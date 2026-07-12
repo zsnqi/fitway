@@ -1,0 +1,24 @@
+{
+  "name": "@fitway/auth",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {},
+  "dependencies": {
+    "@fitway/db": "workspace:*",
+    "@fitway/env": "workspace:*",
+    "better-auth": "catalog:",
+    "dotenv": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@fitway/config": "workspace:*",
+    "typescript": "catalog:"
+  }
+}

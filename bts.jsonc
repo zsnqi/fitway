@@ -1,0 +1,34 @@
+// Better-T-Stack
+//
+// Website: https://www.better-t-stack.dev/
+// Stack Builder: https://www.better-t-stack.dev/new
+// Analytics: https://www.better-t-stack.dev/analytics
+// Showcase: https://www.better-t-stack.dev/showcase
+// Sponsor: https://github.com/sponsors/AmanVarshney01
+//
+// Add new addons with: pnpm dlx create-better-t-stack add
+// This file is safe to delete
+
+{
+  "$schema": "https://r2.better-t-stack.dev/schema.json",
+  "version": "3.36.3",
+  "createdAt": "2026-07-11T22:43:20.630Z",
+  "reproducibleCommand": "pnpm create better-t-stack@latest fitway --frontend tanstack-router --backend hono --runtime node --database postgres --orm drizzle --api orpc --auth better-auth --payments none --addons biome lefthook --examples none --db-setup supabase --manual-db --web-deploy vercel --server-deploy vercel --git --package-manager pnpm --install",
+  "dbSetupOptions": {
+    "mode": "manual",
+  },
+  "database": "postgres",
+  "orm": "drizzle",
+  "backend": "hono",
+  "runtime": "node",
+  "frontend": ["tanstack-router"],
+  "addons": ["biome", "lefthook"],
+  "examples": [],
+  "auth": "better-auth",
+  "payments": "none",
+  "packageManager": "pnpm",
+  "dbSetup": "supabase",
+  "api": "orpc",
+  "webDeploy": "vercel",
+  "serverDeploy": "vercel",
+}

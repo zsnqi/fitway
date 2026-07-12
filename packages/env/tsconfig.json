@@ -1,0 +1,3 @@
+{
+  "extends": "@fitway/config/tsconfig.base.json"
+}
