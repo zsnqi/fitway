@@ -14,9 +14,7 @@
 		"@fitway/api": "workspace:*",
 		"@fitway/env": "workspace:*",
 		"@fitway/ui": "workspace:*",
-		"@hookform/resolvers": "^5.4.0",
 		"@orpc/client": "catalog:",
-		"@orpc/server": "catalog:",
 		"@orpc/tanstack-query": "^1.14.6",
 		"@tailwindcss/vite": "^4.3.2",
 		"@tanstack/react-form": "^1.33.0",
@@ -25,10 +23,8 @@
 		"better-auth": "catalog:",
 		"dotenv": "catalog:",
 		"lucide-react": "catalog:",
-		"next-themes": "catalog:",
 		"react": "catalog:",
 		"react-dom": "catalog:",
-		"sonner": "catalog:",
 		"zod": "catalog:"
 	},
 	"devDependencies": {

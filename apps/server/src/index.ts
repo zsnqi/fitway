@@ -1,4 +1,5 @@
 import { createContext } from "@fitway/api/context";
+import { PUBLIC_OCCUPANCY_INTERNAL_PATH } from "@fitway/api/public-occupancy";
 import { appRouter } from "@fitway/api/routers/index";
 import { auth } from "@fitway/auth";
 import { env } from "@fitway/env/server";
@@ -10,6 +11,8 @@ import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
+
+import { publicOccupancyHandler } from "./public-occupancy";
 
 const app = new Hono();
 
@@ -23,6 +26,8 @@ app.use(
 		credentials: true,
 	}),
 );
+
+app.get(PUBLIC_OCCUPANCY_INTERNAL_PATH, publicOccupancyHandler);
 
 app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
 

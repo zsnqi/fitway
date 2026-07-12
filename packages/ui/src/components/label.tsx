@@ -14,7 +14,7 @@ function Label({
 			data-slot="label"
 			htmlFor={htmlFor}
 			className={cn(
-				"flex select-none items-center gap-2 text-xs leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50 group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50",
+				"flex select-none items-center gap-2 font-medium text-muted-foreground text-sm leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-50 group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50",
 				className,
 			)}
 			{...props}

@@ -1,13 +1,42 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>fitway</title>
-  </head>
+<html lang="ar" dir="rtl">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="theme-color" content="#0b0c0e" />
+		<meta
+			name="description"
+			content="تحقق من حالة الازدحام الحالية في فت واي قبل زيارتك."
+		/>
+		<title>فت واي | حالة الازدحام المباشرة</title>
+		<link rel="icon" href="/favicon.png" type="image/png" sizes="32x32" />
+		<script>
+			(() => {
+				let locale = "ar";
+				try {
+					if (localStorage.getItem("fitway.locale") === "en") {
+						locale = "en";
+						document.documentElement.lang = "en";
+						document.documentElement.dir = "ltr";
+					}
+				} catch {
+					// Arabic remains the safe document default.
+				}
 
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+				for (const weight of ["400", "700"]) {
+					const preload = document.createElement("link");
+					preload.rel = "preload";
+					preload.as = "font";
+					preload.type = "font/woff2";
+					preload.crossOrigin = "anonymous";
+					preload.href = `/fonts/cairo-${locale === "en" ? "latin" : "arabic"}-${weight}-normal.woff2`;
+					document.head.append(preload);
+				}
+			})();
+		</script>
+	</head>
+	<body>
+		<div id="app"></div>
+		<script type="module" src="/src/main.tsx"></script>
+	</body>
 </html>

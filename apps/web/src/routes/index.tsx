@@ -1,51 +1,29 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { orpc } from "@/utils/orpc";
+import { BrandHeader } from "@/components/brand-header";
+import { PublicStatusSkeleton } from "@/components/public-status-skeleton";
+import { UnavailableState } from "@/components/unavailable-state";
+import { fetchPublicOccupancy } from "@/lib/public-occupancy";
 
 export const Route = createFileRoute("/")({
 	component: HomeComponent,
 });
 
-const TITLE_TEXT = `
- ██████╗ ███████╗████████╗████████╗███████╗██████╗
- ██╔══██╗██╔════╝╚══██╔══╝╚══██╔══╝██╔════╝██╔══██╗
- ██████╔╝█████╗     ██║      ██║   █████╗  ██████╔╝
- ██╔══██╗██╔══╝     ██║      ██║   ██╔══╝  ██╔══██╗
- ██████╔╝███████╗   ██║      ██║   ███████╗██║  ██║
- ╚═════╝ ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚═╝  ╚═╝
-
- ████████╗    ███████╗████████╗ █████╗  ██████╗██╗  ██╗
- ╚══██╔══╝    ██╔════╝╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝
-    ██║       ███████╗   ██║   ███████║██║     █████╔╝
-    ██║       ╚════██║   ██║   ██╔══██║██║     ██╔═██╗
-    ██║       ███████║   ██║   ██║  ██║╚██████╗██║  ██╗
-    ╚═╝       ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝
- `;
-
 function HomeComponent() {
-	const healthCheck = useQuery(orpc.healthCheck.queryOptions());
+	const occupancy = useQuery({
+		queryKey: ["public-occupancy"],
+		queryFn: fetchPublicOccupancy,
+		retry: false,
+		staleTime: 30_000,
+	});
 
 	return (
-		<div className="container mx-auto max-w-3xl px-4 py-2">
-			<pre className="overflow-x-auto font-mono text-sm">{TITLE_TEXT}</pre>
-			<div className="grid gap-6">
-				<section className="rounded-lg border p-4">
-					<h2 className="mb-2 font-medium">API Status</h2>
-					<div className="flex items-center gap-2">
-						<div
-							className={`h-2 w-2 rounded-full ${healthCheck.data ? "bg-green-500" : "bg-red-500"}`}
-						/>
-						<span className="text-muted-foreground text-sm">
-							{healthCheck.isLoading
-								? "Checking..."
-								: healthCheck.data
-									? "Connected"
-									: "Disconnected"}
-						</span>
-					</div>
-				</section>
-			</div>
+		<div className="grid min-h-svh grid-rows-[auto_1fr] bg-background">
+			<BrandHeader />
+			<main className="mx-auto grid w-full max-w-[var(--fw-container-public)] place-items-center px-4 py-8 sm:px-6 sm:py-12">
+				{occupancy.isPending ? <PublicStatusSkeleton /> : <UnavailableState />}
+			</main>
 		</div>
 	);
 }
