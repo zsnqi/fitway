@@ -93,8 +93,14 @@ shared desk device. Audit-log entries for staff actions are recorded as that sha
 front-desk account — **coarse audit granularity is accepted for v1.** Owner/Admin access
 remains separate.
 
-**Auth stack:** **Clerk** for staff/admin/owner authentication. The public page stays
-anonymous and account-free.
+**Auth stack:** **Better Auth** for the small staff/admin/owner account set, integrated
+with **Hono** and **Drizzle**. Auth identities, sessions/roles, and audit-log actor
+references live in the same **Supabase Postgres** database. Authentication and role-based
+authorization are enforced server-side; the public page stays anonymous and account-free.
+
+**Deferred alternative:** **Clerk** is not selected for v1. The pilot's small account set
+does not justify a separate hosted identity system or cross-system identity mapping;
+revisit it only if later SaaS needs make managed auth more compelling.
 
 ---
 
@@ -316,10 +322,12 @@ status/band, capacity_at_time`. **Per-minute `entries` and `exits` are required,
   the **public page never shows a negative number.**
 - **Settings** — capacity, thresholds, gym hours; **versioned** so historical analytics
   know the values _at the time_.
-- **Users & roles** — staff/admin accounts.
+- **Users & roles** — Better Auth identities/sessions and staff/admin roles, stored with
+  the application data in Supabase Postgres.
 - **Audit log** — every manual correction/reset: **who, when, from what, to what, why (if
-  available).** For staff actions, "who" is the shared front-desk account (§3).
-  Non-negotiable for trust/debugging in a system where staff touch the count.
+  available).** `who` is a same-database reference to the Better Auth account; for staff
+  actions, it is the shared front-desk account (§3). Non-negotiable for trust/debugging in
+  a system where staff touch the count.
 - **Edge health log** — heartbeat, offline/stale events, camera/feed/device health.
 
 **We do NOT store:** raw video, images, frames, biometric/identity data. Raw per-crossing
@@ -413,15 +421,23 @@ of how many people are watching.
 ## 11. Deployment & Stack
 
 - **Web app / hosting:** **Vercel.**
-- **Data layer:** **Supabase (managed Postgres).**
-- **Auth:** **Clerk** (staff/admin/owner). Public page anonymous.
+- **Application API:** **Hono.**
+- **Data layer:** **Drizzle** over **Supabase (managed Postgres).**
+- **Auth:** **Better Auth** (staff/admin/owner), using the same Postgres database as the
+  application and audit records. Public page anonymous.
 - **Edge:** a **Windows all-in-one PC (screen + computer) the gym provides for FITWAY**
   — a separate machine, **not** the front-desk/reception device — _if capable_
   (see site-check gate §18). Runs the CV pipeline locally.
 
-**Flagged integration decision:** **Clerk ↔ Supabase RLS/JWT** must be verified during
-implementation — Clerk identities have to map correctly to Supabase row-level security,
-or we get either a security hole or a broken admin panel. Not a guess-at-runtime item.
+**Authorization boundary:** Hono validates Better Auth sessions and performs role checks
+server-side for every staff/owner action. Drizzle writes auth-linked application and audit
+records in the same database, avoiding a cross-provider identity/JWT mapping. Database
+constraints and any Supabase RLS used remain defense in depth, not a substitute for
+server-side authorization.
+
+**Deferred alternative:** Clerk is rejected for this v1 deployment because it would add a
+separate identity store and mapping path without solving a need Better Auth does not cover
+for this small account set.
 
 **Vercel cost controls (hard requirements):**
 
@@ -437,8 +453,7 @@ or we get either a security hole or a broken admin panel. Not a guess-at-runtime
 - Vercel pricing/limits/spend caps (above).
 - **Supabase** tier limits, backups, connection limits, and **inactivity/pausing risk**
   (a paused free-tier project would silently kill the pilot).
-- **Clerk** pricing/limits.
-- Clerk ↔ Supabase **RLS/JWT integration** (flagged above).
+- Better Auth session/cookie configuration, secrets, and Hono deployment behavior.
 
 ---
 
@@ -480,8 +495,10 @@ agreed).
 
 ## 13. Security (summary)
 
-- Staff/admin/owner behind **Clerk** auth; least-privilege roles (§3).
-- **Supabase RLS / server-side access rules** enforce data access (integration to verify).
+- Staff/admin/owner behind **Better Auth**; Hono enforces least-privilege roles server-side
+  (§3).
+- Supabase database constraints and any RLS are defense in depth; they do not replace
+  server-side authorization.
 - **Write endpoint authenticated (device token) + rate-limited.**
 - Public page anonymous, read-only, cache-served — no per-visitor DB/function exposure.
 - No PII / biometrics stored → small privacy-breach blast radius by design.
@@ -582,10 +599,11 @@ over-building now._
 - **Domain / URL shape** — undecided. Must stay SaaS-friendly (future per-gym paths or
   subdomains) without building multi-tenancy now.
 - **Real capacity & band thresholds** — unknown; measure on-site; keep admin-configurable.
-- **Stack pricing/tiers/limits (Vercel, Supabase, Clerk) + Vercel Spend-Management
+- **Stack pricing/tiers/limits (Vercel, Supabase) + Vercel Spend-Management
   setup** — verify before deploy (§11), incl. Supabase inactivity/pausing, backups,
   connection limits.
-- **Clerk ↔ Supabase RLS/JWT integration** — verify during implementation.
+- **Better Auth deployment configuration** — verify session/cookie behavior, secrets,
+  migrations, and Hono server-side authorization during implementation.
 - **Trend feature reliability** — include in v1 only if it can be made reliable; else
   defer.
 - **Transparency signage wording** — confirm with owner.
@@ -671,7 +689,7 @@ enough for the pilot (no heavy contract), but get clear owner agreement on:
 | Privacy/consent exposure (cameras on members)                    | Edge-only; zero image/video/identity storage; anonymous counts only; owner transparency notice                                   |
 | Gym PC too weak for CV                                           | Site-check gate; gym provides hardware if needed                                                                                 |
 | RTSP/network access not actually available                       | Site-check gate before committing                                                                                                |
-| Clerk↔Supabase RLS misconfig (security hole / broken admin)      | Flagged as must-verify integration decision                                                                                      |
+| Better Auth session/authorization misconfiguration                | Hono validates sessions and enforces roles server-side; auth and audit references share the Postgres database; verify configuration before launch |
 | Scope creep into SaaS/predictions/floor-count                    | Explicit scope fence (§16)                                                                                                       |
 | Non-members inflate "occupancy"                                  | Accepted + framed honestly ("bodies inside, not members"); manual correction                                                     |
 

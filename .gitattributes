@@ -1,0 +1,21 @@
+# Keep text files portable across Windows, macOS, and Linux.
+* text=auto eol=lf
+
+# Preserve binary assets exactly; do not attempt text conversion or textual diffs.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.eot binary
+*.mp4 binary
+*.webm binary
+*.zip binary
+*.gz binary
+*.tgz binary
