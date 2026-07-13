@@ -12,6 +12,10 @@ export type MessageCatalog = {
 	};
 	publicPage: {
 		eyebrow: string;
+		open: string;
+		closedTitle: string;
+		opensAt: (time: string) => string;
+		closedSummary: (opening: string | null) => string;
 		unavailableTitle: string;
 		unavailableDescription: string;
 		loading: string;
@@ -30,6 +34,7 @@ export type MessageCatalog = {
 			band: string,
 			count: string,
 			percent: string,
+			open: string,
 			freshness: string,
 			time: string,
 		) => string;

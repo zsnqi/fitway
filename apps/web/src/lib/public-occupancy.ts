@@ -54,6 +54,19 @@ export function effectiveFreshness(
 	payload: PublicOccupancyPayload,
 	now: Date,
 ): PublicOccupancyPayload["freshness"] {
+	if (payload.freshness === "closed") {
+		if (payload.nextOpenAt === null) return "closed";
+		const nextOpenAt = Date.parse(payload.nextOpenAt);
+		const computedAt = Date.parse(payload.computedAt);
+		if (
+			!Number.isFinite(nextOpenAt) ||
+			!Number.isFinite(computedAt) ||
+			computedAt >= nextOpenAt
+		) {
+			return "unavailable";
+		}
+		return now.getTime() < nextOpenAt ? "closed" : "unavailable";
+	}
 	if (payload.freshness !== "fresh") return payload.freshness;
 	const freshUntil = Date.parse(payload.freshUntil);
 	const computedAt = Date.parse(payload.computedAt);

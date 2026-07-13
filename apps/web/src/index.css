@@ -1,1 +1,22 @@
 @import "@fitway/ui/globals.css";
+
+.fw-status-open {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--fw-space-2);
+	padding-block: var(--fw-space-1);
+	padding-inline: var(--fw-space-3);
+	border-radius: var(--fw-radius-pill);
+	font-weight: 600;
+	font-size: var(--fw-text-sm);
+}
+
+.fw-status-open--open {
+	color: var(--fw-success-fg);
+	background: var(--fw-success-bg);
+}
+
+.fw-status-open--closed {
+	color: var(--fw-text-subtle);
+	background: var(--fw-surface-2);
+}

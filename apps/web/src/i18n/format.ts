@@ -15,9 +15,13 @@ export function formatDate(
 	);
 }
 
-export function formatGymTime(value: Date | number, locale: Locale): string {
+export function formatGymTime(
+	value: Date | number,
+	locale: Locale,
+	timeZone: string,
+): string {
 	return formatDate(value, locale, {
-		timeZone: "Asia/Riyadh",
+		timeZone,
 		hour: "numeric",
 		minute: "2-digit",
 		hour12: true,

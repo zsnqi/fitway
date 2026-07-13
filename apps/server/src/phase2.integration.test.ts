@@ -21,7 +21,7 @@ import {
 import * as authSchema from "@fitway/db/schema/auth";
 import { serve } from "@hono/node-server";
 import { chromium } from "@playwright/test";
-import { eq, ne, sql } from "drizzle-orm";
+import { eq, gt, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { Hono } from "hono";
@@ -68,7 +68,27 @@ const token = "integration-device-token-that-is-at-least-32-bytes-long";
 const execFileAsync = promisify(execFile);
 let deviceId = "";
 
+const alwaysOpenSchedule = {
+	scheduleSunOpen: "00:00",
+	scheduleSunClose: "00:00",
+	scheduleMonOpen: "00:00",
+	scheduleMonClose: "00:00",
+	scheduleTueOpen: "00:00",
+	scheduleTueClose: "00:00",
+	scheduleWedOpen: "00:00",
+	scheduleWedClose: "00:00",
+	scheduleThuOpen: "00:00",
+	scheduleThuClose: "00:00",
+	scheduleFriOpen: "00:00",
+	scheduleFriClose: "00:00",
+	scheduleSatOpen: "00:00",
+	scheduleSatClose: "00:00",
+} as const;
+
 beforeAll(async () => {
+	await database.execute(sql`drop schema if exists drizzle cascade`);
+	await database.execute(sql`drop schema if exists public cascade`);
+	await database.execute(sql`create schema public`);
 	await migrate(database, {
 		migrationsFolder: path.resolve("packages/db/src/migrations"),
 	});
@@ -87,7 +107,7 @@ beforeAll(async () => {
 		.where(eq(currentState.id, 1));
 	await database
 		.delete(settingsVersions)
-		.where(ne(settingsVersions.version, 1));
+		.where(gt(settingsVersions.version, 2));
 	await database.delete(edgeDevices);
 	const [device] = await database
 		.insert(edgeDevices)
@@ -108,9 +128,151 @@ describe("Phase 2 real Postgres vertical slice", () => {
 			sql`select (select count(*) from settings_versions)::int settings_count, (select count(*) from current_state)::int current_count`,
 		);
 		expect(result.rows[0]).toMatchObject({
-			settings_count: 1,
+			settings_count: 2,
 			current_count: 1,
 		});
+		const rows = await database
+			.select()
+			.from(settingsVersions)
+			.orderBy(settingsVersions.version);
+		expect(rows[0]).toMatchObject({
+			version: 1,
+			scheduleSunOpen: null,
+			scheduleSunClose: null,
+			scheduleFriOpen: null,
+			scheduleFriClose: null,
+		});
+		expect(rows[1]).toMatchObject({
+			version: 2,
+			scheduleSunOpen: "06:00:00",
+			scheduleSunClose: "02:00:00",
+			scheduleThuOpen: "06:00:00",
+			scheduleThuClose: "02:00:00",
+			scheduleFriOpen: "14:00:00",
+			scheduleFriClose: "00:00:00",
+			scheduleSatOpen: "06:00:00",
+			scheduleSatClose: "02:00:00",
+		});
+		const latest = await publicRepository.readCurrentAndLatestSettings();
+		expect(latest.settings).toMatchObject({
+			version: 2,
+			timeZone: "Asia/Riyadh",
+			weeklySchedule: {
+				thu: { open: "06:00:00", close: "02:00:00" },
+				fri: { open: "14:00:00", close: "00:00:00" },
+			},
+		});
+		await expect(
+			database.insert(settingsVersions).values({
+				capacity: 100,
+				quietMaxPercent: 25,
+				moderateMaxPercent: 50,
+				busyMaxPercent: 75,
+				timezone: "Asia/Riyadh",
+				businessDayBoundary: "04:00",
+				pushIntervalSeconds: 20,
+				freshForSeconds: 90,
+				operationalStaleAfterSeconds: 180,
+				publicPollSeconds: 60,
+				scheduleSunOpen: "06:00",
+				scheduleSunClose: null,
+			}),
+		).rejects.toThrow();
+	});
+
+	it("keeps pushes updating while closed and exposes them only after opening", async () => {
+		const phase3Token = "phase-3-device-token-that-is-at-least-32-bytes";
+		const [device] = await database
+			.insert(edgeDevices)
+			.values({
+				name: "phase-3-integration",
+				tokenHash: createHash("sha256").update(phase3Token).digest("hex"),
+			})
+			.returning({ id: edgeDevices.id });
+		if (!device) throw new Error("Phase 3 device not created");
+		let now = new Date("2026-07-17T10:59:40.000Z");
+		const input = (sequence: number, count: number) => ({
+			schemaVersion: 1 as const,
+			sequence,
+			observedAt: new Date(now.getTime() - 1_000).toISOString(),
+			currentCount: count,
+			minutes: [],
+			health: {
+				process: "ok" as const,
+				camera: "ok" as const,
+				feed: "ok" as const,
+				detectorFps: 4,
+			},
+			appliedCommandId: null,
+		});
+		await processLivePush(device.id, input(1, 21), {
+			...engine,
+			now: () => now,
+		});
+		now = new Date("2026-07-17T10:59:50.000Z");
+		await processLivePush(device.id, input(2, 23), {
+			...engine,
+			now: () => now,
+		});
+
+		const app = new Hono();
+		app.get(
+			PUBLIC_OCCUPANCY_INTERNAL_PATH,
+			createPublicOccupancyHandler(publicRepository, () => now),
+		);
+		const closedResponse = await app.request(PUBLIC_OCCUPANCY_INTERNAL_PATH);
+		const closed = await closedResponse.json();
+		expect(closedResponse.headers.get("cache-control")).toBe(
+			"public, s-maxage=10, stale-while-revalidate=60",
+		);
+		expect(closedResponse.headers.get("x-fitway-poll-seconds")).toBe("60");
+		expect(closed).toEqual({
+			schemaVersion: 1,
+			freshness: "closed",
+			timeZone: "Asia/Riyadh",
+			nextOpenAt: "2026-07-17T11:00:00.000Z",
+			computedAt: "2026-07-17T10:59:50.000Z",
+			trend: null,
+		});
+		expect(closed).not.toHaveProperty("count");
+		expect((await database.select().from(currentState))[0]).toMatchObject({
+			currentCount: 23,
+		});
+
+		now = new Date("2026-07-17T11:00:10.000Z");
+		const openResponse = await app.request(PUBLIC_OCCUPANCY_INTERNAL_PATH);
+		expect(await openResponse.json()).toMatchObject({
+			freshness: "fresh",
+			timeZone: "Asia/Riyadh",
+			count: 23,
+		});
+
+		await database
+			.update(currentState)
+			.set({ lastPushReceivedAt: new Date("2026-07-17T12:00:00.000Z") })
+			.where(eq(currentState.id, 1));
+		now = new Date("2026-07-17T10:59:50.000Z");
+		expect(
+			await (await app.request(PUBLIC_OCCUPANCY_INTERNAL_PATH)).json(),
+		).toMatchObject({ freshness: "closed" });
+		now = new Date("2026-07-17T11:00:10.000Z");
+		expect(
+			await (await app.request(PUBLIC_OCCUPANCY_INTERNAL_PATH)).json(),
+		).toMatchObject({ freshness: "unavailable" });
+
+		await database
+			.update(currentState)
+			.set({
+				currentCount: null,
+				band: null,
+				source: null,
+				lastPushReceivedAt: null,
+				lastEdgeReportedAt: null,
+				activeDeviceId: null,
+				settingsVersion: null,
+			})
+			.where(eq(currentState.id, 1));
+		await database.delete(edgeDevices).where(eq(edgeDevices.id, device.id));
 	});
 
 	it("commits current and complete minute snapshot, projects fresh, and keeps replay immutable", async () => {
@@ -149,7 +311,7 @@ describe("Phase 2 real Postgres vertical slice", () => {
 		);
 		app.get(
 			PUBLIC_OCCUPANCY_INTERNAL_PATH,
-			createPublicOccupancyHandler(publicRepository),
+			createPublicOccupancyHandler(publicRepository, () => now),
 		);
 		const firstResponse = await app.request(EDGE_PUSH_INTERNAL_PATH, {
 			method: "POST",
@@ -173,7 +335,7 @@ describe("Phase 2 real Postgres vertical slice", () => {
 			businessDay: "2026-07-12",
 			source: "live",
 			capacitySnapshot: 100,
-			settingsVersion: 1,
+			settingsVersion: 2,
 		});
 		const publicValue = await buildPublicOccupancyPayload(
 			publicRepository,
@@ -342,6 +504,7 @@ describe("Phase 2 real Postgres vertical slice", () => {
 				freshForSeconds: 30,
 				operationalStaleAfterSeconds: 60,
 				publicPollSeconds: 11,
+				...alwaysOpenSchedule,
 			})
 			.returning({ version: settingsVersions.version });
 		if (!settings) throw new Error("New settings version was not created");
@@ -472,6 +635,7 @@ describe("Phase 2 real Postgres vertical slice", () => {
 			freshForSeconds: 3,
 			operationalStaleAfterSeconds: 4,
 			publicPollSeconds: 1,
+			...alwaysOpenSchedule,
 		});
 		const browserToken = "browser-integration-token-that-is-at-least-32-bytes";
 		await database.insert(edgeDevices).values({

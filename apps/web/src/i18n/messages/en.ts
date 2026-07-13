@@ -12,6 +12,11 @@ export const en = {
 	},
 	publicPage: {
 		eyebrow: "Gym status now",
+		open: "Open now",
+		closedTitle: "Closed now",
+		opensAt: (time) => `Opens ${time}`,
+		closedSummary: (opening) =>
+			opening ? `The gym is closed now. ${opening}.` : "The gym is closed now.",
 		unavailableTitle: "Live occupancy is unavailable right now",
 		unavailableDescription:
 			"We will not present an old count as live. Please try again later.",
@@ -33,8 +38,8 @@ export const en = {
 			`The last known count was around ${count} at ${time}. Live updates are delayed.`,
 		meterLabel: "Occupancy level",
 		meterValue: (percent, band) => `${percent}% full, ${band}`,
-		summary: (band, count, percent, freshness, time) =>
-			`${freshness}. ${band}. Around ${count} people, ${percent}% full. Updated ${time}.`,
+		summary: (band, count, percent, open, freshness, time) =>
+			`${freshness}. ${open}. ${band}. Around ${count} people, ${percent}% full. Updated ${time}.`,
 	},
 	login: {
 		title: "Sign in",

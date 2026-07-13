@@ -1,8 +1,8 @@
+import type { OccupancyTransaction } from "@fitway/api/occupancy/engine";
 import type {
-	OccupancySettings,
-	OccupancyTransaction,
-} from "@fitway/api/occupancy/engine";
-import type { PublicPayloadRepository } from "@fitway/api/public/payload-builder";
+	PublicPayloadRepository,
+	PublicPayloadSettings,
+} from "@fitway/api/public/payload-builder";
 import { db } from "@fitway/db";
 import {
 	currentState,
@@ -15,13 +15,13 @@ import { desc, eq, sql } from "drizzle-orm";
 type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
 type Database = typeof db;
 
-function normalizeBoundary(value: string): string {
+function normalizeDatabaseTime(value: string): string {
 	return value.length === 5 ? value : value.slice(0, 8);
 }
 
 async function latestSettings(
 	client: Pick<typeof db, "select">,
-): Promise<OccupancySettings | null> {
+): Promise<PublicPayloadSettings | null> {
 	const [row] = await client
 		.select()
 		.from(settingsVersions)
@@ -35,13 +35,31 @@ async function latestSettings(
 				moderateMaxPercent: row.moderateMaxPercent,
 				busyMaxPercent: row.busyMaxPercent,
 				timezone: row.timezone,
-				businessDayBoundary: normalizeBoundary(row.businessDayBoundary),
+				timeZone: row.timezone,
+				businessDayBoundary: normalizeDatabaseTime(row.businessDayBoundary),
 				pushIntervalSeconds: row.pushIntervalSeconds,
 				freshForSeconds: row.freshForSeconds,
 				operationalStaleAfterSeconds: row.operationalStaleAfterSeconds,
 				publicPollSeconds: row.publicPollSeconds,
+				weeklySchedule: {
+					sun: scheduleHours(row.scheduleSunOpen, row.scheduleSunClose),
+					mon: scheduleHours(row.scheduleMonOpen, row.scheduleMonClose),
+					tue: scheduleHours(row.scheduleTueOpen, row.scheduleTueClose),
+					wed: scheduleHours(row.scheduleWedOpen, row.scheduleWedClose),
+					thu: scheduleHours(row.scheduleThuOpen, row.scheduleThuClose),
+					fri: scheduleHours(row.scheduleFriOpen, row.scheduleFriClose),
+					sat: scheduleHours(row.scheduleSatOpen, row.scheduleSatClose),
+				},
 			}
 		: null;
+}
+
+function scheduleHours(open: string | null, close: string | null) {
+	if (open === null && close === null) return null;
+	return {
+		open: open ? normalizeDatabaseTime(open) : "",
+		close: close ? normalizeDatabaseTime(close) : "",
+	};
 }
 
 function transactionAdapter(tx: Transaction): OccupancyTransaction {

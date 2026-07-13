@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { BrandHeader } from "@/components/brand-header";
+import { ClosedState } from "@/components/closed-state";
 import { OccupancyStatus } from "@/components/occupancy-status";
 import { PublicStatusSkeleton } from "@/components/public-status-skeleton";
 import { UnavailableState } from "@/components/unavailable-state";
@@ -15,8 +16,14 @@ function HomeComponent() {
 	let content = <UnavailableState />;
 	if (occupancy.isPending) content = <PublicStatusSkeleton />;
 	else if (
+		occupancy.payload?.freshness === "closed" &&
+		occupancy.effectiveFreshness === "closed"
+	) {
+		content = <ClosedState payload={occupancy.payload} />;
+	} else if (
 		occupancy.payload &&
-		occupancy.payload.freshness !== "unavailable" &&
+		(occupancy.payload.freshness === "fresh" ||
+			occupancy.payload.freshness === "stale") &&
 		(occupancy.effectiveFreshness === "fresh" ||
 			occupancy.effectiveFreshness === "stale")
 	) {

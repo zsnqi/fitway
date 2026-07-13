@@ -79,6 +79,20 @@ export const settingsVersions = pgTable(
 			.notNull()
 			.default(180),
 		publicPollSeconds: integer("public_poll_seconds").notNull().default(60),
+		scheduleSunOpen: time("schedule_sun_open"),
+		scheduleSunClose: time("schedule_sun_close"),
+		scheduleMonOpen: time("schedule_mon_open"),
+		scheduleMonClose: time("schedule_mon_close"),
+		scheduleTueOpen: time("schedule_tue_open"),
+		scheduleTueClose: time("schedule_tue_close"),
+		scheduleWedOpen: time("schedule_wed_open"),
+		scheduleWedClose: time("schedule_wed_close"),
+		scheduleThuOpen: time("schedule_thu_open"),
+		scheduleThuClose: time("schedule_thu_close"),
+		scheduleFriOpen: time("schedule_fri_open"),
+		scheduleFriClose: time("schedule_fri_close"),
+		scheduleSatOpen: time("schedule_sat_open"),
+		scheduleSatClose: time("schedule_sat_close"),
 		effectiveFrom: utcTimestamp("effective_from").notNull().defaultNow(),
 		createdAt: utcTimestamp("created_at").notNull().defaultNow(),
 		createdBy: text("created_by"),
@@ -103,6 +117,34 @@ export const settingsVersions = pgTable(
 			sql`${table.operationalStaleAfterSeconds} > ${table.freshForSeconds}`,
 		),
 		check("settings_public_poll_positive", sql`${table.publicPollSeconds} > 0`),
+		check(
+			"settings_schedule_sun_pair",
+			sql`(${table.scheduleSunOpen} is null) = (${table.scheduleSunClose} is null)`,
+		),
+		check(
+			"settings_schedule_mon_pair",
+			sql`(${table.scheduleMonOpen} is null) = (${table.scheduleMonClose} is null)`,
+		),
+		check(
+			"settings_schedule_tue_pair",
+			sql`(${table.scheduleTueOpen} is null) = (${table.scheduleTueClose} is null)`,
+		),
+		check(
+			"settings_schedule_wed_pair",
+			sql`(${table.scheduleWedOpen} is null) = (${table.scheduleWedClose} is null)`,
+		),
+		check(
+			"settings_schedule_thu_pair",
+			sql`(${table.scheduleThuOpen} is null) = (${table.scheduleThuClose} is null)`,
+		),
+		check(
+			"settings_schedule_fri_pair",
+			sql`(${table.scheduleFriOpen} is null) = (${table.scheduleFriClose} is null)`,
+		),
+		check(
+			"settings_schedule_sat_pair",
+			sql`(${table.scheduleSatOpen} is null) = (${table.scheduleSatClose} is null)`,
+		),
 	],
 );
 

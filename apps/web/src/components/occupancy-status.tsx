@@ -1,6 +1,7 @@
-import type { PublicOccupancyPayload } from "@fitway/api/public-occupancy";
+import type { PublicOccupancyUsablePayload } from "@fitway/api/public-occupancy";
 import {
 	Activity,
+	CircleCheck,
 	CircleGauge,
 	Clock3,
 	Gauge,
@@ -12,10 +13,6 @@ import { useEffect, useRef } from "react";
 import { formatGymTime, formatNumber, formatRelativeTime } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
 
-type UsablePayload = Exclude<
-	PublicOccupancyPayload,
-	{ freshness: "unavailable" }
->;
 const icons = {
 	quiet: Activity,
 	moderate: CircleGauge,
@@ -40,7 +37,7 @@ export function OccupancyStatus({
 	freshness,
 	now,
 }: {
-	payload: UsablePayload;
+	payload: PublicOccupancyUsablePayload;
 	freshness: "fresh" | "stale";
 	now: Date;
 }) {
@@ -48,7 +45,11 @@ export function OccupancyStatus({
 	const Icon = icons[payload.band];
 	const count = formatNumber(payload.count, locale);
 	const percent = formatNumber(payload.percentFull, locale);
-	const absolute = formatGymTime(new Date(payload.lastUpdatedAt), locale);
+	const absolute = formatGymTime(
+		new Date(payload.lastUpdatedAt),
+		locale,
+		payload.timeZone,
+	);
 	const relative = formatRelativeTime(
 		new Date(payload.lastUpdatedAt),
 		now,
@@ -63,6 +64,7 @@ export function OccupancyStatus({
 		band,
 		count,
 		percent,
+		messages.publicPage.open,
 		freshnessText,
 		absolute,
 	);
@@ -92,6 +94,12 @@ export function OccupancyStatus({
 				>
 					<Icon className="size-4" aria-hidden="true" />
 					{band}
+				</span>
+			</div>
+			<div className="mt-4 flex justify-center">
+				<span className="fw-status-open fw-status-open--open">
+					<CircleCheck className="size-4" aria-hidden="true" />
+					{messages.publicPage.open}
 				</span>
 			</div>
 			<div className="mt-7 text-center">

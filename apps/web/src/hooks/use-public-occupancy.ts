@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
 	effectiveFreshness,
@@ -12,6 +12,7 @@ export function usePublicOccupancy(random: () => number = Math.random) {
 	const [isVisible, setIsVisible] = useState(
 		() => document.visibilityState === "visible",
 	);
+	const refetchedBoundary = useRef<string | null>(null);
 	const query = useQuery({
 		queryKey: ["public-occupancy"],
 		queryFn: ({ signal }) => fetchPublicOccupancy(signal),
@@ -37,7 +38,7 @@ export function usePublicOccupancy(random: () => number = Math.random) {
 
 	useEffect(() => {
 		const payload = query.data?.payload;
-		if (!payload || payload.freshness === "unavailable") return;
+		if (payload?.freshness !== "fresh") return;
 		const delay = Date.parse(payload.freshUntil) - Date.now();
 		if (delay <= 0) {
 			setNow(new Date());
@@ -46,6 +47,28 @@ export function usePublicOccupancy(random: () => number = Math.random) {
 		const timer = window.setTimeout(() => setNow(new Date()), delay);
 		return () => window.clearTimeout(timer);
 	}, [query.data]);
+
+	useEffect(() => {
+		const payload = query.data?.payload;
+		if (payload?.freshness !== "closed" || payload.nextOpenAt === null) return;
+		const boundaryKey = `${payload.computedAt}/${payload.nextOpenAt}`;
+		const boundary = Date.parse(payload.nextOpenAt);
+		const expireAndRefetch = () => {
+			setNow((current) =>
+				current.getTime() >= boundary ? current : new Date(),
+			);
+			if (refetchedBoundary.current === boundaryKey || query.isFetching) return;
+			refetchedBoundary.current = boundaryKey;
+			void query.refetch();
+		};
+		const delay = boundary - Date.now();
+		if (!Number.isFinite(delay) || delay <= 0) {
+			expireAndRefetch();
+			return;
+		}
+		const timer = window.setTimeout(expireAndRefetch, delay);
+		return () => window.clearTimeout(timer);
+	}, [query.data, query.isFetching, query.refetch]);
 
 	useEffect(() => {
 		const timer = window.setInterval(() => {
@@ -67,10 +90,10 @@ export function usePublicOccupancy(random: () => number = Math.random) {
 	}, [query.isFetching, query.refetch]);
 
 	const payload = query.data?.payload;
-	const freshness = payload
-		? query.isError && payload.freshness !== "unavailable"
-			? "stale"
-			: effectiveFreshness(payload, now)
+	const derivedFreshness = payload
+		? effectiveFreshness(payload, now)
 		: undefined;
+	const freshness =
+		query.isError && derivedFreshness === "fresh" ? "stale" : derivedFreshness;
 	return { ...query, payload, effectiveFreshness: freshness, now };
 }

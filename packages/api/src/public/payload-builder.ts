@@ -4,6 +4,11 @@ import {
 	type OccupancySettings,
 } from "../occupancy/engine";
 import {
+	assertScheduleSettings,
+	evaluateSchedule,
+	type ScheduleSettings,
+} from "../occupancy/schedule";
+import {
 	createUnavailablePublicOccupancyPayload,
 	type PublicOccupancyPayload,
 } from "../public-occupancy";
@@ -16,10 +21,12 @@ export type PublicCurrentState = {
 	activeDeviceEnabled: boolean | null;
 };
 
+export type PublicPayloadSettings = OccupancySettings & ScheduleSettings;
+
 export type PublicPayloadRepository = {
 	readCurrentAndLatestSettings(): Promise<{
 		current: PublicCurrentState | null;
-		settings: OccupancySettings | null;
+		settings: PublicPayloadSettings | null;
 	}>;
 };
 
@@ -33,8 +40,10 @@ export async function buildPublicOccupancyPayload(
 	now: Date = new Date(),
 ): Promise<BuiltPublicPayload> {
 	const { current, settings } = await repository.readCurrentAndLatestSettings();
+	const evaluationNow = Number.isFinite(now.getTime()) ? now : null;
+	const computedAt = evaluationNow ?? new Date();
 	const unavailable = (): BuiltPublicPayload => ({
-		payload: createUnavailablePublicOccupancyPayload(now),
+		payload: createUnavailablePublicOccupancyPayload(computedAt),
 		pollSeconds:
 			settings &&
 			Number.isInteger(settings.publicPollSeconds) &&
@@ -42,9 +51,35 @@ export async function buildPublicOccupancyPayload(
 				? settings.publicPollSeconds
 				: null,
 	});
+	if (!evaluationNow) return unavailable();
+	if (!settings) return unavailable();
+	try {
+		assertScheduleSettings(settings);
+		if (
+			!Number.isSafeInteger(settings.publicPollSeconds) ||
+			settings.publicPollSeconds <= 0
+		) {
+			return unavailable();
+		}
+		const schedule = evaluateSchedule(settings, evaluationNow);
+		if (!schedule.open) {
+			return {
+				payload: {
+					schemaVersion: 1,
+					freshness: "closed",
+					timeZone: settings.timeZone,
+					nextOpenAt: schedule.nextOpenAt?.toISOString() ?? null,
+					computedAt: evaluationNow.toISOString(),
+					trend: null,
+				},
+				pollSeconds: settings.publicPollSeconds,
+			};
+		}
+	} catch {
+		return unavailable();
+	}
 	if (
 		!current ||
-		!settings ||
 		current.currentCount === null ||
 		current.currentCount < 0 ||
 		!current.band ||
@@ -67,7 +102,7 @@ export async function buildPublicOccupancyPayload(
 		return unavailable();
 	}
 	const lastUpdated = current.lastPushReceivedAt;
-	const age = now.getTime() - lastUpdated.getTime();
+	const age = evaluationNow.getTime() - lastUpdated.getTime();
 	if (!Number.isFinite(age) || age < -5_000) return unavailable();
 	const freshUntil = new Date(
 		lastUpdated.getTime() + settings.freshForSeconds * 1_000,
@@ -77,6 +112,7 @@ export async function buildPublicOccupancyPayload(
 		payload: {
 			schemaVersion: 1,
 			freshness: age <= settings.freshForSeconds * 1_000 ? "fresh" : "stale",
+			timeZone: settings.timeZone,
 			band: current.band,
 			count,
 			percentFull: Math.min(
@@ -86,7 +122,7 @@ export async function buildPublicOccupancyPayload(
 			lastUpdatedAt: lastUpdated.toISOString(),
 			freshUntil: freshUntil.toISOString(),
 			source: current.source,
-			computedAt: now.toISOString(),
+			computedAt: evaluationNow.toISOString(),
 			trend: null,
 		},
 		pollSeconds: settings.publicPollSeconds,

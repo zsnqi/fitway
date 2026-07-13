@@ -8,6 +8,7 @@ function usablePayload(
 	return {
 		schemaVersion: 1,
 		freshness,
+		timeZone: "Asia/Riyadh",
 		band: "moderate",
 		count: 37,
 		percentFull: 37,

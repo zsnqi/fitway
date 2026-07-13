@@ -43,6 +43,7 @@ describe("Phase 2 contracts", () => {
 		const usable = {
 			schemaVersion: 1,
 			freshness: "fresh",
+			timeZone: "Asia/Riyadh",
 			band: "packed",
 			count: 150,
 			percentFull: 100,

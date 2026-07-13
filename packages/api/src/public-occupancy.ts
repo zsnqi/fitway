@@ -24,6 +24,7 @@ export const publicOccupancyUsableSchema = z
 	.object({
 		...base,
 		freshness: z.enum(["fresh", "stale"]),
+		timeZone: z.string().min(1),
 		band: z.enum(["quiet", "moderate", "busy", "packed"]),
 		count: z.number().int().nonnegative(),
 		percentFull: z.number().int().min(0).max(100),
@@ -32,9 +33,18 @@ export const publicOccupancyUsableSchema = z
 		source: z.enum(["edge", "manual"]),
 	})
 	.strict();
+export const publicOccupancyClosedSchema = z
+	.object({
+		...base,
+		freshness: z.literal("closed"),
+		timeZone: z.string().min(1),
+		nextOpenAt: canonicalTimestamp.nullable(),
+	})
+	.strict();
 export const publicOccupancyPayloadSchema = z.discriminatedUnion("freshness", [
 	publicOccupancyUnavailableSchema,
 	publicOccupancyUsableSchema,
+	publicOccupancyClosedSchema,
 ]);
 
 export type PublicOccupancyPayload = z.infer<
@@ -43,6 +53,26 @@ export type PublicOccupancyPayload = z.infer<
 export type PublicOccupancyUnavailablePayload = z.infer<
 	typeof publicOccupancyUnavailableSchema
 >;
+export type PublicOccupancyUsablePayload = z.infer<
+	typeof publicOccupancyUsableSchema
+>;
+export type PublicOccupancyClosedPayload = z.infer<
+	typeof publicOccupancyClosedSchema
+>;
+
+export function publicOccupancyCacheControl(
+	payload: PublicOccupancyPayload,
+	now: Date,
+): string {
+	if (payload.freshness !== "closed" || payload.nextOpenAt === null) {
+		return PUBLIC_OCCUPANCY_CACHE_CONTROL;
+	}
+	const remaining = Math.floor(
+		(Date.parse(payload.nextOpenAt) - now.getTime()) / 1_000,
+	);
+	const maxAge = Math.max(0, Math.min(30, remaining));
+	return `public, s-maxage=${maxAge}, stale-while-revalidate=60`;
+}
 
 export function createPublicOccupancyUrl(serverBase: string): string {
 	const normalizedBase = serverBase.endsWith("/")

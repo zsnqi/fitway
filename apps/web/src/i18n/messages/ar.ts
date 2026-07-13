@@ -12,6 +12,11 @@ export const ar = {
 	},
 	publicPage: {
 		eyebrow: "حالة النادي الآن",
+		open: "مفتوح الآن",
+		closedTitle: "مغلق الآن",
+		opensAt: (time) => `يفتح ${time}`,
+		closedSummary: (opening) =>
+			opening ? `النادي مغلق الآن. ${opening}.` : "النادي مغلق الآن.",
 		unavailableTitle: "التحديث المباشر غير متاح الآن",
 		unavailableDescription:
 			"لا نعرض عدداً قديماً على أنه مباشر. يرجى المحاولة مرة أخرى لاحقاً.",
@@ -33,8 +38,8 @@ export const ar = {
 			`كان آخر عدد معروف حوالي ${count} في ${time}. التحديثات المباشرة متأخرة.`,
 		meterLabel: "مستوى الإشغال",
 		meterValue: (percent, band) => `ممتلئ بنسبة ${percent}%، ${band}`,
-		summary: (band, count, percent, freshness, time) =>
-			`${freshness}. ${band}. حوالي ${count} شخصًا، ممتلئ بنسبة ${percent}%. آخر تحديث ${time}.`,
+		summary: (band, count, percent, open, freshness, time) =>
+			`${freshness}. ${open}. ${band}. حوالي ${count} شخصًا، ممتلئ بنسبة ${percent}%. آخر تحديث ${time}.`,
 	},
 	login: {
 		title: "تسجيل الدخول",
