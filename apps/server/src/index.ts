@@ -1,97 +1,128 @@
+import { pathToFileURL } from "node:url";
 import { createContext } from "@fitway/api/context";
-import { PUBLIC_OCCUPANCY_INTERNAL_PATH } from "@fitway/api/public-occupancy";
+import {
+	EDGE_NO_STORE,
+	EDGE_PUSH_INTERNAL_PATH,
+	OPENAPI_REFERENCE_PATH,
+	OPENAPI_RESOURCE_PATH,
+} from "@fitway/api/edge-push";
+import {
+	PUBLIC_OCCUPANCY_INTERNAL_PATH,
+	PUBLIC_POLL_HEADER,
+} from "@fitway/api/public-occupancy";
 import { appRouter } from "@fitway/api/routers/index";
 import { auth } from "@fitway/auth";
 import { env } from "@fitway/env/server";
-import { OpenAPIHandler } from "@orpc/openapi/fetch";
-import { OpenAPIReferencePlugin } from "@orpc/openapi/plugins";
 import { onError } from "@orpc/server";
 import { RPCHandler } from "@orpc/server/fetch";
-import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
 import { Hono } from "hono";
+import { bodyLimit } from "hono/body-limit";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 
-import { publicOccupancyHandler } from "./public-occupancy";
+import { createEdgePushHandler } from "./edge-push";
+import {
+	findDeviceByTokenHash,
+	occupancyEngineDatabase,
+	publicPayloadRepository,
+} from "./occupancy-repositories";
+import { generateOpenApiDocument } from "./openapi";
+import { createPublicOccupancyHandler } from "./public-occupancy";
+import { DeviceRateLimiter } from "./rate-limiter";
 
-const app = new Hono();
-
-app.use(logger());
-app.use(
-	"/*",
-	cors({
-		origin: env.CORS_ORIGIN,
-		allowMethods: ["GET", "POST", "OPTIONS"],
-		allowHeaders: ["Content-Type", "Authorization"],
-		credentials: true,
-	}),
-);
-
-app.get(PUBLIC_OCCUPANCY_INTERNAL_PATH, publicOccupancyHandler);
-
-app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
-
-export const apiHandler = new OpenAPIHandler(appRouter, {
-	plugins: [
-		new OpenAPIReferencePlugin({
-			schemaConverters: [new ZodToJsonSchemaConverter()],
+export function createApp(
+	nodeEnv: "development" | "production" | "test" = env.NODE_ENV,
+) {
+	const app = new Hono();
+	const requestLogger = logger();
+	app.use("*", async (context, next) => {
+		if (context.req.path === EDGE_PUSH_INTERNAL_PATH) return next();
+		return requestLogger(context, next);
+	});
+	app.use(
+		"*",
+		cors({
+			origin: env.CORS_ORIGIN,
+			allowMethods: ["GET", "POST", "OPTIONS"],
+			allowHeaders: ["Content-Type", "Authorization"],
+			exposeHeaders: [PUBLIC_POLL_HEADER],
+			credentials: true,
 		}),
-	],
-	interceptors: [
-		onError((error) => {
-			console.error(error);
+	);
+
+	app.post(
+		EDGE_PUSH_INTERNAL_PATH,
+		bodyLimit({
+			maxSize: 16 * 1_024,
+			onError: (context) => {
+				context.header("Cache-Control", EDGE_NO_STORE);
+				return context.json({ error: "request_too_large" }, 413);
+			},
 		}),
-	],
-});
-
-export const rpcHandler = new RPCHandler(appRouter, {
-	interceptors: [
-		onError((error) => {
-			console.error(error);
+		createEdgePushHandler({
+			findDeviceByHash: findDeviceByTokenHash,
+			limiter: new DeviceRateLimiter(),
+			engine: occupancyEngineDatabase,
+			requireHttps: nodeEnv === "production",
 		}),
-	],
-});
+	);
+	app.get(
+		PUBLIC_OCCUPANCY_INTERNAL_PATH,
+		createPublicOccupancyHandler(publicPayloadRepository),
+	);
+	app.on(["POST", "GET"], "/api/auth/*", (context) =>
+		auth.handler(context.req.raw),
+	);
 
-app.use("/*", async (c, next) => {
-	const context = await createContext({ context: c });
-
-	const rpcResult = await rpcHandler.handle(c.req.raw, {
-		prefix: "/rpc",
-		context: context,
+	const document = generateOpenApiDocument();
+	app.get(OPENAPI_RESOURCE_PATH, async (context) => {
+		const value = await document;
+		context.header("Cache-Control", "no-store");
+		return context.json(value);
 	});
 
-	if (rpcResult.matched) {
-		return c.newResponse(rpcResult.response.body, rpcResult.response);
-	}
-
-	const apiResult = await apiHandler.handle(c.req.raw, {
-		prefix: "/api-reference",
-		context: context,
+	const rpcHandler = new RPCHandler(appRouter, {
+		interceptors: [
+			onError((error) =>
+				console.error(
+					"RPC request failed",
+					error instanceof Error ? error.name : "unknown",
+				),
+			),
+		],
 	});
-
-	if (apiResult.matched) {
-		return c.newResponse(apiResult.response.body, apiResult.response);
+	if (nodeEnv !== "production") {
+		app.get(OPENAPI_REFERENCE_PATH, (context) => {
+			context.header("Cache-Control", "no-store");
+			return context.html(`<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fitway Edge API Reference</title></head>
+<body><script id="api-reference" data-url="${OPENAPI_RESOURCE_PATH}"></script><script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@1.62.5" integrity="sha384-jVBCKhcCfx34USN27x4iQK1SBNdL/HxKq3KuBAxTS4WPaP5w80K4fjpwB+DezJL5" crossorigin="anonymous"></script></body></html>`);
+		});
 	}
 
-	await next();
-});
+	app.use("*", async (context, next) => {
+		if (context.req.path.startsWith("/rpc")) {
+			const rpcResult = await rpcHandler.handle(context.req.raw, {
+				prefix: "/rpc",
+				context: await createContext({ context }),
+			});
+			if (rpcResult.matched)
+				return context.newResponse(rpcResult.response.body, rpcResult.response);
+		}
+		await next();
+	});
+	app.get("/", (context) => context.text("OK"));
+	return app;
+}
 
-app.get("/", (c) => {
-	return c.text("OK");
-});
-
-import { serve } from "@hono/node-server";
-
+const app = createApp();
 export default app;
 
-if (!process.env.VERCEL) {
-	serve(
-		{
-			fetch: app.fetch,
-			port: 3000,
-		},
-		(info) => {
-			console.log(`Server is running on http://localhost:${info.port}`);
-		},
-	);
+const entryUrl = process.argv[1] ? pathToFileURL(process.argv[1]).href : "";
+if (!process.env.VERCEL && import.meta.url === entryUrl) {
+	const { serve } = await import("@hono/node-server");
+	const port = Number(process.env.PORT ?? 3100);
+	serve({ fetch: app.fetch, port }, (info) => {
+		console.log(`Server is running on http://localhost:${info.port}`);
+	});
 }

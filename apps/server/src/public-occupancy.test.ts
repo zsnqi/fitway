@@ -5,12 +5,20 @@ import {
 import { Hono } from "hono";
 import { describe, expect, it } from "vitest";
 
-import { publicOccupancyHandler } from "./public-occupancy";
+import { createPublicOccupancyHandler } from "./public-occupancy";
 
 describe("public occupancy endpoint", () => {
 	it("responds without auth or database context", async () => {
 		const app = new Hono();
-		app.get(PUBLIC_OCCUPANCY_INTERNAL_PATH, publicOccupancyHandler);
+		app.get(
+			PUBLIC_OCCUPANCY_INTERNAL_PATH,
+			createPublicOccupancyHandler({
+				readCurrentAndLatestSettings: async () => ({
+					current: null,
+					settings: null,
+				}),
+			}),
+		);
 
 		const response = await app.request(PUBLIC_OCCUPANCY_INTERNAL_PATH);
 		const payload = await response.json();

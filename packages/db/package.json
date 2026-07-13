@@ -10,10 +10,12 @@
 		}
 	},
 	"scripts": {
+		"check-types": "tsc --noEmit",
 		"db:push": "drizzle-kit push",
 		"db:generate": "drizzle-kit generate",
 		"db:studio": "drizzle-kit studio",
-		"db:migrate": "drizzle-kit migrate"
+		"db:migrate": "drizzle-kit migrate",
+		"edge:provision-dev": "tsx scripts/provision-dev-device.ts"
 	},
 	"dependencies": {
 		"@fitway/env": "workspace:*",
@@ -26,6 +28,7 @@
 		"@fitway/config": "workspace:*",
 		"@types/pg": "^8.20.0",
 		"drizzle-kit": "^0.31.10",
-		"typescript": "catalog:"
+		"typescript": "catalog:",
+		"tsx": "catalog:"
 	}
 }

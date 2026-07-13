@@ -47,9 +47,16 @@ lerna-debug.log*
 # Testing
 coverage
 .nyc_output
+test-results/
+playwright-report/
 
 # Misc
 *.tgz
 .cache
 tmp
 temp
+.local/
+edge/*.state.json
+edge/*.token
+__pycache__/
+*.py[cod]

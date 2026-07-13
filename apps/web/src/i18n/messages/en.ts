@@ -16,6 +16,25 @@ export const en = {
 		unavailableDescription:
 			"We will not present an old count as live. Please try again later.",
 		loading: "Loading occupancy status",
+		around: "Around",
+		people: "people",
+		percentFull: (percent) => `${percent}% full`,
+		bands: {
+			quiet: "Quiet",
+			moderate: "Moderate",
+			busy: "Busy",
+			packed: "Packed",
+		},
+		fresh: "Live update",
+		stale: "Last known update",
+		lastUpdated: (absolute, relative) => `Updated ${absolute} · ${relative}`,
+		lastKnown: "Last known occupancy",
+		staleWarning: (count, time) =>
+			`The last known count was around ${count} at ${time}. Live updates are delayed.`,
+		meterLabel: "Occupancy level",
+		meterValue: (percent, band) => `${percent}% full, ${band}`,
+		summary: (band, count, percent, freshness, time) =>
+			`${freshness}. ${band}. Around ${count} people, ${percent}% full. Updated ${time}.`,
 	},
 	login: {
 		title: "Sign in",

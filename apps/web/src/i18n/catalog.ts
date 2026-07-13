@@ -15,6 +15,24 @@ export type MessageCatalog = {
 		unavailableTitle: string;
 		unavailableDescription: string;
 		loading: string;
+		around: string;
+		people: string;
+		percentFull: (percent: string) => string;
+		bands: Record<"quiet" | "moderate" | "busy" | "packed", string>;
+		fresh: string;
+		stale: string;
+		lastUpdated: (absolute: string, relative: string) => string;
+		lastKnown: string;
+		staleWarning: (count: string, time: string) => string;
+		meterLabel: string;
+		meterValue: (percent: string, band: string) => string;
+		summary: (
+			band: string,
+			count: string,
+			percent: string,
+			freshness: string,
+			time: string,
+		) => string;
 	};
 	login: {
 		title: string;

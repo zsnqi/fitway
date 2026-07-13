@@ -1,0 +1,163 @@
+import type {
+	OccupancySettings,
+	OccupancyTransaction,
+} from "@fitway/api/occupancy/engine";
+import type { PublicPayloadRepository } from "@fitway/api/public/payload-builder";
+import { db } from "@fitway/db";
+import {
+	currentState,
+	edgeDevices,
+	occupancyMinutes,
+	settingsVersions,
+} from "@fitway/db/schema/application";
+import { desc, eq, sql } from "drizzle-orm";
+
+type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
+type Database = typeof db;
+
+function normalizeBoundary(value: string): string {
+	return value.length === 5 ? value : value.slice(0, 8);
+}
+
+async function latestSettings(
+	client: Pick<typeof db, "select">,
+): Promise<OccupancySettings | null> {
+	const [row] = await client
+		.select()
+		.from(settingsVersions)
+		.orderBy(desc(settingsVersions.version))
+		.limit(1);
+	return row
+		? {
+				version: row.version,
+				capacity: row.capacity,
+				quietMaxPercent: row.quietMaxPercent,
+				moderateMaxPercent: row.moderateMaxPercent,
+				busyMaxPercent: row.busyMaxPercent,
+				timezone: row.timezone,
+				businessDayBoundary: normalizeBoundary(row.businessDayBoundary),
+				pushIntervalSeconds: row.pushIntervalSeconds,
+				freshForSeconds: row.freshForSeconds,
+				operationalStaleAfterSeconds: row.operationalStaleAfterSeconds,
+				publicPollSeconds: row.publicPollSeconds,
+			}
+		: null;
+}
+
+function transactionAdapter(tx: Transaction): OccupancyTransaction {
+	return {
+		async lockDevice(deviceId) {
+			const result = await tx.execute<{
+				id: string;
+				enabled: boolean;
+				last_sequence: string;
+			}>(
+				sql`select id, enabled, last_sequence from edge_devices where id = ${deviceId} for update`,
+			);
+			const row = result.rows[0];
+			return row
+				? {
+						id: row.id,
+						enabled: row.enabled,
+						lastSequence: Number(row.last_sequence),
+					}
+				: null;
+		},
+		loadLatestSettings: () => latestSettings(tx),
+		async upsertMinute(value) {
+			await tx
+				.insert(occupancyMinutes)
+				.values(value)
+				.onConflictDoUpdate({
+					target: [occupancyMinutes.deviceId, occupancyMinutes.minuteStartUtc],
+					set: {
+						businessDay: value.businessDay,
+						count: value.count,
+						entries: value.entries,
+						exits: value.exits,
+						band: value.band,
+						capacitySnapshot: value.capacitySnapshot,
+						settingsVersion: value.settingsVersion,
+						source: value.source,
+						updatedAt: value.updatedAt,
+					},
+				});
+		},
+		async updateCurrent(value) {
+			const rows = await tx
+				.update(currentState)
+				.set(value)
+				.where(eq(currentState.id, 1))
+				.returning({ id: currentState.id });
+			if (rows.length !== 1) throw new Error("Current singleton is missing");
+		},
+		async advanceDevice(deviceId, sequence, receivedAt) {
+			const rows = await tx
+				.update(edgeDevices)
+				.set({
+					lastSequence: sequence,
+					lastSeenAt: receivedAt,
+					updatedAt: receivedAt,
+				})
+				.where(eq(edgeDevices.id, deviceId))
+				.returning({ id: edgeDevices.id });
+			if (rows.length !== 1) throw new Error("Locked device disappeared");
+		},
+	};
+}
+
+export function createOccupancyEngineDatabase(database: Database) {
+	return {
+		transaction<T>(work: (tx: OccupancyTransaction) => Promise<T>): Promise<T> {
+			return database.transaction((tx) => work(transactionAdapter(tx)));
+		},
+	};
+}
+
+export function createPublicPayloadRepository(
+	database: Database,
+): PublicPayloadRepository {
+	return {
+		async readCurrentAndLatestSettings() {
+			const [settings, rows] = await Promise.all([
+				latestSettings(database),
+				database
+					.select({
+						currentCount: currentState.currentCount,
+						band: currentState.band,
+						source: currentState.source,
+						lastPushReceivedAt: currentState.lastPushReceivedAt,
+						activeDeviceEnabled: edgeDevices.enabled,
+					})
+					.from(currentState)
+					.leftJoin(
+						edgeDevices,
+						eq(currentState.activeDeviceId, edgeDevices.id),
+					)
+					.where(eq(currentState.id, 1))
+					.limit(1),
+			]);
+			return { current: rows[0] ?? null, settings };
+		},
+	};
+}
+
+export const occupancyEngineDatabase = createOccupancyEngineDatabase(db);
+export const publicPayloadRepository = createPublicPayloadRepository(db);
+
+export function createFindDeviceByTokenHash(database: Database) {
+	return async (tokenHash: string) => {
+		const [device] = await database
+			.select({
+				id: edgeDevices.id,
+				name: edgeDevices.name,
+				enabled: edgeDevices.enabled,
+			})
+			.from(edgeDevices)
+			.where(eq(edgeDevices.tokenHash, tokenHash))
+			.limit(1);
+		return device ?? null;
+	};
+}
+
+export const findDeviceByTokenHash = createFindDeviceByTokenHash(db);

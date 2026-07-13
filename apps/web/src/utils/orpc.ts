@@ -38,7 +38,7 @@ function getServerUrl(url: string) {
 		return `${origin}${normalized}`;
 	}
 
-	return `http://localhost:3000${normalized}`;
+	return `http://localhost:3100${normalized}`;
 }
 export const link = new RPCLink({
 	url: `${getServerUrl(env.VITE_SERVER_URL)}/rpc`,

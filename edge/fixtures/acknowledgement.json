@@ -1,0 +1,9 @@
+{
+	"schemaVersion": 1,
+	"accepted": true,
+	"reason": "processed",
+	"highestProcessedSequence": 1,
+	"commands": [],
+	"settings": { "version": 1, "pushIntervalSeconds": 20 },
+	"serverTime": "2026-07-13T18:24:20.250Z"
+}

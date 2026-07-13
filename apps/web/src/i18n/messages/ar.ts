@@ -16,6 +16,25 @@ export const ar = {
 		unavailableDescription:
 			"لا نعرض عدداً قديماً على أنه مباشر. يرجى المحاولة مرة أخرى لاحقاً.",
 		loading: "جارٍ تحميل حالة الازدحام",
+		around: "حوالي",
+		people: "شخصًا",
+		percentFull: (percent) => `ممتلئ بنسبة ${percent}%`,
+		bands: {
+			quiet: "هادئ",
+			moderate: "متوسط",
+			busy: "مزدحم",
+			packed: "ممتلئ جدًا",
+		},
+		fresh: "تحديث مباشر",
+		stale: "آخر تحديث معروف",
+		lastUpdated: (absolute, relative) => `آخر تحديث ${absolute} · ${relative}`,
+		lastKnown: "آخر عدد معروف",
+		staleWarning: (count, time) =>
+			`كان آخر عدد معروف حوالي ${count} في ${time}. التحديثات المباشرة متأخرة.`,
+		meterLabel: "مستوى الإشغال",
+		meterValue: (percent, band) => `ممتلئ بنسبة ${percent}%، ${band}`,
+		summary: (band, count, percent, freshness, time) =>
+			`${freshness}. ${band}. حوالي ${count} شخصًا، ممتلئ بنسبة ${percent}%. آخر تحديث ${time}.`,
 	},
 	login: {
 		title: "تسجيل الدخول",

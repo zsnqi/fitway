@@ -16,6 +16,7 @@
 		"db:studio": "pnpm --filter @fitway/db db:studio",
 		"db:generate": "pnpm --filter @fitway/db db:generate",
 		"db:migrate": "pnpm --filter @fitway/db db:migrate",
+		"edge:provision-dev": "pnpm --filter @fitway/db edge:provision-dev",
 		"deploy:setup": "vercel link",
 		"dev:vercel": "vercel dev -L",
 		"env:preview": "tsx scripts/sync-vercel-env.ts preview",
@@ -25,7 +26,10 @@
 		"deploy:check": "vercel deploy --dry",
 		"check": "biome check .",
 		"format": "biome check --write .",
-		"test": "vitest run"
+		"test": "vitest run",
+		"test:integration": "vitest run --config vitest.integration.config.ts",
+		"test:browser": "playwright test",
+		"test:simulator": "py -m unittest discover -s edge -p test_*.py"
 	},
 	"dependencies": {
 		"@fitway/env": "workspace:*",
@@ -35,6 +39,7 @@
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.2",
 		"@fitway/config": "workspace:*",
+		"@playwright/test": "^1.61.1",
 		"@types/node": "catalog:",
 		"happy-dom": "^20.10.6",
 		"lefthook": "^2.1.9",
