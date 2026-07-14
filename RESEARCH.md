@@ -113,9 +113,9 @@ good time to go?"_
 
 - **Headline status band / color** — Quiet / Moderate / Busy / Packed (the primary
   signal; the thing we most care about being _right_).
-- **Approximate count** — framed as an estimate, e.g., _"Around 45 people"_ /
-  _"Estimated occupancy."_ The number is shown (people care) but never presented as
-  exact truth.
+- **Approximate count** — explicitly labeled as an estimate, e.g., _"Estimated
+  occupancy: 45"_ / _"العدد التقريبي: 45"_. The number is shown (people care) but never
+  presented as exact truth.
 - **% full.**
 - **Last-updated timestamp** — so freshness is visible.
 - **Open/Closed state** — when closed, show e.g. _"Closed now — opens 6:00 AM"_ and do
@@ -124,8 +124,8 @@ good time to go?"_
   can be made reliable enough for v1, otherwise defer.
 
 **Honesty principle:** the count is "good enough, not perfect." The UI must communicate
-approximation ("around", "estimated") rather than implying turnstile precision. A
-confidently _wrong_ page is worse than no page.
+approximation explicitly—through an approved label such as `العدد التقريبي` / “estimated”
+rather than implying turnstile precision. A confidently _wrong_ page is worse than no page.
 
 **Mobile-first (core value pillar, not polish):** most visitors open this on a phone
 before leaving home. The public page must be **excellent on mobile, fast to load, clear
@@ -400,8 +400,8 @@ Accepted defaults:
   **batched into the next push** (§9).
 - **Fresh:** public payload considered current if **≤ ~90s** old.
 - **Stale:** no edge update for **~3 min** → payload flips to `stale`; public page shows
-  e.g. _"Live occupancy temporarily unavailable — last seen ~45 around 7:32pm."_ Never a
-  frozen number pretending to be live.
+  e.g. _"Live updates are delayed — last known approximate count: 45 at 7:32 PM."_ Never
+  a frozen number pretending to be live.
 - **Public auto-refresh:** ~every **60s**, hitting the **cached** endpoint, **paused when
   the browser tab is hidden** (Page Visibility API) to prevent background-tab loops.
 - **Hard failure** (edge crash / camera down / gym internet down): staff device shows an

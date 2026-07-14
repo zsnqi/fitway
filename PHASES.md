@@ -16,8 +16,9 @@
 >
 > **Invariants that apply to every phase** (acceptance-level, from SPEC.md):
 >
-> - **Honesty**: no state ever presents stale/absent data as live; counts always carry
->   the "around/حوالي" qualifier and a freshness time.
+> - **Honesty**: no state ever presents stale/absent data as live; counts are always
+>   explicitly labeled as approximate and carry a freshness time. Approved Arabic public
+>   copy uses `العدد التقريبي`, not `حوالي` or a person unit.
 > - **Cost rule**: no visitor-reachable path may invoke a function per request on cache
 >   hit; visitor reads never touch history tables.
 > - **Privacy**: no image/frame/video/identity data stored or transmitted, ever.
@@ -136,8 +137,8 @@ token. Implement the occupancy engine as the only writer: dedup, floor at 0, ban
 thresholds, minute upserts with capacity/settings snapshot and business-day attribution
 (timezone + boundary). Upgrade the payload builder to read current state + settings and
 bake in `fresh`/`stale`/`unavailable` by push age. Build the full public live
-experience: hero number with qualifier, capped meter, band badge, freshness indicator,
-stale banner (§8.9–§8.15), 60 s polling with jitter, Page Visibility pause and
+experience: explicitly labeled approximate count, capped meter, band label/icon, freshness
+indicator, stale banner (§8.9–§8.15), 60 s polling with jitter, Page Visibility pause and
 refetch-on-focus, polite live-update announcements (§15). Deliver the edge simulator
 v1 (push cadence, sequences, plausible entry/exit patterns, health flags, clean
 stop/start). The OpenAPI document accurately describes the push endpoint; the
@@ -165,8 +166,9 @@ interactive reference stays development-only.
 ### Manual QA plan
 
 1. **Live flow**: Start the stack and the simulator; open `/`. **Expected**: a dominant
-   count with the "around/حوالي" qualifier, meter fill and band badge matching the
-   thresholds, "last updated" ticking; the number changes as the simulator pushes.
+   count explicitly labeled `العدد التقريبي` in Arabic, meter fill and band label/icon
+   matching the thresholds, "last updated" ticking; the number changes as the simulator
+   pushes.
 2. **No width jitter**: Watch the number change at 390px. **Expected**: tabular digits —
    the layout does not shift as digits change.
 3. **Stale honesty**: Stop the simulator and keep the page open. **Expected**: within

@@ -4,7 +4,7 @@
 
 These are the single shared facts for all three Stitch directions. Copy values and wording exactly unless a line is explicitly marked as a stress-test alternative. Do not improve a direction by changing its data, reducing its copy, hiding required facts, or giving it a different state.
 
-All dates and times below are deterministic design fixtures, not measured Fitway truth. Public P1–P4 facts reproduce the approved VDG-0 evidence. Staff and analytics fixtures preview fields and analytics already specified in `SPEC.md` and `PHASES.md`; they do not claim that Phase 4, owner analytics, authentication, commands, or health monitoring are implemented.
+All dates and times below are deterministic design fixtures, not measured Fitway truth. Public P1–P4 facts retain the approved VDG-0 evidence; the Arabic public-live copy is aligned to the locked G1B Public Live Desktop anchor. Staff and analytics fixtures preview fields and analytics already specified in `SPEC.md` and `PHASES.md`; they do not claim that Phase 4, owner analytics, authentication, commands, or health monitoring are implemented.
 
 ## Shared formatting rules
 
@@ -15,7 +15,7 @@ All dates and times below are deterministic design fixtures, not measured Fitway
 - Cairo for Arabic and Latin.
 - The name `FITWAY` stays uppercase and unaltered.
 - Isolate Latin fragments and digit runs inside Arabic, including `FITWAY Edge-01`, `CSV`, `37%`, and timestamps.
-- Count language is approximate: `حوالي 37 شخصًا` / `Around 37 people`.
+- Count language is approximate. Approved Arabic public copy expresses this with the explicit label `العدد التقريبي` followed by `37`; it does not add `حوالي` or `شخصًا`. The existing English fixture remains `Around 37 people` until an English visual anchor supersedes it.
 - Do not expose capacity on the public surface. The fixture denominator `100` is available only to staff/analytics concepts and to explain how `37%` is derived.
 
 ## P1, P3, and P4 — public live fixture
@@ -45,19 +45,18 @@ Canonical payload, for fact checking only:
 
 | Role | Exact copy |
 | --- | --- |
-| Page purpose | حالة النادي الآن |
-| Open state | مفتوح الآن |
+| Global open status | النادي مفتوح الآن |
+| Crowd label | مستوى الازدحام |
 | Crowd band | متوسط |
-| Approximation | حوالي |
+| Approximate-count label | العدد التقريبي |
 | Count | 37 |
-| Unit | شخصًا |
 | Percentage | ممتلئ بنسبة 37% |
 | Freshness | تحديث مباشر |
 | Absolute update | آخر تحديث 2:59 م |
 | Relative update | قبل 30 ثانية |
 | Combined compact freshness | تحديث مباشر · آخر تحديث 2:59 م · قبل 30 ثانية |
 | Language action | English |
-| Accessible summary | الوضع الحالي: متوسط. حوالي 37 شخصًا، ممتلئ بنسبة 37%. النادي مفتوح الآن. تحديث مباشر، آخر تحديث 2:59 م، قبل 30 ثانية. |
+| Accessible summary | النادي مفتوح الآن. مستوى الازدحام: متوسط. العدد التقريبي: 37. ممتلئ بنسبة 37%. تحديث مباشر. آخر تحديث 2:59 م، قبل 30 ثانية. |
 
 ### English display copy — P4
 
@@ -132,7 +131,7 @@ Reuse the public live facts and copy above.
 | Band/count/percent | Moderate, `37`, `37%`, explicitly last known |
 | Arabic label | آخر عدد معروف |
 | Arabic time | آخر تحديث معروف 3:00 م · قبل 5 دقائق |
-| Arabic warning | كان آخر عدد معروف حوالي 37 في 3:00 م. التحديثات المباشرة متأخرة. |
+| Arabic warning | كان آخر عدد تقريبي معروف 37 في 3:00 م. التحديثات المباشرة متأخرة. |
 | English label | Last known count |
 | English time | Last known update 3:00 PM · 5 minutes ago |
 | English warning | The last known count was around 37 at 3:00 PM. Live updates are delayed. |
@@ -308,6 +307,8 @@ Reject any generated artboard that does one or more of the following:
 
 - changes `37`, `37%`, Moderate, 2:59 PM, 30 seconds, or the Friday opening facts;
 - exposes `100` capacity on the public surface;
+- restores `حوالي`, `شخصًا`, `حوالي 37 شخصًا`, or a separate `حالة النادي الآن` label on the Arabic public-live composition;
+- renders the Arabic open state as anything other than `النادي مفتوح الآن` or gives it a filled pill/button treatment;
 - shows count/percent/meter/band in the closed or unavailable state;
 - uses Eastern Arabic digits;
 - changes Arabic public time to a 24-hour clock or omits `ص/م`;

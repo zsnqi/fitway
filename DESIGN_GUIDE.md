@@ -9,6 +9,14 @@
 > **not** expand the product beyond `RESEARCH.md` (§16 scope fence). It is a design system,
 > not a spec, plan, or implementation.
 >
+> **Locked Public Live Desktop anchor.** At the 1440×900 Arabic desktop reference,
+> **G1B — Global Header + Parallel Split + Structural Skeleton** is the approved
+> composition. The canonical artifacts live in
+> `visual-direction-gate/approved/public-live-desktop/`. G1B supersedes only conflicting
+> Public Live Desktop composition and copy examples in this guide; all unrelated research,
+> principles, tokens, responsive guidance, accessibility guidance, and state guidance remain
+> authoritative.
+>
 > **Grounding.** Reference research was performed on the live inspiration site
 > `https://www.fitnesstime.com.sa/ar` using browser inspection (computed styles, runtime
 > CSS custom properties, network assets, and before/after interaction screenshots).
@@ -610,8 +618,9 @@ The public count is the single most important glyph in the product.
   color: var(--fw-text);
   text-align: center;
 }
-/* The count is an estimate: pair it with the "~/حوالي" qualifier, never present as exact.
-   The qualifier is specced once, as `.fw-count__approx` in §8.10 (single source of truth). */
+/* The count is an estimate: pair it with the explicit approximate-count label from §8.10.
+   On approved Arabic public surfaces the label is "العدد التقريبي"; do not add "حوالي"
+   or a person unit to the visible Public Live Desktop count. */
 ```
 
 ### Arabic ↔ English pairing rules
@@ -675,7 +684,7 @@ is a multiple of 4; most layout uses the 8px rhythm.
 
 | Token                      | Value          | Usage                                                                              |
 | -------------------------- | -------------- | ---------------------------------------------------------------------------------- |
-| `--fw-container-public`    | 34rem / 544px  | Public occupancy content column — narrow, phone-native, centered on larger screens |
+| `--fw-container-public`    | 34rem / 544px  | Narrow/mobile public states; G1B desktop uses the page gutters and one wide dominant card |
 | `--fw-container-content`   | 48rem / 768px  | Long-form/legal/transparency text                                                  |
 | `--fw-container-dashboard` | 80rem / 1280px | Staff/owner dashboards (matches reference `--container-7xl`)                       |
 | `--fw-measure`             | 68ch           | Max readable text width for paragraphs                                             |
@@ -684,7 +693,8 @@ is a multiple of 4; most layout uses the 8px rhythm.
 
 - **12-column** fluid grid for dashboards; `gap: var(--fw-space-6)` (24px) desktop,
   `var(--fw-space-4)` (16px) mobile.
-- Public page is **single-column, centered** — no multi-column competition around the number.
+- Public pages use one dominant surface. G1B desktop contains an internal parallel metric
+  split; it does not create competing outer columns or additional cards.
 - Use CSS Grid with logical alignment (`justify-items`, `align-items`), never left/right
   floats, so RTL is automatic.
 
@@ -1151,45 +1161,38 @@ applicable. No framework dependencies. Assume the token block from §17 is prese
 
 ### 8.9 Public occupancy hero
 
-The centerpiece. One column, centered, number-dominant, honest about approximation and
-freshness. This composes the count (§8.10), crowd badge (§8.11), meter + visible % readout
-(§8.12), open/closed (§8.13), and freshness (§8.14).
+The centerpiece composes the count (§8.10), crowd state (§8.11), meter + visible % readout
+(§8.12), open/closed state (§8.13), and freshness (§8.14).
+
+At the locked 1440×900 Arabic desktop reference, use **G1B — Global Header + Parallel
+Split + Structural Skeleton**:
+
+1. a minimal global header containing the unchanged FITWAY logo and `English` action;
+2. one dominant card;
+3. an inline global open-state row above the metrics;
+4. a parallel split between crowd level and approximate count;
+5. exactly one subtle structural vertical divider between those metrics;
+6. the percentage, progress rail, and compact freshness line below.
+
+Do not add horizontal section dividers, extra cards, charts, widgets, staff information,
+diagnostics, or marketing content. This desktop rule replaces the earlier centered
+single-column Public Live Desktop composition. Smaller viewports still follow the responsive,
+overflow, and content-preservation rules elsewhere in this guide; G1B does not invent a new
+mobile composition.
 
 ```css
-.fw-hero {
-  position: relative;
+.fw-public-live-card {
+  inline-size: 100%;
+  background: var(--fw-surface-1);
+  border: 1px solid var(--fw-border-subtle);
+  border-radius: var(--fw-radius-2xl);
+}
+.fw-public-live__metrics {
   display: grid;
-  justify-items: center;
-  gap: var(--fw-space-4);
-  min-block-size: 100svh;
-  padding: var(--fw-space-12) var(--fw-space-4);
-  text-align: center;
-  background: var(--fw-bg);
-  overflow: hidden;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
-/* Optional dimmed gym backdrop — always scrimmed so data wins */
-.fw-hero__media {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  object-fit: cover;
-}
-.fw-hero__scrim {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.85)),
-    radial-gradient(60% 50% at 50% 35%, rgba(227, 24, 55, 0.14), transparent 70%);
-}
-.fw-hero > * {
-  position: relative;
-  z-index: 2;
-}
-.fw-hero__brandline {
-  color: var(--fw-text-subtle);
-  font-weight: 600;
-  letter-spacing: 0.02em;
+.fw-public-live__metric + .fw-public-live__metric {
+  border-inline-start: 1px solid var(--fw-border-subtle);
 }
 ```
 
@@ -1197,16 +1200,15 @@ freshness. This composes the count (§8.10), crowd badge (§8.11), meter + visib
 
 ```css
 .fw-count {
-  display: inline-flex;
-  align-items: flex-start;
+  display: grid;
+  align-content: start;
   gap: var(--fw-space-2);
   color: var(--fw-text);
 }
-.fw-count__approx {
-  font-size: var(--fw-text-xl);
-  font-weight: 700;
+.fw-count__label {
+  font-size: var(--fw-text-sm);
+  font-weight: 600;
   color: var(--fw-text-subtle);
-  margin-block-start: var(--fw-space-2);
 }
 .fw-count__value {
   font-family: var(--fw-font-display);
@@ -1216,19 +1218,20 @@ freshness. This composes the count (§8.10), crowd badge (§8.11), meter + visib
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
 }
-.fw-count__unit {
-  font-size: var(--fw-text-lg);
-  font-weight: 600;
-  color: var(--fw-text-muted);
-  align-self: flex-end;
-  margin-block-end: var(--fw-space-2);
-}
-/* Screen-reader phrasing lives in an sr-only span, e.g. "حوالي 24 شخص" */
+/* Screen-reader phrasing uses the same meaning, e.g. "العدد التقريبي: 37". */
 ```
 
-Markup pattern (RTL example): `حوالي` (approx) + `24` (value, Latin digits) + `شخص` (unit).
+Approved Arabic Public Live Desktop markup: `العدد التقريبي` (label) + `37` (isolated
+Western-digit value). The label carries the approximation semantics; do not append `حوالي`
+or `شخصًا` to this visible composition.
 
 ### 8.11 Crowd-state badge
+
+The reusable badge below remains valid for non-G1B surfaces and component/state samples. On
+the approved Public Live Desktop, do not wrap the crowd state in a filled or bordered pill.
+Render the visible label `مستوى الازدحام`, the value `متوسط`, and its structural status glyph
+as one side of the parallel metric split. Text and the progress-rail position preserve meaning
+without relying on color.
 
 ```css
 .fw-crowd {
@@ -1347,22 +1350,26 @@ but stays small and subtle — the count remains the hero.
 
 ### 8.13 Open / closed badge
 
+On the approved Public Live Desktop, the open state is a global inline status row above the
+metric split. Its exact Arabic text is `النادي مفتوح الآن`. It uses a small green dot and
+white status text with no filled background, border, rounded container, or button-like
+treatment. Closed-state composition remains governed by the separate closed-state rules.
+
 ```css
 .fw-status-open {
   display: inline-flex;
   align-items: center;
   gap: var(--fw-space-2);
+  font-weight: 600;
+  font-size: var(--fw-text-base);
+  color: var(--fw-text);
+  background: transparent;
+  border: 0;
+}
+.fw-status-closed {
   padding-block: var(--fw-space-1);
   padding-inline: var(--fw-space-3);
   border-radius: var(--fw-radius-pill);
-  font-weight: 600;
-  font-size: var(--fw-text-sm);
-}
-.fw-status-open--open {
-  color: var(--fw-success-fg);
-  background: var(--fw-success-bg);
-}
-.fw-status-open--closed {
   color: var(--fw-text-subtle);
   background: var(--fw-surface-2);
 }
@@ -1370,7 +1377,7 @@ but stays small and subtle — the count remains the hero.
   inline-size: 8px;
   block-size: 8px;
   border-radius: var(--fw-radius-pill);
-  background: currentColor;
+  background: var(--fw-success);
 }
 /* Closed shows next-open text: "مغلق الآن — يفتح 6:00 ص" — never a live count while closed */
 ```
@@ -1414,7 +1421,9 @@ but stays small and subtle — the count remains the hero.
     animation: none;
   }
 }
-/* Always renders "آخر تحديث: 7:32 م" (last updated) with an absolute + relative time */
+/* Approved fresh Arabic composition:
+   "تحديث مباشر · آخر تحديث 2:59 م · قبل 30 ثانية".
+   Isolate the 2:59 and 30 digit runs independently for stable RTL/Bidi order. */
 ```
 
 ### 8.15 Stale-data warning
@@ -1438,7 +1447,7 @@ but stays small and subtle — the count remains the hero.
 .fw-stale-banner__body {
   font-size: var(--fw-text-sm);
 }
-/* Copy pattern: "التحديث المباشر غير متاح مؤقتًا — آخر قراءة ~45 حوالي 7:32 م" */
+/* Copy pattern: "التحديثات المباشرة متأخرة — آخر عدد تقريبي معروف 45 عند 7:32 م" */
 /* The live number is visually dimmed and labeled last-known; NEVER shown as current. */
 ```
 
@@ -2545,9 +2554,9 @@ Phone portrait (≈390px) is the **primary design target**; everything scales up
 | `--fw-bp-xs` (base) | 0–479     | Phone portrait                | Single column, 16px gutter    | Hamburger → full drawer     | Display via `clamp()` min; body 16px | 1 col   | Full-bleed, ≤220px h, minimal ticks | Number dominant + meter/% readout, sub-cards stack | Stacked cards, bottom tabs       |
 | `--fw-bp-sm`        | 480       | Large phone / phone landscape | Single column, roomier        | Hamburger drawer            | Slightly larger display              | 1–2 col | Slightly taller                     | Same, more breathing room                          | 1–2 KPI cols                     |
 | `--fw-bp-md`        | 768       | Tablet portrait               | 2-col content, 24px gutter    | Condensed top nav or drawer | Mid display sizes                    | 2 col   | Standard height, more ticks         | Number + side info allowed                         | 2–3 KPI cols, side panels appear |
-| `--fw-bp-lg`        | 1024      | Tablet landscape / laptop     | 12-col grid, 32px gutter      | Full top nav                | Full headings                        | 3 col   | Full detail                         | Centered, capped width                             | Optional side nav + 3–4 KPI cols |
-| `--fw-bp-xl`        | 1280      | Desktop                       | 12-col, container 80rem       | Full top nav                | Max display sizes                    | 3–4 col | Full detail + legends               | Centered instrument, generous space                | Full multi-panel dashboard       |
-| `--fw-bp-2xl`       | 1536      | Large desktop                 | Centered, capped at container | Full top nav                | No further growth                    | 4 col   | Full detail                         | Unchanged (never over-scale the number)            | Max grid, no wasted width        |
+| `--fw-bp-lg`        | 1024      | Tablet landscape / laptop     | 12-col grid, 32px gutter      | Full top nav                | Full headings                        | 3 col   | Full detail                         | Transition toward the G1B parallel metric split    | Optional side nav + 3–4 KPI cols |
+| `--fw-bp-xl`        | 1280      | Desktop                       | 12-col, container 80rem       | Full top nav                | Max display sizes                    | 3–4 col | Full detail + legends               | G1B wide dominant card + parallel metric split     | Full multi-panel dashboard       |
+| `--fw-bp-2xl`       | 1536      | Large desktop                 | Centered, capped at container | Full top nav                | No further growth                    | 4 col   | Full detail                         | G1B unchanged; do not over-scale the metrics       | Max grid, no wasted width        |
 
 Rules: use `min-width` (mobile-first) media queries; never hide essential status behind a
 breakpoint; the occupancy number is capped by `clamp()` so it stays dominant but not absurd on
@@ -2601,7 +2610,8 @@ RTL is structural, designed-in from the start — not a mirror bolted on later.
 
 - Wrap Latin snippets (brand names, units, model IDs) with bidi isolation
   (`unicode-bidi: isolate` / `<bdi>`) so numbers and Latin words keep correct order inside
-  Arabic sentences. Mixed strings like "حوالي 24 شخص" render with the digit run isolated.
+  Arabic sentences. In the approved public composition, isolate `37`, `37%`, `2:59`, and
+  `30` independently while the surrounding labels remain Arabic RTL.
 
 ### Number and date formatting
 
@@ -2658,8 +2668,10 @@ WCAG-conscious throughout; the honesty and color-independence requirements from 
 ### Screen-reader labeling
 
 - Icon-only buttons get `aria-label`. The occupancy hero exposes a concise spoken summary via
-  an `.fw-sr-only` element, e.g. _"الوضع الحالي: مزدحم. حوالي 24 شخصًا، 62% من السعة. مفتوح.
-  آخر تحديث قبل دقيقة."_ Meter uses `role="meter"` with `aria-valuenow/min/max` and a localized
+  an `.fw-sr-only` element, e.g. _"النادي مفتوح الآن. مستوى الازدحام: متوسط. العدد
+  التقريبي: 37. ممتلئ بنسبة 37%. تحديث مباشر. آخر تحديث 2:59 م، قبل 30 ثانية."_ The
+  approximate-count label preserves estimation semantics without restoring `حوالي` or
+  `شخصًا`. Meter uses `role="meter"` with `aria-valuenow/min/max` and a localized
   `aria-valuetext`. Crowd/open/fresh states expose their label text, not just color.
 
 ### Reduced motion
@@ -2711,7 +2723,8 @@ WCAG-conscious throughout; the honesty and color-independence requirements from 
 
 1. Make the occupancy number the largest, highest-contrast, most saturated thing on the public
    screen — everything else supports it.
-2. Always frame the count as an estimate ("حوالي 24 / ~24") — honesty over false precision
+2. Always frame the count as an estimate. Approved Arabic public surfaces use the explicit
+   `العدد التقريبي` label rather than `حوالي` or a person unit — honesty over false precision
    (`RESEARCH.md §4`).
 3. Always show freshness (last-updated + fresh/stale/offline) next to the number; when stale,
    dim and label the last-known value — never present it as live.

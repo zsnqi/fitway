@@ -63,15 +63,15 @@ count (RESEARCH.md §9 governing rule).
 
 ### Visitor (anonymous, public page)
 
-1. As a visitor, I want to see the crowd status band, approximate count ("around ~45"),
-   and % full on my phone within seconds of opening the page, so that I can decide whether
-   to go now.
+1. As a visitor, I want to see the crowd status band, an explicitly labeled approximate
+   count, and % full on my phone within seconds of opening the page, so that I can decide
+   whether to go now. Approved Arabic public copy uses `العدد التقريبي` as that label.
 2. As a visitor, I want a last-updated time next to the number, so that I can judge how
    fresh the information is.
 3. As a visitor, I want the page to say "Closed now — opens 6:00 AM" when the gym is
    closed, so that I am never shown a fake live count outside opening hours.
-4. As a visitor, I want the page to clearly flag stale data ("live updates temporarily
-   unavailable — last seen ~45 around 7:32 PM") when the feed stops, so that I am never
+4. As a visitor, I want the page to clearly flag stale data ("live updates are delayed —
+   last known approximate count: 45 at 7:32 PM") when the feed stops, so that I am never
    misled by a frozen number presented as live.
 5. As a visitor, I want an explicit "live occupancy unavailable" state when there is no
    usable data at all, so that absence of data is communicated honestly.
@@ -592,9 +592,10 @@ None block implementation; all are external gates or deploy-time choices:
 
 ## Further Notes
 
-- **Honesty is a requirement, not a tone.** Every surface that shows a number must carry
-  its qualifier ("around/حوالي"), its freshness, and its state; a confidently wrong page
-  is a spec violation, not a style issue (RESEARCH.md §4).
+- **Honesty is a requirement, not a tone.** Every surface that shows a number must identify
+  it as approximate, carry its freshness, and carry its state. Approved Arabic public copy
+  uses the explicit `العدد التقريبي` label instead of `حوالي` or a person unit; a
+  confidently wrong page is a spec violation, not a style issue (RESEARCH.md §4).
 - **The governing cost rule** — compute scales with time/cache windows, never visitor
   count (RESEARCH.md §9) — is an acceptance criterion here, not advice: any
   visitor-reachable path that invokes a function per request on cache hit is a defect.

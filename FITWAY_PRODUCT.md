@@ -59,9 +59,11 @@ Fitway must remain keyboard-operable, screen-reader legible, color-independent, 
 
 ## Visual Direction Gate boundary
 
-The current UI and the screenshots in [`design-baseline/`](design-baseline/) are behavioral and information baselines only; they are not an approved visual direction or visual north star.
+The current UI and the screenshots in [`design-baseline/`](design-baseline/) remain behavioral and information baselines only; they are not the visual north star.
 
-VDG-0 covers only this product brief and reproducible public baseline evidence. It excludes the Stitch input package, `FITWAY_DESIGN.md`, final design references, visual redesign or polish, VDG-A exploration, VDG-B implementation, Phase 4, and all staff/analytics routes, backend, or authentication work. Visual exploration, design-system extraction, and later feature implementation remain blocked until the required human approvals described in [HANDOFF_CHATGPT_FITWAY_PHASE3_TO_VISUAL_DIRECTION_GATE.md](HANDOFF_CHATGPT_FITWAY_PHASE3_TO_VISUAL_DIRECTION_GATE.md) and [AI_FRONTEND_DESIGN_WORKFLOW.md](AI_FRONTEND_DESIGN_WORKFLOW.md).
+The locked Public Live Desktop visual anchor is **G1B — Global Header + Parallel Split + Structural Skeleton**. Its canonical PNG and archive are recorded in [`visual-direction-gate/approved/public-live-desktop/`](visual-direction-gate/approved/public-live-desktop/). G1B governs that desktop composition and its approved Arabic public copy. `DESIGN_GUIDE.md` remains the comprehensive visual source of truth for all non-conflicting research, principles, tokens, responsive behavior, accessibility, and state guidance.
+
+This approval does not itself authorize production implementation, Phase 4, staff/analytics implementation, or a new visual exploration. Those remain separate reviewed changes.
 
 ## Canonical detail
 
@@ -69,5 +71,6 @@ VDG-0 covers only this product brief and reproducible public baseline evidence. 
 - Implementation contract and Definition of Done: [SPEC.md](SPEC.md)
 - Sequenced implementation phases: [PHASES.md](PHASES.md)
 - Existing design, RTL, state, typography, motion, and accessibility rules: [DESIGN_GUIDE.md](DESIGN_GUIDE.md)
+- Locked Public Live Desktop visual anchor and archive: [`visual-direction-gate/approved/public-live-desktop/`](visual-direction-gate/approved/public-live-desktop/)
 - Repository and service architecture: [SOL_SCAFFOLD_REVIEW.md](SOL_SCAFFOLD_REVIEW.md)
 - Visual-gate rationale and stop conditions: [HANDOFF_CHATGPT_FITWAY_PHASE3_TO_VISUAL_DIRECTION_GATE.md](HANDOFF_CHATGPT_FITWAY_PHASE3_TO_VISUAL_DIRECTION_GATE.md) and [AI_FRONTEND_DESIGN_WORKFLOW.md](AI_FRONTEND_DESIGN_WORKFLOW.md)
