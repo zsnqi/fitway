@@ -3,6 +3,11 @@
 > **هذا الملف مخصص لـChatGPT في المحادثة القادمة، وليس prompt مباشرًا لأي Agent.**
 >
 > المستخدم اسمه **حسين**. دوره صاحب القرار والمراجع، وChatGPT يساعده في فهم مخرجات الـagents، تقييمها، ترتيب الـworkflow، وصياغة prompts قصيرة وواضحة.
+>
+> **Historical handoff status (2026-07-14):** VDG-A is now complete. The canonical approved
+> artifacts are indexed under `visual-direction-gate/approved/`; VDG-B remains the next UI
+> gate. The “next step” instructions below record the earlier handoff state and are superseded
+> by the current dependency plan in `PHASES.md`.
 
 ---
 

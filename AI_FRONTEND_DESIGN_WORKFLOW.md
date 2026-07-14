@@ -5,6 +5,11 @@
 **Research snapshot:** July 2026
 **Purpose:** Preserve the key lessons from the Samtah portal UI work and establish a repeatable workflow for producing strong, non-generic interfaces with AI coding and design agents.
 
+> **FITWAY status update (2026-07-14):** VDG-A is complete. Its approved references are
+> indexed in `visual-direction-gate/approved/`; VDG-B is the next visual gate. Binding product,
+> security, privacy, content, accessibility, and data semantics outrank visual artifacts. The
+> references guide visual direction without imposing blind pixel copying or mockup-only content.
+
 ---
 
 # 1. Executive summary
@@ -312,7 +317,10 @@ Best baseline when using Codex/OpenAI models for:
 
 Use it during design exploration.
 
-Do not use it as the main creative authority when implementing an already approved mockup. At that stage, the reference must win.
+Do not use it to reopen an approved direction during implementation. The reference governs
+unlocked visual choices, while binding product/security/content/data decisions and verified
+real-browser accessibility remain authoritative; improve the execution rather than blindly
+copying pixels.
 
 ## 6.2 Impeccable
 
@@ -1035,12 +1043,14 @@ A visual vertical slice is accepted only when:
 12. Use Playwright/browser tools for visual truth.
 13. Use a fresh session for final visual audit.
 14. Do not solve a weak visual direction with endless local polish.
-15. The approved visual artifact is the highest source of truth.
+15. The approved visual artifact is the strongest visual reference; binding product, security,
+    privacy, content, accessibility, and data-semantic decisions remain the higher contract.
 
 ---
 
 # Immediate next action
 
-Send this file into the Fitway Phase 3 conversation and use it to create a project-specific plan for inserting the Visual Direction Gate before the remaining feature phases continue.
+For FITWAY, proceed to VDG-B using the approved G1B and full-product Claude Design artifacts,
+then resume feature work only through the dependency and integration gates in `PHASES.md`.
 
 For Samtah, continue the current Claude Design sync and use it to produce an approved visual direction before any further large UI implementation pass.

@@ -3,16 +3,16 @@
 > **Source spec:** `SPEC.md` (repo root). Governing docs: `RESEARCH.md` (scope/privacy),
 > `DESIGN_GUIDE.md` (visual system), `SOL_SCAFFOLD_REVIEW.md` (stack).
 >
-> **How to use this plan.** Phases are vertical slices: each cuts through schema → server →
-> UI (or edge contract) and is demoable and acceptable on its own. Complete, review, and
-> accept one phase before starting the next (except where the dependency notes allow
-> parallel tracks). After each phase is implemented, write its tests separately (per
-> SPEC.md Testing Decisions) and then run the phase's Manual QA plan.
+> **How to use this plan.** Phases are vertical slices, but their numbers are not a blanket
+> sequencing rule. Follow the hard dependency graph and contract/merge gates below. A stream
+> may investigate or build behind a frozen interface before another phase closes; it may not
+> merge against an unstable schema, auth, edge, or data-semantic dependency.
 >
-> **Parallelization.** Phases 3 and 4 can proceed in parallel after Phase 2. After
-> Phase 5, the operations track (6 → 7 → 8) and the owner track (9 → 10 → 11) are
-> independent of each other. Phase 11's audit view needs Phase 5; its health summary
-> needs Phase 8. Phase 12 needs the device contract frozen (Phase 6).
+> **Current status (2026-07-14).** Phases 1–3 are complete (`e43d38a`, `928f3b3`,
+> `ab4126d`). VDG-A is complete and its approved artifacts are under
+> `visual-direction-gate/approved/`. VDG-B and Phases 4–12 remain unfinished. Historical
+> checkboxes in completed phase sections are retained as their original acceptance records;
+> this status statement is canonical.
 >
 > **Invariants that apply to every phase** (acceptance-level, from SPEC.md):
 >
@@ -29,6 +29,178 @@
 >   guards are UX only.
 > - **Audit**: every state-changing staff/owner action writes its audit entry in the
 >   same database transaction.
+> - **Implementation fidelity**: binding product/security/privacy/content/accessibility/data
+>   semantics outrank mockups. G1B and the Claude Design family are strong visual references,
+>   not a blind pixel ceiling. Mock annotations, demo notices/data, fake identities/emails,
+>   arbitrary device names, and email/password staff fields never ship.
+> - **Staff auth**: shared staff access is PIN-based through the signed HttpOnly session model,
+>   never email/password. The current scaffold form must be replaced during Phase 4.
+> - **Browser quality**: Arabic RTL and natural English LTR, wrapping/Bidi, Western-digit
+>   number and gym-time formatting, responsive tables/mobile density, overflow, keyboard,
+>   reduced motion, and loading/stale/unavailable/error semantics are acceptance work.
+
+---
+
+## Current dependency and parallel-execution plan
+
+### Remaining gates and major deliverables
+
+| Workstream | Major deliverable | Hard completion dependency |
+| --- | --- | --- |
+| VDG-B | Real-browser Public vertical slice, reference comparison, screenshots, corrections, approval | VDG-A (complete) |
+| Phase 4 | PIN staff access, signed sessions/roles, operational health snapshot, `/staff`, owner-only `/admin` stub | VDG-B for UI; Phase 2 data path |
+| Phase 5 | Command queue, correction/reset, atomic audit, edge apply/ack/supersession | Phase 4 identity/roles |
+| Phase 6 | Manual fallback, backfill, reconnect reconciliation; frozen device contract | Phase 5 command lifecycle |
+| Phase 7 | Authenticated cron and exactly-once scheduled reset | Phases 3 and 5; offline closure also needs Phase 6 |
+| Phase 8 | Health/alert logs, Telegram policy/delivery, recovery, retention | Phase 7 cron; stable Phase 4 health semantics |
+| Phase 9 | Owner shell, occupancy curve, KPIs, multi-day history fixture | Owner UI/route merge needs Phase 4; analytics domain uses Phase 2 history |
+| Phase 10 | Heatmap, week-over-week, date range, CSV | Phase 9 analytics primitives and chart interaction contract |
+| Phase 11 | Settings, access management, audit view, health summary | Shell: 9; settings/account model: 4/6/7; audit: 5; health: 8 |
+| Phase 12 | Durable Python client/outbox, command persistence, synthetic source, Windows lifecycle | Phase 6 device/OpenAPI contract frozen; real CV remains site-gated |
+
+External site checks, production provisioning, and on-site pilot acceptance remain separate
+go-live gates (`RESEARCH.md` §18 and `SPEC.md` pilot targets).
+
+### Hard dependency graph
+
+```text
+VDG-A (complete) → VDG-B ───────────────────────→ UI-producing Phase 4+ work
+
+Phase 4 identity/roles ─→ Phase 5 ─→ Phase 6 ─────────────→ Phase 12
+         │                   │          │
+         │                   └─→ Phase 7 core ─→ Phase 8
+         │                              └─ offline/reconnect closure waits Phase 6
+         │
+         └─→ Phase 9 owner shell ─→ Phase 10
+              │
+Phase 9 analytics domain may start from stable Phase 2 history/time contracts
+
+Phase 11 shell ← Phase 9
+Phase 11 access/settings ← Phase 4 (+ Phase 6/7 fields)
+Phase 11 audit view ← Phase 5
+Phase 11 health summary ← Phase 8
+```
+
+### What can start and what must wait
+
+- **Immediate, genuinely independent:** VDG-B on the existing public Phase 1–3 surface;
+  main-owned Phase 4 contract reconciliation (PIN/session/roles, health DTO, router split,
+  migration/test conventions); read-only Phase 9 query/chart-library investigation over the
+  existing minute schema; Phase 12 lifecycle/outbox research without production client code.
+- **May build behind frozen contracts:** Phase 4 auth backend, operational snapshot backend,
+  and staff UI can separate after VDG-B passes and the main session freezes their interfaces.
+  The Phase 9 analytics domain can build independently of Phase 5–8, but owner transport/UI
+  cannot merge before server-enforced Phase 4 owner authorization.
+- **Must wait:** Phase 5 mutations wait for actor/session/role semantics; Phase 6 and Phase 12
+  transport code wait for the command/backfill contract; Phase 8 integration waits for cron
+  and health-transition semantics; Phase 10 waits for Phase 9; each Phase 11 subview waits for
+  its own source tables/API rather than treating Phase 11 as one indivisible block.
+- **Investigation-only parallelism:** notifier choice, Windows service/watchdog options, and
+  chart-library evaluation may be researched early, but do not install dependencies, change
+  lockfiles, generate migrations, or bind UI to speculative DTOs.
+
+### Recommended execution waves
+
+0. **Gate and contracts (highest-value immediate wave):** run VDG-B in `vdg-b-public` while
+   the main session freezes the Phase 4 PIN/session/role and operational-health contracts.
+   A bounded analytics technical investigation may run read-only in parallel. Do not start
+   Phase 4 application code in this wave.
+1. **First implementation wave after VDG-B/contract approval:** `phase4-auth`,
+   `phase4-snapshot`, and `phase4-staff-web` work against frozen interfaces; an isolated
+   `phase9-analytics-domain` stream builds query/DTO tests only. Main integrates shared schema,
+   router, catalogs, and generated files.
+2. **Two delivery tracks:** `phase5-command-audit` and `phase9-admin` run in parallel after
+   Phase 4. Phase 5 owns the simulator/edge contract; Phase 9 avoids those files.
+3. **Contract-dependent expansion:** after Phase 5, `phase6-manual-backfill` and the pure
+   evaluator portion of `phase7-cron-reset` may run in parallel after a coordinated settings
+   migration. Phase 6 merges before Phase 7 offline acceptance. Phase 10 can advance on the
+   owner track after Phase 9.
+4. **Operations/governance/edge:** Phase 8 follows Phase 7. Phase 11 splits into access,
+   settings, audit, and health substreams when each dependency exists. Phase 12 starts as code
+   only after Phase 6 freezes OpenAPI/fixtures and remains isolated under `edge/`.
+
+### Branch and worktree boundaries
+
+- `vdg-b-public`: public routes/components/styles and screenshot baselines only; no auth,
+  application schema, edge protocol, or owner/staff feature work.
+- `phase4-auth`: auth/session/role middleware and focused tests. It proposes schema needs but
+  does not independently generate competing Drizzle migrations.
+- `phase4-snapshot`: new operational snapshot/health domain, repository, procedure, and tests;
+  no auth UI or global router aggregation.
+- `phase4-staff-web`: new staff/admin-stub routes and app-local components against a frozen
+  DTO; no auth backend, schema, or global style redesign.
+- `phase9-analytics-domain`: new analytics query/DTO modules and unit tests over existing
+  minute snapshots; no admin shell, chart dependency, router aggregation, or simulator edits.
+- Later worktrees follow phase names (`phase5-command-audit`, `phase6-manual-backfill`,
+  `phase7-cron-reset`, `phase8-alerting`, `phase9-admin`, `phase10-reporting`,
+  `phase11-{access,settings,audit,health}`, `phase12-edge`). One worktree owns the simulator
+  and one main-controlled stream owns generated migrations at a time.
+
+The main session retains ownership of product/security/data decisions, source-of-truth docs,
+schema and generated migration ordering, router/index aggregation, shared i18n catalogs,
+global tokens/primitives, dependency/lockfile choices, conflict resolution, visual approval,
+integration, and final verification. Later subagents are best used for bounded new modules,
+reference tracing, focused tests, screenshot matrices, accessibility checks, and read-only
+dependency research—not competing edits to shared spines.
+
+### Shared-file and integration risks
+
+- **Schema/migrations:** `packages/db/src/schema/{application,auth}.ts` and
+  `packages/db/src/migrations/**`; serialize generation and rebase/regenerate downstream work.
+- **Edge contract:** `packages/api/src/edge-push.ts`, the occupancy engine, server handler/
+  repositories/OpenAPI, `edge/simulator.py`, fixtures, and their tests; Phases 5/6/12 cannot
+  evolve these independently.
+- **Auth/router:** `packages/auth`, API context/guards/router index, server index, auth client,
+  login route/form; freeze cookie/role/error semantics before parallel work.
+- **Frontend:** shared ar/en catalogs, root route, global CSS/UI primitives, generated route
+  tree, web package and lockfile. Never hand-edit `routeTree.gen.ts`; main integrates shared
+  catalogs/styles and owns chart-library selection.
+- **Fixtures/tests:** the Phase 2 integration suite seeds settings and performs destructive
+  cleanup against a guarded test DB. Prefer new domain test files; main coordinates shared
+  setup changes. Phase 9 uses a separate history generator/fixture instead of parallel-editing
+  the operations-owned simulator.
+
+### Merge order and integration gates
+
+1. VDG-B acceptance and the main-owned auth/health/DTO contract record.
+2. One reviewed auth/application schema migration, then PIN session/role guards.
+3. Operational snapshot repository/procedure, then staff/admin-stub UI.
+4. Phase 4 integrated auth/role/browser gate; only then merge Phase 5 or owner UI.
+5. Phase 5 before Phase 6 and Phase 7 mutation integration. Phase 6 before Phase 7 offline
+   closure and before Phase 12 contract-bound code.
+6. Phase 9 domain before owner chart UI; Phase 9 before Phase 10. Phase 11 substreams merge
+   only after their individual upstream APIs/tables, with health last after Phase 8.
+7. Phase 12 merges after OpenAPI/Zod/fixture parity and restart/replay/backfill/command tests.
+
+Every UI merge requires Browser inspection when available and repeatable Playwright captures
+at 1440×900 and 390×844 for public, and 1366×768 plus 390px mobile for staff/admin. Verify
+Arabic RTL and English LTR, keyboard/focus order, screen-reader names, 200% zoom/reflow,
+reduced motion, contrast/color independence, touch targets, no document-level overflow,
+responsive tables/charts, loading/fresh/stale/closed/unavailable/error states, and visual
+comparison to G1B/Claude references. Analytics additionally verifies desktop hover and
+keyboard-focus tooltips, mobile tap selection, full-data/tick-density behavior, accessible
+table parity, and gym-local Western-digit time formatting.
+
+### Stop conditions
+
+- Stop Phase 4 until VDG-B passes and PIN credential/session/role semantics are explicit; no
+  staff UI binds to the current email/password scaffold.
+- Stop staff UI binding until operational freshness/current-health semantics and its DTO are
+  frozen; stop owner UI merge until owner authorization is enforced server-side.
+- Stop any stream that needs a parallel generated migration; land/rebase/regenerate in order.
+- Stop Phase 5 edge work until command IDs, lifecycle, supersession, delivery, and ack are
+  frozen. Stop Phase 6/12 until live/backfill authority and applied-command contracts match in
+  Zod, OpenAPI, fixtures, TypeScript, and Python.
+- Stop Phase 7 closure until exactly-once command/audit behavior passes; its offline acceptance
+  waits for Phase 6. Stop Phase 8 integration until cron cadence and health transitions are
+  stable.
+- Stop Phase 9 merge until business-day/timezone/snapshot semantics and owner guards pass;
+  stop Phase 10 until chart interaction/accessibility contracts are proven.
+- Stop Phase 11 subviews when their source tables/APIs do not exist. Stop Phase 12 merge until
+  parity, replay/gap/backfill/command/restart/privacy tests pass; real CV waits for site checks.
+- Any change that leaks capacity/history/identity through the public payload, weakens
+  stale/unavailable honesty, ships mock content, or silently changes a locked decision is a
+  hard stop.
 
 ---
 
@@ -48,13 +220,16 @@ Durable decisions carried from SPEC.md that apply across all phases:
 - **Schema (conceptual)**: occupancy minutes (device-minute upserts), single-row current
   state, append-only settings versions, edge devices (hashed tokens), edge commands
   (pending → delivered → applied / superseded / expired), audit log, edge health log,
-  alert log, Better Auth tables + roles. Single gym: no `gym_id` anywhere.
+  alert log, real owner principals, shared staff PIN credential metadata, signed sessions,
+  and roles. Single gym: no `gym_id` anywhere.
 - **Routes**: `/` public · `/login` · `/staff` (staff|owner) · `/admin` (owner only,
   nested sections). No sign-up route.
-- **Auth**: Better Auth admin plugin with roles `staff` and `owner`; self-registration
-  disabled; email verification off; cookies `httpOnly`/`secure`/`sameSite=lax`; ~30-day
-  rolling sessions; auth rate limiting on. Edge: static per-device bearer token
-  (≥ 32 random bytes) stored hashed, per-device rate limiting.
+- **Auth**: shared staff access is a rate-limited PIN verified against a strong server-side
+  hash and exchanged for a signed `httpOnly`/`secure`/`sameSite=lax` session (~30-day rolling).
+  It is not email/password. Real owner principals remain separately provisioned; roles are
+  `staff` and `owner`, self-registration is disabled, and every authorization check is
+  server-side. Edge: static per-device bearer token (≥ 32 random bytes) stored hashed,
+  per-device rate limiting.
 - **Time model**: UTC storage; one configured IANA gym timezone (default `Asia/Riyadh`);
   configurable business-day boundary (default 04:00 local); per-weekday schedule where
   close ≤ open means past midnight.
@@ -233,26 +408,30 @@ time); the public page renders the closed state per §8.13.
 ## Phase 4: Staff access & live operational view
 
 **User stories**: #10, #11, #15, #16, #18
-**Depends on**: Phase 2 (parallel with Phase 3)
+**Depends on**: Phase 2 and VDG-B approval (Phase 3 is complete)
 
 ### What to build
 
-Introduce roles and the staff surface. Configure the Better Auth admin plugin with
-`staff` and `owner` roles; disable self-registration server-side; set cookies to
-`sameSite=lax`/`secure`/`httpOnly` with ~30-day rolling sessions; enable auth rate
-limiting; add a seed script that provisions the owner account and the shared front-desk
-staff account. Build `/staff` (staff or owner) with server-side role enforcement on a
-new operational-snapshot procedure (public payload fields + capacity, device last-seen,
-health flags, source detail), polling every ~15–20 s. Compose the staff view per §8.28b
-with an unmistakable stale/offline alert. Stub the `/admin` route as owner-only from day
-one so enforcement exists before the owner area is built.
+Introduce roles and the staff surface. Replace the scaffold email/password staff form with
+the locked PIN flow: verify the shared front-desk PIN server-side against a strong hash, issue
+the signed `sameSite=lax`/`secure`/`httpOnly` rolling session, rate-limit attempts, and return
+non-enumerating localized errors. Disable self-registration. Provision only real owner identity
+and the shared staff principal; do not invent emails or people. Build `/staff` (staff or owner)
+with server-side role enforcement on a new operational-snapshot procedure (public payload
+fields + capacity, persisted current device health/last-seen, source detail), polling every
+~15–20 s. Compose the staff view per §8.28b with an unmistakable stale/offline alert. Stub the
+`/admin` route as owner-only from day one so enforcement exists before the owner area is built.
 
 ### Acceptance criteria
 
-- [ ] Staff and owner accounts exist via the seed script; sign-in works; the session
-      survives a browser restart (rolling ~30 days).
+- [ ] The shared staff PIN credential and real owner principal are provisioned without fake
+      identity values; staff PIN sign-in works and its signed HttpOnly session survives a
+      browser restart (rolling ~30 days).
 - [ ] `/staff` shows live count, band, last update, capacity, and device health,
       refreshing every ~15–20 s.
+- [ ] Health shown in the operational snapshot comes from a persisted current-health
+      projection with explicit freshness semantics; the currently discarded push health field
+      is not presented as if it were stored truth.
 - [ ] When the edge is silent past the stale threshold, the staff view shows a prominent
       offline/stale alert distinct from the public presentation.
 - [ ] A staff session calling any owner-only procedure is rejected by the server, not
@@ -262,7 +441,7 @@ one so enforcement exists before the owner area is built.
 
 ### Manual QA plan
 
-1. **Staff sign-in**: Log in at `/login` with the seeded staff account. **Expected**:
+1. **Staff sign-in**: Enter the seeded test PIN at `/login`. **Expected**: no email field;
    redirected/navigable to `/staff`; live count and health visible; Arabic RTL layout.
 2. **Offline alert**: Kill the simulator and wait ~3 min. **Expected**: the staff view
    shows an unmistakable alert (icon + label + tint, not color alone) that live data is
@@ -270,11 +449,11 @@ one so enforcement exists before the owner area is built.
 3. **Role wall**: As staff, navigate to `/admin` directly. **Expected**: blocked (owner
    only). Then, from DevTools, invoke an owner-only procedure with the staff session.
    **Expected**: server rejects with an authorization error.
-4. **No self-registration**: POST to the Better Auth sign-up endpoint directly.
-   **Expected**: rejected.
+4. **No self-registration**: call any exposed sign-up or account-creation endpoint directly as
+   anonymous/staff. **Expected**: rejected.
 5. **Session longevity**: Close the browser entirely, reopen the next day (or adjust the
    clock). **Expected**: still signed in.
-6. **Login rate limit**: Enter a wrong password ~10 times rapidly. **Expected**: rate
+6. **Login rate limit**: Enter a wrong PIN ~10 times rapidly. **Expected**: rate
    limiting kicks in with an honest, localized error.
 
 ---
@@ -380,7 +559,7 @@ applied before the edge's live pushes retake authority.
 ## Phase 7: Cron & scheduled daily zero-reset
 
 **User stories**: #36
-**Depends on**: Phases 3 and 5
+**Depends on**: Phases 3 and 5 for core issuance; offline/reconnect acceptance also needs Phase 6
 
 ### What to build
 
@@ -475,20 +654,22 @@ failure injection (silence and health flags).
 ## Phase 9: Owner admin shell & core analytics
 
 **User stories**: #18, #19, #21
-**Depends on**: Phase 4 (uses history accumulated since Phase 2; parallel with 6–8)
+**Depends on**: Phase 4 for owner route/UI merge; analytics domain uses Phase 2 history and may begin behind stable contracts (parallel with 5–8)
 
 ### What to build
 
 The owner area and its first analytics. `/admin` as an owner-only layout with nested
 sections and navigation between `/staff` and `/admin` for the owner. Select the chart
-library (DESIGN_GUIDE §9 constraints: RTL mirroring, token colors, accessible
-non-color/hover alternatives). Build today's occupancy curve (business-day and
+library against the complete DESIGN_GUIDE §9–§10 contract: natural Arabic RTL and English LTR,
+token colors, smooth meaningful rises/falls/plateaus, restrained fill/glow and first draw,
+visible active point, desktop hover + keyboard-focus tooltips, mobile tap selection, accessible
+table parity, and reduced-motion output. Build today's occupancy curve (business-day and
 gym-timezone aware; closed periods and missing data rendered distinctly) and the KPI
 cards per §8.19: today's/per-day peak, daily average, and estimated daily visits — the
 visits figure always carrying the "estimated entrance crossings, not unique members"
 framing. Analytics read band/capacity snapshots from the minute rows, not current
-settings. Extend the simulator to generate multi-day history so this phase is reviewable
-without waiting weeks.
+settings. Add a separate deterministic multi-day history fixture/generator so this phase is
+reviewable without waiting weeks and does not parallel-edit the operations-owned simulator.
 
 ### Acceptance criteria
 
@@ -500,6 +681,11 @@ without waiting weeks.
       in both locales.
 - [ ] Charts follow reading direction (time flows right-to-left in Arabic), use the
       `--fw-*` chart tokens, and render closed vs no-data distinctly from zero.
+- [ ] Desktop renders a useful full timeline with non-overlapping labels; mobile reduces tick
+      density without dropping underlying data. Arabic uses Western digits, Bidi-isolated
+      gym-local times, and localized `ص/م` rather than the chart PNG's literal `AM` ticks.
+- [ ] Desktop hover and keyboard focus, mobile tap selection, visible active point, accessible
+      table parity, and the static reduced-motion equivalent all expose the same data.
 - [ ] Empty database → honest empty states (§8.32), no broken or zero-filled charts.
 - [ ] Historical KPIs are computed from row snapshots (changing capacity later must not
       rewrite the past — verified fully in Phase 11).
@@ -568,16 +754,16 @@ control per §8.22.
 ## Phase 11: Owner governance — settings, accounts, audit view, health summary
 
 **User stories**: #24, #25, #26, #27
-**Depends on**: Phase 9 (audit view needs Phase 5; health summary needs Phase 8)
+**Depends on**: Phase 9 shell; access/settings need Phase 4 plus final Phase 6/7 fields; audit view needs Phase 5; health summary needs Phase 8
 
 ### What to build
 
 The owner's control surface. Settings UI covering capacity, band thresholds, weekly
 hours (including past-midnight input), business-day boundary, and reset buffer — each
 save appends a new settings version and an audit entry; validation rejects incoherent
-values (overlapping/incomplete thresholds, zero capacity, malformed hours). Account
-management via the Better Auth admin plugin: list, create staff (or owner), deactivate,
-reset password — no email dependency. Audit log view: filterable list of who/when/
+values (overlapping/incomplete thresholds, zero capacity, malformed hours). Access management:
+provision/rotate/deactivate shared staff PIN credentials and manage separately provisioned real
+owner accounts; never require or invent a staff email. Audit log view: filterable list of who/when/
 action/from → to/reason across corrections, resets, system resets, and settings changes.
 Health & uptime summary: offline periods and incidents derived from the health and alert
 logs.
@@ -589,8 +775,9 @@ logs.
 - [ ] Every settings change creates a new version row and an audit entry; prior versions
       remain; analytics for past days are unchanged after a capacity change (snapshots).
 - [ ] Invalid settings are rejected with localized messages; nothing partial is saved.
-- [ ] A created staff account can sign in; a deactivated one cannot (existing session
-      invalidated or rejected on next use); password reset works without email.
+- [ ] A provisioned staff PIN can create a session; a rotated/deactivated PIN cannot, and an
+      existing staff session is invalidated or rejected on next use. No staff email/password
+      identity is created.
 - [ ] The audit view shows entries from Phases 5, 7, and this phase, in order, with
       actor, from → to, and reason.
 - [ ] The health summary reflects the incidents injected in Phase 8 with correct
@@ -605,10 +792,9 @@ logs.
    localized validation errors; the previous settings remain active.
 3. **Hours change**: Change today's close to five minutes from now. **Expected**: the
    public page flips to closed on schedule without redeploy.
-4. **Account lifecycle**: Create a staff account; sign in with it in a private window;
-   deactivate it from the owner session. **Expected**: the deactivated account cannot
-   act (next request or login rejected). Reset its password and confirm the new one
-   works.
+4. **Access lifecycle**: Provision a test staff PIN; sign in with it in a private window;
+   rotate/deactivate it from the owner session. **Expected**: the old PIN cannot sign in and
+   its existing session cannot act on the next request; the new PIN works without an email.
 5. **Audit trail**: Open the audit view. **Expected**: the Phase 5 correction, the
    Phase 7 system reset (actor "system"), and today's settings change all appear with
    from → to values, localized, newest first.

@@ -19,7 +19,7 @@ The primary truth is the labeled crowd band—Quiet, Moderate, Busy, or Packed�
 
 The public surface is anonymous, mobile-first, read-only, lightweight, and limited to current occupancy truth. It must not expose controls, operational diagnostics, member identity, images, video, or tracking identifiers.
 
-Staff and owner surfaces are authenticated operational tools. Staff can operate the live count and see health but cannot access owner settings, analytics, or account management. Owners receive those additional governance and reporting capabilities. Server-side authorization—not navigation visibility—is authoritative. Staff and owner implementation does not belong to the current Visual Direction Gate execution.
+Staff and owner surfaces are authenticated operational tools. Staff can operate the live count and see health but cannot access owner settings, analytics, or account management. Owners receive those additional governance and reporting capabilities. Server-side authorization—not navigation visibility—is authoritative. Shared staff access is PIN-based through the signed HttpOnly session model, not email/password. The current scaffold email/password form and the design archive's fake login values are not the target staff contract.
 
 ## Information hierarchy
 
@@ -45,7 +45,7 @@ The detailed payload, schedule, cache, polling, and transition rules are canonic
 
 ## Devices, language, and content
 
-Public acceptance uses DPR 1 at **1440×900 desktop** and **390×844 mobile portrait**. The public experience remains mobile-first and must not create document-level horizontal overflow. Future staff and analytics concepts will use **1366×768**, but those concepts are outside this execution.
+Public acceptance uses DPR 1 at **1440×900 desktop** and **390×844 mobile portrait**. The public experience remains mobile-first and must not create document-level horizontal overflow. Staff and analytics references use **1366×768 desktop** and **390px mobile** canvases; their application implementation remains Phase 4+ work.
 
 Arabic is the default locale and uses RTL document direction. English uses LTR. The language choice persists locally. Use logical layout properties, natural Arabic wrapping, bidi isolation for Latin fragments and digit runs, and flexible controls that tolerate roughly 30–40% copy expansion.
 
@@ -61,9 +61,13 @@ Fitway must remain keyboard-operable, screen-reader legible, color-independent, 
 
 The current UI and the screenshots in [`design-baseline/`](design-baseline/) remain behavioral and information baselines only; they are not the visual north star.
 
-The locked Public Live Desktop visual anchor is **G1B — Global Header + Parallel Split + Structural Skeleton**. Its canonical PNG and archive are recorded in [`visual-direction-gate/approved/public-live-desktop/`](visual-direction-gate/approved/public-live-desktop/). G1B governs that desktop composition and its approved Arabic public copy. `DESIGN_GUIDE.md` remains the comprehensive visual source of truth for all non-conflicting research, principles, tokens, responsive behavior, accessibility, and state guidance.
+**VDG-A is complete as of 2026-07-14.** The locked Public Live Desktop visual anchor is **G1B — Global Header + Parallel Split + Structural Skeleton**. Its canonical PNG and archive remain unchanged in [`visual-direction-gate/approved/public-live-desktop/`](visual-direction-gate/approved/public-live-desktop/). G1B governs that desktop composition and its approved Arabic public copy. The completed Claude Design product family in [`visual-direction-gate/approved/full-product/`](visual-direction-gate/approved/full-product/) is the strong layout and FITWAY visual-direction reference for the full product. Its separate Analytics PNG governs occupancy-chart behavior and motion character only; the final Claude Analytics screens govern page layout.
 
-This approval does not itself authorize production implementation, Phase 4, staff/analytics implementation, or a new visual exploration. Those remain separate reviewed changes.
+Binding product, security, privacy, content, accessibility, and data-semantic decisions remain in force. The visual references are authorities, not a blind pixel-by-pixel ceiling: implementation may intelligently improve composition, hierarchy, spacing, typography, responsive/mobile behavior, motion, interaction, charts, tables, accessibility, and real-browser quality. Any material proposal to change a locked decision must be surfaced explicitly rather than made silently.
+
+Design-only annotations, preview labels, demo notices, fixture values, fake owner/email values, arbitrary staff/device identities, email/password mockups, and other mockup-only content must not ship. Preserve the capacity-free public payload and approved Arabic Public Live composition. Compose English LTR naturally rather than mechanically mirroring Arabic. Implementation must correct wrapping, RTL/Bidi isolation, Western-digit number and gym-time formatting, overflow, responsive tables, mobile operational density, keyboard behavior, reduced motion, and honest loading/stale/unavailable/error semantics.
+
+This approval does not itself authorize production implementation or Phase 4 application work. VDG-B—the real-browser visual vertical slice, screenshot comparison, correction loop, and approval—remains the next UI gate.
 
 ## Canonical detail
 
@@ -72,5 +76,6 @@ This approval does not itself authorize production implementation, Phase 4, staf
 - Sequenced implementation phases: [PHASES.md](PHASES.md)
 - Existing design, RTL, state, typography, motion, and accessibility rules: [DESIGN_GUIDE.md](DESIGN_GUIDE.md)
 - Locked Public Live Desktop visual anchor and archive: [`visual-direction-gate/approved/public-live-desktop/`](visual-direction-gate/approved/public-live-desktop/)
+- Final full-product Claude Design archive and Analytics chart-behavior reference: [`visual-direction-gate/approved/full-product/`](visual-direction-gate/approved/full-product/)
 - Repository and service architecture: [SOL_SCAFFOLD_REVIEW.md](SOL_SCAFFOLD_REVIEW.md)
 - Visual-gate rationale and stop conditions: [HANDOFF_CHATGPT_FITWAY_PHASE3_TO_VISUAL_DIRECTION_GATE.md](HANDOFF_CHATGPT_FITWAY_PHASE3_TO_VISUAL_DIRECTION_GATE.md) and [AI_FRONTEND_DESIGN_WORKFLOW.md](AI_FRONTEND_DESIGN_WORKFLOW.md)

@@ -17,6 +17,17 @@
 > principles, tokens, responsive guidance, accessibility guidance, and state guidance remain
 > authoritative.
 >
+> **Approved full-product family.** VDG-A is complete. The final Claude Design archive and
+> separate Analytics chart-behavior reference live in
+> `visual-direction-gate/approved/full-product/`. The top-level Claude screens are strong
+> layout and FITWAY visual-direction references; the Analytics PNG governs only occupancy-
+> curve behavior and motion character. Binding product, security, privacy, content,
+> accessibility, and data semantics take precedence. References are not a blind pixel ceiling:
+> improve real-browser composition, hierarchy, spacing, type, responsive/mobile behavior,
+> motion, interaction, charts, tables, and accessibility without silently changing locked
+> decisions. Preview labels, demo data, fake identities/email values, and other mockup-only
+> content never ship.
+>
 > **Grounding.** Reference research was performed on the live inspiration site
 > `https://www.fitnesstime.com.sa/ar` using browser inspection (computed styles, runtime
 > CSS custom properties, network assets, and before/after interaction screenshots).
@@ -2213,6 +2224,11 @@ on reconnect.
 
 ## 9. Data Visualization
 
+The final Claude Analytics screens govern page layout and FITWAY visual direction. The
+separate `FITWAY_ANALYTICS_CHART_BEHAVIOR_REFERENCE.png` governs only the occupancy curve's
+shape, restrained fill/glow, active-point treatment, and motion character. Its crop, literal
+labels, sample data, English `AM` ticks, and axis order are not implementation requirements.
+
 ### Chart palette
 
 - Primary occupancy series: `--fw-chart-1` (brand red). Capacity/reference line: `--fw-chart-6`
@@ -2221,11 +2237,14 @@ on reconnect.
 
 ### Line-chart treatment (daily occupancy curve)
 
-- 2px stroke, round line caps/joins, `--fw-chart-1`. Smooth-ish but not so smoothed that peaks
-  are hidden (peaks are analytically meaningful — `RESEARCH.md §5`).
-- Current-time marker: a thin vertical `--fw-primary` rule with a dot at the latest point.
-- Data points hidden by default; show on hover/focus with a tooltip and an accessible table
-  fallback.
+- 2px stroke, round line caps/joins, `--fw-chart-1`. Use a smooth, natural curve with
+  meaningful rises, falls, and plateaus, but never smooth away analytically meaningful peaks
+  or imply values that the underlying series does not contain (`RESEARCH.md §5`).
+- Keep the active/latest point visibly marked. A thin `--fw-primary` current-time rule may
+  accompany it when that improves reading without clutter.
+- On desktop, hovering or keyboard-focusing a point opens the same tooltip. On mobile, tapping
+  selects a point and keeps its tooltip available until another selection or dismissal.
+  Selection must not depend on a precisely targeted tiny marker.
 
 ### Area fills
 
@@ -2261,6 +2280,8 @@ on reconnect.
 ```
 
 Tooltip content is never the _only_ way to read a value — pair with an accessible data table.
+Tooltip placement must remain inside the usable plot/card bounds, avoid covering the active
+point when practical, and preserve correct focus as the chart changes.
 
 ### Legends
 
@@ -2291,9 +2312,11 @@ Tooltip content is never the _only_ way to read a value — pair with an accessi
 
 ### Mobile chart behavior
 
-- Full-bleed width, min-height 220px, horizontal scroll only if the time axis truly needs it
-  (prefer aggregation over scrolling). Reduce ticks; rotate nothing (Arabic labels don't
-  rotate well) — abbreviate instead.
+- Render the complete underlying timeline at every breakpoint. A useful full timeline and
+  normal tick density are expected on desktop; mobile reduces tick-label density responsively
+  without dropping data points merely to reduce labels. Use a small fixed set of legible ticks
+  chosen from the full domain; do not overlap, clip, or rotate Arabic labels. Horizontal plot
+  scrolling is a last resort when the task genuinely requires inspecting every point.
 
 ### Arabic labels
 
@@ -2307,6 +2330,8 @@ Tooltip content is never the _only_ way to read a value — pair with an accessi
   the current-value marker sit at the inline-end (left). Category order (days of week)
   follows RTL. Bar charts grow from the inline-start baseline. Verify the charting library
   supports a reversed X axis; if not, transform the axis and tooltips accordingly.
+- Arabic charts use Western digits and gym-local time formatting. Bidi-isolate every numeric
+  and time run; do not inherit the chart reference PNG's English `AM` labels.
 
 ### Accessibility alternatives (color/hover-independent)
 
@@ -2409,8 +2434,9 @@ dot once, then settle.
 
 ### Chart animation behavior
 
-Lines draw / bars grow once on first render at `--fw-dur-slower`; subsequent data refreshes
-tween values at `--fw-dur-slow`. No infinite chart animation.
+Use one restrained initial line draw / bar grow on first render, normally no longer than
+`--fw-dur-slower`; it must not delay chart comprehension or replay on routine refresh. Subsequent
+data refreshes may tween at `--fw-dur-slow`. No infinite chart animation.
 
 ### Loading animation behavior
 
@@ -2435,7 +2461,8 @@ loops pause/disable under reduced motion.
 Under reduced motion: number updates **set instantly**, scroll reveals show content in place,
 spinners freeze to a static ring while the control exposes a text/`aria-busy` "loading"
 indication (§8.1), skeletons become a flat surface, the meter fill jumps to its value. No
-information is lost — motion is purely additive.
+information is lost — motion is purely additive. Charts render the complete final line, fill,
+active point, labels, and selected/focused state immediately with no draw animation.
 
 ---
 
@@ -2575,6 +2602,10 @@ RTL is structural, designed-in from the start — not a mirror bolted on later.
   English). All layout responds to `dir` via logical properties — no per-component rewrites.
 - The language toggle swaps `lang`/`dir` and content; layout, spacing, and alignment follow
   automatically.
+- English LTR is composed naturally for English reading order and content rhythm. Logical
+  properties provide the structural foundation, but implementation must not mechanically
+  mirror an Arabic screenshot when hierarchy, wrapping, or control grouping needs an LTR-
+  specific composition.
 
 ### Logical spacing
 
@@ -2702,6 +2733,9 @@ WCAG-conscious throughout; the honesty and color-independence requirements from 
   (`aria-describedby`). Heatmap cells expose day/hour/value via `aria-label`. Series are
   distinguishable without color (§9). A "view as table" option is provided for the owner where
   practical.
+- Desktop point inspection works with both pointer hover and keyboard focus; mobile point
+  inspection works with tap selection. Focus indicators, tooltip content, and the active point
+  expose the same selected datum, and no interaction is hover-only.
 
 ### Loading announcements
 

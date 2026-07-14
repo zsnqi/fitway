@@ -183,22 +183,40 @@ If a pair receives fewer than five `Yes` marks, they are not genuinely different
 
 ### Hussein's decision
 
-- Selected direction:
-- Decision date:
-- Required bounded refinements, if any:
-- Rejected direction(s):
-- Rejection reasons:
-- Visual anti-patterns to record for the later design contract:
+- Selected direction: **G1B for the locked Arabic Public Live Desktop anchor, plus the
+  completed Claude Design full-product family for the remaining product surfaces.**
+- Decision date: **2026-07-14**
+- Required bounded refinements: implementation must correct responsive composition,
+  mobile density, English LTR composition, wrapping, RTL/Bidi isolation, Western-digit
+  number/time formatting, chart/table interaction, keyboard behavior, reduced motion,
+  overflow, and loading/stale/unavailable/error semantics in real browsers.
+- Rejected direction(s): all superseded exploratory alternatives. Their individual names
+  were not preserved in this scorecard and are not reconstructed here.
+- Rejection reasons: they were not selected as the final full-product family and therefore
+  do not govern implementation.
+- Visual anti-patterns: blind pixel copying; shipping preview/demo labels or fixture data;
+  treating fake identities or email/password mockups as product truth; mechanical LTR
+  mirroring; decorative motion; clipped labels; and reducing chart data to hide label
+  collisions.
+
+Canonical artifacts:
+
+- [`../approved/public-live-desktop/`](../approved/public-live-desktop/) — locked G1B
+  Arabic Public Live Desktop anchor.
+- [`../approved/full-product/`](../approved/full-product/) — final full-product Claude
+  Design archive and Analytics chart-behavior reference.
 
 ### Approval language
 
-VDG-A does not pass until Hussein explicitly records:
+The required approval is now recorded:
 
 ```text
 This is the approved Fitway visual direction.
 ```
 
-A high score, a favorite, “looks good,” or approval of individual pieces is not the stop phrase.
+**VDG-A: complete.** The product, security, privacy, content, accessibility, and
+data-semantic contracts remain binding above the visual references. G1B and the Claude
+Design family are strong visual authorities, not a demand for blind pixel copying.
 
 ## I. Review procedure
 
@@ -240,7 +258,7 @@ Repair the affected direction only. Keep its thesis. If the P1 preflight fails, 
 - Claude Design may then consolidate/refine **only the approved direction** if Hussein chooses that workflow. It must not independently redesign Fitway, reopen the three-way exploration, or create a fourth direction.
 - The approved visual contract, `FITWAY_DESIGN.md`, final `design-references/`, VDG-B implementation, and Phase 4 remain separate later work. None begins automatically from approval.
 
-### VDG-A is not complete when
+### Historical VDG-A failure conditions (retained for audit)
 
 - only one or two directions exist;
 - a direction lacks any required surface;

@@ -1,130 +1,100 @@
-# fitway
+# FITWAY
 
-This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines React, TanStack Router, Hono, ORPC, and more.
+FITWAY is a single-gym live-occupancy pilot. The anonymous public page shows an honest,
+cache-first crowd state; later staff and owner surfaces add operations, corrections,
+analytics, governance, and health without exposing visitor identity or camera media.
 
-## Features
+## Current status
 
-- **TypeScript** - For type safety and improved developer experience
-- **TanStack Router** - File-based routing with full type safety
-- **TailwindCSS** - Utility-first CSS for rapid UI development
-- **Shared UI package** - shadcn/ui primitives live in `packages/ui`
-- **Hono** - Lightweight, performant server framework
-- **oRPC** - End-to-end type-safe APIs with OpenAPI integration
-- **Node.js** - Runtime environment
-- **Drizzle** - TypeScript-first ORM
-- **PostgreSQL** - Database engine
-- **Authentication** - Better-Auth
-- **Biome** - Linting and formatting
+- Phases 1–3 are complete: Arabic-first/English public shell, simulated edge-to-public
+  occupancy path, honest freshness states, and schedule-aware open/closed behavior.
+- VDG-A is complete. G1B and the final Claude Design product family are approved visual
+  references; VDG-B is the next UI gate.
+- Phases 4–12 are not implemented. `/staff`, `/admin`, commands/audit, fallback/backfill,
+  cron/alerts, analytics/reporting, and the production edge lifecycle remain future work.
+- Shared staff authentication is locked as PIN-based through the signed HttpOnly session
+  model. The current scaffold email/password form is not the Phase 4 target.
 
-## Getting Started
+See [PHASES.md](PHASES.md) for the dependency graph, parallel execution waves, worktree
+boundaries, merge gates, and stop conditions.
 
-First, install the dependencies:
+## Sources of truth
+
+- [FITWAY_PRODUCT.md](FITWAY_PRODUCT.md) — product and visual-authority boundary.
+- [SPEC.md](SPEC.md) — implementation contract and Definition of Done.
+- [PHASES.md](PHASES.md) — delivery status, dependencies, and phase acceptance plans.
+- [RESEARCH.md](RESEARCH.md) — product, privacy, architecture, risk, and pilot rationale.
+- [DESIGN_GUIDE.md](DESIGN_GUIDE.md) — design system, responsive/RTL, chart, motion, and
+  accessibility rules, including the Fitness Time research evidence.
+- [SOL_SCAFFOLD_REVIEW.md](SOL_SCAFFOLD_REVIEW.md) — repository and service architecture.
+- [`visual-direction-gate/approved/public-live-desktop/`](visual-direction-gate/approved/public-live-desktop/)
+  — immutable approved G1B Arabic Public Live Desktop anchor.
+- [`visual-direction-gate/approved/full-product/`](visual-direction-gate/approved/full-product/)
+  — final full-product Claude Design archive and Analytics chart-behavior reference.
+
+## Current system
+
+```text
+apps/web       React + Vite + TanStack Router public UI
+apps/server    Hono HTTP boundary, cached public read, edge push, auth mount, OpenAPI
+packages/api   Shared contracts and occupancy/schedule domain logic
+packages/db    Drizzle schemas, migrations, and development provisioning
+packages/auth  Current scaffold auth configuration; Phase 4 staff PIN target is documented
+packages/env   Validated web/server environment
+packages/ui    Shared primitives, FITWAY tokens, and global styles
+edge           Python simulator, fixtures, and tests
+tests          Browser and integration test infrastructure
+design-*       Behavioral baselines and preserved Fitness Time design research
+visual-direction-gate  Review inputs and immutable approved artifacts
+```
+
+The browser never accesses Postgres directly. Hono owns public caching, device
+authentication, sessions/authorization, and future staff/owner procedures. The public
+payload remains capacity-free and never reads history.
+
+## Local development
+
+Install dependencies and configure the package environment files, then run:
 
 ```bash
 pnpm install
+pnpm db:migrate
+pnpm dev
 ```
 
-## Database Setup
+- Web: `http://localhost:3101`
+- Server: `http://localhost:3100`
+- Development OpenAPI reference: `http://localhost:3100/api-reference`
 
-This project uses PostgreSQL with Drizzle ORM.
+Provision a development edge token with `pnpm edge:provision-dev`, then run the simulator
+as documented in [edge/README.md](edge/README.md).
 
-1. Make sure you have a PostgreSQL database set up.
-2. Update your `apps/server/.env` file with your PostgreSQL connection details.
-
-3. Apply the schema to your database:
+## Verification
 
 ```bash
-pnpm run db:push
+pnpm check
+pnpm check-types
+pnpm test
+pnpm test:simulator
+pnpm test:browser
+pnpm build
 ```
 
-Then, run the development server:
+`pnpm test:integration` additionally requires a disposable Postgres database configured
+through `.env.integration.local`; start from [.env.integration.example](.env.integration.example).
+The integration guard refuses non-test database targets.
 
-```bash
-pnpm run dev
-```
+Future UI merges also require Browser inspection when available, repository Playwright
+screenshots, Arabic RTL/English LTR checks, mobile/desktop responsive verification, keyboard
+and reduced-motion checks, and visual comparison against the approved artifacts.
 
-Open [http://localhost:3001](http://localhost:3001) in your browser to see the web application.
-The API is running at [http://localhost:3000](http://localhost:3000).
+## Useful scripts
 
-## UI Customization
+- `pnpm dev:web` / `pnpm dev:server` — run one service.
+- `pnpm db:generate` / `pnpm db:migrate` / `pnpm db:studio` — manage the Drizzle database.
+- `pnpm deploy:check` — Vercel dry run without upload.
+- `pnpm deploy` / `pnpm deploy:prod` — preview/production deployment.
+- `pnpm env:preview` / `pnpm env:production` — sync project environment values.
 
-React web apps in this stack share shadcn/ui primitives through `packages/ui`.
-
-- Change design tokens and global styles in `packages/ui/src/styles/globals.css`
-- Update shared primitives in `packages/ui/src/components/*`
-- Adjust shadcn aliases or style config in `packages/ui/components.json` and `apps/web/components.json`
-
-### Add more shared components
-
-Run this from the project root to add more primitives to the shared UI package:
-
-```bash
-npx shadcn@latest add accordion dialog popover sheet table -c packages/ui
-```
-
-Import shared components like this:
-
-```tsx
-import { Button } from "@fitway/ui/components/button";
-```
-
-### Add app-specific blocks
-
-If you want to add app-specific blocks instead of shared primitives, run the shadcn CLI from `apps/web`.
-
-## Deployment
-
-### Vercel Services
-
-- Target: web + server
-- Config: `vercel.json`
-- Link the project first: pnpm run deploy:setup
-- Local Vercel dev: pnpm run dev:vercel
-- Sync preview env: pnpm run env:preview
-- Sync production env: pnpm run env:production
-- Dry-run check (no upload): pnpm run deploy:check
-- Preview deploy: pnpm run deploy
-- Production deploy: pnpm run deploy:prod
-- Web requests under `/api/*` route to the server service and are rewritten before reaching the backend.
-  Vercel Services share project environment variables, but deploys do not upload local `.env` files automatically. Link the project with `vercel link`, then run the env sync command before your first deploy (otherwise the deployment starts with no env vars), or pass one-off envs with `vercel deploy -e KEY=value`.
-  Pass Vercel CLI flags to the env sync command directly, for example: `pnpm run env:production --scope your-team`.
-
-For more details, see the guide on [Deploying to Vercel](https://www.better-t-stack.dev/docs/guides/vercel).
-
-## Git Hooks and Formatting
-
-- Run checks: `pnpm run check`
-
-## Project Structure
-
-```
-fitway/
-├── apps/
-│   ├── web/         # Frontend application (React + TanStack Router)
-│   └── server/      # Backend API (Hono, ORPC)
-├── packages/
-│   ├── ui/          # Shared shadcn/ui components and styles
-│   ├── api/         # API layer / business logic
-│   ├── auth/        # Authentication configuration & logic
-│   └── db/          # Database schema & queries
-```
-
-## Available Scripts
-
-- `pnpm run dev`: Start all applications in development mode
-- `pnpm run build`: Build all applications
-- `pnpm run dev:web`: Start only the web application
-- `pnpm run dev:server`: Start only the server
-- `pnpm run check-types`: Check TypeScript types across all apps
-- `pnpm run db:push`: Push schema changes to database
-- `pnpm run db:generate`: Generate database client/types
-- `pnpm run db:migrate`: Run database migrations
-- `pnpm run db:studio`: Open database studio UI
-- `pnpm run check`: Run Biome formatting and linting
-- `pnpm run deploy:setup`: Link this repo to a Vercel project (first-time setup)
-- `pnpm run dev:vercel`: Run the Vercel Services dev environment locally
-- `pnpm run env:preview`: Sync local env files to the Vercel preview environment
-- `pnpm run env:production`: Sync local env files to the Vercel production environment
-- `pnpm run deploy`: Create a Vercel preview deployment
-- `pnpm run deploy:prod`: Deploy to Vercel production
-- `pnpm run deploy:check`: Dry-run a deploy to preview framework detection and included files without uploading
+The Vercel configuration deploys web and server in one project and rewrites same-origin
+`/api/*` traffic to the Hono service.

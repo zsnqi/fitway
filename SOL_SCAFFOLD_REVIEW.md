@@ -2,6 +2,12 @@
 
 The recommended scaffold is a static TanStack Router web app plus one separate Hono backend, connected through oRPC/OpenAPI, running on Node.js and backed by Supabase PostgreSQL through Drizzle. Use Better Auth, pnpm, local Supabase, Biome, and Lefthook. Do not select Turborepo.
 
+> **Staff-auth clarification (2026-07-14).** Shared staff access is PIN-based through the
+> signed HttpOnly session model, not email/password. Better Auth remains relevant to the
+> scaffold and separately provisioned owner identity, but its scaffold email/password form is
+> not the staff product contract. Server-side roles, rate limiting, deactivation, and audit
+> attribution remain mandatory.
+
 This deliberately changes the recorded Clerk choice in [RESEARCH.md](RESEARCH.md#L95). The separate backend and OpenAPI contract better fit the actual browser + Python edge architecture described in [RESEARCH.md](RESEARCH.md#L343), while the static frontend fits the mobile-first live-status surface in [DESIGN_GUIDE.md](DESIGN_GUIDE.md#L82).
 
 ## 1. Recommended architecture
@@ -166,7 +172,8 @@ There are only two TypeScript apps and a handful of shared packages. pnpm recurs
 - Exact public domain and future SaaS-friendly URL shape.
 - Supabase hosted region/tier, connection-pool mode, backups, and Vercel function region. These must be chosen together before deployment.
 - Exact RLS and database-role strategy. The invariant is fixed now: no browser service-role key, and Hono remains authoritative.
-- Better Auth login method, email delivery, password recovery, session lifetime, and whether the shared staff account is password- or passkey-based.
+- Owner credential/recovery details and any Better Auth customization. Staff credential type
+  is no longer deferred: it is a PIN verified server-side with a signed HttpOnly session.
 - Exact edge command/reconciliation protocol, idempotency keys, sequence numbering, retry timing, and local outbox schema.
 - CV dependencies, packaging, Python environment manager, Windows service/watchdog mechanism, and hardware acceleration until the site-check gates are completed.
 - Chart library, component additions, testing libraries, observability vendor, and Telegram delivery mechanism.

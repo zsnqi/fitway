@@ -13,13 +13,41 @@
 >
 > Where those documents left something genuinely open, this spec resolves it and marks the
 > resolution **[Resolved here]**. Everything else preserves the recorded decisions:
-> the two-path cache-first architecture, edge-authoritative counting, Better Auth +
-> Hono + Drizzle + Supabase Postgres, server-side authorization, Arabic-first RTL,
+> the two-path cache-first architecture, edge-authoritative counting, Hono + Drizzle +
+> Supabase Postgres, signed server-side sessions and authorization, Arabic-first RTL,
 > **dark-only**, and **Western digits 0–9 exclusively**.
 >
 > This spec deliberately does **not** split work into phases and does not cover
 > deployment/provisioning execution (Supabase project creation, Vercel spend caps, domain).
 > Those remain pre-deploy gates listed in RESEARCH.md §11/§17/§18.
+
+---
+
+## Implementation authority and fidelity contract
+
+Phases 1–3 and VDG-A are complete. VDG-B and Phases 4–12 remain unfinished. The following
+contract applies to every remaining implementation phase:
+
+- Hard product, security, privacy, content, accessibility, and data-semantic decisions remain
+  binding. A material proposal to change one must be surfaced explicitly before implementation;
+  it must never be changed silently through UI or technical convenience.
+- G1B and the final Claude Design product family are strong visual references, not a blind
+  pixel-by-pixel ceiling. Implementation may improve composition, hierarchy, spacing,
+  typography, responsive/mobile behavior, motion, interaction, charts, tables, accessibility,
+  and real-browser quality while retaining FITWAY's identity and locked semantics.
+- Design-only annotations, preview labels, demo notices, fake owner/email values, arbitrary
+  identities, fixture data, and other mockup-only content must not ship.
+- Staff authentication is PIN-based using the signed HttpOnly session model, not
+  email/password. The current scaffold login implementation and the archive's fake email form
+  are implementation inputs to replace, not product authority.
+- Preserve the capacity-free public contract and the approved Arabic Public Live composition.
+  English LTR must be naturally composed rather than mechanically mirrored from Arabic.
+- Correct wrapping, RTL/Bidi isolation, Western-digit number and gym-time formatting,
+  overflow, responsive tables, mobile operational density, keyboard behavior, reduced motion,
+  and loading/stale/unavailable/error semantics before a surface can be accepted.
+- The final Claude Analytics screens govern page layout. The separate Analytics PNG governs
+  only the occupancy curve's behavior and motion character; `DESIGN_GUIDE.md` §9–§10 defines
+  the normative chart interaction, accessibility, RTL, formatting, and reduced-motion rules.
 
 ---
 
@@ -31,9 +59,11 @@ Nothing answers that today. The gym owner has no operational view of occupancy p
 needs the system to run unattended in someone else's building and to hear about failures
 from an alert, not from the owner.
 
-The repository currently contains only the Better-T-Stack scaffold (static TanStack Router
-web app + Hono/oRPC server as two same-origin Vercel services, Drizzle + Supabase Postgres,
-Better Auth email/password) with demo content. No product feature exists yet.
+The repository now implements the accepted Phase 1–3 public vertical slice: the static
+TanStack Router web app, Hono/oRPC server boundary, Drizzle/Postgres occupancy path, Python
+simulator, cached public states, and schedule-aware open/closed behavior. Staff, owner,
+command/audit, fallback/backfill, cron/alerts, analytics/reporting, and production edge
+lifecycle work remain unfinished.
 
 ## Solution
 
@@ -88,8 +118,9 @@ count (RESEARCH.md §9 governing rule).
 
 ### Staff (shared front-desk account)
 
-10. As staff, I want to sign in once on the shared desk device with a long-lived session,
-    so that the desk view is always available without daily logins.
+10. As staff, I want to enter the shared desk PIN once and receive a long-lived signed
+    HttpOnly session, so that the desk view is always available without daily logins or an
+    invented staff email identity.
 11. As staff, I want a live operational view (current count, band, last update, edge/camera
     health), so that I can see at a glance whether the system is healthy.
 12. As staff, I want to correct the count with +/− steppers and an explicit Apply action
@@ -123,8 +154,9 @@ count (RESEARCH.md §9 governing rule).
     (including Friday's different hours and past-midnight closing), business-day boundary,
     and the post-close reset buffer — without code changes, so that the system matches the
     real gym as measured on site.
-25. As the owner, I want to manage accounts (create staff account, reset a password,
-    deactivate), so that access control does not require the maintainer for routine cases.
+25. As the owner, I want to manage access (provision/rotate/deactivate staff PIN credentials
+    and manage real owner accounts), so that routine access control does not require invented
+    identities or the maintainer.
 26. As the owner, I want to see the audit log (who, when, from → to, why) for every
     correction, reset, and settings change, so that manual interventions are accountable.
 27. As the owner, I want a health/uptime summary (offline periods, last incidents), so
@@ -262,8 +294,9 @@ separate Hono (Node) server as two services in one Vercel project on one origin,
 `/api/*` rewritten to the server. oRPC provides typed procedures for the TypeScript web
 app and generates the OpenAPI 3.1 document the Python edge consumes. Drizzle over Supabase
 Postgres; Drizzle migrations are the single schema history. Browser code never accesses
-the database directly. Better Auth (same Postgres) with Hono enforcing roles server-side;
-database constraints/RLS are defense in depth only.
+the database directly. Owner auth plus the shared staff PIN/signed-session records live in
+the same Postgres boundary, with Hono enforcing roles server-side; database constraints/RLS
+are defense in depth only.
 
 **Monorepo placement.** Domain logic (occupancy, schedule, commands, audit, analytics,
 health/alerting, settings) lives in the shared API package as domain modules; the server
@@ -307,7 +340,7 @@ just data, not a special case.
   (`pending` → `delivered` → `applied`, or `superseded` | `expired`), issued-by (user or
   `system` for scheduled resets), reason, timestamps. A newer pending set/reset supersedes
   older pending ones; only the latest is delivered.
-- **Audit log** — actor (Better Auth user reference; the shared staff account for staff
+- **Audit log** — actor (authenticated principal; the shared front-desk principal for staff
   actions, accepted coarse granularity per RESEARCH.md §3), action, from → to values,
   optional reason, created-at. Written in the same transaction as the mutation it
   records. Retained ~12 months.
@@ -315,20 +348,23 @@ just data, not a special case.
   (camera/feed/process), derived from pushes and cron detection. Retained ~12 months.
 - **Alert log** — alert type, condition started at, sent at, delivery outcome, recovery
   linkage. Drives re-alert suppression and the alert-delivery target. Retained ~12 months.
-- **Better Auth tables** — as scaffolded, plus role support (below). No PII beyond
-  name/email of the handful of staff/owner accounts.
+- **Authentication/session storage** — real owner principals plus the shared staff PIN
+  credential metadata and signed sessions. Store only a strong server-side PIN hash, never the
+  PIN itself; no staff email identity is required. Roles and deactivation are enforced by the
+  server.
 
 **What is never stored:** video, frames, images, biometrics, identities, per-visitor
 anything, raw per-crossing events (per-minute aggregation only, RESEARCH.md §8).
 
-**Roles & auth model. [Resolved here]** Better Auth with its admin plugin provides two
-roles: `staff` and `owner` (maintainer uses an owner account; RESEARCH.md §3).
-Email + password only; **self-registration disabled**; email verification off; password
-resets performed by owner/maintainer through account management (no email-delivery
-dependency in v1). Sessions are cookie-based, `httpOnly`, `secure`, and — because the
-deployment is same-origin — `sameSite=lax` (tightened from the scaffold's `none`).
-Session lifetime ~30 days rolling to suit the shared desk device. Better Auth's built-in
-rate limiting is enabled on auth endpoints.
+**Roles & auth model. [Updated at VDG-A closure]** Two server-enforced roles remain:
+`staff` and `owner` (maintainer uses a real owner account; RESEARCH.md §3). Shared staff access
+is **PIN-based**, never email/password: the server verifies a strong stored PIN hash and issues
+the existing signed session cookie. The cookie is `httpOnly`, `secure`, and — because the
+deployment is same-origin — `sameSite=lax`, with a roughly 30-day rolling lifetime suitable
+for the shared desk. PIN attempts are rate-limited and return non-enumerating errors.
+Self-registration is disabled. Owner identities remain separately provisioned real accounts;
+this clarification does not authorize invented owner/email values or weaken server-side role
+checks. Deactivation invalidates or rejects the session on its next use.
 
 **Edge authentication.** Static per-device bearer token (≥ 32 random bytes), stored
 hashed; presented on every `/api/edge/*` call; lookup by hash (constant-time by
@@ -361,8 +397,8 @@ current-state row and settings — never history — and is the only thing visit
 - Owner-only: analytics queries (today curve, heatmap, daily peaks/averages/visits,
   week-over-week); CSV export (per-minute rows for a date range, streamed, UTC + local
   time columns, Western digits); settings read/update (new version row + audit);
-  account management (list/create/deactivate/reset-password via the Better Auth admin
-  plugin); audit log listing; health/alert history.
+  access management (provision/rotate/deactivate staff PIN credentials and manage real owner
+  accounts); audit log listing; health/alert history.
 - Router guards in the web app are UX only; every procedure re-checks role on the server
   (SOL_SCAFFOLD_REVIEW.md §1).
 
@@ -396,7 +432,8 @@ thresholds) lives in the settings table, not env.
 **Routes (web). [Resolved here]**
 
 - `/` — public occupancy page (no auth chrome, no header/nav from the scaffold demo).
-- `/login` — staff/owner sign-in (no sign-up route; the scaffolded sign-up UI is removed).
+- `/login` — PIN-based staff sign-in; owner access uses its separately provisioned real
+  account path. No sign-up route; the scaffolded email/password staff form is not the target.
 - `/staff` — operational view; requires `staff` or `owner`.
 - `/admin` — owner area (analytics, settings, accounts, audit, health); requires `owner`;
   organized as nested sections under one layout.
@@ -522,9 +559,10 @@ Deep modules with small interfaces; counting/state rules live in exactly one pla
 
 ## Testing Decisions
 
-No tests exist in the repo yet (fresh scaffold); Vitest is adopted for unit and
-integration tests (fits the Vite/TypeScript workspace), with the local Supabase Postgres
-stack backing integration tests.
+The repository has unit, component, API, Python simulator, browser, and disposable-Postgres
+integration suites for Phases 1–3. Continue using Vitest for TypeScript unit/integration tests,
+the repository Playwright suite for repeatable browser checks, and the disposable local
+Postgres contract for database integration tests.
 
 - **Unit (highest density):** schedule & business-day module (Friday hours, past-midnight
   close, boundary attribution, reset-due, next-open); band computation and threshold
@@ -539,6 +577,11 @@ stack backing integration tests.
 - **End-to-end (thin):** one browser smoke pass — public page renders each payload state
   correctly in Arabic RTL and English LTR, and a staff correction flows through the
   simulated edge to the public payload.
+- **Visual and accessibility acceptance:** Browser inspection plus repeatable Playwright
+  screenshots at the required mobile/desktop sizes in Arabic RTL and English LTR; keyboard and
+  focus order; reduced motion; wrapping/overflow; responsive tables; and chart hover,
+  keyboard-focus, and mobile-tap selection. Loading, stale, closed, unavailable, and error
+  states are verified independently.
 - **Edge simulator** doubles as the integration fixture and the manual dev harness,
   including failure injection for the alerting and recovery acceptance tests.
 - The pilot targets' acceptance protocols (spot checks, injected failures, reboot tests)

@@ -7,8 +7,14 @@
 > implementation. The next steps in our workflow are: **Spec / Definition of Done →
 > Plan → Build (vertical slices) → Verify.** This document feeds the Spec.
 >
-> Status: **Research complete; revised 2026-07-03 after senior review.** Date: **2026-07-02.** Stage: pre-spec.
-> Nothing has been built or scaffolded yet.
+> Status: **Research complete; revised 2026-07-03 after senior review.** Date:
+> **2026-07-02.** This document records the pre-spec reasoning; the repository has since
+> completed Phases 1–3 and VDG-A.
+>
+> **2026-07-14 staff-auth clarification.** Shared staff access is PIN-based through the
+> signed HttpOnly session model, not email/password. This supersedes any staff-credential
+> implication below while preserving server-side roles, authorization, deactivation, rate
+> limiting, shared-desk audit attribution, and separately provisioned real owner identity.
 
 ---
 
@@ -93,10 +99,11 @@ shared desk device. Audit-log entries for staff actions are recorded as that sha
 front-desk account — **coarse audit granularity is accepted for v1.** Owner/Admin access
 remains separate.
 
-**Auth stack:** **Better Auth** for the small staff/admin/owner account set, integrated
-with **Hono** and **Drizzle**. Auth identities, sessions/roles, and audit-log actor
-references live in the same **Supabase Postgres** database. Authentication and role-based
-authorization are enforced server-side; the public page stays anonymous and account-free.
+**Auth stack:** separately provisioned real owner identities may use **Better Auth** with
+**Hono** and **Drizzle**. Shared staff access uses a server-verified PIN and the signed HttpOnly
+session model, not an email identity. Principals, sessions/roles, and audit-log actor references
+live in the same **Supabase Postgres** database. Authentication and role-based authorization are
+enforced server-side; the public page stays anonymous and account-free.
 
 **Deferred alternative:** **Clerk** is not selected for v1. The pilot's small account set
 does not justify a separate hosted identity system or cross-system identity mapping;
@@ -322,11 +329,12 @@ status/band, capacity_at_time`. **Per-minute `entries` and `exits` are required,
   the **public page never shows a negative number.**
 - **Settings** — capacity, thresholds, gym hours; **versioned** so historical analytics
   know the values _at the time_.
-- **Users & roles** — Better Auth identities/sessions and staff/admin roles, stored with
-  the application data in Supabase Postgres.
+- **Principals, credentials & roles** — real owner identities, shared staff PIN credential
+  metadata, signed sessions, and staff/admin roles stored with the application data in
+  Supabase Postgres. The PIN itself is never stored.
 - **Audit log** — every manual correction/reset: **who, when, from what, to what, why (if
-  available).** `who` is a same-database reference to the Better Auth account; for staff
-  actions, it is the shared front-desk account (§3). Non-negotiable for trust/debugging in
+  available).** `who` is a same-database authenticated-principal reference; for staff actions,
+  it is the shared front-desk principal (§3). Non-negotiable for trust/debugging in
   a system where staff touch the count.
 - **Edge health log** — heartbeat, offline/stale events, camera/feed/device health.
 
@@ -423,14 +431,15 @@ of how many people are watching.
 - **Web app / hosting:** **Vercel.**
 - **Application API:** **Hono.**
 - **Data layer:** **Drizzle** over **Supabase (managed Postgres).**
-- **Auth:** **Better Auth** (staff/admin/owner), using the same Postgres database as the
-  application and audit records. Public page anonymous.
+- **Auth:** server-verified staff PIN with a signed HttpOnly session; separately provisioned
+  real owner identity may use Better Auth. Both share the application/audit Postgres boundary.
+  Public page anonymous.
 - **Edge:** a **Windows all-in-one PC (screen + computer) the gym provides for FITWAY**
   — a separate machine, **not** the front-desk/reception device — _if capable_
   (see site-check gate §18). Runs the CV pipeline locally.
 
-**Authorization boundary:** Hono validates Better Auth sessions and performs role checks
-server-side for every staff/owner action. Drizzle writes auth-linked application and audit
+**Authorization boundary:** Hono validates signed sessions and performs role checks server-side
+for every staff/owner action. Drizzle writes auth-linked application and audit
 records in the same database, avoiding a cross-provider identity/JWT mapping. Database
 constraints and any Supabase RLS used remain defense in depth, not a substitute for
 server-side authorization.
@@ -495,8 +504,8 @@ agreed).
 
 ## 13. Security (summary)
 
-- Staff/admin/owner behind **Better Auth**; Hono enforces least-privilege roles server-side
-  (§3).
+- Staff uses PIN + signed HttpOnly session; real owner identity is separately provisioned;
+  Hono enforces least-privilege roles server-side (§3).
 - Supabase database constraints and any RLS are defense in depth; they do not replace
   server-side authorization.
 - **Write endpoint authenticated (device token) + rate-limited.**
@@ -602,8 +611,9 @@ over-building now._
 - **Stack pricing/tiers/limits (Vercel, Supabase) + Vercel Spend-Management
   setup** — verify before deploy (§11), incl. Supabase inactivity/pausing, backups,
   connection limits.
-- **Better Auth deployment configuration** — verify session/cookie behavior, secrets,
-  migrations, and Hono server-side authorization during implementation.
+- **Auth deployment configuration** — verify staff PIN hashing/rate limiting, signed cookie
+  behavior, owner-auth configuration, secrets, migrations, and Hono authorization during
+  implementation.
 - **Trend feature reliability** — include in v1 only if it can be made reliable; else
   defer.
 - **Transparency signage wording** — confirm with owner.
@@ -689,7 +699,7 @@ enough for the pilot (no heavy contract), but get clear owner agreement on:
 | Privacy/consent exposure (cameras on members)                    | Edge-only; zero image/video/identity storage; anonymous counts only; owner transparency notice                                   |
 | Gym PC too weak for CV                                           | Site-check gate; gym provides hardware if needed                                                                                 |
 | RTSP/network access not actually available                       | Site-check gate before committing                                                                                                |
-| Better Auth session/authorization misconfiguration                | Hono validates sessions and enforces roles server-side; auth and audit references share the Postgres database; verify configuration before launch |
+| Session/authorization misconfiguration                            | Hono validates signed sessions and enforces roles server-side; PIN/auth and audit references share Postgres; verify configuration before launch   |
 | Scope creep into SaaS/predictions/floor-count                    | Explicit scope fence (§16)                                                                                                       |
 | Non-members inflate "occupancy"                                  | Accepted + framed honestly ("bodies inside, not members"); manual correction                                                     |
 
