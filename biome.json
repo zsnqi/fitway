@@ -21,6 +21,7 @@
 			"!**/src-tauri",
 			"!**/.nuxt",
 			"!**/.local",
+			"!**/output",
 			"!bts.jsonc",
 			"!**/.expo",
 			"!**/.wrangler",

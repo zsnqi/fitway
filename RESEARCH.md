@@ -4,17 +4,23 @@
 > agent (or human) in a fresh session can understand what we are building, who it is
 > for, and — most importantly — _why each decision was made_ before writing any code.
 > It is the output of a structured discovery interview. It is **not** a spec, plan, or
-> implementation. The next steps in our workflow are: **Spec / Definition of Done →
-> Plan → Build (vertical slices) → Verify.** This document feeds the Spec.
+> implementation authority. Binding conclusions have been migrated into Product, Spec,
+> Design Guide, ADRs, and Phases; this document now preserves rationale and external gates.
 >
 > Status: **Research complete; revised 2026-07-03 after senior review.** Date:
 > **2026-07-02.** This document records the pre-spec reasoning; the repository has since
-> completed Phases 1–3 and VDG-A.
+> completed Phases 1–3 and the Baseline Reconciliation Gate.
 >
 > **2026-07-14 staff-auth clarification.** Shared staff access is PIN-based through the
 > signed HttpOnly session model, not email/password. This supersedes any staff-credential
 > implication below while preserving server-side roles, authorization, deactivation, rate
 > limiting, shared-desk audit attribution, and separately provisioned real owner identity.
+>
+> **2026-07-15 public-privacy resolution.** Anonymous public schema version 2 is capacity-free:
+> it exposes the qualitative crowd band and approximate count, but not capacity, a denominator,
+> or a derived percentage. There is no v1 disclosure toggle. The post-v1 safety reservation in
+> `SPEC.md` constrains but does not authorize a future feature. This supersedes historical
+> percentage exploration below; authorized staff/owner surfaces may still use capacity.
 
 ---
 
@@ -123,12 +129,13 @@ good time to go?"_
 - **Approximate count** — explicitly labeled as an estimate, e.g., _"Estimated
   occupancy: 45"_ / _"العدد التقريبي: 45"_. The number is shown (people care) but never
   presented as exact truth.
-- **% full.**
+- **Continuous cumulative 28-bar crowd signal** derived from the labeled band, with no numeric
+  capacity, denominator, or percentage exposed by the public contract.
 - **Last-updated timestamp** — so freshness is visible.
 - **Open/Closed state** — when closed, show e.g. _"Closed now — opens 6:00 AM"_ and do
   **not** pretend there is live occupancy.
-- **Trend** (getting busier / emptying out / stable) — **secondary**; include only if it
-  can be made reliable enough for v1, otherwise defer.
+- **Trend** (getting busier / emptying out / stable) — deferred from v1; the reserved public
+  contract slot remains `null`.
 
 **Honesty principle:** the count is "good enough, not perfect." The UI must communicate
 approximation explicitly—through an approved label such as `العدد التقريبي` / “estimated”
@@ -603,28 +610,27 @@ over-building now._
 
 ---
 
-## 17. Open Questions & Decisions TBD
+## 17. Resolved decisions and remaining external gates
 
-- **Domain / URL shape** — undecided. Must stay SaaS-friendly (future per-gym paths or
-  subdomains) without building multi-tenancy now.
-- **Real capacity & band thresholds** — unknown; measure on-site; keep admin-configurable.
-- **Stack pricing/tiers/limits (Vercel, Supabase) + Vercel Spend-Management
-  setup** — verify before deploy (§11), incl. Supabase inactivity/pausing, backups,
-  connection limits.
-- **Auth deployment configuration** — verify staff PIN hashing/rate limiting, signed cookie
-  behavior, owner-auth configuration, secrets, migrations, and Hono authorization during
-  implementation.
-- **Trend feature reliability** — include in v1 only if it can be made reliable; else
-  defer.
-- **Transparency signage wording** — confirm with owner.
-- **Alert policy (Telegram, §12)** — suppress or downgrade alerts while the gym is
-  closed? Re-alert unresolved closed-hours failures before opening? Exact trigger set:
-  missed heartbeat, camera/feed offline, stale counter, process crash?
-- **Turnstile pulse/rotation output** — does the gate expose an electrical counter signal
-  usable later as an independent cross-check? (Future, not v1.)
-- **Reset buffer specifics** — exact post-close buffer before auto-reset (closing drifts).
-- **Pilot success thresholds (§15)** — final numeric targets (band accuracy, uptime,
-  usage) and the manual spot-check protocol — decide in Spec / Definition of Done.
+Items once recorded as open now resolve as follows:
+
+- **Domain / URL shape — resolved for v1:** one gym and fixed `/`, `/login`, `/staff`, and
+  `/admin` paths. A future prefix or subdomain may wrap them; no `gym_id` or multi-tenancy now.
+- **Staff auth — resolved:** the PIN/opaque-session/principal/role contract is frozen in
+  `SPEC.md` and ADR-002. Production secrets and deployment configuration remain a go-live gate.
+- **Trend — resolved:** deferred; the public field remains reserved as `null` in v1.
+- **Alert policy — resolved:** open/pre-open evaluation, closed-hour suppression, 30-minute
+  bounded re-alert, failure set, and recovery are frozen in `SPEC.md`.
+- **Reset buffer — resolved default:** 30 minutes, settings-driven and owner-configurable.
+- **Pilot targets — provisionally resolved:** the Spec defines measurable targets and methods;
+  final numeric confirmation happens with the owner at pilot kickoff.
+- **Real capacity, thresholds, hours, timezone, feed/exit geometry, edge hardware, and
+  turnstile electrical output — external site checks:** they do not block contract/domain work,
+  but the applicable implementation or go-live step cannot claim real-site acceptance without
+  measurement.
+- **Vercel/Supabase tiers, spend controls, pausing, backups, pooling, cron cadence, production
+  secrets, final domain, transparency wording, and owner maintenance sign-off — external
+  deployment/owner gates:** verify before deployment; do not guess in code.
 
 ---
 
@@ -671,7 +677,7 @@ front-desk/reception device; specs unknown):**
 - Logo, gym colors, any existing Fitway visual identity.
 - Arabic typography preference.
 - Numeral convention: **resolved — Western/English digits 0–9 exclusively** across both the
-  Arabic and English interfaces (occupancy counts, percentages, charts, dates, times,
+  Arabic and English interfaces (occupancy counts, authorized private percentages, charts, dates, times,
   analytics, and exports). No Eastern-Arabic-numeral option in v1.
 - Theme: **resolved — v1 is dark-only**; a light theme is explicitly **deferred
   (post-pilot)**. Decided 2026-07-11.
@@ -718,5 +724,5 @@ enough for the pilot (no heavy contract), but get clear owner agreement on:
 
 ---
 
-_End of research. Next step: turn this into a Spec / Definition of Done, then a Plan, then
-build vertical slices._
+_End of research. Current implementation authority is indexed in `AGENTS.md`; unresolved
+external gates above must be recorded in `PROJECT_STATE.yaml` when they become phase blockers._

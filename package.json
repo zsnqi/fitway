@@ -25,11 +25,15 @@
 		"deploy:prod": "vercel deploy --prod",
 		"deploy:check": "vercel deploy --dry",
 		"check": "biome check .",
+		"check:repository": "node scripts/verify-repository.mjs",
 		"format": "biome check --write .",
 		"test": "vitest run",
 		"test:integration": "vitest run --config vitest.integration.config.ts",
 		"test:browser": "playwright test",
-		"test:simulator": "py -m unittest discover -s edge -p test_*.py"
+		"test:simulator": "py -m unittest discover -s edge -p test_*.py",
+		"verify:fast": "node scripts/verify.mjs fast",
+		"verify:phase": "node scripts/verify.mjs phase",
+		"verify:full": "node scripts/verify.mjs full"
 	},
 	"dependencies": {
 		"@fitway/env": "workspace:*",
@@ -37,16 +41,20 @@
 		"zod": "catalog:"
 	},
 	"devDependencies": {
+		"@axe-core/playwright": "^4.12.1",
 		"@biomejs/biome": "^2.5.2",
 		"@fitway/config": "workspace:*",
 		"@playwright/test": "^1.61.1",
 		"@types/node": "catalog:",
+		"ajv": "^8.20.0",
+		"ajv-formats": "^3.0.1",
 		"happy-dom": "^20.10.6",
 		"lefthook": "^2.1.9",
 		"tsx": "catalog:",
 		"typescript": "catalog:",
 		"vercel": "^54.18.6",
-		"vitest": "^4.1.10"
+		"vitest": "^4.1.10",
+		"yaml": "^2.9.0"
 	},
 	"packageManager": "pnpm@11.9.0"
 }

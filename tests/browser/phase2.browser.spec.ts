@@ -6,12 +6,11 @@ function usablePayload(
 ) {
 	const now = new Date();
 	return {
-		schemaVersion: 1,
+		schemaVersion: 2,
 		freshness,
 		timeZone: "Asia/Riyadh",
 		band: "moderate",
 		count: 37,
-		percentFull: 37,
 		lastUpdatedAt: now.toISOString(),
 		freshUntil,
 		source: "edge",
@@ -24,7 +23,7 @@ test("renders unavailable without a count or meter", async ({ page }) => {
 	await page.route("**/public/occupancy", (route) =>
 		route.fulfill({
 			json: {
-				schemaVersion: 1,
+				schemaVersion: 2,
 				freshness: "unavailable",
 				computedAt: new Date().toISOString(),
 				trend: null,
@@ -50,13 +49,18 @@ test("renders localized live status and changes direction without overflow", asy
 	);
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto("/");
-	await expect(page.getByRole("heading", { name: "37" })).toBeVisible();
-	await expect(page.locator("meter")).toHaveAttribute("value", "37");
+	await expect(page.getByRole("heading", { name: "متوسط" })).toBeVisible();
+	await expect(page.locator(".public-live__count-value")).toHaveText("37");
+	await expect(
+		page.getByRole("img", { name: /مستوى الازدحام: متوسط/u }),
+	).toBeVisible();
+	await expect(page.locator("meter")).toHaveCount(0);
 	await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-	await expect(page.locator("body")).toContainText("حوالي");
+	await expect(page.locator("body")).toContainText("العدد التقريبي");
+	await expect(page.locator("body")).not.toContainText("%");
 	await page.getByRole("button", { name: /الإنجليزية/u }).click();
 	await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
-	await expect(page.locator("body")).toContainText("Around");
+	await expect(page.locator("body")).toContainText("Approximate count");
 	const overflow = await page.evaluate(
 		() =>
 			document.documentElement.scrollWidth >
@@ -78,7 +82,7 @@ test("locally expires cached fresh JSON without another request", async ({
 	});
 	await page.goto("/");
 	await expect(page.locator("body")).toContainText("تحديث مباشر");
-	await expect(page.locator("body")).toContainText("آخر عدد معروف", {
+	await expect(page.locator("body")).toContainText("آخر عدد تقريبي معروف", {
 		timeout: 3_000,
 	});
 	expect(requests).toBe(1);

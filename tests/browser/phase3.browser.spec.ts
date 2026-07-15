@@ -5,12 +5,11 @@ test.use({ timezoneId: "America/New_York" });
 function openPayload() {
 	const now = new Date();
 	return {
-		schemaVersion: 1,
+		schemaVersion: 2,
 		freshness: "fresh",
 		timeZone: "Asia/Riyadh",
 		band: "quiet",
 		count: 17,
-		percentFull: 17,
 		lastUpdatedAt: now.toISOString(),
 		freshUntil: new Date(now.getTime() + 90_000).toISOString(),
 		source: "edge",
@@ -25,7 +24,7 @@ test("renders the Arabic closed state at 390px, formats in gym time, and toggles
 	await page.route("**/public/occupancy", (route) =>
 		route.fulfill({
 			json: {
-				schemaVersion: 1,
+				schemaVersion: 2,
 				freshness: "closed",
 				timeZone: "Asia/Riyadh",
 				nextOpenAt: "2026-07-17T11:00:00.000Z",
@@ -59,10 +58,10 @@ test("expires cached closed honestly and transitions to open without reload", as
 }) => {
 	const now = Date.now();
 	const closed = {
-		schemaVersion: 1,
+		schemaVersion: 2,
 		freshness: "closed",
 		timeZone: "Asia/Riyadh",
-		nextOpenAt: new Date(now + 500).toISOString(),
+		nextOpenAt: new Date(now + 1_500).toISOString(),
 		computedAt: new Date(now).toISOString(),
 		trend: null,
 	};
@@ -87,7 +86,7 @@ test("expires cached closed honestly and transitions to open without reload", as
 	await expect
 		.poll(() => requests, { timeout: 4_000 })
 		.toBeGreaterThanOrEqual(3);
-	await expect(page.getByRole("heading", { name: "17" })).toBeVisible({
+	await expect(page.getByRole("heading", { name: "هادئ" })).toBeVisible({
 		timeout: 4_000,
 	});
 	await expect(page.locator("body")).toContainText("مفتوح الآن");

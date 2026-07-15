@@ -1,6 +1,7 @@
 import { execFile, spawn } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { createServer } from "node:net";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -36,23 +37,14 @@ import {
 } from "./occupancy-repositories";
 import { createPublicOccupancyHandler } from "./public-occupancy";
 import { DeviceRateLimiter } from "./rate-limiter";
+import { assertDisposableIntegrationDatabase } from "./test-support/integration-database-safety";
 
 const connectionString = process.env.TEST_DATABASE_URL;
-if (!connectionString)
-	throw new Error(
-		"TEST_DATABASE_URL is required; integration tests never use DATABASE_URL",
-	);
-const parsed = new URL(connectionString);
-const local = ["localhost", "127.0.0.1", "::1"].includes(parsed.hostname);
-const namedForTest = /(?:test|dev|local)/i.test(parsed.pathname);
-const explicitlyDisposable =
-	process.env.FITWAY_ALLOW_DISPOSABLE_DATABASE === "true";
-if (!namedForTest && !explicitlyDisposable)
-	throw new Error(
-		"TEST_DATABASE_URL must be test-named or explicitly marked disposable",
-	);
-if (!local && explicitlyDisposable && !namedForTest)
-	throw new Error("Explicit unnamed disposable databases must be local");
+assertDisposableIntegrationDatabase({
+	connectionString,
+	resetMarker: process.env.FITWAY_INTEGRATION_RESET_DATABASE,
+	runId: process.env.FITWAY_RUN_ID,
+});
 
 const pool = new Pool({ connectionString });
 const database = drizzle(pool, {
@@ -67,6 +59,24 @@ const publicRepository = createPublicPayloadRepository(
 const token = "integration-device-token-that-is-at-least-32-bytes-long";
 const execFileAsync = promisify(execFile);
 let deviceId = "";
+
+async function reserveEphemeralPort() {
+	const reservation = createServer();
+	await new Promise<void>((resolve, reject) => {
+		reservation.once("error", reject);
+		reservation.listen(0, "127.0.0.1", resolve);
+	});
+	const address = reservation.address();
+	if (!address || typeof address === "string") {
+		reservation.close();
+		throw new Error("Could not reserve an ephemeral browser port");
+	}
+	const { port } = address;
+	await new Promise<void>((resolve, reject) => {
+		reservation.close((error) => (error ? reject(error) : resolve()));
+	});
+	return port;
+}
 
 const alwaysOpenSchedule = {
 	scheduleSunOpen: "00:00",
@@ -227,7 +237,7 @@ describe("Phase 2 real Postgres vertical slice", () => {
 		);
 		expect(closedResponse.headers.get("x-fitway-poll-seconds")).toBe("60");
 		expect(closed).toEqual({
-			schemaVersion: 1,
+			schemaVersion: 2,
 			freshness: "closed",
 			timeZone: "Asia/Riyadh",
 			nextOpenAt: "2026-07-17T11:00:00.000Z",
@@ -342,10 +352,11 @@ describe("Phase 2 real Postgres vertical slice", () => {
 			now,
 		);
 		expect(publicValue.payload).toMatchObject({
+			schemaVersion: 2,
 			freshness: "fresh",
 			count: 12,
-			percentFull: 12,
 		});
+		expect(publicValue.payload).not.toHaveProperty("percentFull");
 		const publicResponse = await app.request(PUBLIC_OCCUPANCY_INTERNAL_PATH);
 		expect(publicResponse.headers.get("cache-control")).toBe(
 			PUBLIC_OCCUPANCY_CACHE_CONTROL,
@@ -612,6 +623,8 @@ describe("Phase 2 real Postgres vertical slice", () => {
 	it("drives the real browser through unavailable, fresh, changed, stale, and recovery", {
 		timeout: 60_000,
 	}, async () => {
+		const webPort = await reserveEphemeralPort();
+		const webOrigin = `http://127.0.0.1:${webPort}`;
 		await database
 			.update(currentState)
 			.set({
@@ -646,7 +659,7 @@ describe("Phase 2 real Postgres vertical slice", () => {
 		app.use(
 			"*",
 			cors({
-				origin: "http://127.0.0.1:3211",
+				origin: webOrigin,
 				exposeHeaders: ["X-Fitway-Poll-Seconds"],
 			}),
 		);
@@ -684,7 +697,8 @@ describe("Phase 2 real Postgres vertical slice", () => {
 				"--host",
 				"127.0.0.1",
 				"--port",
-				"3211",
+				String(webPort),
+				"--strictPort",
 			],
 			{
 				cwd: path.resolve("apps/web"),
@@ -703,7 +717,7 @@ describe("Phase 2 real Postgres vertical slice", () => {
 		try {
 			for (let attempt = 0; attempt < 80; attempt += 1) {
 				try {
-					const response = await fetch("http://127.0.0.1:3211");
+					const response = await fetch(webOrigin);
 					if (response.ok) break;
 				} catch {
 					if (attempt === 79) throw new Error("Vite did not become ready");
@@ -714,7 +728,7 @@ describe("Phase 2 real Postgres vertical slice", () => {
 			const page = await browser.newPage({
 				viewport: { width: 390, height: 844 },
 			});
-			await page.goto("http://127.0.0.1:3211");
+			await page.goto(webOrigin);
 			await page
 				.getByText("التحديث المباشر غير متاح الآن")
 				.waitFor({ timeout: 5_000 });
@@ -745,27 +759,35 @@ describe("Phase 2 real Postgres vertical slice", () => {
 			};
 			const firstCount = await runSimulator(41);
 			await page
-				.getByRole("heading", { name: String(firstCount) })
+				.locator(".public-live__count-value")
+				.getByText(String(firstCount), { exact: true })
 				.waitFor({ timeout: 5_000 });
 			await page
+				.locator(".public-live__freshness--mobile")
 				.getByText("تحديث مباشر", { exact: true })
 				.waitFor({ timeout: 5_000 });
 			const changedCount = await runSimulator(42);
 			expect(changedCount).not.toBe(firstCount);
 			await page
-				.getByRole("heading", { name: String(changedCount) })
+				.locator(".public-live__count-value")
+				.getByText(String(changedCount), { exact: true })
 				.waitFor({ timeout: 5_000 });
 			await page.getByRole("button", { name: /الإنجليزية/u }).click();
-			await page.getByText("Last known occupancy").waitFor({ timeout: 5_000 });
+			await page
+				.getByText("Last known approximate count", { exact: true })
+				.waitFor({ timeout: 5_000 });
 			const recoveredCount = await runSimulator(43);
 			await page
-				.getByRole("heading", { name: String(recoveredCount) })
+				.locator(".public-live__count-value")
+				.getByText(String(recoveredCount), { exact: true })
 				.waitFor({ timeout: 5_000 });
 			await page
+				.locator(".public-live__freshness--mobile")
 				.getByText("Live update", { exact: true })
 				.waitFor({ timeout: 5_000 });
 			await page.getByRole("button", { name: /Arabic/u }).click();
 			await page
+				.locator(".public-live__freshness--mobile")
 				.getByText("تحديث مباشر", { exact: true })
 				.waitFor({ timeout: 5_000 });
 		} finally {

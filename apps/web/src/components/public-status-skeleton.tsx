@@ -1,26 +1,45 @@
-import { Skeleton } from "@fitway/ui/components/skeleton";
-
 import { useI18n } from "@/i18n/provider";
+import { CrowdSignal } from "./crowd-signal";
+import { PublicLiveCardShell } from "./public-live-card-shell";
+
+function SkeletonLine({ className }: { className: string }) {
+	return (
+		<span className={`public-live__skeleton ${className}`} aria-hidden="true" />
+	);
+}
 
 export function PublicStatusSkeleton() {
 	const { messages } = useI18n();
 
 	return (
-		<section
-			className="w-full rounded-xl border bg-surface p-5 sm:p-6"
+		<PublicLiveCardShell
+			className="public-live-card--loading"
 			aria-busy="true"
+			aria-labelledby="public-loading-title"
+			status={<SkeletonLine className="public-live__skeleton-status" />}
+			desktopFreshness={
+				<SkeletonLine className="public-live__skeleton-freshness" />
+			}
+			crowdLabel={
+				<SkeletonLine className="public-live__skeleton-crowd-label" />
+			}
+			crowdValue={
+				<SkeletonLine className="public-live__skeleton-crowd-value" />
+			}
+			countLabel={
+				<SkeletonLine className="public-live__skeleton-count-label" />
+			}
+			countValue={
+				<SkeletonLine className="public-live__skeleton-count-value" />
+			}
+			signal={<CrowdSignal skeleton />}
 		>
+			<h1 id="public-loading-title" className="fw-sr-only">
+				{messages.publicPage.loading}
+			</h1>
 			<p className="fw-sr-only" role="status">
 				{messages.publicPage.loading}
 			</p>
-			<div className="flex items-start gap-4" aria-hidden="true">
-				<Skeleton className="size-11 shrink-0 rounded-full" />
-				<div className="w-full min-w-0">
-					<Skeleton className="mb-3 h-4 w-28" />
-					<Skeleton className="mb-3 h-9 w-4/5" />
-					<Skeleton className="h-5 w-full max-w-80" />
-				</div>
-			</div>
-		</section>
+		</PublicLiveCardShell>
 	);
 }

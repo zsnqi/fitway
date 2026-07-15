@@ -33,7 +33,7 @@ function StateProbe() {
 
 function closedPayload(nextOpenAt: string | null) {
 	return {
-		schemaVersion: 1,
+		schemaVersion: 2,
 		freshness: "closed",
 		timeZone: "Asia/Riyadh",
 		nextOpenAt,
@@ -45,12 +45,11 @@ function closedPayload(nextOpenAt: string | null) {
 function freshPayload() {
 	const now = new Date();
 	return {
-		schemaVersion: 1,
+		schemaVersion: 2,
 		freshness: "fresh",
 		timeZone: "Asia/Riyadh",
 		band: "quiet",
 		count: 8,
-		percentFull: 8,
 		lastUpdatedAt: now.toISOString(),
 		freshUntil: new Date(now.getTime() + 90_000).toISOString(),
 		source: "edge",
@@ -96,7 +95,7 @@ describe("public occupancy polling controller", () => {
 				requests += 1;
 				return new Response(
 					JSON.stringify({
-						schemaVersion: 1,
+						schemaVersion: 2,
 						freshness: "unavailable",
 						computedAt: new Date().toISOString(),
 						trend: null,
@@ -156,7 +155,7 @@ describe("public occupancy polling controller", () => {
 				requests += 1;
 				return new Response(
 					JSON.stringify({
-						schemaVersion: 1,
+						schemaVersion: 2,
 						freshness: "unavailable",
 						computedAt: new Date().toISOString(),
 						trend: null,

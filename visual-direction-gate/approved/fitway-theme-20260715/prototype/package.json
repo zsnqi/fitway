@@ -1,0 +1,16 @@
+{
+	"name": "fitway-product-preview",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "vite --config vite.config.js",
+		"build": "vite build --config vite.config.js",
+		"preview": "vite preview --config vite.config.js"
+	},
+	"dependencies": {
+		"@vitejs/plugin-react": "6.0.3",
+		"react": "19.2.7",
+		"react-dom": "19.2.7",
+		"vite": "8.1.4"
+	}
+}

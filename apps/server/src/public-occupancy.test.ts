@@ -29,7 +29,7 @@ describe("public occupancy endpoint", () => {
 			PUBLIC_OCCUPANCY_CACHE_CONTROL,
 		);
 		expect(payload).toMatchObject({
-			schemaVersion: 1,
+			schemaVersion: 2,
 			freshness: "unavailable",
 			trend: null,
 		});
@@ -85,7 +85,7 @@ describe("public occupancy endpoint", () => {
 		);
 		expect(response.headers.get("x-fitway-poll-seconds")).toBe("60");
 		expect(await response.json()).toEqual({
-			schemaVersion: 1,
+			schemaVersion: 2,
 			freshness: "closed",
 			timeZone: "Asia/Riyadh",
 			nextOpenAt: "2026-07-17T11:00:00.000Z",

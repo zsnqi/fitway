@@ -93,7 +93,5 @@ export function usePublicOccupancy(random: () => number = Math.random) {
 	const derivedFreshness = payload
 		? effectiveFreshness(payload, now)
 		: undefined;
-	const freshness =
-		query.isError && derivedFreshness === "fresh" ? "stale" : derivedFreshness;
-	return { ...query, payload, effectiveFreshness: freshness, now };
+	return { ...query, payload, effectiveFreshness: derivedFreshness, now };
 }

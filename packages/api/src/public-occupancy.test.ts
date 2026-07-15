@@ -36,7 +36,7 @@ describe("public occupancy contract", () => {
 		);
 
 		expect(payload).toEqual({
-			schemaVersion: 1,
+			schemaVersion: 2,
 			freshness: "unavailable",
 			computedAt: "2026-07-13T10:00:00.000Z",
 			trend: null,
@@ -56,7 +56,7 @@ describe("public occupancy contract", () => {
 		).toBe(false);
 		expect(
 			isPublicOccupancyUnavailablePayload({
-				schemaVersion: 1,
+				schemaVersion: 2,
 				freshness: "unavailable",
 				computedAt: "2026-07-13",
 				trend: null,
@@ -66,12 +66,11 @@ describe("public occupancy contract", () => {
 
 	it("strictly accepts usable timezone metadata without an open flag", () => {
 		const usable = {
-			schemaVersion: 1,
+			schemaVersion: 2,
 			freshness: "fresh",
 			timeZone: "Asia/Riyadh",
 			band: "quiet",
 			count: 12,
-			percentFull: 12,
 			lastUpdatedAt: "2026-07-13T10:00:00.000Z",
 			freshUntil: "2026-07-13T10:01:30.000Z",
 			source: "edge",
@@ -79,6 +78,10 @@ describe("public occupancy contract", () => {
 			trend: null,
 		};
 		expect(publicOccupancyPayloadSchema.safeParse(usable).success).toBe(true);
+		expect(
+			publicOccupancyPayloadSchema.safeParse({ ...usable, percentFull: 12 })
+				.success,
+		).toBe(false);
 		expect(
 			publicOccupancyPayloadSchema.safeParse({ ...usable, open: true }).success,
 		).toBe(false);
@@ -90,7 +93,7 @@ describe("public occupancy contract", () => {
 
 	it("strictly accepts closed with nullable next-open and rejects occupancy leaks", () => {
 		const closed = {
-			schemaVersion: 1,
+			schemaVersion: 2,
 			freshness: "closed",
 			timeZone: "Asia/Riyadh",
 			nextOpenAt: "2026-07-17T11:00:00.000Z",
@@ -119,7 +122,7 @@ describe("public occupancy contract", () => {
 
 	it("caps closed cache freshness at the next opening", () => {
 		const closed = publicOccupancyClosedSchema.parse({
-			schemaVersion: 1,
+			schemaVersion: 2,
 			freshness: "closed",
 			timeZone: "Asia/Riyadh",
 			nextOpenAt: "2026-07-17T11:00:00.000Z",

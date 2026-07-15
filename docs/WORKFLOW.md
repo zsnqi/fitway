@@ -1,0 +1,180 @@
+# FITWAY Long-Running Agent Workflow
+
+This is the operational procedure for multiple Codex sessions. `AGENTS.md` is the concise
+policy; `PROJECT_STATE.yaml` is the coordinator-owned live ledger; phase records preserve
+accepted evidence.
+
+## Roles
+
+- **Coordinator:** sole writer of `PROJECT_STATE.yaml`; allocates worktrees, owned paths, and
+  shared leases; owns migrations/generated ordering; integrates work; declares terminal state.
+- **Worker:** one bounded phase or slice in one worktree, based on the recorded baseline.
+- **Subagent:** bounded reading, investigation, focused test execution, or isolated module work.
+  The parent worker reviews every result and retains ownership.
+- **Independent verifier:** fresh session that did not implement the candidate; reviews the diff,
+  reruns gates, and records findings without repairing the work.
+- **Human approver:** resolves locked Product/Spec/security/privacy decisions and material visual
+  changes; approves canonical screenshot changes.
+
+## State machine
+
+```text
+PLANNED → READY → IN_PROGRESS → VALIDATING → READY_FOR_INTEGRATION → DONE
+                   │              │                    │
+                   ├──────────────┼──────────────┬─────┘
+                   ▼              ▼              ▼
+                BLOCKED       NEEDS_HUMAN   FAILED_VALIDATION
+```
+
+- `DONE`: integrated commit exists and every required gate plus independent verification passed.
+- `BLOCKED`: an external prerequisite or upstream dependency is unavailable. Record the exact
+  unblock condition; difficulty alone is not a blocker.
+- `NEEDS_HUMAN`: a locked decision, security/privacy ambiguity, material visual change, or
+  shared-ownership conflict needs human authority.
+- `FAILED_VALIDATION`: the same gate remains red after two focused repair attempts or the fresh
+  verifier rejects the result.
+
+Only the coordinator changes states. The top-level baseline status/commit must match the
+`baseline-reconciliation-gate` milestone; repository verification rejects drift. A resumed
+blocked/failed item receives a new attempt record; history is never overwritten.
+
+## Before creating a phase worktree
+
+1. Confirm BRG is `DONE` and use its integrated commit as the base.
+2. Confirm every dependency is `DONE` in `PROJECT_STATE.yaml`.
+3. Define the outcome, acceptance criteria, owned paths, forbidden paths, shared leases, and
+   required verification commands.
+4. Assign a unique lowercase `FITWAY_RUN_ID`, for example `p4_auth_s01`.
+5. Create a non-overlapping branch/worktree. Never start from another worker's unintegrated branch.
+6. Record owner, branch, worktree, base commit, lease expiry, and handoff path before edits.
+
+## Clean-session startup
+
+Every worker or verifier reads, in order:
+
+1. `AGENTS.md`;
+2. `FITWAY_PRODUCT.md` and the relevant `SPEC.md` sections;
+3. `DESIGN_GUIDE.md` for UI work;
+4. `PHASES.md` and `PROJECT_STATE.yaml`;
+5. the relevant ADR and phase record;
+6. the latest handoff named in the ledger.
+
+Then verify `git status --short`, `git rev-parse HEAD`, the worktree/branch, tool versions,
+required services, and the declared owned paths. Stop if the base or ownership differs.
+
+## Worker implementation loop
+
+1. Establish a focused failing test at a stable seam where practical.
+2. Make the smallest coherent change inside owned paths.
+3. Run the focused test/type check frequently.
+4. Run `pnpm verify:fast` before broad integration checks.
+5. Run the phase-selected verification with a unique run ID and disposable resources.
+6. If a gate fails, record the command, concise failure, and artifact; make at most two focused
+   repair attempts. Do not reset the count by changing sessions.
+7. UI work completes the phase polish loop below.
+8. Produce a durable handoff and set the candidate ready for independent verification.
+
+Worker sessions do not update canonical screenshot baselines, generate competing migrations,
+edit coordinator-owned state, or broaden their phase to fix unrelated debt.
+
+## Resource isolation
+
+Every concurrent run must set `FITWAY_RUN_ID`. Verification derives or receives:
+
+- a unique Playwright web port;
+- unique `test-results/<run-id>` and browser artifact directories;
+- a run-specific disposable visual-review path;
+- a unique disposable Postgres database whose exact name includes the run ID;
+- an explicit destructive-test marker.
+
+Canonical `toHaveScreenshot` files are shared, coordinator-owned acceptance evidence, separated
+by operating-system platform and Playwright project. Ordinary workers read them but do not update
+them. Generate or approve a new platform baseline only in a serialized human-approved pass using
+the locked browser/toolchain; rendering is not assumed portable across operating systems.
+
+Integration tests must accept only the explicitly named disposable database and marker. They
+must never fall back to `DATABASE_URL`, a general development database, or a name merely
+containing `test`, `dev`, or `local`. Schema/database destruction is limited to that exact
+target. Until a test proves isolation, serialize integration runs.
+
+Ports and output directories are not contracts between phases. Never reuse another worker's
+server or artifacts to obtain a green result.
+
+## Verification ladder
+
+The package scripts are non-writing with respect to tracked source and approved baselines:
+
+- `pnpm verify:fast` — repository invariant checks, formatting/lint, types, unit/component tests.
+- `pnpm verify:phase` — fast ladder plus phase-selected focused integration/browser checks.
+- `pnpm verify:full` — fast ladder plus full disposable-Postgres integration, simulator, build,
+  browser, automated accessibility, and visual comparison.
+
+Commands may write ignored transient output only under the run-specific directories. A passing
+run must leave `git status --short` unchanged from its pre-run state. The coordinator records
+command, result, commit, run ID, timestamp, and artifact path in the phase record.
+
+## Phase UI polish loop
+
+1. Inspect the affected route/state interactively with Browser.
+2. Run deterministic Playwright functional checks in Arabic RTL and English LTR.
+3. Cover every affected state: loading, live, delayed, unavailable, closed, and error where
+   applicable.
+4. Check applicable widths from 320, 360, 390, 721, 768, 820, 1024, 1200, and 1440px.
+5. Verify keyboard order, focus visibility/return, target size, reduced motion, concise live
+   regions, screen-reader names, 200% zoom/reflow, asymmetric safe areas, and page overflow.
+6. Run automated accessibility checks and manually inspect semantics that automation cannot prove.
+7. Compare curated screenshots with the approved baseline or latest accepted phase baseline.
+8. Make at most two focused polish cycles. A material design change becomes `NEEDS_HUMAN`.
+9. Have a fresh verifier rerun the checks. Human approval is required to update a canonical
+   baseline or alter a locked visual decision.
+
+## Handoff format
+
+Store handoffs under `docs/phase-records/handoffs/<phase>/<timestamp>-<run-id>.md` and reference
+the latest file from `PROJECT_STATE.yaml`. Keep them concise and evidence-based:
+
+```markdown
+# <phase/slice> handoff
+
+- Status:
+- Base commit / candidate commit:
+- Branch / worktree / run ID:
+- Owned paths / shared leases used:
+- Decisions made (with canonical source):
+- Changes by file:
+- Validation commands and results:
+- Browser/a11y/visual artifacts:
+- Independent verifier findings:
+- Remaining work or exact blocker:
+- Exact resume command:
+- Stop/escalation conditions:
+```
+
+Do not paste secrets, raw PINs/tokens, unbounded logs, screenshots containing sensitive data, or
+claims that were not independently observed.
+
+## Independent verification
+
+The verifier receives outcome, base/candidate commits, owned scope, acceptance criteria, commands,
+and artifact locations—not the implementer's reasoning transcript. It must:
+
+1. confirm the diff stays inside scope and contains no unrelated/user work;
+2. compare code/contracts to Product, Spec, Design Guide, ADRs, and phase acceptance;
+3. run the required checks from a clean run ID and disposable resources;
+4. perform fresh Browser/a11y/visual inspection for UI work;
+5. report findings by severity with file/line evidence;
+6. return `PASS` or `FAILED_VALIDATION` without editing the candidate.
+
+## Integration
+
+The coordinator integrates candidates in the order defined by `PHASES.md`:
+
+1. inspect candidate history and diff;
+2. reconcile coordinator-owned shared files and generate any single ordered migration;
+3. run focused checks after each shared-spine integration;
+4. run `pnpm verify:full` at the completed batch;
+5. confirm validation left the worktree clean;
+6. record integrated commit and evidence, release leases, and mark `DONE`.
+
+A worker branch being green is `READY_FOR_INTEGRATION`, never `DONE`. Do not push, deploy, or
+provision external systems unless separately authorized.

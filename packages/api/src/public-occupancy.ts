@@ -12,7 +12,7 @@ const canonicalTimestamp = z
 	.datetime({ offset: false })
 	.refine((value) => new Date(value).toISOString() === value);
 const base = {
-	schemaVersion: z.literal(1),
+	schemaVersion: z.literal(2),
 	computedAt: canonicalTimestamp,
 	trend: z.null(),
 };
@@ -27,7 +27,6 @@ export const publicOccupancyUsableSchema = z
 		timeZone: z.string().min(1),
 		band: z.enum(["quiet", "moderate", "busy", "packed"]),
 		count: z.number().int().nonnegative(),
-		percentFull: z.number().int().min(0).max(100),
 		lastUpdatedAt: canonicalTimestamp,
 		freshUntil: canonicalTimestamp,
 		source: z.enum(["edge", "manual"]),
@@ -85,7 +84,7 @@ export function createUnavailablePublicOccupancyPayload(
 	now: Date = new Date(),
 ): PublicOccupancyUnavailablePayload {
 	return {
-		schemaVersion: 1,
+		schemaVersion: 2,
 		freshness: "unavailable",
 		computedAt: now.toISOString(),
 		trend: null,

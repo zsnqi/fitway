@@ -41,12 +41,11 @@ describe("Phase 2 contracts", () => {
 
 	it("keeps unavailable minimal and usable payload capacity-free", () => {
 		const usable = {
-			schemaVersion: 1,
+			schemaVersion: 2,
 			freshness: "fresh",
 			timeZone: "Asia/Riyadh",
 			band: "packed",
 			count: 150,
-			percentFull: 100,
 			lastUpdatedAt: "2026-07-13T18:24:20.000Z",
 			freshUntil: "2026-07-13T18:25:50.000Z",
 			source: "edge",
@@ -58,6 +57,10 @@ describe("Phase 2 contracts", () => {
 		);
 		expect(
 			publicOccupancyPayloadSchema.safeParse({ ...usable, capacity: 100 })
+				.success,
+		).toBe(false);
+		expect(
+			publicOccupancyPayloadSchema.safeParse({ ...usable, percentFull: 100 })
 				.success,
 		).toBe(false);
 	});

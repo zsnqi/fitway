@@ -1,0 +1,166 @@
+schemaVersion: 1
+approvedAt: "2026-07-15"
+status: APPROVED_BASELINE
+name: "FITWAY premium athletic visual system"
+
+authority:
+  product: FITWAY_PRODUCT.md
+  implementation: SPEC.md
+  visualContract: DESIGN_GUIDE.md
+  provenanceSnapshot: visual-direction-gate/approved/fitway-theme-20260715
+
+provenance:
+  sourceWorktree: D:/Projects/fitway-visual-lab
+  sourcePath: visual-exploration/public-live
+  originalBranch: explore/public-live-visual-directions
+  preservationBranch: preserve/brg-visual-approved-20260715
+  preservationCommit: 40c4abd1c8aaa4806662af44c0036f9a93bcc8be
+  preservationCommitMessage: "chore(preserve): checkpoint approved visual laboratory"
+  mainBaseAtExploration: 1711e6e4da42abd30e0412a0e2c6b03012d64752
+  hashAlgorithm: sha256
+
+approvedDecisions:
+  - "Premium first, athletic second, minimal third."
+  - "Obsidian, graphite, oxblood, concentrated FITWAY red, chalk text, restrained live green."
+  - "Static CSS atmospheric depth and page-level watermark; no canvas, WebGL, RAF, or background animation."
+  - "Cairo Arabic/Latin at actual weights 400, 500, 600, and 700."
+  - "Public hierarchy: status/freshness, crowd level, approximate count, continuous signal, update time."
+  - "One cumulative 28-bar band-derived public crowd instrument with mirrored RTL/LTR progression."
+  - "Capacity-free public schema v2: no capacity, denominator, percentage, or person suffix."
+  - "Public live/loading/delayed/unavailable/closed/error state grammar."
+  - "Canonical widths: 320, 360, 390, 721, 768, 820, 1024, 1200, and 1440."
+  - "Public panoramic board; authenticated operational grid; broad analytics curve; purpose-built heatmap; restrained governance."
+  - "44px practical targets, visible focus, skip-link focus transfer, dialog discipline, semantic data alternatives."
+
+supersessions:
+  - source: docs/archive/visual/claude-design/public-live-desktop
+    retained: "G1B global header discipline, panoramic board, asymmetric crowd/count split, structural separator, compact freshness lineage."
+    superseded: "Percentage copy, numeric capacity meter, count-dominant interpretation, and standalone current authority."
+  - source: docs/archive/visual/claude-design/full-product
+    retained: "Top-level route-family composition and occupancy-curve behavior lineage identified by its README."
+    superseded: "Fake identities/email, staff email-password flow, demo/preview labels, fixture facts, page-level standalone authority, and literal mock content."
+  - source: docs/archive/visual/stitch
+    retained: "Content expansion, route/state stress cases, analytics parity, RTL, and accessibility investigation."
+    superseded: "Percentage-era fixtures, visual directions, and all approval/implementation instructions."
+  - source: docs/archive/visual/VDG_A_REVIEW_SCORECARD-20260714.md
+    retained: "Historical approval provenance and rejected-direction context."
+    superseded: "Worksheet status, future VDG-B instruction, and active gate authority."
+  - source: docs/archive/visual/design-baseline
+    retained: "Historical Phase 3 behavior and capture provenance."
+    superseded: "Schema-v1 percentage fixtures, composition, tokens, and visual authority."
+
+sourceSnapshot:
+  visualSystem:
+    path: visual-direction-gate/approved/fitway-theme-20260715/VISUAL_SYSTEM_SOURCE.md
+    bytes: 6549
+    sha256: 1a59c5ae4c9628fd8b7045bbfbc954b16c75ac585ef7fa226231e2b7db067598
+  refinementHandoff:
+    path: visual-direction-gate/approved/fitway-theme-20260715/HANDOFF_FINAL_REFINEMENT_SOURCE.md
+    bytes: 15709
+    sha256: d379d2bd9fe044b153c3b5adc0d52fdf71c134d221961c5889ae2228a371eba3
+    authority: historical-provenance-only
+  prototypeStyleSource:
+    path: visual-direction-gate/approved/fitway-theme-20260715/prototype/provenance/signal-master.source.css
+    bytes: 27808
+    sha256: ddab874f52e66d7aba187116eb2a69fd7e1bf3273e055af90e3656217b3db157
+    authority: byte-exact-visual-lab-provenance
+  prototype:
+    path: visual-direction-gate/approved/fitway-theme-20260715/prototype
+    fileCount: 30
+    digestMethod: "sha256 of UTF-8 lines '<file-sha256><two spaces><relative-path>\\n', relative paths sorted by Unicode code point"
+    treeSha256: 646aa8133f947e72f40336f5c615cdbff474ed17db3771c868f4fe9566cd8852
+    authority: review-only-reference
+    curatedRelocation: "Self-contained runnable mirror with byte-exact source CSS and copied logo/fonts; only relocation paths and documentation differ from the preserved visual-lab checkpoint."
+
+canonicalScreenshots:
+  - id: public-live-ar-desktop
+    path: visual-direction-gate/approved/fitway-theme-20260715/screenshots/public-live-ar-desktop-1440x900.png
+    route: public-live
+    state: live
+    locale: ar
+    direction: rtl
+    viewport: 1440x900
+    bytes: 468051
+    sha256: e6520aad4ce1ff15b68e3d4f93e95d5b4b72a94bfd44c4a892554fa8afe998e4
+  - id: public-live-ar-mobile
+    path: visual-direction-gate/approved/fitway-theme-20260715/screenshots/public-live-ar-mobile-390x844.png
+    route: public-live
+    state: live
+    locale: ar
+    direction: rtl
+    viewport: 390x844
+    bytes: 165857
+    sha256: 3ef39bd2890c3b21cc771e8ea2d0320fa23282f7c530914a3e144180bf75fd69
+  - id: public-live-en-desktop
+    path: visual-direction-gate/approved/fitway-theme-20260715/screenshots/public-live-en-desktop-1440x900.png
+    route: public-live
+    state: live
+    locale: en
+    direction: ltr
+    viewport: 1440x900
+    bytes: 464146
+    sha256: 7624029bdd189052f986f40ca634a72fcd80976c6c453de1b8508669131227fa
+  - id: public-live-en-mobile
+    path: visual-direction-gate/approved/fitway-theme-20260715/screenshots/public-live-en-mobile-390x844.png
+    route: public-live
+    state: live
+    locale: en
+    direction: ltr
+    viewport: 390x844
+    bytes: 166780
+    sha256: 25103120b854c6ee00f79c5e00cc24898db2d24deb6db1a42c05e360582d18ee
+  - id: public-stale-ar-tablet
+    path: visual-direction-gate/approved/fitway-theme-20260715/screenshots/public-stale-ar-tablet-768x1024.png
+    route: public-live
+    state: stale
+    locale: ar
+    direction: rtl
+    viewport: 768x1024
+    bytes: 349079
+    sha256: e068d64ad3cd9ca7b8ea952e654db8057f99999fc034ffab2a34b657e8b51a36
+  - id: staff-live-ar-desktop
+    path: visual-direction-gate/approved/fitway-theme-20260715/screenshots/staff-live-ar-desktop-1440x900.png
+    route: staff-live
+    state: live
+    locale: ar
+    direction: rtl
+    viewport: 1440x900
+    bytes: 423032
+    sha256: 08a566339f2e89a68d93bf5531445148832e9743209da46f26e93e7746ccdd4d
+    authority: future-route-reference-only
+  - id: admin-analytics-en-desktop
+    path: visual-direction-gate/approved/fitway-theme-20260715/screenshots/admin-analytics-en-desktop-1440x900.png
+    route: admin-analytics
+    locale: en
+    direction: ltr
+    viewport: 1440x900
+    bytes: 453593
+    sha256: 5daec56aa4bdc77bae0a25824b28ade4b268e8c162aa339fc265febac81d2790
+    authority: future-route-reference-only
+  - id: admin-settings-ar-mobile
+    path: visual-direction-gate/approved/fitway-theme-20260715/screenshots/admin-settings-ar-mobile-390x844.png
+    route: admin-settings
+    locale: ar
+    direction: rtl
+    viewport: 390x844
+    bytes: 239666
+    sha256: 83063f389da58871a89e86e12817833aab8b4bec93987d3606f6fbef6b09c329
+    authority: future-route-reference-only
+
+legacyArtifactHashes:
+  - path: docs/archive/visual/claude-design/public-live-desktop/FITWAY_PUBLIC_LIVE_APPROVED_G1B.png
+    bytes: 2529369
+    sha256: 027fb9d048bc8ab4740ec38b971434163efdca9634aa14863d51a661c1c7d3b7
+  - path: docs/archive/visual/claude-design/public-live-desktop/FITWAY_PUBLIC_LIVE_APPROVED_G1B.zip
+    bytes: 3945598
+    sha256: 80c2e5d0f2e96bb11c84891c2ff88a224be519470af68374c4549d171f6964a4
+  - path: docs/archive/visual/claude-design/full-product/FITWAY_CLAUDE_DESIGN_FULL_PRODUCT_FINAL.zip
+    bytes: 8849716
+    sha256: e943c3217abe634e716b81223747c4945e554cc0665da4775883677c0df98a4a
+  - path: docs/archive/visual/claude-design/full-product/FITWAY_ANALYTICS_CHART_BEHAVIOR_REFERENCE.png
+    bytes: 287892
+    sha256: e00e050ccf57faaf0bfd17e5e58215559ed6226ca7998b07ee993a1757abdb71
+
+deferredPolish:
+  source: docs/POLISH_BACKLOG.md
+  items: [VIS-001, VIS-002, VIS-003, VIS-004]

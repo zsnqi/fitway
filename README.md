@@ -1,60 +1,65 @@
 # FITWAY
 
-FITWAY is a single-gym live-occupancy pilot. The anonymous public page shows an honest,
-cache-first crowd state; later staff and owner surfaces add operations, corrections,
-analytics, governance, and health without exposing visitor identity or camera media.
+FITWAY is a single-gym live-occupancy pilot. Its anonymous public page gives visitors an
+honest, cache-first crowd level and approximate count. Later authenticated surfaces add
+operations, corrections, analytics, governance, and health without storing visitor identity
+or camera media.
 
-## Current status
+## Status
 
-- Phases 1–3 are complete: Arabic-first/English public shell, simulated edge-to-public
-  occupancy path, honest freshness states, and schedule-aware open/closed behavior.
-- VDG-A is complete. G1B and the final Claude Design product family are approved visual
-  references; VDG-B is the next UI gate.
-- Phases 4–12 are not implemented. `/staff`, `/admin`, commands/audit, fallback/backfill,
-  cron/alerts, analytics/reporting, and the production edge lifecycle remain future work.
-- Shared staff authentication is locked as PIN-based through the signed HttpOnly session
-  model. The current scaffold email/password form is not the Phase 4 target.
+- Phases 1–3 are integrated.
+- Broad visual exploration is closed. The one-time Baseline Reconciliation Gate promotes the
+  capacity-free public schema v2 and approved FITWAY production baseline; its authoritative
+  completion state is in `PROJECT_STATE.yaml`.
+- Phases 4–12 are not implemented. Do not create Phase 4 worktrees until
+  `PROJECT_STATE.yaml` records the baseline as `DONE`.
+- Shared staff authentication is the Spec's PIN/opaque-session model. The remaining scaffold
+  email/password code is explicitly not the Phase 4 target.
 
-See [PHASES.md](PHASES.md) for the dependency graph, parallel execution waves, worktree
-boundaries, merge gates, and stop conditions.
+Live status, ownership, baseline reference, dependencies, gates, and blockers are recorded in
+[PROJECT_STATE.yaml](PROJECT_STATE.yaml). The phase DAG is in [PHASES.md](PHASES.md).
 
 ## Sources of truth
 
-- [FITWAY_PRODUCT.md](FITWAY_PRODUCT.md) — product and visual-authority boundary.
-- [SPEC.md](SPEC.md) — implementation contract and Definition of Done.
-- [PHASES.md](PHASES.md) — delivery status, dependencies, and phase acceptance plans.
-- [RESEARCH.md](RESEARCH.md) — product, privacy, architecture, risk, and pilot rationale.
-- [DESIGN_GUIDE.md](DESIGN_GUIDE.md) — design system, responsive/RTL, chart, motion, and
-  accessibility rules, including the Fitness Time research evidence.
-- [SOL_SCAFFOLD_REVIEW.md](SOL_SCAFFOLD_REVIEW.md) — repository and service architecture.
-- [`visual-direction-gate/approved/public-live-desktop/`](visual-direction-gate/approved/public-live-desktop/)
-  — immutable approved G1B Arabic Public Live Desktop anchor.
-- [`visual-direction-gate/approved/full-product/`](visual-direction-gate/approved/full-product/)
-  — final full-product Claude Design archive and Analytics chart-behavior reference.
+Read them in this order:
 
-## Current system
+1. [AGENTS.md](AGENTS.md) — agent policy, ownership, validation, and escalation.
+2. [FITWAY_PRODUCT.md](FITWAY_PRODUCT.md) and [SPEC.md](SPEC.md) — product boundary and
+   normative implementation contract.
+3. Reviewed migrations, Zod/OpenAPI schemas, and shared DTOs — executable conformance.
+4. [DESIGN_GUIDE.md](DESIGN_GUIDE.md) and the
+   [visual approval manifest](visual-direction-gate/approved/APPROVAL_MANIFEST.yaml) — current
+   visual, responsive, RTL, interaction, accessibility, and artifact provenance.
+5. [PHASES.md](PHASES.md) and [PROJECT_STATE.yaml](PROJECT_STATE.yaml) — delivery scope/DAG
+   and live coordinator-owned state.
+6. [ADRs](docs/adr/), [RESEARCH.md](RESEARCH.md), and
+   [phase records](docs/phase-records/) — rationale and accepted evidence.
+
+Material under [`docs/archive/`](docs/archive/), old G1B/Claude packages,
+prototypes, handoffs, VDG/Stitch worksheets, and generated reviews is historical evidence,
+not current authority.
+
+## Repository shape
 
 ```text
-apps/web       React + Vite + TanStack Router public UI
-apps/server    Hono HTTP boundary, cached public read, edge push, auth mount, OpenAPI
-packages/api   Shared contracts and occupancy/schedule domain logic
-packages/db    Drizzle schemas, migrations, and development provisioning
-packages/auth  Current scaffold auth configuration; Phase 4 staff PIN target is documented
-packages/env   Validated web/server environment
-packages/ui    Shared primitives, FITWAY tokens, and global styles
-edge           Python simulator, fixtures, and tests
-tests          Browser and integration test infrastructure
-design-*       Behavioral baselines and preserved Fitness Time design research
-visual-direction-gate  Review inputs and immutable approved artifacts
+apps/web        React + Vite + TanStack Router UI
+apps/server     Hono HTTP/cache/device/auth boundary
+packages/api    Shared contracts and domain logic
+packages/db     Drizzle schema and migration history
+packages/auth   Auth scaffold to be replaced/reconciled in Phase 4
+packages/env    Validated runtime environment
+packages/ui     Shared UI primitives and tokens
+edge            Python simulator; durable client arrives in Phase 12
+tests           Browser and integration infrastructure
+docs            Workflow, ADRs, phase records, schemas, and archive
+visual-direction-gate/approved  Current manifest plus immutable provenance
 ```
 
-The browser never accesses Postgres directly. Hono owns public caching, device
-authentication, sessions/authorization, and future staff/owner procedures. The public
-payload remains capacity-free and never reads history.
+The browser never accesses Postgres directly. Hono owns anonymous cache behavior, device
+authentication, future sessions/authorization, and staff/owner procedures. Public reads never
+touch history.
 
 ## Local development
-
-Install dependencies and configure the package environment files, then run:
 
 ```bash
 pnpm install
@@ -66,35 +71,37 @@ pnpm dev
 - Server: `http://localhost:3100`
 - Development OpenAPI reference: `http://localhost:3100/api-reference`
 
-Provision a development edge token with `pnpm edge:provision-dev`, then run the simulator
-as documented in [edge/README.md](edge/README.md).
+Provision a development device with `pnpm edge:provision-dev`, then use the simulator as
+documented in [edge/README.md](edge/README.md).
 
 ## Verification
 
+The stable non-writing entry points are:
+
 ```bash
-pnpm check
-pnpm check-types
-pnpm test
-pnpm test:simulator
-pnpm test:browser
-pnpm build
+pnpm verify:fast
+pnpm verify:phase
+pnpm verify:full
 ```
 
-`pnpm test:integration` additionally requires a disposable Postgres database configured
-through `.env.integration.local`; start from [.env.integration.example](.env.integration.example).
-The integration guard refuses non-test database targets.
+- `verify:fast`: formatting/lint, type checks, unit/component tests, and repository invariants.
+- `verify:phase`: fast checks plus the phase-selected focused integration/browser checks.
+  Set the documented phase/run variables when a phase adds a selector.
+- `verify:full`: fast checks plus disposable-Postgres integration, simulator, build, browser,
+  accessibility, and visual regression gates.
 
-Future UI merges also require Browser inspection when available, repository Playwright
-screenshots, Arabic RTL/English LTR checks, mobile/desktop responsive verification, keyboard
-and reduced-motion checks, and visual comparison against the approved artifacts.
+Integration tests require the explicitly named disposable database and marker described by
+`.env.integration.example`; they never fall back to the development database. Browser runs use
+`FITWAY_RUN_ID` to derive a unique port and disposable output/review directory for future
+parallel sessions. Canonical visual snapshots are platform-scoped and coordinator-owned. See
+[docs/WORKFLOW.md](docs/WORKFLOW.md).
 
-## Useful scripts
+Visual acceptance also requires interactive Browser inspection, Arabic RTL and English LTR,
+the applicable 320–1440 responsive matrix, keyboard/focus, reduced motion, 200% zoom/reflow,
+manual accessibility semantics, and a fresh independent verifier.
 
-- `pnpm dev:web` / `pnpm dev:server` — run one service.
-- `pnpm db:generate` / `pnpm db:migrate` / `pnpm db:studio` — manage the Drizzle database.
-- `pnpm deploy:check` — Vercel dry run without upload.
-- `pnpm deploy` / `pnpm deploy:prod` — preview/production deployment.
-- `pnpm env:preview` / `pnpm env:production` — sync project environment values.
+## Deployment boundary
 
-The Vercel configuration deploys web and server in one project and rewrites same-origin
-`/api/*` traffic to the Hono service.
+Deployment, Supabase/Vercel provisioning, spend controls, production secrets, domain setup,
+hardware/feed validation, real capacity/thresholds, and owner sign-off are external go-live
+gates. Do not infer deployment authority from implementation completion.

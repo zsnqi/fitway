@@ -6,12 +6,11 @@ import {
 } from "./public-occupancy";
 
 const payload = {
-	schemaVersion: 1 as const,
+	schemaVersion: 2 as const,
 	freshness: "fresh" as const,
 	timeZone: "Asia/Riyadh",
 	band: "quiet" as const,
 	count: 10,
-	percentFull: 10,
 	lastUpdatedAt: "2026-07-13T12:00:00.000Z",
 	freshUntil: "2026-07-13T12:01:30.000Z",
 	source: "edge" as const,
@@ -47,7 +46,7 @@ describe("public polling and cache-safe expiry", () => {
 
 	it("passes valid closed through until next-open then expires it honestly", () => {
 		const closed = {
-			schemaVersion: 1 as const,
+			schemaVersion: 2 as const,
 			freshness: "closed" as const,
 			timeZone: "Asia/Riyadh",
 			nextOpenAt: "2026-07-17T11:00:00.000Z",

@@ -9,31 +9,42 @@ export type MessageCatalog = {
 		brandName: string;
 		languageSwitchLabel: string;
 		languageSwitchText: string;
+		skipToContent: string;
 	};
 	publicPage: {
 		eyebrow: string;
 		open: string;
+		crowdLevel: string;
+		approximateCount: string;
 		closedTitle: string;
 		opensAt: (time: string) => string;
 		closedSummary: (opening: string | null) => string;
 		unavailableTitle: string;
 		unavailableDescription: string;
+		errorTitle: string;
+		errorDescription: string;
+		retry: string;
+		retrying: string;
 		loading: string;
-		around: string;
-		people: string;
-		percentFull: (percent: string) => string;
 		bands: Record<"quiet" | "moderate" | "busy" | "packed", string>;
 		fresh: string;
 		stale: string;
-		lastUpdated: (absolute: string, relative: string) => string;
-		lastKnown: string;
+		staleStatus: string;
+		lastKnownCrowdLevel: string;
+		lastKnownApproximateCount: string;
+		currentLevel: string;
+		lastKnownLevel: string;
+		lastUpdatedAt: (absolute: string) => string;
 		staleWarning: (count: string, time: string) => string;
-		meterLabel: string;
-		meterValue: (percent: string, band: string) => string;
+		crowdScaleLabel: string;
+		crowdScaleValue: (
+			band: string,
+			completed: string,
+			pending: string,
+		) => string;
 		summary: (
 			band: string,
 			count: string,
-			percent: string,
 			open: string,
 			freshness: string,
 			time: string,

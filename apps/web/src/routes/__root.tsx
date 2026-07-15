@@ -21,7 +21,7 @@ function RootComponent() {
 	return (
 		<I18nProvider>
 			<Outlet />
-			{import.meta.env.DEV ? (
+			{import.meta.env.DEV && import.meta.env.VITE_HIDE_DEVTOOLS !== "1" ? (
 				<>
 					<TanStackRouterDevtools position="bottom-left" />
 					<ReactQueryDevtools position="bottom" buttonPosition="bottom-right" />

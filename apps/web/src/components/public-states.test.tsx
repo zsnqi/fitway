@@ -7,6 +7,7 @@ import { localeConfig } from "@/i18n/locale";
 import { I18nProvider } from "@/i18n/provider";
 import { ClosedState } from "./closed-state";
 import { OccupancyStatus } from "./occupancy-status";
+import { PublicErrorState } from "./public-error-state";
 import { PublicStatusSkeleton } from "./public-status-skeleton";
 import { UnavailableState } from "./unavailable-state";
 
@@ -69,17 +70,16 @@ describe("public occupancy states", () => {
 		);
 	});
 
-	it("gives the occupancy meter a localized programmatic name", async () => {
+	it("gives the qualitative crowd scale a localized programmatic name", async () => {
 		await resetLocale("en");
 		await render(
 			<OccupancyStatus
 				payload={{
-					schemaVersion: 1,
+					schemaVersion: 2,
 					freshness: "fresh",
 					timeZone: "Asia/Riyadh",
 					band: "quiet",
 					count: 2,
-					percentFull: 2,
 					lastUpdatedAt: "2026-07-13T12:00:00.000Z",
 					freshUntil: "2026-07-13T12:01:30.000Z",
 					source: "edge",
@@ -91,9 +91,46 @@ describe("public occupancy states", () => {
 			/>,
 		);
 
-		expect(container.querySelector("meter")?.getAttribute("aria-label")).toBe(
-			"Occupancy level",
+		expect(
+			container.querySelector('[role="img"]')?.getAttribute("aria-label"),
+		).toContain("Crowd level: Quiet");
+		expect(container.querySelectorAll(".public-live__signal-bar")).toHaveLength(
+			28,
 		);
+		expect(container.querySelector("meter")).toBeNull();
+		expect(container.textContent).not.toContain("%");
+	});
+
+	it("offers a keyboard-native retry action for transport errors", async () => {
+		let retries = 0;
+		await render(<PublicErrorState onRetry={() => retries++} />);
+		const retry = container.querySelector("button");
+		expect(container.querySelector('[role="alert"]')).not.toBeNull();
+		expect(retry?.textContent).toContain(
+			localeConfig.ar.messages.publicPage.retry,
+		);
+		await act(async () => retry?.click());
+		expect(retries).toBe(1);
+	});
+
+	it("builds loading placeholders from the live card slots", async () => {
+		await render(<PublicStatusSkeleton />);
+		expect(container.querySelector(".public-live__status-row")).not.toBeNull();
+		expect(
+			container.querySelector(".public-live__metric--count"),
+		).not.toBeNull();
+		expect(
+			container.querySelector(".public-live__metric--band"),
+		).not.toBeNull();
+		expect(container.querySelectorAll(".public-live__signal-bar")).toHaveLength(
+			28,
+		);
+		expect(
+			container.querySelectorAll(
+				'.public-live__signal-bar[data-state="skeleton"]',
+			),
+		).toHaveLength(28);
+		expect(container.querySelectorAll("h1")).toHaveLength(1);
 	});
 
 	it("formats last-updated in the payload timezone instead of the host zone", async () => {
@@ -101,12 +138,11 @@ describe("public occupancy states", () => {
 		await render(
 			<OccupancyStatus
 				payload={{
-					schemaVersion: 1,
+					schemaVersion: 2,
 					freshness: "fresh",
 					timeZone: "Pacific/Auckland",
 					band: "quiet",
 					count: 2,
-					percentFull: 2,
 					lastUpdatedAt: "2026-07-17T21:00:00.000Z",
 					freshUntil: "2026-07-17T21:01:30.000Z",
 					source: "edge",
@@ -122,7 +158,7 @@ describe("public occupancy states", () => {
 
 	it("renders a timezone-aware closed state in both locales without occupancy details", async () => {
 		const payload = {
-			schemaVersion: 1 as const,
+			schemaVersion: 2 as const,
 			freshness: "closed" as const,
 			timeZone: "Pacific/Auckland",
 			nextOpenAt: "2026-07-17T21:00:00.000Z",
@@ -148,7 +184,7 @@ describe("public occupancy states", () => {
 		await render(
 			<ClosedState
 				payload={{
-					schemaVersion: 1,
+					schemaVersion: 2,
 					freshness: "closed",
 					timeZone: "Asia/Riyadh",
 					nextOpenAt: null,
@@ -163,14 +199,13 @@ describe("public occupancy states", () => {
 		expect(container.textContent).not.toContain("يفتح");
 	});
 
-	it("renders approximate count, capped accessible meter, icon label and fresh summary", async () => {
+	it("renders approximate count, qualitative band scale, icon label and fresh summary", async () => {
 		const payload = {
-			schemaVersion: 1 as const,
+			schemaVersion: 2 as const,
 			freshness: "fresh" as const,
 			timeZone: "Asia/Riyadh",
 			band: "packed" as const,
 			count: 150,
-			percentFull: 100,
 			lastUpdatedAt: "2026-07-13T12:00:00.000Z",
 			freshUntil: "2026-07-13T12:01:30.000Z",
 			source: "edge" as const,
@@ -184,15 +219,44 @@ describe("public occupancy states", () => {
 				now={new Date("2026-07-13T12:00:30.000Z")}
 			/>,
 		);
-		const meter = container.querySelector("meter");
-		expect(container.textContent).toContain("حوالي");
+		expect(container.textContent).toContain(
+			localeConfig.ar.messages.publicPage.approximateCount,
+		);
 		expect(container.textContent).toContain("ممتلئ جدًا");
 		expect(container.textContent).toContain(
 			localeConfig.ar.messages.publicPage.open,
 		);
-		expect(meter?.getAttribute("value")).toBe("100");
-		expect(meter?.getAttribute("aria-valuetext")).toContain("100");
-		expect(container.querySelector(".tabular-nums")).not.toBeNull();
+		expect(container.querySelector("meter")).toBeNull();
+		expect(
+			container.querySelector('[role="img"]')?.getAttribute("aria-label"),
+		).toContain("ممتلئ جدًا");
+		expect(container.textContent).not.toContain("%");
+		expect(container.querySelector(".public-live__count-value")).not.toBeNull();
+		expect(
+			container.querySelector("h1.public-live__band-value"),
+		).not.toBeNull();
+		expect(container.querySelector("h1.public-live__count-value")).toBeNull();
+		expect(
+			container
+				.querySelector(".public-live__open-dot")
+				?.getAttribute("aria-hidden"),
+		).toBe("true");
+		expect(container.querySelector(".public-live__open-status svg")).toBeNull();
+		expect(
+			container.querySelectorAll(
+				'.public-live__signal-bar[data-state="current"]',
+			),
+		).toHaveLength(9);
+		expect(
+			container.querySelectorAll(
+				'.public-live__signal-bar[data-state="complete"]',
+			),
+		).toHaveLength(19);
+		expect(
+			container.querySelector(
+				'.public-live__signal-bar:nth-child(28)[data-current-cap="true"]',
+			),
+		).not.toBeNull();
 		expect(
 			container.querySelector('[aria-live="polite"]')?.textContent,
 		).not.toBe("");
@@ -212,12 +276,11 @@ describe("public occupancy states", () => {
 		await render(
 			<OccupancyStatus
 				payload={{
-					schemaVersion: 1,
+					schemaVersion: 2,
 					freshness: "stale",
 					timeZone: "Asia/Riyadh",
 					band: "quiet",
 					count: 4,
-					percentFull: 4,
 					lastUpdatedAt: "2026-07-13T12:00:00.000Z",
 					freshUntil: "2026-07-13T12:01:30.000Z",
 					source: "edge",
@@ -228,8 +291,15 @@ describe("public occupancy states", () => {
 				now={new Date("2026-07-13T12:02:00.000Z")}
 			/>,
 		);
-		expect(container.textContent).toContain("آخر عدد معروف");
+		expect(container.textContent).toContain("آخر عدد تقريبي معروف");
 		expect(container.textContent).toContain("التحديثات المباشرة متأخرة");
+		expect(container.textContent).toContain("آخر تحديث معروف");
+		expect(container.querySelectorAll(".public-live__freshness")).toHaveLength(
+			2,
+		);
+		expect(
+			container.querySelectorAll(".public-live__stale-warning"),
+		).toHaveLength(1);
 	});
 
 	it("covers loading, unavailable, every fresh band, and stale in both locales", async () => {
@@ -244,17 +314,21 @@ describe("public occupancy states", () => {
 			expect(container.textContent).toContain(
 				localeConfig[locale].messages.publicPage.unavailableTitle,
 			);
-			for (const band of ["quiet", "moderate", "busy", "packed"] as const) {
+			for (const [band, completeCount, currentCount, inactiveCount, cap] of [
+				["quiet", 0, 6, 22, 6],
+				["moderate", 6, 5, 17, 11],
+				["busy", 11, 8, 9, 19],
+				["packed", 19, 9, 0, 28],
+			] as const) {
 				await resetLocale(locale);
 				await render(
 					<OccupancyStatus
 						payload={{
-							schemaVersion: 1,
+							schemaVersion: 2,
 							freshness: "fresh",
 							timeZone: "Asia/Riyadh",
 							band,
 							count: 20,
-							percentFull: 20,
 							lastUpdatedAt: "2026-07-13T12:00:00.000Z",
 							freshUntil: "2026-07-13T12:01:30.000Z",
 							source: "edge",
@@ -268,17 +342,41 @@ describe("public occupancy states", () => {
 				expect(container.textContent).toContain(
 					localeConfig[locale].messages.publicPage.bands[band],
 				);
+				expect(
+					container.querySelectorAll(
+						'.public-live__signal-bar[data-state="complete"]',
+					),
+				).toHaveLength(completeCount);
+				expect(
+					container.querySelectorAll(
+						'.public-live__signal-bar[data-state="current"]',
+					),
+				).toHaveLength(currentCount);
+				expect(
+					container.querySelectorAll(
+						'.public-live__signal-bar[data-state="inactive"]',
+					),
+				).toHaveLength(inactiveCount);
+				expect(
+					container.querySelector(
+						`.public-live__signal-bar:nth-child(${cap})[data-current-cap="true"]`,
+					),
+				).not.toBeNull();
+				expect(
+					container.querySelectorAll(
+						'.public-live__signal-bar[data-current-cap="true"]',
+					),
+				).toHaveLength(1);
 			}
 			await resetLocale(locale);
 			await render(
 				<OccupancyStatus
 					payload={{
-						schemaVersion: 1,
+						schemaVersion: 2,
 						freshness: "stale",
 						timeZone: "Asia/Riyadh",
 						band: "quiet",
 						count: 20,
-						percentFull: 20,
 						lastUpdatedAt: "2026-07-13T12:00:00.000Z",
 						freshUntil: "2026-07-13T12:01:30.000Z",
 						source: "edge",
@@ -289,9 +387,12 @@ describe("public occupancy states", () => {
 					now={new Date("2026-07-13T12:02:00.000Z")}
 				/>,
 			);
-			expect(container.textContent).toContain(
-				localeConfig[locale].messages.publicPage.lastKnown,
-			);
+			expect(
+				container.querySelectorAll(".public-live__freshness"),
+			).toHaveLength(2);
+			expect(
+				container.querySelectorAll(".public-live__stale-warning"),
+			).toHaveLength(1);
 		}
 	});
 });

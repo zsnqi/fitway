@@ -9,10 +9,13 @@ export const ar = {
 		brandName: "FITWAY",
 		languageSwitchLabel: "التبديل إلى اللغة الإنجليزية",
 		languageSwitchText: "English",
+		skipToContent: "الانتقال إلى حالة الازدحام",
 	},
 	publicPage: {
 		eyebrow: "حالة النادي الآن",
-		open: "مفتوح الآن",
+		open: "النادي مفتوح الآن",
+		crowdLevel: "مستوى الازدحام",
+		approximateCount: "العدد التقريبي",
 		closedTitle: "مغلق الآن",
 		opensAt: (time) => `يفتح ${time}`,
 		closedSummary: (opening) =>
@@ -20,10 +23,12 @@ export const ar = {
 		unavailableTitle: "التحديث المباشر غير متاح الآن",
 		unavailableDescription:
 			"لا نعرض عدداً قديماً على أنه مباشر. يرجى المحاولة مرة أخرى لاحقاً.",
+		errorTitle: "تعذر تحميل حالة الازدحام",
+		errorDescription:
+			"تحقق من الاتصال ثم حاول مرة أخرى. لن نعرض بيانات قديمة على أنها مباشرة.",
+		retry: "إعادة المحاولة",
+		retrying: "جارٍ إعادة المحاولة",
 		loading: "جارٍ تحميل حالة الازدحام",
-		around: "حوالي",
-		people: "شخصًا",
-		percentFull: (percent) => `ممتلئ بنسبة ${percent}%`,
 		bands: {
 			quiet: "هادئ",
 			moderate: "متوسط",
@@ -32,14 +37,19 @@ export const ar = {
 		},
 		fresh: "تحديث مباشر",
 		stale: "آخر تحديث معروف",
-		lastUpdated: (absolute, relative) => `آخر تحديث ${absolute} · ${relative}`,
-		lastKnown: "آخر عدد معروف",
+		staleStatus: "التحديثات المباشرة متأخرة",
+		lastKnownCrowdLevel: "آخر مستوى ازدحام معروف",
+		lastKnownApproximateCount: "آخر عدد تقريبي معروف",
+		currentLevel: "المستوى الحالي",
+		lastKnownLevel: "آخر مستوى معروف",
+		lastUpdatedAt: (absolute) => `آخر تحديث ${absolute}`,
 		staleWarning: (count, time) =>
-			`كان آخر عدد معروف حوالي ${count} في ${time}. التحديثات المباشرة متأخرة.`,
-		meterLabel: "مستوى الإشغال",
-		meterValue: (percent, band) => `ممتلئ بنسبة ${percent}%، ${band}`,
-		summary: (band, count, percent, open, freshness, time) =>
-			`${freshness}. ${open}. ${band}. حوالي ${count} شخصًا، ممتلئ بنسبة ${percent}%. آخر تحديث ${time}.`,
+			`كان آخر عدد تقريبي معروف ${count} عند ${time}. التحديثات المباشرة متأخرة.`,
+		crowdScaleLabel: "مقياس مستوى الازدحام",
+		crowdScaleValue: (band, completed, pending) =>
+			`مستوى الازدحام: ${band}. المستويات المكتملة: ${completed || "لا يوجد"}. المستويات الأعلى: ${pending || "لا يوجد"}.`,
+		summary: (band, count, open, freshness, time) =>
+			`${freshness}. ${open}. مستوى الازدحام: ${band}. العدد التقريبي: ${count}. آخر تحديث ${time}.`,
 	},
 	login: {
 		title: "تسجيل الدخول",

@@ -1,0 +1,222 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://fitway.local/schemas/project-state.schema.json",
+	"title": "FITWAY project execution state",
+	"type": "object",
+	"additionalProperties": false,
+	"required": [
+		"schemaVersion",
+		"updatedAt",
+		"coordinator",
+		"baseline",
+		"milestones"
+	],
+	"properties": {
+		"schemaVersion": { "const": 1 },
+		"updatedAt": { "type": "string", "format": "date-time" },
+		"coordinator": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["owner", "stateFilePolicy"],
+			"properties": {
+				"owner": { "type": "string", "minLength": 1 },
+				"stateFilePolicy": { "const": "coordinator-only" }
+			}
+		},
+		"baseline": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": [
+				"status",
+				"branch",
+				"integratedCommit",
+				"preservation",
+				"visualManifest"
+			],
+			"properties": {
+				"status": { "$ref": "#/$defs/status" },
+				"branch": { "type": "string", "minLength": 1 },
+				"integratedCommit": {
+					"oneOf": [
+						{ "const": "SELF" },
+						{ "type": "string", "pattern": "^[0-9a-f]{40}$" },
+						{ "type": "null" }
+					]
+				},
+				"preservation": {
+					"type": "object",
+					"additionalProperties": false,
+					"required": ["mainCandidate", "approvedVisualLab"],
+					"properties": {
+						"mainCandidate": { "$ref": "#/$defs/checkpoint" },
+						"approvedVisualLab": { "$ref": "#/$defs/checkpoint" }
+					}
+				},
+				"visualManifest": { "type": "string", "minLength": 1 },
+				"validationRecord": { "type": ["string", "null"] },
+				"independentVerification": { "type": ["string", "null"] }
+			}
+		},
+		"milestones": {
+			"type": "object",
+			"minProperties": 1,
+			"additionalProperties": { "$ref": "#/$defs/milestone" }
+		}
+	},
+	"$defs": {
+		"status": {
+			"enum": [
+				"PLANNED",
+				"READY",
+				"IN_PROGRESS",
+				"VALIDATING",
+				"READY_FOR_INTEGRATION",
+				"DONE",
+				"BLOCKED",
+				"NEEDS_HUMAN",
+				"FAILED_VALIDATION"
+			]
+		},
+		"checkpoint": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["branch", "commit"],
+			"properties": {
+				"branch": { "type": "string", "minLength": 1 },
+				"commit": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" }
+			}
+		},
+		"gateState": {
+			"enum": ["NOT_REQUIRED", "PENDING", "PASS", "FAIL"]
+		},
+		"milestone": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": [
+				"status",
+				"dependencies",
+				"ownerSession",
+				"branch",
+				"worktree",
+				"baseCommit",
+				"ownedPaths",
+				"forbiddenPaths",
+				"sharedLeases",
+				"validationRepairAttempts",
+				"handoff",
+				"stopReason",
+				"gates",
+				"integratedCommit"
+			],
+			"properties": {
+				"status": { "$ref": "#/$defs/status" },
+				"dependencies": {
+					"type": "array",
+					"items": { "type": "string" },
+					"uniqueItems": true
+				},
+				"ownerSession": { "type": ["string", "null"] },
+				"branch": { "type": ["string", "null"] },
+				"worktree": { "type": ["string", "null"] },
+				"baseCommit": {
+					"oneOf": [
+						{ "const": "SELF" },
+						{ "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
+						{ "type": "null" }
+					]
+				},
+				"ownedPaths": {
+					"type": "array",
+					"items": { "type": "string" },
+					"uniqueItems": true
+				},
+				"forbiddenPaths": {
+					"type": "array",
+					"items": { "type": "string" },
+					"uniqueItems": true
+				},
+				"sharedLeases": {
+					"type": "array",
+					"items": { "type": "string" },
+					"uniqueItems": true
+				},
+				"validationRepairAttempts": {
+					"type": "integer",
+					"minimum": 0,
+					"maximum": 2
+				},
+				"lastHeartbeatAt": {
+					"type": ["string", "null"],
+					"format": "date-time"
+				},
+				"leaseExpiresAt": { "type": ["string", "null"], "format": "date-time" },
+				"handoff": { "type": ["string", "null"] },
+				"stopReason": { "type": ["string", "null"] },
+				"gates": {
+					"type": "object",
+					"additionalProperties": false,
+					"required": [
+						"unit",
+						"integration",
+						"browser",
+						"accessibility",
+						"visual",
+						"independentReview"
+					],
+					"properties": {
+						"unit": { "$ref": "#/$defs/gateState" },
+						"integration": { "$ref": "#/$defs/gateState" },
+						"browser": { "$ref": "#/$defs/gateState" },
+						"accessibility": { "$ref": "#/$defs/gateState" },
+						"visual": { "$ref": "#/$defs/gateState" },
+						"independentReview": { "$ref": "#/$defs/gateState" }
+					}
+				},
+				"integratedCommit": {
+					"oneOf": [
+						{ "const": "SELF" },
+						{ "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
+						{ "type": "null" }
+					]
+				}
+			},
+			"allOf": [
+				{
+					"if": {
+						"properties": {
+							"status": {
+								"enum": ["BLOCKED", "NEEDS_HUMAN", "FAILED_VALIDATION"]
+							}
+						},
+						"required": ["status"]
+					},
+					"then": {
+						"properties": {
+							"stopReason": { "type": "string", "minLength": 1 }
+						}
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"status": {
+								"enum": [
+									"PLANNED",
+									"READY",
+									"IN_PROGRESS",
+									"VALIDATING",
+									"READY_FOR_INTEGRATION",
+									"DONE"
+								]
+							}
+						},
+						"required": ["status"]
+					},
+					"then": {
+						"properties": { "stopReason": { "type": "null" } }
+					}
+				}
+			]
+		}
+	}
+}

@@ -111,77 +111,87 @@
 
 :root {
 	color-scheme: dark;
+	--fw-obsidian: #08090a;
+	--fw-coal: #101012;
+	--fw-graphite: #1a1a1e;
+	--fw-oxblood: #4d0713;
+	--fw-red: #e51935;
+	--fw-red-bright: #ff2946;
+	--fw-chalk: #f5f3f2;
+	--fw-muted: #c9c3c4;
+	--fw-live: #4be29b;
+	--fw-delayed: #d9a400;
 
 	--fw-red-50: #fff1f3;
 	--fw-red-100: #ffe0e5;
 	--fw-red-200: #ffc2cc;
-	--fw-red-300: #ff97a8;
-	--fw-red-400: #ff5c74;
-	--fw-red-500: #e31837;
-	--fw-red-600: #c41230;
-	--fw-red-700: #a50e28;
-	--fw-red-800: #7a0b1e;
-	--fw-red-900: #4d0713;
+	--fw-red-300: #ff8b9c;
+	--fw-red-400: #ff516b;
+	--fw-red-500: var(--fw-red);
+	--fw-red-600: #c71631;
+	--fw-red-700: #a8172d;
+	--fw-red-800: #7f1524;
+	--fw-red-900: var(--fw-oxblood);
 	--fw-primary: var(--fw-red-500);
-	--fw-primary-hover: var(--fw-red-600);
+	--fw-primary-hover: var(--fw-red-bright);
 	--fw-primary-pressed: var(--fw-red-700);
 	--fw-primary-deep: var(--fw-red-800);
-	--fw-primary-light: #ff2d4d;
+	--fw-primary-light: var(--fw-red-bright);
 	--fw-on-primary: #fff;
 
-	--fw-bg: #0b0c0e;
-	--fw-surface-1: #131417;
-	--fw-surface-2: #1b1d21;
-	--fw-surface-3: #24272c;
-	--fw-surface-inset: #0e0f11;
+	--fw-bg: var(--fw-obsidian);
+	--fw-surface-1: var(--fw-coal);
+	--fw-surface-2: #17171b;
+	--fw-surface-3: #202126;
+	--fw-surface-inset: #0b0b0d;
 	--fw-scrim: #000;
 	--fw-overlay: rgb(0 0 0 / 72%);
 	--fw-glass-bg: rgb(15 16 19 / 72%);
 	--fw-on-media: #fff;
 
-	--fw-text: #f7f8fa;
-	--fw-text-muted: #c6c9cf;
-	--fw-text-subtle: #969aa3;
-	--fw-text-faint: #6b6f78;
+	--fw-text: var(--fw-chalk);
+	--fw-text-muted: var(--fw-muted);
+	--fw-text-subtle: #aaa4a6;
+	--fw-text-faint: #858084;
 
 	--fw-border: rgb(255 255 255 / 12%);
 	--fw-border-subtle: rgb(255 255 255 / 6%);
 	--fw-border-strong: rgb(255 255 255 / 20%);
-	--fw-focus-ring: rgb(255 45 77 / 70%);
+	--fw-focus-ring: rgb(255 81 107 / 78%);
 
-	--fw-success: #16a34a;
-	--fw-success-fg: #4ade80;
-	--fw-success-bg: rgb(22 163 74 / 14%);
-	--fw-warning: #f59e0b;
-	--fw-warning-fg: #fbbf24;
-	--fw-warning-bg: rgb(245 158 11 / 14%);
-	--fw-error: #e31837;
-	--fw-error-fg: #ff5c74;
-	--fw-error-bg: rgb(227 24 55 / 14%);
+	--fw-success: var(--fw-live);
+	--fw-success-fg: var(--fw-live);
+	--fw-success-bg: rgb(75 226 155 / 12%);
+	--fw-warning: var(--fw-delayed);
+	--fw-warning-fg: #f1c34d;
+	--fw-warning-bg: rgb(217 164 0 / 14%);
+	--fw-error: #e51935;
+	--fw-error-fg: #ff7d91;
+	--fw-error-bg: rgb(229 25 53 / 14%);
 	--fw-info: #2e7df6;
 	--fw-info-fg: #7fb0ff;
 	--fw-info-bg: rgb(46 125 246 / 14%);
-	--fw-stale: #d9a400;
+	--fw-stale: var(--fw-delayed);
 	--fw-stale-fg: #f1c34d;
 	--fw-stale-bg: rgb(217 164 0 / 14%);
-	--fw-offline: #8a8f99;
-	--fw-offline-fg: #b4b8c0;
-	--fw-offline-bg: rgb(138 143 153 / 16%);
+	--fw-offline: #9aa0aa;
+	--fw-offline-fg: #c2c6cc;
+	--fw-offline-bg: rgb(154 160 170 / 14%);
 
-	--fw-quiet: #22c55e;
-	--fw-quiet-fg: #4ade80;
-	--fw-quiet-bg: rgb(34 197 94 / 16%);
-	--fw-moderate: #eab308;
-	--fw-moderate-fg: #fcd34d;
-	--fw-moderate-bg: rgb(234 179 8 / 16%);
-	--fw-busy: #f97316;
-	--fw-busy-fg: #fb923c;
-	--fw-busy-bg: rgb(249 115 22 / 16%);
-	--fw-packed: #e31837;
-	--fw-packed-fg: #ff5c74;
-	--fw-packed-bg: rgb(227 24 55 / 18%);
+	--fw-band-quiet: #7f1524;
+	--fw-band-quiet-fg: #e98191;
+	--fw-band-quiet-bg: rgb(127 21 36 / 18%);
+	--fw-band-moderate: #a8172d;
+	--fw-band-moderate-fg: #f07d8f;
+	--fw-band-moderate-bg: rgb(168 23 45 / 18%);
+	--fw-band-busy: #d31a35;
+	--fw-band-busy-fg: #ff8295;
+	--fw-band-busy-bg: rgb(211 26 53 / 18%);
+	--fw-band-packed: var(--fw-red-bright);
+	--fw-band-packed-fg: #ff9baa;
+	--fw-band-packed-bg: rgb(255 41 70 / 18%);
 
-	--fw-chart-1: #e31837;
+	--fw-chart-1: #e51935;
 	--fw-chart-2: #4c8dff;
 	--fw-chart-3: #2dd4bf;
 	--fw-chart-4: #f5a524;
@@ -193,7 +203,7 @@
 	--fw-heat-1: #3a1620;
 	--fw-heat-2: #6b1528;
 	--fw-heat-3: #a11330;
-	--fw-heat-4: #e31837;
+	--fw-heat-4: #e51935;
 	--fw-heat-empty: rgb(255 255 255 / 4%);
 
 	--fw-font-ar:
@@ -225,8 +235,8 @@
 	--fw-weight-medium: 500;
 	--fw-weight-semibold: 600;
 	--fw-weight-bold: 700;
-	--fw-weight-extra: 800;
-	--fw-weight-black: 900;
+	--fw-weight-extra: 700;
+	--fw-weight-black: 700;
 	--fw-lh-tight: 1.1;
 	--fw-lh-snug: 1.3;
 	--fw-lh-normal: 1.5;
@@ -252,11 +262,14 @@
 	--fw-space-32: 8rem;
 
 	--fw-radius-xs: 4px;
-	--fw-radius-sm: 6px;
-	--fw-radius-md: 8px;
-	--fw-radius-lg: 12px;
-	--fw-radius-xl: 16px;
-	--fw-radius-2xl: 24px;
+	--fw-radius-control: 8px;
+	--fw-radius-surface: 16px;
+	--fw-radius-board: 28px;
+	--fw-radius-sm: var(--fw-radius-control);
+	--fw-radius-md: 12px;
+	--fw-radius-lg: var(--fw-radius-surface);
+	--fw-radius-xl: 22px;
+	--fw-radius-2xl: var(--fw-radius-board);
 	--fw-radius-3xl: 32px;
 	--fw-radius-pill: 999px;
 
@@ -268,10 +281,10 @@
 	--fw-shadow-xl:
 		0 30px 80px -20px rgb(0 0 0 / 60%), 0 0 0 1px var(--fw-border-subtle);
 	--fw-shadow-red-glow:
-		0 20px 60px -18px rgb(227 24 55 / 35%), 0 0 0 1px rgb(227 24 55 / 30%);
+		0 20px 60px -18px rgb(229 25 53 / 35%), 0 0 0 1px rgb(229 25 53 / 30%);
 	--fw-shadow-focus: 0 0 0 3px var(--fw-focus-ring);
 
-	--fw-container-public: 34rem;
+	--fw-container-public: 81rem;
 	--fw-container-content: 48rem;
 	--fw-container-dashboard: 80rem;
 	--fw-measure: 68ch;
@@ -282,8 +295,10 @@
 	--fw-bp-xl: 1280px;
 	--fw-bp-2xl: 1536px;
 	--fw-dur-instant: 80ms;
-	--fw-dur-fast: 150ms;
-	--fw-dur-base: 220ms;
+	--fw-duration-fast: 120ms;
+	--fw-duration-base: 180ms;
+	--fw-dur-fast: var(--fw-duration-fast);
+	--fw-dur-base: var(--fw-duration-base);
 	--fw-dur-slow: 320ms;
 	--fw-dur-slower: 480ms;
 	--fw-ease-standard: cubic-bezier(0.4, 0, 0.2, 1);

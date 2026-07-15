@@ -1,0 +1,719 @@
+# yaml-language-server: $schema=./docs/schemas/project-state.schema.json
+schemaVersion: 1
+updatedAt: "2026-07-16T00:58:04+03:00"
+
+coordinator:
+  owner: "main Codex session"
+  stateFilePolicy: coordinator-only
+
+baseline:
+  status: DONE
+  branch: main
+  integratedCommit: SELF
+  preservation:
+    mainCandidate:
+      branch: preserve/brg-main-dirty-20260715
+      commit: b3a1d09217196d9c8f22b7f7f556a24ff722588f
+    approvedVisualLab:
+      branch: preserve/brg-visual-approved-20260715
+      commit: 40c4abd1c8aaa4806662af44c0036f9a93bcc8be
+  visualManifest: visual-direction-gate/approved/APPROVAL_MANIFEST.yaml
+  validationRecord: docs/phase-records/baseline-reconciliation-gate.md
+  independentVerification: docs/phase-records/baseline-independent-verification.md
+
+milestones:
+  phase-1:
+    status: DONE
+    dependencies: []
+    ownerSession: null
+    branch: main
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: docs/phase-records/phase-01-foundation.md
+    stopReason: null
+    gates:
+      unit: PASS
+      integration: NOT_REQUIRED
+      browser: PASS
+      accessibility: PASS
+      visual: NOT_REQUIRED
+      independentReview: NOT_REQUIRED
+    integratedCommit: e43d38a6e547bb5dff15c4248f22f57e115c7a49
+
+  phase-2:
+    status: DONE
+    dependencies: [phase-1]
+    ownerSession: null
+    branch: main
+    worktree: null
+    baseCommit: e43d38a6e547bb5dff15c4248f22f57e115c7a49
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: docs/phase-records/phase-02-edge-to-public.md
+    stopReason: null
+    gates:
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: NOT_REQUIRED
+      independentReview: NOT_REQUIRED
+    integratedCommit: 928f3b3737e474be630a603e97bf54659a8ce8d4
+
+  phase-3:
+    status: DONE
+    dependencies: [phase-2]
+    ownerSession: null
+    branch: main
+    worktree: null
+    baseCommit: 928f3b3737e474be630a603e97bf54659a8ce8d4
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: docs/phase-records/phase-03-schedule.md
+    stopReason: null
+    gates:
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: NOT_REQUIRED
+      independentReview: NOT_REQUIRED
+    integratedCommit: ab4126dd30598a916ca2aa2e6f8b815a21d86bba
+
+  baseline-reconciliation-gate:
+    status: DONE
+    dependencies: [phase-3]
+    ownerSession: null
+    branch: main
+    worktree: D:/Projects/fitway
+    baseCommit: 1711e6e4da42abd30e0412a0e2c6b03012d64752
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-07-16T00:58:04+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/baseline-reconciliation-gate.md
+    stopReason: null
+    gates:
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
+      independentReview: PASS
+    integratedCommit: SELF
+
+  phase4-auth:
+    status: PLANNED
+    dependencies: [baseline-reconciliation-gate, phase-2, phase-3]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase4-health:
+    status: PLANNED
+    dependencies: [baseline-reconciliation-gate, phase-2, phase-3]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase4-staff-web:
+    status: PLANNED
+    dependencies: [baseline-reconciliation-gate, phase-2, phase-3]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase-4:
+    status: PLANNED
+    dependencies: [phase4-auth, phase4-health, phase4-staff-web]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase-5:
+    status: PLANNED
+    dependencies: [phase-4]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase-6:
+    status: PLANNED
+    dependencies: [phase-5]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase7-reset-evaluator:
+    status: PLANNED
+    dependencies: [baseline-reconciliation-gate, phase-3, phase-5]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase7-integration:
+    status: PLANNED
+    dependencies: [phase7-reset-evaluator, phase-6]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase-7:
+    status: PLANNED
+    dependencies: [phase7-reset-evaluator, phase7-integration]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase8-alert-evaluator:
+    status: PLANNED
+    dependencies: [baseline-reconciliation-gate, phase-3, phase4-health]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase8-integration:
+    status: PLANNED
+    dependencies: [phase8-alert-evaluator, phase-7]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase-8:
+    status: PLANNED
+    dependencies: [phase8-alert-evaluator, phase8-integration]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase9-analytics-domain:
+    status: PLANNED
+    dependencies: [baseline-reconciliation-gate, phase-2, phase-3]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase9-owner-ui:
+    status: PLANNED
+    dependencies: [phase9-analytics-domain, phase-4]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase-9:
+    status: PLANNED
+    dependencies: [phase9-analytics-domain, phase9-owner-ui]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase10-domain:
+    status: PLANNED
+    dependencies: [phase-9]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase10-ui-csv:
+    status: PLANNED
+    dependencies: [phase10-domain]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase-10:
+    status: PLANNED
+    dependencies: [phase10-domain, phase10-ui-csv]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase11-shell:
+    status: PLANNED
+    dependencies: [phase-9]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase11-audit:
+    status: PLANNED
+    dependencies: [phase-5, phase-9]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase11-access:
+    status: PLANNED
+    dependencies: [phase-4, phase-5, phase-9]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase11-settings:
+    status: PLANNED
+    dependencies: [phase-3, phase-5, phase-6, phase-7, phase-9]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase11-health:
+    status: PLANNED
+    dependencies: [phase-8, phase-9]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase-11:
+    status: PLANNED
+    dependencies: [phase11-shell, phase11-audit, phase11-access, phase11-settings, phase11-health]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase-12:
+    status: PLANNED
+    dependencies: [phase-6]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null

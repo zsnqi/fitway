@@ -1,15 +1,16 @@
 # Spec: FITWAY v1 — Live Gym Occupancy (Pilot)
 
 > **Status.** Implementation spec / Definition of Done for the v1 pilot. Written 2026-07-12.
-> This document turns the agreed research and design into implementable, verifiable
-> requirements. It is governed by three source documents, which it references rather than
-> repeats:
+> This document turns the agreed product and design into implementable, verifiable
+> requirements. It participates in the repository hierarchy defined by `AGENTS.md`:
 >
-> - `RESEARCH.md` — the product, privacy, architecture, and scope decisions (the *why*).
-> - `DESIGN_GUIDE.md` — the complete visual system: tokens, components, states, RTL,
->   accessibility (the *look and feel*). UI requirements in this spec are satisfied by
->   implementing the corresponding DESIGN_GUIDE section; this spec does not restate CSS.
-> - `SOL_SCAFFOLD_REVIEW.md` — the chosen stack and repository shape (the *foundation*).
+> - `FITWAY_PRODUCT.md` co-governs product identity, users, content hierarchy, and surface
+>   boundaries.
+> - This Spec governs security, privacy, data semantics, interfaces, and acceptance.
+> - `DESIGN_GUIDE.md` governs visual, responsive, RTL, interaction, and accessibility detail,
+>   subject to Product and Spec.
+> - `RESEARCH.md` and `docs/adr/` retain rationale and provenance; archived planning material
+>   is not implementation authority.
 >
 > Where those documents left something genuinely open, this spec resolves it and marks the
 > resolution **[Resolved here]**. Everything else preserves the recorded decisions:
@@ -25,14 +26,16 @@
 
 ## Implementation authority and fidelity contract
 
-Phases 1–3 and VDG-A are complete. VDG-B and Phases 4–12 remain unfinished. The following
-contract applies to every remaining implementation phase:
+Phases 1–3 are complete. Broad visual exploration is closed; the one-time Baseline
+Reconciliation Gate and Phases 4–12 use the live state in `PROJECT_STATE.yaml`. The following contract applies to
+every remaining implementation phase:
 
 - Hard product, security, privacy, content, accessibility, and data-semantic decisions remain
   binding. A material proposal to change one must be surfaced explicitly before implementation;
   it must never be changed silently through UI or technical convenience.
-- G1B and the final Claude Design product family are strong visual references, not a blind
-  pixel-by-pixel ceiling. Implementation may improve composition, hierarchy, spacing,
+- The approved FITWAY theme and manifest are the visual baseline. G1B and the final Claude
+  Design product family remain historical lineage only where the manifest says they apply.
+  Implementation may improve composition, hierarchy, spacing,
   typography, responsive/mobile behavior, motion, interaction, charts, tables, accessibility,
   and real-browser quality while retaining FITWAY's identity and locked semantics.
 - Design-only annotations, preview labels, demo notices, fake owner/email values, arbitrary
@@ -40,14 +43,15 @@ contract applies to every remaining implementation phase:
 - Staff authentication is PIN-based using the signed HttpOnly session model, not
   email/password. The current scaffold login implementation and the archive's fake email form
   are implementation inputs to replace, not product authority.
-- Preserve the capacity-free public contract and the approved Arabic Public Live composition.
+- Preserve the capacity-free public schema-version-2 contract and the approved Arabic Public
+  Live composition with its continuous cumulative 28-bar crowd signal.
   English LTR must be naturally composed rather than mechanically mirrored from Arabic.
 - Correct wrapping, RTL/Bidi isolation, Western-digit number and gym-time formatting,
   overflow, responsive tables, mobile operational density, keyboard behavior, reduced motion,
   and loading/stale/unavailable/error semantics before a surface can be accepted.
-- The final Claude Analytics screens govern page layout. The separate Analytics PNG governs
-  only the occupancy curve's behavior and motion character; `DESIGN_GUIDE.md` §9–§10 defines
-  the normative chart interaction, accessibility, RTL, formatting, and reduced-motion rules.
+- The current Design Guide and approval manifest govern page layout. The historical Claude
+  Analytics PNG preserves occupancy-curve behavior lineage only; `DESIGN_GUIDE.md` §12 defines
+  normative chart interaction, accessibility, RTL, formatting, and reduced-motion rules.
 
 ---
 
@@ -67,11 +71,13 @@ lifecycle work remain unfinished.
 
 ## Solution
 
-Build the v1 pilot exactly as architected in RESEARCH.md §9–§11 and SOL_SCAFFOLD_REVIEW.md:
+Build the v1 pilot exactly as architected in RESEARCH.md §9–§11 and
+`docs/adr/ADR-001-system-shape.md`:
 
 - A **public, anonymous, mobile-first, Arabic-RTL-default occupancy page** showing the
-  status band (Quiet/Moderate/Busy/Packed), an approximate count, % full, open/closed
-  state, and data freshness — honest in every state (fresh, stale, offline, closed).
+  status band (Quiet/Moderate/Busy/Packed), an approximate count, open/closed state, and
+  data freshness — honest in every state (fresh, stale, offline, closed). In v1,
+  capacity, a denominator, and derived percentage are not exposed publicly.
 - A **staff operational view** (shared front-desk account): live count + device health,
   manual correction, direct count entry, and reset-to-zero — all audited.
 - An **owner/admin area**: analytics (today's curve, day×hour heatmap, peaks, daily
@@ -93,8 +99,8 @@ count (RESEARCH.md §9 governing rule).
 
 ### Visitor (anonymous, public page)
 
-1. As a visitor, I want to see the crowd status band, an explicitly labeled approximate
-   count, and % full on my phone within seconds of opening the page, so that I can decide
+1. As a visitor, I want to see the crowd status band and an explicitly labeled approximate
+   count on my phone within seconds of opening the page, so that I can decide
    whether to go now. Approved Arabic public copy uses `العدد التقريبي` as that label.
 2. As a visitor, I want a last-updated time next to the number, so that I can judge how
    fresh the information is.
@@ -112,7 +118,7 @@ count (RESEARCH.md §9 governing rule).
    interaction and without wasting resources.
 8. As a visitor with color-vision deficiency or a screen reader, I want every status
    conveyed by label + icon + position, never color alone, and live updates announced
-   politely, so that I can read the state (DESIGN_GUIDE §15).
+   politely, so that I can read the state (DESIGN_GUIDE §13).
 9. As a visitor on a slow connection, I want a lightweight page with skeleton loading
    states, so that the status appears fast even on poor mobile networks.
 
@@ -196,8 +202,8 @@ count (RESEARCH.md §9 governing rule).
 37. As the system, I want visitor reads served from the CDN cache with the freshness
     decision baked into the cached payload, so that origin compute scales with time, not
     visitors, and traffic spikes from gym announcements are absorbed.
-38. As the system, I want the stored and displayed occupancy floored at 0 (and the meter
-    fill capped at 100%), so that drift can never show a negative or absurd public state.
+38. As the system, I want the stored and displayed occupancy floored at 0, so that drift
+    can never show a negative or absurd public state.
 39. As the system, I want per-minute history (count, entries, exits, band, capacity
     snapshot) recorded from day one in UTC with gym-local business-day attribution, so
     that future "popular times" analytics are possible even though v1 shows no forecasts.
@@ -214,14 +220,17 @@ measurable pilot targets):
 
 ### Functional
 
-- [ ] Public page implements all five visitor states — loading, open+fresh, stale,
-      unavailable/offline, closed — per DESIGN_GUIDE §8.9–§8.16, with no state ever
+- [ ] Public page implements all six visitor states — loading, open+fresh, stale,
+      unavailable/offline, closed, and request error — per DESIGN_GUIDE §6, with no state ever
       presenting stale data as live.
+- [ ] Public schema version 2 and Public Live expose no capacity, denominator, percentage,
+      health, identity, or history. The crowd-first continuous 28-bar signal derives only from
+      `band`, mirrors by direction, and has a concise localized accessible name.
 - [ ] Public page is Arabic RTL by default with a persistent English/LTR toggle; all copy
       comes from a message catalog; Western digits and `-u-nu-latn` formatting everywhere
-      (both languages), per DESIGN_GUIDE §5/§14.
+      (both languages), per DESIGN_GUIDE §§4, 9, and 14.
 - [ ] The product is dark-only: no theme toggle, no light theme, `--fw-*` tokens from
-      DESIGN_GUIDE §17 replace the scaffold's default palette.
+      DESIGN_GUIDE §14 replace the scaffold's default palette.
 - [ ] Staff view provides live count + health, stepper correction, direct count entry, and
       confirmed reset; every one of these writes an audit entry (who/when/from→to/reason)
       in the same transaction; staff role cannot invoke any owner-only operation
@@ -289,7 +298,7 @@ implication for implementation.
 
 ### Architecture & Schema
 
-**System shape (fixed by SOL_SCAFFOLD_REVIEW.md).** Static TanStack Router web app and a
+**System shape (ADR-001).** Static TanStack Router web app and a
 separate Hono (Node) server as two services in one Vercel project on one origin, with
 `/api/*` rewritten to the server. oRPC provides typed procedures for the TypeScript web
 app and generates the OpenAPI 3.1 document the Python edge consumes. Drizzle over Supabase
@@ -303,8 +312,7 @@ health/alerting, settings) lives in the shared API package as domain modules; th
 app owns HTTP concerns (mounting, cache headers, device auth, cron endpoints); the DB
 package owns schema and migrations; the web app consumes typed procedures only. The
 Python edge counter and its Windows lifecycle scripts live in a top-level `edge/`
-directory in the same repository but are **not** a pnpm workspace package
-(SOL_SCAFFOLD_REVIEW.md §4).
+directory in the same repository but are **not** a pnpm workspace package.
 
 **Single gym, SaaS-safe. [Resolved here]** v1 schema and routes are single-gym (no
 `gym_id` anywhere), per the scope fence (RESEARCH.md §16). SaaS-friendliness is preserved
@@ -356,7 +364,7 @@ just data, not a special case.
 **What is never stored:** video, frames, images, biometrics, identities, per-visitor
 anything, raw per-crossing events (per-minute aggregation only, RESEARCH.md §8).
 
-**Roles & auth model. [Updated at VDG-A closure]** Two server-enforced roles remain:
+**Roles & auth model. [Reconciled at the Baseline Gate]** Two server-enforced roles remain:
 `staff` and `owner` (maintainer uses a real owner account; RESEARCH.md §3). Shared staff access
 is **PIN-based**, never email/password: the server verifies a strong stored PIN hash and issues
 the existing signed session cookie. The cookie is `httpOnly`, `secure`, and — because the
@@ -373,20 +381,108 @@ request per few seconds with a small burst — generous versus the 20 s push int
 hostile to abuse). In-process limiting is acceptable for the pilot given token auth is
 the primary control; note the serverless multi-instance caveat in code.
 
+**Phase 4 staff authentication contract freeze (2026-07-14).**
+
+- Application roles are exactly `staff | owner`; principal kinds are `shared_staff |
+  owner`. The one shared staff principal is the accepted v1 audit actor and never requires
+  or receives a synthetic email identity. Owner principals map only to separately
+  provisioned real owner identities.
+- A staff PIN is 6–12 Western digits. The server stores only a password-grade memory-hard
+  hash with per-credential salt and a server-held pepper, plus `active`, `credentialVersion`,
+  creation/rotation timestamps, and the shared principal reference. The raw PIN is never
+  stored, logged, placed in a URL, or seeded by a migration.
+- Successful verification creates an opaque server-side session and a signed HttpOnly cookie.
+  Production attributes are `Secure`, `SameSite=Lax`, `Path=/`, no `Domain`, and a roughly
+  30-day rolling expiry refreshed at most once per 24 hours. The server stores only a hashed
+  session token. Expired/revoked sessions, inactive principals, or staff sessions issued
+  against an obsolete credential version are rejected on their next request.
+- Authentication resolves to one canonical request context:
+  `principalId`, `principalKind`, `role`, `sessionId`, `expiresAt`, and `active`. A request
+  carrying ambiguous valid owner and staff sessions is rejected and the next explicit login
+  clears the other session; middleware never guesses which authority the caller intended.
+- `/staff` and `staff.*` accept `staff | owner`; `/admin` and `admin.*` accept only `owner`.
+  Missing/expired authentication is `401`; a valid wrong role is `403`. Web route guards are
+  redirect-only UX and never replace the Hono/oRPC role check.
+- `/login` is the PIN-first staff route. Better Auth may remain behind a separate,
+  deliberately provisioned owner credential path, but email/password is never the staff
+  flow and self-registration is disabled server-side. Direct sign-up calls must be rejected.
+- The current scaffold is explicitly non-conforming: it enables email/password and sign-up,
+  uses `SameSite=None`, relies on the default short session lifetime, and renders an email/
+  password staff form. The `phase4-auth` stream must replace those assumptions and tests;
+  no staff UI or Phase 4 merge may bind to them in the meantime.
+
+**Phase 4 operational-health contract freeze (2026-07-14).** The required edge input fields
+remain `health.process`, `health.camera`, `health.feed` (`ok | degraded | failed | unknown`)
+and `health.detectorFps` (finite non-negative number or `null`, where `null` means unknown,
+not zero). The edge owns those reported values; server receipt time is the connectivity
+authority.
+
+Persist the latest accepted live health in a separate `edgeCurrentHealth` projection keyed by
+device with exactly: `deviceId`, `sequence`, `processStatus`, `cameraStatus`, `feedStatus`,
+`detectorFps`, `edgeObservedAt`, `receivedAt`, and `updatedAt`. Update it in the same database
+transaction as minute/current-state writes, device sequence advancement, and `lastSeenAt`, and
+only for an accepted contiguous live push. Replay, sequence gap, validation failure, disabled
+device, transaction rollback, and future pure backfill do not change current health. Existing
+devices are `unavailable` until their first accepted post-migration live push. Phase 8 later
+owns append-only health transitions and alert history; it must not redefine this current
+projection.
+
+The API-visible `staff.operationalSnapshot` health shape is frozen as:
+
+```ts
+health: {
+  freshness: "current" | "stale" | "unavailable";
+  condition: "healthy" | "degraded" | "failed" | "unknown";
+  process: "ok" | "degraded" | "failed" | "unknown" | null;
+  camera: "ok" | "degraded" | "failed" | "unknown" | null;
+  feed: "ok" | "degraded" | "failed" | "unknown" | null;
+  detectorFps: number | null;
+  edgeObservedAt: string | null;
+  receivedAt: string | null;
+  lastSeenAt: string | null;
+  staleAt: string | null;
+}
+```
+
+`current` means trusted `receivedAt` age is below the settings-driven
+`operationalStaleAfterSeconds`; equality is `stale`. `unavailable` means no projection, no
+usable active device, or a disabled device, and all raw fields/times except an independently
+known `lastSeenAt` are null. Condition precedence for a usable projection is any `failed` →
+`failed`, else any `degraded` → `degraded`, else any `unknown` → `unknown`, else all-ok →
+`healthy`; stale freshness does not erase the last-known flags. The server/evaluator owns
+freshness and condition, the repository owns projection reads, and the UI only renders them.
+Transport/API failure is an error state, never converted into `unavailable` current health.
+The staff snapshot also carries `schemaVersion`, `computedAt`, the public occupancy fields,
+authorized `capacity`, and source detail. It does not reserve speculative command fields
+before Phase 5.
+
 ### Interfaces & Contracts
 
 Three interface groups, one Hono app:
 
-**1. Public read (anonymous, cached).** A single GET endpoint returning the occupancy
-payload with `Cache-Control: public, s-maxage=<cache window ~20–30 s>,
+**1. Public read (anonymous, cached).** A single GET endpoint returns public payload schema
+version 2 with `Cache-Control: public, s-maxage=<cache window ~20–30 s>,
 stale-while-revalidate=<~2× window>`. The payload is language-neutral (the client renders
 localized labels) and contains: schema version; open/closed with next-open time (when
-closed); freshness state (`fresh` | `stale` | `unavailable`) **baked in at origin
-refresh**; band, count (floored at 0), percent full (meter display capped at 100%);
-last-updated timestamp; source (`edge` | `manual`); computed-at; and a reserved `trend`
+closed); freshness state (`fresh` | `stale` | `unavailable` | `closed`) **baked in at origin
+refresh**; band and count (floored at 0); last-updated timestamp; source (`edge` |
+`manual`); computed-at; and a reserved `trend`
 field that is always null in v1 **[Resolved here — trend deferred; slot reserved]**.
-Capacity itself is not exposed publicly; percent suffices. This endpoint reads only the
-current-state row and settings — never history — and is the only thing visitors touch.
+Capacity, denominator, percentage, health, device identity, and history are not exposed by
+the current schema-version-2 contract.
+The continuous cumulative 28-bar crowd signal is rendered from `band`, not from a hidden
+capacity ratio. This endpoint reads only the current-state row and settings — never history — and is the only
+thing visitors touch. Version 2 is an intentional pre-Phase-4 privacy correction; web,
+server, fixtures, and tests upgrade atomically and version 1 is not served in parallel.
+
+**Public capacity boundary and post-v1 safety reservation.** Schema version 2 is strict and
+does not accept or emit `capacity`, a denominator, or `percentFull`. There is no v1 setting,
+migration, feature flag, procedure, UI, or client-side toggle for public percentage disclosure.
+If a later product version explicitly approves disclosure, it must use a new versioned API; omit
+the optional field entirely while disabled; make the server the disclosure authority; permit
+only an authenticated owner to change it; warn that count plus percentage can reveal capacity;
+and audit actor/prior/new values/time. These constraints reserve a safe boundary only. They do
+not authorize implementation, and historical visual artifacts do not pre-authorize the feature.
 
 **2. Staff/owner procedures (oRPC, session + role enforced server-side).**
 
@@ -400,7 +496,7 @@ current-state row and settings — never history — and is the only thing visit
   access management (provision/rotate/deactivate staff PIN credentials and manage real owner
   accounts); audit log listing; health/alert history.
 - Router guards in the web app are UX only; every procedure re-checks role on the server
-  (SOL_SCAFFOLD_REVIEW.md §1).
+  (`docs/adr/ADR-002-auth-principals-sessions.md`).
 
 **3. Edge endpoints (OpenAPI-documented, device-token auth).**
 
@@ -443,10 +539,10 @@ thresholds) lives in the settings table, not env.
 
 **Freshness state machine (defaults; all config-driven).** Edge pushes every ~20 s.
 Payload age ≤ 90 s → `fresh`. No accepted push for ≥ 180 s → `stale`: public page dims the
-number, labels it last-known with its time, and shows the stale banner (DESIGN_GUIDE
-§8.15). No usable data at all (or device disabled) → `unavailable` (DESIGN_GUIDE §8.16).
+number, labels it last-known with its time, and shows the stale treatment (DESIGN_GUIDE
+§6). No usable data at all (or device disabled) → `unavailable` (DESIGN_GUIDE §6).
 Closed per schedule → `closed` overrides everything: no count is shown, next-open time is
-(DESIGN_GUIDE §8.13). The freshness decision is computed at origin refresh and baked into
+shown when known (DESIGN_GUIDE §6). The freshness decision is computed at origin refresh and baked into
 the cached payload, so it costs nothing per visitor; the worst-case detection lag is one
 cache window.
 
@@ -459,7 +555,7 @@ entry) and reset create a command; the UI shows "pending" until a subsequent pus
 the applied value (expected ≤ ~40 s online). Commands are **not** applied by overwriting
 the cloud value while the edge is online — the next push would silently undo it
 (RESEARCH.md §9). Reset always passes a destructive-confirmation dialog; direct entry
-accepts non-negative integers only, Western digits (DESIGN_GUIDE §8.28–§8.30). Every
+accepts non-negative integers only, Western digits (DESIGN_GUIDE §11). Every
 command, applied or superseded, has its audit entry.
 
 **Manual fallback (edge offline). [Resolved here — validity window]** When the system is
@@ -491,25 +587,32 @@ bot message to the maintainer chat. Owner-facing capacity alerts remain out of s
 visits" = sum of entries per business day, always presented with the "estimated entrance
 crossings, not unique members" framing (RESEARCH.md §5, §20). Heatmap averages occupancy
 by (weekday, local hour); closed periods render as "closed", and missing history renders
-as "no data" — visually distinct from zero (DESIGN_GUIDE §4.6, §9). Week-over-week shows
+as "no data" — visually distinct from zero (DESIGN_GUIDE §12). Week-over-week shows
 an honest empty state until two comparable weeks exist. Analytics read historical band
 and capacity from the row snapshots, not from current settings.
+
+For the isolated Phase 9 domain, `dailyAverage` is the arithmetic mean of observed open-minute
+counts: include genuine zero rows, exclude closed and missing minutes, and return
+`observedOpenMinutes` plus `expectedOpenMinutes` so outage coverage is never hidden. Timeline
+DTOs classify every bucket as `value | closed | missing`; `closed` and `missing` carry a null
+count. Classification uses the settings version effective at each instant. A gap has no row,
+so the query resolves the append-only settings timeline by `effectiveFrom` rather than using
+today's settings. These semantics must be unit-tested before the analytics domain can merge.
 
 **Internationalization.** Arabic (`dir="rtl" lang="ar"`) is the default; English is a
 first-class toggle persisted client-side. All user-facing copy — including error states,
 confirmation dialogs, and toasts — lives in ar/en message catalogs from the first screen;
 no hard-coded strings. Numbers, dates, and times use `Intl` with `-u-nu-latn` so Western
 digits render in both locales; tabular numerals for anything that updates or aligns.
-Layout uses logical properties exclusively; charts follow reading direction
-(DESIGN_GUIDE §5, §9, §14). The document default (`index.html`) becomes Arabic/RTL with
-localized title/meta and the Fitway favicon per DESIGN_GUIDE §3.
+Layout uses logical properties; charts follow reading direction
+(DESIGN_GUIDE §§4, 9, 12). The document default (`index.html`) is Arabic/RTL with localized
+title/meta and the approved FITWAY favicon.
 
 **Dark-only visual system.** The scaffold's theme toggle and light theme are removed; the
-`--fw-*` token set (DESIGN_GUIDE §17) becomes the single palette, mapped into the
-Tailwind theme. Cairo is self-hosted with the loading strategy of DESIGN_GUIDE §5. The
-public number, meter, badges, freshness indicator, staff ops panels, KPI cards, charts,
-skeletons, and empty/error states follow their DESIGN_GUIDE §8–§9 component specs,
-including reduced-motion behavior (§10) and accessibility rules (§15).
+`--fw-*` token set in DESIGN_GUIDE §14 is the single palette. Cairo is self-hosted at actual
+weights 400–700. The crowd level, approximate count, continuous 28-bar signal, badges,
+freshness, operational panels, KPI cards, charts, skeletons, and empty/error states follow
+DESIGN_GUIDE §§3–13, including reduced motion and accessibility.
 
 **Scaffold cleanup (first implementation act, recorded here so nothing demo-shaped
 survives).** Remove: the ASCII demo home page, sign-up form/route, theme
@@ -612,7 +715,7 @@ spec:
 - **Phase/slice planning** — a separate step after this spec.
 - **Email delivery** (password reset mail, etc.) — owner/maintainer reset flow avoids the
   dependency in v1.
-- **Turborepo** — not justified at current workspace size (SOL_SCAFFOLD_REVIEW.md §3).
+- **Turborepo** — not justified at current workspace size (ADR-001).
 
 ## Open Questions
 
@@ -624,7 +727,7 @@ None block implementation; all are external gates or deploy-time choices:
 - Owner sign-off items: transparency notice wording, remote maintenance/calibration
   acknowledgment, maintenance scope.
 - Domain / final URL host (paths are fixed by this spec; the host is not).
-- Chart library selection — constrained by DESIGN_GUIDE §9 (RTL mirroring, token colors,
+- Chart library selection — constrained by DESIGN_GUIDE §12 (RTL mirroring, token colors,
   accessible fallbacks); pick during implementation.
 - i18n library vs. typed in-repo message catalogs — behavior is fully specced; the
   mechanism is an implementation choice.
@@ -642,7 +745,7 @@ None block implementation; all are external gates or deploy-time choices:
 - **The governing cost rule** — compute scales with time/cache windows, never visitor
   count (RESEARCH.md §9) — is an acceptance criterion here, not advice: any
   visitor-reachable path that invokes a function per request on cache hit is a defect.
-- The three source documents remain authoritative for rationale (RESEARCH.md), visual
-  detail (DESIGN_GUIDE.md), and stack rationale (SOL_SCAFFOLD_REVIEW.md). If this spec
-  and a source document ever conflict on an implementation matter, this spec wins; on a
-  scope or privacy matter, RESEARCH.md wins.
+- The repository hierarchy is defined in `AGENTS.md`. Product and Spec are co-authoritative
+  within their named domains. If they overlap and disagree, mark `NEEDS_HUMAN`; do not silently
+  choose one. `RESEARCH.md`, ADRs, archived plans, mockups, and prototypes preserve rationale
+  and provenance but cannot override Product/Spec.

@@ -65,7 +65,7 @@ export async function buildPublicOccupancyPayload(
 		if (!schedule.open) {
 			return {
 				payload: {
-					schemaVersion: 1,
+					schemaVersion: 2,
 					freshness: "closed",
 					timeZone: settings.timeZone,
 					nextOpenAt: schedule.nextOpenAt?.toISOString() ?? null,
@@ -110,15 +110,11 @@ export async function buildPublicOccupancyPayload(
 	const count = current.currentCount;
 	return {
 		payload: {
-			schemaVersion: 1,
+			schemaVersion: 2,
 			freshness: age <= settings.freshForSeconds * 1_000 ? "fresh" : "stale",
 			timeZone: settings.timeZone,
 			band: current.band,
 			count,
-			percentFull: Math.min(
-				100,
-				Math.max(0, Math.round((count / settings.capacity) * 100)),
-			),
 			lastUpdatedAt: lastUpdated.toISOString(),
 			freshUntil: freshUntil.toISOString(),
 			source: current.source,

@@ -63,7 +63,7 @@ describe("public payload builder", () => {
 		);
 		expect(built).toEqual({
 			payload: {
-				schemaVersion: 1,
+				schemaVersion: 2,
 				freshness: "unavailable",
 				computedAt: "2026-07-16T23:00:00.000Z",
 				trend: null,
@@ -100,7 +100,7 @@ describe("public payload builder", () => {
 			);
 			expect(built).toEqual({
 				payload: {
-					schemaVersion: 1,
+					schemaVersion: 2,
 					freshness: "closed",
 					timeZone: "Asia/Riyadh",
 					nextOpenAt: "2026-07-17T11:00:00.000Z",
@@ -156,11 +156,11 @@ describe("public payload builder", () => {
 				freshness: expected,
 				timeZone: "Asia/Riyadh",
 				count: 150,
-				percentFull: 100,
 				band: "packed",
 				freshUntil: "2026-07-17T11:01:30.000Z",
 			});
 			expect(built.payload).not.toHaveProperty("open");
+			expect(built.payload).not.toHaveProperty("percentFull");
 		}
 	});
 

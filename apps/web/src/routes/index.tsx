@@ -3,7 +3,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { BrandHeader } from "@/components/brand-header";
 import { ClosedState } from "@/components/closed-state";
 import { OccupancyStatus } from "@/components/occupancy-status";
+import { PublicAtmosphere } from "@/components/public-atmosphere";
+import { PublicErrorState } from "@/components/public-error-state";
 import { PublicStatusSkeleton } from "@/components/public-status-skeleton";
+import { SkipLink } from "@/components/skip-link";
 import { UnavailableState } from "@/components/unavailable-state";
 import { usePublicOccupancy } from "@/hooks/use-public-occupancy";
 
@@ -15,7 +18,14 @@ function HomeComponent() {
 	const occupancy = usePublicOccupancy();
 	let content = <UnavailableState />;
 	if (occupancy.isPending) content = <PublicStatusSkeleton />;
-	else if (
+	else if (occupancy.isError) {
+		content = (
+			<PublicErrorState
+				onRetry={() => void occupancy.refetch()}
+				isRetrying={occupancy.isFetching}
+			/>
+		);
+	} else if (
 		occupancy.payload?.freshness === "closed" &&
 		occupancy.effectiveFreshness === "closed"
 	) {
@@ -36,9 +46,11 @@ function HomeComponent() {
 		);
 	}
 	return (
-		<div className="grid min-h-svh grid-rows-[auto_1fr] bg-background">
+		<div className="public-page-shell">
+			<PublicAtmosphere />
+			<SkipLink />
 			<BrandHeader />
-			<main className="mx-auto grid w-full max-w-[var(--fw-container-public)] place-items-center px-4 py-8 sm:px-6 sm:py-12">
+			<main id="main-content" className="public-page-main" tabIndex={-1}>
 				{content}
 			</main>
 		</div>

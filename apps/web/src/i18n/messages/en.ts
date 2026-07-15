@@ -9,10 +9,13 @@ export const en = {
 		brandName: "FITWAY",
 		languageSwitchLabel: "Switch to Arabic",
 		languageSwitchText: "العربية",
+		skipToContent: "Skip to occupancy status",
 	},
 	publicPage: {
 		eyebrow: "Gym status now",
-		open: "Open now",
+		open: "Gym open now",
+		crowdLevel: "Crowd level",
+		approximateCount: "Approximate count",
 		closedTitle: "Closed now",
 		opensAt: (time) => `Opens ${time}`,
 		closedSummary: (opening) =>
@@ -20,10 +23,12 @@ export const en = {
 		unavailableTitle: "Live occupancy is unavailable right now",
 		unavailableDescription:
 			"We will not present an old count as live. Please try again later.",
+		errorTitle: "We could not load the crowd status",
+		errorDescription:
+			"Check your connection and try again. We will not present old data as live.",
+		retry: "Try again",
+		retrying: "Trying again",
 		loading: "Loading occupancy status",
-		around: "Around",
-		people: "people",
-		percentFull: (percent) => `${percent}% full`,
 		bands: {
 			quiet: "Quiet",
 			moderate: "Moderate",
@@ -32,14 +37,19 @@ export const en = {
 		},
 		fresh: "Live update",
 		stale: "Last known update",
-		lastUpdated: (absolute, relative) => `Updated ${absolute} · ${relative}`,
-		lastKnown: "Last known occupancy",
+		staleStatus: "Live updates are delayed",
+		lastKnownCrowdLevel: "Last known crowd level",
+		lastKnownApproximateCount: "Last known approximate count",
+		currentLevel: "Current level",
+		lastKnownLevel: "Last known level",
+		lastUpdatedAt: (absolute) => `Updated ${absolute}`,
 		staleWarning: (count, time) =>
-			`The last known count was around ${count} at ${time}. Live updates are delayed.`,
-		meterLabel: "Occupancy level",
-		meterValue: (percent, band) => `${percent}% full, ${band}`,
-		summary: (band, count, percent, open, freshness, time) =>
-			`${freshness}. ${open}. ${band}. Around ${count} people, ${percent}% full. Updated ${time}.`,
+			`The last known approximate count was ${count} at ${time}. Live updates are delayed.`,
+		crowdScaleLabel: "Crowd-level scale",
+		crowdScaleValue: (band, completed, pending) =>
+			`Crowd level: ${band}. Reached levels: ${completed || "none"}. Higher levels pending: ${pending || "none"}.`,
+		summary: (band, count, open, freshness, time) =>
+			`${freshness}. ${open}. Crowd level: ${band}. Approximate count: ${count}. Updated ${time}.`,
 	},
 	login: {
 		title: "Sign in",
