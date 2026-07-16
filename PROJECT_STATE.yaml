@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-07-16T16:49:13+03:00"
+updatedAt: "2026-07-16T23:25:00+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -165,12 +165,12 @@ milestones:
     integratedCommit: 4730921c182e64f8963d47a3178f4f07b04945ee
 
   phase4-health:
-    status: READY
+    status: DONE
     dependencies: [phase4-auth]
-    ownerSession: "reserved: phase4-health worker (not yet started)"
-    branch: work/phase4-health-b01
-    worktree: D:/Projects/fitway-worktrees/phase4-health
-    baseCommit: SELF
+    ownerSession: null
+    branch: main
+    worktree: null
+    baseCommit: 43211088e4b33639117d1c64a264bef8fb1b0001
     ownedPaths:
       - packages/api/src/health/**
       - apps/server/src/health-repository.ts
@@ -200,30 +200,20 @@ milestones:
       - PROJECT_STATE.yaml
       - normative and unrelated phase documentation
       - root manifests, lockfiles, and test/config scripts
-    sharedLeases:
-      - packages/db/src/schema/application.ts
-      - generated packages/db/src/migrations/0003_*
-      - generated packages/db/src/migrations/meta/0003_snapshot.json
-      - append-only 0003 entry in packages/db/src/migrations/meta/_journal.json
-      - packages/api/src/occupancy/engine.ts
-      - packages/api/src/occupancy/engine.test.ts
-      - apps/server/src/occupancy-repositories.ts
-      - packages/api/src/context.ts
-      - packages/api/src/routers/index.ts
-      - apps/server/src/index.ts
+    sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-07-16T16:49:13+03:00"
-    leaseExpiresAt: "2026-07-18T16:49:00+03:00"
-    handoff: docs/phase-records/handoffs/phase4-health/20260716-164900-p4_health_b01.md
+    lastHeartbeatAt: "2026-07-16T23:25:00+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase4-health/20260716-232500-p4_health_b01-integration.md
     stopReason: null
     gates:
-      unit: PENDING
-      integration: PENDING
+      unit: PASS
+      integration: PASS
       browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
-      independentReview: PENDING
-    integratedCommit: null
+      independentReview: PASS
+    integratedCommit: 4a59ca2f30c587eb71c6721a2adaed194512f5ee
 
   phase4-staff-web:
     status: PLANNED
