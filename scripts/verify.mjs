@@ -29,6 +29,11 @@ const phases = {
 		integrationFiles: ["apps/server/src/phase4-auth.integration.test.ts"],
 		label: "Phase 4 authentication slice",
 	},
+	"phase4-health": {
+		browserFiles: [],
+		integrationFiles: ["apps/server/src/phase4-health.integration.test.ts"],
+		label: "Phase 4 operational health slice",
+	},
 	"phase9-analytics-domain": {
 		browserFiles: [],
 		integrationFiles: ["apps/server/src/phase9-analytics.integration.test.ts"],

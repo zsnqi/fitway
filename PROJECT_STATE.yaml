@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-07-16T15:12:54+03:00"
+updatedAt: "2026-07-16T16:49:13+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -165,19 +165,56 @@ milestones:
     integratedCommit: 4730921c182e64f8963d47a3178f4f07b04945ee
 
   phase4-health:
-    status: PLANNED
+    status: READY
     dependencies: [phase4-auth]
-    ownerSession: null
-    branch: null
-    worktree: null
-    baseCommit: null
-    ownedPaths: []
-    forbiddenPaths: []
-    sharedLeases: []
+    ownerSession: "reserved: phase4-health worker (not yet started)"
+    branch: work/phase4-health-b01
+    worktree: D:/Projects/fitway-worktrees/phase4-health
+    baseCommit: SELF
+    ownedPaths:
+      - packages/api/src/health/**
+      - apps/server/src/health-repository.ts
+      - apps/server/src/phase4-health.integration.test.ts
+      - docs/phase-records/handoffs/phase4-health/**
+    forbiddenPaths:
+      - apps/web/**
+      - packages/ui/**
+      - packages/auth/**
+      - packages/api/src/auth/**
+      - apps/server/src/auth/**
+      - packages/api/src/analytics/**
+      - packages/api/src/public/**
+      - packages/api/src/edge-push.ts
+      - apps/server/src/analytics-repository.ts
+      - apps/server/src/edge-push.ts
+      - apps/server/src/public-occupancy.ts
+      - apps/server/src/openapi.ts
+      - packages/db/src/schema/auth.ts
+      - packages/db/src/migrations/0000_*
+      - packages/db/src/migrations/0001_*
+      - packages/db/src/migrations/0002_*
+      - packages/env/**
+      - edge/**
+      - tests/browser/**
+      - visual-direction-gate/**
+      - PROJECT_STATE.yaml
+      - normative and unrelated phase documentation
+      - root manifests, lockfiles, and test/config scripts
+    sharedLeases:
+      - packages/db/src/schema/application.ts
+      - generated packages/db/src/migrations/0003_*
+      - generated packages/db/src/migrations/meta/0003_snapshot.json
+      - append-only 0003 entry in packages/db/src/migrations/meta/_journal.json
+      - packages/api/src/occupancy/engine.ts
+      - packages/api/src/occupancy/engine.test.ts
+      - apps/server/src/occupancy-repositories.ts
+      - packages/api/src/context.ts
+      - packages/api/src/routers/index.ts
+      - apps/server/src/index.ts
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
-    leaseExpiresAt: null
-    handoff: null
+    lastHeartbeatAt: "2026-07-16T16:49:13+03:00"
+    leaseExpiresAt: "2026-07-18T16:49:00+03:00"
+    handoff: docs/phase-records/handoffs/phase4-health/20260716-164900-p4_health_b01.md
     stopReason: null
     gates:
       unit: PENDING
