@@ -5,7 +5,8 @@ import type { PinRateLimiter } from "./pin-rate-limiter";
 
 type AuthRouteDependencies = {
 	service: AuthService;
-	limiter: PinRateLimiter;
+	staffPinLimiter: PinRateLimiter;
+	ownerLoginLimiter: PinRateLimiter;
 };
 
 const INVALID_CREDENTIALS = { error: "invalid_credentials" } as const;
@@ -32,13 +33,18 @@ export function mountAuthRoutes(
 	app: Hono,
 	dependencies: AuthRouteDependencies,
 ) {
+	app.use("/api/auth/*", async (context, next) => {
+		await next();
+		context.header("Cache-Control", "no-store");
+	});
+
 	app.post("/api/auth/sign-up/*", (context) =>
 		context.json({ error: "signup_disabled" }, 403),
 	);
 
 	app.post("/api/auth/staff/pin", async (context) => {
 		const now = new Date();
-		const limit = dependencies.limiter.check(now);
+		const limit = dependencies.staffPinLimiter.check(now);
 		if (!limit.allowed) {
 			context.header("Retry-After", `${limit.retryAfterSeconds}`);
 			return context.json(INVALID_CREDENTIALS, 429);
@@ -57,10 +63,45 @@ export function mountAuthRoutes(
 			now,
 		});
 		if (result.status !== "authenticated") {
-			dependencies.limiter.recordFailure(now);
+			dependencies.staffPinLimiter.recordFailure(now);
 			return context.json(INVALID_CREDENTIALS, 401);
 		}
-		dependencies.limiter.reset();
+		dependencies.staffPinLimiter.reset();
+		appendCookies(context, result.cookieHeaders);
+		return context.json({ auth: publicContext(result.context) });
+	});
+
+	app.post("/api/auth/owner/password", async (context) => {
+		const now = new Date();
+		const limit = dependencies.ownerLoginLimiter.check(now);
+		if (!limit.allowed) {
+			context.header("Retry-After", `${limit.retryAfterSeconds}`);
+			return context.json(INVALID_CREDENTIALS, 429);
+		}
+		let email: unknown;
+		let password: unknown;
+		try {
+			const body = (await context.req.json()) as {
+				email?: unknown;
+				password?: unknown;
+			};
+			email = body.email;
+			password = body.password;
+		} catch {
+			email = undefined;
+			password = undefined;
+		}
+		const result = await dependencies.service.loginOwner({
+			email: typeof email === "string" ? email : "",
+			password: typeof password === "string" ? password : "",
+			cookieHeader: context.req.header("Cookie"),
+			now,
+		});
+		if (result.status !== "authenticated") {
+			dependencies.ownerLoginLimiter.recordFailure(now);
+			return context.json(INVALID_CREDENTIALS, 401);
+		}
+		dependencies.ownerLoginLimiter.reset();
 		appendCookies(context, result.cookieHeaders);
 		return context.json({ auth: publicContext(result.context) });
 	});

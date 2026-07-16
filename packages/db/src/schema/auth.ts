@@ -91,6 +91,39 @@ export const authStaffCredentials = pgTable(
 	],
 );
 
+export const authOwnerCredentials = pgTable(
+	"auth_owner_credentials",
+	{
+		id: uuid("id").defaultRandom().primaryKey(),
+		principalId: uuid("principal_id")
+			.notNull()
+			.references(() => authPrincipals.id, { onDelete: "cascade" }),
+		passwordHash: text("password_hash").notNull(),
+		passwordSalt: text("password_salt").notNull(),
+		credentialVersion: integer("credential_version").notNull().default(1),
+		active: boolean("active").notNull().default(true),
+		createdAt: utcTimestamp("created_at").notNull().defaultNow(),
+		rotatedAt: utcTimestamp("rotated_at").notNull().defaultNow(),
+	},
+	(table) => [
+		uniqueIndex("auth_owner_credentials_principal_unique").on(
+			table.principalId,
+		),
+		check(
+			"auth_owner_credentials_hash_nonempty",
+			sql`length(trim(${table.passwordHash})) > 0`,
+		),
+		check(
+			"auth_owner_credentials_salt_nonempty",
+			sql`length(trim(${table.passwordSalt})) > 0`,
+		),
+		check(
+			"auth_owner_credentials_version_positive",
+			sql`${table.credentialVersion} > 0`,
+		),
+	],
+);
+
 export const authSessions = pgTable(
 	"auth_sessions",
 	{
@@ -128,6 +161,7 @@ export const authPrincipalRelations = relations(
 	authPrincipals,
 	({ many, one }) => ({
 		staffCredential: one(authStaffCredentials),
+		ownerCredential: one(authOwnerCredentials),
 		sessions: many(authSessions),
 	}),
 );
@@ -148,3 +182,13 @@ export const authSessionRelations = relations(authSessions, ({ one }) => ({
 		references: [authPrincipals.id],
 	}),
 }));
+
+export const authOwnerCredentialRelations = relations(
+	authOwnerCredentials,
+	({ one }) => ({
+		principal: one(authPrincipals, {
+			fields: [authOwnerCredentials.principalId],
+			references: [authPrincipals.id],
+		}),
+	}),
+);

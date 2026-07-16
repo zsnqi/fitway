@@ -2,16 +2,18 @@ import type {
 	AuthPrincipalRecord,
 	AuthRepository,
 	AuthSessionRecord,
+	OwnerCredentialRecord,
 	SessionLookup,
 	StaffCredentialRecord,
 } from "@fitway/auth";
 import type { db } from "@fitway/db";
 import {
+	authOwnerCredentials,
 	authPrincipals,
 	authSessions,
 	authStaffCredentials,
 } from "@fitway/db/schema/auth";
-import { and, eq, isNull, lte } from "drizzle-orm";
+import { and, eq, isNull, lte, sql } from "drizzle-orm";
 
 type Database = typeof db;
 
@@ -55,6 +57,21 @@ function sessionRecord(
 		lastRefreshedAt: row.lastRefreshedAt,
 		revokedAt: row.revokedAt,
 		createdAt: row.createdAt,
+	};
+}
+
+function ownerCredentialRecord(
+	row: typeof authOwnerCredentials.$inferSelect,
+): OwnerCredentialRecord {
+	return {
+		id: row.id,
+		principalId: row.principalId,
+		passwordHash: row.passwordHash,
+		passwordSalt: row.passwordSalt,
+		credentialVersion: row.credentialVersion,
+		active: row.active,
+		createdAt: row.createdAt,
+		rotatedAt: row.rotatedAt,
 	};
 }
 
@@ -148,18 +165,63 @@ export class PostgresAuthRepository implements AuthRepository {
 			: null;
 	}
 
-	async createOwner(input: { email: string; displayName: string }) {
+	async createOwner(input: {
+		email: string;
+		displayName: string;
+		passwordHash: string;
+		passwordSalt: string;
+		now: Date;
+	}) {
+		return this.#db.transaction(async (transaction) => {
+			const [principal] = await transaction
+				.insert(authPrincipals)
+				.values({
+					principalKind: "owner",
+					role: "owner",
+					ownerEmail: input.email,
+					displayName: input.displayName,
+					createdAt: input.now,
+					updatedAt: input.now,
+				})
+				.returning();
+			if (!principal) throw new Error("Failed to provision owner principal");
+			const [credential] = await transaction
+				.insert(authOwnerCredentials)
+				.values({
+					principalId: principal.id,
+					passwordHash: input.passwordHash,
+					passwordSalt: input.passwordSalt,
+					createdAt: input.now,
+					rotatedAt: input.now,
+				})
+				.returning();
+			if (!credential) throw new Error("Failed to provision owner credential");
+			return {
+				principal: principalRecord(principal),
+				credential: ownerCredentialRecord(credential),
+			};
+		});
+	}
+
+	async findOwnerCredentialByEmail(email: string) {
 		const [row] = await this.#db
-			.insert(authPrincipals)
-			.values({
-				principalKind: "owner",
-				role: "owner",
-				ownerEmail: input.email,
-				displayName: input.displayName,
+			.select({
+				principal: authPrincipals,
+				credential: authOwnerCredentials,
 			})
-			.returning();
-		if (!row) throw new Error("Failed to provision owner principal");
-		return principalRecord(row);
+			.from(authPrincipals)
+			.innerJoin(
+				authOwnerCredentials,
+				eq(authOwnerCredentials.principalId, authPrincipals.id),
+			)
+			.where(sql`lower(${authPrincipals.ownerEmail}) = ${email}`)
+			.limit(1);
+		return row
+			? {
+					principal: principalRecord(row.principal),
+					credential: ownerCredentialRecord(row.credential),
+				}
+			: null;
 	}
 
 	async findPrincipalById(principalId: string) {
@@ -185,6 +247,7 @@ export class PostgresAuthRepository implements AuthRepository {
 				session: authSessions,
 				principal: authPrincipals,
 				credential: authStaffCredentials,
+				ownerCredential: authOwnerCredentials,
 			})
 			.from(authSessions)
 			.innerJoin(
@@ -195,6 +258,10 @@ export class PostgresAuthRepository implements AuthRepository {
 				authStaffCredentials,
 				eq(authStaffCredentials.principalId, authPrincipals.id),
 			)
+			.leftJoin(
+				authOwnerCredentials,
+				eq(authOwnerCredentials.principalId, authPrincipals.id),
+			)
 			.where(eq(authSessions.tokenHash, tokenHash))
 			.limit(1);
 		return row
@@ -203,6 +270,9 @@ export class PostgresAuthRepository implements AuthRepository {
 					principal: principalRecord(row.principal),
 					staffCredential: row.credential
 						? credentialRecord(row.credential)
+						: null,
+					ownerCredential: row.ownerCredential
+						? ownerCredentialRecord(row.ownerCredential)
 						: null,
 				}
 			: null;

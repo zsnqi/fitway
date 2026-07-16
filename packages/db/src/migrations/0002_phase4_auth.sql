@@ -1,5 +1,19 @@
 CREATE TYPE "public"."auth_principal_kind" AS ENUM('shared_staff', 'owner');--> statement-breakpoint
 CREATE TYPE "public"."auth_role" AS ENUM('staff', 'owner');--> statement-breakpoint
+CREATE TABLE "auth_owner_credentials" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"principal_id" uuid NOT NULL,
+	"password_hash" text NOT NULL,
+	"password_salt" text NOT NULL,
+	"credential_version" integer DEFAULT 1 NOT NULL,
+	"active" boolean DEFAULT true NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"rotated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "auth_owner_credentials_hash_nonempty" CHECK (length(trim("auth_owner_credentials"."password_hash")) > 0),
+	CONSTRAINT "auth_owner_credentials_salt_nonempty" CHECK (length(trim("auth_owner_credentials"."password_salt")) > 0),
+	CONSTRAINT "auth_owner_credentials_version_positive" CHECK ("auth_owner_credentials"."credential_version" > 0)
+);
+--> statement-breakpoint
 CREATE TABLE "auth_principals" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"principal_kind" "auth_principal_kind" NOT NULL,
@@ -50,8 +64,10 @@ DROP TABLE "account" CASCADE;--> statement-breakpoint
 DROP TABLE "session" CASCADE;--> statement-breakpoint
 DROP TABLE "user" CASCADE;--> statement-breakpoint
 DROP TABLE "verification" CASCADE;--> statement-breakpoint
+ALTER TABLE "auth_owner_credentials" ADD CONSTRAINT "auth_owner_credentials_principal_id_auth_principals_id_fk" FOREIGN KEY ("principal_id") REFERENCES "public"."auth_principals"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "auth_sessions" ADD CONSTRAINT "auth_sessions_principal_id_auth_principals_id_fk" FOREIGN KEY ("principal_id") REFERENCES "public"."auth_principals"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "auth_staff_credentials" ADD CONSTRAINT "auth_staff_credentials_principal_id_auth_principals_id_fk" FOREIGN KEY ("principal_id") REFERENCES "public"."auth_principals"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+CREATE UNIQUE INDEX "auth_owner_credentials_principal_unique" ON "auth_owner_credentials" USING btree ("principal_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "auth_principals_one_shared_staff" ON "auth_principals" USING btree ("principal_kind") WHERE "auth_principals"."principal_kind" = 'shared_staff';--> statement-breakpoint
 CREATE UNIQUE INDEX "auth_principals_owner_email_unique" ON "auth_principals" USING btree (lower("owner_email")) WHERE "auth_principals"."owner_email" is not null;--> statement-breakpoint
 CREATE UNIQUE INDEX "auth_sessions_token_hash_unique" ON "auth_sessions" USING btree ("token_hash");--> statement-breakpoint

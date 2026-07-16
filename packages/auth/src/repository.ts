@@ -1,6 +1,7 @@
 import type {
 	AuthPrincipalRecord,
 	AuthSessionRecord,
+	OwnerCredentialRecord,
 	SessionLookup,
 	StaffCredentialRecord,
 } from "./contracts";
@@ -8,6 +9,11 @@ import type {
 export type SharedStaffCredential = {
 	principal: AuthPrincipalRecord;
 	credential: StaffCredentialRecord;
+};
+
+export type ProvisionedOwner = {
+	principal: AuthPrincipalRecord;
+	credential: OwnerCredentialRecord;
 };
 
 export interface AuthRepository {
@@ -20,7 +26,11 @@ export interface AuthRepository {
 	createOwner(input: {
 		email: string;
 		displayName: string;
-	}): Promise<AuthPrincipalRecord>;
+		passwordHash: string;
+		passwordSalt: string;
+		now: Date;
+	}): Promise<ProvisionedOwner>;
+	findOwnerCredentialByEmail(email: string): Promise<ProvisionedOwner | null>;
 	findPrincipalById(principalId: string): Promise<AuthPrincipalRecord | null>;
 	createSession(input: AuthSessionRecord): Promise<AuthSessionRecord>;
 	findSessionByTokenHash(tokenHash: string): Promise<SessionLookup | null>;

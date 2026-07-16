@@ -6,7 +6,7 @@ import type {
 	PrincipalKind,
 	SessionLookup,
 } from "./contracts";
-import { PIN_PATTERN } from "./contracts";
+import { OWNER_PASSWORD_PATTERN, PIN_PATTERN } from "./contracts";
 import {
 	readCookie,
 	serializeClearedSessionCookie,
@@ -17,8 +17,10 @@ import {
 } from "./cookies";
 import {
 	createOpaqueSessionToken,
+	hashOwnerPassword,
 	hashSessionToken,
 	hashStaffPin,
+	verifyOwnerPassword,
 	verifyStaffPin,
 } from "./crypto";
 import type { AuthRepository } from "./repository";
@@ -108,15 +110,32 @@ export class AuthService {
 		return this.#repository.upsertSharedStaffCredential({ ...hashed, now });
 	}
 
-	async provisionOwner(input: { email: string; displayName: string }) {
+	async provisionOwner(
+		input: {
+			email: string;
+			displayName: string;
+			password: string;
+		},
+		now = new Date(),
+	) {
 		const email = input.email.trim().toLowerCase();
-		if (!email.includes("@") || !input.displayName.trim()) {
-			throw new TypeError("A real owner email and display name are required");
+		if (
+			!email.includes("@") ||
+			!input.displayName.trim() ||
+			!OWNER_PASSWORD_PATTERN.test(input.password)
+		) {
+			throw new TypeError(
+				"A real owner email, display name, and 12-128 character credential are required",
+			);
 		}
-		return this.#repository.createOwner({
+		const hashed = await hashOwnerPassword(input.password, this.#pepper);
+		const provisioned = await this.#repository.createOwner({
 			email,
 			displayName: input.displayName.trim(),
+			...hashed,
+			now,
 		});
+		return provisioned.principal;
 	}
 
 	async loginStaff(input: {
@@ -151,26 +170,37 @@ export class AuthService {
 		});
 	}
 
-	async createOwnerSession(input: {
-		principalId: string;
+	async loginOwner(input: {
+		email: string;
+		password: string;
 		cookieHeader?: string;
 		now?: Date;
-	}) {
-		const principal = await this.#repository.findPrincipalById(
-			input.principalId,
-		);
+	}): Promise<LoginResult> {
+		const now = input.now ?? new Date();
+		const email = input.email.trim().toLowerCase();
+		const owner = await this.#repository.findOwnerCredentialByEmail(email);
+		const verified = owner
+			? await verifyOwnerPassword({
+					password: input.password,
+					pepper: this.#pepper,
+					passwordSalt: owner.credential.passwordSalt,
+					passwordHash: owner.credential.passwordHash,
+				})
+			: await this.#burnInvalidOwnerPassword(input.password);
 		if (
-			!principal?.active ||
-			principal.principalKind !== "owner" ||
-			!hasCoherentAuthority(principal)
+			!OWNER_PASSWORD_PATTERN.test(input.password) ||
+			!verified ||
+			!owner?.principal.active ||
+			!owner.credential.active ||
+			!hasCoherentAuthority(owner.principal)
 		) {
-			throw new Error("Owner principal is not active and provisioned");
+			return { status: "invalid_credentials", cookieHeaders: [] };
 		}
 		return this.#issueSession({
-			principal,
-			credentialVersion: null,
+			principal: owner.principal,
+			credentialVersion: owner.credential.credentialVersion,
 			cookieHeader: input.cookieHeader,
-			now: input.now ?? new Date(),
+			now,
 		});
 	}
 
@@ -226,17 +256,7 @@ export class AuthService {
 		const cookieHeaders: string[] = [];
 		for (const kind of ["shared_staff", "owner"] as const) {
 			const name = sessionCookieName(kind);
-			const value = readCookie(cookieHeader, name);
-			if (value) {
-				const token = verifyCookieValue(name, value, this.#cookieSecret);
-				if (token) {
-					const found = await this.#repository.findSessionByTokenHash(
-						hashSessionToken(token),
-					);
-					if (found)
-						await this.#repository.revokeSession(found.session.id, now);
-				}
-			}
+			await this.#revokeSessionFromCookie(cookieHeader, kind, now);
 			cookieHeaders.push(serializeClearedSessionCookie(name));
 		}
 		return cookieHeaders;
@@ -244,6 +264,11 @@ export class AuthService {
 
 	async #burnInvalidPin(pin: string) {
 		await hashStaffPin(pin, this.#pepper, DUMMY_SALT);
+		return false;
+	}
+
+	async #burnInvalidOwnerPassword(password: string) {
+		await hashOwnerPassword(password, this.#pepper, DUMMY_SALT);
 		return false;
 	}
 
@@ -303,16 +328,25 @@ export class AuthService {
 		cookieHeaders: string[],
 	) {
 		const name = sessionCookieName(kind);
-		const value = readCookie(cookieHeader, name);
-		if (!value) return;
-		const token = verifyCookieValue(name, value, this.#cookieSecret);
-		if (token) {
-			const found = await this.#repository.findSessionByTokenHash(
-				hashSessionToken(token),
-			);
-			if (found) await this.#repository.revokeSession(found.session.id, now);
-		}
+		if (!(await this.#revokeSessionFromCookie(cookieHeader, kind, now))) return;
 		cookieHeaders.push(serializeClearedSessionCookie(name));
+	}
+
+	async #revokeSessionFromCookie(
+		cookieHeader: string | undefined,
+		kind: PrincipalKind,
+		now: Date,
+	) {
+		const name = sessionCookieName(kind);
+		const value = readCookie(cookieHeader, name);
+		if (!value) return false;
+		const token = verifyCookieValue(name, value, this.#cookieSecret);
+		if (!token) return true;
+		const found = await this.#repository.findSessionByTokenHash(
+			hashSessionToken(token),
+		);
+		if (found) await this.#repository.revokeSession(found.session.id, now);
+		return true;
 	}
 
 	async #resolveCookie(
@@ -345,7 +379,12 @@ export class AuthService {
 		) {
 			return null;
 		}
-		if (kind === "owner" && lookup.session.credentialVersion !== null) {
+		if (
+			kind === "owner" &&
+			(!lookup.ownerCredential?.active ||
+				lookup.session.credentialVersion !==
+					lookup.ownerCredential.credentialVersion)
+		) {
 			return null;
 		}
 		return { lookup, token, cookieName };

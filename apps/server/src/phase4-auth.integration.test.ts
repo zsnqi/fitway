@@ -39,7 +39,8 @@ const service = new AuthService({
 });
 const runtime = {
 	service,
-	limiter: new PinRateLimiter(),
+	staffPinLimiter: new PinRateLimiter(),
+	ownerLoginLimiter: new PinRateLimiter(),
 };
 let app: ReturnType<typeof import("./index").createApp>;
 let baseUrl = "";
@@ -124,6 +125,12 @@ describe("Phase 4 auth real HTTP and disposable Postgres slice", () => {
 		const missing = await request("/api/auth/session");
 		expect(missing.status).toBe(401);
 		expect(await missing.json()).toEqual({ error: "unauthorized" });
+		const missingStaffLeaf = await request("/rpc/staff/session", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ json: null }),
+		});
+		expect(missingStaffLeaf.status).toBe(401);
 
 		const signup = await request("/api/auth/sign-up/email", {
 			method: "POST",
@@ -139,6 +146,7 @@ describe("Phase 4 auth real HTTP and disposable Postgres slice", () => {
 			body: JSON.stringify({ pin: rawPin }),
 		});
 		expect(login.status).toBe(200);
+		expect(login.headers.get("Cache-Control")).toBe("no-store");
 		const loginCookies = setCookies(login);
 		expect(loginCookies).toHaveLength(1);
 		const staffSetCookie = loginCookies[0] ?? "";
@@ -180,15 +188,30 @@ describe("Phase 4 auth real HTTP and disposable Postgres slice", () => {
 		});
 		expect(wrongRole.status).toBe(403);
 		expect(await wrongRole.json()).toEqual({ error: "forbidden" });
+		const wrongRoleLeaf = await request("/rpc/admin/session", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				Cookie: staffCookie,
+			},
+			body: JSON.stringify({ json: null }),
+		});
+		expect(wrongRoleLeaf.status).toBe(403);
 
+		const ownerPassword = randomBytes(24).toString("base64url");
+		const ownerEmail = `owner-${randomUUID()}@fitway.example`;
 		const owner = await service.provisionOwner({
-			email: `owner-${randomUUID()}@fitway.example`,
+			email: ownerEmail,
 			displayName: "Provisioned pilot owner",
+			password: ownerPassword,
 		});
-		const ownerLogin = await service.createOwnerSession({
-			principalId: owner.id,
+		const ownerLoginResponse = await request("/api/auth/owner/password", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ email: ownerEmail, password: ownerPassword }),
 		});
-		const ownerCookie = cookiePair(ownerLogin.cookieHeaders[0] ?? "");
+		expect(ownerLoginResponse.status).toBe(200);
+		const ownerCookie = cookiePair(setCookies(ownerLoginResponse)[0] ?? "");
 		const ownerSession = await request("/api/auth/owner/session", {
 			headers: { Cookie: ownerCookie },
 		});
@@ -196,6 +219,15 @@ describe("Phase 4 auth real HTTP and disposable Postgres slice", () => {
 		expect(await ownerSession.json()).toMatchObject({
 			auth: { principalKind: "owner", role: "owner", active: true },
 		});
+		const ownerLeaf = await request("/rpc/admin/session", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				Cookie: ownerCookie,
+			},
+			body: JSON.stringify({ json: null }),
+		});
+		expect(ownerLeaf.status).toBe(200);
 
 		const ambiguousCookies = `${staffCookie}; ${ownerCookie}`;
 		const ambiguous = await request("/api/auth/session", {
@@ -225,11 +257,15 @@ describe("Phase 4 auth real HTTP and disposable Postgres slice", () => {
 			await database.execute(sql`
 				select pin_hash, pin_salt from auth_staff_credentials
 				union all
+				select password_hash, password_salt from auth_owner_credentials
+				union all
 				select token_hash, '' from auth_sessions
 			`),
 		);
 		expect(databaseText).not.toContain(rawPin);
+		expect(databaseText).not.toContain(ownerPassword);
 		expect(capturedLogs.join("\n")).not.toContain(rawPin);
+		expect(capturedLogs.join("\n")).not.toContain(ownerPassword);
 		expect(capturedLogs.join("\n")).not.toContain(rawToken);
 
 		for (let attempt = 0; attempt < 5; attempt += 1) {

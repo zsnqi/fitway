@@ -6,6 +6,7 @@ import {
 	type AuthRepository,
 	AuthService,
 	type AuthSessionRecord,
+	type OwnerCredentialRecord,
 	SESSION_COOKIE_NAMES,
 	SESSION_REFRESH_INTERVAL_MS,
 	SESSION_TTL_MS,
@@ -16,6 +17,7 @@ import {
 class MemoryAuthRepository implements AuthRepository {
 	principals: AuthPrincipalRecord[] = [];
 	credentials: StaffCredentialRecord[] = [];
+	ownerCredentials: OwnerCredentialRecord[] = [];
 	sessions: AuthSessionRecord[] = [];
 	lastStoredPin?: { pinHash: string; pinSalt: string };
 
@@ -83,7 +85,13 @@ class MemoryAuthRepository implements AuthRepository {
 		return principal && credential ? { principal, credential } : null;
 	}
 
-	async createOwner(input: { email: string; displayName: string }) {
+	async createOwner(input: {
+		email: string;
+		displayName: string;
+		passwordHash: string;
+		passwordSalt: string;
+		now: Date;
+	}) {
 		const principal: AuthPrincipalRecord = {
 			id: randomUUID(),
 			principalKind: "owner",
@@ -93,7 +101,30 @@ class MemoryAuthRepository implements AuthRepository {
 			displayName: input.displayName,
 		};
 		this.principals.push(principal);
-		return principal;
+		const credential: OwnerCredentialRecord = {
+			id: randomUUID(),
+			principalId: principal.id,
+			passwordHash: input.passwordHash,
+			passwordSalt: input.passwordSalt,
+			credentialVersion: 1,
+			active: true,
+			createdAt: input.now,
+			rotatedAt: input.now,
+		};
+		this.ownerCredentials.push(credential);
+		return { principal, credential };
+	}
+
+	async findOwnerCredentialByEmail(email: string) {
+		const principal = this.principals.find(
+			(candidate) => candidate.ownerEmail === email,
+		);
+		const credential = principal
+			? this.ownerCredentials.find(
+					(candidate) => candidate.principalId === principal.id,
+				)
+			: undefined;
+		return principal && credential ? { principal, credential } : null;
 	}
 
 	async findPrincipalById(principalId: string) {
@@ -121,7 +152,15 @@ class MemoryAuthRepository implements AuthRepository {
 		const credential = this.credentials.find(
 			(candidate) => candidate.principalId === principal.id,
 		);
-		return { session, principal, staffCredential: credential ?? null };
+		const ownerCredential = this.ownerCredentials.find(
+			(candidate) => candidate.principalId === principal.id,
+		);
+		return {
+			session,
+			principal,
+			staffCredential: credential ?? null,
+			ownerCredential: ownerCredential ?? null,
+		};
 	}
 
 	async refreshSession(input: {
@@ -260,13 +299,18 @@ describe("AuthService", () => {
 		const staffLogin = await service.loginStaff({ pin: rawPin });
 		if (staffLogin.status !== "authenticated")
 			throw new Error("staff login failed");
-		const owner = await service.provisionOwner({
+		const ownerPassword = randomBytes(24).toString("base64url");
+		const provisionedOwner = await service.provisionOwner({
 			email: `owner-${randomUUID()}@fitway.example`,
-			displayName: "Real Owner",
+			displayName: "Authenticated Owner",
+			password: ownerPassword,
 		});
-		const ownerLogin = await service.createOwnerSession({
-			principalId: owner.id,
+		const ownerLogin = await service.loginOwner({
+			email: provisionedOwner.ownerEmail ?? "",
+			password: ownerPassword,
 		});
+		if (ownerLogin.status !== "authenticated")
+			throw new Error("owner login failed");
 		const both = [
 			cookieHeader(staffLogin.cookieHeaders[0] ?? ""),
 			cookieHeader(ownerLogin.cookieHeaders[0] ?? ""),
@@ -283,8 +327,9 @@ describe("AuthService", () => {
 			`${SESSION_COOKIE_NAMES.owner}=;`,
 		);
 		expect(
-			repository.sessions.find((session) => session.principalId === owner.id)
-				?.revokedAt,
+			repository.sessions.find(
+				(session) => session.principalId === provisionedOwner.id,
+			)?.revokedAt,
 		).toBeInstanceOf(Date);
 	});
 });

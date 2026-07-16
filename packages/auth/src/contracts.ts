@@ -5,6 +5,7 @@ export const PRINCIPAL_KINDS = ["shared_staff", "owner"] as const;
 export type PrincipalKind = (typeof PRINCIPAL_KINDS)[number];
 
 export const PIN_PATTERN = /^[0-9]{6,12}$/;
+export const OWNER_PASSWORD_PATTERN = /^.{12,128}$/u;
 
 export type CanonicalAuthContext = {
 	principalId: string;
@@ -35,6 +36,17 @@ export type StaffCredentialRecord = {
 	rotatedAt: Date;
 };
 
+export type OwnerCredentialRecord = {
+	id: string;
+	principalId: string;
+	passwordHash: string;
+	passwordSalt: string;
+	credentialVersion: number;
+	active: boolean;
+	createdAt: Date;
+	rotatedAt: Date;
+};
+
 export type AuthSessionRecord = {
 	id: string;
 	principalId: string;
@@ -50,4 +62,5 @@ export type SessionLookup = {
 	session: AuthSessionRecord;
 	principal: AuthPrincipalRecord;
 	staffCredential: StaffCredentialRecord | null;
+	ownerCredential: OwnerCredentialRecord | null;
 };

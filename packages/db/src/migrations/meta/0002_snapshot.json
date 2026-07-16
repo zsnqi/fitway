@@ -1,5 +1,5 @@
 {
-	"id": "16bcf0ef-87bd-4f78-bbe1-13d2cd32205d",
+	"id": "06188e56-0a41-4691-aa4b-eebafa88a8e8",
 	"prevId": "48652aeb-3d3e-4382-8a9d-1d3fa996e396",
 	"version": "7",
 	"dialect": "postgresql",
@@ -581,6 +581,111 @@
 				"settings_schedule_sat_pair": {
 					"name": "settings_schedule_sat_pair",
 					"value": "(\"settings_versions\".\"schedule_sat_open\" is null) = (\"settings_versions\".\"schedule_sat_close\" is null)"
+				}
+			},
+			"isRLSEnabled": false
+		},
+		"public.auth_owner_credentials": {
+			"name": "auth_owner_credentials",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "uuid",
+					"primaryKey": true,
+					"notNull": true,
+					"default": "gen_random_uuid()"
+				},
+				"principal_id": {
+					"name": "principal_id",
+					"type": "uuid",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"password_hash": {
+					"name": "password_hash",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"password_salt": {
+					"name": "password_salt",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"credential_version": {
+					"name": "credential_version",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"default": 1
+				},
+				"active": {
+					"name": "active",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true,
+					"default": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"rotated_at": {
+					"name": "rotated_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {
+				"auth_owner_credentials_principal_unique": {
+					"name": "auth_owner_credentials_principal_unique",
+					"columns": [
+						{
+							"expression": "principal_id",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": true,
+					"concurrently": false,
+					"method": "btree",
+					"with": {}
+				}
+			},
+			"foreignKeys": {
+				"auth_owner_credentials_principal_id_auth_principals_id_fk": {
+					"name": "auth_owner_credentials_principal_id_auth_principals_id_fk",
+					"tableFrom": "auth_owner_credentials",
+					"tableTo": "auth_principals",
+					"columnsFrom": ["principal_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {
+				"auth_owner_credentials_hash_nonempty": {
+					"name": "auth_owner_credentials_hash_nonempty",
+					"value": "length(trim(\"auth_owner_credentials\".\"password_hash\")) > 0"
+				},
+				"auth_owner_credentials_salt_nonempty": {
+					"name": "auth_owner_credentials_salt_nonempty",
+					"value": "length(trim(\"auth_owner_credentials\".\"password_salt\")) > 0"
+				},
+				"auth_owner_credentials_version_positive": {
+					"name": "auth_owner_credentials_version_positive",
+					"value": "\"auth_owner_credentials\".\"credential_version\" > 0"
 				}
 			},
 			"isRLSEnabled": false

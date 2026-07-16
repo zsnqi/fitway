@@ -61,6 +61,28 @@ export async function hashStaffPin(
 	};
 }
 
+export async function hashOwnerPassword(
+	password: string,
+	pepper: string,
+	salt = createPinSalt(),
+) {
+	const input = createHmac("sha256", pepper)
+		.update("fitway-owner-password-v1\0", "utf8")
+		.update(password, "utf8")
+		.digest();
+	const digest = await deriveScrypt(input, salt);
+	return {
+		passwordSalt: salt,
+		passwordHash: [
+			"scrypt-owner-v1",
+			SCRYPT_COST,
+			SCRYPT_BLOCK_SIZE,
+			SCRYPT_PARALLELIZATION,
+			digest.toString("base64url"),
+		].join("$"),
+	};
+}
+
 export async function verifyStaffPin(input: {
 	pin: string;
 	pepper: string;
@@ -83,6 +105,32 @@ export async function verifyStaffPin(input: {
 		derivePinInput(input.pin, input.pepper),
 		input.pinSalt,
 	);
+	return expected.length === actual.length && timingSafeEqual(expected, actual);
+}
+
+export async function verifyOwnerPassword(input: {
+	password: string;
+	pepper: string;
+	passwordSalt: string;
+	passwordHash: string;
+}) {
+	const [algorithm, cost, blockSize, parallelization, encodedDigest] =
+		input.passwordHash.split("$");
+	if (
+		algorithm !== "scrypt-owner-v1" ||
+		cost !== `${SCRYPT_COST}` ||
+		blockSize !== `${SCRYPT_BLOCK_SIZE}` ||
+		parallelization !== `${SCRYPT_PARALLELIZATION}` ||
+		!encodedDigest
+	) {
+		return false;
+	}
+	const expected = Buffer.from(encodedDigest, "base64url");
+	const passwordInput = createHmac("sha256", input.pepper)
+		.update("fitway-owner-password-v1\0", "utf8")
+		.update(input.password, "utf8")
+		.digest();
+	const actual = await deriveScrypt(passwordInput, input.passwordSalt);
 	return expected.length === actual.length && timingSafeEqual(expected, actual);
 }
 
