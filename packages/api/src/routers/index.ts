@@ -1,6 +1,6 @@
 import type { RouterClient } from "@orpc/server";
 import { edgePushRequestSchema, edgePushResponseSchema } from "../edge-push";
-import { publicProcedure } from "../index";
+import { ownerProcedure, publicProcedure, staffProcedure } from "../index";
 
 const pushOccupancyContract = publicProcedure
 	.route({
@@ -19,6 +19,12 @@ const pushOccupancyContract = publicProcedure
 	});
 
 export const openApiRouter = { edge: { pushOccupancy: pushOccupancyContract } };
-export const appRouter = {};
+const staffSession = staffProcedure.handler(({ context }) => context.auth);
+const adminSession = ownerProcedure.handler(({ context }) => context.auth);
+
+export const appRouter = {
+	staff: { session: staffSession },
+	admin: { session: adminSession },
+};
 export type AppRouter = typeof appRouter;
 export type AppRouterClient = RouterClient<typeof appRouter>;

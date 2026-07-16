@@ -15,6 +15,13 @@
 			"when": 1783954902456,
 			"tag": "0001_safe_falcon",
 			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "7",
+			"when": 1784201893110,
+			"tag": "0002_phase4_auth",
+			"breakpoints": true
 		}
 	]
 }
