@@ -6,6 +6,7 @@ import {
 	OPENAPI_REFERENCE_PATH,
 	OPENAPI_RESOURCE_PATH,
 } from "@fitway/api/edge-push";
+import { buildOperationalSnapshot } from "@fitway/api/health/snapshot";
 import {
 	PUBLIC_OCCUPANCY_INTERNAL_PATH,
 	PUBLIC_POLL_HEADER,
@@ -21,6 +22,7 @@ import { logger } from "hono/logger";
 import { mountAuthRoutes } from "./auth/routes";
 import { type AuthRuntime, createAuthRuntime } from "./auth/runtime";
 import { createEdgePushHandler } from "./edge-push";
+import { healthSnapshotRepository } from "./health-repository";
 import {
 	findDeviceByTokenHash,
 	occupancyEngineDatabase,
@@ -107,6 +109,8 @@ export function createApp(
 					context,
 					authenticate: (cookieHeader) =>
 						authRuntime.service.authenticate(cookieHeader),
+					readOperationalSnapshot: () =>
+						buildOperationalSnapshot(healthSnapshotRepository),
 				}),
 			});
 			if (rpcResult.matched)

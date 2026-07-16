@@ -6,6 +6,7 @@ import type {
 import { db } from "@fitway/db";
 import {
 	currentState,
+	edgeCurrentHealth,
 	edgeDevices,
 	occupancyMinutes,
 	settingsVersions,
@@ -120,6 +121,24 @@ function transactionAdapter(tx: Transaction): OccupancyTransaction {
 				.where(eq(edgeDevices.id, deviceId))
 				.returning({ id: edgeDevices.id });
 			if (rows.length !== 1) throw new Error("Locked device disappeared");
+		},
+		async upsertCurrentHealth(value) {
+			await tx
+				.insert(edgeCurrentHealth)
+				.values(value)
+				.onConflictDoUpdate({
+					target: edgeCurrentHealth.deviceId,
+					set: {
+						sequence: value.sequence,
+						processStatus: value.processStatus,
+						cameraStatus: value.cameraStatus,
+						feedStatus: value.feedStatus,
+						detectorFps: value.detectorFps,
+						edgeObservedAt: value.edgeObservedAt,
+						receivedAt: value.receivedAt,
+						updatedAt: value.updatedAt,
+					},
+				});
 		},
 	};
 }

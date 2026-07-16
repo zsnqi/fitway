@@ -55,6 +55,17 @@ export type OccupancyTransaction = {
 		sequence: number,
 		receivedAt: Date,
 	): Promise<void>;
+	upsertCurrentHealth(value: {
+		deviceId: string;
+		sequence: number;
+		processStatus: EdgePushRequest["health"]["process"];
+		cameraStatus: EdgePushRequest["health"]["camera"];
+		feedStatus: EdgePushRequest["health"]["feed"];
+		detectorFps: EdgePushRequest["health"]["detectorFps"];
+		edgeObservedAt: Date;
+		receivedAt: Date;
+		updatedAt: Date;
+	}): Promise<void>;
 };
 
 export type OccupancyEngineDependencies = {
@@ -202,6 +213,17 @@ export async function processLivePush(
 			updatedAt: receivedAt,
 		});
 		await tx.advanceDevice(deviceId, input.sequence, receivedAt);
+		await tx.upsertCurrentHealth({
+			deviceId,
+			sequence: input.sequence,
+			processStatus: input.health.process,
+			cameraStatus: input.health.camera,
+			feedStatus: input.health.feed,
+			detectorFps: input.health.detectorFps,
+			edgeObservedAt: new Date(input.observedAt),
+			receivedAt,
+			updatedAt: receivedAt,
+		});
 		return response(true, "processed", input.sequence, settings, receivedAt);
 	});
 }

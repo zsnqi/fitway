@@ -22,6 +22,13 @@
 			"when": 1784201893110,
 			"tag": "0002_phase4_auth",
 			"breakpoints": true
+		},
+		{
+			"idx": 3,
+			"version": "7",
+			"when": 1784212329090,
+			"tag": "0003_phase4_health",
+			"breakpoints": true
 		}
 	]
 }
