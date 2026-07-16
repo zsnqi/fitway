@@ -1,93 +1,150 @@
-import { relations } from "drizzle-orm";
-import { boolean, index, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { relations, sql } from "drizzle-orm";
+import {
+	boolean,
+	check,
+	index,
+	integer,
+	pgEnum,
+	pgTable,
+	text,
+	timestamp,
+	uniqueIndex,
+	uuid,
+} from "drizzle-orm/pg-core";
 
-export const user = pgTable("user", {
-	id: text("id").primaryKey(),
-	name: text("name").notNull(),
-	email: text("email").notNull().unique(),
-	emailVerified: boolean("email_verified").default(false).notNull(),
-	image: text("image"),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-	updatedAt: timestamp("updated_at")
-		.defaultNow()
-		.$onUpdate(() => /* @__PURE__ */ new Date())
-		.notNull(),
-});
+export const authRole = pgEnum("auth_role", ["staff", "owner"]);
+export const authPrincipalKind = pgEnum("auth_principal_kind", [
+	"shared_staff",
+	"owner",
+]);
 
-export const session = pgTable(
-	"session",
+const utcTimestamp = (name: string) => timestamp(name, { withTimezone: true });
+
+export const authPrincipals = pgTable(
+	"auth_principals",
 	{
-		id: text("id").primaryKey(),
-		expiresAt: timestamp("expires_at").notNull(),
-		token: text("token").notNull().unique(),
-		createdAt: timestamp("created_at").defaultNow().notNull(),
-		updatedAt: timestamp("updated_at")
-			.$onUpdate(() => /* @__PURE__ */ new Date())
-			.notNull(),
-		ipAddress: text("ip_address"),
-		userAgent: text("user_agent"),
-		userId: text("user_id")
+		id: uuid("id").defaultRandom().primaryKey(),
+		principalKind: authPrincipalKind("principal_kind").notNull(),
+		role: authRole("role").notNull(),
+		active: boolean("active").notNull().default(true),
+		ownerEmail: text("owner_email"),
+		displayName: text("display_name").notNull(),
+		createdAt: utcTimestamp("created_at").notNull().defaultNow(),
+		updatedAt: utcTimestamp("updated_at").notNull().defaultNow(),
+	},
+	(table) => [
+		uniqueIndex("auth_principals_one_shared_staff")
+			.on(table.principalKind)
+			.where(sql`${table.principalKind} = 'shared_staff'`),
+		uniqueIndex("auth_principals_owner_email_unique")
+			.on(sql`lower(${table.ownerEmail})`)
+			.where(sql`${table.ownerEmail} is not null`),
+		check(
+			"auth_principals_kind_role_identity",
+			sql`(
+				(${table.principalKind} = 'shared_staff' and ${table.role} = 'staff' and ${table.ownerEmail} is null)
+				or
+				(${table.principalKind} = 'owner' and ${table.role} = 'owner' and ${table.ownerEmail} is not null)
+			)`,
+		),
+		check(
+			"auth_principals_display_name_nonempty",
+			sql`length(trim(${table.displayName})) > 0`,
+		),
+		check(
+			"auth_principals_owner_email_nonempty",
+			sql`${table.ownerEmail} is null or length(trim(${table.ownerEmail})) > 0`,
+		),
+	],
+);
+
+export const authStaffCredentials = pgTable(
+	"auth_staff_credentials",
+	{
+		id: uuid("id").defaultRandom().primaryKey(),
+		principalId: uuid("principal_id")
 			.notNull()
-			.references(() => user.id, { onDelete: "cascade" }),
+			.references(() => authPrincipals.id, { onDelete: "cascade" }),
+		pinHash: text("pin_hash").notNull(),
+		pinSalt: text("pin_salt").notNull(),
+		credentialVersion: integer("credential_version").notNull().default(1),
+		active: boolean("active").notNull().default(true),
+		createdAt: utcTimestamp("created_at").notNull().defaultNow(),
+		rotatedAt: utcTimestamp("rotated_at").notNull().defaultNow(),
 	},
-	(table) => [index("session_userId_idx").on(table.userId)],
+	(table) => [
+		uniqueIndex("auth_staff_credentials_principal_unique").on(
+			table.principalId,
+		),
+		check(
+			"auth_staff_credentials_hash_nonempty",
+			sql`length(trim(${table.pinHash})) > 0`,
+		),
+		check(
+			"auth_staff_credentials_salt_nonempty",
+			sql`length(trim(${table.pinSalt})) > 0`,
+		),
+		check(
+			"auth_staff_credentials_version_positive",
+			sql`${table.credentialVersion} > 0`,
+		),
+	],
 );
 
-export const account = pgTable(
-	"account",
+export const authSessions = pgTable(
+	"auth_sessions",
 	{
-		id: text("id").primaryKey(),
-		accountId: text("account_id").notNull(),
-		providerId: text("provider_id").notNull(),
-		userId: text("user_id")
+		id: uuid("id").primaryKey(),
+		principalId: uuid("principal_id")
 			.notNull()
-			.references(() => user.id, { onDelete: "cascade" }),
-		accessToken: text("access_token"),
-		refreshToken: text("refresh_token"),
-		idToken: text("id_token"),
-		accessTokenExpiresAt: timestamp("access_token_expires_at"),
-		refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
-		scope: text("scope"),
-		password: text("password"),
-		createdAt: timestamp("created_at").defaultNow().notNull(),
-		updatedAt: timestamp("updated_at")
-			.$onUpdate(() => /* @__PURE__ */ new Date())
-			.notNull(),
+			.references(() => authPrincipals.id, { onDelete: "cascade" }),
+		tokenHash: text("token_hash").notNull(),
+		credentialVersion: integer("credential_version"),
+		expiresAt: utcTimestamp("expires_at").notNull(),
+		lastRefreshedAt: utcTimestamp("last_refreshed_at").notNull(),
+		revokedAt: utcTimestamp("revoked_at"),
+		createdAt: utcTimestamp("created_at").notNull().defaultNow(),
 	},
-	(table) => [index("account_userId_idx").on(table.userId)],
+	(table) => [
+		uniqueIndex("auth_sessions_token_hash_unique").on(table.tokenHash),
+		index("auth_sessions_principal_idx").on(table.principalId),
+		index("auth_sessions_expires_idx").on(table.expiresAt),
+		check(
+			"auth_sessions_token_hash_sha256",
+			sql`${table.tokenHash} ~ '^[0-9a-f]{64}$'`,
+		),
+		check(
+			"auth_sessions_credential_version_positive",
+			sql`${table.credentialVersion} is null or ${table.credentialVersion} > 0`,
+		),
+		check(
+			"auth_sessions_expiry_after_creation",
+			sql`${table.expiresAt} > ${table.createdAt}`,
+		),
+	],
 );
 
-export const verification = pgTable(
-	"verification",
-	{
-		id: text("id").primaryKey(),
-		identifier: text("identifier").notNull(),
-		value: text("value").notNull(),
-		expiresAt: timestamp("expires_at").notNull(),
-		createdAt: timestamp("created_at").defaultNow().notNull(),
-		updatedAt: timestamp("updated_at")
-			.defaultNow()
-			.$onUpdate(() => /* @__PURE__ */ new Date())
-			.notNull(),
-	},
-	(table) => [index("verification_identifier_idx").on(table.identifier)],
-);
-
-export const userRelations = relations(user, ({ many }) => ({
-	sessions: many(session),
-	accounts: many(account),
-}));
-
-export const sessionRelations = relations(session, ({ one }) => ({
-	user: one(user, {
-		fields: [session.userId],
-		references: [user.id],
+export const authPrincipalRelations = relations(
+	authPrincipals,
+	({ many, one }) => ({
+		staffCredential: one(authStaffCredentials),
+		sessions: many(authSessions),
 	}),
-}));
+);
 
-export const accountRelations = relations(account, ({ one }) => ({
-	user: one(user, {
-		fields: [account.userId],
-		references: [user.id],
+export const authStaffCredentialRelations = relations(
+	authStaffCredentials,
+	({ one }) => ({
+		principal: one(authPrincipals, {
+			fields: [authStaffCredentials.principalId],
+			references: [authPrincipals.id],
+		}),
+	}),
+);
+
+export const authSessionRelations = relations(authSessions, ({ one }) => ({
+	principal: one(authPrincipals, {
+		fields: [authSessions.principalId],
+		references: [authPrincipals.id],
 	}),
 }));

@@ -11,7 +11,6 @@ import {
 	PUBLIC_POLL_HEADER,
 } from "@fitway/api/public-occupancy";
 import { appRouter } from "@fitway/api/routers/index";
-import { auth } from "@fitway/auth";
 import { env } from "@fitway/env/server";
 import { onError } from "@orpc/server";
 import { RPCHandler } from "@orpc/server/fetch";
@@ -19,7 +18,8 @@ import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
-
+import { mountAuthRoutes } from "./auth/routes";
+import { type AuthRuntime, createAuthRuntime } from "./auth/runtime";
 import { createEdgePushHandler } from "./edge-push";
 import {
 	findDeviceByTokenHash,
@@ -32,6 +32,7 @@ import { DeviceRateLimiter } from "./rate-limiter";
 
 export function createApp(
 	nodeEnv: "development" | "production" | "test" = env.NODE_ENV,
+	authRuntime: AuthRuntime = createAuthRuntime(env.BETTER_AUTH_SECRET),
 ) {
 	const app = new Hono();
 	const requestLogger = logger();
@@ -70,9 +71,7 @@ export function createApp(
 		PUBLIC_OCCUPANCY_INTERNAL_PATH,
 		createPublicOccupancyHandler(publicPayloadRepository),
 	);
-	app.on(["POST", "GET"], "/api/auth/*", (context) =>
-		auth.handler(context.req.raw),
-	);
+	mountAuthRoutes(app, authRuntime);
 
 	const document = generateOpenApiDocument();
 	app.get(OPENAPI_RESOURCE_PATH, async (context) => {
@@ -104,7 +103,11 @@ export function createApp(
 		if (context.req.path.startsWith("/rpc")) {
 			const rpcResult = await rpcHandler.handle(context.req.raw, {
 				prefix: "/rpc",
-				context: await createContext({ context }),
+				context: await createContext({
+					context,
+					authenticate: (cookieHeader) =>
+						authRuntime.service.authenticate(cookieHeader),
+				}),
 			});
 			if (rpcResult.matched)
 				return context.newResponse(rpcResult.response.body, rpcResult.response);
