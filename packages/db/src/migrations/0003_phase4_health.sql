@@ -13,4 +13,4 @@ CREATE TABLE "edge_current_health" (
 	CONSTRAINT "edge_current_health_detector_fps_finite_nonnegative" CHECK ("edge_current_health"."detector_fps" is null or ("edge_current_health"."detector_fps" >= 0 and "edge_current_health"."detector_fps" < 'infinity'::double precision))
 );
 --> statement-breakpoint
-ALTER TABLE "edge_current_health" ADD CONSTRAINT "edge_current_health_device_id_edge_devices_id_fk" FOREIGN KEY ("device_id") REFERENCES "public"."edge_devices"("id") ON DELETE no action ON UPDATE no action;
+ALTER TABLE "edge_current_health" ADD CONSTRAINT "edge_current_health_device_id_edge_devices_id_fk" FOREIGN KEY ("device_id") REFERENCES "public"."edge_devices"("id") ON DELETE cascade ON UPDATE no action;

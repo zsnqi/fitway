@@ -223,7 +223,7 @@ export const edgeCurrentHealth = pgTable(
 	{
 		deviceId: uuid("device_id")
 			.primaryKey()
-			.references(() => edgeDevices.id),
+			.references(() => edgeDevices.id, { onDelete: "cascade" }),
 		sequence: bigint("sequence", { mode: "number" }).notNull(),
 		processStatus: edgeHealthStatus("process_status").notNull(),
 		cameraStatus: edgeHealthStatus("camera_status").notNull(),

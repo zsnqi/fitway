@@ -177,7 +177,7 @@
 					"tableTo": "edge_devices",
 					"columnsFrom": ["device_id"],
 					"columnsTo": ["id"],
-					"onDelete": "no action",
+					"onDelete": "cascade",
 					"onUpdate": "no action"
 				}
 			},
