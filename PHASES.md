@@ -41,8 +41,9 @@ are not live status.
 ## Dependency DAG
 
 ```text
-baseline-reconciliation-gate + phase-2 + phase-3
-  -> phase4-auth + phase4-health + phase4-staff-web
+baseline-reconciliation-gate + phase-2 + phase-3 -> phase4-auth
+phase4-auth -> phase4-health
+phase4-auth + phase4-health -> phase4-staff-web
 phase4-auth + phase4-health + phase4-staff-web -> phase-4
 phase-4 -> phase-5 -> phase-6
 
@@ -89,7 +90,9 @@ No phase worktree starts until BRG is `DONE` in `PROJECT_STATE.yaml`.
 
 | Batch | Concurrent bounded streams | Integration condition |
 | --- | --- | --- |
-| 1 | `phase4-auth`, `phase4-health`, `phase4-staff-web`, `phase9-analytics-domain` | BRG, `phase-2`, and `phase-3` are `DONE`; coordinator owns migrations, context/router, engine transaction, shared shell/catalogs/styles |
+| 1A | `phase4-auth`, `phase9-analytics-domain` | BRG, `phase-2`, and `phase-3` are `DONE`; auth alone leases the next migration/context lane, while analytics stays additive and unexposed |
+| 1B | `phase4-health` after `phase4-auth` integrates | Coordinator releases and reallocates the ordered migration plus edge transaction/repository lane; health rebases on auth |
+| 1C | `phase4-staff-web` after auth and health integrate | Real principal/session and `staff.operationalSnapshot` contracts exist before UI binds; shared shell/catalog/style leases are then allocated |
 | 2 | `phase8-alert-evaluator` when `phase4-health` closes; coordinator aggregates `phase-4`; then `phase-5` and `phase9-owner-ui` start as their dependencies close | Aggregate nodes stay on the integration branch and are never worker worktrees |
 | 3 | Coordinator aggregates `phase-9`; then `phase10-domain` and `phase11-shell` start | Migration and router aggregation remain serialized |
 | 4 | `phase-6`, `phase7-reset-evaluator`, `phase11-audit`, and `phase11-access` as their exact ledger dependencies close | A coordinated settings/index migration lands first; Phase 11 slices cannot infer missing audit/auth contracts |
@@ -146,9 +149,11 @@ migration number. Never hand-edit generated route trees or migration snapshots.
 
 **Depends on:** Phase 2, Phase 3, BRG.
 
-Worker milestones are `phase4-auth`, `phase4-health`, and `phase4-staff-web`; each has those
-three dependencies. `phase-4` is the coordinator integration/acceptance milestone and depends
-on all three slices.
+`phase4-auth` depends on Phase 2, Phase 3, and BRG. `phase4-health` follows auth because both
+require the single ordered schema/migration lane in this repository. `phase4-staff-web` follows
+both backend slices so it cannot bind to the explicitly nonconforming email/password scaffold or
+invent the missing `staff.operationalSnapshot`. `phase-4` is the coordinator
+integration/acceptance milestone and depends on all three slices.
 
 Deliver the frozen PIN/session/principal model, server-side role guards, persisted current
 health projection, `staff.operationalSnapshot`, PIN-first `/login`, `/staff`, and an

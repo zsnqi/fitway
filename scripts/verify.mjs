@@ -24,15 +24,27 @@ const phases = {
 		integrationFiles: null,
 		label: "Baseline Reconciliation Gate",
 	},
+	"phase4-auth": {
+		browserFiles: [],
+		integrationFiles: ["apps/server/src/phase4-auth.integration.test.ts"],
+		label: "Phase 4 authentication slice",
+	},
+	"phase9-analytics-domain": {
+		browserFiles: [],
+		integrationFiles: ["apps/server/src/phase9-analytics.integration.test.ts"],
+		label: "Phase 9 analytics domain slice",
+	},
 };
+
+const phaseNames = Object.keys(phases).join("|");
 
 function usage() {
 	console.log(`FITWAY verification
 
 Usage:
   pnpm verify:fast
-  FITWAY_PHASE=<1|2|3|baseline> pnpm verify:phase
-  pnpm verify:phase --phase <1|2|3|baseline>
+  FITWAY_PHASE=<${phaseNames}> pnpm verify:phase
+  pnpm verify:phase --phase <${phaseNames}>
   pnpm verify:full
 
 fast   Static checks, types, all unit tests, and simulator tests.
@@ -80,7 +92,9 @@ function parseArguments() {
 		throw new Error(`Unknown argument: ${argument}`);
 	}
 	if (mode === "phase" && (!phase || !(phase in phases))) {
-		throw new Error("verify:phase requires --phase 1, 2, 3, or baseline");
+		throw new Error(
+			`verify:phase requires one of: ${Object.keys(phases).join(", ")}`,
+		);
 	}
 	if (mode !== "phase" && phase) {
 		throw new Error("--phase is valid only with verify:phase");

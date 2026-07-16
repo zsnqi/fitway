@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-07-16T00:58:04+03:00"
+updatedAt: "2026-07-16T13:10:48+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -9,7 +9,7 @@ coordinator:
 baseline:
   status: DONE
   branch: main
-  integratedCommit: SELF
+  integratedCommit: 4df79885ef7e039dcf2d27eb87cf41f8c78b73e2
   preservation:
     mainCandidate:
       branch: preserve/brg-main-dirty-20260715
@@ -116,22 +116,53 @@ milestones:
       accessibility: PASS
       visual: PASS
       independentReview: PASS
-    integratedCommit: SELF
+    integratedCommit: 4df79885ef7e039dcf2d27eb87cf41f8c78b73e2
 
   phase4-auth:
-    status: PLANNED
+    status: READY
     dependencies: [baseline-reconciliation-gate, phase-2, phase-3]
-    ownerSession: null
-    branch: null
-    worktree: null
-    baseCommit: null
-    ownedPaths: []
-    forbiddenPaths: []
-    sharedLeases: []
+    ownerSession: "phase4-auth worker (pending launch)"
+    branch: work/phase4-auth-b01
+    worktree: D:/Projects/fitway-worktrees/phase4-auth
+    baseCommit: SELF
+    ownedPaths:
+      - packages/auth/src/**
+      - packages/api/src/auth/**
+      - apps/server/src/auth/**
+      - apps/server/src/phase4-auth.integration.test.ts
+      - docs/phase-records/handoffs/phase4-auth/**
+    forbiddenPaths:
+      - apps/web/**
+      - packages/ui/**
+      - packages/db/src/schema/application.ts
+      - packages/db/src/migrations/0000_*
+      - packages/db/src/migrations/0001_*
+      - packages/api/src/occupancy/**
+      - packages/api/src/public/**
+      - packages/api/src/edge-push.ts
+      - apps/server/src/occupancy-repositories.ts
+      - apps/server/src/edge-push.ts
+      - apps/server/src/public-occupancy.ts
+      - edge/**
+      - tests/browser/**
+      - visual-direction-gate/**
+      - PROJECT_STATE.yaml
+      - normative and unrelated phase documentation
+      - root manifests, lockfiles, and test/config scripts
+    sharedLeases:
+      - packages/db/src/schema/auth.ts
+      - packages/db/src/migrations/0002_*
+      - packages/db/src/migrations/meta/0002_snapshot.json
+      - packages/db/src/migrations/meta/_journal.json
+      - packages/env/src/server.ts
+      - packages/api/src/context.ts
+      - packages/api/src/index.ts
+      - packages/api/src/routers/index.ts
+      - apps/server/src/index.ts
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
-    leaseExpiresAt: null
-    handoff: null
+    lastHeartbeatAt: "2026-07-16T13:10:48+03:00"
+    leaseExpiresAt: "2026-07-18T13:10:48+03:00"
+    handoff: docs/phase-records/handoffs/phase4-auth/20260716-p4_auth_b01.md
     stopReason: null
     gates:
       unit: PENDING
@@ -144,7 +175,7 @@ milestones:
 
   phase4-health:
     status: PLANNED
-    dependencies: [baseline-reconciliation-gate, phase-2, phase-3]
+    dependencies: [phase4-auth]
     ownerSession: null
     branch: null
     worktree: null
@@ -168,7 +199,7 @@ milestones:
 
   phase4-staff-web:
     status: PLANNED
-    dependencies: [baseline-reconciliation-gate, phase-2, phase-3]
+    dependencies: [phase4-auth, phase4-health]
     ownerSession: null
     branch: null
     worktree: null
@@ -407,19 +438,41 @@ milestones:
     integratedCommit: null
 
   phase9-analytics-domain:
-    status: PLANNED
+    status: READY
     dependencies: [baseline-reconciliation-gate, phase-2, phase-3]
-    ownerSession: null
-    branch: null
-    worktree: null
-    baseCommit: null
-    ownedPaths: []
-    forbiddenPaths: []
+    ownerSession: "phase9-analytics-domain worker (pending launch)"
+    branch: work/phase9-analytics-domain-b01
+    worktree: D:/Projects/fitway-worktrees/phase9-analytics-domain
+    baseCommit: SELF
+    ownedPaths:
+      - packages/api/src/analytics/**
+      - apps/server/src/analytics-repository.ts
+      - apps/server/src/phase9-analytics.integration.test.ts
+      - docs/phase-records/handoffs/phase9-analytics-domain/**
+    forbiddenPaths:
+      - all repository paths outside ownedPaths
+      - packages/db/src/schema/**
+      - packages/db/src/migrations/**
+      - packages/api/src/context.ts
+      - packages/api/src/index.ts
+      - packages/api/src/routers/**
+      - packages/api/src/occupancy/**
+      - apps/server/src/index.ts
+      - apps/server/src/occupancy-repositories.ts
+      - packages/auth/**
+      - apps/web/**
+      - packages/ui/**
+      - edge/**
+      - tests/browser/**
+      - visual-direction-gate/**
+      - PROJECT_STATE.yaml
+      - normative and unrelated phase documentation
+      - root manifests, lockfiles, and test/config scripts
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
-    leaseExpiresAt: null
-    handoff: null
+    lastHeartbeatAt: "2026-07-16T13:10:48+03:00"
+    leaseExpiresAt: "2026-07-18T13:10:48+03:00"
+    handoff: docs/phase-records/handoffs/phase9-analytics-domain/20260716-p9_analytics_b01.md
     stopReason: null
     gates:
       unit: PENDING

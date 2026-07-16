@@ -130,6 +130,27 @@ function assertProjectStateInvariants(state) {
 		"NEEDS_HUMAN",
 		"FAILED_VALIDATION",
 	]);
+	const activeWorkerStatuses = new Set([
+		"READY",
+		"IN_PROGRESS",
+		"VALIDATING",
+		"READY_FOR_INTEGRATION",
+	]);
+	if (
+		state.baseline.integratedCommit === "SELF" &&
+		Object.entries(state.milestones).some(
+			([id, milestone]) =>
+				id !== "baseline-reconciliation-gate" &&
+				activeWorkerStatuses.has(milestone.status),
+		)
+	) {
+		fail(
+			"The baseline commit cannot remain SELF after a worker slice is activated",
+		);
+	}
+	const assignedBranches = new Map();
+	const assignedWorktrees = new Map();
+	const assignedLeases = new Map();
 	for (const [id, milestone] of Object.entries(state.milestones)) {
 		if (stoppedStatuses.has(milestone.status)) {
 			if (!milestone.stopReason?.trim()) {
@@ -145,6 +166,40 @@ function assertProjectStateInvariants(state) {
 						`${id} cannot be ${milestone.status} while ${dependency} is not DONE`,
 					);
 				}
+			}
+		}
+		if (activeWorkerStatuses.has(milestone.status)) {
+			for (const field of [
+				"ownerSession",
+				"branch",
+				"worktree",
+				"baseCommit",
+				"lastHeartbeatAt",
+				"leaseExpiresAt",
+				"handoff",
+			]) {
+				if (!milestone[field]) {
+					fail(`${id} is ${milestone.status} without ${field}`);
+				}
+			}
+			if (milestone.ownedPaths.length === 0) {
+				fail(`${id} is ${milestone.status} without owned paths`);
+			}
+			if (new Date(milestone.leaseExpiresAt) <= new Date()) {
+				fail(`${id} has an expired lease at the current wall-clock time`);
+			}
+			for (const [value, assignments, label] of [
+				[milestone.branch, assignedBranches, "branch"],
+				[milestone.worktree, assignedWorktrees, "worktree"],
+			]) {
+				const assigned = assignments.get(value);
+				if (assigned) fail(`${id} and ${assigned} share the same ${label}`);
+				assignments.set(value, id);
+			}
+			for (const lease of milestone.sharedLeases) {
+				const assigned = assignedLeases.get(lease);
+				if (assigned) fail(`${id} and ${assigned} share lease ${lease}`);
+				assignedLeases.set(lease, id);
 			}
 		}
 		if (milestone.status !== "DONE") continue;
@@ -224,6 +279,18 @@ async function main() {
 	}
 	assertAcyclicMilestones(state.milestones);
 	assertProjectStateInvariants(state);
+	for (const milestone of Object.values(state.milestones)) {
+		if (
+			new Set([
+				"READY",
+				"IN_PROGRESS",
+				"VALIDATING",
+				"READY_FOR_INTEGRATION",
+			]).has(milestone.status)
+		) {
+			await readBytes(milestone.handoff);
+		}
+	}
 	for (const relativePath of [
 		state.baseline.visualManifest,
 		state.baseline.validationRecord,

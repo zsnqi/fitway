@@ -45,8 +45,18 @@ blocked/failed item receives a new attempt record; history is never overwritten.
 3. Define the outcome, acceptance criteria, owned paths, forbidden paths, shared leases, and
    required verification commands.
 4. Assign a unique lowercase `FITWAY_RUN_ID`, for example `p4_auth_s01`.
-5. Create a non-overlapping branch/worktree. Never start from another worker's unintegrated branch.
-6. Record owner, branch, worktree, base commit, lease expiry, and handoff path before edits.
+5. Register the slice's focused verification profile and exact test paths before launch.
+6. Create a non-overlapping branch/worktree. Never start from another worker's unintegrated branch.
+7. Record owner, branch, worktree, actual initial worker HEAD, lease expiry, and handoff path
+   before edits. `baseCommit: SELF` is allowed only when the activation commit itself is that HEAD.
+
+The BRG commit remains the immutable feature baseline. The coordinator may place one activation
+commit directly on top of it containing only live state, launch contracts, corrected execution
+dependencies, and verification profiles. When used, every phase record names both the BRG base
+and activation commit (`SELF` inside that commit), and every worker branch starts at the same
+activation commit. No feature implementation or speculative dependency change belongs in it.
+The baseline's `integratedCommit` remains the immutable BRG hash; `SELF` in an activated worker's
+`baseCommit` means the activation commit, not the BRG commit.
 
 ## Clean-session startup
 
@@ -60,7 +70,11 @@ Every worker or verifier reads, in order:
 6. the latest handoff named in the ledger.
 
 Then verify `git status --short`, `git rev-parse HEAD`, the worktree/branch, tool versions,
-required services, and the declared owned paths. Stop if the base or ownership differs.
+required services, and the declared owned paths. If an activation commit is recorded, verify
+that the BRG base is its parent and that the worker starts at that exact activation commit.
+Check `leaseExpiresAt` against the current wall clock at startup and before every shared-file edit;
+an expired lease requires coordinator renewal and immediate `NEEDS_HUMAN`. Stop if the base,
+activation head, lease, or ownership differs.
 
 ## Worker implementation loop
 
