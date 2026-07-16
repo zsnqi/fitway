@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-07-16T13:10:48+03:00"
+updatedAt: "2026-07-16T15:12:54+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -119,12 +119,12 @@ milestones:
     integratedCommit: 4df79885ef7e039dcf2d27eb87cf41f8c78b73e2
 
   phase4-auth:
-    status: READY
+    status: DONE
     dependencies: [baseline-reconciliation-gate, phase-2, phase-3]
-    ownerSession: "phase4-auth worker (pending launch)"
-    branch: work/phase4-auth-b01
-    worktree: D:/Projects/fitway-worktrees/phase4-auth
-    baseCommit: SELF
+    ownerSession: null
+    branch: main
+    worktree: null
+    baseCommit: 49870cecde23a614d4f518fb0c88e6d1c56bce36
     ownedPaths:
       - packages/auth/src/**
       - packages/api/src/auth/**
@@ -149,29 +149,20 @@ milestones:
       - PROJECT_STATE.yaml
       - normative and unrelated phase documentation
       - root manifests, lockfiles, and test/config scripts
-    sharedLeases:
-      - packages/db/src/schema/auth.ts
-      - packages/db/src/migrations/0002_*
-      - packages/db/src/migrations/meta/0002_snapshot.json
-      - packages/db/src/migrations/meta/_journal.json
-      - packages/env/src/server.ts
-      - packages/api/src/context.ts
-      - packages/api/src/index.ts
-      - packages/api/src/routers/index.ts
-      - apps/server/src/index.ts
-    validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-07-16T13:10:48+03:00"
-    leaseExpiresAt: "2026-07-18T13:10:48+03:00"
-    handoff: docs/phase-records/handoffs/phase4-auth/20260716-p4_auth_b01.md
+    sharedLeases: []
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-07-16T15:12:54+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase4-auth/20260716-143000-p4_auth_b01.md
     stopReason: null
     gates:
-      unit: PENDING
-      integration: PENDING
+      unit: PASS
+      integration: PASS
       browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
-      independentReview: PENDING
-    integratedCommit: null
+      independentReview: PASS
+    integratedCommit: 4730921c182e64f8963d47a3178f4f07b04945ee
 
   phase4-health:
     status: PLANNED
@@ -438,12 +429,12 @@ milestones:
     integratedCommit: null
 
   phase9-analytics-domain:
-    status: READY
+    status: DONE
     dependencies: [baseline-reconciliation-gate, phase-2, phase-3]
-    ownerSession: "phase9-analytics-domain worker (pending launch)"
-    branch: work/phase9-analytics-domain-b01
-    worktree: D:/Projects/fitway-worktrees/phase9-analytics-domain
-    baseCommit: SELF
+    ownerSession: null
+    branch: main
+    worktree: null
+    baseCommit: 49870cecde23a614d4f518fb0c88e6d1c56bce36
     ownedPaths:
       - packages/api/src/analytics/**
       - apps/server/src/analytics-repository.ts
@@ -470,18 +461,18 @@ milestones:
       - root manifests, lockfiles, and test/config scripts
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-07-16T13:10:48+03:00"
-    leaseExpiresAt: "2026-07-18T13:10:48+03:00"
-    handoff: docs/phase-records/handoffs/phase9-analytics-domain/20260716-p9_analytics_b01.md
+    lastHeartbeatAt: "2026-07-16T15:12:54+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase9-analytics-domain/20260716-p9_analytics_b01-ready.md
     stopReason: null
     gates:
-      unit: PENDING
-      integration: PENDING
+      unit: PASS
+      integration: PASS
       browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
-      independentReview: PENDING
-    integratedCommit: null
+      independentReview: PASS
+    integratedCommit: 7d29e1a5dd3c34197fb714d9619ac47f3c2d9201
 
   phase9-owner-ui:
     status: PLANNED

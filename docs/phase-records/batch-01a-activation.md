@@ -1,8 +1,8 @@
 # Batch 01A activation record
 
-- Status: `READY`; worker sessions not yet launched
+- Status: `DONE`; integrated evidence is in `docs/phase-records/batch-01a-integration.md`
 - Approved feature baseline: `4df79885ef7e039dcf2d27eb87cf41f8c78b73e2`
-- Coordinator activation commit: `SELF`
+- Coordinator activation commit: `49870cecde23a614d4f518fb0c88e6d1c56bce36`
 - Coordinator branch: `main`
 - Activated at: `2026-07-16T13:10:48+03:00`
 - Feature implementation in activation commit: none
