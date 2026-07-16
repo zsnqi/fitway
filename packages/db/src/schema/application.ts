@@ -4,6 +4,7 @@ import {
 	boolean,
 	check,
 	date,
+	doublePrecision,
 	integer,
 	pgEnum,
 	pgTable,
@@ -27,6 +28,12 @@ export const minuteSource = pgEnum("minute_source", [
 	"live",
 	"backfill",
 	"manual",
+]);
+export const edgeHealthStatus = pgEnum("edge_health_status", [
+	"ok",
+	"degraded",
+	"failed",
+	"unknown",
 ]);
 
 const utcTimestamp = (name: string) => timestamp(name, { withTimezone: true });
@@ -207,6 +214,33 @@ export const occupancyMinutes = pgTable(
 		check(
 			"occupancy_minutes_capacity_positive",
 			sql`${table.capacitySnapshot} > 0`,
+		),
+	],
+);
+
+export const edgeCurrentHealth = pgTable(
+	"edge_current_health",
+	{
+		deviceId: uuid("device_id")
+			.primaryKey()
+			.references(() => edgeDevices.id),
+		sequence: bigint("sequence", { mode: "number" }).notNull(),
+		processStatus: edgeHealthStatus("process_status").notNull(),
+		cameraStatus: edgeHealthStatus("camera_status").notNull(),
+		feedStatus: edgeHealthStatus("feed_status").notNull(),
+		detectorFps: doublePrecision("detector_fps"),
+		edgeObservedAt: utcTimestamp("edge_observed_at").notNull(),
+		receivedAt: utcTimestamp("received_at").notNull(),
+		updatedAt: utcTimestamp("updated_at").notNull().defaultNow(),
+	},
+	(table) => [
+		check(
+			"edge_current_health_sequence_nonnegative",
+			sql`${table.sequence} >= 0`,
+		),
+		check(
+			"edge_current_health_detector_fps_finite_nonnegative",
+			sql`${table.detectorFps} is null or (${table.detectorFps} >= 0 and ${table.detectorFps} < 'infinity'::double precision)`,
 		),
 	],
 );
