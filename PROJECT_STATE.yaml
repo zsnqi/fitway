@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-07-16T23:25:00+03:00"
+updatedAt: "2026-07-17T13:30:00+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -216,23 +216,58 @@ milestones:
     integratedCommit: 4a59ca2f30c587eb71c6721a2adaed194512f5ee
 
   phase4-staff-web:
-    status: PLANNED
+    status: READY
     dependencies: [phase4-auth, phase4-health]
-    ownerSession: null
-    branch: null
-    worktree: null
-    baseCommit: null
-    ownedPaths: []
-    forbiddenPaths: []
-    sharedLeases: []
+    ownerSession: "reserved: phase4-staff-web worker (not yet started)"
+    branch: work/phase4-staff-web-b02
+    worktree: D:/Projects/fitway-worktrees/phase4-staff-web
+    baseCommit: SELF
+    ownedPaths:
+      - apps/web/src/routes/login.tsx
+      - apps/web/src/routes/staff.tsx
+      - apps/web/src/routes/admin.tsx
+      - apps/web/src/routes/_auth/**
+      - apps/web/src/components/staff/**
+      - apps/web/src/components/sign-in-form.tsx
+      - apps/web/src/lib/auth-client.ts
+      - apps/web/src/hooks/use-staff-*
+      - tests/browser/phase4-staff-web.browser.spec.ts
+      - docs/phase-records/handoffs/phase4-staff-web/**
+    forbiddenPaths:
+      - apps/server/**
+      - packages/api/**
+      - packages/auth/**
+      - packages/db/**
+      - packages/env/**
+      - edge/**
+      - apps/web/src/routes/index.tsx
+      - apps/web/src/main.tsx
+      - apps/web/src/utils/orpc.ts
+      - remaining public components, hooks, lib, and i18n runtime outside owned paths and leases
+      - tests/browser/phase2.browser.spec.ts
+      - tests/browser/phase3.browser.spec.ts
+      - tests/browser/public-baseline.browser.spec.ts
+      - tests/browser/__screenshots__/**
+      - visual-direction-gate/**
+      - PROJECT_STATE.yaml
+      - normative and unrelated phase documentation
+      - root manifests, lockfiles, and test/config scripts
+    sharedLeases:
+      - apps/web/src/routeTree.gen.ts
+      - apps/web/src/i18n/messages/ar.ts
+      - apps/web/src/i18n/messages/en.ts
+      - apps/web/src/routes/__root.tsx
+      - apps/web/src/index.css
+      - apps/web/src/components/public-atmosphere.tsx
+      - additive-only new primitive files under packages/ui/src/components/
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
-    leaseExpiresAt: null
-    handoff: null
+    lastHeartbeatAt: "2026-07-17T13:30:00+03:00"
+    leaseExpiresAt: "2026-07-19T13:30:00+03:00"
+    handoff: docs/phase-records/handoffs/phase4-staff-web/20260717-133000-p4_staff_b02.md
     stopReason: null
     gates:
       unit: PENDING
-      integration: PENDING
+      integration: NOT_REQUIRED
       browser: PENDING
       accessibility: PENDING
       visual: PENDING
@@ -384,19 +419,59 @@ milestones:
     integratedCommit: null
 
   phase8-alert-evaluator:
-    status: PLANNED
+    status: READY
     dependencies: [baseline-reconciliation-gate, phase-3, phase4-health]
-    ownerSession: null
-    branch: null
-    worktree: null
-    baseCommit: null
-    ownedPaths: []
-    forbiddenPaths: []
-    sharedLeases: []
+    ownerSession: "reserved: phase8-alert-evaluator worker (not yet started)"
+    branch: work/phase8-alert-evaluator-b02
+    worktree: D:/Projects/fitway-worktrees/phase8-alert-evaluator
+    baseCommit: SELF
+    ownedPaths:
+      - packages/api/src/alerts/**
+      - apps/server/src/alert-repository.ts
+      - apps/server/src/phase8-alert-evaluator.integration.test.ts
+      - docs/phase-records/handoffs/phase8-alert-evaluator/**
+    forbiddenPaths:
+      - apps/web/**
+      - packages/ui/**
+      - packages/auth/**
+      - packages/api/src/auth/**
+      - packages/api/src/health/**
+      - packages/api/src/analytics/**
+      - packages/api/src/public/**
+      - packages/api/src/occupancy/**
+      - packages/api/src/context.ts
+      - packages/api/src/index.ts
+      - packages/api/src/routers/**
+      - packages/api/src/edge-push.ts
+      - apps/server/src/auth/**
+      - apps/server/src/health-repository.ts
+      - apps/server/src/analytics-repository.ts
+      - apps/server/src/occupancy-repositories.ts
+      - apps/server/src/edge-push.ts
+      - apps/server/src/public-occupancy.ts
+      - apps/server/src/openapi.ts
+      - apps/server/src/index.ts
+      - packages/db/src/schema/auth.ts
+      - packages/db/src/migrations/0000_*
+      - packages/db/src/migrations/0001_*
+      - packages/db/src/migrations/0002_*
+      - packages/db/src/migrations/0003_*
+      - packages/env/**
+      - edge/**
+      - tests/browser/**
+      - visual-direction-gate/**
+      - PROJECT_STATE.yaml
+      - normative and unrelated phase documentation
+      - root manifests, lockfiles, and test/config scripts
+    sharedLeases:
+      - packages/db/src/schema/application.ts
+      - generated packages/db/src/migrations/0004_*
+      - generated packages/db/src/migrations/meta/0004_snapshot.json
+      - append-only 0004 entry in packages/db/src/migrations/meta/_journal.json
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
-    leaseExpiresAt: null
-    handoff: null
+    lastHeartbeatAt: "2026-07-17T13:30:00+03:00"
+    leaseExpiresAt: "2026-07-19T13:30:00+03:00"
+    handoff: docs/phase-records/handoffs/phase8-alert-evaluator/20260717-133000-p8_alert_b02.md
     stopReason: null
     gates:
       unit: PENDING

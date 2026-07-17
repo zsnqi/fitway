@@ -34,6 +34,18 @@ const phases = {
 		integrationFiles: ["apps/server/src/phase4-health.integration.test.ts"],
 		label: "Phase 4 operational health slice",
 	},
+	"phase4-staff-web": {
+		browserFiles: ["tests/browser/phase4-staff-web.browser.spec.ts"],
+		integrationFiles: [],
+		label: "Phase 4 staff web slice",
+	},
+	"phase8-alert-evaluator": {
+		browserFiles: [],
+		integrationFiles: [
+			"apps/server/src/phase8-alert-evaluator.integration.test.ts",
+		],
+		label: "Phase 8 alert evaluator slice",
+	},
 	"phase9-analytics-domain": {
 		browserFiles: [],
 		integrationFiles: ["apps/server/src/phase9-analytics.integration.test.ts"],
