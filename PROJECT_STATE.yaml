@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-07-21T18:45:00+03:00"
+updatedAt: "2026-07-21T19:27:04+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -421,10 +421,10 @@ milestones:
   phase8-alert-evaluator:
     status: READY
     dependencies: [baseline-reconciliation-gate, phase-3, phase4-health]
-    ownerSession: "reserved: phase8-alert-evaluator worker (not yet started)"
-    branch: work/phase8-alert-evaluator-b02
-    worktree: D:/Projects/fitway-worktrees/phase8-alert-evaluator
-    baseCommit: SELF
+    ownerSession: "reserved: phase8-alert-evaluator retry worker (not yet started)"
+    branch: work/phase8-alert-evaluator-b02-retry
+    worktree: D:/Projects/fitway-worktrees/phase8-alert-evaluator-retry
+    baseCommit: 6396d5b70ca533c890624c716be2733a06dfa2a0
     ownedPaths:
       - packages/api/src/alerts/**
       - apps/server/src/alert-repository.ts
@@ -469,9 +469,9 @@ milestones:
       - generated packages/db/src/migrations/meta/0004_snapshot.json
       - append-only 0004 entry in packages/db/src/migrations/meta/_journal.json
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-07-21T18:45:00+03:00"
-    leaseExpiresAt: "2026-07-23T18:45:00+03:00"
-    handoff: docs/phase-records/handoffs/phase8-alert-evaluator/20260721-184500-p8_alert_b02.md
+    lastHeartbeatAt: "2026-07-21T19:27:04+03:00"
+    leaseExpiresAt: "2026-07-23T19:30:00+03:00"
+    handoff: docs/phase-records/handoffs/phase8-alert-evaluator/20260721-192704-p8_alert_b02_retry.md
     stopReason: null
     gates:
       unit: PENDING
