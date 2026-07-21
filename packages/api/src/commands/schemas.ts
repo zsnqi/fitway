@@ -10,10 +10,12 @@ const reasonSchema = z.string().trim().min(1).max(240);
 export const canonicalUtcTimestampSchema = z
 	.string()
 	.datetime({ offset: false })
-	.refine(
-		(value) => new Date(value).toISOString() === value,
-		"Must be canonical UTC ISO-8601",
-	);
+	.refine((value) => {
+		const instant = new Date(value);
+		return (
+			Number.isFinite(instant.getTime()) && instant.toISOString() === value
+		);
+	}, "Must be canonical UTC ISO-8601");
 
 const correctionReason = { reason: reasonSchema.optional() } as const;
 

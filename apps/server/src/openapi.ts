@@ -5,7 +5,7 @@ import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
 const SAFE_INTEGER_MAX = 9_007_199_254_740_991;
 const POSTGRES_INTEGER_MAX = 2_147_483_647;
 const CANONICAL_UTC_PATTERN =
-	"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$";
+	"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9]\\.[0-9]{3}Z$";
 const MINUTE_UTC_PATTERN =
 	"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:00\\.000Z$";
 

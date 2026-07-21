@@ -97,6 +97,7 @@ describe("generated OpenAPI", () => {
 		const requestCases = [
 			validRequest,
 			{ ...validRequest, observedAt: "2026-07-13T18:24:20Z" },
+			{ ...validRequest, observedAt: "2026-07-13T18:24:60.000Z" },
 			{
 				...validRequest,
 				minutes: [

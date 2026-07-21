@@ -1,12 +1,19 @@
 import { describe, expect, it } from "vitest";
 
 import {
+	canonicalUtcTimestampSchema,
 	correctionInputSchema,
 	deviceCommandSchema,
 	resetInputSchema,
 } from "./schemas";
 
 describe("command contract schemas", () => {
+	it("rejects invalid canonical timestamps without throwing", () => {
+		expect(
+			canonicalUtcTimestampSchema.safeParse("2026-07-13T18:24:60.000Z").success,
+		).toBe(false);
+	});
+
 	it("accepts exactly one safe correction form and normalizes a short reason", () => {
 		expect(
 			correctionInputSchema.parse({ delta: -5, reason: "  counter drift  " }),
