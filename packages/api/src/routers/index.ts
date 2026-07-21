@@ -1,4 +1,10 @@
 import type { RouterClient } from "@orpc/server";
+import {
+	commandMutationResultSchema,
+	correctionInputSchema,
+	resetInputSchema,
+} from "../commands/schemas";
+import { CommandIssueError } from "../commands/service";
 import { edgePushRequestSchema, edgePushResponseSchema } from "../edge-push";
 import { operationalSnapshotSchema } from "../health/snapshot";
 import {
@@ -34,12 +40,40 @@ const staffOperationalSnapshot = staffProcedure
 		}
 		return context.readOperationalSnapshot();
 	});
+const staffIssueCorrection = staffProcedure
+	.input(correctionInputSchema)
+	.output(commandMutationResultSchema)
+	.handler(async ({ context, input }) => {
+		if (!context.commandService) throw new ORPCError("INTERNAL_SERVER_ERROR");
+		try {
+			return await context.commandService.issueCorrection(context.auth, input);
+		} catch (error) {
+			if (error instanceof CommandIssueError)
+				throw new ORPCError("BAD_REQUEST");
+			throw error;
+		}
+	});
+const staffIssueReset = staffProcedure
+	.input(resetInputSchema)
+	.output(commandMutationResultSchema)
+	.handler(async ({ context, input }) => {
+		if (!context.commandService) throw new ORPCError("INTERNAL_SERVER_ERROR");
+		try {
+			return await context.commandService.issueReset(context.auth, input);
+		} catch (error) {
+			if (error instanceof CommandIssueError)
+				throw new ORPCError("BAD_REQUEST");
+			throw error;
+		}
+	});
 const adminSession = ownerProcedure.handler(({ context }) => context.auth);
 
 export const appRouter = {
 	staff: {
 		session: staffSession,
 		operationalSnapshot: staffOperationalSnapshot,
+		issueCorrection: staffIssueCorrection,
+		issueReset: staffIssueReset,
 	},
 	admin: { session: adminSession },
 };

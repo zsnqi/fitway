@@ -21,6 +21,7 @@ import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { mountAuthRoutes } from "./auth/routes";
 import { type AuthRuntime, createAuthRuntime } from "./auth/runtime";
+import { commandService } from "./command-repository";
 import { createEdgePushHandler } from "./edge-push";
 import { healthSnapshotRepository } from "./health-repository";
 import {
@@ -111,6 +112,7 @@ export function createApp(
 						authRuntime.service.authenticate(cookieHeader),
 					readOperationalSnapshot: () =>
 						buildOperationalSnapshot(healthSnapshotRepository),
+					commandService,
 				}),
 			});
 			if (rpcResult.matched)

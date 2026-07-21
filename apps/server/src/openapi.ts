@@ -57,7 +57,7 @@ export async function generateOpenApiDocument() {
 					feed: "ok",
 					detectorFps: 4.8,
 				},
-				appliedCommandId: null,
+				appliedCommandId: 41,
 			};
 		}
 		const success = operation.responses?.["200"];
@@ -71,7 +71,14 @@ export async function generateOpenApiDocument() {
 				accepted: true,
 				reason: "processed",
 				highestProcessedSequence: 42,
-				commands: [],
+				commands: [
+					{
+						id: 43,
+						type: "set_count",
+						targetValue: 35,
+						issuedAt: "2026-07-13T18:24:19.000Z",
+					},
+				],
 				settings: { version: 1, pushIntervalSeconds: 20 },
 				serverTime: "2026-07-13T18:24:20.250Z",
 			};

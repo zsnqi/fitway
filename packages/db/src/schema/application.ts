@@ -6,6 +6,7 @@ import {
 	check,
 	date,
 	doublePrecision,
+	index,
 	integer,
 	pgEnum,
 	pgTable,
@@ -17,6 +18,7 @@ import {
 	uniqueIndex,
 	uuid,
 } from "drizzle-orm/pg-core";
+import { authPrincipalKind, authPrincipals, authRole } from "./auth";
 
 export const occupancyBand = pgEnum("occupancy_band", [
 	"quiet",
@@ -55,6 +57,20 @@ export const healthTransitionType = pgEnum("health_transition_type", [
 	"online",
 	"offline",
 	"reported_flags_changed",
+]);
+export const edgeCommandType = pgEnum("edge_command_type", [
+	"set_count",
+	"reset_zero",
+]);
+export const edgeCommandStatus = pgEnum("edge_command_status", [
+	"pending",
+	"applied",
+	"superseded",
+]);
+export const auditAction = pgEnum("audit_action", [
+	"correction_delta",
+	"correction_absolute",
+	"reset",
 ]);
 
 const utcTimestamp = (name: string) => timestamp(name, { withTimezone: true });
@@ -262,6 +278,113 @@ export const edgeCurrentHealth = pgTable(
 		check(
 			"edge_current_health_detector_fps_finite_nonnegative",
 			sql`${table.detectorFps} is null or (${table.detectorFps} >= 0 and ${table.detectorFps} < 'infinity'::double precision)`,
+		),
+	],
+);
+
+/** Durable edge-authoritative corrections and resets. Delivery is metadata, not a status. */
+export const edgeCommands = pgTable(
+	"edge_commands",
+	{
+		id: bigint("id", { mode: "number" })
+			.primaryKey()
+			.generatedAlwaysAsIdentity(),
+		deviceId: uuid("device_id")
+			.notNull()
+			.references(() => edgeDevices.id),
+		type: edgeCommandType("type").notNull(),
+		targetValue: integer("target_value"),
+		status: edgeCommandStatus("status").notNull().default("pending"),
+		issuedByPrincipalId: uuid("issued_by_principal_id")
+			.notNull()
+			.references(() => authPrincipals.id),
+		reason: text("reason"),
+		issuedAt: utcTimestamp("issued_at").notNull().defaultNow(),
+		deliveredAt: utcTimestamp("delivered_at"),
+		appliedAt: utcTimestamp("applied_at"),
+		supersededAt: utcTimestamp("superseded_at"),
+		supersededByCommandId: bigint("superseded_by_command_id", {
+			mode: "number",
+		}).references((): AnyPgColumn => edgeCommands.id),
+	},
+	(table) => [
+		index("edge_commands_device_status_id_idx").on(
+			table.deviceId,
+			table.status,
+			table.id,
+		),
+		check(
+			"edge_commands_id_json_safe",
+			sql`${table.id} > 0 and ${table.id} <= 9007199254740991`,
+		),
+		check(
+			"edge_commands_target_coherent",
+			sql`(${table.type} = 'set_count' and ${table.targetValue} is not null and ${table.targetValue} >= 0) or (${table.type} = 'reset_zero' and ${table.targetValue} is null)`,
+		),
+		check(
+			"edge_commands_reason_short_trimmed",
+			sql`${table.reason} is null or (length(${table.reason}) between 1 and 240 and ${table.reason} = trim(${table.reason}))`,
+		),
+		check(
+			"edge_commands_lifecycle_coherent",
+			sql`(
+				(${table.status} = 'pending' and ${table.appliedAt} is null and ${table.supersededAt} is null and ${table.supersededByCommandId} is null)
+				or (${table.status} = 'applied' and ${table.deliveredAt} is not null and ${table.appliedAt} is not null and ${table.supersededAt} is null and ${table.supersededByCommandId} is null)
+				or (${table.status} = 'superseded' and ${table.appliedAt} is null and ${table.supersededAt} is not null and ${table.supersededByCommandId} is not null)
+			)`,
+		),
+	],
+);
+
+/** Immutable provenance for every human-issued command. */
+export const auditLog = pgTable(
+	"audit_log",
+	{
+		id: bigint("id", { mode: "number" })
+			.primaryKey()
+			.generatedAlwaysAsIdentity(),
+		actorPrincipalId: uuid("actor_principal_id")
+			.notNull()
+			.references(() => authPrincipals.id),
+		actorPrincipalKind: authPrincipalKind("actor_principal_kind").notNull(),
+		actorRole: authRole("actor_role").notNull(),
+		commandId: bigint("command_id", { mode: "number" })
+			.notNull()
+			.references(() => edgeCommands.id),
+		action: auditAction("action").notNull(),
+		priorValue: integer("prior_value"),
+		requestedDelta: integer("requested_delta"),
+		requestedValue: integer("requested_value"),
+		effectiveValue: integer("effective_value").notNull(),
+		reason: text("reason"),
+		createdAt: utcTimestamp("created_at").notNull().defaultNow(),
+	},
+	(table) => [
+		uniqueIndex("audit_log_command_unique").on(table.commandId),
+		index("audit_log_created_id_idx").on(table.createdAt, table.id),
+		check(
+			"audit_log_id_json_safe",
+			sql`${table.id} > 0 and ${table.id} <= 9007199254740991`,
+		),
+		check(
+			"audit_log_actor_kind_role",
+			sql`(${table.actorPrincipalKind} = 'shared_staff' and ${table.actorRole} = 'staff') or (${table.actorPrincipalKind} = 'owner' and ${table.actorRole} = 'owner')`,
+		),
+		check(
+			"audit_log_values_nonnegative",
+			sql`(${table.priorValue} is null or ${table.priorValue} >= 0) and (${table.requestedValue} is null or ${table.requestedValue} >= 0) and ${table.effectiveValue} >= 0`,
+		),
+		check(
+			"audit_log_action_values_coherent",
+			sql`(
+				(${table.action} = 'correction_delta' and ${table.priorValue} is not null and ${table.requestedDelta} is not null and ${table.requestedValue} is null)
+				or (${table.action} = 'correction_absolute' and ${table.requestedDelta} is null and ${table.requestedValue} is not null and ${table.requestedValue} = ${table.effectiveValue})
+				or (${table.action} = 'reset' and ${table.requestedDelta} is null and ${table.requestedValue} = 0 and ${table.effectiveValue} = 0)
+			)`,
+		),
+		check(
+			"audit_log_reason_short_trimmed",
+			sql`${table.reason} is null or (length(${table.reason}) between 1 and 240 and ${table.reason} = trim(${table.reason}))`,
 		),
 	],
 );

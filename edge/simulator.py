@@ -35,7 +35,14 @@ def minute_iso(value: datetime) -> str:
 
 def load_state(path: Path, starting_count: int) -> dict[str, Any]:
     if not path.exists():
-        return {"sequence": 0, "count": max(0, starting_count), "minute": "", "entries": 0, "exits": 0}
+        return {
+            "sequence": 0,
+            "count": max(0, starting_count),
+            "minute": "",
+            "entries": 0,
+            "exits": 0,
+            "appliedCommandId": 0,
+        }
     value = json.loads(path.read_text(encoding="utf-8"))
     return {
         "sequence": max(0, int(value["sequence"])),
@@ -43,6 +50,7 @@ def load_state(path: Path, starting_count: int) -> dict[str, Any]:
         "minute": str(value.get("minute", "")),
         "entries": max(0, int(value.get("entries", 0))),
         "exits": max(0, int(value.get("exits", 0))),
+        "appliedCommandId": max(0, int(value.get("appliedCommandId", 0))),
         "lastRequest": value.get("lastRequest"),
     }
 
@@ -100,7 +108,7 @@ def build_push(
             "exits": state["exits"],
         }],
         "health": health or {"process": "ok", "camera": "ok", "feed": "ok", "detectorFps": 4.8},
-        "appliedCommandId": None,
+        "appliedCommandId": state.get("appliedCommandId") or None,
     }
 
 
@@ -120,27 +128,93 @@ def send(url: str, token: str, payload: dict[str, Any], timeout: float = 15) -> 
         return failure.code, value, dict(failure.headers)
 
 
+def _safe_positive_integer(value: Any) -> bool:
+    return (
+        isinstance(value, int)
+        and not isinstance(value, bool)
+        and 0 < value <= 9_007_199_254_740_991
+    )
+
+
+def _valid_command(value: Any) -> bool:
+    if not isinstance(value, dict) or set(value) != {"id", "type", "targetValue", "issuedAt"}:
+        return False
+    command_type = value.get("type")
+    target = value.get("targetValue")
+    target_valid = (
+        command_type == "set_count"
+        and isinstance(target, int)
+        and not isinstance(target, bool)
+        and 0 <= target <= 2_147_483_647
+    ) or (command_type == "reset_zero" and target is None)
+    if not target_valid or not _safe_positive_integer(value.get("id")):
+        return False
+    issued_at = value.get("issuedAt")
+    if not isinstance(issued_at, str) or not issued_at.endswith("Z"):
+        return False
+    try:
+        datetime.fromisoformat(issued_at.replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    return True
+
+
 def valid_acknowledgement(value: Any) -> bool:
     if not isinstance(value, dict):
         return False
     settings = value.get("settings")
     reason = value.get("reason")
     accepted = value.get("accepted")
+    commands = value.get("commands")
+    commands_valid = isinstance(commands, list) and all(_valid_command(item) for item in commands)
+    if commands_valid:
+        ids = [item["id"] for item in commands]
+        commands_valid = ids == sorted(set(ids))
     return (
-        value.get("schemaVersion") == 1
+        set(value) == {
+            "schemaVersion",
+            "accepted",
+            "reason",
+            "highestProcessedSequence",
+            "commands",
+            "settings",
+            "serverTime",
+        }
+        and value.get("schemaVersion") == 1
         and isinstance(accepted, bool)
         and reason in {"processed", "replay", "sequence_gap"}
         and accepted == (reason == "processed")
         and isinstance(value.get("highestProcessedSequence"), int)
+        and not isinstance(value.get("highestProcessedSequence"), bool)
         and value["highestProcessedSequence"] >= 0
-        and value.get("commands") == []
+        and commands_valid
+        and (accepted or commands == [])
         and isinstance(settings, dict)
+        and set(settings) == {"version", "pushIntervalSeconds"}
         and isinstance(settings.get("version"), int)
+        and not isinstance(settings.get("version"), bool)
         and settings["version"] > 0
         and isinstance(settings.get("pushIntervalSeconds"), int)
+        and not isinstance(settings.get("pushIntervalSeconds"), bool)
         and settings["pushIntervalSeconds"] > 0
         and isinstance(value.get("serverTime"), str)
     )
+
+
+def apply_commands(state: dict[str, Any], commands: list[dict[str, Any]]) -> None:
+    last_applied = int(state.get("appliedCommandId", 0))
+    for command in commands:
+        if not _valid_command(command):
+            raise ValueError("Invalid edge command")
+        command_id = int(command["id"])
+        if command_id <= last_applied:
+            continue
+        if command["type"] == "set_count":
+            state["count"] = int(command["targetValue"])
+        else:
+            state["count"] = 0
+        last_applied = command_id
+    state["appliedCommandId"] = last_applied
 
 
 def run(args: argparse.Namespace) -> int:
@@ -205,6 +279,7 @@ def run(args: argparse.Namespace) -> int:
             state = candidate_state
             state["sequence"] = highest
             state["lastRequest"] = payload
+            apply_commands(state, acknowledgement["commands"])
             save_state(state_path, state)
         elif reason == "replay" and highest == payload["sequence"]:
             state = candidate_state

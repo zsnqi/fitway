@@ -8,14 +8,24 @@ import simulator
 
 
 class SimulatorTests(unittest.TestCase):
+    def test_shared_push_fixture_carries_the_phase5_acknowledgement_shape(self) -> None:
+        fixture = json.loads(
+            (Path(__file__).parent / "fixtures" / "push.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(fixture["schemaVersion"], 1)
+        self.assertEqual(fixture["appliedCommandId"], 7)
+        self.assertNotIn("backfillOnly", fixture)
+
     def test_state_round_trip_and_floor(self) -> None:
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "state.json"
             state = simulator.load_state(path, -4)
             self.assertEqual(state["count"], 0)
             state["sequence"] = 7
+            state["appliedCommandId"] = 5
             simulator.save_state(path, state)
             self.assertEqual(simulator.load_state(path, 0)["sequence"], 7)
+            self.assertEqual(simulator.load_state(path, 0)["appliedCommandId"], 5)
             self.assertEqual(json.loads(path.read_text(encoding="utf-8"))["count"], 0)
 
     def test_exit_heavy_payload_stays_nonnegative_and_is_contract_shaped(self) -> None:
@@ -33,7 +43,12 @@ class SimulatorTests(unittest.TestCase):
             "accepted": True,
             "reason": "processed",
             "highestProcessedSequence": 1,
-            "commands": [],
+            "commands": [{
+                "id": 2,
+                "type": "set_count",
+                "targetValue": 7,
+                "issuedAt": "2026-07-13T18:24:19.000Z",
+            }],
             "settings": {"version": 1, "pushIntervalSeconds": 20},
             "serverTime": "2026-07-13T18:24:20.250Z",
         }
@@ -41,6 +56,27 @@ class SimulatorTests(unittest.TestCase):
         self.assertFalse(
             simulator.valid_acknowledgement({**acknowledgement, "reason": "replay"})
         )
+
+    def test_applies_ordered_commands_and_reports_the_highest_on_the_next_push(self) -> None:
+        state = simulator.load_state(Path("does-not-exist"), 4)
+        simulator.apply_commands(state, [
+            {
+                "id": 2,
+                "type": "set_count",
+                "targetValue": 11,
+                "issuedAt": "2026-07-13T18:24:19.000Z",
+            },
+            {
+                "id": 3,
+                "type": "reset_zero",
+                "targetValue": None,
+                "issuedAt": "2026-07-13T18:24:20.000Z",
+            },
+        ])
+        self.assertEqual(state["count"], 0)
+        self.assertEqual(state["appliedCommandId"], 3)
+        payload = simulator.build_push(state, random.Random(42), "normal")
+        self.assertEqual(payload["appliedCommandId"], 3)
 
 
 if __name__ == "__main__":

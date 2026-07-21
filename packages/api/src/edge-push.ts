@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { deviceCommandSchema } from "./commands/schemas";
+
 export const EDGE_PUSH_RESOURCE_PATH = "/edge/push";
 export const EDGE_PUSH_INTERNAL_PATH = EDGE_PUSH_RESOURCE_PATH;
 export const EDGE_PUSH_EXTERNAL_PATH = `/api${EDGE_PUSH_RESOURCE_PATH}`;
@@ -55,7 +57,7 @@ export const edgePushRequestSchema = z
 				detectorFps: z.number().finite().nonnegative().nullable(),
 			})
 			.strict(),
-		appliedCommandId: z.null(),
+		appliedCommandId: z.number().int().positive().safe().nullable(),
 	})
 	.strict()
 	.superRefine((value, context) => {
@@ -92,7 +94,7 @@ export const edgePushResponseSchema = z
 		accepted: z.boolean(),
 		reason: edgePushReasonSchema,
 		highestProcessedSequence: z.number().int().nonnegative().safe(),
-		commands: z.tuple([]),
+		commands: z.array(deviceCommandSchema),
 		settings: z
 			.object({
 				version: z.number().int().positive().safe(),
@@ -109,6 +111,24 @@ export const edgePushResponseSchema = z
 				message: "Only processed acknowledgements are accepted",
 				path: ["accepted"],
 			});
+		}
+		if (!value.accepted && value.commands.length > 0) {
+			context.addIssue({
+				code: "custom",
+				message: "Only accepted pushes can deliver commands",
+				path: ["commands"],
+			});
+		}
+		let previousId = 0;
+		for (const [index, command] of value.commands.entries()) {
+			if (command.id <= previousId) {
+				context.addIssue({
+					code: "custom",
+					message: "Commands must be unique and ordered oldest-first",
+					path: ["commands", index, "id"],
+				});
+			}
+			previousId = command.id;
 		}
 	});
 

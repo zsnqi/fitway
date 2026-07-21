@@ -20,12 +20,30 @@ describe("generated OpenAPI", () => {
 			operation?.requestBody &&
 				"content" in operation.requestBody &&
 				operation.requestBody.content?.["application/json"]?.example,
-		).toMatchObject({ schemaVersion: 1, sequence: 42 });
+		).toMatchObject({ schemaVersion: 1, sequence: 42, appliedCommandId: 41 });
 		const success = operation?.responses?.["200"];
 		expect(
 			success &&
 				"content" in success &&
 				success.content?.["application/json"]?.example,
-		).toMatchObject({ accepted: true, commands: [] });
+		).toMatchObject({
+			accepted: true,
+			commands: [
+				{
+					id: 43,
+					type: "set_count",
+					targetValue: 35,
+					issuedAt: "2026-07-13T18:24:19.000Z",
+				},
+			],
+		});
+
+		const requestSchema =
+			operation?.requestBody && "content" in operation.requestBody
+				? operation.requestBody.content?.["application/json"]?.schema
+				: undefined;
+		expect(JSON.stringify(requestSchema)).toContain("appliedCommandId");
+		expect(JSON.stringify(success)).toContain("set_count");
+		expect(JSON.stringify(success)).toContain("reset_zero");
 	});
 });
