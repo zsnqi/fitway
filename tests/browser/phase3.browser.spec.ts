@@ -21,6 +21,7 @@ function openPayload() {
 test("renders the Arabic closed state at 390px, formats in gym time, and toggles to English", async ({
 	page,
 }) => {
+	await page.clock.setFixedTime(new Date("2026-07-16T23:00:00.000Z"));
 	await page.route("**/public/occupancy", (route) =>
 		route.fulfill({
 			json: {
