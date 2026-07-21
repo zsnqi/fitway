@@ -1,3 +1,4 @@
+import type { CommandQueue } from "../commands/queue";
 import type { DeviceCommand } from "../commands/schemas";
 import type { EdgePushRequest, EdgePushResponse } from "../edge-push";
 import {
@@ -67,15 +68,7 @@ export type OccupancyTransaction = {
 		receivedAt: Date;
 		updatedAt: Date;
 	}): Promise<void>;
-	acknowledgeAppliedCommand(
-		deviceId: string,
-		commandId: number,
-		appliedAt: Date,
-	): Promise<void>;
-	collectPendingCommands(
-		deviceId: string,
-		deliveredAt: Date,
-	): Promise<DeviceCommand[]>;
+	commandQueue: CommandQueue;
 };
 
 export type OccupancyEngineDependencies = {
@@ -235,14 +228,11 @@ export async function processLivePush(
 			receivedAt,
 			updatedAt: receivedAt,
 		});
-		if (input.appliedCommandId !== null) {
-			await tx.acknowledgeAppliedCommand(
-				deviceId,
-				input.appliedCommandId,
-				receivedAt,
-			);
-		}
-		const commands = await tx.collectPendingCommands(deviceId, receivedAt);
+		const commands = await tx.commandQueue.reconcile({
+			deviceId,
+			appliedCommandId: input.appliedCommandId,
+			at: receivedAt,
+		});
 		return response(
 			true,
 			"processed",

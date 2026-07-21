@@ -8,6 +8,7 @@ import {
 	auditLog,
 	currentState,
 	edgeCommands,
+	edgeCurrentHealth,
 	edgeDevices,
 	settingsVersions,
 } from "@fitway/db/schema/application";
@@ -266,6 +267,12 @@ describe.sequential("Phase 5 command domain over real HTTP and disposable Postgr
 			400,
 		);
 
+		const beforeBackfill = JSON.stringify({
+			current: await database.select().from(currentState),
+			health: await database.select().from(edgeCurrentHealth),
+			commands: await database.select().from(edgeCommands),
+			audits: await database.select().from(auditLog),
+		});
 		const backfillNow = new Date();
 		const invalidBackfill = await request("/edge/push", {
 			method: "POST",
@@ -302,6 +309,14 @@ describe.sequential("Phase 5 command domain over real HTTP and disposable Postgr
 			.from(edgeDevices)
 			.where(eq(edgeDevices.id, deviceId));
 		expect(device?.lastSequence).toBe(1);
+		expect(
+			JSON.stringify({
+				current: await database.select().from(currentState),
+				health: await database.select().from(edgeCurrentHealth),
+				commands: await database.select().from(edgeCommands),
+				audits: await database.select().from(auditLog),
+			}),
+		).toBe(beforeBackfill);
 	});
 
 	it("atomically issues monotonic commands, floors delta, supersedes latest-only, and preserves cloud current state", async () => {
@@ -444,11 +459,24 @@ describe.sequential("Phase 5 command domain over real HTTP and disposable Postgr
 		]);
 		expect(finalRows[2]?.deliveredAt).not.toBeNull();
 		expect(finalRows[2]?.appliedAt).not.toBeNull();
+		const appliedBeforeReplay = finalRows[2];
+		expect(await push(7, 0, resetId)).toMatchObject({
+			accepted: true,
+			commands: [],
+		});
+		const [appliedAfterReplay] = await database
+			.select()
+			.from(edgeCommands)
+			.where(eq(edgeCommands.id, resetId));
+		expect(appliedAfterReplay).toEqual(appliedBeforeReplay);
 		const [current] = await database.select().from(currentState);
 		expect(current?.currentCount).toBe(0);
 	});
 
 	it("rolls back command, supersession, and audit together when audit append fails", async () => {
+		expect(
+			(await rpc("issueCorrection", { absolute: 3 }, staffCookie)).status,
+		).toBe(200);
 		const beforeCommands = await database.select().from(edgeCommands);
 		const beforeAudits = await database.select().from(auditLog);
 		const [principal] = await database
@@ -476,11 +504,7 @@ describe.sequential("Phase 5 command domain over real HTTP and disposable Postgr
 		await expect(
 			failing.issueCorrection(actor, { absolute: 4 }),
 		).rejects.toThrow("forced audit failure");
-		expect(await database.select().from(edgeCommands)).toHaveLength(
-			beforeCommands.length,
-		);
-		expect(await database.select().from(auditLog)).toHaveLength(
-			beforeAudits.length,
-		);
+		expect(await database.select().from(edgeCommands)).toEqual(beforeCommands);
+		expect(await database.select().from(auditLog)).toEqual(beforeAudits);
 	});
 });

@@ -8,6 +8,7 @@ import json
 import math
 import os
 import random
+import re
 import signal
 import sys
 import tempfile
@@ -18,6 +19,8 @@ from typing import Any
 from urllib import error, request
 
 DEFAULT_RESOURCE_PATH = "/edge/push"
+MAX_SAFE_INTEGER = 9_007_199_254_740_991
+CANONICAL_UTC = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}Z$")
 STOP = False
 
 
@@ -132,8 +135,18 @@ def _safe_positive_integer(value: Any) -> bool:
     return (
         isinstance(value, int)
         and not isinstance(value, bool)
-        and 0 < value <= 9_007_199_254_740_991
+        and 0 < value <= MAX_SAFE_INTEGER
     )
+
+
+def _canonical_utc_timestamp(value: Any) -> bool:
+    if not isinstance(value, str) or not CANONICAL_UTC.fullmatch(value):
+        return False
+    try:
+        parsed = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%fZ")
+    except ValueError:
+        return False
+    return iso_utc(parsed.replace(tzinfo=timezone.utc)) == value
 
 
 def _valid_command(value: Any) -> bool:
@@ -149,14 +162,7 @@ def _valid_command(value: Any) -> bool:
     ) or (command_type == "reset_zero" and target is None)
     if not target_valid or not _safe_positive_integer(value.get("id")):
         return False
-    issued_at = value.get("issuedAt")
-    if not isinstance(issued_at, str) or not issued_at.endswith("Z"):
-        return False
-    try:
-        datetime.fromisoformat(issued_at.replace("Z", "+00:00"))
-    except ValueError:
-        return False
-    return True
+    return _canonical_utc_timestamp(value.get("issuedAt"))
 
 
 def valid_acknowledgement(value: Any) -> bool:
@@ -186,18 +192,18 @@ def valid_acknowledgement(value: Any) -> bool:
         and accepted == (reason == "processed")
         and isinstance(value.get("highestProcessedSequence"), int)
         and not isinstance(value.get("highestProcessedSequence"), bool)
-        and value["highestProcessedSequence"] >= 0
+        and 0 <= value["highestProcessedSequence"] <= MAX_SAFE_INTEGER
         and commands_valid
         and (accepted or commands == [])
         and isinstance(settings, dict)
         and set(settings) == {"version", "pushIntervalSeconds"}
         and isinstance(settings.get("version"), int)
         and not isinstance(settings.get("version"), bool)
-        and settings["version"] > 0
+        and 0 < settings["version"] <= MAX_SAFE_INTEGER
         and isinstance(settings.get("pushIntervalSeconds"), int)
         and not isinstance(settings.get("pushIntervalSeconds"), bool)
-        and settings["pushIntervalSeconds"] > 0
-        and isinstance(value.get("serverTime"), str)
+        and 0 < settings["pushIntervalSeconds"] <= MAX_SAFE_INTEGER
+        and _canonical_utc_timestamp(value.get("serverTime"))
     )
 
 

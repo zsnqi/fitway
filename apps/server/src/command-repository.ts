@@ -1,10 +1,16 @@
 import {
+	type CommandQueue,
+	type CommandQueueRepository,
+	createCommandQueue,
+} from "@fitway/api/commands/queue";
+import type { DeviceCommand } from "@fitway/api/commands/schemas";
+import {
 	type CommandIssuanceTransaction,
 	createCommandService,
 } from "@fitway/api/commands/service";
 import { db } from "@fitway/db";
 import { edgeCommands } from "@fitway/db/schema/application";
-import { and, eq, lt, sql } from "drizzle-orm";
+import { and, asc, eq, lt, lte, sql } from "drizzle-orm";
 import { appendAuditEntry } from "./audit-repository";
 
 type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
@@ -99,6 +105,82 @@ function transactionAdapter(tx: Transaction): CommandIssuanceTransaction {
 
 		appendAudit: (value) => appendAuditEntry(tx, value),
 	};
+}
+
+function commandQueueRepository(tx: Transaction): CommandQueueRepository {
+	return {
+		async findAcknowledgementCandidate(deviceId, commandId) {
+			const [target] = await tx
+				.select({
+					status: edgeCommands.status,
+					deliveredAt: edgeCommands.deliveredAt,
+				})
+				.from(edgeCommands)
+				.where(
+					and(
+						eq(edgeCommands.id, commandId),
+						eq(edgeCommands.deviceId, deviceId),
+					),
+				)
+				.limit(1);
+			return target ?? null;
+		},
+		async markAppliedThrough(deviceId, commandId, appliedAt) {
+			await tx
+				.update(edgeCommands)
+				.set({ status: "applied", appliedAt })
+				.where(
+					and(
+						eq(edgeCommands.deviceId, deviceId),
+						eq(edgeCommands.status, "pending"),
+						lte(edgeCommands.id, commandId),
+						sql`${edgeCommands.deliveredAt} is not null`,
+					),
+				);
+		},
+		async listPendingCommands(deviceId) {
+			const rows = await tx
+				.select({
+					id: edgeCommands.id,
+					type: edgeCommands.type,
+					targetValue: edgeCommands.targetValue,
+					issuedAt: edgeCommands.issuedAt,
+				})
+				.from(edgeCommands)
+				.where(
+					and(
+						eq(edgeCommands.deviceId, deviceId),
+						eq(edgeCommands.status, "pending"),
+					),
+				)
+				.orderBy(asc(edgeCommands.id));
+			return rows.map(
+				(row): DeviceCommand => ({
+					...row,
+					issuedAt: row.issuedAt.toISOString(),
+				}),
+			);
+		},
+		async markPendingDelivered(deviceId, deliveredAt) {
+			await tx
+				.update(edgeCommands)
+				.set({
+					deliveredAt: sql`coalesce(${edgeCommands.deliveredAt}, ${deliveredAt})`,
+				})
+				.where(
+					and(
+						eq(edgeCommands.deviceId, deviceId),
+						eq(edgeCommands.status, "pending"),
+					),
+				);
+		},
+	};
+}
+
+export function createCommandQueueForTransaction(
+	tx: Transaction,
+): CommandQueue {
+	return createCommandQueue(commandQueueRepository(tx));
 }
 
 export function createCommandServiceDatabase(

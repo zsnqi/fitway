@@ -1,11 +1,13 @@
 import { z } from "zod";
 
-const safeInteger = z.number().int().safe();
-const postgresInteger = safeInteger.min(-2_147_483_648).max(2_147_483_647);
-const nonnegativePostgresInteger = postgresInteger.min(0);
+export const safeIntegerSchema = z.number().int().safe();
+export const postgresIntegerSchema = safeIntegerSchema
+	.min(-2_147_483_648)
+	.max(2_147_483_647);
+export const nonnegativePostgresIntegerSchema = postgresIntegerSchema.min(0);
 const reasonSchema = z.string().trim().min(1).max(240);
 
-const canonicalUtcTimestamp = z
+export const canonicalUtcTimestampSchema = z
 	.string()
 	.datetime({ offset: false })
 	.refine(
@@ -16,9 +18,9 @@ const canonicalUtcTimestamp = z
 const correctionReason = { reason: reasonSchema.optional() } as const;
 
 export const correctionInputSchema = z.union([
-	z.object({ delta: postgresInteger, ...correctionReason }).strict(),
+	z.object({ delta: postgresIntegerSchema, ...correctionReason }).strict(),
 	z
-		.object({ absolute: nonnegativePostgresInteger, ...correctionReason })
+		.object({ absolute: nonnegativePostgresIntegerSchema, ...correctionReason })
 		.strict(),
 ]);
 
@@ -31,10 +33,10 @@ export const commandStatusSchema = z.enum(["pending", "applied", "superseded"]);
 
 export const deviceCommandSchema = z
 	.object({
-		id: safeInteger.positive(),
+		id: safeIntegerSchema.positive(),
 		type: commandTypeSchema,
-		targetValue: nonnegativePostgresInteger.nullable(),
-		issuedAt: canonicalUtcTimestamp,
+		targetValue: nonnegativePostgresIntegerSchema.nullable(),
+		issuedAt: canonicalUtcTimestampSchema,
 	})
 	.strict()
 	.superRefine((value, context) => {
@@ -52,19 +54,19 @@ export const deviceCommandSchema = z
 
 export const issuedCommandSchema = z
 	.object({
-		id: safeInteger.positive(),
+		id: safeIntegerSchema.positive(),
 		type: commandTypeSchema,
-		targetValue: nonnegativePostgresInteger.nullable(),
+		targetValue: nonnegativePostgresIntegerSchema.nullable(),
 		status: commandStatusSchema,
 		reason: reasonSchema.nullable(),
-		issuedAt: canonicalUtcTimestamp,
+		issuedAt: canonicalUtcTimestampSchema,
 	})
 	.strict();
 
 export const commandMutationResultSchema = z
 	.object({
 		command: issuedCommandSchema,
-		auditId: safeInteger.positive(),
+		auditId: safeIntegerSchema.positive(),
 	})
 	.strict();
 

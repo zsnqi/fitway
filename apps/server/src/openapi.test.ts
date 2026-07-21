@@ -1,3 +1,6 @@
+import { edgePushResponseSchema } from "@fitway/api/edge-push";
+import Ajv2020 from "ajv/dist/2020";
+import addFormats from "ajv-formats";
 import { describe, expect, it } from "vitest";
 import { generateOpenApiDocument } from "./openapi";
 
@@ -43,7 +46,42 @@ describe("generated OpenAPI", () => {
 				? operation.requestBody.content?.["application/json"]?.schema
 				: undefined;
 		expect(JSON.stringify(requestSchema)).toContain("appliedCommandId");
-		expect(JSON.stringify(success)).toContain("set_count");
-		expect(JSON.stringify(success)).toContain("reset_zero");
+		if (!success || !("content" in success)) {
+			throw new Error("OpenAPI success response is missing");
+		}
+		const media = success.content?.["application/json"];
+		if (!media?.schema || !media.example) {
+			throw new Error("OpenAPI success contract is missing");
+		}
+		const ajv = new Ajv2020({ strict: true });
+		addFormats(ajv);
+		const validate = ajv.compile(media.schema);
+		const valid = media.example;
+		const cases = [
+			valid,
+			{ ...valid, highestProcessedSequence: -1 },
+			{
+				...valid,
+				accepted: false,
+				reason: "replay",
+				commands: valid.commands,
+			},
+			{
+				...valid,
+				commands: [
+					{
+						id: 43,
+						type: "reset_zero",
+						targetValue: 0,
+						issuedAt: "2026-07-13T18:24:19.000Z",
+					},
+				],
+			},
+		];
+		for (const value of cases) {
+			expect(Boolean(validate(value))).toBe(
+				edgePushResponseSchema.safeParse(value).success,
+			);
+		}
 	});
 });

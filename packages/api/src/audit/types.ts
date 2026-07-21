@@ -16,7 +16,3 @@ export type HumanAuditEntry = {
 	reason: string | null;
 	createdAt: Date;
 };
-
-export type AuditAppender = {
-	appendAudit(value: HumanAuditEntry): Promise<number>;
-};

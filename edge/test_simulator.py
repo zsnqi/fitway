@@ -56,6 +56,21 @@ class SimulatorTests(unittest.TestCase):
         self.assertFalse(
             simulator.valid_acknowledgement({**acknowledgement, "reason": "replay"})
         )
+        self.assertFalse(
+            simulator.valid_acknowledgement(
+                {**acknowledgement, "highestProcessedSequence": simulator.MAX_SAFE_INTEGER + 1}
+            )
+        )
+        self.assertFalse(
+            simulator.valid_acknowledgement(
+                {**acknowledgement, "serverTime": "2026-07-13T18:24:20Z"}
+            )
+        )
+        invalid_command = {
+            **acknowledgement,
+            "commands": [{**acknowledgement["commands"][0], "issuedAt": "2026-07-13T18:24:19Z"}],
+        }
+        self.assertFalse(simulator.valid_acknowledgement(invalid_command))
 
     def test_applies_ordered_commands_and_reports_the_highest_on_the_next_push(self) -> None:
         state = simulator.load_state(Path("does-not-exist"), 4)

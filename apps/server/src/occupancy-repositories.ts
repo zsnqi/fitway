@@ -1,4 +1,3 @@
-import type { DeviceCommand } from "@fitway/api/commands/schemas";
 import type { OccupancyTransaction } from "@fitway/api/occupancy/engine";
 import type {
 	PublicPayloadRepository,
@@ -7,13 +6,13 @@ import type {
 import { db } from "@fitway/db";
 import {
 	currentState,
-	edgeCommands,
 	edgeCurrentHealth,
 	edgeDevices,
 	occupancyMinutes,
 	settingsVersions,
 } from "@fitway/db/schema/application";
-import { and, asc, desc, eq, lte, sql } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
+import { createCommandQueueForTransaction } from "./command-repository";
 
 type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
 type Database = typeof db;
@@ -67,6 +66,7 @@ function scheduleHours(open: string | null, close: string | null) {
 
 function transactionAdapter(tx: Transaction): OccupancyTransaction {
 	return {
+		commandQueue: createCommandQueueForTransaction(tx),
 		async lockDevice(deviceId) {
 			const result = await tx.execute<{
 				id: string;
@@ -141,69 +141,6 @@ function transactionAdapter(tx: Transaction): OccupancyTransaction {
 						updatedAt: value.updatedAt,
 					},
 				});
-		},
-		async acknowledgeAppliedCommand(deviceId, commandId, appliedAt) {
-			const [target] = await tx
-				.select({
-					id: edgeCommands.id,
-					status: edgeCommands.status,
-					deliveredAt: edgeCommands.deliveredAt,
-				})
-				.from(edgeCommands)
-				.where(
-					and(
-						eq(edgeCommands.id, commandId),
-						eq(edgeCommands.deviceId, deviceId),
-					),
-				)
-				.limit(1);
-			if (target?.status !== "pending" || !target.deliveredAt) return;
-			await tx
-				.update(edgeCommands)
-				.set({ status: "applied", appliedAt })
-				.where(
-					and(
-						eq(edgeCommands.deviceId, deviceId),
-						eq(edgeCommands.status, "pending"),
-						lte(edgeCommands.id, commandId),
-						sql`${edgeCommands.deliveredAt} is not null`,
-					),
-				);
-		},
-		async collectPendingCommands(deviceId, deliveredAt) {
-			const rows = await tx
-				.select({
-					id: edgeCommands.id,
-					type: edgeCommands.type,
-					targetValue: edgeCommands.targetValue,
-					issuedAt: edgeCommands.issuedAt,
-				})
-				.from(edgeCommands)
-				.where(
-					and(
-						eq(edgeCommands.deviceId, deviceId),
-						eq(edgeCommands.status, "pending"),
-					),
-				)
-				.orderBy(asc(edgeCommands.id));
-			if (rows.length === 0) return [];
-			await tx
-				.update(edgeCommands)
-				.set({
-					deliveredAt: sql`coalesce(${edgeCommands.deliveredAt}, ${deliveredAt})`,
-				})
-				.where(
-					and(
-						eq(edgeCommands.deviceId, deviceId),
-						eq(edgeCommands.status, "pending"),
-					),
-				);
-			return rows.map(
-				(row): DeviceCommand => ({
-					...row,
-					issuedAt: row.issuedAt.toISOString(),
-				}),
-			);
 		},
 	};
 }

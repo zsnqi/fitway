@@ -16,7 +16,7 @@ const actor: CanonicalAuthContext = {
 	active: true,
 };
 
-function fake(currentCount: number | null = 3) {
+function createCommandServiceFixture(currentCount: number | null = 3) {
 	const writes: Array<{ kind: string; value: unknown }> = [];
 	let nextCommandId = 11;
 	const tx: CommandIssuanceTransaction = {
@@ -57,7 +57,7 @@ function fake(currentCount: number | null = 3) {
 
 describe("command issuance service", () => {
 	it("resolves a delta under the state lock, floors at zero, and audits provenance", async () => {
-		const value = fake(3);
+		const value = createCommandServiceFixture(3);
 		const result = await value.service.issueCorrection(actor, {
 			delta: -8,
 			reason: "  obvious drift  ",
@@ -94,7 +94,7 @@ describe("command issuance service", () => {
 	});
 
 	it("allows an absolute correction without a current count but rejects a delta", async () => {
-		const absolute = fake(null);
+		const absolute = createCommandServiceFixture(null);
 		expect(
 			await absolute.service.issueCorrection(actor, { absolute: 17 }),
 		).toMatchObject({ command: { targetValue: 17, reason: null } });
@@ -106,7 +106,7 @@ describe("command issuance service", () => {
 			effectiveValue: 17,
 		});
 
-		const delta = fake(null);
+		const delta = createCommandServiceFixture(null);
 		await expect(
 			delta.service.issueCorrection(actor, { delta: 1 }),
 		).rejects.toEqual(
@@ -118,7 +118,7 @@ describe("command issuance service", () => {
 	});
 
 	it("issues reset_zero with no target and an attributable reset audit", async () => {
-		const value = fake(9);
+		const value = createCommandServiceFixture(9);
 		const result = await value.service.issueReset(actor, {});
 		expect(result.command).toMatchObject({
 			type: "reset_zero",

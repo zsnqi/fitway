@@ -49,17 +49,11 @@ function fake(lastSequence = 0, commands: DeviceCommand[] = []) {
 			void writes.push({ kind: "device", value: sequence }),
 		upsertCurrentHealth: async (value) =>
 			void writes.push({ kind: "health", value }),
-		acknowledgeAppliedCommand: async (deviceId, commandId, appliedAt) =>
-			void writes.push({
-				kind: "command_ack",
-				value: { deviceId, commandId, appliedAt },
-			}),
-		collectPendingCommands: async (deviceId, deliveredAt) => {
-			writes.push({
-				kind: "command_delivery",
-				value: { deviceId, deliveredAt },
-			});
-			return commands;
+		commandQueue: {
+			async reconcile(value) {
+				writes.push({ kind: "command_reconciliation", value });
+				return commands;
+			},
 		},
 	};
 	return {
@@ -110,7 +104,7 @@ describe("occupancy engine", () => {
 				updatedAt: new Date("2026-07-12T22:30:21.000Z"),
 			},
 		});
-		expect(value.writes[4]).toMatchObject({ kind: "command_delivery" });
+		expect(value.writes[4]).toMatchObject({ kind: "command_reconciliation" });
 	});
 
 	it("acknowledges and returns commands only inside an accepted contiguous live push", async () => {
@@ -127,20 +121,13 @@ describe("occupancy engine", () => {
 			value.dependencies,
 		);
 		expect(result.commands).toEqual([command]);
-		expect(value.writes.slice(-2)).toEqual([
+		expect(value.writes.slice(-1)).toEqual([
 			{
-				kind: "command_ack",
+				kind: "command_reconciliation",
 				value: {
 					deviceId: "device",
-					commandId: 7,
-					appliedAt: new Date("2026-07-12T22:30:21.000Z"),
-				},
-			},
-			{
-				kind: "command_delivery",
-				value: {
-					deviceId: "device",
-					deliveredAt: new Date("2026-07-12T22:30:21.000Z"),
+					appliedCommandId: 7,
+					at: new Date("2026-07-12T22:30:21.000Z"),
 				},
 			},
 		]);
