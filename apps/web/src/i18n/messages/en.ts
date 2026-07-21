@@ -1,4 +1,110 @@
+import type { StaffWebMessages } from "@/components/staff/messages";
 import type { MessageCatalog } from "../catalog";
+
+export const staffWeb = {
+	common: {
+		operations: "Live operations",
+		admin: "Owner area",
+		languageSwitchLabel: "Switch to Arabic",
+		languageSwitchText: "العربية",
+		logout: "Sign out",
+		loggingOut: "Signing out",
+		skipToContent: "Skip to operational status",
+	},
+	login: {
+		eyebrow: "Front desk access",
+		title: "Open live operations",
+		description:
+			"Enter the shared staff PIN to view the gym's operational status.",
+		pinLabel: "Staff PIN",
+		pinHint: (minimum, maximum) => `Use ${minimum}–${maximum} Western digits.`,
+		pinInvalid: (minimum, maximum) =>
+			`Enter a PIN of ${minimum}–${maximum} Western digits.`,
+		submit: "Open operations",
+		submitting: "Opening operations",
+		invalidCredentials: "Unable to sign in. Check the PIN and try again.",
+		rateLimited: (seconds) =>
+			`Too many attempts. Try again in ${seconds} seconds.`,
+		serviceError: "Sign-in is temporarily unavailable. Try again.",
+	},
+	staff: {
+		eyebrow: "Front desk",
+		title: "Live operations",
+		description: "Current occupancy and system health in one operational view.",
+		loading: "Loading operational status",
+		loadErrorTitle: "Operational status could not be loaded",
+		loadErrorDescription:
+			"The request failed. No missing reading is being presented as unavailable.",
+		retry: "Try again",
+		retrying: "Trying again",
+		occupancyTitle: "Current reading",
+		openNow: "Gym open now",
+		closedNow: "Gym closed now",
+		live: "Live reading",
+		stale: "Last-known reading",
+		staleDescription: "Live updates are delayed. These values are last known.",
+		unavailable: "Occupancy unavailable",
+		unavailableDescription: "There is no usable occupancy reading to show.",
+		crowdLevel: "Crowd level",
+		approximateCount: "Approximate count",
+		capacity: "Configured capacity",
+		source: "Reading source",
+		sources: { edge: "Edge device", manual: "Manual reading" },
+		lastUpdated: (time) => `Updated ${time}`,
+		nextOpen: (time) => `Next opens ${time}`,
+		computed: (time) => `Snapshot computed ${time}`,
+		schemaVersion: "Snapshot schema",
+		healthTitle: "System health",
+		healthDescription: "Server-evaluated device freshness and condition.",
+		healthFreshness: "Health freshness",
+		healthCondition: "Overall condition",
+		process: "Counting process",
+		camera: "Camera",
+		feed: "Video feed",
+		detectorFps: "Detector rate",
+		edgeObservedAt: "Observed at edge",
+		receivedAt: "Received by server",
+		lastSeenAt: "Device last seen",
+		staleAt: "Stale threshold",
+		notAvailable: "Not available",
+		framesPerSecond: (value) => `${value} FPS`,
+		freshness: {
+			current: "Current",
+			stale: "Stale",
+			unavailable: "Unavailable",
+		},
+		conditions: {
+			healthy: "Healthy",
+			degraded: "Degraded",
+			failed: "Failed",
+			unknown: "Unknown",
+		},
+		deviceStates: {
+			ok: "OK",
+			degraded: "Degraded",
+			failed: "Failed",
+			unknown: "Unknown",
+		},
+		bands: {
+			quiet: "Quiet",
+			moderate: "Moderate",
+			busy: "Busy",
+			packed: "Packed",
+		},
+	},
+	admin: {
+		eyebrow: "Owner access",
+		title: "Owner area",
+		description: "Owner-only navigation for FITWAY operations and governance.",
+		placeholderTitle: "Owner navigation is ready",
+		placeholderDescription:
+			"Analytics, settings, accounts, audit, and health sections arrive in their assigned phases.",
+		wrongRoleTitle: "Owner access required",
+		wrongRoleDescription:
+			"This staff session can use live operations but cannot open the owner area.",
+		backToOperations: "Back to live operations",
+	},
+} satisfies StaffWebMessages;
 
 export const en = {
 	metadata: {

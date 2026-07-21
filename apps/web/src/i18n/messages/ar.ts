@@ -1,4 +1,112 @@
+import type { StaffWebMessages } from "@/components/staff/messages";
 import type { MessageCatalog } from "../catalog";
+
+export const staffWeb = {
+	common: {
+		operations: "العمليات المباشرة",
+		admin: "منطقة المالك",
+		languageSwitchLabel: "التبديل إلى اللغة الإنجليزية",
+		languageSwitchText: "English",
+		logout: "تسجيل الخروج",
+		loggingOut: "جارٍ تسجيل الخروج",
+		skipToContent: "الانتقال إلى الحالة التشغيلية",
+	},
+	login: {
+		eyebrow: "دخول مكتب الاستقبال",
+		title: "فتح العمليات المباشرة",
+		description:
+			"أدخل الرقم السري المشترك للموظفين لعرض الحالة التشغيلية للنادي.",
+		pinLabel: "الرقم السري للموظفين",
+		pinHint: (minimum, maximum) =>
+			`استخدم من ${minimum} إلى ${maximum} أرقام غربية.`,
+		pinInvalid: (minimum, maximum) =>
+			`أدخل رقماً سرياً من ${minimum} إلى ${maximum} أرقام غربية.`,
+		submit: "دخول العمليات",
+		submitting: "جارٍ فتح العمليات",
+		invalidCredentials:
+			"تعذر تسجيل الدخول. تحقق من الرقم السري وحاول مرة أخرى.",
+		rateLimited: (seconds) =>
+			`محاولات كثيرة. حاول مرة أخرى بعد ${seconds} ثانية.`,
+		serviceError: "تسجيل الدخول غير متاح مؤقتاً. حاول مرة أخرى.",
+	},
+	staff: {
+		eyebrow: "مكتب الاستقبال",
+		title: "العمليات المباشرة",
+		description: "حالة الإشغال وصحة النظام الآن في عرض تشغيلي واحد.",
+		loading: "جارٍ تحميل الحالة التشغيلية",
+		loadErrorTitle: "تعذر تحميل الحالة التشغيلية",
+		loadErrorDescription:
+			"فشل الطلب. لا نعرض القراءة المفقودة على أنها حالة غير متاحة.",
+		retry: "إعادة المحاولة",
+		retrying: "جارٍ إعادة المحاولة",
+		occupancyTitle: "القراءة الحالية",
+		openNow: "النادي مفتوح الآن",
+		closedNow: "النادي مغلق الآن",
+		live: "قراءة مباشرة",
+		stale: "آخر قراءة معروفة",
+		staleDescription: "التحديثات المباشرة متأخرة. هذه آخر قيم معروفة.",
+		unavailable: "الإشغال غير متاح",
+		unavailableDescription: "لا توجد قراءة إشغال صالحة للعرض.",
+		crowdLevel: "مستوى الازدحام",
+		approximateCount: "العدد التقريبي",
+		capacity: "السعة المضبوطة",
+		source: "مصدر القراءة",
+		sources: { edge: "جهاز الحافة", manual: "قراءة يدوية" },
+		lastUpdated: (time) => `آخر تحديث ${time}`,
+		nextOpen: (time) => `يفتح لاحقاً ${time}`,
+		computed: (time) => `حُسبت اللقطة ${time}`,
+		schemaVersion: "إصدار مخطط اللقطة",
+		healthTitle: "صحة النظام",
+		healthDescription: "حداثة الجهاز وحالته كما قيّمهما الخادم.",
+		healthFreshness: "حداثة بيانات الصحة",
+		healthCondition: "الحالة العامة",
+		process: "عملية العد",
+		camera: "الكاميرا",
+		feed: "بث الفيديو",
+		detectorFps: "معدل الكاشف",
+		edgeObservedAt: "الرصد عند الحافة",
+		receivedAt: "الاستلام في الخادم",
+		lastSeenAt: "آخر اتصال بالجهاز",
+		staleAt: "حد التأخر",
+		notAvailable: "غير متاح",
+		framesPerSecond: (value) => `${value} إطار/ثانية`,
+		freshness: {
+			current: "حالية",
+			stale: "متأخرة",
+			unavailable: "غير متاحة",
+		},
+		conditions: {
+			healthy: "سليمة",
+			degraded: "متراجعة",
+			failed: "فاشلة",
+			unknown: "غير معروفة",
+		},
+		deviceStates: {
+			ok: "سليم",
+			degraded: "متراجع",
+			failed: "فاشل",
+			unknown: "غير معروف",
+		},
+		bands: {
+			quiet: "هادئ",
+			moderate: "متوسط",
+			busy: "مزدحم",
+			packed: "ممتلئ جدًا",
+		},
+	},
+	admin: {
+		eyebrow: "دخول المالك",
+		title: "منطقة المالك",
+		description: "تنقل مخصص للمالك لعمليات فت واي وحوكمتها.",
+		placeholderTitle: "تنقل المالك جاهز",
+		placeholderDescription:
+			"تصل أقسام التحليلات والإعدادات والحسابات وسجل التدقيق والصحة في مراحلها المحددة.",
+		wrongRoleTitle: "يلزم دخول المالك",
+		wrongRoleDescription:
+			"يمكن لجلسة الموظف هذه استخدام العمليات المباشرة، ولا يمكنها فتح منطقة المالك.",
+		backToOperations: "العودة إلى العمليات المباشرة",
+	},
+} satisfies StaffWebMessages;
 
 export const ar = {
 	metadata: {
