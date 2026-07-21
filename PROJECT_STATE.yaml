@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-07-21T21:54:02+03:00"
+updatedAt: "2026-07-21T22:11:26+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -273,7 +273,7 @@ milestones:
     ownerSession: null
     branch: main
     worktree: null
-    baseCommit: 1ba23df651d34c4778a62277a534a55d917f76a2
+    baseCommit: 94b76a8c58a499976b84dd1a0d177846442cf5cc
     ownedPaths: []
     forbiddenPaths: []
     sharedLeases: []
@@ -289,11 +289,139 @@ milestones:
       accessibility: PASS
       visual: PASS
       independentReview: PASS
-    integratedCommit: 1ba23df651d34c4778a62277a534a55d917f76a2
+    integratedCommit: 94b76a8c58a499976b84dd1a0d177846442cf5cc
+
+  phase5-command-domain:
+    status: READY
+    dependencies: [phase-4]
+    ownerSession: "batch-03 reserved; worker unlaunched"
+    branch: work/phase5-command-domain-b03
+    worktree: D:/Projects/fitway-worktrees/phase5-command-domain
+    baseCommit: SELF
+    ownedPaths:
+      - packages/api/src/commands/**
+      - packages/api/src/audit/**
+      - packages/api/src/edge-push.ts
+      - packages/api/src/edge-push.test.ts
+      - packages/api/src/occupancy/engine.ts
+      - packages/api/src/occupancy/engine.test.ts
+      - packages/api/src/context.ts
+      - packages/api/src/routers/index.ts
+      - apps/server/src/command-repository.ts
+      - apps/server/src/audit-repository.ts
+      - apps/server/src/edge-push.ts
+      - apps/server/src/edge-push.test.ts
+      - apps/server/src/occupancy-repositories.ts
+      - apps/server/src/openapi.ts
+      - apps/server/src/openapi.test.ts
+      - apps/server/src/index.ts
+      - apps/server/src/phase5-command-domain.integration.test.ts
+      - packages/db/src/schema/application.ts
+      - packages/db/src/schema/index.ts
+      - packages/db/src/migrations/0005_*
+      - packages/db/src/migrations/meta/0005_snapshot.json
+      - packages/db/src/migrations/meta/_journal.json
+      - edge/simulator.py
+      - edge/test_simulator.py
+      - edge/fixtures/push.json
+      - docs/phase-records/handoffs/phase5-command-domain/**
+    forbiddenPaths:
+      - all repository paths outside ownedPaths and sharedLeases
+      - packages/db/src/migrations/0000_*
+      - packages/db/src/migrations/0001_*
+      - packages/db/src/migrations/0002_*
+      - packages/db/src/migrations/0003_*
+      - packages/db/src/migrations/0004_*
+      - packages/db/src/migrations/meta/0000_snapshot.json
+      - packages/db/src/migrations/meta/0001_snapshot.json
+      - packages/db/src/migrations/meta/0002_snapshot.json
+      - packages/db/src/migrations/meta/0003_snapshot.json
+      - packages/db/src/migrations/meta/0004_snapshot.json
+      - packages/auth/**
+      - packages/api/src/auth/**
+      - packages/api/src/analytics/**
+      - packages/api/src/health/**
+      - packages/api/src/public/**
+      - apps/server/src/auth/**
+      - apps/server/src/analytics-repository.ts
+      - apps/server/src/health-repository.ts
+      - apps/server/src/public-occupancy.ts
+      - apps/web/**
+      - packages/ui/**
+      - tests/browser/**
+      - PROJECT_STATE.yaml
+      - docs/phase-records/phase-05-command-domain.md
+      - docs/phase-records/phase-09-owner-ui.md
+      - docs/phase-records/batch-03-activation.md
+      - visual-direction-gate/**
+      - root manifests, lockfiles, environment schemas, test-runner config, and scripts/verify.mjs
+    sharedLeases:
+      - "exclusive through 2026-07-23T22:11:26+03:00: migration-0005 lane (application schema, generated 0005 migration/snapshot, one journal append)"
+      - "exclusive through 2026-07-23T22:11:26+03:00: edge protocol spine (Zod/OpenAPI, edge handler, occupancy transaction/repository, Python simulator/fixture/parity tests)"
+      - "exclusive through 2026-07-23T22:11:26+03:00: router lane A (API context, router aggregation, server index)"
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-07-21T22:11:26+03:00"
+    leaseExpiresAt: "2026-07-23T22:11:26+03:00"
+    handoff: docs/phase-records/handoffs/phase5-command-domain/20260721-221126-p5_command_b03.md
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase5-staff-ui:
+    status: PLANNED
+    dependencies: [phase5-command-domain]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths:
+      - apps/web/src/components/staff/commands/**
+      - apps/web/src/hooks/use-staff-commands.ts
+      - apps/web/src/hooks/use-staff-commands.test.tsx
+      - apps/web/src/routes/staff.tsx
+      - tests/browser/phase5-staff-ui.browser.spec.ts
+      - docs/phase-records/handoffs/phase5-staff-ui/**
+    forbiddenPaths:
+      - all repository paths outside ownedPaths and a later explicit lease
+      - packages/db/**
+      - packages/api/**
+      - apps/server/**
+      - edge/**
+      - apps/web/src/i18n/messages/**
+      - apps/web/src/components/staff/staff-shell.tsx
+      - apps/web/src/components/staff/messages.ts
+      - apps/web/src/components/staff/staff.css
+      - apps/web/src/routeTree.gen.ts
+      - PROJECT_STATE.yaml
+      - docs/phase-records/phase-05-command-domain.md
+      - docs/phase-records/phase-09-owner-ui.md
+      - docs/phase-records/batch-03-activation.md
+      - visual-direction-gate/**
+      - root manifests, lockfiles, environment schemas, test-runner config, and scripts/verify.mjs
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase5-staff-ui/20260721-221126-p5_staff_b03-waiting.md
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
 
   phase-5:
     status: PLANNED
-    dependencies: [phase-4]
+    dependencies: [phase5-command-domain, phase5-staff-ui]
     ownerSession: null
     branch: null
     worktree: null
@@ -566,19 +694,57 @@ milestones:
     integratedCommit: 7d29e1a5dd3c34197fb714d9619ac47f3c2d9201
 
   phase9-owner-ui:
-    status: PLANNED
+    status: READY
     dependencies: [phase9-analytics-domain, phase-4]
-    ownerSession: null
-    branch: null
-    worktree: null
-    baseCommit: null
-    ownedPaths: []
-    forbiddenPaths: []
-    sharedLeases: []
+    ownerSession: "batch-03 reserved; worker unlaunched"
+    branch: work/phase9-owner-ui-b03
+    worktree: D:/Projects/fitway-worktrees/phase9-owner-ui
+    baseCommit: SELF
+    ownedPaths:
+      - apps/web/src/components/owner/**
+      - apps/web/src/hooks/use-owner-daily-analytics.ts
+      - apps/web/src/hooks/use-owner-daily-analytics.test.tsx
+      - apps/web/src/lib/owner-analytics-contract.ts
+      - apps/web/src/routes/admin.tsx
+      - apps/web/src/components/staff/staff-shell.tsx
+      - apps/web/src/components/staff/staff.css
+      - apps/web/src/components/staff/messages.ts
+      - apps/web/src/i18n/messages/ar.ts
+      - apps/web/src/i18n/messages/en.ts
+      - apps/web/src/routeTree.gen.ts
+      - tests/browser/phase9-owner-ui.browser.spec.ts
+      - docs/phase-records/handoffs/phase9-owner-ui/**
+    forbiddenPaths:
+      - all repository paths outside ownedPaths and sharedLeases
+      - packages/db/**
+      - packages/auth/**
+      - packages/api/src/auth/**
+      - packages/api/src/analytics/**
+      - packages/api/src/context.ts
+      - packages/api/src/index.ts
+      - packages/api/src/routers/**
+      - packages/api/src/edge-push.ts
+      - packages/api/src/occupancy/**
+      - packages/api/src/public/**
+      - packages/api/src/health/**
+      - apps/server/**
+      - edge/**
+      - apps/web/src/routes/staff.tsx
+      - apps/web/src/i18n/catalog.ts
+      - packages/ui/**
+      - PROJECT_STATE.yaml
+      - docs/phase-records/phase-05-command-domain.md
+      - docs/phase-records/phase-09-owner-ui.md
+      - docs/phase-records/batch-03-activation.md
+      - visual-direction-gate/**
+      - root manifests, lockfiles, environment schemas, test-runner config, and scripts/verify.mjs
+    sharedLeases:
+      - "exclusive through 2026-07-23T22:11:26+03:00: ar/en staff message catalogs and StaffShell/admin navigation"
+      - "exclusive through 2026-07-23T22:11:26+03:00: generated routeTree regeneration only (never hand-edit routeTree.gen.ts)"
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
-    leaseExpiresAt: null
-    handoff: null
+    lastHeartbeatAt: "2026-07-21T22:11:26+03:00"
+    leaseExpiresAt: "2026-07-23T22:11:26+03:00"
+    handoff: docs/phase-records/handoffs/phase9-owner-ui/20260721-221126-p9_owner_b03.md
     stopReason: null
     gates:
       unit: PENDING

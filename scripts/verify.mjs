@@ -51,6 +51,23 @@ const phases = {
 		integrationFiles: ["apps/server/src/phase9-analytics.integration.test.ts"],
 		label: "Phase 9 analytics domain slice",
 	},
+	"phase5-command-domain": {
+		browserFiles: [],
+		integrationFiles: [
+			"apps/server/src/phase5-command-domain.integration.test.ts",
+		],
+		label: "Phase 5 command-domain slice",
+	},
+	"phase5-staff-ui": {
+		browserFiles: ["tests/browser/phase5-staff-ui.browser.spec.ts"],
+		integrationFiles: [],
+		label: "Phase 5 staff UI slice",
+	},
+	"phase9-owner-ui": {
+		browserFiles: ["tests/browser/phase9-owner-ui.browser.spec.ts"],
+		integrationFiles: ["apps/server/src/phase9-owner-ui.integration.test.ts"],
+		label: "Phase 9 owner UI slice",
+	},
 };
 
 const phaseNames = Object.keys(phases).join("|");
