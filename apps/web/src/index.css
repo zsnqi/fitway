@@ -49,23 +49,21 @@ body {
 
 .public-atmosphere::before {
 	position: absolute;
-	inset: -22% -10% 12% 18%;
+	inset: -28% -18% 4% 8%;
 	background:
-		linear-gradient(
-			122deg,
-			transparent 23%,
-			rgb(118 10 31 / 18%) 37%,
-			rgb(229 25 53 / 8%) 46%,
-			transparent 59%
+		radial-gradient(
+			ellipse 48% 42% at 72% 27%,
+			rgb(202 17 46 / 18%),
+			transparent 74%
 		),
 		radial-gradient(
-			closest-side at 70% 34%,
-			rgb(202 17 46 / 13%),
-			transparent 100%
+			ellipse 34% 58% at 39% 58%,
+			rgb(118 10 31 / 11%),
+			transparent 78%
 		);
 	content: "";
-	filter: blur(26px);
-	opacity: 0.82;
+	filter: blur(62px);
+	opacity: 0.78;
 }
 
 .public-atmosphere::after {
@@ -84,14 +82,13 @@ body {
 
 .public-atmosphere__cut-light {
 	position: absolute;
-	inset: -18% -8% 32% 36%;
-	clip-path: polygon(24% 0, 100% 0, 67% 100%, 0 100%);
-	background: linear-gradient(
-		136deg,
-		rgb(126 9 30 / 15%),
-		rgb(62 5 17 / 2%) 72%
+	inset: -24% -16% 20% 26%;
+	background: radial-gradient(
+		ellipse 62% 48% at 68% 24%,
+		rgb(126 9 30 / 14%),
+		transparent 76%
 	);
-	filter: blur(34px);
+	filter: blur(72px);
 }
 
 .public-atmosphere__vignette {
