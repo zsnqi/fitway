@@ -1,0 +1,1402 @@
+{
+	"id": "32882b3d-1ed1-4e9d-9485-6782ac6c61b6",
+	"prevId": "c64d326a-dc01-47fd-af9f-9ab498fcf2d8",
+	"version": "7",
+	"dialect": "postgresql",
+	"tables": {
+		"public.alert_log": {
+			"name": "alert_log",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "bigint",
+					"primaryKey": true,
+					"notNull": true,
+					"identity": {
+						"type": "always",
+						"name": "alert_log_id_seq",
+						"schema": "public",
+						"increment": "1",
+						"startWith": "1",
+						"minValue": "1",
+						"maxValue": "9223372036854775807",
+						"cache": "1",
+						"cycle": false
+					}
+				},
+				"device_id": {
+					"name": "device_id",
+					"type": "uuid",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"condition": {
+					"name": "condition",
+					"type": "alert_condition",
+					"typeSchema": "public",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"notice_kind": {
+					"name": "notice_kind",
+					"type": "alert_notice_kind",
+					"typeSchema": "public",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"condition_started_at": {
+					"name": "condition_started_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"sent_at": {
+					"name": "sent_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"delivery_outcome": {
+					"name": "delivery_outcome",
+					"type": "alert_delivery_outcome",
+					"typeSchema": "public",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"recovery_of_alert_id": {
+					"name": "recovery_of_alert_id",
+					"type": "bigint",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"alert_log_device_id_edge_devices_id_fk": {
+					"name": "alert_log_device_id_edge_devices_id_fk",
+					"tableFrom": "alert_log",
+					"tableTo": "edge_devices",
+					"columnsFrom": ["device_id"],
+					"columnsTo": ["id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"alert_log_recovery_of_alert_id_alert_log_id_fk": {
+					"name": "alert_log_recovery_of_alert_id_alert_log_id_fk",
+					"tableFrom": "alert_log",
+					"tableTo": "alert_log",
+					"columnsFrom": ["recovery_of_alert_id"],
+					"columnsTo": ["id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {
+				"alert_log_recovery_linkage": {
+					"name": "alert_log_recovery_linkage",
+					"value": "(\"alert_log\".\"notice_kind\" = 'alert' and \"alert_log\".\"recovery_of_alert_id\" is null) or (\"alert_log\".\"notice_kind\" = 'recovery' and \"alert_log\".\"recovery_of_alert_id\" is not null)"
+				},
+				"alert_log_sent_after_condition_start": {
+					"name": "alert_log_sent_after_condition_start",
+					"value": "\"alert_log\".\"sent_at\" >= \"alert_log\".\"condition_started_at\""
+				}
+			},
+			"isRLSEnabled": false
+		},
+		"public.current_state": {
+			"name": "current_state",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "smallint",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"current_count": {
+					"name": "current_count",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"band": {
+					"name": "band",
+					"type": "occupancy_band",
+					"typeSchema": "public",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"source": {
+					"name": "source",
+					"type": "current_source",
+					"typeSchema": "public",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"last_push_received_at": {
+					"name": "last_push_received_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"last_edge_reported_at": {
+					"name": "last_edge_reported_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"active_device_id": {
+					"name": "active_device_id",
+					"type": "uuid",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"settings_version": {
+					"name": "settings_version",
+					"type": "bigint",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"current_state_active_device_id_edge_devices_id_fk": {
+					"name": "current_state_active_device_id_edge_devices_id_fk",
+					"tableFrom": "current_state",
+					"tableTo": "edge_devices",
+					"columnsFrom": ["active_device_id"],
+					"columnsTo": ["id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"current_state_settings_version_settings_versions_version_fk": {
+					"name": "current_state_settings_version_settings_versions_version_fk",
+					"tableFrom": "current_state",
+					"tableTo": "settings_versions",
+					"columnsFrom": ["settings_version"],
+					"columnsTo": ["version"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {
+				"current_state_singleton": {
+					"name": "current_state_singleton",
+					"value": "\"current_state\".\"id\" = 1"
+				},
+				"current_state_nonnegative": {
+					"name": "current_state_nonnegative",
+					"value": "\"current_state\".\"current_count\" is null or \"current_state\".\"current_count\" >= 0"
+				},
+				"current_state_coherent": {
+					"name": "current_state_coherent",
+					"value": "(\"current_state\".\"current_count\" is null and \"current_state\".\"band\" is null and \"current_state\".\"source\" is null and \"current_state\".\"last_push_received_at\" is null and \"current_state\".\"last_edge_reported_at\" is null and \"current_state\".\"active_device_id\" is null and \"current_state\".\"settings_version\" is null) or (\"current_state\".\"current_count\" is not null and \"current_state\".\"band\" is not null and \"current_state\".\"source\" is not null and \"current_state\".\"last_push_received_at\" is not null and \"current_state\".\"last_edge_reported_at\" is not null and \"current_state\".\"active_device_id\" is not null and \"current_state\".\"settings_version\" is not null)"
+				}
+			},
+			"isRLSEnabled": false
+		},
+		"public.edge_current_health": {
+			"name": "edge_current_health",
+			"schema": "",
+			"columns": {
+				"device_id": {
+					"name": "device_id",
+					"type": "uuid",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"sequence": {
+					"name": "sequence",
+					"type": "bigint",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"process_status": {
+					"name": "process_status",
+					"type": "edge_health_status",
+					"typeSchema": "public",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"camera_status": {
+					"name": "camera_status",
+					"type": "edge_health_status",
+					"typeSchema": "public",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"feed_status": {
+					"name": "feed_status",
+					"type": "edge_health_status",
+					"typeSchema": "public",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"detector_fps": {
+					"name": "detector_fps",
+					"type": "double precision",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"edge_observed_at": {
+					"name": "edge_observed_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"received_at": {
+					"name": "received_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"edge_current_health_device_id_edge_devices_id_fk": {
+					"name": "edge_current_health_device_id_edge_devices_id_fk",
+					"tableFrom": "edge_current_health",
+					"tableTo": "edge_devices",
+					"columnsFrom": ["device_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {
+				"edge_current_health_sequence_nonnegative": {
+					"name": "edge_current_health_sequence_nonnegative",
+					"value": "\"edge_current_health\".\"sequence\" >= 0"
+				},
+				"edge_current_health_detector_fps_finite_nonnegative": {
+					"name": "edge_current_health_detector_fps_finite_nonnegative",
+					"value": "\"edge_current_health\".\"detector_fps\" is null or (\"edge_current_health\".\"detector_fps\" >= 0 and \"edge_current_health\".\"detector_fps\" < 'infinity'::double precision)"
+				}
+			},
+			"isRLSEnabled": false
+		},
+		"public.edge_devices": {
+			"name": "edge_devices",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "uuid",
+					"primaryKey": true,
+					"notNull": true,
+					"default": "gen_random_uuid()"
+				},
+				"name": {
+					"name": "name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"token_hash": {
+					"name": "token_hash",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"enabled": {
+					"name": "enabled",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true,
+					"default": true
+				},
+				"last_seen_at": {
+					"name": "last_seen_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"last_sequence": {
+					"name": "last_sequence",
+					"type": "bigint",
+					"primaryKey": false,
+					"notNull": true,
+					"default": 0
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {
+				"edge_devices_token_hash_unique": {
+					"name": "edge_devices_token_hash_unique",
+					"columns": [
+						{
+							"expression": "token_hash",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": true,
+					"concurrently": false,
+					"method": "btree",
+					"with": {}
+				}
+			},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {
+				"edge_devices_name_nonempty": {
+					"name": "edge_devices_name_nonempty",
+					"value": "length(trim(\"edge_devices\".\"name\")) > 0"
+				},
+				"edge_devices_token_hash_sha256": {
+					"name": "edge_devices_token_hash_sha256",
+					"value": "\"edge_devices\".\"token_hash\" ~ '^[0-9a-f]{64}$'"
+				},
+				"edge_devices_last_sequence_nonnegative": {
+					"name": "edge_devices_last_sequence_nonnegative",
+					"value": "\"edge_devices\".\"last_sequence\" >= 0"
+				}
+			},
+			"isRLSEnabled": false
+		},
+		"public.edge_health_log": {
+			"name": "edge_health_log",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "bigint",
+					"primaryKey": true,
+					"notNull": true,
+					"identity": {
+						"type": "always",
+						"name": "edge_health_log_id_seq",
+						"schema": "public",
+						"increment": "1",
+						"startWith": "1",
+						"minValue": "1",
+						"maxValue": "9223372036854775807",
+						"cache": "1",
+						"cycle": false
+					}
+				},
+				"device_id": {
+					"name": "device_id",
+					"type": "uuid",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"transition_type": {
+					"name": "transition_type",
+					"type": "health_transition_type",
+					"typeSchema": "public",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"process_status": {
+					"name": "process_status",
+					"type": "edge_health_status",
+					"typeSchema": "public",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"camera_status": {
+					"name": "camera_status",
+					"type": "edge_health_status",
+					"typeSchema": "public",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"feed_status": {
+					"name": "feed_status",
+					"type": "edge_health_status",
+					"typeSchema": "public",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"occurred_at": {
+					"name": "occurred_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"edge_health_log_device_id_edge_devices_id_fk": {
+					"name": "edge_health_log_device_id_edge_devices_id_fk",
+					"tableFrom": "edge_health_log",
+					"tableTo": "edge_devices",
+					"columnsFrom": ["device_id"],
+					"columnsTo": ["id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {
+				"edge_health_log_statuses_coherent": {
+					"name": "edge_health_log_statuses_coherent",
+					"value": "(\"edge_health_log\".\"process_status\" is null and \"edge_health_log\".\"camera_status\" is null and \"edge_health_log\".\"feed_status\" is null) or (\"edge_health_log\".\"process_status\" is not null and \"edge_health_log\".\"camera_status\" is not null and \"edge_health_log\".\"feed_status\" is not null)"
+				}
+			},
+			"isRLSEnabled": false
+		},
+		"public.occupancy_minutes": {
+			"name": "occupancy_minutes",
+			"schema": "",
+			"columns": {
+				"device_id": {
+					"name": "device_id",
+					"type": "uuid",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"minute_start_utc": {
+					"name": "minute_start_utc",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"business_day": {
+					"name": "business_day",
+					"type": "date",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"count": {
+					"name": "count",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"entries": {
+					"name": "entries",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"exits": {
+					"name": "exits",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"band": {
+					"name": "band",
+					"type": "occupancy_band",
+					"typeSchema": "public",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"capacity_snapshot": {
+					"name": "capacity_snapshot",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"settings_version": {
+					"name": "settings_version",
+					"type": "bigint",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"source": {
+					"name": "source",
+					"type": "minute_source",
+					"typeSchema": "public",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"occupancy_minutes_device_id_edge_devices_id_fk": {
+					"name": "occupancy_minutes_device_id_edge_devices_id_fk",
+					"tableFrom": "occupancy_minutes",
+					"tableTo": "edge_devices",
+					"columnsFrom": ["device_id"],
+					"columnsTo": ["id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"occupancy_minutes_settings_version_settings_versions_version_fk": {
+					"name": "occupancy_minutes_settings_version_settings_versions_version_fk",
+					"tableFrom": "occupancy_minutes",
+					"tableTo": "settings_versions",
+					"columnsFrom": ["settings_version"],
+					"columnsTo": ["version"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {
+				"occupancy_minutes_device_id_minute_start_utc_pk": {
+					"name": "occupancy_minutes_device_id_minute_start_utc_pk",
+					"columns": ["device_id", "minute_start_utc"]
+				}
+			},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {
+				"occupancy_minutes_aligned": {
+					"name": "occupancy_minutes_aligned",
+					"value": "date_trunc('minute', \"occupancy_minutes\".\"minute_start_utc\") = \"occupancy_minutes\".\"minute_start_utc\""
+				},
+				"occupancy_minutes_count_nonnegative": {
+					"name": "occupancy_minutes_count_nonnegative",
+					"value": "\"occupancy_minutes\".\"count\" >= 0"
+				},
+				"occupancy_minutes_entries_nonnegative": {
+					"name": "occupancy_minutes_entries_nonnegative",
+					"value": "\"occupancy_minutes\".\"entries\" >= 0"
+				},
+				"occupancy_minutes_exits_nonnegative": {
+					"name": "occupancy_minutes_exits_nonnegative",
+					"value": "\"occupancy_minutes\".\"exits\" >= 0"
+				},
+				"occupancy_minutes_capacity_positive": {
+					"name": "occupancy_minutes_capacity_positive",
+					"value": "\"occupancy_minutes\".\"capacity_snapshot\" > 0"
+				}
+			},
+			"isRLSEnabled": false
+		},
+		"public.settings_versions": {
+			"name": "settings_versions",
+			"schema": "",
+			"columns": {
+				"version": {
+					"name": "version",
+					"type": "bigint",
+					"primaryKey": true,
+					"notNull": true,
+					"identity": {
+						"type": "always",
+						"name": "settings_versions_version_seq",
+						"schema": "public",
+						"increment": "1",
+						"startWith": "1",
+						"minValue": "1",
+						"maxValue": "9223372036854775807",
+						"cache": "1",
+						"cycle": false
+					}
+				},
+				"capacity": {
+					"name": "capacity",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"quiet_max_percent": {
+					"name": "quiet_max_percent",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"moderate_max_percent": {
+					"name": "moderate_max_percent",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"busy_max_percent": {
+					"name": "busy_max_percent",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"timezone": {
+					"name": "timezone",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "'Asia/Riyadh'"
+				},
+				"business_day_boundary": {
+					"name": "business_day_boundary",
+					"type": "time",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "'04:00'"
+				},
+				"push_interval_seconds": {
+					"name": "push_interval_seconds",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"default": 20
+				},
+				"fresh_for_seconds": {
+					"name": "fresh_for_seconds",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"default": 90
+				},
+				"operational_stale_after_seconds": {
+					"name": "operational_stale_after_seconds",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"default": 180
+				},
+				"public_poll_seconds": {
+					"name": "public_poll_seconds",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"default": 60
+				},
+				"schedule_sun_open": {
+					"name": "schedule_sun_open",
+					"type": "time",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"schedule_sun_close": {
+					"name": "schedule_sun_close",
+					"type": "time",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"schedule_mon_open": {
+					"name": "schedule_mon_open",
+					"type": "time",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"schedule_mon_close": {
+					"name": "schedule_mon_close",
+					"type": "time",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"schedule_tue_open": {
+					"name": "schedule_tue_open",
+					"type": "time",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"schedule_tue_close": {
+					"name": "schedule_tue_close",
+					"type": "time",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"schedule_wed_open": {
+					"name": "schedule_wed_open",
+					"type": "time",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"schedule_wed_close": {
+					"name": "schedule_wed_close",
+					"type": "time",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"schedule_thu_open": {
+					"name": "schedule_thu_open",
+					"type": "time",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"schedule_thu_close": {
+					"name": "schedule_thu_close",
+					"type": "time",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"schedule_fri_open": {
+					"name": "schedule_fri_open",
+					"type": "time",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"schedule_fri_close": {
+					"name": "schedule_fri_close",
+					"type": "time",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"schedule_sat_open": {
+					"name": "schedule_sat_open",
+					"type": "time",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"schedule_sat_close": {
+					"name": "schedule_sat_close",
+					"type": "time",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"effective_from": {
+					"name": "effective_from",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"created_by": {
+					"name": "created_by",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {
+				"settings_capacity_positive": {
+					"name": "settings_capacity_positive",
+					"value": "\"settings_versions\".\"capacity\" > 0"
+				},
+				"settings_bands_ordered": {
+					"name": "settings_bands_ordered",
+					"value": "0 <= \"settings_versions\".\"quiet_max_percent\" and \"settings_versions\".\"quiet_max_percent\" < \"settings_versions\".\"moderate_max_percent\" and \"settings_versions\".\"moderate_max_percent\" < \"settings_versions\".\"busy_max_percent\" and \"settings_versions\".\"busy_max_percent\" <= 100"
+				},
+				"settings_timezone_nonempty": {
+					"name": "settings_timezone_nonempty",
+					"value": "length(trim(\"settings_versions\".\"timezone\")) > 0"
+				},
+				"settings_push_interval_positive": {
+					"name": "settings_push_interval_positive",
+					"value": "\"settings_versions\".\"push_interval_seconds\" > 0"
+				},
+				"settings_fresh_for_positive": {
+					"name": "settings_fresh_for_positive",
+					"value": "\"settings_versions\".\"fresh_for_seconds\" > 0"
+				},
+				"settings_operational_stale_after_fresh": {
+					"name": "settings_operational_stale_after_fresh",
+					"value": "\"settings_versions\".\"operational_stale_after_seconds\" > \"settings_versions\".\"fresh_for_seconds\""
+				},
+				"settings_public_poll_positive": {
+					"name": "settings_public_poll_positive",
+					"value": "\"settings_versions\".\"public_poll_seconds\" > 0"
+				},
+				"settings_schedule_sun_pair": {
+					"name": "settings_schedule_sun_pair",
+					"value": "(\"settings_versions\".\"schedule_sun_open\" is null) = (\"settings_versions\".\"schedule_sun_close\" is null)"
+				},
+				"settings_schedule_mon_pair": {
+					"name": "settings_schedule_mon_pair",
+					"value": "(\"settings_versions\".\"schedule_mon_open\" is null) = (\"settings_versions\".\"schedule_mon_close\" is null)"
+				},
+				"settings_schedule_tue_pair": {
+					"name": "settings_schedule_tue_pair",
+					"value": "(\"settings_versions\".\"schedule_tue_open\" is null) = (\"settings_versions\".\"schedule_tue_close\" is null)"
+				},
+				"settings_schedule_wed_pair": {
+					"name": "settings_schedule_wed_pair",
+					"value": "(\"settings_versions\".\"schedule_wed_open\" is null) = (\"settings_versions\".\"schedule_wed_close\" is null)"
+				},
+				"settings_schedule_thu_pair": {
+					"name": "settings_schedule_thu_pair",
+					"value": "(\"settings_versions\".\"schedule_thu_open\" is null) = (\"settings_versions\".\"schedule_thu_close\" is null)"
+				},
+				"settings_schedule_fri_pair": {
+					"name": "settings_schedule_fri_pair",
+					"value": "(\"settings_versions\".\"schedule_fri_open\" is null) = (\"settings_versions\".\"schedule_fri_close\" is null)"
+				},
+				"settings_schedule_sat_pair": {
+					"name": "settings_schedule_sat_pair",
+					"value": "(\"settings_versions\".\"schedule_sat_open\" is null) = (\"settings_versions\".\"schedule_sat_close\" is null)"
+				}
+			},
+			"isRLSEnabled": false
+		},
+		"public.auth_owner_credentials": {
+			"name": "auth_owner_credentials",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "uuid",
+					"primaryKey": true,
+					"notNull": true,
+					"default": "gen_random_uuid()"
+				},
+				"principal_id": {
+					"name": "principal_id",
+					"type": "uuid",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"password_hash": {
+					"name": "password_hash",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"password_salt": {
+					"name": "password_salt",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"credential_version": {
+					"name": "credential_version",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"default": 1
+				},
+				"active": {
+					"name": "active",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true,
+					"default": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"rotated_at": {
+					"name": "rotated_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {
+				"auth_owner_credentials_principal_unique": {
+					"name": "auth_owner_credentials_principal_unique",
+					"columns": [
+						{
+							"expression": "principal_id",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": true,
+					"concurrently": false,
+					"method": "btree",
+					"with": {}
+				}
+			},
+			"foreignKeys": {
+				"auth_owner_credentials_principal_id_auth_principals_id_fk": {
+					"name": "auth_owner_credentials_principal_id_auth_principals_id_fk",
+					"tableFrom": "auth_owner_credentials",
+					"tableTo": "auth_principals",
+					"columnsFrom": ["principal_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {
+				"auth_owner_credentials_hash_nonempty": {
+					"name": "auth_owner_credentials_hash_nonempty",
+					"value": "length(trim(\"auth_owner_credentials\".\"password_hash\")) > 0"
+				},
+				"auth_owner_credentials_salt_nonempty": {
+					"name": "auth_owner_credentials_salt_nonempty",
+					"value": "length(trim(\"auth_owner_credentials\".\"password_salt\")) > 0"
+				},
+				"auth_owner_credentials_version_positive": {
+					"name": "auth_owner_credentials_version_positive",
+					"value": "\"auth_owner_credentials\".\"credential_version\" > 0"
+				}
+			},
+			"isRLSEnabled": false
+		},
+		"public.auth_principals": {
+			"name": "auth_principals",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "uuid",
+					"primaryKey": true,
+					"notNull": true,
+					"default": "gen_random_uuid()"
+				},
+				"principal_kind": {
+					"name": "principal_kind",
+					"type": "auth_principal_kind",
+					"typeSchema": "public",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"role": {
+					"name": "role",
+					"type": "auth_role",
+					"typeSchema": "public",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"active": {
+					"name": "active",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true,
+					"default": true
+				},
+				"owner_email": {
+					"name": "owner_email",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"display_name": {
+					"name": "display_name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {
+				"auth_principals_one_shared_staff": {
+					"name": "auth_principals_one_shared_staff",
+					"columns": [
+						{
+							"expression": "principal_kind",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": true,
+					"where": "\"auth_principals\".\"principal_kind\" = 'shared_staff'",
+					"concurrently": false,
+					"method": "btree",
+					"with": {}
+				},
+				"auth_principals_owner_email_unique": {
+					"name": "auth_principals_owner_email_unique",
+					"columns": [
+						{
+							"expression": "lower(\"owner_email\")",
+							"asc": true,
+							"isExpression": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": true,
+					"where": "\"auth_principals\".\"owner_email\" is not null",
+					"concurrently": false,
+					"method": "btree",
+					"with": {}
+				}
+			},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {
+				"auth_principals_kind_role_identity": {
+					"name": "auth_principals_kind_role_identity",
+					"value": "(\n\t\t\t\t(\"auth_principals\".\"principal_kind\" = 'shared_staff' and \"auth_principals\".\"role\" = 'staff' and \"auth_principals\".\"owner_email\" is null)\n\t\t\t\tor\n\t\t\t\t(\"auth_principals\".\"principal_kind\" = 'owner' and \"auth_principals\".\"role\" = 'owner' and \"auth_principals\".\"owner_email\" is not null)\n\t\t\t)"
+				},
+				"auth_principals_display_name_nonempty": {
+					"name": "auth_principals_display_name_nonempty",
+					"value": "length(trim(\"auth_principals\".\"display_name\")) > 0"
+				},
+				"auth_principals_owner_email_nonempty": {
+					"name": "auth_principals_owner_email_nonempty",
+					"value": "\"auth_principals\".\"owner_email\" is null or length(trim(\"auth_principals\".\"owner_email\")) > 0"
+				}
+			},
+			"isRLSEnabled": false
+		},
+		"public.auth_sessions": {
+			"name": "auth_sessions",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "uuid",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"principal_id": {
+					"name": "principal_id",
+					"type": "uuid",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"token_hash": {
+					"name": "token_hash",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"credential_version": {
+					"name": "credential_version",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"expires_at": {
+					"name": "expires_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"last_refreshed_at": {
+					"name": "last_refreshed_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"revoked_at": {
+					"name": "revoked_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {
+				"auth_sessions_token_hash_unique": {
+					"name": "auth_sessions_token_hash_unique",
+					"columns": [
+						{
+							"expression": "token_hash",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": true,
+					"concurrently": false,
+					"method": "btree",
+					"with": {}
+				},
+				"auth_sessions_principal_idx": {
+					"name": "auth_sessions_principal_idx",
+					"columns": [
+						{
+							"expression": "principal_id",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": false,
+					"concurrently": false,
+					"method": "btree",
+					"with": {}
+				},
+				"auth_sessions_expires_idx": {
+					"name": "auth_sessions_expires_idx",
+					"columns": [
+						{
+							"expression": "expires_at",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": false,
+					"concurrently": false,
+					"method": "btree",
+					"with": {}
+				}
+			},
+			"foreignKeys": {
+				"auth_sessions_principal_id_auth_principals_id_fk": {
+					"name": "auth_sessions_principal_id_auth_principals_id_fk",
+					"tableFrom": "auth_sessions",
+					"tableTo": "auth_principals",
+					"columnsFrom": ["principal_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {
+				"auth_sessions_token_hash_sha256": {
+					"name": "auth_sessions_token_hash_sha256",
+					"value": "\"auth_sessions\".\"token_hash\" ~ '^[0-9a-f]{64}$'"
+				},
+				"auth_sessions_credential_version_positive": {
+					"name": "auth_sessions_credential_version_positive",
+					"value": "\"auth_sessions\".\"credential_version\" is null or \"auth_sessions\".\"credential_version\" > 0"
+				},
+				"auth_sessions_expiry_after_creation": {
+					"name": "auth_sessions_expiry_after_creation",
+					"value": "\"auth_sessions\".\"expires_at\" > \"auth_sessions\".\"created_at\""
+				}
+			},
+			"isRLSEnabled": false
+		},
+		"public.auth_staff_credentials": {
+			"name": "auth_staff_credentials",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "uuid",
+					"primaryKey": true,
+					"notNull": true,
+					"default": "gen_random_uuid()"
+				},
+				"principal_id": {
+					"name": "principal_id",
+					"type": "uuid",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"pin_hash": {
+					"name": "pin_hash",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"pin_salt": {
+					"name": "pin_salt",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"credential_version": {
+					"name": "credential_version",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"default": 1
+				},
+				"active": {
+					"name": "active",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true,
+					"default": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"rotated_at": {
+					"name": "rotated_at",
+					"type": "timestamp with time zone",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {
+				"auth_staff_credentials_principal_unique": {
+					"name": "auth_staff_credentials_principal_unique",
+					"columns": [
+						{
+							"expression": "principal_id",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": true,
+					"concurrently": false,
+					"method": "btree",
+					"with": {}
+				}
+			},
+			"foreignKeys": {
+				"auth_staff_credentials_principal_id_auth_principals_id_fk": {
+					"name": "auth_staff_credentials_principal_id_auth_principals_id_fk",
+					"tableFrom": "auth_staff_credentials",
+					"tableTo": "auth_principals",
+					"columnsFrom": ["principal_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"policies": {},
+			"checkConstraints": {
+				"auth_staff_credentials_hash_nonempty": {
+					"name": "auth_staff_credentials_hash_nonempty",
+					"value": "length(trim(\"auth_staff_credentials\".\"pin_hash\")) > 0"
+				},
+				"auth_staff_credentials_salt_nonempty": {
+					"name": "auth_staff_credentials_salt_nonempty",
+					"value": "length(trim(\"auth_staff_credentials\".\"pin_salt\")) > 0"
+				},
+				"auth_staff_credentials_version_positive": {
+					"name": "auth_staff_credentials_version_positive",
+					"value": "\"auth_staff_credentials\".\"credential_version\" > 0"
+				}
+			},
+			"isRLSEnabled": false
+		}
+	},
+	"enums": {
+		"public.alert_condition": {
+			"name": "alert_condition",
+			"schema": "public",
+			"values": [
+				"stale_push",
+				"process_failure",
+				"camera_failure",
+				"feed_failure"
+			]
+		},
+		"public.alert_delivery_outcome": {
+			"name": "alert_delivery_outcome",
+			"schema": "public",
+			"values": ["delivered", "failed"]
+		},
+		"public.alert_notice_kind": {
+			"name": "alert_notice_kind",
+			"schema": "public",
+			"values": ["alert", "recovery"]
+		},
+		"public.current_source": {
+			"name": "current_source",
+			"schema": "public",
+			"values": ["edge", "manual"]
+		},
+		"public.edge_health_status": {
+			"name": "edge_health_status",
+			"schema": "public",
+			"values": ["ok", "degraded", "failed", "unknown"]
+		},
+		"public.health_transition_type": {
+			"name": "health_transition_type",
+			"schema": "public",
+			"values": ["online", "offline", "reported_flags_changed"]
+		},
+		"public.minute_source": {
+			"name": "minute_source",
+			"schema": "public",
+			"values": ["live", "backfill", "manual"]
+		},
+		"public.occupancy_band": {
+			"name": "occupancy_band",
+			"schema": "public",
+			"values": ["quiet", "moderate", "busy", "packed"]
+		},
+		"public.auth_principal_kind": {
+			"name": "auth_principal_kind",
+			"schema": "public",
+			"values": ["shared_staff", "owner"]
+		},
+		"public.auth_role": {
+			"name": "auth_role",
+			"schema": "public",
+			"values": ["staff", "owner"]
+		}
+	},
+	"schemas": {},
+	"sequences": {},
+	"roles": {},
+	"policies": {},
+	"views": {},
+	"_meta": {
+		"columns": {},
+		"schemas": {},
+		"tables": {}
+	}
+}

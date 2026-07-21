@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import {
+	type AnyPgColumn,
 	bigint,
 	boolean,
 	check,
@@ -34,6 +35,25 @@ export const edgeHealthStatus = pgEnum("edge_health_status", [
 	"degraded",
 	"failed",
 	"unknown",
+]);
+export const alertCondition = pgEnum("alert_condition", [
+	"stale_push",
+	"process_failure",
+	"camera_failure",
+	"feed_failure",
+]);
+export const alertNoticeKind = pgEnum("alert_notice_kind", [
+	"alert",
+	"recovery",
+]);
+export const alertDeliveryOutcome = pgEnum("alert_delivery_outcome", [
+	"delivered",
+	"failed",
+]);
+export const healthTransitionType = pgEnum("health_transition_type", [
+	"online",
+	"offline",
+	"reported_flags_changed",
 ]);
 
 const utcTimestamp = (name: string) => timestamp(name, { withTimezone: true });
@@ -241,6 +261,63 @@ export const edgeCurrentHealth = pgTable(
 		check(
 			"edge_current_health_detector_fps_finite_nonnegative",
 			sql`${table.detectorFps} is null or (${table.detectorFps} >= 0 and ${table.detectorFps} < 'infinity'::double precision)`,
+		),
+	],
+);
+
+/** Append-only health-transition history derived from the current projection. */
+export const edgeHealthLog = pgTable(
+	"edge_health_log",
+	{
+		id: bigint("id", { mode: "number" })
+			.primaryKey()
+			.generatedAlwaysAsIdentity(),
+		deviceId: uuid("device_id")
+			.notNull()
+			.references(() => edgeDevices.id),
+		transitionType: healthTransitionType("transition_type").notNull(),
+		processStatus: edgeHealthStatus("process_status"),
+		cameraStatus: edgeHealthStatus("camera_status"),
+		feedStatus: edgeHealthStatus("feed_status"),
+		occurredAt: utcTimestamp("occurred_at").notNull(),
+		createdAt: utcTimestamp("created_at").notNull().defaultNow(),
+	},
+	(table) => [
+		check(
+			"edge_health_log_statuses_coherent",
+			sql`(${table.processStatus} is null and ${table.cameraStatus} is null and ${table.feedStatus} is null) or (${table.processStatus} is not null and ${table.cameraStatus} is not null and ${table.feedStatus} is not null)`,
+		),
+	],
+);
+
+/** Append-only alert and recovery delivery history; it is the suppression authority. */
+export const alertLog = pgTable(
+	"alert_log",
+	{
+		id: bigint("id", { mode: "number" })
+			.primaryKey()
+			.generatedAlwaysAsIdentity(),
+		deviceId: uuid("device_id")
+			.notNull()
+			.references(() => edgeDevices.id),
+		condition: alertCondition("condition").notNull(),
+		noticeKind: alertNoticeKind("notice_kind").notNull(),
+		conditionStartedAt: utcTimestamp("condition_started_at").notNull(),
+		sentAt: utcTimestamp("sent_at").notNull(),
+		deliveryOutcome: alertDeliveryOutcome("delivery_outcome").notNull(),
+		recoveryOfAlertId: bigint("recovery_of_alert_id", {
+			mode: "number",
+		}).references((): AnyPgColumn => alertLog.id),
+		createdAt: utcTimestamp("created_at").notNull().defaultNow(),
+	},
+	(table) => [
+		check(
+			"alert_log_recovery_linkage",
+			sql`(${table.noticeKind} = 'alert' and ${table.recoveryOfAlertId} is null) or (${table.noticeKind} = 'recovery' and ${table.recoveryOfAlertId} is not null)`,
+		),
+		check(
+			"alert_log_sent_after_condition_start",
+			sql`${table.sentAt} >= ${table.conditionStartedAt}`,
 		),
 	],
 );
