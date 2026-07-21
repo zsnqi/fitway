@@ -366,6 +366,10 @@ test("loading and transport failure are honest states, and 401 redirects", async
 	);
 	await captureReview(page, "staff-error-ar-1280.png");
 
+	await page.unroute("**/api/auth/session");
+	await page.route("**/api/auth/session", (route) =>
+		route.fulfill({ status: 401, json: { error: "unauthorized" } }),
+	);
 	await page.unroute("**/rpc/staff/operationalSnapshot");
 	await page.route("**/rpc/staff/operationalSnapshot", (route) =>
 		route.fulfill({
