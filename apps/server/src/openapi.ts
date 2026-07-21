@@ -6,6 +6,8 @@ const SAFE_INTEGER_MAX = 9_007_199_254_740_991;
 const POSTGRES_INTEGER_MAX = 2_147_483_647;
 const CANONICAL_UTC_PATTERN =
 	"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$";
+const MINUTE_UTC_PATTERN =
+	"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:00\\.000Z$";
 
 const positiveSafeIntegerSchema = {
 	type: "integer",
@@ -22,6 +24,91 @@ const commandProperties = {
 	issuedAt: canonicalUtcSchema,
 } as const;
 const commandRequired = ["id", "type", "targetValue", "issuedAt"] as const;
+
+const edgePushRequestOpenApiSchema = {
+	type: "object",
+	properties: {
+		schemaVersion: { const: 1 },
+		sequence: positiveSafeIntegerSchema,
+		observedAt: canonicalUtcSchema,
+		currentCount: {
+			type: "integer",
+			minimum: -2_147_483_648,
+			maximum: POSTGRES_INTEGER_MAX,
+		},
+		minutes: {
+			type: "array",
+			minItems: 1,
+			maxItems: 2,
+			uniqueItems: true,
+			description:
+				"Minute buckets have unique minuteStart values and are sorted by minuteStart ascending.",
+			"x-fitway-sorted-unique-minute-starts": true,
+			items: {
+				type: "object",
+				properties: {
+					minuteStart: {
+						type: "string",
+						format: "date-time",
+						pattern: MINUTE_UTC_PATTERN,
+					},
+					count: {
+						type: "integer",
+						minimum: -2_147_483_648,
+						maximum: POSTGRES_INTEGER_MAX,
+					},
+					entries: {
+						type: "integer",
+						minimum: 0,
+						maximum: POSTGRES_INTEGER_MAX,
+					},
+					exits: {
+						type: "integer",
+						minimum: 0,
+						maximum: POSTGRES_INTEGER_MAX,
+					},
+				},
+				required: ["minuteStart", "count", "entries", "exits"],
+				additionalProperties: false,
+			},
+		},
+		health: {
+			type: "object",
+			properties: {
+				process: {
+					type: "string",
+					enum: ["ok", "degraded", "failed", "unknown"],
+				},
+				camera: {
+					type: "string",
+					enum: ["ok", "degraded", "failed", "unknown"],
+				},
+				feed: {
+					type: "string",
+					enum: ["ok", "degraded", "failed", "unknown"],
+				},
+				detectorFps: {
+					oneOf: [{ type: "number", minimum: 0 }, { type: "null" }],
+				},
+			},
+			required: ["process", "camera", "feed", "detectorFps"],
+			additionalProperties: false,
+		},
+		appliedCommandId: {
+			oneOf: [positiveSafeIntegerSchema, { type: "null" }],
+		},
+	},
+	required: [
+		"schemaVersion",
+		"sequence",
+		"observedAt",
+		"currentCount",
+		"minutes",
+		"health",
+		"appliedCommandId",
+	],
+	additionalProperties: false,
+} as const;
 
 const edgePushResponseOpenApiSchema = {
 	type: "object",
@@ -150,6 +237,8 @@ export async function generateOpenApiDocument() {
 			"content" in operation.requestBody &&
 			operation.requestBody.content?.["application/json"]
 		) {
+			operation.requestBody.content["application/json"].schema =
+				edgePushRequestOpenApiSchema as never;
 			operation.requestBody.content["application/json"].example = {
 				schemaVersion: 1,
 				sequence: 42,

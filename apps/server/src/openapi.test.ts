@@ -1,4 +1,7 @@
-import { edgePushResponseSchema } from "@fitway/api/edge-push";
+import {
+	edgePushRequestSchema,
+	edgePushResponseSchema,
+} from "@fitway/api/edge-push";
 import Ajv2020 from "ajv/dist/2020";
 import addFormats from "ajv-formats";
 import { describe, expect, it } from "vitest";
@@ -46,6 +49,80 @@ describe("generated OpenAPI", () => {
 				? operation.requestBody.content?.["application/json"]?.schema
 				: undefined;
 		expect(JSON.stringify(requestSchema)).toContain("appliedCommandId");
+		if (!requestSchema) {
+			throw new Error("OpenAPI request contract is missing");
+		}
+		const requestAjv = new Ajv2020({ strict: true });
+		addFormats(requestAjv);
+		requestAjv.addKeyword({
+			keyword: "x-fitway-sorted-unique-minute-starts",
+			type: "array",
+			schemaType: "boolean",
+			validate: (_schema: boolean, value: unknown) => {
+				if (!Array.isArray(value)) {
+					return false;
+				}
+				const starts = value.map((item) =>
+					typeof item === "object" && item !== null && "minuteStart" in item
+						? item.minuteStart
+						: undefined,
+				);
+				const stringStarts = starts.filter(
+					(start): start is string => typeof start === "string",
+				);
+				if (stringStarts.length !== starts.length) {
+					return false;
+				}
+				for (let index = 1; index < stringStarts.length; index += 1) {
+					const previous = stringStarts[index - 1];
+					const current = stringStarts[index];
+					if (!previous || !current || previous >= current) {
+						return false;
+					}
+				}
+				return true;
+			},
+		});
+		const validateRequest = requestAjv.compile(requestSchema);
+		const validRequest =
+			operation?.requestBody && "content" in operation.requestBody
+				? operation.requestBody.content?.["application/json"]?.example
+				: undefined;
+		const olderMinute = {
+			minuteStart: "2026-07-13T18:23:00.000Z",
+			count: 36,
+			entries: 1,
+			exits: 0,
+		};
+		const requestCases = [
+			validRequest,
+			{ ...validRequest, observedAt: "2026-07-13T18:24:20Z" },
+			{
+				...validRequest,
+				minutes: [
+					{
+						...validRequest.minutes[0],
+						minuteStart: "2026-07-13T18:24:01.000Z",
+					},
+				],
+			},
+			{
+				...validRequest,
+				minutes: [validRequest.minutes[0], olderMinute],
+			},
+			{
+				...validRequest,
+				minutes: [
+					validRequest.minutes[0],
+					{ ...validRequest.minutes[0], count: 38 },
+				],
+			},
+		];
+		for (const value of requestCases) {
+			expect(Boolean(validateRequest(value))).toBe(
+				edgePushRequestSchema.safeParse(value).success,
+			);
+		}
 		if (!success || !("content" in success)) {
 			throw new Error("OpenAPI success response is missing");
 		}
