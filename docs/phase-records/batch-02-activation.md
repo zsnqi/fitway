@@ -1,6 +1,7 @@
 # Batch 02 activation record
 
-- Status: `READY`; worker sessions pending
+- Status: `SUPERSEDED` — leases expired `2026-07-19T13:30:00+03:00` before worker execution;
+  renewed by `docs/phase-records/batch-02-reactivation.md` (2026-07-21, contracts unchanged)
 - Integrated feature baseline: `f043611a4bfa9f208b06e51c90aa54affeb87d34` (phase4-health closure)
 - Coordinator activation commit: `SELF`
 - Coordinator branch: `main`

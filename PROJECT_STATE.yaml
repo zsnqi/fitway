@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-07-17T13:30:00+03:00"
+updatedAt: "2026-07-21T18:45:00+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -261,9 +261,9 @@ milestones:
       - apps/web/src/components/public-atmosphere.tsx
       - additive-only new primitive files under packages/ui/src/components/
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-07-17T13:30:00+03:00"
-    leaseExpiresAt: "2026-07-19T13:30:00+03:00"
-    handoff: docs/phase-records/handoffs/phase4-staff-web/20260717-133000-p4_staff_b02.md
+    lastHeartbeatAt: "2026-07-21T18:45:00+03:00"
+    leaseExpiresAt: "2026-07-23T18:45:00+03:00"
+    handoff: docs/phase-records/handoffs/phase4-staff-web/20260721-184500-p4_staff_b02.md
     stopReason: null
     gates:
       unit: PENDING
@@ -469,9 +469,9 @@ milestones:
       - generated packages/db/src/migrations/meta/0004_snapshot.json
       - append-only 0004 entry in packages/db/src/migrations/meta/_journal.json
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-07-17T13:30:00+03:00"
-    leaseExpiresAt: "2026-07-19T13:30:00+03:00"
-    handoff: docs/phase-records/handoffs/phase8-alert-evaluator/20260717-133000-p8_alert_b02.md
+    lastHeartbeatAt: "2026-07-21T18:45:00+03:00"
+    leaseExpiresAt: "2026-07-23T18:45:00+03:00"
+    handoff: docs/phase-records/handoffs/phase8-alert-evaluator/20260721-184500-p8_alert_b02.md
     stopReason: null
     gates:
       unit: PENDING
