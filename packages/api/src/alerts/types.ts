@@ -7,7 +7,11 @@ export const ALERT_CONDITION_TYPES = [
 
 export type AlertConditionType = (typeof ALERT_CONDITION_TYPES)[number];
 export type AlertNoticeKind = "alert" | "recovery";
-export type AlertDeliveryOutcome = "delivered" | "failed";
+/**
+ * `claimed` is a durable, append-only delivery decision. A later row records
+ * the final notifier outcome without mutating the claim or any prior history.
+ */
+export type AlertDeliveryOutcome = "claimed" | "delivered" | "failed";
 export type AlertHealthStatus = "ok" | "degraded" | "failed" | "unknown";
 export type HealthTransitionType =
 	| "online"

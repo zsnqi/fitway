@@ -1,5 +1,5 @@
 CREATE TYPE "public"."alert_condition" AS ENUM('stale_push', 'process_failure', 'camera_failure', 'feed_failure');--> statement-breakpoint
-CREATE TYPE "public"."alert_delivery_outcome" AS ENUM('delivered', 'failed');--> statement-breakpoint
+CREATE TYPE "public"."alert_delivery_outcome" AS ENUM('claimed', 'delivered', 'failed');--> statement-breakpoint
 CREATE TYPE "public"."alert_notice_kind" AS ENUM('alert', 'recovery');--> statement-breakpoint
 CREATE TYPE "public"."health_transition_type" AS ENUM('online', 'offline', 'reported_flags_changed');--> statement-breakpoint
 CREATE TABLE "alert_log" (

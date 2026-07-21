@@ -21,9 +21,10 @@ import {
 	edgeHealthLog,
 	settingsVersions,
 } from "@fitway/db/schema/application";
-import { asc, desc, eq } from "drizzle-orm";
+import { asc, desc, eq, sql } from "drizzle-orm";
 
 type Database = typeof db;
+type AlertReader = Pick<Database, "select">;
 
 export type AlertEvaluationOptions = {
 	now: Date;
@@ -111,9 +112,10 @@ function outcomeFor(
 
 export function createAlertRepository(database: Database): AlertRepository {
 	async function buildEvaluationInput(
+		reader: AlertReader,
 		options: AlertEvaluationOptions,
 	): Promise<EvaluateAlertsInput | null> {
-		const [settings] = await database
+		const [settings] = await reader
 			.select()
 			.from(settingsVersions)
 			.orderBy(
@@ -122,7 +124,7 @@ export function createAlertRepository(database: Database): AlertRepository {
 			)
 			.limit(1);
 		if (!settings) return null;
-		const [current] = await database
+		const [current] = await reader
 			.select({
 				deviceId: currentState.activeDeviceId,
 				lastAcceptedPushAt: currentState.lastPushReceivedAt,
@@ -142,12 +144,12 @@ export function createAlertRepository(database: Database): AlertRepository {
 		const deviceId = current?.deviceId ?? null;
 		const [alerts, transitions] = deviceId
 			? await Promise.all([
-					database
+					reader
 						.select()
 						.from(alertLog)
 						.where(eq(alertLog.deviceId, deviceId))
 						.orderBy(asc(alertLog.sentAt), asc(alertLog.id)),
-					database
+					reader
 						.select()
 						.from(edgeHealthLog)
 						.where(eq(edgeHealthLog.deviceId, deviceId))
@@ -194,21 +196,40 @@ export function createAlertRepository(database: Database): AlertRepository {
 
 	return {
 		async evaluateAndNotify(options) {
-			const input = await buildEvaluationInput(options);
-			if (!input) return { notices: [], healthTransitions: [] };
-			const evaluation = evaluateAlerts(input);
-			if (evaluation.healthTransitions.length > 0) {
-				await database.insert(edgeHealthLog).values(
-					evaluation.healthTransitions.map((transition) => ({
-						deviceId: transition.deviceId,
-						transitionType: transition.type,
-						processStatus: transition.processStatus,
-						cameraStatus: transition.cameraStatus,
-						feedStatus: transition.feedStatus,
-						occurredAt: transition.occurredAt,
-					})),
+			const evaluation = await database.transaction(async (transaction) => {
+				await transaction.execute(
+					sql`select pg_advisory_xact_lock(hashtext('fitway-phase8-alert-evaluator'))`,
 				);
-			}
+				const input = await buildEvaluationInput(transaction, options);
+				if (!input) return { notices: [], healthTransitions: [] };
+				const decision = evaluateAlerts(input);
+				if (decision.healthTransitions.length > 0) {
+					await transaction.insert(edgeHealthLog).values(
+						decision.healthTransitions.map((transition) => ({
+							deviceId: transition.deviceId,
+							transitionType: transition.type,
+							processStatus: transition.processStatus,
+							cameraStatus: transition.cameraStatus,
+							feedStatus: transition.feedStatus,
+							occurredAt: transition.occurredAt,
+						})),
+					);
+				}
+				if (decision.notices.length > 0) {
+					await transaction.insert(alertLog).values(
+						decision.notices.map((notice) => ({
+							deviceId: notice.deviceId,
+							condition: notice.condition,
+							noticeKind: notice.noticeKind,
+							conditionStartedAt: notice.conditionStartedAt,
+							sentAt: notice.sentAt,
+							deliveryOutcome: "claimed" as const,
+							recoveryOfAlertId: notice.recoveryOfAlertId,
+						})),
+					);
+				}
+				return decision;
+			});
 			for (const notice of evaluation.notices) {
 				const deliveryOutcome = await outcomeFor(options.notifier, notice);
 				await database.insert(alertLog).values({

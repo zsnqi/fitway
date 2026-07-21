@@ -47,6 +47,7 @@ export const alertNoticeKind = pgEnum("alert_notice_kind", [
 	"recovery",
 ]);
 export const alertDeliveryOutcome = pgEnum("alert_delivery_outcome", [
+	"claimed",
 	"delivered",
 	"failed",
 ]);

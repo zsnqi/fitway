@@ -171,4 +171,131 @@ describe("evaluateAlerts", () => {
 			"reported_flags_changed",
 		]);
 	});
+
+	it("isolates unresolved alerts and recoveries by device", () => {
+		const otherDeviceAlert = alert({
+			deviceId: "device-2",
+			condition: "camera_failure",
+			sentAt: new Date("2026-07-17T09:30:00.000Z"),
+		});
+		const failed = evaluateAlerts(
+			input({
+				lastAcceptedPushAt: new Date("2026-07-17T09:59:59.000Z"),
+				currentHealth: { ...healthyHealth, cameraStatus: "failed" },
+				priorAlerts: [otherDeviceAlert],
+			}),
+		);
+		expect(failed.notices).toEqual([
+			expect.objectContaining({
+				deviceId: "device-1",
+				condition: "camera_failure",
+				noticeKind: "alert",
+			}),
+		]);
+
+		const recovered = evaluateAlerts(
+			input({
+				lastAcceptedPushAt: new Date("2026-07-17T09:59:59.000Z"),
+				priorAlerts: [otherDeviceAlert],
+			}),
+		);
+		expect(recovered.notices).toEqual([]);
+	});
+
+	it("keeps a failure start at its first unresolved qualifying transition", () => {
+		const failureStartedAt = new Date("2026-07-17T09:00:00.000Z");
+		const repeatedReceiptAt = new Date("2026-07-17T09:59:00.000Z");
+		const priorFailure = alert({
+			condition: "camera_failure",
+			conditionStartedAt: failureStartedAt,
+			sentAt: new Date("2026-07-17T09:30:00.000Z"),
+		});
+		const transitions: EvaluateAlertsInput["priorHealthTransitions"] = [
+			{
+				id: 1,
+				deviceId: "device-1",
+				type: "reported_flags_changed",
+				processStatus: "ok",
+				cameraStatus: "failed",
+				feedStatus: "ok",
+				occurredAt: failureStartedAt,
+			},
+		];
+		const reAlert = evaluateAlerts(
+			input({
+				lastAcceptedPushAt: new Date("2026-07-17T09:59:59.000Z"),
+				currentHealth: {
+					...healthyHealth,
+					cameraStatus: "failed",
+					receivedAt: repeatedReceiptAt,
+				},
+				priorAlerts: [priorFailure],
+				priorHealthTransitions: transitions,
+			}),
+		);
+		expect(reAlert.notices).toEqual([
+			expect.objectContaining({
+				condition: "camera_failure",
+				noticeKind: "alert",
+				conditionStartedAt: failureStartedAt,
+			}),
+		]);
+
+		const recovery = evaluateAlerts(
+			input({
+				lastAcceptedPushAt: new Date("2026-07-17T09:59:59.000Z"),
+				priorAlerts: [priorFailure],
+				priorHealthTransitions: transitions,
+			}),
+		);
+		expect(recovery.notices).toEqual([
+			expect.objectContaining({
+				condition: "camera_failure",
+				noticeKind: "recovery",
+				conditionStartedAt: failureStartedAt,
+				recoveryOfAlertId: priorFailure.id,
+			}),
+		]);
+
+		const newFailureStartedAt = new Date("2026-07-17T10:01:00.000Z");
+		const newFailure = evaluateAlerts(
+			input({
+				now: new Date("2026-07-17T10:02:00.000Z"),
+				lastAcceptedPushAt: new Date("2026-07-17T10:01:59.000Z"),
+				currentHealth: {
+					...healthyHealth,
+					cameraStatus: "failed",
+					receivedAt: newFailureStartedAt,
+				},
+				priorAlerts: [
+					priorFailure,
+					{
+						...priorFailure,
+						id: 2,
+						noticeKind: "recovery",
+						sentAt: new Date("2026-07-17T10:00:00.000Z"),
+						recoveryOfAlertId: priorFailure.id,
+					},
+				],
+				priorHealthTransitions: [
+					...transitions,
+					{
+						id: 2,
+						deviceId: "device-1",
+						type: "reported_flags_changed",
+						processStatus: "ok",
+						cameraStatus: "ok",
+						feedStatus: "ok",
+						occurredAt: new Date("2026-07-17T10:00:00.000Z"),
+					},
+				],
+			}),
+		);
+		expect(newFailure.notices).toEqual([
+			expect.objectContaining({
+				condition: "camera_failure",
+				conditionStartedAt: newFailureStartedAt,
+			}),
+		]);
+	});
 });

@@ -1346,7 +1346,7 @@
 		"public.alert_delivery_outcome": {
 			"name": "alert_delivery_outcome",
 			"schema": "public",
-			"values": ["delivered", "failed"]
+			"values": ["claimed", "delivered", "failed"]
 		},
 		"public.alert_notice_kind": {
 			"name": "alert_notice_kind",

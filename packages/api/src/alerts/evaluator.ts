@@ -46,12 +46,51 @@ function latest<T>(
 }
 
 function unresolvedAlert(
+	deviceId: string,
 	condition: AlertConditionType,
 	alerts: readonly PriorAlertLog[],
 ): PriorAlertLog | null {
-	const conditionLogs = alerts.filter((alert) => alert.condition === condition);
+	const conditionLogs = alerts.filter(
+		(alert) => alert.deviceId === deviceId && alert.condition === condition,
+	);
 	const last = latest(conditionLogs, (alert) => milliseconds(alert.sentAt));
 	return last?.noticeKind === "alert" ? last : null;
+}
+
+function failureStartedAt(
+	input: EvaluateAlertsInput,
+	condition: Exclude<AlertConditionType, "stale_push">,
+	health: NonNullable<EvaluateAlertsInput["currentHealth"]>,
+): Date {
+	if (!input.deviceId) return health.receivedAt;
+	const statusKey =
+		condition === "process_failure"
+			? "processStatus"
+			: condition === "camera_failure"
+				? "cameraStatus"
+				: "feedStatus";
+	let unresolvedStartedAt: Date | null = null;
+	const transitions = input.priorHealthTransitions
+		.filter(
+			(transition) =>
+				transition.deviceId === input.deviceId &&
+				transition.processStatus !== null &&
+				transition.cameraStatus !== null &&
+				transition.feedStatus !== null,
+		)
+		.slice()
+		.sort(
+			(left, right) =>
+				milliseconds(left.occurredAt) - milliseconds(right.occurredAt),
+		);
+	for (const transition of transitions) {
+		if (transition[statusKey] === "failed") {
+			unresolvedStartedAt ??= transition.occurredAt;
+		} else {
+			unresolvedStartedAt = null;
+		}
+	}
+	return unresolvedStartedAt ?? health.receivedAt;
 }
 
 function activeConditions(
@@ -77,13 +116,17 @@ function activeConditions(
 	}
 	const health = input.currentHealth;
 	if (!health || health.deviceId !== input.deviceId) return result;
-	const failures: Array<[AlertConditionType, AlertHealthStatus]> = [
+	const failures: Array<
+		[Exclude<AlertConditionType, "stale_push">, AlertHealthStatus]
+	> = [
 		["process_failure", health.processStatus],
 		["camera_failure", health.cameraStatus],
 		["feed_failure", health.feedStatus],
 	];
 	for (const [condition, status] of failures) {
-		if (status === "failed") result.set(condition, health.receivedAt);
+		if (status === "failed") {
+			result.set(condition, failureStartedAt(input, condition, health));
+		}
 	}
 	return result;
 }
@@ -125,11 +168,8 @@ function healthTransitions(input: EvaluateAlertsInput): HealthTransition[] {
 			occurredAt: input.now,
 		});
 	}
-	if (
-		!online ||
-		!input.currentHealth ||
-		input.currentHealth.deviceId !== input.deviceId
-	) {
+	const currentHealth = input.currentHealth;
+	if (!online || !currentHealth || currentHealth.deviceId !== input.deviceId) {
 		return result;
 	}
 	const priorFlags = latest(
@@ -151,7 +191,7 @@ function healthTransitions(input: EvaluateAlertsInput): HealthTransition[] {
 			deviceId: input.deviceId,
 			type: "reported_flags_changed",
 			...statuses,
-			occurredAt: input.now,
+			occurredAt: currentHealth.receivedAt,
 		});
 	}
 	return result;
@@ -177,7 +217,11 @@ export function evaluateAlerts(input: EvaluateAlertsInput): AlertEvaluation {
 	if (input.deviceId) {
 		for (const condition of ALERT_CONDITION_TYPES) {
 			const activeSince = active.get(condition);
-			const previous = unresolvedAlert(condition, input.priorAlerts);
+			const previous = unresolvedAlert(
+				input.deviceId,
+				condition,
+				input.priorAlerts,
+			);
 			if (activeSince) {
 				if (
 					!alertAllowedDuringSchedule(
