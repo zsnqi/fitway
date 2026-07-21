@@ -59,12 +59,31 @@ describe("generated OpenAPI", () => {
 		const valid = media.example;
 		const cases = [
 			valid,
+			{
+				...valid,
+				settings: {
+					...valid.settings,
+					pushIntervalSeconds: 2_147_483_648,
+				},
+			},
 			{ ...valid, highestProcessedSequence: -1 },
 			{
 				...valid,
 				accepted: false,
 				reason: "replay",
 				commands: valid.commands,
+			},
+			{
+				...valid,
+				commands: [
+					{
+						id: 44,
+						type: "reset_zero",
+						targetValue: null,
+						issuedAt: "2026-07-13T18:24:20.000Z",
+					},
+					...valid.commands,
+				],
 			},
 			{
 				...valid,

@@ -39,9 +39,10 @@ const edgePushResponseOpenApiSchema = {
 		},
 		commands: {
 			type: "array",
+			maxItems: 1,
 			uniqueItems: true,
 			description:
-				"Effective pending commands ordered by ascending id (oldest first); empty unless the push is accepted.",
+				"The single effective pending command under the latest-only rule; empty unless the push is accepted.",
 			items: {
 				oneOf: [
 					{
@@ -78,7 +79,7 @@ const edgePushResponseOpenApiSchema = {
 				pushIntervalSeconds: {
 					type: "integer",
 					minimum: 1,
-					maximum: POSTGRES_INTEGER_MAX,
+					maximum: SAFE_INTEGER_MAX,
 				},
 			},
 			required: ["version", "pushIntervalSeconds"],

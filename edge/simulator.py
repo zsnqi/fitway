@@ -172,7 +172,11 @@ def valid_acknowledgement(value: Any) -> bool:
     reason = value.get("reason")
     accepted = value.get("accepted")
     commands = value.get("commands")
-    commands_valid = isinstance(commands, list) and all(_valid_command(item) for item in commands)
+    commands_valid = (
+        isinstance(commands, list)
+        and len(commands) <= 1
+        and all(_valid_command(item) for item in commands)
+    )
     if commands_valid:
         ids = [item["id"] for item in commands]
         commands_valid = ids == sorted(set(ids))

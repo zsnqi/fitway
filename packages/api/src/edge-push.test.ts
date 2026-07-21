@@ -34,7 +34,7 @@ describe("Phase 5 edge push schemas", () => {
 		).toBe(false);
 	});
 
-	it("returns strict oldest-first device commands with coherent targets", () => {
+	it("returns the strict latest-only device command with a coherent target", () => {
 		const response = edgePushResponseSchema.parse({
 			schemaVersion: 1,
 			accepted: true,
@@ -47,27 +47,36 @@ describe("Phase 5 edge push schemas", () => {
 					targetValue: 4,
 					issuedAt: "2026-07-22T00:00:01.000Z",
 				},
-				{
-					id: 12,
-					type: "reset_zero",
-					targetValue: null,
-					issuedAt: "2026-07-22T00:00:02.000Z",
-				},
 			],
 			settings: { version: 1, pushIntervalSeconds: 20 },
 			serverTime: "2026-07-22T00:00:03.000Z",
 		});
-		expect(response.commands.map((command) => command.id)).toEqual([10, 12]);
+		expect(response.commands.map((command) => command.id)).toEqual([10]);
 
-		const reversed = {
+		const multiple = {
 			...response,
-			commands: [...response.commands].reverse(),
+			commands: [
+				...response.commands,
+				{
+					id: 12,
+					type: "reset_zero" as const,
+					targetValue: null,
+					issuedAt: "2026-07-22T00:00:02.000Z",
+				},
+			],
 		};
-		expect(edgePushResponseSchema.safeParse(reversed).success).toBe(false);
+		expect(edgePushResponseSchema.safeParse(multiple).success).toBe(false);
 		expect(
 			edgePushResponseSchema.safeParse({
 				...response,
-				commands: [{ ...response.commands[1], targetValue: 0 }],
+				commands: [
+					{
+						id: 12,
+						type: "reset_zero",
+						targetValue: 0,
+						issuedAt: "2026-07-22T00:00:02.000Z",
+					},
+				],
 			}).success,
 		).toBe(false);
 	});

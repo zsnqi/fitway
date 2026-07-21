@@ -71,6 +71,19 @@ class SimulatorTests(unittest.TestCase):
             "commands": [{**acknowledgement["commands"][0], "issuedAt": "2026-07-13T18:24:19Z"}],
         }
         self.assertFalse(simulator.valid_acknowledgement(invalid_command))
+        multiple_commands = {
+            **acknowledgement,
+            "commands": [
+                *acknowledgement["commands"],
+                {
+                    "id": 3,
+                    "type": "reset_zero",
+                    "targetValue": None,
+                    "issuedAt": "2026-07-13T18:24:20.000Z",
+                },
+            ],
+        }
+        self.assertFalse(simulator.valid_acknowledgement(multiple_commands))
 
     def test_applies_ordered_commands_and_reports_the_highest_on_the_next_push(self) -> None:
         state = simulator.load_state(Path("does-not-exist"), 4)

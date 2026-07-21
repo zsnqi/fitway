@@ -88,7 +88,7 @@ export const edgePushResponseSchema = z
 		accepted: z.boolean(),
 		reason: edgePushReasonSchema,
 		highestProcessedSequence: z.number().int().nonnegative().safe(),
-		commands: z.array(deviceCommandSchema),
+		commands: z.array(deviceCommandSchema).max(1),
 		settings: z
 			.object({
 				version: z.number().int().positive().safe(),
