@@ -1,6 +1,8 @@
 # Batch 02 Phase 8 alert-evaluator retry activation
 
-- Coordinator status: `READY` for one bounded retry; no worker has been launched.
+- Coordinator status: `DONE`; the bounded retry passed independent verification, integrated at
+  `7b2fe32394b8c494dd8c59c6f099a8f21ece68c8`, and closed with Batch 02 in
+  `docs/phase-records/batch-02-integration.md`.
 - Rejected candidate: `7517a28e2f72e040b9e84b2287f7a86d6c330448`
 - Terminal rejection record: `6396d5b70ca533c890624c716be2733a06dfa2a0`,
   `docs/phase-records/handoffs/phase8-alert-evaluator/20260721-184700-p8_alert_b02-failed-validation.md`

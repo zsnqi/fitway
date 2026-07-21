@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-07-21T19:27:04+03:00"
+updatedAt: "2026-07-21T21:24:08+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -216,12 +216,12 @@ milestones:
     integratedCommit: 4a59ca2f30c587eb71c6721a2adaed194512f5ee
 
   phase4-staff-web:
-    status: READY
+    status: DONE
     dependencies: [phase4-auth, phase4-health]
-    ownerSession: "reserved: phase4-staff-web worker (not yet started)"
-    branch: work/phase4-staff-web-b02
-    worktree: D:/Projects/fitway-worktrees/phase4-staff-web
-    baseCommit: SELF
+    ownerSession: null
+    branch: main
+    worktree: null
+    baseCommit: 219c2e836256dcf6684fb2ebdd57b0f1df8b6f8e
     ownedPaths:
       - apps/web/src/routes/login.tsx
       - apps/web/src/routes/staff.tsx
@@ -252,27 +252,20 @@ milestones:
       - PROJECT_STATE.yaml
       - normative and unrelated phase documentation
       - root manifests, lockfiles, and test/config scripts
-    sharedLeases:
-      - apps/web/src/routeTree.gen.ts
-      - apps/web/src/i18n/messages/ar.ts
-      - apps/web/src/i18n/messages/en.ts
-      - apps/web/src/routes/__root.tsx
-      - apps/web/src/index.css
-      - apps/web/src/components/public-atmosphere.tsx
-      - additive-only new primitive files under packages/ui/src/components/
-    validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-07-21T18:45:00+03:00"
-    leaseExpiresAt: "2026-07-23T18:45:00+03:00"
-    handoff: docs/phase-records/handoffs/phase4-staff-web/20260721-184500-p4_staff_b02.md
+    sharedLeases: []
+    validationRepairAttempts: 1
+    lastHeartbeatAt: "2026-07-21T21:24:08+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/batch-02-integration.md
     stopReason: null
     gates:
-      unit: PENDING
+      unit: PASS
       integration: NOT_REQUIRED
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
-      independentReview: PENDING
-    integratedCommit: null
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
+      independentReview: PASS
+    integratedCommit: b67398a8a221e60f45ed7a4f2b0e40207fdbd58a
 
   phase-4:
     status: PLANNED
@@ -419,11 +412,11 @@ milestones:
     integratedCommit: null
 
   phase8-alert-evaluator:
-    status: READY
+    status: DONE
     dependencies: [baseline-reconciliation-gate, phase-3, phase4-health]
-    ownerSession: "reserved: phase8-alert-evaluator retry worker (not yet started)"
-    branch: work/phase8-alert-evaluator-b02-retry
-    worktree: D:/Projects/fitway-worktrees/phase8-alert-evaluator-retry
+    ownerSession: null
+    branch: main
+    worktree: null
     baseCommit: 6396d5b70ca533c890624c716be2733a06dfa2a0
     ownedPaths:
       - packages/api/src/alerts/**
@@ -463,24 +456,20 @@ milestones:
       - PROJECT_STATE.yaml
       - normative and unrelated phase documentation
       - root manifests, lockfiles, and test/config scripts
-    sharedLeases:
-      - packages/db/src/schema/application.ts
-      - generated packages/db/src/migrations/0004_*
-      - generated packages/db/src/migrations/meta/0004_snapshot.json
-      - append-only 0004 entry in packages/db/src/migrations/meta/_journal.json
+    sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-07-21T19:27:04+03:00"
-    leaseExpiresAt: "2026-07-23T19:30:00+03:00"
-    handoff: docs/phase-records/handoffs/phase8-alert-evaluator/20260721-192704-p8_alert_b02_retry.md
+    lastHeartbeatAt: "2026-07-21T21:24:08+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/batch-02-integration.md
     stopReason: null
     gates:
-      unit: PENDING
-      integration: PENDING
+      unit: PASS
+      integration: PASS
       browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
-      independentReview: PENDING
-    integratedCommit: null
+      independentReview: PASS
+    integratedCommit: 7b2fe32394b8c494dd8c59c6f099a8f21ece68c8
 
   phase8-integration:
     status: PLANNED

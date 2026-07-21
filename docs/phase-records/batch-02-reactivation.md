@@ -1,6 +1,7 @@
 # Batch 02 reactivation record
 
-- Status: `READY`; worker sessions pending
+- Status: `DONE`; both verified slices integrated and Batch 02 closed by
+  `docs/phase-records/batch-02-integration.md`
 - Supersedes: `docs/phase-records/batch-02-activation.md` (activation commit
   `bf06c8842b84a5ed539722acfd16998aabb9e373`, activated `2026-07-17T13:30:00+03:00`)
 - Integrated feature baseline: `f043611a4bfa9f208b06e51c90aa54affeb87d34` (unchanged)
