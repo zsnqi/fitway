@@ -1,6 +1,8 @@
 import type { StaffWebMessages } from "@/components/staff/messages";
 import type { MessageCatalog } from "../catalog";
 
+const isolate = (value: string) => `\u2068${value}\u2069`;
+
 export const staffWeb = {
 	common: {
 		operations: "Live operations",
@@ -17,14 +19,15 @@ export const staffWeb = {
 		description:
 			"Enter the shared staff PIN to view the gym's operational status.",
 		pinLabel: "Staff PIN",
-		pinHint: (minimum, maximum) => `Use ${minimum}–${maximum} Western digits.`,
+		pinHint: (minimum, maximum) =>
+			`Use ${isolate(minimum)}–${isolate(maximum)} Western digits.`,
 		pinInvalid: (minimum, maximum) =>
-			`Enter a PIN of ${minimum}–${maximum} Western digits.`,
+			`Enter a PIN of ${isolate(minimum)}–${isolate(maximum)} Western digits.`,
 		submit: "Open operations",
 		submitting: "Opening operations",
 		invalidCredentials: "Unable to sign in. Check the PIN and try again.",
 		rateLimited: (seconds) =>
-			`Too many attempts. Try again in ${seconds} seconds.`,
+			`Too many attempts. Try again in ${isolate(seconds)} seconds.`,
 		serviceError: "Sign-in is temporarily unavailable. Try again.",
 	},
 	staff: {
@@ -50,9 +53,9 @@ export const staffWeb = {
 		capacity: "Configured capacity",
 		source: "Reading source",
 		sources: { edge: "Edge device", manual: "Manual reading" },
-		lastUpdated: (time) => `Updated ${time}`,
-		nextOpen: (time) => `Next opens ${time}`,
-		computed: (time) => `Snapshot computed ${time}`,
+		lastUpdated: (time) => `Updated ${isolate(time)}`,
+		nextOpen: (time) => `Next opens ${isolate(time)}`,
+		computed: (time) => `Snapshot computed ${isolate(time)}`,
 		schemaVersion: "Snapshot schema",
 		healthTitle: "System health",
 		healthDescription: "Server-evaluated device freshness and condition.",
@@ -67,7 +70,7 @@ export const staffWeb = {
 		lastSeenAt: "Device last seen",
 		staleAt: "Stale threshold",
 		notAvailable: "Not available",
-		framesPerSecond: (value) => `${value} FPS`,
+		framesPerSecond: (value) => `${isolate(value)} FPS`,
 		freshness: {
 			current: "Current",
 			stale: "Stale",

@@ -1,6 +1,8 @@
 import type { StaffWebMessages } from "@/components/staff/messages";
 import type { MessageCatalog } from "../catalog";
 
+const isolate = (value: string) => `\u2068${value}\u2069`;
+
 export const staffWeb = {
 	common: {
 		operations: "العمليات المباشرة",
@@ -18,15 +20,15 @@ export const staffWeb = {
 			"أدخل الرقم السري المشترك للموظفين لعرض الحالة التشغيلية للنادي.",
 		pinLabel: "الرقم السري للموظفين",
 		pinHint: (minimum, maximum) =>
-			`استخدم من ${minimum} إلى ${maximum} أرقام غربية.`,
+			`استخدم من ${isolate(minimum)} إلى ${isolate(maximum)} أرقام غربية.`,
 		pinInvalid: (minimum, maximum) =>
-			`أدخل رقماً سرياً من ${minimum} إلى ${maximum} أرقام غربية.`,
+			`أدخل رقماً سرياً من ${isolate(minimum)} إلى ${isolate(maximum)} أرقام غربية.`,
 		submit: "دخول العمليات",
 		submitting: "جارٍ فتح العمليات",
 		invalidCredentials:
 			"تعذر تسجيل الدخول. تحقق من الرقم السري وحاول مرة أخرى.",
 		rateLimited: (seconds) =>
-			`محاولات كثيرة. حاول مرة أخرى بعد ${seconds} ثانية.`,
+			`محاولات كثيرة. حاول مرة أخرى بعد ${isolate(seconds)} ثانية.`,
 		serviceError: "تسجيل الدخول غير متاح مؤقتاً. حاول مرة أخرى.",
 	},
 	staff: {
@@ -52,9 +54,9 @@ export const staffWeb = {
 		capacity: "السعة المضبوطة",
 		source: "مصدر القراءة",
 		sources: { edge: "جهاز الحافة", manual: "قراءة يدوية" },
-		lastUpdated: (time) => `آخر تحديث ${time}`,
-		nextOpen: (time) => `يفتح لاحقاً ${time}`,
-		computed: (time) => `حُسبت اللقطة ${time}`,
+		lastUpdated: (time) => `آخر تحديث ${isolate(time)}`,
+		nextOpen: (time) => `يفتح لاحقاً ${isolate(time)}`,
+		computed: (time) => `حُسبت اللقطة ${isolate(time)}`,
 		schemaVersion: "إصدار مخطط اللقطة",
 		healthTitle: "صحة النظام",
 		healthDescription: "حداثة الجهاز وحالته كما قيّمهما الخادم.",
@@ -69,7 +71,7 @@ export const staffWeb = {
 		lastSeenAt: "آخر اتصال بالجهاز",
 		staleAt: "حد التأخر",
 		notAvailable: "غير متاح",
-		framesPerSecond: (value) => `${value} إطار/ثانية`,
+		framesPerSecond: (value) => `${isolate(value)} إطار/ثانية`,
 		freshness: {
 			current: "حالية",
 			stale: "متأخرة",

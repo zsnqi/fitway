@@ -42,6 +42,7 @@ function LoginRoute() {
 	const [error, setError] = useState<LoginError>(null);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [retrySeconds, setRetrySeconds] = useState(0);
+	const [retryNoticeSeconds, setRetryNoticeSeconds] = useState(0);
 	const minimum = formatNumber(6, locale);
 	const maximum = formatNumber(12, locale);
 
@@ -53,6 +54,13 @@ function LoginRoute() {
 		);
 		return () => window.clearInterval(timer);
 	}, [retrySeconds]);
+
+	useEffect(() => {
+		if (retrySeconds === 0 && error === "rate-limited") {
+			setError(null);
+			setRetryNoticeSeconds(0);
+		}
+	}, [error, retrySeconds]);
 
 	async function submit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
@@ -69,7 +77,9 @@ function LoginRoute() {
 			await navigate({ to: "/staff", replace: true });
 		} catch (caught) {
 			if (caught instanceof AuthRequestError && caught.status === 429) {
-				setRetrySeconds(caught.retryAfterSeconds ?? 30);
+				const waitSeconds = caught.retryAfterSeconds ?? 30;
+				setRetrySeconds(waitSeconds);
+				setRetryNoticeSeconds(waitSeconds);
 				setError("rate-limited");
 			} else if (caught instanceof AuthRequestError && caught.status === 401) {
 				setError("invalid-credentials");
@@ -87,7 +97,7 @@ function LoginRoute() {
 			: error === "invalid-credentials"
 				? messages.login.invalidCredentials
 				: error === "rate-limited"
-					? messages.login.rateLimited(formatNumber(retrySeconds, locale))
+					? messages.login.rateLimited(formatNumber(retryNoticeSeconds, locale))
 					: error === "service"
 						? messages.login.serviceError
 						: null;

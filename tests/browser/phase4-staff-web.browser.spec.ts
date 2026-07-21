@@ -216,6 +216,89 @@ test("login renders non-enumerating failure and honors Retry-After", async ({
 	).toBeDisabled();
 });
 
+test("English login, logout, and owner shell complete their functional flow", async ({
+	page,
+}) => {
+	await page.addInitScript(() =>
+		window.localStorage.setItem("fitway.locale", "en"),
+	);
+	let authenticated = false;
+	await page.route("**/api/auth/session", (route) =>
+		route.fulfill(
+			authenticated
+				? { status: 200, json: { auth: staffAuth } }
+				: { status: 401, json: { error: "unauthorized" } },
+		),
+	);
+	await page.route("**/api/auth/staff/pin", async (route) => {
+		authenticated = true;
+		await route.fulfill({ status: 200, json: { auth: staffAuth } });
+	});
+	await page.route("**/api/auth/logout", async (route) => {
+		authenticated = false;
+		await route.fulfill({ status: 204, body: "" });
+	});
+	await page.route("**/rpc/staff/operationalSnapshot", (route) =>
+		route.fulfill({ status: 200, json: { json: liveSnapshot } }),
+	);
+	await page.route("**/rpc/admin/session", (route) =>
+		route.fulfill({ status: 200, json: { json: ownerAuth } }),
+	);
+
+	await page.goto("/login");
+	await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
+	await page.getByLabel("Staff PIN").fill("123456");
+	await page.getByRole("button", { name: "Open operations" }).click();
+	await expect(
+		page.getByRole("heading", { name: "Live operations" }),
+	).toBeVisible();
+	await page.getByRole("button", { name: "Sign out" }).click();
+	await expect(page).toHaveURL(/\/login$/u);
+
+	await page.goto("/admin");
+	await expect(
+		page.getByRole("heading", { name: "Owner navigation is ready" }),
+	).toBeVisible();
+});
+
+test("a failed background refresh replaces cached live data with transport error", async ({
+	page,
+}) => {
+	let snapshotRequests = 0;
+	await page.route("**/api/auth/session", (route) =>
+		route.fulfill({ status: 200, json: { auth: ownerAuth } }),
+	);
+	await page.route("**/rpc/admin/session", (route) =>
+		route.fulfill({ status: 200, json: { json: ownerAuth } }),
+	);
+	await page.route("**/rpc/staff/operationalSnapshot", async (route) => {
+		snapshotRequests += 1;
+		await route.fulfill(
+			snapshotRequests === 1
+				? { status: 200, json: { json: liveSnapshot } }
+				: {
+						status: 503,
+						json: rpcError(503, "SERVICE_UNAVAILABLE", "Service Unavailable"),
+					},
+		);
+	});
+
+	await page.goto("/staff");
+	await expect(page.getByText("37", { exact: true })).toBeVisible();
+	await page.getByRole("link", { name: "منطقة المالك" }).click();
+	await expect(
+		page.getByRole("heading", { name: "تنقل المالك جاهز" }),
+	).toBeVisible();
+	await page
+		.locator(".operations-nav")
+		.getByRole("link", { name: "العمليات المباشرة" })
+		.click();
+	await expect(page.getByRole("alert")).toContainText(
+		"تعذر تحميل الحالة التشغيلية",
+	);
+	await expect(page.getByText("37", { exact: true })).toHaveCount(0);
+});
+
 test("stale and unavailable snapshots remain visibly distinct from live", async ({
 	page,
 }) => {
@@ -405,8 +488,22 @@ test("keyboard order, focus transfer, practical targets, reduced motion, and 200
 	await expect(
 		page.getByRole("button", { name: "التبديل إلى اللغة الإنجليزية" }),
 	).toBeFocused();
+	await expect
+		.poll(() =>
+			page
+				.getByRole("button", { name: "التبديل إلى اللغة الإنجليزية" })
+				.evaluate((element) => getComputedStyle(element).boxShadow),
+		)
+		.not.toBe("none");
 	await page.keyboard.press("Tab");
 	await expect(page.getByLabel("الرقم السري للموظفين")).toBeFocused();
+	await expect
+		.poll(() =>
+			page
+				.getByLabel("الرقم السري للموظفين")
+				.evaluate((element) => getComputedStyle(element).boxShadow),
+		)
+		.not.toBe("none");
 	await page.getByLabel("الرقم السري للموظفين").fill("123456");
 	await page.keyboard.press("Tab");
 	await expect(

@@ -31,16 +31,15 @@ function StaffRoute() {
 	}, [navigate, unauthorized]);
 
 	let content = <OperationalSnapshotSkeleton />;
-	if (snapshot.data)
-		content = <OperationalSnapshotView snapshot={snapshot.data} />;
-	else if (snapshot.isError && !unauthorized) {
+	if (snapshot.isError && !unauthorized) {
 		content = (
 			<OperationalSnapshotError
 				onRetry={() => void snapshot.refetch()}
 				retrying={snapshot.isFetching}
 			/>
 		);
-	}
+	} else if (snapshot.data)
+		content = <OperationalSnapshotView snapshot={snapshot.data} />;
 
 	return (
 		<StaffShell active="staff" showAdminLink={session.role === "owner"}>
