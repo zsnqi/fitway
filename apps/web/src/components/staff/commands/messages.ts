@@ -49,18 +49,18 @@ const en = {
 	historyEyebrow: "Command lifecycle",
 	historyTitle: "Commands from this visit",
 	historyDescription:
-		"Recent commands remain here while this page is open and reconcile with newer edge readings.",
+		"Recent issuance results remain while this page is open. Later lifecycle updates require server status data.",
 	historyEmpty: "No command has been sent from this page yet.",
 	statuses: {
 		pending: "Waiting for edge application",
 		applied: "Applied by the edge",
 		superseded: "Superseded by a newer command",
 	},
-	setTo: (value: string) => `Set count to ${value}`,
+	setTo: "Set count to",
 	resetToZero: "Reset count to 0",
-	commandReference: (id: string, auditId: string) =>
-		`Command ${id} · Audit ${auditId}`,
-	reasonValue: (reason: string) => `Reason: ${reason}`,
+	command: "Command",
+	audit: "Audit",
+	reason: "Reason",
 	commandAccepted: (status: string) => `Command ${status}.`,
 	badRequest:
 		"The command could not be queued. Refresh the operational state and check the values.",
@@ -116,18 +116,18 @@ const ar: StaffCommandMessages = {
 	historyEyebrow: "دورة حياة الأمر",
 	historyTitle: "أوامر هذه الزيارة",
 	historyDescription:
-		"تبقى الأوامر الأخيرة هنا ما دامت الصفحة مفتوحة وتتوافق مع القراءات الجديدة من جهاز العد.",
+		"تبقى نتائج الإصدار الأخيرة ما دامت الصفحة مفتوحة. تتطلب تحديثات دورة الحياة اللاحقة بيانات حالة من الخادم.",
 	historyEmpty: "لم يُرسل أي أمر من هذه الصفحة بعد.",
 	statuses: {
 		pending: "بانتظار تطبيق جهاز العد",
 		applied: "طبّقه جهاز العد",
 		superseded: "تجاوزه أمر أحدث",
 	},
-	setTo: (value: string) => `تعيين العدد إلى ${value}`,
+	setTo: "تعيين العدد إلى",
 	resetToZero: "إعادة ضبط العدد إلى 0",
-	commandReference: (id: string, auditId: string) =>
-		`الأمر ${id} · سجل التدقيق ${auditId}`,
-	reasonValue: (reason: string) => `السبب: ${reason}`,
+	command: "الأمر",
+	audit: "سجل التدقيق",
+	reason: "السبب",
 	commandAccepted: (status: string) => `حالة الأمر: ${status}.`,
 	badRequest:
 		"تعذر وضع الأمر في قائمة الانتظار. حدّث الحالة التشغيلية وتحقق من القيم.",

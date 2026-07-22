@@ -4,8 +4,7 @@ import type {
 	IssuedCommand,
 	ResetInput,
 } from "@fitway/api/commands/schemas";
-import type { OperationalSnapshot } from "@fitway/api/health/snapshot";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import { client } from "@/utils/orpc";
 
@@ -19,7 +18,6 @@ export type StaffCommandTransport = {
 };
 
 type UseStaffCommandsOptions = {
-	snapshot: OperationalSnapshot;
 	transport?: StaffCommandTransport;
 	onAccepted?: () => void | Promise<void>;
 };
@@ -33,50 +31,13 @@ export function acceptStaffCommand(
 	history: StaffCommandRecord[],
 	result: CommandMutationResult,
 ): StaffCommandRecord[] {
-	const superseded = history.map((command) =>
-		command.status === "pending"
-			? { ...command, status: "superseded" as const }
-			: command,
-	);
-	return [{ ...result.command, auditId: result.auditId }, ...superseded].slice(
+	return [{ ...result.command, auditId: result.auditId }, ...history].slice(
 		0,
 		4,
 	);
 }
 
-export function reconcileStaffCommands(
-	history: StaffCommandRecord[],
-	snapshot: OperationalSnapshot,
-): StaffCommandRecord[] {
-	const occupancy = snapshot.occupancy;
-	if (
-		(occupancy.freshness !== "fresh" && occupancy.freshness !== "stale") ||
-		!("count" in occupancy) ||
-		!("lastUpdatedAt" in occupancy)
-	) {
-		return history;
-	}
-
-	let changed = false;
-	const reconciled = history.map((command) => {
-		const target = command.type === "reset_zero" ? 0 : command.targetValue;
-		if (
-			command.status !== "pending" ||
-			target === null ||
-			occupancy.count !== target ||
-			Date.parse(occupancy.lastUpdatedAt) < Date.parse(command.issuedAt)
-		) {
-			return command;
-		}
-		changed = true;
-		return { ...command, status: "applied" as const };
-	});
-
-	return changed ? reconciled : history;
-}
-
 export function useStaffCommands({
-	snapshot,
 	transport = defaultTransport,
 	onAccepted,
 }: UseStaffCommandsOptions) {
@@ -84,10 +45,6 @@ export function useStaffCommands({
 	const [error, setError] = useState<unknown>(null);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const submittingRef = useRef(false);
-
-	useEffect(() => {
-		setHistory((current) => reconcileStaffCommands(current, snapshot));
-	}, [snapshot]);
 
 	const issue = useCallback(
 		async (operation: () => Promise<CommandMutationResult>) => {
@@ -97,9 +54,7 @@ export function useStaffCommands({
 			setError(null);
 			try {
 				const result = await operation();
-				setHistory((current) =>
-					reconcileStaffCommands(acceptStaffCommand(current, result), snapshot),
-				);
+				setHistory((current) => acceptStaffCommand(current, result));
 				await onAccepted?.();
 				return result;
 			} catch (cause) {
@@ -110,7 +65,7 @@ export function useStaffCommands({
 				setIsSubmitting(false);
 			}
 		},
-		[onAccepted, snapshot],
+		[onAccepted],
 	);
 
 	const issueCorrection = useCallback(

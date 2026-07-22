@@ -82,7 +82,7 @@ function ReasonField({
 				{messages.reasonHint}
 			</p>
 			{error ? (
-				<p id={errorId} className="command-field__error">
+				<p id={errorId} className="command-field__error" role="alert">
 					{error}
 				</p>
 			) : null}
@@ -121,7 +121,7 @@ export function StaffCommandsPanel({
 	const [resetReasonError, setResetReasonError] = useState<string | null>(null);
 	const resetDialogRef = useRef<HTMLDialogElement>(null);
 	const resetCancelRef = useRef<HTMLButtonElement>(null);
-	const commands = useStaffCommands({ snapshot, onAccepted: onRefresh });
+	const commands = useStaffCommands({ onAccepted: onRefresh });
 	const errorStatus = commandErrorStatus(commands.error);
 
 	useEffect(() => {
@@ -360,7 +360,11 @@ export function StaffCommandsPanel({
 							{messages.directHint}
 						</p>
 						{directError ? (
-							<p id="direct-command-error" className="command-field__error">
+							<p
+								id="direct-command-error"
+								className="command-field__error"
+								role="alert"
+							>
 								{directError}
 							</p>
 						) : null}
@@ -417,23 +421,28 @@ export function StaffCommandsPanel({
 								<StatusIcon status={command.status} />
 								<div>
 									<strong>
-										{command.type === "reset_zero"
-											? messages.resetToZero
-											: messages.setTo(
-													formatNumber(command.targetValue ?? 0, locale),
-												)}
+										{command.type === "reset_zero" ? (
+											messages.resetToZero
+										) : (
+											<>
+												{messages.setTo}{" "}
+												<bdi>
+													{formatNumber(command.targetValue ?? 0, locale)}
+												</bdi>
+											</>
+										)}
 									</strong>
 									<span>{messages.statuses[command.status]}</span>
 									<small>
-										<bdi>
-											{messages.commandReference(
-												formatNumber(command.id, locale),
-												formatNumber(command.auditId, locale),
-											)}
-										</bdi>
+										{messages.command}{" "}
+										<bdi>{formatNumber(command.id, locale)}</bdi> ·{" "}
+										{messages.audit}{" "}
+										<bdi>{formatNumber(command.auditId, locale)}</bdi>
 									</small>
 									{command.reason ? (
-										<small>{messages.reasonValue(command.reason)}</small>
+										<small>
+											{messages.reason}: <bdi>{command.reason}</bdi>
+										</small>
 									) : null}
 								</div>
 							</li>

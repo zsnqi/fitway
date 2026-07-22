@@ -70,6 +70,25 @@ const unavailableSnapshot = {
 	},
 } as const;
 
+const staleSnapshot = {
+	...liveSnapshot,
+	occupancy: { ...liveSnapshot.occupancy, freshness: "stale" },
+	health: { ...liveSnapshot.health, freshness: "stale" },
+} as const;
+
+const closedSnapshot = {
+	...liveSnapshot,
+	occupancy: {
+		schemaVersion: 2,
+		freshness: "closed",
+		timeZone: "Asia/Riyadh",
+		nextOpenAt: "2026-07-22T15:00:00.000Z",
+		computedAt: now,
+		trend: null,
+	},
+	source: null,
+} as const;
+
 function commandResult(options: {
 	id: number;
 	targetValue: number | null;
@@ -133,44 +152,27 @@ function requestInput(pageData: unknown) {
 	return pageData;
 }
 
-test("step correction, direct entry, validation, supersession, and edge application stay honest", async ({
+test("step correction, floor-at-zero, direct entry, validation, and pending issuance stay honest", async ({
 	page,
 }) => {
 	await useEnglish(page);
 	await mockSession(page);
-	let snapshotRequests = 0;
-	let directAccepted = false;
 	const correctionInputs: unknown[] = [];
 
-	await page.route("**/rpc/staff/operationalSnapshot", (route) => {
-		snapshotRequests += 1;
-		const snapshot =
-			directAccepted && snapshotRequests >= 3
-				? {
-						...liveSnapshot,
-						computedAt: "2026-07-22T12:00:40.000Z",
-						occupancy: {
-							...liveSnapshot.occupancy,
-							count: 40,
-							lastUpdatedAt: "2026-07-22T12:00:30.000Z",
-							computedAt: "2026-07-22T12:00:40.000Z",
-						},
-					}
-				: liveSnapshot;
-		return route.fulfill({ status: 200, json: { json: snapshot } });
-	});
+	await page.route("**/rpc/staff/operationalSnapshot", (route) =>
+		route.fulfill({ status: 200, json: { json: liveSnapshot } }),
+	);
 	await page.route("**/rpc/staff/issueCorrection", async (route) => {
 		const input = requestInput(route.request().postDataJSON());
 		correctionInputs.push(input);
-		if (correctionInputs.length === 2) directAccepted = true;
 		const isDirect = correctionInputs.length === 2;
 		await route.fulfill({
 			status: 200,
 			json: {
 				json: commandResult({
 					id: isDirect ? 42 : 41,
-					targetValue: isDirect ? 40 : 36,
-					reason: isDirect ? "Verified door count" : "One duplicate",
+					targetValue: isDirect ? 40 : 0,
+					reason: isDirect ? "Verified door count" : "Empty-floor check",
 					issuedAt: isDirect
 						? "2026-07-22T12:00:20.000Z"
 						: "2026-07-22T12:00:10.000Z",
@@ -183,18 +185,20 @@ test("step correction, direct entry, validation, supersession, and edge applicat
 	await expect(
 		page.getByRole("heading", { name: "Count correction controls" }),
 	).toBeVisible();
-	await page
-		.getByRole("button", { name: "Decrease the adjustment by 1" })
-		.click();
+	for (let press = 0; press < 40; press += 1) {
+		await page
+			.getByRole("button", { name: "Decrease the adjustment by 1" })
+			.click();
+	}
 	await page
 		.getByLabel("Short reason (optional)")
 		.first()
-		.fill(" One duplicate ");
+		.fill(" Empty-floor check ");
 	await page.getByRole("button", { name: "Apply adjustment" }).click();
 	await expect(
 		page.getByText("Waiting for edge application", { exact: true }),
 	).toBeVisible();
-	await expect(page.getByText("Set count to 36")).toBeVisible();
+	await expect(page.getByText("Set count to 0")).toBeVisible();
 
 	const directInput = page.getByLabel("New count");
 	await directInput.fill("٣٧");
@@ -210,14 +214,20 @@ test("step correction, direct entry, validation, supersession, and edge applicat
 	await page.getByRole("button", { name: "Set count" }).click();
 
 	expect(correctionInputs).toEqual([
-		{ delta: -1, reason: "One duplicate" },
+		{ delta: -37, reason: "Empty-floor check" },
 		{ absolute: 40, reason: "Verified door count" },
 	]);
-	await expect(page.getByText("Superseded by a newer command")).toBeVisible();
+	await expect(
+		page.getByText("Waiting for edge application", { exact: true }),
+	).toHaveCount(2);
 	await expect(
 		page.getByText("Applied by the edge", { exact: true }),
-	).toBeVisible();
+	).toHaveCount(0);
+	await expect(page.getByText("Superseded by a newer command")).toHaveCount(0);
 	await expect(page.getByText("Set count to 40")).toBeVisible();
+	await expect(
+		page.getByText("Later lifecycle updates require server status data"),
+	).toBeVisible();
 	await captureReview(page, "staff-commands-lifecycle-en-1440.png");
 });
 
@@ -251,6 +261,64 @@ test("unavailable state disables delta but preserves validated direct-set", asyn
 	await expect(
 		page.getByText("Waiting for edge application", { exact: true }),
 	).toBeVisible();
+});
+
+test("stale, closed, loading, and transport-error states keep command availability honest", async ({
+	page,
+}) => {
+	await useEnglish(page);
+	await mockSession(page);
+	let state: "stale" | "closed" | "error" = "stale";
+	await page.route("**/rpc/staff/operationalSnapshot", async (route) => {
+		if (state === "error") {
+			await new Promise((resolve) => setTimeout(resolve, 500));
+			await route.fulfill({
+				status: 503,
+				json: rpcError(503, "SERVICE_UNAVAILABLE", "Service unavailable"),
+			});
+			return;
+		}
+		await route.fulfill({
+			status: 200,
+			json: { json: state === "stale" ? staleSnapshot : closedSnapshot },
+		});
+	});
+
+	await page.goto("/staff");
+	await expect(
+		page.getByText("Last-known reading", { exact: true }),
+	).toBeVisible();
+	await page
+		.getByRole("button", { name: "Decrease the adjustment by 1" })
+		.click();
+	await expect(
+		page.getByRole("button", { name: "Apply adjustment" }),
+	).toBeEnabled();
+
+	state = "closed";
+	await page.reload();
+	await expect(
+		page.getByText("Gym closed now", { exact: true }).first(),
+	).toBeVisible();
+	await expect(
+		page.getByRole("button", { name: "Apply adjustment" }),
+	).toBeDisabled();
+	await expect(page.getByRole("button", { name: "Set count" })).toBeEnabled();
+
+	state = "error";
+	await page.reload();
+	await expect(page.getByRole("status")).toContainText(
+		"Loading operational status",
+	);
+	await expect(
+		page.getByRole("heading", { name: "Count correction controls" }),
+	).toHaveCount(0);
+	await expect(page.getByRole("alert")).toContainText(
+		"Operational status could not be loaded",
+	);
+	await expect(
+		page.getByRole("heading", { name: "Count correction controls" }),
+	).toHaveCount(0);
 });
 
 test("reset requires modal confirmation, traps focus, closes on Escape, restores focus, and queues only after confirm", async ({
@@ -321,17 +389,22 @@ test("command failures stay actionable and an expired mutation session redirects
 	let attempts = 0;
 	await page.route("**/rpc/staff/issueCorrection", async (route) => {
 		attempts += 1;
-		if (attempts === 2) expired = true;
+		if (attempts === 3) expired = true;
 		await route.fulfill(
 			attempts === 1
 				? {
 						status: 400,
 						json: rpcError(400, "BAD_REQUEST", "Bad Request"),
 					}
-				: {
-						status: 401,
-						json: rpcError(401, "UNAUTHORIZED", "Unauthorized"),
-					},
+				: attempts === 2
+					? {
+							status: 403,
+							json: rpcError(403, "FORBIDDEN", "Forbidden"),
+						}
+					: {
+							status: 401,
+							json: rpcError(401, "UNAUTHORIZED", "Unauthorized"),
+						},
 		);
 	});
 
@@ -340,6 +413,10 @@ test("command failures stay actionable and an expired mutation session redirects
 	await page.getByRole("button", { name: "Set count" }).click();
 	await expect(page.getByRole("alert")).toContainText(
 		"The command could not be queued",
+	);
+	await page.getByRole("button", { name: "Set count" }).click();
+	await expect(page.getByRole("alert")).toContainText(
+		"This session is not allowed",
 	);
 	await page.getByRole("button", { name: "Set count" }).click();
 	await expect(page).toHaveURL(/\/login$/u);
@@ -388,6 +465,15 @@ test("Arabic RTL and English LTR are accessible and recompose at every required 
 	await expect(
 		page.getByRole("heading", { name: "Count correction controls" }),
 	).toBeVisible();
+	for (const width of [320, 360, 390, 721, 768, 820, 1024, 1200, 1440]) {
+		await page.setViewportSize({ width, height: width < 721 ? 844 : 900 });
+		const overflow = await page.evaluate(
+			() =>
+				document.documentElement.scrollWidth >
+				document.documentElement.clientWidth,
+		);
+		expect(overflow, `English document overflow at ${width}px`).toBe(false);
+	}
 	results = await new AxeBuilder({ page }).analyze();
 	expect(
 		results.violations.filter(
@@ -437,6 +523,13 @@ test("keyboard focus, targets, reduced motion, and 200% reflow remain usable", a
 			increase.evaluate((element) => getComputedStyle(element).boxShadow),
 		)
 		.not.toBe("none");
+	expect(
+		await increase.evaluate((element) =>
+			getComputedStyle(element)
+				.transitionDuration.split(",")
+				.every((value) => Number.parseFloat(value) <= 0.001),
+		),
+	).toBe(true);
 
 	for (const control of [
 		increase,

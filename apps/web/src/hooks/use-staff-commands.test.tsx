@@ -1,47 +1,14 @@
 // @vitest-environment happy-dom
 
-import type { OperationalSnapshot } from "@fitway/api/health/snapshot";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
 	acceptStaffCommand,
-	reconcileStaffCommands,
 	type StaffCommandTransport,
 	useStaffCommands,
 } from "./use-staff-commands";
-
-const snapshot = {
-	schemaVersion: 1,
-	computedAt: "2026-07-22T12:00:30.000Z",
-	occupancy: {
-		schemaVersion: 2,
-		freshness: "fresh",
-		timeZone: "Asia/Riyadh",
-		band: "moderate",
-		count: 38,
-		lastUpdatedAt: "2026-07-22T12:00:30.000Z",
-		freshUntil: "2026-07-22T12:02:00.000Z",
-		source: "edge",
-		computedAt: "2026-07-22T12:00:30.000Z",
-		trend: null,
-	},
-	capacity: 100,
-	source: "edge",
-	health: {
-		freshness: "current",
-		condition: "healthy",
-		process: "ok",
-		camera: "ok",
-		feed: "ok",
-		detectorFps: 7.5,
-		edgeObservedAt: "2026-07-22T12:00:29.000Z",
-		receivedAt: "2026-07-22T12:00:30.000Z",
-		lastSeenAt: "2026-07-22T12:00:30.000Z",
-		staleAt: "2026-07-22T12:05:30.000Z",
-	},
-} satisfies OperationalSnapshot;
 
 const firstResult = {
 	command: {
@@ -56,7 +23,7 @@ const firstResult = {
 };
 
 describe("staff command session lifecycle", () => {
-	it("keeps a new command pending and supersedes an older pending command", () => {
+	it("preserves server-reported statuses without inventing a transition", () => {
 		const first = acceptStaffCommand([], firstResult);
 		const second = acceptStaffCommand(first, {
 			command: {
@@ -70,30 +37,8 @@ describe("staff command session lifecycle", () => {
 
 		expect(second.map(({ id, status }) => ({ id, status }))).toEqual([
 			{ id: 42, status: "pending" },
-			{ id: 41, status: "superseded" },
+			{ id: 41, status: "pending" },
 		]);
-	});
-
-	it("marks pending applied only after an advanced matching edge reading", () => {
-		const pending = acceptStaffCommand([], firstResult);
-		expect(
-			reconcileStaffCommands(pending, {
-				...snapshot,
-				occupancy: {
-					...snapshot.occupancy,
-					lastUpdatedAt: "2026-07-22T11:59:59.000Z",
-				},
-			})[0]?.status,
-		).toBe("pending");
-		expect(
-			reconcileStaffCommands(pending, {
-				...snapshot,
-				occupancy: { ...snapshot.occupancy, count: 39 },
-			})[0]?.status,
-		).toBe("pending");
-		expect(reconcileStaffCommands(pending, snapshot)[0]?.status).toBe(
-			"applied",
-		);
 	});
 });
 
@@ -122,7 +67,6 @@ describe("useStaffCommands", () => {
 
 		function Harness() {
 			const commands = useStaffCommands({
-				snapshot,
 				transport,
 				onAccepted,
 			});
@@ -148,7 +92,7 @@ describe("useStaffCommands", () => {
 			delta: 1,
 			reason: "Door recount",
 		});
-		expect(container.textContent).toBe("applied");
+		expect(container.textContent).toBe("pending");
 		expect(onAccepted).toHaveBeenCalledOnce();
 	});
 });
