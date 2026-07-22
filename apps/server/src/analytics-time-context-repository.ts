@@ -1,4 +1,7 @@
-import type { AnalyticsTimeContext } from "@fitway/api/analytics/time-context";
+import {
+	type AnalyticsTimeContext,
+	assertIanaTimeZone,
+} from "@fitway/api/analytics/time-context";
 import { businessDayFor } from "@fitway/api/occupancy/business-day";
 import type { db } from "@fitway/db";
 import { settingsVersions } from "@fitway/db/schema/application";
@@ -17,14 +20,6 @@ export type AnalyticsTimeSettingsRow = {
 export type ResolvedAnalyticsTimeContext = AnalyticsTimeContext & {
 	businessDayBoundary: string;
 };
-
-function assertIanaTimeZone(timeZone: string): void {
-	try {
-		new Intl.DateTimeFormat("en", { timeZone }).format(0);
-	} catch {
-		throw new Error(`Settings contain an invalid IANA timezone: ${timeZone}`);
-	}
-}
 
 export function resolveAnalyticsTimeContext(
 	rows: readonly AnalyticsTimeSettingsRow[],
@@ -69,6 +64,7 @@ export function resolveAnalyticsTimeContext(
 export type AnalyticsTimeContextRepository = {
 	readTimeContext(
 		settingsVersions: readonly number[],
+		at?: Date,
 	): Promise<ResolvedAnalyticsTimeContext>;
 };
 
@@ -77,7 +73,7 @@ export function createAnalyticsTimeContextRepository(
 	now: () => Date = () => new Date(),
 ): AnalyticsTimeContextRepository {
 	return {
-		async readTimeContext(requestedVersions) {
+		async readTimeContext(requestedVersions, at = now()) {
 			const rows = await database
 				.select({
 					version: settingsVersions.version,
@@ -99,7 +95,7 @@ export function createAnalyticsTimeContextRepository(
 							: row.businessDayBoundary.slice(0, 8),
 				})),
 				requestedVersions,
-				now(),
+				at,
 			);
 		},
 	};
@@ -115,9 +111,13 @@ export function createOwnerAnalyticsReaders(
 		async readDailyAnalytics(businessDay?: string) {
 			let resolvedBusinessDay = businessDay;
 			if (!resolvedBusinessDay) {
-				const current = await timeRepository.readTimeContext([]);
+				const evaluationTime = now();
+				const current = await timeRepository.readTimeContext(
+					[],
+					evaluationTime,
+				);
 				resolvedBusinessDay = businessDayFor(
-					now(),
+					evaluationTime,
 					current.current.timeZone,
 					current.businessDayBoundary,
 				);

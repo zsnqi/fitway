@@ -45,13 +45,10 @@
 	inset-block: 18px;
 	inset-inline-start: -1px;
 	inline-size: 2px;
-	border-radius: 0 2px 2px 0;
+	border-start-end-radius: 2px;
+	border-end-end-radius: 2px;
 	background: var(--fw-red-bright);
 	content: "";
-}
-
-[dir="rtl"] .owner-metric::before {
-	border-radius: 2px 0 0 2px;
 }
 
 .owner-metric__heading {
@@ -159,6 +156,12 @@
 	list-style: none;
 }
 
+.owner-chart-panel__meta {
+	display: grid;
+	justify-items: end;
+	gap: 12px;
+}
+
 .owner-chart-legend li {
 	display: inline-flex;
 	align-items: center;
@@ -247,6 +250,13 @@
 	vector-effect: non-scaling-stroke;
 }
 
+.owner-chart__point {
+	fill: var(--fw-obsidian);
+	stroke: var(--fw-red-bright);
+	stroke-width: 2;
+	vector-effect: non-scaling-stroke;
+}
+
 .owner-chart__zero {
 	fill: var(--fw-obsidian);
 	stroke: var(--fw-chalk);
@@ -269,9 +279,6 @@
 }
 
 .owner-chart-reading {
-	position: absolute;
-	inset-block-start: 14px;
-	inset-inline-end: 14px;
 	display: grid;
 	grid-template-columns: 1fr auto;
 	gap: 3px 16px;
@@ -440,6 +447,10 @@
 	.owner-chart-legend {
 		justify-content: flex-start;
 	}
+
+	.owner-chart-panel__meta {
+		justify-items: start;
+	}
 }
 
 @media (max-width: 720px) {
@@ -485,8 +496,6 @@
 	}
 
 	.owner-chart-reading {
-		inset-block-start: 8px;
-		inset-inline-end: 8px;
 		min-inline-size: 132px;
 		padding: 8px 10px;
 	}

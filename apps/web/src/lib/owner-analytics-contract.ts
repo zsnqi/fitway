@@ -5,14 +5,6 @@ import {
 	ownerDailyAnalyticsOutputSchema,
 } from "@fitway/api/analytics/time-context";
 
-function assertIanaTimeZone(timeZone: string): void {
-	try {
-		new Intl.DateTimeFormat("en", { timeZone }).format(0);
-	} catch {
-		throw new Error(`Invalid analytics IANA timezone: ${timeZone}`);
-	}
-}
-
 export function parseOwnerDailyAnalytics(value: unknown): DailyAnalytics {
 	return ownerDailyAnalyticsOutputSchema.parse(value) as DailyAnalytics;
 }
@@ -33,10 +25,8 @@ export function parseAnalyticsTimeContext(
 	timeZoneByVersion: ReadonlyMap<number, string>;
 } {
 	const timeContext = analyticsTimeContextOutputSchema.parse(value);
-	assertIanaTimeZone(timeContext.current.timeZone);
 	const timeZoneByVersion = new Map<number, string>();
 	for (const mapping of timeContext.versions) {
-		assertIanaTimeZone(mapping.timeZone);
 		timeZoneByVersion.set(mapping.settingsVersion, mapping.timeZone);
 	}
 	for (const settingsVersion of requestedVersions) {

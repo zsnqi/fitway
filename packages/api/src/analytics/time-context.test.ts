@@ -37,5 +37,11 @@ describe("owner analytics time context transport", () => {
 				current: { ...output.current, unexpected: true },
 			}).success,
 		).toBe(false);
+		expect(
+			analyticsTimeContextOutputSchema.safeParse({
+				...output,
+				current: { settingsVersion: 9, timeZone: "Not/A_Zone" },
+			}).success,
+		).toBe(false);
 	});
 });

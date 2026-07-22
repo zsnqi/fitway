@@ -114,6 +114,7 @@ describe("owner daily analytics states", () => {
 		expect(container.textContent).toContain("2 / 3");
 		expect(container.textContent).toContain("10:00 AM");
 		expect(container.textContent).toContain("3:01 AM");
+		expect(container.querySelectorAll(".owner-chart__point")).toHaveLength(2);
 
 		const chart = container.querySelector<HTMLElement>("[data-owner-chart]");
 		expect(chart?.tabIndex).toBe(0);

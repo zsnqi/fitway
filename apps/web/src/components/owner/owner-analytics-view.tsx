@@ -209,12 +209,25 @@ function OccupancyChart({
 					<h2 id="owner-chart-title">{messages.chartTitle}</h2>
 					<p>{messages.chartHint}</p>
 				</div>
-				<ul className="owner-chart-legend" aria-label={messages.state}>
-					<li data-kind="value">{messages.legendObserved}</li>
-					<li data-kind="missing">{messages.legendMissing}</li>
-					<li data-kind="closed">{messages.legendClosed}</li>
-					<li data-kind="zero">{messages.legendZero}</li>
-				</ul>
+				<div className="owner-chart-panel__meta">
+					<ul className="owner-chart-legend" aria-label={messages.state}>
+						<li data-kind="value">{messages.legendObserved}</li>
+						<li data-kind="missing">{messages.legendMissing}</li>
+						<li data-kind="closed">{messages.legendClosed}</li>
+						<li data-kind="zero">{messages.legendZero}</li>
+					</ul>
+					<div
+						className="owner-chart-reading"
+						data-active-reading
+						aria-live="polite"
+					>
+						<span>{messages.selectedReading}</span>
+						<strong>
+							<bdi>{formatNumber(active.bucket.count, locale)}</bdi>
+						</strong>
+						<bdi dir="auto">{activeTime}</bdi>
+					</div>
+				</div>
 			</div>
 			<button
 				type="button"
@@ -278,6 +291,15 @@ function OccupancyChart({
 								.join(" ")}
 						/>
 					))}
+					{values.map(({ bucket, index }) => (
+						<circle
+							key={`point-${index}`}
+							className="owner-chart__point"
+							cx={xFor(index)}
+							cy={yFor(bucket.count)}
+							r="3"
+						/>
+					))}
 					{values
 						.filter(({ bucket }) => bucket.count === 0)
 						.map(({ index }) => (
@@ -303,17 +325,6 @@ function OccupancyChart({
 						r="5"
 					/>
 				</svg>
-				<div
-					className="owner-chart-reading"
-					data-active-reading
-					aria-live="polite"
-				>
-					<span>{messages.selectedReading}</span>
-					<strong>
-						<bdi>{formatNumber(active.bucket.count, locale)}</bdi>
-					</strong>
-					<bdi dir="auto">{activeTime}</bdi>
-				</div>
 			</button>
 		</section>
 	);

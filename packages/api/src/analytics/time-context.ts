@@ -6,10 +6,27 @@ const settingsVersionSchema = z
 	.positive()
 	.max(Number.MAX_SAFE_INTEGER);
 
+export function isIanaTimeZone(timeZone: string): boolean {
+	try {
+		new Intl.DateTimeFormat("en", { timeZone }).format(0);
+		return true;
+	} catch {
+		return false;
+	}
+}
+
+export function assertIanaTimeZone(timeZone: string): void {
+	if (!isIanaTimeZone(timeZone)) {
+		throw new Error(`Settings contain an invalid IANA timezone: ${timeZone}`);
+	}
+}
+
 const timeZoneMappingSchema = z
 	.object({
 		settingsVersion: settingsVersionSchema,
-		timeZone: z.string().trim().min(1),
+		timeZone: z.string().trim().min(1).refine(isIanaTimeZone, {
+			message: "Timezone must be a valid IANA identifier",
+		}),
 	})
 	.strict();
 

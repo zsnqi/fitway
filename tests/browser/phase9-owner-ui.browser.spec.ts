@@ -191,6 +191,20 @@ test("owner curve preserves exact states, historical timezones, and RTL/LTR inte
 
 	const chart = page.locator("[data-owner-chart]");
 	await expect(chart).toBeVisible();
+	const isolatedPoint = await page
+		.locator(".owner-chart__point")
+		.last()
+		.boundingBox();
+	const readingCard = await page.locator("[data-active-reading]").boundingBox();
+	if (!isolatedPoint || !readingCard) {
+		throw new Error("Chart point visibility geometry is unavailable");
+	}
+	const pointOverlapsReading =
+		isolatedPoint.x < readingCard.x + readingCard.width &&
+		isolatedPoint.x + isolatedPoint.width > readingCard.x &&
+		isolatedPoint.y < readingCard.y + readingCard.height &&
+		isolatedPoint.y + isolatedPoint.height > readingCard.y;
+	expect(pointOverlapsReading).toBe(false);
 	const rtlX = Number(
 		await page.locator(".owner-chart__active").getAttribute("cx"),
 	);
