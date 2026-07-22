@@ -1,7 +1,7 @@
 import { toORPCError } from "@orpc/client";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
-
+import { useCallback, useEffect } from "react";
+import { StaffCommandsPanel } from "@/components/staff/commands/staff-commands-panel";
 import {
 	OperationalSnapshotError,
 	OperationalSnapshotSkeleton,
@@ -25,10 +25,14 @@ function StaffRoute() {
 	const unauthorized = snapshot.error
 		? toORPCError(snapshot.error).status === 401
 		: false;
+	const redirectToLogin = useCallback(
+		() => void navigate({ to: "/login", replace: true }),
+		[navigate],
+	);
 
 	useEffect(() => {
-		if (unauthorized) void navigate({ to: "/login", replace: true });
-	}, [navigate, unauthorized]);
+		if (unauthorized) redirectToLogin();
+	}, [redirectToLogin, unauthorized]);
 
 	let content = <OperationalSnapshotSkeleton />;
 	if (snapshot.isError && !unauthorized) {
@@ -49,7 +53,18 @@ function StaffRoute() {
 					<h1>{messages.staff.title}</h1>
 					<span>{messages.staff.description}</span>
 				</header>
-				{content}
+				<div className={snapshot.data ? "command-page-layout" : undefined}>
+					{content}
+					{snapshot.data ? (
+						<StaffCommandsPanel
+							snapshot={snapshot.data}
+							onRefresh={async () => {
+								await snapshot.refetch();
+							}}
+							onSessionExpired={redirectToLogin}
+						/>
+					) : null}
+				</div>
 			</main>
 		</StaffShell>
 	);
