@@ -215,7 +215,18 @@ test("owner curve preserves exact states, historical timezones, and RTL/LTR inte
 	await expect(page.locator("[data-active-reading]")).toContainText("8");
 	const chartBox = await chart.boundingBox();
 	if (!chartBox) throw new Error("Owner chart has no bounding box");
-	await chart.click({ position: { x: 12, y: chartBox.height / 2 } });
+	await chart.hover({
+		position: { x: chartBox.width / 2, y: chartBox.height / 2 },
+	});
+	await expect(page.locator("[data-active-reading]")).toContainText("18");
+	await chart.dispatchEvent("pointerdown", {
+		pointerType: "touch",
+		pointerId: 7,
+		isPrimary: true,
+		buttons: 1,
+		clientX: chartBox.x + 12,
+		clientY: chartBox.y + chartBox.height / 2,
+	});
 	await expect(page.locator("[data-active-reading]")).toContainText("57");
 	const rtlSelectedX = Number(
 		await page.locator(".owner-chart__active").getAttribute("cx"),
