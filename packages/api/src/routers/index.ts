@@ -1,5 +1,11 @@
 import type { RouterClient } from "@orpc/server";
 import {
+	analyticsTimeContextInputSchema,
+	analyticsTimeContextOutputSchema,
+	ownerDailyAnalyticsInputSchema,
+	ownerDailyAnalyticsOutputSchema,
+} from "../analytics/time-context";
+import {
 	commandMutationResultSchema,
 	correctionInputSchema,
 	resetInputSchema,
@@ -73,6 +79,24 @@ const staffIssueReset = staffProcedure
 		),
 	);
 const adminSession = ownerProcedure.handler(({ context }) => context.auth);
+const adminDailyAnalytics = ownerProcedure
+	.input(ownerDailyAnalyticsInputSchema)
+	.output(ownerDailyAnalyticsOutputSchema)
+	.handler(({ context, input }) => {
+		if (!context.readDailyAnalytics) {
+			throw new ORPCError("INTERNAL_SERVER_ERROR");
+		}
+		return context.readDailyAnalytics(input?.businessDay);
+	});
+const adminAnalyticsTimeContext = ownerProcedure
+	.input(analyticsTimeContextInputSchema)
+	.output(analyticsTimeContextOutputSchema)
+	.handler(({ context, input }) => {
+		if (!context.readAnalyticsTimeContext) {
+			throw new ORPCError("INTERNAL_SERVER_ERROR");
+		}
+		return context.readAnalyticsTimeContext(input.settingsVersions);
+	});
 
 export const appRouter = {
 	staff: {
@@ -81,7 +105,13 @@ export const appRouter = {
 		issueCorrection: staffIssueCorrection,
 		issueReset: staffIssueReset,
 	},
-	admin: { session: adminSession },
+	admin: {
+		session: adminSession,
+		analytics: {
+			daily: adminDailyAnalytics,
+			timeContext: adminAnalyticsTimeContext,
+		},
+	},
 };
 export type AppRouter = typeof appRouter;
 export type AppRouterClient = RouterClient<typeof appRouter>;

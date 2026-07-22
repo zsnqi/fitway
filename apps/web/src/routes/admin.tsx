@@ -2,6 +2,8 @@ import { toORPCError } from "@orpc/client";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { ShieldCheck } from "lucide-react";
 
+import { OwnerAnalyticsPage } from "@/components/owner/owner-analytics-page";
+import { useOwnerAnalyticsMessages } from "@/components/owner/use-owner-analytics-messages";
 import { StaffShell } from "@/components/staff/staff-shell";
 import { useStaffMessages } from "@/hooks/use-staff-messages";
 import { client } from "@/utils/orpc";
@@ -24,14 +26,27 @@ export const Route = createFileRoute("/admin")({
 function AdminRoute() {
 	const { adminAccess } = Route.useRouteContext();
 	const messages = useStaffMessages();
+	const ownerMessages = useOwnerAnalyticsMessages();
 
 	return (
 		<StaffShell active="admin" showAdminLink={adminAccess === "allowed"}>
 			<main id="operations-main" className="operations-main" tabIndex={-1}>
 				<header className="operations-page-heading">
-					<p>{messages.admin.eyebrow}</p>
-					<h1>{messages.admin.title}</h1>
-					<span>{messages.admin.description}</span>
+					<p>
+						{adminAccess === "allowed"
+							? ownerMessages.eyebrow
+							: messages.admin.eyebrow}
+					</p>
+					<h1>
+						{adminAccess === "allowed"
+							? ownerMessages.title
+							: messages.admin.title}
+					</h1>
+					<span>
+						{adminAccess === "allowed"
+							? ownerMessages.description
+							: messages.admin.description}
+					</span>
 				</header>
 				{adminAccess === "forbidden" ? (
 					<section className="admin-state admin-state--forbidden" role="alert">
@@ -43,11 +58,7 @@ function AdminRoute() {
 						</Link>
 					</section>
 				) : (
-					<section className="admin-state">
-						<ShieldCheck aria-hidden="true" />
-						<h2>{messages.admin.placeholderTitle}</h2>
-						<p>{messages.admin.placeholderDescription}</p>
-					</section>
+					<OwnerAnalyticsPage />
 				)}
 			</main>
 		</StaffShell>
