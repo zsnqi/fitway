@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+import {
+	canonicalUtcTimestampSchema,
+	deviceCommandSchema,
+	nonnegativePostgresIntegerSchema,
+	postgresIntegerSchema,
+} from "./commands/schemas";
+
 export const EDGE_PUSH_RESOURCE_PATH = "/edge/push";
 export const EDGE_PUSH_INTERNAL_PATH = EDGE_PUSH_RESOURCE_PATH;
 export const EDGE_PUSH_EXTERNAL_PATH = `/api${EDGE_PUSH_RESOURCE_PATH}`;
@@ -8,21 +15,10 @@ export const OPENAPI_EXTERNAL_PATH = `/api${OPENAPI_RESOURCE_PATH}`;
 export const OPENAPI_REFERENCE_PATH = "/api-reference";
 export const EDGE_NO_STORE = "no-store";
 
-const canonicalUtcTimestamp = z
-	.string()
-	.datetime({ offset: false })
-	.refine(
-		(value) => new Date(value).toISOString() === value,
-		"Must be canonical UTC ISO-8601",
-	);
-
-const minuteTimestamp = canonicalUtcTimestamp.refine((value) => {
+const minuteTimestamp = canonicalUtcTimestampSchema.refine((value) => {
 	const date = new Date(value);
 	return date.getUTCSeconds() === 0 && date.getUTCMilliseconds() === 0;
 }, "Minute timestamp must be aligned");
-
-const postgresInteger = z.number().int().min(-2_147_483_648).max(2_147_483_647);
-const nonnegativePostgresInteger = z.number().int().min(0).max(2_147_483_647);
 
 export const edgeHealthStatusSchema = z.enum([
 	"ok",
@@ -34,9 +30,9 @@ export const edgeHealthStatusSchema = z.enum([
 export const edgeMinuteSchema = z
 	.object({
 		minuteStart: minuteTimestamp,
-		count: postgresInteger,
-		entries: nonnegativePostgresInteger,
-		exits: nonnegativePostgresInteger,
+		count: postgresIntegerSchema,
+		entries: nonnegativePostgresIntegerSchema,
+		exits: nonnegativePostgresIntegerSchema,
 	})
 	.strict();
 
@@ -44,8 +40,8 @@ export const edgePushRequestSchema = z
 	.object({
 		schemaVersion: z.literal(1),
 		sequence: z.number().int().positive().safe(),
-		observedAt: canonicalUtcTimestamp,
-		currentCount: postgresInteger,
+		observedAt: canonicalUtcTimestampSchema,
+		currentCount: postgresIntegerSchema,
 		minutes: z.array(edgeMinuteSchema).min(1).max(2),
 		health: z
 			.object({
@@ -55,7 +51,7 @@ export const edgePushRequestSchema = z
 				detectorFps: z.number().finite().nonnegative().nullable(),
 			})
 			.strict(),
-		appliedCommandId: z.null(),
+		appliedCommandId: z.number().int().positive().safe().nullable(),
 	})
 	.strict()
 	.superRefine((value, context) => {
@@ -92,14 +88,14 @@ export const edgePushResponseSchema = z
 		accepted: z.boolean(),
 		reason: edgePushReasonSchema,
 		highestProcessedSequence: z.number().int().nonnegative().safe(),
-		commands: z.tuple([]),
+		commands: z.array(deviceCommandSchema).max(1),
 		settings: z
 			.object({
 				version: z.number().int().positive().safe(),
 				pushIntervalSeconds: z.number().int().positive(),
 			})
 			.strict(),
-		serverTime: canonicalUtcTimestamp,
+		serverTime: canonicalUtcTimestampSchema,
 	})
 	.strict()
 	.superRefine((value, context) => {
@@ -109,6 +105,24 @@ export const edgePushResponseSchema = z
 				message: "Only processed acknowledgements are accepted",
 				path: ["accepted"],
 			});
+		}
+		if (!value.accepted && value.commands.length > 0) {
+			context.addIssue({
+				code: "custom",
+				message: "Only accepted pushes can deliver commands",
+				path: ["commands"],
+			});
+		}
+		let previousId = 0;
+		for (const [index, command] of value.commands.entries()) {
+			if (command.id <= previousId) {
+				context.addIssue({
+					code: "custom",
+					message: "Commands must be unique and ordered oldest-first",
+					path: ["commands", index, "id"],
+				});
+			}
+			previousId = command.id;
 		}
 	});
 

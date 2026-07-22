@@ -12,6 +12,7 @@ import {
 	settingsVersions,
 } from "@fitway/db/schema/application";
 import { desc, eq, sql } from "drizzle-orm";
+import { createCommandQueueForTransaction } from "./command-repository";
 
 type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
 type Database = typeof db;
@@ -65,6 +66,7 @@ function scheduleHours(open: string | null, close: string | null) {
 
 function transactionAdapter(tx: Transaction): OccupancyTransaction {
 	return {
+		commandQueue: createCommandQueueForTransaction(tx),
 		async lockDevice(deviceId) {
 			const result = await tx.execute<{
 				id: string;

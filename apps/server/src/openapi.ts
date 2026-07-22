@@ -2,6 +2,205 @@ import { openApiRouter } from "@fitway/api/routers/index";
 import { OpenAPIGenerator } from "@orpc/openapi";
 import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
 
+const SAFE_INTEGER_MAX = 9_007_199_254_740_991;
+const POSTGRES_INTEGER_MAX = 2_147_483_647;
+const CANONICAL_UTC_PATTERN =
+	"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-5][0-9]\\.[0-9]{3}Z$";
+const MINUTE_UTC_PATTERN =
+	"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:00\\.000Z$";
+
+const positiveSafeIntegerSchema = {
+	type: "integer",
+	minimum: 1,
+	maximum: SAFE_INTEGER_MAX,
+} as const;
+const canonicalUtcSchema = {
+	type: "string",
+	format: "date-time",
+	pattern: CANONICAL_UTC_PATTERN,
+} as const;
+const commandProperties = {
+	id: positiveSafeIntegerSchema,
+	issuedAt: canonicalUtcSchema,
+} as const;
+const commandRequired = ["id", "type", "targetValue", "issuedAt"] as const;
+
+const edgePushRequestOpenApiSchema = {
+	type: "object",
+	properties: {
+		schemaVersion: { const: 1 },
+		sequence: positiveSafeIntegerSchema,
+		observedAt: canonicalUtcSchema,
+		currentCount: {
+			type: "integer",
+			minimum: -2_147_483_648,
+			maximum: POSTGRES_INTEGER_MAX,
+		},
+		minutes: {
+			type: "array",
+			minItems: 1,
+			maxItems: 2,
+			uniqueItems: true,
+			description:
+				"Minute buckets have unique minuteStart values and are sorted by minuteStart ascending.",
+			"x-fitway-sorted-unique-minute-starts": true,
+			items: {
+				type: "object",
+				properties: {
+					minuteStart: {
+						type: "string",
+						format: "date-time",
+						pattern: MINUTE_UTC_PATTERN,
+					},
+					count: {
+						type: "integer",
+						minimum: -2_147_483_648,
+						maximum: POSTGRES_INTEGER_MAX,
+					},
+					entries: {
+						type: "integer",
+						minimum: 0,
+						maximum: POSTGRES_INTEGER_MAX,
+					},
+					exits: {
+						type: "integer",
+						minimum: 0,
+						maximum: POSTGRES_INTEGER_MAX,
+					},
+				},
+				required: ["minuteStart", "count", "entries", "exits"],
+				additionalProperties: false,
+			},
+		},
+		health: {
+			type: "object",
+			properties: {
+				process: {
+					type: "string",
+					enum: ["ok", "degraded", "failed", "unknown"],
+				},
+				camera: {
+					type: "string",
+					enum: ["ok", "degraded", "failed", "unknown"],
+				},
+				feed: {
+					type: "string",
+					enum: ["ok", "degraded", "failed", "unknown"],
+				},
+				detectorFps: {
+					oneOf: [{ type: "number", minimum: 0 }, { type: "null" }],
+				},
+			},
+			required: ["process", "camera", "feed", "detectorFps"],
+			additionalProperties: false,
+		},
+		appliedCommandId: {
+			oneOf: [positiveSafeIntegerSchema, { type: "null" }],
+		},
+	},
+	required: [
+		"schemaVersion",
+		"sequence",
+		"observedAt",
+		"currentCount",
+		"minutes",
+		"health",
+		"appliedCommandId",
+	],
+	additionalProperties: false,
+} as const;
+
+const edgePushResponseOpenApiSchema = {
+	type: "object",
+	properties: {
+		schemaVersion: { const: 1 },
+		accepted: { type: "boolean" },
+		reason: {
+			type: "string",
+			enum: ["processed", "replay", "sequence_gap"],
+		},
+		highestProcessedSequence: {
+			type: "integer",
+			minimum: 0,
+			maximum: SAFE_INTEGER_MAX,
+		},
+		commands: {
+			type: "array",
+			maxItems: 1,
+			uniqueItems: true,
+			description:
+				"The single effective pending command under the latest-only rule; empty unless the push is accepted.",
+			items: {
+				oneOf: [
+					{
+						type: "object",
+						properties: {
+							...commandProperties,
+							type: { const: "set_count" },
+							targetValue: {
+								type: "integer",
+								minimum: 0,
+								maximum: POSTGRES_INTEGER_MAX,
+							},
+						},
+						required: commandRequired,
+						additionalProperties: false,
+					},
+					{
+						type: "object",
+						properties: {
+							...commandProperties,
+							type: { const: "reset_zero" },
+							targetValue: { type: "null" },
+						},
+						required: commandRequired,
+						additionalProperties: false,
+					},
+				],
+			},
+		},
+		settings: {
+			type: "object",
+			properties: {
+				version: positiveSafeIntegerSchema,
+				pushIntervalSeconds: {
+					type: "integer",
+					minimum: 1,
+					maximum: SAFE_INTEGER_MAX,
+				},
+			},
+			required: ["version", "pushIntervalSeconds"],
+			additionalProperties: false,
+		},
+		serverTime: canonicalUtcSchema,
+	},
+	required: [
+		"schemaVersion",
+		"accepted",
+		"reason",
+		"highestProcessedSequence",
+		"commands",
+		"settings",
+		"serverTime",
+	],
+	additionalProperties: false,
+	oneOf: [
+		{
+			properties: {
+				accepted: { const: true },
+				reason: { const: "processed" },
+			},
+		},
+		{
+			properties: {
+				accepted: { const: false },
+				reason: { enum: ["replay", "sequence_gap"] },
+				commands: { type: "array", maxItems: 0 },
+			},
+		},
+	],
+} as const;
+
 export async function generateOpenApiDocument() {
 	const generator = new OpenAPIGenerator({
 		schemaConverters: [new ZodToJsonSchemaConverter()],
@@ -38,6 +237,8 @@ export async function generateOpenApiDocument() {
 			"content" in operation.requestBody &&
 			operation.requestBody.content?.["application/json"]
 		) {
+			operation.requestBody.content["application/json"].schema =
+				edgePushRequestOpenApiSchema as never;
 			operation.requestBody.content["application/json"].example = {
 				schemaVersion: 1,
 				sequence: 42,
@@ -57,7 +258,7 @@ export async function generateOpenApiDocument() {
 					feed: "ok",
 					detectorFps: 4.8,
 				},
-				appliedCommandId: null,
+				appliedCommandId: 41,
 			};
 		}
 		const success = operation.responses?.["200"];
@@ -66,12 +267,21 @@ export async function generateOpenApiDocument() {
 			"content" in success &&
 			success.content?.["application/json"]
 		) {
+			success.content["application/json"].schema =
+				edgePushResponseOpenApiSchema as never;
 			success.content["application/json"].example = {
 				schemaVersion: 1,
 				accepted: true,
 				reason: "processed",
 				highestProcessedSequence: 42,
-				commands: [],
+				commands: [
+					{
+						id: 43,
+						type: "set_count",
+						targetValue: 35,
+						issuedAt: "2026-07-13T18:24:19.000Z",
+					},
+				],
 				settings: { version: 1, pushIntervalSeconds: 20 },
 				serverTime: "2026-07-13T18:24:20.250Z",
 			};

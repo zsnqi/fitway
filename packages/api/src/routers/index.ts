@@ -1,4 +1,12 @@
 import type { RouterClient } from "@orpc/server";
+import {
+	commandMutationResultSchema,
+	correctionInputSchema,
+	resetInputSchema,
+} from "../commands/schemas";
+import type { CommandService } from "../commands/service";
+import { CommandIssueError } from "../commands/service";
+import type { Context } from "../context";
 import { edgePushRequestSchema, edgePushResponseSchema } from "../edge-push";
 import { operationalSnapshotSchema } from "../health/snapshot";
 import {
@@ -26,6 +34,20 @@ const pushOccupancyContract = publicProcedure
 
 export const openApiRouter = { edge: { pushOccupancy: pushOccupancyContract } };
 const staffSession = staffProcedure.handler(({ context }) => context.auth);
+function requireCommandService(context: Context): CommandService {
+	if (!context.commandService) throw new ORPCError("INTERNAL_SERVER_ERROR");
+	return context.commandService;
+}
+
+async function handleCommandIssue<T>(operation: () => Promise<T>): Promise<T> {
+	try {
+		return await operation();
+	} catch (error) {
+		if (error instanceof CommandIssueError) throw new ORPCError("BAD_REQUEST");
+		throw error;
+	}
+}
+
 const staffOperationalSnapshot = staffProcedure
 	.output(operationalSnapshotSchema)
 	.handler(({ context }) => {
@@ -34,12 +56,30 @@ const staffOperationalSnapshot = staffProcedure
 		}
 		return context.readOperationalSnapshot();
 	});
+const staffIssueCorrection = staffProcedure
+	.input(correctionInputSchema)
+	.output(commandMutationResultSchema)
+	.handler(({ context, input }) =>
+		handleCommandIssue(() =>
+			requireCommandService(context).issueCorrection(context.auth, input),
+		),
+	);
+const staffIssueReset = staffProcedure
+	.input(resetInputSchema)
+	.output(commandMutationResultSchema)
+	.handler(({ context, input }) =>
+		handleCommandIssue(() =>
+			requireCommandService(context).issueReset(context.auth, input),
+		),
+	);
 const adminSession = ownerProcedure.handler(({ context }) => context.auth);
 
 export const appRouter = {
 	staff: {
 		session: staffSession,
 		operationalSnapshot: staffOperationalSnapshot,
+		issueCorrection: staffIssueCorrection,
+		issueReset: staffIssueReset,
 	},
 	admin: { session: adminSession },
 };

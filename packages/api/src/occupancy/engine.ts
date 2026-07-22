@@ -1,3 +1,5 @@
+import type { CommandQueue } from "../commands/queue";
+import type { DeviceCommand } from "../commands/schemas";
 import type { EdgePushRequest, EdgePushResponse } from "../edge-push";
 import {
 	assertBandSettings,
@@ -66,6 +68,7 @@ export type OccupancyTransaction = {
 		receivedAt: Date;
 		updatedAt: Date;
 	}): Promise<void>;
+	commandQueue: CommandQueue;
 };
 
 export type OccupancyEngineDependencies = {
@@ -112,13 +115,14 @@ function response(
 	highestProcessedSequence: number,
 	settings: OccupancySettings,
 	serverTime: Date,
+	commands: DeviceCommand[] = [],
 ): EdgePushResponse {
 	return {
 		schemaVersion: 1,
 		accepted,
 		reason,
 		highestProcessedSequence,
-		commands: [],
+		commands,
 		settings: {
 			version: settings.version,
 			pushIntervalSeconds: settings.pushIntervalSeconds,
@@ -224,6 +228,18 @@ export async function processLivePush(
 			receivedAt,
 			updatedAt: receivedAt,
 		});
-		return response(true, "processed", input.sequence, settings, receivedAt);
+		const commands = await tx.commandQueue.reconcile({
+			deviceId,
+			appliedCommandId: input.appliedCommandId,
+			at: receivedAt,
+		});
+		return response(
+			true,
+			"processed",
+			input.sequence,
+			settings,
+			receivedAt,
+			commands,
+		);
 	});
 }

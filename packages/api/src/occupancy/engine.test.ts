@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import type { DeviceCommand } from "../commands/schemas";
 import type { EdgePushRequest } from "../edge-push";
 import {
 	type OccupancySettings,
@@ -36,7 +37,7 @@ const push: EdgePushRequest = {
 	appliedCommandId: null,
 };
 
-function fake(lastSequence = 0) {
+function fake(lastSequence = 0, commands: DeviceCommand[] = []) {
 	const writes: Array<{ kind: string; value: unknown }> = [];
 	const tx: OccupancyTransaction = {
 		lockDevice: async () => ({ id: "device", enabled: true, lastSequence }),
@@ -48,6 +49,12 @@ function fake(lastSequence = 0) {
 			void writes.push({ kind: "device", value: sequence }),
 		upsertCurrentHealth: async (value) =>
 			void writes.push({ kind: "health", value }),
+		commandQueue: {
+			async reconcile(value) {
+				writes.push({ kind: "command_reconciliation", value });
+				return commands;
+			},
+		},
 	};
 	return {
 		writes,
@@ -70,7 +77,7 @@ describe("occupancy engine", () => {
 			highestProcessedSequence: 1,
 			commands: [],
 		});
-		expect(value.writes).toHaveLength(4);
+		expect(value.writes).toHaveLength(5);
 		expect(value.writes[0]?.value).toMatchObject({
 			count: 0,
 			entries: 2,
@@ -97,6 +104,33 @@ describe("occupancy engine", () => {
 				updatedAt: new Date("2026-07-12T22:30:21.000Z"),
 			},
 		});
+		expect(value.writes[4]).toMatchObject({ kind: "command_reconciliation" });
+	});
+
+	it("acknowledges and returns commands only inside an accepted contiguous live push", async () => {
+		const command: DeviceCommand = {
+			id: 8,
+			type: "set_count",
+			targetValue: 4,
+			issuedAt: "2026-07-12T22:30:20.000Z",
+		};
+		const value = fake(0, [command]);
+		const result = await processLivePush(
+			"device",
+			{ ...push, appliedCommandId: 7 },
+			value.dependencies,
+		);
+		expect(result.commands).toEqual([command]);
+		expect(value.writes.slice(-1)).toEqual([
+			{
+				kind: "command_reconciliation",
+				value: {
+					deviceId: "device",
+					appliedCommandId: 7,
+					at: new Date("2026-07-12T22:30:21.000Z"),
+				},
+			},
+		]);
 	});
 
 	it("acknowledges replay and gap without any mutation", async () => {
