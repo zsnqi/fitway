@@ -69,3 +69,22 @@ database, and return `PASS` without edits.
 Any public capacity/history/identity leak, missing atomic audit, command acknowledgement that
 breaks edge authority, unreviewed migration, unleased shared-file need, or Product/Spec
 conflict is `NEEDS_HUMAN` immediately.
+
+## Phase 5 staff UI retry adjudication — 2026-07-27
+
+Human adjudication resolves the former lifecycle-read stop condition without reopening this
+frozen command-domain contract. A later, private `staff.recentCommands` read leaf is authorized
+for `staff | owner` sessions only. It returns server-authoritative command rows with exactly the
+existing `pending | applied | superseded` status, command identity/type/target/reason, and the
+existing lifecycle fields `issuedAt`, `deliveredAt`, `appliedAt`, `supersededAt`, and
+`supersededByCommandId`.
+
+`deliveredAt` is delivery metadata only; it is never a fourth lifecycle status. The client must
+render the returned `status` verbatim and must not infer `applied`, `superseded`, or any other
+lifecycle transition from snapshots, counts, timestamps, request order, or local state.
+
+This is an additive private continuation boundary, not an implementation change in this record:
+the frozen operational snapshot DTO, existing command mutation/domain contracts, migration lane,
+edge/OpenAPI surfaces, and public payloads remain unchanged. The leaf requires the scoped ledger
+lease and its own server/API/repository proof before the preserved staff UI may bind it; this
+activation does not implement that leaf or resume UI work.

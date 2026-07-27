@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-07-27T19:54:24+03:00"
+updatedAt: "2026-07-27T21:11:56+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -371,12 +371,12 @@ milestones:
     integratedCommit: 4211b172bcfbb50b30f3f38a400287e5d12bdf7e
 
   phase5-staff-ui:
-    status: NEEDS_HUMAN
+    status: READY
     dependencies: [phase5-command-domain]
-    ownerSession: null
-    branch: work/phase5-staff-ui-b03
-    worktree: D:/Projects/fitway-worktrees/phase5-staff-ui
-    baseCommit: d6e7dd8ec8c24e558a85f6cbc0e79cf7ed1de5cf
+    ownerSession: "phase5 staff UI retry reserved; UI work unlaunched"
+    branch: work/phase5-staff-ui-b03-retry
+    worktree: D:/Projects/fitway-worktrees/phase5-staff-ui-retry
+    baseCommit: SELF
     ownedPaths:
       - apps/web/src/components/staff/commands/**
       - apps/web/src/hooks/use-staff-commands.ts
@@ -403,19 +403,20 @@ milestones:
       - docs/phase-records/batch-03-activation.md
       - visual-direction-gate/**
       - root manifests, lockfiles, environment schemas, test-runner config, and scripts/verify.mjs
-    sharedLeases: []
-    validationRepairAttempts: 1
-    lastHeartbeatAt: "2026-07-22T16:00:49+03:00"
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase5-staff-ui/20260722-160011-p5_staff_b03a-needs-human.md
-    stopReason: "Unresolved coordinator question: which authoritative staff-or-owner lifecycle read contract, if any, should expose command IDs and pending | applied | superseded state without changing the frozen staff snapshot DTO or reconciling Product/Spec acceptance?"
+    sharedLeases:
+      - "exclusive through 2026-07-29T21:11:56+03:00: private lifecycle-read continuation limited to packages/api/src/commands/recent-commands.ts, packages/api/src/commands/recent-commands.test.ts, packages/api/src/context.ts, packages/api/src/routers/index.ts, apps/server/src/command-repository.ts, apps/server/src/command-repository.test.ts, apps/server/src/index.ts, and apps/server/src/phase5-staff-recent-commands.integration.test.ts; it excludes migrations, edge/OpenAPI, public payloads, and staff.operationalSnapshot"
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-07-27T21:11:56+03:00"
+    leaseExpiresAt: "2026-07-29T21:11:56+03:00"
+    handoff: docs/phase-records/handoffs/phase5-staff-ui/20260727-211156-p5_staff_b03_retry-activation.md
+    stopReason: null
     gates:
-      unit: PASS
-      integration: NOT_REQUIRED
-      browser: PASS
-      accessibility: PASS
-      visual: PASS
-      independentReview: FAIL
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
     integratedCommit: null
 
   phase-5:
