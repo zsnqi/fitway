@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-07-22T15:10:00+03:00"
+updatedAt: "2026-07-27T19:54:24+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -371,12 +371,12 @@ milestones:
     integratedCommit: 4211b172bcfbb50b30f3f38a400287e5d12bdf7e
 
   phase5-staff-ui:
-    status: READY
+    status: NEEDS_HUMAN
     dependencies: [phase5-command-domain]
-    ownerSession: "batch-03 continuation reserved; worker unlaunched"
+    ownerSession: null
     branch: work/phase5-staff-ui-b03
     worktree: D:/Projects/fitway-worktrees/phase5-staff-ui
-    baseCommit: SELF
+    baseCommit: d6e7dd8ec8c24e558a85f6cbc0e79cf7ed1de5cf
     ownedPaths:
       - apps/web/src/components/staff/commands/**
       - apps/web/src/hooks/use-staff-commands.ts
@@ -404,18 +404,18 @@ milestones:
       - visual-direction-gate/**
       - root manifests, lockfiles, environment schemas, test-runner config, and scripts/verify.mjs
     sharedLeases: []
-    validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-07-22T15:10:00+03:00"
-    leaseExpiresAt: "2026-07-24T15:10:00+03:00"
-    handoff: docs/phase-records/handoffs/phase5-staff-ui/20260722-150910-p5_staff_b03a.md
-    stopReason: null
+    validationRepairAttempts: 1
+    lastHeartbeatAt: "2026-07-22T16:00:49+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase5-staff-ui/20260722-160011-p5_staff_b03a-needs-human.md
+    stopReason: "Unresolved coordinator question: which authoritative staff-or-owner lifecycle read contract, if any, should expose command IDs and pending | applied | superseded state without changing the frozen staff snapshot DTO or reconciling Product/Spec acceptance?"
     gates:
-      unit: PENDING
-      integration: PENDING
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
-      independentReview: PENDING
+      unit: PASS
+      integration: NOT_REQUIRED
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
+      independentReview: FAIL
     integratedCommit: null
 
   phase-5:
@@ -693,12 +693,12 @@ milestones:
     integratedCommit: 7d29e1a5dd3c34197fb714d9619ac47f3c2d9201
 
   phase9-owner-ui:
-    status: READY
+    status: DONE
     dependencies: [phase9-analytics-domain, phase-4, phase5-command-domain]
-    ownerSession: "batch-03 continuation retry reserved; worker unlaunched"
-    branch: work/phase9-owner-ui-b03-retry
-    worktree: D:/Projects/fitway-worktrees/phase9-owner-ui-retry
-    baseCommit: SELF
+    ownerSession: null
+    branch: main
+    worktree: null
+    baseCommit: d6e7dd8ec8c24e558a85f6cbc0e79cf7ed1de5cf
     ownedPaths:
       - apps/web/src/components/owner/**
       - apps/web/src/hooks/use-owner-daily-analytics.ts
@@ -742,21 +742,20 @@ milestones:
       - docs/phase-records/batch-03-activation.md
       - visual-direction-gate/**
       - root manifests, lockfiles, environment schemas, test-runner config, and scripts/verify.mjs
-    sharedLeases:
-      - "exclusive through 2026-07-24T15:10:00+03:00: router lane B limited to packages/api/src/context.ts, packages/api/src/routers/index.ts, apps/server/src/index.ts, and apps/server/src/phase9-owner-ui.integration.test.ts"
-    validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-07-22T15:10:00+03:00"
-    leaseExpiresAt: "2026-07-24T15:10:00+03:00"
-    handoff: docs/phase-records/handoffs/phase9-owner-ui/20260722-150910-p9_owner_b03_retry.md
+    sharedLeases: []
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-07-27T19:54:24+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase9-owner-ui/20260727-195424-p9_owner_coord_integration.md
     stopReason: null
     gates:
-      unit: PENDING
-      integration: PENDING
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
-      independentReview: PENDING
-    integratedCommit: null
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
+      independentReview: PASS
+    integratedCommit: c02b4df8f1fdca1c3e25c888ac2de444400a4e10
 
   phase-9:
     status: PLANNED

@@ -257,7 +257,7 @@ test("English login, logout, and owner shell complete their functional flow", as
 
 	await page.goto("/admin");
 	await expect(
-		page.getByRole("heading", { name: "Owner navigation is ready" }),
+		page.getByRole("heading", { name: "Today's occupancy curve" }),
 	).toBeVisible();
 });
 
@@ -287,7 +287,7 @@ test("a failed background refresh replaces cached live data with transport error
 	await expect(page.getByText("37", { exact: true })).toBeVisible();
 	await page.getByRole("link", { name: "منطقة المالك" }).click();
 	await expect(
-		page.getByRole("heading", { name: "تنقل المالك جاهز" }),
+		page.getByRole("heading", { name: "منحنى الإشغال اليوم" }),
 	).toBeVisible();
 	await page
 		.locator(".operations-nav")
@@ -400,7 +400,7 @@ test("admin renders localized 403 for staff and the shell only for owner", async
 	);
 	await page.reload();
 	await expect(
-		page.getByRole("heading", { name: "تنقل المالك جاهز" }),
+		page.getByRole("heading", { name: "منحنى الإشغال اليوم" }),
 	).toBeVisible();
 	await expect(page.getByRole("link", { name: "منطقة المالك" })).toBeVisible();
 	await captureReview(page, "admin-owner-ar-1280.png");
