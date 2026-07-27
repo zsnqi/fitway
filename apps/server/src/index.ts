@@ -12,6 +12,7 @@ import {
 	PUBLIC_POLL_HEADER,
 } from "@fitway/api/public-occupancy";
 import { appRouter } from "@fitway/api/routers/index";
+import { db } from "@fitway/db";
 import { env } from "@fitway/env/server";
 import { onError } from "@orpc/server";
 import { RPCHandler } from "@orpc/server/fetch";
@@ -19,6 +20,7 @@ import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
+import { createOwnerAnalyticsReaders } from "./analytics-time-context-repository";
 import { mountAuthRoutes } from "./auth/routes";
 import { type AuthRuntime, createAuthRuntime } from "./auth/runtime";
 import { commandService } from "./command-repository";
@@ -32,6 +34,8 @@ import {
 import { generateOpenApiDocument } from "./openapi";
 import { createPublicOccupancyHandler } from "./public-occupancy";
 import { DeviceRateLimiter } from "./rate-limiter";
+
+const ownerAnalyticsReaders = createOwnerAnalyticsReaders(db);
 
 export function createApp(
 	nodeEnv: "development" | "production" | "test" = env.NODE_ENV,
@@ -112,6 +116,9 @@ export function createApp(
 						authRuntime.service.authenticate(cookieHeader),
 					readOperationalSnapshot: () =>
 						buildOperationalSnapshot(healthSnapshotRepository),
+					readDailyAnalytics: ownerAnalyticsReaders.readDailyAnalytics,
+					readAnalyticsTimeContext:
+						ownerAnalyticsReaders.readAnalyticsTimeContext,
 					commandService,
 				}),
 			});
