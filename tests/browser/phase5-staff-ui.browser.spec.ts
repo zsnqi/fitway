@@ -247,7 +247,7 @@ test("step correction, floor-at-zero, direct entry, validation, and pending issu
 
 	await page.goto("/staff");
 	await expect(
-		page.getByRole("heading", { name: "Count correction controls" }),
+		page.getByRole("heading", { name: "Correct the count" }),
 	).toBeVisible();
 	for (let press = 0; press < 40; press += 1) {
 		await page
@@ -255,12 +255,12 @@ test("step correction, floor-at-zero, direct entry, validation, and pending issu
 			.click();
 	}
 	await page
-		.getByLabel("Short reason (optional)")
+		.getByLabel("Reason (optional)")
 		.first()
 		.fill(" Empty-floor check ");
 	await page.getByRole("button", { name: "Apply adjustment" }).click();
 	await expect(
-		page.getByText("Applied by the edge", { exact: true }),
+		page.getByText("Applied by the edge device", { exact: true }),
 	).toBeVisible();
 	await expect(page.getByText("Set count to 0")).toBeVisible();
 
@@ -271,10 +271,7 @@ test("step correction, floor-at-zero, direct entry, validation, and pending issu
 	await expect.poll(() => correctionInputs.length).toBe(1);
 
 	await directInput.fill("40");
-	await page
-		.getByLabel("Short reason (optional)")
-		.nth(1)
-		.fill("Verified door count");
+	await page.getByLabel("Reason (optional)").nth(1).fill("Verified door count");
 	await page.getByRole("button", { name: "Set count" }).click();
 
 	expect(correctionInputs).toEqual([
@@ -283,23 +280,26 @@ test("step correction, floor-at-zero, direct entry, validation, and pending issu
 	]);
 	await expect(
 		page.locator(".command-history li", {
-			hasText: "Waiting for edge application",
+			hasText: "Waiting for the edge device",
 		}),
 	).toHaveCount(0);
 	await expect(
-		page.locator(".command-history li", { hasText: "Applied by the edge" }),
+		page.locator(".command-history li", {
+			hasText: "Applied by the edge device",
+		}),
 	).toHaveCount(1);
 	await expect(
 		page.locator(".command-history li", {
-			hasText: "Superseded by a newer command",
+			hasText: "Replaced by a newer command",
 		}),
 	).toHaveCount(1);
 	await expect(page.getByText("Set count to 40")).toBeVisible();
 	await expect(
-		page.getByText(
-			"Status is read from the server. Delivery time is metadata, not a lifecycle state.",
-		),
+		page.getByText("The edge device reports each status. Newest first."),
 	).toBeVisible();
+	// Delivery time is metadata: the rows above carry delivery timestamps and
+	// the surface must still present nothing but the server status.
+	await expect(page.locator(".command-history")).not.toContainText(/deliver/iu);
 	await captureReview(page, "staff-commands-lifecycle-en-1440.png");
 });
 
@@ -333,9 +333,7 @@ test("unavailable state disables delta but preserves validated direct-set", asyn
 	});
 
 	await page.goto("/staff");
-	await expect(
-		page.getByText("A step correction needs a usable current count"),
-	).toBeVisible();
+	await expect(page.getByText("Steps need a current reading")).toBeVisible();
 	await expect(
 		page.getByRole("button", { name: "Apply adjustment" }),
 	).toBeDisabled();
@@ -343,7 +341,7 @@ test("unavailable state disables delta but preserves validated direct-set", asyn
 	await page.getByRole("button", { name: "Set count" }).click();
 	expect(directInput).toEqual({ absolute: 12 });
 	await expect(
-		page.getByText("Waiting for edge application", { exact: true }),
+		page.getByText("Waiting for the edge device", { exact: true }),
 	).toBeVisible();
 });
 
@@ -395,13 +393,13 @@ test("stale, closed, loading, and transport-error states keep command availabili
 		"Loading operational status",
 	);
 	await expect(
-		page.getByRole("heading", { name: "Count correction controls" }),
+		page.getByRole("heading", { name: "Correct the count" }),
 	).toHaveCount(0);
 	await expect(page.getByRole("alert")).toContainText(
 		"Operational status could not be loaded",
 	);
 	await expect(
-		page.getByRole("heading", { name: "Count correction controls" }),
+		page.getByRole("heading", { name: "Correct the count" }),
 	).toHaveCount(0);
 });
 
@@ -455,16 +453,16 @@ test("reset requires modal confirmation, traps focus, closes on Escape, restores
 
 	await trigger.click();
 	await page
-		.getByLabel("Short reason (optional)")
+		.getByLabel("Reason (optional)")
 		.nth(2)
 		.fill("Closing verification");
 	await captureReview(page, "staff-reset-confirm-en-1440.png");
-	await page.getByRole("button", { name: "Queue reset" }).click();
+	await page.getByRole("button", { name: "Send reset" }).click();
 	expect(resetInputs).toEqual([{ reason: "Closing verification" }]);
 	await expect(dialog).toBeHidden();
 	await expect(page.getByText("Reset count to 0")).toBeVisible();
 	await expect(
-		page.getByText("Waiting for edge application", { exact: true }),
+		page.getByText("Waiting for the edge device", { exact: true }),
 	).toBeVisible();
 });
 
@@ -509,7 +507,7 @@ test("command failures stay actionable and an expired mutation session redirects
 	await page.getByLabel("New count").fill("9");
 	await page.getByRole("button", { name: "Set count" }).click();
 	await expect(page.getByRole("alert")).toContainText(
-		"The command could not be queued",
+		"The command was not accepted",
 	);
 	await page.getByRole("button", { name: "Set count" }).click();
 	await expect(page.getByRole("alert")).toContainText(
@@ -559,13 +557,13 @@ test("Arabic RTL and English LTR are accessible and recompose at every required 
 	await page.goto("/staff");
 	await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
 	await expect(
-		page.getByRole("heading", { name: "أدوات تصحيح العدد" }),
+		page.getByRole("heading", { name: "تصحيح العدد" }),
 	).toBeVisible();
 
 	for (const width of [320, 360, 390, 721, 768, 820, 1024, 1200, 1440]) {
 		await page.setViewportSize({ width, height: width < 721 ? 844 : 900 });
 		await expect(
-			page.getByRole("heading", { name: "أدوات تصحيح العدد" }),
+			page.getByRole("heading", { name: "تصحيح العدد" }),
 		).toBeVisible();
 		const overflow = await page.evaluate(
 			() =>
@@ -590,7 +588,7 @@ test("Arabic RTL and English LTR are accessible and recompose at every required 
 		.click();
 	await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
 	await expect(
-		page.getByRole("heading", { name: "Count correction controls" }),
+		page.getByRole("heading", { name: "Correct the count" }),
 	).toBeVisible();
 	for (const width of [320, 360, 390, 721, 768, 820, 1024, 1200, 1440]) {
 		await page.setViewportSize({ width, height: width < 721 ? 844 : 900 });
@@ -670,7 +668,7 @@ test("keyboard focus, targets, reduced motion, and 200% reflow remain usable", a
 
 	await page.getByRole("button", { name: "Reset to 0" }).click();
 	await page.keyboard.press("Tab");
-	await expect(page.getByRole("button", { name: "Queue reset" })).toBeFocused();
+	await expect(page.getByRole("button", { name: "Send reset" })).toBeFocused();
 	await page.keyboard.press("Tab");
 	expect(
 		await page
@@ -690,7 +688,7 @@ test("keyboard focus, targets, reduced motion, and 200% reflow remain usable", a
 	);
 	expect(overflow).toBe(false);
 	await expect(
-		page.getByRole("heading", { name: "Count correction controls" }),
+		page.getByRole("heading", { name: "Correct the count" }),
 	).toBeVisible();
 	await captureReview(page, "staff-commands-en-200-percent-reflow.png");
 });

@@ -4,7 +4,7 @@ import type {
 } from "@fitway/api/health/snapshot";
 import { Button } from "@fitway/ui/components/button";
 import { Skeleton } from "@fitway/ui/components/skeleton";
-import { HeartPulse, RefreshCw, TriangleAlert, WifiOff } from "lucide-react";
+import { RefreshCw, TriangleAlert, WifiOff } from "lucide-react";
 import { useStaffMessages } from "@/hooks/use-staff-messages";
 import { formatGymTime, formatNumber, formatRelativeTime } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
@@ -203,12 +203,6 @@ export function OperationalSnapshotView({ snapshot }: SnapshotViewProps) {
 								: messages.staff.notAvailable}
 						</dd>
 					</div>
-					<div>
-						<dt>{messages.staff.schemaVersion}</dt>
-						<dd>
-							<bdi>{formatNumber(snapshot.schemaVersion, locale)}</bdi>
-						</dd>
-					</div>
 				</dl>
 			</section>
 
@@ -223,7 +217,6 @@ export function OperationalSnapshotView({ snapshot }: SnapshotViewProps) {
 						</h2>
 						<p>{messages.staff.healthDescription}</p>
 					</div>
-					<HeartPulse aria-hidden="true" />
 				</header>
 
 				<dl className="health-summary">
@@ -297,16 +290,6 @@ export function OperationalSnapshotView({ snapshot }: SnapshotViewProps) {
 						)}
 					/>
 				</dl>
-				<p className="health-panel__computed">
-					{messages.staff.computed(
-						relativeTime(
-							snapshot.computedAt,
-							snapshot.computedAt,
-							locale,
-							messages.staff.notAvailable,
-						),
-					)}
-				</p>
 			</section>
 		</div>
 	);

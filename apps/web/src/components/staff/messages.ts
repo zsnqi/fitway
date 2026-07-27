@@ -45,8 +45,6 @@ export type StaffWebMessages = {
 		sources: Record<"edge" | "manual", string>;
 		lastUpdated: (time: string) => string;
 		nextOpen: (time: string) => string;
-		computed: (time: string) => string;
-		schemaVersion: string;
 		healthTitle: string;
 		healthDescription: string;
 		healthFreshness: string;

@@ -21,10 +21,25 @@
 	}
 }
 
-.login-shell > :not(.public-atmosphere),
+.login-shell > :not(.public-atmosphere, .operations-skip-link),
 .operations-shell > :not(.public-atmosphere, .operations-skip-link) {
 	position: relative;
 	z-index: 1;
+}
+
+/* The FITWAY mark is a logo, so it stays on the same physical side of the
+   field in both directions instead of jumping across on a locale switch. */
+.login-shell .public-atmosphere__watermark,
+.operations-shell .public-atmosphere__watermark {
+	inset-inline: auto;
+	right: -220px;
+}
+
+@media (max-width: 720px) {
+	.login-shell .public-atmosphere__watermark,
+	.operations-shell .public-atmosphere__watermark {
+		right: -132px;
+	}
 }
 
 .login-main {
@@ -45,9 +60,30 @@
 	border: 1px solid var(--fw-border);
 	border-radius: var(--fw-radius-board);
 	background:
-		linear-gradient(145deg, rgb(77 7 19 / 24%), transparent 44%),
-		rgb(16 16 18 / 94%);
+		radial-gradient(120% 88% at 14% -8%, rgb(255 41 70 / 9%), transparent 58%),
+		linear-gradient(
+			158deg,
+			rgb(77 7 19 / 32%),
+			rgb(77 7 19 / 8%) 46%,
+			transparent 74%
+		),
+		rgb(16 16 18 / 95%);
 	box-shadow: var(--fw-shadow-xl);
+}
+
+.login-panel::before {
+	position: absolute;
+	inset-block-start: 0;
+	inset-inline: 0;
+	block-size: 1px;
+	background: linear-gradient(
+		90deg,
+		transparent,
+		rgb(255 255 255 / 15%) 24%,
+		rgb(255 255 255 / 5%) 68%,
+		transparent
+	);
+	content: "";
 }
 
 .login-panel::after {
@@ -108,7 +144,7 @@
 
 .login-panel__description {
 	max-inline-size: 40ch;
-	margin: 0 0 32px;
+	margin: 0 0 28px;
 	color: var(--fw-text-muted);
 }
 
@@ -178,9 +214,9 @@
 
 .operations-header__inner {
 	display: grid;
-	grid-template-columns: auto 1fr auto;
+	grid-template-columns: auto auto 1fr;
 	align-items: center;
-	gap: 28px;
+	gap: 8px 28px;
 	inline-size: min(
 		var(--fw-container-dashboard),
 		calc(
@@ -217,7 +253,7 @@
 }
 
 .operations-nav {
-	justify-self: center;
+	justify-self: start;
 }
 
 .operations-nav__link {
@@ -297,7 +333,7 @@
 .operations-grid {
 	display: grid;
 	grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.8fr);
-	align-items: start;
+	align-items: stretch;
 	gap: 20px;
 }
 
@@ -315,6 +351,8 @@
 .occupancy-panel,
 .health-panel {
 	position: relative;
+	display: flex;
+	flex-direction: column;
 	padding: 30px;
 	overflow: hidden;
 }
@@ -425,14 +463,17 @@
 .occupancy-reading {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) auto;
-	align-items: end;
-	gap: 36px;
-	padding-block: 48px 42px;
+	align-items: start;
+	gap: 32px;
+	/* Pairs with the auto margin on the closing strip so a stretched panel
+	   distributes its spare height around the reading instead of below it. */
+	margin-block-start: auto;
+	padding-block: 34px 14px;
 }
 
 .occupancy-reading span {
 	display: block;
-	margin-block-end: 7px;
+	margin-block-end: 10px;
 	color: var(--fw-text-subtle);
 	font-size: 13px;
 }
@@ -444,22 +485,22 @@
 }
 
 .occupancy-reading__band strong {
-	font-size: clamp(38px, 6vw, 64px);
+	font-size: clamp(38px, 5vw, 58px);
 }
 
 .occupancy-reading__count {
-	padding-inline-start: 36px;
+	padding-inline-start: 32px;
 	border-inline-start: 1px solid var(--fw-border);
 	text-align: end;
 }
 
 .occupancy-reading__count strong {
-	font-size: clamp(56px, 9vw, 92px);
+	font-size: clamp(52px, 7vw, 76px);
 	font-variant-numeric: tabular-nums;
 }
 
 .occupancy-panel__updated {
-	margin: -24px 0 32px;
+	margin: 0 0 28px;
 	color: var(--fw-text-muted);
 	font-size: 13px;
 }
@@ -468,7 +509,7 @@
 	display: flex;
 	align-items: center;
 	gap: 12px;
-	margin-block: 40px;
+	margin-block: 40px auto;
 	padding: 20px;
 	border: 1px solid var(--fw-border-subtle);
 	border-radius: var(--fw-radius-control);
@@ -489,14 +530,17 @@
 	margin: 0;
 }
 
+/* The two panels share a row, so each closing strip settles against the bottom
+   edge and any extra height becomes breathing room around the reading. */
 .occupancy-meta {
 	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	margin-block-start: auto;
 	border-block-start: 1px solid var(--fw-border);
 }
 
 .occupancy-meta > div {
-	padding-block: 20px 4px;
+	padding-block: 18px 2px;
 }
 
 .occupancy-meta > div + div {
@@ -521,7 +565,7 @@
 .health-summary {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-	margin-block: 26px 18px;
+	margin-block: 24px 16px;
 	border: 1px solid var(--fw-border);
 	border-radius: var(--fw-radius-control);
 	background: rgb(8 9 10 / 55%);
@@ -544,13 +588,15 @@
 .health-details {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	border-block-start: 1px solid var(--fw-border-subtle);
+	margin-block-start: auto;
 }
 
+/* Row rules live on the top edge of each cell so the last row never leaves a
+   dangling separator, whatever column count the breakpoint chooses. */
 .health-details .health-detail {
 	min-inline-size: 0;
-	padding: 13px 4px;
-	border-block-end: 1px solid var(--fw-border-subtle);
+	padding: 12px 4px;
+	border-block-start: 1px solid var(--fw-border-subtle);
 }
 
 .health-details .health-detail:nth-child(even) {
@@ -561,12 +607,6 @@
 .health-detail bdi {
 	min-inline-size: 0;
 	overflow-wrap: anywhere;
-}
-
-.health-panel__computed {
-	margin: 16px 0 0;
-	color: var(--fw-text-subtle);
-	font-size: 11px;
 }
 
 .operations-skeleton {
@@ -673,7 +713,7 @@
 	}
 
 	.occupancy-reading {
-		padding-block: 38px 36px;
+		padding-block: 28px 12px;
 	}
 
 	.health-details {
@@ -715,11 +755,15 @@
 			max(16px, env(safe-area-inset-left));
 	}
 
+	/* Brand and account actions share the first row; the nav strip takes the
+	   full width underneath instead of pushing the actions onto a third row. */
 	.operations-brand {
+		grid-area: 1 / 1;
 		font-size: 14px;
 	}
 
 	.operations-header__actions {
+		grid-area: 1 / 2;
 		gap: 4px;
 	}
 
@@ -734,7 +778,7 @@
 	}
 
 	.operations-nav {
-		grid-column: 1 / -1;
+		grid-area: 2 / 1 / 3 / -1;
 		justify-self: stretch;
 		overflow-x: auto;
 	}
@@ -781,12 +825,12 @@
 
 	.occupancy-reading {
 		grid-template-columns: minmax(0, 1fr);
-		gap: 24px;
-		padding-block: 34px;
+		gap: 22px;
+		padding-block: 26px 12px;
 	}
 
 	.occupancy-reading__count {
-		padding-block-start: 22px;
+		padding-block-start: 20px;
 		padding-inline-start: 0;
 		border-block-start: 1px solid var(--fw-border);
 		border-inline-start: 0;
@@ -794,11 +838,11 @@
 	}
 
 	.occupancy-reading__band strong {
-		font-size: 42px;
+		font-size: 40px;
 	}
 
 	.occupancy-reading__count strong {
-		font-size: 64px;
+		font-size: 58px;
 	}
 
 	.occupancy-meta {

@@ -6,7 +6,6 @@ import {
 	Ban,
 	CircleCheck,
 	Clock3,
-	History,
 	Minus,
 	Plus,
 	RotateCcw,
@@ -27,11 +26,16 @@ import { useI18n } from "@/i18n/provider";
 import { useStaffCommandMessages } from "./messages";
 import {
 	isCommandReasonTooLong,
+	MAX_COMMAND_REASON_LENGTH,
 	MAX_COMMAND_VALUE,
 	normalizeCommandReason,
 	parseDirectCount,
 } from "./validation";
 import "./commands.css";
+
+// The remaining-character hint stays hidden until the reason approaches its
+// limit, so the common short reason carries no persistent instructional text.
+const REASON_HINT_THRESHOLD = 40;
 
 type StaffCommandsPanelProps = {
 	snapshot: OperationalSnapshot;
@@ -62,9 +66,15 @@ function ReasonField({
 	onChange: (value: string) => void;
 	error: string | null;
 }) {
+	const { locale } = useI18n();
 	const messages = useStaffCommandMessages();
 	const hintId = `${id}-hint`;
 	const errorId = `${id}-error`;
+	const remaining = MAX_COMMAND_REASON_LENGTH - value.trim().length;
+	const showRemaining = remaining <= REASON_HINT_THRESHOLD;
+	const describedBy = [showRemaining ? hintId : null, error ? errorId : null]
+		.filter(Boolean)
+		.join(" ");
 	return (
 		<div className="command-field">
 			<label htmlFor={id}>{messages.reasonLabel}</label>
@@ -73,14 +83,21 @@ function ReasonField({
 				value={value}
 				onChange={(event) => onChange(event.target.value)}
 				placeholder={messages.reasonPlaceholder}
-				maxLength={241}
+				maxLength={MAX_COMMAND_REASON_LENGTH + 1}
 				rows={2}
 				aria-invalid={error ? true : undefined}
-				aria-describedby={`${hintId}${error ? ` ${errorId}` : ""}`}
+				aria-describedby={describedBy || undefined}
 			/>
-			<p id={hintId} className="command-field__hint">
-				{messages.reasonHint}
-			</p>
+			{showRemaining ? (
+				// No live region: the counter is a visual affordance that would
+				// otherwise re-announce on every keystroke. The over-limit message
+				// below carries the announcement.
+				<p id={hintId} className="command-field__hint">
+					{messages.reasonRemaining(
+						formatNumber(Math.max(0, remaining), locale),
+					)}
+				</p>
+			) : null}
 			{error ? (
 				<p id={errorId} className="command-field__error" role="alert">
 					{error}
@@ -242,18 +259,10 @@ export function StaffCommandsPanel({
 			aria-labelledby="command-center-heading"
 		>
 			<header className="command-center__heading">
-				<div>
-					<p>{messages.eyebrow}</p>
-					<h2 id="command-center-heading">{messages.title}</h2>
-					<span>{messages.description}</span>
-				</div>
-				<RotateCcw aria-hidden="true" />
+				<p>{messages.eyebrow}</p>
+				<h2 id="command-center-heading">{messages.title}</h2>
+				<span>{messages.description}</span>
 			</header>
-
-			<p className="command-authority-note">
-				<TriangleAlert aria-hidden="true" />
-				{messages.edgeAuthority}
-			</p>
 
 			{commandError && errorStatus !== 401 ? (
 				<div className="command-error" role="alert">
@@ -262,215 +271,207 @@ export function StaffCommandsPanel({
 				</div>
 			) : null}
 
-			<div className="command-center__forms">
-				<form className="command-card" onSubmit={applyDelta} noValidate>
-					<header>
-						<h3>{messages.adjustmentTitle}</h3>
-						<p>{messages.adjustmentDescription}</p>
-					</header>
-					<div className="command-current-reading">
-						<span>{messages.currentCount}</span>
-						<strong>
+			<div className="command-center__body">
+				<div className="command-center__actions">
+					<div className="command-center__forms">
+						<form className="command-card" onSubmit={applyDelta} noValidate>
+							<h3>{messages.adjustmentTitle}</h3>
+							<fieldset
+								disabled={currentCount === null || commands.isSubmitting}
+							>
+								<legend>{messages.adjustment}</legend>
+								<div className="command-stepper">
+									<Button
+										type="button"
+										variant="secondary"
+										size="icon"
+										onClick={() =>
+											setDelta((value) =>
+												Math.max(-(currentCount ?? 0), value - 1),
+											)
+										}
+										aria-label={messages.decrease}
+									>
+										<Minus aria-hidden="true" />
+									</Button>
+									<output aria-live="polite">
+										<bdi>
+											{delta > 0 ? `+${delta}` : formatNumber(delta, locale)}
+										</bdi>
+									</output>
+									<Button
+										type="button"
+										variant="secondary"
+										size="icon"
+										onClick={() =>
+											setDelta((value) =>
+												Math.min(
+													MAX_COMMAND_VALUE - (currentCount ?? 0),
+													value + 1,
+												),
+											)
+										}
+										aria-label={messages.increase}
+									>
+										<Plus aria-hidden="true" />
+									</Button>
+								</div>
+							</fieldset>
 							{currentCount === null ? (
-								messages.currentUnavailable
+								<p className="command-card__notice">
+									{messages.deltaUnavailable}
+								</p>
 							) : (
-								<bdi>{formatNumber(currentCount, locale)}</bdi>
+								<p className="command-projection" data-active={delta !== 0}>
+									{delta === 0
+										? messages.adjustmentIdle
+										: messages.projected(
+												formatNumber(projectedCount ?? 0, locale),
+											)}
+								</p>
 							)}
-						</strong>
-					</div>
-					<fieldset disabled={currentCount === null || commands.isSubmitting}>
-						<legend>{messages.adjustment}</legend>
-						<div className="command-stepper">
+							<ReasonField
+								id="delta-command-reason"
+								value={deltaReason}
+								onChange={setDeltaReason}
+								error={deltaReasonError}
+							/>
 							<Button
-								type="button"
-								variant="secondary"
-								size="icon"
-								onClick={() =>
-									setDelta((value) => Math.max(-(currentCount ?? 0), value - 1))
+								type="submit"
+								disabled={
+									currentCount === null || delta === 0 || commands.isSubmitting
 								}
-								aria-label={messages.decrease}
 							>
-								<Minus aria-hidden="true" />
+								{commands.isSubmitting
+									? messages.applying
+									: messages.applyAdjustment}
 							</Button>
-							<output aria-live="polite">
-								<bdi>
-									{delta > 0 ? `+${delta}` : formatNumber(delta, locale)}
-								</bdi>
-							</output>
+						</form>
+
+						<form className="command-card" onSubmit={setDirect} noValidate>
+							<h3>{messages.directTitle}</h3>
+							<div className="command-field">
+								<label htmlFor="direct-command-value">
+									{messages.directLabel}
+								</label>
+								<Input
+									id="direct-command-value"
+									type="text"
+									inputMode="numeric"
+									pattern="[0-9]*"
+									dir="ltr"
+									value={directValue}
+									onChange={(event) => setDirectValue(event.target.value)}
+									placeholder={messages.directPlaceholder}
+									aria-invalid={directError ? true : undefined}
+									aria-describedby={`direct-command-hint${directError ? " direct-command-error" : ""}`}
+								/>
+								<p id="direct-command-hint" className="command-field__hint">
+									{messages.directHint}
+								</p>
+								{directError ? (
+									<p
+										id="direct-command-error"
+										className="command-field__error"
+										role="alert"
+									>
+										{directError}
+									</p>
+								) : null}
+							</div>
+							<ReasonField
+								id="direct-command-reason"
+								value={directReason}
+								onChange={setDirectReason}
+								error={directReasonError}
+							/>
 							<Button
-								type="button"
+								type="submit"
 								variant="secondary"
-								size="icon"
-								onClick={() =>
-									setDelta((value) =>
-										Math.min(
-											MAX_COMMAND_VALUE - (currentCount ?? 0),
-											value + 1,
-										),
-									)
-								}
-								aria-label={messages.increase}
+								disabled={commands.isSubmitting}
 							>
-								<Plus aria-hidden="true" />
+								{commands.isSubmitting ? messages.applying : messages.setDirect}
 							</Button>
-						</div>
-					</fieldset>
-					{currentCount === null ? (
-						<p className="command-card__notice">{messages.deltaUnavailable}</p>
-					) : (
-						<div className="command-result">
-							<span>{messages.result}</span>
-							<strong>
-								<bdi>{formatNumber(projectedCount ?? 0, locale)}</bdi>
-							</strong>
-						</div>
-					)}
-					<ReasonField
-						id="delta-command-reason"
-						value={deltaReason}
-						onChange={setDeltaReason}
-						error={deltaReasonError}
-					/>
-					<Button
-						type="submit"
-						disabled={
-							currentCount === null || delta === 0 || commands.isSubmitting
-						}
-					>
-						{commands.isSubmitting
-							? messages.applying
-							: messages.applyAdjustment}
-					</Button>
-				</form>
-
-				<form className="command-card" onSubmit={setDirect} noValidate>
-					<header>
-						<h3>{messages.directTitle}</h3>
-						<p>{messages.directDescription}</p>
-					</header>
-					<div className="command-field">
-						<label htmlFor="direct-command-value">{messages.directLabel}</label>
-						<Input
-							id="direct-command-value"
-							type="text"
-							inputMode="numeric"
-							pattern="[0-9]*"
-							dir="ltr"
-							value={directValue}
-							onChange={(event) => setDirectValue(event.target.value)}
-							placeholder={messages.directPlaceholder}
-							aria-invalid={directError ? true : undefined}
-							aria-describedby={`direct-command-hint${directError ? " direct-command-error" : ""}`}
-						/>
-						<p id="direct-command-hint" className="command-field__hint">
-							{messages.directHint}
-						</p>
-						{directError ? (
-							<p
-								id="direct-command-error"
-								className="command-field__error"
-								role="alert"
-							>
-								{directError}
-							</p>
-						) : null}
+						</form>
 					</div>
-					<ReasonField
-						id="direct-command-reason"
-						value={directReason}
-						onChange={setDirectReason}
-						error={directReasonError}
-					/>
-					<Button
-						type="submit"
-						variant="secondary"
-						disabled={commands.isSubmitting}
-					>
-						{commands.isSubmitting ? messages.applying : messages.setDirect}
-					</Button>
-				</form>
-			</div>
 
-			<div className="command-reset-zone">
-				<div>
-					<p>{messages.resetEyebrow}</p>
-					<h3>{messages.resetTitle}</h3>
-					<span>{messages.resetDescription}</span>
+					<div className="command-reset-zone">
+						<div>
+							<p>{messages.resetEyebrow}</p>
+							<h3>{messages.resetTitle}</h3>
+							<span>{messages.resetDescription}</span>
+						</div>
+						<Button
+							type="button"
+							variant="destructive"
+							onClick={openResetDialog}
+							disabled={commands.isSubmitting}
+						>
+							<RotateCcw aria-hidden="true" />
+							{messages.openReset}
+						</Button>
+					</div>
 				</div>
-				<Button
-					type="button"
-					variant="destructive"
-					onClick={openResetDialog}
-					disabled={commands.isSubmitting}
-				>
-					<RotateCcw aria-hidden="true" />
-					{messages.openReset}
-				</Button>
-			</div>
 
-			<section
-				className="command-history"
-				aria-labelledby="command-history-heading"
-			>
-				<header>
-					<History aria-hidden="true" />
-					<div>
-						<p>{messages.historyEyebrow}</p>
+				<section
+					className="command-history"
+					aria-labelledby="command-history-heading"
+				>
+					<header>
 						<h3 id="command-history-heading">{messages.historyTitle}</h3>
 						<span>{messages.historyDescription}</span>
-					</div>
-				</header>
-				{commands.isHistoryLoading ? (
-					<p className="command-history__empty" role="status">
-						{messages.historyLoading}
+					</header>
+					{commands.isHistoryLoading ? (
+						<p className="command-history__empty" role="status">
+							{messages.historyLoading}
+						</p>
+					) : commands.historyError ? (
+						<p className="command-history__empty" role="status">
+							{messages.historyUnavailable}
+						</p>
+					) : commands.history.length ? (
+						<ol>
+							{commands.history.map((command) => (
+								<li key={command.id} data-status={command.status}>
+									<StatusIcon status={command.status} />
+									<div>
+										<strong>
+											{command.type === "reset_zero" ? (
+												messages.resetToZero
+											) : (
+												<>
+													{messages.setTo}{" "}
+													<bdi>
+														{formatNumber(command.targetValue ?? 0, locale)}
+													</bdi>
+												</>
+											)}
+										</strong>
+										<span>{messages.statuses[command.status]}</span>
+										{command.reason ? (
+											<q>
+												{/* Quotation marks are decorative CSS content, so the reason */}
+												{/* keeps a spoken label of its own. */}
+												<span className="fw-sr-only">{messages.reason} </span>
+												<bdi>{command.reason}</bdi>
+											</q>
+										) : null}
+									</div>
+								</li>
+							))}
+						</ol>
+					) : (
+						<p className="command-history__empty">{messages.historyEmpty}</p>
+					)}
+					<p className="fw-sr-only" role="status" aria-live="polite">
+						{lastIssuedCommand
+							? messages.commandAccepted(
+									messages.statuses[lastIssuedCommand.status],
+								)
+							: ""}
 					</p>
-				) : commands.historyError ? (
-					<p className="command-history__empty" role="status">
-						{messages.historyUnavailable}
-					</p>
-				) : commands.history.length ? (
-					<ol>
-						{commands.history.map((command) => (
-							<li key={command.id} data-status={command.status}>
-								<StatusIcon status={command.status} />
-								<div>
-									<strong>
-										{command.type === "reset_zero" ? (
-											messages.resetToZero
-										) : (
-											<>
-												{messages.setTo}{" "}
-												<bdi>
-													{formatNumber(command.targetValue ?? 0, locale)}
-												</bdi>
-											</>
-										)}
-									</strong>
-									<span>{messages.statuses[command.status]}</span>
-									<small>
-										{messages.command}{" "}
-										<bdi>{formatNumber(command.id, locale)}</bdi>
-									</small>
-									{command.reason ? (
-										<small>
-											{messages.reason}: <bdi>{command.reason}</bdi>
-										</small>
-									) : null}
-								</div>
-							</li>
-						))}
-					</ol>
-				) : (
-					<p className="command-history__empty">{messages.historyEmpty}</p>
-				)}
-				<p className="fw-sr-only" role="status" aria-live="polite">
-					{lastIssuedCommand
-						? messages.commandAccepted(
-								messages.statuses[lastIssuedCommand.status],
-							)
-						: ""}
-				</p>
-			</section>
+				</section>
+			</div>
 
 			<dialog
 				ref={resetDialogRef}

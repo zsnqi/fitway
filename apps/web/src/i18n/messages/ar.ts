@@ -14,10 +14,9 @@ export const staffWeb = {
 		skipToContent: "الانتقال إلى الحالة التشغيلية",
 	},
 	login: {
-		eyebrow: "دخول مكتب الاستقبال",
+		eyebrow: "مكتب الاستقبال",
 		title: "فتح العمليات المباشرة",
-		description:
-			"أدخل الرقم السري المشترك للموظفين لعرض الحالة التشغيلية للنادي.",
+		description: "أدخل الرقم السري المشترك لمكتب الاستقبال.",
 		pinLabel: "الرقم السري للموظفين",
 		pinHint: (minimum, maximum) =>
 			`استخدم من ${isolate(minimum)} إلى ${isolate(maximum)} أرقام غربية.`,
@@ -34,7 +33,7 @@ export const staffWeb = {
 	staff: {
 		eyebrow: "مكتب الاستقبال",
 		title: "العمليات المباشرة",
-		description: "حالة الإشغال وصحة النظام الآن في عرض تشغيلي واحد.",
+		description: "الإشغال وحالة الجهاز وأدوات ضبط العدد في عرض واحد.",
 		loading: "جارٍ تحميل الحالة التشغيلية",
 		loadErrorTitle: "تعذر تحميل الحالة التشغيلية",
 		loadErrorDescription:
@@ -53,11 +52,9 @@ export const staffWeb = {
 		approximateCount: "العدد التقريبي",
 		capacity: "السعة المضبوطة",
 		source: "مصدر القراءة",
-		sources: { edge: "جهاز الحافة", manual: "قراءة يدوية" },
+		sources: { edge: "جهاز العد", manual: "قراءة يدوية" },
 		lastUpdated: (time) => `آخر تحديث ${isolate(time)}`,
 		nextOpen: (time) => `يفتح لاحقاً ${isolate(time)}`,
-		computed: (time) => `حُسبت اللقطة ${isolate(time)}`,
-		schemaVersion: "إصدار مخطط اللقطة",
 		healthTitle: "صحة النظام",
 		healthDescription: "حداثة الجهاز وحالته كما قيّمهما الخادم.",
 		healthFreshness: "حداثة بيانات الصحة",
@@ -66,7 +63,7 @@ export const staffWeb = {
 		camera: "الكاميرا",
 		feed: "بث الفيديو",
 		detectorFps: "معدل الكاشف",
-		edgeObservedAt: "الرصد عند الحافة",
+		edgeObservedAt: "الرصد في جهاز العد",
 		receivedAt: "الاستلام في الخادم",
 		lastSeenAt: "آخر اتصال بالجهاز",
 		staleAt: "حد التأخر",
