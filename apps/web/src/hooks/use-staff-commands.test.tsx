@@ -4,11 +4,24 @@ import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import {
-	acceptStaffCommand,
-	type StaffCommandTransport,
-	useStaffCommands,
+import type {
+	StaffCommandRecord,
+	StaffCommandTransport,
 } from "./use-staff-commands";
+import { useStaffCommands } from "./use-staff-commands";
+
+const pending: StaffCommandRecord = {
+	id: 41,
+	type: "set_count",
+	targetValue: 38,
+	status: "pending",
+	reason: "Door recount",
+	issuedAt: "2026-07-22T12:00:00.000Z",
+	deliveredAt: "2026-07-22T12:00:10.000Z",
+	appliedAt: null,
+	supersededAt: null,
+	supersededByCommandId: null,
+};
 
 const firstResult = {
 	command: {
@@ -21,26 +34,6 @@ const firstResult = {
 	},
 	auditId: 81,
 };
-
-describe("staff command session lifecycle", () => {
-	it("preserves server-reported statuses without inventing a transition", () => {
-		const first = acceptStaffCommand([], firstResult);
-		const second = acceptStaffCommand(first, {
-			command: {
-				...firstResult.command,
-				id: 42,
-				targetValue: 40,
-				issuedAt: "2026-07-22T12:00:10.000Z",
-			},
-			auditId: 82,
-		});
-
-		expect(second.map(({ id, status }) => ({ id, status }))).toEqual([
-			{ id: 42, status: "pending" },
-			{ id: 41, status: "pending" },
-		]);
-	});
-});
 
 describe("useStaffCommands", () => {
 	let root: Root;
@@ -58,18 +51,25 @@ describe("useStaffCommands", () => {
 		container.remove();
 	});
 
-	it("submits through the integrated transport, records the result, and refreshes", async () => {
+	it("renders only the refreshed server lifecycle state after a mutation", async () => {
 		const transport: StaffCommandTransport = {
 			issueCorrection: vi.fn(async () => firstResult),
 			issueReset: vi.fn(),
+			readRecentCommands: vi
+				.fn()
+				.mockResolvedValueOnce([pending])
+				.mockResolvedValueOnce([
+					{
+						...pending,
+						status: "applied",
+						appliedAt: "2026-07-22T12:00:20.000Z",
+					},
+				]),
 		};
 		const onAccepted = vi.fn(async () => undefined);
 
 		function Harness() {
-			const commands = useStaffCommands({
-				transport,
-				onAccepted,
-			});
+			const commands = useStaffCommands({ transport, onAccepted });
 			return (
 				<button
 					type="button"
@@ -86,13 +86,31 @@ describe("useStaffCommands", () => {
 		}
 
 		await act(async () => root.render(<Harness />));
+		expect(container.textContent).toBe("pending");
 		await act(async () => container.querySelector("button")?.click());
 
 		expect(transport.issueCorrection).toHaveBeenCalledWith({
 			delta: 1,
 			reason: "Door recount",
 		});
-		expect(container.textContent).toBe("pending");
+		expect(transport.readRecentCommands).toHaveBeenCalledTimes(2);
+		expect(container.textContent).toBe("applied");
 		expect(onAccepted).toHaveBeenCalledOnce();
+	});
+
+	it("does not turn delivery metadata into a lifecycle status", async () => {
+		const transport: StaffCommandTransport = {
+			issueCorrection: vi.fn(),
+			issueReset: vi.fn(),
+			readRecentCommands: vi.fn(async () => [pending]),
+		};
+
+		function Harness() {
+			const commands = useStaffCommands({ transport });
+			return <output>{commands.history[0]?.status ?? "empty"}</output>;
+		}
+
+		await act(async () => root.render(<Harness />));
+		expect(container.textContent).toBe("pending");
 	});
 });

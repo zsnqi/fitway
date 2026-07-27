@@ -123,6 +123,12 @@ export function StaffCommandsPanel({
 	const resetCancelRef = useRef<HTMLButtonElement>(null);
 	const commands = useStaffCommands({ onAccepted: onRefresh });
 	const errorStatus = commandErrorStatus(commands.error);
+	const lastIssuedCommand =
+		commands.lastIssuedCommandId === null
+			? null
+			: (commands.history.find(
+					(command) => command.id === commands.lastIssuedCommandId,
+				) ?? null);
 
 	useEffect(() => {
 		if (errorStatus === 401) {
@@ -414,7 +420,15 @@ export function StaffCommandsPanel({
 						<span>{messages.historyDescription}</span>
 					</div>
 				</header>
-				{commands.history.length ? (
+				{commands.isHistoryLoading ? (
+					<p className="command-history__empty" role="status">
+						{messages.historyLoading}
+					</p>
+				) : commands.historyError ? (
+					<p className="command-history__empty" role="status">
+						{messages.historyUnavailable}
+					</p>
+				) : commands.history.length ? (
 					<ol>
 						{commands.history.map((command) => (
 							<li key={command.id} data-status={command.status}>
@@ -435,9 +449,7 @@ export function StaffCommandsPanel({
 									<span>{messages.statuses[command.status]}</span>
 									<small>
 										{messages.command}{" "}
-										<bdi>{formatNumber(command.id, locale)}</bdi> ·{" "}
-										{messages.audit}{" "}
-										<bdi>{formatNumber(command.auditId, locale)}</bdi>
+										<bdi>{formatNumber(command.id, locale)}</bdi>
 									</small>
 									{command.reason ? (
 										<small>
@@ -452,9 +464,9 @@ export function StaffCommandsPanel({
 					<p className="command-history__empty">{messages.historyEmpty}</p>
 				)}
 				<p className="fw-sr-only" role="status" aria-live="polite">
-					{commands.history[0]
+					{lastIssuedCommand
 						? messages.commandAccepted(
-								messages.statuses[commands.history[0].status],
+								messages.statuses[lastIssuedCommand.status],
 							)
 						: ""}
 				</p>

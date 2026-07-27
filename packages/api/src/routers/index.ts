@@ -5,6 +5,7 @@ import {
 	ownerDailyAnalyticsInputSchema,
 	ownerDailyAnalyticsOutputSchema,
 } from "../analytics/time-context";
+import { recentCommandsSchema } from "../commands/recent-commands";
 import {
 	commandMutationResultSchema,
 	correctionInputSchema,
@@ -78,6 +79,14 @@ const staffIssueReset = staffProcedure
 			requireCommandService(context).issueReset(context.auth, input),
 		),
 	);
+const staffRecentCommands = staffProcedure
+	.output(recentCommandsSchema)
+	.handler(({ context }) => {
+		if (!context.readRecentCommands) {
+			throw new ORPCError("INTERNAL_SERVER_ERROR");
+		}
+		return context.readRecentCommands();
+	});
 const adminSession = ownerProcedure.handler(({ context }) => context.auth);
 const adminDailyAnalytics = ownerProcedure
 	.input(ownerDailyAnalyticsInputSchema)
@@ -104,6 +113,7 @@ export const appRouter = {
 		operationalSnapshot: staffOperationalSnapshot,
 		issueCorrection: staffIssueCorrection,
 		issueReset: staffIssueReset,
+		recentCommands: staffRecentCommands,
 	},
 	admin: {
 		session: adminSession,

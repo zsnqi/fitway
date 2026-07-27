@@ -2,6 +2,7 @@ import type { AuthenticationResult, CanonicalAuthContext } from "@fitway/auth";
 import type { Context as HonoContext } from "hono";
 import type { DailyAnalytics } from "./analytics/daily-analytics";
 import type { AnalyticsTimeContext } from "./analytics/time-context";
+import type { RecentCommand } from "./commands/recent-commands";
 import type { CommandService } from "./commands/service";
 import type { OperationalSnapshot } from "./health/snapshot";
 
@@ -15,6 +16,7 @@ export type CreateContextOptions = {
 	readAnalyticsTimeContext: (
 		settingsVersions: readonly number[],
 	) => Promise<AnalyticsTimeContext>;
+	readRecentCommands: () => Promise<RecentCommand[]>;
 	commandService?: CommandService;
 };
 
@@ -30,6 +32,7 @@ export type Context = {
 	readAnalyticsTimeContext?: (
 		settingsVersions: readonly number[],
 	) => Promise<AnalyticsTimeContext>;
+	readRecentCommands?: () => Promise<RecentCommand[]>;
 	commandService?: CommandService;
 };
 
@@ -39,6 +42,7 @@ export async function createContext({
 	readOperationalSnapshot,
 	readDailyAnalytics,
 	readAnalyticsTimeContext,
+	readRecentCommands,
 	commandService,
 }: CreateContextOptions): Promise<Context> {
 	const result = await authenticate(context.req.header("Cookie"));
@@ -53,6 +57,7 @@ export async function createContext({
 		readOperationalSnapshot,
 		readDailyAnalytics,
 		readAnalyticsTimeContext,
+		readRecentCommands,
 		commandService,
 	};
 }

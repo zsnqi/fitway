@@ -109,6 +109,31 @@ function commandResult(options: {
 	};
 }
 
+function recentCommand(options: {
+	id: number;
+	targetValue: number | null;
+	status: "pending" | "applied" | "superseded";
+	type?: "set_count" | "reset_zero";
+	reason?: string | null;
+	deliveredAt?: string | null;
+	appliedAt?: string | null;
+	supersededAt?: string | null;
+	supersededByCommandId?: number | null;
+}) {
+	return {
+		id: options.id,
+		type: options.type ?? "set_count",
+		targetValue: options.targetValue,
+		status: options.status,
+		reason: options.reason ?? null,
+		issuedAt: "2026-07-22T12:00:10.000Z",
+		deliveredAt: options.deliveredAt ?? null,
+		appliedAt: options.appliedAt ?? null,
+		supersededAt: options.supersededAt ?? null,
+		supersededByCommandId: options.supersededByCommandId ?? null,
+	};
+}
+
 function rpcError(status: number, code: string, message: string) {
 	return {
 		json: {
@@ -152,20 +177,59 @@ function requestInput(pageData: unknown) {
 	return pageData;
 }
 
+test.beforeEach(async ({ page }) => {
+	await page.route("**/rpc/staff/recentCommands", (route) =>
+		route.fulfill({ status: 200, json: { json: [] } }),
+	);
+});
+
 test("step correction, floor-at-zero, direct entry, validation, and pending issuance stay honest", async ({
 	page,
 }) => {
 	await useEnglish(page);
 	await mockSession(page);
 	const correctionInputs: unknown[] = [];
+	let lifecycleRows: ReturnType<typeof recentCommand>[] = [];
 
 	await page.route("**/rpc/staff/operationalSnapshot", (route) =>
 		route.fulfill({ status: 200, json: { json: liveSnapshot } }),
+	);
+	await page.route("**/rpc/staff/recentCommands", (route) =>
+		route.fulfill({ status: 200, json: { json: lifecycleRows } }),
 	);
 	await page.route("**/rpc/staff/issueCorrection", async (route) => {
 		const input = requestInput(route.request().postDataJSON());
 		correctionInputs.push(input);
 		const isDirect = correctionInputs.length === 2;
+		lifecycleRows = isDirect
+			? [
+					recentCommand({
+						id: 42,
+						targetValue: 40,
+						status: "superseded",
+						reason: "Verified door count",
+						supersededAt: "2026-07-22T12:00:30.000Z",
+						supersededByCommandId: 43,
+					}),
+					recentCommand({
+						id: 41,
+						targetValue: 0,
+						status: "applied",
+						reason: "Empty-floor check",
+						deliveredAt: "2026-07-22T12:00:15.000Z",
+						appliedAt: "2026-07-22T12:00:20.000Z",
+					}),
+				]
+			: [
+					recentCommand({
+						id: 41,
+						targetValue: 0,
+						status: "applied",
+						reason: "Empty-floor check",
+						deliveredAt: "2026-07-22T12:00:15.000Z",
+						appliedAt: "2026-07-22T12:00:20.000Z",
+					}),
+				];
 		await route.fulfill({
 			status: 200,
 			json: {
@@ -196,7 +260,7 @@ test("step correction, floor-at-zero, direct entry, validation, and pending issu
 		.fill(" Empty-floor check ");
 	await page.getByRole("button", { name: "Apply adjustment" }).click();
 	await expect(
-		page.getByText("Waiting for edge application", { exact: true }),
+		page.getByText("Applied by the edge", { exact: true }),
 	).toBeVisible();
 	await expect(page.getByText("Set count to 0")).toBeVisible();
 
@@ -218,15 +282,23 @@ test("step correction, floor-at-zero, direct entry, validation, and pending issu
 		{ absolute: 40, reason: "Verified door count" },
 	]);
 	await expect(
-		page.getByText("Waiting for edge application", { exact: true }),
-	).toHaveCount(2);
-	await expect(
-		page.getByText("Applied by the edge", { exact: true }),
+		page.locator(".command-history li", {
+			hasText: "Waiting for edge application",
+		}),
 	).toHaveCount(0);
-	await expect(page.getByText("Superseded by a newer command")).toHaveCount(0);
+	await expect(
+		page.locator(".command-history li", { hasText: "Applied by the edge" }),
+	).toHaveCount(1);
+	await expect(
+		page.locator(".command-history li", {
+			hasText: "Superseded by a newer command",
+		}),
+	).toHaveCount(1);
 	await expect(page.getByText("Set count to 40")).toBeVisible();
 	await expect(
-		page.getByText("Later lifecycle updates require server status data"),
+		page.getByText(
+			"Status is read from the server. Delivery time is metadata, not a lifecycle state.",
+		),
 	).toBeVisible();
 	await captureReview(page, "staff-commands-lifecycle-en-1440.png");
 });
@@ -240,8 +312,20 @@ test("unavailable state disables delta but preserves validated direct-set", asyn
 		route.fulfill({ status: 200, json: { json: unavailableSnapshot } }),
 	);
 	let directInput: unknown = null;
+	let lifecycleRows: ReturnType<typeof recentCommand>[] = [];
+	await page.route("**/rpc/staff/recentCommands", (route) =>
+		route.fulfill({ status: 200, json: { json: lifecycleRows } }),
+	);
 	await page.route("**/rpc/staff/issueCorrection", async (route) => {
 		directInput = requestInput(route.request().postDataJSON());
+		lifecycleRows = [
+			recentCommand({
+				id: 51,
+				targetValue: 12,
+				status: "pending",
+				deliveredAt: "2026-07-22T12:00:15.000Z",
+			}),
+		];
 		await route.fulfill({
 			status: 200,
 			json: { json: commandResult({ id: 51, targetValue: 12 }) },
@@ -330,8 +414,21 @@ test("reset requires modal confirmation, traps focus, closes on Escape, restores
 		route.fulfill({ status: 200, json: { json: liveSnapshot } }),
 	);
 	const resetInputs: unknown[] = [];
+	let lifecycleRows: ReturnType<typeof recentCommand>[] = [];
+	await page.route("**/rpc/staff/recentCommands", (route) =>
+		route.fulfill({ status: 200, json: { json: lifecycleRows } }),
+	);
 	await page.route("**/rpc/staff/issueReset", async (route) => {
 		resetInputs.push(requestInput(route.request().postDataJSON()));
+		lifecycleRows = [
+			recentCommand({
+				id: 61,
+				type: "reset_zero",
+				targetValue: null,
+				status: "pending",
+				reason: "Closing verification",
+			}),
+		];
 		await route.fulfill({
 			status: 200,
 			json: {
@@ -428,6 +525,36 @@ test("Arabic RTL and English LTR are accessible and recompose at every required 
 	await mockSession(page);
 	await page.route("**/rpc/staff/operationalSnapshot", (route) =>
 		route.fulfill({ status: 200, json: { json: liveSnapshot } }),
+	);
+	await page.route("**/rpc/staff/recentCommands", (route) =>
+		route.fulfill({
+			status: 200,
+			json: {
+				json: [
+					recentCommand({
+						id: 73,
+						targetValue: 39,
+						status: "pending",
+						deliveredAt: "2026-07-22T12:00:15.000Z",
+					}),
+					recentCommand({
+						id: 72,
+						targetValue: 38,
+						status: "superseded",
+						supersededAt: "2026-07-22T12:00:20.000Z",
+						supersededByCommandId: 73,
+					}),
+					recentCommand({
+						id: 71,
+						type: "reset_zero",
+						targetValue: null,
+						status: "applied",
+						deliveredAt: "2026-07-22T12:00:05.000Z",
+						appliedAt: "2026-07-22T12:00:10.000Z",
+					}),
+				],
+			},
+		}),
 	);
 	await page.goto("/staff");
 	await expect(page.locator("html")).toHaveAttribute("dir", "rtl");

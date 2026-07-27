@@ -47,10 +47,13 @@ const en = {
 	cancel: "Cancel",
 	confirmReset: "Queue reset",
 	historyEyebrow: "Command lifecycle",
-	historyTitle: "Commands from this visit",
+	historyTitle: "Recent command lifecycle",
 	historyDescription:
-		"Recent issuance results remain while this page is open. Later lifecycle updates require server status data.",
-	historyEmpty: "No command has been sent from this page yet.",
+		"Status is read from the server. Delivery time is metadata, not a lifecycle state.",
+	historyEmpty: "No recent commands are available.",
+	historyLoading: "Loading recent command lifecycle…",
+	historyUnavailable:
+		"Recent command lifecycle could not be loaded. Status is unavailable until the server responds.",
 	statuses: {
 		pending: "Waiting for edge application",
 		applied: "Applied by the edge",
@@ -59,7 +62,6 @@ const en = {
 	setTo: "Set count to",
 	resetToZero: "Reset count to 0",
 	command: "Command",
-	audit: "Audit",
 	reason: "Reason",
 	commandAccepted: (status: string) => `Command ${status}.`,
 	badRequest:
@@ -114,10 +116,13 @@ const ar: StaffCommandMessages = {
 	cancel: "إلغاء",
 	confirmReset: "وضع أمر إعادة الضبط",
 	historyEyebrow: "دورة حياة الأمر",
-	historyTitle: "أوامر هذه الزيارة",
+	historyTitle: "دورة حياة الأوامر الأخيرة",
 	historyDescription:
-		"تبقى نتائج الإصدار الأخيرة ما دامت الصفحة مفتوحة. تتطلب تحديثات دورة الحياة اللاحقة بيانات حالة من الخادم.",
-	historyEmpty: "لم يُرسل أي أمر من هذه الصفحة بعد.",
+		"تُقرأ الحالة من الخادم. وقت التسليم بيانات وليس حالة في دورة الحياة.",
+	historyEmpty: "لا توجد أوامر أخيرة متاحة.",
+	historyLoading: "جارٍ تحميل دورة حياة الأوامر الأخيرة…",
+	historyUnavailable:
+		"تعذر تحميل دورة حياة الأوامر الأخيرة. الحالة غير متاحة حتى يستجيب الخادم.",
 	statuses: {
 		pending: "بانتظار تطبيق جهاز العد",
 		applied: "طبّقه جهاز العد",
@@ -126,7 +131,6 @@ const ar: StaffCommandMessages = {
 	setTo: "تعيين العدد إلى",
 	resetToZero: "إعادة ضبط العدد إلى 0",
 	command: "الأمر",
-	audit: "سجل التدقيق",
 	reason: "السبب",
 	commandAccepted: (status: string) => `حالة الأمر: ${status}.`,
 	badRequest:

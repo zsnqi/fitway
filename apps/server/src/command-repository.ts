@@ -3,6 +3,7 @@ import {
 	type CommandQueueRepository,
 	createCommandQueue,
 } from "@fitway/api/commands/queue";
+import type { RecentCommand } from "@fitway/api/commands/recent-commands";
 import type { DeviceCommand } from "@fitway/api/commands/schemas";
 import {
 	type CommandIssuanceTransaction,
@@ -10,7 +11,7 @@ import {
 } from "@fitway/api/commands/service";
 import { db } from "@fitway/db";
 import { edgeCommands } from "@fitway/db/schema/application";
-import { and, asc, eq, lt, lte, sql } from "drizzle-orm";
+import { and, asc, desc, eq, lt, lte, sql } from "drizzle-orm";
 import { appendAuditEntry } from "./audit-repository";
 
 type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
@@ -201,3 +202,33 @@ export function createCommandServiceDatabase(
 }
 
 export const commandService = createCommandServiceDatabase(db);
+
+export function createRecentCommandReaderDatabase(database: Database) {
+	return async (): Promise<RecentCommand[]> => {
+		const rows = await database
+			.select({
+				id: edgeCommands.id,
+				type: edgeCommands.type,
+				targetValue: edgeCommands.targetValue,
+				status: edgeCommands.status,
+				reason: edgeCommands.reason,
+				issuedAt: edgeCommands.issuedAt,
+				deliveredAt: edgeCommands.deliveredAt,
+				appliedAt: edgeCommands.appliedAt,
+				supersededAt: edgeCommands.supersededAt,
+				supersededByCommandId: edgeCommands.supersededByCommandId,
+			})
+			.from(edgeCommands)
+			.orderBy(desc(edgeCommands.id))
+			.limit(4);
+		return rows.map((row) => ({
+			...row,
+			issuedAt: row.issuedAt.toISOString(),
+			deliveredAt: row.deliveredAt?.toISOString() ?? null,
+			appliedAt: row.appliedAt?.toISOString() ?? null,
+			supersededAt: row.supersededAt?.toISOString() ?? null,
+		}));
+	};
+}
+
+export const readRecentCommands = createRecentCommandReaderDatabase(db);
