@@ -64,13 +64,17 @@ None of these is resolved here. Each belongs to a later bounded slice.
    `scripts/verify.mjs` lists no `integrationFiles` for the slice, so
    `apps/server/src/phase5-staff-recent-commands.integration.test.ts` runs only when invoked
    directly. Recorded in the blocked handoff and still true.
-4. **Whether the approved Paper Staff family omits command controls.** The archived surface
-   inventory asserts a commands panel and reset confirmation dialog are "never to be built".
-   `SPEC.md` story 14 and its correction/reset contracts, `PHASES.md` Phase 5,
-   `DESIGN_GUIDE.md` §11, and the integrated `phase5-command-domain` all say otherwise, so the
-   document loses. But if the approved Paper Staff production genuinely has no command surface,
-   that is a real Paper-versus-Spec product conflict and therefore `NEEDS_HUMAN`. No Paper
-   inspection was performed in this session.
+4. ~~**Whether the approved Paper Staff family omits command controls.**~~ **Resolved
+   2026-08-06 by product decision.** `/staff` is monitoring-only. The approved Paper family
+   `STAFF MONITORING PRODUCTION SET — CURRENT` is complete for the intended scope and its
+   omission of command controls is deliberate. There is to be no staff-facing command centre,
+   reset control, reset confirmation dialog, or other staff-triggered operational command UI.
+   The command system itself is not cancelled: backend, edge, scheduled, recovery, and internal
+   command infrastructure remain wherever a behavioral contract or later phase requires them.
+   This makes `SPEC.md` stories 12–14 and 17, `FITWAY_PRODUCT.md`, `PHASES.md` Phases 5 and 6,
+   `DESIGN_GUIDE.md` §11, and `ADR-003`'s manual-fallback clause a locked-Spec change that the
+   next slice must absorb. Assessment, buckets, and plan:
+   [the monitoring-only reconciliation plan](handoffs/phase5-staff-ui/20260806-155000-p5_staff_monitoring_only-plan.md).
 5. **The per-surface Paper-versus-`DESIGN_GUIDE.md` conflict list does not exist.** ADR-007
    records the authority order, not a diff. Establishing which guide sections, tokens, or
    manifest entries an approved Paper family materially conflicts with is implementation-phase
