@@ -69,8 +69,12 @@ None of these is resolved here. Each belongs to a later bounded slice.
    `STAFF MONITORING PRODUCTION SET — CURRENT` is complete for the intended scope and its
    omission of command controls is deliberate. There is to be no staff-facing command centre,
    reset control, reset confirmation dialog, or other staff-triggered operational command UI.
-   The command system itself is not cancelled: backend, edge, scheduled, recovery, and internal
-   command infrastructure remain wherever a behavioral contract or later phase requires them.
+   The two integrated mutation endpoints `staff.issueCorrection` and `staff.issueReset` are
+   authorized for retirement — they must not remain as authenticated product mutations with no
+   caller — and no owner/admin command surface may replace them. Phase 6 must introduce no
+   staff-facing manual fallback. The command system itself is not cancelled: backend, edge,
+   scheduled, recovery, reconciliation, audit, and internal command infrastructure remain
+   wherever a behavioral contract or later phase requires them.
    This makes `SPEC.md` stories 12–14 and 17, `FITWAY_PRODUCT.md`, `PHASES.md` Phases 5 and 6,
    `DESIGN_GUIDE.md` §11, and `ADR-003`'s manual-fallback clause a locked-Spec change that the
    next slice must absorb. Assessment, buckets, and plan:

@@ -1,224 +1,228 @@
-# phase5-staff-ui — monitoring-only reconciliation plan
+# phase5-staff-ui — monitoring-only closeout slice
 
-- Status: `NEEDS_HUMAN` resolved; plan only, nothing implemented
-- Date: 2026-08-06
+- Status: decisions confirmed; plan only, nothing implemented
+- Written 2026-08-06 15:50; **revised 2026-08-06 16:15** after Hussein confirmed the six
+  decisions below. The earlier draft offered three options for the mutation endpoints; option A
+  is now authorized. Prior version recoverable at commit `6611c4b`.
 - Branch / worktree: `work/phase5-staff-ui-b03-retry` /
   `D:/Projects/fitway-worktrees/phase5-staff-ui-retry`
-- Supersedes for planning purposes:
-  [the human visual verdict](20260727-230622-p5_staff_b03_retry-human-visual-verdict.md)
 - Related: [closeout record](../../paper-design-phase-closeout.md),
-  [ADR-007](../../../adr/ADR-007-paper-visual-source-of-truth.md)
+  [ADR-007](../../../adr/ADR-007-paper-visual-source-of-truth.md),
+  [human visual verdict](20260727-230622-p5_staff_b03_retry-human-visual-verdict.md)
 
-## Product decision
+## Confirmed product decisions
 
-`/staff` is **monitoring-only**. The approved Paper family
-`STAFF MONITORING PRODUCTION SET — CURRENT` is complete for the intended scope; its omission of
-command controls is deliberate. There must be no staff-facing command centre, reset control,
-reset confirmation dialog, or other staff-triggered operational command UI.
+1. `/staff` is **permanently monitoring-only**.
+2. Retire both staff-facing mutation endpoints, `staff.issueCorrection` and `staff.issueReset`.
+   They must not remain as authenticated product mutations with no caller.
+3. Preserve backend, edge, scheduled, recovery, reconciliation, audit, and internal command
+   infrastructure wherever an existing behavioral contract or a later phase still needs it.
+4. Phase 6 must not introduce a staff-facing manual fallback or any new staff/owner command UI.
+   Automatic offline fallback, backfill, reconciliation, and recovery behavior are preserved.
+5. Do not invent an owner/admin command surface to replace the retired staff controls.
+6. Do not alter the frozen `operationalSnapshotSchema.source` enum during this slice. Record
+   `manual` for review in its owning future slice (Phase 6) and remove it only after confirming
+   no valid internal producer remains.
 
-The command **system** is not cancelled. Backend, edge, scheduled, recovery, and internal command
-infrastructure stay wherever an existing behavioral contract or a later phase still needs them.
-
-This closes open question 4 in the closeout record. It is a locked-Spec change, so it is a
-product decision the repository must now absorb — not a cleanup.
-
-## The finding that shapes everything
+## Ground truth
 
 **The staff command UI was never merged.** Verified with `git cat-file -e main:<path>`:
 
 | Path | On `main` |
 | --- | --- |
-| `apps/web/src/components/staff/commands/staff-commands-panel.tsx` | no — branch only |
-| `apps/web/src/hooks/use-staff-commands.ts` | no — branch only |
-| `tests/browser/phase5-staff-ui.browser.spec.ts` | no — branch only |
-| `packages/api/src/commands/recent-commands.ts` | no — branch only |
-| `apps/server/src/command-repository.ts` | **yes** |
+| `staff-commands-panel.tsx`, `commands.css`, commands `messages.ts`, `validation.ts` | no |
+| `use-staff-commands.ts`, `use-staff-commands.test.tsx` | no |
+| `tests/browser/phase5-staff-ui.browser.spec.ts` | no |
+| `packages/api/src/commands/recent-commands.ts` and the `staff.recentCommands` leaf | no |
+| `apps/server/src/command-repository.ts`, `CommandService`, migration `0005` | **yes** |
 | `staff.issueCorrection`, `staff.issueReset` in `appRouter` | **yes** |
 
-`main`'s `/staff` route imports no command component. So there is nothing to retire from the
-integrated product at the UI layer. The task is to **not merge** five implementation commits, to
-decide the fate of two already-integrated oRPC procedures, and to bring the normative documents
-into line.
+`main`'s `/staff` imports no command component and `apps/web` on `main` contains zero references
+to either mutation. So nothing is deleted from the running UI — the UI work is excluded by not
+merging, and the only code retirement is the two integrated oRPC leaves.
 
-## Bucket 1 — staff-facing command UI to exclude
+Also verified: every `command` reference in `apps/server/src/openapi.ts` and `openapi.test.ts`
+describes the **edge push response** (command delivery to the device). The OpenAPI document never
+exposed the staff mutations. It is untouched by this slice.
 
-All branch-only, all on `work/phase5-staff-ui-b03-retry`, none on `main`. Excluded by not
-merging; nothing is deleted from `main` because nothing is there.
+## The slice
 
-- `apps/web/src/components/staff/commands/staff-commands-panel.tsx` (530 lines)
-- `apps/web/src/components/staff/commands/commands.css` (461 lines; owns `.command-page-layout`)
-- `apps/web/src/components/staff/commands/messages.ts`
-- `apps/web/src/components/staff/commands/validation.ts`, `validation.test.ts`
-- `apps/web/src/hooks/use-staff-commands.ts`, `use-staff-commands.test.tsx`
-- `tests/browser/phase5-staff-ui.browser.spec.ts` — all seven scenarios exercise the command
-  surface, including the reset confirmation dialog
-- `apps/web/src/routes/staff.tsx` lines 4, 56, 58–66 — the import, the `command-page-layout`
-  wrapper, and the panel mount
+Sequenced so nothing is ever half-true. Each step is one commit.
 
-## Bucket 2 — shared and internal command infrastructure that stays
+### Step 0 — land the documentation commits on `main`
 
-Integrated, `phase5-command-domain` is `DONE`, and each is required by a live contract or a
-later phase. Do not touch.
+Cherry-pick, in order, onto `main`: `c735a77`, `f212bc1`, `9b31486`, `6611c4b`, and this
+revision's commit. **Do not merge the branch** — the five implementation commits share it.
+`c735a77` also fixes `main`'s expired-lease failure, so `pnpm check:repository` goes green there.
 
-- `packages/api/src/commands/{queue,schemas,service}.ts` and their tests — `CommandService`
-  is the issuance seam Phase 7's scheduled reset needs
-- `packages/api/src/edge-push.ts`, `apps/server/src/edge-push.ts` — command delivery and
-  acknowledgement
-- `apps/server/src/command-repository.ts`, `apps/server/src/audit-repository.ts`
-- `packages/db` `edge_commands` schema and migration `0005` — never re-generate
-- `edge/simulator.py`, `edge/fixtures/{push,acknowledgement}.json`
-- `packages/api/src/occupancy/engine.ts` command application
-- ADR-003's command lifecycle: durable, monotonic, auditable, supersession, apply-before-live
-  on reconnect
+### Step 1 — coordinator activation (`PROJECT_STATE.yaml` only)
 
-`SPEC.md:349` already models `system` as the issuer for scheduled resets, and `SPEC.md:518-519`
-and `571` put the daily zero-reset on the internal cron endpoint (`CRON_SECRET`), not on any
-staff procedure. The scheduled path therefore never depended on the staff UI.
+Redefine `phase5-staff-ui`: scope becomes "retire the staff command surface and align `/staff`
+with monitoring-only"; new `ownedPaths` covering steps 2–4; `sharedLeases` for every
+coordinator-owned file listed under Leases; fresh lease; `baseCommit` at the step-0 head;
+`handoff` repointed at this file. The milestone cannot be deleted — `phase-5` depends on it and
+the schema has no cancelled state.
 
-## Bucket 3 — the one consequential decision: `staff.issueCorrection` and `staff.issueReset`
+### Step 2 — product and authority, in one commit
 
-These are **on `main`**, integrated under a `DONE` milestone, and
-`staffProcedure = publicProcedure.use(requireAuth)` — reachable by any authenticated principal,
-staff or owner. With no UI they become an authenticated mutation capability with no product
-caller. That is a security-surface question, not tidiness.
+Writing ADR-008 alone would recreate the split authority the 2026-08-06 reconciliation removed:
+an ADR saying monitoring-only while `SPEC.md` story 14 still requires a staff reset dialog. These
+land together or not at all. That is why this handoff, not an ADR, carried the decision across
+the session boundary.
 
-Verified: nothing else calls them. `CommandService.issueCorrection`/`issueReset` (the service,
-bucket 2) is the seam the cron will use; the oRPC leaves are a UI transport only.
+- **New `docs/adr/ADR-008-staff-monitoring-only.md`** — records decisions 1–6, the retirement of
+  the two leaves, the Phase 6 constraint, and the explicit prohibition on an owner/admin
+  replacement surface. Add the row to `docs/adr/README.md`.
+- **`docs/adr/ADR-003-edge-authority-and-reconciliation.md`** — lines 23–25 record explicit staff
+  manual fallback as a *decision*. Add a partial-supersession note pointing at ADR-008, in the
+  same style as ADR-006→ADR-007, and preserve the decision body unedited. Line 32's "Scheduled
+  resets use the same command and audit lifecycle as human operations" needs rewording: there are
+  no human operations left.
+- **`FITWAY_PRODUCT.md:14`** — staff row: "correct, directly set, or reset the count when needed".
+  Line 15 gives the owner "staff operations plus…", which under decision 5 must not be read as an
+  owner command surface.
+- **`SPEC.md`** — the product-summary staff bullet; stories **12, 13, 14, 17**; story **33**'s
+  "so that staff corrections reach my local counter"; the acceptance criterion "Staff view
+  provides live count + health, stepper correction, direct count entry, and confirmed reset";
+  the **Correction propagation** timing criterion, which measures a staff correction reaching the
+  public payload and now has no trigger; and "Manual fallback works when the edge is offline"
+  under decision 4.
+- **`PHASES.md`** — Phase 5 acceptance drops "pending/applied/superseded UI"; Phase 6 changes
+  "staff manual fallback with its own validity window" to automatic offline fallback, and gains
+  the decision-6 review item for `operationalSnapshotSchema.source`'s `manual` value.
+- **`DESIGN_GUIDE.md`** — §2 "actions placed near their consequences, and destructive actions
+  deliberately separated" and §11:229 "A staff correction shows pending/application state. A
+  reset requires a confirmation dialog."
 
-| Option | Effect | Cost |
-| --- | --- | --- |
-| **A. Retire both leaves** | Removes the only staff-triggered command capability from the running product. `CommandService` untouched. | Contract change to a `DONE` milestone: `packages/api/src/routers/index.ts`, `commands/router.test.ts`, `phase5-command-domain.integration.test.ts`, and the Phase 5 acceptance line |
-| **B. Keep, restrict to owner** | Retains an emergency correction path behind `ownerProcedure`. | Still contradicts "no staff-triggered command UI" only partially — it is an owner capability with no surface, and `FITWAY_PRODUCT.md:14` gives the owner staff operations |
-| **C. Keep as-is** | No code change now. | Leaves an authenticated, unreachable mutation endpoint indefinitely; the audit model still labels it a human action |
+### Step 3 — retire the two endpoints
 
-**Recommended: A.** It is the only option that makes the running product match the decision. B
-preserves an undesigned capability that no approved Paper family exposes, and would need its own
-product decision. C is the status quo the decision exists to end. If Hussein wants an emergency
-correction path, that is a new, designed surface — not a leftover endpoint.
+- `packages/api/src/routers/index.ts` — remove `staffIssueCorrection`, `staffIssueReset`, both
+  `appRouter.staff` entries, and the now-dead `requireCommandService` and `handleCommandIssue`
+  helpers plus their imports (`commandMutationResultSchema`, `correctionInputSchema`,
+  `resetInputSchema`, `CommandService`, `CommandIssueError`).
+- `packages/api/src/context.ts` — remove the `commandService` field from `CreateContextOptions`
+  and `Context`. Nothing in the oRPC layer will use it, and leaving an optional injected service
+  is a standing re-exposure path. (Alternative if contested: keep the field. It is inert. But
+  removal is the honest expression of the decision.)
+- `apps/server/src/index.ts:123` — drop the `commandService` argument from `createContext`.
+- `apps/server/src/command-repository.ts` — **keep** `createCommandServiceDatabase` and the
+  exported `commandService` singleton. Phase 7's cron route calls it directly; `SPEC.md:312`
+  puts cron endpoints in the Hono app, and `SPEC.md:518-519` and `571` put the daily zero-reset
+  there, so it never needed the oRPC path.
+- `packages/api/src/commands/router.test.ts` — delete. Its entire subject is the two leaves; its
+  unique coverage (role enforcement, `CommandIssueError` → `BAD_REQUEST`) describes endpoints that
+  no longer exist.
 
-**A needs Hussein's explicit confirmation before the slice starts.** It changes an integrated
-contract.
+### Step 4 — re-prove the command domain, then land the salvage
 
-## Bucket 4 — normative documents that now misdescribe the product
+**This is the material risk.** `phase5-command-domain` is `DONE` with `integration: PASS`, and
+`apps/server/src/phase5-command-domain.integration.test.ts` drives three of its four `it` blocks
+through `rpc("issueCorrection" | "issueReset", …)`. Removing the endpoints removes that test's
+current means of exercising the lifecycle — which is the acceptance evidence for a completed
+milestone.
 
-Each must change; none may change alone.
+Rewrite issuance to call `commandService.issueCorrection(actor, …)` / `issueReset` directly
+against the disposable database, constructing a `CommandActor`. The fourth block already does
+this at line 505, so the pattern exists in the file.
 
-- `FITWAY_PRODUCT.md:14` — staff row: "correct, directly set, or reset the count when needed"
-- `SPEC.md` — the product-summary staff bullet; stories **12, 13, 14, 17**; the acceptance
-  criterion "Staff view provides live count + health, stepper correction, direct count entry,
-  and confirmed reset"; the **Correction propagation** timing criterion, which measures a staff
-  correction reaching the public payload; story **33**'s "so that staff corrections reach my
-  local counter" wording
-- `PHASES.md` Phase 5 acceptance — "pending/applied/superseded UI"
-- `DESIGN_GUIDE.md` §2 ("actions placed near their consequences, and destructive actions
-  deliberately separated") and §11:229 ("A staff correction shows pending/application state. A
-  reset requires a confirmation dialog.")
-- `docs/adr/ADR-003-edge-authority-and-reconciliation.md:23-25` — the staff manual fallback
-  clause
+- `enforces authorization and strict correction/reset/backfill-shaped validation` — the command
+  authorization and validation halves describe removed endpoints; the backfill half stays.
+  Do not silently drop coverage: state in the phase record what stopped being provable because
+  the surface no longer exists.
+- `atomically issues monotonic commands, floors delta, supersedes latest-only, and preserves
+  cloud current state` — swap issuance to direct service calls; assertions unchanged.
+- `delivers latest-only and advances lifecycle only on eligible accepted acknowledgements` —
+  swap issuance; the edge delivery/ack half, which is the valuable part, is unchanged.
+- `rolls back command, supersession, and audit together when audit append fails` — unaffected.
 
-### Phase 6 is the largest downstream consequence
+**`scripts/verify.mjs`** — the `phase5-staff-ui` profile registers
+`browserFiles: ["tests/browser/phase5-staff-ui.browser.spec.ts"]`, which **does not exist on
+`main`**. It is latently broken today and the spec will now never land. Repoint the profile at
+`tests/browser/phase4-staff-web.browser.spec.ts`, which is `main`'s monitoring coverage for
+`/staff`, or empty `browserFiles`. Also fix the pre-existing `verify:fast` blocker:
+`apps/server/src/command-repository.test.ts` imports `packages/db` at module scope, so
+`packages/env` throws without `DATABASE_URL` (passes under `SKIP_ENV_VALIDATION=1`).
 
-`PHASES.md` Phase 6 delivers "staff manual fallback with its own validity window", and
-ADR-003:23-25 records it as a **decision**: when the edge is unavailable, explicit staff manual
-fallback may temporarily set current state with `source=manual` while creating the command the
-edge later applies. Monitoring-only removes the staff trigger for that path, so Phase 6's scope
-shrinks materially. `SPEC.md` also asserts "Manual fallback works when the edge is offline and
-reconciles on reconnect."
+Then land the salvage from `6cc6d6a`, which answered the recorded human visual verdict and is
+monitoring and login work that survives the decision:
 
-Consequently `operationalSnapshotSchema.source: z.enum(["edge","manual"]).nullable()`
-(`packages/api/src/health/snapshot.ts`, `.strict()`) may lose its reachable `manual` value.
-**Do not touch that enum in this slice.** It is a frozen contract the staff lease explicitly
-excludes, and the monitoring view rendering `manual` is harmless. It is a Phase 6 question.
-
-Whether Phase 6 keeps a non-staff fallback, or drops fallback entirely, is a **separate product
-decision** and is not settled by this handoff.
-
-## Bucket 5 — monitoring and login work to salvage
-
-Commit `6cc6d6a` answered the recorded human visual verdict. Most of it is monitoring and login
-work that survives the decision and should reach `main`.
-
-Carries forward:
-
-- `apps/web/src/components/staff/staff.css` — zero `command` selectors; the diff is login
-  watermark pinning, the login skip-link fix, card lighting, and monitoring layout. Imported by
-  `staff-shell.tsx` and `login.tsx`.
+- `apps/web/src/components/staff/staff.css` — zero `command` selectors; login watermark pinning,
+  the login skip-link fix, card lighting, monitoring layout. Imported by `staff-shell.tsx` and
+  `login.tsx`.
 - `apps/web/src/components/staff/operational-snapshot-view.tsx` — drops the decorative
-  `HeartPulse`, the `schemaVersion` row, and the always-"now" computed line
-- `apps/web/src/components/staff/messages.ts` — the matching type removals
+  `HeartPulse`, the `schemaVersion` row, and the always-"now" computed line.
+- `apps/web/src/components/staff/messages.ts` — the matching type removals.
 - `apps/web/src/i18n/messages/{ar,en}.ts` — login copy, `جهاز العد` terminology, and the removed
-  `computed`/`schemaVersion` keys
+  `computed`/`schemaVersion` keys.
+- **Must change again:** `staff.description` now reads "Occupancy, device health, and count
+  controls in one view." / "الإشغال وحالة الجهاز وأدوات ضبط العدد في عرض واحد." That is the one
+  place the monitoring surface advertises commands. Revert to monitoring-only wording; the
+  pre-`6cc6d6a` string was already correct in both catalogs.
 
-**Must be changed again:** `staff.description` in both catalogs now reads "Occupancy, device
-health, and count controls in one view." / "الإشغال وحالة الجهاز وأدوات ضبط العدد في عرض واحد."
-That is the one place the monitoring surface advertises commands. Revert to monitoring-only
-wording; the pre-`6cc6d6a` string was already correct.
+Do **not** carry over `staff.tsx`'s command import, the `command-page-layout` wrapper, or the
+panel mount (lines 4, 56, 58–66 on the branch). `.command-page-layout` is defined only in
+`commands.css`, which is imported only by the panel, so both disappear together.
 
-This also settles most of the decision-8 question about the five files outside `ownedPaths`
-(`staff/messages.ts`, `operational-snapshot-view.tsx`, `staff.css`, `i18n/messages/ar.ts`,
-`i18n/messages/en.ts`): four of the five are named in `forbiddenPaths`, but their content is
-monitoring and login work that is still wanted. They need a lease, not reversal.
+## Must not change
 
-## Proposed next slice
+`packages/api/src/commands/{queue,schemas,service}.ts` and their tests · `CommandService` ·
+`packages/api/src/edge-push.ts` and `apps/server/src/edge-push.ts` · `apps/server/src/audit-repository.ts` ·
+`packages/db` `edge_commands` schema and migration `0005` (never re-generate) ·
+`edge/simulator.py` and its fixtures · `packages/api/src/occupancy/engine.ts` command
+application · `apps/server/src/openapi.ts` · ADR-003's lifecycle rules (durable, monotonic,
+auditable, supersession, apply-before-live on reconnect) ·
+`operationalSnapshotSchema.source` (decision 6) · Paper.
 
-**Outcome:** `/staff` is monitoring-only in code and in every normative document, Phase 5 can
-close, and the command system remains intact for Phases 6, 7, and 12.
+`CommandActor` and `HumanAuditEntry` model only `shared_staff | owner`, and after retirement no
+human issues commands. `SPEC.md:349` already names `system` as the scheduled-reset issuer.
+Extending the actor model is **Phase 7** work — do not start it here, and do not delete the human
+actor types, which the rewritten integration test still uses to prove lifecycle mechanics.
 
-Smallest safe shape — one slice, three ordered commits, no UI implementation:
-
-1. **Coordinator activation.** Redefine `phase5-staff-ui` in `PROJECT_STATE.yaml`: scope becomes
-   "retire the staff command surface and align `/staff` with the approved Paper monitoring
-   family", new `ownedPaths`, fresh lease, `handoff` repointed at this file. The milestone cannot
-   be deleted — `phase-5` depends on it, and the schema has no cancelled state.
-2. **Product and authority.** Write **ADR-008** (monitoring-only `/staff`) **together with** the
-   `FITWAY_PRODUCT.md`, `SPEC.md`, `PHASES.md`, `DESIGN_GUIDE.md`, and `ADR-003` amendments in
-   bucket 4, in one commit. Writing ADR-008 alone would recreate exactly the split-authority
-   state the 2026-08-06 reconciliation removed — an ADR saying one thing while `SPEC.md` story 14
-   says another. This is why this handoff, not an ADR, carries the decision across the session
-   boundary.
-3. **Code.** Option A if confirmed: remove the two oRPC leaves and their tests. Land the bucket-5
-   salvage with the `staff.description` correction. Leave `staff.tsx` as monitoring-only.
-
-**Do not** merge the command UI, redesign the Staff Monitoring family, touch Paper, regenerate
-migration `0005`, change the operational-snapshot schema, or delete the branch.
-
-### Coordinator-owned files requiring a lease
+## Leases
 
 - `PROJECT_STATE.yaml` — coordinator-only; step 1
-- `FITWAY_PRODUCT.md`, `SPEC.md`, `PHASES.md` — normative; a locked-product change, so
-  human-approved
+- `FITWAY_PRODUCT.md`, `SPEC.md`, `PHASES.md` — normative; locked-product change, human-approved
 - `DESIGN_GUIDE.md`, `docs/adr/**` — visual contract and decision records
-- `packages/api/src/routers/index.ts`, `packages/api/src/commands/router.test.ts`,
-  `apps/server/src/phase5-command-domain.integration.test.ts` — belong to the `DONE`
-  `phase5-command-domain` milestone; option A needs an explicit shared lease
+- `packages/api/src/routers/index.ts`, `packages/api/src/context.ts`,
+  `packages/api/src/commands/router.test.ts`, `apps/server/src/index.ts`,
+  `apps/server/src/phase5-command-domain.integration.test.ts` — all belong to the `DONE`
+  `phase5-command-domain` milestone; explicit shared lease required
+- `scripts/verify.mjs` — named in `phase5-staff-ui`'s `forbiddenPaths`; explicit lease
 - `apps/web/src/i18n/messages/**`, `apps/web/src/components/staff/{staff.css,messages.ts}`,
-  `operational-snapshot-view.tsx` — shared catalogs and shell styles; explicit lease
+  `apps/web/src/components/staff/operational-snapshot-view.tsx` — shared catalogs and shell
+  styles; four of these five are in `forbiddenPaths`. Their content is wanted, so they need a
+  lease, not reversal. This resolves the decision-8 question the closeout record preserved.
 
-### Validation
+## Validation
 
-- `pnpm check:repository`
-- `pnpm verify:fast` — **currently red** on a pre-existing blocker:
-  `apps/server/src/command-repository.test.ts` imports `packages/db` at module scope, so
-  `packages/env` throws without `DATABASE_URL`. Passes under `SKIP_ENV_VALIDATION=1`. Fix this
-  first; `verify:fast` cannot be a gate until it is green.
-- `pnpm verify:phase --phase phase5-staff-ui` — the profile registers no `integrationFiles`, so
-  `apps/server/src/phase5-staff-recent-commands.integration.test.ts` never runs. If
-  `staff.recentCommands` is excluded with the UI, delete the profile gap question with it;
-  otherwise register the file.
-- `pnpm verify:full` before integration, plus a fresh independent verifier.
-- Prove `/staff` still renders monitoring correctly in Arabic RTL and English LTR across the
-  canonical widths after the salvage lands.
+1. `pnpm check:repository`
+2. `pnpm verify:fast` — only meaningful after the `command-repository.test.ts` env fix
+3. `pnpm exec vitest run --config vitest.integration.config.ts apps/server/src/phase5-command-domain.integration.test.ts`
+   with the registered disposable database — the re-proof of the rewritten evidence
+4. `pnpm verify:phase --phase phase5-staff-ui` with the repointed profile
+5. `pnpm verify:full` before integration
+6. `/staff` monitoring in Arabic RTL and English LTR across 320/360/390/721/768/820/1024/1200/1440,
+   keyboard, reduced motion, 200% reflow — `tests/browser/phase4-staff-web.browser.spec.ts` must
+   stay green through the salvage
+7. Fresh independent verifier; human confirmation that `/staff` shows no command affordance
 
-### Rollback boundary
+## Rollback boundary
 
-The command UI is unmerged, so the rollback boundary is simply **do not merge the five
-implementation commits** `06454f9`, `36aa857`, `67feb96`, `9ebbf37`, `6cc6d6a`. The branch stays;
-nothing is deleted. It is the durable record of the candidate and of the human visual verdict.
+The command UI is unmerged, so the boundary is: **do not merge `06454f9`, `36aa857`, `67feb96`,
+`9ebbf37`, `6cc6d6a`.** The branch stays; nothing is deleted. It is the durable record of the
+candidate and of the human visual verdict.
 
-**Mechanical hazard:** the three documentation commits `c735a77`, `f212bc1`, `9b31486` sit on the
-same branch and *do* need to reach `main`. They must be cherry-picked, or moved to a separate
-branch, before or instead of any merge. Merging the branch wholesale would bring the command UI
-with them.
+Step 3 is recoverable from `main`'s history at `4211b17` (`phase5-command-domain` integration) if
+the retirement is ever reversed. Step 4's test rewrite is the only step that changes existing
+green evidence — land it in its own commit so it can be reverted independently.
 
-If option A is applied and later regretted, the two oRPC leaves are recoverable from `main`'s
-history at `4211b17` (`phase5-command-domain` integration).
+## What "closed" means, and what it does not
+
+After this slice `phase5-staff-ui` can reach `DONE`: its deliverable is the absence of a command
+surface plus the monitoring salvage, and its gates are provable against
+`phase4-staff-web.browser.spec.ts` and the re-proved command-domain integration. `phase-5` can
+then close.
+
+This does **not** mean `/staff` matches Paper. Implementing
+`STAFF MONITORING PRODUCTION SET — CURRENT` is a separate later slice: per ADR-007 no production
+family has been implemented, and this slice deliberately implements none.
