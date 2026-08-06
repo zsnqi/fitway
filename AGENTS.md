@@ -8,7 +8,8 @@
 - Use Browser for interactive visual inspection and repository Playwright for repeatable screenshots, responsive checks, RTL/LTR, keyboard behavior, and functional verification.
 - Reserve structured audit skills for a fresh final review or a deliberately requested polish session. Report issues without unnecessarily reopening accepted product decisions.
 - Use brainstorming when substantial feature planning, interaction architecture, or real ambiguity benefits from alternatives; skip it for direct fixes and settled work.
-- Use subagents when they materially help with broad reading, narrow investigation, test execution, or bounded fixes. The main session retains final ownership and review.
+- Use subagents when they materially help with broad reading, narrow investigation, test execution, or bounded fixes. Delegation buys context cleanliness and permission narrowing; speed alone does not justify it. The main session retains final ownership and reviews every returned result against rendered or executed evidence — a subagent's own claim of success is not evidence.
+- One writer at a time. Never run concurrent writers; parallelism is for genuinely independent read-only work. Freeze the exact target and outcome before handing mechanical work to a lighter writer.
 - Do not disable or uninstall globally useful skills, plugins, MCP tools, or integrations merely for FITWAY.
 
 ## Source-of-truth order
