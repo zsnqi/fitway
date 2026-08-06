@@ -1,7 +1,13 @@
 # ADR-006: Visual authority and phase polish
 
-- Status: Accepted by the Baseline Reconciliation Gate
+- Status: Accepted by the Baseline Reconciliation Gate; superseded in part on 2026-08-06
 - Date: 2026-07-15
+
+> **Superseded in part by [ADR-007](ADR-007-paper-visual-source-of-truth.md), limited to visual
+> composition.** Paper is now the visual source of truth, so the first bullet below is no longer
+> the top of the visual authority order. The rest of this ADR stands, and its visual constraints
+> remain in force until a specific approved Paper production materially conflicts with one of
+> them. The decision text is preserved unedited as the record of what the gate accepted.
 
 ## Context
 

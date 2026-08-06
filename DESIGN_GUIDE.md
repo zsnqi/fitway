@@ -1,8 +1,16 @@
 # FITWAY Design Guide
 
-> **Status:** authoritative visual, responsive, RTL, interaction, and accessibility contract
-> after the Baseline Reconciliation Gate (2026-07-15). Product, privacy, security, content,
-> and data semantics remain governed by `FITWAY_PRODUCT.md` and `SPEC.md`.
+> **Status:** the repository's contract for responsive behavior, RTL and localization,
+> interaction and motion, accessibility, the canonical token baseline, and the phase visual
+> gate, after the Baseline Reconciliation Gate (2026-07-15). Product, privacy, security,
+> content, and data semantics remain governed by `FITWAY_PRODUCT.md` and `SPEC.md`.
+>
+> **Visual source of truth:** Paper, not this guide. See
+> [ADR-007](docs/adr/ADR-007-paper-visual-source-of-truth.md) for the authority split, the Paper
+> file identity, and the four approved production families. This guide is subject to ADR-007 for
+> visual composition; where an approved Paper production materially conflicts with a section
+> here, Paper governs the visual treatment and this guide is amended through an approved phase
+> record.
 >
 > **Approved evidence:** `visual-direction-gate/approved/APPROVAL_MANIFEST.yaml` and the
 > immutable snapshot under `visual-direction-gate/approved/fitway-theme-20260715/`.

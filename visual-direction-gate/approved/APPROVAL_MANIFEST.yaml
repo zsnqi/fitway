@@ -6,8 +6,48 @@ name: "FITWAY premium athletic visual system"
 authority:
   product: FITWAY_PRODUCT.md
   implementation: SPEC.md
+  visualSourceOfTruth: paperAuthority
   visualContract: DESIGN_GUIDE.md
+  visualDecisionRecord: docs/adr/ADR-007-paper-visual-source-of-truth.md
   provenanceSnapshot: visual-direction-gate/approved/fitway-theme-20260715
+
+# Paper is the visual source of truth as of 2026-08-06. Paper lives outside this repository,
+# so it carries no bytes or SHA-256 here; identity is the file name, id, and area names below.
+# This block is deliberately outside sourceSnapshot/canonicalScreenshots/legacyArtifactHashes,
+# which are the hash-verified sections of this manifest.
+paperAuthority:
+  status: CURRENT
+  approvedAt: "2026-08-06"
+  decisionRecord: docs/adr/ADR-007-paper-visual-source-of-truth.md
+  phaseRecord: docs/phase-records/paper-design-phase-closeout.md
+  file: "FITWAY UX Exploration"
+  fileId: 01KYPX5AF950XZVVDD88B6J7QB
+  page: "Page 1"
+  system: "09 — FITWAY FINAL SYSTEM — G3 ADAPTIVE GLASS + OWNER ANALYTICS"
+  productionZoneBanner: "FITWAY — APPROVED CURRENT PRODUCTION"
+  approvedProductionFamilies:
+    - "OWNER DAILY ANALYTICS PRODUCTION SET — CURRENT"
+    - "STAFF MONITORING PRODUCTION SET — CURRENT"
+    - "LOGIN PRODUCTION SET — CURRENT"
+    - "PUBLIC CROWD BOARD PRODUCTION SET — CURRENT"
+  notApprovedProduction:
+    - area: "PUBLIC — APPROVED BUILD REFERENCES"
+      role: "Reference evidence only; never present it as approved Public visual production."
+    - area: "PUBLIC CROWD BOARD — G3 LIVE BASE CANDIDATE"
+      role: "Source artifact only; no longer authoritative over Production. Do not build from it."
+  supersedes:
+    scope: "Visual composition only."
+    target: docs/adr/ADR-006-visual-authority.md
+    effect: >-
+      Paper governs visual composition. The 2026-07-15 theme snapshot below remains immutable
+      hash-verified provenance and the repository's token baseline, but is no longer the top of
+      the visual authority order. ADR-006's remaining visual constraints stay in force until a
+      specific approved Paper production materially conflicts with one of them; no such conflict
+      is enumerated yet.
+    behaviorUnaffected: >-
+      FITWAY_PRODUCT.md, SPEC.md, the ADRs, reviewed migrations, Zod/OpenAPI schemas, shared
+      DTOs, tests, and application invariants remain authoritative for behavior, data semantics,
+      privacy, security, and exact copy already fixed in a message catalog.
 
 provenance:
   sourceWorktree: D:/Projects/fitway-visual-lab

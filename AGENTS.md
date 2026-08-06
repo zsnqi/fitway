@@ -1,7 +1,7 @@
 # FITWAY Agent Policy
 
 - Binding product, security, privacy, content, accessibility, and data-semantic decisions remain in force.
-- The approved FITWAY theme snapshot and its manifest under `visual-direction-gate/approved/fitway-theme-20260715/` are the current visual baseline. Claude Design and G1B remain historical provenance where the manifest says they still apply; they are not independent current authorities.
+- Paper is the visual source of truth; `docs/adr/ADR-007-paper-visual-source-of-truth.md` records the authority split and the four approved production families. The approved FITWAY theme snapshot and its manifest under `visual-direction-gate/approved/fitway-theme-20260715/` remain the hash-verified provenance and token baseline. Claude Design and G1B remain historical provenance where the manifest says they still apply; they are not independent current authorities.
 - Apply visual and implementation judgment to improve composition, hierarchy, spacing, typography, responsive/mobile behavior, motion, interaction, charts, tables, accessibility, and overall quality.
 - Do not silently change locked product or content decisions or FITWAY's core identity. Surface any material proposal explicitly.
 - Use at most one broad design or taste skill for the same design problem. Do not stack competing design skills.
@@ -16,7 +16,7 @@
 1. `AGENTS.md` governs agent process, safety, ownership, validation, and escalation.
 2. `FITWAY_PRODUCT.md` governs product identity, users, content hierarchy, and surface boundaries. `SPEC.md` governs security, privacy, data semantics, interfaces, and acceptance. A conflict between them is `NEEDS_HUMAN`; neither silently overrides the other.
 3. Reviewed migrations, Zod/OpenAPI schemas, and shared DTOs prove implementation conformance. A mismatch with Product/Spec is a stop condition, not permission to change a locked decision.
-4. `DESIGN_GUIDE.md` and `visual-direction-gate/approved/APPROVAL_MANIFEST.yaml` govern visual, responsive, RTL, interaction, and accessibility behavior, subject to Product/Spec.
+4. `docs/adr/ADR-007-paper-visual-source-of-truth.md` places visual composition in Paper and behavior in the repository. `DESIGN_GUIDE.md` and `visual-direction-gate/approved/APPROVAL_MANIFEST.yaml` govern responsive, RTL, interaction, and accessibility behavior, the token baseline, and artifact provenance, subject to Product/Spec and to ADR-007 for composition.
 5. `PHASES.md` governs dependency and acceptance scope. `PROJECT_STATE.yaml` is the coordinator-owned live execution ledger.
 6. ADRs, `RESEARCH.md`, and phase records preserve rationale and evidence. `docs/archive/`, prototypes, generated reviews, handoffs, Stitch, Claude, G1B, and VDG material are provenance only.
 

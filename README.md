@@ -27,9 +27,12 @@ Read them in this order:
 2. [FITWAY_PRODUCT.md](FITWAY_PRODUCT.md) and [SPEC.md](SPEC.md) — product boundary and
    normative implementation contract.
 3. Reviewed migrations, Zod/OpenAPI schemas, and shared DTOs — executable conformance.
-4. [DESIGN_GUIDE.md](DESIGN_GUIDE.md) and the
-   [visual approval manifest](visual-direction-gate/approved/APPROVAL_MANIFEST.yaml) — current
-   visual, responsive, RTL, interaction, accessibility, and artifact provenance.
+4. [ADR-007](docs/adr/ADR-007-paper-visual-source-of-truth.md) — Paper is the visual source of
+   truth; the repository stays authoritative for behavior.
+   [DESIGN_GUIDE.md](DESIGN_GUIDE.md) and the
+   [visual approval manifest](visual-direction-gate/approved/APPROVAL_MANIFEST.yaml) — responsive,
+   RTL, interaction, accessibility, tokens, and artifact provenance, subject to ADR-007 for
+   visual composition.
 5. [PHASES.md](PHASES.md) and [PROJECT_STATE.yaml](PROJECT_STATE.yaml) — delivery scope/DAG
    and live coordinator-owned state.
 6. [ADRs](docs/adr/), [RESEARCH.md](RESEARCH.md), and

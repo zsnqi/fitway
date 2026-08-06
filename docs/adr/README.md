@@ -12,3 +12,4 @@ why and must not silently override them.
 | [ADR-004](ADR-004-time-and-business-day.md) | UTC, gym timezone, business day, schedule, settings history |
 | [ADR-005](ADR-005-public-cache-and-privacy.md) | Cache-first capacity-free public boundary |
 | [ADR-006](ADR-006-visual-authority.md) | Approved theme, provenance, and per-phase polish model |
+| [ADR-007](ADR-007-paper-visual-source-of-truth.md) | Paper as visual source of truth, G3 ADAPTIVE GLASS, and the visual/behavioral split |
