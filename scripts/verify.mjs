@@ -59,9 +59,11 @@ const phases = {
 		label: "Phase 5 command-domain slice",
 	},
 	"phase5-staff-ui": {
-		browserFiles: ["tests/browser/phase5-staff-ui.browser.spec.ts"],
-		integrationFiles: [],
-		label: "Phase 5 staff UI slice",
+		browserFiles: ["tests/browser/phase4-staff-web.browser.spec.ts"],
+		integrationFiles: [
+			"apps/server/src/phase5-command-domain.integration.test.ts",
+		],
+		label: "Phase 5 staff monitoring-only closeout slice",
 	},
 	"phase9-owner-ui": {
 		browserFiles: ["tests/browser/phase9-owner-ui.browser.spec.ts"],
