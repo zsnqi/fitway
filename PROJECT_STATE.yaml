@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-07T22:05:00+03:00"
+updatedAt: "2026-08-08T00:05:00+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -371,11 +371,11 @@ milestones:
     integratedCommit: 4211b172bcfbb50b30f3f38a400287e5d12bdf7e
 
   phase5-staff-ui:
-    status: READY_FOR_INTEGRATION
+    status: NEEDS_HUMAN
     dependencies: [phase5-command-domain]
-    ownerSession: "monitoring-only Phase 5 closeout complete on work/phase5-staff-ui-b03-retry at a2936e5; candidate is five commits on 608c1f8 — 63bc227 normative and ADR-008 atomic, f5bc29e retirement, 8e6a7c8 command-domain re-proof and monitoring salvage, 3fac5ad coordinator profile repoint, a2936e5 record repair after review. Independent verification PASS. Awaiting coordinator integration and verify:full; implements no Paper production family"
-    branch: work/phase5-staff-ui-b03-retry
-    worktree: D:/Projects/fitway-worktrees/phase5-staff-ui-retry
+    ownerSession: null
+    branch: main
+    worktree: null
     baseCommit: 229b9ce1f50ba8f598ea60556913a8b98ac0c228
     ownedPaths:
       - apps/web/src/components/staff/commands/**
@@ -408,24 +408,20 @@ milestones:
       - "operationalSnapshotSchema.source and the frozen operational snapshot DTO: decision 6 is deferred to Phase 6 and is neither resolved nor reopened here"
       - Paper production-family implementation, ADR-007 family coverage, and any Phase 6, 10, or 11 product or visual decision
       - "root manifests, lockfiles, environment schemas, test-runner config, vitest and playwright configs, biome.json, and scripts/verify.mjs; the phase5-staff-ui verification-profile repoint named in the closeout plan step 4 is deliberately withheld from this lease and stays coordinator work"
-    sharedLeases:
-      - "exclusive through 2026-08-14T21:00:00+03:00: closeout retirement of the staff-facing backend exposure surface, per operation. DELETE packages/api/src/commands/recent-commands.ts and packages/api/src/commands/recent-commands.test.ts. CONSTRAINED WRITE to packages/api/src/routers/index.ts, limited to retiring the staff.issueCorrection, staff.issueReset, and staff.recentCommands router exposure and the command-service wiring, helpers, and imports that become dead with them. CONSTRAINED WRITE to packages/api/src/context.ts, limited to removing the commandService and recent-command context dependencies that become dead once the retired leaves are gone. CONSTRAINED WRITE to apps/server/src/index.ts, limited to dropping those retired createContext arguments. CONSTRAINED WRITE to apps/server/src/command-repository.ts, limited to removing retired recent-command plumbing; createCommandServiceDatabase and the exported commandService singleton are preserved because the Phase 7 cron route calls them directly. CONSTRAINED WRITE to apps/server/src/command-repository.test.ts for the known module-scope packages/db test-collection repair assigned to this closeout. DELETE apps/server/src/phase5-staff-recent-commands.integration.test.ts, whose only subject is /rpc/staff/recentCommands. RATIFIED DEVIATION: the CONSTRAINED WRITE on apps/server/src/command-repository.test.ts was executed as a DELETE; the coordinator verified at 608c1f8 that the file was describe(\"recent command repository reader\") with one it block importing only the retired createRecentCommandReaderDatabase, that it was branch-only and never on main, and that the surviving createCommandServiceDatabase remains exercised by apps/server/src/phase5-command-domain.integration.test.ts, so no surviving-code coverage was lost and deletion is the honest outcome. EXCLUDES migrations and packages/db, edge protocol, OpenAPI and public payloads, staff.operationalSnapshot and operationalSnapshotSchema.source, and the core CommandService implementation and its tests"
-      - "exclusive through 2026-08-14T21:00:00+03:00: borrowed acceptance evidence of the DONE phase5-command-domain milestone, not ownership. DELETE packages/api/src/commands/router.test.ts, whose whole subject is the retired staff.issueCorrection and staff.issueReset router leaves. CONSTRAINED WRITE to apps/server/src/phase5-command-domain.integration.test.ts, limited to re-proving lifecycle mechanics through direct commandService calls against the disposable database while retiring the staff-facing RPC mutation coverage; backend command-service, edge delivery and acknowledgement, supersession, and audit-rollback coverage must survive intact. Coverage that stops being provable at the oRPC boundary, including staff-or-owner role enforcement on the retired leaves and CommandIssueError to BAD_REQUEST translation, must be stated explicitly in docs/phase-records/phase-05-staff-ui.md; it may not be silently erased"
-      - "exclusive through 2026-08-14T21:00:00+03:00: normative-authority reconciliation of the human-approved monitoring-only decision, limited to FITWAY_PRODUCT.md, SPEC.md, PHASES.md, DESIGN_GUIDE.md, docs/adr/ADR-003-edge-authority-and-reconciliation.md, and docs/adr/README.md. Edits are confined to reconciling that decision; ADR-003 keeps its decision body unedited and receives a partial-supersession note only. ADR-008 and these updates land in one atomic commit, as the closeout plan step 2 requires, so no interval exists where an ADR and a normative document disagree. No unrelated normative statement may move, and no Phase 6, 10, or 11 product decision may be introduced"
-      - "exclusive through 2026-08-14T21:00:00+03:00: retroactive authorization of the monitoring and login changes already carried in commit 885b5b0, replayed from 6cc6d6a, limited to apps/web/src/components/staff/staff.css, apps/web/src/components/staff/messages.ts, apps/web/src/components/staff/operational-snapshot-view.tsx, apps/web/src/i18n/messages/ar.ts, and apps/web/src/i18n/messages/en.ts. It authorizes only those already-carried changes, plus one further edit: reverting staff.description in the two locale catalogs to its pre-6cc6d6a monitoring-only wording, which is the last place the monitoring surface advertises command controls. It is not a general lease on apps/web/src/i18n/messages/**, grants no unrelated staff styling or i18n authority, and does not extend to apps/web/src/i18n/catalog.ts, use-staff-messages.ts, or staff-shell.tsx"
+    sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-07T22:05:00+03:00"
-    leaseExpiresAt: "2026-08-14T21:00:00+03:00"
-    handoff: docs/phase-records/handoffs/phase5-staff-ui/20260807-220500-p5_staff_closeout-ready-for-integration.md
-    stopReason: null
+    lastHeartbeatAt: "2026-08-08T00:05:00+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase5-staff-ui/20260808-000500-p5_staff_integration-needs-human.md
+    stopReason: "Integrated into main at 6321949 and pnpm verify:full passed there, but visual approval for /staff is withheld and has never been re-granted. The human visual verdict of 2026-07-27 (docs/phase-records/handoffs/phase5-staff-ui/20260727-230622-p5_staff_b03_retry-human-visual-verdict.md) did not approve the staff experience and required a bounded refinement pass followed by a fresh human visual review. The refinement landed in 885b5b0 and is integrated, but the fresh human review never happened, and an agent-authored plan cannot discharge a human approval requirement. No automated run can close this gate: toHaveScreenshot appears only in tests/browser/public-baseline.browser.spec.ts and no canonical /staff baseline exists, so verify:full proves nothing about this surface and visual stays PENDING. The monitoring-only plan's validation item 7 — human confirmation that /staff shows no command affordance — is also outstanding and has no automated negative control by design. Two human acts unblock DONE: a fresh visual review of /staff on main, and that no-command-affordance confirmation."
     gates:
       unit: PASS
       integration: PASS
       browser: PASS
-      accessibility: PENDING
+      accessibility: PASS
       visual: PENDING
       independentReview: PASS
-    integratedCommit: null
+    integratedCommit: 632194926211529d40065d4b6d2ac54af88fc48c
 
   phase-5:
     status: PLANNED

@@ -226,6 +226,91 @@ ladder; no tracked source and no `biome.json` entry changed.
 
 Independent verification returned `PASS`. Its findings were minor and are recorded above: the
 weakened validation oracle (item 2), the provenance-chain loss (item 1), the carried-forward
-`SPEC.md:496-498` mismatch, and the absent negative control. `pnpm verify:full` has not been run —
-it belongs to batch integration. Human confirmation that `/staff` shows no command affordance
-remains outstanding and is the coordinator's to schedule.
+`SPEC.md:496-498` mismatch, and the absent negative control. Human confirmation that `/staff` shows
+no command affordance remains outstanding and is the coordinator's to schedule.
+
+## Coordinator integration, 2026-08-08
+
+Integrated by merge commit `6321949` onto `main` head `6e65774`. The candidate branch carried
+**twelve** commits since the recorded `baseCommit` `229b9ce`, not the five this record and the
+handoff foreground: `608c1f8` and its six predecessors were also absent from `main`. Cherry-picking
+only the five would have failed, because `f5bc29e` retires a command UI that `ed10781` introduces.
+A merge was therefore both the repository's established convention and the only correct mechanism.
+
+The worker branch never touched `PROJECT_STATE.yaml` — it is byte-identical to the M0 baseline — and
+`main`'s four coordinator commits touched only the ledger and two handoff files. The merge therefore
+preserved coordinator history verbatim: no ledger commit was replayed and no handoff duplicated.
+This was confirmed before committing by diffing the predicted merge tree against both parents; the
+resulting tree `444e1ce` matched that prediction exactly.
+
+`pnpm verify:full`, run id `p5_staff_full2`, Playwright port `20657`, disposable database
+`fitway_integration_p5_staff_full2`, at `6321949`:
+
+| Step | Result |
+| --- | --- |
+| Repository invariants | PASS — 31 milestones, 8 canonical approval screenshots |
+| Biome | PASS — 210 files, no fixes |
+| Type checks | PASS — all workspaces |
+| Unit tests | PASS — 35 files / 138 tests |
+| Python simulator | PASS — 5 tests |
+| Build | PASS — `pnpm -r build` |
+| All integration tests | PASS — 7 files / 26 tests |
+| All browser and accessibility tests | PASS — 29/29 |
+| Repository mutation guard | PASS — "Verification full passed without repository mutation" |
+
+**The browser gate depends on an untracked file, and this cost a full run.** The first `verify:full`
+at `6321949` failed one test — `tests/browser/phase4-staff-web.browser.spec.ts:187`, "honors
+Retry-After" — which asserted the alert contains `5` but received a 30-second cooldown. It was not
+merge-caused: `apps/web/src/routes/login.tsx` and `apps/web/src/lib/auth-client.ts`, the entire code
+path producing that value, are byte-identical across the merge, and the test mocks the network with
+`page.route`, so no server limiter was involved. The cause is that `playwright.config.ts` does not
+pin `VITE_SERVER_URL`, so the run inherited `http://localhost:3100` from untracked machine-local
+`apps/web/.env`. `Retry-After` is not a CORS-safelisted response header, so cross-origin it reads as
+`null` and `login.tsx:80` falls back to `?? 30`. Re-running with the canonical `/api` — the value
+`scripts/sync-vercel-env.ts` maps for deployment, and the value this record already documents at the
+row above — passes 29/29. No test, config, or threshold was changed to obtain the green run.
+Pinning that variable belongs to whoever owns test-resource configuration; it is not Phase 5's.
+
+### Gate resolution
+
+`unit`, `integration`, `browser`, `independentReview` — `PASS`, from the run above.
+
+`accessibility` — `PASS`. This is real evidence for this surface, not a suite-level inference:
+`tests/browser/phase4-staff-web.browser.spec.ts:409` navigates to `/staff` at `:417` and runs
+`new AxeBuilder({ page }).analyze()` at `:438`, in Arabic RTL and English LTR at every required
+width, and passed.
+
+`visual` — **stays `PENDING`, and `verify:full` cannot close it.** `toHaveScreenshot` appears only
+in `tests/browser/public-baseline.browser.spec.ts`, whose six canonical baselines cover the public
+surface. **No canonical `/staff` baseline exists**, so a green visual step proves nothing about the
+surface this slice changed — and it did change it: `staff.css` by 116 lines and
+`operational-snapshot-view.tsx` by 19. Marking this `PASS` would claim evidence that does not exist.
+
+### Why this phase is `NEEDS_HUMAN` and not `DONE`
+
+The human visual verdict of 2026-07-27 did not approve the staff experience and required a bounded
+refinement pass **followed by a fresh human visual review**. The refinement landed in `885b5b0` and
+is now integrated. The fresh human review never happened. The monitoring-only plan asserts at line
+146 that the salvage "answered" the verdict, but that is an agent-authored claim, and an agent
+cannot discharge a human approval requirement. Several verdict items — metric balance, empty space,
+label clarity, header hierarchy, RTL/LTR visual continuity, login copy density, decorative controls
+that look interactive — concern the monitoring and login surfaces that survive the retirement, so
+they are not made moot by removing the command UI.
+
+Independently, the plan's validation item 7, human confirmation that `/staff` shows no command
+affordance, is outstanding. It has no automated negative control by design: the deliverable is an
+absence, and the repointed browser profile runs Phase 4 monitoring coverage, so reintroducing a
+command control would fail no test.
+
+`scripts/verify-repository.mjs:205-211` independently enforces this: a `DONE` milestone with a
+`PENDING` gate fails the invariant check. `phase-5` therefore cannot close either, per `:164-166`.
+
+### Coordinator ratification
+
+`docs/phase-records/paper-design-phase-closeout.md` was edited by `12d8be2` and `608c1f8` although
+`forbiddenPaths` reads "every other milestone's phase record". Ratified: the diff only closes that
+document's own open question 4, which is precisely the human decision this slice implements, and it
+introduces no new product decision. Recorded here rather than waived silently.
+
+The four shared leases are released; the work they covered is integrated. Release reflects that no
+writer holds these files, **not** that the phase is complete.
