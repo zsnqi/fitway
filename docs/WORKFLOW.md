@@ -1,8 +1,8 @@
 # FITWAY Long-Running Agent Workflow
 
-This is the operational procedure for multiple Codex sessions. `AGENTS.md` is the concise
-policy; `PROJECT_STATE.yaml` is the coordinator-owned live ledger; phase records preserve
-accepted evidence.
+This is the operational procedure for multiple long-running agent sessions, whichever tool runs
+them. `AGENTS.md` is the concise policy; `PROJECT_STATE.yaml` is the coordinator-owned live
+ledger; phase records preserve accepted evidence.
 
 ## Roles
 
