@@ -88,8 +88,17 @@ outstanding item; it would not change any recorded gate value below.
 
 ## Closure
 
-`phase-9` alone is marked `DONE`. Its `integratedCommit` is the coordinator commit that closes the
-aggregate, following the settled `phase-4` convention in `PROJECT_STATE.yaml`
+`phase-9` alone is marked `DONE`. Its `integratedCommit` and `baseCommit` are
+`439b1b3ea58a545448164c091d7981ff2e4dbf94`, the coordinator commit that closes the aggregate —
+the commit this record was created in. They were written as the pre-closure head
+`ffa26ba186b8d196f9fa931fcc8d27a2acf71ee1` in that commit, because the closure commit cannot
+reference its own hash, and re-anchored by the next coordinator commit. The "Aggregate evidence
+baseline" above deliberately still names `ffa26ba`: it is the clean, verified head the closure was
+adjudicated against, which is a different fact from where the aggregate became `DONE`. Recording
+both is the correction to the ambiguity that left the `phase-4` equivalent open —
+`docs/phase-records/phase-04-aggregate.md` names only `1ba23df` while the ledger says `94b76a8`.
+
+This follows the settled `phase-4` convention in `PROJECT_STATE.yaml`
 (`phase-4.integratedCommit` = `94b76a8`, the Phase 4 aggregate closure commit, re-anchored from
 the pre-closure head by the next coordinator commit `e5cb13b`). The two candidate hashes raised in
 the dependency and parallelization audit — `c02b4df` and `a7a7f64` — are both excluded by that
