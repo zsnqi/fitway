@@ -78,6 +78,17 @@ in role enforcement: `staffProcedure` and `ownerProcedure` are unchanged, `staff
 `apps/server/src/phase4-auth.integration.test.ts` still proves the authorization middleware
 itself. What is gone is per-leaf proof for two leaves that no longer exist.
 
+A second loss travels with this one and is recorded separately because it is easy to miss. The
+rewritten integration test synthesizes a `CanonicalAuthContext` from a principal row
+(`apps/server/src/phase5-command-domain.integration.test.ts:100-122`) instead of obtaining one from
+the real staff-PIN and owner-password logins the file previously performed, and its audit
+assertions check `actorPrincipalKind` and `actorRole` but not `actorPrincipalId`. So the
+login → context → audit provenance chain is no longer exercised *in this file*: a change writing
+the wrong principal id into `audit_log` would not be caught here. Impact is low — no product
+surface issues commands, and `apps/server/src/phase4-auth.integration.test.ts:126,133,189,199` with
+`packages/api/src/auth/session-router.test.ts:35-63` still prove session issuance and the
+authorization middleware over real HTTP.
+
 **2. Leaf-level input validation.**
 The same deleted test proved that `{ absolute: -1 }` was rejected at the procedure boundary
 *before* the command service was called (`expect(commandService.issueCorrection).not.toHaveBeenCalled()`),
@@ -163,14 +174,25 @@ lease clauses. Flagged rather than assumed.
 - **Decision 6 stays deferred.** `operationalSnapshotSchema.source` and the frozen operational
   snapshot DTO are untouched. The `manual` enum value is retained and recorded as a Phase 6
   review item in `PHASES.md`.
-- **`scripts/verify.mjs` was not edited.** The `phase5-staff-ui` profile still registers
-  `browserFiles: ["tests/browser/phase5-staff-ui.browser.spec.ts"]`, which this slice deletes and
-  which never existed on `main`. Repointing it at `tests/browser/phase4-staff-web.browser.spec.ts`
-  is coordinator work and is deliberately withheld from this slice's lease. Until it lands,
-  `pnpm verify:phase --phase phase5-staff-ui` cannot pass and is not a gate for this candidate.
+- **`scripts/verify.mjs` was not edited by this slice's implementation commits.** The repoint was
+  withheld from the worker lease and performed by the coordinator afterwards in `3fac5ad`, which is
+  on this branch: `browserFiles` now names `tests/browser/phase4-staff-web.browser.spec.ts` and
+  `integrationFiles` names `apps/server/src/phase5-command-domain.integration.test.ts`, closing the
+  empty-`integrationFiles` gap that `docs/phase-records/paper-design-phase-closeout.md` preserved as
+  open question 3. `pnpm verify:phase --phase phase5-staff-ui` therefore does pass at this head.
 - **`RESEARCH.md` was not edited.** Its risk table still names "manual fallback" as a mitigation
-  (`RESEARCH.md:283`). It is rationale/provenance, not normative, and is outside this slice's
-  lease. Flagged for the coordinator.
+  (`RESEARCH.md:283`) and `:576` still names "Staff correction/reset usability". Both are
+  rationale/provenance, not normative, and outside this slice's lease. Carried forward.
+- **`SPEC.md:496-498` still lists "pending command status"** in the staff-or-owner operational
+  snapshot, while the frozen DTO at `packages/api/src/health/snapshot.ts:41-50` carries no such
+  field. This pre-dates the slice on `main` and does not contradict ADR-008 — reading pending status
+  is monitoring, not issuance — so it is a spec/implementation mismatch, not a surviving
+  command-surface requirement, and reconciling it is outside the monitoring-only lease. Carried
+  forward to its owning slice.
+- **No automated negative control guards the deliverable.** The deliverable is the *absence* of a
+  command surface, but the repointed browser profile runs Phase 4's monitoring coverage;
+  reintroducing a command control on `/staff` would fail no test. The plan defers this to human
+  confirmation (validation item 7). Carried forward.
 - No Phase 6, 7, 10, or 11 work, no actor-model change, no redesign, no unrelated cleanup.
 
 ## Validation
@@ -192,9 +214,18 @@ machine-local `.claude/launch.json` in this worktree is not Biome-formatted. It 
 diagnostic in the tree. It was not deleted and `biome.json` was not edited; Biome restricted to
 tracked source is clean.
 
-`pnpm verify:phase --phase phase5-staff-ui` was **not** run and cannot pass until the coordinator
-repoints the profile's `browserFiles` (see "Not in scope" above). It is not a gate for this
-candidate.
+After the coordinator repoint landed in `3fac5ad`, `pnpm verify:phase --phase phase5-staff-ui` was
+run twice at this head and passed both times, once by the coordinator (run id `p5_staff_b03_retry`,
+port `20645`) and once by an independent verifier from a clean session with its own run id
+(`p5_verify_indep`), its own disposable database, and port `20647`: repository invariants PASS
+(31 milestones, 8 canonical approval screenshots), Biome 211 files clean, all workspace type checks
+PASS, 35 unit files / 138 tests PASS, 5 simulator tests PASS, 4/4 integration blocks PASS, 10/10
+`phase4-staff-web` browser tests PASS, repository mutation guard clean. The untracked machine-local
+`.claude/launch.json` was Biome-formatted in place by the coordinator so it stops blocking the
+ladder; no tracked source and no `biome.json` entry changed.
 
-A fresh independent verifier and human confirmation that `/staff` shows no command affordance
-remain outstanding and are the coordinator's to schedule.
+Independent verification returned `PASS`. Its findings were minor and are recorded above: the
+weakened validation oracle (item 2), the provenance-chain loss (item 1), the carried-forward
+`SPEC.md:496-498` mismatch, and the absent negative control. `pnpm verify:full` has not been run —
+it belongs to batch integration. Human confirmation that `/staff` shows no command affordance
+remains outstanding and is the coordinator's to schedule.
