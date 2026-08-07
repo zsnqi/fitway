@@ -68,6 +68,11 @@ const phases = {
 		integrationFiles: ["apps/server/src/phase9-owner-ui.integration.test.ts"],
 		label: "Phase 9 owner UI slice",
 	},
+	"phase10-domain": {
+		browserFiles: [],
+		integrationFiles: ["apps/server/src/phase10-domain.integration.test.ts"],
+		label: "Phase 10 reporting domain slice",
+	},
 };
 
 const phaseNames = Object.keys(phases).join("|");
