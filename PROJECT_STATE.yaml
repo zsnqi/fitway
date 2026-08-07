@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-07T18:25:00+03:00"
+updatedAt: "2026-08-07T20:16:00+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -373,10 +373,10 @@ milestones:
   phase5-staff-ui:
     status: READY
     dependencies: [phase5-command-domain]
-    ownerSession: "phase5 staff UI retry candidate implemented on work/phase5-staff-ui-b03-retry; paused after human visual approval was withheld, awaiting the Phase 5 closeout slice"
+    ownerSession: "phase5 staff UI retry candidate on work/phase5-staff-ui-b03-retry, reconciled onto M0 at 608c1f8ac190c3af06f8cdf2c1dce85dc4889b05; the monitoring-only Phase 5 closeout slice is specified but unstarted"
     branch: work/phase5-staff-ui-b03-retry
     worktree: D:/Projects/fitway-worktrees/phase5-staff-ui-retry
-    baseCommit: SELF
+    baseCommit: 229b9ce1f50ba8f598ea60556913a8b98ac0c228
     ownedPaths:
       - apps/web/src/components/staff/commands/**
       - apps/web/src/hooks/use-staff-commands.ts
@@ -406,9 +406,9 @@ milestones:
     sharedLeases:
       - "exclusive through 2026-08-13T21:00:00+03:00: private lifecycle-read continuation limited to packages/api/src/commands/recent-commands.ts, packages/api/src/commands/recent-commands.test.ts, packages/api/src/context.ts, packages/api/src/routers/index.ts, apps/server/src/command-repository.ts, apps/server/src/command-repository.test.ts, apps/server/src/index.ts, and apps/server/src/phase5-staff-recent-commands.integration.test.ts; it excludes migrations, edge/OpenAPI, public payloads, and staff.operationalSnapshot"
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-07T18:00:00+03:00"
+    lastHeartbeatAt: "2026-08-07T20:16:00+03:00"
     leaseExpiresAt: "2026-08-13T21:00:00+03:00"
-    handoff: docs/phase-records/handoffs/phase5-staff-ui/20260727-211156-p5_staff_b03_retry-activation.md
+    handoff: docs/phase-records/handoffs/phase5-staff-ui/20260807-201600-p5_staff_b03_retry-m0-reconciliation.md
     stopReason: null
     gates:
       unit: PENDING
