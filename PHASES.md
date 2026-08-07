@@ -170,22 +170,33 @@ keyboard, both directions, responsive density, and private capacity visibility.
 
 Deliver command queue/lifecycle, delta and absolute correction, destructive reset,
 supersession, edge delivery/application acknowledgement, and an audit entry in the same
-transaction as every mutation. Cloud state does not silently override an online edge.
+transaction as every mutation. Cloud state does not silently override an online edge. Per
+`docs/adr/ADR-008-staff-monitoring-only.md` this is internal infrastructure: `/staff` is
+monitoring-only and no product surface issues a command.
 
-Acceptance covers role enforcement, monotonic IDs, replay/idempotency, latest-only delivery,
-pending/applied/superseded UI, floor at zero, reason handling, and audit provenance.
+Acceptance covers monotonic IDs, replay/idempotency, latest-only delivery, floor at zero,
+reason handling, and audit provenance, proved through direct command-service calls and
+simulated edge acknowledgement. There is no pending/applied/superseded UI to accept, and
+role enforcement on the retired staff mutation leaves is no longer provable — see
+`docs/phase-records/phase-05-staff-ui.md`.
 
 ## Phase 6 — Offline fallback, backfill, and reconciliation
 
 **Depends on:** Phase 5.
 
-Deliver staff manual fallback with its own validity window, buffered minute backfill,
-history-only backfill authority, reconnect ordering, and a frozen device/OpenAPI contract.
-Pending commands apply before live authority resumes.
+Deliver automatic offline fallback, buffered minute backfill, history-only backfill
+authority, reconnect ordering, and a frozen device/OpenAPI contract. Pending commands apply
+before live authority resumes. ADR-008 withdrew the staff manual fallback; Phase 6
+introduces no staff-facing manual fallback and no new staff or owner command surface.
 
-Acceptance covers outage, reconnect, duplicate/gap/replay, manual-value expiry, command
-ordering, minute idempotency, current-state protection, and TypeScript/OpenAPI/Python fixture
-parity.
+Acceptance covers outage, reconnect, duplicate/gap/replay, command ordering, minute
+idempotency, current-state protection, and TypeScript/OpenAPI/Python fixture parity.
+
+**Review item carried from ADR-008 decision 6.** Phase 6 must determine whether any valid
+internal producer of `source=manual` remains — for `operationalSnapshotSchema.source`, the
+occupancy-minute and current-state source enums, and the manual-validity freshness window.
+The enum values and the settings field are retained unchanged until that review; removing
+one requires confirming no internal producer remains and is not authorized before Phase 6.
 
 ## Phase 7 — Scheduled reset
 

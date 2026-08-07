@@ -53,8 +53,9 @@ composition only and cannot authorize the content.
 
 ### Authenticated operations
 
-- Staff Live is an operational grid: current truth first, health second, actions placed
-  near their consequences, and destructive actions deliberately separated.
+- Staff Live is a monitoring grid: current truth first, health second, freshness explicit.
+  It is monitoring-only per `docs/adr/ADR-008-staff-monitoring-only.md` — it carries no
+  correction, direct-entry, or reset control, and no other command affordance.
 - Owner Analytics gives the occupancy curve the broadest span and keeps an accessible
   table or equivalent semantic data next to it.
 - History uses a purpose-built heatmap, not public cards repurposed as a chart.
@@ -234,7 +235,9 @@ focus, press, drawer, and dialog feedback. Avoid `transition: all`.
 - Inputs keep persistent labels. Placeholder text is an example, never the label.
 - Validation messages are specific, localized, associated with the field, and announced
   without moving focus unpredictably.
-- A staff correction shows pending/application state. A reset requires a confirmation dialog.
+- `/staff` issues no command, so it presents no pending/application state and no reset
+  confirmation dialog (ADR-008). These rules stand for any future destructive control
+  elsewhere in the product, not for the staff view.
 - Dialogs receive intentional initial focus, trap focus, close with Escape where safe, and
   restore focus to the trigger.
 - Destructive styling is reserved for destructive actions, not general emphasis.

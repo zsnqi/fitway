@@ -1,7 +1,17 @@
 # ADR-003: Edge authority, commands, backfill, and reconciliation
 
-- Status: Accepted; later lifecycle work remains phased
+- Status: Accepted; later lifecycle work remains phased; superseded in part on 2026-08-06
 - Date: 2026-07-12; migrated 2026-07-15
+
+> **Superseded in part by [ADR-008](ADR-008-staff-monitoring-only.md), limited to the staff manual
+> fallback.** `/staff` is monitoring-only, so the fifth decision bullet below no longer describes a
+> reachable path: no product surface lets staff trigger a manual fallback, and the staff-facing
+> command mutations that would have created its command are retired. Automatic offline fallback,
+> backfill, reconnect ordering, reconciliation, and recovery remain Phase 6 scope. Every other
+> decision here — durable, monotonic, auditable commands, latest-only supersession, edge delivery
+> and acknowledgement, apply-before-live on reconnect, and the separation of current from history
+> authority — stands unchanged. The decision text is preserved unedited as the record of what was
+> accepted.
 
 ## Context
 
@@ -29,5 +39,6 @@ be auditable.
 ## Consequences
 
 The edge/API/repository/simulator spine is a serial shared surface across Phases 5, 6, 7, and 12.
-Current and history authority are deliberately separate. Scheduled resets use the same command
-and audit lifecycle as human operations.
+Current and history authority are deliberately separate. Scheduled and internally issued resets
+use one command and audit lifecycle; since ADR-008 retired the staff mutations, that lifecycle has
+no product-surface issuer.

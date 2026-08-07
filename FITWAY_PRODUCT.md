@@ -11,15 +11,15 @@ The primary truth is the labeled crowd band—Quiet, Moderate, Busy, or Packed�
 | User | Job |
 | --- | --- |
 | Visitor | Check crowd level, approximate occupancy, opening state, and freshness quickly before traveling. No sign-in. |
-| Staff | Monitor live occupancy and device health; correct, directly set, or reset the count when needed. Every mutation is attributable and audited. |
-| Owner/admin | Use staff operations plus analytics, exports, settings, account management, audit history, and health summaries to run the gym. |
+| Staff | Monitor live occupancy, device health, and freshness. `/staff` is monitoring-only ([ADR-008](docs/adr/ADR-008-staff-monitoring-only.md)): it carries no correction, direct-entry, or reset control. |
+| Owner/admin | Read the same operational view as staff, plus analytics, exports, settings, account management, audit history, and health summaries to run the gym. The owner has no command surface either. |
 | Maintainer | Detect edge or camera failure before the owner, receive bounded alerts and recovery notices, and verify operational health. |
 
 ## Surface boundaries
 
 The public surface is anonymous, mobile-first, read-only, lightweight, and limited to current occupancy truth. It must not expose controls, operational diagnostics, member identity, images, video, or tracking identifiers.
 
-Staff and owner surfaces are authenticated operational tools. Staff can operate the live count and see health but cannot access owner settings, analytics, or account management. Owners receive those additional governance and reporting capabilities. Server-side authorization—not navigation visibility—is authoritative. Shared staff access is PIN-based through the signed HttpOnly session model, not email/password. The current scaffold email/password form and the design archive's fake login values are not the target staff contract.
+Staff and owner surfaces are authenticated operational tools. Staff can read the live count and health but cannot operate the count and cannot access owner settings, analytics, or account management. Owners receive those additional governance and reporting capabilities. Server-side authorization—not navigation visibility—is authoritative. Shared staff access is PIN-based through the signed HttpOnly session model, not email/password. The current scaffold email/password form and the design archive's fake login values are not the target staff contract.
 
 ## Information hierarchy
 

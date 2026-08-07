@@ -78,8 +78,9 @@ Build the v1 pilot exactly as architected in RESEARCH.md §9–§11 and
   status band (Quiet/Moderate/Busy/Packed), an approximate count, open/closed state, and
   data freshness — honest in every state (fresh, stale, offline, closed). In v1,
   capacity, a denominator, and derived percentage are not exposed publicly.
-- A **staff operational view** (shared front-desk account): live count + device health,
-  manual correction, direct count entry, and reset-to-zero — all audited.
+- A **staff operational view** (shared front-desk account): live count, device health, and
+  freshness. It is monitoring-only — it issues no correction, direct count entry, or reset
+  (`docs/adr/ADR-008-staff-monitoring-only.md`).
 - An **owner/admin area**: analytics (today's curve, day×hour heatmap, peaks, daily
   averages, estimated daily visits, week-over-week), CSV export, settings (capacity,
   band thresholds, gym hours, business-day boundary, reset buffer), account management,
@@ -129,18 +130,19 @@ count (RESEARCH.md §9 governing rule).
     invented staff email identity.
 11. As staff, I want a live operational view (current count, band, last update, edge/camera
     health), so that I can see at a glance whether the system is healthy.
-12. As staff, I want to correct the count with +/− steppers and an explicit Apply action
-    (with optional short reason), so that I can fix an obviously wrong number.
-13. As staff, I want to type a count directly (non-negative integer) when stepping is
-    impractical or the edge is down, so that the public page keeps showing something real.
-14. As staff, I want to reset the count to 0 behind a confirmation dialog that states the
-    consequence, so that the most destructive action cannot happen by accident.
+12. **Withdrawn by `docs/adr/ADR-008-staff-monitoring-only.md`.** Stepper correction with an
+    explicit Apply action. `/staff` is monitoring-only; the number is corrected at the edge,
+    not from a product surface. The story number is retained so existing references stay
+    resolvable.
+13. **Withdrawn by ADR-008.** Direct count entry.
+14. **Withdrawn by ADR-008.** Reset to 0 behind a confirmation dialog.
 15. As staff, I want an unmistakable on-screen alert when the edge is offline or data is
-    stale, so that I know when manual fallback is needed.
+    stale, so that I know the displayed number is not current and can escalate to the
+    maintainer.
 16. As staff, I must NOT be able to reach owner settings, analytics, or account management,
     so that a stray change (e.g., capacity = 5) cannot break the public page.
-17. As staff, I want my correction to appear on the public page within ~2 minutes when the
-    system is healthy, so that I can trust the fix landed.
+17. **Withdrawn by ADR-008.** Staff-issued correction appearing on the public page within
+    ~2 minutes. There is no staff-issued correction to propagate.
 
 ### Owner / Admin
 
@@ -186,8 +188,8 @@ count (RESEARCH.md §9 governing rule).
     a health snapshot at most once per configured interval (~20 s) over an authenticated
     endpoint, so that the cloud always has a bounded, recent view.
 33. As the edge counter, I want every push acknowledged with any pending commands
-    (set-count / reset), so that staff corrections reach my local counter — the single
-    source of truth — and my next push reflects them.
+    (set-count / reset), so that scheduled and internally issued commands reach my local
+    counter — the single source of truth — and my next push reflects them.
 34. As the edge counter, I want to buffer counts/events/health locally for 24–48 h during
     an outage and backfill on reconnect, so that history and analytics survive network
     loss — without backfill ever changing the live current count.
@@ -231,10 +233,11 @@ measurable pilot targets):
       (both languages), per DESIGN_GUIDE §§4, 9, and 14.
 - [ ] The product is dark-only: no theme toggle, no light theme, `--fw-*` tokens from
       DESIGN_GUIDE §14 replace the scaffold's default palette.
-- [ ] Staff view provides live count + health, stepper correction, direct count entry, and
-      confirmed reset; every one of these writes an audit entry (who/when/from→to/reason)
-      in the same transaction; staff role cannot invoke any owner-only operation
-      (verified server-side, not just hidden in the UI).
+- [ ] Staff view provides live count + health and nothing that mutates the count: it exposes
+      no stepper correction, direct count entry, or reset (ADR-008). Every command that any
+      internal path does issue still writes an audit entry (who/when/from→to/reason) in the
+      same transaction; staff role cannot invoke any owner-only operation (verified
+      server-side, not just hidden in the UI).
 - [ ] Owner area provides today's curve, day×hour heatmap, per-day peaks, daily averages,
       estimated daily visits, week-over-week (with honest empty state), CSV export, all
       settings listed in story 24 (versioned), account management, audit log view, and a
@@ -244,8 +247,9 @@ measurable pilot targets):
       accurately describes every device-facing endpoint.
 - [ ] Corrections and resets are edge-authoritative: they travel as commands, are applied
       by the (simulated) edge, and the corrected count survives subsequent pushes (i.e., is
-      not silently undone). Manual fallback works when the edge is offline and reconciles
-      on reconnect.
+      not silently undone). Under ADR-008 the issuers are internal — scheduled reset,
+      recovery, and reconciliation — not a staff surface. Offline behavior is automatic and
+      reconciles on reconnect; there is no staff-triggered manual fallback.
 - [ ] Scheduled daily zero-reset fires per the per-weekday schedule + buffer in gym-local
       time, handles Friday's different hours and past-midnight closing, and reconciles if
       the edge was offline when due.
@@ -280,9 +284,11 @@ measurable pilot targets):
       against push timestamps). When the edge goes silent, a polling visitor sees the
       stale state within **≤ 5 minutes** of the last successful push (3-min stale
       threshold + one cache window + one poll interval).
-- [ ] **Correction propagation.** With the edge online, a staff correction/reset is
+- [ ] **Command propagation.** With the edge online, an issued correction/reset is
       reflected in a freshly fetched public payload within **≤ 90 s in ≥ 90% of ≥ 5
-      timed trials, and ≤ 3 min in 100%** (audit timestamp → payload observation).
+      timed trials, and ≤ 3 min in 100%** (audit timestamp → payload observation). Under
+      ADR-008 no staff surface triggers this; the trials are run against an internally
+      issued command, and the target is not measurable until Phase 7 supplies one.
 - [ ] **Alert delivery.** In ≥ 3 injected-failure tests (edge process killed during open
       hours), the Telegram alert arrives within **≤ 5 minutes** of heartbeat loss in 100%
       of tests, and the recovery notice within **≤ 5 minutes** of the first
@@ -334,8 +340,9 @@ just data, not a special case.
   backfill is idempotent. Retained indefinitely.
 - **Current state** — a single-row table: current count, band, source (`edge` | `manual`),
   last push received at, last edge-reported counter time, active device. This is what the
-  public payload builder reads; it is only advanced by live pushes and manual fallback,
-  never by backfill.
+  public payload builder reads; it is only advanced by live pushes and, if Phase 6 keeps an
+  internal producer of `source=manual` under ADR-008, by that path — never by backfill. The
+  enum is retained unchanged pending that review.
 - **Settings versions** — append-only: capacity, band thresholds (% boundaries for
   Quiet/Moderate/Busy/Packed), weekly hours, business-day boundary, reset buffer minutes,
   timezone, freshness windows (push interval, fresh ≤ 90 s, stale ≥ 180 s, public poll
@@ -487,9 +494,9 @@ not authorize implementation, and historical visual artifacts do not pre-authori
 **2. Staff/owner procedures (oRPC, session + role enforced server-side).**
 
 - Staff-or-owner: live operational snapshot (public payload fields + capacity, device
-  last-seen, health flags, pending command status, source detail); issue correction
-  (delta or absolute value, optional reason); issue reset; each returns the created
-  command + audit reference.
+  last-seen, health flags, pending command status, source detail). Read-only. ADR-008
+  retired `staff.issueCorrection` and `staff.issueReset`; no oRPC procedure issues a
+  command, and none may be reintroduced without a new versioned product decision.
 - Owner-only: analytics queries (today curve, heatmap, daily peaks/averages/visits,
   week-over-week); CSV export (per-minute rows for a date range, streamed, UTC + local
   time columns, Western digits); settings read/update (new version row + audit);
@@ -550,23 +557,26 @@ cache window.
 via the Page Visibility API when hidden, and refetches immediately on becoming visible.
 No WebSockets/SSE (RESEARCH.md §10).
 
-**Corrections and resets (edge-authoritative).** Staff correction (steppers or direct
-entry) and reset create a command; the UI shows "pending" until a subsequent push reflects
-the applied value (expected ≤ ~40 s online). Commands are **not** applied by overwriting
-the cloud value while the edge is online — the next push would silently undo it
-(RESEARCH.md §9). Reset always passes a destructive-confirmation dialog; direct entry
-accepts non-negative integers only, Western digits (DESIGN_GUIDE §11). Every
-command, applied or superseded, has its audit entry.
+**Corrections and resets (edge-authoritative).** A correction or reset creates a command
+that stays "pending" until a subsequent push reflects the applied value (expected ≤ ~40 s
+online). Commands are **not** applied by overwriting the cloud value while the edge is
+online — the next push would silently undo it (RESEARCH.md §9). Every command, applied or
+superseded, has its audit entry. Under ADR-008 the issuers are internal only: the
+scheduled daily zero-reset and any later recovery or reconciliation path. No staff or
+owner surface issues one, so there is no stepper, no direct entry, and no
+destructive-confirmation dialog to specify.
 
-**Manual fallback (edge offline). [Resolved here — validity window]** When the system is
-`stale`/`unavailable`, a staff direct entry both creates the pending command **and**
-immediately sets the current-state row (source `manual`), so the public page shows the
-staff-entered value with its own honest timestamp and a "manual estimate" presentation.
-Because a manual value cannot self-update, it uses a longer staleness window
-(default 30 min, configurable) instead of the 3-minute edge window — otherwise staff
-would have to re-enter every 3 minutes, which contradicts the no-babysitting principle
-(RESEARCH.md §5). On reconnect, the edge receives the pending set-count command, applies
-it, and its next live push retakes authority.
+**Offline behavior (edge offline). [Amended by ADR-008]** The staff manual fallback this
+section previously specified — a staff direct entry that both created a pending command
+and immediately set the current-state row with source `manual` — is withdrawn with the
+surface that would have triggered it. When the system is `stale`/`unavailable` the public
+page shows the honest stale or unavailable state; nothing substitutes a human-entered
+number for it. Automatic offline handling, buffered backfill, reconnect ordering, and
+reconciliation remain Phase 6 scope, and pending commands still apply before live
+authority resumes. Whether any internal producer of `source=manual` and the longer
+manual-validity staleness window (default 30 min, configurable) survives is the Phase 6
+review item recorded in `PHASES.md`; the enum value and the settings field are retained
+until then.
 
 **Daily zero-reset.** The cron evaluates the per-weekday schedule in gym-local time and,
 at close + buffer (default buffer 30 min, configurable), issues a system `reset_zero`
@@ -644,8 +654,9 @@ Deep modules with small interfaces; counting/state rules live in exactly one pla
 (RESEARCH.md §14):
 
 1. **Occupancy engine** — the only writer of current state and minute history. Interface:
-   "process this push" / "apply this manual fallback"; hides sequence dedup, backfill
-   rules, flooring, band computation, and snapshotting.
+   "process this push"; hides sequence dedup, backfill rules, flooring, band computation,
+   and snapshotting. ADR-008 withdrew the staff manual fallback, so the engine gains no
+   "apply this manual fallback" entry point.
 2. **Schedule & business-day module** — pure functions over settings: open/closed at an
    instant, next-open, business-day attribution, reset-due evaluation. Hides all timezone
    and past-midnight complexity; the most heavily unit-tested code in the system.
@@ -669,7 +680,8 @@ Postgres contract for database integration tests.
 
 - **Unit (highest density):** schedule & business-day module (Friday hours, past-midnight
   close, boundary attribution, reset-due, next-open); band computation and threshold
-  edges; freshness state machine including manual-fallback validity; command
+  edges; freshness state machine (manual-fallback validity only if Phase 6 keeps an
+  internal producer of `source=manual`, per ADR-008); command
   supersession/ordering; payload builder outputs for every state; settings validation.
 - **Integration (API-level, real Postgres):** push → current state → public payload
   round trip; sequence idempotency and backfill-does-not-move-current; command lifecycle
@@ -678,8 +690,9 @@ Postgres contract for database integration tests.
   issuance; alert condition detection writing the alert log (Telegram transport faked);
   CSV export shape.
 - **End-to-end (thin):** one browser smoke pass — public page renders each payload state
-  correctly in Arabic RTL and English LTR, and a staff correction flows through the
-  simulated edge to the public payload.
+  correctly in Arabic RTL and English LTR. ADR-008 removed the staff correction that this
+  pass previously drove end-to-end; the command path is exercised at the integration level
+  through direct service calls and simulated edge acknowledgement instead.
 - **Visual and accessibility acceptance:** Browser inspection plus repeatable Playwright
   screenshots at the required mobile/desktop sizes in Arabic RTL and English LTR; keyboard and
   focus order; reduced motion; wrapping/overflow; responsive tables; and chart hover,
