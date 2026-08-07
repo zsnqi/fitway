@@ -32,7 +32,7 @@ export const staffWeb = {
 	staff: {
 		eyebrow: "Front desk",
 		title: "Live operations",
-		description: "Occupancy, device health, and count controls in one view.",
+		description: "Current occupancy and system health in one operational view.",
 		loading: "Loading operational status",
 		loadErrorTitle: "Operational status could not be loaded",
 		loadErrorDescription:

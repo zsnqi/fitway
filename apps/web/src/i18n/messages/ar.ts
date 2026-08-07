@@ -33,7 +33,7 @@ export const staffWeb = {
 	staff: {
 		eyebrow: "مكتب الاستقبال",
 		title: "العمليات المباشرة",
-		description: "الإشغال وحالة الجهاز وأدوات ضبط العدد في عرض واحد.",
+		description: "حالة الإشغال وصحة النظام الآن في عرض تشغيلي واحد.",
 		loading: "جارٍ تحميل الحالة التشغيلية",
 		loadErrorTitle: "تعذر تحميل الحالة التشغيلية",
 		loadErrorDescription:
