@@ -14,10 +14,9 @@ export const staffWeb = {
 		skipToContent: "Skip to operational status",
 	},
 	login: {
-		eyebrow: "Front desk access",
+		eyebrow: "Front desk",
 		title: "Open live operations",
-		description:
-			"Enter the shared staff PIN to view the gym's operational status.",
+		description: "Enter the shared front-desk PIN.",
 		pinLabel: "Staff PIN",
 		pinHint: (minimum, maximum) =>
 			`Use ${isolate(minimum)}–${isolate(maximum)} Western digits.`,
@@ -55,8 +54,6 @@ export const staffWeb = {
 		sources: { edge: "Edge device", manual: "Manual reading" },
 		lastUpdated: (time) => `Updated ${isolate(time)}`,
 		nextOpen: (time) => `Next opens ${isolate(time)}`,
-		computed: (time) => `Snapshot computed ${isolate(time)}`,
-		schemaVersion: "Snapshot schema",
 		healthTitle: "System health",
 		healthDescription: "Server-evaluated device freshness and condition.",
 		healthFreshness: "Health freshness",

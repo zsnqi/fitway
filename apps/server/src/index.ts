@@ -23,7 +23,6 @@ import { logger } from "hono/logger";
 import { createOwnerAnalyticsReaders } from "./analytics-time-context-repository";
 import { mountAuthRoutes } from "./auth/routes";
 import { type AuthRuntime, createAuthRuntime } from "./auth/runtime";
-import { commandService } from "./command-repository";
 import { createEdgePushHandler } from "./edge-push";
 import { healthSnapshotRepository } from "./health-repository";
 import {
@@ -119,7 +118,6 @@ export function createApp(
 					readDailyAnalytics: ownerAnalyticsReaders.readDailyAnalytics,
 					readAnalyticsTimeContext:
 						ownerAnalyticsReaders.readAnalyticsTimeContext,
-					commandService,
 				}),
 			});
 			if (rpcResult.matched)

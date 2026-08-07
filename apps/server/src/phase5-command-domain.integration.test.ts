@@ -1,5 +1,14 @@
+/**
+ * `/staff` is monitoring-only (`docs/adr/ADR-008-staff-monitoring-only.md`), so the
+ * staff.issueCorrection and staff.issueReset oRPC leaves that once drove this file no
+ * longer exist. Issuance is exercised through direct `CommandService` calls against the
+ * disposable database; edge delivery and acknowledgement still cross real HTTP. What
+ * stopped being provable when the oRPC surface disappeared is recorded in
+ * `docs/phase-records/phase-05-staff-ui.md`.
+ */
 import { createHash, randomBytes, randomInt, randomUUID } from "node:crypto";
 import path from "node:path";
+import type { CommandService } from "@fitway/api/commands/service";
 import type { EdgePushRequest } from "@fitway/api/edge-push";
 import { processLivePush } from "@fitway/api/occupancy/engine";
 import { AuthService, type CanonicalAuthContext } from "@fitway/auth";
@@ -58,8 +67,9 @@ const rawDeviceToken = `p5_${"d".repeat(40)}`;
 let baseUrl = "";
 let server: ReturnType<typeof serve>;
 let deviceId = "";
-let staffCookie = "";
-let ownerCookie = "";
+let commands: CommandService;
+let staffActor: CanonicalAuthContext;
+let ownerActor: CanonicalAuthContext;
 let engine: ReturnType<
 	typeof import("./occupancy-repositories").createOccupancyEngineDatabase
 >;
@@ -82,25 +92,36 @@ const alwaysOpen = {
 	scheduleSatClose: "00:00",
 } as const;
 
-function cookiePair(setCookie: string) {
-	return setCookie.split(";", 1)[0] ?? "";
-}
-
 async function request(pathname: string, init?: RequestInit) {
 	return fetch(`${baseUrl}${pathname}`, init);
 }
 
-async function rpc(pathname: string, input: unknown, cookie?: string) {
-	const response = await request(`/rpc/staff/${pathname}`, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			...(cookie ? { Cookie: cookie } : {}),
-		},
-		body: JSON.stringify({ json: input }),
+/** The canonical principal an internal issuer presents to the command service. */
+async function actorFor(
+	principalKind: "shared_staff" | "owner",
+): Promise<CanonicalAuthContext> {
+	const [principal] = await database
+		.select()
+		.from(authSchema.authPrincipals)
+		.where(eq(authSchema.authPrincipals.principalKind, principalKind));
+	if (!principal) throw new Error(`${principalKind} principal is missing`);
+	return {
+		principalId: principal.id,
+		principalKind,
+		role: principalKind === "owner" ? "owner" : "staff",
+		sessionId: randomUUID(),
+		expiresAt: new Date(Date.now() + 60_000),
+		active: true,
+	};
+}
+
+async function databaseState() {
+	return JSON.stringify({
+		current: await database.select().from(currentState),
+		health: await database.select().from(edgeCurrentHealth),
+		commands: await database.select().from(edgeCommands),
+		audits: await database.select().from(auditLog),
 	});
-	const envelope = (await response.json()) as { json?: unknown };
-	return { status: response.status, body: envelope.json ?? envelope };
 }
 
 function minuteFor(value: Date) {
@@ -217,25 +238,18 @@ beforeAll(async () => {
 	});
 
 	await service.setSharedStaffPin(rawPin);
-	const staffLogin = await request("/api/auth/staff/pin", {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({ pin: rawPin }),
-	});
-	staffCookie = cookiePair(staffLogin.headers.getSetCookie()[0] ?? "");
-	const ownerPassword = randomBytes(24).toString("base64url");
-	const ownerEmail = `owner-${randomUUID()}@fitway.example`;
 	await service.provisionOwner({
-		email: ownerEmail,
+		email: `owner-${randomUUID()}@fitway.example`,
 		displayName: "Provisioned pilot owner",
-		password: ownerPassword,
+		password: randomBytes(24).toString("base64url"),
 	});
-	const ownerLogin = await request("/api/auth/owner/password", {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({ email: ownerEmail, password: ownerPassword }),
-	});
-	ownerCookie = cookiePair(ownerLogin.headers.getSetCookie()[0] ?? "");
+	staffActor = await actorFor("shared_staff");
+	ownerActor = await actorFor("owner");
+
+	const { createCommandServiceDatabase } = await import("./command-repository");
+	commands = createCommandServiceDatabase(
+		database as unknown as typeof import("@fitway/db").db,
+	);
 
 	expect(await push(1, 10, null)).toMatchObject({
 		accepted: true,
@@ -250,29 +264,23 @@ afterAll(async () => {
 	await pool.end();
 });
 
-describe.sequential("Phase 5 command domain over real HTTP and disposable Postgres", () => {
-	it("enforces authorization and strict correction/reset/backfill-shaped validation", async () => {
-		expect((await rpc("issueCorrection", { delta: 1 })).status).toBe(401);
+describe.sequential("Phase 5 command domain over the command service, real edge HTTP, and disposable Postgres", () => {
+	it("rejects strict correction/reset input and backfill-shaped live pushes without side effects", async () => {
+		const beforeInvalid = await databaseState();
 		for (const invalid of [
 			{ absolute: -1 },
 			{ delta: 1.5 },
 			{ delta: 1, absolute: 2 },
 			{ delta: 1, reason: " ".repeat(3) },
 		]) {
-			expect((await rpc("issueCorrection", invalid, staffCookie)).status).toBe(
-				400,
-			);
+			await expect(
+				commands.issueCorrection(staffActor, invalid as never),
+			).rejects.toThrow();
 		}
-		expect((await rpc("issueReset", { extra: true }, ownerCookie)).status).toBe(
-			400,
-		);
+		await expect(
+			commands.issueReset(ownerActor, { extra: true } as never),
+		).rejects.toThrow();
 
-		const beforeBackfill = JSON.stringify({
-			current: await database.select().from(currentState),
-			health: await database.select().from(edgeCurrentHealth),
-			commands: await database.select().from(edgeCommands),
-			audits: await database.select().from(auditLog),
-		});
 		const backfillNow = new Date();
 		const invalidBackfill = await request("/edge/push", {
 			method: "POST",
@@ -309,37 +317,19 @@ describe.sequential("Phase 5 command domain over real HTTP and disposable Postgr
 			.from(edgeDevices)
 			.where(eq(edgeDevices.id, deviceId));
 		expect(device?.lastSequence).toBe(1);
-		expect(
-			JSON.stringify({
-				current: await database.select().from(currentState),
-				health: await database.select().from(edgeCurrentHealth),
-				commands: await database.select().from(edgeCommands),
-				audits: await database.select().from(auditLog),
-			}),
-		).toBe(beforeBackfill);
+		expect(await databaseState()).toBe(beforeInvalid);
 	});
 
 	it("atomically issues monotonic commands, floors delta, supersedes latest-only, and preserves cloud current state", async () => {
-		const delta = await rpc(
-			"issueCorrection",
-			{ delta: -20, reason: "  obvious drift  " },
-			staffCookie,
-		);
-		expect(delta.status).toBe(200);
-		const deltaResult = delta.body as {
-			command: { id: number; targetValue: number };
-		};
+		const deltaResult = await commands.issueCorrection(staffActor, {
+			delta: -20,
+			reason: "  obvious drift  ",
+		});
 		expect(deltaResult.command.targetValue).toBe(0);
 
-		const absolute = await rpc(
-			"issueCorrection",
-			{ absolute: 17 },
-			ownerCookie,
-		);
-		expect(absolute.status).toBe(200);
-		const absoluteResult = absolute.body as {
-			command: { id: number; targetValue: number };
-		};
+		const absoluteResult = await commands.issueCorrection(ownerActor, {
+			absolute: 17,
+		});
 		commandIds = [deltaResult.command.id, absoluteResult.command.id];
 		expect(commandIds[1]).toBeGreaterThan(commandIds[0] ?? 0);
 
@@ -423,13 +413,10 @@ describe.sequential("Phase 5 command domain over real HTTP and disposable Postgr
 			)[0]?.status,
 		).toBe("pending");
 
-		const reset = await rpc(
-			"issueReset",
-			{ reason: " closing check " },
-			ownerCookie,
-		);
-		expect(reset.status).toBe(200);
-		const resetId = (reset.body as { command: { id: number } }).command.id;
+		const reset = await commands.issueReset(ownerActor, {
+			reason: " closing check ",
+		});
+		const resetId = reset.command.id;
 		expect(resetId).toBeGreaterThan(latest);
 		expect(await push(5, 10, latest)).toMatchObject({
 			accepted: true,
@@ -474,24 +461,9 @@ describe.sequential("Phase 5 command domain over real HTTP and disposable Postgr
 	});
 
 	it("rolls back command, supersession, and audit together when audit append fails", async () => {
-		expect(
-			(await rpc("issueCorrection", { absolute: 3 }, staffCookie)).status,
-		).toBe(200);
+		await commands.issueCorrection(staffActor, { absolute: 3 });
 		const beforeCommands = await database.select().from(edgeCommands);
 		const beforeAudits = await database.select().from(auditLog);
-		const [principal] = await database
-			.select()
-			.from(authSchema.authPrincipals)
-			.where(eq(authSchema.authPrincipals.principalKind, "shared_staff"));
-		if (!principal) throw new Error("Shared staff principal is missing");
-		const actor: CanonicalAuthContext = {
-			principalId: principal.id,
-			principalKind: "shared_staff",
-			role: "staff",
-			sessionId: randomUUID(),
-			expiresAt: new Date(Date.now() + 60_000),
-			active: true,
-		};
 		const { createCommandServiceDatabase } = await import(
 			"./command-repository"
 		);
@@ -502,7 +474,7 @@ describe.sequential("Phase 5 command domain over real HTTP and disposable Postgr
 			},
 		);
 		await expect(
-			failing.issueCorrection(actor, { absolute: 4 }),
+			failing.issueCorrection(staffActor, { absolute: 4 }),
 		).rejects.toThrow("forced audit failure");
 		expect(await database.select().from(edgeCommands)).toEqual(beforeCommands);
 		expect(await database.select().from(auditLog)).toEqual(beforeAudits);

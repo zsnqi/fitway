@@ -200,4 +200,9 @@ export function createCommandServiceDatabase(
 	});
 }
 
+/**
+ * Internal issuers call this singleton directly. `/staff` is monitoring-only
+ * (`docs/adr/ADR-008-staff-monitoring-only.md`), so it is deliberately not
+ * injected into the oRPC context; Phase 7's cron route consumes it here.
+ */
 export const commandService = createCommandServiceDatabase(db);
