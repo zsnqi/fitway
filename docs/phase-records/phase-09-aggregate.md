@@ -77,7 +77,13 @@ commit between `a7a7f64` and this closure is documentation, coordinator ledger s
   `verify:fast` and `verify:full` never read.
 
 No product source file, test, Zod or OpenAPI contract, migration, i18n catalog, build input, or
-canonical screenshot changed in that range, so no `verify:full` gate can have been affected. The
+canonical screenshot changed in that range, so no `verify:full` gate can have been affected.
+
+One later Wave 0 commit, `1ac03a7`, declares `testTimeout: 20000` in the root `vitest.config.ts`,
+which had never overridden Vitest's 5000ms default. It raises a wall-clock ceiling and can only
+turn a timeout into a pass, never a pass into a failure, so it does not weaken the evidence above;
+it removes a load-dependent flake that this suite has carried since Phase 9. See
+`docs/phase-records/wave-0-baseline.md`. The
 one gate those commits *can* affect — `check:repository`, which hashes the approval manifest and
 validates the ledger — was rerun and passes, together with the whole `verify:fast` ladder, on the
 Wave 0 head. Those results are recorded in `docs/phase-records/wave-0-baseline.md`.

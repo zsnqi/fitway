@@ -99,24 +99,53 @@ Phase 10 activation must list that exact path in `ownedPaths`.
 ## Gates run on `M0`
 
 ```text
-node scripts/verify-repository.mjs
-  Repository invariants passed: 31 milestones, 8 canonical approval screenshots.   exit=0
+pnpm check:repository                                                              exit=0
+  Repository invariants passed: 31 milestones, 8 canonical approval screenshots.
 
 pnpm verify:fast                                                                   exit=0
-  Repository invariants   PASS
-  Biome check             PASS
-  Type checks             PASS (all workspaces)
-  Unit tests              PASS — 36 files / 140 tests
-  Python simulator tests  PASS — 5 tests
+  Repository invariants     PASS
+  Biome check               PASS — 211 files
+  Type checks               PASS — all workspaces
+  Unit tests                PASS — 36 files / 140 tests
+  Python simulator tests    PASS — 5 tests
   Repository mutation guard PASS — "Verification fast passed without repository mutation"
 ```
 
-Run at `439b1b3`, the head immediately preceding this record, and re-confirmed at `M0` after this
-record landed. This answers the audit's §16.4 open question: `verify:fast` does pass on the Wave 0
-baseline. The blocker the Paper closeout record predicted —
-`apps/server/src/command-repository.test.ts` importing `packages/db` at module scope — does not
-exist here; that file is untracked on `main` (`git ls-files` returns nothing) and belongs to the
-Phase 5 branch.
+Run twice, consecutively, at `1ac03a7` — the last Wave 0 commit that touches any executable file.
+Everything after it is Markdown that no gate reads.
+
+This answers the audit's §16.4 open question: `verify:fast` does pass on the Wave 0 baseline. The
+blocker the Paper closeout record predicted — `apps/server/src/command-repository.test.ts`
+importing `packages/db` at module scope — does not exist here; that file is untracked on `main`
+(`git ls-files` returns nothing) and belongs to the Phase 5 branch.
+
+### The gate was red once, for a reason that predates Wave 0
+
+Recorded because the first `verify:fast` on the Wave 0 head passed and the second failed, and
+because the fix is a coordinator-owned file every future worktree inherits.
+
+`packages/api/src/analytics/history-generator.test.ts` timed out at Vitest's undeclared 5000ms
+default. `vitest.config.ts` had never set `testTimeout`, and under full-file parallelism that test
+measures 5.9s while the next-slowest measures 4.0s; alone it takes ~3.0s. The suite had been
+riding the default ceiling since Phase 9, so which side of it a run landed on was decided by
+machine load: green at `439b1b3`, then red three consecutive times at `fc798b7` with no
+intervening executable change.
+
+Not a Wave 0 regression, and verified as such before anything was touched: `git diff --name-only
+680cccc..HEAD -- packages apps edge tests` is empty, and the test, `packages/api/src/analytics/`,
+`vitest.config.ts`, `package.json`, and `pnpm-lock.yaml` are byte-identical to `a7a7f64`, where
+`verify:full` passed 140/140. The test file has not changed since `90aded1` on 2026-07-16.
+
+Fixed in `1ac03a7` by declaring `testTimeout: 20000` in the root `vitest.config.ts` — roughly 3.4x
+the slowest observed test. `vitest.config.ts` is root test-runner configuration, coordinator-owned
+and named in every worker's `forbiddenPaths`, so it is Wave 0's to change and no worker's. No
+test, assertion, product file, or gate semantic changed; only the wall clock stopped deciding
+them. `vitest.integration.config.ts` is a separate config and was left alone.
+
+The alternative — a per-test timeout inside
+`packages/api/src/analytics/history-generator.test.ts` — was rejected: that path is
+`phase9-analytics-domain`'s `ownedPaths` in a slice that is `DONE`, and the problem is the
+suite-wide ceiling, not that one test.
 
 `verify:full` was not rerun. See `docs/phase-records/phase-09-aggregate.md` for the reasoning and
 for what would change if the Phase 4 precedent is held binding.
