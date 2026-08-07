@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-07T18:00:00+03:00"
+updatedAt: "2026-08-07T18:15:00+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -759,28 +759,28 @@ milestones:
     integratedCommit: c02b4df8f1fdca1c3e25c888ac2de444400a4e10
 
   phase-9:
-    status: PLANNED
+    status: DONE
     dependencies: [phase9-analytics-domain, phase9-owner-ui]
     ownerSession: null
-    branch: null
+    branch: main
     worktree: null
-    baseCommit: null
+    baseCommit: ffa26ba186b8d196f9fa931fcc8d27a2acf71ee1
     ownedPaths: []
     forbiddenPaths: []
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
+    lastHeartbeatAt: "2026-08-07T18:15:00+03:00"
     leaseExpiresAt: null
-    handoff: null
+    handoff: docs/phase-records/phase-09-aggregate.md
     stopReason: null
     gates:
-      unit: PENDING
-      integration: PENDING
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
-      independentReview: PENDING
-    integratedCommit: null
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
+      independentReview: PASS
+    integratedCommit: ffa26ba186b8d196f9fa931fcc8d27a2acf71ee1
 
   phase10-domain:
     status: PLANNED
