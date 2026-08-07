@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-07T20:16:00+03:00"
+updatedAt: "2026-08-07T20:40:00+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -371,9 +371,9 @@ milestones:
     integratedCommit: 4211b172bcfbb50b30f3f38a400287e5d12bdf7e
 
   phase5-staff-ui:
-    status: READY
+    status: IN_PROGRESS
     dependencies: [phase5-command-domain]
-    ownerSession: "phase5 staff UI retry candidate on work/phase5-staff-ui-b03-retry, reconciled onto M0 at 608c1f8ac190c3af06f8cdf2c1dce85dc4889b05; the monitoring-only Phase 5 closeout slice is specified but unstarted"
+    ownerSession: "monitoring-only Phase 5 closeout on work/phase5-staff-ui-b03-retry at 608c1f8ac190c3af06f8cdf2c1dce85dc4889b05: retire the staff command surface, including the integrated staff.issueCorrection and staff.issueReset leaves and the branch-only staff.recentCommands leaf, and align /staff with monitoring-only. Implements no Paper production family"
     branch: work/phase5-staff-ui-b03-retry
     worktree: D:/Projects/fitway-worktrees/phase5-staff-ui-retry
     baseCommit: 229b9ce1f50ba8f598ea60556913a8b98ac0c228
@@ -384,30 +384,38 @@ milestones:
       - apps/web/src/routes/staff.tsx
       - tests/browser/phase5-staff-ui.browser.spec.ts
       - docs/phase-records/handoffs/phase5-staff-ui/**
+      - docs/adr/ADR-008-staff-monitoring-only.md
+      - docs/phase-records/phase-05-staff-ui.md
     forbiddenPaths:
       - all repository paths outside ownedPaths and a later explicit lease
-      - packages/db/**
-      - packages/api/**
-      - apps/server/**
+      - packages/db/**, including the edge_commands schema and migration 0005, which is never re-generated
+      - "packages/api/**, except the exact files named in sharedLeases; packages/api/src/commands/queue.ts, schemas.ts, service.ts and their tests, packages/api/src/edge-push.ts, packages/api/src/occupancy/engine.ts, and packages/api/src/health/snapshot.ts stay forbidden outright"
+      - "apps/server/**, except the exact files named in sharedLeases; apps/server/src/edge-push.ts, apps/server/src/audit-repository.ts, apps/server/src/openapi.ts, and apps/server/src/openapi.test.ts stay forbidden outright"
       - edge/**
-      - apps/web/src/i18n/messages/**
+      - "apps/web/src/i18n/messages/**, except the single staff.description reversal in ar.ts and en.ts permitted by the retroactive monitoring-salvage lease; no other key in either catalog and no other catalog file"
       - apps/web/src/i18n/catalog.ts
       - apps/web/src/hooks/use-staff-messages.ts
       - apps/web/src/components/staff/staff-shell.tsx
-      - apps/web/src/components/staff/messages.ts
-      - apps/web/src/components/staff/staff.css
+      - "apps/web/src/components/staff/messages.ts, except the already-carried monitoring change named in the retroactive monitoring-salvage lease"
+      - "apps/web/src/components/staff/staff.css, except the already-carried monitoring and login change named in the retroactive monitoring-salvage lease"
       - apps/web/src/routeTree.gen.ts
       - PROJECT_STATE.yaml
       - docs/phase-records/phase-05-command-domain.md
       - docs/phase-records/phase-09-owner-ui.md
       - docs/phase-records/batch-03-activation.md
-      - visual-direction-gate/**
-      - root manifests, lockfiles, environment schemas, test-runner config, and scripts/verify.mjs
+      - every other milestone's phase record
+      - visual-direction-gate/** and the canonical toHaveScreenshot baselines
+      - "operationalSnapshotSchema.source and the frozen operational snapshot DTO: decision 6 is deferred to Phase 6 and is neither resolved nor reopened here"
+      - Paper production-family implementation, ADR-007 family coverage, and any Phase 6, 10, or 11 product or visual decision
+      - "root manifests, lockfiles, environment schemas, test-runner config, vitest and playwright configs, biome.json, and scripts/verify.mjs; the phase5-staff-ui verification-profile repoint named in the closeout plan step 4 is deliberately withheld from this lease and stays coordinator work"
     sharedLeases:
-      - "exclusive through 2026-08-13T21:00:00+03:00: private lifecycle-read continuation limited to packages/api/src/commands/recent-commands.ts, packages/api/src/commands/recent-commands.test.ts, packages/api/src/context.ts, packages/api/src/routers/index.ts, apps/server/src/command-repository.ts, apps/server/src/command-repository.test.ts, apps/server/src/index.ts, and apps/server/src/phase5-staff-recent-commands.integration.test.ts; it excludes migrations, edge/OpenAPI, public payloads, and staff.operationalSnapshot"
+      - "exclusive through 2026-08-14T21:00:00+03:00: closeout retirement of the staff-facing backend exposure surface, per operation. DELETE packages/api/src/commands/recent-commands.ts and packages/api/src/commands/recent-commands.test.ts. CONSTRAINED WRITE to packages/api/src/routers/index.ts, limited to retiring the staff.issueCorrection, staff.issueReset, and staff.recentCommands router exposure and the command-service wiring, helpers, and imports that become dead with them. CONSTRAINED WRITE to packages/api/src/context.ts, limited to removing the commandService and recent-command context dependencies that become dead once the retired leaves are gone. CONSTRAINED WRITE to apps/server/src/index.ts, limited to dropping those retired createContext arguments. CONSTRAINED WRITE to apps/server/src/command-repository.ts, limited to removing retired recent-command plumbing; createCommandServiceDatabase and the exported commandService singleton are preserved because the Phase 7 cron route calls them directly. CONSTRAINED WRITE to apps/server/src/command-repository.test.ts for the known module-scope packages/db test-collection repair assigned to this closeout. DELETE apps/server/src/phase5-staff-recent-commands.integration.test.ts, whose only subject is /rpc/staff/recentCommands. EXCLUDES migrations and packages/db, edge protocol, OpenAPI and public payloads, staff.operationalSnapshot and operationalSnapshotSchema.source, and the core CommandService implementation and its tests"
+      - "exclusive through 2026-08-14T21:00:00+03:00: borrowed acceptance evidence of the DONE phase5-command-domain milestone, not ownership. DELETE packages/api/src/commands/router.test.ts, whose whole subject is the retired staff.issueCorrection and staff.issueReset router leaves. CONSTRAINED WRITE to apps/server/src/phase5-command-domain.integration.test.ts, limited to re-proving lifecycle mechanics through direct commandService calls against the disposable database while retiring the staff-facing RPC mutation coverage; backend command-service, edge delivery and acknowledgement, supersession, and audit-rollback coverage must survive intact. Coverage that stops being provable at the oRPC boundary, including staff-or-owner role enforcement on the retired leaves and CommandIssueError to BAD_REQUEST translation, must be stated explicitly in docs/phase-records/phase-05-staff-ui.md; it may not be silently erased"
+      - "exclusive through 2026-08-14T21:00:00+03:00: normative-authority reconciliation of the human-approved monitoring-only decision, limited to FITWAY_PRODUCT.md, SPEC.md, PHASES.md, DESIGN_GUIDE.md, docs/adr/ADR-003-edge-authority-and-reconciliation.md, and docs/adr/README.md. Edits are confined to reconciling that decision; ADR-003 keeps its decision body unedited and receives a partial-supersession note only. ADR-008 and these updates land in one atomic commit, as the closeout plan step 2 requires, so no interval exists where an ADR and a normative document disagree. No unrelated normative statement may move, and no Phase 6, 10, or 11 product decision may be introduced"
+      - "exclusive through 2026-08-14T21:00:00+03:00: retroactive authorization of the monitoring and login changes already carried in commit 885b5b0, replayed from 6cc6d6a, limited to apps/web/src/components/staff/staff.css, apps/web/src/components/staff/messages.ts, apps/web/src/components/staff/operational-snapshot-view.tsx, apps/web/src/i18n/messages/ar.ts, and apps/web/src/i18n/messages/en.ts. It authorizes only those already-carried changes, plus one further edit: reverting staff.description in the two locale catalogs to its pre-6cc6d6a monitoring-only wording, which is the last place the monitoring surface advertises command controls. It is not a general lease on apps/web/src/i18n/messages/**, grants no unrelated staff styling or i18n authority, and does not extend to apps/web/src/i18n/catalog.ts, use-staff-messages.ts, or staff-shell.tsx"
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-07T20:16:00+03:00"
-    leaseExpiresAt: "2026-08-13T21:00:00+03:00"
+    lastHeartbeatAt: "2026-08-07T20:40:00+03:00"
+    leaseExpiresAt: "2026-08-14T21:00:00+03:00"
     handoff: docs/phase-records/handoffs/phase5-staff-ui/20260807-201600-p5_staff_b03_retry-m0-reconciliation.md
     stopReason: null
     gates:
