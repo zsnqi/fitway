@@ -17,14 +17,34 @@ const heights = [
 	82, 86, 88, 90, 92, 94, 96, 98, 100,
 ];
 
+/**
+ * The Paper staff board draws the same 28-bar instrument on an almost-linear
+ * ramp that keeps climbing through the packed band, where the public board
+ * flattens near the top. Callers opt into it; the public surface keeps `heights`.
+ */
+export const CROWD_SIGNAL_LINEAR_HEIGHTS = [
+	11.93, 15.34, 18.75, 21.59, 25, 28.41, 31.82, 34.66, 38.07, 41.48, 44.32,
+	47.73, 51.14, 54.55, 57.39, 60.8, 64.2, 67.61, 70.45, 73.86, 77.27, 80.68,
+	83.52, 86.93, 90.34, 93.18, 96.59, 100,
+];
+
 export function CrowdSignal({
 	band,
 	stale = false,
 	skeleton = false,
+	className,
+	showFooter = true,
+	ramp = heights,
 }: {
 	band?: CrowdBand;
 	stale?: boolean;
 	skeleton?: boolean;
+	/** Extra class on the root, for surface-scoped geometry overrides. */
+	className?: string;
+	/** The public board closes with a reading strip; the staff board does not. */
+	showFooter?: boolean;
+	/** Bar heights as percentages of the wave box, ascending, 28 entries. */
+	ramp?: readonly number[];
 }) {
 	const { locale, messages } = useI18n();
 	const currentBandIndex = band ? bands.indexOf(band) : -1;
@@ -54,6 +74,7 @@ export function CrowdSignal({
 				"public-live__signal",
 				stale ? "public-live__signal--stale" : "",
 				skeleton ? "public-live__signal--skeleton" : "",
+				className ?? "",
 			]
 				.filter(Boolean)
 				.join(" ")}
@@ -67,7 +88,7 @@ export function CrowdSignal({
 				))}
 			</div>
 			<div className="public-live__signal-wave" aria-hidden="true">
-				{heights.map((height, index) => {
+				{ramp.map((height, index) => {
 					const barBand = barBands[index];
 					const barBandIndex = bands.indexOf(barBand);
 					const state = skeleton
@@ -93,7 +114,7 @@ export function CrowdSignal({
 					);
 				})}
 			</div>
-			{band && !skeleton ? (
+			{band && !skeleton && showFooter ? (
 				<div className="public-live__signal-footer" aria-hidden="true">
 					<span className="public-live__current-reading">
 						<i />

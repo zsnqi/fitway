@@ -1,0 +1,1301 @@
+/*
+ * /staff — approved Paper monitoring family.
+ *
+ * Scoped entirely under `.sboard*`. `/login` and `/admin` keep `staff.css` and
+ * are untouched by this file. Paper's mirror model is `row-reverse`; this file
+ * uses logical properties instead, so the same declarations serve both
+ * directions and only the deliberately physical parts (the rail zones, the
+ * atmosphere glows, the mark's slash) are pinned.
+ */
+
+.sboard-shell {
+	--sb-field: #100b0e;
+	--sb-panel: #171316;
+	--sb-edge-quiet: #dcc5c90f;
+	--sb-edge: #dcc5c91a;
+	--sb-edge-control: #dcc5c92e;
+	--sb-edge-board-mobile: #dcc5c942;
+	--sb-lift: #ffeef007;
+	--sb-rail-material: #ffffff08;
+	--sb-rail-identity: #ffffff05;
+	--sb-board-rest: #1d181c20;
+	--sb-board-mobile: #1d181c40;
+	--sb-continuation: #ffeef004;
+	--sb-focus: var(--fw-focus-ring);
+
+	/* Desktop tier defaults; the breakpoints below re-declare the tier vars. */
+	--sb-rail-height: 56px;
+	--sb-rail-inset: 40px;
+	--sb-rail-gap: 10px;
+	--sb-rail-font: 15px;
+	--sb-rail-line: 18px;
+	--sb-rail-divider: 18px;
+	--sb-wordmark-size: 16px;
+	--sb-wordmark-track: 0.16em;
+	--sb-mark-size: 24px;
+	--sb-content-block: 36px 44px;
+	--sb-content-inset: 48px;
+	--sb-content-gap: 26px;
+	--sb-title-size: 32px;
+	--sb-title-line: 40px;
+	--sb-reading-block: 40px;
+	--sb-reading-inset: 48px;
+	--sb-reading-gap: 36px;
+	--sb-metric-gap: 10px;
+	--sb-band-size: 82px;
+	--sb-band-line: 92px;
+	--sb-band-track: -0.02em;
+	--sb-eyebrow-size: 13px;
+	--sb-eyebrow-line: 16px;
+	--sb-fresh-size: 14px;
+	--sb-fresh-line: 18px;
+	--sb-fresh-dot: 7px;
+	--sb-count-size: 64px;
+	--sb-count-line: 78px;
+	--sb-count-gap: 19px;
+	--sb-tick-width: 4px;
+	--sb-tick-height: 104px;
+	--sb-tick-glow: 18px;
+	--sb-wave-height: 176px;
+	--sb-bar-gap: 6px;
+	--sb-group-extra: 0px;
+	--sb-caption-size: 12px;
+	--sb-caption-line: 20px;
+	--sb-signal-gap: 14px;
+	--sb-status-inset: 20px;
+	--sb-cell-block: 24px;
+	--sb-cell-inset: 28px;
+	--sb-cell-label-size: 13px;
+	--sb-cell-label-line: 16px;
+	--sb-cell-value-size: 18px;
+	--sb-cell-value-line: 28px;
+	--sb-cell-dot: 8px;
+	--sb-secondary-size: 13px;
+	--sb-secondary-line: 22px;
+	--sb-notice-block: 16px;
+	--sb-notice-inset: 28px;
+	--sb-notice-gap: 14px;
+	--sb-notice-size: 14px;
+	--sb-notice-line: 24px;
+	--sb-statement-size: 56px;
+	--sb-statement-line: 74px;
+	--sb-reason-size: 15px;
+	--sb-reason-line: 26px;
+	--sb-failure-title-size: 22px;
+	--sb-failure-title-line: 30px;
+
+	position: relative;
+	isolation: isolate;
+	display: flex;
+	flex-direction: column;
+	min-block-size: 100vh;
+	overflow-x: clip;
+	background-color: var(--sb-field);
+}
+
+/* Arabic runs larger with a looser line box and no negative tracking so the two
+   locales read at comparable optical weight: Cairo's Arabic has no uppercase
+   and a lower effective cap height. The count gap drops the numeral to meet the
+   taller Arabic band word's baseline. */
+[lang="ar"] .sboard-shell {
+	--sb-band-size: 90px;
+	--sb-band-line: 102px;
+	--sb-band-track: 0;
+	--sb-count-gap: 25px;
+}
+
+@supports (height: 100svh) {
+	.sboard-shell {
+		min-block-size: 100svh;
+	}
+}
+
+@supports (height: 100dvh) {
+	.sboard-shell {
+		min-block-size: 100dvh;
+	}
+}
+
+.sboard-shell > :not(.sboard-atmosphere) {
+	position: relative;
+	z-index: 1;
+}
+
+/* Two fixed glows: the warmer one upper-left, the cooler oxblood lower-right.
+   Both fade to fully transparent before the edges, so there is no vignette, and
+   neither is mirrored for Arabic — the physical lighting is the same. */
+.sboard-atmosphere {
+	position: fixed;
+	z-index: 0;
+	inset: 0;
+	pointer-events: none;
+	background-color: var(--sb-field);
+	background-image:
+		radial-gradient(
+			ellipse 82% 64% at 14% 22% in oklab,
+			oklab(31.3% 0.109 0.036 / 46%) 0%,
+			oklab(27.3% 0.094 0.032 / 16%) 48%,
+			oklab(13.9% -0.001 -0.003 / 0%) 78%
+		),
+		radial-gradient(
+			ellipse 96% 70% at 88% 82% in oklab,
+			oklab(27.3% 0.094 0.032 / 36%) 0%,
+			oklab(27.3% 0.094 0.032 / 12%) 52%,
+			oklab(13.9% -0.001 -0.003 / 0%) 82%
+		);
+}
+
+/* ---- Header rail ------------------------------------------------------- */
+
+.sboard-rail {
+	background-color: var(--sb-rail-material);
+	backdrop-filter: blur(14px) saturate(112%);
+}
+
+.sboard-rail__bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	min-block-size: var(--sb-rail-height);
+	padding-inline: max(var(--sb-rail-inset), env(safe-area-inset-left))
+		max(var(--sb-rail-inset), env(safe-area-inset-right));
+	border-block-end: 1px solid var(--sb-edge);
+}
+
+/* Session controls sit physically inline-start and the brand physically
+   inline-end in both locales: switching language must not move a control out
+   from under the pointer. `direction: ltr` on the flex line pins the zones
+   while each control keeps its own text direction through `bdi`. */
+.sboard-rail__bar,
+.sboard-rail__session,
+.sboard-rail__brand {
+	direction: ltr;
+}
+
+.sboard-rail__session,
+.sboard-rail__brand {
+	display: flex;
+	align-items: center;
+	gap: var(--sb-rail-gap);
+	min-inline-size: 0;
+}
+
+.sboard-rail__control {
+	display: inline-flex;
+	align-items: center;
+	min-block-size: 44px;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: var(--fw-muted);
+	font: inherit;
+	font-size: var(--sb-rail-font);
+	font-weight: 500;
+	line-height: var(--sb-rail-line);
+	text-decoration: none;
+	cursor: pointer;
+	transition: color var(--fw-duration-fast, 140ms) var(--fw-ease-out, ease);
+}
+
+.sboard-rail__control--primary {
+	color: var(--fw-chalk);
+}
+
+/* No pill, chip, fill, border or boxed resting state anywhere on the rail:
+   hover only raises contrast and pressed only lowers luminance. */
+@media (hover: hover) {
+	.sboard-rail__control:hover:not(:disabled) {
+		color: var(--fw-chalk);
+	}
+}
+
+.sboard-rail__control:active:not(:disabled) {
+	color: var(--fw-text-subtle);
+}
+
+.sboard-rail__control:disabled {
+	cursor: default;
+}
+
+/* The 44px target must not move the ink, so the ring is drawn on the ink box:
+   2px fw-focus at radius 8, 9px inline and 5px block outside the glyphs. */
+.sboard-rail__ink {
+	display: inline-flex;
+	margin: -5px -9px;
+	padding: 5px 9px;
+	border-radius: var(--fw-radius-control);
+}
+
+.sboard-rail__control:focus-visible {
+	outline: none;
+}
+
+.sboard-rail__control:focus-visible .sboard-rail__ink {
+	outline: 2px solid var(--sb-focus);
+	outline-offset: 0;
+}
+
+.sboard-rail__divider {
+	flex: none;
+	inline-size: 1px;
+	block-size: var(--sb-rail-divider);
+	background: var(--sb-edge);
+}
+
+.sboard-rail__wordmark {
+	color: var(--fw-chalk);
+	font-size: var(--sb-wordmark-size);
+	font-weight: 700;
+	letter-spacing: var(--sb-wordmark-track);
+	line-height: 1.25;
+	white-space: nowrap;
+}
+
+/* A red ring with a 45° slash rising left to right. The slash is a logo form,
+   so it is not mirrored in Arabic. */
+.sboard-rail__mark {
+	flex: none;
+	inline-size: var(--sb-mark-size);
+	block-size: var(--sb-mark-size);
+}
+
+/* ---- Content column ---------------------------------------------------- */
+
+.sboard-main {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	align-items: stretch;
+	gap: var(--sb-content-gap);
+	inline-size: 100%;
+	padding: var(--sb-content-block);
+	padding-inline: max(var(--sb-content-inset), env(safe-area-inset-left))
+		max(var(--sb-content-inset), env(safe-area-inset-right));
+}
+
+.sboard-title {
+	margin: 0;
+	inline-size: max-content;
+	max-inline-size: 100%;
+	color: var(--fw-chalk);
+	font-size: var(--sb-title-size);
+	font-weight: 700;
+	letter-spacing: 0;
+	line-height: var(--sb-title-line);
+}
+
+/* ---- The board --------------------------------------------------------- */
+
+.sboard {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	inline-size: 100%;
+	overflow: clip;
+	border: 1px solid var(--sb-edge-control);
+	border-radius: var(--fw-radius-board);
+	background-color: var(--sb-board-rest);
+	background-image: linear-gradient(
+		in oklab 160deg,
+		oklab(27.3% 0.094 0.032 / 19.6%) 0%,
+		oklab(96.3% 0.018 0.003 / 3%) 46%,
+		oklab(21.7% 0.01 -0.005 / 8.2%) 100%
+	);
+	background-origin: border-box;
+	backdrop-filter: blur(22px) saturate(114%);
+	box-shadow:
+		var(--sb-lift) 0 1px 0 inset,
+		#0000002e 0 8px 8px;
+}
+
+/* The leading accent marks the inline-start edge at desktop and rotates to a
+   block-start bar below it. It never changes with state. */
+.sboard__accent {
+	position: absolute;
+	z-index: 2;
+	inset-block: 0;
+	inset-inline-start: 0;
+	inline-size: 6px;
+	background-image: linear-gradient(
+		in oklab 180deg,
+		oklab(64.5% 0.224 0.089) 0%,
+		oklab(58.9% 0.21 0.089) 38%,
+		oklab(27.3% 0.094 0.032) 100%
+	);
+}
+
+.sboard__body {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	min-inline-size: 0;
+	padding-inline-start: 6px;
+}
+
+.sboard__reading {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: var(--sb-reading-gap);
+	min-inline-size: 0;
+	padding: var(--sb-reading-block) var(--sb-reading-inset);
+}
+
+.sboard__hero {
+	display: flex;
+	align-items: flex-start;
+	gap: 24px;
+	min-inline-size: 0;
+	padding-block-start: 8px;
+}
+
+.sboard__metric {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	align-items: start;
+	gap: var(--sb-metric-gap);
+	min-inline-size: 0;
+}
+
+.sboard__eyebrow {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0;
+	color: var(--fw-text-subtle);
+	font-size: var(--sb-eyebrow-size);
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	line-height: var(--sb-eyebrow-line);
+}
+
+/* Latin eyebrows are set uppercase and tracked; Arabic has no uppercase, and
+   tracking breaks its letter joining, so every RTL label runs untracked and in
+   its authored case. */
+.sboard__eyebrow,
+.sboard__count-label,
+.sboard__cell-label {
+	text-transform: uppercase;
+}
+
+[dir="rtl"] .sboard__eyebrow,
+[dir="rtl"] .sboard__count-label,
+[dir="rtl"] .sboard__cell-label {
+	letter-spacing: 0;
+	text-transform: none;
+}
+
+.sboard__eyebrow[data-tone="error"] {
+	color: var(--fw-error-fg);
+	font-weight: 700;
+}
+
+.sboard__band {
+	margin: 0;
+	color: var(--fw-chalk);
+	font-size: var(--sb-band-size);
+	font-weight: 700;
+	letter-spacing: var(--sb-band-track);
+	line-height: var(--sb-band-line);
+	overflow-wrap: anywhere;
+}
+
+.sboard__freshness {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin: 0;
+	padding-block-start: 6px;
+	font-size: var(--sb-fresh-size);
+	line-height: var(--sb-fresh-line);
+}
+
+.sboard__freshness-state {
+	font-weight: 600;
+}
+
+.sboard__freshness-state[data-tone="live"] {
+	color: var(--fw-live);
+}
+
+.sboard__freshness-state[data-tone="delayed"] {
+	color: var(--fw-warning-fg);
+}
+
+.sboard__sep {
+	color: var(--fw-border-strong);
+	font-weight: 400;
+}
+
+.sboard__freshness-time {
+	color: var(--fw-muted);
+	font-weight: 400;
+}
+
+/* ---- Status markers ---------------------------------------------------- */
+
+/* Four distinguishable shapes, each paired with a word. The shape is the
+   non-colour channel and must survive with hue removed. */
+.sboard__marker {
+	flex: none;
+	display: inline-block;
+	inline-size: var(--marker-size, var(--sb-cell-dot));
+	block-size: var(--marker-size, var(--sb-cell-dot));
+}
+
+.sboard__marker[data-tone="live"] {
+	border-radius: var(--fw-radius-pill);
+	background: var(--fw-live);
+}
+
+.sboard__marker[data-tone="delayed"] {
+	background: var(--fw-warning-fg);
+	rotate: 45deg;
+}
+
+.sboard__marker[data-tone="error"] {
+	background: var(--fw-error-fg);
+}
+
+.sboard__marker[data-tone="unknown"] {
+	border: 2px solid var(--fw-offline);
+	border-radius: var(--fw-radius-pill);
+}
+
+/* The freshness dot is the only status marker in the product that glows. */
+.sboard__freshness .sboard__marker {
+	--marker-size: var(--sb-fresh-dot);
+}
+
+.sboard__freshness .sboard__marker[data-tone="live"] {
+	box-shadow: #4be29b8c 0 0 12px;
+}
+
+.sboard__eyebrow .sboard__marker {
+	--marker-size: 9px;
+}
+
+/* ---- Count and intensity tick ------------------------------------------ */
+
+.sboard__aside {
+	display: grid;
+	flex: none;
+	grid-template-areas:
+		"tick label"
+		"tick value"
+		"tick reason";
+	grid-template-columns: auto auto;
+	grid-template-rows: auto auto auto;
+	justify-items: start;
+	align-items: start;
+	column-gap: 24px;
+	row-gap: var(--sb-count-gap);
+	min-inline-size: 0;
+}
+
+.sboard__count-group {
+	display: contents;
+}
+
+.sboard__count-label {
+	grid-area: label;
+	margin: 0;
+	color: var(--fw-text-subtle);
+	font-size: var(--sb-eyebrow-size);
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	line-height: var(--sb-eyebrow-line);
+}
+
+.sboard__count-value {
+	grid-area: value;
+	margin: 0;
+	color: var(--fw-chalk);
+	font-size: var(--sb-count-size);
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+	font-feature-settings: "tnum";
+	letter-spacing: -0.03em;
+	line-height: var(--sb-count-line);
+	white-space: nowrap;
+}
+
+.sboard__count-value[data-withdrawn="true"] {
+	white-space: normal;
+	overflow-wrap: anywhere;
+}
+
+.sboard__tick {
+	grid-area: tick;
+	align-self: start;
+	display: flex;
+	flex: none;
+	flex-direction: column;
+	justify-content: flex-end;
+	inline-size: var(--sb-tick-width);
+	block-size: var(--sb-tick-height);
+	overflow: clip;
+	border-radius: var(--fw-radius-pill);
+	background: rgb(255 255 255 / 10%);
+}
+
+.sboard__tick-fill {
+	inline-size: 100%;
+	block-size: var(--tick-level, 0%);
+	border-radius: var(--fw-radius-pill);
+	background-image: linear-gradient(
+		in oklab 180deg,
+		#ff2946 0%,
+		#e51935 55%,
+		#8e1023 100%
+	);
+	box-shadow: #e5193573 0 0 var(--sb-tick-glow);
+}
+
+/* ---- Withdrawn and statement compositions ------------------------------ */
+
+.sboard__statement {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	align-items: start;
+	gap: 10px;
+	min-inline-size: 0;
+}
+
+.sboard__statement-value {
+	margin: 0;
+	color: var(--fw-chalk);
+	font-size: var(--sb-statement-size);
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	line-height: var(--sb-statement-line);
+	overflow-wrap: anywhere;
+}
+
+.sboard__reason {
+	margin: 0;
+	max-inline-size: 700px;
+	color: var(--fw-muted);
+	font-size: var(--sb-reason-size);
+	font-weight: 400;
+	letter-spacing: 0;
+	line-height: var(--sb-reason-line);
+}
+
+.sboard__reason--count {
+	grid-area: reason;
+	max-inline-size: 260px;
+}
+
+/* ---- Crowd instrument, staff geometry ---------------------------------- */
+
+/* The public board's own rule set stays exactly as it is; only the staff
+   surface re-expresses the geometry Paper draws for this board. */
+.public-live__signal.sboard__signal {
+	margin: 0;
+	padding: 0;
+	padding-block-start: 6px;
+	border-block-start: 0;
+}
+
+.sboard__signal .public-live__signal-caption {
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+	margin-block-end: var(--sb-signal-gap);
+	font-size: var(--sb-caption-size);
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	line-height: var(--sb-caption-line);
+}
+
+[dir="rtl"] .sboard__signal .public-live__signal-caption {
+	letter-spacing: 0.02em;
+}
+
+.sboard__signal .public-live__signal-caption > * {
+	flex: none;
+	min-inline-size: 0;
+	overflow-wrap: anywhere;
+}
+
+/* Three zero-width tracks split the ramp into its 6/5/8/9 bands, so the group
+   separation is exactly twice the bar gap and every bar keeps one width. */
+.sboard__signal .public-live__signal-wave {
+	grid-template-columns:
+		repeat(6, minmax(0, 1fr)) var(--sb-group-extra)
+		repeat(5, minmax(0, 1fr)) var(--sb-group-extra)
+		repeat(8, minmax(0, 1fr)) var(--sb-group-extra)
+		repeat(9, minmax(0, 1fr));
+	gap: var(--sb-bar-gap);
+	block-size: var(--sb-wave-height);
+}
+
+.sboard__signal .public-live__signal-wave::before {
+	content: none;
+}
+
+.sboard__signal .public-live__signal-bar {
+	min-block-size: 0;
+	border-radius: 2px;
+}
+
+.sboard__signal .public-live__signal-bar:nth-child(7) {
+	grid-column-start: 8;
+}
+
+.sboard__signal .public-live__signal-bar:nth-child(12) {
+	grid-column-start: 14;
+}
+
+.sboard__signal .public-live__signal-bar:nth-child(20) {
+	grid-column-start: 23;
+}
+
+/* The cap sits flush at the top of the tallest bar of the current band, which
+   is the reading-end bar in both directions because the grid follows `dir`. */
+.sboard__signal .public-live__signal-bar[data-current-cap="true"] {
+	overflow: clip;
+	box-shadow: none;
+}
+
+.sboard__signal .public-live__signal-bar[data-current-cap="true"]::after {
+	inset-inline: 0;
+	inset-block-start: 0;
+	block-size: 3px;
+	border-radius: 0;
+	background: #fff4f5;
+	box-shadow: #ff2946bf 0 0 14px;
+}
+
+/* ---- Operational status strip ------------------------------------------ */
+
+.sboard__status {
+	display: flex;
+	margin: 0;
+	padding-inline: var(--sb-status-inset);
+	border-block-start: 1px solid var(--sb-edge);
+}
+
+.sboard__cell {
+	display: flex;
+	flex: 1 1 0;
+	flex-direction: column;
+	align-items: start;
+	gap: 12px;
+	min-inline-size: 0;
+	padding: var(--sb-cell-block) var(--sb-cell-inset);
+}
+
+.sboard__status[data-secondary="true"] .sboard__cell {
+	gap: 6px;
+}
+
+.sboard__cell + .sboard__cell {
+	border-inline-start: 1px solid var(--sb-edge);
+}
+
+.sboard__cell-label {
+	color: var(--fw-text-subtle);
+	font-size: var(--sb-cell-label-size);
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	line-height: var(--sb-cell-label-line);
+	overflow-wrap: anywhere;
+}
+
+.sboard__cell-value {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0;
+	min-inline-size: 0;
+	color: var(--fw-chalk);
+	font-size: var(--sb-cell-value-size);
+	font-weight: 700;
+	line-height: var(--sb-cell-value-line);
+}
+
+.sboard__cell-value bdi {
+	min-inline-size: 0;
+	overflow-wrap: anywhere;
+}
+
+/* The counting device is the only cell whose value text is ever recoloured. */
+.sboard__cell-value[data-danger="true"] {
+	color: var(--fw-error-fg);
+}
+
+.sboard__cell-value[data-tone="unknown"],
+.sboard__status [data-tone="unknown"] + bdi {
+	color: inherit;
+}
+
+.sboard__cell-secondary {
+	margin: 0;
+	min-inline-size: 0;
+	color: var(--fw-text-subtle);
+	font-size: var(--sb-secondary-size);
+	font-weight: 400;
+	line-height: var(--sb-secondary-line);
+	overflow-wrap: anywhere;
+}
+
+.sboard__cell-secondary[data-tone="delayed"] {
+	color: var(--fw-warning-fg);
+}
+
+.sboard__cell-secondary[data-tone="error"] {
+	color: var(--fw-error-fg);
+}
+
+/* A failure reads Unknown in every cell rather than implying a state the club
+   is not in, so the value takes the offline text token. */
+.sboard[data-variant="failure"] .sboard__cell-value {
+	color: var(--fw-offline-fg);
+}
+
+/* ---- Notice strips ------------------------------------------------------ */
+
+.sboard__notice {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--sb-notice-gap);
+	margin: 0;
+	padding: var(--sb-notice-block) var(--sb-notice-inset);
+	color: var(--fw-chalk);
+	font-size: var(--sb-notice-size);
+	font-weight: 400;
+	line-height: var(--sb-notice-line);
+}
+
+.sboard__notice-marker {
+	flex: none;
+	inline-size: 14px;
+	block-size: 14px;
+	margin-block-start: calc((var(--sb-notice-line) - 14px) / 2);
+}
+
+.sboard__notice[data-tone="loading"] {
+	background: var(--sb-continuation);
+	border-block-start: 1px solid var(--sb-edge);
+	color: var(--fw-offline-fg);
+	padding-block: calc(var(--sb-notice-block) + 2px);
+}
+
+.sboard__notice[data-tone="loading"] .sboard__notice-marker {
+	border: 2px solid #4a4045;
+	border-radius: var(--fw-radius-pill);
+}
+
+.sboard__notice[data-tone="delayed"] {
+	background: #241e16;
+	border-block-start: 1px solid #f1c34d33;
+}
+
+.sboard__notice[data-tone="delayed"] .sboard__notice-marker {
+	border: 1px solid var(--fw-warning-fg);
+	rotate: 45deg;
+}
+
+.sboard__notice[data-tone="error"] {
+	background: #241419;
+	border-block-start: 1px solid #ff7d9142;
+}
+
+.sboard__notice[data-tone="error"] .sboard__notice-marker {
+	inline-size: 12px;
+	block-size: 12px;
+	margin-block-start: calc((var(--sb-notice-line) - 12px) / 2);
+	background: var(--fw-error-fg);
+}
+
+/* ---- Load failure ------------------------------------------------------- */
+
+/* The footprint is held at the live baseline so a failure does not collapse the
+   page under the reader. */
+.sboard__failure {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	align-items: start;
+	justify-content: center;
+	gap: 14px;
+	min-block-size: 502px;
+	padding: var(--sb-reading-block) var(--sb-reading-inset);
+}
+
+.sboard__failure-title {
+	margin: 0;
+	color: var(--fw-chalk);
+	font-size: var(--sb-failure-title-size);
+	font-weight: 600;
+	line-height: var(--sb-failure-title-line);
+}
+
+.sboard__failure-body {
+	margin: 0;
+	max-inline-size: 560px;
+	color: var(--fw-muted);
+	font-size: 15px;
+	font-weight: 400;
+	line-height: 24px;
+}
+
+/* Text only: a red label with a 1px rule detached below the line box, no icon,
+   no pill, no fill, no resting border. The drawn ink stays exactly as Paper
+   draws it and the 44px target is added around it. */
+.sboard__retry {
+	display: flex;
+	flex-direction: column;
+	inline-size: max-content;
+	max-inline-size: 100%;
+	min-block-size: 44px;
+	justify-content: center;
+	gap: 5px;
+	margin-block-start: -5px;
+	padding: 5px 0;
+	border: 0;
+	background: none;
+	color: var(--fw-red-bright);
+	font: inherit;
+	font-size: 15px;
+	font-weight: 600;
+	line-height: 22px;
+	cursor: pointer;
+	transition: color var(--fw-duration-fast, 140ms) var(--fw-ease-out, ease);
+}
+
+.sboard__retry-ink {
+	padding-block-start: 6px;
+}
+
+.sboard__retry-rule {
+	display: block;
+	block-size: 1px;
+	background: #ff294673;
+}
+
+@media (hover: hover) {
+	.sboard__retry:hover:not(:disabled) {
+		color: #ff5c72;
+	}
+}
+
+.sboard__retry:active:not(:disabled) {
+	color: var(--fw-red);
+}
+
+.sboard__retry:disabled {
+	cursor: default;
+	color: var(--fw-muted);
+}
+
+.sboard__retry:disabled .sboard__retry-rule {
+	background: var(--fw-border);
+}
+
+.sboard__retry:focus-visible {
+	outline: 2px solid var(--sb-focus);
+	outline-offset: 3px;
+	border-radius: var(--fw-radius-control);
+}
+
+/* ---- Loading skeleton --------------------------------------------------- */
+
+/* Static by design: Paper expresses no animation on any loading node, the
+   notice carries the state in words, and the ring is an outline, not a spinner. */
+.sboard__skeleton {
+	display: block;
+	border-radius: 6px;
+	background: rgb(255 255 255 / 5%);
+}
+
+.sboard__skeleton[data-tier="value"] {
+	border-radius: 12px;
+	background: rgb(255 255 255 / 7%);
+}
+
+.sboard__skeleton[data-tier="bar"] {
+	background: rgb(255 255 255 / 4%);
+}
+
+.sboard__skeleton--eyebrow {
+	inline-size: 112px;
+	block-size: var(--sb-eyebrow-line);
+}
+
+.sboard__skeleton--band {
+	inline-size: min(332px, 100%);
+	block-size: calc(var(--sb-band-line) - 20px);
+	border-radius: 14px;
+	margin-block: 10px;
+}
+
+.sboard__skeleton--freshness {
+	inline-size: min(236px, 100%);
+	block-size: 13px;
+	margin-block: 5px;
+}
+
+.sboard__skeleton--count-label {
+	grid-area: label;
+	inline-size: 156px;
+	block-size: var(--sb-eyebrow-line);
+}
+
+.sboard__skeleton--count {
+	grid-area: value;
+	inline-size: 96px;
+	block-size: calc(var(--sb-count-line) - 20px);
+	margin-block: 10px;
+}
+
+.sboard__tick[data-empty="true"] {
+	background: rgb(255 255 255 / 8%);
+}
+
+.sboard__signal-skeleton {
+	padding-block-start: 6px;
+}
+
+.sboard__skeleton-captions {
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+	margin-block-end: var(--sb-signal-gap);
+	block-size: var(--sb-caption-line);
+	align-items: center;
+}
+
+.sboard__skeleton-wave {
+	display: flex;
+	align-items: center;
+	block-size: var(--sb-wave-height);
+}
+
+.sboard__skeleton--wave {
+	inline-size: 100%;
+	block-size: 56px;
+	border-radius: 10px;
+}
+
+.sboard[data-variant="loading"] .sboard__cell dt,
+.sboard[data-variant="loading"] .sboard__cell dd {
+	margin: 0;
+}
+
+/* ---- Tablet: 737px and below (Paper 768) -------------------------------- */
+
+@media (max-width: 1023px) {
+	.sboard-shell {
+		--sb-rail-height: 52px;
+		--sb-rail-inset: 24px;
+		--sb-rail-gap: 9px;
+		--sb-rail-font: 13px;
+		--sb-rail-line: 16px;
+		--sb-rail-divider: 14px;
+		--sb-wordmark-size: 14px;
+		--sb-wordmark-track: 0.12em;
+		--sb-mark-size: 20px;
+		--sb-content-block: 28px 40px;
+		--sb-content-inset: 24px;
+		--sb-content-gap: 20px;
+		--sb-title-size: 28px;
+		--sb-title-line: 36px;
+		--sb-reading-block: 26px 28px;
+		--sb-reading-inset: 32px;
+		--sb-reading-gap: 24px;
+		--sb-metric-gap: 2px;
+		--sb-band-size: 64px;
+		--sb-band-line: 78px;
+		--sb-count-size: 52px;
+		--sb-count-line: 64px;
+		--sb-count-gap: 16px;
+		--sb-tick-height: 56px;
+		--sb-tick-glow: 16px;
+		--sb-wave-height: 136px;
+		--sb-bar-gap: 4px;
+		--sb-status-inset: 16px;
+		--sb-cell-block: 20px;
+		--sb-cell-inset: 16px;
+		--sb-cell-label-line: 18px;
+	}
+
+	/* Below the desktop tier the rail becomes a 52px identity bar: the wrapper
+	   carries the blur, the bar carries the tint and the edge. */
+	.sboard-rail__bar {
+		background-color: var(--sb-rail-identity);
+	}
+
+	[lang="ar"] .sboard-shell {
+		--sb-band-size: 64px;
+		--sb-band-line: 78px;
+		--sb-band-track: -0.02em;
+		--sb-count-gap: 16px;
+	}
+
+	.sboard-rail__mark circle,
+	.sboard-rail__mark path {
+		stroke-width: 1.7;
+	}
+
+	.sboard {
+		border-color: var(--sb-edge-board-mobile);
+		background-color: var(--sb-board-mobile);
+		background-image: linear-gradient(
+			in oklab 165deg,
+			oklab(27.3% 0.094 0.032 / 31%) 0%,
+			oklab(96.3% 0.018 0.003 / 4.3%) 38%,
+			oklab(21.7% 0.01 -0.005 / 19.2%) 100%
+		);
+		backdrop-filter: blur(18px) saturate(112%);
+		box-shadow:
+			var(--sb-lift) 0 1px 0 inset,
+			#0000003d 0 8px 8px;
+	}
+
+	/* The accent rotates to a block-start bar with a symmetric gradient, so it
+	   is direction-neutral and needs no mirroring. */
+	.sboard__accent {
+		inset-block: 0 auto;
+		inset-inline: 0;
+		inline-size: auto;
+		block-size: 4px;
+		background-image: linear-gradient(
+			in oklab 90deg,
+			oklab(27.3% 0.094 0.032 / 0%) 0%,
+			oklab(41.6% 0.146 0.057 / 70%) 16%,
+			oklab(58.9% 0.21 0.089) 38%,
+			oklab(64.5% 0.224 0.089) 50%,
+			oklab(58.9% 0.21 0.089) 62%,
+			oklab(41.6% 0.146 0.057 / 70%) 84%,
+			oklab(27.3% 0.094 0.032 / 0%) 100%
+		);
+	}
+
+	.sboard__body {
+		padding-inline-start: 0;
+		padding-block-start: 4px;
+	}
+
+	/* The count leaves the reading row for its own rule-topped strip. */
+	.sboard__hero {
+		flex-direction: column;
+		align-items: stretch;
+		gap: var(--sb-reading-gap);
+		padding-block-start: 0;
+	}
+
+	.sboard__aside {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 16px;
+		padding-block-start: 18px;
+		border-block-start: 1px solid var(--fw-border);
+	}
+
+	.sboard__count-group {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		min-inline-size: 0;
+	}
+
+	.sboard__reason--count {
+		flex-basis: 100%;
+		max-inline-size: none;
+	}
+
+	.sboard__failure {
+		min-block-size: 433px;
+	}
+
+	.sboard__skeleton--count-label,
+	.sboard__skeleton--count {
+		margin-block: 0;
+	}
+}
+
+/* ---- Mobile: 736px and below (Paper 390) -------------------------------- */
+
+@media (max-width: 736px) {
+	.sboard-shell {
+		--sb-rail-inset: 16px;
+		--sb-content-block: 20px 28px;
+		--sb-content-inset: 16px;
+		--sb-content-gap: 16px;
+		--sb-reading-block: 20px 22px;
+		--sb-reading-inset: 20px;
+		--sb-reading-gap: 18px;
+		--sb-band-size: 50px;
+		--sb-band-line: 62px;
+		--sb-count-size: 42px;
+		--sb-count-line: 54px;
+		--sb-eyebrow-line: 18px;
+		--sb-fresh-size: 13px;
+		--sb-tick-height: 46px;
+		--sb-bar-gap: 3px;
+		--sb-caption-size: 11px;
+		--sb-cell-block: 14px;
+		--sb-cell-inset: 20px;
+		--sb-cell-value-size: 15px;
+		--sb-cell-value-line: 24px;
+		--sb-cell-dot: 7px;
+		--sb-status-inset: 0px;
+		--sb-notice-block: 14px;
+		--sb-notice-inset: 20px;
+		--sb-notice-gap: 12px;
+		--sb-notice-size: 13px;
+		--sb-notice-line: 22px;
+		--sb-statement-size: 42px;
+		--sb-statement-line: 54px;
+		--sb-reason-size: 14px;
+	}
+
+	/* Arabic keeps a larger band word with no negative tracking: Cairo's Arabic
+	   forms carry less optical weight than Latin caps at the same size. */
+	[lang="ar"] .sboard-shell {
+		--sb-band-size: 56px;
+		--sb-band-line: 70px;
+		--sb-band-track: 0;
+	}
+
+	.sboard__status {
+		flex-direction: column;
+		border-block-start-color: var(--fw-border);
+	}
+
+	.sboard__cell {
+		flex: none;
+		align-items: flex-start;
+		flex-direction: row;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 16px;
+	}
+
+	.sboard__cell + .sboard__cell {
+		border-block-start: 1px solid var(--fw-border-subtle);
+		border-inline-start: 0;
+	}
+
+	.sboard__status[data-secondary="true"] .sboard__cell {
+		gap: 10px 16px;
+	}
+
+	/* The label pins to the inline-start edge and the marker plus value to the
+	   inline-end edge; the fixed label column was sized for حالة جهاز العد. */
+	.sboard__cell-label {
+		flex: none;
+		inline-size: 150px;
+		max-inline-size: 100%;
+	}
+
+	.sboard__cell-value {
+		flex: 1;
+		justify-content: flex-end;
+		text-align: end;
+	}
+
+	.sboard__cell-secondary {
+		flex-basis: 100%;
+		text-align: end;
+	}
+
+	.sboard[data-variant="loading"] .sboard__cell {
+		align-items: center;
+	}
+}
+
+/* ---- Narrow: 374px and below (Paper 320) -------------------------------- */
+
+@media (max-width: 374px) {
+	.sboard-shell {
+		--sb-rail-inset: 12px;
+		--sb-content-block: 18px 24px;
+		--sb-content-inset: 12px;
+		--sb-content-gap: 14px;
+		--sb-reading-block: 18px 20px;
+		--sb-reading-inset: 14px;
+		--sb-reading-gap: 16px;
+		--sb-band-size: 50px;
+		--sb-band-line: 62px;
+		--sb-band-track: -0.02em;
+		--sb-count-gap: 10px;
+		--sb-signal-gap: 12px;
+		--sb-bar-gap: 2px;
+		--sb-group-extra: 6px;
+		--sb-cell-block: 12px;
+		--sb-cell-inset: 14px;
+	}
+
+	[lang="ar"] .sboard-shell {
+		--sb-band-size: 50px;
+		--sb-band-line: 62px;
+		--sb-band-track: 0;
+	}
+
+	.sboard__aside {
+		padding-block-start: 14px;
+		gap: 10px;
+	}
+
+	.sboard__count-group {
+		gap: 12px;
+	}
+
+	.sboard__cell,
+	.sboard__status[data-secondary="true"] .sboard__cell {
+		gap: 10px;
+	}
+
+	.sboard__cell-label {
+		inline-size: 130px;
+	}
+}
+
+/* ---- Reduced transparency ----------------------------------------------- */
+
+/* One opaque warm panel in place of every glass surface. Text tokens,
+   hierarchy, radius, dividers and the warm role of the surface are unchanged,
+   and the fallback is never opaque black. */
+@media (prefers-reduced-transparency: reduce) {
+	.sboard-rail {
+		background-color: var(--sb-panel);
+		backdrop-filter: none;
+	}
+
+	.sboard-rail__bar {
+		background-color: transparent;
+	}
+
+	.sboard {
+		background-color: var(--sb-panel);
+		background-image: none;
+		backdrop-filter: none;
+		border-color: var(--sb-edge-control);
+	}
+}
+
+/* ---- Reduced motion ------------------------------------------------------ */
+
+/* The class is doubled only to match the specificity of the signal overrides
+   above, so this reset is never the descending selector. It matches the same
+   elements either way. */
+@media (prefers-reduced-motion: reduce) {
+	.sboard-shell.sboard-shell *,
+	.sboard-shell.sboard-shell *::before,
+	.sboard-shell.sboard-shell *::after {
+		transition-duration: 0.01ms;
+		animation-duration: 0.01ms;
+		animation-iteration-count: 1;
+		scroll-behavior: auto;
+	}
+}

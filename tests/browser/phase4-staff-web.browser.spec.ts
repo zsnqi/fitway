@@ -177,7 +177,7 @@ test("PIN-first login accepts only Western digits, opens staff, and logs out", a
 		page.getByRole("heading", { name: "العمليات المباشرة" }),
 	).toBeVisible();
 	await expect(page.getByText("37", { exact: true })).toBeVisible();
-	await expect(page.getByText("100", { exact: true })).toBeVisible();
+	await expect(page.locator(".sboard__band")).toHaveText("متوسط");
 
 	await page.getByRole("button", { name: "تسجيل الخروج" }).click();
 	await expect(page).toHaveURL(/\/login$/u);
@@ -316,13 +316,16 @@ test("stale and unavailable snapshots remain visibly distinct from live", async 
 		route.fulfill({ status: 200, json: { json: unavailableSnapshot } }),
 	);
 	await page.reload();
+	// The approved board withdraws an unverifiable reading outright and states the
+	// reason, rather than showing an emptied or dimmed metric.
 	await expect(
-		page
-			.locator(".operations-state-badge")
-			.getByText("الإشغال غير متاح", { exact: true }),
+		page.locator(".sboard").getByText("القراءة غير متاحة", { exact: true }),
 	).toBeVisible();
 	await expect(page.getByText("37", { exact: true })).toHaveCount(0);
-	await expect(page.getByText("100", { exact: true })).toBeVisible();
+	await expect(page.locator(".sboard__band")).toHaveCount(0);
+	await expect(page.locator(".sboard__signal")).toHaveCount(0);
+	// Device health survives the withdrawal — it is why the reading is gone.
+	await expect(page.locator(".sboard__status")).toBeVisible();
 	await captureReview(page, "staff-unavailable-ar-1280.png");
 });
 

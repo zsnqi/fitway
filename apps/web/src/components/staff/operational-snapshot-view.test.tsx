@@ -83,7 +83,7 @@ describe("operational snapshot truth states", () => {
 		expect(container.textContent).toContain("37");
 	});
 
-	it("removes occupancy values when unavailable while retaining authorized capacity", async () => {
+	it("removes occupancy values outright when unavailable, never dimming them", async () => {
 		await render({
 			...base,
 			occupancy: {
@@ -110,7 +110,14 @@ describe("operational snapshot truth states", () => {
 		expect(container.textContent).toContain("Occupancy unavailable");
 		expect(container.textContent).not.toContain("37");
 		expect(container.textContent).not.toContain("Moderate");
-		expect(container.textContent).toContain("100");
-		expect(container.textContent).toContain("Health freshness");
+		// The approved board withdraws an untrusted reading rather than dimming it,
+		// so the removal must be structural: no element may still carry the value.
+		expect(container.querySelector(".sboard__band")).toBeNull();
+		expect(container.querySelector(".sboard__count-value")).toBeNull();
+		expect(container.querySelector(".sboard__signal")).toBeNull();
+		expect(container.querySelector(".sboard__tick")).toBeNull();
+		// Device health and the reason for the withdrawal stay visible.
+		expect(container.textContent).toContain("Reading unavailable");
+		expect(container.textContent).toContain("Camera");
 	});
 });
