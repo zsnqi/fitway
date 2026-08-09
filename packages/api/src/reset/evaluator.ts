@@ -239,7 +239,7 @@ export function evaluateScheduledReset(
 				) === value.version,
 		);
 	const candidate = candidates.sort(
-		(left, right) => left.closeAt.getTime() - right.closeAt.getTime(),
+		(left, right) => right.closeAt.getTime() - left.closeAt.getTime(),
 	)[0];
 	if (!candidate) {
 		return {
