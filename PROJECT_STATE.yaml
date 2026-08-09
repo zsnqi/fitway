@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-09T12:51:36+03:00"
+updatedAt: "2026-08-09T15:00:13+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -371,57 +371,48 @@ milestones:
     integratedCommit: 4211b172bcfbb50b30f3f38a400287e5d12bdf7e
 
   phase5-staff-ui:
-    status: NEEDS_HUMAN
+    status: READY_FOR_INTEGRATION
     dependencies: [phase5-command-domain]
-    ownerSession: null
-    branch: main
-    worktree: null
-    baseCommit: 229b9ce1f50ba8f598ea60556913a8b98ac0c228
+    ownerSession: "main Codex session"
+    branch: work/phase5-staff-paper-fidelity
+    worktree: D:/Projects/fitway
+    baseCommit: 0f849756cee77d43e9013c9fd5e4e7b5cf36701a
     ownedPaths:
-      - apps/web/src/components/staff/commands/**
-      - apps/web/src/hooks/use-staff-commands.ts
-      - apps/web/src/hooks/use-staff-commands.test.tsx
-      - apps/web/src/routes/staff.tsx
-      - tests/browser/phase5-staff-ui.browser.spec.ts
+      - apps/web/src/components/staff/operational-snapshot-view.tsx
+      - apps/web/src/components/staff/operational-snapshot-view.test.tsx
+      - apps/web/src/components/staff/staff-board.css
+      - tests/browser/staff-paper-fidelity.review.spec.ts
       - docs/phase-records/handoffs/phase5-staff-ui/**
-      - docs/adr/ADR-008-staff-monitoring-only.md
-      - docs/phase-records/phase-05-staff-ui.md
+      - docs/phase-records/phase-05-staff-paper-adoption.md
     forbiddenPaths:
-      - all repository paths outside ownedPaths and a later explicit lease
-      - packages/db/**, including the edge_commands schema and migration 0005, which is never re-generated
-      - "packages/api/**, except the exact files named in sharedLeases; packages/api/src/commands/queue.ts, schemas.ts, service.ts and their tests, packages/api/src/edge-push.ts, packages/api/src/occupancy/engine.ts, and packages/api/src/health/snapshot.ts stay forbidden outright"
-      - "apps/server/**, except the exact files named in sharedLeases; apps/server/src/edge-push.ts, apps/server/src/audit-repository.ts, apps/server/src/openapi.ts, and apps/server/src/openapi.test.ts stay forbidden outright"
+      - all repository paths outside ownedPaths and the exact shared lease
+      - packages/db/**
+      - packages/api/**, including the frozen operational snapshot DTO and its capacity field
+      - apps/server/**
       - edge/**
-      - "apps/web/src/i18n/messages/**, except the single staff.description reversal in ar.ts and en.ts permitted by the retroactive monitoring-salvage lease; no other key in either catalog and no other catalog file"
-      - apps/web/src/i18n/catalog.ts
-      - apps/web/src/hooks/use-staff-messages.ts
-      - apps/web/src/components/staff/staff-shell.tsx
-      - "apps/web/src/components/staff/messages.ts, except the already-carried monitoring change named in the retroactive monitoring-salvage lease"
-      - "apps/web/src/components/staff/staff.css, except the already-carried monitoring and login change named in the retroactive monitoring-salvage lease"
-      - apps/web/src/routeTree.gen.ts
+      - "apps/web/** outside ownedPaths; especially staff-board-shell.tsx and its existing Arabic intra-zone DOM/Tab order, which must not be reversed or reinterpreted for RTL"
+      - "Paper and all Staff Monitoring Paper production/candidate surfaces; the existing self-contained repair candidate is already visually reviewed and must not be changed, duplicated, or sent through another visual-review gate"
+      - PHASES.md and all normative documents outside the owned Phase 5 Paper-adoption record
+      - "the stale PHASES.md private-capacity-visibility wording: the 2026-08-09 human decision preserves the approved Staff composition without visible capacity; DTO capacity remains data-only for this surface and does not authorize a UI row"
       - PROJECT_STATE.yaml
-      - docs/phase-records/phase-05-command-domain.md
-      - docs/phase-records/phase-09-owner-ui.md
-      - docs/phase-records/batch-03-activation.md
-      - every other milestone's phase record
       - visual-direction-gate/** and the canonical toHaveScreenshot baselines
-      - "operationalSnapshotSchema.source and the frozen operational snapshot DTO: decision 6 is deferred to Phase 6 and is neither resolved nor reopened here"
-      - Paper production-family implementation, ADR-007 family coverage, and any Phase 6, 10, or 11 product or visual decision
-      - "root manifests, lockfiles, environment schemas, test-runner config, vitest and playwright configs, biome.json, and scripts/verify.mjs; the phase5-staff-ui verification-profile repoint named in the closeout plan step 4 is deliberately withheld from this lease and stays coordinator work"
+      - every other milestone's phase record and all Phase 6, 7, 10, or 11 work
+      - root manifests, lockfiles, environment schemas, test-runner config, vitest and playwright configs, biome.json, and scripts/verify.mjs
+      - probe2.mjs and all unrelated untracked diagnostics
     sharedLeases: []
-    validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-08T00:05:00+03:00"
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase5-staff-ui/20260808-000500-p5_staff_integration-needs-human.md
-    stopReason: "Integrated into main at 6321949 and pnpm verify:full passed there, but visual approval for /staff is withheld and has never been re-granted. The human visual verdict of 2026-07-27 (docs/phase-records/handoffs/phase5-staff-ui/20260727-230622-p5_staff_b03_retry-human-visual-verdict.md) did not approve the staff experience and required a bounded refinement pass followed by a fresh human visual review. The refinement landed in 885b5b0 and is integrated, but the fresh human review never happened, and an agent-authored plan cannot discharge a human approval requirement. No automated run can close this gate: toHaveScreenshot appears only in tests/browser/public-baseline.browser.spec.ts and no canonical /staff baseline exists, so verify:full proves nothing about this surface and visual stays PENDING. The monitoring-only plan's validation item 7 — human confirmation that /staff shows no command affordance — is also outstanding and has no automated negative control by design. Two human acts unblock DONE: a fresh visual review of /staff on main, and that no-command-affordance confirmation."
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-08-09T15:00:13+03:00"
+    leaseExpiresAt: "2026-08-10T13:14:53+03:00"
+    handoff: docs/phase-records/handoffs/phase5-staff-ui/20260809-150013-p5_staff_human-visual-pass.md
+    stopReason: null
     gates:
       unit: PASS
       integration: PASS
       browser: PASS
       accessibility: PASS
-      visual: PENDING
+      visual: PASS
       independentReview: PASS
-    integratedCommit: 632194926211529d40065d4b6d2ac54af88fc48c
+    integratedCommit: null
 
   phase-5:
     status: PLANNED

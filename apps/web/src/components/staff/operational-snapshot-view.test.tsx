@@ -83,7 +83,7 @@ describe("operational snapshot truth states", () => {
 		expect(container.textContent).toContain("37");
 	});
 
-	it("removes occupancy values when unavailable while retaining authorized capacity", async () => {
+	it("removes occupancy values outright when unavailable, never dimming them", async () => {
 		await render({
 			...base,
 			occupancy: {
@@ -110,7 +110,54 @@ describe("operational snapshot truth states", () => {
 		expect(container.textContent).toContain("Occupancy unavailable");
 		expect(container.textContent).not.toContain("37");
 		expect(container.textContent).not.toContain("Moderate");
-		expect(container.textContent).toContain("100");
-		expect(container.textContent).toContain("Health freshness");
+		// The approved board withdraws an untrusted reading rather than dimming it,
+		// so the removal must be structural: no element may still carry the value.
+		expect(container.querySelector(".sboard__band")).toBeNull();
+		expect(container.querySelector(".sboard__count-value")).toBeNull();
+		expect(container.querySelector(".sboard__signal")).toBeNull();
+		expect(container.querySelector(".sboard__tick")).toBeNull();
+		// Device health and the reason for the withdrawal stay visible.
+		expect(container.textContent).toContain("Reading unavailable");
+		expect(container.textContent).toContain("Camera");
+		expect(
+			container.querySelector(".sboard")?.getAttribute("data-variant"),
+		).toBe("offline");
+	});
+
+	it("uses server-owned health availability to distinguish an untrusted reading", async () => {
+		await render({
+			...base,
+			occupancy: {
+				schemaVersion: 2,
+				freshness: "unavailable",
+				computedAt: base.computedAt,
+				trend: null,
+			},
+			source: null,
+			health: {
+				...base.health,
+				condition: "failed",
+				process: "failed",
+				camera: "ok",
+				feed: "failed",
+			},
+		});
+
+		expect(
+			container.querySelector(".sboard")?.getAttribute("data-variant"),
+		).toBe("trust");
+		expect(container.querySelector(".sboard__statement")).toBeNull();
+		expect(container.querySelector(".sboard__band")?.textContent).toContain(
+			"Not available",
+		);
+		expect(container.querySelector(".sboard__tick")).toBeNull();
+	});
+
+	it("keeps private capacity in the DTO and out of the Staff rendering", async () => {
+		await render(base);
+
+		expect(base.capacity).toBe(100);
+		expect(container.textContent).not.toContain("Capacity");
+		expect(container.textContent).not.toContain("100");
 	});
 });

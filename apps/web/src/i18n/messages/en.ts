@@ -49,6 +49,33 @@ export const staffWeb = {
 		unavailableDescription: "There is no usable occupancy reading to show.",
 		crowdLevel: "Crowd level",
 		approximateCount: "Approximate count",
+		lastKnownCrowdLevel: "Last known crowd level",
+		lastKnownCount: "Last known count",
+		noCurrentReading: "No current reading",
+		clubState: "Club state",
+		notSendingUpdates: "Not sending updates",
+		deviceProblem: "Counting device problem",
+		readingUnavailable: "Reading unavailable",
+		deviceOfflineReason:
+			"Crowd level and approximate count have been removed. The counting device is the only source of the reading, and nothing can be verified without it.",
+		deviceOffline: "Offline",
+		cameraViaDevice: "Reported through the counting device",
+		deviceUntrusted: "Connected, no trusted reading",
+		deviceUntrustedDetail: "Signals conflicted · Failed verification",
+		trustCrowdReason:
+			"The device is connected, but its reading conflicted with the system signals and failed verification.",
+		trustCountReason:
+			"It comes from the same reading, so it was removed with it.",
+		lastSeen: (value) => `Last seen ${isolate(value)}`,
+		loadingNotice: "The reading is loading. Nothing is shown until it arrives.",
+		delayedNotice:
+			"Live updates resume automatically once the counting device starts sending again.",
+		cameraNotice:
+			"The camera is unstable. The counting device is still sending a live reading.",
+		offlineNotice:
+			"The counting device is offline. The reading returns on its own once it reconnects.",
+		trustNotice:
+			"The device is working, but its signals cannot support a trusted reading. The level and count return once the signals agree.",
 		capacity: "Configured capacity",
 		source: "Reading source",
 		sources: { edge: "Edge device", manual: "Manual reading" },

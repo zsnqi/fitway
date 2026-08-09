@@ -177,7 +177,7 @@ test("PIN-first login accepts only Western digits, opens staff, and logs out", a
 		page.getByRole("heading", { name: "العمليات المباشرة" }),
 	).toBeVisible();
 	await expect(page.getByText("37", { exact: true })).toBeVisible();
-	await expect(page.getByText("100", { exact: true })).toBeVisible();
+	await expect(page.locator(".sboard__band")).toHaveText("متوسط");
 
 	await page.getByRole("button", { name: "تسجيل الخروج" }).click();
 	await expect(page).toHaveURL(/\/login$/u);
@@ -316,13 +316,16 @@ test("stale and unavailable snapshots remain visibly distinct from live", async 
 		route.fulfill({ status: 200, json: { json: unavailableSnapshot } }),
 	);
 	await page.reload();
+	// The approved board withdraws an unverifiable reading outright and states the
+	// reason, rather than showing an emptied or dimmed metric.
 	await expect(
-		page
-			.locator(".operations-state-badge")
-			.getByText("الإشغال غير متاح", { exact: true }),
+		page.locator(".sboard").getByText("القراءة غير متاحة", { exact: true }),
 	).toBeVisible();
 	await expect(page.getByText("37", { exact: true })).toHaveCount(0);
-	await expect(page.getByText("100", { exact: true })).toBeVisible();
+	await expect(page.locator(".sboard__band")).toHaveCount(0);
+	await expect(page.locator(".sboard__signal")).toHaveCount(0);
+	// Device health survives the withdrawal — it is why the reading is gone.
+	await expect(page.locator(".sboard__status")).toBeVisible();
 	await captureReview(page, "staff-unavailable-ar-1280.png");
 });
 
@@ -532,4 +535,87 @@ test("keyboard order, focus transfer, practical targets, reduced motion, and 200
 			document.documentElement.clientWidth,
 	);
 	expect(overflow).toBe(false);
+});
+
+test("Staff Arabic order, monitoring-only scope, Retry focus target, overflow, and 200% reflow", async ({
+	page,
+}) => {
+	let snapshotRequests = 0;
+	await page.route("**/api/auth/session", (route) =>
+		route.fulfill({ status: 200, json: { auth: staffAuth } }),
+	);
+	await page.route("**/rpc/staff/operationalSnapshot", async (route) => {
+		snapshotRequests += 1;
+		await route.fulfill(
+			snapshotRequests === 1
+				? {
+						status: 503,
+						json: rpcError(503, "SERVICE_UNAVAILABLE", "Service Unavailable"),
+					}
+				: { status: 200, json: { json: liveSnapshot } },
+		);
+	});
+
+	await page.setViewportSize({ width: 320, height: 844 });
+	await page.goto("/staff");
+	const skipLink = page.locator(".operations-skip-link");
+	const signOut = page.locator(".sboard-rail__session button").nth(0);
+	const language = page.locator(".sboard-rail__session button").nth(1);
+	const retry = page.locator(".sboard__retry");
+	await expect(retry).toBeVisible();
+	await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+
+	await page.evaluate(() =>
+		(document.activeElement as HTMLElement | null)?.blur(),
+	);
+	for (const control of [skipLink, signOut, language, retry]) {
+		await page.keyboard.press("Tab");
+		await expect(control).toBeFocused();
+	}
+	await expect
+		.poll(() =>
+			page
+				.locator(".sboard__retry-focus")
+				.evaluate((element) => getComputedStyle(element).boxShadow),
+		)
+		.not.toBe("none");
+	const retryTarget = await retry.boundingBox();
+	expect(retryTarget?.height).toBeGreaterThanOrEqual(44);
+	expect(retryTarget?.width).toBeGreaterThanOrEqual(44);
+	expect(
+		await page.evaluate(
+			() =>
+				document.documentElement.scrollWidth <=
+				document.documentElement.clientWidth,
+		),
+	).toBe(true);
+
+	await page.keyboard.press("Enter");
+	await expect(page.getByText("37", { exact: true })).toBeVisible();
+	expect(snapshotRequests).toBeGreaterThanOrEqual(2);
+	await expect(
+		page.locator(".sboard").locator("button, input, select, textarea, a"),
+	).toHaveCount(0);
+
+	await page.unroute("**/rpc/staff/operationalSnapshot");
+	await page.route("**/rpc/staff/operationalSnapshot", (route) =>
+		route.fulfill({
+			status: 503,
+			json: rpcError(503, "SERVICE_UNAVAILABLE", "Service Unavailable"),
+		}),
+	);
+	await page.setViewportSize({ width: 720, height: 900 });
+	await page.reload();
+	await expect(retry).toBeVisible();
+	await page.evaluate(() => {
+		document.documentElement.style.zoom = "2";
+	});
+	await expect(retry).toBeVisible();
+	expect(
+		await page.evaluate(
+			() =>
+				document.documentElement.scrollWidth <=
+				document.documentElement.clientWidth,
+		),
+	).toBe(true);
 });

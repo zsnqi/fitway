@@ -115,6 +115,7 @@ export default defineConfig({
 				env: {
 					...process.env,
 					FITWAY_PLAYWRIGHT_REVIEW_DIR: reviewDirectory,
+					VITE_SERVER_URL: "/api",
 					VITE_HIDE_DEVTOOLS: "1",
 				},
 				url: localBaseUrl,
