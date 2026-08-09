@@ -75,6 +75,18 @@ const phases = {
 		integrationFiles: ["apps/server/src/phase10-domain.integration.test.ts"],
 		label: "Phase 10 reporting domain slice",
 	},
+	6: {
+		browserFiles: [],
+		integrationFiles: ["apps/server/src/phase6-offline.integration.test.ts"],
+		label: "Phase 6 offline fallback, backfill, and reconciliation",
+	},
+	"phase7-reset-evaluator": {
+		browserFiles: [],
+		integrationFiles: [
+			"apps/server/src/phase7-reset-evaluator.integration.test.ts",
+		],
+		label: "Phase 7 reset evaluator slice",
+	},
 };
 
 const phaseNames = Object.keys(phases).join("|");

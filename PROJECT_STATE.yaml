@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-09T16:48:19+03:00"
+updatedAt: "2026-08-09T18:30:00+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -439,43 +439,122 @@ milestones:
     integratedCommit: 0f85adf80690ab7df802070bc8ce8197f4057010
 
   phase-6:
-    status: PLANNED
+    status: READY
     dependencies: [phase-5]
-    ownerSession: null
-    branch: null
-    worktree: null
-    baseCommit: null
-    ownedPaths: []
-    forbiddenPaths: []
-    sharedLeases: []
+    ownerSession: "Phase 6 offline/backfill worker on work/phase6-offline-b01 in D:/Projects/fitway-worktrees/phase6-offline: deliver automatic offline fallback, buffered minute backfill, history-only backfill authority, reconnect ordering with pending commands applied before live authority resumes, and the frozen device/OpenAPI contract with TypeScript/Python fixture parity. Also decide ADR-008 decision 6 on the source=manual producer. No staff or owner UI, no new command surface, no migration, no router leaf."
+    branch: work/phase6-offline-b01
+    worktree: D:/Projects/fitway-worktrees/phase6-offline
+    baseCommit: SELF
+    ownedPaths:
+      - packages/api/src/offline/**
+      - apps/server/src/phase6-offline.integration.test.ts
+      - docs/phase-records/handoffs/phase-6/**
+    forbiddenPaths:
+      - all repository paths outside ownedPaths and sharedLeases
+      - packages/api/src/routers/**
+      - packages/api/src/context.ts
+      - packages/api/src/index.ts
+      - packages/api/src/occupancy/bands.ts
+      - packages/api/src/occupancy/business-day.ts
+      - packages/api/src/occupancy/schedule.ts
+      - packages/api/src/analytics/**
+      - packages/api/src/alerts/**
+      - packages/api/src/audit/**
+      - packages/api/src/auth/**
+      - packages/api/src/commands/**
+      - packages/api/src/health/**
+      - packages/api/src/public/**
+      - "packages/api/src/reset/** and apps/server/src/phase7-reset-evaluator.integration.test.ts, which belong to phase7-reset-evaluator"
+      - apps/server/src/index.ts
+      - apps/server/src/analytics-repository.ts
+      - apps/server/src/analytics-time-context-repository.ts
+      - apps/server/src/reporting-repository.ts
+      - apps/server/src/command-repository.ts
+      - apps/server/src/health-repository.ts
+      - apps/server/src/audit-repository.ts
+      - apps/server/src/alert-repository.ts
+      - apps/server/src/test-support/**
+      - "every other apps/server/src/*.integration.test.ts, which is another milestone's accepted acceptance evidence"
+      - "packages/db/**, including src/schema/**, src/migrations/**, and meta/_journal.json; the migration lane is coordinator-serialized and no Phase 6 schema change may be hand-authored"
+      - packages/auth/**
+      - packages/env/**
+      - packages/ui/**
+      - apps/web/**
+      - tests/browser/**
+      - visual-direction-gate/** and the canonical toHaveScreenshot baselines
+      - scripts/verify.mjs and scripts/verify-repository.mjs
+      - PROJECT_STATE.yaml
+      - "AGENTS.md, CLAUDE.md, FITWAY_PRODUCT.md, SPEC.md, PHASES.md, DESIGN_GUIDE.md, README.md, RESEARCH.md, docs/WORKFLOW.md, and docs/adr/**"
+      - every other milestone's phase record and handoff directory
+      - root manifests, lockfiles, environment schemas, test-runner config, vitest and playwright configs, and biome.json
+    sharedLeases:
+      - "exclusive through 2026-08-16T18:30:00+03:00: edge protocol spine (packages/api/src/edge-push.ts and edge-push.test.ts, apps/server/src/edge-push.ts, apps/server/src/openapi.ts, packages/api/src/occupancy/engine.ts and engine.test.ts, apps/server/src/occupancy-repositories.ts, and edge/** Python simulator/fixtures/parity tests); it excludes packages/db/**, the router/context/server-index lane, packages/env/**, and every apps/web surface"
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
-    leaseExpiresAt: null
-    handoff: null
+    lastHeartbeatAt: "2026-08-09T18:30:00+03:00"
+    leaseExpiresAt: "2026-08-16T18:30:00+03:00"
+    handoff: docs/phase-records/handoffs/phase-6/20260809-183000-p6_offline_b01-activation.md
     stopReason: null
     gates:
       unit: PENDING
       integration: PENDING
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
       independentReview: PENDING
     integratedCommit: null
 
   phase7-reset-evaluator:
-    status: PLANNED
+    status: READY
     dependencies: [baseline-reconciliation-gate, phase-3, phase-5]
-    ownerSession: null
-    branch: null
-    worktree: null
-    baseCommit: null
-    ownedPaths: []
-    forbiddenPaths: []
+    ownerSession: "Phase 7 reset-evaluator worker on work/phase7-reset-evaluator-b01 in D:/Projects/fitway-worktrees/phase7-reset-evaluator: deliver the pure scheduled-reset evaluator — close-plus-buffer scheduling, past-midnight and business-day correctness, and exactly-once system reset issuance decisions. Additive and unexposed, mirroring the phase9-analytics-domain and phase10-domain ownership pattern. No cron endpoint, no CRON_SECRET, no router leaf, no context change, no migration, no UI; transport and persistence belong to phase7-integration."
+    branch: work/phase7-reset-evaluator-b01
+    worktree: D:/Projects/fitway-worktrees/phase7-reset-evaluator
+    baseCommit: SELF
+    ownedPaths:
+      - packages/api/src/reset/**
+      - apps/server/src/phase7-reset-evaluator.integration.test.ts
+      - docs/phase-records/handoffs/phase7-reset-evaluator/**
+    forbiddenPaths:
+      - all repository paths outside ownedPaths
+      - packages/api/src/routers/**
+      - packages/api/src/context.ts
+      - packages/api/src/index.ts
+      - packages/api/src/edge-push.ts
+      - packages/api/src/occupancy/**
+      - packages/api/src/analytics/**
+      - packages/api/src/alerts/**
+      - packages/api/src/audit/**
+      - packages/api/src/auth/**
+      - packages/api/src/commands/**
+      - packages/api/src/health/**
+      - packages/api/src/public/**
+      - "packages/api/src/offline/** and apps/server/src/phase6-offline.integration.test.ts, which belong to phase-6"
+      - apps/server/src/index.ts
+      - apps/server/src/openapi.ts
+      - apps/server/src/edge-push.ts
+      - apps/server/src/occupancy-repositories.ts
+      - apps/server/src/command-repository.ts
+      - apps/server/src/audit-repository.ts
+      - apps/server/src/test-support/**
+      - "every other apps/server/src/*.integration.test.ts, which is another milestone's accepted acceptance evidence"
+      - "packages/db/**, including src/schema/**, src/migrations/**, and meta/_journal.json; the migration lane is coordinator-serialized"
+      - "packages/env/**; CRON_SECRET and every cron transport concern belong to phase7-integration"
+      - packages/auth/**
+      - packages/ui/**
+      - apps/web/**
+      - edge/**
+      - tests/browser/**
+      - visual-direction-gate/** and the canonical toHaveScreenshot baselines
+      - scripts/verify.mjs and scripts/verify-repository.mjs
+      - PROJECT_STATE.yaml
+      - "AGENTS.md, CLAUDE.md, FITWAY_PRODUCT.md, SPEC.md, PHASES.md, DESIGN_GUIDE.md, README.md, RESEARCH.md, docs/WORKFLOW.md, and docs/adr/**"
+      - every other milestone's phase record and handoff directory
+      - root manifests, lockfiles, environment schemas, test-runner config, vitest and playwright configs, and biome.json
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
-    leaseExpiresAt: null
-    handoff: null
+    lastHeartbeatAt: "2026-08-09T18:30:00+03:00"
+    leaseExpiresAt: "2026-08-16T18:30:00+03:00"
+    handoff: docs/phase-records/handoffs/phase7-reset-evaluator/20260809-183000-p7_reset_eval_b01-activation.md
     stopReason: null
     gates:
       unit: PENDING
