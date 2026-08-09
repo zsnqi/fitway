@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-09T15:24:05+03:00"
+updatedAt: "2026-08-09T16:48:19+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -778,12 +778,12 @@ milestones:
     integratedCommit: 439b1b3ea58a545448164c091d7981ff2e4dbf94
 
   phase10-domain:
-    status: READY
+    status: DONE
     dependencies: [phase-9]
-    ownerSession: "Phase 10 reporting-domain worker (Codex) on work/phase10-domain-b01 in D:/Projects/fitway-worktrees/phase10-domain: build the additive, unexposed heatmap, week-over-week comparison, date-range, and CSV reporting domain plus its server-side reporting repository and disposable-Postgres integration test. No router leaf, no context change, no migration, no UI."
-    branch: work/phase10-domain-b01
-    worktree: D:/Projects/fitway-worktrees/phase10-domain
-    baseCommit: SELF
+    ownerSession: null
+    branch: main
+    worktree: null
+    baseCommit: 6ea4484fdfdcecc433dd7144fab63f0615dcb124
     ownedPaths:
       - packages/api/src/analytics/reporting/**
       - apps/server/src/reporting-repository.ts
@@ -831,18 +831,18 @@ milestones:
       - root manifests, lockfiles, environment schemas, test-runner config, vitest and playwright configs, and biome.json
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-09T12:51:36+03:00"
-    leaseExpiresAt: "2026-08-16T12:51:36+03:00"
-    handoff: docs/phase-records/handoffs/phase10-domain/20260809-125136-p10_domain_b01-activation.md
+    lastHeartbeatAt: "2026-08-09T16:48:19+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase10-domain/20260809-164819-p10_domain_c01-integration.md
     stopReason: null
     gates:
-      unit: PENDING
-      integration: PENDING
+      unit: PASS
+      integration: PASS
       browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
-      independentReview: PENDING
-    integratedCommit: null
+      independentReview: PASS
+    integratedCommit: b1be589ea6d74d0c646f5da9d20a1157f740279a
 
   phase10-ui-csv:
     status: PLANNED
