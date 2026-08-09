@@ -504,7 +504,7 @@ milestones:
     integratedCommit: null
 
   phase7-reset-evaluator:
-    status: READY
+    status: FAILED_VALIDATION
     dependencies: [baseline-reconciliation-gate, phase-3, phase-5]
     ownerSession: "Phase 7 reset-evaluator worker on work/phase7-reset-evaluator-b01 in D:/Projects/fitway-worktrees/phase7-reset-evaluator: deliver the pure scheduled-reset evaluator — close-plus-buffer scheduling, past-midnight and business-day correctness, and exactly-once system reset issuance decisions. Additive and unexposed, mirroring the phase9-analytics-domain and phase10-domain ownership pattern. No cron endpoint, no CRON_SECRET, no router leaf, no context change, no migration, no UI; transport and persistence belong to phase7-integration."
     branch: work/phase7-reset-evaluator-b01
@@ -551,18 +551,18 @@ milestones:
       - every other milestone's phase record and handoff directory
       - root manifests, lockfiles, environment schemas, test-runner config, vitest and playwright configs, and biome.json
     sharedLeases: []
-    validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-09T18:30:00+03:00"
-    leaseExpiresAt: "2026-08-16T18:30:00+03:00"
-    handoff: docs/phase-records/handoffs/phase7-reset-evaluator/20260809-183000-p7_reset_eval_b01-activation.md
-    stopReason: null
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-08-09T22:53:00+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase7-reset-evaluator/20260809-225300-p7_reset_eval_coord01-failed-validation.md
+    stopReason: "Fresh review after repair attempt 2 reproduced DST-transition-window false-negative and false-positive schedule ownership; no third repair is permitted."
     gates:
-      unit: PENDING
-      integration: PENDING
+      unit: PASS
+      integration: PASS
       browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
-      independentReview: PENDING
+      independentReview: FAIL
     integratedCommit: null
 
   phase7-integration:
