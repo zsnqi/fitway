@@ -39,6 +39,11 @@ const phases = {
 		integrationFiles: [],
 		label: "Phase 4 staff web slice",
 	},
+	"login-paper-adoption": {
+		browserFiles: ["tests/browser/login-paper-adoption.browser.spec.ts"],
+		integrationFiles: [],
+		label: "Login Paper adoption slice",
+	},
 	"phase8-alert-evaluator": {
 		browserFiles: [],
 		integrationFiles: [

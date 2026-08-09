@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-09T18:30:00+03:00"
+updatedAt: "2026-08-09T23:32:00+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -266,6 +266,52 @@ milestones:
       visual: PASS
       independentReview: PASS
     integratedCommit: b67398a8a221e60f45ed7a4f2b0e40207fdbd58a
+
+  login-paper-adoption:
+    status: IN_PROGRESS
+    dependencies: [phase4-staff-web]
+    ownerSession: "Login Paper-adoption worker on work/login-paper-adoption-b01 in D:/Projects/fitway-worktrees/login-paper-adoption: adopt the approved Login production composition without changing authentication, copy, validation, lockout semantics, routes, or other surfaces."
+    branch: work/login-paper-adoption-b01
+    worktree: D:/Projects/fitway-worktrees/login-paper-adoption
+    baseCommit: SELF
+    ownedPaths:
+      - apps/web/src/routes/login.tsx
+      - apps/web/src/components/login/**
+      - tests/browser/login-paper-adoption.browser.spec.ts
+      - tests/browser/__screenshots__/**/login-paper-adoption.browser.spec.ts/**
+      - docs/phase-records/handoffs/login-paper-adoption/**
+    forbiddenPaths:
+      - all repository paths outside ownedPaths
+      - apps/web/src/components/staff/**
+      - apps/web/src/components/brand-header.tsx
+      - apps/web/src/components/public-atmosphere.tsx
+      - apps/web/src/i18n/**
+      - apps/web/src/index.css
+      - apps/web/src/routes/index.tsx
+      - apps/web/src/routes/staff.tsx
+      - apps/web/src/routes/admin.tsx
+      - packages/ui/**
+      - tests/browser/phase4-staff-web.browser.spec.ts
+      - tests/browser/public-baseline.browser.spec.ts
+      - every other existing browser test and screenshot baseline
+      - visual-direction-gate/**
+      - PROJECT_STATE.yaml
+      - scripts/verify.mjs and every other root manifest, lockfile, or test/config script
+      - normative and unrelated phase documentation
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-08-09T23:32:00+03:00"
+    leaseExpiresAt: "2026-08-16T23:32:00+03:00"
+    handoff: docs/phase-records/handoffs/login-paper-adoption/20260809-233200-login_paper_b01-activation.md
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: NOT_REQUIRED
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
 
   phase-4:
     status: DONE
