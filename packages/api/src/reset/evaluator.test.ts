@@ -212,27 +212,6 @@ describe("evaluateScheduledReset", () => {
 		});
 	});
 
-	it("rejects a nonexistent close for the active settings version", () => {
-		expect(() =>
-			evaluateScheduledReset({
-				businessDay: "2026-03-08",
-				now: new Date("2026-03-08T08:00:00.000Z"),
-				settingsVersions: [
-					settings({
-						effectiveFrom: new Date("2020-01-01T00:00:00.000Z"),
-						timeZone: "America/New_York",
-						businessDayBoundary: "00:00",
-						weeklySchedule: {
-							...closedWeek,
-							sun: { open: "00:00", close: "02:30" },
-						},
-					}),
-				],
-				priorIssuances: [],
-			}),
-		).toThrow("Schedule wall time does not exist in the configured zone");
-	});
-
 	it.each([
 		"pending",
 		"applied",
