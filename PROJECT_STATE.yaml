@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-09T15:00:13+03:00"
+updatedAt: "2026-08-09T15:24:05+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -371,11 +371,11 @@ milestones:
     integratedCommit: 4211b172bcfbb50b30f3f38a400287e5d12bdf7e
 
   phase5-staff-ui:
-    status: READY_FOR_INTEGRATION
+    status: DONE
     dependencies: [phase5-command-domain]
-    ownerSession: "main Codex session"
-    branch: work/phase5-staff-paper-fidelity
-    worktree: D:/Projects/fitway
+    ownerSession: null
+    branch: main
+    worktree: null
     baseCommit: 0f849756cee77d43e9013c9fd5e4e7b5cf36701a
     ownedPaths:
       - apps/web/src/components/staff/operational-snapshot-view.tsx
@@ -401,9 +401,9 @@ milestones:
       - probe2.mjs and all unrelated untracked diagnostics
     sharedLeases: []
     validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-09T15:00:13+03:00"
-    leaseExpiresAt: "2026-08-10T13:14:53+03:00"
-    handoff: docs/phase-records/handoffs/phase5-staff-ui/20260809-150013-p5_staff_human-visual-pass.md
+    lastHeartbeatAt: "2026-08-09T15:24:05+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase5-staff-ui/20260809-152405-p5_staff_final-integration.md
     stopReason: null
     gates:
       unit: PASS
@@ -412,31 +412,31 @@ milestones:
       accessibility: PASS
       visual: PASS
       independentReview: PASS
-    integratedCommit: null
+    integratedCommit: 0f85adf80690ab7df802070bc8ce8197f4057010
 
   phase-5:
-    status: PLANNED
+    status: DONE
     dependencies: [phase5-command-domain, phase5-staff-ui]
     ownerSession: null
-    branch: null
+    branch: main
     worktree: null
-    baseCommit: null
+    baseCommit: 0f85adf80690ab7df802070bc8ce8197f4057010
     ownedPaths: []
     forbiddenPaths: []
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
+    lastHeartbeatAt: "2026-08-09T15:24:05+03:00"
     leaseExpiresAt: null
-    handoff: null
+    handoff: docs/phase-records/phase-05-aggregate.md
     stopReason: null
     gates:
-      unit: PENDING
-      integration: PENDING
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
-      independentReview: PENDING
-    integratedCommit: null
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
+      independentReview: PASS
+    integratedCommit: 0f85adf80690ab7df802070bc8ce8197f4057010
 
   phase-6:
     status: PLANNED
