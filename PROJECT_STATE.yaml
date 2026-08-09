@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-10T01:26:00+03:00"
+updatedAt: "2026-08-10T01:31:00+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -485,11 +485,11 @@ milestones:
     integratedCommit: 0f85adf80690ab7df802070bc8ce8197f4057010
 
   phase-6:
-    status: FAILED_VALIDATION
+    status: IN_PROGRESS
     dependencies: [phase-5]
-    ownerSession: "Phase 6 offline/backfill worker on work/phase6-offline-b01 in D:/Projects/fitway-worktrees/phase6-offline: deliver automatic offline fallback, buffered minute backfill, history-only backfill authority, reconnect ordering with pending commands applied before live authority resumes, and the frozen device/OpenAPI contract with TypeScript/Python fixture parity. Also decide ADR-008 decision 6 on the source=manual producer. No staff or owner UI, no new command surface, no migration, no router leaf."
-    branch: work/phase6-offline-b01
-    worktree: D:/Projects/fitway-worktrees/phase6-offline
+    ownerSession: "Fresh resumed Phase 6 b02 worker on work/phase6-offline-b02 in D:/Projects/fitway-worktrees/phase6-offline-b02: replay the preserved b01 candidate exactly, then repair only strict Python acknowledgement schema handling/correlation and OpenAPI whitespace timezone parity with missing negative regressions. This is not a third b01 repair."
+    branch: work/phase6-offline-b02
+    worktree: D:/Projects/fitway-worktrees/phase6-offline-b02
     baseCommit: SELF
     ownedPaths:
       - packages/api/src/offline/**
@@ -533,19 +533,20 @@ milestones:
       - "AGENTS.md, CLAUDE.md, FITWAY_PRODUCT.md, SPEC.md, PHASES.md, DESIGN_GUIDE.md, README.md, RESEARCH.md, docs/WORKFLOW.md, and docs/adr/**"
       - every other milestone's phase record and handoff directory
       - root manifests, lockfiles, environment schemas, test-runner config, vitest and playwright configs, and biome.json
-    sharedLeases: []
-    validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-09T23:16:00+03:00"
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase-6/20260809-231600-p6_offline_coord01-failed-validation.md
-    stopReason: "Fresh executable verification confirmed boolean and mismatched acknowledgement schema versions can settle and delete durable schema-v2 backfill after both repair cycles were exhausted."
+    sharedLeases:
+      - "exclusive through 2026-08-17T01:31:00+03:00: edge protocol spine (packages/api/src/edge-push.ts and edge-push.test.ts, apps/server/src/edge-push.ts, apps/server/src/openapi.ts, packages/api/src/occupancy/engine.ts and engine.test.ts, apps/server/src/occupancy-repositories.ts, and edge/** Python simulator/fixtures/parity tests); it excludes packages/db/**, the router/context/server-index lane, packages/env/**, and every apps/web surface"
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-08-10T01:31:00+03:00"
+    leaseExpiresAt: "2026-08-17T01:31:00+03:00"
+    handoff: docs/phase-records/handoffs/phase-6/20260810-013100-p6_offline_b02-activation.md
+    stopReason: null
     gates:
-      unit: PASS
-      integration: PASS
+      unit: PENDING
+      integration: PENDING
       browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
-      independentReview: FAIL
+      independentReview: PENDING
     integratedCommit: null
 
   phase7-reset-evaluator:
