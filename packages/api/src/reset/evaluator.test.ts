@@ -175,6 +175,43 @@ describe("evaluateScheduledReset", () => {
 		});
 	});
 
+	it("ignores a superseded settings version with a nonexistent future close", () => {
+		const obsolete = settings({
+			version: 1,
+			effectiveFrom: new Date("2020-01-01T00:00:00.000Z"),
+			timeZone: "America/New_York",
+			businessDayBoundary: "00:00",
+			weeklySchedule: {
+				...closedWeek,
+				sun: { open: "00:00", close: "02:30" },
+			},
+		});
+		const current = settings({
+			version: 2,
+			effectiveFrom: new Date("2021-01-01T00:00:00.000Z"),
+			timeZone: "America/New_York",
+			businessDayBoundary: "00:00",
+			weeklySchedule: {
+				...closedWeek,
+				sun: { open: "00:00", close: "03:30" },
+			},
+		});
+
+		expect(
+			evaluateScheduledReset({
+				businessDay: "2026-03-08",
+				now: new Date("2026-03-08T08:00:00.000Z"),
+				settingsVersions: [obsolete, current],
+				priorIssuances: [],
+			}),
+		).toMatchObject({
+			decision: "issue",
+			settingsVersion: 2,
+			scheduledCloseAt: new Date("2026-03-08T07:30:00.000Z"),
+			dueAt: new Date("2026-03-08T08:00:00.000Z"),
+		});
+	});
+
 	it.each([
 		"pending",
 		"applied",
