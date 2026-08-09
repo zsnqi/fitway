@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-10T01:38:00+03:00"
+updatedAt: "2026-08-10T01:42:00+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -968,9 +968,62 @@ milestones:
       independentReview: PASS
     integratedCommit: b1be589ea6d74d0c646f5da9d20a1157f740279a
 
-  phase10-ui-csv:
+  phase10-paper-reporting:
+    status: IN_PROGRESS
+    dependencies: [phase10-domain]
+    ownerSession: "Paper-only Phase 10 Owner reporting-extension writer: author the approved heatmap, comparison, range, export, responsive, RTL/LTR, state, and accessibility compositions inside the existing Owner/Management production family. Preserve all existing approved Paper artboards and every repository file."
+    branch: main
+    worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
+    baseCommit: c49f8cd22b73dac5635c76e744c35a142f16ea9a
+    ownedPaths:
+      - "Paper file 01KYPX5AF950XZVVDD88B6J7QB / OWNER ANALYTICS — PHASE 10 REPORTING EXTENSION — CURRENT"
+    forbiddenPaths:
+      - "all repository paths; this milestone writes only inside the approved FITWAY Paper file"
+      - "all existing approved Paper artboards and components outside the new Owner reporting extension area"
+      - "Staff, Login, and Public production families"
+    sharedLeases:
+      - "exclusive Paper write lease: OWNER ANALYTICS — PHASE 10 REPORTING EXTENSION — CURRENT"
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-08-10T01:42:00+03:00"
+    leaseExpiresAt: "2026-08-11T01:42:00+03:00"
+    handoff: docs/phase-records/handoffs/phase10-paper-reporting/20260810-014200-p10_paper_reporting-b01-activation.md
+    stopReason: null
+    gates:
+      unit: NOT_REQUIRED
+      integration: NOT_REQUIRED
+      browser: NOT_REQUIRED
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase10-csv-transport:
     status: PLANNED
     dependencies: [phase10-domain]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase10-ui-csv:
+    status: PLANNED
+    dependencies: [phase10-domain, phase10-paper-reporting, phase10-csv-transport]
     ownerSession: null
     branch: null
     worktree: null
@@ -994,7 +1047,7 @@ milestones:
 
   phase-10:
     status: PLANNED
-    dependencies: [phase10-domain, phase10-ui-csv]
+    dependencies: [phase10-domain, phase10-paper-reporting, phase10-csv-transport, phase10-ui-csv]
     ownerSession: null
     branch: null
     worktree: null

@@ -58,8 +58,12 @@ phase8-alert-evaluator + phase8-integration -> phase-8
 baseline-reconciliation-gate + phase-2 + phase-3 -> phase9-analytics-domain
 phase9-analytics-domain + phase-4 -> phase9-owner-ui
 phase9-analytics-domain + phase9-owner-ui -> phase-9
-phase-9 -> phase10-domain -> phase10-ui-csv
-phase10-domain + phase10-ui-csv -> phase-10
+phase-9 -> phase10-domain
+phase10-domain -> phase10-paper-reporting
+phase10-domain -> phase10-csv-transport
+phase10-domain + phase10-paper-reporting + phase10-csv-transport -> phase10-ui-csv
+phase10-domain + phase10-paper-reporting + phase10-csv-transport + phase10-ui-csv
+  -> phase-10
 
 phase-9 -> phase11-shell
 phase-5 + phase-9 -> phase11-audit
@@ -72,7 +76,9 @@ phase11-shell + phase11-audit + phase11-access + phase11-settings + phase11-heal
 phase-6 -> phase-12
 ```
 
-Slice IDs are worker-branch milestones. Aggregate IDs with slices (`phase-4`, `phase-7`,
+Repository-writing slice IDs are worker-branch milestones. A bounded Paper-only authority
+milestone may be coordinator-tracked from `main` while its exclusive lease names the exact
+Paper area and every repository path remains forbidden. Aggregate IDs with slices (`phase-4`, `phase-7`,
 `phase-8`, `phase-9`, `phase-10`, and `phase-11`) are coordinator-owned integration and
 acceptance milestones, not worker branches. A slice may become `DONE` independently once its
 own dependencies and gates close; an aggregate becomes `DONE` only after every listed slice
@@ -96,7 +102,7 @@ No phase worktree starts until BRG is `DONE` in `PROJECT_STATE.yaml`.
 | 2 | `phase8-alert-evaluator` when `phase4-health` closes; coordinator aggregates `phase-4`; then `phase-5` and `phase9-owner-ui` start as their dependencies close | Aggregate nodes stay on the integration branch and are never worker worktrees |
 | 3 | Coordinator aggregates `phase-9`; then `phase10-domain` and `phase11-shell` start | Migration and router aggregation remain serialized |
 | 4 | `phase-6`, `phase7-reset-evaluator`, `phase11-audit`, and `phase11-access` as their exact ledger dependencies close | A coordinated settings/index migration lands first; Phase 11 slices cannot infer missing audit/auth contracts |
-| 5 | `phase7-integration` after its evaluator and `phase-6`; `phase10-ui-csv` after `phase10-domain`; `phase-12` after `phase-6`; then coordinator aggregates `phase-7`/`phase-10` and starts `phase11-settings` when eligible | The three worker streams use separate ownership scopes and do not mutate the frozen device contract independently |
+| 5 | `phase7-integration` after its evaluator and `phase-6`; `phase10-paper-reporting` and `phase10-csv-transport` after `phase10-domain`; `phase10-ui-csv` after both Phase 10 prerequisites; `phase-12` after `phase-6`; then coordinator aggregates `phase-7`/`phase-10` and starts `phase11-settings` when eligible | The worker streams use separate ownership scopes and do not mutate the frozen device contract independently |
 | 6 | `phase8-integration` after its evaluator and `phase-7`; then coordinator aggregates `phase-8`, starts `phase11-health`, and aggregates `phase-11` after all five slices | Phase 8 API/log integration is complete before health UI acceptance |
 
 Research may run earlier, but it may not install dependencies, generate migrations, edit
@@ -247,8 +253,12 @@ results after later settings changes.
 **Depends on:** Phase 9.
 
 `phase10-domain` is the domain/reporting worker milestone and depends on `phase-9`.
-`phase10-ui-csv` is the UI/export worker milestone and depends on `phase10-domain`.
-`phase-10` is the coordinator integration/acceptance milestone and depends on both slices.
+`phase10-paper-reporting` is the bounded Paper authority milestone for the already-approved
+Owner/Management reporting extension and depends on `phase10-domain`. `phase10-csv-transport`
+is the owner-only streamed transport milestone and also depends on `phase10-domain`.
+`phase10-ui-csv` consumes the accepted domain, Paper composition, and CSV transport; it must
+not infer any of those contracts. `phase-10` is the coordinator integration/acceptance
+milestone and depends on all four slices.
 
 Deliver weekday/hour heatmap, week-over-week comparison, date range, and owner-only streamed
 CSV with UTC and gym-local time. Closed, missing, and zero remain distinct. CSV is UTF-8,
