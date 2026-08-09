@@ -47,7 +47,16 @@ blocked/failed item receives a new attempt record; history is never overwritten.
 4. Assign a unique lowercase `FITWAY_RUN_ID`, for example `p4_auth_s01`.
 5. Register the slice's focused verification profile and exact test paths before launch.
 6. Create a non-overlapping branch/worktree. Never start from another worker's unintegrated branch.
-7. Record owner, branch, worktree, actual initial worker HEAD, lease expiry, and handoff path
+7. Prepare the new worktree before any agent or test work. `node_modules` is untracked, so a fresh
+   worktree starts without it, and a partial install leaves `node_modules/.bin` without the root
+   tool links. From the worktree root run `pnpm install --frozen-lockfile`, then
+   `pnpm exec vitest --version` as the gate. If that gate does not print a version, the executable
+   links are incomplete and no test result from that worktree is trustworthy. Repair only by
+   reinstalling from the frozen lockfile; never rewrite the lockfile to make a worktree resolve.
+8. Provision `apps/server/.env` in the worktree before any integration or `pnpm verify:full` run.
+   It is untracked and absent from every new worktree; without it those runs fail on environment
+   validation rather than on the change under test.
+9. Record owner, branch, worktree, actual initial worker HEAD, lease expiry, and handoff path
    before edits. `baseCommit: SELF` is allowed only when the activation commit itself is that HEAD.
 
 The BRG commit remains the immutable feature baseline. The coordinator may place one activation
@@ -69,9 +78,10 @@ Every worker or verifier reads, in order:
 5. the relevant ADR and phase record;
 6. the latest handoff named in the ledger.
 
-Then verify `git status --short`, `git rev-parse HEAD`, the worktree/branch, tool versions,
-required services, and the declared owned paths. If an activation commit is recorded, verify
-that the BRG base is its parent and that the worker starts at that exact activation commit.
+Then verify `git status --short`, `git rev-parse HEAD`, the worktree/branch, tool versions
+(including `pnpm exec vitest --version` from the worktree root), required services, and the
+declared owned paths. If an activation commit is recorded, verify that the BRG base is its parent
+and that the worker starts at that exact activation commit.
 Check `leaseExpiresAt` against the current wall clock at startup and before every shared-file edit;
 an expired lease requires coordinator renewal and immediate `NEEDS_HUMAN`. Stop if the base,
 activation head, lease, or ownership differs.
