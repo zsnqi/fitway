@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-09T23:32:00+03:00"
+updatedAt: "2026-08-10T00:05:00+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -268,7 +268,7 @@ milestones:
     integratedCommit: b67398a8a221e60f45ed7a4f2b0e40207fdbd58a
 
   login-paper-adoption:
-    status: IN_PROGRESS
+    status: FAILED_VALIDATION
     dependencies: [phase4-staff-web]
     ownerSession: "Login Paper-adoption worker on work/login-paper-adoption-b01 in D:/Projects/fitway-worktrees/login-paper-adoption: adopt the approved Login production composition without changing authentication, copy, validation, lockout semantics, routes, or other surfaces."
     branch: work/login-paper-adoption-b01
@@ -299,17 +299,17 @@ milestones:
       - scripts/verify.mjs and every other root manifest, lockfile, or test/config script
       - normative and unrelated phase documentation
     sharedLeases: []
-    validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-09T23:32:00+03:00"
-    leaseExpiresAt: "2026-08-16T23:32:00+03:00"
-    handoff: docs/phase-records/handoffs/login-paper-adoption/20260809-233200-login_paper_b01-activation.md
-    stopReason: null
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-08-10T00:02:21+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/login-paper-adoption/20260810-000500-login_paper_coord01-failed-validation.md
+    stopReason: "The focused browser gate remained 6/7 after both repair cycles because its submitting-state assertion reused an accessible-name locator that correctly disappears when the button label changes; the rejected candidate is preserved cleanly at 9b65356."
     gates:
       unit: PENDING
       integration: NOT_REQUIRED
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
+      browser: FAIL
+      accessibility: PASS
+      visual: PASS
       independentReview: PENDING
     integratedCommit: null
 
