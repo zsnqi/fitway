@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-08T00:05:00+03:00"
+updatedAt: "2026-08-09T12:51:36+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -787,19 +787,62 @@ milestones:
     integratedCommit: 439b1b3ea58a545448164c091d7981ff2e4dbf94
 
   phase10-domain:
-    status: PLANNED
+    status: READY
     dependencies: [phase-9]
-    ownerSession: null
-    branch: null
-    worktree: null
-    baseCommit: null
-    ownedPaths: []
-    forbiddenPaths: []
+    ownerSession: "Phase 10 reporting-domain worker (Codex) on work/phase10-domain-b01 in D:/Projects/fitway-worktrees/phase10-domain: build the additive, unexposed heatmap, week-over-week comparison, date-range, and CSV reporting domain plus its server-side reporting repository and disposable-Postgres integration test. No router leaf, no context change, no migration, no UI."
+    branch: work/phase10-domain-b01
+    worktree: D:/Projects/fitway-worktrees/phase10-domain
+    baseCommit: SELF
+    ownedPaths:
+      - packages/api/src/analytics/reporting/**
+      - apps/server/src/reporting-repository.ts
+      - apps/server/src/reporting-repository.test.ts
+      - apps/server/src/phase10-domain.integration.test.ts
+      - docs/phase-records/handoffs/phase10-domain/**
+    forbiddenPaths:
+      - all repository paths outside ownedPaths
+      - packages/api/src/analytics/daily-analytics.ts
+      - packages/api/src/analytics/daily-analytics.test.ts
+      - packages/api/src/analytics/history-generator.ts
+      - packages/api/src/analytics/history-generator.test.ts
+      - packages/api/src/analytics/time-context.ts
+      - packages/api/src/analytics/time-context.test.ts
+      - packages/api/src/routers/**
+      - packages/api/src/context.ts
+      - packages/api/src/index.ts
+      - packages/api/src/occupancy/**
+      - packages/api/src/auth/**
+      - packages/api/src/commands/**
+      - packages/api/src/audit/**
+      - packages/api/src/health/**
+      - packages/api/src/public/**
+      - packages/api/src/alerts/**
+      - packages/api/src/edge-push.ts
+      - apps/server/src/index.ts
+      - apps/server/src/openapi.ts
+      - apps/server/src/analytics-repository.ts
+      - apps/server/src/analytics-time-context-repository.ts
+      - apps/server/src/test-support/**
+      - "every other apps/server/src/*.integration.test.ts, which is another milestone's accepted acceptance evidence"
+      - "packages/db/**, including src/schema/**, src/migrations/**, and meta/_journal.json; the migration lane is coordinator-serialized and no Phase 10 index may be hand-authored"
+      - packages/auth/**
+      - packages/env/**
+      - packages/ui/**
+      - apps/web/**
+      - edge/**
+      - tests/browser/**
+      - visual-direction-gate/** and the canonical toHaveScreenshot baselines
+      - scripts/verify.mjs and scripts/verify-repository.mjs
+      - PROJECT_STATE.yaml
+      - "AGENTS.md, CLAUDE.md, FITWAY_PRODUCT.md, SPEC.md, PHASES.md, DESIGN_GUIDE.md, README.md, RESEARCH.md, docs/WORKFLOW.md, and docs/adr/**"
+      - every other milestone's phase record and handoff directory
+      - "all Phase 5 work and all apps/web Phase 10 UI/CSV surfaces, which belong to phase10-ui-csv"
+      - root manifests, lockfiles, environment schemas, test-runner config, vitest and playwright configs, and biome.json
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
-    leaseExpiresAt: null
-    handoff: null
+    lastHeartbeatAt: "2026-08-09T12:51:36+03:00"
+    leaseExpiresAt: "2026-08-16T12:51:36+03:00"
+    handoff: docs/phase-records/handoffs/phase10-domain/20260809-125136-p10_domain_b01-activation.md
     stopReason: null
     gates:
       unit: PENDING
