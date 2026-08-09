@@ -39,11 +39,6 @@ const phases = {
 		integrationFiles: [],
 		label: "Phase 4 staff web slice",
 	},
-	"login-paper-adoption": {
-		browserFiles: ["tests/browser/login-paper-adoption.browser.spec.ts"],
-		integrationFiles: [],
-		label: "Login Paper adoption slice",
-	},
 	"phase8-alert-evaluator": {
 		browserFiles: [],
 		integrationFiles: [
@@ -74,15 +69,6 @@ const phases = {
 		browserFiles: ["tests/browser/phase9-owner-ui.browser.spec.ts"],
 		integrationFiles: ["apps/server/src/phase9-owner-ui.integration.test.ts"],
 		label: "Phase 9 owner UI slice",
-	},
-	"phase11-shell": {
-		browserFiles: [
-			"tests/browser/phase4-staff-web.browser.spec.ts",
-			"tests/browser/phase9-owner-ui.browser.spec.ts",
-			"tests/browser/phase11-shell.browser.spec.ts",
-		],
-		integrationFiles: [],
-		label: "Phase 11 owner shell Paper adoption slice",
 	},
 	"phase10-domain": {
 		browserFiles: [],

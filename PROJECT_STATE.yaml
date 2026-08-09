@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-10T00:08:00+03:00"
+updatedAt: "2026-08-10T01:26:00+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -1017,7 +1017,7 @@ milestones:
     integratedCommit: null
 
   phase11-shell:
-    status: IN_PROGRESS
+    status: FAILED_VALIDATION
     dependencies: [phase-9]
     ownerSession: "Phase 11 Owner-shell Paper-adoption worker on work/phase11-shell-b01 in D:/Projects/fitway-worktrees/phase11-shell: replace only the legacy /admin wrapper with the approved Owner rail and responsive shell while preserving Phase 9 analytics behavior, copy, states, tests, and every non-admin surface."
     branch: work/phase11-shell-b01
@@ -1055,18 +1055,18 @@ milestones:
       - scripts/verify.mjs and every other root manifest, lockfile, or test/config script
       - Paper and normative or unrelated phase documentation
     sharedLeases: []
-    validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-10T00:08:00+03:00"
-    leaseExpiresAt: "2026-08-17T00:08:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-shell/20260810-000800-p11_shell_b01-activation.md
-    stopReason: null
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-08-10T01:24:00+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase11-shell/20260810-012600-p11_shell_coord01-failed-validation.md
+    stopReason: "The final allowed repair passed asymmetric safe-area, 44x44 target, navigation, state, and canonical-visual checks but the focused forced-colors test still found an interactive target with computed outline-style none; the rejected candidate is preserved cleanly at 0b015ee."
     gates:
       unit: PENDING
       integration: NOT_REQUIRED
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
-      independentReview: PENDING
+      browser: FAIL
+      accessibility: FAIL
+      visual: PASS
+      independentReview: FAIL
     integratedCommit: null
 
   phase11-audit:

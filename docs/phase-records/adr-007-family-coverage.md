@@ -1,6 +1,7 @@
 # ADR-007 Paper production-family coverage for the remaining UI slices
 
-- Status: `RECORDED` — coordinator determination; documentation only
+- Status: `SUPERSEDED_IN_PART` — the rendered-family inventory remains evidence, while the
+  missing-family decision was resolved by the human approval recorded below
 - Date: 2026-08-09
 - Authority: [ADR-007](../adr/ADR-007-paper-visual-source-of-truth.md), which places visual
   composition in Paper and states that "Establishing the per-surface conflict list is
@@ -10,9 +11,12 @@
 - Source: Paper file `FITWAY UX Exploration` (`01KYPX5AF950XZVVDD88B6J7QB`), `Page 1`,
   token content hash `3b0faca3`. Nothing in Paper was created, edited, moved, or deleted.
 
-This record maps slices onto the **four already-approved families only**. It proposes no new
-family, no new surface, and no visual direction. Where no approved family renders a surface, the
-slice is reported `NEEDS_HUMAN` rather than resolved.
+This record originally mapped slices onto the **four already-approved families only**. Its
+read-only inventory remains valid. Its original `NEEDS_HUMAN` conclusions do not: during the
+2026-08-09/10 orchestration run, Hussein explicitly authorized Codex to extend the existing
+approved Owner/Management family for the required Phase 10 reporting and Phase 11 audit/access
+components, reusing its approved patterns and `DESIGN_GUIDE.md` precedents. An unrelated
+replacement production family is forbidden. Staff remains monitoring-only.
 
 ## What the approved families actually contain
 
@@ -40,9 +44,9 @@ crowd board. None renders an owner reporting or owner governance surface.
 | Slice | Verdict | Covering family | Evidence |
 | --- | --- | --- | --- |
 | `phase11-shell` | **COVERED** | `OWNER DAILY ANALYTICS PRODUCTION SET — CURRENT` | The owner shell chrome — top rail, sign-out, locale toggle, FITWAY identity, and the two-destination nav — is rendered in all five viewport/locale frames plus the exception and resilience frames |
-| `phase10-ui-csv` | **NEEDS_HUMAN** | none | No approved family renders a weekday/hour heatmap, week-over-week comparison, date-range control, or CSV export affordance; a file-wide search returns zero `heatmap` and zero `CSV` nodes, and the only approved owner chart is a single-day curve |
-| `phase11-audit` | **NEEDS_HUMAN** | none | No approved family renders an audit history list or its actor/action/from/to/reason filters; the single file-wide `audit` match is a note about a repository audit, not an interface |
-| `phase11-access` | **NEEDS_HUMAN** | none | No approved family renders PIN provisioning, rotation, deactivation, or owner account management; every file-wide `PIN` match is the word "spinner" inside Login and Public loading copy |
+| `phase10-ui-csv` | **AUTHORIZED_EXTENSION** | existing approved Owner/Management family | The current family does not yet render the reporting controls, heatmap, comparison, or export affordance; Codex is authorized to author those missing components inside this family and obtain independent review |
+| `phase11-audit` | **AUTHORIZED_EXTENSION** | existing approved Owner/Management family | Codex is authorized to author the filterable audit/history presentation inside this family after the generalized audit contract is established |
+| `phase11-access` | **AUTHORIZED_EXTENSION** | existing approved Owner/Management family | Codex is authorized to author credential/access administration, reveal-once PIN, and required owner-account presentation inside this family; unresolved security policy remains governed by Product/Spec rather than visual authority |
 
 ## The constraint that rides with `phase11-shell`
 
@@ -55,28 +59,25 @@ renders those destinations and inventing one would be a material visual-directio
 `AGENTS.md` makes immediately `NEEDS_HUMAN`. Whether the rail should grow destinations is part of
 the same missing-family decision recorded below, not a call for the shell slice to make.
 
-## What remains open for Hussein
+## Superseding human decision
 
-Three slices need a visual decision before any of them can implement:
+The missing-composition question is closed. Codex may add the required reporting, audit, and
+access/account compositions to the **existing** approved Owner/Management family in Paper. Work
+must reuse the approved rail, typography, glass boards, tables/disclosures, responsive behavior,
+RTL/LTR behavior, and accessibility/state patterns before creating any local component. The
+Phase 10 heatmap belongs inside Owner analytics. No governance control may appear on Staff.
 
-- **`phase10-ui-csv`** — the missing family is an owner **reporting** surface: weekday/hour
-  heatmap, week-over-week comparison, date-range selection, and the export affordance.
-- **`phase11-audit`** — the missing family is an owner **audit history** surface: a filterable
-  actor/action/from/to/reason record list.
-- **`phase11-access`** — the missing family is an owner **access management** surface: PIN
-  provisioning, rotation, and deactivation, plus owner account management.
+New Paper compositions require a bounded writer and fresh independent read-only review before
+they become implementation authority. This approval does not settle unrelated security or data
+semantics; for example, owner self-deactivation, last-owner protection, and password delivery
+remain Product/Spec questions if the repository has not already answered them.
 
-`phase11-settings` and `phase11-health` are not assessed here; both are still blocked by their own
-ledger dependencies, and their coverage should be determined when those close.
-
-The decision required is the one `dependency-parallelization-audit.md` §16.1 named and left
-unverified: whether a new Paper production family must exist before an owner surface with no
-family may be implemented, or whether ADR-007 is amended to authorize implementing such a surface
-from `DESIGN_GUIDE.md` using an approved family as precedent. This record does not take that
-decision and no agent may.
+`phase11-settings` and `phase11-health` remain governed by their ledger dependencies. Their future
+Owner-family composition is authorized under the same rule, but implementation cannot bypass
+failed or incomplete backend dependencies.
 
 ## Effect on coordinator state
 
-None. This record changes no milestone status, gate, ownership, or lease. `phase11-shell` becomes
-eligible for a normal activation on its own schedule; `PROJECT_STATE.yaml` is unchanged by this
-determination.
+The visual-authority stall is removed for the authorized extensions. Milestone status, dependency,
+ownership, lease, and validation transitions remain coordinator-owned in `PROJECT_STATE.yaml`;
+this record alone does not activate implementation.
