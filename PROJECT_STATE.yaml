@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-10T01:31:00+03:00"
+updatedAt: "2026-08-10T01:38:00+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -485,7 +485,7 @@ milestones:
     integratedCommit: 0f85adf80690ab7df802070bc8ce8197f4057010
 
   phase-6:
-    status: IN_PROGRESS
+    status: BLOCKED
     dependencies: [phase-5]
     ownerSession: "Fresh resumed Phase 6 b02 worker on work/phase6-offline-b02 in D:/Projects/fitway-worktrees/phase6-offline-b02: replay the preserved b01 candidate exactly, then repair only strict Python acknowledgement schema handling/correlation and OpenAPI whitespace timezone parity with missing negative regressions. This is not a third b01 repair."
     branch: work/phase6-offline-b02
@@ -533,13 +533,12 @@ milestones:
       - "AGENTS.md, CLAUDE.md, FITWAY_PRODUCT.md, SPEC.md, PHASES.md, DESIGN_GUIDE.md, README.md, RESEARCH.md, docs/WORKFLOW.md, and docs/adr/**"
       - every other milestone's phase record and handoff directory
       - root manifests, lockfiles, environment schemas, test-runner config, vitest and playwright configs, and biome.json
-    sharedLeases:
-      - "exclusive through 2026-08-17T01:31:00+03:00: edge protocol spine (packages/api/src/edge-push.ts and edge-push.test.ts, apps/server/src/edge-push.ts, apps/server/src/openapi.ts, packages/api/src/occupancy/engine.ts and engine.test.ts, apps/server/src/occupancy-repositories.ts, and edge/** Python simulator/fixtures/parity tests); it excludes packages/db/**, the router/context/server-index lane, packages/env/**, and every apps/web surface"
+    sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-10T01:31:00+03:00"
-    leaseExpiresAt: "2026-08-17T01:31:00+03:00"
-    handoff: docs/phase-records/handoffs/phase-6/20260810-013100-p6_offline_b02-activation.md
-    stopReason: null
+    lastHeartbeatAt: "2026-08-10T01:38:00+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase-6/20260810-013800-p6_offline_b02-blocked.md
+    stopReason: "The clean b02 activation could not replay preserved commit 37d2d52 because both worker and coordinator Git-index attempts were rejected after the host approval service exhausted its usage limit and explicitly prohibited workarounds; no candidate code or repair was attempted."
     gates:
       unit: PENDING
       integration: PENDING
