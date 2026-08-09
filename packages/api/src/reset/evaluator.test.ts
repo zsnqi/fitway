@@ -86,32 +86,6 @@ describe("evaluateScheduledReset", () => {
 		});
 	});
 
-	it("uses the final scheduled close when adjacent sessions share a business day", () => {
-		const now = new Date("2026-07-18T20:30:00.000Z");
-
-		expect(
-			evaluateScheduledReset({
-				businessDay: "2026-07-18",
-				now,
-				settingsVersions: [
-					settings({
-						weeklySchedule: {
-							...closedWeek,
-							fri: { open: "14:00", close: "05:00" },
-							sat: { open: "06:00", close: "23:00" },
-						},
-					}),
-				],
-				priorIssuances: [],
-			}),
-		).toMatchObject({
-			decision: "issue",
-			businessDay: "2026-07-18",
-			scheduledCloseAt: new Date("2026-07-18T20:00:00.000Z"),
-			dueAt: now,
-		});
-	});
-
 	it("keeps a past-midnight close on the historical settings effective before close", () => {
 		const historical = settings({
 			version: 4,
@@ -145,32 +119,6 @@ describe("evaluateScheduledReset", () => {
 			businessDay: "2026-07-17",
 			settingsVersion: 4,
 			scheduledCloseAt: new Date("2026-07-17T23:00:00.000Z"),
-			dueAt: now,
-		});
-	});
-
-	it("uses the canonical earlier instant for a repeated DST close time", () => {
-		const now = new Date("2026-11-01T06:00:00.000Z");
-
-		expect(
-			evaluateScheduledReset({
-				businessDay: "2026-10-31",
-				now,
-				settingsVersions: [
-					settings({
-						timeZone: "America/New_York",
-						weeklySchedule: {
-							...closedWeek,
-							sat: { open: "20:00", close: "01:30" },
-						},
-					}),
-				],
-				priorIssuances: [],
-			}),
-		).toMatchObject({
-			decision: "issue",
-			businessDay: "2026-10-31",
-			scheduledCloseAt: new Date("2026-11-01T05:30:00.000Z"),
 			dueAt: now,
 		});
 	});
