@@ -124,8 +124,7 @@ function wallTimeToInstant(
 	date: CivilDate,
 	time: WallTime,
 	timeZone: string,
-	isRelevantAt: (instant: Date) => boolean,
-): Date | null {
+): Date {
 	const requested: LocalParts = { ...date, ...time };
 	const naive = utcMilliseconds(requested);
 	const offsets = new Set<number>();
@@ -135,18 +134,13 @@ function wallTimeToInstant(
 			utcMilliseconds(localParts(new Date(sampled), timeZone)) - sampled,
 		);
 	}
-	const candidates = [...offsets].map((offset) => naive - offset);
-	const match = candidates
+	const match = [...offsets]
+		.map((offset) => naive - offset)
 		.filter((candidate) =>
 			sameLocalParts(localParts(new Date(candidate), timeZone), requested),
 		)
 		.sort((left, right) => left - right)[0];
 	if (match === undefined) {
-		if (
-			!candidates.some((candidate) => isRelevantAt(new Date(candidate - 1)))
-		) {
-			return null;
-		}
 		throw new RangeError(
 			"Schedule wall time does not exist in the configured zone",
 		);
@@ -186,7 +180,6 @@ function scheduledCloseFor(
 	businessDay: string,
 	anchor: CivilDate,
 	version: ResetScheduleSettingsVersion,
-	versions: readonly ResetScheduleSettingsVersion[],
 ): Date | null {
 	const weekday = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
 	const hours = version.weeklySchedule[weekday[weekdayIndex(anchor)] ?? "sun"];
@@ -199,11 +192,9 @@ function scheduledCloseFor(
 			: anchor,
 		close,
 		version.timeZone,
-		(at) => settingsEffectiveAt(versions, at) === version,
 	);
-	if (!closeAt) return null;
 	const beforeClose = new Date(closeAt.getTime() - 1);
-	if (settingsEffectiveAt(versions, beforeClose) !== version) return null;
+	if (settingsEffectiveAt([version], beforeClose) !== version) return null;
 	if (!evaluateSchedule(version, beforeClose).open) return null;
 	if (
 		businessDayFor(
@@ -231,12 +222,7 @@ export function evaluateScheduledReset(
 		.flatMap((version) =>
 			anchors.map((anchor) => ({
 				version,
-				closeAt: scheduledCloseFor(
-					input.businessDay,
-					anchor,
-					version,
-					input.settingsVersions,
-				),
+				closeAt: scheduledCloseFor(input.businessDay, anchor, version),
 			})),
 		)
 		.filter(
@@ -244,6 +230,13 @@ export function evaluateScheduledReset(
 				value,
 			): value is { version: ResetScheduleSettingsVersion; closeAt: Date } =>
 				value.closeAt !== null,
+		)
+		.filter(
+			(value) =>
+				settingsEffectiveAt(
+					input.settingsVersions,
+					new Date(value.closeAt.getTime() - 1),
+				) === value.version,
 		);
 	const candidate = candidates.sort(
 		(left, right) => right.closeAt.getTime() - left.closeAt.getTime(),
