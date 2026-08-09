@@ -116,7 +116,10 @@
 	}
 }
 
-.sboard-shell > :not(.sboard-atmosphere) {
+/* The skip link must keep the `position: fixed` staff.css gives it. Promoting it
+   to `relative` here would leave its collapsed box in flow and push the rail
+   down by its own height, so it is excluded alongside the atmosphere. */
+.sboard-shell > :not(.sboard-atmosphere, .operations-skip-link) {
 	position: relative;
 	z-index: 1;
 }
@@ -269,7 +272,7 @@
 	align-items: stretch;
 	gap: var(--sb-content-gap);
 	inline-size: 100%;
-	padding: var(--sb-content-block);
+	padding-block: var(--sb-content-block);
 	padding-inline: max(var(--sb-content-inset), env(safe-area-inset-left))
 		max(var(--sb-content-inset), env(safe-area-inset-right));
 }
@@ -339,7 +342,8 @@
 	flex-direction: column;
 	gap: var(--sb-reading-gap);
 	min-inline-size: 0;
-	padding: var(--sb-reading-block) var(--sb-reading-inset);
+	padding-block: var(--sb-reading-block);
+	padding-inline: var(--sb-reading-inset);
 }
 
 .sboard__hero {
@@ -617,6 +621,12 @@
 	letter-spacing: 0.02em;
 }
 
+/* Paper sets all four captions at 600 and distinguishes the current one by tint
+   alone; the public board bolds it, which this surface does not inherit. */
+.sboard__signal .public-live__signal-caption > [data-current="true"] {
+	font-weight: 600;
+}
+
 .sboard__signal .public-live__signal-caption > * {
 	flex: none;
 	min-inline-size: 0;
@@ -658,9 +668,11 @@
 
 /* The cap sits flush at the top of the tallest bar of the current band, which
    is the reading-end bar in both directions because the grid follows `dir`. */
+/* Cancel the public board's upward cap bloom, but keep the current band's own
+   glow — Paper gives every group-2 bar the same 22px halo, capped or not. */
 .sboard__signal .public-live__signal-bar[data-current-cap="true"] {
 	overflow: clip;
-	box-shadow: none;
+	box-shadow: #e519353d 0 0 22px;
 }
 
 .sboard__signal .public-live__signal-bar[data-current-cap="true"]::after {
@@ -826,7 +838,8 @@
 	justify-content: center;
 	gap: 14px;
 	min-block-size: 502px;
-	padding: var(--sb-reading-block) var(--sb-reading-inset);
+	padding-block: var(--sb-reading-block);
+	padding-inline: var(--sb-reading-inset);
 }
 
 .sboard__failure-title {
@@ -851,14 +864,13 @@
    draws it and the 44px target is added around it. */
 .sboard__retry {
 	display: flex;
-	flex-direction: column;
 	inline-size: max-content;
 	max-inline-size: 100%;
 	min-block-size: 44px;
+	align-items: center;
 	justify-content: center;
-	gap: 5px;
 	margin-block-start: -5px;
-	padding: 5px 0;
+	padding: 0;
 	border: 0;
 	background: none;
 	color: var(--fw-red-bright);
@@ -870,8 +882,13 @@
 	transition: color var(--fw-duration-fast, 140ms) var(--fw-ease-out, ease);
 }
 
-.sboard__retry-ink {
-	padding-block-start: 6px;
+.sboard__retry-focus {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	padding-block: 5px;
+	padding-inline: 9px;
+	border-radius: var(--fw-radius-control);
 }
 
 .sboard__retry-rule {
@@ -882,12 +899,33 @@
 
 @media (hover: hover) {
 	.sboard__retry:hover:not(:disabled) {
-		color: #ff5c72;
+		color: var(--fw-red-bright);
 	}
+
+	.sboard__retry:hover:not(:disabled) .sboard__retry-rule {
+		background: var(--fw-red-bright);
+	}
+}
+
+.sboard__retry:focus-visible {
+	outline: none;
+	color: var(--fw-red-bright);
+}
+
+.sboard__retry:focus-visible .sboard__retry-focus {
+	box-shadow: 0 0 0 2px var(--sb-focus);
+}
+
+.sboard__retry:focus-visible .sboard__retry-rule {
+	background: #ff294673;
 }
 
 .sboard__retry:active:not(:disabled) {
 	color: var(--fw-red);
+}
+
+.sboard__retry:active:not(:disabled) .sboard__retry-rule {
+	background: var(--fw-red);
 }
 
 .sboard__retry:disabled {
@@ -897,12 +935,6 @@
 
 .sboard__retry:disabled .sboard__retry-rule {
 	background: var(--fw-border);
-}
-
-.sboard__retry:focus-visible {
-	outline: 2px solid var(--sb-focus);
-	outline-offset: 3px;
-	border-radius: var(--fw-radius-control);
 }
 
 /* ---- Loading skeleton --------------------------------------------------- */
@@ -1257,7 +1289,7 @@
 	}
 
 	.sboard__cell-label {
-		inline-size: 130px;
+		inline-size: 150px;
 	}
 }
 

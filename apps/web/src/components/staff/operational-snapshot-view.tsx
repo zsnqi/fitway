@@ -57,11 +57,10 @@ function resolveVariant(snapshot: OperationalSnapshot): BoardVariant {
 	if (occupancy.freshness === "closed") return "closed";
 	if (occupancy.freshness === "stale") return "delayed";
 	if (occupancy.freshness === "unavailable") {
-		// Both states are `unavailable`; the counting device is the only signal the
-		// DTO carries that separates an absent device from a present untrusted one.
-		return health.process === null || health.process === "failed"
-			? "offline"
-			: "trust";
+		// The server owns health availability. A nulled unavailable health block
+		// means there is no usable device projection; current/stale health means the
+		// device is present but the occupancy reading itself was withdrawn.
+		return health.freshness === "unavailable" ? "offline" : "trust";
 	}
 	return health.camera === "degraded" || health.camera === "failed"
 		? "camera"
@@ -531,10 +530,12 @@ export function OperationalSnapshotError({
 						onClick={onRetry}
 						disabled={retrying}
 					>
-						<span className="sboard__retry-ink">
-							{retrying ? staff.retrying : staff.retry}
+						<span className="sboard__retry-focus">
+							<span className="sboard__retry-ink">
+								{retrying ? staff.retrying : staff.retry}
+							</span>
+							<span className="sboard__retry-rule" aria-hidden="true" />
 						</span>
-						<span className="sboard__retry-rule" aria-hidden="true" />
 					</button>
 				</div>
 				<StatusStrip cells={cells} />

@@ -119,5 +119,45 @@ describe("operational snapshot truth states", () => {
 		// Device health and the reason for the withdrawal stay visible.
 		expect(container.textContent).toContain("Reading unavailable");
 		expect(container.textContent).toContain("Camera");
+		expect(
+			container.querySelector(".sboard")?.getAttribute("data-variant"),
+		).toBe("offline");
+	});
+
+	it("uses server-owned health availability to distinguish an untrusted reading", async () => {
+		await render({
+			...base,
+			occupancy: {
+				schemaVersion: 2,
+				freshness: "unavailable",
+				computedAt: base.computedAt,
+				trend: null,
+			},
+			source: null,
+			health: {
+				...base.health,
+				condition: "failed",
+				process: "failed",
+				camera: "ok",
+				feed: "failed",
+			},
+		});
+
+		expect(
+			container.querySelector(".sboard")?.getAttribute("data-variant"),
+		).toBe("trust");
+		expect(container.querySelector(".sboard__statement")).toBeNull();
+		expect(container.querySelector(".sboard__band")?.textContent).toContain(
+			"Not available",
+		);
+		expect(container.querySelector(".sboard__tick")).toBeNull();
+	});
+
+	it("keeps private capacity in the DTO and out of the Staff rendering", async () => {
+		await render(base);
+
+		expect(base.capacity).toBe(100);
+		expect(container.textContent).not.toContain("Capacity");
+		expect(container.textContent).not.toContain("100");
 	});
 });

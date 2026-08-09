@@ -1,7 +1,6 @@
-// Disposable review-evidence capture for the /staff Paper-fidelity adoption.
-// Renders every approved Paper state at every required width in both locales and
-// writes full-page captures for human visual comparison against the Paper set.
-// This file asserts nothing; it is evidence generation, not coverage.
+// Durable Paper-fidelity coverage plus disposable review-evidence capture for
+// /staff. Canonical screenshot baselines remain untouched; these captures are
+// run-scoped evidence while the assertions protect state and reflow behavior.
 
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
@@ -167,8 +166,13 @@ async function mockStaff(page: Page, snapshot: unknown) {
 }
 
 async function capture(page: Page, name: string) {
-	const directory = process.env.FITWAY_STAFF_REVIEW_DIR;
-	if (!directory) throw new Error("FITWAY_STAFF_REVIEW_DIR is required");
+	const directory =
+		process.env.FITWAY_STAFF_REVIEW_DIR ??
+		process.env.FITWAY_PLAYWRIGHT_REVIEW_DIR;
+	if (!directory)
+		throw new Error(
+			"FITWAY_STAFF_REVIEW_DIR or FITWAY_PLAYWRIGHT_REVIEW_DIR is required",
+		);
 	await mkdir(directory, { recursive: true });
 	await page.screenshot({
 		path: path.join(directory, `${name}.png`),
@@ -185,6 +189,16 @@ async function switchToEnglish(page: Page) {
 	).toBeVisible();
 }
 
+async function expectNoDocumentOverflow(page: Page) {
+	expect(
+		await page.evaluate(
+			() =>
+				document.documentElement.scrollWidth <=
+				document.documentElement.clientWidth,
+		),
+	).toBe(true);
+}
+
 for (const state of states) {
 	for (const viewport of viewports) {
 		test(`${state.name} at ${viewport.name}`, async ({ page }) => {
@@ -196,10 +210,17 @@ for (const state of states) {
 
 			await page.goto("/staff");
 			await expect(page.locator(".sboard")).toBeVisible();
+			await expectNoDocumentOverflow(page);
+			if (state.name === "baseline-live") {
+				await expect(
+					page.locator(".sboard").locator("button, input, select, textarea, a"),
+				).toHaveCount(0);
+			}
 			await page.waitForTimeout(160);
 			await capture(page, `${state.name}-ar-${viewport.name}`);
 
 			await switchToEnglish(page);
+			await expectNoDocumentOverflow(page);
 			await page.waitForTimeout(160);
 			await capture(page, `${state.name}-en-${viewport.name}`);
 		});
@@ -255,6 +276,10 @@ test("s3-load-failure at every width", async ({ page }) => {
 		await expect(page.locator('.sboard[data-variant="failure"]')).toBeVisible({
 			timeout: 15_000,
 		});
+		await expectNoDocumentOverflow(page);
+		const retryTarget = await page.locator(".sboard__retry").boundingBox();
+		expect(retryTarget?.height).toBeGreaterThanOrEqual(44);
+		expect(retryTarget?.width).toBeGreaterThanOrEqual(44);
 		await capture(page, `s3-load-failure-ar-${viewport.name}`);
 
 		await switchToEnglish(page);
@@ -271,6 +296,10 @@ test("200pct text zoom reflow", async ({ page }) => {
 	await page.evaluate(() => {
 		document.documentElement.style.fontSize = "32px";
 	});
+	await expectNoDocumentOverflow(page);
+	await expect(
+		page.locator(".sboard").locator("button, input, select, textarea, a"),
+	).toHaveCount(0);
 	await page.waitForTimeout(200);
 	await capture(page, "s7-trust-failure-ar-200pct-720");
 

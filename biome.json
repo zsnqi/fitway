@@ -9,6 +9,7 @@
 		"ignoreUnknown": false,
 		"includes": [
 			"**",
+			"!**/.impeccable/hook.cache.json",
 			"!**/.next",
 			"!**/dist",
 			"!**/.turbo",
