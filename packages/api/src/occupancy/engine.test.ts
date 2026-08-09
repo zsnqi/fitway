@@ -19,6 +19,15 @@ const settings: OccupancySettings = {
 	freshForSeconds: 90,
 	operationalStaleAfterSeconds: 180,
 	publicPollSeconds: 60,
+	weeklySchedule: {
+		sun: { open: "00:00", close: "00:00" },
+		mon: { open: "00:00", close: "00:00" },
+		tue: { open: "00:00", close: "00:00" },
+		wed: { open: "00:00", close: "00:00" },
+		thu: { open: "00:00", close: "00:00" },
+		fri: { open: "00:00", close: "00:00" },
+		sat: { open: "00:00", close: "00:00" },
+	},
 };
 const push: EdgePushRequest = {
 	schemaVersion: 1,
@@ -37,11 +46,20 @@ const push: EdgePushRequest = {
 	appliedCommandId: null,
 };
 
-function fake(lastSequence = 0, commands: DeviceCommand[] = []) {
+function fake(
+	lastSequence = 0,
+	commands: DeviceCommand[] = [],
+	settingsAtMinute: OccupancySettings | null = settings,
+) {
 	const writes: Array<{ kind: string; value: unknown }> = [];
+	const settingsLookups: Date[] = [];
 	const tx: OccupancyTransaction = {
 		lockDevice: async () => ({ id: "device", enabled: true, lastSequence }),
 		loadLatestSettings: async () => settings,
+		loadSettingsEffectiveAt: async (at) => {
+			settingsLookups.push(at);
+			return settingsAtMinute;
+		},
 		upsertMinute: async (value) => void writes.push({ kind: "minute", value }),
 		updateCurrent: async (value) =>
 			void writes.push({ kind: "current", value }),
@@ -58,6 +76,7 @@ function fake(lastSequence = 0, commands: DeviceCommand[] = []) {
 	};
 	return {
 		writes,
+		settingsLookups,
 		dependencies: {
 			transaction: async <T>(
 				work: (value: OccupancyTransaction) => Promise<T>,
@@ -68,6 +87,206 @@ function fake(lastSequence = 0, commands: DeviceCommand[] = []) {
 }
 
 describe("occupancy engine", () => {
+	it("accepts contiguous backfill with history-only authority", async () => {
+		const value = fake();
+		const result = await processLivePush(
+			"device",
+			{
+				schemaVersion: 2,
+				mode: "backfill",
+				sequence: 1,
+				minutes: push.minutes,
+				appliedCommandId: null,
+			},
+			value.dependencies,
+		);
+		expect(result).toMatchObject({
+			schemaVersion: 2,
+			accepted: true,
+			reason: "processed",
+			highestProcessedSequence: 1,
+		});
+		expect(value.writes.map((write) => write.kind)).toEqual([
+			"minute",
+			"device",
+			"command_reconciliation",
+		]);
+		expect(value.writes[0]?.value).toMatchObject({ source: "backfill" });
+	});
+
+	it("settles a stale v2 live request without refreshing current or health", async () => {
+		const value = fake();
+		const [minute] = push.minutes;
+		if (!minute) throw new Error("Expected stale live minute fixture");
+		const stale: EdgePushRequest = {
+			...push,
+			schemaVersion: 2,
+			mode: "live",
+			observedAt: "2026-07-12T22:20:00.000Z",
+			minutes: [
+				{
+					...minute,
+					minuteStart: "2026-07-12T22:20:00.000Z",
+				},
+			],
+		};
+		expect(
+			await processLivePush("device", stale, value.dependencies),
+		).toMatchObject({
+			accepted: true,
+			reason: "processed",
+			highestProcessedSequence: 1,
+		});
+		expect(value.writes.map((write) => write.kind)).toEqual([
+			"command_reconciliation",
+			"minute",
+			"device",
+		]);
+	});
+
+	it("does not grant live authority to a future-dated sample", async () => {
+		const value = fake();
+		const [minute] = push.minutes;
+		if (!minute) throw new Error("Expected future live minute fixture");
+		const future: EdgePushRequest = {
+			...push,
+			schemaVersion: 2,
+			mode: "live",
+			observedAt: "2026-07-12T22:31:21.000Z",
+			minutes: [
+				{
+					...minute,
+					minuteStart: "2026-07-12T22:31:00.000Z",
+				},
+			],
+		};
+		expect(
+			await processLivePush("device", future, value.dependencies),
+		).toMatchObject({
+			accepted: true,
+			reason: "processed",
+			highestProcessedSequence: 1,
+		});
+		expect(value.writes.map((write) => write.kind)).toEqual([
+			"command_reconciliation",
+			"minute",
+			"device",
+		]);
+	});
+
+	it("snapshots each historical minute with its effective settings", async () => {
+		const historical: OccupancySettings = {
+			...settings,
+			version: 2,
+			capacity: 20,
+			timezone: "UTC",
+			businessDayBoundary: "00:00",
+		};
+		const value = fake(0, [], historical);
+		await processLivePush(
+			"device",
+			{
+				schemaVersion: 2,
+				mode: "backfill",
+				sequence: 1,
+				minutes: [
+					{
+						minuteStart: "2026-07-12T22:30:00.000Z",
+						count: 16,
+						entries: 1,
+						exits: 0,
+					},
+				],
+				appliedCommandId: null,
+			},
+			value.dependencies,
+		);
+		expect(value.settingsLookups).toEqual([
+			new Date("2026-07-12T22:30:00.000Z"),
+		]);
+		expect(value.writes[0]).toMatchObject({
+			kind: "minute",
+			value: {
+				businessDay: "2026-07-12",
+				band: "packed",
+				capacitySnapshot: 20,
+				settingsVersion: 2,
+			},
+		});
+	});
+
+	it("rejects an invalid reconnect sample before delivering a pending command", async () => {
+		const command: DeviceCommand = {
+			id: 8,
+			type: "set_count",
+			targetValue: 4,
+			issuedAt: "2026-07-12T22:30:20.000Z",
+		};
+		const value = fake(0, [command]);
+		const [minute] = push.minutes;
+		if (!minute) {
+			throw new Error("Expected reconnect push minute fixture");
+		}
+		await expect(
+			processLivePush(
+				"device",
+				{
+					...push,
+					schemaVersion: 2,
+					mode: "live",
+					minutes: [
+						{
+							...minute,
+							minuteStart: "2026-07-12T22:36:00.000Z",
+						},
+					],
+				},
+				value.dependencies,
+			),
+		).rejects.toMatchObject({ code: "invalid_minute" });
+		expect(value.writes).toEqual([]);
+	});
+
+	it("delivers pending commands before accepting the reconnecting live sequence", async () => {
+		const command: DeviceCommand = {
+			id: 8,
+			type: "set_count",
+			targetValue: 4,
+			issuedAt: "2026-07-12T22:30:20.000Z",
+		};
+		const blocked = fake(0, [command]);
+		const reconnect = { ...push, schemaVersion: 2, mode: "live" } as const;
+		expect(
+			await processLivePush("device", reconnect, blocked.dependencies),
+		).toMatchObject({
+			schemaVersion: 2,
+			accepted: false,
+			reason: "commands_pending",
+			highestProcessedSequence: 0,
+			commands: [command],
+		});
+		expect(blocked.writes.map((write) => write.kind)).toEqual([
+			"command_reconciliation",
+		]);
+
+		const resumed = fake();
+		expect(
+			await processLivePush(
+				"device",
+				{ ...reconnect, currentCount: 4, appliedCommandId: command.id },
+				resumed.dependencies,
+			),
+		).toMatchObject({
+			accepted: true,
+			reason: "processed",
+			highestProcessedSequence: 1,
+			commands: [],
+		});
+		expect(
+			resumed.writes.find((write) => write.kind === "current")?.value,
+		).toMatchObject({ currentCount: 4 });
+	});
+
 	it("writes the contiguous sequence atomically with floor, snapshot, and business day", async () => {
 		const value = fake();
 		const result = await processLivePush("device", push, value.dependencies);

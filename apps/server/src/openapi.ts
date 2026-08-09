@@ -1,3 +1,4 @@
+import { EDGE_BACKFILL_MAX_MINUTES } from "@fitway/api/edge-push";
 import { openApiRouter } from "@fitway/api/routers/index";
 import { OpenAPIGenerator } from "@orpc/openapi";
 import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
@@ -25,99 +26,177 @@ const commandProperties = {
 } as const;
 const commandRequired = ["id", "type", "targetValue", "issuedAt"] as const;
 
-const edgePushRequestOpenApiSchema = {
+const minuteItemOpenApiSchema = {
 	type: "object",
 	properties: {
-		schemaVersion: { const: 1 },
-		sequence: positiveSafeIntegerSchema,
-		observedAt: canonicalUtcSchema,
-		currentCount: {
+		minuteStart: {
+			type: "string",
+			format: "date-time",
+			pattern: MINUTE_UTC_PATTERN,
+		},
+		count: {
 			type: "integer",
 			minimum: -2_147_483_648,
 			maximum: POSTGRES_INTEGER_MAX,
 		},
-		minutes: {
-			type: "array",
-			minItems: 1,
-			maxItems: 2,
-			uniqueItems: true,
-			description:
-				"Minute buckets have unique minuteStart values and are sorted by minuteStart ascending.",
-			"x-fitway-sorted-unique-minute-starts": true,
-			items: {
-				type: "object",
-				properties: {
-					minuteStart: {
-						type: "string",
-						format: "date-time",
-						pattern: MINUTE_UTC_PATTERN,
-					},
-					count: {
-						type: "integer",
-						minimum: -2_147_483_648,
-						maximum: POSTGRES_INTEGER_MAX,
-					},
-					entries: {
-						type: "integer",
-						minimum: 0,
-						maximum: POSTGRES_INTEGER_MAX,
-					},
-					exits: {
-						type: "integer",
-						minimum: 0,
-						maximum: POSTGRES_INTEGER_MAX,
-					},
-				},
-				required: ["minuteStart", "count", "entries", "exits"],
-				additionalProperties: false,
-			},
+		entries: {
+			type: "integer",
+			minimum: 0,
+			maximum: POSTGRES_INTEGER_MAX,
 		},
-		health: {
-			type: "object",
-			properties: {
-				process: {
-					type: "string",
-					enum: ["ok", "degraded", "failed", "unknown"],
-				},
-				camera: {
-					type: "string",
-					enum: ["ok", "degraded", "failed", "unknown"],
-				},
-				feed: {
-					type: "string",
-					enum: ["ok", "degraded", "failed", "unknown"],
-				},
-				detectorFps: {
-					oneOf: [{ type: "number", minimum: 0 }, { type: "null" }],
-				},
-			},
-			required: ["process", "camera", "feed", "detectorFps"],
-			additionalProperties: false,
-		},
-		appliedCommandId: {
-			oneOf: [positiveSafeIntegerSchema, { type: "null" }],
+		exits: {
+			type: "integer",
+			minimum: 0,
+			maximum: POSTGRES_INTEGER_MAX,
 		},
 	},
-	required: [
-		"schemaVersion",
-		"sequence",
-		"observedAt",
-		"currentCount",
-		"minutes",
-		"health",
-		"appliedCommandId",
-	],
+	required: ["minuteStart", "count", "entries", "exits"],
 	additionalProperties: false,
 } as const;
 
-const edgePushResponseOpenApiSchema = {
+const minuteBatchOpenApiSchema = (maxItems: number) => ({
+	type: "array" as const,
+	minItems: 1,
+	maxItems,
+	uniqueItems: true,
+	description:
+		"Minute buckets have unique minuteStart values and are sorted by minuteStart ascending.",
+	"x-fitway-sorted-unique-minute-starts": true,
+	items: minuteItemOpenApiSchema,
+});
+
+const livePayloadProperties = {
+	sequence: positiveSafeIntegerSchema,
+	observedAt: canonicalUtcSchema,
+	currentCount: {
+		type: "integer",
+		minimum: -2_147_483_648,
+		maximum: POSTGRES_INTEGER_MAX,
+	},
+	minutes: minuteBatchOpenApiSchema(2),
+	health: {
+		type: "object",
+		properties: {
+			process: {
+				type: "string",
+				enum: ["ok", "degraded", "failed", "unknown"],
+			},
+			camera: {
+				type: "string",
+				enum: ["ok", "degraded", "failed", "unknown"],
+			},
+			feed: {
+				type: "string",
+				enum: ["ok", "degraded", "failed", "unknown"],
+			},
+			detectorFps: {
+				oneOf: [{ type: "number", minimum: 0 }, { type: "null" }],
+			},
+		},
+		required: ["process", "camera", "feed", "detectorFps"],
+		additionalProperties: false,
+	},
+	appliedCommandId: {
+		oneOf: [positiveSafeIntegerSchema, { type: "null" }],
+	},
+} as const;
+
+const edgePushRequestOpenApiSchema = {
+	oneOf: [
+		{
+			type: "object",
+			properties: {
+				schemaVersion: { const: 1 },
+				...livePayloadProperties,
+			},
+			required: [
+				"schemaVersion",
+				"sequence",
+				"observedAt",
+				"currentCount",
+				"minutes",
+				"health",
+				"appliedCommandId",
+			],
+			additionalProperties: false,
+		},
+		{
+			type: "object",
+			properties: {
+				schemaVersion: { const: 2 },
+				mode: { const: "live" },
+				...livePayloadProperties,
+			},
+			required: [
+				"schemaVersion",
+				"mode",
+				"sequence",
+				"observedAt",
+				"currentCount",
+				"minutes",
+				"health",
+				"appliedCommandId",
+			],
+			additionalProperties: false,
+		},
+		{
+			type: "object",
+			properties: {
+				schemaVersion: { const: 2 },
+				mode: { const: "backfill" },
+				sequence: positiveSafeIntegerSchema,
+				minutes: minuteBatchOpenApiSchema(EDGE_BACKFILL_MAX_MINUTES),
+				appliedCommandId: {
+					oneOf: [positiveSafeIntegerSchema, { type: "null" }],
+				},
+			},
+			required: [
+				"schemaVersion",
+				"mode",
+				"sequence",
+				"minutes",
+				"appliedCommandId",
+			],
+			additionalProperties: false,
+		},
+	],
+} as const;
+
+const wallTimeOpenApiSchema = {
+	type: "string",
+	pattern: "^(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d{1,6})?)?$",
+} as const;
+
+const dailyHoursOpenApiSchema = {
 	type: "object",
 	properties: {
-		schemaVersion: { const: 1 },
+		open: wallTimeOpenApiSchema,
+		close: wallTimeOpenApiSchema,
+	},
+	required: ["open", "close"],
+	additionalProperties: false,
+} as const;
+
+const weeklyScheduleOpenApiSchema = {
+	type: "object",
+	properties: Object.fromEntries(
+		["sun", "mon", "tue", "wed", "thu", "fri", "sat"].map((day) => [
+			day,
+			{ oneOf: [dailyHoursOpenApiSchema, { type: "null" }] },
+		]),
+	),
+	required: ["sun", "mon", "tue", "wed", "thu", "fri", "sat"],
+	additionalProperties: false,
+} as const;
+
+const frozenEdgePushResponseOpenApiSchema = {
+	type: "object",
+	properties: {
+		schemaVersion: { const: 2 },
 		accepted: { type: "boolean" },
 		reason: {
 			type: "string",
-			enum: ["processed", "replay", "sequence_gap"],
+			enum: ["processed", "replay", "sequence_gap", "commands_pending"],
 		},
 		highestProcessedSequence: {
 			type: "integer",
@@ -129,7 +208,7 @@ const edgePushResponseOpenApiSchema = {
 			maxItems: 1,
 			uniqueItems: true,
 			description:
-				"The single effective pending command under the latest-only rule; empty unless the push is accepted.",
+				"The single effective pending command under the latest-only rule; present only for accepted delivery or a commands_pending live hold.",
 			items: {
 				oneOf: [
 					{
@@ -168,8 +247,17 @@ const edgePushResponseOpenApiSchema = {
 					minimum: 1,
 					maximum: SAFE_INTEGER_MAX,
 				},
+				timezone: { type: "string", minLength: 1 },
+				businessDayBoundary: wallTimeOpenApiSchema,
+				weeklySchedule: weeklyScheduleOpenApiSchema,
 			},
-			required: ["version", "pushIntervalSeconds"],
+			required: [
+				"version",
+				"pushIntervalSeconds",
+				"timezone",
+				"businessDayBoundary",
+				"weeklySchedule",
+			],
 			additionalProperties: false,
 		},
 		serverTime: canonicalUtcSchema,
@@ -198,6 +286,46 @@ const edgePushResponseOpenApiSchema = {
 				commands: { type: "array", maxItems: 0 },
 			},
 		},
+		{
+			properties: {
+				accepted: { const: false },
+				reason: { const: "commands_pending" },
+				commands: { type: "array", minItems: 1, maxItems: 1 },
+			},
+		},
+	],
+} as const;
+
+const legacyEdgePushResponseOpenApiSchema = {
+	...frozenEdgePushResponseOpenApiSchema,
+	properties: {
+		...frozenEdgePushResponseOpenApiSchema.properties,
+		schemaVersion: { const: 1 },
+		reason: {
+			type: "string",
+			enum: ["processed", "replay", "sequence_gap"],
+		},
+		settings: {
+			type: "object",
+			properties: {
+				version: positiveSafeIntegerSchema,
+				pushIntervalSeconds: {
+					type: "integer",
+					minimum: 1,
+					maximum: SAFE_INTEGER_MAX,
+				},
+			},
+			required: ["version", "pushIntervalSeconds"],
+			additionalProperties: false,
+		},
+	},
+	oneOf: frozenEdgePushResponseOpenApiSchema.oneOf.slice(0, 2),
+} as const;
+
+const edgePushResponseOpenApiSchema = {
+	oneOf: [
+		legacyEdgePushResponseOpenApiSchema,
+		frozenEdgePushResponseOpenApiSchema,
 	],
 } as const;
 
@@ -206,7 +334,7 @@ export async function generateOpenApiDocument() {
 		schemaConverters: [new ZodToJsonSchemaConverter()],
 	});
 	const document = await generator.generate(openApiRouter, {
-		info: { title: "Fitway Edge API", version: "1.0.0" },
+		info: { title: "Fitway Edge API", version: "2.0.0" },
 		servers: [{ url: "/api" }],
 		components: {
 			securitySchemes: {
@@ -232,6 +360,8 @@ export async function generateOpenApiDocument() {
 			},
 		});
 		operation.security = [{ deviceBearer: [] }];
+		operation.description =
+			"Schema v2 freezes strict live samples and history-only buffered minute backfill. Schema-v1 live pushes remain accepted for deployed-client compatibility. A commands_pending response requires a v2 edge to apply the delivered command and retry the same live sequence before current authority resumes.";
 		if (
 			operation.requestBody &&
 			"content" in operation.requestBody &&
@@ -301,7 +431,7 @@ export async function generateOpenApiDocument() {
 				content: errorContent("invalid_request"),
 			},
 			"413": {
-				description: "Request body exceeds the live-push size bound",
+				description: "Request body exceeds the device-push size bound",
 				content: errorContent("request_too_large"),
 			},
 			"415": {

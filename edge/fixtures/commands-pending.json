@@ -1,9 +1,16 @@
 {
 	"schemaVersion": 2,
-	"accepted": true,
-	"reason": "processed",
+	"accepted": false,
+	"reason": "commands_pending",
 	"highestProcessedSequence": 1,
-	"commands": [],
+	"commands": [
+		{
+			"id": 8,
+			"type": "set_count",
+			"targetValue": 4,
+			"issuedAt": "2026-07-13T18:24:19.000Z"
+		}
+	],
 	"settings": {
 		"version": 1,
 		"pushIntervalSeconds": 20,

@@ -11,7 +11,7 @@ import {
 	occupancyMinutes,
 	settingsVersions,
 } from "@fitway/db/schema/application";
-import { desc, eq, sql } from "drizzle-orm";
+import { desc, eq, lte, sql } from "drizzle-orm";
 import { createCommandQueueForTransaction } from "./command-repository";
 
 type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
@@ -19,6 +19,34 @@ type Database = typeof db;
 
 function normalizeDatabaseTime(value: string): string {
 	return value.length === 5 ? value : value.slice(0, 8);
+}
+
+function mapSettings(
+	row: typeof settingsVersions.$inferSelect,
+): PublicPayloadSettings {
+	return {
+		version: row.version,
+		capacity: row.capacity,
+		quietMaxPercent: row.quietMaxPercent,
+		moderateMaxPercent: row.moderateMaxPercent,
+		busyMaxPercent: row.busyMaxPercent,
+		timezone: row.timezone,
+		timeZone: row.timezone,
+		businessDayBoundary: normalizeDatabaseTime(row.businessDayBoundary),
+		pushIntervalSeconds: row.pushIntervalSeconds,
+		freshForSeconds: row.freshForSeconds,
+		operationalStaleAfterSeconds: row.operationalStaleAfterSeconds,
+		publicPollSeconds: row.publicPollSeconds,
+		weeklySchedule: {
+			sun: scheduleHours(row.scheduleSunOpen, row.scheduleSunClose),
+			mon: scheduleHours(row.scheduleMonOpen, row.scheduleMonClose),
+			tue: scheduleHours(row.scheduleTueOpen, row.scheduleTueClose),
+			wed: scheduleHours(row.scheduleWedOpen, row.scheduleWedClose),
+			thu: scheduleHours(row.scheduleThuOpen, row.scheduleThuClose),
+			fri: scheduleHours(row.scheduleFriOpen, row.scheduleFriClose),
+			sat: scheduleHours(row.scheduleSatOpen, row.scheduleSatClose),
+		},
+	};
 }
 
 async function latestSettings(
@@ -29,31 +57,23 @@ async function latestSettings(
 		.from(settingsVersions)
 		.orderBy(desc(settingsVersions.version))
 		.limit(1);
-	return row
-		? {
-				version: row.version,
-				capacity: row.capacity,
-				quietMaxPercent: row.quietMaxPercent,
-				moderateMaxPercent: row.moderateMaxPercent,
-				busyMaxPercent: row.busyMaxPercent,
-				timezone: row.timezone,
-				timeZone: row.timezone,
-				businessDayBoundary: normalizeDatabaseTime(row.businessDayBoundary),
-				pushIntervalSeconds: row.pushIntervalSeconds,
-				freshForSeconds: row.freshForSeconds,
-				operationalStaleAfterSeconds: row.operationalStaleAfterSeconds,
-				publicPollSeconds: row.publicPollSeconds,
-				weeklySchedule: {
-					sun: scheduleHours(row.scheduleSunOpen, row.scheduleSunClose),
-					mon: scheduleHours(row.scheduleMonOpen, row.scheduleMonClose),
-					tue: scheduleHours(row.scheduleTueOpen, row.scheduleTueClose),
-					wed: scheduleHours(row.scheduleWedOpen, row.scheduleWedClose),
-					thu: scheduleHours(row.scheduleThuOpen, row.scheduleThuClose),
-					fri: scheduleHours(row.scheduleFriOpen, row.scheduleFriClose),
-					sat: scheduleHours(row.scheduleSatOpen, row.scheduleSatClose),
-				},
-			}
-		: null;
+	return row ? mapSettings(row) : null;
+}
+
+async function settingsEffectiveAt(
+	client: Pick<typeof db, "select">,
+	at: Date,
+): Promise<PublicPayloadSettings | null> {
+	const [row] = await client
+		.select()
+		.from(settingsVersions)
+		.where(lte(settingsVersions.effectiveFrom, at))
+		.orderBy(
+			desc(settingsVersions.effectiveFrom),
+			desc(settingsVersions.version),
+		)
+		.limit(1);
+	return row ? mapSettings(row) : null;
 }
 
 function scheduleHours(open: string | null, close: string | null) {
@@ -85,6 +105,7 @@ function transactionAdapter(tx: Transaction): OccupancyTransaction {
 				: null;
 		},
 		loadLatestSettings: () => latestSettings(tx),
+		loadSettingsEffectiveAt: (at) => settingsEffectiveAt(tx, at),
 		async upsertMinute(value) {
 			await tx
 				.insert(occupancyMinutes)

@@ -1,6 +1,11 @@
 import type { CommandQueue } from "../commands/queue";
 import type { DeviceCommand } from "../commands/schemas";
-import type { EdgePushRequest, EdgePushResponse } from "../edge-push";
+import type {
+	EdgeHealthStatus,
+	EdgePushRequest,
+	EdgePushResponse,
+} from "../edge-push";
+import { decidePushAuthority } from "../offline/reconciliation";
 import {
 	assertBandSettings,
 	type BandThresholds,
@@ -8,6 +13,7 @@ import {
 	floorOccupancy,
 } from "./bands";
 import { businessDayFor } from "./business-day";
+import { assertScheduleSettings, type WeeklySchedule } from "./schedule";
 
 export type OccupancySettings = BandThresholds & {
 	version: number;
@@ -18,6 +24,7 @@ export type OccupancySettings = BandThresholds & {
 	freshForSeconds: number;
 	operationalStaleAfterSeconds: number;
 	publicPollSeconds: number;
+	weeklySchedule: WeeklySchedule;
 };
 
 export type LockedDevice = {
@@ -29,6 +36,7 @@ export type LockedDevice = {
 export type OccupancyTransaction = {
 	lockDevice(deviceId: string): Promise<LockedDevice | null>;
 	loadLatestSettings(): Promise<OccupancySettings | null>;
+	loadSettingsEffectiveAt(at: Date): Promise<OccupancySettings | null>;
 	upsertMinute(value: {
 		deviceId: string;
 		minuteStartUtc: Date;
@@ -39,7 +47,7 @@ export type OccupancyTransaction = {
 		band: "quiet" | "moderate" | "busy" | "packed";
 		capacitySnapshot: number;
 		settingsVersion: number;
-		source: "live";
+		source: "live" | "backfill";
 		updatedAt: Date;
 	}): Promise<void>;
 	updateCurrent(value: {
@@ -60,10 +68,10 @@ export type OccupancyTransaction = {
 	upsertCurrentHealth(value: {
 		deviceId: string;
 		sequence: number;
-		processStatus: EdgePushRequest["health"]["process"];
-		cameraStatus: EdgePushRequest["health"]["camera"];
-		feedStatus: EdgePushRequest["health"]["feed"];
-		detectorFps: EdgePushRequest["health"]["detectorFps"];
+		processStatus: EdgeHealthStatus;
+		cameraStatus: EdgeHealthStatus;
+		feedStatus: EdgeHealthStatus;
+		detectorFps: number | null;
 		edgeObservedAt: Date;
 		receivedAt: Date;
 		updatedAt: Date;
@@ -107,9 +115,14 @@ export function assertOccupancySettings(settings: OccupancySettings): void {
 		throw new RangeError("Operational stale threshold must follow freshness");
 	}
 	businessDayFor(new Date(0), settings.timezone, settings.businessDayBoundary);
+	assertScheduleSettings({
+		timeZone: settings.timezone,
+		weeklySchedule: settings.weeklySchedule,
+	});
 }
 
 function response(
+	schemaVersion: 1 | 2,
 	accepted: boolean,
 	reason: EdgePushResponse["reason"],
 	highestProcessedSequence: number,
@@ -117,18 +130,34 @@ function response(
 	serverTime: Date,
 	commands: DeviceCommand[] = [],
 ): EdgePushResponse {
-	return {
-		schemaVersion: 1,
+	const base = {
 		accepted,
 		reason,
 		highestProcessedSequence,
 		commands,
+		serverTime: serverTime.toISOString(),
+	};
+	if (schemaVersion === 1) {
+		return {
+			...base,
+			schemaVersion,
+			settings: {
+				version: settings.version,
+				pushIntervalSeconds: settings.pushIntervalSeconds,
+			},
+		} as EdgePushResponse;
+	}
+	return {
+		...base,
+		schemaVersion,
 		settings: {
 			version: settings.version,
 			pushIntervalSeconds: settings.pushIntervalSeconds,
+			timezone: settings.timezone,
+			businessDayBoundary: settings.businessDayBoundary,
+			weeklySchedule: settings.weeklySchedule,
 		},
-		serverTime: serverTime.toISOString(),
-	};
+	} as EdgePushResponse;
 }
 
 export async function processLivePush(
@@ -156,6 +185,7 @@ export async function processLivePush(
 
 		if (input.sequence <= device.lastSequence) {
 			return response(
+				input.schemaVersion,
 				false,
 				"replay",
 				device.lastSequence,
@@ -165,6 +195,7 @@ export async function processLivePush(
 		}
 		if (input.sequence > device.lastSequence + 1) {
 			return response(
+				input.schemaVersion,
 				false,
 				"sequence_gap",
 				device.lastSequence,
@@ -173,7 +204,8 @@ export async function processLivePush(
 			);
 		}
 
-		for (const minute of input.minutes) {
+		const mode = input.schemaVersion === 1 ? "live" : input.mode;
+		const validatedMinutes = input.minutes.map((minute) => {
 			const minuteStart = new Date(minute.minuteStart);
 			if (
 				minuteStart.getUTCSeconds() !== 0 ||
@@ -185,55 +217,111 @@ export async function processLivePush(
 					"invalid_minute",
 				);
 			}
-			const count = floorOccupancy(minute.count);
+			return {
+				minute,
+				minuteStart,
+				count: floorOccupancy(minute.count),
+			};
+		});
+		let commands: DeviceCommand[] = [];
+		if (input.schemaVersion === 2 && mode === "live") {
+			commands = await tx.commandQueue.reconcile({
+				deviceId,
+				appliedCommandId: input.appliedCommandId,
+				at: receivedAt,
+			});
+		}
+		const liveSampleAgeMs =
+			"observedAt" in input
+				? receivedAt.getTime() - new Date(input.observedAt).getTime()
+				: null;
+		const authority = decidePushAuthority({
+			schemaVersion: input.schemaVersion,
+			mode,
+			hasPendingCommand: commands.length > 0,
+			liveSampleFresh:
+				liveSampleAgeMs !== null &&
+				liveSampleAgeMs >= 0 &&
+				liveSampleAgeMs <= settings.freshForSeconds * 1_000,
+		});
+		if (!authority.advanceSequence) {
+			return response(
+				input.schemaVersion,
+				false,
+				"commands_pending",
+				device.lastSequence,
+				settings,
+				receivedAt,
+				commands,
+			);
+		}
+
+		for (const { minute, minuteStart, count } of authority.writeHistory
+			? validatedMinutes
+			: []) {
+			const minuteSettings = await tx.loadSettingsEffectiveAt(minuteStart);
+			if (!minuteSettings) {
+				throw new OccupancyEngineError(
+					"Settings unavailable for minute",
+					"settings_unavailable",
+				);
+			}
+			assertOccupancySettings(minuteSettings);
 			await tx.upsertMinute({
 				deviceId,
 				minuteStartUtc: minuteStart,
 				businessDay: businessDayFor(
 					minuteStart,
-					settings.timezone,
-					settings.businessDayBoundary,
+					minuteSettings.timezone,
+					minuteSettings.businessDayBoundary,
 				),
 				count,
 				entries: minute.entries,
 				exits: minute.exits,
-				band: bandFor(count, settings.capacity, settings),
-				capacitySnapshot: settings.capacity,
-				settingsVersion: settings.version,
-				source: "live",
+				band: bandFor(count, minuteSettings.capacity, minuteSettings),
+				capacitySnapshot: minuteSettings.capacity,
+				settingsVersion: minuteSettings.version,
+				source: mode === "backfill" ? "backfill" : "live",
 				updatedAt: receivedAt,
 			});
 		}
 
-		const currentCount = floorOccupancy(input.currentCount);
-		await tx.updateCurrent({
-			currentCount,
-			band: bandFor(currentCount, settings.capacity, settings),
-			source: "edge",
-			lastPushReceivedAt: receivedAt,
-			lastEdgeReportedAt: new Date(input.observedAt),
-			activeDeviceId: deviceId,
-			settingsVersion: settings.version,
-			updatedAt: receivedAt,
-		});
+		if (authority.writeCurrent && "currentCount" in input) {
+			const currentCount = floorOccupancy(input.currentCount);
+			await tx.updateCurrent({
+				currentCount,
+				band: bandFor(currentCount, settings.capacity, settings),
+				source: "edge",
+				lastPushReceivedAt: receivedAt,
+				lastEdgeReportedAt: new Date(input.observedAt),
+				activeDeviceId: deviceId,
+				settingsVersion: settings.version,
+				updatedAt: receivedAt,
+			});
+		}
 		await tx.advanceDevice(deviceId, input.sequence, receivedAt);
-		await tx.upsertCurrentHealth({
-			deviceId,
-			sequence: input.sequence,
-			processStatus: input.health.process,
-			cameraStatus: input.health.camera,
-			feedStatus: input.health.feed,
-			detectorFps: input.health.detectorFps,
-			edgeObservedAt: new Date(input.observedAt),
-			receivedAt,
-			updatedAt: receivedAt,
-		});
-		const commands = await tx.commandQueue.reconcile({
-			deviceId,
-			appliedCommandId: input.appliedCommandId,
-			at: receivedAt,
-		});
+		if (authority.writeHealth && "health" in input) {
+			await tx.upsertCurrentHealth({
+				deviceId,
+				sequence: input.sequence,
+				processStatus: input.health.process,
+				cameraStatus: input.health.camera,
+				feedStatus: input.health.feed,
+				detectorFps: input.health.detectorFps,
+				edgeObservedAt: new Date(input.observedAt),
+				receivedAt,
+				updatedAt: receivedAt,
+			});
+		}
+		if (input.schemaVersion === 1 || mode === "backfill") {
+			commands = await tx.commandQueue.reconcile({
+				deviceId,
+				appliedCommandId: input.appliedCommandId,
+				at: receivedAt,
+			});
+		}
 		return response(
+			input.schemaVersion,
 			true,
 			"processed",
 			input.sequence,
