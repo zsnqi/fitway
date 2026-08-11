@@ -497,7 +497,7 @@ milestones:
     integratedCommit: 24449defc2f51738ae1dfa9eae94a7122863d638
 
   phase7-reset-evaluator:
-    status: PLANNED
+    status: NEEDS_HUMAN
     dependencies: [baseline-reconciliation-gate, phase-3, phase-5]
     ownerSession: null
     branch: null
@@ -507,10 +507,10 @@ milestones:
     forbiddenPaths: []
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
+    lastHeartbeatAt: "2026-08-11T22:36:20+03:00"
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/coordinator/20260811-201938-completion-blocker-state-reconciled.md
-    stopReason: null
+    handoff: docs/phase-records/handoffs/phase7-reset-evaluator/20260811-222719-p7_reset_eval_b02-plan.md
+    stopReason: "Normative SPEC does not decide which settings version owns a reset when a new version becomes effective exactly at close or during the close-plus-buffer delay. Human approval of both cases and a coordinator-committed SPEC amendment are required before plan re-review and fresh b02 activation."
     gates:
       unit: PENDING
       integration: PENDING
