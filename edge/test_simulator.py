@@ -238,6 +238,20 @@ class SimulatorTests(unittest.TestCase):
             simulator.valid_acknowledgement({**acknowledgement, "commands": {}})
         )
 
+    def test_acknowledgement_schema_version_rejects_boolean_but_accepts_numeric_versions(self) -> None:
+        current = acknowledgement(1)
+        legacy = {
+            **current,
+            "schemaVersion": 1,
+            "settings": {"version": 1, "pushIntervalSeconds": 20},
+        }
+
+        self.assertTrue(simulator.valid_acknowledgement(legacy))
+        self.assertTrue(simulator.valid_acknowledgement(current))
+        self.assertFalse(
+            simulator.valid_acknowledgement({**legacy, "schemaVersion": True})
+        )
+
     def test_v2_acknowledgement_requires_frozen_settings_but_allows_additive_keys(self) -> None:
         value = acknowledgement(1)
         self.assertTrue(simulator.valid_acknowledgement(value))
@@ -246,6 +260,14 @@ class SimulatorTests(unittest.TestCase):
             "settings": {**FROZEN_SETTINGS, "resetBufferMinutes": 30},
         }
         self.assertTrue(simulator.valid_acknowledgement(additive))
+        self.assertFalse(
+            simulator.valid_acknowledgement(
+                {
+                    **value,
+                    "settings": {**FROZEN_SETTINGS, "timezone": " \t "},
+                }
+            )
+        )
         for missing in FROZEN_SETTINGS:
             incomplete = dict(FROZEN_SETTINGS)
             del incomplete[missing]
@@ -384,6 +406,110 @@ class SimulatorTests(unittest.TestCase):
         mismatched["highestProcessedSequence"] = 0
         with self.assertRaisesRegex(ValueError, "in-flight sequence"):
             simulator.accept_acknowledgement(state, payload, mismatched)
+
+    def test_v1_processed_acknowledgement_cannot_settle_v2_live_or_backfill_state(self) -> None:
+        preserved_names = (
+            "sequence",
+            "count",
+            "appliedCommandId",
+            "outbox",
+            "lastRequest",
+            "inFlightRequest",
+        )
+        for mode in ("live", "backfill"):
+            with self.subTest(mode=mode):
+                state = simulator.load_state(Path("does-not-exist"), 5)
+                state["sequence"] = 4
+                state["appliedCommandId"] = 3
+                simulator.buffer_completed_minute(
+                    state,
+                    {
+                        "minuteStart": "2026-07-13T18:23:00.000Z",
+                        "count": 5,
+                        "entries": 1,
+                        "exits": 0,
+                    },
+                )
+                if mode == "live":
+                    payload = simulator.build_live_push(
+                        state,
+                        5,
+                        now=datetime(2026, 7, 13, 18, 24, 20, tzinfo=timezone.utc),
+                    )
+                else:
+                    payload = simulator.build_next_push(state, 5)
+                state["lastRequest"] = {**payload, "sequence": 4}
+                state["inFlightRequest"] = payload
+                before = json.dumps(
+                    {name: state.get(name) for name in preserved_names},
+                    separators=(",", ":"),
+                    sort_keys=True,
+                ).encode("utf-8")
+                legacy = {
+                    **acknowledgement(5),
+                    "schemaVersion": 1,
+                    "settings": {"version": 1, "pushIntervalSeconds": 20},
+                }
+
+                with self.assertRaisesRegex(ValueError, "schema version"):
+                    simulator.accept_acknowledgement(state, payload, legacy)
+
+                after = json.dumps(
+                    {name: state.get(name) for name in preserved_names},
+                    separators=(",", ":"),
+                    sort_keys=True,
+                ).encode("utf-8")
+                self.assertEqual(after, before)
+
+    def test_commands_pending_cannot_settle_or_apply_commands_to_backfill_state(self) -> None:
+        state = simulator.load_state(Path("does-not-exist"), 5)
+        state["sequence"] = 4
+        state["appliedCommandId"] = 3
+        simulator.buffer_completed_minute(
+            state,
+            {
+                "minuteStart": "2026-07-13T18:23:00.000Z",
+                "count": 5,
+                "entries": 1,
+                "exits": 0,
+            },
+        )
+        payload = simulator.build_next_push(state, 5)
+        state["lastRequest"] = {**payload, "sequence": 4}
+        state["inFlightRequest"] = payload
+        preserved_names = (
+            "sequence",
+            "count",
+            "appliedCommandId",
+            "outbox",
+            "lastRequest",
+            "inFlightRequest",
+        )
+        before = json.dumps(
+            {name: state.get(name) for name in preserved_names},
+            separators=(",", ":"),
+            sort_keys=True,
+        ).encode("utf-8")
+        pending = acknowledgement(
+            5,
+            reason="commands_pending",
+            commands=[{
+                "id": 8,
+                "type": "set_count",
+                "targetValue": 9,
+                "issuedAt": "2026-07-13T18:24:19.000Z",
+            }],
+        )
+
+        with self.assertRaisesRegex(ValueError, "live request"):
+            simulator.accept_acknowledgement(state, payload, pending)
+
+        after = json.dumps(
+            {name: state.get(name) for name in preserved_names},
+            separators=(",", ":"),
+            sort_keys=True,
+        ).encode("utf-8")
+        self.assertEqual(after, before)
 
     def test_outbox_retains_2880_minutes_and_drains_repeated_100_minute_batches(self) -> None:
         state = simulator.load_state(Path("does-not-exist"), 5)

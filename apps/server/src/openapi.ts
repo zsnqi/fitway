@@ -247,7 +247,7 @@ const frozenEdgePushResponseOpenApiSchema = {
 					minimum: 1,
 					maximum: SAFE_INTEGER_MAX,
 				},
-				timezone: { type: "string", minLength: 1 },
+				timezone: { type: "string", minLength: 1, pattern: "\\S" },
 				businessDayBoundary: wallTimeOpenApiSchema,
 				weeklySchedule: weeklyScheduleOpenApiSchema,
 			},

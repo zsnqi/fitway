@@ -387,6 +387,8 @@ def valid_acknowledgement(value: Any) -> bool:
             "settings",
             "serverTime",
         }
+        and isinstance(schema_version, int)
+        and not isinstance(schema_version, bool)
         and schema_version in {1, 2}
         and isinstance(accepted, bool)
         and reason in valid_reasons
@@ -424,9 +426,17 @@ def accept_acknowledgement(
 ) -> None:
     if not valid_acknowledgement(acknowledgement):
         raise ValueError("Invalid edge acknowledgement")
+    durable_payload = state.get("inFlightRequest")
+    if not isinstance(durable_payload, dict):
+        durable_payload = payload
+    if acknowledgement["schemaVersion"] != durable_payload.get("schemaVersion"):
+        raise ValueError("Acknowledgement schema version does not match the in-flight request")
+    payload = durable_payload
     reason = acknowledgement["reason"]
     highest = int(acknowledgement["highestProcessedSequence"])
     if reason == "commands_pending":
+        if payload.get("schemaVersion") != 2 or payload.get("mode") != "live":
+            raise ValueError("Command-pending acknowledgement requires a schema-v2 live request")
         if highest != payload["sequence"] - 1:
             raise ValueError("Command-pending acknowledgement does not match the in-flight sequence")
         apply_commands(state, acknowledgement["commands"])
