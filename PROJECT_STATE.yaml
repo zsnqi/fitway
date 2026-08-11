@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-11T14:10:33+03:00"
+updatedAt: "2026-08-11T14:47:49+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -909,7 +909,7 @@ milestones:
     integratedCommit: b1be589ea6d74d0c646f5da9d20a1157f740279a
 
   phase10-paper-reporting:
-    status: IN_PROGRESS
+    status: BLOCKED
     dependencies: [phase10-domain]
     ownerSession: "Paper-only Phase 10 Owner reporting-extension writer: author the approved heatmap, comparison, range, export, responsive, RTL/LTR, state, and accessibility compositions inside the existing Owner/Management production family. Preserve all existing approved Paper artboards and every repository file."
     branch: main
@@ -921,13 +921,12 @@ milestones:
       - "all repository paths; this milestone writes only inside the approved FITWAY Paper file"
       - "all existing approved Paper artboards and components outside the new Owner reporting extension area"
       - "Staff, Login, and Public production families"
-    sharedLeases:
-      - "exclusive through 2026-08-18T14:10:33+03:00: Paper file 01KYPX5AF950XZVVDD88B6J7QB / one new top-level area named OWNER ANALYTICS — PHASE 10 REPORTING EXTENSION — CURRENT; every existing Paper area, artboard, component, and every repository path remains read-only/forbidden"
+    sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-11T14:10:33+03:00"
-    leaseExpiresAt: "2026-08-18T14:10:33+03:00"
-    handoff: docs/phase-records/handoffs/phase10-paper-reporting/20260811-141033-p10_paper_reporting-b01-resume-activation.md
-    stopReason: null
+    lastHeartbeatAt: "2026-08-11T14:47:49+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase10-paper-reporting/20260811-144749-p10_paper_reporting-b01-tool-authorization-blocked.md
+    stopReason: "Paper MCP availability is confirmed and partial candidate area 17YY-0 is preserved with English/Arabic desktop shells, independent ranges, heatmaps, and bounded visual corrections. The Paper tool rejected both comparison/semantic-table insertions before mutation as unacceptable-risk transfer of plausible private occupancy, entrance-crossing, and coverage metrics to an unverified Paper destination, explicitly prohibiting retry or workaround. Comparison/table and all responsive/state coverage remain absent. No candidate validation or repair ran; repair count remains 0 and the Paper lease is released. Resume only after explicit human authorization to place bounded deterministic analytics fixture values in Paper file 01KYPX5AF950XZVVDD88B6J7QB."
     gates:
       unit: NOT_REQUIRED
       integration: NOT_REQUIRED
