@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-11T15:40:32+03:00"
+updatedAt: "2026-08-11T17:23:56+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -909,33 +909,32 @@ milestones:
     integratedCommit: b1be589ea6d74d0c646f5da9d20a1157f740279a
 
   phase10-paper-reporting:
-    status: IN_PROGRESS
+    status: DONE
     dependencies: [phase10-domain]
-    ownerSession: "Paper-only Phase 10 Owner reporting-extension b02 focused validation repair 1: preserve the passing desktop pair and correct only the independently identified responsive glass, segmented-control, fixture-consistency, retained-content, and Arabic bidi defects under candidate 17YY-0. Preserve all approved Paper artboards and every repository file."
+    ownerSession: null
     branch: main
-    worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
-    baseCommit: SELF
+    worktree: null
+    baseCommit: 99629d1dd39922d8aff3bb82ee1ba599c1718cc3
     ownedPaths:
       - "Paper file 01KYPX5AF950XZVVDD88B6J7QB / OWNER ANALYTICS — PHASE 10 REPORTING EXTENSION — CURRENT"
     forbiddenPaths:
       - "all repository paths; this milestone writes only inside the approved FITWAY Paper file"
       - "all existing approved Paper artboards and components outside the new Owner reporting extension area"
       - "Staff, Login, and Public production families"
-    sharedLeases:
-      - "exclusive through 2026-08-18T15:40:32+03:00: Paper file 01KYPX5AF950XZVVDD88B6J7QB / preserved candidate OWNER ANALYTICS — PHASE 10 REPORTING EXTENSION — CURRENT (17YY-0); every approved Paper area, sibling family, shared component, and every repository path remains read-only/forbidden"
+    sharedLeases: []
     validationRepairAttempts: 1
-    lastHeartbeatAt: "2026-08-11T16:58:24+03:00"
-    leaseExpiresAt: "2026-08-18T15:40:32+03:00"
-    handoff: docs/phase-records/handoffs/phase10-paper-reporting/20260811-165824-p10_paper_reporting-b02-validation-repair-1.md
+    lastHeartbeatAt: "2026-08-11T17:23:56+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase10-paper-reporting/20260811-172242-p10_paper_reporting-b02-completion.md
     stopReason: null
     gates:
       unit: NOT_REQUIRED
       integration: NOT_REQUIRED
       browser: NOT_REQUIRED
-      accessibility: PENDING
-      visual: PENDING
-      independentReview: PENDING
-    integratedCommit: null
+      accessibility: PASS
+      visual: PASS
+      independentReview: PASS
+    integratedCommit: 34c7257e6d2d6d0f60494a941c96a7f09bd561a0
 
   phase10-csv-transport:
     status: BLOCKED
