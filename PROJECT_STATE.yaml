@@ -911,7 +911,7 @@ milestones:
   phase10-paper-reporting:
     status: IN_PROGRESS
     dependencies: [phase10-domain]
-    ownerSession: "Paper-only Phase 10 Owner reporting-extension b02 writer: reuse preserved candidate 17YY-0; correct Arabic RTL structure, restore approved glass and segmented-control treatments, add the authorized deterministic comparison/table fixtures, and complete responsive/state/accessibility coverage inside the existing Owner/Management production family. Preserve the English baseline, all approved Paper artboards, and every repository file."
+    ownerSession: "Paper-only Phase 10 Owner reporting-extension b02 focused validation repair 1: preserve the passing desktop pair and correct only the independently identified responsive glass, segmented-control, fixture-consistency, retained-content, and Arabic bidi defects under candidate 17YY-0. Preserve all approved Paper artboards and every repository file."
     branch: main
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
     baseCommit: SELF
@@ -923,10 +923,10 @@ milestones:
       - "Staff, Login, and Public production families"
     sharedLeases:
       - "exclusive through 2026-08-18T15:40:32+03:00: Paper file 01KYPX5AF950XZVVDD88B6J7QB / preserved candidate OWNER ANALYTICS — PHASE 10 REPORTING EXTENSION — CURRENT (17YY-0); every approved Paper area, sibling family, shared component, and every repository path remains read-only/forbidden"
-    validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-11T15:40:32+03:00"
+    validationRepairAttempts: 1
+    lastHeartbeatAt: "2026-08-11T16:58:24+03:00"
     leaseExpiresAt: "2026-08-18T15:40:32+03:00"
-    handoff: docs/phase-records/handoffs/phase10-paper-reporting/20260811-154032-p10_paper_reporting-b02-resume-activation.md
+    handoff: docs/phase-records/handoffs/phase10-paper-reporting/20260811-165824-p10_paper_reporting-b02-validation-repair-1.md
     stopReason: null
     gates:
       unit: NOT_REQUIRED
