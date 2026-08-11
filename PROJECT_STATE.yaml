@@ -463,67 +463,38 @@ milestones:
     integratedCommit: 0f85adf80690ab7df802070bc8ce8197f4057010
 
   phase-6:
-    status: FAILED_VALIDATION
+    status: IN_PROGRESS
     dependencies: [phase-5]
-    ownerSession: "Fresh Phase 6 b02-r02 recovery worker on work/phase6-offline-b02-r02 in D:/Projects/fitway-worktrees/phase6-offline-b02-r02: start at this activation, receive a coordinator-ratified replay of source checkpoint 37d2d52, then add only the missing negative regressions and repair strict Python acknowledgement schema/correlation plus OpenAPI whitespace-timezone parity. Preserved work/phase6-offline-b02 remains immutable provenance; this fresh b02 activation is at repair count 0/2, not a third b01 repair."
-    branch: work/phase6-offline-b02-r02
-    worktree: D:/Projects/fitway-worktrees/phase6-offline-b02-r02
+    ownerSession: "Fresh Phase 6 fixture-reconciliation b03 worker on work/phase6-fixture-reconciliation-b03 in D:/Projects/fitway-worktrees/phase6-fixture-reconciliation-b03: implement only the independently approved explicit settings effectiveFrom chronology in the three leased integration fixtures. The merged Phase 6 implementation and the terminal b02 FAILED_VALIDATION record remain unchanged; this fresh attempt starts at repair count 0/2."
+    branch: work/phase6-fixture-reconciliation-b03
+    worktree: D:/Projects/fitway-worktrees/phase6-fixture-reconciliation-b03
     baseCommit: SELF
     ownedPaths:
-      - packages/api/src/offline/**
-      - apps/server/src/phase6-offline.integration.test.ts
       - docs/phase-records/handoffs/phase-6/**
     forbiddenPaths:
       - all repository paths outside ownedPaths and sharedLeases
-      - packages/api/src/routers/**
-      - packages/api/src/context.ts
-      - packages/api/src/index.ts
-      - packages/api/src/occupancy/bands.ts
-      - packages/api/src/occupancy/business-day.ts
-      - packages/api/src/occupancy/schedule.ts
-      - packages/api/src/analytics/**
-      - packages/api/src/alerts/**
-      - packages/api/src/audit/**
-      - packages/api/src/auth/**
-      - packages/api/src/commands/**
-      - packages/api/src/health/**
-      - packages/api/src/public/**
-      - "packages/api/src/reset/** and apps/server/src/phase7-reset-evaluator.integration.test.ts, which belong to phase7-reset-evaluator"
-      - apps/server/src/index.ts
-      - apps/server/src/analytics-repository.ts
-      - apps/server/src/analytics-time-context-repository.ts
-      - apps/server/src/reporting-repository.ts
-      - apps/server/src/command-repository.ts
-      - apps/server/src/health-repository.ts
-      - apps/server/src/audit-repository.ts
-      - apps/server/src/alert-repository.ts
-      - apps/server/src/test-support/**
-      - "every other apps/server/src/*.integration.test.ts, which is another milestone's accepted acceptance evidence"
-      - "packages/db/**, including src/schema/**, src/migrations/**, and meta/_journal.json; the migration lane is coordinator-serialized and no Phase 6 schema change may be hand-authored"
-      - packages/auth/**
-      - packages/env/**
-      - packages/ui/**
-      - apps/web/**
-      - tests/browser/**
-      - visual-direction-gate/** and the canonical toHaveScreenshot baselines
-      - scripts/verify.mjs and scripts/verify-repository.mjs
+      - all production code, including packages/api/**, apps/server/src files other than the three leased integration tests, packages/auth/**, packages/env/**, packages/ui/**, and apps/web/**
+      - "packages/db/**, including schema, migrations, and migration metadata"
+      - every test outside the three exact leased integration tests
+      - scripts/**, root manifests, lockfiles, environment schemas, test-runner configuration, vitest and playwright configuration, and biome.json
+      - tests/browser/**, visual-direction-gate/**, Paper artifacts, and canonical screenshot baselines
       - PROJECT_STATE.yaml
       - "AGENTS.md, CLAUDE.md, FITWAY_PRODUCT.md, SPEC.md, PHASES.md, DESIGN_GUIDE.md, README.md, RESEARCH.md, docs/WORKFLOW.md, and docs/adr/**"
       - every other milestone's phase record and handoff directory
-      - root manifests, lockfiles, environment schemas, test-runner config, vitest and playwright configs, and biome.json
-    sharedLeases: []
-    validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-11T21:40:34+03:00"
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase-6/20260811-214034-p6_offline_coord02-post-integration-failed-validation.md
-    stopReason: "Post-integration verify:full deterministically fails accepted Phase 2/4/5 integration evidence because fixed July minutes predate fixture settings effective_from values; repair budget 2/2 is exhausted, so fixture reconciliation requires a fresh recorded attempt."
+    sharedLeases:
+      - "exclusive through 2026-08-18T21:49:38+03:00: apps/server/src/phase2.integration.test.ts, apps/server/src/phase4-health.integration.test.ts, and apps/server/src/phase5-command-domain.integration.test.ts for explicit fixture settings effectiveFrom chronology only; excludes all production code, migrations/schema, every other test, configuration, UI/Paper/visual artifacts, and coordinator state"
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-08-11T21:49:38+03:00"
+    leaseExpiresAt: "2026-08-18T21:49:38+03:00"
+    handoff: docs/phase-records/handoffs/phase-6/20260811-214513-p6_fixture_b03-plan.md
+    stopReason: null
     gates:
-      unit: PASS
-      integration: FAIL
+      unit: PENDING
+      integration: PENDING
       browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
-      independentReview: PASS
+      independentReview: PENDING
     integratedCommit: null
 
   phase7-reset-evaluator:
