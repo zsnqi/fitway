@@ -391,23 +391,57 @@ describe("week-over-week comparison", () => {
 });
 
 describe("reporting CSV", () => {
+	it("returns validation failure without throwing for malformed calendar dates", () => {
+		for (const input of [
+			{
+				startBusinessDay: "2026-02-29",
+				endBusinessDay: "2026-03-01",
+			},
+			{
+				startBusinessDay: "2026-02-28",
+				endBusinessDay: "2026-02-29",
+			},
+		]) {
+			let success: boolean | undefined;
+			expect(() => {
+				success = csvRangeInputSchema.safeParse(input).success;
+			}).not.toThrow();
+			expect(success).toBe(false);
+		}
+	});
+
 	it("enforces the inclusive 366-business-day cap", () => {
 		expect(CSV_MAX_RANGE_DAYS).toBe(366);
+		expect(
+			csvRangeInputSchema.parse({
+				startBusinessDay: "2026-01-01",
+				endBusinessDay: "2026-01-01",
+			}),
+		).toEqual({
+			startBusinessDay: "2026-01-01",
+			endBusinessDay: "2026-01-01",
+		});
+		expect(
+			csvRangeInputSchema.parse({
+				startBusinessDay: "2026-01-01",
+				endBusinessDay: "2027-01-01",
+			}),
+		).toEqual({
+			startBusinessDay: "2026-01-01",
+			endBusinessDay: "2027-01-01",
+		});
+		expect(() =>
+			csvRangeInputSchema.parse({
+				startBusinessDay: "2026-01-02",
+				endBusinessDay: "2026-01-01",
+			}),
+		).toThrow(/must not precede/);
 		expect(() =>
 			csvRangeInputSchema.parse({
 				startBusinessDay: "2026-01-01",
 				endBusinessDay: "2027-01-02",
 			}),
 		).toThrow(/366/);
-		expect(
-			csvRangeInputSchema.parse({
-				startBusinessDay: "2026-01-01",
-				endBusinessDay: "2026-12-31",
-			}),
-		).toEqual({
-			startBusinessDay: "2026-01-01",
-			endBusinessDay: "2026-12-31",
-		});
 	});
 
 	it("emits one BOM, CRLF, explicit absent rows, empty numeric cells, and no device fields", () => {

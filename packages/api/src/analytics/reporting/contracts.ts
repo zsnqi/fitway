@@ -103,6 +103,8 @@ export const csvRangeInputSchema = z
 	.superRefine((value, context) => {
 		validateOrderedRange(value, context);
 		if (
+			validIsoBusinessDay(value.startBusinessDay) &&
+			validIsoBusinessDay(value.endBusinessDay) &&
 			value.startBusinessDay <= value.endBusinessDay &&
 			inclusiveBusinessDayCount(value.startBusinessDay, value.endBusinessDay) >
 				CSV_MAX_RANGE_DAYS
