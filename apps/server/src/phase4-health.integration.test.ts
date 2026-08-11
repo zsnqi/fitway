@@ -171,6 +171,9 @@ beforeAll(async () => {
 	await migrate(database, {
 		migrationsFolder: path.resolve("packages/db/src/migrations"),
 	});
+	await database
+		.update(settingsVersions)
+		.set({ effectiveFrom: new Date("2026-01-01T00:00:00.000Z") });
 	await database.insert(settingsVersions).values({
 		capacity: 100,
 		quietMaxPercent: 25,
@@ -182,6 +185,7 @@ beforeAll(async () => {
 		freshForSeconds: 90,
 		operationalStaleAfterSeconds: 180,
 		publicPollSeconds: 60,
+		effectiveFrom: new Date("2026-01-02T00:00:00.000Z"),
 		...alwaysOpen,
 	});
 	const [device] = await database
