@@ -419,6 +419,18 @@ def apply_commands(state: dict[str, Any], commands: list[dict[str, Any]]) -> Non
     state["appliedCommandId"] = last_applied
 
 
+def _correlated_in_flight_request(
+    state: dict[str, Any],
+    acknowledgement: dict[str, Any],
+) -> dict[str, Any]:
+    durable_payload = state.get("inFlightRequest")
+    if not valid_push(durable_payload):
+        raise ValueError("Missing or invalid durable in-flight request")
+    if acknowledgement["schemaVersion"] != durable_payload.get("schemaVersion"):
+        raise ValueError("Acknowledgement schema version does not match the in-flight request")
+    return durable_payload
+
+
 def accept_acknowledgement(
     state: dict[str, Any],
     payload: dict[str, Any],
@@ -426,12 +438,7 @@ def accept_acknowledgement(
 ) -> None:
     if not valid_acknowledgement(acknowledgement):
         raise ValueError("Invalid edge acknowledgement")
-    durable_payload = state.get("inFlightRequest")
-    if not isinstance(durable_payload, dict):
-        durable_payload = payload
-    if acknowledgement["schemaVersion"] != durable_payload.get("schemaVersion"):
-        raise ValueError("Acknowledgement schema version does not match the in-flight request")
-    payload = durable_payload
+    payload = _correlated_in_flight_request(state, acknowledgement)
     reason = acknowledgement["reason"]
     highest = int(acknowledgement["highestProcessedSequence"])
     if reason == "commands_pending":
@@ -476,6 +483,8 @@ def run(args: argparse.Namespace) -> int:
         if not payload:
             print("No acknowledged request is saved for replay.", file=sys.stderr)
             return 2
+        state["inFlightRequest"] = payload
+        save_state(state_path, state)
     elif args.action != "gap" and state.get("inFlightRequest") is not None:
         payload = state["inFlightRequest"]
     else:
@@ -517,6 +526,11 @@ def run(args: argparse.Namespace) -> int:
             print(f"Push rejected with HTTP {status}: {acknowledgement.get('error', 'invalid response')}", file=sys.stderr)
             return 4
         if not valid_acknowledgement(acknowledgement):
+            print("Server returned an invalid acknowledgement; stopping without advancing state.", file=sys.stderr)
+            return 4
+        try:
+            payload = _correlated_in_flight_request(state, acknowledgement)
+        except ValueError:
             print("Server returned an invalid acknowledgement; stopping without advancing state.", file=sys.stderr)
             return 4
         reason = acknowledgement.get("reason")

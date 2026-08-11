@@ -112,6 +112,7 @@ class SimulatorTests(unittest.TestCase):
         self.assertEqual(payload["mode"], "backfill")
         self.assertEqual(payload["minutes"][0]["minuteStart"], "2026-07-13T18:24:00.000Z")
         self.assertNotIn("currentCount", payload)
+        state["inFlightRequest"] = payload
 
         simulator.accept_acknowledgement(
             state,
@@ -337,6 +338,78 @@ class SimulatorTests(unittest.TestCase):
             )
             self.assertIsNone(saved["inFlightRequest"])
 
+    def test_replay_persists_last_request_before_send_and_restarts_from_it(self) -> None:
+        with tempfile.TemporaryDirectory() as folder:
+            state_path = Path(folder) / "state.json"
+            state = simulator.load_state(state_path, 3)
+            replay = simulator.build_live_push(
+                state,
+                1,
+                now=datetime(2026, 7, 13, 18, 24, 20, tzinfo=timezone.utc),
+            )
+            state["sequence"] = 1
+            state["lastRequest"] = replay
+            simulator.save_state(state_path, state)
+            replay_args = simulator.parser().parse_args([
+                "--base-url", "http://127.0.0.1:1",
+                "--token", "fixture-token",
+                "--state-file", str(state_path),
+                "--action", "replay",
+            ])
+
+            def interrupt_after_persist(
+                _url: str,
+                _token: str,
+                payload: dict[str, object],
+            ) -> tuple[int, dict[str, object], dict[str, str]]:
+                persisted = simulator.load_state(state_path, 0)
+                self.assertEqual(
+                    simulator.serialize_push(persisted["inFlightRequest"]),
+                    simulator.serialize_push(payload),
+                )
+                raise KeyboardInterrupt
+
+            with (
+                patch.object(simulator, "send", side_effect=interrupt_after_persist),
+                self.assertRaises(KeyboardInterrupt),
+            ):
+                simulator.run(replay_args)
+
+            interrupted = simulator.load_state(state_path, 0)
+            self.assertEqual(
+                simulator.serialize_push(interrupted["inFlightRequest"]),
+                simulator.serialize_push(replay),
+            )
+            restart_args = simulator.parser().parse_args([
+                "--base-url", "http://127.0.0.1:1",
+                "--token", "fixture-token",
+                "--state-file", str(state_path),
+                "--action", "once",
+            ])
+            sent: list[dict[str, object]] = []
+
+            def settle_replay(
+                _url: str,
+                _token: str,
+                payload: dict[str, object],
+            ) -> tuple[int, dict[str, object], dict[str, str]]:
+                sent.append(payload)
+                return (200, acknowledgement(1, reason="replay"), {})
+
+            with patch.object(simulator, "send", side_effect=settle_replay):
+                self.assertEqual(simulator.run(restart_args), 0)
+
+            self.assertEqual(
+                [simulator.serialize_push(payload) for payload in sent],
+                [simulator.serialize_push(replay)],
+            )
+            settled = simulator.load_state(state_path, 0)
+            self.assertIsNone(settled["inFlightRequest"])
+            self.assertEqual(
+                simulator.serialize_push(settled["lastRequest"]),
+                simulator.serialize_push(replay),
+            )
+
     def test_commands_pending_replaces_in_flight_live_with_corrected_same_sequence(self) -> None:
         with tempfile.TemporaryDirectory() as folder:
             state_path = Path(folder) / "state.json"
@@ -396,6 +469,7 @@ class SimulatorTests(unittest.TestCase):
             2,
             now=datetime(2026, 7, 13, 18, 24, 20, tzinfo=timezone.utc),
         )
+        state["inFlightRequest"] = payload
         command = {
             "id": 8,
             "type": "set_count",
@@ -460,6 +534,119 @@ class SimulatorTests(unittest.TestCase):
                     sort_keys=True,
                 ).encode("utf-8")
                 self.assertEqual(after, before)
+
+    def test_acknowledgement_requires_a_durable_in_flight_request_without_mutation(self) -> None:
+        state = simulator.load_state(Path("does-not-exist"), 5)
+        state["sequence"] = 4
+        state["appliedCommandId"] = 3
+        simulator.buffer_completed_minute(
+            state,
+            {
+                "minuteStart": "2026-07-13T18:23:00.000Z",
+                "count": 5,
+                "entries": 1,
+                "exits": 0,
+            },
+        )
+        payload = simulator.build_live_push(
+            state,
+            5,
+            now=datetime(2026, 7, 13, 18, 24, 20, tzinfo=timezone.utc),
+        )
+        state["lastRequest"] = {**payload, "sequence": 4}
+        preserved_names = (
+            "sequence",
+            "count",
+            "appliedCommandId",
+            "outbox",
+            "lastRequest",
+            "inFlightRequest",
+        )
+        before = json.dumps(
+            {name: state.get(name) for name in preserved_names},
+            separators=(",", ":"),
+            sort_keys=True,
+        ).encode("utf-8")
+        processed = acknowledgement(
+            5,
+            commands=[{
+                "id": 8,
+                "type": "set_count",
+                "targetValue": 9,
+                "issuedAt": "2026-07-13T18:24:19.000Z",
+            }],
+        )
+
+        with self.assertRaisesRegex(ValueError, "durable in-flight request"):
+            simulator.accept_acknowledgement(state, payload, processed)
+
+        after = json.dumps(
+            {name: state.get(name) for name in preserved_names},
+            separators=(",", ":"),
+            sort_keys=True,
+        ).encode("utf-8")
+        self.assertEqual(after, before)
+
+    def test_v1_sequence_gap_cannot_replace_v2_durable_recovery_state(self) -> None:
+        with tempfile.TemporaryDirectory() as folder:
+            state_path = Path(folder) / "state.json"
+            state = simulator.load_state(state_path, 5)
+            state["sequence"] = 1
+            state["appliedCommandId"] = 3
+            state["lastRequest"] = simulator.build_live_push(
+                state,
+                2,
+                now=datetime(2026, 7, 13, 18, 24, 20, tzinfo=timezone.utc),
+            )
+            state["inFlightRequest"] = simulator.build_live_push(
+                state,
+                3,
+                now=datetime(2026, 7, 13, 18, 24, 40, tzinfo=timezone.utc),
+            )
+            simulator.save_state(state_path, state)
+            preserved_names = (
+                "sequence",
+                "count",
+                "appliedCommandId",
+                "outbox",
+                "lastRequest",
+                "inFlightRequest",
+            )
+            before = json.dumps(
+                {name: state.get(name) for name in preserved_names},
+                separators=(",", ":"),
+                sort_keys=True,
+            ).encode("utf-8")
+            sequence_gap = {
+                **acknowledgement(1, reason="sequence_gap"),
+                "schemaVersion": 1,
+                "settings": {"version": 1, "pushIntervalSeconds": 20},
+            }
+            args = simulator.parser().parse_args([
+                "--base-url", "http://127.0.0.1:1",
+                "--token", "fixture-token",
+                "--state-file", str(state_path),
+                "--action", "once",
+            ])
+
+            with patch.object(
+                simulator,
+                "send",
+                side_effect=[
+                    (200, sequence_gap, {}),
+                    (400, {"error": "unexpected retry"}, {}),
+                ],
+            ) as mocked_send:
+                self.assertEqual(simulator.run(args), 4)
+
+            self.assertEqual(mocked_send.call_count, 1)
+            reloaded = simulator.load_state(state_path, 0)
+            after = json.dumps(
+                {name: reloaded.get(name) for name in preserved_names},
+                separators=(",", ":"),
+                sort_keys=True,
+            ).encode("utf-8")
+            self.assertEqual(after, before)
 
     def test_commands_pending_cannot_settle_or_apply_commands_to_backfill_state(self) -> None:
         state = simulator.load_state(Path("does-not-exist"), 5)
@@ -535,6 +722,7 @@ class SimulatorTests(unittest.TestCase):
         for sequence in range(1, 4):
             payload = simulator.build_next_push(state, sequence)
             batch_sizes.append(len(payload["minutes"]))
+            state["inFlightRequest"] = payload
             simulator.accept_acknowledgement(state, payload, acknowledgement(sequence))
         self.assertEqual(batch_sizes, [100, 100, 5])
         live = simulator.build_next_push(
