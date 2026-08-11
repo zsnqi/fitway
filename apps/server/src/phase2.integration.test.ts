@@ -118,6 +118,9 @@ beforeAll(async () => {
 	await database
 		.delete(settingsVersions)
 		.where(gt(settingsVersions.version, 2));
+	await database
+		.update(settingsVersions)
+		.set({ effectiveFrom: new Date("2026-01-01T00:00:00.000Z") });
 	await database.delete(edgeDevices);
 	const [device] = await database
 		.insert(edgeDevices)
@@ -515,6 +518,7 @@ describe("Phase 2 real Postgres vertical slice", () => {
 				freshForSeconds: 30,
 				operationalStaleAfterSeconds: 60,
 				publicPollSeconds: 11,
+				effectiveFrom: new Date("2026-07-12T22:31:30.000Z"),
 				...alwaysOpenSchedule,
 			})
 			.returning({ version: settingsVersions.version });
@@ -648,6 +652,7 @@ describe("Phase 2 real Postgres vertical slice", () => {
 			freshForSeconds: 3,
 			operationalStaleAfterSeconds: 4,
 			publicPollSeconds: 1,
+			effectiveFrom: new Date("2026-07-12T22:32:30.000Z"),
 			...alwaysOpenSchedule,
 		});
 		const browserToken = "browser-integration-token-that-is-at-least-32-bytes";
