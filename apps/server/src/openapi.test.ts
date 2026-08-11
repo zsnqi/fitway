@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import {
 	edgePushRequestSchema,
 	edgePushResponseSchema,
@@ -88,6 +89,11 @@ describe("generated OpenAPI", () => {
 			operation?.requestBody && "content" in operation.requestBody
 				? operation.requestBody.content?.["application/json"]?.example
 				: undefined;
+		const booleanRequestVersion = { ...validRequest, schemaVersion: true };
+		expect(Boolean(validateRequest(booleanRequestVersion))).toBe(false);
+		expect(edgePushRequestSchema.safeParse(booleanRequestVersion).success).toBe(
+			false,
+		);
 		const olderMinute = {
 			minuteStart: "2026-07-13T18:23:00.000Z",
 			count: 36,
@@ -135,6 +141,26 @@ describe("generated OpenAPI", () => {
 		addFormats(ajv);
 		const validate = ajv.compile(media.schema);
 		const valid = media.example;
+		const booleanResponseVersion = { ...valid, schemaVersion: true };
+		expect(Boolean(validate(booleanResponseVersion))).toBe(false);
+		expect(
+			edgePushResponseSchema.safeParse(booleanResponseVersion).success,
+		).toBe(false);
+		const versionTwo = JSON.parse(
+			readFileSync(
+				new URL("../../../edge/fixtures/acknowledgement.json", import.meta.url),
+				"utf8",
+			),
+		);
+		expect(Boolean(validate(versionTwo))).toBe(true);
+		const whitespaceTimezone = {
+			...versionTwo,
+			settings: { ...versionTwo.settings, timezone: " \t " },
+		};
+		expect(edgePushResponseSchema.safeParse(whitespaceTimezone).success).toBe(
+			false,
+		);
+		expect(Boolean(validate(whitespaceTimezone))).toBe(false);
 		const cases = [
 			valid,
 			{

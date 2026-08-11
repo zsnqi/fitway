@@ -1,5 +1,6 @@
 {
-	"schemaVersion": 1,
+	"schemaVersion": 2,
+	"mode": "live",
 	"sequence": 1,
 	"observedAt": "2026-07-13T18:24:20.000Z",
 	"currentCount": 2,
