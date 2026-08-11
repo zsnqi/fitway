@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-11T14:47:49+03:00"
+updatedAt: "2026-08-11T15:40:32+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -909,9 +909,9 @@ milestones:
     integratedCommit: b1be589ea6d74d0c646f5da9d20a1157f740279a
 
   phase10-paper-reporting:
-    status: BLOCKED
+    status: IN_PROGRESS
     dependencies: [phase10-domain]
-    ownerSession: "Paper-only Phase 10 Owner reporting-extension writer: author the approved heatmap, comparison, range, export, responsive, RTL/LTR, state, and accessibility compositions inside the existing Owner/Management production family. Preserve all existing approved Paper artboards and every repository file."
+    ownerSession: "Paper-only Phase 10 Owner reporting-extension b02 writer: reuse preserved candidate 17YY-0; correct Arabic RTL structure, restore approved glass and segmented-control treatments, add the authorized deterministic comparison/table fixtures, and complete responsive/state/accessibility coverage inside the existing Owner/Management production family. Preserve the English baseline, all approved Paper artboards, and every repository file."
     branch: main
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
     baseCommit: SELF
@@ -921,12 +921,13 @@ milestones:
       - "all repository paths; this milestone writes only inside the approved FITWAY Paper file"
       - "all existing approved Paper artboards and components outside the new Owner reporting extension area"
       - "Staff, Login, and Public production families"
-    sharedLeases: []
+    sharedLeases:
+      - "exclusive through 2026-08-18T15:40:32+03:00: Paper file 01KYPX5AF950XZVVDD88B6J7QB / preserved candidate OWNER ANALYTICS — PHASE 10 REPORTING EXTENSION — CURRENT (17YY-0); every approved Paper area, sibling family, shared component, and every repository path remains read-only/forbidden"
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-11T14:47:49+03:00"
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase10-paper-reporting/20260811-144749-p10_paper_reporting-b01-tool-authorization-blocked.md
-    stopReason: "Paper MCP availability is confirmed and partial candidate area 17YY-0 is preserved with English/Arabic desktop shells, independent ranges, heatmaps, and bounded visual corrections. The Paper tool rejected both comparison/semantic-table insertions before mutation as unacceptable-risk transfer of plausible private occupancy, entrance-crossing, and coverage metrics to an unverified Paper destination, explicitly prohibiting retry or workaround. Comparison/table and all responsive/state coverage remain absent. No candidate validation or repair ran; repair count remains 0 and the Paper lease is released. Resume only after explicit human authorization to place bounded deterministic analytics fixture values in Paper file 01KYPX5AF950XZVVDD88B6J7QB."
+    lastHeartbeatAt: "2026-08-11T15:40:32+03:00"
+    leaseExpiresAt: "2026-08-18T15:40:32+03:00"
+    handoff: docs/phase-records/handoffs/phase10-paper-reporting/20260811-154032-p10_paper_reporting-b02-resume-activation.md
+    stopReason: null
     gates:
       unit: NOT_REQUIRED
       integration: NOT_REQUIRED
@@ -1075,7 +1076,7 @@ milestones:
     integratedCommit: null
 
   phase11-access:
-    status: NEEDS_HUMAN
+    status: BLOCKED
     dependencies: [phase-4, phase-5, phase-9]
     ownerSession: null
     branch: null
@@ -1085,10 +1086,10 @@ milestones:
     forbiddenPaths: []
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-11T14:05:22+03:00"
+    lastHeartbeatAt: "2026-08-11T15:40:32+03:00"
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-access/20260811-140522-p11_access-needs-human.md
-    stopReason: "Product/Spec authorize owner-managed staff PIN and real-owner access, but do not define the security-sensitive lifecycle and lockout rules, v1 secret handoff/reset mechanism, or secret-safe access-audit taxonomy/storage required for atomic audited mutations. ADR-007 coverage explicitly leaves owner self-deactivation, last-owner protection, and password delivery to Product/Spec when unanswered. The current command-only audit schema cannot represent access events. No worker, branch, worktree, profile, lease, edit, migration, candidate, assertion, or validation attempt exists; repair count remains 0. Human product/security decisions and a reviewed coordinator-owned audit migration contract are required before activation."
+    handoff: docs/phase-records/handoffs/phase11-access/20260811-154032-p11_access-authority-resolved-capacity-blocked.md
+    stopReason: "The human has resolved the complete v1 owner lifecycle, generated/reveal-once staff PIN, in-app owner credential reset, and secret-free access-audit contract; the historical NEEDS_HUMAN stop is superseded. Implementation remains unactivated and BLOCKED until integrated phase11-shell, integrated phase11-audit, and an independently reviewed backward-compatible coordinator-owned audit migration/contract are available in the serialized Owner lane. Isolated-worker toolchain capacity also remains unavailable. No worker, branch, worktree, profile, lease, edit, migration, candidate, assertion, or validation attempt exists; repair count remains 0."
     gates:
       unit: PENDING
       integration: PENDING
