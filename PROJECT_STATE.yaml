@@ -463,19 +463,60 @@ milestones:
     integratedCommit: 0f85adf80690ab7df802070bc8ce8197f4057010
 
   phase-6:
-    status: PLANNED
+    status: IN_PROGRESS
     dependencies: [phase-5]
-    ownerSession: null
-    branch: work/phase6-offline-b02
-    worktree: D:/Projects/fitway-worktrees/phase6-offline-b02
-    baseCommit: null
-    ownedPaths: []
-    forbiddenPaths: []
-    sharedLeases: []
+    ownerSession: "Fresh Phase 6 b02-r02 recovery worker on work/phase6-offline-b02-r02 in D:/Projects/fitway-worktrees/phase6-offline-b02-r02: start at this activation, receive a coordinator-ratified replay of source checkpoint 37d2d52, then add only the missing negative regressions and repair strict Python acknowledgement schema/correlation plus OpenAPI whitespace-timezone parity. Preserved work/phase6-offline-b02 remains immutable provenance; this fresh b02 activation is at repair count 0/2, not a third b01 repair."
+    branch: work/phase6-offline-b02-r02
+    worktree: D:/Projects/fitway-worktrees/phase6-offline-b02-r02
+    baseCommit: SELF
+    ownedPaths:
+      - packages/api/src/offline/**
+      - apps/server/src/phase6-offline.integration.test.ts
+      - docs/phase-records/handoffs/phase-6/**
+    forbiddenPaths:
+      - all repository paths outside ownedPaths and sharedLeases
+      - packages/api/src/routers/**
+      - packages/api/src/context.ts
+      - packages/api/src/index.ts
+      - packages/api/src/occupancy/bands.ts
+      - packages/api/src/occupancy/business-day.ts
+      - packages/api/src/occupancy/schedule.ts
+      - packages/api/src/analytics/**
+      - packages/api/src/alerts/**
+      - packages/api/src/audit/**
+      - packages/api/src/auth/**
+      - packages/api/src/commands/**
+      - packages/api/src/health/**
+      - packages/api/src/public/**
+      - "packages/api/src/reset/** and apps/server/src/phase7-reset-evaluator.integration.test.ts, which belong to phase7-reset-evaluator"
+      - apps/server/src/index.ts
+      - apps/server/src/analytics-repository.ts
+      - apps/server/src/analytics-time-context-repository.ts
+      - apps/server/src/reporting-repository.ts
+      - apps/server/src/command-repository.ts
+      - apps/server/src/health-repository.ts
+      - apps/server/src/audit-repository.ts
+      - apps/server/src/alert-repository.ts
+      - apps/server/src/test-support/**
+      - "every other apps/server/src/*.integration.test.ts, which is another milestone's accepted acceptance evidence"
+      - "packages/db/**, including src/schema/**, src/migrations/**, and meta/_journal.json; the migration lane is coordinator-serialized and no Phase 6 schema change may be hand-authored"
+      - packages/auth/**
+      - packages/env/**
+      - packages/ui/**
+      - apps/web/**
+      - tests/browser/**
+      - visual-direction-gate/** and the canonical toHaveScreenshot baselines
+      - scripts/verify.mjs and scripts/verify-repository.mjs
+      - PROJECT_STATE.yaml
+      - "AGENTS.md, CLAUDE.md, FITWAY_PRODUCT.md, SPEC.md, PHASES.md, DESIGN_GUIDE.md, README.md, RESEARCH.md, docs/WORKFLOW.md, and docs/adr/**"
+      - every other milestone's phase record and handoff directory
+      - root manifests, lockfiles, environment schemas, test-runner config, vitest and playwright configs, and biome.json
+    sharedLeases:
+      - "exclusive through 2026-08-18T20:41:09+03:00: edge protocol spine (packages/api/src/edge-push.ts and edge-push.test.ts, apps/server/src/edge-push.ts, apps/server/src/openapi.ts and openapi.test.ts, packages/api/src/occupancy/engine.ts and engine.test.ts, apps/server/src/occupancy-repositories.ts, and edge/** Python simulator/fixtures/parity tests); it excludes packages/db/**, the router/context/server-index lane, packages/env/**, and every apps/web surface"
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/coordinator/20260811-201938-completion-blocker-state-reconciled.md
+    lastHeartbeatAt: "2026-08-11T20:41:09+03:00"
+    leaseExpiresAt: "2026-08-18T20:41:09+03:00"
+    handoff: docs/phase-records/handoffs/phase-6/20260811-203406-p6_offline_b02-r02-plan.md
     stopReason: null
     gates:
       unit: PENDING
