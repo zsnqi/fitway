@@ -80,13 +80,6 @@ const phases = {
 		integrationFiles: ["apps/server/src/phase10-domain.integration.test.ts"],
 		label: "Phase 10 reporting domain slice",
 	},
-	"phase10-csv-transport": {
-		browserFiles: [],
-		integrationFiles: [
-			"apps/server/src/phase10-csv-transport.integration.test.ts",
-		],
-		label: "Phase 10 owner CSV transport slice",
-	},
 };
 
 const phaseNames = Object.keys(phases).join("|");
