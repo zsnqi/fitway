@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-11T13:42:06+03:00"
+updatedAt: "2026-08-11T13:50:10+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -1061,10 +1061,10 @@ milestones:
     forbiddenPaths: []
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-11T13:33:35+03:00"
+    lastHeartbeatAt: "2026-08-11T13:50:10+03:00"
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-audit/20260811-133335-p11_audit_b01-preactivation-blocked.md
-    stopReason: "All ledger dependencies are DONE, but isolated-worker toolchain capacity is unavailable as independently evidenced by Phase 6 cb4ec2d and Phase 10 CSV 36dad322 before assertions. No b01 worker, branch, worktree, profile, lease, edit, candidate, assertion, or validation attempt exists; repair count remains 0. Do not launch until a shared authorized probe reaches assertion collection."
+    handoff: docs/phase-records/handoffs/phase11-audit/20260811-135010-p11_audit-authority-packet.md
+    stopReason: "All ledger dependencies are DONE and the read-only authority packet is plan-ready with no migration/index or open product decision, but isolated-worker toolchain capacity remains unavailable as independently evidenced by Phase 6 cb4ec2d and Phase 10 CSV 36dad322 before assertions. No b01 worker, branch, worktree, profile, lease, edit, candidate, assertion, or validation attempt exists; repair count remains 0. Do not launch until a shared authorized probe reaches assertion collection."
     gates:
       unit: PENDING
       integration: PENDING
