@@ -13,9 +13,21 @@
   remain provenance only.
 - Preserved every historical terminal handoff, rejected attempt, rollback, and candidate branch.
 
+### Preserved provenance index
+
+| Milestone | Preserved checkpoint/evidence |
+| --- | --- |
+| Phase 6 | Candidate `e4832915524fe23edca77afaa0f9be74a0c38ff3`; blocked-record tip `cb4ec2de9b99b761b3ee5531c2b48488d9dfedf3`; `docs/phase-records/handoffs/phase-6/20260811-131554-p6_offline_b02-external-blocked.md` |
+| Phase 7 reset evaluator | Rejected attempts `61dd07855bd976116b747893999b4e14a7256d32`, `457a06a4dbdc133a064ee53d9aa07146f87beb0a`, and `c1db8a854eaee25ed6d1fef1d47b13895bc19cbc`; rollback `381f45962fb747d617165279dac174a92da1d7c9`; `docs/phase-records/handoffs/phase7-reset-evaluator/20260810-012600-p7_reset_eval-advisory-resume-plan.md`; `docs/phase-records/handoffs/phase7-reset-evaluator/20260811-133335-p7_reset_eval_b02-preactivation-blocked.md` |
+| Login Paper adoption | Candidate `9b65356cfefe8b9a42e41b4912d9efa7af020345`; `docs/phase-records/handoffs/login-paper-adoption/20260811-133335-login_paper_b02-preactivation-blocked.md` |
+| Phase 10 CSV transport | Documentation-only tip `36dad322e7daa52d0d7b93f9866181759a3817c5`; `docs/phase-records/handoffs/phase10-csv-transport/20260811-132547-p10_csv_transport_b01-toolchain-blocked.md` |
+| Phase 11 Shell | Candidate `0b015ee0323ab644be0242365560c0e9cf037429`; `docs/phase-records/handoffs/phase11-shell/20260811-133335-p11_shell_b02-preactivation-blocked.md` |
+| Phase 11 Audit | `docs/phase-records/handoffs/phase11-audit/20260811-135010-p11_audit-authority-packet.md` |
+| Phase 11 Access | `docs/phase-records/handoffs/phase11-access/20260811-154032-p11_access-authority-resolved-capacity-blocked.md`; resolved-decision commit `103cc00` |
+
 ## Exact current state
 
-- Branch: `main` at reconciliation commit `SELF`; the plan/probe boundary is `a37a0d6`.
+- Branch: `main`; state-transition commit `c203e9e`; the plan/probe boundary is `a37a0d6`.
 - Working tree after this commit: expected clean; nothing staged or uncommitted.
 - `main` was 148 commits ahead of the local `origin/main` tracking snapshot before this commit; no
   fetch or push occurred.
@@ -66,7 +78,10 @@ toolchain or human-decision blocks.
   type/build checks passed; 37 unit files / 156 tests passed; five Python simulator tests passed;
   mutation guard reported no repository mutation.
 - `git diff --check` — PASS.
-- Independent review — pending after the coordinator commit; the reviewer must not repair.
+- Fresh independent read-only review of `a37a0d6..c203e9e` — PASS: exactly the seven named
+  transitions, correct unassigned fields, preserved repair counters, no Product/Spec/PHASES/code/
+  Paper/visual change, and clean scope. The only non-blocking finding was the missing exact
+  provenance index, corrected above in this evidence-only follow-up.
 - Not verified in this slice: implementation behavior, Paper/runtime parity, browser/accessibility,
   canonical visual baselines, integrations, or full verification. No implementation changed.
 
