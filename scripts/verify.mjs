@@ -19,11 +19,6 @@ const phases = {
 		integrationFiles: ["apps/server/src/phase2.integration.test.ts"],
 		label: "Phase 3 schedule awareness",
 	},
-	6: {
-		browserFiles: [],
-		integrationFiles: ["apps/server/src/phase6-offline.integration.test.ts"],
-		label: "Phase 6 offline fallback, backfill, and reconciliation",
-	},
 	baseline: {
 		browserFiles: null,
 		integrationFiles: null,
