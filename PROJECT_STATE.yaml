@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-11T13:20:09+03:00"
+updatedAt: "2026-08-11T13:22:35+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -997,7 +997,7 @@ milestones:
     integratedCommit: null
 
   phase10-csv-transport:
-    status: READY
+    status: IN_PROGRESS
     dependencies: [phase10-domain]
     ownerSession: "Phase 10 CSV transport b01 worker on work/phase10-csv-transport-b01 in D:/Projects/fitway-worktrees/phase10-csv-transport: expose the accepted reporting CSV generator as an owner-only streamed oRPC procedure with strict range validation, bounded/cancellation-safe delivery, canonical 401/403 enforcement, and real-Postgres transport proof. No UI, Paper, migration/index, reporting-domain/repository semantic, auth, OpenAPI, or audit mutation change."
     branch: work/phase10-csv-transport-b01
@@ -1026,9 +1026,9 @@ milestones:
     sharedLeases:
       - "exclusive through 2026-08-18T13:20:09+03:00: Phase 10 CSV oRPC aggregation lane limited to packages/api/src/context.ts, packages/api/src/routers/index.ts, and apps/server/src/index.ts for injecting the accepted reporting stream reader, adding the owner-only admin.analytics leaf, and wiring createReportingRepository(db); no other router, auth, context, server aggregation, OpenAPI, audit, environment, database, or migration change"
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-11T13:20:09+03:00"
+    lastHeartbeatAt: "2026-08-11T13:22:35+03:00"
     leaseExpiresAt: "2026-08-18T13:20:09+03:00"
-    handoff: docs/phase-records/handoffs/phase10-csv-transport/20260811-132009-p10_csv_transport_b01-activation.md
+    handoff: docs/phase-records/handoffs/phase10-csv-transport/20260811-132235-p10_csv_transport_b01-in-progress.md
     stopReason: null
     gates:
       unit: PENDING
