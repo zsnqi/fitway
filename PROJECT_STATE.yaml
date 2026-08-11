@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-11T13:22:35+03:00"
+updatedAt: "2026-08-11T13:27:34+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -997,7 +997,7 @@ milestones:
     integratedCommit: null
 
   phase10-csv-transport:
-    status: IN_PROGRESS
+    status: BLOCKED
     dependencies: [phase10-domain]
     ownerSession: "Phase 10 CSV transport b01 worker on work/phase10-csv-transport-b01 in D:/Projects/fitway-worktrees/phase10-csv-transport: expose the accepted reporting CSV generator as an owner-only streamed oRPC procedure with strict range validation, bounded/cancellation-safe delivery, canonical 401/403 enforcement, and real-Postgres transport proof. No UI, Paper, migration/index, reporting-domain/repository semantic, auth, OpenAPI, or audit mutation change."
     branch: work/phase10-csv-transport-b01
@@ -1023,13 +1023,12 @@ milestones:
       - scripts/verify.mjs, scripts/verify-repository.mjs, PROJECT_STATE.yaml, and all root manifests/config/lockfiles
       - every other milestone's phase record, implementation, and test
       - normative product/specification/ADR/workflow documents
-    sharedLeases:
-      - "exclusive through 2026-08-18T13:20:09+03:00: Phase 10 CSV oRPC aggregation lane limited to packages/api/src/context.ts, packages/api/src/routers/index.ts, and apps/server/src/index.ts for injecting the accepted reporting stream reader, adding the owner-only admin.analytics leaf, and wiring createReportingRepository(db); no other router, auth, context, server aggregation, OpenAPI, audit, environment, database, or migration change"
+    sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-11T13:22:35+03:00"
-    leaseExpiresAt: "2026-08-18T13:20:09+03:00"
-    handoff: docs/phase-records/handoffs/phase10-csv-transport/20260811-132235-p10_csv_transport_b01-in-progress.md
-    stopReason: null
+    lastHeartbeatAt: "2026-08-11T13:27:34+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase10-csv-transport/20260811-132547-p10_csv_transport_b01-toolchain-blocked.md
+    stopReason: "The isolated b01 worktree and frozen install succeeded, but the assigned worker's required pnpm exec vitest --version probe could not resolve Vitest before or after the one authorized frozen-lockfile repair. No implementation or assertion ran, repair count remains 0, and the oRPC aggregation lease/profile are released. Preserve clean branch work/phase10-csv-transport-b01 and do not retry this exact worker toolchain path until it is restored."
     gates:
       unit: PENDING
       integration: PENDING
