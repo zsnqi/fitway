@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-11T13:27:34+03:00"
+updatedAt: "2026-08-11T13:33:35+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -268,48 +268,26 @@ milestones:
     integratedCommit: b67398a8a221e60f45ed7a4f2b0e40207fdbd58a
 
   login-paper-adoption:
-    status: FAILED_VALIDATION
+    status: BLOCKED
     dependencies: [phase4-staff-web]
-    ownerSession: "Login Paper-adoption worker on work/login-paper-adoption-b01 in D:/Projects/fitway-worktrees/login-paper-adoption: adopt the approved Login production composition without changing authentication, copy, validation, lockout semantics, routes, or other surfaces."
-    branch: work/login-paper-adoption-b01
-    worktree: D:/Projects/fitway-worktrees/login-paper-adoption
-    baseCommit: SELF
-    ownedPaths:
-      - apps/web/src/routes/login.tsx
-      - apps/web/src/components/login/**
-      - tests/browser/login-paper-adoption.browser.spec.ts
-      - tests/browser/__screenshots__/**/login-paper-adoption.browser.spec.ts/**
-      - docs/phase-records/handoffs/login-paper-adoption/**
-    forbiddenPaths:
-      - all repository paths outside ownedPaths
-      - apps/web/src/components/staff/**
-      - apps/web/src/components/brand-header.tsx
-      - apps/web/src/components/public-atmosphere.tsx
-      - apps/web/src/i18n/**
-      - apps/web/src/index.css
-      - apps/web/src/routes/index.tsx
-      - apps/web/src/routes/staff.tsx
-      - apps/web/src/routes/admin.tsx
-      - packages/ui/**
-      - tests/browser/phase4-staff-web.browser.spec.ts
-      - tests/browser/public-baseline.browser.spec.ts
-      - every other existing browser test and screenshot baseline
-      - visual-direction-gate/**
-      - PROJECT_STATE.yaml
-      - scripts/verify.mjs and every other root manifest, lockfile, or test/config script
-      - normative and unrelated phase documentation
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
     sharedLeases: []
-    validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-10T00:02:21+03:00"
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-08-11T13:33:35+03:00"
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/login-paper-adoption/20260810-000500-login_paper_coord01-failed-validation.md
-    stopReason: "The focused browser gate remained 6/7 after both repair cycles because its submitting-state assertion reused an accessible-name locator that correctly disappears when the button label changes; the rejected candidate is preserved cleanly at 9b65356."
+    handoff: docs/phase-records/handoffs/login-paper-adoption/20260811-133335-login_paper_b02-preactivation-blocked.md
+    stopReason: "A coordinator-authorized fresh b02 may reuse rejected checkpoint 9b65356 and repair only the submitting-state locator, but isolated-worker toolchain capacity is unavailable: Phase 6 cb4ec2d failed at Vite spawn with EPERM before assertions, and Phase 10 CSV 36dad322 could not resolve Vitest after the sole frozen-install repair. No b02 worker, branch, worktree, profile, lease, edit, assertion, or validation attempt exists; repair count is reset to 0. Preserve b01 history and do not launch another isolated worker until a shared authorized probe reaches assertion collection."
     gates:
       unit: PENDING
       integration: NOT_REQUIRED
-      browser: FAIL
-      accessibility: PASS
-      visual: PASS
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
       independentReview: PENDING
     integratedCommit: null
 
@@ -549,65 +527,27 @@ milestones:
     integratedCommit: null
 
   phase7-reset-evaluator:
-    status: FAILED_VALIDATION
+    status: BLOCKED
     dependencies: [baseline-reconciliation-gate, phase-3, phase-5]
-    ownerSession: "Phase 7 reset-evaluator worker on work/phase7-reset-evaluator-b01 in D:/Projects/fitway-worktrees/phase7-reset-evaluator: deliver the pure scheduled-reset evaluator — close-plus-buffer scheduling, past-midnight and business-day correctness, and exactly-once system reset issuance decisions. Additive and unexposed, mirroring the phase9-analytics-domain and phase10-domain ownership pattern. No cron endpoint, no CRON_SECRET, no router leaf, no context change, no migration, no UI; transport and persistence belong to phase7-integration."
-    branch: work/phase7-reset-evaluator-b01
-    worktree: D:/Projects/fitway-worktrees/phase7-reset-evaluator
-    baseCommit: SELF
-    ownedPaths:
-      - packages/api/src/reset/**
-      - apps/server/src/phase7-reset-evaluator.integration.test.ts
-      - docs/phase-records/handoffs/phase7-reset-evaluator/**
-    forbiddenPaths:
-      - all repository paths outside ownedPaths
-      - packages/api/src/routers/**
-      - packages/api/src/context.ts
-      - packages/api/src/index.ts
-      - packages/api/src/edge-push.ts
-      - packages/api/src/occupancy/**
-      - packages/api/src/analytics/**
-      - packages/api/src/alerts/**
-      - packages/api/src/audit/**
-      - packages/api/src/auth/**
-      - packages/api/src/commands/**
-      - packages/api/src/health/**
-      - packages/api/src/public/**
-      - "packages/api/src/offline/** and apps/server/src/phase6-offline.integration.test.ts, which belong to phase-6"
-      - apps/server/src/index.ts
-      - apps/server/src/openapi.ts
-      - apps/server/src/edge-push.ts
-      - apps/server/src/occupancy-repositories.ts
-      - apps/server/src/command-repository.ts
-      - apps/server/src/audit-repository.ts
-      - apps/server/src/test-support/**
-      - "every other apps/server/src/*.integration.test.ts, which is another milestone's accepted acceptance evidence"
-      - "packages/db/**, including src/schema/**, src/migrations/**, and meta/_journal.json; the migration lane is coordinator-serialized"
-      - "packages/env/**; CRON_SECRET and every cron transport concern belong to phase7-integration"
-      - packages/auth/**
-      - packages/ui/**
-      - apps/web/**
-      - edge/**
-      - tests/browser/**
-      - visual-direction-gate/** and the canonical toHaveScreenshot baselines
-      - scripts/verify.mjs and scripts/verify-repository.mjs
-      - PROJECT_STATE.yaml
-      - "AGENTS.md, CLAUDE.md, FITWAY_PRODUCT.md, SPEC.md, PHASES.md, DESIGN_GUIDE.md, README.md, RESEARCH.md, docs/WORKFLOW.md, and docs/adr/**"
-      - every other milestone's phase record and handoff directory
-      - root manifests, lockfiles, environment schemas, test-runner config, vitest and playwright configs, and biome.json
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
     sharedLeases: []
-    validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-09T22:53:00+03:00"
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-08-11T13:33:35+03:00"
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase7-reset-evaluator/20260809-225300-p7_reset_eval_coord01-failed-validation.md
-    stopReason: "Fresh review after repair attempt 2 reproduced DST-transition-window false-negative and false-positive schedule ownership; no third repair is permitted."
+    handoff: docs/phase-records/handoffs/phase7-reset-evaluator/20260811-133335-p7_reset_eval_b02-preactivation-blocked.md
+    stopReason: "The advisory authorizes a fresh b02 with repair count 0 while preserving rejected b01 history 61dd078/457a06a/c1db8a8 and rollback 381f459, but isolated-worker toolchain capacity is unavailable as independently evidenced by Phase 6 cb4ec2d and Phase 10 CSV 36dad322 before assertions. No b02 worker, branch, worktree, profile, lease, edit, candidate, assertion, or validation attempt exists. Do not launch until a shared authorized probe reaches assertion collection; b01 remains terminal at repair count 2."
     gates:
-      unit: PASS
-      integration: PASS
+      unit: PENDING
+      integration: PENDING
       browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
-      independentReview: FAIL
+      independentReview: PENDING
     integratedCommit: null
 
   phase7-integration:
@@ -1087,60 +1027,31 @@ milestones:
     integratedCommit: null
 
   phase11-shell:
-    status: FAILED_VALIDATION
+    status: BLOCKED
     dependencies: [phase-9]
-    ownerSession: "Phase 11 Owner-shell Paper-adoption worker on work/phase11-shell-b01 in D:/Projects/fitway-worktrees/phase11-shell: replace only the legacy /admin wrapper with the approved Owner rail and responsive shell while preserving Phase 9 analytics behavior, copy, states, tests, and every non-admin surface."
-    branch: work/phase11-shell-b01
-    worktree: D:/Projects/fitway-worktrees/phase11-shell
-    baseCommit: SELF
-    ownedPaths:
-      - apps/web/src/routes/admin.tsx
-      - apps/web/src/components/owner/owner-shell.tsx
-      - apps/web/src/components/owner/owner-shell.css
-      - apps/web/src/components/owner/owner-shell.test.tsx
-      - tests/browser/phase11-shell.browser.spec.ts
-      - tests/browser/__screenshots__/**/phase11-shell.browser.spec.ts/**
-      - docs/phase-records/handoffs/phase11-shell/**
-    forbiddenPaths:
-      - all repository paths outside ownedPaths
-      - apps/web/src/routes/login.tsx
-      - apps/web/src/routes/staff.tsx
-      - apps/web/src/routes/index.tsx
-      - apps/web/src/components/login/**
-      - apps/web/src/components/staff/**
-      - apps/web/src/components/public-atmosphere.tsx
-      - apps/web/src/components/owner/owner-analytics-view.tsx
-      - apps/web/src/components/owner/owner-analytics.css
-      - every existing Phase 9 Owner analytics component, hook, parsing contract, message, and unit test
-      - apps/web/src/i18n/**
-      - apps/web/src/index.css
-      - apps/web/src/routeTree.gen.ts
-      - packages/ui/**
-      - tests/browser/phase4-staff-web.browser.spec.ts
-      - tests/browser/phase9-owner-ui.browser.spec.ts
-      - every other existing browser test and screenshot baseline
-      - packages/api/**, apps/server/**, packages/db/**, packages/auth/**, packages/env/**, and edge/**
-      - visual-direction-gate/**
-      - PROJECT_STATE.yaml
-      - scripts/verify.mjs and every other root manifest, lockfile, or test/config script
-      - Paper and normative or unrelated phase documentation
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
     sharedLeases: []
-    validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-10T01:24:00+03:00"
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-08-11T13:33:35+03:00"
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-shell/20260810-012600-p11_shell_coord01-failed-validation.md
-    stopReason: "The final allowed repair passed asymmetric safe-area, 44x44 target, navigation, state, and canonical-visual checks but the focused forced-colors test still found an interactive target with computed outline-style none; the rejected candidate is preserved cleanly at 0b015ee."
+    handoff: docs/phase-records/handoffs/phase11-shell/20260811-133335-p11_shell_b02-preactivation-blocked.md
+    stopReason: "A coordinator-authorized fresh b02 may reuse rejected checkpoint 0b015ee and address only the remaining forced-colors focus defect, but isolated-worker toolchain capacity is unavailable as independently evidenced by Phase 6 cb4ec2d and Phase 10 CSV 36dad322 before assertions. No b02 worker, branch, worktree, profile, lease, edit, assertion, or validation attempt exists; repair count is reset to 0. Preserve b01 history and do not launch until a shared authorized probe reaches assertion collection."
     gates:
       unit: PENDING
       integration: NOT_REQUIRED
-      browser: FAIL
-      accessibility: FAIL
-      visual: PASS
-      independentReview: FAIL
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
     integratedCommit: null
 
   phase11-audit:
-    status: PLANNED
+    status: BLOCKED
     dependencies: [phase-5, phase-9]
     ownerSession: null
     branch: null
@@ -1150,10 +1061,10 @@ milestones:
     forbiddenPaths: []
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
+    lastHeartbeatAt: "2026-08-11T13:33:35+03:00"
     leaseExpiresAt: null
-    handoff: null
-    stopReason: null
+    handoff: docs/phase-records/handoffs/phase11-audit/20260811-133335-p11_audit_b01-preactivation-blocked.md
+    stopReason: "All ledger dependencies are DONE, but isolated-worker toolchain capacity is unavailable as independently evidenced by Phase 6 cb4ec2d and Phase 10 CSV 36dad322 before assertions. No b01 worker, branch, worktree, profile, lease, edit, candidate, assertion, or validation attempt exists; repair count remains 0. Do not launch until a shared authorized probe reaches assertion collection."
     gates:
       unit: PENDING
       integration: PENDING
@@ -1164,7 +1075,7 @@ milestones:
     integratedCommit: null
 
   phase11-access:
-    status: PLANNED
+    status: BLOCKED
     dependencies: [phase-4, phase-5, phase-9]
     ownerSession: null
     branch: null
@@ -1174,10 +1085,10 @@ milestones:
     forbiddenPaths: []
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
+    lastHeartbeatAt: "2026-08-11T13:33:35+03:00"
     leaseExpiresAt: null
-    handoff: null
-    stopReason: null
+    handoff: docs/phase-records/handoffs/phase11-access/20260811-133335-p11_access_b01-preactivation-blocked.md
+    stopReason: "All ledger dependencies are DONE, but isolated-worker toolchain capacity is unavailable as independently evidenced by Phase 6 cb4ec2d and Phase 10 CSV 36dad322 before assertions. No b01 worker, branch, worktree, profile, lease, edit, candidate, assertion, or validation attempt exists; repair count remains 0. Future activation remains serialized behind phase11-audit resource release; do not launch either stream until a shared authorized probe reaches assertion collection."
     gates:
       unit: PENDING
       integration: PENDING
