@@ -907,20 +907,33 @@ milestones:
     integratedCommit: 34c7257e6d2d6d0f60494a941c96a7f09bd561a0
 
   phase10-csv-transport:
-    status: NEEDS_HUMAN
+    status: IN_PROGRESS
     dependencies: [phase10-domain]
-    ownerSession: null
+    ownerSession: p10_csv_contract_b01
     branch: work/phase10-csv-transport-b02
     worktree: D:/Projects/fitway-worktrees/phase10-csv-transport-b02
     baseCommit: 9d7f4165fa36fb9128b3d68b8399da8fbbc866ce
-    ownedPaths: []
-    forbiddenPaths: []
-    sharedLeases: []
+    ownedPaths:
+      - packages/api/src/analytics/reporting/contracts.ts
+      - packages/api/src/analytics/reporting/reporting.test.ts
+      - docs/phase-records/handoffs/phase10-csv-transport/*-p10_csv_contract_b01-*.md
+    forbiddenPaths:
+      - all repository paths outside ownedPaths
+      - apps/server/src/index.ts
+      - apps/server/src/phase10-csv-transport.integration.test.ts
+      - packages/api/src/context.ts
+      - packages/api/src/routers/index.ts
+      - packages/api/src/analytics/reporting/csv-transport.ts
+      - packages/api/src/analytics/reporting/csv-transport.test.ts
+      - scripts/verify.mjs
+      - PROJECT_STATE.yaml
+    sharedLeases:
+      - "exclusive through 2026-08-18T23:34:58+03:00: Phase 10 CSV malformed-date accepted-domain correction limited to packages/api/src/analytics/reporting/contracts.ts and packages/api/src/analytics/reporting/reporting.test.ts; no helper, message/path, cap, DTO, reporting/repository, transport/wiring, config, or other semantic change"
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-11T23:20:29+03:00"
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase10-csv-transport/20260811-232029-p10_csv_transport_b02-coordinator-contract-needs-human.md
-    stopReason: "Raw RPC regression proves malformed ISO business days return HTTP 500 because the accepted csvRangeInputSchema throws RangeError during superRefine after its base date refine fails. The worker correctly stopped before editing forbidden reporting contracts. Resume requires a separately reviewed coordinator lease for packages/api/src/analytics/reporting/contracts.ts and its accepted domain test, then a fresh b02 scope ratification; repair count remains 0/2."
+    lastHeartbeatAt: "2026-08-11T23:34:58+03:00"
+    leaseExpiresAt: "2026-08-18T23:34:58+03:00"
+    handoff: docs/phase-records/handoffs/phase10-csv-transport/20260811-233458-p10_csv_contract_b01-coordinator-ratification.md
+    stopReason: null
     gates:
       unit: PENDING
       integration: PENDING
