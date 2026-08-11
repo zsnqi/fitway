@@ -513,10 +513,10 @@ milestones:
       - root manifests, lockfiles, environment schemas, test-runner config, vitest and playwright configs, and biome.json
     sharedLeases:
       - "exclusive through 2026-08-18T20:41:09+03:00: edge protocol spine (packages/api/src/edge-push.ts and edge-push.test.ts, apps/server/src/edge-push.ts, apps/server/src/openapi.ts and openapi.test.ts, packages/api/src/occupancy/engine.ts and engine.test.ts, apps/server/src/occupancy-repositories.ts, and edge/** Python simulator/fixtures/parity tests); it excludes packages/db/**, the router/context/server-index lane, packages/env/**, and every apps/web surface"
-    validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-11T20:41:09+03:00"
+    validationRepairAttempts: 1
+    lastHeartbeatAt: "2026-08-11T21:06:53+03:00"
     leaseExpiresAt: "2026-08-18T20:41:09+03:00"
-    handoff: docs/phase-records/handoffs/phase-6/20260811-203406-p6_offline_b02-r02-plan.md
+    handoff: docs/phase-records/handoffs/phase-6/20260811-210016-p6_offline_b02-r02-profile-continuation.md
     stopReason: null
     gates:
       unit: PENDING
