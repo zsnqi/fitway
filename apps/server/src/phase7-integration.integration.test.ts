@@ -1,14 +1,19 @@
+import { createHash, randomBytes, randomInt, randomUUID } from "node:crypto";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import type { CommandService } from "@fitway/api/commands/service";
-import { edgePushResponseSchema } from "@fitway/api/edge-push";
+import {
+	type EdgePushRequest,
+	edgePushResponseSchema,
+} from "@fitway/api/edge-push";
 import { evaluateScheduledReset } from "@fitway/api/reset/evaluator";
 import { createScheduledResetRunner } from "@fitway/api/reset/runner";
 import type { SystemResetIssuanceDecision } from "@fitway/api/reset/types";
+import { SESSION_COOKIE_NAMES } from "@fitway/auth";
 import * as applicationSchema from "@fitway/db/schema/application";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { createResetRepository } from "./reset-repository";
 import { assertDisposableIntegrationDatabase } from "./test-support/integration-database-safety";
 
@@ -19,6 +24,18 @@ assertDisposableIntegrationDatabase({
 	runId: process.env.FITWAY_RUN_ID,
 });
 if (connectionString) process.env.DATABASE_URL = connectionString;
+const rawCronSecret = process.env.CRON_SECRET;
+if (!rawCronSecret || rawCronSecret.length < 32) {
+	throw new Error(
+		"CRON_SECRET must be supplied to the Phase 7 integration test",
+	);
+}
+const authSecret = process.env.BETTER_AUTH_SECRET;
+if (!authSecret || authSecret.length < 32) {
+	throw new Error(
+		"BETTER_AUTH_SECRET must be supplied to the Phase 7 integration test",
+	);
+}
 
 const pool = new Pool({ connectionString });
 const database = drizzle(pool, { schema: applicationSchema });
@@ -1551,5 +1568,375 @@ describe.sequential("Phase 7 scheduled reset runner and repository", () => {
 				},
 			]),
 		);
+	});
+});
+
+async function cronMutationState() {
+	return {
+		commands: (await pool.query("select * from edge_commands order by id"))
+			.rows,
+		audits: (await pool.query("select * from audit_log order by id")).rows,
+		issuances: (
+			await pool.query(
+				"select * from scheduled_reset_issuances order by business_day",
+			)
+		).rows,
+		current: (await pool.query("select * from current_state order by id")).rows,
+	};
+}
+
+function sessionCookie(cookieHeader: string, expectedName: string) {
+	const pair = cookieHeader.split(";", 1)[0] ?? "";
+	expect(pair.startsWith(`${expectedName}=`)).toBe(true);
+	return pair;
+}
+
+describe.sequential("Phase 7 production cron composition", () => {
+	it("does not let valid active staff or owner sessions substitute for the cron bearer", async () => {
+		const { createAuthRuntime } = await import("./auth/runtime");
+		const runtime = createAuthRuntime(authSecret);
+		const pin = `${randomInt(0, 1_000_000)}`.padStart(6, "0");
+		const ownerEmail = `phase7-${randomUUID()}@fitway.example`;
+		const ownerPassword = randomBytes(24).toString("base64url");
+		await runtime.service.setSharedStaffPin(pin);
+		await runtime.service.provisionOwner({
+			email: ownerEmail,
+			displayName: "Phase 7 production topology owner",
+			password: ownerPassword,
+		});
+		const staffLogin = await runtime.service.loginStaff({ pin });
+		const ownerLogin = await runtime.service.loginOwner({
+			email: ownerEmail,
+			password: ownerPassword,
+		});
+		if (
+			staffLogin.status !== "authenticated" ||
+			ownerLogin.status !== "authenticated"
+		) {
+			throw new Error("Active Phase 7 sessions were not created");
+		}
+		const staffCookie = sessionCookie(
+			staffLogin.cookieHeaders[0] ?? "",
+			SESSION_COOKIE_NAMES.staff,
+		);
+		const ownerCookie = sessionCookie(
+			ownerLogin.cookieHeaders[0] ?? "",
+			SESSION_COOKIE_NAMES.owner,
+		);
+		expect(await runtime.service.authenticate(staffCookie)).toMatchObject({
+			status: "authenticated",
+			context: { principalKind: "shared_staff", role: "staff", active: true },
+		});
+		expect(await runtime.service.authenticate(ownerCookie)).toMatchObject({
+			status: "authenticated",
+			context: { principalKind: "owner", role: "owner", active: true },
+		});
+
+		const cronRun = vi.fn(async () => undefined);
+		const consoleLog = vi
+			.spyOn(console, "log")
+			.mockImplementation(() => undefined);
+		const consoleError = vi
+			.spyOn(console, "error")
+			.mockImplementation(() => undefined);
+		try {
+			const { createApp } = await import("./index");
+			const app = createApp("production", runtime, undefined, { run: cronRun });
+			const before = await cronMutationState();
+			for (const cookie of [staffCookie, ownerCookie]) {
+				const response = await app.request("/cron", {
+					headers: { Cookie: cookie },
+				});
+				expect(response.status).toBe(401);
+				expect(response.headers.get("cache-control")).toBe("no-store");
+				expect(await response.json()).toEqual({ error: "unauthorized" });
+			}
+			expect(cronRun).not.toHaveBeenCalled();
+			expect(await cronMutationState()).toEqual(before);
+			expect(consoleLog.mock.calls).toEqual([
+				["GET", "/cron", 401],
+				["GET", "/cron", 401],
+			]);
+			expect(consoleError).not.toHaveBeenCalled();
+		} finally {
+			consoleLog.mockRestore();
+			consoleError.mockRestore();
+		}
+	});
+});
+
+describe.sequential("Phase 7 authenticated cron and offline edge reconciliation", () => {
+	it("issues one pending triple at 18:30 and settles it before 18:31 live authority resumes", async () => {
+		const edgeActivityBeforeDue = new Date("2026-07-30T18:29:00.000Z");
+		const resetDue = new Date("2026-07-30T18:30:00.000Z");
+		const edgeReconnectAfterDue = new Date("2026-07-30T18:31:00.000Z");
+		const rawEdgeToken = randomBytes(32).toString("base64url");
+		vi.useFakeTimers({ toFake: ["Date"] });
+		try {
+			vi.setSystemTime(edgeActivityBeforeDue);
+			const [schedule] = await database
+				.insert(applicationSchema.settingsVersions)
+				.values({
+					capacity: 100,
+					quietMaxPercent: 25,
+					moderateMaxPercent: 50,
+					busyMaxPercent: 75,
+					timezone: "UTC",
+					businessDayBoundary: "04:00",
+					resetBufferMinutes: 30,
+					scheduleSunOpen: null,
+					scheduleSunClose: null,
+					scheduleMonOpen: null,
+					scheduleMonClose: null,
+					scheduleTueOpen: null,
+					scheduleTueClose: null,
+					scheduleWedOpen: null,
+					scheduleWedClose: null,
+					scheduleThuOpen: "10:00",
+					scheduleThuClose: "18:00",
+					scheduleFriOpen: null,
+					scheduleFriClose: null,
+					scheduleSatOpen: null,
+					scheduleSatClose: null,
+					effectiveFrom: new Date("2026-07-29T00:00:00.000Z"),
+				})
+				.returning({ version: applicationSchema.settingsVersions.version });
+			if (!schedule) throw new Error("Cron schedule fixture was not created");
+			const [device] = await database
+				.insert(applicationSchema.edgeDevices)
+				.values({
+					name: "phase-7-cron-offline-reconciliation",
+					tokenHash: createHash("sha256")
+						.update(rawEdgeToken, "utf8")
+						.digest("hex"),
+				})
+				.returning({ id: applicationSchema.edgeDevices.id });
+			if (!device) throw new Error("Cron edge fixture was not created");
+
+			const { createApp } = await import("./index");
+			let app = createApp("test", undefined, () => resetDue);
+			const push = async (
+				sequence: number,
+				currentCount: number,
+				appliedCommandId: number | null,
+				observedAt: Date,
+			) => {
+				const minuteStart = new Date(
+					Math.floor(observedAt.getTime() / 60_000) * 60_000,
+				);
+				const input: EdgePushRequest = {
+					schemaVersion: 2,
+					mode: "live",
+					sequence,
+					observedAt: observedAt.toISOString(),
+					currentCount,
+					minutes: [
+						{
+							minuteStart: minuteStart.toISOString(),
+							count: currentCount,
+							entries: 0,
+							exits: 0,
+						},
+					],
+					health: {
+						process: "ok",
+						camera: "ok",
+						feed: "ok",
+						detectorFps: 4.8,
+					},
+					appliedCommandId,
+				};
+				const response = await app.request("/edge/push", {
+					method: "POST",
+					headers: {
+						Authorization: `Bearer ${rawEdgeToken}`,
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(input),
+				});
+				return {
+					status: response.status,
+					body: (await response.json()) as Record<string, unknown>,
+				};
+			};
+			const cron = () =>
+				app.request("/cron", {
+					headers: { Authorization: `Bearer ${rawCronSecret}` },
+				});
+
+			expect(await push(1, 7, null, edgeActivityBeforeDue)).toMatchObject({
+				status: 200,
+				body: {
+					accepted: true,
+					reason: "processed",
+					highestProcessedSequence: 1,
+					commands: [],
+				},
+			});
+			const currentBeforeCron = (
+				await pool.query("select * from current_state where id = 1")
+			).rows[0];
+			const settingsHistory = (
+				await pool.query(
+					"select * from settings_versions order by effective_from, version",
+				)
+			).rows;
+
+			vi.setSystemTime(resetDue);
+			const concurrent = await Promise.all([cron(), cron(), cron(), cron()]);
+			for (const response of concurrent) {
+				expect(response.status).toBe(200);
+				expect(response.headers.get("cache-control")).toBe("no-store");
+				expect(await response.json()).toEqual({ status: "ok" });
+			}
+			const issued = await pool.query<{
+				command_id: string;
+				status: "pending" | "applied" | "superseded";
+				issuer_class: string;
+				type: string;
+			}>(
+				`select i.command_id, c.status, c.issuer_class, c.type
+				from scheduled_reset_issuances i
+				join edge_commands c on c.id = i.command_id
+				where i.business_day = '2026-07-30'`,
+			);
+			expect(issued.rows).toEqual([
+				{
+					command_id: expect.any(String),
+					status: "pending",
+					issuer_class: "system",
+					type: "reset_zero",
+				},
+			]);
+			const resetCommandId = Number(issued.rows[0]?.command_id);
+			expect(Number.isSafeInteger(resetCommandId)).toBe(true);
+			expect(
+				(await pool.query("select * from current_state where id = 1")).rows[0],
+			).toEqual(currentBeforeCron);
+			expect(
+				(
+					await pool.query(
+						"select * from settings_versions order by effective_from, version",
+					)
+				).rows,
+			).toEqual(settingsHistory);
+			const issuanceAfterCron = (
+				await pool.query(
+					"select * from scheduled_reset_issuances where business_day = '2026-07-30'",
+				)
+			).rows;
+			expect(issuanceAfterCron).toHaveLength(1);
+			expect(
+				(
+					await pool.query(
+						"select count(*) from audit_log where command_id = $1 and actor_principal_kind = 'system'",
+						[resetCommandId],
+					)
+				).rows[0]?.count,
+			).toBe("1");
+			expect(
+				(
+					await pool.query(
+						"select count(*) from edge_commands where device_id = $1 and issuer_class = 'system' and type = 'reset_zero'",
+						[device.id],
+					)
+				).rows[0]?.count,
+			).toBe("1");
+
+			vi.setSystemTime(edgeReconnectAfterDue);
+			expect((await cron()).status).toBe(200);
+			const blocked = await push(2, 99, null, edgeReconnectAfterDue);
+			expect(blocked).toMatchObject({
+				status: 200,
+				body: {
+					accepted: false,
+					reason: "commands_pending",
+					highestProcessedSequence: 1,
+					commands: [{ id: resetCommandId, type: "reset_zero" }],
+				},
+			});
+			expect(
+				(
+					await pool.query(
+						"select last_sequence from edge_devices where id = $1",
+						[device.id],
+					)
+				).rows[0]?.last_sequence,
+			).toBe("1");
+			expect(
+				(await pool.query("select * from current_state where id = 1")).rows[0],
+			).toEqual(currentBeforeCron);
+
+			expect(
+				await push(2, 0, resetCommandId, edgeReconnectAfterDue),
+			).toMatchObject({
+				status: 200,
+				body: {
+					accepted: true,
+					reason: "processed",
+					highestProcessedSequence: 2,
+					commands: [],
+				},
+			});
+			app = createApp("test", undefined, () => resetDue);
+			expect(
+				await push(2, 0, resetCommandId, edgeReconnectAfterDue),
+			).toMatchObject({
+				status: 200,
+				body: {
+					accepted: false,
+					reason: "replay",
+					highestProcessedSequence: 2,
+				},
+			});
+			expect((await cron()).status).toBe(200);
+
+			expect(
+				(
+					await pool.query(
+						"select current_count from current_state where id = 1",
+					)
+				).rows[0]?.current_count,
+			).toBe(0);
+			expect(
+				(
+					await pool.query("select status from edge_commands where id = $1", [
+						resetCommandId,
+					])
+				).rows[0]?.status,
+			).toBe("applied");
+			expect(
+				(
+					await pool.query(
+						"select * from scheduled_reset_issuances where business_day = '2026-07-30'",
+					)
+				).rows,
+			).toEqual(issuanceAfterCron);
+			expect(
+				(
+					await pool.query(
+						"select * from settings_versions order by effective_from, version",
+					)
+				).rows,
+			).toEqual(settingsHistory);
+			expect(
+				(
+					await pool.query(
+						"select count(*) from edge_commands where device_id = $1 and issuer_class = 'system' and type = 'reset_zero'",
+						[device.id],
+					)
+				).rows[0]?.count,
+			).toBe("1");
+			expect(
+				(
+					await pool.query(
+						"select count(*) from audit_log where command_id = $1",
+						[resetCommandId],
+					)
+				).rows[0]?.count,
+			).toBe("1");
+		} finally {
+			vi.useRealTimers();
+		}
 	});
 });

@@ -12,6 +12,7 @@ function getVercelOrigin() {
 }
 
 const vercelOrigin = getVercelOrigin();
+export const cronSecretSchema = z.string().min(32);
 
 const runtimeEnv = {
 	...process.env,
@@ -27,6 +28,7 @@ export const env = createEnv({
 	server: {
 		DATABASE_URL: z.string().min(1),
 		BETTER_AUTH_SECRET: z.string().min(32),
+		CRON_SECRET: cronSecretSchema,
 		BETTER_AUTH_URL: z.url(),
 		CORS_ORIGIN: z.url(),
 		NODE_ENV: z
