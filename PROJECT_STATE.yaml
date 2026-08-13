@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-13T13:43:00+03:00"
+updatedAt: "2026-08-13T13:55:00+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -517,8 +517,8 @@ milestones:
       - FITWAY_PRODUCT.md, SPEC.md, PHASES.md, DESIGN_GUIDE.md, docs/WORKFLOW.md, docs/adr/**, existing handoffs, and every other phase record
     sharedLeases:
       - "exclusive through 2026-08-20T13:13:09+03:00: Phase 7 b03 total schedule/business-day lane limited to packages/api/src/occupancy/schedule.ts, schedule.test.ts, business-day.ts, and business-day.test.ts for exact/fold/gap total resolution, a strict behavior-preserving schedule wrapper, and a reusable exclusive local-wall close attribution primitive where close <= boundary belongs to the previous civil date; no public instant-based businessDayFor change or unrelated occupancy semantic"
-    validationRepairAttempts: 1
-    lastHeartbeatAt: "2026-08-13T13:43:00+03:00"
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-08-13T13:55:00+03:00"
     leaseExpiresAt: "2026-08-20T13:13:09+03:00"
     handoff: docs/phase-records/handoffs/phase7-reset-evaluator/20260813-131510-p7_reset_eval_b03-coordinator-start.md
     stopReason: null
