@@ -570,9 +570,33 @@ milestones:
       independentReview: FAIL
     integratedCommit: null
 
+  phase7-integration-b02:
+    status: PLANNED
+    dependencies: [phase7-reset-evaluator, phase-6]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase-7/20260813-203344-p7_integration_b02-plan.md
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null
+
   phase-7:
     status: PLANNED
-    dependencies: [phase7-reset-evaluator, phase7-integration]
+    dependencies: [phase7-reset-evaluator, phase7-integration-b02]
     ownerSession: null
     branch: null
     worktree: null
