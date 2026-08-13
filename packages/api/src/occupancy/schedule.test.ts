@@ -228,6 +228,26 @@ describe("weekly schedule evaluation", () => {
 		).toThrow(/does not exist/u);
 	});
 
+	it("preserves strict gap rejection for a session close and the next-opening scan", () => {
+		const closeGap = closedWeek();
+		closeGap.sun = { open: "00:00", close: "02:30" };
+		expect(() =>
+			resultAt(
+				{ timeZone: "America/New_York", weeklySchedule: closeGap },
+				"2026-03-08T06:00:00.000Z",
+			),
+		).toThrow(/does not exist/u);
+
+		const futureOpeningGap = closedWeek();
+		futureOpeningGap.sun = { open: "02:30", close: "04:00" };
+		expect(() =>
+			resultAt(
+				{ timeZone: "America/New_York", weeklySchedule: futureOpeningGap },
+				"2026-03-07T12:00:00.000Z",
+			),
+		).toThrow(/does not exist/u);
+	});
+
 	it("fails deterministically for invalid instants, zones, shapes, and times", () => {
 		expect(() => resultAt(riyadh, "invalid")).toThrow(/valid evaluation/u);
 		expect(() =>
