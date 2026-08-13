@@ -16,10 +16,13 @@
 
 ## Exact current state
 
-- Parent / implementation boundary / review-record correction:
+- Parent / implementation boundary / prior review-record correction / current correction:
   `b707f63d474183b03d68c96321e51f3e2b84ec5c` /
-  `41ac3ca1e491bc77e6a6471c6c3e2a19e4b510cd` / `SELF`. Revert this documentation-only correction
-  to return to `41ac3ca`, then revert `41ac3ca` to return exactly to `b707f63`.
+  `41ac3ca1e491bc77e6a6471c6c3e2a19e4b510cd` /
+  `14dad412a51889eec1f151f573c9484b864f5848` / `SELF`. `SELF` is resolved and pinned by the
+  subsequent coordinator Stage 3 acceptance record; the handoff does not embed its own unknown,
+  self-referential hash. Revert this documentation-only correction to return to `14dad41`, revert
+  `14dad41` to return to `41ac3ca`, then revert `41ac3ca` to return exactly to `b707f63`.
 - Branch / worktree / run ID: `work/phase7-integration-b02-stage3` /
   `C:/Users/Pc Force/.codex/visualizations/2026/08/13/019ffce0-b522-7880-a6a7-3a5cf4c90ff5/phase7-integration-b02-stage3`
   / `p7_integration_b02_s3`; exact disposable database
@@ -27,6 +30,8 @@
 - Status: Stage 3 implementation and self-verification are complete. `SELF` is for independent
   Stage 3 review only; this is not a formal candidate and does not claim `READY_FOR_INTEGRATION`
   or `DONE`. Nothing was deployed or externally provisioned.
+- Review record gate: this is focused documentation correction `2/2`; Spec/security review passed
+  with no findings. Formal complete-candidate repair remains `0/2` because no candidate exists.
 - Scope: exactly the six permitted Stage 3 source/config/test paths and this handoff changed.
   Accepted Stage 1/2 paths, b01, auth behavior/schema, edge/OpenAPI contracts, product surfaces,
   schema/migrations, coordinator state, root configuration, and UI remain untouched.
@@ -67,6 +72,31 @@
   or formal b02 candidate repair.
 
 ## Verification
+
+The following executed PowerShell command shapes produced the exact results below. The generated
+authentication and cron values were synthetic, process-local, and never printed or persisted:
+
+```powershell
+$env:CRON_SECRET=[Guid]::NewGuid().ToString('N')
+$env:BETTER_AUTH_SECRET=([Guid]::NewGuid().ToString('N')+[Guid]::NewGuid().ToString('N'))
+$env:BETTER_AUTH_URL='http://127.0.0.1/api/auth'
+$env:CORS_ORIGIN='http://127.0.0.1'
+$env:DATABASE_URL='postgresql://postgres:postgres@127.0.0.1:55432/fitway_integration_p7_integration_b02_s3'
+.\node_modules\.bin\vitest.CMD run packages/api/src/commands packages/api/src/reset apps/server/src/cron.test.ts apps/server/src/reset-repository.test.ts
+
+$env:FITWAY_RUN_ID='p7_integration_b02_s3'
+$env:TEST_DATABASE_URL='postgresql://postgres:postgres@127.0.0.1:55432/fitway_integration_p7_integration_b02_s3'
+$env:FITWAY_INTEGRATION_RESET_DATABASE='fitway_integration_p7_integration_b02_s3'
+.\node_modules\.bin\vitest.CMD run --config vitest.integration.config.ts apps/server/src/phase5-command-domain.integration.test.ts apps/server/src/phase6-offline.integration.test.ts apps/server/src/phase7-reset-evaluator.integration.test.ts apps/server/src/phase7-integration.integration.test.ts
+
+.\node_modules\.bin\biome.CMD check apps/server/src/cron.ts apps/server/src/cron.test.ts apps/server/src/index.ts apps/server/src/phase7-integration.integration.test.ts packages/env/src/server.ts vercel.json
+pnpm check-types
+pnpm verify:fast
+git diff --check
+git diff --cached --check
+git diff --name-status b707f63d474183b03d68c96321e51f3e2b84ec5c..HEAD
+git status --short --branch
+```
 
 - Fresh red: `apps/server/src/cron.test.ts` failed `1` file with `0` tests because `./cron` did not
   exist. The preceding sandbox-only launch stopped at Vite config loading with `spawn EPERM` and
