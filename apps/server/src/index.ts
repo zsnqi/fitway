@@ -11,6 +11,7 @@ import {
 	PUBLIC_OCCUPANCY_INTERNAL_PATH,
 	PUBLIC_POLL_HEADER,
 } from "@fitway/api/public-occupancy";
+import { createScheduledResetRunner } from "@fitway/api/reset/runner";
 import { appRouter } from "@fitway/api/routers/index";
 import { db } from "@fitway/db";
 import { env } from "@fitway/env/server";
@@ -23,6 +24,8 @@ import { logger } from "hono/logger";
 import { createOwnerAnalyticsReaders } from "./analytics-time-context-repository";
 import { mountAuthRoutes } from "./auth/routes";
 import { type AuthRuntime, createAuthRuntime } from "./auth/runtime";
+import { commandService } from "./command-repository";
+import { CRON_INTERNAL_PATH, createCronHandler } from "./cron";
 import { createEdgePushHandler } from "./edge-push";
 import { healthSnapshotRepository } from "./health-repository";
 import {
@@ -33,17 +36,24 @@ import {
 import { generateOpenApiDocument } from "./openapi";
 import { createPublicOccupancyHandler } from "./public-occupancy";
 import { DeviceRateLimiter } from "./rate-limiter";
+import { createResetRepository } from "./reset-repository";
 
 const ownerAnalyticsReaders = createOwnerAnalyticsReaders(db);
 
 export function createApp(
 	nodeEnv: "development" | "production" | "test" = env.NODE_ENV,
 	authRuntime: AuthRuntime = createAuthRuntime(env.BETTER_AUTH_SECRET),
+	cronNow: () => Date = () => new Date(),
+	cronRunnerOverride?: { run: () => Promise<unknown> },
 ) {
 	const app = new Hono();
 	const requestLogger = logger();
 	app.use("*", async (context, next) => {
-		if (context.req.path === EDGE_PUSH_INTERNAL_PATH) return next();
+		if (
+			context.req.path === EDGE_PUSH_INTERNAL_PATH ||
+			context.req.path === CRON_INTERNAL_PATH
+		)
+			return next();
 		return requestLogger(context, next);
 	});
 	app.use(
@@ -76,6 +86,27 @@ export function createApp(
 	app.get(
 		PUBLIC_OCCUPANCY_INTERNAL_PATH,
 		createPublicOccupancyHandler(publicPayloadRepository),
+	);
+	const resetRepository = createResetRepository(db);
+	const scheduledResetRunner =
+		cronRunnerOverride ??
+		createScheduledResetRunner({
+			now: cronNow,
+			...resetRepository,
+			issueScheduledReset: (decision) =>
+				commandService.issueScheduledReset(decision),
+		});
+	app.get(
+		CRON_INTERNAL_PATH,
+		createCronHandler({
+			secret: env.CRON_SECRET,
+			runner: scheduledResetRunner,
+			logger: {
+				request: ({ method, path, status }) =>
+					console.log(method, path, status),
+				error: (errorName) => console.error(errorName),
+			},
+		}),
 	);
 	mountAuthRoutes(app, authRuntime);
 

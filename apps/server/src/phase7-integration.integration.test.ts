@@ -1,8 +1,20 @@
+import { createHash, randomBytes, randomInt, randomUUID } from "node:crypto";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
-import { edgePushResponseSchema } from "@fitway/api/edge-push";
+import type { CommandService } from "@fitway/api/commands/service";
+import {
+	type EdgePushRequest,
+	edgePushResponseSchema,
+} from "@fitway/api/edge-push";
+import { evaluateScheduledReset } from "@fitway/api/reset/evaluator";
+import { createScheduledResetRunner } from "@fitway/api/reset/runner";
+import type { SystemResetIssuanceDecision } from "@fitway/api/reset/types";
+import { SESSION_COOKIE_NAMES } from "@fitway/auth";
+import * as applicationSchema from "@fitway/db/schema/application";
+import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import { createResetRepository } from "./reset-repository";
 import { assertDisposableIntegrationDatabase } from "./test-support/integration-database-safety";
 
 const connectionString = process.env.TEST_DATABASE_URL;
@@ -11,8 +23,22 @@ assertDisposableIntegrationDatabase({
 	resetMarker: process.env.FITWAY_INTEGRATION_RESET_DATABASE,
 	runId: process.env.FITWAY_RUN_ID,
 });
+if (connectionString) process.env.DATABASE_URL = connectionString;
+const rawCronSecret = process.env.CRON_SECRET;
+if (!rawCronSecret || rawCronSecret.length < 32) {
+	throw new Error(
+		"CRON_SECRET must be supplied to the Phase 7 integration test",
+	);
+}
+const authSecret = process.env.BETTER_AUTH_SECRET;
+if (!authSecret || authSecret.length < 32) {
+	throw new Error(
+		"BETTER_AUTH_SECRET must be supplied to the Phase 7 integration test",
+	);
+}
 
 const pool = new Pool({ connectionString });
+const database = drizzle(pool, { schema: applicationSchema });
 const migrationsFolder = path.resolve("packages/db/src/migrations");
 
 let settingsVersion = "";
@@ -21,6 +47,7 @@ let staffPrincipalId = "";
 let ownerPrincipalId = "";
 let legacyStaffCommandId = "";
 let legacyOwnerCommandId = "";
+let commands: CommandService;
 
 async function migrationFiles() {
 	return (await readdir(migrationsFolder))
@@ -41,6 +68,8 @@ async function createCommand(input: {
 	principalId: string | null;
 	type: "set_count" | "reset_zero";
 	targetValue: number | null;
+	reason?: string | null;
+	issuedAt?: string;
 }) {
 	const result = await pool.query<{ id: string }>(
 		`insert into edge_commands (
@@ -49,8 +78,9 @@ async function createCommand(input: {
 			target_value,
 			issuer_class,
 			issued_by_principal_id,
+			reason,
 			issued_at
-		) values ($1, $2, $3, $4, $5, $6)
+		) values ($1, $2, $3, $4, $5, $6, $7)
 		returning id`,
 		[
 			deviceId,
@@ -58,7 +88,8 @@ async function createCommand(input: {
 			input.targetValue,
 			input.issuerClass,
 			input.principalId,
-			"2026-08-13T12:00:00.000Z",
+			input.reason ?? null,
+			input.issuedAt ?? "2026-08-13T12:00:00.000Z",
 		],
 	);
 	const id = result.rows[0]?.id;
@@ -72,6 +103,8 @@ async function insertAudit(input: {
 	actorRole: "staff" | "owner" | null;
 	commandId: string;
 	commandIssuerClass: "human" | "system";
+	reason?: string;
+	createdAt?: string;
 }) {
 	return pool.query(
 		`insert into audit_log (
@@ -86,14 +119,15 @@ async function insertAudit(input: {
 			effective_value,
 			reason,
 			created_at
-		) values ($1, $2, $3, $4, $5, 'reset', 7, 0, 0, 'scheduled close', $6)`,
+		) values ($1, $2, $3, $4, $5, 'reset', 7, 0, 0, $6, $7)`,
 		[
 			input.actorPrincipalId,
 			input.actorPrincipalKind,
 			input.actorRole,
 			input.commandId,
 			input.commandIssuerClass,
-			"2026-08-13T12:00:00.000Z",
+			input.reason ?? "scheduled close",
+			input.createdAt ?? "2026-08-13T12:00:00.000Z",
 		],
 	);
 }
@@ -250,6 +284,10 @@ beforeAll(async () => {
 	);
 
 	await applyMigration(phase7Files[0] ?? "");
+	const { createCommandServiceDatabase } = await import("./command-repository");
+	commands = createCommandServiceDatabase(
+		database as unknown as typeof import("@fitway/db").db,
+	);
 });
 
 afterAll(async () => {
@@ -807,6 +845,7 @@ describe("Phase 7 additive scheduled-reset persistence", () => {
 				constraint: "scheduled_reset_issuances_key_coherent",
 			});
 		} finally {
+			await client.query("set datestyle to 'ISO, MDY'");
 			client.release();
 		}
 
@@ -814,5 +853,1090 @@ describe("Phase 7 additive scheduled-reset persistence", () => {
 			"select count(*) from scheduled_reset_issuances",
 		);
 		expect(claims.rows[0]?.count).toBe("2");
+	});
+});
+const closedWeek = {
+	sun: null,
+	mon: null,
+	tue: null,
+	wed: null,
+	thu: null,
+	fri: null,
+	sat: null,
+} as const;
+
+function evaluateThursdayReset(
+	businessDay: string,
+	now: string,
+	priorIssuances: Array<{
+		businessDay: string;
+		commandId: number;
+		status: "pending" | "applied" | "superseded";
+	}> = [],
+) {
+	return evaluateScheduledReset({
+		businessDay,
+		now: new Date(now),
+		settingsVersions: [
+			{
+				version: Number(settingsVersion),
+				effectiveFrom: new Date("2026-08-01T00:00:00.000Z"),
+				timeZone: "Asia/Riyadh",
+				businessDayBoundary: "04:00",
+				resetBufferMinutes: 30,
+				weeklySchedule: {
+					...closedWeek,
+					thu: { open: "06:00", close: "23:00" },
+				},
+			},
+		],
+		priorIssuances,
+	});
+}
+
+function requireIssueDecision(
+	value: ReturnType<typeof evaluateThursdayReset>,
+): SystemResetIssuanceDecision {
+	if (value.decision !== "issue") {
+		throw new Error(`Expected issue decision, received ${value.reason}`);
+	}
+	return value;
+}
+
+function expectIssuanceToPreserveDecision(
+	issuance: {
+		businessDay: string;
+		issuanceKey: string;
+		settingsVersion: number;
+		scheduledCloseAt: Date;
+		dueAt: Date;
+		commandId: number;
+		issuedAt: Date;
+	},
+	decision: SystemResetIssuanceDecision,
+	commandId: number,
+) {
+	expect(issuance.businessDay).toBe(decision.businessDay);
+	expect(typeof issuance.businessDay).toBe("string");
+	expect(issuance.issuanceKey).toBe(decision.issuanceKey);
+	expect(issuance.settingsVersion).toBe(decision.settingsVersion);
+	expect(issuance.commandId).toBe(commandId);
+	for (const [actual, expected] of [
+		[issuance.scheduledCloseAt, decision.scheduledCloseAt],
+		[issuance.dueAt, decision.dueAt],
+		[issuance.issuedAt, decision.issuedAt],
+	] as const) {
+		expect(actual).toBeInstanceOf(Date);
+		expect(actual.toISOString()).toBe(expected.toISOString());
+	}
+}
+
+async function completeWithin<T>(
+	operation: Promise<T>,
+	label: string,
+): Promise<T> {
+	let timeoutId: ReturnType<typeof setTimeout> | undefined;
+	const timeout = new Promise<never>((_resolve, reject) => {
+		timeoutId = setTimeout(() => {
+			reject(new Error(`${label} did not settle within 3 seconds`));
+		}, 3_000);
+	});
+	try {
+		return await Promise.race([operation, timeout]);
+	} finally {
+		if (timeoutId) clearTimeout(timeoutId);
+	}
+}
+
+async function setActiveDevice(activeDeviceId: string | null) {
+	if (!activeDeviceId) {
+		await pool.query(
+			`update current_state set
+				current_count = null,
+				band = null,
+				source = null,
+				last_push_received_at = null,
+				last_edge_reported_at = null,
+				active_device_id = null,
+				settings_version = null,
+				updated_at = $1
+			where id = 1`,
+			["2026-08-20T20:30:00.000Z"],
+		);
+		return;
+	}
+	await pool.query(
+		`update current_state set
+			current_count = 7,
+			band = 'quiet',
+			source = 'edge',
+			last_push_received_at = $1,
+			last_edge_reported_at = $1,
+			active_device_id = $2,
+			settings_version = $3,
+			updated_at = $1
+		where id = 1`,
+		["2026-08-20T20:30:00.000Z", activeDeviceId, settingsVersion],
+	);
+}
+
+async function issuanceTables() {
+	return {
+		commands: (await pool.query("select * from edge_commands order by id"))
+			.rows,
+		audits: (await pool.query("select * from audit_log order by id")).rows,
+		issuances: (
+			await pool.query(
+				"select * from scheduled_reset_issuances order by business_day",
+			)
+		).rows,
+	};
+}
+
+describe.sequential("Phase 7 scheduled reset command service", () => {
+	it("does nothing before due and atomically issues system provenance at exact due", async () => {
+		await setActiveDevice(deviceId);
+		const before = await issuanceTables();
+		expect(
+			evaluateThursdayReset("2026-08-20", "2026-08-20T20:29:59.999Z"),
+		).toMatchObject({ decision: "skip", reason: "not_due" });
+		expect(await issuanceTables()).toEqual(before);
+
+		const decision = requireIssueDecision(
+			evaluateThursdayReset("2026-08-20", "2026-08-20T20:30:00.000Z"),
+		);
+		const currentBefore = await pool.query(
+			"select * from current_state where id = 1",
+		);
+		const result = await commands.issueScheduledReset(decision);
+		expect(result).toMatchObject({ alreadyIssued: false });
+		if (result.alreadyIssued) throw new Error("Expected a new issuance");
+		expectIssuanceToPreserveDecision(
+			result.issuance,
+			decision,
+			result.command.id,
+		);
+		expect(result.command.issuedAt).toBe(decision.issuedAt.toISOString());
+
+		const command = await pool.query(
+			"select * from edge_commands where id = $1",
+			[result.command.id],
+		);
+		expect(command.rows[0]).toMatchObject({
+			device_id: deviceId,
+			type: "reset_zero",
+			target_value: null,
+			status: "pending",
+			issuer_class: "system",
+			issued_by_principal_id: null,
+			reason: "scheduled reset for business day 2026-08-20",
+		});
+		expect(new Date(command.rows[0]?.issued_at).toISOString()).toBe(
+			decision.issuedAt.toISOString(),
+		);
+		const audit = await pool.query(
+			"select * from audit_log where command_id = $1",
+			[result.command.id],
+		);
+		expect(audit.rows[0]).toMatchObject({
+			actor_principal_id: null,
+			actor_principal_kind: "system",
+			actor_role: null,
+			command_issuer_class: "system",
+			action: "reset",
+			prior_value: 7,
+			requested_delta: null,
+			requested_value: 0,
+			effective_value: 0,
+			reason: decision.command.reason,
+		});
+		expect(new Date(audit.rows[0]?.created_at).toISOString()).toBe(
+			decision.issuedAt.toISOString(),
+		);
+		const claim = await pool.query(
+			`select business_day::text as business_day, issuance_key,
+				settings_version, scheduled_close, due_at, command_id,
+				command_issuer_class, command_type, issued_at
+			from scheduled_reset_issuances where business_day = $1`,
+			[decision.businessDay],
+		);
+		expect(claim.rows[0]).toMatchObject({
+			business_day: decision.businessDay,
+			issuance_key: decision.issuanceKey,
+			settings_version: settingsVersion,
+			command_id: String(result.command.id),
+			command_issuer_class: "system",
+			command_type: "reset_zero",
+		});
+		expect(new Date(claim.rows[0]?.scheduled_close).toISOString()).toBe(
+			decision.scheduledCloseAt.toISOString(),
+		);
+		expect(new Date(claim.rows[0]?.due_at).toISOString()).toBe(
+			decision.dueAt.toISOString(),
+		);
+		expect(new Date(claim.rows[0]?.issued_at).toISOString()).toBe(
+			decision.issuedAt.toISOString(),
+		);
+		expect(
+			await pool.query("select * from current_state where id = 1"),
+		).toEqual(currentBefore);
+		const olderPending = await pool.query<{
+			id: string;
+			status: string;
+			superseded_by_command_id: string;
+		}>(
+			`select id::text, status, superseded_by_command_id::text
+			from edge_commands
+			where id = any($1::bigint[])
+			order by id`,
+			[[legacyStaffCommandId, legacyOwnerCommandId]],
+		);
+		expect(olderPending.rows).toEqual([
+			{
+				id: legacyStaffCommandId,
+				status: "superseded",
+				superseded_by_command_id: String(result.command.id),
+			},
+			{
+				id: legacyOwnerCommandId,
+				status: "superseded",
+				superseded_by_command_id: String(result.command.id),
+			},
+		]);
+	});
+
+	it("never reopens a claimed day after pending, applied, or superseded lifecycle states", async () => {
+		const pendingDecision = requireIssueDecision(
+			evaluateThursdayReset("2026-08-20", "2026-08-20T20:31:00.000Z"),
+		);
+		const pendingBefore = await issuanceTables();
+		const pendingCommand = await pool.query<{ command_id: string }>(
+			`select command_id::text from scheduled_reset_issuances
+			where business_day = $1`,
+			[pendingDecision.businessDay],
+		);
+		const pending = await commands.issueScheduledReset(pendingDecision);
+		if (!pending.alreadyIssued)
+			throw new Error("Expected existing pending claim");
+		expectIssuanceToPreserveDecision(
+			pending.issuance,
+			{
+				...pendingDecision,
+				issuedAt: new Date("2026-08-20T20:30:00.000Z"),
+			},
+			Number(pendingCommand.rows[0]?.command_id),
+		);
+		expect(await issuanceTables()).toEqual(pendingBefore);
+
+		const appliedDecision = requireIssueDecision(
+			evaluateThursdayReset("2026-08-27", "2026-08-27T20:30:00.000Z"),
+		);
+		const applied = await commands.issueScheduledReset(appliedDecision);
+		if (applied.alreadyIssued)
+			throw new Error("Expected applied fixture issue");
+		await pool.query(
+			`update edge_commands set
+				status = 'applied', delivered_at = $2, applied_at = $2
+			where id = $1`,
+			[applied.command.id, "2026-08-27T20:31:00.000Z"],
+		);
+		const appliedBefore = await issuanceTables();
+		expect(await commands.issueScheduledReset(appliedDecision)).toMatchObject({
+			alreadyIssued: true,
+		});
+		expect(await issuanceTables()).toEqual(appliedBefore);
+
+		const supersededDecision = requireIssueDecision(
+			evaluateThursdayReset("2026-09-03", "2026-09-03T20:30:00.000Z"),
+		);
+		const superseded = await commands.issueScheduledReset(supersededDecision);
+		if (superseded.alreadyIssued) {
+			throw new Error("Expected superseded fixture issue");
+		}
+		const newer = await createCommand({
+			issuerClass: "human",
+			principalId: staffPrincipalId,
+			type: "reset_zero",
+			targetValue: null,
+		});
+		await pool.query(
+			`update edge_commands set
+				status = 'superseded', superseded_at = $2,
+				superseded_by_command_id = $3
+			where id = $1`,
+			[superseded.command.id, "2026-09-03T20:31:00.000Z", newer],
+		);
+		const supersededBefore = await issuanceTables();
+		expect(
+			await commands.issueScheduledReset(supersededDecision),
+		).toMatchObject({ alreadyIssued: true });
+		expect(await issuanceTables()).toEqual(supersededBefore);
+	});
+
+	it("synchronizes concurrent issue calls before locking and settles exactly once", async () => {
+		const { createCommandServiceDatabase } = await import(
+			"./command-repository"
+		);
+		const decision = requireIssueDecision(
+			evaluateThursdayReset("2026-09-10", "2026-09-10T20:30:00.000Z"),
+		);
+		const before = await issuanceTables();
+		let arrivals = 0;
+		let releasePreLockGate!: () => void;
+		let abortPreLockGate!: (error: unknown) => void;
+		let observeBothCalls!: () => void;
+		const preLockGate = new Promise<void>((resolve, reject) => {
+			releasePreLockGate = resolve;
+			abortPreLockGate = reject;
+		});
+		const bothCallsObserved = new Promise<void>((resolve) => {
+			observeBothCalls = resolve;
+		});
+		const pauseBeforeLocks = async () => {
+			arrivals += 1;
+			if (arrivals === 2) {
+				observeBothCalls();
+				releasePreLockGate();
+			}
+			await preLockGate;
+		};
+		const concurrentServices = [
+			createCommandServiceDatabase(
+				database as unknown as typeof import("@fitway/db").db,
+				undefined,
+				{ afterCommandStateObservation: pauseBeforeLocks },
+			),
+			createCommandServiceDatabase(
+				database as unknown as typeof import("@fitway/db").db,
+				undefined,
+				{ afterCommandStateObservation: pauseBeforeLocks },
+			),
+		];
+		const concurrent = Promise.all(
+			concurrentServices.map((service) =>
+				service.issueScheduledReset(decision),
+			),
+		);
+		let results: Awaited<typeof concurrent>;
+		try {
+			await completeWithin(
+				bothCallsObserved,
+				"both concurrent calls reaching the pre-lock seam",
+			);
+			expect(arrivals).toBe(2);
+			results = await completeWithin(
+				concurrent,
+				"concurrent scheduled-reset issuance",
+			);
+		} catch (error) {
+			abortPreLockGate(error);
+			await Promise.allSettled([concurrent]);
+			throw error;
+		}
+		expect(results.map((result) => result.alreadyIssued).sort()).toEqual([
+			false,
+			true,
+		]);
+		const after = await issuanceTables();
+		expect(after.commands).toHaveLength(before.commands.length + 1);
+		expect(after.audits).toHaveLength(before.audits.length + 1);
+		expect(after.issuances).toHaveLength(before.issuances.length + 1);
+	});
+
+	it("resolves only the exact business-day race by reading the winning claim", async () => {
+		const { createCommandServiceDatabase } = await import(
+			"./command-repository"
+		);
+		const decision = requireIssueDecision(
+			evaluateThursdayReset("2026-10-22", "2026-10-22T20:30:00.000Z"),
+		);
+		const winnerCommandId = await createCommand({
+			issuerClass: "system",
+			principalId: null,
+			type: "reset_zero",
+			targetValue: null,
+			reason: decision.command.reason,
+			issuedAt: decision.issuedAt.toISOString(),
+		});
+		await insertAudit({
+			actorPrincipalId: null,
+			actorPrincipalKind: "system",
+			actorRole: null,
+			commandId: winnerCommandId,
+			commandIssuerClass: "system",
+			reason: decision.command.reason,
+			createdAt: decision.issuedAt.toISOString(),
+		});
+		await pool.query(
+			`update edge_commands set
+				status = 'applied', delivered_at = $2, applied_at = $2
+			where id = $1`,
+			[winnerCommandId, "2026-10-22T20:30:00.000Z"],
+		);
+		const raced = createCommandServiceDatabase(
+			database as unknown as typeof import("@fitway/db").db,
+			undefined,
+			{
+				beforeScheduledResetIssuanceInsert: async () => {
+					await insertIssuance({
+						businessDay: decision.businessDay,
+						issuanceKey: decision.issuanceKey,
+						commandId: winnerCommandId,
+						scheduledClose: decision.scheduledCloseAt.toISOString(),
+						dueAt: decision.dueAt.toISOString(),
+						issuedAt: decision.issuedAt.toISOString(),
+					});
+				},
+			},
+		);
+		const before = await issuanceTables();
+		const result = await raced.issueScheduledReset(decision);
+		if (!result.alreadyIssued) throw new Error("Expected winning race claim");
+		expectIssuanceToPreserveDecision(
+			result.issuance,
+			decision,
+			Number(winnerCommandId),
+		);
+		const after = await issuanceTables();
+		expect(after.commands).toEqual(before.commands);
+		expect(after.audits).toEqual(before.audits);
+		expect(after.issuances).toHaveLength(before.issuances.length + 1);
+	});
+
+	it("propagates an unrelated claim constraint failure and rolls back", async () => {
+		const wrongSettingsDecision = {
+			...requireIssueDecision(
+				evaluateThursdayReset("2026-10-29", "2026-10-29T20:30:00.000Z"),
+			),
+			settingsVersion: Number.MAX_SAFE_INTEGER,
+		};
+		const before = await issuanceTables();
+		await expect(
+			commands.issueScheduledReset(wrongSettingsDecision),
+		).rejects.toMatchObject({
+			cause: {
+				code: "23503",
+				constraint:
+					"scheduled_reset_issuances_settings_version_settings_versions_ve",
+			},
+		});
+		expect(await issuanceTables()).toEqual(before);
+	});
+
+	it("rolls back missing or changed targets and injected command, audit, and claim failures", async () => {
+		const { createCommandServiceDatabase } = await import(
+			"./command-repository"
+		);
+		await setActiveDevice(null);
+		await pool.query("update edge_devices set enabled = false");
+		const missingBefore = await issuanceTables();
+		await expect(
+			commands.issueScheduledReset(
+				requireIssueDecision(
+					evaluateThursdayReset("2026-09-17", "2026-09-17T20:30:00.000Z"),
+				),
+			),
+		).rejects.toMatchObject({ code: "device_unavailable" });
+		expect(await issuanceTables()).toEqual(missingBefore);
+
+		await pool.query("update edge_devices set enabled = true where id = $1", [
+			deviceId,
+		]);
+		await setActiveDevice(deviceId);
+		const secondDevice = await pool.query<{ id: string }>(
+			`insert into edge_devices (name, token_hash)
+			values ('phase-7-changed-target', $1)
+			returning id`,
+			["8".repeat(64)],
+		);
+		const secondDeviceId = secondDevice.rows[0]?.id;
+		if (!secondDeviceId)
+			throw new Error("Second device fixture was not created");
+		const changed = createCommandServiceDatabase(
+			database as unknown as typeof import("@fitway/db").db,
+			undefined,
+			{
+				afterCommandStateObservation: async () => {
+					await pool.query(
+						"update current_state set active_device_id = $1 where id = 1",
+						[secondDeviceId],
+					);
+				},
+			},
+		);
+		const changedBefore = await issuanceTables();
+		await expect(
+			changed.issueScheduledReset(
+				requireIssueDecision(
+					evaluateThursdayReset("2026-09-24", "2026-09-24T20:30:00.000Z"),
+				),
+			),
+		).rejects.toThrow("Active command target changed during issuance");
+		expect(await issuanceTables()).toEqual(changedBefore);
+		await setActiveDevice(deviceId);
+
+		const failures = [
+			{
+				businessDay: "2026-10-01",
+				message: "forced command failure",
+				service: createCommandServiceDatabase(
+					database as unknown as typeof import("@fitway/db").db,
+					undefined,
+					{
+						beforeSystemCommandInsert: () => {
+							throw new Error("forced command failure");
+						},
+					},
+				),
+			},
+			{
+				businessDay: "2026-10-08",
+				message: "forced audit failure",
+				service: createCommandServiceDatabase(
+					database as unknown as typeof import("@fitway/db").db,
+					async () => {
+						throw new Error("forced audit failure");
+					},
+				),
+			},
+			{
+				businessDay: "2026-10-15",
+				message: "forced claim failure",
+				service: createCommandServiceDatabase(
+					database as unknown as typeof import("@fitway/db").db,
+					undefined,
+					{
+						beforeScheduledResetIssuanceInsert: () => {
+							throw new Error("forced claim failure");
+						},
+					},
+				),
+			},
+		];
+		for (const failure of failures) {
+			const before = await issuanceTables();
+			await expect(
+				failure.service.issueScheduledReset(
+					requireIssueDecision(
+						evaluateThursdayReset(
+							failure.businessDay,
+							`${failure.businessDay}T20:30:00.000Z`,
+						),
+					),
+				),
+			).rejects.toThrow(failure.message);
+			expect(await issuanceTables()).toEqual(before);
+		}
+	});
+
+	it("rejects fabricated system audit provenance at the database boundary", async () => {
+		const before = await issuanceTables();
+		await expect(
+			commands.issueReset(
+				{
+					principalId: staffPrincipalId,
+					principalKind: "system",
+					role: null,
+				} as never,
+				{},
+			),
+		).rejects.toMatchObject({
+			cause: {
+				code: "23514",
+				constraint: "audit_log_actor_kind_role",
+			},
+		});
+		expect(await issuanceTables()).toEqual(before);
+	});
+});
+
+describe.sequential("Phase 7 scheduled reset runner and repository", () => {
+	it("reads ordered history and joined issuance status while issuing exact and late past-midnight resets", async () => {
+		const [fridaySettings, overnightSettings] = await database
+			.insert(applicationSchema.settingsVersions)
+			.values([
+				{
+					capacity: 100,
+					quietMaxPercent: 25,
+					moderateMaxPercent: 50,
+					busyMaxPercent: 75,
+					timezone: "UTC",
+					businessDayBoundary: "04:00",
+					resetBufferMinutes: 30,
+					scheduleSunOpen: null,
+					scheduleSunClose: null,
+					scheduleMonOpen: null,
+					scheduleMonClose: null,
+					scheduleTueOpen: null,
+					scheduleTueClose: null,
+					scheduleWedOpen: null,
+					scheduleWedClose: null,
+					scheduleThuOpen: null,
+					scheduleThuClose: null,
+					scheduleFriOpen: "10:00",
+					scheduleFriClose: "18:00",
+					scheduleSatOpen: null,
+					scheduleSatClose: null,
+					effectiveFrom: new Date("2026-08-01T00:00:00.000Z"),
+				},
+				{
+					capacity: 100,
+					quietMaxPercent: 25,
+					moderateMaxPercent: 50,
+					busyMaxPercent: 75,
+					timezone: "UTC",
+					businessDayBoundary: "04:00",
+					resetBufferMinutes: 30,
+					scheduleSunOpen: null,
+					scheduleSunClose: null,
+					scheduleMonOpen: null,
+					scheduleMonClose: null,
+					scheduleTueOpen: null,
+					scheduleTueClose: null,
+					scheduleWedOpen: null,
+					scheduleWedClose: null,
+					scheduleThuOpen: null,
+					scheduleThuClose: null,
+					scheduleFriOpen: "14:00",
+					scheduleFriClose: "02:00",
+					scheduleSatOpen: null,
+					scheduleSatClose: null,
+					effectiveFrom: new Date("2026-11-01T00:00:00.000Z"),
+				},
+			])
+			.returning({ version: applicationSchema.settingsVersions.version });
+		if (!fridaySettings || !overnightSettings) {
+			throw new Error("Phase 7 runner settings fixtures were not created");
+		}
+
+		const repository = createResetRepository(
+			database as unknown as typeof import("@fitway/db").db,
+		);
+		const settings = await repository.readSettingsVersions();
+		expect(settings).toEqual(
+			[...settings].sort(
+				(left, right) =>
+					left.effectiveFrom.getTime() - right.effectiveFrom.getTime() ||
+					left.version - right.version,
+			),
+		);
+		expect(settings.map((row) => row.version)).toEqual(
+			expect.arrayContaining([
+				Number(settingsVersion),
+				fridaySettings.version,
+				overnightSettings.version,
+			]),
+		);
+		expect(settings).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					version: fridaySettings.version,
+					resetBufferMinutes: 30,
+					weeklySchedule: expect.objectContaining({
+						fri: { open: "10:00:00", close: "18:00:00" },
+					}),
+				}),
+			]),
+		);
+
+		const exactDue = createScheduledResetRunner({
+			now: () => new Date("2026-08-07T18:30:00.000Z"),
+			...repository,
+			issueScheduledReset: (decision) => commands.issueScheduledReset(decision),
+		});
+		await exactDue.run();
+
+		const lateAfterMidnight = createScheduledResetRunner({
+			now: () => new Date("2026-11-07T03:00:00.000Z"),
+			...repository,
+			issueScheduledReset: (decision) => commands.issueScheduledReset(decision),
+		});
+		await lateAfterMidnight.run();
+
+		const priorIssuances = await repository.readPriorIssuances();
+		expect(priorIssuances).toEqual(
+			expect.arrayContaining([
+				{
+					businessDay: "2026-08-07",
+					commandId: expect.any(Number),
+					status: "superseded",
+				},
+				{
+					businessDay: "2026-11-06",
+					commandId: expect.any(Number),
+					status: "pending",
+				},
+			]),
+		);
+	});
+});
+
+async function cronMutationState() {
+	return {
+		commands: (await pool.query("select * from edge_commands order by id"))
+			.rows,
+		audits: (await pool.query("select * from audit_log order by id")).rows,
+		issuances: (
+			await pool.query(
+				"select * from scheduled_reset_issuances order by business_day",
+			)
+		).rows,
+		current: (await pool.query("select * from current_state order by id")).rows,
+	};
+}
+
+function sessionCookie(cookieHeader: string, expectedName: string) {
+	const pair = cookieHeader.split(";", 1)[0] ?? "";
+	expect(pair.startsWith(`${expectedName}=`)).toBe(true);
+	return pair;
+}
+
+describe.sequential("Phase 7 production cron composition", () => {
+	it("does not let valid active staff or owner sessions substitute for the cron bearer", async () => {
+		const { createAuthRuntime } = await import("./auth/runtime");
+		const runtime = createAuthRuntime(authSecret);
+		const pin = `${randomInt(0, 1_000_000)}`.padStart(6, "0");
+		const ownerEmail = `phase7-${randomUUID()}@fitway.example`;
+		const ownerPassword = randomBytes(24).toString("base64url");
+		await runtime.service.setSharedStaffPin(pin);
+		await runtime.service.provisionOwner({
+			email: ownerEmail,
+			displayName: "Phase 7 production topology owner",
+			password: ownerPassword,
+		});
+		const staffLogin = await runtime.service.loginStaff({ pin });
+		const ownerLogin = await runtime.service.loginOwner({
+			email: ownerEmail,
+			password: ownerPassword,
+		});
+		if (
+			staffLogin.status !== "authenticated" ||
+			ownerLogin.status !== "authenticated"
+		) {
+			throw new Error("Active Phase 7 sessions were not created");
+		}
+		const staffCookie = sessionCookie(
+			staffLogin.cookieHeaders[0] ?? "",
+			SESSION_COOKIE_NAMES.staff,
+		);
+		const ownerCookie = sessionCookie(
+			ownerLogin.cookieHeaders[0] ?? "",
+			SESSION_COOKIE_NAMES.owner,
+		);
+		expect(await runtime.service.authenticate(staffCookie)).toMatchObject({
+			status: "authenticated",
+			context: { principalKind: "shared_staff", role: "staff", active: true },
+		});
+		expect(await runtime.service.authenticate(ownerCookie)).toMatchObject({
+			status: "authenticated",
+			context: { principalKind: "owner", role: "owner", active: true },
+		});
+
+		const cronRun = vi.fn(async () => undefined);
+		const consoleLog = vi
+			.spyOn(console, "log")
+			.mockImplementation(() => undefined);
+		const consoleError = vi
+			.spyOn(console, "error")
+			.mockImplementation(() => undefined);
+		try {
+			const { createApp } = await import("./index");
+			const app = createApp("production", runtime, undefined, { run: cronRun });
+			const before = await cronMutationState();
+			for (const cookie of [staffCookie, ownerCookie]) {
+				const response = await app.request("/cron", {
+					headers: { Cookie: cookie },
+				});
+				expect(response.status).toBe(401);
+				expect(response.headers.get("cache-control")).toBe("no-store");
+				expect(await response.json()).toEqual({ error: "unauthorized" });
+			}
+			expect(cronRun).not.toHaveBeenCalled();
+			expect(await cronMutationState()).toEqual(before);
+			expect(consoleLog.mock.calls).toEqual([
+				["GET", "/cron", 401],
+				["GET", "/cron", 401],
+			]);
+			expect(consoleError).not.toHaveBeenCalled();
+		} finally {
+			consoleLog.mockRestore();
+			consoleError.mockRestore();
+		}
+	});
+});
+
+describe.sequential("Phase 7 authenticated cron and offline edge reconciliation", () => {
+	it("issues one pending triple at 18:30 and settles it before 18:31 live authority resumes", async () => {
+		const edgeActivityBeforeDue = new Date("2026-07-30T18:29:00.000Z");
+		const resetDue = new Date("2026-07-30T18:30:00.000Z");
+		const edgeReconnectAfterDue = new Date("2026-07-30T18:31:00.000Z");
+		const rawEdgeToken = randomBytes(32).toString("base64url");
+		vi.useFakeTimers({ toFake: ["Date"] });
+		try {
+			vi.setSystemTime(edgeActivityBeforeDue);
+			const [schedule] = await database
+				.insert(applicationSchema.settingsVersions)
+				.values({
+					capacity: 100,
+					quietMaxPercent: 25,
+					moderateMaxPercent: 50,
+					busyMaxPercent: 75,
+					timezone: "UTC",
+					businessDayBoundary: "04:00",
+					resetBufferMinutes: 30,
+					scheduleSunOpen: null,
+					scheduleSunClose: null,
+					scheduleMonOpen: null,
+					scheduleMonClose: null,
+					scheduleTueOpen: null,
+					scheduleTueClose: null,
+					scheduleWedOpen: null,
+					scheduleWedClose: null,
+					scheduleThuOpen: "10:00",
+					scheduleThuClose: "18:00",
+					scheduleFriOpen: null,
+					scheduleFriClose: null,
+					scheduleSatOpen: null,
+					scheduleSatClose: null,
+					effectiveFrom: new Date("2026-07-29T00:00:00.000Z"),
+				})
+				.returning({ version: applicationSchema.settingsVersions.version });
+			if (!schedule) throw new Error("Cron schedule fixture was not created");
+			const [device] = await database
+				.insert(applicationSchema.edgeDevices)
+				.values({
+					name: "phase-7-cron-offline-reconciliation",
+					tokenHash: createHash("sha256")
+						.update(rawEdgeToken, "utf8")
+						.digest("hex"),
+				})
+				.returning({ id: applicationSchema.edgeDevices.id });
+			if (!device) throw new Error("Cron edge fixture was not created");
+
+			const { createApp } = await import("./index");
+			let app = createApp("test", undefined, () => resetDue);
+			const push = async (
+				sequence: number,
+				currentCount: number,
+				appliedCommandId: number | null,
+				observedAt: Date,
+			) => {
+				const minuteStart = new Date(
+					Math.floor(observedAt.getTime() / 60_000) * 60_000,
+				);
+				const input: EdgePushRequest = {
+					schemaVersion: 2,
+					mode: "live",
+					sequence,
+					observedAt: observedAt.toISOString(),
+					currentCount,
+					minutes: [
+						{
+							minuteStart: minuteStart.toISOString(),
+							count: currentCount,
+							entries: 0,
+							exits: 0,
+						},
+					],
+					health: {
+						process: "ok",
+						camera: "ok",
+						feed: "ok",
+						detectorFps: 4.8,
+					},
+					appliedCommandId,
+				};
+				const response = await app.request("/edge/push", {
+					method: "POST",
+					headers: {
+						Authorization: `Bearer ${rawEdgeToken}`,
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(input),
+				});
+				return {
+					status: response.status,
+					body: (await response.json()) as Record<string, unknown>,
+				};
+			};
+			const cron = () =>
+				app.request("/cron", {
+					headers: { Authorization: `Bearer ${rawCronSecret}` },
+				});
+
+			expect(await push(1, 7, null, edgeActivityBeforeDue)).toMatchObject({
+				status: 200,
+				body: {
+					accepted: true,
+					reason: "processed",
+					highestProcessedSequence: 1,
+					commands: [],
+				},
+			});
+			const currentBeforeCron = (
+				await pool.query("select * from current_state where id = 1")
+			).rows[0];
+			const settingsHistory = (
+				await pool.query(
+					"select * from settings_versions order by effective_from, version",
+				)
+			).rows;
+
+			vi.setSystemTime(resetDue);
+			const concurrent = await Promise.all([cron(), cron(), cron(), cron()]);
+			for (const response of concurrent) {
+				expect(response.status).toBe(200);
+				expect(response.headers.get("cache-control")).toBe("no-store");
+				expect(await response.json()).toEqual({ status: "ok" });
+			}
+			const issued = await pool.query<{
+				command_id: string;
+				status: "pending" | "applied" | "superseded";
+				issuer_class: string;
+				type: string;
+			}>(
+				`select i.command_id, c.status, c.issuer_class, c.type
+				from scheduled_reset_issuances i
+				join edge_commands c on c.id = i.command_id
+				where i.business_day = '2026-07-30'`,
+			);
+			expect(issued.rows).toEqual([
+				{
+					command_id: expect.any(String),
+					status: "pending",
+					issuer_class: "system",
+					type: "reset_zero",
+				},
+			]);
+			const resetCommandId = Number(issued.rows[0]?.command_id);
+			expect(Number.isSafeInteger(resetCommandId)).toBe(true);
+			expect(
+				(await pool.query("select * from current_state where id = 1")).rows[0],
+			).toEqual(currentBeforeCron);
+			expect(
+				(
+					await pool.query(
+						"select * from settings_versions order by effective_from, version",
+					)
+				).rows,
+			).toEqual(settingsHistory);
+			const issuanceAfterCron = (
+				await pool.query(
+					"select * from scheduled_reset_issuances where business_day = '2026-07-30'",
+				)
+			).rows;
+			expect(issuanceAfterCron).toHaveLength(1);
+			expect(
+				(
+					await pool.query(
+						"select count(*) from audit_log where command_id = $1 and actor_principal_kind = 'system'",
+						[resetCommandId],
+					)
+				).rows[0]?.count,
+			).toBe("1");
+			expect(
+				(
+					await pool.query(
+						"select count(*) from edge_commands where device_id = $1 and issuer_class = 'system' and type = 'reset_zero'",
+						[device.id],
+					)
+				).rows[0]?.count,
+			).toBe("1");
+
+			vi.setSystemTime(edgeReconnectAfterDue);
+			expect((await cron()).status).toBe(200);
+			const blocked = await push(2, 99, null, edgeReconnectAfterDue);
+			expect(blocked).toMatchObject({
+				status: 200,
+				body: {
+					accepted: false,
+					reason: "commands_pending",
+					highestProcessedSequence: 1,
+					commands: [{ id: resetCommandId, type: "reset_zero" }],
+				},
+			});
+			expect(
+				(
+					await pool.query(
+						"select last_sequence from edge_devices where id = $1",
+						[device.id],
+					)
+				).rows[0]?.last_sequence,
+			).toBe("1");
+			expect(
+				(await pool.query("select * from current_state where id = 1")).rows[0],
+			).toEqual(currentBeforeCron);
+
+			expect(
+				await push(2, 0, resetCommandId, edgeReconnectAfterDue),
+			).toMatchObject({
+				status: 200,
+				body: {
+					accepted: true,
+					reason: "processed",
+					highestProcessedSequence: 2,
+					commands: [],
+				},
+			});
+			app = createApp("test", undefined, () => resetDue);
+			expect(
+				await push(2, 0, resetCommandId, edgeReconnectAfterDue),
+			).toMatchObject({
+				status: 200,
+				body: {
+					accepted: false,
+					reason: "replay",
+					highestProcessedSequence: 2,
+				},
+			});
+			expect((await cron()).status).toBe(200);
+
+			expect(
+				(
+					await pool.query(
+						"select current_count from current_state where id = 1",
+					)
+				).rows[0]?.current_count,
+			).toBe(0);
+			expect(
+				(
+					await pool.query("select status from edge_commands where id = $1", [
+						resetCommandId,
+					])
+				).rows[0]?.status,
+			).toBe("applied");
+			expect(
+				(
+					await pool.query(
+						"select * from scheduled_reset_issuances where business_day = '2026-07-30'",
+					)
+				).rows,
+			).toEqual(issuanceAfterCron);
+			expect(
+				(
+					await pool.query(
+						"select * from settings_versions order by effective_from, version",
+					)
+				).rows,
+			).toEqual(settingsHistory);
+			expect(
+				(
+					await pool.query(
+						"select count(*) from edge_commands where device_id = $1 and issuer_class = 'system' and type = 'reset_zero'",
+						[device.id],
+					)
+				).rows[0]?.count,
+			).toBe("1");
+			expect(
+				(
+					await pool.query(
+						"select count(*) from audit_log where command_id = $1",
+						[resetCommandId],
+					)
+				).rows[0]?.count,
+			).toBe("1");
+		} finally {
+			vi.useRealTimers();
+		}
 	});
 });

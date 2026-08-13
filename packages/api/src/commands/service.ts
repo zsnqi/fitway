@@ -1,4 +1,5 @@
-import type { HumanAuditEntry } from "../audit/types";
+import type { AuditEntry, HumanAuditEntry } from "../audit/types";
+import type { SystemResetIssuanceDecision } from "../reset/types";
 import {
 	type CommandMutationResult,
 	type CorrectionInput,
@@ -21,8 +22,32 @@ export type CommandIssuanceState = {
 	deviceId: string | null;
 };
 
+export type ScheduledResetIssuance = {
+	businessDay: string;
+	issuanceKey: string;
+	settingsVersion: number;
+	scheduledCloseAt: Date;
+	dueAt: Date;
+	commandId: number;
+	issuedAt: Date;
+};
+
+export type ScheduledResetIssueResult =
+	| {
+			alreadyIssued: true;
+			issuance: ScheduledResetIssuance;
+	  }
+	| {
+			alreadyIssued: false;
+			issuance: ScheduledResetIssuance;
+			command: IssuedCommand;
+			auditId: number;
+	  };
+
 export type CommandIssuanceTransaction = {
-	lockCommandState(): Promise<CommandIssuanceState>;
+	lockCommandState(options?: {
+		rejectActiveDeviceChange?: true;
+	}): Promise<CommandIssuanceState>;
 	insertCommand(value: {
 		deviceId: string;
 		type: "set_count" | "reset_zero";
@@ -31,20 +56,38 @@ export type CommandIssuanceTransaction = {
 		reason: string | null;
 		issuedAt: Date;
 	}): Promise<IssuedCommand>;
+	insertSystemCommand(value: {
+		deviceId: string;
+		type: "reset_zero";
+		targetValue: null;
+		reason: string;
+		issuedAt: Date;
+	}): Promise<IssuedCommand>;
 	supersedePendingCommands(
 		deviceId: string,
 		newerCommandId: number,
 		at: Date,
 	): Promise<void>;
-	appendAudit(value: HumanAuditEntry): Promise<number>;
+	appendAudit(value: AuditEntry): Promise<number>;
+	findScheduledResetIssuance(
+		businessDay: string,
+	): Promise<ScheduledResetIssuance | null>;
+	insertScheduledResetIssuance(
+		value: ScheduledResetIssuance,
+	): Promise<ScheduledResetIssuance | null>;
 };
 
 export type CommandServiceDependencies = {
 	transaction<T>(
 		work: (tx: CommandIssuanceTransaction) => Promise<T>,
 	): Promise<T>;
+	findScheduledResetIssuance(
+		businessDay: string,
+	): Promise<ScheduledResetIssuance | null>;
 	now?: () => Date;
 };
+
+class ScheduledResetIssuanceRace extends Error {}
 
 export class CommandIssueError extends Error {
 	constructor(
@@ -180,6 +223,74 @@ export function createCommandService(dependencies: CommandServiceDependencies) {
 				});
 				return { command, auditId };
 			});
+		},
+
+		async issueScheduledReset(
+			decision: SystemResetIssuanceDecision,
+		): Promise<ScheduledResetIssueResult> {
+			try {
+				return await dependencies.transaction(async (tx) => {
+					const state = await tx.lockCommandState({
+						rejectActiveDeviceChange: true,
+					});
+					const existing = await tx.findScheduledResetIssuance(
+						decision.businessDay,
+					);
+					if (existing) return { alreadyIssued: true, issuance: existing };
+
+					const deviceId = requireDevice(state);
+					const command = await tx.insertSystemCommand({
+						deviceId,
+						type: decision.command.type,
+						targetValue: decision.command.targetValue,
+						reason: decision.command.reason,
+						issuedAt: decision.issuedAt,
+					});
+					await tx.supersedePendingCommands(
+						deviceId,
+						command.id,
+						decision.issuedAt,
+					);
+					const auditId = await tx.appendAudit({
+						actorPrincipalId: null,
+						actorPrincipalKind: "system",
+						actorRole: null,
+						commandId: command.id,
+						commandIssuerClass: "system",
+						action: "reset",
+						priorValue: state.currentCount,
+						requestedDelta: null,
+						requestedValue: 0,
+						effectiveValue: 0,
+						reason: decision.command.reason,
+						createdAt: decision.issuedAt,
+					});
+					const issuance: ScheduledResetIssuance = {
+						businessDay: decision.businessDay,
+						issuanceKey: decision.issuanceKey,
+						settingsVersion: decision.settingsVersion,
+						scheduledCloseAt: decision.scheduledCloseAt,
+						dueAt: decision.dueAt,
+						commandId: command.id,
+						issuedAt: decision.issuedAt,
+					};
+					const inserted = await tx.insertScheduledResetIssuance(issuance);
+					if (!inserted) throw new ScheduledResetIssuanceRace();
+					return {
+						alreadyIssued: false,
+						issuance: inserted,
+						command,
+						auditId,
+					};
+				});
+			} catch (error) {
+				if (!(error instanceof ScheduledResetIssuanceRace)) throw error;
+				const existing = await dependencies.findScheduledResetIssuance(
+					decision.businessDay,
+				);
+				if (!existing) throw error;
+				return { alreadyIssued: true, issuance: existing };
+			}
 		},
 	};
 }
