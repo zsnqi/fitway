@@ -87,6 +87,13 @@ const phases = {
 		],
 		label: "Phase 7 reset evaluator slice",
 	},
+	"phase7-integration": {
+		browserFiles: [],
+		integrationFiles: [
+			"apps/server/src/phase7-integration.integration.test.ts",
+		],
+		label: "Phase 7 scheduled-reset integration slice",
+	},
 };
 
 const phaseNames = Object.keys(phases).join("|");
