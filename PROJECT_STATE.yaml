@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-13T11:40:47+03:00"
+updatedAt: "2026-08-13T11:43:01+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -907,19 +907,41 @@ milestones:
     integratedCommit: 34c7257e6d2d6d0f60494a941c96a7f09bd561a0
 
   phase10-csv-transport:
-    status: PLANNED
+    status: IN_PROGRESS
     dependencies: [phase10-domain]
-    ownerSession: null
+    ownerSession: "Phase 10 CSV transport b02 resumed worker on work/phase10-csv-transport-b02 in D:/Projects/fitway-worktrees/phase10-csv-transport-b02: finish the preserved owner-only admin.analytics.csv oRPC event stream candidate after the accepted malformed-date contract correction, with strict auth/range rejection, incremental schema-validated chunks, cancellation propagation, and real-Postgres raw-SSE proof."
     branch: work/phase10-csv-transport-b02
     worktree: D:/Projects/fitway-worktrees/phase10-csv-transport-b02
-    baseCommit: 9d7f4165fa36fb9128b3d68b8399da8fbbc866ce
-    ownedPaths: []
-    forbiddenPaths: []
-    sharedLeases: []
+    baseCommit: 668898373be2de19d3f825ea7dc37da1ac7e909a
+    ownedPaths:
+      - packages/api/src/analytics/reporting/csv-transport.ts
+      - packages/api/src/analytics/reporting/csv-transport.test.ts
+      - apps/server/src/phase10-csv-transport.integration.test.ts
+      - docs/phase-records/handoffs/phase10-csv-transport/*-p10_csv_transport_b02-worker-*.md
+    forbiddenPaths:
+      - all repository paths outside ownedPaths and sharedLeases
+      - packages/api/src/analytics/reporting/contracts.ts
+      - packages/api/src/analytics/reporting/csv.ts
+      - packages/api/src/analytics/reporting/reporting.ts
+      - packages/api/src/analytics/reporting/reporting.test.ts
+      - apps/server/src/reporting-repository.ts
+      - apps/server/src/reporting-repository.test.ts
+      - packages/api/src/index.ts and every packages/api/src/routers/** path except packages/api/src/routers/index.ts
+      - packages/api/src/auth/**, packages/auth/**, and apps/server/src/auth/**
+      - packages/api/src/edge-push.ts, apps/server/src/openapi.ts, and every device/public/occupancy/command/reset/offline surface
+      - packages/db/**, including schema, migrations, metadata, and indexes
+      - packages/env/** and every environment schema
+      - apps/web/**, tests/browser/**, Paper, visual-direction-gate/**, and screenshot baselines
+      - scripts/verify.mjs, scripts/verify-repository.mjs, PROJECT_STATE.yaml, and all root manifests/config/lockfiles
+      - all existing phase10-csv-transport b01 handoffs and every handoff not matching the owned b02 worker pattern
+      - every other milestone's phase record, implementation, and test
+      - normative product/specification/ADR/workflow documents
+    sharedLeases:
+      - "exclusive through 2026-08-20T11:43:01+03:00: Phase 10 CSV oRPC aggregation lane limited to packages/api/src/context.ts, packages/api/src/routers/index.ts, and apps/server/src/index.ts for the already-preserved reporting stream injection, owner-only admin.analytics.csv leaf, and createReportingRepository(db) wiring; no other router, auth, context, server aggregation, OpenAPI, audit, environment, database, or migration change"
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-13T11:40:47+03:00"
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase10-csv-transport/20260813-114047-p10_csv_contract_c01-integration.md
+    lastHeartbeatAt: "2026-08-13T11:43:01+03:00"
+    leaseExpiresAt: "2026-08-20T11:43:01+03:00"
+    handoff: docs/phase-records/handoffs/phase10-csv-transport/20260813-114301-p10_csv_transport_b02-resume-ratification.md
     stopReason: null
     gates:
       unit: PENDING
