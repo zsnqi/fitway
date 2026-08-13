@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-13T20:03:29+03:00"
+updatedAt: "2026-08-13T20:43:13+03:00"
 
 coordinator:
   owner: "main Codex session"
