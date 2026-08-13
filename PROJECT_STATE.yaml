@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-13T21:01:19+03:00"
+updatedAt: "2026-08-13T21:24:46+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -599,9 +599,9 @@ milestones:
     sharedLeases:
       - "exclusive through 2026-08-20T20:58:59+03:00: Phase 7 b02 scheduled-reset application lane limited to packages/api/src/commands/{service.ts,service.test.ts}, packages/api/src/audit/types.ts, apps/server/src/{audit-repository.ts,command-repository.ts,index.ts}, packages/env/src/server.ts, and vercel.json. It authorizes only internal atomic system reset issuance, reset runner composition, CRON_SECRET validation, accurate /cron production routing/evidence, and the one minutely /api/cron schedule; auth/session behavior, product command surfaces, edge/OpenAPI contracts, UI, Phase 8, retention, deployments, secrets, and b01 remain frozen."
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-13T21:01:19+03:00"
+    lastHeartbeatAt: "2026-08-13T21:24:46+03:00"
     leaseExpiresAt: "2026-08-20T20:58:59+03:00"
-    handoff: docs/phase-records/handoffs/phase-7/20260813-210119-p7_integration_b02-coordinator-start.md
+    handoff: docs/phase-records/handoffs/phase-7/20260813-212446-p7_integration_b02-stage1-review-pass.md
     stopReason: null
     gates:
       unit: PENDING
