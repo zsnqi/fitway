@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-13T20:43:13+03:00"
+updatedAt: "2026-08-13T20:44:54+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -583,7 +583,7 @@ milestones:
     validationRepairAttempts: 0
     lastHeartbeatAt: null
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase-7/20260813-203344-p7_integration_b02-plan.md
+    handoff: docs/phase-records/handoffs/phase-7/20260813-204454-p7_integration_b02-plan-review-pass.md
     stopReason: null
     gates:
       unit: PENDING
