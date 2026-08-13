@@ -6,6 +6,7 @@ import {
 	check,
 	date,
 	doublePrecision,
+	foreignKey,
 	index,
 	integer,
 	pgEnum,
@@ -18,7 +19,7 @@ import {
 	uniqueIndex,
 	uuid,
 } from "drizzle-orm/pg-core";
-import { authPrincipalKind, authPrincipals, authRole } from "./auth";
+import { authPrincipals, authRole } from "./auth";
 
 export const occupancyBand = pgEnum("occupancy_band", [
 	"quiet",
@@ -66,6 +67,15 @@ export const edgeCommandStatus = pgEnum("edge_command_status", [
 	"pending",
 	"applied",
 	"superseded",
+]);
+export const commandIssuerClass = pgEnum("command_issuer_class", [
+	"human",
+	"system",
+]);
+export const auditActorPrincipalKind = pgEnum("audit_actor_principal_kind", [
+	"shared_staff",
+	"owner",
+	"system",
 ]);
 export const auditAction = pgEnum("audit_action", [
 	"correction_delta",
@@ -123,6 +133,7 @@ export const settingsVersions = pgTable(
 			.notNull()
 			.default(180),
 		publicPollSeconds: integer("public_poll_seconds").notNull().default(60),
+		resetBufferMinutes: integer("reset_buffer_minutes").notNull().default(30),
 		scheduleSunOpen: time("schedule_sun_open"),
 		scheduleSunClose: time("schedule_sun_close"),
 		scheduleMonOpen: time("schedule_mon_open"),
@@ -161,6 +172,10 @@ export const settingsVersions = pgTable(
 			sql`${table.operationalStaleAfterSeconds} > ${table.freshForSeconds}`,
 		),
 		check("settings_public_poll_positive", sql`${table.publicPollSeconds} > 0`),
+		check(
+			"settings_reset_buffer_nonnegative",
+			sql`${table.resetBufferMinutes} >= 0`,
+		),
 		check(
 			"settings_schedule_sun_pair",
 			sql`(${table.scheduleSunOpen} is null) = (${table.scheduleSunClose} is null)`,
@@ -295,9 +310,10 @@ export const edgeCommands = pgTable(
 		type: edgeCommandType("type").notNull(),
 		targetValue: integer("target_value"),
 		status: edgeCommandStatus("status").notNull().default("pending"),
-		issuedByPrincipalId: uuid("issued_by_principal_id")
-			.notNull()
-			.references(() => authPrincipals.id),
+		issuerClass: commandIssuerClass("issuer_class").notNull().default("human"),
+		issuedByPrincipalId: uuid("issued_by_principal_id").references(
+			() => authPrincipals.id,
+		),
 		reason: text("reason"),
 		issuedAt: utcTimestamp("issued_at").notNull().defaultNow(),
 		deliveredAt: utcTimestamp("delivered_at"),
@@ -313,9 +329,22 @@ export const edgeCommands = pgTable(
 			table.status,
 			table.id,
 		),
+		uniqueIndex("edge_commands_id_issuer_class_unique").on(
+			table.id,
+			table.issuerClass,
+		),
+		uniqueIndex("edge_commands_id_issuer_class_type_unique").on(
+			table.id,
+			table.issuerClass,
+			table.type,
+		),
 		check(
 			"edge_commands_id_json_safe",
 			sql`${table.id} > 0 and ${table.id} <= 9007199254740991`,
+		),
+		check(
+			"edge_commands_issuer_coherent",
+			sql`(${table.issuerClass} = 'human' and ${table.issuedByPrincipalId} is not null) or (${table.issuerClass} = 'system' and ${table.issuedByPrincipalId} is null)`,
 		),
 		check(
 			"edge_commands_target_coherent",
@@ -336,21 +365,24 @@ export const edgeCommands = pgTable(
 	],
 );
 
-/** Immutable provenance for every human-issued command. */
+/** Immutable provenance for every human- or system-issued command. */
 export const auditLog = pgTable(
 	"audit_log",
 	{
 		id: bigint("id", { mode: "number" })
 			.primaryKey()
 			.generatedAlwaysAsIdentity(),
-		actorPrincipalId: uuid("actor_principal_id")
+		actorPrincipalId: uuid("actor_principal_id").references(
+			() => authPrincipals.id,
+		),
+		actorPrincipalKind: auditActorPrincipalKind(
+			"actor_principal_kind",
+		).notNull(),
+		actorRole: authRole("actor_role"),
+		commandId: bigint("command_id", { mode: "number" }).notNull(),
+		commandIssuerClass: commandIssuerClass("command_issuer_class")
 			.notNull()
-			.references(() => authPrincipals.id),
-		actorPrincipalKind: authPrincipalKind("actor_principal_kind").notNull(),
-		actorRole: authRole("actor_role").notNull(),
-		commandId: bigint("command_id", { mode: "number" })
-			.notNull()
-			.references(() => edgeCommands.id),
+			.default("human"),
 		action: auditAction("action").notNull(),
 		priorValue: integer("prior_value"),
 		requestedDelta: integer("requested_delta"),
@@ -368,7 +400,11 @@ export const auditLog = pgTable(
 		),
 		check(
 			"audit_log_actor_kind_role",
-			sql`(${table.actorPrincipalKind} = 'shared_staff' and ${table.actorRole} = 'staff') or (${table.actorPrincipalKind} = 'owner' and ${table.actorRole} = 'owner')`,
+			sql`(
+				(${table.commandIssuerClass} = 'human' and ${table.actorPrincipalId} is not null and ${table.actorPrincipalKind} = 'shared_staff' and ${table.actorRole} = 'staff')
+				or (${table.commandIssuerClass} = 'human' and ${table.actorPrincipalId} is not null and ${table.actorPrincipalKind} = 'owner' and ${table.actorRole} = 'owner')
+				or (${table.commandIssuerClass} = 'system' and ${table.actorPrincipalId} is null and ${table.actorPrincipalKind} = 'system' and ${table.actorRole} is null)
+			)`,
 		),
 		check(
 			"audit_log_values_nonnegative",
@@ -386,6 +422,62 @@ export const auditLog = pgTable(
 			"audit_log_reason_short_trimmed",
 			sql`${table.reason} is null or (length(${table.reason}) between 1 and 240 and ${table.reason} = trim(${table.reason}))`,
 		),
+		foreignKey({
+			columns: [table.commandId, table.commandIssuerClass],
+			foreignColumns: [edgeCommands.id, edgeCommands.issuerClass],
+			name: "audit_log_command_issuer_fk",
+		}),
+	],
+);
+
+/** Durable one-per-business-day closure marker for scheduled reset issuance. */
+export const scheduledResetIssuances = pgTable(
+	"scheduled_reset_issuances",
+	{
+		businessDay: date("business_day").primaryKey(),
+		issuanceKey: text("issuance_key").notNull(),
+		settingsVersion: bigint("settings_version", { mode: "number" })
+			.notNull()
+			.references(() => settingsVersions.version),
+		scheduledClose: utcTimestamp("scheduled_close").notNull(),
+		dueAt: utcTimestamp("due_at").notNull(),
+		commandId: bigint("command_id", { mode: "number" }).notNull(),
+		commandIssuerClass: commandIssuerClass("command_issuer_class")
+			.notNull()
+			.default("system"),
+		commandType: edgeCommandType("command_type")
+			.notNull()
+			.default("reset_zero"),
+		issuedAt: utcTimestamp("issued_at").notNull(),
+	},
+	(table) => [
+		uniqueIndex("scheduled_reset_issuances_key_unique").on(table.issuanceKey),
+		uniqueIndex("scheduled_reset_issuances_command_unique").on(table.commandId),
+		check(
+			"scheduled_reset_issuances_key_coherent",
+			sql`${table.issuanceKey} = 'scheduled-reset:' || to_char(${table.businessDay}, 'YYYY-MM-DD')`,
+		),
+		check(
+			"scheduled_reset_issuances_command_identity",
+			sql`${table.commandIssuerClass} = 'system' and ${table.commandType} = 'reset_zero'`,
+		),
+		check(
+			"scheduled_reset_issuances_due_after_close",
+			sql`${table.dueAt} >= ${table.scheduledClose}`,
+		),
+		check(
+			"scheduled_reset_issuances_issued_after_due",
+			sql`${table.issuedAt} >= ${table.dueAt}`,
+		),
+		foreignKey({
+			columns: [table.commandId, table.commandIssuerClass, table.commandType],
+			foreignColumns: [
+				edgeCommands.id,
+				edgeCommands.issuerClass,
+				edgeCommands.type,
+			],
+			name: "scheduled_reset_issuances_command_fk",
+		}),
 	],
 );
 
