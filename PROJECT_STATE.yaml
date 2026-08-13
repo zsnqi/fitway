@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-13T12:19:26+03:00"
+updatedAt: "2026-08-13T12:30:00+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -517,8 +517,8 @@ milestones:
       - FITWAY_PRODUCT.md, SPEC.md, PHASES.md, DESIGN_GUIDE.md, docs/WORKFLOW.md, docs/adr/**, existing handoffs, and every other phase record
     sharedLeases:
       - "exclusive through 2026-08-20T12:17:28+03:00: Phase 7 total schedule-session resolver lane limited to packages/api/src/occupancy/schedule.ts and packages/api/src/occupancy/schedule.test.ts for non-throwing exact/fold/gap candidate representation plus a strict behavior-preserving evaluateSchedule wrapper; no public schedule semantic narrowing, occupancy analytics change, router/context, persistence, migration, or UI change"
-    validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-13T12:19:26+03:00"
+    validationRepairAttempts: 1
+    lastHeartbeatAt: "2026-08-13T12:30:00+03:00"
     leaseExpiresAt: "2026-08-20T12:17:28+03:00"
     handoff: docs/phase-records/handoffs/phase7-reset-evaluator/20260813-121926-p7_reset_eval_b02-coordinator-start.md
     stopReason: null
