@@ -16,8 +16,10 @@
 
 ## Exact current state
 
-- Parent / Stage 3 boundary: `b707f63d474183b03d68c96321e51f3e2b84ec5c` / `SELF`.
-  Revert the single Stage 3 commit to return exactly to `b707f63`.
+- Parent / implementation boundary / review-record correction:
+  `b707f63d474183b03d68c96321e51f3e2b84ec5c` /
+  `41ac3ca1e491bc77e6a6471c6c3e2a19e4b510cd` / `SELF`. Revert this documentation-only correction
+  to return to `41ac3ca`, then revert `41ac3ca` to return exactly to `b707f63`.
 - Branch / worktree / run ID: `work/phase7-integration-b02-stage3` /
   `C:/Users/Pc Force/.codex/visualizations/2026/08/13/019ffce0-b522-7880-a6a7-3a5cf4c90ff5/phase7-integration-b02-stage3`
   / `p7_integration_b02_s3`; exact disposable database
@@ -28,6 +30,14 @@
 - Scope: exactly the six permitted Stage 3 source/config/test paths and this handoff changed.
   Accepted Stage 1/2 paths, b01, auth behavior/schema, edge/OpenAPI contracts, product surfaces,
   schema/migrations, coordinator state, root configuration, and UI remain untouched.
+- Owned paths / shared leases used: worker-owned paths used were `apps/server/src/cron.ts`,
+  `apps/server/src/cron.test.ts`, `apps/server/src/phase7-integration.integration.test.ts`, and this
+  handoff. Shared paths actually used were `apps/server/src/index.ts`,
+  `packages/env/src/server.ts`, and `vercel.json` under the exclusive b02 lease through
+  `2026-08-20T20:58:59+03:00`. The other lease-authorized paths
+  `packages/api/src/commands/service.ts`, `packages/api/src/commands/service.test.ts`,
+  `packages/api/src/audit/types.ts`, `apps/server/src/audit-repository.ts`, and
+  `apps/server/src/command-repository.ts` were untouched.
 
 ## Decisions
 
@@ -88,6 +98,9 @@
 ## Recommended next session
 
 Mode: independent review.
+
+Exact resume command:
+`Set-Location 'C:/Users/Pc Force/.codex/visualizations/2026/08/13/019ffce0-b522-7880-a6a7-3a5cf4c90ff5/phase7-integration-b02-stage3'; git status --short; git rev-parse HEAD; git diff --name-status b707f63d474183b03d68c96321e51f3e2b84ec5c..HEAD`.
 
 Review only the Stage 3 b02 diff from `b707f63d474183b03d68c96321e51f3e2b84ec5c` through `SELF`.
 Make no edits. Confirm exact production GET/HEAD/unregistered-method/OPTIONS behavior, canonical
