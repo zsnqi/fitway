@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-13T14:17:45+03:00"
+updatedAt: "2026-08-13T14:46:35+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -945,11 +945,11 @@ milestones:
       - every other milestone's phase record, implementation, and test
       - normative product/specification/ADR/workflow documents
     sharedLeases:
-      - "exclusive through 2026-08-20T14:16:01+03:00: Phase 10 CSV b03 transport/cancellation lane limited to packages/api/src/context.ts, packages/api/src/routers/index.ts, apps/server/src/index.ts, apps/server/src/reporting-repository.ts, and apps/server/src/reporting-repository.test.ts for optional AbortSignal propagation, owner-only leaf/wiring, idempotent release(true) on abort, normal CLOSE/COMMIT/release, early-return/error CLOSE/ROLLBACK/release, primary-error preservation, and focused tests; all accepted queries, CSV/history/privacy/batch/domain semantics remain frozen"
+      - "exclusive through 2026-08-20T14:16:01+03:00: Phase 10 CSV b03 transport/cancellation lane limited to packages/api/src/context.ts, packages/api/src/routers/index.ts, apps/server/src/index.ts, apps/server/src/reporting-repository.ts, and apps/server/src/reporting-repository.test.ts for optional AbortSignal propagation, abort-aware pool acquisition with consumed late rejection/safe late-client release, exact 30000 ms transaction-local production statement timeout plus exact 250 ms focused-test injection, category-only timeout/abort diagnostics, owner-only leaf/wiring, idempotent release(true) on abort, normal CLOSE/COMMIT/release, early-return/error CLOSE/ROLLBACK/release, primary-error preservation, noUnsafeFinally-safe cleanup, and focused tests; no control connection, PID signaling, pg_cancel_backend, pg_terminate_backend, elevated role, new credential, environment change, or production PID query; all accepted report queries, CSV/history/privacy/batch/domain semantics remain frozen"
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-13T14:17:45+03:00"
+    lastHeartbeatAt: "2026-08-13T14:46:35+03:00"
     leaseExpiresAt: "2026-08-20T14:16:01+03:00"
-    handoff: docs/phase-records/handoffs/phase10-csv-transport/20260813-141745-p10_csv_transport_b03-coordinator-start.md
+    handoff: docs/phase-records/handoffs/phase10-csv-transport/20260813-144635-p10_csv_transport_b03-timeout-amendment.md
     stopReason: null
     gates:
       unit: PENDING
