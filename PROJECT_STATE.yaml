@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-13T12:58:00+03:00"
+updatedAt: "2026-08-13T13:02:39+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -497,9 +497,9 @@ milestones:
     integratedCommit: 24449defc2f51738ae1dfa9eae94a7122863d638
 
   phase7-reset-evaluator:
-    status: VALIDATING
+    status: FAILED_VALIDATION
     dependencies: [baseline-reconciliation-gate, phase-3, phase-5]
-    ownerSession: "Fresh Phase 7 reset evaluator b02 worker on work/phase7-reset-evaluator-b02 in D:/Projects/fitway-worktrees/phase7-reset-evaluator-b02: replay only the accepted evaluator blobs, then implement total exact/fold/gap candidate generation, full-history real-instant ownership, frozen close-time settings/buffer/dueAt, winning-gap-only rejection, order independence, and strict public schedule behavior preservation. No transport, router, persistence, migration, UI, or unrelated domain change."
+    ownerSession: null
     branch: work/phase7-reset-evaluator-b02
     worktree: D:/Projects/fitway-worktrees/phase7-reset-evaluator-b02
     baseCommit: 0e299e2b5147f8757572898be7f2feb85291f51e
@@ -515,20 +515,19 @@ milestones:
       - packages/db/**, packages/env/**, packages/auth/**, packages/ui/**, apps/web/**, edge/**, tests/browser/**, Paper, visual-direction-gate/**, and screenshot baselines
       - scripts/verify.mjs, scripts/verify-repository.mjs, PROJECT_STATE.yaml, root manifests/config/lockfiles, schemas, migrations, and environment configuration
       - FITWAY_PRODUCT.md, SPEC.md, PHASES.md, DESIGN_GUIDE.md, docs/WORKFLOW.md, docs/adr/**, existing handoffs, and every other phase record
-    sharedLeases:
-      - "exclusive through 2026-08-20T12:17:28+03:00: Phase 7 total schedule-session resolver lane limited to packages/api/src/occupancy/schedule.ts and packages/api/src/occupancy/schedule.test.ts for non-throwing exact/fold/gap candidate representation plus a strict behavior-preserving evaluateSchedule wrapper; no public schedule semantic narrowing, occupancy analytics change, router/context, persistence, migration, or UI change"
+    sharedLeases: []
     validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-13T12:58:00+03:00"
-    leaseExpiresAt: "2026-08-20T12:17:28+03:00"
-    handoff: docs/phase-records/handoffs/phase7-reset-evaluator/20260813-125059-p7_reset_eval_b02-coordinator-validation.md
-    stopReason: null
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase7-reset-evaluator/20260813-130239-p7_reset_eval_b02-failed-validation.md
+    stopReason: "Fresh Standards and Spec review rejected candidate d5b856c at exhausted repair 2/2: a nonexistent close whose scheduled wall label equals the business-day boundary is attributed to the following day, unlike the exclusive exact-close rule, because the gap helper uses close < boundary rather than close <= boundary. No third b02 repair is permitted."
     gates:
       unit: PASS
       integration: PASS
       browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
-      independentReview: PENDING
+      independentReview: FAIL
     integratedCommit: null
 
   phase7-integration:
