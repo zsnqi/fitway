@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-13T14:16:01+03:00"
+updatedAt: "2026-08-13T14:17:45+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -917,12 +917,12 @@ milestones:
     integratedCommit: 34c7257e6d2d6d0f60494a941c96a7f09bd561a0
 
   phase10-csv-transport:
-    status: READY
+    status: IN_PROGRESS
     dependencies: [phase10-domain]
     ownerSession: "Fresh Phase 10 CSV transport b03 worker on work/phase10-csv-transport-b03 in D:/Projects/fitway-worktrees/phase10-csv-transport-b03: reapply the bounded owner-only admin.analytics.csv event stream from accepted main, propagate AbortSignal to pending reporting database work, destructively release the active pool client on abort, preserve transaction/error semantics, and prove raw-SSE boundaries plus deterministic cancellation/retry. No contract/domain/migration/OpenAPI/UI/Paper change."
     branch: work/phase10-csv-transport-b03
     worktree: D:/Projects/fitway-worktrees/phase10-csv-transport-b03
-    baseCommit: SELF
+    baseCommit: c4bd178a0cc0ca9524a2da8230fa6d84487da2e1
     ownedPaths:
       - packages/api/src/analytics/reporting/csv-transport.ts
       - packages/api/src/analytics/reporting/csv-transport.test.ts
@@ -947,9 +947,9 @@ milestones:
     sharedLeases:
       - "exclusive through 2026-08-20T14:16:01+03:00: Phase 10 CSV b03 transport/cancellation lane limited to packages/api/src/context.ts, packages/api/src/routers/index.ts, apps/server/src/index.ts, apps/server/src/reporting-repository.ts, and apps/server/src/reporting-repository.test.ts for optional AbortSignal propagation, owner-only leaf/wiring, idempotent release(true) on abort, normal CLOSE/COMMIT/release, early-return/error CLOSE/ROLLBACK/release, primary-error preservation, and focused tests; all accepted queries, CSV/history/privacy/batch/domain semantics remain frozen"
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-13T14:16:01+03:00"
+    lastHeartbeatAt: "2026-08-13T14:17:45+03:00"
     leaseExpiresAt: "2026-08-20T14:16:01+03:00"
-    handoff: docs/phase-records/handoffs/phase10-csv-transport/20260813-141601-p10_csv_transport_b03-coordinator-activation.md
+    handoff: docs/phase-records/handoffs/phase10-csv-transport/20260813-141745-p10_csv_transport_b03-coordinator-start.md
     stopReason: null
     gates:
       unit: PENDING
