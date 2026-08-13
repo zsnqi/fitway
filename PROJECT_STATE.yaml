@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-13T13:02:39+03:00"
+updatedAt: "2026-08-13T13:08:46+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -519,8 +519,8 @@ milestones:
     validationRepairAttempts: 2
     lastHeartbeatAt: null
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase7-reset-evaluator/20260813-130239-p7_reset_eval_b02-failed-validation.md
-    stopReason: "Fresh Standards and Spec review rejected candidate d5b856c at exhausted repair 2/2: a nonexistent close whose scheduled wall label equals the business-day boundary is attributed to the following day, unlike the exclusive exact-close rule, because the gap helper uses close < boundary rather than close <= boundary. No third b02 repair is permitted."
+    handoff: docs/phase-records/handoffs/phase7-reset-evaluator/20260813-130846-p7_reset_eval_b03-plan-review-fail.md
+    stopReason: "b02 remains terminal at 2/2. First review of the fresh b03 plan rejected transition-time overuse, a missing documentation-only commit boundary, and incomplete state/cleanup protocol. The committed plan revision confines transition time to ownership, adds scheduled-wall final-close ordering, and makes activation/terminal cleanup explicit; fresh re-review is pending."
     gates:
       unit: PASS
       integration: PASS
