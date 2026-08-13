@@ -3,11 +3,13 @@ import path from "node:path";
 import type { CommandService } from "@fitway/api/commands/service";
 import { edgePushResponseSchema } from "@fitway/api/edge-push";
 import { evaluateScheduledReset } from "@fitway/api/reset/evaluator";
+import { createScheduledResetRunner } from "@fitway/api/reset/runner";
 import type { SystemResetIssuanceDecision } from "@fitway/api/reset/types";
 import * as applicationSchema from "@fitway/db/schema/application";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { createResetRepository } from "./reset-repository";
 import { assertDisposableIntegrationDatabase } from "./test-support/integration-database-safety";
 
 const connectionString = process.env.TEST_DATABASE_URL;
@@ -1428,5 +1430,126 @@ describe.sequential("Phase 7 scheduled reset command service", () => {
 			},
 		});
 		expect(await issuanceTables()).toEqual(before);
+	});
+});
+
+describe.sequential("Phase 7 scheduled reset runner and repository", () => {
+	it("reads ordered history and joined issuance status while issuing exact and late past-midnight resets", async () => {
+		const [fridaySettings, overnightSettings] = await database
+			.insert(applicationSchema.settingsVersions)
+			.values([
+				{
+					capacity: 100,
+					quietMaxPercent: 25,
+					moderateMaxPercent: 50,
+					busyMaxPercent: 75,
+					timezone: "UTC",
+					businessDayBoundary: "04:00",
+					resetBufferMinutes: 30,
+					scheduleSunOpen: null,
+					scheduleSunClose: null,
+					scheduleMonOpen: null,
+					scheduleMonClose: null,
+					scheduleTueOpen: null,
+					scheduleTueClose: null,
+					scheduleWedOpen: null,
+					scheduleWedClose: null,
+					scheduleThuOpen: null,
+					scheduleThuClose: null,
+					scheduleFriOpen: "10:00",
+					scheduleFriClose: "18:00",
+					scheduleSatOpen: null,
+					scheduleSatClose: null,
+					effectiveFrom: new Date("2026-08-01T00:00:00.000Z"),
+				},
+				{
+					capacity: 100,
+					quietMaxPercent: 25,
+					moderateMaxPercent: 50,
+					busyMaxPercent: 75,
+					timezone: "UTC",
+					businessDayBoundary: "04:00",
+					resetBufferMinutes: 30,
+					scheduleSunOpen: null,
+					scheduleSunClose: null,
+					scheduleMonOpen: null,
+					scheduleMonClose: null,
+					scheduleTueOpen: null,
+					scheduleTueClose: null,
+					scheduleWedOpen: null,
+					scheduleWedClose: null,
+					scheduleThuOpen: null,
+					scheduleThuClose: null,
+					scheduleFriOpen: "14:00",
+					scheduleFriClose: "02:00",
+					scheduleSatOpen: null,
+					scheduleSatClose: null,
+					effectiveFrom: new Date("2026-11-01T00:00:00.000Z"),
+				},
+			])
+			.returning({ version: applicationSchema.settingsVersions.version });
+		if (!fridaySettings || !overnightSettings) {
+			throw new Error("Phase 7 runner settings fixtures were not created");
+		}
+
+		const repository = createResetRepository(
+			database as unknown as typeof import("@fitway/db").db,
+		);
+		const settings = await repository.readSettingsVersions();
+		expect(settings).toEqual(
+			[...settings].sort(
+				(left, right) =>
+					left.effectiveFrom.getTime() - right.effectiveFrom.getTime() ||
+					left.version - right.version,
+			),
+		);
+		expect(settings.map((row) => row.version)).toEqual(
+			expect.arrayContaining([
+				Number(settingsVersion),
+				fridaySettings.version,
+				overnightSettings.version,
+			]),
+		);
+		expect(settings).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					version: fridaySettings.version,
+					resetBufferMinutes: 30,
+					weeklySchedule: expect.objectContaining({
+						fri: { open: "10:00:00", close: "18:00:00" },
+					}),
+				}),
+			]),
+		);
+
+		const exactDue = createScheduledResetRunner({
+			now: () => new Date("2026-08-07T18:30:00.000Z"),
+			...repository,
+			issueScheduledReset: (decision) => commands.issueScheduledReset(decision),
+		});
+		await exactDue.run();
+
+		const lateAfterMidnight = createScheduledResetRunner({
+			now: () => new Date("2026-11-07T03:00:00.000Z"),
+			...repository,
+			issueScheduledReset: (decision) => commands.issueScheduledReset(decision),
+		});
+		await lateAfterMidnight.run();
+
+		const priorIssuances = await repository.readPriorIssuances();
+		expect(priorIssuances).toEqual(
+			expect.arrayContaining([
+				{
+					businessDay: "2026-08-07",
+					commandId: expect.any(Number),
+					status: "superseded",
+				},
+				{
+					businessDay: "2026-11-06",
+					commandId: expect.any(Number),
+					status: "pending",
+				},
+			]),
+		);
 	});
 });
