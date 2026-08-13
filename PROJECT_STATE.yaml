@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-13T19:36:11+03:00"
+updatedAt: "2026-08-13T20:00:36+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -531,9 +531,9 @@ milestones:
     integratedCommit: 0acebac247511160673977aa4394d4017fd51ccb
 
   phase7-integration:
-    status: IN_PROGRESS
+    status: FAILED_VALIDATION
     dependencies: [phase7-reset-evaluator, phase-6]
-    ownerSession: "Fresh Phase 7 scheduled-reset integration b01 worker on work/phase7-integration-b01 in D:/Projects/fitway-worktrees/phase7-integration: implement the reviewed internal system command service, historical reset runner/repository, authenticated same-origin cron, and full offline edge reconciliation without any product command surface or Phase 6 contract change."
+    ownerSession: null
     branch: work/phase7-integration-b01
     worktree: D:/Projects/fitway-worktrees/phase7-integration
     baseCommit: 346bcc83ee52eb600ef0301096fea64dd08a5e3c
@@ -555,20 +555,19 @@ milestones:
       - apps/web/**, packages/ui/**, tests/browser/**, Paper, visual-direction-gate/**, and screenshot baselines
       - scripts/verify.mjs, scripts/verify-repository.mjs, PROJECT_STATE.yaml, root manifests/config/lockfiles, and environment values
       - FITWAY_PRODUCT.md, SPEC.md, PHASES.md, DESIGN_GUIDE.md, docs/WORKFLOW.md, docs/adr/**, existing handoffs, and every other phase record
-    sharedLeases:
-      - "exclusive through 2026-08-20T17:27:49+03:00: Phase 7 b01 scheduled-reset lane limited to packages/api/src/commands/service.ts, packages/api/src/commands/service.test.ts, packages/api/src/audit/types.ts, apps/server/src/audit-repository.ts, apps/server/src/command-repository.ts, packages/env/src/server.ts, apps/server/src/index.ts, and vercel.json for internal system issuance, audit/command persistence, CRON_SECRET validation, /cron mounting, and the one minutely /api/cron schedule; human command behavior, auth principals/roles, edge/OpenAPI, UI, and all other accepted semantics remain frozen"
+    sharedLeases: []
     validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-13T19:36:11+03:00"
-    leaseExpiresAt: "2026-08-20T17:27:49+03:00"
-    handoff: docs/phase-records/handoffs/phase-7/20260813-193611-p7_integration_b01-stage3-review-repair.md
-    stopReason: null
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase-7/20260813-200036-p7_integration_b01-failed-validation.md
+    stopReason: "Terminal b01 FAILED_VALIDATION after repair 2/2. Candidate 950a35e passes runtime security, chronology, 56 focused tests, 23 isolated PostgreSQL tests, types, Biome, and exact scope, but fresh verification rejected the required final evidence: the repair handoff inaccurately claims all non-GET production routes return 405/no-store although app.get returns 404 for methods other than Hono's HEAD fallback, and the session-substitution test uses an artificial app.all topology plus a nonexistent cookie instead of the real FITWAY session cookies. No third b01 repair is permitted. Preserve the branch/candidate; a human-authorized fresh attempt must start with a new attempt record and reviewed plan."
     gates:
-      unit: PENDING
-      integration: PENDING
+      unit: PASS
+      integration: PASS
       browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
-      independentReview: PENDING
+      independentReview: FAIL
     integratedCommit: null
 
   phase-7:
