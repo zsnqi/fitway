@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-13T13:08:46+03:00"
+updatedAt: "2026-08-13T13:11:44+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -520,7 +520,7 @@ milestones:
     lastHeartbeatAt: null
     leaseExpiresAt: null
     handoff: docs/phase-records/handoffs/phase7-reset-evaluator/20260813-130846-p7_reset_eval_b03-plan-review-fail.md
-    stopReason: "b02 remains terminal at 2/2. First review of the fresh b03 plan rejected transition-time overuse, a missing documentation-only commit boundary, and incomplete state/cleanup protocol. The committed plan revision confines transition time to ownership, adds scheduled-wall final-close ordering, and makes activation/terminal cleanup explicit; fresh re-review is pending."
+    stopReason: "b02 remains terminal at 2/2. b03 plan reviews required transition-time confinement, full commit/state cleanup protocol, and a total equal-label selection key. The committed revision uses scheduled civil label then append-only settings precedence (effectiveFrom/version), never transitionAt or input order; fresh re-review is pending."
     gates:
       unit: PASS
       integration: PASS
