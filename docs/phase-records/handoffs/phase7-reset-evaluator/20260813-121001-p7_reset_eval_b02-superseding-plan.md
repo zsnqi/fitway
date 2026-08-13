@@ -78,23 +78,39 @@ After independent plan `PASS`, the coordinator:
 5. only after those preflight checks records `READY -> IN_PROGRESS` with a start-ratification
    handoff. No source replay or edit precedes ratification.
 
+## Auditable implementation and rollback stages
+
+Stage 1 replays exactly the four approved `f329f70` blobs and no other source. The worker runs the
+preserved reset unit and integration tests, proves the blob hashes, and commits this replay as its
+own byte-auditable boundary. Reverting Stage 1 returns exactly to an activation with no reset
+evaluator or Phase 7 integration test.
+
+Stage 2 adds only the total resolver, the frozen regression matrix, and the minimal evaluator repair.
+It is committed separately after the full worker ladder. Reverting Stage 2 returns byte-for-byte to
+the accepted Stage 1 replay boundary. The worker handoff is a third documentation-only commit if
+needed; no source repair is squashed into the replay.
+
 ## Regression-first implementation invariants
 
 Candidate generation must be total. Convert every candidate wall time independently into one of:
 
 - exact: one real timeline instant;
 - ambiguous fold: choose the established earlier matching instant;
-- nonexistent gap: retain an unresolved candidate rather than throwing during generation.
+- nonexistent gap: retain an unresolved candidate and its first real instant after the gap—the
+  actual forward-transition instant—solely for ownership; do not throw during generation.
 
 One settings candidate must never abort generation or ownership evaluation of the others. Apply
 ownership only after generating candidates across the full settings history, compare real timeline
 instants, and make the result independent of `settingsVersions` input order.
 
 The selected winner controls rejection: only a winning unresolved gap may surface the existing
-rejection. An obsolete, future, non-owning, or otherwise losing gap cannot abort evaluation. Do not
-change the public `evaluateSchedule` contract. Preserve its current strict traversal behavior,
-including the separate next-opening scan throw path; characterize that untouched second path before
-any leased schedule edit.
+rejection. An obsolete, future, non-owning, or otherwise losing gap cannot abort evaluation.
+
+Introduce a total schedule-session resolver that represents close and opening wall-time outcomes
+without throwing. The reset evaluator consumes that total resolver. The public `evaluateSchedule`
+remains a strict wrapper with its exact current traversal and rejection contract, including the
+separate next-opening scan throw path. Characterize both public throw paths before any leased edit;
+do not narrow, defer, or reorder their observable behavior.
 
 ## Frozen red/green matrix
 
@@ -103,16 +119,23 @@ The worker first proves the replayed stable suite green, then adds one focused r
 1. exact-close version change: immediately pre-close settings own; exact-close settings do not;
 2. during-buffer change: owning version, buffer, and `dueAt` remain byte-stable after close;
 3. prospective later close: the newer version can own only a later applicable session;
-4. transition-window false negative: a valid winning candidate survives an obsolete gap candidate;
-5. transition-window false positive: an obsolete candidate cannot be selected by sampled-offset or
-   hypothetical-instant ownership;
-6. winning unresolved gap: the existing rejection surfaces only when that candidate wins;
-7. ambiguous fold: the earlier matching real instant is selected and then ownership is evaluated;
-8. order independence: several permutations of the same settings history return identical results;
-9. final-close/business-day behavior: the latest applicable close wins across midnight and weekday
+4. transition-window false negative: a gap version effective from `2026-03-08T06:45:00Z` through
+   the real `2026-03-08T07:00:00Z` transition until `07:15:00Z` owns the gap candidate by that real
+   transition instant and therefore wins and throws;
+5. transition-window false positive: an obsolete gap version that does not own the real transition
+   instant cannot throw or displace the valid winning candidate; sampled-offset or hypothetical
+   ownership is forbidden;
+6. direct-close losing/winning pair: a nonexistent close is ignored when non-owning and surfaces
+   the existing rejection only when it owns the selected reset candidate;
+7. opening-resolution losing/winning pair: a nonexistent session opening with a later real close
+   does not abort reset evaluation when non-owning and surfaces the existing rejection when its
+   candidate wins, exercising the formerly untouched second evaluator throw path;
+8. ambiguous fold: the earlier matching real instant is selected and then ownership is evaluated;
+9. order independence: several permutations of the same settings history return identical results;
+10. final-close/business-day behavior: the latest applicable close wins across midnight and weekday
    boundaries with no retroactive current-settings substitution;
-10. schedule preservation: existing selected gap behavior plus the untouched next-opening scan
-    throw path retain their exact current public outcomes.
+11. schedule preservation: direct close-gap and next-opening-scan characterization tests retain
+    their exact current public `evaluateSchedule` outcomes through the strict wrapper.
 
 Each new regression must fail for the intended semantic reason before the minimal production
 change. TDD reds do not consume repair attempts; a candidate-gate failure may receive at most two
@@ -140,7 +163,8 @@ git diff --cached --check
 git status --short --branch
 ```
 
-The worker commits a clean candidate and evidence handoff, then stops at
+The worker preserves the separate Stage 1 replay and Stage 2 repair commits, commits a clean
+evidence handoff, then stops at
 `READY_FOR_INTEGRATION`. It does not push, merge, change state/profile, or declare `DONE`.
 
 ## Independent verification and coordinator closeout
@@ -149,18 +173,23 @@ A fresh verifier who did not implement b02 uses run/database suffix `_v02`, revi
 activation-to-candidate diff and every authority/invariant above, runs the exact worker ladder, and
 returns `PASS` or `FAILED_VALIDATION` without edits. A verifier rejection is terminal.
 
-Only verifier `PASS` permits serial no-ff integration. The coordinator then uses suffix `_coord02`,
-runs the focused unit/integration/profile ladder plus `pnpm verify:full`, checks the exact diff and
-clean status, writes the terminal handoff, clears the lease/owner/heartbeat/expiry, retains the
-passing profile, and marks only `phase7-reset-evaluator` `DONE`. Dependent `phase7-integration`
-remains separate.
+Only verifier `PASS` permits serial no-ff integration of the preserved Stage 1 and Stage 2 commits.
+The coordinator then uses suffix `_coord02`, runs the focused unit/integration/profile ladder plus
+`pnpm verify:full`, checks the exact diff and clean status, writes the terminal handoff, clears the
+lease/owner/heartbeat/expiry, retains the passing profile, and marks only
+`phase7-reset-evaluator` `DONE`. Dependent `phase7-integration` remains separate.
 
 ## Failure and rollback
 
 - Same candidate gate red after repair `2/2` or fresh verifier rejection: `FAILED_VALIDATION`.
 - Product/security/privacy conflict or new same-level authority disagreement: `NEEDS_HUMAN`.
 - External dependency unavailable after bounded evidence: `BLOCKED`.
-- On any terminal b02 failure, preserve unmerged source only on the isolated branch, write exact
-  evidence, clear owner/heartbeat/expiry, release the schedule lease, remove the unintegrated
-  profile, and never rewrite b01 or b02 repair history.
+- Before integration, a terminal failure preserves unmerged Stage 1/Stage 2 source only on the
+  isolated branch, writes exact evidence, clears owner/heartbeat/expiry, releases the schedule
+  lease, removes the unintegrated profile, and never rewrites b01 or b02 repair history.
+- After integration, any coordinator full-gate failure reverts the no-ff integration merge on
+  `main` (or the replay and repair commits in reverse order if they were integrated separately),
+  without deleting or rewriting the rejected commits/branch. It removes the invalid profile,
+  records the actual cumulative repair count and terminal evidence, releases the lease, and clears
+  active ownership. The clean accepted pre-integration main is restored before closure.
 - No former exact-close/during-buffer ownership question remains; do not re-escalate it.

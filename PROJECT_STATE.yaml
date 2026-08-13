@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-13T12:08:11+03:00"
+updatedAt: "2026-08-13T12:14:48+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -509,8 +509,8 @@ milestones:
     validationRepairAttempts: 0
     lastHeartbeatAt: null
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase7-reset-evaluator/20260813-120811-p7_reset_eval-product-decision.md
-    stopReason: "The former human decision is resolved and committed in SPEC/ADR-004: pre-close settings own the reset and the owning version, buffer, and dueAt freeze at close. NEEDS_HUMAN remains only until the required superseding b02 plan passes independent review; no further Product decision is pending."
+    handoff: docs/phase-records/handoffs/phase7-reset-evaluator/20260813-121448-p7_reset_eval_b02-plan-review-fail.md
+    stopReason: "The Product decision is resolved in SPEC/ADR-004. First review of the superseding b02 plan rejected four implementation/rollback omissions; the committed plan now includes real transition ownership for gaps, both reset-evaluator throw paths through a total resolver/strict wrapper, separate replay and repair commits, and post-integration rollback. Fresh re-review is pending; no Product decision is pending."
     gates:
       unit: PENDING
       integration: PENDING
