@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-13T18:58:51+03:00"
+updatedAt: "2026-08-13T19:36:11+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -557,10 +557,10 @@ milestones:
       - FITWAY_PRODUCT.md, SPEC.md, PHASES.md, DESIGN_GUIDE.md, docs/WORKFLOW.md, docs/adr/**, existing handoffs, and every other phase record
     sharedLeases:
       - "exclusive through 2026-08-20T17:27:49+03:00: Phase 7 b01 scheduled-reset lane limited to packages/api/src/commands/service.ts, packages/api/src/commands/service.test.ts, packages/api/src/audit/types.ts, apps/server/src/audit-repository.ts, apps/server/src/command-repository.ts, packages/env/src/server.ts, apps/server/src/index.ts, and vercel.json for internal system issuance, audit/command persistence, CRON_SECRET validation, /cron mounting, and the one minutely /api/cron schedule; human command behavior, auth principals/roles, edge/OpenAPI, UI, and all other accepted semantics remain frozen"
-    validationRepairAttempts: 1
-    lastHeartbeatAt: "2026-08-13T18:58:51+03:00"
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-08-13T19:36:11+03:00"
     leaseExpiresAt: "2026-08-20T17:27:49+03:00"
-    handoff: docs/phase-records/handoffs/phase-7/20260813-185851-p7_integration_b01-stage2-pass.md
+    handoff: docs/phase-records/handoffs/phase-7/20260813-193611-p7_integration_b01-stage3-review-repair.md
     stopReason: null
     gates:
       unit: PENDING
