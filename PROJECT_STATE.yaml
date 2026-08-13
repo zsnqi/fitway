@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-13T14:12:46+03:00"
+updatedAt: "2026-08-13T14:16:01+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -917,25 +917,23 @@ milestones:
     integratedCommit: 34c7257e6d2d6d0f60494a941c96a7f09bd561a0
 
   phase10-csv-transport:
-    status: FAILED_VALIDATION
+    status: READY
     dependencies: [phase10-domain]
-    ownerSession: null
-    branch: work/phase10-csv-transport-b02
-    worktree: D:/Projects/fitway-worktrees/phase10-csv-transport-b02
-    baseCommit: 668898373be2de19d3f825ea7dc37da1ac7e909a
+    ownerSession: "Fresh Phase 10 CSV transport b03 worker on work/phase10-csv-transport-b03 in D:/Projects/fitway-worktrees/phase10-csv-transport-b03: reapply the bounded owner-only admin.analytics.csv event stream from accepted main, propagate AbortSignal to pending reporting database work, destructively release the active pool client on abort, preserve transaction/error semantics, and prove raw-SSE boundaries plus deterministic cancellation/retry. No contract/domain/migration/OpenAPI/UI/Paper change."
+    branch: work/phase10-csv-transport-b03
+    worktree: D:/Projects/fitway-worktrees/phase10-csv-transport-b03
+    baseCommit: SELF
     ownedPaths:
       - packages/api/src/analytics/reporting/csv-transport.ts
       - packages/api/src/analytics/reporting/csv-transport.test.ts
       - apps/server/src/phase10-csv-transport.integration.test.ts
-      - docs/phase-records/handoffs/phase10-csv-transport/*-p10_csv_transport_b02-worker-*.md
+      - docs/phase-records/handoffs/phase10-csv-transport/*-p10_csv_transport_b03-worker-*.md
     forbiddenPaths:
       - all repository paths outside ownedPaths and sharedLeases
       - packages/api/src/analytics/reporting/contracts.ts
       - packages/api/src/analytics/reporting/csv.ts
       - packages/api/src/analytics/reporting/reporting.ts
       - packages/api/src/analytics/reporting/reporting.test.ts
-      - apps/server/src/reporting-repository.ts
-      - apps/server/src/reporting-repository.test.ts
       - packages/api/src/index.ts and every packages/api/src/routers/** path except packages/api/src/routers/index.ts
       - packages/api/src/auth/**, packages/auth/**, and apps/server/src/auth/**
       - packages/api/src/edge-push.ts, apps/server/src/openapi.ts, and every device/public/occupancy/command/reset/offline surface
@@ -943,22 +941,23 @@ milestones:
       - packages/env/** and every environment schema
       - apps/web/**, tests/browser/**, Paper, visual-direction-gate/**, and screenshot baselines
       - scripts/verify.mjs, scripts/verify-repository.mjs, PROJECT_STATE.yaml, and all root manifests/config/lockfiles
-      - all existing phase10-csv-transport b01 handoffs and every handoff not matching the owned b02 worker pattern
+      - all existing phase10-csv-transport b01/b02 handoffs and every handoff not matching the owned b03 worker pattern
       - every other milestone's phase record, implementation, and test
       - normative product/specification/ADR/workflow documents
-    sharedLeases: []
-    validationRepairAttempts: 2
-    lastHeartbeatAt: null
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase10-csv-transport/20260813-120555-p10_csv_transport_b02-failed-validation.md
-    stopReason: "Fresh Standards and Spec review rejected candidate 94ecea4 after repair 2/2: raw cancellation was asserted before the first decoded CSV event, event boundaries were erased, and AsyncIterator.return() cannot interrupt a pending next()/database operation because streamCsv cannot receive AbortSignal. No third b02 repair is permitted."
+    sharedLeases:
+      - "exclusive through 2026-08-20T14:16:01+03:00: Phase 10 CSV b03 transport/cancellation lane limited to packages/api/src/context.ts, packages/api/src/routers/index.ts, apps/server/src/index.ts, apps/server/src/reporting-repository.ts, and apps/server/src/reporting-repository.test.ts for optional AbortSignal propagation, owner-only leaf/wiring, idempotent release(true) on abort, normal CLOSE/COMMIT/release, early-return/error CLOSE/ROLLBACK/release, primary-error preservation, and focused tests; all accepted queries, CSV/history/privacy/batch/domain semantics remain frozen"
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-08-13T14:16:01+03:00"
+    leaseExpiresAt: "2026-08-20T14:16:01+03:00"
+    handoff: docs/phase-records/handoffs/phase10-csv-transport/20260813-141601-p10_csv_transport_b03-coordinator-activation.md
+    stopReason: null
     gates:
-      unit: PASS
-      integration: PASS
+      unit: PENDING
+      integration: PENDING
       browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
-      independentReview: FAIL
+      independentReview: PENDING
     integratedCommit: null
 
   phase10-ui-csv:
