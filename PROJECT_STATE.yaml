@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-13T12:05:55+03:00"
+updatedAt: "2026-08-13T12:08:11+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -507,10 +507,10 @@ milestones:
     forbiddenPaths: []
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-11T22:36:20+03:00"
+    lastHeartbeatAt: null
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase7-reset-evaluator/20260811-222719-p7_reset_eval_b02-plan.md
-    stopReason: "Normative SPEC does not decide which settings version owns a reset when a new version becomes effective exactly at close or during the close-plus-buffer delay. Human approval of both cases and a coordinator-committed SPEC amendment are required before plan re-review and fresh b02 activation."
+    handoff: docs/phase-records/handoffs/phase7-reset-evaluator/20260813-120811-p7_reset_eval-product-decision.md
+    stopReason: "The former human decision is resolved and committed in SPEC/ADR-004: pre-close settings own the reset and the owning version, buffer, and dueAt freeze at close. NEEDS_HUMAN remains only until the required superseding b02 plan passes independent review; no further Product decision is pending."
     gates:
       unit: PENDING
       integration: PENDING

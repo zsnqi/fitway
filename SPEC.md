@@ -584,6 +584,14 @@ command and marks the business day closed. If the edge is offline at that moment
 command stays pending and must be applied on reconnect **before** the edge's pushes
 advance the live count again (RESEARCH.md §9). Occupancy still floors at 0 independently.
 
+Reset ownership is determined from the settings version effective immediately before the
+scheduled close instant. A settings version becoming effective exactly at close does not own that
+reset. At close, freeze the owning settings version, its `resetBufferMinutes`, and
+`dueAt = scheduledCloseAt + resetBufferMinutes`. Settings changes after close, including during the
+buffer, do not recompute, cancel, or transfer that pending reset; they apply prospectively only.
+Historical reset evaluation resolves settings at these real instants and never substitutes current
+settings.
+
 **Alert policy. [Resolved here — defaults]** Alert conditions: (a) no accepted push for
 ≥ the stale threshold during open hours or within the 30-minute pre-open window; (b) a
 push whose health snapshot reports camera/feed/process failure; (c) at most one re-alert

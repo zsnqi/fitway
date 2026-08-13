@@ -16,6 +16,9 @@ timezone, and changing settings must not rewrite historical meaning.
 - Store weekly open/close per weekday. `close <= open` means close on the next calendar day.
 - Store settings as append-only versions with `effectiveFrom`. Historical queries resolve the
   version effective at each instant; they never apply today's settings retroactively.
+- A scheduled reset is owned by the settings version effective immediately before its close. Freeze
+  that version, its reset buffer, and the resulting due instant at close; an exact-close or later
+  settings change applies only prospectively and never transfers or recomputes the pending reset.
 - Store required band/capacity/settings snapshots with minute history so later configuration
   changes do not rewrite old analytics.
 - All user-facing time uses gym timezone and Western digits. Arabic uses localized `ص/م`; English
