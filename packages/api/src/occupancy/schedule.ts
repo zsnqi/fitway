@@ -22,7 +22,7 @@ export type ScheduleSettings = {
 	weeklySchedule: WeeklySchedule;
 };
 
-type CivilDate = { year: number; month: number; day: number };
+export type ScheduleCivilDate = { year: number; month: number; day: number };
 type WallTime = {
 	hour: number;
 	minute: number;
@@ -30,7 +30,24 @@ type WallTime = {
 	millisecond: number;
 	totalMilliseconds: number;
 };
-type LocalParts = CivilDate & Omit<WallTime, "totalMilliseconds">;
+type LocalParts = ScheduleCivilDate & Omit<WallTime, "totalMilliseconds">;
+
+export type ScheduleWallTimeResolution =
+	| {
+			kind: "exact" | "fold";
+			instant: Date;
+			scheduled: { date: ScheduleCivilDate; timeMilliseconds: number };
+	  }
+	| {
+			kind: "gap";
+			transitionAt: Date;
+			scheduled: { date: ScheduleCivilDate; timeMilliseconds: number };
+	  };
+
+export type ScheduleSessionResolution = {
+	start: ScheduleWallTimeResolution;
+	end: ScheduleWallTimeResolution;
+};
 
 const TIME = /^(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,6}))?)?$/;
 const formatters = new Map<string, Intl.DateTimeFormat>();
@@ -99,7 +116,7 @@ function parseTime(value: string): WallTime {
 	};
 }
 
-function addDays(value: CivilDate, amount: number): CivilDate {
+function addDays(value: ScheduleCivilDate, amount: number): ScheduleCivilDate {
 	const date = new Date(0);
 	date.setUTCFullYear(value.year, value.month - 1, value.day + amount);
 	date.setUTCHours(0, 0, 0, 0);
@@ -110,7 +127,7 @@ function addDays(value: CivilDate, amount: number): CivilDate {
 	};
 }
 
-function weekdayFor(value: CivilDate): Weekday {
+function weekdayFor(value: ScheduleCivilDate): Weekday {
 	const date = new Date(0);
 	date.setUTCFullYear(value.year, value.month - 1, value.day);
 	date.setUTCHours(0, 0, 0, 0);
@@ -129,24 +146,50 @@ function sameWallParts(left: LocalParts, right: LocalParts): boolean {
 	);
 }
 
-/**
- * Converts a gym-local wall time to an instant without using the host timezone.
- * DST policy: nonexistent wall times are rejected; repeated wall times use the
- * earlier of the two matching instants.
- */
-function wallTimeToInstant(
-	date: CivilDate,
+function offsetAt(instant: number, timeZone: string): number {
+	return utcMilliseconds(localParts(new Date(instant), timeZone)) - instant;
+}
+
+function transitionAfterGap(naive: number, timeZone: string): Date | null {
+	const step = 6 * 60 * 60 * 1_000;
+	let previousInstant = naive - 48 * 60 * 60 * 1_000;
+	let previousOffset = offsetAt(previousInstant, timeZone);
+	for (
+		let sampledInstant = previousInstant + step;
+		sampledInstant <= naive + 48 * 60 * 60 * 1_000;
+		sampledInstant += step
+	) {
+		const sampledOffset = offsetAt(sampledInstant, timeZone);
+		if (sampledOffset > previousOffset) {
+			let low = previousInstant;
+			let high = sampledInstant;
+			while (low + 1 < high) {
+				const middle = Math.floor((low + high) / 2);
+				if (offsetAt(middle, timeZone) === previousOffset) low = middle;
+				else high = middle;
+			}
+			const beforeLocal = low + offsetAt(low, timeZone);
+			const afterLocal = high + offsetAt(high, timeZone);
+			if (naive > beforeLocal && naive < afterLocal) return new Date(high);
+		}
+		previousInstant = sampledInstant;
+		previousOffset = sampledOffset;
+	}
+	return null;
+}
+
+function resolveWallTime(
+	date: ScheduleCivilDate,
 	time: WallTime,
 	timeZone: string,
-): Date {
+): ScheduleWallTimeResolution {
 	const requested: LocalParts = { ...date, ...time };
+	const scheduled = { date, timeMilliseconds: time.totalMilliseconds };
 	const naive = utcMilliseconds(requested);
 	const offsets = new Set<number>();
 	for (let delta = -48; delta <= 48; delta += 6) {
 		const sampled = naive + delta * 60 * 60 * 1_000;
-		offsets.add(
-			utcMilliseconds(localParts(new Date(sampled), timeZone)) - sampled,
-		);
+		offsets.add(offsetAt(sampled, timeZone));
 	}
 	const matches = [...offsets]
 		.map((offset) => naive - offset)
@@ -155,25 +198,31 @@ function wallTimeToInstant(
 		)
 		.sort((left, right) => left - right);
 	const instant = matches[0];
-	if (instant === undefined) {
-		throw new RangeError(
-			"Schedule wall time does not exist in the configured zone",
-		);
+	if (instant !== undefined) {
+		return {
+			kind: matches.length > 1 ? "fold" : "exact",
+			instant: new Date(instant),
+			scheduled,
+		};
 	}
-	return new Date(instant);
+	const transitionAt = transitionAfterGap(naive, timeZone);
+	if (!transitionAt) {
+		throw new RangeError("Schedule wall time could not be resolved");
+	}
+	return { kind: "gap", transitionAt, scheduled };
 }
 
-function sessionFor(
+export function resolveScheduleSession(
 	settings: ScheduleSettings,
-	anchor: CivilDate,
-): { start: Date; end: Date } | null {
+	anchor: ScheduleCivilDate,
+): ScheduleSessionResolution | null {
 	const hours = settings.weeklySchedule[weekdayFor(anchor)];
 	if (!hours) return null;
 	const open = parseTime(hours.open);
 	const close = parseTime(hours.close);
 	return {
-		start: wallTimeToInstant(anchor, open, settings.timeZone),
-		end: wallTimeToInstant(
+		start: resolveWallTime(anchor, open, settings.timeZone),
+		end: resolveWallTime(
 			close.totalMilliseconds <= open.totalMilliseconds
 				? addDays(anchor, 1)
 				: anchor,
@@ -181,6 +230,15 @@ function sessionFor(
 			settings.timeZone,
 		),
 	};
+}
+
+function strictInstant(resolution: ScheduleWallTimeResolution): Date {
+	if (resolution.kind === "gap") {
+		throw new RangeError(
+			"Schedule wall time does not exist in the configured zone",
+		);
+	}
+	return resolution.instant;
 }
 
 export function assertScheduleSettings(
@@ -225,7 +283,13 @@ export function evaluateSchedule(
 	const local = localParts(now, settings.timeZone);
 	const today = { year: local.year, month: local.month, day: local.day };
 	for (const anchor of [addDays(today, -1), today]) {
-		const session = sessionFor(settings, anchor);
+		const resolution = resolveScheduleSession(settings, anchor);
+		const session = resolution
+			? {
+					start: strictInstant(resolution.start),
+					end: strictInstant(resolution.end),
+				}
+			: null;
 		if (
 			session &&
 			now.getTime() >= session.start.getTime() &&
@@ -240,10 +304,8 @@ export function evaluateSchedule(
 		const date = addDays(today, days);
 		const hours = settings.weeklySchedule[weekdayFor(date)];
 		if (!hours) continue;
-		const candidate = wallTimeToInstant(
-			date,
-			parseTime(hours.open),
-			settings.timeZone,
+		const candidate = strictInstant(
+			resolveWallTime(date, parseTime(hours.open), settings.timeZone),
 		);
 		if (candidate.getTime() > now.getTime()) openings.push(candidate);
 	}

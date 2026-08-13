@@ -1,23 +1,17 @@
-import { businessDayFor } from "../occupancy/business-day";
-import { evaluateSchedule } from "../occupancy/schedule";
+import { businessDayForExclusiveLocalClose } from "../occupancy/business-day";
+import {
+	resolveScheduleSession,
+	type ScheduleCivilDate,
+	type ScheduleSessionResolution,
+} from "../occupancy/schedule";
 import type {
 	EvaluateScheduledResetInput,
 	ResetScheduleSettingsVersion,
 	ScheduledResetEvaluation,
 } from "./types";
 
-type CivilDate = { year: number; month: number; day: number };
-type WallTime = {
-	hour: number;
-	minute: number;
-	second: number;
-	millisecond: number;
-	totalMilliseconds: number;
-};
-type LocalParts = CivilDate & Omit<WallTime, "totalMilliseconds">;
-
 const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
-const TIME = /^(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,6}))?)?$/;
+const GAP_ERROR = "Schedule wall time does not exist in the configured zone";
 
 function milliseconds(value: Date, name: string): number {
 	const result = value.getTime();
@@ -25,7 +19,7 @@ function milliseconds(value: Date, name: string): number {
 	return result;
 }
 
-function parseIsoDate(value: string): CivilDate {
+function parseIsoDate(value: string): ScheduleCivilDate {
 	const match = ISO_DATE.exec(value);
 	if (!match) throw new RangeError("Business day must be an ISO date");
 	const result = {
@@ -42,7 +36,7 @@ function parseIsoDate(value: string): CivilDate {
 	return result;
 }
 
-function addDays(value: CivilDate, amount: number): CivilDate {
+function addDays(value: ScheduleCivilDate, amount: number): ScheduleCivilDate {
 	const date = new Date(0);
 	date.setUTCFullYear(value.year, value.month - 1, value.day + amount);
 	date.setUTCHours(0, 0, 0, 0);
@@ -53,106 +47,14 @@ function addDays(value: CivilDate, amount: number): CivilDate {
 	};
 }
 
-function parseTime(value: string): WallTime {
-	const match = TIME.exec(value);
-	if (!match) throw new RangeError("Schedule time must be HH:mm or HH:mm:ss");
-	const hour = Number(match[1]);
-	const minute = Number(match[2]);
-	const second = Number(match[3] ?? 0);
-	const millisecond = Number((match[4] ?? "").slice(0, 3).padEnd(3, "0"));
-	if (hour > 23 || minute > 59 || second > 59) {
-		throw new RangeError("Schedule time is outside the clock range");
-	}
-	return {
-		hour,
-		minute,
-		second,
-		millisecond,
-		totalMilliseconds:
-			((hour * 60 + minute) * 60 + second) * 1_000 + millisecond,
-	};
-}
-
-function localParts(instant: Date, timeZone: string): LocalParts {
-	const parts = Object.fromEntries(
-		new Intl.DateTimeFormat("en-CA-u-ca-gregory-nu-latn", {
-			timeZone,
-			year: "numeric",
-			month: "2-digit",
-			day: "2-digit",
-			hour: "2-digit",
-			minute: "2-digit",
-			second: "2-digit",
-			fractionalSecondDigits: 3,
-			hourCycle: "h23",
-		})
-			.formatToParts(instant)
-			.filter((part) => part.type !== "literal")
-			.map((part) => [part.type, part.value]),
-	);
-	return {
-		year: Number(parts.year),
-		month: Number(parts.month),
-		day: Number(parts.day),
-		hour: Number(parts.hour),
-		minute: Number(parts.minute),
-		second: Number(parts.second),
-		millisecond: Number(parts.fractionalSecond),
-	};
-}
-
-function utcMilliseconds(value: LocalParts): number {
-	const date = new Date(0);
-	date.setUTCFullYear(value.year, value.month - 1, value.day);
-	date.setUTCHours(value.hour, value.minute, value.second, value.millisecond);
-	return date.getTime();
-}
-
-function sameLocalParts(left: LocalParts, right: LocalParts): boolean {
-	return (
-		left.year === right.year &&
-		left.month === right.month &&
-		left.day === right.day &&
-		left.hour === right.hour &&
-		left.minute === right.minute &&
-		left.second === right.second &&
-		left.millisecond === right.millisecond
-	);
-}
-
-function wallTimeToInstant(
-	date: CivilDate,
-	time: WallTime,
-	timeZone: string,
-): Date {
-	const requested: LocalParts = { ...date, ...time };
-	const naive = utcMilliseconds(requested);
-	const offsets = new Set<number>();
-	for (let delta = -48; delta <= 48; delta += 6) {
-		const sampled = naive + delta * 60 * 60 * 1_000;
-		offsets.add(
-			utcMilliseconds(localParts(new Date(sampled), timeZone)) - sampled,
-		);
-	}
-	const match = [...offsets]
-		.map((offset) => naive - offset)
-		.filter((candidate) =>
-			sameLocalParts(localParts(new Date(candidate), timeZone), requested),
-		)
-		.sort((left, right) => left - right)[0];
-	if (match === undefined) {
-		throw new RangeError(
-			"Schedule wall time does not exist in the configured zone",
-		);
-	}
-	return new Date(match);
-}
-
-function weekdayIndex(value: CivilDate): number {
-	const date = new Date(0);
-	date.setUTCFullYear(value.year, value.month - 1, value.day);
-	date.setUTCHours(0, 0, 0, 0);
-	return date.getUTCDay();
+function scheduledCivilTime(
+	date: ScheduleCivilDate,
+	timeMilliseconds: number,
+): number {
+	const value = new Date(0);
+	value.setUTCFullYear(date.year, date.month - 1, date.day);
+	value.setUTCHours(0, 0, 0, timeMilliseconds);
+	return value.getTime();
 }
 
 function settingsEffectiveAt(
@@ -176,36 +78,46 @@ function settingsEffectiveAt(
 		);
 }
 
-function scheduledCloseFor(
+type ResetCandidate = {
+	version: ResetScheduleSettingsVersion;
+	session: ScheduleSessionResolution;
+	scheduledCloseOrder: number;
+	ownershipAt: Date;
+};
+
+function candidateFor(
 	businessDay: string,
-	anchor: CivilDate,
+	anchor: ScheduleCivilDate,
 	version: ResetScheduleSettingsVersion,
-): Date | null {
-	const weekday = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
-	const hours = version.weeklySchedule[weekday[weekdayIndex(anchor)] ?? "sun"];
-	if (!hours) return null;
-	const open = parseTime(hours.open);
-	const close = parseTime(hours.close);
-	const closeAt = wallTimeToInstant(
-		close.totalMilliseconds <= open.totalMilliseconds
-			? addDays(anchor, 1)
-			: anchor,
-		close,
-		version.timeZone,
-	);
-	const beforeClose = new Date(closeAt.getTime() - 1);
-	if (settingsEffectiveAt([version], beforeClose) !== version) return null;
-	if (!evaluateSchedule(version, beforeClose).open) return null;
+): ResetCandidate | null {
+	const session = resolveScheduleSession(version, anchor);
+	if (!session) return null;
+	const endAt =
+		session.end.kind === "gap" ? session.end.transitionAt : session.end.instant;
+	const ownershipAt =
+		session.end.kind === "gap" ? endAt : new Date(endAt.getTime() - 1);
 	if (
-		businessDayFor(
-			beforeClose,
-			version.timeZone,
-			version.businessDayBoundary,
-		) !== businessDay
+		session.start.kind !== "gap" &&
+		session.end.kind !== "gap" &&
+		session.start.instant.getTime() >= session.end.instant.getTime()
 	) {
 		return null;
 	}
-	return closeAt;
+	const attributedBusinessDay = businessDayForExclusiveLocalClose(
+		session.end.scheduled.date,
+		session.end.scheduled.timeMilliseconds,
+		version.businessDayBoundary,
+	);
+	if (attributedBusinessDay !== businessDay) return null;
+	return {
+		version,
+		session,
+		scheduledCloseOrder: scheduledCivilTime(
+			session.end.scheduled.date,
+			session.end.scheduled.timeMilliseconds,
+		),
+		ownershipAt,
+	};
 }
 
 export function evaluateScheduledReset(
@@ -220,26 +132,20 @@ export function evaluateScheduledReset(
 	];
 	const candidates = input.settingsVersions
 		.flatMap((version) =>
-			anchors.map((anchor) => ({
-				version,
-				closeAt: scheduledCloseFor(input.businessDay, anchor, version),
-			})),
+			anchors.map((anchor) => candidateFor(input.businessDay, anchor, version)),
 		)
-		.filter(
-			(
-				value,
-			): value is { version: ResetScheduleSettingsVersion; closeAt: Date } =>
-				value.closeAt !== null,
-		)
+		.filter((value): value is ResetCandidate => value !== null)
 		.filter(
 			(value) =>
-				settingsEffectiveAt(
-					input.settingsVersions,
-					new Date(value.closeAt.getTime() - 1),
-				) === value.version,
+				settingsEffectiveAt(input.settingsVersions, value.ownershipAt) ===
+				value.version,
 		);
 	const candidate = candidates.sort(
-		(left, right) => right.closeAt.getTime() - left.closeAt.getTime(),
+		(left, right) =>
+			right.scheduledCloseOrder - left.scheduledCloseOrder ||
+			milliseconds(right.version.effectiveFrom, "Settings effectiveFrom") -
+				milliseconds(left.version.effectiveFrom, "Settings effectiveFrom") ||
+			right.version.version - left.version.version,
 	)[0];
 	if (!candidate) {
 		return {
@@ -250,14 +156,20 @@ export function evaluateScheduledReset(
 		};
 	}
 	if (
+		candidate.session.start.kind === "gap" ||
+		candidate.session.end.kind === "gap"
+	) {
+		throw new RangeError(GAP_ERROR);
+	}
+	const closeAt = candidate.session.end.instant;
+	if (
 		!Number.isSafeInteger(candidate.version.resetBufferMinutes) ||
 		candidate.version.resetBufferMinutes < 0
 	) {
 		throw new RangeError("Reset buffer must be a nonnegative safe integer");
 	}
 	const dueAt = new Date(
-		candidate.closeAt.getTime() +
-			candidate.version.resetBufferMinutes * 60 * 1_000,
+		closeAt.getTime() + candidate.version.resetBufferMinutes * 60 * 1_000,
 	);
 	if (nowMs < dueAt.getTime()) {
 		return {
@@ -284,7 +196,7 @@ export function evaluateScheduledReset(
 		issuanceKey: `scheduled-reset:${input.businessDay}`,
 		businessDay: input.businessDay,
 		settingsVersion: candidate.version.version,
-		scheduledCloseAt: candidate.closeAt,
+		scheduledCloseAt: closeAt,
 		dueAt,
 		issuedAt: input.now,
 		issuer: "system",
