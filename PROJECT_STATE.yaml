@@ -1168,19 +1168,28 @@ milestones:
     integratedCommit: null
 
   phase-12:
-    status: PLANNED
+    status: READY
     dependencies: [phase-6]
-    ownerSession: null
-    branch: null
-    worktree: null
-    baseCommit: null
-    ownedPaths: []
-    forbiddenPaths: []
-    sharedLeases: []
+    ownerSession: "Fresh Phase 12 durable edge client b01 worker on work/phase12-edge-client-b01 in D:/Projects/fitway-worktrees/phase12-edge-client: extract the accepted Python protocol seam, implement the synthetic SQLite runtime, and deliver the Windows lifecycle/runbook within the independently approved plan."
+    branch: work/phase12-edge-client-b01
+    worktree: D:/Projects/fitway-worktrees/phase12-edge-client
+    baseCommit: SELF
+    ownedPaths:
+      - docs/phase-records/handoffs/phase-12/*-p12_edge_b01-worker-*.md
+    forbiddenPaths:
+      - all repository paths outside ownedPaths and sharedLeases
+      - edge/fixtures/push.json, edge/fixtures/backfill.json, edge/fixtures/acknowledgement.json, and edge/fixtures/commands-pending.json
+      - all TypeScript DTOs, OpenAPI, API, server, router, auth, occupancy, command, reset, offline, analytics, alert, and public surfaces
+      - packages/db/**, migrations, schema metadata, and indexes
+      - root manifests, pnpm-lock.yaml, environment schemas and values, scripts/verify.mjs, scripts/verify-repository.mjs, and PROJECT_STATE.yaml
+      - apps/web/**, packages/ui/**, tests/browser/**, Paper, visual-direction-gate/**, and screenshot baselines
+      - FITWAY_PRODUCT.md, SPEC.md, PHASES.md, DESIGN_GUIDE.md, docs/WORKFLOW.md, docs/adr/**, existing handoffs, and every other phase record
+    sharedLeases:
+      - "exclusive through 2026-08-20T20:08:41+03:00: Phase 12 b01 edge protocol spine limited to edge/client.py; edge/fitway_edge/{__init__.py,config.py,protocol.py,runtime.py,sqlite_store.py,sources.py}; edge/{test_client.py,test_sqlite_store.py,test_windows_lifecycle.py}; edge/fixtures/client.synthetic.json; edge/windows/{install.ps1,run.ps1,uninstall.ps1,README.md}; edge/{simulator.py,test_simulator.py,README.md}. The frozen cloud/device contract fixtures, TypeScript/OpenAPI/server surfaces, dependencies, manifests, and every image/frame/video/identity path remain forbidden."
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
-    leaseExpiresAt: null
-    handoff: null
+    lastHeartbeatAt: "2026-08-13T20:08:41+03:00"
+    leaseExpiresAt: "2026-08-20T20:08:41+03:00"
+    handoff: docs/phase-records/handoffs/phase-12/20260813-200841-p12_edge_b01-coordinator-activation.md
     stopReason: null
     gates:
       unit: PENDING

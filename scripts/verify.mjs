@@ -24,6 +24,11 @@ const phases = {
 		integrationFiles: ["apps/server/src/phase6-offline.integration.test.ts"],
 		label: "Phase 6 offline fallback, backfill, and reconciliation",
 	},
+	12: {
+		browserFiles: [],
+		integrationFiles: ["apps/server/src/phase6-offline.integration.test.ts"],
+		label: "Phase 12 durable edge client and Windows lifecycle",
+	},
 	baseline: {
 		browserFiles: null,
 		integrationFiles: null,
