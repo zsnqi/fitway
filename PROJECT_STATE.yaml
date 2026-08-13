@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-13T17:27:49+03:00"
+updatedAt: "2026-08-13T17:32:23+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -531,12 +531,12 @@ milestones:
     integratedCommit: 0acebac247511160673977aa4394d4017fd51ccb
 
   phase7-integration:
-    status: READY
+    status: IN_PROGRESS
     dependencies: [phase7-reset-evaluator, phase-6]
     ownerSession: "Fresh Phase 7 scheduled-reset integration b01 worker on work/phase7-integration-b01 in D:/Projects/fitway-worktrees/phase7-integration: implement the reviewed internal system command service, historical reset runner/repository, authenticated same-origin cron, and full offline edge reconciliation without any product command surface or Phase 6 contract change."
     branch: work/phase7-integration-b01
     worktree: D:/Projects/fitway-worktrees/phase7-integration
-    baseCommit: SELF
+    baseCommit: 346bcc83ee52eb600ef0301096fea64dd08a5e3c
     ownedPaths:
       - packages/api/src/reset/runner.ts
       - packages/api/src/reset/runner.test.ts
@@ -558,9 +558,9 @@ milestones:
     sharedLeases:
       - "exclusive through 2026-08-20T17:27:49+03:00: Phase 7 b01 scheduled-reset lane limited to packages/api/src/commands/service.ts, packages/api/src/commands/service.test.ts, packages/api/src/audit/types.ts, apps/server/src/audit-repository.ts, apps/server/src/command-repository.ts, packages/env/src/server.ts, apps/server/src/index.ts, and vercel.json for internal system issuance, audit/command persistence, CRON_SECRET validation, /cron mounting, and the one minutely /api/cron schedule; human command behavior, auth principals/roles, edge/OpenAPI, UI, and all other accepted semantics remain frozen"
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-13T17:27:49+03:00"
+    lastHeartbeatAt: "2026-08-13T17:32:23+03:00"
     leaseExpiresAt: "2026-08-20T17:27:49+03:00"
-    handoff: docs/phase-records/handoffs/phase-7/20260813-172749-p7_integration_b01-coordinator-activation.md
+    handoff: docs/phase-records/handoffs/phase-7/20260813-173223-p7_integration_b01-coordinator-start.md
     stopReason: null
     gates:
       unit: PENDING
