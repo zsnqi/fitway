@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-14T01:59:27+03:00"
+updatedAt: "2026-08-14T02:42:37+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -571,11 +571,11 @@ milestones:
     integratedCommit: null
 
   phase7-integration-b02:
-    status: IN_PROGRESS
+    status: DONE
     dependencies: [phase7-reset-evaluator, phase-6]
-    ownerSession: "Fresh Phase 7 scheduled-reset integration b02 worker on work/phase7-integration-b02 in D:/Projects/fitway-worktrees/phase7-integration-b02: reproduce the independently accepted atomic issuance and historical runner behavior in fresh b02 commits, then implement accurate production cron/session evidence and offline reconciliation without adopting any b01 handoff or changing product/auth/edge contracts."
-    branch: work/phase7-integration-b02
-    worktree: D:/Projects/fitway-worktrees/phase7-integration-b02
+    ownerSession: null
+    branch: main
+    worktree: null
     baseCommit: SELF
     ownedPaths:
       - packages/api/src/reset/runner.ts
@@ -596,12 +596,11 @@ milestones:
       - apps/web/**, packages/ui/**, edge/**, tests/browser/**, Paper, visual-direction-gate/**, and screenshot baselines
       - scripts/verify.mjs, scripts/verify-repository.mjs, PROJECT_STATE.yaml, root manifests/config/lockfiles, and environment values
       - FITWAY_PRODUCT.md, SPEC.md, PHASES.md, DESIGN_GUIDE.md, docs/WORKFLOW.md, docs/adr/**, existing handoffs, and every other phase record
-    sharedLeases:
-      - "exclusive through 2026-08-20T20:58:59+03:00: Phase 7 b02 scheduled-reset application lane limited to packages/api/src/commands/{service.ts,service.test.ts}, packages/api/src/audit/types.ts, apps/server/src/{audit-repository.ts,command-repository.ts,index.ts}, packages/env/src/server.ts, and vercel.json. It authorizes only internal atomic system reset issuance, reset runner composition, CRON_SECRET validation, accurate /cron production routing/evidence, and the one minutely /api/cron schedule; auth/session behavior, product command surfaces, edge/OpenAPI contracts, UI, Phase 8, retention, deployments, secrets, and b01 remain frozen."
+    sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-14T01:59:27+03:00"
-    leaseExpiresAt: "2026-08-20T20:58:59+03:00"
-    handoff: docs/phase-records/handoffs/phase-7/20260814-015927-p7_integration_b02-v02-verification-pass.md
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase-7/20260814-024237-p7_integration_b02-coordinator-done.md
     stopReason: null
     gates:
       unit: PASS
@@ -610,7 +609,7 @@ milestones:
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
       independentReview: PASS
-    integratedCommit: null
+    integratedCommit: 0a128a55f22370e24166bc03da875ae157512d97
 
   phase-7:
     status: PLANNED
