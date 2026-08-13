@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-13T13:13:09+03:00"
+updatedAt: "2026-08-13T13:15:10+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -497,12 +497,12 @@ milestones:
     integratedCommit: 24449defc2f51738ae1dfa9eae94a7122863d638
 
   phase7-reset-evaluator:
-    status: READY
+    status: IN_PROGRESS
     dependencies: [baseline-reconciliation-gate, phase-3, phase-5]
     ownerSession: "Fresh Phase 7 reset evaluator b03 worker on work/phase7-reset-evaluator-b03 in D:/Projects/fitway-worktrees/phase7-reset-evaluator-b03: replay accepted evaluator blobs, then deliver total reset-history resolution with ownership-only transition instants, scheduled-civil total ordering, centralized exclusive-close business-day attribution, frozen close settings/buffer/dueAt, and winning-gap-only rejection. No transport, persistence, router, migration, UI, or unrelated domain change."
     branch: work/phase7-reset-evaluator-b03
     worktree: D:/Projects/fitway-worktrees/phase7-reset-evaluator-b03
-    baseCommit: SELF
+    baseCommit: 7574b56ea712e7ae9c8c583ccf096aec39e6ef69
     ownedPaths:
       - packages/api/src/reset/**
       - apps/server/src/phase7-reset-evaluator.integration.test.ts
@@ -518,9 +518,9 @@ milestones:
     sharedLeases:
       - "exclusive through 2026-08-20T13:13:09+03:00: Phase 7 b03 total schedule/business-day lane limited to packages/api/src/occupancy/schedule.ts, schedule.test.ts, business-day.ts, and business-day.test.ts for exact/fold/gap total resolution, a strict behavior-preserving schedule wrapper, and a reusable exclusive local-wall close attribution primitive where close <= boundary belongs to the previous civil date; no public instant-based businessDayFor change or unrelated occupancy semantic"
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-13T13:13:09+03:00"
+    lastHeartbeatAt: "2026-08-13T13:15:10+03:00"
     leaseExpiresAt: "2026-08-20T13:13:09+03:00"
-    handoff: docs/phase-records/handoffs/phase7-reset-evaluator/20260813-131309-p7_reset_eval_b03-coordinator-activation.md
+    handoff: docs/phase-records/handoffs/phase7-reset-evaluator/20260813-131510-p7_reset_eval_b03-coordinator-start.md
     stopReason: null
     gates:
       unit: PENDING
