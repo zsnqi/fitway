@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-13T20:44:54+03:00"
+updatedAt: "2026-08-13T20:58:59+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -571,19 +571,37 @@ milestones:
     integratedCommit: null
 
   phase7-integration-b02:
-    status: PLANNED
+    status: READY
     dependencies: [phase7-reset-evaluator, phase-6]
-    ownerSession: null
-    branch: null
-    worktree: null
-    baseCommit: null
-    ownedPaths: []
-    forbiddenPaths: []
-    sharedLeases: []
+    ownerSession: "Fresh Phase 7 scheduled-reset integration b02 worker on work/phase7-integration-b02 in D:/Projects/fitway-worktrees/phase7-integration-b02: reproduce the independently accepted atomic issuance and historical runner behavior in fresh b02 commits, then implement accurate production cron/session evidence and offline reconciliation without adopting any b01 handoff or changing product/auth/edge contracts."
+    branch: work/phase7-integration-b02
+    worktree: D:/Projects/fitway-worktrees/phase7-integration-b02
+    baseCommit: SELF
+    ownedPaths:
+      - packages/api/src/reset/runner.ts
+      - packages/api/src/reset/runner.test.ts
+      - apps/server/src/cron.ts
+      - apps/server/src/cron.test.ts
+      - apps/server/src/reset-repository.ts
+      - apps/server/src/reset-repository.test.ts
+      - apps/server/src/phase7-integration.integration.test.ts
+      - docs/phase-records/handoffs/phase-7/*-p7_integration_b02-worker-*.md
+    forbiddenPaths:
+      - all repository paths outside ownedPaths and sharedLeases
+      - the entire preserved b01 branch/worktree and every existing b01 handoff or terminal record
+      - all auth principal/session schema and behavior, packages/api/src/context.ts, packages/api/src/routers/**, and every oRPC product command surface
+      - Phase 6 edge DTO/OpenAPI/engine/queue/Python files and the accepted public closed-state behavior
+      - packages/db/**, including the committed Stage 0 schema, migration, snapshot, and journal
+      - all occupancy/public/analytics/alerts/retention domains
+      - apps/web/**, packages/ui/**, edge/**, tests/browser/**, Paper, visual-direction-gate/**, and screenshot baselines
+      - scripts/verify.mjs, scripts/verify-repository.mjs, PROJECT_STATE.yaml, root manifests/config/lockfiles, and environment values
+      - FITWAY_PRODUCT.md, SPEC.md, PHASES.md, DESIGN_GUIDE.md, docs/WORKFLOW.md, docs/adr/**, existing handoffs, and every other phase record
+    sharedLeases:
+      - "exclusive through 2026-08-20T20:58:59+03:00: Phase 7 b02 scheduled-reset application lane limited to packages/api/src/commands/{service.ts,service.test.ts}, packages/api/src/audit/types.ts, apps/server/src/{audit-repository.ts,command-repository.ts,index.ts}, packages/env/src/server.ts, and vercel.json. It authorizes only internal atomic system reset issuance, reset runner composition, CRON_SECRET validation, accurate /cron production routing/evidence, and the one minutely /api/cron schedule; auth/session behavior, product command surfaces, edge/OpenAPI contracts, UI, Phase 8, retention, deployments, secrets, and b01 remain frozen."
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase-7/20260813-204454-p7_integration_b02-plan-review-pass.md
+    lastHeartbeatAt: "2026-08-13T20:58:59+03:00"
+    leaseExpiresAt: "2026-08-20T20:58:59+03:00"
+    handoff: docs/phase-records/handoffs/phase-7/20260813-205859-p7_integration_b02-coordinator-activation.md
     stopReason: null
     gates:
       unit: PENDING
