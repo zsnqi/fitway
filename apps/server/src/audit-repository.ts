@@ -1,4 +1,4 @@
-import type { HumanAuditEntry } from "@fitway/api/audit/types";
+import type { AuditEntry } from "@fitway/api/audit/types";
 import { auditLog } from "@fitway/db/schema/application";
 
 type AuditDatabase = {
@@ -7,7 +7,7 @@ type AuditDatabase = {
 
 export async function appendAuditEntry(
 	database: AuditDatabase,
-	value: HumanAuditEntry,
+	value: AuditEntry,
 ): Promise<number> {
 	const [row] = await database
 		.insert(auditLog)
