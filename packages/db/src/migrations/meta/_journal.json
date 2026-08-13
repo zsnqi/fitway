@@ -43,6 +43,13 @@
 			"when": 1784671172878,
 			"tag": "0005_phase5_command_domain",
 			"breakpoints": true
+		},
+		{
+			"idx": 6,
+			"version": "7",
+			"when": 1786643363268,
+			"tag": "0006_powerful_bastion",
+			"breakpoints": true
 		}
 	]
 }
