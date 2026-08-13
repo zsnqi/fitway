@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-11T23:20:29+03:00"
+updatedAt: "2026-08-13T11:40:47+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -865,9 +865,9 @@ milestones:
       - root manifests, lockfiles, environment schemas, test-runner config, vitest and playwright configs, and biome.json
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-09T16:48:19+03:00"
+    lastHeartbeatAt: "2026-08-13T11:40:47+03:00"
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase10-domain/20260809-164819-p10_domain_c01-integration.md
+    handoff: docs/phase-records/handoffs/phase10-csv-transport/20260813-114047-p10_csv_contract_c01-integration.md
     stopReason: null
     gates:
       unit: PASS
@@ -876,7 +876,7 @@ milestones:
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
       independentReview: PASS
-    integratedCommit: b1be589ea6d74d0c646f5da9d20a1157f740279a
+    integratedCommit: cd0c27534d5d27f9e6cf8073a9a38fc96d8f5cb1
 
   phase10-paper-reporting:
     status: DONE
@@ -907,7 +907,7 @@ milestones:
     integratedCommit: 34c7257e6d2d6d0f60494a941c96a7f09bd561a0
 
   phase10-csv-transport:
-    status: BLOCKED
+    status: PLANNED
     dependencies: [phase10-domain]
     ownerSession: null
     branch: work/phase10-csv-transport-b02
@@ -917,10 +917,10 @@ milestones:
     forbiddenPaths: []
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-11T23:48:21+03:00"
+    lastHeartbeatAt: "2026-08-13T11:40:47+03:00"
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase10-csv-transport/20260811-234821-p10_csv_contract_v01-environment-blocked.md
-    stopReason: "The exact two-file correction candidate 668898373be2de19d3f825ea7dc37da1ac7e909a passed static scope review, but fresh independent executable verification is unavailable because sandbox pnpm/Docker execution is denied and the approval service rejects every required escalation after the account usage limit was reached. Zero trusted runtime gates ran; this is an external environment block, not candidate FAILED_VALIDATION, and repair remains 0/2. Resume by rerunning the unchanged v01 ladder in the preserved clean detached verifier worktree when escalated execution is available."
+    handoff: docs/phase-records/handoffs/phase10-csv-transport/20260813-114047-p10_csv_contract_c01-integration.md
+    stopReason: null
     gates:
       unit: PENDING
       integration: PENDING
