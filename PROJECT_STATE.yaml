@@ -617,7 +617,7 @@ milestones:
     ownerSession: null
     branch: main
     worktree: null
-    baseCommit: 158b8c97fbbce37e172b5169dcc4687a4796c79e
+    baseCommit: 06b1ebf9857c4e54cba4e017857a72c8e6055ae5
     ownedPaths: []
     forbiddenPaths: []
     sharedLeases: []
@@ -633,7 +633,7 @@ milestones:
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
       independentReview: PASS
-    integratedCommit: 158b8c97fbbce37e172b5169dcc4687a4796c79e
+    integratedCommit: 06b1ebf9857c4e54cba4e017857a72c8e6055ae5
 
   phase8-alert-evaluator:
     status: DONE

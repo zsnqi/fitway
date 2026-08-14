@@ -84,7 +84,7 @@ Phase 7 is not expanded to absorb any of these merely because they are adjacent 
 
 ## Closure
 
-`phase-7` alone is marked `DONE`. Its `baseCommit` and `integratedCommit` are the coordinator commit that closes the aggregate — the commit this record was created in. Following the settled convention documented in `docs/phase-records/phase-09-aggregate.md`, they are written first as the pre-closure head `158b8c97fbbce37e172b5169dcc4687a4796c79e`, because a commit cannot reference its own hash, and re-anchored to the closure commit by the immediately following coordinator commit. The "Aggregate evidence baseline" above deliberately continues to name `158b8c9`: it is the clean, fully verified head this closure was adjudicated against, which is a different fact from where the aggregate became `DONE`.
+`phase-7` alone is marked `DONE`. Its `baseCommit` and `integratedCommit` are `06b1ebf9857c4e54cba4e017857a72c8e6055ae5`, the coordinator commit that closes the aggregate — the commit this record was created in. Following the settled convention documented in `docs/phase-records/phase-09-aggregate.md`, they were written first as the pre-closure head `158b8c97fbbce37e172b5169dcc4687a4796c79e`, because a commit cannot reference its own hash, and re-anchored to the closure commit by the immediately following coordinator commit. The "Aggregate evidence baseline" above deliberately continues to name `158b8c9`: it is the clean, fully verified head this closure was adjudicated against, which is a different fact from where the aggregate became `DONE`.
 
 No successor was activated, no branch or worktree was created or deleted, and no Product, Spec, privacy, security, or visual contract changed. Nothing was pushed, deployed, or externally provisioned.
 
