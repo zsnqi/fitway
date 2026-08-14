@@ -29,6 +29,11 @@ export const env = createEnv({
 		DATABASE_URL: z.string().min(1),
 		BETTER_AUTH_SECRET: z.string().min(32),
 		CRON_SECRET: cronSecretSchema,
+		// Maintainer health-alert transport, per the SPEC environment additions.
+		// Gym configuration stays in the settings table; only the delivery
+		// channel credential belongs here.
+		TELEGRAM_BOT_TOKEN: z.string().min(1),
+		TELEGRAM_CHAT_ID: z.string().min(1),
 		BETTER_AUTH_URL: z.url(),
 		CORS_ORIGIN: z.url(),
 		NODE_ENV: z

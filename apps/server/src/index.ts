@@ -1,6 +1,12 @@
 import { pathToFileURL } from "node:url";
 import { createContext } from "@fitway/api/context";
 import {
+	ALERT_DELIVERY_TIMEOUT_MS,
+	ALERT_PRE_OPEN_WINDOW_MS,
+	ALERT_RE_ALERT_INTERVAL_MS,
+	createCompositeCronRunner,
+} from "@fitway/api/cron/runner";
+import {
 	EDGE_NO_STORE,
 	EDGE_PUSH_INTERNAL_PATH,
 	OPENAPI_REFERENCE_PATH,
@@ -21,6 +27,8 @@ import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
+import { createTelegramAlertNotifier } from "./alert-notifier";
+import { createAlertRepository } from "./alert-repository";
 import { createOwnerAnalyticsReaders } from "./analytics-time-context-repository";
 import { mountAuthRoutes } from "./auth/routes";
 import { type AuthRuntime, createAuthRuntime } from "./auth/runtime";
@@ -37,8 +45,23 @@ import { generateOpenApiDocument } from "./openapi";
 import { createPublicOccupancyHandler } from "./public-occupancy";
 import { DeviceRateLimiter } from "./rate-limiter";
 import { createResetRepository } from "./reset-repository";
+import { createRetentionRepository } from "./retention-repository";
 
 const ownerAnalyticsReaders = createOwnerAnalyticsReaders(db);
+
+/**
+ * Outbound alert delivery is the one component that talks to a third party, and
+ * undici's own header/body defaults are measured in minutes — far longer than the
+ * minutely cron it runs inside. The notifier takes an injected `fetch`, so the
+ * bound is applied here rather than in the accepted transport itself. Its value
+ * belongs to the cron seam, which is what sizes it against the component
+ * deadline and the sequential per-notice delivery loop.
+ */
+const boundedFetch: typeof fetch = (input, init) =>
+	fetch(input, {
+		...init,
+		signal: AbortSignal.timeout(ALERT_DELIVERY_TIMEOUT_MS),
+	});
 
 export function createApp(
 	nodeEnv: "development" | "production" | "test" = env.NODE_ENV,
@@ -88,19 +111,40 @@ export function createApp(
 		createPublicOccupancyHandler(publicPayloadRepository),
 	);
 	const resetRepository = createResetRepository(db);
-	const scheduledResetRunner =
+	const scheduledResetRunner = createScheduledResetRunner({
+		now: cronNow,
+		...resetRepository,
+		issueScheduledReset: (decision) =>
+			commandService.issueScheduledReset(decision),
+	});
+	const alertRepository = createAlertRepository(db);
+	const retentionRepository = createRetentionRepository(db);
+	// Scheduled reset, health alerting, and retention share the single
+	// authenticated minutely seam. The runner attempts all three on every
+	// invocation and isolates their failures from one another.
+	const cronRunner =
 		cronRunnerOverride ??
-		createScheduledResetRunner({
+		createCompositeCronRunner({
 			now: cronNow,
-			...resetRepository,
-			issueScheduledReset: (decision) =>
-				commandService.issueScheduledReset(decision),
+			runScheduledReset: () => scheduledResetRunner.run(),
+			evaluateAlerts: (now) =>
+				alertRepository.evaluateAndNotify({
+					now,
+					preOpenWindowMs: ALERT_PRE_OPEN_WINDOW_MS,
+					reAlertIntervalMs: ALERT_RE_ALERT_INTERVAL_MS,
+					notifier: createTelegramAlertNotifier({
+						botToken: env.TELEGRAM_BOT_TOKEN,
+						chatId: env.TELEGRAM_CHAT_ID,
+						fetch: boundedFetch,
+					}),
+				}),
+			purgeExpired: (now) => retentionRepository.purgeExpired(now),
 		});
 	app.get(
 		CRON_INTERNAL_PATH,
 		createCronHandler({
 			secret: env.CRON_SECRET,
-			runner: scheduledResetRunner,
+			runner: cronRunner,
 			logger: {
 				request: ({ method, path, status }) =>
 					console.log(method, path, status),
