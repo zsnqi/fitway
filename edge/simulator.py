@@ -38,6 +38,7 @@ from fitway_edge.protocol import (
     valid_acknowledgement,
     valid_push,
 )
+from fitway_edge.sources import next_flow
 
 DEFAULT_RESOURCE_PATH = "/edge/push"
 STOP = False
@@ -93,18 +94,6 @@ def save_state(path: Path, state: dict[str, Any]) -> None:
     finally:
         if os.path.exists(temporary):
             os.unlink(temporary)
-
-
-def next_flow(rng: random.Random, mode: str, count: int) -> tuple[int, int]:
-    if mode == "exit-heavy":
-        return (0, rng.randint(1, 3))
-    if mode == "rush" or rng.random() < 0.1:
-        entries = rng.choices([0, 1, 2, 3, 4], weights=[20, 30, 25, 18, 7])[0]
-        exits = rng.choices([0, 1, 2], weights=[55, 35, 10])[0] if count else 0
-        return entries, exits
-    entries = rng.choices([0, 1, 2, 3], weights=[65, 25, 8, 2])[0]
-    exits = rng.choices([0, 1, 2], weights=[70, 25, 5])[0] if count else 0
-    return entries, exits
 
 
 def record_sample(

@@ -1,4 +1,53 @@
-# Frozen Phase 6 edge simulator
+# FITWAY edge
+
+Two programs share one canonical device contract in `fitway_edge/protocol.py`:
+
+- `client.py` — the durable production client with SQLite persistence and Windows lifecycle scripts.
+- `simulator.py` — the frozen Phase 6 development simulator and integration fixture.
+
+Neither has any camera, image, identity, per-person event, or tracking capability, and neither may
+take on a third-party dependency: both are Python standard library only.
+
+## Durable client
+
+```powershell
+py -3 edge/client.py --config C:\ProgramData\FITWAY\config\client.json
+py -3 edge/client.py --config C:\ProgramData\FITWAY\config\client.json --check-config
+```
+
+`--config` is the only production input. The strict schema-version-1 JSON file rejects unknown keys
+and carries the endpoint, the path to a token file of at least 32 bytes, the SQLite path, the fixed
+48-hour retention, the counting source, and the process cadence/backoff bounds. Paths inside it
+resolve relative to the configuration file itself. `edge/fixtures/client.synthetic.json` is a
+template; the token file it names is never committed.
+
+The resource path must be the external `/api/edge/push`. The internal `/edge/push` is accepted only
+when the base URL is loopback, and plaintext transport is refused anywhere else. A base URL may not
+carry a path, query, fragment, or user information.
+
+This build accepts `source.kind: "synthetic"` only. A configured `rtsp` source is refused with the
+named `site_gated_source` error before anything is opened; real capture, calibration, and detection
+remain site-gated work under a later scope. Because the source observes nothing, the client honestly
+reports `camera` and `feed` health as `unknown` with no detector rate.
+
+State lives in one SQLite database using WAL and `synchronous=FULL`, holding aggregates and the exact
+canonical request bytes only: sequence, current count, the open minute accumulator, the highest
+applied command id, the last settled request, the in-flight request, and a 2,880-minute outbox. Every
+mutation is one `BEGIN IMMEDIATE` transaction and one commit, so an abrupt stop recovers to either the
+exact pre-state or the complete post-state. The request bytes are persisted before they are sent and
+resent unchanged — byte for byte, never re-serialized — until a correlated processed or replay
+acknowledgement settles them. Counting continues through an outage without disturbing those frozen
+bytes, and settlement removes only the minutes the settled request actually carried.
+
+Back up the database together with its `-wal` and `-shm` files as one unit, and only while the client
+is stopped. Exit codes: `0` clean stop, `2` configuration, `3` authentication, `4` protocol, `5`
+durable state, `6` site-gated source.
+
+Diagnostics are fixed event names with an allow-listed set of fields and aggregate health only. No
+token, URL, host, request payload, count, SQL, or file content is ever emitted; the endpoint appears
+only as its scheme and a loopback/external category.
+
+## Frozen Phase 6 simulator
 
 This tool sends **simulated development occupancy** only. It has no camera, image, identity, per-person event, or tracking capability.
 

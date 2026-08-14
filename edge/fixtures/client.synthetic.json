@@ -1,0 +1,28 @@
+{
+	"schemaVersion": 1,
+	"endpoint": {
+		"baseUrl": "https://fitway.example.com",
+		"resourcePath": "/api/edge/push",
+		"requestTimeoutSeconds": 15,
+		"requireTls": true
+	},
+	"credentials": {
+		"tokenFile": "device.token"
+	},
+	"state": {
+		"sqlitePath": "state/edge-state.sqlite3",
+		"retentionHours": 48
+	},
+	"source": {
+		"kind": "synthetic",
+		"seed": 42,
+		"mode": "normal",
+		"initialCount": 0,
+		"sampleIntervalSeconds": 5
+	},
+	"process": {
+		"pushIntervalSeconds": 20,
+		"minimumBackoffSeconds": 1,
+		"maximumBackoffSeconds": 30
+	}
+}
