@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-14T03:44:33+03:00"
+updatedAt: "2026-08-14T15:48:07+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -696,7 +696,7 @@ milestones:
     integratedCommit: 7b2fe32394b8c494dd8c59c6f099a8f21ece68c8
 
   phase8-integration:
-    status: READY
+    status: IN_PROGRESS
     dependencies: [phase8-alert-evaluator, phase-7]
     ownerSession: "Phase 8 health-alert integration b01 worker on work/phase8-integration-b01 in D:/Projects/fitway-worktrees/phase8-integration: deliver Telegram delivery, 12-month retention cleanup, and the composed cron seam per the independently passed plan docs/phase-records/handoffs/phase8-integration/20260814-133826-p8_integration_b01-plan.md, in three staged commits with an independent review between stages."
     branch: work/phase8-integration-b01
@@ -730,9 +730,9 @@ milestones:
     sharedLeases:
       - "exclusive through 2026-08-21T15:44:44+03:00: Phase 8 b01 cron-seam composition limited to apps/server/src/index.ts and packages/env/src/server.ts. Both are held solely to compose the alert, retention, and existing scheduled-reset runners into the unchanged cron handler and to add TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID. apps/server/src/cron.ts, vercel.json, every migration and schema artifact, and all environment values remain forbidden."
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-14T15:44:44+03:00"
+    lastHeartbeatAt: "2026-08-14T15:48:07+03:00"
     leaseExpiresAt: "2026-08-21T15:44:44+03:00"
-    handoff: docs/phase-records/handoffs/phase8-integration/20260814-154444-p8_integration_b01-coordinator-activation.md
+    handoff: docs/phase-records/handoffs/phase8-integration/20260814-154807-p8_integration_b01-coordinator-start.md
     stopReason: null
     gates:
       unit: PENDING
