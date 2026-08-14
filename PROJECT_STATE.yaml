@@ -1,6 +1,6 @@
 ﻿# yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-15T02:45:00+03:00"
+updatedAt: "2026-08-15T03:00:00+03:00"
 
 coordinator:
   owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration on main; handover recorded in docs/phase-records/handoffs/coordinator/20260815-003900-coordinator-handover-and-frontier-baseline.md"
@@ -1248,9 +1248,9 @@ milestones:
     integratedCommit: null
 
   phase-12:
-    status: IN_PROGRESS
+    status: DONE
     dependencies: [phase-6]
-    ownerSession: "Fresh Phase 12 durable edge client b01 worker on work/phase12-edge-client-b01 in D:/Projects/fitway-worktrees/phase12-edge-client: extract the accepted Python protocol seam, implement the synthetic SQLite runtime, and deliver the Windows lifecycle/runbook within the independently approved plan."
+    ownerSession: null
     branch: work/phase12-edge-client-b01
     worktree: D:/Projects/fitway-worktrees/phase12-edge-client
     baseCommit: SELF
@@ -1267,15 +1267,15 @@ milestones:
     sharedLeases:
       - "exclusive through 2026-08-20T20:08:41+03:00: Phase 12 b01 edge protocol spine limited to edge/client.py; edge/fitway_edge/{__init__.py,config.py,protocol.py,runtime.py,sqlite_store.py,sources.py}; edge/{test_client.py,test_sqlite_store.py,test_windows_lifecycle.py}; edge/fixtures/client.synthetic.json; edge/windows/{install.ps1,run.ps1,uninstall.ps1,README.md}; edge/{simulator.py,test_simulator.py,README.md}. The frozen cloud/device contract fixtures, TypeScript/OpenAPI/server surfaces, dependencies, manifests, and every image/frame/video/identity path remain forbidden."
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-15T01:20:00+03:00"
-    leaseExpiresAt: "2026-08-20T20:08:41+03:00"
-    handoff: docs/phase-records/handoffs/phase-12/20260815-012000-p12_edge_b01-coordinator-resume.md
+    lastHeartbeatAt: "2026-08-15T03:00:00+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase-12/20260815-030000-p12_edge_c01-coordinator-done.md
     stopReason: null
     gates:
-      unit: PENDING
-      integration: PENDING
+      unit: PASS
+      integration: PASS
       browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
-      independentReview: PENDING
-    integratedCommit: null
+      independentReview: PASS
+    integratedCommit: 05ad2c4eebda6ea5c873db8770bdb9162821f3ac
