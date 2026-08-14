@@ -1,3 +1,4 @@
+import ast
 import json
 import random
 import tempfile
@@ -8,6 +9,7 @@ from unittest.mock import patch
 from urllib import error
 
 import simulator
+from fitway_edge import protocol
 
 
 FROZEN_SETTINGS = {
@@ -753,6 +755,140 @@ class SimulatorTests(unittest.TestCase):
         self.assertEqual(state["appliedCommandId"], 3)
         payload = simulator.build_push(state, random.Random(42), "normal")
         self.assertEqual(payload["appliedCommandId"], 3)
+
+
+class ProtocolParityTests(unittest.TestCase):
+    """The extracted canonical seam and the accepted simulator must not diverge."""
+
+    def _fixture(self, name: str) -> dict[str, object]:
+        return json.loads(
+            (Path(__file__).parent / "fixtures" / name).read_text(encoding="utf-8")
+        )
+
+    def test_simulator_exposes_the_shared_protocol_objects(self) -> None:
+        for name in (
+            "MAX_SAFE_INTEGER",
+            "MAX_BUFFERED_MINUTES",
+            "BACKFILL_BATCH_MINUTES",
+            "iso_utc",
+            "minute_iso",
+            "serialize_push",
+            "valid_push",
+            "valid_acknowledgement",
+            "apply_commands",
+            "accept_acknowledgement",
+            "buffer_completed_minute",
+        ):
+            with self.subTest(name=name):
+                self.assertIs(getattr(simulator, name), getattr(protocol, name))
+
+    def test_canonical_fixture_validation_matches_the_simulator(self) -> None:
+        for name in ("push.json", "backfill.json"):
+            value = self._fixture(name)
+            with self.subTest(fixture=name):
+                self.assertTrue(protocol.valid_push(value))
+                self.assertEqual(protocol.valid_push(value), simulator.valid_push(value))
+        for name in ("acknowledgement.json", "commands-pending.json"):
+            value = self._fixture(name)
+            with self.subTest(fixture=name):
+                self.assertTrue(protocol.valid_acknowledgement(value))
+                self.assertEqual(
+                    protocol.valid_acknowledgement(value),
+                    simulator.valid_acknowledgement(value),
+                )
+        rejected = {**self._fixture("push.json"), "schemaVersion": 1}
+        self.assertFalse(protocol.valid_push(rejected))
+        self.assertEqual(protocol.valid_push(rejected), simulator.valid_push(rejected))
+
+    def test_serialization_is_byte_identical_across_both_seams(self) -> None:
+        live = self._fixture("push.json")
+        self.assertEqual(protocol.serialize_push(live), simulator.serialize_push(live))
+        self.assertEqual(
+            protocol.serialize_push(live),
+            json.dumps(live, separators=(",", ":"), sort_keys=True).encode("utf-8"),
+        )
+
+    def test_protocol_applies_commands_before_live_authority_resumes(self) -> None:
+        state = {
+            "sequence": 0,
+            "count": 2,
+            "minute": "",
+            "entries": 0,
+            "exits": 0,
+            "appliedCommandId": 0,
+            "outbox": [],
+            "inFlightRequest": None,
+        }
+        protocol.buffer_completed_minute(
+            state,
+            {
+                "minuteStart": "2026-07-13T18:24:00.000Z",
+                "count": 2,
+                "entries": 1,
+                "exits": 0,
+            },
+        )
+        backfill = protocol.build_next_push(state, 1)
+        self.assertEqual(backfill["mode"], "backfill")
+        state["inFlightRequest"] = backfill
+        protocol.accept_acknowledgement(
+            state,
+            backfill,
+            acknowledgement(
+                1,
+                commands=[{
+                    "id": 3,
+                    "type": "set_count",
+                    "targetValue": 4,
+                    "issuedAt": "2026-07-13T18:25:19.000Z",
+                }],
+            ),
+        )
+        self.assertEqual(state["outbox"], [])
+        self.assertEqual(state["count"], 4)
+        self.assertEqual(state["appliedCommandId"], 3)
+        live = protocol.build_next_push(
+            state,
+            2,
+            now=datetime(2026, 7, 13, 18, 25, 40, tzinfo=timezone.utc),
+        )
+        self.assertEqual(live["mode"], "live")
+        self.assertEqual(live["currentCount"], 4)
+        self.assertEqual(live["appliedCommandId"], 3)
+
+    def test_protocol_rejects_an_uncorrelated_acknowledgement_without_mutation(self) -> None:
+        state = {
+            "sequence": 4,
+            "count": 5,
+            "minute": "",
+            "entries": 0,
+            "exits": 0,
+            "appliedCommandId": 3,
+            "outbox": [],
+            "inFlightRequest": None,
+        }
+        payload = protocol.build_live_push(
+            state,
+            5,
+            now=datetime(2026, 7, 13, 18, 24, 20, tzinfo=timezone.utc),
+        )
+        before = json.dumps(state, separators=(",", ":"), sort_keys=True)
+        with self.assertRaisesRegex(ValueError, "durable in-flight request"):
+            protocol.accept_acknowledgement(state, payload, acknowledgement(5))
+        self.assertEqual(json.dumps(state, separators=(",", ":"), sort_keys=True), before)
+
+    def test_protocol_never_names_a_frame_image_or_identity_field(self) -> None:
+        source = Path(protocol.__file__).read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        first = tree.body[0]
+        skipped = (
+            first.end_lineno
+            if isinstance(first, ast.Expr) and isinstance(first.value, ast.Constant)
+            else 0
+        )
+        code = "\n".join(source.splitlines()[skipped:]).lower()
+        for forbidden in ("frame", "image", "video", "jpeg", "png", "identity", "face"):
+            self.assertNotIn(forbidden, code, forbidden)
 
 
 if __name__ == "__main__":
