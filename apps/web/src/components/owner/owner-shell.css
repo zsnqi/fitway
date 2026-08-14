@@ -1,0 +1,565 @@
+.owner-shell {
+	--owner-field: #100b0e;
+	--owner-panel: #171316;
+	--owner-edge-quiet: #dcc5c90f;
+	--owner-edge: #dcc5c91a;
+	--owner-edge-control: #dcc5c92e;
+	--owner-safe-inset-left: env(safe-area-inset-left, 0px);
+	--owner-safe-inset-right: env(safe-area-inset-right, 0px);
+	position: relative;
+	isolation: isolate;
+	min-block-size: 100vh;
+	overflow-x: clip;
+	background-color: var(--owner-field);
+	background-image:
+		radial-gradient(
+			ellipse 82% 64% at 14% 22% in oklab,
+			oklab(31.3% 0.109 0.036 / 46%) 0%,
+			oklab(27.3% 0.094 0.032 / 16%) 48%,
+			oklab(13.9% -0.001 -0.003 / 0%) 78%
+		),
+		radial-gradient(
+			ellipse 96% 70% at 88% 82% in oklab,
+			oklab(27.3% 0.094 0.032 / 36%) 0%,
+			oklab(27.3% 0.094 0.032 / 12%) 52%,
+			oklab(13.9% -0.001 -0.003 / 0%) 82%
+		);
+}
+
+@supports (height: 100svh) {
+	.owner-shell {
+		min-block-size: 100svh;
+	}
+}
+
+@supports (height: 100dvh) {
+	.owner-shell {
+		min-block-size: 100dvh;
+	}
+}
+
+.owner-shell > :not(.operations-skip-link) {
+	position: relative;
+	z-index: 1;
+}
+
+.owner-shell .operations-skip-link {
+	position: fixed;
+	z-index: var(--fw-z-sticky);
+	inset-block-start: 8px;
+	inset-inline-start: 16px;
+	padding: 10px 16px;
+	border-radius: var(--fw-radius-control);
+	background: var(--fw-chalk);
+	color: var(--fw-obsidian);
+	font-weight: 700;
+	text-decoration: none;
+	transform: translateY(-160%);
+	transition: transform var(--fw-duration-fast) var(--fw-ease-out);
+}
+
+/* The skip link parks off-screen and cannot be reached by pointer, so :focus is
+   the correct trigger: any focus at all — keyboard or programmatic — must bring
+   it into view rather than leave focus on an element the user cannot see. */
+.owner-shell .operations-skip-link:focus {
+	transform: translateY(0);
+}
+
+.owner-rail {
+	direction: ltr;
+	position: relative;
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr) auto 1px auto;
+	column-gap: 28px;
+	align-items: center;
+	inline-size: 100%;
+	block-size: 56px;
+	padding-left: max(40px, var(--owner-safe-inset-left));
+	padding-right: max(40px, var(--owner-safe-inset-right));
+	border-block-end: 1px solid #dcc5c918;
+	background: #ffffff08;
+	backdrop-filter: blur(14px) saturate(112%);
+}
+
+.owner-rail__identity {
+	display: contents;
+}
+
+.owner-rail__session {
+	grid-row: 1;
+	grid-column: 1;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.owner-rail__session-action {
+	direction: inherit;
+	display: inline-flex;
+	align-items: center;
+	justify-content: flex-start;
+	min-inline-size: 44px;
+	min-block-size: 44px;
+	margin-inline-end: -10px;
+	padding-block: 0;
+	padding-inline-start: 0;
+	padding-inline-end: 10px;
+	border: 0;
+	border-radius: 8px;
+	background: transparent;
+	font-family: inherit;
+	font-size: 15px;
+	font-weight: 500;
+	line-height: 18px;
+	cursor: pointer;
+	transition:
+		color var(--fw-duration-fast) var(--fw-ease-out),
+		background-color var(--fw-duration-fast) var(--fw-ease-out);
+}
+
+.owner-rail__logout {
+	color: var(--fw-muted);
+}
+
+.owner-rail__language {
+	color: var(--fw-chalk);
+}
+
+.owner-rail__session-action:hover:not(:disabled) {
+	color: #fff;
+	background: #ffffff05;
+}
+
+.owner-rail__session-action:disabled {
+	cursor: wait;
+	opacity: 0.72;
+}
+
+.owner-rail__session-action:focus-visible,
+.owner-rail__brand:focus-visible,
+.owner-nav__link:focus-visible {
+	outline: 0;
+	box-shadow: 0 0 0 2px var(--fw-focus-ring);
+}
+
+.owner-rail__separator,
+.owner-rail__zone-separator {
+	inline-size: 1px;
+	block-size: 18px;
+	background: var(--owner-edge);
+}
+
+.owner-shell .owner-nav {
+	grid-row: 1;
+	grid-column: 3;
+	direction: ltr;
+	display: flex;
+	align-items: center;
+	gap: 24px;
+	min-inline-size: 0;
+	overflow: visible;
+}
+
+.owner-nav__link {
+	direction: inherit;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-block-size: 44px;
+	padding: 0;
+	border-radius: 8px;
+	color: var(--fw-text-subtle);
+	font-size: 15px;
+	font-weight: 400;
+	line-height: 18px;
+	text-decoration: none;
+	white-space: nowrap;
+	transition:
+		color var(--fw-duration-fast) var(--fw-ease-out),
+		background-color var(--fw-duration-fast) var(--fw-ease-out);
+}
+
+.owner-nav__link:hover {
+	color: var(--fw-chalk);
+	background: #ffffff05;
+}
+
+.owner-nav__link[data-active="true"] {
+	color: var(--fw-chalk);
+	font-weight: 700;
+}
+
+.owner-rail__zone-separator {
+	grid-row: 1;
+	grid-column: 4;
+}
+
+.owner-rail__brand {
+	grid-row: 1;
+	grid-column: 5;
+	direction: ltr;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	min-block-size: 44px;
+	border-radius: 8px;
+	color: var(--fw-chalk);
+	font-size: 16px;
+	font-weight: 700;
+	letter-spacing: 0.16em;
+	line-height: 20px;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.owner-rail__brand svg {
+	inline-size: 24px;
+	block-size: 24px;
+	flex: 0 0 auto;
+	fill: none;
+	stroke: var(--fw-red);
+	stroke-linecap: round;
+	stroke-width: 1.5;
+}
+
+.owner-shell .owner-main.operations-main {
+	inline-size: 100%;
+	min-block-size: calc(100vh - 56px);
+	margin: 0;
+	padding: 36px max(48px, var(--owner-safe-inset-right)) 44px
+		max(48px, var(--owner-safe-inset-left));
+}
+
+@supports (height: 100svh) {
+	.owner-shell .owner-main.operations-main {
+		min-block-size: calc(100svh - 56px);
+	}
+}
+
+@supports (height: 100dvh) {
+	.owner-shell .owner-main.operations-main {
+		min-block-size: calc(100dvh - 56px);
+	}
+}
+
+.owner-shell .operations-page-heading {
+	margin-block-end: 26px;
+}
+
+.owner-shell .operations-page-heading h1 {
+	margin: 5px 0 4px;
+	font-size: clamp(31px, 4vw, 46px);
+	font-weight: 700;
+	line-height: 1.25;
+}
+
+.owner-shell .operations-page-heading > span {
+	display: block;
+	max-inline-size: 64ch;
+	color: var(--fw-text-muted);
+}
+
+.owner-shell .admin-state {
+	max-inline-size: 720px;
+	padding: 38px;
+	border: 1px solid var(--fw-border);
+	border-radius: var(--fw-radius-surface);
+	background: rgb(16 16 18 / 92%);
+	box-shadow: var(--fw-shadow-lg);
+}
+
+.owner-shell .admin-state > svg {
+	inline-size: 34px;
+	block-size: 34px;
+	margin-block-end: 22px;
+	color: #ff8295;
+}
+
+.owner-shell .admin-state h2 {
+	margin: 0;
+	font-size: 21px;
+}
+
+.owner-shell .admin-state p {
+	margin: 4px 0 0;
+	color: var(--fw-text-muted);
+}
+
+.owner-shell .admin-state--forbidden {
+	border-color: rgb(217 164 0 / 28%);
+}
+
+.owner-shell .admin-state__action {
+	display: inline-flex;
+	align-items: center;
+	min-block-size: 44px;
+	margin-block-start: 24px;
+	padding: 9px 18px;
+	border: 1px solid var(--fw-border-strong);
+	border-radius: var(--fw-radius-control);
+	color: var(--fw-chalk);
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.owner-shell .admin-state__action:focus-visible {
+	outline: 0;
+	box-shadow: 0 0 0 2px var(--fw-focus-ring);
+}
+
+@media (min-width: 721px) and (max-width: 820px) {
+	.owner-rail {
+		column-gap: 20px;
+		padding-left: max(24px, var(--owner-safe-inset-left));
+		padding-right: max(24px, var(--owner-safe-inset-right));
+	}
+
+	.owner-rail__session-action,
+	.owner-nav__link {
+		font-size: 14px;
+	}
+
+	.owner-rail__separator,
+	.owner-rail__zone-separator {
+		block-size: 16px;
+	}
+
+	.owner-shell .owner-nav {
+		gap: 18px;
+	}
+
+	.owner-rail__brand {
+		gap: 8px;
+		font-size: 15px;
+		letter-spacing: 0.14em;
+	}
+
+	.owner-rail__brand svg {
+		inline-size: 21px;
+		block-size: 21px;
+		stroke-width: 1.6;
+	}
+
+	.owner-shell .owner-main.operations-main {
+		padding: 28px max(24px, var(--owner-safe-inset-right)) 36px
+			max(24px, var(--owner-safe-inset-left));
+	}
+
+	.owner-shell .operations-page-heading {
+		margin-block-end: 22px;
+	}
+}
+
+@media (max-width: 720px) {
+	.owner-rail {
+		display: grid;
+		grid-template-rows: 52px 44px;
+		grid-template-columns: minmax(0, 1fr) auto;
+		column-gap: 0;
+		block-size: 96px;
+		padding: 0;
+		border: 0;
+		background-color: #ffffff08;
+		background-image: linear-gradient(
+			to bottom,
+			#ffffff05 0 52px,
+			transparent 52px
+		);
+	}
+
+	.owner-rail::before {
+		position: absolute;
+		z-index: 0;
+		pointer-events: none;
+		inset-block-start: 51px;
+		inset-inline: 0;
+		block-size: 1px;
+		background: var(--owner-edge);
+		content: "";
+	}
+
+	.owner-rail__session {
+		grid-row: 1;
+		grid-column: 1;
+		padding-left: max(16px, var(--owner-safe-inset-left));
+		gap: 9px;
+	}
+
+	.owner-rail__session-action {
+		font-size: 13px;
+		line-height: 16px;
+	}
+
+	.owner-rail__separator {
+		block-size: 14px;
+	}
+
+	.owner-rail__brand {
+		grid-row: 1;
+		grid-column: 2;
+		gap: 8px;
+		min-block-size: 44px;
+		margin-right: max(16px, var(--owner-safe-inset-right));
+		font-size: 14px;
+		letter-spacing: 0.12em;
+		line-height: 18px;
+	}
+
+	.owner-rail__brand svg {
+		inline-size: 20px;
+		block-size: 20px;
+		stroke-width: 1.7;
+	}
+
+	.owner-shell .owner-nav {
+		grid-row: 2;
+		grid-column: 1 / -1;
+		direction: ltr;
+		display: flex;
+		flex: 0 0 auto;
+		gap: 0;
+		inline-size: 100%;
+		block-size: 44px;
+		border-block-end: 1px solid var(--owner-edge-quiet);
+	}
+
+	.owner-nav__link {
+		position: relative;
+		flex: 1 1 50%;
+		min-inline-size: 0;
+		block-size: 44px;
+		border-radius: 0;
+		font-size: 14px;
+		line-height: 18px;
+	}
+
+	.owner-nav__link::after {
+		position: absolute;
+		inset-inline: 0;
+		inset-block-end: 0;
+		block-size: 2px;
+		background: transparent;
+		content: "";
+	}
+
+	.owner-nav__link[data-active="true"]::after {
+		background: var(--fw-red-bright);
+	}
+
+	.owner-rail__zone-separator {
+		display: none;
+	}
+
+	.owner-shell .owner-main.operations-main {
+		min-block-size: calc(100vh - 96px);
+		padding: 20px max(16px, var(--owner-safe-inset-right)) 28px
+			max(16px, var(--owner-safe-inset-left));
+	}
+
+	.owner-shell .operations-page-heading {
+		margin-block-end: 16px;
+	}
+
+	.owner-shell .operations-page-heading h1 {
+		font-size: 30px;
+	}
+
+	.owner-shell .admin-state {
+		padding: 22px;
+	}
+}
+
+@supports (height: 100svh) {
+	@media (max-width: 720px) {
+		.owner-shell .owner-main.operations-main {
+			min-block-size: calc(100svh - 96px);
+		}
+	}
+}
+
+@supports (height: 100dvh) {
+	@media (max-width: 720px) {
+		.owner-shell .owner-main.operations-main {
+			min-block-size: calc(100dvh - 96px);
+		}
+	}
+}
+
+@media (max-width: 340px) {
+	.owner-rail__session {
+		padding-left: max(12px, var(--owner-safe-inset-left));
+	}
+
+	.owner-rail__brand {
+		margin-right: max(12px, var(--owner-safe-inset-right));
+	}
+
+	.owner-shell .owner-main.operations-main {
+		padding-right: max(12px, var(--owner-safe-inset-right));
+		padding-left: max(12px, var(--owner-safe-inset-left));
+	}
+
+	.owner-shell .operations-page-heading h1 {
+		font-size: 27px;
+	}
+
+	.owner-shell .admin-state {
+		padding: 18px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.owner-shell *,
+	.owner-shell *::before,
+	.owner-shell *::after {
+		scroll-behavior: auto;
+		transition: none;
+		animation: none;
+	}
+}
+
+@media (prefers-reduced-transparency: reduce) {
+	.owner-rail {
+		background: var(--owner-panel);
+		backdrop-filter: none;
+	}
+
+	.owner-rail__identity {
+		background: transparent;
+	}
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+	.owner-rail {
+		background: var(--owner-panel);
+		backdrop-filter: none;
+	}
+}
+
+@media (forced-colors: active) {
+	.owner-rail,
+	.owner-shell .owner-nav {
+		border-block-end: 1px solid CanvasText;
+	}
+
+	.owner-rail__brand svg {
+		stroke: LinkText;
+	}
+
+	.owner-nav__link[data-active="true"]::after {
+		background: Highlight;
+	}
+
+	/* Forced colors discards the box-shadow focus ring, so the outline below is
+	   the only indicator left. It is deliberately keyed to :focus rather than
+	   :focus-visible: :focus-visible tracks the last interaction modality, so
+	   after any pointer interaction a focused control would carry no indicator
+	   at all in high-contrast mode. Guaranteeing the ring matters more here than
+	   suppressing it for pointer focus. */
+	.owner-shell :is(a[href], button, input, select, textarea):focus,
+	.owner-shell [tabindex]:not([tabindex="-1"]):focus {
+		outline: 2px solid Highlight;
+		outline-offset: 2px;
+	}
+}
