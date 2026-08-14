@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-14T21:28:00+03:00"
+updatedAt: "2026-08-15T00:39:00+03:00"
 
 coordinator:
-  owner: "main Codex session"
+  owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration on main; handover recorded in docs/phase-records/handoffs/coordinator/20260815-003900-coordinator-handover-and-frontier-baseline.md"
   stateFilePolicy: coordinator-only
 
 baseline:
