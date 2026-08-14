@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-14T18:16:57+03:00"
+updatedAt: "2026-08-14T18:49:00+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -730,9 +730,9 @@ milestones:
     sharedLeases:
       - "exclusive through 2026-08-21T15:44:44+03:00: Phase 8 b01 cron-seam composition limited to apps/server/src/index.ts and packages/env/src/server.ts. Both are held solely to compose the alert, retention, and existing scheduled-reset runners into the unchanged cron handler and to add TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID. apps/server/src/cron.ts, vercel.json, every migration and schema artifact, and all environment values remain forbidden."
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-14T18:16:57+03:00"
+    lastHeartbeatAt: "2026-08-14T18:49:00+03:00"
     leaseExpiresAt: "2026-08-21T15:44:44+03:00"
-    handoff: docs/phase-records/handoffs/phase8-integration/20260814-181657-p8_integration_b01-stage-b-review-pass.md
+    handoff: docs/phase-records/handoffs/phase8-integration/20260814-184600-p8_integration_b01-worker-stage-c.md
     stopReason: null
     gates:
       unit: PENDING
