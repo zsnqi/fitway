@@ -71,6 +71,21 @@ UI slices, a fresh verifier that did not implement the candidate, then coordinat
 `verify:full` at the batch boundary. Two focused repairs maximum; the third recurrence is
 `FAILED_VALIDATION`. Canonical baseline updates and material visual changes remain human-approved.
 
+## Scoping fact for `phase10-ui-csv`, recorded before it activates
+
+`phase10-domain` delivered the reporting domain and its repository, but only the CSV leaf was ever
+exposed. After the CSV transport merge, `packages/api/src/routers/index.ts` exposes exactly
+`admin.analytics.{csv, daily, timeContext}`, while `apps/server/src/reporting-repository.ts` already
+implements `readRange`, `readHeatmap`, and `readWeekOverWeek` with no procedure in front of them.
+
+So `phase10-ui-csv` is not a UI-only slice. It must also add the owner-only `range`, `heatmap`, and
+`weekOverWeek` procedures with their context and server wiring, consuming the frozen
+`heatmapOutputSchema`, `reportingRangeOutputSchema`, and `weekComparisonOutputSchema` in
+`packages/api/src/analytics/reporting/contracts.ts`. It must not redefine or infer any of those
+contracts. That places it back on the shared `context.ts` / `routers/index.ts` / `index.ts` lane, so
+it needs the same coordinator lease the CSV transport slice held and cannot overlap any Phase 11
+slice.
+
 ## Known risks
 
 - The audit migration in step 5 is the only new schema work in the remaining frontier. It is
