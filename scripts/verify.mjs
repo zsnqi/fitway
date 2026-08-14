@@ -99,6 +99,13 @@ const phases = {
 		],
 		label: "Phase 7 scheduled-reset integration b02",
 	},
+	"phase8-integration": {
+		browserFiles: [],
+		integrationFiles: [
+			"apps/server/src/phase8-integration.integration.test.ts",
+		],
+		label: "Phase 8 health-alert integration b01",
+	},
 };
 
 const phaseNames = Object.keys(phases).join("|");
