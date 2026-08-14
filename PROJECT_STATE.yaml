@@ -1,6 +1,6 @@
 ﻿# yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-15T00:45:00+03:00"
+updatedAt: "2026-08-15T01:20:00+03:00"
 
 coordinator:
   owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration on main; handover recorded in docs/phase-records/handoffs/coordinator/20260815-003900-coordinator-handover-and-frontier-baseline.md"
@@ -1252,9 +1252,9 @@ milestones:
     sharedLeases:
       - "exclusive through 2026-08-20T20:08:41+03:00: Phase 12 b01 edge protocol spine limited to edge/client.py; edge/fitway_edge/{__init__.py,config.py,protocol.py,runtime.py,sqlite_store.py,sources.py}; edge/{test_client.py,test_sqlite_store.py,test_windows_lifecycle.py}; edge/fixtures/client.synthetic.json; edge/windows/{install.ps1,run.ps1,uninstall.ps1,README.md}; edge/{simulator.py,test_simulator.py,README.md}. The frozen cloud/device contract fixtures, TypeScript/OpenAPI/server surfaces, dependencies, manifests, and every image/frame/video/identity path remain forbidden."
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-13T20:23:56+03:00"
+    lastHeartbeatAt: "2026-08-15T01:20:00+03:00"
     leaseExpiresAt: "2026-08-20T20:08:41+03:00"
-    handoff: docs/phase-records/handoffs/phase-12/20260813-202023-p12_edge_b01-coordinator-start.md
+    handoff: docs/phase-records/handoffs/phase-12/20260815-012000-p12_edge_b01-coordinator-resume.md
     stopReason: null
     gates:
       unit: PENDING
