@@ -38,13 +38,27 @@ export function createRetentionRepository(
 
 				// `alert_log.recovery_of_alert_id` is a self-referencing key, so a
 				// condition that opened before the cutoff and recovered after it
-				// leaves an expired parent under a retained child. One pass suffices:
-				// the `alert_log_recovery_linkage` check constraint forces
-				// `notice_kind = 'alert'` to carry a null parent, making the graph
-				// exactly one level deep. And because the key is `ON DELETE no
-				// action`, which PostgreSQL evaluates at end of statement, an expired
-				// parent and its equally expired child still go together — only a
-				// *retained* recovery pins its parent.
+				// leaves an expired parent under a retained child.
+				//
+				// One pass suffices only because the reference graph is at most one
+				// level deep, and that guarantee comes from the frozen evaluator, not
+				// from the schema. `alert_log_recovery_linkage`
+				// (`packages/db/src/schema/application.ts:530-533`) constrains only
+				// `notice_kind = 'alert'` to carry a null parent; it places no
+				// restriction on a recovery's parent, so recovery → recovery is
+				// schema-legal and a deeper chain would leave a middle row pinned
+				// while its expired root was deleted, aborting the whole transaction
+				// on the foreign key. What actually prevents that chain is
+				// `packages/api/src/alerts/evaluator.ts:57`, which returns a prior row
+				// only when its `noticeKind` is `"alert"`, and `evaluator.ts:259`,
+				// which sets `recoveryOfAlertId` from exactly that row. A recovery can
+				// therefore never parent a recovery. If that evaluator behaviour ever
+				// changes, this single pass must become a fixed-point loop.
+				//
+				// Within a depth-one graph the key's `ON DELETE no action`, which
+				// PostgreSQL evaluates at end of statement, lets an expired parent and
+				// its equally expired child go together — only a *retained* recovery
+				// pins its parent.
 				const retainedRecovery = alias(alertLog, "retained_recovery");
 				await transaction.delete(alertLog).where(
 					and(

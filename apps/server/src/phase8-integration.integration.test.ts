@@ -1,10 +1,13 @@
 import path from "node:path";
+import { createCompositeCronRunner } from "@fitway/api/cron/runner";
+import { createScheduledResetRunner } from "@fitway/api/reset/runner";
 import * as applicationSchema from "@fitway/db/schema/application";
 import {
 	alertLog,
 	auditLog,
 	currentState,
 	edgeCommands,
+	edgeCurrentHealth,
 	edgeDevices,
 	edgeHealthLog,
 	occupancyMinutes,
@@ -15,7 +18,15 @@ import { asc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { Pool } from "pg";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeAll,
+	describe,
+	expect,
+	it,
+	vi,
+} from "vitest";
 import { createRetentionRepository } from "./retention-repository";
 import { assertDisposableIntegrationDatabase } from "./test-support/integration-database-safety";
 
@@ -25,6 +36,12 @@ assertDisposableIntegrationDatabase({
 	resetMarker: process.env.FITWAY_INTEGRATION_RESET_DATABASE,
 	runId: process.env.FITWAY_RUN_ID,
 });
+const cronSecret = process.env.CRON_SECRET;
+if (!cronSecret || cronSecret.length < 32) {
+	throw new Error(
+		"CRON_SECRET must be supplied to the Phase 8 integration test",
+	);
+}
 
 const pool = new Pool({ connectionString });
 const database = drizzle(pool, { schema: applicationSchema });
@@ -434,5 +451,432 @@ describe("Phase 8 retention cleanup", () => {
 		expect(survivors).not.toContain(retainedRecoveryId);
 		expect(survivors).not.toContain(boundaryAlertId);
 		expect(survivors).toEqual([]);
+	});
+});
+
+/**
+ * The composed cron seam, exercised through the real authenticated route.
+ *
+ * Everything below runs the production composition from `createApp`: the real
+ * alert repository, the real Telegram notifier, the real retention repository,
+ * and the real scheduled-reset runner against disposable PostgreSQL. The single
+ * substitution is `globalThis.fetch`, which the injected bounded fetch calls —
+ * no test may open an ambient socket to Telegram.
+ */
+
+/** Riyadh is UTC+3, so the 08:00-22:00 local schedule is 05:00-19:00 UTC. */
+const OPEN_HOURS = new Date("2026-08-14T12:00:00.000Z");
+/** Exactly the 30-minute pre-open window before 05:00 UTC. */
+const PRE_OPEN_BOUNDARY = new Date("2026-08-14T04:30:00.000Z");
+/** Three hours before opening: outside the window, so alerts are suppressed. */
+const DEEP_CLOSED = new Date("2026-08-14T02:00:00.000Z");
+const EXPIRED_AUDIT_AT = new Date("2024-01-01T00:00:00.000Z");
+const RETAINED_AUDIT_AT = new Date("2026-08-01T00:00:00.000Z");
+
+const businessHours = {
+	scheduleSunOpen: "08:00",
+	scheduleSunClose: "22:00",
+	scheduleMonOpen: "08:00",
+	scheduleMonClose: "22:00",
+	scheduleTueOpen: "08:00",
+	scheduleTueClose: "22:00",
+	scheduleWedOpen: "08:00",
+	scheduleWedClose: "22:00",
+	scheduleThuOpen: "08:00",
+	scheduleThuClose: "22:00",
+	scheduleFriOpen: "08:00",
+	scheduleFriClose: "22:00",
+	scheduleSatOpen: "08:00",
+	scheduleSatClose: "22:00",
+} as const;
+
+type CronFixture = {
+	deviceId: string;
+	settingsVersion: number;
+	expiredAuditId: number;
+	retainedAuditId: number;
+};
+
+let cronFixture: CronFixture;
+let telegramFetch: ReturnType<typeof vi.spyOn>;
+
+function telegramOk() {
+	return new Response(JSON.stringify({ ok: true }), {
+		status: 200,
+		headers: { "content-type": "application/json" },
+	});
+}
+
+async function seedCronFixture(options: {
+	now: Date;
+	priorOfflineAt?: Date;
+	priorAlertSentAt?: Date;
+}): Promise<CronFixture> {
+	// Children first, then the rows they reference. current_state is a checked
+	// singleton, so its device and settings references are cleared together.
+	await database.update(currentState).set({
+		currentCount: null,
+		band: null,
+		source: null,
+		lastPushReceivedAt: null,
+		lastEdgeReportedAt: null,
+		activeDeviceId: null,
+		settingsVersion: null,
+	});
+	await database.delete(occupancyMinutes);
+	await database.delete(auditLog);
+	await database.delete(scheduledResetIssuances);
+	await database.delete(alertLog);
+	await database.delete(edgeHealthLog);
+	await database.delete(edgeCurrentHealth);
+	await database.delete(edgeCommands);
+	await database.delete(edgeDevices);
+	await database.delete(settingsVersions);
+
+	const [settings] = await database
+		.insert(settingsVersions)
+		.values({
+			capacity: 100,
+			quietMaxPercent: 25,
+			moderateMaxPercent: 50,
+			busyMaxPercent: 75,
+			timezone: "Asia/Riyadh",
+			businessDayBoundary: "04:00",
+			resetBufferMinutes: 30,
+			pushIntervalSeconds: 20,
+			freshForSeconds: 90,
+			operationalStaleAfterSeconds: 180,
+			publicPollSeconds: 60,
+			effectiveFrom: new Date("2025-01-01T00:00:00.000Z"),
+			...businessHours,
+		})
+		.returning({ version: settingsVersions.version });
+	if (!settings) throw new Error("Cron settings were not created");
+
+	const [device] = await database
+		.insert(edgeDevices)
+		.values({ name: "phase-8-cron", tokenHash: "c".repeat(64) })
+		.returning({ id: edgeDevices.id });
+	if (!device) throw new Error("Cron device was not created");
+
+	// A stale projection: the last accepted push is an hour old against a
+	// 180-second staleness window, so `stale_push` is the active condition.
+	const lastPushAt = new Date(options.now.getTime() - 3_600_000);
+	await database.insert(edgeCurrentHealth).values({
+		deviceId: device.id,
+		sequence: 1,
+		processStatus: "ok",
+		cameraStatus: "ok",
+		feedStatus: "ok",
+		edgeObservedAt: lastPushAt,
+		receivedAt: lastPushAt,
+	});
+	await database.update(currentState).set({
+		currentCount: 5,
+		band: "quiet",
+		source: "edge",
+		lastPushReceivedAt: lastPushAt,
+		lastEdgeReportedAt: lastPushAt,
+		activeDeviceId: device.id,
+		settingsVersion: settings.version,
+	});
+
+	if (options.priorOfflineAt) {
+		await database.insert(edgeHealthLog).values({
+			deviceId: device.id,
+			transitionType: "offline",
+			processStatus: "ok",
+			cameraStatus: "ok",
+			feedStatus: "ok",
+			occurredAt: options.priorOfflineAt,
+		});
+	}
+	if (options.priorAlertSentAt) {
+		await database.insert(alertLog).values({
+			deviceId: device.id,
+			condition: "stale_push",
+			noticeKind: "alert",
+			conditionStartedAt: options.priorAlertSentAt,
+			sentAt: options.priorAlertSentAt,
+			deliveryOutcome: "delivered",
+		});
+	}
+
+	// audit_log is a child of edge_commands through a composite key, so each
+	// retention row needs its own command.
+	const commands = await database
+		.insert(edgeCommands)
+		.values([
+			{
+				deviceId: device.id,
+				type: "reset_zero",
+				status: "pending",
+				issuerClass: "system",
+			},
+			{
+				deviceId: device.id,
+				type: "reset_zero",
+				status: "pending",
+				issuerClass: "system",
+			},
+		])
+		.returning({ id: edgeCommands.id });
+	const [expiredCommand, retainedCommand] = commands;
+	if (!expiredCommand || !retainedCommand) {
+		throw new Error("Cron commands were not created");
+	}
+	const systemActor = {
+		actorPrincipalId: null,
+		actorPrincipalKind: "system",
+		actorRole: null,
+		commandIssuerClass: "system",
+		action: "reset",
+		priorValue: 5,
+		requestedDelta: null,
+		requestedValue: 0,
+		effectiveValue: 0,
+	} as const;
+	const audits = await database
+		.insert(auditLog)
+		.values([
+			{
+				...systemActor,
+				commandId: expiredCommand.id,
+				createdAt: EXPIRED_AUDIT_AT,
+			},
+			{
+				...systemActor,
+				commandId: retainedCommand.id,
+				createdAt: RETAINED_AUDIT_AT,
+			},
+		])
+		.returning({ id: auditLog.id });
+	const [expiredAudit, retainedAudit] = audits;
+	if (!expiredAudit || !retainedAudit) {
+		throw new Error("Cron audit rows were not created");
+	}
+
+	return {
+		deviceId: device.id,
+		settingsVersion: settings.version,
+		expiredAuditId: expiredAudit.id,
+		retainedAuditId: retainedAudit.id,
+	};
+}
+
+async function invokeCron(options: {
+	now: Date;
+	runner?: { run: () => Promise<unknown> };
+}) {
+	const { createApp } = await import("./index");
+	const app = createApp("test", undefined, () => options.now, options.runner);
+	return app.fetch(
+		new Request("http://localhost/cron", {
+			headers: { Authorization: `Bearer ${cronSecret}` },
+		}),
+	);
+}
+
+async function healthSurfaces() {
+	return JSON.stringify({
+		current: await database
+			.select()
+			.from(currentState)
+			.orderBy(asc(currentState.id)),
+		projection: await database
+			.select()
+			.from(edgeCurrentHealth)
+			.orderBy(asc(edgeCurrentHealth.deviceId)),
+		transitions: await database
+			.select()
+			.from(edgeHealthLog)
+			.orderBy(asc(edgeHealthLog.id)),
+	});
+}
+
+async function alertRows() {
+	return database.select().from(alertLog).orderBy(asc(alertLog.id));
+}
+
+describe("Phase 8 composed cron seam", () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	it("evaluates alerts, issues the scheduled reset, and purges retention in one authenticated invocation", async () => {
+		cronFixture = await seedCronFixture({ now: PRE_OPEN_BOUNDARY });
+		telegramFetch = vi
+			.spyOn(globalThis, "fetch")
+			.mockResolvedValue(telegramOk());
+
+		const response = await invokeCron({ now: PRE_OPEN_BOUNDARY });
+
+		expect(response.status).toBe(200);
+		expect(response.headers.get("cache-control")).toBe("no-store");
+		expect(await response.json()).toEqual({ status: "ok" });
+
+		// Alerting: exactly one claimed row inside the transaction and one
+		// delivered outcome row after it, for the one active condition.
+		const alerts = await alertRows();
+		expect(alerts).toHaveLength(2);
+		expect(alerts.map((row) => row.deliveryOutcome)).toEqual([
+			"claimed",
+			"delivered",
+		]);
+		expect(new Set(alerts.map((row) => row.condition))).toEqual(
+			new Set(["stale_push"]),
+		);
+		expect(new Set(alerts.map((row) => row.noticeKind))).toEqual(
+			new Set(["alert"]),
+		);
+
+		// Delivery: exactly one bounded outbound call, to Telegram only.
+		expect(telegramFetch).toHaveBeenCalledTimes(1);
+		const [endpoint, init] = telegramFetch.mock.calls[0] as [
+			string,
+			RequestInit,
+		];
+		expect(endpoint.startsWith("https://api.telegram.org/bot")).toBe(true);
+		// The carried-forward Stage A finding: a hung delivery must not be able to
+		// consume the whole invocation.
+		expect(init.signal).toBeInstanceOf(AbortSignal);
+
+		// Health: one connection transition, recorded regardless of the schedule.
+		const transitions = await database
+			.select()
+			.from(edgeHealthLog)
+			.orderBy(asc(edgeHealthLog.id));
+		expect(transitions).toHaveLength(1);
+		expect(transitions[0]?.transitionType).toBe("offline");
+
+		// Scheduled reset: the previous business day closed at 19:00 UTC and its
+		// 30-minute buffer elapsed before this invocation.
+		const issuances = await database
+			.select()
+			.from(scheduledResetIssuances)
+			.orderBy(asc(scheduledResetIssuances.businessDay));
+		expect(issuances).toHaveLength(1);
+		expect(issuances[0]?.businessDay).toBe("2026-08-13");
+
+		// Retention: the same invocation purged the expired audit row and kept the
+		// one inside the window.
+		const auditIds = (
+			await database.select({ id: auditLog.id }).from(auditLog)
+		).map((row) => row.id);
+		expect(auditIds).not.toContain(cronFixture.expiredAuditId);
+		expect(auditIds).toContain(cronFixture.retainedAuditId);
+	});
+
+	it("suppresses a closed-hour failure and escalates it exactly at the pre-open boundary", async () => {
+		cronFixture = await seedCronFixture({ now: DEEP_CLOSED });
+		telegramFetch = vi
+			.spyOn(globalThis, "fetch")
+			.mockResolvedValue(telegramOk());
+
+		const closed = await invokeCron({ now: DEEP_CLOSED });
+
+		expect(closed.status).toBe(200);
+		// Three hours before opening is outside the 30-minute window, so nothing is
+		// sent and nothing is claimed.
+		expect(await alertRows()).toEqual([]);
+		expect(telegramFetch).not.toHaveBeenCalled();
+		// The health transition is not schedule-gated and is still recorded.
+		expect(await database.select().from(edgeHealthLog)).toHaveLength(1);
+
+		const escalated = await invokeCron({ now: PRE_OPEN_BOUNDARY });
+
+		expect(escalated.status).toBe(200);
+		const alerts = await alertRows();
+		expect(alerts).toHaveLength(2);
+		expect(alerts.map((row) => row.deliveryOutcome)).toEqual([
+			"claimed",
+			"delivered",
+		]);
+		expect(alerts[0]?.sentAt.toISOString()).toBe(
+			PRE_OPEN_BOUNDARY.toISOString(),
+		);
+		expect(telegramFetch).toHaveBeenCalledTimes(1);
+		// The offline transition was already recorded, so the escalation adds none.
+		expect(await database.select().from(edgeHealthLog)).toHaveLength(1);
+	});
+
+	it("records a delivery failure durably and leaves device health byte-identical", async () => {
+		// A prior offline transition and a prior alert older than the 30-minute
+		// re-alert interval: the invocation therefore emits a re-alert and no
+		// health transition at all, so every health surface must come out unchanged.
+		cronFixture = await seedCronFixture({
+			now: OPEN_HOURS,
+			priorOfflineAt: new Date(OPEN_HOURS.getTime() - 3_600_000),
+			priorAlertSentAt: new Date(OPEN_HOURS.getTime() - 3_600_000),
+		});
+		telegramFetch = vi
+			.spyOn(globalThis, "fetch")
+			.mockResolvedValue(new Response("upstream failure", { status: 500 }));
+		const healthBefore = await healthSurfaces();
+
+		const response = await invokeCron({ now: OPEN_HOURS });
+
+		// A transport outage is a durable `failed` row, not a failing cron: it must
+		// never turn into a 500 that would also mask the scheduled reset.
+		expect(response.status).toBe(200);
+		const alerts = await alertRows();
+		expect(alerts).toHaveLength(3);
+		expect(alerts.map((row) => row.deliveryOutcome)).toEqual([
+			"delivered",
+			"claimed",
+			"failed",
+		]);
+		expect(telegramFetch).toHaveBeenCalledTimes(1);
+
+		expect(await healthSurfaces()).toBe(healthBefore);
+	});
+
+	it("still issues the scheduled reset when alert evaluation faults", async () => {
+		cronFixture = await seedCronFixture({ now: PRE_OPEN_BOUNDARY });
+		telegramFetch = vi
+			.spyOn(globalThis, "fetch")
+			.mockResolvedValue(telegramOk());
+		const { commandService } = await import("./command-repository");
+		const { createResetRepository } = await import("./reset-repository");
+		const applicationDatabase = database as typeof import("@fitway/db").db;
+		// Real scheduled reset and real retention; only alert evaluation is forced
+		// to fault, which is the fault the frozen contract exists to isolate.
+		const runner = createCompositeCronRunner({
+			now: () => PRE_OPEN_BOUNDARY,
+			runScheduledReset: () =>
+				createScheduledResetRunner({
+					now: () => PRE_OPEN_BOUNDARY,
+					...createResetRepository(applicationDatabase),
+					issueScheduledReset: (decision) =>
+						commandService.issueScheduledReset(decision),
+				}).run(),
+			evaluateAlerts: async () => {
+				throw new TypeError("private alert fault detail");
+			},
+			purgeExpired: (now) =>
+				createRetentionRepository(applicationDatabase).purgeExpired(now),
+		});
+
+		const response = await invokeCron({ now: PRE_OPEN_BOUNDARY, runner });
+
+		// The aggregate error surfaces as the existing fixed no-store 500.
+		expect(response.status).toBe(500);
+		expect(response.headers.get("cache-control")).toBe("no-store");
+		expect(await response.json()).toEqual({ error: "cron_failed" });
+
+		// Both components after the fault still ran.
+		const issuances = await database
+			.select()
+			.from(scheduledResetIssuances)
+			.orderBy(asc(scheduledResetIssuances.businessDay));
+		expect(issuances).toHaveLength(1);
+		expect(issuances[0]?.businessDay).toBe("2026-08-13");
+		const auditIds = (
+			await database.select({ id: auditLog.id }).from(auditLog)
+		).map((row) => row.id);
+		expect(auditIds).not.toContain(cronFixture.expiredAuditId);
+		expect(auditIds).toContain(cronFixture.retainedAuditId);
+		// The faulting component wrote nothing.
+		expect(await alertRows()).toEqual([]);
 	});
 });

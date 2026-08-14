@@ -16,7 +16,14 @@ export const RETENTION_TABLES = [
 
 export type RetentionTable = (typeof RETENTION_TABLES)[number];
 
-/** The one timestamp that decides each table's eligibility. */
+/**
+ * The one timestamp that decides each table's eligibility — recorded here as
+ * documentation, and deliberately claiming nothing more. It has no runtime
+ * consumer: `apps/server/src/retention-repository.ts` names the Drizzle columns
+ * directly, and because the value type is a bare `string`, `check-types` cannot
+ * detect a disagreement between the two. Treat a change to either side as a
+ * change that must be made in both.
+ */
 export const RETENTION_GOVERNING_COLUMN: Record<RetentionTable, string> = {
 	audit_log: "created_at",
 	edge_health_log: "occurred_at",
@@ -44,16 +51,24 @@ function assertInstant(value: Date, name: string): void {
  */
 export function retentionCutoff(now: Date): Date {
 	assertInstant(now, "now");
-	const year = now.getUTCFullYear();
-	const month = now.getUTCMonth();
+	// Derived from the declared window rather than a hardcoded year, so the two
+	// cannot disagree.
+	const totalMonths =
+		now.getUTCFullYear() * 12 + now.getUTCMonth() - RETENTION_WINDOW_MONTHS;
+	const targetYear = Math.floor(totalMonths / 12);
+	const targetMonth = totalMonths - targetYear * 12;
 	// Day 0 of the following month is the last day of the target month, which
 	// clamps 29 February back onto a non-leap year instead of letting it roll
 	// forward into March and silently shorten the window by a day.
 	const lastDayOfTargetMonth = new Date(
-		Date.UTC(year - 1, month + 1, 0),
+		Date.UTC(targetYear, targetMonth + 1, 0),
 	).getUTCDate();
 	return new Date(
-		Date.UTC(year - 1, month, Math.min(now.getUTCDate(), lastDayOfTargetMonth)),
+		Date.UTC(
+			targetYear,
+			targetMonth,
+			Math.min(now.getUTCDate(), lastDayOfTargetMonth),
+		),
 	);
 }
 

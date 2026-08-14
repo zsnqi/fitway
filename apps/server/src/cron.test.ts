@@ -160,6 +160,48 @@ describe("internal cron handler", () => {
 		expect(logError).not.toHaveBeenCalled();
 	});
 
+	it("rejects a wrong secret of exactly the right length, isolating the digest comparison", async () => {
+		// The Phase 7 carried-forward item. The length is derived from the real
+		// secret rather than a literal, so this stays equal-length under any
+		// provisioning: cron.ts:50-52 short-circuits on a length mismatch, so a
+		// fixed-width literal can leave the constant-time digest comparison at
+		// cron.ts:44-53 untested without anyone noticing.
+		const equalLength = `Bearer ${"w".repeat(cronSecret.length)}`;
+		expect(equalLength).toHaveLength(`Bearer ${cronSecret}`.length);
+		expect(equalLength).not.toBe(`Bearer ${cronSecret}`);
+
+		const response = await rawRequest({ authorization: equalLength });
+
+		expect(response.status).toBe(401);
+		expect(response.headers["cache-control"]).toBe("no-store");
+		expect(response.body).toBe(JSON.stringify({ error: "unauthorized" }));
+		expect(run).not.toHaveBeenCalled();
+		expect(logRequest).toHaveBeenCalledExactlyOnceWith({
+			method: "GET",
+			path: "/cron",
+			status: 401,
+		});
+		expect(logError).not.toHaveBeenCalled();
+	});
+
+	it("rejects a wrong secret one character too long, keeping the length path proved", async () => {
+		const unequalLength = `Bearer ${"w".repeat(cronSecret.length + 1)}`;
+		expect(unequalLength.length).not.toBe(`Bearer ${cronSecret}`.length);
+
+		const response = await rawRequest({ authorization: unequalLength });
+
+		expect(response.status).toBe(401);
+		expect(response.headers["cache-control"]).toBe("no-store");
+		expect(response.body).toBe(JSON.stringify({ error: "unauthorized" }));
+		expect(run).not.toHaveBeenCalled();
+		expect(logRequest).toHaveBeenCalledExactlyOnceWith({
+			method: "GET",
+			path: "/cron",
+			status: 401,
+		});
+		expect(logError).not.toHaveBeenCalled();
+	});
+
 	it("rejects duplicate bearer headers without running work", async () => {
 		const response = await rawRequest({
 			authorization: [`Bearer ${cronSecret}`, `Bearer ${cronSecret}`],
