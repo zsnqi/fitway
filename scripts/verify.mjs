@@ -85,6 +85,11 @@ const phases = {
 		integrationFiles: ["apps/server/src/phase10-domain.integration.test.ts"],
 		label: "Phase 10 reporting domain slice",
 	},
+	"phase11-shell": {
+		browserFiles: ["tests/browser/phase11-shell.browser.spec.ts"],
+		integrationFiles: [],
+		label: "Phase 11 owner shell slice",
+	},
 	"phase10-csv-transport": {
 		browserFiles: [],
 		integrationFiles: [

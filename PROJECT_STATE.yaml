@@ -1,6 +1,6 @@
 ﻿# yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-15T02:18:00+03:00"
+updatedAt: "2026-08-15T02:45:00+03:00"
 
 coordinator:
   owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration on main; handover recorded in docs/phase-records/handoffs/coordinator/20260815-003900-coordinator-handover-and-frontier-baseline.md"
@@ -1088,19 +1088,35 @@ milestones:
     integratedCommit: null
 
   phase11-shell:
-    status: PLANNED
+    status: IN_PROGRESS
     dependencies: [phase-9]
-    ownerSession: null
-    branch: null
-    worktree: null
-    baseCommit: null
-    ownedPaths: []
-    forbiddenPaths: []
+    ownerSession: "Fresh phase11-shell b02 worker on work/phase11-shell-b02 in D:/Projects/fitway-worktrees/phase11-shell-b02: reuse the preserved b01 candidate reapplied onto current main, resolve the single forced-colors focus-visible gap, and complete the phase UI polish loop. New attempt at repair 0/2; rejected b01 candidate 0b015ee remains immutable provenance."
+    branch: work/phase11-shell-b02
+    worktree: D:/Projects/fitway-worktrees/phase11-shell-b02
+    baseCommit: 300c59dc8adeb098ea3cd28385a1fd83557e59c2
+    ownedPaths:
+      - apps/web/src/components/owner/owner-shell.tsx
+      - apps/web/src/components/owner/owner-shell.css
+      - apps/web/src/routes/admin.tsx
+      - tests/browser/phase11-shell.browser.spec.ts
+      - docs/phase-records/handoffs/phase11-shell/*-p11_shell_b02-worker-*.md
+    forbiddenPaths:
+      - all repository paths outside ownedPaths
+      - every backend, API, database, auth, and edge surface
+      - apps/web/src/components/owner/owner-analytics-* and every Phase 9 analytics component or test
+      - apps/web/src/components/staff/**
+      - apps/web/src/i18n/**, shared message catalogs, global tokens, and apps/web/src/routeTree.gen.ts
+      - tests/browser/phase4-staff-web.browser.spec.ts, phase9-owner-ui.browser.spec.ts, public-baseline.browser.spec.ts, and staff-paper-fidelity.review.spec.ts
+      - "tests/browser/__screenshots__/**: canonical baselines are read-only coordinator-owned acceptance evidence; a canonical diff is a stop condition, never a regeneration"
+      - PROJECT_STATE.yaml and scripts/verify.mjs
+      - visual-direction-gate/**, Paper, and every normative document
+      - root manifests, lockfiles, environment schemas, and test-runner configuration
+      - every other milestone's phase record and handoff directory
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/coordinator/20260811-201938-completion-blocker-state-reconciled.md
+    lastHeartbeatAt: "2026-08-15T02:45:00+03:00"
+    leaseExpiresAt: "2026-08-22T02:45:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-shell/20260815-024500-p11_shell_b02-coordinator-activation.md
     stopReason: null
     gates:
       unit: PENDING
