@@ -33,9 +33,26 @@ export const ALERT_RE_ALERT_INTERVAL_MS = 30 * 60_000;
  * idempotent against a repeat invocation — the alert claim is taken under an
  * advisory transaction lock, retention's cutoff is day-quantized, and reset
  * issuance is keyed — and because the outbound Telegram call carries its own
- * abort signal at the composition site.
+ * abort signal, bounded by `ALERT_DELIVERY_TIMEOUT_MS` below.
  */
-export const CRON_COMPONENT_DEADLINE_MS = 15_000;
+export const CRON_COMPONENT_DEADLINE_MS = 18_000;
+
+/**
+ * Per-delivery bound for the outbound Telegram call, applied by the composition
+ * site to the `fetch` the accepted notifier takes as a dependency.
+ *
+ * It is deliberately far below the component deadline rather than close to it.
+ * `apps/server/src/alert-repository.ts:233-244` delivers notices **sequentially**,
+ * and one invocation can carry one notice per member of `ALERT_CONDITION_TYPES`,
+ * so a stalling — as opposed to rejecting — Telegram costs the alerts component
+ * up to `ALERT_CONDITION_TYPES.length × ALERT_DELIVERY_TIMEOUT_MS`. If that
+ * product exceeded `CRON_COMPONENT_DEADLINE_MS`, a transport outage would breach
+ * the deadline and raise the aggregate error — which is exactly the 500 the
+ * frozen contract says a transport outage must never produce, because
+ * `alert-repository.ts:103-111` already turns a rejection into a durable
+ * `failed` row. The relation is asserted by test, not left to arithmetic here.
+ */
+export const ALERT_DELIVERY_TIMEOUT_MS = 4_000;
 
 export type CompositeCronRunnerDependencies = {
 	now: () => Date;

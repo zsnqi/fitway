@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { ALERT_CONDITION_TYPES } from "../alerts/types";
 import {
+	ALERT_DELIVERY_TIMEOUT_MS,
 	ALERT_PRE_OPEN_WINDOW_MS,
 	ALERT_RE_ALERT_INTERVAL_MS,
 	CRON_COMPONENT_DEADLINE_MS,
@@ -48,10 +50,21 @@ describe("frozen alert policy supplied at the cron composition boundary", () => 
 		expect(CRON_COMPONENT_DEADLINE_MS).toBeGreaterThan(0);
 		expect(CRON_COMPONENT_DEADLINE_MS * 3).toBeLessThanOrEqual(60_000);
 	});
+
+	it("keeps a stalling Telegram inside the alerts component's own deadline", () => {
+		// alert-repository.ts:233-244 delivers sequentially, one notice per
+		// condition type at worst. If the whole stalled sequence could outlast the
+		// component deadline, a transport outage would raise the aggregate error
+		// and produce the 500 the frozen contract forbids for exactly that case.
+		expect(ALERT_DELIVERY_TIMEOUT_MS).toBeGreaterThan(0);
+		expect(
+			ALERT_DELIVERY_TIMEOUT_MS * ALERT_CONDITION_TYPES.length,
+		).toBeLessThanOrEqual(CRON_COMPONENT_DEADLINE_MS);
+	});
 });
 
 describe("composite cron runner", () => {
-	it("attempts scheduled reset, then alerts, then retention on one shared instant", async () => {
+	it("gives both time-dependent components the same instant", async () => {
 		const seen: Date[] = [];
 		const { calls, now, runner } = runnerWith({
 			evaluateAlerts: async (at) => {
@@ -68,6 +81,35 @@ describe("composite cron runner", () => {
 		// Both time-dependent components read the same instant, so a retention
 		// cutoff can never disagree with the alert evaluation beside it.
 		expect(seen).toEqual([now, now]);
+	});
+
+	it("runs scheduled reset, then alerts, then retention, strictly one at a time", async () => {
+		const events: string[] = [];
+		const component = (name: string) => async () => {
+			events.push(`start:${name}`);
+			await Promise.resolve();
+			await Promise.resolve();
+			events.push(`end:${name}`);
+		};
+		const { runner } = runnerWith({
+			runScheduledReset: component("reset"),
+			evaluateAlerts: component("alerts"),
+			purgeExpired: component("retention"),
+		});
+
+		await runner.run();
+
+		// A stub that only records its name on entry would pass under `Promise.all`
+		// too. Recording entry and exit is what makes concurrent execution
+		// observable: it would interleave every start before the first end.
+		expect(events).toEqual([
+			"start:reset",
+			"end:reset",
+			"start:alerts",
+			"end:alerts",
+			"start:retention",
+			"end:retention",
+		]);
 	});
 
 	it("reads the clock exactly once per invocation", async () => {

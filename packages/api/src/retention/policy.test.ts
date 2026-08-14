@@ -24,6 +24,36 @@ describe("retention policy", () => {
 		expect(RETENTION_WINDOW_MONTHS).toBe(12);
 	});
 
+	it.each([
+		"2026-08-14T12:34:56.789Z",
+		"2026-01-31T23:59:59.999Z",
+		"2024-02-29T00:00:00.000Z",
+		"2026-03-31T05:00:00.000Z",
+		"2000-02-29T18:00:00.000Z",
+	])("moves %s back by exactly RETENTION_WINDOW_MONTHS whole months", (iso) => {
+		// Derived through a disjoint path — month arithmetic recovered from the
+		// result rather than compared against a restated literal — so the
+		// declared window and the cutoff cannot drift apart unnoticed.
+		const now = new Date(iso);
+		const cutoff = retentionCutoff(now);
+
+		expect(
+			(now.getUTCFullYear() - cutoff.getUTCFullYear()) * 12 +
+				(now.getUTCMonth() - cutoff.getUTCMonth()),
+		).toBe(RETENTION_WINDOW_MONTHS);
+		// 29 February clamps back onto the shorter month rather than rolling
+		// forward into March and silently shortening the window.
+		expect(cutoff.getUTCDate()).toBe(
+			Math.min(
+				now.getUTCDate(),
+				new Date(
+					Date.UTC(cutoff.getUTCFullYear(), cutoff.getUTCMonth() + 1, 0),
+				).getUTCDate(),
+			),
+		);
+		expect(cutoff.toISOString().slice(10)).toBe("T00:00:00.000Z");
+	});
+
 	it("advances by exactly one day across a UTC day boundary", () => {
 		const before = retentionCutoff(new Date("2026-08-14T23:59:59.999Z"));
 		const after = retentionCutoff(new Date("2026-08-15T00:00:00.000Z"));

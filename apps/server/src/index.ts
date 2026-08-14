@@ -1,6 +1,7 @@
 import { pathToFileURL } from "node:url";
 import { createContext } from "@fitway/api/context";
 import {
+	ALERT_DELIVERY_TIMEOUT_MS,
 	ALERT_PRE_OPEN_WINDOW_MS,
 	ALERT_RE_ALERT_INTERVAL_MS,
 	createCompositeCronRunner,
@@ -52,14 +53,14 @@ const ownerAnalyticsReaders = createOwnerAnalyticsReaders(db);
  * Outbound alert delivery is the one component that talks to a third party, and
  * undici's own header/body defaults are measured in minutes — far longer than the
  * minutely cron it runs inside. The notifier takes an injected `fetch`, so the
- * bound is applied here rather than in the accepted transport itself.
+ * bound is applied here rather than in the accepted transport itself. Its value
+ * belongs to the cron seam, which is what sizes it against the component
+ * deadline and the sequential per-notice delivery loop.
  */
-const TELEGRAM_DELIVERY_TIMEOUT_MS = 10_000;
-
 const boundedFetch: typeof fetch = (input, init) =>
 	fetch(input, {
 		...init,
-		signal: AbortSignal.timeout(TELEGRAM_DELIVERY_TIMEOUT_MS),
+		signal: AbortSignal.timeout(ALERT_DELIVERY_TIMEOUT_MS),
 	});
 
 export function createApp(
