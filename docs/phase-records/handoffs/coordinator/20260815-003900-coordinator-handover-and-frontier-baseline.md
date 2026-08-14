@@ -51,7 +51,9 @@ Terminal history preserved unchanged: `phase7-integration` b01 `FAILED_VALIDATIO
 ## Baseline verification at `96ba85f`
 
 ```
-pnpm verify:fast   -> PASS
+pnpm verify:fast      -> PASS
+pnpm test:integration -> PASS   (run coord_baseline_c01)
+pnpm test:browser     -> PASS   (run coord_browser_c01)
 ```
 
 - Repository invariants, Biome, types: pass.
@@ -59,6 +61,15 @@ pnpm verify:fast   -> PASS
 - Python simulator: `18` tests, `OK`.
 - Repository mutation guard: "Verification fast passed without repository mutation."
 - Disposable Postgres reachable: `127.0.0.1:55432` open (`fitway-phase2-postgres`).
+- Integration: `12` files, `55` tests passed against disposable database
+  `fitway_integration_coord_baseline_c01` with the matching reset marker. No other database was
+  targeted.
+- Browser: `57` passed in `33.1s`, chromium, covering public baseline, Phase 4 staff web, Phase 9
+  owner UI, and the Staff Paper fidelity review across the required widths in both locales.
+
+This is the trustworthy base every remaining slice integrates onto. The integrated frontier is
+therefore green on all three ladders before any new work lands, so a later red is attributable to
+the slice that introduced it.
 
 ## Environment provisioning required by every root-run verification
 
