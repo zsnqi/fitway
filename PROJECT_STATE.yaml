@@ -1,6 +1,6 @@
-# yaml-language-server: $schema=./docs/schemas/project-state.schema.json
+﻿# yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-15T00:39:00+03:00"
+updatedAt: "2026-08-15T00:45:00+03:00"
 
 coordinator:
   owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration on main; handover recorded in docs/phase-records/handoffs/coordinator/20260815-003900-coordinator-handover-and-frontier-baseline.md"
@@ -976,7 +976,7 @@ milestones:
     worktree: null
     baseCommit: 99629d1dd39922d8aff3bb82ee1ba599c1718cc3
     ownedPaths:
-      - "Paper file 01KYPX5AF950XZVVDD88B6J7QB / OWNER ANALYTICS — PHASE 10 REPORTING EXTENSION — CURRENT"
+      - "Paper file 01KYPX5AF950XZVVDD88B6J7QB / OWNER ANALYTICS â€” PHASE 10 REPORTING EXTENSION â€” CURRENT"
     forbiddenPaths:
       - "all repository paths; this milestone writes only inside the approved FITWAY Paper file"
       - "all existing approved Paper artboards and components outside the new Owner reporting extension area"
@@ -997,9 +997,9 @@ milestones:
     integratedCommit: 34c7257e6d2d6d0f60494a941c96a7f09bd561a0
 
   phase10-csv-transport:
-    status: BLOCKED
+    status: IN_PROGRESS
     dependencies: [phase10-domain]
-    ownerSession: null
+    ownerSession: "Resumed phase10-csv-transport b03 worker on work/phase10-csv-transport-b03 in D:/Projects/fitway-worktrees/phase10-csv-transport-b03: complete the ratified b03 plan plus timeout amendment on the preserved eight-path TDD provenance. Repair budget remains 0/2."
     branch: work/phase10-csv-transport-b03
     worktree: D:/Projects/fitway-worktrees/phase10-csv-transport-b03
     baseCommit: c4bd178a0cc0ca9524a2da8230fa6d84487da2e1
@@ -1024,12 +1024,13 @@ milestones:
       - all existing phase10-csv-transport b01/b02 handoffs and every handoff not matching the owned b03 worker pattern
       - every other milestone's phase record, implementation, and test
       - normative product/specification/ADR/workflow documents
-    sharedLeases: []
+    sharedLeases:
+      - "exclusive through 2026-08-22T00:45:00+03:00: packages/api/src/context.ts, packages/api/src/routers/index.ts, apps/server/src/index.ts, apps/server/src/reporting-repository.ts, and apps/server/src/reporting-repository.test.ts. The reporting-repository lease is limited to optional AbortSignal propagation, statement-timeout installation, idempotent client release/cleanup, primary-error preservation, category-only diagnostics, and their focused tests. Its query, cursor, CSV, historical settings, snapshot, privacy, batch-size, and transaction semantics stay frozen."
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase10-csv-transport/20260813-151812-p10_csv_transport_b03-worker-capacity-blocked.md
-    stopReason: "External patch-approval capacity is exhausted until 2026-08-20T11:21:00+03:00 for the isolated b03 worktree outside the session writable root. Required patches were rejected before mutation; alternate write mechanisms are forbidden. Preserve the eight-path dirty TDD provenance and resume from the ratified timeout amendment when lawful write capacity returns. Repair remains 0/2."
+    lastHeartbeatAt: "2026-08-15T00:45:00+03:00"
+    leaseExpiresAt: "2026-08-22T00:45:00+03:00"
+    handoff: docs/phase-records/handoffs/phase10-csv-transport/20260815-004500-p10_csv_transport_b03-coordinator-resume.md
+    stopReason: null
     gates:
       unit: PENDING
       integration: PENDING
