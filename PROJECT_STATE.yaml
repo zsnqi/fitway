@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-14T21:26:00+03:00"
+updatedAt: "2026-08-14T21:28:00+03:00"
 
 coordinator:
   owner: "main Codex session"
@@ -748,7 +748,7 @@ milestones:
     ownerSession: null
     branch: main
     worktree: null
-    baseCommit: f7c231e620e03edbd09c2ef18a0ab8480b37c5e8
+    baseCommit: a68db15864a4efc597ebc5afe4e23f71d4247a9a
     ownedPaths: []
     forbiddenPaths: []
     sharedLeases: []
@@ -764,7 +764,7 @@ milestones:
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
       independentReview: PASS
-    integratedCommit: f7c231e620e03edbd09c2ef18a0ab8480b37c5e8
+    integratedCommit: a68db15864a4efc597ebc5afe4e23f71d4247a9a
 
   phase9-analytics-domain:
     status: DONE
