@@ -44,10 +44,12 @@ import {
 import { generateOpenApiDocument } from "./openapi";
 import { createPublicOccupancyHandler } from "./public-occupancy";
 import { DeviceRateLimiter } from "./rate-limiter";
+import { createReportingRepository } from "./reporting-repository";
 import { createResetRepository } from "./reset-repository";
 import { createRetentionRepository } from "./retention-repository";
 
 const ownerAnalyticsReaders = createOwnerAnalyticsReaders(db);
+const reportingRepository = createReportingRepository(db);
 
 /**
  * Outbound alert delivery is the one component that talks to a third party, and
@@ -193,6 +195,7 @@ export function createApp(
 					readDailyAnalytics: ownerAnalyticsReaders.readDailyAnalytics,
 					readAnalyticsTimeContext:
 						ownerAnalyticsReaders.readAnalyticsTimeContext,
+					streamCsv: reportingRepository.streamCsv,
 				}),
 			});
 			if (rpcResult.matched)

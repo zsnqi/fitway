@@ -69,6 +69,22 @@ type StoredMinuteRow = {
 
 type RawSettingsRow = StoredSettingsRow & QueryResultRow;
 type RawMinuteRow = StoredMinuteRow & QueryResultRow;
+/**
+ * Category-only CSV export diagnostics. The category is the entire payload: no
+ * SQL, parameter, range, CSV content, connection, database, or credential value
+ * is ever emitted.
+ */
+export type CsvDiagnosticCategory = "csv_abort" | "csv_statement_timeout";
+
+const STATEMENT_TIMEOUT_SQLSTATE = "57014";
+
+function isStatementTimeout(error: unknown): boolean {
+	return (
+		typeof error === "object" &&
+		error !== null &&
+		(error as { code?: unknown }).code === STATEMENT_TIMEOUT_SQLSTATE
+	);
+}
 
 function normalizeDatabaseTime(value: string): string {
 	return value.length === 5 ? value : value.slice(0, 8);
@@ -219,6 +235,8 @@ async function readRange(
 }
 
 export const DEFAULT_CSV_FETCH_BATCH_SIZE = 1_000;
+export const DEFAULT_CSV_STATEMENT_TIMEOUT_MS = 30_000;
+const TEST_CSV_STATEMENT_TIMEOUT_MS = 250;
 const csvCursorName = "fitway_reporting_csv_cursor";
 
 const cursorSettingsQuery = `SELECT
@@ -257,6 +275,54 @@ SELECT
 FROM occupancy_minutes
 WHERE business_day >= $1::date AND business_day <= $2::date
 ORDER BY business_day, minute_start_utc, device_id`;
+
+async function acquireCsvClient(
+	database: Database,
+	signal?: AbortSignal,
+	reportAbort?: () => void,
+): Promise<PoolClient> {
+	if (signal?.aborted) {
+		reportAbort?.();
+		throw signal.reason;
+	}
+	const connectPromise = database.$client.connect();
+	if (!signal) return connectPromise;
+
+	let aborted = false;
+	const settledConnect = connectPromise.then(
+		(client) => {
+			if (!aborted) return { kind: "client" as const, client };
+			try {
+				client.release(true);
+			} catch {
+				// The abort reason is primary and the late client cannot be reused.
+			}
+			return { kind: "aborted" as const };
+		},
+		(error: unknown) => {
+			if (aborted) return { kind: "aborted" as const };
+			throw error;
+		},
+	);
+	let abortListener: (() => void) | undefined;
+	const abortPromise = new Promise<never>((_resolve, reject) => {
+		abortListener = () => {
+			aborted = true;
+			reportAbort?.();
+			reject(signal.reason);
+		};
+		signal.addEventListener("abort", abortListener, { once: true });
+		if (signal.aborted) abortListener();
+	});
+
+	try {
+		const result = await Promise.race([settledConnect, abortPromise]);
+		if (result.kind === "aborted") throw signal.reason;
+		return result.client;
+	} finally {
+		if (abortListener) signal.removeEventListener("abort", abortListener);
+	}
+}
 
 async function* cursorMinutes(
 	client: PoolClient,
@@ -310,15 +376,87 @@ async function* streamCsvFromDatabase(
 	database: Database,
 	range: { startBusinessDay: string; endBusinessDay: string },
 	batchSize: number,
+	statementTimeoutMs: number,
+	signal?: AbortSignal,
+	onCsvDiagnostic?: (category: CsvDiagnosticCategory) => void,
 ): AsyncGenerator<string> {
-	const client = await database.$client.connect();
+	const reported = new Set<CsvDiagnosticCategory>();
+	const report = (category: CsvDiagnosticCategory) => {
+		if (reported.has(category)) return;
+		reported.add(category);
+		try {
+			onCsvDiagnostic?.(category);
+		} catch {
+			// Diagnostics are advisory and never alter export control flow.
+		}
+	};
+	const client = await acquireCsvClient(database, signal, () =>
+		report("csv_abort"),
+	);
 	let transactionOpen = false;
 	let cursorOpen = false;
+	let released = false;
+	let hasPrimary = false;
+	let primaryError: unknown;
+	let cleanupError: unknown;
+	let abortReleaseError: unknown;
+	const release = (destroy = false) => {
+		if (released) return;
+		released = true;
+		if (destroy) client.release(true);
+		else client.release();
+	};
+	const onAbort = () => {
+		report("csv_abort");
+		try {
+			release(true);
+		} catch (error) {
+			abortReleaseError = error;
+		}
+	};
+	/**
+	 * Idempotent cleanup helper called by the generator so no `throw` or
+	 * `return` ever occurs directly in `finally`. It never rethrows; the caller
+	 * decides whether a cleanup failure may surface.
+	 */
+	const cleanup = async (): Promise<unknown> => {
+		if (released) return abortReleaseError;
+		let error: unknown;
+		if (transactionOpen) {
+			if (cursorOpen) {
+				cursorOpen = false;
+				try {
+					await client.query(`CLOSE ${csvCursorName}`);
+				} catch (closeError) {
+					error = closeError;
+				}
+			}
+			transactionOpen = false;
+			try {
+				await client.query("ROLLBACK");
+			} catch (rollbackError) {
+				error ??= rollbackError;
+			}
+		}
+		try {
+			release();
+		} catch (releaseError) {
+			error ??= releaseError;
+		}
+		return error;
+	};
+	signal?.addEventListener("abort", onAbort, { once: true });
 	try {
+		if (signal?.aborted) onAbort();
+		signal?.throwIfAborted();
 		await client.query(
 			"BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY",
 		);
 		transactionOpen = true;
+		await client.query({
+			text: "SELECT set_config('statement_timeout', $1, true)",
+			values: [`${statementTimeoutMs}`],
+		});
 		const settingsResult =
 			await client.query<RawSettingsRow>(cursorSettingsQuery);
 		const resolvedSettings = settingsResult.rows.map(mapSettings);
@@ -336,27 +474,37 @@ async function* streamCsvFromDatabase(
 		cursorOpen = false;
 		await client.query("COMMIT");
 		transactionOpen = false;
-	} finally {
-		if (transactionOpen) {
-			if (cursorOpen) {
-				await client.query(`CLOSE ${csvCursorName}`).catch(() => undefined);
-			}
-			await client.query("ROLLBACK").catch(() => undefined);
+	} catch (error) {
+		hasPrimary = true;
+		if (signal?.aborted) {
+			// The exact abort reason outranks the socket, timeout, and cleanup
+			// failures that destroying the connection necessarily produces.
+			report("csv_abort");
+			primaryError = signal.reason;
+		} else {
+			if (isStatementTimeout(error)) report("csv_statement_timeout");
+			primaryError = error;
 		}
-		client.release();
+	} finally {
+		signal?.removeEventListener("abort", onAbort);
+		cleanupError = await cleanup();
 	}
+	if (hasPrimary) throw primaryError;
+	if (cleanupError !== undefined) throw cleanupError;
 }
 
 export type ReportingRepository = {
 	readRange(input: ReportingDateRangeInput): Promise<ReportingRange>;
 	readHeatmap(input: ReportingDateRangeInput): Promise<Heatmap>;
 	readWeekOverWeek(input?: WeekComparisonReadInput): Promise<WeekComparison>;
-	streamCsv(input: CsvRangeInput): AsyncIterable<string>;
+	streamCsv(input: CsvRangeInput, signal?: AbortSignal): AsyncIterable<string>;
 };
 
 export type ReportingRepositoryOptions = {
 	now?: () => Date;
 	csvFetchBatchSize?: number;
+	csvStatementTimeoutMs?: number;
+	onCsvDiagnostic?: (category: CsvDiagnosticCategory) => void;
 };
 
 export function createReportingRepository(
@@ -366,12 +514,20 @@ export function createReportingRepository(
 	const now = options.now ?? (() => new Date());
 	const csvFetchBatchSize =
 		options.csvFetchBatchSize ?? DEFAULT_CSV_FETCH_BATCH_SIZE;
+	const csvStatementTimeoutMs =
+		options.csvStatementTimeoutMs ?? DEFAULT_CSV_STATEMENT_TIMEOUT_MS;
 	if (
 		!Number.isSafeInteger(csvFetchBatchSize) ||
 		csvFetchBatchSize <= 0 ||
 		csvFetchBatchSize > 10_000
 	) {
 		throw new RangeError("CSV fetch batch size must be between 1 and 10000");
+	}
+	if (
+		csvStatementTimeoutMs !== TEST_CSV_STATEMENT_TIMEOUT_MS &&
+		csvStatementTimeoutMs !== DEFAULT_CSV_STATEMENT_TIMEOUT_MS
+	) {
+		throw new RangeError("CSV statement timeout must be 250 or 30000 ms");
 	}
 
 	return {
@@ -403,9 +559,16 @@ export function createReportingRepository(
 				minimumCoverage: parsed.minimumCoverage,
 			});
 		},
-		streamCsv(input) {
+		streamCsv(input, signal) {
 			const range = csvRangeInputSchema.parse(input);
-			return streamCsvFromDatabase(database, range, csvFetchBatchSize);
+			return streamCsvFromDatabase(
+				database,
+				range,
+				csvFetchBatchSize,
+				csvStatementTimeoutMs,
+				signal,
+				options.onCsvDiagnostic,
+			);
 		},
 	};
 }
