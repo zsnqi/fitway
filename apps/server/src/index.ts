@@ -33,8 +33,10 @@ import {
 import { generateOpenApiDocument } from "./openapi";
 import { createPublicOccupancyHandler } from "./public-occupancy";
 import { DeviceRateLimiter } from "./rate-limiter";
+import { createReportingRepository } from "./reporting-repository";
 
 const ownerAnalyticsReaders = createOwnerAnalyticsReaders(db);
+const reportingRepository = createReportingRepository(db);
 
 export function createApp(
 	nodeEnv: "development" | "production" | "test" = env.NODE_ENV,
@@ -118,6 +120,7 @@ export function createApp(
 					readDailyAnalytics: ownerAnalyticsReaders.readDailyAnalytics,
 					readAnalyticsTimeContext:
 						ownerAnalyticsReaders.readAnalyticsTimeContext,
+					streamCsv: reportingRepository.streamCsv,
 				}),
 			});
 			if (rpcResult.matched)

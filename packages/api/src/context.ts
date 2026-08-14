@@ -1,6 +1,7 @@
 import type { AuthenticationResult, CanonicalAuthContext } from "@fitway/auth";
 import type { Context as HonoContext } from "hono";
 import type { DailyAnalytics } from "./analytics/daily-analytics";
+import type { CsvRangeInput } from "./analytics/reporting/contracts";
 import type { AnalyticsTimeContext } from "./analytics/time-context";
 import type { OperationalSnapshot } from "./health/snapshot";
 
@@ -14,6 +15,10 @@ export type CreateContextOptions = {
 	readAnalyticsTimeContext: (
 		settingsVersions: readonly number[],
 	) => Promise<AnalyticsTimeContext>;
+	streamCsv: (
+		input: CsvRangeInput,
+		signal?: AbortSignal,
+	) => AsyncIterable<string>;
 };
 
 /**
@@ -33,6 +38,10 @@ export type Context = {
 	readAnalyticsTimeContext?: (
 		settingsVersions: readonly number[],
 	) => Promise<AnalyticsTimeContext>;
+	streamCsv?: (
+		input: CsvRangeInput,
+		signal?: AbortSignal,
+	) => AsyncIterable<string>;
 };
 
 export async function createContext({
@@ -41,6 +50,7 @@ export async function createContext({
 	readOperationalSnapshot,
 	readDailyAnalytics,
 	readAnalyticsTimeContext,
+	streamCsv,
 }: CreateContextOptions): Promise<Context> {
 	const result = await authenticate(context.req.header("Cookie"));
 	for (const cookie of result.cookieHeaders) {
@@ -54,5 +64,6 @@ export async function createContext({
 		readOperationalSnapshot,
 		readDailyAnalytics,
 		readAnalyticsTimeContext,
+		streamCsv,
 	};
 }

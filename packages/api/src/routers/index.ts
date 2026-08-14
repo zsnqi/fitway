@@ -1,4 +1,5 @@
 import type { RouterClient } from "@orpc/server";
+import { adminAnalyticsCsv } from "../analytics/reporting/csv-transport";
 import {
 	analyticsTimeContextInputSchema,
 	analyticsTimeContextOutputSchema,
@@ -74,6 +75,7 @@ export const appRouter = {
 	admin: {
 		session: adminSession,
 		analytics: {
+			csv: adminAnalyticsCsv,
 			daily: adminDailyAnalytics,
 			timeContext: adminAnalyticsTimeContext,
 		},
