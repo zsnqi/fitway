@@ -3,6 +3,7 @@ import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { ShieldCheck } from "lucide-react";
 
 import { OwnerAuditSection } from "@/components/owner/audit/owner-audit-section";
+import { OwnerHealthSection } from "@/components/owner/health/owner-health-section";
 import { OwnerAnalyticsPage } from "@/components/owner/owner-analytics-page";
 import { OwnerShell } from "@/components/owner/owner-shell";
 import { useOwnerAnalyticsMessages } from "@/components/owner/use-owner-analytics-messages";
@@ -66,6 +67,13 @@ function AdminRoute() {
 					<>
 						<OwnerAnalyticsPage />
 						<OwnerAuditSection />
+						{/*
+						 * Last on the route deliberately. Every accepted composition above
+						 * keeps its exact rendered geometry, so no canonical baseline
+						 * outside this slice moves, and the two periodic history surfaces
+						 * sit together beneath the live analytics the owner opens daily.
+						 */}
+						<OwnerHealthSection />
 					</>
 				)}
 			</main>

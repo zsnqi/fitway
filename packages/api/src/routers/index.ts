@@ -8,6 +8,7 @@ import {
 } from "../analytics/time-context";
 import { auditListInputSchema, auditListOutputSchema } from "../audit/list";
 import { edgePushRequestSchema, edgePushResponseSchema } from "../edge-push";
+import { healthIncidentSummarySchema } from "../health/incidents";
 import { operationalSnapshotSchema } from "../health/snapshot";
 import {
 	ORPCError,
@@ -84,6 +85,22 @@ const adminAuditList = ownerProcedure
 		return context.listAuditEntries(input);
 	});
 
+/**
+ * Owner-only incident and uptime summary. It takes no input at all: the window is a
+ * product decision resolved server-side from the configured gym timezone and business
+ * day, so no client can widen it, and no device or per-visitor datum is reachable
+ * through it. `ownerProcedure` is the same server-side guard the analytics and audit
+ * leaves use — missing or expired authentication is 401 and staff is 403.
+ */
+const adminHealthSummary = ownerProcedure
+	.output(healthIncidentSummarySchema)
+	.handler(({ context }) => {
+		if (!context.readHealthIncidentSummary) {
+			throw new ORPCError("INTERNAL_SERVER_ERROR");
+		}
+		return context.readHealthIncidentSummary();
+	});
+
 export const appRouter = {
 	staff: {
 		session: staffSession,
@@ -98,6 +115,9 @@ export const appRouter = {
 		},
 		audit: {
 			list: adminAuditList,
+		},
+		health: {
+			summary: adminHealthSummary,
 		},
 	},
 };
