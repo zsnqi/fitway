@@ -1,7 +1,8 @@
 # Phase 11 audit b01 worker handoff
 
-- Status: `READY_FOR_INTEGRATION`. First attempt, repair `0/2`, no candidate-gate failure consumed.
-- Base commit / candidate commit: `ce82b52` (activation, `SELF`) / this commit.
+- Status: the slice is `READY_FOR_INTEGRATION`; one coordinator-owned baseline outside this slice is
+  `NEEDS_HUMAN`. Repair `1/2` consumed — see "Repair 1" at the end of this record.
+- Base commit / candidate commits: `ce82b52` (activation, `SELF`) / `8c40740` plus repair `b13555b`.
 - Branch / worktree / run ID: `work/phase11-audit-b01` /
   `D:/Projects/fitway-worktrees/phase11-audit-b01` / `p11_audit_b01`.
 - Owned paths used: `packages/api/src/audit/list.ts` and `list.test.ts`;
@@ -160,4 +161,67 @@ pnpm verify:phase
 ```
 
 A fresh verifier must use its own reserved resources (`p11_audit_v01` /
-`fitway_integration_p11_audit_v01`) rather than these.
+`fitway_integration_p11_audit_v01`) rather than these, and must take
+`scripts/verify.mjs` from `main` at `3a19ef8` for the widened browser profile. That file is
+coordinator-owned and is deliberately absent from this branch's commits; it was imported into the
+worktree only to run the gate, then restored.
+
+## Repair 1 (`b13555b`) — repair `1/2`
+
+**What failed.** Coordinator `pnpm verify:full` on the merged tree went red on
+`tests/browser/phase9-owner-ui.browser.spec.ts`. Reproduced here against `8c40740`: all five Phase 9
+tests and all five `phase11-shell` tests failed, ten in total.
+
+**Root cause.** The audit hook fetched `admin.analytics.timeContext` itself, with
+`{ settingsVersions: [] }`. That procedure belongs to Phase 9, whose surface mounts beside this
+section on `/admin` and had already resolved the same fact with the versions its own day payload
+derives. Both `tests/browser/phase9-owner-ui.browser.spec.ts:157-160` and
+`tests/browser/phase11-shell.browser.spec.ts:109-113` route-mock that procedure with an exact
+post-data assertion, so the second differently-shaped call tripped them and the analytics query never
+resolved, cascading into every downstream assertion. Two calls to one procedure for one fact was the
+defect; the exact-body assertions are only what noticed it.
+
+**What changed.** `useOwnerAudit` now consumes `useOwnerDailyAnalytics` and reads
+`data.timeContext.current.timeZone`. Sharing that query key means React Query serves the same cache
+entry, so the section issues **no** request of its own for the timezone. While that shared query is
+pending or failed the section is `unavailable` and renders nothing, rather than adding a second live
+region, a second alert, and a second retry control for the one cause the analytics surface already
+reports — which is also what three separate neighbouring assertions require, each expecting a single
+`status`, `alert`, or retry button on `/admin`. `apps/web/src/hooks/use-owner-daily-analytics.ts` was
+imported, never edited.
+
+**Request behaviour of the Phase 9 surface: unchanged.** `/admin` issues exactly one
+`admin.analytics.daily` with `{}` and exactly one `admin.analytics.timeContext` carrying the
+analytics-derived versions, identical to before this slice existed. Pinned by a unit assertion
+(`timeContext` called once, with `{ settingsVersions: [11] }`, never with `[]`) and a browser
+assertion on every observed time-context body.
+
+Nothing was relaxed to achieve this: no neighbouring spec was edited or mocked around, no assertion
+of this slice was weakened, and no canonical baseline was regenerated. This slice's own two canonical
+compositions still match byte-for-byte.
+
+**Result.** Phase 9 `5/5` pass. `phase11-shell` `4/5`. `phase11-audit` `8/8`.
+
+## Open blocker — `NEEDS_HUMAN`, coordinator-owned baseline
+
+`tests/browser/phase11-shell.browser.spec.ts:272` "canonical desktop Arabic and mobile English shell
+compositions match" still fails, and cannot be fixed inside this slice.
+
+It captures `/admin` with `toHaveScreenshot(..., { fullPage: true })`. Its baselines were approved
+when `/admin` carried only the Phase 9 analytics section. Mounting the owner audit section — the
+approved deliverable of this slice — makes the page taller: expected 1440×1101, received 1440×1666.
+The failure is a pure page-height delta, not a rendering difference in the shell chrome itself.
+
+No in-slice change resolves it. Any rendering of the section at all changes a full-page capture of
+the same route, so this is not a matter of the section's state, size, or request behaviour.
+
+The two resolutions both sit outside this worker's ownership:
+
+1. re-approve `owner-shell-ar-desktop-1440x900.png` and `owner-shell-en-mobile-390x844.png` in the
+   serialized human-approved baseline pass `AGENTS.md` requires; or
+2. scope that spec's capture to the shell chrome so it stops asserting the composition of whatever
+   sections `/admin` hosts — a change to another milestone's accepted acceptance evidence.
+
+Per the activation, canonical baselines outside this slice's own subtree are forbidden to this
+worker, and `AGENTS.md` requires human approval to update a canonical baseline. This record makes no
+attempt at either.

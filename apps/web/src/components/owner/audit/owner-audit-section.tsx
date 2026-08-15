@@ -57,16 +57,20 @@ export function OwnerAuditSection() {
 		setApplied(emptyOwnerAuditSelection);
 	}
 
+	// Without the configured gym timezone no record can be dated, and `/admin`
+	// already carries one live region and one retry for that same cause. A second
+	// copy would be noise for a screen reader and a duplicate control for everyone
+	// else, so the section stands down entirely until the timezone is known.
+	if (audit.status === "unavailable" || !audit.timeZone) return null;
+
 	return (
 		<section className="owner-audit" aria-labelledby={fieldId("heading")}>
 			<header className="owner-audit__heading">
 				<h2 id={fieldId("heading")}>{messages.title}</h2>
 				<p>{messages.description}</p>
-				{audit.timeZone ? (
-					<span className="owner-audit__zone">
-						{messages.timeZoneLabel} <bdi>{audit.timeZone}</bdi>
-					</span>
-				) : null}
+				<span className="owner-audit__zone">
+					{messages.timeZoneLabel} <bdi>{audit.timeZone}</bdi>
+				</span>
 			</header>
 
 			<form
@@ -227,7 +231,7 @@ export function OwnerAuditSection() {
 			{audit.status === "error" ? (
 				<OwnerAuditError onRetry={audit.retry} />
 			) : null}
-			{audit.status === "success" && audit.timeZone ? (
+			{audit.status === "success" ? (
 				audit.entries.length === 0 ? (
 					<OwnerAuditEmpty />
 				) : (
