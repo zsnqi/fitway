@@ -30,6 +30,7 @@ import { logger } from "hono/logger";
 import { createTelegramAlertNotifier } from "./alert-notifier";
 import { createAlertRepository } from "./alert-repository";
 import { createOwnerAnalyticsReaders } from "./analytics-time-context-repository";
+import { createAuditListRepository } from "./audit-repository";
 import { mountAuthRoutes } from "./auth/routes";
 import { type AuthRuntime, createAuthRuntime } from "./auth/runtime";
 import { commandService } from "./command-repository";
@@ -50,6 +51,7 @@ import { createRetentionRepository } from "./retention-repository";
 
 const ownerAnalyticsReaders = createOwnerAnalyticsReaders(db);
 const reportingRepository = createReportingRepository(db);
+const auditListRepository = createAuditListRepository(db);
 
 /**
  * Outbound alert delivery is the one component that talks to a third party, and
@@ -196,6 +198,7 @@ export function createApp(
 					readAnalyticsTimeContext:
 						ownerAnalyticsReaders.readAnalyticsTimeContext,
 					streamCsv: reportingRepository.streamCsv,
+					listAuditEntries: auditListRepository.listAuditEntries,
 				}),
 			});
 			if (rpcResult.matched)

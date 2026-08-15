@@ -6,6 +6,7 @@ import {
 	ownerDailyAnalyticsInputSchema,
 	ownerDailyAnalyticsOutputSchema,
 } from "../analytics/time-context";
+import { auditListInputSchema, auditListOutputSchema } from "../audit/list";
 import { edgePushRequestSchema, edgePushResponseSchema } from "../edge-push";
 import { operationalSnapshotSchema } from "../health/snapshot";
 import {
@@ -67,6 +68,22 @@ const adminAnalyticsTimeContext = ownerProcedure
 		return context.readAnalyticsTimeContext(input.settingsVersions);
 	});
 
+/**
+ * Owner-only audit history. Read-only by construction: the context exposes no
+ * append path, so this leaf cannot write, and Phase 5 command/audit atomicity is
+ * untouched. `ownerProcedure` is the same server-side guard the analytics leaves
+ * use — missing or expired authentication is 401 and staff is 403.
+ */
+const adminAuditList = ownerProcedure
+	.input(auditListInputSchema)
+	.output(auditListOutputSchema)
+	.handler(({ context, input }) => {
+		if (!context.listAuditEntries) {
+			throw new ORPCError("INTERNAL_SERVER_ERROR");
+		}
+		return context.listAuditEntries(input);
+	});
+
 export const appRouter = {
 	staff: {
 		session: staffSession,
@@ -78,6 +95,9 @@ export const appRouter = {
 			csv: adminAnalyticsCsv,
 			daily: adminDailyAnalytics,
 			timeContext: adminAnalyticsTimeContext,
+		},
+		audit: {
+			list: adminAuditList,
 		},
 	},
 };
