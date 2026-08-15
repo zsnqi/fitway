@@ -1,6 +1,6 @@
 ﻿# yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-15T22:10:00+03:00"
+updatedAt: "2026-08-15T22:50:00+03:00"
 
 coordinator:
   owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration on main; handover recorded in docs/phase-records/handoffs/coordinator/20260815-003900-coordinator-handover-and-frontier-baseline.md"
@@ -1195,9 +1195,9 @@ milestones:
       independentReview: PASS
     integratedCommit: 748f759195ffd1450c83d53ae7220af4c1fc2572
 
-  phase11-access:
+  phase11-audit-generalization:
     status: PLANNED
-    dependencies: [phase-4, phase-5, phase-9]
+    dependencies: [phase11-audit]
     ownerSession: null
     branch: null
     worktree: null
@@ -1208,7 +1208,31 @@ milestones:
     validationRepairAttempts: 0
     lastHeartbeatAt: null
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/coordinator/20260811-201938-completion-blocker-state-reconciled.md
+    handoff: docs/phase-records/handoffs/coordinator/20260815-224500-audit-generalization-proposal-v4.md
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase11-access:
+    status: PLANNED
+    dependencies: [phase-4, phase-5, phase-9, phase11-audit-generalization]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase11-access/20260811-154032-p11_access-authority-resolved-capacity-blocked.md
     stopReason: null
     gates:
       unit: PENDING
@@ -1221,7 +1245,8 @@ milestones:
 
   phase11-settings:
     status: PLANNED
-    dependencies: [phase-3, phase-5, phase-6, phase-7, phase-9]
+    dependencies:
+      [phase-3, phase-5, phase-6, phase-7, phase-9, phase11-audit-generalization]
     ownerSession: null
     branch: null
     worktree: null
@@ -1292,7 +1317,15 @@ milestones:
 
   phase-11:
     status: PLANNED
-    dependencies: [phase11-shell, phase11-audit, phase11-access, phase11-settings, phase11-health]
+    dependencies:
+      [
+        phase11-shell,
+        phase11-audit,
+        phase11-audit-generalization,
+        phase11-access,
+        phase11-settings,
+        phase11-health,
+      ]
     ownerSession: null
     branch: null
     worktree: null

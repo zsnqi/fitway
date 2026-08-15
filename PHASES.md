@@ -67,11 +67,13 @@ phase10-domain + phase10-paper-reporting + phase10-csv-transport + phase10-ui-cs
 
 phase-9 -> phase11-shell
 phase-5 + phase-9 -> phase11-audit
-phase-4 + phase-5 + phase-9 -> phase11-access
-phase-3 + phase-5 + phase-6 + phase-7 + phase-9 -> phase11-settings
+phase11-audit -> phase11-audit-generalization
+phase-4 + phase-5 + phase-9 + phase11-audit-generalization -> phase11-access
+phase-3 + phase-5 + phase-6 + phase-7 + phase-9 + phase11-audit-generalization
+  -> phase11-settings
 phase-8 + phase-9 -> phase11-health
-phase11-shell + phase11-audit + phase11-access + phase11-settings + phase11-health
-  -> phase-11
+phase11-shell + phase11-audit + phase11-audit-generalization + phase11-access
+  + phase11-settings + phase11-health -> phase-11
 
 phase-6 -> phase-12
 ```
@@ -270,6 +272,13 @@ spreadsheet-safe, uses Western digits, and includes only authorized private anal
 
 - **`phase11-shell`:** Phase 9 navigation/layout.
 - **`phase11-audit`:** Phase 5 + Phase 9, filterable actor/action/from/to/reason history.
+- **`phase11-audit-generalization`:** Phase 11 audit. `audit_log` is command-coupled — `command_id`
+  is `NOT NULL` with a composite foreign key and `effective_value` is a `NOT NULL` integer — so
+  neither an access event nor a settings change can be written to it as it stands. One
+  coordinator-owned, backward-compatible migration and contract extension therefore precedes both
+  governance slices. This is a dependency derived from the existing schema and from owner story 26's
+  requirement of **one** audit log, not a new product decision; the rationale and its three rejected
+  design rounds are preserved under `docs/phase-records/handoffs/coordinator/`.
 - **`phase11-access`:** Phase 4 + Phase 5 audit + Phase 9, PIN provision/rotate/deactivate and real owner
   account management without synthetic staff email.
 - **`phase11-settings`:** Phase 3 + Phase 5 audit + Phase 6 + Phase 7 + Phase 9, append-only capacity,
