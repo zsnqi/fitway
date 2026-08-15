@@ -1,6 +1,6 @@
 ﻿# yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-15T18:45:00+03:00"
+updatedAt: "2026-08-15T22:10:00+03:00"
 
 coordinator:
   owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration on main; handover recorded in docs/phase-records/handoffs/coordinator/20260815-003900-coordinator-handover-and-frontier-baseline.md"
@@ -1042,7 +1042,7 @@ milestones:
   phase10-ui-csv:
     status: IN_PROGRESS
     dependencies: [phase10-domain, phase10-paper-reporting, phase10-csv-transport]
-    ownerSession: "Fresh phase10-ui-csv b01 worker on work/phase10-ui-csv-b01 in D:/Projects/fitway-worktrees/phase10-ui-csv-b01: expose the three unexposed reporting procedures and build the owner heatmap, week-over-week, date range, and CSV export UI. Paper is unreachable this session, so Paper fidelity must not be claimed."
+    ownerSession: "phase10-ui-csv b01 on work/phase10-ui-csv-b01 in D:/Projects/fitway-worktrees/phase10-ui-csv-b01. Stage 1 (the three owner-only reporting procedures and their wiring) is committed at 0212869 after coordinator reconciliation of interrupted uncommitted work; the UI stage remains. Paper is unreachable, so Paper fidelity must not be claimed."
     branch: work/phase10-ui-csv-b01
     worktree: D:/Projects/fitway-worktrees/phase10-ui-csv-b01
     baseCommit: SELF
@@ -1071,9 +1071,9 @@ milestones:
     sharedLeases:
       - "exclusive through 2026-08-22T18:45:00+03:00: wiring only in packages/api/src/context.ts, packages/api/src/routers/index.ts, apps/server/src/index.ts, and apps/web/src/routes/admin.tsx."
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-15T18:45:00+03:00"
+    lastHeartbeatAt: "2026-08-15T22:10:00+03:00"
     leaseExpiresAt: "2026-08-22T18:45:00+03:00"
-    handoff: docs/phase-records/handoffs/phase10-ui-csv/20260815-184500-p10_ui_csv_b01-coordinator-activation.md
+    handoff: docs/phase-records/handoffs/phase10-ui-csv/20260815-220500-p10_ui_csv_c01-stage1-reconciliation.md
     stopReason: null
     gates:
       unit: PENDING
