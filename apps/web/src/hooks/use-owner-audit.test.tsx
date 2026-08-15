@@ -5,13 +5,14 @@ import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const { list, timeContext } = vi.hoisted(() => ({
+const { list, daily, timeContext } = vi.hoisted(() => ({
 	list: vi.fn(),
+	daily: vi.fn(),
 	timeContext: vi.fn(),
 }));
 vi.mock("@/utils/orpc", () => ({
 	client: {
-		admin: { audit: { list }, analytics: { timeContext } },
+		admin: { audit: { list }, analytics: { daily, timeContext } },
 	},
 }));
 
@@ -220,9 +221,50 @@ function probe() {
 	};
 }
 
+/** The day payload `/admin` already fetches; its versions drive the time context. */
+const dailyPayload = {
+	businessDay: "2026-08-10",
+	timeline: [
+		{
+			state: "value",
+			minuteStartUtc: "2026-08-10T07:00:00.000Z",
+			count: 12,
+			entries: 12,
+			exits: 0,
+			band: "quiet",
+			capacitySnapshot: 100,
+			settingsVersion: 11,
+			source: "live",
+		},
+	],
+	peak: {
+		minuteStartUtc: "2026-08-10T07:00:00.000Z",
+		count: 12,
+		band: "quiet",
+		capacitySnapshot: 100,
+		settingsVersion: 11,
+	},
+	dailyAverage: 12,
+	estimatedEntranceCrossings: 12,
+	observedOpenMinutes: 1,
+	expectedOpenMinutes: 1,
+	coverage: 1,
+} as const;
+
+const timeContextPayload = {
+	current: { settingsVersion: 11, timeZone: "Asia/Riyadh" },
+	versions: [{ settingsVersion: 11, timeZone: "Asia/Riyadh" }],
+} as const;
+
+function mockAnalytics() {
+	daily.mockResolvedValue(dailyPayload);
+	timeContext.mockResolvedValue(timeContextPayload);
+}
+
 beforeEach(() => {
 	Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 	list.mockReset();
+	daily.mockReset();
 	timeContext.mockReset();
 	container = document.createElement("div");
 	document.body.append(container);
@@ -235,35 +277,55 @@ afterEach(async () => {
 });
 
 describe("owner audit query", () => {
-	it("resolves the gym timezone before reading history and reports loading first", async () => {
-		let resolveZone: (value: unknown) => void = () => {};
-		timeContext.mockReturnValue(
-			new Promise((resolve) => {
-				resolveZone = resolve;
-			}),
-		);
+	it("reads the gym timezone from the analytics query instead of asking again", async () => {
+		mockAnalytics();
 		list.mockResolvedValue({ entries: [], nextCursor: null });
 		await render();
-		expect(probe().status).toBe("pending");
-		expect(list).not.toHaveBeenCalled();
 
-		await act(async () => {
-			resolveZone({
-				current: { settingsVersion: 4, timeZone: "Asia/Riyadh" },
-				versions: [],
-			});
-		});
-		await settle();
-		expect(timeContext).toHaveBeenCalledWith({ settingsVersions: [] });
+		// The regression this pins: the audit section must add no request of its
+		// own for the timezone, and must not reshape the Phase 9 time-context call.
+		expect(timeContext).toHaveBeenCalledTimes(1);
+		expect(timeContext).toHaveBeenCalledWith({ settingsVersions: [11] });
+		expect(timeContext).not.toHaveBeenCalledWith({ settingsVersions: [] });
+		expect(daily).toHaveBeenCalledTimes(1);
+		expect(daily).toHaveBeenCalledWith({});
 		expect(probe().zone).toBe("Asia/Riyadh");
 		expect(probe().status).toBe("success");
 	});
 
-	it("requests a bounded first page and exposes an empty result", async () => {
-		timeContext.mockResolvedValue({
-			current: { settingsVersion: 4, timeZone: "Asia/Riyadh" },
-			versions: [],
+	it("is unavailable, and reads no history, until the shared timezone resolves", async () => {
+		let resolveDaily: (value: unknown) => void = () => {};
+		daily.mockReturnValue(
+			new Promise((resolve) => {
+				resolveDaily = resolve;
+			}),
+		);
+		timeContext.mockResolvedValue(timeContextPayload);
+		list.mockResolvedValue({ entries: [], nextCursor: null });
+		await render();
+		expect(probe().status).toBe("unavailable");
+		expect(probe().zone).toBe("");
+		expect(list).not.toHaveBeenCalled();
+
+		await act(async () => {
+			resolveDaily(dailyPayload);
 		});
+		await settle();
+		expect(probe().status).toBe("success");
+		expect(list).toHaveBeenCalledTimes(1);
+	});
+
+	it("stands down rather than duplicating the failure the analytics surface shows", async () => {
+		daily.mockRejectedValue(new Error("Service Unavailable"));
+		timeContext.mockResolvedValue(timeContextPayload);
+		list.mockResolvedValue({ entries: [], nextCursor: null });
+		await render();
+		expect(probe().status).toBe("unavailable");
+		expect(list).not.toHaveBeenCalled();
+	});
+
+	it("requests a bounded first page and exposes an empty result", async () => {
+		mockAnalytics();
 		list.mockResolvedValue({ entries: [], nextCursor: null });
 		await render();
 		expect(list).toHaveBeenCalledWith({ limit: 25, cursor: null });
@@ -273,10 +335,7 @@ describe("owner audit query", () => {
 	});
 
 	it("appends the next keyset page without duplicating a row", async () => {
-		timeContext.mockResolvedValue({
-			current: { settingsVersion: 4, timeZone: "Asia/Riyadh" },
-			versions: [],
-		});
+		mockAnalytics();
 		list
 			.mockResolvedValueOnce({
 				entries: [entry(9, "2026-08-14T09:15:30.250Z")],
@@ -303,10 +362,7 @@ describe("owner audit query", () => {
 	});
 
 	it("passes applied filters to the transport", async () => {
-		timeContext.mockResolvedValue({
-			current: { settingsVersion: 4, timeZone: "Asia/Riyadh" },
-			versions: [],
-		});
+		mockAnalytics();
 		list.mockResolvedValue({ entries: [], nextCursor: null });
 		await render(selection({ action: "reset", reasonMode: "missing" }));
 		expect(list).toHaveBeenCalledWith({
@@ -317,10 +373,7 @@ describe("owner audit query", () => {
 	});
 
 	it("surfaces a transport failure as an error without substituting rows", async () => {
-		timeContext.mockResolvedValue({
-			current: { settingsVersion: 4, timeZone: "Asia/Riyadh" },
-			versions: [],
-		});
+		mockAnalytics();
 		list.mockRejectedValue(new Error("Service Unavailable"));
 		await render();
 		expect(probe().status).toBe("error");
@@ -328,10 +381,7 @@ describe("owner audit query", () => {
 	});
 
 	it("surfaces a malformed page as an error rather than rendering it", async () => {
-		timeContext.mockResolvedValue({
-			current: { settingsVersion: 4, timeZone: "Asia/Riyadh" },
-			versions: [],
-		});
+		mockAnalytics();
 		list.mockResolvedValue({
 			entries: [
 				{ ...entry(9, "2026-08-14T09:15:30.250Z"), effectiveValue: -2 },
@@ -342,11 +392,18 @@ describe("owner audit query", () => {
 		expect(probe().status).toBe("error");
 	});
 
-	it("fails closed when the gym timezone cannot be resolved", async () => {
-		timeContext.mockRejectedValue(new Error("unavailable"));
+	it("stands down when the shared time context cannot be mapped", async () => {
+		daily.mockResolvedValue(dailyPayload);
+		// A mapping that omits the day's settings version is exactly what the
+		// analytics contract rejects; the audit section must not read history from
+		// a timezone it never received.
+		timeContext.mockResolvedValue({
+			current: { settingsVersion: 11, timeZone: "Asia/Riyadh" },
+			versions: [],
+		});
 		list.mockResolvedValue({ entries: [], nextCursor: null });
 		await render();
-		expect(probe().status).toBe("error");
+		expect(probe().status).toBe("unavailable");
 		expect(list).not.toHaveBeenCalled();
 	});
 });

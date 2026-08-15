@@ -10,9 +10,11 @@ import {
 	AUDIT_PAGE_LIMIT_DEFAULT,
 	auditListOutputSchema,
 } from "@fitway/api/audit/list";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 import { client } from "@/utils/orpc";
+
+import { useOwnerDailyAnalytics } from "./use-owner-daily-analytics";
 
 /**
  * The owner's filter form state. It is deliberately raw: the form holds text and
@@ -155,7 +157,8 @@ export function toAuditFilters(
 }
 
 export type OwnerAuditResult = {
-	status: "pending" | "error" | "success";
+	/** `unavailable` means the gym timezone is not resolved, so no row can be dated. */
+	status: "unavailable" | "pending" | "error" | "success";
 	entries: AuditEntryView[];
 	timeZone: string | null;
 	hasNextPage: boolean;
@@ -167,29 +170,24 @@ export type OwnerAuditResult = {
 /**
  * Owner audit history.
  *
- * The configured gym timezone is resolved first and gates the list, because the
- * occurred-range filter is expressed in gym-local days. Every page is validated
- * against the shared transport schema, so a malformed row surfaces as an error
- * instead of rendering as a plausible-looking audit record.
+ * The configured gym timezone is one fact, and `/admin` has already resolved it:
+ * `useOwnerDailyAnalytics` fetches it alongside the day's curve. This hook reads
+ * that same query rather than asking for the timezone a second time, so mounting
+ * the audit section issues no request beyond `admin.audit.list` and leaves the
+ * request behaviour of the Phase 9 surface exactly as it was.
+ *
+ * While that shared query is pending or failed the section is `unavailable` and
+ * renders nothing: no row can be dated without the gym timezone, and `/admin`
+ * already carries one louder live region and one retry for that same cause.
+ *
+ * Every page is validated against the shared transport schema, so a malformed row
+ * surfaces as an error instead of rendering as a plausible-looking audit record.
  */
 export function useOwnerAudit(
 	selection: OwnerAuditFilterSelection,
 ): OwnerAuditResult {
-	const timeZoneQuery = useQuery({
-		queryKey: ["owner", "audit", "timezone"],
-		queryFn: async () => {
-			const context = await client.admin.analytics.timeContext({
-				settingsVersions: [],
-			});
-			const timeZone = context.current.timeZone;
-			if (!timeZone) throw new Error("The gym timezone is unavailable");
-			return timeZone;
-		},
-		retry: false,
-		refetchOnWindowFocus: false,
-	});
-
-	const timeZone = timeZoneQuery.data ?? null;
+	const analytics = useOwnerDailyAnalytics();
+	const timeZone = analytics.data?.timeContext.current.timeZone ?? null;
 	const filters = timeZone ? toAuditFilters(selection, timeZone) : undefined;
 	const history = useInfiniteQuery({
 		queryKey: ["owner", "audit", "list", filters ?? null],
@@ -209,11 +207,13 @@ export function useOwnerAudit(
 	});
 
 	const status: OwnerAuditResult["status"] =
-		timeZoneQuery.isError || history.isError
-			? "error"
-			: timeZone === null || history.isPending
-				? "pending"
-				: "success";
+		timeZone === null
+			? "unavailable"
+			: history.isError
+				? "error"
+				: history.isPending
+					? "pending"
+					: "success";
 
 	return {
 		status,
@@ -222,9 +222,6 @@ export function useOwnerAudit(
 		hasNextPage: history.hasNextPage,
 		isFetchingNextPage: history.isFetchingNextPage,
 		fetchNextPage: () => void history.fetchNextPage(),
-		retry: () => {
-			if (timeZoneQuery.isError) void timeZoneQuery.refetch();
-			else void history.refetch();
-		},
+		retry: () => void history.refetch(),
 	};
 }

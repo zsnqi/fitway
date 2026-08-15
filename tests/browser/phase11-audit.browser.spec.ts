@@ -148,6 +148,12 @@ type ListInput = {
 };
 
 let observedFilters: Array<Record<string, unknown> | undefined> = [];
+/**
+ * Every `admin.analytics.timeContext` body seen on the page. Mounting the audit
+ * section must add none: that procedure belongs to Phase 9 and its spec asserts
+ * exact post data on it.
+ */
+let observedTimeContextRequests: unknown[] = [];
 
 function applyFilters(
 	entries: AuditEntry[],
@@ -226,14 +232,16 @@ async function mockOwnerSurfaces(
 ) {
 	const source = options.entries ?? auditEntries;
 	observedFilters = [];
+	observedTimeContextRequests = [];
 	await page.route("**/rpc/admin/session", (route) =>
 		route.fulfill({ status: 200, json: { json: ownerAuth } }),
 	);
 	await page.route("**/rpc/admin/analytics/daily", (route) =>
 		route.fulfill({ status: 200, json: { json: daily } }),
 	);
-	await page.route("**/rpc/admin/analytics/timeContext", (route) =>
-		route.fulfill({
+	await page.route("**/rpc/admin/analytics/timeContext", (route) => {
+		observedTimeContextRequests.push(route.request().postDataJSON());
+		return route.fulfill({
 			status: 200,
 			json: {
 				json: {
@@ -246,8 +254,8 @@ async function mockOwnerSurfaces(
 					})),
 				},
 			},
-		}),
-	);
+		});
+	});
 	await page.route("**/rpc/admin/audit/list", async (route) => {
 		if (options.auditDelayMs) {
 			await new Promise((resolve) => setTimeout(resolve, options.auditDelayMs));
@@ -355,6 +363,15 @@ test("audit rows render in the configured gym timezone regardless of the device 
 
 	const rows = page.locator(`${auditTable} tbody tr`);
 	await expect(rows).toHaveCount(4);
+
+	// Mounting this section must not change what `/admin` asks for. The gym
+	// timezone is one fact and the analytics query already resolved it, so exactly
+	// one time-context request exists and it still carries the Phase 9 shape,
+	// whose spec asserts that body exactly.
+	expect(observedTimeContextRequests).toEqual([
+		{ json: { settingsVersions: [11] } },
+	]);
+
 	expect(
 		await page.evaluate(() => Intl.DateTimeFormat().resolvedOptions().timeZone),
 	).toBe(DEVICE_TIME_ZONE);
