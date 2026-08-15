@@ -1196,25 +1196,47 @@ milestones:
     integratedCommit: 748f759195ffd1450c83d53ae7220af4c1fc2572
 
   phase11-audit-generalization:
-    status: PLANNED
+    status: IN_PROGRESS
     dependencies: [phase11-audit]
-    ownerSession: null
-    branch: null
-    worktree: null
-    baseCommit: null
-    ownedPaths: []
-    forbiddenPaths: []
+    ownerSession: "phase11-audit-generalization b01 worker on work/phase11-audit-gen-b01 in D:/Projects/fitway-worktrees/phase11-audit-gen-b01, Slice A only: schema, migration 0007, API audit contracts, and the server read path. apps/web is excluded because phase10-ui-csv is concurrently writing there; the web half is Slice B after that slice integrates."
+    branch: work/phase11-audit-gen-b01
+    worktree: D:/Projects/fitway-worktrees/phase11-audit-gen-b01
+    baseCommit: b5a9cefe17da9bfcfb4c916833e5f6d6e3c67314
+    ownedPaths:
+      - packages/db/src/schema/application.ts
+      - packages/db/src/migrations/0007_*
+      - packages/db/src/migrations/meta/0007_snapshot.json
+      - packages/db/src/migrations/meta/_journal.json
+      - packages/api/src/audit/**
+      - apps/server/src/audit-repository.ts
+      - apps/server/src/audit-repository.test.ts
+      - apps/server/src/phase11-audit-generalization.integration.test.ts
+      - docs/phase-records/handoffs/phase11-audit-generalization/*-p11_audit_gen_b01-worker-*.md
+    forbiddenPaths:
+      - all repository paths outside ownedPaths
+      - "apps/web/** in its entirety and tests/browser/**: the web half is Slice B"
+      - "packages/api/src/context.ts, packages/api/src/routers/index.ts, and apps/server/src/index.ts: under a live phase10-ui-csv wiring lease"
+      - packages/api/src/analytics/** and every Phase 10 reporting surface
+      - "packages/api/src/commands/** and packages/api/src/alerts/**: frozen accepted authority"
+      - "every migration 0000-0006 and their snapshots; 0000 and 0001 are immutable"
+      - packages/auth/**, packages/env/**, packages/ui/**, and edge/**
+      - PROJECT_STATE.yaml, scripts/verify.mjs, and scripts/verify-repository.mjs
+      - visual-direction-gate/**, Paper, and every normative document including PHASES.md
+      - root manifests, lockfiles, environment schemas, and test-runner configuration
+      - every other milestone's phase record and handoff directory
+      - "the seven approved access action labels, the secret-free audit rule, and the owner lifecycle decisions: human-locked"
+      - "the access and settings mutation write paths, which belong to phase11-access and phase11-settings"
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/coordinator/20260815-224500-audit-generalization-proposal-v4.md
+    lastHeartbeatAt: "2026-08-15T23:00:00+03:00"
+    leaseExpiresAt: "2026-08-22T23:00:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260815-230000-p11_audit_gen_b01-coordinator-activation.md
     stopReason: null
     gates:
       unit: PENDING
       integration: PENDING
-      browser: PENDING
-      accessibility: PENDING
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
       independentReview: PENDING
     integratedCommit: null
