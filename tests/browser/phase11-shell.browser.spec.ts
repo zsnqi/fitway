@@ -278,16 +278,22 @@ test("canonical desktop Arabic and mobile English shell compositions match", asy
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await expect(page.locator("[data-owner-chart]")).toBeVisible();
 	await page.evaluate(() => document.fonts.ready);
-	await expect(page).toHaveScreenshot("owner-shell-ar-desktop-1440x900.png", {
-		fullPage: true,
-	});
+	// Scoped to the shell chrome rather than the full page, under the human
+	// decision of 2026-08-15. `/admin` is designed to host a growing set of owner
+	// sections, so a full-page capture of this route asserted the composition of
+	// whatever happened to be mounted and broke on every new section regardless of
+	// whether the shell itself changed. Each section's composition is covered by
+	// its own slice's baselines; this one owns the rail.
+	await expect(page.locator(".owner-rail")).toHaveScreenshot(
+		"owner-shell-ar-desktop-1440x900.png",
+	);
 
 	await setLocale(page, "en");
 	await page.setViewportSize({ width: 390, height: 844 });
 	await expect(page.locator("[data-owner-chart]")).toBeVisible();
-	await expect(page).toHaveScreenshot("owner-shell-en-mobile-390x844.png", {
-		fullPage: true,
-	});
+	await expect(page.locator(".owner-rail")).toHaveScreenshot(
+		"owner-shell-en-mobile-390x844.png",
+	);
 });
 
 test("navigation, locale, and logout keep their established behavior", async ({
