@@ -86,6 +86,27 @@ contracts. That places it back on the shared `context.ts` / `routers/index.ts` /
 it needs the same coordinator lease the CSV transport slice held and cannot overlap any Phase 11
 slice.
 
+## Canonical baseline ledger, accumulating as slices land
+
+The recorded human decision requires canonical baselines for the final adopted Paper surfaces
+`/staff`, `/login`, `/admin`, and Owner reporting. Tracking what exists as it accumulates, because
+every new baseline is acceptance evidence that needs human ratification and none of it should be
+discovered at closure:
+
+| Subtree | Origin | State |
+| --- | --- | --- |
+| `public-baseline.browser.spec.ts` | pre-existing | ratified baseline, 6 images |
+| `phase11-shell.browser.spec.ts` | `phase11-shell` b02 | 2 images, carried unchanged from the b01 candidate and hash-verified; **awaiting human ratification** |
+| `phase11-audit.browser.spec.ts` | `phase11-audit` b01 | 2 images, newly generated; **awaiting human ratification** |
+| `/staff` | none yet | still missing; needs the visual-ledger slice |
+| `/login` | none yet | arrives with `login-paper-adoption` |
+| Owner reporting | none yet | arrives with `phase10-ui-csv` |
+
+Workers may not generate or update canonical baselines. Where a slice legitimately introduces its own
+new subtree, that is new acceptance evidence, not a silent baseline update, and the coordinator
+records it here for the human ratification pass rather than treating a passing `toHaveScreenshot` as
+approval.
+
 ## Known risks
 
 - The audit migration in step 5 is the only new schema work in the remaining frontier. It is
