@@ -1128,7 +1128,7 @@ milestones:
     integratedCommit: 63c360330d1f09bd69129b8e46c157e8f7292a8b
 
   phase11-audit:
-    status: IN_PROGRESS
+    status: NEEDS_HUMAN
     dependencies: [phase-5, phase-9]
     ownerSession: "Phase 11 audit b01 worker on work/phase11-audit-b01 in D:/Projects/fitway-worktrees/phase11-audit-b01: owner-only admin.audit.list read surface and Owner history UI against the reviewed authority packet. Three command actions only; no pre-generalization."
     branch: work/phase11-audit-b01
@@ -1160,11 +1160,11 @@ milestones:
       - "future audit action kinds: the three command actions are the whole set for this slice"
     sharedLeases:
       - "exclusive through 2026-08-22T07:35:00+03:00: packages/api/src/context.ts, packages/api/src/routers/index.ts, apps/server/src/index.ts, and apps/web/src/routes/admin.tsx. Limited to wiring the owner-only audit read surface and mounting its Owner section; the owner shell composition, route guard, and every other procedure stay unchanged."
-    validationRepairAttempts: 0
+    validationRepairAttempts: 1
     lastHeartbeatAt: "2026-08-15T07:35:00+03:00"
     leaseExpiresAt: "2026-08-22T07:35:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-audit/20260815-073500-p11_audit_b01-coordinator-activation.md
-    stopReason: null
+    handoff: docs/phase-records/handoffs/phase11-audit/20260815-124500-p11_audit-canonical-baseline-needs-human.md
+    stopReason: "Repair 1/2 fixed the Phase 9 regression and /admin now issues byte-identical analytics requests. Blocked on a human canonical-baseline decision: phase11-shell.browser.spec.ts captures /admin with fullPage, so mounting any new owner section changes that composition (1440x1101 -> 1440x1666). Re-approve the two shell baselines, or scope that capture to the shell chrome. The same decision blocks phase11-access, phase11-settings, phase11-health, and phase10-ui-csv. Repair budget is NOT consumed by this."
     gates:
       unit: PENDING
       integration: PENDING
