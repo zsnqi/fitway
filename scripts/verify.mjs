@@ -85,6 +85,18 @@ const phases = {
 		integrationFiles: ["apps/server/src/phase10-domain.integration.test.ts"],
 		label: "Phase 10 reporting domain slice",
 	},
+	"phase10-ui-csv": {
+		// Every /admin slice gates on its sibling specs from activation.
+		browserFiles: [
+			"tests/browser/phase10-ui-csv.browser.spec.ts",
+			"tests/browser/phase11-health.browser.spec.ts",
+			"tests/browser/phase11-audit.browser.spec.ts",
+			"tests/browser/phase9-owner-ui.browser.spec.ts",
+			"tests/browser/phase11-shell.browser.spec.ts",
+		],
+		integrationFiles: ["apps/server/src/phase10-ui-csv.integration.test.ts"],
+		label: "Phase 10 owner reporting UI and CSV export slice",
+	},
 	"phase11-health": {
 		// Every /admin slice gates on its sibling specs from activation. Omitting
 		// them hid a real regression in phase11-audit until coordinator

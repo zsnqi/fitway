@@ -1,6 +1,6 @@
 ﻿# yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-15T18:30:00+03:00"
+updatedAt: "2026-08-15T18:45:00+03:00"
 
 coordinator:
   owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration on main; handover recorded in docs/phase-records/handoffs/coordinator/20260815-003900-coordinator-handover-and-frontier-baseline.md"
@@ -1040,19 +1040,40 @@ milestones:
     integratedCommit: 3ce3efd75c4f07d5ffef07d8b742ce92d34e75c4
 
   phase10-ui-csv:
-    status: PLANNED
+    status: IN_PROGRESS
     dependencies: [phase10-domain, phase10-paper-reporting, phase10-csv-transport]
-    ownerSession: null
-    branch: null
-    worktree: null
-    baseCommit: null
-    ownedPaths: []
-    forbiddenPaths: []
-    sharedLeases: []
+    ownerSession: "Fresh phase10-ui-csv b01 worker on work/phase10-ui-csv-b01 in D:/Projects/fitway-worktrees/phase10-ui-csv-b01: expose the three unexposed reporting procedures and build the owner heatmap, week-over-week, date range, and CSV export UI. Paper is unreachable this session, so Paper fidelity must not be claimed."
+    branch: work/phase10-ui-csv-b01
+    worktree: D:/Projects/fitway-worktrees/phase10-ui-csv-b01
+    baseCommit: SELF
+    ownedPaths:
+      - packages/api/src/analytics/reporting/queries.ts
+      - packages/api/src/analytics/reporting/queries.test.ts
+      - apps/server/src/phase10-ui-csv.integration.test.ts
+      - apps/web/src/components/owner/reporting/**
+      - apps/web/src/hooks/use-owner-reporting.ts
+      - apps/web/src/hooks/use-owner-reporting.test.tsx
+      - tests/browser/phase10-ui-csv.browser.spec.ts
+      - tests/browser/__screenshots__/win32/chromium/phase10-ui-csv.browser.spec.ts/**
+      - docs/phase-records/handoffs/phase10-ui-csv/*-p10_ui_csv_b01-worker-*.md
+    forbiddenPaths:
+      - all repository paths outside ownedPaths and sharedLeases
+      - "packages/api/src/analytics/reporting/contracts.ts, csv.ts, reporting.ts, and csv-transport.ts: frozen accepted contracts"
+      - "apps/server/src/reporting-repository.ts: its readRange, readHeatmap, and readWeekOverWeek are consumed as they are"
+      - "packages/db/** in its entirety: no migration, schema change, or index"
+      - every Phase 9 analytics, phase11-audit, phase11-health, and phase11-shell component, hook, and test
+      - apps/web/src/i18n/**, shared message catalogs, global tokens, and apps/web/src/routeTree.gen.ts
+      - "tests/browser/__screenshots__/** outside this slice's own subtree"
+      - PROJECT_STATE.yaml and scripts/verify.mjs
+      - visual-direction-gate/**, Paper, and every normative document
+      - root manifests, lockfiles, environment schemas, and test-runner configuration
+      - every other milestone's phase record and handoff directory
+    sharedLeases:
+      - "exclusive through 2026-08-22T18:45:00+03:00: wiring only in packages/api/src/context.ts, packages/api/src/routers/index.ts, apps/server/src/index.ts, and apps/web/src/routes/admin.tsx."
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
-    leaseExpiresAt: null
-    handoff: null
+    lastHeartbeatAt: "2026-08-15T18:45:00+03:00"
+    leaseExpiresAt: "2026-08-22T18:45:00+03:00"
+    handoff: docs/phase-records/handoffs/phase10-ui-csv/20260815-184500-p10_ui_csv_b01-coordinator-activation.md
     stopReason: null
     gates:
       unit: PENDING
