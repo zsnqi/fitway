@@ -86,7 +86,15 @@ const phases = {
 		label: "Phase 10 reporting domain slice",
 	},
 	"phase11-audit": {
-		browserFiles: ["tests/browser/phase11-audit.browser.spec.ts"],
+		// The audit section mounts on /admin beside the Phase 9 analytics, so the
+		// Phase 9 owner spec is part of this slice's gate, not a neighbour's
+		// problem. Omitting it hid a real regression from both the worker and the
+		// independent verifier until coordinator verify:full caught it.
+		browserFiles: [
+			"tests/browser/phase11-audit.browser.spec.ts",
+			"tests/browser/phase9-owner-ui.browser.spec.ts",
+			"tests/browser/phase11-shell.browser.spec.ts",
+		],
 		integrationFiles: ["apps/server/src/phase11-audit.integration.test.ts"],
 		label: "Phase 11 owner audit history slice",
 	},
