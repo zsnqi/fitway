@@ -47,20 +47,34 @@ running two of them at once would reproduce exactly the class of cross-slice reg
 `20260815-120000-frontier-checkpoint.md`. Read-only review may run concurrently with a writer, and
 does.
 
-## Paper reachability, probed this session
+## Paper reachability — corrected at 23:10
 
-The only design-file MCP available is Pencil, and it fails to connect: "failed to connect to running
-Pencil app". This matches the previous session's finding. **Paper is unreachable.** Consequences,
-recorded here so they are not quietly approximated later:
+An earlier version of this record said Paper was unreachable. **That was wrong, and it is corrected
+here rather than left standing.** The first probe went to Pencil, which is a different application
+and is indeed not running; Paper itself was never probed.
 
-- The Paper-fidelity gate on the Phase 10 owner reporting surface stays **open**. The worker was
-  instructed not to claim it.
-- `login-paper-adoption` cannot be executed. Its preserved candidate is `9b65356`.
+Paper is **running and reachable**. Its desktop MCP server answers on `http://127.0.0.1:29979/mcp`,
+`tools/list` returns the full tool set, and `list_files` shows the FITWAY file
+`01KYPX5AF950XZVVDD88B6J7QB` — the exact file `phase10-paper-reporting` owns — open and active in
+team `HUSSAIN`.
+
+One caveat that matters for how the work is done: the `paper-desktop` plugin's MCP server is **not
+bound into this session's tool surface**, so the Paper tools cannot be called as ordinary tools here.
+They are reachable over that local HTTP endpoint by JSON-RPC. That is workable for a bounded fidelity
+check; a session that needs sustained Paper authoring should have the connector enabled instead.
+
+Consequences:
+
+- The Paper-fidelity gate on the Phase 10 owner reporting surface is **achievable** and must be
+  closed before `phase-10` is declared `DONE`. The reporting worker was told not to claim fidelity
+  and its instruction stands — the gate is closed by a separate check against the rendered
+  composition, not by the implementer's assertion.
+- `login-paper-adoption` is executable. Its preserved candidate is `9b65356`. It stays serialized
+  behind the other `apps/web` work.
 - The human requirement that canonical screenshot baselines exist for final adopted Paper surfaces
-  (`/staff`, `/login`, `/admin`, Owner reporting) cannot be discharged for surfaces whose Paper
-  composition has not been adopted.
-
-These are external gates, not failures, and not grounds for lowering a gate.
+  (`/staff`, `/login`, `/admin`, Owner reporting) can be discharged, in the serialized human-approved
+  pass the workflow requires. Baselines remain coordinator-owned and are never regenerated to make a
+  diff disappear.
 
 ## Standing operational notes, carried forward
 
