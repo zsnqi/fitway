@@ -77,10 +77,45 @@ export const auditActorPrincipalKind = pgEnum("audit_actor_principal_kind", [
 	"owner",
 	"system",
 ]);
+/**
+ * The eleven audit actions.
+ *
+ * The three command actions are the original tuple and keep their positions; the
+ * eight governance actions are *appended*, so the migration is a plain
+ * `ALTER TYPE ... ADD VALUE` per label and never a create/cast/drop recreate.
+ *
+ * Postgres forbids using a label in the same transaction that adds it, and drizzle
+ * wraps all pending migrations in one transaction, so every constraint below that
+ * names an action compares `action::text` rather than a bare enum literal.
+ */
 export const auditAction = pgEnum("audit_action", [
 	"correction_delta",
 	"correction_absolute",
 	"reset",
+	"staff_pin_provisioned",
+	"staff_pin_rotated",
+	"staff_pin_deactivated",
+	"owner_provisioned",
+	"owner_deactivated",
+	"owner_reactivated",
+	"credential_reset",
+	"settings_updated",
+]);
+
+/**
+ * The row discriminator. A governance row carries no command and no count, so a
+ * class cannot be rescued from the other columns without circular rules; the
+ * class filter also wants one indexable predicate.
+ *
+ * This type is created in the same migration transaction that adds the eight
+ * action labels. A type created in that transaction *is* usable as a bare literal
+ * — only pre-existing enums carry the restriction — so `event_class` appears bare
+ * below while `action` never does.
+ */
+export const auditEventClass = pgEnum("audit_event_class", [
+	"command",
+	"access",
+	"settings",
 ]);
 
 const utcTimestamp = (name: string) => timestamp(name, { withTimezone: true });
@@ -365,13 +400,26 @@ export const edgeCommands = pgTable(
 	],
 );
 
-/** Immutable provenance for every human- or system-issued command. */
+/**
+ * Immutable provenance for every command, access-governance, and settings event.
+ *
+ * One table, not two: `SPEC.md:168-169` asks for a single audit log covering
+ * "every correction, reset, and settings change", so a parallel governance table
+ * would satisfy the schema and fail the product.
+ *
+ * Governance state is typed and non-secret by construction: an active flag and a
+ * monotonic credential version have room for a status and a counter and nowhere to
+ * put a PIN, password, hash, salt, pepper-derived value, or session token. The four
+ * count columns are held null on governance rows so the PIN-sized integer channel
+ * they would otherwise open stays closed.
+ */
 export const auditLog = pgTable(
 	"audit_log",
 	{
 		id: bigint("id", { mode: "number" })
 			.primaryKey()
 			.generatedAlwaysAsIdentity(),
+		eventClass: auditEventClass("event_class").notNull().default("command"),
 		actorPrincipalId: uuid("actor_principal_id").references(
 			() => authPrincipals.id,
 		),
@@ -379,44 +427,146 @@ export const auditLog = pgTable(
 			"actor_principal_kind",
 		).notNull(),
 		actorRole: authRole("actor_role"),
-		commandId: bigint("command_id", { mode: "number" }).notNull(),
-		commandIssuerClass: commandIssuerClass("command_issuer_class")
-			.notNull()
-			.default("human"),
+		commandId: bigint("command_id", { mode: "number" }),
+		/**
+		 * Nullable for governance rows, but the `'human'` default stays: the Phase 5
+		 * human command path never sets this key and depends entirely on the default.
+		 * Drizzle omits only `undefined`, so the governance write path passes an
+		 * explicit `null`, which is emitted and suppresses the default.
+		 */
+		commandIssuerClass: commandIssuerClass("command_issuer_class").default(
+			"human",
+		),
 		action: auditAction("action").notNull(),
 		priorValue: integer("prior_value"),
 		requestedDelta: integer("requested_delta"),
 		requestedValue: integer("requested_value"),
-		effectiveValue: integer("effective_value").notNull(),
+		effectiveValue: integer("effective_value"),
+		/** The subject of an access event: whose credential or account changed. */
+		targetPrincipalId: uuid("target_principal_id").references(
+			() => authPrincipals.id,
+		),
+		priorActive: boolean("prior_active"),
+		newActive: boolean("new_active"),
+		priorCredentialVersion: integer("prior_credential_version"),
+		newCredentialVersion: integer("new_credential_version"),
+		settingsVersion: bigint("settings_version", { mode: "number" }).references(
+			() => settingsVersions.version,
+		),
 		reason: text("reason"),
 		createdAt: utcTimestamp("created_at").notNull().defaultNow(),
 	},
 	(table) => [
+		// Still one audit row per command. Postgres treats nulls as distinct in a
+		// unique index, so governance rows with a null command coexist freely.
 		uniqueIndex("audit_log_command_unique").on(table.commandId),
 		index("audit_log_created_id_idx").on(table.createdAt, table.id),
+		index("audit_log_event_class_idx").on(table.eventClass),
 		check(
 			"audit_log_id_json_safe",
 			sql`${table.id} > 0 and ${table.id} <= 9007199254740991`,
 		),
+		/**
+		 * Every column in every arm carries its own `is not null`.
+		 *
+		 * A CHECK passes when its predicate is NULL, so `actor_role = 'owner'` is
+		 * vacuously satisfied by a NULL role — the exact row this rule exists to
+		 * reject. The fourth arm is the governance path: `command_issuer_class` is
+		 * explicitly null there and only a real owner may author a governance event.
+		 */
 		check(
 			"audit_log_actor_kind_role",
 			sql`(
-				(${table.commandIssuerClass} = 'human' and ${table.actorPrincipalId} is not null and ${table.actorPrincipalKind} = 'shared_staff' and ${table.actorRole} = 'staff')
-				or (${table.commandIssuerClass} = 'human' and ${table.actorPrincipalId} is not null and ${table.actorPrincipalKind} = 'owner' and ${table.actorRole} = 'owner')
-				or (${table.commandIssuerClass} = 'system' and ${table.actorPrincipalId} is null and ${table.actorPrincipalKind} = 'system' and ${table.actorRole} is null)
+				(${table.commandIssuerClass} is not null and ${table.commandIssuerClass} = 'human'
+					and ${table.actorPrincipalId} is not null
+					and ${table.actorPrincipalKind} is not null and ${table.actorPrincipalKind} = 'shared_staff'
+					and ${table.actorRole} is not null and ${table.actorRole} = 'staff')
+				or (${table.commandIssuerClass} is not null and ${table.commandIssuerClass} = 'human'
+					and ${table.actorPrincipalId} is not null
+					and ${table.actorPrincipalKind} is not null and ${table.actorPrincipalKind} = 'owner'
+					and ${table.actorRole} is not null and ${table.actorRole} = 'owner')
+				or (${table.commandIssuerClass} is not null and ${table.commandIssuerClass} = 'system'
+					and ${table.actorPrincipalId} is null
+					and ${table.actorPrincipalKind} is not null and ${table.actorPrincipalKind} = 'system'
+					and ${table.actorRole} is null)
+				or (${table.commandIssuerClass} is null
+					and ${table.actorPrincipalId} is not null
+					and ${table.actorPrincipalKind} is not null and ${table.actorPrincipalKind} = 'owner'
+					and ${table.actorRole} is not null and ${table.actorRole} = 'owner')
+			)`,
+		),
+		/** A command row keeps its full linkage; a governance row carries none of it. */
+		check(
+			"audit_log_command_linkage",
+			sql`(
+				(${table.eventClass} = 'command' and ${table.commandId} is not null and ${table.commandIssuerClass} is not null and ${table.effectiveValue} is not null)
+				or (${table.eventClass} <> 'command' and ${table.commandId} is null and ${table.commandIssuerClass} is null and ${table.effectiveValue} is null)
 			)`,
 		),
 		check(
 			"audit_log_values_nonnegative",
-			sql`(${table.priorValue} is null or ${table.priorValue} >= 0) and (${table.requestedValue} is null or ${table.requestedValue} >= 0) and ${table.effectiveValue} >= 0`,
+			sql`(${table.priorValue} is null or ${table.priorValue} >= 0) and (${table.requestedValue} is null or ${table.requestedValue} >= 0) and (${table.effectiveValue} is null or ${table.effectiveValue} >= 0)`,
 		),
 		check(
 			"audit_log_action_values_coherent",
-			sql`(
-				(${table.action} = 'correction_delta' and ${table.priorValue} is not null and ${table.requestedDelta} is not null and ${table.requestedValue} is null)
-				or (${table.action} = 'correction_absolute' and ${table.requestedDelta} is null and ${table.requestedValue} is not null and ${table.requestedValue} = ${table.effectiveValue})
-				or (${table.action} = 'reset' and ${table.requestedDelta} is null and ${table.requestedValue} = 0 and ${table.effectiveValue} = 0)
+			sql`${table.eventClass} <> 'command' or (
+				(${table.action}::text = 'correction_delta' and ${table.priorValue} is not null and ${table.requestedDelta} is not null and ${table.requestedValue} is null)
+				or (${table.action}::text = 'correction_absolute' and ${table.requestedDelta} is null and ${table.requestedValue} is not null and ${table.requestedValue} = ${table.effectiveValue})
+				or (${table.action}::text = 'reset' and ${table.requestedDelta} is null and ${table.requestedValue} = 0 and ${table.effectiveValue} = 0)
 			)`,
+		),
+		/**
+		 * The four count columns are closed on governance rows. A staff PIN is 6-12
+		 * Western digits and fits in `int4`; without this, guarding the coherence
+		 * rule above would open a PIN-sized channel the table never had.
+		 */
+		check(
+			"audit_log_governance_counts_closed",
+			sql`${table.eventClass} = 'command' or (${table.priorValue} is null and ${table.requestedDelta} is null and ${table.requestedValue} is null and ${table.effectiveValue} is null)`,
+		),
+		/** An action belongs to exactly one class, and a mismatch is rejected at write. */
+		check(
+			"audit_log_action_event_class",
+			sql`(
+				(${table.eventClass} = 'command' and ${table.action}::text in ('correction_delta', 'correction_absolute', 'reset'))
+				or (${table.eventClass} = 'access' and ${table.action}::text in ('staff_pin_provisioned', 'staff_pin_rotated', 'staff_pin_deactivated', 'owner_provisioned', 'owner_deactivated', 'owner_reactivated', 'credential_reset'))
+				or (${table.eventClass} = 'settings' and ${table.action}::text = 'settings_updated')
+			)`,
+		),
+		/** Access rows name a target; settings rows name a version; commands name neither. */
+		check(
+			"audit_log_governance_columns",
+			sql`(
+				(${table.eventClass} = 'access' and ${table.targetPrincipalId} is not null and ${table.settingsVersion} is null)
+				or (${table.eventClass} = 'settings' and ${table.settingsVersion} is not null and ${table.targetPrincipalId} is null and ${table.priorActive} is null and ${table.newActive} is null and ${table.priorCredentialVersion} is null and ${table.newCredentialVersion} is null)
+				or (${table.eventClass} = 'command' and ${table.targetPrincipalId} is null and ${table.settingsVersion} is null and ${table.priorActive} is null and ${table.newActive} is null and ${table.priorCredentialVersion} is null and ${table.newCredentialVersion} is null)
+			)`,
+		),
+		check(
+			"audit_log_credential_versions_positive",
+			sql`(${table.priorCredentialVersion} is null or ${table.priorCredentialVersion} > 0) and (${table.newCredentialVersion} is null or ${table.newCredentialVersion} > 0)`,
+		),
+		/**
+		 * The "from → to" story 26 promises. `is true`/`is false` rather than
+		 * `= true`, because `prior_active = true` passes vacuously on a NULL column.
+		 */
+		check(
+			"audit_log_governance_state_transition",
+			sql`(
+				(${table.action}::text = 'owner_deactivated' and ${table.priorActive} is true and ${table.newActive} is false)
+				or (${table.action}::text = 'owner_reactivated' and ${table.priorActive} is false and ${table.newActive} is true)
+				or (${table.action}::text in ('staff_pin_rotated', 'credential_reset') and ${table.priorCredentialVersion} is not null and ${table.newCredentialVersion} is not null and ${table.newCredentialVersion} > ${table.priorCredentialVersion})
+				or ${table.action}::text not in ('owner_deactivated', 'owner_reactivated', 'staff_pin_rotated', 'credential_reset')
+			)`,
+		),
+		/**
+		 * A reason is required for the two deactivations only. Rotation, reset, and
+		 * provisioning are exactly the moments a fresh secret sits in the operator's
+		 * hands, and demanding free text there would invite it into the log.
+		 */
+		check(
+			"audit_log_destructive_reason_required",
+			sql`${table.action}::text not in ('staff_pin_deactivated', 'owner_deactivated') or ${table.reason} is not null`,
 		),
 		check(
 			"audit_log_reason_short_trimmed",
