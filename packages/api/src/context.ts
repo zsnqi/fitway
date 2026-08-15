@@ -3,7 +3,6 @@ import type { Context as HonoContext } from "hono";
 import type { DailyAnalytics } from "./analytics/daily-analytics";
 import type { CsvRangeInput } from "./analytics/reporting/contracts";
 import type { AnalyticsTimeContext } from "./analytics/time-context";
-import type { AuditListInput, AuditListPage } from "./audit/list";
 import type { OperationalSnapshot } from "./health/snapshot";
 
 export type CreateContextOptions = {
@@ -20,7 +19,6 @@ export type CreateContextOptions = {
 		input: CsvRangeInput,
 		signal?: AbortSignal,
 	) => AsyncIterable<string>;
-	listAuditEntries: (input: AuditListInput) => Promise<AuditListPage>;
 };
 
 /**
@@ -44,8 +42,6 @@ export type Context = {
 		input: CsvRangeInput,
 		signal?: AbortSignal,
 	) => AsyncIterable<string>;
-	/** Owner-only audit history read. The append path stays out of the context. */
-	listAuditEntries?: (input: AuditListInput) => Promise<AuditListPage>;
 };
 
 export async function createContext({
@@ -55,7 +51,6 @@ export async function createContext({
 	readDailyAnalytics,
 	readAnalyticsTimeContext,
 	streamCsv,
-	listAuditEntries,
 }: CreateContextOptions): Promise<Context> {
 	const result = await authenticate(context.req.header("Cookie"));
 	for (const cookie of result.cookieHeaders) {
@@ -70,6 +65,5 @@ export async function createContext({
 		readDailyAnalytics,
 		readAnalyticsTimeContext,
 		streamCsv,
-		listAuditEntries,
 	};
 }
