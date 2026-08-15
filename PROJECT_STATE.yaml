@@ -1,6 +1,6 @@
 ﻿# yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-15T07:30:00+03:00"
+updatedAt: "2026-08-15T07:35:00+03:00"
 
 coordinator:
   owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration on main; handover recorded in docs/phase-records/handoffs/coordinator/20260815-003900-coordinator-handover-and-frontier-baseline.md"
@@ -1128,19 +1128,42 @@ milestones:
     integratedCommit: 63c360330d1f09bd69129b8e46c157e8f7292a8b
 
   phase11-audit:
-    status: PLANNED
+    status: IN_PROGRESS
     dependencies: [phase-5, phase-9]
-    ownerSession: null
-    branch: null
-    worktree: null
-    baseCommit: null
-    ownedPaths: []
-    forbiddenPaths: []
-    sharedLeases: []
+    ownerSession: "Phase 11 audit b01 worker on work/phase11-audit-b01 in D:/Projects/fitway-worktrees/phase11-audit-b01: owner-only admin.audit.list read surface and Owner history UI against the reviewed authority packet. Three command actions only; no pre-generalization."
+    branch: work/phase11-audit-b01
+    worktree: D:/Projects/fitway-worktrees/phase11-audit-b01
+    baseCommit: SELF
+    ownedPaths:
+      - packages/api/src/audit/**
+      - apps/server/src/audit-repository.ts
+      - apps/server/src/audit-repository.test.ts
+      - apps/server/src/phase11-audit.integration.test.ts
+      - apps/web/src/components/owner/audit/**
+      - apps/web/src/hooks/use-owner-audit.ts
+      - apps/web/src/hooks/use-owner-audit.test.tsx
+      - tests/browser/phase11-audit.browser.spec.ts
+      - tests/browser/__screenshots__/win32/chromium/phase11-audit.browser.spec.ts/**
+      - docs/phase-records/handoffs/phase11-audit/*-p11_audit_b01-worker-*.md
+    forbiddenPaths:
+      - all repository paths outside ownedPaths and sharedLeases
+      - "the Phase 5 command service, transaction adapters, and audit append semantics, which are frozen"
+      - "packages/db/**, including schema, migrations, metadata, and any new index"
+      - "packages/auth/** and every auth, occupancy, public, alert, reset, offline, and edge surface"
+      - apps/web/src/components/owner/owner-shell.* and every Phase 9 analytics component or test
+      - apps/web/src/components/staff/**, apps/web/src/i18n/**, global tokens, and apps/web/src/routeTree.gen.ts
+      - "every canonical screenshot subtree except the new phase11-audit one"
+      - PROJECT_STATE.yaml and scripts/verify.mjs
+      - visual-direction-gate/**, Paper, and every normative document
+      - root manifests, lockfiles, environment schemas, and test-runner configuration
+      - every other milestone's phase record and handoff directory
+      - "future audit action kinds: the three command actions are the whole set for this slice"
+    sharedLeases:
+      - "exclusive through 2026-08-22T07:35:00+03:00: packages/api/src/context.ts, packages/api/src/routers/index.ts, apps/server/src/index.ts, and apps/web/src/routes/admin.tsx. Limited to wiring the owner-only audit read surface and mounting its Owner section; the owner shell composition, route guard, and every other procedure stay unchanged."
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/coordinator/20260811-201938-completion-blocker-state-reconciled.md
+    lastHeartbeatAt: "2026-08-15T07:35:00+03:00"
+    leaseExpiresAt: "2026-08-22T07:35:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-audit/20260815-073500-p11_audit_b01-coordinator-activation.md
     stopReason: null
     gates:
       unit: PENDING
