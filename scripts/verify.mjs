@@ -85,6 +85,19 @@ const phases = {
 		integrationFiles: ["apps/server/src/phase10-domain.integration.test.ts"],
 		label: "Phase 10 reporting domain slice",
 	},
+	"phase11-health": {
+		// Every /admin slice gates on its sibling specs from activation. Omitting
+		// them hid a real regression in phase11-audit until coordinator
+		// verify:full caught it; that lesson applies to each remaining owner slice.
+		browserFiles: [
+			"tests/browser/phase11-health.browser.spec.ts",
+			"tests/browser/phase11-audit.browser.spec.ts",
+			"tests/browser/phase9-owner-ui.browser.spec.ts",
+			"tests/browser/phase11-shell.browser.spec.ts",
+		],
+		integrationFiles: ["apps/server/src/phase11-health.integration.test.ts"],
+		label: "Phase 11 owner health and uptime slice",
+	},
 	"phase11-audit": {
 		// The audit section mounts on /admin beside the Phase 9 analytics, so the
 		// Phase 9 owner spec is part of this slice's gate, not a neighbour's

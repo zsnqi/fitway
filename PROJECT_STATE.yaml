@@ -1,6 +1,6 @@
 ﻿# yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-15T12:50:00+03:00"
+updatedAt: "2026-08-15T13:15:00+03:00"
 
 coordinator:
   owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration on main; handover recorded in docs/phase-records/handoffs/coordinator/20260815-003900-coordinator-handover-and-frontier-baseline.md"
@@ -1223,19 +1223,43 @@ milestones:
     integratedCommit: null
 
   phase11-health:
-    status: PLANNED
+    status: IN_PROGRESS
     dependencies: [phase-8, phase-9]
-    ownerSession: null
-    branch: null
-    worktree: null
-    baseCommit: null
-    ownedPaths: []
-    forbiddenPaths: []
-    sharedLeases: []
+    ownerSession: "Fresh phase11-health b01 worker on work/phase11-health-b01 in D:/Projects/fitway-worktrees/phase11-health-b01: owner-only incident and uptime summary, read-only over edge_health_log and alert_log. No migration, index, mutation, or audit action."
+    branch: work/phase11-health-b01
+    worktree: D:/Projects/fitway-worktrees/phase11-health-b01
+    baseCommit: SELF
+    ownedPaths:
+      - packages/api/src/health/incidents.ts
+      - packages/api/src/health/incidents.test.ts
+      - apps/server/src/health-incident-repository.ts
+      - apps/server/src/health-incident-repository.test.ts
+      - apps/server/src/phase11-health.integration.test.ts
+      - apps/web/src/components/owner/health/**
+      - apps/web/src/hooks/use-owner-health.ts
+      - apps/web/src/hooks/use-owner-health.test.tsx
+      - tests/browser/phase11-health.browser.spec.ts
+      - tests/browser/__screenshots__/win32/chromium/phase11-health.browser.spec.ts/**
+      - docs/phase-records/handoffs/phase11-health/*-p11_health_b01-worker-*.md
+    forbiddenPaths:
+      - all repository paths outside ownedPaths and sharedLeases
+      - "packages/db/** in its entirety: no migration, schema change, or index"
+      - "packages/api/src/alerts/** and apps/server/src/alert-repository.ts, frozen accepted Phase 8 authority"
+      - packages/api/src/health/evaluator.ts and packages/api/src/health/snapshot.ts
+      - apps/server/src/retention-repository.ts
+      - every Phase 9 analytics, phase11-audit, and phase11-shell component, hook, and test
+      - apps/web/src/i18n/**, shared message catalogs, global tokens, and apps/web/src/routeTree.gen.ts
+      - "tests/browser/__screenshots__/** outside this slice's own subtree: canonical baselines are read-only acceptance evidence"
+      - PROJECT_STATE.yaml and scripts/verify.mjs
+      - visual-direction-gate/**, Paper, and every normative document
+      - root manifests, lockfiles, environment schemas, and test-runner configuration
+      - every other milestone's phase record and handoff directory
+    sharedLeases:
+      - "exclusive through 2026-08-22T13:15:00+03:00: wiring only in packages/api/src/context.ts, packages/api/src/routers/index.ts, apps/server/src/index.ts, and apps/web/src/routes/admin.tsx. No behavior in those files changes beyond registering and injecting the owner health read."
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
-    leaseExpiresAt: null
-    handoff: null
+    lastHeartbeatAt: "2026-08-15T13:15:00+03:00"
+    leaseExpiresAt: "2026-08-22T13:15:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-health/20260815-131500-p11_health_b01-coordinator-activation.md
     stopReason: null
     gates:
       unit: PENDING
