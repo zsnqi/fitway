@@ -1,6 +1,6 @@
 ﻿# yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-15T13:15:00+03:00"
+updatedAt: "2026-08-15T18:30:00+03:00"
 
 coordinator:
   owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration on main; handover recorded in docs/phase-records/handoffs/coordinator/20260815-003900-coordinator-handover-and-frontier-baseline.md"
@@ -1223,9 +1223,9 @@ milestones:
     integratedCommit: null
 
   phase11-health:
-    status: IN_PROGRESS
+    status: DONE
     dependencies: [phase-8, phase-9]
-    ownerSession: "Fresh phase11-health b01 worker on work/phase11-health-b01 in D:/Projects/fitway-worktrees/phase11-health-b01: owner-only incident and uptime summary, read-only over edge_health_log and alert_log. No migration, index, mutation, or audit action."
+    ownerSession: null
     branch: work/phase11-health-b01
     worktree: D:/Projects/fitway-worktrees/phase11-health-b01
     baseCommit: SELF
@@ -1254,21 +1254,20 @@ milestones:
       - visual-direction-gate/**, Paper, and every normative document
       - root manifests, lockfiles, environment schemas, and test-runner configuration
       - every other milestone's phase record and handoff directory
-    sharedLeases:
-      - "exclusive through 2026-08-22T13:15:00+03:00: wiring only in packages/api/src/context.ts, packages/api/src/routers/index.ts, apps/server/src/index.ts, and apps/web/src/routes/admin.tsx. No behavior in those files changes beyond registering and injecting the owner health read."
+    sharedLeases: []
     validationRepairAttempts: 0
     lastHeartbeatAt: "2026-08-15T13:15:00+03:00"
-    leaseExpiresAt: "2026-08-22T13:15:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-health/20260815-131500-p11_health_b01-coordinator-activation.md
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase11-health/20260815-183000-p11_health_c01-coordinator-done.md
     stopReason: null
     gates:
-      unit: PENDING
-      integration: PENDING
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
-      independentReview: PENDING
-    integratedCommit: null
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
+      independentReview: PASS
+    integratedCommit: 974302b976e8a1d1344191241665333d4bf6a75c
 
   phase-11:
     status: PLANNED
