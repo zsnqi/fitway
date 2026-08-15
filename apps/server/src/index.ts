@@ -36,6 +36,7 @@ import { type AuthRuntime, createAuthRuntime } from "./auth/runtime";
 import { commandService } from "./command-repository";
 import { CRON_INTERNAL_PATH, createCronHandler } from "./cron";
 import { createEdgePushHandler } from "./edge-push";
+import { createHealthIncidentRepository } from "./health-incident-repository";
 import { healthSnapshotRepository } from "./health-repository";
 import {
 	findDeviceByTokenHash,
@@ -52,6 +53,7 @@ import { createRetentionRepository } from "./retention-repository";
 const ownerAnalyticsReaders = createOwnerAnalyticsReaders(db);
 const reportingRepository = createReportingRepository(db);
 const auditListRepository = createAuditListRepository(db);
+const healthIncidentRepository = createHealthIncidentRepository(db);
 
 /**
  * Outbound alert delivery is the one component that talks to a third party, and
@@ -199,6 +201,8 @@ export function createApp(
 						ownerAnalyticsReaders.readAnalyticsTimeContext,
 					streamCsv: reportingRepository.streamCsv,
 					listAuditEntries: auditListRepository.listAuditEntries,
+					readHealthIncidentSummary:
+						healthIncidentRepository.readHealthIncidentSummary,
 				}),
 			});
 			if (rpcResult.matched)
