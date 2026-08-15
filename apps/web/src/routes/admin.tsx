@@ -3,8 +3,8 @@ import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { ShieldCheck } from "lucide-react";
 
 import { OwnerAnalyticsPage } from "@/components/owner/owner-analytics-page";
+import { OwnerShell } from "@/components/owner/owner-shell";
 import { useOwnerAnalyticsMessages } from "@/components/owner/use-owner-analytics-messages";
-import { StaffShell } from "@/components/staff/staff-shell";
 import { useStaffMessages } from "@/hooks/use-staff-messages";
 import { client } from "@/utils/orpc";
 
@@ -29,8 +29,12 @@ function AdminRoute() {
 	const ownerMessages = useOwnerAnalyticsMessages();
 
 	return (
-		<StaffShell active="admin" showAdminLink={adminAccess === "allowed"}>
-			<main id="operations-main" className="operations-main" tabIndex={-1}>
+		<OwnerShell>
+			<main
+				id="operations-main"
+				className="owner-main operations-main"
+				tabIndex={-1}
+			>
 				<header className="operations-page-heading">
 					<p>
 						{adminAccess === "allowed"
@@ -61,6 +65,6 @@ function AdminRoute() {
 					<OwnerAnalyticsPage />
 				)}
 			</main>
-		</StaffShell>
+		</OwnerShell>
 	);
 }
