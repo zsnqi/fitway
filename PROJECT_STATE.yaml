@@ -1,6 +1,6 @@
 ﻿# yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-16T21:45:00+03:00"
+updatedAt: "2026-08-16T21:55:00+03:00"
 
 coordinator:
   owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration on main; handover recorded in docs/phase-records/handoffs/coordinator/20260815-003900-coordinator-handover-and-frontier-baseline.md"
@@ -1228,9 +1228,9 @@ milestones:
       - "the access and settings mutation write paths, which belong to phase11-access and phase11-settings"
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-16T21:45:00+03:00"
+    lastHeartbeatAt: "2026-08-16T21:55:00+03:00"
     leaseExpiresAt: "2026-08-22T23:00:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260816-214500-p11_audit_gen_c01-scope-correction-plan-v2.md
+    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260816-215500-p11_audit_gen_c01-plan-review-pass.md
     stopReason: null
     gates:
       unit: PENDING
