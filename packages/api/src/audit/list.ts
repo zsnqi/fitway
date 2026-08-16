@@ -24,6 +24,58 @@ export const AUDIT_ACTIONS = [
 export const AUDIT_ACTOR_KINDS = ["shared_staff", "owner", "system"] as const;
 export const AUDIT_ACTOR_ROLES = ["staff", "owner"] as const;
 
+/**
+ * The generalized action set, as persisted by migration 0007.
+ *
+ * `AUDIT_ACTIONS` above is the *rendered* set and still holds exactly the three
+ * command actions. The tuples here are the persisted truth, and the two are
+ * deliberately not yet the same value: widening the rendered set requires eight
+ * English and eight Arabic action labels in `apps/web`, which is a separate slice.
+ * See the note on `toAuditEntry`.
+ */
+export const AUDIT_EVENT_CLASSES = ["command", "access", "settings"] as const;
+export const AUDIT_COMMAND_ACTIONS = AUDIT_ACTIONS;
+/** The seven human-approved access actions. Locked; not extended by any slice. */
+export const AUDIT_ACCESS_ACTIONS = [
+	"staff_pin_provisioned",
+	"staff_pin_rotated",
+	"staff_pin_deactivated",
+	"owner_provisioned",
+	"owner_deactivated",
+	"owner_reactivated",
+	"credential_reset",
+] as const;
+export const AUDIT_SETTINGS_ACTIONS = ["settings_updated"] as const;
+export const AUDIT_ALL_ACTIONS = [
+	...AUDIT_COMMAND_ACTIONS,
+	...AUDIT_ACCESS_ACTIONS,
+	...AUDIT_SETTINGS_ACTIONS,
+] as const;
+
+/** A reason is required for these two actions only. */
+export const AUDIT_REASON_REQUIRED_ACTIONS = [
+	"staff_pin_deactivated",
+	"owner_deactivated",
+] as const;
+
+export const auditEventClassSchema = z.enum(AUDIT_EVENT_CLASSES);
+/** Every persisted action, including the ones the rendered contract cannot name yet. */
+export const auditAnyActionSchema = z.enum(AUDIT_ALL_ACTIONS);
+
+export type AuditEventClass = z.infer<typeof auditEventClassSchema>;
+export type AuditAnyAction = z.infer<typeof auditAnyActionSchema>;
+
+/** Which class a persisted action belongs to; mirrors `audit_log_action_event_class`. */
+export function auditActionEventClass(action: AuditAnyAction): AuditEventClass {
+	if ((AUDIT_COMMAND_ACTIONS as readonly string[]).includes(action)) {
+		return "command";
+	}
+	if ((AUDIT_ACCESS_ACTIONS as readonly string[]).includes(action)) {
+		return "access";
+	}
+	return "settings";
+}
+
 export const AUDIT_REASON_MAX_LENGTH = 240;
 export const AUDIT_PAGE_LIMIT_DEFAULT = 25;
 export const AUDIT_PAGE_LIMIT_MAX = 100;
@@ -175,21 +227,34 @@ export type AuditListFilters = z.infer<typeof auditListFilterSchema>;
 export type AuditListInput = z.infer<typeof auditListInputSchema>;
 export type AuditListPage = z.infer<typeof auditListOutputSchema>;
 
-/** The joined persistence shape the repository reads. */
+/**
+ * The joined persistence shape the repository reads.
+ *
+ * This is the generalized row: it carries the class discriminator, the resolved
+ * target principal that every access event is *about*, and a nullable
+ * `effectiveValue`, because a governance event has no count.
+ */
 export type PersistedAuditRow = {
 	id: number;
-	action: AuditAction;
+	eventClass: AuditEventClass;
+	action: AuditAnyAction;
 	actorPrincipalId: string | null;
 	actorPrincipalKind: AuditActorKind;
 	actorRole: AuditActorRole | null;
 	actorDisplayName: string | null;
+	targetPrincipalId: string | null;
+	targetDisplayName: string | null;
 	priorValue: number | null;
 	requestedDelta: number | null;
 	requestedValue: number | null;
-	effectiveValue: number;
+	effectiveValue: number | null;
 	reason: string | null;
 	createdAt: Date;
 };
+
+function isCommandAction(action: AuditAnyAction): action is AuditAction {
+	return (AUDIT_COMMAND_ACTIONS as readonly string[]).includes(action);
+}
 
 function assertActorCoherent(row: PersistedAuditRow): void {
 	const { actorPrincipalId, actorPrincipalKind, actorRole } = row;
@@ -208,9 +273,12 @@ function assertActorCoherent(row: PersistedAuditRow): void {
 	}
 }
 
-function assertValuesCoherent(row: PersistedAuditRow): void {
-	const { action, priorValue, requestedDelta, requestedValue, effectiveValue } =
-		row;
+function assertValuesCoherent(
+	row: PersistedAuditRow,
+	action: AuditAction,
+	effectiveValue: number,
+): void {
+	const { priorValue, requestedDelta, requestedValue } = row;
 	if (action === "correction_delta") {
 		if (priorValue === null || requestedDelta === null) {
 			throw new Error(`Audit row ${row.id} is missing delta provenance`);
@@ -240,13 +308,31 @@ function assertValuesCoherent(row: PersistedAuditRow): void {
  * Maps one persisted row to the transport DTO. Every coherence rule the database
  * already enforces is re-asserted here, because a read surface that silently
  * reshapes an audit row is worse than one that refuses to serve it.
+ *
+ * A governance row is refused rather than reshaped. The rendered contract —
+ * `AUDIT_ACTIONS`, `auditEntrySchema.action`, and the entry's absent `target` —
+ * still describes command rows only, because widening it requires the eight
+ * English and eight Arabic action labels and the target column in `apps/web`.
+ * Refusing loudly is the fail-closed behaviour: no governance row can exist until
+ * the access and settings write paths ship, and those land after the rendering
+ * does, so this branch is a tripwire rather than a reachable state.
  */
 export function toAuditEntry(row: PersistedAuditRow): AuditEntryView {
 	if (!Number.isFinite(row.createdAt.getTime())) {
 		throw new Error(`Audit row ${row.id} has an invalid server instant`);
 	}
+	if (row.eventClass !== "command" || !isCommandAction(row.action)) {
+		throw new Error(
+			`Audit row ${row.id} is a ${row.eventClass}/${row.action} event, which the rendered audit contract does not yet carry`,
+		);
+	}
+	if (row.effectiveValue === null) {
+		throw new Error(
+			`Audit row ${row.id} is a command without an effective count`,
+		);
+	}
 	assertActorCoherent(row);
-	assertValuesCoherent(row);
+	assertValuesCoherent(row, row.action, row.effectiveValue);
 	return auditEntrySchema.parse({
 		id: row.id,
 		action: row.action,

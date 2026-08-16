@@ -21,6 +21,15 @@ import {
 	type SQL,
 	sql,
 } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
+
+/**
+ * The target principal is a second, independent reference to `auth_principals`:
+ * an access event's actor is the owner performing it and its target is the
+ * principal it is about, and the two are different rows. An alias is what keeps
+ * both joins in one query without either shadowing the other.
+ */
+const targetPrincipals = alias(authPrincipals, "target_principal");
 
 type AuditDatabase = {
 	insert: typeof import("@fitway/db").db.insert;
@@ -127,11 +136,14 @@ export function createAuditListRepository(
 			const rows = await database
 				.select({
 					id: auditLog.id,
+					eventClass: auditLog.eventClass,
 					action: auditLog.action,
 					actorPrincipalId: auditLog.actorPrincipalId,
 					actorPrincipalKind: auditLog.actorPrincipalKind,
 					actorRole: auditLog.actorRole,
 					actorDisplayName: authPrincipals.displayName,
+					targetPrincipalId: auditLog.targetPrincipalId,
+					targetDisplayName: targetPrincipals.displayName,
 					priorValue: auditLog.priorValue,
 					requestedDelta: auditLog.requestedDelta,
 					requestedValue: auditLog.requestedValue,
@@ -143,6 +155,10 @@ export function createAuditListRepository(
 				.leftJoin(
 					authPrincipals,
 					eq(auditLog.actorPrincipalId, authPrincipals.id),
+				)
+				.leftJoin(
+					targetPrincipals,
+					eq(auditLog.targetPrincipalId, targetPrincipals.id),
 				)
 				.where(auditListConditions(input))
 				.orderBy(desc(auditLog.createdAt), desc(auditLog.id))
