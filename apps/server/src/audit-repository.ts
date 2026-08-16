@@ -79,7 +79,9 @@ export function auditListFilterConditions(
 	} else if (filters.priorValue !== undefined) {
 		conditions.push(eq(auditLog.priorValue, filters.priorValue));
 	}
-	if (filters.effectiveValue !== undefined) {
+	if (filters.effectiveValue === null) {
+		conditions.push(isNull(auditLog.effectiveValue));
+	} else if (filters.effectiveValue !== undefined) {
 		conditions.push(eq(auditLog.effectiveValue, filters.effectiveValue));
 	}
 	if (filters.occurredFrom !== undefined) {
@@ -148,6 +150,11 @@ export function createAuditListRepository(
 					requestedDelta: auditLog.requestedDelta,
 					requestedValue: auditLog.requestedValue,
 					effectiveValue: auditLog.effectiveValue,
+					priorActive: auditLog.priorActive,
+					newActive: auditLog.newActive,
+					priorCredentialVersion: auditLog.priorCredentialVersion,
+					newCredentialVersion: auditLog.newCredentialVersion,
+					settingsVersion: auditLog.settingsVersion,
 					reason: auditLog.reason,
 					createdAt: auditLog.createdAt,
 				})

@@ -86,6 +86,20 @@ describe("audit list filter translation", () => {
 		expect(missing.params).toEqual([]);
 	});
 
+	it("keeps a zero effective value distinct from a missing governance value", () => {
+		const zero = render(
+			auditListConditions(input({ filters: { effectiveValue: 0 } })),
+		);
+		expect(zero.sql).toContain('"effective_value" = $1');
+		expect(zero.params).toEqual([0]);
+
+		const missing = render(
+			auditListConditions(input({ filters: { effectiveValue: null } })),
+		);
+		expect(missing.sql).toContain('"effective_value" is null');
+		expect(missing.params).toEqual([]);
+	});
+
 	it("matches a missing reason by nullness and a present reason case-insensitively", () => {
 		expect(
 			render(auditListConditions(input({ filters: { reason: null } }))).sql,
@@ -135,7 +149,7 @@ describe("audit list keyset seek", () => {
 
 type RecordedQuery = {
 	columns: string[];
-	join: string;
+	joins: string[];
 	ordered: unknown[];
 	limit: number;
 };
@@ -143,7 +157,7 @@ type RecordedQuery = {
 function recordingDatabase(rows: unknown[]) {
 	const recorded: RecordedQuery = {
 		columns: [],
-		join: "",
+		joins: [],
 		ordered: [],
 		limit: 0,
 	};
@@ -152,7 +166,7 @@ function recordingDatabase(rows: unknown[]) {
 			return builder;
 		},
 		leftJoin(table: Table) {
-			recorded.join = getTableName(table);
+			recorded.joins.push(getTableName(table));
 			return builder;
 		},
 		where() {
@@ -181,15 +195,23 @@ function recordingDatabase(rows: unknown[]) {
 function persistedRow(id: number, createdAt: string) {
 	return {
 		id,
+		eventClass: "command" as const,
 		action: "reset" as const,
 		actorPrincipalId: null,
 		actorPrincipalKind: "system" as const,
 		actorRole: null,
 		actorDisplayName: null,
+		targetPrincipalId: null,
+		targetDisplayName: null,
 		priorValue: 9,
 		requestedDelta: null,
 		requestedValue: 0,
 		effectiveValue: 0,
+		priorActive: null,
+		newActive: null,
+		priorCredentialVersion: null,
+		newCredentialVersion: null,
+		settingsVersion: null,
 		reason: "Scheduled post-close reset",
 		createdAt: new Date(createdAt),
 	};
@@ -208,15 +230,23 @@ describe("audit list repository", () => {
 				"actorRole",
 				"createdAt",
 				"effectiveValue",
+				"eventClass",
 				"id",
+				"newActive",
+				"newCredentialVersion",
+				"priorActive",
+				"priorCredentialVersion",
 				"priorValue",
 				"reason",
 				"requestedDelta",
 				"requestedValue",
+				"settingsVersion",
+				"targetDisplayName",
+				"targetPrincipalId",
 			].sort(),
 		);
 		expect(recorded.columns).not.toContain("ownerEmail");
-		expect(recorded.join).toBe("auth_principals");
+		expect(recorded.joins).toEqual(["auth_principals", "target_principal"]);
 	});
 
 	it("orders newest-first on the composite key and reads one bounding row", async () => {

@@ -178,7 +178,8 @@ export const auditListFilterSchema = z
 			})
 			.optional(),
 		priorValue: nonNegativeCountSchema.nullable().optional(),
-		effectiveValue: nonNegativeCountSchema.optional(),
+		/** `null` is the explicit missing option for governance rows. */
+		effectiveValue: nonNegativeCountSchema.nullable().optional(),
 		occurredFrom: isoUtcInstantSchema.optional(),
 		occurredTo: isoUtcInstantSchema.optional(),
 		/** Case-insensitive substring match, or `null` for rows without a reason. */
@@ -248,6 +249,11 @@ export type PersistedAuditRow = {
 	requestedDelta: number | null;
 	requestedValue: number | null;
 	effectiveValue: number | null;
+	priorActive: boolean | null;
+	newActive: boolean | null;
+	priorCredentialVersion: number | null;
+	newCredentialVersion: number | null;
+	settingsVersion: number | null;
 	reason: string | null;
 	createdAt: Date;
 };
@@ -304,6 +310,20 @@ function assertValuesCoherent(
 	}
 }
 
+function assertCommandGovernanceColumnsEmpty(row: PersistedAuditRow): void {
+	if (
+		row.targetPrincipalId !== null ||
+		row.targetDisplayName !== null ||
+		row.priorActive !== null ||
+		row.newActive !== null ||
+		row.priorCredentialVersion !== null ||
+		row.newCredentialVersion !== null ||
+		row.settingsVersion !== null
+	) {
+		throw new Error(`Audit row ${row.id} mixes command and governance state`);
+	}
+}
+
 /**
  * Maps one persisted row to the transport DTO. Every coherence rule the database
  * already enforces is re-asserted here, because a read surface that silently
@@ -332,6 +352,7 @@ export function toAuditEntry(row: PersistedAuditRow): AuditEntryView {
 		);
 	}
 	assertActorCoherent(row);
+	assertCommandGovernanceColumnsEmpty(row);
 	assertValuesCoherent(row, row.action, row.effectiveValue);
 	return auditEntrySchema.parse({
 		id: row.id,
