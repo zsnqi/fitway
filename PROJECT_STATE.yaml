@@ -1,6 +1,6 @@
 ﻿# yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-16T21:30:00+03:00"
+updatedAt: "2026-08-16T21:45:00+03:00"
 
 coordinator:
   owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration on main; handover recorded in docs/phase-records/handoffs/coordinator/20260815-003900-coordinator-handover-and-frontier-baseline.md"
@@ -1198,10 +1198,10 @@ milestones:
   phase11-audit-generalization:
     status: IN_PROGRESS
     dependencies: [phase11-audit]
-    ownerSession: "Main coordinator recovery on codex/phase11-audit-gen-recovery in D:/Projects/fitway-worktrees/phase5-staff-integration. Preserved commits were reconstructed onto current main; Slice A transport/tests remain. apps/web stays excluded as Slice B."
+    ownerSession: "Main coordinator recovery on codex/phase11-audit-gen-recovery in D:/Projects/fitway-worktrees/phase5-staff-integration. Independent plan review rejected an unsafe DTO/web split; the corrected c01 slice is backend foundation only and cannot complete the milestone."
     branch: codex/phase11-audit-gen-recovery
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
-    baseCommit: SELF
+    baseCommit: 3bb55f644152210e405f15dcbee5ef8602913ffb
     ownedPaths:
       - packages/db/src/schema/application.ts
       - packages/db/src/migrations/0007_*
@@ -1228,9 +1228,9 @@ milestones:
       - "the access and settings mutation write paths, which belong to phase11-access and phase11-settings"
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-16T21:30:00+03:00"
+    lastHeartbeatAt: "2026-08-16T21:45:00+03:00"
     leaseExpiresAt: "2026-08-22T23:00:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260816-213000-p11_audit_gen_b01-recovery-plan.md
+    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260816-214500-p11_audit_gen_c01-scope-correction-plan-v2.md
     stopReason: null
     gates:
       unit: PENDING
