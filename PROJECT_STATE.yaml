@@ -1143,11 +1143,12 @@ milestones:
       - root manifests, lockfiles, environment schemas, and test-runner configuration
       - every other milestone's phase record and handoff directory
     sharedLeases:
+      - "one-time inherited b03 carry-forward only, immutable after the replay commit: packages/api/src/analytics/reporting/queries.ts, packages/api/src/analytics/reporting/queries.test.ts, packages/api/src/analytics/reporting/query-range.ts, and apps/server/src/phase10-ui-csv.integration.test.ts"
       - "exclusive through 2026-08-23T23:00:00+03:00: wiring only in packages/api/src/context.ts, packages/api/src/routers/index.ts, apps/server/src/index.ts, and apps/web/src/routes/admin.tsx"
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-20T23:00:00+03:00"
+    lastHeartbeatAt: "2026-08-20T23:12:00+03:00"
     leaseExpiresAt: "2026-08-23T23:00:00+03:00"
-    handoff: docs/phase-records/handoffs/phase10-ui-csv/20260820-230000-p10_ui_csv_b04-coordinator-activation.md
+    handoff: docs/phase-records/handoffs/phase10-ui-csv/20260820-231200-p10_ui_csv_b04-carry-forward-scope-correction.md
     stopReason: null
     gates:
       unit: PENDING
