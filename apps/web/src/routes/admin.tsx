@@ -39,34 +39,34 @@ function AdminRoute() {
 				className="owner-main operations-main"
 				tabIndex={-1}
 			>
-				<header className="operations-page-heading">
-					<p>
-						{adminAccess === "allowed"
-							? ownerMessages.eyebrow
-							: messages.admin.eyebrow}
-					</p>
-					<h1>
-						{adminAccess === "allowed"
-							? ownerMessages.title
-							: messages.admin.title}
-					</h1>
-					<span>
-						{adminAccess === "allowed"
-							? ownerMessages.description
-							: messages.admin.description}
-					</span>
-				</header>
 				{adminAccess === "forbidden" ? (
-					<section className="admin-state admin-state--forbidden" role="alert">
-						<ShieldCheck aria-hidden="true" />
-						<h2>{messages.admin.wrongRoleTitle}</h2>
-						<p>{messages.admin.wrongRoleDescription}</p>
-						<Link className="admin-state__action" to="/staff">
-							{messages.admin.backToOperations}
-						</Link>
-					</section>
+					<>
+						<header className="operations-page-heading">
+							<p>{messages.admin.eyebrow}</p>
+							<h1>{messages.admin.title}</h1>
+							<span>{messages.admin.description}</span>
+						</header>
+						<section
+							className="admin-state admin-state--forbidden"
+							role="alert"
+						>
+							<ShieldCheck aria-hidden="true" />
+							<h2>{messages.admin.wrongRoleTitle}</h2>
+							<p>{messages.admin.wrongRoleDescription}</p>
+							<Link className="admin-state__action" to="/staff">
+								{messages.admin.backToOperations}
+							</Link>
+						</section>
+					</>
 				) : (
 					<OwnerAnalyticsModeSwitch
+						heading={
+							<>
+								<p>{ownerMessages.eyebrow}</p>
+								<h1>{ownerMessages.title}</h1>
+								<span>{ownerMessages.description}</span>
+							</>
+						}
 						daily={
 							<>
 								<OwnerAnalyticsPage />

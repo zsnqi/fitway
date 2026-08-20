@@ -1,4 +1,10 @@
-import { type KeyboardEvent, type ReactNode, useRef, useState } from "react";
+import {
+	type KeyboardEvent,
+	type ReactNode,
+	type RefObject,
+	useRef,
+	useState,
+} from "react";
 
 import { useOwnerDailyAnalytics } from "@/hooks/use-owner-daily-analytics";
 import { useI18n } from "@/i18n/provider";
@@ -37,9 +43,11 @@ const labels = {
  */
 export function OwnerAnalyticsModeSwitch({
 	daily,
+	heading,
 	history,
 }: {
 	daily: ReactNode;
+	heading?: ReactNode;
 	history: (prerequisite: OwnerDailyAnalyticsPrerequisite) => ReactNode;
 }) {
 	const { locale } = useI18n();
@@ -83,38 +91,28 @@ export function OwnerAnalyticsModeSwitch({
 
 	return (
 		<div className="owner-analytics-mode">
-			<div
-				className="owner-analytics-mode__tabs"
-				role="tablist"
-				aria-label={copy.group}
-			>
-				<button
-					ref={dailyTab}
-					id={ids.dailyTab}
-					type="button"
-					role="tab"
-					aria-controls={ids.dailyPanel}
-					aria-selected={selected === "daily"}
-					tabIndex={selected === "daily" ? 0 : -1}
-					onClick={() => select("daily")}
-					onKeyDown={(event) => handleKeyDown(event, "daily")}
-				>
-					{copy.daily}
-				</button>
-				<button
-					ref={historyTab}
-					id={ids.historyTab}
-					type="button"
-					role="tab"
-					aria-controls={ids.historyPanel}
-					aria-selected={selected === "history"}
-					tabIndex={selected === "history" ? 0 : -1}
-					onClick={() => select("history")}
-					onKeyDown={(event) => handleKeyDown(event, "history")}
-				>
-					{copy.history}
-				</button>
-			</div>
+			{heading ? (
+				<header className="operations-page-heading operations-page-heading--analytics">
+					<div className="operations-page-heading__copy">{heading}</div>
+					<AnalyticsTabs
+						copy={copy}
+						dailyTab={dailyTab}
+						historyTab={historyTab}
+						onKeyDown={handleKeyDown}
+						onSelect={select}
+						selected={selected}
+					/>
+				</header>
+			) : (
+				<AnalyticsTabs
+					copy={copy}
+					dailyTab={dailyTab}
+					historyTab={historyTab}
+					onKeyDown={handleKeyDown}
+					onSelect={select}
+					selected={selected}
+				/>
+			)}
 
 			<div
 				id={ids.dailyPanel}
@@ -134,6 +132,60 @@ export function OwnerAnalyticsModeSwitch({
 			>
 				{historyVisited ? history(prerequisite) : null}
 			</div>
+		</div>
+	);
+}
+
+function AnalyticsTabs({
+	copy,
+	dailyTab,
+	historyTab,
+	onKeyDown,
+	onSelect,
+	selected,
+}: {
+	copy: (typeof labels)[keyof typeof labels];
+	dailyTab: RefObject<HTMLButtonElement | null>;
+	historyTab: RefObject<HTMLButtonElement | null>;
+	onKeyDown: (
+		event: KeyboardEvent<HTMLButtonElement>,
+		mode: AnalyticsMode,
+	) => void;
+	onSelect: (mode: AnalyticsMode) => void;
+	selected: AnalyticsMode;
+}) {
+	return (
+		<div
+			className="owner-analytics-mode__tabs"
+			role="tablist"
+			aria-label={copy.group}
+		>
+			<button
+				ref={dailyTab}
+				id={ids.dailyTab}
+				type="button"
+				role="tab"
+				aria-controls={ids.dailyPanel}
+				aria-selected={selected === "daily"}
+				tabIndex={selected === "daily" ? 0 : -1}
+				onClick={() => onSelect("daily")}
+				onKeyDown={(event) => onKeyDown(event, "daily")}
+			>
+				{copy.daily}
+			</button>
+			<button
+				ref={historyTab}
+				id={ids.historyTab}
+				type="button"
+				role="tab"
+				aria-controls={ids.historyPanel}
+				aria-selected={selected === "history"}
+				tabIndex={selected === "history" ? 0 : -1}
+				onClick={() => onSelect("history")}
+				onKeyDown={(event) => onKeyDown(event, "history")}
+			>
+				{copy.history}
+			</button>
 		</div>
 	);
 }

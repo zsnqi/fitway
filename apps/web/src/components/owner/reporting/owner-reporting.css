@@ -16,9 +16,25 @@
 
 .owner-analytics-mode__tabs {
 	display: flex;
+	flex: none;
 	inline-size: 160px;
 	block-size: 44px;
 	margin-block-end: 24px;
+}
+
+.operations-page-heading--analytics {
+	display: flex;
+	gap: 24px;
+	align-items: flex-end;
+	justify-content: space-between;
+}
+
+.operations-page-heading--analytics .operations-page-heading__copy {
+	min-inline-size: 0;
+}
+
+.operations-page-heading--analytics .owner-analytics-mode__tabs {
+	margin-block-end: 0;
 }
 
 .owner-analytics-mode__tabs [role="tab"] {
@@ -59,8 +75,10 @@
 	display: grid;
 	gap: 16px;
 	margin-block-start: 24px;
-	padding-block-start: 24px;
-	border-block-start: 1px solid var(--fw-border);
+}
+
+.owner-reporting > * {
+	min-inline-size: 0;
 }
 
 .owner-reporting__heading {
@@ -215,12 +233,13 @@
 .owner-reporting-block {
 	display: grid;
 	gap: 14px;
+	min-inline-size: 0;
 }
 
 .owner-reporting-controls {
 	display: flex;
 	gap: 16px;
-	align-items: flex-start;
+	align-items: stretch;
 	min-inline-size: 0;
 }
 
@@ -232,16 +251,38 @@
 }
 
 .owner-reporting-controls > .owner-reporting-block,
-.owner-reporting-controls > .owner-reporting-range fieldset {
+.owner-reporting-controls > .owner-reporting-range {
 	padding: 16px 18px;
-	border: 1px solid var(--fw-border);
+	border: 1px solid var(--fw-edge-control, rgb(220 197 201 / 18%));
 	border-radius: var(--fw-radius-surface);
-	background: rgb(16 16 18 / 88%);
+	background-color: var(--fw-material-board-rest, rgb(29 24 28 / 12.5%));
+	background-image: linear-gradient(
+		in oklab 160deg,
+		oklab(27.3% 0.094 0.032 / 19.6%) 0%,
+		oklab(96.3% 0.018 0.003 / 3%) 46%,
+		oklab(21.7% 0.01 -0.005 / 8.2%) 100%
+	);
+	background-origin: border-box;
+	backdrop-filter: blur(22px) saturate(114%);
+	box-shadow:
+		var(--fw-lift, rgb(255 238 240 / 2.8%)) 0 1px 0 inset,
+		#0000002e 0 8px 8px;
 }
 
 .owner-reporting-controls > .owner-reporting-block {
 	display: grid;
 	gap: 14px;
+}
+
+.owner-reporting-controls
+	> :is(.owner-reporting-block, .owner-reporting-range)
+	.owner-reporting-range
+	fieldset,
+.owner-reporting-controls > .owner-reporting-range > fieldset {
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
 }
 
 .owner-reporting-block__heading h3,
@@ -536,6 +577,7 @@
 	display: flex;
 	gap: 8px;
 	align-items: center;
+	min-inline-size: 0;
 	min-block-size: 44px;
 	padding-inline: 12px;
 	border: 1px solid var(--fw-border);
@@ -543,6 +585,12 @@
 	color: var(--fw-text-muted);
 	font-size: 12px;
 	cursor: pointer;
+}
+
+.owner-reporting-disclosure {
+	inline-size: 100%;
+	min-inline-size: 0;
+	max-inline-size: 100%;
 }
 
 .owner-reporting-disclosure summary:focus-visible {
@@ -555,6 +603,8 @@
 }
 
 .owner-reporting-region {
+	min-inline-size: 0;
+	max-inline-size: 100%;
 	max-block-size: 460px;
 	overflow: auto;
 	scrollbar-width: thin;
@@ -562,6 +612,10 @@
 	border: 1px solid var(--fw-border);
 	border-radius: var(--fw-radius-surface);
 	background: rgb(16 16 18 / 92%);
+}
+
+.owner-reporting-block > .owner-reporting__note {
+	overflow-wrap: anywhere;
 }
 
 .owner-reporting-region::-webkit-scrollbar {
@@ -865,9 +919,41 @@
 	.owner-reporting-heatmap__heading {
 		flex-direction: column;
 	}
+
+	.owner-reporting-controls > .owner-reporting-block,
+	.owner-reporting-controls > .owner-reporting-range {
+		padding: 16px;
+		border-radius: var(--fw-radius-board);
+		background-color: var(--fw-material-board-mobile, rgb(29 24 28 / 25%));
+		background-image: linear-gradient(
+			in oklab 165deg,
+			oklab(27.3% 0.094 0.032 / 31%) 0%,
+			oklab(96.3% 0.018 0.003 / 4.3%) 38%,
+			oklab(21.7% 0.01 -0.005 / 19.2%) 100%
+		);
+		backdrop-filter: blur(18px) saturate(112%);
+		box-shadow:
+			var(--fw-lift, rgb(255 238 240 / 2.8%)) 0 1px 0 inset,
+			#0000003d 0 8px 8px;
+	}
 }
 
 @media (max-width: 720px) {
+	.operations-page-heading--analytics {
+		align-items: stretch;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.operations-page-heading--analytics .owner-analytics-mode__tabs {
+		inline-size: 100%;
+	}
+
+	.operations-page-heading--analytics .owner-analytics-mode__tabs [role="tab"] {
+		flex: 1 1 50%;
+		inline-size: auto;
+	}
+
 	.owner-reporting-range__fields {
 		grid-template-columns: minmax(0, 1fr);
 	}

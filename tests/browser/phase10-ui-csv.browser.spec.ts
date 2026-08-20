@@ -265,7 +265,10 @@ async function setLocale(page: Page, locale: "ar" | "en") {
 	);
 }
 
-async function expectNoOverflow(page: Page) {
+async function expectNoOverflow(
+	page: Page,
+	allowReportingRegionOverflow = false,
+) {
 	const overflow = await page.evaluate(() => {
 		const reporting = document.querySelector<HTMLElement>(".owner-reporting");
 		return {
@@ -276,7 +279,9 @@ async function expectNoOverflow(page: Page) {
 	});
 	expect(overflow.document).toBeLessThanOrEqual(0);
 	expect(overflow.body).toBeLessThanOrEqual(0);
-	expect(overflow.reporting).toBeLessThanOrEqual(0);
+	if (!allowReportingRegionOverflow) {
+		expect(overflow.reporting).toBeLessThanOrEqual(0);
+	}
 }
 
 function seriousViolations(
@@ -323,12 +328,74 @@ async function expectControlLayout(page: Page, width: number) {
 	} else {
 		expect(Math.abs(csvBox.y - reportingBox.y)).toBeLessThanOrEqual(1);
 		expect(Math.abs(csvBox.width - reportingBox.width)).toBeLessThanOrEqual(1);
+		expect(Math.abs(csvBox.height - reportingBox.height)).toBeLessThanOrEqual(
+			1,
+		);
 		expect(Math.abs(csvBox.x - reportingBox.x) - reportingBox.width).toBe(16);
 	}
 	if (width === 1440) {
 		expect(reportingBox.width).toBe(664);
 		expect(csvBox.width).toBe(664);
 	}
+	const material = await reportingRange.evaluate((board) => {
+		const style = getComputedStyle(board);
+		const nestedFieldset = board.parentElement?.querySelector<HTMLElement>(
+			"[data-owner-reporting-export] fieldset",
+		);
+		return {
+			backdropFilter: style.backdropFilter,
+			borderTopWidth: style.borderTopWidth,
+			nestedBackground: nestedFieldset
+				? getComputedStyle(nestedFieldset).backgroundColor
+				: null,
+			nestedBorderTopWidth: nestedFieldset
+				? getComputedStyle(nestedFieldset).borderTopWidth
+				: null,
+		};
+	});
+	expect(material.backdropFilter).toBe(
+		width <= 820 ? "blur(18px) saturate(1.12)" : "blur(22px) saturate(1.14)",
+	);
+	expect(material.borderTopWidth).toBe("1px");
+	expect(material.nestedBorderTopWidth).toBe("0px");
+	expect(material.nestedBackground).toBe("rgba(0, 0, 0, 0)");
+}
+
+async function expectHeadingLayout(
+	page: Page,
+	locale: "ar" | "en",
+	width: number,
+) {
+	const heading = page.locator(".operations-page-heading--analytics");
+	const title = heading.locator("h1");
+	const tablist = heading.getByRole("tablist");
+	const [headingBox, titleBox, tabsBox] = await Promise.all([
+		heading.boundingBox(),
+		title.boundingBox(),
+		tablist.boundingBox(),
+	]);
+	if (!headingBox || !titleBox || !tabsBox) {
+		throw new Error("Analytics heading and tabs require layout boxes");
+	}
+	expect(tabsBox.height).toBe(44);
+	if (width <= 720) {
+		expect(Math.abs(tabsBox.x - headingBox.x)).toBeLessThanOrEqual(1);
+		expect(Math.abs(tabsBox.width - headingBox.width)).toBeLessThanOrEqual(1);
+		expect(tabsBox.y).toBeGreaterThan(titleBox.y + titleBox.height);
+	} else {
+		expect(
+			Math.abs(tabsBox.y + tabsBox.height - headingBox.y - headingBox.height),
+		).toBeLessThanOrEqual(1);
+		if (locale === "ar") expect(titleBox.x).toBeGreaterThan(tabsBox.x);
+		else expect(titleBox.x).toBeLessThan(tabsBox.x);
+	}
+	const typography = await title.evaluate((element) => {
+		const style = getComputedStyle(element);
+		return { family: style.fontFamily, weight: Number(style.fontWeight) };
+	});
+	expect(typography.family).toMatch(/Cairo/u);
+	expect(typography.weight).toBeGreaterThanOrEqual(400);
+	expect(typography.weight).toBeLessThanOrEqual(700);
 }
 
 test("the lazy bilingual tabs keep exact prerequisite counts and stable panel shells", async ({
@@ -384,6 +451,7 @@ test("the lazy bilingual tabs keep exact prerequisite counts and stable panel sh
 	expect(tablistBox).toMatchObject({ width: 160, height: 44 });
 	expect(dailyTabBox).toMatchObject({ width: 80, height: 44 });
 	expect(historyTabBox).toMatchObject({ width: 80, height: 44 });
+	await expectHeadingLayout(page, "ar", 1440);
 
 	await historyTab.focus();
 	await page.keyboard.press("ArrowLeft");
@@ -670,6 +738,8 @@ test("reflow, focus, keyboard, live names, reduced motion, and automated accessi
 			.evaluate((panel) => panel.contains(document.activeElement)),
 	).toBe(true);
 	const reporting = page.locator(".owner-reporting");
+	const disclosure = reporting.locator(".owner-reporting-disclosure summary");
+	await disclosure.click();
 	for (const locale of ["en", "ar"] as const) {
 		await setLocale(page, locale);
 		for (const width of [320, 360, 390, 721, 768, 820, 1024, 1200, 1440]) {
@@ -678,7 +748,36 @@ test("reflow, focus, keyboard, live names, reduced motion, and automated accessi
 				reporting.locator("[data-owner-reporting-grid]"),
 			).toBeVisible();
 			await expectControlLayout(page, width);
-			await expectNoOverflow(page);
+			await expectHeadingLayout(page, locale, width);
+			await expectNoOverflow(page, true);
+			const containedAction = await reporting
+				.locator("[data-owner-reporting-export-start]")
+				.boundingBox();
+			if (!containedAction)
+				throw new Error("Export action requires a layout box");
+			expect(containedAction.x).toBeGreaterThanOrEqual(0);
+			expect(containedAction.x + containedAction.width).toBeLessThanOrEqual(
+				width,
+			);
+			const overflowingOrdinaryContent = await reporting
+				.locator(
+					".owner-reporting-disclosure summary, .owner-reporting__note, .owner-reporting__footnote",
+				)
+				.evaluateAll((elements) =>
+					elements.flatMap((element) => {
+						const box = element.getBoundingClientRect();
+						return box.left >= 0 && box.right <= window.innerWidth
+							? []
+							: [
+									{
+										text: element.textContent,
+										left: box.left,
+										right: box.right,
+									},
+								];
+					}),
+				);
+			expect(overflowingOrdinaryContent).toEqual([]);
 		}
 		if (locale === "ar") {
 			await historyTab.focus();
