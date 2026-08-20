@@ -103,7 +103,7 @@
 	display: grid;
 	gap: 12px;
 	margin: 0;
-	padding: 16px;
+	padding: 16px 18px;
 	border: 1px solid var(--fw-border);
 	border-radius: var(--fw-radius-surface);
 	background: rgb(16 16 18 / 88%);
@@ -213,6 +213,33 @@
 }
 
 .owner-reporting-block {
+	display: grid;
+	gap: 14px;
+}
+
+.owner-reporting-controls {
+	display: flex;
+	gap: 16px;
+	align-items: flex-start;
+	min-inline-size: 0;
+}
+
+.owner-reporting-controls > * {
+	box-sizing: border-box;
+	flex: 0 0 calc((100% - 16px) / 2);
+	inline-size: calc((100% - 16px) / 2);
+	min-inline-size: 0;
+}
+
+.owner-reporting-controls > .owner-reporting-block,
+.owner-reporting-controls > .owner-reporting-range fieldset {
+	padding: 16px 18px;
+	border: 1px solid var(--fw-border);
+	border-radius: var(--fw-radius-surface);
+	background: rgb(16 16 18 / 88%);
+}
+
+.owner-reporting-controls > .owner-reporting-block {
 	display: grid;
 	gap: 14px;
 }
@@ -825,6 +852,16 @@
 }
 
 @media (max-width: 820px) {
+	.owner-reporting-controls {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.owner-reporting-controls > * {
+		flex-basis: auto;
+		inline-size: 100%;
+	}
+
 	.owner-reporting-heatmap__heading {
 		flex-direction: column;
 	}
@@ -833,10 +870,6 @@
 @media (max-width: 720px) {
 	.owner-reporting-range__fields {
 		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.owner-reporting-range fieldset {
-		padding: 14px;
 	}
 
 	.owner-reporting-range__actions {

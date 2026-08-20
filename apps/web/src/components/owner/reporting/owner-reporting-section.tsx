@@ -139,64 +139,71 @@ export function OwnerReportingSection({
 				</span>
 			</header>
 
-			<form
-				className="owner-reporting-range"
-				data-owner-reporting-range=""
-				onSubmit={handleSubmit}
+			<div
+				className="owner-reporting-controls"
+				data-owner-reporting-controls=""
 			>
-				<fieldset>
-					<legend>{messages.rangeLegend}</legend>
-					<div className="owner-reporting-range__fields">
-						<div className="owner-reporting-field">
-							<label htmlFor={`${ids}-start`}>{messages.startLabel}</label>
-							<input
-								id={`${ids}-start`}
-								type="date"
-								value={editing.startBusinessDay}
-								aria-describedby={problem ? `${ids}-problem` : `${ids}-hint`}
-								aria-invalid={problem ? true : undefined}
-								onChange={(event) =>
-									update("startBusinessDay", event.target.value)
-								}
-							/>
+				<form
+					className="owner-reporting-range"
+					data-owner-reporting-range=""
+					onSubmit={handleSubmit}
+				>
+					<fieldset>
+						<legend>{messages.rangeLegend}</legend>
+						<div className="owner-reporting-range__fields">
+							<div className="owner-reporting-field">
+								<label htmlFor={`${ids}-start`}>{messages.startLabel}</label>
+								<input
+									id={`${ids}-start`}
+									type="date"
+									value={editing.startBusinessDay}
+									aria-describedby={problem ? `${ids}-problem` : `${ids}-hint`}
+									aria-invalid={problem ? true : undefined}
+									onChange={(event) =>
+										update("startBusinessDay", event.target.value)
+									}
+								/>
+							</div>
+							<div className="owner-reporting-field">
+								<label htmlFor={`${ids}-end`}>{messages.endLabel}</label>
+								<input
+									id={`${ids}-end`}
+									type="date"
+									value={editing.endBusinessDay}
+									aria-describedby={problem ? `${ids}-problem` : `${ids}-hint`}
+									aria-invalid={problem ? true : undefined}
+									onChange={(event) =>
+										update("endBusinessDay", event.target.value)
+									}
+								/>
+							</div>
 						</div>
-						<div className="owner-reporting-field">
-							<label htmlFor={`${ids}-end`}>{messages.endLabel}</label>
-							<input
-								id={`${ids}-end`}
-								type="date"
-								value={editing.endBusinessDay}
-								aria-describedby={problem ? `${ids}-problem` : `${ids}-hint`}
-								aria-invalid={problem ? true : undefined}
-								onChange={(event) =>
-									update("endBusinessDay", event.target.value)
-								}
-							/>
-						</div>
-					</div>
-					<p className="owner-reporting__hint" id={`${ids}-hint`}>
-						{messages.rangeHint}
-					</p>
-					{problem ? (
-						<p
-							className="owner-reporting__problem"
-							id={`${ids}-problem`}
-							data-owner-reporting-problem="range"
-							role="alert"
-						>
-							{problem}
+						<p className="owner-reporting__hint" id={`${ids}-hint`}>
+							{messages.rangeHint}
 						</p>
-					) : null}
-					<div className="owner-reporting-range__actions">
-						<Button type="submit" disabled={problem !== null}>
-							{messages.apply}
-						</Button>
-						<Button type="button" variant="outline" onClick={restoreDefault}>
-							{messages.restoreDefault}
-						</Button>
-					</div>
-				</fieldset>
-			</form>
+						{problem ? (
+							<p
+								className="owner-reporting__problem"
+								id={`${ids}-problem`}
+								data-owner-reporting-problem="range"
+								role="alert"
+							>
+								{problem}
+							</p>
+						) : null}
+						<div className="owner-reporting-range__actions">
+							<Button type="submit" disabled={problem !== null}>
+								{messages.apply}
+							</Button>
+							<Button type="button" variant="outline" onClick={restoreDefault}>
+								{messages.restoreDefault}
+							</Button>
+						</div>
+					</fieldset>
+				</form>
+
+				<OwnerReportingExport anchorBusinessDay={anchor} />
+			</div>
 
 			{/* One loading card for the section, not one for each leaf in flight. */}
 			{loading ? <OwnerReportingLoading /> : null}
@@ -241,8 +248,6 @@ export function OwnerReportingSection({
 					<OwnerReportingComparison comparison={comparison} />
 				) : null}
 			</div>
-
-			<OwnerReportingExport anchorBusinessDay={anchor} />
 
 			<p className="owner-reporting__footnote">{messages.footnote}</p>
 		</section>
