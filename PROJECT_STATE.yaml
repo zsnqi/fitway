@@ -1118,19 +1118,36 @@ milestones:
     integratedCommit: null
 
   phase10-ui-csv-b04:
-    status: PLANNED
+    status: IN_PROGRESS
     dependencies: [phase10-domain, phase10-paper-reporting, phase10-csv-transport]
-    ownerSession: null
-    branch: null
-    worktree: null
-    baseCommit: null
-    ownedPaths: []
-    forbiddenPaths: []
-    sharedLeases: []
+    ownerSession: "S2 b04 coordinator activation from post-S1 main; bounded Paper-fidelity plan and independent plan review pending before implementation."
+    branch: codex/phase10-ui-csv-b04
+    worktree: D:/Projects/fitway-worktrees/phase10-ui-csv-b04
+    baseCommit: SELF
+    ownedPaths:
+      - apps/web/src/components/owner/reporting/**
+      - apps/web/src/hooks/use-owner-reporting.ts
+      - apps/web/src/hooks/use-owner-reporting.test.tsx
+      - tests/browser/phase10-ui-csv.browser.spec.ts
+      - docs/phase-records/handoffs/phase10-ui-csv/*-p10_ui_csv_b04-*.md
+    forbiddenPaths:
+      - all repository paths outside ownedPaths and sharedLeases
+      - "packages/api/src/analytics/reporting/contracts.ts, csv.ts, reporting.ts, and csv-transport.ts: frozen accepted contracts"
+      - "apps/server/src/reporting-repository.ts: accepted range, heatmap, and week-over-week reads remain unchanged"
+      - "packages/db/** in its entirety: no migration, schema change, snapshot, or index"
+      - every Phase 9 analytics, phase11-audit, phase11-health, and phase11-shell component, hook, and test
+      - apps/web/src/i18n/**, shared catalogs, global tokens, and apps/web/src/routeTree.gen.ts
+      - tests/browser/__screenshots__/** and every canonical baseline
+      - PROJECT_STATE.yaml, scripts/verify.mjs, and scripts/verify-repository.mjs
+      - visual-direction-gate/**, Paper, and every normative document
+      - root manifests, lockfiles, environment schemas, and test-runner configuration
+      - every other milestone's phase record and handoff directory
+    sharedLeases:
+      - "exclusive through 2026-08-23T23:00:00+03:00: wiring only in packages/api/src/context.ts, packages/api/src/routers/index.ts, apps/server/src/index.ts, and apps/web/src/routes/admin.tsx"
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
-    leaseExpiresAt: null
-    handoff: null
+    lastHeartbeatAt: "2026-08-20T23:00:00+03:00"
+    leaseExpiresAt: "2026-08-23T23:00:00+03:00"
+    handoff: docs/phase-records/handoffs/phase10-ui-csv/20260820-230000-p10_ui_csv_b04-coordinator-activation.md
     stopReason: null
     gates:
       unit: PENDING
