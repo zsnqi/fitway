@@ -1254,9 +1254,9 @@ milestones:
     integratedCommit: 748f759195ffd1450c83d53ae7220af4c1fc2572
 
   phase11-audit-generalization:
-    status: IN_PROGRESS
+    status: VALIDATING
     dependencies: [phase11-audit]
-    ownerSession: "S0 ledger reconciliation session, resuming c01 Slice A verification. Environmental blocker (approval service exhaustion) is resolved; Git and Vitest are both available."
+    ownerSession: "S1 coordinator verification complete for Slice A candidate 1253e10; fresh v01 independent review is pending."
     branch: codex/phase11-audit-gen-recovery
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
     baseCommit: 3bb55f644152210e405f15dcbee5ef8602913ffb
@@ -1288,13 +1288,13 @@ milestones:
     sharedLeases:
       - "Coordinator lease on apps/server/src/phase7-integration.integration.test.ts for the current-schema migration fixture only; no expectation or production change."
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-16T23:10:00+03:00"
+    lastHeartbeatAt: "2026-08-20T22:43:00+03:00"
     leaseExpiresAt: "2026-08-22T23:00:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260816-222500-p11_audit_gen_c01-approval-service-blocked-handoff.md
+    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260820-224300-p11_audit_gen_c01-candidate-validating.md
     stopReason: null
     gates:
       unit: PASS
-      integration: PENDING
+      integration: PASS
       browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
