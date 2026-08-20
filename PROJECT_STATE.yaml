@@ -1118,9 +1118,9 @@ milestones:
     integratedCommit: null
 
   phase10-ui-csv-b04:
-    status: IN_PROGRESS
+    status: NEEDS_HUMAN
     dependencies: [phase10-domain, phase10-paper-reporting, phase10-csv-transport]
-    ownerSession: "S2 b04 coordinator activation from post-S1 main; bounded Paper-fidelity plan and independent plan review pending before implementation."
+    ownerSession: null
     branch: codex/phase10-ui-csv-b04
     worktree: D:/Projects/fitway-worktrees/phase10-ui-csv-b04
     baseCommit: SELF
@@ -1142,21 +1142,19 @@ milestones:
       - visual-direction-gate/**, Paper, and every normative document
       - root manifests, lockfiles, environment schemas, and test-runner configuration
       - every other milestone's phase record and handoff directory
-    sharedLeases:
-      - "one-time inherited b03 carry-forward only, immutable after the replay commit: packages/api/src/analytics/reporting/queries.ts, packages/api/src/analytics/reporting/queries.test.ts, packages/api/src/analytics/reporting/query-range.ts, and apps/server/src/phase10-ui-csv.integration.test.ts"
-      - "exclusive through 2026-08-23T23:00:00+03:00: wiring only in packages/api/src/context.ts, packages/api/src/routers/index.ts, apps/server/src/index.ts, and apps/web/src/routes/admin.tsx"
+    sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-20T23:12:00+03:00"
-    leaseExpiresAt: "2026-08-23T23:00:00+03:00"
-    handoff: docs/phase-records/handoffs/phase10-ui-csv/20260820-231200-p10_ui_csv_b04-carry-forward-scope-correction.md
-    stopReason: null
+    lastHeartbeatAt: "2026-08-21T00:41:00+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase10-ui-csv/20260821-004100-p10_ui_csv_b04-needs-human.md
+    stopReason: "Terminal b04 NEEDS_HUMAN under the approved strict visual exception: fresh direct Paper review found the second material composition disagreement after b03 (heading-row/mobile seam and G3 board material/density), plus 390 expanded-disclosure clipping; fresh candidate verification also found heatmap arrow selection does not move DOM focus. No b04 repair was attempted. The settled direction remains repair to approved Paper, but a human must authorize a fresh successor attempt before Phase 10 can continue. Preserve candidate cd4c0fb; do not integrate it."
     gates:
-      unit: PENDING
-      integration: PENDING
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
-      independentReview: PENDING
+      unit: PASS
+      integration: PASS
+      browser: FAIL
+      accessibility: FAIL
+      visual: FAIL
+      independentReview: FAIL
     integratedCommit: null
 
   phase-10:
