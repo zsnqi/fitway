@@ -789,18 +789,55 @@ test("reflow, focus, keyboard, live names, reduced motion, and automated accessi
 	}
 
 	await page.setViewportSize({ width: 768, height: 1024 });
-	const activeCell = reporting.locator(".owner-reporting-cell[tabindex='0']");
-	await expect(activeCell).toHaveCount(1);
-	await activeCell.focus();
-	await expect(activeCell).toBeFocused();
-	await page.keyboard.press("ArrowRight");
-	await expect(
-		reporting.locator(".owner-reporting-cell[tabindex='0']"),
-	).toHaveCount(1);
+	const cells = reporting.locator(".owner-reporting-cell");
+	async function expectFocusedCell(index: number) {
+		const activeCell = cells.nth(index);
+		await expect(
+			reporting.locator(".owner-reporting-cell[tabindex='0']"),
+		).toHaveCount(1);
+		await expect(activeCell).toHaveAttribute("tabindex", "0");
+		await expect(activeCell).toBeFocused();
+	}
+
+	await setLocale(page, "en");
+	await cells.nth(9).focus();
+	await expectFocusedCell(9);
+	await cells.nth(9).press("ArrowRight");
+	await expectFocusedCell(10);
+	await cells.nth(10).press("ArrowDown");
+	await expectFocusedCell(34);
+	await cells.nth(34).press("Home");
+	await expectFocusedCell(24);
+	await cells.nth(24).press("ArrowLeft");
+	await expectFocusedCell(24);
+	await cells.nth(24).press("ArrowUp");
+	await expectFocusedCell(0);
+	await cells.nth(0).press("ArrowUp");
+	await expectFocusedCell(0);
+	await cells.nth(0).press("End");
+	await expectFocusedCell(23);
+	await cells.nth(23).press("ArrowRight");
+	await expectFocusedCell(23);
+
+	await page.locator("#owner-analytics-daily-tab").click();
+	await page.locator("#owner-analytics-history-tab").click();
+	await expect(cells.nth(23)).toHaveAttribute("tabindex", "0");
+	await cells.nth(23).focus();
+	await cells.nth(23).press("ArrowLeft");
+	await expectFocusedCell(22);
+
+	await setLocale(page, "ar");
+	await cells.nth(9).focus();
+	await cells.nth(9).press("ArrowRight");
+	await expectFocusedCell(8);
+	await cells.nth(8).press("ArrowLeft");
+	await expectFocusedCell(9);
+	await cells.nth(9).press("ArrowDown");
+	await expectFocusedCell(33);
 	await expect(
 		reporting.locator("[data-owner-reporting-reading]"),
 	).toContainText(/Average occupancy|متوسط الإشغال/u);
-	const cellFocus = await activeCell.evaluate((element) => {
+	const cellFocus = await cells.nth(33).evaluate((element) => {
 		const style = getComputedStyle(element);
 		return style.outlineStyle !== "none" || style.boxShadow !== "none";
 	});

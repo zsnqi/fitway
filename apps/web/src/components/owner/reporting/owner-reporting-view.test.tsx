@@ -209,6 +209,33 @@ describe("cell classification", () => {
 });
 
 describe("heatmap rendering", () => {
+	function cells() {
+		return [
+			...container.querySelectorAll<HTMLButtonElement>(".owner-reporting-cell"),
+		];
+	}
+
+	function at(weekdayIndex: number, localHour: number) {
+		const button = cells()[weekdayIndex * 24 + localHour];
+		if (!button) throw new Error("Expected heatmap cell is missing");
+		return button;
+	}
+
+	function expectFocusedCell(weekdayIndex: number, localHour: number) {
+		const expected = at(weekdayIndex, localHour);
+		expect(document.activeElement).toBe(expected);
+		expect(expected.tabIndex).toBe(0);
+		expect(cells().filter((button) => button.tabIndex === 0)).toHaveLength(1);
+	}
+
+	function press(target: HTMLButtonElement, key: string) {
+		act(() =>
+			target.dispatchEvent(
+				new KeyboardEvent("keydown", { bubbles: true, key }),
+			),
+		);
+	}
+
 	it("carries exactly one tab stop across the whole grid", () => {
 		render(<OwnerReportingHeatmap heatmap={heatmapFixture()} />);
 		const cells = container.querySelectorAll<HTMLButtonElement>(
@@ -218,6 +245,40 @@ describe("heatmap rendering", () => {
 		expect([...cells].filter((button) => button.tabIndex === 0)).toHaveLength(
 			1,
 		);
+	});
+
+	it("keeps selection, the single tab stop, and DOM focus together for LTR moves", () => {
+		render(<OwnerReportingHeatmap heatmap={heatmapFixture()} />);
+		const initial = at(0, 9);
+		act(() => initial.focus());
+		expectFocusedCell(0, 9);
+
+		press(initial, "ArrowRight");
+		expectFocusedCell(0, 10);
+		press(at(0, 10), "ArrowDown");
+		expectFocusedCell(1, 10);
+		press(at(1, 10), "Home");
+		expectFocusedCell(1, 0);
+		press(at(1, 0), "ArrowLeft");
+		expectFocusedCell(1, 0);
+		press(at(1, 0), "ArrowUp");
+		expectFocusedCell(0, 0);
+		press(at(0, 0), "End");
+		expectFocusedCell(0, 23);
+		press(at(0, 23), "ArrowRight");
+		expectFocusedCell(0, 23);
+	});
+
+	it("mirrors only the Arabic hour direction while preserving focused selection", () => {
+		render(<OwnerReportingHeatmap heatmap={heatmapFixture()} />, "ar");
+		const initial = at(0, 9);
+		act(() => initial.focus());
+		press(initial, "ArrowRight");
+		expectFocusedCell(0, 8);
+		press(at(0, 8), "ArrowLeft");
+		expectFocusedCell(0, 9);
+		press(at(0, 9), "ArrowDown");
+		expectFocusedCell(1, 9);
 	});
 
 	it("names every cell's state in its accessible name, not by colour alone", () => {

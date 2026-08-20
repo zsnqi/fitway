@@ -14,7 +14,7 @@ import {
 	Minus,
 	RefreshCw,
 } from "lucide-react";
-import { type KeyboardEvent, useId, useState } from "react";
+import { type KeyboardEvent, useId, useRef, useState } from "react";
 
 import type { Locale } from "@/i18n/catalog";
 import { formatDate, formatNumber } from "@/i18n/format";
@@ -32,6 +32,7 @@ import "./owner-reporting.css";
 type HeatmapCell = Heatmap["cells"][number];
 type WeekMetrics = WeekComparison["currentWeek"];
 type Weekday = (typeof WEEKDAYS)[number];
+type HeatmapPosition = { weekday: Weekday; localHour: number };
 
 const HOURS = Array.from({ length: 24 }, (_unused, hour) => hour);
 
@@ -141,6 +142,25 @@ function cellByPosition(heatmap: Heatmap, weekday: Weekday, localHour: number) {
 	);
 }
 
+function cellKey({ weekday, localHour }: HeatmapPosition): string {
+	return `${weekday}-${localHour}`;
+}
+
+function movedPosition(
+	current: HeatmapPosition,
+	weekdayDelta: number,
+	hourDelta: number,
+): HeatmapPosition {
+	const weekdayIndex = WEEKDAYS.indexOf(current.weekday);
+	return {
+		weekday:
+			WEEKDAYS[
+				Math.min(WEEKDAYS.length - 1, Math.max(0, weekdayIndex + weekdayDelta))
+			] ?? current.weekday,
+		localHour: Math.min(23, Math.max(0, current.localHour + hourDelta)),
+	};
+}
+
 /**
  * The weekday-by-hour heatmap and the reading of whichever cell is selected.
  *
@@ -155,30 +175,26 @@ export function OwnerReportingHeatmap({ heatmap }: { heatmap: Heatmap }) {
 	const messages = useOwnerReportingMessages();
 	const weekdays = useOwnerReportingWeekdays();
 	const ids = useId();
-	const [selected, setSelected] = useState<{
-		weekday: Weekday;
-		localHour: number;
-	}>({ weekday: WEEKDAYS[0], localHour: 9 });
+	const initialSelection: HeatmapPosition = {
+		weekday: WEEKDAYS[0],
+		localHour: 9,
+	};
+	const [selected, setSelected] = useState<HeatmapPosition>(initialSelection);
+	const selectedRef = useRef<HeatmapPosition>(initialSelection);
+	const cellRefs = useRef(new Map<string, HTMLButtonElement>());
 	const busiest = busiestAverage(heatmap);
 	const active =
 		cellByPosition(heatmap, selected.weekday, selected.localHour) ??
 		heatmap.cells[0];
 
+	function select(next: HeatmapPosition, moveFocus = false) {
+		selectedRef.current = next;
+		setSelected(next);
+		if (moveFocus) cellRefs.current.get(cellKey(next))?.focus();
+	}
+
 	function move(weekdayDelta: number, hourDelta: number) {
-		setSelected((current) => {
-			const weekdayIndex = WEEKDAYS.indexOf(current.weekday);
-			const nextWeekday =
-				WEEKDAYS[
-					Math.min(
-						WEEKDAYS.length - 1,
-						Math.max(0, weekdayIndex + weekdayDelta),
-					)
-				] ?? current.weekday;
-			return {
-				weekday: nextWeekday,
-				localHour: Math.min(23, Math.max(0, current.localHour + hourDelta)),
-			};
-		});
+		select(movedPosition(selectedRef.current, weekdayDelta, hourDelta), true);
 	}
 
 	function handleKeyDown(event: KeyboardEvent<HTMLTableSectionElement>) {
@@ -189,9 +205,9 @@ export function OwnerReportingHeatmap({ heatmap }: { heatmap: Heatmap }) {
 		else if (event.key === "ArrowDown") move(1, 0);
 		else if (event.key === "ArrowUp") move(-1, 0);
 		else if (event.key === "Home")
-			setSelected((current) => ({ ...current, localHour: 0 }));
+			select({ ...selectedRef.current, localHour: 0 }, true);
 		else if (event.key === "End")
-			setSelected((current) => ({ ...current, localHour: 23 }));
+			select({ ...selectedRef.current, localHour: 23 }, true);
 		else return;
 		event.preventDefault();
 	}
@@ -269,6 +285,11 @@ export function OwnerReportingHeatmap({ heatmap }: { heatmap: Heatmap }) {
 									return (
 										<td key={hour}>
 											<button
+												ref={(element) => {
+													const key = cellKey({ weekday, localHour: hour });
+													if (element) cellRefs.current.set(key, element);
+													else cellRefs.current.delete(key);
+												}}
 												type="button"
 												className="owner-reporting-cell"
 												data-level={cellLevel(cell, busiest)}
@@ -277,12 +298,8 @@ export function OwnerReportingHeatmap({ heatmap }: { heatmap: Heatmap }) {
 												tabIndex={isActive ? 0 : -1}
 												aria-pressed={isActive}
 												aria-label={`${weekdays.full[weekday]} ${hourSpan(hour, locale)}, ${cellStateLabel(cell, messages)}. ${reading}`}
-												onClick={() =>
-													setSelected({ weekday, localHour: hour })
-												}
-												onFocus={() =>
-													setSelected({ weekday, localHour: hour })
-												}
+												onClick={() => select({ weekday, localHour: hour })}
+												onFocus={() => select({ weekday, localHour: hour })}
 											/>
 										</td>
 									);
