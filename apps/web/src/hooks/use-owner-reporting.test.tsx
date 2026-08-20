@@ -222,14 +222,20 @@ afterEach(async () => {
 function ReportingProbe({
 	startBusinessDay,
 	endBusinessDay,
+	prerequisite = {
+		timeZone: "Asia/Riyadh",
+		anchorBusinessDay: "2026-08-15",
+	},
 }: {
 	startBusinessDay?: string;
 	endBusinessDay?: string;
+	prerequisite?: { timeZone: string | null; anchorBusinessDay: string | null };
 }) {
 	const reporting = useOwnerReporting(
 		startBusinessDay && endBusinessDay
 			? { startBusinessDay, endBusinessDay }
 			: null,
+		prerequisite,
 	);
 	return (
 		<div
@@ -266,7 +272,7 @@ describe("useOwnerReporting", () => {
 		});
 	});
 
-	it("reads the gym timezone and anchor day /admin already fetched, asking for neither again", async () => {
+	it("uses the prerequisite facts without creating another Daily observer", async () => {
 		await render(
 			<ReportingProbe
 				startBusinessDay="2026-07-19"
@@ -277,10 +283,10 @@ describe("useOwnerReporting", () => {
 		expect(probe()?.getAttribute("data-available")).toBe("true");
 		expect(probe()?.getAttribute("data-zone")).toBe("Asia/Riyadh");
 		expect(probe()?.getAttribute("data-anchor")).toBe("2026-08-15");
-		// Exactly the two new requests, and not one extra call to either shared
-		// Phase 9 procedure: a duplicate time-context call cost a prior slice a repair.
-		expect(daily).toHaveBeenCalledTimes(1);
-		expect(timeContext).toHaveBeenCalledTimes(1);
+		// Exactly the two History leaves, and no call at all to either shared Phase 9
+		// procedure: their permanent observer lives above this subtree.
+		expect(daily).not.toHaveBeenCalled();
+		expect(timeContext).not.toHaveBeenCalled();
 		expect(heatmap).toHaveBeenCalledTimes(1);
 		expect(weekOverWeek).toHaveBeenCalledTimes(1);
 		expect(heatmap).toHaveBeenCalledWith({
@@ -291,9 +297,12 @@ describe("useOwnerReporting", () => {
 		expect(weekOverWeek).toHaveBeenCalledWith();
 	});
 
-	it("stands down entirely while the shared query is still failing", async () => {
-		daily.mockRejectedValue(new Error("offline"));
-		await render(<ReportingProbe />);
+	it("stands down entirely while prerequisite facts are unavailable", async () => {
+		await render(
+			<ReportingProbe
+				prerequisite={{ timeZone: null, anchorBusinessDay: null }}
+			/>,
+		);
 
 		expect(probe()?.getAttribute("data-available")).toBe("false");
 		// Neither leaf is called: `/admin` is already carrying one error and one

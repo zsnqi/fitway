@@ -14,8 +14,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { client } from "@/utils/orpc";
 
-import { useOwnerDailyAnalytics } from "./use-owner-daily-analytics";
-
 export {
 	CSV_MAX_RANGE_DAYS,
 	inclusiveBusinessDayCount,
@@ -137,18 +135,21 @@ export type OwnerReportingResult = {
 	comparison: OwnerReportingQuery<WeekComparison>;
 };
 
+export type OwnerReportingPrerequisiteFacts = {
+	timeZone: string | null;
+	anchorBusinessDay: string | null;
+};
+
 /**
  * Owner weekday-by-hour occupancy and week-over-week comparison.
  *
  * ## No second call to a shared procedure
  *
  * The configured gym timezone and today's business day are two facts `/admin` has
- * already fetched: `useOwnerDailyAnalytics` resolves both alongside the day's curve.
- * This hook observes that same query rather than asking for either again, so mounting
- * the reporting surface adds exactly two requests — `admin.analytics.heatmap` and
- * `admin.analytics.weekOverWeek` — and leaves the request behaviour of the Phase 9
- * surface exactly as it was. Fetching the timezone twice is what cost a prior slice a
- * repair; there is no reason to repeat it.
+ * already fetched. The permanently mounted route wrapper resolves them and supplies
+ * them here, so opening History creates no late observer of the shared Daily query.
+ * Mounting the reporting surface adds exactly two requests — `admin.analytics.heatmap`
+ * and `admin.analytics.weekOverWeek` — and leaves the Phase 9 request chain unchanged.
  *
  * ## Why the range leaf is not read here
  *
@@ -168,10 +169,9 @@ export type OwnerReportingResult = {
  */
 export function useOwnerReporting(
 	selection: ReportingRangeSelection | null,
+	prerequisite: OwnerReportingPrerequisiteFacts,
 ): OwnerReportingResult {
-	const analytics = useOwnerDailyAnalytics();
-	const timeZone = analytics.data?.timeContext.current.timeZone ?? null;
-	const anchorBusinessDay = analytics.data?.daily.businessDay ?? null;
+	const { timeZone, anchorBusinessDay } = prerequisite;
 	const available = timeZone !== null && anchorBusinessDay !== null;
 	// The default window is resolved here rather than in the section, so the form holds
 	// no state derived from a value that only arrives later and never has to correct

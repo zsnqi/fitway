@@ -13,6 +13,7 @@ import {
 import { formatNumber } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
 
+import type { OwnerDailyAnalyticsPrerequisite } from "./owner-analytics-mode-switch";
 import {
 	OwnerReportingExport,
 	rangeProblemMessage,
@@ -35,13 +36,15 @@ import "./owner-reporting.css";
  * It reads and never writes. The three leaves behind it expose no mutation path, so the
  * per-minute history remains the edge writer's alone.
  *
- * The section stands down entirely until `/admin` has resolved its own analytics query.
- * That query already carries the two facts every default here depends on — the configured
- * gym timezone and the current gym business day — so nothing below asks for either a
- * second time, and while it is in flight `/admin` is already announcing exactly one
- * loading status and offering exactly one retry for the same cause.
+ * The route wrapper supplies the permanently observed Daily prerequisite. While History
+ * is visible this section owns a visible pending or retryable error state for that shared
+ * cause, then hands only the resolved timezone and business-day facts to its leaf hook.
  */
-export function OwnerReportingSection() {
+export function OwnerReportingSection({
+	prerequisite,
+}: {
+	prerequisite: OwnerDailyAnalyticsPrerequisite;
+}) {
 	const { locale } = useI18n();
 	const messages = useOwnerReportingMessages();
 	const ids = useId();
@@ -51,9 +54,31 @@ export function OwnerReportingSection() {
 	// page on the same window.
 	const [applied, setApplied] = useState<ReportingRangeSelection | null>(null);
 	const [draft, setDraft] = useState<ReportingRangeSelection | null>(null);
-	const reporting = useOwnerReporting(applied);
+	const reporting = useOwnerReporting(applied, {
+		timeZone: prerequisite.data?.timeContext.current.timeZone ?? null,
+		anchorBusinessDay: prerequisite.data?.daily.businessDay ?? null,
+	});
 	const anchor = reporting.anchorBusinessDay;
 	const current = reporting.range;
+
+	if (prerequisite.isPending) {
+		return (
+			<section className="owner-reporting" aria-label={messages.title}>
+				<OwnerReportingLoading />
+			</section>
+		);
+	}
+
+	if (prerequisite.isError || !prerequisite.data) {
+		return (
+			<section className="owner-reporting" aria-label={messages.title}>
+				<OwnerReportingError
+					title={messages.errorTitle}
+					onRetry={() => void prerequisite.refetch()}
+				/>
+			</section>
+		);
+	}
 
 	if (!reporting.available || !anchor || !reporting.timeZone || !current) {
 		return null;

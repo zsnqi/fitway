@@ -6,6 +6,7 @@ import { OwnerAuditSection } from "@/components/owner/audit/owner-audit-section"
 import { OwnerHealthSection } from "@/components/owner/health/owner-health-section";
 import { OwnerAnalyticsPage } from "@/components/owner/owner-analytics-page";
 import { OwnerShell } from "@/components/owner/owner-shell";
+import { OwnerAnalyticsModeSwitch } from "@/components/owner/reporting/owner-analytics-mode-switch";
 import { OwnerReportingSection } from "@/components/owner/reporting/owner-reporting-section";
 import { useOwnerAnalyticsMessages } from "@/components/owner/use-owner-analytics-messages";
 import { useStaffMessages } from "@/hooks/use-staff-messages";
@@ -65,25 +66,18 @@ function AdminRoute() {
 						</Link>
 					</section>
 				) : (
-					<>
-						<OwnerAnalyticsPage />
-						<OwnerAuditSection />
-						{/*
-						 * Last on the route deliberately. Every accepted composition above
-						 * keeps its exact rendered geometry, so no canonical baseline
-						 * outside this slice moves, and the two periodic history surfaces
-						 * sit together beneath the live analytics the owner opens daily.
-						 */}
-						<OwnerHealthSection />
-						{/*
-						 * And this one after it, for exactly the same reason: every accepted
-						 * composition above keeps its rendered geometry, so no canonical
-						 * baseline outside this slice moves. The reporting extension is
-						 * periodic history like the two surfaces above it, not the live
-						 * reading the owner opens the page for.
-						 */}
-						<OwnerReportingSection />
-					</>
+					<OwnerAnalyticsModeSwitch
+						daily={
+							<>
+								<OwnerAnalyticsPage />
+								<OwnerAuditSection />
+								<OwnerHealthSection />
+							</>
+						}
+						history={(prerequisite) => (
+							<OwnerReportingSection prerequisite={prerequisite} />
+						)}
+					/>
 				)}
 			</main>
 		</OwnerShell>
