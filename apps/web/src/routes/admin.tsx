@@ -6,6 +6,7 @@ import { OwnerAuditSection } from "@/components/owner/audit/owner-audit-section"
 import { OwnerHealthSection } from "@/components/owner/health/owner-health-section";
 import { OwnerAnalyticsPage } from "@/components/owner/owner-analytics-page";
 import { OwnerShell } from "@/components/owner/owner-shell";
+import { OwnerReportingSection } from "@/components/owner/reporting/owner-reporting-section";
 import { useOwnerAnalyticsMessages } from "@/components/owner/use-owner-analytics-messages";
 import { useStaffMessages } from "@/hooks/use-staff-messages";
 import { client } from "@/utils/orpc";
@@ -74,6 +75,14 @@ function AdminRoute() {
 						 * sit together beneath the live analytics the owner opens daily.
 						 */}
 						<OwnerHealthSection />
+						{/*
+						 * And this one after it, for exactly the same reason: every accepted
+						 * composition above keeps its rendered geometry, so no canonical
+						 * baseline outside this slice moves. The reporting extension is
+						 * periodic history like the two surfaces above it, not the live
+						 * reading the owner opens the page for.
+						 */}
+						<OwnerReportingSection />
 					</>
 				)}
 			</main>
