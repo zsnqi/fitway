@@ -1254,10 +1254,10 @@ milestones:
     integratedCommit: 748f759195ffd1450c83d53ae7220af4c1fc2572
 
   phase11-audit-generalization:
-    status: READY_FOR_INTEGRATION
+    status: IN_PROGRESS
     dependencies: [phase11-audit]
-    ownerSession: "S1 Slice A candidate 1253e10 independently verified PASS on p11_audit_gen_v01; coordinator integration is next."
-    branch: codex/phase11-audit-gen-recovery
+    ownerSession: "S1 Slice A integrated to main at e6c14b5 with post-integration PASS; Slice B remains outstanding after S2/S3."
+    branch: main
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
     baseCommit: 3bb55f644152210e405f15dcbee5ef8602913ffb
     ownedPaths:
@@ -1285,12 +1285,11 @@ milestones:
       - every other milestone's phase record and handoff directory
       - "the seven approved access action labels, the secret-free audit rule, and the owner lifecycle decisions: human-locked"
       - "the access and settings mutation write paths, which belong to phase11-access and phase11-settings"
-    sharedLeases:
-      - "Coordinator lease on apps/server/src/phase7-integration.integration.test.ts for the current-schema migration fixture only; no expectation or production change."
+    sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-20T22:53:00+03:00"
+    lastHeartbeatAt: "2026-08-20T22:56:00+03:00"
     leaseExpiresAt: "2026-08-22T23:00:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260820-225300-p11_audit_gen_v01-independent-review-pass.md
+    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260820-225600-p11_audit_gen_c02-slice-a-integrated.md
     stopReason: null
     gates:
       unit: PASS
@@ -1299,7 +1298,7 @@ milestones:
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
       independentReview: PASS
-    integratedCommit: null
+    integratedCommit: e6c14b56e2adf93cde3361f54d0f913b880da74d
 
   phase11-access:
     status: PLANNED
