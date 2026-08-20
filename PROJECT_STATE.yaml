@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-21T01:30:00+03:00"
+updatedAt: "2026-08-21T02:38:00+03:00"
 
 coordinator:
   owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration on main; handover recorded in docs/phase-records/handoffs/coordinator/20260815-003900-coordinator-handover-and-frontier-baseline.md"
@@ -1186,10 +1186,10 @@ milestones:
     sharedLeases:
       - "one-time inherited b04 carry-forward only: merge the complete immutable codex/phase10-ui-csv-b04 candidate at cd4c0fb into b05; after the carry commit every inherited path outside b05 ownedPaths and the active route lease is frozen"
       - "exclusive through 2026-08-24T01:30:00+03:00: apps/web/src/routes/admin.tsx, limited to the Owner Analytics heading-row/local-switch composition needed for approved Paper fidelity; authentication, route loading, guard behavior, sibling sections, copy, and URLs remain unchanged"
-    validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-21T01:30:00+03:00"
+    validationRepairAttempts: 1
+    lastHeartbeatAt: "2026-08-21T02:38:00+03:00"
     leaseExpiresAt: "2026-08-24T01:30:00+03:00"
-    handoff: docs/phase-records/handoffs/phase10-ui-csv/20260821-013000-p10_ui_csv_b05-coordinator-activation.md
+    handoff: docs/phase-records/handoffs/phase10-ui-csv/20260821-023800-p10_ui_csv_b05-repair-1-activation.md
     stopReason: null
     gates:
       unit: PENDING
