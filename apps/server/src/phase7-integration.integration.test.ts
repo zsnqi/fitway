@@ -174,8 +174,10 @@ beforeAll(async () => {
 	const phase7Files = files.filter((name) => name.startsWith("0006_"));
 	expect(legacyFiles).toHaveLength(6);
 	expect(phase7Files).toHaveLength(1);
+	const phase7File = phase7Files[0] ?? "";
+	const laterFiles = files.filter((name) => name > phase7File);
 	const phase7Source = await readFile(
-		path.join(migrationsFolder, phase7Files[0] ?? ""),
+		path.join(migrationsFolder, phase7File),
 		"utf8",
 	);
 	for (const [indexName, foreignKeyName] of [
@@ -283,7 +285,10 @@ beforeAll(async () => {
 		[ownerPrincipalId, legacyOwnerCommandId, "2026-08-12T12:01:00.000Z"],
 	);
 
-	await applyMigration(phase7Files[0] ?? "");
+	await applyMigration(phase7File);
+	// The fixture isolates and proves migration 0006 above, then advances to the
+	// current schema before constructing repositories generated from that schema.
+	for (const filename of laterFiles) await applyMigration(filename);
 	const { createCommandServiceDatabase } = await import("./command-repository");
 	commands = createCommandServiceDatabase(
 		database as unknown as typeof import("@fitway/db").db,

@@ -1,6 +1,6 @@
-﻿# yaml-language-server: $schema=./docs/schemas/project-state.schema.json
+# yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-15T22:50:00+03:00"
+updatedAt: "2026-08-16T23:12:00+03:00"
 
 coordinator:
   owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration on main; handover recorded in docs/phase-records/handoffs/coordinator/20260815-003900-coordinator-handover-and-frontier-baseline.md"
@@ -1040,11 +1040,11 @@ milestones:
     integratedCommit: 3ce3efd75c4f07d5ffef07d8b742ce92d34e75c4
 
   phase10-ui-csv:
-    status: IN_PROGRESS
+    status: FAILED_VALIDATION
     dependencies: [phase10-domain, phase10-paper-reporting, phase10-csv-transport]
-    ownerSession: "phase10-ui-csv b01 on work/phase10-ui-csv-b01 in D:/Projects/fitway-worktrees/phase10-ui-csv-b01. Stage 1 (the three owner-only reporting procedures and their wiring) is committed at 0212869 after coordinator reconciliation of interrupted uncommitted work; the UI stage remains. Paper is unreachable, so Paper fidelity must not be claimed."
-    branch: work/phase10-ui-csv-b01
-    worktree: D:/Projects/fitway-worktrees/phase10-ui-csv-b01
+    ownerSession: null
+    branch: codex/phase10-ui-csv-recovery
+    worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
     baseCommit: SELF
     ownedPaths:
       - packages/api/src/analytics/reporting/queries.ts
@@ -1070,10 +1070,67 @@ milestones:
       - every other milestone's phase record and handoff directory
     sharedLeases:
       - "exclusive through 2026-08-22T18:45:00+03:00: wiring only in packages/api/src/context.ts, packages/api/src/routers/index.ts, apps/server/src/index.ts, and apps/web/src/routes/admin.tsx."
+    validationRepairAttempts: 2
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase10-ui-csv/20260816-153500-p10_ui_csv_b02-failure-diagnosis-correction.md
+    stopReason: "Terminal b02 FAILED_VALIDATION after repair 2/2. The preserved implementation and 3/4 new browser tests show no product defect. Fresh plan review corrected the worker/coordinator diagnosis: the health sibling uses data-owner-health-state and cannot match the reporting selector; the actual failing assertion asks for accessible name Retry while the rendered English reporting action is Try again. No third b02 repair is permitted. Preserve the original terminal record plus its correction; b03 is a separate reviewed attempt."
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: FAIL
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase10-ui-csv-b03:
+    status: FAILED_VALIDATION
+    dependencies: [phase10-domain, phase10-paper-reporting, phase10-csv-transport]
+    ownerSession: null
+    branch: codex/phase10-ui-csv-b03
+    worktree: null
+    baseCommit: SELF
+    ownedPaths:
+      - tests/browser/phase10-ui-csv.browser.spec.ts
+      - docs/phase-records/handoffs/phase10-ui-csv/*-p10_ui_csv_b03-worker-*.md
+    forbiddenPaths:
+      - all repository paths outside ownedPaths
+      - "the entire terminal b02 history and every existing b01/b02 handoff: immutable provenance"
+      - "all production code, including packages/api/**, apps/server/**, apps/web/**, packages/db/**, packages/auth/**, packages/env/**, packages/ui/**, and edge/**"
+      - "every browser spec except tests/browser/phase10-ui-csv.browser.spec.ts and every screenshot baseline"
+      - scripts/verify.mjs, scripts/verify-repository.mjs, PROJECT_STATE.yaml, and root manifests/config/lockfiles
+      - visual-direction-gate/**, Paper, and every normative document
+      - every other milestone's phase record and handoff directory
+    sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-15T22:10:00+03:00"
-    leaseExpiresAt: "2026-08-22T18:45:00+03:00"
-    handoff: docs/phase-records/handoffs/phase10-ui-csv/20260815-220500-p10_ui_csv_c01-stage1-reconciliation.md
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase10-ui-csv/20260816-211500-p10_ui_csv_b03-paper-fidelity-needs-human.md
+    stopReason: "Terminal b03 visual FAIL: test-only scope completed (unit/integration/browser/accessibility PASS) but Paper fidelity check found the adopted hierarchy diverges from the approved Paper composition. Human decision 2026-08-16 chose repair to the approved Paper hierarchy over superseding Paper. b03 is test-only provenance; the fidelity repair requires a fresh b04 activation with widened owned paths. Candidate 4c253de carried forward to b04."
+    gates:
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: FAIL
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase10-ui-csv-b04:
+    status: PLANNED
+    dependencies: [phase10-domain, phase10-paper-reporting, phase10-csv-transport]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: null
     stopReason: null
     gates:
       unit: PENDING
@@ -1086,7 +1143,8 @@ milestones:
 
   phase-10:
     status: PLANNED
-    dependencies: [phase10-domain, phase10-paper-reporting, phase10-csv-transport, phase10-ui-csv]
+    dependencies:
+      [phase10-domain, phase10-paper-reporting, phase10-csv-transport, phase10-ui-csv-b04]
     ownerSession: null
     branch: null
     worktree: null
@@ -1196,12 +1254,12 @@ milestones:
     integratedCommit: 748f759195ffd1450c83d53ae7220af4c1fc2572
 
   phase11-audit-generalization:
-    status: IN_PROGRESS
+    status: READY_FOR_INTEGRATION
     dependencies: [phase11-audit]
-    ownerSession: "phase11-audit-generalization b01 worker on work/phase11-audit-gen-b01 in D:/Projects/fitway-worktrees/phase11-audit-gen-b01, Slice A only: schema, migration 0007, API audit contracts, and the server read path. apps/web is excluded because phase10-ui-csv is concurrently writing there; the web half is Slice B after that slice integrates."
-    branch: work/phase11-audit-gen-b01
-    worktree: D:/Projects/fitway-worktrees/phase11-audit-gen-b01
-    baseCommit: SELF
+    ownerSession: "S1 Slice A candidate 1253e10 independently verified PASS on p11_audit_gen_v01; coordinator integration is next."
+    branch: codex/phase11-audit-gen-recovery
+    worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
+    baseCommit: 3bb55f644152210e405f15dcbee5ef8602913ffb
     ownedPaths:
       - packages/db/src/schema/application.ts
       - packages/db/src/migrations/0007_*
@@ -1211,6 +1269,7 @@ milestones:
       - apps/server/src/audit-repository.ts
       - apps/server/src/audit-repository.test.ts
       - apps/server/src/phase11-audit-generalization.integration.test.ts
+      - apps/server/src/phase7-integration.integration.test.ts
       - docs/phase-records/handoffs/phase11-audit-generalization/*-p11_audit_gen_b01-worker-*.md
     forbiddenPaths:
       - all repository paths outside ownedPaths
@@ -1226,19 +1285,20 @@ milestones:
       - every other milestone's phase record and handoff directory
       - "the seven approved access action labels, the secret-free audit rule, and the owner lifecycle decisions: human-locked"
       - "the access and settings mutation write paths, which belong to phase11-access and phase11-settings"
-    sharedLeases: []
+    sharedLeases:
+      - "Coordinator lease on apps/server/src/phase7-integration.integration.test.ts for the current-schema migration fixture only; no expectation or production change."
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-15T23:00:00+03:00"
+    lastHeartbeatAt: "2026-08-20T22:53:00+03:00"
     leaseExpiresAt: "2026-08-22T23:00:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260815-230000-p11_audit_gen_b01-coordinator-activation.md
+    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260820-225300-p11_audit_gen_v01-independent-review-pass.md
     stopReason: null
     gates:
-      unit: PENDING
-      integration: PENDING
+      unit: PASS
+      integration: PASS
       browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
-      independentReview: PENDING
+      independentReview: PASS
     integratedCommit: null
 
   phase11-access:
@@ -1366,6 +1426,33 @@ milestones:
       browser: PENDING
       accessibility: PENDING
       visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
+  focus-parity-accessibility:
+    status: PLANNED
+    dependencies: [phase11-settings]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths:
+      - apps/web/src/index.css
+      - apps/web/src/components/staff/staff.css
+      - apps/web/src/components/owner/owner-shell.css
+    forbiddenPaths: []
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/coordinator/20260815-031500-focus-parity-gap.md
+    stopReason: null
+    gates:
+      unit: NOT_REQUIRED
+      integration: NOT_REQUIRED
+      browser: PENDING
+      accessibility: PENDING
+      visual: NOT_REQUIRED
       independentReview: PENDING
     integratedCommit: null
 

@@ -21,15 +21,23 @@ function persisted(
 ): PersistedAuditRow {
 	return {
 		id: 7,
+		eventClass: "command",
 		action: "correction_absolute",
 		actorPrincipalId: ownerPrincipal,
 		actorPrincipalKind: "owner",
 		actorRole: "owner",
 		actorDisplayName: "Nadia (owner)",
+		targetPrincipalId: null,
+		targetDisplayName: null,
 		priorValue: 41,
 		requestedDelta: null,
 		requestedValue: 12,
 		effectiveValue: 12,
+		priorActive: null,
+		newActive: null,
+		priorCredentialVersion: null,
+		newCredentialVersion: null,
+		settingsVersion: null,
 		reason: "Recount after the door jam",
 		createdAt: new Date("2026-08-14T09:15:30.250Z"),
 		...overrides,
@@ -119,8 +127,8 @@ describe("the six audit filters", () => {
 			false,
 		);
 		expect(
-			auditListFilterSchema.safeParse({ effectiveValue: null }).success,
-		).toBe(false);
+			auditListFilterSchema.parse({ effectiveValue: null }).effectiveValue,
+		).toBeNull();
 		expect(
 			auditListFilterSchema.safeParse({ reason: "  padded" }).success,
 		).toBe(false);
@@ -270,6 +278,14 @@ describe("persisted row to transport entry", () => {
 		expect(() => toAuditEntry(persisted({ actorDisplayName: null }))).toThrow(
 			/unresolved actor/i,
 		);
+		expect(() =>
+			toAuditEntry(
+				persisted({
+					targetPrincipalId: staffPrincipal,
+					targetDisplayName: "Front desk",
+				}),
+			),
+		).toThrow(/mixes command and governance state/i);
 		expect(() =>
 			toAuditEntry(persisted({ createdAt: new Date("nope") })),
 		).toThrow(/server instant/i);
