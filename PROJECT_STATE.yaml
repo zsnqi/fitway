@@ -1201,9 +1201,9 @@ milestones:
     integratedCommit: null
 
   phase10-ui-csv-b06:
-    status: IN_PROGRESS
+    status: DONE
     dependencies: [phase10-domain, phase10-paper-reporting, phase10-csv-transport]
-    ownerSession: "OpenCode external leaf worker: Ox Alpha / opencode/x-preview-f-free / high. Fresh bounded successor for the human-approved relocation of csvDescription and csvPrivacyNote beneath the reporting/CSV board pair; b05 remains immutable and this attempt starts at repair count 0/2."
+    ownerSession: null
     branch: codex/phase10-ui-csv-b06
     worktree: D:/Projects/fitway-worktrees/phase10-ui-csv-b06
     baseCommit: SELF
@@ -1227,18 +1227,18 @@ milestones:
     sharedLeases:
       - "one-time inherited b05 carry-forward only: merge the complete immutable codex/phase10-ui-csv-b05 candidate at bf44049 into b06; after the carry commit every inherited path outside b06 ownedPaths is frozen"
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-21T19:00:00+03:00"
-    leaseExpiresAt: "2026-08-22T19:00:00+03:00"
-    handoff: docs/phase-records/handoffs/phase10-ui-csv/20260821-190000-p10_ui_csv_b06-coordinator-activation.md
+    lastHeartbeatAt: "2026-08-21T19:30:00+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/coordinator/20260821-193000-p10_ui_csv_b06-done.md
     stopReason: null
     gates:
-      unit: PENDING
-      integration: PENDING
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
-      independentReview: PENDING
-    integratedCommit: null
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
+      independentReview: PASS
+    integratedCommit: f1c1e7bf161f64b2fd308afa45d342e56690c2d6
 
   phase-10:
     status: PLANNED
@@ -1254,7 +1254,7 @@ milestones:
     validationRepairAttempts: 0
     lastHeartbeatAt: null
     leaseExpiresAt: null
-    handoff: null
+    handoff: docs/phase-records/handoffs/coordinator/20260821-193000-p10_ui_csv_b06-done.md
     stopReason: null
     gates:
       unit: PENDING
