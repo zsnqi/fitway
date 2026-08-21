@@ -160,16 +160,41 @@
 	font-weight: 600;
 }
 
-.owner-reporting-range__fields {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-	gap: 12px 16px;
-	align-items: end;
+.owner-reporting-board__heading {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2px 16px;
+	align-items: baseline;
+	justify-content: space-between;
+	min-inline-size: 0;
+}
+
+.owner-reporting-board__meta {
+	min-inline-size: 0;
+	margin: 0;
+	color: var(--fw-text-subtle);
+	font-size: 12px;
+	font-weight: 400;
+	line-height: 18px;
+}
+
+/*
+ * The approved board puts both dates and the action on one row, bottom-aligned on the
+ * controls rather than on the labels above them. It wraps rather than compressing a date
+ * control below its usable width, so a narrow viewport stacks instead of overflowing.
+ */
+.owner-reporting-board__row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px 10px;
+	align-items: flex-end;
+	min-inline-size: 0;
 }
 
 .owner-reporting-field {
 	display: grid;
-	gap: 6px;
+	flex: 1 1 8rem;
+	gap: 5px;
 	min-inline-size: 0;
 }
 
@@ -177,6 +202,7 @@
 	color: var(--fw-text-muted);
 	font-size: 12px;
 	font-weight: 600;
+	line-height: 14px;
 }
 
 .owner-reporting-range input {
@@ -203,12 +229,12 @@
 
 .owner-reporting-range__actions {
 	display: flex;
+	flex: 0 0 auto;
 	flex-wrap: wrap;
 	gap: 8px;
-	align-items: center;
+	align-items: flex-end;
 	justify-content: flex-end;
-	padding-block-start: 12px;
-	border-block-start: 1px solid var(--fw-border-subtle);
+	min-inline-size: 0;
 }
 
 .owner-reporting-range__actions button {
@@ -223,6 +249,15 @@
 	color: var(--fw-text-subtle);
 	font-size: 12px;
 	line-height: 1.6;
+}
+
+/*
+ * The export's format and privacy sentences stay on the board and stay whole; they read
+ * as one supporting line under the controls instead of two stacked prose rows.
+ */
+.owner-reporting-board__aside {
+	max-inline-size: none;
+	line-height: 1.5;
 }
 
 .owner-reporting__progress bdi {
@@ -295,9 +330,11 @@
 		#0000002e 0 8px 8px;
 }
 
-.owner-reporting-controls > .owner-reporting-block {
+.owner-reporting-controls > .owner-reporting-block,
+.owner-reporting-controls > .owner-reporting-range {
 	display: grid;
-	gap: 14px;
+	align-content: start;
+	gap: 12px;
 }
 
 .owner-reporting-controls
@@ -311,16 +348,16 @@
 	background: transparent;
 }
 
-.owner-reporting-block__heading h3,
+.owner-reporting-board__title,
 .owner-reporting-heatmap__heading h3,
 .owner-reporting-comparison__heading h3 {
 	margin: 0;
 	color: var(--fw-chalk);
 	font-size: 15px;
-	line-height: 1.35;
+	font-weight: 700;
+	line-height: 22px;
 }
 
-.owner-reporting-block__heading p,
 .owner-reporting-heatmap__heading p,
 .owner-reporting-comparison__heading p {
 	max-inline-size: 70ch;
@@ -980,11 +1017,8 @@
 		inline-size: auto;
 	}
 
-	.owner-reporting-range__fields {
-		grid-template-columns: minmax(0, 1fr);
-	}
-
 	.owner-reporting-range__actions {
+		flex: 1 1 100%;
 		justify-content: flex-start;
 	}
 

@@ -148,9 +148,22 @@ export function OwnerReportingSection({
 					data-owner-reporting-range=""
 					onSubmit={handleSubmit}
 				>
+					{/*
+					 * The board names itself once, on one line, with the window it accepts
+					 * stated beside the name rather than as a paragraph under the controls.
+					 * The legend still carries the group name for assistive technology.
+					 */}
+					<div className="owner-reporting-board__heading">
+						<h3 className="owner-reporting-board__title">
+							{messages.rangeLegend}
+						</h3>
+						<p className="owner-reporting-board__meta" id={`${ids}-hint`}>
+							{messages.rangeHint}
+						</p>
+					</div>
 					<fieldset>
-						<legend>{messages.rangeLegend}</legend>
-						<div className="owner-reporting-range__fields">
+						<legend className="fw-sr-only">{messages.rangeLegend}</legend>
+						<div className="owner-reporting-board__row">
 							<div className="owner-reporting-field">
 								<label htmlFor={`${ids}-start`}>{messages.startLabel}</label>
 								<input
@@ -177,10 +190,19 @@ export function OwnerReportingSection({
 									}
 								/>
 							</div>
+							<div className="owner-reporting-range__actions">
+								<Button type="submit" disabled={problem !== null}>
+									{messages.apply}
+								</Button>
+								<Button
+									type="button"
+									variant="outline"
+									onClick={restoreDefault}
+								>
+									{messages.restoreDefault}
+								</Button>
+							</div>
 						</div>
-						<p className="owner-reporting__hint" id={`${ids}-hint`}>
-							{messages.rangeHint}
-						</p>
 						{problem ? (
 							<p
 								className="owner-reporting__problem"
@@ -191,14 +213,6 @@ export function OwnerReportingSection({
 								{problem}
 							</p>
 						) : null}
-						<div className="owner-reporting-range__actions">
-							<Button type="submit" disabled={problem !== null}>
-								{messages.apply}
-							</Button>
-							<Button type="button" variant="outline" onClick={restoreDefault}>
-								{messages.restoreDefault}
-							</Button>
-						</div>
 					</fieldset>
 				</form>
 

@@ -74,15 +74,22 @@ export function OwnerReportingExport({
 
 	return (
 		<div className="owner-reporting-block" data-owner-reporting-export="">
-			<div className="owner-reporting-block__heading">
-				<h3>{messages.csvTitle}</h3>
-				<p>{messages.csvDescription}</p>
+			{/*
+			 * One title, one line, with the export's own limit beside it. The window
+			 * legend stays as the field group's name for assistive technology, where it
+			 * is a group label rather than a second visible heading.
+			 */}
+			<div className="owner-reporting-board__heading">
+				<h3 className="owner-reporting-board__title">{messages.csvTitle}</h3>
+				<p className="owner-reporting-board__meta" id={`${ids}-export-hint`}>
+					{messages.csvHint}
+				</p>
 			</div>
 
 			<form className="owner-reporting-range" onSubmit={handleSubmit}>
 				<fieldset>
-					<legend>{messages.csvLegend}</legend>
-					<div className="owner-reporting-range__fields">
+					<legend className="fw-sr-only">{messages.csvLegend}</legend>
+					<div className="owner-reporting-board__row">
 						<div className="owner-reporting-field">
 							<label htmlFor={`${ids}-start`}>{messages.startLabel}</label>
 							<input
@@ -119,10 +126,33 @@ export function OwnerReportingExport({
 								}
 							/>
 						</div>
+						<div className="owner-reporting-range__actions">
+							<Button
+								type="submit"
+								data-owner-reporting-export-start=""
+								disabled={exporting || problem !== null}
+							>
+								<Download aria-hidden="true" />
+								{messages.csvExport}
+							</Button>
+							{/*
+							 * The abort control exists only while there is something to
+							 * abort, so it is never a disabled control the owner has to
+							 * interpret.
+							 */}
+							{exporting ? (
+								<Button
+									type="button"
+									variant="outline"
+									data-owner-reporting-export-abort=""
+									onClick={csv.abort}
+								>
+									<Square aria-hidden="true" />
+									{messages.csvAbort}
+								</Button>
+							) : null}
+						</div>
 					</div>
-					<p className="owner-reporting__hint" id={`${ids}-export-hint`}>
-						{messages.csvHint}
-					</p>
 					{problem ? (
 						<p
 							className="owner-reporting__problem"
@@ -133,31 +163,6 @@ export function OwnerReportingExport({
 							{problem}
 						</p>
 					) : null}
-					<div className="owner-reporting-range__actions">
-						<Button
-							type="submit"
-							data-owner-reporting-export-start=""
-							disabled={exporting || problem !== null}
-						>
-							<Download aria-hidden="true" />
-							{messages.csvExport}
-						</Button>
-						{/*
-						 * The abort control exists only while there is something to abort,
-						 * so it is never a disabled control the owner has to interpret.
-						 */}
-						{exporting ? (
-							<Button
-								type="button"
-								variant="outline"
-								data-owner-reporting-export-abort=""
-								onClick={csv.abort}
-							>
-								<Square aria-hidden="true" />
-								{messages.csvAbort}
-							</Button>
-						) : null}
-					</div>
 				</fieldset>
 			</form>
 
@@ -234,7 +239,13 @@ export function OwnerReportingExport({
 				/>
 			) : null}
 
-			<p className="owner-reporting__note">{messages.csvPrivacyNote}</p>
+			{/*
+			 * What the file is, and what it deliberately does not carry, kept together on
+			 * the board itself rather than pushed away from the control that produces it.
+			 */}
+			<p className="owner-reporting__note owner-reporting-board__aside">
+				{messages.csvDescription} {messages.csvPrivacyNote}
+			</p>
 		</div>
 	);
 }

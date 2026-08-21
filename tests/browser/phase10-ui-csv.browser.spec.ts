@@ -298,6 +298,132 @@ async function activateHistory(page: Page) {
 	await expect(page.locator(".owner-reporting")).toBeVisible();
 }
 
+/*
+ * Default-state density and flow of the two control boards.
+ *
+ * The approved composition gives each board one heading line, a 12px gap, and then a
+ * single field-and-action row; it does not stack a legend, a field block, a hint
+ * paragraph and a divided action strip into four rows. The numbers asserted here are the
+ * approved board's own: a 22px heading line, a 12px gap, a 63px control row, and — for a
+ * board carrying no extra prose — a 131px board. They are read from the rendered boxes,
+ * so a return to the stacked control flow fails here rather than only in a screenshot.
+ */
+async function expectBoardDensity(page: Page, width: number) {
+	const boards = await page.evaluate(() => {
+		const controls = document.querySelector(
+			"[data-owner-reporting-controls]",
+		) as HTMLElement;
+		const measure = (selector: string) => {
+			const board = controls.querySelector(selector) as HTMLElement;
+			const box = (element: Element | null) => {
+				if (!element) return null;
+				const rect = element.getBoundingClientRect();
+				return {
+					top: Math.round(rect.top * 100) / 100,
+					height: Math.round(rect.height * 100) / 100,
+					width: Math.round(rect.width * 100) / 100,
+				};
+			};
+			const actions = board.querySelector(".owner-reporting-range__actions");
+			const actionStyle = actions ? getComputedStyle(actions) : null;
+			const style = getComputedStyle(board);
+			return {
+				board: box(board),
+				heading: box(board.querySelector(".owner-reporting-board__heading")),
+				row: box(board.querySelector(".owner-reporting-board__row")),
+				actions: box(actions),
+				fields: Array.from(
+					board.querySelectorAll(".owner-reporting-field"),
+				).map((field) => box(field)),
+				padding: `${style.paddingTop} ${style.paddingRight}`,
+				actionDivider: actionStyle
+					? `${actionStyle.borderTopWidth} ${actionStyle.paddingTop}`
+					: null,
+				// The old flow put the window hint in its own paragraph row. The board
+				// still carries that sentence, but as the heading line's metadata.
+				hintRows: board.querySelectorAll(".owner-reporting__hint").length,
+			};
+		};
+		return {
+			reporting: measure("[data-owner-reporting-range]"),
+			csv: measure("[data-owner-reporting-export]"),
+		};
+	});
+
+	for (const [name, board] of Object.entries(boards)) {
+		const { heading, row, actions, fields } = board;
+		if (!board.board || !heading || !row || !actions) {
+			throw new Error(`${name} board is missing its heading, row, or actions`);
+		}
+		expect(board.hintRows, `${name} keeps no separate hint row`).toBe(0);
+		expect(board.actionDivider, `${name} actions carry no divider`).toBe(
+			"0px 0px",
+		);
+		expect(board.padding, `${name} board inset`).toBe(
+			width <= 820 ? "16px 16px" : "16px 18px",
+		);
+		// The heading is the board's first row, one 12px gap above the controls.
+		expect(
+			Math.round(heading.top - board.board.top),
+			`${name} heading starts inside the board inset`,
+		).toBe(17);
+		expect(
+			Math.round(row.top - (heading.top + heading.height)),
+			`${name} gap under the heading`,
+		).toBe(12);
+		expect(fields.length, `${name} keeps both date fields`).toBe(2);
+		const [start, end] = fields;
+		if (!start || !end) throw new Error(`${name} lost a date field`);
+		expect(start.height, `${name} field row height`).toBe(63);
+		expect(end.height, `${name} field row height`).toBe(63);
+		expect(actions.height, `${name} action row height`).toBe(44);
+
+		if (width === 1440) {
+			// The approved desktop board: one heading line, one control row.
+			expect(heading.height, `${name} heading line at 1440`).toBe(22);
+			expect(row.height, `${name} control row at 1440`).toBe(63);
+			expect(start.top, `${name} start field on the control row`).toBe(row.top);
+			expect(end.top, `${name} end field on the control row`).toBe(row.top);
+			expect(
+				Math.round(actions.top + actions.height),
+				`${name} action sits on the control row baseline`,
+			).toBe(Math.round(row.top + row.height));
+			expect(
+				board.board.height,
+				`${name} board stays at the approved density`,
+			).toBeLessThanOrEqual(180);
+		}
+
+		if (width >= 721 && width <= 820) {
+			// Stacked full-width boards are not stretched to a sibling, so the board
+			// that carries no extra prose renders at exactly the approved 131px.
+			expect(heading.height, `${name} heading line when stacked`).toBe(22);
+			expect(row.height, `${name} control row when stacked`).toBe(63);
+			if (name === "reporting") {
+				expect(board.board.height, "reporting board height when stacked").toBe(
+					131,
+				);
+			}
+		}
+
+		if (width >= 360 && width <= 720) {
+			// Mobile keeps the two dates side by side and gives the action its own
+			// full-width row, one 12px gap below them.
+			expect(start.top, `${name} dates stay side by side at ${width}`).toBe(
+				end.top,
+			);
+			expect(
+				Math.round(actions.top - (start.top + start.height)),
+				`${name} gap above the mobile action row`,
+			).toBe(12);
+			expect(
+				Math.round(actions.width),
+				`${name} mobile action row spans the board`,
+			).toBe(Math.round(row.width));
+		}
+	}
+}
+
 async function expectControlLayout(page: Page, width: number) {
 	const controls = page.locator("[data-owner-reporting-controls]");
 	const reportingRange = controls.locator(
@@ -808,6 +934,7 @@ test("reflow, focus, keyboard, live names, reduced motion, and automated accessi
 				reporting.locator("[data-owner-reporting-grid]"),
 			).toBeVisible();
 			await expectControlLayout(page, width);
+			await expectBoardDensity(page, width);
 			await expectHeadingLayout(page, locale, width);
 			await expectNoOverflow(page, true);
 			const containedAction = await reporting
