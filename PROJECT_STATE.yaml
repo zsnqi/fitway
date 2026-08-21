@@ -1353,9 +1353,9 @@ milestones:
     integratedCommit: 748f759195ffd1450c83d53ae7220af4c1fc2572
 
   phase11-audit-generalization:
-    status: NEEDS_HUMAN
+    status: VALIDATING
     dependencies: [phase11-audit]
-    ownerSession: "S4 Slice B stopped NEEDS_HUMAN: required target/filter composition conflicts with frozen canonical audit baseline."
+    ownerSession: "S4 c04 coordinator resume: human-approved serialized target-column/effective-mode baseline replacement and closure only."
     branch: codex/phase11-audit-gen-slice-b
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
     baseCommit: da2abc7
@@ -1369,13 +1369,16 @@ milestones:
       - apps/web/src/hooks/use-owner-audit.ts
       - apps/web/src/hooks/use-owner-audit.test.tsx
       - tests/browser/phase11-audit.browser.spec.ts
+      - tests/browser/__screenshots__/win32/chromium/phase11-audit.browser.spec.ts/owner-audit-ar-desktop-1440x900.png
+      - tests/browser/__screenshots__/win32/chromium/phase11-audit.browser.spec.ts/owner-audit-en-mobile-390x844.png
       - docs/phase-records/handoffs/phase11-audit-generalization/*-p11_audit_gen_b02-*.md
+      - docs/phase-records/handoffs/phase11-audit-generalization/*-p11_audit_gen_c04-*.md
     forbiddenPaths:
       - all repository paths outside ownedPaths
       - "packages/db/**: migration 0007 and the Slice A schema are frozen"
       - "packages/api/src/commands/** and the Phase 5 command service/audit append semantics"
       - "apps/web/src/i18n/**, apps/web/src/routeTree.gen.ts, and shared router wiring"
-      - "tests/browser/__screenshots__/** and every canonical baseline"
+      - "tests/browser/__screenshots__/** except the two explicitly owned Phase 11 audit baselines; every other canonical baseline remains frozen"
       - "phase11-access and phase11-settings governance writers: S5/S6 only"
       - packages/auth/**, packages/env/**, packages/ui/**, edge/**, and every Phase 10 surface
       - PROJECT_STATE.yaml, scripts/verify.mjs, and scripts/verify-repository.mjs
@@ -1383,19 +1386,20 @@ milestones:
       - root manifests, lockfiles, environment schemas, and test-runner configuration
       - every other milestone's phase record and handoff directory
       - "the seven approved access action labels, the secret-free audit rule, and the owner lifecycle decisions: human-locked"
-    sharedLeases: []
+    sharedLeases:
+      - "human-approved serialized coordinator replacement through 2026-08-23T22:54:04+03:00: exactly the existing Phase 11 audit Arabic desktop and English mobile Windows/Chromium canonical screenshots, for the required target-column/effective-mode composition; every other baseline remains read-only"
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-21T23:55:00+03:00"
+    lastHeartbeatAt: "2026-08-22T00:05:00+03:00"
     leaseExpiresAt: "2026-08-23T22:54:04+03:00"
-    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260821-235500-p11_audit_gen_c03-needs-human.md
-    stopReason: "S4 requires the visible seventh target column and effectiveMode control, while its accepted scope forbids canonical-baseline edits and WORKFLOW requires human approval. Fresh Playwright measured 8,342 changed pixels (1%) against the frozen Arabic desktop audit baseline, and SOL/xhigh authority review confirmed no compliant code/test repair can match the six-column baseline without hiding or weakening required behavior. No repair attempt consumed. Human must authorize a serialized replacement baseline or supersede one side of the conflict."
+    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260822-000500-p11_audit_gen_c04-resume-activation.md
+    stopReason: null
     gates:
       unit: PASS
       integration: PENDING
-      browser: FAIL
+      browser: PENDING
       accessibility: PASS
-      visual: FAIL
-      independentReview: FAIL
+      visual: PENDING
+      independentReview: PENDING
     integratedCommit: e6c14b56e2adf93cde3361f54d0f913b880da74d
 
   phase11-access:
