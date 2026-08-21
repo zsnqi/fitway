@@ -1,10 +1,13 @@
 # Phase 10 coordinator aggregate closure
 
-- Status: `PLANNED` while the aggregate evidence is collected; closure is atomic to `DONE`
+- Status: `DONE`
 - Stage: S3 only — coordinator aggregate acceptance
 - Activated: 2026-08-21T20:10:00+03:00
 - Start point: `32f22f69748fc005ccfea4c698bebf2d53032fb7` on `main`, clean
 - Aggregate evidence baseline: `b0cea419037b355fa39ada9eb204f73681be2619` on `main`, clean
+- Aggregate evidence commit: `ef05412afba75d89e30d07aa531d31838fd9d45e`
+- Closure commit: pending the atomic durable-state commit; reanchored immediately afterward
+- Closed: 2026-08-21T20:44:34+03:00
 - Push/deploy/external provisioning: none
 
 ## Starting frontier
@@ -41,10 +44,10 @@ through its clean-main evidence and changes atomically to `DONE` only after the 
 
 | Slice | Durable result | Accepted evidence reused by S3 |
 | --- | --- | --- |
-| `phase10-domain` | `DONE` at `cd0c27534d5d27f9e6cf8073a9a38fc96d8f5cb1` | Reporting contracts and malformed-date/range behavior; unit, disposable-Postgres integration, full coordinator gate, and independent review already accepted. |
-| `phase10-paper-reporting` | `DONE` at `34c7257e6d2d6d0f60494a941c96a7f09bd561a0` | Adopted Paper area `17YY-0`; EN/AR desktop through narrow/reflow/state/resilience evidence and fresh read-only Paper re-review `PASS`. |
-| `phase10-csv-transport` | `DONE` at `3ce3efd75c4f07d5ffef07d8b742ce92d34e75c4` | Owner-only cancellable streamed CSV transport, timeout/error precedence, focused integration, full coordinator gate, and independent verification `PASS`. |
-| `phase10-ui-csv-b06` | `DONE` at `f1c1e7bf161f64b2fd308afa45d342e56690c2d6` | Complete UI/CSV successor with unit/type/browser/accessibility/visual gates and fresh independent review `PASS`; accepted b05 integration evidence was inherited rather than rerun. |
+| `phase10-domain` | `DONE` at `cd0c27534d5d27f9e6cf8073a9a38fc96d8f5cb1` | Reporting contracts and malformed-date/range behavior; unit, disposable-Postgres integration, full coordinator gate, and independent review already accepted. Ledger handoff: `docs/phase-records/handoffs/phase10-csv-transport/20260813-114047-p10_csv_contract_c01-integration.md`. |
+| `phase10-paper-reporting` | `DONE` at `34c7257e6d2d6d0f60494a941c96a7f09bd561a0` | Adopted Paper area `17YY-0`; EN/AR desktop through narrow/reflow/state/resilience evidence and fresh read-only Paper re-review `PASS`. Ledger handoff: `docs/phase-records/handoffs/phase10-paper-reporting/20260811-172242-p10_paper_reporting-b02-completion.md`. |
+| `phase10-csv-transport` | `DONE` at `3ce3efd75c4f07d5ffef07d8b742ce92d34e75c4` | Owner-only cancellable streamed CSV transport, timeout/error precedence, focused integration, full coordinator gate, and independent verification `PASS`. Ledger handoff: `docs/phase-records/handoffs/phase10-csv-transport/20260815-021800-p10_csv_transport_c03-coordinator-done.md`. |
+| `phase10-ui-csv-b06` | `DONE` at `f1c1e7bf161f64b2fd308afa45d342e56690c2d6` | Complete UI/CSV successor with unit/type/browser/accessibility/visual gates and fresh independent review `PASS`; accepted b05 integration evidence was inherited rather than rerun. Ledger handoff: `docs/phase-records/handoffs/coordinator/20260821-193000-p10_ui_csv_b06-done.md`. |
 
 The dependency evidence comes from the ledger handoffs named by each milestone. S3 does not repeat
 closed b06 work or reopen any accepted Phase 10 visual, content, contract, privacy, or behavior
@@ -53,7 +56,7 @@ decision.
 ## Delegated review route
 
 - Delegation reason: independence and economy for the required read-only aggregate-record review.
-- Selected route: stable candidate `ox-alpha`, `opencode/x-preview-f-free`, variant `high`.
+- Initially selected route: stable candidate `ox-alpha`, `opencode/x-preview-f-free`, variant `high`.
 - Registry/evidence: shared registry revision `2026-08-21.4`, Ox evidence revision
   `2026-08-21.5`; OpenCode `1.18.20`.
 - Live preflight: route `active` as `Ox Alpha Free (Unlimited)`, zero reported input/output cost,
@@ -66,6 +69,12 @@ decision.
 - Controls: read-only repository access; write, shell, task, external-directory, and skill access
   denied; external skill scanning disabled; exact skill allowlist empty; no MCP; no `--auto`; JSON
   event capture with exact-session/export fallback if compact final text is absent.
+- Route outcome: the external invocation was rejected by the approval gate before a session began
+  or repository payload was transferred. The coordinator did not bypass that boundary, so Ox was
+  ineligible for this review execution.
+- Actual delegated route: native Codex `gpt-5.6-terra`, reasoning variant `high`. This retained an
+  independent, economical read-only review through an authorized route after the external boundary
+  rejection; SOL retained final gate authority.
 
 ## Verification and independent review
 
@@ -129,15 +138,51 @@ Environment and retry evidence, without a source repair:
 
 ### Independent aggregate-record review
 
-Pending. The selected Ox Alpha read-only reviewer will inspect this committed draft against
-`PHASES.md`, the ledger, the four accepted slice records, the evidence log, and the Phase 9 aggregate
-precedent. SOL retains the final gate and will independently check every returned claim before
-closure.
+`PASS` from native Codex `gpt-5.6-terra` / `high`, read-only. The reviewer found no blocking or
+significant issue. Its one minor traceability observation was that the dependency table relied on
+ledger pointers instead of naming all four exact handoff paths; the table now names them. The
+reviewer reconciled every dependency status and ancestor commit, Phase 10 acceptance semantics,
+the evidence-only S3 scope, preserved b05/b06 terminal states, and the Phase 9 aggregate precedent.
+The coordinator separately audited the retained c02 log and accepted the review against the
+committed diff; no reviewer claim substituted for executed evidence.
 
-## Current state, blockers, and remaining
+## Completed
 
-- Current state: the aggregate gate is `PASS`; `phase-10` remains `PLANNED` until the required
-  independent record review and atomic coordinator closure.
-- Blockers: none.
-- Remaining in S3: commit this evidence draft, complete the independent record review, apply the
-  coordinator gate, record the integrated closure commit, and stop. S4 is explicitly not started.
+- Reconciled the repository and durable frontier before S3.
+- Reused accepted Phase 10 slice evidence and recorded the aggregate acceptance mapping.
+- Passed the clean-main full gate and mutation guard, then passed an independent read-only review.
+- Applied the coordinator gate and transitioned `phase-10` atomically from `PLANNED` to `DONE`.
+- Added no source implementation; S3 changed only this record and `PROJECT_STATE.yaml`.
+
+## Exact current state
+
+- `phase-10`: `DONE`, all six recorded gates `PASS`, on `main`.
+- Durable closure pointer: aggregate evidence commit
+  `ef05412afba75d89e30d07aa531d31838fd9d45e` until the closure commit is created and immediately
+  reanchored.
+- `phase10-ui-csv-b05` remains `FAILED_VALIDATION`; `phase10-ui-csv-b06` remains `DONE`.
+- No push, deployment, external provisioning, or S4 work occurred.
+
+## Decisions
+
+- Used the Phase 9 aggregate precedent and an atomic `PLANNED` to `DONE` transition because the
+  repository invariant correctly forbids a second active milestone on `main` while the already
+  active Phase 11 audit milestone sits between its completed Slice A and deferred Slice B.
+- Classified the c01 browser loading-state miss as a transient assertion-window failure only after
+  the exact unchanged test and a fresh unchanged full run passed; no source repair was made.
+- Honored the rejected external-provider approval boundary and rerouted the review to native Terra
+  instead of bypassing it.
+
+## Remaining
+
+- S3: none after the durable closure commit and its pointer reanchor.
+- Next valid stage: S4, Phase 11 audit generalization Slice B. It is deliberately not started here.
+
+## Blockers
+
+None.
+
+## Recommended next session
+
+Execute S4 only: complete the already planned Phase 11 audit generalization Slice B atomic DTO and
+`apps/web` switch. Do not repeat S3, reopen Phase 10, or widen into later stages.
