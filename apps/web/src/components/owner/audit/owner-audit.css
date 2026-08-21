@@ -84,6 +84,11 @@
 	font-family: inherit;
 }
 
+/* Preserve a clear native-arrow lane at inline-end in both LTR and RTL. */
+.owner-audit-filters select {
+	padding-inline-end: 36px;
+}
+
 .owner-audit-filters :is(select, input):focus-visible {
 	outline: 2px solid var(--fw-red-bright);
 	outline-offset: 2px;

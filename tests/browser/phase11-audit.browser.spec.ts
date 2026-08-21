@@ -571,8 +571,8 @@ test("governance rows render their resolved target and missing effective-count s
 			action: "owner_deactivated",
 			actor: ownerActor,
 			target: {
-				principalId: "00000000-0000-4000-8000-0000000000b2",
-				displayName: "Shared front desk",
+				principalId: ownerActor.principalId,
+				displayName: ownerActor.displayName,
 			},
 			priorValue: null,
 			effectiveValue: null,
@@ -613,7 +613,7 @@ test("governance rows render their resolved target and missing effective-count s
 	await page.setViewportSize({ width: 1200, height: 900 });
 	await page.goto("/admin");
 	const table = page.locator(auditTable);
-	await expect(table).toContainText("Shared front desk");
+	await expect(table).toContainText(ownerActor.displayName);
 	await expect(table).toContainText("Active");
 	await expect(table).toContainText("Inactive");
 	await expect(table).toContainText("Settings version 12");
@@ -625,7 +625,7 @@ test("governance rows render their resolved target and missing effective-count s
 	expect(observedFilters.at(-1)).toEqual({ effectiveValue: null });
 
 	await setLocale(page, "ar");
-	await expect(table).toContainText("مكتب الاستقبال");
+	await expect(table).toContainText(ownerActor.displayName);
 	await expect(table).toContainText("تحديث الإعدادات");
 	expect(
 		await page
@@ -647,6 +647,18 @@ test("layout holds at every required width in both locales", async ({
 			await page.setViewportSize({ width, height: 900 });
 			await expect(page.locator(auditTable)).toBeVisible();
 			await expectNoDocumentOverflow(page);
+			const selectPadding = await page
+				.locator(".owner-audit-filters select")
+				.first()
+				.evaluate((element) => {
+					const style = getComputedStyle(element);
+					return {
+						inlineStart: Number.parseFloat(style.paddingInlineStart),
+						inlineEnd: Number.parseFloat(style.paddingInlineEnd),
+					};
+				});
+			expect(selectPadding.inlineStart).toBe(12);
+			expect(selectPadding.inlineEnd).toBeGreaterThanOrEqual(36);
 			const region = await page
 				.locator(".owner-audit-region")
 				.evaluate((element) => ({
@@ -662,6 +674,16 @@ test("layout holds at every required width in both locales", async ({
 		await captureReview(page, `owner-audit-${locale}-360x900.png`);
 		await page.setViewportSize({ width: 768, height: 1024 });
 		await captureReview(page, `owner-audit-${locale}-768x1024.png`);
+		await page.setViewportSize({ width: 390, height: 844 });
+		await captureReview(
+			page,
+			`owner-audit-${locale}-select-mobile-390x844.png`,
+		);
+		await page.setViewportSize({ width: 1440, height: 900 });
+		await captureReview(
+			page,
+			`owner-audit-${locale}-select-desktop-1440x900.png`,
+		);
 	}
 });
 

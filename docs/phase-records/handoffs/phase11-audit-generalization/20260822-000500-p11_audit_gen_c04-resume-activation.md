@@ -44,7 +44,10 @@
 
 ## Verification
 
-- Not yet rerun in c04. The c03 evidence remains historical and does not count as the resumed gate.
+- Focused S4 unit/component, disposable PostgreSQL integration, type, and full browser suites pass.
+- The first `verify:phase` c04 run passed repository invariants, then stopped at Biome because two
+  newly added review-capture calls needed repository formatting. The formatter-only correction is
+  repair attempt 1/2; the phase ladder must rerun from the start.
 
 ## Recommended next session
 
