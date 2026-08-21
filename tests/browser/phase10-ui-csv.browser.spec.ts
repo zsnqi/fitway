@@ -339,23 +339,63 @@ async function expectBoardDensity(page: Page, width: number) {
 				actionDivider: actionStyle
 					? `${actionStyle.borderTopWidth} ${actionStyle.paddingTop}`
 					: null,
-				// The old flow put the window hint in its own paragraph row. The board
-				// still carries that sentence, but as the heading line's metadata.
+				// The old flow put the window hint in its own paragraph row. The
+				// board still carries that sentence, but as the heading metadata.
 				hintRows: board.querySelectorAll(".owner-reporting__hint").length,
+				// The old flow stacked the CSV format and privacy sentences onto the
+				// export board as a third supporting row; they now live as section
+				// prose beneath the board pair.
+				asideRows: board.querySelectorAll(".owner-reporting-board__aside")
+					.length,
+				noteRows: board.querySelectorAll(".owner-reporting__note").length,
 			};
 		};
 		return {
 			reporting: measure("[data-owner-reporting-range]"),
 			csv: measure("[data-owner-reporting-export]"),
+			csvNotes: (() => {
+				const section = document.querySelector(".owner-reporting");
+				const controls = document.querySelector(
+					"[data-owner-reporting-controls]",
+				);
+				const prose = section?.querySelector<HTMLElement>(
+					"[data-owner-reporting-csv-notes]",
+				);
+				if (!section || !controls || !prose) return null;
+				return {
+					inSection: section.contains(prose),
+					outsideBoards: !controls.contains(prose),
+					directlyAfterControls: prose.previousElementSibling === controls,
+					visible: prose.getClientRects().length > 0,
+					text: prose.textContent ?? "",
+				};
+			})(),
 		};
 	});
 
+	const { csvNotes } = boards;
+	if (!csvNotes) throw new Error("CSV section prose is missing");
+	expect(csvNotes.inSection, "CSV prose sits inside the section").toBe(true);
+	expect(csvNotes.outsideBoards, "CSV prose sits outside both boards").toBe(
+		true,
+	);
+	expect(
+		csvNotes.directlyAfterControls,
+		"CSV prose directly follows the board pair",
+	).toBe(true);
+	expect(csvNotes.visible, "CSV prose is visible section text").toBe(true);
+
 	for (const [name, board] of Object.entries(boards)) {
+		if (name === "csvNotes") continue;
 		const { heading, row, actions, fields } = board;
 		if (!board.board || !heading || !row || !actions) {
 			throw new Error(`${name} board is missing its heading, row, or actions`);
 		}
 		expect(board.hintRows, `${name} keeps no separate hint row`).toBe(0);
+		expect(
+			board.asideRows + board.noteRows,
+			`${name} keeps no supporting prose row`,
+		).toBe(0);
 		expect(board.actionDivider, `${name} actions carry no divider`).toBe(
 			"0px 0px",
 		);
@@ -390,8 +430,8 @@ async function expectBoardDensity(page: Page, width: number) {
 			).toBe(Math.round(row.top + row.height));
 			expect(
 				board.board.height,
-				`${name} board stays at the approved density`,
-			).toBeLessThanOrEqual(180);
+				`${name} board is exactly the approved 131px at 1440`,
+			).toBe(131);
 		}
 
 		if (width >= 721 && width <= 820) {
@@ -936,7 +976,9 @@ test("reflow, focus, keyboard, live names, reduced motion, and automated accessi
 			await expectControlLayout(page, width);
 			await expectBoardDensity(page, width);
 			await expectHeadingLayout(page, locale, width);
-			await expectNoOverflow(page, true);
+			// The relocated CSV prose is ordinary in-flow section content, so the
+			// section-level overflow check no longer needs its recorded bypass.
+			await expectNoOverflow(page);
 			const containedAction = await reporting
 				.locator("[data-owner-reporting-export-start]")
 				.boundingBox();

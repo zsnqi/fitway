@@ -238,14 +238,6 @@ export function OwnerReportingExport({
 					}
 				/>
 			) : null}
-
-			{/*
-			 * What the file is, and what it deliberately does not carry, kept together on
-			 * the board itself rather than pushed away from the control that produces it.
-			 */}
-			<p className="owner-reporting__note owner-reporting-board__aside">
-				{messages.csvDescription} {messages.csvPrivacyNote}
-			</p>
 		</div>
 	);
 }

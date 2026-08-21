@@ -251,15 +251,6 @@
 	line-height: 1.6;
 }
 
-/*
- * The export's format and privacy sentences stay on the board and stay whole; they read
- * as one supporting line under the controls instead of two stacked prose rows.
- */
-.owner-reporting-board__aside {
-	max-inline-size: none;
-	line-height: 1.5;
-}
-
 .owner-reporting__progress bdi {
 	color: var(--fw-chalk);
 	font-weight: 600;

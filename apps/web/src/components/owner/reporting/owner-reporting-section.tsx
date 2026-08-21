@@ -219,6 +219,15 @@ export function OwnerReportingSection({
 				<OwnerReportingExport anchorBusinessDay={anchor} />
 			</div>
 
+			{/*
+			 * What the file is, and what it deliberately does not carry, stated as
+			 * section prose beneath the board pair rather than as a row on either
+			 * control board.
+			 */}
+			<p className="owner-reporting__note" data-owner-reporting-csv-notes="">
+				{messages.csvDescription} {messages.csvPrivacyNote}
+			</p>
+
 			{/* One loading card for the section, not one for each leaf in flight. */}
 			{loading ? <OwnerReportingLoading /> : null}
 
