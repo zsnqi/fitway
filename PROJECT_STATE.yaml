@@ -1355,7 +1355,7 @@ milestones:
   phase11-audit-generalization:
     status: IN_PROGRESS
     dependencies: [phase11-audit]
-    ownerSession: "S4 Slice B activated on codex/phase11-audit-gen-slice-b; atomic shared DTO and owner-audit web switch only."
+    ownerSession: "S4 Slice B active; external Ox writer rejected pre-session by host approval gate, rerouted to native Terra/high."
     branch: codex/phase11-audit-gen-slice-b
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
     baseCommit: da2abc7
@@ -1385,7 +1385,7 @@ milestones:
       - "the seven approved access action labels, the secret-free audit rule, and the owner lifecycle decisions: human-locked"
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-21T23:21:00+03:00"
+    lastHeartbeatAt: "2026-08-21T23:32:00+03:00"
     leaseExpiresAt: "2026-08-23T22:54:04+03:00"
     handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260821-225404-p11_audit_gen_b02-activation.md
     stopReason: null

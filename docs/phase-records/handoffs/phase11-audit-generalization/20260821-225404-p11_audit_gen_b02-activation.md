@@ -65,6 +65,15 @@ change is `NEEDS_HUMAN`.
   diff/verification gate remain mandatory.
 - Independent verification/review will use a fresh native worker that did not write the change.
 
+### Writer-route gate outcome
+
+The managed host rejected the authorized Ox Alpha invocation before `CreateProcess`: no provider
+session, event capture, stderr file, source edit, or data transmission occurred. The route was not
+retried or bypassed. Implementation is rerouted to native `gpt-5.6-terra` / `high`, which was an
+eligible comparison survivor and has the concrete material advantage of staying inside the native
+repository boundary after the host rejection. The native worker inherits the same exact write
+scope, no-commit rule, secret exclusions, self-verification contract, and parent gate.
+
 ## Registered isolated verification profile
 
 - `FITWAY_RUN_ID=p11_audit_gen_b02`
