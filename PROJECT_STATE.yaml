@@ -1353,9 +1353,9 @@ milestones:
     integratedCommit: 748f759195ffd1450c83d53ae7220af4c1fc2572
 
   phase11-audit-generalization:
-    status: FAILED_VALIDATION
+    status: IN_PROGRESS
     dependencies: [phase11-audit]
-    ownerSession: null
+    ownerSession: p11_audit_gen_c05
     branch: codex/phase11-audit-gen-slice-b
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
     baseCommit: da2abc7
@@ -1387,18 +1387,18 @@ milestones:
       - every other milestone's phase record and handoff directory
       - "the seven approved access action labels, the secret-free audit rule, and the owner lifecycle decisions: human-locked"
     sharedLeases: []
-    validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-22T01:55:00+03:00"
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260822-015500-p11_audit_gen_c04-failed-validation.md
-    stopReason: "Terminal c04 FAILED_VALIDATION after repair 2/2. Candidate e42b6c4 passes the substantive owner-only governance/reason repair, exact PostgreSQL actor/target mapping, phase/fast/full verification, 9/9 focused browser checks, AR/RTL and EN/LTR select inspection, accessibility, and both human-approved canonical comparisons. Fresh independent verification rejected the required repository evidence because docs/phase-records/handoffs/phase11-audit-generalization/20260822-013100-p11_audit_gen_c04-repair2-candidate.md has a new blank line at EOF, so git diff --check da2abc7..e42b6c4 exits 1 while that handoff claims PASS. No third c04 repair is permitted. Preserve the candidate and terminal record; a human-authorized fresh attempt must start with a new durable attempt record. S5 remains frozen."
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-08-22T02:45:00+03:00"
+    leaseExpiresAt: "2026-08-22T10:45:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260822-024500-p11_audit_gen_c05-activation.md
+    stopReason: null
     gates:
-      unit: PASS
-      integration: PASS
-      browser: PASS
-      accessibility: PASS
-      visual: PASS
-      independentReview: FAIL
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
     integratedCommit: e6c14b56e2adf93cde3361f54d0f913b880da74d
 
   phase11-access:
