@@ -6,6 +6,8 @@ import { OwnerAuditSection } from "@/components/owner/audit/owner-audit-section"
 import { OwnerHealthSection } from "@/components/owner/health/owner-health-section";
 import { OwnerAnalyticsPage } from "@/components/owner/owner-analytics-page";
 import { OwnerShell } from "@/components/owner/owner-shell";
+import { OwnerAnalyticsModeSwitch } from "@/components/owner/reporting/owner-analytics-mode-switch";
+import { OwnerReportingSection } from "@/components/owner/reporting/owner-reporting-section";
 import { useOwnerAnalyticsMessages } from "@/components/owner/use-owner-analytics-messages";
 import { useStaffMessages } from "@/hooks/use-staff-messages";
 import { client } from "@/utils/orpc";
@@ -37,44 +39,45 @@ function AdminRoute() {
 				className="owner-main operations-main"
 				tabIndex={-1}
 			>
-				<header className="operations-page-heading">
-					<p>
-						{adminAccess === "allowed"
-							? ownerMessages.eyebrow
-							: messages.admin.eyebrow}
-					</p>
-					<h1>
-						{adminAccess === "allowed"
-							? ownerMessages.title
-							: messages.admin.title}
-					</h1>
-					<span>
-						{adminAccess === "allowed"
-							? ownerMessages.description
-							: messages.admin.description}
-					</span>
-				</header>
 				{adminAccess === "forbidden" ? (
-					<section className="admin-state admin-state--forbidden" role="alert">
-						<ShieldCheck aria-hidden="true" />
-						<h2>{messages.admin.wrongRoleTitle}</h2>
-						<p>{messages.admin.wrongRoleDescription}</p>
-						<Link className="admin-state__action" to="/staff">
-							{messages.admin.backToOperations}
-						</Link>
-					</section>
-				) : (
 					<>
-						<OwnerAnalyticsPage />
-						<OwnerAuditSection />
-						{/*
-						 * Last on the route deliberately. Every accepted composition above
-						 * keeps its exact rendered geometry, so no canonical baseline
-						 * outside this slice moves, and the two periodic history surfaces
-						 * sit together beneath the live analytics the owner opens daily.
-						 */}
-						<OwnerHealthSection />
+						<header className="operations-page-heading">
+							<p>{messages.admin.eyebrow}</p>
+							<h1>{messages.admin.title}</h1>
+							<span>{messages.admin.description}</span>
+						</header>
+						<section
+							className="admin-state admin-state--forbidden"
+							role="alert"
+						>
+							<ShieldCheck aria-hidden="true" />
+							<h2>{messages.admin.wrongRoleTitle}</h2>
+							<p>{messages.admin.wrongRoleDescription}</p>
+							<Link className="admin-state__action" to="/staff">
+								{messages.admin.backToOperations}
+							</Link>
+						</section>
 					</>
+				) : (
+					<OwnerAnalyticsModeSwitch
+						heading={
+							<>
+								<p>{ownerMessages.eyebrow}</p>
+								<h1>{ownerMessages.title}</h1>
+								<span>{ownerMessages.description}</span>
+							</>
+						}
+						daily={
+							<>
+								<OwnerAnalyticsPage />
+								<OwnerAuditSection />
+								<OwnerHealthSection />
+							</>
+						}
+						history={(prerequisite) => (
+							<OwnerReportingSection prerequisite={prerequisite} />
+						)}
+					/>
 				)}
 			</main>
 		</OwnerShell>

@@ -200,6 +200,12 @@ export function createApp(
 					readAnalyticsTimeContext:
 						ownerAnalyticsReaders.readAnalyticsTimeContext,
 					streamCsv: reportingRepository.streamCsv,
+					readReportingRange: reportingRepository.readRange,
+					readReportingHeatmap: reportingRepository.readHeatmap,
+					// No argument crosses this boundary: the repository resolves the
+					// comparison window from the server clock and the frozen minimum
+					// coverage, so no caller can ask for a different pair of weeks.
+					readWeekOverWeek: () => reportingRepository.readWeekOverWeek(),
 					listAuditEntries: auditListRepository.listAuditEntries,
 					readHealthIncidentSummary:
 						healthIncidentRepository.readHealthIncidentSummary,

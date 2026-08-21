@@ -1,7 +1,13 @@
 import type { AuthenticationResult, CanonicalAuthContext } from "@fitway/auth";
 import type { Context as HonoContext } from "hono";
 import type { DailyAnalytics } from "./analytics/daily-analytics";
-import type { CsvRangeInput } from "./analytics/reporting/contracts";
+import type {
+	CsvRangeInput,
+	Heatmap,
+	ReportingDateRangeInput,
+	ReportingRange,
+	WeekComparison,
+} from "./analytics/reporting/contracts";
 import type { AnalyticsTimeContext } from "./analytics/time-context";
 import type { AuditListInput, AuditListPage } from "./audit/list";
 import type { HealthIncidentSummary } from "./health/incidents";
@@ -21,6 +27,11 @@ export type CreateContextOptions = {
 		input: CsvRangeInput,
 		signal?: AbortSignal,
 	) => AsyncIterable<string>;
+	readReportingRange: (
+		input: ReportingDateRangeInput,
+	) => Promise<ReportingRange>;
+	readReportingHeatmap: (input: ReportingDateRangeInput) => Promise<Heatmap>;
+	readWeekOverWeek: () => Promise<WeekComparison>;
 	listAuditEntries: (input: AuditListInput) => Promise<AuditListPage>;
 	readHealthIncidentSummary: () => Promise<HealthIncidentSummary>;
 };
@@ -46,6 +57,16 @@ export type Context = {
 		input: CsvRangeInput,
 		signal?: AbortSignal,
 	) => AsyncIterable<string>;
+	/**
+	 * Owner-only reporting reads. All three are reads with no writer beside them, and
+	 * the comparison takes no argument at all: its window and comparability bar are
+	 * resolved server-side so no caller can move either.
+	 */
+	readReportingRange?: (
+		input: ReportingDateRangeInput,
+	) => Promise<ReportingRange>;
+	readReportingHeatmap?: (input: ReportingDateRangeInput) => Promise<Heatmap>;
+	readWeekOverWeek?: () => Promise<WeekComparison>;
 	/** Owner-only audit history read. The append path stays out of the context. */
 	listAuditEntries?: (input: AuditListInput) => Promise<AuditListPage>;
 	/**
@@ -63,6 +84,9 @@ export async function createContext({
 	readDailyAnalytics,
 	readAnalyticsTimeContext,
 	streamCsv,
+	readReportingRange,
+	readReportingHeatmap,
+	readWeekOverWeek,
 	listAuditEntries,
 	readHealthIncidentSummary,
 }: CreateContextOptions): Promise<Context> {
@@ -79,6 +103,9 @@ export async function createContext({
 		readDailyAnalytics,
 		readAnalyticsTimeContext,
 		streamCsv,
+		readReportingRange,
+		readReportingHeatmap,
+		readWeekOverWeek,
 		listAuditEntries,
 		readHealthIncidentSummary,
 	};
