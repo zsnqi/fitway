@@ -1355,7 +1355,7 @@ milestones:
   phase11-audit-generalization:
     status: VALIDATING
     dependencies: [phase11-audit]
-    ownerSession: "S4 c04 candidate d6a5818 passed verify:full; fresh Ox Alpha read-only review active; S5 remains frozen."
+    ownerSession: "S4 c04 candidate d6a5818 passed verify:full; Ox review finalization failed and fresh native SOL/xhigh read-only reroute is active; S5 remains frozen."
     branch: codex/phase11-audit-gen-slice-b
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
     baseCommit: da2abc7
@@ -1389,9 +1389,9 @@ milestones:
     sharedLeases:
       - "human-approved serialized coordinator replacement through 2026-08-23T22:54:04+03:00: exactly the existing Phase 11 audit Arabic desktop and English mobile Windows/Chromium canonical screenshots, for the required target-column/effective-mode composition; every other baseline remains read-only"
     validationRepairAttempts: 1
-    lastHeartbeatAt: "2026-08-22T00:44:00+03:00"
+    lastHeartbeatAt: "2026-08-22T01:05:00+03:00"
     leaseExpiresAt: "2026-08-23T22:54:04+03:00"
-    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260822-004400-p11_audit_gen_c04-review-activation.md
+    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260822-010500-p11_audit_gen_c04-review-reroute.md
     stopReason: null
     gates:
       unit: PASS
