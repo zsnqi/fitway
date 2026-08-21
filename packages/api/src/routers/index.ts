@@ -1,5 +1,6 @@
 import type { RouterClient } from "@orpc/server";
 import { adminAnalyticsCsv } from "../analytics/reporting/csv-transport";
+import { adminAnalyticsReportingQueries } from "../analytics/reporting/queries";
 import {
 	analyticsTimeContextInputSchema,
 	analyticsTimeContextOutputSchema,
@@ -112,6 +113,12 @@ export const appRouter = {
 			csv: adminAnalyticsCsv,
 			daily: adminDailyAnalytics,
 			timeContext: adminAnalyticsTimeContext,
+			// Owner-only reporting reads over the frozen Phase 10 contracts. They sit
+			// beside the accepted CSV leaf rather than inside it: the export streams,
+			// these answer once, and none of them shares the export's range bound.
+			range: adminAnalyticsReportingQueries.range,
+			heatmap: adminAnalyticsReportingQueries.heatmap,
+			weekOverWeek: adminAnalyticsReportingQueries.weekOverWeek,
 		},
 		audit: {
 			list: adminAuditList,
