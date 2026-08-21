@@ -42,4 +42,3 @@ browser target-cell assertions, native select behavior in AR/RTL and EN/LTR desk
 canonical baselines, and all locked security/privacy/data semantics. The reviewer must not edit,
 delegate, read secrets, or repair; it must return ranked findings, missing checks, exact executed
 evidence, and final status.
-

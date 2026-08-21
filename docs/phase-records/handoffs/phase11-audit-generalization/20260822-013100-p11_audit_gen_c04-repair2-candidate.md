@@ -44,4 +44,3 @@ This is validation repair attempt 2/2. No safety gate was weakened and S5 remain
 2. Run the repository-required phase/fast/full verification ladder against the candidate.
 3. Obtain a fresh independent read-only review of the repaired candidate.
 4. On PASS, durably integrate and mark S4 `DONE`, release the baseline lease, and stop before S5.
-
