@@ -1355,7 +1355,7 @@ milestones:
   phase11-audit-generalization:
     status: IN_PROGRESS
     dependencies: [phase11-audit]
-    ownerSession: "S4 Slice B candidate 30d6abc frozen after parent gate; independent verification pending."
+    ownerSession: "S4 Slice B candidate 30d6abc failed independent browser/visual verification; authority review pending before repair."
     branch: codex/phase11-audit-gen-slice-b
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
     baseCommit: da2abc7
@@ -1385,16 +1385,16 @@ milestones:
       - "the seven approved access action labels, the secret-free audit rule, and the owner lifecycle decisions: human-locked"
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-21T23:33:00+03:00"
+    lastHeartbeatAt: "2026-08-21T23:50:00+03:00"
     leaseExpiresAt: "2026-08-23T22:54:04+03:00"
-    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260821-233300-p11_audit_gen_b02-candidate.md
+    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260821-235000-p11_audit_gen_v02-verification-fail.md
     stopReason: null
     gates:
       unit: PASS
       integration: PENDING
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
+      browser: FAIL
+      accessibility: PASS
+      visual: FAIL
       independentReview: PENDING
     integratedCommit: e6c14b56e2adf93cde3361f54d0f913b880da74d
 
