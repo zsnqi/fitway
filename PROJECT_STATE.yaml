@@ -1355,7 +1355,7 @@ milestones:
   phase11-audit-generalization:
     status: VALIDATING
     dependencies: [phase11-audit]
-    ownerSession: "S4 c04 final repair attempt 2 is a focused candidate after independent review rejected d6a5818; full verification and fresh independent review remain required; S5 remains frozen."
+    ownerSession: "S4 repair candidate e42b6c4 passed phase/fast/full; fresh native SOL/xhigh independent rereview is active after the selected Ox route's documented finalization failure; S5 remains frozen."
     branch: codex/phase11-audit-gen-slice-b
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
     baseCommit: da2abc7
@@ -1389,9 +1389,9 @@ milestones:
     sharedLeases:
       - "human-approved serialized coordinator replacement through 2026-08-23T22:54:04+03:00: exactly the existing Phase 11 audit Arabic desktop and English mobile Windows/Chromium canonical screenshots, for the required target-column/effective-mode composition; every other baseline remains read-only"
     validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-22T01:31:00+03:00"
+    lastHeartbeatAt: "2026-08-22T01:40:00+03:00"
     leaseExpiresAt: "2026-08-23T22:54:04+03:00"
-    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260822-013100-p11_audit_gen_c04-repair2-candidate.md
+    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260822-014000-p11_audit_gen_c04-repair2-review-activation.md
     stopReason: null
     gates:
       unit: PASS
