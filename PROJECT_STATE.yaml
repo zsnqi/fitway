@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-21T03:25:00+03:00"
+updatedAt: "2026-08-21T18:10:00+03:00"
 
 coordinator:
   owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration on main; handover recorded in docs/phase-records/handoffs/coordinator/20260815-003900-coordinator-handover-and-frontier-baseline.md"
@@ -1158,9 +1158,9 @@ milestones:
     integratedCommit: null
 
   phase10-ui-csv-b05:
-    status: IN_PROGRESS
+    status: FAILED_VALIDATION
     dependencies: [phase10-domain, phase10-paper-reporting, phase10-csv-transport]
-    ownerSession: "Fresh human-authorized b05 successor from main after terminal b04 review; carry cd4c0fb forward non-destructively, then execute the independently reviewed bounded Paper-fidelity and keyboard repair."
+    ownerSession: null
     branch: codex/phase10-ui-csv-b05
     worktree: D:/Projects/fitway-worktrees/phase10-ui-csv-b05
     baseCommit: SELF
@@ -1187,17 +1187,17 @@ milestones:
       - "one-time inherited b04 carry-forward only: merge the complete immutable codex/phase10-ui-csv-b04 candidate at cd4c0fb into b05; after the carry commit every inherited path outside b05 ownedPaths and the active route lease is frozen"
       - "exclusive through 2026-08-24T01:30:00+03:00: apps/web/src/routes/admin.tsx, limited to the Owner Analytics heading-row/local-switch composition needed for approved Paper fidelity; authentication, route loading, guard behavior, sibling sections, copy, and URLs remain unchanged"
     validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-21T03:25:00+03:00"
-    leaseExpiresAt: "2026-08-24T01:30:00+03:00"
-    handoff: docs/phase-records/handoffs/phase10-ui-csv/20260821-032500-p10_ui_csv_b05-repair-2-activation.md
-    stopReason: null
+    lastHeartbeatAt: "2026-08-21T18:10:00+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/coordinator/20260821-181000-p10_ui_csv_b05-terminal-frontier.md
+    stopReason: "Terminal at candidate bf44049. Repair 2 (d3cef4f) reproduced the approved board skeleton exactly and every executable gate passed, including 30/30 browser and both frozen Phase 11 Arabic canonical element screenshots, and the fresh candidate verifier returned READY_FOR_INTEGRATION. The fresh Paper fidelity gate rejected a third time: the export board keeps a third structural row carrying csvDescription and csvPrivacyNote (36px at 1440, 72px at 390) that approved area 17YY-0 places nowhere on the board at any breakpoint, holding both boards at 179px against an approved 131px and leaving a 48px void in the stretched reporting board. validationRepairAttempts is exhausted at 2/2, so this is the terminal third recurrence. NOT integrated; nothing merged to main. Unblocking needs one human decision, recorded in the handoff: whether those two repository-owned sentences may move from inside the approved control board to section prose beneath the control pair. A successor attempt requires human authorization exactly as b05 did after b04."
     gates:
-      unit: PENDING
-      integration: PENDING
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
-      independentReview: PENDING
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: FAIL
+      independentReview: PASS
     integratedCommit: null
 
   phase-10:
