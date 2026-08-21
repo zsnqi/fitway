@@ -1355,48 +1355,47 @@ milestones:
   phase11-audit-generalization:
     status: IN_PROGRESS
     dependencies: [phase11-audit]
-    ownerSession: "S1 Slice A integrated to main at e6c14b5 with post-integration PASS; Slice B remains outstanding after S2/S3."
-    branch: main
+    ownerSession: "S4 Slice B activated on codex/phase11-audit-gen-slice-b; atomic shared DTO and owner-audit web switch only."
+    branch: codex/phase11-audit-gen-slice-b
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
-    baseCommit: 3bb55f644152210e405f15dcbee5ef8602913ffb
+    baseCommit: da2abc7
     ownedPaths:
-      - packages/db/src/schema/application.ts
-      - packages/db/src/migrations/0007_*
-      - packages/db/src/migrations/meta/0007_snapshot.json
-      - packages/db/src/migrations/meta/_journal.json
       - packages/api/src/audit/**
       - apps/server/src/audit-repository.ts
       - apps/server/src/audit-repository.test.ts
+      - apps/server/src/phase11-audit.integration.test.ts
       - apps/server/src/phase11-audit-generalization.integration.test.ts
-      - apps/server/src/phase7-integration.integration.test.ts
-      - docs/phase-records/handoffs/phase11-audit-generalization/*-p11_audit_gen_b01-worker-*.md
+      - apps/web/src/components/owner/audit/**
+      - apps/web/src/hooks/use-owner-audit.ts
+      - apps/web/src/hooks/use-owner-audit.test.tsx
+      - tests/browser/phase11-audit.browser.spec.ts
+      - docs/phase-records/handoffs/phase11-audit-generalization/*-p11_audit_gen_b02-*.md
     forbiddenPaths:
       - all repository paths outside ownedPaths
-      - "apps/web/** in its entirety and tests/browser/**: the web half is Slice B"
-      - "packages/api/src/context.ts, packages/api/src/routers/index.ts, and apps/server/src/index.ts: under a live phase10-ui-csv wiring lease"
-      - packages/api/src/analytics/** and every Phase 10 reporting surface
-      - "packages/api/src/commands/** and packages/api/src/alerts/**: frozen accepted authority"
-      - "every migration 0000-0006 and their snapshots; 0000 and 0001 are immutable"
-      - packages/auth/**, packages/env/**, packages/ui/**, and edge/**
+      - "packages/db/**: migration 0007 and the Slice A schema are frozen"
+      - "packages/api/src/commands/** and the Phase 5 command service/audit append semantics"
+      - "apps/web/src/i18n/**, apps/web/src/routeTree.gen.ts, and shared router wiring"
+      - "tests/browser/__screenshots__/** and every canonical baseline"
+      - "phase11-access and phase11-settings governance writers: S5/S6 only"
+      - packages/auth/**, packages/env/**, packages/ui/**, edge/**, and every Phase 10 surface
       - PROJECT_STATE.yaml, scripts/verify.mjs, and scripts/verify-repository.mjs
       - visual-direction-gate/**, Paper, and every normative document including PHASES.md
       - root manifests, lockfiles, environment schemas, and test-runner configuration
       - every other milestone's phase record and handoff directory
       - "the seven approved access action labels, the secret-free audit rule, and the owner lifecycle decisions: human-locked"
-      - "the access and settings mutation write paths, which belong to phase11-access and phase11-settings"
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-20T22:56:00+03:00"
-    leaseExpiresAt: "2026-08-22T23:00:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260820-225600-p11_audit_gen_c02-slice-a-integrated.md
+    lastHeartbeatAt: "2026-08-21T23:21:00+03:00"
+    leaseExpiresAt: "2026-08-23T22:54:04+03:00"
+    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260821-225404-p11_audit_gen_b02-activation.md
     stopReason: null
     gates:
-      unit: PASS
-      integration: PASS
-      browser: NOT_REQUIRED
-      accessibility: NOT_REQUIRED
-      visual: NOT_REQUIRED
-      independentReview: PASS
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
     integratedCommit: e6c14b56e2adf93cde3361f54d0f913b880da74d
 
   phase11-access:
