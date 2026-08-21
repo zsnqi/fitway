@@ -179,12 +179,15 @@ claims that were not independently observed.
 
 ### External worker data boundary
 
-The 2026-08-21 human authorization recorded in
+Two 2026-08-21 human authorizations, recorded in
 `docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md`
-permits FITWAY repository source code and non-secret project artifacts to be sent to and processed
-by the configured OpenCode Go / DeepSeek V4 Pro external worker when the active
-`agent-project-workflow` route-first comparison selects that route. The authorization is durable for
-FITWAY and need not be requested again at each stage.
+and
+`docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md`,
+permit FITWAY non-secret repository source code and non-secret project artifacts to be sent to and
+processed by the currently qualified OpenCode external-worker pool — DeepSeek V4 Pro, Ox Alpha,
+GLM-5.3, and MiniMax M3 — when the active `agent-project-workflow` route-first comparison selects
+that route. The authorization is durable for FITWAY and need not be requested again at each stage.
+It follows the currently qualified pool: a candidate that is not qualified is not authorized by it.
 
 This grant does not include credentials, secrets, API keys, `.env` contents, personal/private data,
 or any artifact prohibited elsewhere by repository policy. Route selection remains stage-specific:
