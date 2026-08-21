@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-21T18:10:00+03:00"
+updatedAt: "2026-08-21T20:10:00+03:00"
 
 coordinator:
   owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration on main; handover recorded in docs/phase-records/handoffs/coordinator/20260815-003900-coordinator-handover-and-frontier-baseline.md"
@@ -1254,7 +1254,7 @@ milestones:
     validationRepairAttempts: 0
     lastHeartbeatAt: null
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/coordinator/20260821-193000-p10_ui_csv_b06-done.md
+    handoff: docs/phase-records/phase-10-aggregate.md
     stopReason: null
     gates:
       unit: PENDING
