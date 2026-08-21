@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-21T20:44:34+03:00"
+updatedAt: "2026-08-21T20:45:47+03:00"
 
 coordinator:
   owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration on main; handover recorded in docs/phase-records/handoffs/coordinator/20260815-003900-coordinator-handover-and-frontier-baseline.md"
@@ -1247,7 +1247,7 @@ milestones:
     ownerSession: null
     branch: main
     worktree: null
-    baseCommit: ef05412afba75d89e30d07aa531d31838fd9d45e
+    baseCommit: 764f219ff46fd9fa89b1a3347f5e2175fb75bc99
     ownedPaths: []
     forbiddenPaths: []
     sharedLeases: []
@@ -1263,7 +1263,7 @@ milestones:
       accessibility: PASS
       visual: PASS
       independentReview: PASS
-    integratedCommit: ef05412afba75d89e30d07aa531d31838fd9d45e
+    integratedCommit: 764f219ff46fd9fa89b1a3347f5e2175fb75bc99
 
   phase11-shell:
     status: DONE

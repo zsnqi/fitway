@@ -6,7 +6,8 @@
 - Start point: `32f22f69748fc005ccfea4c698bebf2d53032fb7` on `main`, clean
 - Aggregate evidence baseline: `b0cea419037b355fa39ada9eb204f73681be2619` on `main`, clean
 - Aggregate evidence commit: `ef05412afba75d89e30d07aa531d31838fd9d45e`
-- Closure commit: pending the atomic durable-state commit; reanchored immediately afterward
+- Closure commit: `764f219ff46fd9fa89b1a3347f5e2175fb75bc99`; this following coordinator
+  state commit reanchors the ledger to it
 - Closed: 2026-08-21T20:44:34+03:00
 - Push/deploy/external provisioning: none
 
@@ -157,9 +158,8 @@ committed diff; no reviewer claim substituted for executed evidence.
 ## Exact current state
 
 - `phase-10`: `DONE`, all six recorded gates `PASS`, on `main`.
-- Durable closure pointer: aggregate evidence commit
-  `ef05412afba75d89e30d07aa531d31838fd9d45e` until the closure commit is created and immediately
-  reanchored.
+- Durable closure pointer: `764f219ff46fd9fa89b1a3347f5e2175fb75bc99`; the coordinator state
+  reanchor is the only change after that closure commit.
 - `phase10-ui-csv-b05` remains `FAILED_VALIDATION`; `phase10-ui-csv-b06` remains `DONE`.
 - No push, deployment, external provisioning, or S4 work occurred.
 
