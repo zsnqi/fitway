@@ -85,16 +85,23 @@ const OLDEST = "2026-08-08T04:30:00.000Z";
 type AuditEntryPayload = {
 	id: number;
 	action: string;
+	eventClass: "command" | "access" | "settings";
 	actor: {
 		principalId: string | null;
 		kind: string;
 		role: string | null;
 		displayName: string | null;
 	};
+	target: { principalId: string; displayName: string } | null;
 	priorValue: number | null;
-	effectiveValue: number;
+	effectiveValue: number | null;
 	requestedDelta: number | null;
 	requestedValue: number | null;
+	priorActive: boolean | null;
+	newActive: boolean | null;
+	priorCredentialVersion: number | null;
+	newCredentialVersion: number | null;
+	settingsVersion: number | null;
 	reason: string | null;
 	createdAtUtc: string;
 };
@@ -607,7 +614,7 @@ describe.sequential("Phase 11 owner audit history transport", () => {
 		expect(await auditSnapshot()).toBe(before);
 	});
 
-	it("emits an exact non-sensitive shape with no credential or session data", async () => {
+	it("emits an exact non-sensitive shape with no credential secret or session data", async () => {
 		const response = await rpcRaw({ limit: 100 }, ownerCookie);
 		const text = await response.text();
 		const payload = (JSON.parse(text) as { json: AuditListPayload }).json;
@@ -619,11 +626,18 @@ describe.sequential("Phase 11 owner audit history transport", () => {
 					"actor",
 					"createdAtUtc",
 					"effectiveValue",
+					"eventClass",
 					"id",
+					"newActive",
+					"newCredentialVersion",
+					"priorActive",
+					"priorCredentialVersion",
 					"priorValue",
 					"reason",
 					"requestedDelta",
 					"requestedValue",
+					"settingsVersion",
+					"target",
 				].sort(),
 			);
 			expect(Object.keys(entry.actor).sort()).toEqual(
@@ -636,7 +650,9 @@ describe.sequential("Phase 11 owner audit history transport", () => {
 		expect(text).not.toContain(ownerEmail);
 		expect(text).not.toMatch(/@/);
 		expect(text).not.toMatch(/pinHash|pin_hash|passwordHash|password_salt/i);
-		expect(text).not.toMatch(/sessionId|session_id|token|credential/i);
+		expect(text).not.toMatch(
+			/sessionId|session_id|token|pin|password|hash|salt/i,
+		);
 		expect(text).not.toMatch(/commandId|command_id|issuerClass/i);
 
 		const [credential] = await database

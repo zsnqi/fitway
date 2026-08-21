@@ -49,6 +49,57 @@ function CountValue({ value }: { value: number | null }) {
 	return <bdi>{formatNumber(value, locale)}</bdi>;
 }
 
+function GovernanceValue({ entry }: { entry: AuditEntryView }) {
+	const { locale } = useI18n();
+	const messages = useOwnerAuditMessages();
+	if (entry.priorActive !== null && entry.newActive !== null) {
+		return (
+			<span className="owner-audit__change">
+				{entry.priorActive ? messages.active : messages.inactive}
+				<span aria-hidden="true" className="owner-audit__arrow">
+					{locale === "ar" ? "←" : "→"}
+				</span>
+				{entry.newActive ? messages.active : messages.inactive}
+			</span>
+		);
+	}
+	if (
+		entry.priorCredentialVersion !== null &&
+		entry.newCredentialVersion !== null
+	) {
+		return (
+			<span className="owner-audit__change">
+				<bdi>{`${messages.credentialVersion} ${formatNumber(entry.priorCredentialVersion, locale)}`}</bdi>
+				<span aria-hidden="true" className="owner-audit__arrow">
+					{locale === "ar" ? "←" : "→"}
+				</span>
+				<bdi>{`${messages.credentialVersion} ${formatNumber(entry.newCredentialVersion, locale)}`}</bdi>
+			</span>
+		);
+	}
+	if (entry.settingsVersion !== null) {
+		return (
+			<bdi>{`${messages.settingsVersion} ${formatNumber(entry.settingsVersion, locale)}`}</bdi>
+		);
+	}
+	return <span className="owner-audit__absent">{messages.notRecorded}</span>;
+}
+
+function ChangeValue({ entry }: { entry: AuditEntryView }) {
+	const { locale } = useI18n();
+	if (entry.eventClass !== "command") return <GovernanceValue entry={entry} />;
+	return (
+		<span className="owner-audit__change">
+			<CountValue value={entry.priorValue} />
+			{/* The change arrow points along the reading direction. */}
+			<span aria-hidden="true" className="owner-audit__arrow">
+				{locale === "ar" ? "←" : "→"}
+			</span>
+			<CountValue value={entry.effectiveValue} />
+		</span>
+	);
+}
+
 function RequestedValue({ entry }: { entry: AuditEntryView }) {
 	const { locale } = useI18n();
 	const messages = useOwnerAuditMessages();
@@ -96,6 +147,7 @@ export function OwnerAuditTable({
 						<tr>
 							<th scope="col">{messages.columnTime}</th>
 							<th scope="col">{messages.columnActor}</th>
+							<th scope="col">{messages.columnTarget}</th>
 							<th scope="col">{messages.columnAction}</th>
 							<th scope="col">{messages.columnChange}</th>
 							<th scope="col">{messages.columnRequested}</th>
@@ -124,16 +176,18 @@ export function OwnerAuditTable({
 								<td>
 									<bdi dir="auto">{actorLabel(entry.actor, messages)}</bdi>
 								</td>
+								<td>
+									{entry.target === null ? (
+										<span className="owner-audit__absent">
+											{messages.noTarget}
+										</span>
+									) : (
+										<bdi dir="auto">{entry.target.displayName}</bdi>
+									)}
+								</td>
 								<td>{messages[entry.action]}</td>
 								<td>
-									<span className="owner-audit__change">
-										<CountValue value={entry.priorValue} />
-										{/* The change arrow points along the reading direction. */}
-										<span aria-hidden="true" className="owner-audit__arrow">
-											{locale === "ar" ? "←" : "→"}
-										</span>
-										<CountValue value={entry.effectiveValue} />
-									</span>
+									<ChangeValue entry={entry} />
 								</td>
 								<td>
 									<RequestedValue entry={entry} />

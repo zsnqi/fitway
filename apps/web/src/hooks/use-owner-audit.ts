@@ -26,6 +26,7 @@ export type OwnerAuditFilterSelection = {
 	actor: "any" | AuditActorKind;
 	priorMode: "any" | "value" | "missing";
 	priorValue: string;
+	effectiveMode: "any" | "value" | "missing";
 	effectiveValue: string;
 	occurredFromDay: string;
 	occurredToDay: string;
@@ -38,6 +39,7 @@ export const emptyOwnerAuditSelection: OwnerAuditFilterSelection = {
 	actor: "any",
 	priorMode: "any",
 	priorValue: "",
+	effectiveMode: "any",
 	effectiveValue: "",
 	occurredFromDay: "",
 	occurredToDay: "",
@@ -125,8 +127,12 @@ export function toAuditFilters(
 		const prior = parseCount(selection.priorValue);
 		if (prior !== undefined) filters.priorValue = prior;
 	}
-	const effective = parseCount(selection.effectiveValue);
-	if (effective !== undefined) filters.effectiveValue = effective;
+	if (selection.effectiveMode === "missing") {
+		filters.effectiveValue = null;
+	} else if (selection.effectiveMode === "value") {
+		const effective = parseCount(selection.effectiveValue);
+		if (effective !== undefined) filters.effectiveValue = effective;
+	}
 	if (GYM_DAY.test(selection.occurredFromDay)) {
 		filters.occurredFrom = gymDayStartUtc(
 			selection.occurredFromDay,

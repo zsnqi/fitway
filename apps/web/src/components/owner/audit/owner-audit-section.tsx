@@ -151,19 +151,38 @@ export function OwnerAuditSection() {
 					</div>
 				</div>
 
-				<div className="owner-audit-field">
-					<label htmlFor={fieldId("effective")}>
+				<div className="owner-audit-field owner-audit-field--pair">
+					<label htmlFor={fieldId("effective-mode")}>
 						{messages.effectiveLabel}
 					</label>
-					<input
-						id={fieldId("effective")}
-						type="number"
-						inputMode="numeric"
-						min={0}
-						step={1}
-						value={draft.effectiveValue}
-						onChange={(event) => update("effectiveValue", event.target.value)}
-					/>
+					<div className="owner-audit-field__controls">
+						<select
+							id={fieldId("effective-mode")}
+							value={draft.effectiveMode}
+							onChange={(event) =>
+								update(
+									"effectiveMode",
+									event.target
+										.value as OwnerAuditFilterSelection["effectiveMode"],
+								)
+							}
+						>
+							<option value="any">{messages.effectiveAny}</option>
+							<option value="value">{messages.effectiveValue}</option>
+							<option value="missing">{messages.effectiveMissing}</option>
+						</select>
+						<input
+							id={fieldId("effective")}
+							type="number"
+							inputMode="numeric"
+							min={0}
+							step={1}
+							aria-label={messages.effectiveValueInput}
+							disabled={draft.effectiveMode !== "value"}
+							value={draft.effectiveValue}
+							onChange={(event) => update("effectiveValue", event.target.value)}
+						/>
+					</div>
 				</div>
 
 				<div className="owner-audit-field">

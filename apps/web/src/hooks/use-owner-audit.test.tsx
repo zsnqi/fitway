@@ -29,6 +29,7 @@ const ownerPrincipal = "00000000-0000-4000-8000-0000000000a1";
 function entry(id: number, createdAtUtc: string) {
 	return {
 		id,
+		eventClass: "command" as const,
 		action: "correction_absolute" as const,
 		actor: {
 			principalId: ownerPrincipal,
@@ -36,10 +37,16 @@ function entry(id: number, createdAtUtc: string) {
 			role: "owner" as const,
 			displayName: "Real owner",
 		},
+		target: null,
 		priorValue: 41,
 		effectiveValue: 12,
 		requestedDelta: null,
 		requestedValue: 12,
+		priorActive: null,
+		newActive: null,
+		priorCredentialVersion: null,
+		newCredentialVersion: null,
+		settingsVersion: null,
 		reason: "Recount",
 		createdAtUtc,
 	};
@@ -104,7 +111,7 @@ describe("selection to transport filters", () => {
 		expect(zero?.priorValue).not.toBeNull();
 	});
 
-	it("drops an unusable numeric entry instead of coercing it", () => {
+	it("uses effective mode for missing governance values and ignores unusable numeric entries", () => {
 		expect(
 			toAuditFilters(
 				selection({ priorMode: "value", priorValue: "-3" }),
@@ -112,10 +119,23 @@ describe("selection to transport filters", () => {
 			),
 		).toBeUndefined();
 		expect(
-			toAuditFilters(selection({ effectiveValue: "abc" }), "UTC"),
+			toAuditFilters(
+				selection({ effectiveMode: "value", effectiveValue: "abc" }),
+				"UTC",
+			),
 		).toBeUndefined();
-		expect(toAuditFilters(selection({ effectiveValue: "7" }), "UTC")).toEqual({
+		expect(
+			toAuditFilters(
+				selection({ effectiveMode: "value", effectiveValue: "7" }),
+				"UTC",
+			),
+		).toEqual({
 			effectiveValue: 7,
+		});
+		expect(
+			toAuditFilters(selection({ effectiveMode: "missing" }), "UTC"),
+		).toEqual({
+			effectiveValue: null,
 		});
 	});
 

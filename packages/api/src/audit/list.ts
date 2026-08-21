@@ -7,16 +7,11 @@ import { z } from "zod";
  * in `./types` carry a `Date` and a `commandId`; they belong to the frozen Phase 5
  * append path and are deliberately not reused here.
  *
- * Openness to a later additive action set, without inventing one now:
- * - `AUDIT_ACTIONS` is the single source of the action enum, so a later migration
- *   that adds a persisted action extends one tuple rather than every schema.
- * - The action filter is an *array*, so adding an action is additive on the wire:
- *   existing clients keep sending the same shape and keep the same meaning.
- * - The entry carries no `commandId` and no command issuer class. The current
- *   `audit_log` is command-coupled, but the read contract does not depend on that
- *   coupling, so a later generalized row is representable without a breaking change.
+ * `AUDIT_ACTIONS` is the single source of the rendered persisted enum. Its array
+ * filter is additive on the wire, and this entry deliberately carries neither a
+ * command identity nor an issuer class.
  */
-export const AUDIT_ACTIONS = [
+export const AUDIT_COMMAND_ACTIONS = [
 	"correction_delta",
 	"correction_absolute",
 	"reset",
@@ -27,14 +22,10 @@ export const AUDIT_ACTOR_ROLES = ["staff", "owner"] as const;
 /**
  * The generalized action set, as persisted by migration 0007.
  *
- * `AUDIT_ACTIONS` above is the *rendered* set and still holds exactly the three
- * command actions. The tuples here are the persisted truth, and the two are
- * deliberately not yet the same value: widening the rendered set requires eight
- * English and eight Arabic action labels in `apps/web`, which is a separate slice.
- * See the note on `toAuditEntry`.
+ * These tuples are the persisted truth. `AUDIT_ACTIONS` below is their ordered
+ * union, shared by the strict output and filter contracts.
  */
 export const AUDIT_EVENT_CLASSES = ["command", "access", "settings"] as const;
-export const AUDIT_COMMAND_ACTIONS = AUDIT_ACTIONS;
 /** The seven human-approved access actions. Locked; not extended by any slice. */
 export const AUDIT_ACCESS_ACTIONS = [
 	"staff_pin_provisioned",
@@ -51,6 +42,8 @@ export const AUDIT_ALL_ACTIONS = [
 	...AUDIT_ACCESS_ACTIONS,
 	...AUDIT_SETTINGS_ACTIONS,
 ] as const;
+/** Every action the generalized audit list renders and filters. */
+export const AUDIT_ACTIONS = AUDIT_ALL_ACTIONS;
 
 /** A reason is required for these two actions only. */
 export const AUDIT_REASON_REQUIRED_ACTIONS = [
@@ -140,21 +133,119 @@ export const auditActorSchema = z
 	})
 	.strict();
 
+/** The named principal an access event is about; command and settings rows have none. */
+export const auditTargetSchema = z
+	.object({
+		principalId: z.uuid(),
+		displayName: z.string().min(1),
+	})
+	.strict()
+	.nullable();
+
 export const auditEntrySchema = z
 	.object({
 		id: safeIdSchema,
 		action: auditActionSchema,
+		eventClass: auditEventClassSchema,
 		actor: auditActorSchema,
+		target: auditTargetSchema,
 		/** Nullable `prior_value`. A null prior means "not recorded"; it never means zero. */
 		priorValue: nonNegativeCountSchema.nullable(),
-		/** `effective_value`: the floored result the system actually adopted. */
-		effectiveValue: nonNegativeCountSchema,
+		/** `effective_value`: the floored count, or absent for governance events. */
+		effectiveValue: nonNegativeCountSchema.nullable(),
 		requestedDelta: deltaSchema.nullable(),
 		requestedValue: nonNegativeCountSchema.nullable(),
+		/** Non-secret governance transition state; null means it was not recorded. */
+		priorActive: z.boolean().nullable(),
+		newActive: z.boolean().nullable(),
+		priorCredentialVersion: safeIdSchema.nullable(),
+		newCredentialVersion: safeIdSchema.nullable(),
+		/** The append-only settings version named by a settings event. */
+		settingsVersion: safeIdSchema.nullable(),
 		reason: auditReasonSchema.nullable(),
 		createdAtUtc: isoUtcInstantSchema,
 	})
-	.strict();
+	.strict()
+	.superRefine((entry, context) => {
+		const reject = (message: string) =>
+			context.addIssue({ code: "custom", message });
+		if (auditActionEventClass(entry.action) !== entry.eventClass) {
+			reject("Audit action must match its event class");
+		}
+		if (entry.eventClass === "command") {
+			if (entry.target !== null || entry.effectiveValue === null) {
+				reject("A command must have a count and no governance target");
+			}
+			if (
+				entry.priorActive !== null ||
+				entry.newActive !== null ||
+				entry.priorCredentialVersion !== null ||
+				entry.newCredentialVersion !== null ||
+				entry.settingsVersion !== null
+			) {
+				reject("A command cannot carry governance state");
+			}
+			return;
+		}
+		if (
+			entry.priorValue !== null ||
+			entry.effectiveValue !== null ||
+			entry.requestedDelta !== null ||
+			entry.requestedValue !== null
+		) {
+			reject("A governance event cannot carry count state");
+		}
+		if (entry.eventClass === "access") {
+			if (entry.target === null || entry.settingsVersion !== null) {
+				reject("An access event must name a target and no settings version");
+			}
+			const activeTransition =
+				entry.action === "owner_deactivated" ||
+				entry.action === "owner_reactivated";
+			const credentialTransition =
+				entry.action === "staff_pin_rotated" ||
+				entry.action === "credential_reset";
+			if (activeTransition) {
+				const expectedPrior = entry.action === "owner_deactivated";
+				if (
+					entry.priorActive !== expectedPrior ||
+					entry.newActive !== !expectedPrior ||
+					entry.priorCredentialVersion !== null ||
+					entry.newCredentialVersion !== null
+				) {
+					reject(
+						"An active transition must carry its matching non-secret state",
+					);
+				}
+			} else if (credentialTransition) {
+				if (
+					entry.priorActive !== null ||
+					entry.newActive !== null ||
+					entry.priorCredentialVersion === null ||
+					entry.newCredentialVersion === null ||
+					entry.newCredentialVersion <= entry.priorCredentialVersion
+				) {
+					reject("A credential transition must advance its non-secret version");
+				}
+			} else if (
+				entry.priorActive !== null ||
+				entry.newActive !== null ||
+				entry.priorCredentialVersion !== null ||
+				entry.newCredentialVersion !== null
+			) {
+				reject("An access action cannot carry another action's state");
+			}
+		} else if (
+			entry.target !== null ||
+			entry.settingsVersion === null ||
+			entry.priorActive !== null ||
+			entry.newActive !== null ||
+			entry.priorCredentialVersion !== null ||
+			entry.newCredentialVersion !== null
+		) {
+			reject("A settings event must name only its settings version");
+		}
+	});
 
 /**
  * The six strict filters: actor, action, prior value, effective value, occurred
@@ -324,39 +415,115 @@ function assertCommandGovernanceColumnsEmpty(row: PersistedAuditRow): void {
 	}
 }
 
+function assertGovernanceCountsEmpty(row: PersistedAuditRow): void {
+	if (
+		row.priorValue !== null ||
+		row.requestedDelta !== null ||
+		row.requestedValue !== null ||
+		row.effectiveValue !== null
+	) {
+		throw new Error(`Audit row ${row.id} mixes governance and count state`);
+	}
+}
+
+function assertAccessStateCoherent(row: PersistedAuditRow): void {
+	if (
+		!row.targetPrincipalId ||
+		!row.targetDisplayName ||
+		row.settingsVersion !== null
+	) {
+		throw new Error(`Audit row ${row.id} has an incoherent access target`);
+	}
+	const activeTransition =
+		row.action === "owner_deactivated" || row.action === "owner_reactivated";
+	const credentialTransition =
+		row.action === "staff_pin_rotated" || row.action === "credential_reset";
+	if (activeTransition) {
+		const expectedPrior = row.action === "owner_deactivated";
+		if (
+			row.priorActive !== expectedPrior ||
+			row.newActive !== !expectedPrior ||
+			row.priorCredentialVersion !== null ||
+			row.newCredentialVersion !== null
+		) {
+			throw new Error(
+				`Audit row ${row.id} has an incoherent active transition`,
+			);
+		}
+		return;
+	}
+	if (credentialTransition) {
+		if (
+			row.priorActive !== null ||
+			row.newActive !== null ||
+			row.priorCredentialVersion === null ||
+			row.newCredentialVersion === null ||
+			row.newCredentialVersion <= row.priorCredentialVersion
+		) {
+			throw new Error(
+				`Audit row ${row.id} has an incoherent credential transition`,
+			);
+		}
+		return;
+	}
+	if (
+		row.priorActive !== null ||
+		row.newActive !== null ||
+		row.priorCredentialVersion !== null ||
+		row.newCredentialVersion !== null
+	) {
+		throw new Error(`Audit row ${row.id} carries unclaimed governance state`);
+	}
+}
+
+function assertSettingsStateCoherent(row: PersistedAuditRow): void {
+	if (
+		row.targetPrincipalId !== null ||
+		row.targetDisplayName !== null ||
+		row.settingsVersion === null ||
+		row.priorActive !== null ||
+		row.newActive !== null ||
+		row.priorCredentialVersion !== null ||
+		row.newCredentialVersion !== null
+	) {
+		throw new Error(`Audit row ${row.id} has incoherent settings state`);
+	}
+}
+
 /**
  * Maps one persisted row to the transport DTO. Every coherence rule the database
  * already enforces is re-asserted here, because a read surface that silently
  * reshapes an audit row is worse than one that refuses to serve it.
  *
- * A governance row is refused rather than reshaped. The rendered contract —
- * `AUDIT_ACTIONS`, `auditEntrySchema.action`, and the entry's absent `target` —
- * still describes command rows only, because widening it requires the eight
- * English and eight Arabic action labels and the target column in `apps/web`.
- * Refusing loudly is the fail-closed behaviour: no governance row can exist until
- * the access and settings write paths ship, and those land after the rendering
- * does, so this branch is a tripwire rather than a reachable state.
+ * Command, access, and settings rows share one strict transport shape. Null is
+ * always carried honestly: governance has no count, only access has a target,
+ * and only actions with a persisted transition expose from/to state.
  */
 export function toAuditEntry(row: PersistedAuditRow): AuditEntryView {
 	if (!Number.isFinite(row.createdAt.getTime())) {
 		throw new Error(`Audit row ${row.id} has an invalid server instant`);
 	}
-	if (row.eventClass !== "command" || !isCommandAction(row.action)) {
-		throw new Error(
-			`Audit row ${row.id} is a ${row.eventClass}/${row.action} event, which the rendered audit contract does not yet carry`,
-		);
-	}
-	if (row.effectiveValue === null) {
-		throw new Error(
-			`Audit row ${row.id} is a command without an effective count`,
-		);
-	}
 	assertActorCoherent(row);
-	assertCommandGovernanceColumnsEmpty(row);
-	assertValuesCoherent(row, row.action, row.effectiveValue);
+	if (auditActionEventClass(row.action) !== row.eventClass) {
+		throw new Error(`Audit row ${row.id} has an incoherent action class`);
+	}
+	if (row.eventClass === "command") {
+		if (!isCommandAction(row.action) || row.effectiveValue === null) {
+			throw new Error(
+				`Audit row ${row.id} is a command without an effective count`,
+			);
+		}
+		assertCommandGovernanceColumnsEmpty(row);
+		assertValuesCoherent(row, row.action, row.effectiveValue);
+	} else {
+		assertGovernanceCountsEmpty(row);
+		if (row.eventClass === "access") assertAccessStateCoherent(row);
+		else assertSettingsStateCoherent(row);
+	}
 	return auditEntrySchema.parse({
 		id: row.id,
 		action: row.action,
+		eventClass: row.eventClass,
 		actor: {
 			principalId: row.actorPrincipalId,
 			kind: row.actorPrincipalKind,
@@ -364,10 +531,22 @@ export function toAuditEntry(row: PersistedAuditRow): AuditEntryView {
 			displayName:
 				row.actorPrincipalKind === "system" ? null : row.actorDisplayName,
 		},
+		target:
+			row.targetPrincipalId === null
+				? null
+				: {
+						principalId: row.targetPrincipalId,
+						displayName: row.targetDisplayName,
+					},
 		priorValue: row.priorValue,
 		effectiveValue: row.effectiveValue,
 		requestedDelta: row.requestedDelta,
 		requestedValue: row.requestedValue,
+		priorActive: row.priorActive,
+		newActive: row.newActive,
+		priorCredentialVersion: row.priorCredentialVersion,
+		newCredentialVersion: row.newCredentialVersion,
+		settingsVersion: row.settingsVersion,
 		reason: row.reason,
 		createdAtUtc: row.createdAt.toISOString(),
 	});

@@ -22,6 +22,7 @@ const staffPrincipal = "00000000-0000-4000-8000-0000000000b2";
 const entries: AuditEntryView[] = [
 	{
 		id: 9,
+		eventClass: "command",
 		action: "correction_absolute",
 		actor: {
 			principalId: ownerPrincipal,
@@ -29,15 +30,22 @@ const entries: AuditEntryView[] = [
 			role: "owner",
 			displayName: "Real owner",
 		},
+		target: null,
 		priorValue: 41,
 		effectiveValue: 12,
 		requestedDelta: null,
 		requestedValue: 12,
+		priorActive: null,
+		newActive: null,
+		priorCredentialVersion: null,
+		newCredentialVersion: null,
+		settingsVersion: null,
 		reason: "Recount after the door jam",
 		createdAtUtc: "2026-08-10T21:30:00.000Z",
 	},
 	{
 		id: 8,
+		eventClass: "command",
 		action: "correction_delta",
 		actor: {
 			principalId: staffPrincipal,
@@ -45,15 +53,22 @@ const entries: AuditEntryView[] = [
 			role: "staff",
 			displayName: "Shared front desk",
 		},
+		target: null,
 		priorValue: 2,
 		effectiveValue: 0,
 		requestedDelta: -9,
 		requestedValue: null,
+		priorActive: null,
+		newActive: null,
+		priorCredentialVersion: null,
+		newCredentialVersion: null,
+		settingsVersion: null,
 		reason: null,
 		createdAtUtc: "2026-08-10T05:15:00.000Z",
 	},
 	{
 		id: 7,
+		eventClass: "command",
 		action: "reset",
 		actor: {
 			principalId: null,
@@ -61,10 +76,16 @@ const entries: AuditEntryView[] = [
 			role: null,
 			displayName: null,
 		},
+		target: null,
 		priorValue: null,
 		effectiveValue: 0,
 		requestedDelta: null,
 		requestedValue: 0,
+		priorActive: null,
+		newActive: null,
+		priorCredentialVersion: null,
+		newCredentialVersion: null,
+		settingsVersion: null,
 		reason: "Scheduled post-close reset",
 		createdAtUtc: "2026-08-09T21:05:00.000Z",
 	},
@@ -169,10 +190,10 @@ describe("owner audit table", () => {
 			"en",
 		);
 		const system = rows()[2];
-		expect(system?.[3]).toContain(ownerAuditMessages.en.notRecorded);
-		expect(system?.[3]).not.toMatch(/\b0\s*→\s*0\b/u);
+		expect(system?.[4]).toContain(ownerAuditMessages.en.notRecorded);
+		expect(system?.[4]).not.toMatch(/\b0\s*→\s*0\b/u);
 		const staff = rows()[1];
-		expect(staff?.[5]).toBe(ownerAuditMessages.en.noReason);
+		expect(staff?.[6]).toBe(ownerAuditMessages.en.noReason);
 	});
 
 	it("shows the floored delta result alongside the amount actually requested", async () => {
@@ -181,10 +202,10 @@ describe("owner audit table", () => {
 			"en",
 		);
 		const staff = rows()[1];
-		expect(staff?.[3]).toContain("2");
-		expect(staff?.[3]).toContain("0");
-		expect(staff?.[4]).toContain("-9");
-		expect(staff?.[4]).toContain(ownerAuditMessages.en.flooredNote);
+		expect(staff?.[4]).toContain("2");
+		expect(staff?.[4]).toContain("0");
+		expect(staff?.[5]).toContain("-9");
+		expect(staff?.[5]).toContain(ownerAuditMessages.en.flooredNote);
 	});
 
 	it("labels persisted principals and the automatic issuer without inventing identity", async () => {
@@ -222,6 +243,55 @@ describe("owner audit table", () => {
 		}
 	});
 
+	it("renders target and non-secret governance state while command targets stay empty", async () => {
+		const firstEntry = entries[0];
+		if (!firstEntry) throw new Error("Expected a command audit fixture");
+		const governance: AuditEntryView = {
+			...firstEntry,
+			id: 6,
+			eventClass: "access",
+			action: "owner_deactivated",
+			target: { principalId: staffPrincipal, displayName: "Nadia" },
+			priorValue: null,
+			effectiveValue: null,
+			requestedValue: null,
+			priorActive: true,
+			newActive: false,
+		};
+		await render(
+			<OwnerAuditTable
+				entries={[firstEntry, governance]}
+				timeZone="Asia/Riyadh"
+			/>,
+			"en",
+		);
+		const rendered = rows();
+		expect(rendered[0]?.[2]).toBe(ownerAuditMessages.en.noTarget);
+		expect(rendered[1]?.[2]).toBe("Nadia");
+		expect(rendered[1]?.[4]).toContain(ownerAuditMessages.en.active);
+		expect(rendered[1]?.[4]).toContain(ownerAuditMessages.en.inactive);
+	});
+
+	it("has explicit labels for every action in both locales", () => {
+		const actions = [
+			"correction_delta",
+			"correction_absolute",
+			"reset",
+			"staff_pin_provisioned",
+			"staff_pin_rotated",
+			"staff_pin_deactivated",
+			"owner_provisioned",
+			"owner_deactivated",
+			"owner_reactivated",
+			"credential_reset",
+			"settings_updated",
+		] as const;
+		for (const locale of ["en", "ar"] as const) {
+			for (const action of actions)
+				expect(ownerAuditMessages[locale][action]).toBeTruthy();
+		}
+	});
+
 	it("presents the dense table as a labeled keyboard-reachable scroll region", async () => {
 		await render(
 			<OwnerAuditTable entries={entries} timeZone="Asia/Riyadh" />,
@@ -232,6 +302,6 @@ describe("owner audit table", () => {
 		expect(region?.getAttribute("aria-label")).toBe(
 			ownerAuditMessages.en.tableRegion,
 		);
-		expect(container.querySelectorAll("thead th[scope='col']")).toHaveLength(6);
+		expect(container.querySelectorAll("thead th[scope='col']")).toHaveLength(7);
 	});
 });

@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 
 import {
+	AUDIT_ALL_ACTIONS,
 	AUDIT_PAGE_LIMIT_DEFAULT,
 	AUDIT_PAGE_LIMIT_MAX,
 	type AuditEntryView,
 	auditCursorSchema,
+	auditEntrySchema,
 	auditListFilterSchema,
 	auditListInputSchema,
 	auditListOutputSchema,
@@ -149,14 +151,14 @@ describe("the six audit filters", () => {
 		).toBe(false);
 	});
 
-	it("keeps the action filter additive-shaped for a later action set", () => {
+	it("accepts every persisted action in the additive-shaped filter", () => {
 		const single = auditListFilterSchema.parse({ actions: ["reset"] });
 		expect(single.actions).toEqual(["reset"]);
 		expect(
 			auditListFilterSchema.parse({
-				actions: ["correction_delta", "correction_absolute", "reset"],
+				actions: [...AUDIT_ALL_ACTIONS],
 			}).actions,
-		).toHaveLength(3);
+		).toHaveLength(11);
 	});
 });
 
@@ -222,6 +224,131 @@ describe("persisted row to transport entry", () => {
 
 	it("keeps an absent reason absent", () => {
 		expect(toAuditEntry(persisted({ reason: null })).reason).toBeNull();
+	});
+
+	it("maps all eleven actions with honest command, access, and settings state", () => {
+		const commandActions = [
+			"correction_delta",
+			"correction_absolute",
+			"reset",
+		] as const;
+		for (const action of commandActions) {
+			const row = persisted(
+				action === "correction_delta"
+					? {
+							action,
+							priorValue: 2,
+							requestedDelta: -2,
+							requestedValue: null,
+							effectiveValue: 0,
+						}
+					: action === "reset"
+						? { action, requestedValue: 0, effectiveValue: 0 }
+						: { action },
+			);
+			const entry = toAuditEntry(row);
+			expect(entry.eventClass).toBe("command");
+			expect(entry.target).toBeNull();
+			expect(entry.effectiveValue).not.toBeNull();
+		}
+		for (const action of [
+			"staff_pin_provisioned",
+			"staff_pin_deactivated",
+			"owner_provisioned",
+		] as const) {
+			const entry = toAuditEntry(
+				persisted({
+					eventClass: "access",
+					action,
+					targetPrincipalId: staffPrincipal,
+					targetDisplayName: "Front desk",
+					priorValue: null,
+					requestedValue: null,
+					effectiveValue: null,
+				}),
+			);
+			expect(entry.target?.displayName).toBe("Front desk");
+			expect(entry.effectiveValue).toBeNull();
+		}
+		for (const action of ["staff_pin_rotated", "credential_reset"] as const) {
+			expect(
+				toAuditEntry(
+					persisted({
+						eventClass: "access",
+						action,
+						targetPrincipalId: staffPrincipal,
+						targetDisplayName: "Front desk",
+						priorValue: null,
+						requestedValue: null,
+						effectiveValue: null,
+						priorCredentialVersion: 2,
+						newCredentialVersion: 3,
+					}),
+				).newCredentialVersion,
+			).toBe(3);
+		}
+		for (const [action, priorActive, newActive] of [
+			["owner_deactivated", true, false],
+			["owner_reactivated", false, true],
+		] as const) {
+			expect(
+				toAuditEntry(
+					persisted({
+						eventClass: "access",
+						action,
+						targetPrincipalId: staffPrincipal,
+						targetDisplayName: "Front desk",
+						priorValue: null,
+						requestedValue: null,
+						effectiveValue: null,
+						priorActive,
+						newActive,
+					}),
+				).newActive,
+			).toBe(newActive);
+		}
+		const settings = toAuditEntry(
+			persisted({
+				eventClass: "settings",
+				action: "settings_updated",
+				priorValue: null,
+				requestedValue: null,
+				effectiveValue: null,
+				settingsVersion: 12,
+			}),
+		);
+		expect(settings.settingsVersion).toBe(12);
+		expect(settings.target).toBeNull();
+	});
+
+	it("rejects incoherent generalized transport rows at the DTO boundary", () => {
+		const command = toAuditEntry(persisted());
+		expect(auditEntrySchema.safeParse(command).success).toBe(true);
+		expect(
+			auditEntrySchema.safeParse({
+				...command,
+				eventClass: "access",
+				target: { principalId: staffPrincipal, displayName: "Front desk" },
+				effectiveValue: null,
+			}).success,
+		).toBe(false);
+		const deactivation = toAuditEntry(
+			persisted({
+				eventClass: "access",
+				action: "owner_deactivated",
+				targetPrincipalId: staffPrincipal,
+				targetDisplayName: "Front desk",
+				priorValue: null,
+				requestedValue: null,
+				effectiveValue: null,
+				priorActive: true,
+				newActive: false,
+			}),
+		);
+		expect(auditEntrySchema.safeParse(deactivation).success).toBe(true);
+		expect(
+			auditEntrySchema.safeParse({ ...deactivation, newActive: true }).success,
+		).toBe(false);
 	});
 
 	it("preserves the floored delta result and absolute parity", () => {

@@ -59,17 +59,35 @@ const daily = {
 
 type AuditEntry = {
 	id: number;
-	action: "correction_delta" | "correction_absolute" | "reset";
+	eventClass: "command" | "access" | "settings";
+	action:
+		| "correction_delta"
+		| "correction_absolute"
+		| "reset"
+		| "staff_pin_provisioned"
+		| "staff_pin_rotated"
+		| "staff_pin_deactivated"
+		| "owner_provisioned"
+		| "owner_deactivated"
+		| "owner_reactivated"
+		| "credential_reset"
+		| "settings_updated";
 	actor: {
 		principalId: string | null;
 		kind: "shared_staff" | "owner" | "system";
 		role: "staff" | "owner" | null;
 		displayName: string | null;
 	};
+	target: { principalId: string; displayName: string } | null;
 	priorValue: number | null;
-	effectiveValue: number;
+	effectiveValue: number | null;
 	requestedDelta: number | null;
 	requestedValue: number | null;
+	priorActive: boolean | null;
+	newActive: boolean | null;
+	priorCredentialVersion: number | null;
+	newCredentialVersion: number | null;
+	settingsVersion: number | null;
 	reason: string | null;
 	createdAtUtc: string;
 };
@@ -93,9 +111,20 @@ const systemActor = {
 	displayName: null,
 } as const;
 
+const commandAuditState = {
+	eventClass: "command" as const,
+	target: null,
+	priorActive: null,
+	newActive: null,
+	priorCredentialVersion: null,
+	newCredentialVersion: null,
+	settingsVersion: null,
+};
+
 /** Newest first, exactly as the transport emits it. */
 const auditEntries: AuditEntry[] = [
 	{
+		...commandAuditState,
 		id: 26,
 		action: "correction_absolute",
 		actor: ownerActor,
@@ -107,6 +136,7 @@ const auditEntries: AuditEntry[] = [
 		createdAtUtc: "2026-08-10T21:30:00.000Z",
 	},
 	{
+		...commandAuditState,
 		id: 25,
 		action: "correction_delta",
 		actor: staffActor,
@@ -118,6 +148,7 @@ const auditEntries: AuditEntry[] = [
 		createdAtUtc: "2026-08-10T05:15:00.000Z",
 	},
 	{
+		...commandAuditState,
 		id: 24,
 		action: "reset",
 		actor: systemActor,
@@ -129,6 +160,7 @@ const auditEntries: AuditEntry[] = [
 		createdAtUtc: "2026-08-09T21:05:00.000Z",
 	},
 	{
+		...commandAuditState,
 		id: 23,
 		action: "correction_delta",
 		actor: staffActor,
@@ -182,6 +214,8 @@ function applyFilters(
 		) {
 			return false;
 		}
+		if (filters.effectiveValue === null && entry.effectiveValue !== null)
+			return false;
 		if (filters.reason === null && entry.reason !== null) return false;
 		if (
 			typeof filters.reason === "string" &&
@@ -525,6 +559,79 @@ test("keyset paging appends older records without repeating one", async ({
 		elements.map((element) => element.textContent ?? ""),
 	);
 	expect(new Set(ids).size).toBe(ids.length);
+});
+
+test("governance rows render their resolved target and missing effective-count state in both locales", async ({
+	page,
+}) => {
+	const governanceEntries: AuditEntry[] = [
+		{
+			id: 22,
+			eventClass: "access",
+			action: "owner_deactivated",
+			actor: ownerActor,
+			target: {
+				principalId: "00000000-0000-4000-8000-0000000000b2",
+				displayName: "Shared front desk",
+			},
+			priorValue: null,
+			effectiveValue: null,
+			requestedDelta: null,
+			requestedValue: null,
+			priorActive: true,
+			newActive: false,
+			priorCredentialVersion: null,
+			newCredentialVersion: null,
+			settingsVersion: null,
+			reason: "Departure approved",
+			createdAtUtc: "2026-08-09T05:15:00.000Z",
+		},
+		{
+			id: 21,
+			eventClass: "settings",
+			action: "settings_updated",
+			actor: ownerActor,
+			target: null,
+			priorValue: null,
+			effectiveValue: null,
+			requestedDelta: null,
+			requestedValue: null,
+			priorActive: null,
+			newActive: null,
+			priorCredentialVersion: null,
+			newCredentialVersion: null,
+			settingsVersion: 12,
+			reason: null,
+			createdAtUtc: "2026-08-09T05:14:00.000Z",
+		},
+		...auditEntries,
+	];
+	await page.addInitScript(() =>
+		window.localStorage.setItem("fitway.locale", "en"),
+	);
+	await mockOwnerSurfaces(page, { entries: governanceEntries });
+	await page.setViewportSize({ width: 1200, height: 900 });
+	await page.goto("/admin");
+	const table = page.locator(auditTable);
+	await expect(table).toContainText("Shared front desk");
+	await expect(table).toContainText("Active");
+	await expect(table).toContainText("Inactive");
+	await expect(table).toContainText("Settings version 12");
+
+	const filters = page.getByRole("form", { name: "Filter audit history" });
+	await filters.getByLabel("To (effective count)").selectOption("missing");
+	await filters.getByRole("button", { name: "Apply filters" }).click();
+	await expect(page.locator(`${auditTable} tbody tr`)).toHaveCount(2);
+	expect(observedFilters.at(-1)).toEqual({ effectiveValue: null });
+
+	await setLocale(page, "ar");
+	await expect(table).toContainText("مكتب الاستقبال");
+	await expect(table).toContainText("تحديث الإعدادات");
+	expect(
+		await page
+			.locator(".owner-audit")
+			.evaluate((element) => getComputedStyle(element).direction),
+	).toBe("rtl");
 });
 
 test("layout holds at every required width in both locales", async ({
