@@ -1353,9 +1353,9 @@ milestones:
     integratedCommit: 748f759195ffd1450c83d53ae7220af4c1fc2572
 
   phase11-audit-generalization:
-    status: IN_PROGRESS
+    status: NEEDS_HUMAN
     dependencies: [phase11-audit]
-    ownerSession: "S4 Slice B candidate 30d6abc failed independent browser/visual verification; authority review pending before repair."
+    ownerSession: "S4 Slice B stopped NEEDS_HUMAN: required target/filter composition conflicts with frozen canonical audit baseline."
     branch: codex/phase11-audit-gen-slice-b
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
     baseCommit: da2abc7
@@ -1385,17 +1385,17 @@ milestones:
       - "the seven approved access action labels, the secret-free audit rule, and the owner lifecycle decisions: human-locked"
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-21T23:50:00+03:00"
+    lastHeartbeatAt: "2026-08-21T23:55:00+03:00"
     leaseExpiresAt: "2026-08-23T22:54:04+03:00"
-    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260821-235000-p11_audit_gen_v02-verification-fail.md
-    stopReason: null
+    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260821-235500-p11_audit_gen_c03-needs-human.md
+    stopReason: "S4 requires the visible seventh target column and effectiveMode control, while its accepted scope forbids canonical-baseline edits and WORKFLOW requires human approval. Fresh Playwright measured 8,342 changed pixels (1%) against the frozen Arabic desktop audit baseline, and SOL/xhigh authority review confirmed no compliant code/test repair can match the six-column baseline without hiding or weakening required behavior. No repair attempt consumed. Human must authorize a serialized replacement baseline or supersede one side of the conflict."
     gates:
       unit: PASS
       integration: PENDING
       browser: FAIL
       accessibility: PASS
       visual: FAIL
-      independentReview: PENDING
+      independentReview: FAIL
     integratedCommit: e6c14b56e2adf93cde3361f54d0f913b880da74d
 
   phase11-access:
