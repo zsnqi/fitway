@@ -1200,10 +1200,50 @@ milestones:
       independentReview: PASS
     integratedCommit: null
 
+  phase10-ui-csv-b06:
+    status: IN_PROGRESS
+    dependencies: [phase10-domain, phase10-paper-reporting, phase10-csv-transport]
+    ownerSession: "OpenCode external leaf worker: Ox Alpha / opencode/x-preview-f-free / high. Fresh bounded successor for the human-approved relocation of csvDescription and csvPrivacyNote beneath the reporting/CSV board pair; b05 remains immutable and this attempt starts at repair count 0/2."
+    branch: codex/phase10-ui-csv-b06
+    worktree: D:/Projects/fitway-worktrees/phase10-ui-csv-b06
+    baseCommit: SELF
+    ownedPaths:
+      - apps/web/src/components/owner/reporting/owner-reporting-section.tsx
+      - apps/web/src/components/owner/reporting/owner-reporting-export.tsx
+      - apps/web/src/components/owner/reporting/owner-reporting.css
+      - tests/browser/phase10-ui-csv.browser.spec.ts
+      - docs/phase-records/handoffs/phase10-ui-csv/*-p10_ui_csv_b06-*.md
+    forbiddenPaths:
+      - all repository paths outside ownedPaths and sharedLeases
+      - "the preserved b05 branch, candidate bf44049, its commits, and its records: immutable provenance; do not rebase, amend, move, delete, or edit them"
+      - "every inherited b05 path outside this successor's four source/test files: frozen after the one-time carry merge"
+      - apps/web/src/routes/admin.tsx, apps/web/src/i18n/**, shared catalogs, global tokens, and apps/web/src/routeTree.gen.ts
+      - packages/api/**, apps/server/**, packages/db/**, schemas, migrations, and generated contracts
+      - tests/browser/__screenshots__/** and every canonical baseline
+      - PROJECT_STATE.yaml, scripts/verify.mjs, and scripts/verify-repository.mjs
+      - visual-direction-gate/**, Paper, and every normative document
+      - root manifests, lockfiles, environment schemas, and test-runner configuration
+      - every other milestone's phase record and handoff directory
+    sharedLeases:
+      - "one-time inherited b05 carry-forward only: merge the complete immutable codex/phase10-ui-csv-b05 candidate at bf44049 into b06; after the carry commit every inherited path outside b06 ownedPaths is frozen"
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-08-21T19:00:00+03:00"
+    leaseExpiresAt: "2026-08-22T19:00:00+03:00"
+    handoff: docs/phase-records/handoffs/phase10-ui-csv/20260821-190000-p10_ui_csv_b06-coordinator-activation.md
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
   phase-10:
     status: PLANNED
     dependencies:
-      [phase10-domain, phase10-paper-reporting, phase10-csv-transport, phase10-ui-csv-b05]
+      [phase10-domain, phase10-paper-reporting, phase10-csv-transport, phase10-ui-csv-b06]
     ownerSession: null
     branch: null
     worktree: null
