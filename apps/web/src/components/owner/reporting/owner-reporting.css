@@ -33,6 +33,32 @@
 	min-inline-size: 0;
 }
 
+/* The route heading's eyebrow and description sit under the copy wrapper here,
+   so the canonical staff/owner-shell direct-child selectors no longer match.
+   Restore the exact canonical computed treatment for the wrapper's own `p` and
+   `span`, including the Arabic letter-spacing/text-transform exception. The
+   copy wrapper is unique to the analytics heading, so the child selectors keep
+   the same specificity as the canonical rules they stand in for. */
+.operations-page-heading__copy > p {
+	margin: 0;
+	color: #ff8295;
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+:where([lang="ar"]) .operations-page-heading__copy > p {
+	letter-spacing: 0;
+	text-transform: none;
+}
+
+.operations-page-heading__copy > span {
+	display: block;
+	max-inline-size: 64ch;
+	color: var(--fw-text-muted);
+}
+
 .operations-page-heading--analytics .owner-analytics-mode__tabs {
 	margin-block-end: 0;
 }

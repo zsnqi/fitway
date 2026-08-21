@@ -396,6 +396,66 @@ async function expectHeadingLayout(
 	expect(typography.family).toMatch(/Cairo/u);
 	expect(typography.weight).toBeGreaterThanOrEqual(400);
 	expect(typography.weight).toBeLessThanOrEqual(700);
+
+	// The copy wrapper nests the canonical eyebrow `<p>` and description
+	// `<span>`; the canonical direct-child selectors no longer reach them, so
+	// assert the restored computed treatment here rather than relying on
+	// staff.css/owner-shell.css.
+	const copyTreatment = await heading
+		.locator(".operations-page-heading__copy")
+		.evaluate((copy) => {
+			const eyebrow = copy.querySelector("p");
+			const description = copy.querySelector("span");
+			if (!eyebrow || !description) {
+				throw new Error("Heading copy requires an eyebrow and a description");
+			}
+			const eyebrowStyle = getComputedStyle(eyebrow);
+			const descriptionStyle = getComputedStyle(description);
+			const rawLetterSpacing = eyebrowStyle.letterSpacing;
+			const letterSpacing =
+				rawLetterSpacing === "normal" ? 0 : Number.parseFloat(rawLetterSpacing);
+			const chProbe = document.createElement("span");
+			chProbe.style.cssText =
+				"position:absolute;visibility:hidden;pointer-events:none;";
+			chProbe.style.font = descriptionStyle.font;
+			chProbe.style.width = "64ch";
+			description.appendChild(chProbe);
+			const canonicalMaxInlineSize = Number.parseFloat(
+				getComputedStyle(chProbe).width,
+			);
+			chProbe.remove();
+			return {
+				eyebrow: {
+					margin: eyebrowStyle.margin,
+					fontSize: eyebrowStyle.fontSize,
+					color: eyebrowStyle.color,
+					letterSpacing,
+					textTransform: eyebrowStyle.textTransform,
+				},
+				description: {
+					display: descriptionStyle.display,
+					maxInlineSize: Number.parseFloat(descriptionStyle.maxInlineSize),
+					canonicalMaxInlineSize,
+					color: descriptionStyle.color,
+				},
+			};
+		});
+	expect(copyTreatment.eyebrow.margin).toBe("0px");
+	expect(copyTreatment.eyebrow.fontSize).toBe("12px");
+	expect(copyTreatment.eyebrow.color).toBe("rgb(255, 130, 149)");
+	expect(copyTreatment.eyebrow.textTransform).toBe(
+		locale === "ar" ? "none" : "uppercase",
+	);
+	expect(copyTreatment.eyebrow.letterSpacing).toBeCloseTo(
+		locale === "ar" ? 0 : 0.48,
+		1,
+	);
+	expect(copyTreatment.description.display).toBe("block");
+	expect(copyTreatment.description.maxInlineSize).toBeCloseTo(
+		copyTreatment.description.canonicalMaxInlineSize,
+		0,
+	);
+	expect(copyTreatment.description.color).toBe("rgb(201, 195, 196)");
 }
 
 test("the lazy bilingual tabs keep exact prerequisite counts and stable panel shells", async ({
