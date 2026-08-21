@@ -98,6 +98,10 @@ const ownerActor = {
 	role: "owner",
 	displayName: "Real owner",
 } as const;
+const targetOwner = {
+	principalId: "00000000-0000-4000-8000-0000000000c3",
+	displayName: "Amina target owner",
+} as const;
 const staffActor = {
 	principalId: "00000000-0000-4000-8000-0000000000b2",
 	kind: "shared_staff",
@@ -571,8 +575,8 @@ test("governance rows render their resolved target and missing effective-count s
 			action: "owner_deactivated",
 			actor: ownerActor,
 			target: {
-				principalId: ownerActor.principalId,
-				displayName: ownerActor.displayName,
+				principalId: targetOwner.principalId,
+				displayName: targetOwner.displayName,
 			},
 			priorValue: null,
 			effectiveValue: null,
@@ -613,7 +617,14 @@ test("governance rows render their resolved target and missing effective-count s
 	await page.setViewportSize({ width: 1200, height: 900 });
 	await page.goto("/admin");
 	const table = page.locator(auditTable);
-	await expect(table).toContainText(ownerActor.displayName);
+	const deactivationRow = table.locator(
+		'tbody tr[data-action="owner_deactivated"]',
+	);
+	const targetCell = deactivationRow.locator("td").nth(2);
+	await expect(deactivationRow.locator("td").nth(1)).toContainText(
+		ownerActor.displayName,
+	);
+	await expect(targetCell).toHaveText(targetOwner.displayName);
 	await expect(table).toContainText("Active");
 	await expect(table).toContainText("Inactive");
 	await expect(table).toContainText("Settings version 12");
@@ -625,7 +636,7 @@ test("governance rows render their resolved target and missing effective-count s
 	expect(observedFilters.at(-1)).toEqual({ effectiveValue: null });
 
 	await setLocale(page, "ar");
-	await expect(table).toContainText(ownerActor.displayName);
+	await expect(targetCell).toHaveText(targetOwner.displayName);
 	await expect(table).toContainText("تحديث الإعدادات");
 	expect(
 		await page

@@ -10,7 +10,10 @@ import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { Pool, type QueryResult } from "pg";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { appendAuditEntry } from "./audit-repository";
+import {
+	appendAuditEntry,
+	createAuditListRepository,
+} from "./audit-repository";
 import { assertDisposableIntegrationDatabase } from "./test-support/integration-database-safety";
 
 const connectionString = process.env.TEST_DATABASE_URL;
@@ -795,6 +798,44 @@ describe("Phase 11 audit generalization migration", () => {
 		expect(stored.rows[0]).toEqual({
 			prior_credential_version: 3,
 			new_credential_version: 4,
+		});
+	});
+
+	it("lists a real governance row through both principal joins and the strict mapper", async () => {
+		const inserted = await insertAudit(
+			accessAudit({
+				action: "owner_deactivated",
+				target_principal_id: targetOwnerPrincipalId,
+				prior_active: true,
+				new_active: false,
+				reason: "Departure approved",
+			}),
+		);
+		const insertedId = Number(inserted.rows[0]?.id);
+		const repository = createAuditListRepository(database as never);
+		const page = await repository.listAuditEntries({
+			limit: 100,
+			filters: { actions: ["owner_deactivated"] },
+		});
+		const entry = page.entries.find((candidate) => candidate.id === insertedId);
+
+		expect(entry).toMatchObject({
+			eventClass: "access",
+			action: "owner_deactivated",
+			actor: {
+				principalId: ownerPrincipalId,
+				kind: "owner",
+				role: "owner",
+				displayName: "Owner actor",
+			},
+			target: {
+				principalId: targetOwnerPrincipalId,
+				displayName: "Owner target",
+			},
+			priorActive: true,
+			newActive: false,
+			effectiveValue: null,
+			reason: "Departure approved",
 		});
 	});
 });

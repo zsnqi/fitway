@@ -77,6 +77,12 @@ export const auditActionSchema = z.enum(AUDIT_ACTIONS);
 export const auditActorKindSchema = z.enum(AUDIT_ACTOR_KINDS);
 export const auditActorRoleSchema = z.enum(AUDIT_ACTOR_ROLES);
 
+function auditActionRequiresReason(action: AuditAnyAction): boolean {
+	return (AUDIT_REASON_REQUIRED_ACTIONS as readonly AuditAnyAction[]).includes(
+		action,
+	);
+}
+
 const safeIdSchema = z.number().int().positive().max(Number.MAX_SAFE_INTEGER);
 const nonNegativeCountSchema = z
 	.number()
@@ -194,6 +200,17 @@ export const auditEntrySchema = z
 			entry.requestedValue !== null
 		) {
 			reject("A governance event cannot carry count state");
+		}
+		if (
+			entry.actor.principalId === null ||
+			entry.actor.kind !== "owner" ||
+			entry.actor.role !== "owner" ||
+			entry.actor.displayName === null
+		) {
+			reject("A governance event must be authored by a real owner");
+		}
+		if (auditActionRequiresReason(entry.action) && entry.reason === null) {
+			reject("A destructive governance event must carry a reason");
 		}
 		if (entry.eventClass === "access") {
 			if (entry.target === null || entry.settingsVersion !== null) {
@@ -370,6 +387,20 @@ function assertActorCoherent(row: PersistedAuditRow): void {
 	}
 }
 
+function assertGovernanceAuthorAndReason(row: PersistedAuditRow): void {
+	if (
+		row.actorPrincipalId === null ||
+		row.actorPrincipalKind !== "owner" ||
+		row.actorRole !== "owner" ||
+		row.actorDisplayName === null
+	) {
+		throw new Error(`Audit row ${row.id} has a non-owner governance actor`);
+	}
+	if (auditActionRequiresReason(row.action) && row.reason === null) {
+		throw new Error(`Audit row ${row.id} is missing its destructive reason`);
+	}
+}
+
 function assertValuesCoherent(
 	row: PersistedAuditRow,
 	action: AuditAction,
@@ -516,6 +547,7 @@ export function toAuditEntry(row: PersistedAuditRow): AuditEntryView {
 		assertCommandGovernanceColumnsEmpty(row);
 		assertValuesCoherent(row, row.action, row.effectiveValue);
 	} else {
+		assertGovernanceAuthorAndReason(row);
 		assertGovernanceCountsEmpty(row);
 		if (row.eventClass === "access") assertAccessStateCoherent(row);
 		else assertSettingsStateCoherent(row);

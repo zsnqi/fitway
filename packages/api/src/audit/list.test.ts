@@ -349,6 +349,92 @@ describe("persisted row to transport entry", () => {
 		expect(
 			auditEntrySchema.safeParse({ ...deactivation, newActive: true }).success,
 		).toBe(false);
+		expect(
+			auditEntrySchema.safeParse({
+				...deactivation,
+				actor: {
+					principalId: staffPrincipal,
+					kind: "shared_staff",
+					role: "staff",
+					displayName: "Front desk",
+				},
+			}).success,
+		).toBe(false);
+		expect(
+			auditEntrySchema.safeParse({ ...deactivation, reason: null }).success,
+		).toBe(false);
+		const settings = toAuditEntry(
+			persisted({
+				eventClass: "settings",
+				action: "settings_updated",
+				priorValue: null,
+				requestedValue: null,
+				effectiveValue: null,
+				settingsVersion: 12,
+			}),
+		);
+		expect(
+			auditEntrySchema.safeParse({
+				...settings,
+				actor: {
+					principalId: null,
+					kind: "system",
+					role: null,
+					displayName: null,
+				},
+			}).success,
+		).toBe(false);
+	});
+
+	it("refuses non-owner governance authors and missing destructive reasons", () => {
+		const deactivation = persisted({
+			eventClass: "access",
+			action: "owner_deactivated",
+			targetPrincipalId: staffPrincipal,
+			targetDisplayName: "Front desk",
+			priorValue: null,
+			requestedValue: null,
+			effectiveValue: null,
+			priorActive: true,
+			newActive: false,
+		});
+		expect(() =>
+			toAuditEntry({
+				...deactivation,
+				actorPrincipalId: staffPrincipal,
+				actorPrincipalKind: "shared_staff",
+				actorRole: "staff",
+				actorDisplayName: "Front desk",
+			}),
+		).toThrow(/non-owner governance actor/i);
+		expect(() => toAuditEntry({ ...deactivation, reason: null })).toThrow(
+			/destructive reason/i,
+		);
+		expect(() =>
+			toAuditEntry({
+				...deactivation,
+				action: "staff_pin_deactivated",
+				priorActive: null,
+				newActive: null,
+				reason: null,
+			}),
+		).toThrow(/destructive reason/i);
+		expect(() =>
+			toAuditEntry(
+				persisted({
+					eventClass: "settings",
+					action: "settings_updated",
+					actorPrincipalId: null,
+					actorPrincipalKind: "system",
+					actorRole: null,
+					actorDisplayName: null,
+					priorValue: null,
+					requestedValue: null,
+					effectiveValue: null,
+					settingsVersion: 12,
+				}),
+			),
+		).toThrow(/non-owner governance actor/i);
 	});
 
 	it("preserves the floored delta result and absolute parity", () => {
