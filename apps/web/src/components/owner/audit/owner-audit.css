@@ -42,9 +42,16 @@
 	font-weight: 600;
 }
 
+/*
+ * The track floor is sized from the longest filter option label, not from the
+ * shortest field: the paired mode selects carry strings such as "Any effective
+ * count" and must render them whole at every required width. `min(100%, ...)`
+ * keeps the floor from forcing document overflow once the viewport is narrower
+ * than the floor itself.
+ */
 .owner-audit-filters {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 248px), 1fr));
 	gap: 12px 16px;
 	align-items: end;
 	padding: 16px;
@@ -65,9 +72,16 @@
 	font-weight: 600;
 }
 
+/*
+ * A mode select and its value partner are not equal work: the select holds a
+ * full sentence-length label while the partner holds a small count or a short
+ * search term. Split the pair 2:1 and put a hard floor under the select, wide
+ * enough for the longest label plus the 12px inline-start padding and the 36px
+ * arrow lane below, so no option can clip mid-word.
+ */
 .owner-audit-field__controls {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	grid-template-columns: minmax(min(100%, 160px), 2fr) minmax(0, 1fr);
 	gap: 8px;
 }
 
@@ -114,7 +128,7 @@
 }
 
 /* A visible affordance for the labeled scroll region, shown only where the
-   six columns cannot fit the available inline size. */
+   seven columns cannot fit the available inline size. */
 .owner-audit__scroll-hint {
 	display: none;
 	margin: 0;

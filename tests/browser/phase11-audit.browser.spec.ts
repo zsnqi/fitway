@@ -365,6 +365,69 @@ async function expectNoDocumentOverflow(page: Page) {
 	expect(overflow.audit).toBeLessThanOrEqual(0);
 }
 
+/**
+ * The filter selects reserve a 36px native-arrow lane, but reserving the lane
+ * proves nothing on its own: a label that overruns the remaining content box
+ * still clips mid-word. Measure every option of every filter select against the
+ * box it actually gets, so the widest label — not merely the default one — has
+ * to fit. `SELECT_LABEL_SAFETY_PX` keeps a marginal pass from reading as a
+ * comfortable one; canvas advance width is deterministic but is not the
+ * select's own shaping.
+ */
+const SELECT_LABEL_SAFETY_PX = 2;
+
+type SelectLabelOverrun = {
+	locale: "ar" | "en";
+	width: number;
+	id: string;
+	label: string;
+	text: number;
+	box: number;
+};
+
+async function findFilterSelectLabelOverruns(
+	page: Page,
+	locale: "ar" | "en",
+	width: number,
+): Promise<SelectLabelOverrun[]> {
+	const overruns = await page.evaluate((safety) => {
+		const canvas = document.createElement("canvas");
+		const context = canvas.getContext("2d");
+		if (!context) throw new Error("2d context unavailable");
+		const found: {
+			id: string;
+			label: string;
+			text: number;
+			box: number;
+		}[] = [];
+		for (const select of document.querySelectorAll<HTMLSelectElement>(
+			".owner-audit-filters select",
+		)) {
+			const style = getComputedStyle(select);
+			context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} / ${style.lineHeight} ${style.fontFamily}`;
+			const box =
+				select.clientWidth -
+				Number.parseFloat(style.paddingInlineStart) -
+				Number.parseFloat(style.paddingInlineEnd);
+			for (const option of Array.from(select.options)) {
+				const label = option.textContent ?? "";
+				const text = context.measureText(label).width;
+				if (text + safety > box) {
+					found.push({
+						id: select.id,
+						label,
+						text: Math.round(text * 100) / 100,
+						box: Math.round(box * 100) / 100,
+					});
+				}
+			}
+		}
+		return found;
+	}, SELECT_LABEL_SAFETY_PX);
+
+	return overruns.map((overrun) => ({ locale, width, ...overrun }));
+}
+
 function seriousViolations(
 	results: Awaited<ReturnType<AxeBuilder["analyze"]>>,
 ) {
@@ -652,12 +715,18 @@ test("layout holds at every required width in both locales", async ({
 	await page.goto("/admin");
 
 	const widths = [320, 360, 390, 721, 768, 820, 1024, 1200, 1440];
+	// Collected across the whole sweep, then asserted once: a clipped label at
+	// one width must not hide the same defect at the eight others.
+	const labelOverruns: SelectLabelOverrun[] = [];
 	for (const locale of ["ar", "en"] as const) {
 		await setLocale(page, locale);
 		for (const width of widths) {
 			await page.setViewportSize({ width, height: 900 });
 			await expect(page.locator(auditTable)).toBeVisible();
 			await expectNoDocumentOverflow(page);
+			labelOverruns.push(
+				...(await findFilterSelectLabelOverruns(page, locale, width)),
+			);
 			const selectPadding = await page
 				.locator(".owner-audit-filters select")
 				.first()
@@ -696,6 +765,11 @@ test("layout holds at every required width in both locales", async ({
 			`owner-audit-${locale}-select-desktop-1440x900.png`,
 		);
 	}
+
+	expect(
+		labelOverruns,
+		"every filter select option must fit inside its own content box",
+	).toEqual([]);
 });
 
 test("keyboard, targets, reduced motion, 200% reflow, forced colors, and axe hold", async ({

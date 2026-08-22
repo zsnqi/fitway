@@ -120,7 +120,7 @@ export function OwnerAuditSection() {
 					</select>
 				</div>
 
-				<div className="owner-audit-field owner-audit-field--pair">
+				<div className="owner-audit-field">
 					<label htmlFor={fieldId("prior-mode")}>{messages.priorLabel}</label>
 					<div className="owner-audit-field__controls">
 						<select
@@ -151,7 +151,7 @@ export function OwnerAuditSection() {
 					</div>
 				</div>
 
-				<div className="owner-audit-field owner-audit-field--pair">
+				<div className="owner-audit-field">
 					<label htmlFor={fieldId("effective-mode")}>
 						{messages.effectiveLabel}
 					</label>
@@ -209,7 +209,7 @@ export function OwnerAuditSection() {
 					/>
 				</div>
 
-				<div className="owner-audit-field owner-audit-field--pair">
+				<div className="owner-audit-field">
 					<label htmlFor={fieldId("reason-mode")}>{messages.reasonLabel}</label>
 					<div className="owner-audit-field__controls">
 						<select
