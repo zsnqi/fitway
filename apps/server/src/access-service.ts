@@ -8,7 +8,12 @@ import type {
 	StaffPinDeactivateInput,
 	StaffPinRevealOutput,
 } from "@fitway/api/access/contracts";
-import { createStaffPin, hashOwnerPassword, hashStaffPin } from "@fitway/auth";
+import {
+	assertStaffPinShape,
+	createStaffPin,
+	hashOwnerPassword,
+	hashStaffPin,
+} from "@fitway/auth";
 
 import type { AccessRepository } from "./access-repository";
 
@@ -59,13 +64,29 @@ export function createAccessService(options: {
 	const { repository, pinPepper, ownerPasswordPepper } = options;
 	const clock = options.now ?? (() => new Date());
 
+	/**
+	 * The one seam where a PIN becomes credential material, and therefore the
+	 * only place the `SPEC.md` shape rule can actually bind.
+	 *
+	 * No procedure accepts a PIN, so the shape rule has no input to guard; what
+	 * it guards is the generator. Asserting here means the 6-12 Western digits
+	 * rule is enforced on the value that gets hashed and revealed, rather than
+	 * holding only as long as nobody changes `createStaffPin`. A failure is a
+	 * server defect, not a caller's, and it stops before anything is stored.
+	 */
+	const generateStaffPin = () => {
+		const pin = createStaffPin();
+		assertStaffPinShape(pin);
+		return pin;
+	};
+
 	return {
 		listAccessPrincipals: async () => ({
 			principals: await repository.listPrincipals(),
 		}),
 
 		provisionStaffPin: async ({ actorPrincipalId }) => {
-			const pin = createStaffPin();
+			const pin = generateStaffPin();
 			const hashed = await hashStaffPin(pin, pinPepper);
 			const result = await repository.provisionStaffPin({
 				actorPrincipalId,
@@ -77,7 +98,7 @@ export function createAccessService(options: {
 		},
 
 		rotateStaffPin: async ({ actorPrincipalId }) => {
-			const pin = createStaffPin();
+			const pin = generateStaffPin();
 			const hashed = await hashStaffPin(pin, pinPepper);
 			const result = await repository.rotateStaffPin({
 				actorPrincipalId,
