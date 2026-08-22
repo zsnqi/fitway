@@ -284,13 +284,22 @@ export type AccessMutationResult = {
  * Two separate things make the row truthful, and the second one is easy to
  * mistake for the first. Because the snapshots are read server-side, a *caller*
  * cannot supply either one and so cannot describe a transition it invented.
- * Because the target principal is locked with `for update` before the before
- * snapshot is read, a *concurrent transaction* cannot have moved the state
- * between the read and the write either — without that lock two simultaneous
- * reactivations would each observe `active=false`, each pass their assertion,
- * and each append a row claiming `false -> true`, of which only one happened.
- * The snapshot handles the malicious caller; the lock handles the concurrent
- * one. Removing either leaves rows the audit log cannot justify.
+ * Because every mutation that reads a state and writes a successor derived from
+ * it locks the target principal with `for update` first, a *concurrent
+ * transaction* cannot have moved the state between the read and the write
+ * either — without that lock two simultaneous reactivations would each observe
+ * `active=false`, each pass their assertion, and each append a row claiming
+ * `false -> true`, of which only one happened. The snapshot handles the
+ * malicious caller; the lock handles the concurrent one. Removing either leaves
+ * rows the audit log cannot justify.
+ *
+ * Two call sites take no such lock and need none, and saying "every mutation
+ * locks" without them would be the same overstatement in a new place. Both
+ * *create* the row they describe rather than transitioning one: `provisionOwner`
+ * inserts a principal that did not exist, and `provisionStaffPin` inserts the
+ * shared staff principal when it is absent. There is no prior state for a
+ * concurrent transaction to have moved, and a second caller racing them is
+ * arbitrated by a unique index rather than by a lock.
  */
 async function appendGovernanceRow(
 	transaction: Transaction,

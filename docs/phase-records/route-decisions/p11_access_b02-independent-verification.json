@@ -15,7 +15,8 @@
 	"registry_revision": "2026-08-22.2",
 	"qualification_baseline": "2026-08-22.2",
 
-	"gate_outcome": null,
+	"gate_outcome": "PASS",
+	"gate_outcome_note": "Native opus worker returned PASS with six ranked minor findings, ran check:repository, verify:fast, four focused integration runs including one on a database it created, and verify:full green at 83/83, and designed five of its own SQL-level probes including a 640-operation mixed-traffic deadlock probe and a pg_stat_activity poll proving the suite genuinely contends rather than serialising. It left the tree clean and edited nothing. The compact return arrived complete - no truncation of the kind recorded for the external route in the c04 reroute. Native remains the correct route for any FITWAY stage defined by running the repository verification ladder, for the registry reason recorded above.",
 
 	"covered_modalities": ["text"],
 	"covered_tools": ["repository_read", "shell"],

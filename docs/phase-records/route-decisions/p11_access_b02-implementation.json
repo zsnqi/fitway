@@ -14,7 +14,8 @@
 	"registry_revision": null,
 	"qualification_baseline": null,
 
-	"gate_outcome": null,
+	"gate_outcome": "PASS",
+	"gate_outcome_note": "Candidate cb7cd96 accepted by independent verification on 2026-08-22 with six minor findings and no blocking or significant finding. Direct coordinator execution held: the stage stayed inside its named file set, needed no escalation, and produced no scope drift. Two defects surfaced during the stage and both were found by its own tests before submission, not at the gate - evidence that the direct route was sized correctly rather than that it was lucky.",
 
 	"covered_modalities": ["text"],
 	"covered_tools": ["repository_read", "file_write", "shell"],
