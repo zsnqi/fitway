@@ -1454,7 +1454,7 @@ milestones:
     integratedCommit: null
 
   phase11-access-b02:
-    status: IN_PROGRESS
+    status: VALIDATING
     dependencies: [phase-4, phase-5, phase-9, phase11-audit-generalization]
     ownerSession: "coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration executing Slice A directly; run ID p11_access_b02"
     branch: work/phase11-access-b02
@@ -1491,13 +1491,13 @@ milestones:
       - "exclusive through 2026-08-24T23:00:00+03:00 to p11_access_b02: additive admin.access.* leaves in packages/api/src/routers/index.ts and their context wiring in apps/server/src/index.ts. Does not authorize touching the staff, analytics, audit, or health leaves. Released from p11_access_b01 on 2026-08-22T22:20:00+03:00."
       - "exclusive through 2026-08-24T23:00:00+03:00 to p11_access_b02: additive access members in packages/api/src/context.ts. The transport injects its readers and writers through this type, so the leaves cannot exist without it. Additive only: no existing member's shape, optionality, or documentation changes. Released from p11_access_b01 on 2026-08-22T22:20:00+03:00."
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-22T22:20:00+03:00"
+    lastHeartbeatAt: "2026-08-22T23:30:00+03:00"
     leaseExpiresAt: "2026-08-24T23:00:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-access/20260822-222000-p11_access_b02-activation-and-plan.md
+    handoff: docs/phase-records/handoffs/phase11-access/20260822-233000-p11_access_b02-candidate.md
     stopReason: null
     gates:
-      unit: PENDING
-      integration: PENDING
+      unit: PASS
+      integration: PASS
       browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
