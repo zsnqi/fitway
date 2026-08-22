@@ -1,4 +1,5 @@
 import type { RouterClient } from "@orpc/server";
+import { adminAccessProcedures } from "../access/procedures";
 import { adminAnalyticsCsv } from "../analytics/reporting/csv-transport";
 import { adminAnalyticsReportingQueries } from "../analytics/reporting/queries";
 import {
@@ -126,6 +127,12 @@ export const appRouter = {
 		health: {
 			summary: adminHealthSummary,
 		},
+		/**
+		 * Owner access management. The only writers on the owner surface, added
+		 * under the recorded coordinator lease for this slice; every read leaf
+		 * beside them is untouched.
+		 */
+		access: adminAccessProcedures,
 	},
 };
 export type AppRouter = typeof appRouter;

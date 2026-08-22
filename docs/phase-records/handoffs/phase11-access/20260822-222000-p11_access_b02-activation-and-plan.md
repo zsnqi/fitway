@@ -77,7 +77,7 @@ untouched. Discarding that to retype it would destroy verified evidence and buy 
 The coordinator therefore authorizes **one** carry-forward commit on `work/phase11-access-b02`,
 scoped to paths rather than to a merge:
 
-- Carried, from `8e77536bebcda08f401d0c3d4db296bab8cf3286`: the thirteen implementation files —
+- Carried, from `8e77536bebcda08f401d0c3d4db296bab8cf3286`: the twelve implementation files —
   `packages/auth/src/access.ts`, `packages/auth/src/access.test.ts`, `packages/auth/src/index.ts`,
   `packages/api/src/access/contracts.ts`, `packages/api/src/access/procedures.ts`,
   `packages/api/src/context.ts`, `packages/api/src/routers/index.ts`,

@@ -27,12 +27,18 @@ import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
+import { AccessRepository } from "./access-repository";
+import { createAccessService } from "./access-service";
 import { createTelegramAlertNotifier } from "./alert-notifier";
 import { createAlertRepository } from "./alert-repository";
 import { createOwnerAnalyticsReaders } from "./analytics-time-context-repository";
 import { createAuditListRepository } from "./audit-repository";
 import { mountAuthRoutes } from "./auth/routes";
-import { type AuthRuntime, createAuthRuntime } from "./auth/runtime";
+import {
+	type AuthRuntime,
+	createAuthRuntime,
+	derivePinPepper,
+} from "./auth/runtime";
 import { commandService } from "./command-repository";
 import { CRON_INTERNAL_PATH, createCronHandler } from "./cron";
 import { createEdgePushHandler } from "./edge-push";
@@ -75,6 +81,16 @@ export function createApp(
 	cronNow: () => Date = () => new Date(),
 	cronRunnerOverride?: { run: () => Promise<unknown> },
 ) {
+	// Built here rather than at module scope because it needs this app's auth
+	// runtime: a credential written by the access path must carry the same pepper
+	// the login path verifies against, and tests substitute the runtime.
+	const accessPepper =
+		authRuntime.pinPepper ?? derivePinPepper(env.BETTER_AUTH_SECRET);
+	const accessService = createAccessService({
+		repository: new AccessRepository(db),
+		pinPepper: accessPepper,
+		ownerPasswordPepper: authRuntime.ownerPasswordPepper ?? accessPepper,
+	});
 	const app = new Hono();
 	const requestLogger = logger();
 	app.use("*", async (context, next) => {
@@ -209,6 +225,17 @@ export function createApp(
 					listAuditEntries: auditListRepository.listAuditEntries,
 					readHealthIncidentSummary:
 						healthIncidentRepository.readHealthIncidentSummary,
+					// The owner access writers. Every one takes its actor from the
+					// authenticated caller, and the two that reveal a PIN generate it
+					// rather than accept it.
+					listAccessPrincipals: accessService.listAccessPrincipals,
+					provisionStaffPin: accessService.provisionStaffPin,
+					rotateStaffPin: accessService.rotateStaffPin,
+					deactivateStaffPin: accessService.deactivateStaffPin,
+					provisionOwner: accessService.provisionOwner,
+					deactivateOwner: accessService.deactivateOwner,
+					reactivateOwner: accessService.reactivateOwner,
+					resetOwnerCredential: accessService.resetOwnerCredential,
 				}),
 			});
 			if (rpcResult.matched)

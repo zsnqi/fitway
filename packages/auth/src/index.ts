@@ -1,3 +1,4 @@
+export * from "./access";
 export * from "./auth-service";
 export * from "./contracts";
 export * from "./cookies";

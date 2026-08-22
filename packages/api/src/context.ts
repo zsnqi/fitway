@@ -1,5 +1,15 @@
 import type { AuthenticationResult, CanonicalAuthContext } from "@fitway/auth";
 import type { Context as HonoContext } from "hono";
+import type {
+	AccessListOutput,
+	AccessMutationOutput,
+	OwnerCredentialResetInput,
+	OwnerDeactivateInput,
+	OwnerProvisionInput,
+	OwnerReactivateInput,
+	StaffPinDeactivateInput,
+	StaffPinRevealOutput,
+} from "./access/contracts";
 import type { DailyAnalytics } from "./analytics/daily-analytics";
 import type {
 	CsvRangeInput,
@@ -34,6 +44,28 @@ export type CreateContextOptions = {
 	readWeekOverWeek: () => Promise<WeekComparison>;
 	listAuditEntries: (input: AuditListInput) => Promise<AuditListPage>;
 	readHealthIncidentSummary: () => Promise<HealthIncidentSummary>;
+	listAccessPrincipals: () => Promise<AccessListOutput>;
+	provisionStaffPin: (input: {
+		actorPrincipalId: string;
+	}) => Promise<StaffPinRevealOutput>;
+	rotateStaffPin: (input: {
+		actorPrincipalId: string;
+	}) => Promise<StaffPinRevealOutput>;
+	deactivateStaffPin: (
+		input: { actorPrincipalId: string } & StaffPinDeactivateInput,
+	) => Promise<AccessMutationOutput>;
+	provisionOwner: (
+		input: { actorPrincipalId: string } & OwnerProvisionInput,
+	) => Promise<AccessMutationOutput>;
+	deactivateOwner: (
+		input: { actorPrincipalId: string } & OwnerDeactivateInput,
+	) => Promise<AccessMutationOutput>;
+	reactivateOwner: (
+		input: { actorPrincipalId: string } & OwnerReactivateInput,
+	) => Promise<AccessMutationOutput>;
+	resetOwnerCredential: (
+		input: { actorPrincipalId: string } & OwnerCredentialResetInput,
+	) => Promise<AccessMutationOutput>;
 };
 
 /**
@@ -75,6 +107,35 @@ export type Context = {
 	 * only thing that can append to either table.
 	 */
 	readHealthIncidentSummary?: () => Promise<HealthIncidentSummary>;
+	/**
+	 * Owner-only access management. These are the only writers in the context, and
+	 * every one of them takes its actor from the caller rather than from its own
+	 * input, so a procedure cannot attribute a change to a principal that did not
+	 * make it. No PIN arrives through any of them; the two that reveal one return
+	 * it and never accept it.
+	 */
+	listAccessPrincipals?: () => Promise<AccessListOutput>;
+	provisionStaffPin?: (input: {
+		actorPrincipalId: string;
+	}) => Promise<StaffPinRevealOutput>;
+	rotateStaffPin?: (input: {
+		actorPrincipalId: string;
+	}) => Promise<StaffPinRevealOutput>;
+	deactivateStaffPin?: (
+		input: { actorPrincipalId: string } & StaffPinDeactivateInput,
+	) => Promise<AccessMutationOutput>;
+	provisionOwner?: (
+		input: { actorPrincipalId: string } & OwnerProvisionInput,
+	) => Promise<AccessMutationOutput>;
+	deactivateOwner?: (
+		input: { actorPrincipalId: string } & OwnerDeactivateInput,
+	) => Promise<AccessMutationOutput>;
+	reactivateOwner?: (
+		input: { actorPrincipalId: string } & OwnerReactivateInput,
+	) => Promise<AccessMutationOutput>;
+	resetOwnerCredential?: (
+		input: { actorPrincipalId: string } & OwnerCredentialResetInput,
+	) => Promise<AccessMutationOutput>;
 };
 
 export async function createContext({
@@ -89,6 +150,14 @@ export async function createContext({
 	readWeekOverWeek,
 	listAuditEntries,
 	readHealthIncidentSummary,
+	listAccessPrincipals,
+	provisionStaffPin,
+	rotateStaffPin,
+	deactivateStaffPin,
+	provisionOwner,
+	deactivateOwner,
+	reactivateOwner,
+	resetOwnerCredential,
 }: CreateContextOptions): Promise<Context> {
 	const result = await authenticate(context.req.header("Cookie"));
 	for (const cookie of result.cookieHeaders) {
@@ -108,5 +177,13 @@ export async function createContext({
 		readWeekOverWeek,
 		listAuditEntries,
 		readHealthIncidentSummary,
+		listAccessPrincipals,
+		provisionStaffPin,
+		rotateStaffPin,
+		deactivateStaffPin,
+		provisionOwner,
+		deactivateOwner,
+		reactivateOwner,
+		resetOwnerCredential,
 	};
 }
