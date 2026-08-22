@@ -1353,9 +1353,9 @@ milestones:
     integratedCommit: 748f759195ffd1450c83d53ae7220af4c1fc2572
 
   phase11-audit-generalization:
-    status: VALIDATING
+    status: NEEDS_HUMAN
     dependencies: [phase11-audit]
-    ownerSession: p11_audit_gen_c05
+    ownerSession: null
     branch: codex/phase11-audit-gen-slice-b
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
     baseCommit: da2abc7
@@ -1372,7 +1372,10 @@ milestones:
       - tests/browser/__screenshots__/win32/chromium/phase11-audit.browser.spec.ts/owner-audit-ar-desktop-1440x900.png
       - tests/browser/__screenshots__/win32/chromium/phase11-audit.browser.spec.ts/owner-audit-en-mobile-390x844.png
       - docs/phase-records/handoffs/phase11-audit-generalization/*-p11_audit_gen_b02-*.md
+      - docs/phase-records/handoffs/phase11-audit-generalization/*-p11_audit_gen_v02-*.md
+      - docs/phase-records/handoffs/phase11-audit-generalization/*-p11_audit_gen_c03-*.md
       - docs/phase-records/handoffs/phase11-audit-generalization/*-p11_audit_gen_c04-*.md
+      - docs/phase-records/handoffs/phase11-audit-generalization/*-p11_audit_gen_c05-*.md
     forbiddenPaths:
       - all repository paths outside ownedPaths
       - "packages/db/**: migration 0007 and the Slice A schema are frozen"
@@ -1388,17 +1391,17 @@ milestones:
       - "the seven approved access action labels, the secret-free audit rule, and the owner lifecycle decisions: human-locked"
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-22T03:20:00+03:00"
-    leaseExpiresAt: "2026-08-22T10:45:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260822-032000-p11_audit_gen_c05-candidate.md
-    stopReason: null
+    lastHeartbeatAt: "2026-08-22T04:15:00+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260822-041500-p11_audit_gen_c05-needs-human.md
+    stopReason: "c05 NEEDS_HUMAN on approved visual authority, with 0 of 2 repair attempts used. The human-authorized fresh attempt corrected the carried whitespace defect forward without touching c04 content, and candidate 70b8bade30d4a44153d355ec41ec8be315397362 passes check:repository, verify:fast, verify:phase, verify:full, the full-range whitespace gate, and pre-submission freeze, with both approved canonical PNG hashes unchanged. Fresh independent verification returned FAILED_VALIDATION on one high finding: the effective-count filter select truncates its default option label at 8 of 9 required widths in English and 6 of 9 in Arabic. The coordinator confirmed it independently, including that the human-approved AR desktop canonical baseline itself renders that control truncated, and that no label fits every required width in the current two-column grid. Every fix changes a human-approved composition or bilingual copy and needs a fresh serialized baseline approval, so no repair was attempted. The candidate, the c04 terminal record, and commit e42b6c4 are preserved; nothing is integrated; S5 remains frozen. A human must choose: accept the approved rendering, authorize a composition repair, or authorize new copy."
     gates:
       unit: PASS
       integration: PASS
       browser: PASS
       accessibility: PASS
       visual: PASS
-      independentReview: PENDING
+      independentReview: FAIL
     integratedCommit: e6c14b56e2adf93cde3361f54d0f913b880da74d
 
   phase11-access:
