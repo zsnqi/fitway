@@ -3,7 +3,7 @@ schemaVersion: 1
 updatedAt: "2026-08-22T16:30:00+03:00"
 
 coordinator:
-  owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration on main; handover recorded in docs/phase-records/handoffs/coordinator/20260815-003900-coordinator-handover-and-frontier-baseline.md"
+  owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration, currently on work/phase11-access-b02 executing Phase 11 access Slice A directly; handover recorded in docs/phase-records/handoffs/coordinator/20260815-003900-coordinator-handover-and-frontier-baseline.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1407,26 +1407,100 @@ milestones:
     integratedCommit: 8fef4ec8d2a59b45c041d529e35ba8506de7e3b8
 
   phase11-access:
-    status: PLANNED
+    status: FAILED_VALIDATION
     dependencies: [phase-4, phase-5, phase-9, phase11-audit-generalization]
     ownerSession: null
-    branch: null
-    worktree: null
-    baseCommit: null
-    ownedPaths: []
-    forbiddenPaths: []
+    branch: work/phase11-access-b01
+    worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
+    baseCommit: 6071e1b6489cf2a477e766dbc95743791092e0fd
+    ownedPaths:
+      - packages/auth/src/repository.ts
+      - packages/auth/src/crypto.ts
+      - packages/auth/src/access.ts
+      - packages/auth/src/access.test.ts
+      - packages/auth/src/index.ts
+      - packages/api/src/access/**
+      - apps/server/src/access-repository.ts
+      - apps/server/src/access-service.ts
+      - apps/server/src/auth/postgres-auth-repository.ts
+      - "apps/server/src/auth/runtime.ts: additive exposure of the already-derived pin and password subkeys"
+      - apps/server/src/phase11-access.integration.test.ts
+      - docs/phase-records/handoffs/phase11-access/*-p11_access_b01-*.md
+      - docs/phase-records/handoffs/phase11-access/*-p11_access_v01-*.md
+    forbiddenPaths:
+      - all repository paths outside ownedPaths and sharedLeases
+      - "packages/db/**: the schema already carries active and credentialVersion; a migration need is a stop condition"
+      - "packages/api/src/audit/**: the governance contract is integrated and independently verified; call it, do not modify it"
+      - "packages/api/src/commands/** and the frozen Phase 5 command/audit append semantics"
+      - "apps/web/**, apps/web/src/i18n/**, tests/browser/**, and every canonical screenshot: Slice B"
+      - visual-direction-gate/**, Paper, and every normative document including PHASES.md
+      - scripts/verify.mjs and scripts/verify-repository.mjs
+      - root manifests, lockfiles, environment schemas, and test-runner configuration
+      - every other milestone's phase record and handoff directory
+      - "the seven approved access action labels, the secret-free audit rule, and the owner lifecycle decisions: human-locked"
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
+    lastHeartbeatAt: "2026-08-22T17:30:00+03:00"
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-access/20260811-154032-p11_access-authority-resolved-capacity-blocked.md
+    handoff: docs/phase-records/handoffs/phase11-access/20260822-173000-p11_access_b01-failed-validation.md
+    stopReason: "Terminal b01 FAILED_VALIDATION on fresh independent verification, with 0 of 2 repair attempts consumed. Candidate 8e77536bebcda08f401d0c3d4db296bab8cf3286 on work/phase11-access-b01 passes check:repository, verify:fast, the access integration file 16/16 over six runs, and full scope and whitespace checks, and the verifier marked all eleven locked 2026-08-11 decisions HELD with no secret material reachable in any audit row, response, or log. It was rejected on three confirmed concurrency defects the locked-decision checklist does not cover: only deactivateOwner locks the rows it reasons about, so concurrent staffPin/rotate reveals two PINs of which only one is the stored credential, and concurrent owner/reactivate and owner/resetCredential each write audit rows describing a transition that did not happen. A separate blocking finding, verify:full red in the browser step, is pre-existing load-sensitive repository debt outside this slice and is not attributed to the candidate. The candidate is preserved and unintegrated; no b01 work was integrated and main remains at 6071e1b. Its two shared leases were released to the successor on 2026-08-22T22:20:00+03:00. This entry is the ledger's record of the rejected attempt on the frontier lineage; the b01 branch carries its own live-state history and is never rewritten. Successor: phase11-access-b02."
+    gates:
+      unit: PASS
+      integration: PASS
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: FAIL
+    integratedCommit: null
+
+  phase11-access-b02:
+    status: IN_PROGRESS
+    dependencies: [phase-4, phase-5, phase-9, phase11-audit-generalization]
+    ownerSession: "coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration executing Slice A directly; run ID p11_access_b02"
+    branch: work/phase11-access-b02
+    worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
+    baseCommit: 6071e1b6489cf2a477e766dbc95743791092e0fd
+    ownedPaths:
+      - packages/auth/src/access.ts
+      - packages/auth/src/access.test.ts
+      - packages/auth/src/index.ts
+      - packages/api/src/access/**
+      - apps/server/src/access-repository.ts
+      - apps/server/src/access-service.ts
+      - "apps/server/src/auth/runtime.ts: additive exposure of the already-derived pin and password subkeys, carried unchanged from the b01 candidate. The derivation itself does not change."
+      - apps/server/src/phase11-access.integration.test.ts
+      - docs/phase-records/handoffs/phase11-access/*-p11_access_b02-*.md
+      - docs/phase-records/handoffs/phase11-access/*-p11_access_v02-*.md
+      - docs/phase-records/route-decisions/**
+      - "one-time coordinator-authorized carry-forward only: the twelve implementation files of the immutable b01 candidate 8e77536bebcda08f401d0c3d4db296bab8cf3286, copied unmodified in a single commit. PROJECT_STATE.yaml and the b01 handoffs are excluded from the carry; the b01 handoffs are copied separately as preserved rejected evidence and are read-only thereafter."
+    forbiddenPaths:
+      - all repository paths outside ownedPaths and sharedLeases
+      - "work/phase11-access-b01 and every b01 handoff or terminal record: preserved rejected evidence, read-only after the activation commit"
+      - "packages/db/**: the schema already carries active and credentialVersion; a migration need is a stop condition, not a decision inside this slice"
+      - "packages/api/src/audit/**: the governance contract is integrated and independently verified; call it, do not modify it"
+      - "packages/api/src/commands/** and the frozen Phase 5 command/audit append semantics"
+      - "apps/web/**, apps/web/src/i18n/**, tests/browser/**, and every canonical screenshot: Slice B, which does not start on this candidate"
+      - visual-direction-gate/**, Paper, and every normative document including PHASES.md
+      - scripts/verify.mjs and scripts/verify-repository.mjs
+      - root manifests, lockfiles, environment schemas, and test-runner configuration
+      - every other milestone's phase record and handoff directory
+      - "the seven approved access action labels, the secret-free audit rule, and the owner lifecycle decisions: human-locked"
+      - "rate limiting on the owner access leaves: a new decision named in the b01 terminal record, not an omission this slice may close"
+      - "the load-sensitive browser step of verify:full: repository debt outside these owned paths"
+    sharedLeases:
+      - "exclusive through 2026-08-24T23:00:00+03:00 to p11_access_b02: additive admin.access.* leaves in packages/api/src/routers/index.ts and their context wiring in apps/server/src/index.ts. Does not authorize touching the staff, analytics, audit, or health leaves. Released from p11_access_b01 on 2026-08-22T22:20:00+03:00."
+      - "exclusive through 2026-08-24T23:00:00+03:00 to p11_access_b02: additive access members in packages/api/src/context.ts. The transport injects its readers and writers through this type, so the leaves cannot exist without it. Additive only: no existing member's shape, optionality, or documentation changes. Released from p11_access_b01 on 2026-08-22T22:20:00+03:00."
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-08-22T22:20:00+03:00"
+    leaseExpiresAt: "2026-08-24T23:00:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-access/20260822-222000-p11_access_b02-activation-and-plan.md
     stopReason: null
     gates:
       unit: PENDING
       integration: PENDING
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
       independentReview: PENDING
     integratedCommit: null
 
@@ -1509,7 +1583,7 @@ milestones:
         phase11-shell,
         phase11-audit,
         phase11-audit-generalization,
-        phase11-access,
+        phase11-access-b02,
         phase11-settings,
         phase11-health,
       ]

@@ -1,0 +1,47 @@
+{
+	"schema": "route-decision/1",
+
+	"project": "fitway",
+	"stage_ref": "p11_access_b02 / implementation (phase11-access Slice A repair)",
+	"recorded": "2026-08-22T22:20:00+03:00",
+
+	"candidate_id": "native",
+	"route": null,
+	"execution": "direct-coordinator",
+	"control": null,
+	"transport": null,
+
+	"registry_revision": null,
+	"qualification_baseline": null,
+
+	"gate_outcome": null,
+
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "file_write", "shell"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md",
+		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
+	],
+
+	"delegation_trigger": null,
+	"material_selection_reason": "No delegation trigger applies to this stage, so no route comparison was opened. The stage is a six-item repair list fixed in advance by the b01 independent verifier, against a named file set the coordinator read in full while reconciling state: apps/server/src/access-repository.ts, apps/server/src/access-service.ts, packages/auth/src/access.ts, packages/api/src/access/**, and apps/server/src/phase11-access.integration.test.ts. Volume does not apply (the inspection is already done and is small). Independence does not apply to producing a candidate. Permission does not apply: the stage needs exactly the write scope the coordinator already holds. Recoverability does not apply: the branch is the rollback boundary. Economy does not apply: briefing a worker would have to re-transmit the locking analysis, the eleven locked 2026-08-11 decisions, and the b01 rejection reasoning, which costs more than the edits. Delegating a stage whose inspection is already complete is a named anti-pattern of the active workflow.",
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"native-subagent": [
+			"no delegation trigger; inspection and implementation are coupled and already performed by the orchestrator"
+		],
+		"opencode-deepseek-v4-pro": [
+			"no delegation trigger; route comparison not opened"
+		],
+		"opencode-ox-alpha": ["no delegation trigger; route comparison not opened"],
+		"opencode-glm-5.3": ["no delegation trigger; route comparison not opened"],
+		"opencode-minimax-m3": [
+			"no delegation trigger; route comparison not opened"
+		]
+	},
+
+	"downstream_note": "The independent-verification stage for this candidate does qualify for delegation on the Independence trigger and is a separate decision. It is deliberately not pre-selected here; its record is written when that stage opens."
+}
