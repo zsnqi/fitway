@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-22T14:57:00+03:00"
+updatedAt: "2026-08-22T15:25:00+03:00"
 
 coordinator:
   owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration on main; handover recorded in docs/phase-records/handoffs/coordinator/20260815-003900-coordinator-handover-and-frontier-baseline.md"
@@ -1353,7 +1353,7 @@ milestones:
     integratedCommit: 748f759195ffd1450c83d53ae7220af4c1fc2572
 
   phase11-audit-generalization:
-    status: IN_PROGRESS
+    status: VALIDATING
     dependencies: [phase11-audit]
     ownerSession: "Coordinator session p11_audit_gen_c06 in D:/Projects/fitway-worktrees/phase5-staff-integration on codex/phase11-audit-gen-slice-b: execute the human-authorized composition repair for the filter-select truncation, replace the two owned canonical baselines in a serialized pass, and re-submit to fresh independent verification. EN/AR copy is frozen; c03/c04/c05 records and candidate e42b6c4 are preserved."
     branch: codex/phase11-audit-gen-slice-b
@@ -1393,16 +1393,16 @@ milestones:
       - "the seven approved access action labels, the secret-free audit rule, and the owner lifecycle decisions: human-locked"
     sharedLeases: []
     validationRepairAttempts: 1
-    lastHeartbeatAt: "2026-08-22T14:57:00+03:00"
+    lastHeartbeatAt: "2026-08-22T15:25:00+03:00"
     leaseExpiresAt: "2026-08-23T14:57:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260822-145700-p11_audit_gen_c06-activation-and-repair-plan.md
+    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260822-152500-p11_audit_gen_c06-candidate.md
     stopReason: null
     gates:
-      unit: PENDING
-      integration: PENDING
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
       independentReview: PENDING
     integratedCommit: e6c14b56e2adf93cde3361f54d0f913b880da74d
 
