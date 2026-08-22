@@ -43,15 +43,16 @@
 }
 
 /*
- * The track floor is sized from the longest filter option label, not from the
- * shortest field: the paired mode selects carry strings such as "Any effective
- * count" and must render them whole at every required width. `min(100%, ...)`
- * keeps the floor from forcing document overflow once the viewport is narrower
- * than the floor itself.
+ * One track floor governs every multi-column width, sized from the longest
+ * filter option label rather than from the shortest field: the paired mode
+ * selects carry strings such as "Any effective count" and must render them
+ * whole. `min(100%, ...)` keeps the floor from forcing document overflow once
+ * the viewport is narrower than the floor itself. Below 721px the fields stack
+ * to a single column, which is where the widest labels have the most room.
  */
 .owner-audit-filters {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(min(100%, 248px), 1fr));
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 256px), 1fr));
 	gap: 12px 16px;
 	align-items: end;
 	padding: 16px;
@@ -75,13 +76,14 @@
 /*
  * A mode select and its value partner are not equal work: the select holds a
  * full sentence-length label while the partner holds a small count or a short
- * search term. Split the pair 2:1 and put a hard floor under the select, wide
- * enough for the longest label plus the 12px inline-start padding and the 36px
- * arrow lane below, so no option can clip mid-word.
+ * search term. Size the select from its own longest option and give the partner
+ * everything left over. `max-content` keeps that true when the labels differ by
+ * locale, when copy changes, and when the user enlarges text; the track floor
+ * above is what guarantees the field is wide enough to grant it.
  */
 .owner-audit-field__controls {
 	display: grid;
-	grid-template-columns: minmax(min(100%, 160px), 2fr) minmax(0, 1fr);
+	grid-template-columns: minmax(0, max-content) minmax(72px, 1fr);
 	gap: 8px;
 }
 
@@ -345,12 +347,6 @@
 @media (max-width: 1023px) {
 	.owner-audit__scroll-hint {
 		display: block;
-	}
-}
-
-@media (max-width: 820px) {
-	.owner-audit-filters {
-		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 	}
 }
 
