@@ -1,0 +1,54 @@
+{
+	"schema": "route-decision/1",
+
+	"project": "fitway",
+	"stage_ref": "p11_access_v02 / independent verification of phase11-access Slice A candidate cb7cd96",
+	"recorded": "2026-08-22T23:45:00+03:00",
+
+	"candidate_id": "native",
+	"route": null,
+	"execution": "native-subagent",
+	"control": null,
+	"model_class": "opus",
+	"transport": null,
+
+	"registry_revision": "2026-08-22.2",
+	"qualification_baseline": "2026-08-22.2",
+
+	"gate_outcome": null,
+
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "shell"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": ["repository_verification_ladder"],
+
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md",
+		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
+	],
+
+	"delegation_trigger": "independence",
+	"material_selection_reason": "The stage qualifies for delegation on Independence: docs/WORKFLOW.md requires a session that did not produce the candidate, and an implementer verifying its own work grades it against what it intended. Route comparison was opened under the two in-force 2026-08-21 authorizations, which were reconciled and not re-requested. Every external candidate is hard-filtered at step 1, not compared: the shared registry at revision 2026-08-22.2 records repository_verification_ladder as not_qualified for all four candidates, and states for FITWAY specifically that the ladder requires .env-derived secrets in the process environment and that failing output can carry them, which the durable grant excludes - so qualifying the capability would not by itself make this stage routable. This stage is defined by running that ladder from a clean run ID against disposable Postgres, so no external candidate survives the filter and no comparison was possible. Native subagent selected; opus class because the stage judges lock sufficiency, deadlock ordering, and credential-governance invariants under concurrency, where being wrong ships a defect that reveals a staff PIN that does not open the door. This host exposes no per-worker reasoning-effort axis, so the deliberation demand and the cost of being wrong are stated in the brief instead, and no effort value is recorded.",
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"deepseek-v4-pro": [
+			"repository_verification_ladder not_qualified at baseline 2026-08-22.2",
+			"FITWAY ladder needs .env-derived secrets in the process environment; the durable grant excludes that payload class"
+		],
+		"ox-alpha": [
+			"repository_verification_ladder not_qualified at baseline 2026-08-22.2",
+			"FITWAY ladder needs .env-derived secrets in the process environment; the durable grant excludes that payload class",
+			"prior FITWAY review reroute recorded in docs/phase-records/handoffs/phase11-audit-generalization/20260822-010500-p11_audit_gen_c04-review-reroute.md: compact return truncated before the required fields"
+		],
+		"glm-5.3": [
+			"repository_verification_ladder not_qualified at baseline 2026-08-22.2",
+			"FITWAY ladder needs .env-derived secrets in the process environment; the durable grant excludes that payload class"
+		],
+		"minimax-m3": [
+			"repository_verification_ladder not_qualified at baseline 2026-08-22.2",
+			"FITWAY ladder needs .env-derived secrets in the process environment; the durable grant excludes that payload class"
+		]
+	},
+
+	"independence_limitation": "The verifier is a fresh native worker spawned by the implementing coordinator session. It shares no context with that session and did not produce the candidate, and it is briefed to form its own assessment from the diff, the specification, and the code before reading the implementer's candidate record. It is not a separately launched human-initiated session, and the final gate remains the coordinator's. This limitation is recorded rather than claimed away."
+}
