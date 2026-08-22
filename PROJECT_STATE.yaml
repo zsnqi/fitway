@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-21T20:45:47+03:00"
+updatedAt: "2026-08-22T14:57:00+03:00"
 
 coordinator:
   owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration on main; handover recorded in docs/phase-records/handoffs/coordinator/20260815-003900-coordinator-handover-and-frontier-baseline.md"
@@ -1353,9 +1353,9 @@ milestones:
     integratedCommit: 748f759195ffd1450c83d53ae7220af4c1fc2572
 
   phase11-audit-generalization:
-    status: NEEDS_HUMAN
+    status: IN_PROGRESS
     dependencies: [phase11-audit]
-    ownerSession: null
+    ownerSession: "Coordinator session p11_audit_gen_c06 in D:/Projects/fitway-worktrees/phase5-staff-integration on codex/phase11-audit-gen-slice-b: execute the human-authorized composition repair for the filter-select truncation, replace the two owned canonical baselines in a serialized pass, and re-submit to fresh independent verification. EN/AR copy is frozen; c03/c04/c05 records and candidate e42b6c4 are preserved."
     branch: codex/phase11-audit-gen-slice-b
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
     baseCommit: da2abc7
@@ -1376,6 +1376,8 @@ milestones:
       - docs/phase-records/handoffs/phase11-audit-generalization/*-p11_audit_gen_c03-*.md
       - docs/phase-records/handoffs/phase11-audit-generalization/*-p11_audit_gen_c04-*.md
       - docs/phase-records/handoffs/phase11-audit-generalization/*-p11_audit_gen_c05-*.md
+      - docs/phase-records/handoffs/phase11-audit-generalization/*-p11_audit_gen_c06-*.md
+      - docs/phase-records/handoffs/phase11-audit-generalization/*-p11_audit_gen_v03-*.md
     forbiddenPaths:
       - all repository paths outside ownedPaths
       - "packages/db/**: migration 0007 and the Slice A schema are frozen"
@@ -1390,18 +1392,18 @@ milestones:
       - every other milestone's phase record and handoff directory
       - "the seven approved access action labels, the secret-free audit rule, and the owner lifecycle decisions: human-locked"
     sharedLeases: []
-    validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-22T04:15:00+03:00"
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260822-041500-p11_audit_gen_c05-needs-human.md
-    stopReason: "c05 NEEDS_HUMAN on approved visual authority, with 0 of 2 repair attempts used. The human-authorized fresh attempt corrected the carried whitespace defect forward without touching c04 content, and candidate 70b8bade30d4a44153d355ec41ec8be315397362 passes check:repository, verify:fast, verify:phase, verify:full, the full-range whitespace gate, and pre-submission freeze, with both approved canonical PNG hashes unchanged. Fresh independent verification returned FAILED_VALIDATION on one high finding: the effective-count filter select truncates its default option label at 8 of 9 required widths in English and 6 of 9 in Arabic. The coordinator confirmed it independently, including that the human-approved AR desktop canonical baseline itself renders that control truncated, and that no label fits every required width in the current two-column grid. Every fix changes a human-approved composition or bilingual copy and needs a fresh serialized baseline approval, so no repair was attempted. The candidate, the c04 terminal record, and commit e42b6c4 are preserved; nothing is integrated; S5 remains frozen. A human must choose: accept the approved rendering, authorize a composition repair, or authorize new copy."
+    validationRepairAttempts: 1
+    lastHeartbeatAt: "2026-08-22T14:57:00+03:00"
+    leaseExpiresAt: "2026-08-23T14:57:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-audit-generalization/20260822-145700-p11_audit_gen_c06-activation-and-repair-plan.md
+    stopReason: null
     gates:
-      unit: PASS
-      integration: PASS
-      browser: PASS
-      accessibility: PASS
-      visual: PASS
-      independentReview: FAIL
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
     integratedCommit: e6c14b56e2adf93cde3361f54d0f913b880da74d
 
   phase11-access:
