@@ -8,12 +8,13 @@
  */
 import { randomBytes, randomUUID } from "node:crypto";
 import path from "node:path";
+import type { AccessAuditAction } from "@fitway/api/audit/types";
 import { AuthService } from "@fitway/auth";
 import * as applicationSchema from "@fitway/db/schema/application";
 import { auditLog } from "@fitway/db/schema/application";
 import * as authSchema from "@fitway/db/schema/auth";
 import { serve } from "@hono/node-server";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { Pool } from "pg";
@@ -160,6 +161,31 @@ async function latestAuditRow() {
 	return row;
 }
 
+async function accessRowsSince(
+	auditIdFloor: number,
+	action: AccessAuditAction,
+) {
+	return database
+		.select()
+		.from(auditLog)
+		.where(and(eq(auditLog.eventClass, "access"), eq(auditLog.action, action)))
+		.then((rows) => rows.filter((row) => row.id > auditIdFloor));
+}
+
+async function highestAuditId(): Promise<number> {
+	const [row] = await database
+		.select({ id: auditLog.id })
+		.from(auditLog)
+		.orderBy(desc(auditLog.id))
+		.limit(1);
+	return row?.id ?? 0;
+}
+
+async function staffCredentialRow() {
+	const [row] = await database.select().from(authSchema.authStaffCredentials);
+	return row ?? null;
+}
+
 async function provisionOwnerAccount(displayName: string) {
 	const email = `p11-access-${randomUUID()}@fitway.example`;
 	const password = randomBytes(18).toString("base64url");
@@ -214,6 +240,65 @@ beforeAll(async () => {
 afterAll(async () => {
 	server?.close();
 	await pool.end();
+});
+
+/**
+ * This block runs first, and it has to.
+ *
+ * Every other test in this file works against a shared staff principal that
+ * exists by the time it runs, and once audit rows reference that principal it
+ * cannot be deleted. The one race a row lock cannot cover is the one *before*
+ * the principal exists — there is nothing to lock, and the unique index
+ * arbitrates instead. The only state in which that is reachable is the state
+ * `beforeAll` leaves behind, so the assertion lives here rather than beside the
+ * other concurrency tests, and it hands the fixture back the way it found it.
+ */
+describe("the provisioning race before a shared staff principal exists", () => {
+	it("provisions once and refuses the losers by name rather than by 500", async () => {
+		const existing = await database
+			.select()
+			.from(authSchema.authPrincipals)
+			.where(eq(authSchema.authPrincipals.principalKind, "shared_staff"));
+		expect(existing, "this must run before anything provisions").toHaveLength(
+			0,
+		);
+		const floor = await highestAuditId();
+
+		const settled = await Promise.all(
+			Array.from({ length: 3 }, () =>
+				rpcRaw("staffPin/provision", {}, ownerCookie),
+			),
+		);
+		expect(settled.filter((response) => response.status === 200)).toHaveLength(
+			1,
+		);
+		for (const response of settled.filter((entry) => entry.status !== 200)) {
+			expect(
+				response.status,
+				"a lost provisioning race is a refusal, not a server fault",
+			).toBe(400);
+			const body = (await response.json()) as {
+				json?: { data?: { code?: unknown } };
+			};
+			expect(body.json?.data?.code).toBe("staff_pin_already_active");
+		}
+		expect(await accessRowsSince(floor, "staff_pin_provisioned")).toHaveLength(
+			1,
+		);
+	});
+
+	// Restored here rather than at the end of the test so that a failure above
+	// reports itself instead of cascading: the principal now exists and cannot be
+	// removed, but leaving no PIN active makes the next provision behave exactly
+	// as it would have had this block never run.
+	afterAll(async () => {
+		const credential = await staffCredentialRow();
+		if (credential?.active) {
+			await rpc<MutationPayload>("staffPin/deactivate", {
+				reason: "restoring the fixture this block borrowed",
+			});
+		}
+	});
 });
 
 describe("authorization", () => {
@@ -483,6 +568,236 @@ describe("credential reset", () => {
 		expect(row.action).toBe("credential_reset");
 		expect(row.priorCredentialVersion).toBe(1);
 		expect(row.newCredentialVersion).toBe(2);
+	});
+});
+
+/**
+ * Every governance mutation reads a state, decides from it, and writes a
+ * successor derived from it. The sequential suite above passed sixteen of
+ * sixteen on a candidate where only one of the six mutations locked what it
+ * read, so nothing here duplicates a sequential assertion: each test aims at
+ * the lost update specifically, and each one fails against the unlocked code.
+ *
+ * The shared discriminator is that a lost update is invisible in the final row
+ * and loud in the sequence. Two unlocked rotations both read version N and both
+ * write N+1, so the credential ends at N+1 with two audit rows claiming the same
+ * transition — the state looks plausible and the history is a lie. Locked, the
+ * second waits, reads N+1, and writes N+2. So these assertions read the
+ * *versions the mutations reported* and the *rows they appended*, not the row
+ * that happens to be there at the end.
+ */
+describe("every mutation under concurrency", () => {
+	const RACERS = 3;
+
+	it("advances the staff PIN version once per rotation and reveals only the stored one", async () => {
+		// Guarantee an active PIN to rotate, whatever the earlier blocks left.
+		const active = await staffCredentialRow();
+		if (!active?.active) await rpc<RevealPayload>("staffPin/provision", {});
+		const floor = await highestAuditId();
+
+		const settled = await Promise.all(
+			Array.from({ length: RACERS }, () =>
+				rpcRaw("staffPin/rotate", {}, ownerCookie),
+			),
+		);
+		const reveals: RevealPayload[] = [];
+		for (const response of settled) {
+			expect(response.status).toBe(200);
+			reveals.push(((await response.json()) as { json: RevealPayload }).json);
+		}
+
+		const versions = reveals
+			.map((reveal) => reveal.principal.credentialVersion ?? 0)
+			.sort((a, b) => a - b);
+		// Unlocked, every racer reads the same version and reports the same
+		// successor. This is the assertion that catches it.
+		expect(
+			new Set(versions).size,
+			"each rotation must claim its own version",
+		).toBe(RACERS);
+		expect(versions.at(-1)).toBe((versions[0] ?? 0) + RACERS - 1);
+
+		const stored = await staffCredentialRow();
+		expect(stored?.credentialVersion).toBe(versions.at(-1));
+
+		// The reveal is the only channel by which a PIN reaches a human. Exactly
+		// the one belonging to the stored version may log in; an owner handed any
+		// other was handed a PIN that does not open the door.
+		const winner = reveals.find(
+			(reveal) => reveal.principal.credentialVersion === versions.at(-1),
+		);
+		if (!winner) throw new Error("No reveal matched the stored version");
+		expect(cookiePair(await loginStaff(winner.revealedPin))).not.toBe("");
+		for (const loser of reveals.filter((reveal) => reveal !== winner)) {
+			expect(
+				cookiePair(await loginStaff(loser.revealedPin)),
+				"a superseded reveal must not authenticate",
+			).toBe("");
+		}
+
+		const rows = await accessRowsSince(floor, "staff_pin_rotated");
+		expect(rows).toHaveLength(RACERS);
+		expect(
+			new Set(rows.map((row) => row.priorCredentialVersion)).size,
+			"no two rows may claim the same prior version",
+		).toBe(RACERS);
+	});
+
+	it("deactivates the staff PIN once, and refuses the rest by name", async () => {
+		const active = await staffCredentialRow();
+		if (!active?.active) await rpc<RevealPayload>("staffPin/provision", {});
+		const floor = await highestAuditId();
+
+		const settled = await Promise.all(
+			Array.from({ length: RACERS }, () =>
+				rpcRaw(
+					"staffPin/deactivate",
+					{ reason: "front desk closed for the night" },
+					ownerCookie,
+				),
+			),
+		);
+		const statuses = settled.map((response) => response.status);
+		expect(statuses.filter((status) => status === 200)).toHaveLength(1);
+		for (const response of settled.filter((entry) => entry.status !== 200)) {
+			expect(response.status).toBe(400);
+			const body = (await response.json()) as {
+				json?: { data?: { code?: unknown } };
+			};
+			// Not staff_pin_shape: the owner typed no PIN, so a shape refusal would
+			// describe a fault that does not exist.
+			expect(body.json?.data?.code).toBe("staff_pin_not_active");
+		}
+
+		const rows = await accessRowsSince(floor, "staff_pin_deactivated");
+		expect(rows, "one transition writes one row").toHaveLength(1);
+	});
+
+	it("reactivates an owner once and writes one row for the one transition", async () => {
+		const created = await provisionOwnerAccount("Reactivation race owner");
+		await rpc<MutationPayload>("owner/deactivate", {
+			targetPrincipalId: created.principalId,
+			reason: "so there is something to reactivate",
+		});
+		const floor = await highestAuditId();
+
+		const settled = await Promise.all(
+			Array.from({ length: RACERS }, () =>
+				rpcRaw(
+					"owner/reactivate",
+					{ targetPrincipalId: created.principalId },
+					ownerCookie,
+				),
+			),
+		);
+		expect(settled.filter((response) => response.status === 200)).toHaveLength(
+			1,
+		);
+		for (const response of settled.filter((entry) => entry.status !== 200)) {
+			expect(response.status).toBe(400);
+			const body = (await response.json()) as {
+				json?: { data?: { code?: unknown } };
+			};
+			expect(body.json?.data?.code).toBe("owner_already_active");
+		}
+
+		const rows = await accessRowsSince(floor, "owner_reactivated");
+		// Unlocked, every racer observed active=false, every one passed its
+		// assertion, and every one appended a row claiming false -> true. Only one
+		// of those transitions happened.
+		expect(rows, "one reactivation is one row").toHaveLength(1);
+		expect(rows[0]?.targetPrincipalId).toBe(created.principalId);
+	});
+
+	it("advances the owner credential version once per reset", async () => {
+		const created = await provisionOwnerAccount("Reset race owner");
+		const floor = await highestAuditId();
+
+		const passwords = Array.from({ length: RACERS }, () =>
+			randomBytes(18).toString("base64url"),
+		);
+		const settled = await Promise.all(
+			passwords.map((password) =>
+				rpcRaw(
+					"owner/resetCredential",
+					{ targetPrincipalId: created.principalId, password },
+					ownerCookie,
+				),
+			),
+		);
+		const results: MutationPayload[] = [];
+		for (const response of settled) {
+			expect(response.status).toBe(200);
+			results.push(((await response.json()) as { json: MutationPayload }).json);
+		}
+
+		const versions = results
+			.map((result) => result.principal.credentialVersion ?? 0)
+			.sort((a, b) => a - b);
+		expect(
+			new Set(versions).size,
+			"each reset must claim its own version",
+		).toBe(RACERS);
+		expect(versions.at(-1)).toBe((versions[0] ?? 0) + RACERS - 1);
+
+		const [credential] = await database
+			.select()
+			.from(authSchema.authOwnerCredentials)
+			.where(
+				eq(authSchema.authOwnerCredentials.principalId, created.principalId),
+			);
+		expect(credential?.credentialVersion, "no increment may be lost").toBe(
+			versions.at(-1),
+		);
+
+		const rows = await accessRowsSince(floor, "credential_reset");
+		expect(rows).toHaveLength(RACERS);
+		expect(
+			new Set(rows.map((row) => row.priorCredentialVersion)).size,
+			"no two rows may assert the same version transition",
+		).toBe(RACERS);
+
+		// Whatever the interleaving, every one of these transactions revoked the
+		// principal's sessions and only the last-written password can log in.
+		const last = results.find(
+			(result) => result.principal.credentialVersion === versions.at(-1),
+		);
+		const lastPassword = passwords[results.indexOf(last as MutationPayload)];
+		if (!lastPassword) throw new Error("No password matched the final version");
+		expect(cookiePair(await loginOwner(created.email, lastPassword))).not.toBe(
+			"",
+		);
+	});
+
+	it("refuses a credential reset on a deactivated owner instead of re-enabling them", async () => {
+		// Not a race, but the same class of defect the races exposed: a reset set
+		// the credential row back to active with no active check on the principal,
+		// half-undoing a deactivation with no owner_reactivated row to describe it.
+		const created = await provisionOwnerAccount("Deactivated reset target");
+		await rpc<MutationPayload>("owner/deactivate", {
+			targetPrincipalId: created.principalId,
+			reason: "left the company",
+		});
+		const floor = await highestAuditId();
+
+		const refused = await refusal("owner/resetCredential", {
+			targetPrincipalId: created.principalId,
+			password: randomBytes(18).toString("base64url"),
+		});
+		expect(refused.status).toBe(400);
+		expect(refused.code).toBe("owner_already_inactive");
+
+		const [credential] = await database
+			.select()
+			.from(authSchema.authOwnerCredentials)
+			.where(
+				eq(authSchema.authOwnerCredentials.principalId, created.principalId),
+			);
+		expect(
+			credential?.active,
+			"a refused reset must leave the deactivated credential inactive",
+		).toBe(false);
+		expect(await accessRowsSince(floor, "credential_reset")).toHaveLength(0);
 	});
 });
 

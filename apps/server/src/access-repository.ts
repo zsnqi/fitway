@@ -218,12 +218,25 @@ const lockOwnerPrincipal = (transaction: Transaction, principalId: string) =>
  * reported as that refusal instead.
  */
 function isUniqueViolation(error: unknown): boolean {
-	return (
-		typeof error === "object" &&
-		error !== null &&
-		"code" in error &&
-		(error as { code?: unknown }).code === "23505"
-	);
+	// The driver's error does not arrive bare: Drizzle wraps a failed query and
+	// keeps the `pg` error underneath as `cause`, so a check on the top-level
+	// object alone silently never matches and the refusal stays a 500. The chain
+	// is walked with a depth bound rather than trusted to terminate.
+	let current: unknown = error;
+	for (let depth = 0; depth < 5 && current; depth += 1) {
+		if (
+			typeof current === "object" &&
+			"code" in current &&
+			(current as { code?: unknown }).code === "23505"
+		) {
+			return true;
+		}
+		current =
+			typeof current === "object" && "cause" in current
+				? (current as { cause?: unknown }).cause
+				: null;
+	}
+	return false;
 }
 
 async function insertSharedStaffPrincipal(
