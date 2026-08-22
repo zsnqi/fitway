@@ -2,6 +2,7 @@ import { buildAccessAuditEntry } from "@fitway/api/audit/governance";
 import type { AccessAuditAction } from "@fitway/api/audit/types";
 import {
 	AccessRuleError,
+	assertOwnerCredentialResetAllowed,
 	assertOwnerDeactivationAllowed,
 	assertOwnerReactivationAllowed,
 	assertReasonPresent,
@@ -13,7 +14,7 @@ import {
 	authSessions,
 	authStaffCredentials,
 } from "@fitway/db/schema/auth";
-import { and, asc, eq, isNull } from "drizzle-orm";
+import { and, asc, eq, isNull, type SQL } from "drizzle-orm";
 
 import { appendAuditEntry } from "./audit-repository";
 
@@ -145,6 +146,9 @@ async function readOwnerState(transaction: Transaction, principalId: string) {
  * against a mutation, and without the lock two concurrent deactivations each
  * read two active owners, each pass, and the gym is left with none. The lock
  * makes the second transaction wait and re-read a count of one.
+ *
+ * The rows are ordered before they are locked so two concurrent deactivations
+ * take the same locks in the same sequence and queue instead of deadlocking.
  */
 async function countActiveOwnersForUpdate(
 	transaction: Transaction,
@@ -158,8 +162,96 @@ async function countActiveOwnersForUpdate(
 				eq(authPrincipals.active, true),
 			),
 		)
+		.orderBy(asc(authPrincipals.id))
 		.for("update");
 	return rows.length;
+}
+
+/**
+ * Locks one principal row for the rest of the transaction.
+ *
+ * Every governance mutation reads a state, decides from it, and writes a
+ * successor derived from what it read — a new credential version, an inverted
+ * active flag. Under READ COMMITTED that is a lost update: two transactions read
+ * the same row and write the same successor, and the audit rows they append then
+ * describe two transitions where only one happened. Taking this lock first is
+ * what makes the read-decide-write sequence atomic against a concurrent caller,
+ * and it is why `appendGovernanceRow` can claim what it claims.
+ *
+ * The lock is taken on the principal row alone, not on the joined read that
+ * follows, because Postgres refuses `for update` on the nullable side of an
+ * outer join and the credential is reached through a left join. Locking the
+ * principal is sufficient: every credential in this module is reached through
+ * its principal, so serialising the principal serialises the credential with it.
+ *
+ * A row that does not exist cannot be locked. Both callers that can meet that
+ * case handle it explicitly rather than proceeding unlocked.
+ */
+async function lockPrincipalRow(
+	transaction: Transaction,
+	where: SQL | undefined,
+): Promise<string | null> {
+	const [row] = await transaction
+		.select({ id: authPrincipals.id })
+		.from(authPrincipals)
+		.where(where)
+		.limit(1)
+		.for("update");
+	return row?.id ?? null;
+}
+
+const lockSharedStaffPrincipal = (transaction: Transaction) =>
+	lockPrincipalRow(
+		transaction,
+		eq(authPrincipals.principalKind, "shared_staff"),
+	);
+
+const lockOwnerPrincipal = (transaction: Transaction, principalId: string) =>
+	lockPrincipalRow(transaction, eq(authPrincipals.id, principalId));
+
+/**
+ * The one race a lock cannot cover: two provisioning calls arriving before the
+ * shared staff principal exists at all. There is no row to lock, so
+ * `auth_principals_one_shared_staff` arbitrates, and the loser's insert fails
+ * with a unique violation. Left alone that surfaces as an untyped 500. It is the
+ * same refusal the locked path gives once the principal exists, so it is
+ * reported as that refusal instead.
+ */
+function isUniqueViolation(error: unknown): boolean {
+	return (
+		typeof error === "object" &&
+		error !== null &&
+		"code" in error &&
+		(error as { code?: unknown }).code === "23505"
+	);
+}
+
+async function insertSharedStaffPrincipal(
+	transaction: Transaction,
+	now: Date,
+): Promise<typeof authPrincipals.$inferSelect | undefined> {
+	try {
+		const [principal] = await transaction
+			.insert(authPrincipals)
+			.values({
+				principalKind: "shared_staff",
+				role: "staff",
+				ownerEmail: null,
+				displayName: "Shared front desk",
+				createdAt: now,
+				updatedAt: now,
+			})
+			.returning();
+		return principal;
+	} catch (error) {
+		if (isUniqueViolation(error)) {
+			throw new AccessRuleError(
+				"staff_pin_already_active",
+				"An active staff PIN already exists; rotate it instead",
+			);
+		}
+		throw error;
+	}
 }
 
 export type AccessMutationResult = {
@@ -174,9 +266,18 @@ export type AccessMutationResult = {
  * `SPEC.md` requires the mutation and its audit row to share one transaction, so
  * this is the only shape a governance write takes here: read the before snapshot
  * under the transaction, mutate, read the after snapshot under the same
- * transaction, build the row from those two snapshots, append. A caller cannot
- * supply either snapshot and therefore cannot describe a transition that did not
- * happen.
+ * transaction, build the row from those two snapshots, append.
+ *
+ * Two separate things make the row truthful, and the second one is easy to
+ * mistake for the first. Because the snapshots are read server-side, a *caller*
+ * cannot supply either one and so cannot describe a transition it invented.
+ * Because the target principal is locked with `for update` before the before
+ * snapshot is read, a *concurrent transaction* cannot have moved the state
+ * between the read and the write either — without that lock two simultaneous
+ * reactivations would each observe `active=false`, each pass their assertion,
+ * and each append a row claiming `false -> true`, of which only one happened.
+ * The snapshot handles the malicious caller; the lock handles the concurrent
+ * one. Removing either leaves rows the audit log cannot justify.
  */
 async function appendGovernanceRow(
 	transaction: Transaction,
@@ -252,28 +353,17 @@ export class AccessRepository {
 		now: Date;
 	}): Promise<AccessMutationResult> {
 		return this.#db.transaction(async (transaction) => {
+			await lockSharedStaffPrincipal(transaction);
 			const existing = await readStaffState(transaction);
 			if (existing?.credential?.active) {
 				throw new AccessRuleError(
-					"staff_pin_shape",
+					"staff_pin_already_active",
 					"An active staff PIN already exists; rotate it instead",
 				);
 			}
 			const principal =
 				existing?.principal ??
-				(
-					await transaction
-						.insert(authPrincipals)
-						.values({
-							principalKind: "shared_staff",
-							role: "staff",
-							ownerEmail: null,
-							displayName: "Shared front desk",
-							createdAt: input.now,
-							updatedAt: input.now,
-						})
-						.returning()
-				)[0];
+				(await insertSharedStaffPrincipal(transaction, input.now));
 			if (!principal)
 				throw new Error("Failed to create shared staff principal");
 			const before = existing ? existing.view : governanceView(principal, null);
@@ -323,10 +413,11 @@ export class AccessRepository {
 		now: Date;
 	}): Promise<AccessMutationResult> {
 		return this.#db.transaction(async (transaction) => {
+			await lockSharedStaffPrincipal(transaction);
 			const existing = await readStaffState(transaction);
 			if (!existing?.credential?.active) {
 				throw new AccessRuleError(
-					"staff_pin_shape",
+					"staff_pin_not_active",
 					"There is no active staff PIN to rotate",
 				);
 			}
@@ -369,10 +460,11 @@ export class AccessRepository {
 	}): Promise<AccessMutationResult> {
 		assertReasonPresent(input.reason);
 		return this.#db.transaction(async (transaction) => {
+			await lockSharedStaffPrincipal(transaction);
 			const existing = await readStaffState(transaction);
 			if (!existing?.credential?.active) {
 				throw new AccessRuleError(
-					"staff_pin_shape",
+					"staff_pin_not_active",
 					"There is no active staff PIN to deactivate",
 				);
 			}
@@ -465,6 +557,11 @@ export class AccessRepository {
 	}): Promise<AccessMutationResult> {
 		return this.#db.transaction(async (transaction) => {
 			const activeOwnerCount = await countActiveOwnersForUpdate(transaction);
+			// The count above already locks every *active* owner. An inactive target
+			// is not in that set, so it is locked here too — a concurrent
+			// reactivation of the same principal must not slip between this read and
+			// the refusal it produces.
+			await lockOwnerPrincipal(transaction, input.targetPrincipalId);
 			const existing = await readOwnerState(
 				transaction,
 				input.targetPrincipalId,
@@ -524,6 +621,7 @@ export class AccessRepository {
 		now: Date;
 	}): Promise<AccessMutationResult> {
 		return this.#db.transaction(async (transaction) => {
+			await lockOwnerPrincipal(transaction, input.targetPrincipalId);
 			const existing = await readOwnerState(
 				transaction,
 				input.targetPrincipalId,
@@ -580,13 +678,21 @@ export class AccessRepository {
 		now: Date;
 	}): Promise<AccessMutationResult> {
 		return this.#db.transaction(async (transaction) => {
+			await lockOwnerPrincipal(transaction, input.targetPrincipalId);
 			const existing = await readOwnerState(
 				transaction,
 				input.targetPrincipalId,
 			);
-			if (existing?.principal.role !== "owner") {
+			if (!existing) {
 				throw new AccessRuleError("not_an_owner", "No such owner principal");
 			}
+			assertOwnerCredentialResetAllowed({
+				target: {
+					principalId: existing.principal.id,
+					role: existing.principal.role,
+					active: existing.principal.active,
+				},
+			});
 			if (!existing.credential) {
 				throw new AccessRuleError(
 					"not_an_owner",
