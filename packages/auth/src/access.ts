@@ -26,8 +26,16 @@ export const GENERATED_STAFF_PIN_LENGTH = 8;
 
 const WESTERN_DIGITS = /^[0-9]+$/;
 
+/**
+ * `staff_pin_shape` means the digits are wrong. It does not mean "there is
+ * already a PIN" or "there is no PIN yet" — those are states, not shapes, and
+ * they carry their own codes so the owner surface can say what actually
+ * happened instead of reporting a malformed PIN the owner never typed.
+ */
 export type AccessRuleCode =
 	| "staff_pin_shape"
+	| "staff_pin_already_active"
+	| "staff_pin_not_active"
 	| "owner_self_deactivation"
 	| "owner_last_active"
 	| "owner_already_inactive"
@@ -174,6 +182,36 @@ export function assertOwnerReactivationAllowed(input: {
 		throw new AccessRuleError(
 			"owner_already_active",
 			"That owner is already active",
+		);
+	}
+}
+
+/**
+ * An in-app credential reset targets an *active* owner.
+ *
+ * The locked decisions say deactivation "targets the principal and invalidates
+ * its credentials", and that reactivation is an explicit separate owner action.
+ * A reset re-activates the credential row, so allowing it against a deactivated
+ * owner would half-undo a deactivation with no `owner_reactivated` row to
+ * describe it — a state the audit log cannot express. Refusing is what holds
+ * both locked decisions; the recovery path is reactivate, then reset.
+ *
+ * The refusal reuses `owner_already_inactive` because it is the same fact about
+ * the target, not a different rule wearing a different name.
+ */
+export function assertOwnerCredentialResetAllowed(input: {
+	target: OwnerLifecycleTarget;
+}): void {
+	if (input.target.role !== "owner") {
+		throw new AccessRuleError(
+			"not_an_owner",
+			"A credential reset targets an owner principal",
+		);
+	}
+	if (!input.target.active) {
+		throw new AccessRuleError(
+			"owner_already_inactive",
+			"That owner is deactivated; reactivate before resetting the credential",
 		);
 	}
 }

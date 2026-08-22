@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
 	AccessRuleError,
+	assertOwnerCredentialResetAllowed,
 	assertOwnerDeactivationAllowed,
 	assertOwnerReactivationAllowed,
 	assertReasonPresent,
@@ -220,6 +221,45 @@ describe("owner reactivation", () => {
 				}),
 			),
 		).toBe("not_an_owner");
+	});
+});
+
+describe("owner credential reset", () => {
+	it("allows an active owner", () => {
+		expect(
+			ruleCode(() => assertOwnerCredentialResetAllowed({ target: otherOwner })),
+		).toBeNull();
+	});
+
+	it("refuses a deactivated owner rather than silently re-enabling them", () => {
+		// The credential row would come back active with no owner_reactivated row
+		// to describe it. Reactivate first; that is the explicit separate action.
+		expect(
+			ruleCode(() =>
+				assertOwnerCredentialResetAllowed({
+					target: { ...otherOwner, active: false },
+				}),
+			),
+		).toBe("owner_already_inactive");
+	});
+
+	it("refuses a staff target", () => {
+		expect(
+			ruleCode(() =>
+				assertOwnerCredentialResetAllowed({
+					target: { ...otherOwner, role: "staff" },
+				}),
+			),
+		).toBe("not_an_owner");
+	});
+
+	it("allows an owner to reset their own credential", () => {
+		// Self-deactivation is refused; self-reset is not. Nothing in the locked
+		// decisions makes an owner unable to change their own password, and the
+		// deactivation rule exists to stop an owner locking themselves out.
+		expect(
+			ruleCode(() => assertOwnerCredentialResetAllowed({ target: owner })),
+		).toBeNull();
 	});
 });
 
