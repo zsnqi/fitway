@@ -152,3 +152,23 @@ Recorded because an honest gap statement is worth more than a clean-looking one:
 - Rate limiting was not evaluated — correctly out of scope, a new decision named in the b01 record.
 - No browser, accessibility, or visual inspection: the slice has no UI and those gates are
   `NOT_REQUIRED`.
+
+## Addendum — does the PASS cover the commit that was integrated?
+
+The verifier's PASS was formed at `cb7cd96`. One code-file edit landed after it: the M2 comment
+correction, in the integrated commit `8ff55f9` and carried to `main` at `be98817`. A verdict does
+not automatically survive an edit made after it, so the question was checked rather than assumed,
+by the verifier and again by the coordinator against the repository.
+
+`git diff cb7cd96..be98817` over every non-document path touches exactly one file,
+`apps/server/src/access-repository.ts`, +16/-7, entirely inside the `appendGovernanceRow` docblock.
+Stripping block comments, whole-line comments, and blank lines from both revisions leaves the two
+files **byte-identical** — 17,403 characters each. No executable code changed between the verified
+candidate and the integrated commit, so nothing the verifier exercised was invalidated. The gates
+were deliberately not re-run against `be98817`: with executable code proven identical there is
+nothing new to exercise, and a re-run would not be independent evidence of anything.
+
+**Scope caveat for the next session, in the verifier's own terms.** This PASS is scoped to
+`cb7cd96`. Any later commit that touches executable code in
+`packages/auth/src/access.ts`, `packages/api/src/access/**`, `apps/server/src/access-repository.ts`,
+or `apps/server/src/access-service.ts` inherits no verification from it and needs its own.
