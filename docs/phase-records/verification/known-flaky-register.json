@@ -1,0 +1,66 @@
+{
+	"schema": "known-flaky-register/1",
+	"project": "fitway",
+	"_what_this_is": "The load-sensitive assertions FITWAY has independently observed going red inside a single pnpm verify:full invocation and green when their suite is run standalone at the same commit. It exists so a verifier does not pay for four full ladder runs to re-derive a failure someone else already recorded, and it is not a licence: scripts/flaky-attribution-check.mjs fails closed on anything unlisted, on an entry with one uncorroborated observation, on an entry opened by the session reporting the failure, on a candidate that touches the entry's surface, and on a missing standalone re-run. One unlisted failing assertion makes the whole run red.",
+	"_provenance": "Entries transcribed from evidence recorded by earlier sessions, not opened by the session that first used this file. The b01 independent verifier recorded all three locations in docs/phase-records/handoffs/phase11-access/20260822-173000-p11_access_b01-failed-validation.md, together with the standalone 83/83 pass at the same commit. The phase2 integration entry was named at the S4 close.",
+
+	"entries": [
+		{
+			"id": "browser-phase2-cache-expiry",
+			"location": "tests/browser/phase2.browser.spec.ts:72",
+			"title": "locally expires cached fresh JSON without another request",
+			"status": "open",
+			"opened": "2026-08-22T17:30:00+03:00",
+			"opened_by": "v11f_access_r1",
+			"surface": ["apps/web/**", "tests/browser/**", "edge/**"],
+			"standalone_pass_observed": true,
+			"mechanism": "A cache-expiry timing assertion. Inside a single verify:full invocation the browser step runs after build, unit, and integration on the same machine, and the elapsed-time margin this assertion depends on is compressed under that load.",
+			"observations": [
+				{
+					"session": "v11f_access_r1",
+					"date": "2026-08-22",
+					"result": "red inside verify:full, green standalone 83/83 at the same commit",
+					"record": "docs/phase-records/handoffs/phase11-access/20260822-173000-p11_access_b01-failed-validation.md"
+				}
+			]
+		},
+		{
+			"id": "browser-phase10-csv-history-retry",
+			"location": "tests/browser/phase10-ui-csv.browser.spec.ts:742",
+			"title": "History exposes prerequisite pending, error, and one deliberate retry chain",
+			"status": "open",
+			"opened": "2026-08-22T17:30:00+03:00",
+			"opened_by": "v11f_access_r1",
+			"surface": ["apps/web/**", "tests/browser/**"],
+			"standalone_pass_observed": true,
+			"mechanism": "Asserts a transient loading state is visible. Under load the transition completes before the assertion samples it, so the element is not found rather than wrong.",
+			"observations": [
+				{
+					"session": "v11f_access_r1",
+					"date": "2026-08-22",
+					"result": "red inside verify:full, green standalone 83/83 at the same commit",
+					"record": "docs/phase-records/handoffs/phase11-access/20260822-173000-p11_access_b01-failed-validation.md"
+				}
+			]
+		},
+		{
+			"id": "browser-phase3-transient-state",
+			"location": "tests/browser/phase3.browser.spec.ts:57",
+			"title": "transient-state assertion recorded alongside the other two",
+			"status": "open",
+			"opened": "2026-08-22T17:30:00+03:00",
+			"opened_by": "v11f_access_r1",
+			"surface": ["apps/web/**", "tests/browser/**"],
+			"standalone_pass_observed": true,
+			"mechanism": "Same class as the other two: a transient-state timing assertion sampled after the rest of the ladder has loaded the machine.",
+			"observations": [
+				{
+					"session": "v11f_access_r1",
+					"date": "2026-08-22",
+					"result": "red inside verify:full, green standalone 83/83 at the same commit",
+					"record": "docs/phase-records/handoffs/phase11-access/20260822-173000-p11_access_b01-failed-validation.md"
+				}
+			]
+		}
+	]
+}

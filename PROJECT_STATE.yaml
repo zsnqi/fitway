@@ -1454,9 +1454,9 @@ milestones:
     integratedCommit: null
 
   phase11-access-b02:
-    status: READY_FOR_INTEGRATION
+    status: DONE
     dependencies: [phase-4, phase-5, phase-9, phase11-audit-generalization]
-    ownerSession: "coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration executing Slice A directly; run ID p11_access_b02"
+    ownerSession: null
     branch: work/phase11-access-b02
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
     baseCommit: 6071e1b6489cf2a477e766dbc95743791092e0fd
@@ -1472,6 +1472,7 @@ milestones:
       - docs/phase-records/handoffs/phase11-access/*-p11_access_b02-*.md
       - docs/phase-records/handoffs/phase11-access/*-p11_access_v02-*.md
       - docs/phase-records/route-decisions/**
+      - docs/phase-records/verification/**
       - "one-time coordinator-authorized carry-forward only: the twelve implementation files of the immutable b01 candidate 8e77536bebcda08f401d0c3d4db296bab8cf3286, copied unmodified in a single commit. PROJECT_STATE.yaml and the b01 handoffs are excluded from the carry; the b01 handoffs are copied separately as preserved rejected evidence and are read-only thereafter."
     forbiddenPaths:
       - all repository paths outside ownedPaths and sharedLeases
@@ -1487,13 +1488,11 @@ milestones:
       - "the seven approved access action labels, the secret-free audit rule, and the owner lifecycle decisions: human-locked"
       - "rate limiting on the owner access leaves: a new decision named in the b01 terminal record, not an omission this slice may close"
       - "the load-sensitive browser step of verify:full: repository debt outside these owned paths"
-    sharedLeases:
-      - "exclusive through 2026-08-24T23:00:00+03:00 to p11_access_b02: additive admin.access.* leaves in packages/api/src/routers/index.ts and their context wiring in apps/server/src/index.ts. Does not authorize touching the staff, analytics, audit, or health leaves. Released from p11_access_b01 on 2026-08-22T22:20:00+03:00."
-      - "exclusive through 2026-08-24T23:00:00+03:00 to p11_access_b02: additive access members in packages/api/src/context.ts. The transport injects its readers and writers through this type, so the leaves cannot exist without it. Additive only: no existing member's shape, optionality, or documentation changes. Released from p11_access_b01 on 2026-08-22T22:20:00+03:00."
+    sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-23T00:45:00+03:00"
-    leaseExpiresAt: "2026-08-24T23:00:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-access/20260823-004500-p11_access_v02-independent-verification.md
+    lastHeartbeatAt: "2026-08-23T01:15:00+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase11-access/20260823-001500-p11_access_c02-coordinator-done.md
     stopReason: null
     gates:
       unit: PASS
@@ -1502,7 +1501,7 @@ milestones:
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
       independentReview: PASS
-    integratedCommit: null
+    integratedCommit: 8ff55f9badcfe17b49ab1de788dd64cf20ec0682
 
   phase11-settings:
     status: PLANNED

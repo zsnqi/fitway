@@ -1,0 +1,51 @@
+{
+	"schema": "verification-failure/1",
+	"run_id": "p11_access_int2",
+	"reporting_session": "p11_access_b02_coordinator",
+	"recorded": "2026-08-22T23:40:00+03:00",
+	"candidate_commit": "8ff55f9badcfe17b49ab1de788dd64cf20ec0682",
+	"command": "pnpm verify:full",
+	"step": "All browser and accessibility tests",
+	"result": "2 failed / 81 passed",
+	"diff_paths": [
+		"PROJECT_STATE.yaml",
+		"apps/server/src/access-repository.ts",
+		"apps/server/src/access-service.ts",
+		"apps/server/src/auth/runtime.ts",
+		"apps/server/src/index.ts",
+		"apps/server/src/phase11-access.integration.test.ts",
+		"docs/phase-records/handoffs/phase11-access/20260822-164500-p11_access_b01-activation-and-plan.md",
+		"docs/phase-records/handoffs/phase11-access/20260822-173000-p11_access_b01-failed-validation.md",
+		"docs/phase-records/handoffs/phase11-access/20260822-183000-p11_access_b01-candidate.md",
+		"docs/phase-records/handoffs/phase11-access/20260822-222000-p11_access_b02-activation-and-plan.md",
+		"docs/phase-records/handoffs/phase11-access/20260822-233000-p11_access_b02-candidate.md",
+		"docs/phase-records/handoffs/phase11-access/20260823-004500-p11_access_v02-independent-verification.md",
+		"docs/phase-records/route-decisions/README.md",
+		"docs/phase-records/route-decisions/p11_access_b02-implementation.json",
+		"docs/phase-records/route-decisions/p11_access_b02-independent-verification.json",
+		"packages/api/src/access/contracts.ts",
+		"packages/api/src/access/procedures.ts",
+		"packages/api/src/context.ts",
+		"packages/api/src/routers/index.ts",
+		"packages/auth/src/access.test.ts",
+		"packages/auth/src/access.ts",
+		"packages/auth/src/index.ts"
+	],
+	"standalone_rerun": {
+		"tests/browser/phase2.browser.spec.ts:72": "PASS",
+		"tests/browser/phase10-ui-csv.browser.spec.ts:742": "PASS"
+	},
+	"standalone_rerun_evidence": "pnpm exec playwright test at 8ff55f9, run id p11_access_std1, 83/83 passed in 1.2m, worktree clean before and after",
+	"failures": [
+		{
+			"location": "tests/browser/phase2.browser.spec.ts:72",
+			"title": "locally expires cached fresh JSON without another request",
+			"error": "expect(locator).toContainText(expected) failed on locator('body'), 5000ms timeout"
+		},
+		{
+			"location": "tests/browser/phase10-ui-csv.browser.spec.ts:742",
+			"title": "History exposes prerequisite pending, error, and one deliberate retry chain",
+			"error": "expect(locator).toBeVisible() failed on [data-owner-reporting-state='loading'], element not found, 5000ms timeout"
+		}
+	]
+}
