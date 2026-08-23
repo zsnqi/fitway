@@ -1,0 +1,56 @@
+{
+	"schema": "route-decision/1",
+
+	"project": "fitway",
+	"stage_ref": "p11_access_tx_b01 / stage-5-independent-verification",
+	"recorded": "2026-08-23T14:05:00+03:00",
+
+	"evaluated_before_stage_discovery": true,
+
+	"candidate_id": "deepseek-v4-pro",
+	"route": "opencode-go/deepseek-v4-pro",
+	"control": "max",
+	"execution": "external-opencode",
+	"transport": "opencode-cli",
+
+	"registry_revision": "2026-08-23.5",
+	"qualification_baseline": "2026-08-23.2",
+	"qualification_status": "qualified",
+
+	"gate_outcome": null,
+	"gate_outcome_note": null,
+
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "shell"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": ["repository_verification_ladder"],
+
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md",
+		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
+	],
+
+	"delegation_trigger": "independence",
+	"material_selection_reason": "Requalified from current evidence rather than reused. The prior FITWAY independent-verification decision selected native, and the resolver rejects it on three counts: the recorded qualification baseline no longer matches the registry, the registry revision moved, and the recorded candidate is no longer in the registry. That decision rested on repository_verification_ladder being not_qualified for every candidate; the capability has since been qualified for deepseek-v4-pro and ox-alpha by recorded probes, so its central premise is gone and reusing it would have routed this stage on a fact that is no longer true. Fresh comparison: glm-5.3 and minimax-m3 are hard-filtered because they still lack the ladder capability this stage is defined by. ox-alpha is hard-filtered on long_structured_return_is_material, which is preserved unchanged and genuinely applies here - independent verification returns one verdict resting on scope conformance, spec conformance, gate re-runs, and ranked findings, and those axes are interdependent, so per stage-gates it is one review that must not be split. That leaves deepseek-v4-pro as the only survivor, selected on its own qualified ladder evidence rather than by preference. Control max chosen independently of model: the defect classes that matter here are subtle - a PIN value reachable through a new Error cause chain, a narrowed unique-violation classifier silently changing the staff path, and a race test passing for the wrong reason - and an empty review below that floor is not a pass.",
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"glm-5.3": [
+			"required capability not qualified: repository_verification_ladder"
+		],
+		"minimax-m3": [
+			"required capability not qualified: repository_verification_ladder"
+		],
+		"ox-alpha": ["known constraint: long_structured_return_is_material"],
+		"native-subagent": [
+			"not filtered on capability; it lost the comparison. The reason the previous stage of this kind went native - no external candidate could run the ladder - no longer holds. No concrete native material advantage remains: the consequence is inside the external ceiling, the tooling is qualified, and native convenience is explicitly not sufficient."
+		]
+	},
+
+	"consequence": "medium",
+	"consequence_note": "Sized honestly and deliberately not inflated. The candidate converts two error paths and adds tests; it changes no locking, no transaction boundary, no session invalidation, and no credential derivation. It is credential-adjacent because one conversion sits at the PIN generator seam, which is why the PIN-leak surface is a named review axis. Medium sits inside every candidate's qualified ceiling, so the ceiling did not bind on this decision - stated because a ceiling cited only when it blocks is a ceiling nobody trusts.",
+	"resolver_verdict": "selected=deepseek-v4-pro, route=opencode-go/deepseek-v4-pro, control=max, route_evidence=requalified, no native fallback and no provisional native selection",
+
+	"data_boundary": "The excluded payload classes stay excluded. The verifier runs in its own git worktree at the candidate commit, D:/Projects/fitway-worktrees/phase11-access-tx-v01, prepared per docs/WORKFLOW.md steps 7-8 with pnpm install --frozen-lockfile and the pnpm exec vitest --version gate. Its environment is synthetic and process-local throughout: a disposable Postgres role created for this run with a randomly generated password, its own run-owned integration database and a separate disposable application database, and freshly generated BETTER_AUTH_SECRET and CRON_SECRET. The real repository .env is never sourced into the worker's shell and the real Telegram credentials are replaced by synthetic placeholders. The packet names variable names only and carries no values. Output capture redacts values before anything crosses back.",
+
+	"downstream_note": "Integration and the DONE declaration remain coordinator authority and are not part of this stage."
+}
