@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-23T20:20:00+03:00"
+updatedAt: "2026-08-23T21:55:00+03:00"
 
 coordinator:
-  owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration, on work/phase11-browser-debt-b01 executing the approved phase11-access successor sequence P2 -> P1 -> Slice B recorded in docs/phase-records/handoffs/coordinator/20260823-124724-p11-access-successor-sequence-plan.md. P2 is DONE at 6299a75; P1 is NEEDS_HUMAN at 75f751e with its scope delivered but its gate unmet; Slice B has not started and stays blocked."
+  owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration, on work/phase11-browser-debt-b01 executing the approved phase11-access successor sequence, revised by the human option-B decision of 2026-08-23 to P2 -> ladder contention -> P1 stage 3 -> Slice B recorded in docs/phase-records/handoffs/coordinator/20260823-124724-p11-access-successor-sequence-plan.md. P2 is DONE at 6299a75. phase11-ladder-contention is DONE at 12afd33 with a net-zero code diff: it tested a configuration fix, its own validation falsified it, and it reverted. phase11-browser-debt (P1) is unblocked and resumes at stage 3 - closing the three register entries against a green ladder, with two of their recorded mechanisms corrected. Slice B has not started and must not start until P1 is legitimately closed."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1552,8 +1552,8 @@ milestones:
     integratedCommit: 6299a7568f8dfd30813f54e85a4ececdf22efee3
 
   phase11-browser-debt:
-    status: BLOCKED
-    dependencies: [phase11-access-tx]
+    status: IN_PROGRESS
+    dependencies: [phase11-access-tx, phase11-ladder-contention]
     ownerSession: "main Claude Code coordinator session, run p11_browser_debt_b01"
     branch: work/phase11-browser-debt-b01
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
@@ -1570,20 +1570,20 @@ milestones:
       - "tests/browser/__screenshots__/**: canonical baselines are read-only acceptance evidence"
       - "packages/** in its entirety, and every file under apps/server/** other than the leased phase2.integration.test.ts"
       - "the meaning of every assertion under repair: fix the sampling, not what the assertion proves. An assertion that cannot be made deterministic without changing what it proves is a stop condition, not a decision inside a stage."
+      - "playwright.config.ts, vitest.config.ts, vitest.integration.config.ts and scripts/verify.mjs: phase11-ladder-contention held that lease, tested a configuration fix, falsified it and reverted. Reopening that surface is not this slice's work."
       - "M4, M5, rate limiting on the owner access leaves, and the docs/WORKFLOW.md step-8 environment gap: named open items carried forward by P2, not this slice's work"
       - "work/phase11-access-b01 and every b01 handoff or terminal record: preserved rejected evidence, read-only"
       - visual-direction-gate/**, Paper, and every normative document including PHASES.md
-      - PROJECT_STATE.yaml, scripts/verify.mjs, and scripts/verify-repository.mjs
+      - PROJECT_STATE.yaml and scripts/verify-repository.mjs
       - root manifests, lockfiles, environment schemas, and test-runner configuration
       - every other milestone's phase record and handoff directory
     sharedLeases:
-      - "exclusive through 2026-08-26T23:59:00+03:00: assertion-scoped stabilization of four load-sensitive locations, limited to tests/browser/phase2.browser.spec.ts:72, tests/browser/phase3.browser.spec.ts:57, tests/browser/phase10-ui-csv.browser.spec.ts:742, and apps/server/src/phase2.integration.test.ts:779. The fourth is conditional on decision D1's stage-1 evidence condition. Cross-milestone by necessity: these specs sit inside other milestones' owned paths, which makes the lease coordinator-granted and nothing more. No other assertion, no other file, and no screenshot baseline is covered."
+      - "exclusive through 2026-08-27T23:59:00+03:00: assertion-scoped stabilization limited to tests/browser/phase2.browser.spec.ts:72, tests/browser/phase3.browser.spec.ts:57 and tests/browser/phase10-ui-csv.browser.spec.ts:742, all three already repaired at 75f751e. Cross-milestone by necessity: these specs sit inside other milestones' owned paths, which makes the lease coordinator-granted and nothing more. The fourth location, apps/server/src/phase2.integration.test.ts:779, was investigated and deliberately excluded by decision D1 and is NOT covered."
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-23T19:30:00+03:00"
-    leaseExpiresAt: "2026-08-26T23:59:00+03:00"
+    lastHeartbeatAt: "2026-08-23T21:55:00+03:00"
+    leaseExpiresAt: "2026-08-27T23:59:00+03:00"
     handoff: docs/phase-records/handoffs/phase11-browser-debt/20260823-193000-p11_browser_debt_b01-needs-human.md
-    stopReason: "Blocked on the phase11-ladder-contention milestone by the human option-B decision of 2026-08-23. That slice fixes the shared verification contention mechanism first and integrates to main; P1 then rebases onto it and completes stage 3 against a genuinely green full ladder. The formal dependency is not listed in dependencies yet because phase11-ladder-contention does not exist in this branch ledger - it is added at integration, when both entries are on main. P1 stages 0-2 are DELIVERED and preserved untouched at 75f751e: the three registered assertions are repaired and verified, with 11 passed running them together, the full browser suite green three consecutive times at the candidate, and no failure in five full-suite runs ever landing on an assertion this slice touched. P1 is deliberately NOT broadened retroactively. What remains is stage 3 only - closing the three register entries with a green ladder behind them, including correcting the refuted mechanism on the phase3 entry and the mock-timer correction on the phase10 entry. Evidence: docs/phase-records/verification/20260823-p11_browser_debt_b01-ladder-load-sensitivity-observations.json. Slice B remains unstarted and must not start until P1 is legitimately closed."
-
+    stopReason: null
     gates:
       unit: NOT_REQUIRED
       integration: PENDING
@@ -1592,6 +1592,47 @@ milestones:
       visual: NOT_REQUIRED
       independentReview: PENDING
     integratedCommit: null
+
+  phase11-ladder-contention:
+    status: DONE
+    dependencies: [phase11-access-tx]
+    ownerSession: "main Claude Code coordinator session, run p11_ladder_contention_b01"
+    branch: work/phase11-ladder-contention-b01
+    worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
+    baseCommit: 9ca0ef13d5a4eea815cb1cbb153e316433b03816
+    ownedPaths:
+      - docs/phase-records/handoffs/phase11-ladder-contention/*-p11_ladder_contention_b01-*.md
+      - docs/phase-records/handoffs/phase11-ladder-contention/*-p11_ladder_contention_v01-*.md
+      - docs/phase-records/route-decisions/**
+      - docs/phase-records/verification/**
+    forbiddenPaths:
+      - all repository paths outside ownedPaths and sharedLeases
+      - "every test file and every application source file without exception: this slice retires the contention mechanism, it does not repair individual flaky assertions. Naming the tempting targets explicitly - tests/browser/**, apps/**/*.test.*, apps/**/*.integration.test.*, apps/web/src/hooks/use-owner-reporting.test.tsx, and the three assertions the blocked phase11-browser-debt slice already repaired."
+      - "runner-level retry of any kind, Playwright retries or vitest retry: it makes flaky tests pass without fixing anything and destroys the known-flaky register's purpose. Not negotiable."
+      - "removing, skipping or conditionally excluding any test, spec, project or ladder step, and any reduction in what the ladder verifies"
+      - "blanket timeout inflation as the primary change: a specific misconfigured timeout is a finding with evidence, not a global multiplier"
+      - "work/phase11-browser-debt-b01, every record of that slice, and docs/phase-records/verification/known-flaky-register.json: register closure belongs to that slice's stage 3, this slice never edits it"
+      - "tests/browser/__screenshots__/**: canonical baselines are read-only acceptance evidence"
+      - "pnpm-lock.yaml, dependency versions, and environment schemas: a dependency change is a stop condition"
+      - PROJECT_STATE.yaml and scripts/verify-repository.mjs
+      - visual-direction-gate/**, Paper, and every normative document including PHASES.md
+      - every other milestone's phase record and handoff directory
+      - "M4, M5, rate limiting on the owner access leaves, and the docs/WORKFLOW.md step-8 environment gap: carried forward by P2, still unscheduled"
+    sharedLeases:
+      - "exclusive through 2026-08-27T23:59:00+03:00: verification-toolchain contention fix, limited to playwright.config.ts, vitest.config.ts, vitest.integration.config.ts, scripts/verify.mjs, and package.json verification scripts only where an invocation must change. These gate every phase, which makes the lease coordinator-granted and nothing more. No test file, no application source, no screenshot baseline, no lockfile, and no register entry is covered."
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-08-23T21:45:00+03:00"
+    leaseExpiresAt: "2026-08-27T23:59:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-ladder-contention/20260823-214500-p11_ladder_contention_b01-done-negative-result.md
+    stopReason: null
+    gates:
+      unit: NOT_REQUIRED
+      integration: NOT_REQUIRED
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: NOT_REQUIRED
+    integratedCommit: SELF
 
   phase11-settings:
     status: PLANNED

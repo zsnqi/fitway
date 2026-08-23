@@ -1,0 +1,68 @@
+{
+	"schema": "route-decision/1",
+
+	"project": "fitway",
+	"stage_ref": "p11_ladder_contention_b01 / stage-1-contention-diagnosis",
+	"recorded": "2026-08-23T20:30:00+03:00",
+
+	"evaluated_before_stage_discovery": true,
+
+	"candidate_id": "ox-alpha",
+	"route": "opencode/x-preview-f-free",
+	"control": "high",
+	"execution": "external-opencode",
+	"transport": "opencode-cli",
+
+	"registry_revision": "2026-08-23.6",
+	"qualification_baseline": "2026-08-23.3",
+
+	"gate_outcome": "PASS",
+	"gate_outcome_note": "Accepted at the parent gate on 2026-08-23. Session ses_fd0588026ffeeqKlyb4vrGP1Ym, exit 0, 50 events, one 9,477-character final finalized on the first invocation. Read-only boundary held and no verification command was run, as instructed. The parent verified every load-bearing claim against the repository and all matched: the strictly sequential ladder loop at scripts/verify.mjs:389, fullyParallel false at playwright.config.ts:87, fileParallelism false at vitest.integration.config.ts:10, retries 0 at playwright.config.ts:89, the absent expect timeout in the playwright expect block, and - decisively - the ratified unit-step precedent at vitest.config.ts:23-26 whose own comment states this exact diagnosis. The stage overturned the hypothesis the slice was activated on: the mechanism is timeout headroom against a sequential ladder, not concurrency contention. It also answered the discriminating question the brief demanded, explaining the unit step rarity by its already-raised 20000ms budget, and it declined to claim the class can be retired by configuration alone. Two imprecisions, neither affecting the conclusion: the expect block was cited as :103-110 when it is :102-104, and nine hardcoded waits were listed where there are eight. The parent REJECTED the return's second proposed change - integration testTimeout - as unnecessary under the smallest-necessary-change constraint, because no observed failure ever hit vitest's integration testTimeout and its justification divided total step time by test count, conflating setup with execution.",
+	"gate_outcome_record": "docs/phase-records/handoffs/phase11-ladder-contention/20260823-212000-p11_ladder_contention_b01-stage1-findings.md",
+	"parent_defect_recorded": "The brief cited a phase11-browser-debt record that exists only on that slice's branch and not on this one. The worker caught it, reported it in its first line, and substituted the records available here rather than inventing around it. Recorded against the parent, not the worker.",
+
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md",
+		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
+	],
+
+	"delegation_trigger": "volume, economy",
+	"material_selection_reason": "Resolved by scripts/resolve-opencode-worker.mjs with no delegation-lifecycle violations, from a stage input recorded before any runner configuration was opened. The stage qualifies on Volume and Economy: it reads the full runner-configuration surface plus the ladder's step machinery and correlates it against three timestamped full-ladder transcripts, returning a one-page mechanism. The transcripts alone are tens of thousands of lines that must not enter the orchestrator's context.",
+
+	"route_evidence": "reused",
+	"requalification_reasons": [],
+	"reused_or_requalified": "REUSED, and this is the first reuse in this sequence. The p11_browser_debt_b01 stage-1 decision covers the same candidate, route, control, tool and modality, carries a PASS, and its recorded registry revision 2026-08-23.6 and qualification baseline 2026-08-23.3 both still match the registry. No requalification trigger fired. The two earlier decisions in this sequence were requalified precisely because the registry had moved under them; recording the contrast so a later session can see the reuse rules working in both directions rather than assuming reuse is the default.",
+
+	"eligible_alternatives": ["deepseek-v4-pro", "glm-5.3"],
+	"filtered_alternatives": {
+		"minimax-m3": [
+			"known constraint: high_reporting_precision_is_material — the deliverable is a mechanism traced to specific configuration values with file:line pointers and correlated timings"
+		],
+		"native-subagent": [
+			"not filtered on capability; it lost the comparison. Read-only correlation of configuration against supplied measurement transcripts, returning a compact structured result, is inside the external candidate's qualified scope, and the qualified route is currently free."
+		]
+	},
+
+	"stage_flags": ["high_reporting_precision_is_material"],
+	"consequence": "low",
+
+	"execution_split": "Recorded, not improvised. The orchestrator takes the baseline ladder measurements itself and the delegated worker never runs the ladder. The reason is a data boundary, not capability: every meaningful ladder measurement needs real .env credentials and a disposable database, dotenv_contents is an excluded payload class under both durable authorizations, and a failing ladder run's output is exactly where credential values would surface. Doing the measurement inline removes that exposure entirely rather than relying on redaction discipline. What crosses to the worker is summarized evidence — step names, durations, test counts, and failure file:line locations — which carries no excluded class. The split is one-way: measurements are produced first and handed in as input, so the stage is not an iteration loop and inspection is not coupled to implementation.",
+
+	"prior_knowledge_disclosure": "The orchestrator read parts of scripts/verify.mjs during the P1 work — its phase profile list, its usage text, and its step composition near line 344. This is disclosed in the slice contract and was NOT used as a direct-execution reason. playwright.config.ts, vitest.config.ts and vitest.integration.config.ts were not opened by anyone before this decision was recorded.",
+
+	"hard_constraints_applied": [
+		"json_event_capture_required: --format json, events captured outside the transcript",
+		"exact_session_finalization_fallback_required",
+		"external_skill_scanning_disabled and deny_by_default_exact_skill_allowlist_required: no skill body is transmitted and no skill is allowlisted",
+		"auto_approval_forbidden: --auto is not passed",
+		"parent_diff_and_verification_gate_required",
+		"read-only stage: no writable target is granted, no ladder invocation is granted, and the parent verifies an unchanged working tree on return"
+	],
+
+	"downstream_note": "Stage 2 (the minimal configuration change) and stage 3 (validation) are separate decisions recorded when those stages open. Stage 2 is writable against coordinator-owned configuration that gates every phase, so its consequence is higher than this stage's and its comparison starts fresh. Stage 5 independent verification must not route to whichever candidate implements stage 2."
+}
