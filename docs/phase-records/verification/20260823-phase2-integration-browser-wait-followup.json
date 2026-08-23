@@ -2,13 +2,10 @@
 	"schema": "failure-record/1",
 	"project": "fitway",
 	"_what_this_is": "The fourth load-sensitive location, consolidated. It is deliberately NOT a known-flaky register entry, and this record says why. It supersedes 20260823-p11_access_v01-phase2-integration-timeout.json as the current statement of what is known, and does not replace it as evidence.",
-
 	"location": "apps/server/src/phase2.integration.test.ts",
 	"test": "Phase 2 real Postgres vertical slice > drives the real browser through unavailable, fresh, changed, stale, and recovery",
 	"step": "the 'All integration tests' step of pnpm verify:full — vitest driving Playwright directly, not the browser step",
-
 	"status": "open, scheduled as follow-up, NOT attributable",
-
 	"observations": [
 		{
 			"session": "p11_access_v01",
@@ -24,18 +21,21 @@
 			"run_id": "p11lc_b1",
 			"result": "the same test failed inside verify:full (9 tests | 1 failed, 12247ms; suite 1 failed | 121 passed). A different session, a different slice, a different commit.",
 			"record": "docs/phase-records/verification/20260823-p11_ladder_contention_b01-baseline-measurements.json"
+		},
+		{
+			"session": "p11_browser_debt_v01",
+			"date": "2026-08-23",
+			"observer_kind": "independent verifier, deepseek-v4-pro via opencode-cli, session ses_fcfff13f2ffeqKgLsZuTPKDZe0",
+			"run_id": "p11bdv_v2",
+			"result": "red inside verify:full at apps/server/src/phase2.integration.test.ts:779, locator.waitFor Timeout 5000ms; integration 1 failed | 121 passed, and the browser step never ran in that invocation. The same verifier's other three ladders at the same commit were exit 0 with 122/122 integration.",
+			"significance": "THIRD independent observation, by a third session. Found while verifying a candidate that explicitly excludes this site, which is the cleanest possible corroboration: the verifier had no stake in it and was not looking for it."
 		}
 	],
-
 	"evidence_bar_now_met_but_deliberately_not_registered": "The register requires two independent observations, or one plus an observed standalone pass. Both are now satisfied. It is still NOT entered as a register entry, for two reasons that outlast this slice. First, a register entry is a licence to attribute a red run, and this failure should never be attributed: unlike the three entries just closed, nobody has established that it is load sensitivity rather than a real defect in the propagation path it exercises. Second, its surface necessarily includes apps/web/**, so every UI slice - Slice B included - would lose the attribution anyway, leaving an entry that grants nothing and never closes. That is the defect the register's own closing rule warns about.",
-
 	"why_it_was_not_repaired_by_phase11_browser_debt": "Decision D1 at that slice's activation, resolved on evidence at its stage-1 gate. The file imports chromium from @playwright/test and expect from vitest, so Playwright's web-first assertions are unavailable in it and locator.waitFor is already the strongest primitive it has. Its proof is that a real simulator-to-edge-to-server-to-poll pipeline propagates a count, with no signal to await but the text itself, and page.clock cannot substitute because effectiveFreshness compares page time against real server timestamps. Making that arrival deterministic requires mocking the pipeline, which deletes the assertion's end-to-end meaning — the one thing that slice's constraint forbade.",
-
 	"what_the_contention_slice_adds": "It rules out the cheap fix in advance. The eight hardcoded locator.waitFor({ timeout: 5_000 }) calls at :739, :769, :773, :779, :783, :788, :792 and :797 sit inside a test that already carries an explicit timeout: 60_000 at :628, so no vitest test-level budget is what expires. And raising a waiting budget was directly tested on the sibling browser class and falsified: assertions given 20000ms still failed with the element absent. Anyone reaching for a larger timeout here should read docs/phase-records/verification/20260823-p11_ladder_contention_b01-falsification-result.json first.",
-
 	"what_a_real_repair_would_have_to_do": "Either establish, with evidence, that the failure is load sensitivity and not a genuine propagation defect — which needs the observed tail-latency distribution of the simulator-to-render path under ladder load, not another timeout guess — or find a signal in that pipeline that can be awaited deterministically without mocking any part of what the test exists to prove. Neither fits inside a slice scoped to assertion sampling.",
-
 	"scheduled_as": "PROJECT_STATE.yaml milestone phase11-e2e-propagation-wait, PLANNED. Recorded as a milestone rather than a note because a known, twice-observed defect with no owner is a defect nobody scheduled.",
-
-	"not_a_licence": "No session may cite this record to excuse a red run. It is a scheduled defect, not an attribution."
+	"not_a_licence": "No session may cite this record to excuse a red run. It is a scheduled defect, not an attribution.",
+	"frequency_note": "Across every ladder recorded to date this site has gone red 3 times: p11_access_v01 (P2 verification), p11lc_b1 (contention baseline) and p11bdv_v2 (P1 verification). It is intermittent rather than per-run - the same three sessions also produced green integration steps at the same commits - which is consistent with load sensitivity but does not establish it. Establishing it is the scheduled milestone's job."
 }
