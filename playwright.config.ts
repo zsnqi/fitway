@@ -101,15 +101,6 @@ export default defineConfig({
 		["junit", { outputFile: path.join(outputRoot, "results.xml") }],
 	],
 	expect: {
-		// The ladder is strictly sequential, so nothing runs beside the browser
-		// step - but it runs last, after roughly ten minutes of preceding work has
-		// left residual load on the machine. Every load-sensitive browser failure
-		// recorded so far was an auto-retrying assertion expiring on Playwright's
-		// 5000ms default, which left correct behaviour decided by machine load.
-		// This mirrors the ratified unit-step budget in vitest.config.ts and costs
-		// nothing on a green run: an auto-retrying assertion resolves the moment it
-		// is satisfied, so only a genuine failure reports later.
-		timeout: 20_000,
 		toHaveScreenshot: { animations: "disabled", caret: "hide" },
 	},
 	use: {
