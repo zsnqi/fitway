@@ -1,0 +1,60 @@
+{
+	"schema": "measurement-record/1",
+	"project": "fitway",
+	"_what_this_is": "The stage-3 validation of the phase11-ladder-contention slice. It ran the falsifiable prediction stage 1 committed to, and the prediction FAILED. This record exists because a negative result that is not written down is a negative result the next session pays to rediscover.",
+
+	"taken_by": "p11_ladder_contention_b01 coordinator session",
+	"taken": "2026-08-23",
+	"candidate_commit": "865d678",
+	"change_under_test": "playwright.config.ts expect.timeout raised from Playwright's 5000ms default to 20000ms, matching the ratified unit-step budget at vitest.config.ts:23-26",
+
+	"runs": [
+		{ "run_id": "p11lc_c1", "exit_code": 1, "elapsed_seconds": 542 },
+		{ "run_id": "p11lc_c2", "exit_code": 1, "elapsed_seconds": 545 },
+		{ "run_id": "p11lc_c3", "exit_code": 1, "elapsed_seconds": 605 },
+		{ "run_id": "p11lc_c4", "exit_code": 1, "elapsed_seconds": 620 }
+	],
+
+	"verdict": "FALSIFIED",
+
+	"the_prediction": "Stage 1 committed to this in advance: browser-step failures whose mode is 'element appears after more than 5s' would stop, and the browser-step red rate would fall from roughly 2 in 3 toward 0. It also stated the falsifier explicitly - 'If browser reds continue at the old rate, the mechanism is wrong and this recommendation fails.'",
+
+	"what_happened": "The browser step went red in 4 of 4 candidate runs. At the baseline it went red in 2 of the 2 runs that reached it. The rate did not fall.",
+
+	"the_decisive_detail": "The configuration change DID take effect and is provably not the problem. Every candidate failure reports 'Timeout: 20000ms' where every baseline failure reported 'Timeout: 5000ms'. The assertions waited four times as long and the element still never appeared. A latency ceiling explains an element arriving late; it cannot explain an element absent after 20 seconds. The timeout-headroom mechanism is therefore wrong for this class.",
+
+	"candidate_failures": [
+		{
+			"run_id": "p11lc_c1",
+			"location": "tests/browser/phase10-ui-csv.browser.spec.ts:757 (test at :742)",
+			"error": "expect(locator).toBeVisible() failed. Locator: locator('.owner-reporting').locator('[data-owner-reporting-state=\\'loading\\']'). Timeout: 20000ms. element(s) not found."
+		},
+		{
+			"run_id": "p11lc_c2",
+			"location": "tests/browser/phase2.browser.spec.ts:84 (test at :72)",
+			"error": "expect(locator).toContainText(expected) failed. Locator: locator('body'). Timeout: 20000ms. Expected substring never appeared."
+		},
+		{
+			"run_id": "p11lc_c3",
+			"location": "tests/browser/phase3.browser.spec.ts:82 (test at :57)",
+			"error": "expect(locator).toBeVisible() failed. Locator: getByRole('heading', { name: 'مغلق الآن' }). Timeout: 20000ms. element(s) not found."
+		},
+		{
+			"run_id": "p11lc_c4",
+			"location": "tests/browser/phase3.browser.spec.ts:82 (test at :57)",
+			"error": "identical to p11lc_c3"
+		}
+	],
+
+	"corrected_mechanism": "These assertions do not miss their target because they wait too little. They sample a state that has already passed, or that never renders at all, because the residual machine load pushes page load, hydration and first React commit past the window in which the state exists. Waiting longer moves the observation further past the window, not closer to it. That is why no timeout value can fix this class, and it is why the correct repair is to control the clock and the fixture so the state is deterministic rather than raced.",
+
+	"independent_corroboration_of_the_repair_slice": "Every one of the four candidate failures is an assertion the phase11-browser-debt slice has ALREADY repaired, on its own branch, before this result existed. c1 is the assertion its commit 75f751e replaced with a held-open route promise; c2 is the assertion 0243b0d replaced with a paused page clock; c3 and c4 are the assertion 438fdac replaced with a paused page clock. That slice's stage-1 investigation also predicted these exact modes from source - it said the fresh badge 'never renders' when hydration outruns the 500ms window, and that the phase3 closed heading can be skipped entirely when goto plus hydration consumes the 1500ms margin. Both are now observed rather than argued. The assertion-level approach is vindicated by this slice's failure.",
+
+	"what_did_not_fail": "Unit passed 476/476 and integration passed 122/122 in all four candidate runs. The baseline's single integration failure did not recur, but with 1 of 3 against 0 of 4 that is not attributable to this change, and the raised expect timeout cannot reach the explicit locator.waitFor({ timeout: 5_000 }) calls in that file anyway. Recorded as coincidence, not as improvement.",
+
+	"action_taken": "The change was REVERTED at ceb0968. The slice constraint is the smallest evidence-supported change NECESSARY to retire the class. The evidence now shows this change retires nothing, while costing every phase's gate up to 15 extra seconds per genuine failure forever. Keeping a configuration change justified by a falsified mechanism would be exactly the unjustified drift the constraint exists to prevent.",
+
+	"conclusion": "No infrastructure or configuration change retires this failure class, because the class is not a configuration property. It is assertion-level by nature, and the repairs that address it already exist on work/phase11-browser-debt-b01. The slice contract anticipated this outcome and named it a legitimate result rather than a failure.",
+
+	"raw_capture": "Per-line timestamped transcripts retained outside the repository at the coordinator's scratchpad as cand-c1.txt through cand-c4.txt, alongside the baseline transcripts. Deliberately not committed."
+}
