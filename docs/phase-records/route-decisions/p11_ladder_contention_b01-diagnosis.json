@@ -16,8 +16,10 @@
 	"registry_revision": "2026-08-23.6",
 	"qualification_baseline": "2026-08-23.3",
 
-	"gate_outcome": null,
-	"gate_outcome_note": "Pending. Appended after the parent gate closes this stage.",
+	"gate_outcome": "PASS",
+	"gate_outcome_note": "Accepted at the parent gate on 2026-08-23. Session ses_fd0588026ffeeqKlyb4vrGP1Ym, exit 0, 50 events, one 9,477-character final finalized on the first invocation. Read-only boundary held and no verification command was run, as instructed. The parent verified every load-bearing claim against the repository and all matched: the strictly sequential ladder loop at scripts/verify.mjs:389, fullyParallel false at playwright.config.ts:87, fileParallelism false at vitest.integration.config.ts:10, retries 0 at playwright.config.ts:89, the absent expect timeout in the playwright expect block, and - decisively - the ratified unit-step precedent at vitest.config.ts:23-26 whose own comment states this exact diagnosis. The stage overturned the hypothesis the slice was activated on: the mechanism is timeout headroom against a sequential ladder, not concurrency contention. It also answered the discriminating question the brief demanded, explaining the unit step rarity by its already-raised 20000ms budget, and it declined to claim the class can be retired by configuration alone. Two imprecisions, neither affecting the conclusion: the expect block was cited as :103-110 when it is :102-104, and nine hardcoded waits were listed where there are eight. The parent REJECTED the return's second proposed change - integration testTimeout - as unnecessary under the smallest-necessary-change constraint, because no observed failure ever hit vitest's integration testTimeout and its justification divided total step time by test count, conflating setup with execution.",
+	"gate_outcome_record": "docs/phase-records/handoffs/phase11-ladder-contention/20260823-212000-p11_ladder_contention_b01-stage1-findings.md",
+	"parent_defect_recorded": "The brief cited a phase11-browser-debt record that exists only on that slice's branch and not on this one. The worker caught it, reported it in its first line, and substituted the records available here rather than inventing around it. Recorded against the parent, not the worker.",
 
 	"covered_modalities": ["text"],
 	"covered_tools": ["repository_read"],
