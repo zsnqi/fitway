@@ -1,0 +1,75 @@
+{
+	"schema": "measurement-record/1",
+	"project": "fitway",
+	"_what_this_is": "Pre-change baseline for the phase11-ladder-contention slice, taken by the coordinator at the slice's own base so that any later claim of improvement is a comparison rather than an impression. Three consecutive pnpm verify:full invocations, each with a unique FITWAY_RUN_ID and its own disposable database, per-line timestamped.",
+
+	"taken_by": "p11_ladder_contention_b01 coordinator session",
+	"taken": "2026-08-23",
+	"base_commit": "9ca0ef13d5a4eea815cb1cbb153e316433b03816",
+	"branch": "work/phase11-ladder-contention-b01",
+	"note_on_base": "This base does NOT contain the phase11-browser-debt repairs, which are preserved unintegrated on work/phase11-browser-debt-b01. The three registered assertions are therefore still load-sensitive here, by design.",
+
+	"machine": {
+		"logical_processors": 16,
+		"total_memory_gb": 31.2,
+		"platform": "win32"
+	},
+
+	"runs": [
+		{ "run_id": "p11lc_b1", "exit_code": 1, "elapsed_seconds": 561 },
+		{ "run_id": "p11lc_b2", "exit_code": 1, "elapsed_seconds": 619 },
+		{ "run_id": "p11lc_b3", "exit_code": 1, "elapsed_seconds": 552 }
+	],
+
+	"headline": "3 of 3 full ladders went red at the base, each on a DIFFERENT assertion, and every one of those assertions is known to pass in isolation. No run failed twice on the same thing except phase3:82, which failed in two of three.",
+
+	"step_durations_seconds": {
+		"_comment": "Measured between the ladder's own ==> step markers. A step that did not run because an earlier one failed is absent.",
+		"repository_invariants": [1, 1, 1],
+		"biome_check": [1, 1, 1],
+		"type_checks": [14, 14, 16],
+		"unit_tests": [16, 16, 19],
+		"python_simulator_tests": [35, 35, 34],
+		"build": [16, 23, 16],
+		"all_integration_tests": [476, 451, 399],
+		"all_browser_and_accessibility_tests": [null, 76, 65]
+	},
+
+	"dominant_cost": "The integration step is 399-476s, roughly 70-80 percent of the entire ladder, for 122 tests across 18 files. Every other step combined is under 90s. The browser step runs immediately after it.",
+
+	"failures": [
+		{
+			"run_id": "p11lc_b1",
+			"step": "All integration tests",
+			"location": "apps/server/src/phase2.integration.test.ts",
+			"test": "Phase 2 real Postgres vertical slice > drives the real browser through unavailable, fresh, changed, stale, and recovery",
+			"file_result": "9 tests | 1 failed, 12247ms",
+			"suite_result": "1 failed | 17 passed (18 files); 1 failed | 121 passed (122 tests)",
+			"significance": "This is the SECOND independent observation of this location. P2's independent verifier recorded it on 2026-08-23 at apps/server/src/phase2.integration.test.ts:779 and it was explicitly not added to the register because one observation by the reporting session is not enough. This observation is by a different session, in a different slice, at a different commit."
+		},
+		{
+			"run_id": "p11lc_b2",
+			"step": "All browser and accessibility tests",
+			"location": "tests/browser/phase3.browser.spec.ts:82",
+			"test": "expires cached closed honestly and transitions to open without reload",
+			"error": "expect(locator).toBeVisible() failed. Locator: getByRole('heading', { name: 'مغلق الآن' }). Expected visible, timeout 5000ms, element(s) not found.",
+			"suite_result": "1 failed | 82 passed"
+		},
+		{
+			"run_id": "p11lc_b3",
+			"step": "All browser and accessibility tests",
+			"location": "tests/browser/phase3.browser.spec.ts:82",
+			"test": "expires cached closed honestly and transitions to open without reload",
+			"error": "identical to p11lc_b2",
+			"suite_result": "1 failed | 82 passed"
+		}
+	],
+
+	"corroboration_of_a_prior_finding": "This baseline independently confirms the phase11-browser-debt stage-1 refutation, which was analysis at the time and is now observation. The known-flaky register's entry browser-phase3-transient-state describes 'a transient-state timing assertion'. The stage-1 investigation refuted that from source and named line 82 - the closed heading, asserted before any transient - as a candidate red site. Line 82 is exactly what failed, twice, in runs taken by a different slice at a different commit with no knowledge of that prediction. The register entry's stated mechanism is wrong and its correction at closure is now evidence-backed rather than argued.",
+
+	"what_the_unit_step_shows": "Unit tests passed 476/476 in all three baseline runs. The single unit-step failure previously observed at apps/web/src/hooks/use-owner-reporting.test.tsx:456 was on the phase11-browser-debt branch and did not reproduce here. It is therefore rarer than the browser and integration cases, not a per-run occurrence, and any mechanism proposed for this class must account for its rarity rather than assume uniform exposure.",
+
+	"boundaries_of_this_record": "These are measurements, not a diagnosis. No runner configuration was read while producing them, so nothing here presupposes a cause. Attributing the pattern to a mechanism is stage 1's delegated work, and this record is its input.",
+
+	"raw_capture": "Per-line timestamped transcripts retained outside the repository at the coordinator's scratchpad as baseline-b1.txt, baseline-b2.txt, baseline-b3.txt. They are tens of thousands of lines and are deliberately not committed."
+}
