@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-23T21:55:00+03:00"
+updatedAt: "2026-08-23T22:15:00+03:00"
 
 coordinator:
   owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration, on work/phase11-browser-debt-b01 executing the approved phase11-access successor sequence, revised by the human option-B decision of 2026-08-23 to P2 -> ladder contention -> P1 stage 3 -> Slice B recorded in docs/phase-records/handoffs/coordinator/20260823-124724-p11-access-successor-sequence-plan.md. P2 is DONE at 6299a75. phase11-ladder-contention is DONE at 12afd33 with a net-zero code diff: it tested a configuration fix, its own validation falsified it, and it reverted. phase11-browser-debt (P1) is unblocked and resumes at stage 3 - closing the three register entries against a green ladder, with two of their recorded mechanisms corrected. Slice B has not started and must not start until P1 is legitimately closed."
@@ -1552,7 +1552,7 @@ milestones:
     integratedCommit: 6299a7568f8dfd30813f54e85a4ececdf22efee3
 
   phase11-browser-debt:
-    status: IN_PROGRESS
+    status: VALIDATING
     dependencies: [phase11-access-tx, phase11-ladder-contention]
     ownerSession: "main Claude Code coordinator session, run p11_browser_debt_b01"
     branch: work/phase11-browser-debt-b01
@@ -1580,14 +1580,40 @@ milestones:
     sharedLeases:
       - "exclusive through 2026-08-27T23:59:00+03:00: assertion-scoped stabilization limited to tests/browser/phase2.browser.spec.ts:72, tests/browser/phase3.browser.spec.ts:57 and tests/browser/phase10-ui-csv.browser.spec.ts:742, all three already repaired at 75f751e. Cross-milestone by necessity: these specs sit inside other milestones' owned paths, which makes the lease coordinator-granted and nothing more. The fourth location, apps/server/src/phase2.integration.test.ts:779, was investigated and deliberately excluded by decision D1 and is NOT covered."
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-23T21:55:00+03:00"
+    lastHeartbeatAt: "2026-08-23T22:15:00+03:00"
     leaseExpiresAt: "2026-08-27T23:59:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-browser-debt/20260823-193000-p11_browser_debt_b01-needs-human.md
+    handoff: docs/phase-records/handoffs/phase11-browser-debt/20260823-221500-p11_browser_debt_b01-candidate.md
     stopReason: null
     gates:
-      unit: NOT_REQUIRED
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase11-e2e-propagation-wait:
+    status: PLANNED
+    dependencies: [phase11-browser-debt]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths: []
+    forbiddenPaths:
+      - "raising a waiting budget as the repair: directly tested on the sibling browser class by phase11-ladder-contention and falsified - assertions given 20000ms still failed with the element absent. Read docs/phase-records/verification/20260823-p11_ladder_contention_b01-falsification-result.json before proposing a timeout."
+      - "mocking any part of the simulator-to-edge-to-server-to-poll pipeline: that pipeline is what the assertion exists to prove end to end, and mocking it deletes the proof rather than stabilizing it"
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: docs/phase-records/verification/20260823-phase2-integration-browser-wait-followup.json
+    stopReason: null
+    gates:
+      unit: PENDING
       integration: PENDING
-      browser: PENDING
+      browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
       independentReview: PENDING
