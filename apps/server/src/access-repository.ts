@@ -217,17 +217,25 @@ const lockOwnerPrincipal = (transaction: Transaction, principalId: string) =>
  * same refusal the locked path gives once the principal exists, so it is
  * reported as that refusal instead.
  */
-function isUniqueViolation(error: unknown): boolean {
+function isUniqueViolation(error: unknown, constraint?: string): boolean {
 	// The driver's error does not arrive bare: Drizzle wraps a failed query and
 	// keeps the `pg` error underneath as `cause`, so a check on the top-level
 	// object alone silently never matches and the refusal stays a 500. The chain
 	// is walked with a depth bound rather than trusted to terminate.
+	//
+	// `constraint` narrows the match to one index. SQLSTATE alone answers "some
+	// unique index rejected this row", which is only the same question when the
+	// statement can collide on exactly one. A caller whose table carries more than
+	// one reachable unique index names the one it means, so a future index cannot
+	// quietly inherit an unrelated refusal.
 	let current: unknown = error;
 	for (let depth = 0; depth < 5 && current; depth += 1) {
 		if (
 			typeof current === "object" &&
 			"code" in current &&
-			(current as { code?: unknown }).code === "23505"
+			(current as { code?: unknown }).code === "23505" &&
+			(constraint === undefined ||
+				(current as { constraint?: unknown }).constraint === constraint)
 		) {
 			return true;
 		}
@@ -261,6 +269,45 @@ async function insertSharedStaffPrincipal(
 			throw new AccessRuleError(
 				"staff_pin_already_active",
 				"An active staff PIN already exists; rotate it instead",
+			);
+		}
+		throw error;
+	}
+}
+
+/**
+ * Inserts the owner principal, converting the one unique collision this
+ * statement can produce into a typed refusal.
+ *
+ * `auth_principals_owner_email_unique` is a lower(owner_email) index, so the
+ * collision is case-insensitive and a caller that re-sends the same address in
+ * different case is refused rather than duplicated. Without this the driver
+ * error escapes the transport's `AccessRuleError` test and reaches the owner as
+ * a bare 500 - it fails closed and leaks nothing, but it is unactionable.
+ */
+async function insertOwnerPrincipal(
+	transaction: Transaction,
+	input: { email: string; displayName: string; now: Date },
+): Promise<typeof authPrincipals.$inferSelect> {
+	try {
+		const [principal] = await transaction
+			.insert(authPrincipals)
+			.values({
+				principalKind: "owner",
+				role: "owner",
+				ownerEmail: input.email,
+				displayName: input.displayName,
+				createdAt: input.now,
+				updatedAt: input.now,
+			})
+			.returning();
+		if (!principal) throw new Error("Failed to provision owner principal");
+		return principal;
+	} catch (error) {
+		if (isUniqueViolation(error, "auth_principals_owner_email_unique")) {
+			throw new AccessRuleError(
+				"owner_email_taken",
+				"An owner already exists for that email address",
 			);
 		}
 		throw error;
@@ -525,18 +572,7 @@ export class AccessRepository {
 		now: Date;
 	}): Promise<AccessMutationResult> {
 		return this.#db.transaction(async (transaction) => {
-			const [principal] = await transaction
-				.insert(authPrincipals)
-				.values({
-					principalKind: "owner",
-					role: "owner",
-					ownerEmail: input.email,
-					displayName: input.displayName,
-					createdAt: input.now,
-					updatedAt: input.now,
-				})
-				.returning();
-			if (!principal) throw new Error("Failed to provision owner principal");
+			const principal = await insertOwnerPrincipal(transaction, input);
 			const [credential] = await transaction
 				.insert(authOwnerCredentials)
 				.values({

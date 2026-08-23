@@ -589,6 +589,66 @@ describe("credential reset", () => {
 describe("every mutation under concurrency", () => {
 	const RACERS = 3;
 
+	// The owner-email index is the second place in this file where a unique
+	// constraint, not a row lock, is the arbiter: owners provisioned at the same
+	// moment on the same address have nothing to lock, exactly as the shared staff
+	// principal had nothing to lock before it existed. The refusal has to be
+	// named, because the alternative the owner sees is a bare 500 that reads as an
+	// outage rather than as a taken address.
+	it("provisions one owner per email and refuses the losers by name", async () => {
+		const email = `p11-access-race-${randomUUID()}@fitway.example`;
+		const password = randomBytes(18).toString("base64url");
+		const floor = await highestAuditId();
+
+		const settled = await Promise.all(
+			Array.from({ length: RACERS }, () =>
+				rpcRaw(
+					"owner/provision",
+					{ email, displayName: "Race owner", password },
+					ownerCookie,
+				),
+			),
+		);
+
+		expect(settled.filter((response) => response.status === 200)).toHaveLength(
+			1,
+		);
+		for (const response of settled.filter((entry) => entry.status !== 200)) {
+			expect(
+				response.status,
+				"a lost provisioning race is a refusal, not a server fault",
+			).toBe(400);
+			const body = (await response.json()) as {
+				json?: { data?: { code?: unknown } };
+			};
+			expect(body.json?.data?.code).toBe("owner_email_taken");
+		}
+		expect(await accessRowsSince(floor, "owner_provisioned")).toHaveLength(1);
+	});
+
+	// The index is on lower(owner_email), so the refusal has to survive a change
+	// of case. A guard that keyed on the exact string would admit this row and
+	// then fail at the database, which is the 500 this slice exists to remove.
+	it("refuses a duplicate owner email that differs only in case", async () => {
+		const email = `p11-access-case-${randomUUID()}@fitway.example`;
+		const password = randomBytes(18).toString("base64url");
+		const floor = await highestAuditId();
+		await rpc<MutationPayload>("owner/provision", {
+			email,
+			displayName: "Case owner",
+			password,
+		});
+
+		expect(
+			await refusal("owner/provision", {
+				email: email.toUpperCase(),
+				displayName: "Case owner again",
+				password,
+			}),
+		).toMatchObject({ status: 400, code: "owner_email_taken" });
+		expect(await accessRowsSince(floor, "owner_provisioned")).toHaveLength(1);
+	});
+
 	it("advances the staff PIN version once per rotation and reveals only the stored one", async () => {
 		// Guarantee an active PIN to rotate, whatever the earlier blocks left.
 		const active = await staffCredentialRow();

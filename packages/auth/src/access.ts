@@ -40,6 +40,7 @@ export type AccessRuleCode =
 	| "owner_last_active"
 	| "owner_already_inactive"
 	| "owner_already_active"
+	| "owner_email_taken"
 	| "not_an_owner"
 	| "reason_required";
 

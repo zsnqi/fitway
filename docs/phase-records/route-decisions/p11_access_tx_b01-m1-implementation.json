@@ -1,0 +1,57 @@
+{
+	"schema": "route-decision/1",
+
+	"project": "fitway",
+	"stage_ref": "p11_access_tx_b01 / stage-2-m1-duplicate-owner-email-refusal",
+	"recorded": "2026-08-23T13:02:00+03:00",
+
+	"evaluated_before_stage_discovery": true,
+
+	"candidate_id": "native",
+	"route": null,
+	"control": null,
+	"execution": "direct-coordinator",
+	"transport": null,
+
+	"registry_revision": "2026-08-23.1",
+	"qualification_baseline": "2026-08-22.2",
+
+	"gate_outcome": "PASS",
+	"gate_outcome_note": "Direct execution held. The stage stayed inside its three declared files, needed no escalation, and produced no scope drift. The focused access integration suite is 24/24 on a freshly created disposable database (run id p11_access_tx_m1a), up from the 22 Slice A recorded, and pnpm verify:fast is green. The decisive evidence is that the case-insensitivity test passes: it can only pass if the pg error actually carries .constraint equal to auth_principals_owner_email_unique, which was the one thing the design could not establish by reading. One freeze-class defect - Biome formatting in this record - was found and repaired inside the stage before submission, which is the writing stage finishing its own work rather than a gate outcome.",
+
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "file_write", "shell"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md",
+		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
+	],
+
+	"delegation_trigger": null,
+	"material_selection_reason": "The route comparison was opened and the external pool competed; it lost on a verification fact rather than on convenience. What decides this stage is a concurrency test observed running against the disposable Postgres - one 200 and N-1 typed refusals under a real unique-constraint race. That run needs real database credentials, which the durable external-worker authorization excludes as a payload class, so an external worker could author the test but never watch it fail and pass. Splitting a race test's look-judge-adjust loop across a packet boundary would iterate through the orchestrator anyway, at more cost than doing it. No other trigger applies: Volume was already spent by stage 1, which was delegated; Independence does not apply to producing a candidate; the stage needs exactly the write scope the coordinator holds; and the branch is the rollback boundary. Recorded explicitly because the inverse reasoning is a named anti-pattern: the coordinator did not perform this stage's target-file reading inline and is not citing accumulated context. Stage 1's discovery was delegated and its product is a durable record.",
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"deepseek-v4-pro": [
+			"no delegation trigger survived; the deciding verification axis is not reachable inside the durable authorization"
+		],
+		"ox-alpha": [
+			"no delegation trigger survived; the deciding verification axis is not reachable inside the durable authorization"
+		],
+		"glm-5.3": [
+			"no delegation trigger survived; the deciding verification axis is not reachable inside the durable authorization"
+		],
+		"minimax-m3": [
+			"no delegation trigger survived; the deciding verification axis is not reachable inside the durable authorization"
+		],
+		"native-subagent": [
+			"same reason as the external candidates, plus no independence or permission benefit over direct execution"
+		]
+	},
+
+	"consequence": "medium",
+	"resolver_verdict": "selected=direct, delegation_lifecycle_violations=[]",
+
+	"downstream_note": "Stage 3 (M3) and stage 5 (independent verification) are separate decisions, each recorded when that stage opens. Stage 5 qualifies on Independence and its comparison is genuinely open."
+}
