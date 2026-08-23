@@ -154,7 +154,9 @@ async function captureReview(page: Page, name: string) {
 async function mockOwnerRoute(
 	page: Page,
 	options: {
-		dailyDelayMs?: number;
+		// The daily response stays unfulfilled until this resolves, so the
+		// prerequisite pending state lasts exactly as long as the caller holds it.
+		dailyHold?: Promise<void>;
 		heatmapDelayMs?: number;
 		heatmapStatus?: number;
 		comparison?: typeof insufficient;
@@ -174,8 +176,8 @@ async function mockOwnerRoute(
 	);
 	await page.route("**/rpc/admin/analytics/daily", async (route) => {
 		calls.daily += 1;
-		if (options.dailyDelayMs) {
-			await new Promise((resolve) => setTimeout(resolve, options.dailyDelayMs));
+		if (options.dailyHold) {
+			await options.dailyHold;
 		}
 		await route.fulfill({ status: 200, json: { json: daily } });
 	});
@@ -745,8 +747,11 @@ test("History exposes prerequisite pending, error, and one deliberate retry chai
 	await page.addInitScript(() =>
 		window.localStorage.setItem("fitway.locale", "en"),
 	);
+	let releaseDaily!: () => void;
 	const calls = await mockOwnerRoute(page, {
-		dailyDelayMs: 350,
+		dailyHold: new Promise<void>((resolve) => {
+			releaseDaily = resolve;
+		}),
 		timeContextFailures: 1,
 	});
 	await page.setViewportSize({ width: 390, height: 844 });
@@ -754,12 +759,15 @@ test("History exposes prerequisite pending, error, and one deliberate retry chai
 	await page.locator("#owner-analytics-history-tab").click();
 	const reporting = page.locator(".owner-reporting");
 	const loading = reporting.locator("[data-owner-reporting-state='loading']");
+	// The daily response is still withheld, so the prerequisite pending state is
+	// held open until the release below instead of racing a mock delay.
 	await expect(loading).toBeVisible();
 	await expect(loading).toHaveAttribute("role", "status");
 	expect(calls.heatmap).toBe(0);
 	expect(calls.weekOverWeek).toBe(0);
 	expect(calls.csv).toBe(0);
 
+	releaseDaily();
 	const error = reporting.locator("[data-owner-reporting-state='error']");
 	await expect(error).toBeVisible();
 	await expect(error).toHaveAttribute("role", "alert");
