@@ -1,0 +1,83 @@
+{
+	"schema": "route-decision/1",
+
+	"project": "fitway",
+	"stage_ref": "p11_browser_debt_b01 / stage-2-stabilize-three-assertions (P1 browser load-sensitivity debt)",
+	"recorded": "2026-08-23T18:05:00+03:00",
+
+	"evaluated_before_stage_discovery": true,
+
+	"candidate_id": "ox-alpha",
+	"route": "opencode/x-preview-f-free",
+	"control": "high",
+	"execution": "external-opencode",
+	"transport": "opencode-cli",
+
+	"registry_revision": "2026-08-23.6",
+	"qualification_baseline": "2026-08-23.3",
+
+	"gate_outcome": null,
+	"gate_outcome_note": "Pending. Appended after the parent gate closes this stage.",
+
+	"covered_modalities": ["text"],
+	"covered_tools": [
+		"repository_read",
+		"file_write",
+		"shell",
+		"browser_control"
+	],
+	"covered_mcp_operations": [],
+	"covered_capabilities": ["repository_verification_ladder"],
+
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md",
+		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
+	],
+
+	"delegation_trigger": "recoverability, economy",
+	"material_selection_reason": "Resolved by scripts/resolve-opencode-worker.mjs with no delegation-lifecycle violations. The stage qualifies on Recoverability and Economy. Recoverability is the substantive one: the repair applies page.clock.install()/fastForward, a pattern with zero precedent anywhere in this repository, to assertions owned by three other milestones, and it must be iterated against real Playwright runs. Running that iteration in a disposable worktree keeps the orchestrator's context unaffected if it goes wrong and lets the stage be re-run from clean. Economy is real: the qualified route is currently free. Among two eligible candidates showing no material stage-specific evidence advantage over one another, the active availability_economic temporary preference of 2026-08-21 selects ox-alpha; its free route was confirmed live at preflight and it closed this slice's stage 1 the same day at a PASS gate with no constraint breach. No concrete native material advantage applies. Direct execution was considered and rejected on its merits, NOT on accumulated context: see delegation_evaluation_note.",
+	"eligible_alternatives": ["deepseek-v4-pro"],
+	"filtered_alternatives": {
+		"glm-5.3": [
+			"required capability not qualified: repository_verification_ladder"
+		],
+		"minimax-m3": [
+			"required tool (browser_control not demonstrated)",
+			"required capability not qualified: repository_verification_ladder",
+			"known constraint: high_reporting_precision_is_material"
+		],
+		"native-subagent": [
+			"not filtered on capability; it lost the comparison. The stage is meaningful bounded implementation with a precise plan, an objective gate, and a disposable worktree, which is squarely inside the external candidate's qualified scope. It needs no native-only tooling and no MCP operation."
+		]
+	},
+
+	"delegation_evaluation_note": "The parent holds context on all three target files from gate-reviewing the delegated stage-1 return, which the workflow requires it to do. That context is recorded here explicitly and was NOT used as a direct-execution reason. 'The orchestrator already has context' is the named anti-pattern, and here it would be coupling the parent manufactured by reviewing rather than a property of the stage. No stage-2 target-file discovery was performed before this decision: nothing was read to work out how to rewrite an assertion.",
+
+	"stage_flags": ["high_reporting_precision_is_material"],
+	"consequence": "medium",
+	"consequence_basis": "Three test assertions, each independently revertible as its own commit, behind an independent-verification gate whose explicit substance is reproducing the stochastic claim. Below the candidate's medium ceiling. The failure mode that matters is not a crash but a test that goes green without proving what it did, which is why the constraint is written as a hard boundary in the packet and why the parent diffs every hunk.",
+
+	"preflight_findings": {
+		"write_isolation": "SATISFIED. Disposable worktree D:/Projects/fitway-worktrees/p11-browser-debt-w01 prepared per docs/WORKFLOW.md steps 7-8: pnpm install --frozen-lockfile exit 0 in 13.2s, then the gate pnpm exec vitest --version returned vitest/4.1.10 win32-x64 node-v24.14.0.",
+		"playwright_drive_and_read_failure_output": "SATISFIED. pnpm exec playwright test tests/browser/phase3.browser.spec.ts in that worktree ran 3 tests, 3 passed in 16.5s, with the vite dev webServer started by the Playwright config.",
+		"secret_provisioning": "NOT REQUIRED, and this is the finding that changed the routing. The assumption going in was that a browser run needs .env and that provisioning real secrets into an external worker's worktree would be the blocker, since dotenv_contents is an excluded payload class. The probe refutes it: the three target specs mock every route and need no .env at all. The excluded payload class never enters the packet and the worker is never given a secret.",
+		"toolchain_supports_the_proposed_pattern": "Playwright 1.61.1, which has page.clock.install()/fastForward.",
+		"verify_full_split": "The worker does NOT run pnpm verify:full. That step needs a disposable Postgres database and .env, so the orchestrator runs it twice at the candidate. The approved plan pre-authorized this split as acceptable provided it is recorded. It is recorded here."
+	},
+
+	"route_evidence": "requalified",
+	"requalification_reasons": [
+		"no recorded route decision for this project covering a writable implementation stage of this shape"
+	],
+
+	"hard_constraints_applied": [
+		"write_isolation_required: satisfied by the disposable worktree above; the worker never touches the coordinator's worktree",
+		"parent_diff_and_verification_gate_required: the worker may not commit. The parent reviews every hunk and commits at the stage boundary.",
+		"json_event_capture_required: --format json, events captured outside the transcript",
+		"exact_session_finalization_fallback_required",
+		"external_skill_scanning_disabled and deny_by_default_exact_skill_allowlist_required: no skill body is transmitted and no skill is allowlisted",
+		"auto_approval_forbidden: --auto is not passed"
+	],
+
+	"downstream_note": "Stage 5 independent verification MUST NOT route to ox-alpha, because ox-alpha implemented this stage and independence is the whole point of that gate. deepseek-v4-pro at max served that role for P2 and is the obvious candidate, but stage 5 still gets its own comparison recorded when it opens. Stage 3, closing the register entries, is a separate writable records-only stage with its own decision."
+}
