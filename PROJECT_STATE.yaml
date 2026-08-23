@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-23T16:05:00+03:00"
+updatedAt: "2026-08-23T16:30:00+03:00"
 
 coordinator:
   owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration, on work/phase11-access-tx-b01 executing the approved phase11-access successor sequence P2 -> P1 -> Slice B recorded in docs/phase-records/handoffs/coordinator/20260823-124724-p11-access-successor-sequence-plan.md"
@@ -1504,9 +1504,9 @@ milestones:
     integratedCommit: 8ff55f9badcfe17b49ab1de788dd64cf20ec0682
 
   phase11-access-tx:
-    status: VALIDATING
+    status: DONE
     dependencies: [phase11-access-b02]
-    ownerSession: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration"
+    ownerSession: null
     branch: work/phase11-access-tx-b01
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
     baseCommit: aaa646b174d4dbb248eb1a73a6b7273fa40af3e7
@@ -1538,9 +1538,9 @@ milestones:
       - "M4 and rate limiting on the owner access leaves: named open items, not this slice's work"
     sharedLeases: []
     validationRepairAttempts: 1
-    lastHeartbeatAt: "2026-08-23T16:05:00+03:00"
-    leaseExpiresAt: "2026-08-25T12:00:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-access/20260823-133000-p11_access_tx_b01-candidate.md
+    lastHeartbeatAt: "2026-08-23T16:30:00+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase11-access/20260823-163000-p11_access_c01-coordinator-done.md
     stopReason: null
     gates:
       unit: PASS
@@ -1548,8 +1548,8 @@ milestones:
       browser: PASS
       accessibility: PASS
       visual: NOT_REQUIRED
-      independentReview: PENDING
-    integratedCommit: null
+      independentReview: PASS
+    integratedCommit: 6299a7568f8dfd30813f54e85a4ececdf22efee3
 
   phase11-settings:
     status: PLANNED

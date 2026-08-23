@@ -17,8 +17,8 @@
 	"qualification_baseline": "2026-08-23.2",
 	"qualification_status": "qualified",
 
-	"gate_outcome": null,
-	"gate_outcome_note": null,
+	"gate_outcome": "PASS",
+	"gate_outcome_note": "Accepted at the parent gate on 2026-08-23. Session ses_fd1482bedffeclLjNw5PNmm3wC, exit 0, 151 events, 52 tool calls, one 5,142-character multi-axis structured final that finalized on the first invocation. VERDICT: PASS with no findings. The parent re-checked four cited claims against the repository and all four matched: the staff caller still calls isUniqueViolation with no constraint at apps/server/src/access-repository.ts:268, the owner caller passes the constraint name at :307, fileParallelism is false at vitest.integration.config.ts:10, and auth_principals_owner_email_unique is a lower(owner_email) partial index at packages/db/src/migrations/0002_phase4_auth.sql:72. The verifier worktree was clean at the candidate commit. The external route was the right call: it ran the complete ladder green including the browser and accessibility steps at 83/83, closing the gap attempt 1 left open, and it proved non-vacuity for three of four claims by reverting each change and watching the specific test fail. It declined to claim non-vacuity for the fourth and said why - the narrowing is not behaviour-visible on the current schema, so no discriminating test can exist. That refusal is the reason the return was accepted rather than merely believed.",
 
 	"covered_modalities": ["text"],
 	"covered_tools": ["repository_read", "shell"],
