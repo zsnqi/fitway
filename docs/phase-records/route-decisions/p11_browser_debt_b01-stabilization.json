@@ -16,8 +16,13 @@
 	"registry_revision": "2026-08-23.6",
 	"qualification_baseline": "2026-08-23.3",
 
-	"gate_outcome": null,
-	"gate_outcome_note": "Pending. Appended after the parent gate closes this stage.",
+	"gate_outcome": "PASS",
+	"gate_outcome_note": "Accepted at the parent gate on 2026-08-23. Session ses_fd0d00dc5ffetdze7z0J3rkf7r, exit 0, 226 events, final compact text event finalized without fallback. Scope held exactly: three files modified, no others. The parent reviewed every hunk against the constraint rather than the report and confirmed the load-bearing points: expect(requests).toBe(1) is untouched and still strict; every new expect.poll replaced an already-retrying assertion with the same target and the same budget, so no retry was added; both helper signature changes default to prior behaviour, leaving sibling tests byte-identical; and the dailyDelayMs single-call-site correction the parent supplied was applied correctly. The worker resolved both open questions it was told to settle first, traced the pending-to-locator mapping the stage-1 return had gotten wrong, and supplied real non-vacuity evidence by breaking two behaviours and observing the specific repaired assertions fail. The parent independently re-ran the three specs at the candidate: 11 passed. PASS is scoped to the stage-2 deliverable. It is NOT a statement that the slice gate passed - the full ladder did not go green, for reasons outside this stage's scope, recorded separately.",
+	"gate_outcome_record": "docs/phase-records/handoffs/phase11-browser-debt/20260823-193000-p11_browser_debt_b01-needs-human.md",
+	"minor_findings": [
+		"Debugging residue: the worker left an untracked file literally named `nul` in its worktree, created by a cmd-style `2>nul` redirect run inside bash, containing one stderr line. Confined to the disposable worktree and removed by the parent; it never reached the candidate. Recorded because leaving no debugging residue is an execute-stage requirement, not because it caused harm.",
+		"The two heading assertions in phase3 moved from expect(locator).toBeVisible() to expect.poll(() => locator.isVisible()).toBe(true). Semantically the same proof, but the failure message degrades from Playwright's locator diagnostics to `expected true, received false`. Not blocking and not a constraint breach; worth a look if a future session debugs that test."
+	],
 
 	"covered_modalities": ["text"],
 	"covered_tools": [
