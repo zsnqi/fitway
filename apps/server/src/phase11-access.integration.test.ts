@@ -198,6 +198,20 @@ async function provisionOwnerAccount(displayName: string) {
 }
 
 beforeAll(async () => {
+	// Reset the schema before migrating, as every other integration file in this
+	// directory does. This file used to migrate onto whatever a sibling had left
+	// behind, and it was the only one that did. Inside a single `verify:full` the
+	// siblings drop `drizzle` and `public` and re-migrate the same disposable
+	// database, so this file could meet a journal that disagreed with the objects
+	// actually present and fail its `beforeAll` with SQLSTATE 42710
+	// (`type current_source already exists`) - a red gate in code no candidate had
+	// touched. Found by the p11_access_tx_v01 independent verification.
+	//
+	// It also makes the pre-principal provisioning race below rest on a guaranteed
+	// empty schema rather than on the deletes underneath having caught everything.
+	await database.execute("drop schema if exists drizzle cascade");
+	await database.execute("drop schema if exists public cascade");
+	await database.execute("create schema public");
 	await migrate(database, {
 		migrationsFolder: path.resolve("packages/db/src/migrations"),
 	});

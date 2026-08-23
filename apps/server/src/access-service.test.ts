@@ -59,6 +59,10 @@ describe("the staff PIN generator seam", () => {
 		);
 	});
 
+	// A standing guard, not a change-discriminating test: it passes against the
+	// pre-change code too, because the old refusal's message was static as well.
+	// It is kept deliberately. The secrecy holds by construction today, and
+	// construction is exactly what a later edit can change without noticing.
 	it("keeps the rejected PIN out of the error it raises", async () => {
 		generator.next = "not-a-pin";
 		const service = serviceWithRepository({

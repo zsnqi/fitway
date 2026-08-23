@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-23T13:30:00+03:00"
+updatedAt: "2026-08-23T15:50:00+03:00"
 
 coordinator:
   owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration, on work/phase11-access-tx-b01 executing the approved phase11-access successor sequence P2 -> P1 -> Slice B recorded in docs/phase-records/handoffs/coordinator/20260823-124724-p11-access-successor-sequence-plan.md"
@@ -1537,10 +1537,10 @@ milestones:
       - "the seven approved access action labels, the secret-free audit rule, and the owner lifecycle decisions: human-locked"
       - "M4 and rate limiting on the owner access leaves: named open items, not this slice's work"
     sharedLeases: []
-    validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-23T13:30:00+03:00"
+    validationRepairAttempts: 1
+    lastHeartbeatAt: "2026-08-23T15:50:00+03:00"
     leaseExpiresAt: "2026-08-25T12:00:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-access/20260823-133000-p11_access_tx_b01-candidate.md
+    handoff: docs/phase-records/handoffs/phase11-access/20260823-155000-p11_access_v01-verification-escalation.md
     stopReason: null
     gates:
       unit: PASS

@@ -1,0 +1,39 @@
+{
+	"schema": "failure-record/1",
+	"project": "fitway",
+	"_what_this_is": "One observed verification failure, recorded so a later session does not re-derive it. This is NOT a known-flaky register entry and must not be used as an attribution. It is the raw observation that a register entry would need, plus the reason it was not opened here.",
+
+	"observed_by": "p11_access_v01",
+	"observer_kind": "independent verifier, deepseek-v4-pro via opencode-cli",
+	"observed": "2026-08-23",
+	"session": "ses_fd18a66dbffeecFPf40lwpiEez",
+
+	"location": "apps/server/src/phase2.integration.test.ts:779",
+	"symptom": "Playwright locator.waitFor timed out after 5s on .public-live__count-value during the 'All integration tests' step of pnpm verify:full",
+	"surface": [
+		"apps/web/**",
+		"tests/browser/**",
+		"apps/server/src/phase2.integration.test.ts",
+		"edge/**"
+	],
+
+	"candidate_under_test": "805f6759e56674ac27668b05b39292833bef7574",
+	"candidate_touches_surface": false,
+	"candidate_touched_files": [
+		"packages/auth/src/access.ts",
+		"apps/server/src/access-repository.ts",
+		"apps/server/src/access-service.ts",
+		"apps/server/src/access-service.test.ts",
+		"apps/server/src/phase11-access.integration.test.ts"
+	],
+
+	"standalone_pass_observed": true,
+	"standalone_evidence": "the same verifier re-ran the full integration component standalone at the same commit: 18 files / 122 tests PASS. The coordinator independently ran the complete integration component after the schema repair: 18 files / 122 tests PASS (run id p11_access_tx_r1b).",
+
+	"register_status": "not_added",
+	"why_not_added": "Two reasons, both fail-closed. First, the known-flaky register's entries are all browser specs and this is an integration file, so no existing entry covers it and attribution was correctly refused for the run that hit it. Second, the session that repaired this candidate should not also be the session that opens the register entry which would later excuse that same candidate's gate. One observation plus an observed standalone pass is what the register requires, so this is materially close - but it should be opened by a session that is not the implementer, or by P1 when it takes this class of debt.",
+
+	"hand_off_to": "P1, the browser load-sensitivity debt slice. This observation widens P1's picture: the three registered entries are browser specs, and this is a fourth load-sensitive location living in an integration file. P1's scope was written for tests/browser/** only and should be reconsidered against this before it activates.",
+
+	"mechanism_hypothesis": "Same class as the three registered entries - a transient-state assertion sampled after the rest of the ladder has loaded the machine - but recorded as a hypothesis, not a finding. It was observed once."
+}
