@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-22T16:30:00+03:00"
+updatedAt: "2026-08-23T12:47:24+03:00"
 
 coordinator:
-  owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration, currently on work/phase11-access-b02 executing Phase 11 access Slice A directly; handover recorded in docs/phase-records/handoffs/coordinator/20260815-003900-coordinator-handover-and-frontier-baseline.md"
+  owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration, on work/phase11-access-tx-b01 executing the approved phase11-access successor sequence P2 -> P1 -> Slice B recorded in docs/phase-records/handoffs/coordinator/20260823-124724-p11-access-successor-sequence-plan.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1503,6 +1503,53 @@ milestones:
       independentReview: PASS
     integratedCommit: 8ff55f9badcfe17b49ab1de788dd64cf20ec0682
 
+  phase11-access-tx:
+    status: IN_PROGRESS
+    dependencies: [phase11-access-b02]
+    ownerSession: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration"
+    branch: work/phase11-access-tx-b01
+    worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
+    baseCommit: aaa646b174d4dbb248eb1a73a6b7273fa40af3e7
+    ownedPaths:
+      - packages/api/src/access/**
+      - packages/auth/src/access.ts
+      - packages/auth/src/access.test.ts
+      - apps/server/src/access-repository.ts
+      - apps/server/src/access-service.ts
+      - apps/server/src/phase11-access.integration.test.ts
+      - docs/phase-records/handoffs/phase11-access/*-p11_access_tx_b01-*.md
+      - docs/phase-records/handoffs/phase11-access/*-p11_access_tx_v01-*.md
+      - docs/phase-records/route-decisions/**
+      - docs/phase-records/verification/**
+    forbiddenPaths:
+      - all repository paths outside ownedPaths and sharedLeases
+      - "apps/web/** and tests/browser/** in their entirety: Slice B, and touching them would also void this slice's known-flaky attribution"
+      - "packages/db/**: a migration or schema need is a stop condition, not a decision inside this slice"
+      - "packages/api/src/audit/**: the governance contract is integrated and independently verified; call it, do not modify it"
+      - "packages/api/src/commands/** and the frozen Phase 5 command/audit append semantics"
+      - "packages/auth/src/auth-service.ts: M5 is pre-existing Phase 4 code and must not be repaired opportunistically"
+      - "work/phase11-access-b01 and every b01 handoff or terminal record: preserved rejected evidence, read-only"
+      - visual-direction-gate/**, Paper, and every normative document including PHASES.md
+      - PROJECT_STATE.yaml, scripts/verify.mjs, and scripts/verify-repository.mjs
+      - root manifests, lockfiles, environment schemas, and test-runner configuration
+      - every other milestone's phase record and handoff directory
+      - "the seven approved access action labels, the secret-free audit rule, and the owner lifecycle decisions: human-locked"
+      - "M4 and rate limiting on the owner access leaves: named open items, not this slice's work"
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-08-23T12:47:24+03:00"
+    leaseExpiresAt: "2026-08-25T12:00:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-access/20260823-124724-p11_access_tx_b01-activation.md
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null
+
   phase11-settings:
     status: PLANNED
     dependencies:
@@ -1583,6 +1630,7 @@ milestones:
         phase11-audit,
         phase11-audit-generalization,
         phase11-access-b02,
+        phase11-access-tx,
         phase11-settings,
         phase11-health,
       ]
