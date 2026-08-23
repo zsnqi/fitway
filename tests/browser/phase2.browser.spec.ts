@@ -3,18 +3,21 @@ import { expect, test } from "@playwright/test";
 function usablePayload(
 	freshUntil: string,
 	freshness: "fresh" | "stale" = "fresh",
+	stamps: { lastUpdatedAt: string; computedAt: string } = {
+		lastUpdatedAt: new Date().toISOString(),
+		computedAt: new Date().toISOString(),
+	},
 ) {
-	const now = new Date();
 	return {
 		schemaVersion: 2,
 		freshness,
 		timeZone: "Asia/Riyadh",
 		band: "moderate",
 		count: 37,
-		lastUpdatedAt: now.toISOString(),
+		lastUpdatedAt: stamps.lastUpdatedAt,
 		freshUntil,
 		source: "edge",
-		computedAt: now.toISOString(),
+		computedAt: stamps.computedAt,
 		trend: null,
 	};
 }
@@ -72,16 +75,40 @@ test("renders localized live status and changes direction without overflow", asy
 test("locally expires cached fresh JSON without another request", async ({
 	page,
 }) => {
+	// The page clock is installed and paused so the 500ms fresh window is
+	// anchored to the page's own timeline: hydration cannot consume it, and the
+	// local expiry timer is fired by fastForward instead of wall-clock luck.
+	// The paused instant sits slightly ahead of the install moment because the
+	// installed clock keeps ticking in real time until pauseAt lands.
+	const base = new Date(Date.now() + 60_000);
+	await page.clock.install();
+	await page.clock.pauseAt(base);
 	let requests = 0;
 	await page.route("**/public/occupancy", (route) => {
 		requests += 1;
 		return route.fulfill({
-			json: usablePayload(new Date(Date.now() + 500).toISOString()),
+			json: usablePayload(
+				new Date(base.getTime() + 500).toISOString(),
+				"fresh",
+				{
+					lastUpdatedAt: base.toISOString(),
+					computedAt: base.toISOString(),
+				},
+			),
 			headers: { "X-Fitway-Poll-Seconds": "60" },
 		});
 	});
 	await page.goto("/");
-	await expect(page.locator("body")).toContainText("تحديث مباشر");
+	// react-query delivers its cache notifications through setTimeout(0), which
+	// the installed clock owns: each poll step flushes the timer queue so the
+	// response arrives and renders no matter how slow the machine is.
+	await expect
+		.poll(async () => {
+			await page.clock.fastForward(0);
+			return page.locator("body").textContent();
+		})
+		.toContain("تحديث مباشر");
+	await page.clock.fastForward(500);
 	await expect(page.locator("body")).toContainText("آخر عدد تقريبي معروف", {
 		timeout: 3_000,
 	});
