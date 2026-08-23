@@ -123,6 +123,23 @@ const phases = {
 		integrationFiles: ["apps/server/src/phase11-audit.integration.test.ts"],
 		label: "Phase 11 owner audit history slice",
 	},
+	"phase11-access": {
+		// Slice B mounts the owner access surface on /admin beside every other
+		// owner section, so all of them are this slice's gate. The comments on
+		// phase11-health and phase11-audit record two separate occasions where
+		// omitting a sibling hid a real regression until coordinator verify:full
+		// caught it; this profile is written to not repeat that a third time.
+		browserFiles: [
+			"tests/browser/phase11-access.browser.spec.ts",
+			"tests/browser/phase11-audit.browser.spec.ts",
+			"tests/browser/phase11-health.browser.spec.ts",
+			"tests/browser/phase10-ui-csv.browser.spec.ts",
+			"tests/browser/phase9-owner-ui.browser.spec.ts",
+			"tests/browser/phase11-shell.browser.spec.ts",
+		],
+		integrationFiles: ["apps/server/src/phase11-access.integration.test.ts"],
+		label: "Phase 11 owner access management slice",
+	},
 	"phase11-shell": {
 		browserFiles: ["tests/browser/phase11-shell.browser.spec.ts"],
 		integrationFiles: [],

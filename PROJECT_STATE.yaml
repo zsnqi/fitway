@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-23T23:15:00+03:00"
+updatedAt: "2026-08-23T23:45:00+03:00"
 
 coordinator:
-  owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration, on work/phase11-browser-debt-b01 executing the approved phase11-access successor sequence, revised by the human option-B decision of 2026-08-23 to P2 -> ladder contention -> P1 stage 3 -> Slice B recorded in docs/phase-records/handoffs/coordinator/20260823-124724-p11-access-successor-sequence-plan.md. P2 is DONE at 6299a75. phase11-ladder-contention is DONE at 12afd33 with a net-zero code diff - it tested a configuration fix, its own validation falsified it, and it reverted. phase11-browser-debt (P1) is DONE with independent review PASS. The approved sequence is complete through P1. Slice B (phase11-access-ui) is the next authorized work and has not started."
+  owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration, on work/phase11-access-ui-b01 executing the approved phase11-access successor sequence, revised by the human option-B decision of 2026-08-23 to P2 -> ladder contention -> P1 stage 3 -> Slice B recorded in docs/phase-records/handoffs/coordinator/20260823-124724-p11-access-successor-sequence-plan.md. P2 is DONE at 6299a75. phase11-ladder-contention is DONE at 12afd33 with a net-zero code diff - it tested a configuration fix, its own validation falsified it, and it reverted. phase11-browser-debt (P1) is DONE with independent review PASS. The approved sequence is complete through P1. Slice B (phase11-access-ui) is ACTIVE and is the final item in the approved sequence."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1593,6 +1593,54 @@ milestones:
       independentReview: PASS
     integratedCommit: ffe3745e87c60b67ce9825ca322976e3eda6122a
 
+  phase11-access-ui:
+    status: IN_PROGRESS
+    dependencies: [phase11-access-b02, phase11-access-tx, phase11-browser-debt]
+    ownerSession: "main Claude Code coordinator session, run p11_access_ui_b01"
+    branch: work/phase11-access-ui-b01
+    worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
+    baseCommit: 0ef72c2
+    ownedPaths:
+      - apps/web/src/components/owner/access/**
+      - apps/web/src/hooks/use-owner-access.ts
+      - apps/web/src/hooks/use-owner-access.test.tsx
+      - tests/browser/phase11-access.browser.spec.ts
+      - tests/browser/__screenshots__/win32/chromium/phase11-access.browser.spec.ts/**
+      - docs/phase-records/handoffs/phase11-access-ui/*-p11_access_ui_b01-*.md
+      - docs/phase-records/handoffs/phase11-access-ui/*-p11_access_ui_v01-*.md
+      - docs/phase-records/route-decisions/**
+      - docs/phase-records/verification/**
+    forbiddenPaths:
+      - all repository paths outside ownedPaths and sharedLeases
+      - "packages/**, apps/server/** and packages/db/**: admin.access is already mounted and independently verified. If the UI turns out to need a transport or schema change, that is a stop condition, not a decision inside this slice."
+      - "apps/web/src/i18n/**, apps/web/src/routeTree.gen.ts, global tokens and packages/ui/**"
+      - "every canonical screenshot subtree except this slice's own: canonical baselines are read-only acceptance evidence and stay under human approval"
+      - "every other owner section component, hook and spec: phase9-owner-ui, phase10-ui-csv, phase11-audit, phase11-health and phase11-shell are gated by this slice, not edited by it"
+      - "playwright.config.ts, vitest.config.ts, vitest.integration.config.ts and scripts/verify.mjs after the activation commit: phase11-ladder-contention held that lease, tested a configuration fix, falsified it and reverted. Reopening that surface is not this slice's work, and raising a timeout is a falsified repair, not an option."
+      - "opening a known-flaky register entry for any failure this slice's own run hits: the register forbids a run registering its own flake, and every prior entry is now closed"
+      - "the seven approved access action labels, the secret-free audit rule, and the owner lifecycle decisions: human-locked"
+      - "M4, M5, rate limiting on the owner access leaves, and the docs/WORKFLOW.md step-8 environment gap: carried forward by P2, still unscheduled"
+      - "work/phase11-access-b01 and every b01 handoff or terminal record: preserved rejected evidence, read-only"
+      - visual-direction-gate/**, Paper, and every normative document including PHASES.md
+      - PROJECT_STATE.yaml and scripts/verify-repository.mjs
+      - root manifests, lockfiles, and environment schemas
+      - every other milestone's phase record and handoff directory
+    sharedLeases:
+      - "exclusive through 2026-08-28T23:59:00+03:00: apps/web/src/routes/admin.tsx, limited to mounting the access Owner section. The owner shell composition, the route guard, every sibling section and every other URL stay unchanged. Same shape as the lease phase11-audit held. No server or router lease is needed because admin.access is already mounted."
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-08-23T23:45:00+03:00"
+    leaseExpiresAt: "2026-08-28T23:59:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-access-ui/20260823-234500-p11_access_ui_b01-activation.md
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
   phase11-e2e-propagation-wait:
     status: PLANNED
     dependencies: [phase11-browser-debt]
@@ -1741,6 +1789,7 @@ milestones:
         phase11-audit-generalization,
         phase11-access-b02,
         phase11-access-tx,
+        phase11-access-ui,
         phase11-settings,
         phase11-health,
       ]
