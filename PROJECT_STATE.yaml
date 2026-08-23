@@ -1591,7 +1591,7 @@ milestones:
       accessibility: PASS
       visual: NOT_REQUIRED
       independentReview: PASS
-    integratedCommit: PLACEHOLDER
+    integratedCommit: ffe3745e87c60b67ce9825ca322976e3eda6122a
 
   phase11-e2e-propagation-wait:
     status: PLANNED
