@@ -76,7 +76,7 @@ export function createAccessService(options: {
 	 *
 	 * That last sentence is why the refusal is converted rather than propagated.
 	 * `assertStaffPinShape` refuses with an `AccessRuleError`, and the transport
-	 * maps every `AccessRuleError` to `BAD_REQUEST` - correct for the eight
+	 * maps every `AccessRuleError` to `BAD_REQUEST` - correct for the nine
 	 * refusals an owner can actually provoke, and wrong for this one, which would
 	 * tell an owner they mistyped a value they never typed. The distinction is
 	 * only knowable here, at the seam that knows the value came from
