@@ -1,0 +1,56 @@
+{
+	"schema": "route-decision/1",
+
+	"project": "fitway",
+	"stage_ref": "p11_access_tx_b01 / stage-1-refusal-surface-investigation (P2 access transport follow-ups)",
+	"recorded": "2026-08-23T12:52:00+03:00",
+
+	"evaluated_before_stage_discovery": true,
+
+	"candidate_id": "ox-alpha",
+	"route": "opencode/x-preview-f-free",
+	"control": "high",
+	"execution": "external-opencode",
+	"transport": "opencode-cli",
+
+	"registry_revision": "2026-08-23.1",
+	"qualification_baseline": "2026-08-22.2",
+
+	"gate_outcome": "PASS",
+	"gate_outcome_note": "Accepted at the parent gate on 2026-08-23. Session ses_fd1f52fccffe48At2rCHkGxq0D, exit 0, 42 events, one 7,795-character final text event that finalized on the first invocation with no exact-session fallback required. The return held the Findings contract: no file contents, no listings, no search narration. Six of six claims spot-checked against the repository matched exactly, including the negative claim that the owner-provision insert at apps/server/src/access-repository.ts:528-538 carries no try/catch. Working tree confirmed unchanged, so the read-only boundary held. Outcome appended to the candidate evidence record before the stage closed. The external route earned its selection here: roughly 40KB of source was read and a one-page map crossed back.",
+
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md",
+		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
+	],
+
+	"delegation_trigger": "volume",
+	"material_selection_reason": "Resolved by scripts/resolve-opencode-worker.mjs from a stage input recorded before this stage's own target-file discovery began: the active availability_economic temporary preference of 2026-08-21 selects ox-alpha, its free qualified route was confirmed live at preflight, and no eligible candidate showed a material stage-specific advantage. The stage qualifies for delegation on Volume: the access refusal surface spans packages/api/src/access/**, packages/auth/src/access.ts, apps/server/src/access-repository.ts, apps/server/src/access-service.ts and the access integration test - tens of kilobytes of source - while the deliverable is a one-page map of declaration sites, transport mapping, the staff-path unique-violation pattern, and the integration test's concurrency convention. Reading that inline would spend the orchestrator context that the two later slices of this sequence need. The direct-execution reasons were considered and recorded in the stage input; none applied, and 'the orchestrator already holds the context' was deliberately kept false by performing no target-file discovery during planning or activation.",
+	"eligible_alternatives": ["deepseek-v4-pro", "glm-5.3"],
+	"filtered_alternatives": {
+		"minimax-m3": [
+			"known constraint: high_reporting_precision_is_material - the deliverable is an exact inventory of refusal identifiers with file:line pointers, and this candidate's recorded limitations include omitted final tool reporting and an allowlist overrun"
+		],
+		"native-subagent": [
+			"not filtered on capability; it lost the comparison. Read-only investigation with a short single-axis structured return is inside the external candidate's qualified scope, the durable authorization covers non-secret repository source, and Economy is real here - the qualified route is currently free while a native worker spends the orchestrator's budget. No concrete native material advantage applies: the stage needs no native-only tooling, no MCP operation, and its consequence is low."
+		]
+	},
+
+	"stage_flags": ["high_reporting_precision_is_material"],
+	"consequence": "low",
+
+	"hard_constraints_applied": [
+		"json_event_capture_required: --format json, events captured outside the transcript",
+		"exact_session_finalization_fallback_required: on a missing final compact text, continue the exact session with tools forbidden and request only the return contract, then opencode export <sessionID>",
+		"external_skill_scanning_disabled and deny_by_default_exact_skill_allowlist_required: no skill body is transmitted and no skill is allowlisted",
+		"auto_approval_forbidden: --auto is not passed",
+		"read-only stage: no writable target is granted, and the parent verifies an unchanged working tree on return"
+	],
+
+	"downstream_note": "This decision covers the read-only investigation only. Stages 2 and 3 are writable implementation and are separate decisions, each recorded when that stage opens and before its own target-file discovery."
+}
