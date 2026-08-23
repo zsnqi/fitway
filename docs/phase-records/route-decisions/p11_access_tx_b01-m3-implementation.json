@@ -1,0 +1,48 @@
+{
+	"schema": "route-decision/1",
+
+	"project": "fitway",
+	"stage_ref": "p11_access_tx_b01 / stage-3-m3-generator-defect-is-not-a-caller-error",
+	"recorded": "2026-08-23T13:12:00+03:00",
+
+	"evaluated_before_stage_discovery": true,
+
+	"candidate_id": "native",
+	"route": null,
+	"control": null,
+	"execution": "direct-coordinator",
+	"transport": null,
+
+	"registry_revision": "2026-08-23.1",
+	"qualification_baseline": "2026-08-22.2",
+
+	"gate_outcome": "PASS",
+	"gate_outcome_note": "Direct execution held; the stage stayed inside its declared surface. The new test was proven non-vacuous by a negative control rather than asserted to be: with the fix stashed, `refuses a malformed generated PIN as a server fault` fails on exactly its own assertion - expected 'AccessRuleError' not to be 'AccessRuleError' - and with the fix restored all three pass. Focused access integration 24/24 on a second freshly created disposable database (run id p11_access_tx_m3a) and pnpm verify:fast green. One scope item was surfaced rather than taken silently: M3 is only observable at the generator seam, which no procedure can reach, so it needed apps/server/src/access-service.test.ts - a file the milestone did not own because it did not exist. The coordinator extended ownedPaths in the same commit and said so, instead of writing outside the declared scope.",
+
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "file_write", "shell"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md",
+		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
+	],
+
+	"delegation_trigger": null,
+	"material_selection_reason": "Direct, and for a different reason from the M1 stage - recorded separately because a record that reuses the previous stage's reason teaches the next session nothing. M1 was unreachable for an external worker because its deciding evidence needed real database credentials. M3 is not: a generator defect is provable at the service seam with a stubbed generator and no database, so the durable authorization is not the obstacle and the external pool was genuinely eligible. It loses on handoff cost. The change is a seam conversion of roughly ten lines plus one focused test; writing the packet, capturing events, running the parent gate and absorbing one likely iteration costs more than making the change. Volume was already spent by the delegated stage 1, Independence does not apply to producing a candidate, the stage needs exactly the write scope the coordinator holds, and one commit on a branch is the rollback boundary.",
+	"eligible_alternatives": ["deepseek-v4-pro", "ox-alpha", "glm-5.3"],
+	"filtered_alternatives": {
+		"minimax-m3": [
+			"not evaluated on capability; no delegation trigger survived, so no comparison was opened"
+		],
+		"native-subagent": [
+			"no delegation trigger; no independence or permission benefit over direct execution"
+		]
+	},
+
+	"consequence": "low",
+	"resolver_verdict": "selected=direct, delegation_lifecycle_violations=[]",
+
+	"downstream_note": "Stage 5, independent verification, qualifies on Independence and is a genuinely open comparison. Its record is written when that stage opens."
+}

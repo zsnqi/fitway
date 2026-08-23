@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-23T12:47:24+03:00"
+updatedAt: "2026-08-23T13:15:00+03:00"
 
 coordinator:
   owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration, on work/phase11-access-tx-b01 executing the approved phase11-access successor sequence P2 -> P1 -> Slice B recorded in docs/phase-records/handoffs/coordinator/20260823-124724-p11-access-successor-sequence-plan.md"
@@ -1516,6 +1516,7 @@ milestones:
       - packages/auth/src/access.test.ts
       - apps/server/src/access-repository.ts
       - apps/server/src/access-service.ts
+      - "apps/server/src/access-service.test.ts: added by this slice. M3 is only observable at the generator seam, which no procedure can reach, so it needs a unit test beside the source it covers - the same pairing packages/auth/src/access.ts and access.test.ts already use."
       - apps/server/src/phase11-access.integration.test.ts
       - docs/phase-records/handoffs/phase11-access/*-p11_access_tx_b01-*.md
       - docs/phase-records/handoffs/phase11-access/*-p11_access_tx_v01-*.md
@@ -1537,7 +1538,7 @@ milestones:
       - "M4 and rate limiting on the owner access leaves: named open items, not this slice's work"
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-23T12:47:24+03:00"
+    lastHeartbeatAt: "2026-08-23T13:15:00+03:00"
     leaseExpiresAt: "2026-08-25T12:00:00+03:00"
     handoff: docs/phase-records/handoffs/phase11-access/20260823-124724-p11_access_tx_b01-activation.md
     stopReason: null

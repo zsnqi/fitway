@@ -73,10 +73,29 @@ export function createAccessService(options: {
 	 * rule is enforced on the value that gets hashed and revealed, rather than
 	 * holding only as long as nobody changes `createStaffPin`. A failure is a
 	 * server defect, not a caller's, and it stops before anything is stored.
+	 *
+	 * That last sentence is why the refusal is converted rather than propagated.
+	 * `assertStaffPinShape` refuses with an `AccessRuleError`, and the transport
+	 * maps every `AccessRuleError` to `BAD_REQUEST` - correct for the eight
+	 * refusals an owner can actually provoke, and wrong for this one, which would
+	 * tell an owner they mistyped a value they never typed. The distinction is
+	 * only knowable here, at the seam that knows the value came from
+	 * `createStaffPin`, so it is drawn here rather than by teaching the transport
+	 * about individual codes.
 	 */
 	const generateStaffPin = () => {
 		const pin = createStaffPin();
-		assertStaffPinShape(pin);
+		try {
+			assertStaffPinShape(pin);
+		} catch (error) {
+			// The rejected value is deliberately absent from this message and from
+			// `cause`: a malformed PIN is still credential material, and a server
+			// fault is exactly the path most likely to be logged.
+			throw new Error(
+				"The generated staff PIN failed the SPEC shape rule; this is a generator defect, not a caller error",
+				{ cause: error },
+			);
+		}
 		return pin;
 	};
 
