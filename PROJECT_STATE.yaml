@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-23T16:30:00+03:00"
+updatedAt: "2026-08-23T17:15:00+03:00"
 
 coordinator:
-  owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration, on work/phase11-access-tx-b01 executing the approved phase11-access successor sequence P2 -> P1 -> Slice B recorded in docs/phase-records/handoffs/coordinator/20260823-124724-p11-access-successor-sequence-plan.md"
+  owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration, on work/phase11-browser-debt-b01 executing the approved phase11-access successor sequence P2 -> P1 -> Slice B recorded in docs/phase-records/handoffs/coordinator/20260823-124724-p11-access-successor-sequence-plan.md. P2 is DONE at 6299a75; P1 is active; Slice B has not started."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1550,6 +1550,47 @@ milestones:
       visual: NOT_REQUIRED
       independentReview: PASS
     integratedCommit: 6299a7568f8dfd30813f54e85a4ececdf22efee3
+
+  phase11-browser-debt:
+    status: IN_PROGRESS
+    dependencies: [phase11-access-tx]
+    ownerSession: "main Claude Code coordinator session, run p11_browser_debt_b01"
+    branch: work/phase11-browser-debt-b01
+    worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
+    baseCommit: 9ca0ef13d5a4eea815cb1cbb153e316433b03816
+    ownedPaths:
+      - docs/phase-records/verification/known-flaky-register.json
+      - docs/phase-records/handoffs/phase11-browser-debt/*-p11_browser_debt_b01-*.md
+      - docs/phase-records/handoffs/phase11-browser-debt/*-p11_browser_debt_v01-*.md
+      - docs/phase-records/route-decisions/**
+      - docs/phase-records/verification/**
+    forbiddenPaths:
+      - all repository paths outside ownedPaths and sharedLeases
+      - "apps/web/** in its entirety, and every file under tests/browser/** not named in sharedLeases: Slice B, and touching them would void this slice's own attribution position"
+      - "tests/browser/__screenshots__/**: canonical baselines are read-only acceptance evidence"
+      - "packages/** in its entirety, and every file under apps/server/** other than the leased phase2.integration.test.ts"
+      - "the meaning of every assertion under repair: fix the sampling, not what the assertion proves. An assertion that cannot be made deterministic without changing what it proves is a stop condition, not a decision inside a stage."
+      - "M4, M5, rate limiting on the owner access leaves, and the docs/WORKFLOW.md step-8 environment gap: named open items carried forward by P2, not this slice's work"
+      - "work/phase11-access-b01 and every b01 handoff or terminal record: preserved rejected evidence, read-only"
+      - visual-direction-gate/**, Paper, and every normative document including PHASES.md
+      - PROJECT_STATE.yaml, scripts/verify.mjs, and scripts/verify-repository.mjs
+      - root manifests, lockfiles, environment schemas, and test-runner configuration
+      - every other milestone's phase record and handoff directory
+    sharedLeases:
+      - "exclusive through 2026-08-26T23:59:00+03:00: assertion-scoped stabilization of four load-sensitive locations, limited to tests/browser/phase2.browser.spec.ts:72, tests/browser/phase3.browser.spec.ts:57, tests/browser/phase10-ui-csv.browser.spec.ts:742, and apps/server/src/phase2.integration.test.ts:779. The fourth is conditional on decision D1's stage-1 evidence condition. Cross-milestone by necessity: these specs sit inside other milestones' owned paths, which makes the lease coordinator-granted and nothing more. No other assertion, no other file, and no screenshot baseline is covered."
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-08-23T17:15:00+03:00"
+    leaseExpiresAt: "2026-08-26T23:59:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-browser-debt/20260823-171500-p11_browser_debt_b01-activation-and-scope-decision.md
+    stopReason: null
+    gates:
+      unit: NOT_REQUIRED
+      integration: PENDING
+      browser: PENDING
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null
 
   phase11-settings:
     status: PLANNED
