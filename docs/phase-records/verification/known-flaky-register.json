@@ -3,18 +3,17 @@
 	"project": "fitway",
 	"_what_this_is": "The load-sensitive assertions FITWAY has independently observed going red inside a single pnpm verify:full invocation and green when their suite is run standalone at the same commit. It exists so a verifier does not pay for four full ladder runs to re-derive a failure someone else already recorded, and it is not a licence: scripts/flaky-attribution-check.mjs fails closed on anything unlisted, on an entry with one uncorroborated observation, on an entry opened by the session reporting the failure, on a candidate that touches the entry's surface, and on a missing standalone re-run. One unlisted failing assertion makes the whole run red.",
 	"_provenance": "Entries transcribed from evidence recorded by earlier sessions, not opened by the session that first used this file. The b01 independent verifier recorded all three locations in docs/phase-records/handoffs/phase11-access/20260822-173000-p11_access_b01-failed-validation.md, together with the standalone 83/83 pass at the same commit. The phase2 integration entry was named at the S4 close.",
-
 	"entries": [
 		{
 			"id": "browser-phase2-cache-expiry",
 			"location": "tests/browser/phase2.browser.spec.ts:72",
 			"title": "locally expires cached fresh JSON without another request",
-			"status": "open",
+			"status": "closed",
 			"opened": "2026-08-22T17:30:00+03:00",
 			"opened_by": "v11f_access_r1",
 			"surface": ["apps/web/**", "tests/browser/**", "edge/**"],
 			"standalone_pass_observed": true,
-			"mechanism": "A cache-expiry timing assertion. Inside a single verify:full invocation the browser step runs after build, unit, and integration on the same machine, and the elapsed-time margin this assertion depends on is compressed under that load.",
+			"mechanism": "CORRECTED AT CLOSURE. The original entry called this 'a cache-expiry timing assertion' whose 'elapsed-time margin is compressed under that load'. That is close but wrong in the way that matters: the assertion did not observe a late value, it observed nothing. The fresh window was 500ms of wall clock built from Node's Date.now() inside the route handler, so when navigation and hydration outran it the client mounted already stale via the delay <= 0 branch in apps/web/src/hooks/use-public-occupancy.ts, and the fresh badge never rendered at all. Proven by the phase11-ladder-contention slice: with the Playwright expect timeout raised to 20000ms the same assertion still failed with the substring never appearing, so no waiting budget could ever have fixed it.",
 			"observations": [
 				{
 					"session": "v11f_access_r1",
@@ -22,18 +21,22 @@
 					"result": "red inside verify:full, green standalone 83/83 at the same commit",
 					"record": "docs/phase-records/handoffs/phase11-access/20260822-173000-p11_access_b01-failed-validation.md"
 				}
-			]
+			],
+			"closed": "2026-08-23T22:00:00+03:00",
+			"closed_by": "p11_browser_debt_b01",
+			"repair": "tests/browser/phase2.browser.spec.ts, commit 0243b0d. The page clock is installed and paused, every payload stamp derives from that paused instant, and expiry is fired by fastForward(500). The strict expect(requests).toBe(1) was deliberately left untouched.",
+			"closing_evidence": "Three consecutive pnpm verify:full invocations at candidate 4a333e2 (run ids p11bd_g1/g2/g3) were exit 0 with 476/476 unit, 122/122 integration and 83/83 browser, and the independent verifier reproduced 83/83 browser in three further ladders at b57aecb. WHAT THIS PROVES, precisely: these three assertions no longer depend on machine load - across six full ladders that reached the browser step, none of them failed once. It does NOT claim the ladder is unconditionally green. The independent verifier's fourth ladder went red at apps/server/src/phase2.integration.test.ts:779, a pre-existing out-of-scope site this slice deliberately excludes and does not claim to have fixed; that wording was tightened at its request. The comparison that makes this evidence rather than a quiet day: at the same base without these repairs the ladder went red 3 of 3, and with a raised Playwright expect timeout instead of these repairs it went red 4 of 4 - see the baseline and falsification records under docs/phase-records/verification/. Only the assertion-level repair produced green."
 		},
 		{
 			"id": "browser-phase10-csv-history-retry",
 			"location": "tests/browser/phase10-ui-csv.browser.spec.ts:742",
 			"title": "History exposes prerequisite pending, error, and one deliberate retry chain",
-			"status": "open",
+			"status": "closed",
 			"opened": "2026-08-22T17:30:00+03:00",
 			"opened_by": "v11f_access_r1",
 			"surface": ["apps/web/**", "tests/browser/**"],
 			"standalone_pass_observed": true,
-			"mechanism": "Asserts a transient loading state is visible. Under load the transition completes before the assertion samples it, so the element is not found rather than wrong.",
+			"mechanism": "CORRECTED AT CLOSURE. The original entry said the transition 'completes before the assertion samples it'. True, but it omitted the cause: the pending window existed only because a mock route delayed fulfilment by a fixed 350ms, so the transient's lifetime was bounded by a test timer rather than by application speed, while the assertion could not sample until goto returned, hydration finished and the History tab click landed.",
 			"observations": [
 				{
 					"session": "v11f_access_r1",
@@ -41,18 +44,22 @@
 					"result": "red inside verify:full, green standalone 83/83 at the same commit",
 					"record": "docs/phase-records/handoffs/phase11-access/20260822-173000-p11_access_b01-failed-validation.md"
 				}
-			]
+			],
+			"closed": "2026-08-23T22:00:00+03:00",
+			"closed_by": "p11_browser_debt_b01",
+			"repair": "tests/browser/phase10-ui-csv.browser.spec.ts, commit 75f751e. The daily response is withheld behind a promise the test resolves, so the prerequisite pending state lasts exactly as long as the test needs. What is proved is unchanged: pending is observable before error, with heatmap, weekOverWeek and csv all still uncalled during it.",
+			"closing_evidence": "Three consecutive pnpm verify:full invocations at candidate 4a333e2 (run ids p11bd_g1/g2/g3) were exit 0 with 476/476 unit, 122/122 integration and 83/83 browser, and the independent verifier reproduced 83/83 browser in three further ladders at b57aecb. WHAT THIS PROVES, precisely: these three assertions no longer depend on machine load - across six full ladders that reached the browser step, none of them failed once. It does NOT claim the ladder is unconditionally green. The independent verifier's fourth ladder went red at apps/server/src/phase2.integration.test.ts:779, a pre-existing out-of-scope site this slice deliberately excludes and does not claim to have fixed; that wording was tightened at its request. The comparison that makes this evidence rather than a quiet day: at the same base without these repairs the ladder went red 3 of 3, and with a raised Playwright expect timeout instead of these repairs it went red 4 of 4 - see the baseline and falsification records under docs/phase-records/verification/. Only the assertion-level repair produced green."
 		},
 		{
 			"id": "browser-phase3-transient-state",
 			"location": "tests/browser/phase3.browser.spec.ts:57",
 			"title": "transient-state assertion recorded alongside the other two",
-			"status": "open",
+			"status": "closed",
 			"opened": "2026-08-22T17:30:00+03:00",
 			"opened_by": "v11f_access_r1",
 			"surface": ["apps/web/**", "tests/browser/**"],
 			"standalone_pass_observed": true,
-			"mechanism": "Same class as the other two: a transient-state timing assertion sampled after the rest of the ladder has loaded the machine.",
+			"mechanism": "REFUTED AND REPLACED AT CLOSURE. The original entry claimed 'the same class as the other two: a transient-state timing assertion'. It was recorded by analogy, and its own title conceded it was 'recorded alongside the other two'. It is wrong. Once expiry fires, the unavailable text persists until the third response - at least one ~900ms poll minimum - far longer than Playwright's sampling granularity, so the transient was never the exposure. The register had recorded a test declaration, not an assertion. The actual red site is line 82, the CLOSED heading asserted immediately after goto: when goto plus hydration consumes the 1500ms boundary margin, first paint skips straight to unavailable and that heading never exists. This was refuted from source by this slice's stage-1 investigation before any supporting observation existed, and then observed four separate times - twice in the phase11-ladder-contention baseline and twice in its candidate runs, at a different commit by a different slice.",
 			"observations": [
 				{
 					"session": "v11f_access_r1",
@@ -60,7 +67,12 @@
 					"result": "red inside verify:full, green standalone 83/83 at the same commit",
 					"record": "docs/phase-records/handoffs/phase11-access/20260822-173000-p11_access_b01-failed-validation.md"
 				}
-			]
+			],
+			"closed": "2026-08-23T22:00:00+03:00",
+			"closed_by": "p11_browser_debt_b01",
+			"repair": "tests/browser/phase3.browser.spec.ts, commit 438fdac. Wall-clock anchoring is removed from the whole closed-to-open chain: the clock is installed and paused, payload stamps derive from that instant, fastForward(1500) fires the boundary timer, and the requests poll advances the fake clock past the maximum jitter so the third request fires deterministically. Targets and budgets are unchanged.",
+			"closing_evidence": "Three consecutive pnpm verify:full invocations at candidate 4a333e2 (run ids p11bd_g1/g2/g3) were exit 0 with 476/476 unit, 122/122 integration and 83/83 browser, and the independent verifier reproduced 83/83 browser in three further ladders at b57aecb. WHAT THIS PROVES, precisely: these three assertions no longer depend on machine load - across six full ladders that reached the browser step, none of them failed once. It does NOT claim the ladder is unconditionally green. The independent verifier's fourth ladder went red at apps/server/src/phase2.integration.test.ts:779, a pre-existing out-of-scope site this slice deliberately excludes and does not claim to have fixed; that wording was tightened at its request. The comparison that makes this evidence rather than a quiet day: at the same base without these repairs the ladder went red 3 of 3, and with a raised Playwright expect timeout instead of these repairs it went red 4 of 4 - see the baseline and falsification records under docs/phase-records/verification/. Only the assertion-level repair produced green."
 		}
-	]
+	],
+	"_closure_note": "All three entries closed 2026-08-23 by p11_browser_debt_b01. Two of the three had their recorded mechanism CORRECTED and one was REFUTED outright, because closing an entry while leaving a wrong mechanism behind would preserve exactly the misinformation the register exists to prevent - the next session would inherit a confident explanation that does not match the code. A fourth location, apps/server/src/phase2.integration.test.ts:779, is deliberately NOT entered here: it now has two independent observations, but its assertion cannot be made deterministic without mocking the pipeline it exists to prove end to end, so it is recorded as scheduled follow-up rather than as a flake anyone may attribute."
 }

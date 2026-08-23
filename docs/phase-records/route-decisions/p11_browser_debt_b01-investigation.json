@@ -1,0 +1,67 @@
+{
+	"schema": "route-decision/1",
+
+	"project": "fitway",
+	"stage_ref": "p11_browser_debt_b01 / stage-1-timing-mechanism-investigation (P1 browser load-sensitivity debt)",
+	"recorded": "2026-08-23T17:22:00+03:00",
+
+	"evaluated_before_stage_discovery": true,
+
+	"candidate_id": "ox-alpha",
+	"route": "opencode/x-preview-f-free",
+	"control": "high",
+	"execution": "external-opencode",
+	"transport": "opencode-cli",
+
+	"registry_revision": "2026-08-23.6",
+	"qualification_baseline": "2026-08-23.3",
+
+	"gate_outcome": "PASS",
+	"gate_outcome_note": "Accepted at the parent gate on 2026-08-23. Session ses_fd0e380f3ffeh8xx9e137rJIlB, exit 0, 49 events, one 9,161-character final text event that finalized on the first invocation with no exact-session fallback required. The return held the contract: no file contents, no listings, no search narration, every claim carrying a file:line pointer. Working tree confirmed unchanged, so the read-only boundary held. The parent spot-checked the load-bearing claims against the repository and all six structural ones matched exactly, including the decisive negative claim that apps/server/src/phase2.integration.test.ts imports chromium from @playwright/test at line 24 and expect from vitest at line 31, which is what makes Playwright web-first assertions unavailable in that file. Two corrections were recorded: the candidate overstated a shared-fixture risk at location 3 (dailyDelayMs has exactly one call site, not two - line 789 passes heatmapDelayMs), and it attributed a pending state to a component subtree that does not emit the asserted locator, which it had correctly self-flagged as unconfirmed. Neither correction reverses a finding. The stage also refuted a prior session's recorded mechanism for location 2 rather than repeating it back, which was the specific failure mode the brief was written to prevent. The external route earned its selection: four large test files plus their hook and library dependencies were read, and a one-page map crossed back.",
+	"gate_outcome_record": "docs/phase-records/handoffs/phase11-browser-debt/20260823-174500-p11_browser_debt_b01-stage1-findings.md",
+
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md",
+		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
+	],
+
+	"delegation_trigger": "volume",
+	"material_selection_reason": "Resolved by scripts/resolve-opencode-worker.mjs from a stage input recorded before this stage's own target-file discovery began, with no delegation-lifecycle violations. The stage qualifies on Volume: it reads four large test files in full — three Playwright browser specs and one vitest integration file that drives Playwright, whose named assertions sit at lines 72, 57, 742 and 779 — plus the wait and fixture conventions around them, and returns a four-row map of mechanism and proposed deterministic wait. That is far more raw material than conclusion, and the raw material is exactly what the two remaining slices of this sequence must not spend orchestrator context on. The active availability_economic temporary preference of 2026-08-21 selects ox-alpha among three eligible candidates that showed no material stage-specific evidence advantage over one another; its free qualified route was confirmed live at preflight, and the registry's ox-alpha tool-availability incident of 2026-08-23 is recorded resolved with a PASS probe. The direct-execution reasons were considered and none applied: the target is a named file set, but 'the orchestrator already holds the context' was deliberately kept false — the P1 activation decided D1 from the known-flaky register, the failure record, and the ladder's step structure, and read no line of any of the four assertion locations.",
+	"eligible_alternatives": ["deepseek-v4-pro", "glm-5.3"],
+	"filtered_alternatives": {
+		"minimax-m3": [
+			"known constraint: high_reporting_precision_is_material — the deliverable is per-location file:line evidence of what an assertion samples and which deterministic wait proves the same thing, and this candidate's recorded limitations include omitted final tool reporting"
+		],
+		"native-subagent": [
+			"not filtered on capability; it lost the comparison. Read-only investigation with a compact structured return is inside the external candidate's qualified scope, the durable authorization covers non-secret repository source, and the qualified route is currently free while a native worker spends the orchestrator's budget. No concrete native material advantage applies: the stage needs no native-only tooling, no MCP operation, no browser control, and its consequence is low because nothing is written and nothing is reverted."
+		]
+	},
+
+	"stage_flags": ["high_reporting_precision_is_material"],
+	"consequence": "low",
+
+	"long_structured_return_assessment": "long_structured_return_is_material was considered and deliberately NOT declared. The return is a four-row map on one axis — one mechanism and one proposed wait per location — not a multi-axis review whose acceptance depends on every axis surviving in one message. It is comparable in size to the 7,795-character return this candidate finalized on the first invocation for p11_access_tx_b01 stage 1. Had it been declared, this candidate would have been filtered unless completeness protection were also declared. Recorded so a later session can audit the judgement rather than re-derive it.",
+
+	"route_evidence": "requalified",
+	"requalification_reasons": [
+		"stale evidence: recorded qualification baseline no longer matches the registry (2026-08-22.2 recorded, 2026-08-23.3 current)",
+		"stale evidence: workflow/registry revision changed since the recorded decision (2026-08-23.1 recorded, 2026-08-23.6 current)"
+	],
+	"reused_or_requalified": "requalified — the p11_access_tx_b01 stage-1 decision covers the same candidate, route, control, tools and modality and carries a PASS, but the registry moved under it, so it was re-run through full comparison rather than reused",
+
+	"hard_constraints_applied": [
+		"json_event_capture_required: --format json, events captured outside the transcript",
+		"exact_session_finalization_fallback_required: on a missing final compact text, continue the exact session with tools forbidden and request only the return contract, then opencode export <sessionID>",
+		"external_skill_scanning_disabled and deny_by_default_exact_skill_allowlist_required: no skill body is transmitted and no skill is allowlisted",
+		"auto_approval_forbidden: --auto is not passed",
+		"parent_diff_and_verification_gate_required: the parent checks every returned claim against the repository",
+		"read-only stage: no writable target is granted, and the parent verifies an unchanged working tree on return"
+	],
+
+	"downstream_note": "This decision covers the read-only investigation only. Stage 2 (stabilization) and stage 3 (register closure) are writable and are separate decisions, each recorded when that stage opens and before its own target-file discovery. Stage 2 additionally carries the tooling preflight the approved plan names — whether the candidate can drive Playwright and read its failure output, whether it gets a prepared worktree passing the pnpm exec vitest --version gate with .env provisioned, and whether it can run verify:full twice — none of which this read-only stage exercises or qualifies."
+}

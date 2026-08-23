@@ -1,0 +1,81 @@
+{
+	"schema": "route-decision/1",
+
+	"project": "fitway",
+	"stage_ref": "p11_browser_debt_b01 / stage-5-independent-verification",
+	"recorded": "2026-08-23T22:25:00+03:00",
+
+	"evaluated_before_stage_discovery": true,
+
+	"candidate_id": "deepseek-v4-pro",
+	"route": "opencode-go/deepseek-v4-pro",
+	"control": "max",
+	"execution": "external-opencode",
+	"transport": "opencode-cli",
+
+	"registry_revision": "2026-08-23.6",
+	"qualification_baseline": "2026-08-23.3",
+
+	"gate_outcome": "PASS",
+	"gate_outcome_note": "PASS with no blocking findings, 2026-08-23. Session ses_fcfff13f2ffeqKgLsZuTPKDZe0, exit 0, 137 events, compact final. Verifier worktree clean before and after; it reported and did not repair, as required. It exceeded the brief in the directions that matter: it ran FOUR full ladders rather than the two asked for, provisioning a fourth database itself; it performed non-vacuity on two assertions rather than one, choosing for phase3 the exact load-induced mode (boundary already passed at mount) rather than an arbitrary break; and it checked the register refutation against git show main: tests/browser/phase3.browser.spec.ts rather than accepting the claim. All five constraint points were answered with file:line evidence and all three register mechanisms were judged correct against source. Its one informational finding was acted on and is the reason for the two record commits after this PASS.",
+	"gate_outcome_record": "docs/phase-records/handoffs/phase11-browser-debt/20260823-231500-p11_browser_debt_c01-coordinator-done.md",
+	"scope_of_the_pass": "The PASS attaches to b57aecb. The two commits after it contain records only - no executable code - and exist to act on the verifier's own informational finding. A later commit touching executable code in these paths inherits nothing from this verdict.",
+
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "shell", "browser_control"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": ["repository_verification_ladder"],
+
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md",
+		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
+	],
+
+	"delegation_trigger": "independence",
+	"material_selection_reason": "Independence qualifies this stage by definition: the coordinator authored the register closure and gated both delegated stages, so it cannot be the verifier. Among candidates eligible for THIS stage, deepseek-v4-pro is the only one surviving the hard filters, because the verifier must run the full ladder and reproduce a stochastic claim, which requires the repository_verification_ladder capability. Selected at control max, matching the effort this candidate carried when it verified P2 - the substance of this gate is reproducing a stochastic claim, which is exactly where thin deliberation produces a confident wrong verdict.",
+
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"ox-alpha": [
+			"INELIGIBLE FOR THIS STAGE ON INDEPENDENCE: it implemented stage 2 of this very candidate. This is the material reason and it is recorded here in full, because the resolver reports it as an availability filter - an artifact of how the bar was expressed in the stage input, not a fact about the candidate. ox-alpha is live, healthy, and would otherwise be eligible; it is barred because a reviewer that produced the work cannot review it."
+		],
+		"glm-5.3": [
+			"required capability not qualified: repository_verification_ladder"
+		],
+		"minimax-m3": [
+			"required tool (browser_control not demonstrated)",
+			"required capability not qualified: repository_verification_ladder",
+			"known constraint: high_reporting_precision_is_material"
+		],
+		"native-subagent": [
+			"not filtered on capability; it lost the comparison. The stage needs no native-only tooling, and this candidate has already performed exactly this role on this repository at this effort for the phase11-access-tx slice."
+		]
+	},
+
+	"stage_flags": ["high_reporting_precision_is_material"],
+	"consequence": "medium",
+
+	"route_evidence": "requalified",
+	"requalification_reasons": [
+		"no recorded route decision for this project covering an independent-verification stage of this shape at the current registry revision"
+	],
+
+	"data_boundary_handling": "This is the one stage in the sequence where an external worker legitimately needs the verification environment, because reproducing a stochastic ladder claim cannot be done without it. Handled by local provisioning, not by transmission: .env and apps/server/.env were copied into the verifier's isolated worktree by the coordinator, and three disposable databases were created in advance. The packet itself carries no secret value - it names environment variables and database names only - so no excluded payload class enters it. The packet additionally instructs the verifier never to echo, print, or quote any env file content or connection string, and to redact credentials in any output it reproduces, because failing output is where values leak.",
+
+	"independence_measures": [
+		"the verifier receives outcome, base and candidate commits, owned scope, acceptance criteria, commands and artifact locations",
+		"the implementer's stage findings and reasoning records are deliberately withheld, and the packet says so explicitly rather than relying on the verifier not to look",
+		"it is instructed to report and not repair, and it holds no writable target",
+		"it runs in its own isolated worktree at the candidate commit, not in the coordinator's"
+	],
+
+	"hard_constraints_applied": [
+		"json_event_capture_required: --format json, events captured outside the transcript",
+		"auto_approval_forbidden: --auto is not passed",
+		"parent_diff_and_verification_gate_required: the parent checks the returned claims against the repository",
+		"no skill body transmitted and no skill allowlisted",
+		"output redaction required on any run touching the verification environment"
+	],
+
+	"downstream_note": "A PASS here closes stage 5. Integration and the DONE declaration are stage 6 and belong to the coordinator by authority. A FAILED_VALIDATION would be the first gate outcome against this candidate's repair budget, which currently stands at 0 of 2."
+}

@@ -1,0 +1,64 @@
+{
+	"schema": "failure-record/1",
+	"project": "fitway",
+	"_what_this_is": "Three observed verification failures at the p11_browser_debt_b01 candidate, recorded so a later session does not re-derive them. These are NOT known-flaky register entries and must not be used as attributions. They are the raw observations a register entry would need, plus the reason none was opened here. Together they are the evidence behind this slice's NEEDS_HUMAN stop.",
+
+	"observed_by": "p11_browser_debt_b01 coordinator session",
+	"observed": "2026-08-23",
+	"candidate_under_test": "75f751e",
+	"candidate_touched_files": [
+		"tests/browser/phase2.browser.spec.ts",
+		"tests/browser/phase3.browser.spec.ts",
+		"tests/browser/phase10-ui-csv.browser.spec.ts"
+	],
+
+	"why_none_added_to_the_register": "Two independent fail-closed reasons, the same two that stopped P2 opening its own. First, the known-flaky register's rule is that nothing is added during the run that hit it and that an entry opened by the session now invoking it does not count - a run may not register its own flake. Second, this candidate touches tests/browser/**, which is inside every one of these observations' surfaces, so it would lose the attribution even if the entries existed. Recording them as observations keeps the evidence without manufacturing a licence.",
+
+	"observations": [
+		{
+			"id": "browser-phase10-csv-mode-switch-parity",
+			"location": "tests/browser/phase10-ui-csv.browser.spec.ts:791",
+			"title": "loading, retryable error, insufficient history, and semantic-table parity are explicit",
+			"step": "browser and accessibility step of pnpm verify:full",
+			"run_id": "p11bd_r1",
+			"result": "red inside verify:full (1 failed / 82 passed), green in every isolated run",
+			"standalone_pass_observed": true,
+			"standalone_evidence": "The whole file passed at this candidate: 11 passed (52.6s) running the three touched specs together. The complete browser suite passed three consecutive times at this same candidate: 83 passed (1.0m), 83 passed (1.1m), 83 passed (1.0m), run ids p11bd_br1..3.",
+			"caused_by_this_candidate": false,
+			"caused_by_analysis": "Structurally excluded, not assumed. This test calls mockOwnerRoute(page, { heatmapDelayMs: 450 }) at line 797 and passes no dailyHold. The stage-2 helper change replaced options.dailyDelayMs with options.dailyHold inside the daily route handler at lines 178-181, guarded by `if (options.dailyHold)`. With the option absent the guard is false and no await runs, exactly as the previous `if (options.dailyDelayMs)` guard was false. The change is a provable no-op for this test.",
+			"mechanism_hypothesis": "Same class as the registered entries: an assertion sampled after the rest of the ladder has loaded the machine. Recorded as a hypothesis. Observed once."
+		},
+		{
+			"id": "unit-owner-reporting-abort-signal",
+			"location": "apps/web/src/hooks/use-owner-reporting.test.tsx:456",
+			"title": "useOwnerCsvExport > aborts the transport signal and keeps no partial file",
+			"step": "unit tests step of pnpm verify:full",
+			"run_id": "p11bd_r2",
+			"result": "red inside verify:full (1 failed / 475 passed), green standalone",
+			"standalone_pass_observed": true,
+			"standalone_evidence": "pnpm exec vitest run apps/web/src/hooks/use-owner-reporting.test.tsx at the same candidate: 1 file, 18 passed (18).",
+			"failure_detail": "AssertionError: expected false to be true. expect(observed?.aborted).toBe(true) at :456.",
+			"caused_by_this_candidate": false,
+			"caused_by_analysis": "This candidate modifies three Playwright browser spec files and no application source, no unit test, and no shared unit fixture. There is no path by which it can reach a vitest unit test of a hook.",
+			"mechanism_hypothesis": "The test mocks a CSV stream that yields, awaits setTimeout(resolve, 40), then yields again, presses start then abort, and calls settle() before asserting the abort signal fired. That ordering depends on the 40ms timer and the abort landing in a particular sequence, which contention can reorder. Recorded as a hypothesis. Observed once.",
+			"why_this_one_matters_most": "It is in the UNIT step. The three registered entries and every prior observation are browser or integration. This is the first evidence that the ladder's load sensitivity is not a browser-step property."
+		},
+		{
+			"id": "browser-phase4-staff-web-387",
+			"location": "tests/browser/phase4-staff-web.browser.spec.ts:387",
+			"step": "full browser suite",
+			"observed_by": "the stage-2 implementer, ox-alpha, session ses_fd0d00dc5ffetdze7z0J3rkf7r",
+			"result": "red once in a full browser run, then green standalone (1 passed, 5.7s), whole-file (11 passed, 17.5s), six parallel (6 passed, 8.2s), and two subsequent full runs (83 passed, 83 passed)",
+			"standalone_pass_observed": true,
+			"caused_by_this_candidate": false,
+			"caused_by_analysis": "Untouched by this candidate's diff, which is confined to three other spec files.",
+			"corroboration_note": "Reported by the implementing worker, and the parent did not reproduce it in three subsequent full browser runs. Recorded at the reliability the evidence supports, not higher."
+		}
+	],
+
+	"what_this_evidence_establishes": "Across five full-suite executions at this candidate, no failure ever landed on one of the three assertions this slice repaired. The failures that did occur were in four different files across three different ladder steps - unit, browser under ladder load, and previously integration - and every one passed when its suite ran in isolation at the same commit. The load sensitivity of this repository's verification ladder is therefore broader than the three registered browser assertions P1 was scoped to fix, and is not confined to the browser step.",
+
+	"consequence_for_the_plan": "P1's purpose is to give Slice B a ladder it can be judged on. The approved plan's premise was that the debt is three browser assertions. That premise does not survive this evidence, so P1 as scoped cannot deliver its purpose even though it correctly delivered its scope. The slice is stopped at NEEDS_HUMAN rather than widened, because the human decision it would contradict - that the risk is not accepted and the debt is fixed first - was made on the older premise and is not the coordinator's to reinterpret.",
+
+	"hand_off_to": "The coordinator handoff at docs/phase-records/handoffs/phase11-browser-debt/20260823-193000-p11_browser_debt_b01-needs-human.md, which states the options and their costs."
+}

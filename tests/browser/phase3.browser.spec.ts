@@ -2,8 +2,8 @@ import { expect, test } from "@playwright/test";
 
 test.use({ timezoneId: "America/New_York" });
 
-function openPayload() {
-	const now = new Date();
+function openPayload(base: Date = new Date()) {
+	const now = base;
 	return {
 		schemaVersion: 2,
 		freshness: "fresh",
@@ -57,20 +57,27 @@ test("renders the Arabic closed state at 390px, formats in gym time, and toggles
 test("expires cached closed honestly and transitions to open without reload", async ({
 	page,
 }) => {
-	const now = Date.now();
+	// The page clock is installed and paused so the 1500ms closed window is
+	// anchored to the page's own timeline: navigation and hydration cannot
+	// consume it, and the boundary and poll timers are fired by fastForward.
+	// The paused instant sits slightly ahead of the install moment because the
+	// installed clock keeps ticking in real time until pauseAt lands.
+	const base = new Date(Date.now() + 60_000);
+	await page.clock.install();
+	await page.clock.pauseAt(base);
 	const closed = {
 		schemaVersion: 2,
 		freshness: "closed",
 		timeZone: "Asia/Riyadh",
-		nextOpenAt: new Date(now + 1_500).toISOString(),
-		computedAt: new Date(now).toISOString(),
+		nextOpenAt: new Date(base.getTime() + 1_500).toISOString(),
+		computedAt: base.toISOString(),
 		trend: null,
 	};
 	let requests = 0;
 	await page.route("**/public/occupancy", (route) => {
 		requests += 1;
 		return route.fulfill({
-			json: requests < 3 ? closed : openPayload(),
+			json: requests < 3 ? closed : openPayload(base),
 			headers: {
 				"Access-Control-Allow-Origin": "*",
 				"Access-Control-Expose-Headers": "X-Fitway-Poll-Seconds",
@@ -79,17 +86,41 @@ test("expires cached closed honestly and transitions to open without reload", as
 		});
 	});
 	await page.goto("/");
-	await expect(page.getByRole("heading", { name: "مغلق الآن" })).toBeVisible();
+	// react-query delivers its cache notifications through setTimeout(0), which
+	// the installed clock owns: each poll step flushes the timer queue so the
+	// closed payload arrives and renders no matter how slow the machine is.
+	await expect
+		.poll(async () => {
+			await page.clock.fastForward(0);
+			return page.getByRole("heading", { name: "مغلق الآن" }).isVisible();
+		})
+		.toBe(true);
 	await expect(page.locator("meter")).toHaveCount(0);
+	await page.clock.fastForward(1_500);
 	await expect(page.locator("body")).toContainText("غير متاح", {
 		timeout: 3_000,
 	});
 	await expect
-		.poll(() => requests, { timeout: 4_000 })
+		.poll(
+			async () => {
+				// The jittered poll timer (900–1100ms) is only armed once the
+				// expiry refetch settles, so each poll step advances the fake
+				// clock past its maximum delay until the refetch fires.
+				await page.clock.fastForward(1_100);
+				return requests;
+			},
+			{ timeout: 4_000 },
+		)
 		.toBeGreaterThanOrEqual(3);
-	await expect(page.getByRole("heading", { name: "هادئ" })).toBeVisible({
-		timeout: 4_000,
-	});
+	await expect
+		.poll(
+			async () => {
+				await page.clock.fastForward(0);
+				return page.getByRole("heading", { name: "هادئ" }).isVisible();
+			},
+			{ timeout: 4_000 },
+		)
+		.toBe(true);
 	await expect(page.locator("body")).toContainText("مفتوح الآن");
 	expect(requests).toBeGreaterThanOrEqual(3);
 });
