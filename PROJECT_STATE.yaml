@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-23T19:30:00+03:00"
+updatedAt: "2026-08-23T20:20:00+03:00"
 
 coordinator:
   owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration, on work/phase11-browser-debt-b01 executing the approved phase11-access successor sequence P2 -> P1 -> Slice B recorded in docs/phase-records/handoffs/coordinator/20260823-124724-p11-access-successor-sequence-plan.md. P2 is DONE at 6299a75; P1 is NEEDS_HUMAN at 75f751e with its scope delivered but its gate unmet; Slice B has not started and stays blocked."
@@ -1552,7 +1552,7 @@ milestones:
     integratedCommit: 6299a7568f8dfd30813f54e85a4ececdf22efee3
 
   phase11-browser-debt:
-    status: NEEDS_HUMAN
+    status: BLOCKED
     dependencies: [phase11-access-tx]
     ownerSession: "main Claude Code coordinator session, run p11_browser_debt_b01"
     branch: work/phase11-browser-debt-b01
@@ -1582,7 +1582,7 @@ milestones:
     lastHeartbeatAt: "2026-08-23T19:30:00+03:00"
     leaseExpiresAt: "2026-08-26T23:59:00+03:00"
     handoff: docs/phase-records/handoffs/phase11-browser-debt/20260823-193000-p11_browser_debt_b01-needs-human.md
-    stopReason: "P1 delivered its scope and cannot deliver its purpose, and closing that gap would contradict a human decision. The three registered assertions are repaired and verified: 11 passed running them together, and the complete browser suite passed three consecutive times at the candidate (83 passed each). No failure in any run landed on an assertion this slice touched. But pnpm verify:full never went green. Run p11bd_r1 went red in the browser step at tests/browser/phase10-ui-csv.browser.spec.ts:791, a sibling this candidate provably cannot affect - it passes no dailyHold, so the changed guard is a no-op for it. Run p11bd_r2 went red in the UNIT step at apps/web/src/hooks/use-owner-reporting.test.tsx:456, which this candidate cannot reach at all, and which passes 18/18 standalone. With the earlier integration-step observation, the ladder's load sensitivity now spans four files across three steps, and none of the new locations may be attributed: the register forbids a run registering its own flake, and this candidate touches tests/browser/** which is inside every one of their surfaces. The approved plan's premise was that the debt is three browser assertions; that premise does not survive this evidence. Choosing between widening further, addressing the shared contention mechanism in coordinator-owned test-runner configuration, accepting a residual risk, or shipping P1 as scoped is a human decision, because the recorded human decision it would contradict - that the risk is not accepted and the debt is fixed first - was made on the older premise. Evidence: docs/phase-records/verification/20260823-p11_browser_debt_b01-ladder-load-sensitivity-observations.json. Slice B remains unstarted and blocked."
+    stopReason: "Blocked on the phase11-ladder-contention milestone by the human option-B decision of 2026-08-23. That slice fixes the shared verification contention mechanism first and integrates to main; P1 then rebases onto it and completes stage 3 against a genuinely green full ladder. The formal dependency is not listed in dependencies yet because phase11-ladder-contention does not exist in this branch ledger - it is added at integration, when both entries are on main. P1 stages 0-2 are DELIVERED and preserved untouched at 75f751e: the three registered assertions are repaired and verified, with 11 passed running them together, the full browser suite green three consecutive times at the candidate, and no failure in five full-suite runs ever landing on an assertion this slice touched. P1 is deliberately NOT broadened retroactively. What remains is stage 3 only - closing the three register entries with a green ladder behind them, including correcting the refuted mechanism on the phase3 entry and the mock-timer correction on the phase10 entry. Evidence: docs/phase-records/verification/20260823-p11_browser_debt_b01-ladder-load-sensitivity-observations.json. Slice B remains unstarted and must not start until P1 is legitimately closed."
 
     gates:
       unit: NOT_REQUIRED
