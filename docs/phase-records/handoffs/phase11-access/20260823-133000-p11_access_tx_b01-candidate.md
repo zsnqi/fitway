@@ -2,10 +2,10 @@
 
 - Status: **`READY_FOR_INTEGRATION`** pending independent verification.
 - Milestone `phase11-access-tx`, run ID `p11_access_tx_b01`.
-- Base commit: `aaa646b174d4dbb248eb1a73a6b7273fa40af3e7`. Candidate commit: `1feeae26901bb8f05d275faca14f50c0caed6648`.
+- Base commit: `aaa646b174d4dbb248eb1a73a6b7273fa40af3e7`. Candidate commit: `ecae31b` (**resubmission**; the first submission was `805f675`).
 - Branch `work/phase11-access-tx-b01`, worktree `D:/Projects/fitway-worktrees/phase5-staff-integration`.
-- Repair budget: **0 of 2 consumed**.
-- `git diff aaa646b..1feeae26901bb8f05d275faca14f50c0caed6648` is the whole slice.
+- Repair budget: **1 of 2 consumed**.
+- `git diff aaa646b..ecae31b` is the whole slice.
 
 ## What shipped
 
@@ -37,6 +37,9 @@ The rejected PIN is kept out of both the message and the `cause`.
 | `7fa0d68` | M1: typed duplicate-email refusal, constraint-scoped classifier, two tests |
 | `ca263a8` | M3: generator defect converted out of the caller-error path, three tests |
 | `1feeae2` | A refusal count in an M3 comment that M1 had already invalidated |
+| `805f675` | First candidate record and gate results — **submitted, and returned escalated** |
+| `0b2bd07` | Verification route requalified from current registry evidence |
+| `ecae31b` | Repair 1: the access integration file resets its own schema; the guard test labelled |
 
 ## Routing
 
@@ -65,7 +68,7 @@ The two 2026-08-21 external-worker authorizations were reconciled as in force an
 | Simulator / build | PASS |
 | Browser / accessibility | PASS — 83/83 |
 | Visual | PASS — no baseline touched; the diff contains zero files under `apps/web/**` or `tests/browser/**` |
-| Full ladder | PASS — `p11_access_tx_full2`, complete, **green on its first invocation**, mutation guard clean |
+| Full ladder | PASS — `p11_access_tx_full3` at the resubmitted candidate `ecae31b`: complete, green on its first invocation, unit 63/476, integration 18 files / 122 tests, browser 83/83, mutation guard clean. The pre-repair candidate `805f675` also passed complete as `p11_access_tx_full2` |
 | Independent review | pending |
 
 The full ladder went green first time, so no known-flaky attribution was invoked and none was
@@ -77,6 +80,25 @@ A first full-ladder run at `ca263a8` (`p11_access_tx_full1`) was **deliberately 
 not failed. The refusal-count defect in the M3 comment was found while it was in the simulator step,
 and certifying a tree already known to be wrong is worse than paying for a restart. It is recorded
 here so the log in the capture directory is not mistaken later for a suppressed red run.
+
+## Verification history
+
+**Attempt 1 — ESCALATED.** deepseek-v4-pro at `max` examined `805f675`, passed every
+candidate-owned gate, proved all three claims non-vacuous with controls stronger than the
+implementer's, and then stopped: `pnpm verify:full` went red twice, in two different places, neither
+in code this candidate touches. It correctly refused to attribute either failure and correctly
+refused to decide whether pre-existing suite flakiness should block the candidate. Full record:
+`docs/phase-records/handoffs/phase11-access/20260823-155000-p11_access_v01-verification-escalation.md`.
+
+One of the two failures was a real latent defect in a file this slice owns and is repaired at
+`ecae31b`. The other is outside owned paths, is recorded as a failure observation, and is **not**
+attributed and **not** added to the known-flaky register by this session.
+
+**Attempt 2 — pending**, on a fresh verifier at the repaired candidate. The route was requalified
+rather than reused: the resolver read the escalation appended to the candidate's evidence record and
+fired its own trigger, naming both the outcome entry and the `ESCALATED` gate outcome. It resolved
+to the same route and control, because the escalation was environmental rather than a capability
+shortfall - the verifier performed above the bar, and re-sizing it would draw the wrong lesson.
 
 ## Findings deliberately not repaired
 

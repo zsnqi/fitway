@@ -1,0 +1,57 @@
+{
+	"schema": "route-decision/1",
+
+	"project": "fitway",
+	"stage_ref": "p11_access_tx_b01 / stage-5-independent-verification (attempt 2, repaired candidate ecae31b)",
+	"recorded": "2026-08-23T16:00:00+03:00",
+
+	"evaluated_before_stage_discovery": true,
+
+	"candidate_id": "deepseek-v4-pro",
+	"route": "opencode-go/deepseek-v4-pro",
+	"control": "max",
+	"execution": "external-opencode",
+	"transport": "opencode-cli",
+
+	"registry_revision": "2026-08-23.5",
+	"qualification_baseline": "2026-08-23.2",
+	"qualification_status": "qualified",
+
+	"gate_outcome": null,
+	"gate_outcome_note": null,
+
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "shell"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": ["repository_verification_ladder"],
+
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md",
+		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
+	],
+
+	"delegation_trigger": "independence",
+	"material_selection_reason": "Requalified, not reused, and the trigger fired on its own rather than being asserted. The attempt-1 decision is hours old against an unchanged registry and would otherwise have been reusable; the resolver rejected it because the escalation outcome appended to this candidate's evidence record post-dates that decision, naming both the outcome entry fitway-p11-access-tx-b01-independent-verification-attempt-1 and its ESCALATED gate outcome. That is the recording rule earning its keep: had the outcome not been appended before the stage closed, this attempt would have silently reused a route decision whose gate had already come back unresolved. The fresh comparison lands in the same place - glm-5.3 and minimax-m3 still lack the ladder capability the stage is defined by, ox-alpha is still filtered on long_structured_return_is_material, and deepseek-v4-pro is the only survivor.",
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"glm-5.3": [
+			"required capability not qualified: repository_verification_ladder"
+		],
+		"minimax-m3": [
+			"required capability not qualified: repository_verification_ladder"
+		],
+		"ox-alpha": ["known constraint: long_structured_return_is_material"],
+		"native-subagent": [
+			"no concrete material advantage; the external candidate's ladder capability is qualified and was exercised successfully on this exact repository in attempt 1"
+		]
+	},
+
+	"consequence": "medium",
+	"control_rationale": "Unchanged at max, deliberately. The workflow's guidance after an escalation is to re-size against the evidence that came back, not against the orchestrator's level. That evidence shows the level was right: the verifier proved three non-vacuity controls stronger than the implementer's, correctly refused two attributions, honoured the read-only boundary with an empty tree, and stopped exactly where its brief said to stop. The escalation was environmental, not a capability shortfall. Lowering the control would draw the wrong lesson from a good return, and there is no higher control to raise it to.",
+	"fresh_worker_required": "yes - a new session, not a continuation. A resumed worker carries its prior reading of the candidate forward, and this attempt must judge a repaired tree on its own terms. The prior verifier's own stated gap is the reason this matters: verify:full's browser and accessibility steps never executed in either of its attempts, so the 83/83 browser claim has still not been independently reproduced.",
+	"resolver_verdict": "selected=deepseek-v4-pro, control=max, route_evidence=requalified, requalification_reasons=[recorded worker outcome after this decision, recorded gate outcome was ESCALATED]",
+
+	"data_boundary": "Unchanged from attempt 1 and re-established for this attempt: a fresh isolated worktree at the repaired candidate commit, a new disposable Postgres role with a newly generated password, new run-owned integration and application databases, and newly generated auth and cron secrets. The repository .env is never sourced into the worker's shell; real Telegram credentials are replaced by synthetic placeholders; the packet names variables only.",
+
+	"downstream_note": "Integration and the DONE declaration remain coordinator authority. If this attempt returns FAILED_VALIDATION, the repair budget stands at 1 of 2 and a second repair is permitted; a third recurrence of the same gate is FAILED_VALIDATION under AGENTS.md."
+}
