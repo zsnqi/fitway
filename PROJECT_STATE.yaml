@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-25T00:04:00+03:00"
+updatedAt: "2026-08-25T00:22:00+03:00"
 
 coordinator:
   owner: "Codex SOL coordinator run p11_remaining_coord01 on codex/remaining-scope-coordinator. Active frontier: serialize one Paper writer across the behavior-correct Owner Access successor, Owner Uptime mobile successor, and Owner Settings successor; independently review each before repository use. Access repository freeze and verification are reopened against corrected Paper authority. Settings implementation remains gated by reviewed Paper, a written migration-free specification, and the integrated backend contract. Reference-gating unit debt, the real unmocked propagation-wait milestone, focus parity, Login Paper adoption, Uptime mobile fidelity, and the Phase 11 aggregate remain explicit downstream milestones. Canonical baseline acceptance and all integration/DONE judgments remain coordinator-owned. M4/M5 access races, owner-access rate limiting, and the workflow environment-documentation gap remain outside approved scope."
@@ -1591,9 +1591,9 @@ milestones:
     integratedCommit: ffe3745e87c60b67ce9825ca322976e3eda6122a
 
   phase11-access-paper-successor:
-    status: VALIDATING
+    status: DONE
     dependencies: [phase11-shell, phase11-access-tx]
-    ownerSession: "Codex SOL coordinator, run p11_remaining_coord01"
+    ownerSession: null
     branch: codex/remaining-scope-coordinator
     worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
     baseCommit: 181480a176896133c310eadd10273fe8b108a6b0
@@ -1607,18 +1607,18 @@ milestones:
       - "generated owner credentials, secret-bearing response states, M4/M5 races, and owner-access rate limiting"
     sharedLeases: []
     validationRepairAttempts: 1
-    lastHeartbeatAt: "2026-08-25T00:02:00+03:00"
+    lastHeartbeatAt: "2026-08-25T00:22:00+03:00"
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-access-paper-successor/20260825-000200-p11_access_paper_c01-repair-1-freeze.md
+    handoff: docs/phase-records/handoffs/phase11-access-paper-successor/20260825-002200-p11_access_paper_c01-coordinator-done.md
     stopReason: null
     gates:
       unit: NOT_REQUIRED
       integration: NOT_REQUIRED
       browser: NOT_REQUIRED
-      accessibility: PENDING
-      visual: PENDING
-      independentReview: PENDING
-    integratedCommit: null
+      accessibility: PASS
+      visual: PASS
+      independentReview: PASS
+    integratedCommit: SELF
 
   phase11-access-ui:
     status: IN_PROGRESS
@@ -1697,10 +1697,10 @@ milestones:
   phase11-reference-gating-debt:
     status: IN_PROGRESS
     dependencies: [phase11-browser-debt]
-    ownerSession: "external DeepSeek V4 Pro read-only discovery completed; Codex SOL native reproduction completed, run p11_ref_gate_b01"
+    ownerSession: "Codex SOL coordinator one-file test-lifecycle candidate, run p11_ref_gate_b01"
     branch: codex/remaining-scope-coordinator
     worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
-    baseCommit: 793d84c9535c4faf4f6356c35d703295ba86be01
+    baseCommit: 7bbdd84852749b7447e64fbb758b1f35e0da2b26
     ownedPaths:
       - apps/server/src/reference-gating.test.ts
       - docs/phase-records/handoffs/phase11-reference-gating-debt/**
@@ -1710,10 +1710,11 @@ milestones:
       - "all production source, schema, migration, browser, UI, baseline, and normative authority paths unless a later coordinator gate records a strictly necessary revised lease"
       - "global or blanket timeout inflation, retries, skipped assertions, reduced coverage, and known-flaky attribution created by the same failing run"
       - "M4/M5 access races, owner-access rate limiting, and the workflow environment-documentation gap"
-    sharedLeases: []
+    sharedLeases:
+      - "exclusive repository writer lease through 2026-08-25T00:47:00+03:00: apps/server/src/reference-gating.test.ts only; no production, config, timeout, retry, skip, mock, or unrelated test change"
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-25T00:02:00+03:00"
-    leaseExpiresAt: null
+    lastHeartbeatAt: "2026-08-25T00:22:00+03:00"
+    leaseExpiresAt: "2026-08-25T00:47:00+03:00"
     handoff: docs/phase-records/handoffs/phase11-reference-gating-debt/20260825-000200-p11_ref_gate_b01-discovery-reproduction.md
     stopReason: null
     gates:
@@ -1766,9 +1767,9 @@ milestones:
     integratedCommit: SELF
 
   phase11-uptime-paper-successor:
-    status: IN_PROGRESS
+    status: VALIDATING
     dependencies: [phase11-health]
-    ownerSession: "native SOL Paper writer pending dispatch, run p11_uptime_paper_b01"
+    ownerSession: "Codex SOL coordinator; native SOL candidate writer completed, run p11_uptime_paper_b01"
     branch: codex/remaining-scope-coordinator
     worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
     baseCommit: 361ebe711ea35d01f906ad2bf486e1339c244ab0
@@ -1779,12 +1780,11 @@ milestones:
     forbiddenPaths:
       - "every approved Paper original, desktop composition, shared token, and unrelated family"
       - "every repository application, schema, migration, router, baseline, and normative authority path"
-    sharedLeases:
-      - "exclusive Paper writer lease through 2026-08-25T00:49:00+03:00: one new labelled Owner Uptime & Incidents mobile stacked-card successor area only; preserve the approved original and desktop composition; every other Paper node is immutable"
+    sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-25T00:04:00+03:00"
-    leaseExpiresAt: "2026-08-25T00:49:00+03:00"
-    handoff: docs/phase-records/handoffs/coordinator/20260824-230600-final-remaining-scope-reconciliation-activation.md
+    lastHeartbeatAt: "2026-08-25T00:22:00+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase11-uptime-paper-successor/20260825-002200-p11_uptime_paper_b01-candidate-freeze.md
     stopReason: null
     gates:
       unit: NOT_REQUIRED

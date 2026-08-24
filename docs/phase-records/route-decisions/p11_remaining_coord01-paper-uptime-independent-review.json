@@ -1,0 +1,53 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_remaining_coord01 / Owner Uptime mobile stacked-card Paper successor independent review",
+	"recorded": "2026-08-25T00:22:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native-sol",
+	"route": null,
+	"control": "high",
+	"execution": "native-sol-subagent",
+	"transport": null,
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": "PENDING",
+	"covered_modalities": ["text", "image"],
+	"covered_tools": [],
+	"covered_mcp_operations": ["paper.read", "paper.screenshot"],
+	"covered_capabilities": [],
+	"durable_authorization_records": [],
+	"delegation_trigger": "independence",
+	"consequence": "medium",
+	"material_selection_reason": "A fresh SOL reviewer who did not write the candidate must inspect real Paper content and bilingual mobile rendering before the coordinator accepts it. The gate is read-only and checks stacked-card completeness, desktop/source preservation, RTL/LTR fidelity, typography, target/focus inheritance, and absence of clipping or horizontal scrolling.",
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"candidate-writer": [
+			"The writer cannot independently approve its own candidate."
+		],
+		"direct-coordinator": [
+			"The coordinator owns final judgment and already performed the parent gate; a separate reviewer supplies independence."
+		],
+		"external-providers": [
+			"Real Paper content and screenshot fidelity review are not currently qualified externally."
+		],
+		"native-terra-or-luna": [
+			"No current advantage for this bilingual visual-authority verdict."
+		]
+	},
+	"execution_identity": {
+		"paper_file": "FITWAY UX Exploration",
+		"paper_file_id": "01KYPX5AF950XZVVDD88B6J7QB",
+		"page": "Page 1",
+		"candidate_area": "OWNER UPTIME — MOBILE STACKED RECORDS SUCCESSOR",
+		"freeze_at": "2026-08-25T00:22:00+03:00",
+		"rollback_boundary": "none; independent review is read-only"
+	},
+	"access_boundary": {
+		"readable": "the frozen Uptime successor, preserved source family, and directly relevant FITWAY/G3 visual authority",
+		"writable": "none",
+		"commit_allowed": false,
+		"forbidden": "every Paper mutation, repository write, unrelated family, secret material, and further delegation"
+	}
+}

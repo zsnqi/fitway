@@ -1,0 +1,55 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_ref_gate_b01 / reference-gating one-file lifecycle hardening",
+	"recorded": "2026-08-25T00:22:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "direct-native-sol-coordinator",
+	"route": null,
+	"control": "high",
+	"execution": "direct-native-sol-coordinator",
+	"transport": null,
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": "PENDING",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_write", "test_execution"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"durable_authorization_records": [],
+	"delegation_trigger": "context-continuity",
+	"consequence": "low",
+	"material_selection_reason": "Discovery and native reproduction already froze one exact test-only lifecycle boundary. The coordinator holds the complete local test-envelope context, the correction is a few mechanical lines in one file, and decisive focused/full self-checks cannot expose environment values to an external worker. A separate worktree/worker handoff would cost more than the bounded change while adding no independent discovery value. Fresh review remains delegated after candidate freeze.",
+	"eligible_alternatives": ["native-sol-worker"],
+	"filtered_alternatives": {
+		"deepseek-v4-pro": [
+			"Repository write and native runtime verification with environment values are outside the qualified external route."
+		],
+		"ox-alpha": [
+			"Current availability is degraded and repository write/runtime qualification is not stronger than native."
+		],
+		"native-luna": [
+			"The edit is cheap, but worktree transfer and test-envelope reconstruction remove the cost advantage."
+		],
+		"native-terra": [
+			"No concrete current advantage over the coordinator's exact reproduced boundary."
+		],
+		"native-sol-worker": [
+			"Permissible, but isolation overhead exceeds this one-file low-consequence edit; independence is reserved for the post-freeze no-repair gate."
+		]
+	},
+	"execution_identity": {
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration",
+		"head": "7bbdd84852749b7447e64fbb758b1f35e0da2b26",
+		"branch": "codex/remaining-scope-coordinator",
+		"run_id": "p11_ref_gate_b01",
+		"rollback_boundary": "restore apps/server/src/reference-gating.test.ts only"
+	},
+	"access_boundary": {
+		"readable": "reference-gating.test.ts, real createApp lifecycle, neighboring test precedent, and recorded reproduction evidence",
+		"writable": "apps/server/src/reference-gating.test.ts only",
+		"commit_allowed": true,
+		"forbidden": "production source, every other test, config, environment schemas/values, timeout inflation, retry, skip, mock, reduced assertion coverage, unrelated debt, and further delegation"
+	}
+}
