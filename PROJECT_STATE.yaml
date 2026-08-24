@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-25T01:08:00+03:00"
+updatedAt: "2026-08-25T01:35:00+03:00"
 
 coordinator:
   owner: "Codex SOL coordinator run p11_remaining_coord01 on codex/remaining-scope-coordinator. Active frontier: serialize one Paper writer across the behavior-correct Owner Access successor, Owner Uptime mobile successor, and Owner Settings successor; independently review each before repository use. Access repository freeze and verification are reopened against corrected Paper authority. Settings implementation remains gated by reviewed Paper, a written migration-free specification, and the integrated backend contract. Reference-gating unit debt, the real unmocked propagation-wait milestone, focus parity, Login Paper adoption, Uptime mobile fidelity, and the Phase 11 aggregate remain explicit downstream milestones. Canonical baseline acceptance and all integration/DONE judgments remain coordinator-owned. M4/M5 access races, owner-access rate limiting, and the workflow environment-documentation gap remain outside approved scope."
@@ -1621,9 +1621,9 @@ milestones:
     integratedCommit: SELF
 
   phase11-access-ui:
-    status: VALIDATING
+    status: PLANNED
     dependencies: [phase11-access-b02, phase11-access-tx, phase11-browser-debt, phase11-access-paper-successor]
-    ownerSession: "preserved Access candidate worktree work/phase11-access-ui-b01; frozen by Codex SOL coordinator run p11_access_ui_c02; native SOL verifier run p11_access_ui_v02"
+    ownerSession: null
     branch: work/phase11-access-ui-b01
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
     baseCommit: 0ef72c2
@@ -1654,18 +1654,18 @@ milestones:
       - every other milestone's phase record and handoff directory
     sharedLeases:
       - "exclusive through 2026-08-28T23:59:00+03:00: apps/web/src/routes/admin.tsx, limited to mounting the access Owner section. The owner shell composition, the route guard, every sibling section and every other URL stay unchanged. Same shape as the lease phase11-audit held. No server or router lease is needed because admin.access is already mounted."
-    validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-25T01:20:00+03:00"
-    leaseExpiresAt: "2026-08-25T02:20:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-access-ui/20260825-011800-p11_access_ui_c02-candidate-freeze.md
+    validationRepairAttempts: 1
+    lastHeartbeatAt: "2026-08-25T01:35:00+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase11-access-ui/20260825-013500-p11_access_ui_v02-independent-fail.md
     stopReason: null
     gates:
       unit: PASS
       integration: PASS
       browser: PASS
       accessibility: PASS
-      visual: PASS
-      independentReview: PENDING
+      visual: FAIL
+      independentReview: FAIL
     integratedCommit: null
 
   phase11-e2e-propagation-wait:

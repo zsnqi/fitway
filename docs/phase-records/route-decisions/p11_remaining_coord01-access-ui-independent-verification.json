@@ -12,7 +12,8 @@
 	"registry_revision": "2026-08-23.9",
 	"qualification_baseline": "2026-08-23.4",
 	"qualification_status": "native",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "FAIL",
+	"gate_outcome_note": "Fresh native SOL verification found the candidate mechanically green but materially divergent from the accepted Access Paper successor. The repository composition does not implement Paper's sibling desktop summary cards, collapsed mobile provisioning action, or single owner board; the two canonical PNGs reproduce and therefore codify that divergence. The required secret-free owner-created confirmation is absent, cancelled reset retains its entered password for a later principal, and client fields omit the contract's required/12-200 length validation. Focused 2 files/34 tests and the exact registered phase all passed, both worktrees remained clean, and no repair or acceptance occurred. The candidate is rejected, preserved, and consumes validation repair 1 of 2.",
 	"covered_modalities": ["text", "image"],
 	"covered_tools": [
 		"repository_read",
