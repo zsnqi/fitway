@@ -1,0 +1,54 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_access_ui_c02 / Access UI corrected-authority final freeze",
+	"recorded": "2026-08-25T01:08:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "direct-native-sol-coordinator",
+	"route": null,
+	"control": "high",
+	"execution": "direct-native-sol-coordinator",
+	"transport": null,
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": "PENDING",
+	"covered_modalities": ["text", "image"],
+	"covered_tools": ["repository_read", "test_execution", "browser"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"durable_authorization_records": [],
+	"delegation_trigger": "integration-authority",
+	"consequence": "medium",
+	"material_selection_reason": "The preserved Access candidate has already completed bounded implementation stages and a repository conformance map found no correction against the now-accepted Paper successor. This stage is coordinator-owned candidate identity reconciliation, non-vacuity review, and freeze—not new implementation. The coordinator alone may accept routine baselines, integrate, and declare DONE; delegating target discovery would duplicate existing stage records without narrowing permission. Fresh independent verification remains delegated after freeze.",
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"deepseek-v4-pro": [
+			"It implemented Access UI stages and is ineligible for the final independent gate; no new repository map is needed."
+		],
+		"ox-alpha": [
+			"It implemented an Access UI stage and has current transport failures; no freeze advantage."
+		],
+		"native-sol-worker": [
+			"Freeze and integration authority remain coordinator-owned; the preserved candidate requires no delegated mutation."
+		],
+		"native-luna-or-terra": [
+			"No current advantage for coordinator-owned integration provenance and visual acceptance."
+		]
+	},
+	"execution_identity": {
+		"candidate_branch": "work/phase11-access-ui-b01",
+		"candidate_worktree": "D:/Projects/fitway-worktrees/phase5-staff-integration",
+		"candidate_head_expected": "181480a176896133c310eadd10273fe8b108a6b0",
+		"integration_worktree": "C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration",
+		"accepted_paper_area": "OWNER ACCESS — BEHAVIOR-CORRECT SUCCESSOR — CURRENT",
+		"run_id": "p11_access_ui_c02",
+		"rollback_boundary": "no mutation during freeze; reject candidate identity on mismatch"
+	},
+	"access_boundary": {
+		"readable": "preserved candidate branch/worktree, existing Access stage records, current integrated copies, accepted Paper successor, and directly relevant verification configuration",
+		"writable": "coordinator route/handoff/state records only before freeze",
+		"commit_allowed": true,
+		"forbidden": "Access implementation repair, packages/server/schema/migration, unrelated UI, baseline promotion before independent review, M4/M5, rate limiting, workflow env-doc scope, and further delegation"
+	}
+}
