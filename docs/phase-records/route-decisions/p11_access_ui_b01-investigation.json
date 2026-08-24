@@ -1,0 +1,108 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_access_ui_b01 / stage-1-surface-investigation (Slice B owner access UI)",
+	"recorded": "2026-08-24T13:02:00+03:00",
+	"supersedes_same_stage_draft": "an earlier draft of this same stage decision selected native on 2026-08-24T12:46:16+03:00 purely because two external candidates tied. It was superseded before any worker ran; no work was produced under it.",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "deepseek-v4-pro",
+	"route": "opencode-go/deepseek-v4-pro",
+	"control": "high",
+	"execution": "external-opencode",
+	"transport": "opencode-cli",
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"gate_outcome": "PASS",
+	"gate_outcome_note": "Accepted at the parent gate on 2026-08-24. Session ses_fccccf1d3ffeC39J93QR8ZK5Y7, exit 0, 86 events (43 tool_use), one final text event of 18,895 characters carrying the END-OF-MAP sentinel, finalized on the first invocation with no continuation or export fallback. The return held the contract: no file contents, no listings, no search narration, every structural claim carrying a file:line pointer, two items self-flagged UNCONFIRMED. Read-only boundary held - git status --porcelain byte-identical before and after (d9e0bff01ca21ad57d677a393409d200), HEAD unchanged at abb371a. Six load-bearing claims were checked against the repository and all six matched exactly: the AccessRuleCode union is a single definition site at packages/auth/src/access.ts:35-45 with exactly ten members; no second definition site exists repo-wide; staff_pin_shape is converted to a server fault at apps/server/src/access-service.ts:74-100 and is not owner-provokable; apps/web/src/routes/admin.tsx:70-76 mounts the daily sections as a bare fragment; no existing browser spec stubs admin/access; canonical baselines are exactly two per section. No correction reverses a finding. The stage additionally refuted a false premise carried in its own brief from a coordinator-authored durable record - that tests/browser/phase10-ui-csv.browser.spec.ts demonstrates page.clock install/pauseAt/fastForward - which the parent confirmed and then completed. The long_structured_return_is_material declaration that filtered ox-alpha was vindicated by the outcome: the return required 18,895 characters, more than double the 9,161 of the p11_browser_debt_b01 stage-1 return that declined the same flag.",
+	"gate_outcome_record": "docs/phase-records/handoffs/phase11-access-ui/20260824-130500-p11_access_ui_b01-stage1-findings.md",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md",
+		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
+	],
+	"delegation_trigger": "volume",
+	"material_selection_reason": "NOT a material-preference claim. This stage qualifies on Volume exactly as the approved plan predicted: it reads apps/web/src/routes/admin.tsx, the owner shell, two existing owner section subtrees in full, the hook-and-messages pattern, the admin.access procedure surface, the browser-spec auth and screenshot conventions, and returns a one-page map. scripts/resolve-opencode-worker.mjs was run on a stage input recorded before any of this stage's own target-file reading, with zero delegation-lifecycle violations, and it reduced the pool to exactly two fully qualified external candidates - deepseek-v4-pro and glm-5.3 - between which NO material stage-specific evidence advantage exists in either direction. The selection between those two is a neutral tie resolution, not a capability judgement. See tie_resolution.",
+	"tie_resolution": {
+		"applied": true,
+		"tied_candidates": ["deepseek-v4-pro", "glm-5.3"],
+		"basis": "human routing instruction of 2026-08-24 for this run: a tie between two or more fully qualified external candidates is not a reason to fall back to a native subagent. Where the workflow filters leave several externals materially tied, the winner stays inside the tied qualified external set and is chosen deterministically. Native remains available only where every external route is disqualified by a material workflow constraint, never merely tied.",
+		"rule": "deterministic lexicographic ascending order of candidate_id over the tied eligible set",
+		"applied_to": "deepseek-v4-pro sorts before glm-5.3",
+		"is_material_preference_claim": false,
+		"evidence_considered_and_rejected_as_separators": [
+			"deepseek-v4-pro has 5 recorded outcome_history entries and glm-5.3 has 0. Absence of recorded outcomes is absence of evidence, not evidence of a disadvantage, and treating it as a separator would manufacture a capability advantage the evidence does not support.",
+			"the deepseek-v4-pro entry of 2026-08-23T12:50 is ESCALATED. Escalation is the return contract working as designed, not a gate failure, and it is followed by three PASS entries. It is not a separator against that candidate either.",
+			"the registry preferred_general_bounded_implementation_candidate happens to also be deepseek-v4-pro, but that preference is scoped by preference_condition to meaningful bounded implementation and this stage is read-only investigation. It was deliberately NOT relied on, and it is not the reason for this selection. The lexicographic rule would have produced the same winner had the registry named a different preferred candidate."
+		]
+	},
+	"eligible_alternatives": ["glm-5.3"],
+	"filtered_alternatives": {
+		"ox-alpha": [
+			"material workflow constraint, not a tie. Conditional hard constraint long_structured_return_is_material, not waived: long_structured_return_completeness_protected was NOT declared because this session has no validated exact-session completeness-sentinel and continuation path for this stage, and the adapter is explicit that absent that protection the flag still filters. The 2026-08-22 finalization-truncation rejection in evidence/ox-alpha.json is this exact failure shape.",
+			"note: the active availability_economic temporary preference would otherwise promote this candidate. A hard filter outranks a temporary preference; fail-closed behaviour is preserved."
+		],
+		"minimax-m3": [
+			"material workflow constraint, not a tie. Known constraint high_reporting_precision_is_material - the deliverable is an exhaustive typed-refusal inventory with file:line evidence, and this candidate recorded limitations include omitted final tool reporting."
+		],
+		"native-subagent": [
+			"not selected. It is available and capable, but under the human routing instruction of 2026-08-24 a tie inside the qualified external set does not fall back to native. No material workflow constraint disqualifies the surviving externals, so native has no claim here."
+		],
+		"direct-coordinator": [
+			"not selected. The plan fixes this stage as Open and names Volume; the coordinator has deliberately read no target file, so the orchestrator-already-holds-the-context reason is false by construction rather than by accident. Consuming this stage discovery inline is the named anti-pattern the plan delegation-before-discovery rule exists to prevent."
+		]
+	},
+	"stage_flags": [
+		"high_reporting_precision_is_material",
+		"long_structured_return_is_material"
+	],
+	"consequence": "low",
+	"consequence_ceiling_of_selected_candidate": "medium",
+	"long_structured_return_assessment": "long_structured_return_is_material IS declared here, and this is the deliberate difference from the p11_browser_debt_b01 stage-1 decision, which considered the same flag and declined it. That stage returned a four-row map on ONE axis - one mechanism and one proposed wait per location. This stage acceptance depends on five structurally distinct topics arriving in one message (owner-section mount and shell contribution; the messages.ts plus use-*-messages.ts plus hook composition; the admin.access procedure surface; browser-spec owner authentication and /admin driving; canonical screenshot naming and scoping) PLUS an enumeration whose completeness is itself load-bearing. The approved plan names refusal-to-copy incompleteness as a defect class equivalent to M1: a refusal with no copy path surfaces to the owner as a bare error. A truncated return here does not merely cost a re-run, it can silently ship an incomplete inventory into stage 3. Declaring the flag is the fail-closed reading. The selected candidate carries no constraint against this flag; it filters ox-alpha only.",
+	"route_evidence": "requalified",
+	"requalification_reasons": [
+		"stale evidence: recorded qualification baseline no longer matches the registry (2026-08-23.3 recorded on the reused decision, 2026-08-23.4 current)",
+		"stale evidence: workflow/registry revision changed since the recorded decision (2026-08-23.6 recorded, 2026-08-23.9 current)"
+	],
+	"reused_or_requalified": "requalified - the p11_browser_debt_b01 stage-1 decision covers a read-only investigation with the same modality and tools and carries a PASS, but the registry moved under it (.7 decomposition policy, .8 writable-parallel probe PASS and baseline move, .9 demonstrated-scope narrowing), so it was re-run through full comparison rather than reused. Requalification changed the winner: the reused decision selected ox-alpha, which this stage return-shape flag now filters.",
+	"live_preflight": {
+		"performed": "2026-08-24T12:46:16+03:00",
+		"opencode_cli_version": "1.18.21",
+		"non_interactive_surface_confirmed": "opencode run supports --dir, --model, --variant, --format json, --session and --fork; --auto defaults to false and is not passed",
+		"routes_confirmed_live": [
+			"opencode/x-preview-f-free",
+			"opencode-go/deepseek-v4-pro",
+			"opencode-go/glm-5.3",
+			"opencode-go/minimax-m3"
+		],
+		"active_qualified_route_of_selected_candidate_confirmed_live": true
+	},
+	"execution_identity": {
+		"worktree": "D:/Projects/fitway-worktrees/phase5-staff-integration",
+		"branch": "work/phase11-access-ui-b01",
+		"base_commit": "abb371a",
+		"status_at_assignment": "clean",
+		"rollback_boundary": "none - read-only stage, nothing to revert",
+		"worktree_preparation_required": false,
+		"worktree_preparation_note": "The approved plan requires docs/WORKFLOW.md steps 7-8 preparation only for a worker in an isolated worktree that must run the toolchain. This stage runs no build, no test and no verification command, so no preparation applies and no result depends on one. Stage 5 is where that preflight becomes load-bearing."
+	},
+	"access_boundary": {
+		"readable": "the FITWAY repository at this worktree, excluding .env and any secret material",
+		"writable": "none",
+		"commit_allowed": false,
+		"forbidden": "every write, every mutating command, every test/build/verification run, and any further delegation",
+		"bulky_evidence_destination": "scratchpad JSON event capture outside the orchestrator transcript; only the final compact text crosses back"
+	},
+	"hard_constraints_applied": [
+		"auto_approval_forbidden: --auto is not passed",
+		"parent_diff_and_verification_gate_required: the parent checks every returned claim against the repository",
+		"write_isolation_required: not engaged - the stage grants no writable target; the parent verifies an unchanged working tree on return",
+		"external skill scanning: no skill body is transmitted and no skill is allowlisted",
+		"event capture outside the transcript; no --thinking, no --print-logs",
+		"leaf stage: no further delegation"
+	],
+	"downstream_note": "This decision covers the read-only investigation only. Stages 2 (data layer), 3 (presentation), 4 (mount under lease), 5 (browser spec, baselines, polish loop) and 7 (independent verification) are separate decisions, each recorded when that stage opens and before its own target-file discovery. Stage 5 additionally carries a tooling preflight this read-only stage neither exercises nor qualifies: whether the writer can drive Playwright in this worktree, generate canonical win32/chromium baselines with the locked toolchain, and run the ladder. Stage 7 must not route to whichever candidate implemented the writing stages - if deepseek-v4-pro implements a writing stage, it is ineligible for stage 7.",
+	"candidate_evidence_outcome_appended": "fitway-p11-access-ui-b01-stage1-surface-investigation-2026-08-24, appended to the agent-project-workflow registry evidence record for deepseek-v4-pro before this stage closed. The registry regression harness (scripts/resolve-opencode-worker.mjs --validate) stayed green afterwards: 65 passed, 0 failed."
+}
