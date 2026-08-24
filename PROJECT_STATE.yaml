@@ -1623,7 +1623,7 @@ milestones:
   phase11-access-ui:
     status: VALIDATING
     dependencies: [phase11-access-b02, phase11-access-tx, phase11-browser-debt, phase11-access-paper-successor]
-    ownerSession: "preserved Access candidate worktree work/phase11-access-ui-b01; frozen by Codex SOL coordinator run p11_access_ui_c02; fresh verifier pending"
+    ownerSession: "preserved Access candidate worktree work/phase11-access-ui-b01; frozen by Codex SOL coordinator run p11_access_ui_c02; native SOL verifier run p11_access_ui_v02"
     branch: work/phase11-access-ui-b01
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
     baseCommit: 0ef72c2
@@ -1655,8 +1655,8 @@ milestones:
     sharedLeases:
       - "exclusive through 2026-08-28T23:59:00+03:00: apps/web/src/routes/admin.tsx, limited to mounting the access Owner section. The owner shell composition, the route guard, every sibling section and every other URL stay unchanged. Same shape as the lease phase11-audit held. No server or router lease is needed because admin.access is already mounted."
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-25T01:18:00+03:00"
-    leaseExpiresAt: "2026-08-25T02:18:00+03:00"
+    lastHeartbeatAt: "2026-08-25T01:20:00+03:00"
+    leaseExpiresAt: "2026-08-25T02:20:00+03:00"
     handoff: docs/phase-records/handoffs/phase11-access-ui/20260825-011800-p11_access_ui_c02-candidate-freeze.md
     stopReason: null
     gates:

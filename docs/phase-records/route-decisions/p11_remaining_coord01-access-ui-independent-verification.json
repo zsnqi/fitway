@@ -1,0 +1,63 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_access_ui_v02 / Owner Access UI fresh independent verification",
+	"recorded": "2026-08-25T01:20:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native-sol",
+	"route": null,
+	"control": "high",
+	"execution": "native-sol-subagent",
+	"transport": null,
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": "PENDING",
+	"covered_modalities": ["text", "image"],
+	"covered_tools": [
+		"repository_read",
+		"test_execution",
+		"browser",
+		"image_inspection"
+	],
+	"covered_mcp_operations": ["paper.read", "paper.screenshot"],
+	"covered_capabilities": [],
+	"durable_authorization_records": [],
+	"delegation_trigger": "independence",
+	"consequence": "high",
+	"material_selection_reason": "The candidate is frozen after a complete coordinator phase run and now requires a verifier independent of the earlier DeepSeek and Ox implementation stages and of coordinator baseline authority. A native SOL reviewer can combine repository/code review, real Paper read-only fidelity judgment, exact disposable-database verification, Browser evidence, and bilingual visual inspection without exporting environment values. The gate has no repair authority.",
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"deepseek-v4-pro": [
+			"It implemented prior Access UI stages and is not independent for the final gate."
+		],
+		"ox-alpha": [
+			"It implemented a prior Access UI stage, is not independent, and has current transport unreliability."
+		],
+		"native-luna-or-terra": [
+			"No current advantage for this high-consequence cross-authority code, browser, security, and bilingual visual gate."
+		],
+		"direct-native-sol-coordinator": [
+			"The coordinator owns final acceptance and performed the parent freeze, so a separate reviewer is required."
+		]
+	},
+	"execution_identity": {
+		"candidate_branch": "work/phase11-access-ui-b01",
+		"candidate_worktree": "D:/Projects/fitway-worktrees/phase5-staff-integration",
+		"candidate_base": "0ef72c2",
+		"candidate_head": "181480a176896133c310eadd10273fe8b108a6b0",
+		"accepted_paper_area": "OWNER ACCESS — BEHAVIOR-CORRECT SUCCESSOR — CURRENT",
+		"run_id": "p11_access_ui_v02",
+		"phase_run_id": "p11_access_ui_v02_phase",
+		"port": 43131,
+		"disposable_database": "fitway_integration_p11_access_ui_v02_phase",
+		"output_root": "output/playwright/p11_access_ui_v02_phase",
+		"rollback_boundary": "none; independent verification is read-only and must not repair"
+	},
+	"access_boundary": {
+		"readable": "exact candidate range and worktree, accepted Access Paper successor, existing Access records, native local test environment, disposable PostgreSQL test database, and isolated generated verification artifacts",
+		"writable": "only the exact disposable test database and ignored isolated output/review directories",
+		"commit_allowed": false,
+		"forbidden": "every repository file, Paper mutation, canonical baseline promotion, shared config, schema/migration, real environment disclosure, production action, M4/M5, rate limiting, workflow environment gap, repair, acceptance, and further delegation"
+	}
+}
