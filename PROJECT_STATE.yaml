@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-24T23:44:00+03:00"
+updatedAt: "2026-08-24T23:48:30+03:00"
 
 coordinator:
   owner: "Codex SOL coordinator run p11_remaining_coord01 on codex/remaining-scope-coordinator. Active frontier: serialize one Paper writer across the behavior-correct Owner Access successor, Owner Uptime mobile successor, and Owner Settings successor; independently review each before repository use. Access repository freeze and verification are reopened against corrected Paper authority. Settings implementation remains gated by reviewed Paper, a written migration-free specification, and the integrated backend contract. Reference-gating unit debt, the real unmocked propagation-wait milestone, focus parity, Login Paper adoption, Uptime mobile fidelity, and the Phase 11 aggregate remain explicit downstream milestones. Canonical baseline acceptance and all integration/DONE judgments remain coordinator-owned. M4/M5 access races, owner-access rate limiting, and the workflow environment-documentation gap remain outside approved scope."
@@ -1696,12 +1696,12 @@ milestones:
     integratedCommit: null
 
   phase11-reference-gating-debt:
-    status: PLANNED
+    status: IN_PROGRESS
     dependencies: [phase11-browser-debt]
-    ownerSession: null
-    branch: null
-    worktree: null
-    baseCommit: null
+    ownerSession: "external DeepSeek V4 Pro read-only discovery + Codex SOL coordinator, run p11_ref_gate_b01"
+    branch: codex/remaining-scope-coordinator
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
+    baseCommit: 793d84c9535c4faf4f6356c35d703295ba86be01
     ownedPaths:
       - apps/server/src/reference-gating.test.ts
       - docs/phase-records/handoffs/phase11-reference-gating-debt/**
@@ -1713,9 +1713,9 @@ milestones:
       - "M4/M5 access races, owner-access rate limiting, and the workflow environment-documentation gap"
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
+    lastHeartbeatAt: "2026-08-24T23:48:30+03:00"
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/coordinator/20260824-230600-final-remaining-scope-reconciliation-activation.md
+    handoff: docs/phase-records/worker-packets/p11_remaining_coord01-reference-gating-discovery.md
     stopReason: null
     gates:
       unit: PENDING

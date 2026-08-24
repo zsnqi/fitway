@@ -1,0 +1,56 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_remaining_coord01 / reference-gating unit debt root-cause discovery",
+	"recorded": "2026-08-24T23:48:30+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "deepseek-v4-pro",
+	"route": "opencode-go/deepseek-v4-pro",
+	"control": "high",
+	"execution": "external-opencode",
+	"transport": "opencode-cli",
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "qualified",
+	"gate_outcome": "PENDING",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md",
+		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
+	],
+	"delegation_trigger": "volume",
+	"consequence": "low",
+	"material_selection_reason": "The stage reads the reference-gating test, its fixture lifecycle, neighboring server-test patterns, prior failure evidence, and verification configuration to return a compact root-cause map without absorbing raw source into the coordinator. DeepSeek V4 Pro remains qualified for this non-secret repository_read shape and is live. Ox Alpha's current Access-stage stream failures remove its availability advantage; native Luna is suitable but has no concrete advantage over the reusable qualified external route. Runtime reproduction, environment values, and any repair remain native and out of this route.",
+	"eligible_alternatives": ["native-luna", "glm-5.3"],
+	"filtered_alternatives": {
+		"ox-alpha": [
+			"Two consecutive current provider stream failures remove its availability-economic advantage."
+		],
+		"minimax-m3": [
+			"Recorded reporting-precision flag for an exact fixture/lifecycle map."
+		],
+		"native-terra": [
+			"No concrete current advantage over the qualified external text-only route."
+		],
+		"direct-coordinator": [
+			"The discovery spans test lifecycle, helpers, configuration, and prior evidence; delegation preserves the high-signal coordinator boundary."
+		]
+	},
+	"route_evidence": "reused",
+	"reused_from": "docs/phase-records/route-decisions/p11_remaining_coord01-authority-frontier-discovery.json",
+	"execution_identity": {
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration",
+		"head": "793d84c9535c4faf4f6356c35d703295ba86be01",
+		"branch": "codex/remaining-scope-coordinator",
+		"rollback_boundary": "none; read-only"
+	},
+	"access_boundary": {
+		"readable": "non-secret reference-gating test/lifecycle source, relevant test configuration, and prior recorded failure evidence",
+		"writable": "none",
+		"commit_allowed": false,
+		"forbidden": "all writes, .env and secret material, test/build execution, network access beyond the provider transport, production mutation, timeout inflation, retries/skips, unrelated source, and further delegation"
+	}
+}
