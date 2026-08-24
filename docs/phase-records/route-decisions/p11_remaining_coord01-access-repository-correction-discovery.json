@@ -12,7 +12,8 @@
 	"registry_revision": "2026-08-23.9",
 	"qualification_baseline": "2026-08-23.4",
 	"qualification_status": "qualified",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "PASS_WITH_CORRECTION",
+	"gate_outcome_note": "OpenCode session ses_fca837608ffeu43hhE5Z26Kdsv exited 0 with the END-OF-MAP sentinel and returned ALREADY_CONFORMANT. The working tree remained clean and HEAD stayed fb05a52 with the recorded route boundary as an ancestor. Parent spot checks confirmed the create-owner and reset-credential password inputs, submitted password fields, secret-free owner mutation schema, staff-PIN-only reveal path, server-side owner password hashing, and bilingual hash-only copy. One worker inference was corrected: a confirm-password field could remain client-local and would not inherently require a transport schema change, but it is not part of the locked product decision or current repository behavior and therefore must not be silently introduced by Paper.",
 	"covered_modalities": ["text"],
 	"covered_tools": ["repository_read"],
 	"covered_mcp_operations": [],
@@ -41,6 +42,7 @@
 	},
 	"route_evidence": "reused",
 	"reused_from": "docs/phase-records/route-decisions/p11_access_ui_b01-investigation.json",
+	"external_session_id": "ses_fca837608ffeu43hhE5Z26Kdsv",
 	"execution_identity": {
 		"worktree": "C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration",
 		"head": "53e4b9eb25f66b13b55f138934bd423a56d14ebc",
