@@ -140,6 +140,11 @@ const phases = {
 		integrationFiles: ["apps/server/src/phase11-access.integration.test.ts"],
 		label: "Phase 11 owner access management slice",
 	},
+	"phase11-reference-gating-debt": {
+		browserFiles: [],
+		integrationFiles: [],
+		label: "Phase 11 reference-gating unit debt",
+	},
 	"phase11-shell": {
 		browserFiles: ["tests/browser/phase11-shell.browser.spec.ts"],
 		integrationFiles: [],
