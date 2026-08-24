@@ -1,0 +1,58 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_remaining_coord01 / Owner Access Paper successor independent fidelity review",
+	"recorded": "2026-08-24T23:30:47+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native",
+	"route": null,
+	"control": "high",
+	"execution": "native-sol-subagent",
+	"transport": null,
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": "PENDING",
+	"covered_modalities": ["text", "image"],
+	"covered_tools": [],
+	"covered_mcp_operations": ["paper.read", "paper.screenshot"],
+	"covered_capabilities": [],
+	"durable_authorization_records": [],
+	"delegation_trigger": "independence",
+	"consequence": "medium",
+	"material_selection_reason": "The candidate needs a fresh reviewer who did not author it and can inspect real Paper content, rendered bilingual states, responsive family preservation, and the human-locked password/secret-free boundary. External providers, Luna, and Terra fail the current Paper qualification or explicit human routing filter. A native SOL subagent is selected read-only; the coordinator retains acceptance and final fidelity judgment.",
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"direct-coordinator": [
+			"The coordinator authored the candidate and therefore is not independent for this gate."
+		],
+		"deepseek-v4-pro": [
+			"Real Paper design-content reads and screenshots are not qualified."
+		],
+		"ox-alpha": ["Paper capability is not qualified."],
+		"glm-5.3": [
+			"Real Paper design-content reads and screenshots are not qualified."
+		],
+		"minimax-m3": ["Paper capability is not qualified."],
+		"native-terra": [
+			"The human instruction excludes Terra from Paper mutation and provides no current advantage for this fidelity review."
+		],
+		"native-luna": [
+			"The human instruction excludes Luna from Paper mutation; this gate also requires high-consequence bilingual fidelity judgment."
+		]
+	},
+	"execution_identity": {
+		"paper_file": "FITWAY UX Exploration",
+		"paper_file_id": "01KYPX5AF950XZVVDD88B6J7QB",
+		"page": "Page 1",
+		"candidate_area": "OWNER ACCESS — BEHAVIOR-CORRECT SUCCESSOR — CURRENT",
+		"freeze_at": "2026-08-24T23:30:47+03:00",
+		"rollback_boundary": "none; independent review is read-only"
+	},
+	"access_boundary": {
+		"readable": "the frozen Owner Access successor, its preserved source family, and directly relevant FITWAY product/spec/ADR/visual authority",
+		"writable": "none",
+		"commit_allowed": false,
+		"forbidden": "every Paper mutation, every repository write, unrelated Paper families, secret material, and further delegation"
+	}
+}

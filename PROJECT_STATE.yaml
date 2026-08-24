@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-24T23:20:08+03:00"
+updatedAt: "2026-08-24T23:30:47+03:00"
 
 coordinator:
   owner: "Codex SOL coordinator run p11_remaining_coord01 on codex/remaining-scope-coordinator. Active frontier: serialize one Paper writer across the behavior-correct Owner Access successor, Owner Uptime mobile successor, and Owner Settings successor; independently review each before repository use. Access repository freeze and verification are reopened against corrected Paper authority. Settings implementation remains gated by reviewed Paper, a written migration-free specification, and the integrated backend contract. Reference-gating unit debt, the real unmocked propagation-wait milestone, focus parity, Login Paper adoption, Uptime mobile fidelity, and the Phase 11 aggregate remain explicit downstream milestones. Canonical baseline acceptance and all integration/DONE judgments remain coordinator-owned. M4/M5 access races, owner-access rate limiting, and the workflow environment-documentation gap remain outside approved scope."
@@ -1591,7 +1591,7 @@ milestones:
     integratedCommit: ffe3745e87c60b67ce9825ca322976e3eda6122a
 
   phase11-access-paper-successor:
-    status: IN_PROGRESS
+    status: VALIDATING
     dependencies: [phase11-shell, phase11-access-tx]
     ownerSession: "Codex SOL coordinator, run p11_remaining_coord01"
     branch: codex/remaining-scope-coordinator
@@ -1605,12 +1605,11 @@ milestones:
       - "every existing approved Paper original, shared token, and unrelated family"
       - "every repository application, schema, migration, router, baseline, and normative authority path"
       - "generated owner credentials, secret-bearing response states, M4/M5 races, and owner-access rate limiting"
-    sharedLeases:
-      - "exclusive Paper writer lease through 2026-08-25T02:00:00+03:00: one new labelled Owner Access behavior-correct successor area in Paper file 01KYPX5AF950XZVVDD88B6J7QB; originals remain immutable"
+    sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-24T23:20:08+03:00"
-    leaseExpiresAt: "2026-08-25T02:00:00+03:00"
-    handoff: docs/phase-records/handoffs/coordinator/20260824-230600-final-remaining-scope-reconciliation-activation.md
+    lastHeartbeatAt: "2026-08-24T23:30:47+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase11-access-paper-successor/20260824-233047-p11_access_paper_c01-candidate-freeze.md
     stopReason: null
     gates:
       unit: NOT_REQUIRED

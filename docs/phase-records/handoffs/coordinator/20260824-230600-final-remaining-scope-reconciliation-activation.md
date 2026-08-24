@@ -57,6 +57,10 @@ The discovery gate is closed. The following executable dependency edges are now 
 
 Canonical baseline promotion, repository integration, `PROJECT_STATE.yaml`, shared-file leases, and terminal `DONE` declarations remain coordinator-owned and serialized.
 
+## Subsequent Paper routing instruction
+
+The human instruction received after the Access successor write makes all later Paper mutation SOL-only. When practical, Uptime and Settings Paper writes route to a native SOL subagent with explicit Paper write capability and one narrow lease. Luna, Terra, Ox Alpha, DeepSeek V4 Pro, and every other model/provider are excluded from Paper mutation. The main SOL session retains Paper authority, sequencing, acceptance/rejection, and final fidelity judgment, and may write directly only if a qualified SOL subagent cannot perform the bounded edit.
+
 ## Verification status
 
 No implementation verification was claimed at activation. Discovery was read-only. Its three route decisions now carry their checked gate outcomes; the Owner Access Paper successor writing stage is open with `gate_outcome: PENDING` and has not mutated Paper yet.
