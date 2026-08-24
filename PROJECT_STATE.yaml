@@ -1621,9 +1621,9 @@ milestones:
     integratedCommit: SELF
 
   phase11-access-ui:
-    status: IN_PROGRESS
+    status: VALIDATING
     dependencies: [phase11-access-b02, phase11-access-tx, phase11-browser-debt, phase11-access-paper-successor]
-    ownerSession: "preserved Access candidate worktree work/phase11-access-ui-b01; Codex SOL coordinator final freeze run p11_access_ui_c02"
+    ownerSession: "preserved Access candidate worktree work/phase11-access-ui-b01; frozen by Codex SOL coordinator run p11_access_ui_c02; fresh verifier pending"
     branch: work/phase11-access-ui-b01
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
     baseCommit: 0ef72c2
@@ -1655,16 +1655,16 @@ milestones:
     sharedLeases:
       - "exclusive through 2026-08-28T23:59:00+03:00: apps/web/src/routes/admin.tsx, limited to mounting the access Owner section. The owner shell composition, the route guard, every sibling section and every other URL stay unchanged. Same shape as the lease phase11-audit held. No server or router lease is needed because admin.access is already mounted."
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-25T01:08:00+03:00"
-    leaseExpiresAt: "2026-08-28T23:59:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-access-ui/20260825-010800-p11_access_ui_c02-final-freeze-activation.md
+    lastHeartbeatAt: "2026-08-25T01:18:00+03:00"
+    leaseExpiresAt: "2026-08-25T02:18:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-access-ui/20260825-011800-p11_access_ui_c02-candidate-freeze.md
     stopReason: null
     gates:
-      unit: PENDING
-      integration: PENDING
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
       independentReview: PENDING
     integratedCommit: null
 
@@ -1795,10 +1795,10 @@ milestones:
     integratedCommit: SELF
 
   phase11-settings-paper-successor:
-    status: VALIDATING
+    status: IN_PROGRESS
     dependencies: [phase11-shell, phase11-audit-generalization]
-    ownerSession: "Codex SOL coordinator; native SOL candidate writer completed, run p11_settings_paper_b01"
-    branch: paper/owner-settings-successor
+    ownerSession: "Codex SOL coordinator; native SOL Paper writer repair 1 run p11_settings_paper_r01"
+    branch: paper/owner-settings-successor-repair-1
     worktree: paper://01KYPX5AF950XZVVDD88B6J7QB/Page-1
     baseCommit: 76c2091
     ownedPaths:
@@ -1810,10 +1810,10 @@ milestones:
       - "editable timezone, push, freshness, stale, or poll controls; those values are read-only and copy forward"
       - "every repository application, schema, migration, router, baseline, and normative authority path"
     sharedLeases: []
-    validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-25T01:04:00+03:00"
-    leaseExpiresAt: "2026-08-25T01:44:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-settings-paper-successor/20260825-010400-p11_settings_paper_b01-candidate-freeze.md
+    validationRepairAttempts: 1
+    lastHeartbeatAt: "2026-08-25T01:18:00+03:00"
+    leaseExpiresAt: "2026-08-25T01:58:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-settings-paper-successor/20260825-011800-p11_settings_paper_r01-repair-activation.md
     stopReason: null
     gates:
       unit: NOT_REQUIRED

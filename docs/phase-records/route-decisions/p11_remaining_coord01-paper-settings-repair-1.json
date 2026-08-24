@@ -1,0 +1,59 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_settings_paper_r01 / Owner Settings successor focused repair 1",
+	"recorded": "2026-08-25T01:18:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native-sol",
+	"route": null,
+	"control": "high",
+	"execution": "native-sol-subagent",
+	"transport": null,
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": "PENDING",
+	"covered_modalities": ["text", "image"],
+	"covered_tools": [],
+	"covered_mcp_operations": ["paper.read", "paper.write", "paper.screenshot"],
+	"covered_capabilities": [],
+	"durable_authorization_records": [],
+	"delegation_trigger": "permission",
+	"consequence": "medium",
+	"material_selection_reason": "The human instruction makes Paper mutation SOL-only and prefers a qualified native SOL subagent with a narrow lease. The independent review froze three concrete successor-only defects. A fresh SOL writer can repair them without importing detailed Paper mutation into the coordinator context; the coordinator retains the parent diff, freeze, sequencing, acceptance, and final fidelity judgment.",
+	"eligible_alternatives": ["direct-native-sol-coordinator"],
+	"filtered_alternatives": {
+		"candidate-writer": ["A fresh repair writer narrows self-review risk."],
+		"independent-reviewer": [
+			"The failed-gate reviewer remains read-only and may not repair its own findings."
+		],
+		"deepseek-v4-pro": [
+			"The human instruction forbids non-SOL Paper mutation."
+		],
+		"ox-alpha": ["The human instruction forbids non-SOL Paper mutation."],
+		"native-terra": [
+			"The human instruction explicitly excludes Terra from Paper mutation."
+		],
+		"native-luna": [
+			"The human instruction explicitly excludes Luna from Paper mutation."
+		],
+		"direct-native-sol-coordinator": [
+			"Qualified SOL subagent write capability is available, so delegation preserves the high-signal coordinator context."
+		]
+	},
+	"execution_identity": {
+		"paper_file": "FITWAY UX Exploration",
+		"paper_file_id": "01KYPX5AF950XZVVDD88B6J7QB",
+		"page": "Page 1",
+		"candidate_area": "OWNER SETTINGS — BEHAVIOR-CORRECT FORM SUCCESSOR — REVIEW CANDIDATE",
+		"run_id": "p11_settings_paper_r01",
+		"lease_expires_at": "2026-08-25T01:58:00+03:00",
+		"rollback_boundary": "restore only the nodes changed for the three independent-review findings"
+	},
+	"access_boundary": {
+		"readable": "the frozen Settings successor, the independent-failure handoff, the preserved original for comparison, and directly relevant FITWAY/G3 authority",
+		"writable": "only successor weekly-hours rows, actual 390px action areas, and the two identified Arabic labels",
+		"commit_allowed": false,
+		"forbidden": "every approved original, shared token, unrelated Paper area, repository path, schema/migration/product invention, editable operational timing, M4/M5, rate limiting, workflow content, baseline work, secret material, and further delegation"
+	}
+}
