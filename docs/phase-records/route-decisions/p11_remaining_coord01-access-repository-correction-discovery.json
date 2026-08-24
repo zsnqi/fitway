@@ -1,0 +1,56 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_remaining_coord01 / Access repository behavior-correction discovery",
+	"recorded": "2026-08-24T23:32:53+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "deepseek-v4-pro",
+	"route": "opencode-go/deepseek-v4-pro",
+	"control": "high",
+	"execution": "external-opencode",
+	"transport": "opencode-cli",
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "qualified",
+	"gate_outcome": "PENDING",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md",
+		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
+	],
+	"delegation_trigger": "volume",
+	"consequence": "low",
+	"material_selection_reason": "This stage reads the existing Access component, hook, focused tests, and the frozen textual Paper handoff to return a compact exact-delta map without absorbing raw source into the coordinator. DeepSeek V4 Pro remains qualified for the same non-secret repository_read shape at the current baseline, is live, and has already demonstrated precision on the Access subtree. Ox Alpha's two current Access-stage stream failures remove its availability advantage. Native Luna remains capable but has no concrete advantage over the reusable qualified external route; Terra has no current stage-specific advantage.",
+	"eligible_alternatives": ["native-luna", "glm-5.3"],
+	"filtered_alternatives": {
+		"ox-alpha": [
+			"Two consecutive current Access-stage provider stream failures remove its availability-economic advantage."
+		],
+		"minimax-m3": [
+			"Recorded reporting-precision flag for a cross-file exact-delta map."
+		],
+		"native-terra": [
+			"No concrete current advantage over the qualified external text-only route."
+		],
+		"direct-coordinator": [
+			"The stage spans multiple Access source and test files; delegating the raw read preserves the requested high-signal coordinator boundary."
+		]
+	},
+	"route_evidence": "reused",
+	"reused_from": "docs/phase-records/route-decisions/p11_access_ui_b01-investigation.json",
+	"execution_identity": {
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration",
+		"head": "53e4b9eb25f66b13b55f138934bd423a56d14ebc",
+		"branch": "codex/remaining-scope-coordinator",
+		"rollback_boundary": "none; read-only"
+	},
+	"access_boundary": {
+		"readable": "non-secret Access UI source/tests plus the frozen Access Paper candidate handoff and directly required authority text",
+		"writable": "none",
+		"commit_allowed": false,
+		"forbidden": "all writes, .env and secret material, Paper access, test/build execution, unrelated source, and further delegation"
+	}
+}
