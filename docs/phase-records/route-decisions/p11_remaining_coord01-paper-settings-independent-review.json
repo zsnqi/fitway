@@ -1,0 +1,53 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_settings_paper_v01 / Owner Settings successor independent fidelity review",
+	"recorded": "2026-08-25T01:04:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native-sol",
+	"route": null,
+	"control": "high",
+	"execution": "native-sol-subagent",
+	"transport": null,
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": "PENDING",
+	"covered_modalities": ["text", "image"],
+	"covered_tools": [],
+	"covered_mcp_operations": ["paper.read", "paper.screenshot"],
+	"covered_capabilities": [],
+	"durable_authorization_records": [],
+	"delegation_trigger": "independence",
+	"consequence": "high",
+	"material_selection_reason": "A fresh SOL reviewer who did not write the candidate must inspect real Paper content and rendered bilingual form states before the coordinator extracts a normative repository specification. The gate is read-only and must verify exact editable/read-only boundaries, lifecycle states, responsive/RTL fit, accessibility treatment, original preservation, and absence of unauthorized product or schema invention.",
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"candidate-writer": [
+			"The writer cannot independently approve its own design."
+		],
+		"direct-coordinator": [
+			"The coordinator owns final judgment and already performed the parent gate."
+		],
+		"external-providers": [
+			"Real Paper content and fidelity review are not currently qualified externally."
+		],
+		"native-luna-or-terra": [
+			"No advantage for this high-consequence bilingual visual/behavior authority verdict."
+		]
+	},
+	"execution_identity": {
+		"paper_file": "FITWAY UX Exploration",
+		"paper_file_id": "01KYPX5AF950XZVVDD88B6J7QB",
+		"page": "Page 1",
+		"candidate_area": "OWNER SETTINGS — BEHAVIOR-CORRECT FORM SUCCESSOR — REVIEW CANDIDATE",
+		"freeze_at": "2026-08-25T01:04:00+03:00",
+		"rollback_boundary": "none; review is read-only"
+	},
+	"access_boundary": {
+		"readable": "frozen Settings successor, preserved original, migration-free contract map, and directly relevant FITWAY/G3 authority",
+		"writable": "none",
+		"commit_allowed": false,
+		"forbidden": "every Paper mutation, repository write, unrelated family, schema/product invention, secret material, and further delegation"
+	}
+}
