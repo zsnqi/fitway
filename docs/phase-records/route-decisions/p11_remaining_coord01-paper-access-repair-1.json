@@ -1,0 +1,58 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_remaining_coord01 / Owner Access Paper successor focused repair 1",
+	"recorded": "2026-08-24T23:44:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native-sol",
+	"route": null,
+	"control": "high",
+	"execution": "native-sol-subagent",
+	"transport": null,
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": "PENDING",
+	"covered_modalities": ["text", "image"],
+	"covered_tools": [],
+	"covered_mcp_operations": ["paper.read", "paper.write", "paper.screenshot"],
+	"covered_capabilities": [],
+	"durable_authorization_records": [],
+	"delegation_trigger": "permission",
+	"consequence": "low",
+	"material_selection_reason": "The human instruction makes subsequent Paper mutation SOL-only and prefers a native SOL subagent with explicit write capability when practical. This repair is mechanically narrow but must be executed against the exact bilingual rendered cards without touching the frozen passing axes. A fresh native SOL writer receives a two-card text-only lease; the main coordinator retains the parent non-vacuity check and final acceptance.",
+	"eligible_alternatives": ["direct-native-sol-coordinator"],
+	"filtered_alternatives": {
+		"prior-independent-reviewer": [
+			"The reviewer remains read-only and does not repair its own finding."
+		],
+		"deepseek-v4-pro": [
+			"The human instruction forbids non-SOL Paper mutation; Paper write capability is not qualified."
+		],
+		"ox-alpha": [
+			"The human instruction forbids non-SOL Paper mutation; Paper capability is not qualified."
+		],
+		"native-terra": [
+			"The human instruction explicitly excludes Terra from Paper mutation."
+		],
+		"native-luna": [
+			"The human instruction explicitly excludes Luna from Paper mutation."
+		],
+		"direct-native-sol-coordinator": [
+			"Qualified SOL subagent write capability is available, so the narrow Paper mutation is delegated as instructed."
+		]
+	},
+	"execution_identity": {
+		"paper_file": "FITWAY UX Exploration",
+		"paper_file_id": "01KYPX5AF950XZVVDD88B6J7QB",
+		"page": "Page 1",
+		"candidate_area": "OWNER ACCESS — BEHAVIOR-CORRECT SUCCESSOR — CURRENT",
+		"rollback_boundary": "restore only the four frozen confirmation-bearing text values if the repair is rejected"
+	},
+	"access_boundary": {
+		"readable": "the Access successor S6/S7 cards, the independent-review failure record, and directly required source/reference context",
+		"writable": "only the English and Arabic masked-field/helper text inside S6 Create owner and S7 Reset credential",
+		"commit_allowed": false,
+		"forbidden": "every other Paper node, every original, tokens, the secret-free success state, desktop/mobile boards, repository files, and further delegation"
+	}
+}

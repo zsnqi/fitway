@@ -1,0 +1,61 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_remaining_coord01 / Owner Uptime mobile stacked-card Paper successor",
+	"recorded": "2026-08-24T23:43:06+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native-sol",
+	"route": null,
+	"control": "high",
+	"execution": "native-sol-subagent",
+	"transport": null,
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": "PENDING",
+	"covered_modalities": ["text", "image"],
+	"covered_tools": [],
+	"covered_mcp_operations": ["paper.read", "paper.write", "paper.screenshot"],
+	"covered_capabilities": [],
+	"durable_authorization_records": [],
+	"delegation_trigger": "volume",
+	"consequence": "medium",
+	"material_selection_reason": "The human instruction makes all subsequent Paper mutation SOL-only and prefers a bounded native SOL subagent when practical. This stage is one named family but requires coupled English/Arabic mobile record restructuring, preservation of desktop and approved G3 geometry, and iterative screenshot judgment. A native SOL subagent has explicit Paper write capability and a narrow successor-only lease; the main coordinator retains sequencing, parent fidelity checks, acceptance/rejection, and final authority.",
+	"eligible_alternatives": ["direct-native-sol-coordinator"],
+	"filtered_alternatives": {
+		"deepseek-v4-pro": [
+			"The human instruction forbids non-SOL Paper mutation; Paper write capability is not qualified."
+		],
+		"ox-alpha": [
+			"The human instruction forbids non-SOL Paper mutation; Paper capability is not qualified."
+		],
+		"glm-5.3": [
+			"The human instruction forbids non-SOL Paper mutation; Paper write capability is not qualified."
+		],
+		"minimax-m3": [
+			"The human instruction forbids non-SOL Paper mutation; Paper capability is not qualified."
+		],
+		"native-terra": [
+			"The human instruction explicitly excludes Terra from Paper mutation."
+		],
+		"native-luna": [
+			"The human instruction explicitly excludes Luna from Paper mutation."
+		],
+		"direct-native-sol-coordinator": [
+			"Qualified SOL subagent write capability is available, so detailed mutation remains outside the high-signal coordinator context."
+		]
+	},
+	"execution_identity": {
+		"paper_file": "FITWAY UX Exploration",
+		"paper_file_id": "01KYPX5AF950XZVVDD88B6J7QB",
+		"page": "Page 1",
+		"source_area": "OWNER UPTIME & INCIDENTS PRODUCTION SET — CANDIDATE",
+		"rollback_boundary": "delete only the new labelled Uptime mobile successor area before acceptance; the approved original remains untouched"
+	},
+	"access_boundary": {
+		"readable": "Owner Uptime & Incidents family and directly required approved FITWAY/G3 comparison sources and authority text",
+		"writable": "one new labelled Owner Uptime & Incidents mobile stacked-card successor area only",
+		"commit_allowed": false,
+		"forbidden": "every approved original, shared token, desktop redesign, unrelated Paper family, repository path, deletion/archive operation, secret material, and further delegation"
+	}
+}
