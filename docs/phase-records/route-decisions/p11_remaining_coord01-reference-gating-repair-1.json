@@ -1,0 +1,49 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_ref_gate_b02 / reference-gating provenance and registered-profile repair 1",
+	"recorded": "2026-08-25T00:36:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "direct-native-sol-coordinator",
+	"route": null,
+	"control": "high",
+	"execution": "direct-native-sol-coordinator",
+	"transport": null,
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": "PENDING",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_write", "test_execution"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"durable_authorization_records": [],
+	"delegation_trigger": "shared-file-authority",
+	"consequence": "medium",
+	"material_selection_reason": "Repair 1 must both rebuild exact candidate provenance and add one coordinator-owned shared verification-profile entry. The coordinator alone owns shared config and integration, already holds the passing lifecycle implementation, and can serialize a two-path source-only commit followed by a separate records freeze. Delegating would either violate shared-file authority or add a handoff without independent implementation value; the new verification gate remains delegated.",
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"native-sol-worker": [
+			"scripts/verify.mjs is coordinator-owned shared configuration and has no delegated lease."
+		],
+		"external-providers": [
+			"Shared-config write authority and native registered-ladder verification are not externalized."
+		],
+		"native-luna-or-terra": [
+			"No shared-file authority or concrete current advantage."
+		]
+	},
+	"execution_identity": {
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration",
+		"branch": "codex/remaining-scope-coordinator",
+		"activation_head": "c2fd9b87",
+		"run_id": "p11_ref_gate_b02",
+		"rollback_boundary": "restore only apps/server/src/reference-gating.test.ts and the exact new phases entry in scripts/verify.mjs"
+	},
+	"access_boundary": {
+		"readable": "rejected candidate/failure evidence, reference-gating test lifecycle, and verify profile registry",
+		"writable": "apps/server/src/reference-gating.test.ts plus one new phase11-reference-gating-debt entry in scripts/verify.mjs",
+		"commit_allowed": true,
+		"forbidden": "production source, every other test/profile/config, integration/browser files, timeouts, retries, skips, mocks, environment schema/values, unrelated debt, and further delegation"
+	}
+}

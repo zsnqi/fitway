@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-25T00:31:00+03:00"
+updatedAt: "2026-08-25T00:36:00+03:00"
 
 coordinator:
   owner: "Codex SOL coordinator run p11_remaining_coord01 on codex/remaining-scope-coordinator. Active frontier: serialize one Paper writer across the behavior-correct Owner Access successor, Owner Uptime mobile successor, and Owner Settings successor; independently review each before repository use. Access repository freeze and verification are reopened against corrected Paper authority. Settings implementation remains gated by reviewed Paper, a written migration-free specification, and the integrated backend contract. Reference-gating unit debt, the real unmocked propagation-wait milestone, focus parity, Login Paper adoption, Uptime mobile fidelity, and the Phase 11 aggregate remain explicit downstream milestones. Canonical baseline acceptance and all integration/DONE judgments remain coordinator-owned. M4/M5 access races, owner-access rate limiting, and the workflow environment-documentation gap remain outside approved scope."
@@ -1695,7 +1695,7 @@ milestones:
     integratedCommit: null
 
   phase11-reference-gating-debt:
-    status: VALIDATING
+    status: IN_PROGRESS
     dependencies: [phase11-browser-debt]
     ownerSession: "Codex SOL coordinator one-file test-lifecycle candidate, run p11_ref_gate_b01"
     branch: codex/remaining-scope-coordinator
@@ -1710,14 +1710,15 @@ milestones:
       - "all production source, schema, migration, browser, UI, baseline, and normative authority paths unless a later coordinator gate records a strictly necessary revised lease"
       - "global or blanket timeout inflation, retries, skipped assertions, reduced coverage, and known-flaky attribution created by the same failing run"
       - "M4/M5 access races, owner-access rate limiting, and the workflow environment-documentation gap"
-    sharedLeases: []
-    validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-25T00:25:00+03:00"
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-reference-gating-debt/20260825-002500-p11_ref_gate_b01-candidate-freeze.md
+    sharedLeases:
+      - "exclusive coordinator repair-1 writer lease through 2026-08-25T01:01:00+03:00: apps/server/src/reference-gating.test.ts and the exact phase11-reference-gating-debt profile entry in scripts/verify.mjs only"
+    validationRepairAttempts: 1
+    lastHeartbeatAt: "2026-08-25T00:36:00+03:00"
+    leaseExpiresAt: "2026-08-25T01:01:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-reference-gating-debt/20260825-003600-p11_ref_gate_v01-independent-fail.md
     stopReason: null
     gates:
-      unit: PASS
+      unit: PENDING
       integration: NOT_REQUIRED
       browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
