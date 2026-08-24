@@ -1,0 +1,144 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_access_ui_b01 / stage-3-presentation (Slice B owner access UI)",
+	"recorded": "2026-08-24T13:44:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"evaluated_before_stage_discovery_note": "Judged from the approved plan, stage 1's gated map, and the stage 2 gate record, before any stage-3 target-file reading. The coordinator has read no line of apps/web/src/components/owner/audit/** or owner/health/**; stage 1's map describes their shape, which is what that stage existed to produce. The apps/web/src/components/owner/access/** subtree does not exist yet.",
+	"candidate_id": "deepseek-v4-pro",
+	"route": "opencode-go/deepseek-v4-pro",
+	"control": "high",
+	"execution": "external-opencode",
+	"transport": "opencode-cli",
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"gate_outcome": "PASS",
+	"gate_outcome_note": "Accepted at the parent gate on 2026-08-24, after a host power loss interrupted the original gate work. The gate was re-established from durable repository evidence rather than carried over: every check was re-run. Attempt 3 on this route delivered - session ses_fcca12cc7ffes6E6jaSBheFnfL, exit 0, 226 events, 3,667-character report with sentinel, finalized first time. Scope held exactly: commit 5fb9854, six files, 1,864 insertions, all under the access subtree, nothing mounted, the stage-2 hook untouched. A negative control renaming one refusal code produced TS2561 in both locale tables, proving the satisfies binding genuine. Codepoint scans confirmed the ASCII-hyphen 6-12 range and Western-digits-only in Arabic. pnpm verify:fast passed exit 0 with unit counts moving 64/493 to 65/510, demonstrating the 17 new view tests actually run. The stage exceeded its brief on four accessibility and bidi details, notably a bdi dir=ltr isolate around the revealed PIN. Two items carried to the stage-5 polish loop as questions, not defects: PIN action vocabulary versus the audit actor label, and em dashes in prose copy.",
+	"gate_outcome_record": "docs/phase-records/handoffs/phase11-access-ui/20260824-140000-p11_access_ui_b01-stage3-gate.md",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "file_write", "shell"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": ["repository_verification_ladder"],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md",
+		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
+	],
+	"delegation_trigger": "volume",
+	"material_selection_reason": "Rerouted to the registry's stable preferred general bounded implementation candidate after two consecutive provider-side stream failures on the previously selected route, under a rule pre-committed before the second attempt. Stage 3 is meaningful bounded implementation, so the stable preference legitimately applies here - unlike this run's stage 1, where it was explicitly set aside because that stage was read-only investigation and the preference is scoped by preference_condition to implementation. glm-5.3 and minimax-m3 remain filtered fail-closed on the required repository_verification_ladder capability. deepseek-v4-pro carries five recorded outcomes, four PASS and one ESCALATED (escalation being the return contract working, not a failure), and its qualified route resolved live at preflight.",
+	"tie_resolution": {
+		"applied": false,
+		"note": "Not engaged. The reused decision was itself settled by the recorded availability_economic preference, not by a tie."
+	},
+	"eligible_alternatives": ["deepseek-v4-pro"],
+	"filtered_alternatives": {
+		"glm-5.3": [
+			"required capability not qualified: repository_verification_ladder. The stage runs the repository's own test tooling for its view tests, and shell access does not qualify that. Fail-closed."
+		],
+		"minimax-m3": [
+			"required capability not qualified: repository_verification_ladder (same reason as glm-5.3)."
+		],
+		"native-subagent": [
+			"considered seriously and not selected, but see consequence_note - this was the closest call of the slice so far. It lost because the stage's recoverability is high, the security-critical property it might otherwise have carried was already discharged and independently proven one layer down at stage 2, and the two genuinely judgment-heavy axes are gated downstream by design rather than left to this worker."
+		],
+		"direct-coordinator": [
+			"not selected. The volume is real - two full section subtrees - and the coordinator holds a map rather than the files, deliberately."
+		]
+	},
+	"stage_flags": [],
+	"consequence": "medium",
+	"consequence_note": "The classification was reconsidered from scratch rather than inherited from stage 2, because the approved plan calls the one-time PIN reveal the highest-risk element in the slice, on three axes at once - security, accessibility and copy - and a high classification would filter every external candidate against their medium ceilings and force this stage native. It is recorded as medium for four specific reasons, not for convenience. First, recoverability is high: the subtree is additive, nothing imports it, it is not mounted until stage 4, and discarding the branch discards the stage. Second, the security axis is largely not resident in this stage - the retention property lives in the hook, was implemented at stage 2, and was proven at the stage-2 gate by a negative control that failed exactly one of seventeen tests when the sanitization was defeated; presentation consumes an already-sanitized surface. Third, the copy is not invented here: the seven action labels are human-locked and already exist in the repository, so the stage copies rather than authors them. Fourth, the two axes that genuinely need judgment - Arabic copy quality and the accessibility semantics of a transient credential display - are gated downstream on purpose, by the coordinator's own review at this gate, by the stage-5 polish loop, and by stage-7 independent verification. If any of those four had been false, this stage would have been high and would have gone native.",
+	"retained_coordinator_axes": [
+		"Arabic copy review at the gate, read directly rather than taken from the report. The plan names a specific trap: an en dash renders a numeric range reversed in Arabic, and the staff PIN length is a range, so it must use a plain hyphen. This is carried into the brief and re-checked here.",
+		"accessibility semantics around the one-time reveal - focus placement and focus return - inspected at the gate and again in the stage-5 polish loop",
+		"pnpm verify:fast with real environment values, which an external worker must not hold"
+	],
+	"long_structured_return_assessment": "long_structured_return_is_material is NOT declared. The return is a compact single-axis Change report, as at stage 2. The conditional constraint on this candidate therefore does not fire.",
+	"route_evidence": "requalified",
+	"requalification_reasons": [
+		"recorded worker outcome after this decision: fitway-p11-access-ui-b01-stage3-presentation-transport-failure-2026-08-24"
+	],
+	"reused_or_requalified": "originally recorded as REUSED from the stage-2 decision. The first stage-3 attempt then died on a provider-side stream failure, that adverse outcome was appended to the candidate's evidence record, and the resolver correctly treated an adverse entry post-dating the stored decision as a requalification trigger. This decision is the requalified replacement, produced by full comparison rather than reuse. The winner did not change.",
+	"live_preflight": {
+		"performed": "2026-08-24T13:44:00+03:00",
+		"opencode_cli_version": "1.18.21",
+		"routes_confirmed_live": [
+			"opencode/x-preview-f-free",
+			"opencode-go/deepseek-v4-pro",
+			"opencode-go/glm-5.3",
+			"opencode-go/minimax-m3"
+		],
+		"active_qualified_route_of_selected_candidate_confirmed_live": true,
+		"note": "Both routes resolve. The failed route's problem is stream stability mid-run, which route resolution does not detect - which is exactly why the recorded outcome history, not the preflight probe, is what caught it."
+	},
+	"execution_identity": {
+		"worktree": "D:/Projects/fitway-worktrees/phase11-access-ui-s2",
+		"branch": "work/phase11-access-ui-b01-s3",
+		"base_commit": "d2fe54f",
+		"isolation": "the dedicated stage worktree, re-pointed to a fresh branch off the stage-2 gate commit; node_modules is already prepared and the vitest gate was re-run after the switch",
+		"rollback_boundary": "the stage-3 commit on work/phase11-access-ui-b01-s3; discarding the branch discards the stage entirely",
+		"worktree_preparation_step_8_deliberately_skipped": "apps/server/.env is still NOT provisioned in this worktree, for the same reason as stage 2: the stage runs no integration and no verify:full, and real environment values must not be within an external worker's reach."
+	},
+	"access_boundary": {
+		"readable": "the FITWAY repository at the stage worktree, excluding .env and any secret material",
+		"writable": "apps/web/src/components/owner/access/** only - a new subtree that does not yet exist",
+		"commit_allowed": true,
+		"commit_scope": "exactly one commit containing only files under that subtree",
+		"forbidden": "every other path without exception, including apps/web/src/routes/admin.tsx (stage 4, under a lease this stage does not hold), apps/web/src/hooks/use-owner-access.ts (stage 2, now closed and gated), every sibling owner section subtree, every file under tests/browser/, apps/web/src/i18n/**, packages/ui/**, global tokens, packages/**, apps/server/**, packages/db/**, PROJECT_STATE.yaml, and every runner or verification configuration file",
+		"bulky_evidence_destination": "scratchpad JSON event capture outside the orchestrator transcript"
+	},
+	"verification_split": {
+		"worker_axis": "pnpm exec vitest run on the new view test files only - non-secret, no database, no environment values",
+		"coordinator_axis": "diff review, scope check, Arabic copy review, accessibility inspection of the reveal, and pnpm verify:fast in the primary worktree with real environment values"
+	},
+	"hard_constraints_applied": [
+		"auto_approval_forbidden: --auto is not passed",
+		"write_isolation_required: satisfied by the dedicated stage worktree",
+		"parent_diff_and_verification_gate_required",
+		"json event capture outside the transcript; no --thinking, no --print-logs",
+		"leaf stage: no further delegation",
+		"note: the ox-alpha-specific finalization, skill-scanning and allowlist constraints no longer apply to the selected candidate; deepseek-v4-pro carries write_isolation_required, parent_diff_and_verification_gate_required and auto_approval_forbidden only. No skill body is transmitted regardless."
+	],
+	"downstream_note": "Stage 4 (mount under the admin.tsx lease), stage 5 (browser spec, baselines, polish loop) and stage 7 (independent verification) remain separate decisions. Stage 7 must not route to ox-alpha, which has now implemented stages 2 and 3 - that exclusion is no longer hypothetical and must be applied when stage 7 opens.",
+	"attempt_history": [
+		{
+			"attempt": 1,
+			"session": "ses_fccab7bf9ffe8z05ngqKfH4hGe",
+			"outcome": "FAILED_TRANSPORT",
+			"detail": "CLI exit 1 at 27 events / 7 tool reads, before any write. APIError 'Provider finish_reason: network_error', metadata.code ProviderResponseStreamError, provider isRetryable true. No final text event, so nothing to recover through the exact-session fallback. Stage worktree verified byte-clean at base d2fe54f afterwards - zero blast radius.",
+			"charged_to_validation_repair_budget": false,
+			"charged_to_validation_repair_budget_reason": "the milestone's repair budget covers a candidate failing verification. No candidate was produced and nothing was verified, so spending that budget here would consume an allowance reserved for real defects."
+		},
+		{
+			"attempt": 2,
+			"session": "ses_fcca5641affeYIcOLnD0FqUZgR",
+			"route": "opencode/x-preview-f-free",
+			"outcome": "FAILED_TRANSPORT",
+			"detail": "Identical failure mode to attempt 1 and earlier in the run: CLI exit 1 at 19 events / 4 tool reads before any write. APIError 'Provider finish_reason: network_error', metadata.code ProviderResponseStreamError, isRetryable true, no final text event. Unchanged packet, unchanged clean worktree, roughly seven minutes after attempt 1. Stage worktree verified byte-clean at d2fe54f afterwards.",
+			"charged_to_validation_repair_budget": false
+		}
+	],
+	"reliability_escalation_rule": {
+		"question_asked": "Does deepseek-v4-pro now hold a material stage-specific evidence advantage, given that ox-alpha carries a transport failure recorded minutes ago on this exact stage and deepseek-v4-pro carries none?",
+		"answer": "Not yet. One transient stream error that the provider itself marks retryable, on a route that re-resolved live immediately afterwards, is not evidence of a reliability difference between two candidates - it is evidence that a network call failed once. Reading it as a material advantage would manufacture a separator out of a single sample, which is the same error as inventing a capability advantage.",
+		"pre_committed": "Recorded BEFORE attempt 2 so it cannot be rationalized afterwards: if attempt 2 also fails on transport, stage 3 routes to deepseek-v4-pro rather than retrying this route a third time. Two failures make a pattern where one makes noise, and at that point the availability_economic preference's own basis - current free / near-unlimited availability of the qualified route - is no longer confirmed for this stage. This is a routing rule, not a repair-budget rule; the milestone's repair budget is untouched either way.",
+		"cost_asymmetry_acknowledged": "Stage 3 is the largest writing stage in the slice, so a repeated mid-stream failure is more expensive here than elsewhere. That asymmetry is why the escalation rule is pre-committed at one further failure rather than left open-ended."
+	},
+	"reroute": {
+		"applied": true,
+		"from": {
+			"candidate_id": "ox-alpha",
+			"route": "opencode/x-preview-f-free"
+		},
+		"to": {
+			"candidate_id": "deepseek-v4-pro",
+			"route": "opencode-go/deepseek-v4-pro",
+			"control": "high"
+		},
+		"trigger": "the rule pre-committed in reliability_escalation_rule BEFORE attempt 2 ran: a second transport failure routes stage 3 to deepseek-v4-pro rather than retrying a third time. Two failures make a pattern where one makes noise.",
+		"mechanism": "Both failures were appended to the ox-alpha evidence record before rerouting, so the resolver saw two adverse entries post-dating the stored decision and requalified. The stage input was corrected on one honest point: confirmed_promotion_basis_candidate_ids no longer lists ox-alpha, because the availability_economic preference applies only when live preflight confirms its basis - current free / near-unlimited availability of the qualified route - still holds FOR THIS STAGE, and two consecutive mid-stream failures mean it does not. With that preference correctly out of the way, the resolver selected the registry's stable preferred general bounded implementation candidate, which this stage genuinely is.",
+		"scope_of_the_finding": "Deliberately scoped to this stage, not a global expiry of the temporary preference. The route still resolves at preflight, one stage's transport trouble is not established provider-wide unavailability, and expiring the registry entry is a separate edit with its own reasoning. A recurrence on another stage would warrant that registry-level review.",
+		"not_a_capability_judgement": "Nothing here says ox-alpha is less capable. It closed stages 1 and 2 of this run - one of them this slice's largest read stage - and its qualification, ceiling, constraints and flags are unchanged. The reroute is about a route that could not hold a stream open twice in a row, nothing more."
+	},
+	"candidate_evidence_outcome_appended": "fitway-p11-access-ui-b01-stage3-presentation-2026-08-24 appended to the deepseek-v4-pro evidence record. The two ox-alpha FAILED_TRANSPORT entries were appended earlier, before the reroute, and are what drove the resolver's requalification.",
+	"interruption_note": "A host power loss occurred during this stage's parent-gate work. The implementation commit and this decision file survived; the gate record, the candidate evidence entry, this gate_outcome, the ledger advance, and verify:fast did not, and were completed on resume. No implementation was redone and no accepted stage was reopened. On the first post-restart verify:fast run the ladder went red on Biome - not on the stage, but on THIS file, which JSON.stringify had written with expanded short arrays and which, being untracked, had never passed through the pre-commit formatter. It was formatted and the ladder re-run clean. That is precisely the failure class the approved plan anticipates when it requires the deterministic checks to run last, after every durable record is written."
+}
