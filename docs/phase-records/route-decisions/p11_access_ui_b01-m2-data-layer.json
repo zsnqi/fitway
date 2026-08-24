@@ -1,0 +1,102 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_access_ui_b01 / stage-2-data-layer (Slice B owner access UI)",
+	"recorded": "2026-08-24T13:20:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"evaluated_before_stage_discovery_note": "Judged from the approved plan, the activation record, and stage 1's gated map. The coordinator has read no line of apps/web/src/hooks/use-owner-audit.ts, its test, or packages/api/src/access/contracts.ts - stage 1's map describes them, which is exactly the artifact the plan created this sequencing to produce.",
+	"candidate_id": "ox-alpha",
+	"route": "opencode/x-preview-f-free",
+	"control": "high",
+	"execution": "external-opencode",
+	"transport": "opencode-cli",
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"gate_outcome": "PASS",
+	"gate_outcome_note": "Accepted at the parent gate on 2026-08-24. Session ses_fccbf1d10ffedmlrnO73B4l1XU, exit 0, 135 events, compact 2,689-character Change report finalized on the first invocation with the END-OF-REPORT sentinel. Scope held exactly - one commit 5ad38f9, exactly the two writable files, clean tree, no forbidden surface touched. The parent re-ran the worker's decisive check (17/17) and added a negative control that defeated the credential sanitization and failed exactly 1 of 17 tests, proving the PIN-retention assertion genuine; the tree was restored and re-verified clean. The retained coordinator axis, pnpm verify:fast with real environment values in the primary worktree, passed exit 0 across all six steps. Both stage-1-derived constraints were discharged correctly: the nine-vs-ten refusal distinction and the TanStack mutation-cache retention property. Stage 4's mount problem was not foreclosed - enabled is a required argument with no mount-time default and standby issues zero requests.",
+	"gate_outcome_record": "docs/phase-records/handoffs/phase11-access-ui/20260824-133000-p11_access_ui_b01-stage2-gate.md",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "file_write", "shell"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": ["repository_verification_ladder"],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md",
+		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
+	],
+	"delegation_trigger": "volume",
+	"material_selection_reason": "Resolved by scripts/resolve-opencode-worker.mjs with zero delegation-lifecycle violations. The stage qualifies on Volume: writing the hook is small, but writing its test well requires reading use-owner-audit.test.tsx in full plus the access contracts, and that raw material is exactly what the orchestrator must not absorb with stages 3 through 8 still ahead of it. Selection is by the active availability_economic temporary preference recorded 2026-08-21, whose basis - the free qualified route - was confirmed live at preflight; ox-alpha and deepseek-v4-pro were both eligible and materially comparable, and that recorded preference is the tiebreak the project already owns.",
+	"tie_resolution": {
+		"applied": false,
+		"note": "No neutral tie resolution was needed. Unlike this run's stage 1, a recorded project policy - the active availability_economic temporary preference - materially resolves the ox-alpha / deepseek-v4-pro pairing. The human routing instruction of 2026-08-24 governs only the case where nothing separates the tied externals; it is not engaged here and did not need to be."
+	},
+	"eligible_alternatives": ["deepseek-v4-pro"],
+	"filtered_alternatives": {
+		"glm-5.3": [
+			"required capability not qualified: repository_verification_ladder. This stage runs the repository's own test tooling, and the adapter is explicit that shell access does not qualify running a project's verification ladder. Fail-closed, not a tie."
+		],
+		"minimax-m3": [
+			"required capability not qualified: repository_verification_ladder (same reason as glm-5.3)."
+		],
+		"native-subagent": [
+			"not filtered on capability; it lost the comparison. Bounded implementation of a precisely specified data layer is inside the external candidate's qualified scope and consequence ceiling, the durable authorization covers non-secret repository source, the qualified route is free, and no native-only tooling, MCP operation, or browser control is needed. No concrete native material advantage applies."
+		],
+		"direct-coordinator": [
+			"not selected. The plan fixes this stage as Open; the direct-execution reasons were considered and the decisive one - that the orchestrator already holds the context - is false, because stage 1's discovery was deliberately delegated and the coordinator holds a map, not the files."
+		]
+	},
+	"stage_flags": [],
+	"consequence": "medium",
+	"consequence_note": "Raised above stage 1's low. The stage is additive and revertible as one commit, but the hook is the seam through which generated PIN material returns from staffPin.provision and staffPin.rotate, and 'the revealed PIN is not persisted in client state past the reveal' is partly a hook-level property (react-query mutation cache retention), not purely a presentation one. Within the candidate's medium ceiling.",
+	"long_structured_return_assessment": "long_structured_return_is_material is NOT declared, and this is the deliberate difference from stage 1 of this same run. Stage 2's return is a Change report - files written, the focused vitest result, the commit identifier, escalations - which is compact and single-axis. Stage 1's five-topic map plus exhaustive enumeration was not. Because the flag is absent, ox-alpha's conditional hard constraint does not fire and the candidate is eligible here even though it was filtered one stage ago. This is the constraint working as designed rather than being worked around.",
+	"route_evidence": "requalified",
+	"requalification_reasons": [
+		"a required tool the recorded evidence never demonstrated (file_write and shell; stage 1 covered repository_read only)",
+		"a required capability the recorded evidence never demonstrated (repository_verification_ladder)"
+	],
+	"reused_or_requalified": "requalified - this run's stage-1 decision is one stage old and carries a PASS, but it covered a read-only stage. A writable stage that runs the repository's test tooling needs tools and a capability that decision never demonstrated, so reuse was refused and full comparison re-run. The winner changed from deepseek-v4-pro to ox-alpha, in the opposite direction to the stage-1 requalification.",
+	"live_preflight": {
+		"performed": "2026-08-24T13:20:00+03:00",
+		"opencode_cli_version": "1.18.21",
+		"routes_confirmed_live": [
+			"opencode/x-preview-f-free",
+			"opencode-go/deepseek-v4-pro",
+			"opencode-go/glm-5.3",
+			"opencode-go/minimax-m3"
+		],
+		"active_qualified_route_of_selected_candidate_confirmed_live": true,
+		"temporary_preference_basis_confirmed": "the qualified route resolved live under its free identity"
+	},
+	"execution_identity": {
+		"worktree": "D:/Projects/fitway-worktrees/phase11-access-ui-s2",
+		"branch": "work/phase11-access-ui-b01-s2",
+		"base_commit": "9b39349",
+		"isolation": "dedicated git worktree, created for this stage, separate from the coordinator's worktree",
+		"rollback_boundary": "the stage-2 commit on work/phase11-access-ui-b01-s2; discarding the branch discards the stage entirely",
+		"worktree_preparation": "docs/WORKFLOW.md step 7 performed before assignment: pnpm install --frozen-lockfile, then pnpm exec vitest --version as the gate. No result from this worktree is trusted unless that gate printed a version.",
+		"worktree_preparation_step_8_deliberately_skipped": "apps/server/.env is NOT provisioned in this worktree, deliberately. Step 8 is required only before an integration or verify:full run, and this stage runs neither. Provisioning real environment values into an external worker's worktree would place an excluded payload class within its reach for no benefit."
+	},
+	"access_boundary": {
+		"readable": "the FITWAY repository at the stage worktree, excluding .env and any secret material",
+		"writable": "apps/web/src/hooks/use-owner-access.ts and apps/web/src/hooks/use-owner-access.test.tsx only",
+		"commit_allowed": true,
+		"commit_scope": "exactly one commit containing exactly those two files",
+		"forbidden": "every other path in the repository without exception, including apps/web/src/routes/admin.tsx (stage 4, under a lease this stage does not hold), the owner/access component subtree (stage 3), packages/**, apps/server/**, packages/db/**, PROJECT_STATE.yaml, and every test-runner or verification configuration file",
+		"bulky_evidence_destination": "scratchpad JSON event capture outside the orchestrator transcript"
+	},
+	"verification_split": {
+		"worker_axis": "pnpm exec vitest run on the new hook test file only - non-secret, no database, no environment values",
+		"coordinator_axis": "the diff review, the scope check, and pnpm verify:fast, run by the coordinator in the prepared primary worktree after the stage is accepted and merged, because verify:fast requires real environment values the worker must not hold",
+		"basis": "the adapter permits splitting a stage's acceptance across axes provided each axis reaches a verdict on its own evidence and the orchestrator retains every gate depending on real secret values"
+	},
+	"hard_constraints_applied": [
+		"json_event_capture_required: --format json, events captured outside the transcript",
+		"exact_session_finalization_fallback_required: on a missing final compact text, continue the exact session with tools forbidden and request only the return contract, then opencode export <sessionID>",
+		"external_skill_scanning_disabled and deny_by_default_exact_skill_allowlist_required: no skill body is transmitted and no skill is allowlisted",
+		"auto_approval_forbidden: --auto is not passed",
+		"write_isolation_required: satisfied by the dedicated worktree above",
+		"parent_diff_and_verification_gate_required: the parent reads the complete diff against 9b39349, confirms forbidden surfaces are untouched, and re-runs the decisive check",
+		"leaf stage: no further delegation"
+	],
+	"downstream_note": "Stage 3 (presentation), stage 4 (mount under the admin.tsx lease), stage 5 (browser spec, baselines, polish loop) and stage 7 (independent verification) remain separate decisions, each recorded when that stage opens and before its own target-file discovery. Stage 7 must not route to whichever candidate implemented the writing stages: ox-alpha is now on track to be ineligible for stage 7 if it also implements stages 3 to 5.",
+	"candidate_evidence_outcome_appended": "fitway-p11-access-ui-b01-stage2-data-layer-2026-08-24, appended to the registry evidence record for ox-alpha before this stage closed."
+}
