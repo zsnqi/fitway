@@ -6,7 +6,7 @@
 - Stage: read-only Access repository behavior-correction discovery.
 - Route: `opencode-go/deepseek-v4-pro`, control `high`.
 - Worktree: `C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration`.
-- Expected HEAD at start: `e1bd67485c8faf4efa0cdaf3c2db1c183a966fd3`.
+- Required route-boundary ancestor: `e1bd67485c8faf4efa0cdaf3c2db1c183a966fd3`; later commits may contain only this coordinator-owned packet or review records.
 
 ## Authority and objective
 
