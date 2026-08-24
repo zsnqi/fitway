@@ -47,7 +47,7 @@
 		"paper_file_id": "01KYPX5AF950XZVVDD88B6J7QB",
 		"page": "Page 1",
 		"candidate_area": "OWNER ACCESS — BEHAVIOR-CORRECT SUCCESSOR — CURRENT",
-		"rollback_boundary": "restore only the four frozen confirmation-bearing text values if the repair is rejected"
+		"rollback_boundary": "restore only the five frozen confirmation-bearing text values if the repair is rejected"
 	},
 	"access_boundary": {
 		"readable": "the Access successor S6/S7 cards, the independent-review failure record, and directly required source/reference context",
