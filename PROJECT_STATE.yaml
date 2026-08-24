@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-25T01:35:00+03:00"
+updatedAt: "2026-08-25T01:45:00+03:00"
 
 coordinator:
-  owner: "Codex SOL coordinator run p11_remaining_coord01 on codex/remaining-scope-coordinator. Active frontier: serialize one Paper writer across the behavior-correct Owner Access successor, Owner Uptime mobile successor, and Owner Settings successor; independently review each before repository use. Access repository freeze and verification are reopened against corrected Paper authority. Settings implementation remains gated by reviewed Paper, a written migration-free specification, and the integrated backend contract. Reference-gating unit debt, the real unmocked propagation-wait milestone, focus parity, Login Paper adoption, Uptime mobile fidelity, and the Phase 11 aggregate remain explicit downstream milestones. Canonical baseline acceptance and all integration/DONE judgments remain coordinator-owned. M4/M5 access races, owner-access rate limiting, and the workflow environment-documentation gap remain outside approved scope."
+  owner: "Safe-stop checkpoint 2026-08-25T01:45:00+03:00 on codex/remaining-scope-coordinator. No stage or lease is active. Access UI is test-green but rejected for material Paper divergence and three behavior/validation defects; repair 1/2 is consumed and its baselines are rejected evidence. Settings Paper repair 1 reached a structurally safe partial-verification boundary, but its final Arabic bidi/copy batch and Paper working-marker release are unconfirmed because Paper MCP stopped responding; no independent review may start until service health and exact landed state are reconciled. Settings spec/backend/UI remain blocked. Focus-parity discovery is complete but implementation is not activated. Uptime mobile fidelity, the real unmocked propagation-wait milestone, focus parity, Login Paper adoption, Settings, and the Phase 11 aggregate remain pending. Canonical baseline acceptance, integration, and DONE authority remain coordinator-owned. M4/M5 access races, owner-access rate limiting, and the workflow environment-documentation gap remain outside approved scope."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1795,9 +1795,9 @@ milestones:
     integratedCommit: SELF
 
   phase11-settings-paper-successor:
-    status: IN_PROGRESS
+    status: PLANNED
     dependencies: [phase11-shell, phase11-audit-generalization]
-    ownerSession: "Codex SOL coordinator; native SOL Paper writer repair 1 run p11_settings_paper_r01"
+    ownerSession: null
     branch: paper/owner-settings-successor-repair-1
     worktree: paper://01KYPX5AF950XZVVDD88B6J7QB/Page-1
     baseCommit: 76c2091
@@ -1811,9 +1811,9 @@ milestones:
       - "every repository application, schema, migration, router, baseline, and normative authority path"
     sharedLeases: []
     validationRepairAttempts: 1
-    lastHeartbeatAt: "2026-08-25T01:18:00+03:00"
-    leaseExpiresAt: "2026-08-25T01:58:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-settings-paper-successor/20260825-011800-p11_settings_paper_r01-repair-activation.md
+    lastHeartbeatAt: "2026-08-25T01:43:00+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase11-settings-paper-successor/20260825-014500-p11_settings_paper_r01-safe-stop.md
     stopReason: null
     gates:
       unit: NOT_REQUIRED
@@ -2008,12 +2008,30 @@ milestones:
       - apps/web/src/index.css
       - apps/web/src/components/staff/staff.css
       - apps/web/src/components/owner/owner-shell.css
-    forbiddenPaths: []
+      - tests/browser/public-baseline.browser.spec.ts
+      - tests/browser/phase4-staff-web.browser.spec.ts
+      - tests/browser/phase11-shell.browser.spec.ts
+    forbiddenPaths:
+      - apps/web/src/components/staff/staff-board.css
+      - apps/web/src/components/staff/staff-board-shell.tsx
+      - "apps/web/src/components/owner/** except owner-shell.css"
+      - apps/web/src/routes/**
+      - apps/web/src/i18n/**
+      - apps/web/src/routeTree.gen.ts
+      - packages/ui/**
+      - packages/db/**
+      - apps/server/**
+      - packages/api/**
+      - tests/browser/__screenshots__/**
+      - tests/browser/phase11-access.browser.spec.ts
+      - scripts/verify.mjs
+      - PROJECT_STATE.yaml
+      - "Playwright/Vitest configuration, Paper, visual-direction-gate/**, and every unrelated milestone record"
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
+    lastHeartbeatAt: "2026-08-25T01:29:00+03:00"
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/coordinator/20260815-031500-focus-parity-gap.md
+    handoff: docs/phase-records/handoffs/focus-parity-accessibility/20260825-012900-p11_focus_parity_c01-current-target-map.md
     stopReason: null
     gates:
       unit: NOT_REQUIRED
