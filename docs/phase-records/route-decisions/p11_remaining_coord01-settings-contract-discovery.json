@@ -1,0 +1,54 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_remaining_coord01 / Settings migration-free repository contract discovery",
+	"recorded": "2026-08-25T00:31:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "deepseek-v4-pro",
+	"route": "opencode-go/deepseek-v4-pro",
+	"control": "high",
+	"execution": "external-opencode",
+	"transport": "opencode-cli",
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "qualified",
+	"gate_outcome": "PENDING",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md",
+		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
+	],
+	"delegation_trigger": "volume",
+	"consequence": "medium",
+	"material_selection_reason": "This read-only stage must map the existing append-only settings schema, validation rules, effective chronology, update/audit transaction seams, current router exposure, DTO precedents, and exact read-only timing values without pulling raw files into the coordinator context. DeepSeek V4 Pro remains qualified for the same repository_read shape and has three current successful FITWAY discovery outcomes. Ox Alpha's repeated current stream failures remove its availability advantage; Luna is capable but has no material advantage over the qualified external route for this multi-file contract map. Paper content is explicitly excluded.",
+	"eligible_alternatives": ["native-luna", "glm-5.3"],
+	"filtered_alternatives": {
+		"ox-alpha": [
+			"Two consecutive current stream failures make availability materially worse for this exact long structured return."
+		],
+		"native-terra": [
+			"No concrete current advantage over the qualified external repository-read route."
+		],
+		"direct-coordinator": [
+			"The map spans schema, migrations, API, server repositories, audit, chronology, and tests; delegation preserves the high-signal coordinator boundary."
+		],
+		"paper-capable-agent": [
+			"This stage must not read or mutate Paper; its output informs a later SOL-only Paper writer lease."
+		]
+	},
+	"execution_identity": {
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration",
+		"head": "7250794f4dbf04f47b03b92c8eeab8aa73c3f7dd",
+		"branch": "codex/remaining-scope-coordinator",
+		"rollback_boundary": "none; read-only"
+	},
+	"access_boundary": {
+		"readable": "non-secret Settings schema/migrations/contracts/repositories/routers/audit/tests and directly relevant Product/Spec/Phase authority",
+		"writable": "none",
+		"commit_allowed": false,
+		"forbidden": "Paper, all writes, .env/secret material, test/build execution, network beyond provider transport, migration/schema changes, product invention, UI implementation, and further delegation"
+	}
+}
