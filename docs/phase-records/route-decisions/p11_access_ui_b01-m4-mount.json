@@ -1,0 +1,75 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_access_ui_b01 / stage-4-mount (Slice B owner access UI)",
+	"recorded": "2026-08-24T14:10:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"evaluated_before_stage_discovery_note": "Judged from the approved plan, stage 1's gated map, and the stage 2 and 3 gate records, before any stage-4 target-file reading. At the moment of this decision the coordinator had read no line of apps/web/src/routes/admin.tsx and no line of the stage-3 section component.",
+	"candidate_id": null,
+	"route": null,
+	"control": null,
+	"execution": "direct-coordinator",
+	"transport": null,
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"gate_outcome": "PASS",
+	"gate_outcome_note": "Accepted at the parent gate on 2026-08-24. Direct coordinator execution; no worker involved, so no candidate evidence record applies. The lease held exactly: apps/web/src/routes/admin.tsx took 2 insertions, one import and one JSX element, with shell composition, route guard, sibling sections and every other URL unchanged. The slice's central risk was resolved empirically rather than assumed: the five sibling /admin browser specs were run, failed 3 of 31 on the first attempt, and passed 31 of 31 after the fix, with no sibling spec edited and no accepted canonical baseline changed. pnpm verify:fast passed exit 0. See the gate record for the substantive finding - the coordinator's first enabled decision was wrong and the specs caught a real accessibility regression against DESIGN_GUIDE.md section 13.",
+	"gate_outcome_record": "docs/phase-records/handoffs/phase11-access-ui/20260824-142500-p11_access_ui_b01-stage4-gate.md",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "file_write", "shell"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": ["repository_verification_ladder"],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md",
+		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
+	],
+	"delegation_trigger": null,
+	"material_selection_reason": "Resolved by scripts/resolve-opencode-worker.mjs as `direct` with delegation_lifecycle_checked true and zero violations - the resolver verified that the delegation test was evaluated before this stage's own target-file discovery and that direct-execution reasons were actually recorded rather than asserted. This is the first stage of the slice to route direct, and it does so because the delegation test genuinely fails, not because the coordinator preferred it. No trigger applies: Volume is absent because stage 1 already produced the map and the edit is two lines in one file; Independence does not apply to implementation; Permission buys nothing on a single leased file; Recoverability is already trivial because the stage reverts by deleting one JSX element; Economy cannot carry a stage whose handoff exceeds its content. Several direct-execution reasons apply at once: the change is small, the target is a single named file with named lines, briefing would take longer than doing, and the stage's decisive verification is coordinator-retained regardless of who writes the diff.",
+	"why_the_context_claim_is_legitimate_here": "The named anti-pattern is doing a stage's discovery inline and then citing the accumulated context as the reason it stays direct. That is NOT what happened. Everything the coordinator knows about the mount shape came from stage 1 - a delegated, gated, independently-verified investigation whose entire purpose was to produce that map - and the coordinator had still read no line of admin.tsx when this decision was recorded. The plan's own stage table anticipates this: it calls stage 4 'deliberately last and deliberately small' and notes that the lease is coordinator-granted while the edit under it is not coordinator-reserved. Stage 1 existing is precisely what makes stage 4 small enough to stay direct.",
+	"eligible_alternatives": ["ox-alpha", "deepseek-v4-pro"],
+	"filtered_alternatives": {
+		"glm-5.3": [
+			"required capability not qualified: repository_verification_ladder. Fail-closed, unchanged from stages 2 and 3."
+		],
+		"minimax-m3": [
+			"required capability not qualified: repository_verification_ladder."
+		],
+		"external-opencode-generally": [
+			"not filtered on capability - both surviving external candidates could perform the edit. They lost because the stage does not qualify for delegation at all. An external writable stage additionally needs its own prepared worktree, and the decisive verification cannot run there: confirming the five sibling /admin browser specs still pass needs this worktree's locked Playwright toolchain and real environment values. Delegating the two-line edit while retaining the verification that actually decides the stage would be structure for its own sake."
+		],
+		"native-subagent": [
+			"same reasoning. A native worker starting blind would re-establish ground truth the coordinator already holds legitimately from stage 1's gated map."
+		]
+	},
+	"stage_flags": [],
+	"consequence": "medium",
+	"consequence_note": "The diff is two lines but the consequence is not. This is the slice's first and only shared-file stage, taken under an exclusive lease on apps/web/src/routes/admin.tsx, and it is the stage where the slice's one unresolved cross-stage risk lands: five sibling /admin browser specs stub no admin.access route, and repairing them is forbidden to this slice. Sized by consequence and coupling rather than by diff size, per the delegation policy's explicit warning that file count is not complexity.",
+	"lease": {
+		"file": "apps/web/src/routes/admin.tsx",
+		"kind": "exclusive, coordinator-granted",
+		"expires": "2026-08-28T23:59:00+03:00",
+		"limited_to": "mounting the access Owner section. The owner shell composition, the route guard, every sibling section and every other URL stay unchanged.",
+		"one_writer": "the coordinator holds this lease and no worker is active anywhere in the slice while it is held"
+	},
+	"known_risk_landing_here": {
+		"risk": "Mounting the section introduces an admin.access.list request into five sibling /admin browser specs that stub no such route: phase9-owner-ui, phase10-ui-csv, phase11-shell, phase11-audit, phase11-health.",
+		"evidence_already_gathered": "playwright.config.ts:111-123 starts only the web dev server - there is no backend - so an unmocked /api/rpc call 404s at Vite and surfaces as the section's error state rather than a crash. That makes the risk tractable rather than fatal, but it does not make it acceptable by assumption.",
+		"levers_deliberately_preserved_upstream": "stage 2 made `enabled` a required hook argument with no mount-time default, where enabled:false yields status `standby` and issues zero requests; stage 3 kept enablement an explicit section prop rather than burying it.",
+		"resolution_method": "empirical, not assumed. The mount is made, then the five sibling specs are run. Passing specs close the risk on evidence; failing specs are a stop condition, because repairing those specs is forbidden to this slice and doing it anyway would be unleased shared-file work.",
+		"stop_condition": "if the sibling specs cannot pass without editing them, that is NEEDS_HUMAN at the point of discovery, and the rest of the slice still ships per the plan's closing instruction.",
+		"resolution": "RESOLVED, empirically, without reaching the stop condition. First run: 3 of 31 failed - getByRole('status') and getByRole('alert') each resolving to two elements because the access section added a second page-level live region while a sibling's was present. That was NOT the predicted 404-error-state problem; it was a genuine accessibility regression against the one-live-region rule documented at apps/web/src/hooks/use-owner-health.ts:29-36 under DESIGN_GUIDE.md section 13. The coordinator's initial reasoning - that gating on the shared analytics query would be cargo cult because access has no timezone dependency - was wrong: the gate exists for live-region uniqueness, not for timezone. Stage 1's Risk 4 had named the one-live-region convention and it was under-weighted. Fixed by giving the section its own stand-down on the shared prerequisite, mirroring health. Second run: 31 of 31 pass. No sibling spec was edited."
+	},
+	"verification_plan": [
+		"pnpm verify:fast - full ladder including type checks and the unit suite",
+		"the five sibling /admin browser specs - the decisive axis for the known risk above",
+		"note: the new access browser spec and its canonical baselines belong to stage 5, not here"
+	],
+	"hard_constraints_applied": [
+		"one writer: the coordinator holds the admin.tsx lease; no worker is active in the slice",
+		"the lease is limited to mounting one section - shell composition, route guard, sibling sections and other URLs stay unchanged",
+		"sibling browser specs are forbidden to this slice and are not edited to accommodate the mount",
+		"packages/**, apps/server/** and packages/db/** remain forbidden: a transport or schema need is a stop condition"
+	],
+	"downstream_note": "Stage 5 (browser spec, baselines, polish loop) and stage 7 (independent verification) remain separate decisions, recorded when those stages open and before their own target-file discovery. Stage 7 must not route to a candidate that implemented the writing stages: ox-alpha implemented stage 2 and deepseek-v4-pro implemented stages 1 and 3, so both are now excluded from stage 7 and that exclusion leaves glm-5.3, minimax-m3, or a native reviewer. Stage 5 additionally carries the tooling preflight no stage so far has exercised: driving Playwright and generating canonical win32/chromium baselines with the locked toolchain, which is bound to this worktree.",
+	"correction_recorded": "The fix was placed in owner-access-section.tsx rather than in the route on purpose: /admin renders its forbidden branch from the same component, and the rules of hooks would force a route-level useOwnerDailyAnalytics() call to run unconditionally, firing the shared query for a caller not permitted to see the page and adding a request to the shell's forbidden-state test. The section is where audit and health keep the same gate."
+}

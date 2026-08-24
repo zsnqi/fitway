@@ -2,6 +2,7 @@ import { toORPCError } from "@orpc/client";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { ShieldCheck } from "lucide-react";
 
+import { OwnerAccessSection } from "@/components/owner/access/owner-access-section";
 import { OwnerAuditSection } from "@/components/owner/audit/owner-audit-section";
 import { OwnerHealthSection } from "@/components/owner/health/owner-health-section";
 import { OwnerAnalyticsPage } from "@/components/owner/owner-analytics-page";
@@ -72,6 +73,7 @@ function AdminRoute() {
 								<OwnerAnalyticsPage />
 								<OwnerAuditSection />
 								<OwnerHealthSection />
+								<OwnerAccessSection enabled />
 							</>
 						}
 						history={(prerequisite) => (

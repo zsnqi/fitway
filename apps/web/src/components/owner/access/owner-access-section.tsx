@@ -1,6 +1,7 @@
 import { useId } from "react";
 
 import { useOwnerAccess } from "@/hooks/use-owner-access";
+import { useOwnerDailyAnalytics } from "@/hooks/use-owner-daily-analytics";
 
 import {
 	OwnerAccessEmpty,
@@ -18,13 +19,28 @@ import "./owner-access.css";
  * Enablement is an explicit property, not a mount-time default. The route that
  * hosts this section decides when the access surface may turn on; until then the
  * hook stands down (`enabled: false` yields `standby` and issues zero requests)
- * and this section renders nothing, exactly as the audit and health sections
- * stand down while `/admin` still speaks for the page. Stage 4 owns that
- * decision and passes it here.
+ * and this section renders nothing.
+ *
+ * ## One live region and one retry per page
+ *
+ * That route-level permission is necessary but not sufficient. While `/admin`'s
+ * own shared analytics query is pending or failed, the page is already
+ * announcing exactly one "loading" status, or showing exactly one error with one
+ * retry. A second copy would be a competing announcement for a screen reader and
+ * a duplicate control for everyone else (`DESIGN_GUIDE.md` §13), so this section
+ * stands down until the page itself has settled — the same standing-down the
+ * accepted audit and health sections perform on this route, for the same reason
+ * (see `use-owner-health.ts`).
+ *
+ * The gate lives here rather than in the route because `/admin` renders a
+ * forbidden branch from the same component: a route-level hook call would fire
+ * the shared query for a caller who is not allowed to see the page at all.
  */
 export function OwnerAccessSection({ enabled }: { enabled: boolean }) {
 	const messages = useOwnerAccessMessages();
-	const access = useOwnerAccess({ enabled });
+	const analytics = useOwnerDailyAnalytics();
+	const pageSettled = !analytics.isPending && !analytics.isError;
+	const access = useOwnerAccess({ enabled: enabled && pageSettled });
 	const ids = useId();
 	const headingId = `${ids}-heading`;
 
