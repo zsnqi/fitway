@@ -1,0 +1,60 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_remaining_coord01 / authority-frontier repository discovery",
+	"recorded": "2026-08-24T23:06:16+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "deepseek-v4-pro",
+	"route": "opencode-go/deepseek-v4-pro",
+	"control": "high",
+	"execution": "external-opencode",
+	"transport": "opencode-cli",
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "qualified",
+	"gate_outcome": "PASS_WITH_CORRECTION",
+	"gate_outcome_note": "OpenCode session ses_fca9b59ecffeW4o4oLG5uOPkH2 exited 0 with the END-OF-MAP sentinel. The working tree remained unchanged apart from coordinator-owned records. Spot checks confirmed the settings schema fields, settings audit builder, missing admin.settings router, focus dependency, Access stage boundary, and reference-gating evidence. One authority sentence was corrected at the parent gate: ADR-007 names the older CURRENT families, not the four newer Owner families; authority for Owner Access, Audit, Uptime & Incidents, and Settings comes from the active human instruction.",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md",
+		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
+	],
+	"delegation_trigger": "volume",
+	"consequence": "low",
+	"material_selection_reason": "The discovery reads several long normative documents, the live ledger, current handoffs, and implementation evidence to return a compact dependency/frontier map. DeepSeek V4 Pro's current FITWAY evidence covers the same text-only repository_read shape at the same qualification baseline and remains inside its medium consequence ceiling. Live preflight on 2026-08-24 confirmed opencode-go/deepseek-v4-pro is available. The recent Ox Alpha transport failures remove its temporary availability-economic advantage for this stage; native Luna remains capable but has no concrete advantage over the reusable qualified external route.",
+	"eligible_alternatives": ["native-luna", "glm-5.3"],
+	"filtered_alternatives": {
+		"ox-alpha": [
+			"Two consecutive provider stream failures were recorded on the active route during the current Access UI run; the availability-economic preference therefore supplies no current stage-specific advantage."
+		],
+		"minimax-m3": [
+			"The requested map requires high reporting precision across several authorities, which is a recorded disqualifying flag for this candidate."
+		],
+		"direct-coordinator": [
+			"Volume applies before target-document reading; absorbing the complete authority and evidence sweep into the orchestrator would defeat the requested high-signal boundary."
+		]
+	},
+	"route_evidence": "reused",
+	"reused_from": "docs/phase-records/route-decisions/p11_access_ui_b01-investigation.json",
+	"live_preflight": {
+		"performed": "2026-08-24T23:06:16+03:00",
+		"opencode_cli_version": "1.18.21",
+		"active_qualified_route_confirmed_live": true
+	},
+	"external_session_id": "ses_fca9b59ecffeW4o4oLG5uOPkH2",
+	"execution_identity": {
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration",
+		"head": "181480a176896133c310eadd10273fe8b108a6b0",
+		"status_at_assignment": "clean detached checkout; work/phase11-access-ui-b01 points at the same commit in the primary worktree",
+		"rollback_boundary": "none; read-only"
+	},
+	"access_boundary": {
+		"readable": "non-secret FITWAY repository content only",
+		"writable": "none",
+		"commit_allowed": false,
+		"forbidden": "all writes, .env and secret material, Paper content, test/build execution, and further delegation"
+	}
+}

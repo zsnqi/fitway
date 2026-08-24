@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-24T15:30:00+03:00"
+updatedAt: "2026-08-24T23:20:08+03:00"
 
 coordinator:
-  owner: "main Claude Code coordinator session in D:/Projects/fitway-worktrees/phase5-staff-integration, on work/phase11-access-ui-b01 executing the approved phase11-access successor sequence, revised by the human option-B decision of 2026-08-23 to P2 -> ladder contention -> P1 stage 3 -> Slice B recorded in docs/phase-records/handoffs/coordinator/20260823-124724-p11-access-successor-sequence-plan.md. P2 is DONE at 6299a75. phase11-ladder-contention is DONE at 12afd33 with a net-zero code diff - it tested a configuration fix, its own validation falsified it, and it reverted. phase11-browser-debt (P1) is DONE with independent review PASS. The approved sequence is complete through P1. Slice B (phase11-access-ui) is ACTIVE and is the final item in the approved sequence. Slice B stage 1, the read-only surface investigation, is CLOSED with parent gate PASS on 2026-08-24; it routed externally to deepseek-v4-pro by neutral tie resolution inside a tied qualified external set, under the human routing instruction of 2026-08-24 that a tie is not a reason to fall back to native. Its map, the parent gate evidence, and one correction to the activation record are in docs/phase-records/handoffs/phase11-access-ui/20260824-130500-p11_access_ui_b01-stage1-findings.md. Slice B stage 2, the data layer, is CLOSED with parent gate PASS on 2026-08-24 at candidate 5ad38f9, fast-forwarded onto the slice branch; it routed externally to ox-alpha under the recorded availability_economic preference, and the coordinator retained the verify:fast axis because it needs real environment values an external worker must not hold. Slice B stage 3, presentation, is CLOSED with parent gate PASS on 2026-08-24 at candidate 5fb9854, fast-forwarded onto the slice branch. It took three attempts across two candidates: two provider-side transport failures on ox-alpha with zero blast radius, then a reroute to deepseek-v4-pro under a rule pre-committed before the second failure. Neither transport failure consumed the validation-repair budget, which remains 0 of 2, because no candidate was produced and nothing was verified. A host power loss then interrupted the parent-gate work; the gate was re-established entirely from durable repository evidence on resume, with no implementation redone. Slice B stage 4, the admin.tsx mount, is CLOSED with parent gate PASS on 2026-08-24. It routed direct - the first stage of the slice to do so, on a resolver verdict with zero delegation-lifecycle violations - because the edit was two lines in one leased file and the decisive verification was coordinator-retained regardless. The slice's central cross-stage risk is RESOLVED empirically and the stop condition was not reached: the five sibling /admin specs failed 3 of 31 on the first mount, which exposed a real accessibility regression against the one-live-region rule in DESIGN_GUIDE.md section 13 rather than the predicted 404 problem, and passed 31 of 31 after the section was given its own stand-down on the shared page prerequisite. No sibling spec was edited and no accepted canonical baseline changed. Slice B stage 5, the access browser spec with canonical baselines and the /admin polish loop, is CLOSED with parent gate PASS_WITH_CORRECTION on 2026-08-24. verify:phase is green on the final state - unit 65/510, integration 24/24, browser 43 across the access spec and all five siblings. The correction was a coverage omission the worker did not disclose: the plan requires nine widths in the polish loop and the delivered spec covered four, so the coordinator added the nine-width test per the sibling convention and layout held everywhere. TWO ITEMS NEED A HUMAN. First, the two canonical baselines require approval per docs/WORKFLOW.md - they are verified byte-identical to this worktree and verified free of credential material, but approval is not the coordinator's to grant. Second, apps/server/src/reference-gating.test.ts:5 exhibited new load-sensitive debt on the UNIT ladder (Hook timed out in 10000ms under full-suite load; passes standalone in 1.17s; the disposable-Postgres hypothesis was tested and disproved). It is outside this slice, the slice may not repair it because apps/server is forbidden, and the slice may not register it because opening a register entry for a failure its own run hits is forbidden - so it is escalated, not absorbed. Stage 6 (freeze then submit) and stage 7 (independent verification) remain. Stage 7 routes NATIVE by exclusion: deepseek-v4-pro implemented stages 1, 3 and 5 and ox-alpha stage 2, and glm-5.3 and minimax-m3 are filtered fail-closed on the verification-ladder capability. Stages 1-5 are closed and committed at a0c9f53 with verify:phase green; the session handoff is docs/phase-records/handoffs/phase11-access-ui/20260824-153000-p11_access_ui_b01-session-handoff.md. TWO HUMAN GATES ARE OPEN and the milestone stays IN_PROGRESS rather than terminal because stages 6 and 7 are unblocked: (1) the two new canonical baselines need approval per docs/WORKFLOW.md, which is why the visual gate is PENDING and which gates DONE; (2) the reference-gating unit-ladder load-sensitivity is escalated for its own bounded slice. Neither is a stop condition for stage 6 or 7."
+  owner: "Codex SOL coordinator run p11_remaining_coord01 on codex/remaining-scope-coordinator. Active frontier: serialize one Paper writer across the behavior-correct Owner Access successor, Owner Uptime mobile successor, and Owner Settings successor; independently review each before repository use. Access repository freeze and verification are reopened against corrected Paper authority. Settings implementation remains gated by reviewed Paper, a written migration-free specification, and the integrated backend contract. Reference-gating unit debt, the real unmocked propagation-wait milestone, focus parity, Login Paper adoption, Uptime mobile fidelity, and the Phase 11 aggregate remain explicit downstream milestones. Canonical baseline acceptance and all integration/DONE judgments remain coordinator-owned. M4/M5 access races, owner-access rate limiting, and the workflow environment-documentation gap remain outside approved scope."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -269,7 +269,7 @@ milestones:
 
   login-paper-adoption:
     status: PLANNED
-    dependencies: [phase4-staff-web]
+    dependencies: [phase4-staff-web, focus-parity-accessibility]
     ownerSession: null
     branch: null
     worktree: null
@@ -1183,9 +1183,7 @@ milestones:
       - visual-direction-gate/**, Paper, and every normative document
       - root manifests, lockfiles, environment schemas, and test-runner configuration
       - every other milestone's phase record and handoff directory
-    sharedLeases:
-      - "one-time inherited b04 carry-forward only: merge the complete immutable codex/phase10-ui-csv-b04 candidate at cd4c0fb into b05; after the carry commit every inherited path outside b05 ownedPaths and the active route lease is frozen"
-      - "exclusive through 2026-08-24T01:30:00+03:00: apps/web/src/routes/admin.tsx, limited to the Owner Analytics heading-row/local-switch composition needed for approved Paper fidelity; authentication, route loading, guard behavior, sibling sections, copy, and URLs remain unchanged"
+    sharedLeases: []
     validationRepairAttempts: 2
     lastHeartbeatAt: "2026-08-21T18:10:00+03:00"
     leaseExpiresAt: null
@@ -1577,11 +1575,10 @@ milestones:
       - PROJECT_STATE.yaml and scripts/verify-repository.mjs
       - root manifests, lockfiles, environment schemas, and test-runner configuration
       - every other milestone's phase record and handoff directory
-    sharedLeases:
-      - "exclusive through 2026-08-27T23:59:00+03:00: assertion-scoped stabilization limited to tests/browser/phase2.browser.spec.ts:72, tests/browser/phase3.browser.spec.ts:57 and tests/browser/phase10-ui-csv.browser.spec.ts:742, all three already repaired at 75f751e. Cross-milestone by necessity: these specs sit inside other milestones' owned paths, which makes the lease coordinator-granted and nothing more. The fourth location, apps/server/src/phase2.integration.test.ts:779, was investigated and deliberately excluded by decision D1 and is NOT covered."
+    sharedLeases: []
     validationRepairAttempts: 0
     lastHeartbeatAt: "2026-08-23T23:15:00+03:00"
-    leaseExpiresAt: "2026-08-27T23:59:00+03:00"
+    leaseExpiresAt: null
     handoff: docs/phase-records/handoffs/phase11-browser-debt/20260823-231500-p11_browser_debt_c01-coordinator-done.md
     stopReason: null
     gates:
@@ -1593,12 +1590,43 @@ milestones:
       independentReview: PASS
     integratedCommit: ffe3745e87c60b67ce9825ca322976e3eda6122a
 
+  phase11-access-paper-successor:
+    status: IN_PROGRESS
+    dependencies: [phase11-shell, phase11-access-tx]
+    ownerSession: "Codex SOL coordinator, run p11_remaining_coord01"
+    branch: codex/remaining-scope-coordinator
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
+    baseCommit: 181480a176896133c310eadd10273fe8b108a6b0
+    ownedPaths:
+      - "Paper file 01KYPX5AF950XZVVDD88B6J7QB / one new labelled Owner Access behavior-correct successor area"
+      - docs/phase-records/route-decisions/p11_remaining_coord01-paper-access-successor.json
+      - docs/phase-records/handoffs/coordinator/20260824-230600-final-remaining-scope-reconciliation-activation.md
+    forbiddenPaths:
+      - "every existing approved Paper original, shared token, and unrelated family"
+      - "every repository application, schema, migration, router, baseline, and normative authority path"
+      - "generated owner credentials, secret-bearing response states, M4/M5 races, and owner-access rate limiting"
+    sharedLeases:
+      - "exclusive Paper writer lease through 2026-08-25T02:00:00+03:00: one new labelled Owner Access behavior-correct successor area in Paper file 01KYPX5AF950XZVVDD88B6J7QB; originals remain immutable"
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-08-24T23:20:08+03:00"
+    leaseExpiresAt: "2026-08-25T02:00:00+03:00"
+    handoff: docs/phase-records/handoffs/coordinator/20260824-230600-final-remaining-scope-reconciliation-activation.md
+    stopReason: null
+    gates:
+      unit: NOT_REQUIRED
+      integration: NOT_REQUIRED
+      browser: NOT_REQUIRED
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
   phase11-access-ui:
     status: IN_PROGRESS
-    dependencies: [phase11-access-b02, phase11-access-tx, phase11-browser-debt]
-    ownerSession: "main Claude Code coordinator session, run p11_access_ui_b01"
-    branch: work/phase11-access-ui-b01
-    worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
+    dependencies: [phase11-access-b02, phase11-access-tx, phase11-browser-debt, phase11-access-paper-successor]
+    ownerSession: "Codex SOL coordinator, run p11_remaining_coord01"
+    branch: codex/remaining-scope-coordinator
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
     baseCommit: 0ef72c2
     ownedPaths:
       - apps/web/src/components/owner/access/**
@@ -1614,7 +1642,7 @@ milestones:
       - all repository paths outside ownedPaths and sharedLeases
       - "packages/**, apps/server/** and packages/db/**: admin.access is already mounted and independently verified. If the UI turns out to need a transport or schema change, that is a stop condition, not a decision inside this slice."
       - "apps/web/src/i18n/**, apps/web/src/routeTree.gen.ts, global tokens and packages/ui/**"
-      - "every canonical screenshot subtree except this slice's own: canonical baselines are read-only acceptance evidence and stay under human approval"
+      - "every canonical screenshot subtree except this slice's own; this slice's routine in-system baseline refresh remains coordinator-owned and requires independent fidelity review before acceptance"
       - "every other owner section component, hook and spec: phase9-owner-ui, phase10-ui-csv, phase11-audit, phase11-health and phase11-shell are gated by this slice, not edited by it"
       - "playwright.config.ts, vitest.config.ts, vitest.integration.config.ts and scripts/verify.mjs after the activation commit: phase11-ladder-contention held that lease, tested a configuration fix, falsified it and reverted. Reopening that surface is not this slice's work, and raising a timeout is a falsified repair, not an option."
       - "opening a known-flaky register entry for any failure this slice's own run hits: the register forbids a run registering its own flake, and every prior entry is now closed"
@@ -1628,15 +1656,15 @@ milestones:
     sharedLeases:
       - "exclusive through 2026-08-28T23:59:00+03:00: apps/web/src/routes/admin.tsx, limited to mounting the access Owner section. The owner shell composition, the route guard, every sibling section and every other URL stay unchanged. Same shape as the lease phase11-audit held. No server or router lease is needed because admin.access is already mounted."
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-24T15:20:00+03:00"
+    lastHeartbeatAt: "2026-08-24T23:20:08+03:00"
     leaseExpiresAt: "2026-08-28T23:59:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-access-ui/20260824-153000-p11_access_ui_b01-session-handoff.md
+    handoff: docs/phase-records/handoffs/coordinator/20260824-230600-final-remaining-scope-reconciliation-activation.md
     stopReason: null
     gates:
-      unit: PASS
-      integration: PASS
-      browser: PASS
-      accessibility: PASS
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
       visual: PENDING
       independentReview: PENDING
     integratedCommit: null
@@ -1661,6 +1689,37 @@ milestones:
     gates:
       unit: PENDING
       integration: PENDING
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase11-reference-gating-debt:
+    status: PLANNED
+    dependencies: [phase11-browser-debt]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths:
+      - apps/server/src/reference-gating.test.ts
+      - docs/phase-records/handoffs/phase11-reference-gating-debt/**
+      - docs/phase-records/route-decisions/**
+      - docs/phase-records/verification/**
+    forbiddenPaths:
+      - "all production source, schema, migration, browser, UI, baseline, and normative authority paths unless a later coordinator gate records a strictly necessary revised lease"
+      - "global or blanket timeout inflation, retries, skipped assertions, reduced coverage, and known-flaky attribution created by the same failing run"
+      - "M4/M5 access races, owner-access rate limiting, and the workflow environment-documentation gap"
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/coordinator/20260824-230600-final-remaining-scope-reconciliation-activation.md
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: NOT_REQUIRED
       browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
@@ -1692,11 +1751,10 @@ milestones:
       - visual-direction-gate/**, Paper, and every normative document including PHASES.md
       - every other milestone's phase record and handoff directory
       - "M4, M5, rate limiting on the owner access leaves, and the docs/WORKFLOW.md step-8 environment gap: carried forward by P2, still unscheduled"
-    sharedLeases:
-      - "exclusive through 2026-08-27T23:59:00+03:00: verification-toolchain contention fix, limited to playwright.config.ts, vitest.config.ts, vitest.integration.config.ts, scripts/verify.mjs, and package.json verification scripts only where an invocation must change. These gate every phase, which makes the lease coordinator-granted and nothing more. No test file, no application source, no screenshot baseline, no lockfile, and no register entry is covered."
+    sharedLeases: []
     validationRepairAttempts: 0
     lastHeartbeatAt: "2026-08-23T21:45:00+03:00"
-    leaseExpiresAt: "2026-08-27T23:59:00+03:00"
+    leaseExpiresAt: null
     handoff: docs/phase-records/handoffs/phase11-ladder-contention/20260823-214500-p11_ladder_contention_b01-done-negative-result.md
     stopReason: null
     gates:
@@ -1708,10 +1766,97 @@ milestones:
       independentReview: NOT_REQUIRED
     integratedCommit: SELF
 
+  phase11-uptime-paper-successor:
+    status: PLANNED
+    dependencies: [phase11-health]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths:
+      - "Paper file 01KYPX5AF950XZVVDD88B6J7QB / one new labelled Owner Uptime & Incidents mobile stacked-card successor area"
+      - docs/phase-records/route-decisions/**
+      - docs/phase-records/handoffs/phase11-uptime-paper-successor/**
+    forbiddenPaths:
+      - "every approved Paper original, desktop composition, shared token, and unrelated family"
+      - "every repository application, schema, migration, router, baseline, and normative authority path"
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/coordinator/20260824-230600-final-remaining-scope-reconciliation-activation.md
+    stopReason: null
+    gates:
+      unit: NOT_REQUIRED
+      integration: NOT_REQUIRED
+      browser: NOT_REQUIRED
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase11-settings-paper-successor:
+    status: PLANNED
+    dependencies: [phase11-shell, phase11-audit-generalization]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths:
+      - "Paper file 01KYPX5AF950XZVVDD88B6J7QB / one new labelled Owner Settings behavior-correct successor area"
+      - docs/phase-records/route-decisions/**
+      - docs/phase-records/handoffs/phase11-settings-paper-successor/**
+    forbiddenPaths:
+      - "every approved Paper original, shared token, and unrelated family"
+      - "editable timezone, push, freshness, stale, or poll controls; those values are read-only and copy forward"
+      - "every repository application, schema, migration, router, baseline, and normative authority path"
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/coordinator/20260824-230600-final-remaining-scope-reconciliation-activation.md
+    stopReason: null
+    gates:
+      unit: NOT_REQUIRED
+      integration: NOT_REQUIRED
+      browser: NOT_REQUIRED
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
+  phase11-settings-spec:
+    status: PLANNED
+    dependencies: [phase-3, phase-5, phase-6, phase-7, phase-9, phase11-audit-generalization, phase11-settings-paper-successor]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths:
+      - docs/phase-records/handoffs/phase11-settings/**-spec.md
+      - docs/phase-records/route-decisions/**
+    forbiddenPaths:
+      - "all application source, schemas, migrations, routers, baselines, Paper, and normative authorities"
+      - "any Settings contract that makes timezone, push, freshness, stale, or poll editable"
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/coordinator/20260824-230600-final-remaining-scope-reconciliation-activation.md
+    stopReason: null
+    gates:
+      unit: NOT_REQUIRED
+      integration: NOT_REQUIRED
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null
+
   phase11-settings:
     status: PLANNED
     dependencies:
-      [phase-3, phase-5, phase-6, phase-7, phase-9, phase11-audit-generalization]
+      [phase-3, phase-5, phase-6, phase-7, phase-9, phase11-audit-generalization, phase11-settings-spec]
     ownerSession: null
     branch: null
     worktree: null
@@ -1780,6 +1925,40 @@ milestones:
       independentReview: PASS
     integratedCommit: 974302b976e8a1d1344191241665333d4bf6a75c
 
+  phase11-uptime-mobile-fidelity:
+    status: PLANNED
+    dependencies: [phase11-health, phase11-uptime-paper-successor]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: null
+    ownedPaths:
+      - apps/web/src/components/owner/health/**
+      - apps/web/src/hooks/use-owner-health.test.tsx
+      - tests/browser/phase11-health.browser.spec.ts
+      - tests/browser/__screenshots__/win32/chromium/phase11-health.browser.spec.ts/**
+      - docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/**
+      - docs/phase-records/route-decisions/**
+      - docs/phase-records/verification/**
+    forbiddenPaths:
+      - "all server, API, schema, migration, router, shared catalog, global token, unrelated UI, and normative authority paths"
+      - "desktop Uptime composition except where a shared rule is proven necessary and independently regression-checked"
+      - "canonical baseline promotion outside this milestone's own subtree; promotion remains coordinator-owned"
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/coordinator/20260824-230600-final-remaining-scope-reconciliation-activation.md
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: NOT_REQUIRED
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
   phase-11:
     status: PLANNED
     dependencies:
@@ -1792,6 +1971,11 @@ milestones:
         phase11-access-ui,
         phase11-settings,
         phase11-health,
+        phase11-uptime-mobile-fidelity,
+        phase11-reference-gating-debt,
+        phase11-e2e-propagation-wait,
+        focus-parity-accessibility,
+        login-paper-adoption,
       ]
     ownerSession: null
     branch: null
@@ -1816,7 +2000,7 @@ milestones:
 
   focus-parity-accessibility:
     status: PLANNED
-    dependencies: [phase11-settings]
+    dependencies: [phase11-shell]
     ownerSession: null
     branch: null
     worktree: null
@@ -1858,8 +2042,7 @@ milestones:
       - root manifests, pnpm-lock.yaml, environment schemas and values, scripts/verify.mjs, scripts/verify-repository.mjs, and PROJECT_STATE.yaml
       - apps/web/**, packages/ui/**, tests/browser/**, Paper, visual-direction-gate/**, and screenshot baselines
       - FITWAY_PRODUCT.md, SPEC.md, PHASES.md, DESIGN_GUIDE.md, docs/WORKFLOW.md, docs/adr/**, existing handoffs, and every other phase record
-    sharedLeases:
-      - "exclusive through 2026-08-20T20:08:41+03:00: Phase 12 b01 edge protocol spine limited to edge/client.py; edge/fitway_edge/{__init__.py,config.py,protocol.py,runtime.py,sqlite_store.py,sources.py}; edge/{test_client.py,test_sqlite_store.py,test_windows_lifecycle.py}; edge/fixtures/client.synthetic.json; edge/windows/{install.ps1,run.ps1,uninstall.ps1,README.md}; edge/{simulator.py,test_simulator.py,README.md}. The frozen cloud/device contract fixtures, TypeScript/OpenAPI/server surfaces, dependencies, manifests, and every image/frame/video/identity path remain forbidden."
+    sharedLeases: []
     validationRepairAttempts: 0
     lastHeartbeatAt: "2026-08-15T03:00:00+03:00"
     leaseExpiresAt: null

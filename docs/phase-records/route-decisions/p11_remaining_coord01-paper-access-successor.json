@@ -1,0 +1,51 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_remaining_coord01 / Owner Access behavior-correct Paper successor",
+	"recorded": "2026-08-24T23:15:44+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native",
+	"route": null,
+	"control": "high",
+	"execution": "direct-coordinator",
+	"transport": null,
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": "PENDING",
+	"covered_modalities": ["text", "image"],
+	"covered_tools": [],
+	"covered_mcp_operations": ["paper.read", "paper.write", "paper.screenshot"],
+	"covered_capabilities": [],
+	"durable_authorization_records": [],
+	"delegation_trigger": "none",
+	"consequence": "medium",
+	"material_selection_reason": "Direct execution is selected before mutation-target discovery because this is one named Paper family with a coupled look-judge-adjust loop, and the coordinator must preserve the human-locked password/secret-free boundary while retaining final cross-authority fidelity judgment. All external candidates are hard-filtered on Paper content/write qualification. A native subagent has no permission, recoverability, specialization, volume, or economy advantage for the single correction stage and would duplicate the orientation and review cost. Paper remains one writer at a time.",
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"deepseek-v4-pro": [
+			"Paper write capability and real Paper content reads are not qualified."
+		],
+		"ox-alpha": ["Paper capability is not qualified."],
+		"glm-5.3": [
+			"Real Paper design-content reads and writes are not qualified."
+		],
+		"minimax-m3": ["Paper capability is not qualified."],
+		"native-subagent": [
+			"The edit is one coupled named surface; briefing and duplicate orientation exceed the bounded direct correction and buy no independent judgment because a fresh reviewer is still required afterwards."
+		]
+	},
+	"execution_identity": {
+		"paper_file": "FITWAY UX Exploration",
+		"paper_file_id": "01KYPX5AF950XZVVDD88B6J7QB",
+		"page": "Page 1",
+		"source_area": "OWNER ACCESS PRODUCTION SET — CANDIDATE",
+		"rollback_boundary": "delete only the newly labelled successor area before acceptance; the approved original remains untouched"
+	},
+	"access_boundary": {
+		"readable": "Owner Access family and directly required approved FITWAY/G3 comparison sources",
+		"writable": "one new labelled Owner Access behavior-correct successor area only",
+		"commit_allowed": false,
+		"forbidden": "every approved original, shared token, unrelated Paper family, repository path, deletion/archive operation, and further delegation"
+	}
+}

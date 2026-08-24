@@ -1,0 +1,54 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_remaining_coord01 / Paper Access and Uptime rendered review",
+	"recorded": "2026-08-24T23:06:16+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native",
+	"route": null,
+	"control": "high",
+	"execution": "native-subagent",
+	"transport": null,
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": "PASS",
+	"gate_outcome_note": "Read-only native Paper review completed with no mutations and content hash 3b0faca3 unchanged. Parent spot checks confirmed zero password labels and the presence of Copy/نسخ secret actions in Owner Access, the rendered mobile Access/Uptime families, and the reported FITWAY/G3 geometry. Accepted findings: Access requires a behavior-correct successor before repository freeze; Uptime desktop remains authoritative while mobile record collections require stacked cards.",
+	"covered_modalities": ["text", "image"],
+	"covered_tools": [],
+	"covered_mcp_operations": ["paper.read", "paper.screenshot"],
+	"covered_capabilities": [],
+	"durable_authorization_records": [],
+	"delegation_trigger": "volume and independence",
+	"consequence": "medium",
+	"material_selection_reason": "The stage must inspect rendered FITWAY Paper content and compare it with locked product behavior. Every qualified external candidate is explicitly limited to Paper tool discovery and documentation-only reads, so real design-content reading and screenshot judgment fail the external hard filter. Native Sol is selected for qualified Paper access and high-consequence bilingual/responsive visual judgment; it is read-only and returns evidence, while the coordinator retains the correction decision.",
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"deepseek-v4-pro": [
+			"Real Paper design-content reads and screenshots are not qualified."
+		],
+		"ox-alpha": ["Paper capability is not qualified."],
+		"glm-5.3": [
+			"Real Paper design-content reads and screenshots are not qualified."
+		],
+		"minimax-m3": ["Paper capability is not qualified."],
+		"native-terra": [
+			"No concrete advantage over Sol for cross-authority bilingual and responsive fidelity judgment."
+		],
+		"native-luna": [
+			"The evidence requires visual hierarchy, behavior-authority, RTL, and responsive judgment rather than mechanical extraction."
+		]
+	},
+	"execution_identity": {
+		"paper_file": "FITWAY UX Exploration",
+		"paper_file_id": "01KYPX5AF950XZVVDD88B6J7QB",
+		"page": "Page 1",
+		"rollback_boundary": "none; read-only"
+	},
+	"access_boundary": {
+		"readable": "Owner Access and Owner Uptime & Incidents production families plus directly required approved FITWAY/G3 comparison sources",
+		"writable": "none",
+		"commit_allowed": false,
+		"forbidden": "every Paper mutation, every unrelated family, repository writes, and further delegation"
+	}
+}

@@ -1,0 +1,54 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_remaining_coord01 / Paper Settings and Audit rendered review",
+	"recorded": "2026-08-24T23:06:16+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native",
+	"route": null,
+	"control": "high",
+	"execution": "native-subagent",
+	"transport": null,
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": "PASS",
+	"gate_outcome_note": "Read-only native Paper review completed with no mutations and content hash 3b0faca3 unchanged. Parent spot checks confirmed Settings has no push label, exposes only static facts plus Save settings, and the rendered mobile Settings/Audit families match the reported structure. Accepted findings: Settings needs real controls and a distinct read-only timing group before specification extraction; Audit remains materially aligned with a significant mobile five-claimed/four-rendered record correction.",
+	"covered_modalities": ["text", "image"],
+	"covered_tools": [],
+	"covered_mcp_operations": ["paper.read", "paper.screenshot"],
+	"covered_capabilities": [],
+	"durable_authorization_records": [],
+	"delegation_trigger": "volume and independence",
+	"consequence": "medium",
+	"material_selection_reason": "The stage must establish whether the Settings source is corrected enough for specification extraction and independently confirm the Audit family remains materially aligned. The work depends on rendered Paper content and locked editable/read-only field semantics, which external candidates are not qualified to read. Native Sol supplies the required visual and cross-authority judgment; the coordinator retains specification and acceptance authority.",
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"deepseek-v4-pro": [
+			"Real Paper design-content reads and screenshots are not qualified."
+		],
+		"ox-alpha": ["Paper capability is not qualified."],
+		"glm-5.3": [
+			"Real Paper design-content reads and screenshots are not qualified."
+		],
+		"minimax-m3": ["Paper capability is not qualified."],
+		"native-terra": [
+			"No concrete advantage over Sol for cross-authority Settings semantics and independent Audit fidelity judgment."
+		],
+		"native-luna": [
+			"The verdict requires visual and semantic authority judgment, not mechanical extraction."
+		]
+	},
+	"execution_identity": {
+		"paper_file": "FITWAY UX Exploration",
+		"paper_file_id": "01KYPX5AF950XZVVDD88B6J7QB",
+		"page": "Page 1",
+		"rollback_boundary": "none; read-only"
+	},
+	"access_boundary": {
+		"readable": "Owner Settings and Owner Audit production families plus directly required approved FITWAY/G3 comparison sources",
+		"writable": "none",
+		"commit_allowed": false,
+		"forbidden": "every Paper mutation, every unrelated family, repository writes, and further delegation"
+	}
+}
