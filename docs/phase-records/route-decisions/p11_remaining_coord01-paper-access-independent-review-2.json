@@ -1,0 +1,56 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_remaining_coord01 / Owner Access Paper successor independent fidelity review 2",
+	"recorded": "2026-08-25T00:02:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native-sol",
+	"route": null,
+	"control": "high",
+	"execution": "native-sol-subagent",
+	"transport": null,
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": "PENDING",
+	"covered_modalities": ["text", "image"],
+	"covered_tools": [],
+	"covered_mcp_operations": ["paper.read", "paper.screenshot"],
+	"covered_capabilities": [],
+	"durable_authorization_records": [],
+	"delegation_trigger": "independence",
+	"consequence": "medium",
+	"material_selection_reason": "The repaired candidate needs a fresh verdict from a SOL reviewer who neither authored the successor, performed review 1, nor executed repair 1. The gate requires real Paper content and rendered bilingual fidelity judgment. It is strictly read-only, and the main coordinator retains acceptance and final authority.",
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"prior-reviewer": [
+			"Review 1 identified the defect and is excluded to keep the post-repair verdict fresh."
+		],
+		"repair-writer": [
+			"The writer cannot independently approve its own repair."
+		],
+		"direct-coordinator": [
+			"The coordinator authored the initial successor and owns final judgment, so it is not the independent reviewer."
+		],
+		"external-providers": [
+			"Real Paper content reads and rendered fidelity judgment are not currently qualified externally."
+		],
+		"native-terra-or-luna": [
+			"No current advantage for this high-consequence bilingual fidelity verdict; Paper mutation remains SOL-only in all cases."
+		]
+	},
+	"execution_identity": {
+		"paper_file": "FITWAY UX Exploration",
+		"paper_file_id": "01KYPX5AF950XZVVDD88B6J7QB",
+		"page": "Page 1",
+		"candidate_area": "OWNER ACCESS — BEHAVIOR-CORRECT SUCCESSOR — CURRENT",
+		"freeze_at": "2026-08-25T00:02:00+03:00",
+		"rollback_boundary": "none; independent review is read-only"
+	},
+	"access_boundary": {
+		"readable": "the frozen repaired Access successor, its preserved source family, current one-password repository behavior, and directly relevant FITWAY authorities",
+		"writable": "none",
+		"commit_allowed": false,
+		"forbidden": "every Paper mutation, every repository write, unrelated Paper families, secret material, and further delegation"
+	}
+}
