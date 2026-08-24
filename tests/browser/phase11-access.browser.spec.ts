@@ -914,6 +914,27 @@ test("keyboard, targets, reduced motion, 200% reflow, forced colors, and axe hol
 	}
 });
 
+test("layout holds at every required width in both locales", async ({
+	page,
+}) => {
+	await mockOwnerSurfaces(page, { principals: livePrincipals });
+	await page.goto("/admin");
+
+	const widths = [320, 360, 390, 721, 768, 820, 1024, 1200, 1440];
+	for (const locale of ["ar", "en"] as const) {
+		await setLocale(page, locale);
+		for (const width of widths) {
+			await page.setViewportSize({ width, height: 900 });
+			await expect(page.locator(staffCard)).toBeVisible();
+			await expectNoDocumentOverflow(page);
+		}
+		await page.setViewportSize({ width: 360, height: 900 });
+		await captureReview(page, `owner-access-${locale}-360x900.png`);
+		await page.setViewportSize({ width: 768, height: 1024 });
+		await captureReview(page, `owner-access-${locale}-768x1024.png`);
+	}
+});
+
 test("canonical desktop Arabic and mobile English access compositions match", async ({
 	page,
 }) => {

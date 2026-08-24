@@ -1,0 +1,94 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_access_ui_b01 / stage-5-browser-spec-and-baselines (Slice B owner access UI)",
+	"recorded": "2026-08-24T14:40:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"evaluated_before_stage_discovery_note": "Judged from the approved plan and the stage 1-4 gate records, before any stage-5 target-file reading. The coordinator has read no sibling browser spec beyond what stage 1's gated map reported, and has not opened the new access spec's neighbours to design assertions.",
+	"candidate_id": "deepseek-v4-pro",
+	"route": "opencode-go/deepseek-v4-pro",
+	"control": "high",
+	"execution": "external-opencode",
+	"transport": "opencode-cli",
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"gate_outcome": "PASS_WITH_CORRECTION",
+	"gate_outcome_note": "Accepted at the parent gate on 2026-08-24 with one coordinator correction. Worker commit 30a10f0 held scope exactly. Three load-bearing claims were verified against the repository: no canonical baseline can capture PIN material (structural - the screenshot test never invokes a mutation and the reveal renders only when one resolves); the baselines are byte-identical to what the primary worktree renders (regenerated with --update-snapshots, empty diff); and the stand-down's zero-request assertion carries its own positive control. The correction: the plan requires nine widths in the polish loop and the delivered spec covered four, an omission the Coverage section did not disclose. The coordinator added the nine-width test per the sibling convention; layout held at every width in both locales, so the gap cost coverage rather than correctness. Final pnpm verify:phase exit 0 - unit 65/510, integration 24/24, browser 43 across the access spec and all five siblings.",
+	"gate_outcome_record": "docs/phase-records/handoffs/phase11-access-ui/20260824-152000-p11_access_ui_b01-stage5-gate.md",
+	"covered_modalities": ["text"],
+	"covered_tools": [
+		"repository_read",
+		"file_write",
+		"shell",
+		"browser_control"
+	],
+	"covered_mcp_operations": [],
+	"covered_capabilities": ["repository_verification_ladder"],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md",
+		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
+	],
+	"delegation_trigger": "volume",
+	"material_selection_reason": "Resolved by scripts/resolve-opencode-worker.mjs with zero delegation-lifecycle violations. The stage qualifies on Volume without strain: authoring the access browser spec means reading three large sibling specs in full - phase11-audit at roughly 880 lines, phase11-health at roughly 650, phase9-owner-ui at roughly 430 - plus the new section, view and message catalog, and returning one spec file and a compact report. minimax-m3 is filtered fail-closed on two counts, the missing browser_control tool and the missing repository_verification_ladder capability; glm-5.3 on the capability alone. Between the two survivors the registry's stable preferred general bounded implementation candidate applies, and this stage is squarely meaningful bounded implementation.",
+	"tie_resolution": {
+		"applied": false,
+		"note": "Not engaged. The stable preferred-candidate rule separated the pairing on its own terms, and the availability_economic preference remains unconfirmed for this slice after the stage-3 transport failures, so it was not relied on."
+	},
+	"eligible_alternatives": ["ox-alpha"],
+	"filtered_alternatives": {
+		"glm-5.3": [
+			"required capability not qualified: repository_verification_ladder"
+		],
+		"minimax-m3": [
+			"required tool not demonstrated: browser_control - the stage drives Playwright",
+			"required capability not qualified: repository_verification_ladder"
+		],
+		"native-subagent": [
+			"not filtered on capability; it lost on Volume. The three sibling specs this stage must read in full are exactly the raw material the orchestrator should not absorb with stages 6 through 8 still ahead."
+		],
+		"direct-coordinator": [
+			"not selected for the authoring work, for the same Volume reason. The coordinator does retain three axes of this stage - see retained_coordinator_axes - but retaining the judgment-heavy and human-gated parts is not the same as taking the whole stage."
+		]
+	},
+	"stage_flags": [],
+	"consequence": "medium",
+	"consequence_note": "The spec is this slice's acceptance evidence, which argues upward, but the stage is additive - one new spec file and one new baseline subtree, nothing else - and reverts by discarding the branch. The two parts that would justify a higher classification are not delegated: the /admin polish loop is judgment-heavy and a material design change is NEEDS_HUMAN, and canonical baselines stay under human approval whoever generates them. Both are retained.",
+	"preflight": {
+		"performed": "2026-08-24T14:40:00+03:00",
+		"opencode_cli_version": "1.18.21",
+		"playwright_version": "1.61.1",
+		"vitest_gate": "vitest/4.1.10 printed in the stage worktree after re-pointing to work/phase11-access-ui-b01-s5 at e14af60",
+		"decisive_finding": "An isolated worktree with NO .env at all - neither the root .env nor apps/server/.env - ran a complete sibling /admin browser spec green: tests/browser/phase11-shell.browser.spec.ts, 5 of 5 passed, exit 0. Test 2 of those 5 is 'canonical desktop Arabic and mobile English shell compositions match', so a canonical screenshot comparison passed there too.",
+		"why_it_matters": "This is the tooling preflight the approved plan requires at this stage, and it removed an assumption the coordinator had been carrying since stage 2. Browser specs stub the transport and there is no backend, so they need no secret values whatsoever. An external worker can therefore drive the full browser ladder in its own isolated worktree with no excluded payload class anywhere near it - which is materially better than the stage-2 and stage-3 arrangement, where the verification axis had to be retained because it needed real environment values. It also shows canonical rendering is reproducible across worktrees on this machine with the locked toolchain.",
+		"what_it_does_not_change": "The approved plan still says canonical baselines must be generated in THIS worktree. That constraint is honoured rather than argued away - see retained_coordinator_axes - and the preflight evidence is recorded as supporting rather than superseding it."
+	},
+	"retained_coordinator_axes": [
+		"Canonical baseline validation in the primary worktree. The worker generates baselines in its own worktree; the coordinator then re-runs generation here with --update-snapshots and requires the resulting git diff to be EMPTY. An empty diff proves the committed baselines are byte-identical to what this worktree's locked toolchain renders, which satisfies the plan's 'generated in this worktree' constraint more rigorously than generating them here blind would.",
+		"The /admin polish loop in full, per docs/WORKFLOW.md: both locales, every state, the nine widths, keyboard order, focus visibility and focus return, target size, reduced motion, live regions, screen-reader names, 200% zoom and reflow, safe areas and overflow. At most two focused cycles; a material design change is NEEDS_HUMAN.",
+		"pnpm verify:phase against the phase11-access profile in the primary worktree - the profile lists the new access spec plus all five siblings.",
+		"The human approval gate on canonical screenshot baselines, which is not the coordinator's to grant."
+	],
+	"long_structured_return_assessment": "long_structured_return_is_material is NOT declared. The return is a Change report plus a short polish-observation list, not a multi-axis review whose acceptance depends on every axis surviving one message.",
+	"route_evidence": "requalified",
+	"requalification_reasons": [
+		"a required tool the recorded evidence never demonstrated (browser_control; the stage-3 decision covered repository_read, file_write and shell only)"
+	],
+	"reused_or_requalified": "requalified - the stage-3 decision covers the same candidate, route and control and closed PASS, but this stage adds browser_control, which that record never demonstrated. Reuse was refused and full comparison re-run. The winner did not change. The registry lists browser_control among this candidate's demonstrated tools and its outcome history carries a passing bounded probe of a shell-invoked two-test Playwright ladder, so the capability is qualified rather than assumed.",
+	"execution_identity": {
+		"worktree": "D:/Projects/fitway-worktrees/phase11-access-ui-s2",
+		"branch": "work/phase11-access-ui-b01-s5",
+		"base_commit": "e14af60",
+		"isolation": "the dedicated stage worktree, re-pointed to a fresh branch off the stage-4 gate commit, node_modules already prepared, vitest and Playwright gates re-run after the switch",
+		"rollback_boundary": "the stage-5 commit on work/phase11-access-ui-b01-s5; discarding the branch discards the spec and its baselines together",
+		"env": "apps/server/.env and the root .env are both absent from this worktree and stay absent. The preflight above proves they are not needed, so this is no longer a compromise - it is simply the correct boundary."
+	},
+	"access_boundary": {
+		"readable": "the FITWAY repository at the stage worktree",
+		"writable": "tests/browser/phase11-access.browser.spec.ts and tests/browser/__screenshots__/win32/chromium/phase11-access.browser.spec.ts/** only",
+		"commit_allowed": true,
+		"commit_scope": "exactly one commit containing only the new spec and its own baseline subtree",
+		"forbidden": "every other path without exception - every sibling browser spec, every other canonical screenshot subtree, apps/web/** in its entirety (stages 2 to 4 are closed and gated), playwright.config.ts, scripts/verify.mjs, packages/**, apps/server/**, packages/db/**, PROJECT_STATE.yaml"
+	},
+	"downstream_note": "Stage 7 independence is now determined and is worth recording before it becomes a surprise. deepseek-v4-pro will have implemented stages 1, 3 and 5; ox-alpha implemented stage 2. Stage 7 must not route to a candidate that implemented the candidate it reviews, which excludes both. glm-5.3 and minimax-m3 are filtered fail-closed on repository_verification_ladder, which an independent verification stage genuinely needs. Stage 7 therefore routes NATIVE, and that is a sound outcome rather than a fallback: independence is about who judges, not about which compute holds the judgement.",
+	"candidate_evidence_outcome_appended": "fitway-p11-access-ui-b01-stage5-browser-spec-2026-08-24 appended to the deepseek-v4-pro evidence record."
+}
