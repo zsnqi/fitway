@@ -1,0 +1,55 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_focus_parity_c01 / focus-parity current-target discovery",
+	"recorded": "2026-08-25T01:24:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "deepseek-v4-pro",
+	"route": "opencode-go/deepseek-v4-pro",
+	"control": "high",
+	"execution": "external-opencode",
+	"transport": "opencode-cli",
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "qualified",
+	"gate_outcome": "PENDING",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md",
+		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
+	],
+	"delegation_trigger": "volume",
+	"consequence": "low",
+	"material_selection_reason": "This is a read-only current-checkout confirmation of three already-recorded CSS/accessibility defects and their exact Playwright seams. DeepSeek V4 Pro remains qualified for the same repository_read modality with current successful FITWAY maps, and OpenCode 1.18.21 confirms the required non-interactive route is available. Ox Alpha's repeated current stream failures remove its availability advantage. Native Luna is suitable but has no concrete advantage over the qualified external route for the multi-file selector/test map; Terra has none and is not selected. Paper is excluded.",
+	"eligible_alternatives": ["native-luna", "glm-5.3"],
+	"filtered_alternatives": {
+		"ox-alpha": [
+			"Repeated current stream failures make availability materially worse for this structured return."
+		],
+		"native-terra": [
+			"No concrete current advantage over the qualified external repository-read route."
+		],
+		"direct-coordinator": [
+			"Delegation keeps detailed selector/test discovery out of the live coordinator context."
+		],
+		"paper-capable-agent": [
+			"Paper is explicitly outside this repository-only discovery."
+		]
+	},
+	"execution_identity": {
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration",
+		"head": "72d2e0b",
+		"branch": "codex/remaining-scope-coordinator",
+		"worker_packet": "docs/phase-records/worker-packets/p11_remaining_coord01-focus-parity-discovery.md",
+		"rollback_boundary": "none; read-only"
+	},
+	"access_boundary": {
+		"readable": "non-secret current CSS, focused browser specs/helpers, frozen focus-gap authority, and directly relevant design/accessibility authority",
+		"writable": "none",
+		"commit_allowed": false,
+		"forbidden": "Paper, every write, .env/secret material, test/build execution, canonical baseline mutation, product redesign, M4/M5, Access rate limiting, workflow environment gap, and further delegation"
+	}
+}
