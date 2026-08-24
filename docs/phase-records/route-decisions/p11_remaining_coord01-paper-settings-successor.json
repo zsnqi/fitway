@@ -1,0 +1,49 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_settings_paper_b01 / Owner Settings behavior-correct Paper successor",
+	"recorded": "2026-08-25T00:42:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native-sol",
+	"route": null,
+	"control": "high",
+	"execution": "native-sol-subagent",
+	"transport": null,
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": "PENDING",
+	"covered_modalities": ["text", "image"],
+	"covered_tools": [],
+	"covered_mcp_operations": ["paper.read", "paper.write", "paper.screenshot"],
+	"covered_capabilities": [],
+	"durable_authorization_records": [],
+	"delegation_trigger": "volume",
+	"consequence": "medium",
+	"material_selection_reason": "The human instruction makes Paper mutation SOL-only and prefers a narrow native SOL subagent lease. Settings requires coupled English/Arabic desktop/mobile form design, five editable groups, a separate read-only operational group, and explicit dirty/validation/saving/saved/failure states while preserving the approved family. A native SOL writer can iterate rendered Paper; the coordinator retains sequencing, parent gate, acceptance, and final authority.",
+	"eligible_alternatives": ["direct-native-sol-coordinator"],
+	"filtered_alternatives": {
+		"external-providers": [
+			"The human instruction forbids non-SOL Paper mutation and Paper write capability is not externally qualified."
+		],
+		"native-luna-or-terra": [
+			"The human instruction explicitly excludes these models from Paper mutation."
+		],
+		"direct-native-sol-coordinator": [
+			"A qualified SOL subagent write path is available, so detailed mutation remains outside the coordinator context."
+		]
+	},
+	"execution_identity": {
+		"paper_file": "FITWAY UX Exploration",
+		"paper_file_id": "01KYPX5AF950XZVVDD88B6J7QB",
+		"page": "Page 1",
+		"source_area": "Owner Settings production family",
+		"rollback_boundary": "delete only the new labelled Settings successor before acceptance; preserve the approved original"
+	},
+	"access_boundary": {
+		"readable": "Owner Settings original, accepted FITWAY/G3 authority, and the migration-free contract map",
+		"writable": "one new clearly labelled Owner Settings behavior-correct successor area only",
+		"commit_allowed": false,
+		"forbidden": "every original, unrelated family, shared token, repository path, editable timezone/push/fresh/stale/poll control, schema/migration invention, deletion/archive, secret material, and further delegation"
+	}
+}

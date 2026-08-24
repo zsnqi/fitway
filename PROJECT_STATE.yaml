@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-25T00:38:00+03:00"
+updatedAt: "2026-08-25T00:42:00+03:00"
 
 coordinator:
   owner: "Codex SOL coordinator run p11_remaining_coord01 on codex/remaining-scope-coordinator. Active frontier: serialize one Paper writer across the behavior-correct Owner Access successor, Owner Uptime mobile successor, and Owner Settings successor; independently review each before repository use. Access repository freeze and verification are reopened against corrected Paper authority. Settings implementation remains gated by reviewed Paper, a written migration-free specification, and the integrated backend contract. Reference-gating unit debt, the real unmocked propagation-wait milestone, focus parity, Login Paper adoption, Uptime mobile fidelity, and the Phase 11 aggregate remain explicit downstream milestones. Canonical baseline acceptance and all integration/DONE judgments remain coordinator-owned. M4/M5 access races, owner-access rate limiting, and the workflow environment-documentation gap remain outside approved scope."
@@ -1695,9 +1695,9 @@ milestones:
     integratedCommit: null
 
   phase11-reference-gating-debt:
-    status: IN_PROGRESS
+    status: VALIDATING
     dependencies: [phase11-browser-debt]
-    ownerSession: "Codex SOL coordinator repair-1 two-path candidate, run p11_ref_gate_b02"
+    ownerSession: "Codex SOL coordinator; frozen repair-1 candidate 9b874e7 awaiting fresh verification, run p11_ref_gate_b02"
     branch: codex/remaining-scope-coordinator
     worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
     baseCommit: b52ddb1660ee96d8090716f9fe81bafb56daad35
@@ -1710,15 +1710,14 @@ milestones:
       - "all production source, schema, migration, browser, UI, baseline, and normative authority paths unless a later coordinator gate records a strictly necessary revised lease"
       - "global or blanket timeout inflation, retries, skipped assertions, reduced coverage, and known-flaky attribution created by the same failing run"
       - "M4/M5 access races, owner-access rate limiting, and the workflow environment-documentation gap"
-    sharedLeases:
-      - "exclusive coordinator repair-1 writer lease through 2026-08-25T01:01:00+03:00: apps/server/src/reference-gating.test.ts and the exact phase11-reference-gating-debt profile entry in scripts/verify.mjs only"
+    sharedLeases: []
     validationRepairAttempts: 1
-    lastHeartbeatAt: "2026-08-25T00:38:00+03:00"
-    leaseExpiresAt: "2026-08-25T01:01:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-reference-gating-debt/20260825-003800-p11_ref_gate_b02-activation-invariant-correction.md
+    lastHeartbeatAt: "2026-08-25T00:42:00+03:00"
+    leaseExpiresAt: "2026-08-25T01:12:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-reference-gating-debt/20260825-004200-p11_ref_gate_b02-repair-1-freeze.md
     stopReason: null
     gates:
-      unit: PENDING
+      unit: PASS
       integration: NOT_REQUIRED
       browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
@@ -1796,12 +1795,12 @@ milestones:
     integratedCommit: SELF
 
   phase11-settings-paper-successor:
-    status: PLANNED
+    status: IN_PROGRESS
     dependencies: [phase11-shell, phase11-audit-generalization]
-    ownerSession: null
-    branch: null
-    worktree: null
-    baseCommit: null
+    ownerSession: "native SOL Paper writer pending dispatch, run p11_settings_paper_b01"
+    branch: paper/owner-settings-successor
+    worktree: paper://01KYPX5AF950XZVVDD88B6J7QB/Page-1
+    baseCommit: 76c2091
     ownedPaths:
       - "Paper file 01KYPX5AF950XZVVDD88B6J7QB / one new labelled Owner Settings behavior-correct successor area"
       - docs/phase-records/route-decisions/**
@@ -1810,11 +1809,12 @@ milestones:
       - "every approved Paper original, shared token, and unrelated family"
       - "editable timezone, push, freshness, stale, or poll controls; those values are read-only and copy forward"
       - "every repository application, schema, migration, router, baseline, and normative authority path"
-    sharedLeases: []
+    sharedLeases:
+      - "exclusive Paper writer lease through 2026-08-25T01:27:00+03:00: one new labelled Owner Settings behavior-correct successor area only; approved original and every other Paper node remain immutable"
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/coordinator/20260824-230600-final-remaining-scope-reconciliation-activation.md
+    lastHeartbeatAt: "2026-08-25T00:42:00+03:00"
+    leaseExpiresAt: "2026-08-25T01:27:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-settings/20260825-004200-p11_settings_contract_c01-migration-free-map.md
     stopReason: null
     gates:
       unit: NOT_REQUIRED

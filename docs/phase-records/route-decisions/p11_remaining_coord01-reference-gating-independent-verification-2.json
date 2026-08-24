@@ -1,0 +1,52 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_ref_gate_b02 / repair-1 independent verification 2",
+	"recorded": "2026-08-25T00:42:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native-sol",
+	"route": null,
+	"control": "high",
+	"execution": "native-sol-subagent",
+	"transport": null,
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": "PENDING",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "test_execution"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"durable_authorization_records": [],
+	"delegation_trigger": "independence",
+	"consequence": "medium",
+	"material_selection_reason": "Review 2 must be fresh relative to the first verifier and the implementing coordinator, confirm the literal two-path source commit provenance, and rerun both focused and registered phase gates under a new synthetic identity. External routes cannot handle the native runtime/environment boundary; SOL provides the decisive no-repair verification.",
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"reviewer-1": [
+			"Freshness requires a different verifier after the provenance finding."
+		],
+		"implementing-coordinator": [
+			"The implementer owns final acceptance but is not independent."
+		],
+		"external-providers": [
+			"Native registered-ladder execution and environment isolation are not externalized."
+		],
+		"native-luna-or-terra": [
+			"No advantage for the decisive lifecycle/provenance gate."
+		]
+	},
+	"execution_identity": {
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration",
+		"candidate_commit": "9b874e7",
+		"candidate_parent": "b52ddb1",
+		"run_id": "p11_ref_gate_v02",
+		"rollback_boundary": "none; verification is read-only"
+	},
+	"access_boundary": {
+		"readable": "frozen two-path candidate, repair/failure records, relevant test lifecycle and verify registry",
+		"writable": "none in tracked repository or Paper; test runtime artifacts only",
+		"commit_allowed": false,
+		"forbidden": "repair, source/config/doc/state mutation, real environment values, unrelated profiles/tests, and further delegation"
+	}
+}
