@@ -1,0 +1,55 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_ref_gate_b01 / reference-gating frozen-candidate independent verification",
+	"recorded": "2026-08-25T00:25:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native-sol",
+	"route": null,
+	"control": "high",
+	"execution": "native-sol-subagent",
+	"transport": null,
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": "PENDING",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "test_execution"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"durable_authorization_records": [],
+	"delegation_trigger": "independence",
+	"consequence": "medium",
+	"material_selection_reason": "A fresh native SOL verifier can inspect the frozen one-file diff, run the real focused and full unit ladders under a new synthetic test-only identity, and judge the lifecycle fix without repair authority. External providers cannot receive environment values or supply decisive native runtime evidence; the implementer cannot independently approve its own candidate.",
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"implementing-coordinator": [
+			"The implementer owns the parent gate but is not independent."
+		],
+		"deepseek-v4-pro": [
+			"Native runtime verification and environment handling are outside the external route."
+		],
+		"ox-alpha": [
+			"Current provider availability is degraded and no native runtime advantage is demonstrated."
+		],
+		"native-luna": [
+			"Cheap for reading, but the gate requires high-confidence lifecycle judgment and full native verification."
+		],
+		"native-terra": [
+			"No concrete current advantage over SOL for the decisive verification gate."
+		]
+	},
+	"execution_identity": {
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration",
+		"branch": "codex/remaining-scope-coordinator",
+		"candidate_path": "apps/server/src/reference-gating.test.ts",
+		"run_id": "p11_ref_gate_v01",
+		"rollback_boundary": "none; verification is read-only"
+	},
+	"access_boundary": {
+		"readable": "frozen one-file diff, directly relevant test lifecycle/config/source, and candidate records",
+		"writable": "none in tracked repository or Paper; test-runtime artifacts only",
+		"commit_allowed": false,
+		"forbidden": "repair, source/config/doc/state mutation, real environment values, timeout/retry/skip/mock changes, unrelated tests, and further delegation"
+	}
+}
