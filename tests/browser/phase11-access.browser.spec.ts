@@ -372,6 +372,51 @@ test("the owner list reads once and leaves the shared analytics query untouched"
 	await expectNoDocumentOverflow(page);
 });
 
+test("desktop uses two summary cards above one owners table and mobile keeps provisioning collapsed in one separator board", async ({
+	page,
+}) => {
+	await page.addInitScript(() =>
+		window.localStorage.setItem("fitway.locale", "en"),
+	);
+	await mockOwnerSurfaces(page, { principals: livePrincipals });
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await page.goto("/admin");
+
+	const summaries = page.locator(
+		".owner-access-summary-grid > .owner-access-card",
+	);
+	const board = page.locator(".owner-access-owners-board");
+	await expect(summaries).toHaveCount(2);
+	await expect(board.locator("table")).toHaveCount(1);
+	const [staffSummary, ownersSummary, ownersBoard] = await Promise.all([
+		summaries.nth(0).boundingBox(),
+		summaries.nth(1).boundingBox(),
+		board.boundingBox(),
+	]);
+	expect(staffSummary?.y).toBe(ownersSummary?.y);
+	expect(ownersBoard?.y ?? 0).toBeGreaterThan(
+		Math.max(staffSummary?.y ?? 0, ownersSummary?.y ?? 0),
+	);
+
+	await page.setViewportSize({ width: 390, height: 844 });
+	const trigger = page.locator("[data-owner-access-provision-trigger]");
+	const provisionForm = page.locator(".owner-access-provision");
+	await expect(trigger).toBeVisible();
+	await expect(provisionForm).toBeHidden();
+	await trigger.click();
+	await expect(provisionForm).toBeVisible();
+	await expect(board).toHaveCount(1);
+	const rows = board.locator(".owner-access-owner");
+	expect(await rows.count()).toBeGreaterThan(1);
+	const separator = await rows
+		.nth(0)
+		.locator("td")
+		.first()
+		.evaluate((element) => getComputedStyle(element).borderBottomWidth);
+	expect(Number.parseFloat(separator)).toBeGreaterThan(0);
+	await expectNoDocumentOverflow(page);
+});
+
 test("loading, error, empty, and live states each render with their own announcement", async ({
 	page,
 }) => {

@@ -10,7 +10,7 @@ import type {
 } from "@fitway/api/access/contracts";
 import { act, useRef, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { OwnerAccessMutation } from "@/hooks/use-owner-access";
 import { I18nProvider } from "@/i18n/provider";
@@ -73,6 +73,24 @@ function idleMutation<TInput>(): OwnerAccessMutation<TInput> {
 	return { outcome: { phase: "idle" }, submit: () => {}, reset: () => {} };
 }
 
+function mutationSpy<TInput>(
+	overrides: Partial<OwnerAccessMutation<TInput>> = {},
+): OwnerAccessMutation<TInput> & {
+	submitSpy: ReturnType<typeof vi.fn>;
+	resetSpy: ReturnType<typeof vi.fn>;
+} {
+	const submitSpy = vi.fn();
+	const resetSpy = vi.fn();
+	return {
+		outcome: { phase: "idle" },
+		submit: submitSpy,
+		reset: resetSpy,
+		submitSpy,
+		resetSpy,
+		...overrides,
+	};
+}
+
 function liveProps(principals: readonly PrincipalGovernance[]) {
 	return {
 		principals,
@@ -94,8 +112,16 @@ let container: HTMLDivElement;
 async function render(node: React.ReactNode, locale: "ar" | "en") {
 	document.documentElement.lang = locale;
 	await act(async () => {
-		root?.render(<I18nProvider>{node}</I18nProvider>);
+		root?.render(<I18nProvider key={locale}>{node}</I18nProvider>);
 	});
+}
+
+function setControlledValue(input: HTMLInputElement, value: string) {
+	Object.getOwnPropertyDescriptor(
+		HTMLInputElement.prototype,
+		"value",
+	)?.set?.call(input, value);
+	input.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
 beforeEach(() => {
@@ -214,6 +240,232 @@ describe("typed refusals", () => {
 });
 
 describe("owner access live", () => {
+	it("keeps two desktop summaries above one owners table and exposes a collapsed provisioning action", async () => {
+		await render(
+			<OwnerAccessLive {...liveProps([staffPrincipal(), ownerPrincipal()])} />,
+			"en",
+		);
+		const summaries = container.querySelectorAll(
+			".owner-access-summary-grid > *",
+		);
+		expect(summaries).toHaveLength(2);
+		expect(
+			summaries[0]?.getAttribute("data-owner-access-staff-pin"),
+		).not.toBeNull();
+		expect(
+			summaries[1]?.getAttribute("data-owner-access-owners-summary"),
+		).not.toBeNull();
+		expect(
+			container.querySelector(".owner-access-owners-board table"),
+		).not.toBeNull();
+		expect(
+			container.querySelector("[data-owner-access-provision-trigger]")
+				?.textContent,
+		).toContain(ownerAccessMessages.en.provisionOwner);
+	});
+
+	it("announces a secret-free owner-created success until Done clears it", async () => {
+		const provision = mutationSpy<OwnerProvisionInput>({
+			outcome: {
+				phase: "success",
+				output: {
+					auditId: 21,
+					principal: ownerPrincipal(),
+					revokedSessions: 0,
+				},
+			},
+		});
+		await render(
+			<OwnerAccessLive
+				{...liveProps([staffPrincipal(), ownerPrincipal()])}
+				provisionOwner={provision}
+			/>,
+			"en",
+		);
+		const success = container.querySelector(
+			"[data-owner-access-owner-created]",
+		);
+		expect(success?.getAttribute("role")).toBe("status");
+		expect(success?.textContent).toContain("Owner created");
+		expect(success?.textContent).toContain("No credential returned");
+		expect(success?.textContent).not.toMatch(
+			/password|PIN|copy|returned secret/iu,
+		);
+		await act(async () => {
+			container
+				.querySelector<HTMLButtonElement>(
+					"[data-owner-access-owner-created] button",
+				)
+				?.click();
+		});
+		expect(provision.resetSpy).toHaveBeenCalledTimes(1);
+	});
+
+	it("validates provision and reset passwords locally in English and Arabic", async () => {
+		for (const locale of ["en", "ar"] as const) {
+			const provision = mutationSpy<OwnerProvisionInput>();
+			const reset = mutationSpy<OwnerCredentialResetInput>();
+			await render(
+				<OwnerAccessLive
+					{...liveProps([staffPrincipal(), ownerPrincipal()])}
+					provisionOwner={provision}
+					resetOwnerCredential={reset}
+				/>,
+				locale,
+			);
+			const provisionForm = container.querySelector(
+				".owner-access-provision",
+			) as HTMLFormElement;
+			const provisionPassword = provisionForm.querySelector(
+				'input[type="password"]',
+			) as HTMLInputElement;
+			for (const [value, error] of [
+				["", "required"],
+				["a".repeat(11), "min"],
+				["a".repeat(201), "max"],
+			] as const) {
+				await act(async () => {
+					setControlledValue(provisionPassword, value);
+					provisionForm.dispatchEvent(
+						new Event("submit", { bubbles: true, cancelable: true }),
+					);
+				});
+				expect(provision.submitSpy).not.toHaveBeenCalled();
+				expect(provisionPassword.getAttribute("aria-invalid")).toBe("true");
+				expect(provisionPassword.getAttribute("aria-describedby")).toContain(
+					"error",
+				);
+				expect(container.textContent).toContain(
+					ownerAccessMessages[locale].ownerPasswordErrors[error],
+				);
+			}
+			for (const value of ["a".repeat(12), "a".repeat(200)]) {
+				await act(async () => {
+					setControlledValue(provisionPassword, value);
+					provisionForm.dispatchEvent(
+						new Event("submit", { bubbles: true, cancelable: true }),
+					);
+				});
+			}
+			expect(provision.submitSpy).toHaveBeenCalledTimes(2);
+
+			const resetButton = [...container.querySelectorAll(".owner-access-owner")]
+				.flatMap((row) => [
+					...row.querySelectorAll<HTMLButtonElement>("button"),
+				])
+				.find((button) =>
+					button.textContent?.includes(
+						ownerAccessMessages[locale].resetCredential,
+					),
+				);
+			expect(resetButton).toBeDefined();
+			await act(async () => resetButton?.click());
+			const resetForm = container.querySelector(
+				".owner-access-inline--reset",
+			) as HTMLFormElement;
+			const resetPassword = resetForm.querySelector(
+				'input[type="password"]',
+			) as HTMLInputElement;
+			for (const [value, error] of [
+				["", "required"],
+				["a".repeat(11), "min"],
+				["a".repeat(201), "max"],
+			] as const) {
+				await act(async () => {
+					setControlledValue(resetPassword, value);
+					resetForm.dispatchEvent(
+						new Event("submit", { bubbles: true, cancelable: true }),
+					);
+				});
+				expect(reset.submitSpy).not.toHaveBeenCalled();
+				expect(resetPassword.getAttribute("aria-invalid")).toBe("true");
+				expect(resetPassword.getAttribute("aria-describedby")).toContain(
+					"error",
+				);
+				expect(container.textContent).toContain(
+					ownerAccessMessages[locale].ownerPasswordErrors[error],
+				);
+			}
+			for (const value of ["a".repeat(12), "a".repeat(200)]) {
+				await act(async () => {
+					setControlledValue(resetPassword, value);
+					resetForm.dispatchEvent(
+						new Event("submit", { bubbles: true, cancelable: true }),
+					);
+				});
+			}
+			expect(reset.submitSpy).toHaveBeenCalledTimes(2);
+		}
+	});
+
+	it("clears the reset draft and mutation state on cancel and target switch", async () => {
+		const resetSpy = vi.fn();
+		function ResetHost() {
+			const [outcome, setOutcome] = useState<
+				OwnerAccessMutation<OwnerCredentialResetInput>["outcome"]
+			>({ phase: "refused", code: "owner_already_inactive" });
+			return (
+				<OwnerAccessLive
+					{...liveProps([
+						ownerPrincipal(),
+						ownerPrincipal({
+							principalId: "00000000-0000-4000-8000-0000000000a2",
+							displayName: "Samir",
+						}),
+					])}
+					resetOwnerCredential={{
+						outcome,
+						submit: () => {},
+						reset: () => {
+							resetSpy();
+							setOutcome({ phase: "idle" });
+						},
+					}}
+				/>
+			);
+		}
+		await render(<ResetHost />, "en");
+		const resetButton = [...container.querySelectorAll(".owner-access-owner")]
+			.flatMap((row) => [...row.querySelectorAll<HTMLButtonElement>("button")])
+			.find((button) =>
+				button.textContent?.includes(ownerAccessMessages.en.resetCredential),
+			);
+		expect(resetButton).toBeDefined();
+		await act(async () => resetButton?.click());
+		let password = container.querySelector<HTMLInputElement>(
+			".owner-access-inline--reset input",
+		);
+		await act(async () => {
+			if (!password) return;
+			setControlledValue(password, "a-draft-that-must-clear");
+			[
+				...container.querySelectorAll<HTMLButtonElement>(
+					".owner-access-inline--reset button",
+				),
+			]
+				.find((button) => button.textContent === ownerAccessMessages.en.cancel)
+				?.click();
+		});
+		expect(resetSpy).toHaveBeenCalledTimes(2);
+		const secondResetButton = [
+			...container.querySelectorAll(".owner-access-owner"),
+		]
+			.filter((row) => row.textContent?.includes("Samir"))
+			.flatMap((row) => [...row.querySelectorAll<HTMLButtonElement>("button")])
+			.find((button) =>
+				button.textContent?.includes(ownerAccessMessages.en.resetCredential),
+			);
+		expect(secondResetButton).toBeDefined();
+		await act(async () => secondResetButton?.click());
+		password = container.querySelector<HTMLInputElement>(
+			".owner-access-inline--reset input",
+		);
+		expect(password?.value).toBe("");
+		expect(container.textContent).not.toContain(
+			ownerAccessMessages.en.refusals.owner_already_inactive,
+		);
+	});
+
 	it("shows an active staff PIN with rotate and deactivate, not provision", async () => {
 		await render(<OwnerAccessLive {...liveProps([staffPrincipal()])} />, "en");
 		const card = container.querySelector("[data-owner-access-staff-pin]");

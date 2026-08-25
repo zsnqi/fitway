@@ -40,6 +40,18 @@
 	background: rgb(16 16 18 / 88%);
 }
 
+/* Desktop leads with two peer summaries; the owner records stay one table below. */
+.owner-access-summary-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 16px;
+	align-items: start;
+}
+
+.owner-access-summary-grid > .owner-access-card {
+	min-block-size: 100%;
+}
+
 .owner-access-card__heading,
 .owner-access-block__heading {
 	display: grid;
@@ -164,6 +176,11 @@
 	border-block-start: 1px solid var(--fw-border-subtle);
 }
 
+.owner-access-provision__trigger,
+.owner-access-provision__cancel {
+	display: none;
+}
+
 .owner-access-field {
 	display: grid;
 	gap: 6px;
@@ -175,21 +192,42 @@
 	grid-column: 1 / -1;
 }
 
+/* One data board, rather than a stack of unrelated cards. */
+.owner-access-owners-board {
+	overflow: hidden;
+	border: 1px solid var(--fw-border);
+	border-radius: var(--fw-radius-surface);
+	background: rgb(16 16 18 / 88%);
+}
+
 .owner-access-owners {
-	display: grid;
-	gap: 8px;
+	inline-size: 100%;
 	margin: 0;
-	padding: 0;
-	list-style: none;
+	border-collapse: collapse;
 }
 
 .owner-access-owner {
-	display: grid;
-	gap: 10px;
-	padding: 14px;
-	border: 1px solid var(--fw-border-subtle);
-	border-radius: var(--fw-radius-control);
-	background: rgb(255 255 255 / 2%);
+	background: rgb(255 255 255 / 1.5%);
+}
+
+.owner-access-owners th,
+.owner-access-owners td {
+	padding: 14px 16px;
+	border-block-end: 1px solid var(--fw-border-subtle);
+	text-align: start;
+	vertical-align: top;
+}
+
+.owner-access-owners th {
+	color: var(--fw-text-muted);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.owner-access-owners tr:last-child td {
+	border-block-end: 0;
 }
 
 .owner-access-owner__identity {
@@ -197,6 +235,10 @@
 	flex-wrap: wrap;
 	gap: 4px 12px;
 	align-items: baseline;
+}
+
+.owner-access-owner__controls {
+	min-inline-size: 220px;
 }
 
 .owner-access-owner__name {
@@ -248,6 +290,34 @@
 	color: var(--fw-delayed);
 	font-size: 12px;
 	line-height: 1.55;
+}
+
+.owner-access-field__error,
+.owner-access-inline__error {
+	margin: 0;
+	color: #ff7d91;
+	font-size: 12px;
+	line-height: 1.55;
+}
+
+.owner-access__owner-created {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	align-items: center;
+	justify-content: space-between;
+	margin: 0;
+	padding: 10px 12px;
+	border: 1px solid rgb(24 180 120 / 28%);
+	border-radius: var(--fw-radius-control);
+	color: #8ee8bd;
+	background: rgb(16 168 105 / 8%);
+	font-size: 12px;
+	line-height: 1.55;
+}
+
+.owner-access__owner-created strong {
+	color: var(--fw-chalk);
 }
 
 /*
@@ -427,10 +497,58 @@
 	}
 }
 
-@media (max-width: 720px) {
+@media (max-width: 820px) {
+	.owner-access-summary-grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	/* At this width provisioning has a single deliberate entry action. */
+	.owner-access-provision__trigger {
+		display: inline-flex;
+		justify-self: start;
+	}
+
+	.owner-access-owners-summary--provision-open
+		.owner-access-provision__trigger {
+		display: none;
+	}
+
+	.owner-access-provision:not([data-open]) {
+		display: none;
+	}
+
+	.owner-access-provision__cancel {
+		display: inline-flex;
+	}
+
 	.owner-access-provision {
 		grid-template-columns: minmax(0, 1fr);
 		padding: 12px;
+	}
+
+	.owner-access-owners thead {
+		position: absolute;
+		overflow: hidden;
+		inline-size: 1px;
+		block-size: 1px;
+		clip: rect(0 0 0 0);
+		white-space: nowrap;
+	}
+
+	.owner-access-owners,
+	.owner-access-owners tbody,
+	.owner-access-owner,
+	.owner-access-owners td {
+		display: block;
+	}
+
+	.owner-access-owner__identity,
+	.owner-access-owner__controls {
+		min-inline-size: 0;
+	}
+
+	.owner-access-owners td.owner-access-owner__controls {
+		padding-block-start: 0;
 	}
 
 	.owner-access-state {
