@@ -564,7 +564,11 @@ export function OwnerAccessLive({
 									setProvisionPasswordError(null);
 								}}
 								aria-invalid={provisionPasswordError !== null}
-								aria-describedby={`${fieldId("owner-password-hint")} ${fieldId("owner-password-error")}`}
+								aria-describedby={
+									provisionPasswordError === null
+										? fieldId("owner-password-hint")
+										: `${fieldId("owner-password-hint")} ${fieldId("owner-password-error")}`
+								}
 							/>
 							<p
 								id={fieldId("owner-password-hint")}
@@ -632,7 +636,7 @@ export function OwnerAccessLive({
 				<table className="owner-access-owners">
 					<thead>
 						<tr>
-							<th scope="col">{messages.ownerFormLegend}</th>
+							<th scope="col">{messages.ownerColumnLabel}</th>
 							<th scope="col">{messages.ownerActionsLabel}</th>
 						</tr>
 					</thead>
@@ -740,7 +744,11 @@ export function OwnerAccessLive({
 															setResetPasswordError(null);
 														}}
 														aria-invalid={resetPasswordError !== null}
-														aria-describedby={`${fieldId(`password-hint-${owner.principalId}`)} ${fieldId(`password-error-${owner.principalId}`)}`}
+														aria-describedby={
+															resetPasswordError === null
+																? fieldId(`password-hint-${owner.principalId}`)
+																: `${fieldId(`password-hint-${owner.principalId}`)} ${fieldId(`password-error-${owner.principalId}`)}`
+														}
 													/>
 													<p
 														id={fieldId(`password-hint-${owner.principalId}`)}
@@ -766,8 +774,7 @@ export function OwnerAccessLive({
 														<Button
 															type="submit"
 															disabled={
-																resetOwnerCredential.outcome.phase ===
-																	"pending" || ownerPassword.length === 0
+																resetOwnerCredential.outcome.phase === "pending"
 															}
 														>
 															{messages.confirm}

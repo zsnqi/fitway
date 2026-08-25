@@ -178,6 +178,15 @@
 
 .owner-access-provision__trigger,
 .owner-access-provision__cancel {
+	display: inline-flex;
+	justify-self: start;
+}
+
+.owner-access-owners-summary--provision-open .owner-access-provision__trigger {
+	display: none;
+}
+
+.owner-access-provision:not([data-open]) {
 	display: none;
 }
 
@@ -504,21 +513,8 @@
 
 	/* At this width provisioning has a single deliberate entry action. */
 	.owner-access-provision__trigger {
-		display: inline-flex;
-		justify-self: start;
-	}
-
-	.owner-access-owners-summary--provision-open
-		.owner-access-provision__trigger {
-		display: none;
-	}
-
-	.owner-access-provision:not([data-open]) {
-		display: none;
-	}
-
-	.owner-access-provision__cancel {
-		display: inline-flex;
+		inline-size: 100%;
+		justify-content: center;
 	}
 
 	.owner-access-provision {

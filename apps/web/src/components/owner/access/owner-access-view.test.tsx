@@ -259,9 +259,20 @@ describe("owner access live", () => {
 			container.querySelector(".owner-access-owners-board table"),
 		).not.toBeNull();
 		expect(
-			container.querySelector("[data-owner-access-provision-trigger]")
-				?.textContent,
-		).toContain(ownerAccessMessages.en.provisionOwner);
+			container.querySelector(".owner-access-owners-board th")?.textContent,
+		).toBe(ownerAccessMessages.en.ownerColumnLabel);
+		const trigger = container.querySelector<HTMLButtonElement>(
+			"[data-owner-access-provision-trigger]",
+		);
+		const provisionForm = container.querySelector<HTMLFormElement>(
+			".owner-access-provision",
+		);
+		expect(trigger?.textContent).toContain(
+			ownerAccessMessages.en.provisionOwner,
+		);
+		expect(provisionForm?.hasAttribute("data-open")).toBe(false);
+		await act(async () => trigger?.click());
+		expect(provisionForm?.hasAttribute("data-open")).toBe(true);
 	});
 
 	it("announces a secret-free owner-created success until Done clears it", async () => {
@@ -366,6 +377,10 @@ describe("owner access live", () => {
 			const resetPassword = resetForm.querySelector(
 				'input[type="password"]',
 			) as HTMLInputElement;
+			const resetSubmit = resetForm.querySelector<HTMLButtonElement>(
+				'button[type="submit"]',
+			);
+			expect(resetSubmit?.disabled).toBe(false);
 			for (const [value, error] of [
 				["", "required"],
 				["a".repeat(11), "min"],
