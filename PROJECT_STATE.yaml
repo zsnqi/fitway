@@ -1795,9 +1795,9 @@ milestones:
     integratedCommit: SELF
 
   phase11-settings-paper-successor:
-    status: IN_PROGRESS
+    status: VALIDATING
     dependencies: [phase11-shell, phase11-audit-generalization]
-    ownerSession: p11_settings_paper_r01_resume
+    ownerSession: p11_settings_paper_v02
     branch: paper/owner-settings-successor-repair-1
     worktree: paper://01KYPX5AF950XZVVDD88B6J7QB/Page-1
     baseCommit: 76c2091
@@ -1809,12 +1809,11 @@ milestones:
       - "every approved Paper original, shared token, and unrelated family"
       - "editable timezone, push, freshness, stale, or poll controls; those values are read-only and copy forward"
       - "every repository application, schema, migration, router, baseline, and normative authority path"
-    sharedLeases:
-      - "exclusive through 2026-08-25T13:00:00+03:00: Paper file 01KYPX5AF950XZVVDD88B6J7QB / successor 1EO5-0 only; within it, Arabic desktop rail 1ETE-0, Arabic mobile rail 1F2P-0, and Arabic mobile operational timing text 1FKF-0, 1FKI-0, 1FKL-0, 1FKO-0 plus same-mechanism mixed suffix 1F3I-0. Approved originals, English successor frames, shared tokens, and every unrelated Paper area remain locked."
+    sharedLeases: []
     validationRepairAttempts: 1
-    lastHeartbeatAt: "2026-08-25T12:15:00+03:00"
-    leaseExpiresAt: "2026-08-25T13:00:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-settings-paper-successor/20260825-121500-p11_settings_paper_r01-resume-activation.md
+    lastHeartbeatAt: "2026-08-25T12:26:00+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase11-settings-paper-successor/20260825-122600-p11_settings_paper_r01-candidate-freeze.md
     stopReason: null
     gates:
       unit: NOT_REQUIRED

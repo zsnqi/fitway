@@ -1,0 +1,54 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_settings_paper_v02 / Owner Settings successor fresh independent review after repair 1",
+	"recorded": "2026-08-25T12:26:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native-sol",
+	"route": null,
+	"control": "high",
+	"execution": "native-sol-subagent",
+	"transport": null,
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": null,
+	"gate_outcome_note": null,
+	"covered_modalities": ["text", "image"],
+	"covered_tools": [],
+	"covered_mcp_operations": ["paper.read", "paper.screenshot"],
+	"covered_capabilities": [],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260824-230600-final-remaining-scope-reconciliation-activation.md"
+	],
+	"delegation_trigger": "independence",
+	"consequence": "high",
+	"material_selection_reason": "The repaired four-frame Settings candidate is visual and behavioral production authority, and the writer and coordinator parent gate cannot independently accept it. Native SOL is the recorded qualified Paper image/read route for a high-consequence bilingual fidelity verdict; the reviewer is fresh, read-only, and cannot repair.",
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"repair-writer": ["The writer cannot independently review its own repair."],
+		"direct-coordinator": [
+			"The coordinator performed the parent gate and owns final synthesis, so it is not the fresh reviewer."
+		],
+		"external-providers": [
+			"Real Paper content and fidelity review are not currently qualified externally."
+		],
+		"native-luna-or-terra": [
+			"No material advantage for this high-consequence bilingual visual and behavior authority verdict."
+		]
+	},
+	"execution_identity": {
+		"paper_file": "FITWAY UX Exploration",
+		"paper_file_id": "01KYPX5AF950XZVVDD88B6J7QB",
+		"page": "Page 1",
+		"candidate_area": "OWNER SETTINGS — BEHAVIOR-CORRECT FORM SUCCESSOR — REVIEW CANDIDATE",
+		"freeze_at": "2026-08-25T12:26:00+03:00",
+		"rollback_boundary": "none; review is read-only"
+	},
+	"access_boundary": {
+		"readable": "frozen Settings successor 1EO5-0, preserved source 1B9I-0, approved G3 analogues I8X-0/IK3-0/J1S-0/JA7-0, migration-free Settings contract map, and directly relevant authority",
+		"writable": "none",
+		"commit_allowed": false,
+		"forbidden": "every Paper mutation, repository implementation write, unrelated family, schema/product invention, secret material, and further delegation"
+	}
+}
