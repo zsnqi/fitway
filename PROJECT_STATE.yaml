@@ -1795,9 +1795,9 @@ milestones:
     integratedCommit: SELF
 
   phase11-settings-paper-successor:
-    status: VALIDATING
+    status: FAILED_VALIDATION
     dependencies: [phase11-shell, phase11-audit-generalization]
-    ownerSession: p11_settings_paper_v03
+    ownerSession: null
     branch: paper/owner-settings-successor-repair-1
     worktree: paper://01KYPX5AF950XZVVDD88B6J7QB/Page-1
     baseCommit: 76c2091
@@ -1811,17 +1811,17 @@ milestones:
       - "every repository application, schema, migration, router, baseline, and normative authority path"
     sharedLeases: []
     validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-25T12:45:00+03:00"
+    lastHeartbeatAt: "2026-08-25T12:55:00+03:00"
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-settings-paper-successor/20260825-124500-p11_settings_paper_r02-candidate-freeze.md
-    stopReason: null
+    handoff: docs/phase-records/handoffs/phase11-settings-paper-successor/20260825-125500-p11_settings_paper_v03-terminal-failure.md
+    stopReason: "Terminal p11_settings_paper_v03 FAILED_VALIDATION after repair 2/2. All earlier behavior, mobile action, bidi, shell, and Arabic-copy findings are closed, but fresh independent review found Arabic direction-sensitive content still follows LTR physical order in route metadata/actions, threshold order, and weekly columns. Physical FITWAY shell placement itself is correct and remains fixed. No repair 3, propagation, specification, or implementation is permitted under this attempt."
     gates:
       unit: NOT_REQUIRED
       integration: NOT_REQUIRED
       browser: NOT_REQUIRED
       accessibility: PENDING
-      visual: PENDING
-      independentReview: PENDING
+      visual: FAIL
+      independentReview: FAIL
     integratedCommit: null
 
   phase11-settings-spec:
