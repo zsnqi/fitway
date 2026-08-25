@@ -1,0 +1,57 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_access_ui_r02 / final independent contract verification",
+	"recorded": "2026-08-26T01:53:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native-sol",
+	"route": null,
+	"control": "xhigh",
+	"transport": "codex-native",
+	"native_spawn": {
+		"model": "gpt-5.6-sol",
+		"reasoning_effort": "xhigh",
+		"agent_role": "tester",
+		"fork_turns": "none",
+		"parent_inheritance_deliberate": false
+	},
+	"registry_revision": "2026-08-25.10",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": null,
+	"gate_outcome_note": null,
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "test_execution"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": ["independent_contract_verification"],
+	"durable_authorization_records": [],
+	"delegation_trigger": "independence",
+	"consequence": "high",
+	"material_selection_reason": "This is the final repair attempt for an owner credential surface. A fresh SOL tester must independently verify state clearing, secret-free success, refusal mapping, validation bounds, accessibility assertions, and candidate-range integrity without repair authority.",
+	"eligible_alternatives": ["direct-native-sol-coordinator"],
+	"filtered_alternatives": {
+		"implementation-writer": [
+			"The implementation writer cannot independently approve its own work."
+		],
+		"direct-native-sol-coordinator": [
+			"The coordinator performed the parent corrections and owns final acceptance."
+		],
+		"native-terra-or-luna": [
+			"No capability advantage for the high-consequence final repair verdict."
+		]
+	},
+	"execution_identity": {
+		"candidate_branch": "codex/phase11-access-ui-r02",
+		"candidate_worktree": "D:/Projects/fitway-worktrees/phase11-access-ui-r02",
+		"candidate_base": "d10f6272852d69d15788fa1edae0887489527e6a",
+		"candidate_head": "pending freeze commit",
+		"run_id": "p11_access_ui_r02_independent",
+		"rollback_boundary": "none; independent verification is read-only and must not repair"
+	},
+	"access_boundary": {
+		"readable": "the exact candidate range, directly relevant FITWAY authorities, test configuration, and isolated test outputs",
+		"writable": "only ignored run-scoped test outputs",
+		"commit_allowed": false,
+		"forbidden": "every repository file, canonical baseline change, Paper mutation, real environment disclosure, repair, acceptance, and further delegation"
+	}
+}
