@@ -1,0 +1,64 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_settings_paper_r01_resume / Owner Settings successor repair 1 resumed bounded correction",
+	"recorded": "2026-08-25T12:15:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native-sol",
+	"route": null,
+	"control": "high",
+	"execution": "native-sol-subagent",
+	"transport": null,
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": null,
+	"gate_outcome_note": null,
+	"covered_modalities": ["text", "image"],
+	"covered_tools": [],
+	"covered_mcp_operations": ["paper.read", "paper.write", "paper.screenshot"],
+	"covered_capabilities": [],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260824-230600-final-remaining-scope-reconciliation-activation.md"
+	],
+	"delegation_trigger": "permission",
+	"consequence": "medium",
+	"material_selection_reason": "The resumed stage remains one bounded Paper repair, but live reconciliation expanded the exact target to the Arabic physical rails required by the approved Arabic G3 references. The recorded human decision keeps Paper mutation SOL-only; native SOL retains the qualified Paper read/write/screenshot path and a fresh writer prevents the failed reviewer or coordinator from repairing its own judgment.",
+	"eligible_alternatives": ["direct-native-sol-coordinator"],
+	"filtered_alternatives": {
+		"prior-repair-writer": [
+			"The prior writer's MCP session ended unresponsively and its exact mutation context is not recoverable."
+		],
+		"independent-reviewer": [
+			"The reviewer must remain read-only and independent."
+		],
+		"deepseek-v4-pro": [
+			"The human instruction forbids non-SOL Paper mutation."
+		],
+		"ox-alpha": ["The human instruction forbids non-SOL Paper mutation."],
+		"native-terra": [
+			"The human instruction explicitly excludes Terra from Paper mutation."
+		],
+		"native-luna": [
+			"The human instruction explicitly excludes Luna from Paper mutation."
+		],
+		"direct-native-sol-coordinator": [
+			"A fresh qualified SOL subagent preserves the high-signal coordinator context and enforces the one-writer boundary."
+		]
+	},
+	"execution_identity": {
+		"paper_file": "FITWAY UX Exploration",
+		"paper_file_id": "01KYPX5AF950XZVVDD88B6J7QB",
+		"page": "Page 1",
+		"candidate_area": "OWNER SETTINGS — BEHAVIOR-CORRECT FORM SUCCESSOR — REVIEW CANDIDATE",
+		"run_id": "p11_settings_paper_r01_resume",
+		"lease_expires_at": "2026-08-25T13:00:00+03:00",
+		"rollback_boundary": "restore only the two Arabic successor rails and five explicitly targeted Arabic mobile text nodes"
+	},
+	"access_boundary": {
+		"readable": "successor 1EO5-0, preserved Settings source 1B9I-0, approved Arabic G3 analogues IK3-0 and JA7-0, and the two durable repair/reconciliation records",
+		"writable": "only Arabic desktop rail 1ETE-0, Arabic mobile rail 1F2P-0, timing text 1FKF-0/1FKI-0/1FKL-0/1FKO-0, and same-mechanism mixed suffix 1F3I-0 inside successor 1EO5-0",
+		"commit_allowed": false,
+		"forbidden": "approved originals, English successor frames, shared tokens, unrelated Paper areas, repository implementation, schema/migration/product invention, deletion, propagation, and further delegation"
+	}
+}
