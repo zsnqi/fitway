@@ -1,0 +1,53 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_access_ui_r02 / repair plan",
+	"recorded": "2026-08-26T01:12:55+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native",
+	"route": null,
+	"control": "high",
+	"transport": "codex-native",
+	"native_spawn": {
+		"model": "gpt-5.6-sol",
+		"reasoning_effort": "high",
+		"agent_role": "architect",
+		"fork_turns": "none",
+		"parent_inheritance_deliberate": false
+	},
+	"registry_revision": "2026-08-25.10",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": "PASS",
+	"gate_outcome_note": "The plan reconciled the accepted Paper successor, the four independent findings, the current component/hook seams, shared contract limits, exact file scope, predeclared tests, verification, and rollback. Parent Paper review confirmed its composition and secret-free state claims. No open decision remains.",
+	"covered_modalities": ["text", "image"],
+	"covered_tools": ["repository_read", "paper_read"],
+	"covered_mcp_operations": ["paper.get_screenshot", "paper.get_tree_summary"],
+	"covered_capabilities": [
+		"ui_state_repair_planning",
+		"paper_fidelity_planning"
+	],
+	"durable_authorization_records": [],
+	"material_selection_reason": "The plan combines accepted visual authority, secret-free behavior, state isolation, validation, and accessibility. SOL judgment was warranted; execution authority remained with the coordinator.",
+	"eligible_alternatives": ["native-gpt-5.6-terra"],
+	"filtered_alternatives": {
+		"deepseek-v4-pro": [
+			"Human-directed native-primary posture marks the paid route unavailable."
+		],
+		"glm-5.3": [
+			"Human-directed native-primary posture marks the paid route unavailable."
+		],
+		"minimax-m3": [
+			"Human-directed native-primary posture marks the paid route unavailable."
+		],
+		"ox-alpha": [
+			"Standby-only and no material advantage for this high-consequence authority reconciliation."
+		],
+		"native-gpt-5.6-luna": [
+			"The plan requires consequential visual, state, and secret-free contract judgment."
+		],
+		"native-gpt-5.6-terra": [
+			"Capable, but SOL materially reduces risk at the final 2/2 repair-plan boundary."
+		]
+	}
+}

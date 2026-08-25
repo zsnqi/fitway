@@ -1,0 +1,53 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_access_ui_r02 / durable-frontier discovery",
+	"recorded": "2026-08-26T01:12:55+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native",
+	"route": null,
+	"control": "high",
+	"transport": "codex-native",
+	"native_spawn": {
+		"model": "gpt-5.6-luna",
+		"reasoning_effort": "high",
+		"agent_role": "explorer",
+		"fork_turns": "none",
+		"parent_inheritance_deliberate": false
+	},
+	"registry_revision": "2026-08-25.10",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": "PASS_WITH_CORRECTION",
+	"gate_outcome_note": "The worker correctly found the newer coordinator ref, ranked the final Access repair highest, and returned locatable evidence. Parent review corrected one claim: the candidate-freeze tool is available from the installed workflow skill even though it is not stored in the repository.",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "git_read"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": ["durable_frontier_mapping"],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md",
+		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
+	],
+	"material_selection_reason": "The stage was high-volume, read-only repository and ledger mapping. Current registry posture filters normal external capacity, and Ox standby had no material advantage over a native long-context reader.",
+	"eligible_alternatives": ["native-gpt-5.6-terra", "native-gpt-5.6-sol"],
+	"filtered_alternatives": {
+		"deepseek-v4-pro": [
+			"Human-directed native-primary posture marks the paid route unavailable."
+		],
+		"glm-5.3": [
+			"Human-directed native-primary posture marks the paid route unavailable."
+		],
+		"minimax-m3": [
+			"Human-directed native-primary posture marks the paid route unavailable."
+		],
+		"ox-alpha": [
+			"Standby-only; no stage-specific material reason justified its latency/finalization recovery cost."
+		],
+		"native-gpt-5.6-terra": [
+			"More capability than the bounded read-only mapping required."
+		],
+		"native-gpt-5.6-sol": [
+			"More capability and cost than the bounded read-only mapping required."
+		]
+	}
+}

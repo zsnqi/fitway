@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-25T01:45:00+03:00"
+updatedAt: "2026-08-26T01:12:55+03:00"
 
 coordinator:
-  owner: "Safe-stop checkpoint 2026-08-25T01:45:00+03:00 on codex/remaining-scope-coordinator. No stage or lease is active. Access UI is test-green but rejected for material Paper divergence and three behavior/validation defects; repair 1/2 is consumed and its baselines are rejected evidence. Settings Paper repair 1 reached a structurally safe partial-verification boundary, but its final Arabic bidi/copy batch and Paper working-marker release are unconfirmed because Paper MCP stopped responding; no independent review may start until service health and exact landed state are reconciled. Settings spec/backend/UI remain blocked. Focus-parity discovery is complete but implementation is not activated. Uptime mobile fidelity, the real unmocked propagation-wait milestone, focus parity, Login Paper adoption, Settings, and the Phase 11 aggregate remain pending. Canonical baseline acceptance, integration, and DONE authority remain coordinator-owned. M4/M5 access races, owner-access rate limiting, and the workflow environment-documentation gap remain outside approved scope."
+  owner: "Coordinator activation 2026-08-26T01:12:55+03:00 on codex/remaining-scope-coordinator. Owner Access UI repair 2/2 is the only active slice and targets the four independently confirmed Paper/behavior findings on a fresh isolated branch; rejected candidate 181480a and its images remain evidence. Settings Paper is terminal FAILED_VALIDATION after repair 2/2 and Settings spec/backend/UI remain blocked pending a human-authorized fresh attempt. Focus parity, Uptime mobile fidelity, the real unmocked propagation-wait milestone, Login Paper adoption, Settings, and the Phase 11 aggregate remain pending. Canonical baseline acceptance, integration, and DONE authority remain coordinator-owned. M4/M5 access races, owner-access rate limiting, and the workflow environment-documentation gap remain outside approved scope."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1621,20 +1621,18 @@ milestones:
     integratedCommit: SELF
 
   phase11-access-ui:
-    status: PLANNED
+    status: IN_PROGRESS
     dependencies: [phase11-access-b02, phase11-access-tx, phase11-browser-debt, phase11-access-paper-successor]
-    ownerSession: null
-    branch: work/phase11-access-ui-b01
-    worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
-    baseCommit: 0ef72c2
+    ownerSession: "Codex coordinator session / run p11_access_ui_r02; one native Terra writer on the fresh isolated repair worktree"
+    branch: codex/phase11-access-ui-r02
+    worktree: D:/Projects/fitway-worktrees/phase11-access-ui-r02
+    baseCommit: SELF
     ownedPaths:
       - apps/web/src/components/owner/access/**
-      - apps/web/src/hooks/use-owner-access.ts
       - apps/web/src/hooks/use-owner-access.test.tsx
       - tests/browser/phase11-access.browser.spec.ts
       - tests/browser/__screenshots__/win32/chromium/phase11-access.browser.spec.ts/**
-      - docs/phase-records/handoffs/phase11-access-ui/*-p11_access_ui_b01-*.md
-      - docs/phase-records/handoffs/phase11-access-ui/*-p11_access_ui_v01-*.md
+      - docs/phase-records/handoffs/phase11-access-ui/*-p11_access_ui_r02-*.md
       - docs/phase-records/route-decisions/**
       - docs/phase-records/verification/**
     forbiddenPaths:
@@ -1652,20 +1650,19 @@ milestones:
       - PROJECT_STATE.yaml and scripts/verify-repository.mjs
       - root manifests, lockfiles, and environment schemas
       - every other milestone's phase record and handoff directory
-    sharedLeases:
-      - "exclusive through 2026-08-28T23:59:00+03:00: apps/web/src/routes/admin.tsx, limited to mounting the access Owner section. The owner shell composition, the route guard, every sibling section and every other URL stay unchanged. Same shape as the lease phase11-audit held. No server or router lease is needed because admin.access is already mounted."
-    validationRepairAttempts: 1
-    lastHeartbeatAt: "2026-08-25T01:35:00+03:00"
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-access-ui/20260825-013500-p11_access_ui_v02-independent-fail.md
+    sharedLeases: []
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-08-26T01:12:55+03:00"
+    leaseExpiresAt: "2026-08-28T23:59:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-access-ui/20260826-011255-p11_access_ui_r02-activation-plan.md
     stopReason: null
     gates:
-      unit: PASS
-      integration: PASS
-      browser: PASS
-      accessibility: PASS
-      visual: FAIL
-      independentReview: FAIL
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
     integratedCommit: null
 
   phase11-e2e-propagation-wait:

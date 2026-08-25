@@ -1,0 +1,59 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_access_ui_r02 / implementation",
+	"recorded": "2026-08-26T01:12:55+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native",
+	"route": null,
+	"control": "high",
+	"transport": "codex-native",
+	"native_spawn": {
+		"model": "gpt-5.6-terra",
+		"reasoning_effort": "high",
+		"agent_role": "worker",
+		"fork_turns": "none",
+		"parent_inheritance_deliberate": false
+	},
+	"registry_revision": "2026-08-25.10",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": null,
+	"gate_outcome_note": null,
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "repository_write", "test_execution"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": ["bounded_ui_implementation"],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md",
+		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
+	],
+	"material_selection_reason": "The adopted plan freezes all product and Paper decisions, but implementation still couples responsive composition, React mutation state, localized validation, and accessibility. Terra/high is the least native route trusted to hold that coupling. Current external capacity is unavailable/standby-only, and direct execution would absorb the detailed edit/test loop into the coordinator context.",
+	"eligible_alternatives": [
+		"native-gpt-5.6-sol",
+		"direct-native-sol-coordinator"
+	],
+	"filtered_alternatives": {
+		"deepseek-v4-pro": [
+			"Human-directed native-primary posture marks the paid route unavailable."
+		],
+		"glm-5.3": [
+			"Human-directed native-primary posture marks the paid route unavailable."
+		],
+		"minimax-m3": [
+			"Human-directed native-primary posture marks the paid route unavailable."
+		],
+		"ox-alpha": [
+			"Standby-only; no material advantage justified latency and incomplete-finalization recovery risk."
+		],
+		"native-gpt-5.6-luna": [
+			"Responsive, state, localization, and accessibility coupling exceeds a deterministic mechanical edit."
+		],
+		"native-gpt-5.6-sol": [
+			"No material capability advantage after the plan froze the consequential decisions."
+		],
+		"direct-native-sol-coordinator": [
+			"Would collapse a detailed implementation loop into the coordinator context and weaken later independence."
+		]
+	}
+}
