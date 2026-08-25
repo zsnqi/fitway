@@ -1,0 +1,60 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_settings_paper_r02 / Owner Settings successor Arabic-label-only repair 2",
+	"recorded": "2026-08-25T12:38:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native-sol",
+	"route": null,
+	"control": "high",
+	"execution": "native-sol-subagent",
+	"transport": null,
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": null,
+	"gate_outcome_note": null,
+	"covered_modalities": ["text", "image"],
+	"covered_tools": [],
+	"covered_mcp_operations": ["paper.read", "paper.write", "paper.screenshot"],
+	"covered_capabilities": [],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260824-230600-final-remaining-scope-reconciliation-activation.md"
+	],
+	"delegation_trigger": "permission",
+	"consequence": "medium",
+	"material_selection_reason": "The second repair is deterministic replacement of fourteen Arabic label nodes with a coordinator-frozen bilingual copy map. Human authorization keeps Paper mutation SOL-only; a fresh native SOL writer preserves the one-writer boundary and can render-check Arabic desktop/mobile fit without changing semantics or layout.",
+	"eligible_alternatives": ["direct-native-sol-coordinator"],
+	"filtered_alternatives": {
+		"repair-1-writer": [
+			"Repair 2 follows a fresh failed gate and therefore uses a fresh worker."
+		],
+		"failed-reviewer": [
+			"The independent reviewer remains read-only and may not repair its own findings."
+		],
+		"external-providers": [
+			"Paper mutation is not externally qualified and is human-locked to SOL."
+		],
+		"native-terra-or-luna": [
+			"The human instruction excludes non-SOL Paper mutation."
+		],
+		"direct-native-sol-coordinator": [
+			"A fresh qualified SOL subagent preserves coordinator focus and independent parent verification."
+		]
+	},
+	"execution_identity": {
+		"paper_file": "FITWAY UX Exploration",
+		"paper_file_id": "01KYPX5AF950XZVVDD88B6J7QB",
+		"page": "Page 1",
+		"candidate_area": "OWNER SETTINGS — BEHAVIOR-CORRECT FORM SUCCESSOR — REVIEW CANDIDATE",
+		"run_id": "p11_settings_paper_r02",
+		"lease_expires_at": "2026-08-25T13:15:00+03:00",
+		"rollback_boundary": "restore only the fourteen Arabic text nodes from the pre-write snapshot"
+	},
+	"access_boundary": {
+		"readable": "frozen Settings successor 1EO5-0, its English sibling labels, the independent v02 failure, the migration-free Settings contract map, and the preserved Settings/G3 references needed for fit",
+		"writable": "only text content of 1EUR-0/1EUW-0/1EV1-0/1EXP-0/1EXS-0/1EXV-0/1EXY-0 and 1F3T-0/1F3Y-0/1F43-0/1FKE-0/1FKH-0/1FKK-0/1FKN-0",
+		"commit_allowed": false,
+		"forbidden": "all layout/style/value/control/token changes, approved originals, English successor frames, unrelated Paper areas, repository implementation, product/schema invention, deletion, propagation, and further delegation"
+	}
+}
