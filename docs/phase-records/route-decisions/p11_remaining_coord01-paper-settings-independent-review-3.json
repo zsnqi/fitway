@@ -1,0 +1,59 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_settings_paper_v03 / Owner Settings successor terminal fresh independent review after repair 2",
+	"recorded": "2026-08-25T12:45:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native-sol",
+	"route": null,
+	"control": "high",
+	"execution": "native-sol-subagent",
+	"transport": null,
+	"registry_revision": "2026-08-23.9",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": null,
+	"gate_outcome_note": null,
+	"covered_modalities": ["text", "image"],
+	"covered_tools": [],
+	"covered_mcp_operations": ["paper.read", "paper.screenshot"],
+	"covered_capabilities": [],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260824-230600-final-remaining-scope-reconciliation-activation.md"
+	],
+	"delegation_trigger": "independence",
+	"consequence": "high",
+	"material_selection_reason": "Repair 2 exhausted the validation repair budget. A fresh-context native SOL reviewer who did not write either repair must issue the terminal bilingual visual/behavior authority verdict; it is read-only and may not repair. Any FAIL is recorded FAILED_VALIDATION with no third repair.",
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"repair-2-writer": [
+			"The writer cannot independently review its own text repair."
+		],
+		"prior-reviewer": [
+			"A fresh reviewer avoids carrying the prior verdict's search path into the terminal gate."
+		],
+		"direct-coordinator": [
+			"The coordinator performed the parent freeze gate and owns synthesis, not fresh review."
+		],
+		"external-providers": [
+			"Real Paper content and fidelity review are not currently qualified externally."
+		],
+		"native-luna-or-terra": [
+			"No material advantage for this terminal high-consequence bilingual visual and behavior authority verdict."
+		]
+	},
+	"execution_identity": {
+		"paper_file": "FITWAY UX Exploration",
+		"paper_file_id": "01KYPX5AF950XZVVDD88B6J7QB",
+		"page": "Page 1",
+		"candidate_area": "OWNER SETTINGS — BEHAVIOR-CORRECT FORM SUCCESSOR — REVIEW CANDIDATE",
+		"freeze_at": "2026-08-25T12:45:00+03:00",
+		"rollback_boundary": "none; review is read-only"
+	},
+	"access_boundary": {
+		"readable": "frozen Settings successor 1EO5-0, preserved source 1B9I-0, approved G3 analogues I8X-0/IK3-0/J1S-0/JA7-0, both prior independent failures, both repair freezes, migration-free Settings contract map, and directly relevant authority",
+		"writable": "none",
+		"commit_allowed": false,
+		"forbidden": "every Paper mutation, repository implementation write, unrelated family, schema/product invention, secret material, and further delegation"
+	}
+}
