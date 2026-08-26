@@ -1,9 +1,9 @@
 {
 	"schema": "route-decision/1",
 	"project": "fitway",
-	"stage_ref": "p11_focus_parity_b01-repair-2",
-	"recorded": "2026-08-26T17:47:00+03:00",
-	"evaluated_before_stage_discovery": false,
+	"stage_ref": "p11_focus_parity_v01-independent-review",
+	"recorded": "2026-08-26T17:59:00+03:00",
+	"evaluated_before_stage_discovery": true,
 	"candidate_id": "native",
 	"route": null,
 	"control": "high",
@@ -11,35 +11,36 @@
 	"native_spawn": {
 		"model": "gpt-5.6-terra",
 		"reasoning_effort": "high",
-		"agent_role": "worker",
+		"agent_role": "reviewer",
 		"fork_turns": "none",
 		"parent_inheritance_deliberate": false
 	},
 	"registry_revision": "2026-08-25.10",
 	"qualification_baseline": "2026-08-23.4",
 	"qualification_status": "native",
-	"gate_outcome": "PASS_WITH_CORRECTION",
+	"gate_outcome": "PENDING",
 	"covered_modalities": ["text"],
-	"covered_tools": ["repository_read", "file_write", "shell", "playwright"],
+	"covered_tools": ["repository_read", "shell", "playwright"],
 	"covered_mcp_operations": [],
 	"covered_capabilities": [
-		"single_seam_playwright_repair_and_candidate_freeze"
+		"independent_accessibility_diff_review",
+		"repository_verification_ladder"
 	],
 	"durable_authorization_records": [
 		"docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md",
 		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
 	],
-	"material_selection_reason": "Repair 1 narrowed the only red assertion to one unchanged public reload seam. A fresh worker is mandatory after that failed gate. Normal external capacity remains unavailable and Ox Alpha standby-only without a material advantage, so native Terra/high carries the final repair and freeze.",
+	"material_selection_reason": "Independence requires a fresh reviewer. The medium-consequence review is within the external ceiling, but registry revision 2026-08-25.10 makes normal external capacity unavailable and Ox Alpha standby-only without a material advantage. Native Terra/high is sized for CSS specificity, accessibility semantics, and fresh Playwright/fast-ladder evidence.",
 	"eligible_alternatives": ["native"],
 	"filtered_alternatives": {
 		"deepseek-v4-pro": ["operational-capacity posture: unavailable"],
 		"glm-5.3": ["operational-capacity posture: unavailable"],
 		"minimax-m3": ["operational-capacity posture: unavailable"],
 		"ox-alpha": [
-			"standby-only; no material advantage and higher recovery cost"
+			"standby-only; no material advantage and higher recovery/finalization cost"
 		],
 		"direct": [
-			"fresh-worker rule after failed repair 1; preserve coordinator independence"
+			"reviewer must be independent of coordinator and implementation writers"
 		]
 	}
 }

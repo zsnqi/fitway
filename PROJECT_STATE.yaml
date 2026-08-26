@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-26T17:47:00+03:00"
+updatedAt: "2026-08-26T17:59:00+03:00"
 
 coordinator:
-  owner: "Coordinator session 2026-08-26T17:47:00+03:00 on codex/remaining-scope-coordinator. Exactly one bounded slice is active: focus-parity-accessibility run p11_focus_parity_b01. Repair 1 passed 23 of 24 focused Chromium tests and isolated the final public sequential-focus reset. Final repair 2 of 2 is active on that one public test seam; the three CSS files and every other assertion are frozen. No other milestone or Paper lease is active."
+  owner: "Coordinator session 2026-08-26T17:59:00+03:00 on codex/remaining-scope-coordinator. Exactly one bounded slice is validating: focus-parity-accessibility candidate a7f517a. Final repair 2 passed, the parent implementation gate is PASS_WITH_CORRECTION for record attribution only, and the amended candidate passed the full freeze protocol. Fresh native independent review p11_focus_parity_v01 is active read-only. No other milestone or Paper lease is active."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1994,9 +1994,9 @@ milestones:
     integratedCommit: null
 
   focus-parity-accessibility:
-    status: IN_PROGRESS
+    status: VALIDATING
     dependencies: [phase11-shell]
-    ownerSession: "fresh native Codex repair worker, run p11_focus_parity_b01 repair 2"
+    ownerSession: "fresh native Codex independent reviewer, run p11_focus_parity_v01"
     branch: work/phase11-focus-parity-b01
     worktree: D:/Projects/fitway-worktrees/phase11-focus-parity-b01
     baseCommit: SELF
@@ -2025,9 +2025,9 @@ milestones:
       - "Playwright/Vitest configuration, Paper, visual-direction-gate/**, and every unrelated milestone record"
     sharedLeases: []
     validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-26T17:47:00+03:00"
-    leaseExpiresAt: "2026-08-26T21:47:00+03:00"
-    handoff: docs/phase-records/handoffs/focus-parity-accessibility/20260826-174700-p11_focus_parity_b01-repair-2-activation.md
+    lastHeartbeatAt: "2026-08-26T17:59:00+03:00"
+    leaseExpiresAt: "2026-08-26T21:59:00+03:00"
+    handoff: docs/phase-records/handoffs/focus-parity-accessibility/20260826-175900-p11_focus_parity_v01-review-activation.md
     stopReason: null
     gates:
       unit: NOT_REQUIRED
