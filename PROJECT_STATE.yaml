@@ -1994,12 +1994,12 @@ milestones:
     integratedCommit: null
 
   focus-parity-accessibility:
-    status: FAILED_VALIDATION
+    status: IN_PROGRESS
     dependencies: [phase11-shell]
-    ownerSession: null
-    branch: work/phase11-focus-parity-b01
-    worktree: D:/Projects/fitway-worktrees/phase11-focus-parity-b01
-    baseCommit: SELF
+    ownerSession: "direct native Codex coordinator/writer, run p11_focus_parity_r04; fresh human-authorized repair budget 0/2 consumed"
+    branch: codex/phase11-focus-parity-r04
+    worktree: D:/Projects/fitway-worktrees/phase11-focus-parity-r04
+    baseCommit: a7f517ae743f7679e251b2e8f8a35c4da0388745
     ownedPaths:
       - apps/web/src/index.css
       - apps/web/src/components/staff/staff.css
@@ -2025,15 +2025,15 @@ milestones:
       - "Playwright/Vitest configuration, Paper, visual-direction-gate/**, and every unrelated milestone record"
     sharedLeases: []
     validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-26T20:00:00+03:00"
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/focus-parity-accessibility/20260826-200000-p11_focus_parity_r03-failed-validation.md
-    stopReason: "Terminal human-authorized exceptional repair p11_focus_parity_r03 FAILED_VALIDATION. With the operations-shell selector temporarily absent, the new proof failed discriminatingly with outline-style none. After exact selector restoration, the fixed three-spec Chromium gate passed 23/24: the new target computed a solid 2px outline but Chromium forced-colors normalized outline-offset to 0px, failing the added exact 2px offset expectation. The activation authorized only this one beyond-budget repair and made any red focused gate terminal. The uncommitted test probe was rolled back; preserved candidate a7f517a remains clean, unchanged, and unintegrated. No independent review or integration was permitted."
+    lastHeartbeatAt: "2026-08-26T20:19:22+03:00"
+    leaseExpiresAt: "2026-08-27T00:19:22+03:00"
+    handoff: docs/phase-records/handoffs/focus-parity-accessibility/20260826-201922-p11_focus_parity_r04-activation.md
+    stopReason: null
     gates:
       unit: NOT_REQUIRED
       integration: NOT_REQUIRED
-      browser: FAIL
-      accessibility: FAIL
+      browser: PENDING
+      accessibility: PENDING
       visual: NOT_REQUIRED
       independentReview: PENDING
     integratedCommit: null
