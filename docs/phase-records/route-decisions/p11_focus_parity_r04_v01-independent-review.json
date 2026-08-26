@@ -1,0 +1,41 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_focus_parity_r04_v01-independent-review",
+	"recorded": "2026-08-26T20:30:45+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native",
+	"route": null,
+	"control": "high",
+	"transport": "codex-native",
+	"native_spawn": {
+		"model": "gpt-5.6-terra",
+		"reasoning_effort": "high",
+		"agent_role": "reviewer",
+		"fork_turns": "none",
+		"parent_inheritance_deliberate": false
+	},
+	"registry_revision": "native-only-user-directed-2026-08-26",
+	"qualification_baseline": "agent-project-workflow-1.9.2",
+	"qualification_status": "native",
+	"gate_outcome": "PENDING",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "shell", "playwright"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [
+		"independent_accessibility_diff_review",
+		"forced_colors_non_vacuity_review",
+		"repository_verification_ladder"
+	],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/focus-parity-accessibility/20260826-201922-p11_focus_parity_r04-activation.md"
+	],
+	"stage_consequence": "medium-consequence accessibility regression review; within native Terra/high scope",
+	"material_selection_reason": "Independence requires a fresh reviewer. Native Terra/high is sized for CSS specificity, accessibility semantics, non-vacuity, and executable Playwright/fast-ladder evidence. The human explicitly requires native routes only, so external-worker routes are inapplicable and were not considered or preflighted.",
+	"eligible_alternatives": ["native"],
+	"filtered_alternatives": {
+		"direct": [
+			"reviewer must be independent of the coordinator and repair author"
+		]
+	}
+}

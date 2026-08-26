@@ -1994,9 +1994,9 @@ milestones:
     integratedCommit: null
 
   focus-parity-accessibility:
-    status: IN_PROGRESS
+    status: VALIDATING
     dependencies: [phase11-shell]
-    ownerSession: "direct native Codex coordinator/writer, run p11_focus_parity_r04; fresh human-authorized repair budget 0/2 consumed"
+    ownerSession: "fresh native Codex Terra/high independent reviewer, run p11_focus_parity_r04_v01; fresh human-authorized repair budget 0/2 consumed"
     branch: codex/phase11-focus-parity-r04
     worktree: D:/Projects/fitway-worktrees/phase11-focus-parity-r04
     baseCommit: a7f517ae743f7679e251b2e8f8a35c4da0388745
@@ -2025,15 +2025,15 @@ milestones:
       - "Playwright/Vitest configuration, Paper, visual-direction-gate/**, and every unrelated milestone record"
     sharedLeases: []
     validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-26T20:19:22+03:00"
-    leaseExpiresAt: "2026-08-27T00:19:22+03:00"
-    handoff: docs/phase-records/handoffs/focus-parity-accessibility/20260826-201922-p11_focus_parity_r04-activation.md
+    lastHeartbeatAt: "2026-08-26T20:30:45+03:00"
+    leaseExpiresAt: "2026-08-27T00:30:45+03:00"
+    handoff: docs/phase-records/handoffs/focus-parity-accessibility/20260826-203045-p11_focus_parity_r04-review-activation.md
     stopReason: null
     gates:
       unit: NOT_REQUIRED
       integration: NOT_REQUIRED
-      browser: PENDING
-      accessibility: PENDING
+      browser: PASS
+      accessibility: PASS
       visual: NOT_REQUIRED
       independentReview: PENDING
     integratedCommit: null
