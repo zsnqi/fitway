@@ -372,6 +372,54 @@ test("the owner list reads once and leaves the shared analytics query untouched"
 	await expectNoDocumentOverflow(page);
 });
 
+test("desktop uses two summary cards above one owners table and mobile keeps provisioning collapsed in one separator board", async ({
+	page,
+}) => {
+	await page.addInitScript(() =>
+		window.localStorage.setItem("fitway.locale", "en"),
+	);
+	await mockOwnerSurfaces(page, { principals: livePrincipals });
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await page.goto("/admin");
+
+	const summaries = page.locator(
+		".owner-access-summary-grid > .owner-access-card",
+	);
+	const board = page.locator(".owner-access-owners-board");
+	const trigger = page.locator("[data-owner-access-provision-trigger]");
+	const provisionForm = page.locator(".owner-access-provision");
+	await expect(summaries).toHaveCount(2);
+	await expect(board.locator("table")).toHaveCount(1);
+	await expect(trigger).toBeVisible();
+	await expect(provisionForm).toBeHidden();
+	const [staffSummary, ownersSummary, ownersBoard] = await Promise.all([
+		summaries.nth(0).boundingBox(),
+		summaries.nth(1).boundingBox(),
+		board.boundingBox(),
+	]);
+	expect(staffSummary?.y).toBe(ownersSummary?.y);
+	expect(ownersBoard?.y ?? 0).toBeGreaterThan(
+		Math.max(staffSummary?.y ?? 0, ownersSummary?.y ?? 0),
+	);
+
+	await page.setViewportSize({ width: 390, height: 844 });
+	await expect(trigger).toBeVisible();
+	await expect(provisionForm).toBeHidden();
+	await trigger.click();
+	await expect(provisionForm).toBeVisible();
+	await expect(trigger).toBeHidden();
+	await expect(board).toHaveCount(1);
+	const rows = board.locator(".owner-access-owner");
+	expect(await rows.count()).toBeGreaterThan(1);
+	const separator = await rows
+		.nth(0)
+		.locator("td")
+		.first()
+		.evaluate((element) => getComputedStyle(element).borderBottomWidth);
+	expect(Number.parseFloat(separator)).toBeGreaterThan(0);
+	await expectNoDocumentOverflow(page);
+});
+
 test("loading, error, empty, and live states each render with their own announcement", async ({
 	page,
 }) => {
@@ -559,10 +607,14 @@ test("Arabic renders RTL with Western digits and a plain-hyphen PIN range", asyn
 	refusals = { "owner/provision": "owner_email_taken" };
 	await page.reload();
 	await expect(page.locator(staffCard)).toBeVisible();
+	await page.locator("[data-owner-access-provision-trigger]").click();
 	await page.getByLabel("البريد الإلكتروني").fill("taken@fitway.example");
 	await page.getByLabel("اسم العرض").fill("مالك جديد");
 	await page.getByLabel("كلمة المرور الأولية").fill("long-enough-passphrase");
-	await page.getByRole("button", { name: "توفير حساب مالك" }).click();
+	await page
+		.getByLabel("مالك جديد")
+		.getByRole("button", { name: "توفير حساب مالك" })
+		.click();
 	const note = page.locator('[data-owner-access-refusal="owner_email_taken"]');
 	await expect(note).toBeVisible();
 	await expect(note).toContainText("يوجد مالك بالفعل بهذا البريد الإلكتروني");
@@ -598,10 +650,14 @@ test("each of the nine typed refusals reaches the owner as its own named copy", 
 	}
 
 	async function provisionOwnerTaken(page: Page) {
+		await page.locator("[data-owner-access-provision-trigger]").click();
 		await page.getByLabel("Email").fill("taken@fitway.example");
 		await page.getByLabel("Display name").fill("New owner");
 		await page.getByLabel("Initial password").fill("long-enough-passphrase");
-		await page.getByRole("button", { name: "Provision owner" }).click();
+		await page
+			.getByLabel("New owner")
+			.getByRole("button", { name: "Provision owner" })
+			.click();
 	}
 
 	const scenarios: Array<{
