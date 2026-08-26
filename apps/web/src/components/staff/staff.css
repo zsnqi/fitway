@@ -202,7 +202,7 @@
 	transition: transform var(--fw-duration-fast) var(--fw-ease-out);
 }
 
-.operations-skip-link:focus-visible {
+.operations-skip-link:focus {
 	transform: translateY(0);
 }
 
@@ -934,5 +934,15 @@
 		transition-duration: 0.01ms;
 		animation-duration: 0.01ms;
 		animation-iteration-count: 1;
+	}
+}
+
+@media (forced-colors: active) {
+	.login-shell :is(a[href], button, input, select, textarea):focus,
+	.login-shell [tabindex]:not([tabindex="-1"]):focus,
+	.operations-shell :is(a[href], button, input, select, textarea):focus,
+	.operations-shell [tabindex]:not([tabindex="-1"]):focus {
+		outline: 2px solid Highlight;
+		outline-offset: 2px;
 	}
 }

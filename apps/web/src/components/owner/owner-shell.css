@@ -510,6 +510,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+	.owner-shell .operations-skip-link,
 	.owner-shell *,
 	.owner-shell *::before,
 	.owner-shell *::after {

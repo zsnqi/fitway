@@ -506,6 +506,16 @@ test("supports skip navigation, locale switching, reduced motion, and 200% text"
 		name: "الانتقال إلى حالة الازدحام",
 	});
 	await expect(skipLink).toHaveAttribute("href", "#main-content");
+	await page.locator(".public-live-card").click();
+	await skipLink.focus();
+	await expect(skipLink).toBeFocused();
+	await expect
+		.poll(() =>
+			skipLink.evaluate((element) => element.getBoundingClientRect().top),
+		)
+		.toBeGreaterThanOrEqual(0);
+	await page.goto("/");
+	await expect(skipLink).toBeAttached();
 	await page.evaluate(() =>
 		(document.activeElement as HTMLElement | null)?.blur(),
 	);
@@ -545,6 +555,22 @@ test("supports skip navigation, locale switching, reduced motion, and 200% text"
 	await page.locator(".public-live__signal").scrollIntoViewIfNeeded();
 	await expect(page.locator(".public-live__signal")).toBeVisible();
 	await expectNoWcagViolations(page);
+
+	await page.emulateMedia({ forcedColors: "active" });
+	expect(
+		await page.evaluate(() => matchMedia("(forced-colors: active)").matches),
+	).toBe(true);
+	const forcedColorTarget = page.locator(".public-site-header__language");
+	await forcedColorTarget.focus();
+	const outline = await forcedColorTarget.evaluate((element) => {
+		const style = getComputedStyle(element);
+		return {
+			style: style.outlineStyle,
+			width: Number.parseFloat(style.outlineWidth),
+		};
+	});
+	expect(outline.style).not.toBe("none");
+	expect(outline.width).toBeGreaterThanOrEqual(2);
 });
 
 test("covers every approved responsive width in RTL and LTR", async ({

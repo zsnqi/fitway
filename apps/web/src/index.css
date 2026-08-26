@@ -129,7 +129,7 @@ body {
 	transition: transform 160ms var(--fw-ease-out);
 }
 
-.public-skip-link:focus-visible {
+.public-skip-link:focus {
 	transform: translateY(0);
 }
 
@@ -1142,5 +1142,13 @@ html[dir="rtl"] .public-state-card h1 {
 		scroll-behavior: auto;
 		transition-delay: 0ms;
 		transition-duration: 0.01ms;
+	}
+}
+
+@media (forced-colors: active) {
+	.public-page-shell :is(a[href], button, input, select, textarea):focus,
+	.public-page-shell [tabindex]:not([tabindex="-1"]):focus {
+		outline: 2px solid Highlight;
+		outline-offset: 2px;
 	}
 }

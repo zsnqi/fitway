@@ -405,6 +405,15 @@ test("focus, 44px targets, reduced preferences, 200% reflow, and axe remain soun
 	const skip = page.locator(".operations-skip-link");
 	await skip.focus();
 	await expect(skip).toBeFocused();
+	const skipPreferences = await skip.evaluate((element) => {
+		const style = getComputedStyle(element);
+		return {
+			transitionDuration: style.transitionDuration,
+			transitionProperty: style.transitionProperty,
+		};
+	});
+	expect(skipPreferences.transitionProperty).toBe("none");
+	expect(skipPreferences.transitionDuration).toBe("0s");
 	await page.keyboard.press("Enter");
 	await expect(page.locator("main")).toBeFocused();
 

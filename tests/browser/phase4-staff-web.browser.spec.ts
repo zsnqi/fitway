@@ -478,6 +478,16 @@ test("keyboard order, focus transfer, practical targets, reduced motion, and 200
 		name: "الانتقال إلى الحالة التشغيلية",
 	});
 	await expect(skipLink).toBeAttached();
+	await page.locator(".login-panel").click();
+	await skipLink.focus();
+	await expect(skipLink).toBeFocused();
+	await expect
+		.poll(() =>
+			skipLink.evaluate((element) => element.getBoundingClientRect().top),
+		)
+		.toBeGreaterThanOrEqual(0);
+	await page.goto("/login");
+	await expect(skipLink).toBeAttached();
 	await page.evaluate(() =>
 		(document.activeElement as HTMLElement | null)?.blur(),
 	);
@@ -535,6 +545,27 @@ test("keyboard order, focus transfer, practical targets, reduced motion, and 200
 			document.documentElement.clientWidth,
 	);
 	expect(overflow).toBe(false);
+	await page.evaluate(() => {
+		document.documentElement.style.zoom = "1";
+	});
+
+	await page.emulateMedia({ forcedColors: "active" });
+	expect(
+		await page.evaluate(() => matchMedia("(forced-colors: active)").matches),
+	).toBe(true);
+	const forcedColorTarget = page.getByRole("button", {
+		name: "التبديل إلى اللغة الإنجليزية",
+	});
+	await forcedColorTarget.focus();
+	const outline = await forcedColorTarget.evaluate((element) => {
+		const style = getComputedStyle(element);
+		return {
+			style: style.outlineStyle,
+			width: Number.parseFloat(style.outlineWidth),
+		};
+	});
+	expect(outline.style).not.toBe("none");
+	expect(outline.width).toBeGreaterThanOrEqual(2);
 });
 
 test("Staff Arabic order, monitoring-only scope, Retry focus target, overflow, and 200% reflow", async ({
