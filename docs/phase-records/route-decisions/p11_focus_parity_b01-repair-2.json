@@ -1,8 +1,8 @@
 {
 	"schema": "route-decision/1",
 	"project": "fitway",
-	"stage_ref": "p11_focus_parity_b01-repair-1",
-	"recorded": "2026-08-26T17:40:00+03:00",
+	"stage_ref": "p11_focus_parity_b01-repair-2",
+	"recorded": "2026-08-26T17:47:00+03:00",
 	"evaluated_before_stage_discovery": false,
 	"candidate_id": "native",
 	"route": null,
@@ -18,16 +18,18 @@
 	"registry_revision": "2026-08-25.10",
 	"qualification_baseline": "2026-08-23.4",
 	"qualification_status": "native",
-	"gate_outcome": "ESCALATED",
+	"gate_outcome": "PENDING",
 	"covered_modalities": ["text"],
 	"covered_tools": ["repository_read", "file_write", "shell", "playwright"],
 	"covered_mcp_operations": [],
-	"covered_capabilities": ["bounded_playwright_test_repair"],
+	"covered_capabilities": [
+		"single_seam_playwright_repair_and_candidate_freeze"
+	],
 	"durable_authorization_records": [
 		"docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md",
 		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
 	],
-	"material_selection_reason": "A fresh worker is required after the first implementation stage failed its self-verification. Registry revision 2026-08-25.10 filters normal external capacity and leaves Ox Alpha standby-only without a material advantage. Native Terra/high is sized for a narrow Playwright sequential-focus repair while the CSS remains frozen.",
+	"material_selection_reason": "Repair 1 narrowed the only red assertion to one unchanged public reload seam. A fresh worker is mandatory after that failed gate. Normal external capacity remains unavailable and Ox Alpha standby-only without a material advantage, so native Terra/high carries the final repair and freeze.",
 	"eligible_alternatives": ["native"],
 	"filtered_alternatives": {
 		"deepseek-v4-pro": ["operational-capacity posture: unavailable"],
@@ -37,7 +39,7 @@
 			"standby-only; no material advantage and higher recovery cost"
 		],
 		"direct": [
-			"fresh-worker rule after a failed delegated stage; preserve coordinator independence"
+			"fresh-worker rule after failed repair 1; preserve coordinator independence"
 		]
 	}
 }
