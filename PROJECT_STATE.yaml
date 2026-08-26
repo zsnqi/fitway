@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-26T12:29:00+03:00"
+updatedAt: "2026-08-26T14:10:00+03:00"
 
 coordinator:
   owner: "Coordinator closeout 2026-08-26T12:29:00+03:00 on codex/remaining-scope-coordinator. Owner Access UI is terminal FAILED_VALIDATION after final repair 2/2: candidate 97e4f70 passed focused, fast, exact phase, browser, accessibility, canonical, and visual-fidelity gates, but fresh independent contract review found the provisioning open-state modifier missing a separating space, leaving the collapsed trigger visible beside the open form. The two coordinator-owned canonical baseline replacements were authorized by the activation ledger but remain unintegrated with the rejected candidate. Settings Paper is also terminal FAILED_VALIDATION. Focus parity, Uptime mobile fidelity, the real unmocked propagation-wait milestone, Login Paper adoption, Settings, and the Phase 11 aggregate remain pending. No active slice exists. M4/M5 access races, owner-access rate limiting, and the workflow environment-documentation gap remain outside approved scope."
@@ -1651,8 +1651,8 @@ milestones:
       - every other milestone's phase record and handoff directory
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-26T13:05:00+03:00"
-    leaseExpiresAt: null
+    lastHeartbeatAt: "2026-08-26T14:10:00+03:00"
+    leaseExpiresAt: "2026-08-26T15:10:00+03:00"
     handoff: docs/phase-records/handoffs/phase11-access-ui/20260826-130500-p11_access_ui_r03-activation-plan.md
     stopReason: null
     gates:
