@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-26T19:38:00+03:00"
+updatedAt: "2026-08-26T19:56:00+03:00"
 
 coordinator:
-  owner: "Coordinator terminal closeout persisted 2026-08-26T19:38:00+03:00 on codex/remaining-scope-coordinator. The sole selected slice focus-parity-accessibility is FAILED_VALIDATION: repairs 1 and 2 are consumed, and fresh independent review rejected candidate a7f517a for missing operations-shell forced-colors non-vacuity coverage plus absent independent executable browser evidence. The candidate is preserved unintegrated; owner and lease are released. No second task was started."
+  owner: "Coordinator session 2026-08-26T19:56:00+03:00 on codex/remaining-scope-coordinator. Exactly one bounded slice is active: the user-authorized exceptional focus-parity-accessibility repair beyond the exhausted 2/2 budget, resuming frozen candidate a7f517a. Scope is one discriminating operations-shell forced-colors browser assertion plus existing verification, fresh native independent review, and integration only if accepted. The schema counter remains saturated at 2; any red gate is terminal. No other task or Paper lease is active."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1994,9 +1994,9 @@ milestones:
     integratedCommit: null
 
   focus-parity-accessibility:
-    status: FAILED_VALIDATION
+    status: IN_PROGRESS
     dependencies: [phase11-shell]
-    ownerSession: null
+    ownerSession: "direct native Codex coordinator/writer, run p11_focus_parity_r03"
     branch: work/phase11-focus-parity-b01
     worktree: D:/Projects/fitway-worktrees/phase11-focus-parity-b01
     baseCommit: SELF
@@ -2025,17 +2025,17 @@ milestones:
       - "Playwright/Vitest configuration, Paper, visual-direction-gate/**, and every unrelated milestone record"
     sharedLeases: []
     validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-26T19:38:00+03:00"
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/focus-parity-accessibility/20260826-180400-p11_focus_parity_c01-failed-validation.md
-    stopReason: "Terminal p11_focus_parity_v01 FAILED_VALIDATION after repair 2 of 2. Candidate a7f517a is preserved unintegrated. Independent review found the new operations-shell forced-colors selector has no discriminating operations-shell assertion; the login-only assertion stays green if that selector is removed. The independent browser command also failed before test collection because the reviewer sandbox could not resolve Playwright. No repair 3, integration, or DONE transition is permitted in this attempt."
+    lastHeartbeatAt: "2026-08-26T19:56:00+03:00"
+    leaseExpiresAt: "2026-08-26T23:56:00+03:00"
+    handoff: docs/phase-records/handoffs/focus-parity-accessibility/20260826-195600-p11_focus_parity_r03-activation.md
+    stopReason: null
     gates:
       unit: NOT_REQUIRED
       integration: NOT_REQUIRED
-      browser: PASS
-      accessibility: FAIL
+      browser: PENDING
+      accessibility: PENDING
       visual: NOT_REQUIRED
-      independentReview: FAIL
+      independentReview: PENDING
     integratedCommit: null
 
   phase-12:
