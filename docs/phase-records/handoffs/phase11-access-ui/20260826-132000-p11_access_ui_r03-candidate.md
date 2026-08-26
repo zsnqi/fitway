@@ -8,7 +8,7 @@
 
 ## Exact current state
 
-- Status: implementation complete; broader candidate verification is in progress and independent review has not started.
+- Status: implementation and coordinator verification complete; candidate freeze and independent reviews are pending.
 - Branch/worktree/run: `codex/phase11-access-ui-r03` / `D:/Projects/fitway-worktrees/phase11-access-ui-r03` / `p11_access_ui_r03`.
 - Base: preserved rejected candidate `97e4f70581a250b75bf75e878c96602c1ce1747f`.
 - Source/test diff is limited to `owner-access-view.tsx` and `phase11-access.browser.spec.ts`; this record is the only additional tracked path.
@@ -43,7 +43,11 @@ Current source state, before the final candidate commit:
 - Focused Biome: 2 files checked, no fixes or findings.
 - Corrected `pnpm verify:fast`: 65/65 files and 514/514 unit tests, 117/117 simulator tests, repository invariants, Biome, types, and mutation guard passed under `p11_access_ui_r03_fast3`.
 - Two preceding `verify:fast` invocations stopped at the same 2 environment-dependent server files because the copied ignored `.env` did not contain `CRON_SECRET`, `TELEGRAM_BOT_TOKEN`, or `TELEGRAM_CHAT_ID`. No candidate assertion failed and no tracked file changed. The green run used the recorded FITWAY pattern: existing ignored environment loaded without disclosure plus synthetic process-local values for those three test-only variables.
-- Pending: registered phase ladder, full ladder, final responsive/UI evidence, candidate freeze, independent verification/review, and post-integration verification.
+- Registered phase ladder at `648965c`: PASS under `p11_access_ui_r03_phase`; 65/65 unit files and 514/514 tests, 117/117 simulator tests, 24/24 focused disposable-Postgres integration tests, 44/44 registered browser/accessibility/responsive/visual tests, and clean mutation guard.
+- First full ladder at `648965c`: RED only at the existing scheduled Phase 2 propagation wait, with 17/18 integration files and 121/122 tests passing; the recovery count `6` did not render within 5,000 ms at `apps/server/src/phase2.integration.test.ts:788`. The candidate does not edit that file, but the durable follow-up explicitly forbids attribution for every UI slice, so the run remains red and is not suppressed.
+- Exact standalone Phase 2 file at the unchanged candidate: 1/1 file and 9/9 tests passed in 10.40 s under `p11_access_ui_r03_phase2_probe`. This is disclosed evidence, not attribution.
+- Second full ladder at `648965c`: PASS under `p11_access_ui_r03_full2`; repository invariants, Biome, types, 65/514 unit, 117 simulator, both production builds, 18/18 integration files and 122/122 tests, 96/96 browser/accessibility/responsive/visual tests, and clean mutation guard.
+- Pending: final candidate freeze, fresh independent contract/UI reviews, and post-integration verification.
 
 ## Recommended next session
 

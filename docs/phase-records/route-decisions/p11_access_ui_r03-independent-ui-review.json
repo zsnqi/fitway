@@ -1,0 +1,57 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_access_ui_r03 / fresh independent UI and accepted-Paper-family review",
+	"recorded": "2026-08-26T13:33:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native-gpt-5.6-sol",
+	"route": null,
+	"control": "xhigh",
+	"transport": "codex-native",
+	"native_spawn": {
+		"model": "gpt-5.6-sol",
+		"reasoning_effort": "xhigh",
+		"agent_role": "ui_reviewer",
+		"fork_turns": "none",
+		"parent_inheritance_deliberate": false
+	},
+	"qualification_baseline": "reused from p11_access_ui_r02 independent visual review; image modality, accepted family, consequence, and read-only boundary are unchanged",
+	"qualification_status": "native",
+	"gate_outcome": "PENDING",
+	"gate_outcome_note": "Fresh read-only verdict has not started.",
+	"covered_modalities": ["text", "image"],
+	"covered_tools": [
+		"repository_read",
+		"browser_test_execution",
+		"image_inspection"
+	],
+	"covered_capabilities": ["independent_bilingual_fidelity_review"],
+	"delegation_trigger": "independence and multi-viewport evidence volume",
+	"consequence": "high",
+	"material_selection_reason": "Reuse of the still-applicable r02 visual route: the final bilingual Owner family verdict needs a fresh strong native reviewer that did not implement the fix and can hold responsive, RTL, accessibility, and image evidence together.",
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"qualified-external-pool": [
+			"The recorded consequence ceiling and required image/browser modality exclude the available external pool."
+		],
+		"implementation-writer": [
+			"The coordinator implemented the repair and cannot independently approve its rendered result."
+		],
+		"prior-r02-reviewer": ["The gate must be fresh for the r03 candidate."]
+	},
+	"execution_identity": {
+		"candidate_branch": "codex/phase11-access-ui-r03",
+		"candidate_worktree": "D:/Projects/fitway-worktrees/phase11-access-ui-r03",
+		"candidate_base": "97e4f70581a250b75bf75e878c96602c1ce1747f",
+		"candidate_head": "648965c",
+		"paper_file": "FITWAY UX Exploration",
+		"accepted_paper_area": "OWNER ACCESS — BEHAVIOR-CORRECT SUCCESSOR — CURRENT",
+		"rollback_boundary": "none; independent review is read-only"
+	},
+	"access_boundary": {
+		"readable": "the exact r03 candidate range, accepted Access Paper-family records, current canonical evidence, and run-scoped rendered output",
+		"writable": "only ignored run-scoped browser/review outputs",
+		"commit_allowed": false,
+		"forbidden": "every tracked repository write, Paper mutation, baseline promotion, redesign, repair, acceptance, integration, environment disclosure, and further delegation"
+	}
+}

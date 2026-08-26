@@ -1,0 +1,52 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_access_ui_r03 / fresh independent contract verification",
+	"recorded": "2026-08-26T13:33:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native-gpt-5.6-sol",
+	"route": null,
+	"control": "xhigh",
+	"transport": "codex-native",
+	"native_spawn": {
+		"model": "gpt-5.6-sol",
+		"reasoning_effort": "xhigh",
+		"agent_role": "tester",
+		"fork_turns": "none",
+		"parent_inheritance_deliberate": false
+	},
+	"qualification_baseline": "reused from p11_access_ui_r02 independent contract verification; requirements, consequence, tools, and read-only boundary are unchanged",
+	"qualification_status": "native",
+	"gate_outcome": "PENDING",
+	"gate_outcome_note": "Fresh read-only verdict has not started.",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "focused_test_execution"],
+	"covered_capabilities": ["independent_contract_verification"],
+	"delegation_trigger": "independence",
+	"consequence": "high",
+	"material_selection_reason": "Reuse of the still-applicable r02 route: final owner-credential UI contract review is high consequence and needs a fresh native Sol reviewer; external and implementation-writer routes remain filtered by consequence and independence.",
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"qualified-external-pool": [
+			"The recorded consequence ceiling excludes this final owner-credential contract verdict."
+		],
+		"implementation-writer": [
+			"The coordinator implemented the repair and cannot independently approve it."
+		],
+		"prior-r02-reviewer": ["The gate must be fresh for the r03 candidate."]
+	},
+	"execution_identity": {
+		"candidate_branch": "codex/phase11-access-ui-r03",
+		"candidate_worktree": "D:/Projects/fitway-worktrees/phase11-access-ui-r03",
+		"candidate_base": "97e4f70581a250b75bf75e878c96602c1ce1747f",
+		"candidate_head": "648965c",
+		"run_id": "p11_access_ui_r03_independent_contract",
+		"rollback_boundary": "none; independent verification is read-only"
+	},
+	"access_boundary": {
+		"readable": "the exact r03 candidate range, directly relevant FITWAY authorities, and focused owner-access tests",
+		"writable": "only ignored run-scoped test outputs",
+		"commit_allowed": false,
+		"forbidden": "every tracked repository write, Paper mutation, baseline change, repair, acceptance, integration, environment disclosure, and further delegation"
+	}
+}
