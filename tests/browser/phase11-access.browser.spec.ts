@@ -407,6 +407,7 @@ test("desktop uses two summary cards above one owners table and mobile keeps pro
 	await expect(provisionForm).toBeHidden();
 	await trigger.click();
 	await expect(provisionForm).toBeVisible();
+	await expect(trigger).toBeHidden();
 	await expect(board).toHaveCount(1);
 	const rows = board.locator(".owner-access-owner");
 	expect(await rows.count()).toBeGreaterThan(1);

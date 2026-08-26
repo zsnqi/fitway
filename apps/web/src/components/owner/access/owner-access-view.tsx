@@ -487,7 +487,11 @@ export function OwnerAccessLive({
 				</div>
 
 				<div
-					className={`owner-access-card owner-access-owners-summary${provisionOpen ? "owner-access-owners-summary--provision-open" : ""}`}
+					className={
+						provisionOpen
+							? "owner-access-card owner-access-owners-summary owner-access-owners-summary--provision-open"
+							: "owner-access-card owner-access-owners-summary"
+					}
 					data-owner-access-owners-summary=""
 				>
 					<header className="owner-access-block__heading">
