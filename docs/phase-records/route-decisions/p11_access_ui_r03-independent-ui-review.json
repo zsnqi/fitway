@@ -4,21 +4,26 @@
 	"stage_ref": "p11_access_ui_r03 / fresh independent UI and accepted-Paper-family review",
 	"recorded": "2026-08-26T13:33:00+03:00",
 	"evaluated_before_stage_discovery": true,
-	"candidate_id": "native-gpt-5.6-sol",
+	"candidate_id": "native-gpt-5.4-fallback",
 	"route": null,
 	"control": "xhigh",
 	"transport": "codex-native",
 	"native_spawn": {
-		"model": "gpt-5.6-sol",
+		"model": "gpt-5.4",
 		"reasoning_effort": "xhigh",
 		"agent_role": "ui_reviewer",
 		"fork_turns": "none",
 		"parent_inheritance_deliberate": false
 	},
+	"primary_route_attempt": {
+		"candidate_id": "native-gpt-5.6-sol",
+		"outcome": "REJECTED_BEFORE_EXECUTION",
+		"reason": "The host rejected the fresh Sol UI reviewer for current usage allocation before repository or image work began; no verdict or evidence was produced by that attempt."
+	},
 	"qualification_baseline": "reused from p11_access_ui_r02 independent visual review; image modality, accepted family, consequence, and read-only boundary are unchanged",
 	"qualification_status": "native",
-	"gate_outcome": "PENDING",
-	"gate_outcome_note": "Fresh read-only verdict has not started.",
+	"gate_outcome": "PASS_WITH_NOTE",
+	"gate_outcome_note": "A fresh gpt-5.4/xhigh UI reviewer ran the complete owner-access Chromium spec 13/13 green under p11_access_ui_r03_ind_ui2 on port 43149 and inspected ten fresh opened-provisioning captures across Arabic and English at 1440, 820, 390, 360, and 320px. The trigger is absent while the form is open; accepted family membership, directional order, responsive reflow, keyboard/focus, targets, axe, forced colors, and overflow all pass. The only note is unchanged r02 mobile density: at 320-390px the owner name/email/state cluster has no horizontal gap, but remains readable, operable, and overflow-free. No Paper or baseline mutation occurred. The stale pre-recorded outcome/head fields in this file are corrected here after review without changing the frozen candidate.",
 	"covered_modalities": ["text", "image"],
 	"covered_tools": [
 		"repository_read",
@@ -28,7 +33,7 @@
 	"covered_capabilities": ["independent_bilingual_fidelity_review"],
 	"delegation_trigger": "independence and multi-viewport evidence volume",
 	"consequence": "high",
-	"material_selection_reason": "Reuse of the still-applicable r02 visual route: the final bilingual Owner family verdict needs a fresh strong native reviewer that did not implement the fix and can hold responsive, RTL, accessibility, and image evidence together.",
+	"material_selection_reason": "The still-applicable r02 visual route required a fresh strong native reviewer. Sol was selected first but rejected by host usage allocation before execution, so a fresh gpt-5.4/xhigh UI reviewer performed the same bounded image/browser gate and held responsive, RTL, accessibility, and accepted-family evidence together.",
 	"eligible_alternatives": [],
 	"filtered_alternatives": {
 		"qualified-external-pool": [
@@ -43,7 +48,10 @@
 		"candidate_branch": "codex/phase11-access-ui-r03",
 		"candidate_worktree": "D:/Projects/fitway-worktrees/phase11-access-ui-r03",
 		"candidate_base": "97e4f70581a250b75bf75e878c96602c1ce1747f",
-		"candidate_head": "648965c",
+		"candidate_head": "abc712ff0b29203ce7ed3b63fcf954306f8d547d",
+		"run_id": "p11_access_ui_r03_ind_ui2",
+		"playwright_port": 43149,
+		"review_output": "output/playwright/p11_access_ui_r03_ind_ui2/review-open",
 		"paper_file": "FITWAY UX Exploration",
 		"accepted_paper_area": "OWNER ACCESS — BEHAVIOR-CORRECT SUCCESSOR — CURRENT",
 		"rollback_boundary": "none; independent review is read-only"

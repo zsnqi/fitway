@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-26T14:10:00+03:00"
+updatedAt: "2026-08-26T14:18:50+03:00"
 
 coordinator:
-  owner: "Coordinator closeout 2026-08-26T12:29:00+03:00 on codex/remaining-scope-coordinator. Owner Access UI is terminal FAILED_VALIDATION after final repair 2/2: candidate 97e4f70 passed focused, fast, exact phase, browser, accessibility, canonical, and visual-fidelity gates, but fresh independent contract review found the provisioning open-state modifier missing a separating space, leaving the collapsed trigger visible beside the open form. The two coordinator-owned canonical baseline replacements were authorized by the activation ledger but remain unintegrated with the rejected candidate. Settings Paper is also terminal FAILED_VALIDATION. Focus parity, Uptime mobile fidelity, the real unmocked propagation-wait milestone, Login Paper adoption, Settings, and the Phase 11 aggregate remain pending. No active slice exists. M4/M5 access races, owner-access rate limiting, and the workflow environment-documentation gap remain outside approved scope."
+  owner: "Coordinator closeout 2026-08-26T14:18:50+03:00 on codex/remaining-scope-coordinator. Owner Access UI is DONE after the explicitly human-authorized r03 repair: frozen candidate abc712f closed the provisioning open-state class-token defect, passed fresh independent contract and UI/Paper-family gates plus the coordinator full ladder, and integrated at 0edb9d9. The accepted Paper family and locked product/contract decisions remain unchanged. No other task was started and no active slice remains."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1621,11 +1621,11 @@ milestones:
     integratedCommit: SELF
 
   phase11-access-ui:
-    status: IN_PROGRESS
+    status: DONE
     dependencies: [phase11-access-b02, phase11-access-tx, phase11-browser-debt, phase11-access-paper-successor]
-    ownerSession: "Codex coordinator session p11_access_ui_r03, explicitly human-authorized on 2026-08-26 as one fresh attempt beyond terminal r02 repair 2/2; only the confirmed open-state class-token defect and its regression assertion are writable."
-    branch: codex/phase11-access-ui-r03
-    worktree: D:/Projects/fitway-worktrees/phase11-access-ui-r03
+    ownerSession: null
+    branch: codex/remaining-scope-coordinator
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
     baseCommit: 97e4f70581a250b75bf75e878c96602c1ce1747f
     ownedPaths:
       - apps/web/src/components/owner/access/**
@@ -1651,18 +1651,18 @@ milestones:
       - every other milestone's phase record and handoff directory
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-26T14:10:00+03:00"
-    leaseExpiresAt: "2026-08-26T15:10:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-access-ui/20260826-130500-p11_access_ui_r03-activation-plan.md
+    lastHeartbeatAt: "2026-08-26T14:18:50+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase11-access-ui/20260826-141850-p11_access_ui_r03-coordinator-done.md
     stopReason: null
     gates:
-      unit: PENDING
-      integration: PENDING
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
-      independentReview: PENDING
-    integratedCommit: null
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
+      independentReview: PASS
+    integratedCommit: 0edb9d97fe0967148158f4a15c13294bdf97ee6e
 
   phase11-e2e-propagation-wait:
     status: PLANNED
