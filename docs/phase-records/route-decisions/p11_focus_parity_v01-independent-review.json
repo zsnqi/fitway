@@ -18,7 +18,7 @@
 	"registry_revision": "2026-08-25.10",
 	"qualification_baseline": "2026-08-23.4",
 	"qualification_status": "native",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "FAILED_VALIDATION",
 	"covered_modalities": ["text"],
 	"covered_tools": ["repository_read", "shell", "playwright"],
 	"covered_mcp_operations": [],
