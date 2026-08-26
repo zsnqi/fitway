@@ -566,6 +566,33 @@ test("keyboard order, focus transfer, practical targets, reduced motion, and 200
 	});
 	expect(outline.style).not.toBe("none");
 	expect(outline.width).toBeGreaterThanOrEqual(2);
+
+	await page.evaluate(() => {
+		const shell = document.createElement("div");
+		shell.className = "operations-shell";
+		const target = document.createElement("button");
+		target.type = "button";
+		target.dataset.testid = "operations-shell-forced-colors-probe";
+		target.textContent = "Operations shell forced-colors probe";
+		shell.append(target);
+		document.body.append(shell);
+	});
+	const operationsShellTarget = page.getByTestId(
+		"operations-shell-forced-colors-probe",
+	);
+	await operationsShellTarget.focus();
+	await expect(operationsShellTarget).toBeFocused();
+	const operationsShellOutline = await operationsShellTarget.evaluate(
+		(element) => {
+			const style = getComputedStyle(element);
+			return {
+				style: style.outlineStyle,
+				width: Number.parseFloat(style.outlineWidth),
+			};
+		},
+	);
+	expect(operationsShellOutline.style).toBe("solid");
+	expect(operationsShellOutline.width).toBeGreaterThanOrEqual(2);
 });
 
 test("Staff Arabic order, monitoring-only scope, Retry focus target, overflow, and 200% reflow", async ({
