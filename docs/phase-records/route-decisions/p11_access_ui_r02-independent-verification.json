@@ -1,0 +1,57 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_access_ui_r02 / final independent contract verification",
+	"recorded": "2026-08-26T12:29:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native-gpt-5.4-fallback",
+	"route": null,
+	"control": "xhigh",
+	"transport": "codex-native",
+	"native_spawn": {
+		"model": "gpt-5.4",
+		"reasoning_effort": "xhigh",
+		"agent_role": "tester",
+		"fork_turns": "none",
+		"parent_inheritance_deliberate": false
+	},
+	"registry_revision": "2026-08-25.10",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": "FAIL",
+	"gate_outcome_note": "The primary SOL route was rejected before execution by host usage allocation, so a fresh native gpt-5.4/xhigh tester ran the same read-only gate. Focused unit 38/38 and selected Playwright 4/4 passed, and secret-free success, reset isolation, validation bounds, refusal mapping, and authorization scope held. The gate nevertheless failed: owner-access-view.tsx concatenates the provision-open modifier without a separating space, so the trigger-hiding selector never matches and the Provision owner trigger remains beside the open form. The review's additional assertion that the two canonical baselines were unauthorized was adjudicated invalid because the activation ledger explicitly makes their serialized refresh coordinator-owned; the confirmed class defect independently requires rejection.",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "test_execution"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": ["independent_contract_verification"],
+	"durable_authorization_records": [],
+	"delegation_trigger": "independence",
+	"consequence": "high",
+	"material_selection_reason": "Final owner-credential UI repair required a fresh independent contract verdict. SOL was selected first but could not start due host usage allocation; gpt-5.4/xhigh was the strongest executable fresh native fallback and retained no repair authority.",
+	"eligible_alternatives": ["native-gpt-5.6-sol"],
+	"filtered_alternatives": {
+		"native-gpt-5.6-sol": [
+			"Selected first; host usage allocation rejected the run before repository access or test execution."
+		],
+		"implementation-writer": [
+			"The implementation writer cannot independently approve its own work."
+		],
+		"direct-native-sol-coordinator": [
+			"The coordinator performed parent corrections and retains terminal authority."
+		]
+	},
+	"execution_identity": {
+		"candidate_branch": "codex/phase11-access-ui-r02",
+		"candidate_worktree": "D:/Projects/fitway-worktrees/phase11-access-ui-r02",
+		"candidate_base": "d10f6272852d69d15788fa1edae0887489527e6a",
+		"candidate_head": "97e4f70581a250b75bf75e878c96602c1ce1747f",
+		"run_id": "p11_access_ui_r02_independent",
+		"rollback_boundary": "none; independent verification was read-only"
+	},
+	"access_boundary": {
+		"readable": "the exact candidate range, directly relevant FITWAY authorities, test configuration, and ignored isolated test outputs",
+		"writable": "only ignored run-scoped test outputs",
+		"commit_allowed": false,
+		"forbidden": "every repository file, canonical baseline change, Paper mutation, real environment disclosure, repair, acceptance, and further delegation"
+	}
+}

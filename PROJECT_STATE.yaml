@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-26T01:12:55+03:00"
+updatedAt: "2026-08-26T12:29:00+03:00"
 
 coordinator:
-  owner: "Coordinator activation 2026-08-26T01:12:55+03:00 on codex/remaining-scope-coordinator. Owner Access UI repair 2/2 is the only active slice and targets the four independently confirmed Paper/behavior findings on a fresh isolated branch; rejected candidate 181480a and its images remain evidence. Settings Paper is terminal FAILED_VALIDATION after repair 2/2 and Settings spec/backend/UI remain blocked pending a human-authorized fresh attempt. Focus parity, Uptime mobile fidelity, the real unmocked propagation-wait milestone, Login Paper adoption, Settings, and the Phase 11 aggregate remain pending. Canonical baseline acceptance, integration, and DONE authority remain coordinator-owned. M4/M5 access races, owner-access rate limiting, and the workflow environment-documentation gap remain outside approved scope."
+  owner: "Coordinator closeout 2026-08-26T12:29:00+03:00 on codex/remaining-scope-coordinator. Owner Access UI is terminal FAILED_VALIDATION after final repair 2/2: candidate 97e4f70 passed focused, fast, exact phase, browser, accessibility, canonical, and visual-fidelity gates, but fresh independent contract review found the provisioning open-state modifier missing a separating space, leaving the collapsed trigger visible beside the open form. The two coordinator-owned canonical baseline replacements were authorized by the activation ledger but remain unintegrated with the rejected candidate. Settings Paper is also terminal FAILED_VALIDATION. Focus parity, Uptime mobile fidelity, the real unmocked propagation-wait milestone, Login Paper adoption, Settings, and the Phase 11 aggregate remain pending. No active slice exists. M4/M5 access races, owner-access rate limiting, and the workflow environment-documentation gap remain outside approved scope."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1621,9 +1621,9 @@ milestones:
     integratedCommit: SELF
 
   phase11-access-ui:
-    status: IN_PROGRESS
+    status: FAILED_VALIDATION
     dependencies: [phase11-access-b02, phase11-access-tx, phase11-browser-debt, phase11-access-paper-successor]
-    ownerSession: "Codex coordinator session / run p11_access_ui_r02; one native Terra writer on the fresh isolated repair worktree"
+    ownerSession: null
     branch: codex/phase11-access-ui-r02
     worktree: D:/Projects/fitway-worktrees/phase11-access-ui-r02
     baseCommit: SELF
@@ -1652,17 +1652,17 @@ milestones:
       - every other milestone's phase record and handoff directory
     sharedLeases: []
     validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-26T01:12:55+03:00"
-    leaseExpiresAt: "2026-08-28T23:59:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-access-ui/20260826-011255-p11_access_ui_r02-activation-plan.md
-    stopReason: null
+    lastHeartbeatAt: "2026-08-26T12:29:00+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase11-access-ui/20260826-122900-p11_access_ui_r02-failed-validation.md
+    stopReason: "Terminal final repair 2/2. Frozen candidate 97e4f70581a250b75bf75e878c96602c1ce1747f on codex/phase11-access-ui-r02 passes focused unit 38/38, verify:fast, non-canonical Chromium 12/12, canonical Chromium 1/1, and exact verify:phase with 24/24 disposable-Postgres integration tests plus 44/44 registered browser/accessibility/visual tests. Fresh independent visual review passed with one non-blocking mobile identity-density note. Fresh independent contract review failed because owner-access-view.tsx concatenates the provision-open modifier without a separating space, so .owner-access-owners-summary--provision-open never matches and the Provision owner trigger remains visible beside the open form. The review's separate baseline-authorization concern was adjudicated invalid because this activation explicitly leases the two Access baselines to the coordinator for serialized promotion; it does not affect the confirmed UI defect. verify:full passed invariants, Biome, types, 514 unit tests, 117 simulator tests, and both builds, then was intentionally terminated during all-integration after the independent blocking verdict made integration forbidden. No candidate commit or baseline was integrated. A third repair is forbidden without a new human-authorized attempt."
     gates:
-      unit: PENDING
-      integration: PENDING
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
-      independentReview: PENDING
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
+      independentReview: FAIL
     integratedCommit: null
 
   phase11-e2e-propagation-wait:

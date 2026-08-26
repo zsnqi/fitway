@@ -1,0 +1,58 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_access_ui_r02 / final independent Paper and UI review",
+	"recorded": "2026-08-26T12:29:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native-gpt-5.4-fallback",
+	"route": null,
+	"control": "xhigh",
+	"transport": "codex-native",
+	"native_spawn": {
+		"model": "gpt-5.4",
+		"reasoning_effort": "xhigh",
+		"agent_role": "ui_reviewer",
+		"fork_turns": "none",
+		"parent_inheritance_deliberate": false
+	},
+	"registry_revision": "2026-08-25.10",
+	"qualification_baseline": "2026-08-23.4",
+	"qualification_status": "native",
+	"gate_outcome": "PASS_WITH_NOTE",
+	"gate_outcome_note": "The primary SOL route was rejected before execution by host usage allocation, so a fresh native gpt-5.4/xhigh UI reviewer ran the same read-only gate. The 1440 Arabic and 390 English canonical renders preserve the accepted two-card desktop hierarchy, collapsed provisioning, single mobile separator board, RTL order, Western digits, readable contrast, distinct actions, and touch-safe controls. Mobile owner identity metadata is denser than Paper and reads nearly concatenated, but remains understandable without overflow at 390/360; recorded as significant non-blocking fidelity debt.",
+	"covered_modalities": ["text", "image"],
+	"covered_tools": ["repository_read", "image_inspection"],
+	"covered_mcp_operations": ["paper.read", "paper.screenshot"],
+	"covered_capabilities": ["independent_bilingual_fidelity_review"],
+	"durable_authorization_records": [],
+	"delegation_trigger": "independence",
+	"consequence": "high",
+	"material_selection_reason": "Final bilingual Paper fidelity required a fresh reviewer. SOL was selected first but could not start due host usage allocation; gpt-5.4/xhigh was the strongest executable fresh native fallback and retained no mutation authority.",
+	"eligible_alternatives": ["native-gpt-5.6-sol"],
+	"filtered_alternatives": {
+		"native-gpt-5.6-sol": [
+			"Selected first; host usage allocation rejected the run before repository or Paper review."
+		],
+		"implementation-writer": [
+			"The implementation writer cannot independently approve its own visual work."
+		],
+		"direct-native-sol-coordinator": [
+			"The coordinator performed the baseline refresh and retains final authority."
+		]
+	},
+	"execution_identity": {
+		"candidate_branch": "codex/phase11-access-ui-r02",
+		"candidate_worktree": "D:/Projects/fitway-worktrees/phase11-access-ui-r02",
+		"candidate_base": "d10f6272852d69d15788fa1edae0887489527e6a",
+		"candidate_head": "97e4f70581a250b75bf75e878c96602c1ce1747f",
+		"paper_file": "FITWAY UX Exploration",
+		"accepted_paper_area": "OWNER ACCESS — BEHAVIOR-CORRECT SUCCESSOR — CURRENT",
+		"rollback_boundary": "none; independent review was read-only"
+	},
+	"access_boundary": {
+		"readable": "the exact candidate range, canonical desktop Arabic and mobile English screenshots, the accepted Paper successor, and directly relevant FITWAY authorities",
+		"writable": "none",
+		"commit_allowed": false,
+		"forbidden": "every repository write, Paper mutation, baseline promotion, real environment disclosure, repair, acceptance, and further delegation"
+	}
+}
