@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-26T19:56:00+03:00"
+updatedAt: "2026-08-26T20:00:00+03:00"
 
 coordinator:
-  owner: "Coordinator session 2026-08-26T19:56:00+03:00 on codex/remaining-scope-coordinator. Exactly one bounded slice is active: the user-authorized exceptional focus-parity-accessibility repair beyond the exhausted 2/2 budget, resuming frozen candidate a7f517a. Scope is one discriminating operations-shell forced-colors browser assertion plus existing verification, fresh native independent review, and integration only if accepted. The schema counter remains saturated at 2; any red gate is terminal. No other task or Paper lease is active."
+  owner: "Coordinator terminal closeout persisted 2026-08-26T20:00:00+03:00 on codex/remaining-scope-coordinator. The user-authorized exceptional focus-parity-accessibility repair beyond 2/2 reached its terminal FAILED_VALIDATION outcome: the new operations-shell proof was discriminating when the selector was absent, but the restored-selector Chromium gate was 23/24 because forced-colors normalized the authored outline offset to 0px. The uncommitted probe was rolled back and frozen candidate a7f517a remains clean, unchanged, and unintegrated. Owner and lease are released; no second task was started."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1994,9 +1994,9 @@ milestones:
     integratedCommit: null
 
   focus-parity-accessibility:
-    status: IN_PROGRESS
+    status: FAILED_VALIDATION
     dependencies: [phase11-shell]
-    ownerSession: "direct native Codex coordinator/writer, run p11_focus_parity_r03"
+    ownerSession: null
     branch: work/phase11-focus-parity-b01
     worktree: D:/Projects/fitway-worktrees/phase11-focus-parity-b01
     baseCommit: SELF
@@ -2025,15 +2025,15 @@ milestones:
       - "Playwright/Vitest configuration, Paper, visual-direction-gate/**, and every unrelated milestone record"
     sharedLeases: []
     validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-26T19:56:00+03:00"
-    leaseExpiresAt: "2026-08-26T23:56:00+03:00"
-    handoff: docs/phase-records/handoffs/focus-parity-accessibility/20260826-195600-p11_focus_parity_r03-activation.md
-    stopReason: null
+    lastHeartbeatAt: "2026-08-26T20:00:00+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/focus-parity-accessibility/20260826-200000-p11_focus_parity_r03-failed-validation.md
+    stopReason: "Terminal human-authorized exceptional repair p11_focus_parity_r03 FAILED_VALIDATION. With the operations-shell selector temporarily absent, the new proof failed discriminatingly with outline-style none. After exact selector restoration, the fixed three-spec Chromium gate passed 23/24: the new target computed a solid 2px outline but Chromium forced-colors normalized outline-offset to 0px, failing the added exact 2px offset expectation. The activation authorized only this one beyond-budget repair and made any red focused gate terminal. The uncommitted test probe was rolled back; preserved candidate a7f517a remains clean, unchanged, and unintegrated. No independent review or integration was permitted."
     gates:
       unit: NOT_REQUIRED
       integration: NOT_REQUIRED
-      browser: PENDING
-      accessibility: PENDING
+      browser: FAIL
+      accessibility: FAIL
       visual: NOT_REQUIRED
       independentReview: PENDING
     integratedCommit: null
