@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-27T14:41:00+03:00"
+updatedAt: "2026-08-27T14:53:00+03:00"
 
 coordinator:
-  owner: "Native coordinator on codex/phase11-access-ui-r05-native. Human authorization on 2026-08-27 opened one fresh bounded repair of the latest Phase 11 Access UI terminal FAILED_VALIDATION. Accepted r03 integration 0edb9d9 and its Paper/baselines remain authoritative; r04 is immutable rejected evidence. Plan review is pending. No source lease, external route, second task, integration, deployment, or push has started."
+  owner: "Native coordinator on codex/phase11-access-ui-r05-native. Human authorization on 2026-08-27 opened one fresh bounded repair of the latest Phase 11 Access UI terminal FAILED_VALIDATION. Accepted r03 integration 0edb9d9 and its Paper/baselines remain authoritative; r04 is immutable rejected evidence. Plan review v1 requested workflow-only corrections; amended plan review is pending. No source lease, external route, second task, integration, deployment, or push has started."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1623,7 +1623,7 @@ milestones:
   phase11-access-ui:
     status: IN_PROGRESS
     dependencies: [phase11-access-b02, phase11-access-tx, phase11-browser-debt, phase11-access-paper-successor]
-    ownerSession: "Native coordinator repair p11_access_ui_r05; plan review pending, no source lease open"
+    ownerSession: "Native coordinator repair p11_access_ui_r05; amended plan review pending, no source lease open"
     branch: codex/phase11-access-ui-r05-native
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration/.codex-worktrees/phase11-access-ui-r05-native
     baseCommit: 8f2de74ecdc1f44f5bafe1f8c4ccd4d662b1a3ab
@@ -1651,7 +1651,7 @@ milestones:
       - every other milestone's phase record and handoff directory
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-27T14:41:00+03:00"
+    lastHeartbeatAt: "2026-08-27T14:53:00+03:00"
     leaseExpiresAt: "2026-08-27T22:41:00+03:00"
     handoff: docs/phase-records/handoffs/phase11-access-ui/20260827-144100-p11_access_ui_r05-activation-plan.md
     stopReason: null

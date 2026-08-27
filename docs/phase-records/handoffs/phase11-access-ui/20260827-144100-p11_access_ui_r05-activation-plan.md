@@ -35,8 +35,8 @@ The coordinator alone writes this attempt's ledger, handoff, route-decision, and
 1. **Activation and plan review.** This metadata-only commit opens r05 at repair count `0/2`. A fresh native reviewer checks authority, scope, discriminating acceptance, and verification completeness. Rollback: revert the activation commit; accepted r03 stays integrated.
 2. **Bounded implementation.** Re-derive the smallest r04 focus changes against r03, then build credential-aware, response-correlated browser fixtures. Establish red tests for each recorded r04 blocker before green. Rollback: revert the single source/test implementation commit.
 3. **Candidate freeze.** Coordinator reviews the complete diff and evidence, writes the candidate handoff, then runs freeze checks after every tracked write. A freeze defect is repaired before submission and does not consume validation budget. Rollback: amend or revert only the candidate-record commit before submission.
-4. **Fresh verification and independent review.** A native verifier that did not implement runs focused and broad gates, performs interactive Browser inspection plus repository Playwright checks, and fault-injects at least audit-ID mismatch and stale-credential acceptance. The verifier never repairs. A rejection consumes one repair attempt; at most two focused repairs are permitted, and a third recurrence is terminal `FAILED_VALIDATION`.
-5. **Coordinator terminal gate.** On `PASS`, integrate the bounded candidate onto the current coordinator frontier, rerun integration checks, record `DONE`, and release ownership. On a red gate, run only the authorized focused repair loop or record the required terminal state. Stop without starting another task.
+4. **Fresh verification and independent review.** Before submission, writer/coordinator self-gates permit at most two focused repairs. After the candidate is frozen and submitted, a native verifier that did not implement runs focused and broad gates, performs interactive Browser inspection plus repository Playwright checks, and fault-injects at least audit-ID mismatch and stale-credential acceptance. The verifier never repairs. Any fresh independent rejection is immediately terminal `FAILED_VALIDATION` for r05, with no repair or resubmission.
+5. **Coordinator terminal gate.** On independent `PASS`, integrate the bounded candidate onto the current coordinator frontier, rerun integration checks, record `DONE`, and release ownership. On independent rejection, record terminal `FAILED_VALIDATION` and stop without source repair, resubmission, integration, or another task.
 
 ## Verification contract
 
@@ -49,14 +49,17 @@ Environment preparation:
 Focused and rendered behavior:
 
 - `pnpm exec .\\node_modules\\.bin\\vitest.CMD run apps/web/src/components/owner/access/owner-access-view.test.tsx apps/web/src/hooks/use-owner-access.test.tsx`
-- `pnpm exec .\\node_modules\\.bin\\playwright.CMD test tests/browser/phase11-access.browser.spec.ts --project=chromium` with a unique run ID, port, output path, and no baseline updates
+- PowerShell browser isolation: `$env:FITWAY_RUN_ID = "p11_access_ui_r05_browser"`; `$env:FITWAY_PLAYWRIGHT_PORT = "24150"`; `$env:FITWAY_PLAYWRIGHT_OUTPUT_DIR = "output/playwright/p11_access_ui_r05_browser"`; `$env:FITWAY_PLAYWRIGHT_REPORT_DIR = "output/playwright/p11_access_ui_r05_browser/report"`; `$env:FITWAY_PLAYWRIGHT_REVIEW_DIR = "output/playwright/p11_access_ui_r05_browser/review"`.
+- `pnpm exec .\\node_modules\\.bin\\playwright.CMD test tests/browser/phase11-access.browser.spec.ts --project=chromium` after those assignments, with no baseline update flag and the accepted snapshot directory left read-only
 - explicit fault-injection copies or runtime switches proving response audit-ID mismatch, wrong-principal use, old-credential acceptance, and replacement-credential rejection turn the exact success test red
 
 Repository ladder:
 
 - `pnpm verify:fast`
-- `FITWAY_PHASE=phase11-access pnpm verify:phase`
-- `pnpm verify:full` with exact run-specific disposable PostgreSQL database and destructive-test marker
+- Phase PowerShell assignments: `$env:FITWAY_RUN_ID = "p11_access_ui_r05_phase"`; `$env:FITWAY_INTEGRATION_RESET_DATABASE = "fitway_integration_p11_access_ui_r05_phase"`; `$env:TEST_DATABASE_URL = $env:FITWAY_R05_PHASE_TEST_DATABASE_URL`, where the last value is a session-only secret-bearing URL provisioned without logging and names that exact disposable database; assign the same isolated Playwright variables with port `24151` and matching `p11_access_ui_r05_phase` output/report/review directories.
+- `pnpm verify:phase --phase phase11-access`
+- Full PowerShell assignments: `$env:FITWAY_RUN_ID = "p11_access_ui_r05_full"`; `$env:FITWAY_INTEGRATION_RESET_DATABASE = "fitway_integration_p11_access_ui_r05_full"`; `$env:TEST_DATABASE_URL = $env:FITWAY_R05_FULL_TEST_DATABASE_URL`, where the last value is separately provisioned without logging and names that exact disposable database; assign the same isolated Playwright variables with port `24152` and matching `p11_access_ui_r05_full` output/report/review directories.
+- `pnpm verify:full`
 
 Freeze after all tracked writes:
 

@@ -1,0 +1,35 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "p11_access_ui_r05_plan_review_v2",
+	"recorded": "2026-08-27T14:53:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"delegation_evaluation": {
+		"stage_discovery_started_at": null,
+		"basis": "Amended r05 activation plan plus the first review's two locatable workflow findings; fresh reviewer has not inspected the plan or target files.",
+		"triggers": ["independence", "recoverability"],
+		"direct_reasons_considered": ["corrections are narrow and deterministic"],
+		"decision": "Use a fresh native reviewer because the first plan gate rejected the submitted plan; the prior reviewer is not resumed."
+	},
+	"candidate_id": "native",
+	"route": null,
+	"control": "xhigh",
+	"transport": "codex-native",
+	"native_spawn": {
+		"model": "gpt-5.6-sol",
+		"reasoning_effort": "xhigh",
+		"agent_role": "reviewer",
+		"fork_turns": "none",
+		"parent_inheritance_deliberate": false
+	},
+	"gate_outcome": "PENDING",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "git_read"],
+	"covered_capabilities": [
+		"workflow conformance",
+		"session and audit evidence planning"
+	],
+	"material_selection_reason": "A fresh independent gate is required after plan correction. Sol/xhigh remains warranted by the terminal consequence and session/audit proof design. Native is mandatory; no external route is considered, loaded, preflighted, or invoked. Nested delegation is explicitly prohibited for this retry.",
+	"eligible_alternatives": ["native-sol", "native-terra"],
+	"consequence": "A PASS opens the only source writer; rejection returns to coordinator. Reviewer cannot edit, repair, integrate, delegate, or make product decisions."
+}

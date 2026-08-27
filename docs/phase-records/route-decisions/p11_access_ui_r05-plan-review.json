@@ -22,7 +22,8 @@
 		"fork_turns": "none",
 		"parent_inheritance_deliberate": false
 	},
-	"gate_outcome": "PENDING",
+	"gate_outcome": "REQUEST_CHANGES",
+	"observed_outcome": "Plan review found no authority, scope, product, security, privacy, visual, or semantic acceptance conflict. It requested two workflow corrections: fresh independent rejection must be immediately terminal, and Windows verification must name executable PowerShell isolation assignments. Reviewer attempted unqualified nested read-only delegation; coordinator interrupted both children and required the assigned reviewer to finish independently without relying on them.",
 	"covered_modalities": ["text"],
 	"covered_tools": ["repository_read", "git_read"],
 	"covered_capabilities": [
