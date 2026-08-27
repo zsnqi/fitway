@@ -1,0 +1,35 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "p11_access_ui_r05_plan_review",
+	"recorded": "2026-08-27T14:41:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"delegation_evaluation": {
+		"stage_discovery_started_at": null,
+		"basis": "The written r05 activation plan and immutable r04 blocking findings; reviewer has not inspected target files.",
+		"triggers": ["independence"],
+		"direct_reasons_considered": ["plan is bounded to three files"],
+		"decision": "A fresh native reviewer independently checks whether the plan makes the prior false-green evidence discriminating before any implementation lease opens."
+	},
+	"candidate_id": "native",
+	"route": null,
+	"control": "xhigh",
+	"transport": "codex-native",
+	"native_spawn": {
+		"model": "gpt-5.6-sol",
+		"reasoning_effort": "xhigh",
+		"agent_role": "reviewer",
+		"fork_turns": "none",
+		"parent_inheritance_deliberate": false
+	},
+	"gate_outcome": "PENDING",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "git_read"],
+	"covered_capabilities": [
+		"authority review",
+		"session and audit evidence planning"
+	],
+	"material_selection_reason": "Independence and the terminal consequence of another false-green fixture justify Sol/xhigh. Native is mandatory under the user's explicit restriction; no external route was considered, loaded, preflighted, or invoked.",
+	"eligible_alternatives": ["native-sol", "native-terra"],
+	"consequence": "Plan approval controls whether source implementation may begin; reviewer cannot edit, repair, integrate, or make product decisions."
+}

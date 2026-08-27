@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-26T20:00:00+03:00"
+updatedAt: "2026-08-27T14:41:00+03:00"
 
 coordinator:
-  owner: "Coordinator terminal closeout persisted 2026-08-26T20:00:00+03:00 on codex/remaining-scope-coordinator. The user-authorized exceptional focus-parity-accessibility repair beyond 2/2 reached its terminal FAILED_VALIDATION outcome: the new operations-shell proof was discriminating when the selector was absent, but the restored-selector Chromium gate was 23/24 because forced-colors normalized the authored outline offset to 0px. The uncommitted probe was rolled back and frozen candidate a7f517a remains clean, unchanged, and unintegrated. Owner and lease are released; no second task was started."
+  owner: "Native coordinator on codex/phase11-access-ui-r05-native. Human authorization on 2026-08-27 opened one fresh bounded repair of the latest Phase 11 Access UI terminal FAILED_VALIDATION. Accepted r03 integration 0edb9d9 and its Paper/baselines remain authoritative; r04 is immutable rejected evidence. Plan review is pending. No source lease, external route, second task, integration, deployment, or push has started."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1621,24 +1621,24 @@ milestones:
     integratedCommit: SELF
 
   phase11-access-ui:
-    status: DONE
+    status: IN_PROGRESS
     dependencies: [phase11-access-b02, phase11-access-tx, phase11-browser-debt, phase11-access-paper-successor]
-    ownerSession: null
-    branch: codex/remaining-scope-coordinator
-    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
-    baseCommit: 97e4f70581a250b75bf75e878c96602c1ce1747f
+    ownerSession: "Native coordinator repair p11_access_ui_r05; plan review pending, no source lease open"
+    branch: codex/phase11-access-ui-r05-native
+    worktree: D:/Projects/fitway-worktrees/phase5-staff-integration/.codex-worktrees/phase11-access-ui-r05-native
+    baseCommit: 8f2de74ecdc1f44f5bafe1f8c4ccd4d662b1a3ab
     ownedPaths:
-      - apps/web/src/components/owner/access/**
-      - apps/web/src/hooks/use-owner-access.test.tsx
+      - apps/web/src/components/owner/access/owner-access-view.tsx
+      - apps/web/src/components/owner/access/owner-access-view.test.tsx
       - tests/browser/phase11-access.browser.spec.ts
-      - docs/phase-records/handoffs/phase11-access-ui/*-p11_access_ui_r03-*.md
-      - docs/phase-records/route-decisions/p11_access_ui_r03-*.json
-      - docs/phase-records/verification/*p11_access_ui_r03*
+      - docs/phase-records/handoffs/phase11-access-ui/*-p11_access_ui_r05-*.md
+      - docs/phase-records/route-decisions/p11_access_ui_r05-*.json
+      - docs/phase-records/verification/*p11_access_ui_r05*
     forbiddenPaths:
       - all repository paths outside ownedPaths and sharedLeases
       - "packages/**, apps/server/** and packages/db/**: admin.access is already mounted and independently verified. If the UI turns out to need a transport or schema change, that is a stop condition, not a decision inside this slice."
       - "apps/web/src/i18n/**, apps/web/src/routeTree.gen.ts, global tokens and packages/ui/**"
-      - "every canonical screenshot subtree except this slice's own; this slice's routine in-system baseline refresh remains coordinator-owned and requires independent fidelity review before acceptance"
+      - "every canonical screenshot, including the accepted r03 baselines; no baseline update is authorized in r05"
       - "every other owner section component, hook and spec: phase9-owner-ui, phase10-ui-csv, phase11-audit, phase11-health and phase11-shell are gated by this slice, not edited by it"
       - "playwright.config.ts, vitest.config.ts, vitest.integration.config.ts and scripts/verify.mjs after the activation commit: phase11-ladder-contention held that lease, tested a configuration fix, falsified it and reverted. Reopening that surface is not this slice's work, and raising a timeout is a falsified repair, not an option."
       - "opening a known-flaky register entry for any failure this slice's own run hits: the register forbids a run registering its own flake, and every prior entry is now closed"
@@ -1651,17 +1651,17 @@ milestones:
       - every other milestone's phase record and handoff directory
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-26T14:18:50+03:00"
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-access-ui/20260826-141850-p11_access_ui_r03-coordinator-done.md
+    lastHeartbeatAt: "2026-08-27T14:41:00+03:00"
+    leaseExpiresAt: "2026-08-27T22:41:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-access-ui/20260827-144100-p11_access_ui_r05-activation-plan.md
     stopReason: null
     gates:
-      unit: PASS
-      integration: PASS
-      browser: PASS
-      accessibility: PASS
-      visual: PASS
-      independentReview: PASS
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
     integratedCommit: 0edb9d97fe0967148158f4a15c13294bdf97ee6e
 
   phase11-e2e-propagation-wait:

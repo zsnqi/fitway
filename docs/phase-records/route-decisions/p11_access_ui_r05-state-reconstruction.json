@@ -1,0 +1,35 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "p11_access_ui_r05_state_reconstruction",
+	"recorded": "2026-08-27T14:41:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"delegation_evaluation": {
+		"stage_discovery_started_at": null,
+		"basis": "User request and repository worktree/ref inventory before reading the Access UI terminal records.",
+		"triggers": ["volume"],
+		"direct_reasons_considered": [
+			"authority reconstruction spans refs, worktrees, ledger entries and handoffs"
+		],
+		"decision": "Use one read-only native investigator; coordinator independently reconciles the returned pointers against git and durable records."
+	},
+	"candidate_id": "native",
+	"route": null,
+	"control": "high",
+	"transport": "codex-native",
+	"native_spawn": {
+		"model": "gpt-5.6-luna",
+		"reasoning_effort": "high",
+		"agent_role": "explorer",
+		"fork_turns": "none",
+		"parent_inheritance_deliberate": false
+	},
+	"gate_outcome": "PASS",
+	"observed_outcome": "Latest terminal Access attempt is r04 at d69f459 on accepted coordinator base 8f2de74; r03 integration 0edb9d9 remains authoritative. Three F1 blockers and passing F2 evidence were confirmed. The stale dirty b02 checkout was rejected as authority.",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "git_read"],
+	"covered_capabilities": ["durable-state reconstruction"],
+	"material_selection_reason": "High-volume read-only evidence gathering fits Luna/high. Native is mandatory under the user's explicit restriction; no external route was considered, loaded, preflighted, or invoked.",
+	"eligible_alternatives": ["native-luna", "direct"],
+	"consequence": "Read-only discovery; coordinator retains authority, activation and terminal judgment."
+}
