@@ -97,9 +97,7 @@ test("approved Login family is responsive, physically anchored, and locale-safe"
 	await page.locator(".login-rail__language").click();
 	await expect(page.locator("html")).toHaveAttribute("lang", "en");
 	await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
-	await expect(
-		page.getByRole("heading", { name: "Open live operations" }),
-	).toBeVisible();
+	await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
 	await expectNoHorizontalOverflow(page, "320px English");
 
 	const physicalAnchors = await page.evaluate(() => {
@@ -168,12 +166,12 @@ test("exception and submitting visuals preserve frozen authentication semantics"
 
 	await page.setViewportSize({ width: 320, height: 720 });
 	await page.goto("/login");
-	const pin = page.getByLabel("Staff PIN");
+	const pin = page.getByLabel("Access code");
 	const submit = page.locator(".login-panel__submit");
 	await pin.fill("123456");
 	await submit.click();
 	await expect(page.getByRole("alert")).toContainText(
-		"Unable to sign in. Check the PIN and try again.",
+		"That code didn't work. Check it and try again.",
 	);
 	await expect(page.getByRole("alert")).toHaveAttribute("data-tone", "error");
 	await expect(pin).toHaveAttribute("aria-invalid", "true");
@@ -226,14 +224,12 @@ test("server Retry-After controls lockout without disabling PIN entry", async ({
 	);
 	await page.setViewportSize({ width: 320, height: 720 });
 	await page.goto("/login");
-	const pin = page.getByLabel("Staff PIN");
+	const pin = page.getByLabel("Access code");
 	await pin.fill("123456");
-	await page.getByRole("button", { name: "Open operations" }).click();
+	await page.getByRole("button", { name: "Sign in" }).click();
 	await expect(page.getByRole("alert")).toHaveAttribute("data-tone", "delayed");
 	await expect(page.getByRole("alert")).toContainText("28");
-	await expect(
-		page.getByRole("button", { name: "Open operations" }),
-	).toBeDisabled();
+	await expect(page.getByRole("button", { name: "Sign in" })).toBeDisabled();
 	await expect(pin).toBeEnabled();
 	await expectNoHorizontalOverflow(page, "320px Retry-After");
 	await captureReview(page, "login-rate-limited-en-320x720.png");
@@ -250,8 +246,8 @@ test("keyboard order, focus, practical targets, and 200 percent zoom remain resi
 	await page.goto("/login");
 	const skip = page.getByRole("link", { name: "Skip to operational status" });
 	const language = page.locator(".login-rail__language");
-	const pin = page.getByLabel("Staff PIN");
-	const submit = page.getByRole("button", { name: "Open operations" });
+	const pin = page.getByLabel("Access code");
+	const submit = page.getByRole("button", { name: "Sign in" });
 
 	await skip.focus();
 	await expect(skip).toBeFocused();
@@ -305,10 +301,8 @@ test("reduced motion and reduced transparency retain state clarity", async ({
 	});
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	await page.goto("/login");
-	await page.getByLabel("Staff PIN").fill("123456");
-	const submission = page
-		.getByRole("button", { name: "Open operations" })
-		.click();
+	await page.getByLabel("Access code").fill("123456");
+	const submission = page.getByRole("button", { name: "Sign in" }).click();
 	await expect(page.locator(".login-submit__spinner")).toBeHidden();
 	await expect
 		.poll(() =>

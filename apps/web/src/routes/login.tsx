@@ -169,9 +169,7 @@ function LoginRoute() {
 							type="submit"
 							className="login-panel__submit"
 							data-submitting={isSubmitting ? "true" : "false"}
-							disabled={
-								!isValidStaffPin(pin) || isSubmitting || retrySeconds > 0
-							}
+							disabled={isSubmitting || retrySeconds > 0}
 						>
 							{isSubmitting ? messages.login.submitting : messages.login.submit}
 							{isSubmitting ? <LoginSubmittingIndicator /> : null}
