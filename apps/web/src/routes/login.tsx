@@ -1,13 +1,14 @@
-import { Button } from "@fitway/ui/components/button";
 import { Input } from "@fitway/ui/components/input";
 import { Label } from "@fitway/ui/components/label";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
-import { LockKeyhole } from "lucide-react";
 import { type FormEvent, useEffect, useState } from "react";
 
-import { BrandHeader } from "@/components/brand-header";
-import { PublicAtmosphere } from "@/components/public-atmosphere";
-import "@/components/staff/staff.css";
+import {
+	LoginRail,
+	LoginStatusMessage,
+	LoginSubmittingIndicator,
+} from "@/components/login/login-chrome";
+import "@/components/login/login.css";
 import { useStaffMessages } from "@/hooks/use-staff-messages";
 import { formatNumber } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
@@ -104,7 +105,6 @@ function LoginRoute() {
 
 	return (
 		<div className="login-shell">
-			<PublicAtmosphere />
 			{/* biome-ignore lint/a11y/useValidAnchor: this skip link also transfers focus to the main landmark. */}
 			<a
 				className="operations-skip-link"
@@ -119,17 +119,15 @@ function LoginRoute() {
 			>
 				{messages.common.skipToContent}
 			</a>
-			<BrandHeader />
+			<LoginRail />
 			<main id="main-content" className="login-main" tabIndex={-1}>
 				<section className="login-panel" aria-labelledby="login-heading">
-					<div className="login-panel__icon" aria-hidden="true">
-						<LockKeyhole />
+					<div className="login-panel__heading">
+						<h1 id="login-heading">{messages.login.title}</h1>
+						<p className="login-panel__description">
+							{messages.login.description}
+						</p>
 					</div>
-					<p className="login-panel__eyebrow">{messages.login.eyebrow}</p>
-					<h1 id="login-heading">{messages.login.title}</h1>
-					<p className="login-panel__description">
-						{messages.login.description}
-					</p>
 					<form onSubmit={(event) => void submit(event)} noValidate>
 						<div className="login-field">
 							<Label htmlFor="staff-pin">{messages.login.pinLabel}</Label>
@@ -143,6 +141,8 @@ function LoginRoute() {
 								minLength={6}
 								maxLength={12}
 								dir="ltr"
+								className="login-field__input"
+								data-state={error ?? (isSubmitting ? "submitting" : "idle")}
 								value={pin}
 								onChange={(event) => {
 									setPin(normalizeWesternPin(event.target.value));
@@ -159,26 +159,23 @@ function LoginRoute() {
 							<p id="staff-pin-hint" className="login-field__hint">
 								{messages.login.pinHint(minimum, maximum)}
 							</p>
-							{errorMessage ? (
-								<p
-									id="staff-pin-error"
-									className="login-field__error"
-									role="alert"
-								>
+							{errorMessage && error ? (
+								<LoginStatusMessage kind={error}>
 									{errorMessage}
-								</p>
+								</LoginStatusMessage>
 							) : null}
 						</div>
-						<Button
+						<button
 							type="submit"
-							size="lg"
 							className="login-panel__submit"
+							data-submitting={isSubmitting ? "true" : "false"}
 							disabled={
 								!isValidStaffPin(pin) || isSubmitting || retrySeconds > 0
 							}
 						>
 							{isSubmitting ? messages.login.submitting : messages.login.submit}
-						</Button>
+							{isSubmitting ? <LoginSubmittingIndicator /> : null}
+						</button>
 					</form>
 				</section>
 			</main>
