@@ -798,6 +798,7 @@ test("the one-time PIN reveal appears only after provision and rotate, focuses i
 	const provisionButton = card.getByRole("button", {
 		name: "Provision staff PIN",
 	});
+	listPrincipals = [staff];
 	await provisionButton.click();
 
 	const revealRegion = page.locator(reveal);
@@ -808,12 +809,44 @@ test("the one-time PIN reveal appears only after provision and rotate, focuses i
 	await expect(revealRegion).toContainText("shown once");
 	await expect(revealRegion.locator("dd bdi")).toHaveText(REVEALED_PIN);
 	await expect(revealRegion.locator("dd bdi")).toHaveAttribute("dir", "ltr");
+	const refreshedRotateButton = card.getByRole("button", {
+		name: "Rotate staff PIN",
+	});
+	await expect(refreshedRotateButton).toBeVisible();
+	await page.keyboard.press("Tab");
+	await expect(page.locator(revealDismiss)).toBeFocused();
+	await page.keyboard.press("Shift+Tab");
+	await expect(page.locator(revealDismiss)).toBeFocused();
 
-	// Dismissal returns focus to the invoking control, never the body.
-	await page.locator(revealDismiss).click();
+	// Escape returns focus to the same primary action after the refresh.
+	await page.keyboard.press("Escape");
 	await expect(revealRegion).toHaveCount(0);
-	await expect(provisionButton).toBeFocused();
+	await expect(refreshedRotateButton).toBeFocused();
 	await expect(page.locator(reveal)).toHaveCount(0);
+
+	// The same focused primary control also survives a delayed refresh that lands
+	// after reveal dismissal.
+	await mockOwnerSurfaces(page, { principals: [unprovisionedStaff] });
+	listPrincipals = [unprovisionedStaff];
+	await page.reload();
+	const delayedProvisionButton = card.getByRole("button", {
+		name: "Provision staff PIN",
+	});
+	await expect(delayedProvisionButton).toBeVisible();
+	listHoldOpen = true;
+	await delayedProvisionButton.click();
+	await expect(revealRegion).toBeVisible();
+	await page.keyboard.press("Escape");
+	await expect(delayedProvisionButton).toBeFocused();
+	listPrincipals = [staff];
+	listHoldOpen = false;
+	releaseList?.();
+	releaseList = null;
+	const delayedRotateButton = card.getByRole("button", {
+		name: "Rotate staff PIN",
+	});
+	await expect(delayedRotateButton).toBeVisible();
+	await expect(delayedRotateButton).toBeFocused();
 
 	// Rotate path: an active PIN offers rotate, and reveals through the same channel.
 	await mockOwnerSurfaces(page, { principals: [staff] });
@@ -832,6 +865,639 @@ test("the one-time PIN reveal appears only after provision and rotate, focuses i
 	await card.getByLabel("Reason").fill("Desk closed");
 	await card.getByRole("button", { name: "Confirm" }).click();
 	await expect(page.locator(reveal)).toHaveCount(0);
+});
+
+test("all seven successful governance actions correlate browser responses, submitted credentials, audits, and sessions", async ({
+	page,
+}) => {
+	await page.addInitScript(() =>
+		window.localStorage.setItem("fitway.locale", "en"),
+	);
+	await mockOwnerSurfaces(page, { principals: [] });
+	await page.unroute("**/rpc/admin/access/**");
+	await page.unroute("**/rpc/admin/audit/list");
+
+	type AuditEntry = {
+		id: number;
+		action: string;
+		target: { principalId: string; displayName: string };
+		priorActive: boolean | null;
+		newActive: boolean | null;
+		priorCredentialVersion: number | null;
+		newCredentialVersion: number | null;
+		reason: string | null;
+	};
+	type MutationResult = {
+		auditId: number;
+		principal: Principal;
+		revokedSessions: number;
+		revealedPin?: string;
+	};
+	type CredentialState = { current: string; stale: Set<string> };
+	type FixtureLoginResult = { status: number; sessionId: string | null };
+
+	const fault = process.env.FITWAY_ACCESS_EVIDENCE_FAULT ?? "none";
+	const STAFF_INITIAL = "48291057";
+	const STAFF_REPLACEMENT = "73194620";
+	const OWNER_INITIAL = "synthetic-owner-initial-47";
+	const OWNER_REPLACEMENT = "synthetic-owner-replacement-83";
+	const OTHER_OWNER_INITIAL = "synthetic-amina-initial-26";
+	const SELF_OWNER_CURRENT = "synthetic-rashid-current-91";
+	const PROVISIONED_OWNER_ID = "00000000-0000-4000-8000-0000000000a4";
+	const WRONG_OWNER_ID = "00000000-0000-4000-0000000000a4";
+
+	let principals: Principal[] = [
+		{ ...unprovisionedStaff },
+		{ ...otherOwner, credentialVersion: 1, credentialActive: true },
+		{ ...selfOwner, credentialVersion: 1, credentialActive: true },
+	];
+	const audits: AuditEntry[] = [];
+	const credentials = new Map<string, CredentialState>([
+		[
+			otherOwner.principalId,
+			{ current: OTHER_OWNER_INITIAL, stale: new Set() },
+		],
+		[selfOwner.principalId, { current: SELF_OWNER_CURRENT, stale: new Set() }],
+	]);
+	const sessions = new Map<
+		string,
+		{ principalId: string; credentialVersion: number }
+	>();
+	let nextAuditId = 801;
+	let nextSessionId = 1;
+
+	const principalFor = (principalId: string) =>
+		principals.find((principal) => principal.principalId === principalId);
+	const replaceCredential = (principalId: string, replacement: string) => {
+		const previous = credentials.get(principalId);
+		const stale = new Set(previous?.stale ?? []);
+		if (previous) stale.add(previous.current);
+		credentials.set(principalId, { current: replacement, stale });
+	};
+	const mayLogin = (principalId: string, credential: string) => {
+		const principal = principalFor(principalId);
+		const state = credentials.get(principalId);
+		if (
+			!principal?.active ||
+			!principal.credentialActive ||
+			principal.credentialVersion === null ||
+			!state
+		) {
+			return false;
+		}
+		if (
+			fault === "replacement-credential-rejected" &&
+			credential === state.current
+		) {
+			return false;
+		}
+		return (
+			credential === state.current ||
+			(fault === "stale-credential-accepted" && state.stale.has(credential))
+		);
+	};
+	const revokePrincipalSessions = (principalId: string) => {
+		let revoked = 0;
+		for (const [sessionId, session] of sessions) {
+			if (session.principalId === principalId) {
+				sessions.delete(sessionId);
+				revoked += 1;
+			}
+		}
+		return revoked;
+	};
+	const appendAudit = (input: {
+		action: string;
+		target: Principal;
+		reason: string | null;
+		priorActive?: boolean | null;
+		newActive?: boolean | null;
+		priorCredentialVersion?: number | null;
+		newCredentialVersion?: number | null;
+	}) => {
+		const entry: AuditEntry = {
+			id: nextAuditId++,
+			action: input.action,
+			target: {
+				principalId: input.target.principalId,
+				displayName: input.target.displayName,
+			},
+			priorActive: input.priorActive ?? null,
+			newActive: input.newActive ?? null,
+			priorCredentialVersion: input.priorCredentialVersion ?? null,
+			newCredentialVersion: input.newCredentialVersion ?? null,
+			reason: input.reason,
+		};
+		audits.unshift(entry);
+		return entry.id;
+	};
+	const mutationOutput = (
+		principal: Principal,
+		auditId: number,
+		revokedSessions: number,
+	) => ({
+		auditId: fault === "response-audit-mismatch" ? auditId + 10_000 : auditId,
+		principal,
+		revokedSessions,
+	});
+
+	await page.route("**/fixture/access/**", async (route) => {
+		const path = new URL(route.request().url()).pathname;
+		if (path.endsWith("/login")) {
+			const input = route.request().postDataJSON() ?? {};
+			const principalId =
+				typeof input.principalId === "string" ? input.principalId : "";
+			const credential =
+				typeof input.credential === "string" ? input.credential : "";
+			if (!mayLogin(principalId, credential)) {
+				await route.fulfill({ status: 401, json: { ok: false } });
+				return;
+			}
+			const principal = principalFor(principalId);
+			const sessionId = `opaque-${nextSessionId++}`;
+			sessions.set(sessionId, {
+				principalId,
+				credentialVersion: principal?.credentialVersion ?? 0,
+			});
+			await route.fulfill({ status: 200, json: { sessionId } });
+			return;
+		}
+		const sessionId = path.split("/").at(-1) ?? "";
+		const session = sessions.get(sessionId);
+		const principal = session ? principalFor(session.principalId) : undefined;
+		const allowed = Boolean(
+			session &&
+				principal?.active &&
+				principal.credentialActive &&
+				principal.credentialVersion === session.credentialVersion,
+		);
+		await route.fulfill({ status: allowed ? 200 : 401, json: { ok: allowed } });
+	});
+	await page.route("**/rpc/admin/audit/list", (route) =>
+		route.fulfill({
+			status: 200,
+			json: {
+				json: {
+					entries: audits.map((entry) => ({
+						...entry,
+						eventClass: "access",
+						actor: {
+							principalId: ownerAuth.principalId,
+							kind: "owner",
+							role: "owner",
+							displayName: "Rashid Owner",
+						},
+						priorValue: null,
+						effectiveValue: null,
+						requestedDelta: null,
+						requestedValue: null,
+						settingsVersion: null,
+						createdAtUtc: "2026-08-10T10:00:00.000Z",
+					})),
+					nextCursor: null,
+				},
+			},
+		}),
+	);
+	await page.route("**/rpc/admin/access/**", async (route) => {
+		const path = new URL(route.request().url()).pathname;
+		if (path.endsWith("/list")) {
+			await route.fulfill({ status: 200, json: { json: { principals } } });
+			return;
+		}
+		const input = route.request().postDataJSON()?.json ?? {};
+		let result: MutationResult;
+		if (path.endsWith("/staffPin/provision")) {
+			const after: Principal = {
+				...unprovisionedStaff,
+				credentialVersion: 1,
+				credentialActive: true,
+			};
+			principals = [
+				after,
+				...principals.filter((item) => item.principalKind !== "shared_staff"),
+			];
+			replaceCredential(after.principalId, STAFF_INITIAL);
+			const auditId = appendAudit({
+				action: "staff_pin_provisioned",
+				target: after,
+				reason: null,
+			});
+			result = {
+				...mutationOutput(after, auditId, 0),
+				revealedPin: STAFF_INITIAL,
+			};
+		} else if (path.endsWith("/staffPin/rotate")) {
+			const before = principalFor(staff.principalId) as Principal;
+			const after = {
+				...before,
+				credentialVersion: (before.credentialVersion ?? 0) + 1,
+			};
+			principals = principals.map((item) =>
+				item.principalId === after.principalId ? after : item,
+			);
+			replaceCredential(after.principalId, STAFF_REPLACEMENT);
+			const auditId = appendAudit({
+				action: "staff_pin_rotated",
+				target: after,
+				reason: null,
+				priorCredentialVersion: before.credentialVersion,
+				newCredentialVersion: after.credentialVersion,
+			});
+			result = {
+				...mutationOutput(
+					after,
+					auditId,
+					revokePrincipalSessions(after.principalId),
+				),
+				revealedPin: STAFF_REPLACEMENT,
+			};
+		} else if (path.endsWith("/staffPin/deactivate")) {
+			const before = principalFor(staff.principalId) as Principal;
+			const after = { ...before, credentialActive: false };
+			principals = principals.map((item) =>
+				item.principalId === after.principalId ? after : item,
+			);
+			const auditId = appendAudit({
+				action: "staff_pin_deactivated",
+				target: after,
+				reason: typeof input.reason === "string" ? input.reason : null,
+			});
+			result = mutationOutput(
+				after,
+				auditId,
+				revokePrincipalSessions(after.principalId),
+			);
+		} else if (path.endsWith("/owner/provision")) {
+			const after: Principal = {
+				principalId: PROVISIONED_OWNER_ID,
+				principalKind: "owner",
+				role: "owner",
+				displayName:
+					typeof input.displayName === "string" ? input.displayName : "",
+				ownerEmail: typeof input.email === "string" ? input.email : null,
+				active: true,
+				credentialVersion: 1,
+				credentialActive: true,
+			};
+			principals = [...principals, after];
+			if (typeof input.password === "string") {
+				replaceCredential(after.principalId, input.password);
+			}
+			const auditId = appendAudit({
+				action: "owner_provisioned",
+				target: after,
+				reason: null,
+			});
+			result = mutationOutput(after, auditId, 0);
+		} else if (path.endsWith("/owner/deactivate")) {
+			const before = principalFor(input.targetPrincipalId) as Principal;
+			const after = { ...before, active: false, credentialActive: false };
+			principals = principals.map((item) =>
+				item.principalId === after.principalId ? after : item,
+			);
+			const auditId = appendAudit({
+				action: "owner_deactivated",
+				target: after,
+				reason: typeof input.reason === "string" ? input.reason : null,
+				priorActive: true,
+				newActive: false,
+			});
+			result = mutationOutput(
+				after,
+				auditId,
+				revokePrincipalSessions(after.principalId),
+			);
+		} else if (path.endsWith("/owner/reactivate")) {
+			const before = principalFor(input.targetPrincipalId) as Principal;
+			const after = { ...before, active: true, credentialActive: true };
+			principals = principals.map((item) =>
+				item.principalId === after.principalId ? after : item,
+			);
+			const auditId = appendAudit({
+				action: "owner_reactivated",
+				target: after,
+				reason: null,
+				priorActive: false,
+				newActive: true,
+			});
+			result = mutationOutput(after, auditId, 0);
+		} else {
+			const before = principalFor(input.targetPrincipalId) as Principal;
+			const after = {
+				...before,
+				credentialVersion: (before.credentialVersion ?? 0) + 1,
+			};
+			principals = principals.map((item) =>
+				item.principalId === after.principalId ? after : item,
+			);
+			if (typeof input.password === "string") {
+				replaceCredential(after.principalId, input.password);
+			}
+			const auditId = appendAudit({
+				action: "credential_reset",
+				target: after,
+				reason: null,
+				priorCredentialVersion: before.credentialVersion,
+				newCredentialVersion: after.credentialVersion,
+			});
+			result = mutationOutput(
+				after,
+				auditId,
+				revokePrincipalSessions(after.principalId),
+			);
+		}
+		await route.fulfill({ status: 200, json: { json: result } });
+	});
+
+	const performMutation = async (
+		endpoint: string,
+		perform: () => Promise<void>,
+	) => {
+		const responsePromise = page.waitForResponse(
+			(response) =>
+				new URL(response.url()).pathname.endsWith(
+					`/rpc/admin/access/${endpoint}`,
+				) && response.request().method() === "POST",
+		);
+		await perform();
+		const response = await responsePromise;
+		expect(response.status()).toBe(200);
+		const body = (await response.json()) as { json: MutationResult };
+		return body.json;
+	};
+	const fixtureLogin = async (
+		principalId: string,
+		credential: string,
+	): Promise<FixtureLoginResult> =>
+		page.evaluate(
+			async (input) => {
+				const response = await fetch("/fixture/access/login", {
+					method: "POST",
+					headers: { "content-type": "application/json" },
+					body: JSON.stringify(input),
+				});
+				const body = (await response.json()) as { sessionId?: string };
+				return { status: response.status, sessionId: body.sessionId ?? null };
+			},
+			{ principalId, credential },
+		);
+	const fixtureSessionStatus = (sessionId: string) =>
+		page.evaluate(
+			async (id) => (await fetch(`/fixture/access/session/${id}`)).status,
+			sessionId,
+		);
+	const requireSession = (login: FixtureLoginResult) => {
+		expect(login.status).toBe(200);
+		expect(login.sessionId).not.toBeNull();
+		return login.sessionId as string;
+	};
+	const checkRenderedAudit = async (
+		response: MutationResult,
+		expected: Omit<AuditEntry, "id">,
+	) => {
+		const entry = audits.find((candidate) => candidate.id === response.auditId);
+		expect(entry).toEqual({ id: response.auditId, ...expected });
+		await page.reload();
+		const row = page
+			.locator(`[data-owner-audit-table] tr[data-action="${expected.action}"]`)
+			.filter({ hasText: expected.target.displayName });
+		await expect(row).toHaveCount(1);
+		if (expected.reason !== null)
+			await expect(row).toContainText(expected.reason);
+		return row;
+	};
+	const expectedAudit = (
+		action: string,
+		target: Principal,
+		overrides: Partial<Omit<AuditEntry, "id" | "action" | "target">> = {},
+	): Omit<AuditEntry, "id"> => ({
+		action,
+		target: {
+			principalId: target.principalId,
+			displayName: target.displayName,
+		},
+		priorActive: null,
+		newActive: null,
+		priorCredentialVersion: null,
+		newCredentialVersion: null,
+		reason: null,
+		...overrides,
+	});
+
+	await page.goto("/admin");
+	const staffProvision = await performMutation(
+		"staffPin/provision",
+		async () => {
+			await page.getByRole("button", { name: "Provision staff PIN" }).click();
+		},
+	);
+	await page.keyboard.press("Escape");
+	await checkRenderedAudit(
+		staffProvision,
+		expectedAudit("staff_pin_provisioned", staffProvision.principal),
+	);
+	const staffInitialCredential = staffProvision.revealedPin as string;
+	const staffInitialSession = requireSession(
+		await fixtureLogin(
+			staffProvision.principal.principalId,
+			staffInitialCredential,
+		),
+	);
+
+	const staffRotate = await performMutation("staffPin/rotate", async () => {
+		await page.getByRole("button", { name: "Rotate staff PIN" }).click();
+	});
+	await page.keyboard.press("Escape");
+	const staffRotateRow = await checkRenderedAudit(
+		staffRotate,
+		expectedAudit("staff_pin_rotated", staffRotate.principal, {
+			priorCredentialVersion: 1,
+			newCredentialVersion: 2,
+		}),
+	);
+	await expect(staffRotateRow).toContainText("Credential version 1");
+	await expect(staffRotateRow).toContainText("Credential version 2");
+	expect(await fixtureSessionStatus(staffInitialSession)).toBe(401);
+	expect(
+		(
+			await fixtureLogin(
+				staffRotate.principal.principalId,
+				staffInitialCredential,
+			)
+		).status,
+	).toBe(401);
+	const staffReplacementCredential = staffRotate.revealedPin as string;
+	const staffCurrentSession = requireSession(
+		await fixtureLogin(
+			staffRotate.principal.principalId,
+			staffReplacementCredential,
+		),
+	);
+
+	await page
+		.locator(staffCard)
+		.getByRole("button", { name: "Deactivate staff PIN" })
+		.click();
+	await page.locator(staffCard).getByLabel("Reason").fill("Desk closure");
+	const staffDeactivate = await performMutation(
+		"staffPin/deactivate",
+		async () => {
+			await page
+				.locator(staffCard)
+				.getByRole("button", { name: "Confirm" })
+				.click();
+		},
+	);
+	await checkRenderedAudit(
+		staffDeactivate,
+		expectedAudit("staff_pin_deactivated", staffDeactivate.principal, {
+			reason: "Desk closure",
+		}),
+	);
+	expect(await fixtureSessionStatus(staffCurrentSession)).toBe(401);
+	expect(
+		(
+			await fixtureLogin(
+				staffDeactivate.principal.principalId,
+				staffReplacementCredential,
+			)
+		).status,
+	).toBe(401);
+
+	const unrelatedSession = requireSession(
+		await fixtureLogin(selfOwner.principalId, SELF_OWNER_CURRENT),
+	);
+	await page.locator("[data-owner-access-provision-trigger]").click();
+	await page.getByLabel("Email").fill("safa@fitway.example");
+	await page.getByLabel("Display name").fill("Safa Lifecycle Owner");
+	await page.getByLabel("Initial password").fill(OWNER_INITIAL);
+	const ownerProvisionRequest = page.waitForRequest((request) =>
+		new URL(request.url()).pathname.endsWith(
+			"/rpc/admin/access/owner/provision",
+		),
+	);
+	const ownerProvision = await performMutation("owner/provision", async () => {
+		await page.getByRole("button", { name: "Provision owner" }).click();
+	});
+	const submittedOwnerCredential = (await ownerProvisionRequest).postDataJSON()
+		?.json?.password;
+	expect(typeof submittedOwnerCredential).toBe("string");
+	await checkRenderedAudit(
+		ownerProvision,
+		expectedAudit("owner_provisioned", ownerProvision.principal),
+	);
+	const provisionedOwnerId = ownerProvision.principal.principalId;
+	expect(provisionedOwnerId).toBe(PROVISIONED_OWNER_ID);
+	const provisionedOwnerSession = requireSession(
+		await fixtureLogin(provisionedOwnerId, submittedOwnerCredential as string),
+	);
+
+	const provisionedOwnerRow = page
+		.locator(".owner-access-owner")
+		.filter({ hasText: ownerProvision.principal.displayName });
+	await provisionedOwnerRow.getByRole("button", { name: "Deactivate" }).click();
+	await provisionedOwnerRow.getByLabel("Reason").fill("Role changed");
+	const ownerDeactivate = await performMutation(
+		"owner/deactivate",
+		async () => {
+			await provisionedOwnerRow
+				.getByRole("button", { name: "Confirm" })
+				.click();
+		},
+	);
+	const ownerDeactivateRow = await checkRenderedAudit(
+		ownerDeactivate,
+		expectedAudit("owner_deactivated", ownerDeactivate.principal, {
+			priorActive: true,
+			newActive: false,
+			reason: "Role changed",
+		}),
+	);
+	await expect(ownerDeactivateRow).toContainText("Active");
+	await expect(ownerDeactivateRow).toContainText("Inactive");
+	expect(await fixtureSessionStatus(provisionedOwnerSession)).toBe(401);
+	const deactivatedOwnerProbeId =
+		fault === "wrong-owner-principal" ? WRONG_OWNER_ID : provisionedOwnerId;
+	expect(deactivatedOwnerProbeId).toBe(provisionedOwnerId);
+	expect(
+		(
+			await fixtureLogin(
+				deactivatedOwnerProbeId,
+				submittedOwnerCredential as string,
+			)
+		).status,
+	).toBe(401);
+
+	const reactivationRow = page
+		.locator(".owner-access-owner")
+		.filter({ hasText: ownerProvision.principal.displayName });
+	const ownerReactivate = await performMutation(
+		"owner/reactivate",
+		async () => {
+			await reactivationRow.getByRole("button", { name: "Reactivate" }).click();
+		},
+	);
+	const ownerReactivateRow = await checkRenderedAudit(
+		ownerReactivate,
+		expectedAudit("owner_reactivated", ownerReactivate.principal, {
+			priorActive: false,
+			newActive: true,
+		}),
+	);
+	await expect(ownerReactivateRow).toContainText("Inactive");
+	await expect(ownerReactivateRow).toContainText("Active");
+	expect(await fixtureSessionStatus(provisionedOwnerSession)).toBe(401);
+	const freshProvisionedOwnerSession = requireSession(
+		await fixtureLogin(provisionedOwnerId, submittedOwnerCredential as string),
+	);
+	expect(await fixtureSessionStatus(freshProvisionedOwnerSession)).toBe(200);
+
+	const otherOwnerOldSession = requireSession(
+		await fixtureLogin(otherOwner.principalId, OTHER_OWNER_INITIAL),
+	);
+	const otherOwnerRow = page
+		.locator(".owner-access-owner")
+		.filter({ hasText: otherOwner.displayName });
+	await otherOwnerRow.getByRole("button", { name: "Reset credential" }).click();
+	await otherOwnerRow.getByLabel("New password").fill(OWNER_REPLACEMENT);
+	const ownerResetRequest = page.waitForRequest((request) =>
+		new URL(request.url()).pathname.endsWith(
+			"/rpc/admin/access/owner/resetCredential",
+		),
+	);
+	const ownerReset = await performMutation(
+		"owner/resetCredential",
+		async () => {
+			await otherOwnerRow.getByRole("button", { name: "Confirm" }).click();
+		},
+	);
+	const submittedReplacementCredential = (
+		await ownerResetRequest
+	).postDataJSON()?.json?.password;
+	expect(typeof submittedReplacementCredential).toBe("string");
+	const ownerResetRow = await checkRenderedAudit(
+		ownerReset,
+		expectedAudit("credential_reset", ownerReset.principal, {
+			priorCredentialVersion: 1,
+			newCredentialVersion: 2,
+		}),
+	);
+	await expect(ownerResetRow).toContainText("Credential version 1");
+	await expect(ownerResetRow).toContainText("Credential version 2");
+	expect(await fixtureSessionStatus(otherOwnerOldSession)).toBe(401);
+	expect(
+		(await fixtureLogin(otherOwner.principalId, OTHER_OWNER_INITIAL)).status,
+	).toBe(401);
+	const otherOwnerFreshSession = requireSession(
+		await fixtureLogin(
+			otherOwner.principalId,
+			submittedReplacementCredential as string,
+		),
+	);
+	expect(await fixtureSessionStatus(otherOwnerFreshSession)).toBe(200);
+	expect(await fixtureSessionStatus(unrelatedSession)).toBe(200);
+	expect(audits).toHaveLength(7);
 });
 
 test("a staff session and an anonymous visitor reach the access surface not at all", async ({

@@ -626,6 +626,111 @@ describe("owner access live", () => {
 });
 
 describe("the one-time reveal", () => {
+	it("returns focus to the same primary action when the staff list refreshes before dismissal", async () => {
+		let refreshStaff: (() => void) | undefined;
+		function RefreshingRevealHost() {
+			const [staffActive, setStaffActive] = useState(false);
+			const [pin, setPin] = useState<string | null>(null);
+			refreshStaff = () => setStaffActive(true);
+			return (
+				<OwnerAccessLive
+					{...liveProps([
+						{
+							...staffPrincipal(),
+							credentialVersion: staffActive ? 4 : null,
+							credentialActive: staffActive,
+						},
+					])}
+					revealedPin={pin}
+					dismissRevealedPin={() => setPin(null)}
+					provisionStaffPin={{
+						outcome: { phase: "idle" },
+						submit: () => setPin("48291057"),
+						reset: () => {},
+					}}
+				/>
+			);
+		}
+
+		await render(<RefreshingRevealHost />, "en");
+		const primary = [
+			...container.querySelectorAll<HTMLButtonElement>(
+				"[data-owner-access-staff-pin] button",
+			),
+		].find((button) =>
+			button.textContent?.includes(ownerAccessMessages.en.provisionStaffPin),
+		);
+		expect(primary).not.toBeNull();
+		primary?.focus();
+		await act(async () => primary?.click());
+		expect(document.activeElement).toBe(
+			container.querySelector(".owner-access-reveal__dismiss"),
+		);
+
+		await act(async () => refreshStaff?.());
+		const refreshedPrimary = [
+			...container.querySelectorAll<HTMLButtonElement>(
+				"[data-owner-access-staff-pin] button",
+			),
+		].find((button) =>
+			button.textContent?.includes(ownerAccessMessages.en.rotateStaffPin),
+		);
+		expect(refreshedPrimary).toBe(primary);
+		expect(refreshedPrimary?.textContent).toContain(
+			ownerAccessMessages.en.rotateStaffPin,
+		);
+
+		await act(async () => {
+			container
+				.querySelector<HTMLButtonElement>(".owner-access-reveal__dismiss")
+				?.click();
+		});
+		expect(document.activeElement).toBe(primary);
+		expect(container.querySelector("[data-owner-access-reveal]")).toBeNull();
+	});
+
+	it("keeps focus in the reveal for Tab and Shift+Tab, then dismisses with Escape", async () => {
+		const onDismiss = vi.fn();
+		await render(
+			<OwnerAccessReveal
+				pin="48291057"
+				returnFocus={null}
+				onDismiss={onDismiss}
+			/>,
+			"en",
+		);
+		const dismiss = container.querySelector<HTMLButtonElement>(
+			".owner-access-reveal__dismiss",
+		);
+		expect(dismiss).not.toBeNull();
+		expect(document.activeElement).toBe(dismiss);
+
+		await act(async () => {
+			dismiss?.dispatchEvent(
+				new KeyboardEvent("keydown", { key: "Tab", bubbles: true }),
+			);
+		});
+		expect(document.activeElement).toBe(dismiss);
+
+		await act(async () => {
+			dismiss?.dispatchEvent(
+				new KeyboardEvent("keydown", {
+					key: "Tab",
+					shiftKey: true,
+					bubbles: true,
+				}),
+			);
+		});
+		expect(document.activeElement).toBe(dismiss);
+
+		await act(async () => {
+			dismiss?.dispatchEvent(
+				new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
+			);
+		});
+		expect(onDismiss).toHaveBeenCalledTimes(1);
+	});
+
 	it("places focus on the dismiss control and returns it on dismissal", async () => {
 		function RevealHost() {
 			const [pin, setPin] = useState<string | null>(null);

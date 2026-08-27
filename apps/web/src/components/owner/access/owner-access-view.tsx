@@ -87,6 +87,18 @@ export function OwnerAccessReveal({
 		};
 	}, [returnFocus]);
 
+	function handleKeyDown(event: React.KeyboardEvent<HTMLElement>) {
+		if (event.key === "Escape") {
+			event.preventDefault();
+			onDismiss();
+			return;
+		}
+		if (event.key === "Tab") {
+			event.preventDefault();
+			dismissRef.current?.focus();
+		}
+	}
+
 	return (
 		<section
 			className="owner-access-reveal"
@@ -94,6 +106,7 @@ export function OwnerAccessReveal({
 			aria-modal="false"
 			aria-labelledby={`${ids}-title`}
 			aria-describedby={`${ids}-warning`}
+			onKeyDown={handleKeyDown}
 			data-owner-access-reveal=""
 		>
 			<KeyRound aria-hidden="true" />
@@ -407,83 +420,84 @@ export function OwnerAccessLive({
 						</bdi>
 					</p>
 
-					{staff?.credentialActive === true ? (
-						<>
-							<div className="owner-access-actions">
-								<Button
-									type="button"
-									onClick={() => requestReveal(() => rotateStaffPin.submit())}
-								>
-									{messages.rotateStaffPin}
-								</Button>
-								{staffPinDeactivating ? null : (
-									<Button
-										type="button"
-										variant="destructive"
-										onClick={() => setStaffPinDeactivating(true)}
-									>
-										{messages.deactivateStaffPin}
-									</Button>
-								)}
-							</div>
-							<OwnerAccessRefusal outcome={rotateStaffPin.outcome} />
-							{staffPinDeactivating ? (
-								<form
-									className="owner-access-inline"
-									onSubmit={handleDeactivateStaffPin}
-								>
-									<label htmlFor={fieldId("staff-pin-reason")}>
-										{messages.reasonLabel}
-									</label>
-									<input
-										id={fieldId("staff-pin-reason")}
-										type="text"
-										maxLength={500}
-										autoComplete="off"
-										aria-describedby={fieldId("staff-pin-reason-hint")}
-										value={staffPinReason}
-										onChange={(event) => setStaffPinReason(event.target.value)}
-									/>
-									<p
-										id={fieldId("staff-pin-reason-hint")}
-										className="owner-access-inline__hint"
-									>
-										{messages.staffPinReasonHint} {messages.reasonHint}
-									</p>
-									<OwnerAccessRefusal outcome={deactivateStaffPin.outcome} />
-									<div className="owner-access-inline__actions">
-										<Button
-											type="submit"
-											variant="destructive"
-											disabled={
-												deactivateStaffPin.outcome.phase === "pending" ||
-												staffPinReason.trim().length === 0
-											}
-										>
-											{messages.confirm}
-										</Button>
-										<Button
-											type="button"
-											variant="outline"
-											onClick={() => setStaffPinDeactivating(false)}
-										>
-											{messages.cancel}
-										</Button>
-									</div>
-								</form>
-							) : null}
-						</>
-					) : (
-						<>
+					<div className="owner-access-actions">
+						<Button
+							type="button"
+							data-owner-access-staff-pin-primary=""
+							onClick={() =>
+								requestReveal(() =>
+									staff?.credentialActive === true
+										? rotateStaffPin.submit()
+										: provisionStaffPin.submit(),
+								)
+							}
+						>
+							{staff?.credentialActive === true
+								? messages.rotateStaffPin
+								: messages.provisionStaffPin}
+						</Button>
+						{staff?.credentialActive === true && !staffPinDeactivating ? (
 							<Button
 								type="button"
-								onClick={() => requestReveal(() => provisionStaffPin.submit())}
+								variant="destructive"
+								onClick={() => setStaffPinDeactivating(true)}
 							>
-								{messages.provisionStaffPin}
+								{messages.deactivateStaffPin}
 							</Button>
-							<OwnerAccessRefusal outcome={provisionStaffPin.outcome} />
-						</>
-					)}
+						) : null}
+					</div>
+					<OwnerAccessRefusal
+						outcome={
+							staff?.credentialActive === true
+								? rotateStaffPin.outcome
+								: provisionStaffPin.outcome
+						}
+					/>
+					{staff?.credentialActive === true && staffPinDeactivating ? (
+						<form
+							className="owner-access-inline"
+							onSubmit={handleDeactivateStaffPin}
+						>
+							<label htmlFor={fieldId("staff-pin-reason")}>
+								{messages.reasonLabel}
+							</label>
+							<input
+								id={fieldId("staff-pin-reason")}
+								type="text"
+								maxLength={500}
+								autoComplete="off"
+								aria-describedby={fieldId("staff-pin-reason-hint")}
+								value={staffPinReason}
+								onChange={(event) => setStaffPinReason(event.target.value)}
+							/>
+							<p
+								id={fieldId("staff-pin-reason-hint")}
+								className="owner-access-inline__hint"
+							>
+								{messages.staffPinReasonHint} {messages.reasonHint}
+							</p>
+							<OwnerAccessRefusal outcome={deactivateStaffPin.outcome} />
+							<div className="owner-access-inline__actions">
+								<Button
+									type="submit"
+									variant="destructive"
+									disabled={
+										deactivateStaffPin.outcome.phase === "pending" ||
+										staffPinReason.trim().length === 0
+									}
+								>
+									{messages.confirm}
+								</Button>
+								<Button
+									type="button"
+									variant="outline"
+									onClick={() => setStaffPinDeactivating(false)}
+								>
+									{messages.cancel}
+								</Button>
+							</div>
+						</form>
+					) : null}
 				</div>
 
 				<div
