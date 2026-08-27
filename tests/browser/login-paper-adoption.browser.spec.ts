@@ -166,6 +166,7 @@ test("exception and submitting visuals preserve frozen authentication semantics"
 
 	await page.setViewportSize({ width: 320, height: 720 });
 	await page.goto("/login");
+	await expect(page.locator(".login-field__hint")).toBeVisible();
 	const pin = page.getByLabel("Access code");
 	const submit = page.locator(".login-panel__submit");
 	await pin.fill("123456");
@@ -173,8 +174,12 @@ test("exception and submitting visuals preserve frozen authentication semantics"
 	await expect(page.getByRole("alert")).toContainText(
 		"That code didn’t work. Check it and try again.",
 	);
+	// The message replaces the helper in every exception state (approved Paper
+	// S2/S3/S4 render no helper line).
+	await expect(page.locator(".login-field__hint")).toHaveCount(0);
 	await expect(page.getByRole("alert")).toHaveAttribute("data-tone", "error");
 	await expect(pin).toHaveAttribute("aria-invalid", "true");
+	await expect(pin).toHaveValue("123456");
 	await expect(submit).toBeEnabled();
 	await captureReview(page, "login-invalid-en-320x720.png");
 
@@ -182,6 +187,12 @@ test("exception and submitting visuals preserve frozen authentication semantics"
 	await expect(page.getByRole("alert")).toHaveAttribute("data-tone", "offline");
 	await expect(submit).toBeDisabled();
 	await expect(pin).toBeEnabled();
+	// Approved Paper S4: the field takes the disabled treatment and renders no
+	// code while the service failure holds.
+	await expect(pin).toHaveValue("");
+	await expect
+		.poll(() => pin.evaluate((element) => getComputedStyle(element).opacity))
+		.toBe("0.72");
 	await expectNoHorizontalOverflow(page, "320px service failure");
 	await captureReview(page, "login-service-en-320x720.png");
 
@@ -206,13 +217,15 @@ test("exception and submitting visuals preserve frozen authentication semantics"
 	await expect(submit).toHaveAttribute("data-submitting", "true");
 	await expect(submit).toBeDisabled();
 	await expect(pin).toBeDisabled();
+	// Approved Paper S5: the code stays in the field while submitting.
+	await expect(pin).toHaveValue("123456");
 	await expect(page.locator(".login-submit__spinner")).toBeVisible();
 	await captureReview(page, "login-submitting-en-320x720.png");
 	releaseSubmission();
 	await expect(page.getByRole("alert")).toHaveAttribute("data-tone", "error");
 });
 
-test("server Retry-After controls lockout without disabling PIN entry", async ({
+test("server Retry-After controls lockout while the field takes the disabled treatment", async ({
 	page,
 }) => {
 	await page.addInitScript(() =>
@@ -235,6 +248,12 @@ test("server Retry-After controls lockout without disabling PIN entry", async ({
 	await expect(page.getByRole("alert")).toContainText("28");
 	await expect(page.getByRole("button", { name: "Sign in" })).toBeDisabled();
 	await expect(pin).toBeEnabled();
+	// Approved Paper S3: the lockout field renders the disabled treatment and
+	// no code while the countdown holds.
+	await expect(pin).toHaveValue("");
+	await expect
+		.poll(() => pin.evaluate((element) => getComputedStyle(element).opacity))
+		.toBe("0.72");
 	await expectNoHorizontalOverflow(page, "320px Retry-After");
 	await captureReview(page, "login-rate-limited-en-320x720.png");
 });

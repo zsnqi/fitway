@@ -82,10 +82,12 @@ function LoginRoute() {
 				setRetrySeconds(waitSeconds);
 				setRetryNoticeSeconds(waitSeconds);
 				setError("rate-limited");
+				setPin("");
 			} else if (caught instanceof AuthRequestError && caught.status === 401) {
 				setError("invalid-credentials");
 			} else {
 				setError("service");
+				setPin("");
 			}
 		} finally {
 			setIsSubmitting(false);
@@ -148,17 +150,19 @@ function LoginRoute() {
 									setPin(normalizeWesternPin(event.target.value));
 									if (error !== "rate-limited") setError(null);
 								}}
-								aria-invalid={Boolean(errorMessage)}
+								aria-invalid={
+									error === "invalid-pin" || error === "invalid-credentials"
+								}
 								aria-describedby={
-									errorMessage
-										? "staff-pin-hint staff-pin-error"
-										: "staff-pin-hint"
+									errorMessage ? "staff-pin-error" : "staff-pin-hint"
 								}
 								disabled={isSubmitting}
 							/>
-							<p id="staff-pin-hint" className="login-field__hint">
-								{messages.login.pinHint(minimum, maximum)}
-							</p>
+							{errorMessage ? null : (
+								<p id="staff-pin-hint" className="login-field__hint">
+									{messages.login.pinHint(minimum, maximum)}
+								</p>
+							)}
 							{errorMessage && error ? (
 								<LoginStatusMessage kind={error}>
 									{errorMessage}

@@ -2,7 +2,6 @@
 	--login-field: #1a171a;
 	--login-field-disabled: #151316;
 	--login-panel: #171316;
-	--login-edge-quiet: #dcc5c90f;
 	--login-edge: #dcc5c91a;
 	--login-edge-control: #dcc5c92e;
 	--login-lift: #ffeef007;
@@ -278,9 +277,26 @@
 		0 0 0 2px var(--login-focus);
 }
 
+/* Approved Paper S3/S4: the lockout and unavailable states render the disabled
+   field treatment (opacity 0.72 on #151316 with the subtle edge, per I3). */
+.login-field__input[data-state="rate-limited"],
+.login-field__input[data-state="service"] {
+	opacity: 0.72;
+	border-color: var(--fw-border-subtle);
+	background-color: var(--login-field-disabled);
+}
+
+.login-field__input[data-state="rate-limited"]:hover,
+.login-field__input[data-state="service"]:hover,
+.login-field__input[data-state="rate-limited"]:focus-visible,
+.login-field__input[data-state="service"]:focus-visible {
+	border-color: var(--fw-border-subtle);
+}
+
+/* Approved Paper S5: the submitting field dims to 0.82 on #151316 and keeps
+   the resting edge. */
 .login-field__input:disabled {
 	opacity: 0.82;
-	border-color: var(--login-edge-quiet);
 	background-color: var(--login-field-disabled);
 }
 
