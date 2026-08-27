@@ -24,7 +24,7 @@ export const staffWeb = {
 			`Enter a PIN of ${isolate(minimum)}–${isolate(maximum)} Western digits.`,
 		submit: "Sign in",
 		submitting: "Signing in…",
-		invalidCredentials: "That code didn't work. Check it and try again.",
+		invalidCredentials: "That code didn’t work. Check it and try again.",
 		rateLimited: (seconds) =>
 			`Too many attempts. Try again in ${isolate(seconds)} seconds.`,
 		serviceError: "Sign-in is unavailable right now. Try again shortly.",

@@ -171,7 +171,7 @@ test("exception and submitting visuals preserve frozen authentication semantics"
 	await pin.fill("123456");
 	await submit.click();
 	await expect(page.getByRole("alert")).toContainText(
-		"That code didn't work. Check it and try again.",
+		"That code didn’t work. Check it and try again.",
 	);
 	await expect(page.getByRole("alert")).toHaveAttribute("data-tone", "error");
 	await expect(pin).toHaveAttribute("aria-invalid", "true");
@@ -180,7 +180,7 @@ test("exception and submitting visuals preserve frozen authentication semantics"
 
 	await submit.click();
 	await expect(page.getByRole("alert")).toHaveAttribute("data-tone", "offline");
-	await expect(submit).toBeEnabled();
+	await expect(submit).toBeDisabled();
 	await expect(pin).toBeEnabled();
 	await expectNoHorizontalOverflow(page, "320px service failure");
 	await captureReview(page, "login-service-en-320x720.png");
@@ -197,7 +197,11 @@ test("exception and submitting visuals preserve frozen authentication semantics"
 			json: { error: "invalid_credentials" },
 		});
 	});
+	// Re-engaging the field clears the service condition and re-arms the action
+	// (the unavailable state holds the action disabled per approved Paper S4/I4).
+	await pin.fill("");
 	await pin.fill("123456");
+	await expect(submit).toBeEnabled();
 	await submit.evaluate((button) => button.click());
 	await expect(submit).toHaveAttribute("data-submitting", "true");
 	await expect(submit).toBeDisabled();

@@ -169,7 +169,7 @@ function LoginRoute() {
 							type="submit"
 							className="login-panel__submit"
 							data-submitting={isSubmitting ? "true" : "false"}
-							disabled={isSubmitting || retrySeconds > 0}
+							disabled={isSubmitting || retrySeconds > 0 || error === "service"}
 						>
 							{isSubmitting ? messages.login.submitting : messages.login.submit}
 							{isSubmitting ? <LoginSubmittingIndicator /> : null}
