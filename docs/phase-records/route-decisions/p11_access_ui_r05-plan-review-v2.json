@@ -22,7 +22,8 @@
 		"fork_turns": "none",
 		"parent_inheritance_deliberate": false
 	},
-	"gate_outcome": "PENDING",
+	"gate_outcome": "REQUEST_CHANGES",
+	"observed_outcome": "The one-way independent gate and phase command were corrected, and authority, scope, secret handling and semantic acceptance remained sound. Review requested one final mechanical correction: spell out all four PowerShell Playwright isolation assignments for phase and full runs instead of referring to them as the same variables.",
 	"covered_modalities": ["text"],
 	"covered_tools": ["repository_read", "git_read"],
 	"covered_capabilities": [
