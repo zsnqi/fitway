@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-27T15:02:00+03:00"
+updatedAt: "2026-08-27T15:24:00+03:00"
 
 coordinator:
-  owner: "Native coordinator on codex/phase11-access-ui-r05-native. Human authorization on 2026-08-27 opened one fresh bounded repair of the latest Phase 11 Access UI terminal FAILED_VALIDATION. Accepted r03 integration 0edb9d9 and its Paper/baselines remain authoritative; r04 is immutable rejected evidence. Plan review v3 passed; one native source writer now owns the exact three-file implementation lease. No external route, second task, integration, deployment, or push has started."
+  owner: "Native coordinator on codex/phase11-access-ui-r05-native. Human authorization on 2026-08-27 opened one fresh bounded repair of the latest Phase 11 Access UI terminal FAILED_VALIDATION. Accepted r03 integration 0edb9d9 and its Paper/baselines remain authoritative; r04 is immutable rejected evidence. Source commit 00a821d passed the coordinator three-file gate at repair 2/2; source lease is released and candidate freeze is pending. No external route, second task, integration, deployment, or push has started."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1621,9 +1621,9 @@ milestones:
     integratedCommit: SELF
 
   phase11-access-ui:
-    status: IN_PROGRESS
+    status: VALIDATING
     dependencies: [phase11-access-b02, phase11-access-tx, phase11-browser-debt, phase11-access-paper-successor]
-    ownerSession: "Native Sol/high writer p11_access_ui_r05_writer; exact three-file source lease open under coordinator gate"
+    ownerSession: "Native coordinator p11_access_ui_r05 candidate freeze; source writer released, no source lease open"
     branch: codex/phase11-access-ui-r05-native
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration/.codex-worktrees/phase11-access-ui-r05-native
     baseCommit: 8f2de74ecdc1f44f5bafe1f8c4ccd4d662b1a3ab
@@ -1650,17 +1650,17 @@ milestones:
       - root manifests, lockfiles, and environment schemas
       - every other milestone's phase record and handoff directory
     sharedLeases: []
-    validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-27T15:02:00+03:00"
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-08-27T15:24:00+03:00"
     leaseExpiresAt: "2026-08-27T22:41:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-access-ui/20260827-144100-p11_access_ui_r05-activation-plan.md
+    handoff: docs/phase-records/handoffs/phase11-access-ui/20260827-152400-p11_access_ui_r05-candidate.md
     stopReason: null
     gates:
-      unit: PENDING
+      unit: PASS
       integration: PENDING
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
       independentReview: PENDING
     integratedCommit: 0edb9d97fe0967148158f4a15c13294bdf97ee6e
 

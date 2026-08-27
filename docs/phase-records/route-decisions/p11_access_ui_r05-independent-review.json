@@ -1,0 +1,41 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "p11_access_ui_r05_independent_review",
+	"recorded": "2026-08-27T15:24:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"delegation_evaluation": {
+		"stage_discovery_started_at": null,
+		"basis": "Adopted plan, source commit 00a821d, coordinator three-file gate and candidate submission record; independent reviewer has not inspected target files or evidence.",
+		"triggers": ["independence", "volume", "recoverability"],
+		"direct_reasons_considered": ["candidate scope is three source/test files"],
+		"decision": "One fresh native verifier holds contract, browser, visual and broad-gate evidence as one judgment because its semantic verdict depends on all of them. Coordinator retains terminal and integration authority."
+	},
+	"candidate_id": "native",
+	"route": null,
+	"control": "xhigh",
+	"transport": "codex-native",
+	"native_spawn": {
+		"model": "gpt-5.6-sol",
+		"reasoning_effort": "xhigh",
+		"agent_role": "reviewer",
+		"fork_turns": "none",
+		"parent_inheritance_deliberate": false
+	},
+	"selection_status": "selected; candidate freeze pending",
+	"gate_outcome": "PENDING",
+	"covered_modalities": ["text", "image"],
+	"covered_tools": ["repository_read", "shell", "browser", "image_inspection"],
+	"covered_capabilities": [
+		"independent acceptance verification",
+		"session and audit invariant review",
+		"RTL/LTR responsive and accessibility review"
+	],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/phase11-access-ui/20260827-144100-p11_access_ui_r05-activation-plan.md",
+		"docs/phase-records/handoffs/phase11-access-ui/20260827-152400-p11_access_ui_r05-candidate.md"
+	],
+	"material_selection_reason": "Independence, broad output volume, prior false-green history and terminal consequence require Sol/xhigh. Native is mandatory; no external route is considered, loaded, preflighted, or invoked. One reviewer is used because rendered evidence and session/audit semantics form one dependent verdict.",
+	"eligible_alternatives": ["native-sol", "native-terra"],
+	"consequence": "Fresh rejection is immediately terminal FAILED_VALIDATION for r05. Reviewer cannot edit, repair, delegate, resubmit, integrate, deploy, push, or make product decisions."
+}
