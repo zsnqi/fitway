@@ -79,4 +79,6 @@ No open product decision remains. Stop at `NEEDS_HUMAN` for any required locked-
 
 Environment preflight: `pnpm install --frozen-lockfile` completed from the locked graph. The workflow's bare `pnpm exec vitest --version` lookup failed before assertions even though `node_modules/.bin/vitest.CMD` exists; the explicit generated-shim form above printed version `4.1.10`. This host-only lookup condition consumes no source-repair or validation budget and authorizes no package, lockfile, runner, or configuration edit.
 
-Next gate: fresh native plan review. No source write, integration, deployment, push, external route, or second task is authorized before that review passes.
+Plan review history: v1 requested one-way independent-gate semantics plus executable Windows isolation; v2 requested literal phase/full Playwright assignments; the second and final focused plan correction closed that issue. Fresh native v3 review passed at commit `6d61a25` with no authority, scope, acceptance, secret, rollback, or stop-condition gap.
+
+The plan is adopted. Next gate: one native implementation writer inside the exact three-file lease, followed by coordinator review and candidate freeze. No integration, deployment, push, external route, or second task is authorized.

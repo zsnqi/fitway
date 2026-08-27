@@ -1,0 +1,44 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "p11_access_ui_r05_writer",
+	"recorded": "2026-08-27T15:02:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"delegation_evaluation": {
+		"stage_discovery_started_at": null,
+		"basis": "Adopted r05 plan at 6d61a25 and immutable r04 independent findings; implementation-stage target-file discovery has not begun.",
+		"triggers": ["volume", "recoverability"],
+		"direct_reasons_considered": ["three named files", "plan is precise"],
+		"decision": "One native writer absorbs the stateful browser fixture, red/green evidence, and focused output; coordinator retains scope, acceptance, freeze, independent verification and integration."
+	},
+	"candidate_id": "native",
+	"route": null,
+	"control": "high",
+	"transport": "codex-native",
+	"native_spawn": {
+		"model": "gpt-5.6-sol",
+		"reasoning_effort": "high",
+		"agent_role": "worker",
+		"fork_turns": "none",
+		"parent_inheritance_deliberate": false
+	},
+	"qualification_status": "selected; implementation pending",
+	"gate_outcome": "PENDING",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "file_write", "shell", "browser_tests"],
+	"covered_capabilities": [
+		"bounded React focus repair",
+		"stateful credential/session/audit browser contract tests"
+	],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/phase11-access-ui/20260827-144100-p11_access_ui_r05-activation-plan.md"
+	],
+	"material_selection_reason": "The r04 Terra/high writer failed its parent gate on all three session/audit evidence invariants. The r05 plan is more explicit, but that observed failure requires requalification and raises capability to Sol/high for this consequential fixture design. Native is mandatory; no external route is considered, loaded, preflighted, or invoked.",
+	"eligible_alternatives": ["native-sol", "native-terra"],
+	"consequence": "Implementation and self-verification only; no authority, terminal verdict, baseline change or integration delegation.",
+	"write_scope": [
+		"apps/web/src/components/owner/access/owner-access-view.tsx",
+		"apps/web/src/components/owner/access/owner-access-view.test.tsx",
+		"tests/browser/phase11-access.browser.spec.ts"
+	]
+}
