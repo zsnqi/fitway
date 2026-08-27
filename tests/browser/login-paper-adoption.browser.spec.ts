@@ -186,9 +186,9 @@ test("exception and submitting visuals preserve frozen authentication semantics"
 	await submit.click();
 	await expect(page.getByRole("alert")).toHaveAttribute("data-tone", "offline");
 	await expect(submit).toBeDisabled();
-	await expect(pin).toBeEnabled();
-	// Approved Paper S4: the field takes the disabled treatment and renders no
-	// code while the service failure holds.
+	// Approved Paper S4/I3: the field takes the disabled treatment, renders no
+	// code, and is not focusable — so no ring case exists (VF4-0).
+	await expect(pin).toBeDisabled();
 	await expect(pin).toHaveValue("");
 	await expect
 		.poll(() => pin.evaluate((element) => getComputedStyle(element).opacity))
@@ -208,9 +208,10 @@ test("exception and submitting visuals preserve frozen authentication semantics"
 			json: { error: "invalid_credentials" },
 		});
 	});
-	// Re-engaging the field clears the service condition and re-arms the action
-	// (the unavailable state holds the action disabled per approved Paper S4/I4).
-	await pin.fill("");
+	// Approved Paper S4 (VTY-0): no recovery action exists in the form while
+	// the service condition holds and none is invented — the message states
+	// what to do. A retry therefore begins from a fresh page load.
+	await page.reload();
 	await pin.fill("123456");
 	await expect(submit).toBeEnabled();
 	await submit.evaluate((button) => button.click());
@@ -247,9 +248,10 @@ test("server Retry-After controls lockout while the field takes the disabled tre
 	await expect(page.getByRole("alert")).toHaveAttribute("data-tone", "delayed");
 	await expect(page.getByRole("alert")).toContainText("28");
 	await expect(page.getByRole("button", { name: "Sign in" })).toBeDisabled();
-	await expect(pin).toBeEnabled();
-	// Approved Paper S3: the lockout field renders the disabled treatment and
-	// no code while the countdown holds.
+	// Approved Paper S3/I3: the lockout field is disabled — not focusable, no
+	// ring case — renders the disabled treatment, and holds no code while the
+	// server-provided countdown runs.
+	await expect(pin).toBeDisabled();
 	await expect(pin).toHaveValue("");
 	await expect
 		.poll(() => pin.evaluate((element) => getComputedStyle(element).opacity))

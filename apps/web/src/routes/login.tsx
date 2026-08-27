@@ -133,6 +133,8 @@ function LoginRoute() {
 					<form onSubmit={(event) => void submit(event)} noValidate>
 						<div className="login-field">
 							<Label htmlFor="staff-pin">{messages.login.pinLabel}</Label>
+							{/* Approved Paper I3: the S3/S4 field is disabled, so it is
+						    not focusable and no ring case exists (VF4-0). */}
 							<Input
 								id="staff-pin"
 								name="pin"
@@ -156,7 +158,11 @@ function LoginRoute() {
 								aria-describedby={
 									errorMessage ? "staff-pin-error" : "staff-pin-hint"
 								}
-								disabled={isSubmitting}
+								disabled={
+									isSubmitting ||
+									error === "rate-limited" ||
+									error === "service"
+								}
 							/>
 							{errorMessage ? null : (
 								<p id="staff-pin-hint" className="login-field__hint">

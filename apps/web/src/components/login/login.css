@@ -278,7 +278,8 @@
 }
 
 /* Approved Paper S3/S4: the lockout and unavailable states render the disabled
-   field treatment (opacity 0.72 on #151316 with the subtle edge, per I3). */
+   field treatment (opacity 0.72 on #151316 with the subtle edge, per I3). The
+   field is disabled, so it is not focusable and no ring case exists (VF4-0). */
 .login-field__input[data-state="rate-limited"],
 .login-field__input[data-state="service"] {
 	opacity: 0.72;
@@ -286,16 +287,9 @@
 	background-color: var(--login-field-disabled);
 }
 
-.login-field__input[data-state="rate-limited"]:hover,
-.login-field__input[data-state="service"]:hover,
-.login-field__input[data-state="rate-limited"]:focus-visible,
-.login-field__input[data-state="service"]:focus-visible {
-	border-color: var(--fw-border-subtle);
-}
-
 /* Approved Paper S5: the submitting field dims to 0.82 on #151316 and keeps
    the resting edge. */
-.login-field__input:disabled {
+.login-field__input[data-state="submitting"] {
 	opacity: 0.82;
 	background-color: var(--login-field-disabled);
 }
