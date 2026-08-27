@@ -75,11 +75,13 @@ test("approved Login family is responsive, physically anchored, and locale-safe"
 			const panel = document
 				.querySelector(".login-panel")
 				?.getBoundingClientRect();
+			const input = document.querySelector(".login-field__input");
 			return {
 				brandRight: brand?.right,
 				languageLeft: language?.left,
 				panelWidth: panel?.width,
 				railHeight: rail?.height,
+				inputDirection: input ? getComputedStyle(input).direction : undefined,
 			};
 		});
 
@@ -87,6 +89,9 @@ test("approved Login family is responsive, physically anchored, and locale-safe"
 		expect(measurements.panelWidth).toBeCloseTo(viewport.panelWidth, 0);
 		expect(measurements.languageLeft).toBeLessThan(viewport.width / 4);
 		expect(measurements.brandRight).toBeGreaterThan((viewport.width * 3) / 4);
+		// Approved Paper mirrors the field in Arabic (WBX-0/W0S-0 render
+		// direction rtl) and keeps it LTR on the English page.
+		expect(measurements.inputDirection).toBe("rtl");
 		await expectNoHorizontalOverflow(page, `${viewport.width}px Arabic`);
 		await captureReview(
 			page,
@@ -107,10 +112,16 @@ test("approved Login family is responsive, physically anchored, and locale-safe"
 		const brand = document
 			.querySelector(".login-rail__brand")
 			?.getBoundingClientRect();
-		return { brandRight: brand?.right, languageLeft: language?.left };
+		const input = document.querySelector(".login-field__input");
+		return {
+			brandRight: brand?.right,
+			languageLeft: language?.left,
+			inputDirection: input ? getComputedStyle(input).direction : undefined,
+		};
 	});
 	expect(physicalAnchors.languageLeft).toBeLessThan(80);
 	expect(physicalAnchors.brandRight).toBeGreaterThan(240);
+	expect(physicalAnchors.inputDirection).toBe("ltr");
 	await captureReview(page, "login-en-320x720.png");
 });
 

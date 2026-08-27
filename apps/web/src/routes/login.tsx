@@ -144,7 +144,6 @@ function LoginRoute() {
 								pattern="[0-9]*"
 								minLength={6}
 								maxLength={12}
-								dir="ltr"
 								className="login-field__input"
 								data-state={error ?? (isSubmitting ? "submitting" : "idle")}
 								value={pin}

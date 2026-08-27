@@ -225,8 +225,10 @@
 	line-height: 24px;
 }
 
+/* Approved Paper mirrors the field in Arabic (WBX-0/W0S-0 render direction
+   rtl); Western digit order survives bidi, so the direction is inherited
+   rather than forced. */
 .login-field__input {
-	direction: ltr;
 	min-block-size: 56px;
 	padding-inline: 18px;
 	border: 1px solid #d8bcc02e;
