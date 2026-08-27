@@ -12,7 +12,7 @@
 		"decision": "One fresh native verifier holds contract, browser, visual and broad-gate evidence as one judgment because its semantic verdict depends on all of them. Coordinator retains terminal and integration authority."
 	},
 	"candidate_id": "native",
-	"route": null,
+	"route": "native-sol",
 	"control": "xhigh",
 	"transport": "codex-native",
 	"native_spawn": {
@@ -22,8 +22,8 @@
 		"fork_turns": "none",
 		"parent_inheritance_deliberate": false
 	},
-	"selection_status": "selected; candidate freeze pending",
-	"gate_outcome": "PENDING",
+	"selection_status": "completed on frozen candidate 00665f576bf05c9e243f53a69de9e64c0e9af39e",
+	"gate_outcome": "PASS",
 	"covered_modalities": ["text", "image"],
 	"covered_tools": ["repository_read", "shell", "browser", "image_inspection"],
 	"covered_capabilities": [
@@ -37,5 +37,16 @@
 	],
 	"material_selection_reason": "Independence, broad output volume, prior false-green history and terminal consequence require Sol/xhigh. Native is mandatory; no external route is considered, loaded, preflighted, or invoked. One reviewer is used because rendered evidence and session/audit semantics form one dependent verdict.",
 	"eligible_alternatives": ["native-sol", "native-terra"],
-	"consequence": "Fresh rejection is immediately terminal FAILED_VALIDATION for r05. Reviewer cannot edit, repair, delegate, resubmit, integrate, deploy, push, or make product decisions."
+	"consequence": "The fresh independent reviewer returned PASS with no blocking finding. The coordinator may integrate only after closing the reviewer's explicit disposable-database phase/full gap. Reviewer did not edit, repair, delegate, resubmit, integrate, deploy, push, or make product decisions.",
+	"observed_evidence": {
+		"candidate": "00665f576bf05c9e243f53a69de9e64c0e9af39e",
+		"focused_vitest": "2 files / 40 tests passed",
+		"access_chromium": "14/14 passed",
+		"simulator": "117/117 passed",
+		"fault_injections": "4/4 made the exact seven-action success test fail at the intended audit, principal, stale-credential, or current-credential guard",
+		"canonical_hashes_unchanged": true,
+		"phase_full_gap_at_review": "FITWAY_R05_PHASE_TEST_DATABASE_URL and FITWAY_R05_FULL_TEST_DATABASE_URL were absent; the coordinator subsequently provisioned the exact disposable local databases and ran both registered ladders before integration",
+		"interactive_gap": "Native /admin redirected to /login without an owner session; no interactive Access UI coverage or manual screen-reader coverage is claimed",
+		"artifact_hygiene": "Verifier removed all five isolated Playwright directories, retained no trace-like artifact, closed its ports, and left the worktree clean"
+	}
 }
