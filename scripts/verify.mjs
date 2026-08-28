@@ -4,6 +4,17 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 const phases = {
+	"login-paper-adoption": {
+		browserFiles: [
+			"tests/browser/login-paper-adoption.browser.spec.ts",
+			"tests/browser/phase4-staff-web.browser.spec.ts",
+			"tests/browser/phase9-owner-ui.browser.spec.ts",
+			"tests/browser/public-baseline.browser.spec.ts",
+			"tests/browser/phase11-shell.browser.spec.ts",
+		],
+		integrationFiles: [],
+		label: "Login Paper adoption integration",
+	},
 	1: {
 		browserFiles: [],
 		integrationFiles: [],

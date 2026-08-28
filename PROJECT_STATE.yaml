@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-28T11:33:49+03:00"
+updatedAt: "2026-08-28T11:41:00+03:00"
 
 coordinator:
-  owner: "Main coordinator p11_frontier_20260828. Authoritative branch verified; Access r05 integrated and full post-integration gate PASS at cac4b9e. Access owner/lease released. Next executable queue: Login integration, propagation-wait investigation, Uptime mobile fidelity. Settings remains terminal awaiting fresh human authorization; no terminal attempt is reopened."
+  owner: "Main coordinator login_b03_c01. Access r05 DONE and closeout frozen at c2977cd. Login b03 bounded integration active; one source writer. Propagation and Uptime follow; Settings remains terminal awaiting fresh human authorization."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -268,19 +268,36 @@ milestones:
     integratedCommit: b67398a8a221e60f45ed7a4f2b0e40207fdbd58a
 
   login-paper-adoption:
-    status: PLANNED
+    status: IN_PROGRESS
     dependencies: [phase4-staff-web, focus-parity-accessibility]
-    ownerSession: null
-    branch: null
-    worktree: null
-    baseCommit: null
-    ownedPaths: []
-    forbiddenPaths: []
-    sharedLeases: []
+    ownerSession: "Main coordinator login_b03_c01"
+    branch: codex/remaining-scope-coordinator
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
+    baseCommit: c2977cd96d2a19a4b6737dee69a206a32604a895
+    ownedPaths:
+      - apps/web/src/components/login/**
+      - apps/web/src/routes/login.tsx
+      - tests/browser/login-paper-adoption.browser.spec.ts
+      - docs/phase-records/handoffs/login-paper-adoption/**
+      - docs/phase-records/route-decisions/login_b03_*.json
+    forbiddenPaths:
+      - apps/server/**
+      - packages/**
+      - pnpm-lock.yaml
+      - package.json
+      - apps/web/src/components/staff/staff.css
+      - visual-direction-gate/approved/**
+    sharedLeases:
+      - "Coordinator only: apps/web/src/i18n/messages/{ar,en}.ts staffWeb.login candidate blocks"
+      - "Coordinator only: tests/browser/phase4-staff-web.browser.spec.ts candidate copy + accepted focus preservation + operations probe context"
+      - "Coordinator only: tests/browser/phase9-owner-ui.browser.spec.ts one expired-session Login heading"
+      - "Coordinator only: scripts/verify.mjs additive login-paper-adoption profile"
+      - "Coordinator only: two Login canonical PNGs named in adopted plan; comparison/acceptance after independent fidelity"
+      - "Coordinator only: ADR-007 dated Login authority addendum; PROJECT_STATE.yaml and stage records"
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/coordinator/20260811-201938-completion-blocker-state-reconciled.md
+    lastHeartbeatAt: "2026-08-28T11:41:00+03:00"
+    leaseExpiresAt: "2026-08-28T21:00:00+03:00"
+    handoff: docs/phase-records/handoffs/login-paper-adoption/20260828-login-b03-coordinator-integration-plan.md
     stopReason: null
     gates:
       unit: PENDING

@@ -36,3 +36,6 @@ GLM evidence moved from `test-results/p11_glm_advisory_20260828` to `test-result
 Access exact commands, counts, hashes and gaps: `../phase11-access-ui/20260828-p11_access_ui_r05-coordinator-done.md`. The coordinator toolchain is restored from the frozen lockfile, Vitest 4.1.10; no dependency/config update occurred. Current tracked writes are only these closeout records and ledger updates until their commit/final cheap freeze.
 
 Next: adopt and persist the bounded Login integration plan, allocate exact shared leases, and activate from the resulting clean coordinator HEAD. Keep one source writer, preserve candidate history, and obtain fresh independent review of the merged result before DONE.
+
+## 11:41 coordinator continuation
+Access metadata freeze PASS at c2977cd. Own run DB and sensitive browser output removed; prior r05_phase/r05_full databases remain with zero active connections after host refusal to delete. No deletion retry. Login plan adopted and coordinator lease activated; baseline approval remains pending its gates. GLM synthetic-only probe planning may proceed independently, with no FITWAY source egress.

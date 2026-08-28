@@ -1,0 +1,42 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "login_b03_coordinator_integration_20260828",
+	"recorded": "2026-08-28T08:41:00Z",
+	"candidate_id": "direct",
+	"transport": "coordinator-native",
+	"qualification_baseline": "2026-08-28.2",
+	"registry_revision": "2026-08-28.2",
+	"gate_outcome": "PENDING",
+	"consequence": "high coordinator integration authority; bounded compatibility edits",
+	"delegation_evaluation": {
+		"basis": [
+			"adopted bounded Login integration plan",
+			"durable authority reconciliation"
+		],
+		"direct_reasons_considered": [
+			"four exact compatibility edits",
+			"coordinator alone owns integration/shared catalog/baseline authority"
+		],
+		"triggers_for_following_stages": [
+			"volume for execution logs",
+			"independence for final review"
+		],
+		"note": "Plan assigned coordinator integration directly; after targeted code reads, explicit route comparison reaffirmed direct execution, not an unqualified discovery-based default."
+	},
+	"material_selection_reason": "Coordinator performs the history-preserving merge and four exact compatibility fixes. Delegating this small edit after integration would add a source-lease/worktree handoff; high-volume verification and independent Browser/Paper review are separately delegated. No authority is delegated.",
+	"filtered_alternatives": {
+		"glm-5.3-flash": [
+			"FITWAY source egress host-blocked pending exact consent; qualification does not cover integration authority or Browser/Paper"
+		],
+		"deepseek-v4-pro": [
+			"No delegation advantage for the four coordinator reconciliation edits; no Browser/Paper or authority qualification. Not substituted to bypass GLM data gate."
+		],
+		"gpt-5.6-terra": ["No fresh invocation approval"],
+		"gpt-5.6-luna": ["No fresh invocation approval"]
+	},
+	"covered_tools": ["git", "repository_edit", "shell"],
+	"covered_modalities": ["text"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": []
+}

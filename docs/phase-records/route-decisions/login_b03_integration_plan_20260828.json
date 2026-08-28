@@ -1,0 +1,42 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "login_b03_integration_plan_20260828",
+	"recorded": "2026-08-28T08:12:15.3352798Z",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native",
+	"route": null,
+	"control": "xhigh",
+	"transport": "codex-native",
+	"native_spawn": {
+		"invocation_id": "login_b03_integration_plan_sol01",
+		"parent_inheritance_deliberate": false,
+		"reasoning_effort": "xhigh",
+		"agent_role": "explorer",
+		"fork_turns": "none",
+		"request_timestamp": "2026-08-28T08:12:15.3352798Z",
+		"model": "gpt-5.6-sol"
+	},
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"qualification_status": "native",
+	"gate_outcome": "PASS",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "shell"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"durable_authorization_records": [],
+	"material_selection_reason": "Volume and independent high-consequence integration planning across divergent accepted Login copy/state authority, shared catalogs, canonical images, existing focus changes, verification profile and ledger. GLM low ceiling and V4 medium ceiling/tool scope do not cover final authority-sensitive integration planning; no external implementation task is assigned.",
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"gpt-5.6-luna": ["No fresh per-invocation human approval"],
+		"deepseek-v4-pro": [
+			"High-consequence authority reconciliation exceeds medium consequence ceiling"
+		],
+		"gpt-5.6-terra": ["No fresh per-invocation human approval"],
+		"glm-5.3-flash": [
+			"High-consequence authority reconciliation exceeds low consequence ceiling"
+		]
+	},
+	"adopted_plan": "docs/phase-records/handoffs/login-paper-adoption/20260828-login-b03-coordinator-integration-plan.md"
+}
