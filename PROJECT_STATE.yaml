@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-28T20:31:00Z"
+updatedAt: "2026-08-28T20:35:00Z"
 
 coordinator:
-  owner: "Coordinator executing the human-authorized one-time W2 repair exception. Historical 2/2 remains recorded; effective candidate ceiling is 3/3 for GLM-5.3-Flash/high only. Uptime is paused and V4 Pro is not authorized for further current-run work. Handoff: docs/phase-records/handoffs/phase11-e2e-propagation-wait/20260828-p11-w2-repair3-human-exception.md"
+  owner: "Coordinator final authority validating W2 candidate 0e5f2aa after the human-authorized GLM repair3/3 and a valid fresh GLM review PASS. Historical 2/2 remains recorded; no repair4. Uptime stays paused and V4 Pro remains unauthorized. Handoff: docs/phase-records/handoffs/phase11-e2e-propagation-wait/20260828-p11-w2-repair3-cycle-pass.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1676,9 +1676,9 @@ milestones:
     integratedCommit: cac4b9e1f27c1a4cbd69b678abf707faa1a18be0
 
   phase11-e2e-propagation-wait:
-    status: IN_PROGRESS
+    status: VALIDATING
     dependencies: [ phase11-browser-debt ]
-    ownerSession: "Fourth fresh GLM-5.3-Flash/high read-only W2 repair3/3 reviewer with absolute candidate-worktree paths; candidate unchanged at 0e5f2aa"
+    ownerSession: "Native independent runtime/ladder verifier for candidate 0e5f2aa; GLM implementation/review cycle complete PASS"
     branch: work/phase11-e2e-propagation-wait-w1
     worktree: C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1
     baseCommit: f07f5d9e82c12bc216b10f4360b79dd6c9c32e5a
@@ -1694,17 +1694,17 @@ milestones:
     sharedLeases:
       - "Coordinator only: PROJECT_STATE.yaml and W2 exception/route/evidence records"
     validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-28T20:31:00Z"
+    lastHeartbeatAt: "2026-08-28T20:35:00Z"
     leaseExpiresAt: "2026-08-29T07:00:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-e2e-propagation-wait/20260828-p11-w2-repair3-human-exception.md
+    handoff: docs/phase-records/handoffs/phase11-e2e-propagation-wait/20260828-p11-w2-repair3-cycle-pass.md
     stopReason: null
     gates:
-      unit: PENDING
+      unit: PASS
       integration: PENDING
       browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
-      independentReview: PENDING
+      independentReview: PASS
     integratedCommit: null
 
   phase11-reference-gating-debt:

@@ -13,7 +13,7 @@
 	"qualification_baseline": "2026-08-28.2",
 	"qualification_status": "qualified_restricted",
 	"route_evidence": "explicit human-directed fresh independent GLM review cycle",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "PASS",
 	"material_selection_reason": "Review3 stayed compact but could not inspect because relative paths resolved outside the candidate worktree. Human instructions require a fresh independent GLM review and prohibit V4 Pro. Review4 enumerates absolute allowlisted candidate-worktree paths proven by Review1's successful reads.",
 	"consequence": "low read-only source review; runtime causal verification and final acceptance remain coordinator-owned",
 	"covered_modalities": ["text"],
@@ -40,7 +40,7 @@
 		"candidate_diff_sha256": "5d3c3bf5b703e6223bd20c28fcbbe6a8f98637e3326a20530f8dcdf2ea82083f",
 		"mechanical_evidence": "C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1/test-results/node_modules/p11_w2_repair3_review4/mechanical-evidence.json"
 	},
-	"provider_task_invocations": 0,
+	"provider_task_invocations": 1,
 	"reconciliation": {
 		"candidate_clean": true,
 		"implementation_and_reviewer_sessions_separate": true,
@@ -49,7 +49,26 @@
 		"reviewer_write_access": false,
 		"model_failure": false
 	},
-	"outcome_history": [],
+	"outcome_history": [
+		{
+			"recorded": "2026-08-28T20:35:00Z",
+			"gate_outcome": "PASS",
+			"provider_task_invocations": 1,
+			"provider_session_id": "ses_fb5fb0b2fffewanKT4dkHFsOWP",
+			"candidate": "0e5f2aae017c19b6d0b7e036ba3ae9c8046c6d27",
+			"reviewer_writes": 0,
+			"completed_reads": 4,
+			"denied_reads": 0,
+			"verdict": "PASS",
+			"findings": [],
+			"final_chars": 1424,
+			"contract_limit_chars": 1500,
+			"sentinel_present": true,
+			"final_sha256": "b65b434589e702b1cefcdb1bb263187195c01dd7c40adcbdd3d30d4ab24627bb",
+			"gaps": ["runtime", "integration", "phase", "full"],
+			"parent_action": "Accept worker-level independent source review and return unchanged candidate to coordinator final verification authority."
+		}
+	],
 	"prior_route_decision": "docs/phase-records/route-decisions/p11_propagation_w2_repair3_review3_20260828.json",
 	"stage_input": "human-directed worker-level GLM review cycle"
 }

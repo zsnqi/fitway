@@ -13,7 +13,7 @@
 	"qualification_baseline": "2026-08-28.2",
 	"qualification_status": "qualified_restricted",
 	"route_evidence": "explicit one-time human route and repair authorization",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "SOURCE_PASS_REVIEW_PASS",
 	"material_selection_reason": "The human explicitly authorized one W2 repair3/3 and required GLM-5.3-Flash/high through the verified path, prohibiting V4 Pro. The task is the exact low-consequence single-file correction class GLM is qualified for; native retains all substantive review/runtime/integration authority.",
 	"consequence": "low supervised exact one-file source correction; substantive causal/runtime/review consequence is native-owned",
 	"covered_modalities": ["text"],
@@ -47,14 +47,38 @@
 		"fourth_attempt_authorized": false,
 		"project_state_schema_field_remains": 2
 	},
-	"provider_task_invocations": 0,
+	"provider_task_invocations": 1,
 	"reconciliation": {
 		"source_hash_unchanged": true,
 		"prior_terminal_evidence_preserved": true,
 		"one_writer": true,
 		"model_failure": false
 	},
-	"outcome_history": [],
+	"outcome_history": [
+		{
+			"recorded": "2026-08-28T20:35:00Z",
+			"gate_outcome": "SOURCE_PASS_REVIEW_PASS",
+			"provider_task_invocations": 1,
+			"provider_session_id": "ses_fb60657d1ffe2eU2X5P4nkXEgY",
+			"candidate": "0e5f2aae017c19b6d0b7e036ba3ae9c8046c6d27",
+			"source_sha256": "884b3a503a4209b3042ec1b352e3ae44d9db424713d06fd7bbcf08a9ea821dff",
+			"completion_chars": 1391,
+			"completion_limit_chars": 1500,
+			"completion_sha256": "a6889e594ec4da4c6fdff892e8317e7a8ac4f3a84afb6545c92aff970f49af82",
+			"sentinel_present": true,
+			"focused_gates": {
+				"git_diff_check": "PASS",
+				"biome": "PASS",
+				"server_types": "PASS"
+			},
+			"independent_review": {
+				"route_record": "docs/phase-records/route-decisions/p11_propagation_w2_repair3_review4_20260828.json",
+				"verdict": "PASS",
+				"findings": 0
+			},
+			"parent_action": "Advance unchanged candidate to native runtime and repository ladder verification. No repair4 exists."
+		}
+	],
 	"prior_route_decision": "docs/phase-records/route-decisions/p11_propagation_w2_20260828.json",
 	"stage_input": "human instruction plus frozen packet"
 }
