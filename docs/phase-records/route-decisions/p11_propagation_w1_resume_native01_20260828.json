@@ -7,7 +7,7 @@
 	"candidate_id": "native",
 	"transport": "codex-native",
 	"control": "high",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "STOPPED_BY_HUMAN",
 	"consequence": "bounded test-only diagnostics and fixture; parent owns privacy/causality/runtime acceptance",
 	"native_spawn": {
 		"model": "gpt-5.6-sol",
@@ -20,5 +20,8 @@
 	"material_selection_reason": "Same delegation-qualified stage rerouted after substantive external host rejection; native avoids external source transmission. Sol/high available without Terra/Luna one-shot approval and can preserve real async instrumentation/deadline semantics. No external/harness re-investigation.",
 	"scope": ["apps/server/src/phase2.integration.test.ts"],
 	"base": "f07f5d9e82c12bc216b10f4360b79dd6c9c32e5a",
-	"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1"
+	"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1",
+	"stopped_at": "2026-08-28T15:27:04.076Z",
+	"outcome_record": "docs/phase-records/handoffs/coordinator/20260828-182621-human-stop-checkpoint.md",
+	"outcome_scope": "Interrupted before source edits; no candidate or runtime gate. No capability/validation failure."
 }
