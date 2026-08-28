@@ -1,0 +1,60 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-e2e-propagation-wait/W2-repair3-human-exception",
+	"recorded": "2026-08-28T20:19:00Z",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "glm-5.3-flash",
+	"route": "opencode-go/glm-5.3-flash",
+	"control": "high",
+	"transport": "opencode-cli",
+	"native_spawn": null,
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"qualification_status": "qualified_restricted",
+	"route_evidence": "explicit one-time human route and repair authorization",
+	"gate_outcome": "PENDING",
+	"material_selection_reason": "The human explicitly authorized one W2 repair3/3 and required GLM-5.3-Flash/high through the verified path, prohibiting V4 Pro. The task is the exact low-consequence single-file correction class GLM is qualified for; native retains all substantive review/runtime/integration authority.",
+	"consequence": "low supervised exact one-file source correction; substantive causal/runtime/review consequence is native-owned",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "file_write"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"human_authorization": "docs/phase-records/handoffs/coordinator/20260828-w2-repair3-human-authorization.md",
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260828-glm-5.3-flash-authorization.md"
+	],
+	"host_approval": {
+		"authority": "existing human-authorized scoped host rule",
+		"launcher": "C:/Users/Pc Force/.agents/skills/agent-project-workflow/scripts/launch-external-worker.cjs",
+		"launcher_sha256": "814a85d027e0c5d4296bdeb63d0ec36f378ae7aecb3863c9e239b81f023263da"
+	},
+	"activation": {
+		"base": "d106724d27f7ff0b96ed21c7a0f6497203315e14",
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1",
+		"branch": "work/phase11-e2e-propagation-wait-w1",
+		"exact_write_lease": ["apps/server/src/phase2.integration.test.ts"],
+		"lease_expires_at": "2026-08-29T07:00:00+03:00",
+		"packet": "C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration/test-results/node_modules/p11_w2_repair3/packet.txt",
+		"packet_sha256": "d92d68a3608b66e06311053e14c0cce017a9f95dc672ceb107444a7616e3d17e",
+		"spec": "test-results/node_modules/p11_w2_repair3/spec.json",
+		"source_sha256": "5197bafd0c9e68701fcec8d095c5434d59f474caaf4588c54bbe548eaeb11a0f"
+	},
+	"repair_accounting": {
+		"historical_attempts_preserved": 2,
+		"effective_human_exception_attempt": 3,
+		"effective_ceiling": 3,
+		"fourth_attempt_authorized": false,
+		"project_state_schema_field_remains": 2
+	},
+	"provider_task_invocations": 0,
+	"reconciliation": {
+		"source_hash_unchanged": true,
+		"prior_terminal_evidence_preserved": true,
+		"one_writer": true,
+		"model_failure": false
+	},
+	"outcome_history": [],
+	"prior_route_decision": "docs/phase-records/route-decisions/p11_propagation_w2_20260828.json",
+	"stage_input": "human instruction plus frozen packet"
+}

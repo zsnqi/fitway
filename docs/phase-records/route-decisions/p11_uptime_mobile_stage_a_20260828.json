@@ -13,7 +13,7 @@
 	"qualification_baseline": "2026-08-28.2",
 	"qualification_status": "qualified",
 	"route_evidence": "requalified",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "CANCELLED_BY_HUMAN_STEERING",
 	"material_selection_reason": "Fresh live preflight found DeepSeek V4 Pro and GLM available. DeepSeek is the registry-preferred general bounded implementation candidate and is qualified for a supervised two-file medium-consequence source stage. GLM's fresh W2 parent source-gate failure prevents route reuse, and this stage exceeds its low-consequence ceiling. Terra/Luna lack fresh one-shot approval; Sol remains native visual and verification authority.",
 	"consequence": "medium supervised responsive semantic source implementation; visual, accessibility, canonical, runtime and integration judgments remain native/human-owned",
 	"covered_modalities": ["text"],
@@ -47,7 +47,7 @@
 			"apps/web/src/components/owner/health/owner-health.css": "ae53fa3ab3042a650e627c55ebd26f11347babbb05e3d69e6b72f3ee231895d4"
 		}
 	},
-	"provider_task_invocations": 0,
+	"provider_task_invocations": 1,
 	"reconciliation": {
 		"source_hashes_unchanged": true,
 		"plan_and_paper_spec_unchanged": true,
@@ -55,7 +55,21 @@
 		"one_writer": true,
 		"model_failure": false
 	},
-	"outcome_history": [],
+	"outcome_history": [
+		{
+			"recorded": "2026-08-28T20:19:00Z",
+			"gate_outcome": "CANCELLED_BY_HUMAN_STEERING",
+			"provider_task_invocations": 1,
+			"provider_session_id": "ses_fb60d0a97ffeBOTiV7TWAxDacI",
+			"candidate_created": false,
+			"source_edits": 0,
+			"completed_allowed_reads": 2,
+			"denied_out_of_scope_reads": 1,
+			"interrupted_launcher_exit": 1,
+			"parent_action": "Paused Uptime until W2 repair3/3 terminates; released lease; no adoption or repair accounting. V4 Pro prohibited for further current-run work without explicit human authorization.",
+			"evidence": "docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260828-p11-uptime-stage-a-paused-for-w2.md"
+		}
+	],
 	"prior_plan_route_decision": "docs/phase-records/route-decisions/p11_uptime_mobile_plan_20260828.json",
 	"delegation_evaluation": {
 		"evaluated_at": "2026-08-28T20:15:00Z",
