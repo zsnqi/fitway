@@ -1,0 +1,47 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-e2e-propagation-wait/W1-resume01",
+	"recorded": "2026-08-28T15:19:39.495Z",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "glm-5.3-flash",
+	"route": "opencode-go/glm-5.3-flash",
+	"control": "high",
+	"transport": "opencode-cli",
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"qualification_status": "qualified_restricted",
+	"gate_outcome": "PENDING",
+	"route_evidence": "requalified",
+	"prior_route_decision": "docs/phase-records/route-decisions/p11_propagation_w1_glm_20260828.json",
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260828-glm-5.3-flash-authorization.md"
+	],
+	"material_selection_reason": "Frozen W1 source-only resume. Volume/recoverability/economy evaluated before target discovery. GLM exact-file qualification and human preference still apply; route live. Completed installed launch repair replaces prior overhead; no harness repair/review. Native Sol has no material source-edit advantage and retains all runtime/security/acceptance gates. Terra/Luna lack exact approval; V4 has no concrete advantage.",
+	"consequence": "low supervised one-file diagnostics; runtime and acceptance native",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "file_write"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"activation": {
+		"commit": "f07f5d9e82c12bc216b10f4360b79dd6c9c32e5a",
+		"branch": "work/phase11-e2e-propagation-wait-w1",
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1",
+		"exact_write_lease": "apps/server/src/phase2.integration.test.ts",
+		"packet": "C:\\Users\\Pc Force\\.codex\\worktrees\\f2a7\\phase5-staff-integration\\test-results\\node_modules\\p11_w1_resume01\\packet.txt",
+		"packet_sha256": "ea3d86884deddce779200b2025084776670be1ab335a571a6d9d2a0cf60e0738",
+		"lease_expires_at": "2026-08-28T21:30:00+03:00"
+	},
+	"launch_options": {
+		"max_transient_retries": 3
+	},
+	"route_record_reconciliation": "Historical record has completion:null because provider never ran; current resolver rejects null. Resumed record omits completion until an actual completion exists. No model failure or requalification is inferred.",
+	"requalification_reasons": [
+		"Resolver recomputed selection because prior run had no PASS completion (PENDING resume); existing qualification evidence and substantive packet reused; no qualification probe or model failure."
+	],
+	"preflight": {
+		"live_models": "opencode models opencode-go: GLM-5.3-Flash and DeepSeek V4 Pro present",
+		"effective_controls": "test-results/node_modules/p11_w1_resume01/preflight.json",
+		"source_hash": "379826cf6741c9721b69294b86d59155bbec566c2be708cee0e979ab103a3588"
+	}
+}
