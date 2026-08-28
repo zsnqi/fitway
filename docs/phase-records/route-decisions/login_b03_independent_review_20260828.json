@@ -1,0 +1,41 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "login_b03_independent_review_20260828",
+	"recorded": "2026-08-28T08:53:42.956Z",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native",
+	"transport": "codex-native",
+	"control": "high",
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"qualification_status": "native",
+	"gate_outcome": "PENDING",
+	"native_spawn": {
+		"model": "gpt-5.6-sol",
+		"reasoning_effort": "high",
+		"agent_role": "reviewer",
+		"fork_turns": "none",
+		"invocation_id": "login_b03_independent_sol01",
+		"request_timestamp": "2026-08-28T08:53:42.957Z"
+	},
+	"consequence": "high final integrated Login UI/state/accessibility/canonical acceptance review; coordinator retains acceptance",
+	"covered_modalities": ["text", "image"],
+	"covered_tools": ["repository_read", "shell", "Browser", "Paper_read"],
+	"covered_mcp_operations": ["Paper read", "Browser interaction"],
+	"covered_capabilities": [],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260828-glm-5.3-flash-authorization.md"
+	],
+	"material_selection_reason": "Independence: a fresh reviewer must judge integrated source plus interactive Browser and live Paper composition and run isolated phase/full verification. GLM-first decomposition considered: low-consequence code advisory alone cannot decide this coupled UI-state/focus/fidelity gate; GLM can serve the following bounded project implementation while native retains this final image/Browser/Paper and real-environment gate. No V4 assignment.",
+	"filtered_alternatives": {
+		"glm-5.3-flash": [
+			"No demonstrated Browser/Paper/image or high-consequence final acceptance capability; data authorization is not a blocker"
+		],
+		"deepseek-v4-pro": [
+			"No Browser/Paper/image final-gate qualification, no material advantage"
+		],
+		"gpt-5.6-terra": ["No fresh explicit invocation approval"],
+		"gpt-5.6-luna": ["No fresh explicit invocation approval"]
+	}
+}

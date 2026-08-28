@@ -194,6 +194,13 @@ or any artifact prohibited elsewhere by repository policy. Route selection remai
 the authorization removes the data-processing-consent blocker but does not predetermine that the
 external route wins the required native-versus-external comparison.
 
+The separate 2026-08-28 human authorization in
+`docs/phase-records/handoffs/coordinator/20260828-glm-5.3-flash-authorization.md`
+also permits eligible, task-scoped non-secret FITWAY source, tests, specifications,
+and context to the qualified GLM-5.3-Flash route. It is durable and reusable, with
+content-based real-secret/private-data exclusions (not filename exclusions) and all normal qualification, consequence, ownership, review,
+and host gates retained. It does not authorize future unqualified identities.
+
 ## Independent verification
 
 The verifier receives outcome, base/candidate commits, owned scope, acceptance criteria, commands,

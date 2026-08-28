@@ -81,3 +81,23 @@ the per-surface conflict list is implementation-phase work and has not been done
 - Evidence and history: `docs/phase-records/paper-design-phase-closeout.md`, and the original
   closing handoff preserved at
   `docs/archive/handoffs/HANDOFF-paper-design-phase-close-20260805.md`.
+
+## 2026-08-28 — Login-specific human authority reconciliation
+
+The human instructions recorded in the Login b03
+[Paper fidelity repair](../phase-records/handoffs/login-paper-adoption/20260827-183500-login_paper_b03-paper-fidelity-repair.md),
+[repair 3](../phase-records/handoffs/login-paper-adoption/20260827-212500-login_paper_b03-repair3.md),
+and [repair 4](../phase-records/handoffs/login-paper-adoption/20260827-222500-login_paper_b03-repair4.md)
+make LOGIN PRODUCTION SET — CURRENT authoritative for Login presentation, its represented
+states and behavior, and all user-facing Login copy. This is a narrow human-approved exception
+to the catalog precedence above, not a general transfer of application behavior to Paper.
+
+Product/Spec security, authorization, privacy and data semantics remain unchanged. In S4,
+disabled/non-focusable controls and no invented recovery action are represented authority;
+the candidate's fresh-load recovery is a minimal implementation inference, not a claim that
+the human explicitly prescribed reload-only recovery. No conflicting recovery requirement
+was found in the durable record. Other families retain the general authority split.
+
+The main coordinator adopted the
+[bounded current-frontier integration plan](../phase-records/handoffs/login-paper-adoption/20260828-login-b03-coordinator-integration-plan.md).
+Canonical comparison and acceptance still require its fresh independent fidelity gate.
