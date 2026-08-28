@@ -20,7 +20,7 @@
 	"registry_revision": "2026-08-28.2",
 	"qualification_baseline": "2026-08-28.2",
 	"qualification_status": "native",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "PASS",
 	"covered_modalities": ["text"],
 	"covered_tools": ["repository_read", "shell"],
 	"covered_mcp_operations": [],
@@ -39,5 +39,19 @@
 		"deepseek-v4-pro": [
 			"Real environment values required by this operational gate stay native"
 		]
+	},
+	"observed_evidence": {
+		"native_worker_interruption": "Worker model usage interruption after process completed; coordinator recovered executed artifact evidence and checked raw counts before acceptance",
+		"commit": "cac4b9e1f27c1a4cbd69b678abf707faa1a18be0",
+		"incident": "Attempt01 collection contaminated by coordinator artifacts; quarantined without source/config changes; unchanged attempt02 passed",
+		"browser": 97,
+		"simulator": 117,
+		"canonical_hashes_unchanged": true,
+		"integration": 122,
+		"unit": 516,
+		"focused_access": 40,
+		"full_exit": 0,
+		"evidence": "test-results/p11_access_integrated_20260828/summary.json",
+		"clean_before_after": true
 	}
 }
