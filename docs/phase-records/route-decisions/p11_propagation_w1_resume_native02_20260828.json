@@ -1,0 +1,36 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-e2e-propagation-wait/W1-resume-native02",
+	"recorded": "2026-08-28T17:09:25.682Z",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native",
+	"transport": "codex-native",
+	"control": "high",
+	"gate_outcome": "PENDING",
+	"route_evidence": "reused",
+	"prior_route_decision": "docs/phase-records/route-decisions/p11_propagation_w1_resume_native01_20260828.json",
+	"delegation_reasons": ["volume", "recoverability", "permission"],
+	"consequence": "Bounded test-only diagnostics and prior-minute fixture; native parent retains causal, privacy and runtime acceptance.",
+	"material_selection_reason": "Prior native fallback still covers unchanged W1. Current installed workflow 1.10.1 and registry 2026-08-28.2 inspected. Prior external host refusal requires new exact human host approval; no approval inferred from general resume and no egress retry. Native avoids external source transmission. Terra/Luna lack exact one-shot approval. Sol/high preserves async observation and deadlines with bounded context.",
+	"native_spawn": {
+		"model": "gpt-5.6-sol",
+		"reasoning_effort": "high",
+		"agent_role": "worker",
+		"fork_turns": "none",
+		"invocation_id": "p11_w1_resume_native02",
+		"request_timestamp": "2026-08-28T17:09:25.682Z"
+	},
+	"scope": ["apps/server/src/phase2.integration.test.ts"],
+	"base": "f07f5d9e82c12bc216b10f4360b79dd6c9c32e5a",
+	"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1",
+	"lease_expires_at": "2026-08-29T00:30:00+03:00",
+	"preflight": {
+		"worker_clean": true,
+		"source_sha256": "379826cf6741c9721b69294b86d59155bbec566c2be708cee0e979ab103a3588",
+		"matching_processes": 0,
+		"vitest": "4.1.10 win32-x64 node-v24.14.0",
+		"private_environment": "missing; provision before runtime; source stage has no runtime permission"
+	},
+	"authorization": "Explicit current human resume; preserves completed and terminal attempts. Sol needs no additional invocation approval."
+}
