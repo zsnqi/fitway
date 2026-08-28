@@ -1,8 +1,8 @@
 {
 	"schema": "route-decision/1",
 	"project": "FITWAY",
-	"stage_ref": "phase11-e2e-propagation-wait/W2-repair3-review3",
-	"recorded": "2026-08-28T20:28:00Z",
+	"stage_ref": "phase11-e2e-propagation-wait/W2-repair3-review4",
+	"recorded": "2026-08-28T20:31:00Z",
 	"evaluated_before_stage_discovery": true,
 	"candidate_id": "glm-5.3-flash",
 	"route": "opencode-go/glm-5.3-flash",
@@ -13,8 +13,8 @@
 	"qualification_baseline": "2026-08-28.2",
 	"qualification_status": "qualified_restricted",
 	"route_evidence": "explicit human-directed fresh independent GLM review cycle",
-	"gate_outcome": "BLOCKED_BY_PACKET_PATH_RESOLUTION",
-	"material_selection_reason": "Review2 did not inspect the candidate because the coordinator packet omitted exact path names from its prose. Human instructions require a fresh independent GLM review and prohibit V4 Pro. Review3 enumerates each exact allowlisted path and uses the governing 1500-character contract.",
+	"gate_outcome": "PENDING",
+	"material_selection_reason": "Review3 stayed compact but could not inspect because relative paths resolved outside the candidate worktree. Human instructions require a fresh independent GLM review and prohibit V4 Pro. Review4 enumerates absolute allowlisted candidate-worktree paths proven by Review1's successful reads.",
 	"consequence": "low read-only source review; runtime causal verification and final acceptance remain coordinator-owned",
 	"covered_modalities": ["text"],
 	"covered_tools": ["repository_read"],
@@ -35,36 +35,21 @@
 		"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1",
 		"branch": "work/phase11-e2e-propagation-wait-w1",
 		"write_lease": [],
-		"packet": "C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration/test-results/node_modules/p11_w2_repair3_review3/packet.txt",
-		"packet_sha256": "32c5ec01a4d22251a93d3c69ac70b0462fb0e2f6930f222ed316eb0d8f048dfd",
+		"packet": "C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration/test-results/node_modules/p11_w2_repair3_review4/packet.txt",
+		"packet_sha256": "6f255e5a6428f4182aad55106584fa90bccd5b607c49b5f3540dee33af43309b",
 		"candidate_diff_sha256": "5d3c3bf5b703e6223bd20c28fcbbe6a8f98637e3326a20530f8dcdf2ea82083f",
-		"mechanical_evidence": "test-results/node_modules/p11_w2_repair3_review3/mechanical-evidence.json"
+		"mechanical_evidence": "C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1/test-results/node_modules/p11_w2_repair3_review4/mechanical-evidence.json"
 	},
-	"provider_task_invocations": 1,
+	"provider_task_invocations": 0,
 	"reconciliation": {
 		"candidate_clean": true,
 		"implementation_and_reviewer_sessions_separate": true,
 		"prior_review_results_not_accepted": true,
-		"exact_paths_enumerated": true,
+		"absolute_paths_enumerated": true,
 		"reviewer_write_access": false,
 		"model_failure": false
 	},
-	"outcome_history": [
-		{
-			"recorded": "2026-08-28T20:31:00Z",
-			"gate_outcome": "BLOCKED_BY_PACKET_PATH_RESOLUTION",
-			"provider_task_invocations": 1,
-			"provider_session_id": "ses_fb5fd267affeRltFqSO595skED",
-			"candidate_changed": false,
-			"candidate_reviewed": false,
-			"final_chars": 1291,
-			"contract_limit_chars": 1500,
-			"sentinel_present": true,
-			"parent_packet_failure": "Relative exact paths resolved against the coordinator packet directory rather than the candidate worktree, so all four reads were denied.",
-			"parent_action": "Issue a fresh read-only GLM review enumerating absolute paths inside the candidate worktree.",
-			"model_failure": false
-		}
-	],
-	"prior_route_decision": "docs/phase-records/route-decisions/p11_propagation_w2_repair3_review2_20260828.json",
+	"outcome_history": [],
+	"prior_route_decision": "docs/phase-records/route-decisions/p11_propagation_w2_repair3_review3_20260828.json",
 	"stage_input": "human-directed worker-level GLM review cycle"
 }
