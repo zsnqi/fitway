@@ -1,0 +1,35 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "p11_propagation_w1_launch_review_20260828",
+	"recorded": "2026-08-28T17:04:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native",
+	"transport": "codex-native",
+	"control": "high",
+	"gate_outcome": "REQUEST_CHANGES",
+	"reviewed_supervisor_sha256": "3A03A490690C6E069D0AB9223EC080C59561D1E1159FD08934A01576EDCBCC73",
+	"review_record": "docs/phase-records/handoffs/phase11-e2e-propagation-wait/20260828-p11-propagation-w1-launch-controls-review.md",
+	"provider_invocations": 0,
+	"attribution": "Coordinator launch infrastructure; no model execution or qualification penalty",
+	"native_spawn": {
+		"model": "gpt-5.6-sol",
+		"reasoning_effort": "high",
+		"agent_role": "reviewer",
+		"fork_turns": "none",
+		"invocation_id": "p11_w1_launch_controls_sol01",
+		"request_timestamp": "2026-08-28T17:04:00+03:00"
+	},
+	"consequence": "High consequence review of external-provider egress confinement and completion evidence; read-only, no provider invocation",
+	"material_selection_reason": "Independence: review the coordinator-written launch supervisor against the adopted packet before any external process. High-consequence access/evidence review exceeds GLM's low and V4's medium ceiling. Terra and Luna lack fresh explicit approval. No completed review is repeated.",
+	"scope": [
+		"test-results/node_modules/p11_propagation_glm_w1_20260828/supervisor.mjs",
+		"existing W1 launch packet and installed OpenCode adapter requirements"
+	],
+	"prohibited": [
+		"provider launch",
+		"source changes",
+		"test/server/database execution",
+		"workaround for host rejection"
+	]
+}

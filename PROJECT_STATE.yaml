@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-28T16:30:00+03:00"
+updatedAt: "2026-08-28T17:07:00+03:00"
 
 coordinator:
-  owner: "Main coordinator. Access r05 remains DONE. Login b03 is terminal and reverted. Propagation W1 is active as a supervised bounded GLM-5.3-Flash test-only writer stage; Uptime planning remains read-only and disjoint. Settings remains terminal awaiting fresh human authorization."
+  owner: "Main coordinator. Access r05 remains DONE; Login b03 is terminal and reverted. Propagation W1 never launched: host approval-checker usage refusal plus independently rejected coordinator launch controls. Source lease released. Uptime planning is complete and preserved; Settings remains terminal awaiting fresh human authorization."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1676,9 +1676,9 @@ milestones:
     integratedCommit: cac4b9e1f27c1a4cbd69b678abf707faa1a18be0
 
   phase11-e2e-propagation-wait:
-    status: IN_PROGRESS
+    status: BLOCKED
     dependencies: [phase11-browser-debt]
-    ownerSession: "OpenCode GLM-5.3-Flash/high W1 test-only writer, supervised and gated by main coordinator"
+    ownerSession: null
     branch: work/phase11-e2e-propagation-wait-w1
     worktree: C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1
     baseCommit: 9082d8f16b8fe9f0a26b65998b32a3b23424888c
@@ -1695,10 +1695,10 @@ milestones:
       - "Coordinator only: PROJECT_STATE.yaml and scripts/verify.mjs additive phase profile"
       - "Coordinator only: durable plan/route/handoff records and external-worker evidence append"
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-28T16:30:00+03:00"
-    leaseExpiresAt: "2026-08-28T21:30:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-e2e-propagation-wait/20260828-p11-propagation-b01-plan.md
-    stopReason: null
+    lastHeartbeatAt: "2026-08-28T17:07:00+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase11-e2e-propagation-wait/20260828-p11-propagation-w1-launch-checkpoint.md
+    stopReason: "W1 provider process never started. The host rejected the exact supervisor invocation because its automatic approval reviewer hit its usage limit and explicitly prohibited an indirect retry/workaround. Independent read-only review then rejected coordinator launch controls: missing frozen payload/live route/lease bindings, result identity and completion validation, cancellation confirmation and protected-scope enforcement. No breach was demonstrated. Durable GLM data authorization remains valid; this is not a provider/model failure and consumes no implementation repair. Resume requires satisfying the host refusal boundary, repairing and independently verifying launch controls, fresh live preflight, and a reissued exact source lease. Preserve the clean isolated f07f5d9 worktree and completed planning; do not redispatch any completed stage."
     gates:
       unit: PENDING
       integration: PENDING
