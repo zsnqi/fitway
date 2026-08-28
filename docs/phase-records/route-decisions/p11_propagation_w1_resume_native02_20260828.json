@@ -7,7 +7,7 @@
 	"candidate_id": "native",
 	"transport": "codex-native",
 	"control": "high",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "NOT_RUN_SUPERSEDED",
 	"route_evidence": "reused",
 	"prior_route_decision": "docs/phase-records/route-decisions/p11_propagation_w1_resume_native01_20260828.json",
 	"delegation_reasons": ["volume", "recoverability", "permission"],
@@ -32,5 +32,7 @@
 		"vitest": "4.1.10 win32-x64 node-v24.14.0",
 		"private_environment": "missing; provision before runtime; source stage has no runtime permission"
 	},
-	"authorization": "Explicit current human resume; preserves completed and terminal attempts. Sol needs no additional invocation approval."
+	"authorization": "Explicit current human resume; preserves completed and terminal attempts. Sol needs no additional invocation approval.",
+	"parent_action": "Human correction before any spawn: reconcile completed launcher repair and fresh Codex smoke; external current02 selected.",
+	"completed": "2026-08-28T17:12:27.231Z"
 }

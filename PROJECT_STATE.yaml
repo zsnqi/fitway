@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-28T17:09:25.682Z"
+updatedAt: "2026-08-28T17:12:27.231Z"
 
 coordinator:
-  owner: "Main coordinator resumed by explicit human instruction; one bounded native W1 writer. Access DONE and Login/Settings terminal preserved. Handoff: docs/phase-records/handoffs/coordinator/20260828-201500-resumed-frontier.md"
+  owner: "Main coordinator resumed; current workflow-owned external GLM W1 launch, no native worker. Access DONE; Login/Settings terminal preserved. Handoff: docs/phase-records/handoffs/coordinator/20260828-201500-resumed-frontier.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1678,7 +1678,7 @@ milestones:
   phase11-e2e-propagation-wait:
     status: IN_PROGRESS
     dependencies: [ phase11-browser-debt ]
-    ownerSession: Native Sol/high p11_w1_resume_native02 sole W1 source writer
+    ownerSession: GLM/high p11_w1_current02 sole W1 source writer
     branch: work/phase11-e2e-propagation-wait-w1
     worktree: C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1
     baseCommit: f07f5d9e82c12bc216b10f4360b79dd6c9c32e5a

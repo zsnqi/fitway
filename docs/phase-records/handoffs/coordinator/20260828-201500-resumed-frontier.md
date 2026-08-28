@@ -19,3 +19,7 @@ At 938c42b predecessor checkpoint content: git diff --check PASS; pnpm check:rep
 ## Resume contract
 
 Execute only the adopted propagation plan and native causal method, preserving source-only worker boundary, 5000ms DOM/60000ms test budgets, real pipeline, safe disposable resources, one writer and repair count 0. Freeze and independently review before integration. Continue executable remaining frontier; stop on authority conflict or normal terminal gate.
+
+## Current launch reconciliation supersedes native selection
+
+Human corrected the routing before any native spawn. Installed STATUS completion 1.10.3, exact launcher hash, current rule 87, and fresh Codex-hosted smoke result were inspected: launcher path PASS, one GLM/high completion, no surfaced manual approval or auto-review intervention. Earlier refusal preceded this repair; it is preserved, not reused as a blocker. Current live discovery confirms GLM/V4. Resolver re-evaluation includes both durable authorizations and reports no lifecycle violations; GLM selected under the explicit safe/economical preference. Fresh route docs/phase-records/route-decisions/p11_propagation_w1_current02_20260828.json now owns the same one-file lease. No native worker ran; no global repair or settings change. Source-only packet substance unchanged; activation metadata refreshed. Native runtime gates remain mandatory.

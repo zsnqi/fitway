@@ -1,0 +1,53 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-e2e-propagation-wait/W1-current02",
+	"recorded": "2026-08-28T17:12:27.231Z",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "glm-5.3-flash",
+	"route": "opencode-go/glm-5.3-flash",
+	"control": "high",
+	"transport": "opencode-cli",
+	"native_spawn": null,
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"qualification_status": "qualified_restricted",
+	"route_evidence": "requalified",
+	"gate_outcome": "PENDING",
+	"material_selection_reason": "Current live host rule and verified workflow-owned launcher supersede pre-repair refusal. Both external candidates authorized and live; GLM can execute frozen source-only W1 with parent-owned runtime/causality gates, no concrete V4 advantage. Explicit human GLM preference retained. Native has no material source-edit advantage; no native worker launched.",
+	"consequence": "low supervised one-file diagnostics and persisted-state fixture; runtime/security/causal judgment native-owned",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "file_write"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260828-glm-5.3-flash-authorization.md"
+	],
+	"host_approval": {
+		"authority": "existing human-authorized scoped host rule",
+		"rule": "C:/Users/Pc Force/.codex/rules/default.rules:87",
+		"launcher": "C:/Users/Pc Force/.agents/skills/agent-project-workflow/scripts/launch-external-worker.cjs",
+		"launcher_sha256": "814a85d027e0c5d4296bdeb63d0ec36f378ae7aecb3863c9e239b81f023263da",
+		"evidence": "C:/Users/Pc Force/.codex/worktrees/external-worker-smoke-test/attempt-01/result.json",
+		"historical_refusal": "Preserved; predates completed host repair and fresh host smoke. Not a permanent eligibility blocker."
+	},
+	"activation": {
+		"base": "f07f5d9e82c12bc216b10f4360b79dd6c9c32e5a",
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1",
+		"branch": "work/phase11-e2e-propagation-wait-w1",
+		"exact_write_lease": ["apps/server/src/phase2.integration.test.ts"],
+		"lease_expires_at": "2026-08-29T00:30:00+03:00",
+		"packet": "C:\\Users\\Pc Force\\.codex\\worktrees\\f2a7\\phase5-staff-integration\\test-results\\node_modules\\p11_w1_current02\\packet.txt",
+		"packet_sha256": "8a5480634a09f5dd51668270cc302554957cca899bf0fedff6e0e9932d2a010a",
+		"spec": "test-results/node_modules/p11_w1_current02/spec.json"
+	},
+	"provider_task_invocations": 0,
+	"reconciliation": {
+		"source_hash_unchanged": true,
+		"input_manifest_unchanged": true,
+		"launcher_hash_matches_fresh_smoke": true,
+		"one_writer": true,
+		"model_failure": false
+	},
+	"outcome_history": []
+}
