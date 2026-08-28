@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-28T20:05:00Z"
+updatedAt: "2026-08-28T20:18:00Z"
 
 coordinator:
-  owner: "Coordinator fresh reconciliation continued. Propagation terminal FAILED_VALIDATION after W1 causal adoption and rejected W2 at exhausted repair2/2; unintegrated history preserved. Uptime mobile fidelity is the only independent executable frontier. Handoff: docs/phase-records/handoffs/coordinator/20260828-214300-fresh-reconciliation.md"
+  owner: "Coordinator fresh reconciliation continued. Propagation terminal preserved at repair2/2. Uptime mobile fidelity Stage A activated for a sole DeepSeek V4 Pro/high source writer under the frozen Paper-derived contract. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260828-p11-uptime-stage-a-activation.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1937,12 +1937,12 @@ milestones:
     integratedCommit: 974302b976e8a1d1344191241665333d4bf6a75c
 
   phase11-uptime-mobile-fidelity:
-    status: PLANNED
+    status: IN_PROGRESS
     dependencies: [phase11-health, phase11-uptime-paper-successor]
-    ownerSession: null
-    branch: null
-    worktree: null
-    baseCommit: f07f5d9e82c12bc216b10f4360b79dd6c9c32e5a
+    ownerSession: "DeepSeek V4 Pro/high Stage A sole source writer; native coordinator owns source/visual/a11y/runtime/review/integration gates"
+    branch: work/phase11-uptime-mobile-fidelity-b01
+    worktree: C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile
+    baseCommit: SELF
     ownedPaths:
       - apps/web/src/components/owner/health/**
       - apps/web/src/hooks/use-owner-health.test.tsx
@@ -1957,9 +1957,9 @@ milestones:
       - "canonical baseline promotion outside this milestone's own subtree; promotion remains coordinator-owned"
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-28T16:34:00+03:00"
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260828-p11-uptime-mobile-plan.md
+    lastHeartbeatAt: "2026-08-28T20:18:00Z"
+    leaseExpiresAt: "2026-08-29T07:00:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260828-p11-uptime-stage-a-activation.md
     stopReason: null
     gates:
       unit: PENDING

@@ -1,0 +1,67 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-uptime-mobile-fidelity/stage-a",
+	"recorded": "2026-08-28T20:18:00Z",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "deepseek-v4-pro",
+	"route": "opencode-go/deepseek-v4-pro",
+	"control": "high",
+	"transport": "opencode-cli",
+	"native_spawn": null,
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"qualification_status": "qualified",
+	"route_evidence": "requalified",
+	"gate_outcome": "PENDING",
+	"material_selection_reason": "Fresh live preflight found DeepSeek V4 Pro and GLM available. DeepSeek is the registry-preferred general bounded implementation candidate and is qualified for a supervised two-file medium-consequence source stage. GLM's fresh W2 parent source-gate failure prevents route reuse, and this stage exceeds its low-consequence ceiling. Terra/Luna lack fresh one-shot approval; Sol remains native visual and verification authority.",
+	"consequence": "medium supervised responsive semantic source implementation; visual, accessibility, canonical, runtime and integration judgments remain native/human-owned",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "file_write"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
+	],
+	"host_approval": {
+		"authority": "existing human-authorized scoped host rule",
+		"rule": "installed scoped launch-external-worker rule previously exercised by W2",
+		"launcher": "C:/Users/Pc Force/.agents/skills/agent-project-workflow/scripts/launch-external-worker.cjs",
+		"launcher_sha256": "814a85d027e0c5d4296bdeb63d0ec36f378ae7aecb3863c9e239b81f023263da"
+	},
+	"activation": {
+		"coordinator_parent": "a70ccd18f2a97c701074535b4c27fb36ee5fdbce",
+		"activation_commit": "SELF",
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile",
+		"branch": "work/phase11-uptime-mobile-fidelity-b01",
+		"exact_write_lease": [
+			"apps/web/src/components/owner/health/owner-health-view.tsx",
+			"apps/web/src/components/owner/health/owner-health.css"
+		],
+		"lease_expires_at": "2026-08-29T07:00:00+03:00",
+		"packet": "C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration/test-results/node_modules/p11_uptime_stage_a/packet.txt",
+		"packet_sha256": "104a9a9685a531407cf4d4836446c63964eeaee4a49470f962df87b18f064bd5",
+		"spec": "test-results/node_modules/p11_uptime_stage_a/spec.json",
+		"source_sha256": {
+			"apps/web/src/components/owner/health/owner-health-view.tsx": "04906f60b6bc7fc1fcf70dbd5f9fd649a45d9785daaadc3d12d8912626831780",
+			"apps/web/src/components/owner/health/owner-health.css": "ae53fa3ab3042a650e627c55ebd26f11347babbb05e3d69e6b72f3ee231895d4"
+		}
+	},
+	"provider_task_invocations": 0,
+	"reconciliation": {
+		"source_hashes_unchanged": true,
+		"plan_and_paper_spec_unchanged": true,
+		"launcher_hash_matches_approved_launcher": true,
+		"one_writer": true,
+		"model_failure": false
+	},
+	"outcome_history": [],
+	"prior_plan_route_decision": "docs/phase-records/route-decisions/p11_uptime_mobile_plan_20260828.json",
+	"delegation_evaluation": {
+		"evaluated_at": "2026-08-28T20:15:00Z",
+		"stage_discovery_started_at": null,
+		"basis": ["approved frozen Uptime plan", "durable current frontier"],
+		"reasons": ["economy", "permission", "recoverability"]
+	},
+	"stage_input": "test-results/node_modules/p11_uptime_stage_a/stage.json"
+}
