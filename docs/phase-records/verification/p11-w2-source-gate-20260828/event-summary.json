@@ -1,0 +1,29 @@
+{
+	"schema": "fitway-external-worker-gate/1",
+	"stage_ref": "phase11-e2e-propagation-wait/W2",
+	"recorded": "2026-08-28T20:02:00Z",
+	"base_commit": "8dd4d527492cef253e9e60be4cd3ddb4b37781ff",
+	"provider_task_invocations": 1,
+	"provider_session_id": "ses_fb62e820effePrpeHfW5YNChuG",
+	"process_exit": {
+		"code": 0,
+		"signal": null
+	},
+	"stderr_bytes": 0,
+	"tool_counts": {
+		"read": 5,
+		"edit": 7
+	},
+	"denied_tools": 0,
+	"exact_write_paths": [
+		"C:\\Users\\Pc Force\\.codex\\worktrees\\p11-propagation-w1\\apps\\server\\src\\phase2.integration.test.ts"
+	],
+	"raw_candidate_sha256": "ca6f0d1b94a28997eb562ed38f3ceae9a0a78206f9ac948e2698db020ae69054",
+	"raw_patch_sha256": "b6380c80153f990f97c12fa001ece224270abf2d02538a2b5e72731dc4fdca9b",
+	"final_chars": 2206,
+	"final_sha256": "2e36546d1986c81228e3edd47581736b30457bde2a56c8ea34e3fe60ba0a706f",
+	"final_sentinel_present": true,
+	"packet_final_limit_chars": 1500,
+	"post_gate_preservation_commit": "d106724d27f7ff0b96ed21c7a0f6497203315e14",
+	"post_gate_preservation_note": "Coordinator git commit invoked the repository pre-commit hook, which autoformatted the rejected file. This mutation happened after the terminal gate and is not a repair or candidate acceptance. candidate.patch is the replayed exact pre-hook external result."
+}

@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-28T18:43:00Z"
+updatedAt: "2026-08-28T20:05:00Z"
 
 coordinator:
-  owner: "Coordinator fresh reconciliation; terminal W1 candidate under independent adoption review, not integrated. Access DONE; Login/Settings terminal preserved. Handoff: docs/phase-records/handoffs/coordinator/20260828-214300-fresh-reconciliation.md"
+  owner: "Coordinator fresh reconciliation continued. Propagation terminal FAILED_VALIDATION after W1 causal adoption and rejected W2 at exhausted repair2/2; unintegrated history preserved. Uptime mobile fidelity is the only independent executable frontier. Handoff: docs/phase-records/handoffs/coordinator/20260828-214300-fresh-reconciliation.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1676,9 +1676,9 @@ milestones:
     integratedCommit: cac4b9e1f27c1a4cbd69b678abf707faa1a18be0
 
   phase11-e2e-propagation-wait:
-    status: IN_PROGRESS
+    status: FAILED_VALIDATION
     dependencies: [ phase11-browser-debt ]
-    ownerSession: "GLM/high W2 sole source writer under frozen native contract; W1 adopted, not integrated; repair2/2 unchanged"
+    ownerSession: null
     branch: work/phase11-e2e-propagation-wait-w1
     worktree: C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1
     baseCommit: f07f5d9e82c12bc216b10f4360b79dd6c9c32e5a
@@ -1691,21 +1691,19 @@ milestones:
       - "mocking any part of the simulator-to-edge-to-server-to-poll pipeline: that pipeline is what the assertion exists to prove end to end, and mocking it deletes the proof rather than stabilizing it"
       - "all production source, edge runtime, schema/migrations, other tests, snapshots, package/lock/config and normative authority"
       - "secrets, real credentials, unrestricted repository discovery, external services and provider-owned verification"
-    sharedLeases:
-      - "Coordinator only: PROJECT_STATE.yaml and scripts/verify.mjs additive phase profile"
-      - "Coordinator only: durable plan/route/handoff records and external-worker evidence append"
+    sharedLeases: []
     validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-28T18:43:00Z"
-    leaseExpiresAt: "2026-08-29T06:00:00+03:00"
-    handoff: docs/phase-records/handoffs/coordinator/20260828-214300-fresh-reconciliation.md
-    stopReason: null
+    lastHeartbeatAt: "2026-08-28T20:05:00Z"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase11-e2e-propagation-wait/20260828-p11-propagation-terminal-failed-validation.md
+    stopReason: "Terminal FAILED_VALIDATION at the existing exhausted repair count 2/2. W1 source 8dd4d52 and native causal proof were adopted as staged evidence but never integrated. The planned W2 external candidate failed the source gate: server TypeScript TS2322 at raw candidate line 1069, Biome formatting at line 1285, and a 2206-character final against the explicit 1500-character maximum. No W2 runtime or broader ladder ran. Exact raw patch/evidence is preserved under docs/phase-records/verification/p11-w2-source-gate-20260828; branch commit d106724 preserves a post-gate autoformatted form only and remains rejected. No third repair, rerun, or integration is authorized."
     gates:
-      unit: PENDING
+      unit: FAIL
       integration: PENDING
       browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
-      independentReview: PENDING
+      independentReview: FAIL
     integratedCommit: null
 
   phase11-reference-gating-debt:

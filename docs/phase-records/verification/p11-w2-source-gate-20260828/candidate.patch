@@ -1,0 +1,462 @@
+diff --git a/apps/server/src/phase2.integration.test.ts b/apps/server/src/phase2.integration.test.ts
+index 79a1a9e..67be56d 100644
+--- a/apps/server/src/phase2.integration.test.ts
++++ b/apps/server/src/phase2.integration.test.ts
+@@ -137,6 +137,9 @@ const createW1Diagnostics = () => {
+ 				records.shift();
+ 			}
+ 		},
++		snapshot(): readonly W1Diagnostic[] {
++			return records.map((record) => ({ ...record }));
++		},
+ 		emit(): void {
+ 			console.error(
+ 				JSON.stringify({
+@@ -162,6 +165,25 @@ const w1Count = (value: unknown): number | null =>
+ 		? value
+ 		: null;
+ 
++type W1SimulatorLastRequest = {
++	mode: "live" | "backfill";
++	sequence: number;
++	observedAt: string | null;
++	currentCount: number | null;
++};
++
++type W1SimulatorState = {
++	sequence: number;
++	outbox: readonly unknown[];
++	lastRequest: W1SimulatorLastRequest;
++	inFlightRequest: null;
++};
++
++type W1SimulatorSample = {
++	currentCount: number;
++	ackElapsedMs: number;
++};
++
+ const alwaysOpenSchedule = {
+ 	scheduleSunOpen: "00:00",
+ 	scheduleSunClose: "00:00",
+@@ -967,54 +989,348 @@ describe("Phase 2 real Postgres vertical slice", () => {
+ 					});
+ 				}
+ 			};
++			const countWaitTimeoutMs = (
++				sample: W1SimulatorSample,
++				assertion: string,
++			): number => {
++				const deadlineMs = diagnosticStartedAt + sample.ackElapsedMs + 5_000;
++				const remainingMs = deadlineMs - Date.now();
++				if (remainingMs <= 0) {
++					throw new Error(
++						`${assertion} count wait deadline expired before the wait started`,
++					);
++				}
++				return remainingMs;
++			};
+ 			await page
+ 				.getByText("التحديث المباشر غير متاح الآن")
+ 				.waitFor({ timeout: 5_000 });
+ 			await expect(page.locator("meter").count()).resolves.toBe(0);
+-			const runSimulator = async (seed: number) => {
+-				let processOutcome: string | null = null;
++			let expectedSequence = 1;
++			let lastAcceptedAckElapsedMs: number | null = null;
++			const readSimulatorState = async (): Promise<W1SimulatorState> => {
++				let parsed: unknown;
+ 				try {
+-					const result = await execFileAsync("py", [
+-						path.resolve("edge/simulator.py"),
+-						"--base-url",
+-						apiBase,
+-						"--token-file",
+-						simulatorTokenFile,
+-						"--state-file",
+-						simulatorStateFile,
+-						"--starting-count",
+-						"12",
+-						"--seed",
+-						String(seed),
+-						"--mode",
+-						"exit-heavy",
+-						"--action",
+-						"once",
+-					]);
+-					processOutcome =
+-						/outcome=([a-z_]+)/u.exec(result.stdout)?.[1] ?? null;
+-					expect(result.stdout).toContain("outcome=processed");
+-					const state = JSON.parse(
++					parsed = JSON.parse(
+ 						await readFile(simulatorStateFile, "utf8"),
+-					) as { count: number };
+-					return state.count;
+-				} finally {
+-					diagnostics.record({
+-						kind: "simulator",
+-						elapsedMs: Date.now() - diagnosticStartedAt,
+-						seed,
+-						processOutcome,
+-					});
++					) as unknown;
++				} catch {
++					throw new Error("Simulator state file could not be read as JSON");
++				}
++				if (typeof parsed !== "object" || parsed === null) {
++					throw new Error("Simulator state file is not an object");
++				}
++				const fields = parsed as Record<string, unknown>;
++				const sequence = w1Count(fields.sequence);
++				if (sequence === null) {
++					throw new Error("Simulator state sequence is missing or invalid");
++				}
++				if (fields.inFlightRequest !== null) {
++					throw new Error("Simulator state in-flight request is not null");
++				}
++				if (!Array.isArray(fields.outbox)) {
++					throw new Error("Simulator state outbox is missing or invalid");
++				}
++				const outbox: readonly unknown[] = fields.outbox;
++				const lastRequestFields = fields.lastRequest;
++				if (
++					typeof lastRequestFields !== "object" ||
++					lastRequestFields === null
++				) {
++					throw new Error("Simulator state lastRequest is missing or invalid");
++				}
++				const lastRequest = lastRequestFields as Record<string, unknown>;
++				const lastMode = w1Token(lastRequest.mode, ["live", "backfill"]);
++				if (lastMode === null) {
++					throw new Error(
++						"Simulator state lastRequest mode is missing or invalid",
++					);
++				}
++				const lastSequence = w1Count(lastRequest.sequence);
++				if (lastSequence === null) {
++					throw new Error(
++						"Simulator state lastRequest sequence is missing or invalid",
++					);
++				}
++				const lastObservedAt =
++					lastRequest.observedAt === undefined ||
++					lastRequest.observedAt === null
++						? null
++						: w1Timestamp(lastRequest.observedAt);
++				const lastCurrentCount =
++					lastRequest.currentCount === undefined ||
++					lastRequest.currentCount === null
++						? null
++						: w1Count(lastRequest.currentCount);
++				return {
++					sequence,
++					outbox,
++					lastRequest: {
++						mode: lastMode,
++						sequence: lastSequence,
++						observedAt: lastObservedAt,
++						currentCount: lastCurrentCount,
++					},
++					inFlightRequest: null,
++				};
++			};
++			const runSimulator = async (seed: number): Promise<W1SimulatorSample> => {
++				let backfillCount = 0;
++				for (;;) {
++					if (lastAcceptedAckElapsedMs !== null) {
++						const pacingTargetMs =
++							diagnosticStartedAt + lastAcceptedAckElapsedMs + 5_000;
++						const pacingRemainingMs = pacingTargetMs - Date.now();
++						if (pacingRemainingMs > 0) {
++							await new Promise((resolve) =>
++								setTimeout(resolve, pacingRemainingMs),
++							);
++						}
++					}
++					const invocationStartElapsed = Date.now() - diagnosticStartedAt;
++					let processOutcome: string | null = null;
++					try {
++						const result = await execFileAsync("py", [
++							path.resolve("edge/simulator.py"),
++							"--base-url",
++							apiBase,
++							"--token-file",
++							simulatorTokenFile,
++							"--state-file",
++							simulatorStateFile,
++							"--starting-count",
++							"12",
++							"--seed",
++							String(seed),
++							"--mode",
++							"exit-heavy",
++							"--action",
++							"once",
++						]);
++						const stdoutText = result.stdout;
++						if (/Network failure|Rate limited|retrying/u.test(stdoutText)) {
++							processOutcome = "retry-indicated";
++							throw new Error("Simulator output reported a transport retry");
++						}
++						if (result.stderr.trim().length > 0) {
++							processOutcome = "stderr-present";
++							throw new Error("Simulator produced stderr output");
++						}
++						const outcomeMatches = [
++							...stdoutText.matchAll(
++								/sequence=(\d+) outcome=([a-z_]+) highest=(\d+)/gu,
++							),
++						];
++						const [outcomeMatch] = outcomeMatches;
++						if (outcomeMatches.length !== 1 || !outcomeMatch) {
++							processOutcome = "outcome-lines";
++							throw new Error(
++								"Simulator output did not contain exactly one outcome line",
++							);
++						}
++						const reportedOutcome = outcomeMatch[2]?.slice(0, 24) ?? null;
++						processOutcome = reportedOutcome;
++						const reportedSequence = w1Count(Number(outcomeMatch[1]));
++						const reportedHighest = w1Count(Number(outcomeMatch[3]));
++						if (
++							reportedOutcome !== "processed" ||
++							reportedSequence === null ||
++							reportedHighest === null
++						) {
++							throw new Error("Simulator outcome was not a processed result");
++						}
++						if (reportedSequence !== expectedSequence) {
++							throw new Error(
++								"Simulator outcome sequence did not match the expected contiguous sequence",
++							);
++						}
++						if (reportedHighest !== reportedSequence) {
++							throw new Error(
++								"Simulator outcome highest sequence did not match the reported sequence",
++							);
++						}
++						const observedEdges = diagnostics
++							.snapshot()
++							.filter(
++								(record): record is W1EdgeDiagnostic =>
++									record.kind === "edge" &&
++									record.elapsedMs >= invocationStartElapsed,
++							);
++						if (observedEdges.length !== 1) {
++							processOutcome =
++								observedEdges.length === 0
++									? "no-edge-record"
++									: "multiple-edge-records";
++							throw new Error(
++								observedEdges.length === 0
++									? "No edge request record was observed for the simulator invocation"
++									: "More than one edge request record was observed for the simulator invocation",
++							);
++						}
++						const [ackRecord] = observedEdges;
++						if (!ackRecord) {
++							processOutcome = "no-edge-record";
++							throw new Error(
++								"No edge request record was observed for the simulator invocation",
++							);
++						}
++						if (ackRecord.httpStatus !== 200) {
++							processOutcome = "non-200-ack";
++							throw new Error(
++								"Simulator edge request was not accepted with HTTP 200",
++							);
++						}
++						if (ackRecord.reason !== "processed") {
++							processOutcome = "unprocessed-ack";
++							throw new Error("Simulator edge request was not processed");
++						}
++						if (
++							ackRecord.mode === null ||
++							ackRecord.sequence === null ||
++							ackRecord.highestProcessedSequence !== ackRecord.sequence
++						) {
++							processOutcome = "uncorrelated-ack";
++							throw new Error(
++								"Edge acknowledgement did not correlate with the request",
++							);
++						}
++						if (ackRecord.sequence !== reportedSequence) {
++							processOutcome = "uncorrelated-ack";
++							throw new Error(
++								"Edge acknowledgement sequence did not match the simulator outcome",
++							);
++						}
++						let state: W1SimulatorState;
++						try {
++							state = await readSimulatorState();
++						} catch {
++							processOutcome = "invalid-state";
++							throw new Error(
++								"Persisted simulator state was missing or invalid",
++							);
++						}
++						if (state.sequence !== ackRecord.sequence) {
++							processOutcome = "invalid-state";
++							throw new Error(
++								"Persisted simulator state sequence did not match the acknowledgement",
++							);
++						}
++						if (
++							state.lastRequest.mode !== ackRecord.mode ||
++							state.lastRequest.sequence !== ackRecord.sequence
++						) {
++							processOutcome = "invalid-state";
++							throw new Error(
++								"Persisted simulator lastRequest did not match the observed request",
++							);
++						}
++						if (ackRecord.mode === "backfill") {
++							if (
++								ackRecord.observedAt !== null ||
++								ackRecord.currentCount !== null
++							) {
++								processOutcome = "uncorrelated-ack";
++								throw new Error(
++									"Backfill request unexpectedly carried observedAt or currentCount",
++								);
++							}
++							if (
++								state.lastRequest.observedAt !== null ||
++								state.lastRequest.currentCount !== null
++							) {
++								processOutcome = "invalid-state";
++								throw new Error(
++									"Backfill lastRequest unexpectedly carried observedAt or currentCount",
++								);
++							}
++							lastAcceptedAckElapsedMs = ackRecord.elapsedMs;
++							expectedSequence = ackRecord.sequence + 1;
++							backfillCount += 1;
++							if (backfillCount >= 3) {
++								processOutcome = "backfill-limit";
++								throw new Error(
++									"Simulator produced three accepted backfills without a live sample",
++								);
++							}
++							continue;
++						}
++						if (ackRecord.mode !== "live") {
++							processOutcome = "uncorrelated-ack";
++							throw new Error("Edge request mode was not live or backfill");
++						}
++						if (
++							ackRecord.observedAt === null ||
++							ackRecord.currentCount === null
++						) {
++							processOutcome = "uncorrelated-ack";
++							throw new Error(
++								"Live edge request is missing observedAt or currentCount",
++							);
++						}
++						if (ackRecord.serverTime === null) {
++							processOutcome = "uncorrelated-ack";
++							throw new Error("Live acknowledgement is missing serverTime");
++						}
++						if (
++							state.lastRequest.observedAt !== ackRecord.observedAt ||
++							state.lastRequest.currentCount !== ackRecord.currentCount
++						) {
++							processOutcome = "invalid-state";
++							throw new Error(
++								"Persisted simulator lastRequest did not match the live acknowledgement",
++							);
++						}
++						if (state.outbox.length !== 0) {
++							processOutcome = "invalid-state";
++							throw new Error("Simulator outbox is not empty for a live sample");
++						}
++						const observedMs = Date.parse(ackRecord.observedAt);
++						const serverMs = Date.parse(ackRecord.serverTime);
++						const sampleAgeMs = serverMs - observedMs;
++						if (
++							!Number.isFinite(sampleAgeMs) ||
++							sampleAgeMs < 0 ||
++							sampleAgeMs > 3_000
++						) {
++							processOutcome = "invalid-freshness";
++							throw new Error(
++								"Live sample age is outside the accepted freshness window",
++							);
++						}
++						lastAcceptedAckElapsedMs = ackRecord.elapsedMs;
++						expectedSequence = ackRecord.sequence + 1;
++						return {
++							currentCount: ackRecord.currentCount,
++							ackElapsedMs: ackRecord.elapsedMs,
++						};
++					} catch (invocationError) {
++						if (processOutcome === null) {
++							processOutcome = "transport-error";
++							throw new Error(
++								"Simulator invocation failed without a processed outcome",
++							);
++						}
++						throw invocationError;
++					} finally {
++						diagnostics.record({
++							kind: "simulator",
++							elapsedMs: Date.now() - diagnosticStartedAt,
++							seed,
++							processOutcome,
++						});
++					}
+ 				}
+ 			};
+ 			const firstCount = await runSimulator(41);
+ 			await observeCountWait(
+ 				"fresh-first-count",
+-				firstCount,
++				firstCount.currentCount,
+ 				page
+ 					.locator(".public-live__count-value")
+-					.getByText(String(firstCount), { exact: true })
+-					.waitFor({ timeout: 5_000 }),
++					.getByText(String(firstCount.currentCount), { exact: true })
++					.waitFor({
++						timeout: countWaitTimeoutMs(firstCount, "fresh-first-count"),
++					}),
+ 			);
+ 			await page
+ 				.locator(".public-live__freshness--mobile")
+@@ -1049,14 +1365,16 @@ describe("Phase 2 real Postgres vertical slice", () => {
+ 				"utf8",
+ 			);
+ 			const changedCount = await runSimulator(42);
+-			expect(changedCount).not.toBe(firstCount);
++			expect(changedCount.currentCount).not.toBe(firstCount.currentCount);
+ 			await observeCountWait(
+ 				"changed-count",
+-				changedCount,
++				changedCount.currentCount,
+ 				page
+ 					.locator(".public-live__count-value")
+-					.getByText(String(changedCount), { exact: true })
+-					.waitFor({ timeout: 5_000 }),
++					.getByText(String(changedCount.currentCount), { exact: true })
++					.waitFor({
++						timeout: countWaitTimeoutMs(changedCount, "changed-count"),
++					}),
+ 			);
+ 			await page.getByRole("button", { name: /الإنجليزية/u }).click();
+ 			await page
+@@ -1065,11 +1383,13 @@ describe("Phase 2 real Postgres vertical slice", () => {
+ 			const recoveredCount = await runSimulator(43);
+ 			await observeCountWait(
+ 				"recovered-count",
+-				recoveredCount,
++				recoveredCount.currentCount,
+ 				page
+ 					.locator(".public-live__count-value")
+-					.getByText(String(recoveredCount), { exact: true })
+-					.waitFor({ timeout: 5_000 }),
++					.getByText(String(recoveredCount.currentCount), { exact: true })
++					.waitFor({
++						timeout: countWaitTimeoutMs(recoveredCount, "recovered-count"),
++					}),
+ 			);
+ 			await page
+ 				.locator(".public-live__freshness--mobile")

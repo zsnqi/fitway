@@ -1,5 +1,11 @@
 # Coordinator fresh reconciliation and Propagation W1 adoption
 
+## 2026-08-28T20:05:00Z — Propagation terminal boundary
+
+W2 returned from one GLM-5.3-Flash/high provider invocation with an exact one-file delta and no denied tools. The coordinator reviewed the repository result rather than its completion claim. Raw `git diff --check` passed, but Biome failed at raw line 1285, server TypeScript failed TS2322 at line 1069, and the final was 2206 characters against the frozen 1500-character maximum. The independent native reviewer had identified the same type defect. Existing repair count remains 2/2; no W2 repair, rerun, runtime, or integration was performed.
+
+The exact pre-hook raw patch and compact event evidence are under `docs/phase-records/verification/p11-w2-source-gate-20260828/`. A coordinator preservation commit `d106724` triggered the repository pre-commit formatter after the terminal gate; this is recorded as post-gate preservation, not a repair or accepted candidate. Propagation is now terminal `FAILED_VALIDATION`, its lease is released, W1 remains adopted but unintegrated, and Uptime mobile fidelity is the independent executable frontier.
+
 ## Completed / exact current state
 
 Fresh reconciliation on 2026-08-28 at coordinator base 1ea918fd9c9a4ec01c87761f357b0b5a33519824, branch codex/remaining-scope-coordinator in authoritative f2a7 worktree. Coordinator and W1 worktrees initially clean. W1 has completed candidate 77d8200, evidence/review 9283ade, terminal handoff 1a75d2d atop f07f5d9. These are not integrated. Matching W1 process identity query returned no processes. No external or native execution has been repeated.

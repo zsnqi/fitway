@@ -1,0 +1,23 @@
+W2 SOURCE GATE — FAILED_VALIDATION
+
+Raw external candidate base: 8dd4d527492cef253e9e60be4cd3ddb4b37781ff
+Raw external candidate SHA-256: ca6f0d1b94a28997eb562ed38f3ceae9a0a78206f9ac948e2698db020ae69054
+Raw candidate patch SHA-256: b6380c80153f990f97c12fa001ece224270abf2d02538a2b5e72731dc4fdca9b
+
+git diff --check
+exit 0
+
+pnpm exec biome check apps/server/src/phase2.integration.test.ts
+exit 1
+Formatter rejected the one-line outbox error at raw-candidate line 1285.
+
+pnpm --filter server check-types
+exit 1
+src/phase2.integration.test.ts(1069,7): error TS2322: Type 'string' is not assignable to type '"live" | "backfill"'.
+
+External final return: 2206 chars; contract maximum 1500; sentinel present true.
+External final SHA-256: 2e36546d1986c81228e3edd47581736b30457bde2a56c8ea34e3fe60ba0a706f
+
+No runtime, integration, phase, full, browser, or integration/adoption gate ran because the source freeze failed.
+Existing milestone repair count was 2/2 before W2. No repair or retry is authorized.
+Post-gate preservation commit d106724 autoformatted the rejected file through the pre-commit hook. It remains rejected and unintegrated.

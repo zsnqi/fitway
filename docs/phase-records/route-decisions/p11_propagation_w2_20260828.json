@@ -13,7 +13,7 @@
 	"qualification_baseline": "2026-08-28.2",
 	"qualification_status": "qualified_restricted",
 	"route_evidence": "requalified",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "FAILED_VALIDATION",
 	"material_selection_reason": "Live available GLM/V4; resolver GLM/high, durable human GLM preference and exact low-consequence supervised one-file transcription. Native frozen ack/pacing contract accepted; semantic/privacy/runtime/integration authority native-owned. V4 no material advantage; Terra/Luna not approved. Prior failed source gate recorded; scope narrowed to exact W2 algorithm.",
 	"consequence": "low supervised one-file diagnostics and persisted-state fixture; runtime/security/causal judgment native-owned",
 	"covered_modalities": ["text"],
@@ -42,15 +42,38 @@
 		"spec": "test-results/node_modules/p11_w2/spec.json",
 		"source_sha256": "255fa649113a528cb1893239db1c1b23375548b54098923a1d5be6e156231041"
 	},
-	"provider_task_invocations": 0,
+	"provider_task_invocations": 1,
 	"reconciliation": {
-		"source_hash_unchanged": true,
+		"source_hash_unchanged": false,
 		"input_manifest_unchanged": true,
 		"launcher_hash_matches_fresh_smoke": true,
 		"one_writer": true,
-		"model_failure": false
+		"model_failure": true
 	},
-	"outcome_history": [],
+	"outcome_history": [
+		{
+			"recorded": "2026-08-28T20:02:00Z",
+			"gate_outcome": "FAILED_VALIDATION",
+			"provider_task_invocations": 1,
+			"candidate_commit": "d106724d27f7ff0b96ed21c7a0f6497203315e14",
+			"raw_candidate_sha256": "ca6f0d1b94a28997eb562ed38f3ceae9a0a78206f9ac948e2698db020ae69054",
+			"raw_patch_sha256": "b6380c80153f990f97c12fa001ece224270abf2d02538a2b5e72731dc4fdca9b",
+			"result_fingerprint": "sha256:2e36546d1986c81228e3edd47581736b30457bde2a56c8ea34e3fe60ba0a706f",
+			"succeeded": [
+				"One provider invocation completed with exact-file read/edit confinement and no denied tools",
+				"Only the leased integration test changed and git diff --check passed",
+				"Final sentinel was present"
+			],
+			"failed": [
+				"Server TypeScript gate TS2322 at raw candidate line 1069",
+				"Biome source freeze gate failed at raw candidate line 1285",
+				"Final return was 2206 characters against the 1500-character maximum"
+			],
+			"parent_action": "Terminal FAILED_VALIDATION: existing repair count 2/2 is exhausted; no W2 repair, rerun, runtime, or integration.",
+			"evidence": "docs/phase-records/verification/p11-w2-source-gate-20260828/event-summary.json",
+			"post_gate_preservation_note": "Commit d106724 was created only to preserve the rejected branch. Its pre-commit hook autoformatted the source after the gate; it is not a repair or accepted candidate."
+		}
+	],
 	"prior_route_decision": "docs/phase-records/route-decisions/p11_propagation_w1_current02_r1_20260828.json",
 	"delegation_evaluation": {
 		"evaluated_at": "2026-08-28T19:17:00.188Z",
