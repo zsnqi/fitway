@@ -6,7 +6,8 @@
 	"candidate_id": "native",
 	"transport": "codex-native",
 	"control": "high",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "STOPPED_BY_HUMAN",
+	"stop_reason": "User prohibited further launcher repair/expansion/re-review in this FITWAY run; worker interrupted, partial core.mjs is unverified; no provider ran",
 	"consequence": "high: external egress confinement and execution lifecycle safeguards",
 	"native_spawn": {
 		"model": "gpt-5.6-sol",

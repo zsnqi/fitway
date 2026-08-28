@@ -1,0 +1,24 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-e2e-propagation-wait/W1-native",
+	"recorded": "2026-08-28T17:27:24+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native",
+	"transport": "codex-native",
+	"control": "high",
+	"gate_outcome": "PENDING",
+	"native_spawn": {
+		"model": "gpt-5.6-sol",
+		"reasoning_effort": "high",
+		"agent_role": "worker",
+		"fork_turns": "none",
+		"invocation_id": "p11_w1_source_native01",
+		"request_timestamp": "2026-08-28T17:27:24+03:00"
+	},
+	"material_selection_reason": "Volume and recoverability: meaningful bounded real-pipeline test instrumentation under an existing frozen plan. User stopped launcher infrastructure work; no ready approved W1 external path exists. Native advances FITWAY itself without another launcher effort. No capability penalty is attributed to GLM. Terra/Luna unapproved; V4 has no ready-path or material advantage.",
+	"consequence": "bounded test-only initial causal regression; native parent owns runtime proof and acceptance",
+	"scope": ["apps/server/src/phase2.integration.test.ts"],
+	"base": "f07f5d9e82c12bc216b10f4360b79dd6c9c32e5a",
+	"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1"
+}

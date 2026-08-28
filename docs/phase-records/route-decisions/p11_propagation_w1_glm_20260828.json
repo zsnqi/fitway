@@ -11,7 +11,8 @@
 	"registry_revision": "2026-08-28.2",
 	"qualification_baseline": "2026-08-28.2",
 	"qualification_status": "qualified_restricted",
-	"gate_outcome": "LAUNCH_CONTROLS_BLOCKED",
+	"gate_outcome": "BLOCKED_FOR_THIS_RUN",
+	"run_stop_reason": "Human stopped further launcher work and GLM retries without an already verified ready path. No W1 safeguards approval exists. Continue useful source work natively, without launcher work or a capability penalty.",
 	"post_refusal_approval": {
 		"record": "docs/phase-records/handoffs/phase11-e2e-propagation-wait/20260828-p11-w1-launch-retry-authorization.md",
 		"commit": "6aee4ba",

@@ -3,7 +3,7 @@ schemaVersion: 1
 updatedAt: "2026-08-28T17:07:00+03:00"
 
 coordinator:
-  owner: "Main coordinator. Access r05 remains DONE; Login b03 is terminal and reverted. Human explicitly approved the specific W1 launch retry after safeguards pass independent review. Native harness repair and disjoint read-only causal planning are active; W1 source lease remains released and GLM has not launched. Uptime planning is complete; Settings remains terminal."
+  owner: "Main coordinator. Human stopped further launcher work and GLM retries for this run without an already verified ready path. Propagation W1 continues as native one-file FITWAY test work; read-only causal planning is disjoint. Access DONE, Login terminal/reverted, Uptime plan complete, Settings terminal."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1676,12 +1676,12 @@ milestones:
     integratedCommit: cac4b9e1f27c1a4cbd69b678abf707faa1a18be0
 
   phase11-e2e-propagation-wait:
-    status: BLOCKED
+    status: IN_PROGRESS
     dependencies: [phase11-browser-debt]
-    ownerSession: null
+    ownerSession: "Native Sol/high p11_w1_source_native01; sole W1 source writer"
     branch: work/phase11-e2e-propagation-wait-w1
     worktree: C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1
-    baseCommit: 9082d8f16b8fe9f0a26b65998b32a3b23424888c
+    baseCommit: f07f5d9e82c12bc216b10f4360b79dd6c9c32e5a
     ownedPaths:
       - apps/server/src/phase2.integration.test.ts
       - docs/phase-records/handoffs/phase11-e2e-propagation-wait/**
@@ -1695,10 +1695,10 @@ milestones:
       - "Coordinator only: PROJECT_STATE.yaml and scripts/verify.mjs additive phase profile"
       - "Coordinator only: durable plan/route/handoff records and external-worker evidence append"
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-28T17:07:00+03:00"
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-e2e-propagation-wait/20260828-p11-propagation-w1-launch-checkpoint.md
-    stopReason: "W1 has not launched. The human explicitly approved retry of this exact supervised launch after independent safeguards approval (6aee4ba). Coordinator harness repair 1 is in progress to address frozen payload/live route/lease binding, fail-closed result validation, cancellation and protected-scope controls. No provider/model failure or implementation repair was consumed. Keep source lease released until fresh independent launch-controls review passes, then renew exact lease and run ordinary live/host preflight. Frozen W1 worktree f07f5d9 is clean; frozen dependencies and Vitest 4.1.10 are verified."
+    lastHeartbeatAt: "2026-08-28T17:27:24+03:00"
+    leaseExpiresAt: "2026-08-28T21:30:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-e2e-propagation-wait/20260828-launch-overhead-stop-and-native-continuation.md
+    stopReason: null
     gates:
       unit: PENDING
       integration: PENDING
