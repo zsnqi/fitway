@@ -37,7 +37,11 @@
 		"write_paths": [
 			"test-results/node_modules/p11_w1_causal_verify/**",
 			"C:/Users/Public/FitwayTemp/p11w1causalv01/**",
-			"apps/server/.env (new ignored synthetic-only verification environment; no real credential reads)"
+			"apps/server/.env (new ignored synthetic-only verification environment; no real credential reads)",
+			"node_modules/.vite*/** (ignored tool cache)",
+			"test-results/node_modules/.vite-temp/** (ignored temporary config bundle)",
+			"apps/web/node_modules/.vite*/** (ignored tool cache)",
+			"apps/web/.tanstack/** (ignored tool cache)"
 		],
 		"forbidden": [
 			"tracked source",
@@ -53,7 +57,8 @@
 		"container": "fitway-p11w1-causal-v01",
 		"postgres_port": 55434,
 		"lease_expires_at": "2026-08-29T06:00:00+03:00",
-		"environment_provisioning": "WORKFLOW step 8: synthetic placeholder .env only; process-local guarded test database remains authoritative; no external network/delivery; preserve preexisting files"
+		"environment_provisioning": "WORKFLOW step 8: synthetic placeholder .env only; process-local guarded test database remains authoritative; no external network/delivery; preserve preexisting files",
+		"ordinary_tool_cache_policy": "Unchanged verification tools may write their ordinary ignored cache paths in the isolated worker worktree; no tracked generated source, config, lock, route tree or canonical writes. Candidate hashes and tracked status must stay unchanged. Run evidence remains under the leased run directory."
 	},
 	"gate_outcome": "PENDING"
 }
