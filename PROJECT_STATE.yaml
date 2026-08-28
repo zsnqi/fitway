@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-28T15:19:39.495Z"
+updatedAt: "2026-08-28T15:22:02.839Z"
 
 coordinator:
   owner: "Main coordinator resumed by explicit human instruction. Propagation W1 exact-source lease; current launch path. Access DONE; Login/Settings terminal preserved; Uptime planned. Handoff: docs/phase-records/handoffs/coordinator/20260828-resumed-frontier.md"
@@ -1678,7 +1678,7 @@ milestones:
   phase11-e2e-propagation-wait:
     status: IN_PROGRESS
     dependencies: [phase11-browser-debt]
-    ownerSession: "GLM/high p11_w1_resume01 supervised sole W1 source writer"
+    ownerSession: "Native Sol/high p11_w1_resume_native01 sole W1 source writer"
     branch: work/phase11-e2e-propagation-wait-w1
     worktree: C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1
     baseCommit: f07f5d9e82c12bc216b10f4360b79dd6c9c32e5a

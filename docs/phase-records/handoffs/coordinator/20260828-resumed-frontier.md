@@ -23,3 +23,7 @@ Preserved checkpoint: git diff --check PASS; pnpm check:repository PASS (53 mile
 ## Resume instruction
 
 Use recorded route and frozen packet, source review, native causal execution, conditional W2, fresh verification/integration. Do not repeat completed planning/terminal work. Stop on authority, scope, security conflict or established repair limit.
+
+## W1 host refusal and safer continuation
+
+Host rejected the actual external launch before process creation for payload/destination authorization despite the cited durable authorization. Classified substantive, not transient. Zero provider calls, no model outcome or source change. No retry or indirect route is attempted. Native Sol/high p11_w1_resume_native01 receives the unchanged bounded source task; all original runtime gates remain. The W1 source lease has transferred to native after confirming no external process started.

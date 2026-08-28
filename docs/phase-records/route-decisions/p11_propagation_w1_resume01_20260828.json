@@ -11,7 +11,7 @@
 	"registry_revision": "2026-08-28.2",
 	"qualification_baseline": "2026-08-28.2",
 	"qualification_status": "qualified_restricted",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "BLOCKED_EXTERNAL_HOST_AUTHORIZATION",
 	"route_evidence": "requalified",
 	"prior_route_decision": "docs/phase-records/route-decisions/p11_propagation_w1_glm_20260828.json",
 	"durable_authorization_records": [
@@ -43,5 +43,28 @@
 		"live_models": "opencode models opencode-go: GLM-5.3-Flash and DeepSeek V4 Pro present",
 		"effective_controls": "test-results/node_modules/p11_w1_resume01/preflight.json",
 		"source_hash": "379826cf6741c9721b69294b86d59155bbec566c2be708cee0e979ab103a3588"
-	}
+	},
+	"provider_task_invocations": 0,
+	"model_gate_outcome": "NOT_RUN",
+	"launch_attempts": [
+		{
+			"attempt_id": "p11_w1_resume01_launch01",
+			"retry_of": null,
+			"route": "opencode-go/glm-5.3-flash",
+			"control": "high",
+			"transport": "opencode-cli",
+			"authorization_record": "docs/phase-records/handoffs/coordinator/20260828-glm-5.3-flash-authorization.md",
+			"packet_fingerprint": "sha256:ea3d86884deddce779200b2025084776670be1ab335a571a6d9d2a0cf60e0738",
+			"qualification_baseline": "2026-08-28.2",
+			"outcome": "substantive_refusal",
+			"host_reset_boundary": null,
+			"provider_invocations": 0,
+			"model_outcome": "NOT_RUN",
+			"cited_excluded_payload_class": null,
+			"refusal_reason": "Host rejected transmission of internal FITWAY source/test material to GLM for missing explicit payload/destination approval despite cited in-force durable record. Do not bypass. Native fallback selected; no provider process or source edit.",
+			"blocker": null,
+			"recorded": "2026-08-28T15:22:02.839Z"
+		}
+	],
+	"parent_action": "Native Sol/high source-only fallback. No launch retry, harness repair, qualification penalty or external egress."
 }
