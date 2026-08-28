@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-28T20:35:00Z"
+updatedAt: "2026-08-28T20:40:00Z"
 
 coordinator:
-  owner: "Coordinator final authority validating W2 candidate 0e5f2aa after the human-authorized GLM repair3/3 and a valid fresh GLM review PASS. Historical 2/2 remains recorded; no repair4. Uptime stays paused and V4 Pro remains unauthorized. Handoff: docs/phase-records/handoffs/phase11-e2e-propagation-wait/20260828-p11-w2-repair3-cycle-pass.md"
+  owner: "Coordinator final authority preparing provisional one-file integration of W2 candidate 0e5f2aa after focused runtime PASS and a stale-ledger fast red in the isolated branch. Fresh authoritative integration verification is required; no repair4. Uptime stays paused and V4 Pro remains unauthorized. Handoff: docs/phase-records/handoffs/phase11-e2e-propagation-wait/20260828-p11-w2-native-v01-ledger-red.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1678,7 +1678,7 @@ milestones:
   phase11-e2e-propagation-wait:
     status: VALIDATING
     dependencies: [ phase11-browser-debt ]
-    ownerSession: "Native independent runtime/ladder verifier for candidate 0e5f2aa; GLM implementation/review cycle complete PASS"
+    ownerSession: "Coordinator provisional one-file integration followed by fresh native authoritative focused/fast/phase/full verification"
     branch: work/phase11-e2e-propagation-wait-w1
     worktree: C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1
     baseCommit: f07f5d9e82c12bc216b10f4360b79dd6c9c32e5a
@@ -1694,9 +1694,9 @@ milestones:
     sharedLeases:
       - "Coordinator only: PROJECT_STATE.yaml and W2 exception/route/evidence records"
     validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-28T20:35:00Z"
+    lastHeartbeatAt: "2026-08-28T20:40:00Z"
     leaseExpiresAt: "2026-08-29T07:00:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-e2e-propagation-wait/20260828-p11-w2-repair3-cycle-pass.md
+    handoff: docs/phase-records/handoffs/phase11-e2e-propagation-wait/20260828-p11-w2-native-v01-ledger-red.md
     stopReason: null
     gates:
       unit: PASS

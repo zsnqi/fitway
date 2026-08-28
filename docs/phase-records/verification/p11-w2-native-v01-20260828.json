@@ -1,0 +1,53 @@
+{
+	"schema": "fitway-verification-result/1",
+	"stage_ref": "phase11-e2e-propagation-wait/W2-repair3-native-v01",
+	"candidate": "0e5f2aae017c19b6d0b7e036ba3ae9c8046c6d27",
+	"source_sha256": "884b3a503a4209b3042ec1b352e3ae44d9db424713d06fd7bbcf08a9ea821dff",
+	"run_id": "p11w2v01",
+	"verdict": "FAILED_VALIDATION_ENVIRONMENT_STALE_LEDGER",
+	"focused": {
+		"result": "PASS",
+		"passed": 1,
+		"skipped": 8,
+		"test_body_seconds": 20.66,
+		"vitest_seconds": 21.68,
+		"process_wall_seconds": 22.527,
+		"timeout_seconds": 60,
+		"accepted_sequence": 4,
+		"forced_backfills": 1,
+		"backfill_count": 10,
+		"final_live_count": 3,
+		"exact_dom_waits": "PASS"
+	},
+	"fast": {
+		"result": "FAIL",
+		"duration_seconds": 2.361,
+		"failure": "phase11-e2e-propagation-wait has an expired lease at the current wall-clock time",
+		"candidate_branch_lease": "2026-08-28T21:30:00+03:00",
+		"authoritative_lease": "2026-08-29T07:00:00+03:00",
+		"attribution": "stale coordinator-owned ledger in the isolated candidate branch; not candidate source"
+	},
+	"phase": "NOT_RUN",
+	"full": "NOT_RUN",
+	"invalid_harness_attempt": {
+		"duration_seconds": 0.89,
+		"cause": "FITWAY_PHASE leaked into fast mode before repository checks",
+		"candidate_gate": false
+	},
+	"artifacts": {
+		"root": "C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1/test-results/p11w2v01",
+		"focused_log_sha256": "a21d2c4ed32dc512e494fad4bab5debc4fd170a559b314bcd847e9bce5458b62",
+		"focused_result_sha256": "01e95f91ad6141dab88ff13110c3ccd5c6c918801b12b8dc7f858ef25f221cce",
+		"focused_db_evidence_sha256": "b7b54b1a9adf55fa129c3ccd43aa59061cb6f25c79f158b2e7c9d899f4c586bd",
+		"fast_log_sha256": "5717107e8e58770622696555854d2abaf2a7ed66417ca4dfe9b0bc6b82a38564",
+		"fast_result_sha256": "ae7c780fca935fb4eb9d12063db3daac05b9ec4e0ec7f218bdc0298524639107",
+		"invalid_harness_log_sha256": "9ac38a429af5e7dd7cbf8d1ead0639812b90a55950133be7f52efea94562e439",
+		"cleanup_proof_sha256": "01ff7e6d2ebb73849bacfdb43f906318e9f28841a1f5a6d582bf1d417f3f4848"
+	},
+	"cleanup": {
+		"owned_resources_removed": true,
+		"tracked_tree_clean": true,
+		"candidate_unchanged": true
+	},
+	"next": "provisional exact-file integration and fresh authoritative verification; no source repair"
+}
