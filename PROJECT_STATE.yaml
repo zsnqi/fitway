@@ -1944,7 +1944,7 @@ milestones:
     ownerSession: null
     branch: null
     worktree: null
-    baseCommit: null
+    baseCommit: f07f5d9e82c12bc216b10f4360b79dd6c9c32e5a
     ownedPaths:
       - apps/web/src/components/owner/health/**
       - apps/web/src/hooks/use-owner-health.test.tsx
@@ -1959,9 +1959,9 @@ milestones:
       - "canonical baseline promotion outside this milestone's own subtree; promotion remains coordinator-owned"
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
+    lastHeartbeatAt: "2026-08-28T16:34:00+03:00"
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/coordinator/20260824-230600-final-remaining-scope-reconciliation-activation.md
+    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260828-p11-uptime-mobile-plan.md
     stopReason: null
     gates:
       unit: PENDING

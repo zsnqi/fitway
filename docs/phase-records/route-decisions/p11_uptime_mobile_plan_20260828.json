@@ -1,0 +1,86 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "p11_uptime_mobile_plan_20260828",
+	"recorded": "2026-08-28T11:57:01.3096178+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native",
+	"transport": "codex-native",
+	"control": "xhigh",
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"gate_outcome": "PASS",
+	"native_spawn": {
+		"model": "gpt-5.6-sol",
+		"reasoning_effort": "xhigh",
+		"agent_role": "explorer",
+		"fork_turns": "none",
+		"invocation_id": "p11_uptime_mobile_plan_sol01",
+		"request_timestamp": "2026-08-28T11:57:01.3096178+03:00",
+		"mechanism": "followup_existing_frontier_authority"
+	},
+	"consequence": "approved Paper/source specification extraction, no mutation or product change",
+	"material_selection_reason": "Volume: read accepted mobile Paper composition and current Uptime implementation to freeze a GLM-ready bounded source plan. Native Paper read capability is required; external candidates have no qualified Paper read. Implementation will be separately compared with GLM-first decomposition.",
+	"filtered_alternatives": {
+		"gpt-5.6-terra": ["No fresh invocation approval"],
+		"gpt-5.6-luna": ["No fresh invocation approval"],
+		"glm-5.3-flash": [
+			"Not qualified for the actual Paper/image reads required by this planning stage. Preferred for the future supervised low-consequence text source-writing stages under exact allowlists and native parent gates; missing Paper/Browser qualification is not a source-writing exclusion."
+		],
+		"deepseek-v4-pro": ["Actual Paper/image reads not qualified; no advantage"]
+	},
+	"covered_tools": ["repository_read", "Paper_read"],
+	"covered_modalities": ["text", "image"],
+	"covered_mcp_operations": ["Paper read"],
+	"covered_capabilities": [
+		"frozen_paper_source_specification",
+		"bounded_source_implementation_planning",
+		"glm_writer_route_recommendation"
+	],
+	"gate_outcome_note": "Read-only native planning gate PASS. At discovery start the requested frozen coordinator baseline was clean at 901983b25e8deadaca825c47cd5d426d8998aff5. Ledger/handoff/Paper agreed: successor 1DZC-0 is accepted, original 1AUL-0 preserved, repository milestone remains PLANNED. Live Paper render plus computed styles/JSX froze the 390px stacked-record contract; exact Owner Health source/tests and current canonicals were inspected. No Paper/repository/server/test/database mutation occurred. GLM remains excluded only from this Paper-read stage, not from the separately controlled source-writing stages.",
+	"frozen_repository_head": "901983b25e8deadaca825c47cd5d426d8998aff5",
+	"paper_evidence": {
+		"file_id": "01KYPX5AF950XZVVDD88B6J7QB",
+		"accepted_successor": "1DZC-0",
+		"preserved_original": "1AUL-0",
+		"token_content_hash": "3b0faca3"
+	},
+	"artifacts": {
+		"spec_path": "docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260828-p11-uptime-mobile-native-paper-spec.json",
+		"spec_sha256": "5A5262E47AA97B036EA4EE7BD5AE0200B2883EACD9F9E65B0CA594C3559F0141",
+		"plan_path": "docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260828-p11-uptime-mobile-plan.md",
+		"plan_sha256": "6ACDA8C7AF2AC73043C79D59AFCFA84D7C45DFFA70DA291AD5EE10F52FAA0A3A"
+	},
+	"coordinator_adoption": {
+		"frontier": "f07f5d9e82c12bc216b10f4360b79dd6c9c32e5a",
+		"source_hashes_revalidated": true,
+		"ledger_state": "PLANNED",
+		"activation_condition": "current propagation source writer releases its one-writer lease"
+	},
+	"implementation_route_recommendation": {
+		"candidate_id": "glm-5.3-flash",
+		"route": "opencode-go/glm-5.3-flash",
+		"control": "high",
+		"consequence": "low",
+		"delegation_trigger": "economy",
+		"shape": "two sequential exact two-file writer stages; if live resolver refuses the prospective two-file expansion, split into sequential one-file GLM stages",
+		"writer_only": true,
+		"native_retains": [
+			"Paper fidelity",
+			"interactive Browser",
+			"Playwright and accessibility gates",
+			"canonical approval/promotion",
+			"verify:fast/phase/full",
+			"independent review",
+			"integration"
+		],
+		"activation_requirements": [
+			"live preflight and resolver at qualification baseline 2026-08-28.2",
+			"durable 2026-08-28 GLM authorization reconciliation",
+			"exact read/write/command allowlists",
+			"one writer and no worker commit",
+			"compact sentinel/fingerprint validation",
+			"native diff review after each stage"
+		]
+	}
+}

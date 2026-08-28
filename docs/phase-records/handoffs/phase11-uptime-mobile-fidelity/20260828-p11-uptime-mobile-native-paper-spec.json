@@ -1,0 +1,146 @@
+{
+	"schema": "fitway/native-paper-source-spec/1",
+	"stage": "phase11-uptime-mobile-fidelity",
+	"frozen_at": "2026-08-28T13:24:55.4768978Z",
+	"repository": {
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration",
+		"branch": "codex/remaining-scope-coordinator",
+		"head": "901983b25e8deadaca825c47cd5d426d8998aff5",
+		"clean": true
+	},
+	"activation_revalidation": {
+		"head": "f07f5d9e82c12bc216b10f4360b79dd6c9c32e5a",
+		"source_hashes_unchanged": true,
+		"status": "PLAN_READY_AFTER_CURRENT_SOURCE_WRITER"
+	},
+	"authority": {
+		"paper_file_id": "01KYPX5AF950XZVVDD88B6J7QB",
+		"page": "Page 1",
+		"accepted_successor": {
+			"node_id": "1DZC-0",
+			"name": "OWNER UPTIME — MOBILE STACKED RECORDS SUCCESSOR"
+		},
+		"preserved_original": {
+			"node_id": "1AUL-0",
+			"name": "OWNER UPTIME & INCIDENTS PRODUCTION SET — CANDIDATE"
+		},
+		"token_content_hash": "3b0faca3",
+		"ledger_status": "phase11-uptime-paper-successor DONE; phase11-uptime-mobile-fidelity PLANNED",
+		"handoff_sha256": "73D122C527D109CF34AC5519E0D2AA913A61D1376EAFC5D0E571CA8BAAD9E2D8"
+	},
+	"jurisdiction": {
+		"applies": "Owner Uptime offline-period and incident record collections at 320-720px, in English LTR and Arabic RTL",
+		"supersedes": "the current mobile horizontal-table presentation only",
+		"does_not_apply": [
+			"721px and wider desktop/tablet table composition",
+			"metrics, section headings, required states, footnote, route shell, actions, data semantics, copy, tokens, API, hooks, or messages",
+			"any Paper node or approved original"
+		],
+		"unmigrated": [
+			"No other FITWAY page or record family is migrated by this specification"
+		],
+		"undetermined": []
+	},
+	"measured_390px": {
+		"frame_width_px": 390,
+		"content_inline_padding_px": 16,
+		"content_width_px": 358,
+		"board": {
+			"width_px": 358,
+			"inner_width_px": 356,
+			"height": "fit-content",
+			"overflow": "clip",
+			"radius": "var(--fw-radius-surface)",
+			"background": "var(--fw-material-board-mobile)",
+			"border": "1px solid var(--fw-edge)"
+		},
+		"board_header": {
+			"min_height_px": 50,
+			"inline_padding_px": 16,
+			"title_type": "14px/20px weight 700",
+			"count_type": "13px/18px weight 500",
+			"count_examples": ["3 of 3", "2 of 2"]
+		},
+		"collection": {
+			"width_px": 356,
+			"height": "fit-content",
+			"padding_px": 12,
+			"gap_px": 12,
+			"flow": "vertical"
+		},
+		"card": {
+			"width_px": 332,
+			"height": "fit-content; never freeze observed example heights",
+			"padding_px": 16,
+			"gap_px": 10,
+			"radius_px": 12,
+			"background": "var(--fw-group)",
+			"border": "1px solid var(--fw-edge-quiet)"
+		},
+		"field_row": {
+			"available_width_px": 300,
+			"gap_px": 12,
+			"label_width_px_at_390": 124,
+			"value_width_px_at_390": 164,
+			"label_type": "13px/18px weight 500 var(--fw-text-subtle)",
+			"value_type": "14px/20px weight 500 var(--fw-chalk)",
+			"unresolved_value": "weight 600 var(--fw-delayed-fg)",
+			"alignment": "label at reading start; value aligned to reading end; wrap without truncation"
+		}
+	},
+	"record_contract": {
+		"offline": {
+			"example_count": 3,
+			"fields_in_order": [
+				"Started",
+				"Recovered",
+				"Length",
+				"Open minutes affected"
+			],
+			"all_fields_required_per_record": true
+		},
+		"incidents": {
+			"example_count": 2,
+			"fields_in_order": [
+				"Condition",
+				"Started",
+				"Recovered",
+				"Alerts sent",
+				"Delivery"
+			],
+			"all_fields_required_per_record": true
+		},
+		"no_horizontal_table_or_scroll_at_mobile": true,
+		"no_clipping_overlap_truncation_or_content_removal": true,
+		"auto_height_for_collection_card_field_and_page": true
+	},
+	"directional_contract": {
+		"english": "LTR; label left lane, value right lane",
+		"arabic": "RTL content reflection; label right lane, value left lane; physical shell unchanged",
+		"western_digits_only": true,
+		"bidi": "preserve existing bdi isolation for dates, times, durations, counts, delivery phrases, and Asia/Riyadh",
+		"record_and_field_order": "semantic source order preserved in both locales; visual lanes reflect through logical CSS"
+	},
+	"responsive_contract": {
+		"mobile_breakpoint": "max-width: 720px",
+		"paper_measured": [390],
+		"repository_validation_widths": [
+			320, 360, 390, 721, 768, 820, 1024, 1200, 1440
+		],
+		"below_390_rule": "label lane may contract below 124px, value lane consumes the remainder, both wrap; no fixed card height and no content deletion",
+		"desktop_rule": "at 721px and wider retain the existing semantic table, sticky headers, labeled keyboard-reachable region, column order, typography, density, and composition"
+	},
+	"semantic_contract": {
+		"retain_real_table_markup_and_column_headers": true,
+		"mobile_visual_labels": "derive from existing localized message fields; decorative duplicates aria-hidden",
+		"region_name_and_keyboard_focus": "preserve the existing labeled section and focus-visible treatment",
+		"status_not_color_only": true,
+		"copy_and_actions": "unchanged"
+	},
+	"source_baseline_sha256": {
+		"apps/web/src/components/owner/health/owner-health-view.tsx": "04906F60B6BC7FC1FCF70DBD5F9FD649A45D9785DAAADC3D12D8912626831780",
+		"apps/web/src/components/owner/health/owner-health-section.tsx": "45748683135875B3DDF60A223DC58460B1025A58B0813C63D86E876F87EB8EC1",
+		"apps/web/src/components/owner/health/owner-health.css": "AE53FA3AB3042A650E627C55EBD26F11347BABBB05E3D69E6B72F3EE231895D4",
+		"tests/browser/phase11-health.browser.spec.ts": "1C5845FAAEB29246AA39AC8ACD773A035DC99A1F18F137DBB9048AA623998056"
+	}
+}
