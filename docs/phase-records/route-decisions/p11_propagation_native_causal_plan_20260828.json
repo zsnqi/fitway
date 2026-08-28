@@ -6,7 +6,9 @@
 	"candidate_id": "native",
 	"transport": "codex-native",
 	"control": "high",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "PASS",
+	"outcome_record": "docs/phase-records/handoffs/phase11-e2e-propagation-wait/20260828-native-causal-method.md",
+	"outcome_scope": "Read-only lifecycle method accepted; no runtime reproduction or product gate claimed",
 	"consequence": "high: preserve real resource/causal evidence without weakening candidate acceptance",
 	"native_spawn": {
 		"model": "gpt-5.6-sol",

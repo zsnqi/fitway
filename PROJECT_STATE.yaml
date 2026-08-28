@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-28T17:07:00+03:00"
+updatedAt: "2026-08-28T17:34:00+03:00"
 
 coordinator:
-  owner: "Main coordinator. Human stopped further launcher work and GLM retries for this run without an already verified ready path. Propagation W1 continues as native one-file FITWAY test work; read-only causal planning is disjoint. Access DONE, Login terminal/reverted, Uptime plan complete, Settings terminal."
+  owner: "Main coordinator STOPPED by explicit human instruction. No active write lease or permission to continue this run. Checkpoint: docs/phase-records/handoffs/coordinator/20260828-173400-human-stop-checkpoint.md. Access DONE, Login terminal/reverted, propagation W1 interrupted before source changes, Uptime planned, Settings terminal."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1676,9 +1676,9 @@ milestones:
     integratedCommit: cac4b9e1f27c1a4cbd69b678abf707faa1a18be0
 
   phase11-e2e-propagation-wait:
-    status: IN_PROGRESS
+    status: BLOCKED
     dependencies: [phase11-browser-debt]
-    ownerSession: "Native Sol/high p11_w1_source_native01; sole W1 source writer"
+    ownerSession: null
     branch: work/phase11-e2e-propagation-wait-w1
     worktree: C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1
     baseCommit: f07f5d9e82c12bc216b10f4360b79dd6c9c32e5a
@@ -1695,10 +1695,10 @@ milestones:
       - "Coordinator only: PROJECT_STATE.yaml and scripts/verify.mjs additive phase profile"
       - "Coordinator only: durable plan/route/handoff records and external-worker evidence append"
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-28T17:27:24+03:00"
-    leaseExpiresAt: "2026-08-28T21:30:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-e2e-propagation-wait/20260828-launch-overhead-stop-and-native-continuation.md
-    stopReason: null
+    lastHeartbeatAt: "2026-08-28T17:34:00+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/coordinator/20260828-173400-human-stop-checkpoint.md
+    stopReason: "Human explicitly stopped the entire run. Worker interrupted before any source change; no W1 candidate or runtime evidence. Resume only on a later explicit human instruction, after reconciling preserved state and renewing the source lease."
     gates:
       unit: PENDING
       integration: PENDING
