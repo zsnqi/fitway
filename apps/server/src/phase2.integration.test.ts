@@ -78,6 +78,112 @@ async function reserveEphemeralPort() {
 	return port;
 }
 
+type W1EdgeDiagnostic = {
+	kind: "edge";
+	elapsedMs: number;
+	mode: string | null;
+	sequence: number | null;
+	observedAt: string | null;
+	currentCount: number | null;
+	httpStatus: number;
+	reason: string | null;
+	highestProcessedSequence: number | null;
+	serverTime: string | null;
+};
+
+type W1SimulatorDiagnostic = {
+	kind: "simulator";
+	elapsedMs: number;
+	seed: number;
+	processOutcome: string | null;
+};
+
+type W1PublicBrowserDiagnostic = {
+	kind: "public-browser-response";
+	elapsedMs: number | null;
+	httpStatus: number;
+	pollSeconds: number | null;
+	freshness: string | null;
+	count: number | null;
+	computedAt: string | null;
+	lastUpdatedAt: string | null;
+	freshUntil: string | null;
+	source: string | null;
+};
+
+type W1DomTimingDiagnostic = {
+	kind: "dom-timing";
+	elapsedMs: number;
+	assertion: string;
+	expectedCount: number | null;
+	observedCountText: string | null;
+	observedFreshnessText: string | null;
+};
+
+type W1Diagnostic =
+	| W1EdgeDiagnostic
+	| W1SimulatorDiagnostic
+	| W1PublicBrowserDiagnostic
+	| W1DomTimingDiagnostic;
+
+const W1_DIAGNOSTIC_RING_LIMIT = 32;
+
+const createW1Diagnostics = () => {
+	const records: W1Diagnostic[] = [];
+	return {
+		record(record: W1Diagnostic): void {
+			records.push(record);
+			if (records.length > W1_DIAGNOSTIC_RING_LIMIT) {
+				records.shift();
+			}
+		},
+		snapshot(): readonly W1Diagnostic[] {
+			return records.map((record) => ({ ...record }));
+		},
+		emit(): void {
+			console.error(
+				JSON.stringify({
+					stage: "w1-failure-diagnostics",
+					diagnostics: records,
+				}),
+			);
+		},
+	};
+};
+
+const w1Token = (value: unknown, allowed: readonly string[]): string | null =>
+	typeof value === "string" && allowed.includes(value) ? value : null;
+
+const w1Timestamp = (value: unknown): string | null =>
+	typeof value === "string" &&
+	/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/u.test(value)
+		? value
+		: null;
+
+const w1Count = (value: unknown): number | null =>
+	typeof value === "number" && Number.isSafeInteger(value) && value >= 0
+		? value
+		: null;
+
+type W1SimulatorLastRequest = {
+	mode: "live" | "backfill";
+	sequence: number;
+	observedAt: string | null;
+	currentCount: number | null;
+};
+
+type W1SimulatorState = {
+	sequence: number;
+	outbox: readonly unknown[];
+	lastRequest: W1SimulatorLastRequest;
+	inFlightRequest: null;
+};
+
+type W1SimulatorSample = {
+	currentCount: number;
+	ackElapsedMs: number;
+};
+
 const alwaysOpenSchedule = {
 	scheduleSunOpen: "00:00",
 	scheduleSunClose: "00:00",
@@ -660,7 +766,60 @@ describe("Phase 2 real Postgres vertical slice", () => {
 			name: "browser-integration",
 			tokenHash: createHash("sha256").update(browserToken).digest("hex"),
 		});
+		const diagnosticStartedAt = Date.now();
+		const diagnostics = createW1Diagnostics();
 		const app = new Hono();
+		app.use(EDGE_PUSH_INTERNAL_PATH, async (context, next) => {
+			let mode: string | null = null;
+			let sequence: number | null = null;
+			let observedAt: string | null = null;
+			let currentCount: number | null = null;
+			try {
+				const request = (await context.req.raw.clone().json()) as unknown;
+				if (typeof request === "object" && request !== null) {
+					const fields = request as Record<string, unknown>;
+					mode = w1Token(fields.mode, ["live", "backfill"]);
+					sequence = w1Count(fields.sequence);
+					observedAt = w1Timestamp(fields.observedAt);
+					currentCount = w1Count(fields.currentCount);
+				}
+			} catch {
+				// Observation only; the handler still receives the original request.
+			}
+			await next();
+			let reason: string | null = null;
+			let highestProcessedSequence: number | null = null;
+			let serverTime: string | null = null;
+			const httpStatus = context.res.status;
+			try {
+				const response = (await context.res.clone().json()) as unknown;
+				if (typeof response === "object" && response !== null) {
+					const fields = response as Record<string, unknown>;
+					reason = w1Token(fields.reason, [
+						"processed",
+						"replay",
+						"sequence_gap",
+						"commands_pending",
+					]);
+					highestProcessedSequence = w1Count(fields.highestProcessedSequence);
+					serverTime = w1Timestamp(fields.serverTime);
+				}
+			} catch {
+				// Observation only; non-JSON responses are recorded by status alone.
+			}
+			diagnostics.record({
+				kind: "edge",
+				elapsedMs: Date.now() - diagnosticStartedAt,
+				mode,
+				sequence,
+				observedAt,
+				currentCount,
+				httpStatus,
+				reason,
+				highestProcessedSequence,
+				serverTime,
+			});
+		});
 		app.use(
 			"*",
 			cors({
@@ -733,59 +892,510 @@ describe("Phase 2 real Postgres vertical slice", () => {
 			const page = await browser.newPage({
 				viewport: { width: 390, height: 844 },
 			});
+			let lastPublicSignature = "";
+			page.on("response", (response) => {
+				if (response.url() !== `${apiBase}${PUBLIC_OCCUPANCY_INTERNAL_PATH}`) {
+					return;
+				}
+				void (async () => {
+					try {
+						const elapsedMs = Date.now() - diagnosticStartedAt;
+						const rawPollSeconds = response.headers()["x-fitway-poll-seconds"];
+						const pollSeconds =
+							typeof rawPollSeconds === "string" &&
+							/^\d+$/u.test(rawPollSeconds)
+								? Number(rawPollSeconds)
+								: null;
+						const body = (await response.json()) as unknown;
+						let freshness: string | null = null;
+						let count: number | null = null;
+						let computedAt: string | null = null;
+						let lastUpdatedAt: string | null = null;
+						let freshUntil: string | null = null;
+						let source: string | null = null;
+						if (typeof body === "object" && body !== null) {
+							const fields = body as Record<string, unknown>;
+							freshness = w1Token(fields.freshness, [
+								"fresh",
+								"stale",
+								"unavailable",
+								"closed",
+							]);
+							count = w1Count(fields.count);
+							computedAt = w1Timestamp(fields.computedAt);
+							lastUpdatedAt = w1Timestamp(fields.lastUpdatedAt);
+							freshUntil = w1Timestamp(fields.freshUntil);
+							source = w1Token(fields.source, ["edge", "manual"]);
+						}
+						const signature = `${freshness}|${count}|${source}`;
+						if (signature === lastPublicSignature) {
+							return;
+						}
+						lastPublicSignature = signature;
+						diagnostics.record({
+							kind: "public-browser-response",
+							elapsedMs,
+							httpStatus: response.status(),
+							pollSeconds,
+							freshness,
+							count,
+							computedAt,
+							lastUpdatedAt,
+							freshUntil,
+							source,
+						});
+					} catch {
+						// Observation only; never a success prerequisite.
+					}
+				})();
+			});
 			await page.goto(webOrigin);
+			const observeCountWait = async (
+				assertion: string,
+				expectedCount: number,
+				wait: Promise<void>,
+			) => {
+				try {
+					await wait;
+				} finally {
+					const completedElapsedMs = Date.now() - diagnosticStartedAt;
+					let observedCountText: string | null = null;
+					let observedFreshnessText: string | null = null;
+					try {
+						const countText = await page
+							.locator(".public-live__count-value")
+							.textContent({ timeout: 250 })
+							.catch(() => null);
+						const freshnessText = await page
+							.locator(".public-live__freshness--mobile")
+							.textContent({ timeout: 250 })
+							.catch(() => null);
+						observedCountText =
+							countText === null ? null : countText.trim().slice(0, 24) || null;
+						observedFreshnessText =
+							freshnessText === null
+								? null
+								: freshnessText.trim().slice(0, 24) || null;
+					} catch {
+						// Best-effort observation only.
+					}
+					diagnostics.record({
+						kind: "dom-timing",
+						elapsedMs: completedElapsedMs,
+						assertion,
+						expectedCount,
+						observedCountText,
+						observedFreshnessText,
+					});
+				}
+			};
+			const countWaitTimeoutMs = (
+				sample: W1SimulatorSample,
+				assertion: string,
+			): number => {
+				const deadlineMs = diagnosticStartedAt + sample.ackElapsedMs + 5_000;
+				const remainingMs = deadlineMs - Date.now();
+				if (remainingMs <= 0) {
+					throw new Error(
+						`${assertion} count wait deadline expired before the wait started`,
+					);
+				}
+				return remainingMs;
+			};
 			await page
 				.getByText("التحديث المباشر غير متاح الآن")
 				.waitFor({ timeout: 5_000 });
 			await expect(page.locator("meter").count()).resolves.toBe(0);
-			const runSimulator = async (seed: number) => {
-				const result = await execFileAsync("py", [
-					path.resolve("edge/simulator.py"),
-					"--base-url",
-					apiBase,
-					"--token-file",
-					simulatorTokenFile,
-					"--state-file",
-					simulatorStateFile,
-					"--starting-count",
-					"12",
-					"--seed",
-					String(seed),
-					"--mode",
-					"exit-heavy",
-					"--action",
-					"once",
-				]);
-				expect(result.stdout).toContain("outcome=processed");
-				const state = JSON.parse(
-					await readFile(simulatorStateFile, "utf8"),
-				) as { count: number };
-				return state.count;
+			let expectedSequence = 1;
+			let lastAcceptedAckElapsedMs: number | null = null;
+			const readSimulatorState = async (): Promise<W1SimulatorState> => {
+				let parsed: unknown;
+				try {
+					parsed = JSON.parse(
+						await readFile(simulatorStateFile, "utf8"),
+					) as unknown;
+				} catch {
+					throw new Error("Simulator state file could not be read as JSON");
+				}
+				if (typeof parsed !== "object" || parsed === null) {
+					throw new Error("Simulator state file is not an object");
+				}
+				const fields = parsed as Record<string, unknown>;
+				const sequence = w1Count(fields.sequence);
+				if (sequence === null) {
+					throw new Error("Simulator state sequence is missing or invalid");
+				}
+				if (fields.inFlightRequest !== null) {
+					throw new Error("Simulator state in-flight request is not null");
+				}
+				if (!Array.isArray(fields.outbox)) {
+					throw new Error("Simulator state outbox is missing or invalid");
+				}
+				const outbox: readonly unknown[] = fields.outbox;
+				const lastRequestFields = fields.lastRequest;
+				if (
+					typeof lastRequestFields !== "object" ||
+					lastRequestFields === null
+				) {
+					throw new Error("Simulator state lastRequest is missing or invalid");
+				}
+				const lastRequest = lastRequestFields as Record<string, unknown>;
+				const lastMode: "live" | "backfill" | null =
+					lastRequest.mode === "live" || lastRequest.mode === "backfill"
+						? lastRequest.mode
+						: null;
+				if (lastMode === null) {
+					throw new Error(
+						"Simulator state lastRequest mode is missing or invalid",
+					);
+				}
+				const lastSequence = w1Count(lastRequest.sequence);
+				if (lastSequence === null) {
+					throw new Error(
+						"Simulator state lastRequest sequence is missing or invalid",
+					);
+				}
+				const lastObservedAt =
+					lastRequest.observedAt === undefined ||
+					lastRequest.observedAt === null
+						? null
+						: w1Timestamp(lastRequest.observedAt);
+				const lastCurrentCount =
+					lastRequest.currentCount === undefined ||
+					lastRequest.currentCount === null
+						? null
+						: w1Count(lastRequest.currentCount);
+				return {
+					sequence,
+					outbox,
+					lastRequest: {
+						mode: lastMode,
+						sequence: lastSequence,
+						observedAt: lastObservedAt,
+						currentCount: lastCurrentCount,
+					},
+					inFlightRequest: null,
+				};
+			};
+			const runSimulator = async (seed: number): Promise<W1SimulatorSample> => {
+				let backfillCount = 0;
+				for (;;) {
+					if (lastAcceptedAckElapsedMs !== null) {
+						const pacingTargetMs =
+							diagnosticStartedAt + lastAcceptedAckElapsedMs + 5_000;
+						const pacingRemainingMs = pacingTargetMs - Date.now();
+						if (pacingRemainingMs > 0) {
+							await new Promise((resolve) =>
+								setTimeout(resolve, pacingRemainingMs),
+							);
+						}
+					}
+					const invocationStartElapsed = Date.now() - diagnosticStartedAt;
+					let processOutcome: string | null = null;
+					try {
+						const result = await execFileAsync("py", [
+							path.resolve("edge/simulator.py"),
+							"--base-url",
+							apiBase,
+							"--token-file",
+							simulatorTokenFile,
+							"--state-file",
+							simulatorStateFile,
+							"--starting-count",
+							"12",
+							"--seed",
+							String(seed),
+							"--mode",
+							"exit-heavy",
+							"--action",
+							"once",
+						]);
+						const stdoutText = result.stdout;
+						if (/Network failure|Rate limited|retrying/u.test(stdoutText)) {
+							processOutcome = "retry-indicated";
+							throw new Error("Simulator output reported a transport retry");
+						}
+						if (result.stderr.trim().length > 0) {
+							processOutcome = "stderr-present";
+							throw new Error("Simulator produced stderr output");
+						}
+						const outcomeMatches = [
+							...stdoutText.matchAll(
+								/sequence=(\d+) outcome=([a-z_]+) highest=(\d+)/gu,
+							),
+						];
+						const [outcomeMatch] = outcomeMatches;
+						if (outcomeMatches.length !== 1 || !outcomeMatch) {
+							processOutcome = "outcome-lines";
+							throw new Error(
+								"Simulator output did not contain exactly one outcome line",
+							);
+						}
+						const reportedOutcome = outcomeMatch[2]?.slice(0, 24) ?? null;
+						processOutcome = reportedOutcome;
+						const reportedSequence = w1Count(Number(outcomeMatch[1]));
+						const reportedHighest = w1Count(Number(outcomeMatch[3]));
+						if (
+							reportedOutcome !== "processed" ||
+							reportedSequence === null ||
+							reportedHighest === null
+						) {
+							throw new Error("Simulator outcome was not a processed result");
+						}
+						if (reportedSequence !== expectedSequence) {
+							throw new Error(
+								"Simulator outcome sequence did not match the expected contiguous sequence",
+							);
+						}
+						if (reportedHighest !== reportedSequence) {
+							throw new Error(
+								"Simulator outcome highest sequence did not match the reported sequence",
+							);
+						}
+						const observedEdges = diagnostics
+							.snapshot()
+							.filter(
+								(record): record is W1EdgeDiagnostic =>
+									record.kind === "edge" &&
+									record.elapsedMs >= invocationStartElapsed,
+							);
+						if (observedEdges.length !== 1) {
+							processOutcome =
+								observedEdges.length === 0
+									? "no-edge-record"
+									: "multiple-edge-records";
+							throw new Error(
+								observedEdges.length === 0
+									? "No edge request record was observed for the simulator invocation"
+									: "More than one edge request record was observed for the simulator invocation",
+							);
+						}
+						const [ackRecord] = observedEdges;
+						if (!ackRecord) {
+							processOutcome = "no-edge-record";
+							throw new Error(
+								"No edge request record was observed for the simulator invocation",
+							);
+						}
+						if (ackRecord.httpStatus !== 200) {
+							processOutcome = "non-200-ack";
+							throw new Error(
+								"Simulator edge request was not accepted with HTTP 200",
+							);
+						}
+						if (ackRecord.reason !== "processed") {
+							processOutcome = "unprocessed-ack";
+							throw new Error("Simulator edge request was not processed");
+						}
+						if (
+							ackRecord.mode === null ||
+							ackRecord.sequence === null ||
+							ackRecord.highestProcessedSequence !== ackRecord.sequence
+						) {
+							processOutcome = "uncorrelated-ack";
+							throw new Error(
+								"Edge acknowledgement did not correlate with the request",
+							);
+						}
+						if (ackRecord.sequence !== reportedSequence) {
+							processOutcome = "uncorrelated-ack";
+							throw new Error(
+								"Edge acknowledgement sequence did not match the simulator outcome",
+							);
+						}
+						let state: W1SimulatorState;
+						try {
+							state = await readSimulatorState();
+						} catch {
+							processOutcome = "invalid-state";
+							throw new Error(
+								"Persisted simulator state was missing or invalid",
+							);
+						}
+						if (state.sequence !== ackRecord.sequence) {
+							processOutcome = "invalid-state";
+							throw new Error(
+								"Persisted simulator state sequence did not match the acknowledgement",
+							);
+						}
+						if (
+							state.lastRequest.mode !== ackRecord.mode ||
+							state.lastRequest.sequence !== ackRecord.sequence
+						) {
+							processOutcome = "invalid-state";
+							throw new Error(
+								"Persisted simulator lastRequest did not match the observed request",
+							);
+						}
+						if (ackRecord.mode === "backfill") {
+							if (
+								ackRecord.observedAt !== null ||
+								ackRecord.currentCount !== null
+							) {
+								processOutcome = "uncorrelated-ack";
+								throw new Error(
+									"Backfill request unexpectedly carried observedAt or currentCount",
+								);
+							}
+							if (
+								state.lastRequest.observedAt !== null ||
+								state.lastRequest.currentCount !== null
+							) {
+								processOutcome = "invalid-state";
+								throw new Error(
+									"Backfill lastRequest unexpectedly carried observedAt or currentCount",
+								);
+							}
+							lastAcceptedAckElapsedMs = ackRecord.elapsedMs;
+							expectedSequence = ackRecord.sequence + 1;
+							backfillCount += 1;
+							if (backfillCount >= 3) {
+								processOutcome = "backfill-limit";
+								throw new Error(
+									"Simulator produced three accepted backfills without a live sample",
+								);
+							}
+							continue;
+						}
+						if (ackRecord.mode !== "live") {
+							processOutcome = "uncorrelated-ack";
+							throw new Error("Edge request mode was not live or backfill");
+						}
+						if (
+							ackRecord.observedAt === null ||
+							ackRecord.currentCount === null
+						) {
+							processOutcome = "uncorrelated-ack";
+							throw new Error(
+								"Live edge request is missing observedAt or currentCount",
+							);
+						}
+						if (ackRecord.serverTime === null) {
+							processOutcome = "uncorrelated-ack";
+							throw new Error("Live acknowledgement is missing serverTime");
+						}
+						if (
+							state.lastRequest.observedAt !== ackRecord.observedAt ||
+							state.lastRequest.currentCount !== ackRecord.currentCount
+						) {
+							processOutcome = "invalid-state";
+							throw new Error(
+								"Persisted simulator lastRequest did not match the live acknowledgement",
+							);
+						}
+						if (state.outbox.length !== 0) {
+							processOutcome = "invalid-state";
+							throw new Error(
+								"Simulator outbox is not empty for a live sample",
+							);
+						}
+						const observedMs = Date.parse(ackRecord.observedAt);
+						const serverMs = Date.parse(ackRecord.serverTime);
+						const sampleAgeMs = serverMs - observedMs;
+						if (
+							!Number.isFinite(sampleAgeMs) ||
+							sampleAgeMs < 0 ||
+							sampleAgeMs > 3_000
+						) {
+							processOutcome = "invalid-freshness";
+							throw new Error(
+								"Live sample age is outside the accepted freshness window",
+							);
+						}
+						lastAcceptedAckElapsedMs = ackRecord.elapsedMs;
+						expectedSequence = ackRecord.sequence + 1;
+						return {
+							currentCount: ackRecord.currentCount,
+							ackElapsedMs: ackRecord.elapsedMs,
+						};
+					} catch (invocationError) {
+						if (processOutcome === null) {
+							processOutcome = "transport-error";
+							throw new Error(
+								"Simulator invocation failed without a processed outcome",
+							);
+						}
+						throw invocationError;
+					} finally {
+						diagnostics.record({
+							kind: "simulator",
+							elapsedMs: Date.now() - diagnosticStartedAt,
+							seed,
+							processOutcome,
+						});
+					}
+				}
 			};
 			const firstCount = await runSimulator(41);
-			await page
-				.locator(".public-live__count-value")
-				.getByText(String(firstCount), { exact: true })
-				.waitFor({ timeout: 5_000 });
+			await observeCountWait(
+				"fresh-first-count",
+				firstCount.currentCount,
+				page
+					.locator(".public-live__count-value")
+					.getByText(String(firstCount.currentCount), { exact: true })
+					.waitFor({
+						timeout: countWaitTimeoutMs(firstCount, "fresh-first-count"),
+					}),
+			);
 			await page
 				.locator(".public-live__freshness--mobile")
 				.getByText("تحديث مباشر", { exact: true })
 				.waitFor({ timeout: 5_000 });
+			const persistedState = JSON.parse(
+				await readFile(simulatorStateFile, "utf8"),
+			) as {
+				sequence: number;
+				count: number;
+				minute: string;
+				entries: number;
+				exits: number;
+				appliedCommandId: number;
+				outbox: Array<{
+					minuteStart: string;
+					count: number;
+					entries: number;
+					exits: number;
+				}>;
+				lastRequest?: unknown;
+				inFlightRequest: unknown | null;
+			};
+			expect(persistedState.outbox).toEqual([]);
+			expect(persistedState.inFlightRequest).toBeNull();
+			const previousMinute = new Date(
+				Math.floor(Date.now() / 60_000) * 60_000 - 60_000,
+			).toISOString();
+			await writeFile(
+				simulatorStateFile,
+				JSON.stringify({ ...persistedState, minute: previousMinute }),
+				"utf8",
+			);
 			const changedCount = await runSimulator(42);
-			expect(changedCount).not.toBe(firstCount);
-			await page
-				.locator(".public-live__count-value")
-				.getByText(String(changedCount), { exact: true })
-				.waitFor({ timeout: 5_000 });
+			expect(changedCount.currentCount).not.toBe(firstCount.currentCount);
+			await observeCountWait(
+				"changed-count",
+				changedCount.currentCount,
+				page
+					.locator(".public-live__count-value")
+					.getByText(String(changedCount.currentCount), { exact: true })
+					.waitFor({
+						timeout: countWaitTimeoutMs(changedCount, "changed-count"),
+					}),
+			);
 			await page.getByRole("button", { name: /الإنجليزية/u }).click();
 			await page
 				.getByText("Last known approximate count", { exact: true })
 				.waitFor({ timeout: 5_000 });
 			const recoveredCount = await runSimulator(43);
-			await page
-				.locator(".public-live__count-value")
-				.getByText(String(recoveredCount), { exact: true })
-				.waitFor({ timeout: 5_000 });
+			await observeCountWait(
+				"recovered-count",
+				recoveredCount.currentCount,
+				page
+					.locator(".public-live__count-value")
+					.getByText(String(recoveredCount.currentCount), { exact: true })
+					.waitFor({
+						timeout: countWaitTimeoutMs(recoveredCount, "recovered-count"),
+					}),
+			);
 			await page
 				.locator(".public-live__freshness--mobile")
 				.getByText("Live update", { exact: true })
@@ -795,6 +1405,9 @@ describe("Phase 2 real Postgres vertical slice", () => {
 				.locator(".public-live__freshness--mobile")
 				.getByText("تحديث مباشر", { exact: true })
 				.waitFor({ timeout: 5_000 });
+		} catch (failure) {
+			diagnostics.emit();
+			throw failure;
 		} finally {
 			await browser?.close();
 			if (vite.exitCode === null) {
