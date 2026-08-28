@@ -1,0 +1,29 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "p11_propagation_w1_harness_r01_20260828",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native",
+	"transport": "codex-native",
+	"control": "high",
+	"gate_outcome": "PENDING",
+	"consequence": "high: external egress confinement and execution lifecycle safeguards",
+	"native_spawn": {
+		"model": "gpt-5.6-sol",
+		"reasoning_effort": "high",
+		"agent_role": "worker",
+		"fork_turns": "none",
+		"invocation_id": "p11_w1_harness_repair_sol01",
+		"request_timestamp": "2026-08-28T17:15:00+03:00"
+	},
+	"material_selection_reason": "Permission and volume: bounded coordinator-harness repair and local evidence remain isolated from coordinator context. External egress/scope/termination safeguards exceed GLM low and V4 medium qualified ceilings. No Terra/Luna approval exists. Actual project W1 implementation remains routed to GLM.",
+	"owned_paths": [
+		"test-results/node_modules/p11_propagation_glm_w1_20260828/r01/**"
+	],
+	"prohibited": [
+		"real provider invocation",
+		"FITWAY source edits",
+		"ledger or global configuration changes",
+		"production servers/databases"
+	]
+}
