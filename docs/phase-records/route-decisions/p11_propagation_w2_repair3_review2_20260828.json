@@ -13,7 +13,7 @@
 	"qualification_baseline": "2026-08-28.2",
 	"qualification_status": "qualified_restricted",
 	"route_evidence": "explicit human-directed fresh independent GLM review cycle",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "INVALID_REVIEW_PACKET_AND_COMPLETION",
 	"material_selection_reason": "Review1's source verdict is unaccepted because its return exceeded the contract. Human instructions require implementer/reviewer independence via separate GLM invocations and prohibit V4 Pro. Review2 is a fresh read-only bounded advisory review with a stricter compact return.",
 	"consequence": "low read-only source review; runtime causal verification and final acceptance remain coordinator-owned",
 	"covered_modalities": ["text"],
@@ -40,15 +40,31 @@
 		"candidate_diff_sha256": "5d3c3bf5b703e6223bd20c28fcbbe6a8f98637e3326a20530f8dcdf2ea82083f",
 		"mechanical_evidence": "test-results/node_modules/p11_w2_repair3_review2/mechanical-evidence.json"
 	},
-	"provider_task_invocations": 0,
+	"provider_task_invocations": 1,
 	"reconciliation": {
 		"candidate_clean": true,
 		"implementation_and_reviewer_sessions_separate": true,
 		"review1_result_not_accepted": true,
 		"reviewer_write_access": false,
-		"model_failure": false
+		"model_failure": true
 	},
-	"outcome_history": [],
+	"outcome_history": [
+		{
+			"recorded": "2026-08-28T20:28:00Z",
+			"gate_outcome": "INVALID_REVIEW_PACKET_AND_COMPLETION",
+			"provider_task_invocations": 1,
+			"provider_session_id": "ses_fb5ff7aadffeHanG2hQemBzdLa",
+			"candidate_changed": false,
+			"candidate_reviewed": false,
+			"reported_verdict": "FAILED_VALIDATION_UNACCEPTED",
+			"final_chars": 1107,
+			"contract_limit_chars": 1000,
+			"sentinel_present": true,
+			"parent_packet_failure": "Packet did not enumerate the four exact paths in its prose, so the reviewer refused to guess and made no reads.",
+			"parent_action": "Reissue a fresh read-only GLM review with every exact path enumerated and the governing 1500-character completion limit.",
+			"model_failure": "Return exceeded its explicit 1000-character limit and incorrectly claimed the limit was preserved."
+		}
+	],
 	"prior_route_decision": "docs/phase-records/route-decisions/p11_propagation_w2_repair3_review1_20260828.json",
 	"stage_input": "human-directed worker-level GLM review cycle"
 }

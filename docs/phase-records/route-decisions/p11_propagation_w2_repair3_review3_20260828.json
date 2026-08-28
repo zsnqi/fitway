@@ -1,0 +1,55 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-e2e-propagation-wait/W2-repair3-review3",
+	"recorded": "2026-08-28T20:28:00Z",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "glm-5.3-flash",
+	"route": "opencode-go/glm-5.3-flash",
+	"control": "high",
+	"transport": "opencode-cli",
+	"native_spawn": null,
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"qualification_status": "qualified_restricted",
+	"route_evidence": "explicit human-directed fresh independent GLM review cycle",
+	"gate_outcome": "PENDING",
+	"material_selection_reason": "Review2 did not inspect the candidate because the coordinator packet omitted exact path names from its prose. Human instructions require a fresh independent GLM review and prohibit V4 Pro. Review3 enumerates each exact allowlisted path and uses the governing 1500-character contract.",
+	"consequence": "low read-only source review; runtime causal verification and final acceptance remain coordinator-owned",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"human_authorization": "current coordinator turn and docs/phase-records/handoffs/coordinator/20260828-w2-repair3-human-authorization.md",
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260828-glm-5.3-flash-authorization.md"
+	],
+	"host_approval": {
+		"authority": "existing human-authorized scoped host rule",
+		"launcher": "C:/Users/Pc Force/.agents/skills/agent-project-workflow/scripts/launch-external-worker.cjs",
+		"launcher_sha256": "814a85d027e0c5d4296bdeb63d0ec36f378ae7aecb3863c9e239b81f023263da"
+	},
+	"activation": {
+		"candidate": "0e5f2aae017c19b6d0b7e036ba3ae9c8046c6d27",
+		"base": "8dd4d527492cef253e9e60be4cd3ddb4b37781ff",
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1",
+		"branch": "work/phase11-e2e-propagation-wait-w1",
+		"write_lease": [],
+		"packet": "C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration/test-results/node_modules/p11_w2_repair3_review3/packet.txt",
+		"packet_sha256": "32c5ec01a4d22251a93d3c69ac70b0462fb0e2f6930f222ed316eb0d8f048dfd",
+		"candidate_diff_sha256": "5d3c3bf5b703e6223bd20c28fcbbe6a8f98637e3326a20530f8dcdf2ea82083f",
+		"mechanical_evidence": "test-results/node_modules/p11_w2_repair3_review3/mechanical-evidence.json"
+	},
+	"provider_task_invocations": 0,
+	"reconciliation": {
+		"candidate_clean": true,
+		"implementation_and_reviewer_sessions_separate": true,
+		"prior_review_results_not_accepted": true,
+		"exact_paths_enumerated": true,
+		"reviewer_write_access": false,
+		"model_failure": false
+	},
+	"outcome_history": [],
+	"prior_route_decision": "docs/phase-records/route-decisions/p11_propagation_w2_repair3_review2_20260828.json",
+	"stage_input": "human-directed worker-level GLM review cycle"
+}
