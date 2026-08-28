@@ -13,7 +13,7 @@
 	"qualification_baseline": "2026-08-28.2",
 	"qualification_status": "qualified_restricted",
 	"route_evidence": "requalified",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "FAIL_SOURCE_GATE",
 	"material_selection_reason": "Current live host rule and verified workflow-owned launcher supersede pre-repair refusal. Both external candidates authorized and live; GLM can execute frozen source-only W1 with parent-owned runtime/causality gates, no concrete V4 advantage. Explicit human GLM preference retained. Native has no material source-edit advantage; no native worker launched.",
 	"consequence": "low supervised one-file diagnostics and persisted-state fixture; runtime/security/causal judgment native-owned",
 	"covered_modalities": ["text"],
@@ -41,7 +41,7 @@
 		"packet_sha256": "8a5480634a09f5dd51668270cc302554957cca899bf0fedff6e0e9932d2a010a",
 		"spec": "test-results/node_modules/p11_w1_current02/spec.json"
 	},
-	"provider_task_invocations": 0,
+	"provider_task_invocations": 1,
 	"reconciliation": {
 		"source_hash_unchanged": true,
 		"input_manifest_unchanged": true,
@@ -49,5 +49,39 @@
 		"one_writer": true,
 		"model_failure": false
 	},
-	"outcome_history": []
+	"outcome_history": [
+		{
+			"candidate_id": "glm-5.3-flash",
+			"stage_ref": "phase11-e2e-propagation-wait/W1-current02",
+			"recorded": "2026-08-28T17:21:53.219Z",
+			"route": "opencode-go/glm-5.3-flash",
+			"control": "high",
+			"gate_outcome": "FAIL",
+			"escalated": false,
+			"constraint_breach": false,
+			"succeeded": [
+				"Current workflow launcher invoked provider and exited 0; no approval refusal",
+				"Only leased integration test changed; no denied tools",
+				"Preserved actual pipeline, single once helper, forced previous-minute fixture, all 5000/60000ms budgets",
+				"git diff --check and server tsc passed"
+			],
+			"failed": [
+				"Public response elapsedMs subtracts epoch startTime from relative responseEnd; wrong timing units",
+				"Edge durations and DOM durations have no shared origin for acknowledgement-to-DOM proof",
+				"Biome format check failed",
+				"Final report exceeded 1500-character contract: 2634"
+			],
+			"parent_action": "One bounded fresh GLM source correction R1; no runtime or W2. Milestone repair count 1/2.",
+			"evidence": "C:\\Users\\Pc Force\\.codex\\worktrees\\f2a7\\phase5-staff-integration\\test-results\\node_modules\\p11_w1_current02\\candidate.patch",
+			"candidate_sha256": "d4bc2dcc5298a0c8008ba0b9ba2b296be6f8f41c1defbe0112a1974a641ff9a9"
+		}
+	],
+	"completion": {
+		"completion_id": "p11_w1_current02",
+		"final_text_present": true,
+		"sentinel": "WORKER_RESULT_COMPLETE",
+		"sentinel_verified": true,
+		"result_fingerprint": "sha256:03a638a4604f2143514e5ddb24aa970c3fa4378990d11263337c62ecca5c64d9",
+		"raw_evidence_pointer": "C:\\Users\\Pc Force\\.codex\\worktrees\\f2a7\\phase5-staff-integration\\test-results\\node_modules\\p11_w1_current02\\events.jsonl"
+	}
 }
