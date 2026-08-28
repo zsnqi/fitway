@@ -48,7 +48,7 @@ milestones:
 
   phase-2:
     status: DONE
-    dependencies: [ phase-1 ]
+    dependencies: [phase-1]
     ownerSession: null
     branch: main
     worktree: null
@@ -72,7 +72,7 @@ milestones:
 
   phase-3:
     status: DONE
-    dependencies: [ phase-2 ]
+    dependencies: [phase-2]
     ownerSession: null
     branch: main
     worktree: null
@@ -96,7 +96,7 @@ milestones:
 
   baseline-reconciliation-gate:
     status: DONE
-    dependencies: [ phase-3 ]
+    dependencies: [phase-3]
     ownerSession: null
     branch: main
     worktree: D:/Projects/fitway
@@ -120,7 +120,7 @@ milestones:
 
   phase4-auth:
     status: DONE
-    dependencies: [ baseline-reconciliation-gate, phase-2, phase-3 ]
+    dependencies: [baseline-reconciliation-gate, phase-2, phase-3]
     ownerSession: null
     branch: main
     worktree: null
@@ -166,7 +166,7 @@ milestones:
 
   phase4-health:
     status: DONE
-    dependencies: [ phase4-auth ]
+    dependencies: [phase4-auth]
     ownerSession: null
     branch: main
     worktree: null
@@ -217,7 +217,7 @@ milestones:
 
   phase4-staff-web:
     status: DONE
-    dependencies: [ phase4-auth, phase4-health ]
+    dependencies: [phase4-auth, phase4-health]
     ownerSession: null
     branch: main
     worktree: null
@@ -269,7 +269,7 @@ milestones:
 
   login-paper-adoption:
     status: FAILED_VALIDATION
-    dependencies: [ phase4-staff-web, focus-parity-accessibility ]
+    dependencies: [phase4-staff-web, focus-parity-accessibility]
     ownerSession: null
     branch: codex/remaining-scope-coordinator
     worktree: null
@@ -304,7 +304,7 @@ milestones:
 
   phase-4:
     status: DONE
-    dependencies: [ phase4-auth, phase4-health, phase4-staff-web ]
+    dependencies: [phase4-auth, phase4-health, phase4-staff-web]
     ownerSession: null
     branch: main
     worktree: null
@@ -328,7 +328,7 @@ milestones:
 
   phase5-command-domain:
     status: DONE
-    dependencies: [ phase-4 ]
+    dependencies: [phase-4]
     ownerSession: null
     branch: main
     worktree: null
@@ -407,7 +407,7 @@ milestones:
 
   phase5-staff-ui:
     status: DONE
-    dependencies: [ phase5-command-domain ]
+    dependencies: [phase5-command-domain]
     ownerSession: null
     branch: main
     worktree: null
@@ -451,7 +451,7 @@ milestones:
 
   phase-5:
     status: DONE
-    dependencies: [ phase5-command-domain, phase5-staff-ui ]
+    dependencies: [phase5-command-domain, phase5-staff-ui]
     ownerSession: null
     branch: main
     worktree: null
@@ -475,7 +475,7 @@ milestones:
 
   phase-6:
     status: DONE
-    dependencies: [ phase-5 ]
+    dependencies: [phase-5]
     ownerSession: "Fresh Phase 6 fixture-reconciliation b03 worker on work/phase6-fixture-reconciliation-b03 in D:/Projects/fitway-worktrees/phase6-fixture-reconciliation-b03: implement only the independently approved explicit settings effectiveFrom chronology in the three leased integration fixtures. The merged Phase 6 implementation and the terminal b02 FAILED_VALIDATION record remain unchanged; this fresh attempt starts at repair count 0/2."
     branch: work/phase6-fixture-reconciliation-b03
     worktree: D:/Projects/fitway-worktrees/phase6-fixture-reconciliation-b03
@@ -509,7 +509,7 @@ milestones:
 
   phase7-reset-evaluator:
     status: DONE
-    dependencies: [ baseline-reconciliation-gate, phase-3, phase-5 ]
+    dependencies: [baseline-reconciliation-gate, phase-3, phase-5]
     ownerSession: null
     branch: main
     worktree: null
@@ -543,7 +543,7 @@ milestones:
 
   phase7-integration:
     status: FAILED_VALIDATION
-    dependencies: [ phase7-reset-evaluator, phase-6 ]
+    dependencies: [phase7-reset-evaluator, phase-6]
     ownerSession: null
     branch: work/phase7-integration-b01
     worktree: D:/Projects/fitway-worktrees/phase7-integration
@@ -583,7 +583,7 @@ milestones:
 
   phase7-integration-b02:
     status: DONE
-    dependencies: [ phase7-reset-evaluator, phase-6 ]
+    dependencies: [phase7-reset-evaluator, phase-6]
     ownerSession: null
     branch: main
     worktree: null
@@ -624,7 +624,7 @@ milestones:
 
   phase-7:
     status: DONE
-    dependencies: [ phase7-reset-evaluator, phase7-integration-b02 ]
+    dependencies: [phase7-reset-evaluator, phase7-integration-b02]
     ownerSession: null
     branch: main
     worktree: null
@@ -648,7 +648,7 @@ milestones:
 
   phase8-alert-evaluator:
     status: DONE
-    dependencies: [ baseline-reconciliation-gate, phase-3, phase4-health ]
+    dependencies: [baseline-reconciliation-gate, phase-3, phase4-health]
     ownerSession: null
     branch: main
     worktree: null
@@ -708,7 +708,7 @@ milestones:
 
   phase8-integration:
     status: DONE
-    dependencies: [ phase8-alert-evaluator, phase-7 ]
+    dependencies: [phase8-alert-evaluator, phase-7]
     ownerSession: null
     branch: main
     worktree: null
@@ -755,7 +755,7 @@ milestones:
 
   phase-8:
     status: DONE
-    dependencies: [ phase8-alert-evaluator, phase8-integration ]
+    dependencies: [phase8-alert-evaluator, phase8-integration]
     ownerSession: null
     branch: main
     worktree: null
@@ -779,7 +779,7 @@ milestones:
 
   phase9-analytics-domain:
     status: DONE
-    dependencies: [ baseline-reconciliation-gate, phase-2, phase-3 ]
+    dependencies: [baseline-reconciliation-gate, phase-2, phase-3]
     ownerSession: null
     branch: main
     worktree: null
@@ -825,7 +825,7 @@ milestones:
 
   phase9-owner-ui:
     status: DONE
-    dependencies: [ phase9-analytics-domain, phase-4, phase5-command-domain ]
+    dependencies: [phase9-analytics-domain, phase-4, phase5-command-domain]
     ownerSession: null
     branch: main
     worktree: null
@@ -890,7 +890,7 @@ milestones:
 
   phase-9:
     status: DONE
-    dependencies: [ phase9-analytics-domain, phase9-owner-ui ]
+    dependencies: [phase9-analytics-domain, phase9-owner-ui]
     ownerSession: null
     branch: main
     worktree: null
@@ -914,7 +914,7 @@ milestones:
 
   phase10-domain:
     status: DONE
-    dependencies: [ phase-9 ]
+    dependencies: [phase-9]
     ownerSession: null
     branch: main
     worktree: null
@@ -981,7 +981,7 @@ milestones:
 
   phase10-paper-reporting:
     status: DONE
-    dependencies: [ phase10-domain ]
+    dependencies: [phase10-domain]
     ownerSession: null
     branch: main
     worktree: null
@@ -1009,7 +1009,7 @@ milestones:
 
   phase10-csv-transport:
     status: DONE
-    dependencies: [ phase10-domain ]
+    dependencies: [phase10-domain]
     ownerSession: null
     branch: main
     worktree: null
@@ -1052,7 +1052,7 @@ milestones:
 
   phase10-ui-csv:
     status: FAILED_VALIDATION
-    dependencies: [ phase10-domain, phase10-paper-reporting, phase10-csv-transport ]
+    dependencies: [phase10-domain, phase10-paper-reporting, phase10-csv-transport]
     ownerSession: null
     branch: codex/phase10-ui-csv-recovery
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
@@ -1097,7 +1097,7 @@ milestones:
 
   phase10-ui-csv-b03:
     status: FAILED_VALIDATION
-    dependencies: [ phase10-domain, phase10-paper-reporting, phase10-csv-transport ]
+    dependencies: [phase10-domain, phase10-paper-reporting, phase10-csv-transport]
     ownerSession: null
     branch: codex/phase10-ui-csv-b03
     worktree: null
@@ -1130,7 +1130,7 @@ milestones:
 
   phase10-ui-csv-b04:
     status: NEEDS_HUMAN
-    dependencies: [ phase10-domain, phase10-paper-reporting, phase10-csv-transport ]
+    dependencies: [phase10-domain, phase10-paper-reporting, phase10-csv-transport]
     ownerSession: null
     branch: codex/phase10-ui-csv-b04
     worktree: D:/Projects/fitway-worktrees/phase10-ui-csv-b04
@@ -1170,7 +1170,7 @@ milestones:
 
   phase10-ui-csv-b05:
     status: FAILED_VALIDATION
-    dependencies: [ phase10-domain, phase10-paper-reporting, phase10-csv-transport ]
+    dependencies: [phase10-domain, phase10-paper-reporting, phase10-csv-transport]
     ownerSession: null
     branch: codex/phase10-ui-csv-b05
     worktree: D:/Projects/fitway-worktrees/phase10-ui-csv-b05
@@ -1211,7 +1211,7 @@ milestones:
 
   phase10-ui-csv-b06:
     status: DONE
-    dependencies: [ phase10-domain, phase10-paper-reporting, phase10-csv-transport ]
+    dependencies: [phase10-domain, phase10-paper-reporting, phase10-csv-transport]
     ownerSession: null
     branch: codex/phase10-ui-csv-b06
     worktree: D:/Projects/fitway-worktrees/phase10-ui-csv-b06
@@ -1251,7 +1251,8 @@ milestones:
 
   phase-10:
     status: DONE
-    dependencies: [ phase10-domain, phase10-paper-reporting, phase10-csv-transport, phase10-ui-csv-b06 ]
+    dependencies:
+      [phase10-domain, phase10-paper-reporting, phase10-csv-transport, phase10-ui-csv-b06]
     ownerSession: null
     branch: main
     worktree: null
@@ -1275,7 +1276,7 @@ milestones:
 
   phase11-shell:
     status: DONE
-    dependencies: [ phase-9 ]
+    dependencies: [phase-9]
     ownerSession: null
     branch: work/phase11-shell-b02
     worktree: D:/Projects/fitway-worktrees/phase11-shell-b02
@@ -1315,7 +1316,7 @@ milestones:
 
   phase11-audit:
     status: DONE
-    dependencies: [ phase-5, phase-9 ]
+    dependencies: [phase-5, phase-9]
     ownerSession: null
     branch: work/phase11-audit-b01
     worktree: D:/Projects/fitway-worktrees/phase11-audit-b01
@@ -1362,7 +1363,7 @@ milestones:
 
   phase11-audit-generalization:
     status: DONE
-    dependencies: [ phase11-audit ]
+    dependencies: [phase11-audit]
     ownerSession: null
     branch: codex/phase11-audit-gen-slice-b
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
@@ -1416,7 +1417,7 @@ milestones:
 
   phase11-access:
     status: FAILED_VALIDATION
-    dependencies: [ phase-4, phase-5, phase-9, phase11-audit-generalization ]
+    dependencies: [phase-4, phase-5, phase-9, phase11-audit-generalization]
     ownerSession: null
     branch: work/phase11-access-b01
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
@@ -1463,7 +1464,7 @@ milestones:
 
   phase11-access-b02:
     status: DONE
-    dependencies: [ phase-4, phase-5, phase-9, phase11-audit-generalization ]
+    dependencies: [phase-4, phase-5, phase-9, phase11-audit-generalization]
     ownerSession: null
     branch: work/phase11-access-b02
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
@@ -1513,7 +1514,7 @@ milestones:
 
   phase11-access-tx:
     status: DONE
-    dependencies: [ phase11-access-b02 ]
+    dependencies: [phase11-access-b02]
     ownerSession: null
     branch: work/phase11-access-tx-b01
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
@@ -1561,7 +1562,7 @@ milestones:
 
   phase11-browser-debt:
     status: DONE
-    dependencies: [ phase11-access-tx, phase11-ladder-contention ]
+    dependencies: [phase11-access-tx, phase11-ladder-contention]
     ownerSession: "main Claude Code coordinator session, run p11_browser_debt_b01"
     branch: work/phase11-browser-debt-b01
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
@@ -1602,7 +1603,7 @@ milestones:
 
   phase11-access-paper-successor:
     status: DONE
-    dependencies: [ phase11-shell, phase11-access-tx ]
+    dependencies: [phase11-shell, phase11-access-tx]
     ownerSession: null
     branch: codex/remaining-scope-coordinator
     worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
@@ -1632,7 +1633,7 @@ milestones:
 
   phase11-access-ui:
     status: DONE
-    dependencies: [ phase11-access-b02, phase11-access-tx, phase11-browser-debt, phase11-access-paper-successor ]
+    dependencies: [phase11-access-b02, phase11-access-tx, phase11-browser-debt, phase11-access-paper-successor]
     ownerSession: null
     branch: codex/remaining-scope-coordinator
     worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
@@ -1709,7 +1710,7 @@ milestones:
 
   phase11-reference-gating-debt:
     status: DONE
-    dependencies: [ phase11-browser-debt ]
+    dependencies: [phase11-browser-debt]
     ownerSession: null
     branch: codex/remaining-scope-coordinator
     worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
@@ -1740,7 +1741,7 @@ milestones:
 
   phase11-ladder-contention:
     status: DONE
-    dependencies: [ phase11-access-tx ]
+    dependencies: [phase11-access-tx]
     ownerSession: "main Claude Code coordinator session, run p11_ladder_contention_b01"
     branch: work/phase11-ladder-contention-b01
     worktree: D:/Projects/fitway-worktrees/phase5-staff-integration
@@ -1780,7 +1781,7 @@ milestones:
 
   phase11-uptime-paper-successor:
     status: DONE
-    dependencies: [ phase11-health ]
+    dependencies: [phase11-health]
     ownerSession: null
     branch: codex/remaining-scope-coordinator
     worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
@@ -1809,7 +1810,7 @@ milestones:
 
   phase11-settings-paper-successor:
     status: FAILED_VALIDATION
-    dependencies: [ phase11-shell, phase11-audit-generalization ]
+    dependencies: [phase11-shell, phase11-audit-generalization]
     ownerSession: null
     branch: paper/owner-settings-successor-repair-1
     worktree: paper://01KYPX5AF950XZVVDD88B6J7QB/Page-1
@@ -1839,7 +1840,7 @@ milestones:
 
   phase11-settings-spec:
     status: PLANNED
-    dependencies: [ phase-3, phase-5, phase-6, phase-7, phase-9, phase11-audit-generalization, phase11-settings-paper-successor ]
+    dependencies: [phase-3, phase-5, phase-6, phase-7, phase-9, phase11-audit-generalization, phase11-settings-paper-successor]
     ownerSession: null
     branch: null
     worktree: null
@@ -1867,7 +1868,8 @@ milestones:
 
   phase11-settings:
     status: PLANNED
-    dependencies: [ phase-3, phase-5, phase-6, phase-7, phase-9, phase11-audit-generalization, phase11-settings-spec ]
+    dependencies:
+      [phase-3, phase-5, phase-6, phase-7, phase-9, phase11-audit-generalization, phase11-settings-spec]
     ownerSession: null
     branch: null
     worktree: null
@@ -1891,7 +1893,7 @@ milestones:
 
   phase11-health:
     status: DONE
-    dependencies: [ phase-8, phase-9 ]
+    dependencies: [phase-8, phase-9]
     ownerSession: null
     branch: work/phase11-health-b01
     worktree: D:/Projects/fitway-worktrees/phase11-health-b01
@@ -1938,7 +1940,7 @@ milestones:
 
   phase11-uptime-mobile-fidelity:
     status: PLANNED
-    dependencies: [ phase11-health, phase11-uptime-paper-successor ]
+    dependencies: [phase11-health, phase11-uptime-paper-successor]
     ownerSession: null
     branch: null
     worktree: null
@@ -1972,7 +1974,22 @@ milestones:
 
   phase-11:
     status: PLANNED
-    dependencies: [ phase11-shell, phase11-audit, phase11-audit-generalization, phase11-access-b02, phase11-access-tx, phase11-access-ui, phase11-settings, phase11-health, phase11-uptime-mobile-fidelity, phase11-reference-gating-debt, phase11-e2e-propagation-wait, focus-parity-accessibility, login-paper-adoption ]
+    dependencies:
+      [
+        phase11-shell,
+        phase11-audit,
+        phase11-audit-generalization,
+        phase11-access-b02,
+        phase11-access-tx,
+        phase11-access-ui,
+        phase11-settings,
+        phase11-health,
+        phase11-uptime-mobile-fidelity,
+        phase11-reference-gating-debt,
+        phase11-e2e-propagation-wait,
+        focus-parity-accessibility,
+        login-paper-adoption,
+      ]
     ownerSession: null
     branch: null
     worktree: null
@@ -1996,7 +2013,7 @@ milestones:
 
   focus-parity-accessibility:
     status: DONE
-    dependencies: [ phase11-shell ]
+    dependencies: [phase11-shell]
     ownerSession: null
     branch: codex/remaining-scope-coordinator
     worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
@@ -2041,7 +2058,7 @@ milestones:
 
   phase-12:
     status: DONE
-    dependencies: [ phase-6 ]
+    dependencies: [phase-6]
     ownerSession: null
     branch: work/phase12-edge-client-b01
     worktree: D:/Projects/fitway-worktrees/phase12-edge-client
