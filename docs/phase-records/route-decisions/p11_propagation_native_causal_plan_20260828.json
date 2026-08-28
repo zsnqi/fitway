@@ -1,0 +1,26 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "p11_propagation_native_causal_plan_20260828",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native",
+	"transport": "codex-native",
+	"control": "high",
+	"gate_outcome": "PENDING",
+	"consequence": "high: preserve real resource/causal evidence without weakening candidate acceptance",
+	"native_spawn": {
+		"model": "gpt-5.6-sol",
+		"reasoning_effort": "high",
+		"agent_role": "explorer",
+		"fork_turns": "none",
+		"invocation_id": "p11_native_causal_plan_sol01",
+		"request_timestamp": "2026-08-28T17:28:00+03:00"
+	},
+	"material_selection_reason": "Read-only volume: derive only the still-unspecified same-resource native follow-up proof mechanism from the existing causal plan and test lifecycle. This is not GLM source writing; real database/server/browser causal safeguards exceed external qualified ceilings. Terra/Luna unapproved.",
+	"prohibited": [
+		"source or harness writes",
+		"runtime execution",
+		"provider invocation",
+		"product/authority decisions"
+	]
+}

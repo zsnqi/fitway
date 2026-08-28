@@ -3,7 +3,7 @@ schemaVersion: 1
 updatedAt: "2026-08-28T17:07:00+03:00"
 
 coordinator:
-  owner: "Main coordinator. Access r05 remains DONE; Login b03 is terminal and reverted. Propagation W1 never launched: host approval-checker usage refusal plus independently rejected coordinator launch controls. Source lease released. Uptime planning is complete and preserved; Settings remains terminal awaiting fresh human authorization."
+  owner: "Main coordinator. Access r05 remains DONE; Login b03 is terminal and reverted. Human explicitly approved the specific W1 launch retry after safeguards pass independent review. Native harness repair and disjoint read-only causal planning are active; W1 source lease remains released and GLM has not launched. Uptime planning is complete; Settings remains terminal."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1698,7 +1698,7 @@ milestones:
     lastHeartbeatAt: "2026-08-28T17:07:00+03:00"
     leaseExpiresAt: null
     handoff: docs/phase-records/handoffs/phase11-e2e-propagation-wait/20260828-p11-propagation-w1-launch-checkpoint.md
-    stopReason: "W1 provider process never started. The host rejected the exact supervisor invocation because its automatic approval reviewer hit its usage limit and explicitly prohibited an indirect retry/workaround. Independent read-only review then rejected coordinator launch controls: missing frozen payload/live route/lease bindings, result identity and completion validation, cancellation confirmation and protected-scope enforcement. No breach was demonstrated. Durable GLM data authorization remains valid; this is not a provider/model failure and consumes no implementation repair. Resume requires satisfying the host refusal boundary, repairing and independently verifying launch controls, fresh live preflight, and a reissued exact source lease. Preserve the clean isolated f07f5d9 worktree and completed planning; do not redispatch any completed stage."
+    stopReason: "W1 has not launched. The human explicitly approved retry of this exact supervised launch after independent safeguards approval (6aee4ba). Coordinator harness repair 1 is in progress to address frozen payload/live route/lease binding, fail-closed result validation, cancellation and protected-scope controls. No provider/model failure or implementation repair was consumed. Keep source lease released until fresh independent launch-controls review passes, then renew exact lease and run ordinary live/host preflight. Frozen W1 worktree f07f5d9 is clean; frozen dependencies and Vitest 4.1.10 are verified."
     gates:
       unit: PENDING
       integration: PENDING

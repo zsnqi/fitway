@@ -11,7 +11,12 @@
 	"registry_revision": "2026-08-28.2",
 	"qualification_baseline": "2026-08-28.2",
 	"qualification_status": "qualified_restricted",
-	"gate_outcome": "HOST_APPROVAL_BLOCKED",
+	"gate_outcome": "LAUNCH_CONTROLS_BLOCKED",
+	"post_refusal_approval": {
+		"record": "docs/phase-records/handoffs/phase11-e2e-propagation-wait/20260828-p11-w1-launch-retry-authorization.md",
+		"commit": "6aee4ba",
+		"scope": "specific supervised W1 launch retry only after independent safeguards PASS"
+	},
 	"model_gate_outcome": "NOT_RUN",
 	"provider_task_invocations": 0,
 	"completion": null,
