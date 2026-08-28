@@ -36,7 +36,8 @@
 		"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1",
 		"write_paths": [
 			"test-results/node_modules/p11_w1_causal_verify/**",
-			"C:/Users/Public/FitwayTemp/p11w1causalv01/**"
+			"C:/Users/Public/FitwayTemp/p11w1causalv01/**",
+			"apps/server/.env (new ignored synthetic-only verification environment; no real credential reads)"
 		],
 		"forbidden": [
 			"tracked source",
@@ -51,7 +52,8 @@
 		],
 		"container": "fitway-p11w1-causal-v01",
 		"postgres_port": 55434,
-		"lease_expires_at": "2026-08-29T06:00:00+03:00"
+		"lease_expires_at": "2026-08-29T06:00:00+03:00",
+		"environment_provisioning": "WORKFLOW step 8: synthetic placeholder .env only; process-local guarded test database remains authoritative; no external network/delivery; preserve preexisting files"
 	},
 	"gate_outcome": "PENDING"
 }
