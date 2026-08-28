@@ -1,0 +1,43 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "login_b03_c01_self_verification",
+	"recorded": "2026-08-28T08:45:00Z",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native",
+	"transport": "codex-native",
+	"control": "high",
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"qualification_status": "native",
+	"gate_outcome": "PASS",
+	"native_spawn": {
+		"model": "gpt-5.6-sol",
+		"reasoning_effort": "high",
+		"agent_role": "tester",
+		"fork_turns": "none",
+		"invocation_id": "login_b03_c01_self_verify_sol01",
+		"request_timestamp": "2026-08-28T08:45:00Z",
+		"mechanism": "followup_existing_access_integrated_verification"
+	},
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "shell", "runtime_browser_probes"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"consequence": "medium execution self-gate; does not grant independent review or integration",
+	"material_selection_reason": "Volume/recoverability: isolate phase ladder, runtime negative controls and detailed logs with the proven native test supervisor. This stage requires task-owned local test servers and runtime Browser probes beyond external qualification. GLM source egress is now explicitly authorized for eligible tasks. Independent final review is a separate later stage.",
+	"filtered_alternatives": {
+		"glm-5.3-flash": [
+			"Durable 2026-08-28 human egress authorization now covers eligible FITWAY tasks; repository ladder and task-owned server/runtime Browser probes remain outside demonstrated scope"
+		],
+		"deepseek-v4-pro": [
+			"No task-owned local server/interactive Browser qualification for this runtime probe stage"
+		],
+		"gpt-5.6-terra": ["No fresh explicit invocation approval"],
+		"gpt-5.6-luna": ["No fresh explicit invocation approval"]
+	},
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260828-glm-5.3-flash-authorization.md"
+	],
+	"outcome_evidence": "test-results/login_b03_c01/final-summary.json; phase JUnit 36/36, runtime controls expected failures, source fingerprint unchanged"
+}

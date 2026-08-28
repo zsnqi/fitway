@@ -39,3 +39,9 @@ Next: adopt and persist the bounded Login integration plan, allocate exact share
 
 ## 11:41 coordinator continuation
 Access metadata freeze PASS at c2977cd. Own run DB and sensitive browser output removed; prior r05_phase/r05_full databases remain with zero active connections after host refusal to delete. No deletion retry. Login plan adopted and coordinator lease activated; baseline approval remains pending its gates. GLM synthetic-only probe planning may proceed independently, with no FITWAY source egress.
+
+## 16:25 Login terminal reconciliation
+
+The exact provisional merge `901983b` completed its independent phase and full execution ladder. The first full browser attempt was red only because `/@react-refresh` hit host `ERR_NO_BUFFER_SPACE`; the unchanged Public test then passed 1/1 and unchanged full retry passed 516 unit, 117 simulator, 122 integration and 104/104 browser. The fresh interactive review nevertheless rejected the candidate: the enabled submit hover in both Arabic and English S2 renders white on `#eb213d` at 4.35:1, below WCAG AA 4.5:1. Paper I4 explicitly specifies the same conflicting hover treatment. This is a real authority conflict, not an implementation-only repair.
+
+Per the adopted plan, no repair or resubmission was made. The provisional merge remains reachable and was reverted with first-parent semantics by `435e1e5`; the original worker branch remains preserved. Coordinator records and durable GLM authorization were restored without restoring rejected source, tests or canonicals. Login is terminal `FAILED_VALIDATION` and needs explicit human authority for a successor. Propagation and Uptime remain independently executable; Settings remains at its prior terminal boundary.

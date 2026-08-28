@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-28T11:41:00+03:00"
+updatedAt: "2026-08-28T16:25:00+03:00"
 
 coordinator:
-  owner: "Main coordinator login_b03_c01. Access r05 DONE and closeout frozen at c2977cd. Login b03 bounded integration active; one source writer. Propagation and Uptime follow; Settings remains terminal awaiting fresh human authorization."
+  owner: "Main coordinator. Access r05 remains DONE. Login b03 is terminal FAILED_VALIDATION after fresh independent rejection and its provisional merge is history-preservingly reverted. Propagation and Uptime are the executable frontier; Settings remains terminal awaiting fresh human authorization."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -268,11 +268,11 @@ milestones:
     integratedCommit: b67398a8a221e60f45ed7a4f2b0e40207fdbd58a
 
   login-paper-adoption:
-    status: IN_PROGRESS
+    status: FAILED_VALIDATION
     dependencies: [phase4-staff-web, focus-parity-accessibility]
-    ownerSession: "Main coordinator login_b03_c01"
+    ownerSession: null
     branch: codex/remaining-scope-coordinator
-    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
+    worktree: null
     baseCommit: c2977cd96d2a19a4b6737dee69a206a32604a895
     ownedPaths:
       - apps/web/src/components/login/**
@@ -287,25 +287,19 @@ milestones:
       - package.json
       - apps/web/src/components/staff/staff.css
       - visual-direction-gate/approved/**
-    sharedLeases:
-      - "Coordinator only: apps/web/src/i18n/messages/{ar,en}.ts staffWeb.login candidate blocks"
-      - "Coordinator only: tests/browser/phase4-staff-web.browser.spec.ts candidate copy + accepted focus preservation + operations probe context"
-      - "Coordinator only: tests/browser/phase9-owner-ui.browser.spec.ts one expired-session Login heading"
-      - "Coordinator only: scripts/verify.mjs additive login-paper-adoption profile"
-      - "Coordinator only: two Login canonical PNGs named in adopted plan; comparison/acceptance after independent fidelity"
-      - "Coordinator only: ADR-007 dated Login authority addendum; PROJECT_STATE.yaml and stage records"
+    sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-28T11:41:00+03:00"
-    leaseExpiresAt: "2026-08-28T21:00:00+03:00"
-    handoff: docs/phase-records/handoffs/login-paper-adoption/20260828-login-b03-coordinator-integration-plan.md
-    stopReason: null
+    lastHeartbeatAt: "2026-08-28T16:25:00+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/login-paper-adoption/20260828-login-b03-c01-terminal-failed-validation.md
+    stopReason: "Terminal b03 c01 FAILED_VALIDATION on fresh independent verification with 0 of 2 prospective coordinator repair attempts consumed. Candidate 901983b passes the focused phase gate (516 unit, 117 simulator, 36/36 browser), an unchanged full retry (516 unit, 117 simulator, 122 integration, 104/104 browser), both locales across nine widths, all represented S1-S5 states, focus, forced colors, 200% reflow, reduced preferences, cold Staff redirect, and Paper fidelity otherwise. The verifier rejected the enabled submit hover in both Arabic and English S2: white on rendered #eb213d is 4.35:1, below WCAG AA 4.5:1. Paper I4 explicitly specifies the conflicting hover #FF2946, so no silent coordinator repair or resubmission is permitted. Provisional merge 901983b is preserved in history and reverted by 435e1e5; original branch work/login-paper-adoption-b03 remains preserved. A successor needs explicit human authority resolving the approved Paper hover against binding accessibility."
     gates:
-      unit: PENDING
+      unit: PASS
       integration: NOT_REQUIRED
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
-      independentReview: PENDING
+      browser: PASS
+      accessibility: FAIL
+      visual: PASS
+      independentReview: FAIL
     integratedCommit: null
 
   phase-4:
