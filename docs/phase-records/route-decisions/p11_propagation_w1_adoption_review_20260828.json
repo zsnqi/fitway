@@ -1,0 +1,47 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-e2e-propagation-wait/W1-adoption-review",
+	"recorded": "2026-08-28T18:43:00Z",
+	"candidate_id": "native-sol",
+	"route": "native",
+	"control": "xhigh",
+	"transport": "native-spawn-agent",
+	"native_spawn": {
+		"model": "gpt-5.6-sol",
+		"invocation_id": "p11_w1_adoption_review_sol01",
+		"request_timestamp": "2026-08-28T18:43:00Z",
+		"reasoning_effort": "xhigh",
+		"role": "reviewer",
+		"fork_turns": "none"
+	},
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"route_evidence": "requalified",
+	"delegation_evaluation": {
+		"evaluated_at": "2026-08-28T18:41:00Z",
+		"stage_discovery_started_at": null,
+		"basis": "adopted W1 plan, native causal method, terminal handoff; no source diff read by coordinator",
+		"triggers": ["independence", "volume"],
+		"direct_execution_reasons_considered": [
+			"single source file but cross-system causal and privacy review with separate authority records"
+		]
+	},
+	"consequence": "high: assess causal proof and privacy boundary before authorizing W2; exceeds external medium/low ceilings",
+	"material_selection_reason": "Native Sol xhigh for coupled acknowledgement, freshness, real pipeline and privacy judgment. GLM low and V4 medium ceilings exclude this acceptance axis; no external launch needed. Terra/Luna lack one-shot approval and are not selected. Coordinator retains adoption and integration authority.",
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260828-glm-5.3-flash-authorization.md",
+		"docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md"
+	],
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "shell_read"],
+	"scope": {
+		"base": "f07f5d9e82c12bc216b10f4360b79dd6c9c32e5a",
+		"candidate": "77d8200",
+		"evidence": "9283ade",
+		"handoff": "1a75d2d",
+		"write_paths": [],
+		"runtime_execution": false
+	},
+	"gate_outcome": "PENDING"
+}

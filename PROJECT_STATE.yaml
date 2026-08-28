@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-28T17:12:27.231Z"
+updatedAt: "2026-08-28T18:43:00Z"
 
 coordinator:
-  owner: "Main coordinator resumed; current workflow-owned external GLM W1 launch, no native worker. Access DONE; Login/Settings terminal preserved. Handoff: docs/phase-records/handoffs/coordinator/20260828-201500-resumed-frontier.md"
+  owner: "Coordinator fresh reconciliation; terminal W1 candidate under independent adoption review, not integrated. Access DONE; Login/Settings terminal preserved. Handoff: docs/phase-records/handoffs/coordinator/20260828-214300-fresh-reconciliation.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1676,9 +1676,9 @@ milestones:
     integratedCommit: cac4b9e1f27c1a4cbd69b678abf707faa1a18be0
 
   phase11-e2e-propagation-wait:
-    status: IN_PROGRESS
+    status: VALIDATING
     dependencies: [ phase11-browser-debt ]
-    ownerSession: GLM/high p11_w1_current02_r1 sole W1 source writer
+    ownerSession: "Coordinator adoption review; source frozen at 77d8200, terminal records 1a75d2d; no implementation writer"
     branch: work/phase11-e2e-propagation-wait-w1
     worktree: C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1
     baseCommit: f07f5d9e82c12bc216b10f4360b79dd6c9c32e5a
@@ -1695,9 +1695,9 @@ milestones:
       - "Coordinator only: PROJECT_STATE.yaml and scripts/verify.mjs additive phase profile"
       - "Coordinator only: durable plan/route/handoff records and external-worker evidence append"
     validationRepairAttempts: 1
-    lastHeartbeatAt: "2026-08-28T17:09:25.682Z"
-    leaseExpiresAt: 2026-08-29T00:30:00+03:00
-    handoff: docs/phase-records/handoffs/coordinator/20260828-201500-resumed-frontier.md
+    lastHeartbeatAt: "2026-08-28T18:43:00Z"
+    leaseExpiresAt: "2026-08-29T06:00:00+03:00"
+    handoff: docs/phase-records/handoffs/coordinator/20260828-214300-fresh-reconciliation.md
     stopReason: null
     gates:
       unit: PENDING
