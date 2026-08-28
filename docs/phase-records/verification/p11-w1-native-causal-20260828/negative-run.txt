@@ -1,0 +1,40 @@
+
+ RUN  v4.1.10 C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1
+
+ ❯ apps/server/src/phase2.integration.test.ts (9 tests | 1 failed | 8 skipped) 15096ms
+     ↓ has deterministic settings and empty singleton after migration
+     ↓ keeps pushes updating while closed and exposes them only after opening
+     ↓ commits current and complete minute snapshot, projects fresh, and keeps replay immutable
+     ↓ replaces same-minute totals for the next contiguous sequence and floors negative counts
+     ↓ keeps gaps immutable and serializes concurrent same-next pushes to one commit
+     ↓ rolls back minute and device advancement when the singleton write fails
+     ↓ applies a newer settings version to the next acknowledgement and public timing
+     ↓ runs the real Python simulator through auth, limiter, engine, and Postgres
+     × drives the real browser through unavailable, fresh, changed, stale, and recovery 14823ms
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 8 skipped (9)
+   Start at  22:04:04
+   Duration  16.10s (transform 158ms, setup 33ms, import 803ms, tests 15.10s, environment 0ms)
+
+
+stderr | apps/server/src/phase2.integration.test.ts > Phase 2 real Postgres vertical slice > drives the real browser through unavailable, fresh, changed, stale, and recovery
+{"stage":"w1-failure-diagnostics","diagnostics":[{"kind":"public-browser-response","elapsedMs":7436,"httpStatus":200,"pollSeconds":1,"freshness":"unavailable","count":null,"computedAt":"2026-08-28T19:04:12.797Z","lastUpdatedAt":null,"freshUntil":null,"source":null},{"kind":"edge","elapsedMs":7686,"mode":"live","sequence":1,"observedAt":"2026-08-28T19:04:13.035Z","currentCount":10,"httpStatus":200,"reason":"processed","highestProcessedSequence":1,"serverTime":"2026-08-28T19:04:13.060Z"},{"kind":"simulator","elapsedMs":7706,"seed":41,"processOutcome":"processed"},{"kind":"public-browser-response","elapsedMs":9323,"httpStatus":200,"pollSeconds":1,"freshness":"fresh","count":10,"computedAt":"2026-08-28T19:04:13.797Z","lastUpdatedAt":"2026-08-28T19:04:13.060Z","freshUntil":"2026-08-28T19:04:16.060Z","source":"edge"},{"kind":"dom-timing","elapsedMs":9556,"assertion":"fresh-first-count","expectedCount":10,"observedCountText":"10","observedFreshnessText":"تحديث مباشرآخر تحديث 10:"},{"kind":"edge","elapsedMs":9732,"mode":"backfill","sequence":2,"observedAt":null,"currentCount":null,"httpStatus":200,"reason":"processed","highestProcessedSequence":2,"serverTime":"2026-08-28T19:04:15.114Z"},{"kind":"simulator","elapsedMs":9751,"seed":42,"processOutcome":"processed"},{"kind":"public-browser-response","elapsedMs":12399,"httpStatus":200,"pollSeconds":1,"freshness":"stale","count":10,"computedAt":"2026-08-28T19:04:16.796Z","lastUpdatedAt":"2026-08-28T19:04:13.060Z","freshUntil":"2026-08-28T19:04:16.060Z","source":"edge"},{"kind":"dom-timing","elapsedMs":14756,"assertion":"changed-count","expectedCount":7,"observedCountText":"10","observedFreshnessText":"آخر تحديث معروفآخر تحديث"}]}
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  apps/server/src/phase2.integration.test.ts > Phase 2 real Postgres vertical slice > drives the real browser through unavailable, fresh, changed, stale, and recovery
+TimeoutError: locator.waitFor: Timeout 5000ms exceeded.
+Call log:
+  - waiting for locator('.public-live__count-value').getByText('7', { exact: true }) to be visible
+
+ ❯ apps/server/src/phase2.integration.test.ts:1059:7
+    1057|      .locator(".public-live__count-value")
+    1058|      .getByText(String(changedCount), { exact: true })
+    1059|      .waitFor({ timeout: 5_000 }),
+       |       ^
+    1060|    );
+    1061|    await page.getByRole("button", { name: /الإنجليزية/u }).click();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯

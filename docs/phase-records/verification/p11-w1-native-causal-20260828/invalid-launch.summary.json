@@ -1,0 +1,47 @@
+{
+	"stage": "negative",
+	"runId": "p11w1negv01",
+	"databaseName": "fitway_integration_p11w1negv01",
+	"container": "fitway-p11w1-causal-v01",
+	"expectedHead": "8dd4d527492cef253e9e60be4cd3ddb4b37781ff",
+	"startedAt": "2026-08-28T19:00:38.237Z",
+	"verdict": "STOPPED",
+	"incidents": ["Expected one bounded W1 diagnostic emission"],
+	"cleanup": {
+		"databaseAbsent": true,
+		"stageTempRemoved": true,
+		"containerAbsent": true
+	},
+	"headBefore": "8dd4d527492cef253e9e60be4cd3ddb4b37781ff",
+	"statusBefore": "",
+	"hashesBefore": {
+		"apps/server/src/phase2.integration.test.ts": "255fa649113a528cb1893239db1c1b23375548b54098923a1d5be6e156231041",
+		"vitest.integration.config.ts": "ccf56e6163f742b71032c2facf153aba407d0c1b6bc2078e8112acc6aa72b268",
+		"pnpm-lock.yaml": "9d570634c10b3a4f09cafc09484808de877d415438d1a9bbaff1f94da9adb27d",
+		"tests/integration/setup.ts": "ff7d2dadbe30a454ef4d0ad001348b8d13c6f77fd4252c8d22f57eca61488a1e"
+	},
+	"containerId": "edcadd0313cb1754998e58f4bad54d709a92e885a1f02993f5f809b0fd43ecfc",
+	"postgresVersion": "postgres (PostgreSQL) 17.10",
+	"databaseSafety": "existing source guard accepted exact run-owned target",
+	"command": {
+		"command": "pnpm exec vitest run --config vitest.integration.config.ts apps/server/src/phase2.integration.test.ts -t \"drives the real browser through unavailable, fresh, changed, stale, and recovery\"",
+		"startedAt": "2026-08-28T19:00:41.778Z",
+		"exitCode": 0,
+		"finishedAt": "2026-08-28T19:00:50.522Z",
+		"log": "test-results/node_modules/p11_w1_causal_verify/negative.redacted.log",
+		"countSummary": [
+			"Test Files  2 skipped (2)",
+			"Tests  13 skipped (13)",
+			"Duration  5.66s (transform 242ms, setup 61ms, import 5.12s, tests 0ms, environment 0ms)"
+		]
+	},
+	"headAfter": "8dd4d527492cef253e9e60be4cd3ddb4b37781ff",
+	"statusAfter": "",
+	"hashesAfter": {
+		"apps/server/src/phase2.integration.test.ts": "255fa649113a528cb1893239db1c1b23375548b54098923a1d5be6e156231041",
+		"vitest.integration.config.ts": "ccf56e6163f742b71032c2facf153aba407d0c1b6bc2078e8112acc6aa72b268",
+		"pnpm-lock.yaml": "9d570634c10b3a4f09cafc09484808de877d415438d1a9bbaff1f94da9adb27d",
+		"tests/integration/setup.ts": "ff7d2dadbe30a454ef4d0ad001348b8d13c6f77fd4252c8d22f57eca61488a1e"
+	},
+	"finishedAt": "2026-08-28T19:00:52.108Z"
+}

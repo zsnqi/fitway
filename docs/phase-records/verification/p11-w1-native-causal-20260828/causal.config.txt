@@ -1,0 +1,35 @@
+import fs from "node:fs";
+import path from "node:path";
+import { createHash } from "node:crypto";
+import original from "../../../../vitest.integration.config.ts";
+const scratch = path.resolve("test-results/node_modules/p11_w1_causal_verify/retry1");
+const target = path.resolve("apps/server/src/phase2.integration.test.ts").replaceAll("\\", "/");
+const hash = (value: string) => createHash("sha256").update(value).digest("hex");
+const expectedSourceHash = "255fa649113a528cb1893239db1c1b23375548b54098923a1d5be6e156231041";
+const before = fs.readFileSync(path.join(scratch, "original-await.txt"), "utf8");
+const insertion = fs.readFileSync(path.join(scratch, "insertion.txt"), "utf8");
+const expectedTransformedHash = "90ce3a11ccbedbe435903f2c817a35ff560d5aa8c9b55839c70b18c9bde2281d";
+let matchCount = 0;
+export default {
+	...original,
+	plugins: [
+		...(original.plugins ?? []),
+		{
+			name: "p11-w1-native-causal-single-await",
+			enforce: "pre" as const,
+			transform(code: string, id: string) {
+				if (id.split("?")[0].replaceAll("\\", "/") !== target) return null;
+				if (hash(code) !== expectedSourceHash || code.split(before).length !== 2 || ++matchCount !== 1) {
+					throw new Error("P11 exact source/single-transform guard failed");
+				}
+				const transformed = code.replace(before, insertion);
+				if (hash(transformed) !== expectedTransformedHash) throw new Error("P11 transformed hash guard failed");
+				fs.writeFileSync(path.join(scratch, "adapter.runtime.json"), JSON.stringify({
+					matchCount, sourceHash: hash(code), transformedHash: hash(transformed),
+					configImported: "vitest.integration.config.ts", target: "apps/server/src/phase2.integration.test.ts",
+				}, null, 2) + "\n", { flag: "wx" });
+				return { code: transformed, map: null };
+			},
+		},
+	],
+};

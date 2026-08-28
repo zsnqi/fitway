@@ -1,0 +1,227 @@
+			/* P11_NATIVE_CAUSAL_BEGIN: scratch-only wrapper of the original await. */
+			try {
+			await observeCountWait(
+				"changed-count",
+				changedCount,
+				page
+					.locator(".public-live__count-value")
+					.getByText(String(changedCount), { exact: true })
+					.waitFor({ timeout: 5_000 }),
+			);
+			} catch (originalChangedFailure) {
+				const causalEvidence: Record<string, any> = {
+					schema: "p11-w1-native-causal/1",
+					runId: process.env.FITWAY_RUN_ID,
+					verdict: "H1_NOT_ESTABLISHED",
+					dbReads: 0,
+					followupInvocations: 0,
+					originalAwaitTimeoutMs: 5_000,
+					originalTestTimeoutMs: 60_000,
+				};
+				const requireCausal = (condition: unknown, code: string) => {
+					if (!condition) throw new Error(code);
+				};
+				const isoCausal = (value: Date | string) => new Date(value).toISOString();
+				const projectRequest = (request: any) => ({
+					mode: w1Token(request?.mode, ["live", "backfill"]),
+					sequence: w1Count(request?.sequence),
+					observedAt: w1Timestamp(request?.observedAt),
+					currentCount: w1Count(request?.currentCount),
+					minutes: Array.isArray(request?.minutes)
+						? request.minutes.slice(0, 2).map((minute: any) => ({
+								minuteStart: w1Timestamp(minute.minuteStart),
+								count: w1Count(minute.count),
+								entries: w1Count(minute.entries),
+								exits: w1Count(minute.exits),
+							}))
+						: [],
+				});
+				const projectState = (state: any) => ({
+					sequence: w1Count(state.sequence),
+					count: w1Count(state.count),
+					minute: w1Timestamp(state.minute),
+					outboxLength: Array.isArray(state.outbox) ? state.outbox.length : null,
+					inFlightEmpty: state.inFlightRequest === null,
+					lastRequest: projectRequest(state.lastRequest),
+				});
+				const readCausalDatabaseOnce = async () => {
+					causalEvidence.dbReads += 1;
+					const result = await pool.query(
+						"SELECT cs.current_count AS \"currentCount\", " +
+						"cs.last_push_received_at AS \"lastPushReceivedAt\", " +
+						"cs.last_edge_reported_at AS \"lastEdgeReportedAt\", " +
+						"ed.last_sequence::int AS \"lastSequence\", " +
+						"(SELECT COALESCE(json_agg(h ORDER BY h.\"minuteStart\"), '[]'::json) FROM " +
+						"(SELECT m.minute_start_utc AS \"minuteStart\", m.count, m.entries, m.exits, m.source, " +
+						"m.updated_at AS \"updatedAt\" FROM occupancy_minutes m WHERE m.device_id=ed.id " +
+						"ORDER BY m.minute_start_utc LIMIT 4) h) AS history " +
+						"FROM current_state cs JOIN edge_devices ed ON ed.id=cs.active_device_id WHERE cs.id=1",
+					);
+					requireCausal(result.rows.length === 1, "P11_DATABASE_SINGLETON_MISSING");
+					const row = result.rows[0];
+					return {
+						observedElapsedMs: Date.now() - diagnosticStartedAt,
+						currentCount: w1Count(row.currentCount),
+						lastSequence: w1Count(row.lastSequence),
+						lastPushReceivedAt: isoCausal(row.lastPushReceivedAt),
+						lastEdgeReportedAt: isoCausal(row.lastEdgeReportedAt),
+						history: row.history.map((minute: any) => ({
+							minuteStart: isoCausal(minute.minuteStart),
+							count: w1Count(minute.count),
+							entries: w1Count(minute.entries),
+							exits: w1Count(minute.exits),
+							source: w1Token(minute.source, ["live", "backfill", "manual"]),
+							updatedAt: isoCausal(minute.updatedAt),
+						})),
+					};
+				};
+				const readCausalDom = async () => {
+					const value = await page.evaluate(() => ({
+						countText: document.querySelector(".public-live__count-value")?.textContent?.trim().slice(0, 24) ?? null,
+						freshnessText: document.querySelector(".public-live__freshness--mobile")?.textContent?.trim().slice(0, 80) ?? null,
+						visibility: document.visibilityState,
+					}));
+					return { ...value, observedElapsedMs: Date.now() - diagnosticStartedAt };
+				};
+				let restoreCausalRecord: (() => void) | undefined;
+				let causalDeadlineTimer: ReturnType<typeof setTimeout> | undefined;
+				try {
+					requireCausal(
+						originalChangedFailure instanceof Error &&
+							originalChangedFailure.name === "TimeoutError" &&
+							originalChangedFailure.message.includes("locator.waitFor: Timeout 5000ms exceeded") &&
+							originalChangedFailure.message.includes("getByText('" + String(changedCount) + "'"),
+						"P11_UNEXPECTED_ORIGINAL_REJECTION",
+					);
+					let priorRecords: W1Diagnostic[] = [];
+					const previousConsoleError = console.error;
+					try {
+						console.error = (line: unknown) => {
+							requireCausal(typeof line === "string", "P11_DIAGNOSTICS_NOT_STRING");
+							const value = JSON.parse(line as string);
+							requireCausal(value.stage === "w1-failure-diagnostics" && Array.isArray(value.diagnostics), "P11_DIAGNOSTICS_SHAPE");
+							priorRecords = value.diagnostics;
+						};
+						diagnostics.emit();
+					} finally {
+						console.error = previousConsoleError;
+					}
+					requireCausal(priorRecords.length > 0 && priorRecords.length <= 32, "P11_DIAGNOSTICS_BOUND");
+					const priorEdges = priorRecords.filter((item) => item.kind === "edge") as W1EdgeDiagnostic[];
+					const priorSimulators = priorRecords.filter((item) => item.kind === "simulator") as W1SimulatorDiagnostic[];
+					const priorPublic = priorRecords.filter((item) => item.kind === "public-browser-response") as W1PublicBrowserDiagnostic[];
+					const priorChangedDom = priorRecords.find((item) => item.kind === "dom-timing" && item.assertion === "changed-count") as W1DomTimingDiagnostic | undefined;
+					requireCausal(priorEdges.length === 2 && priorSimulators.length === 2, "P11_INITIAL_REQUEST_COUNT");
+					const firstAck = priorEdges[0];
+					const backfillAck = priorEdges[1];
+					const firstState = projectState(persistedState);
+					const [stateText, beforeDatabase, beforeDom] = await Promise.all([
+						readFile(simulatorStateFile, "utf8"),
+						readCausalDatabaseOnce(),
+						readCausalDom(),
+					]);
+					const beforeRawState = JSON.parse(stateText);
+					const beforeState = projectState(beforeRawState);
+					causalEvidence.before = { firstCount, changedCount, firstAck, backfillAck, firstState, state: beforeState, database: beforeDatabase, dom: beforeDom, publicResponses: priorPublic, originalChangedDom: priorChangedDom };
+					requireCausal(firstAck.mode === "live" && firstAck.sequence === 1 && firstAck.reason === "processed" && firstAck.httpStatus === 200 && firstAck.highestProcessedSequence === 1 && firstAck.currentCount === firstCount, "P11_FIRST_ACK_MISMATCH");
+					requireCausal(firstState.sequence === 1 && firstState.lastRequest.mode === "live" && firstState.lastRequest.sequence === 1 && firstState.lastRequest.currentCount === firstCount && firstState.lastRequest.observedAt === firstAck.observedAt, "P11_FIRST_PERSISTED_REQUEST_MISMATCH");
+					requireCausal(backfillAck.mode === "backfill" && backfillAck.sequence === 2 && backfillAck.reason === "processed" && backfillAck.httpStatus === 200 && backfillAck.highestProcessedSequence === 2 && backfillAck.currentCount === null && backfillAck.observedAt === null, "P11_BACKFILL_ACK_MISMATCH");
+					requireCausal(priorSimulators[0].seed === 41 && priorSimulators[1].seed === 42 && priorSimulators.every((item) => item.processOutcome === "processed"), "P11_INITIAL_SIMULATOR_MISMATCH");
+					requireCausal(changedCount !== firstCount && beforeState.count === changedCount && beforeState.sequence === 2 && beforeState.outboxLength === 0 && beforeState.inFlightEmpty, "P11_SECOND_PERSISTED_STATE_MISMATCH");
+					requireCausal(beforeState.lastRequest.mode === "backfill" && beforeState.lastRequest.sequence === 2 && beforeState.lastRequest.currentCount === null && beforeState.lastRequest.observedAt === null && !("currentCount" in beforeRawState.lastRequest) && !("observedAt" in beforeRawState.lastRequest), "P11_SECOND_PERSISTED_REQUEST_MISMATCH");
+					requireCausal(beforeState.lastRequest.minutes.length === 1 && beforeState.lastRequest.minutes[0].minuteStart === previousMinute && beforeState.lastRequest.minutes[0].count === firstCount, "P11_FORCED_MINUTE_MISMATCH");
+					requireCausal(beforeDatabase.currentCount === firstCount && beforeDatabase.lastSequence === 2 && beforeDatabase.lastPushReceivedAt === firstAck.serverTime && beforeDatabase.lastEdgeReportedAt === firstAck.observedAt, "P11_BACKFILL_CHANGED_CURRENT_OR_SEQUENCE");
+					const storedBackfill = beforeDatabase.history.find((item: any) => item.minuteStart === previousMinute);
+					requireCausal(beforeDatabase.history.length >= 1 && beforeDatabase.history.length <= 2 && storedBackfill?.source === "backfill" && storedBackfill.count === firstCount && storedBackfill.entries === persistedState.entries && storedBackfill.exits === persistedState.exits && storedBackfill.updatedAt === backfillAck.serverTime, "P11_HISTORY_NOT_ADVANCED_BY_BACKFILL");
+					requireCausal(priorChangedDom?.expectedCount === changedCount && priorChangedDom.observedCountText === String(firstCount) && beforeDom.countText === String(firstCount) && beforeDom.visibility === "visible", "P11_NEGATIVE_DOM_MISMATCH");
+					requireCausal(priorPublic.some((item) => item.count === firstCount && item.freshness === "fresh") && priorPublic.at(-1)?.count === firstCount && priorPublic.at(-1)?.freshness === "stale" && priorPublic.every((item) => item.httpStatus === 200 && item.pollSeconds === 1 && (item.count === null || item.count === firstCount)), "P11_NEGATIVE_PUBLIC_MISMATCH");
+					requireCausal(beforeState.minute === new Date(Math.floor(Date.now() / 60_000) * 60_000).toISOString(), "P11_ANOTHER_MINUTE_ROLLOVER_BEFORE_INTERVENTION");
+					requireCausal(Date.now() - diagnosticStartedAt < 50_000, "P11_ORIGINAL_TEST_BUDGET_EXHAUSTED");
+
+					const futureRecords: W1Diagnostic[] = [];
+					causalEvidence.followup = { records: futureRecords };
+					let followupAck: W1EdgeDiagnostic | undefined;
+					let hookFailure: string | undefined;
+					let publicResolve: ((value: unknown) => void) | undefined;
+					let observations: Promise<any> | undefined;
+					let ackEpochMs = 0;
+					let deadlineEpochMs = 0;
+					const originalRecord = diagnostics.record.bind(diagnostics);
+					restoreCausalRecord = () => { diagnostics.record = originalRecord; };
+					diagnostics.record = (record) => {
+						originalRecord(record);
+						futureRecords.push(record);
+						try {
+							requireCausal(futureRecords.length <= 16, "P11_FOLLOWUP_RECORD_BOUND");
+							if (record.kind === "edge") {
+								requireCausal(record.sequence === 3 && record.mode === "live", "P11_FOLLOWUP_ROLLOVER_OR_SEQUENCE_MISMATCH");
+								if (record.httpStatus === 429) return;
+								requireCausal(!followupAck && record.httpStatus === 200 && record.reason === "processed" && record.highestProcessedSequence === 3 && record.currentCount !== null && record.currentCount !== firstCount && record.observedAt !== null && record.serverTime !== null, "P11_FOLLOWUP_ACK_MISMATCH");
+								const sampleAgeMs = Date.parse(record.serverTime!) - Date.parse(record.observedAt!);
+								requireCausal(sampleAgeMs >= 0 && sampleAgeMs <= 3_000, "P11_FOLLOWUP_STALE_SAMPLE");
+								followupAck = record;
+								ackEpochMs = diagnosticStartedAt + record.elapsedMs;
+								deadlineEpochMs = ackEpochMs + 5_000;
+								const remainingMs = deadlineEpochMs - Date.now();
+								requireCausal(remainingMs > 0 && remainingMs <= 5_000, "P11_ACK_DEADLINE_ALREADY_EXHAUSTED");
+								causalEvidence.followup = { records: futureRecords, ack: record, sampleAgeMs, ackEpochMs, deadlineEpochMs, observationStartedElapsedMs: Date.now() - diagnosticStartedAt };
+								const publicPromise = new Promise((resolve) => { publicResolve = resolve; });
+								// All three observations start at the actual W1 acknowledgement.
+								const databasePromise = readCausalDatabaseOnce();
+								const domPromise = page.locator(".public-live__count-value")
+									.getByText(String(record.currentCount), { exact: true })
+									.waitFor({ timeout: remainingMs })
+									.then(async () => {
+										const dom = await readCausalDom();
+										requireCausal(dom.countText === String(record.currentCount) && dom.visibility === "visible" && Date.now() <= deadlineEpochMs, "P11_FOLLOWUP_DOM_MISMATCH_OR_DEADLINE");
+										return dom;
+									});
+								const deadlinePromise = new Promise((_, reject) => {
+									causalDeadlineTimer = setTimeout(() => reject(new Error("P11_ACK_DEADLINE_EXHAUSTED")), Math.max(1, deadlineEpochMs - Date.now()));
+								});
+								observations = Promise.race([
+									Promise.all([databasePromise, publicPromise, domPromise]),
+									deadlinePromise,
+								]).then((values) => ({ ok: true, values }), (failure) => ({ ok: false, failure }));
+							} else if (record.kind === "public-browser-response" && followupAck) {
+								requireCausal(record.count === firstCount || record.count === followupAck.currentCount || record.count === null, "P11_UNEXPECTED_PUBLIC_CURRENT");
+								if (record.count === followupAck.currentCount && record.freshness === "fresh") {
+									requireCausal(record.httpStatus === 200 && record.pollSeconds === 1 && record.source === "edge" && record.lastUpdatedAt === followupAck.serverTime && record.elapsedMs! >= followupAck.elapsedMs && diagnosticStartedAt + record.elapsedMs! <= deadlineEpochMs && Date.now() <= deadlineEpochMs, "P11_FOLLOWUP_PUBLIC_MISMATCH_OR_DEADLINE");
+									publicResolve?.({ ...record, acceptedElapsedMs: Date.now() - diagnosticStartedAt });
+								}
+							}
+						} catch (failure) {
+							hookFailure = failure instanceof Error && /^P11_[A-Z_]+$/u.test(failure.message) ? failure.message : "P11_DIAGNOSTIC_HOOK_FAILURE";
+						}
+					};
+					causalEvidence.followupInvocations += 1;
+					const followupLocalCount = await runSimulator(43);
+					requireCausal(!hookFailure && followupAck && observations, hookFailure ?? "P11_FOLLOWUP_ACK_NOT_CAPTURED");
+					const afterState = projectState(JSON.parse(await readFile(simulatorStateFile, "utf8")));
+					const settled = await observations!;
+					requireCausal(settled.ok, settled.failure instanceof Error && /^P11_[A-Z_]+$/u.test(settled.failure.message) ? settled.failure.message : "P11_FOLLOWUP_OBSERVATION_FAILED");
+					const [afterDatabase, afterPublic, afterDom] = settled.values;
+					causalEvidence.followup = { ...causalEvidence.followup, localCount: followupLocalCount, state: afterState, database: afterDatabase, publicResponse: afterPublic, dom: afterDom, records: futureRecords, publicAfterAckMs: afterPublic.acceptedElapsedMs - followupAck!.elapsedMs, domAfterAckMs: afterDom.observedElapsedMs - followupAck!.elapsedMs };
+					requireCausal(!hookFailure && Date.now() <= deadlineEpochMs, hookFailure ?? "P11_ACK_DEADLINE_EXHAUSTED");
+					requireCausal(afterState.sequence === 3 && afterState.outboxLength === 0 && afterState.inFlightEmpty && afterState.lastRequest.mode === "live" && afterState.lastRequest.sequence === 3 && afterState.lastRequest.currentCount === followupAck!.currentCount && afterState.lastRequest.observedAt === followupAck!.observedAt && afterState.count === followupLocalCount, "P11_FOLLOWUP_PERSISTED_REQUEST_MISMATCH");
+					requireCausal(afterDatabase.currentCount === followupAck!.currentCount && afterDatabase.lastSequence === 3 && afterDatabase.lastPushReceivedAt === followupAck!.serverTime && afterDatabase.lastEdgeReportedAt === followupAck!.observedAt, "P11_FOLLOWUP_CURRENT_NOT_CORRELATED");
+					const afterBackfill = afterDatabase.history.find((item: any) => item.minuteStart === previousMinute);
+					const afterLive = afterDatabase.history.find((item: any) => item.minuteStart === afterState.lastRequest.minutes[0]?.minuteStart);
+					requireCausal(afterDatabase.history.length === 2 && afterBackfill?.source === "backfill" && afterBackfill.updatedAt === backfillAck.serverTime && afterLive?.source === "live" && afterLive.count === followupAck!.currentCount && afterLive.updatedAt === followupAck!.serverTime, "P11_FOLLOWUP_HISTORY_MISMATCH");
+					requireCausal(futureRecords.filter((item) => item.kind === "simulator").length === 1 && futureRecords.some((item) => item.kind === "simulator" && item.seed === 43 && item.processOutcome === "processed") && causalEvidence.dbReads === 2 && causalEvidence.followupInvocations === 1, "P11_PROBE_OPERATION_BOUND");
+					causalEvidence.verdict = "H1_CAUSALLY_CONFIRMED";
+				} catch (probeFailure) {
+					causalEvidence.failure = probeFailure instanceof Error && /^P11_[A-Z_]+$/u.test(probeFailure.message) ? probeFailure.message : "P11_UNEXPECTED_PROBE_ERROR";
+				} finally {
+					restoreCausalRecord?.();
+					if (causalDeadlineTimer) clearTimeout(causalDeadlineTimer);
+					causalEvidence.originalErrorPreserved = true;
+					try {
+						await writeFile(process.env.P11_CAUSAL_EVIDENCE_PATH!, JSON.stringify(causalEvidence, null, 2) + "\n", "utf8");
+					} catch {
+						console.error(JSON.stringify({ stage: "p11-causal-evidence-write-failed" }));
+					}
+				}
+				throw originalChangedFailure;
+			}
+			/* P11_NATIVE_CAUSAL_END */

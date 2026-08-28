@@ -1,0 +1,275 @@
+{
+	"schema": "p11-w1-native-causal/1",
+	"runId": "p11w1causalv01",
+	"verdict": "H1_CAUSALLY_CONFIRMED",
+	"dbReads": 2,
+	"followupInvocations": 1,
+	"originalAwaitTimeoutMs": 5000,
+	"originalTestTimeoutMs": 60000,
+	"before": {
+		"firstCount": 10,
+		"changedCount": 7,
+		"firstAck": {
+			"kind": "edge",
+			"elapsedMs": 1702,
+			"mode": "live",
+			"sequence": 1,
+			"observedAt": "2026-08-28T19:14:13.414Z",
+			"currentCount": 10,
+			"httpStatus": 200,
+			"reason": "processed",
+			"highestProcessedSequence": 1,
+			"serverTime": "2026-08-28T19:14:13.432Z"
+		},
+		"backfillAck": {
+			"kind": "edge",
+			"elapsedMs": 3748,
+			"mode": "backfill",
+			"sequence": 2,
+			"observedAt": null,
+			"currentCount": null,
+			"httpStatus": 200,
+			"reason": "processed",
+			"highestProcessedSequence": 2,
+			"serverTime": "2026-08-28T19:14:15.486Z"
+		},
+		"firstState": {
+			"sequence": 1,
+			"count": 10,
+			"minute": "2026-08-28T19:14:00.000Z",
+			"outboxLength": 0,
+			"inFlightEmpty": true,
+			"lastRequest": {
+				"mode": "live",
+				"sequence": 1,
+				"observedAt": "2026-08-28T19:14:13.414Z",
+				"currentCount": 10,
+				"minutes": [
+					{
+						"minuteStart": "2026-08-28T19:14:00.000Z",
+						"count": 10,
+						"entries": 0,
+						"exits": 2
+					}
+				]
+			}
+		},
+		"state": {
+			"sequence": 2,
+			"count": 7,
+			"minute": "2026-08-28T19:14:00.000Z",
+			"outboxLength": 0,
+			"inFlightEmpty": true,
+			"lastRequest": {
+				"mode": "backfill",
+				"sequence": 2,
+				"observedAt": null,
+				"currentCount": null,
+				"minutes": [
+					{
+						"minuteStart": "2026-08-28T19:13:00.000Z",
+						"count": 10,
+						"entries": 0,
+						"exits": 2
+					}
+				]
+			}
+		},
+		"database": {
+			"observedElapsedMs": 8776,
+			"currentCount": 10,
+			"lastSequence": 2,
+			"lastPushReceivedAt": "2026-08-28T19:14:13.432Z",
+			"lastEdgeReportedAt": "2026-08-28T19:14:13.414Z",
+			"history": [
+				{
+					"minuteStart": "2026-08-28T19:13:00.000Z",
+					"count": 10,
+					"entries": 0,
+					"exits": 2,
+					"source": "backfill",
+					"updatedAt": "2026-08-28T19:14:15.486Z"
+				},
+				{
+					"minuteStart": "2026-08-28T19:14:00.000Z",
+					"count": 10,
+					"entries": 0,
+					"exits": 2,
+					"source": "live",
+					"updatedAt": "2026-08-28T19:14:13.432Z"
+				}
+			]
+		},
+		"dom": {
+			"countText": "10",
+			"freshnessText": "آخر تحديث معروفآخر تحديث 10:14 م · قبل 4 ثوانِ",
+			"visibility": "visible",
+			"observedElapsedMs": 8776
+		},
+		"publicResponses": [
+			{
+				"kind": "public-browser-response",
+				"elapsedMs": 1401,
+				"httpStatus": 200,
+				"pollSeconds": 1,
+				"freshness": "unavailable",
+				"count": null,
+				"computedAt": "2026-08-28T19:14:13.122Z",
+				"lastUpdatedAt": null,
+				"freshUntil": null,
+				"source": null
+			},
+			{
+				"kind": "public-browser-response",
+				"elapsedMs": 3527,
+				"httpStatus": 200,
+				"pollSeconds": 1,
+				"freshness": "fresh",
+				"count": 10,
+				"computedAt": "2026-08-28T19:14:14.217Z",
+				"lastUpdatedAt": "2026-08-28T19:14:13.432Z",
+				"freshUntil": "2026-08-28T19:14:16.432Z",
+				"source": "edge"
+			},
+			{
+				"kind": "public-browser-response",
+				"elapsedMs": 6807,
+				"httpStatus": 200,
+				"pollSeconds": 1,
+				"freshness": "stale",
+				"count": 10,
+				"computedAt": "2026-08-28T19:14:17.479Z",
+				"lastUpdatedAt": "2026-08-28T19:14:13.432Z",
+				"freshUntil": "2026-08-28T19:14:16.432Z",
+				"source": "edge"
+			}
+		],
+		"originalChangedDom": {
+			"kind": "dom-timing",
+			"elapsedMs": 8769,
+			"assertion": "changed-count",
+			"expectedCount": 7,
+			"observedCountText": "10",
+			"observedFreshnessText": "آخر تحديث معروفآخر تحديث"
+		}
+	},
+	"followup": {
+		"records": [
+			{
+				"kind": "edge",
+				"elapsedMs": 8987,
+				"mode": "live",
+				"sequence": 3,
+				"observedAt": "2026-08-28T19:14:20.708Z",
+				"currentCount": 6,
+				"httpStatus": 200,
+				"reason": "processed",
+				"highestProcessedSequence": 3,
+				"serverTime": "2026-08-28T19:14:20.722Z"
+			},
+			{
+				"kind": "simulator",
+				"elapsedMs": 9008,
+				"seed": 43,
+				"processOutcome": "processed"
+			},
+			{
+				"kind": "public-browser-response",
+				"elapsedMs": 10748,
+				"httpStatus": 200,
+				"pollSeconds": 1,
+				"freshness": "fresh",
+				"count": 6,
+				"computedAt": "2026-08-28T19:14:21.574Z",
+				"lastUpdatedAt": "2026-08-28T19:14:20.722Z",
+				"freshUntil": "2026-08-28T19:14:23.722Z",
+				"source": "edge"
+			}
+		],
+		"ack": {
+			"kind": "edge",
+			"elapsedMs": 8987,
+			"mode": "live",
+			"sequence": 3,
+			"observedAt": "2026-08-28T19:14:20.708Z",
+			"currentCount": 6,
+			"httpStatus": 200,
+			"reason": "processed",
+			"highestProcessedSequence": 3,
+			"serverTime": "2026-08-28T19:14:20.722Z"
+		},
+		"sampleAgeMs": 14,
+		"ackEpochMs": 1787944460737,
+		"deadlineEpochMs": 1787944465737,
+		"observationStartedElapsedMs": 8987,
+		"localCount": 6,
+		"state": {
+			"sequence": 3,
+			"count": 6,
+			"minute": "2026-08-28T19:14:00.000Z",
+			"outboxLength": 0,
+			"inFlightEmpty": true,
+			"lastRequest": {
+				"mode": "live",
+				"sequence": 3,
+				"observedAt": "2026-08-28T19:14:20.708Z",
+				"currentCount": 6,
+				"minutes": [
+					{
+						"minuteStart": "2026-08-28T19:14:00.000Z",
+						"count": 6,
+						"entries": 0,
+						"exits": 4
+					}
+				]
+			}
+		},
+		"database": {
+			"observedElapsedMs": 8989,
+			"currentCount": 6,
+			"lastSequence": 3,
+			"lastPushReceivedAt": "2026-08-28T19:14:20.722Z",
+			"lastEdgeReportedAt": "2026-08-28T19:14:20.708Z",
+			"history": [
+				{
+					"minuteStart": "2026-08-28T19:13:00.000Z",
+					"count": 10,
+					"entries": 0,
+					"exits": 2,
+					"source": "backfill",
+					"updatedAt": "2026-08-28T19:14:15.486Z"
+				},
+				{
+					"minuteStart": "2026-08-28T19:14:00.000Z",
+					"count": 6,
+					"entries": 0,
+					"exits": 4,
+					"source": "live",
+					"updatedAt": "2026-08-28T19:14:20.722Z"
+				}
+			]
+		},
+		"publicResponse": {
+			"kind": "public-browser-response",
+			"elapsedMs": 10748,
+			"httpStatus": 200,
+			"pollSeconds": 1,
+			"freshness": "fresh",
+			"count": 6,
+			"computedAt": "2026-08-28T19:14:21.574Z",
+			"lastUpdatedAt": "2026-08-28T19:14:20.722Z",
+			"freshUntil": "2026-08-28T19:14:23.722Z",
+			"source": "edge",
+			"acceptedElapsedMs": 10753
+		},
+		"dom": {
+			"countText": "6",
+			"freshnessText": "تحديث مباشرآخر تحديث 10:14 م · خلال 3 ثوانٍ",
+			"visibility": "visible",
+			"observedElapsedMs": 10827
+		},
+		"publicAfterAckMs": 1766,
+		"domAfterAckMs": 1840
+	},
+	"originalErrorPreserved": true
+}

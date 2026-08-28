@@ -1,0 +1,40 @@
+
+ RUN  v4.1.10 C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1
+
+ ❯ apps/server/src/phase2.integration.test.ts (9 tests | 1 failed | 8 skipped) 11141ms
+     ↓ has deterministic settings and empty singleton after migration
+     ↓ keeps pushes updating while closed and exposes them only after opening
+     ↓ commits current and complete minute snapshot, projects fresh, and keeps replay immutable
+     ↓ replaces same-minute totals for the next contiguous sequence and floors negative counts
+     ↓ keeps gaps immutable and serializes concurrent same-next pushes to one commit
+     ↓ rolls back minute and device advancement when the singleton write fails
+     ↓ applies a newer settings version to the next acknowledgement and public timing
+     ↓ runs the real Python simulator through auth, limiter, engine, and Postgres
+     × drives the real browser through unavailable, fresh, changed, stale, and recovery 10889ms
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 8 skipped (9)
+   Start at  22:14:10
+   Duration  12.08s (transform 167ms, setup 32ms, import 766ms, tests 11.14s, environment 0ms)
+
+
+stderr | apps/server/src/phase2.integration.test.ts > Phase 2 real Postgres vertical slice > drives the real browser through unavailable, fresh, changed, stale, and recovery
+{"stage":"w1-failure-diagnostics","diagnostics":[{"kind":"public-browser-response","elapsedMs":1401,"httpStatus":200,"pollSeconds":1,"freshness":"unavailable","count":null,"computedAt":"2026-08-28T19:14:13.122Z","lastUpdatedAt":null,"freshUntil":null,"source":null},{"kind":"edge","elapsedMs":1702,"mode":"live","sequence":1,"observedAt":"2026-08-28T19:14:13.414Z","currentCount":10,"httpStatus":200,"reason":"processed","highestProcessedSequence":1,"serverTime":"2026-08-28T19:14:13.432Z"},{"kind":"simulator","elapsedMs":1723,"seed":41,"processOutcome":"processed"},{"kind":"public-browser-response","elapsedMs":3527,"httpStatus":200,"pollSeconds":1,"freshness":"fresh","count":10,"computedAt":"2026-08-28T19:14:14.217Z","lastUpdatedAt":"2026-08-28T19:14:13.432Z","freshUntil":"2026-08-28T19:14:16.432Z","source":"edge"},{"kind":"dom-timing","elapsedMs":3574,"assertion":"fresh-first-count","expectedCount":10,"observedCountText":"10","observedFreshnessText":"تحديث مباشرآخر تحديث 10:"},{"kind":"edge","elapsedMs":3748,"mode":"backfill","sequence":2,"observedAt":null,"currentCount":null,"httpStatus":200,"reason":"processed","highestProcessedSequence":2,"serverTime":"2026-08-28T19:14:15.486Z"},{"kind":"simulator","elapsedMs":3767,"seed":42,"processOutcome":"processed"},{"kind":"public-browser-response","elapsedMs":6807,"httpStatus":200,"pollSeconds":1,"freshness":"stale","count":10,"computedAt":"2026-08-28T19:14:17.479Z","lastUpdatedAt":"2026-08-28T19:14:13.432Z","freshUntil":"2026-08-28T19:14:16.432Z","source":"edge"},{"kind":"dom-timing","elapsedMs":8769,"assertion":"changed-count","expectedCount":7,"observedCountText":"10","observedFreshnessText":"آخر تحديث معروفآخر تحديث"},{"kind":"edge","elapsedMs":8987,"mode":"live","sequence":3,"observedAt":"2026-08-28T19:14:20.708Z","currentCount":6,"httpStatus":200,"reason":"processed","highestProcessedSequence":3,"serverTime":"2026-08-28T19:14:20.722Z"},{"kind":"simulator","elapsedMs":9008,"seed":43,"processOutcome":"processed"},{"kind":"public-browser-response","elapsedMs":10748,"httpStatus":200,"pollSeconds":1,"freshness":"fresh","count":6,"computedAt":"2026-08-28T19:14:21.574Z","lastUpdatedAt":"2026-08-28T19:14:20.722Z","freshUntil":"2026-08-28T19:14:23.722Z","source":"edge"}]}
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  apps/server/src/phase2.integration.test.ts > Phase 2 real Postgres vertical slice > drives the real browser through unavailable, fresh, changed, stale, and recovery
+TimeoutError: locator.waitFor: Timeout 5000ms exceeded.
+Call log:
+  - waiting for locator('.public-live__count-value').getByText('7', { exact: true }) to be visible
+
+ ❯ apps/server/src/phase2.integration.test.ts:1061:7
+    1059|      .waitFor({ timeout: 5_000 }),
+    1060|    );
+    1061|    await page.getByRole("button", { name: /الإنجليزية/u }).click();
+       |       ^
+    1062|    await page
+    1063|     .getByText("Last known approximate count", { exact: true })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯

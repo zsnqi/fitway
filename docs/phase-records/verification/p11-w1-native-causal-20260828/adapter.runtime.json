@@ -1,0 +1,7 @@
+{
+	"matchCount": 1,
+	"sourceHash": "255fa649113a528cb1893239db1c1b23375548b54098923a1d5be6e156231041",
+	"transformedHash": "90ce3a11ccbedbe435903f2c817a35ff560d5aa8c9b55839c70b18c9bde2281d",
+	"configImported": "vitest.integration.config.ts",
+	"target": "apps/server/src/phase2.integration.test.ts"
+}

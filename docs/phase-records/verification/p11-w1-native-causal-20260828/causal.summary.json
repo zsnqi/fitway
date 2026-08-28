@@ -1,0 +1,87 @@
+{
+	"stage": "causal",
+	"runId": "p11w1causalv01",
+	"databaseName": "fitway_integration_p11w1causalv01",
+	"container": "fitway-p11w1-causal-v01",
+	"expectedHead": "8dd4d527492cef253e9e60be4cd3ddb4b37781ff",
+	"startedAt": "2026-08-28T19:14:08.390Z",
+	"verdict": "EXPECTED_RED_AND_CAUSAL_PROOF_OBSERVED",
+	"incidents": [],
+	"cleanup": {
+		"databaseAbsent": true,
+		"stageTempRemoved": true,
+		"containerAbsent": true
+	},
+	"headBefore": "8dd4d527492cef253e9e60be4cd3ddb4b37781ff",
+	"statusBefore": "",
+	"hashesBefore": {
+		"apps/server/src/phase2.integration.test.ts": "255fa649113a528cb1893239db1c1b23375548b54098923a1d5be6e156231041",
+		"vitest.integration.config.ts": "ccf56e6163f742b71032c2facf153aba407d0c1b6bc2078e8112acc6aa72b268",
+		"pnpm-lock.yaml": "9d570634c10b3a4f09cafc09484808de877d415438d1a9bbaff1f94da9adb27d",
+		"tests/integration/setup.ts": "ff7d2dadbe30a454ef4d0ad001348b8d13c6f77fd4252c8d22f57eca61488a1e"
+	},
+	"adapterHashesBefore": {
+		"test-results/node_modules/p11_w1_causal_verify/retry1/causal.config.ts": "bc6c9558cef57039082d66c1b73ff6564af5f35707096096f5ce3d65d1835e5f",
+		"test-results/node_modules/p11_w1_causal_verify/retry1/original-await.txt": "b301fd35dcbfd6d76e95780271053ccf969ebbff8828165ec5810ffbfb04b9d8",
+		"test-results/node_modules/p11_w1_causal_verify/retry1/insertion.txt": "b4c226ba7735167e5674f6766d86b5302cf8631df407f84d7af5c336b48ad423",
+		"test-results/node_modules/p11_w1_causal_verify/retry1/generated.diff": "826d045da4450d0891d4a563dc642a3bfef6c99796a88cc04ae093f5d1ca065e",
+		"test-results/node_modules/p11_w1_causal_verify/retry1/transformed-source.txt": "90ce3a11ccbedbe435903f2c817a35ff560d5aa8c9b55839c70b18c9bde2281d",
+		"test-results/node_modules/p11_w1_causal_verify/run-v2.mjs": "a588236fd7fbcad35e60dc635d5c46d0a9cb554f3a07af109cbf81da24827b6b"
+	},
+	"containerId": "166976d8eceddeeb50ee84e91e87b8e972be28c7d848c9a58797c7bc717d5f10",
+	"postgresVersion": "postgres (PostgreSQL) 17.10",
+	"databaseSafety": "existing source guard accepted exact run-owned target",
+	"command": {
+		"command": "pnpm exec vitest run --config test-results/node_modules/p11_w1_causal_verify/retry1/causal.config.ts apps/server/src/phase2.integration.test.ts -t \"drives the real browser through unavailable, fresh, changed, stale, and recovery\"",
+		"executable": "C:\\Program Files\\nodejs\\node.exe",
+		"argv": [
+			"C:/Users/Pc Force/AppData/Roaming/npm/node_modules/pnpm/bin/pnpm.mjs",
+			"exec",
+			"vitest",
+			"run",
+			"--config",
+			"test-results/node_modules/p11_w1_causal_verify/retry1/causal.config.ts",
+			"apps/server/src/phase2.integration.test.ts",
+			"-t",
+			"drives the real browser through unavailable, fresh, changed, stale, and recovery"
+		],
+		"pnpmVersion": "11.9.0",
+		"startedAt": "2026-08-28T19:14:09.947Z",
+		"exitCode": 1,
+		"finishedAt": "2026-08-28T19:14:22.679Z",
+		"log": "test-results/node_modules/p11_w1_causal_verify/retry1/causal.redacted.log",
+		"countSummary": [
+			"Test Files  1 failed (1)",
+			"Tests  1 failed | 8 skipped (9)",
+			"Duration  12.08s (transform 167ms, setup 32ms, import 766ms, tests 11.14s, environment 0ms)"
+		]
+	},
+	"observed": {
+		"firstCount": 10,
+		"changedLocalCount": 7,
+		"changedDomCount": "10",
+		"edgeRequests": 3,
+		"simulatorInvocations": 3,
+		"publicRecords": 4,
+		"pollSeconds": [1],
+		"canonicalRedPreserved": true
+	},
+	"causalVerdict": "H1_CAUSALLY_CONFIRMED",
+	"headAfter": "8dd4d527492cef253e9e60be4cd3ddb4b37781ff",
+	"statusAfter": "",
+	"hashesAfter": {
+		"apps/server/src/phase2.integration.test.ts": "255fa649113a528cb1893239db1c1b23375548b54098923a1d5be6e156231041",
+		"vitest.integration.config.ts": "ccf56e6163f742b71032c2facf153aba407d0c1b6bc2078e8112acc6aa72b268",
+		"pnpm-lock.yaml": "9d570634c10b3a4f09cafc09484808de877d415438d1a9bbaff1f94da9adb27d",
+		"tests/integration/setup.ts": "ff7d2dadbe30a454ef4d0ad001348b8d13c6f77fd4252c8d22f57eca61488a1e"
+	},
+	"adapterHashesAfter": {
+		"test-results/node_modules/p11_w1_causal_verify/retry1/causal.config.ts": "bc6c9558cef57039082d66c1b73ff6564af5f35707096096f5ce3d65d1835e5f",
+		"test-results/node_modules/p11_w1_causal_verify/retry1/original-await.txt": "b301fd35dcbfd6d76e95780271053ccf969ebbff8828165ec5810ffbfb04b9d8",
+		"test-results/node_modules/p11_w1_causal_verify/retry1/insertion.txt": "b4c226ba7735167e5674f6766d86b5302cf8631df407f84d7af5c336b48ad423",
+		"test-results/node_modules/p11_w1_causal_verify/retry1/generated.diff": "826d045da4450d0891d4a563dc642a3bfef6c99796a88cc04ae093f5d1ca065e",
+		"test-results/node_modules/p11_w1_causal_verify/retry1/transformed-source.txt": "90ce3a11ccbedbe435903f2c817a35ff560d5aa8c9b55839c70b18c9bde2281d",
+		"test-results/node_modules/p11_w1_causal_verify/run-v2.mjs": "a588236fd7fbcad35e60dc635d5c46d0a9cb554f3a07af109cbf81da24827b6b"
+	},
+	"finishedAt": "2026-08-28T19:14:24.290Z"
+}

@@ -1,0 +1,90 @@
+[
+	{
+		"kind": "public-browser-response",
+		"elapsedMs": 7436,
+		"httpStatus": 200,
+		"pollSeconds": 1,
+		"freshness": "unavailable",
+		"count": null,
+		"computedAt": "2026-08-28T19:04:12.797Z",
+		"lastUpdatedAt": null,
+		"freshUntil": null,
+		"source": null
+	},
+	{
+		"kind": "edge",
+		"elapsedMs": 7686,
+		"mode": "live",
+		"sequence": 1,
+		"observedAt": "2026-08-28T19:04:13.035Z",
+		"currentCount": 10,
+		"httpStatus": 200,
+		"reason": "processed",
+		"highestProcessedSequence": 1,
+		"serverTime": "2026-08-28T19:04:13.060Z"
+	},
+	{
+		"kind": "simulator",
+		"elapsedMs": 7706,
+		"seed": 41,
+		"processOutcome": "processed"
+	},
+	{
+		"kind": "public-browser-response",
+		"elapsedMs": 9323,
+		"httpStatus": 200,
+		"pollSeconds": 1,
+		"freshness": "fresh",
+		"count": 10,
+		"computedAt": "2026-08-28T19:04:13.797Z",
+		"lastUpdatedAt": "2026-08-28T19:04:13.060Z",
+		"freshUntil": "2026-08-28T19:04:16.060Z",
+		"source": "edge"
+	},
+	{
+		"kind": "dom-timing",
+		"elapsedMs": 9556,
+		"assertion": "fresh-first-count",
+		"expectedCount": 10,
+		"observedCountText": "10",
+		"observedFreshnessText": "تحديث مباشرآخر تحديث 10:"
+	},
+	{
+		"kind": "edge",
+		"elapsedMs": 9732,
+		"mode": "backfill",
+		"sequence": 2,
+		"observedAt": null,
+		"currentCount": null,
+		"httpStatus": 200,
+		"reason": "processed",
+		"highestProcessedSequence": 2,
+		"serverTime": "2026-08-28T19:04:15.114Z"
+	},
+	{
+		"kind": "simulator",
+		"elapsedMs": 9751,
+		"seed": 42,
+		"processOutcome": "processed"
+	},
+	{
+		"kind": "public-browser-response",
+		"elapsedMs": 12399,
+		"httpStatus": 200,
+		"pollSeconds": 1,
+		"freshness": "stale",
+		"count": 10,
+		"computedAt": "2026-08-28T19:04:16.796Z",
+		"lastUpdatedAt": "2026-08-28T19:04:13.060Z",
+		"freshUntil": "2026-08-28T19:04:16.060Z",
+		"source": "edge"
+	},
+	{
+		"kind": "dom-timing",
+		"elapsedMs": 14756,
+		"assertion": "changed-count",
+		"expectedCount": 7,
+		"observedCountText": "10",
+		"observedFreshnessText": "آخر تحديث معروفآخر تحديث"
+	}
+]

@@ -1,0 +1,8 @@
+			await observeCountWait(
+				"changed-count",
+				changedCount,
+				page
+					.locator(".public-live__count-value")
+					.getByText(String(changedCount), { exact: true })
+					.waitFor({ timeout: 5_000 }),
+			);

@@ -1,0 +1,120 @@
+[
+	{
+		"kind": "public-browser-response",
+		"elapsedMs": 1401,
+		"httpStatus": 200,
+		"pollSeconds": 1,
+		"freshness": "unavailable",
+		"count": null,
+		"computedAt": "2026-08-28T19:14:13.122Z",
+		"lastUpdatedAt": null,
+		"freshUntil": null,
+		"source": null
+	},
+	{
+		"kind": "edge",
+		"elapsedMs": 1702,
+		"mode": "live",
+		"sequence": 1,
+		"observedAt": "2026-08-28T19:14:13.414Z",
+		"currentCount": 10,
+		"httpStatus": 200,
+		"reason": "processed",
+		"highestProcessedSequence": 1,
+		"serverTime": "2026-08-28T19:14:13.432Z"
+	},
+	{
+		"kind": "simulator",
+		"elapsedMs": 1723,
+		"seed": 41,
+		"processOutcome": "processed"
+	},
+	{
+		"kind": "public-browser-response",
+		"elapsedMs": 3527,
+		"httpStatus": 200,
+		"pollSeconds": 1,
+		"freshness": "fresh",
+		"count": 10,
+		"computedAt": "2026-08-28T19:14:14.217Z",
+		"lastUpdatedAt": "2026-08-28T19:14:13.432Z",
+		"freshUntil": "2026-08-28T19:14:16.432Z",
+		"source": "edge"
+	},
+	{
+		"kind": "dom-timing",
+		"elapsedMs": 3574,
+		"assertion": "fresh-first-count",
+		"expectedCount": 10,
+		"observedCountText": "10",
+		"observedFreshnessText": "تحديث مباشرآخر تحديث 10:"
+	},
+	{
+		"kind": "edge",
+		"elapsedMs": 3748,
+		"mode": "backfill",
+		"sequence": 2,
+		"observedAt": null,
+		"currentCount": null,
+		"httpStatus": 200,
+		"reason": "processed",
+		"highestProcessedSequence": 2,
+		"serverTime": "2026-08-28T19:14:15.486Z"
+	},
+	{
+		"kind": "simulator",
+		"elapsedMs": 3767,
+		"seed": 42,
+		"processOutcome": "processed"
+	},
+	{
+		"kind": "public-browser-response",
+		"elapsedMs": 6807,
+		"httpStatus": 200,
+		"pollSeconds": 1,
+		"freshness": "stale",
+		"count": 10,
+		"computedAt": "2026-08-28T19:14:17.479Z",
+		"lastUpdatedAt": "2026-08-28T19:14:13.432Z",
+		"freshUntil": "2026-08-28T19:14:16.432Z",
+		"source": "edge"
+	},
+	{
+		"kind": "dom-timing",
+		"elapsedMs": 8769,
+		"assertion": "changed-count",
+		"expectedCount": 7,
+		"observedCountText": "10",
+		"observedFreshnessText": "آخر تحديث معروفآخر تحديث"
+	},
+	{
+		"kind": "edge",
+		"elapsedMs": 8987,
+		"mode": "live",
+		"sequence": 3,
+		"observedAt": "2026-08-28T19:14:20.708Z",
+		"currentCount": 6,
+		"httpStatus": 200,
+		"reason": "processed",
+		"highestProcessedSequence": 3,
+		"serverTime": "2026-08-28T19:14:20.722Z"
+	},
+	{
+		"kind": "simulator",
+		"elapsedMs": 9008,
+		"seed": 43,
+		"processOutcome": "processed"
+	},
+	{
+		"kind": "public-browser-response",
+		"elapsedMs": 10748,
+		"httpStatus": 200,
+		"pollSeconds": 1,
+		"freshness": "fresh",
+		"count": 6,
+		"computedAt": "2026-08-28T19:14:21.574Z",
+		"lastUpdatedAt": "2026-08-28T19:14:20.722Z",
+		"freshUntil": "2026-08-28T19:14:23.722Z",
+		"source": "edge"
+	}
+]
