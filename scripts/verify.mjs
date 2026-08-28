@@ -121,6 +121,11 @@ const phases = {
 		integrationFiles: ["apps/server/src/phase11-health.integration.test.ts"],
 		label: "Phase 11 owner health and uptime slice",
 	},
+	"phase11-e2e-propagation-wait": {
+		browserFiles: [],
+		integrationFiles: ["apps/server/src/phase2.integration.test.ts"],
+		label: "Phase 11 simulator-to-browser propagation wait",
+	},
 	"phase11-audit": {
 		// The audit section mounts on /admin beside the Phase 9 analytics, so the
 		// Phase 9 owner spec is part of this slice's gate, not a neighbour's

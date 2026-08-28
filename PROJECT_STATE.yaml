@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-28T16:25:00+03:00"
+updatedAt: "2026-08-28T16:30:00+03:00"
 
 coordinator:
-  owner: "Main coordinator. Access r05 remains DONE. Login b03 is terminal FAILED_VALIDATION after fresh independent rejection and its provisional merge is history-preservingly reverted. Propagation and Uptime are the executable frontier; Settings remains terminal awaiting fresh human authorization."
+  owner: "Main coordinator. Access r05 remains DONE. Login b03 is terminal and reverted. Propagation W1 is active as a supervised bounded GLM-5.3-Flash test-only writer stage; Uptime planning remains read-only and disjoint. Settings remains terminal awaiting fresh human authorization."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1676,21 +1676,28 @@ milestones:
     integratedCommit: cac4b9e1f27c1a4cbd69b678abf707faa1a18be0
 
   phase11-e2e-propagation-wait:
-    status: PLANNED
+    status: IN_PROGRESS
     dependencies: [phase11-browser-debt]
-    ownerSession: null
-    branch: null
-    worktree: null
-    baseCommit: null
-    ownedPaths: []
+    ownerSession: "OpenCode GLM-5.3-Flash/high W1 test-only writer, supervised and gated by main coordinator"
+    branch: work/phase11-e2e-propagation-wait-w1
+    worktree: C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1
+    baseCommit: 9082d8f16b8fe9f0a26b65998b32a3b23424888c
+    ownedPaths:
+      - apps/server/src/phase2.integration.test.ts
+      - docs/phase-records/handoffs/phase11-e2e-propagation-wait/**
+      - docs/phase-records/route-decisions/p11_propagation_*.json
     forbiddenPaths:
       - "raising a waiting budget as the repair: directly tested on the sibling browser class by phase11-ladder-contention and falsified - assertions given 20000ms still failed with the element absent. Read docs/phase-records/verification/20260823-p11_ladder_contention_b01-falsification-result.json before proposing a timeout."
       - "mocking any part of the simulator-to-edge-to-server-to-poll pipeline: that pipeline is what the assertion exists to prove end to end, and mocking it deletes the proof rather than stabilizing it"
-    sharedLeases: []
+      - "all production source, edge runtime, schema/migrations, other tests, snapshots, package/lock/config and normative authority"
+      - "secrets, real credentials, unrestricted repository discovery, external services and provider-owned verification"
+    sharedLeases:
+      - "Coordinator only: PROJECT_STATE.yaml and scripts/verify.mjs additive phase profile"
+      - "Coordinator only: durable plan/route/handoff records and external-worker evidence append"
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
-    leaseExpiresAt: null
-    handoff: docs/phase-records/verification/20260823-phase2-integration-browser-wait-followup.json
+    lastHeartbeatAt: "2026-08-28T16:30:00+03:00"
+    leaseExpiresAt: "2026-08-28T21:30:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-e2e-propagation-wait/20260828-p11-propagation-b01-plan.md
     stopReason: null
     gates:
       unit: PENDING

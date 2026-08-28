@@ -1,0 +1,42 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "p11_propagation_plan_20260828",
+	"recorded": "2026-08-28T08:46:12.2133868+00:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native",
+	"transport": "codex-native",
+	"control": "xhigh",
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"gate_outcome": "PASS",
+	"native_spawn": {
+		"model": "gpt-5.6-sol",
+		"reasoning_effort": "xhigh",
+		"agent_role": "explorer",
+		"fork_turns": "none",
+		"invocation_id": "p11_propagation_plan_sol01",
+		"request_timestamp": "2026-08-28T08:46:12.2133868+00:00",
+		"mechanism": "followup_existing_frontier_authority"
+	},
+	"consequence": "high planning across real simulator-edge-server DB isolation and propagation proof; no implementation authority",
+	"material_selection_reason": "Volume and bounded high-judgment planning of the real cross-process pipeline, failure attribution, and disposable database safety. GLM initial evidence does not cover cross-pipeline root cause planning; V4 medium ceiling does not cover this security/isolation-sensitive integration plan. Existing native authority explorer can preserve relevant context while keeping raw investigation outside coordinator.",
+	"filtered_alternatives": {
+		"glm-5.3-flash": [
+			"Egress now authorized; cross-pipeline high-consequence planning exceeds demonstrated scope"
+		],
+		"deepseek-v4-pro": [
+			"High-consequence integrated proof and data isolation plan exceeds medium ceiling"
+		],
+		"gpt-5.6-terra": ["No fresh exact invocation approval"],
+		"gpt-5.6-luna": ["No fresh exact invocation approval"]
+	},
+	"covered_tools": ["repository_read"],
+	"covered_modalities": ["text"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"timestamp_note": "Corrected a provisional clock literal to actual host observation; no gated native approval was requested or consumed.",
+	"adopted_plan": "docs/phase-records/handoffs/phase11-e2e-propagation-wait/20260828-p11-propagation-b01-plan.md",
+	"adopted_at_frontier": "9082d8f16b8fe9f0a26b65998b32a3b23424888c",
+	"next_stage": "W1 supervised bounded GLM-5.3-Flash/high test-only implementation; native source review and causal execution remain mandatory"
+}
