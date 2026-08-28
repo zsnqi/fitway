@@ -1,0 +1,59 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-e2e-propagation-wait/W1",
+	"recorded": "2026-08-28T16:36:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "glm-5.3-flash",
+	"route": "opencode-go/glm-5.3-flash",
+	"control": "high",
+	"transport": "opencode-cli",
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"qualification_status": "qualified_restricted",
+	"gate_outcome": "RUNNING",
+	"consequence": "low consequence one-file integration-test diagnostics and deterministic causal fixture; native owns runtime and acceptance",
+	"material_selection_reason": "GLM-5.3-Flash is qualified for supervised bounded low-consequence text repository writing, the source stage is one exact test file, and the user requires substantial GLM exercise. DeepSeek V4 Pro has no material advantage. Native retains all server, database, browser, causal, security and integration gates.",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "file_write"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"activation": {
+		"commit": "f07f5d9e82c12bc216b10f4360b79dd6c9c32e5a",
+		"branch": "work/phase11-e2e-propagation-wait-w1",
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1",
+		"exact_write_lease": "apps/server/src/phase2.integration.test.ts",
+		"packet": "C:/Users/Pc Force/AppData/Local/Temp/fitway-frontier-20260828/propagation-w1-launch-f07f5d9/W1-GLM-task-packet.txt",
+		"packet_sha256": "537EDC3C24E24902871155551807F2EE09288D3274237758CB63C24451509A4B"
+	},
+	"authorization": {
+		"record": "docs/phase-records/handoffs/coordinator/20260828-glm-5.3-flash-authorization.md",
+		"status": "in_force",
+		"payload": "one FITWAY integration test plus exact non-secret protocol/source excerpts and authority constraints",
+		"excluded": [
+			"actual credentials",
+			"tokens",
+			"passwords",
+			"real secrets",
+			"private user data",
+			"unrelated project material"
+		]
+	},
+	"preflight": {
+		"resolver": "selected glm-5.3-flash/high as the only qualified external survivor",
+		"live_route": "opencode-go/glm-5.3-flash present",
+		"auto_approval": false,
+		"required_effective_config": "deny by default; exact test read/edit only; shell, MCP, skills, web, task and external directories denied"
+	},
+	"filtered_alternatives": {
+		"deepseek-v4-pro": [
+			"No material advantage; not authorized for this stage and excluded by live resolver input"
+		],
+		"gpt-5.6-terra": ["No fresh explicit invocation approval"],
+		"gpt-5.6-luna": ["No fresh explicit invocation approval"]
+	},
+	"repair_budget": {
+		"implementation_retries_used": 0,
+		"finalization_clarification_maximum": 1
+	}
+}
