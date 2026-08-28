@@ -1,0 +1,43 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "p11_access_r05_integrated_verification_20260828",
+	"recorded": "2026-08-28T08:10:23.5572184Z",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native",
+	"route": null,
+	"control": "high",
+	"transport": "codex-native",
+	"native_spawn": {
+		"model": "gpt-5.6-sol",
+		"reasoning_effort": "high",
+		"fork_turns": "none",
+		"agent_role": "tester",
+		"request_timestamp": "2026-08-28T08:10:23.5572184Z",
+		"invocation_id": "p11_access_r05_integrated_verify_sol01",
+		"parent_inheritance_deliberate": false
+	},
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"qualification_status": "native",
+	"gate_outcome": "PENDING",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "shell"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": ["repository_verification_ladder"],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/phase11-access-ui/20260828-p11_access_ui_r05-coordinator-resume.md"
+	],
+	"material_selection_reason": "Volume and recoverability: full post-integration ladder with local database provisioning and process-local real credential import requires native handling. GLM lacks ladder qualification; V4 Pro must not receive actual environment credentials. Main retains terminal gate and integration authority.",
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"glm-5.3-flash": [
+			"Project ladder capability unqualified; real environment values excluded from external payload"
+		],
+		"gpt-5.6-terra": ["No fresh explicit per-invocation approval"],
+		"gpt-5.6-luna": ["No fresh explicit per-invocation approval"],
+		"deepseek-v4-pro": [
+			"Real environment values required by this operational gate stay native"
+		]
+	}
+}
