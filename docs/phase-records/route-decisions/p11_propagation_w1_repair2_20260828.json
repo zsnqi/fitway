@@ -7,7 +7,7 @@
 	"route": "coordinator-direct",
 	"control": "not_applicable",
 	"native_spawn": null,
-	"gate_outcome": "PENDING",
+	"gate_outcome": "SOURCE_PASS",
 	"consequence": "low exact two-line test diagnostics correction",
 	"delegation_evaluation": {
 		"evaluated_at": "2026-08-28T18:48:00.212Z",
@@ -26,5 +26,12 @@
 		"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1",
 		"lease_expires_at": "2026-08-29T06:00:00+03:00",
 		"repair_attempt": 2
-	}
+	},
+	"candidate_commit": "8dd4d52",
+	"verification": [
+		"Biome PASS",
+		"server tsc PASS",
+		"git diff --check PASS",
+		"independent Sol delta review PASS"
+	]
 }

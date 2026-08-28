@@ -1,0 +1,57 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-e2e-propagation-wait/W1-native-causal-verification",
+	"recorded": "2026-08-28T18:50:54.945Z",
+	"candidate_id": "native-sol",
+	"route": "native",
+	"control": "xhigh",
+	"transport": "native-spawn-agent",
+	"native_spawn": {
+		"model": "gpt-5.6-sol",
+		"invocation_id": "p11_w1_causal_verify_sol01",
+		"request_timestamp": "2026-08-28T18:50:54.945Z",
+		"reasoning_effort": "xhigh",
+		"agent_role": "worker",
+		"fork_turns": "none"
+	},
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"route_evidence": "reused_native_causal_method",
+	"consequence": "high causal proof and disposable-resource/privacy gate; exceeds GLM low and V4 medium ceilings",
+	"delegation_evaluation": {
+		"evaluated_at": "2026-08-28T18:50:54.945Z",
+		"stage_discovery_started_at": null,
+		"basis": [
+			"adopted_native_causal_method",
+			"independent_source_PASS_8dd4d52"
+		],
+		"reasons": ["volume", "independence", "permission"]
+	},
+	"material_selection_reason": "Bounded native worker retains run-specific harness, source safety, real pipeline and causal judgment; no external candidate qualified for this high-consequence gate. No source edit or new production behavior. Terra/Luna not approved.",
+	"source_candidate": "8dd4d52",
+	"source_gate": "PASS",
+	"canonical_negative_control": "one fresh invocation at corrected freeze to prove newly fixed public diagnostics; earlier negative controls retained",
+	"runtime_scope": {
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1",
+		"write_paths": [
+			"test-results/node_modules/p11_w1_causal_verify/**",
+			"C:/Users/Public/FitwayTemp/p11w1causalv01/**"
+		],
+		"forbidden": [
+			"tracked source",
+			"PROJECT_STATE.yaml",
+			"other runs resources",
+			"canonical images"
+		],
+		"run_ids": ["p11w1negv01", "p11w1causalv01"],
+		"database_names": [
+			"fitway_integration_p11w1negv01",
+			"fitway_integration_p11w1causalv01"
+		],
+		"container": "fitway-p11w1-causal-v01",
+		"postgres_port": 55434,
+		"lease_expires_at": "2026-08-29T06:00:00+03:00"
+	},
+	"gate_outcome": "PENDING"
+}
