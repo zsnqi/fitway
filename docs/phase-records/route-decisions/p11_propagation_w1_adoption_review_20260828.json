@@ -43,5 +43,6 @@
 		"write_paths": [],
 		"runtime_execution": false
 	},
-	"gate_outcome": "PENDING"
+	"gate_outcome": "FAIL",
+	"outcome_record": "docs/phase-records/verification/20260828-p11-w1-adoption-review.md"
 }

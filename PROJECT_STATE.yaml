@@ -1676,9 +1676,9 @@ milestones:
     integratedCommit: cac4b9e1f27c1a4cbd69b678abf707faa1a18be0
 
   phase11-e2e-propagation-wait:
-    status: VALIDATING
+    status: IN_PROGRESS
     dependencies: [ phase11-browser-debt ]
-    ownerSession: "Coordinator adoption review; source frozen at 77d8200, terminal records 1a75d2d; no implementation writer"
+    ownerSession: "Coordinator exact W1 diagnostics URL repair 2/2; W2 unauthorized"
     branch: work/phase11-e2e-propagation-wait-w1
     worktree: C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1
     baseCommit: f07f5d9e82c12bc216b10f4360b79dd6c9c32e5a
@@ -1694,7 +1694,7 @@ milestones:
     sharedLeases:
       - "Coordinator only: PROJECT_STATE.yaml and scripts/verify.mjs additive phase profile"
       - "Coordinator only: durable plan/route/handoff records and external-worker evidence append"
-    validationRepairAttempts: 1
+    validationRepairAttempts: 2
     lastHeartbeatAt: "2026-08-28T18:43:00Z"
     leaseExpiresAt: "2026-08-29T06:00:00+03:00"
     handoff: docs/phase-records/handoffs/coordinator/20260828-214300-fresh-reconciliation.md

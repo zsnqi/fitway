@@ -21,3 +21,5 @@ At initial clean coordinator 1ea918f and worker 1a75d2d: git status/worktree his
 Mode review: receive bounded independent W1 source/evidence findings, inspect decisive evidence, make coordinator adoption decision, retain repair count 1/2, and authorize only the next proven stage. Never integrate the intentionally red W1 test as a finished repair. Then continue remaining dependency-ready scope under one-writer gates. Exact activation, evidence and final boundary will be appended here.
 
 Validation lease: repository invariants require an expiry for VALIDATING. Coordinator-only validation/record lease expires 2026-08-29T06:00:00+03:00; this is not a source-write grant. Initial checkpoint freeze caught and corrected the absent validation expiry before submission.
+
+W1 adoption gate FAIL: exact URL mismatch; review: docs/phase-records/verification/20260828-p11-w1-adoption-review.md. Final focused repair 2/2 authorized under p11_propagation_w1_repair2_20260828.json. Missing causal experiment remains continuation. No W2 authorization.

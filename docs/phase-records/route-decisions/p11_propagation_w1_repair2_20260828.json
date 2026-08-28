@@ -1,0 +1,30 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-e2e-propagation-wait/W1-repair2",
+	"recorded": "2026-08-28T18:48:00.212Z",
+	"candidate_id": "direct",
+	"route": "coordinator-direct",
+	"control": "not_applicable",
+	"native_spawn": null,
+	"gate_outcome": "PENDING",
+	"consequence": "low exact two-line test diagnostics correction",
+	"delegation_evaluation": {
+		"evaluated_at": "2026-08-28T18:48:00.212Z",
+		"stage_discovery_started_at": null,
+		"basis": ["independent_review_findings", "frozen_exact_correction"],
+		"delegation_qualified": false,
+		"direct_execution_reasons_considered": [
+			"two-line deterministic edit; briefing/launch exceeds edit; no implementation design remains"
+		]
+	},
+	"material_selection_reason": "Direct minimal exact correction; native independent reviewer retains delta/privacy/runtime gates. Meaningful W2 separately GLM-routed if proven.",
+	"activation": {
+		"base": "1a75d2d16ea7c3e0d51e426b349120cc88e0c9c7",
+		"source_sha256": "6a47e7341a1b3c12349a791b01167c502ec1e12cda22d5437e7dd44c11bbbc9f",
+		"write_paths": ["apps/server/src/phase2.integration.test.ts"],
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1",
+		"lease_expires_at": "2026-08-29T06:00:00+03:00",
+		"repair_attempt": 2
+	}
+}

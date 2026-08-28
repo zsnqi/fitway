@@ -1,0 +1,13 @@
+# W1 authoritative adoption review
+
+Date: 2026-08-28T18:48:00.212Z. Coordinator a383d8c; worker code 77d8200, evidence 9283ade, handoff 1a75d2d. Native Sol/xhigh p11_w1_adoption_review_sol01 returned source gate FAIL; parent independently inspected the full diff and all three decoded UTF-16 logs.
+
+P1: phase2.integration.test.ts:876 filters /api/public/occupancy while this test serves and requests /public/occupancy on bare apiBase. Each log has six records (two edge, two simulator, two DOM), zero public-browser-response. Correct only the external import and exact URL guard. This is final focused repair 2/2, not W1 reimplementation. Canonical count 1/2 supersedes worker-local 0/2. Worker DONE is not integrated milestone DONE. Worker records and overclaims remain provenance, not authority.
+
+Otherwise all original assertions, 5000ms waits, 60000ms ceiling, real simulator/transport/poll pipeline, limiter and cleanup remain. Prior-minute fixture preserves fields and checks no queued/in-flight work. Ring bounded to 32; selected fields and logs contain no secret values, headers, cookies, environment or whole payloads. Dedup cannot establish poll cadence; DOM probes add at most 500ms after waits; historical Arabic logs have encoding limitations.
+
+Evidence timing (ms from common origin): run2 live seq1 ack 1956, DOM10 3845, backfill seq2 ack 3992, failed DOM expected7 observed10 9018. run3 1665/3537/3683/8708. run4 1608/3476/3616/8649. Initial sample ages 26/18/14ms. Acks 200 processed, sequence1 then2, no logged 429. These are negative controls only, not completed causal proof. Logs remain at 9283ade in docs/phase-records/handoffs/phase11-e2e-propagation-wait/evidence/.
+
+After corrected source review: canonical negative control verifies real public diagnostics, then separately isolated adopted native-causal-method with exact temporary transform, unchanged original wait and cleanup, DB/history/lastRequest correlation, exactly one seq3 live follow-up and <=5000ms ack-to-public/DOM. Always rethrow original error. Missing probe is planned continuation, not another failed repair. W2 remains unauthorized. A further validation rejection exhausts this attempt.
+
+Frontier: 53 milestones, all 37 recorded DONE commit objects exist and are ancestors. Two historical handoffs absent from current tree are preserved at 79e65a3 (phase10 b02 diagnosis) and 4c253de (phase10 b03 Paper failure). No terminal work reopened. Uptime dependency-ready; Settings/Login require separate human authority. Coordinator vitest/4.1.10 passed after frozen install, no tracked changes. Initial sandboxed Node ancestry output was invalid; escalated read-only check passed.
