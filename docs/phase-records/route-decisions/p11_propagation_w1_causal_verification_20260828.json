@@ -49,10 +49,11 @@
 			"other runs resources",
 			"canonical images"
 		],
-		"run_ids": ["p11w1negv01", "p11w1causalv01"],
+		"run_ids": ["p11w1negv01", "p11w1causalv01", "p11w1negv02"],
 		"database_names": [
 			"fitway_integration_p11w1negv01",
-			"fitway_integration_p11w1causalv01"
+			"fitway_integration_p11w1causalv01",
+			"fitway_integration_p11w1negv02"
 		],
 		"container": "fitway-p11w1-causal-v01",
 		"postgres_port": 55434,
@@ -60,5 +61,7 @@
 		"environment_provisioning": "WORKFLOW step 8: synthetic placeholder .env only; process-local guarded test database remains authoritative; no external network/delivery; preserve preexisting files",
 		"ordinary_tool_cache_policy": "Unchanged verification tools may write their ordinary ignored cache paths in the isolated worker worktree; no tracked generated source, config, lock, route tree or canonical writes. Candidate hashes and tracked status must stay unchanged. Run evidence remains under the leased run directory."
 	},
-	"gate_outcome": "PENDING"
+	"gate_outcome": "PENDING",
+	"execution_incident": "Canonical runner via cmd.exe selected 2 files /13 skipped, no test body or diagnostics. Invalid execution, not expected red or PASS. All resources removed; candidate clean. Preserve original runner/log/summary. One bounded scratch transport correction: spawn installed Node + pnpm.mjs with separate arguments; same exact config/file/title, new run ID p11w1negv02. Source repair count stays 2/2 because no candidate assertion executed. No source repair or W2 authorized.",
+	"scratch_transport_correction_attempt": 1
 }

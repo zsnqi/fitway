@@ -25,3 +25,5 @@ Validation lease: repository invariants require an expiry for VALIDATING. Coordi
 W1 adoption gate FAIL: exact URL mismatch; review: docs/phase-records/verification/20260828-p11-w1-adoption-review.md. Final focused repair 2/2 authorized under p11_propagation_w1_repair2_20260828.json. Missing causal experiment remains continuation. No W2 authorization.
 
 Repair 2/2 code frozen at 8dd4d52. Biome/server types/whitespace and independent exact-delta source gate PASS. Adopt source for native verification only. p11_w1_causal_verify_sol01 owns scratch/runtime artifacts, no tracked source. Native canonical negative plus adopted causal probe pending; W2 still unauthorized.
+
+Native execution incident: cmd argument transport selected 13 skipped tests, no target body ran. Invalid result is preserved; exact resources removed and source unchanged. Bounded scratch-only argv correction 1 authorized; installed Node/pnpm.mjs argument array, same test selector, fresh p11w1negv02. Candidate repair count remains 2/2; W2 still unauthorized.
