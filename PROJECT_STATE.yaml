@@ -1676,9 +1676,9 @@ milestones:
     integratedCommit: cac4b9e1f27c1a4cbd69b678abf707faa1a18be0
 
   phase11-e2e-propagation-wait:
-    status: VALIDATING
+    status: IN_PROGRESS
     dependencies: [ phase11-browser-debt ]
-    ownerSession: "Native causal verifier p11_w1_causal_verify_sol01; source frozen 8dd4d52; scratch/runtime lease only; W2 unauthorized"
+    ownerSession: "GLM/high W2 sole source writer under frozen native contract; W1 adopted, not integrated; repair2/2 unchanged"
     branch: work/phase11-e2e-propagation-wait-w1
     worktree: C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1
     baseCommit: f07f5d9e82c12bc216b10f4360b79dd6c9c32e5a

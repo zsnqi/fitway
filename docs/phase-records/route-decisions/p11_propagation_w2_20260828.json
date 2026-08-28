@@ -1,0 +1,63 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-e2e-propagation-wait/W2",
+	"recorded": "2026-08-28T19:20:29.671Z",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "glm-5.3-flash",
+	"route": "opencode-go/glm-5.3-flash",
+	"control": "high",
+	"transport": "opencode-cli",
+	"native_spawn": null,
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"qualification_status": "qualified_restricted",
+	"route_evidence": "requalified",
+	"gate_outcome": "PENDING",
+	"material_selection_reason": "Live available GLM/V4; resolver GLM/high, durable human GLM preference and exact low-consequence supervised one-file transcription. Native frozen ack/pacing contract accepted; semantic/privacy/runtime/integration authority native-owned. V4 no material advantage; Terra/Luna not approved. Prior failed source gate recorded; scope narrowed to exact W2 algorithm.",
+	"consequence": "low supervised one-file diagnostics and persisted-state fixture; runtime/security/causal judgment native-owned",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "file_write"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260828-glm-5.3-flash-authorization.md"
+	],
+	"host_approval": {
+		"authority": "existing human-authorized scoped host rule",
+		"rule": "C:/Users/Pc Force/.codex/rules/default.rules:87",
+		"launcher": "C:/Users/Pc Force/.agents/skills/agent-project-workflow/scripts/launch-external-worker.cjs",
+		"launcher_sha256": "814a85d027e0c5d4296bdeb63d0ec36f378ae7aecb3863c9e239b81f023263da",
+		"evidence": "C:/Users/Pc Force/.codex/worktrees/external-worker-smoke-test/attempt-01/result.json",
+		"historical_refusal": "Preserved; predates completed host repair and fresh host smoke. Not a permanent eligibility blocker."
+	},
+	"activation": {
+		"base": "8dd4d527492cef253e9e60be4cd3ddb4b37781ff",
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1",
+		"branch": "work/phase11-e2e-propagation-wait-w1",
+		"exact_write_lease": ["apps/server/src/phase2.integration.test.ts"],
+		"lease_expires_at": "2026-08-29T06:00:00+03:00",
+		"packet": "C:\\Users\\Pc Force\\.codex\\worktrees\\f2a7\\phase5-staff-integration\\test-results\\node_modules\\p11_w2\\packet.txt",
+		"packet_sha256": "2d0dff97bac30a05e366b55795d26164af8bf60beedd45736c929b3900cc1452",
+		"spec": "test-results/node_modules/p11_w2/spec.json",
+		"source_sha256": "255fa649113a528cb1893239db1c1b23375548b54098923a1d5be6e156231041"
+	},
+	"provider_task_invocations": 0,
+	"reconciliation": {
+		"source_hash_unchanged": true,
+		"input_manifest_unchanged": true,
+		"launcher_hash_matches_fresh_smoke": true,
+		"one_writer": true,
+		"model_failure": false
+	},
+	"outcome_history": [],
+	"prior_route_decision": "docs/phase-records/route-decisions/p11_propagation_w1_current02_r1_20260828.json",
+	"delegation_evaluation": {
+		"evaluated_at": "2026-08-28T19:17:00.188Z",
+		"stage_discovery_started_at": null,
+		"basis": ["approved_plan", "durable_records"],
+		"reasons": ["economy", "permission", "recoverability"]
+	},
+	"native_contract": "docs/phase-records/handoffs/phase11-e2e-propagation-wait/20260828-w2-native-contract.md",
+	"stage_input": "test-results/node_modules/p11_w2/stage.json"
+}

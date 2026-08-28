@@ -27,3 +27,5 @@ W1 adoption gate FAIL: exact URL mismatch; review: docs/phase-records/verificati
 Repair 2/2 code frozen at 8dd4d52. Biome/server types/whitespace and independent exact-delta source gate PASS. Adopt source for native verification only. p11_w1_causal_verify_sol01 owns scratch/runtime artifacts, no tracked source. Native canonical negative plus adopted causal probe pending; W2 still unauthorized.
 
 Native execution incident: cmd argument transport selected 13 skipped tests, no target body ran. Invalid result is preserved; exact resources removed and source unchanged. Bounded scratch-only argv correction 1 authorized; installed Node/pnpm.mjs argument array, same test selector, fresh p11w1negv02. Candidate repair count remains 2/2; W2 still unauthorized.
+
+W1 source and causal proof adopted at61cc93b; no integration. Native W2 exact pacing/ack contract reviewed and accepted, source route GLM/high selected after live preflight/resolver. W2 sole one-file lease from8dd4d52, repair2/2 preserved. Contract and route p11_propagation_w2_20260828.json are current continuation. All native test resources removed before writer activation.
