@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-28T11:53:51.2230059+03:00"
+updatedAt: "2026-08-28T11:41:00+03:00"
 
 coordinator:
   owner: "Main coordinator login_b03_c01. Access r05 DONE and closeout frozen at c2977cd. Login b03 bounded integration active; one source writer. Propagation and Uptime follow; Settings remains terminal awaiting fresh human authorization."
@@ -268,7 +268,7 @@ milestones:
     integratedCommit: b67398a8a221e60f45ed7a4f2b0e40207fdbd58a
 
   login-paper-adoption:
-    status: VALIDATING
+    status: IN_PROGRESS
     dependencies: [phase4-staff-web, focus-parity-accessibility]
     ownerSession: "Main coordinator login_b03_c01"
     branch: codex/remaining-scope-coordinator
@@ -295,15 +295,15 @@ milestones:
       - "Coordinator only: two Login canonical PNGs named in adopted plan; comparison/acceptance after independent fidelity"
       - "Coordinator only: ADR-007 dated Login authority addendum; PROJECT_STATE.yaml and stage records"
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-28T11:53:51.2230059+03:00"
+    lastHeartbeatAt: "2026-08-28T11:41:00+03:00"
     leaseExpiresAt: "2026-08-28T21:00:00+03:00"
-    handoff: docs/phase-records/handoffs/login-paper-adoption/20260828-login-b03-c01-self-gate.md
+    handoff: docs/phase-records/handoffs/login-paper-adoption/20260828-login-b03-coordinator-integration-plan.md
     stopReason: null
     gates:
-      unit: PASS
+      unit: PENDING
       integration: NOT_REQUIRED
-      browser: PASS
-      accessibility: PASS
+      browser: PENDING
+      accessibility: PENDING
       visual: PENDING
       independentReview: PENDING
     integratedCommit: null

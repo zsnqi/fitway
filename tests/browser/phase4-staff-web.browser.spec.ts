@@ -162,7 +162,7 @@ test("PIN-first login accepts only Western digits, opens staff, and logs out", a
 
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto("/login");
-	const pin = page.getByLabel("رمز الدخول");
+	const pin = page.getByLabel("الرقم السري للموظفين");
 	await expect(pin).toBeVisible();
 	await page.evaluate(() =>
 		(document.activeElement as HTMLElement | null)?.blur(),
@@ -170,7 +170,7 @@ test("PIN-first login accepts only Western digits, opens staff, and logs out", a
 	await captureReview(page, "login-ar-390.png");
 	await pin.fill("12a٣34-56");
 	await expect(pin).toHaveValue("123456");
-	await page.getByRole("button", { name: "دخول" }).click();
+	await page.getByRole("button", { name: "دخول العمليات" }).click();
 
 	await expect(page).toHaveURL(/\/staff$/u);
 	await expect(
@@ -205,13 +205,15 @@ test("login renders non-enumerating failure and honors Retry-After", async ({
 	});
 
 	await page.goto("/login");
-	const pin = page.getByLabel("رمز الدخول");
+	const pin = page.getByLabel("الرقم السري للموظفين");
 	await pin.fill("123456");
-	await page.getByRole("button", { name: "دخول" }).click();
-	await expect(page.getByRole("alert")).toContainText("الرمز غير صحيح");
-	await page.getByRole("button", { name: "دخول" }).click();
+	await page.getByRole("button", { name: "دخول العمليات" }).click();
+	await expect(page.getByRole("alert")).toContainText("تعذر تسجيل الدخول");
+	await page.getByRole("button", { name: "دخول العمليات" }).click();
 	await expect(page.getByRole("alert")).toContainText("5");
-	await expect(page.getByRole("button", { name: "دخول" })).toBeDisabled();
+	await expect(
+		page.getByRole("button", { name: "دخول العمليات" }),
+	).toBeDisabled();
 });
 
 test("English login, logout, and owner shell complete their functional flow", async ({
@@ -245,8 +247,8 @@ test("English login, logout, and owner shell complete their functional flow", as
 
 	await page.goto("/login");
 	await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
-	await page.getByLabel("Access code").fill("123456");
-	await page.getByRole("button", { name: "Sign in" }).click();
+	await page.getByLabel("Staff PIN").fill("123456");
+	await page.getByRole("button", { name: "Open operations" }).click();
 	await expect(
 		page.getByRole("heading", { name: "Live operations" }),
 	).toBeVisible();
@@ -511,22 +513,24 @@ test("keyboard order, focus transfer, practical targets, reduced motion, and 200
 		)
 		.not.toBe("none");
 	await page.keyboard.press("Tab");
-	await expect(page.getByLabel("رمز الدخول")).toBeFocused();
+	await expect(page.getByLabel("الرقم السري للموظفين")).toBeFocused();
 	await expect
 		.poll(() =>
 			page
-				.getByLabel("رمز الدخول")
+				.getByLabel("الرقم السري للموظفين")
 				.evaluate((element) => getComputedStyle(element).boxShadow),
 		)
 		.not.toBe("none");
-	await page.getByLabel("رمز الدخول").fill("123456");
+	await page.getByLabel("الرقم السري للموظفين").fill("123456");
 	await page.keyboard.press("Tab");
-	await expect(page.getByRole("button", { name: "دخول" })).toBeFocused();
+	await expect(
+		page.getByRole("button", { name: "دخول العمليات" }),
+	).toBeFocused();
 
 	for (const locator of [
 		page.getByRole("button", { name: "التبديل إلى اللغة الإنجليزية" }),
-		page.getByLabel("رمز الدخول"),
-		page.getByRole("button", { name: "دخول" }),
+		page.getByLabel("الرقم السري للموظفين"),
+		page.getByRole("button", { name: "دخول العمليات" }),
 	]) {
 		const box = await locator.boundingBox();
 		expect(box?.height).toBeGreaterThanOrEqual(44);
@@ -562,12 +566,6 @@ test("keyboard order, focus transfer, practical targets, reduced motion, and 200
 	});
 	expect(outline.style).not.toBe("none");
 	expect(outline.width).toBeGreaterThanOrEqual(2);
-
-	// The operations probe must exercise the stylesheet loaded by the Staff route.
-	await page.unroute("**/api/auth/session");
-	await mockStaffPage(page);
-	await page.goto("/staff");
-	await expect(page.getByText("37", { exact: true })).toBeVisible();
 
 	await page.evaluate(() => {
 		const shell = document.createElement("div");

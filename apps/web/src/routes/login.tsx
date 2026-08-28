@@ -1,14 +1,13 @@
+import { Button } from "@fitway/ui/components/button";
 import { Input } from "@fitway/ui/components/input";
 import { Label } from "@fitway/ui/components/label";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { LockKeyhole } from "lucide-react";
 import { type FormEvent, useEffect, useState } from "react";
 
-import {
-	LoginRail,
-	LoginStatusMessage,
-	LoginSubmittingIndicator,
-} from "@/components/login/login-chrome";
-import "@/components/login/login.css";
+import { BrandHeader } from "@/components/brand-header";
+import { PublicAtmosphere } from "@/components/public-atmosphere";
+import "@/components/staff/staff.css";
 import { useStaffMessages } from "@/hooks/use-staff-messages";
 import { formatNumber } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
@@ -82,12 +81,10 @@ function LoginRoute() {
 				setRetrySeconds(waitSeconds);
 				setRetryNoticeSeconds(waitSeconds);
 				setError("rate-limited");
-				setPin("");
 			} else if (caught instanceof AuthRequestError && caught.status === 401) {
 				setError("invalid-credentials");
 			} else {
 				setError("service");
-				setPin("");
 			}
 		} finally {
 			setIsSubmitting(false);
@@ -107,6 +104,7 @@ function LoginRoute() {
 
 	return (
 		<div className="login-shell">
+			<PublicAtmosphere />
 			{/* biome-ignore lint/a11y/useValidAnchor: this skip link also transfers focus to the main landmark. */}
 			<a
 				className="operations-skip-link"
@@ -121,20 +119,20 @@ function LoginRoute() {
 			>
 				{messages.common.skipToContent}
 			</a>
-			<LoginRail />
+			<BrandHeader />
 			<main id="main-content" className="login-main" tabIndex={-1}>
 				<section className="login-panel" aria-labelledby="login-heading">
-					<div className="login-panel__heading">
-						<h1 id="login-heading">{messages.login.title}</h1>
-						<p className="login-panel__description">
-							{messages.login.description}
-						</p>
+					<div className="login-panel__icon" aria-hidden="true">
+						<LockKeyhole />
 					</div>
+					<p className="login-panel__eyebrow">{messages.login.eyebrow}</p>
+					<h1 id="login-heading">{messages.login.title}</h1>
+					<p className="login-panel__description">
+						{messages.login.description}
+					</p>
 					<form onSubmit={(event) => void submit(event)} noValidate>
 						<div className="login-field">
 							<Label htmlFor="staff-pin">{messages.login.pinLabel}</Label>
-							{/* Approved Paper I3: the S3/S4 field is disabled, so it is
-						    not focusable and no ring case exists (VF4-0). */}
 							<Input
 								id="staff-pin"
 								name="pin"
@@ -144,45 +142,43 @@ function LoginRoute() {
 								pattern="[0-9]*"
 								minLength={6}
 								maxLength={12}
-								className="login-field__input"
-								data-state={error ?? (isSubmitting ? "submitting" : "idle")}
+								dir="ltr"
 								value={pin}
 								onChange={(event) => {
 									setPin(normalizeWesternPin(event.target.value));
 									if (error !== "rate-limited") setError(null);
 								}}
-								aria-invalid={
-									error === "invalid-pin" || error === "invalid-credentials"
-								}
+								aria-invalid={Boolean(errorMessage)}
 								aria-describedby={
-									errorMessage ? "staff-pin-error" : "staff-pin-hint"
+									errorMessage
+										? "staff-pin-hint staff-pin-error"
+										: "staff-pin-hint"
 								}
-								disabled={
-									isSubmitting ||
-									error === "rate-limited" ||
-									error === "service"
-								}
+								disabled={isSubmitting}
 							/>
-							{errorMessage ? null : (
-								<p id="staff-pin-hint" className="login-field__hint">
-									{messages.login.pinHint(minimum, maximum)}
-								</p>
-							)}
-							{errorMessage && error ? (
-								<LoginStatusMessage kind={error}>
+							<p id="staff-pin-hint" className="login-field__hint">
+								{messages.login.pinHint(minimum, maximum)}
+							</p>
+							{errorMessage ? (
+								<p
+									id="staff-pin-error"
+									className="login-field__error"
+									role="alert"
+								>
 									{errorMessage}
-								</LoginStatusMessage>
+								</p>
 							) : null}
 						</div>
-						<button
+						<Button
 							type="submit"
+							size="lg"
 							className="login-panel__submit"
-							data-submitting={isSubmitting ? "true" : "false"}
-							disabled={isSubmitting || retrySeconds > 0 || error === "service"}
+							disabled={
+								!isValidStaffPin(pin) || isSubmitting || retrySeconds > 0
+							}
 						>
 							{isSubmitting ? messages.login.submitting : messages.login.submit}
-							{isSubmitting ? <LoginSubmittingIndicator /> : null}
-						</button>
+						</Button>
 					</form>
 				</section>
 			</main>

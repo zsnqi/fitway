@@ -15,19 +15,19 @@ export const staffWeb = {
 	},
 	login: {
 		eyebrow: "Front desk",
-		title: "Sign in",
-		description: "Enter your access code to reach monitoring.",
-		pinLabel: "Access code",
+		title: "Open live operations",
+		description: "Enter the shared front-desk PIN.",
+		pinLabel: "Staff PIN",
 		pinHint: (minimum, maximum) =>
-			`${isolate(minimum)} to ${isolate(maximum)} digits.`,
+			`Use ${isolate(minimum)}–${isolate(maximum)} Western digits.`,
 		pinInvalid: (minimum, maximum) =>
 			`Enter a PIN of ${isolate(minimum)}–${isolate(maximum)} Western digits.`,
-		submit: "Sign in",
-		submitting: "Signing in…",
-		invalidCredentials: "That code didn’t work. Check it and try again.",
+		submit: "Open operations",
+		submitting: "Opening operations",
+		invalidCredentials: "Unable to sign in. Check the PIN and try again.",
 		rateLimited: (seconds) =>
 			`Too many attempts. Try again in ${isolate(seconds)} seconds.`,
-		serviceError: "Sign-in is unavailable right now. Try again shortly.",
+		serviceError: "Sign-in is temporarily unavailable. Try again.",
 	},
 	staff: {
 		eyebrow: "Front desk",
