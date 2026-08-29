@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-29T20:02:27Z"
+updatedAt: "2026-08-29T20:22:12Z"
 
 coordinator:
-  owner: "Coordinator final authority. Human authorized fresh Uptime and Settings attempts and resolved Login in favor of WCAG AA with the smallest Paper-language-preserving adjustment. Fresh Uptime b02 initial plan and repair 1 were independently rejected before activation; final focused plan repair 2 is frozen for fresh review. Terminal b01/B2 history and 2/2 budget remain immutable; b02 source/runtime budget remains 0/2 and no branch/worktree/database run exists. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b02-plan-review2-rejection.md"
+  owner: "Coordinator final authority. Human authorized fresh Uptime and Settings attempts and resolved Login in favor of WCAG AA with the smallest Paper-language-preserving adjustment. Fresh Uptime b02 planning is terminal FAILED_VALIDATION after the initial review and two focused plan repairs; the final independent review rejected plan repair 2 before activation, so no third plan repair is authorized without new human direction. Terminal b01/B2 history and 2/2 budget remain immutable; b02 implementation budget remains untouched at 0/2 and no branch, worktree, lease, database, source change, runtime, Browser run, or integration exists. Settings Paper and Login remain separately authorized follow-ups. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b02-plan-terminal-failed-validation.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1971,7 +1971,7 @@ milestones:
     integratedCommit: null
 
   phase11-uptime-mobile-fidelity-b02:
-    status: PLANNED
+    status: FAILED_VALIDATION
     dependencies: [phase11-health, phase11-uptime-paper-successor]
     ownerSession: null
     branch: null
@@ -1993,17 +1993,17 @@ milestones:
       - "root manifests, lockfiles, test configuration, generated routing, deployment, databases, and external systems"
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-29T20:02:27Z"
+    lastHeartbeatAt: "2026-08-29T20:22:12Z"
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b02-plan-review2-rejection.md
-    stopReason: null
+    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b02-plan-terminal-failed-validation.md
+    stopReason: "Terminal b02 FAILED_VALIDATION at the independent final plan gate after the initial review and two focused plan repairs. Plan repair 2 still had deterministic verify:fast/verify:full phase-environment failures, incomplete exact topology and candidate pinning, mutable-branch integration, incomplete runtime preconditions, paint-oracle false-pass seams, contradictory formatted-value requirements, and database provisioning before live-ledger authorization. Per the frozen stop rule, no third plan repair or activation is authorized without new human direction. No implementation candidate, branch, worktree, lease, database, source change, runtime, Browser run, or integration exists; the fresh implementation repair budget remains 0/2. Terminal b01/B2 history remains separately immutable at 2/2."
     gates:
       unit: PENDING
       integration: NOT_REQUIRED
       browser: PENDING
       accessibility: PENDING
       visual: PENDING
-      independentReview: PENDING
+      independentReview: FAIL
     integratedCommit: null
 
   phase-11:

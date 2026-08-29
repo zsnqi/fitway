@@ -11,7 +11,9 @@
 	"registry_revision": "2026-08-28.2",
 	"qualification_baseline": "2026-08-28.2",
 	"qualification_status": "native",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "FAILED_VALIDATION",
+	"gate_outcome_note": "Fresh independent final review rejected plan repair 2 before activation. The frozen plan still had deterministic verification-environment failures, incomplete commit/topology pinning, mutable-branch integration, incomplete runtime preconditions, paint-oracle false-pass seams, contradictory formatted-value requirements, and database authorization ordering. Per the reviewed stop rule, Uptime b02 planning is terminal and no third plan repair is authorized.",
+	"gate_evidence": "docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b02-plan-terminal-failed-validation.md",
 	"native_spawn": {
 		"model": "gpt-5.6-sol",
 		"reasoning_effort": "xhigh",
