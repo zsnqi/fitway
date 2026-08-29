@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-29T09:03:00Z"
+updatedAt: "2026-08-29T09:05:00Z"
 
 coordinator:
-  owner: "Coordinator final authority. W2 remains terminal DONE with its human-authorized 3/3 history unchanged. The human authorized one additional Uptime A1 repair for the preserved candidate only, making its effective ceiling 3/3 while preserving the completed 2/2 terminal history. Uptime is READY for route reconciliation with no source lease open. The only permitted repair is the two authoritative Biome JSX inter-element spacing expressions; no unrelated stage is reopened. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-a1-human-repair3-authorization.md"
+  owner: "Coordinator final authority. W2 remains terminal DONE with its human-authorized 3/3 history unchanged. Uptime A1 human-authorized repair 3/3 is active through GLM-5.3-Flash/high under one exact source lease after live preflight and clean resolver requalification. The prior 2/2 terminal history remains preserved. Only two Biome JSX spacing expressions may change; no A2, Stage B, W2, or unrelated scope is reopened. No repair 4 may be inferred. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-a1-repair3-glm-activation.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1937,9 +1937,9 @@ milestones:
     integratedCommit: 974302b976e8a1d1344191241665333d4bf6a75c
 
   phase11-uptime-mobile-fidelity:
-    status: READY
+    status: IN_PROGRESS
     dependencies: [phase11-health, phase11-uptime-paper-successor]
-    ownerSession: null
+    ownerSession: "GLM-5.3-Flash/high one-time human-authorized A1 repair 3 writer under exact one-file lease; coordinator retains review, verification, integration, and terminal authority"
     branch: work/phase11-uptime-mobile-fidelity-b01
     worktree: C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile
     baseCommit: SELF
@@ -1955,11 +1955,15 @@ milestones:
       - "all server, API, schema, migration, router, shared catalog, global token, unrelated UI, and normative authority paths"
       - "desktop Uptime composition except where a shared rule is proven necessary and independently regression-checked"
       - "canonical baseline promotion outside this milestone's own subtree; promotion remains coordinator-owned"
-    sharedLeases: []
-    validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-29T09:03:00Z"
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-a1-human-repair3-authorization.md
+    sharedLeases:
+      - path: apps/web/src/components/owner/health/owner-health-view.tsx
+        owner: p11_uptime_stage_a1_repair3_glm_20260829
+        reason: "One-time human-authorized repair 3/3: replace only two explicit JSX-space expressions with Biome-required literal inter-element spaces"
+        expiresAt: "2026-08-29T18:00:00+03:00"
+    validationRepairAttempts: 3
+    lastHeartbeatAt: "2026-08-29T09:05:00Z"
+    leaseExpiresAt: "2026-08-29T18:00:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-a1-repair3-glm-activation.md
     stopReason: null
     gates:
       unit: PENDING
