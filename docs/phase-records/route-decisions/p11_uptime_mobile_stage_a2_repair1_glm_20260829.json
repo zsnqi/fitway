@@ -1,0 +1,60 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-uptime-mobile-fidelity/stage-a2-css-repair1",
+	"recorded": "2026-08-29T09:44:00Z",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "glm-5.3-flash",
+	"route": "opencode-go/glm-5.3-flash",
+	"control": "high",
+	"transport": "opencode-cli",
+	"native_spawn": null,
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"qualification_status": "qualified_restricted",
+	"route_evidence": "requalified",
+	"gate_outcome": "PENDING",
+	"material_selection_reason": "Exact deterministic single-file correction of five frozen independent-review findings is within GLM's qualified restricted implementation class. Live preflight passed and the resolver selected GLM/high as the only authorized qualified external candidate surviving hard filters. Native retains independent rereview and every executable, visual, canonical, verification, integration, and terminal gate.",
+	"consequence": "low supervised one-file CSS correction; responsive and visual consequences remain native-gated",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "file_write"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"deepseek-v4-pro": ["explicitly unauthorized for current-run work"],
+		"gpt-5.6-terra": ["no fresh one-shot human invocation approval"],
+		"gpt-5.6-luna": ["no fresh one-shot human invocation approval"]
+	},
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260828-glm-5.3-flash-authorization.md"
+	],
+	"activation": {
+		"activation_commit": "3a02a126ba3031c0b4c3f12934ee2dffd97065dd",
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile",
+		"branch": "work/phase11-uptime-mobile-fidelity-b01",
+		"source_sha256": "07dd08cbca4ecf81c49e095910ceb5f8076d539c022de48edf92785ced13d391",
+		"exact_write_lease": [
+			"apps/web/src/components/owner/health/owner-health.css"
+		],
+		"lease_expires_at": "2026-08-29T18:30:00+03:00",
+		"packet": "test-results/node_modules/p11_uptime_stage_a2_repair1_glm_20260829/packet.txt",
+		"packet_sha256": "457df7bfc69ef6e675cca80fbd4c8789da1d97c32aaaef0fd702073c0e675dcd",
+		"stage_input": "test-results/node_modules/p11_uptime_stage_a2_repair1_glm_20260829/stage.json"
+	},
+	"repair_accounting": {
+		"a1_attempts_consumed": 3,
+		"a1_effective_ceiling": 3,
+		"a1_fourth_repair_authorized": false,
+		"a2_stage_repairs_consumed": 1,
+		"a2_stage_repair_ceiling": 2
+	},
+	"provider_task_invocations": 0,
+	"resolver": {
+		"selected": "glm-5.3-flash",
+		"route": "opencode-go/glm-5.3-flash",
+		"control": "high",
+		"delegation_lifecycle_violations": [],
+		"decomposition_mode": "sequential_default"
+	}
+}

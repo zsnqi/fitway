@@ -13,7 +13,7 @@
 	"qualification_baseline": "2026-08-28.2",
 	"qualification_status": "qualified_restricted",
 	"route_evidence": "requalified",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "REJECTED_SOURCE_REVIEW",
 	"material_selection_reason": "A2 is deterministic single-file low-consequence CSS transcription from the frozen plan within GLM's qualified restricted class. Live preflight confirms the route, the resolver selected it without lifecycle violations, and the human prefers GLM while barring V4 Pro. Native retains source review, Browser, accessibility, visual, canonical, verification, and integration gates.",
 	"consequence": "low supervised one-file CSS implementation; medium responsive and visual consequence remains native-gated",
 	"covered_modalities": ["text"],
@@ -55,7 +55,22 @@
 		"a1_fourth_repair_authorized": false,
 		"a2_stage_repairs_consumed": 0
 	},
-	"provider_task_invocations": 0,
+	"provider_task_invocations": 1,
+	"result": {
+		"provider_exit_code": 0,
+		"source_sha256": "07dd08cbca4ecf81c49e095910ceb5f8076d539c022de48edf92785ced13d391",
+		"exact_changed_paths": [
+			"apps/web/src/components/owner/health/owner-health.css"
+		],
+		"tool_operations": { "reads": 2, "edits": 2, "other": 0 },
+		"completion_chars": 1318,
+		"completion_ceiling": 900,
+		"completion_sentinel_valid": true,
+		"completion_sha256": "770655600f64b6b5031b29b1dd1f4a3b55364ac27370b2e276203f93aa7a5c7b",
+		"completion_contract_outcome": "TRANSPORT_NONCOMPLIANT_SOURCE_PRESERVED_NO_ROUTING_PENALTY",
+		"independent_review": "FAIL",
+		"mechanical_gates_run": false
+	},
 	"delegation_evaluation": {
 		"evaluated_at": "2026-08-29T09:20:00Z",
 		"stage_discovery_started_at": null,

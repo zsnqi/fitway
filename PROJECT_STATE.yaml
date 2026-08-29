@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-29T09:29:00Z"
+updatedAt: "2026-08-29T09:44:00Z"
 
 coordinator:
-  owner: "Coordinator final authority. W2 remains terminal DONE with its human-authorized 3/3 history unchanged. Uptime A1 is accepted at 3a02a12 after human repair 3/3; prior 2/2 history remains preserved and no A1 repair 4 may be inferred. Frozen Stage A2 CSS candidate 07dd08c has returned from GLM-5.3-Flash and its writer lease is closed; exact one-file source is preserved for independent native review. The 1318/900 compact-return overrun is completion-contract/transport noncompliance only, not a source or review-capability failure and not a GLM routing penalty. A1 markup, Stage B, browser spec, W2, and unrelated scope remain closed. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-a2-native-review-activation.md"
+  owner: "Coordinator final authority. W2 remains terminal DONE with its human-authorized 3/3 history unchanged. Uptime A1 is accepted at 3a02a12 after human repair 3/3; prior 2/2 history remains preserved and no A1 repair 4 may be inferred. Initial A2 CSS candidate 07dd08c was rejected by independent native source review before mechanical gates. Frozen A2 repair 1/2 is active through GLM-5.3-Flash/high under one exact CSS lease. The prior 1318/900 compact-return overrun remains transport-only and not a GLM routing penalty. A1 markup, Stage B, browser spec, W2, and unrelated scope remain closed. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-a2-repair1-glm-activation.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1939,7 +1939,7 @@ milestones:
   phase11-uptime-mobile-fidelity:
     status: IN_PROGRESS
     dependencies: [phase11-health, phase11-uptime-paper-successor]
-    ownerSession: "Independent native Stage A2 CSS reviewer; GLM writer has returned and exact write lease is closed; coordinator retains verification, visual, integration, and terminal authority"
+    ownerSession: "GLM-5.3-Flash/high Stage A2 repair 1/2 writer under exact one-file lease; coordinator retains rereview, verification, visual, integration, and terminal authority"
     branch: work/phase11-uptime-mobile-fidelity-b01
     worktree: C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile
     baseCommit: SELF
@@ -1955,11 +1955,15 @@ milestones:
       - "all server, API, schema, migration, router, shared catalog, global token, unrelated UI, and normative authority paths"
       - "desktop Uptime composition except where a shared rule is proven necessary and independently regression-checked"
       - "canonical baseline promotion outside this milestone's own subtree; promotion remains coordinator-owned"
-    sharedLeases: []
+    sharedLeases:
+      - path: apps/web/src/components/owner/health/owner-health.css
+        owner: p11_uptime_stage_a2_repair1_glm_20260829
+        reason: "Frozen A2 repair 1/2 for five exact native-review CSS findings only; A1 and all other source locked"
+        expiresAt: "2026-08-29T18:30:00+03:00"
     validationRepairAttempts: 3
-    lastHeartbeatAt: "2026-08-29T09:29:00Z"
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-a2-native-review-activation.md
+    lastHeartbeatAt: "2026-08-29T09:44:00Z"
+    leaseExpiresAt: "2026-08-29T18:30:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-a2-repair1-glm-activation.md
     stopReason: null
     gates:
       unit: PENDING
