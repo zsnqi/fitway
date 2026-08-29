@@ -1,0 +1,58 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-uptime-mobile-fidelity/stage-a2-css-repair2",
+	"recorded": "2026-08-29T09:56:00Z",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "glm-5.3-flash",
+	"route": "opencode-go/glm-5.3-flash",
+	"control": "high",
+	"transport": "opencode-cli",
+	"native_spawn": null,
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"qualification_status": "qualified_restricted",
+	"route_evidence": "requalified",
+	"gate_outcome": "PENDING",
+	"material_selection_reason": "One exact Biome-supplied formatting-only edit is a deterministic single-file low-consequence correction within GLM's qualified restricted class. Native retains exact-diff rereview and every executable/visual/terminal gate.",
+	"consequence": "low supervised one-declaration formatting correction",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "file_write"],
+	"filtered_alternatives": {
+		"deepseek-v4-pro": ["explicitly unauthorized for current-run work"],
+		"gpt-5.6-terra": ["no fresh one-shot human invocation approval"],
+		"gpt-5.6-luna": ["no fresh one-shot human invocation approval"]
+	},
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260828-glm-5.3-flash-authorization.md"
+	],
+	"activation": {
+		"activation_commit": "3a02a126ba3031c0b4c3f12934ee2dffd97065dd",
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile",
+		"branch": "work/phase11-uptime-mobile-fidelity-b01",
+		"source_sha256": "cef62231fb2cdb17af21301777f0864d9837ba529e0f37a15c29dea7ddca6222",
+		"exact_write_lease": [
+			"apps/web/src/components/owner/health/owner-health.css"
+		],
+		"lease_expires_at": "2026-08-29T18:45:00+03:00",
+		"packet": "test-results/node_modules/p11_uptime_stage_a2_repair2_glm_20260829/packet.txt",
+		"packet_sha256": "2b646d647d333804e11e6cd6224f379566888710c1d50c3a084df587cad99d1b",
+		"stage_input": "test-results/node_modules/p11_uptime_stage_a2_repair2_glm_20260829/stage.json"
+	},
+	"repair_accounting": {
+		"a1_attempts_consumed": 3,
+		"a1_effective_ceiling": 3,
+		"a1_fourth_repair_authorized": false,
+		"a2_stage_repairs_consumed": 2,
+		"a2_stage_repair_ceiling": 2,
+		"a2_third_repair_authorized": false
+	},
+	"provider_task_invocations": 0,
+	"resolver": {
+		"selected": "glm-5.3-flash",
+		"route": "opencode-go/glm-5.3-flash",
+		"control": "high",
+		"delegation_lifecycle_violations": [],
+		"decomposition_mode": "sequential_default"
+	}
+}
