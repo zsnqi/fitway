@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-29T08:59:00Z"
+updatedAt: "2026-08-29T09:03:00Z"
 
 coordinator:
-  owner: "Coordinator final authority. W2 remains terminal DONE with its human-authorized 3/3 history unchanged. Uptime reached terminal FAILED_VALIDATION at focused repair ceiling 2/2 when the final direct Biome rerun rejected explicit JSX-space expressions; no repair 3, CSS A2, Stage B, browser work, or integration is permitted. GLM compact overruns/provider latency remain transport/completion events only with no source/capability or permanent routing penalty. The later process-improvement candidate changes no active workflow. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-stage-a1-terminal-failed-validation.md"
+  owner: "Coordinator final authority. W2 remains terminal DONE with its human-authorized 3/3 history unchanged. The human authorized one additional Uptime A1 repair for the preserved candidate only, making its effective ceiling 3/3 while preserving the completed 2/2 terminal history. Uptime is READY for route reconciliation with no source lease open. The only permitted repair is the two authoritative Biome JSX inter-element spacing expressions; no unrelated stage is reopened. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-a1-human-repair3-authorization.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1937,7 +1937,7 @@ milestones:
     integratedCommit: 974302b976e8a1d1344191241665333d4bf6a75c
 
   phase11-uptime-mobile-fidelity:
-    status: FAILED_VALIDATION
+    status: READY
     dependencies: [phase11-health, phase11-uptime-paper-successor]
     ownerSession: null
     branch: work/phase11-uptime-mobile-fidelity-b01
@@ -1957,10 +1957,10 @@ milestones:
       - "canonical baseline promotion outside this milestone's own subtree; promotion remains coordinator-owned"
     sharedLeases: []
     validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-29T08:59:00Z"
+    lastHeartbeatAt: "2026-08-29T09:03:00Z"
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-stage-a1-terminal-failed-validation.md
-    stopReason: "Terminal Stage A1 FAILED_VALIDATION at focused repair ceiling 2/2. Independent repair-2 source review passed and git diff --check passed, but the final direct installed Biome rerun still requires literal inter-element spaces where the preserved candidate uses explicit JSX-space expressions in both new board counts. No type, focused component, browser, accessibility, visual, canonical, fast, phase, full, CSS A2, Stage B, integration, or repair 3 is permitted. Candidate ed3f8d513cb916cfa9d54fea974c9fc7fd22ff82f5d421a8686cf1be46bb97b4 remains preserved uncommitted in the isolated Uptime worktree. GLM compact-return overruns and provider latency remain completion-contract/transport events only and are excluded from source-quality, capability, qualification, and permanent routing-penalty history."
+    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-a1-human-repair3-authorization.md
+    stopReason: null
     gates:
       unit: PENDING
       integration: NOT_REQUIRED
