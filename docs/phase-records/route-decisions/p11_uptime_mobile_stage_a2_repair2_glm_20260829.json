@@ -13,7 +13,7 @@
 	"qualification_baseline": "2026-08-28.2",
 	"qualification_status": "qualified_restricted",
 	"route_evidence": "requalified",
-	"gate_outcome": "PENDING_NATIVE_REREVIEW",
+	"gate_outcome": "PASS",
 	"material_selection_reason": "One exact Biome-supplied formatting-only edit is a deterministic single-file low-consequence correction within GLM's qualified restricted class. Native retains exact-diff rereview and every executable/visual/terminal gate.",
 	"consequence": "low supervised one-declaration formatting correction",
 	"covered_modalities": ["text"],
@@ -63,7 +63,13 @@
 		"completion_ceiling": 500,
 		"completion_sentinel_valid": true,
 		"completion_sha256": "c5afb852036df8710d93bc897159353f6999a92353780fb616b1007dee12aae5",
-		"completion_contract_outcome": "TRANSPORT_NONCOMPLIANT_SOURCE_PRESERVED_NO_ROUTING_PENALTY"
+		"completion_contract_outcome": "TRANSPORT_NONCOMPLIANT_SOURCE_PRESERVED_NO_ROUTING_PENALTY",
+		"independent_review": "PASS",
+		"diff_check": "PASS",
+		"biome": "PASS",
+		"typecheck": "PASS",
+		"focused_test": "PASS_13_OF_13",
+		"accepted_commit": "b04215cada5c717b3e115b3a34d585b5039b34c4"
 	},
 	"resolver": {
 		"selected": "glm-5.3-flash",

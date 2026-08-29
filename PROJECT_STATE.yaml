@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-29T10:03:00Z"
+updatedAt: "2026-08-29T10:08:00Z"
 
 coordinator:
-  owner: "Coordinator final authority. W2 remains terminal DONE and Uptime A1 remains accepted at human repair 3/3 with no repair 4. Exact formatting-only A2 repair 2/2 returned at CSS 7f4adec and its lease is closed for independent exact-diff rereview. Conditional A2 repair 3 remains dormant unless a substantive source gate fails; no A2 repair 4 exists. All GLM compact overruns remain transport-only and non-penalizing; type/test setup failures remain invalid. Stage B, Browser, W2, and unrelated scope remain closed. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-a2-repair2-native-rereview.md"
+  owner: "Coordinator final authority. W2 remains terminal DONE. Uptime A1 is accepted at human repair 3/3 with no repair 4. Uptime A2 is accepted at b04215c after repair 2/2; conditional human repair 3 was never activated or consumed and no A2 repair 4 exists. GLM compact overruns remain transport-only/non-penalizing and invalid setup failures remain non-source. Next valid stage is frozen B1 totals propagation after fresh route evaluation. Browser, W2, and unrelated scope remain closed. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-a2-repair2-pass.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1937,9 +1937,9 @@ milestones:
     integratedCommit: 974302b976e8a1d1344191241665333d4bf6a75c
 
   phase11-uptime-mobile-fidelity:
-    status: IN_PROGRESS
+    status: READY
     dependencies: [phase11-health, phase11-uptime-paper-successor]
-    ownerSession: "Independent native Stage A2 repair 2/2 exact-diff rereviewer; writer lease closed; coordinator retains verification, visual, integration, and terminal authority"
+    ownerSession: null
     branch: work/phase11-uptime-mobile-fidelity-b01
     worktree: C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile
     baseCommit: SELF
@@ -1957,9 +1957,9 @@ milestones:
       - "canonical baseline promotion outside this milestone's own subtree; promotion remains coordinator-owned"
     sharedLeases: []
     validationRepairAttempts: 3
-    lastHeartbeatAt: "2026-08-29T10:03:00Z"
+    lastHeartbeatAt: "2026-08-29T10:08:00Z"
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-a2-repair2-native-rereview.md
+    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-a2-repair2-pass.md
     stopReason: null
     gates:
       unit: PENDING

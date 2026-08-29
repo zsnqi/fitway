@@ -1,0 +1,34 @@
+{
+	"schema": "verification/1",
+	"project": "FITWAY",
+	"stage": "phase11-uptime-mobile-fidelity/stage-a2-css",
+	"recorded": "2026-08-29T10:08:00Z",
+	"candidate_commit": "b04215cada5c717b3e115b3a34d585b5039b34c4",
+	"source_sha256": "7f4adece6bcea8ce6bd64f8f3011ea6b04b98a71fb798c75f0ba913a694d3576",
+	"exact_changed_paths": [
+		"apps/web/src/components/owner/health/owner-health.css"
+	],
+	"independent_review": "PASS",
+	"gates": {
+		"git_diff_check": "PASS",
+		"direct_biome": "PASS_CHECKED_1_NO_FIXES",
+		"web_check_types": "PASS_VITE_2192_MODULES_AND_TSC_NOEMIT",
+		"focused_component_test": "PASS_13_OF_13"
+	},
+	"invalidated_attempts": {
+		"typecheck": "sandbox setup failure: native binding load/spawn EPERM; not source",
+		"focused_test": "sandbox setup failure: vitest executable unresolved; not source"
+	},
+	"repair_accounting": {
+		"a2_initial_review": "FAIL",
+		"a2_repair_1": "FAIL_BIOME_FORMAT",
+		"a2_repair_2": "PASS",
+		"a2_repairs_consumed": 2,
+		"human_conditional_effective_ceiling": 3,
+		"conditional_repair_3_activated": false,
+		"conditional_repair_3_consumed": false,
+		"repair_4_authorized": false
+	},
+	"transport_classification": "GLM compact-return overruns are completion-contract/transport only and carry no source/review capability or routing penalty",
+	"outcome": "PASS"
+}
