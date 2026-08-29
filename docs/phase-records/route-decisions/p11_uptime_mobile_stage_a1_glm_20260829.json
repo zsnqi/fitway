@@ -14,7 +14,7 @@
 	"qualification_status": "qualified_restricted",
 	"outcome_classification": "The compact-return overruns are completion-contract/transport compliance events only. They are not source-quality failures, review-capability failures, qualification downgrades, or permanent routing penalties; the preserved candidate remains subject to independent native gates.",
 	"route_evidence": "requalified",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "TERMINAL_FAILED_VALIDATION",
 	"material_selection_reason": "The adopted plan permits sequential one-file GLM stages when the two-file shape exceeds current qualification. A1 is a deterministic single-file low-consequence React transcription under an exact allowlist, matching GLM's qualified class. The human requires GLM preference and bars V4 Pro for the current run; native retains all semantic, visual, accessibility, browser, canonical, verification, review, and integration judgment.",
 	"consequence": "low supervised exact one-file source transcription; medium responsive/semantic product consequence remains entirely native-gated",
 	"covered_modalities": ["text"],
@@ -94,6 +94,17 @@
 			"raw_evidence_pointer": "test-results/node_modules/p11_uptime_stage_a1_glm_r01_20260829/events.jsonl"
 		}
 	],
+	"terminal_outcome": {
+		"status": "FAILED_VALIDATION",
+		"repair_attempts_consumed": 2,
+		"repair_ceiling": 2,
+		"final_candidate_source_sha256": "ed3f8d513cb916cfa9d54fea974c9fc7fd22ff82f5d421a8686cf1be46bb97b4",
+		"final_authoritative_failure": "Direct installed Biome check requires literal inter-element spaces where repair 2 retained explicit JSX-space expressions.",
+		"transport_events_excluded_from_source_outcome": true,
+		"qualification_status_after_outcome": "qualified_restricted",
+		"permanent_routing_penalty_from_compact_overruns": false,
+		"integration": "NOT_INTEGRATED"
+	},
 	"packet_correction": {
 		"basis": "Native exact catalog inspection confirmed messages.offlineOf exists in both locales and is already used by owner-health-section.tsx.",
 		"packet": "C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration/test-results/node_modules/p11_uptime_stage_a1_glm_r01_20260829/packet.txt",

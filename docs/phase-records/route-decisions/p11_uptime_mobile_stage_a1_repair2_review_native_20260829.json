@@ -21,7 +21,7 @@
 	"registry_revision": "2026-08-28.2",
 	"qualification_baseline": "2026-08-28.2",
 	"qualification_status": "native",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "PASS",
 	"material_selection_reason": "The final exact GLM repair candidate is preserved but its completion exceeded the hard return ceiling. A read-only native reviewer closes the fail-closed completion gap independently of the writer before executable gates resume. Provider latency and return compliance create no source-quality or capability penalty against GLM.",
 	"consequence": "medium responsive semantic source review at final repair ceiling; no source write or product decision",
 	"covered_modalities": ["text"],
@@ -47,6 +47,17 @@
 	"repair_accounting": {
 		"attempts_consumed": 2,
 		"ceiling": 2
+	},
+	"outcome": {
+		"blocking_issues": 0,
+		"significant_issues": 0,
+		"non_blocking_issues": 0,
+		"verified_candidate_sha256": "ed3f8d513cb916cfa9d54fea974c9fc7fd22ff82f5d421a8686cf1be46bb97b4",
+		"exact_changed_paths": [
+			"apps/web/src/components/owner/health/owner-health-view.tsx"
+		],
+		"recommendation": "approve final repair-2 source review and restart coordinator A1 mechanical verification",
+		"commands_run": []
 	},
 	"delegation_evaluation": {
 		"evaluated_at": "2026-08-29T08:56:00Z",
