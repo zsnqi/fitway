@@ -44,8 +44,12 @@
 		"a1_effective_ceiling": 3,
 		"a1_fourth_repair_authorized": false,
 		"a2_stage_repairs_consumed": 2,
-		"a2_stage_repair_ceiling": 2,
-		"a2_third_repair_authorized": false
+		"a2_stage_repair_ceiling_before_exception": 2,
+		"a2_effective_repair_ceiling": 3,
+		"a2_third_repair_conditionally_authorized": true,
+		"a2_third_repair_active": false,
+		"a2_fourth_repair_authorized": false,
+		"conditional_authorization_record": "docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-a2-conditional-human-repair3-authorization.md"
 	},
 	"provider_task_invocations": 0,
 	"resolver": {
