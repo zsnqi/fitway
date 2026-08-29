@@ -13,7 +13,7 @@
 	"qualification_baseline": "2026-08-28.2",
 	"qualification_status": "qualified_restricted",
 	"route_evidence": "requalified",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "PENDING_NATIVE_REREVIEW",
 	"material_selection_reason": "Exact deterministic single-file correction of five frozen independent-review findings is within GLM's qualified restricted implementation class. Live preflight passed and the resolver selected GLM/high as the only authorized qualified external candidate surviving hard filters. Native retains independent rereview and every executable, visual, canonical, verification, integration, and terminal gate.",
 	"consequence": "low supervised one-file CSS correction; responsive and visual consequences remain native-gated",
 	"covered_modalities": ["text"],
@@ -49,7 +49,21 @@
 		"a2_stage_repairs_consumed": 1,
 		"a2_stage_repair_ceiling": 2
 	},
-	"provider_task_invocations": 0,
+	"provider_task_invocations": 1,
+	"result": {
+		"provider_exit_code": 0,
+		"source_sha256": "cef62231fb2cdb17af21301777f0864d9837ba529e0f37a15c29dea7ddca6222",
+		"exact_changed_paths": [
+			"apps/web/src/components/owner/health/owner-health.css"
+		],
+		"tool_operations": { "reads": 2, "edits": 5, "other": 0 },
+		"completion_chars": 1688,
+		"completion_ceiling": 900,
+		"completion_sentinel_valid": true,
+		"completion_sha256": "7c85fe1708ce9d8354e3866fbbb5b10fae0643f5008c5619a6981debfb5455a6",
+		"completion_contract_outcome": "TRANSPORT_NONCOMPLIANT_SOURCE_PRESERVED_NO_ROUTING_PENALTY",
+		"mechanical_gates_run": false
+	},
 	"resolver": {
 		"selected": "glm-5.3-flash",
 		"route": "opencode-go/glm-5.3-flash",
