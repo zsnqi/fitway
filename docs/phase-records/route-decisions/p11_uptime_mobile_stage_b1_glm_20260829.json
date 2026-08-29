@@ -10,7 +10,7 @@
 	"transport": "opencode-cli",
 	"qualification_status": "qualified_restricted",
 	"route_evidence": "requalified",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "PENDING_NATIVE_REVIEW",
 	"material_selection_reason": "Two exact prop additions in one file are deterministic low-consequence wiring within GLM's qualified restricted class; native retains all review and gates.",
 	"filtered_alternatives": {
 		"deepseek-v4-pro": ["explicitly unauthorized"],
@@ -31,7 +31,20 @@
 		"lease_expires_at": "2026-08-29T19:15:00+03:00",
 		"packet_sha256": "af4603f8d1125de192432979615f571f1f54294fef3ea99a412450c7ee99cea7"
 	},
-	"provider_task_invocations": 0,
+	"provider_task_invocations": 1,
+	"result": {
+		"provider_exit_code": 0,
+		"source_sha256": "66e208e6f55e4fb847f3c53353385004c689bb47abc1fbd11628e6017f42c414",
+		"exact_changed_paths": [
+			"apps/web/src/components/owner/health/owner-health-section.tsx"
+		],
+		"tool_operations": { "reads": 1, "edits": 2, "other": 0 },
+		"completion_chars": 599,
+		"completion_ceiling": 500,
+		"completion_sentinel_valid": true,
+		"completion_sha256": "8388407bdef5047d44e6ac4acde6c4dc260eceaba4fe83435481b10988c74925",
+		"completion_contract_outcome": "TRANSPORT_NONCOMPLIANT_SOURCE_PRESERVED_NO_ROUTING_PENALTY"
+	},
 	"resolver": {
 		"selected": "glm-5.3-flash",
 		"route": "opencode-go/glm-5.3-flash",
