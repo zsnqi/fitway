@@ -11,7 +11,7 @@
 	"registry_revision": "2026-08-28.2",
 	"qualification_baseline": "2026-08-28.2",
 	"qualification_status": "native-stage-local-fallback",
-	"gate_outcome": "IN_PROGRESS",
+	"gate_outcome": "PENDING_INDEPENDENT_SOURCE_REVIEW",
 	"native_spawn": {
 		"model": "gpt-5.6-sol",
 		"invocation_id": "p11-uptime-b2-repair1-native-sol-20260829t1212z",
@@ -52,5 +52,13 @@
 		"prior_transport_incomplete_returns": 2,
 		"b2_repair_ceiling": 2,
 		"b2_third_repair_authorized": false
+	},
+	"result": {
+		"source_sha256_before": "aa3d28a64b5fb9125158ce81b411c24b71316559280404ac77c16d787af3cb86",
+		"source_sha256_after": "faf8e26f1c76d63e74e81e3fa09a8067ffa080310f5623f5e098beb18eb2b78e",
+		"source_mutated": true,
+		"exact_modified_paths": ["tests/browser/phase11-health.browser.spec.ts"],
+		"worker_reported_runtime_gates": false,
+		"independent_review_pending": true
 	}
 }
