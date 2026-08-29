@@ -1,0 +1,62 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-uptime-mobile-fidelity/stage-a1-focused-repair-2-independent-review",
+	"recorded": "2026-08-29T08:56:00Z",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native",
+	"route": null,
+	"control": "high",
+	"transport": "codex-native",
+	"native_spawn": {
+		"model": "gpt-5.6-sol",
+		"invocation_id": "p11_uptime_a1_repair2_review_sol03",
+		"request_timestamp": "2026-08-29T08:56:00Z",
+		"reasoning_effort": "high",
+		"agent_role": "reviewer",
+		"fork_turns": "none",
+		"parent_inheritance_deliberate": false,
+		"explicit_one_shot_human_approval": null
+	},
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"qualification_status": "native",
+	"gate_outcome": "PENDING",
+	"material_selection_reason": "The final exact GLM repair candidate is preserved but its completion exceeded the hard return ceiling. A read-only native reviewer closes the fail-closed completion gap independently of the writer before executable gates resume. Provider latency and return compliance create no source-quality or capability penalty against GLM.",
+	"consequence": "medium responsive semantic source review at final repair ceiling; no source write or product decision",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"durable_authorization_records": [],
+	"filtered_alternatives": {
+		"glm-5.3-flash": [
+			"same-cycle fail-closed completion gap requires a reviewer independent of the external writer; qualification remains unchanged"
+		],
+		"deepseek-v4-pro": ["explicitly unauthorized for further current-run work"],
+		"gpt-5.6-terra": ["no fresh one-shot human invocation approval"],
+		"gpt-5.6-luna": ["no fresh one-shot human invocation approval"]
+	},
+	"activation": {
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile",
+		"branch": "work/phase11-uptime-mobile-fidelity-b01",
+		"candidate_source_sha256": "ed3f8d513cb916cfa9d54fea974c9fc7fd22ff82f5d421a8686cf1be46bb97b4",
+		"read_only": true,
+		"invocation_id": "p11_uptime_a1_repair2_review_sol03"
+	},
+	"repair_accounting": {
+		"attempts_consumed": 2,
+		"ceiling": 2
+	},
+	"delegation_evaluation": {
+		"evaluated_at": "2026-08-29T08:56:00Z",
+		"stage_discovery_started_at": null,
+		"basis": [
+			"direct local Biome diagnostic",
+			"exact final repaired candidate hash and diff",
+			"invalid compact external completion",
+			"fixed repair ceiling 2/2"
+		],
+		"reasons": ["independence", "recoverability"]
+	}
+}

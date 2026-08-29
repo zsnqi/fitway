@@ -13,7 +13,8 @@
 	"qualification_baseline": "2026-08-28.2",
 	"qualification_status": "qualified_restricted",
 	"route_evidence": "requalified",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "SOURCE_CANDIDATE_COMPLETION_INVALID",
+	"outcome_classification": "provider latency and completion-contract/transport compliance only; not a source-quality failure, review-capability failure, qualification downgrade, additional repair, or permanent routing penalty",
 	"material_selection_reason": "The final allowed A1 repair is an exact deterministic one-file formatting correction within GLM's qualified restricted class. The human prefers GLM for eligible bounded external work and bars V4 Pro. Prior return overruns are completion-contract/transport events only and do not reduce qualification; native retains independent review and all verification authority.",
 	"consequence": "low supervised exact one-file formatting repair; final repair 2/2 remains native-gated",
 	"covered_modalities": ["text"],
@@ -46,7 +47,29 @@
 		"attempts_consumed": 2,
 		"ceiling": 2
 	},
-	"provider_task_invocations": 0,
+	"provider_task_invocations": 1,
+	"completion": {
+		"completion_id": "p11-uptime-a1-repair2-overlong",
+		"final_text_present": true,
+		"sentinel": "WORKER_RESULT_COMPLETE",
+		"sentinel_verified": true,
+		"result_fingerprint": "sha256:e4092fa3b860adb1d973db5a5d834904d9237144f7b231e177c0372f2667f430",
+		"completion_chars": 1278,
+		"completion_limit_chars": 900,
+		"constraint_breach": true,
+		"source_changed": true,
+		"candidate_source_sha256": "ed3f8d513cb916cfa9d54fea974c9fc7fd22ff82f5d421a8686cf1be46bb97b4",
+		"exact_changed_paths": [
+			"apps/web/src/components/owner/health/owner-health-view.tsx"
+		],
+		"tool_audit": {
+			"permitted_reads": 3,
+			"permitted_edits": 2,
+			"other_operations": 0,
+			"out_of_scope_paths": 0
+		},
+		"raw_evidence_pointer": "test-results/node_modules/p11_uptime_stage_a1_repair2_glm_20260829/events.jsonl"
+	},
 	"delegation_evaluation": {
 		"evaluated_at": "2026-08-29T08:49:00Z",
 		"stage_discovery_started_at": null,
