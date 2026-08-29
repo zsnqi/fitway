@@ -15,7 +15,7 @@
 ## Decisions
 
 - Reject both overlong GLM completions while preserving their raw evidence and unchanged candidate.
-- Native Sol/high now has a concrete reliability and semantic-review advantage. It reviews only; it may not repair.
+- Native Sol/high was selected as a temporary fail-closed completion-compliance reroute for this active review. This is not a source-quality or review-capability failure, qualification downgrade, or permanent routing penalty against GLM. It reviews only; it may not repair.
 
 ## Remaining
 

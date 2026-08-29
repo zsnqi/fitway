@@ -21,8 +21,8 @@
 	"registry_revision": "2026-08-28.2",
 	"qualification_baseline": "2026-08-28.2",
 	"qualification_status": "native",
-	"gate_outcome": "PENDING",
-	"material_selection_reason": "Independence plus reliability: the GLM writer and fresh GLM reviewer each breached an explicit compact-return ceiling, so a third GLM completion retry is refused. V4 Pro is human-barred; Terra/Luna lack one-shot approval. Native Sol/high is read-only, independent of the writer, needs no extra approval, and has a concrete material advantage for semantic source review.",
+	"gate_outcome": "REQUEST_CHANGES",
+	"material_selection_reason": "Independence plus temporary active-cycle completion compliance: the GLM writer and fresh GLM reviewer each breached an explicit compact-return ceiling, so another GLM completion retry for that same review was refused fail-closed. V4 Pro is human-barred; Terra/Luna lack one-shot approval. Native Sol/high is read-only, independent of the writer, and needs no extra approval. This reroute is not a source-quality or review-capability judgment against GLM and creates no permanent routing penalty.",
 	"consequence": "medium responsive semantic source review; no source write or product decision",
 	"covered_modalities": ["text"],
 	"covered_tools": ["repository_read", "shell"],
@@ -45,8 +45,17 @@
 		"invocation_id": "p11_uptime_a1_review_sol01"
 	},
 	"repair_accounting": {
-		"attempts_consumed": 0,
+		"attempts_consumed": 1,
 		"ceiling": 2
+	},
+	"outcome": {
+		"blocking_issues": 0,
+		"significant_issues": 1,
+		"non_blocking_issues": 0,
+		"finding": "Both new board counts drop the established separate bdi isolation for visible and total formatted numeric runs, violating the frozen bidi contract for Arabic unequal counts.",
+		"recommendation": "request changes",
+		"source_repair_authorized": "focused repair 1/2 in owner-health-view.tsx only",
+		"commands_run": []
 	},
 	"delegation_evaluation": {
 		"evaluated_at": "2026-08-29T09:02:00Z",

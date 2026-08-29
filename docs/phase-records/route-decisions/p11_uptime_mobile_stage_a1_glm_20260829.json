@@ -12,6 +12,7 @@
 	"registry_revision": "2026-08-28.2",
 	"qualification_baseline": "2026-08-28.2",
 	"qualification_status": "qualified_restricted",
+	"outcome_classification": "The compact-return overruns are completion-contract/transport compliance events only. They are not source-quality failures, review-capability failures, qualification downgrades, or permanent routing penalties; the preserved candidate remains subject to independent native gates.",
 	"route_evidence": "requalified",
 	"gate_outcome": "PENDING",
 	"material_selection_reason": "The adopted plan permits sequential one-file GLM stages when the two-file shape exceeds current qualification. A1 is a deterministic single-file low-consequence React transcription under an exact allowlist, matching GLM's qualified class. The human requires GLM preference and bars V4 Pro for the current run; native retains all semantic, visual, accessibility, browser, canonical, verification, review, and integration judgment.",

@@ -12,6 +12,7 @@
 	"registry_revision": "2026-08-28.2",
 	"qualification_baseline": "2026-08-28.2",
 	"qualification_status": "qualified_restricted",
+	"outcome_classification": "completion-contract/transport compliance only; the reported review text contained zero source findings, and this event is not a source-quality failure, review-capability failure, qualification downgrade, or permanent routing penalty",
 	"route_evidence": "requalified",
 	"gate_outcome": "COMPLETION_INVALID",
 	"material_selection_reason": "Independence: the writer completion is invalid, so a fresh read-only reviewer must judge the exact one-file candidate before native gates. GLM is qualified for bounded advisory defect review, the human requires GLM preference, and V4 Pro is barred for the run.",
