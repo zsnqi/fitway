@@ -1,0 +1,56 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-uptime-mobile-fidelity-b02/independent-plan-rereview-2",
+	"recorded": "2026-08-29T23:02:27.8932594+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native",
+	"route": null,
+	"transport": "codex-native",
+	"control": "xhigh",
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"qualification_status": "native",
+	"gate_outcome": "PENDING",
+	"native_spawn": {
+		"model": "gpt-5.6-sol",
+		"reasoning_effort": "xhigh",
+		"agent_role": "reviewer",
+		"fork_turns": "none",
+		"parent_inheritance_deliberate": false,
+		"invocation_id": "p11_uptime_mobile_b02_plan_rereview2_sol01",
+		"request_timestamp": "2026-08-29T23:02:27.8932594+03:00",
+		"mechanism": "fresh_native_read_only_final_plan_review"
+	},
+	"consequence": "release-gating final plan review that exceeds every currently qualified external candidate's demonstrated consequence ceiling; another rejection stops Uptime planning",
+	"material_selection_reason": "Fresh Sol independence is required for a release-gating final review spanning two worktrees, immutable terminal history, database safety, verification topology, and adversarial browser-oracle sensitivity. DeepSeek's qualified supervised bounded-work ceiling is medium and the other external candidates' evidence is lower or lacks this exact review capability; this review exceeds those ceilings. Native Sol has the required consequence ceiling, direct multi-worktree access, and reliable read-only return path.",
+	"eligible_alternatives": ["native"],
+	"filtered_alternatives": {
+		"deepseek-v4-pro": [
+			"Release-gating final review exceeds its demonstrated medium consequence ceiling and exact multi-worktree browser-oracle review evidence."
+		],
+		"glm-5.3-flash": [
+			"Qualified evidence covers supervised low-consequence implementation, not this final review."
+		],
+		"ox-alpha": [
+			"No current evidence covers this release-gating multi-worktree plan-review capability and consequence."
+		],
+		"minimax-m3": [
+			"No current evidence covers this release-gating multi-worktree plan-review capability and consequence."
+		],
+		"gpt-5.6-terra": [
+			"No fresh one-shot invocation approval; Sol matches the required consequence ceiling."
+		],
+		"gpt-5.6-luna": [
+			"No fresh one-shot invocation approval and insufficient consequence-bearing review evidence."
+		]
+	},
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "multi_worktree_read"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [
+		"independent_final_plan_review",
+		"database_and_verification_topology_review",
+		"adversarial_browser_oracle_review"
+	]
+}

@@ -1,0 +1,24 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-uptime-mobile-fidelity-b02/plan-repair-2",
+	"recorded": "2026-08-29T23:02:27.8932594+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "direct",
+	"route": null,
+	"transport": "direct",
+	"control": null,
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"gate_outcome": "PASS",
+	"consequence": "final focused correction of a release-gating plan; no product, source, test, Paper, branch, worktree, database, or runtime mutation",
+	"material_selection_reason": "Direct correction won because the second review returned concrete plan-only defects across coordinator-owned topology, database safety, verification ordering, and browser-oracle contracts. The coordinator retains the only plan/ledger write; a fresh independent reviewer owns the final gate.",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "coordinator_record_write"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [
+		"final_plan_gate_correction",
+		"disposable_resource_and_detached_verifier_design",
+		"deterministic_browser_oracle_specification"
+	]
+}

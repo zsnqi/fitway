@@ -10,7 +10,7 @@
 	"control": "xhigh",
 	"registry_revision": "2026-08-28.2",
 	"qualification_baseline": "2026-08-28.2",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "FAILED_VALIDATION",
 	"native_spawn": {
 		"model": "gpt-5.6-sol",
 		"reasoning_effort": "xhigh",
@@ -41,5 +41,7 @@
 		"independent_plan_rereview",
 		"adversarial_negative_control_review",
 		"workflow_topology_and_repair_budget_review"
-	]
+	],
+	"gate_outcome_note": "Fresh independent rereview rejected plan repair 1 before activation. Blocking findings: activation commands did not create/enter/assert the worktree or execute carry gates; pre-review freeze was ordered after runtime; disposable integration resources and a detached verifier were absent; paint/accessibility controls missed exact matching, pointer-events-none descendants, filters/masks, deterministic pseudo coverage and font/tolerance rules; count connector/ownership, finite max-size/outer clipping, and row-level Arabic unconfirmed coverage were incomplete. No b02 implementation repair was consumed.",
+	"evidence": "docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b02-plan-review2-rejection.md"
 }

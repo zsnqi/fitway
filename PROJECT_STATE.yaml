@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-29T19:44:18Z"
+updatedAt: "2026-08-29T20:02:27Z"
 
 coordinator:
-  owner: "Coordinator final authority. Human authorized fresh Uptime and Settings attempts and resolved Login in favor of WCAG AA with the smallest Paper-language-preserving adjustment. Fresh Uptime b02 initial plan was independently rejected before activation; focused plan repair 1 is frozen for fresh rereview. Terminal b01/B2 history and 2/2 budget remain immutable; b02 source/runtime budget remains 0/2 and no branch/worktree exists. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b02-plan-review1-rejection.md"
+  owner: "Coordinator final authority. Human authorized fresh Uptime and Settings attempts and resolved Login in favor of WCAG AA with the smallest Paper-language-preserving adjustment. Fresh Uptime b02 initial plan and repair 1 were independently rejected before activation; final focused plan repair 2 is frozen for fresh review. Terminal b01/B2 history and 2/2 budget remain immutable; b02 source/runtime budget remains 0/2 and no branch/worktree/database run exists. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b02-plan-review2-rejection.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1993,9 +1993,9 @@ milestones:
       - "root manifests, lockfiles, test configuration, generated routing, deployment, databases, and external systems"
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-29T19:44:18Z"
+    lastHeartbeatAt: "2026-08-29T20:02:27Z"
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b02-plan-review1-rejection.md
+    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b02-plan-review2-rejection.md
     stopReason: null
     gates:
       unit: PENDING

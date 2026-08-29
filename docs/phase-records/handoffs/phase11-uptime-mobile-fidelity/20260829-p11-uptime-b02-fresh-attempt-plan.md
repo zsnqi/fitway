@@ -1,6 +1,6 @@
 # Phase 11 Uptime mobile fidelity — fresh b02 attempt plan
 
-- Status: `PLAN_REPAIR_1_READY`; the first independent plan review rejected the initial plan before activation, and this focused correction requires a fresh independent rereview. The future implementation repair budget remains `0/2`. The human explicitly authorized a fresh Uptime attempt on 2026-08-29 with a new reviewed plan and fresh bounded repair budget. This is not B2 repair 3.
+- Status: `PLAN_REPAIR_2_READY`; independent review rejected the initial plan and repair 1 before activation. This is the final permitted focused plan correction and requires a fresh independent review. Another plan rejection stops Uptime planning for new human direction. The future implementation repair budget remains `0/2`. The human explicitly authorized a fresh Uptime attempt on 2026-08-29 with a new reviewed plan and fresh bounded repair budget. This is not B2 repair 3.
 - Planning anchor: clean coordinator branch `codex/remaining-scope-coordinator` at `a3e64573630f4953bea717d238f0f8b357540391`.
 - Execution base if the plan passes: a coordinator-only activation commit on the then-current authoritative coordinator branch. The fresh b02 worktree starts there, never from b01. It carries forward only the three accepted source commits `3a02a126ba3031c0b4c3f12934ee2dffd97065dd`, `b04215cada5c717b3e115b3a34d585b5039b34c4`, and `04c2d3be01c14a42974666af636c96f2ed23ce39` as new b02 commits with byte-identical resulting source. The terminal b01 branch, its uncommitted B2 candidate at SHA-256 `a0e69ed02e833227883da7a3b5577c7a520b99ca18f386e842010aa5a9fc64aa`, its `2/2` budget, and all terminal records remain immutable.
 - Fresh attempt identity: `phase11-uptime-mobile-fidelity-b02`; prospective branch `work/phase11-uptime-mobile-fidelity-b02`; prospective worktree `C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile-b02`; run ID `p11_uptime_mobile_b02`; validation repair budget `0/2`.
@@ -25,7 +25,7 @@ The only new implementation file is `tests/browser/phase11-health.browser.spec.t
 
 Everything else is forbidden, including any production change beyond the exact accepted carry-forward bytes, message catalogs, hooks, canonical PNGs, test configuration, root manifests/lockfiles, normative authorities, Paper, server/API/database paths, and the preserved b01 worktree.
 
-Rollback boundaries: revert the test commit to return to the frozen carry-forward; then revert the three carry-forward commits in reverse order to return to the coordinator activation tree. Each b02 commit has one parent and leaves b01 untouched.
+Rollback boundaries: revert the handoff commit first, then test, B1 carry-forward, A2 carry-forward, and A1 carry-forward in reverse order. The state after each revert is respectively the test candidate without a stale handoff, frozen accepted carry-forward, accepted A1/A2, accepted A1, and the coordinator activation tree. Each b02 commit has one parent and leaves b01 untouched.
 
 ## Stage sequence
 
@@ -37,11 +37,11 @@ Plan-review corrections do not consume the future source-validation budget becau
 
 ### Stage 1 — coordinator activation and accepted source carry-forward
 
-After `PLAN_REVIEW_PASS`, the coordinator registers the existing `phase11-health` profile and exact browser path for b02, changes only the b02 ledger block to `READY`, records branch/worktree/run ID/lease/activation handoff, and commits that live state. Create `work/phase11-uptime-mobile-fidelity-b02` and its non-overlapping worktree from that coordinator activation commit.
+After `PLAN_REVIEW_PASS`, the coordinator registers the existing `phase11-health` profile and exact browser path for b02, changes only the b02 ledger block to `READY`, records branch/worktree/run IDs, three disposable databases, lease, activation handoff, and `baseCommit: SELF`, and commits that live state. The exact command block creates `work/phase11-uptime-mobile-fidelity-b02` and its non-overlapping worktree from that recorded activation commit, enters it, and fails on any branch/HEAD/status mismatch.
 
 Before any source or test edit, run `pnpm install --frozen-lockfile`, require `pnpm exec vitest --version` to print a version, and provision the ignored `apps/server/.env` from the coordinator worktree without printing or copying it into tracked files. Record the actual initial HEAD and clean status.
 
-Apply the accepted A1, A2, and B1 source-only commits in order with three separate `git cherry-pick` operations, producing three new b02 carry-forward commits. After each commit, verify its one-file diff and resulting blob against the accepted commit. After B1, `git diff --exit-code 04c2d3b --` over the three accepted Owner Health source paths must be empty; focused component tests, `pnpm --filter web check-types`, and `pnpm --filter web build` must pass. A fresh read-only scope review must pass before the test lease opens. Any conflict or byte difference is rejection, not a repair of accepted source.
+Apply the accepted A1, A2, and B1 source-only commits in order with three separate `git cherry-pick` operations, producing three new single-parent b02 carry-forward commits. The fail-fast command block checks each commit's sole changed path and target blob against the accepted commit before continuing. After B1, exact three-source equality, focused component tests, web type-check/build, full activation-to-B1 allowlist, and a fresh read-only carry-forward scope review must pass before the test lease opens. Any conflict, extra path, missing review, or byte difference is rejection, not a repair of accepted source.
 
 ### Stage 2 — fresh browser-contract implementation
 
@@ -49,32 +49,34 @@ Start from the committed B1 browser spec now present on the fresh branch; consul
 
 The contract must preserve all existing Uptime functional/state/timezone/request/sibling-route, keyboard/focus, forced-colors, reduced-motion, 200% reflow, axe, screenshot, and canonical assertions, and add these independently reviewable oracles:
 
-1. Assert the exact Arabic and English accessible name of each offline/incident region, not mere truthiness.
+1. Assert each offline/incident region with `getByRole("region", { name: expected, exact: true })` in Arabic and English; substring matches are forbidden.
 2. Pin exact independent literals for every static label/state word exercised by the responsive contract, including Arabic `غير مؤكد` and English `unconfirmed`, and exercise them in rendered output. Locale-formatted dates, times, durations, and numbers use frozen fixture-derived structural oracles and exact Western-digit/`bdi` assertions rather than hard-coded ICU punctuation.
-3. For every mobile cell at 320/360/390 in both locales, assert its exact accessible name through `getByRole("cell", { name: ... })` or an exact `ariaSnapshot`, so `aria-hidden`, `inert`, or hidden accessibility ancestry fails. Separately collect every value text range and ancestor chain: require non-empty client rects, `display` not `none`, `visibility: visible`, `content-visibility` not `hidden`, opacity greater than zero, nontransparent `color` and `-webkit-text-fill-color`, no clipping by any ancestor, and containment inside cell and region. Sample the center of every range fragment with `elementsFromPoint`; the first accepted hit must be the value owner or its ancestor/descendant, with no opaque covering sibling/non-ancestor. Inspect `::before`/`::after` on the owner and ancestor chain and reject a nonempty positioned opaque covering pseudo-element.
-4. Use two separate count containment chains at 320/360/390 in Arabic and English. Board-header counts must have exact visible and accessible text, Western digits, and both numeric `bdi` ranges painted inside count lane → board header → region. Bounded summaries must use a fixture whose totals exceed returned rows and prove exact visible and accessible text plus both numeric `bdi` ranges inside `.owner-health__shown` → `.owner-health-block` → viewport/document. Neither chain may be substituted for the other.
-5. Prove natural mobile auto-height at 320/360/390 in both locales on the first incident row's fifth (delivery) cell. In `try/finally`, append a `grid-column: 1 / -1`, `display:block`, `white-space:pre-wrap` span containing eight explicit 20px lines, wait two animation frames, and compare before/after/restored rectangles and scroll/client metrics for the cell, row, `tbody`, and region. Each layer must grow by at least 100px without clipping, then restore within 1px after removal. At 320 and 390 in both locales, reversible negative controls apply fixed baseline and oversized 2000px `block-size`/hidden overflow to the same layers; the helper must return false, then restore all styles in `finally`.
+3. A file-local literal `expectedCells` matrix independently enumerates the exact accessible name for all 3×4 offline and 2×5 incident cells in both locales. It calls no production formatter, catalog, or helper; dates/times/durations are frozen literal outputs for the fixed fixture. At 320/360/390 every cell uses `getByRole("cell", { name: expected, exact: true })` plus exact `ariaSnapshot`, so `aria-hidden`, `inert`, or hidden ancestry fails. Before measurement wait for `document.fonts.ready`. For every value text fragment and its complete owner/ancestor chain, require non-empty range rects within 1px tolerance, visible display/content/opacity, nontransparent `color` and `-webkit-text-fill-color`, `filter:none`, `mask-image:none`, no clipping/finite max-block constraint, and containment inside cell, region, owning `.owner-health-block`, and viewport. `elementsFromPoint` plus a separate rectangle-intersection scan of every visible positioned descendant/sibling rejects opaque overlays even with `pointer-events:none`. Pseudo coverage is deterministic: for `::before`/`::after`, only `content:none|normal` or a fully transparent background is accepted; any nonempty positioned pseudo with zero insets or computed width/height intersecting a text sample is rejected.
+4. Use two separate, table-bound count chains at 320/360/390 in Arabic and English. Board-header counts prove exact visible/accessibility text and paint for both numeric `bdi` ranges and the connector text node inside count lane → header → the region that owns that exact table. Bounded fixtures set each total above returned rows; each matching `.owner-health-block` must contain exactly one expected table and one summary. The summary proves exact visible/accessibility text and paint for label, connector, and both numeric ranges inside summary → that owning block → viewport/document. Swapping summaries between blocks, transparent connectors, hidden accessibility ancestry, or below-390 clipping must fail.
+5. Prove natural mobile auto-height at 320/360/390 in both locales on the first incident row's fifth delivery cell and its owning block. Assert computed `height/block-size` is content-derived, `max-block-size:none`, and nonclipping overflow for cell, row, `tbody`, region, and block; scan matching mobile CSS rules and reject authored fixed/finite `height`, `block-size`, `max-height`, or `max-block-size` on those layers. In `try/finally`, append a `grid-column:1/-1`, `display:block`, `white-space:pre-wrap` span containing eight explicit 20px lines, wait two animation frames, and require every layer to grow by at least 100px without scroll clipping, then restore within 1px. At 320 and 390 in both locales, reversible fixed-baseline, oversized 2000px block-size, finite 4000px max-block-size, and outer-block clipping controls must each make the helper return false, then restore all styles.
 6. Retain exact semantic column headers/scopes, record/field counts, DOM order, RTL/LTR lane reflection, bidi isolation, 390px Paper dimensions, below-390 contraction, the 720/721 breakpoint, desktop sticky-table behavior, and document/region overflow rules.
 
-The paint helper must prove its own sensitivity with reversible negative controls before acceptance: transparent `color`/`-webkit-text-fill-color`, `aria-hidden` ancestry, a same-host opaque `::after`, an opaque positioned sibling overlay, transformed off-clip placement, and clipped ancestry must each make the applicable evidence return false, after which the DOM/style state is restored in `finally`. Existing 390/1440 screenshot assertions and axe color-contrast checks remain a separate visual backstop.
+The paint helper must prove its own sensitivity with reversible negative controls before acceptance: transparent `color`/`-webkit-text-fill-color`, `filter:opacity(0)`, CSS masking, `aria-hidden` ancestry, a same-host opaque zero-inset `::after`, opaque positioned sibling and descendant overlays including `pointer-events:none`, transformed off-clip placement, and clipped ancestry must each make the applicable evidence return false, after which DOM/style state restores in `finally`. Existing 390/1440 screenshot assertions and axe color-contrast checks remain a separate visual backstop.
 
-The implementation writer commits the test-only change, then writes and commits only its b02 worker handoff citing the test commit and commands, then runs the candidate-freeze check over the complete candidate. The exact diff from the accepted carry-forward commit to the test commit is one test file; the later handoff commit is record-only. Any need for new production bytes, copy, Paper, canonical, configuration, or a second test file is an immediate stop, not scope expansion.
+The bounded incident fixture sets the first incident to `unconfirmed: 1` with coherent notice totals. Its fifth-cell literal must include English `1 unconfirmed` and Arabic `1 غير مؤكد`; the aggregate metric alone never satisfies this oracle.
+
+The implementation writer commits the test-only change, then writes and commits only its b02 worker handoff citing the test commit and non-runtime checks. It runs the exact pre-review freeze block over the complete candidate before source review. That block proves: each carry commit one-parent/one-file/exact-blob, test commit one-file, handoff commit one-file, full activation-to-candidate allowlist, source equality, repository invariants, Biome, focused component tests, web type/build, clean status, and whitespace. It runs no Playwright, phase, integration, Browser, or visual gate. Any need for new production bytes, copy, Paper, canonical, configuration, or a second test file is an immediate stop, not scope expansion.
 
 ### Stage 3 — independent source review and cumulative repair accounting
 
-A fresh read-only reviewer inspects the entire one-file diff against both Standards and Spec/accepted Paper axes before any Playwright execution. The review must construct at least one adversarial counterexample for each new oracle and confirm the test would fail it.
+A fresh read-only reviewer inspects the frozen one-file test diff and complete candidate topology against Standards and Spec/accepted Paper axes before any Playwright, phase, integration, Browser, or visual execution. The review must construct at least one adversarial counterexample for each new oracle and confirm the test would fail it.
 
 The first formally submitted candidate begins at repair `0/2`. Any source-review, mechanical, runtime, Browser/Paper, accessibility, canonical, repository, or final independent-verification rejection consumes the next cumulative focused repair. After repair 2/2, another rejection is terminal `FAILED_VALIDATION` for b02. No gate receives its own reset budget.
 
 ### Stage 4 — executable and visual gates
 
-Only after source review passes:
+Only after source review passes, the coordinator creates a detached verifier worktree at the exact frozen candidate commit, independently installs from the lockfile, checks Vitest, provisions its ignored `.env`, and uses verifier-specific run/database/output resources. Then:
 
 1. Run the focused Owner Health unit/component tests, direct Biome check, web type-check and build, ancestry/diff/scope/freeze checks, and the complete `phase11-health.browser.spec.ts` in Chromium with a unique run ID and review directory.
 2. Inspect the live route interactively with Browser and compare repository Playwright screenshots at 320/360/390/721/768/820/1024/1200/1440, Arabic RTL and English LTR. Recheck loading, populated, clear, unmonitored, unavailable/error states represented by the existing suite.
 3. Verify keyboard order/focus, 44px targets, exact accessible names, semantic headers/scopes, axe serious/critical results, reduced motion, forced colors, 200% zoom/reflow, safe containment, and no page or mobile-region overflow.
 4. Compare 390px mobile renders to accepted Paper successor `1DZC-0` and 1440px desktop renders to the preserved desktop source. Existing canonical screenshots must match without update; any requested promotion is `NEEDS_HUMAN` and outside this attempt.
-5. Run `pnpm build`, `pnpm verify:fast`, `FITWAY_PHASE=phase11-health pnpm verify:phase`, and the candidate freeze checks after every durable candidate record is committed. A fresh detached verifier repeats the source, browser, accessibility, RTL/LTR, Paper, desktop, canonical, repository, ancestry, and scope gates without editing.
+5. Run `pnpm build`, `pnpm verify:fast`, and `FITWAY_PHASE=phase11-health pnpm verify:phase` on the writer candidate and detached verifier with distinct resources. Write runtime/visual evidence only to coordinator-owned durable records after both read-only runs, then rerun final freeze/status/topology checks against the unchanged candidate. The detached verifier repeats source, browser, accessibility, RTL/LTR, Paper, desktop, canonical, repository, ancestry, and scope gates without editing.
 
 ### Stage 5 — coordinator integration
 
@@ -84,49 +86,141 @@ If pre-integration validation terminates, preserve the b02 branch/worktree and r
 
 ## Exact activation and verification commands
 
-The coordinator runs this activation/preflight block once, after the reviewed activation commit and before the test writer starts:
+Before activation the coordinator provisions, through the established scoped local disposable-Postgres mechanism, three existing empty databases and records proof without credentials: `fitway_integration_p11_uptime_mobile_b02`, `fitway_integration_p11_uptime_mobile_v02`, and `fitway_integration_p11_uptime_mobile_c02`. They are distinct from `DATABASE_URL`; absence or name mismatch stops. Native command failures are fail-fast.
+
+The coordinator runs this activation/carry-forward block once after committing the reviewed activation record. It creates and enters the exact worktree, asserts activation identity, prepares ignored dependencies/environment, and stops after the carry-forward gates; the test writer does not start until a fresh read-only carry-forward review passes.
 
 ```powershell
-$uptimeCoordinatorEnv = 'C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration/apps/server/.env'
-$uptimeWorkerEnv = 'C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile-b02/apps/server/.env'
-$uptimeWorkerHandoff = 'docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b02-worker-candidate.md'
+$ErrorActionPreference = 'Stop'
+$PSNativeCommandUseErrorActionPreference = $true
+$uptimeCoordinator = 'C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration'
+$uptimeWorker = 'C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile-b02'
+$uptimeBranch = 'work/phase11-uptime-mobile-fidelity-b02'
+$uptimeCoordinatorEnv = "$uptimeCoordinator/apps/server/.env"
+$uptimeWorkerEnv = "$uptimeWorker/apps/server/.env"
+Set-Location -LiteralPath $uptimeCoordinator
+if ((git status --porcelain).Length -ne 0) { throw 'coordinator worktree is dirty' }
+$uptimeActivation = (git rev-parse HEAD).Trim()
+git worktree add -b $uptimeBranch $uptimeWorker $uptimeActivation
+Set-Location -LiteralPath $uptimeWorker
+if ((git branch --show-current).Trim() -ne $uptimeBranch) { throw 'wrong b02 branch' }
+if ((git rev-parse HEAD).Trim() -ne $uptimeActivation) { throw 'wrong activation HEAD' }
+if ((git status --porcelain).Length -ne 0) { throw 'fresh b02 worktree is dirty' }
 if (-not (Test-Path -LiteralPath $uptimeCoordinatorEnv)) { throw 'coordinator apps/server/.env is absent' }
 Copy-Item -LiteralPath $uptimeCoordinatorEnv -Destination $uptimeWorkerEnv -Force
-if (-not (Test-Path -LiteralPath $uptimeWorkerEnv)) { throw 'worker apps/server/.env was not provisioned' }
 pnpm install --frozen-lockfile
 pnpm exec vitest --version
-git status --short --branch
+function Assert-UptimeCarryCommit([string]$expectedPath, [string]$acceptedCommit) {
+  $actualPaths = @(git diff-tree --no-commit-id --name-only -r HEAD)
+  if ($actualPaths.Count -ne 1 -or $actualPaths[0] -ne $expectedPath) { throw "carry path mismatch: $expectedPath" }
+  if (((git rev-list --parents -n 1 HEAD).Trim().Split(' ')).Count -ne 2) { throw 'carry commit is not single-parent' }
+  if ((git rev-parse "HEAD:$expectedPath").Trim() -ne (git rev-parse "$acceptedCommit`:$expectedPath").Trim()) { throw "carry blob mismatch: $expectedPath" }
+}
 git cherry-pick 3a02a126ba3031c0b4c3f12934ee2dffd97065dd
+Assert-UptimeCarryCommit 'apps/web/src/components/owner/health/owner-health-view.tsx' '3a02a126ba3031c0b4c3f12934ee2dffd97065dd'
 git cherry-pick b04215cada5c717b3e115b3a34d585b5039b34c4
+Assert-UptimeCarryCommit 'apps/web/src/components/owner/health/owner-health.css' 'b04215cada5c717b3e115b3a34d585b5039b34c4'
 git cherry-pick 04c2d3be01c14a42974666af636c96f2ed23ce39
+Assert-UptimeCarryCommit 'apps/web/src/components/owner/health/owner-health-section.tsx' '04c2d3be01c14a42974666af636c96f2ed23ce39'
+git diff --exit-code 04c2d3be01c14a42974666af636c96f2ed23ce39 -- apps/web/src/components/owner/health/owner-health-view.tsx apps/web/src/components/owner/health/owner-health.css apps/web/src/components/owner/health/owner-health-section.tsx
+$uptimeCarryPaths = @(git diff --name-only $uptimeActivation..HEAD | Sort-Object)
+$uptimeExpectedCarryPaths = @('apps/web/src/components/owner/health/owner-health-section.tsx','apps/web/src/components/owner/health/owner-health-view.tsx','apps/web/src/components/owner/health/owner-health.css') | Sort-Object
+if (Compare-Object $uptimeCarryPaths $uptimeExpectedCarryPaths) { throw 'carry-forward allowlist mismatch' }
+pnpm exec vitest run apps/web/src/components/owner/health/owner-health-view.test.tsx apps/web/src/hooks/use-owner-health.test.tsx
+pnpm --filter web check-types
+pnpm --filter web build
+git diff --check $uptimeActivation..HEAD
+if ((git status --porcelain).Length -ne 0) { throw 'carry-forward worktree is dirty' }
 ```
 
-After the test-only and worker-handoff commits exist, the writer and fresh verifier run this non-writing candidate block from the b02 worktree:
+After the test-only commit and exact worker-handoff commit exist, the writer runs this non-runtime pre-source-review freeze. For the initial candidate, `HEAD` is handoff, `HEAD^` test, `HEAD^^` B1 carry, `HEAD^^^` A2, `HEAD^^^^` A1, and `HEAD^^^^^` activation. A later focused repair must freeze its new literal commit IDs in its own repair record before execution; it may not reuse these relative assumptions.
 
 ```powershell
+$ErrorActionPreference = 'Stop'
+$PSNativeCommandUseErrorActionPreference = $true
+$uptimeWorker = 'C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile-b02'
 $uptimeWorkerHandoff = 'docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b02-worker-candidate.md'
+Set-Location -LiteralPath $uptimeWorker
+if ((git status --porcelain).Length -ne 0) { throw 'candidate worktree is dirty' }
+if (((git rev-list --parents -n 1 HEAD).Trim().Split(' ')).Count -ne 2) { throw 'handoff commit is not single-parent' }
+if (((git rev-list --parents -n 1 HEAD^).Trim().Split(' ')).Count -ne 2) { throw 'test commit is not single-parent' }
+if (@(git diff-tree --no-commit-id --name-only -r HEAD).Count -ne 1 -or (git diff-tree --no-commit-id --name-only -r HEAD).Trim() -ne $uptimeWorkerHandoff) { throw 'handoff commit scope mismatch' }
+if (@(git diff-tree --no-commit-id --name-only -r HEAD^).Count -ne 1 -or (git diff-tree --no-commit-id --name-only -r HEAD^).Trim() -ne 'tests/browser/phase11-health.browser.spec.ts') { throw 'test commit scope mismatch' }
+$uptimeCandidatePaths = @(git diff --name-only HEAD^^^^^..HEAD | Sort-Object)
+$uptimeExpectedCandidatePaths = @('apps/web/src/components/owner/health/owner-health-section.tsx','apps/web/src/components/owner/health/owner-health-view.tsx','apps/web/src/components/owner/health/owner-health.css','tests/browser/phase11-health.browser.spec.ts',$uptimeWorkerHandoff) | Sort-Object
+if (Compare-Object $uptimeCandidatePaths $uptimeExpectedCandidatePaths) { throw 'candidate allowlist mismatch' }
+git diff --exit-code 04c2d3be01c14a42974666af636c96f2ed23ce39 -- apps/web/src/components/owner/health/owner-health-view.tsx apps/web/src/components/owner/health/owner-health.css apps/web/src/components/owner/health/owner-health-section.tsx
 pnpm exec biome check tests/browser/phase11-health.browser.spec.ts
 pnpm exec vitest run apps/web/src/components/owner/health/owner-health-view.test.tsx apps/web/src/hooks/use-owner-health.test.tsx
 pnpm --filter web check-types
 pnpm --filter web build
+node 'C:/Users/Pc Force/.codex/skills/agent-project-workflow/scripts/candidate-freeze-check.mjs' --dir $uptimeWorker --base 'HEAD^^^^^' --capture 'test-results/node_modules/p11_uptime_mobile_b02_source_freeze.txt' --also "repository=pnpm check:repository" --record $uptimeWorkerHandoff
+```
+
+Only after independent source review passes, the writer candidate uses `p11_uptime_mobile_b02` / `fitway_integration_p11_uptime_mobile_b02` and runs the post-review executable block:
+
+```powershell
 $env:FITWAY_RUN_ID='p11_uptime_mobile_b02'
+$env:TEST_DATABASE_URL='postgresql://postgres:postgres@127.0.0.1:55432/fitway_integration_p11_uptime_mobile_b02'
+$env:FITWAY_INTEGRATION_RESET_DATABASE='fitway_integration_p11_uptime_mobile_b02'
 $env:FITWAY_PLAYWRIGHT_REVIEW_DIR='test-results/p11_uptime_mobile_b02/review'
+$env:FITWAY_PHASE='phase11-health'
 pnpm exec playwright test tests/browser/phase11-health.browser.spec.ts --project=chromium
 pnpm build
 pnpm verify:fast
-$env:FITWAY_PHASE='phase11-health'
 pnpm verify:phase
-git diff --exit-code 04c2d3be01c14a42974666af636c96f2ed23ce39 -- apps/web/src/components/owner/health/owner-health-view.tsx apps/web/src/components/owner/health/owner-health.css apps/web/src/components/owner/health/owner-health-section.tsx
-git diff --check HEAD^^^^^..HEAD
-git diff --name-only HEAD^^..HEAD^
-git rev-parse HEAD^^
-git rev-parse HEAD^^^
-git rev-list --parents --max-count=1 HEAD^
-node 'C:/Users/Pc Force/.codex/skills/agent-project-workflow/scripts/candidate-freeze-check.mjs' --dir 'C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile-b02' --base 'HEAD^^^^^' --capture 'test-results/node_modules/p11_uptime_mobile_b02_freeze.txt' --also "repository=pnpm check:repository" --record $uptimeWorkerHandoff
-git status --short --branch
+node 'C:/Users/Pc Force/.codex/skills/agent-project-workflow/scripts/candidate-freeze-check.mjs' --dir 'C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile-b02' --base 'HEAD^^^^^' --capture 'test-results/node_modules/p11_uptime_mobile_b02_final_freeze.txt' --also "repository=pnpm check:repository" --record 'docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b02-worker-candidate.md'
 ```
 
-The frozen candidate topology is exact: `HEAD` is the worker-handoff commit, `HEAD^` the test-only commit, `HEAD^^` accepted B1 carry-forward, `HEAD^^^` accepted A2 carry-forward, `HEAD^^^^` accepted A1 carry-forward, and `HEAD^^^^^` the coordinator activation commit. The ancestry commands must show the test commit has exactly `HEAD^^` as its sole parent, and the one-file name check must print only `tests/browser/phase11-health.browser.spec.ts`. Before any integration or `pnpm verify:full`, the ignored `apps/server/.env` must exist and be sourced without disclosure; absence stops the run. The detached verifier uses a distinct run ID and output directory. Coordinator integration additionally runs `pnpm verify:full`. Every run must leave tracked status unchanged from its pre-run snapshot except for the frozen b02 branch candidate where applicable.
+The coordinator creates and prepares the detached verifier with this exact block; it never reuses writer checkout/resources and makes no tracked edit:
+
+```powershell
+$ErrorActionPreference = 'Stop'
+$PSNativeCommandUseErrorActionPreference = $true
+$uptimeCoordinator = 'C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration'
+$uptimeWorker = 'C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile-b02'
+$uptimeVerifier = 'C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile-v02'
+$uptimeCandidate = (git -C $uptimeWorker rev-parse HEAD).Trim()
+git -C $uptimeCoordinator worktree add --detach $uptimeVerifier $uptimeCandidate
+Set-Location -LiteralPath $uptimeVerifier
+if ((git rev-parse HEAD).Trim() -ne $uptimeCandidate) { throw 'verifier candidate mismatch' }
+if ((git status --porcelain).Length -ne 0) { throw 'verifier worktree is dirty' }
+Copy-Item -LiteralPath "$uptimeCoordinator/apps/server/.env" -Destination "$uptimeVerifier/apps/server/.env" -Force
+pnpm install --frozen-lockfile
+pnpm exec vitest --version
+$env:FITWAY_RUN_ID='p11_uptime_mobile_v02'
+$env:TEST_DATABASE_URL='postgresql://postgres:postgres@127.0.0.1:55432/fitway_integration_p11_uptime_mobile_v02'
+$env:FITWAY_INTEGRATION_RESET_DATABASE='fitway_integration_p11_uptime_mobile_v02'
+$env:FITWAY_PLAYWRIGHT_REVIEW_DIR='test-results/p11_uptime_mobile_v02/review'
+$env:FITWAY_PHASE='phase11-health'
+pnpm exec playwright test tests/browser/phase11-health.browser.spec.ts --project=chromium
+pnpm build
+pnpm verify:fast
+pnpm verify:phase
+node 'C:/Users/Pc Force/.codex/skills/agent-project-workflow/scripts/candidate-freeze-check.mjs' --dir $uptimeVerifier --base 'HEAD^^^^^' --capture 'test-results/node_modules/p11_uptime_mobile_v02_final_freeze.txt' --also "repository=pnpm check:repository" --record 'docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b02-worker-candidate.md'
+if ((git status --porcelain).Length -ne 0) { throw 'verifier mutated tracked state' }
+```
+
+Only detached `PASS` permits the coordinator's serialized no-ff integration block:
+
+```powershell
+$ErrorActionPreference = 'Stop'
+$PSNativeCommandUseErrorActionPreference = $true
+Set-Location -LiteralPath 'C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration'
+if ((git status --porcelain).Length -ne 0) { throw 'coordinator worktree is dirty before integration' }
+git merge --no-ff work/phase11-uptime-mobile-fidelity-b02 -m 'merge(phase11): integrate Uptime mobile fidelity b02'
+$env:FITWAY_RUN_ID='p11_uptime_mobile_c02'
+$env:TEST_DATABASE_URL='postgresql://postgres:postgres@127.0.0.1:55432/fitway_integration_p11_uptime_mobile_c02'
+$env:FITWAY_INTEGRATION_RESET_DATABASE='fitway_integration_p11_uptime_mobile_c02'
+$env:FITWAY_PLAYWRIGHT_REVIEW_DIR='test-results/p11_uptime_mobile_c02/review'
+$env:FITWAY_PHASE='phase11-health'
+pnpm verify:phase
+pnpm verify:full
+git diff --check HEAD^..HEAD
+if ((git status --porcelain).Length -ne 0) { throw 'integration verification mutated tracked state' }
+```
+
+All three database names and reset markers exactly match their run IDs and remain distinct from `DATABASE_URL`. A missing database, unsafe target, collision, or environment mismatch stops before the corresponding run. If post-merge verification fails because of b02, the coordinator ordinary-reverts the merge; it never resets history.
 
 ## Risks, unknowns, and stop conditions
 
@@ -138,10 +232,10 @@ The frozen candidate topology is exact: `HEAD` is the worker-handoff commit, `HE
 
 ## Current handoff
 
-- Completed: repository/durable-state discovery, initial plan commit `b2a73e82026f7ea0c7abedee99a33d13860c36c6`, independent plan-review rejection, and focused plan repair 1; no implementation, b02 branch/worktree, lease, runtime, Browser, or test change exists.
+- Completed: repository/durable-state discovery, initial plan commit `b2a73e82026f7ea0c7abedee99a33d13860c36c6`, two independent plan rejections, and focused plan repairs 1 and 2; no implementation, b02 branch/worktree, lease, database run, runtime, Browser, or test change exists.
 - Current state: coordinator branch contains only plan/ledger/route records beyond terminal b01 history; b01 remains terminal and its separate worktree retains exactly its recorded uncommitted test candidate.
 - Human decisions: fresh Uptime and Settings attempts are authorized; Login must prefer WCAG AA with the smallest Paper-language-preserving adjustment. Only the Uptime decision is activated by this slice.
-- Remaining: fresh independent rereview of repair 1, then b02 activation/carry-forward/test implementation/source review/executable verification/integration; later Settings, Login, and aggregate slices remain separate.
-- Blockers: none for plan rereview. Activation is blocked until that rereview passes.
+- Remaining: fresh independent final review of plan repair 2, then b02 activation/carry-forward/test implementation/source review/executable verification/integration; later Settings, Login, and aggregate slices remain separate.
+- Blockers: none for final plan review. Activation is blocked until it passes; another rejection stops Uptime planning for new human direction.
 - Verification: planning used read-only repository, ledger, handoff, accepted source commits/hashes, CSS, copy, actual DOM ownership, branch topology, workflow preflight, verification scripts, and exact-worktree checks. No runtime or Browser verification was appropriate before an implementation candidate.
-- Recommended next session/stage: `review` repaired plan 1 read-only against the first review findings, terminal findings, workflow, and actual accepted source; return locatable findings and `PASS` or `FAILED_VALIDATION`; do not repair it.
+- Recommended next session/stage: `review` repaired plan 2 read-only against both prior review records, terminal findings, workflow, database safety guard, Playwright 1.61 primitives, and actual accepted source; return locatable findings and `PASS` or `FAILED_VALIDATION`; do not repair it.
