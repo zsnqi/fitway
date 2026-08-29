@@ -1,0 +1,41 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-uptime-mobile-fidelity/B2-repair1-independent-read-axes-and-frontier-map",
+	"recorded": "2026-08-29T19:06:30Z",
+	"candidate_id": "native",
+	"route": "codex-native-subagents",
+	"control": "parent-inherited",
+	"transport": "codex-native",
+	"gate_outcome": "COMPLETE",
+	"consequence": "release-gating source review on an uncommitted candidate plus coordinator-authority frontier reconstruction",
+	"delegation_trigger": "independence for the two review axes; volume and context isolation for the separate ledger map",
+	"axes": [
+		{
+			"name": "standards",
+			"role": "native read-only reviewer",
+			"result": "REJECT"
+		},
+		{
+			"name": "spec",
+			"role": "native read-only reviewer",
+			"result": "REJECT"
+		},
+		{
+			"name": "remaining-frontier",
+			"role": "native read-only explorer",
+			"result": "COMPLETE"
+		}
+	],
+	"eligible_alternatives": ["native", "glm-5.3-flash-through-opencode"],
+	"material_selection_reason": "The three axes had to reconcile two simultaneously live local trees: the uncommitted Uptime candidate in C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile and newer coordinator-only authority records in C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration. Native Codex subagents could read both exact filesystem states directly and return independent axes without copying either state into an external packet. The current GLM evidence qualified supervised low-consequence single-file implementation, not this release-gating multi-worktree review shape, and the same B2 lineage had just produced two consecutive zero-edit transport-incomplete OpenCode returns. Native therefore had the concrete compatibility and reliability advantage for this stage; this is stage-local evidence and does not change GLM's later qualified implementation preference.",
+	"glm_evidence": {
+		"qualification_baseline": "2026-08-28.2",
+		"qualified_scope_observed": "supervised low-consequence single-file implementation with exact allowlists",
+		"stage_local_transport_observations": 2,
+		"transport_outcome": "two consecutive zero-edit transport-incomplete returns on the exact B2 repair lineage",
+		"permanent_penalty_applied": false
+	},
+	"write_access": false,
+	"runtime_gates_run": false
+}
