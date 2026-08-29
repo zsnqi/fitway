@@ -10,7 +10,7 @@
 	"transport": "opencode-cli",
 	"qualification_status": "qualified_restricted",
 	"route_evidence": "requalified",
-	"gate_outcome": "PENDING_NATIVE_REVIEW",
+	"gate_outcome": "REJECTED_SOURCE_REVIEW",
 	"material_selection_reason": "A bounded extension of one existing Playwright regression test from a frozen exact contract is eligible supervised external work; native retains source review, Browser execution, visual/canonical, verification, integration, and terminal authority.",
 	"filtered_alternatives": {
 		"deepseek-v4-pro": ["explicitly unauthorized"],
@@ -39,7 +39,9 @@
 		"completion_ceiling": 900,
 		"completion_sentinel_valid": true,
 		"completion_sha256": "083a1d0cec7ddd40322e77b00f356e0ab5d4a647a585c5043cc47eec592a81e2",
-		"completion_contract_outcome": "TRANSPORT_NONCOMPLIANT_SOURCE_PRESERVED_NO_ROUTING_PENALTY"
+		"completion_contract_outcome": "TRANSPORT_NONCOMPLIANT_SOURCE_PRESERVED_NO_ROUTING_PENALTY",
+		"independent_review": "FAIL",
+		"mechanical_or_browser_gates_run": false
 	},
 	"resolver": {
 		"selected": "glm-5.3-flash",

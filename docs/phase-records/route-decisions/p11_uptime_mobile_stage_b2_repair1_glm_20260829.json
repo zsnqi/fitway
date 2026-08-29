@@ -1,0 +1,46 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-uptime-mobile-fidelity/stage-b2-browser-contract-repair1",
+	"recorded": "2026-08-29T10:53:00Z",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "glm-5.3-flash",
+	"route": "opencode-go/glm-5.3-flash",
+	"control": "high",
+	"transport": "opencode-cli",
+	"qualification_status": "qualified_restricted",
+	"route_evidence": "requalified",
+	"gate_outcome": "PENDING",
+	"material_selection_reason": "The native review produced a frozen, deterministic, one-file Playwright repair contract within GLM's qualified supervised repository-test class; native retains rereview, execution, visual, canonical, verification, integration, and terminal authority.",
+	"filtered_alternatives": {
+		"deepseek-v4-pro": ["explicitly unauthorized"],
+		"gpt-5.6-terra": ["no fresh approval"],
+		"gpt-5.6-luna": ["no fresh approval"]
+	},
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260828-glm-5.3-flash-authorization.md"
+	],
+	"activation": {
+		"activation_commit": "04c2d3be01c14a42974666af636c96f2ed23ce39",
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile",
+		"branch": "work/phase11-uptime-mobile-fidelity-b01",
+		"source_sha256": "aa3d28a64b5fb9125158ce81b411c24b71316559280404ac77c16d787af3cb86",
+		"exact_write_lease": ["tests/browser/phase11-health.browser.spec.ts"],
+		"read_only_context": ["apps/web/src/components/owner/health/messages.ts"],
+		"lease_expires_at": "2026-08-29T20:45:00+03:00",
+		"packet_sha256": "71323cd5673ec6888b1a6356291239b7679d5df05685d7bd4a2f1c19366f3842"
+	},
+	"repair_accounting": {
+		"b2_repairs_consumed": 1,
+		"b2_repair_ceiling": 2,
+		"b2_third_repair_authorized": false
+	},
+	"provider_task_invocations": 0,
+	"resolver": {
+		"selected": "glm-5.3-flash",
+		"route": "opencode-go/glm-5.3-flash",
+		"control": "high",
+		"delegation_lifecycle_violations": [],
+		"decomposition_mode": "sequential_default"
+	}
+}
