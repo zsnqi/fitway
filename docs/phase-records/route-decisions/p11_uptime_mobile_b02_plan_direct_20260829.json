@@ -1,0 +1,36 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-uptime-mobile-fidelity-b02/plan",
+	"recorded": "2026-08-29T22:29:11.9122381+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "direct",
+	"route": null,
+	"transport": "direct",
+	"control": null,
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"gate_outcome": "PASS",
+	"consequence": "release-gating fresh-attempt planning with no production, test, Paper, or runtime mutation",
+	"material_selection_reason": "Direct planning won because the terminal handoff fixes one exact successor objective, the writable implementation scope is one named browser spec, and the coordinator alone may amend PROJECT_STATE.yaml. The judgment is tightly coupled to preserving the failed b01 history and recording the human authorization; delegation would add a second authority handoff without reducing the bounded read.",
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"native": [
+			"Independent judgment is reserved for the separate plan-review stage; the coordinator retains the authoritative plan and ledger write."
+		]
+	},
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "coordinator_record_write"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [
+		"fresh_attempt_boundary",
+		"bounded_test_only_plan",
+		"repair_budget_and_rollback_design"
+	],
+	"frozen_repository_head": "a3e64573630f4953bea717d238f0f8b357540391",
+	"human_authority": {
+		"decision": "Authorize a fresh Uptime attempt with a new reviewed plan and fresh bounded repair budget; preserve failed B2 history.",
+		"recorded": "2026-08-29T22:29:11.9122381+03:00",
+		"authority": "human"
+	}
+}

@@ -1,0 +1,45 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-uptime-mobile-fidelity-b02/independent-plan-review",
+	"recorded": "2026-08-29T22:29:11.9122381+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native",
+	"route": null,
+	"transport": "codex-native",
+	"control": "xhigh",
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"gate_outcome": "PENDING",
+	"native_spawn": {
+		"model": "gpt-5.6-sol",
+		"reasoning_effort": "xhigh",
+		"agent_role": "reviewer",
+		"fork_turns": "none",
+		"invocation_id": "p11_uptime_mobile_b02_plan_review_sol01",
+		"request_timestamp": "2026-08-29T22:29:11.9122381+03:00",
+		"mechanism": "native_read_only_independent_review"
+	},
+	"consequence": "release-gating plan review; rejection prevents a fresh Uptime implementation attempt from starting",
+	"material_selection_reason": "Independence and consequence require a reviewer who did not author the plan. Native Sol can read the preserved uncommitted b01 worktree and newer coordinator-only authority records simultaneously, construct adversarial false-pass cases, and evaluate release-gating repair accounting. The current external qualification covers supervised low-consequence implementation, not this multi-worktree terminal-successor judgment.",
+	"eligible_alternatives": ["native"],
+	"filtered_alternatives": {
+		"glm-5.3-flash": [
+			"Qualified evidence does not cover release-gating multi-worktree plan review or terminal-successor authority reconciliation."
+		],
+		"gpt-5.6-terra": [
+			"Fresh one-shot invocation approval is absent; Sol is already authorized and matches the consequence ceiling."
+		],
+		"gpt-5.6-luna": [
+			"Fresh one-shot invocation approval is absent and the stage requires consequence-bearing adversarial judgment."
+		]
+	},
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "multi_worktree_read"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [
+		"independent_plan_review",
+		"adversarial_false_pass_analysis",
+		"authority_and_repair_budget_review"
+	]
+}

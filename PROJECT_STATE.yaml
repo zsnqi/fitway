@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-29T19:14:22Z"
+updatedAt: "2026-08-29T19:29:11Z"
 
 coordinator:
-  owner: "Coordinator final authority. W2 and Uptime A1/A2/B1 remain accepted. Uptime B2 is terminal FAILED_VALIDATION after final repair 2/2 failed both independent source-review axes at frozen hash a0e69ed; no runtime gate or repair 3 is authorized. Settings Paper and Login also retain separate human-only boundaries, so no approved executable milestone remains. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b2-terminal-failed-validation.md"
+  owner: "Coordinator final authority. Human authorized fresh Uptime and Settings attempts and resolved Login in favor of WCAG AA with the smallest Paper-language-preserving adjustment. Taking only fresh Uptime b02 planning now: terminal b01/B2 history and its 2/2 budget remain immutable; b02 is a separate test-only attempt at repair 0/2 and cannot activate before independent plan review. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b02-fresh-attempt-plan.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1970,6 +1970,38 @@ milestones:
       independentReview: FAIL
     integratedCommit: null
 
+  phase11-uptime-mobile-fidelity-b02:
+    status: PLANNED
+    dependencies: [phase11-health, phase11-uptime-paper-successor]
+    ownerSession: null
+    branch: null
+    worktree: null
+    baseCommit: 04c2d3be01c14a42974666af636c96f2ed23ce39
+    ownedPaths:
+      - tests/browser/phase11-health.browser.spec.ts
+      - docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/**
+      - docs/phase-records/route-decisions/**
+      - docs/phase-records/verification/**
+    forbiddenPaths:
+      - "the terminal phase11-uptime-mobile-fidelity b01 branch, worktree, uncommitted B2 candidate, budget, and history"
+      - "all production source including apps/web/src/components/owner/health/**, hooks, catalogs, server, API, schema, migration, router, shared tokens, unrelated UI, and normative authority paths"
+      - "Paper and every canonical screenshot; this attempt compares accepted artifacts and never promotes them"
+      - "root manifests, lockfiles, test configuration, generated routing, deployment, databases, and external systems"
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-08-29T19:29:11Z"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b02-fresh-attempt-plan.md
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: NOT_REQUIRED
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
   phase-11:
     status: PLANNED
     dependencies:
@@ -1982,7 +2014,7 @@ milestones:
         phase11-access-ui,
         phase11-settings,
         phase11-health,
-        phase11-uptime-mobile-fidelity,
+        phase11-uptime-mobile-fidelity-b02,
         phase11-reference-gating-debt,
         phase11-e2e-propagation-wait,
         focus-parity-accessibility,
