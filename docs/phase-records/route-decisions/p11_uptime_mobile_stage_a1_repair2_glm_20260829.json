@@ -1,0 +1,60 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-uptime-mobile-fidelity/stage-a1-focused-repair-2",
+	"recorded": "2026-08-29T08:49:00Z",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "glm-5.3-flash",
+	"route": "opencode-go/glm-5.3-flash",
+	"control": "high",
+	"transport": "opencode-cli",
+	"native_spawn": null,
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"qualification_status": "qualified_restricted",
+	"route_evidence": "requalified",
+	"gate_outcome": "PENDING",
+	"material_selection_reason": "The final allowed A1 repair is an exact deterministic one-file formatting correction within GLM's qualified restricted class. The human prefers GLM for eligible bounded external work and bars V4 Pro. Prior return overruns are completion-contract/transport events only and do not reduce qualification; native retains independent review and all verification authority.",
+	"consequence": "low supervised exact one-file formatting repair; final repair 2/2 remains native-gated",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "file_write"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"deepseek-v4-pro": ["explicitly unauthorized for further current-run work"],
+		"gpt-5.6-terra": ["no fresh one-shot human invocation approval"],
+		"gpt-5.6-luna": ["no fresh one-shot human invocation approval"]
+	},
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260828-glm-5.3-flash-authorization.md"
+	],
+	"activation": {
+		"activation_commit": "5a409e411491336b480de5c3b7589ab3ff1c80c7",
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile",
+		"branch": "work/phase11-uptime-mobile-fidelity-b01",
+		"candidate_source_sha256": "519b640d164fa12810a7f030389c8ea1990eb1603539d4c66104916f83ddc2fb",
+		"exact_write_lease": [
+			"apps/web/src/components/owner/health/owner-health-view.tsx"
+		],
+		"lease_expires_at": "2026-08-29T18:00:00+03:00",
+		"packet": "C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration/test-results/node_modules/p11_uptime_stage_a1_repair2_glm_20260829/packet.txt",
+		"packet_sha256": "8feb7c3857cf8e669ae0c7c24d220b8f71b90947d0e8cdc11683ff53f9d1c571",
+		"spec": "test-results/node_modules/p11_uptime_stage_a1_repair2_glm_20260829/spec.json"
+	},
+	"repair_accounting": {
+		"attempts_consumed": 2,
+		"ceiling": 2
+	},
+	"provider_task_invocations": 0,
+	"delegation_evaluation": {
+		"evaluated_at": "2026-08-29T08:49:00Z",
+		"stage_discovery_started_at": null,
+		"basis": [
+			"direct local Biome diagnostic",
+			"exact repaired candidate hash",
+			"frozen A1 repair ceiling"
+		],
+		"reasons": ["economy", "permission", "recoverability"]
+	}
+}
