@@ -1,0 +1,40 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-uptime-mobile-fidelity/stage-b2-browser-contract",
+	"recorded": "2026-08-29T10:31:00Z",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "glm-5.3-flash",
+	"route": "opencode-go/glm-5.3-flash",
+	"control": "high",
+	"transport": "opencode-cli",
+	"qualification_status": "qualified_restricted",
+	"route_evidence": "requalified",
+	"gate_outcome": "PENDING",
+	"material_selection_reason": "A bounded extension of one existing Playwright regression test from a frozen exact contract is eligible supervised external work; native retains source review, Browser execution, visual/canonical, verification, integration, and terminal authority.",
+	"filtered_alternatives": {
+		"deepseek-v4-pro": ["explicitly unauthorized"],
+		"gpt-5.6-terra": ["no fresh approval"],
+		"gpt-5.6-luna": ["no fresh approval"]
+	},
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260828-glm-5.3-flash-authorization.md"
+	],
+	"activation": {
+		"activation_commit": "04c2d3be01c14a42974666af636c96f2ed23ce39",
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile",
+		"branch": "work/phase11-uptime-mobile-fidelity-b01",
+		"source_sha256": "1c5845faaeb29246aa39ac8acd773a035dc99a1f18f137dbb9048aa623998056",
+		"exact_write_lease": ["tests/browser/phase11-health.browser.spec.ts"],
+		"lease_expires_at": "2026-08-29T20:00:00+03:00",
+		"packet_sha256": "8c5fdc0eaf58d720d8c001270f476354f2110bd147f1d8267dc6076df2c9906d"
+	},
+	"provider_task_invocations": 0,
+	"resolver": {
+		"selected": "glm-5.3-flash",
+		"route": "opencode-go/glm-5.3-flash",
+		"control": "high",
+		"delegation_lifecycle_violations": [],
+		"decomposition_mode": "sequential_default"
+	}
+}

@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-29T10:23:00Z"
+updatedAt: "2026-08-29T10:31:00Z"
 
 coordinator:
-  owner: "Coordinator final authority. W2 and Uptime A1/A2/B1 are accepted with repair histories unchanged. B1 is frozen at 04c2d3b after independent review and green source gates. Next valid stage is frozen B2 browser regression contract after fresh route evaluation. Transport overruns remain non-penalizing. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b1-pass.md"
+  owner: "Coordinator final authority. W2 and Uptime A1/A2/B1 remain accepted. Frozen B2 bilingual nine-width browser contract is active through GLM-5.3-Flash/high under one exact spec-file lease; Browser execution and all visual/canonical/terminal authority remain native. Transport overruns remain non-penalizing. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b2-glm-activation.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1937,9 +1937,9 @@ milestones:
     integratedCommit: 974302b976e8a1d1344191241665333d4bf6a75c
 
   phase11-uptime-mobile-fidelity:
-    status: READY
+    status: IN_PROGRESS
     dependencies: [phase11-health, phase11-uptime-paper-successor]
-    ownerSession: null
+    ownerSession: "GLM-5.3-Flash/high Stage B2 one-file Playwright contract writer; coordinator retains review, Browser, visual, canonical, and terminal gates"
     branch: work/phase11-uptime-mobile-fidelity-b01
     worktree: C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile
     baseCommit: SELF
@@ -1955,11 +1955,15 @@ milestones:
       - "all server, API, schema, migration, router, shared catalog, global token, unrelated UI, and normative authority paths"
       - "desktop Uptime composition except where a shared rule is proven necessary and independently regression-checked"
       - "canonical baseline promotion outside this milestone's own subtree; promotion remains coordinator-owned"
-    sharedLeases: []
+    sharedLeases:
+      - path: tests/browser/phase11-health.browser.spec.ts
+        owner: p11_uptime_stage_b2_glm_20260829
+        reason: "Extend only the existing bilingual nine-width Uptime layout test to frozen regression contract"
+        expiresAt: "2026-08-29T20:00:00+03:00"
     validationRepairAttempts: 3
-    lastHeartbeatAt: "2026-08-29T10:23:00Z"
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b1-pass.md
+    lastHeartbeatAt: "2026-08-29T10:31:00Z"
+    leaseExpiresAt: "2026-08-29T20:00:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b2-glm-activation.md
     stopReason: null
     gates:
       unit: PENDING
