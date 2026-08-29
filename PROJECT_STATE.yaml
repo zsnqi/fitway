@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-29T09:18:00Z"
+updatedAt: "2026-08-29T09:20:00Z"
 
 coordinator:
-  owner: "Coordinator final authority. W2 remains terminal DONE with its human-authorized 3/3 history unchanged. Uptime A1 human-authorized repair 3/3 passed independent source review, diff-check, direct Biome, web type-check, and 13/13 focused component tests, and is frozen at Uptime commit 3a02a12. Prior 2/2 terminal history remains preserved and no repair 4 may be inferred. Uptime is READY for frozen Stage A2 route evaluation with no lease open. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-a1-repair3-pass.md"
+  owner: "Coordinator final authority. W2 remains terminal DONE with its human-authorized 3/3 history unchanged. Uptime A1 is accepted at 3a02a12 after human repair 3/3; prior 2/2 history remains preserved and no A1 repair 4 may be inferred. Frozen Stage A2 CSS is active through GLM-5.3-Flash/high under one exact file lease after live preflight and clean resolver selection. A1 markup, Stage B, browser spec, W2, and unrelated scope remain closed. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-a2-glm-activation.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1937,9 +1937,9 @@ milestones:
     integratedCommit: 974302b976e8a1d1344191241665333d4bf6a75c
 
   phase11-uptime-mobile-fidelity:
-    status: READY
+    status: IN_PROGRESS
     dependencies: [phase11-health, phase11-uptime-paper-successor]
-    ownerSession: null
+    ownerSession: "GLM-5.3-Flash/high Stage A2 CSS writer under exact one-file lease; coordinator retains review, visual, verification, integration, and terminal authority"
     branch: work/phase11-uptime-mobile-fidelity-b01
     worktree: C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile
     baseCommit: SELF
@@ -1955,11 +1955,15 @@ milestones:
       - "all server, API, schema, migration, router, shared catalog, global token, unrelated UI, and normative authority paths"
       - "desktop Uptime composition except where a shared rule is proven necessary and independently regression-checked"
       - "canonical baseline promotion outside this milestone's own subtree; promotion remains coordinator-owned"
-    sharedLeases: []
+    sharedLeases:
+      - path: apps/web/src/components/owner/health/owner-health.css
+        owner: p11_uptime_stage_a2_glm_20260829
+        reason: "Frozen Stage A2 <=720px mobile record-card CSS only; desktop >=721 and all other source locked"
+        expiresAt: "2026-08-29T18:00:00+03:00"
     validationRepairAttempts: 3
-    lastHeartbeatAt: "2026-08-29T09:18:00Z"
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-a1-repair3-pass.md
+    lastHeartbeatAt: "2026-08-29T09:20:00Z"
+    leaseExpiresAt: "2026-08-29T18:00:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-a2-glm-activation.md
     stopReason: null
     gates:
       unit: PENDING

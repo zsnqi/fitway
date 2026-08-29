@@ -1,0 +1,77 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-uptime-mobile-fidelity/stage-a2-css",
+	"recorded": "2026-08-29T09:20:00Z",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "glm-5.3-flash",
+	"route": "opencode-go/glm-5.3-flash",
+	"control": "high",
+	"transport": "opencode-cli",
+	"native_spawn": null,
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"qualification_status": "qualified_restricted",
+	"route_evidence": "requalified",
+	"gate_outcome": "PENDING",
+	"material_selection_reason": "A2 is deterministic single-file low-consequence CSS transcription from the frozen plan within GLM's qualified restricted class. Live preflight confirms the route, the resolver selected it without lifecycle violations, and the human prefers GLM while barring V4 Pro. Native retains source review, Browser, accessibility, visual, canonical, verification, and integration gates.",
+	"consequence": "low supervised one-file CSS implementation; medium responsive and visual consequence remains native-gated",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "file_write"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"eligible_alternatives": [],
+	"filtered_alternatives": {
+		"deepseek-v4-pro": ["explicitly unauthorized for current-run work"],
+		"gpt-5.6-terra": ["no fresh one-shot human invocation approval"],
+		"gpt-5.6-luna": ["no fresh one-shot human invocation approval"]
+	},
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260828-glm-5.3-flash-authorization.md"
+	],
+	"host_approval": {
+		"authority": "existing human-authorized scoped host rule",
+		"rule": "C:/Users/Pc Force/.codex/rules/default.rules:87",
+		"launcher": "C:/Users/Pc Force/.agents/skills/agent-project-workflow/scripts/launch-external-worker.cjs",
+		"launcher_sha256": "814a85d027e0c5d4296bdeb63d0ec36f378ae7aecb3863c9e239b81f023263da"
+	},
+	"activation": {
+		"activation_commit": "3a02a126ba3031c0b4c3f12934ee2dffd97065dd",
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile",
+		"branch": "work/phase11-uptime-mobile-fidelity-b01",
+		"source_sha256": "ae53fa3ab3042a650e627c55ebd26f11347babbb05e3d69e6b72f3ee231895d4",
+		"read_only_context_sha256": "ad66958bad92be2736128d13a5ac43d3b7546d04a01d76070d15a8652242368e",
+		"exact_write_lease": [
+			"apps/web/src/components/owner/health/owner-health.css"
+		],
+		"lease_expires_at": "2026-08-29T18:00:00+03:00",
+		"packet": "C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration/test-results/node_modules/p11_uptime_stage_a2_glm_20260829/packet.txt",
+		"packet_sha256": "d7b8bbb6e96e4346c8b6dc9f78159eee95199b9b93038abd4311cfeafc36e2ce",
+		"spec": "test-results/node_modules/p11_uptime_stage_a2_glm_20260829/spec.json"
+	},
+	"repair_accounting": {
+		"a1_attempts_consumed": 3,
+		"a1_effective_ceiling": 3,
+		"a1_fourth_repair_authorized": false,
+		"a2_stage_repairs_consumed": 0
+	},
+	"provider_task_invocations": 0,
+	"delegation_evaluation": {
+		"evaluated_at": "2026-08-29T09:20:00Z",
+		"stage_discovery_started_at": null,
+		"basis": [
+			"frozen Uptime plan",
+			"accepted A1 rollback commit",
+			"human GLM-first preference"
+		],
+		"reasons": ["economy", "permission", "recoverability"]
+	},
+	"resolver": {
+		"selected": "glm-5.3-flash",
+		"route": "opencode-go/glm-5.3-flash",
+		"control": "high",
+		"delegation_lifecycle_violations": [],
+		"decomposition_mode": "sequential_default"
+	},
+	"stage_input": "test-results/node_modules/p11_uptime_stage_a2_glm_20260829/stage.json"
+}
