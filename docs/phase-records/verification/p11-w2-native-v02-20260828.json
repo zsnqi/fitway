@@ -1,0 +1,64 @@
+{
+	"schema": "fitway-verification-result/1",
+	"stage_ref": "phase11-e2e-propagation-wait/W2-repair3-native-v02-authoritative",
+	"candidate": "0e5f2aae017c19b6d0b7e036ba3ae9c8046c6d27",
+	"integrated_source_commit": "8eee353e667e55918649408cbd22ea4981dd7b11",
+	"source_sha256": "884b3a503a4209b3042ec1b352e3ae44d9db424713d06fd7bbcf08a9ea821dff",
+	"run_id": "p11w2intv02",
+	"verdict": "PASS",
+	"repair_accounting": {
+		"historical_attempts": 2,
+		"human_authorized_exception_attempt": 3,
+		"effective_ceiling": 3,
+		"fourth_attempt_authorized": false
+	},
+	"focused": {
+		"result": "PASS",
+		"passed": 1,
+		"skipped": 8,
+		"duration_ms": 27083.4396,
+		"timeout_seconds": 60
+	},
+	"fast": {
+		"result": "PASS",
+		"unit_test_files": 65,
+		"unit_tests": 516,
+		"python_tests": 117,
+		"duration_ms": 53147.9869,
+		"mutation_guard": "PASS"
+	},
+	"phase": {
+		"result": "PASS",
+		"focused_integration_test_files": 1,
+		"focused_integration_tests": 9,
+		"duration_ms": 69794.8644,
+		"mutation_guard": "PASS"
+	},
+	"full": {
+		"result": "PASS",
+		"integration_test_files": 18,
+		"integration_tests": 122,
+		"browser_accessibility_tests": 97,
+		"duration_ms": 462206.002,
+		"mutation_guard": "PASS"
+	},
+	"artifacts": {
+		"root": "test-results/p11w2intv02",
+		"focused_result_sha256": "9492d4236d40ff910ac55946f3b63bd5f72c54801485893d99cbf72bfbff3c37",
+		"fast_result_sha256": "cd26b4633a60d03a4b0de6f8cafe84c2c4fda6b381546da5298fd52613a1aa24",
+		"phase_result_sha256": "12fcca248844da7117e7659e5f5260d4a55f3d676ae7849523043490b851f73b",
+		"full_result_sha256": "5f52927ed9254b74a48fab30f331097a7d5c05fca4f9197bdeb5d169694cbc36",
+		"focused_log_sha256": "52e23ad2a510bf269bd787cfc9cafb6a55327c8c09d510d0a53d2ef4af70903c",
+		"fast_log_sha256": "b36091cf53aafbef606cbbeb0b4cf034f50dfcd22a351ac181b020491e4ea624",
+		"phase_log_sha256": "93f90eff17452db64fb3bc0042efca78962888d59ad284141090306d8aaa75a7",
+		"full_log_sha256": "82a2b164dcb37eb26a55a39252a448898eab6e35f96a7245da31f2293ccf0eb2"
+	},
+	"reconciliation": {
+		"authoritative_tree_clean_after_run": true,
+		"head_did_not_move_during_run": true,
+		"candidate_bytes_match_integrated_source": true,
+		"phase_and_full_results_discovered_on_resume": true,
+		"completed_green_gates_repeated": false
+	},
+	"terminal_action": "accept integrated source commit, release validation lease, mark milestone DONE, then resume independently eligible Uptime scope"
+}

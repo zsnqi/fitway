@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-28T20:40:00Z"
+updatedAt: "2026-08-29T08:18:00Z"
 
 coordinator:
-  owner: "Coordinator final authority preparing provisional one-file integration of W2 candidate 0e5f2aa after focused runtime PASS and a stale-ledger fast red in the isolated branch. Fresh authoritative integration verification is required; no repair4. Uptime stays paused and V4 Pro remains unauthorized. Handoff: docs/phase-records/handoffs/phase11-e2e-propagation-wait/20260828-p11-w2-native-v01-ledger-red.md"
+  owner: "Coordinator final authority. W2 is terminal DONE at integrated source commit 8eee353 after fresh authoritative focused/fast/phase/full PASS under p11w2intv02; the one-time human exception remains repair 3/3 and no repair4 exists. Uptime is the next independently executable frontier, and V4 Pro remains unauthorized for the current run. Handoff: docs/phase-records/handoffs/phase11-e2e-propagation-wait/20260829-p11-w2-native-v02-terminal-pass.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1676,11 +1676,11 @@ milestones:
     integratedCommit: cac4b9e1f27c1a4cbd69b678abf707faa1a18be0
 
   phase11-e2e-propagation-wait:
-    status: VALIDATING
+    status: DONE
     dependencies: [ phase11-browser-debt ]
-    ownerSession: "Coordinator provisional one-file integration followed by fresh native authoritative focused/fast/phase/full verification"
-    branch: work/phase11-e2e-propagation-wait-w1
-    worktree: C:/Users/Pc Force/.codex/worktrees/p11-propagation-w1
+    ownerSession: null
+    branch: codex/remaining-scope-coordinator
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
     baseCommit: f07f5d9e82c12bc216b10f4360b79dd6c9c32e5a
     ownedPaths:
       - apps/server/src/phase2.integration.test.ts
@@ -1691,21 +1691,20 @@ milestones:
       - "mocking any part of the simulator-to-edge-to-server-to-poll pipeline: that pipeline is what the assertion exists to prove end to end, and mocking it deletes the proof rather than stabilizing it"
       - "all production source, edge runtime, schema/migrations, other tests, snapshots, package/lock/config and normative authority"
       - "secrets, real credentials, unrestricted repository discovery, external services and provider-owned verification"
-    sharedLeases:
-      - "Coordinator only: PROJECT_STATE.yaml and W2 exception/route/evidence records"
+    sharedLeases: []
     validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-28T20:40:00Z"
-    leaseExpiresAt: "2026-08-29T07:00:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-e2e-propagation-wait/20260828-p11-w2-native-v01-ledger-red.md
+    lastHeartbeatAt: "2026-08-29T08:18:00Z"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase11-e2e-propagation-wait/20260829-p11-w2-native-v02-terminal-pass.md
     stopReason: null
     gates:
       unit: PASS
-      integration: PENDING
+      integration: PASS
       browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
       independentReview: PASS
-    integratedCommit: null
+    integratedCommit: 8eee353e667e55918649408cbd22ea4981dd7b11
 
   phase11-reference-gating-debt:
     status: DONE
