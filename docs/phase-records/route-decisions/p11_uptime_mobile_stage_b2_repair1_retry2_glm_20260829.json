@@ -1,0 +1,67 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-uptime-mobile-fidelity/stage-b2-browser-contract-repair1-transport-retry2",
+	"recorded": "2026-08-29T11:55:00Z",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "glm-5.3-flash",
+	"route": "opencode-go/glm-5.3-flash",
+	"control": "high",
+	"transport": "opencode-cli",
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"qualification_status": "qualified_restricted",
+	"route_evidence": "requalified",
+	"gate_outcome": "IN_PROGRESS",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "file_write"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260828-glm-5.3-flash-authorization.md"
+	],
+	"host_approval": {
+		"required": true,
+		"authority": "human",
+		"granted": true,
+		"command": "node C:/Users/Pc Force/.agents/skills/agent-project-workflow/scripts/launch-external-worker.cjs C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration/test-results/node_modules/p11_uptime_stage_b2_repair1_retry2_glm_20260829/spec.json",
+		"packet_path": "C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration/test-results/node_modules/p11_uptime_stage_b2_repair1_retry2_glm_20260829/packet.txt",
+		"packet_sha256": "331975aab86adb8cdf5ef1805cd910413eff96c9cb7d0d41c77087c26e9f549e",
+		"destination_route": "opencode-go/glm-5.3-flash",
+		"recorded": "2026-08-29T11:55:00Z",
+		"record": "docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b2-repair1-retry2-glm-activation.md"
+	},
+	"material_selection_reason": "The fresh resolver selected the only authorized qualified external candidate surviving hard filters. The prior repair-1 run made no edit and failed only its transport/completion contract, so this is a new isolated transport retry of the same unconsumed bounded repair with no GLM routing penalty.",
+	"eligible_alternatives": ["glm-5.3-flash"],
+	"filtered_alternatives": {
+		"deepseek-v4-pro": ["explicitly unauthorized"],
+		"gpt-5.6-terra": ["no fresh one-shot approval"],
+		"gpt-5.6-luna": ["no fresh one-shot approval"]
+	},
+	"activation": {
+		"activation_commit": "04c2d3be01c14a42974666af636c96f2ed23ce39",
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile",
+		"branch": "work/phase11-uptime-mobile-fidelity-b01",
+		"source_sha256": "aa3d28a64b5fb9125158ce81b411c24b71316559280404ac77c16d787af3cb86",
+		"exact_write_lease": ["tests/browser/phase11-health.browser.spec.ts"],
+		"read_only_context": [],
+		"lease_expires_at": "2026-08-29T23:00:00+03:00",
+		"packet_sha256": "331975aab86adb8cdf5ef1805cd910413eff96c9cb7d0d41c77087c26e9f549e"
+	},
+	"repair_accounting": {
+		"b2_repairs_consumed": 0,
+		"b2_repair_1_transport_retries_before_this": 1,
+		"b2_repair_1_remains_the_active_repair": true,
+		"b2_repair_ceiling": 2,
+		"b2_third_repair_authorized": false
+	},
+	"resolver": {
+		"selected": "glm-5.3-flash",
+		"route": "opencode-go/glm-5.3-flash",
+		"control": "high",
+		"transport": "opencode-cli",
+		"route_evidence": "requalified",
+		"delegation_lifecycle_violations": [],
+		"decomposition_mode": "sequential_default"
+	}
+}

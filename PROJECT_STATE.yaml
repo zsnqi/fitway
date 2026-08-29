@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-29T11:08:00Z"
+updatedAt: "2026-08-29T11:55:00Z"
 
 coordinator:
-  owner: "Coordinator final authority. W2 and Uptime A1/A2/B1 remain accepted. Initial B2 candidate remains rejected. The first B2 repair-1 GLM process returned transport-incomplete with zero source edits and no sentinel; lease is closed, repair 1/2 is not consumed, and GLM receives no routing penalty. Fresh route evaluation/new run directory required before retrying the same frozen repair. Browser and all terminal gates remain closed. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b2-repair1-transport-incomplete.md"
+  owner: "Coordinator final authority. W2 and Uptime A1/A2/B1 remain accepted. Initial B2 remains rejected. Fresh reconciliation confirmed the first repair-1 process terminal with zero edits; its transport failure consumed no source repair and carries no GLM penalty. A fresh GLM-5.3-Flash/high transport retry of the same B2 repair 1/2 is active under one exact test-file lease. Browser and terminal authority remain native. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b2-repair1-retry2-glm-activation.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -25,13 +25,17 @@ milestones:
   phase-1:
     status: DONE
     dependencies: []
-    ownerSession: null
+    ownerSession: "GLM-5.3-Flash/high B2 repair 1/2 transport retry 2 under exact Playwright-spec lease; coordinator retains rereview and all execution/terminal gates"
     branch: main
     worktree: null
     baseCommit: null
     ownedPaths: []
     forbiddenPaths: []
-    sharedLeases: []
+    sharedLeases:
+      - path: tests/browser/phase11-health.browser.spec.ts
+        owner: p11_uptime_stage_b2_repair1_retry2_glm_20260829
+        reason: "Correct only the frozen independent-review findings; same unconsumed B2 repair 1/2"
+        expiresAt: "2026-08-29T23:00:00+03:00"
     validationRepairAttempts: 0
     lastHeartbeatAt: null
     leaseExpiresAt: null
@@ -1957,9 +1961,9 @@ milestones:
       - "canonical baseline promotion outside this milestone's own subtree; promotion remains coordinator-owned"
     sharedLeases: []
     validationRepairAttempts: 3
-    lastHeartbeatAt: "2026-08-29T11:08:00Z"
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b2-repair1-transport-incomplete.md
+    lastHeartbeatAt: "2026-08-29T11:55:00Z"
+    leaseExpiresAt: "2026-08-29T23:00:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b2-repair1-retry2-glm-activation.md
     stopReason: null
     gates:
       unit: PENDING
