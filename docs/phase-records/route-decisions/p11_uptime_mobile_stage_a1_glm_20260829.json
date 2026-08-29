@@ -52,7 +52,33 @@
 		"attempts_consumed": 0,
 		"ceiling": 2
 	},
-	"provider_task_invocations": 0,
+	"provider_task_invocations": 1,
+	"attempt_history": [
+		{
+			"attempt": "initial-packet",
+			"packet_sha256": "6c05ae4026b56488bf8fd3175883b20b08e1769cd86e67caa496eacc2d070b36",
+			"outcome": "ESCALATED_CLEAN_PACKET_AMBIGUITY",
+			"source_changed": false,
+			"repair_consumed": false,
+			"reason": "Packet named existing offlineOf without stating that it is supplied by the typed messages object from the out-of-lease catalog; worker stopped rather than guessing copy.",
+			"completion_id": "p11-uptime-a1-initial-escalation",
+			"final_text_present": true,
+			"sentinel": "WORKER_RESULT_COMPLETE",
+			"sentinel_verified": true,
+			"result_fingerprint": "sha256:a234b6da46905b2447034521bd3146b2dcb09f951962c1f298ac61e56df03f73",
+			"completion_chars": 2574,
+			"completion_limit_chars": 1500,
+			"completion_constraint_breach": true,
+			"raw_evidence_pointer": "test-results/node_modules/p11_uptime_stage_a1_glm_20260829/events.jsonl"
+		}
+	],
+	"packet_correction": {
+		"basis": "Native exact catalog inspection confirmed messages.offlineOf exists in both locales and is already used by owner-health-section.tsx.",
+		"packet": "C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration/test-results/node_modules/p11_uptime_stage_a1_glm_r01_20260829/packet.txt",
+		"packet_sha256": "72ecee18b96bce56d524efe8370fa05e018f4ddc0e86fa64490b0d8ceea44845",
+		"route_reused": true,
+		"source_repair": false
+	},
 	"delegation_evaluation": {
 		"evaluated_at": "2026-08-29T08:25:00Z",
 		"stage_discovery_started_at": null,

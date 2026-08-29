@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-29T08:31:00Z"
+updatedAt: "2026-08-29T08:40:00Z"
 
 coordinator:
-  owner: "Coordinator final authority. W2 is terminal DONE with repair history fixed at 3/3 and no repair4. Uptime is resumed from clean activation 5a409e4; Stage A is safely split into sequential one-file GLM-5.3-Flash/high source stages, starting with A1 view-only. V4 Pro remains unauthorized. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-stage-a1-glm-activation.md"
+  owner: "Coordinator final authority. W2 is terminal DONE with repair history fixed at 3/3 and no repair4. Uptime A1 remains source-clean: the first GLM packet correctly escalated on omitted offlineOf context but exceeded its compact return limit; no candidate or repair was consumed. Native confirmed the existing word and froze one corrected A1 packet. V4 Pro remains unauthorized. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-stage-a1-packet-correction.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1958,9 +1958,9 @@ milestones:
     sharedLeases:
       - "Stage A1 exact source lease: apps/web/src/components/owner/health/owner-health-view.tsx only"
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-29T08:31:00Z"
+    lastHeartbeatAt: "2026-08-29T08:40:00Z"
     leaseExpiresAt: "2026-08-29T18:00:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-stage-a1-glm-activation.md
+    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-stage-a1-packet-correction.md
     stopReason: null
     gates:
       unit: PENDING
