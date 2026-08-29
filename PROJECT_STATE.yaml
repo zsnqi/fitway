@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-29T08:43:00Z"
+updatedAt: "2026-08-29T08:48:00Z"
 
 coordinator:
-  owner: "Coordinator final authority. W2 remains terminal DONE at 3/3. Uptime A1 independent native review adopted one bounded bidi-isolation finding and opened focused repair 1/2 through GLM-5.3-Flash/high under an exact one-file lease. Earlier GLM compact-return overruns remain completion-contract/transport compliance only, not source-quality or review-capability failures, qualification downgrades, or permanent routing penalties. V4 Pro remains unauthorized. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-stage-a1-review-result-repair1-activation.md"
+  owner: "Coordinator final authority. W2 remains terminal DONE at 3/3. Uptime A1 repair 1/2 produced the exact one-file bidi candidate, but its 966/900-character return is fail-closed. The source is preserved under an independent native Sol/high read-only repair review. All GLM return overruns remain completion-contract/transport compliance only, not source-quality or review-capability failures, qualification downgrades, or permanent routing penalties. V4 Pro remains unauthorized. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-stage-a1-repair1-native-review-activation.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1939,7 +1939,7 @@ milestones:
   phase11-uptime-mobile-fidelity:
     status: IN_PROGRESS
     dependencies: [phase11-health, phase11-uptime-paper-successor]
-    ownerSession: "GLM-5.3-Flash/high focused A1 repair 1 writer under exact one-file lease; coordinator retains review, verification, integration, and terminal authority"
+    ownerSession: "Independent native Sol/high A1 repair 1 reviewer, read-only; coordinator retains acceptance, verification, integration, and terminal authority"
     branch: work/phase11-uptime-mobile-fidelity-b01
     worktree: C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile
     baseCommit: SELF
@@ -1955,15 +1955,11 @@ milestones:
       - "all server, API, schema, migration, router, shared catalog, global token, unrelated UI, and normative authority paths"
       - "desktop Uptime composition except where a shared rule is proven necessary and independently regression-checked"
       - "canonical baseline promotion outside this milestone's own subtree; promotion remains coordinator-owned"
-    sharedLeases:
-      - path: apps/web/src/components/owner/health/owner-health-view.tsx
-        owner: p11_uptime_stage_a1_repair1_glm_20260829
-        reason: "Focused repair 1/2: separately isolate visible and total mobile board-count numeric runs with bdi; no other source change"
-        expiresAt: "2026-08-29T18:00:00+03:00"
+    sharedLeases: []
     validationRepairAttempts: 1
-    lastHeartbeatAt: "2026-08-29T08:43:00Z"
+    lastHeartbeatAt: "2026-08-29T08:48:00Z"
     leaseExpiresAt: "2026-08-29T18:00:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-stage-a1-review-result-repair1-activation.md
+    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-stage-a1-repair1-native-review-activation.md
     stopReason: null
     gates:
       unit: PENDING
