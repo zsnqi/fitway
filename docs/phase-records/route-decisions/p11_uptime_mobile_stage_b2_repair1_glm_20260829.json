@@ -10,7 +10,7 @@
 	"transport": "opencode-cli",
 	"qualification_status": "qualified_restricted",
 	"route_evidence": "requalified",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "TRANSPORT_INCOMPLETE_NO_SOURCE_MUTATION",
 	"material_selection_reason": "The native review produced a frozen, deterministic, one-file Playwright repair contract within GLM's qualified supervised repository-test class; native retains rereview, execution, visual, canonical, verification, integration, and terminal authority.",
 	"filtered_alternatives": {
 		"deepseek-v4-pro": ["explicitly unauthorized"],
@@ -31,11 +31,24 @@
 		"packet_sha256": "71323cd5673ec6888b1a6356291239b7679d5df05685d7bd4a2f1c19366f3842"
 	},
 	"repair_accounting": {
-		"b2_repairs_consumed": 1,
+		"b2_repairs_consumed": 0,
+		"b2_repair_1_activated_but_not_consumed": true,
 		"b2_repair_ceiling": 2,
 		"b2_third_repair_authorized": false
 	},
-	"provider_task_invocations": 0,
+	"provider_task_invocations": 1,
+	"result": {
+		"provider_exit_code": 0,
+		"source_sha256_before": "aa3d28a64b5fb9125158ce81b411c24b71316559280404ac77c16d787af3cb86",
+		"source_sha256_after": "aa3d28a64b5fb9125158ce81b411c24b71316559280404ac77c16d787af3cb86",
+		"source_mutated": false,
+		"tool_operations": { "reads": 3, "edits": 0, "other": 0 },
+		"completion_chars": 152,
+		"completion_sentinel_valid": false,
+		"completion_sha256": "467a2b4ff9789c1ccf9903d7a83476e292fa42271e5a703c2b1f381886cec9bd",
+		"completion_contract_outcome": "TRANSPORT_INCOMPLETE_NO_SOURCE_MUTATION_NO_REPAIR_CONSUMPTION_NO_ROUTING_PENALTY",
+		"source_or_browser_gates_run": false
+	},
 	"resolver": {
 		"selected": "glm-5.3-flash",
 		"route": "opencode-go/glm-5.3-flash",
