@@ -12,7 +12,7 @@
 	"qualification_baseline": "2026-08-28.2",
 	"qualification_status": "qualified_restricted",
 	"route_evidence": "requalified",
-	"gate_outcome": "IN_PROGRESS",
+	"gate_outcome": "TRANSPORT_INCOMPLETE_NO_SOURCE_MUTATION",
 	"covered_modalities": ["text"],
 	"covered_tools": ["repository_read", "file_write"],
 	"covered_mcp_operations": [],
@@ -51,9 +51,22 @@
 	"repair_accounting": {
 		"b2_repairs_consumed": 0,
 		"b2_repair_1_transport_retries_before_this": 1,
-		"b2_repair_1_remains_the_active_repair": true,
+		"b2_repair_1_activated_but_not_consumed": true,
 		"b2_repair_ceiling": 2,
 		"b2_third_repair_authorized": false
+	},
+	"provider_task_invocations": 1,
+	"result": {
+		"provider_exit_code": 0,
+		"source_sha256_before": "aa3d28a64b5fb9125158ce81b411c24b71316559280404ac77c16d787af3cb86",
+		"source_sha256_after": "aa3d28a64b5fb9125158ce81b411c24b71316559280404ac77c16d787af3cb86",
+		"source_mutated": false,
+		"tool_operations": { "reads": 1, "edits": 0, "other": 0 },
+		"completion_chars": 0,
+		"completion_sentinel_valid": false,
+		"completion_sha256": null,
+		"completion_contract_outcome": "TRANSPORT_INCOMPLETE_NO_SOURCE_MUTATION_NO_REPAIR_CONSUMPTION_NO_CAPABILITY_OR_ROUTING_PENALTY",
+		"source_or_browser_gates_run": false
 	},
 	"resolver": {
 		"selected": "glm-5.3-flash",
