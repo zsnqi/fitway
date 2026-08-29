@@ -7,7 +7,7 @@
 	"route": "coordinator-direct",
 	"control": "not_applicable",
 	"native_spawn": null,
-	"gate_outcome": "PENDING_INDEPENDENT_SOURCE_REVIEW",
+	"gate_outcome": "FAILED_INDEPENDENT_SOURCE_REVIEW_TERMINAL",
 	"consequence": "final approved B2 browser-contract repair; test-only but release-gating because false passes can conceal mobile clipping and locked-copy drift",
 	"delegation_evaluation": {
 		"evaluated_at": "2026-08-29T16:54:27Z",
@@ -44,7 +44,17 @@
 		"source_sha256_after": "a0e69ed02e833227883da7a3b5577c7a520b99ca18f386e842010aa5a9fc64aa",
 		"exact_modified_paths": ["tests/browser/phase11-health.browser.spec.ts"],
 		"writer_closed": true,
-		"runtime_gates_started": false
+		"runtime_gates_started": false,
+		"independent_review_verdict": "REJECT",
+		"repair_budget_exhausted": true,
+		"repair_3_authorized": false,
+		"confirmed_findings": [
+			"localized region accessible names are asserted only as non-empty",
+			"record values and bounded shown/total number lanes can be hidden while geometry or text assertions pass",
+			"count text paint and containment within the clipped header/region are unproved",
+			"stylesheet-fixed oversized grid heights can satisfy the current containment assertions",
+			"Arabic unconfirmed delivery wording is absent from the independent literal oracle"
+		]
 	},
 	"verification": [
 		"coordinator-installed repository Biome check PASS: Checked 1 file; no fixes applied",

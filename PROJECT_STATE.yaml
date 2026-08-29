@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-29T19:06:30Z"
+updatedAt: "2026-08-29T19:14:22Z"
 
 coordinator:
-  owner: "Coordinator final authority. W2 and Uptime A1/A2/B1 remain accepted. B2 repair 2/2 is frozen at exact-file SHA-256 a0e69ed02e833227883da7a3b5577c7a520b99ca18f386e842010aa5a9fc64aa; the writer is closed and fresh independent source review is active before any runtime gate. Browser and terminal authority remain coordinator-owned. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b2-repair2-source-freeze-review.md"
+  owner: "Coordinator final authority. W2 and Uptime A1/A2/B1 remain accepted. Uptime B2 is terminal FAILED_VALIDATION after final repair 2/2 failed both independent source-review axes at frozen hash a0e69ed; no runtime gate or repair 3 is authorized. Settings Paper and Login also retain separate human-only boundaries, so no approved executable milestone remains. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b2-terminal-failed-validation.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1937,7 +1937,7 @@ milestones:
     integratedCommit: 974302b976e8a1d1344191241665333d4bf6a75c
 
   phase11-uptime-mobile-fidelity:
-    status: IN_PROGRESS
+    status: FAILED_VALIDATION
     dependencies: [phase11-health, phase11-uptime-paper-successor]
     ownerSession: null
     branch: work/phase11-uptime-mobile-fidelity-b01
@@ -1956,18 +1956,18 @@ milestones:
       - "desktop Uptime composition except where a shared rule is proven necessary and independently regression-checked"
       - "canonical baseline promotion outside this milestone's own subtree; promotion remains coordinator-owned"
     sharedLeases: []
-    validationRepairAttempts: 3
-    lastHeartbeatAt: "2026-08-29T19:06:30Z"
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-08-29T19:14:22Z"
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b2-repair2-source-freeze-review.md
-    stopReason: null
+    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b2-terminal-failed-validation.md
+    stopReason: "Terminal B2 FAILED_VALIDATION after final repair 2/2. Candidate a0e69ed02e833227883da7a3b5577c7a520b99ca18f386e842010aa5a9fc64aa remains exact-scope and passes Biome plus diff-check, but both fresh native source-review axes reject the executable contract before runtime: localized region names are only truthy, value visibility/accessibility and bounded shown/total lanes can false-pass, count paint/in-bounds placement is unproved, stylesheet-fixed oversized heights can satisfy the grid geometry checks, and Arabic unconfirmed wording is not independently pinned. No runtime, Browser, screenshot, canonical, or terminal gate ran. Preserve the uncommitted candidate and coordinator history; no repair 3 or fresh Uptime attempt without explicit human authorization and a new reviewed plan."
     gates:
       unit: PENDING
       integration: NOT_REQUIRED
       browser: PENDING
       accessibility: PENDING
       visual: PENDING
-      independentReview: PENDING
+      independentReview: FAIL
     integratedCommit: null
 
   phase-11:

@@ -1,0 +1,43 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-uptime-mobile-fidelity/stage-b2-repair2-independent-source-review",
+	"recorded": "2026-08-29T19:14:22Z",
+	"candidate_id": "native",
+	"route": "codex-native-parallel-reviewers",
+	"control": "high",
+	"transport": "codex-native",
+	"gate_outcome": "REJECT",
+	"consequence": "terminal release-gating review of final approved B2 repair 2/2",
+	"native_spawn": {
+		"model": "gpt-5.6-sol",
+		"reasoning_effort": "high",
+		"fork_turns": "none",
+		"roles": ["standards-reviewer", "spec-reviewer"],
+		"write_access": false
+	},
+	"material_selection_reason": "Fresh independent native review required direct simultaneous access to the frozen uncommitted candidate and newer coordinator-only authority records. The consequence was terminal and release-gating, while the current GLM evidence covered supervised low-consequence implementation and the same B2 OpenCode lineage had two recent transport-incomplete returns. Native Sol supplied the required multi-worktree compatibility, reliable return path, and consequence ceiling without changing GLM's general qualification.",
+	"axes": [
+		{
+			"name": "standards",
+			"verdict": "REJECT",
+			"task": "/root/uptime_b2_r2_standards"
+		},
+		{
+			"name": "spec",
+			"verdict": "REJECT",
+			"task": "/root/uptime_b2_r2_spec"
+		}
+	],
+	"candidate": {
+		"base_commit": "04c2d3be01c14a42974666af636c96f2ed23ce39",
+		"source_sha256": "a0e69ed02e833227883da7a3b5577c7a520b99ca18f386e842010aa5a9fc64aa",
+		"modified_paths": ["tests/browser/phase11-health.browser.spec.ts"]
+	},
+	"runtime_gates_run": false,
+	"repair_budget": {
+		"repairs_consumed": 2,
+		"repair_ceiling": 2,
+		"repair_3_authorized": false
+	}
+}
