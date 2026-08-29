@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-29T08:52:00Z"
+updatedAt: "2026-08-29T09:02:00Z"
 
 coordinator:
-  owner: "Coordinator final authority. W2 remains terminal DONE at 3/3. Uptime A1 now has an exact one-file source candidate, but its writer completion exceeded the compact contract and is fail-closed. The write lease is released; one fresh read-only GLM source review is activated before native gates. No source finding or Uptime repair is recorded. V4 Pro remains unauthorized. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-stage-a1-review-activation.md"
+  owner: "Coordinator final authority. W2 remains terminal DONE at 3/3. Uptime A1 has an exact one-file candidate but two consecutive GLM completions exceeded their hard compact limits; both are fail-closed despite no reported source finding. No third GLM completion retry and no V4. A fresh native Sol/high read-only reviewer is activated; no Uptime source repair is recorded. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-stage-a1-native-review-activation.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1939,7 +1939,7 @@ milestones:
   phase11-uptime-mobile-fidelity:
     status: IN_PROGRESS
     dependencies: [phase11-health, phase11-uptime-paper-successor]
-    ownerSession: "Fresh external GLM-5.3-Flash/high read-only A1 source reviewer; coordinator retains every parent and terminal gate"
+    ownerSession: "Fresh native Sol/high read-only A1 source reviewer; coordinator retains acceptance and terminal authority"
     branch: work/phase11-uptime-mobile-fidelity-b01
     worktree: C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile
     baseCommit: SELF
@@ -1957,9 +1957,9 @@ milestones:
       - "canonical baseline promotion outside this milestone's own subtree; promotion remains coordinator-owned"
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-29T08:52:00Z"
+    lastHeartbeatAt: "2026-08-29T09:02:00Z"
     leaseExpiresAt: "2026-08-29T18:00:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-stage-a1-review-activation.md
+    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-stage-a1-native-review-activation.md
     stopReason: null
     gates:
       unit: PENDING

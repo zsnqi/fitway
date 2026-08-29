@@ -13,7 +13,7 @@
 	"qualification_baseline": "2026-08-28.2",
 	"qualification_status": "qualified_restricted",
 	"route_evidence": "requalified",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "COMPLETION_INVALID",
 	"material_selection_reason": "Independence: the writer completion is invalid, so a fresh read-only reviewer must judge the exact one-file candidate before native gates. GLM is qualified for bounded advisory defect review, the human requires GLM preference, and V4 Pro is barred for the run.",
 	"consequence": "low advisory exact one-file source review; visual and terminal judgment remain native",
 	"covered_modalities": ["text"],
@@ -42,7 +42,28 @@
 		"attempts_consumed": 0,
 		"ceiling": 2
 	},
-	"provider_task_invocations": 0,
+	"provider_task_invocations": 1,
+	"completion": {
+		"completion_id": "p11-uptime-a1-review1-overlong",
+		"final_text_present": true,
+		"sentinel": "WORKER_RESULT_COMPLETE",
+		"sentinel_verified": true,
+		"result_fingerprint": "sha256:ca6affe0515d524a15addf8ca73581e488110bbed6fa7f516d6721bf6663b13b",
+		"raw_evidence_pointer": "test-results/node_modules/p11_uptime_stage_a1_review1_glm_20260829/events.jsonl"
+	},
+	"outcome_history": [
+		{
+			"recorded": "2026-08-29T09:00:00Z",
+			"gate_outcome": "COMPLETION_INVALID",
+			"provider_task_invocations": 1,
+			"source_changed": false,
+			"verdict_text": "PASS with zero findings",
+			"completion_chars": 920,
+			"completion_limit_chars": 900,
+			"constraint_breach": true,
+			"parent_action": "Reject the completion, do not retry GLM a third time, route a fresh native Sol reviewer. No source repair consumed."
+		}
+	],
 	"delegation_evaluation": {
 		"evaluated_at": "2026-08-29T08:48:00Z",
 		"stage_discovery_started_at": null,
