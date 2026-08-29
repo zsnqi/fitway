@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-29T10:18:00Z"
+updatedAt: "2026-08-29T10:23:00Z"
 
 coordinator:
-  owner: "Coordinator final authority. W2, Uptime A1, and Uptime A2 remain accepted. B1 candidate 66e208e returned with exactly two totalCount props; lease closed for independent native review. Its compact overrun is transport-only/non-penalizing. Stage B2, Browser, and unrelated scope remain closed. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b1-native-review.md"
+  owner: "Coordinator final authority. W2 and Uptime A1/A2/B1 are accepted with repair histories unchanged. B1 is frozen at 04c2d3b after independent review and green source gates. Next valid stage is frozen B2 browser regression contract after fresh route evaluation. Transport overruns remain non-penalizing. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b1-pass.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1937,9 +1937,9 @@ milestones:
     integratedCommit: 974302b976e8a1d1344191241665333d4bf6a75c
 
   phase11-uptime-mobile-fidelity:
-    status: IN_PROGRESS
+    status: READY
     dependencies: [phase11-health, phase11-uptime-paper-successor]
-    ownerSession: "Independent native Stage B1 totals reviewer; writer lease closed; coordinator retains all gates"
+    ownerSession: null
     branch: work/phase11-uptime-mobile-fidelity-b01
     worktree: C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile
     baseCommit: SELF
@@ -1957,9 +1957,9 @@ milestones:
       - "canonical baseline promotion outside this milestone's own subtree; promotion remains coordinator-owned"
     sharedLeases: []
     validationRepairAttempts: 3
-    lastHeartbeatAt: "2026-08-29T10:18:00Z"
+    lastHeartbeatAt: "2026-08-29T10:23:00Z"
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b1-native-review.md
+    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b1-pass.md
     stopReason: null
     gates:
       unit: PENDING

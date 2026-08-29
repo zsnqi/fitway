@@ -10,7 +10,7 @@
 	"transport": "opencode-cli",
 	"qualification_status": "qualified_restricted",
 	"route_evidence": "requalified",
-	"gate_outcome": "PENDING_NATIVE_REVIEW",
+	"gate_outcome": "PASS",
 	"material_selection_reason": "Two exact prop additions in one file are deterministic low-consequence wiring within GLM's qualified restricted class; native retains all review and gates.",
 	"filtered_alternatives": {
 		"deepseek-v4-pro": ["explicitly unauthorized"],
@@ -43,7 +43,13 @@
 		"completion_ceiling": 500,
 		"completion_sentinel_valid": true,
 		"completion_sha256": "8388407bdef5047d44e6ac4acde6c4dc260eceaba4fe83435481b10988c74925",
-		"completion_contract_outcome": "TRANSPORT_NONCOMPLIANT_SOURCE_PRESERVED_NO_ROUTING_PENALTY"
+		"completion_contract_outcome": "TRANSPORT_NONCOMPLIANT_SOURCE_PRESERVED_NO_ROUTING_PENALTY",
+		"independent_review": "PASS",
+		"diff_check": "PASS",
+		"biome": "PASS",
+		"typecheck": "PASS",
+		"focused_test": "PASS_13_OF_13",
+		"accepted_commit": "04c2d3be01c14a42974666af636c96f2ed23ce39"
 	},
 	"resolver": {
 		"selected": "glm-5.3-flash",
