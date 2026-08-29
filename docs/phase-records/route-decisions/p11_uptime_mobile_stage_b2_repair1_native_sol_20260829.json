@@ -11,7 +11,7 @@
 	"registry_revision": "2026-08-28.2",
 	"qualification_baseline": "2026-08-28.2",
 	"qualification_status": "native-stage-local-fallback",
-	"gate_outcome": "PENDING_INDEPENDENT_SOURCE_REVIEW",
+	"gate_outcome": "FAILED_INDEPENDENT_SOURCE_REVIEW",
 	"native_spawn": {
 		"model": "gpt-5.6-sol",
 		"invocation_id": "p11-uptime-b2-repair1-native-sol-20260829t1212z",
@@ -47,8 +47,8 @@
 		"lease_expires_at": "2026-08-29T23:30:00+03:00"
 	},
 	"repair_accounting": {
-		"b2_repairs_consumed": 0,
-		"b2_repair_1_remains_active": true,
+		"b2_repairs_consumed": 1,
+		"b2_repair_1_remains_active": false,
 		"prior_transport_incomplete_returns": 2,
 		"b2_repair_ceiling": 2,
 		"b2_third_repair_authorized": false
@@ -59,6 +59,13 @@
 		"source_mutated": true,
 		"exact_modified_paths": ["tests/browser/phase11-health.browser.spec.ts"],
 		"worker_reported_runtime_gates": false,
-		"independent_review_pending": true
+		"independent_review_pending": false,
+		"independent_review_verdict": "REJECT",
+		"confirmed_findings": [
+			"mobile region vertical auto-fit and clipping remain unproved at 390 and at the clipping region boundary",
+			"below-390 label-lane contraction can pass without contracting",
+			"visible shown/total count text is not required to be visible",
+			"wording assertions use the production message catalog as their own oracle"
+		]
 	}
 }

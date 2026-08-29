@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-29T12:24:00Z"
+updatedAt: "2026-08-29T16:54:27Z"
 
 coordinator:
-  owner: "Coordinator final authority. W2 and Uptime A1/A2/B1 remain accepted. Two GLM repair-1 runs remain transport-only with no repair consumption or penalty. The native Sol fallback produced one exact-file B2 repair candidate at faf8e26; writer lease is closed and the already-independent native reviewer is active before any execution gate. Browser and terminal authority remain coordinator-owned. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b2-repair1-native-sol-review.md"
+  owner: "Coordinator final authority. W2 and Uptime A1/A2/B1 remain accepted. B2 repair 1 failed independent source review and is consumed; B2 repair 2/2 is the final approved focused correction under a direct one-file coordinator lease. Browser and terminal authority remain coordinator-owned. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b2-repair1-review-repair2-activation.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1957,9 +1957,9 @@ milestones:
       - "canonical baseline promotion outside this milestone's own subtree; promotion remains coordinator-owned"
     sharedLeases: []
     validationRepairAttempts: 3
-    lastHeartbeatAt: "2026-08-29T12:24:00Z"
+    lastHeartbeatAt: "2026-08-29T16:54:27Z"
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b2-repair1-native-sol-review.md
+    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b2-repair1-review-repair2-activation.md
     stopReason: null
     gates:
       unit: PENDING

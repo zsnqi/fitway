@@ -1,0 +1,44 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-uptime-mobile-fidelity/stage-b2-browser-contract-repair2",
+	"recorded": "2026-08-29T16:54:27Z",
+	"candidate_id": "direct",
+	"route": "coordinator-direct",
+	"control": "not_applicable",
+	"native_spawn": null,
+	"gate_outcome": "PENDING_SOURCE_FREEZE",
+	"consequence": "final approved B2 browser-contract repair; test-only but release-gating because false passes can conceal mobile clipping and locked-copy drift",
+	"delegation_evaluation": {
+		"evaluated_at": "2026-08-29T16:54:27Z",
+		"stage_discovery_started_at": null,
+		"basis": [
+			"frozen Stage B plan",
+			"independent repair-1 Standards and Spec findings",
+			"exact one-file repair boundary"
+		],
+		"delegation_qualified": false,
+		"direct_execution_reasons_considered": [
+			"four deterministic assertion corrections in one already-frozen test file",
+			"briefing and lease transfer exceed the bounded edit",
+			"fresh independent review remains mandatory after freeze"
+		]
+	},
+	"material_selection_reason": "Direct final repair inside the existing frozen Stage B contract. The coordinator applies only the confirmed source-review corrections; no product, visual, application-source, Browser, or canonical authority is delegated or exercised in this writing stage.",
+	"activation": {
+		"base_commit": "04c2d3be01c14a42974666af636c96f2ed23ce39",
+		"source_sha256": "faf8e26f1c76d63e74e81e3fa09a8067ffa080310f5623f5e098beb18eb2b78e",
+		"write_paths": ["tests/browser/phase11-health.browser.spec.ts"],
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile",
+		"lease_expires_at": "2026-08-29T23:30:00+03:00",
+		"repair_attempt": 2,
+		"repair_ceiling": 2
+	},
+	"required_repairs": [
+		"prove the clipping region and every mobile board/row/cell fit vertically at 320, 360, and 390",
+		"prove the below-390 label track is strictly narrower than the 124px 390 track",
+		"require the board count and both number lanes to be visibly rendered",
+		"use independent locked literals for wording rather than the production catalog"
+	],
+	"verification": []
+}
