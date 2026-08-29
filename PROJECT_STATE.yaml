@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-29T08:40:00Z"
+updatedAt: "2026-08-29T08:52:00Z"
 
 coordinator:
-  owner: "Coordinator final authority. W2 is terminal DONE with repair history fixed at 3/3 and no repair4. Uptime A1 remains source-clean: the first GLM packet correctly escalated on omitted offlineOf context but exceeded its compact return limit; no candidate or repair was consumed. Native confirmed the existing word and froze one corrected A1 packet. V4 Pro remains unauthorized. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-stage-a1-packet-correction.md"
+  owner: "Coordinator final authority. W2 remains terminal DONE at 3/3. Uptime A1 now has an exact one-file source candidate, but its writer completion exceeded the compact contract and is fail-closed. The write lease is released; one fresh read-only GLM source review is activated before native gates. No source finding or Uptime repair is recorded. V4 Pro remains unauthorized. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-stage-a1-review-activation.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1939,7 +1939,7 @@ milestones:
   phase11-uptime-mobile-fidelity:
     status: IN_PROGRESS
     dependencies: [phase11-health, phase11-uptime-paper-successor]
-    ownerSession: "External GLM-5.3-Flash/high Stage A1 one-file writer; coordinator retains every parent, visual, verification, review, canonical, and integration gate"
+    ownerSession: "Fresh external GLM-5.3-Flash/high read-only A1 source reviewer; coordinator retains every parent and terminal gate"
     branch: work/phase11-uptime-mobile-fidelity-b01
     worktree: C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile
     baseCommit: SELF
@@ -1955,12 +1955,11 @@ milestones:
       - "all server, API, schema, migration, router, shared catalog, global token, unrelated UI, and normative authority paths"
       - "desktop Uptime composition except where a shared rule is proven necessary and independently regression-checked"
       - "canonical baseline promotion outside this milestone's own subtree; promotion remains coordinator-owned"
-    sharedLeases:
-      - "Stage A1 exact source lease: apps/web/src/components/owner/health/owner-health-view.tsx only"
+    sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-29T08:40:00Z"
+    lastHeartbeatAt: "2026-08-29T08:52:00Z"
     leaseExpiresAt: "2026-08-29T18:00:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-stage-a1-packet-correction.md
+    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-stage-a1-review-activation.md
     stopReason: null
     gates:
       unit: PENDING

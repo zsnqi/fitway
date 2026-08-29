@@ -52,7 +52,7 @@
 		"attempts_consumed": 0,
 		"ceiling": 2
 	},
-	"provider_task_invocations": 1,
+	"provider_task_invocations": 2,
 	"attempt_history": [
 		{
 			"attempt": "initial-packet",
@@ -70,6 +70,27 @@
 			"completion_limit_chars": 1500,
 			"completion_constraint_breach": true,
 			"raw_evidence_pointer": "test-results/node_modules/p11_uptime_stage_a1_glm_20260829/events.jsonl"
+		},
+		{
+			"attempt": "corrected-packet-source-candidate",
+			"packet_sha256": "72ecee18b96bce56d524efe8370fa05e018f4ddc0e86fa64490b0d8ceea44845",
+			"outcome": "SOURCE_CANDIDATE_COMPLETION_INVALID",
+			"source_changed": true,
+			"candidate_source_sha256": "4b389a7ca10e2da33ab6551e39657e1bbabfbebe68142711bef4757c0569c221",
+			"exact_changed_paths": [
+				"apps/web/src/components/owner/health/owner-health-view.tsx"
+			],
+			"repair_consumed": false,
+			"reason": "Exact one-file candidate exists, but final completion was 1903 characters against the 1500-character contract and is fail-closed pending a fresh compact read-only review.",
+			"completion_id": "p11-uptime-a1-source-overlong",
+			"final_text_present": true,
+			"sentinel": "WORKER_RESULT_COMPLETE",
+			"sentinel_verified": true,
+			"result_fingerprint": "sha256:f42bec937dc7440c0607c69c269e64803ac55752aaff0082d27583e264e2cf4b",
+			"completion_chars": 1903,
+			"completion_limit_chars": 1500,
+			"completion_constraint_breach": true,
+			"raw_evidence_pointer": "test-results/node_modules/p11_uptime_stage_a1_glm_r01_20260829/events.jsonl"
 		}
 	],
 	"packet_correction": {

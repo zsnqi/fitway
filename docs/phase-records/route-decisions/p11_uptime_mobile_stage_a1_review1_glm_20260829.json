@@ -1,0 +1,57 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-uptime-mobile-fidelity/stage-a1-independent-source-review",
+	"recorded": "2026-08-29T08:52:00Z",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "glm-5.3-flash",
+	"route": "opencode-go/glm-5.3-flash",
+	"control": "high",
+	"transport": "opencode-cli",
+	"native_spawn": null,
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"qualification_status": "qualified_restricted",
+	"route_evidence": "requalified",
+	"gate_outcome": "PENDING",
+	"material_selection_reason": "Independence: the writer completion is invalid, so a fresh read-only reviewer must judge the exact one-file candidate before native gates. GLM is qualified for bounded advisory defect review, the human requires GLM preference, and V4 Pro is barred for the run.",
+	"consequence": "low advisory exact one-file source review; visual and terminal judgment remain native",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260828-glm-5.3-flash-authorization.md"
+	],
+	"host_approval": {
+		"authority": "existing human-authorized scoped host rule",
+		"rule": "C:/Users/Pc Force/.codex/rules/default.rules:87",
+		"launcher": "C:/Users/Pc Force/.agents/skills/agent-project-workflow/scripts/launch-external-worker.cjs",
+		"launcher_sha256": "814a85d027e0c5d4296bdeb63d0ec36f378ae7aecb3863c9e239b81f023263da"
+	},
+	"activation": {
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile",
+		"branch": "work/phase11-uptime-mobile-fidelity-b01",
+		"candidate_source_sha256": "4b389a7ca10e2da33ab6551e39657e1bbabfbebe68142711bef4757c0569c221",
+		"read_only": ["apps/web/src/components/owner/health/owner-health-view.tsx"],
+		"packet": "C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration/test-results/node_modules/p11_uptime_stage_a1_review1_glm_20260829/packet.txt",
+		"packet_sha256": "05ba6242cba29b00710eb64ea362682d91d54b8c5bab6fe04db692fbf3ac2085",
+		"spec": "test-results/node_modules/p11_uptime_stage_a1_review1_glm_20260829/spec.json"
+	},
+	"repair_accounting": {
+		"attempts_consumed": 0,
+		"ceiling": 2
+	},
+	"provider_task_invocations": 0,
+	"delegation_evaluation": {
+		"evaluated_at": "2026-08-29T08:48:00Z",
+		"stage_discovery_started_at": null,
+		"basis": [
+			"A1 frozen acceptance",
+			"candidate scope/hash",
+			"invalid overlong writer completion"
+		],
+		"reasons": ["independence", "permission"]
+	},
+	"stage_input": "test-results/node_modules/p11_uptime_stage_a1_review1_glm_20260829/stage.json"
+}
