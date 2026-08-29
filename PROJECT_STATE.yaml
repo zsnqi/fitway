@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-29T10:00:00Z"
+updatedAt: "2026-08-29T10:03:00Z"
 
 coordinator:
-  owner: "Coordinator final authority. W2 remains terminal DONE with its human-authorized 3/3 history unchanged. Uptime A1 is accepted at 3a02a12 after human repair 3/3; prior 2/2 history remains preserved and no A1 repair 4 may be inferred. Exact formatting-only A2 repair 2/2 remains active through GLM-5.3-Flash/high. Human conditionally authorized one A2-only repair 3, effective ceiling 3/3, solely if repair 2 later fails a substantive source gate; it is not active or consumed now and no A2 repair 4 exists. Transport/setup failures remain separate and non-penalizing. A1 markup, Stage B, Browser, W2, and unrelated scope remain closed. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-a2-conditional-human-repair3-authorization.md"
+  owner: "Coordinator final authority. W2 remains terminal DONE and Uptime A1 remains accepted at human repair 3/3 with no repair 4. Exact formatting-only A2 repair 2/2 returned at CSS 7f4adec and its lease is closed for independent exact-diff rereview. Conditional A2 repair 3 remains dormant unless a substantive source gate fails; no A2 repair 4 exists. All GLM compact overruns remain transport-only and non-penalizing; type/test setup failures remain invalid. Stage B, Browser, W2, and unrelated scope remain closed. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-a2-repair2-native-rereview.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1939,7 +1939,7 @@ milestones:
   phase11-uptime-mobile-fidelity:
     status: IN_PROGRESS
     dependencies: [phase11-health, phase11-uptime-paper-successor]
-    ownerSession: "GLM-5.3-Flash/high Stage A2 repair 2/2 formatting writer under exact CSS lease; coordinator retains rereview, verification, visual, integration, and terminal authority"
+    ownerSession: "Independent native Stage A2 repair 2/2 exact-diff rereviewer; writer lease closed; coordinator retains verification, visual, integration, and terminal authority"
     branch: work/phase11-uptime-mobile-fidelity-b01
     worktree: C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile
     baseCommit: SELF
@@ -1955,15 +1955,11 @@ milestones:
       - "all server, API, schema, migration, router, shared catalog, global token, unrelated UI, and normative authority paths"
       - "desktop Uptime composition except where a shared rule is proven necessary and independently regression-checked"
       - "canonical baseline promotion outside this milestone's own subtree; promotion remains coordinator-owned"
-    sharedLeases:
-      - path: apps/web/src/components/owner/health/owner-health.css
-        owner: p11_uptime_stage_a2_repair2_glm_20260829
-        reason: "Exact Biome-supplied two-line formatting correction only; all behavior and other source locked"
-        expiresAt: "2026-08-29T18:45:00+03:00"
+    sharedLeases: []
     validationRepairAttempts: 3
-    lastHeartbeatAt: "2026-08-29T10:00:00Z"
-    leaseExpiresAt: "2026-08-29T18:45:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-a2-repair2-glm-activation.md
+    lastHeartbeatAt: "2026-08-29T10:03:00Z"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-a2-repair2-native-rereview.md
     stopReason: null
     gates:
       unit: PENDING

@@ -13,7 +13,7 @@
 	"qualification_baseline": "2026-08-28.2",
 	"qualification_status": "qualified_restricted",
 	"route_evidence": "requalified",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "PENDING_NATIVE_REREVIEW",
 	"material_selection_reason": "One exact Biome-supplied formatting-only edit is a deterministic single-file low-consequence correction within GLM's qualified restricted class. Native retains exact-diff rereview and every executable/visual/terminal gate.",
 	"consequence": "low supervised one-declaration formatting correction",
 	"covered_modalities": ["text"],
@@ -51,7 +51,20 @@
 		"a2_fourth_repair_authorized": false,
 		"conditional_authorization_record": "docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-a2-conditional-human-repair3-authorization.md"
 	},
-	"provider_task_invocations": 0,
+	"provider_task_invocations": 1,
+	"result": {
+		"provider_exit_code": 0,
+		"source_sha256": "7f4adece6bcea8ce6bd64f8f3011ea6b04b98a71fb798c75f0ba913a694d3576",
+		"exact_changed_paths": [
+			"apps/web/src/components/owner/health/owner-health.css"
+		],
+		"tool_operations": { "reads": 1, "edits": 1, "other": 0 },
+		"completion_chars": 585,
+		"completion_ceiling": 500,
+		"completion_sentinel_valid": true,
+		"completion_sha256": "c5afb852036df8710d93bc897159353f6999a92353780fb616b1007dee12aae5",
+		"completion_contract_outcome": "TRANSPORT_NONCOMPLIANT_SOURCE_PRESERVED_NO_ROUTING_PENALTY"
+	},
 	"resolver": {
 		"selected": "glm-5.3-flash",
 		"route": "opencode-go/glm-5.3-flash",
