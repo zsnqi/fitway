@@ -17,7 +17,8 @@
 		"new human-authorized attempt record after terminal 2/2",
 		"fresh live availability and stage-specific route comparison required"
 	],
-	"gate_outcome": "PENDING",
+	"gate_outcome": "SOURCE_CANDIDATE_COMPLETION_INVALID",
+	"outcome_classification": "completion-contract/transport compliance only; not a source-quality failure, review-capability failure, qualification downgrade, repair 4, or permanent routing penalty",
 	"material_selection_reason": "Repair 3 is a deterministic exact one-file low-consequence JSX spacing correction within GLM's qualified restricted class. Live preflight confirms the route, the resolver selected it without lifecycle violations, and the human prefers GLM while barring V4 Pro. Native retains independent review and authoritative gates.",
 	"consequence": "low supervised one-file formatting repair; human-authorized attempt 3/3 remains native-gated",
 	"covered_modalities": ["text"],
@@ -59,7 +60,29 @@
 		"exception_authority": "explicit human one-time authorization for this A1 candidate only",
 		"prior_terminal_history_preserved": true
 	},
-	"provider_task_invocations": 0,
+	"provider_task_invocations": 1,
+	"completion": {
+		"completion_id": "p11-uptime-a1-repair3-overlong",
+		"final_text_present": true,
+		"sentinel": "WORKER_RESULT_COMPLETE",
+		"sentinel_verified": true,
+		"result_fingerprint": "sha256:2ee30057baf91c376eb3b445b5316fab4968715b5801afc63228accc3fadb6b5",
+		"completion_chars": 608,
+		"completion_limit_chars": 600,
+		"constraint_breach": true,
+		"source_changed": true,
+		"candidate_source_sha256": "ad66958bad92be2736128d13a5ac43d3b7546d04a01d76070d15a8652242368e",
+		"exact_changed_paths": [
+			"apps/web/src/components/owner/health/owner-health-view.tsx"
+		],
+		"tool_audit": {
+			"permitted_reads": 1,
+			"permitted_edits": 2,
+			"other_operations": 0,
+			"out_of_scope_paths": 0
+		},
+		"raw_evidence_pointer": "test-results/node_modules/p11_uptime_stage_a1_repair3_glm_20260829/events.jsonl"
+	},
 	"delegation_evaluation": {
 		"evaluated_at": "2026-08-29T09:04:00Z",
 		"stage_discovery_started_at": null,

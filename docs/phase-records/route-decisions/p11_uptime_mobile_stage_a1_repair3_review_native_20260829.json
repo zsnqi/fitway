@@ -1,0 +1,62 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-uptime-mobile-fidelity/stage-a1-human-repair-3-independent-review",
+	"recorded": "2026-08-29T09:15:00Z",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native",
+	"route": null,
+	"control": "high",
+	"transport": "codex-native",
+	"native_spawn": {
+		"model": "gpt-5.6-sol",
+		"invocation_id": "p11_uptime_a1_repair3_review_sol04",
+		"request_timestamp": "2026-08-29T09:15:00Z",
+		"reasoning_effort": "high",
+		"agent_role": "reviewer",
+		"fork_turns": "none",
+		"parent_inheritance_deliberate": false,
+		"explicit_one_shot_human_approval": null
+	},
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"qualification_status": "native",
+	"gate_outcome": "PENDING",
+	"material_selection_reason": "The exact repair-3 candidate is preserved but its external return exceeded the hard compact ceiling by 8 characters. A read-only native reviewer independently closes the fail-closed completion gap before executable gates. This route is not a source-quality or capability judgment against GLM and creates no permanent routing penalty.",
+	"consequence": "medium responsive semantic source review at final human-authorized repair ceiling; no source write or product decision",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [],
+	"durable_authorization_records": [],
+	"filtered_alternatives": {
+		"glm-5.3-flash": [
+			"same-cycle fail-closed completion gap requires a reviewer independent of the external writer; qualification remains unchanged"
+		],
+		"deepseek-v4-pro": ["explicitly unauthorized for current-run work"],
+		"gpt-5.6-terra": ["no fresh one-shot human invocation approval"],
+		"gpt-5.6-luna": ["no fresh one-shot human invocation approval"]
+	},
+	"activation": {
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile",
+		"branch": "work/phase11-uptime-mobile-fidelity-b01",
+		"candidate_source_sha256": "ad66958bad92be2736128d13a5ac43d3b7546d04a01d76070d15a8652242368e",
+		"read_only": true,
+		"invocation_id": "p11_uptime_a1_repair3_review_sol04"
+	},
+	"repair_accounting": {
+		"attempts_consumed": 3,
+		"effective_ceiling": 3,
+		"prior_terminal_history_preserved": true
+	},
+	"delegation_evaluation": {
+		"evaluated_at": "2026-08-29T09:15:00Z",
+		"stage_discovery_started_at": null,
+		"basis": [
+			"human repair-3 authority",
+			"exact candidate hash/diff",
+			"invalid compact external completion"
+		],
+		"reasons": ["independence", "recoverability"]
+	}
+}
