@@ -21,7 +21,7 @@
 	"registry_revision": "2026-08-28.2",
 	"qualification_baseline": "2026-08-28.2",
 	"qualification_status": "native",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "PASS",
 	"material_selection_reason": "The exact repair-3 candidate is preserved but its external return exceeded the hard compact ceiling by 8 characters. A read-only native reviewer independently closes the fail-closed completion gap before executable gates. This route is not a source-quality or capability judgment against GLM and creates no permanent routing penalty.",
 	"consequence": "medium responsive semantic source review at final human-authorized repair ceiling; no source write or product decision",
 	"covered_modalities": ["text"],
@@ -48,6 +48,17 @@
 		"attempts_consumed": 3,
 		"effective_ceiling": 3,
 		"prior_terminal_history_preserved": true
+	},
+	"outcome": {
+		"blocking_issues": 0,
+		"significant_issues": 0,
+		"non_blocking_issues": 0,
+		"verified_candidate_sha256": "ad66958bad92be2736128d13a5ac43d3b7546d04a01d76070d15a8652242368e",
+		"exact_changed_paths": [
+			"apps/web/src/components/owner/health/owner-health-view.tsx"
+		],
+		"recommendation": "approve repair-3 source review and restart authoritative A1 mechanical verification",
+		"commands_run": []
 	},
 	"delegation_evaluation": {
 		"evaluated_at": "2026-08-29T09:15:00Z",

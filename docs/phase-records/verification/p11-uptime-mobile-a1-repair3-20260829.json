@@ -1,0 +1,62 @@
+{
+	"schema": "fitway-verification/1",
+	"project": "FITWAY",
+	"milestone": "phase11-uptime-mobile-fidelity",
+	"stage": "A1 mobile record markup after human-authorized repair 3/3",
+	"recorded": "2026-08-29T09:18:00Z",
+	"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile",
+	"branch": "work/phase11-uptime-mobile-fidelity-b01",
+	"base_commit": "5a409e411491336b480de5c3b7589ab3ff1c80c7",
+	"candidate_commit": "3a02a126ba3031c0b4c3f12934ee2dffd97065dd",
+	"source_sha256": "ad66958bad92be2736128d13a5ac43d3b7546d04a01d76070d15a8652242368e",
+	"repair_accounting": {
+		"attempts_consumed": 3,
+		"effective_ceiling": 3,
+		"one_time_human_exception": true,
+		"prior_terminal_2_of_2_history_preserved": true,
+		"fourth_repair_authorized": false
+	},
+	"independent_review": {
+		"route": "native gpt-5.6-sol/high read-only",
+		"invocation_id": "p11_uptime_a1_repair3_review_sol04",
+		"outcome": "PASS",
+		"findings": 0,
+		"verified": [
+			"exact source SHA-256 and one modified path",
+			"only two authorized JSX-space expressions changed versus repair 2",
+			"Biome-required literal spaces",
+			"separate visible/total bdi nodes and one rendered space around localized separator",
+			"no unrelated A1 behavior, copy, prop, class, table-semantic, or scope change"
+		],
+		"commands_run": []
+	},
+	"commands": [
+		{
+			"command": "git diff --check",
+			"outcome": "PASS",
+			"output": "exit 0; no diagnostics"
+		},
+		{
+			"command": "node_modules/.bin/biome.cmd check apps/web/src/components/owner/health/owner-health-view.tsx",
+			"outcome": "PASS",
+			"output": "Checked 1 file in 10ms. No fixes applied."
+		},
+		{
+			"command": "pnpm --filter web check-types",
+			"outcome": "PASS",
+			"output": "vite build completed (2192 modules) and tsc --noEmit exited 0"
+		},
+		{
+			"command": "pnpm exec vitest run apps/web/src/components/owner/health/owner-health-view.test.tsx",
+			"outcome": "PASS",
+			"output": "1 file passed; 13 tests passed; duration 7.67s"
+		}
+	],
+	"tracked_status_after_verification": "only the expected one-file source candidate before commit; clean after commit 3a02a12",
+	"outcome": "PASS",
+	"gaps": [
+		"CSS Stage A2 not implemented",
+		"Stage B counts/browser regression contract not implemented",
+		"browser, accessibility, visual, canonical, fast, phase, full, and terminal integration gates not yet run"
+	]
+}
