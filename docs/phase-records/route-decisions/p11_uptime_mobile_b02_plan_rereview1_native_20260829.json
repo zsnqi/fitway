@@ -1,0 +1,45 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-uptime-mobile-fidelity-b02/independent-plan-rereview-1",
+	"recorded": "2026-08-29T22:44:18.4917907+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native",
+	"route": null,
+	"transport": "codex-native",
+	"control": "xhigh",
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"gate_outcome": "PENDING",
+	"native_spawn": {
+		"model": "gpt-5.6-sol",
+		"reasoning_effort": "xhigh",
+		"agent_role": "reviewer",
+		"fork_turns": "none",
+		"invocation_id": "p11_uptime_mobile_b02_plan_rereview1_sol01",
+		"request_timestamp": "2026-08-29T22:44:18.4917907+03:00",
+		"mechanism": "fresh_native_read_only_plan_rereview"
+	},
+	"consequence": "release-gating plan rereview; a second failed focused correction stops b02 planning",
+	"material_selection_reason": "A fresh independent Sol reviewer is required because the original reviewer cannot grade its own requested corrections and this release-gating rereview must reconcile multi-worktree history, executable browser-oracle sensitivity, and coordinator topology. External low-consequence implementation qualification does not cover this judgment.",
+	"eligible_alternatives": ["native"],
+	"filtered_alternatives": {
+		"glm-5.3-flash": [
+			"Qualification does not cover release-gating multi-worktree plan review."
+		],
+		"gpt-5.6-terra": [
+			"No fresh one-shot invocation approval; Sol matches the consequence ceiling."
+		],
+		"gpt-5.6-luna": [
+			"No fresh one-shot invocation approval and insufficient consequence-bearing judgment evidence."
+		]
+	},
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "multi_worktree_read"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [
+		"independent_plan_rereview",
+		"adversarial_negative_control_review",
+		"workflow_topology_and_repair_budget_review"
+	]
+}

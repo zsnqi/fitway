@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-29T19:29:11Z"
+updatedAt: "2026-08-29T19:44:18Z"
 
 coordinator:
-  owner: "Coordinator final authority. Human authorized fresh Uptime and Settings attempts and resolved Login in favor of WCAG AA with the smallest Paper-language-preserving adjustment. Taking only fresh Uptime b02 planning now: terminal b01/B2 history and its 2/2 budget remain immutable; b02 is a separate test-only attempt at repair 0/2 and cannot activate before independent plan review. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b02-fresh-attempt-plan.md"
+  owner: "Coordinator final authority. Human authorized fresh Uptime and Settings attempts and resolved Login in favor of WCAG AA with the smallest Paper-language-preserving adjustment. Fresh Uptime b02 initial plan was independently rejected before activation; focused plan repair 1 is frozen for fresh rereview. Terminal b01/B2 history and 2/2 budget remain immutable; b02 source/runtime budget remains 0/2 and no branch/worktree exists. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b02-plan-review1-rejection.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1978,20 +1978,24 @@ milestones:
     worktree: null
     baseCommit: 04c2d3be01c14a42974666af636c96f2ed23ce39
     ownedPaths:
+      - apps/web/src/components/owner/health/owner-health-view.tsx
+      - apps/web/src/components/owner/health/owner-health.css
+      - apps/web/src/components/owner/health/owner-health-section.tsx
       - tests/browser/phase11-health.browser.spec.ts
       - docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/**
       - docs/phase-records/route-decisions/**
       - docs/phase-records/verification/**
     forbiddenPaths:
       - "the terminal phase11-uptime-mobile-fidelity b01 branch, worktree, uncommitted B2 candidate, budget, and history"
-      - "all production source including apps/web/src/components/owner/health/**, hooks, catalogs, server, API, schema, migration, router, shared tokens, unrelated UI, and normative authority paths"
+      - "all production source except exact byte-identical carry-forward of accepted A1/A2/B1 in the three owned Owner Health files; after carry-forward those files are frozen"
+      - "hooks, catalogs, server, API, schema, migration, router, shared tokens, unrelated UI, and normative authority paths"
       - "Paper and every canonical screenshot; this attempt compares accepted artifacts and never promotes them"
       - "root manifests, lockfiles, test configuration, generated routing, deployment, databases, and external systems"
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-29T19:29:11Z"
+    lastHeartbeatAt: "2026-08-29T19:44:18Z"
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b02-fresh-attempt-plan.md
+    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b02-plan-review1-rejection.md
     stopReason: null
     gates:
       unit: PENDING

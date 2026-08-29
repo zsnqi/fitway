@@ -10,7 +10,7 @@
 	"control": "xhigh",
 	"registry_revision": "2026-08-28.2",
 	"qualification_baseline": "2026-08-28.2",
-	"gate_outcome": "PENDING",
+	"gate_outcome": "FAILED_VALIDATION",
 	"native_spawn": {
 		"model": "gpt-5.6-sol",
 		"reasoning_effort": "xhigh",
@@ -41,5 +41,7 @@
 		"independent_plan_review",
 		"adversarial_false_pass_analysis",
 		"authority_and_repair_budget_review"
-	]
+	],
+	"gate_outcome_note": "Independent plan review rejected the initial plan before activation. Blocking findings: missing accessibility-tree exposure for values/counts; non-executable paint/occlusion oracle; wrong containment chain and incomplete 320/360 coverage for bounded summaries; underspecified auto-height probe; unlawful direct branch from unintegrated B1; incomplete worktree/freeze/build preflight. No implementation repair was consumed.",
+	"evidence": "docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b02-plan-review1-rejection.md"
 }

@@ -1,0 +1,24 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-uptime-mobile-fidelity-b02/plan-repair-1",
+	"recorded": "2026-08-29T22:44:18.4917907+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "direct",
+	"route": null,
+	"transport": "direct",
+	"control": null,
+	"registry_revision": "2026-08-28.2",
+	"qualification_baseline": "2026-08-28.2",
+	"gate_outcome": "PASS",
+	"consequence": "focused correction of a release-gating plan; no production, test, Paper, branch, worktree, or runtime mutation",
+	"material_selection_reason": "Direct correction won because the independent reviewer returned six locatable plan defects, the coordinator alone owns the ledger and plan boundary, and every correction is coupled to authoritative topology/repair-accounting judgment. A separate fresh reviewer retains independence at the next gate.",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read", "coordinator_record_write"],
+	"covered_mcp_operations": [],
+	"covered_capabilities": [
+		"plan_gate_correction",
+		"workflow_topology_reconciliation",
+		"adversarial_oracle_specification"
+	]
+}
