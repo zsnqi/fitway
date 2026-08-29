@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-29T10:08:00Z"
+updatedAt: "2026-08-29T10:14:00Z"
 
 coordinator:
-  owner: "Coordinator final authority. W2 remains terminal DONE. Uptime A1 is accepted at human repair 3/3 with no repair 4. Uptime A2 is accepted at b04215c after repair 2/2; conditional human repair 3 was never activated or consumed and no A2 repair 4 exists. GLM compact overruns remain transport-only/non-penalizing and invalid setup failures remain non-source. Next valid stage is frozen B1 totals propagation after fresh route evaluation. Browser, W2, and unrelated scope remain closed. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-a2-repair2-pass.md"
+  owner: "Coordinator final authority. W2 remains terminal DONE; Uptime A1 and A2 remain accepted with their recorded repair histories unchanged. Frozen B1 real-total propagation is active through GLM-5.3-Flash/high under one exact section-file lease after live preflight and clean route resolution. Transport overruns remain non-penalizing and setup failures non-source. Stage B2, Browser, W2, and unrelated scope remain closed. Handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b1-glm-activation.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1937,9 +1937,9 @@ milestones:
     integratedCommit: 974302b976e8a1d1344191241665333d4bf6a75c
 
   phase11-uptime-mobile-fidelity:
-    status: READY
+    status: IN_PROGRESS
     dependencies: [phase11-health, phase11-uptime-paper-successor]
-    ownerSession: null
+    ownerSession: "GLM-5.3-Flash/high Stage B1 total-count writer under exact one-file lease; coordinator retains review and all gates"
     branch: work/phase11-uptime-mobile-fidelity-b01
     worktree: C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile
     baseCommit: SELF
@@ -1955,11 +1955,15 @@ milestones:
       - "all server, API, schema, migration, router, shared catalog, global token, unrelated UI, and normative authority paths"
       - "desktop Uptime composition except where a shared rule is proven necessary and independently regression-checked"
       - "canonical baseline promotion outside this milestone's own subtree; promotion remains coordinator-owned"
-    sharedLeases: []
+    sharedLeases:
+      - path: apps/web/src/components/owner/health/owner-health-section.tsx
+        owner: p11_uptime_stage_b1_glm_20260829
+        reason: "Exactly two accepted table totalCount prop additions; all other source locked"
+        expiresAt: "2026-08-29T19:15:00+03:00"
     validationRepairAttempts: 3
-    lastHeartbeatAt: "2026-08-29T10:08:00Z"
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-a2-repair2-pass.md
+    lastHeartbeatAt: "2026-08-29T10:14:00Z"
+    leaseExpiresAt: "2026-08-29T19:15:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260829-p11-uptime-b1-glm-activation.md
     stopReason: null
     gates:
       unit: PENDING

@@ -1,0 +1,42 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "phase11-uptime-mobile-fidelity/stage-b1-total-counts",
+	"recorded": "2026-08-29T10:14:00Z",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "glm-5.3-flash",
+	"route": "opencode-go/glm-5.3-flash",
+	"control": "high",
+	"transport": "opencode-cli",
+	"qualification_status": "qualified_restricted",
+	"route_evidence": "requalified",
+	"gate_outcome": "PENDING",
+	"material_selection_reason": "Two exact prop additions in one file are deterministic low-consequence wiring within GLM's qualified restricted class; native retains all review and gates.",
+	"filtered_alternatives": {
+		"deepseek-v4-pro": ["explicitly unauthorized"],
+		"gpt-5.6-terra": ["no fresh one-shot human approval"],
+		"gpt-5.6-luna": ["no fresh one-shot human approval"]
+	},
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/coordinator/20260828-glm-5.3-flash-authorization.md"
+	],
+	"activation": {
+		"activation_commit": "b04215cada5c717b3e115b3a34d585b5039b34c4",
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/p11-uptime-mobile",
+		"branch": "work/phase11-uptime-mobile-fidelity-b01",
+		"source_sha256": "45748683135875b3ddf60a223dc58460b1025a58b0813c63d86e876f87eb8ec1",
+		"exact_write_lease": [
+			"apps/web/src/components/owner/health/owner-health-section.tsx"
+		],
+		"lease_expires_at": "2026-08-29T19:15:00+03:00",
+		"packet_sha256": "af4603f8d1125de192432979615f571f1f54294fef3ea99a412450c7ee99cea7"
+	},
+	"provider_task_invocations": 0,
+	"resolver": {
+		"selected": "glm-5.3-flash",
+		"route": "opencode-go/glm-5.3-flash",
+		"control": "high",
+		"delegation_lifecycle_violations": [],
+		"decomposition_mode": "sequential_default"
+	}
+}
