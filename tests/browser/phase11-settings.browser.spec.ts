@@ -1,4 +1,4 @@
-import { mkdir } from "node:fs/promises";
+﻿import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, type Route, test } from "@playwright/test";
@@ -119,7 +119,23 @@ function savedOutput(version: number, capacity: number) {
 }
 
 function rpcError(status: number, code: string, message: string) {
-	return { json: null, error: { json: { status, code, message, data: null } } };
+	// The oRPC wire error shape: a typed error the client rehydrates as an
+	// ORPCError with the same code and data.
+	return {
+		json: { defined: false, code, status, message, data: null },
+	};
+}
+
+function conflictError() {
+	return {
+		json: {
+			defined: false,
+			code: "CONFLICT",
+			status: 409,
+			message: "Settings were updated by someone else",
+			data: { code: "settings_version_conflict" },
+		},
+	};
 }
 
 function deferred() {
@@ -288,7 +304,7 @@ function seriousViolations(
 async function openOwnerPage(page: Page, options?: { readStatus?: number }) {
 	await mockOwnerSurfaces(page, options);
 	await page.addInitScript(() =>
-		window.localStorage.setItem("fitway-locale", "en"),
+		window.localStorage.setItem("fitway.locale", "en"),
 	);
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/admin");
@@ -300,11 +316,12 @@ test("the section stands down while the shared analytics query is pending, issui
 }) => {
 	await mockOwnerSurfaces(page);
 	const hold = deferred();
-	await page.route("**/rpc/admin/analytics/daily", async () => {
+	await page.route("**/rpc/admin/analytics/daily", async (route) => {
 		await hold.promise;
+		await route.fulfill({ status: 200, json: { json: daily } });
 	});
 	await page.addInitScript(() =>
-		window.localStorage.setItem("fitway-locale", "en"),
+		window.localStorage.setItem("fitway.locale", "en"),
 	);
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/admin");
@@ -320,16 +337,17 @@ test("the section stands down while the shared analytics query is pending, issui
 	).toContainText("Current version 7");
 });
 
-test("clean renders no Discard and locks Save; loading and load failure carry their own copy and Retry", async ({
+test("load failure carries its own copy and Retry; clean locks Save and renders no Discard", async ({
 	page,
 }) => {
 	await openOwnerPage(page, { readStatus: 500 });
 
-	await expect(page.locator(status)).toContainText(
+	await expect(page.locator(section)).toContainText(
 		"Settings could not be loaded",
 	);
 	await expect(page.locator(section)).toContainText("Try again");
-	await page.locator(`${discardButtons}`).first().click();
+	const retry = page.locator("button.owner-settings__retry");
+	await retry.click();
 	await expect(
 		page.locator(`${upperActions} .owner-settings__version`),
 	).toContainText("Current version 7");
@@ -339,7 +357,9 @@ test("clean renders no Discard and locks Save; loading and load failure carry th
 
 	await setLocale(page, "ar");
 	await expect(page.locator(section)).toContainText("تعذر تحميل الإعدادات");
-	await page.locator(`${discardButtons}`).first().click();
+	// A retry must refetch: point the read back at the live snapshot first.
+	readResponse = { status: 200, body: { json: settingsSnapshot } };
+	await page.locator("button.owner-settings__retry").click();
 	await expect(page.locator(section)).toContainText("الإعدادات");
 	await expect(page.locator(section)).toContainText("Asia/Riyadh");
 	await expect(page.locator(saveButtons).first()).toBeDisabled();
@@ -372,15 +392,25 @@ test("dirty valid shows the upper Discard, saves once, and announces the created
 
 	await page.locator("input[data-testid='capacity']").fill("240");
 	await expect(page.locator(saveButtons).first()).toBeEnabled();
-	await expect(page.locator(discardButtons)).toHaveCount(1);
-	await expect(page.locator(upperActions)).toContainText("Discard changes");
-	await expect(page.locator(upperActions)).toContainText("Unsaved changes");
+	// The lower frontier exists in the DOM at desktop width but is hidden; only
+	// the upper Discard is visible. The unsaved state text lives beside the
+	// foundations header, as in the accepted composition.
+	await expect(page.locator(discardButtons)).toHaveCount(2);
+	await expect(
+		page.locator(`${upperActions} .owner-settings__discard`),
+	).toBeVisible();
+	await expect(
+		page.locator(".owner-settings__board-state").first(),
+	).toContainText("Unsaved changes");
+	await expect(page.locator(lowerFrontier)).toBeHidden();
 
 	updateHold = deferred();
 	await page.locator(saveButtons).first().click();
 	await expect(page.locator(status)).toContainText("Saving settings…");
 	await expect(page.locator(saveButtons).first()).toBeDisabled();
-	await expect(page.locator(saveButtons)).toHaveCount(1);
+	await expect(page.locator(saveButtons).locator("visible=true")).toHaveCount(
+		1,
+	);
 	expect(observedUpdateRequests).toHaveLength(1);
 
 	updateHold?.resolve();
@@ -488,7 +518,7 @@ test("a version conflict preserves the draft, locks Save, and Discard reloads la
 	await page.locator("input[data-testid='capacity']").fill("260");
 	updateResponse = {
 		status: 409,
-		body: rpcError(409, "CONFLICT", "Settings were updated by someone else"),
+		body: conflictError(),
 	};
 	await page.locator(saveButtons).first().click();
 
@@ -522,25 +552,31 @@ test("unchecking a day serializes null and removes its inputs; rechecking restor
 }) => {
 	await openOwnerPage(page);
 
-	const sundayToggle = page.locator("input[data-testid='sun-toggle']");
+	// The checkbox is visually hidden inside its 44px label target, so the
+	// label is the real user's click surface.
+	const sundayToggle = page
+		.locator("label.owner-settings__toggle")
+		.filter({ hasText: "Sunday" });
 	const sundayOpen = page.locator("input[data-testid='sun-open']");
 	const sundayClose = page.locator("input[data-testid='sun-close']");
 	await expect(sundayOpen).toHaveValue("06:00");
 	await expect(sundayClose).toHaveValue("23:00");
 
-	await sundayToggle.uncheck();
+	await sundayToggle.click();
 	await expect(sundayOpen).toHaveCount(0);
 	await expect(sundayClose).toHaveCount(0);
 	await expect(page.locator(section)).toContainText(
 		"Open and close unavailable while closed",
 	);
 
-	await sundayToggle.check();
+	await sundayToggle.click();
 	await expect(sundayOpen).toHaveValue("06:00");
 	await expect(sundayClose).toHaveValue("23:00");
 
-	const saturdayToggle = page.locator("input[data-testid='sat-toggle']");
-	await saturdayToggle.check();
+	const saturdayToggle = page
+		.locator("label.owner-settings__toggle")
+		.filter({ hasText: "Saturday" });
+	await saturdayToggle.click();
 	const saturdayOpen = page.locator("input[data-testid='sat-open']");
 	const saturdayClose = page.locator("input[data-testid='sat-close']");
 	await expect(saturdayOpen).toHaveValue("");
@@ -555,7 +591,7 @@ test("unchecking a day serializes null and removes its inputs; rechecking restor
 	await saturdayClose.fill("20:00");
 	await expect(page.locator(saveButtons).first()).toBeEnabled();
 
-	// The submitted schedule serializes the closed-reopened day and keeps the
+	// The submitted schedule serializes the reopened day and keeps the
 	// next-day Friday pair.
 	updateResponse = {
 		status: 200,
@@ -583,7 +619,7 @@ test("mobile exposes the lower frontier only when dirty, and both Save controls 
 }) => {
 	await mockOwnerSurfaces(page);
 	await page.addInitScript(() =>
-		window.localStorage.setItem("fitway-locale", "en"),
+		window.localStorage.setItem("fitway.locale", "en"),
 	);
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto("/admin");
@@ -604,10 +640,17 @@ test("mobile exposes the lower frontier only when dirty, and both Save controls 
 	).toBeHidden();
 
 	updateHold = deferred();
-	await Promise.all([
-		page.locator(saveButtons).first().click(),
-		page.locator(`${lowerFrontier} ${saveButtons}`).click(),
-	]);
+	// A genuine double-tap lands both clicks inside one React frame, before
+	// the saving state can disable the second button. Dispatch both submits
+	// synchronously to reproduce exactly that frame.
+	await page.evaluate(() => {
+		const saves = [
+			...document.querySelectorAll<HTMLButtonElement>(
+				"button[type='submit'].owner-settings__save",
+			),
+		];
+		for (const button of saves) button.click();
+	});
 	await page.waitForTimeout(200);
 	expect(observedUpdateRequests).toHaveLength(1);
 	await expect(page.locator(status)).toContainText("Saving settings…");
@@ -687,7 +730,7 @@ test("all required widths and 200 percent reflow keep the document free of horiz
 }) => {
 	await mockOwnerSurfaces(page);
 	await page.addInitScript(() =>
-		window.localStorage.setItem("fitway-locale", "en"),
+		window.localStorage.setItem("fitway.locale", "en"),
 	);
 	await page.goto("/admin");
 	await expect(page.locator(section)).toBeVisible();
@@ -722,7 +765,7 @@ test("automated accessibility finds no serious or critical violations in either 
 }) => {
 	await mockOwnerSurfaces(page);
 	await page.addInitScript(() =>
-		window.localStorage.setItem("fitway-locale", "en"),
+		window.localStorage.setItem("fitway.locale", "en"),
 	);
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/admin");
@@ -751,7 +794,7 @@ test("review captures mirror the four accepted Paper frames without promoting an
 }) => {
 	await mockOwnerSurfaces(page);
 	await page.addInitScript(() =>
-		window.localStorage.setItem("fitway-locale", "en"),
+		window.localStorage.setItem("fitway.locale", "en"),
 	);
 
 	await page.setViewportSize({ width: 1440, height: 900 });

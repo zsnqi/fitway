@@ -156,6 +156,24 @@ const phases = {
 		integrationFiles: ["apps/server/src/phase11-access.integration.test.ts"],
 		label: "Phase 11 owner access management slice",
 	},
+	"phase11-settings": {
+		// Every /admin slice gates on its sibling specs from activation. The
+		// comments on phase11-health, phase11-audit, and phase11-access record
+		// three separate occasions where omitting a sibling hid a real
+		// regression until coordinator verify:full caught it; this profile is
+		// written to not repeat that a fourth time.
+		browserFiles: [
+			"tests/browser/phase11-settings.browser.spec.ts",
+			"tests/browser/phase11-access.browser.spec.ts",
+			"tests/browser/phase11-audit.browser.spec.ts",
+			"tests/browser/phase11-health.browser.spec.ts",
+			"tests/browser/phase10-ui-csv.browser.spec.ts",
+			"tests/browser/phase9-owner-ui.browser.spec.ts",
+			"tests/browser/phase11-shell.browser.spec.ts",
+		],
+		integrationFiles: ["apps/server/src/phase11-settings.integration.test.ts"],
+		label: "Phase 11 owner settings slice",
+	},
 	"phase11-reference-gating-debt": {
 		browserFiles: [],
 		integrationFiles: [],

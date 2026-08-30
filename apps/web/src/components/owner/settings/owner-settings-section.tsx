@@ -29,7 +29,7 @@ import "./owner-settings.css";
  *
  * Enablement is an explicit property and the shared daily analytics are the
  * page prerequisite. While either is unsettled, the hook stands down
- * (`status: "standby"`) and this section renders nothing â€” `/admin` is
+ * (`status: "standby"`) and this section renders nothing — `/admin` is
  * already announcing exactly one loading status or showing exactly one error
  * with one retry, and a second copy of either would be noise for a screen
  * reader and a duplicate control for everyone else (the same standing-down
@@ -38,7 +38,7 @@ import "./owner-settings.css";
  * ## Draft lifecycle
  *
  * The draft is a local, lossless copy of the server snapshot with string
- * fields. It resets only when the server snapshot object itself changes â€” a
+ * fields. It resets only when the server snapshot object itself changes — a
  * successful save (the read cache adopts the appended snapshot) or a conflict
  * Discard (an explicit refetch whose server version must differ). Switching
  * locale never touches the snapshot object, so values and the draft survive
@@ -56,6 +56,12 @@ export function OwnerSettingsSection({ enabled }: { enabled: boolean }) {
 	const [draft, setDraft] = useState<OwnerSettingsDraft | null>(null);
 	const [prior, setPrior] = useState<OwnerSettingsDraftPrior>(emptyPrior);
 	const appliedRef = useRef<unknown>(null);
+	/**
+	 * The one submission controller for both Save presentations. A double-tap
+	 * can land two clicks inside one React frame — before the saving state
+	 * disables the buttons — so the guard is a ref, not derived state.
+	 */
+	const saveInFlightRef = useRef(false);
 
 	const snapshot = settings.snapshot;
 	// Reset the editing surface whenever a new server snapshot object arrives.
@@ -67,6 +73,15 @@ export function OwnerSettingsSection({ enabled }: { enabled: boolean }) {
 		setDraft(draftFromSnapshot(snapshot));
 		setPrior(emptyPrior());
 	}, [snapshot]);
+
+	// The in-flight guard releases as soon as the save stops being pending,
+	// so a retry after an atomic failure stays possible.
+	const savePhase = settings.save.outcome.phase;
+	useEffect(() => {
+		if (savePhase !== "pending") {
+			saveInFlightRef.current = false;
+		}
+	}, [savePhase]);
 
 	if (settings.status === "standby") return null;
 	if (settings.status === "pending") {
@@ -159,8 +174,10 @@ export function OwnerSettingsSection({ enabled }: { enabled: boolean }) {
 	}
 
 	function handleSave() {
+		if (saveInFlightRef.current) return;
 		const editable = buildEditable(activeDraft);
 		if (!editable || invalid || !dirty) return;
+		saveInFlightRef.current = true;
 		settings.save.submit({ expectedVersion: activeSnapshot.version, editable });
 	}
 

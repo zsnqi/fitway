@@ -80,7 +80,9 @@ export function OwnerSettingsView({
 	const clean = state === "clean";
 	const conflict = state === "conflict";
 	const invalid = state === "dirty-invalid";
-	const saveDisabled = clean || invalid || conflict || saving;
+	// A just-saved form is clean again: Save locks until the next real change.
+	const saveDisabled =
+		clean || state === "saved" || invalid || conflict || saving;
 	const discardDisabled = saving;
 	const showDiscardInUpper = state !== "clean";
 	const showLowerFrontier = state !== "clean" && state !== "saved";
