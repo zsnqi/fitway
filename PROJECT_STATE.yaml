@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-30T16:34:00Z"
+updatedAt: "2026-08-30T16:56:00Z"
 
 coordinator:
-  owner: "Coordinator final authority. Human authorized a fresh Settings Paper successor attempt on 2026-08-30 while preserving the terminal 2/2 attempt unchanged. The separate pre-existing Paper area OWNER SETTINGS — FRESH r01 SUCCESSOR CANDIDATE passed fresh independent bilingual rendered review and is accepted as the Settings implementation visual authority; no Paper mutation or Settings product-code implementation occurred. The migration-free Settings specification r01 is now the active bounded prerequisite; all product-code, Paper, schema, migration, router, baseline, and normative-authority paths remain excluded. Fresh Uptime b02 planning remains terminal FAILED_VALIDATION with no third plan repair authorized. Login remains a separately authorized follow-up. Handoff: docs/phase-records/handoffs/phase11-settings/20260830-193400-p11_settings_spec_r01-activation.md"
+  owner: "Coordinator final authority. Human authorized a fresh Settings Paper successor attempt on 2026-08-30 while preserving the terminal 2/2 attempt unchanged. The separate pre-existing Paper area OWNER SETTINGS — FRESH r01 SUCCESSOR CANDIDATE passed fresh independent bilingual rendered review and is accepted as the Settings implementation visual authority; no Paper mutation or Settings product-code implementation occurred. The migration-free Settings specification r01 remains the active bounded prerequisite and is in focused repair 1/2 after independent contract and Paper/UI review; all product-code, Paper, schema, migration, router, baseline, and normative-authority paths remain excluded. Fresh Uptime b02 planning remains terminal FAILED_VALIDATION with no third plan repair authorized. Login remains a separately authorized follow-up. Handoff: docs/phase-records/handoffs/phase11-settings/20260830-195600-p11_settings_spec_r01-repair-1.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1885,10 +1885,10 @@ milestones:
       - "the terminal phase11-settings-paper-successor milestone, its 2/2 history, and Paper area 1EO5-0"
       - "the accepted fresh Paper successor area 1FKS-0 and all Paper nodes"
     sharedLeases: []
-    validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-30T19:34:00+03:00"
+    validationRepairAttempts: 1
+    lastHeartbeatAt: "2026-08-30T19:56:00+03:00"
     leaseExpiresAt: "2026-08-31T01:34:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-settings/20260830-193400-p11_settings_spec_r01-activation.md
+    handoff: docs/phase-records/handoffs/phase11-settings/20260830-195600-p11_settings_spec_r01-repair-1.md
     stopReason: null
     gates:
       unit: NOT_REQUIRED

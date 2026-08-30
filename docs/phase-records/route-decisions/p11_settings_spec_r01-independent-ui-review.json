@@ -1,0 +1,23 @@
+{
+	"routeDecisionId": "p11_settings_spec_r01-independent-ui-review",
+	"recordedAt": "2026-08-30T16:56:00Z",
+	"candidateCommit": "6c84e833a36e82123c4bc2b807a6f62739bf69b7",
+	"reviewer": "native Sol subagent, xhigh, read-only",
+	"verdict": "CHANGES_REQUIRED",
+	"findings": [
+		{
+			"severity": "blocking",
+			"summary": "The weekly open/closed editing state machine was undefined.",
+			"requiredCorrection": "Specify accessible switch semantics, null serialization, draft-only time restoration, persisted-null reopen behavior, and no invented defaults."
+		},
+		{
+			"severity": "significant",
+			"summary": "Paper order, direction-sensitive sequences, heading/inset ownership, weekly typography, invalid-state behavior, and four-frame comparison were underspecified or contradictory."
+		},
+		{
+			"severity": "minor",
+			"summary": "The lower action frontier must be mobile/stacked only and runtime Arabic copy needs a native expansion review."
+		}
+	],
+	"mutation": "none"
+}

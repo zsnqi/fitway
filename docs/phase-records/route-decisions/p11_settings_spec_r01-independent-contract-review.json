@@ -1,0 +1,25 @@
+{
+	"routeDecisionId": "p11_settings_spec_r01-independent-contract-review",
+	"recordedAt": "2026-08-30T16:56:00Z",
+	"candidateCommit": "6c84e833a36e82123c4bc2b807a6f62739bf69b7",
+	"reviewer": "native Sol subagent, xhigh, read-only",
+	"verdict": "CHANGES_REQUIRED",
+	"findings": [
+		{
+			"severity": "blocking",
+			"summary": "A Settings capacity or threshold update would not affect the next public payload because the existing builder emits persisted current_state.band.",
+			"requiredCorrection": "Own the existing public payload builder and test, derive band at response time from current count and current-effective Settings, leave current_state untouched, freeze the response schema, and prove no private field leakage."
+		},
+		{
+			"severity": "significant",
+			"summary": "The phase verification profile did not enumerate all settled Owner sibling browser suites.",
+			"requiredCorrection": "Specify phase11-settings, phase11-access, phase11-audit, phase11-health, phase10-ui-csv, phase9-owner-ui, and phase11-shell browser suites plus the Settings integration suite."
+		},
+		{
+			"severity": "minor",
+			"summary": "effectiveFromUtc was not narrowed to the repository's canonical serialization.",
+			"requiredCorrection": "Require Date.toISOString() and YYYY-MM-DDTHH:mm:ss.sssZ round-trip identity."
+		}
+	],
+	"mutation": "none"
+}
