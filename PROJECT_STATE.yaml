@@ -1981,9 +1981,9 @@ milestones:
     integratedCommit: null
 
   phase11-settings-r01:
-    status: IN_PROGRESS
+    status: FAILED_VALIDATION
     dependencies: [phase11-settings-spec]
-    ownerSession: "Codex continuation orchestrator, run p11_settings_r01 repair 2/2, repairing only the three fresh independent-review defects from frozen repair-1 candidate a3bd779 under the human's standing continuation authorization."
+    ownerSession: null
     branch: codex/phase11-settings-b01
     worktree: D:/Projects/fitway-worktrees/phase11-settings-b01
     baseCommit: 78fd65032d24cad8486171fb8057ee48fdc67865
@@ -2009,17 +2009,54 @@ milestones:
       - every other milestone's phase record and handoff directory
     sharedLeases: []
     validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-31T02:20:35+03:00"
-    leaseExpiresAt: "2026-09-01T23:59:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-settings/20260831-022035-p11_settings_r01-repair-2-activation.md
-    stopReason: null
+    lastHeartbeatAt: "2026-08-31T02:44:59+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase11-settings/20260831-024459-p11_settings_r01-independent-rejection.md
+    stopReason: "Terminal p11_settings_r01 at frozen candidate 74f6f69cc3116e3b93e858600e9d94bfba4594b0 after repair 2/2. Self phase/fast/full gates, fresh executable phase verification, and fresh Paper review passed, but fresh independent code review found six invalid-control class strings concatenate the base and error modifier without a space, making the intended error highlight CSS unreachable for scalar and weekly-time fields. Candidate is preserved unintegrated. Human standing authorization immediately opens bounded successor p11_settings_r02 without resetting this history."
     gates:
       unit: PASS
       integration: PASS
       browser: PASS
       accessibility: PASS
-      visual: FAIL
+      visual: PASS
       independentReview: FAIL
+    integratedCommit: null
+
+  phase11-settings-r02:
+    status: IN_PROGRESS
+    dependencies: [phase11-settings-spec]
+    ownerSession: "Codex continuation orchestrator, run p11_settings_r02, repairing only the invalid-control class-token defect and its visual regression coverage from preserved r01 candidate 74f6f69 under the human's standing successor authorization."
+    branch: codex/phase11-settings-b01
+    worktree: D:/Projects/fitway-worktrees/phase11-settings-b01
+    baseCommit: 74f6f69cc3116e3b93e858600e9d94bfba4594b0
+    ownedPaths:
+      - apps/web/src/components/owner/settings/owner-settings-view.tsx
+      - apps/web/src/components/owner/settings/owner-settings-section.test.tsx
+      - apps/web/src/components/owner/settings/owner-settings.css
+      - tests/browser/phase11-settings.browser.spec.ts
+      - docs/phase-records/handoffs/phase11-settings/*p11_settings_r02*.md
+      - docs/phase-records/route-decisions/p11_settings_r02-*.json
+      - docs/phase-records/verification/*p11_settings_r02*
+    forbiddenPaths:
+      - all repository paths outside ownedPaths
+      - "accepted Product, Spec, Paper, ADR, visual token, schema, migration, auth, privacy, route, and canonical screenshot decisions"
+      - "preserved p11_settings_b01 and p11_settings_r01 candidate/history commits; do not amend, rebase, delete, or rewrite"
+      - "new settings, new routes, defaults/reset, import/export, scheduling, or product-scope expansion"
+      - "root manifests, lockfiles, environment schemas, and test-runner configuration"
+      - every other milestone's phase record and handoff directory
+    sharedLeases: []
+    validationRepairAttempts: 1
+    lastHeartbeatAt: "2026-08-31T02:44:59+03:00"
+    leaseExpiresAt: "2026-09-01T23:59:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-settings/20260831-024459-p11_settings_r02-successor-activation.md
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
     integratedCommit: null
 
   phase11-health:
