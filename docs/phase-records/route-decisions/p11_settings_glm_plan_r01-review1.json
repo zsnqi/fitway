@@ -1,0 +1,40 @@
+{
+	"routeDecisionId": "p11_settings_glm_plan_r01-review1",
+	"recordedAt": "2026-08-30T17:27:00Z",
+	"candidateCommit": "2656548",
+	"reviewer": "fresh native architecture subagent, read-only",
+	"verdict": "CHANGES_REQUIRED",
+	"findings": [
+		{
+			"severity": "blocking",
+			"summary": "Durable GLM egress consent was treated as workload qualification without a Settings-specific capability decision.",
+			"requiredCorrection": "Require activation-time route qualification for repository writes, shell commands, disposable Postgres, browser resources, and the exact unattended workload; split unsupported verification explicitly."
+		},
+		{
+			"severity": "blocking",
+			"summary": "A repository-only GLM worker lacked accepted bilingual copy and fresh rendered Paper inputs.",
+			"requiredCorrection": "Provide a secret-screened durable copy/geometry packet and assign final four-frame comparison to a native Paper-capable reviewer."
+		},
+		{
+			"severity": "significant",
+			"summary": "Checkpoints A-E lacked coherent commit and rollback boundaries.",
+			"requiredCorrection": "Commit each coherent checkpoint and roll back by preserving or returning to the preceding checkpoint boundary without rewriting history."
+		},
+		{
+			"severity": "significant",
+			"summary": "Manual screen-reader semantics verification was absent.",
+			"requiredCorrection": "Verify control/group names, errors, state/version announcements, read-only semantics, and live-region uniqueness in both locales."
+		},
+		{
+			"severity": "minor",
+			"summary": "The phase command used POSIX environment assignment in a PowerShell repository context.",
+			"requiredCorrection": "Use pnpm verify:phase --phase phase11-settings."
+		}
+	],
+	"hygiene": {
+		"worktree": "clean",
+		"diffCheck": "PASS",
+		"repositoryCheck": "PASS: 55 milestones, 8 canonical approval screenshots"
+	},
+	"mutation": "none"
+}

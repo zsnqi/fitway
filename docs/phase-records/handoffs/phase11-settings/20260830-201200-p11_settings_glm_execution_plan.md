@@ -1,6 +1,6 @@
 # Phase 11 Owner Settings — GLM execution plan
 
-Status: candidate for independent plan review. This document is implementation instructions only; it does not activate a worker or authorize product-code changes in the current session.
+Status: candidate repair 1 after independent plan review. This document is implementation instructions only; it does not activate a worker or authorize product-code changes in the current session.
 
 ## 1. Goal
 
@@ -20,14 +20,29 @@ The terminal result sought from the implementation worker is a committed candida
 - Accepted implementation specification: `docs/phase-records/handoffs/phase11-settings/20260830-193900-p11_settings_spec_r01-spec.md`.
 - Specification acceptance: `docs/phase-records/handoffs/phase11-settings/20260830-200700-p11_settings_spec_r01-done.md`.
 - Accepted visual authority: Paper file `01KYPX5AF950XZVVDD88B6J7QB`, fresh area `1FKS-0`, token hash `3b0faca3`, four frames at English/Arabic desktop `1440` and mobile `390`.
+- Secret-screened durable Paper implementation packet: `docs/phase-records/handoffs/phase11-settings/20260830-202500-p11_settings_paper_copy_packet.md`. It contains the accepted bilingual strings and confirms the geometry/token inventory is complete for implementation.
 - The failed predecessor `phase11-settings-paper-successor`, its `2/2` budget, its records, and Paper area `1EO5-0` are immutable history.
 - `phase11-settings-spec` is `DONE`; `phase11-settings` is not activated by this plan.
 - Existing schema already contains append-only `settings_versions` and generalized `settings_updated` audit support. No migration or schema edit is needed.
 - Existing public and operational payloads share `packages/api/src/public/payload-builder.ts`; it currently emits persisted `current.band`, which is the one authorized existing behavior change.
 - Existing `/admin` daily branch owns the page `h1`, shell, fixed-LTR rail, responsive content insets, prerequisite/loading region, and sibling Analytics, Audit, Health, and Access sections.
-- Durable qualified GLM route: `opencode-go/glm-5.3-flash`. Use one isolated writer. Native coordinator review remains mandatory.
+- Human-selected GLM target: `opencode-go/glm-5.3-flash`. Durable egress consent exists, but it does not by itself qualify this workload or its tools. Use one isolated writer only after the activation gate below passes. Native coordinator review remains mandatory.
 
 At activation, the coordinator must give GLM the exact accepted plan commit SHA and create an isolated branch/worktree from that SHA. The worker must verify `git rev-parse HEAD` and clean `git status --short` before editing. Do not infer or reuse an older worktree.
+
+### Activation capability gate
+
+Before dispatch, the coordinator must write a Settings-specific route decision that records:
+
+- the exact accepted plan/base SHA, branch, isolated worktree, owned paths, five active leases, lease expiry, and one-writer identity;
+- the resolved external route/model/control and fresh qualification result for this exact multi-file repository-write workload;
+- whether the route can run local shell/type/unit commands and interact with the supplied disposable Postgres and isolated browser resources;
+- the allowed data packet, with secret screening and no `.env` values or private data;
+- the rollback boundary and required handoff.
+
+The durable GLM consent record is egress authority only. It does not waive the fresh route/capability decision. If GLM cannot safely write the complete owned slice or run local repository commands, stop before dispatch rather than distributing implementation across concurrent writers.
+
+Paper access and final visual judgment are deliberately not assigned to GLM. GLM implements from the accepted specification plus the durable copy/geometry packet and captures run-scoped browser evidence. A native Paper-capable coordinator/reviewer performs the four-frame comparison and any source remeasurement after the candidate is frozen. If the activation preflight cannot support disposable Postgres or browser execution, record that split explicitly: GLM may produce the committed code/tests only if the coordinator has preassigned those missing checks to a sequential native verifier before independent review; no gate may be omitted.
 
 ## 3. Bounded scope and ownership
 
@@ -113,7 +128,7 @@ No other shared file is leased. If an additional file appears necessary, stop `N
 - Do not create a URL, route-tree entry, shell, page `h1`, header, main landmark, global nav item, or duplicate `48px`/`16px` content insets.
 - Settings begins at `h2`; internal groups use semantic `h3` or `fieldset`/`legend`.
 - Preserve the physical FITWAY rail LTR. Use logical CSS properties and the explicit reading-start orders in the accepted specification.
-- Keep Settings copy local. Use accepted Paper Arabic where available and native Arabic for runtime-only states; do not edit shared i18n catalogs.
+- Keep Settings copy local. Transcribe accepted English/Arabic exactly from `20260830-202500-p11_settings_paper_copy_packet.md`; do not translate, infer, or normalize accepted strings. Runtime-only states use the packet's explicit repository-convention boundary and receive native Arabic review. Do not edit shared i18n catalogs.
 - Follow the accepted group order: intro/actions; Capacity → Boundary → Reset; Quiet → Moderate → Busy; weekly hours; locked timings.
 - Weekday state is a styled form checkbox: `18×18px` marker inside a `44×44px` target, accessible name includes day and state. Unchecked serializes `null`, removes time inputs from interaction, and shows the localized full-width unavailable row.
 - Closing then reopening in one draft restores that draft's prior pair. Reopening a persisted closed day starts with two empty required times; Save stays disabled until valid. Never invent defaults.
@@ -125,7 +140,14 @@ No other shared file is leased. If an additional file appears necessary, stop `N
 
 ## 5. Execution sequence
 
-GLM must work sequentially as the sole writer and keep each checkpoint reviewable.
+GLM must work sequentially as the sole writer and keep each checkpoint reviewable. Checkpoints A–E are reversible writing stages, not informal progress labels:
+
+- begin each from the preceding clean checkpoint commit;
+- finish each in a coherent, compiling state with its named focused tests green;
+- commit each checkpoint separately and record its SHA;
+- if a stage cannot reach its gate, stop and preserve the prior checkpoint commit. Do not rewrite or force-reset accepted checkpoint history; the coordinator may abandon the isolated worktree or authorize a focused follow-up from the last coherent commit.
+
+The rollback boundary for A is the activation SHA; for B–E it is the immediately preceding checkpoint SHA. Checkpoint F freezes the whole-slice candidate.
 
 ### Checkpoint A — shared contracts and procedures
 
@@ -135,7 +157,7 @@ GLM must work sequentially as the sole writer and keep each checkpoint reviewabl
 4. Implement `adminSettingsProcedures` with only `read` and `update`; expose it under `admin.settings` through the leased router file.
 5. Add typed `readOwnerSettings` and `updateOwnerSettings` context functions through the leased context file; do not expose repository/database objects.
 
-Checkpoint acceptance: focused contract/procedure tests pass and no server/web implementation is required to compile those tests through unsafe casts.
+Checkpoint acceptance: focused contract/procedure tests pass and no server/web implementation is required to compile those tests through unsafe casts. Commit coherent checkpoint A and record its SHA.
 
 ### Checkpoint B — repository and service
 
@@ -145,7 +167,7 @@ Checkpoint acceptance: focused contract/procedure tests pass and no server/web i
 4. Wire one repository/service instance into the leased server entry and inject only its two functions into request context.
 5. Add real-Postgres integration coverage for current resolution, equal timestamps, ignored future rows, owner/staff/anonymous access, success/audit linkage, copy-forward, stale version, two concurrent writers, forced settings/audit rollback, canonical timestamps, no-op append, malformed/missing history, and schedule semantics.
 
-Checkpoint acceptance: unit and isolated integration tests pass against a uniquely named disposable database; schema diff is empty.
+Checkpoint acceptance: unit and isolated integration tests pass against a uniquely named disposable database; schema diff is empty. Commit coherent checkpoint B and record its SHA.
 
 ### Checkpoint C — public/operational band behavior
 
@@ -154,7 +176,7 @@ Checkpoint acceptance: unit and isolated integration tests pass against a unique
 3. Extend integration coverage to prove the next public payload and operational snapshot agree without a new push, `current_state` remains byte/field equivalent, and no private setting appears publicly.
 4. Prove historical analytics/reporting rows and reset decisions remain unchanged.
 
-Checkpoint acceptance: builder and integration tests pass; no public DTO/schema/OpenAPI diff exists.
+Checkpoint acceptance: builder and integration tests pass; no public DTO/schema/OpenAPI diff exists. Commit coherent checkpoint C and record its SHA.
 
 ### Checkpoint D — hook and form behavior
 
@@ -163,7 +185,7 @@ Checkpoint acceptance: builder and integration tests pass; no public DTO/schema/
 3. Implement local English/Arabic messages and the section/view form with controlled fields, group validation, checkbox day transitions, read-only operational display, upper/lower responsive actions, and the full announced state machine.
 4. Write component tests for every state plus open → closed → reopen restoration, persisted closed → empty required open, `null` serialization, no invented values, breakpoint-specific Discard, LTR/RTL order, error association, keyboard flow, and duplicate-submit prevention.
 
-Checkpoint acceptance: hook/component tests pass in both locales and the DOM has one section heading hierarchy, one controller, no nested main, no clean Discard, and no standby request.
+Checkpoint acceptance: hook/component tests pass in both locales and the DOM has one section heading hierarchy, one controller, no nested main, no clean Discard, and no standby request. Commit coherent checkpoint D and record its SHA.
 
 ### Checkpoint E — route adoption, profile, and rendered verification
 
@@ -173,9 +195,10 @@ Checkpoint acceptance: hook/component tests pass in both locales and the DOM has
    - integration: `apps/server/src/phase11-settings.integration.test.ts`.
 3. Write browser coverage for authorization/standby, loading/retry, editing/validation, save/saved, atomic failure/retry, conflict/discard reload, weekly transitions, responsive actions, no duplicate submit, keyboard/focus, axe, forced colors, reduced motion, and bidi.
 4. Verify widths `320`, `360`, `390`, `721`, `768`, `820`, `1024`, `1200`, and `1440`, plus 200% zoom/reflow.
-5. Capture uncommitted review evidence for all four accepted Paper comparisons: English/Arabic desktop `1440` and English/Arabic mobile `390`. Use run-scoped review directories; do not overwrite canonical baselines or commit generated screenshots unless the coordinator explicitly leases a destination.
+5. Capture uncommitted run-scoped screenshots in English/Arabic at desktop `1440` and mobile `390`. GLM does not claim Paper comparison. After the checkpoint commit, the native Paper-capable reviewer compares those four renders to accepted frames `1G2Y-0`, `1FY6-0`, `1FSU-0`, and `1FNO-0` and records the verdict. Do not overwrite canonical baselines or commit generated screenshots unless the coordinator explicitly leases a destination.
+6. Perform a manual screen-reader semantics pass in both locales: control names; weekday/group context; persistent label and associated error output; clean/dirty/saving/failure/conflict status; saved-version announcement; locked-value/read-only semantics; and absence of duplicate competing live regions. Record the screen reader and evidence. Automated axe is necessary but not sufficient.
 
-Checkpoint acceptance: all Settings and sibling browser suites pass; visual review shows no clipping, duplicate insets, shell mirroring, or material drift.
+Checkpoint acceptance: all Settings and sibling browser suites and the manual screen-reader pass are green; native visual review shows no clipping, duplicate insets, shell mirroring, or material drift. Commit coherent checkpoint E and record its SHA.
 
 ### Checkpoint F — candidate freeze
 
@@ -196,7 +219,7 @@ The candidate is acceptable only when all are true:
 6. The repository uses one injected clock exactly as locked, and immediate read-after-write sees the new version.
 7. Current public and operational bands change on the next fetch when applicable without a push, while `current_state`, public shape/privacy, historical snapshots, analytics, reporting, and reset history remain unchanged.
 8. Read-only operational values copy forward exactly and are visible but never editable.
-9. The complete form state machine, weekly checkbox transitions, responsive actions, Arabic/English ordering, accessibility, reflow, and four-frame visual comparison pass.
+9. The complete form state machine, weekly checkbox transitions, responsive actions, Arabic/English ordering, automated accessibility, manual screen-reader semantics, reflow, and native four-frame Paper comparison pass.
 10. `/admin` retains one shell, one page `h1`, one main landmark, one prerequisite loading/error region, and every existing sibling behavior.
 11. The exact phase profile and full verification suite are green on fresh resources.
 12. The diff contains only worker-owned paths and the five actively leased shared paths; the candidate is committed and clean.
@@ -212,12 +235,12 @@ Minimum command ledger:
 3. `pnpm check:repository`;
 4. `pnpm test:integration -- apps/server/src/phase11-settings.integration.test.ts` with isolated `TEST_DATABASE_URL`, `FITWAY_RUN_ID`, and the approved reset marker;
 5. `pnpm test:browser -- tests/browser/phase11-settings.browser.spec.ts` with isolated Playwright resources;
-6. `FITWAY_PHASE=phase11-settings pnpm verify:phase` (PowerShell may set and then remove the environment variable for the command);
+6. `pnpm verify:phase --phase phase11-settings`;
 7. `pnpm verify:fast`;
 8. `pnpm verify:full`;
 9. `git diff --check <activation-sha>..HEAD`, exact changed-path inspection, mutation-guard cleanliness, and final clean status.
 
-The coordinator/fresh independent reviewer reruns relevant focused, integration, phase, accessibility, and rendered checks. GLM's own green report is evidence, not acceptance.
+The coordinator/fresh independent reviewer reruns relevant focused, integration, phase, accessibility, manual assistive-technology, and rendered Paper-comparison checks. GLM's own green report is evidence, not acceptance.
 
 ## 8. GLM must not change
 
@@ -238,6 +261,7 @@ If the task cannot be completed inside this boundary, if a required lease is abs
 Return:
 
 - activation SHA and candidate SHA;
+- Settings-specific route-decision ID and checkpoint A–E SHAs;
 - concise outcome and changed paths grouped by owned versus leased;
 - exact verification commands and PASS/FAIL results;
 - disposable database/run ID and Playwright evidence locations, with secrets redacted;
