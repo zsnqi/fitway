@@ -9,6 +9,7 @@ import { OwnerAnalyticsPage } from "@/components/owner/owner-analytics-page";
 import { OwnerShell } from "@/components/owner/owner-shell";
 import { OwnerAnalyticsModeSwitch } from "@/components/owner/reporting/owner-analytics-mode-switch";
 import { OwnerReportingSection } from "@/components/owner/reporting/owner-reporting-section";
+import { OwnerSettingsSection } from "@/components/owner/settings/owner-settings-section";
 import { useOwnerAnalyticsMessages } from "@/components/owner/use-owner-analytics-messages";
 import { useStaffMessages } from "@/hooks/use-staff-messages";
 import { client } from "@/utils/orpc";
@@ -74,6 +75,7 @@ function AdminRoute() {
 								<OwnerAuditSection />
 								<OwnerHealthSection />
 								<OwnerAccessSection enabled />
+								<OwnerSettingsSection enabled />
 							</>
 						}
 						history={(prerequisite) => (
