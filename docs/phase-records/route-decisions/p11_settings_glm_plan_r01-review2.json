@@ -1,0 +1,31 @@
+{
+	"routeDecisionId": "p11_settings_glm_plan_r01-review2",
+	"recordedAt": "2026-08-30T17:34:00Z",
+	"candidateCommit": "52ec572bdebc6c9922ad85e9bbf0143c7464d9d8",
+	"reviewer": "fresh native architecture subagent, read-only",
+	"verdict": "CHANGES_REQUIRED",
+	"findings": [
+		{
+			"severity": "blocking",
+			"summary": "Native Paper, manual assistive-technology, and Arabic review ownership conflicted with checkpoint E/F ordering.",
+			"requiredCorrection": "Let GLM freeze first, then run one explicitly preassigned read-only native UI gate for four-frame Paper comparison, Windows Narrator plus Chromium in both locales, and Arabic meaning/wrapping at 320px and 390px."
+		},
+		{
+			"severity": "significant",
+			"summary": "Checkpoint A could make required CreateContextOptions fields without the server injection deferred to checkpoint B.",
+			"requiredCorrection": "Limit A to optional procedure-facing Context members and router aggregation; land required CreateContextOptions plumbing and server injection atomically in B, with an exact API type gate for A."
+		}
+	],
+	"confirmedClosed": [
+		"Settings-specific GLM activation capability gate",
+		"secret-screened accepted Paper copy/geometry packet",
+		"coherent checkpoint commit and rollback policy",
+		"shell-neutral phase verification command"
+	],
+	"hygiene": {
+		"worktree": "clean",
+		"diffCheck": "PASS",
+		"repositoryCheck": "PASS: 55 milestones, 8 canonical approval screenshots"
+	},
+	"mutation": "none"
+}

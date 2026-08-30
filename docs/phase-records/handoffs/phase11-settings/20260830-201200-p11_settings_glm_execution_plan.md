@@ -42,7 +42,7 @@ Before dispatch, the coordinator must write a Settings-specific route decision t
 
 The durable GLM consent record is egress authority only. It does not waive the fresh route/capability decision. If GLM cannot safely write the complete owned slice or run local repository commands, stop before dispatch rather than distributing implementation across concurrent writers.
 
-Paper access and final visual judgment are deliberately not assigned to GLM. GLM implements from the accepted specification plus the durable copy/geometry packet and captures run-scoped browser evidence. A native Paper-capable coordinator/reviewer performs the four-frame comparison and any source remeasurement after the candidate is frozen. If the activation preflight cannot support disposable Postgres or browser execution, record that split explicitly: GLM may produce the committed code/tests only if the coordinator has preassigned those missing checks to a sequential native verifier before independent review; no gate may be omitted.
+Paper access, Arabic-language judgment, and manual assistive-technology judgment are deliberately not assigned to GLM. GLM implements from the accepted specification plus the durable copy/geometry packet and captures run-scoped browser/axe/screenshot evidence. After the candidate is frozen, one preassigned sequential native UI gate owns the four-frame Paper comparison, runtime Arabic meaning/wrapping review, and the named Windows Narrator + Chromium pass in both locales. If the activation preflight cannot support disposable Postgres or browser execution, record that split explicitly: GLM may produce the committed code/tests only if the coordinator has preassigned those missing checks to a sequential native verifier before independent review; no gate may be omitted.
 
 ## 3. Bounded scope and ownership
 
@@ -128,7 +128,7 @@ No other shared file is leased. If an additional file appears necessary, stop `N
 - Do not create a URL, route-tree entry, shell, page `h1`, header, main landmark, global nav item, or duplicate `48px`/`16px` content insets.
 - Settings begins at `h2`; internal groups use semantic `h3` or `fieldset`/`legend`.
 - Preserve the physical FITWAY rail LTR. Use logical CSS properties and the explicit reading-start orders in the accepted specification.
-- Keep Settings copy local. Transcribe accepted English/Arabic exactly from `20260830-202500-p11_settings_paper_copy_packet.md`; do not translate, infer, or normalize accepted strings. Runtime-only states use the packet's explicit repository-convention boundary and receive native Arabic review. Do not edit shared i18n catalogs.
+- Keep Settings copy local. Transcribe accepted English/Arabic exactly from `20260830-202500-p11_settings_paper_copy_packet.md`; do not translate, infer, or normalize accepted strings. Runtime-only states use the packet's explicit repository-convention boundary. The post-freeze native UI gate owns their Arabic meaning and wrapping verdict at `320px` and `390px`. Do not edit shared i18n catalogs.
 - Follow the accepted group order: intro/actions; Capacity → Boundary → Reset; Quiet → Moderate → Busy; weekly hours; locked timings.
 - Weekday state is a styled form checkbox: `18×18px` marker inside a `44×44px` target, accessible name includes day and state. Unchecked serializes `null`, removes time inputs from interaction, and shows the localized full-width unavailable row.
 - Closing then reopening in one draft restores that draft's prior pair. Reopening a persisted closed day starts with two empty required times; Save stays disabled until valid. Never invent defaults.
@@ -147,7 +147,7 @@ GLM must work sequentially as the sole writer and keep each checkpoint reviewabl
 - commit each checkpoint separately and record its SHA;
 - if a stage cannot reach its gate, stop and preserve the prior checkpoint commit. Do not rewrite or force-reset accepted checkpoint history; the coordinator may abandon the isolated worktree or authorize a focused follow-up from the last coherent commit.
 
-The rollback boundary for A is the activation SHA; for B–E it is the immediately preceding checkpoint SHA. Checkpoint F freezes the whole-slice candidate.
+The rollback boundary for A is the activation SHA; for B–E it is the immediately preceding checkpoint SHA. Checkpoint F freezes the whole-slice candidate. The post-freeze native UI gate is read-only against product files.
 
 ### Checkpoint A — shared contracts and procedures
 
@@ -155,16 +155,16 @@ The rollback boundary for A is the activation SHA; for B–E it is the immediate
 2. Implement the shared schemas/types in `settings/contracts.ts`.
 3. Write procedure tests for owner success, `401`, `403`, missing context functions, actor sourcing, typed conflict mapping, and unexpected-error non-leakage.
 4. Implement `adminSettingsProcedures` with only `read` and `update`; expose it under `admin.settings` through the leased router file.
-5. Add typed `readOwnerSettings` and `updateOwnerSettings` context functions through the leased context file; do not expose repository/database objects.
+5. Add only optional procedure-facing `readOwnerSettings` and `updateOwnerSettings` members to `Context` through the leased context file; do not yet change required `CreateContextOptions`, its destructuring/return plumbing, or the server entry. Do not expose repository/database objects.
 
-Checkpoint acceptance: focused contract/procedure tests pass and no server/web implementation is required to compile those tests through unsafe casts. Commit coherent checkpoint A and record its SHA.
+Checkpoint acceptance: `pnpm test -- packages/api/src/settings/contracts.test.ts packages/api/src/settings/procedures.test.ts` and `pnpm --filter @fitway/api check-types` pass; no server/web implementation or unsafe cast is needed. Commit coherent checkpoint A and record its SHA.
 
 ### Checkpoint B — repository and service
 
 1. Write repository unit tests first for mapping, malformed stored rows, exactly one read clock call/no advisory lock, post-lock exactly one update clock call, chronology/tie order, full operational copy-forward, no-op append, stable conflict, and rollback propagation.
 2. Implement the repository transaction exactly in the locked sequence. Use the fixed Settings-only advisory key and existing Drizzle schema/audit helpers.
 3. Implement the thin service and tests. It forwards read/update, keeps actor attribution intact, and never owns the clock or transaction.
-4. Wire one repository/service instance into the leased server entry and inject only its two functions into request context.
+4. Complete the leased context plumbing and server wiring atomically: add required `CreateContextOptions` fields, destructure/return them, create one repository/service instance in the server entry, and inject only its two functions into request context.
 5. Add real-Postgres integration coverage for current resolution, equal timestamps, ignored future rows, owner/staff/anonymous access, success/audit linkage, copy-forward, stale version, two concurrent writers, forced settings/audit rollback, canonical timestamps, no-op append, malformed/missing history, and schedule semantics.
 
 Checkpoint acceptance: unit and isolated integration tests pass against a uniquely named disposable database; schema diff is empty. Commit coherent checkpoint B and record its SHA.
@@ -195,10 +195,9 @@ Checkpoint acceptance: hook/component tests pass in both locales and the DOM has
    - integration: `apps/server/src/phase11-settings.integration.test.ts`.
 3. Write browser coverage for authorization/standby, loading/retry, editing/validation, save/saved, atomic failure/retry, conflict/discard reload, weekly transitions, responsive actions, no duplicate submit, keyboard/focus, axe, forced colors, reduced motion, and bidi.
 4. Verify widths `320`, `360`, `390`, `721`, `768`, `820`, `1024`, `1200`, and `1440`, plus 200% zoom/reflow.
-5. Capture uncommitted run-scoped screenshots in English/Arabic at desktop `1440` and mobile `390`. GLM does not claim Paper comparison. After the checkpoint commit, the native Paper-capable reviewer compares those four renders to accepted frames `1G2Y-0`, `1FY6-0`, `1FSU-0`, and `1FNO-0` and records the verdict. Do not overwrite canonical baselines or commit generated screenshots unless the coordinator explicitly leases a destination.
-6. Perform a manual screen-reader semantics pass in both locales: control names; weekday/group context; persistent label and associated error output; clean/dirty/saving/failure/conflict status; saved-version announcement; locked-value/read-only semantics; and absence of duplicate competing live regions. Record the screen reader and evidence. Automated axe is necessary but not sufficient.
+5. Capture uncommitted run-scoped screenshots in English/Arabic at desktop `1440` and mobile `390`. GLM does not claim Paper comparison. Preserve the evidence location for the post-freeze native gate. Do not overwrite canonical baselines or commit generated screenshots unless the coordinator explicitly leases a destination.
 
-Checkpoint acceptance: all Settings and sibling browser suites and the manual screen-reader pass are green; native visual review shows no clipping, duplicate insets, shell mirroring, or material drift. Commit coherent checkpoint E and record its SHA.
+Checkpoint acceptance: all Settings and sibling browser suites, automated axe, keyboard/focus, reflow, forced-colors, reduced-motion, and screenshot capture are green. Commit coherent checkpoint E and record its SHA. Do not wait for or claim the native UI verdict here.
 
 ### Checkpoint F — candidate freeze
 
@@ -206,6 +205,16 @@ Checkpoint acceptance: all Settings and sibling browser suites and the manual sc
 2. Run all verification below on fresh run-scoped resources.
 3. Commit the exact candidate. Confirm `git status --short` is empty and `git diff --check <activation>..HEAD` passes.
 4. Return the candidate SHA, changed-path list, command/evidence ledger, database/run IDs without secrets, and any residual risk. Do not merge or edit the coordinator ledger.
+
+### Post-freeze native UI gate — sequential and read-only
+
+Only after checkpoint F has produced a clean candidate SHA, the preassigned native UI reviewer performs:
+
+1. comparison of the four run-scoped renders against accepted Paper frames `1G2Y-0`, `1FY6-0`, `1FSU-0`, and `1FNO-0`;
+2. Windows Narrator + Chromium manual semantics in English and Arabic: control names; weekday/group context; persistent labels and associated errors; clean/dirty/saving/failure/conflict status; saved-version announcement; locked/read-only values; and absence of duplicate live regions;
+3. native Arabic meaning and wrapping/expansion review for accepted and runtime-only copy at `320px` and `390px`.
+
+The reviewer records PASS/FAIL without editing product files. PASS is required before independent contract/final acceptance. A finding returns to the same single writer as a focused repair and consumes the `phase11-settings` validation repair budget; at most two focused repairs are permitted. No native reviewer silently repairs the candidate.
 
 ## 6. Acceptance criteria
 
