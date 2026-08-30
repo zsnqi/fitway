@@ -1966,8 +1966,8 @@ milestones:
       - every other milestone's phase record and handoff directory
     sharedLeases:
       - "exclusive through 2026-09-01T23:59:00+03:00: packages/api/src/context.ts, packages/api/src/routers/index.ts, apps/server/src/index.ts, apps/web/src/routes/admin.tsx limited to Settings wiring, scripts/verify.mjs limited to the phase11-settings profile, and packages/api/src/health/snapshot.test.ts limited to reconciling the response-time band expectation required by accepted Settings specification r01 sections 9 and 12"
-    validationRepairAttempts: 1
-    lastHeartbeatAt: "2026-08-31T00:43:00+03:00"
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-08-31T00:45:53+03:00"
     leaseExpiresAt: "2026-09-01T23:59:00+03:00"
     handoff: docs/phase-records/handoffs/phase11-settings/20260830-215400-p11_settings_b01-activation.md
     stopReason: null
