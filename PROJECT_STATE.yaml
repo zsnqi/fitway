@@ -1937,7 +1937,7 @@ milestones:
     ownerSession: "GLM-5.3 execution orchestrator (opencode), run p11_settings_b01; one authoritative writer implementing accepted Settings specification r01 under the human-authorized execution plan. The terminal phase11-settings-plan-r01 attempt is preserved history and is not a live dependency or execution guide."
     branch: codex/phase11-settings-b01
     worktree: D:/Projects/fitway-worktrees/phase11-settings-b01
-    baseCommit: d3a85876
+    baseCommit: 96987a53dcafccb691be5cf07bc5031a05162994
     ownedPaths:
       - packages/api/src/settings/**
       - packages/api/src/public/payload-builder.ts
