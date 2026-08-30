@@ -93,7 +93,7 @@ export function OwnerSettingsSection({ enabled }: { enabled: boolean }) {
 			</section>
 		);
 	}
-	if (settings.status === "error" || !snapshot || !draft) {
+	if (settings.status === "error" || !snapshot) {
 		return (
 			<section className="owner-settings">
 				<header className="owner-settings__intro">
@@ -107,6 +107,18 @@ export function OwnerSettingsSection({ enabled }: { enabled: boolean }) {
 				>
 					{messages.retry}
 				</button>
+			</section>
+		);
+	}
+	// A successful query and the snapshot-to-draft effect are separate React
+	// commits. Keep that short handoff in the loading state instead of flashing
+	// a fabricated transport failure before the effect seeds the draft.
+	if (!draft) {
+		return (
+			<section className="owner-settings" aria-busy="true">
+				<p className="owner-settings__status" role="status">
+					{messages.loading}
+				</p>
 			</section>
 		);
 	}
@@ -126,17 +138,22 @@ export function OwnerSettingsSection({ enabled }: { enabled: boolean }) {
 			? "saving"
 			: saveOutcome.phase === "conflict"
 				? "conflict"
-				: saveOutcome.phase === "failed"
-					? "failed"
-					: saveOutcome.phase === "success" && !dirty
+				: !dirty
+					? saveOutcome.phase === "success"
 						? "saved"
-						: dirty
-							? invalid
-								? "dirty-invalid"
-								: "dirty-valid"
-							: "clean";
+						: "clean"
+					: invalid
+						? "dirty-invalid"
+						: saveOutcome.phase === "failed"
+							? "failed"
+							: "dirty-valid";
+
+	function clearFailedSaveOutcome() {
+		if (saveOutcome.phase === "failed") settings.save.reset();
+	}
 
 	function handleFieldChange(patch: Partial<Omit<OwnerSettingsDraft, "days">>) {
+		clearFailedSaveOutcome();
 		setDraft((current) => (current ? { ...current, ...patch } : current));
 	}
 
@@ -145,6 +162,7 @@ export function OwnerSettingsSection({ enabled }: { enabled: boolean }) {
 		field: "open" | "close",
 		value: string,
 	) {
+		clearFailedSaveOutcome();
 		setDraft((current) => {
 			if (!current) return current;
 			const pair = current.days[day];
@@ -158,6 +176,7 @@ export function OwnerSettingsSection({ enabled }: { enabled: boolean }) {
 
 	function handleDayToggle(day: Weekday, nextOpen: boolean) {
 		if (!draft) return;
+		clearFailedSaveOutcome();
 		const currentPair = draft.days[day];
 		if (nextOpen) {
 			// A persisted closed day has no prior pair: it starts empty and

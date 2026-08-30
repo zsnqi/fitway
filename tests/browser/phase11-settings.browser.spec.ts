@@ -495,6 +495,21 @@ test("an atomic failure preserves the draft and expected version and unlocks Sav
 		page.locator(`${upperActions} .owner-settings__version`),
 	).toContainText("Current version 7");
 
+	await page.locator("input[data-testid='capacity']").fill("5000000000");
+	await expect(page.locator(saveButtons).first()).toBeDisabled();
+	await expect(page.locator(status)).toContainText(
+		"Save stays locked until they are fixed.",
+	);
+	await expect(page.locator(status)).not.toContainText("Nothing was changed.");
+
+	await page.locator("input[data-testid='capacity']").fill("220");
+	await expect(page.locator(saveButtons).first()).toBeDisabled();
+	await expect(page.locator(discardButtons)).toHaveCount(0);
+	await expect(page.locator(status)).toBeEmpty();
+
+	await page.locator("input[data-testid='capacity']").fill("260");
+	await expect(page.locator(saveButtons).first()).toBeEnabled();
+
 	updateResponse = { status: 200, body: { json: savedOutput(8, 260) } };
 	await page.locator(saveButtons).first().click();
 	await expect(page.locator(status)).toContainText(
@@ -671,6 +686,45 @@ test("mobile exposes the lower frontier only when dirty, and both Save controls 
 	await expect(
 		page.locator(`${upperActions} .owner-settings__discard`),
 	).toBeHidden();
+
+	const mobileFrontier = await page.locator(section).evaluate((root) => {
+		const locked = root.querySelector<HTMLElement>(
+			".owner-settings__board--locked",
+		);
+		const frontier = root.querySelector<HTMLElement>(
+			".owner-settings__actions--lower",
+		);
+		const state = frontier?.querySelector<HTMLElement>(
+			".owner-settings__lower-state",
+		);
+		const discard = frontier?.querySelector<HTMLElement>(
+			".owner-settings__discard",
+		);
+		const save = frontier?.querySelector<HTMLElement>(".owner-settings__save");
+		if (!(locked && frontier && state && discard && save)) return null;
+		const lockedRect = locked.getBoundingClientRect();
+		const frontierRect = frontier.getBoundingClientRect();
+		const stateRect = state.getBoundingClientRect();
+		const discardRect = discard.getBoundingClientRect();
+		const saveRect = save.getBoundingClientRect();
+		return {
+			lockedBottom: lockedRect.bottom,
+			frontierTop: frontierRect.top,
+			frontierHeight: frontierRect.height,
+			centers: [stateRect, discardRect, saveRect].map(
+				(rect) => rect.top + rect.height / 2,
+			),
+		};
+	});
+	expect(mobileFrontier).not.toBeNull();
+	expect(mobileFrontier?.frontierTop ?? 0).toBeGreaterThan(
+		mobileFrontier?.lockedBottom ?? Number.POSITIVE_INFINITY,
+	);
+	expect(mobileFrontier?.frontierHeight).toBe(44);
+	expect(Math.max(...(mobileFrontier?.centers ?? [0]))).toBeCloseTo(
+		Math.min(...(mobileFrontier?.centers ?? [0])),
+		0,
+	);
 
 	updateHold = deferred();
 	// A genuine double-tap lands both clicks inside one React frame, before
@@ -852,6 +906,8 @@ test("review captures mirror the four accepted Paper frames without promoting an
 
 	await page.setViewportSize({ width: 390, height: 844 });
 	await setLocale(page, "en");
+	await page.locator("input[data-testid='capacity']").fill("240");
+	await expect(page.locator(lowerFrontier)).toBeVisible();
 	await page.waitForTimeout(200);
 	await captureReview(page, "owner-settings-en-mobile-390.png");
 

@@ -569,29 +569,6 @@ export function OwnerSettingsView({
 					</div>
 				</fieldset>
 
-				{showLowerFrontier ? (
-					<div className="owner-settings__actions owner-settings__actions--lower">
-						<span className="owner-settings__lower-state">
-							{lowerStateText}
-						</span>
-						<button
-							type="button"
-							className="owner-settings__discard"
-							disabled={discardDisabled}
-							onClick={onDiscard}
-						>
-							{messages.discard}
-						</button>
-						<button
-							type="submit"
-							className="owner-settings__save"
-							disabled={saveDisabled}
-						>
-							{saving ? messages.saveShort : messages.save}
-						</button>
-					</div>
-				) : null}
-
 				<fieldset
 					className="owner-settings__board owner-settings__board--locked"
 					aria-labelledby={fieldId("locked-title")}
@@ -661,6 +638,32 @@ export function OwnerSettingsView({
 						</span>
 					</p>
 				</fieldset>
+
+				{showLowerFrontier ? (
+					<div
+						className="owner-settings__actions owner-settings__actions--lower"
+						data-state={state}
+					>
+						<span className="owner-settings__lower-state">
+							{lowerStateText}
+						</span>
+						<button
+							type="button"
+							className="owner-settings__discard"
+							disabled={discardDisabled}
+							onClick={onDiscard}
+						>
+							{messages.discard}
+						</button>
+						<button
+							type="submit"
+							className="owner-settings__save"
+							disabled={saveDisabled}
+						>
+							{saving ? messages.saveShort : messages.save}
+						</button>
+					</div>
+				) : null}
 			</form>
 		</section>
 	);

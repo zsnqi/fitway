@@ -458,20 +458,37 @@
 
 /* The frontier belongs to the long mobile composition only; the desktop
  * keeps its Discard in the upper cluster. */
+.owner-settings__actions--lower {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto auto;
+	align-items: center;
+	gap: 8px;
+	min-block-size: 44px;
+}
+
 .owner-settings__actions--lower .owner-settings__discard,
 .owner-settings__actions--lower .owner-settings__save {
-	flex-grow: 1;
-	flex-basis: 0;
 	min-inline-size: 0;
 	padding-inline: 10px;
 	font-size: 13px;
 }
 
 .owner-settings__lower-state {
-	inline-size: 100%;
+	min-inline-size: 0;
 	color: var(--fw-muted);
 	font-size: 12px;
 	line-height: 18px;
+	white-space: nowrap;
+}
+
+.owner-settings__actions--lower:not([data-state="dirty-valid"]) {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.owner-settings__actions--lower:not([data-state="dirty-valid"])
+	.owner-settings__lower-state {
+	grid-column: 1 / -1;
+	white-space: normal;
 }
 
 /* ---- Responsive recomposition -------------------------------------- */

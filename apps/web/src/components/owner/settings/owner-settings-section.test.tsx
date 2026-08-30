@@ -279,6 +279,27 @@ describe("owner settings section", () => {
 		expect(statusText()).toContain("Nothing was changed.");
 		expect(saveButton()?.disabled).toBe(false);
 
+		// Editing after a failure leaves the old outcome behind. Validation and
+		// clean-state truth take precedence over an obsolete retry message.
+		await act(async () => {
+			setControlledValue(field("capacity") ?? null, "5000000000");
+		});
+		expect(saveButton()?.disabled).toBe(true);
+		expect(statusText()).toContain("Save stays locked until they are fixed.");
+		expect(statusText()).not.toContain("Nothing was changed.");
+
+		await act(async () => {
+			setControlledValue(field("capacity") ?? null, "220");
+		});
+		expect(saveButton()?.disabled).toBe(true);
+		expect(container.textContent).not.toContain("Discard changes");
+		expect(statusText()).toBe("");
+
+		await act(async () => {
+			setControlledValue(field("capacity") ?? null, "260");
+		});
+		expect(saveButton()?.disabled).toBe(false);
+
 		update.mockResolvedValueOnce(saveOutput(9, 260));
 		await act(async () => {
 			submitForm();
