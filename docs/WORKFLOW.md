@@ -34,6 +34,13 @@ PLANNED → READY → IN_PROGRESS → VALIDATING → READY_FOR_INTEGRATION → D
 - `FAILED_VALIDATION`: the same gate remains red after two focused repair attempts or the fresh
   verifier rejects the result.
 
+These states and the two-repair rule govern implementation and validation attempts. A plan whose
+deliverable is handed to the user or to an external executor ends at plan delivery: it may be
+recorded durably, but it is not registered as a milestone, carries no gates, and does not enter
+repair-budget or terminal machinery. Such a plan may still be reviewed when the human asks or when
+it will execute unattended without the human in the loop; findings are settled as ordinary plan
+edits before hand-off.
+
 Only the coordinator changes states. The top-level baseline status/commit must match the
 `baseline-reconciliation-gate` milestone; repository verification rejects drift. A resumed
 blocked/failed item receives a new attempt record; history is never overwritten.
