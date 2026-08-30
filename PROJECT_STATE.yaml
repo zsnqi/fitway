@@ -1983,7 +1983,7 @@ milestones:
   phase11-settings-r01:
     status: IN_PROGRESS
     dependencies: [phase11-settings-spec]
-    ownerSession: "Codex continuation orchestrator, run p11_settings_r01, repairing only the six evidence-backed independent-review defects from preserved candidate 78fd650 under the human's standing successor authorization."
+    ownerSession: "Codex continuation orchestrator, run p11_settings_r01 repair 2/2, repairing only the three fresh independent-review defects from frozen repair-1 candidate a3bd779 under the human's standing continuation authorization."
     branch: codex/phase11-settings-b01
     worktree: D:/Projects/fitway-worktrees/phase11-settings-b01
     baseCommit: 78fd65032d24cad8486171fb8057ee48fdc67865
@@ -1992,6 +1992,8 @@ milestones:
       - apps/server/src/settings-repository.test.ts
       - apps/server/src/phase11-settings.integration.test.ts
       - apps/web/src/components/owner/settings/messages.ts
+      - apps/web/src/components/owner/settings/owner-settings-section.tsx
+      - apps/web/src/components/owner/settings/owner-settings-section.test.tsx
       - apps/web/src/components/owner/settings/owner-settings-view.tsx
       - apps/web/src/components/owner/settings/owner-settings.css
       - tests/browser/phase11-settings.browser.spec.ts
@@ -2006,18 +2008,18 @@ milestones:
       - "root manifests, lockfiles, environment schemas, and test-runner configuration"
       - every other milestone's phase record and handoff directory
     sharedLeases: []
-    validationRepairAttempts: 1
-    lastHeartbeatAt: "2026-08-31T01:48:00+03:00"
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-08-31T02:20:35+03:00"
     leaseExpiresAt: "2026-09-01T23:59:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-settings/20260831-014800-p11_settings_r01-successor-activation.md
+    handoff: docs/phase-records/handoffs/phase11-settings/20260831-022035-p11_settings_r01-repair-2-activation.md
     stopReason: null
     gates:
-      unit: PENDING
-      integration: PENDING
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
-      independentReview: PENDING
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: FAIL
+      independentReview: FAIL
     integratedCommit: null
 
   phase11-health:
