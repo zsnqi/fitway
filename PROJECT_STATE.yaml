@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-30T16:30:00Z"
+updatedAt: "2026-08-30T16:34:00Z"
 
 coordinator:
-  owner: "Coordinator final authority. Human authorized a fresh Settings Paper successor attempt on 2026-08-30 while preserving the terminal 2/2 attempt unchanged. The separate pre-existing Paper area OWNER SETTINGS — FRESH r01 SUCCESSOR CANDIDATE passed fresh independent bilingual rendered review and is accepted as the Settings implementation visual authority; no Paper mutation or Settings product-code implementation occurred. The next active prerequisite is the migration-free Settings specification. Fresh Uptime b02 planning remains terminal FAILED_VALIDATION with no third plan repair authorized. Login remains a separately authorized follow-up. Handoff: docs/phase-records/handoffs/phase11-settings-paper-successor/20260830-193000-p11_settings_paper_fresh_r01-done.md"
+  owner: "Coordinator final authority. Human authorized a fresh Settings Paper successor attempt on 2026-08-30 while preserving the terminal 2/2 attempt unchanged. The separate pre-existing Paper area OWNER SETTINGS — FRESH r01 SUCCESSOR CANDIDATE passed fresh independent bilingual rendered review and is accepted as the Settings implementation visual authority; no Paper mutation or Settings product-code implementation occurred. The migration-free Settings specification r01 is now the active bounded prerequisite; all product-code, Paper, schema, migration, router, baseline, and normative-authority paths remain excluded. Fresh Uptime b02 planning remains terminal FAILED_VALIDATION with no third plan repair authorized. Login remains a separately authorized follow-up. Handoff: docs/phase-records/handoffs/phase11-settings/20260830-193400-p11_settings_spec_r01-activation.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1869,23 +1869,26 @@ milestones:
     integratedCommit: SELF
 
   phase11-settings-spec:
-    status: PLANNED
+    status: IN_PROGRESS
     dependencies: [phase-3, phase-5, phase-6, phase-7, phase-9, phase11-audit-generalization, phase11-settings-paper-successor-r01]
-    ownerSession: null
-    branch: null
-    worktree: null
-    baseCommit: null
+    ownerSession: "Codex coordinator / p11_settings_spec_r01"
+    branch: codex/remaining-scope-coordinator
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
+    baseCommit: cf51f53bcac4971bc9299b00d63eef1fec0ba3d3
     ownedPaths:
-      - docs/phase-records/handoffs/phase11-settings/**-spec.md
-      - docs/phase-records/route-decisions/**
+      - docs/phase-records/handoffs/phase11-settings/*p11_settings_spec_r01*.md
+      - docs/phase-records/route-decisions/p11_settings_spec_r01-*.json
+      - PROJECT_STATE.yaml
     forbiddenPaths:
       - "all application source, schemas, migrations, routers, baselines, Paper, and normative authorities"
       - "any Settings contract that makes timezone, push, freshness, stale, or poll editable"
+      - "the terminal phase11-settings-paper-successor milestone, its 2/2 history, and Paper area 1EO5-0"
+      - "the accepted fresh Paper successor area 1FKS-0 and all Paper nodes"
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/coordinator/20260824-230600-final-remaining-scope-reconciliation-activation.md
+    lastHeartbeatAt: "2026-08-30T19:34:00+03:00"
+    leaseExpiresAt: "2026-08-31T01:34:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-settings/20260830-193400-p11_settings_spec_r01-activation.md
     stopReason: null
     gates:
       unit: NOT_REQUIRED
