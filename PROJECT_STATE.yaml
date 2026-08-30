@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-30T17:36:00Z"
+updatedAt: "2026-08-30T21:55:00Z"
 
 coordinator:
-  owner: "Coordinator final authority. The fresh Settings Paper successor and migration-free Settings specification r01 are DONE and preserved. Settings GLM execution-plan r01 is terminal FAILED_VALIDATION after repair 2/2; no repair 3 or phase11-settings activation is permitted under that attempt. No Settings product-code, schema, migration, Paper, configuration, or baseline mutation occurred. A fresh Settings GLM plan successor requires explicit human authorization and must preserve r01 history. Fresh Uptime b02 planning remains terminal FAILED_VALIDATION with no third plan repair authorized. Login remains a separately authorized follow-up. Handoff: docs/phase-records/handoffs/phase11-settings/20260830-203600-p11_settings_glm_plan_r01-terminal-failure.md"
+  owner: "Coordinator final authority. On 2026-08-30 the human authorized executing the attached fresh Owner Settings GLM execution plan as a planning-only deliverable; GLM-5.3 is now the activated phase11-settings implementation writer on run p11_settings_b01 from base 3a1c3cb. The terminal phase11-settings-plan-r01 attempt, the failed Paper predecessor, and all their records are preserved immutable history and are no longer live dependencies. The accepted Settings specification r01 and fresh Paper successor remain the binding product authorities. Fresh Uptime b02 planning remains terminal FAILED_VALIDATION. Login remains a separately authorized follow-up."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1931,20 +1931,45 @@ milestones:
     integratedCommit: null
 
   phase11-settings:
-    status: PLANNED
+    status: IN_PROGRESS
     dependencies:
-      [phase-3, phase-5, phase-6, phase-7, phase-9, phase11-audit-generalization, phase11-settings-spec, phase11-settings-plan-r01]
-    ownerSession: null
-    branch: null
-    worktree: null
-    baseCommit: null
-    ownedPaths: []
-    forbiddenPaths: []
-    sharedLeases: []
+      [phase-3, phase-5, phase-6, phase-7, phase-9, phase11-audit-generalization, phase11-settings-spec]
+    ownerSession: "GLM-5.3 execution orchestrator (opencode), run p11_settings_b01; one authoritative writer implementing accepted Settings specification r01 under the human-authorized execution plan. The terminal phase11-settings-plan-r01 attempt is preserved history and is not a live dependency or execution guide."
+    branch: codex/phase11-settings-b01
+    worktree: D:/Projects/fitway-worktrees/phase11-settings-b01
+    baseCommit: 3a1c3cbec3d3b1f3becdece289d36285774b7813
+    ownedPaths:
+      - packages/api/src/settings/**
+      - packages/api/src/public/payload-builder.ts
+      - packages/api/src/public/payload-builder.test.ts
+      - apps/server/src/settings-repository.ts
+      - apps/server/src/settings-repository.test.ts
+      - apps/server/src/settings-service.ts
+      - apps/server/src/settings-service.test.ts
+      - apps/server/src/phase11-settings.integration.test.ts
+      - apps/web/src/hooks/use-owner-settings.ts
+      - apps/web/src/hooks/use-owner-settings.test.tsx
+      - apps/web/src/components/owner/settings/**
+      - tests/browser/phase11-settings.browser.spec.ts
+      - docs/phase-records/handoffs/phase11-settings/*p11_settings_b01*.md
+      - docs/phase-records/route-decisions/p11_settings_b01-*.json
+      - docs/phase-records/verification/*p11_settings_b01*
+    forbiddenPaths:
+      - all repository paths outside ownedPaths and sharedLeases
+      - "packages/db/**: schema, migrations, metadata, seeds, identity ordering; a migration need is a stop condition"
+      - "FITWAY_PRODUCT.md, SPEC.md, PHASES.md, DESIGN_GUIDE.md, ADRs, docs/WORKFLOW.md, Paper, the approved manifest/theme snapshot, and every phase record"
+      - "public payload schemas/routes, edge/OpenAPI contracts, generated route tree, owner shell/rail, access/auth behavior, command/reset issuance models, analytics history semantics, and canonical screenshot baselines"
+      - "timezone, push, fresh, operational-stale, and public-poll editability; any new setting, reason field, scheduling, defaults/reset action, import/export"
+      - "alert/health, reset, and analytics modules, and unrelated future-dated Settings-reader debt"
+      - "the terminal phase11-settings-plan-r01 milestone, its records, the failed Paper predecessor phase11-settings-paper-successor, and Paper area 1EO5-0: immutable history"
+      - "root manifests, lockfiles, environment schemas, and test-runner configuration outside the leased scripts/verify.mjs profile addition"
+      - every other milestone's phase record and handoff directory
+    sharedLeases:
+      - "exclusive through 2026-09-01T23:59:00+03:00: packages/api/src/context.ts, packages/api/src/routers/index.ts, apps/server/src/index.ts, apps/web/src/routes/admin.tsx limited to Settings wiring, and scripts/verify.mjs limited to adding the phase11-settings profile"
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
-    leaseExpiresAt: null
-    handoff: null
+    lastHeartbeatAt: "2026-08-30T21:54:38+03:00"
+    leaseExpiresAt: "2026-09-01T23:59:00+03:00"
+    handoff: docs/phase-records/handoffs/phase11-settings/20260830-215400-p11_settings_b01-activation.md
     stopReason: null
     gates:
       unit: PENDING
