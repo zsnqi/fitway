@@ -11,13 +11,15 @@
 	--ows-field: #100b0e;
 	--ows-edge-control: #dcc5c92e;
 	--ows-control: #1a171a;
-	--ows-board: rgb(29 24 28 / 88%);
 
-	display: grid;
-	gap: 32px;
 	margin-block-start: 24px;
 	padding-block-start: 24px;
 	border-block-start: 1px solid var(--fw-border);
+}
+
+.owner-settings__top {
+	display: grid;
+	gap: 14px;
 }
 
 .owner-settings__intro {
@@ -43,7 +45,7 @@
 
 .owner-settings__form {
 	display: grid;
-	gap: 20px;
+	gap: 22px;
 }
 
 /* ---- Actions ------------------------------------------------------- */
@@ -135,12 +137,10 @@
 .owner-settings__board {
 	min-inline-size: 0;
 	margin: 0;
-	padding: 18px;
-	border: 1px solid var(--fw-border);
-	border-radius: var(--fw-radius-surface);
-	background: var(--ows-board);
+	padding: 0;
+	border: 0;
 	display: grid;
-	gap: 16px;
+	gap: 12px;
 }
 
 .owner-settings__board:disabled {
@@ -149,7 +149,7 @@
 
 .owner-settings__board-head {
 	display: grid;
-	gap: 4px;
+	gap: 0;
 }
 
 .owner-settings__board-head h3 {
@@ -185,6 +185,10 @@
 .owner-settings__triple {
 	display: grid;
 	gap: 16px;
+	padding: 18px;
+	border: 1px solid var(--fw-border);
+	border-radius: var(--fw-radius-surface);
+	background: var(--fw-material-board-rest);
 }
 
 .owner-settings__field {
@@ -254,6 +258,10 @@
 .owner-settings__week {
 	display: grid;
 	min-inline-size: 0;
+	overflow: clip;
+	border: 1px solid var(--fw-border);
+	border-radius: var(--fw-radius-surface);
+	background: var(--fw-material-board-rest);
 }
 
 .owner-settings__week-header,
@@ -396,8 +404,7 @@
 /* ---- Locked operational timing ------------------------------------- */
 
 .owner-settings__board--locked {
-	gap: 8px;
-	padding-block-end: 14px;
+	gap: 12px;
 }
 
 .owner-settings__locked-badge {
@@ -409,7 +416,11 @@
 .owner-settings__locked {
 	display: grid;
 	margin: 0;
-	gap: 8px;
+	gap: 0;
+	overflow: clip;
+	border: 1px solid var(--fw-border);
+	border-radius: var(--fw-radius-surface);
+	background: var(--fw-group);
 }
 
 .owner-settings__locked-item {
@@ -487,6 +498,16 @@
 		display: none;
 	}
 
+	.owner-settings__top {
+		grid-template-columns: minmax(0, 1fr) auto;
+		align-items: end;
+		gap: 32px;
+	}
+
+	.owner-settings__actions--upper {
+		justify-self: end;
+	}
+
 	.owner-settings__intro h2 {
 		font-size: 30px;
 		line-height: 42px;
@@ -502,13 +523,27 @@
 	}
 
 	.owner-settings__board-head {
-		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+		grid-template-columns: minmax(0, 1fr) auto;
+		grid-template-rows: auto auto;
 		align-items: end;
 	}
 
+	.owner-settings__board-head h3 {
+		grid-column: 1;
+		grid-row: 1;
+	}
+
 	.owner-settings__board-head p {
+		grid-column: 1;
+		grid-row: 2;
+	}
+
+	.owner-settings__board-state,
+	.owner-settings__locked-badge {
+		grid-column: 2;
+		grid-row: 1 / 3;
+		align-self: end;
 		justify-self: end;
-		text-align: end;
 	}
 
 	.owner-settings__triple {
@@ -517,7 +552,17 @@
 
 	.owner-settings__locked {
 		grid-template-columns: repeat(5, minmax(0, 1fr));
-		gap: 16px;
+		min-block-size: 76px;
+	}
+
+	.owner-settings__locked-item {
+		min-block-size: 74px;
+		padding: 14px 16px;
+		border-inline-end: 1px solid var(--fw-border-subtle);
+	}
+
+	.owner-settings__locked-item:last-child {
+		border-inline-end: 0;
 	}
 
 	.owner-settings__locked-footer-short {
@@ -530,8 +575,33 @@
 }
 
 @media (max-width: 720px) {
-	.owner-settings {
-		gap: 24px;
+	.owner-settings__form {
+		gap: 20px;
+	}
+
+	.owner-settings__actions--upper {
+		justify-content: space-between;
+	}
+
+	.owner-settings__board {
+		gap: 10px;
+	}
+
+	.owner-settings__board-head {
+		gap: 0;
+	}
+
+	.owner-settings__board--foundations .owner-settings__board-head p {
+		display: none;
+	}
+
+	.owner-settings__board--foundations .owner-settings__triple,
+	.owner-settings__board--thresholds .owner-settings__triple {
+		gap: 10px;
+		padding: 0;
+		border: 0;
+		border-radius: 0;
+		background: transparent;
 	}
 
 	.owner-settings__board-state {
@@ -542,19 +612,28 @@
 		display: none;
 	}
 
-	.owner-settings__week-header,
-	.owner-settings__week-row {
-		grid-template-columns: minmax(0, 1fr);
+	.owner-settings__week {
+		padding-inline: 14px;
+		background: var(--fw-material-board-mobile);
 	}
 
 	.owner-settings__week-row {
-		gap: 7px;
-		padding-block: 4px;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		grid-template-rows: 44px auto;
+	}
+
+	.owner-settings__week-row {
+		gap: 10px;
+		min-block-size: 126px;
+		padding-block: 2px;
 	}
 
 	/* Day -> State, then Opens -> Closes: the accepted mobile weekly order. */
 	.owner-settings__week-day {
-		order: -2;
+		grid-column: 1;
+		grid-row: 1;
+		align-self: center;
+		justify-self: start;
 	}
 
 	.owner-settings__toggle--desktop {
@@ -563,17 +642,21 @@
 
 	.owner-settings__week-row > .owner-settings__toggle--mobile {
 		display: flex;
-		order: -1;
-		justify-self: start;
+		grid-column: 2;
+		grid-row: 1;
+		justify-self: end;
 		min-block-size: 44px;
 	}
 
 	.owner-settings__time {
+		grid-row: 2;
 		grid-template-columns: minmax(0, 1fr);
 	}
 
 	.owner-settings__time-label {
 		display: block;
+		font-size: 12px;
+		line-height: 20px;
 	}
 
 	.owner-settings__time input {
@@ -583,7 +666,8 @@
 	}
 
 	.owner-settings__week-unavailable {
-		grid-column: auto;
+		grid-column: 1 / -1;
+		grid-row: 2;
 		block-size: 44px;
 	}
 
@@ -596,10 +680,22 @@
 		display: inline;
 	}
 
+	.owner-settings__version {
+		padding-inline: 0;
+		border: 0;
+		border-radius: 0;
+	}
+
 	.owner-settings__locked-item {
 		grid-template-columns: minmax(0, 1fr) auto;
 		align-items: center;
-		min-block-size: 44px;
+		min-block-size: 52px;
+		padding: 4px 14px;
+		border-block-end: 1px solid var(--fw-border-subtle);
+	}
+
+	.owner-settings__locked-item:last-child {
+		border-block-end: 0;
 	}
 
 	.owner-settings__locked-footer-long {
@@ -623,7 +719,9 @@
 }
 
 @media (forced-colors: active) {
-	.owner-settings__board,
+	.owner-settings__triple,
+	.owner-settings__week,
+	.owner-settings__locked,
 	.owner-settings__control,
 	.owner-settings__time input,
 	.owner-settings__week-unavailable {

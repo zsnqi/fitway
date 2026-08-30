@@ -144,44 +144,45 @@ export function OwnerSettingsView({
 
 	return (
 		<section className="owner-settings" aria-labelledby={headingId}>
-			<header className="owner-settings__intro">
-				<h2 id={headingId}>{messages.title}</h2>
-				<p>{messages.intro}</p>
-			</header>
-
 			<form
 				id={`${baseId}-form`}
 				className="owner-settings__form"
 				onSubmit={handleSubmit}
 				noValidate
 			>
-				<div className="owner-settings__actions owner-settings__actions--upper">
-					<span className="owner-settings__version">
-						<bdi>
-							{messages.currentVersion} {snapshot.version}
-						</bdi>
-						<span className="owner-settings__version-state">
-							{" Â· "}
-							{stateShort}
+				<div className="owner-settings__top">
+					<header className="owner-settings__intro">
+						<h2 id={headingId}>{messages.title}</h2>
+						<p>{messages.intro}</p>
+					</header>
+					<div className="owner-settings__actions owner-settings__actions--upper">
+						<span className="owner-settings__version">
+							<bdi>
+								{messages.currentVersion} {snapshot.version}
+							</bdi>
+							<span className="owner-settings__version-state">
+								{" · "}
+								{stateShort}
+							</span>
 						</span>
-					</span>
-					{showDiscardInUpper ? (
+						{showDiscardInUpper ? (
+							<button
+								type="button"
+								className="owner-settings__discard"
+								disabled={discardDisabled}
+								onClick={onDiscard}
+							>
+								{messages.discard}
+							</button>
+						) : null}
 						<button
-							type="button"
-							className="owner-settings__discard"
-							disabled={discardDisabled}
-							onClick={onDiscard}
+							type="submit"
+							className="owner-settings__save"
+							disabled={saveDisabled}
 						>
-							{messages.discard}
+							{saving ? messages.saveShort : messages.save}
 						</button>
-					) : null}
-					<button
-						type="submit"
-						className="owner-settings__save"
-						disabled={saveDisabled}
-					>
-						{saving ? messages.saveShort : messages.save}
-					</button>
+					</div>
 				</div>
 
 				<p
@@ -194,7 +195,7 @@ export function OwnerSettingsView({
 				</p>
 
 				<fieldset
-					className="owner-settings__board"
+					className="owner-settings__board owner-settings__board--foundations"
 					aria-labelledby={fieldId("foundations-title")}
 					disabled={saving}
 				>
@@ -324,7 +325,7 @@ export function OwnerSettingsView({
 				</fieldset>
 
 				<fieldset
-					className="owner-settings__board"
+					className="owner-settings__board owner-settings__board--thresholds"
 					aria-labelledby={fieldId("thresholds-title")}
 					disabled={saving}
 				>
