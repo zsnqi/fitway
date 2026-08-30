@@ -1,0 +1,23 @@
+{
+	"routeDecisionId": "p11_settings_spec_r01-repair2-ui-review",
+	"recordedAt": "2026-08-30T17:07:00Z",
+	"candidateCommit": "3efa370e523cd74b2f1233b9119dda007c9d488e",
+	"reviewer": "native Sol subagent, xhigh, read-only",
+	"verdict": "PASS",
+	"findings": [],
+	"confirmed": [
+		"responsive Discard placement and deterministic weekday checkbox behavior",
+		"LTR/RTL sequence, shell ownership, and complete form state machine",
+		"responsive, reflow, keyboard, forced-colors, reduced-motion, and screen-reader acceptance",
+		"all four accepted fresh Paper comparisons and exact verification coverage"
+	],
+	"paper": {
+		"fileId": "01KYPX5AF950XZVVDD88B6J7QB",
+		"freshAreaId": "1FKS-0",
+		"failedHistoricalAreaId": "1EO5-0",
+		"nodeCount": 29266,
+		"artboardCount": 18,
+		"tokenHash": "3b0faca3",
+		"mutation": "none"
+	}
+}
