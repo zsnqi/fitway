@@ -541,6 +541,41 @@ test("a version conflict preserves the draft, locks Save, and Discard reloads la
 	).toContainText("Current version 7");
 });
 
+test("mobile conflict keeps the lower Discard visible and reloads the current snapshot", async ({
+	page,
+}) => {
+	await openOwnerPage(page);
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.locator("input[data-testid='capacity']").fill("260");
+
+	const lowerSave = page.locator(
+		`${lowerFrontier} button.owner-settings__save`,
+	);
+	const lowerDiscard = page.locator(
+		`${lowerFrontier} button.owner-settings__discard`,
+	);
+	await expect(lowerSave).toBeVisible();
+	await expect(lowerDiscard).toBeVisible();
+
+	updateResponse = { status: 409, body: conflictError() };
+	await lowerSave.click();
+	await expect(page.locator(status)).toContainText(
+		"Settings changed elsewhere. Discard reloads the current values; your draft is not applied.",
+	);
+	await expect(lowerSave).toBeDisabled();
+	await expect(lowerDiscard).toBeEnabled();
+
+	readResponse = {
+		status: 200,
+		body: { json: snapshotWithCapacity(300) },
+	};
+	await lowerDiscard.click();
+	await expect(page.locator("input[data-testid='capacity']")).toHaveValue(
+		"300",
+	);
+	await expect(page.locator(lowerFrontier)).toHaveCount(0);
+});
+
 test("unchecking a day serializes null and removes its inputs; rechecking restores the draft-only pair; a persisted closed day starts empty and required", async ({
 	page,
 }) => {
@@ -629,6 +664,9 @@ test("mobile exposes the lower frontier only when dirty, and both Save controls 
 	await expect(page.locator(lowerFrontier)).toContainText("Unsaved changes");
 	await expect(page.locator(lowerFrontier)).toContainText("Discard changes");
 	await expect(page.locator(lowerFrontier)).toContainText("Save settings");
+	await expect(
+		page.locator(`${lowerFrontier} .owner-settings__discard`),
+	).toBeVisible();
 	// The upper cluster keeps version + Save only; its Discard stays hidden.
 	await expect(
 		page.locator(`${upperActions} .owner-settings__discard`),
@@ -784,20 +822,14 @@ test("automated accessibility finds no serious or critical violations in either 
 	await expect(page.locator(section)).toBeVisible();
 	await hideShellSkipLink(page);
 
-	const english = await new AxeBuilder({ page })
-		.include(section)
-		.withRules(["color-contrast"])
-		.analyze();
+	const english = await new AxeBuilder({ page }).include(section).analyze();
 	expect(seriousViolations(english)).toEqual([]);
 
 	await page.locator("input[data-testid='capacity']").fill("5000000000");
 	await setLocale(page, "ar");
 	await expect(page.locator(section)).toContainText("حدود نطاقات الازدحام");
 
-	const arabic = await new AxeBuilder({ page })
-		.include(section)
-		.withRules(["color-contrast"])
-		.analyze();
+	const arabic = await new AxeBuilder({ page }).include(section).analyze();
 	expect(seriousViolations(arabic)).toEqual([]);
 });
 

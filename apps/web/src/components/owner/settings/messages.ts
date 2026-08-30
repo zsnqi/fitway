@@ -104,8 +104,10 @@ export const ownerSettingsMessages = {
 		closedDayMessage: "Open and close unavailable while closed",
 
 		lockedTitle: "Operational timing · locked",
+		lockedTitleMobile: "◇ Operational timing · locked",
 		lockedHelper:
 			"Copied forward unchanged into the new settings version and managed by the system.",
+		lockedHelperMobile: "System-managed · copied forward unchanged.",
 		lockedBadge: "◇ Read-only",
 		timezoneLabel: "Timezone",
 		pushLabel: "Edge push",
@@ -230,8 +232,10 @@ export const ownerSettingsMessages = {
 		closedDayMessage: "وقتا الفتح والإغلاق غير متاحين عند الإغلاق",
 
 		lockedTitle: "التوقيت التشغيلي · مقفل",
+		lockedTitleMobile: "◇ التوقيت التشغيلي · مقفل",
 		lockedHelper:
 			"ينسخه النظام دون تغيير إلى إصدار الإعدادات الجديد ويديره مركزياً.",
+		lockedHelperMobile: "يديرها النظام · تُنسخ دون تغيير.",
 		lockedBadge: "◇ للقراءة فقط",
 		timezoneLabel: "المنطقة الزمنية",
 		pushLabel: "فاصل دفع التحديثات الطرفية",

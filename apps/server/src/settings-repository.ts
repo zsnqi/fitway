@@ -173,11 +173,11 @@ export function createSettingsRepository(options: {
 							quietMaxPercent: editable.thresholds.quietMaxPercent,
 							moderateMaxPercent: editable.thresholds.moderateMaxPercent,
 							busyMaxPercent: editable.thresholds.busyMaxPercent,
-							// Every operational timing is copied from the locked current
+							// Every locked operational timing is copied from the current
 							// row. Omitting any of these keys would reapply the column
 							// defaults, which is a correctness failure, not a shortcut.
 							timezone: current.timezone,
-							businessDayBoundary: current.businessDayBoundary,
+							businessDayBoundary: editable.businessDayBoundary,
 							pushIntervalSeconds: current.pushIntervalSeconds,
 							freshForSeconds: current.freshForSeconds,
 							operationalStaleAfterSeconds:

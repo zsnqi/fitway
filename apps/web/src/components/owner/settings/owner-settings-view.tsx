@@ -14,8 +14,8 @@ import "./owner-settings.css";
  * The owner Settings form: the accepted Paper composition rendered by the
  * repository's runtime.
  *
- * The view is presentational. Every decision about *when* something shows â€”
- * standby gating, which Discard cluster is visible, whether Save is enabled â€”
+ * The view is presentational. Every decision about *when* something shows —
+ * standby gating, which Discard cluster is visible, whether Save is enabled —
  * arrives as props, so tests can drive the full state machine without a
  * server. Visual responsive recomposition (desktop weekly table, mobile day
  * cards, the conditional lower action frontier) is CSS-owned per ADR-007.
@@ -547,7 +547,7 @@ export function OwnerSettingsView({
 											onChange={(event) =>
 												onDayToggle(day, event.target.checked)
 											}
-											aria-label={`${dayName} â€” ${pair !== null ? messages.open : messages.closed}`}
+											aria-label={`${dayName} — ${pair !== null ? messages.open : messages.closed}`}
 										/>
 										<span
 											className="owner-settings__toggle-marker"
@@ -598,8 +598,22 @@ export function OwnerSettingsView({
 					disabled={false}
 				>
 					<div className="owner-settings__board-head">
-						<h3 id={fieldId("locked-title")}>{messages.lockedTitle}</h3>
-						<p>{messages.lockedHelper}</p>
+						<h3 id={fieldId("locked-title")}>
+							<span className="owner-settings__locked-copy-desktop">
+								{messages.lockedTitle}
+							</span>
+							<span className="owner-settings__locked-copy-mobile">
+								{messages.lockedTitleMobile}
+							</span>
+						</h3>
+						<p>
+							<span className="owner-settings__locked-copy-desktop">
+								{messages.lockedHelper}
+							</span>
+							<span className="owner-settings__locked-copy-mobile">
+								{messages.lockedHelperMobile}
+							</span>
+						</p>
 						<span className="owner-settings__locked-badge">
 							{messages.lockedBadge}
 						</span>

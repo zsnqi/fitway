@@ -65,7 +65,7 @@ const editableFixture = {
 		fri: { open: "13:00", close: "01:00" },
 		sat: null,
 	},
-	businessDayBoundary: "04:00",
+	businessDayBoundary: "03:30",
 	resetBufferMinutes: 15,
 } as const;
 
@@ -253,6 +253,7 @@ describe("settings repository update", () => {
 		expect(values.operationalStaleAfterSeconds).toBe(444);
 		expect(values.publicPollSeconds).toBe(77);
 		expect(values.capacity).toBe(220);
+		expect(values.businessDayBoundary).toBe("03:30");
 		expect(values.resetBufferMinutes).toBe(15);
 		expect(values.createdBy).toBe(actorPrincipalId);
 		expect(values.effectiveFrom).toBe(capturedInstant);

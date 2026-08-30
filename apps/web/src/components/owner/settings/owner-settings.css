@@ -277,17 +277,17 @@
 
 .owner-settings__week-header {
 	min-block-size: 44px;
-	padding-block: 10px;
+	padding: 10px 18px;
 	border-block-end: 1px solid var(--fw-border-subtle);
 	color: var(--fw-text-subtle);
-	font-size: 12px;
-	font-weight: 700;
-	line-height: 16px;
+	font-size: 11px;
+	font-weight: 400;
+	line-height: 18px;
 }
 
 .owner-settings__week-row {
 	min-block-size: 58px;
-	padding-block: 7px;
+	padding: 7px 18px;
 	border-block-end: 1px solid var(--fw-border-subtle);
 }
 
@@ -298,7 +298,7 @@
 .owner-settings__week-day {
 	color: var(--fw-chalk);
 	font-size: 13px;
-	font-weight: 400;
+	font-weight: 600;
 	line-height: 20px;
 }
 
@@ -413,6 +413,10 @@
 	line-height: 20px;
 }
 
+.owner-settings__locked-copy-mobile {
+	display: none;
+}
+
 .owner-settings__locked {
 	display: grid;
 	margin: 0;
@@ -472,7 +476,7 @@
 
 /* ---- Responsive recomposition -------------------------------------- */
 
-.owner-settings__discard {
+.owner-settings__actions--upper .owner-settings__discard {
 	display: none;
 }
 
@@ -513,7 +517,7 @@
 		line-height: 42px;
 	}
 
-	.owner-settings__discard {
+	.owner-settings__actions--upper .owner-settings__discard {
 		display: inline-flex;
 	}
 
@@ -625,7 +629,7 @@
 	.owner-settings__week-row {
 		gap: 10px;
 		min-block-size: 126px;
-		padding-block: 2px;
+		padding: 2px 0;
 	}
 
 	/* Day -> State, then Opens -> Closes: the accepted mobile weekly order. */
@@ -645,7 +649,16 @@
 		grid-column: 2;
 		grid-row: 1;
 		justify-self: end;
+		inline-size: max-content;
 		min-block-size: 44px;
+		padding-inline: 10px;
+		border: 1px solid var(--ows-edge-control);
+		background: var(--ows-control);
+		white-space: nowrap;
+	}
+
+	.owner-settings__toggle--mobile .owner-settings__toggle-hint {
+		flex-shrink: 0;
 	}
 
 	.owner-settings__time {
@@ -686,6 +699,19 @@
 		border-radius: 0;
 	}
 
+	.owner-settings__board--locked .owner-settings__board-head {
+		min-block-size: 48px;
+	}
+
+	.owner-settings__locked-copy-desktop,
+	.owner-settings__locked-badge {
+		display: none;
+	}
+
+	.owner-settings__locked-copy-mobile {
+		display: inline;
+	}
+
 	.owner-settings__locked-item {
 		grid-template-columns: minmax(0, 1fr) auto;
 		align-items: center;
@@ -724,7 +750,8 @@
 	.owner-settings__locked,
 	.owner-settings__control,
 	.owner-settings__time input,
-	.owner-settings__week-unavailable {
+	.owner-settings__week-unavailable,
+	.owner-settings__toggle {
 		border-color: CanvasText;
 	}
 

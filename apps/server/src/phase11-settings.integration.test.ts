@@ -171,7 +171,7 @@ const editableForUpdate = {
 		fri: { open: "00:00", close: "00:00" },
 		sat: { open: "00:00", close: "00:00" },
 	},
-	businessDayBoundary: "04:00",
+	businessDayBoundary: "03:30",
 	resetBufferMinutes: 45,
 } as const;
 
@@ -417,6 +417,7 @@ describe("owner settings update", () => {
 		appendedVersion = body.json.settings.version;
 		expect(body.json.auditId).toBeGreaterThan(0);
 		expect(body.json.settings.effectiveFromUtc).not.toBe(OLDEST);
+		expect(body.json.settings.editable.businessDayBoundary).toBe("03:30");
 		expect(body.json.settings.operational).toEqual(lockedOperational);
 
 		const [appended] = await database
@@ -428,6 +429,7 @@ describe("owner settings update", () => {
 		expect(appended.quietMaxPercent).toBe(30);
 		expect(appended.moderateMaxPercent).toBe(55);
 		expect(appended.busyMaxPercent).toBe(80);
+		expect(appended.businessDayBoundary).toBe("03:30:00");
 		expect(appended.resetBufferMinutes).toBe(45);
 		// Every operational timing is copied from the locked row, not defaulted.
 		expect(appended.timezone).toBe("Asia/Riyadh");
