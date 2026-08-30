@@ -346,15 +346,6 @@ test("load failure carries its own copy and Retry; clean locks Save and renders 
 		"Settings could not be loaded",
 	);
 	await expect(page.locator(section)).toContainText("Try again");
-	const retry = page.locator("button.owner-settings__retry");
-	await retry.click();
-	await expect(
-		page.locator(`${upperActions} .owner-settings__version`),
-	).toContainText("Current version 7");
-	await expect(page.locator(saveButtons).first()).toBeDisabled();
-	await expect(page.locator(discardButtons)).toHaveCount(0);
-	await expect(page.locator(lowerFrontier)).toHaveCount(0);
-
 	await setLocale(page, "ar");
 	await expect(page.locator(section)).toContainText("تعذر تحميل الإعدادات");
 	// A retry must refetch: point the read back at the live snapshot first.
@@ -363,6 +354,9 @@ test("load failure carries its own copy and Retry; clean locks Save and renders 
 	await expect(page.locator(section)).toContainText("الإعدادات");
 	await expect(page.locator(section)).toContainText("Asia/Riyadh");
 	await expect(page.locator(saveButtons).first()).toBeDisabled();
+	await expect(page.locator(discardButtons)).toHaveCount(0);
+	await expect(page.locator(lowerFrontier)).toHaveCount(0);
+	expect(observedReadRequests).toBe(2);
 });
 
 test("clean state shows the locked timing board with copied values and Western digits", async ({
@@ -552,11 +546,12 @@ test("unchecking a day serializes null and removes its inputs; rechecking restor
 }) => {
 	await openOwnerPage(page);
 
-	// The checkbox is visually hidden inside its 44px label target, so the
-	// label is the real user's click surface.
-	const sundayToggle = page
-		.locator("label.owner-settings__toggle")
-		.filter({ hasText: "Sunday" });
+	// The checkbox is visually hidden inside its 44px label target. Locate the
+	// user's click surface by the checkbox it owns; the weekday text is a
+	// sibling column rather than visible label text.
+	const sundayToggle = page.locator("label.owner-settings__toggle", {
+		has: page.locator("input[data-testid='sun-toggle']"),
+	});
 	const sundayOpen = page.locator("input[data-testid='sun-open']");
 	const sundayClose = page.locator("input[data-testid='sun-close']");
 	await expect(sundayOpen).toHaveValue("06:00");
@@ -573,9 +568,9 @@ test("unchecking a day serializes null and removes its inputs; rechecking restor
 	await expect(sundayOpen).toHaveValue("06:00");
 	await expect(sundayClose).toHaveValue("23:00");
 
-	const saturdayToggle = page
-		.locator("label.owner-settings__toggle")
-		.filter({ hasText: "Saturday" });
+	const saturdayToggle = page.locator("label.owner-settings__toggle", {
+		has: page.locator("input[data-testid='sat-toggle']"),
+	});
 	await saturdayToggle.click();
 	const saturdayOpen = page.locator("input[data-testid='sat-open']");
 	const saturdayClose = page.locator("input[data-testid='sat-close']");
@@ -701,6 +696,7 @@ test("keyboard order follows the reading order and visible focus follows Tab", a
 
 	const capacity = page.locator("input[data-testid='capacity']");
 	await capacity.focus();
+	await page.keyboard.press("ControlOrMeta+A");
 	await page.keyboard.type("240");
 	await expect(capacity).toHaveValue("240");
 

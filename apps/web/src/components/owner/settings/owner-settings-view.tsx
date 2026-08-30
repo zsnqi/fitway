@@ -84,7 +84,7 @@ export function OwnerSettingsView({
 	const saveDisabled =
 		clean || state === "saved" || invalid || conflict || saving;
 	const discardDisabled = saving;
-	const showDiscardInUpper = state !== "clean";
+	const showDiscardInUpper = state !== "clean" && state !== "saved";
 	const showLowerFrontier = state !== "clean" && state !== "saved";
 
 	const quietValue = parsedPercent(draft.quietMaxPercent) ?? 0;
