@@ -85,10 +85,12 @@ describe("buildOperationalSnapshot", () => {
 		expect(snapshot.computedAt).toBe(now.toISOString());
 		expect(snapshot.capacity).toBe(100);
 		expect(snapshot.source).toBe("edge");
+		// The stored band is deliberately moderate; the operational snapshot
+		// derives quiet from 12 / 100 against the current 25% threshold.
 		expect(snapshot.occupancy).toMatchObject({
 			schemaVersion: 2,
 			freshness: "fresh",
-			band: "moderate",
+			band: "quiet",
 			count: 12,
 		});
 		expect(snapshot.health).toMatchObject({
