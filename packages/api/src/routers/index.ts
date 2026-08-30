@@ -18,6 +18,7 @@ import {
 	publicProcedure,
 	staffProcedure,
 } from "../index";
+import { adminSettingsProcedures } from "../settings/procedures";
 
 const pushOccupancyContract = publicProcedure
 	.route({
@@ -133,6 +134,14 @@ export const appRouter = {
 		 * beside them is untouched.
 		 */
 		access: adminAccessProcedures,
+		/**
+		 * Owner Settings. One read of the current effective version and one
+		 * append-only writer, both added under the recorded coordinator lease
+		 * for this slice. The writer appends the successor snapshot and its
+		 * audit row in one transaction; no operational timing is editable
+		 * through either leaf.
+		 */
+		settings: adminSettingsProcedures,
 	},
 };
 export type AppRouter = typeof appRouter;

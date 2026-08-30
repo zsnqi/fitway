@@ -164,6 +164,35 @@ describe("public payload builder", () => {
 		}
 	});
 
+	it("derives the band at response time from current settings, not the persisted band", async () => {
+		// The persisted band was computed against an older settings version and
+		// remains untouched by a Settings update; the emitted band must follow
+		// the current-effective capacity and thresholds instead. The fixture is
+		// Friday 14:00:30 Riyadh inside the open 14:00-00:00 session.
+		const built = await buildPublicOccupancyPayload(
+			repository({
+				settings: {
+					...settings,
+					capacity: 200,
+					quietMaxPercent: 10,
+					moderateMaxPercent: 20,
+					busyMaxPercent: 25,
+				},
+				current: {
+					...current,
+					band: "quiet",
+					lastPushReceivedAt: new Date("2026-07-17T10:59:30.000Z"),
+				},
+			}),
+			new Date("2026-07-17T11:00:30.000Z"),
+		);
+		expect(built.payload).toMatchObject({
+			freshness: "fresh",
+			count: 150,
+			band: "packed",
+		});
+	});
+
 	it("returns unavailable during open hours for invalid current data or occupancy settings", async () => {
 		for (const value of [
 			repository({ current: null }),

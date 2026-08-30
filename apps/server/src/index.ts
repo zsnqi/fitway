@@ -55,11 +55,16 @@ import { DeviceRateLimiter } from "./rate-limiter";
 import { createReportingRepository } from "./reporting-repository";
 import { createResetRepository } from "./reset-repository";
 import { createRetentionRepository } from "./retention-repository";
+import { createSettingsRepository } from "./settings-repository";
+import { createSettingsService } from "./settings-service";
 
 const ownerAnalyticsReaders = createOwnerAnalyticsReaders(db);
 const reportingRepository = createReportingRepository(db);
 const auditListRepository = createAuditListRepository(db);
 const healthIncidentRepository = createHealthIncidentRepository(db);
+const settingsService = createSettingsService({
+	repository: createSettingsRepository({ database: db, now: () => new Date() }),
+});
 
 /**
  * Outbound alert delivery is the one component that talks to a third party, and
@@ -236,6 +241,10 @@ export function createApp(
 					deactivateOwner: accessService.deactivateOwner,
 					reactivateOwner: accessService.reactivateOwner,
 					resetOwnerCredential: accessService.resetOwnerCredential,
+					// The owner Settings read/append pair. The service captures no
+					// time; the repository owns the clock and the advisory lock.
+					readOwnerSettings: settingsService.readOwnerSettings,
+					updateOwnerSettings: settingsService.updateOwnerSettings,
 				}),
 			});
 			if (rpcResult.matched)

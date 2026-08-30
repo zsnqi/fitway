@@ -1,4 +1,8 @@
-import { assertBandSettings, type OccupancyBand } from "../occupancy/bands";
+import {
+	assertBandSettings,
+	bandFor,
+	type OccupancyBand,
+} from "../occupancy/bands";
 import {
 	assertOccupancySettings,
 	type OccupancySettings,
@@ -89,9 +93,17 @@ export async function buildPublicOccupancyPayload(
 	) {
 		return unavailable();
 	}
+	let derivedBand: OccupancyBand;
 	try {
 		assertBandSettings(settings.capacity, settings);
 		assertOccupancySettings(settings);
+		// The emitted band is derived at response time from the unchanged stored
+		// count and the current-effective capacity and thresholds. A Settings
+		// update may therefore change the categorical band on the next fetch
+		// without a new occupancy push, without rewriting `current_state`, and
+		// without ever exposing the capacity, thresholds, or percentages that
+		// produced it.
+		derivedBand = bandFor(current.currentCount, settings.capacity, settings);
 	} catch {
 		return unavailable();
 	}
@@ -113,7 +125,7 @@ export async function buildPublicOccupancyPayload(
 			schemaVersion: 2,
 			freshness: age <= settings.freshForSeconds * 1_000 ? "fresh" : "stale",
 			timeZone: settings.timeZone,
-			band: current.band,
+			band: derivedBand,
 			count,
 			lastUpdatedAt: lastUpdated.toISOString(),
 			freshUntil: freshUntil.toISOString(),

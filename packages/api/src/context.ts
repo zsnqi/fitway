@@ -22,6 +22,11 @@ import type { AnalyticsTimeContext } from "./analytics/time-context";
 import type { AuditListInput, AuditListPage } from "./audit/list";
 import type { HealthIncidentSummary } from "./health/incidents";
 import type { OperationalSnapshot } from "./health/snapshot";
+import type {
+	OwnerSettingsSnapshot,
+	OwnerSettingsUpdateInput,
+	OwnerSettingsUpdateOutput,
+} from "./settings/contracts";
 
 export type CreateContextOptions = {
 	context: HonoContext;
@@ -66,6 +71,10 @@ export type CreateContextOptions = {
 	resetOwnerCredential: (
 		input: { actorPrincipalId: string } & OwnerCredentialResetInput,
 	) => Promise<AccessMutationOutput>;
+	readOwnerSettings: () => Promise<OwnerSettingsSnapshot>;
+	updateOwnerSettings: (
+		input: { actorPrincipalId: string } & OwnerSettingsUpdateInput,
+	) => Promise<OwnerSettingsUpdateOutput>;
 };
 
 /**
@@ -136,6 +145,16 @@ export type Context = {
 	resetOwnerCredential?: (
 		input: { actorPrincipalId: string } & OwnerCredentialResetInput,
 	) => Promise<AccessMutationOutput>;
+	/**
+	 * Owner-only Settings reads and appends. The read resolves the current
+	 * effective version at one server instant; the update is the only Settings
+	 * writer and takes its actor from the authenticated caller, never from its
+	 * input. The five operational timings are not caller-editable through either.
+	 */
+	readOwnerSettings?: () => Promise<OwnerSettingsSnapshot>;
+	updateOwnerSettings?: (
+		input: { actorPrincipalId: string } & OwnerSettingsUpdateInput,
+	) => Promise<OwnerSettingsUpdateOutput>;
 };
 
 export async function createContext({
@@ -158,6 +177,8 @@ export async function createContext({
 	deactivateOwner,
 	reactivateOwner,
 	resetOwnerCredential,
+	readOwnerSettings,
+	updateOwnerSettings,
 }: CreateContextOptions): Promise<Context> {
 	const result = await authenticate(context.req.header("Cookie"));
 	for (const cookie of result.cookieHeaders) {
@@ -185,5 +206,7 @@ export async function createContext({
 		deactivateOwner,
 		reactivateOwner,
 		resetOwnerCredential,
+		readOwnerSettings,
+		updateOwnerSettings,
 	};
 }
