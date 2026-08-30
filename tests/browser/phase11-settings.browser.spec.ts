@@ -465,9 +465,17 @@ test("dirty invalid locks Save, associates field errors, and announces the summa
 	);
 	const describedBy = await capacity.getAttribute("aria-describedby");
 	expect(describedBy).toBeTruthy();
+	await expect(capacity.locator("..")).toHaveClass(
+		/owner-settings__control--error/,
+	);
 	await expect(page.locator(`#${describedBy}`)).toContainText(
 		"Capacity must be between 1 and 2147483647.",
 	);
+
+	await page.emulateMedia({ forcedColors: "active" });
+	await expect(capacity.locator("..")).toHaveCSS("outline-style", "solid");
+	await expect(capacity.locator("..")).toHaveCSS("outline-width", "2px");
+	await page.emulateMedia({ forcedColors: "none" });
 
 	await page.locator("input[data-testid='capacity']").fill("240");
 	await page.locator("input[data-testid='boundary']").fill("03:00");

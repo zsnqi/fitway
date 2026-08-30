@@ -772,6 +772,13 @@
 		border-color: CanvasText;
 	}
 
+	.owner-settings__control--error,
+	.owner-settings__time--error input {
+		border-color: Mark;
+		outline: 2px solid Mark;
+		outline-offset: 2px;
+	}
+
 	.owner-settings__toggle-marker {
 		border-color: CanvasText;
 	}

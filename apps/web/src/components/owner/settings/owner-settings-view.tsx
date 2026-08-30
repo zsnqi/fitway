@@ -57,6 +57,10 @@ function parsedPercent(value: string): number | null {
 	return Number.isSafeInteger(parsed) ? parsed : null;
 }
 
+function withErrorClass(baseClass: string, hasError: boolean): string {
+	return hasError ? `${baseClass} ${baseClass}--error` : baseClass;
+}
+
 export function OwnerSettingsView({
 	messages,
 	state,
@@ -217,7 +221,10 @@ export function OwnerSettingsView({
 								{messages.capacityLabel}
 							</label>
 							<div
-								className={`owner-settings__control${errors.capacity !== null ? "owner-settings__control--error" : ""}`}
+								className={withErrorClass(
+									"owner-settings__control",
+									errors.capacity !== null,
+								)}
 							>
 								<input
 									id={fieldId("capacity")}
@@ -249,7 +256,10 @@ export function OwnerSettingsView({
 								{messages.boundaryLabel}
 							</label>
 							<div
-								className={`owner-settings__control${errors.businessDayBoundary !== null ? "owner-settings__control--error" : ""}`}
+								className={withErrorClass(
+									"owner-settings__control",
+									errors.businessDayBoundary !== null,
+								)}
 							>
 								<input
 									id={fieldId("boundary")}
@@ -288,7 +298,10 @@ export function OwnerSettingsView({
 						<div className="owner-settings__field">
 							<label htmlFor={fieldId("reset")}>{messages.resetLabel}</label>
 							<div
-								className={`owner-settings__control${errors.resetBufferMinutes !== null ? "owner-settings__control--error" : ""}`}
+								className={withErrorClass(
+									"owner-settings__control",
+									errors.resetBufferMinutes !== null,
+								)}
 							>
 								<input
 									id={fieldId("reset")}
@@ -359,7 +372,10 @@ export function OwnerSettingsView({
 							<div className="owner-settings__field" key={key}>
 								<label htmlFor={fieldId(key)}>{label}</label>
 								<div
-									className={`owner-settings__control${error !== null ? "owner-settings__control--error" : ""}`}
+									className={withErrorClass(
+										"owner-settings__control",
+										error !== null,
+									)}
 								>
 									<input
 										id={fieldId(key)}
@@ -451,7 +467,10 @@ export function OwnerSettingsView({
 									) : (
 										<>
 											<div
-												className={`owner-settings__time${dayErrors.open !== null ? "owner-settings__time--error" : ""}`}
+												className={withErrorClass(
+													"owner-settings__time",
+													dayErrors.open !== null,
+												)}
 											>
 												<label
 													className="owner-settings__time-label"
@@ -494,7 +513,10 @@ export function OwnerSettingsView({
 												) : null}
 											</div>
 											<div
-												className={`owner-settings__time${dayErrors.close !== null ? "owner-settings__time--error" : ""}`}
+												className={withErrorClass(
+													"owner-settings__time",
+													dayErrors.close !== null,
+												)}
 											>
 												<label
 													className="owner-settings__time-label"

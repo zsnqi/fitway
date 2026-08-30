@@ -359,6 +359,12 @@ describe("owner settings section", () => {
 		});
 
 		expect(saveButton()?.disabled).toBe(true);
+		expect(field("capacity")?.parentElement?.classList).toContain(
+			"owner-settings__control",
+		);
+		expect(field("capacity")?.parentElement?.classList).toContain(
+			"owner-settings__control--error",
+		);
 		expect(container.textContent).toContain(
 			"Capacity must be between 1 and 2147483647.",
 		);
@@ -421,6 +427,12 @@ describe("owner settings section", () => {
 		expect(timeInputs().filter((input) => input.value === "")).toHaveLength(2);
 		expect(saveButton()?.disabled).toBe(true);
 		expect(container.textContent).toContain("Enter a time.");
+		expect(field("sat-open")?.parentElement?.classList).toContain(
+			"owner-settings__time",
+		);
+		expect(field("sat-open")?.parentElement?.classList).toContain(
+			"owner-settings__time--error",
+		);
 	});
 
 	it("keeps a next-day close hint on the Friday fixture and preserves the draft across a locale switch", async () => {
