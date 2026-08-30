@@ -1,0 +1,32 @@
+{
+	"routeDecisionId": "p11_settings_spec_r01-repair1-ui-review",
+	"recordedAt": "2026-08-30T17:02:00Z",
+	"candidateCommit": "579419d0fc85669aba6eea134ee051b3c245b205",
+	"reviewer": "native Sol subagent, xhigh, read-only",
+	"verdict": "CHANGES_REQUIRED",
+	"findings": [
+		{
+			"severity": "blocking",
+			"summary": "Desktop and tablet dirty/error/conflict states required Discard but had no defined placement.",
+			"requiredCorrection": "Freeze responsive upper/lower action placement and state behavior at the 720/721 breakpoint."
+		},
+		{
+			"severity": "significant",
+			"summary": "Weekly open/closed semantics still allowed checkbox versus switch and disabled versus removed controls.",
+			"requiredCorrection": "Use a styled form checkbox and replace unchecked time inputs with the accepted full-width unavailable message."
+		},
+		{
+			"severity": "significant",
+			"summary": "The test matrix omitted weekly transitions and responsive Discard placement.",
+			"requiredCorrection": "Add explicit component/browser cases for draft restoration, persisted-closed reopening, null serialization, responsive actions, RTL/LTR order, and duplicate-submit prevention."
+		},
+		{
+			"severity": "minor",
+			"summary": "Two existing builder files appeared under a new-file heading.",
+			"requiredCorrection": "Clarify the worker-owned list contains both new files and two existing owned edits."
+		}
+	],
+	"paperMutation": "none",
+	"paperNodeCount": 29266,
+	"paperTokenHash": "3b0faca3"
+}

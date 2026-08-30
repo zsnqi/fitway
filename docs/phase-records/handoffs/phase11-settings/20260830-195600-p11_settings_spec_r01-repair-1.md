@@ -1,7 +1,9 @@
 # Phase 11 Owner Settings specification r01 — focused repair 1/2
 
-Timestamp: 2026-08-30T19:56:00+03:00  
-Reviewed candidate: `6c84e833a36e82123c4bc2b807a6f62739bf69b7`  
+Timestamp: 2026-08-30T19:56:00+03:00
+
+Reviewed candidate: `6c84e833a36e82123c4bc2b807a6f62739bf69b7`
+
 Status: `IN_PROGRESS`
 
 Two independent read-only reviews rejected the first specification candidate. This is focused repair `1/2`; it does not authorize or implement product code and does not touch Paper.

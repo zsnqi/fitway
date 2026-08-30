@@ -1,0 +1,26 @@
+{
+	"routeDecisionId": "p11_settings_spec_r01-repair1-contract-review",
+	"recordedAt": "2026-08-30T17:02:00Z",
+	"candidateCommit": "579419d0fc85669aba6eea134ee051b3c245b205",
+	"reviewer": "native Sol subagent, xhigh, read-only",
+	"verdict": "CHANGES_REQUIRED",
+	"findings": [
+		{
+			"severity": "significant",
+			"summary": "Read and update time ownership allowed mixed application and database clocks.",
+			"requiredCorrection": "Use one injected repository clock; read calls it once immediately before an unlocked query, update calls it once after the advisory lock, and the captured update instant supplies every transaction timestamp and effective predicate."
+		},
+		{
+			"severity": "minor",
+			"summary": "The repair-1 handoff contained two Markdown trailing-space hard breaks.",
+			"requiredCorrection": "Remove trailing whitespace and use blank lines."
+		}
+	],
+	"confirmedClosed": [
+		"response-time band derivation and privacy boundary",
+		"canonical UTC serialization",
+		"append-only transaction and concurrency contract",
+		"complete verification sibling profile"
+	],
+	"mutation": "none"
+}
