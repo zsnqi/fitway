@@ -1,0 +1,29 @@
+{
+	"routeDecisionId": "p11_settings_glm_plan_r01-review3-terminal",
+	"recordedAt": "2026-08-30T17:36:00Z",
+	"candidateCommit": "5bf484f8c9f417f8a755bae73609987aeaaaf0ef",
+	"reviewer": "fresh native architecture subagent, read-only",
+	"verdict": "FAILED_VALIDATION",
+	"repairBudget": "2/2 exhausted",
+	"findings": [
+		{
+			"severity": "blocking",
+			"summary": "A failed post-freeze native UI gate does not mandate focused repair, affected-check rerun, new freeze/SHA/evidence, and native UI re-review before final review."
+		},
+		{
+			"severity": "significant",
+			"summary": "Checkpoint B changes the required Context/server boundary but lacks an executable API plus server TypeScript gate at that reversible checkpoint."
+		},
+		{
+			"severity": "minor",
+			"summary": "The durable plan header identifies candidate repair 1 although the reviewed candidate is repair 2."
+		}
+	],
+	"hygiene": {
+		"worktree": "clean",
+		"diffCheck": "PASS",
+		"repositoryCheck": "PASS: 55 milestones, 8 canonical approval screenshots"
+	},
+	"mutation": "none",
+	"nextAuthority": "A fresh Settings GLM plan successor requires explicit human authorization; no repair 3 or implementation activation is permitted."
+}

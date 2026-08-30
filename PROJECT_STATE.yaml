@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-30T17:07:00Z"
+updatedAt: "2026-08-30T17:36:00Z"
 
 coordinator:
-  owner: "Coordinator final authority. Human authorized a fresh Settings Paper successor attempt on 2026-08-30 while preserving the terminal 2/2 attempt unchanged. The separate pre-existing Paper area OWNER SETTINGS — FRESH r01 SUCCESSOR CANDIDATE and migration-free Settings specification r01 are now DONE after fresh independent review; no Settings product-code, schema, migration, Paper, configuration, or baseline mutation occurred. The next bounded prerequisite is a clean independently reviewed GLM execution plan; phase11-settings implementation remains unauthorized until separate activation. Fresh Uptime b02 planning remains terminal FAILED_VALIDATION with no third plan repair authorized. Login remains a separately authorized follow-up. Handoff: docs/phase-records/handoffs/phase11-settings/20260830-200700-p11_settings_spec_r01-done.md"
+  owner: "Coordinator final authority. The fresh Settings Paper successor and migration-free Settings specification r01 are DONE and preserved. Settings GLM execution-plan r01 is terminal FAILED_VALIDATION after repair 2/2; no repair 3 or phase11-settings activation is permitted under that attempt. No Settings product-code, schema, migration, Paper, configuration, or baseline mutation occurred. A fresh Settings GLM plan successor requires explicit human authorization and must preserve r01 history. Fresh Uptime b02 planning remains terminal FAILED_VALIDATION with no third plan repair authorized. Login remains a separately authorized follow-up. Handoff: docs/phase-records/handoffs/phase11-settings/20260830-203600-p11_settings_glm_plan_r01-terminal-failure.md"
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -1899,10 +1899,41 @@ milestones:
       independentReview: PASS
     integratedCommit: SELF
 
+  phase11-settings-plan-r01:
+    status: FAILED_VALIDATION
+    dependencies: [phase11-settings-spec]
+    ownerSession: null
+    branch: codex/remaining-scope-coordinator
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
+    baseCommit: b9f91b5
+    ownedPaths:
+      - docs/phase-records/handoffs/phase11-settings/*p11_settings_glm_plan*.md
+      - docs/phase-records/handoffs/phase11-settings/*p11_settings_paper_copy_packet.md
+      - docs/phase-records/route-decisions/p11_settings_glm_plan_r01-*.json
+      - PROJECT_STATE.yaml
+    forbiddenPaths:
+      - "all application source, schemas, migrations, routers, baselines, Paper, and normative authorities"
+      - "the accepted Settings specification and Paper successor"
+      - "the terminal failed Settings Paper predecessor and its 2/2 history"
+    sharedLeases: []
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-08-30T20:36:00+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase11-settings/20260830-203600-p11_settings_glm_plan_r01-terminal-failure.md
+    stopReason: "Terminal Settings GLM plan r01 FAILED_VALIDATION after repair 2/2: missing mandatory re-freeze/native-re-review loop after a native UI failure, missing API+server type gate at checkpoint B, and stale repair-1 header provenance. No repair 3 or implementation activation is permitted; a fresh successor needs explicit human authorization."
+    gates:
+      unit: NOT_REQUIRED
+      integration: NOT_REQUIRED
+      browser: NOT_REQUIRED
+      accessibility: FAIL
+      visual: FAIL
+      independentReview: FAIL
+    integratedCommit: null
+
   phase11-settings:
     status: PLANNED
     dependencies:
-      [phase-3, phase-5, phase-6, phase-7, phase-9, phase11-audit-generalization, phase11-settings-spec]
+      [phase-3, phase-5, phase-6, phase-7, phase-9, phase11-audit-generalization, phase11-settings-spec, phase11-settings-plan-r01]
     ownerSession: null
     branch: null
     worktree: null
