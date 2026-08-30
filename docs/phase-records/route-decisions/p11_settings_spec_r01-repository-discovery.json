@@ -1,0 +1,32 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_settings_spec_r01 / migration-free repository surface discovery",
+	"recorded": "2026-08-30T19:39:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native-luna",
+	"route": null,
+	"control": "high",
+	"execution": "native-luna-subagent",
+	"transport": null,
+	"qualification_status": "native",
+	"gate_outcome": "PASS",
+	"gate_outcome_note": "Read-only repository discovery confirmed a complete migration-free vertical slice, exact new module families, five coordinator-owned shared wiring leases, existing transaction/advisory-lock/audit precedents, current /admin sibling-section composition, and the phase verification expectations. It found no blocker; optional audit reason and latent future-dated-reader drift are closed by the written specification without widening scope.",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read"],
+	"covered_mcp_operations": [],
+	"delegation_trigger": "volume",
+	"consequence": "medium",
+	"material_selection_reason": "The implementation surface crosses API, server, web, test, and verification conventions; a bounded read-only native explorer returned the exact ownership map without spending the assembly context.",
+	"execution_identity": {
+		"branch": "codex/remaining-scope-coordinator",
+		"activation_commit": "ca54feef0ea305acc3a9e45619cdec8edf2e1b14",
+		"rollback_boundary": "none; discovery was read-only"
+	},
+	"access_boundary": {
+		"readable": "repository authorities and directly relevant API/server/web/test conventions",
+		"writable": "none",
+		"commit_allowed": false,
+		"forbidden": "all repository and Paper mutation, environment disclosure, implementation, and further delegation"
+	}
+}

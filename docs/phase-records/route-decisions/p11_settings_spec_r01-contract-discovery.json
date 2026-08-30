@@ -1,0 +1,32 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_settings_spec_r01 / transaction and contract architecture discovery",
+	"recorded": "2026-08-30T19:39:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native-sol",
+	"route": null,
+	"control": "xhigh",
+	"execution": "native-sol-architect",
+	"transport": null,
+	"qualification_status": "native",
+	"gate_outcome": "PASS_WITH_CONDITIONS",
+	"gate_outcome_note": "Read-only architecture review returned MIGRATION_FREE / PROCEED WITH CONDITIONS. The accepted conditions are: current-effective chronology at server now; server-owned immediate effective time captured after a Settings advisory lock; expectedVersion conflict; complete read-only copy-forward; settings plus existing settings_updated audit in one transaction; missing history as invariant failure; strict five-axis input; and no unrelated current-reader retrofit.",
+	"covered_modalities": ["text"],
+	"covered_tools": ["repository_read"],
+	"covered_mcp_operations": [],
+	"delegation_trigger": "independence_and_specialization",
+	"consequence": "high",
+	"material_selection_reason": "Concurrency, effective chronology, append-only history, and audit atomicity required an independent architecture pass before the coordinator froze an implementation contract.",
+	"execution_identity": {
+		"branch": "codex/remaining-scope-coordinator",
+		"activation_base": "cf51f53bcac4971bc9299b00d63eef1fec0ba3d3",
+		"rollback_boundary": "none; review was read-only"
+	},
+	"access_boundary": {
+		"readable": "repository authorities, schema, current settings consumers, audit seam, and transaction precedents",
+		"writable": "none",
+		"commit_allowed": false,
+		"forbidden": "all repository and Paper mutation, implementation, migration, and further delegation"
+	}
+}

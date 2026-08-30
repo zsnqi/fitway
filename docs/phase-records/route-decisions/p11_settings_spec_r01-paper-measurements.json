@@ -1,0 +1,34 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_settings_spec_r01 / accepted Paper measurement extraction",
+	"recorded": "2026-08-30T19:39:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native-luna",
+	"route": null,
+	"control": "high",
+	"execution": "native-luna-subagent",
+	"transport": null,
+	"qualification_status": "native",
+	"gate_outcome": "PASS",
+	"gate_outcome_note": "Read-only extraction measured the accepted fresh r01 desktop/mobile frames, shell and section geometry, controls, typography, token values, visible states, copy, values, and LTR/RTL order. It distinguished the isolated-frame standalone-route impression as inference rather than a measured URL decision and identified tablet, 320px, 200% reflow, keyboard, API, audit, and production configuration as repository acceptance rather than Paper claims.",
+	"covered_modalities": ["text", "image"],
+	"covered_mcp_operations": ["paper.read"],
+	"delegation_trigger": "volume_and_specialization",
+	"consequence": "medium",
+	"material_selection_reason": "Paper measurement extraction is a bounded, read-heavy visual task whose compact return preserves coordinator context and separates source measurement from specification assembly.",
+	"execution_identity": {
+		"paper_file_id": "01KYPX5AF950XZVVDD88B6J7QB",
+		"page": "Page 1",
+		"candidate_area": "1FKS-0",
+		"frames": ["1G2Y-0", "1FY6-0", "1FSU-0", "1FNO-0"],
+		"token_hash": "3b0faca3",
+		"rollback_boundary": "none; extraction was read-only"
+	},
+	"access_boundary": {
+		"readable": "accepted fresh r01 Settings Paper area and directly relevant FITWAY Paper workflow references",
+		"writable": "none",
+		"commit_allowed": false,
+		"forbidden": "failed Paper area 1EO5-0, all Paper mutation, repository mutation, repair, deletion, propagation, and further delegation"
+	}
+}
