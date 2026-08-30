@@ -1,0 +1,34 @@
+{
+	"schema": "route-decision/1",
+	"project": "fitway",
+	"stage_ref": "p11_settings_paper_fresh_r01 / fresh successor discovery and activation",
+	"recorded": "2026-08-30T19:25:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native-sol",
+	"route": null,
+	"control": "high",
+	"execution": "native-sol-subagent",
+	"transport": null,
+	"qualification_status": "native",
+	"gate_outcome": "PASS_WITH_RECONCILIATION",
+	"gate_outcome_note": "Read-only Paper inspection found a separate pre-existing fresh r01 candidate carrying the exact terminal RTL content-order correction. The coordinator adopted it as unapproved fresh-attempt evidence for validation, without mutating or reopening the failed 2/2 candidate.",
+	"covered_modalities": ["text", "image"],
+	"covered_mcp_operations": ["paper.read", "paper.screenshot"],
+	"delegation_trigger": "volume_and_specialization",
+	"consequence": "high",
+	"material_selection_reason": "Rendered bilingual Paper inspection and per-group direction measurements require strong visual judgment while keeping raw canvas evidence out of the coordinator context.",
+	"execution_identity": {
+		"paper_file": "FITWAY UX Exploration",
+		"paper_file_id": "01KYPX5AF950XZVVDD88B6J7QB",
+		"page": "Page 1",
+		"fresh_candidate_area": "OWNER SETTINGS — FRESH r01 SUCCESSOR CANDIDATE",
+		"preserved_terminal_area": "OWNER SETTINGS — BEHAVIOR-CORRECT FORM SUCCESSOR — REVIEW CANDIDATE",
+		"rollback_boundary": "none; discovery was read-only"
+	},
+	"access_boundary": {
+		"readable": "fresh and terminal Settings areas plus approved Owner/G3 analogues and directly relevant durable authority",
+		"writable": "none",
+		"commit_allowed": false,
+		"forbidden": "all Paper mutation, product code, terminal-history mutation, unrelated families, deletion, propagation, and further delegation"
+	}
+}
