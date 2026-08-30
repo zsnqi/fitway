@@ -711,6 +711,22 @@ test("keyboard order follows the reading order and visible focus follows Tab", a
 		page.locator("input[data-testid='quietMaxPercent']"),
 	).toBeFocused();
 
+	// Desktop weekly order is Opens -> Closes -> State.
+	await page.locator("input[data-testid='sun-open']").focus();
+	await page.keyboard.press("Tab");
+	await expect(page.locator("input[data-testid='sun-close']")).toBeFocused();
+	await page.keyboard.press("Tab");
+	await expect(page.locator("input[data-testid='sun-toggle']")).toBeFocused();
+
+	// Mobile recomposes the same native control as State -> Opens -> Closes;
+	// the DOM order follows that visual order rather than using positive tabindex.
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.locator("input[data-testid='sun-toggle-mobile']").focus();
+	await page.keyboard.press("Tab");
+	await expect(page.locator("input[data-testid='sun-open']")).toBeFocused();
+	await page.keyboard.press("Tab");
+	await expect(page.locator("input[data-testid='sun-close']")).toBeFocused();
+
 	// Enter submits the form when Save is enabled.
 	await expect(page.locator(saveButtons).first()).toBeEnabled();
 	await page.locator("input[data-testid='reset']").fill("45");

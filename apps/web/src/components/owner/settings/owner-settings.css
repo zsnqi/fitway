@@ -349,6 +349,10 @@
 	line-height: 16px;
 }
 
+.owner-settings__toggle--mobile {
+	display: none;
+}
+
 .owner-settings__toggle-input {
 	position: absolute;
 	inline-size: 1px;
@@ -553,7 +557,12 @@
 		order: -2;
 	}
 
-	.owner-settings__week-row > .owner-settings__toggle {
+	.owner-settings__toggle--desktop {
+		display: none;
+	}
+
+	.owner-settings__week-row > .owner-settings__toggle--mobile {
+		display: flex;
 		order: -1;
 		justify-self: start;
 		min-block-size: 44px;

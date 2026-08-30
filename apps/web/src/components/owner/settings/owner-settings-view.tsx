@@ -418,6 +418,31 @@ export function OwnerSettingsView({
 							return (
 								<div className="owner-settings__week-row" key={day}>
 									<span className="owner-settings__week-day">{dayName}</span>
+									<label className="owner-settings__toggle owner-settings__toggle--mobile">
+										<input
+											type="checkbox"
+											className="owner-settings__toggle-input"
+											data-testid={`${day}-toggle-mobile`}
+											checked={pair !== null}
+											onChange={(event) =>
+												onDayToggle(day, event.target.checked)
+											}
+											aria-label={`${dayName} — ${pair !== null ? messages.open : messages.closed}`}
+										/>
+										<span
+											className="owner-settings__toggle-marker"
+											data-open={pair !== null ? "" : undefined}
+											aria-hidden="true"
+										/>
+										<span className="owner-settings__toggle-text">
+											{pair !== null ? messages.open : messages.closed}
+										</span>
+										{closesNextDay ? (
+											<span className="owner-settings__toggle-hint">
+												{messages.closesNextDay}
+											</span>
+										) : null}
+									</label>
 									{pair === null ? (
 										<div className="owner-settings__week-unavailable">
 											{messages.closedDayMessage}
@@ -512,7 +537,7 @@ export function OwnerSettingsView({
 											</div>
 										</>
 									)}
-									<label className="owner-settings__toggle">
+									<label className="owner-settings__toggle owner-settings__toggle--desktop">
 										<input
 											type="checkbox"
 											className="owner-settings__toggle-input"
