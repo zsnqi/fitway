@@ -19,7 +19,7 @@ The primary truth is the labeled crowd band—Quiet, Moderate, Busy, or Packed�
 
 The public surface is anonymous, mobile-first, read-only, lightweight, and limited to current occupancy truth. It must not expose controls, operational diagnostics, member identity, images, video, or tracking identifiers.
 
-Staff and owner surfaces are authenticated operational tools. Staff can read the live count and health but cannot operate the count and cannot access owner settings, analytics, or account management. Owners receive those additional governance and reporting capabilities. Server-side authorization—not navigation visibility—is authoritative. Shared staff access is PIN-based through the signed HttpOnly session model, not email/password. The current scaffold email/password form and the design archive's fake login values are not the target staff contract.
+Staff and owner surfaces are authenticated operational tools. Staff can read the live count and health but cannot operate the count and cannot access owner settings, analytics, or account management. Owners receive those additional governance and reporting capabilities. Server-side authorization—not navigation visibility—is authoritative. Shared staff access is PIN-based through the signed HttpOnly session model, not email/password. Historical scaffold email/password forms and the design archive's fake login values are not product authority.
 
 ## Information hierarchy
 
@@ -47,7 +47,7 @@ The detailed payload, schedule, cache, polling, and transition rules are canonic
 
 ## Devices, language, and content
 
-Responsive acceptance covers widths **320, 360, 390, 721, 768, 820, 1024, 1200, and 1440px**, with canonical screenshot anchors at **1440×900 desktop**, **768×1024 tablet**, and **390×844 mobile portrait** where applicable. The public experience remains mobile-first and no route may create document-level horizontal overflow. Staff and owner route implementation remains Phase 4+ work.
+Responsive acceptance covers widths **320, 360, 390, 721, 768, 820, 1024, 1200, and 1440px**, with canonical screenshot anchors at **1440×900 desktop**, **768×1024 tablet**, and **390×844 mobile portrait** where applicable. The public experience remains mobile-first and no route may create document-level horizontal overflow. The implemented staff and owner routes follow the same locale, responsive, keyboard, zoom/reflow, and accessibility contract where applicable.
 
 Arabic is the default locale and uses RTL document direction. English uses LTR. The language choice persists locally. Use logical layout properties, natural Arabic wrapping, bidi isolation for Latin fragments and digit runs, and flexible controls that tolerate roughly 30–40% copy expansion.
 

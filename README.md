@@ -1,66 +1,87 @@
 # FITWAY
 
-FITWAY is a single-gym live-occupancy pilot. Its anonymous public page gives visitors an
-honest, cache-first crowd level and approximate count. Later authenticated surfaces add
-operations, corrections, analytics, governance, and health without storing visitor identity
-or camera media.
+FITWAY v1 is a privacy-limited live-occupancy system for one pilot gym. Its anonymous,
+Arabic-first public page helps visitors decide whether to go now with an honest crowd band,
+approximate count, opening state, and freshness. Authenticated staff and owner surfaces support
+operations and governance without storing visitor identity, images, video, or per-person events.
 
-## Status
+## Repository status
 
-- Phases 1–3 are integrated.
-- Broad visual exploration is closed. The one-time Baseline Reconciliation Gate promotes the
-  capacity-free public schema v2 and approved FITWAY production baseline; its authoritative
-  completion state is in `PROJECT_STATE.yaml`.
-- Phases 4–12 are not implemented. Do not create Phase 4 worktrees until
-  `PROJECT_STATE.yaml` records the baseline as `DONE`.
-- Shared staff authentication is the Spec's PIN/opaque-session model. The remaining scaffold
-  email/password code is explicitly not the Phase 4 target.
+FITWAY v1 is **repository-complete**. Canonical `main` contains every accepted aggregate phase
+from 1 through 12, and the `repository-closeout` milestone is `DONE` in
+[PROJECT_STATE.yaml](PROJECT_STATE.yaml). The accepted project-wide `pnpm verify:full` run at
+commit `b46f496ac2f217278d2706be02a8061bb199403d` passed the repository invariants, build and type
+gates, 566 TypeScript unit/component tests, 117 Python tests, 133 disposable-Postgres integration
+tests, and 125 Chromium browser/accessibility/visual tests. The durable evidence and exact run
+conditions are recorded in the [repository closeout](docs/phase-records/repository-closeout.md).
 
-Live status, ownership, baseline reference, dependencies, gates, and blockers are recorded in
-[PROJECT_STATE.yaml](PROJECT_STATE.yaml). The phase DAG is in [PHASES.md](PHASES.md).
+Repository completion is not deployment approval. No GitHub push, release, production
+provisioning, deployment, demo preparation, or real-gym validation was performed as part of
+closeout. Historical `FAILED_VALIDATION` and `NEEDS_HUMAN` attempt records remain intentionally
+preserved as terminal engineering history; they are not open v1 implementation work.
 
-## Sources of truth
+## Product surfaces
 
-Read them in this order:
+- **Public `/`:** anonymous, cache-first crowd band and approximate count with honest loading,
+  fresh, stale, closed, unavailable, and error states. The public contract exposes no capacity,
+  percentage, operational diagnostics, identity, or history.
+- **Staff `/login` and `/staff`:** shared PIN authentication with opaque server-side sessions and
+  signed HttpOnly cookies, plus a monitoring-only view of occupancy, freshness, and device health.
+- **Owner `/admin`:** owner-only analytics, accessible chart/table views, heatmap and
+  week-over-week reporting, streamed CSV export, audit history, health/uptime, access management,
+  and append-only settings governance.
+- **Edge and operations:** authenticated occupancy pushes, durable command/reset and audit
+  infrastructure, offline buffering and backfill, scheduled reset, health transitions, bounded
+  Telegram alert/recovery delivery, retention, and a durable standard-library Python client with
+  SQLite persistence and Windows lifecycle scripts.
 
-1. [AGENTS.md](AGENTS.md) — agent policy, ownership, validation, and escalation.
-2. [FITWAY_PRODUCT.md](FITWAY_PRODUCT.md) and [SPEC.md](SPEC.md) — product boundary and
-   normative implementation contract.
-3. Reviewed migrations, Zod/OpenAPI schemas, and shared DTOs — executable conformance.
-4. [ADR-007](docs/adr/ADR-007-paper-visual-source-of-truth.md) — Paper is the visual source of
-   truth; the repository stays authoritative for behavior.
-   [DESIGN_GUIDE.md](DESIGN_GUIDE.md) and the
-   [visual approval manifest](visual-direction-gate/approved/APPROVAL_MANIFEST.yaml) — responsive,
-   RTL, interaction, accessibility, tokens, and artifact provenance, subject to ADR-007 for
-   visual composition.
-5. [PHASES.md](PHASES.md) and [PROJECT_STATE.yaml](PROJECT_STATE.yaml) — delivery scope/DAG
-   and live coordinator-owned state.
-6. [ADRs](docs/adr/), [RESEARCH.md](RESEARCH.md), and
-   [phase records](docs/phase-records/) — rationale and accepted evidence.
+Staff and owner product surfaces are monitoring/governance tools; neither exposes a manual count
+command. Real camera capture, calibration, detection, and tracking are deliberately site-gated and
+are not implemented by the repository client.
 
-Material under [`docs/archive/`](docs/archive/), old G1B/Claude packages,
-prototypes, handoffs, VDG/Stitch worksheets, and generated reviews is historical evidence,
-not current authority.
+## Architecture
 
-## Repository shape
+FITWAY is a TypeScript pnpm workspace with a separate Python edge runtime:
 
 ```text
-apps/web        React + Vite + TanStack Router UI
-apps/server     Hono HTTP/cache/device/auth boundary
-packages/api    Shared contracts and domain logic
-packages/db     Drizzle schema and migration history
-packages/auth   Auth scaffold to be replaced/reconciled in Phase 4
-packages/env    Validated runtime environment
-packages/ui     Shared UI primitives and tokens
-edge            Python simulator; durable client arrives in Phase 12
-tests           Browser and integration infrastructure
-docs            Workflow, ADRs, phase records, schemas, and archive
-visual-direction-gate/approved  Current manifest plus immutable provenance
+apps/web        React + Vite + TanStack Router; Arabic RTL and English LTR
+apps/server     Hono HTTP, cache, auth, device, cron, and transport boundary
+packages/api    oRPC contracts and occupancy, command, analytics, alert, and governance logic
+packages/auth   PIN/owner principals, opaque sessions, cookies, and role authorization
+packages/db     Drizzle/Postgres schema and the reviewed migration history
+packages/env    Validated web/server runtime environment
+packages/ui     Shared accessible UI primitives and FITWAY styling foundation
+edge            Durable Python client, frozen simulator, fixtures, and Windows lifecycle
+tests           Browser, accessibility, visual, and cross-surface verification
+docs            Workflow, ADRs, phase evidence, handoffs, and archive
+visual-direction-gate/approved  Hash-verified visual baseline and provenance manifest
 ```
 
-The browser never accesses Postgres directly. Hono owns anonymous cache behavior, device
-authentication, future sessions/authorization, and staff/owner procedures. Public reads never
-touch history.
+The browser never accesses Postgres directly. Hono is the security and cache boundary; oRPC is the
+typed web contract, OpenAPI 3.1 is the device contract, and checked-in Drizzle migrations are the
+only schema history. Public reads are capacity-free, cache-first, and never query occupancy
+history. The system is intentionally single-gym in v1.
+
+## Documentation map
+
+Current authority is intentionally separate from implementation history:
+
+1. [AGENTS.md](AGENTS.md) — process, safety, ownership, validation, and escalation policy.
+2. [FITWAY_PRODUCT.md](FITWAY_PRODUCT.md) and [SPEC.md](SPEC.md) — product boundary and normative
+   security, privacy, data, interface, and acceptance contract.
+3. Reviewed migrations, Zod/OpenAPI schemas, and shared DTOs — executable conformance evidence.
+4. [ADR-007](docs/adr/ADR-007-paper-visual-source-of-truth.md) — Paper is authoritative for visual
+   composition; repository behavior remains authoritative. [DESIGN_GUIDE.md](DESIGN_GUIDE.md) and
+   the [approval manifest](visual-direction-gate/approved/APPROVAL_MANIFEST.yaml) govern responsive,
+   RTL, interaction, accessibility, tokens, and provenance within that split.
+5. [PHASES.md](PHASES.md) — the completed delivery scope and dependency/acceptance plan;
+   [PROJECT_STATE.yaml](PROJECT_STATE.yaml) — the canonical closeout and milestone ledger.
+6. [ADRs](docs/adr/), [RESEARCH.md](RESEARCH.md), and
+   [phase records](docs/phase-records/) — durable rationale and accepted engineering evidence.
+
+Material under [`docs/archive/`](docs/archive/), preserved handoffs and terminal attempts, old
+G1B/Claude packages, prototypes, and VDG/Stitch worksheets is historical provenance, not a current
+implementation backlog. `README.md` is a presentation-facing index, not a normative authority.
 
 ## Local development
 
@@ -74,37 +95,32 @@ pnpm dev
 - Server: `http://localhost:3100`
 - Development OpenAPI reference: `http://localhost:3100/api-reference`
 
-Provision a development device with `pnpm edge:provision-dev`, then use the simulator as
-documented in [edge/README.md](edge/README.md).
+Provision a development device with `pnpm edge:provision-dev`, then use the simulator as documented
+in [edge/README.md](edge/README.md). Integration tests require the explicitly named disposable
+database and reset marker described by [.env.integration.example](.env.integration.example); they
+never fall back to the development database.
 
 ## Verification
 
-The stable non-writing entry points are:
-
 ```bash
 pnpm verify:fast
-pnpm verify:phase
+pnpm verify:phase --phase <registered-name>
 pnpm verify:full
 ```
 
 - `verify:fast`: formatting/lint, type checks, unit/component tests, and repository invariants.
-- `verify:phase`: fast checks plus the phase-selected focused integration/browser checks.
-  Set the documented phase/run variables when a phase adds a selector.
-- `verify:full`: fast checks plus disposable-Postgres integration, simulator, build, browser,
+- `verify:phase`: fast checks plus the selected integration/browser checks; it requires a
+  registered `--phase` value (or the equivalent `FITWAY_PHASE` environment variable).
+- `verify:full`: fast checks plus disposable-Postgres integration, Python, builds, browser,
   accessibility, and visual regression gates.
 
-Integration tests require the explicitly named disposable database and marker described by
-`.env.integration.example`; they never fall back to the development database. Browser runs use
-`FITWAY_RUN_ID` to derive a unique port and disposable output/review directory for future
-parallel sessions. Canonical visual snapshots are platform-scoped and coordinator-owned. See
-[docs/WORKFLOW.md](docs/WORKFLOW.md).
+The verification ladder proves repository behavior under its controlled fixtures. It does not
+substitute for site commissioning or production observation.
 
-Visual acceptance also requires interactive Browser inspection, Arabic RTL and English LTR,
-the applicable 320–1440 responsive matrix, keyboard/focus, reduced motion, 200% zoom/reflow,
-manual accessibility semantics, and a fresh independent verifier.
+## External go-live boundary
 
-## Deployment boundary
-
-Deployment, Supabase/Vercel provisioning, spend controls, production secrets, domain setup,
-hardware/feed validation, real capacity/thresholds, and owner sign-off are external go-live
-gates. Do not infer deployment authority from implementation completion.
+Production database and Vercel provisioning, plan/spend controls, secrets, domain and final URL,
+real gym capacity/thresholds/hours/timezone, edge-PC and network behavior, camera/RTSP access, feed
+and exit-path geometry, calibration/detector accuracy, transparency wording, operational ownership,
+and owner sign-off remain external go-live gates. These require real-site evidence and explicit
+deployment authority; none is implied by repository completion.

@@ -1,6 +1,9 @@
 # Spec: FITWAY v1 — Live Gym Occupancy (Pilot)
 
-> **Status.** Implementation spec / Definition of Done for the v1 pilot. Written 2026-07-12.
+> **Status.** Implemented v1 pilot specification / Definition of Done. Written 2026-07-12;
+> repository implementation closed 2026-08-31. All aggregate phases 1–12 and the
+> `repository-closeout` milestone are `DONE` in `PROJECT_STATE.yaml`. The accepted canonical
+> project-wide verification is recorded in `docs/phase-records/repository-closeout.md`.
 > This document turns the agreed product and design into implementable, verifiable
 > requirements. It participates in the repository hierarchy defined by `AGENTS.md`:
 >
@@ -26,9 +29,8 @@
 
 ## Implementation authority and fidelity contract
 
-Phases 1–3 are complete. Broad visual exploration is closed; the one-time Baseline
-Reconciliation Gate and Phases 4–12 use the live state in `PROJECT_STATE.yaml`. The following contract applies to
-every remaining implementation phase:
+Broad visual exploration and repository implementation are closed. The following contract governed
+the implementation phases and remains the conformance boundary for maintenance or later changes:
 
 - Hard product, security, privacy, content, accessibility, and data-semantic decisions remain
   binding. A material proposal to change one must be surfaced explicitly before implementation;
@@ -41,8 +43,8 @@ every remaining implementation phase:
 - Design-only annotations, preview labels, demo notices, fake owner/email values, arbitrary
   identities, fixture data, and other mockup-only content must not ship.
 - Staff authentication is PIN-based using the signed HttpOnly session model, not
-  email/password. The current scaffold login implementation and the archive's fake email form
-  are implementation inputs to replace, not product authority.
+  email/password. The removed scaffold login and the archive's fake email form are historical
+  implementation inputs, not product authority.
 - Preserve the capacity-free public schema-version-2 contract and the approved Arabic Public
   Live composition with its continuous cumulative 28-bar crowd signal.
   English LTR must be naturally composed rather than mechanically mirrored from Arabic.
@@ -63,11 +65,12 @@ Nothing answers that today. The gym owner has no operational view of occupancy p
 needs the system to run unattended in someone else's building and to hear about failures
 from an alert, not from the owner.
 
-The repository now implements the accepted Phase 1–3 public vertical slice: the static
-TanStack Router web app, Hono/oRPC server boundary, Drizzle/Postgres occupancy path, Python
-simulator, cached public states, and schedule-aware open/closed behavior. Staff, owner,
-command/audit, fallback/backfill, cron/alerts, analytics/reporting, and production edge
-lifecycle work remain unfinished.
+The repository implements the complete accepted v1 system: the static TanStack Router web app,
+Hono/oRPC server boundary, Drizzle/Postgres occupancy path, cached public states, schedule-aware
+open/closed behavior, PIN/session authentication, staff monitoring, owner analytics/reporting and
+governance, command/audit infrastructure, offline backfill and reconciliation, scheduled reset,
+health alerts and retention, and the durable Python/Windows edge lifecycle. Camera/CV integration,
+site commissioning, production provisioning, and deployment remain outside repository completion.
 
 ## Solution
 
@@ -337,17 +340,18 @@ just data, not a special case.
 - **Occupancy minutes** — one row per device-minute: UTC minute bucket, business day
   (local date), count (≥ 0), entries, exits, band, capacity snapshot, settings version
   reference, source (`live` | `backfill` | `manual`). Upserted by (device, minute) so
-  backfill is idempotent. Retained indefinitely.
+  backfill is idempotent. Retained indefinitely. `manual` remains a compatibility enum value,
+  not an authorized production source.
 - **Current state** — a single-row table: current count, band, source (`edge` | `manual`),
   last push received at, last edge-reported counter time, active device. This is what the
-  public payload builder reads; it is only advanced by live pushes and, if Phase 6 keeps an
-  internal producer of `source=manual` under ADR-008, by that path — never by backfill. The
-  enum is retained unchanged pending that review.
+  public payload builder reads; it is advanced only by accepted live pushes, never by backfill.
+  The Phase 6 ADR-008 review found no authorized production `source=manual` producer; the enum
+  remains for compatibility without authorizing a manual fallback.
 - **Settings versions** — append-only: capacity, band thresholds (% boundaries for
   Quiet/Moderate/Busy/Packed), weekly hours, business-day boundary, reset buffer minutes,
   timezone, freshness windows (push interval, fresh ≤ 90 s, stale ≥ 180 s, public poll
-  ~60 s, manual-fallback validity), created-by, effective-from. Current settings = latest
-  row; historical rows keep old analytics honest (RESEARCH.md §8).
+  ~60 s), created-by, effective-from. Current settings = latest row; historical rows keep
+  old analytics honest (RESEARCH.md §8).
 - **Edge devices** — id, name, hashed device token, enabled flag, last-seen, last
   processed sequence number. One device in v1; the table exists so tokens are rotatable
   and a second camera later is additive.
@@ -413,10 +417,10 @@ the primary control; note the serverless multi-instance caveat in code.
 - `/login` is the PIN-first staff route. Better Auth may remain behind a separate,
   deliberately provisioned owner credential path, but email/password is never the staff
   flow and self-registration is disabled server-side. Direct sign-up calls must be rejected.
-- The current scaffold is explicitly non-conforming: it enables email/password and sign-up,
-  uses `SameSite=None`, relies on the default short session lifetime, and renders an email/
-  password staff form. The `phase4-auth` stream must replace those assumptions and tests;
-  no staff UI or Phase 4 merge may bind to them in the meantime.
+- The pre-v1 scaffold was explicitly non-conforming: it enabled email/password and sign-up,
+  used `SameSite=None`, relied on the default short session lifetime, and rendered an email/
+  password staff form. Phase 4 replaced those assumptions and tests; the historical scaffold
+  remains non-authoritative.
 
 **Phase 4 operational-health contract freeze (2026-07-14).** The required edge input fields
 remain `health.process`, `health.camera`, `health.feed` (`ok | degraded | failed | unknown`)
@@ -572,11 +576,10 @@ and immediately set the current-state row with source `manual` — is withdrawn 
 surface that would have triggered it. When the system is `stale`/`unavailable` the public
 page shows the honest stale or unavailable state; nothing substitutes a human-entered
 number for it. Automatic offline handling, buffered backfill, reconnect ordering, and
-reconciliation remain Phase 6 scope, and pending commands still apply before live
-authority resumes. Whether any internal producer of `source=manual` and the longer
-manual-validity staleness window (default 30 min, configurable) survives is the Phase 6
-review item recorded in `PHASES.md`; the enum value and the settings field are retained
-until then.
+reconciliation were completed in Phase 6, and pending commands still apply before live
+authority resumes. The accepted Phase 6 ADR-008 review found no authorized production
+`source=manual` producer. Compatibility enum/read surfaces remain without authorizing a fallback,
+migration, manual-validity setting, or new command surface.
 
 **Daily zero-reset.** The cron evaluates the per-weekday schedule in gym-local time and,
 at close + buffer (default buffer 30 min, configurable), issues a system `reset_zero`
@@ -681,15 +684,15 @@ Deep modules with small interfaces; counting/state rules live in exactly one pla
 
 ## Testing Decisions
 
-The repository has unit, component, API, Python simulator, browser, and disposable-Postgres
-integration suites for Phases 1–3. Continue using Vitest for TypeScript unit/integration tests,
-the repository Playwright suite for repeatable browser checks, and the disposable local
-Postgres contract for database integration tests.
+The repository has unit, component, API, durable-Python/simulator, browser, accessibility, visual,
+and disposable-Postgres integration suites across v1. Continue using Vitest for TypeScript
+unit/integration tests, the repository Playwright suite for repeatable browser checks, and the
+disposable local Postgres contract for database integration tests. The accepted final full-ladder
+result is recorded in `docs/phase-records/repository-closeout.md`.
 
 - **Unit (highest density):** schedule & business-day module (Friday hours, past-midnight
   close, boundary attribution, reset-due, next-open); band computation and threshold
-  edges; freshness state machine (manual-fallback validity only if Phase 6 keeps an
-  internal producer of `source=manual`, per ADR-008); command
+  edges; freshness state machine and retained compatibility enum/read behavior; command
   supersession/ordering; payload builder outputs for every state; settings validation.
 - **Integration (API-level, real Postgres):** push → current state → public payload
   round trip; sequence idempotency and backfill-does-not-move-current; command lifecycle
@@ -740,7 +743,7 @@ spec:
 
 ## Open Questions
 
-None block implementation; all are external gates or deploy-time choices:
+None block repository completion; all are external gates or deploy-time choices:
 
 - Real capacity and band thresholds — measured on site; admin-configurable regardless.
 - Site-check gates (RESEARCH.md §18): camera/RTSP access, exit-path geometry, edge PC
@@ -748,14 +751,14 @@ None block implementation; all are external gates or deploy-time choices:
 - Owner sign-off items: transparency notice wording, remote maintenance/calibration
   acknowledgment, maintenance scope.
 - Domain / final URL host (paths are fixed by this spec; the host is not).
-- Chart library selection — constrained by DESIGN_GUIDE §12 (RTL mirroring, token colors,
-  accessible fallbacks); pick during implementation.
-- i18n library vs. typed in-repo message catalogs — behavior is fully specced; the
-  mechanism is an implementation choice.
 - Vercel plan's cron cadence and Supabase tier/pausing/backups/pooling — pre-deploy
   verification (RESEARCH.md §11).
 - Pilot target values — adopted provisionally above; confirm with the owner at pilot
   kickoff and record any adjustment in this file.
+
+Repository implementation resolved the two formerly open mechanism choices without changing the
+product contract: charts are purpose-built accessible React/SVG/semantic-table components, and
+localization uses typed in-repository Arabic/English message catalogs.
 
 ## Further Notes
 
