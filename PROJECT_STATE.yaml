@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-31T05:50:34Z"
+updatedAt: "2026-08-31T18:04:17Z"
 
 coordinator:
-  owner: "Coordinator final authority. Phase 11 Settings is integrated and DONE through bounded successor p11_settings_r02 at verified coordinator commit 0104f1241bb61e8a1eccb289ca8fce7ed5fbfd02. Terminal p11_settings_b01 and p11_settings_r01 candidates, their exhausted 2/2 histories, and r02's own 2/2 repair history remain immutable. The accepted Settings specification r01 and Paper area 1FKS-0 remain binding; no deploy or push occurred."
+  owner: "Coordinator final authority. FITWAY v1 is formally repository-closed by the repository-closeout milestone on canonical main. All aggregate phases 1-12 are DONE, the accepted coordinator state is canonical, the final project-wide verification passed, and no product implementation remains. Historical terminal attempts remain immutable. Branch/worktree cleanup, demo preparation, presentation-only documentation, GitHub push, deployment, and external go-live gates were not performed."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -2369,3 +2369,46 @@ milestones:
       visual: NOT_REQUIRED
       independentReview: PASS
     integratedCommit: 05ad2c4eebda6ea5c873db8770bdb9162821f3ac
+
+  repository-closeout:
+    status: DONE
+    dependencies:
+      [
+        phase-1,
+        phase-2,
+        phase-3,
+        phase-4,
+        phase-5,
+        phase-6,
+        phase-7,
+        phase-8,
+        phase-9,
+        phase-10,
+        phase-11,
+        phase-12,
+      ]
+    ownerSession: null
+    branch: main
+    worktree: null
+    baseCommit: b46f496ac2f217278d2706be02a8061bb199403d
+    ownedPaths:
+      - PROJECT_STATE.yaml
+      - docs/phase-records/repository-closeout.md
+    forbiddenPaths:
+      - all product, schema, migration, runtime, test, canonical screenshot, Paper, and normative authority files
+      - historical terminal attempt records and their preserved branches/worktrees
+      - demo data/tooling, presentation-only documentation, deployment, and external systems
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: docs/phase-records/repository-closeout.md
+    stopReason: null
+    gates:
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
+      independentReview: PASS
+    integratedCommit: SELF
