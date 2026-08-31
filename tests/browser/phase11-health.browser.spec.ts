@@ -797,6 +797,12 @@ function collectMobileBoard(table: Element) {
 				? `.${element.className.split(" ").join(".")}`
 				: ""
 		}`;
+	const rgbKey = (value: string) => {
+		const match = /rgba?\(([^)]+)\)/.exec(value);
+		if (!match) return value;
+		const parts = match[1].split(",").map((part) => Number.parseFloat(part));
+		return `${parts[0] ?? 0},${parts[1] ?? 0},${parts[2] ?? 0}`;
+	};
 
 	if (region.scrollWidth > region.clientWidth + 1) {
 		violations.push("region: horizontal overflow");
@@ -853,11 +859,11 @@ function collectMobileBoard(table: Element) {
 		}
 		// Opacity is not inherited but composites multiplicatively down the tree,
 		// so a near-transparent ancestor hides the text without touching its own
-		// computed value. Walk the ancestor chain for the effective product.
+		// computed value. Walk the full ancestor chain for the effective product.
 		let effectiveOpacity = 1;
 		for (
 			let ancestor: Element | null = element;
-			ancestor && region.contains(ancestor);
+			ancestor;
 			ancestor = ancestor.parentElement
 		) {
 			effectiveOpacity *= Number.parseFloat(style(ancestor).opacity) || 1;
@@ -867,6 +873,28 @@ function collectMobileBoard(table: Element) {
 				);
 				break;
 			}
+		}
+		// A clip-path hides glyphs while keeping the box intact and hit-testable.
+		for (
+			let clipped: Element | null = element;
+			clipped && region.contains(clipped);
+			clipped = clipped.parentElement
+		) {
+			if (style(clipped).clipPath !== "none") {
+				violations.push(`${where}: value clipped via clip-path`);
+				break;
+			}
+		}
+		// Camouflage: text painted in the card's own background color is invisible
+		// even though every visibility, opacity, and paint probe above passes.
+		const cardBackground =
+			alphaOf(style(container).backgroundColor) >= 0.5
+				? style(container).backgroundColor
+				: null;
+		if (cardBackground && rgbKey(cardBackground) === rgbKey(valueStyle.color)) {
+			violations.push(
+				`${where}: value text color indistinguishable from the card background`,
+			);
 		}
 
 		const cardRect = container.getBoundingClientRect();
@@ -911,6 +939,40 @@ function collectMobileBoard(table: Element) {
 		if (painted === 0) {
 			violations.push(`${where}: value text never painted on top`);
 		}
+		// elementFromPoint skips pointer-events:none boxes by specification, so a
+		// hit-test pass alone cannot see an opaque overlay that mutes its own hit
+		// testing. Enumerate real elements and pseudo-elements whose boxes cover
+		// the text center and paint an opaque pixel there, regardless of
+		// pointer-events or pseudo content.
+		for (const other of region.querySelectorAll("*")) {
+			if (
+				other === element ||
+				element.contains(other) ||
+				other.contains(element)
+			) {
+				continue;
+			}
+			const otherRect = other.getBoundingClientRect();
+			if (
+				otherRect.right <= cx ||
+				otherRect.left >= cx ||
+				otherRect.bottom <= cy ||
+				otherRect.top >= cy
+			) {
+				continue;
+			}
+			const otherStyle = style(other);
+			// Only an opaque background or background image can paint over the text
+			// centre; outset box-shadows are handled board-wide below.
+			const paintsOver =
+				alphaOf(otherStyle.backgroundColor) >= 0.5 ||
+				otherStyle.backgroundImage !== "none";
+			if (paintsOver) {
+				violations.push(
+					`${where}: opaque element ${describe(other)} covers the text centre`,
+				);
+			}
+		}
 	};
 
 	function styleWithPseudo(element: Element, pseudo: string) {
@@ -921,8 +983,8 @@ function collectMobileBoard(table: Element) {
 		for (const host of region.querySelectorAll("*")) {
 			for (const pseudo of ["::before", "::after"] as const) {
 				const pseudoStyle = styleWithPseudo(host, pseudo);
-				const content = pseudoStyle.content;
-				if (!content || content === "none" || content === '""') continue;
+				// An empty-content pseudo still paints its background, so content is
+				// not a skip condition: only a transparent (or absent) background is.
 				if (alphaOf(pseudoStyle.backgroundColor) < 0.5) continue;
 				const hostRect = host.getBoundingClientRect();
 				const overlaps =
@@ -938,7 +1000,6 @@ function collectMobileBoard(table: Element) {
 			}
 		}
 	};
-	void checkPseudoOverlays;
 
 	const header = table.previousElementSibling;
 
@@ -967,10 +1028,41 @@ function collectMobileBoard(table: Element) {
 				checkValue(node, where, card);
 			}
 			checkPseudoOverlays(where, cell.getBoundingClientRect());
+			// A cell stretched by a fixed grid height stretches its own boxes with
+			// it, so boxes cannot prove natural sizing. The text cannot stretch:
+			// compare the cell box against the rendered height of its label/value
+			// TEXT plus the cell's own padding.
+			const cellRect = cell.getBoundingClientRect();
+			const cellStyle = style(cell);
+			const textHeight = (node: Node) => {
+				const range = doc.createRange();
+				range.selectNodeContents(node);
+				return range.getBoundingClientRect().height;
+			};
+			const kidTextHeights = Array.from(cell.childNodes).map((child) =>
+				textHeight(child),
+			);
+			const cellNatural =
+				(Number.parseFloat(cellStyle.paddingTop) || 0) +
+				(Number.parseFloat(cellStyle.paddingBottom) || 0) +
+				Math.max(0, ...kidTextHeights);
+			if (cellRect.height > cellNatural + 6) {
+				violations.push(
+					`${where}: stretched cell (${cellRect.height.toFixed(0)}px vs natural ${cellNatural.toFixed(0)}px)`,
+				);
+			}
 		}
 		// The card must be as tall as its content: a fixed stylesheet height that
 		// stretches the grid must fail even though every paint check above passes.
+		// A card short enough to clip also fails here, even though the value-level
+		// scrollIntoView can programmatically reveal content inside an
+		// overflow:hidden box.
 		const cardRect = card.getBoundingClientRect();
+		if (card.scrollHeight > card.clientHeight + 1) {
+			violations.push(
+				`row ${cardIndex + 1}: card content clipped (scrollHeight ${card.scrollHeight} > clientHeight ${card.clientHeight})`,
+			);
+		}
 		const cardStyle = style(card);
 		const gap = Number.parseFloat(cardStyle.rowGap) || 0;
 		const padTop = Number.parseFloat(cardStyle.paddingTop) || 0;
@@ -995,6 +1087,20 @@ function collectMobileBoard(table: Element) {
 		checkValue(countLane, "board count", header);
 	} else {
 		violations.push("board count lane missing");
+	}
+
+	// An outset box-shadow paints outside its box and can cover record content
+	// anywhere on the board; the accepted accents are inset and stay excluded.
+	for (const element of region.querySelectorAll("*")) {
+		const elementStyle = style(element);
+		if (
+			elementStyle.boxShadow !== "none" &&
+			!elementStyle.boxShadow.includes("inset")
+		) {
+			violations.push(
+				`outset box-shadow on ${describe(element)} can paint over record content`,
+			);
+		}
 	}
 
 	// The collection lane is also content-sized: a fixed height there stretches
@@ -1294,9 +1400,11 @@ test("the mobile contract rejects every false-pass fault injection", async ({
 	await mockOwnerSurfaces(page);
 
 	/**
-	 * Each fault re-navigates from a clean load, applies exactly one fault, and
-	 * requires the contract collector to reject the board. The accepted
-	 * border-only tr::before runs through every fault untouched: the positive
+	 * Each fault re-navigates from a clean load at a true mobile viewport, proves
+	 * the baseline contract clean, applies exactly one fault, and requires the
+	 * collector to reject the board — a fault that passes on an already-violated
+	 * or desktop-rendered board proves nothing. The accepted border-only
+	 * tr::before runs through every baseline and fault untouched: the positive
 	 * collector above passes with it, so decorative borders never reject.
 	 */
 	const expectFaultRejected = async (
@@ -1305,8 +1413,19 @@ test("the mobile contract rejects every false-pass fault injection", async ({
 		table: string,
 		oracle: MobileBoardOracle = mobileOracle.en.offline,
 	) => {
+		await page.setViewportSize({ width: 390, height: 844 });
 		await page.goto("/admin");
 		await expect(page.locator(offlineTable)).toBeVisible();
+		const baseline = await collectBoardViolations(
+			page,
+			table,
+			oracle,
+			`fault ${name} baseline`,
+		);
+		expect(
+			baseline,
+			`fault "${name}" baseline must be clean before injecting`,
+		).toEqual([]);
 		await fault();
 		const violations = await collectBoardViolations(
 			page,
@@ -1362,25 +1481,28 @@ test("the mobile contract rejects every false-pass fault injection", async ({
 		inject(`${offlineTable} tbody { block-size: 2000px !important; }`),
 		offlineTable,
 	);
+	const injectCoverOverlay = (pointerEvents: "auto" | "none") => async () => {
+		// The overlay lives inside the value's own cell, so it covers the text
+		// wherever the contract's own scrolling places the card.
+		await page.evaluate((pointerEvents) => {
+			const td = document.querySelector(
+				"[data-owner-health-offline-table] tbody tr:first-child td:first-child",
+			);
+			if (!(td instanceof HTMLElement)) return;
+			td.style.position = "relative";
+			const overlay = document.createElement("div");
+			overlay.style.position = "absolute";
+			overlay.style.inset = "0";
+			overlay.style.background = "rgb(20, 16, 20)";
+			overlay.style.zIndex = "50";
+			overlay.style.pointerEvents = pointerEvents;
+			td.append(overlay);
+		}, pointerEvents);
+	};
+
 	await expectFaultRejected(
 		"opaque overlay covers text",
-		async () => {
-			const box = await page.locator(firstValue).boundingBox();
-			await page.evaluate(
-				({ x, y }) => {
-					const overlay = document.createElement("div");
-					overlay.style.position = "fixed";
-					overlay.style.left = `${x}px`;
-					overlay.style.top = `${y}px`;
-					overlay.style.width = "60px";
-					overlay.style.height = "24px";
-					overlay.style.background = "rgb(20, 16, 20)";
-					overlay.style.zIndex = "9999";
-					document.body.append(overlay);
-				},
-				{ x: box?.x ?? 0, y: box?.y ?? 0 },
-			);
-		},
+		injectCoverOverlay("auto"),
 		offlineTable,
 	);
 	await expectFaultRejected(
@@ -1392,24 +1514,24 @@ test("the mobile contract rejects every false-pass fault injection", async ({
 	);
 	await expectFaultRejected(
 		"pointer-events none overlay covers text",
-		async () => {
-			const box = await page.locator(firstValue).boundingBox();
-			await page.evaluate(
-				({ x, y }) => {
-					const overlay = document.createElement("div");
-					overlay.style.position = "fixed";
-					overlay.style.left = `${x}px`;
-					overlay.style.top = `${y}px`;
-					overlay.style.width = "60px";
-					overlay.style.height = "24px";
-					overlay.style.background = "rgb(20, 16, 20)";
-					overlay.style.pointerEvents = "none";
-					overlay.style.zIndex = "9999";
-					document.body.append(overlay);
-				},
-				{ x: box?.x ?? 0, y: box?.y ?? 0 },
-			);
-		},
+		injectCoverOverlay("none"),
+		offlineTable,
+	);
+	await expectFaultRejected(
+		"text camouflaged as the card background",
+		inject(`${firstValue} { color: rgb(23, 23, 27) !important; }`),
+		offlineTable,
+	);
+	await expectFaultRejected(
+		"value clipped via clip-path",
+		inject(`${firstValue} { clip-path: inset(50%) !important; }`),
+		offlineTable,
+	);
+	await expectFaultRejected(
+		"outset box-shadow paints over content",
+		inject(
+			`${offlineTable} tbody tr td:nth-child(2) { box-shadow: 0 0 0 300px rgb(20, 16, 20) !important; }`,
+		),
 		offlineTable,
 	);
 	await expectFaultRejected(
