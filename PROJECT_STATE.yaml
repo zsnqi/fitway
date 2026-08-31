@@ -2179,11 +2179,10 @@ milestones:
   phase11-uptime-mobile-fidelity-r01:
     status: IN_PROGRESS
     dependencies: [phase11-health, phase11-uptime-paper-successor]
-    ownerSession: glm-phase11-r01
+    ownerSession: sol-phase11-final
     branch: codex/phase11-uptime-mobile-fidelity-r01
     worktree: D:/Projects/fitway-worktrees/phase11-uptime-r01
     baseCommit: f70b113fbff1c2657dfcb9820678146c044ca15a
-    runId: p11_uptime_r01
     ownedPaths:
       - apps/web/src/components/owner/health/owner-health-view.tsx
       - apps/web/src/components/owner/health/owner-health.css
@@ -2200,10 +2199,10 @@ milestones:
       - "every canonical screenshot outside this milestone's own subtree; inside it, only owner-health-en-mobile-390x844.png may be replaced under the recorded mobile-fidelity human authority and owner-health-ar-desktop-1440x900.png must stay byte-identical"
       - "root manifests, lockfiles, test configuration, generated routing, deployment, external databases, and production systems"
     sharedLeases: []
-    validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-31T09:40:12+03:00"
-    leaseExpiresAt: null
-    handoff: null
+    validationRepairAttempts: 1
+    lastHeartbeatAt: "2026-08-31T17:26:21+03:00"
+    leaseExpiresAt: "2026-09-01T01:26:21+03:00"
+    handoff: docs/phase-records/handoffs/coordinator/20260831-phase11-glm-takeover-handoff.md
     stopReason: null
     gates:
       unit: PENDING
@@ -2217,11 +2216,10 @@ milestones:
   login-paper-adoption-r01:
     status: IN_PROGRESS
     dependencies: [phase4-staff-web, focus-parity-accessibility]
-    ownerSession: glm-phase11-r01
+    ownerSession: sol-phase11-final
     branch: codex/login-paper-adoption-r01
     worktree: D:/Projects/fitway-worktrees/login-paper-adoption-r01
     baseCommit: f70b113fbff1c2657dfcb9820678146c044ca15a
-    runId: login_paper_r01
     ownedPaths:
       - apps/web/src/components/login/login-chrome.tsx
       - apps/web/src/components/login/login.css
@@ -2242,10 +2240,10 @@ milestones:
       - "regenerating the two idle Login canonical PNGs; they must return byte-identical"
       - "root manifests, lockfiles, environment schemas, and test-runner configuration"
     sharedLeases: []
-    validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-08-31T09:40:12+03:00"
-    leaseExpiresAt: null
-    handoff: null
+    validationRepairAttempts: 1
+    lastHeartbeatAt: "2026-08-31T17:26:21+03:00"
+    leaseExpiresAt: "2026-09-01T01:26:21+03:00"
+    handoff: docs/phase-records/handoffs/coordinator/20260831-phase11-glm-takeover-handoff.md
     stopReason: null
     gates:
       unit: PENDING
