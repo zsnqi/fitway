@@ -314,6 +314,17 @@ test("enabled submit hover reaches WCAG AA contrast in both locales", async ({
 		const submit = page.locator(".login-panel__submit");
 		await expect(submit).toBeEnabled();
 		await submit.hover();
+		// Pin the exact exception color first so the contrast poll cannot pass
+		// with hover unapplied (the resting red already clears 4.5:1).
+		await expect
+			.poll(
+				() =>
+					page
+						.locator(".login-panel__submit")
+						.evaluate((element) => getComputedStyle(element).backgroundColor),
+				`${locale} hover background`,
+			)
+			.toBe("rgb(196, 20, 48)");
 		await expect
 			.poll(measureHoverContrast, `${locale} hover contrast`)
 			.toBeGreaterThanOrEqual(4.5);

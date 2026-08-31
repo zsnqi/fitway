@@ -357,8 +357,9 @@
 	transition: background-color var(--fw-duration-fast) var(--fw-ease-out);
 }
 
-/* Accessibility exception over Paper I4: the approved hover #FF2946 renders at
-   4.35:1 with white text, so the enabled hover uses #c41430 (about 6:1) instead.
+/* Accessibility exception over Paper I4: the approved hover #FF2946 renders
+   about 3.7:1 with white text (historical rendered variant 4.35:1), below the
+   binding WCAG AA 4.5:1, so the enabled hover uses #c41430 (about 6:1) instead.
    This is repository-local; the global --fw-red-bright token stays untouched. */
 .login-panel__submit:hover:not(:disabled) {
 	background: #c41430;
