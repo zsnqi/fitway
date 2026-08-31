@@ -2177,7 +2177,7 @@ milestones:
     integratedCommit: null
 
   phase11-uptime-mobile-fidelity-r01:
-    status: VALIDATING
+    status: READY_FOR_INTEGRATION
     dependencies: [phase11-health, phase11-uptime-paper-successor]
     ownerSession: sol-phase11-final
     branch: codex/phase11-uptime-mobile-fidelity-r01
@@ -2200,17 +2200,17 @@ milestones:
       - "root manifests, lockfiles, test configuration, generated routing, deployment, external databases, and production systems"
     sharedLeases: []
     validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-31T17:37:22+03:00"
+    lastHeartbeatAt: "2026-08-31T17:49:56+03:00"
     leaseExpiresAt: "2026-09-01T01:26:21+03:00"
-    handoff: docs/phase-records/handoffs/coordinator/20260831-phase11-glm-takeover-handoff.md
+    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260831-174956-p11_uptime_r01-repair2-independent-verification-v01.md
     stopReason: null
     gates:
-      unit: PENDING
-      integration: PENDING
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
-      independentReview: PENDING
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
+      independentReview: PASS
     integratedCommit: null
 
   login-paper-adoption-r01:
