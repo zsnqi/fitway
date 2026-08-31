@@ -2177,7 +2177,7 @@ milestones:
     integratedCommit: null
 
   phase11-uptime-mobile-fidelity-r01:
-    status: IN_PROGRESS
+    status: VALIDATING
     dependencies: [phase11-health, phase11-uptime-paper-successor]
     ownerSession: sol-phase11-final
     branch: codex/phase11-uptime-mobile-fidelity-r01
@@ -2199,8 +2199,8 @@ milestones:
       - "every canonical screenshot outside this milestone's own subtree; inside it, only owner-health-en-mobile-390x844.png may be replaced under the recorded mobile-fidelity human authority and owner-health-ar-desktop-1440x900.png must stay byte-identical"
       - "root manifests, lockfiles, test configuration, generated routing, deployment, external databases, and production systems"
     sharedLeases: []
-    validationRepairAttempts: 1
-    lastHeartbeatAt: "2026-08-31T17:26:21+03:00"
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-08-31T17:37:22+03:00"
     leaseExpiresAt: "2026-09-01T01:26:21+03:00"
     handoff: docs/phase-records/handoffs/coordinator/20260831-phase11-glm-takeover-handoff.md
     stopReason: null
@@ -2214,7 +2214,7 @@ milestones:
     integratedCommit: null
 
   login-paper-adoption-r01:
-    status: IN_PROGRESS
+    status: READY_FOR_INTEGRATION
     dependencies: [phase4-staff-web, focus-parity-accessibility]
     ownerSession: sol-phase11-final
     branch: codex/login-paper-adoption-r01
@@ -2241,17 +2241,17 @@ milestones:
       - "root manifests, lockfiles, environment schemas, and test-runner configuration"
     sharedLeases: []
     validationRepairAttempts: 1
-    lastHeartbeatAt: "2026-08-31T17:26:21+03:00"
+    lastHeartbeatAt: "2026-08-31T17:37:22+03:00"
     leaseExpiresAt: "2026-09-01T01:26:21+03:00"
-    handoff: docs/phase-records/handoffs/coordinator/20260831-phase11-glm-takeover-handoff.md
+    handoff: docs/phase-records/handoffs/login-paper-adoption/20260831-173722-login_paper_r01-final-delta-verification-v02.md
     stopReason: null
     gates:
-      unit: PENDING
-      integration: PENDING
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
-      independentReview: PENDING
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
+      independentReview: PASS
     integratedCommit: null
 
   phase-11:
