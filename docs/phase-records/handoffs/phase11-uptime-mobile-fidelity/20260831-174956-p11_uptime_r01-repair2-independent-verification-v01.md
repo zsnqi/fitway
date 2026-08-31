@@ -42,4 +42,3 @@ space-free disposable root `D:/Projects/fitway-sim-temp/p11_uptime_r2_v01`.
 The writer's exact-candidate `pnpm verify:fast` PASS (565 unit tests, 117 simulator tests,
 mutation guard clean) remains the self-verification gate and was not unnecessarily repeated by
 this delta verifier. No blocking delta gap remains; the successor is READY_FOR_INTEGRATION.
-

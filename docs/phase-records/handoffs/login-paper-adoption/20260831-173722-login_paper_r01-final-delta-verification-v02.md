@@ -32,4 +32,3 @@ The existing frozen-install shims were intact, but plain `pnpm exec` did not inj
 `node_modules/.bin` on this host path. The verifier confirmed Vitest 4.1.10 and Playwright 1.61.1
 with a process-local PATH addition; the repository browser script itself ran normally. No tracked
 file or production environment changed.
-
