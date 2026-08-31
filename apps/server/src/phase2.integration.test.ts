@@ -1002,6 +1002,45 @@ describe("Phase 2 real Postgres vertical slice", () => {
 				}
 				return remainingMs;
 			};
+			const observeFreshCountWait = async (
+				assertion: string,
+				sample: W1SimulatorSample,
+				freshnessText: string,
+			) =>
+				observeCountWait(
+					assertion,
+					sample.currentCount,
+					page
+						.waitForFunction(
+							({ expectedCount, expectedFreshness }) => {
+								const browserDocument = (
+									globalThis as unknown as {
+										document: {
+											querySelector: (selector: string) => {
+												textContent: string | null;
+											} | null;
+										};
+									}
+								).document;
+								const count = browserDocument.querySelector(
+									".public-live__count-value",
+								);
+								const freshness = browserDocument.querySelector(
+									".public-live__freshness--mobile .public-live__freshness-primary",
+								);
+								return (
+									count?.textContent?.trim() === expectedCount &&
+									freshness?.textContent?.trim() === expectedFreshness
+								);
+							},
+							{
+								expectedCount: String(sample.currentCount),
+								expectedFreshness: freshnessText,
+							},
+							{ timeout: countWaitTimeoutMs(sample, assertion) },
+						)
+						.then(() => undefined),
+				);
 			await page
 				.getByText("التحديث المباشر غير متاح الآن")
 				.waitFor({ timeout: 5_000 });
@@ -1386,25 +1425,17 @@ describe("Phase 2 real Postgres vertical slice", () => {
 				.getByText("Last known approximate count", { exact: true })
 				.waitFor({ timeout: 5_000 });
 			const recoveredCount = await runSimulator(43);
-			await observeCountWait(
-				"recovered-count",
-				recoveredCount.currentCount,
-				page
-					.locator(".public-live__count-value")
-					.getByText(String(recoveredCount.currentCount), { exact: true })
-					.waitFor({
-						timeout: countWaitTimeoutMs(recoveredCount, "recovered-count"),
-					}),
+			await observeFreshCountWait(
+				"recovered-fresh-count-en",
+				recoveredCount,
+				"Live update",
 			);
-			await page
-				.locator(".public-live__freshness--mobile")
-				.getByText("Live update", { exact: true })
-				.waitFor({ timeout: 5_000 });
 			await page.getByRole("button", { name: /Arabic/u }).click();
-			await page
-				.locator(".public-live__freshness--mobile")
-				.getByText("تحديث مباشر", { exact: true })
-				.waitFor({ timeout: 5_000 });
+			await observeFreshCountWait(
+				"recovered-fresh-count-ar",
+				recoveredCount,
+				"تحديث مباشر",
+			);
 		} catch (failure) {
 			diagnostics.emit();
 			throw failure;
