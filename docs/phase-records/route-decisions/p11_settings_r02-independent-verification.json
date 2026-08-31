@@ -1,0 +1,81 @@
+{
+	"schema": "route-decision/1",
+	"project": "FITWAY",
+	"stage_ref": "p11_settings_r02_independent_verification",
+	"recorded": "2026-08-31T08:33:00+03:00",
+	"evaluated_before_stage_discovery": true,
+	"candidate_id": "native-review-triad",
+	"route": "native",
+	"control": "high",
+	"transport": "codex-native",
+	"selection_status": "completed on frozen candidate 486838451bd0d988530d55d9652367374061b18f",
+	"gate_outcome": "PASS",
+	"delegation_evaluation": {
+		"basis": "Frozen r02 candidate, preserved b01/r01 failure history, accepted Settings specification, Paper authority, and completed self phase/fast/full evidence.",
+		"triggers": [
+			"independence",
+			"broad reading",
+			"test execution",
+			"visual and accessibility review"
+		],
+		"decision": "Use three fresh read-only native agents with disjoint executable, code, and UI/Paper verdicts. The coordinator retains terminal and integration authority."
+	},
+	"native_spawns": [
+		{
+			"agent_role": "tester",
+			"scope": "registered Phase 11 Settings executable verification",
+			"write_authority": "ignored run-scoped outputs and uniquely named disposable database only",
+			"outcome": "PASS"
+		},
+		{
+			"agent_role": "reviewer",
+			"scope": "full implementation and r02 delta correctness/security review",
+			"write_authority": "none",
+			"outcome": "PASS"
+		},
+		{
+			"agent_role": "ui_reviewer",
+			"scope": "Paper fidelity, responsive behavior, and accessibility review",
+			"write_authority": "none",
+			"outcome": "PASS"
+		}
+	],
+	"covered_modalities": ["text", "image", "browser"],
+	"covered_tools": [
+		"repository_read",
+		"test_execution",
+		"browser",
+		"Paper_read",
+		"image_inspection"
+	],
+	"covered_capabilities": [
+		"independent executable verification",
+		"correctness and regression review",
+		"authorization and data-semantics review",
+		"Paper fidelity",
+		"responsive and accessibility review"
+	],
+	"durable_authorization_records": [
+		"docs/phase-records/handoffs/phase11-settings/20260831-024459-p11_settings_r02-successor-activation.md",
+		"docs/phase-records/handoffs/phase11-settings/20260831-024754-p11_settings_r02-repair-2-activation.md"
+	],
+	"material_selection_reason": "The third attempt follows two terminal false-green histories. Independent executable, semantic/security, and Paper/accessibility judgments materially reduce correlated review risk without giving any reviewer repair or acceptance authority.",
+	"consequence": "All fresh verdicts passed. The coordinator may integrate the frozen implementation chain and records, then must run the registered full post-integration ladder before declaring DONE.",
+	"execution_identity": {
+		"candidate_branch": "codex/phase11-settings-b01",
+		"candidate_worktree": "D:/Projects/fitway-worktrees/phase11-settings-b01",
+		"candidate_base": "74f6f69cc3116e3b93e858600e9d94bfba4594b0",
+		"candidate_head": "486838451bd0d988530d55d9652367374061b18f",
+		"fresh_run_id": "p11_settings_v04",
+		"fresh_database": "fitway_integration_p11_settings_v04",
+		"rollback_boundary": "none; all independent work was read-only apart from ignored run outputs and the exact disposable database"
+	},
+	"observed_evidence": {
+		"fresh_phase": "56 milestones / 8 screenshots; Biome 488; types; 565 unit; 117 simulator; 11 Settings integration; 61 browser; mutation guard PASS",
+		"fresh_code_review": "PASS with no finding",
+		"fresh_ui_paper_review": "PASS with no finding; accepted Paper file, area, token hash, and four frames reconfirmed",
+		"settings_focused_browser": "16/16 including invalid DOM token and forced-colors outline assertions",
+		"coverage_gap": "No new live screen-reader session; repeatable semantic, keyboard, Axe, forced-colors, reflow, LTR/RTL, and responsive checks passed",
+		"artifact_hygiene": "No secret value was printed or written to durable records; candidate HEAD and tracked status were unchanged"
+	}
+}
