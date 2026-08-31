@@ -1,8 +1,12 @@
 # Login Paper adoption r01 — candidate record
 
-- Status: VALIDATING (implementation complete, independent verification in progress)
+- Status: READY_FOR_INTEGRATION
 - Base commit: f70b113fbff1c2657dfcb9820678146c044ca15a (codex/remaining-scope-coordinator, clean)
-- Candidate commit: a5843ef5b682adcf30bd2ea2998bc36332f10725 (codex/login-paper-adoption-r01)
+- Implementation candidate commit: a5843ef5b682adcf30bd2ea2998bc36332f10725
+- Final candidate commit (after focused repair 1 from independent review): 23d3bf46609906c8e1b027d0ca917814c2df02d2
+- Evidence commit: see history; records under docs/phase-records/handoffs/login-paper-adoption/
+- Independent verification: PASS (v01, against a5843ef) —
+  20260831-110000-login_paper_r01-independent-verification-v01.md
 - Branch / worktree / run ID: codex/login-paper-adoption-r01 / D:/Projects/fitway-worktrees/login-paper-adoption-r01 / login_paper_r01_impl, login_paper_r01_phase, login_paper_r01_full
 - Owner: glm-phase11-r01
 
@@ -59,16 +63,19 @@ historical state.
 
 - pnpm verify:fast — PASS (mutation guard clean).
 - pnpm verify:phase --phase login-paper-adoption — PASS (37 browser).
-- pnpm verify:full — PASS: unit 549, simulator 117, builds web+server, integration
-  1 passed/132 skipped suites convention per config (133 file total), browser 121/121
-  including accessibility and visual, mutation guard clean.
+- pnpm verify:full — PASS: unit 565, simulator 117, builds web+server, all integration
+  suites, browser 121/121 including accessibility and visual, mutation guard clean.
 - Focused: login-paper-adoption.browser.spec.ts 8/8; phase4-staff-web + phase9-owner-ui
   16/16.
 - Ladder history: 2 environment-only failures before the first green fast run (Biome format on
   the new spec, then missing process env values); both were environment/toolchain wiring, no
   candidate assertion failed, counted as implementation wiring rather than source repairs.
+- Repair 1 (from independent review, non-blocking findings): corrected the measured ratio in
+  the exception comment (live --fw-red-bright is 3.71:1; historical rendered variant 4.35:1)
+  and pinned the exact rendered hover color rgb(196, 20, 48) before the contrast poll in both
+  locales, closing the hover-unapplied/removed-rule blind spot. verify:fast re-run PASS.
 
 ## Independent verifier findings
 
-Pending — fresh read-only verification of candidate a5843ef in progress; result to be appended
-to this directory before integration.
+PASS — full report: 20260831-110000-login_paper_r01-independent-verification-v01.md.
+Measured rendered hover contrast 6.0174:1 in both locales; fault injection 3.7118:1.
