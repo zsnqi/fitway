@@ -408,7 +408,7 @@ test("strict mapping failures render an error and auth keeps anonymous and staff
 	await page.reload();
 	await expect(page).toHaveURL(/\/login$/u);
 	await expect(
-		page.getByRole("heading", { name: "فتح العمليات المباشرة" }),
+		page.getByRole("heading", { name: "تسجيل الدخول" }),
 	).toBeVisible();
 });
 

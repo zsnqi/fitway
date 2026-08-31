@@ -15,20 +15,19 @@ export const staffWeb = {
 	},
 	login: {
 		eyebrow: "مكتب الاستقبال",
-		title: "فتح العمليات المباشرة",
-		description: "أدخل الرقم السري المشترك لمكتب الاستقبال.",
-		pinLabel: "الرقم السري للموظفين",
+		title: "تسجيل الدخول",
+		description: "أدخل رمز الدخول للوصول إلى لوحة المتابعة.",
+		pinLabel: "رمز الدخول",
 		pinHint: (minimum, maximum) =>
-			`استخدم من ${isolate(minimum)} إلى ${isolate(maximum)} أرقام غربية.`,
+			`من ${isolate(minimum)} إلى ${isolate(maximum)} رقمًا`,
 		pinInvalid: (minimum, maximum) =>
 			`أدخل رقماً سرياً من ${isolate(minimum)} إلى ${isolate(maximum)} أرقام غربية.`,
-		submit: "دخول العمليات",
-		submitting: "جارٍ فتح العمليات",
-		invalidCredentials:
-			"تعذر تسجيل الدخول. تحقق من الرقم السري وحاول مرة أخرى.",
+		submit: "دخول",
+		submitting: "جارٍ تسجيل الدخول…",
+		invalidCredentials: "الرمز غير صحيح. تحقق منه وحاول مرة أخرى.",
 		rateLimited: (seconds) =>
-			`محاولات كثيرة. حاول مرة أخرى بعد ${isolate(seconds)} ثانية.`,
-		serviceError: "تسجيل الدخول غير متاح مؤقتاً. حاول مرة أخرى.",
+			`كثرت المحاولات. حاول مرة أخرى بعد ${isolate(seconds)} ثانية.`,
+		serviceError: "تعذر تسجيل الدخول الآن. حاول بعد قليل.",
 	},
 	staff: {
 		eyebrow: "مكتب الاستقبال",
