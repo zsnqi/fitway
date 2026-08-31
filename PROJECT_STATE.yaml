@@ -2176,6 +2176,86 @@ milestones:
       independentReview: FAIL
     integratedCommit: null
 
+  phase11-uptime-mobile-fidelity-r01:
+    status: IN_PROGRESS
+    dependencies: [phase11-health, phase11-uptime-paper-successor]
+    ownerSession: glm-phase11-r01
+    branch: codex/phase11-uptime-mobile-fidelity-r01
+    worktree: D:/Projects/fitway-worktrees/phase11-uptime-r01
+    baseCommit: f70b113fbff1c2657dfcb9820678146c044ca15a
+    runId: p11_uptime_r01
+    ownedPaths:
+      - apps/web/src/components/owner/health/owner-health-view.tsx
+      - apps/web/src/components/owner/health/owner-health.css
+      - apps/web/src/components/owner/health/owner-health-section.tsx
+      - tests/browser/phase11-health.browser.spec.ts
+      - tests/browser/__screenshots__/win32/chromium/phase11-health.browser.spec.ts/**
+      - docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/*p11_uptime_r01*
+      - docs/phase-records/route-decisions/p11_uptime_r01-*
+      - docs/phase-records/verification/*p11_uptime_r01*
+    forbiddenPaths:
+      - "hooks, catalogs, server, API, schema, migration, router, shared tokens, unrelated UI, and normative authority paths"
+      - "the desktop/tablet Uptime composition at 721px and wider"
+      - "the terminal phase11-uptime-mobile-fidelity b01/B2 attempt, the b02 plan attempt, their branches, worktrees, budgets, and history: preserved and immutable"
+      - "every canonical screenshot outside this milestone's own subtree; inside it, only owner-health-en-mobile-390x844.png may be replaced under the recorded mobile-fidelity human authority and owner-health-ar-desktop-1440x900.png must stay byte-identical"
+      - "root manifests, lockfiles, test configuration, generated routing, deployment, external databases, and production systems"
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-08-31T09:40:12+03:00"
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
+  login-paper-adoption-r01:
+    status: IN_PROGRESS
+    dependencies: [phase4-staff-web, focus-parity-accessibility]
+    ownerSession: glm-phase11-r01
+    branch: codex/login-paper-adoption-r01
+    worktree: D:/Projects/fitway-worktrees/login-paper-adoption-r01
+    baseCommit: f70b113fbff1c2657dfcb9820678146c044ca15a
+    runId: login_paper_r01
+    ownedPaths:
+      - apps/web/src/components/login/login-chrome.tsx
+      - apps/web/src/components/login/login.css
+      - apps/web/src/routes/login.tsx
+      - apps/web/src/i18n/messages/ar.ts
+      - apps/web/src/i18n/messages/en.ts
+      - tests/browser/login-paper-adoption.browser.spec.ts
+      - tests/browser/phase4-staff-web.browser.spec.ts
+      - tests/browser/phase9-owner-ui.browser.spec.ts
+      - tests/browser/__screenshots__/win32/chromium/login-paper-adoption.browser.spec.ts/**
+      - docs/phase-records/handoffs/login-paper-adoption/*login_paper_r01*
+      - docs/phase-records/route-decisions/login_paper_r01-*
+      - docs/phase-records/verification/*login_paper_r01*
+    forbiddenPaths:
+      - "apps/server/**, packages/**, pnpm-lock.yaml, package.json, apps/web/src/components/staff/staff.css, owner CSS, router aggregation, visual-direction-gate/**, and Paper"
+      - "the global --fw-red-bright token; the hover exception is a repository-local literal in login.css only"
+      - "the terminal login-paper-adoption b03 attempt, merge 901983b, revert 435e1e5, branch work/login-paper-adoption-b03, and its records: preserved and immutable"
+      - "regenerating the two idle Login canonical PNGs; they must return byte-identical"
+      - "root manifests, lockfiles, environment schemas, and test-runner configuration"
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-08-31T09:40:12+03:00"
+    leaseExpiresAt: null
+    handoff: null
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
   phase-11:
     status: PLANNED
     dependencies:
@@ -2188,11 +2268,11 @@ milestones:
         phase11-access-ui,
         phase11-settings-r02,
         phase11-health,
-        phase11-uptime-mobile-fidelity-b02,
+        phase11-uptime-mobile-fidelity-r01,
         phase11-reference-gating-debt,
         phase11-e2e-propagation-wait,
         focus-parity-accessibility,
-        login-paper-adoption,
+        login-paper-adoption-r01,
       ]
     ownerSession: null
     branch: null
