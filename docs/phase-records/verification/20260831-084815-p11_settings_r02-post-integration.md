@@ -39,7 +39,7 @@ Paper file `01KYPX5AF950XZVVDD88B6J7QB`, accepted area `1FKS-0`, token hash `3b0
 
 ## Cleanup and hygiene
 
-After verification, the coordinator confirmed zero active sessions and dropped exactly these disposable databases: `fitway_integration_p11_settings_r01`, `fitway_integration_p11_settings_v02`, `fitway_integration_p11_settings_v03`, `fitway_integration_p11_settings_r02`, `fitway_integration_p11_settings_v04`, and `fitway_integration_p11_settings_integrated_20260831`.
+After verification, the coordinator confirmed zero active sessions and dropped exactly these disposable databases: `fitway_integration_p11_settings_b01`, `fitway_integration_p11_settings_v01`, `fitway_integration_p11_settings_r01`, `fitway_integration_p11_settings_v02`, `fitway_integration_p11_settings_v03`, `fitway_integration_p11_settings_r02`, `fitway_integration_p11_settings_v04`, and `fitway_integration_p11_settings_integrated_20260831`.
 
 All ignored output directories whose names began with `p11_settings` under the worker/coordinator `test-results` or `playwright-report` roots were resolved inside those exact roots and removed because generated HTML/traces can retain synthetic credentials. They are generated and not recoverable. Durable counts, verdicts, candidate identities, Paper authority, invocation incidents, and review findings remain committed. The local PostgreSQL container remains running for unrelated serial project verification.
 
