@@ -196,14 +196,26 @@ function ScrollRegion({
 export function OwnerHealthOfflineTable({
 	periods,
 	timeZone,
+	totalCount,
 }: {
 	periods: readonly HealthOfflinePeriod[];
 	timeZone: string;
+	totalCount?: number;
 }) {
 	const { locale } = useI18n();
 	const messages = useOwnerHealthMessages();
+	const total = totalCount ?? periods.length;
 	return (
 		<ScrollRegion label={messages.offlineRegion}>
+			<div className="owner-health__board-header">
+				<span className="owner-health__board-title">
+					{messages.offlineRegion}
+				</span>
+				<span className="owner-health__board-count">
+					<bdi>{formatNumber(periods.length, locale)}</bdi> {messages.offlineOf}{" "}
+					<bdi>{formatNumber(total, locale)}</bdi>
+				</span>
+			</div>
 			<table data-owner-health-offline-table="">
 				<thead>
 					<tr>
@@ -221,11 +233,17 @@ export function OwnerHealthOfflineTable({
 							data-closed-only={period.openMinutes === 0 ? "" : undefined}
 						>
 							<td>
+								<span className="owner-health__field-label" aria-hidden="true">
+									{messages.offlineColumnStarted}
+								</span>
 								<bdi dir="auto">
 									{gymDayTime(period.startedAtUtc, locale, timeZone)}
 								</bdi>
 							</td>
 							<td>
+								<span className="owner-health__field-label" aria-hidden="true">
+									{messages.offlineColumnEnded}
+								</span>
 								{period.endedAtUtc === null ? (
 									<span className="owner-health__flag">
 										{messages.offlineOngoing}
@@ -237,11 +255,17 @@ export function OwnerHealthOfflineTable({
 								)}
 							</td>
 							<td>
+								<span className="owner-health__field-label" aria-hidden="true">
+									{messages.offlineColumnLength}
+								</span>
 								<bdi>
 									{formatDuration(period.elapsedMinutes, locale, messages)}
 								</bdi>
 							</td>
 							<td>
+								<span className="owner-health__field-label" aria-hidden="true">
+									{messages.offlineColumnOpen}
+								</span>
 								{period.openMinutes === 0 ? (
 									<span className="owner-health__absent">
 										{messages.offlineClosedOnly}
@@ -263,14 +287,26 @@ export function OwnerHealthOfflineTable({
 export function OwnerHealthIncidentTable({
 	incidents,
 	timeZone,
+	totalCount,
 }: {
 	incidents: readonly HealthIncident[];
 	timeZone: string;
+	totalCount?: number;
 }) {
 	const { locale } = useI18n();
 	const messages = useOwnerHealthMessages();
+	const total = totalCount ?? incidents.length;
 	return (
 		<ScrollRegion label={messages.incidentsRegion}>
+			<div className="owner-health__board-header">
+				<span className="owner-health__board-title">
+					{messages.incidentsRegion}
+				</span>
+				<span className="owner-health__board-count">
+					<bdi>{formatNumber(incidents.length, locale)}</bdi>{" "}
+					{messages.offlineOf} <bdi>{formatNumber(total, locale)}</bdi>
+				</span>
+			</div>
 			<table data-owner-health-incident-table="">
 				<thead>
 					<tr>
@@ -288,13 +324,24 @@ export function OwnerHealthIncidentTable({
 							data-condition={incident.condition}
 							data-ongoing={incident.recoveredAtUtc === null ? "" : undefined}
 						>
-							<td>{messages[incident.condition]}</td>
 							<td>
+								<span className="owner-health__field-label" aria-hidden="true">
+									{messages.incidentsColumnCondition}
+								</span>
+								{messages[incident.condition]}
+							</td>
+							<td>
+								<span className="owner-health__field-label" aria-hidden="true">
+									{messages.incidentsColumnStarted}
+								</span>
 								<bdi dir="auto">
 									{gymDayTime(incident.startedAtUtc, locale, timeZone)}
 								</bdi>
 							</td>
 							<td>
+								<span className="owner-health__field-label" aria-hidden="true">
+									{messages.incidentsColumnRecovered}
+								</span>
 								{incident.recoveredAtUtc === null ? (
 									<span className="owner-health__flag">
 										{messages.incidentsOngoing}
@@ -306,9 +353,15 @@ export function OwnerHealthIncidentTable({
 								)}
 							</td>
 							<td>
+								<span className="owner-health__field-label" aria-hidden="true">
+									{messages.incidentsColumnNotices}
+								</span>
 								<bdi>{formatNumber(incident.noticeCount, locale)}</bdi>
 							</td>
 							<td>
+								<span className="owner-health__field-label" aria-hidden="true">
+									{messages.incidentsColumnDelivery}
+								</span>
 								<bdi dir="auto">
 									{incident.failed === 0 && incident.unconfirmed === 0
 										? messages.deliveryAllDelivered

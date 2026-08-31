@@ -95,6 +95,7 @@ export function OwnerHealthSection() {
 							<>
 								<OwnerHealthOfflineTable
 									periods={summary.connection.offlinePeriods}
+									totalCount={summary.connection.offlinePeriodCount}
 									timeZone={summary.window.timeZone}
 								/>
 								{/* The bound only earns a line when it actually hid a row. */}
@@ -133,6 +134,7 @@ export function OwnerHealthSection() {
 							<>
 								<OwnerHealthIncidentTable
 									incidents={summary.alerts.incidents}
+									totalCount={summary.alerts.incidentCount}
 									timeZone={summary.window.timeZone}
 								/>
 								{summary.alerts.incidentCount >

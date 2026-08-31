@@ -133,6 +133,13 @@
 	font-size: 12px;
 }
 
+/* Board header and per-field labels are stacked-card furniture; at table sizes the
+   sticky column headers carry the labels instead. */
+.owner-health__board-header,
+.owner-health__field-label {
+	display: none;
+}
+
 .owner-health-region {
 	max-block-size: 420px;
 	overflow: auto;
@@ -362,6 +369,146 @@
 
 	.owner-health-loading-bars {
 		display: none;
+	}
+
+	/* Stacked-card presentation: the semantic table stays in the accessibility tree
+	   while the presentation becomes labelled cards. The region no longer scrolls;
+	   every lane is minmax(0, ...) so nothing overflows horizontally. */
+	.owner-health__scroll-hint {
+		display: none;
+	}
+
+	.owner-health-region {
+		max-block-size: none;
+		overflow: clip;
+		border-color: var(--fw-edge, var(--owner-edge, var(--fw-border)));
+		background-color: var(--fw-material-board-mobile, rgb(29 24 28 / 25%));
+	}
+
+	/* Column headers stay in the accessibility tree, never display:none. */
+	.owner-health-region thead {
+		position: absolute;
+		inline-size: 1px;
+		block-size: 1px;
+		margin: -1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+
+	.owner-health__board-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		min-block-size: 50px;
+		padding: 14px 16px;
+		border-block-end: 1px solid var(--fw-border-subtle);
+	}
+
+	.owner-health__board-title {
+		color: var(--fw-chalk);
+		font-size: 14px;
+		line-height: 20px;
+		font-weight: 700;
+	}
+
+	.owner-health__board-count {
+		color: var(--fw-text-subtle);
+		font-size: 13px;
+		line-height: 18px;
+		font-weight: 500;
+		white-space: nowrap;
+	}
+
+	.owner-health__board-count bdi {
+		color: var(--fw-chalk);
+		font-weight: 500;
+	}
+
+	.owner-health-region table {
+		display: block;
+		inline-size: 100%;
+	}
+
+	.owner-health-region tbody {
+		display: grid;
+		gap: 12px;
+		padding: 12px;
+	}
+
+	.owner-health-region tr {
+		position: relative;
+		display: grid;
+		gap: 10px;
+		padding: 16px;
+		border: 0;
+		border-radius: 12px;
+		background: var(--fw-group, var(--fw-surface-2));
+	}
+
+	.owner-health-region tr::before {
+		position: absolute;
+		inset: 0;
+		border: 1px solid
+			var(--fw-edge-quiet, var(--owner-edge-quiet, var(--fw-border-subtle)));
+		border-radius: inherit;
+		pointer-events: none;
+		content: "";
+	}
+
+	.owner-health-region td {
+		display: grid;
+		grid-template-columns: minmax(0, 124px) minmax(0, 1fr);
+		gap: 12px;
+		min-inline-size: 0;
+		padding: 0;
+		border-block-end: none;
+		color: var(--fw-chalk);
+		font-size: 14px;
+		line-height: 20px;
+		font-weight: 500;
+		text-align: end;
+		overflow-wrap: anywhere;
+	}
+
+	.owner-health__field-label {
+		display: block;
+		color: var(--fw-text-subtle);
+		font-size: 13px;
+		line-height: 18px;
+		font-weight: 500;
+		text-align: start;
+	}
+
+	/* The row accent moves from the first cell to the card's reading-start edge. */
+	.owner-health-region tr[data-ongoing] td:first-child,
+	.owner-health-region tr[data-closed-only] td:first-child {
+		box-shadow: none;
+	}
+
+	.owner-health-region tr[data-ongoing] {
+		box-shadow: inset 2px 0 0 var(--fw-red-bright);
+	}
+
+	.owner-health-region tr[data-closed-only] {
+		box-shadow: inset 2px 0 0 var(--fw-offline);
+	}
+
+	[dir="rtl"] .owner-health-region tr[data-ongoing] {
+		box-shadow: inset -2px 0 0 var(--fw-red-bright);
+	}
+
+	[dir="rtl"] .owner-health-region tr[data-closed-only] {
+		box-shadow: inset -2px 0 0 var(--fw-offline);
+	}
+}
+
+/* Below 390px the label lane contracts so values keep readable room. */
+@media (max-width: 389px) {
+	.owner-health-region td {
+		grid-template-columns: minmax(88px, 40%) minmax(0, 1fr);
+		gap: 12px;
 	}
 }
 
