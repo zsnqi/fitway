@@ -531,7 +531,9 @@ test("layout holds at every required width in both locales", async ({
 						label: element.getAttribute("aria-label"),
 						tabIndex: element.getAttribute("tabindex"),
 					}));
-				expect(region.overflowX).toBe("auto");
+				// At mobile widths the stacked-record board clips instead of
+				// scrolling; at 721px and wider the labelled scroll region stays.
+				expect(region.overflowX).toBe(width <= 720 ? "clip" : "auto");
 				expect(region.label).toBeTruthy();
 				expect(region.tabIndex).toBe("0");
 			}
@@ -655,4 +657,827 @@ test("canonical desktop Arabic and mobile English health compositions match", as
 	await expect(page.locator(".owner-health")).toHaveScreenshot(
 		"owner-health-en-mobile-390x844.png",
 	);
+});
+
+/**
+ * Independent literal oracle for the mobile stacked-record boards (Paper 1DZC-0).
+ *
+ * Every expected string is derived from the fixed fixture and its locale — fixed
+ * instants rendered in Asia/Riyadh, ICU month/time spellings, and the component's
+ * own bilingual copy — never read back from the implementation or its catalogs at
+ * runtime. Durations follow formatDuration's "1h 35m" / "1س 35د" composition.
+ */
+const mobileOracle = {
+	en: {
+		offline: {
+			title: "Offline periods",
+			count: "3 of 3",
+			columns: ["Started", "Recovered", "Length", "Open minutes affected"],
+			rows: [
+				["Aug 14 12:30 AM", "Not yet recovered", "1h 35m", "1h 35m"],
+				[
+					"Aug 13 1:00 AM",
+					"Aug 13 3:00 AM",
+					"2h",
+					"None — gym closed throughout",
+				],
+				["Aug 9 2:15 PM", "Aug 9 2:45 PM", "30m", "30m"],
+			],
+		},
+		incidents: {
+			title: "Incidents",
+			count: "2 of 2",
+			columns: ["Condition", "Started", "Recovered", "Alerts sent", "Delivery"],
+			rows: [
+				[
+					"Device reported a camera failure",
+					"Aug 13 8:00 AM",
+					"Not yet recovered",
+					"2",
+					"1 delivered · 1 failed to send",
+				],
+				[
+					"Edge stopped pushing",
+					"Aug 9 2:15 PM",
+					"Aug 9 2:46 PM",
+					"1",
+					"All delivered",
+				],
+			],
+		},
+	},
+	ar: {
+		offline: {
+			title: "فترات الانقطاع",
+			count: "3 من 3",
+			columns: ["البداية", "التعافي", "المدة", "دقائق العمل المتأثرة"],
+			rows: [
+				["14 أغسطس 12:30 ص", "لم يتعافَ بعد", "1س 35د", "1س 35د"],
+				[
+					"13 أغسطس 1:00 ص",
+					"13 أغسطس 3:00 ص",
+					"2س",
+					"لا شيء — الصالة مغلقة طوال الفترة",
+				],
+				["9 أغسطس 2:15 م", "9 أغسطس 2:45 م", "30د", "30د"],
+			],
+		},
+		incidents: {
+			title: "الأعطال",
+			count: "2 من 2",
+			columns: ["الحالة", "البداية", "التعافي", "التنبيهات المرسلة", "الإرسال"],
+			rows: [
+				[
+					"أبلغ الجهاز عن تعطل الكاميرا",
+					"13 أغسطس 8:00 ص",
+					"لم تتعافَ بعد",
+					"2",
+					"1 وصل · 1 فشل الإرسال",
+				],
+				[
+					"توقف الجهاز عن الإرسال",
+					"9 أغسطس 2:15 م",
+					"9 أغسطس 2:46 م",
+					"1",
+					"وصلت كلها",
+				],
+			],
+		},
+	},
+} as const;
+
+type MobileBoardOracle =
+	(typeof mobileOracle)["en"][keyof (typeof mobileOracle)["en"]];
+
+/** A mobile-only variant whose first incident adds one unconfirmed notice. */
+const mobileUnconfirmed: Summary = {
+	...populated,
+	alerts: {
+		...populated.alerts,
+		incidents: populated.alerts.incidents.map((incident, index) =>
+			index === 0 ? { ...incident, unconfirmed: 1 } : incident,
+		),
+	},
+};
+
+const unconfirmedOracle = {
+	en: "1 delivered · 1 failed to send · 1 unconfirmed",
+	ar: "1 وصل · 1 فشل الإرسال · 1 غير مؤكد",
+} as const;
+
+/**
+ * In-page geometric and paint oracle for one mobile board.
+ *
+ * It returns the board's text content plus a list of concrete violations so the
+ * same collector proves the positive contract and rejects every fault injection:
+ * hidden or translucent values, transparent text, values moved outside their
+ * card, clipped values, covered text (including pointer-events:none overlays and
+ * content-bearing pseudo-elements), and stretched fixed-height geometry.
+ * Border-only decorative pseudo-elements paint no opaque pixel and are ignored.
+ */
+function collectMobileBoard(table: Element) {
+	const violations: string[] = [];
+	const doc = table.ownerDocument;
+	const win = doc.defaultView;
+	if (!win) return { violations: ["no window"], data: null };
+	const region = table.closest("section");
+	if (!(region instanceof HTMLElement)) {
+		return { violations: ["region section missing"], data: null };
+	}
+
+	const alphaOf = (value: string) => {
+		const match = /rgba?\(([^)]+)\)/.exec(value);
+		if (!match) return 1;
+		const parts = match[1].split(",").map((part) => Number.parseFloat(part));
+		return parts.length >= 4 ? (parts[3] ?? 1) : 1;
+	};
+	const describe = (element: Element) =>
+		`${element.tagName.toLowerCase()}${
+			element.className && typeof element.className === "string"
+				? `.${element.className.split(" ").join(".")}`
+				: ""
+		}`;
+
+	if (region.scrollWidth > region.clientWidth + 1) {
+		violations.push("region: horizontal overflow");
+	}
+	if (region.scrollHeight > region.clientHeight + 1) {
+		violations.push("region: vertical content clipped by overflow");
+	}
+
+	const style = (element: Element) => win.getComputedStyle(element);
+
+	/**
+	 * Scroll the value into the viewport first: elementFromPoint only sees the
+	 * visible viewport, and the boards sit far below the fold on /admin.
+	 */
+	const checkValue = (node: Node, where: string, container: Element) => {
+		const element =
+			node instanceof Element ? node : (node.parentElement as Element);
+		if (!element) {
+			violations.push(`${where}: detached value`);
+			return;
+		}
+		// elementFromPoint only sees the visible viewport, and the boards sit far
+		// below the fold on /admin: scroll this value into view before measuring.
+		// Scrolling invalidates every viewport-relative rect, so the region rect is
+		// re-measured here rather than reused from the pre-scroll pass.
+		element.scrollIntoView({ block: "center" });
+		const regionRect = region.getBoundingClientRect();
+		const rect =
+			node instanceof Element
+				? node.getBoundingClientRect()
+				: (() => {
+						const range = doc.createRange();
+						range.selectNodeContents(node);
+						return range.getBoundingClientRect();
+					})();
+		if (rect.width <= 0 || rect.height <= 0) {
+			violations.push(`${where}: empty rendered box`);
+			return;
+		}
+		const valueStyle = style(element);
+		if (
+			valueStyle.display === "none" ||
+			valueStyle.visibility === "hidden" ||
+			valueStyle.visibility === "collapse"
+		) {
+			violations.push(`${where}: value hidden`);
+			return;
+		}
+		if (Number.parseFloat(valueStyle.opacity) < 0.5) {
+			violations.push(`${where}: value effectively invisible (opacity)`);
+		}
+		if (alphaOf(valueStyle.color) < 0.5) {
+			violations.push(`${where}: value effectively invisible (color alpha)`);
+		}
+		// Opacity is not inherited but composites multiplicatively down the tree,
+		// so a near-transparent ancestor hides the text without touching its own
+		// computed value. Walk the ancestor chain for the effective product.
+		let effectiveOpacity = 1;
+		for (
+			let ancestor: Element | null = element;
+			ancestor && region.contains(ancestor);
+			ancestor = ancestor.parentElement
+		) {
+			effectiveOpacity *= Number.parseFloat(style(ancestor).opacity) || 1;
+			if (effectiveOpacity < 0.5) {
+				violations.push(
+					`${where}: value effectively invisible (ancestor opacity)`,
+				);
+				break;
+			}
+		}
+
+		const cardRect = container.getBoundingClientRect();
+		const inside = (outer: DOMRect) =>
+			rect.left >= outer.left - 1 &&
+			rect.right <= outer.right + 1 &&
+			rect.top >= outer.top - 1 &&
+			rect.bottom <= outer.bottom + 1;
+		if (!inside(cardRect)) {
+			violations.push(`${where}: value outside its record card`);
+		}
+		if (!inside(regionRect)) {
+			violations.push(`${where}: value clipped by the board region`);
+		}
+
+		const cx = rect.left + rect.width / 2;
+		const cy = rect.top + rect.height / 2;
+		const samples: Array<[number, number]> = [
+			[cx, cy],
+			[rect.left + 1, cy],
+			[rect.right - 1, cy],
+			[cx, rect.top + 1],
+			[cx, rect.bottom - 1],
+		];
+		let painted = 0;
+		for (const [x, y] of samples) {
+			const hit = doc.elementFromPoint(x, y);
+			if (!hit) {
+				violations.push(
+					`${where}: nothing painted at ${x.toFixed(0)},${y.toFixed(0)}`,
+				);
+				continue;
+			}
+			if (hit === element || element.contains(hit) || hit.contains(element)) {
+				painted += 1;
+				continue;
+			}
+			violations.push(
+				`${where}: text covered by ${describe(hit)} at ${x.toFixed(0)},${y.toFixed(0)}`,
+			);
+		}
+		if (painted === 0) {
+			violations.push(`${where}: value text never painted on top`);
+		}
+	};
+
+	function styleWithPseudo(element: Element, pseudo: string) {
+		return win.getComputedStyle(element, pseudo);
+	}
+
+	const checkPseudoOverlays = (where: string, point: DOMRect) => {
+		for (const host of region.querySelectorAll("*")) {
+			for (const pseudo of ["::before", "::after"] as const) {
+				const pseudoStyle = styleWithPseudo(host, pseudo);
+				const content = pseudoStyle.content;
+				if (!content || content === "none" || content === '""') continue;
+				if (alphaOf(pseudoStyle.backgroundColor) < 0.5) continue;
+				const hostRect = host.getBoundingClientRect();
+				const overlaps =
+					hostRect.right > point.left &&
+					hostRect.left < point.right &&
+					hostRect.bottom > point.top &&
+					hostRect.top < point.bottom;
+				if (overlaps) {
+					violations.push(
+						`${where}: opaque ${pseudo} of ${describe(host)} covers text`,
+					);
+				}
+			}
+		}
+	};
+	void checkPseudoOverlays;
+
+	const header = table.previousElementSibling;
+
+	const cards = Array.from(table.querySelectorAll("tbody tr"));
+	for (const [cardIndex, card] of cards.entries()) {
+		if (!(card instanceof HTMLElement)) continue;
+		const cells = Array.from(card.children).filter(
+			(child): child is HTMLElement => child.tagName === "TD",
+		);
+		for (const [cellIndex, cell] of cells.entries()) {
+			const where = `row ${cardIndex + 1} field ${cellIndex + 1}`;
+			const valueNodes = Array.from(cell.childNodes).filter((node) => {
+				if (
+					node instanceof Element &&
+					node.getAttribute("aria-hidden") === "true"
+				) {
+					return false;
+				}
+				return (node.textContent?.trim().length ?? 0) > 0;
+			});
+			if (valueNodes.length === 0) {
+				violations.push(`${where}: no value rendered`);
+				continue;
+			}
+			for (const node of valueNodes) {
+				checkValue(node, where, card);
+			}
+			checkPseudoOverlays(where, cell.getBoundingClientRect());
+		}
+		// The card must be as tall as its content: a fixed stylesheet height that
+		// stretches the grid must fail even though every paint check above passes.
+		const cardRect = card.getBoundingClientRect();
+		const cardStyle = style(card);
+		const gap = Number.parseFloat(cardStyle.rowGap) || 0;
+		const padTop = Number.parseFloat(cardStyle.paddingTop) || 0;
+		const padBottom = Number.parseFloat(cardStyle.paddingBottom) || 0;
+		const content = cells.reduce(
+			(sum, cell) => sum + cell.getBoundingClientRect().height,
+			0,
+		);
+		const natural =
+			padTop + padBottom + gap * Math.max(cells.length - 1, 0) + content;
+		if (cardRect.height > natural + 6) {
+			violations.push(
+				`row ${cardIndex + 1}: stretched card (${cardRect.height.toFixed(0)}px vs natural ${natural.toFixed(0)}px)`,
+			);
+		}
+	}
+
+	// The shown/total lane must itself be visible and painted inside the clipped
+	// header, not merely present in the DOM.
+	const countLane = header?.querySelector(".owner-health__board-count");
+	if (countLane) {
+		checkValue(countLane, "board count", header);
+	} else {
+		violations.push("board count lane missing");
+	}
+
+	// The collection lane is also content-sized: a fixed height there stretches
+	// the grid without moving any text.
+	const tbody = table.querySelector("tbody");
+	if (tbody instanceof HTMLElement) {
+		const tbodyRect = tbody.getBoundingClientRect();
+		const tbodyStyle = style(tbody);
+		const gap = Number.parseFloat(tbodyStyle.rowGap) || 0;
+		const padTop = Number.parseFloat(tbodyStyle.paddingTop) || 0;
+		const padBottom = Number.parseFloat(tbodyStyle.paddingBottom) || 0;
+		const cardSum = cards.reduce(
+			(sum, card) => sum + card.getBoundingClientRect().height,
+			0,
+		);
+		const natural =
+			padTop + padBottom + gap * Math.max(cards.length - 1, 0) + cardSum;
+		if (tbodyRect.height > natural + 6) {
+			violations.push(
+				`collection: stretched lane (${tbodyRect.height.toFixed(0)}px vs natural ${natural.toFixed(0)}px)`,
+			);
+		}
+	}
+
+	const data = {
+		title:
+			header?.querySelector(".owner-health__board-title")?.textContent ?? null,
+		count:
+			header?.querySelector(".owner-health__board-count")?.textContent ?? null,
+		headerRect: header
+			? {
+					left: header.getBoundingClientRect().left,
+					right: header.getBoundingClientRect().right,
+					top: header.getBoundingClientRect().top,
+					bottom: header.getBoundingClientRect().bottom,
+				}
+			: null,
+		columns: Array.from(table.querySelectorAll("thead th")).map(
+			(th) => th.textContent?.trim() ?? "",
+		),
+		thDisplayNone: Array.from(table.querySelectorAll("thead th")).map(
+			(th) => style(th).display === "none" || style(th).visibility === "hidden",
+		),
+		rows: cards.map((card) => ({
+			labels: Array.from(
+				card.querySelectorAll(":scope > td > .owner-health__field-label"),
+			).map((label) => label.textContent?.trim() ?? ""),
+			values: Array.from(card.querySelectorAll(":scope > td")).map((cell) => {
+				const label = cell.querySelector(":scope > .owner-health__field-label");
+				const clone = label ? (label.textContent ?? "") : "";
+				return (cell.textContent ?? "").replace(clone, "").trim();
+			}),
+		})),
+		bdiCount: table.querySelectorAll("bdi").length,
+		bdiIsolated: Array.from(table.querySelectorAll("bdi")).every(
+			(bdi) => style(bdi).unicodeBidi === "isolate",
+		),
+		region: {
+			overflowX: style(region).overflowX,
+			overflowY: style(region).overflowY,
+			maxBlockHeight: style(region).maxHeight,
+		},
+		tableDisplay: style(table).display,
+		tbodyDisplay: tbody ? style(tbody).display : null,
+		hasArabicIndicDigits: /[\u0660-\u0669\u06F0-\u06F9]/u.test(
+			table.textContent ?? "",
+		),
+	};
+
+	return { violations, data };
+}
+
+/** Node-side comparison of the in-page collection against the literal oracle. */
+async function collectBoardViolations(
+	page: Page,
+	tableSelector: string,
+	oracle: MobileBoardOracle,
+	label: string,
+): Promise<string[]> {
+	const result = await page.locator(tableSelector).evaluate(collectMobileBoard);
+	if (result.data === null) return result.violations;
+	const { violations, data } = result;
+	const found: string[] = [...violations];
+	const push = (message: string) => found.push(`${label}: ${message}`);
+
+	if (data.title?.trim() !== oracle.title) {
+		push(`board title "${data.title?.trim()}" != "${oracle.title}"`);
+	}
+	if (data.count?.replace(/\s+/g, " ").trim() !== oracle.count) {
+		push(`board count "${data.count?.trim()}" != "${oracle.count}"`);
+	}
+	if (data.columns.join("|") !== oracle.columns.join("|")) {
+		push(
+			`column headers [${data.columns.join(", ")}] != [${oracle.columns.join(", ")}]`,
+		);
+	}
+	if (data.thDisplayNone.some(Boolean)) {
+		push("a column header is display:none or visibility:hidden");
+	}
+	if (data.rows.length !== oracle.rows.length) {
+		push(`record count ${data.rows.length} != ${oracle.rows.length}`);
+	}
+	for (const [index, row] of data.rows.entries()) {
+		const expected = oracle.rows[index];
+		if (!expected) break;
+		if (row.labels.join("|") !== oracle.columns.join("|")) {
+			push(
+				`row ${index + 1} field labels [${row.labels.join(", ")}] != [${oracle.columns.join(", ")}]`,
+			);
+		}
+		for (const [field, value] of row.values.entries()) {
+			const expectedValue = expected[field];
+			if (expectedValue === undefined) {
+				push(`row ${index + 1} has an extra field ${field + 1}`);
+				continue;
+			}
+			if (value !== expectedValue) {
+				push(
+					`row ${index + 1} field ${field + 1} "${value}" != "${expectedValue}"`,
+				);
+			}
+		}
+	}
+	if (!data.bdiIsolated || data.bdiCount === 0) {
+		push("bdi isolation is missing");
+	}
+	if (data.hasArabicIndicDigits) {
+		push("Arabic-Indic digits rendered; Western digits are required");
+	}
+	if (data.region.overflowX !== "clip" || data.region.overflowY !== "clip") {
+		push(
+			`region overflow is ${data.region.overflowX}/${data.region.overflowY}, expected clip`,
+		);
+	}
+	if (data.region.maxBlockHeight !== "none") {
+		push(
+			`region max-block-size is ${data.region.maxBlockHeight}, expected none`,
+		);
+	}
+	if (data.tableDisplay !== "block") {
+		push(`mobile table display is ${data.tableDisplay}, expected block`);
+	}
+	if (data.tbodyDisplay !== "grid") {
+		push(`mobile collection display is ${data.tbodyDisplay}, expected grid`);
+	}
+	return found;
+}
+
+test("mobile stacked records keep every required value visible, painted, and contained", async ({
+	page,
+}) => {
+	await emulateDeviceTimeZone(page);
+	await mockOwnerSurfaces(page);
+	await page.goto("/admin");
+
+	for (const locale of ["ar", "en"] as const) {
+		await setLocale(page, locale);
+		for (const width of [320, 360, 390]) {
+			await page.setViewportSize({ width, height: 844 });
+			await expect(page.locator(offlineTable)).toBeVisible();
+
+			const offline = await collectBoardViolations(
+				page,
+				offlineTable,
+				mobileOracle[locale].offline,
+				`offline ${locale} ${width}px`,
+			);
+			expect(offline).toEqual([]);
+			const incidents = await collectBoardViolations(
+				page,
+				incidentTable,
+				mobileOracle[locale].incidents,
+				`incidents ${locale} ${width}px`,
+			);
+			expect(incidents).toEqual([]);
+
+			await expectNoDocumentOverflow(page);
+		}
+		await page.setViewportSize({ width: 390, height: 844 });
+		await captureReview(
+			page,
+			`owner-health-mobile-stacked-${locale}-390x844.png`,
+		);
+	}
+});
+
+test("Arabic unconfirmed delivery wording is pinned by the independent oracle", async ({
+	page,
+}) => {
+	await page.addInitScript(() =>
+		window.localStorage.setItem("fitway.locale", "ar"),
+	);
+	await mockOwnerSurfaces(page, { summary: mobileUnconfirmed });
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto("/admin");
+	await setLocale(page, "ar");
+	await expect(page.locator(incidentTable)).toBeVisible();
+
+	const oracle = {
+		...mobileOracle.ar.incidents,
+		rows: mobileOracle.ar.incidents.rows.map((row, index) =>
+			index === 0 ? [...row.slice(0, 4), unconfirmedOracle.ar] : row,
+		),
+	};
+	const violations = await collectBoardViolations(
+		page,
+		incidentTable,
+		oracle,
+		"incidents ar unconfirmed 390px",
+	);
+	expect(violations).toEqual([]);
+
+	await setLocale(page, "en");
+	const oracleEn = {
+		...mobileOracle.en.incidents,
+		rows: mobileOracle.en.incidents.rows.map((row, index) =>
+			index === 0 ? [...row.slice(0, 4), unconfirmedOracle.en] : row,
+		),
+	};
+	const violationsEn = await collectBoardViolations(
+		page,
+		incidentTable,
+		oracleEn,
+		"incidents en unconfirmed 390px",
+	);
+	expect(violationsEn).toEqual([]);
+	await captureReview(page, "owner-health-mobile-unconfirmed-en-390x844.png");
+});
+
+test("the desktop table composition at 721px and wider is unchanged", async ({
+	page,
+}) => {
+	await mockOwnerSurfaces(page);
+	await page.goto("/admin");
+
+	for (const width of [721, 768, 820, 1024, 1200, 1440]) {
+		for (const locale of ["ar", "en"] as const) {
+			await setLocale(page, locale);
+			await page.setViewportSize({ width, height: 900 });
+			await expect(page.locator(offlineTable)).toBeVisible();
+
+			const desktop = await page.locator(offlineTable).evaluate((table) => {
+				const region = table.closest("section");
+				const win = table.ownerDocument.defaultView;
+				if (!(region instanceof HTMLElement) || !win) return null;
+				const computed = (element: Element, pseudo?: string) =>
+					win.getComputedStyle(element, pseudo);
+				const headerEl = table.previousElementSibling;
+				const boardHeader = headerEl?.matches(".owner-health__board-header")
+					? headerEl
+					: headerEl?.querySelector(".owner-health__board-header");
+				const ongoing = table.querySelector("tbody tr[data-ongoing]");
+				return {
+					overflowX: computed(region).overflowX,
+					maxBlockHeight: computed(region).maxHeight,
+					boardHeaderDisplay: computed(boardHeader ?? table).display,
+					fieldLabelDisplay: computed(
+						table.querySelector(".owner-health__field-label") ?? table,
+					).display,
+					theadPosition: computed(table.querySelector("thead") ?? table)
+						.position,
+					tableDisplay: computed(table).display,
+					tdDisplay: computed(table.querySelector("td") ?? table).display,
+					accent: ongoing
+						? computed(ongoing.querySelector("td") ?? ongoing).boxShadow
+						: null,
+					scrollHintVisible:
+						(document.querySelector(".owner-health__scroll-hint")
+							? computed(document.querySelector(".owner-health__scroll-hint")!)
+									.display
+							: "missing") !== "none",
+				};
+			});
+			expect(desktop, `${locale} ${width}px`).toEqual({
+				overflowX: "auto",
+				maxBlockHeight: "420px",
+				boardHeaderDisplay: "none",
+				fieldLabelDisplay: "none",
+				theadPosition: "static",
+				tableDisplay: "table",
+				tdDisplay: "table-cell",
+				accent: expect.stringContaining("2px"),
+				// Pre-existing behaviour: the sideways-scroll hint shows only where
+				// the table actually scrolls, 721px through 1023px.
+				scrollHintVisible: width <= 1023,
+			});
+		}
+	}
+});
+
+test("the mobile contract rejects every false-pass fault injection", async ({
+	page,
+}) => {
+	await page.addInitScript(() =>
+		window.localStorage.setItem("fitway.locale", "en"),
+	);
+	await mockOwnerSurfaces(page);
+
+	/**
+	 * Each fault re-navigates from a clean load, applies exactly one fault, and
+	 * requires the contract collector to reject the board. The accepted
+	 * border-only tr::before runs through every fault untouched: the positive
+	 * collector above passes with it, so decorative borders never reject.
+	 */
+	const expectFaultRejected = async (
+		name: string,
+		fault: () => Promise<void>,
+		table: string,
+		oracle: MobileBoardOracle = mobileOracle.en.offline,
+	) => {
+		await page.goto("/admin");
+		await expect(page.locator(offlineTable)).toBeVisible();
+		await fault();
+		const violations = await collectBoardViolations(
+			page,
+			table,
+			oracle,
+			`fault ${name}`,
+		);
+		expect(
+			violations,
+			`fault "${name}" must be rejected, got none`,
+		).not.toEqual([]);
+	};
+
+	const inject = (css: string) => async () => {
+		await page.addStyleTag({ content: css });
+	};
+	const firstValue = `${offlineTable} tbody tr:first-child td:first-child bdi`;
+
+	await expectFaultRejected(
+		"values hidden",
+		inject(`${offlineTable} tbody tr td { display: none !important; }`),
+		offlineTable,
+	);
+	await expectFaultRejected(
+		"values translucent",
+		inject(`${offlineTable} tbody tr { opacity: 0.05 !important; }`),
+		offlineTable,
+	);
+	await expectFaultRejected(
+		"text transparent",
+		inject(`${firstValue} { color: transparent !important; }`),
+		offlineTable,
+	);
+	await expectFaultRejected(
+		"value moved outside its card",
+		inject(`${firstValue} { transform: translate(80vw, 200px) !important; }`),
+		offlineTable,
+	);
+	await expectFaultRejected(
+		"values clipped by the card",
+		inject(
+			`${offlineTable} tbody tr { block-size: 48px !important; height: 48px !important; overflow: hidden !important; }`,
+		),
+		offlineTable,
+	);
+	await expectFaultRejected(
+		"oversized fixed card height stretches the grid",
+		inject(`${offlineTable} tbody tr { block-size: 2000px !important; }`),
+		offlineTable,
+	);
+	await expectFaultRejected(
+		"oversized fixed collection height stretches the grid",
+		inject(`${offlineTable} tbody { block-size: 2000px !important; }`),
+		offlineTable,
+	);
+	await expectFaultRejected(
+		"opaque overlay covers text",
+		async () => {
+			const box = await page.locator(firstValue).boundingBox();
+			await page.evaluate(
+				({ x, y }) => {
+					const overlay = document.createElement("div");
+					overlay.style.position = "fixed";
+					overlay.style.left = `${x}px`;
+					overlay.style.top = `${y}px`;
+					overlay.style.width = "60px";
+					overlay.style.height = "24px";
+					overlay.style.background = "rgb(20, 16, 20)";
+					overlay.style.zIndex = "9999";
+					document.body.append(overlay);
+				},
+				{ x: box?.x ?? 0, y: box?.y ?? 0 },
+			);
+		},
+		offlineTable,
+	);
+	await expectFaultRejected(
+		"opaque pseudo-element covers text",
+		inject(
+			`${offlineTable} tbody tr:first-child td:first-child::after { content: "x"; position: absolute; inset: 0; background: rgb(20, 16, 20) !important; }`,
+		),
+		offlineTable,
+	);
+	await expectFaultRejected(
+		"pointer-events none overlay covers text",
+		async () => {
+			const box = await page.locator(firstValue).boundingBox();
+			await page.evaluate(
+				({ x, y }) => {
+					const overlay = document.createElement("div");
+					overlay.style.position = "fixed";
+					overlay.style.left = `${x}px`;
+					overlay.style.top = `${y}px`;
+					overlay.style.width = "60px";
+					overlay.style.height = "24px";
+					overlay.style.background = "rgb(20, 16, 20)";
+					overlay.style.pointerEvents = "none";
+					overlay.style.zIndex = "9999";
+					document.body.append(overlay);
+				},
+				{ x: box?.x ?? 0, y: box?.y ?? 0 },
+			);
+		},
+		offlineTable,
+	);
+	await expectFaultRejected(
+		"summary lanes swapped",
+		async () => {
+			await page.evaluate(() => {
+				const counts = document.querySelectorAll(".owner-health__board-count");
+				if (counts.length >= 2) {
+					const first = counts[0];
+					const second = counts[1];
+					const swap = first.textContent;
+					first.textContent = second.textContent;
+					second.textContent = swap;
+				}
+			});
+		},
+		offlineTable,
+	);
+	await expectFaultRejected(
+		"required field removed",
+		async () => {
+			await page.evaluate(() => {
+				document
+					.querySelector(
+						"[data-owner-health-offline-table] tbody tr td:last-child",
+					)
+					?.remove();
+			});
+		},
+		offlineTable,
+	);
+
+	// The Arabic unconfirmed wording is pinned in Arabic with its own fixture:
+	// rewriting the rendered cell must be rejected by the literal oracle.
+	await page.unroute("**/rpc/admin/health/summary");
+	await page.route("**/rpc/admin/health/summary", (route) =>
+		route.fulfill({ status: 200, json: { json: mobileUnconfirmed } }),
+	);
+	// The addInitScript above pins English on every load; the reload must opt
+	// back into Arabic explicitly.
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.evaluate(() => window.localStorage.setItem("fitway.locale", "ar"));
+	await page.reload();
+	await setLocale(page, "ar");
+	const oracleArUnconfirmed: MobileBoardOracle = {
+		...mobileOracle.ar.incidents,
+		rows: mobileOracle.ar.incidents.rows.map((row, index) =>
+			index === 0 ? [...row.slice(0, 4), unconfirmedOracle.ar] : row,
+		),
+	};
+	const violationsBefore = await collectBoardViolations(
+		page,
+		incidentTable,
+		oracleArUnconfirmed,
+		"fault baseline ar unconfirmed",
+	);
+	expect(violationsBefore).toEqual([]);
+	await page.evaluate(() => {
+		const cell = document.querySelector(
+			"[data-owner-health-incident-table] tbody tr:first-child td:last-child bdi",
+		);
+		if (cell) cell.textContent = "وصلت كلها";
+	});
+	const violationsAfter = await collectBoardViolations(
+		page,
+		incidentTable,
+		oracleArUnconfirmed,
+		"fault Arabic unconfirmed removed",
+	);
+	expect(violationsAfter, "removing غير مؤكد must be rejected").not.toEqual([]);
 });
