@@ -1263,7 +1263,7 @@ test("the desktop table composition at 721px and wider is unchanged", async ({
 						: null,
 					scrollHintVisible:
 						(document.querySelector(".owner-health__scroll-hint")
-							? computed(document.querySelector(".owner-health__scroll-hint")!)
+							? computed(document.querySelector(".owner-health__scroll-hint"))
 									.display
 							: "missing") !== "none",
 				};
