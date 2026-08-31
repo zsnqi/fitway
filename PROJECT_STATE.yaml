@@ -2177,9 +2177,9 @@ milestones:
     integratedCommit: null
 
   phase11-uptime-mobile-fidelity-r01:
-    status: READY_FOR_INTEGRATION
+    status: DONE
     dependencies: [phase11-health, phase11-uptime-paper-successor]
-    ownerSession: sol-phase11-final
+    ownerSession: null
     branch: codex/phase11-uptime-mobile-fidelity-r01
     worktree: D:/Projects/fitway-worktrees/phase11-uptime-r01
     baseCommit: f70b113fbff1c2657dfcb9820678146c044ca15a
@@ -2200,9 +2200,9 @@ milestones:
       - "root manifests, lockfiles, test configuration, generated routing, deployment, external databases, and production systems"
     sharedLeases: []
     validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-31T17:49:56+03:00"
-    leaseExpiresAt: "2026-09-01T01:26:21+03:00"
-    handoff: docs/phase-records/handoffs/phase11-uptime-mobile-fidelity/20260831-174956-p11_uptime_r01-repair2-independent-verification-v01.md
+    lastHeartbeatAt: "2026-08-31T19:17:52+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/phase-11-aggregate.md
     stopReason: null
     gates:
       unit: PASS
@@ -2211,12 +2211,12 @@ milestones:
       accessibility: PASS
       visual: PASS
       independentReview: PASS
-    integratedCommit: null
+    integratedCommit: 0ff5ae905f1e7faac6a9d207045fccfc70bf4f91
 
   login-paper-adoption-r01:
-    status: READY_FOR_INTEGRATION
+    status: DONE
     dependencies: [phase4-staff-web, focus-parity-accessibility]
-    ownerSession: sol-phase11-final
+    ownerSession: null
     branch: codex/login-paper-adoption-r01
     worktree: D:/Projects/fitway-worktrees/login-paper-adoption-r01
     baseCommit: f70b113fbff1c2657dfcb9820678146c044ca15a
@@ -2241,9 +2241,9 @@ milestones:
       - "root manifests, lockfiles, environment schemas, and test-runner configuration"
     sharedLeases: []
     validationRepairAttempts: 1
-    lastHeartbeatAt: "2026-08-31T17:37:22+03:00"
-    leaseExpiresAt: "2026-09-01T01:26:21+03:00"
-    handoff: docs/phase-records/handoffs/login-paper-adoption/20260831-173722-login_paper_r01-final-delta-verification-v02.md
+    lastHeartbeatAt: "2026-08-31T19:17:52+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/phase-11-aggregate.md
     stopReason: null
     gates:
       unit: PASS
@@ -2252,10 +2252,10 @@ milestones:
       accessibility: PASS
       visual: PASS
       independentReview: PASS
-    integratedCommit: null
+    integratedCommit: 69bb533e22aa3e7d2c35f0c6094e455ad0e41106
 
   phase-11:
-    status: PLANNED
+    status: DONE
     dependencies:
       [
         phase11-shell,
@@ -2273,25 +2273,25 @@ milestones:
         login-paper-adoption-r01,
       ]
     ownerSession: null
-    branch: null
-    worktree: null
-    baseCommit: null
+    branch: codex/remaining-scope-coordinator
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
+    baseCommit: 60c767966887bb683b243ca155b38c64699148ca
     ownedPaths: []
     forbiddenPaths: []
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: null
+    lastHeartbeatAt: "2026-08-31T19:17:52+03:00"
     leaseExpiresAt: null
-    handoff: null
+    handoff: docs/phase-records/phase-11-aggregate.md
     stopReason: null
     gates:
-      unit: PENDING
-      integration: PENDING
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
-      independentReview: PENDING
-    integratedCommit: null
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
+      independentReview: PASS
+    integratedCommit: 30e0f0e8c40634edf57dabc4d00dfd838819b682
 
   focus-parity-accessibility:
     status: DONE
