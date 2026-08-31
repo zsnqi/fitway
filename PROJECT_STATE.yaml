@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-30T22:48:00Z"
+updatedAt: "2026-08-31T05:48:15Z"
 
 coordinator:
-  owner: "Coordinator final authority. Phase 11 Settings candidate 78fd650 is preserved as the exhausted p11_settings_b01 implementation attempt after fresh code and Paper reviews rejected it despite executable gates passing. Under the human's standing continuation authorization, bounded successor p11_settings_r01 is active on the same isolated worker from that exact candidate, with a fresh 0/2 budget and repair 1 now in progress. The accepted Settings specification r01 and fresh Paper successor remain binding."
+  owner: "Coordinator final authority. Phase 11 Settings is integrated and DONE through bounded successor p11_settings_r02 at verified coordinator commit 0104f1241bb61e8a1eccb289ca8fce7ed5fbfd02. Terminal p11_settings_b01 and p11_settings_r01 candidates, their exhausted 2/2 histories, and r02's own 2/2 repair history remain immutable. The accepted Settings specification r01 and Paper area 1FKS-0 remain binding; no deploy or push occurred."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -2023,11 +2023,11 @@ milestones:
     integratedCommit: null
 
   phase11-settings-r02:
-    status: IN_PROGRESS
+    status: DONE
     dependencies: [phase11-settings-spec]
-    ownerSession: "Codex continuation orchestrator, run p11_settings_r02 repair 2/2, replacing formatter-fragile conditional class fragments with explicit class-token construction and retaining the new visual regression coverage."
-    branch: codex/phase11-settings-b01
-    worktree: D:/Projects/fitway-worktrees/phase11-settings-b01
+    ownerSession: null
+    branch: codex/remaining-scope-coordinator
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
     baseCommit: 74f6f69cc3116e3b93e858600e9d94bfba4594b0
     ownedPaths:
       - apps/web/src/components/owner/settings/owner-settings-view.tsx
@@ -2046,18 +2046,18 @@ milestones:
       - every other milestone's phase record and handoff directory
     sharedLeases: []
     validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-08-31T02:47:54+03:00"
-    leaseExpiresAt: "2026-09-01T23:59:00+03:00"
-    handoff: docs/phase-records/handoffs/phase11-settings/20260831-024754-p11_settings_r02-repair-2-activation.md
+    lastHeartbeatAt: "2026-08-31T08:48:15+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/phase11-settings/20260831-084815-p11_settings_r02-coordinator-done.md
     stopReason: null
     gates:
-      unit: PENDING
-      integration: PENDING
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
-      independentReview: PENDING
-    integratedCommit: null
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
+      independentReview: PASS
+    integratedCommit: 0104f1241bb61e8a1eccb289ca8fce7ed5fbfd02
 
   phase11-health:
     status: DONE
@@ -2186,7 +2186,7 @@ milestones:
         phase11-access-b02,
         phase11-access-tx,
         phase11-access-ui,
-        phase11-settings,
+        phase11-settings-r02,
         phase11-health,
         phase11-uptime-mobile-fidelity-b02,
         phase11-reference-gating-debt,
