@@ -301,4 +301,55 @@ describe("public occupancy polling controller", () => {
 		expect(requests).toBe(2);
 		expect(container.textContent).toBe("closed");
 	});
+
+	it("evaluates a newly fetched payload against its receipt time", async () => {
+		const startedAt = new Date("2026-07-17T10:00:00.000Z");
+		vi.setSystemTime(startedAt);
+		let requests = 0;
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(async () => {
+				requests += 1;
+				const payload =
+					requests === 1
+						? {
+								schemaVersion: 2,
+								freshness: "unavailable",
+								computedAt: new Date().toISOString(),
+								trend: null,
+							}
+						: freshPayload();
+				return new Response(JSON.stringify(payload), {
+					status: 200,
+					headers: { "Content-Type": "application/json" },
+				});
+			}),
+		);
+		const client = new QueryClient({
+			defaultOptions: { queries: { retry: false } },
+		});
+		await act(async () => {
+			root?.render(
+				<QueryClientProvider client={client}>
+					<StateProbe />
+				</QueryClientProvider>,
+			);
+		});
+		await act(async () => vi.advanceTimersByTimeAsync(0));
+		await flush();
+		expect(container.textContent).toBe("unavailable");
+
+		vi.setSystemTime(new Date(startedAt.getTime() + 6_000));
+		await act(async () => {
+			await client.refetchQueries({ queryKey: ["public-occupancy"] });
+		});
+		await act(async () => vi.advanceTimersByTimeAsync(0));
+		await flush();
+		expect(requests).toBe(2);
+
+		expect(container.firstElementChild?.getAttribute("data-origin")).toBe(
+			"fresh",
+		);
+		expect(container.textContent).toBe("fresh");
+	});
 });

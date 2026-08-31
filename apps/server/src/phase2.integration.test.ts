@@ -1002,45 +1002,132 @@ describe("Phase 2 real Postgres vertical slice", () => {
 				}
 				return remainingMs;
 			};
+			const armFreshCountObservation = async () =>
+				page.evaluate(() => {
+					type Observation = {
+						count: string;
+						freshness: string;
+						observedAtMs: number;
+					};
+					type Observer = {
+						disconnect: () => void;
+						observe: (
+							target: unknown,
+							options: {
+								characterData: boolean;
+								childList: boolean;
+								subtree: boolean;
+							},
+						) => void;
+					};
+					const browserGlobal = globalThis as unknown as {
+						Date: { now: () => number };
+						MutationObserver: new (callback: () => void) => Observer;
+						document: {
+							documentElement: unknown;
+							querySelector: (selector: string) => {
+								textContent: string | null;
+							} | null;
+						};
+						__fitwayFreshCountObservation?: {
+							observations: Observation[];
+							observer: Observer;
+						};
+					};
+					browserGlobal.__fitwayFreshCountObservation?.observer.disconnect();
+					const observations: Observation[] = [];
+					const record = () => {
+						const count = browserGlobal.document
+							.querySelector(".public-live__count-value")
+							?.textContent?.trim();
+						const freshness = browserGlobal.document
+							.querySelector(
+								".public-live__freshness--mobile .public-live__freshness-primary",
+							)
+							?.textContent?.trim();
+						if (!count || !freshness) return;
+						const previous = observations.at(-1);
+						if (previous?.count === count && previous.freshness === freshness) {
+							return;
+						}
+						observations.push({
+							count,
+							freshness,
+							observedAtMs: browserGlobal.Date.now(),
+						});
+						if (observations.length > 16) observations.shift();
+					};
+					const observer = new browserGlobal.MutationObserver(record);
+					observer.observe(browserGlobal.document.documentElement, {
+						characterData: true,
+						childList: true,
+						subtree: true,
+					});
+					browserGlobal.__fitwayFreshCountObservation = {
+						observations,
+						observer,
+					};
+					record();
+				});
 			const observeFreshCountWait = async (
 				assertion: string,
 				sample: W1SimulatorSample,
 				freshnessText: string,
-			) =>
-				observeCountWait(
-					assertion,
-					sample.currentCount,
-					page
-						.waitForFunction(
-							({ expectedCount, expectedFreshness }) => {
-								const browserDocument = (
-									globalThis as unknown as {
-										document: {
-											querySelector: (selector: string) => {
-												textContent: string | null;
-											} | null;
-										};
-									}
-								).document;
-								const count = browserDocument.querySelector(
-									".public-live__count-value",
-								);
-								const freshness = browserDocument.querySelector(
-									".public-live__freshness--mobile .public-live__freshness-primary",
-								);
-								return (
-									count?.textContent?.trim() === expectedCount &&
-									freshness?.textContent?.trim() === expectedFreshness
-								);
-							},
-							{
-								expectedCount: String(sample.currentCount),
-								expectedFreshness: freshnessText,
-							},
-							{ timeout: countWaitTimeoutMs(sample, assertion) },
-						)
-						.then(() => undefined),
-				);
+			) => {
+				const deadlineMs = diagnosticStartedAt + sample.ackElapsedMs + 5_000;
+				const expectedCount = String(sample.currentCount);
+				const wait = async () => {
+					while (true) {
+						const observations = await page.evaluate(() => {
+							const browserGlobal = globalThis as unknown as {
+								__fitwayFreshCountObservation?: {
+									observations: Array<{
+										count: string;
+										freshness: string;
+										observedAtMs: number;
+									}>;
+								};
+							};
+							return [
+								...(browserGlobal.__fitwayFreshCountObservation?.observations ??
+									[]),
+							];
+						});
+						if (
+							observations.some(
+								(observation) =>
+									observation.count === expectedCount &&
+									observation.freshness === freshnessText &&
+									observation.observedAtMs <= deadlineMs,
+							)
+						) {
+							return;
+						}
+						const remainingMs = deadlineMs - Date.now();
+						if (remainingMs <= 0) {
+							throw new Error(
+								`${assertion} did not observe the fresh count before its deadline`,
+							);
+						}
+						await new Promise((resolve) =>
+							setTimeout(resolve, Math.min(50, remainingMs)),
+						);
+					}
+				};
+				try {
+					await observeCountWait(assertion, sample.currentCount, wait());
+				} finally {
+					await page.evaluate(() => {
+						const browserGlobal = globalThis as unknown as {
+							__fitwayFreshCountObservation?: {
+								observer: { disconnect: () => void };
+							};
+						};
+						browserGlobal.__fitwayFreshCountObservation?.observer.disconnect();
+						delete browserGlobal.__fitwayFreshCountObservation;
+					});
+				}
+			};
 			await page
 				.getByText("التحديث المباشر غير متاح الآن")
 				.waitFor({ timeout: 5_000 });
@@ -1424,12 +1511,14 @@ describe("Phase 2 real Postgres vertical slice", () => {
 			await page
 				.getByText("Last known approximate count", { exact: true })
 				.waitFor({ timeout: 5_000 });
+			await armFreshCountObservation();
 			const recoveredCount = await runSimulator(43);
 			await observeFreshCountWait(
 				"recovered-fresh-count-en",
 				recoveredCount,
 				"Live update",
 			);
+			await armFreshCountObservation();
 			await page.getByRole("button", { name: /Arabic/u }).click();
 			await observeFreshCountWait(
 				"recovered-fresh-count-ar",

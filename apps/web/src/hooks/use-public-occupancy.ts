@@ -38,12 +38,12 @@ export function usePublicOccupancy(random: () => number = Math.random) {
 
 	useEffect(() => {
 		const payload = query.data?.payload;
-		if (payload?.freshness !== "fresh") return;
-		const delay = Date.parse(payload.freshUntil) - Date.now();
-		if (delay <= 0) {
-			setNow(new Date());
-			return;
-		}
+		if (!payload) return;
+		const receivedAt = new Date();
+		setNow(receivedAt);
+		if (payload.freshness !== "fresh") return;
+		const delay = Date.parse(payload.freshUntil) - receivedAt.getTime();
+		if (delay <= 0) return;
 		const timer = window.setTimeout(() => setNow(new Date()), delay);
 		return () => window.clearTimeout(timer);
 	}, [query.data]);
