@@ -812,6 +812,32 @@ function collectMobileBoard(table: Element) {
 	}
 
 	const style = (element: Element) => win.getComputedStyle(element);
+	// CSSOM may normalize a shorthand into one, two, or four px tokens. Accept
+	// only that normalized spelling of the exact native Paper value; a relative,
+	// calculated, or merely-near value is not an equivalent mobile contract.
+	const isExactPx = (value: string, expected: number) => {
+		const tokens = value.trim().split(/\s+/u);
+		return (
+			tokens.length > 0 &&
+			tokens.every(
+				(token) =>
+					/^\d+(?:\.0+)?px$/u.test(token) &&
+					Number.parseFloat(token) === expected,
+			)
+		);
+	};
+	const requireExactPx = (
+		where: string,
+		property: string,
+		value: string,
+		expected: number,
+	) => {
+		if (!isExactPx(value, expected)) {
+			violations.push(
+				`${where}: ${property} is ${value}, expected exactly ${expected}px`,
+			);
+		}
+	};
 
 	/**
 	 * Scroll the value into the viewport first: elementFromPoint only sees the
@@ -1064,6 +1090,20 @@ function collectMobileBoard(table: Element) {
 			);
 		}
 		const cardStyle = style(card);
+		// These Paper-native values are part of the mobile composition, rather
+		// than inputs to the natural-height calculation below. Without this
+		// independent assertion, an injected gap/padding can self-derive a
+		// plausible card height and evade the geometry check.
+		for (const [property, value, expected] of [
+			["padding-top", cardStyle.paddingTop, 16],
+			["padding-right", cardStyle.paddingRight, 16],
+			["padding-bottom", cardStyle.paddingBottom, 16],
+			["padding-left", cardStyle.paddingLeft, 16],
+			["row-gap", cardStyle.rowGap, 10],
+			["column-gap", cardStyle.columnGap, 10],
+		] as const) {
+			requireExactPx(`row ${cardIndex + 1}`, property, value, expected);
+		}
 		const gap = Number.parseFloat(cardStyle.rowGap) || 0;
 		const padTop = Number.parseFloat(cardStyle.paddingTop) || 0;
 		const padBottom = Number.parseFloat(cardStyle.paddingBottom) || 0;
@@ -1109,6 +1149,16 @@ function collectMobileBoard(table: Element) {
 	if (tbody instanceof HTMLElement) {
 		const tbodyRect = tbody.getBoundingClientRect();
 		const tbodyStyle = style(tbody);
+		for (const [property, value, expected] of [
+			["padding-top", tbodyStyle.paddingTop, 12],
+			["padding-right", tbodyStyle.paddingRight, 12],
+			["padding-bottom", tbodyStyle.paddingBottom, 12],
+			["padding-left", tbodyStyle.paddingLeft, 12],
+			["row-gap", tbodyStyle.rowGap, 12],
+			["column-gap", tbodyStyle.columnGap, 12],
+		] as const) {
+			requireExactPx("collection", property, value, expected);
+		}
 		const gap = Number.parseFloat(tbodyStyle.rowGap) || 0;
 		const padTop = Number.parseFloat(tbodyStyle.paddingTop) || 0;
 		const padBottom = Number.parseFloat(tbodyStyle.paddingBottom) || 0;
@@ -1479,6 +1529,26 @@ test("the mobile contract rejects every false-pass fault injection", async ({
 	await expectFaultRejected(
 		"oversized fixed collection height stretches the grid",
 		inject(`${offlineTable} tbody { block-size: 2000px !important; }`),
+		offlineTable,
+	);
+	await expectFaultRejected(
+		"card row gap differs from the native mobile composition",
+		inject(`${offlineTable} tbody tr { row-gap: 180px !important; }`),
+		offlineTable,
+	);
+	await expectFaultRejected(
+		"card block padding differs from the native mobile composition",
+		inject(`${offlineTable} tbody tr { padding-block: 180px !important; }`),
+		offlineTable,
+	);
+	await expectFaultRejected(
+		"collection row gap differs from the native mobile composition",
+		inject(`${offlineTable} tbody { row-gap: 180px !important; }`),
+		offlineTable,
+	);
+	await expectFaultRejected(
+		"collection block padding differs from the native mobile composition",
+		inject(`${offlineTable} tbody { padding-block: 180px !important; }`),
 		offlineTable,
 	);
 	const injectCoverOverlay = (pointerEvents: "auto" | "none") => async () => {
