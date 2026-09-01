@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-09-01T05:07:43Z"
+updatedAt: "2026-09-01T06:33:52Z"
 
 coordinator:
-  owner: "Coordinator final authority. FITWAY v1 remains repository-closed at repository-closeout; historical phases and terminal attempts are immutable. The post-closeout desktop-demo milestone is the only active slice and is limited to guarded synthetic local-demo tooling, data, operator workflow, and verification. LAN/mobile support, presentation work, GitHub synchronization, release/tagging, deployment, and external go-live gates remain excluded."
+  owner: "Coordinator final authority. FITWAY v1 remains repository-closed at repository-closeout; the post-closeout desktop-demo milestone is DONE and historical phases and terminal attempts remain immutable. No implementation slice is active. LAN/mobile support, presentation work, GitHub synchronization, release/tagging, deployment, and external go-live gates remain excluded."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -2414,11 +2414,11 @@ milestones:
     integratedCommit: SELF
 
   desktop-demo:
-    status: IN_PROGRESS
+    status: DONE
     dependencies: [repository-closeout]
-    ownerSession: "Codex coordinator desktop demo execution"
-    branch: codex/desktop-demo
-    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
+    ownerSession: null
+    branch: main
+    worktree: null
     baseCommit: 5ebb22998a9e65b8f9fa751d66edc55e13f4bf4e
     ownedPaths:
       - compose.demo.yaml
@@ -2437,21 +2437,17 @@ milestones:
       - apps/web/**, packages/ui/**, shared catalogs, global tokens, generated routing, and canonical screenshots
       - historical phase records, terminal attempts, branches, worktrees, and approved visual provenance
       - LAN/mobile support, TLS gateways, certificate trust, firewall configuration, deployment, GitHub synchronization, releases, tags, presentation capture, and owner-facing PDF work
-    sharedLeases:
-      - coordinator-project-state-ledger
-      - root-package-demo-scripts
-      - desktop-demo-compose-runtime
-      - desktop-demo-playwright-runtime
-    validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-09-01T05:07:43Z"
-    leaseExpiresAt: "2026-09-01T13:07:43Z"
-    handoff: docs/phase-records/handoffs/desktop-demo/20260901-050743-desktop_demo_c01-in-progress.md
+    sharedLeases: []
+    validationRepairAttempts: 2
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/desktop-demo/20260901-063352-desktop_demo-coordinator-done.md
     stopReason: null
     gates:
-      unit: PENDING
-      integration: PENDING
-      browser: PENDING
-      accessibility: PENDING
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
-      independentReview: PENDING
-    integratedCommit: null
+      independentReview: PASS
+    integratedCommit: SELF
