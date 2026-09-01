@@ -45,6 +45,12 @@ async function startInArabic(page: Page) {
 	});
 }
 
+async function startInEnglish(page: Page) {
+	await page.addInitScript(() => {
+		window.localStorage.setItem("fitway.locale", "en");
+	});
+}
+
 async function fulfill(route: Route, json: unknown) {
 	await route.fulfill({
 		json,
@@ -59,6 +65,11 @@ async function fulfill(route: Route, json: unknown) {
 async function settleVisuals(page: Page) {
 	await page.evaluate(async () => {
 		await document.fonts.ready;
+		await Promise.all(
+			Array.from(document.images, (image) =>
+				image.decode().catch(() => undefined),
+			),
+		);
 		await new Promise<void>((resolve) => {
 			requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
 		});
@@ -81,6 +92,79 @@ async function expectNoHorizontalOverflow(page: Page) {
 		scrollWidth: document.documentElement.scrollWidth,
 	}));
 	expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth);
+}
+
+async function expectStateContentInsideCard(page: Page) {
+	const bounds = await page.evaluate(() => {
+		const card = document.querySelector<HTMLElement>(".public-state-card");
+		const body = document.querySelector<HTMLElement>(
+			".public-state-card__body",
+		);
+		if (!card || !body) throw new Error("Expected a public state card");
+		const cardRect = card.getBoundingClientRect();
+		const bodyRect = body.getBoundingClientRect();
+		const contentRects = Array.from(
+			body.querySelectorAll<HTMLElement>(
+				"h1, .public-state-card__status, .public-state-card__detail",
+			),
+		).map((element) => {
+			const rect = element.getBoundingClientRect();
+			return { left: rect.left, right: rect.right };
+		});
+		const textRects = Array.from(
+			body.querySelectorAll<HTMLElement>(
+				"h1, .public-state-card__status, .public-state-card__detail",
+			),
+		).flatMap((element) => {
+			const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+			const rects: Array<{ left: number; right: number }> = [];
+			for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+				if (!node.textContent?.trim()) continue;
+				const range = document.createRange();
+				range.selectNodeContents(node);
+				const rect = range.getBoundingClientRect();
+				rects.push({ left: rect.left, right: rect.right });
+			}
+			return rects;
+		});
+		return {
+			bodyScrollLeft: document.body.scrollLeft,
+			documentScrollLeft: document.documentElement.scrollLeft,
+			cardLeft: cardRect.left,
+			cardRight: cardRect.right,
+			bodyLeft: bodyRect.left,
+			bodyRight: bodyRect.right,
+			contentRects,
+			textRects,
+		};
+	});
+	expect(bounds.bodyScrollLeft).toBe(0);
+	expect(bounds.documentScrollLeft).toBe(0);
+	expect(bounds.bodyLeft).toBeGreaterThanOrEqual(bounds.cardLeft);
+	expect(bounds.bodyRight).toBeLessThanOrEqual(bounds.cardRight);
+	for (const rect of bounds.contentRects) {
+		expect(rect.left).toBeGreaterThanOrEqual(bounds.cardLeft);
+		expect(rect.right).toBeLessThanOrEqual(bounds.cardRight);
+	}
+	for (const rect of bounds.textRects) {
+		expect(rect.left).toBeGreaterThanOrEqual(bounds.cardLeft);
+		expect(rect.right).toBeLessThanOrEqual(bounds.cardRight);
+	}
+}
+
+async function expectHeaderInsideViewport(page: Page) {
+	const bounds = await page
+		.locator(".public-site-header__brand")
+		.evaluate((brand) => {
+			const rect = brand.getBoundingClientRect();
+			return {
+				left: rect.left,
+				right: rect.right,
+				viewportWidth: window.innerWidth,
+			};
+		});
+	expect(bounds.left).toBeGreaterThanOrEqual(0);
+	expect(bounds.right).toBeLessThanOrEqual(bounds.viewportWidth);
 }
 
 async function expectBandFirstHierarchy(page: Page) {
@@ -335,6 +419,8 @@ test("keeps stale, unavailable, and closed states honest in RTL and LTR", async 
 	await expect(page.locator("body")).not.toContainText(/37|متوسط|%/u);
 	await expectNoOccupancyReading(page);
 	await expectNoHorizontalOverflow(page);
+	await expectStateContentInsideCard(page);
+	await expectHeaderInsideViewport(page);
 	await expectNoWcagViolations(page);
 	await captureReview(page, testInfo, "public-unavailable-ar-mobile.png");
 
@@ -348,6 +434,8 @@ test("keeps stale, unavailable, and closed states honest in RTL and LTR", async 
 	await expect(page.locator("body")).not.toContainText(/37|Moderate|%/u);
 	await expectNoOccupancyReading(page);
 	await expectNoHorizontalOverflow(page);
+	await expectStateContentInsideCard(page);
+	await expectHeaderInsideViewport(page);
 	await expectNoWcagViolations(page);
 	await captureReview(page, testInfo, "public-unavailable-en-mobile.png");
 
@@ -368,6 +456,8 @@ test("keeps stale, unavailable, and closed states honest in RTL and LTR", async 
 	await expect(page.locator("body")).not.toContainText(/37|متوسط|%/u);
 	await expectNoOccupancyReading(page);
 	await expectNoHorizontalOverflow(page);
+	await expectStateContentInsideCard(page);
+	await expectHeaderInsideViewport(page);
 	await expectNoWcagViolations(page);
 	await captureReview(page, testInfo, "public-closed-ar-mobile.png");
 
@@ -378,8 +468,81 @@ test("keeps stale, unavailable, and closed states honest in RTL and LTR", async 
 	await expect(page.locator("body")).not.toContainText(/37|Moderate|%/u);
 	await expectNoOccupancyReading(page);
 	await expectNoHorizontalOverflow(page);
+	await expectStateContentInsideCard(page);
+	await expectHeaderInsideViewport(page);
 	await expectNoWcagViolations(page);
 	await captureReview(page, testInfo, "public-closed-en-mobile.png");
+});
+
+test("protects the unavailable English mobile route from a fresh load", async ({
+	page,
+}) => {
+	await page.setViewportSize({ width: 390, height: 844 });
+	await startInEnglish(page);
+	await page.route("**/public/occupancy", (route) =>
+		fulfill(route, {
+			schemaVersion: 2,
+			freshness: "unavailable",
+			computedAt: fixedNow.toISOString(),
+			trend: null,
+		}),
+	);
+	await page.goto("/");
+	await switchLocale(page, "en");
+	await expect(page.locator(".public-site-header__brand")).toBeVisible();
+	await page.reload();
+	await switchLocale(page, "en");
+	await expect(
+		page.getByRole("heading", {
+			level: 1,
+			name: "Live occupancy is unavailable right now",
+		}),
+	).toBeVisible();
+	await expectNoOccupancyReading(page);
+	await expectNoHorizontalOverflow(page);
+	await expectStateContentInsideCard(page);
+	await expectNoWcagViolations(page);
+	await expectHeaderInsideViewport(page);
+	await settleVisuals(page);
+	await expect(page).toHaveScreenshot(
+		"public-unavailable-route-en-mobile-390x844.png",
+		{ fullPage: true },
+	);
+});
+
+test("protects the closed English mobile route from a fresh load", async ({
+	page,
+}) => {
+	await page.setViewportSize({ width: 390, height: 844 });
+	await startInEnglish(page);
+	await page.route("**/public/occupancy", (route) =>
+		fulfill(route, {
+			schemaVersion: 2,
+			freshness: "closed",
+			timeZone: "Asia/Riyadh",
+			nextOpenAt: "2026-07-17T14:00:00.000Z",
+			computedAt: fixedNow.toISOString(),
+			trend: null,
+		}),
+	);
+	await page.goto("/");
+	await switchLocale(page, "en");
+	await expect(page.locator(".public-site-header__brand")).toBeVisible();
+	await page.reload();
+	await switchLocale(page, "en");
+	await expect(
+		page.getByRole("heading", { level: 1, name: "Closed now" }),
+	).toBeVisible();
+	await expectNoOccupancyReading(page);
+	await expectNoHorizontalOverflow(page);
+	await expectStateContentInsideCard(page);
+	await expectNoWcagViolations(page);
+	await expectHeaderInsideViewport(page);
+	await settleVisuals(page);
+	await expect(page).toHaveScreenshot(
+		"public-closed-route-en-mobile-390x844.png",
+		{ fullPage: true },
+	);
 });
 
 test("announces loading without exposing a reading in RTL and LTR", async ({
@@ -422,6 +585,11 @@ test("announces loading without exposing a reading in RTL and LTR", async ({
 	await expectNoHorizontalOverflow(page);
 	await expectNoWcagViolations(page);
 	await captureReview(page, testInfo, "public-loading-en-mobile.png");
+	await page.evaluate(() => document.fonts.ready);
+	await expect(page).toHaveScreenshot(
+		"public-loading-route-en-mobile-390x844.png",
+		{ fullPage: true },
+	);
 
 	releaseRequest?.();
 	await expect(
@@ -475,6 +643,11 @@ test("removes retained readings after a background error and keyboard retry reco
 	await expectNoHorizontalOverflow(page);
 	await expectNoWcagViolations(page);
 	await captureReview(page, testInfo, "public-error-en-mobile.png");
+	await page.evaluate(() => document.fonts.ready);
+	await expect(page).toHaveScreenshot(
+		"public-error-route-en-mobile-390x844.png",
+		{ fullPage: true },
+	);
 
 	const retryButton = page.getByRole("button", { name: "Try again" });
 	await retryButton.focus();

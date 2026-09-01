@@ -543,6 +543,10 @@
 		min-inline-size: 0;
 	}
 
+	.owner-access-owners td.owner-access-owner__identity {
+		display: flex;
+	}
+
 	.owner-access-owners td.owner-access-owner__controls {
 		padding-block-start: 0;
 	}

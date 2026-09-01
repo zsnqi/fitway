@@ -87,6 +87,10 @@ export function OwnerSettingsSection({ enabled }: { enabled: boolean }) {
 	if (settings.status === "pending") {
 		return (
 			<section className="owner-settings" aria-busy="true">
+				<header className="owner-settings__intro">
+					<h1>{messages.title}</h1>
+					<p>{messages.intro}</p>
+				</header>
 				<p className="owner-settings__status" role="status">
 					{messages.loading}
 				</p>
@@ -116,6 +120,10 @@ export function OwnerSettingsSection({ enabled }: { enabled: boolean }) {
 	if (!draft) {
 		return (
 			<section className="owner-settings" aria-busy="true">
+				<header className="owner-settings__intro">
+					<h1>{messages.title}</h1>
+					<p>{messages.intro}</p>
+				</header>
 				<p className="owner-settings__status" role="status">
 					{messages.loading}
 				</p>

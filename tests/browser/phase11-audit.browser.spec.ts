@@ -3,6 +3,8 @@ import path from "node:path";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, test } from "@playwright/test";
 
+import { expectOwnerReflowAt200Percent } from "./helpers/owner-reflow";
+
 async function selectAudit(page: Page) {
 	const tab = page.getByRole("tab", { name: /^(?:Audit|التدقيق)$/u });
 	await tab.focus();
@@ -840,14 +842,9 @@ test("keyboard, targets, reduced motion, 200% reflow, forced colors, and axe hol
 	}));
 	expect(motion.reduced).toBe(true);
 
-	await page.evaluate(() => {
-		document.documentElement.style.zoom = "2";
-	});
-	await expectNoDocumentOverflow(page);
+	await expectOwnerReflowAt200Percent(page, ".owner-audit__heading h1");
 	await captureReview(page, "owner-audit-en-200-percent-reflow.png");
-	await page.evaluate(() => {
-		document.documentElement.style.zoom = "1";
-	});
+	await page.setViewportSize({ width: 1024, height: 900 });
 
 	for (const locale of ["en", "ar"] as const) {
 		await setLocale(page, locale);

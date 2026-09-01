@@ -501,7 +501,7 @@ export function OwnerAnalyticsLoading() {
 		>
 			<BarChart3 aria-hidden="true" />
 			<div>
-				<h2>{messages.loading}</h2>
+				<h1>{messages.loading}</h1>
 				<p>{messages.loadingDescription}</p>
 			</div>
 			<div className="owner-loading-bars" aria-hidden="true">
@@ -524,7 +524,7 @@ export function OwnerAnalyticsError({ onRetry }: { onRetry: () => void }) {
 		>
 			<AlertTriangle aria-hidden="true" />
 			<div>
-				<h2>{messages.errorTitle}</h2>
+				<h1>{messages.errorTitle}</h1>
 				<p>{messages.errorDescription}</p>
 			</div>
 			<Button type="button" onClick={onRetry}>

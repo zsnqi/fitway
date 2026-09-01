@@ -193,6 +193,10 @@ test("exception and submitting visuals preserve frozen authentication semantics"
 	await expect(pin).toHaveValue("123456");
 	await expect(submit).toBeEnabled();
 	await captureReview(page, "login-invalid-en-320x720.png");
+	await page.evaluate(() => document.fonts.ready);
+	await expect(page).toHaveScreenshot("login-invalid-route-en-320x720.png", {
+		fullPage: true,
+	});
 
 	await submit.click();
 	await expect(page.getByRole("alert")).toHaveAttribute("data-tone", "offline");
@@ -206,6 +210,10 @@ test("exception and submitting visuals preserve frozen authentication semantics"
 		.toBe("0.72");
 	await expectNoHorizontalOverflow(page, "320px service failure");
 	await captureReview(page, "login-service-en-320x720.png");
+	await page.evaluate(() => document.fonts.ready);
+	await expect(page).toHaveScreenshot("login-service-route-en-320x720.png", {
+		fullPage: true,
+	});
 
 	await page.unroute("**/api/auth/staff/pin");
 	let releaseSubmission!: () => void;
@@ -233,6 +241,10 @@ test("exception and submitting visuals preserve frozen authentication semantics"
 	await expect(pin).toHaveValue("123456");
 	await expect(page.locator(".login-submit__spinner")).toBeVisible();
 	await captureReview(page, "login-submitting-en-320x720.png");
+	await page.evaluate(() => document.fonts.ready);
+	await expect(page).toHaveScreenshot("login-submitting-route-en-320x720.png", {
+		fullPage: true,
+	});
 	releaseSubmission();
 	await expect(page.getByRole("alert")).toHaveAttribute("data-tone", "error");
 });

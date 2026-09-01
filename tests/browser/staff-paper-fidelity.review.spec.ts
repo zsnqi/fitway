@@ -218,6 +218,13 @@ for (const state of states) {
 			}
 			await page.waitForTimeout(160);
 			await capture(page, `${state.name}-ar-${viewport.name}`);
+			if (state.name === "s4-closed" && viewport.name === "390") {
+				await page.evaluate(() => document.fonts.ready);
+				await expect(page).toHaveScreenshot(
+					"staff-closed-route-ar-mobile-390x844.png",
+					{ fullPage: true },
+				);
+			}
 
 			await switchToEnglish(page);
 			await expectNoDocumentOverflow(page);
@@ -244,6 +251,13 @@ test("s1-loading at every width", async ({ page }) => {
 		await page.goto("/staff");
 		await expect(page.locator(".sboard__skeleton").first()).toBeVisible();
 		await capture(page, `s1-loading-ar-${viewport.name}`);
+		if (viewport.name === "390") {
+			await page.evaluate(() => document.fonts.ready);
+			await expect(page).toHaveScreenshot(
+				"staff-loading-route-ar-mobile-390x844.png",
+				{ fullPage: true },
+			);
+		}
 	}
 });
 
@@ -284,6 +298,13 @@ test("s3-load-failure at every width", async ({ page }) => {
 
 		await switchToEnglish(page);
 		await capture(page, `s3-load-failure-en-${viewport.name}`);
+		if (viewport.name === "390") {
+			await page.evaluate(() => document.fonts.ready);
+			await expect(page).toHaveScreenshot(
+				"staff-error-route-en-mobile-390x844.png",
+				{ fullPage: true },
+			);
+		}
 	}
 });
 

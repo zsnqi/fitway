@@ -79,6 +79,8 @@ export function OwnerSectionSwitch(props: OwnerSectionRenderers) {
 	);
 	const tabRefs = useRef<Partial<Record<OwnerSection, HTMLButtonElement>>>({});
 	const copy = labels[locale];
+	const prerequisiteUnavailable =
+		!prerequisite.data && (prerequisite.isPending || prerequisite.isError);
 
 	function select(section: OwnerSection, focus = false) {
 		setVisited((current) =>
@@ -150,7 +152,7 @@ export function OwnerSectionSwitch(props: OwnerSectionRenderers) {
 					{visited.has(section)
 						? section !== "daily" &&
 							section !== "history" &&
-							(prerequisite.isPending || prerequisite.isError)
+							prerequisiteUnavailable
 							? props.daily
 							: section === "history"
 								? props.history(prerequisite)

@@ -331,10 +331,31 @@ test("loading, transport error, missing-only, and scheduled-closed days stay dis
 	await expect(page.getByRole("status")).toContainText(
 		"جارٍ تحميل تحليلات المالك",
 	);
+	await expect(
+		page.getByRole("heading", {
+			level: 1,
+			name: "جارٍ تحميل تحليلات المالك",
+		}),
+	).toBeVisible();
+	await expect(page.locator("main h1:visible")).toHaveCount(1);
 	await captureReview(page, "owner-analytics-loading-ar-1440.png");
+	await page.evaluate(() => document.fonts.ready);
+	await expect(page).toHaveScreenshot(
+		"owner-daily-loading-route-ar-desktop-1440x900.png",
+		{ fullPage: true },
+	);
 	await expect(page.getByRole("alert")).toContainText("تعذر تحميل التحليلات");
+	await expect(
+		page.getByRole("heading", { level: 1, name: "تعذر تحميل التحليلات" }),
+	).toBeVisible();
+	await expect(page.locator("main h1:visible")).toHaveCount(1);
 	await expect(page.getByText("لا توجد بيانات إشغال مرصودة")).toHaveCount(0);
 	await captureReview(page, "owner-analytics-error-ar-1440.png");
+	await page.evaluate(() => document.fonts.ready);
+	await expect(page).toHaveScreenshot(
+		"owner-daily-error-route-ar-desktop-1440x900.png",
+		{ fullPage: true },
+	);
 
 	mode = "missing";
 	await page.getByRole("button", { name: "إعادة المحاولة" }).click();

@@ -160,6 +160,8 @@ const lowerFrontier = ".owner-settings__actions--lower";
 const upperActions = ".owner-settings__actions--upper";
 
 let observedReadRequests = 0;
+let observedDailyRequests = 0;
+let observedTimeContextRequests = 0;
 let observedUpdateRequests: unknown[] = [];
 let readHold: { promise: Promise<void>; resolve: () => void } | null = null;
 let updateHold: { promise: Promise<void>; resolve: () => void } | null = null;
@@ -174,9 +176,11 @@ let updateResponse: { status: number; body: unknown } = {
 
 async function mockOwnerSurfaces(
 	page: Page,
-	options: { readStatus?: number } = {},
+	options: { readStatus?: number; dailyStatusAfterFirst?: number } = {},
 ) {
 	observedReadRequests = 0;
+	observedDailyRequests = 0;
+	observedTimeContextRequests = 0;
 	observedUpdateRequests = [];
 	readHold = null;
 	updateHold = null;
@@ -199,11 +203,24 @@ async function mockOwnerSurfaces(
 	await page.route("**/rpc/admin/session", (route) =>
 		route.fulfill({ status: 200, json: { json: ownerAuth } }),
 	);
-	await page.route("**/rpc/admin/analytics/daily", (route) =>
-		route.fulfill({ status: 200, json: { json: daily } }),
-	);
-	await page.route("**/rpc/admin/analytics/timeContext", (route) =>
-		route.fulfill({
+	await page.route("**/rpc/admin/analytics/daily", async (route) => {
+		observedDailyRequests += 1;
+		if (options.dailyStatusAfterFirst && observedDailyRequests > 1) {
+			await route.fulfill({
+				status: options.dailyStatusAfterFirst,
+				json: rpcError(
+					options.dailyStatusAfterFirst,
+					"SERVICE_UNAVAILABLE",
+					"Service Unavailable",
+				),
+			});
+			return;
+		}
+		await route.fulfill({ status: 200, json: { json: daily } });
+	});
+	await page.route("**/rpc/admin/analytics/timeContext", (route) => {
+		observedTimeContextRequests += 1;
+		return route.fulfill({
 			status: 200,
 			json: {
 				json: {
@@ -216,8 +233,8 @@ async function mockOwnerSurfaces(
 					})),
 				},
 			},
-		}),
-	);
+		});
+	});
 	await page.route("**/rpc/admin/audit/list", (route) =>
 		route.fulfill({
 			status: 200,
@@ -337,12 +354,83 @@ test("the section stands down while the shared analytics query is pending, issui
 	await page.waitForTimeout(300);
 	expect(observedReadRequests).toBe(0);
 	await expect(page.locator(section)).toHaveCount(0);
+	await expect(
+		page.getByRole("heading", { level: 1, name: "Loading owner analytics" }),
+	).toBeVisible();
+	await expect(page.locator("main h1:visible")).toHaveCount(1);
 
 	hold.resolve();
 	await expect(page.locator(section)).toBeVisible();
 	await expect(
 		page.locator(`${upperActions} .owner-settings__version`),
 	).toContainText("Current version 7");
+});
+
+test("a late first section visit neither refetches Daily nor loses a mounted Settings draft", async ({
+	page,
+}) => {
+	await page.addInitScript(() => {
+		const realNow = Date.now.bind(Date);
+		let offset = 0;
+		Date.now = () => realNow() + offset;
+		Object.defineProperty(window, "__fitwayAdvanceNow", {
+			value: (milliseconds: number) => {
+				offset += milliseconds;
+			},
+		});
+		window.localStorage.setItem("fitway.locale", "en");
+	});
+	await mockOwnerSurfaces(page, { dailyStatusAfterFirst: 503 });
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await page.goto("/admin");
+	await selectSettings(page);
+	const capacity = page.locator("input[data-testid='capacity']");
+	await expect(capacity).toHaveValue("220");
+	await capacity.fill("333");
+
+	await page.getByRole("tab", { name: "Daily" }).click();
+	await page.evaluate(() =>
+		(
+			window as typeof window & {
+				__fitwayAdvanceNow: (milliseconds: number) => void;
+			}
+		).__fitwayAdvanceNow(61_000),
+	);
+	await page.getByRole("tab", { name: "Access" }).click();
+	await expect(page.locator(".owner-access")).toBeVisible();
+	await page.waitForTimeout(300);
+
+	expect(observedDailyRequests).toBe(1);
+	expect(observedTimeContextRequests).toBe(1);
+	await page.getByRole("tab", { name: "Settings" }).click();
+	await expect(capacity).toHaveValue("333");
+});
+
+test("Settings loading retains one active page-level heading", async ({
+	page,
+}) => {
+	await mockOwnerSurfaces(page);
+	readHold = deferred();
+	await page.addInitScript(() =>
+		window.localStorage.setItem("fitway.locale", "en"),
+	);
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await page.goto("/admin");
+	await selectSettings(page);
+	await expect(
+		page.getByRole("heading", { level: 1, name: "Settings" }),
+	).toBeVisible();
+	await expect(page.getByRole("status")).toContainText("Loading settings");
+	await expect(page.locator("main h1:visible")).toHaveCount(1);
+	await page.evaluate(() => document.fonts.ready);
+	await expect(page).toHaveScreenshot(
+		"owner-settings-loading-route-en-desktop-1440x900.png",
+		{ fullPage: true },
+	);
+	readHold.resolve();
+	await expect(page.locator("input[data-testid='capacity']")).toHaveValue(
+		"220",
+	);
 });
 
 test("load failure carries its own copy and Retry; clean locks Save and renders no Discard", async ({
@@ -352,6 +440,12 @@ test("load failure carries its own copy and Retry; clean locks Save and renders 
 
 	await expect(page.locator(section)).toContainText(
 		"Settings could not be loaded",
+	);
+	await expect(page.locator("main h1:visible")).toHaveCount(1);
+	await page.evaluate(() => document.fonts.ready);
+	await expect(page).toHaveScreenshot(
+		"owner-settings-error-route-en-desktop-1440x900.png",
+		{ fullPage: true },
 	);
 	await expect(page.locator(section)).toContainText("Try again");
 	await setLocale(page, "ar");

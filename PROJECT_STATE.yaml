@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-09-01T16:55:12Z"
+updatedAt: "2026-09-01T17:25:17Z"
 
 coordinator:
   owner: "Coordinator final authority. fidelity-integration-closure-r01, r02, and r03 are preserved FAILED_VALIDATION; the human-authorized repair-lineage successor fidelity-integration-closure-r04 is IN_PROGRESS from preserved candidate b1bc91c. It qualifies rather than rewrites the historical repository-closeout and desktop-demo DONE claims. Historical phases and terminal attempts remain immutable. LAN/mobile support, presentation work, GitHub synchronization, release/tagging, deployment, owner-facing PDF work, and external go-live gates remain excluded."
@@ -2575,6 +2575,8 @@ milestones:
     ownedPaths:
       - apps/web/src/hooks/use-owner-daily-analytics.ts
       - apps/web/src/components/owner/reporting/owner-section-switch.tsx
+      - apps/web/src/components/owner/reporting/owner-reporting-section.tsx
+      - apps/web/src/components/owner/reporting/messages.ts
       - apps/web/src/components/owner/owner-analytics-view.tsx
       - apps/web/src/components/owner/settings/owner-settings-section.tsx
       - apps/web/src/components/owner/access/owner-access.css
@@ -2591,13 +2593,13 @@ milestones:
       - deployment, GitHub synchronization, releases, tags, external provisioning, presentation capture, and owner-facing PDF work
       - unrelated product behavior and demo-data semantics
     sharedLeases:
-      - "coordinator lease: confirmed Owner lazy-query/state-preservation and active-heading repairs only"
+      - "coordinator lease: confirmed Owner lazy-query/state-preservation and active-heading repairs, including the History prerequisite states"
       - "coordinator lease: Access identity and Access/Audit/Uptime 200 percent reflow CSS only"
       - "coordinator lease: routed regression tests and canonical non-live state evidence for the accepted Public, Login, Staff, and Owner families"
       - "coordinator lease: serialized disposable database, browser ports, desktop demo runtime, and evidence directories"
       - "coordinator lease: PROJECT_STATE and successor closure handoffs"
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-09-01T16:55:12Z"
+    lastHeartbeatAt: "2026-09-01T17:25:17Z"
     leaseExpiresAt: "2026-09-02T16:55:12Z"
     handoff: docs/phase-records/handoffs/fidelity-integration-closure/20260901-195513-fidelity_closure_r04-activation.md
     stopReason: null

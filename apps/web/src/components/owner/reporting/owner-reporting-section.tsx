@@ -60,10 +60,17 @@ export function OwnerReportingSection({
 	});
 	const anchor = reporting.anchorBusinessDay;
 	const current = reporting.range;
+	const pageTitle = messages.pageTitle;
 
 	if (prerequisite.isPending) {
 		return (
-			<section className="owner-reporting" aria-label={messages.title}>
+			<section
+				className="owner-reporting"
+				aria-labelledby={`${ids}-page-heading`}
+			>
+				<header className="owner-reporting-page-heading">
+					<h1 id={`${ids}-page-heading`}>{pageTitle}</h1>
+				</header>
 				<OwnerReportingLoading />
 			</section>
 		);
@@ -71,7 +78,13 @@ export function OwnerReportingSection({
 
 	if (prerequisite.isError || !prerequisite.data) {
 		return (
-			<section className="owner-reporting" aria-label={messages.title}>
+			<section
+				className="owner-reporting"
+				aria-labelledby={`${ids}-page-heading`}
+			>
+				<header className="owner-reporting-page-heading">
+					<h1 id={`${ids}-page-heading`}>{pageTitle}</h1>
+				</header>
 				<OwnerReportingError
 					title={messages.errorTitle}
 					onRetry={() => void prerequisite.refetch()}
@@ -115,7 +128,6 @@ export function OwnerReportingSection({
 	const loading =
 		reporting.heatmap.status === "pending" ||
 		reporting.comparison.status === "pending";
-	const pageTitle = locale === "ar" ? "التحليلات" : "Analytics";
 	const pageDate = formatDate(new Date(`${anchor}T12:00:00.000Z`), locale, {
 		weekday: "long",
 		day: "numeric",

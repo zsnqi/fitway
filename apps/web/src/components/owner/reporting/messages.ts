@@ -17,6 +17,7 @@
  */
 export const ownerReportingMessages = {
 	en: {
+		pageTitle: "Analytics",
 		title: "Busiest times and direction",
 		description:
 			"How the week actually fills, by weekday and gym-local hour · every average is measured on observed open minutes only",
@@ -143,6 +144,7 @@ export const ownerReportingMessages = {
 		none: "None",
 	},
 	ar: {
+		pageTitle: "التحليلات",
 		title: "أوقات الذروة والاتجاه",
 		description:
 			"كيف يمتلئ الأسبوع فعلياً، بحسب اليوم والساعة بتوقيت الصالة · كل متوسط محسوب على دقائق العمل المرصودة وحدها",

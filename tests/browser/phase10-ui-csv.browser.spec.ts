@@ -708,6 +708,15 @@ test("History exposes prerequisite pending, error, and one deliberate retry chai
 	// held open until the release below instead of racing a mock delay.
 	await expect(loading).toBeVisible();
 	await expect(loading).toHaveAttribute("role", "status");
+	await expect(
+		page.getByRole("heading", { level: 1, name: "Analytics" }),
+	).toBeVisible();
+	await expect(page.locator("main h1:visible")).toHaveCount(1);
+	await page.evaluate(() => document.fonts.ready);
+	await expect(page).toHaveScreenshot(
+		"owner-history-loading-route-en-mobile-390x844.png",
+		{ fullPage: true },
+	);
 	expect(calls.heatmap).toBe(0);
 	expect(calls.weekOverWeek).toBe(0);
 	expect(calls.csv).toBe(0);
@@ -716,6 +725,15 @@ test("History exposes prerequisite pending, error, and one deliberate retry chai
 	const error = reporting.locator("[data-owner-reporting-state='error']");
 	await expect(error).toBeVisible();
 	await expect(error).toHaveAttribute("role", "alert");
+	await expect(
+		page.getByRole("heading", { level: 1, name: "Analytics" }),
+	).toBeVisible();
+	await expect(page.locator("main h1:visible")).toHaveCount(1);
+	await page.evaluate(() => document.fonts.ready);
+	await expect(page).toHaveScreenshot(
+		"owner-history-error-route-en-mobile-390x844.png",
+		{ fullPage: true },
+	);
 	await expect.poll(() => calls.daily).toBe(1);
 	await expect.poll(() => calls.timeContext).toBe(1);
 	await page.waitForTimeout(150);
