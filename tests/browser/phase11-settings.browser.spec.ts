@@ -3,6 +3,12 @@ import path from "node:path";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, type Route, test } from "@playwright/test";
 
+async function selectSettings(page: Page) {
+	const tab = page.getByRole("tab", { name: /^(?:Settings|الإعدادات)$/u });
+	await tab.focus();
+	await page.keyboard.press("Enter");
+}
+
 const ownerAuth = {
 	principalId: "00000000-0000-4000-8000-000000000091",
 	principalKind: "owner",
@@ -308,6 +314,7 @@ async function openOwnerPage(page: Page, options?: { readStatus?: number }) {
 	);
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/admin");
+	await selectSettings(page);
 	await expect(page.locator(section)).toBeVisible();
 }
 
@@ -325,6 +332,7 @@ test("the section stands down while the shared analytics query is pending, issui
 	);
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/admin");
+	await selectSettings(page);
 
 	await page.waitForTimeout(300);
 	expect(observedReadRequests).toBe(0);
@@ -676,6 +684,7 @@ test("mobile exposes the lower frontier only when dirty, and both Save controls 
 	);
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto("/admin");
+	await selectSettings(page);
 	await expect(page.locator(section)).toBeVisible();
 
 	// Clean: no Discard and no lower frontier on mobile either.
@@ -845,6 +854,7 @@ test("all required widths and 200 percent reflow keep the document free of horiz
 		window.localStorage.setItem("fitway.locale", "en"),
 	);
 	await page.goto("/admin");
+	await selectSettings(page);
 	await expect(page.locator(section)).toBeVisible();
 	await page.locator("input[data-testid='capacity']").fill("240");
 
@@ -881,6 +891,7 @@ test("automated accessibility finds no serious or critical violations in either 
 	);
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/admin");
+	await selectSettings(page);
 	await expect(page.locator(section)).toBeVisible();
 	await hideShellSkipLink(page);
 
@@ -895,7 +906,7 @@ test("automated accessibility finds no serious or critical violations in either 
 	expect(seriousViolations(arabic)).toEqual([]);
 });
 
-test("review captures mirror the four accepted Paper frames without promoting any baseline", async ({
+test("canonical routed Settings frames and review states match Paper", async ({
 	page,
 }) => {
 	await mockOwnerSurfaces(page);
@@ -905,9 +916,17 @@ test("review captures mirror the four accepted Paper frames without promoting an
 
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/admin");
+	await selectSettings(page);
 	await expect(page.locator(section)).toBeVisible();
 	await hideShellSkipLink(page);
 	await captureReview(page, "owner-settings-en-desktop-1440.png");
+	await page.evaluate(() => document.fonts.ready);
+	await expect(page).toHaveScreenshot(
+		"owner-settings-route-en-desktop-1440x900.png",
+		{
+			fullPage: true,
+		},
+	);
 
 	await setLocale(page, "ar");
 	await captureReview(page, "owner-settings-ar-desktop-1440.png");
@@ -922,4 +941,11 @@ test("review captures mirror the four accepted Paper frames without promoting an
 	await setLocale(page, "ar");
 	await page.waitForTimeout(200);
 	await captureReview(page, "owner-settings-ar-mobile-390.png");
+	await page.evaluate(() => document.fonts.ready);
+	await expect(page).toHaveScreenshot(
+		"owner-settings-route-ar-mobile-390x844.png",
+		{
+			fullPage: true,
+		},
+	);
 });

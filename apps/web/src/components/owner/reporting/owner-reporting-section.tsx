@@ -10,7 +10,7 @@ import {
 	useOwnerReporting,
 	windowEndingOn,
 } from "@/hooks/use-owner-reporting";
-import { formatNumber } from "@/i18n/format";
+import { formatDate, formatNumber } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
 
 import type { OwnerDailyAnalyticsPrerequisite } from "./owner-analytics-mode-switch";
@@ -115,11 +115,27 @@ export function OwnerReportingSection({
 	const loading =
 		reporting.heatmap.status === "pending" ||
 		reporting.comparison.status === "pending";
+	const pageTitle = locale === "ar" ? "التحليلات" : "Analytics";
+	const pageDate = formatDate(new Date(`${anchor}T12:00:00.000Z`), locale, {
+		weekday: "long",
+		day: "numeric",
+		month: "long",
+		year: "numeric",
+	});
 
 	return (
-		<section className="owner-reporting" aria-labelledby={`${ids}-heading`}>
+		<section
+			className="owner-reporting"
+			aria-labelledby={`${ids}-page-heading`}
+		>
+			<header className="owner-reporting-page-heading">
+				<h1 id={`${ids}-page-heading`}>{pageTitle}</h1>
+				<p>
+					<bdi dir="auto">{pageDate}</bdi>
+				</p>
+			</header>
 			<header className="owner-reporting__heading">
-				<h2 id={`${ids}-heading`}>{messages.title}</h2>
+				<h2>{messages.title}</h2>
 				<p>{messages.description}</p>
 				<span className="owner-reporting__window">
 					<span>

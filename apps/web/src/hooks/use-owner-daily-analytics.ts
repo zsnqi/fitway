@@ -23,5 +23,9 @@ export function useOwnerDailyAnalytics() {
 		},
 		retry: false,
 		refetchOnWindowFocus: false,
+		// Section navigation adds observers after Daily has settled. Keep the same
+		// resolved business-day prerequisite across that in-page transition instead
+		// of issuing a duplicate daily/time-context pair for each visited section.
+		staleTime: 60_000,
 	});
 }

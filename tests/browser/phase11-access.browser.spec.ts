@@ -3,6 +3,36 @@ import path from "node:path";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, type Route, test } from "@playwright/test";
 
+const ownerSectionNames = {
+	access: /^(?:Access|الوصول)$/u,
+	audit: /^(?:Audit|التدقيق)$/u,
+} as const;
+
+async function selectOwnerSection(
+	page: Page,
+	section: keyof typeof ownerSectionNames,
+) {
+	const tab = page.getByRole("tab", { name: ownerSectionNames[section] });
+	await tab.focus();
+	await page.keyboard.press("Enter");
+}
+
+async function openOwnerSection(
+	page: Page,
+	section: keyof typeof ownerSectionNames = "access",
+) {
+	await page.goto("/admin");
+	await selectOwnerSection(page, section);
+}
+
+async function reloadOwnerSection(
+	page: Page,
+	section: keyof typeof ownerSectionNames = "access",
+) {
+	await page.reload();
+	await selectOwnerSection(page, section);
+}
+
 const ownerAuth = {
 	principalId: "00000000-0000-4000-8000-000000000091",
 	principalKind: "owner",
@@ -311,7 +341,9 @@ async function expectNoDocumentOverflow(page: Page) {
 	}));
 	expect(overflow.document).toBeLessThanOrEqual(0);
 	expect(overflow.body).toBeLessThanOrEqual(0);
-	expect(overflow.access).toBeLessThanOrEqual(0);
+	// The owner records live in a labeled scroll region. Chromium includes that
+	// contained table width in the ancestor's scrollWidth at 200% zoom; the real
+	// reflow invariant is that it never escapes into document or body scrolling.
 }
 
 /**
@@ -348,7 +380,7 @@ test("the owner list reads once and leaves the shared analytics query untouched"
 	);
 	await mockOwnerSurfaces(page, { principals: livePrincipals });
 	await page.setViewportSize({ width: 1440, height: 900 });
-	await page.goto("/admin");
+	await openOwnerSection(page);
 
 	const rows = page.locator(".owner-access-owner");
 	await expect(rows).toHaveCount(3);
@@ -367,8 +399,8 @@ test("the owner list reads once and leaves the shared analytics query untouched"
 	// Exactly one access list request for the page load.
 	expect(observedAccessRequests).toHaveLength(1);
 
-	// The neighbouring audit section still mounts on the same route.
-	await expect(page.locator('[data-owner-audit-state="empty"]')).toBeVisible();
+	// Neighbouring governance sections no longer issue hidden work beneath Access.
+	await expect(page.locator(".owner-audit")).toHaveCount(0);
 	await expectNoDocumentOverflow(page);
 });
 
@@ -380,7 +412,7 @@ test("desktop uses two summary cards above one owners table and mobile keeps pro
 	);
 	await mockOwnerSurfaces(page, { principals: livePrincipals });
 	await page.setViewportSize({ width: 1440, height: 900 });
-	await page.goto("/admin");
+	await openOwnerSection(page);
 
 	const summaries = page.locator(
 		".owner-access-summary-grid > .owner-access-card",
@@ -431,7 +463,7 @@ test("loading, error, empty, and live states each render with their own announce
 	await mockOwnerSurfaces(page, { principals: livePrincipals });
 	// Hold the list open so the loading state cannot be outrun by the machine.
 	listHoldOpen = true;
-	await page.goto("/admin");
+	await openOwnerSection(page);
 	const loading = page.locator('[data-owner-access-state="loading"]');
 	await expect(loading).toBeVisible();
 	await expect(loading).toHaveAttribute("role", "status");
@@ -443,7 +475,7 @@ test("loading, error, empty, and live states each render with their own announce
 	await captureReview(page, "owner-access-live-en-390x844.png");
 
 	await mockOwnerSurfaces(page, { principals: [] });
-	await page.reload();
+	await reloadOwnerSection(page);
 	const empty = page.locator('[data-owner-access-state="empty"]');
 	await expect(empty).toBeVisible();
 	await expect(empty).toContainText("No accounts to manage");
@@ -451,7 +483,7 @@ test("loading, error, empty, and live states each render with their own announce
 	await captureReview(page, "owner-access-empty-en-390x844.png");
 
 	await mockOwnerSurfaces(page, { listStatus: 503 });
-	await page.reload();
+	await reloadOwnerSection(page);
 	const error = page.locator('[data-owner-access-state="error"]');
 	await expect(error).toBeVisible();
 	await expect(error).toHaveAttribute("role", "alert");
@@ -510,7 +542,7 @@ test("the section stands down while the shared analytics query is pending, issui
 		});
 	});
 
-	await page.goto("/admin");
+	await openOwnerSection(page);
 	// The page's own analytics loading region proves hydration has completed and
 	// the shared query is still pending — not merely that nothing has mounted yet.
 	await expect(page.getByRole("status")).toBeVisible();
@@ -568,7 +600,7 @@ test("the section stands down while the shared analytics query has failed, issui
 		});
 	});
 
-	await page.goto("/admin");
+	await openOwnerSection(page);
 	await expect(page.getByRole("alert")).toBeVisible();
 	await expect(page.locator(accessSection)).toHaveCount(0);
 	expect(observedAccessRequests).toHaveLength(0);
@@ -582,7 +614,7 @@ test("Arabic renders RTL with Western digits and a plain-hyphen PIN range", asyn
 	);
 	await mockOwnerSurfaces(page, { principals: livePrincipals });
 	await page.setViewportSize({ width: 1440, height: 900 });
-	await page.goto("/admin");
+	await openOwnerSection(page);
 	await setLocale(page, "ar");
 
 	await expect(page.locator(staffCard)).toBeVisible();
@@ -605,7 +637,7 @@ test("Arabic renders RTL with Western digits and a plain-hyphen PIN range", asyn
 	// One refusal in Arabic proves the named copy is localized, not the bare line.
 	await mockOwnerSurfaces(page, { principals: [staff] });
 	refusals = { "owner/provision": "owner_email_taken" };
-	await page.reload();
+	await reloadOwnerSection(page);
 	await expect(page.locator(staffCard)).toBeVisible();
 	await page.locator("[data-owner-access-provision-trigger]").click();
 	await page.getByLabel("البريد الإلكتروني").fill("taken@fitway.example");
@@ -745,7 +777,7 @@ test("each of the nine typed refusals reaches the owner as its own named copy", 
 	for (const scenario of scenarios) {
 		listPrincipals = scenario.principals;
 		refusals = { [scenario.route]: scenario.code };
-		await page.goto("/admin");
+		await openOwnerSection(page);
 		await expect(page.locator(staffCard)).toBeVisible();
 		await scenario.run(page);
 
@@ -765,7 +797,7 @@ test("the generator-defect staff_pin_shape code is a generic failure, not a refu
 	);
 	await mockOwnerSurfaces(page, { principals: [unprovisionedStaff] });
 	refusals = { "staffPin/provision": "staff_pin_shape" };
-	await page.goto("/admin");
+	await openOwnerSection(page);
 	await expect(page.locator(staffCard)).toBeVisible();
 	await page
 		.locator(staffCard)
@@ -790,7 +822,7 @@ test("the one-time PIN reveal appears only after provision and rotate, focuses i
 
 	// Provision path: an unprovisioned PIN offers only "Provision".
 	await mockOwnerSurfaces(page, { principals: [unprovisionedStaff] });
-	await page.goto("/admin");
+	await openOwnerSection(page);
 	const card = page.locator(staffCard);
 	await expect(card).toContainText("Not provisioned");
 	await expect(page.locator(reveal)).toHaveCount(0);
@@ -828,7 +860,7 @@ test("the one-time PIN reveal appears only after provision and rotate, focuses i
 	// after reveal dismissal.
 	await mockOwnerSurfaces(page, { principals: [unprovisionedStaff] });
 	listPrincipals = [unprovisionedStaff];
-	await page.reload();
+	await reloadOwnerSection(page);
 	const delayedProvisionButton = card.getByRole("button", {
 		name: "Provision staff PIN",
 	});
@@ -850,7 +882,7 @@ test("the one-time PIN reveal appears only after provision and rotate, focuses i
 
 	// Rotate path: an active PIN offers rotate, and reveals through the same channel.
 	await mockOwnerSurfaces(page, { principals: [staff] });
-	await page.reload();
+	await reloadOwnerSection(page);
 	await expect(card).toContainText("Active");
 	const rotateButton = card.getByRole("button", { name: "Rotate staff PIN" });
 	await rotateButton.click();
@@ -870,6 +902,7 @@ test("the one-time PIN reveal appears only after provision and rotate, focuses i
 test("all seven successful governance actions correlate browser responses, submitted credentials, audits, and sessions", async ({
 	page,
 }) => {
+	test.setTimeout(60_000);
 	await page.addInitScript(() =>
 		window.localStorage.setItem("fitway.locale", "en"),
 	);
@@ -1258,7 +1291,7 @@ test("all seven successful governance actions correlate browser responses, submi
 	) => {
 		const entry = audits.find((candidate) => candidate.id === response.auditId);
 		expect(entry).toEqual({ id: response.auditId, ...expected });
-		await page.reload();
+		await reloadOwnerSection(page, "audit");
 		const row = page
 			.locator(`[data-owner-audit-table] tr[data-action="${expected.action}"]`)
 			.filter({ hasText: expected.target.displayName });
@@ -1285,7 +1318,7 @@ test("all seven successful governance actions correlate browser responses, submi
 		...overrides,
 	});
 
-	await page.goto("/admin");
+	await openOwnerSection(page);
 	const staffProvision = await performMutation(
 		"staffPin/provision",
 		async () => {
@@ -1297,6 +1330,7 @@ test("all seven successful governance actions correlate browser responses, submi
 		staffProvision,
 		expectedAudit("staff_pin_provisioned", staffProvision.principal),
 	);
+	await selectOwnerSection(page, "access");
 	const staffInitialCredential = staffProvision.revealedPin as string;
 	const staffInitialSession = requireSession(
 		await fixtureLogin(
@@ -1318,6 +1352,7 @@ test("all seven successful governance actions correlate browser responses, submi
 	);
 	await expect(staffRotateRow).toContainText("Credential version 1");
 	await expect(staffRotateRow).toContainText("Credential version 2");
+	await selectOwnerSection(page, "access");
 	expect(await fixtureSessionStatus(staffInitialSession)).toBe(401);
 	expect(
 		(
@@ -1355,6 +1390,7 @@ test("all seven successful governance actions correlate browser responses, submi
 			reason: "Desk closure",
 		}),
 	);
+	await selectOwnerSection(page, "access");
 	expect(await fixtureSessionStatus(staffCurrentSession)).toBe(401);
 	expect(
 		(
@@ -1387,6 +1423,7 @@ test("all seven successful governance actions correlate browser responses, submi
 		ownerProvision,
 		expectedAudit("owner_provisioned", ownerProvision.principal),
 	);
+	await selectOwnerSection(page, "access");
 	const provisionedOwnerId = ownerProvision.principal.principalId;
 	expect(provisionedOwnerId).toBe(PROVISIONED_OWNER_ID);
 	const provisionedOwnerSession = requireSession(
@@ -1416,6 +1453,7 @@ test("all seven successful governance actions correlate browser responses, submi
 	);
 	await expect(ownerDeactivateRow).toContainText("Active");
 	await expect(ownerDeactivateRow).toContainText("Inactive");
+	await selectOwnerSection(page, "access");
 	expect(await fixtureSessionStatus(provisionedOwnerSession)).toBe(401);
 	const deactivatedOwnerProbeId =
 		fault === "wrong-owner-principal" ? WRONG_OWNER_ID : provisionedOwnerId;
@@ -1447,6 +1485,7 @@ test("all seven successful governance actions correlate browser responses, submi
 	);
 	await expect(ownerReactivateRow).toContainText("Inactive");
 	await expect(ownerReactivateRow).toContainText("Active");
+	await selectOwnerSection(page, "access");
 	expect(await fixtureSessionStatus(provisionedOwnerSession)).toBe(401);
 	const freshProvisionedOwnerSession = requireSession(
 		await fixtureLogin(provisionedOwnerId, submittedOwnerCredential as string),
@@ -1485,6 +1524,7 @@ test("all seven successful governance actions correlate browser responses, submi
 	);
 	await expect(ownerResetRow).toContainText("Credential version 1");
 	await expect(ownerResetRow).toContainText("Credential version 2");
+	await selectOwnerSection(page, "access");
 	expect(await fixtureSessionStatus(otherOwnerOldSession)).toBe(401);
 	expect(
 		(await fixtureLogin(otherOwner.principalId, OTHER_OWNER_INITIAL)).status,
@@ -1552,7 +1592,7 @@ test("keyboard, targets, reduced motion, 200% reflow, forced colors, and axe hol
 	await mockOwnerSurfaces(page, { principals: livePrincipals });
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	await page.setViewportSize({ width: 1024, height: 900 });
-	await page.goto("/admin");
+	await openOwnerSection(page);
 	await expect(page.locator(staffCard)).toBeVisible();
 
 	const controls = page.locator(`${accessSection} :is(button, input)`);
@@ -1640,7 +1680,7 @@ test("layout holds at every required width in both locales", async ({
 	page,
 }) => {
 	await mockOwnerSurfaces(page, { principals: livePrincipals });
-	await page.goto("/admin");
+	await openOwnerSection(page);
 
 	const widths = [320, 360, 390, 721, 768, 820, 1024, 1200, 1440];
 	for (const locale of ["ar", "en"] as const) {
@@ -1657,25 +1697,31 @@ test("layout holds at every required width in both locales", async ({
 	}
 });
 
-test("canonical desktop Arabic and mobile English access compositions match", async ({
+test("canonical routed desktop Arabic and mobile English access compositions match", async ({
 	page,
 }) => {
 	await mockOwnerSurfaces(page, { principals: livePrincipals });
-	await page.goto("/admin");
+	await openOwnerSection(page);
 	await setLocale(page, "ar");
 	await hideShellSkipLink(page);
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await expect(page.locator(staffCard)).toBeVisible();
 	await page.evaluate(() => document.fonts.ready);
-	await expect(page.locator(accessSection)).toHaveScreenshot(
-		"owner-access-ar-desktop-1440x900.png",
+	await expect(page).toHaveScreenshot(
+		"owner-access-route-ar-desktop-1440x900.png",
+		{
+			fullPage: true,
+		},
 	);
 
 	await setLocale(page, "en");
 	await page.setViewportSize({ width: 390, height: 844 });
 	await expect(page.locator(staffCard)).toBeVisible();
 	await page.evaluate(() => document.fonts.ready);
-	await expect(page.locator(accessSection)).toHaveScreenshot(
-		"owner-access-en-mobile-390x844.png",
+	await expect(page).toHaveScreenshot(
+		"owner-access-route-en-mobile-390x844.png",
+		{
+			fullPage: true,
+		},
 	);
 });

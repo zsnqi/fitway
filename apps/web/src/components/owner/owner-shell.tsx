@@ -79,10 +79,7 @@ export function OwnerShell({ children }: { children: ReactNode }) {
 					aria-label={messages.common.operations}
 				>
 					<bdi>FITWAY</bdi>
-					<svg viewBox="0 0 26 26" aria-hidden="true">
-						<circle cx="13" cy="13" r="11.2" />
-						<path d="M9.2 16.8 16.8 9.2" />
-					</svg>
+					<img src="/fitway-logo.png" alt="" aria-hidden="true" />
 				</Link>
 			</header>
 			{children}

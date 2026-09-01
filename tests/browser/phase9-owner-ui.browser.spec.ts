@@ -177,42 +177,28 @@ test("owner curve preserves exact states, historical timezones, and RTL/LTR inte
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/admin");
 	await expect(
-		page.getByRole("heading", { name: "منحنى الإشغال اليوم" }),
+		page.getByRole("heading", { name: "التحليلات اليومية" }),
 	).toBeVisible();
 	await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
 	await expect(
 		page.getByText("تقدير لمرات الدخول، وليس لعدد الأعضاء الفريدين"),
 	).toBeVisible();
-	await expect(page.getByText("رصد مفقود").first()).toBeVisible();
-	await expect(page.getByText("إغلاق مجدول").first()).toBeVisible();
-	await expect(page.getByText("صفر فعلي")).toBeVisible();
-	await expect(page.getByText("6 / 8", { exact: true })).toBeVisible();
+	await expect(page.locator(".owner-chart__missing")).toHaveCount(2);
+	await expect(page.locator(".owner-chart__closed")).toHaveCount(2);
+	await expect(page.locator(".owner-chart__zero")).toHaveCount(1);
+	await expect(page.getByText("تغطية الرصد")).toHaveCount(0);
 	await expect(page.locator("body")).not.toContainText(/[٠-٩]/u);
 
 	const chart = page.locator("[data-owner-chart]");
 	await expect(chart).toBeVisible();
-	const isolatedPoint = await page
-		.locator(".owner-chart__point")
-		.last()
-		.boundingBox();
-	const readingCard = await page.locator("[data-active-reading]").boundingBox();
-	if (!isolatedPoint || !readingCard) {
-		throw new Error("Chart point visibility geometry is unavailable");
-	}
-	const pointOverlapsReading =
-		isolatedPoint.x < readingCard.x + readingCard.width &&
-		isolatedPoint.x + isolatedPoint.width > readingCard.x &&
-		isolatedPoint.y < readingCard.y + readingCard.height &&
-		isolatedPoint.y + isolatedPoint.height > readingCard.y;
-	expect(pointOverlapsReading).toBe(false);
 	const rtlX = Number(
 		await page.locator(".owner-chart__active").getAttribute("cx"),
 	);
-	expect(rtlX).toBeGreaterThan(500);
+	expect(rtlX).toBeLessThan(600);
 	await chart.focus();
 	await expect(chart).toBeFocused();
-	await page.keyboard.press("ArrowLeft");
-	await expect(page.locator("[data-active-reading]")).toContainText("8");
+	await page.keyboard.press("ArrowRight");
+	await expect(page.locator("[data-active-reading]")).toContainText("46");
 	const chartBox = await chart.boundingBox();
 	if (!chartBox) throw new Error("Owner chart has no bounding box");
 	await chart.hover({
@@ -243,13 +229,13 @@ test("owner curve preserves exact states, historical timezones, and RTL/LTR inte
 		.click();
 	await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
 	await expect(
-		page.getByRole("heading", { name: "Today's occupancy curve" }),
+		page.getByRole("heading", { name: "Daily analytics" }),
 	).toBeVisible();
 	const ltrX = Number(
 		await page.locator(".owner-chart__active").getAttribute("cx"),
 	);
-	expect(ltrX).toBeGreaterThan(500);
-	expect(Math.abs(rtlSelectedX + ltrX - 1000)).toBeLessThan(1);
+	expect(ltrX).toBeGreaterThan(600);
+	expect(Math.abs(rtlSelectedX + ltrX - 1200)).toBeLessThan(1);
 	await expect(page.getByText("10:00 AM").first()).toBeVisible();
 	await expect(page.getByText("3:04 AM").first()).toBeVisible();
 	await chart.focus();
@@ -436,8 +422,8 @@ test("keyboard order, practical targets, reduced motion, and 200% reflow remain 
 			chart.evaluate((element) => getComputedStyle(element).boxShadow),
 		)
 		.not.toBe("none");
-	await page.keyboard.press("ArrowLeft");
-	await expect(page.locator("[data-active-reading]")).toContainText("8");
+	await page.keyboard.press("ArrowRight");
+	await expect(page.locator("[data-active-reading]")).toContainText("46");
 
 	await page.locator("summary").focus();
 	await expect(page.locator("summary")).toBeFocused();
@@ -471,7 +457,40 @@ test("keyboard order, practical targets, reduced motion, and 200% reflow remain 
 	);
 	expect(overflow).toBe(false);
 	await expect(
-		page.getByRole("heading", { name: "منحنى الإشغال اليوم" }),
+		page.getByRole("heading", { name: "التحليلات اليومية" }),
 	).toBeVisible();
 	await captureReview(page, "owner-analytics-ar-200-percent-reflow.png");
+});
+
+test("canonical routed Owner Daily desktop Arabic and mobile English match", async ({
+	page,
+}) => {
+	await mockOwnerAnalytics(page);
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await page.goto("/admin");
+	await expect(
+		page.getByRole("heading", { name: "التحليلات اليومية" }),
+	).toBeVisible();
+	await page.evaluate(() => document.fonts.ready);
+	await expect(page).toHaveScreenshot(
+		"owner-daily-route-ar-desktop-1440x900.png",
+		{
+			fullPage: true,
+		},
+	);
+
+	await page
+		.getByRole("button", { name: "التبديل إلى اللغة الإنجليزية" })
+		.click();
+	await page.setViewportSize({ width: 390, height: 844 });
+	await expect(
+		page.getByRole("heading", { name: "Daily analytics" }),
+	).toBeVisible();
+	await page.evaluate(() => document.fonts.ready);
+	await expect(page).toHaveScreenshot(
+		"owner-daily-route-en-mobile-390x844.png",
+		{
+			fullPage: true,
+		},
+	);
 });

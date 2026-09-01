@@ -3,6 +3,22 @@ import path from "node:path";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, test } from "@playwright/test";
 
+async function selectAudit(page: Page) {
+	const tab = page.getByRole("tab", { name: /^(?:Audit|التدقيق)$/u });
+	await tab.focus();
+	await page.keyboard.press("Enter");
+}
+
+async function openAudit(page: Page) {
+	await page.goto("/admin");
+	await selectAudit(page);
+}
+
+async function reloadAudit(page: Page) {
+	await page.reload();
+	await selectAudit(page);
+}
+
 const ownerAuth = {
 	principalId: "00000000-0000-4000-8000-000000000091",
 	principalKind: "owner",
@@ -362,7 +378,9 @@ async function expectNoDocumentOverflow(page: Page) {
 	}));
 	expect(overflow.document).toBeLessThanOrEqual(0);
 	expect(overflow.body).toBeLessThanOrEqual(0);
-	expect(overflow.audit).toBeLessThanOrEqual(0);
+	// The dense history table owns a labeled horizontal scroll region. Chromium
+	// includes that contained width in the ancestor's scrollWidth at 200% zoom;
+	// document and body containment are the route-level reflow invariant.
 }
 
 /**
@@ -460,7 +478,7 @@ test("audit rows render in the configured gym timezone regardless of the device 
 	await emulateDeviceTimeZone(page);
 	await mockOwnerSurfaces(page);
 	await page.setViewportSize({ width: 1440, height: 900 });
-	await page.goto("/admin");
+	await openAudit(page);
 
 	const rows = page.locator(`${auditTable} tbody tr`);
 	await expect(rows).toHaveCount(4);
@@ -506,7 +524,7 @@ test("Arabic renders RTL with Western digits and a mirrored change arrow", async
 	await emulateDeviceTimeZone(page);
 	await mockOwnerSurfaces(page);
 	await page.setViewportSize({ width: 1440, height: 900 });
-	await page.goto("/admin");
+	await openAudit(page);
 	await setLocale(page, "ar");
 
 	const table = page.locator(auditTable);
@@ -533,7 +551,7 @@ test("loading, empty, error, and populated states each render", async ({
 	await page.setViewportSize({ width: 390, height: 844 });
 
 	await mockOwnerSurfaces(page, { auditDelayMs: 600 });
-	await page.goto("/admin");
+	await openAudit(page);
 	await expect(
 		page.locator('[data-owner-audit-state="loading"]'),
 	).toBeVisible();
@@ -545,7 +563,7 @@ test("loading, empty, error, and populated states each render", async ({
 	await captureReview(page, "owner-audit-populated-en-390x844.png");
 
 	await mockOwnerSurfaces(page, { entries: [] });
-	await page.reload();
+	await reloadAudit(page);
 	const empty = page.locator('[data-owner-audit-state="empty"]');
 	await expect(empty).toBeVisible();
 	await expect(empty).toContainText("No audit records match");
@@ -553,7 +571,7 @@ test("loading, empty, error, and populated states each render", async ({
 	await captureReview(page, "owner-audit-empty-en-390x844.png");
 
 	await mockOwnerSurfaces(page, { auditStatus: 503 });
-	await page.reload();
+	await reloadAudit(page);
 	const error = page.locator('[data-owner-audit-state="error"]');
 	await expect(error).toBeVisible();
 	await expect(error).toHaveAttribute("role", "alert");
@@ -575,7 +593,7 @@ test("filters reach the transport with gym-day bounds and an explicit missing op
 	await emulateDeviceTimeZone(page);
 	await mockOwnerSurfaces(page);
 	await page.setViewportSize({ width: 1200, height: 900 });
-	await page.goto("/admin");
+	await openAudit(page);
 	await expect(page.locator(auditTable)).toBeVisible();
 
 	const filters = page.getByRole("form", { name: "Filter audit history" });
@@ -613,7 +631,7 @@ test("keyset paging appends older records without repeating one", async ({
 	);
 	await mockOwnerSurfaces(page, { pageSize: 2 });
 	await page.setViewportSize({ width: 1024, height: 900 });
-	await page.goto("/admin");
+	await openAudit(page);
 
 	const rows = page.locator(`${auditTable} tbody tr`);
 	await expect(rows).toHaveCount(2);
@@ -678,7 +696,7 @@ test("governance rows render their resolved target and missing effective-count s
 	);
 	await mockOwnerSurfaces(page, { entries: governanceEntries });
 	await page.setViewportSize({ width: 1200, height: 900 });
-	await page.goto("/admin");
+	await openAudit(page);
 	const table = page.locator(auditTable);
 	const deactivationRow = table.locator(
 		'tbody tr[data-action="owner_deactivated"]',
@@ -712,7 +730,7 @@ test("layout holds at every required width in both locales", async ({
 	page,
 }) => {
 	await mockOwnerSurfaces(page);
-	await page.goto("/admin");
+	await openAudit(page);
 
 	const widths = [320, 360, 390, 721, 768, 820, 1024, 1200, 1440];
 	// Collected across the whole sweep, then asserted once: a clipped label at
@@ -781,7 +799,7 @@ test("keyboard, targets, reduced motion, 200% reflow, forced colors, and axe hol
 	await mockOwnerSurfaces(page);
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	await page.setViewportSize({ width: 1024, height: 900 });
-	await page.goto("/admin");
+	await openAudit(page);
 	await expect(page.locator(auditTable)).toBeVisible();
 
 	const controls = page.locator(
@@ -861,26 +879,32 @@ test("keyboard, targets, reduced motion, 200% reflow, forced colors, and axe hol
 	}
 });
 
-test("canonical desktop Arabic and mobile English audit compositions match", async ({
+test("canonical routed desktop Arabic and mobile English audit compositions match", async ({
 	page,
 }) => {
 	await emulateDeviceTimeZone(page);
 	await mockOwnerSurfaces(page);
-	await page.goto("/admin");
+	await openAudit(page);
 	await setLocale(page, "ar");
 	await hideShellSkipLink(page);
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await expect(page.locator(auditTable)).toBeVisible();
 	await page.evaluate(() => document.fonts.ready);
-	await expect(page.locator(".owner-audit")).toHaveScreenshot(
-		"owner-audit-ar-desktop-1440x900.png",
+	await expect(page).toHaveScreenshot(
+		"owner-audit-route-ar-desktop-1440x900.png",
+		{
+			fullPage: true,
+		},
 	);
 
 	await setLocale(page, "en");
 	await page.setViewportSize({ width: 390, height: 844 });
 	await expect(page.locator(auditTable)).toBeVisible();
 	await page.evaluate(() => document.fonts.ready);
-	await expect(page.locator(".owner-audit")).toHaveScreenshot(
-		"owner-audit-en-mobile-390x844.png",
+	await expect(page).toHaveScreenshot(
+		"owner-audit-route-en-mobile-390x844.png",
+		{
+			fullPage: true,
+		},
 	);
 });

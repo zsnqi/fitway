@@ -66,7 +66,7 @@ export function OwnerAuditSection() {
 	return (
 		<section className="owner-audit" aria-labelledby={fieldId("heading")}>
 			<header className="owner-audit__heading">
-				<h2 id={fieldId("heading")}>{messages.title}</h2>
+				<h1 id={fieldId("heading")}>{messages.title}</h1>
 				<p>{messages.description}</p>
 				<span className="owner-audit__zone">
 					{messages.timeZoneLabel} <bdi>{audit.timeZone}</bdi>

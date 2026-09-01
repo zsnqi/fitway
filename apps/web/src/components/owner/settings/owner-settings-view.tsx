@@ -156,7 +156,7 @@ export function OwnerSettingsView({
 			>
 				<div className="owner-settings__top">
 					<header className="owner-settings__intro">
-						<h2 id={headingId}>{messages.title}</h2>
+						<h1 id={headingId}>{messages.title}</h1>
 						<p>{messages.intro}</p>
 					</header>
 					<div className="owner-settings__actions owner-settings__actions--upper">

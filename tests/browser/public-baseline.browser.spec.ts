@@ -202,8 +202,7 @@ test("renders the privacy-safe schema-v2 live hierarchy and 28-bar signal", asyn
 	await expect(page.locator(".public-live__intensity-bar")).toHaveCount(0);
 	await expect(page.locator("body")).not.toContainText("%");
 	await expect(page.locator("body")).not.toContainText(/السعة|capacity/iu);
-	await expect(page.locator(".public-live__freshness--desktop")).toBeVisible();
-	await expect(page.locator(".public-live__freshness--mobile")).toBeHidden();
+	await expect(page.locator(".public-live__freshness")).toBeVisible();
 	await expectSignalDistribution(page);
 	await expect(
 		page.locator('.public-live__signal-bar[data-state="complete"]'),
@@ -281,8 +280,7 @@ test("keeps stale, unavailable, and closed states honest in RTL and LTR", async 
 	await expect(page.getByRole("status")).toContainText(
 		"التحديثات المباشرة متأخرة",
 	);
-	await expect(page.locator(".public-live__freshness--mobile")).toBeVisible();
-	await expect(page.locator(".public-live__freshness--desktop")).toBeHidden();
+	await expect(page.locator(".public-live__freshness")).toBeVisible();
 	await expect(
 		page.getByRole("heading", { level: 1, name: "متوسط" }),
 	).toBeVisible();

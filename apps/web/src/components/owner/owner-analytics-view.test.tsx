@@ -105,13 +105,13 @@ describe("owner daily analytics states", () => {
 			/>,
 		);
 
-		expect(container.textContent).toContain("Occupancy by minute");
-		expect(container.textContent).toContain("Estimated entrance crossings");
+		expect(container.textContent).toContain("People present through the day");
+		expect(container.textContent).toContain("Total entries");
 		expect(container.textContent).toContain("not unique members");
 		expect(container.textContent).toContain("Scheduled closed");
 		expect(container.textContent).toContain("Missing observation");
-		expect(container.textContent).toContain("Genuine zero");
-		expect(container.textContent).toContain("2 / 3");
+		expect(container.textContent).not.toContain("Observation coverage");
+		expect(container.querySelectorAll(".owner-metric")).toHaveLength(3);
 		expect(container.textContent).toContain("10:00 AM");
 		expect(container.textContent).toContain("3:01 AM");
 		expect(container.querySelectorAll(".owner-chart__point")).toHaveLength(2);

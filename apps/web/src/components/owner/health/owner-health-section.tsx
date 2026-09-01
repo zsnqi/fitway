@@ -50,7 +50,7 @@ export function OwnerHealthSection() {
 	return (
 		<section className="owner-health" aria-labelledby={headingId}>
 			<header className="owner-health__heading">
-				<h2 id={headingId}>{messages.title}</h2>
+				<h1 id={headingId}>{messages.title}</h1>
 				<p>{messages.description}</p>
 				{summary ? (
 					<span className="owner-health__window">

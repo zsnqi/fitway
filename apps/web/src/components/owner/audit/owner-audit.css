@@ -16,7 +16,7 @@
 	gap: 6px;
 }
 
-.owner-audit__heading h2 {
+.owner-audit__heading h1 {
 	margin: 0;
 	color: var(--fw-chalk);
 	font-size: 18px;
@@ -76,14 +76,13 @@
 /*
  * A mode select and its value partner are not equal work: the select holds a
  * full sentence-length label while the partner holds a small count or a short
- * search term. Size the select from its own longest option and give the partner
- * everything left over. `max-content` keeps that true when the labels differ by
- * locale, when copy changes, and when the user enlarges text; the track floor
- * above is what guarantees the field is wide enough to grant it.
+ * search term. Give the select the larger fractional track so its longest
+ * localized option keeps a small shaping margin even at 320px, while the value
+ * control retains a usable floor.
  */
 .owner-audit-field__controls {
 	display: grid;
-	grid-template-columns: minmax(0, max-content) minmax(72px, 1fr);
+	grid-template-columns: minmax(0, 1.6fr) minmax(72px, 1fr);
 	gap: 8px;
 }
 

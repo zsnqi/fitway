@@ -103,6 +103,29 @@
 	margin-block-start: 24px;
 }
 
+.owner-reporting-page-heading {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding-inline-end: 510px;
+}
+
+.owner-reporting-page-heading h1 {
+	margin: 0;
+	color: var(--fw-chalk);
+	font-size: 32px;
+	font-weight: 700;
+	line-height: 40px;
+}
+
+.owner-reporting-page-heading p {
+	margin: 0;
+	color: var(--fw-text-subtle);
+	font-size: 14px;
+	font-variant-numeric: tabular-nums;
+	line-height: 18px;
+}
+
 .owner-reporting > * {
 	min-inline-size: 0;
 }
@@ -1098,5 +1121,114 @@
 	.owner-reporting-disclosure summary:focus-visible,
 	.owner-reporting-download:focus-visible {
 		outline: 2px solid CanvasText;
+	}
+}
+
+/* Integrated Management section navigation. The top rail remains the accepted
+   two-destination Monitoring/Management rail; these tabs live within Management. */
+.owner-section-switch {
+	position: relative;
+	min-inline-size: 0;
+}
+
+.owner-section-switch > .owner-analytics-mode__tabs {
+	position: absolute;
+	z-index: 2;
+	inset-block-start: 0;
+	inset-inline-end: 0;
+	display: flex;
+	inline-size: auto;
+	max-inline-size: min(100%, 560px);
+	block-size: 44px;
+	margin: 0;
+	overflow-x: auto;
+	scrollbar-width: thin;
+}
+
+.owner-section-switch > .owner-analytics-mode__tabs [role="tab"] {
+	flex: 0 0 auto;
+	inline-size: auto;
+	min-inline-size: 80px;
+	padding-inline: 12px;
+	font-size: 14px;
+	line-height: 20px;
+}
+
+.owner-section-switch__panel[hidden] {
+	display: none;
+}
+
+.owner-section-switch__panel > :is(section, .owner-reporting),
+.owner-section-switch__panel > .owner-analytics {
+	margin-block-start: 0;
+}
+
+.owner-section-switch__panel > :is(.owner-access, .owner-audit, .owner-health, .owner-settings) {
+	padding-block-start: 0;
+	border-block-start: 0;
+}
+
+.owner-section-switch__panel :is(
+	.owner-access__heading,
+	.owner-audit__heading,
+	.owner-health__heading,
+	.owner-settings__intro
+) h1 {
+	font-size: 32px;
+	font-weight: 700;
+	line-height: 40px;
+}
+
+.owner-section-switch__panel :is(
+	.owner-access__heading,
+	.owner-audit__heading,
+	.owner-health__heading,
+	.owner-settings__intro
+) > p {
+	font-size: 14px;
+	line-height: 23px;
+}
+
+.owner-section-switch__panel > section > header,
+.owner-section-switch__panel .owner-settings__top,
+.owner-section-switch__panel .owner-reporting__heading {
+	padding-inline-end: 510px;
+}
+
+@media (max-width: 900px) {
+	.owner-section-switch > .owner-analytics-mode__tabs {
+		position: static;
+		inline-size: 100%;
+		max-inline-size: none;
+		margin-block-end: 18px;
+	}
+
+	.owner-section-switch__panel > section > header,
+	.owner-section-switch__panel .owner-settings__top,
+	.owner-section-switch__panel .owner-reporting__heading {
+		padding-inline-end: 0;
+	}
+
+	.owner-reporting-page-heading {
+		padding-inline-end: 0;
+	}
+}
+
+@media (max-width: 720px) {
+	.owner-section-switch > .owner-analytics-mode__tabs {
+		margin-inline: -16px;
+		padding-inline: 16px;
+		inline-size: calc(100% + 32px);
+	}
+
+	.owner-section-switch__panel :is(
+		.owner-access__heading,
+		.owner-audit__heading,
+		.owner-health__heading,
+		.owner-settings__intro
+	) h1,
+	.owner-reporting-page-heading h1 {
+		font-size: 24px;
+		line-height: 32px;
 	}
 }

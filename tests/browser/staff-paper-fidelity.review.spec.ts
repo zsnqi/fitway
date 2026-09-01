@@ -306,3 +306,36 @@ test("200pct text zoom reflow", async ({ page }) => {
 	await switchToEnglish(page);
 	await capture(page, "s7-trust-failure-en-200pct-720");
 });
+
+test("canonical routed Staff live and trust-failure frames match", async ({
+	page,
+}) => {
+	await mockStaff(page, liveSnapshot);
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await page.goto("/staff");
+	await expect(page.locator('.sboard[data-variant="live"]')).toBeVisible();
+	await page.evaluate(() => document.fonts.ready);
+	await expect(page).toHaveScreenshot(
+		"staff-live-route-ar-desktop-1440x900.png",
+		{
+			fullPage: true,
+		},
+	);
+
+	await switchToEnglish(page);
+	await page.setViewportSize({ width: 390, height: 844 });
+	await expect(page).toHaveScreenshot(
+		"staff-live-route-en-mobile-390x844.png",
+		{
+			fullPage: true,
+		},
+	);
+
+	await mockStaff(page, trustFailureSnapshot);
+	await page.reload();
+	await expect(page.locator('.sboard[data-variant="trust"]')).toBeVisible();
+	await expect(page).toHaveScreenshot(
+		"staff-trust-failure-route-en-mobile-390x844.png",
+		{ fullPage: true },
+	);
+});

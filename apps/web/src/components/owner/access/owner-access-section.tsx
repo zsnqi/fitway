@@ -49,7 +49,7 @@ export function OwnerAccessSection({ enabled }: { enabled: boolean }) {
 	return (
 		<section className="owner-access" aria-labelledby={headingId}>
 			<header className="owner-access__heading">
-				<h2 id={headingId}>{messages.title}</h2>
+				<h1 id={headingId}>{messages.title}</h1>
 				<p>{messages.description}</p>
 			</header>
 

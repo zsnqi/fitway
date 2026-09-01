@@ -1,6 +1,7 @@
 import type { PublicOccupancyUsablePayload } from "@fitway/api/public-occupancy";
 import type { CSSProperties } from "react";
 
+import { CROWD_SIGNAL_LINEAR_HEIGHTS } from "@/components/crowd-signal-ramp";
 import { useI18n } from "@/i18n/provider";
 
 type CrowdBand = PublicOccupancyUsablePayload["band"];
@@ -12,12 +13,6 @@ const barBands: CrowdBand[] = [
 	...Array<CrowdBand>(8).fill("busy"),
 	...Array<CrowdBand>(9).fill("packed"),
 ];
-export const CROWD_SIGNAL_LINEAR_HEIGHTS = [
-	11.93, 15.34, 18.75, 21.59, 25, 28.41, 31.82, 34.66, 38.07, 41.48, 44.32,
-	47.73, 51.14, 54.55, 57.39, 60.8, 64.2, 67.61, 70.45, 73.86, 77.27, 80.68,
-	83.52, 86.93, 90.34, 93.18, 96.59, 100,
-];
-
 export function CrowdSignal({
 	band,
 	stale = false,

@@ -97,7 +97,7 @@ export function OwnerSettingsSection({ enabled }: { enabled: boolean }) {
 		return (
 			<section className="owner-settings">
 				<header className="owner-settings__intro">
-					<h2>{messages.errorTitle}</h2>
+					<h1>{messages.errorTitle}</h1>
 					<p>{messages.errorDescription}</p>
 				</header>
 				<button

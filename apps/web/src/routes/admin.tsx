@@ -7,10 +7,9 @@ import { OwnerAuditSection } from "@/components/owner/audit/owner-audit-section"
 import { OwnerHealthSection } from "@/components/owner/health/owner-health-section";
 import { OwnerAnalyticsPage } from "@/components/owner/owner-analytics-page";
 import { OwnerShell } from "@/components/owner/owner-shell";
-import { OwnerAnalyticsModeSwitch } from "@/components/owner/reporting/owner-analytics-mode-switch";
 import { OwnerReportingSection } from "@/components/owner/reporting/owner-reporting-section";
+import { OwnerSectionSwitch } from "@/components/owner/reporting/owner-section-switch";
 import { OwnerSettingsSection } from "@/components/owner/settings/owner-settings-section";
-import { useOwnerAnalyticsMessages } from "@/components/owner/use-owner-analytics-messages";
 import { useStaffMessages } from "@/hooks/use-staff-messages";
 import { client } from "@/utils/orpc";
 
@@ -32,7 +31,6 @@ export const Route = createFileRoute("/admin")({
 function AdminRoute() {
 	const { adminAccess } = Route.useRouteContext();
 	const messages = useStaffMessages();
-	const ownerMessages = useOwnerAnalyticsMessages();
 
 	return (
 		<OwnerShell>
@@ -61,26 +59,15 @@ function AdminRoute() {
 						</section>
 					</>
 				) : (
-					<OwnerAnalyticsModeSwitch
-						heading={
-							<>
-								<p>{ownerMessages.eyebrow}</p>
-								<h1>{ownerMessages.title}</h1>
-								<span>{ownerMessages.description}</span>
-							</>
-						}
-						daily={
-							<>
-								<OwnerAnalyticsPage />
-								<OwnerAuditSection />
-								<OwnerHealthSection />
-								<OwnerAccessSection enabled />
-								<OwnerSettingsSection enabled />
-							</>
-						}
+					<OwnerSectionSwitch
+						daily={<OwnerAnalyticsPage />}
 						history={(prerequisite) => (
 							<OwnerReportingSection prerequisite={prerequisite} />
 						)}
+						access={<OwnerAccessSection enabled />}
+						audit={<OwnerAuditSection />}
+						health={<OwnerHealthSection />}
+						settings={<OwnerSettingsSection enabled />}
 					/>
 				)}
 			</main>

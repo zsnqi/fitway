@@ -4,14 +4,7 @@ import type {
 	DailyAnalytics,
 } from "@fitway/api/analytics/daily-analytics";
 import { Button } from "@fitway/ui/components/button";
-import {
-	AlertTriangle,
-	BarChart3,
-	Clock3,
-	DoorOpen,
-	Gauge,
-	RefreshCw,
-} from "lucide-react";
+import { AlertTriangle, BarChart3, RefreshCw } from "lucide-react";
 import {
 	type KeyboardEvent,
 	type PointerEvent,
@@ -19,7 +12,7 @@ import {
 	useState,
 } from "react";
 
-import { formatGymTime, formatNumber } from "@/i18n/format";
+import { formatDate, formatGymTime, formatNumber } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
 
 import type { OwnerAnalyticsMessages } from "./messages";
@@ -74,22 +67,17 @@ function bucketState(
 }
 
 function AnalyticsMetric({
-	icon: Icon,
 	label,
 	value,
 	detail,
 }: {
-	icon: typeof Gauge;
 	label: string;
 	value: React.ReactNode;
 	detail: React.ReactNode;
 }) {
 	return (
 		<article className="owner-metric">
-			<div className="owner-metric__heading">
-				<span>{label}</span>
-				<Icon aria-hidden="true" />
-			</div>
+			<span className="owner-metric__heading">{label}</span>
 			<strong>{value}</strong>
 			<p>{detail}</p>
 		</article>
@@ -142,16 +130,23 @@ function OccupancyChart({
 			),
 		[daily.timeline],
 	);
-	const [activePosition, setActivePosition] = useState(0);
+	const initialActive = Math.max(
+		0,
+		values.findIndex(
+			({ bucket }) => bucket.minuteStartUtc === daily.peak?.minuteStartUtc,
+		),
+	);
+	const [activePosition, setActivePosition] = useState(initialActive);
 	const active =
 		values[Math.min(activePosition, Math.max(0, values.length - 1))];
-	const width = 1000;
-	const height = 300;
-	const padX = 28;
-	const padTop = 20;
-	const padBottom = 38;
+	const width = 1200;
+	const height = 240;
+	const padX = 0;
+	const padTop = 1;
+	const padBottom = 0;
 	const chartHeight = height - padTop - padBottom;
-	const maxCount = Math.max(1, ...values.map(({ bucket }) => bucket.count));
+	const rawMaxCount = Math.max(1, ...values.map(({ bucket }) => bucket.count));
+	const maxCount = Math.max(20, Math.ceil(rawMaxCount / 20) * 20);
 	const xFor = (index: number) => {
 		const ratio =
 			daily.timeline.length <= 1 ? 0.5 : index / (daily.timeline.length - 1);
@@ -161,6 +156,9 @@ function OccupancyChart({
 	const yFor = (count: number) => padTop + (1 - count / maxCount) * chartHeight;
 	const runs = valueRuns(daily.timeline);
 	const ranges = absentRanges(daily.timeline);
+	const tickIndices = Array.from({ length: 7 }, (_unused, index) =>
+		Math.round((index / 6) * Math.max(0, daily.timeline.length - 1)),
+	);
 
 	function moveActive(delta: number) {
 		setActivePosition((current) =>
@@ -205,127 +203,130 @@ function OccupancyChart({
 	return (
 		<section className="owner-chart-panel" aria-labelledby="owner-chart-title">
 			<div className="owner-chart-panel__heading">
-				<div>
-					<h2 id="owner-chart-title">{messages.chartTitle}</h2>
-					<p>{messages.chartHint}</p>
+				<h2 id="owner-chart-title">{messages.chartTitle}</h2>
+				<p className="sr-only">{messages.chartHint}</p>
+				<div className="sr-only" data-active-reading aria-live="polite">
+					{activeLabel}
 				</div>
-				<div className="owner-chart-panel__meta">
-					<ul className="owner-chart-legend" aria-label={messages.state}>
-						<li data-kind="value">{messages.legendObserved}</li>
-						<li data-kind="missing">{messages.legendMissing}</li>
-						<li data-kind="closed">{messages.legendClosed}</li>
-						<li data-kind="zero">{messages.legendZero}</li>
-					</ul>
-					<div
-						className="owner-chart-reading"
-						data-active-reading
-						aria-live="polite"
+			</div>
+			<div className="owner-chart-layout">
+				<div className="owner-chart-y-axis" aria-hidden="true">
+					<span>{formatNumber(maxCount, locale)}</span>
+					<span>{formatNumber(Math.round((maxCount * 2) / 3), locale)}</span>
+					<span>{formatNumber(Math.round(maxCount / 3), locale)}</span>
+					<span>{formatNumber(0, locale)}</span>
+				</div>
+				<div className="owner-chart-plot">
+					<button
+						type="button"
+						className="owner-chart-interaction"
+						data-owner-chart
+						aria-label={`${messages.chartLabel}. ${activeLabel}`}
+						onKeyDown={handleKeyDown}
+						onPointerMove={selectFromPointer}
+						onPointerDown={selectFromPointer}
 					>
-						<span>{messages.selectedReading}</span>
-						<strong>
-							<bdi>{formatNumber(active.bucket.count, locale)}</bdi>
-						</strong>
-						<bdi dir="auto">{activeTime}</bdi>
+						<svg
+							className="owner-chart"
+							viewBox={`0 0 ${width} ${height}`}
+							preserveAspectRatio="none"
+							aria-hidden="true"
+						>
+							<defs>
+								<pattern
+									id="owner-missing"
+									width="8"
+									height="8"
+									patternUnits="userSpaceOnUse"
+								>
+									<path d="M-2 8L8-2M4 12L12 4" />
+								</pattern>
+							</defs>
+							{[0, 1 / 3, 2 / 3, 1].map((ratio) => (
+								<line
+									key={ratio}
+									className="owner-chart__grid"
+									x1={padX}
+									x2={width - padX}
+									y1={padTop + ratio * chartHeight}
+									y2={padTop + ratio * chartHeight}
+								/>
+							))}
+							{ranges.map((range) => {
+								const first = xFor(range.start);
+								const last = xFor(range.end);
+								const bucketWidth =
+									(width - padX * 2) / Math.max(1, daily.timeline.length);
+								return (
+									<rect
+										key={`${range.state}-${range.start}`}
+										className={`owner-chart__${range.state}`}
+										x={Math.min(first, last) - bucketWidth / 2}
+										y={padTop}
+										width={Math.abs(last - first) + bucketWidth}
+										height={chartHeight}
+									/>
+								);
+							})}
+							{runs.map((run) => (
+								<polyline
+									key={run[0]?.index}
+									className="owner-chart__line"
+									points={run
+										.map(
+											({ bucket, index }) =>
+												`${xFor(index)},${yFor(bucket.count)}`,
+										)
+										.join(" ")}
+								/>
+							))}
+							{values.map(({ bucket, index }) => (
+								<circle
+									key={`point-${index}`}
+									className="owner-chart__point"
+									cx={xFor(index)}
+									cy={yFor(bucket.count)}
+									r="3"
+								/>
+							))}
+							{values
+								.filter(({ bucket }) => bucket.count === 0)
+								.map(({ index }) => (
+									<rect
+										key={`zero-${index}`}
+										className="owner-chart__zero"
+										x={xFor(index) - 3}
+										y={yFor(0) - 3}
+										width="6"
+										height="6"
+									/>
+								))}
+							<circle
+								className="owner-chart__active-halo"
+								cx={xFor(active.index)}
+								cy={yFor(active.bucket.count)}
+								r="11"
+							/>
+							<circle
+								className="owner-chart__active"
+								cx={xFor(active.index)}
+								cy={yFor(active.bucket.count)}
+								r="5"
+							/>
+						</svg>
+					</button>
+					<div className="owner-chart-x-axis" aria-hidden="true">
+						{tickIndices.map((index, tick) => {
+							const bucket = daily.timeline[index];
+							return (
+								<span key={`${index}-${tick}`}>
+									{bucket ? bucketTime(bucket, locale, timeZoneByVersion) : ""}
+								</span>
+							);
+						})}
 					</div>
 				</div>
 			</div>
-			<button
-				type="button"
-				className="owner-chart-interaction"
-				data-owner-chart
-				aria-label={`${messages.chartLabel}. ${activeLabel}`}
-				onKeyDown={handleKeyDown}
-				onPointerMove={selectFromPointer}
-				onPointerDown={selectFromPointer}
-			>
-				<svg
-					className="owner-chart"
-					viewBox={`0 0 ${width} ${height}`}
-					preserveAspectRatio="none"
-					aria-hidden="true"
-				>
-					<defs>
-						<pattern
-							id="owner-missing"
-							width="8"
-							height="8"
-							patternUnits="userSpaceOnUse"
-						>
-							<path d="M-2 8L8-2M4 12L12 4" />
-						</pattern>
-					</defs>
-					{[0, 0.5, 1].map((ratio) => (
-						<line
-							key={ratio}
-							className="owner-chart__grid"
-							x1={padX}
-							x2={width - padX}
-							y1={padTop + ratio * chartHeight}
-							y2={padTop + ratio * chartHeight}
-						/>
-					))}
-					{ranges.map((range) => {
-						const first = xFor(range.start);
-						const last = xFor(range.end);
-						const bucketWidth =
-							(width - padX * 2) / Math.max(1, daily.timeline.length);
-						return (
-							<rect
-								key={`${range.state}-${range.start}`}
-								className={`owner-chart__${range.state}`}
-								x={Math.min(first, last) - bucketWidth / 2}
-								y={padTop}
-								width={Math.abs(last - first) + bucketWidth}
-								height={chartHeight}
-							/>
-						);
-					})}
-					{runs.map((run) => (
-						<polyline
-							key={run[0]?.index}
-							className="owner-chart__line"
-							points={run
-								.map(
-									({ bucket, index }) => `${xFor(index)},${yFor(bucket.count)}`,
-								)
-								.join(" ")}
-						/>
-					))}
-					{values.map(({ bucket, index }) => (
-						<circle
-							key={`point-${index}`}
-							className="owner-chart__point"
-							cx={xFor(index)}
-							cy={yFor(bucket.count)}
-							r="3"
-						/>
-					))}
-					{values
-						.filter(({ bucket }) => bucket.count === 0)
-						.map(({ index }) => (
-							<rect
-								key={`zero-${index}`}
-								className="owner-chart__zero"
-								x={xFor(index) - 3}
-								y={yFor(0) - 3}
-								width="6"
-								height="6"
-							/>
-						))}
-					<circle
-						className="owner-chart__active-halo"
-						cx={xFor(active.index)}
-						cy={yFor(active.bucket.count)}
-						r="11"
-					/>
-					<circle
-						className="owner-chart__active"
-						cx={xFor(active.index)}
-						cy={yFor(active.bucket.count)}
-						r="5"
-					/>
-				</svg>
-			</button>
 		</section>
 	);
 }
@@ -339,7 +340,13 @@ function AnalyticsTable({
 	const keyboardScrollable = { tabIndex: 0 };
 	return (
 		<details className="owner-table-disclosure">
-			<summary>{messages.tableSummary}</summary>
+			<summary>
+				<span>{messages.tableSummary}</span>
+				<small>
+					{formatNumber(daily.observedOpenMinutes, locale)}{" "}
+					{messages.observed.toLocaleLowerCase()}
+				</small>
+			</summary>
 			<section
 				className="owner-table-region"
 				aria-label={messages.tableRegion}
@@ -402,86 +409,84 @@ export function OwnerAnalyticsView({
 				mappedTimeZone(daily.peak.settingsVersion, timeZoneByVersion),
 			)
 		: null;
+	const businessDate = formatDate(
+		new Date(`${daily.businessDay}T12:00:00.000Z`),
+		locale,
+		{ weekday: "long", day: "numeric", month: "long", year: "numeric" },
+	);
 
 	return (
 		<div className="owner-analytics">
-			<div className="owner-analytics__context">
-				<span>
-					{messages.businessDay} <bdi>{daily.businessDay}</bdi>
+			<header className="owner-daily-heading">
+				<h1>{messages.title}</h1>
+				<p>
+					<bdi dir="auto">{businessDate}</bdi>
+				</p>
+				<span className="sr-only">
+					{messages.businessDay} <bdi>{daily.businessDay}</bdi>.{" "}
+					{messages.currentTimeZone} <bdi>{currentTimeZone}</bdi>.
 				</span>
-				<span>
-					{messages.currentTimeZone} <bdi>{currentTimeZone}</bdi>
-				</span>
-			</div>
-			<section className="owner-metrics" aria-label={messages.title}>
-				<AnalyticsMetric
-					icon={BarChart3}
-					label={messages.peak}
-					value={
-						daily.peak ? (
-							<bdi>{formatNumber(daily.peak.count, locale)}</bdi>
-						) : (
-							messages.noValue
-						)
-					}
-					detail={
-						peakTime ? (
-							<>
-								<span>{messages.atTime}</span> <bdi dir="auto">{peakTime}</bdi>
-							</>
-						) : (
-							messages.noValue
-						)
-					}
-				/>
-				<AnalyticsMetric
-					icon={Clock3}
-					label={messages.average}
-					value={
-						daily.dailyAverage === null ? (
-							messages.noValue
-						) : (
-							<bdi>{formatDecimal(daily.dailyAverage, locale)}</bdi>
-						)
-					}
-					detail={`${formatNumber(daily.observedOpenMinutes, locale)} ${messages.observed.toLocaleLowerCase()}`}
-				/>
-				<AnalyticsMetric
-					icon={DoorOpen}
-					label={messages.crossings}
-					value={
-						<bdi>{formatNumber(daily.estimatedEntranceCrossings, locale)}</bdi>
-					}
-					detail={messages.crossingsNote}
-				/>
-				<AnalyticsMetric
-					icon={Gauge}
-					label={messages.coverage}
-					value={
-						<bdi dir="ltr">
-							{formatNumber(daily.observedOpenMinutes, locale)} /{" "}
-							{formatNumber(daily.expectedOpenMinutes, locale)}
-						</bdi>
-					}
-					detail={messages.coverageNote}
-				/>
+			</header>
+			<section className="owner-analytics-board" aria-label={messages.title}>
+				<div className="owner-metrics">
+					<AnalyticsMetric
+						label={messages.peak}
+						value={
+							daily.peak ? (
+								<bdi>{formatNumber(daily.peak.count, locale)}</bdi>
+							) : (
+								messages.noValue
+							)
+						}
+						detail={
+							peakTime ? (
+								<>
+									<span>{messages.atTime}</span>{" "}
+									<bdi dir="auto">{peakTime}</bdi>
+								</>
+							) : (
+								messages.noValue
+							)
+						}
+					/>
+					<AnalyticsMetric
+						label={messages.average}
+						value={
+							daily.dailyAverage === null ? (
+								messages.noValue
+							) : (
+								<bdi>{formatDecimal(daily.dailyAverage, locale)}</bdi>
+							)
+						}
+						detail={`${formatNumber(daily.observedOpenMinutes, locale)} ${messages.observed.toLocaleLowerCase()}`}
+					/>
+					<AnalyticsMetric
+						label={messages.crossings}
+						value={
+							<bdi>
+								{formatNumber(daily.estimatedEntranceCrossings, locale)}
+							</bdi>
+						}
+						detail={messages.crossingsNote}
+					/>
+				</div>
+				{noObserved ? (
+					<section className="owner-empty-state" role="status">
+						<BarChart3 aria-hidden="true" />
+						<h2>
+							{closedDay ? messages.closedDayTitle : messages.noObservedTitle}
+						</h2>
+						<p>
+							{closedDay
+								? messages.closedDayDescription
+								: messages.noObservedDescription}
+						</p>
+					</section>
+				) : (
+					<OccupancyChart daily={daily} timeZoneByVersion={timeZoneByVersion} />
+				)}
+				<AnalyticsTable daily={daily} timeZoneByVersion={timeZoneByVersion} />
 			</section>
-			{noObserved ? (
-				<section className="owner-empty-state" role="status">
-					<BarChart3 aria-hidden="true" />
-					<h2>
-						{closedDay ? messages.closedDayTitle : messages.noObservedTitle}
-					</h2>
-					<p>
-						{closedDay
-							? messages.closedDayDescription
-							: messages.noObservedDescription}
-					</p>
-				</section>
-			) : (
-				<OccupancyChart daily={daily} timeZoneByVersion={timeZoneByVersion} />
-			)}
-			<AnalyticsTable daily={daily} timeZoneByVersion={timeZoneByVersion} />
 		</div>
 	);
 }

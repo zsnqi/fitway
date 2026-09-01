@@ -190,7 +190,7 @@ describe("owner settings section", () => {
 		await render();
 
 		expect(read).toHaveBeenCalledTimes(1);
-		expect(q("h2")?.textContent).toBe("Settings");
+		expect(q("h1")?.textContent).toBe("Settings");
 		expect(field("capacity")?.value).toBe("220");
 		expect(field("boundary")?.value).toBe("04:00");
 		expect(field("reset")?.value).toBe("15");
@@ -203,7 +203,7 @@ describe("owner settings section", () => {
 		read.mockRejectedValue(new Error("Service Unavailable"));
 		await render();
 
-		expect(q("h2")?.textContent).toBe("Settings could not be loaded");
+		expect(q("h1")?.textContent).toBe("Settings could not be loaded");
 		expect(timeInputs()).toHaveLength(0);
 		const retry = all("button").find((b) => b.textContent === "Try again");
 		expect(retry).toBeDefined();
@@ -465,7 +465,7 @@ describe("owner settings section", () => {
 		});
 		await settle();
 
-		expect(q("h2")?.textContent).toBe("الإعدادات");
+		expect(q("h1")?.textContent).toBe("الإعدادات");
 		expect(field("capacity")?.value).toBe("240");
 		expect(container.textContent).toContain("حد يوم العمل");
 		expect(container.textContent).toContain("Asia/Riyadh");

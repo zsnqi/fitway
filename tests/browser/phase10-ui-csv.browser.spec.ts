@@ -534,9 +534,11 @@ async function expectHeadingLayout(
 	locale: "ar" | "en",
 	width: number,
 ) {
-	const heading = page.locator(".operations-page-heading--analytics");
+	const heading = page.locator(".owner-reporting-page-heading");
 	const title = heading.locator("h1");
-	const tablist = heading.getByRole("tablist");
+	const tablist = page.getByRole("tablist", {
+		name: locale === "ar" ? "أقسام الإدارة" : "Management sections",
+	});
 	const [headingBox, titleBox, tabsBox] = await Promise.all([
 		heading.boundingBox(),
 		title.boundingBox(),
@@ -546,14 +548,10 @@ async function expectHeadingLayout(
 		throw new Error("Analytics heading and tabs require layout boxes");
 	}
 	expect(tabsBox.height).toBe(44);
-	if (width <= 720) {
-		expect(Math.abs(tabsBox.x - headingBox.x)).toBeLessThanOrEqual(1);
-		expect(Math.abs(tabsBox.width - headingBox.width)).toBeLessThanOrEqual(1);
-		expect(tabsBox.y).toBeGreaterThan(titleBox.y + titleBox.height);
+	if (width <= 900) {
+		expect(tabsBox.y + tabsBox.height).toBeLessThanOrEqual(titleBox.y);
 	} else {
-		expect(
-			Math.abs(tabsBox.y + tabsBox.height - headingBox.y - headingBox.height),
-		).toBeLessThanOrEqual(1);
+		expect(Math.abs(tabsBox.y - headingBox.y)).toBeLessThanOrEqual(1);
 		if (locale === "ar") expect(titleBox.x).toBeGreaterThan(tabsBox.x);
 		else expect(titleBox.x).toBeLessThan(tabsBox.x);
 	}
@@ -562,68 +560,7 @@ async function expectHeadingLayout(
 		return { family: style.fontFamily, weight: Number(style.fontWeight) };
 	});
 	expect(typography.family).toMatch(/Cairo/u);
-	expect(typography.weight).toBeGreaterThanOrEqual(400);
-	expect(typography.weight).toBeLessThanOrEqual(700);
-
-	// The copy wrapper nests the canonical eyebrow `<p>` and description
-	// `<span>`; the canonical direct-child selectors no longer reach them, so
-	// assert the restored computed treatment here rather than relying on
-	// staff.css/owner-shell.css.
-	const copyTreatment = await heading
-		.locator(".operations-page-heading__copy")
-		.evaluate((copy) => {
-			const eyebrow = copy.querySelector("p");
-			const description = copy.querySelector("span");
-			if (!eyebrow || !description) {
-				throw new Error("Heading copy requires an eyebrow and a description");
-			}
-			const eyebrowStyle = getComputedStyle(eyebrow);
-			const descriptionStyle = getComputedStyle(description);
-			const rawLetterSpacing = eyebrowStyle.letterSpacing;
-			const letterSpacing =
-				rawLetterSpacing === "normal" ? 0 : Number.parseFloat(rawLetterSpacing);
-			const chProbe = document.createElement("span");
-			chProbe.style.cssText =
-				"position:absolute;visibility:hidden;pointer-events:none;";
-			chProbe.style.font = descriptionStyle.font;
-			chProbe.style.width = "64ch";
-			description.appendChild(chProbe);
-			const canonicalMaxInlineSize = Number.parseFloat(
-				getComputedStyle(chProbe).width,
-			);
-			chProbe.remove();
-			return {
-				eyebrow: {
-					margin: eyebrowStyle.margin,
-					fontSize: eyebrowStyle.fontSize,
-					color: eyebrowStyle.color,
-					letterSpacing,
-					textTransform: eyebrowStyle.textTransform,
-				},
-				description: {
-					display: descriptionStyle.display,
-					maxInlineSize: Number.parseFloat(descriptionStyle.maxInlineSize),
-					canonicalMaxInlineSize,
-					color: descriptionStyle.color,
-				},
-			};
-		});
-	expect(copyTreatment.eyebrow.margin).toBe("0px");
-	expect(copyTreatment.eyebrow.fontSize).toBe("12px");
-	expect(copyTreatment.eyebrow.color).toBe("rgb(255, 130, 149)");
-	expect(copyTreatment.eyebrow.textTransform).toBe(
-		locale === "ar" ? "none" : "uppercase",
-	);
-	expect(copyTreatment.eyebrow.letterSpacing).toBeCloseTo(
-		locale === "ar" ? 0 : 0.48,
-		1,
-	);
-	expect(copyTreatment.description.display).toBe("block");
-	expect(copyTreatment.description.maxInlineSize).toBeCloseTo(
-		copyTreatment.description.canonicalMaxInlineSize,
-		0,
-	);
-	expect(copyTreatment.description.color).toBe("rgb(201, 195, 196)");
+	expect(typography.weight).toBe(700);
 }
 
 test("the lazy bilingual tabs keep exact prerequisite counts and stable panel shells", async ({
@@ -632,7 +569,7 @@ test("the lazy bilingual tabs keep exact prerequisite counts and stable panel sh
 	const calls = await mockOwnerRoute(page);
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/admin");
-	const tablist = page.getByRole("tablist", { name: "عرض التحليلات" });
+	const tablist = page.getByRole("tablist", { name: "أقسام الإدارة" });
 	const dailyTab = page.locator("#owner-analytics-daily-tab");
 	const historyTab = page.locator("#owner-analytics-history-tab");
 	const dailyPanel = page.locator("#owner-analytics-daily-panel");
@@ -640,7 +577,14 @@ test("the lazy bilingual tabs keep exact prerequisite counts and stable panel sh
 	const reporting = page.locator(".owner-reporting");
 
 	await expect(tablist).toBeVisible();
-	await expect(tablist.getByRole("tab")).toHaveText(["اليومي", "السجل"]);
+	await expect(tablist.getByRole("tab")).toHaveText([
+		"اليومي",
+		"السجل",
+		"الوصول",
+		"التدقيق",
+		"التشغيل",
+		"الإعدادات",
+	]);
 	await expect(dailyTab).toHaveAttribute(
 		"aria-controls",
 		"owner-analytics-daily-panel",
@@ -670,22 +614,21 @@ test("the lazy bilingual tabs keep exact prerequisite counts and stable panel sh
 	expect(calls.weekOverWeek).toBe(0);
 	expect(calls.csv).toBe(0);
 	await expect(page.locator("[data-owner-chart]")).toBeVisible();
-	await expect(page.locator(".owner-audit")).toBeVisible();
-	await expect(page.locator(".owner-health")).toBeVisible();
+	await expect(page.locator(".owner-audit")).toHaveCount(0);
+	await expect(page.locator(".owner-health")).toHaveCount(0);
 
 	const tablistBox = await tablist.boundingBox();
 	const dailyTabBox = await dailyTab.boundingBox();
 	const historyTabBox = await historyTab.boundingBox();
-	expect(tablistBox).toMatchObject({ width: 160, height: 44 });
+	expect(tablistBox?.width).toBeGreaterThanOrEqual(480);
+	expect(tablistBox?.height).toBe(44);
 	expect(dailyTabBox).toMatchObject({ width: 80, height: 44 });
 	expect(historyTabBox).toMatchObject({ width: 80, height: 44 });
-	await expectHeadingLayout(page, "ar", 1440);
-
 	await historyTab.focus();
-	await page.keyboard.press("ArrowLeft");
+	await page.keyboard.press("ArrowRight");
 	await expect(dailyTab).toBeFocused();
 	await expect(dailyTab).toHaveAttribute("aria-selected", "true");
-	await page.keyboard.press("End");
+	await page.keyboard.press("ArrowLeft");
 	await expect(historyTab).toBeFocused();
 	await expect(historyTab).toHaveAttribute("aria-selected", "true");
 	await expect(historyPanel).toBeVisible();
@@ -700,11 +643,13 @@ test("the lazy bilingual tabs keep exact prerequisite counts and stable panel sh
 		await setLocale(page, locale);
 		await expect(
 			page.getByRole("tablist", {
-				name: locale === "ar" ? "عرض التحليلات" : "Analytics view",
+				name: locale === "ar" ? "أقسام الإدارة" : "Management sections",
 			}),
 		).toBeVisible();
 		await expect(page.getByRole("tablist").getByRole("tab")).toHaveText(
-			locale === "ar" ? ["اليومي", "السجل"] : ["Daily", "History"],
+			locale === "ar"
+				? ["اليومي", "السجل", "الوصول", "التدقيق", "التشغيل", "الإعدادات"]
+				: ["Daily", "History", "Access", "Audit", "Uptime", "Settings"],
 		);
 		const labels =
 			locale === "ar"
@@ -1098,4 +1043,31 @@ test("reflow, focus, keyboard, live names, reduced motion, and automated accessi
 		.analyze();
 	expect(seriousViolations(results)).toEqual([]);
 	await captureReview(page, "phase10-reporting-a11y-reflow-ar-768x1024.png");
+});
+
+test("canonical routed Reporting History desktop English and mobile Arabic match", async ({
+	page,
+}) => {
+	await page.addInitScript(() =>
+		window.localStorage.setItem("fitway.locale", "en"),
+	);
+	await mockOwnerRoute(page);
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await page.goto("/admin");
+	await activateHistory(page);
+	await expect(page.locator(".owner-reporting")).toBeVisible();
+	await page.evaluate(() => document.fonts.ready);
+	await expect(page).toHaveScreenshot(
+		"owner-history-route-en-desktop-1440x900.png",
+		{ fullPage: true },
+	);
+
+	await setLocale(page, "ar");
+	await page.setViewportSize({ width: 390, height: 844 });
+	await expect(page.locator(".owner-reporting")).toBeVisible();
+	await page.evaluate(() => document.fonts.ready);
+	await expect(page).toHaveScreenshot(
+		"owner-history-route-ar-mobile-390x844.png",
+		{ fullPage: true },
+	);
 });

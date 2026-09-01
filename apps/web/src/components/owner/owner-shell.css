@@ -213,14 +213,12 @@
 	white-space: nowrap;
 }
 
-.owner-rail__brand svg {
+.owner-rail__brand img {
 	inline-size: 24px;
 	block-size: 24px;
 	flex: 0 0 auto;
-	fill: none;
-	stroke: var(--fw-red);
-	stroke-linecap: round;
-	stroke-width: 1.5;
+	object-fit: contain;
+	object-position: center;
 }
 
 .owner-shell .owner-main.operations-main {
@@ -335,10 +333,9 @@
 		letter-spacing: 0.14em;
 	}
 
-	.owner-rail__brand svg {
+	.owner-rail__brand img {
 		inline-size: 21px;
 		block-size: 21px;
-		stroke-width: 1.6;
 	}
 
 	.owner-shell .owner-main.operations-main {
@@ -406,10 +403,9 @@
 		line-height: 18px;
 	}
 
-	.owner-rail__brand svg {
+	.owner-rail__brand img {
 		inline-size: 20px;
 		block-size: 20px;
-		stroke-width: 1.7;
 	}
 
 	.owner-shell .owner-nav {
@@ -544,8 +540,8 @@
 		border-block-end: 1px solid CanvasText;
 	}
 
-	.owner-rail__brand svg {
-		stroke: LinkText;
+	.owner-rail__brand img {
+		forced-color-adjust: none;
 	}
 
 	.owner-nav__link[data-active="true"]::after {

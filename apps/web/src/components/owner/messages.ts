@@ -1,7 +1,7 @@
 export const ownerAnalyticsMessages = {
 	en: {
 		eyebrow: "Owner analytics",
-		title: "Today's occupancy curve",
+		title: "Daily analytics",
 		description:
 			"Gym business day · times shown in each reading's configured timezone",
 		businessDay: "Business day",
@@ -13,15 +13,15 @@ export const ownerAnalyticsMessages = {
 		errorDescription:
 			"No reading has been substituted. Check the connection and try again.",
 		retry: "Try again",
-		peak: "Peak occupancy",
-		average: "Observed-minute average",
-		crossings: "Estimated entrance crossings",
+		peak: "Peak level",
+		average: "Average level",
+		crossings: "Total entries",
 		crossingsNote: "Estimated entrance crossings, not unique members",
 		coverage: "Observation coverage",
 		coverageNote: "Observed open minutes / expected open minutes",
 		noValue: "Not available",
 		atTime: "at",
-		chartTitle: "Occupancy by minute",
+		chartTitle: "People present through the day",
 		chartHint:
 			"Focus the chart and use Left or Right Arrow to inspect observed points. Hover or tap also selects a point.",
 		chartLabel: "Interactive occupancy curve",
@@ -37,7 +37,7 @@ export const ownerAnalyticsMessages = {
 		closedDayTitle: "Scheduled closed day",
 		closedDayDescription:
 			"No open minutes were scheduled for this gym business day.",
-		tableSummary: "View minute-by-minute data table",
+		tableSummary: "Today's minutes",
 		tableRegion: "Minute-by-minute analytics data",
 		time: "Gym-local time",
 		state: "State",
@@ -56,7 +56,7 @@ export const ownerAnalyticsMessages = {
 	},
 	ar: {
 		eyebrow: "تحليلات المالك",
-		title: "منحنى الإشغال اليوم",
+		title: "التحليلات اليومية",
 		description:
 			"يوم عمل الصالة · يُعرض وقت كل قراءة حسب المنطقة الزمنية المحفوظة لها",
 		businessDay: "يوم العمل",
@@ -67,15 +67,15 @@ export const ownerAnalyticsMessages = {
 		errorDescription:
 			"لم نستبدل البيانات بقراءة افتراضية. تحقق من الاتصال ثم أعد المحاولة.",
 		retry: "إعادة المحاولة",
-		peak: "ذروة الإشغال",
-		average: "متوسط الدقائق المرصودة",
-		crossings: "تقدير مرات الدخول",
+		peak: "مستوى الذروة",
+		average: "المستوى المتوسط",
+		crossings: "إجمالي مرات الدخول",
 		crossingsNote: "تقدير لمرات الدخول، وليس لعدد الأعضاء الفريدين",
 		coverage: "تغطية الرصد",
 		coverageNote: "الدقائق المفتوحة المرصودة / الدقائق المفتوحة المتوقعة",
 		noValue: "غير متاح",
 		atTime: "عند",
-		chartTitle: "الإشغال حسب الدقيقة",
+		chartTitle: "عدد الموجودين خلال اليوم",
 		chartHint:
 			"ركّز على المخطط واستخدم سهم اليمين أو اليسار لاستعراض النقاط المرصودة. ويمكنك أيضاً التحديد بالتمرير أو اللمس.",
 		chartLabel: "منحنى إشغال تفاعلي",
@@ -90,7 +90,7 @@ export const ownerAnalyticsMessages = {
 			"كان هناك وقت فتح مجدول، لكن لا تتوفر أرصاد للدقائق في يوم العمل هذا.",
 		closedDayTitle: "يوم إغلاق مجدول",
 		closedDayDescription: "لم تكن هناك دقائق فتح مجدولة في يوم عمل الصالة هذا.",
-		tableSummary: "عرض جدول البيانات لكل دقيقة",
+		tableSummary: "دقائق اليوم",
 		tableRegion: "بيانات التحليلات لكل دقيقة",
 		time: "الوقت المحلي للصالة",
 		state: "الحالة",

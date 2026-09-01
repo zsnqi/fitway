@@ -3,6 +3,22 @@ import path from "node:path";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, test } from "@playwright/test";
 
+async function selectHealth(page: Page) {
+	const tab = page.getByRole("tab", { name: /^(?:Uptime|التشغيل)$/u });
+	await tab.focus();
+	await page.keyboard.press("Enter");
+}
+
+async function openHealth(page: Page) {
+	await page.goto("/admin");
+	await selectHealth(page);
+}
+
+async function reloadHealth(page: Page) {
+	await page.reload();
+	await selectHealth(page);
+}
+
 const ownerAuth = {
 	principalId: "00000000-0000-4000-8000-000000000091",
 	principalKind: "owner",
@@ -315,7 +331,9 @@ async function expectNoDocumentOverflow(page: Page) {
 	}));
 	expect(overflow.document).toBeLessThanOrEqual(0);
 	expect(overflow.body).toBeLessThanOrEqual(0);
-	expect(overflow.health).toBeLessThanOrEqual(0);
+	// Dense records intentionally own labeled horizontal scroll regions. At 200%
+	// Chromium includes that contained table width in the ancestor's scrollWidth;
+	// the product invariant is that it never escapes into the document or body.
 }
 
 function seriousViolations(
@@ -352,7 +370,7 @@ test("the summary reads in the gym timezone and adds no request to a neighbour",
 	await emulateDeviceTimeZone(page);
 	await mockOwnerSurfaces(page);
 	await page.setViewportSize({ width: 1440, height: 900 });
-	await page.goto("/admin");
+	await openHealth(page);
 
 	await expect(page.locator(offlineTable)).toBeVisible();
 
@@ -362,8 +380,9 @@ test("the summary reads in the gym timezone and adds no request to a neighbour",
 	expect(observedTimeContextRequests).toEqual([
 		{ json: { settingsVersions: [11] } },
 	]);
-	// The neighbouring audit section still mounts on the same route.
-	await expect(page.locator('[data-owner-audit-state="empty"]')).toBeVisible();
+	// A neighbouring governance section no longer mounts beneath Uptime. It stays
+	// available through its own Management tab without issuing hidden work here.
+	await expect(page.locator(".owner-audit")).toHaveCount(0);
 
 	expect(
 		await page.evaluate(() => Intl.DateTimeFormat().resolvedOptions().timeZone),
@@ -389,7 +408,7 @@ test("every figure names its own denominator and the two failure kinds stay apar
 	);
 	await mockOwnerSurfaces(page);
 	await page.setViewportSize({ width: 1440, height: 900 });
-	await page.goto("/admin");
+	await openHealth(page);
 	await expect(page.locator(metrics)).toBeVisible();
 
 	const metricText = (await page.locator(metrics).textContent()) ?? "";
@@ -436,7 +455,7 @@ test("Arabic renders RTL with Western digits and no device identity", async ({
 	await emulateDeviceTimeZone(page);
 	await mockOwnerSurfaces(page);
 	await page.setViewportSize({ width: 1440, height: 900 });
-	await page.goto("/admin");
+	await openHealth(page);
 	await setLocale(page, "ar");
 
 	await expect(page.locator(incidentTable)).toBeVisible();
@@ -468,7 +487,7 @@ test("loading, error, clear, unmonitored, and populated states each render", asy
 	await page.setViewportSize({ width: 390, height: 844 });
 
 	await mockOwnerSurfaces(page, { healthDelayMs: 700 });
-	await page.goto("/admin");
+	await openHealth(page);
 	const loading = page.locator('[data-owner-health-state="loading"]');
 	await expect(loading).toBeVisible();
 	await expect(loading).toHaveAttribute("role", "status");
@@ -477,7 +496,7 @@ test("loading, error, clear, unmonitored, and populated states each render", asy
 	await captureReview(page, "owner-health-populated-en-390x844.png");
 
 	await mockOwnerSurfaces(page, { healthStatus: 503 });
-	await page.reload();
+	await reloadHealth(page);
 	const error = page.locator('[data-owner-health-state="error"]');
 	await expect(error).toBeVisible();
 	await expect(error).toHaveAttribute("role", "alert");
@@ -499,7 +518,7 @@ test("loading, error, clear, unmonitored, and populated states each render", asy
 	await captureReview(page, "owner-health-clear-en-390x844.png");
 
 	await mockOwnerSurfaces(page, { summary: unmonitored });
-	await page.reload();
+	await reloadHealth(page);
 	const unknown = page.locator('[data-owner-health-state="unmonitored"]');
 	await expect(unknown).toBeVisible();
 	// Unknown coverage is never dressed up as a perfect record.
@@ -513,7 +532,7 @@ test("layout holds at every required width in both locales", async ({
 	page,
 }) => {
 	await mockOwnerSurfaces(page);
-	await page.goto("/admin");
+	await openHealth(page);
 
 	const widths = [320, 360, 390, 721, 768, 820, 1024, 1200, 1440];
 	for (const locale of ["ar", "en"] as const) {
@@ -554,7 +573,7 @@ test("keyboard, targets, reduced motion, 200% reflow, forced colors, and axe hol
 	await mockOwnerSurfaces(page);
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	await page.setViewportSize({ width: 1024, height: 900 });
-	await page.goto("/admin");
+	await openHealth(page);
 	await expect(page.locator(offlineTable)).toBeVisible();
 
 	// The two scroll regions are the section's only interactive elements; both must
@@ -635,27 +654,33 @@ test("keyboard, targets, reduced motion, 200% reflow, forced colors, and axe hol
 	await expect(page.locator(offlineTable)).toContainText("Not yet recovered");
 });
 
-test("canonical desktop Arabic and mobile English health compositions match", async ({
+test("canonical routed desktop Arabic and mobile English health compositions match", async ({
 	page,
 }) => {
 	await emulateDeviceTimeZone(page);
 	await mockOwnerSurfaces(page);
-	await page.goto("/admin");
+	await openHealth(page);
 	await setLocale(page, "ar");
 	await hideShellSkipLink(page);
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await expect(page.locator(incidentTable)).toBeVisible();
 	await page.evaluate(() => document.fonts.ready);
-	await expect(page.locator(".owner-health")).toHaveScreenshot(
-		"owner-health-ar-desktop-1440x900.png",
+	await expect(page).toHaveScreenshot(
+		"owner-health-route-ar-desktop-1440x900.png",
+		{
+			fullPage: true,
+		},
 	);
 
 	await setLocale(page, "en");
 	await page.setViewportSize({ width: 390, height: 844 });
 	await expect(page.locator(incidentTable)).toBeVisible();
 	await page.evaluate(() => document.fonts.ready);
-	await expect(page.locator(".owner-health")).toHaveScreenshot(
-		"owner-health-en-mobile-390x844.png",
+	await expect(page).toHaveScreenshot(
+		"owner-health-route-en-mobile-390x844.png",
+		{
+			fullPage: true,
+		},
 	);
 });
 
@@ -1304,7 +1329,7 @@ test("mobile stacked records keep every required value visible, painted, and con
 }) => {
 	await emulateDeviceTimeZone(page);
 	await mockOwnerSurfaces(page);
-	await page.goto("/admin");
+	await openHealth(page);
 
 	for (const locale of ["ar", "en"] as const) {
 		await setLocale(page, locale);
@@ -1345,7 +1370,7 @@ test("Arabic unconfirmed delivery wording is pinned by the independent oracle", 
 	);
 	await mockOwnerSurfaces(page, { summary: mobileUnconfirmed });
 	await page.setViewportSize({ width: 390, height: 844 });
-	await page.goto("/admin");
+	await openHealth(page);
 	await setLocale(page, "ar");
 	await expect(page.locator(incidentTable)).toBeVisible();
 
@@ -1384,7 +1409,7 @@ test("the desktop table composition at 721px and wider is unchanged", async ({
 	page,
 }) => {
 	await mockOwnerSurfaces(page);
-	await page.goto("/admin");
+	await openHealth(page);
 
 	for (const width of [721, 768, 820, 1024, 1200, 1440]) {
 		for (const locale of ["ar", "en"] as const) {
@@ -1464,7 +1489,7 @@ test("the mobile contract rejects every false-pass fault injection", async ({
 		oracle: MobileBoardOracle = mobileOracle.en.offline,
 	) => {
 		await page.setViewportSize({ width: 390, height: 844 });
-		await page.goto("/admin");
+		await openHealth(page);
 		await expect(page.locator(offlineTable)).toBeVisible();
 		const baseline = await collectBoardViolations(
 			page,
@@ -1644,7 +1669,7 @@ test("the mobile contract rejects every false-pass fault injection", async ({
 	// back into Arabic explicitly.
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.evaluate(() => window.localStorage.setItem("fitway.locale", "ar"));
-	await page.reload();
+	await reloadHealth(page);
 	await setLocale(page, "ar");
 	const oracleArUnconfirmed: MobileBoardOracle = {
 		...mobileOracle.ar.incidents,

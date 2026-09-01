@@ -22,7 +22,7 @@ import type { OwnerAccessRefusalCode } from "@/hooks/use-owner-access";
  */
 export const ownerAccessMessages = {
 	en: {
-		title: "Access and owners",
+		title: "Access",
 		description:
 			"Who can open and manage the gym: the shared front-desk PIN and every owner account, with each one's current state",
 
@@ -107,7 +107,7 @@ export const ownerAccessMessages = {
 		} satisfies Record<OwnerAccessRefusalCode, string>,
 	},
 	ar: {
-		title: "الوصول والمالكون",
+		title: "الوصول",
 		description:
 			"من يستطيع فتح الصالة وإدارتها: رمز موظف الاستقبال المشترك وكل حساب مالك، مع حالة كلٍّ منهما",
 
