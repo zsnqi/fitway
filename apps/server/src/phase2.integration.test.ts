@@ -967,7 +967,7 @@ describe("Phase 2 real Postgres vertical slice", () => {
 							.textContent({ timeout: 250 })
 							.catch(() => null);
 						const freshnessText = await page
-							.locator(".public-live__freshness--mobile")
+							.locator(".public-live__freshness")
 							.textContent({ timeout: 250 })
 							.catch(() => null);
 						observedCountText =
@@ -1042,7 +1042,7 @@ describe("Phase 2 real Postgres vertical slice", () => {
 							?.textContent?.trim();
 						const freshness = browserGlobal.document
 							.querySelector(
-								".public-live__freshness--mobile .public-live__freshness-primary",
+								".public-live__freshness .public-live__freshness-primary",
 							)
 							?.textContent?.trim();
 						if (!count || !freshness) return;
@@ -1464,7 +1464,7 @@ describe("Phase 2 real Postgres vertical slice", () => {
 					}),
 			);
 			await page
-				.locator(".public-live__freshness--mobile")
+				.locator(".public-live__freshness")
 				.getByText("تحديث مباشر", { exact: true })
 				.waitFor({ timeout: 5_000 });
 			const persistedState = JSON.parse(
