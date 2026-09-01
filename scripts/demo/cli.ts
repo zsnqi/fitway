@@ -9,6 +9,7 @@ import {
 	assertDemoOperation,
 	assertOwnedProcessCommand,
 	assertOwnedProcessRecord,
+	DEMO_BROWSER_VERIFICATION_FLAGS,
 	DEMO_COMPOSE_PROJECT,
 	DEMO_DATABASE_URL,
 	DEMO_OWNER_EMAIL,
@@ -545,8 +546,7 @@ async function verify() {
 			playwrightCli,
 			"test",
 			"tests/browser/desktop-demo.browser.spec.ts",
-			"--project=chromium",
-			"--trace=off",
+			...DEMO_BROWSER_VERIFICATION_FLAGS,
 		],
 		{
 			env: {
@@ -557,11 +557,6 @@ async function verify() {
 				FITWAY_PLAYWRIGHT_BASE_URL: DEMO_WEB_URL,
 				FITWAY_PLAYWRIGHT_SKIP_WEBSERVER: "true",
 				FITWAY_PLAYWRIGHT_OUTPUT_DIR: path.join(runtime, "playwright"),
-				FITWAY_PLAYWRIGHT_REPORT_DIR: path.join(
-					runtime,
-					"playwright",
-					"report",
-				),
 			},
 		},
 	);

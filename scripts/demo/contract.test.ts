@@ -6,6 +6,7 @@ import {
 	assertDemoRuntimePath,
 	assertOwnedProcessCommand,
 	assertOwnedProcessRecord,
+	DEMO_BROWSER_VERIFICATION_FLAGS,
 	DEMO_COMPOSE_PROJECT,
 	DEMO_DATABASE_URL,
 	DEMO_PROCESS_MARKERS,
@@ -84,5 +85,10 @@ describe("desktop demo safety contract", () => {
 			SAFE_VALUE: "preserved",
 		});
 		expect(source.FITWAY_DEMO_OWNER_PASSWORD).toBe("synthetic-owner-secret");
+	});
+
+	it("disables persistent browser proof artifacts", () => {
+		expect(DEMO_BROWSER_VERIFICATION_FLAGS).toContain("--trace=off");
+		expect(DEMO_BROWSER_VERIFICATION_FLAGS).toContain("--reporter=line");
 	});
 });

@@ -8,6 +8,11 @@ export const DEMO_RUNTIME_RELATIVE_PATH = path.join(".local", "demo");
 export const DEMO_OWNER_EMAIL = "owner@demo.fitway.local";
 export const DEMO_WEB_URL = "http://localhost:3101";
 export const DEMO_SERVER_URL = "http://localhost:3100";
+export const DEMO_BROWSER_VERIFICATION_FLAGS = [
+	"--project=chromium",
+	"--trace=off",
+	"--reporter=line",
+] as const;
 export const DEMO_PROCESS_MARKERS = {
 	server: "scripts/demo/server.ts",
 	web: "apps/web/node_modules/vite/bin/vite.js",

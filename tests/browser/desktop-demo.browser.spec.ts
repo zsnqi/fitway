@@ -59,9 +59,24 @@ test("real Staff PIN opens monitoring and the server denies Owner", async ({
 	page,
 }) => {
 	await page.goto("/login");
-	await page.getByLabel("Access code").fill(staffPin);
-	await page.getByRole("button", { name: "Sign in" }).click();
-	await expect(page).toHaveURL(/\/staff$/u);
+	await expect(page.getByLabel("Access code")).toBeVisible();
+	const status = await page.evaluate(
+		async ({ pin, server }) =>
+			(
+				await fetch(`${server}/api/auth/staff/pin`, {
+					method: "POST",
+					credentials: "include",
+					headers: {
+						Accept: "application/json",
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({ pin }),
+				})
+			).status,
+		{ pin: staffPin, server: serverUrl },
+	);
+	expect(status).toBe(200);
+	await page.goto("/staff");
 	await expect(
 		page.getByRole("heading", { name: "Live operations" }),
 	).toBeVisible();

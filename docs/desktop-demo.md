@@ -53,7 +53,8 @@ only under `.local/demo`. A recorded PID is killed only when its live command li
 the role marker; any ambiguity fails closed.
 
 `verify` runs an unmocked Chromium walkthrough of Public, Staff, Owner, and the 401/403 role
-boundaries. Credential-bearing trace capture is explicitly disabled for this live proof. FITWAY
-intentionally has no owner sign-in page: `owner` opens an ephemeral Chromium window by
-authenticating through the real separately provisioned owner-password endpoint, then navigates to
-`/admin`. Closing that window discards its session.
+boundaries. Credential-bearing trace capture and persistent HTML/JUnit reporters are explicitly
+disabled for this live proof; its line-only console reporter does not record credential-bearing UI
+actions. FITWAY intentionally has no owner sign-in page: `owner` opens an ephemeral Chromium
+window by authenticating through the real separately provisioned owner-password endpoint, then
+navigates to `/admin`. Closing that window discards its session.
