@@ -5,27 +5,27 @@ type PublicLiveCardShellProps = Omit<
 	"children"
 > & {
 	children?: ReactNode;
+	statusKicker: ReactNode;
 	status: ReactNode;
-	desktopFreshness?: ReactNode;
+	freshness?: ReactNode;
 	alert?: ReactNode;
 	crowdLabel: ReactNode;
 	crowdValue: ReactNode;
 	countLabel: ReactNode;
 	countValue: ReactNode;
 	signal: ReactNode;
-	mobileFreshness?: ReactNode;
 };
 
 export function PublicLiveCardShell({
 	status,
-	desktopFreshness,
+	statusKicker,
+	freshness,
 	alert,
 	crowdLabel,
 	crowdValue,
 	countLabel,
 	countValue,
 	signal,
-	mobileFreshness,
 	children,
 	className,
 	...sectionProps
@@ -35,13 +35,9 @@ export function PublicLiveCardShell({
 			className={["public-live-card", className].filter(Boolean).join(" ")}
 			{...sectionProps}
 		>
-			<div className="public-live__status-row">
+			<div className="public-live__status-block">
+				<div className="public-live__status-kicker">{statusKicker}</div>
 				{status}
-				{desktopFreshness ? (
-					<div className="public-live__freshness public-live__freshness--desktop">
-						{desktopFreshness}
-					</div>
-				) : null}
 			</div>
 
 			{alert ? <div className="public-live__alert-row">{alert}</div> : null}
@@ -50,6 +46,9 @@ export function PublicLiveCardShell({
 				<div className="public-live__metric public-live__metric--band">
 					<div className="public-live__metric-label">{crowdLabel}</div>
 					<div className="public-live__metric-primary">{crowdValue}</div>
+					{freshness ? (
+						<div className="public-live__freshness">{freshness}</div>
+					) : null}
 				</div>
 				<div className="public-live__metric public-live__metric--count">
 					<div className="public-live__metric-label">{countLabel}</div>
@@ -58,12 +57,6 @@ export function PublicLiveCardShell({
 			</div>
 
 			<div className="public-live__signal-slot">{signal}</div>
-
-			{mobileFreshness ? (
-				<div className="public-live__freshness public-live__freshness--mobile">
-					{mobileFreshness}
-				</div>
-			) : null}
 
 			{children}
 		</section>

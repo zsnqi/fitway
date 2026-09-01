@@ -16,19 +16,19 @@ export function PublicStatusSkeleton() {
 			className="public-live-card--loading"
 			aria-busy="true"
 			aria-labelledby="public-loading-title"
-			status={<SkeletonLine className="public-live__skeleton-status" />}
-			desktopFreshness={
-				<SkeletonLine className="public-live__skeleton-freshness" />
+			statusKicker={messages.publicPage.eyebrow}
+			status={
+				<span className="public-live__open-status public-live__loading-status">
+					<span className="public-live__loading-dot" aria-hidden="true" />
+					{messages.publicPage.loadingStatus}
+				</span>
 			}
-			crowdLabel={
-				<SkeletonLine className="public-live__skeleton-crowd-label" />
-			}
+			freshness={<SkeletonLine className="public-live__skeleton-freshness" />}
+			crowdLabel={messages.publicPage.crowdLevel}
 			crowdValue={
 				<SkeletonLine className="public-live__skeleton-crowd-value" />
 			}
-			countLabel={
-				<SkeletonLine className="public-live__skeleton-count-label" />
-			}
+			countLabel={messages.publicPage.approximateCount}
 			countValue={
 				<SkeletonLine className="public-live__skeleton-count-value" />
 			}

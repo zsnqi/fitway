@@ -46,7 +46,7 @@ export function OccupancyStatus({
 		if (announced) lastSummary.current = summary;
 	}, [announced, summary]);
 
-	const freshnessContent = (mobile: boolean) => (
+	const freshnessContent = (
 		<>
 			{isStale ? (
 				<Clock className="public-live__freshness-icon" aria-hidden="true" />
@@ -56,27 +56,16 @@ export function OccupancyStatus({
 			<strong className="public-live__freshness-primary">
 				{freshnessText}
 			</strong>
-			{mobile ? (
-				<span className="public-live__freshness-detail">
-					<time dateTime={payload.lastUpdatedAt}>
-						{messages.publicPage.lastUpdatedAt(absolute)}
-					</time>
-					<span aria-hidden="true"> · </span>
-					<span>{relative}</span>
-				</span>
-			) : (
-				<>
-					<span className="public-live__separator" aria-hidden="true" />
-					<time
-						className="public-live__freshness-time"
-						dateTime={payload.lastUpdatedAt}
-					>
-						{messages.publicPage.lastUpdatedAt(absolute)}
-					</time>
-					<span className="public-live__separator" aria-hidden="true" />
-					<span className="public-live__freshness-relative">{relative}</span>
-				</>
-			)}
+			<span className="public-live__separator" aria-hidden="true" />
+			<time
+				className="public-live__freshness-time"
+				dateTime={payload.lastUpdatedAt}
+			>
+				{messages.publicPage.lastUpdatedAt(absolute)}
+			</time>
+			<span className="public-live__freshness-relative fw-sr-only">
+				{relative}
+			</span>
 		</>
 	);
 
@@ -86,6 +75,7 @@ export function OccupancyStatus({
 			data-band={payload.band}
 			aria-labelledby="occupancy-status-title occupancy-title"
 			aria-describedby="occupancy-spoken-summary"
+			statusKicker={messages.publicPage.eyebrow}
 			status={
 				<span id="occupancy-status-title" className="public-live__open-status">
 					<span
@@ -96,7 +86,7 @@ export function OccupancyStatus({
 					{isStale ? messages.publicPage.staleStatus : messages.publicPage.open}
 				</span>
 			}
-			desktopFreshness={freshnessContent(false)}
+			freshness={freshnessContent}
 			alert={
 				isStale ? (
 					<div className="public-live__stale-warning" role="status">
@@ -129,8 +119,9 @@ export function OccupancyStatus({
 					<bdi key={`${payload.count}-${freshness}`}>{count}</bdi>
 				</strong>
 			}
-			signal={<CrowdSignal band={payload.band} stale={isStale} />}
-			mobileFreshness={freshnessContent(true)}
+			signal={
+				<CrowdSignal band={payload.band} stale={isStale} showFooter={false} />
+			}
 		>
 			<p
 				id="occupancy-spoken-summary"

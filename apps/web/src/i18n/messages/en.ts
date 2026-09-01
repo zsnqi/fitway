@@ -150,18 +150,22 @@ export const en = {
 		crowdLevel: "Crowd level",
 		approximateCount: "Approximate count",
 		closedTitle: "Closed now",
+		closedStatus: "Closed",
 		opensAt: (time) => `Opens ${time}`,
 		closedSummary: (opening) =>
 			opening ? `The gym is closed now. ${opening}.` : "The gym is closed now.",
 		unavailableTitle: "Live occupancy is unavailable right now",
+		unavailableStatus: "Unavailable",
 		unavailableDescription:
 			"We will not present an old count as live. Please try again later.",
 		errorTitle: "We could not load the crowd status",
+		errorStatus: "Not loaded",
 		errorDescription:
 			"Check your connection and try again. We will not present old data as live.",
 		retry: "Try again",
 		retrying: "Trying again",
 		loading: "Loading occupancy status",
+		loadingStatus: "Loading",
 		bands: {
 			quiet: "Quiet",
 			moderate: "Moderate",

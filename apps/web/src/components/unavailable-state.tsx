@@ -1,5 +1,3 @@
-import { WifiOff } from "lucide-react";
-
 import { useI18n } from "@/i18n/provider";
 
 export function UnavailableState() {
@@ -11,29 +9,13 @@ export function UnavailableState() {
 			role="status"
 			aria-labelledby="unavailable-title"
 		>
-			<div className="public-live__status-row">
-				<span className="public-live__open-status">
-					<span
-						className="public-live__open-dot"
-						data-tone="offline"
-						aria-hidden="true"
-					/>
-					{messages.publicPage.eyebrow}
-				</span>
-			</div>
 			<div className="public-state-card__body">
-				<div
-					className="public-state-card__icon"
-					data-tone="offline"
-					aria-hidden="true"
-				>
-					<WifiOff />
-				</div>
-				<p className="public-state-card__eyebrow">
-					{messages.publicPage.eyebrow}
-				</p>
+				<span className="public-state-card__status" data-tone="offline">
+					<span aria-hidden="true" />
+					{messages.publicPage.unavailableStatus}
+				</span>
 				<h1 id="unavailable-title">{messages.publicPage.unavailableTitle}</h1>
-				<p className="public-state-card__copy">
+				<p className="fw-sr-only">
 					{messages.publicPage.unavailableDescription}
 				</p>
 			</div>

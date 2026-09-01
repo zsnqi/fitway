@@ -147,18 +147,22 @@ export const ar = {
 		crowdLevel: "مستوى الازدحام",
 		approximateCount: "العدد التقريبي",
 		closedTitle: "مغلق الآن",
+		closedStatus: "مغلق",
 		opensAt: (time) => `يفتح ${time}`,
 		closedSummary: (opening) =>
 			opening ? `النادي مغلق الآن. ${opening}.` : "النادي مغلق الآن.",
 		unavailableTitle: "التحديث المباشر غير متاح الآن",
+		unavailableStatus: "غير متاح",
 		unavailableDescription:
 			"لا نعرض عدداً قديماً على أنه مباشر. يرجى المحاولة مرة أخرى لاحقاً.",
 		errorTitle: "تعذر تحميل حالة الازدحام",
+		errorStatus: "تعذّر التحميل",
 		errorDescription:
 			"تحقق من الاتصال ثم حاول مرة أخرى. لن نعرض بيانات قديمة على أنها مباشرة.",
 		retry: "إعادة المحاولة",
 		retrying: "جارٍ إعادة المحاولة",
 		loading: "جارٍ تحميل حالة الازدحام",
+		loadingStatus: "جارٍ تحميل حالة الازدحام",
 		bands: {
 			quiet: "هادئ",
 			moderate: "متوسط",

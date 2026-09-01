@@ -46,11 +46,13 @@ afterEach(async () => {
 });
 
 describe("public occupancy states", () => {
-	it("renders an icon and localized unavailable label without live data", async () => {
+	it("renders the localized unavailable state without live data", async () => {
 		await render(<UnavailableState />);
 
 		const status = container.querySelector('[role="status"]');
-		expect(status?.querySelector("svg")).not.toBeNull();
+		expect(status?.textContent).toContain(
+			localeConfig.ar.messages.publicPage.unavailableStatus,
+		);
 		expect(status?.textContent).toContain(
 			localeConfig.ar.messages.publicPage.unavailableTitle,
 		);
@@ -115,7 +117,9 @@ describe("public occupancy states", () => {
 
 	it("builds loading placeholders from the live card slots", async () => {
 		await render(<PublicStatusSkeleton />);
-		expect(container.querySelector(".public-live__status-row")).not.toBeNull();
+		expect(
+			container.querySelector(".public-live__status-block"),
+		).not.toBeNull();
 		expect(
 			container.querySelector(".public-live__metric--count"),
 		).not.toBeNull();
@@ -176,7 +180,11 @@ describe("public occupancy states", () => {
 			expect(container.textContent).not.toMatch(/[٠-٩]/u);
 			expect(container.querySelector("meter")).toBeNull();
 			expect(container.textContent).not.toContain("% ");
-			expect(container.querySelector('[role="status"] svg')).not.toBeNull();
+			expect(
+				container.querySelector(
+					'.public-state-card__status > [aria-hidden="true"]',
+				),
+			).not.toBeNull();
 		}
 	});
 
@@ -295,7 +303,7 @@ describe("public occupancy states", () => {
 		expect(container.textContent).toContain("التحديثات المباشرة متأخرة");
 		expect(container.textContent).toContain("آخر تحديث معروف");
 		expect(container.querySelectorAll(".public-live__freshness")).toHaveLength(
-			2,
+			1,
 		);
 		expect(
 			container.querySelectorAll(".public-live__stale-warning"),
@@ -389,7 +397,7 @@ describe("public occupancy states", () => {
 			);
 			expect(
 				container.querySelectorAll(".public-live__freshness"),
-			).toHaveLength(2);
+			).toHaveLength(1);
 			expect(
 				container.querySelectorAll(".public-live__stale-warning"),
 			).toHaveLength(1);

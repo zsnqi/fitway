@@ -12,16 +12,6 @@ const barBands: CrowdBand[] = [
 	...Array<CrowdBand>(8).fill("busy"),
 	...Array<CrowdBand>(9).fill("packed"),
 ];
-const heights = [
-	12, 15, 18, 21, 24, 27, 30, 34, 38, 42, 46, 50, 54, 58, 62, 66, 70, 74, 78,
-	82, 86, 88, 90, 92, 94, 96, 98, 100,
-];
-
-/**
- * The Paper staff board draws the same 28-bar instrument on an almost-linear
- * ramp that keeps climbing through the packed band, where the public board
- * flattens near the top. Callers opt into it; the public surface keeps `heights`.
- */
 export const CROWD_SIGNAL_LINEAR_HEIGHTS = [
 	11.93, 15.34, 18.75, 21.59, 25, 28.41, 31.82, 34.66, 38.07, 41.48, 44.32,
 	47.73, 51.14, 54.55, 57.39, 60.8, 64.2, 67.61, 70.45, 73.86, 77.27, 80.68,
@@ -34,7 +24,7 @@ export function CrowdSignal({
 	skeleton = false,
 	className,
 	showFooter = true,
-	ramp = heights,
+	ramp = CROWD_SIGNAL_LINEAR_HEIGHTS,
 }: {
 	band?: CrowdBand;
 	stale?: boolean;
@@ -114,7 +104,12 @@ export function CrowdSignal({
 					);
 				})}
 			</div>
-			{band && !skeleton && showFooter ? (
+			{skeleton ? (
+				<div className="public-live__loading-strip">
+					<span aria-hidden="true" />
+					{messages.publicPage.loading}
+				</div>
+			) : band && showFooter ? (
 				<div className="public-live__signal-footer" aria-hidden="true">
 					<span className="public-live__current-reading">
 						<i />

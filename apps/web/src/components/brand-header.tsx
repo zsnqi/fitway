@@ -9,8 +9,14 @@ export function BrandHeader() {
 		<header className="public-site-header">
 			<div className="public-site-header__inner">
 				<div className="public-site-header__brand">
-					<img src="/fitway-logo.png" alt="" width="44" height="44" />
 					<bdi>{messages.common.brandName}</bdi>
+					<img
+						src="/fitway-logo.png"
+						alt=""
+						aria-hidden="true"
+						width="24"
+						height="24"
+					/>
 				</div>
 				<Button
 					type="button"
