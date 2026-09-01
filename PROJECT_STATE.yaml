@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-09-01T14:04:30Z"
+updatedAt: "2026-09-01T16:55:12Z"
 
 coordinator:
-  owner: "Coordinator final authority. fidelity-integration-closure-r01 and r02 are preserved FAILED_VALIDATION after their respective third validation recurrences; the human-authorized repair-lineage successor fidelity-integration-closure-r03 is IN_PROGRESS from preserved candidate 28a57b4. It qualifies rather than rewrites the historical repository-closeout and desktop-demo DONE claims. Historical phases and terminal attempts remain immutable. LAN/mobile support, presentation work, GitHub synchronization, release/tagging, deployment, owner-facing PDF work, and external go-live gates remain excluded."
+  owner: "Coordinator final authority. fidelity-integration-closure-r01, r02, and r03 are preserved FAILED_VALIDATION; the human-authorized repair-lineage successor fidelity-integration-closure-r04 is IN_PROGRESS from preserved candidate b1bc91c. It qualifies rather than rewrites the historical repository-closeout and desktop-demo DONE claims. Historical phases and terminal attempts remain immutable. LAN/mobile support, presentation work, GitHub synchronization, release/tagging, deployment, owner-facing PDF work, and external go-live gates remain excluded."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -2527,7 +2527,7 @@ milestones:
     integratedCommit: null
 
   fidelity-integration-closure-r03:
-    status: IN_PROGRESS
+    status: FAILED_VALIDATION
     dependencies: [repository-closeout, desktop-demo]
     ownerSession: "Primary Codex coordinator; sole repository writer and final gate owner for the r02 repair-lineage successor"
     branch: codex/fidelity-integration-closure
@@ -2552,9 +2552,54 @@ milestones:
       - "coordinator lease: serialized disposable database, browser ports, desktop demo runtime, and evidence directories"
       - "coordinator lease: PROJECT_STATE and successor closure handoffs"
     validationRepairAttempts: 1
-    lastHeartbeatAt: "2026-09-01T14:04:30Z"
-    leaseExpiresAt: "2026-09-02T13:58:44Z"
-    handoff: docs/phase-records/handoffs/fidelity-integration-closure/20260901-165845-fidelity_closure_r03-activation.md
+    lastHeartbeatAt: "2026-09-01T16:55:12Z"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/fidelity-integration-closure/20260901-195512-fidelity_closure_r03-failed-validation.md
+    stopReason: "Terminal r03 FAILED_VALIDATION at independent review. Its one focused repair replaced three stale Phase 4 Owner content assertions with the localized selected Daily tab that the integration slice actually owns. The focused browser set passed 16/16, verify:fast passed, and fresh verify:full passed mutation-free with 572 unit, 117 simulator, 133 integration, and 128 executed browser/accessibility tests plus 3 intentional live-demo skips. Independent review then proved four closure blockers outside r03's frozen test-only scope: lazy late Owner mounts can refetch stale Daily data and unmount preserved section state on failure; Daily and Settings loading/error branches lack an active h1; Access/Audit/Uptime 200% review captures visibly overlap while overflow-only tests pass; and mobile Access owner identity loses spacing because a table-cell rule overrides its flex layout. Important non-live routed visual states also remain functional-only rather than canonical. The b1bc91c candidate remains preserved unintegrated. Successor: fidelity-integration-closure-r04."
+    gates:
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: FAIL
+      visual: FAIL
+      independentReview: FAIL
+    integratedCommit: null
+
+  fidelity-integration-closure-r04:
+    status: IN_PROGRESS
+    dependencies: [repository-closeout, desktop-demo]
+    ownerSession: "Primary Codex coordinator; sole repository writer and final gate owner for the independently reviewed r03 repair-lineage successor"
+    branch: codex/fidelity-integration-closure
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
+    baseCommit: b1bc91c4028eb02083ea59dc73a3c8c03614c767
+    ownedPaths:
+      - apps/web/src/hooks/use-owner-daily-analytics.ts
+      - apps/web/src/components/owner/reporting/owner-section-switch.tsx
+      - apps/web/src/components/owner/owner-analytics-view.tsx
+      - apps/web/src/components/owner/settings/owner-settings-section.tsx
+      - apps/web/src/components/owner/access/owner-access.css
+      - "apps/web/src/components/owner/** CSS required only for confirmed 200 percent reflow repair"
+      - tests/browser/**
+      - PROJECT_STATE.yaml
+      - docs/phase-records/handoffs/fidelity-integration-closure/**
+    forbiddenPaths:
+      - FITWAY_PRODUCT.md, SPEC.md, PHASES.md, DESIGN_GUIDE.md, docs/WORKFLOW.md, and existing ADRs
+      - apps/server/**, packages/**, edge/**, schemas, migrations, OpenAPI, and locked product/security/privacy/data semantics
+      - Paper mutations, visual-direction-gate/**, and the immutable approved theme snapshot
+      - unrelated Public, Login, Staff, or Owner product implementation
+      - historical phase records, terminal attempts, branches, worktrees, repair budgets, and their preserved evidence
+      - deployment, GitHub synchronization, releases, tags, external provisioning, presentation capture, and owner-facing PDF work
+      - unrelated product behavior and demo-data semantics
+    sharedLeases:
+      - "coordinator lease: confirmed Owner lazy-query/state-preservation and active-heading repairs only"
+      - "coordinator lease: Access identity and Access/Audit/Uptime 200 percent reflow CSS only"
+      - "coordinator lease: routed regression tests and canonical non-live state evidence for the accepted Public, Login, Staff, and Owner families"
+      - "coordinator lease: serialized disposable database, browser ports, desktop demo runtime, and evidence directories"
+      - "coordinator lease: PROJECT_STATE and successor closure handoffs"
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-09-01T16:55:12Z"
+    leaseExpiresAt: "2026-09-02T16:55:12Z"
+    handoff: docs/phase-records/handoffs/fidelity-integration-closure/20260901-195513-fidelity_closure_r04-activation.md
     stopReason: null
     gates:
       unit: PENDING
