@@ -705,7 +705,7 @@ html[dir="rtl"] .public-live__band-value {
 	padding: 8px 0 0;
 }
 
-.public-live-card--loading .public-live__metric {
+.public-live-card.public-live-card--loading .public-live__metric {
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
@@ -1298,7 +1298,6 @@ html[dir="rtl"] .public-state-card--closed h1 {
 	.public-live__signal-caption {
 		font-size: 10px;
 	}
-
 }
 
 @media (prefers-reduced-motion: reduce) {

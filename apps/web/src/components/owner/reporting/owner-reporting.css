@@ -1163,28 +1163,33 @@
 	margin-block-start: 0;
 }
 
-.owner-section-switch__panel > :is(.owner-access, .owner-audit, .owner-health, .owner-settings) {
+.owner-section-switch__panel
+	> :is(.owner-access, .owner-audit, .owner-health, .owner-settings) {
 	padding-block-start: 0;
 	border-block-start: 0;
 }
 
-.owner-section-switch__panel :is(
-	.owner-access__heading,
-	.owner-audit__heading,
-	.owner-health__heading,
-	.owner-settings__intro
-) h1 {
+.owner-section-switch__panel
+	:is(
+		.owner-access__heading,
+		.owner-audit__heading,
+		.owner-health__heading,
+		.owner-settings__intro
+	)
+	h1 {
 	font-size: 32px;
 	font-weight: 700;
 	line-height: 40px;
 }
 
-.owner-section-switch__panel :is(
-	.owner-access__heading,
-	.owner-audit__heading,
-	.owner-health__heading,
-	.owner-settings__intro
-) > p {
+.owner-section-switch__panel
+	:is(
+		.owner-access__heading,
+		.owner-audit__heading,
+		.owner-health__heading,
+		.owner-settings__intro
+	)
+	> p {
 	font-size: 14px;
 	line-height: 23px;
 }
@@ -1221,12 +1226,14 @@
 		inline-size: calc(100% + 32px);
 	}
 
-	.owner-section-switch__panel :is(
-		.owner-access__heading,
-		.owner-audit__heading,
-		.owner-health__heading,
-		.owner-settings__intro
-	) h1,
+	.owner-section-switch__panel
+		:is(
+			.owner-access__heading,
+			.owner-audit__heading,
+			.owner-health__heading,
+			.owner-settings__intro
+		)
+		h1,
 	.owner-reporting-page-heading h1 {
 		font-size: 24px;
 		line-height: 32px;
