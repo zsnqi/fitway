@@ -131,10 +131,7 @@
 	inline-size: 24px;
 	block-size: 24px;
 	flex: 0 0 auto;
-	fill: none;
-	stroke: var(--fw-red);
-	stroke-linecap: round;
-	stroke-width: 1.5;
+	object-fit: contain;
 }
 
 .login-main {

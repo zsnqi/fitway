@@ -255,12 +255,11 @@
 	white-space: nowrap;
 }
 
-/* A red ring with a 45° slash rising left to right. The slash is a logo form,
-   so it is not mirrored in Arabic. */
 .sboard-rail__mark {
 	flex: none;
 	inline-size: var(--sb-mark-size);
 	block-size: var(--sb-mark-size);
+	object-fit: contain;
 }
 
 /* ---- Content column ---------------------------------------------------- */
@@ -1069,11 +1068,6 @@
 		--sb-band-line: 78px;
 		--sb-band-track: -0.02em;
 		--sb-count-gap: 16px;
-	}
-
-	.sboard-rail__mark circle,
-	.sboard-rail__mark path {
-		stroke-width: 1.7;
 	}
 
 	.sboard {

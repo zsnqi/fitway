@@ -24,14 +24,14 @@ export function LoginRail() {
 			</button>
 			<div className="login-rail__brand">
 				<bdi>{messages.common.brandName}</bdi>
-				<svg
+				<img
 					className="login-rail__mark"
-					viewBox="0 0 26 26"
+					src="/fitway-logo.png"
+					alt=""
+					width="24"
+					height="24"
 					aria-hidden="true"
-				>
-					<circle cx="13" cy="13" r="11.2" />
-					<path d="M9.2 16.8 16.8 9.2" />
-				</svg>
+				/>
 			</div>
 		</header>
 	);

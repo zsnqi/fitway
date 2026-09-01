@@ -14,9 +14,8 @@ import "./staff-board.css";
  * with its two fixed oxblood glows, the glass identity rail, and the single
  * content column that carries the page title and the board.
  *
- * `/admin` keeps `StaffShell`. The two surfaces deliberately do not share this
- * file: the Paper rail has no primary-navigation row, and `/admin` is outside
- * the adopted family.
+ * `/admin` owns a separate Owner shell. The two surfaces deliberately do not
+ * share chrome: the Paper Staff rail has no primary-navigation row.
  */
 export function StaffBoardShell({
 	children,
@@ -91,27 +90,14 @@ export function StaffBoardShell({
 							</Link>
 						) : null}
 						<bdi className="sboard-rail__wordmark">FITWAY</bdi>
-						<svg
+						<img
 							className="sboard-rail__mark"
-							viewBox="0 0 26 26"
+							src="/fitway-logo.png"
+							alt=""
+							width="24"
+							height="24"
 							aria-hidden="true"
-							focusable="false"
-						>
-							<circle
-								cx="13"
-								cy="13"
-								r="11.2"
-								fill="none"
-								stroke="var(--fw-red)"
-								strokeWidth="1.5"
-							/>
-							<path
-								d="M9.2 16.8 16.8 9.2"
-								stroke="var(--fw-red)"
-								strokeWidth="1.5"
-								strokeLinecap="round"
-							/>
-						</svg>
+						/>
 					</div>
 				</div>
 			</header>
