@@ -30,6 +30,7 @@ describe("Phase 1 scaffold reset", () => {
 		const html = readFileSync(fromRoot("apps/web/index.html"), "utf8");
 		const favicon = readFileSync(fromRoot("apps/web/public/favicon.png"));
 		const logo = readFileSync(fromRoot("apps/web/public/fitway-logo.png"));
+		const brandLogo = readFileSync(fromRoot("brand/fitway-logo.png"));
 		expect(html).toContain('<html lang="ar" dir="rtl">');
 		expect(html).toContain('name="description"');
 		expect(html).toContain("/favicon.png");
@@ -37,7 +38,10 @@ describe("Phase 1 scaffold reset", () => {
 		expect([favicon.readUInt32BE(16), favicon.readUInt32BE(20)]).toEqual([
 			32, 32,
 		]);
-		expect([logo.readUInt32BE(16), logo.readUInt32BE(20)]).toEqual([80, 80]);
+		expect([logo.readUInt32BE(16), logo.readUInt32BE(20)]).toEqual([
+			1024, 1024,
+		]);
+		expect(logo.equals(brandLogo)).toBe(true);
 		expect(
 			existsSync(
 				fromRoot("apps/web/public/fonts/cairo-arabic-400-normal.woff2"),
