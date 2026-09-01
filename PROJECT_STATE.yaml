@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-09-01T13:58:44Z"
+updatedAt: "2026-09-01T14:04:30Z"
 
 coordinator:
   owner: "Coordinator final authority. fidelity-integration-closure-r01 and r02 are preserved FAILED_VALIDATION after their respective third validation recurrences; the human-authorized repair-lineage successor fidelity-integration-closure-r03 is IN_PROGRESS from preserved candidate 28a57b4. It qualifies rather than rewrites the historical repository-closeout and desktop-demo DONE claims. Historical phases and terminal attempts remain immutable. LAN/mobile support, presentation work, GitHub synchronization, release/tagging, deployment, owner-facing PDF work, and external go-live gates remain excluded."
@@ -2551,8 +2551,8 @@ milestones:
       - "coordinator lease: exact shell canonical reproducibility check before any test-source decision"
       - "coordinator lease: serialized disposable database, browser ports, desktop demo runtime, and evidence directories"
       - "coordinator lease: PROJECT_STATE and successor closure handoffs"
-    validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-09-01T13:58:44Z"
+    validationRepairAttempts: 1
+    lastHeartbeatAt: "2026-09-01T14:04:30Z"
     leaseExpiresAt: "2026-09-02T13:58:44Z"
     handoff: docs/phase-records/handoffs/fidelity-integration-closure/20260901-165845-fidelity_closure_r03-activation.md
     stopReason: null

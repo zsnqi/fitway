@@ -254,9 +254,10 @@ test("English login, logout, and owner shell complete their functional flow", as
 	await expect(page).toHaveURL(/\/login$/u);
 
 	await page.goto("/admin");
-	await expect(
-		page.getByRole("heading", { name: "Today's occupancy curve" }),
-	).toBeVisible();
+	await expect(page.getByRole("tab", { name: "Daily" })).toHaveAttribute(
+		"aria-selected",
+		"true",
+	);
 });
 
 test("a failed background refresh replaces cached live data with transport error", async ({
@@ -284,9 +285,10 @@ test("a failed background refresh replaces cached live data with transport error
 	await page.goto("/staff");
 	await expect(page.getByText("37", { exact: true })).toBeVisible();
 	await page.getByRole("link", { name: "منطقة المالك" }).click();
-	await expect(
-		page.getByRole("heading", { name: "منحنى الإشغال اليوم" }),
-	).toBeVisible();
+	await expect(page.getByRole("tab", { name: "اليومي" })).toHaveAttribute(
+		"aria-selected",
+		"true",
+	);
 	await page
 		.locator(".operations-nav")
 		.getByRole("link", { name: "العمليات المباشرة" })
@@ -400,9 +402,10 @@ test("admin renders localized 403 for staff and the shell only for owner", async
 		route.fulfill({ status: 200, json: { json: ownerAuth } }),
 	);
 	await page.reload();
-	await expect(
-		page.getByRole("heading", { name: "منحنى الإشغال اليوم" }),
-	).toBeVisible();
+	await expect(page.getByRole("tab", { name: "اليومي" })).toHaveAttribute(
+		"aria-selected",
+		"true",
+	);
 	await expect(page.getByRole("link", { name: "منطقة المالك" })).toBeVisible();
 	await captureReview(page, "admin-owner-ar-1280.png");
 });
