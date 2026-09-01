@@ -2,6 +2,7 @@ import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, test } from "@playwright/test";
+import { expectOfficialBrandMark } from "./helpers/brand";
 
 async function mockLoggedOutSession(page: Page) {
 	await page.route("**/api/auth/session", (route) =>
@@ -193,9 +194,11 @@ test("exception and submitting visuals preserve frozen authentication semantics"
 	await expect(pin).toHaveValue("123456");
 	await expect(submit).toBeEnabled();
 	await captureReview(page, "login-invalid-en-320x720.png");
+	const brandMark = await expectOfficialBrandMark(page, ".login-rail__brand");
 	await page.evaluate(() => document.fonts.ready);
 	await expect(page).toHaveScreenshot("login-invalid-route-en-320x720.png", {
 		fullPage: true,
+		mask: [brandMark],
 	});
 
 	await submit.click();
@@ -213,6 +216,7 @@ test("exception and submitting visuals preserve frozen authentication semantics"
 	await page.evaluate(() => document.fonts.ready);
 	await expect(page).toHaveScreenshot("login-service-route-en-320x720.png", {
 		fullPage: true,
+		mask: [brandMark],
 	});
 
 	await page.unroute("**/api/auth/staff/pin");
@@ -244,6 +248,7 @@ test("exception and submitting visuals preserve frozen authentication semantics"
 	await page.evaluate(() => document.fonts.ready);
 	await expect(page).toHaveScreenshot("login-submitting-route-en-320x720.png", {
 		fullPage: true,
+		mask: [brandMark],
 	});
 	releaseSubmission();
 	await expect(page.getByRole("alert")).toHaveAttribute("data-tone", "error");

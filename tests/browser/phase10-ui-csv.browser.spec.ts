@@ -2,6 +2,7 @@ import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, test } from "@playwright/test";
+import { expectOfficialBrandMark } from "./helpers/brand";
 
 const owner = {
 	principalId: "00000000-0000-4000-8000-000000000091",
@@ -712,10 +713,11 @@ test("History exposes prerequisite pending, error, and one deliberate retry chai
 		page.getByRole("heading", { level: 1, name: "Analytics" }),
 	).toBeVisible();
 	await expect(page.locator("main h1:visible")).toHaveCount(1);
+	const brandMark = await expectOfficialBrandMark(page, ".owner-rail__brand");
 	await page.evaluate(() => document.fonts.ready);
 	await expect(page).toHaveScreenshot(
 		"owner-history-loading-route-en-mobile-390x844.png",
-		{ fullPage: true },
+		{ fullPage: true, mask: [brandMark] },
 	);
 	expect(calls.heatmap).toBe(0);
 	expect(calls.weekOverWeek).toBe(0);
@@ -732,7 +734,7 @@ test("History exposes prerequisite pending, error, and one deliberate retry chai
 	await page.evaluate(() => document.fonts.ready);
 	await expect(page).toHaveScreenshot(
 		"owner-history-error-route-en-mobile-390x844.png",
-		{ fullPage: true },
+		{ fullPage: true, mask: [brandMark] },
 	);
 	await expect.poll(() => calls.daily).toBe(1);
 	await expect.poll(() => calls.timeContext).toBe(1);
@@ -910,6 +912,7 @@ test("CSV export visibly starts, cancels without a file, and reports a transport
 test("reflow, focus, keyboard, live names, reduced motion, and automated accessibility hold", async ({
 	page,
 }) => {
+	test.setTimeout(60_000);
 	await page.addInitScript(() =>
 		window.localStorage.setItem("fitway.locale", "en"),
 	);

@@ -2,6 +2,7 @@ import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, test } from "@playwright/test";
+import { expectOfficialBrandMark } from "./helpers/brand";
 
 const ownerAuth = {
 	principalId: "00000000-0000-4000-8000-000000000091",
@@ -281,10 +282,14 @@ test("loading, transport error, missing-only, and scheduled-closed days stay dis
 	await page.route("**/rpc/admin/session", (route) =>
 		route.fulfill({ status: 200, json: { json: ownerAuth } }),
 	);
+	let releaseError!: () => void;
+	const errorGate = new Promise<void>((resolve) => {
+		releaseError = resolve;
+	});
 	let mode: "error" | "missing" | "closed" = "error";
 	await page.route("**/rpc/admin/analytics/daily", async (route) => {
 		if (mode === "error") {
-			await new Promise((resolve) => setTimeout(resolve, 500));
+			await errorGate;
 			await route.fulfill({
 				status: 503,
 				json: rpcError(503, "SERVICE_UNAVAILABLE", "Service Unavailable"),
@@ -328,22 +333,27 @@ test("loading, transport error, missing-only, and scheduled-closed days stay dis
 	);
 
 	await page.goto("/admin");
-	await expect(page.getByRole("status")).toContainText(
-		"جارٍ تحميل تحليلات المالك",
-	);
-	await expect(
-		page.getByRole("heading", {
-			level: 1,
-			name: "جارٍ تحميل تحليلات المالك",
-		}),
-	).toBeVisible();
-	await expect(page.locator("main h1:visible")).toHaveCount(1);
-	await captureReview(page, "owner-analytics-loading-ar-1440.png");
-	await page.evaluate(() => document.fonts.ready);
-	await expect(page).toHaveScreenshot(
-		"owner-daily-loading-route-ar-desktop-1440x900.png",
-		{ fullPage: true },
-	);
+	try {
+		await expect(page.getByRole("status")).toContainText(
+			"جارٍ تحميل تحليلات المالك",
+		);
+		await expect(
+			page.getByRole("heading", {
+				level: 1,
+				name: "جارٍ تحميل تحليلات المالك",
+			}),
+		).toBeVisible();
+		await expect(page.locator("main h1:visible")).toHaveCount(1);
+		const brandMark = await expectOfficialBrandMark(page, ".owner-rail__brand");
+		await captureReview(page, "owner-analytics-loading-ar-1440.png");
+		await page.evaluate(() => document.fonts.ready);
+		await expect(page).toHaveScreenshot(
+			"owner-daily-loading-route-ar-desktop-1440x900.png",
+			{ fullPage: true, mask: [brandMark] },
+		);
+	} finally {
+		releaseError();
+	}
 	await expect(page.getByRole("alert")).toContainText("تعذر تحميل التحليلات");
 	await expect(
 		page.getByRole("heading", { level: 1, name: "تعذر تحميل التحليلات" }),
@@ -354,7 +364,10 @@ test("loading, transport error, missing-only, and scheduled-closed days stay dis
 	await page.evaluate(() => document.fonts.ready);
 	await expect(page).toHaveScreenshot(
 		"owner-daily-error-route-ar-desktop-1440x900.png",
-		{ fullPage: true },
+		{
+			fullPage: true,
+			mask: [page.locator(".owner-rail__brand img")],
+		},
 	);
 
 	mode = "missing";
