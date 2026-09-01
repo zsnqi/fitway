@@ -1,0 +1,245 @@
+{
+	"title": "FITWAY guarded desktop demo environment",
+	"generatedAt": "2026-09-01T05:25:00.000Z",
+	"mode": "impact",
+	"status": "analysis complete; implementation not started",
+	"verdict": "PROCEED WITH CONDITIONS",
+	"summary": "The demo is additive and isolated from production modules, but destructive Compose cleanup, credential handling, process ownership, secure localhost cookies, and time-relative seed data need explicit guards and live proof.",
+	"request": "Implement the approved desktop-only synthetic demo environment for Public, Staff, and Owner using the real Postgres schema, authentication, services, APIs, and edge simulator.",
+	"repository": {
+		"root": "C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration",
+		"branch": "codex/desktop-demo",
+		"head": "45e9f38",
+		"dirty": true
+	},
+	"scope": {
+		"in": [
+			"Loopback-only Compose Postgres lifecycle",
+			"Synthetic seed and real auth/service reuse",
+			"Desktop application supervision and cleanup",
+			"Live Public, Staff, and Owner verification"
+		],
+		"out": [
+			"Production application behavior or schema changes",
+			"Existing apps/server/.env or remote databases",
+			"LAN, TLS, certificates, or firewall changes",
+			"Deployment, release, GitHub, screenshots, or PDF work"
+		]
+	},
+	"impact": [
+		{
+			"surface": "Local database lifecycle",
+			"kind": "operational",
+			"risk": "High",
+			"evidence": "Reset and clean remove a Compose volume; existing integration guards demonstrate the repository's fail-closed destructive-data policy.",
+			"files": [
+				"compose.demo.yaml",
+				"scripts/demo/cli.ts",
+				"apps/server/src/test-support/integration-database-safety.ts"
+			]
+		},
+		{
+			"surface": "Authentication and credentials",
+			"kind": "contractual",
+			"risk": "High",
+			"evidence": "AuthService hashes credentials and session cookies remain Secure/HttpOnly/SameSite=Lax; demo input must stay off disk and command lines.",
+			"files": [
+				"scripts/demo.ps1",
+				"scripts/demo/seed.ts",
+				"packages/auth/src/auth-service.ts",
+				"packages/auth/src/cookies.ts"
+			]
+		},
+		{
+			"surface": "Synthetic analytics and health state",
+			"kind": "direct",
+			"risk": "Medium",
+			"evidence": "The existing deterministic history generator and integration fixtures establish the accepted data semantics.",
+			"files": [
+				"scripts/demo/seed.ts",
+				"packages/api/src/analytics/history-generator.ts",
+				"apps/server/src/phase11-health.integration.test.ts"
+			]
+		},
+		{
+			"surface": "Application process lifecycle",
+			"kind": "operational",
+			"risk": "High",
+			"evidence": "The new supervisor will own server, Vite, and simulator child processes and must not terminate unrelated reused PIDs.",
+			"files": ["scripts/demo/cli.ts", "scripts/demo/server.ts"]
+		},
+		{
+			"surface": "Real browser flows",
+			"kind": "test-only",
+			"risk": "Medium",
+			"evidence": "Existing browser tests mock most requests; a new live spec is needed to prove the split-local origin and secure-cookie path.",
+			"files": [
+				"tests/browser/desktop-demo.browser.spec.ts",
+				"playwright.config.ts"
+			]
+		}
+	],
+	"risks": [
+		{
+			"id": "R1",
+			"failure": "Reset or clean targets a non-demo database or unrelated Docker resource.",
+			"likelihood": 1,
+			"severity": 5,
+			"detectability": 1,
+			"blastRadius": 5,
+			"tier": "High",
+			"evidence": "The operation is destructive, while the approved design fixes project, database, port, and path values.",
+			"mitigation": "Hard-code and independently validate the exact project, loopback URL, database name, and resolved local runtime path before every destructive call; test all refusal cases.",
+			"rollback": "No destructive call runs when a guard fails; successful cleanup affects only the disposable demo volume."
+		},
+		{
+			"id": "R2",
+			"failure": "A raw Staff PIN or Owner password is committed, logged, stored, or exposed in a process command line.",
+			"likelihood": 2,
+			"severity": 4,
+			"detectability": 3,
+			"blastRadius": 3,
+			"tier": "High",
+			"evidence": "Credential material crosses the operator-to-seed boundary once during reset.",
+			"mitigation": "PowerShell secure prompts, environment-only child input, immediate environment clearing, no credential fields in profile/log output, and diff/log scans.",
+			"rollback": "Destroy the disposable database and local runtime directory; no real credential is in scope."
+		},
+		{
+			"id": "R3",
+			"failure": "A stale PID file causes stop to terminate an unrelated local process.",
+			"likelihood": 2,
+			"severity": 4,
+			"detectability": 4,
+			"blastRadius": 2,
+			"tier": "High",
+			"evidence": "Windows can reuse PIDs after an unclean supervisor exit.",
+			"mitigation": "Record role markers and verify each live process command line before termination; refuse mismatches and remove only stale records for missing PIDs.",
+			"rollback": "Stop refuses ownership ambiguity; the user can close the foreground supervisor normally."
+		},
+		{
+			"id": "R4",
+			"failure": "Secure session cookies do not persist across the localhost web/server split, blocking Staff or Owner login.",
+			"likelihood": 3,
+			"severity": 3,
+			"detectability": 2,
+			"blastRadius": 3,
+			"tier": "Medium",
+			"evidence": "Cookies are always Secure and the desktop demo uses HTTP localhost with exact-origin CORS.",
+			"mitigation": "Use localhost consistently, credentials-included requests, and a real Chromium login/session walkthrough; do not weaken cookie flags.",
+			"rollback": "Remove the demo harness; production cookie behavior is untouched."
+		},
+		{
+			"id": "R5",
+			"failure": "Time-relative seed data is empty, stale, closed, or changes across same-day resets.",
+			"likelihood": 3,
+			"severity": 3,
+			"detectability": 2,
+			"blastRadius": 3,
+			"tier": "Medium",
+			"evidence": "Owner queries and freshness evaluate against wall clock while analytics rows use gym-local business days.",
+			"mitigation": "Anchor the profile to the current Asia/Riyadh business day, use a 24-hour synthetic schedule, fixed offsets and seed, and compare non-secret fingerprints across two resets.",
+			"rollback": "Reset recreates the complete disposable profile."
+		},
+		{
+			"id": "R6",
+			"failure": "Docker or the Postgres image is unavailable on the local machine.",
+			"likelihood": 4,
+			"severity": 2,
+			"detectability": 1,
+			"blastRadius": 1,
+			"tier": "Medium",
+			"evidence": "Docker CLI exists, but the engine was inaccessible during discovery and no local Postgres service is installed.",
+			"mitigation": "Prepare/reset fail before writes with one actionable Docker Desktop prerequisite; never fall back to the existing remote env file.",
+			"rollback": "No repository or database mutation occurs when the prerequisite fails."
+		}
+	],
+	"contracts": [
+		{
+			"name": "Database destruction boundary",
+			"mustPreserve": "Only the named loopback demo Compose database and volume may be recreated or removed.",
+			"evidence": "AGENTS.md and docs/WORKFLOW.md require exact disposable targets.",
+			"protection": "Contract unit tests plus two reset/clean lifecycle runs."
+		},
+		{
+			"name": "Authentication and authorization",
+			"mustPreserve": "Real hashed credentials, Secure HttpOnly cookies, server-side Staff/Owner guards, 401/403 semantics, and monitoring-only Staff.",
+			"evidence": "FITWAY_PRODUCT.md, SPEC.md, AuthService, and authorization procedures.",
+			"protection": "Focused auth tests and live browser/API denial checks."
+		},
+		{
+			"name": "Public privacy/data semantics",
+			"mustPreserve": "Anonymous public output remains capacity-free and never exposes device, health, identity, or history.",
+			"evidence": "FITWAY_PRODUCT.md and public payload builder.",
+			"protection": "Existing payload tests plus live Public response assertions."
+		},
+		{
+			"name": "Historical analytics semantics",
+			"mustPreserve": "UTC minutes, gym-local business day, settings snapshots, true zero, missing coverage, and deterministic generation.",
+			"evidence": "History generator and Phase 9 integration tests.",
+			"protection": "Seed unit tests, fingerprint comparison, and Owner live assertions."
+		}
+	],
+	"plan": [
+		{
+			"step": 1,
+			"change": "Add guarded Compose/operator/profile tooling and focused unit tests.",
+			"files": [
+				"compose.demo.yaml",
+				"scripts/demo.ps1",
+				"scripts/demo/**",
+				"package.json",
+				"docs/desktop-demo.md"
+			],
+			"validation": "Focused Vitest, type checks, repository invariants, and diff hygiene.",
+			"rollback": "Revert the isolated Stage 1 commit."
+		},
+		{
+			"step": 2,
+			"change": "Add and run the unmocked desktop browser walkthrough and lifecycle proof.",
+			"files": ["tests/browser/desktop-demo.browser.spec.ts"],
+			"validation": "Two resets, live Playwright, stop/restart, status, and scoped clean.",
+			"rollback": "Revert the Stage 2 commit."
+		},
+		{
+			"step": 3,
+			"change": "Freeze, independently review, integrate, and mark the milestone DONE.",
+			"files": [
+				"docs/phase-records/handoffs/desktop-demo/**",
+				"PROJECT_STATE.yaml"
+			],
+			"validation": "verify:fast, focused suites, candidate freeze, independent review, and clean canonical status.",
+			"rollback": "Revert final integration commits and run demo clean."
+		}
+	],
+	"verification": [
+		{
+			"command": "git status --short --branch",
+			"result": "clean on codex/desktop-demo immediately after design commit",
+			"evidence": "Coordinator observation at 45e9f38.",
+			"phase": "baseline"
+		},
+		{
+			"command": "node scripts/verify-repository.mjs",
+			"result": "Repository invariants passed: 62 milestones, 8 canonical approval screenshots.",
+			"evidence": "Coordinator baseline run after milestone activation.",
+			"phase": "baseline"
+		},
+		{
+			"command": "pnpm exec vitest --version",
+			"result": "failed: Vitest executable links are incomplete",
+			"evidence": "Requires the repository-prescribed frozen install before implementation verification.",
+			"phase": "baseline"
+		}
+	],
+	"unknowns": [
+		"Docker Desktop engine availability and image pull capability are not yet proven.",
+		"Physical mobile/LAN behavior is intentionally excluded and will not be inferred from desktop results.",
+		"The real Chromium localhost Secure-cookie path has not yet been exercised."
+	],
+	"rollback": [
+		"Each writing stage is one commit and independently revertible.",
+		"The demo clean command removes only validated project resources and ignored local runtime state.",
+		"No migration or production module change is planned."
+	],
+	"nextAction": "Repair package links from the frozen lockfile, then execute Stage 1 exactly as recorded in the adopted plan."
+}

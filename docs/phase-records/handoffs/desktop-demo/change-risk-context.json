@@ -1,0 +1,46 @@
+{
+	"schemaVersion": 1,
+	"collectedAt": "2026-09-01T05:12:43.543Z",
+	"mode": "impact",
+	"request": "Implement the approved guarded desktop-only synthetic demo environment for Public, Staff, and Owner using real Postgres, auth, services, APIs, and edge simulation.",
+	"repository": {
+		"root": "C:\\Users\\Pc Force\\.codex\\worktrees\\f2a7\\phase5-staff-integration",
+		"branch": "codex/desktop-demo",
+		"head": "45e9f38",
+		"dirty": false,
+		"changedFiles": []
+	},
+	"availableScripts": {
+		"dev": "pnpm -r dev",
+		"build": "pnpm -r build",
+		"check-types": "pnpm -r check-types",
+		"dev:web": "pnpm --filter web dev",
+		"dev:server": "pnpm --filter server dev",
+		"db:push": "pnpm --filter @fitway/db db:push",
+		"db:studio": "pnpm --filter @fitway/db db:studio",
+		"db:generate": "pnpm --filter @fitway/db db:generate",
+		"db:migrate": "pnpm --filter @fitway/db db:migrate",
+		"edge:provision-dev": "pnpm --filter @fitway/db edge:provision-dev",
+		"deploy:setup": "vercel link",
+		"dev:vercel": "vercel dev -L",
+		"env:preview": "tsx scripts/sync-vercel-env.ts preview",
+		"env:production": "tsx scripts/sync-vercel-env.ts production",
+		"deploy": "vercel deploy",
+		"deploy:prod": "vercel deploy --prod",
+		"deploy:check": "vercel deploy --dry",
+		"check": "biome check .",
+		"check:repository": "node scripts/verify-repository.mjs",
+		"format": "biome check --write .",
+		"test": "vitest run",
+		"test:integration": "vitest run --config vitest.integration.config.ts",
+		"test:browser": "playwright test",
+		"test:simulator": "py -m unittest discover -s edge -p test_*.py",
+		"verify:fast": "node scripts/verify.mjs fast",
+		"verify:phase": "node scripts/verify.mjs phase",
+		"verify:full": "node scripts/verify.mjs full"
+	},
+	"notes": [
+		"This snapshot is repository evidence, not a complete dependency graph.",
+		"Preserve all pre-existing working-tree changes."
+	]
+}
