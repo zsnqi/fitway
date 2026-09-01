@@ -1,0 +1,22 @@
+name: fitway-desktop-demo
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: fitway_demo
+      POSTGRES_PASSWORD: fitway_demo_local
+      POSTGRES_DB: fitway_desktop_demo
+    ports:
+      - "127.0.0.1:55432:5432"
+    volumes:
+      - fitway_desktop_demo_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fitway_demo -d fitway_desktop_demo"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  fitway_desktop_demo_data:
+    name: fitway-desktop-demo_fitway_desktop_demo_data

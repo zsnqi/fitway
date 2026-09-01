@@ -33,7 +33,14 @@
 		"test:simulator": "py -m unittest discover -s edge -p test_*.py",
 		"verify:fast": "node scripts/verify.mjs fast",
 		"verify:phase": "node scripts/verify.mjs phase",
-		"verify:full": "node scripts/verify.mjs full"
+		"verify:full": "node scripts/verify.mjs full",
+		"demo:prepare": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo.ps1 prepare",
+		"demo:reset": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo.ps1 reset",
+		"demo:start": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo.ps1 start",
+		"demo:status": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo.ps1 status",
+		"demo:verify": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo.ps1 verify",
+		"demo:stop": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo.ps1 stop",
+		"demo:clean": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo.ps1 clean"
 	},
 	"dependencies": {
 		"@fitway/env": "workspace:*",
