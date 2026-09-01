@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-08-31T18:04:17Z"
+updatedAt: "2026-09-01T05:07:43Z"
 
 coordinator:
-  owner: "Coordinator final authority. FITWAY v1 is formally repository-closed by the repository-closeout milestone on canonical main. All aggregate phases 1-12 are DONE, the accepted coordinator state is canonical, the final project-wide verification passed, and no product implementation remains. Historical terminal attempts remain immutable. Branch/worktree cleanup, demo preparation, presentation-only documentation, GitHub push, deployment, and external go-live gates were not performed."
+  owner: "Coordinator final authority. FITWAY v1 remains repository-closed at repository-closeout; historical phases and terminal attempts are immutable. The post-closeout desktop-demo milestone is the only active slice and is limited to guarded synthetic local-demo tooling, data, operator workflow, and verification. LAN/mobile support, presentation work, GitHub synchronization, release/tagging, deployment, and external go-live gates remain excluded."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -2412,3 +2412,46 @@ milestones:
       visual: PASS
       independentReview: PASS
     integratedCommit: SELF
+
+  desktop-demo:
+    status: IN_PROGRESS
+    dependencies: [repository-closeout]
+    ownerSession: "Codex coordinator desktop demo execution"
+    branch: codex/desktop-demo
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
+    baseCommit: 5ebb22998a9e65b8f9fa751d66edc55e13f4bf4e
+    ownedPaths:
+      - compose.demo.yaml
+      - package.json
+      - scripts/demo.ps1
+      - scripts/demo/**
+      - tests/browser/desktop-demo.browser.spec.ts
+      - docs/desktop-demo.md
+      - docs/superpowers/specs/2026-09-01-desktop-demo-design.md
+      - docs/phase-records/handoffs/desktop-demo/**
+      - PROJECT_STATE.yaml
+    forbiddenPaths:
+      - FITWAY_PRODUCT.md, SPEC.md, PHASES.md, DESIGN_GUIDE.md, and docs/WORKFLOW.md
+      - apps/server/.env and every production or existing remote credential
+      - packages/db/src/schema/**, packages/db/src/migrations/**, and migration metadata
+      - apps/web/**, packages/ui/**, shared catalogs, global tokens, generated routing, and canonical screenshots
+      - historical phase records, terminal attempts, branches, worktrees, and approved visual provenance
+      - LAN/mobile support, TLS gateways, certificate trust, firewall configuration, deployment, GitHub synchronization, releases, tags, presentation capture, and owner-facing PDF work
+    sharedLeases:
+      - coordinator-project-state-ledger
+      - root-package-demo-scripts
+      - desktop-demo-compose-runtime
+      - desktop-demo-playwright-runtime
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-09-01T05:07:43Z"
+    leaseExpiresAt: "2026-09-01T13:07:43Z"
+    handoff: docs/phase-records/handoffs/desktop-demo/20260901-050743-desktop_demo_c01-in-progress.md
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null
