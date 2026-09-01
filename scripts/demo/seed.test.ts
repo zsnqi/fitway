@@ -16,11 +16,15 @@ describe("desktop demo seed profile", () => {
 			new Date(riyadhBusinessDay(afterBoundary)).toISOString().slice(0, 10),
 		).toBe("2026-09-01");
 		const profile = buildDemoProfile(afterBoundary);
+		const laterSameBusinessDay = buildDemoProfile(
+			new Date("2026-09-01T20:30:00.000Z"),
+		);
 		expect(profile.days).toBe(28);
 		expect(profile.historyStartUtc).toBe("2026-08-05T01:00:00.000Z");
 		expect(profile.observedThroughUtc).toBe("2026-09-01T01:00:00.000Z");
+		expect(laterSameBusinessDay).toEqual(profile);
 		expect(profileFingerprint(profile)).toBe(
-			profileFingerprint(buildDemoProfile(afterBoundary)),
+			profileFingerprint(laterSameBusinessDay),
 		);
 		const row = {
 			minuteStartUtc: new Date("2026-08-05T01:00:00.000Z"),

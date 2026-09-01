@@ -55,13 +55,14 @@ export function riyadhBusinessDay(now = new Date()) {
 export function buildDemoProfile(now = new Date()) {
 	const businessDayEpoch = riyadhBusinessDay(now);
 	const businessDay = new Date(businessDayEpoch).toISOString().slice(0, 10);
-	const observedThroughUtc = new Date(
-		Math.floor(now.getTime() / 3_600_000) * 3_600_000,
-	);
 	// Riyadh 04:00 begins at 01:00 UTC; the earliest of 28 business days is 27 days back.
 	const historyStartUtc = new Date(
 		businessDayEpoch - 27 * 86_400_000 + 3_600_000,
 	);
+	// Keep the synthetic profile identical for the entire Riyadh business day.
+	// The current day contains its opening minute; the live simulator owns the
+	// wall-clock state shown by Public and Staff after startup.
+	const observedThroughUtc = new Date(businessDayEpoch + 3_600_000);
 	return {
 		businessDay,
 		historyStartUtc: historyStartUtc.toISOString(),
@@ -108,10 +109,28 @@ export function profileFingerprint(
 	return hash.digest("hex");
 }
 
+export async function migrateDemoDatabase(databaseUrl: string) {
+	assertDemoDatabaseUrl(databaseUrl);
+	const [{ drizzle }, { migrate }, { Pool }] = await Promise.all([
+		import("drizzle-orm/node-postgres"),
+		import("drizzle-orm/node-postgres/migrator"),
+		import("pg"),
+	]);
+	const pool = new Pool({ connectionString: databaseUrl });
+	try {
+		await migrate(drizzle(pool), {
+			migrationsFolder: path.resolve("packages/db/src/migrations"),
+		});
+	} finally {
+		await pool.end();
+	}
+}
+
 export async function seedDemo(input: DemoSeedInput): Promise<DemoSeedResult> {
 	assertDemoDatabaseUrl(input.databaseUrl);
 	if (input.edgeToken.length < 43 || input.authSecret.length < 32)
 		throw new Error("Demo runtime secrets are invalid");
+	await migrateDemoDatabase(input.databaseUrl);
 	// Dynamic imports keep deterministic profile tests independent of optional workspace links.
 	// The actual reset path still uses the repository's real services and schema.
 	const [
@@ -120,7 +139,6 @@ export async function seedDemo(input: DemoSeedInput): Promise<DemoSeedResult> {
 		applicationSchema,
 		authSchema,
 		{ drizzle },
-		{ migrate },
 		{ Pool },
 		{ PostgresAuthRepository },
 	] = await Promise.all([
@@ -129,7 +147,6 @@ export async function seedDemo(input: DemoSeedInput): Promise<DemoSeedResult> {
 		import("@fitway/db/schema/application"),
 		import("@fitway/db/schema/auth"),
 		import("drizzle-orm/node-postgres"),
-		import("drizzle-orm/node-postgres/migrator"),
 		import("pg"),
 		import("../../apps/server/src/auth/postgres-auth-repository"),
 	]);
@@ -139,9 +156,6 @@ export async function seedDemo(input: DemoSeedInput): Promise<DemoSeedResult> {
 		schema: { ...applicationSchema, ...authSchema },
 	});
 	try {
-		await migrate(database, {
-			migrationsFolder: path.resolve("packages/db/src/migrations"),
-		});
 		// Migration 0000 supplies production-safe singleton defaults. A fresh demo
 		// replaces only those two seed rows before building its own versioned profile.
 		await database.delete(applicationSchema.currentState);
@@ -230,8 +244,8 @@ export async function seedDemo(input: DemoSeedInput): Promise<DemoSeedResult> {
 				busyMaxPercent: 75,
 			},
 		});
-		// Future minutes would make today's analytics look more complete than the
-		// wall clock permits. Hour anchoring keeps repeated walkthrough resets stable.
+		// The fixed business-day opening minute keeps resets deterministic without
+		// presenting future history. Live state is populated by the simulator.
 		const observedThrough = new Date(profile.observedThroughUtc).getTime();
 		const history = generatedHistory.filter(
 			(row) => row.minuteStartUtc.getTime() <= observedThrough,

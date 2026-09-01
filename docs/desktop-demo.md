@@ -19,8 +19,8 @@ pnpm demo:clean
 
 For a walkthrough:
 
-1. Run `pnpm demo:prepare` once, then `pnpm demo:reset`. Choose a synthetic owner password of at
-   least 12 characters and a synthetic Staff PIN of 6-12 Western digits; keep both for this local
+1. Run `pnpm demo:prepare` once, then `pnpm demo:reset`. Choose a synthetic owner password of
+   12-128 characters and a synthetic Staff PIN of 6-12 Western digits; keep both for this local
    walkthrough.
 2. Run `pnpm demo:start` and leave that terminal open.
 3. Open `http://localhost:3101` for Public. Open `http://localhost:3101/login` and enter the Staff
@@ -33,9 +33,12 @@ For a walkthrough:
 
 `reset` and `verify` request the owner password and staff PIN through PowerShell secure prompts;
 `owner` requests only the owner password.
-They are passed only to the immediate child environment, never written to disk, command lines,
-logs, or URLs. The owner identity is `owner@demo.fitway.local`; the staff identity is shared and
-monitoring-only.
+They enter only the credential-consuming Node process. That process removes them from its own
+environment before starting Docker, application services, the simulator, or the Owner browser.
+`verify` passes them explicitly to its isolated test runner; each test worker captures and removes
+them before launching Chromium with a sanitized environment. They are never written to disk,
+command lines, logs, or URLs. The owner identity is `owner@demo.fitway.local`; the staff identity
+is shared and monitoring-only.
 
 The only database is `fitway_desktop_demo`, exposed only as `127.0.0.1:55432` by the fixed
 `fitway-desktop-demo` Compose project. `reset` and `clean` recheck the exact database URL,
@@ -50,6 +53,7 @@ only under `.local/demo`. A recorded PID is killed only when its live command li
 the role marker; any ambiguity fails closed.
 
 `verify` runs an unmocked Chromium walkthrough of Public, Staff, Owner, and the 401/403 role
-boundaries. FITWAY intentionally has no owner sign-in page: `owner` opens an ephemeral Chromium
-window by authenticating through the real separately provisioned owner-password endpoint, then
-navigates to `/admin`. Closing that window discards its session.
+boundaries. Credential-bearing trace capture is explicitly disabled for this live proof. FITWAY
+intentionally has no owner sign-in page: `owner` opens an ephemeral Chromium window by
+authenticating through the real separately provisioned owner-password endpoint, then navigates to
+`/admin`. Closing that window discards its session.

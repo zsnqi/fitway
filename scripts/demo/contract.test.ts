@@ -9,6 +9,7 @@ import {
 	DEMO_COMPOSE_PROJECT,
 	DEMO_DATABASE_URL,
 	DEMO_PROCESS_MARKERS,
+	withoutInteractiveDemoCredentials,
 } from "./contract";
 
 describe("desktop demo safety contract", () => {
@@ -71,5 +72,17 @@ describe("desktop demo safety contract", () => {
 				marker: DEMO_PROCESS_MARKERS.server,
 			}),
 		).not.toThrow();
+	});
+
+	it("removes interactive credentials from helper child environments", () => {
+		const source = {
+			FITWAY_DEMO_OWNER_PASSWORD: "synthetic-owner-secret",
+			FITWAY_DEMO_STAFF_PIN: "123456",
+			SAFE_VALUE: "preserved",
+		};
+		expect(withoutInteractiveDemoCredentials(source)).toEqual({
+			SAFE_VALUE: "preserved",
+		});
+		expect(source.FITWAY_DEMO_OWNER_PASSWORD).toBe("synthetic-owner-secret");
 	});
 });

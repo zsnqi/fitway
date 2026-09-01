@@ -11,6 +11,24 @@ function credential(
 	return value;
 }
 
+const ownerPassword = credential("FITWAY_DEMO_OWNER_PASSWORD");
+const staffPin = credential("FITWAY_DEMO_STAFF_PIN");
+const browserEnvironment = Object.fromEntries(
+	Object.entries(process.env).filter(
+		([name, value]) =>
+			value !== undefined &&
+			name !== "FITWAY_DEMO_OWNER_PASSWORD" &&
+			name !== "FITWAY_DEMO_STAFF_PIN",
+	),
+) as Record<string, string>;
+test.use({ launchOptions: { env: browserEnvironment } });
+// The coordinator must retain the values long enough to create its worker.
+// Each worker captures them above, then removes them before Chromium launches.
+if (process.env.TEST_WORKER_INDEX !== undefined) {
+	delete process.env.FITWAY_DEMO_OWNER_PASSWORD;
+	delete process.env.FITWAY_DEMO_STAFF_PIN;
+}
+
 test.beforeEach(async ({ page }) => {
 	await page.addInitScript(() =>
 		window.localStorage.setItem("fitway.locale", "en"),
@@ -41,9 +59,7 @@ test("real Staff PIN opens monitoring and the server denies Owner", async ({
 	page,
 }) => {
 	await page.goto("/login");
-	await page
-		.getByLabel("Access code")
-		.fill(credential("FITWAY_DEMO_STAFF_PIN"));
+	await page.getByLabel("Access code").fill(staffPin);
 	await page.getByRole("button", { name: "Sign in" }).click();
 	await expect(page).toHaveURL(/\/staff$/u);
 	await expect(
@@ -82,7 +98,7 @@ test("real Owner password opens every populated owner surface", async ({
 			).status,
 		{
 			email: ownerEmail,
-			password: credential("FITWAY_DEMO_OWNER_PASSWORD"),
+			password: ownerPassword,
 			server: serverUrl,
 		},
 	);

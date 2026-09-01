@@ -16,6 +16,15 @@ export const DEMO_PROCESS_MARKERS = {
 
 export type DemoProcessRole = keyof typeof DEMO_PROCESS_MARKERS;
 
+export function withoutInteractiveDemoCredentials(
+	environment: NodeJS.ProcessEnv,
+): NodeJS.ProcessEnv {
+	const sanitized = { ...environment };
+	delete sanitized.FITWAY_DEMO_OWNER_PASSWORD;
+	delete sanitized.FITWAY_DEMO_STAFF_PIN;
+	return sanitized;
+}
+
 function normalized(value: string) {
 	return process.platform === "win32" ? value.toLowerCase() : value;
 }

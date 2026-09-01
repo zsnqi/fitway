@@ -16,8 +16,9 @@ import {
 	DEMO_SERVER_URL,
 	DEMO_WEB_URL,
 	type DemoProcessRole,
+	withoutInteractiveDemoCredentials,
 } from "./contract";
-import { seedDemo } from "./seed";
+import { migrateDemoDatabase, seedDemo } from "./seed";
 
 const workspace = path.resolve(
 	path.dirname(fileURLToPath(import.meta.url)),
@@ -59,7 +60,7 @@ function child(
 	return new Promise<void>((resolve, reject) => {
 		const result = spawn(command, args, {
 			cwd: workspace,
-			env: options.env ?? process.env,
+			env: options.env ?? withoutInteractiveDemoCredentials(process.env),
 			stdio: options.stdio ?? "inherit",
 			windowsHide: true,
 		});
@@ -87,7 +88,7 @@ function capture(command: string, args: string[]) {
 	return new Promise<string>((resolve, reject) => {
 		const result = spawn(command, args, {
 			cwd: workspace,
-			env: process.env,
+			env: withoutInteractiveDemoCredentials(process.env),
 			windowsHide: true,
 		});
 		let stdout = "";
@@ -152,7 +153,7 @@ async function secrets(): Promise<RuntimeSecrets> {
 
 function demoEnvironment(value: RuntimeSecrets): NodeJS.ProcessEnv {
 	return {
-		...process.env,
+		...withoutInteractiveDemoCredentials(process.env),
 		DATABASE_URL: DEMO_DATABASE_URL,
 		BETTER_AUTH_SECRET: value.authSecret,
 		CRON_SECRET: value.authSecret,
@@ -176,6 +177,14 @@ async function waitFor(url: string, label: string) {
 		await new Promise((resolve) => setTimeout(resolve, 500));
 	}
 	throw new Error(`${label} did not become ready on its fixed loopback URL`);
+}
+
+async function isReady(url: string) {
+	try {
+		return (await fetch(url, { signal: AbortSignal.timeout(2_000) })).ok;
+	} catch {
+		return false;
+	}
 }
 
 async function assertAvailableLoopbackPort(port: number, label: string) {
@@ -272,23 +281,27 @@ async function startPostgres() {
 	]);
 }
 
-function requireCredentials() {
-	const ownerPassword = process.env.FITWAY_DEMO_OWNER_PASSWORD;
-	const staffPin = process.env.FITWAY_DEMO_STAFF_PIN;
-	if (!ownerPassword || !staffPin)
+function takeCredential(
+	name: "FITWAY_DEMO_OWNER_PASSWORD" | "FITWAY_DEMO_STAFF_PIN",
+) {
+	const value = process.env[name];
+	delete process.env[name];
+	if (!value)
 		throw new Error(
 			"Credentials must be supplied by scripts/demo.ps1 secure prompts",
 		);
-	return { ownerPassword, staffPin };
+	return value;
+}
+
+function requireCredentials() {
+	return {
+		ownerPassword: takeCredential("FITWAY_DEMO_OWNER_PASSWORD"),
+		staffPin: takeCredential("FITWAY_DEMO_STAFF_PIN"),
+	};
 }
 
 function requireOwnerPassword() {
-	const ownerPassword = process.env.FITWAY_DEMO_OWNER_PASSWORD;
-	if (!ownerPassword)
-		throw new Error(
-			"Owner password must be supplied by the scripts/demo.ps1 secure prompt",
-		);
-	return ownerPassword;
+	return takeCredential("FITWAY_DEMO_OWNER_PASSWORD");
 }
 
 async function reset() {
@@ -464,10 +477,22 @@ async function status() {
 	const processes = await readProcesses();
 	for (const role of Object.keys(DEMO_PROCESS_MARKERS) as DemoProcessRole[]) {
 		const entry = processes.find((candidate) => candidate.role === role);
-		console.log(
-			`${role}: ${entry && (await isLive(entry.pid)) ? "running" : "not running"}`,
+		if (!entry || !(await isLive(entry.pid))) {
+			console.log(`${role}: not running`);
+			continue;
+		}
+		assertOwnedProcessCommand(
+			await processCommandLine(entry.pid),
+			entry.marker,
 		);
+		console.log(`${role}: running (owned process verified)`);
 	}
+	console.log(
+		`server endpoint: ${(await isReady(DEMO_SERVER_URL)) ? "ready" : "not ready"}`,
+	);
+	console.log(
+		`web endpoint: ${(await isReady(DEMO_WEB_URL)) ? "ready" : "not ready"}`,
+	);
 }
 
 async function verify() {
@@ -521,10 +546,13 @@ async function verify() {
 			"test",
 			"tests/browser/desktop-demo.browser.spec.ts",
 			"--project=chromium",
+			"--trace=off",
 		],
 		{
 			env: {
-				...process.env,
+				...withoutInteractiveDemoCredentials(process.env),
+				FITWAY_DEMO_OWNER_PASSWORD: credentials.ownerPassword,
+				FITWAY_DEMO_STAFF_PIN: credentials.staffPin,
 				FITWAY_RUN_ID: "desktop_demo_live",
 				FITWAY_PLAYWRIGHT_BASE_URL: DEMO_WEB_URL,
 				FITWAY_PLAYWRIGHT_SKIP_WEBSERVER: "true",
@@ -623,6 +651,8 @@ if (action === "prepare") {
 		throw new Error("Run demo preparation through pnpm demo:prepare");
 	await child("py", ["--version"]);
 	await child("docker", ["version"]);
+	await assertAvailableLoopbackPort(3100, "Demo server");
+	await assertAvailableLoopbackPort(3101, "Demo web");
 	const { chromium } = await import("@playwright/test");
 	if (!existsSync(chromium.executablePath()))
 		throw new Error(
@@ -630,8 +660,11 @@ if (action === "prepare") {
 		);
 	await child(process.execPath, ["scripts/verify-repository.mjs"]);
 	await startPostgres();
+	await migrateDemoDatabase(DEMO_DATABASE_URL);
 	await secrets();
-	console.log("Demo prerequisites and loopback Postgres are ready.");
+	console.log(
+		"Demo prerequisites, reviewed migrations, and loopback Postgres are ready.",
+	);
 } else if (action === "reset") await reset();
 else if (action === "start") await start();
 else if (action === "status") await status();
