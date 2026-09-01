@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-09-01T07:54:39Z"
+updatedAt: "2026-09-01T11:28:53Z"
 
 coordinator:
-  owner: "Coordinator final authority. The human-authorized fidelity-integration-closure-r01 successor is IN_PROGRESS from canonical commit 8f5ff99; it qualifies rather than rewrites the historical repository-closeout and desktop-demo DONE claims. Historical phases and terminal attempts remain immutable. LAN/mobile support, presentation work, GitHub synchronization, release/tagging, deployment, owner-facing PDF work, and external go-live gates remain excluded."
+  owner: "Coordinator final authority. fidelity-integration-closure-r01 is preserved FAILED_VALIDATION after its third validation recurrence; the human-authorized repair-lineage successor fidelity-integration-closure-r02 is IN_PROGRESS from preserved candidate 2069896. It qualifies rather than rewrites the historical repository-closeout and desktop-demo DONE claims. Historical phases and terminal attempts remain immutable. LAN/mobile support, presentation work, GitHub synchronization, release/tagging, deployment, owner-facing PDF work, and external go-live gates remain excluded."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -2453,7 +2453,7 @@ milestones:
     integratedCommit: SELF
 
   fidelity-integration-closure-r01:
-    status: IN_PROGRESS
+    status: FAILED_VALIDATION
     dependencies: [repository-closeout, desktop-demo]
     ownerSession: "Primary Codex coordinator; sole repository writer and final gate owner for the human-authorized repository-wide Paper fidelity/integration closure"
     branch: codex/fidelity-integration-closure
@@ -2462,6 +2462,7 @@ milestones:
     ownedPaths:
       - apps/web/**
       - tests/browser/**
+      - phase1-foundation.test.ts
       - PROJECT_STATE.yaml
       - docs/phase-records/handoffs/fidelity-integration-closure/**
     forbiddenPaths:
@@ -2471,15 +2472,50 @@ milestones:
       - historical phase records, terminal attempts, branches, worktrees, repair budgets, and their preserved evidence
       - deployment, GitHub synchronization, releases, tags, external provisioning, presentation capture, and owner-facing PDF work
       - unrelated product behavior and demo-data semantics
+    sharedLeases: []
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-09-01T11:28:52Z"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/fidelity-integration-closure/20260901-142852-fidelity_closure_r01-failed-validation.md
+    stopReason: "Terminal r01 FAILED_VALIDATION after the third validation recurrence. Repair 1 settled CSS format/specificity failures. Repair 2 pinned the official 1024x1024 brand asset in the foundation contract and supplied documented synthetic test-only process environment values. The next full gate passed invariants, Biome, types, 572 unit tests, 117 simulator tests, and both builds, then failed 1/133 integration tests because phase2.integration.test.ts still queried the deleted .public-live__freshness--mobile wrapper. The 2069896 candidate, 111/111 selected routed browser pass, canonical evidence, and mutation-free verify:fast pass are preserved unintegrated. Successor: fidelity-integration-closure-r02."
+    gates:
+      unit: PASS
+      integration: FAIL
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
+      independentReview: PENDING
+    integratedCommit: null
+
+  fidelity-integration-closure-r02:
+    status: IN_PROGRESS
+    dependencies: [repository-closeout, desktop-demo]
+    ownerSession: "Primary Codex coordinator; sole repository writer and final gate owner for the r01 repair-lineage successor"
+    branch: codex/fidelity-integration-closure
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
+    baseCommit: 2069896e39434c4f2c6adff4504a7040167b53c5
+    ownedPaths:
+      - apps/web/**
+      - tests/browser/**
+      - phase1-foundation.test.ts
+      - "apps/server/src/phase2.integration.test.ts: stale routed Public freshness locator only"
+      - PROJECT_STATE.yaml
+      - docs/phase-records/handoffs/fidelity-integration-closure/**
+    forbiddenPaths:
+      - FITWAY_PRODUCT.md, SPEC.md, PHASES.md, DESIGN_GUIDE.md, docs/WORKFLOW.md, and existing ADRs
+      - "packages/**, apps/server/** except the exact leased Phase 2 integration locator, edge/**, schemas, migrations, OpenAPI, and locked product/security/privacy/data semantics"
+      - Paper mutations, visual-direction-gate/**, and the immutable approved theme snapshot
+      - historical phase records, terminal attempts, branches, worktrees, repair budgets, and their preserved evidence
+      - deployment, GitHub synchronization, releases, tags, external provisioning, presentation capture, and owner-facing PDF work
+      - unrelated product behavior and demo-data semantics
     sharedLeases:
-      - "coordinator lease: apps/web root and routed Public/Login/Staff/Owner composition"
-      - "coordinator lease: shared web branding, catalogs, global styles, and generated routing if required"
-      - "coordinator lease: tests/browser route coverage and canonical screenshot baselines under explicit human refresh authority"
-      - "coordinator lease: serialized browser ports, runtime, and visual evidence directories"
+      - "coordinator lease: apps/server/src/phase2.integration.test.ts freshness locator only; no server implementation or behavior changes"
+      - "coordinator lease: serialized disposable database, browser ports, desktop demo runtime, and evidence directories"
+      - "coordinator lease: PROJECT_STATE and successor closure handoffs"
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-09-01T07:54:39Z"
-    leaseExpiresAt: "2026-09-02T07:54:39Z"
-    handoff: docs/phase-records/handoffs/fidelity-integration-closure/20260901-105439-fidelity_closure_r01-activation.md
+    lastHeartbeatAt: "2026-09-01T11:28:53Z"
+    leaseExpiresAt: "2026-09-02T11:28:53Z"
+    handoff: docs/phase-records/handoffs/fidelity-integration-closure/20260901-142853-fidelity_closure_r02-activation.md
     stopReason: null
     gates:
       unit: PENDING
