@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-09-01T06:33:52Z"
+updatedAt: "2026-09-01T07:54:39Z"
 
 coordinator:
-  owner: "Coordinator final authority. FITWAY v1 remains repository-closed at repository-closeout; the post-closeout desktop-demo milestone is DONE and historical phases and terminal attempts remain immutable. No implementation slice is active. LAN/mobile support, presentation work, GitHub synchronization, release/tagging, deployment, and external go-live gates remain excluded."
+  owner: "Coordinator final authority. The human-authorized fidelity-integration-closure-r01 successor is IN_PROGRESS from canonical commit 8f5ff99; it qualifies rather than rewrites the historical repository-closeout and desktop-demo DONE claims. Historical phases and terminal attempts remain immutable. LAN/mobile support, presentation work, GitHub synchronization, release/tagging, deployment, owner-facing PDF work, and external go-live gates remain excluded."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -2451,3 +2451,41 @@ milestones:
       visual: NOT_REQUIRED
       independentReview: PASS
     integratedCommit: SELF
+
+  fidelity-integration-closure-r01:
+    status: IN_PROGRESS
+    dependencies: [repository-closeout, desktop-demo]
+    ownerSession: "Primary Codex coordinator; sole repository writer and final gate owner for the human-authorized repository-wide Paper fidelity/integration closure"
+    branch: codex/fidelity-integration-closure
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
+    baseCommit: 8f5ff99a9e48722a9cb44b6124833099f3704f42
+    ownedPaths:
+      - apps/web/**
+      - tests/browser/**
+      - PROJECT_STATE.yaml
+      - docs/phase-records/handoffs/fidelity-integration-closure/**
+    forbiddenPaths:
+      - FITWAY_PRODUCT.md, SPEC.md, PHASES.md, DESIGN_GUIDE.md, docs/WORKFLOW.md, and existing ADRs
+      - packages/**, apps/server/**, edge/**, schemas, migrations, OpenAPI, and locked product/security/privacy/data semantics
+      - Paper mutations, visual-direction-gate/**, and the immutable approved theme snapshot
+      - historical phase records, terminal attempts, branches, worktrees, repair budgets, and their preserved evidence
+      - deployment, GitHub synchronization, releases, tags, external provisioning, presentation capture, and owner-facing PDF work
+      - unrelated product behavior and demo-data semantics
+    sharedLeases:
+      - "coordinator lease: apps/web root and routed Public/Login/Staff/Owner composition"
+      - "coordinator lease: shared web branding, catalogs, global styles, and generated routing if required"
+      - "coordinator lease: tests/browser route coverage and canonical screenshot baselines under explicit human refresh authority"
+      - "coordinator lease: serialized browser ports, runtime, and visual evidence directories"
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-09-01T07:54:39Z"
+    leaseExpiresAt: "2026-09-02T07:54:39Z"
+    handoff: docs/phase-records/handoffs/fidelity-integration-closure/20260901-105439-fidelity_closure_r01-activation.md
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
