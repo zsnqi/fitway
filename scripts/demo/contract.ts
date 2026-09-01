@@ -10,7 +10,7 @@ export const DEMO_WEB_URL = "http://localhost:3101";
 export const DEMO_SERVER_URL = "http://localhost:3100";
 export const DEMO_PROCESS_MARKERS = {
 	server: "scripts/demo/server.ts",
-	web: "node_modules/vite/bin/vite.js",
+	web: "apps/web/node_modules/vite/bin/vite.js",
 	simulator: "edge/simulator.py",
 } as const;
 

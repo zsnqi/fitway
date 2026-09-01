@@ -1,13 +1,12 @@
 [CmdletBinding()]
 param(
 	[Parameter(Mandatory = $true)]
-	[ValidateSet("prepare", "reset", "start", "status", "verify", "stop", "clean")]
+	[ValidateSet("prepare", "reset", "start", "status", "verify", "owner", "stop", "clean")]
 	[string]$Action
 )
 
 $ErrorActionPreference = "Stop"
 $repo = Split-Path -Parent $PSScriptRoot
-$repo = Split-Path -Parent $repo
 Set-Location -LiteralPath $repo
 
 function Convert-SecureDemoValue([Security.SecureString]$Value) {
@@ -16,12 +15,15 @@ function Convert-SecureDemoValue([Security.SecureString]$Value) {
 	finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($ptr) }
 }
 
-$needsCredentials = $Action -in @("reset", "verify")
+$needsOwnerCredential = $Action -in @("reset", "verify", "owner")
+$needsStaffCredential = $Action -in @("reset", "verify")
 try {
-	if ($needsCredentials) {
+	if ($needsOwnerCredential) {
 		$owner = Read-Host "Demo owner password" -AsSecureString
-		$pin = Read-Host "Demo staff PIN (6-12 Western digits)" -AsSecureString
 		$env:FITWAY_DEMO_OWNER_PASSWORD = Convert-SecureDemoValue $owner
+	}
+	if ($needsStaffCredential) {
+		$pin = Read-Host "Demo staff PIN (6-12 Western digits)" -AsSecureString
 		$env:FITWAY_DEMO_STAFF_PIN = Convert-SecureDemoValue $pin
 	}
 	& node --import tsx scripts/demo/cli.ts $Action

@@ -47,6 +47,7 @@ type Action =
 	| "start"
 	| "status"
 	| "verify"
+	| "owner"
 	| "stop"
 	| "clean";
 
@@ -73,6 +74,40 @@ function child(
 
 function compose(args: string[]) {
 	return child("docker", [
+		"compose",
+		"--project-name",
+		DEMO_COMPOSE_PROJECT,
+		"--file",
+		composeFile,
+		...args,
+	]);
+}
+
+function capture(command: string, args: string[]) {
+	return new Promise<string>((resolve, reject) => {
+		const result = spawn(command, args, {
+			cwd: workspace,
+			env: process.env,
+			windowsHide: true,
+		});
+		let stdout = "";
+		let stderr = "";
+		result.stdout.on("data", (chunk) => {
+			stdout += String(chunk);
+		});
+		result.stderr.on("data", (chunk) => {
+			stderr += String(chunk);
+		});
+		result.once("error", reject);
+		result.once("exit", (code) => {
+			if (code === 0) resolve(stdout.trim());
+			else reject(new Error(stderr.trim() || `${command} exited with ${code}`));
+		});
+	});
+}
+
+function composeOutput(args: string[]) {
+	return capture("docker", [
 		"compose",
 		"--project-name",
 		DEMO_COMPOSE_PROJECT,
@@ -203,9 +238,16 @@ async function stopProcesses() {
 			await processCommandLine(entry.pid),
 			entry.marker,
 		);
-		await child("taskkill.exe", ["/PID", `${entry.pid}`, "/T", "/F"], {
-			stdio: "ignore",
-		});
+		try {
+			await child("taskkill.exe", ["/PID", `${entry.pid}`, "/T", "/F"], {
+				stdio: "ignore",
+			});
+		} catch (error) {
+			// A second-terminal stop races intentionally with the foreground
+			// supervisor. Ignore taskkill's "not found" only after liveness proves
+			// the exact, already-validated PID is no longer present.
+			if (await isLive(entry.pid)) throw error;
+		}
 	}
 	if (existsSync(processFile)) await rm(processFile, { force: true });
 }
@@ -238,6 +280,15 @@ function requireCredentials() {
 			"Credentials must be supplied by scripts/demo.ps1 secure prompts",
 		);
 	return { ownerPassword, staffPin };
+}
+
+function requireOwnerPassword() {
+	const ownerPassword = process.env.FITWAY_DEMO_OWNER_PASSWORD;
+	if (!ownerPassword)
+		throw new Error(
+			"Owner password must be supplied by the scripts/demo.ps1 secure prompt",
+		);
+	return ownerPassword;
 }
 
 async function reset() {
@@ -328,7 +379,7 @@ async function start() {
 			DEMO_PROCESS_MARKERS.web,
 			process.execPath,
 			[
-				"node_modules/vite/bin/vite.js",
+				"apps/web/node_modules/vite/bin/vite.js",
 				"apps/web",
 				"--host",
 				"127.0.0.1",
@@ -402,17 +453,28 @@ async function status() {
 	console.log(
 		`Postgres contract: ${DEMO_DATABASE_URL.replace("fitway_demo:fitway_demo_local@", "")}`,
 	);
-	for (const entry of await readProcesses())
+	const postgres = await composeOutput([
+		"ps",
+		"--status",
+		"running",
+		"--quiet",
+		"postgres",
+	]);
+	console.log(`postgres: ${postgres ? "running" : "not running"}`);
+	const processes = await readProcesses();
+	for (const role of Object.keys(DEMO_PROCESS_MARKERS) as DemoProcessRole[]) {
+		const entry = processes.find((candidate) => candidate.role === role);
 		console.log(
-			`${entry.role}: ${(await isLive(entry.pid)) ? "running" : "not running"}`,
+			`${role}: ${entry && (await isLive(entry.pid)) ? "running" : "not running"}`,
 		);
+	}
 }
 
 async function verify() {
 	const credentials = requireCredentials();
 	await waitFor(DEMO_SERVER_URL, "Demo server");
 	const [publicResponse, staffResponse, ownerResponse] = await Promise.all([
-		fetch(`${DEMO_SERVER_URL}/api/public/occupancy`),
+		fetch(`${DEMO_SERVER_URL}/public/occupancy`),
 		fetch(`${DEMO_SERVER_URL}/api/auth/staff/pin`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
@@ -431,9 +493,95 @@ async function verify() {
 		throw new Error(
 			"Demo verification failed; public or real authentication route was not ready",
 		);
-	console.log(
-		"Demo public and real authentication endpoints are ready. Live browser proof is Stage 2.",
+	const publicPayload = (await publicResponse.json()) as {
+		freshness?: unknown;
+		count?: unknown;
+	};
+	if (
+		publicPayload.freshness !== "fresh" ||
+		typeof publicPayload.count !== "number" ||
+		publicPayload.count <= 0
+	)
+		throw new Error(
+			"Demo public route did not expose a live populated reading",
+		);
+	const playwrightCli = path.join(
+		workspace,
+		"node_modules",
+		"@playwright",
+		"test",
+		"cli.js",
 	);
+	if (!existsSync(playwrightCli))
+		throw new Error("Playwright is not installed in the workspace");
+	await child(
+		process.execPath,
+		[
+			playwrightCli,
+			"test",
+			"tests/browser/desktop-demo.browser.spec.ts",
+			"--project=chromium",
+		],
+		{
+			env: {
+				...process.env,
+				FITWAY_RUN_ID: "desktop_demo_live",
+				FITWAY_PLAYWRIGHT_BASE_URL: DEMO_WEB_URL,
+				FITWAY_PLAYWRIGHT_SKIP_WEBSERVER: "true",
+				FITWAY_PLAYWRIGHT_OUTPUT_DIR: path.join(runtime, "playwright"),
+				FITWAY_PLAYWRIGHT_REPORT_DIR: path.join(
+					runtime,
+					"playwright",
+					"report",
+				),
+			},
+		},
+	);
+	console.log(
+		"Demo API, authentication, authorization, and live browser proof passed.",
+	);
+}
+
+async function openOwner() {
+	const ownerPassword = requireOwnerPassword();
+	await waitFor(DEMO_SERVER_URL, "Demo server");
+	await waitFor(DEMO_WEB_URL, "Demo web app");
+	const { chromium } = await import("@playwright/test");
+	const browser = await chromium.launch({ headless: false });
+	try {
+		const context = await browser.newContext();
+		const page = await context.newPage();
+		await page.goto(DEMO_WEB_URL);
+		const statusCode = await page.evaluate(
+			async ({ email, password, serverUrl }) =>
+				(
+					await fetch(`${serverUrl}/api/auth/owner/password`, {
+						method: "POST",
+						credentials: "include",
+						headers: {
+							Accept: "application/json",
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({ email, password }),
+					})
+				).status,
+			{
+				email: DEMO_OWNER_EMAIL,
+				password: ownerPassword,
+				serverUrl: DEMO_SERVER_URL,
+			},
+		);
+		if (statusCode !== 200)
+			throw new Error(`Owner authentication failed with status ${statusCode}`);
+		await page.goto(`${DEMO_WEB_URL}/admin`);
+		console.log(
+			"Owner walkthrough opened in an ephemeral authenticated Chromium window. Close the window to finish.",
+		);
+		await new Promise<void>((resolve) => browser.once("disconnected", resolve));
+	} catch (error) {
+		await browser.close();
+		throw error;
+	}
 }
 
 async function clean() {
@@ -451,12 +599,19 @@ async function clean() {
 const action = process.argv[2] as Action | undefined;
 if (
 	!action ||
-	!["prepare", "reset", "start", "status", "verify", "stop", "clean"].includes(
-		action,
-	)
+	![
+		"prepare",
+		"reset",
+		"start",
+		"status",
+		"verify",
+		"owner",
+		"stop",
+		"clean",
+	].includes(action)
 )
 	throw new Error(
-		"Usage: scripts/demo.ps1 <prepare|reset|start|status|verify|stop|clean>",
+		"Usage: scripts/demo.ps1 <prepare|reset|start|status|verify|owner|stop|clean>",
 	);
 if (action === "prepare") {
 	if (!existsSync(path.join(workspace, "node_modules")))
@@ -464,9 +619,15 @@ if (action === "prepare") {
 			"Dependencies are missing; run pnpm install --frozen-lockfile before preparing the demo",
 		);
 	await child(process.execPath, ["--version"]);
-	await child("pnpm", ["--version"]);
+	if (!process.env.npm_execpath?.toLowerCase().includes("pnpm"))
+		throw new Error("Run demo preparation through pnpm demo:prepare");
 	await child("py", ["--version"]);
 	await child("docker", ["version"]);
+	const { chromium } = await import("@playwright/test");
+	if (!existsSync(chromium.executablePath()))
+		throw new Error(
+			"Playwright Chromium is missing; run pnpm exec playwright install chromium",
+		);
 	await child(process.execPath, ["scripts/verify-repository.mjs"]);
 	await startPostgres();
 	await secrets();
@@ -475,6 +636,7 @@ if (action === "prepare") {
 else if (action === "start") await start();
 else if (action === "status") await status();
 else if (action === "verify") await verify();
+else if (action === "owner") await openOwner();
 else if (action === "stop") {
 	await requestStop();
 	await compose(["stop", "postgres"]);
