@@ -2,6 +2,14 @@ import { expect, test } from "@playwright/test";
 
 const serverUrl = "http://localhost:3100";
 const ownerEmail = "owner@demo.fitway.local";
+const isLiveDesktopDemo =
+	process.env.FITWAY_PLAYWRIGHT_BASE_URL === "http://localhost:3101" &&
+	process.env.FITWAY_PLAYWRIGHT_SKIP_WEBSERVER === "true";
+
+test.skip(
+	!isLiveDesktopDemo,
+	"The unmocked desktop-demo proof runs only through pnpm demo:verify.",
+);
 
 function credential(
 	name: "FITWAY_DEMO_OWNER_PASSWORD" | "FITWAY_DEMO_STAFF_PIN",
@@ -11,8 +19,10 @@ function credential(
 	return value;
 }
 
-const ownerPassword = credential("FITWAY_DEMO_OWNER_PASSWORD");
-const staffPin = credential("FITWAY_DEMO_STAFF_PIN");
+const ownerPassword = isLiveDesktopDemo
+	? credential("FITWAY_DEMO_OWNER_PASSWORD")
+	: "";
+const staffPin = isLiveDesktopDemo ? credential("FITWAY_DEMO_STAFF_PIN") : "";
 const browserEnvironment = Object.fromEntries(
 	Object.entries(process.env).filter(
 		([name, value]) =>
@@ -141,6 +151,9 @@ test("real Owner password opens every populated owner surface", async ({
 	await page.getByRole("tab", { name: "Access" }).click();
 	await expect(
 		page.getByRole("heading", { name: "Access", exact: true }),
+	).toBeVisible({ timeout: 15_000 });
+	await expect(
+		page.getByRole("heading", { name: "Shared staff PIN", exact: true }),
 	).toBeVisible({ timeout: 15_000 });
 	await expect(page.getByText(ownerEmail, { exact: true })).toBeVisible();
 
