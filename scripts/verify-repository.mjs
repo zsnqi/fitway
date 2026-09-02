@@ -6,6 +6,7 @@ import process from "node:process";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { parse as parseYaml } from "yaml";
+import { verifyVisualAuthorityRepository } from "./visual-authority.mjs";
 
 const root = process.cwd();
 
@@ -350,8 +351,10 @@ async function main() {
 		await assertMissing(relativePath);
 	}
 
+	const routeAuthority = await verifyVisualAuthorityRepository(root);
+
 	console.log(
-		`Repository invariants passed: ${Object.keys(state.milestones).length} milestones, ${(manifest.canonicalScreenshots ?? []).length} canonical approval screenshots.`,
+		`Repository invariants passed: ${Object.keys(state.milestones).length} milestones, ${(manifest.canonicalScreenshots ?? []).length} canonical approval screenshots, ${routeAuthority.caseCount} registered full-route visual-authority cases, ${routeAuthority.paperExportCount} hash-verified Paper exports, and ${routeAuthority.rejectedArtifactCount} hash-frozen rejected r05 screenshots.`,
 	);
 }
 

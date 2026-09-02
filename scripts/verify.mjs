@@ -212,6 +212,23 @@ const phases = {
 		],
 		label: "Phase 8 health-alert integration b01",
 	},
+	"full-route-paper-fidelity": {
+		browserFiles: [
+			"tests/browser/public-baseline.browser.spec.ts",
+			"tests/browser/login-paper-adoption.browser.spec.ts",
+			"tests/browser/staff-paper-fidelity.review.spec.ts",
+			"tests/browser/phase4-staff-web.browser.spec.ts",
+			"tests/browser/phase11-shell.browser.spec.ts",
+			"tests/browser/phase9-owner-ui.browser.spec.ts",
+			"tests/browser/phase10-ui-csv.browser.spec.ts",
+			"tests/browser/phase11-access.browser.spec.ts",
+			"tests/browser/phase11-audit.browser.spec.ts",
+			"tests/browser/phase11-health.browser.spec.ts",
+			"tests/browser/phase11-settings.browser.spec.ts",
+		],
+		integrationFiles: [],
+		label: "Full-route Paper fidelity repair",
+	},
 };
 
 const phaseNames = Object.keys(phases).join("|");

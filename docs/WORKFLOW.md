@@ -118,10 +118,13 @@ Every concurrent run must set `FITWAY_RUN_ID`. Verification derives or receives:
 - a unique disposable Postgres database whose exact name includes the run ID;
 - an explicit destructive-test marker.
 
-Canonical `toHaveScreenshot` files are shared, coordinator-owned acceptance evidence, separated
-by operating-system platform and Playwright project. Ordinary workers read them but do not update
-them. Generate or approve a new platform baseline only in a serialized human-approved pass using
-the locked browser/toolchain; rendering is not assumed portable across operating systems.
+Canonical `toHaveScreenshot` files are shared, coordinator-owned regression evidence, separated
+by operating-system platform and Playwright project. They become acceptance evidence only after a
+recorded comparison to the exact accepted Paper authority. An implementation-generated baseline,
+including a latest phase baseline, may never substitute for Paper during initial acceptance.
+Ordinary workers read canonical files but do not update them. Generate or promote a platform
+baseline only in a serialized human-approved pass using the locked browser/toolchain; rendering is
+not assumed portable across operating systems.
 
 Integration tests must accept only the explicitly named disposable database and marker. They
 must never fall back to `DATABASE_URL`, a general development database, or a name merely
@@ -154,10 +157,28 @@ command, result, commit, run ID, timestamp, and artifact path in the phase recor
 5. Verify keyboard order, focus visibility/return, target size, reduced motion, concise live
    regions, screen-reader names, 200% zoom/reflow, asymmetric safe areas, and page overflow.
 6. Run automated accessibility checks and manually inspect semantics that automation cannot prove.
-7. Compare curated screenshots with the approved baseline or latest accepted phase baseline.
+7. Compare full routed screenshots with the registered Paper authority. For Owner routes, every
+   comparison includes the global shell, shared navigation, and active page panel. A
+   `captureReview` artifact is evidence generation only and cannot produce a passing verdict.
 8. Make at most two focused polish cycles. A material design change becomes `NEEDS_HUMAN`.
 9. Have a fresh verifier rerun the checks. Human approval is required to update a canonical
    baseline or alter a locked visual decision.
+
+### Non-circular visual acceptance
+
+The active route-authority manifest and test-only `VisualAuthorityCase` registry map each routed
+surface/state/locale/viewport to its exact Paper family, landmark contract, expected full-route
+artifact, approval record, and reviewed deviations. Repository verification fails when a canonical
+artifact is unmapped, a Paper export or routed artifact hash changes, an accepted matrix case is
+missing, or a baseline lacks a new human approval record.
+
+Exact Paper comparison detects unintended drift; it is not blind pixel reproduction. A bounded
+correction is allowed only when its durable deviation record names the Paper frame and affected
+region, the observed presentation or runtime problem, the smallest correction, why design language
+and semantics remain intact, before/after routed evidence, and independent rendered-review
+approval. Unrecorded or unreviewed deviations fail acceptance. Charts and other runtime-rendered
+content are judged through container geometry, tokens, semantic values, and rendered review rather
+than brittle raw-pixel identity.
 
 ## Handoff format
 

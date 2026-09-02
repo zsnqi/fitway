@@ -95,3 +95,13 @@ acceptancePolicy:
   routedEvidencePending: "Every registered canonical case must carry a full-route routed screenshot hash and approval record before acceptance."
   captureReviewIsVerdict: false
   baselineMayReplacePaper: false
+
+rejectedRoutedBaseline:
+  status: REJECTED_R05
+  path: tests/browser/__screenshots__
+  fileCount: 41
+  treeSha256: 542c5609c477ed6398f9e4b9f7cdfa2646939c1c9301fa2820538de520972dc9
+  rejectionRecord: docs/phase-records/handoffs/fidelity-integration-closure/20260902-193655-fidelity_closure_r05-human-visual-rejection.md
+  disposition: >-
+    Hash-frozen provenance only. These implementation-generated screenshots cannot satisfy any
+    current Paper-conformance case and may be replaced only after full-route rendered approval.

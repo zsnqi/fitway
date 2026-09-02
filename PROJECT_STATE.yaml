@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-09-02T20:21:48Z"
+updatedAt: "2026-09-02T20:34:10Z"
 
 coordinator:
   owner: "Coordinator final authority. fidelity-integration-closure-r01 through r05 are preserved FAILED_VALIDATION; the human-approved successor full-route-paper-fidelity-r01 is IN_PROGRESS. The Owner shared navigation and Activity Log successor are approved and frozen; their routed-only uniform-material and bidi/presentation deviations are explicitly approved pending implementation evidence. The milestone starts from preserved functional candidate afa2ef6 and corrects the non-circular Paper authority, full-route visual gate, shared Owner shell, and routed fidelity failures without rewriting historical repository-closeout or desktop-demo claims. Historical phases and terminal attempts remain immutable. LAN/mobile support, presentation work, GitHub synchronization, release/tagging, deployment, owner-facing PDF work, and external go-live gates remain excluded."
@@ -2661,6 +2661,9 @@ milestones:
       - apps/web/**
       - tests/browser/**
       - scripts/verify.mjs
+      - scripts/verify-repository.mjs
+      - scripts/visual-authority.mjs
+      - scripts/visual-authority.test.ts
       - phase1-foundation.test.ts
       - docs/WORKFLOW.md
       - docs/adr/ADR-007-paper-visual-source-of-truth.md
@@ -2684,9 +2687,9 @@ milestones:
       - "coordinator lease: serialized disposable database, browser ports, desktop demo runtime, and evidence directories"
       - "coordinator lease: PROJECT_STATE and successor handoffs"
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-09-02T20:21:48Z"
+    lastHeartbeatAt: "2026-09-02T20:34:10Z"
     leaseExpiresAt: "2026-09-03T20:21:48Z"
-    handoff: docs/phase-records/handoffs/full-route-paper-fidelity/20260902-202148-activity-log-approved.md
+    handoff: docs/phase-records/handoffs/full-route-paper-fidelity/20260902-203410-visual-authority-gate.md
     stopReason: null
     gates:
       unit: PENDING
