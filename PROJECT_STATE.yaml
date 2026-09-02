@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-09-02T19:28:33Z"
+updatedAt: "2026-09-02T20:21:48Z"
 
 coordinator:
-  owner: "Coordinator final authority. fidelity-integration-closure-r01 through r05 are preserved FAILED_VALIDATION; the human-approved successor full-route-paper-fidelity-r01 is NEEDS_HUMAN for rendered approval of its new Activity Log successor before visual-gate construction and routed adoption. The Owner shared navigation is approved and frozen; its routed-only uniform-material deviation is explicitly approved pending implementation evidence. The milestone starts from preserved functional candidate afa2ef6 and corrects the non-circular Paper authority, full-route visual gate, shared Owner shell, and routed fidelity failures without rewriting historical repository-closeout or desktop-demo claims. Historical phases and terminal attempts remain immutable. LAN/mobile support, presentation work, GitHub synchronization, release/tagging, deployment, owner-facing PDF work, and external go-live gates remain excluded."
+  owner: "Coordinator final authority. fidelity-integration-closure-r01 through r05 are preserved FAILED_VALIDATION; the human-approved successor full-route-paper-fidelity-r01 is IN_PROGRESS. The Owner shared navigation and Activity Log successor are approved and frozen; their routed-only uniform-material and bidi/presentation deviations are explicitly approved pending implementation evidence. The milestone starts from preserved functional candidate afa2ef6 and corrects the non-circular Paper authority, full-route visual gate, shared Owner shell, and routed fidelity failures without rewriting historical repository-closeout or desktop-demo claims. Historical phases and terminal attempts remain immutable. LAN/mobile support, presentation work, GitHub synchronization, release/tagging, deployment, owner-facing PDF work, and external go-live gates remain excluded."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -2651,7 +2651,7 @@ milestones:
     integratedCommit: null
 
   full-route-paper-fidelity-r01:
-    status: NEEDS_HUMAN
+    status: IN_PROGRESS
     dependencies: [repository-closeout, desktop-demo]
     ownerSession: "Primary Codex coordinator; sole repository and Paper writer authority for the human-approved full-route Paper fidelity repair"
     branch: codex/fidelity-integration-closure
@@ -2684,10 +2684,10 @@ milestones:
       - "coordinator lease: serialized disposable database, browser ports, desktop demo runtime, and evidence directories"
       - "coordinator lease: PROJECT_STATE and successor handoffs"
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-09-02T19:28:33Z"
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/full-route-paper-fidelity/20260902-192833-owner-shell-approved-activity-candidate-needs-human.md
-    stopReason: "The human approved the Owner shared-navigation successor and its routed-only uniform-material deviation. Paper now names the shared shell CURRENT, and eleven leaf exports are hash-registered in the in-progress route-authority manifest. A separate Activity Log successor preserves the Audit filters, records, states, pagination, and semantics while replacing inherited Daily/History chrome with the shared shell and removing redundant page prose. Its complete bilingual desktop/mobile renders plus responsive/RTL contract are ready for the required separate human review. Per the approved sequence, visual-gate construction and routed UI adoption wait for this rendered approval."
+    lastHeartbeatAt: "2026-09-02T20:21:48Z"
+    leaseExpiresAt: "2026-09-03T20:21:48Z"
+    handoff: docs/phase-records/handoffs/full-route-paper-fidelity/20260902-202148-activity-log-approved.md
+    stopReason: null
     gates:
       unit: PENDING
       integration: PENDING

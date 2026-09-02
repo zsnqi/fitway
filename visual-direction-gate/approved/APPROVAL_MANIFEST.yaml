@@ -31,6 +31,7 @@ paperAuthority:
     - "LOGIN PRODUCTION SET — CURRENT"
     - "PUBLIC CROWD BOARD PRODUCTION SET — CURRENT"
     - "OWNER SHARED NAVIGATION — FULL-ROUTE SUCCESSOR — CURRENT"
+    - "OWNER ACTIVITY LOG — SHARED-SHELL SUCCESSOR — CURRENT"
   routeAuthorityManifest:
     status: IN_PROGRESS
     path: visual-direction-gate/approved/paper-route-authority-20260902/AUTHORITY_MANIFEST.yaml
@@ -39,8 +40,6 @@ paperAuthority:
       role: "Source artifact only; no longer authoritative over Production. Do not build from it."
     - area: "OWNER AUDIT PRODUCTION SET — CANDIDATE"
       role: "Immutable source material for the Activity Log successor; not active route authority."
-    - area: "OWNER ACTIVITY LOG — SHARED-SHELL SUCCESSOR CANDIDATE"
-      role: "Rendered successor awaiting separate human approval; do not implement from it yet."
   supersedes:
     scope: "Visual composition only."
     target: docs/adr/ADR-006-visual-authority.md

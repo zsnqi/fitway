@@ -1,6 +1,6 @@
 schemaVersion: 1
 status: IN_PROGRESS
-updatedAt: "2026-09-02T19:28:33Z"
+updatedAt: "2026-09-02T20:21:48Z"
 authorityDecision: docs/adr/ADR-007-paper-visual-source-of-truth.md
 milestone: full-route-paper-fidelity-r01
 
@@ -66,17 +66,19 @@ surfaces:
   ownerActivityLog:
     sourceArea: "OWNER AUDIT PRODUCTION SET — CANDIDATE"
     sourceAreaId: 1AFO-0
-    successorArea: "OWNER ACTIVITY LOG — SHARED-SHELL SUCCESSOR CANDIDATE"
+    successorArea: "OWNER ACTIVITY LOG — SHARED-SHELL SUCCESSOR — CURRENT"
     successorAreaId: 1GVI-0
-    status: NEEDS_HUMAN
+    status: ACCEPTED_PAPER_AUTHORITY
+    humanApprovalRecord: docs/phase-records/handoffs/full-route-paper-fidelity/20260902-202148-activity-log-approved.md
+    approvedDeviationIds: [owner-activity-log-bidi-and-presentation]
     requiredStates: [populated, loading, load-failure-retry, no-matching-records]
     successorLeaves:
-      - { nodeId: 1HC7-0, locale: en, viewport: 1440, state: populated }
-      - { nodeId: 1H76-0, locale: ar, viewport: 1440, state: populated }
-      - { nodeId: 1H26-0, locale: en, viewport: 390, state: populated }
-      - { nodeId: 1GXE-0, locale: ar, viewport: 390, state: populated }
-      - { nodeId: 1GVJ-0, locale: bilingual, viewport: state-matrix, state: loading-failure-empty }
-      - { nodeId: 1HIV-0, locale: bilingual, viewport: responsive-contract, state: interpolation-rtl }
+      - { nodeId: 1HC7-0, locale: en, viewport: 1440, state: populated, path: owner-activity-log/owner-activity-desktop-en-populated-1440.png, bytes: 1081083, sha256: 3b4f4f9024f5db930bd6f1c7ad6fed6fd2c6c59593bd4db625e19d42f0958340 }
+      - { nodeId: 1H76-0, locale: ar, viewport: 1440, state: populated, path: owner-activity-log/owner-activity-desktop-ar-populated-1440.png, bytes: 1054183, sha256: a781884fe9f9307392f180e5efc3e6f9cb34d93bfc34f428885ba1c700240a38 }
+      - { nodeId: 1H26-0, locale: en, viewport: 390, state: populated, path: owner-activity-log/owner-activity-mobile-en-populated-390.png, bytes: 362902, sha256: 01ce22df5ea3f93e07bae05fbd93adfa6a816ad51216087ceea5b97a49bebd47 }
+      - { nodeId: 1GXE-0, locale: ar, viewport: 390, state: populated, path: owner-activity-log/owner-activity-mobile-ar-populated-390.png, bytes: 353628, sha256: 8a947f29b99210a0379ef187f1d30924afffe4332bb50249d68a4d5a1652ab07 }
+      - { nodeId: 1GVJ-0, locale: bilingual, viewport: state-matrix, state: loading-failure-empty, path: owner-activity-log/owner-activity-required-states.png, bytes: 109125, sha256: aafac824843b46ebc702ee058423db2c01ce95107f799e7370e506780b222e9b }
+      - { nodeId: 1HIV-0, locale: bilingual, viewport: responsive-contract, state: interpolation-rtl, path: owner-activity-log/owner-activity-responsive-rtl-contract.png, bytes: 98180, sha256: fc32b9c952ed5dd201fcbabb5261ea72ee8698b5b949d357d65fa58690861462 }
   ownerSystemStatus:
     desktopArea: "OWNER UPTIME & INCIDENTS PRODUCTION SET — CANDIDATE"
     desktopAreaId: 1AUL-0

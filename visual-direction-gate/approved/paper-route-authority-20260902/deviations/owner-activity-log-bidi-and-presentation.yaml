@@ -1,0 +1,35 @@
+schemaVersion: 1
+id: owner-activity-log-bidi-and-presentation
+status: APPROVED_PENDING_IMPLEMENTATION_EVIDENCE
+approvedAt: "2026-09-02T20:21:48Z"
+approvedBy: human-rendered-review
+paper:
+  file: "FITWAY UX Exploration"
+  page: "Page 1"
+  area: "OWNER ACTIVITY LOG — SHARED-SHELL SUCCESSOR — CURRENT"
+affectedRegion: >-
+  Activity Log numeric values, mixed-direction runs, control edges, alignment, spacing, and
+  typography where the accepted Paper render contains an obvious presentation defect.
+observableProblem: >-
+  The standalone negative value -3 and similar mixed numeric/RTL details can render with awkward
+  sign placement or alignment. Minor control-edge, spacing, and typographic defects may also be
+  evident when the composition is translated to responsive runtime controls.
+smallestCorrection: >-
+  Use explicit bidi isolation and stable numeric formatting, then make only the smallest local
+  spacing, alignment, control-edge, or typography correction required for a coherent routed render.
+mustPreserve:
+  - approved Activity Log composition, hierarchy, density, and visual language
+  - filter, record, pagination, loading, failure/retry, and no-match behavior
+  - approved user-facing copy semantics and Western digits
+  - shared Owner shell structure and navigation behavior
+paperMutationRequired: false
+reviewEvidence:
+  decision: "Explicitly approved by the human with the Activity Log successor."
+  approvalRecord: docs/phase-records/handoffs/full-route-paper-fidelity/20260902-202148-activity-log-approved.md
+  routedBefore: PENDING_IMPLEMENTATION
+  routedAfter: PENDING_IMPLEMENTATION
+  independentRenderedReview: PENDING_IMPLEMENTATION
+acceptanceRule: >-
+  This deviation authorizes only evident local presentation corrections. Each meaningful routed
+  difference still requires before/after evidence and independent rendered review; broad redesign
+  or semantic change remains prohibited.
