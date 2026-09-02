@@ -31,8 +31,6 @@ paperAuthority:
     - "LOGIN PRODUCTION SET — CURRENT"
     - "PUBLIC CROWD BOARD PRODUCTION SET — CURRENT"
   notApprovedProduction:
-    - area: "PUBLIC — APPROVED BUILD REFERENCES"
-      role: "Reference evidence only; never present it as approved Public visual production."
     - area: "PUBLIC CROWD BOARD — G3 LIVE BASE CANDIDATE"
       role: "Source artifact only; no longer authoritative over Production. Do not build from it."
   supersedes:
@@ -73,6 +71,9 @@ approvedDecisions:
   - "44px practical targets, visible focus, skip-link focus transfer, dialog discipline, semantic data alternatives."
 
 supersessions:
+  - source: "Paper / Page 1 / PUBLIC — APPROVED BUILD REFERENCES"
+    retained: "Historical phase records that mention the former area remain immutable provenance."
+    superseded: "The area was explicitly rejected by the human and removed from Paper on 2026-09-02. It supplies no active visual, copy, Staff, Public, implementation, or acceptance evidence."
   - source: docs/archive/visual/claude-design/public-live-desktop
     retained: "G1B global header discipline, panoramic board, asymmetric crowd/count split, structural separator, compact freshness lineage."
     superseded: "Percentage copy, numeric capacity meter, count-dominant interpretation, and standalone current authority."

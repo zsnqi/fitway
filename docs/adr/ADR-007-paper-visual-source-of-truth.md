@@ -34,10 +34,12 @@ These four native top-level areas inside the production zone are the approved re
 - `LOGIN PRODUCTION SET — CURRENT`
 - `PUBLIC CROWD BOARD PRODUCTION SET — CURRENT`
 
-Two areas in the same file are explicitly **not** approved production and must never be
-presented as such: `PUBLIC — APPROVED BUILD REFERENCES` is reference evidence only, and
-`PUBLIC CROWD BOARD — G3 LIVE BASE CANDIDATE` is a source artifact only. Do not build from
-either, and do not treat either as the reference for Public visuals.
+`PUBLIC CROWD BOARD — G3 LIVE BASE CANDIDATE` is a source artifact only. Do not build from it
+and do not treat it as the reference for Public visuals. The former
+`PUBLIC — APPROVED BUILD REFERENCES` area was explicitly rejected by the human and removed
+from Paper on 2026-09-02. Historical records that mention it remain immutable provenance, but
+the removed area supplies no current visual, copy, Staff, Public, implementation, or acceptance
+evidence.
 
 ### Authority split
 
@@ -47,10 +49,20 @@ rendered appearance of an approved family.
 The repository governs **behavior**. `FITWAY_PRODUCT.md` and `SPEC.md`, the ADRs under
 `docs/adr/`, reviewed migrations, Zod/OpenAPI schemas and shared DTOs, tests, and application
 invariants remain authoritative for behavior, data semantics, privacy, security, and
-authorization. Where Paper copy and a repository message catalog disagree, the catalog wins for
-application strings; where visual treatment is in question, Paper wins. A Paper composition
-cannot authorize a change to a locked product, privacy, security, or lifecycle decision; that
-remains `NEEDS_HUMAN`.
+authorization. Visible text explicitly required by Product, Spec, security, privacy, or
+accessibility remains binding. For interface copy represented by an accepted Paper frame, Paper
+wording governs. Current implementation prose absent from Paper and without a binding source is
+removed; required meaning without locked wording is expressed once and concisely in the
+appropriate label, helper, status, or disclosure. A Paper composition cannot authorize a change
+to a locked product, privacy, security, or lifecycle decision; that remains `NEEDS_HUMAN`.
+
+Exact Paper comparison is a drift detector, not a mandate for blind pixel reproduction. A small
+spacing, hierarchy, readability, responsive, accessibility, or consistency correction is allowed
+only when an accepted frame has an evident presentation issue or cannot directly represent a
+runtime constraint. The correction must preserve the same visual language, composition, copy
+authority, information hierarchy, and product meaning, and must be recorded with the affected
+frame and region, observable problem, smallest correction, before/after routed evidence, and
+independent rendered-review approval. An unrecorded deviation is not accepted evidence.
 
 ### Relationship to ADR-006
 
