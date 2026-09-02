@@ -26,7 +26,7 @@ export function useOwnerDailyAnalytics() {
 		// the duplicate transport pair caused when a late section joins an already
 		// observed query. The first observer after a real route remount retains the
 		// normal stale-data refresh, as does reconnect recovery.
-		refetchOnMount: (query) => query.getObserversCount() === 0,
+		refetchOnMount: (query) => query.getObserversCount() === 1,
 		refetchOnWindowFocus: false,
 		// Section navigation adds observers after Daily has settled. Keep the same
 		// resolved business-day prerequisite across that in-page transition instead

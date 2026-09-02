@@ -406,6 +406,54 @@ test("a late first section visit neither refetches Daily nor loses a mounted Set
 	await expect(capacity).toHaveValue("333");
 });
 
+test("the first observer after a stale full-route remount refetches exactly once", async ({
+	page,
+}) => {
+	await page.addInitScript(() => {
+		const realNow = Date.now.bind(Date);
+		let offset = 0;
+		Date.now = () => realNow() + offset;
+		Object.defineProperty(window, "__fitwayAdvanceNow", {
+			value: (milliseconds: number) => {
+				offset += milliseconds;
+			},
+		});
+		window.localStorage.setItem("fitway.locale", "en");
+	});
+	await mockOwnerSurfaces(page);
+	await page.route("**/api/auth/session", (route) =>
+		route.fulfill({ status: 200, json: { auth: ownerAuth } }),
+	);
+	await page.route("**/rpc/staff/operationalSnapshot", (route) =>
+		route.fulfill({
+			status: 503,
+			json: rpcError(503, "SERVICE_UNAVAILABLE", "Service Unavailable"),
+		}),
+	);
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await page.goto("/admin");
+	await expect.poll(() => observedDailyRequests).toBe(1);
+	await expect.poll(() => observedTimeContextRequests).toBe(1);
+
+	await page.evaluate(() =>
+		(
+			window as typeof window & {
+				__fitwayAdvanceNow: (milliseconds: number) => void;
+			}
+		).__fitwayAdvanceNow(61_000),
+	);
+	await page.locator(".owner-nav__link").first().click();
+	await expect(page).toHaveURL(/\/staff$/u);
+	await expect(page.locator(".owner-section-switch")).toHaveCount(0);
+	await page.goBack();
+	await expect(page).toHaveURL(/\/admin$/u);
+	await expect.poll(() => observedDailyRequests).toBe(2);
+	await expect.poll(() => observedTimeContextRequests).toBe(2);
+	await page.waitForTimeout(300);
+	expect(observedDailyRequests).toBe(2);
+	expect(observedTimeContextRequests).toBe(2);
+});
+
 test("a failed stale reconnect preserves cached Daily data and a mounted Settings draft", async ({
 	page,
 }) => {
