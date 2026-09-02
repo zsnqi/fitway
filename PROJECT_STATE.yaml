@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-09-01T18:45:17Z"
+updatedAt: "2026-09-02T08:26:10Z"
 
 coordinator:
-  owner: "Coordinator final authority. fidelity-integration-closure-r01, r02, and r03 are preserved FAILED_VALIDATION; the human-authorized repair-lineage successor fidelity-integration-closure-r04 is IN_PROGRESS from preserved candidate b1bc91c. It qualifies rather than rewrites the historical repository-closeout and desktop-demo DONE claims. Historical phases and terminal attempts remain immutable. LAN/mobile support, presentation work, GitHub synchronization, release/tagging, deployment, owner-facing PDF work, and external go-live gates remain excluded."
+  owner: "Coordinator final authority. fidelity-integration-closure-r01 through r04 are preserved FAILED_VALIDATION; the same-scope repair-lineage successor fidelity-integration-closure-r05 is IN_PROGRESS from preserved candidate 6036de9. It qualifies rather than rewrites the historical repository-closeout and desktop-demo DONE claims. Historical phases and terminal attempts remain immutable. LAN/mobile support, presentation work, GitHub synchronization, release/tagging, deployment, owner-facing PDF work, and external go-live gates remain excluded."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -2566,7 +2566,7 @@ milestones:
     integratedCommit: null
 
   fidelity-integration-closure-r04:
-    status: VALIDATING
+    status: FAILED_VALIDATION
     dependencies: [repository-closeout, desktop-demo]
     ownerSession: "Primary Codex coordinator; sole repository writer and final gate owner for the independently reviewed r03 repair-lineage successor"
     branch: codex/fidelity-integration-closure
@@ -2599,12 +2599,50 @@ milestones:
       - "coordinator lease: serialized disposable database, browser ports, desktop demo runtime, and evidence directories"
       - "coordinator lease: PROJECT_STATE and successor closure handoffs"
     validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-09-02T07:51:27Z"
-    leaseExpiresAt: "2026-09-02T18:36:29Z"
-    handoff: docs/phase-records/handoffs/fidelity-integration-closure/20260902-105127-fidelity_closure_r04-repair2-candidate.md
-    stopReason: null
+    lastHeartbeatAt: "2026-09-02T08:26:10Z"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/fidelity-integration-closure/20260902-112610-fidelity_closure_r04-failed-validation.md
+    stopReason: "Terminal r04 FAILED_VALIDATION after its second focused repair and the third validation recurrence. Repair 1 stabilized Daily transition timing, the full History locale/width accessibility runtime, and official-logo raster evidence without global tolerance or renderer manipulation. Repair 2 restored reconnect refreshes and preserved validated cached Daily data plus mounted Settings draft state after a failed stale reconnect. The exact 6036de9 candidate passed verify:fast and fresh verify:full mutation-free with 572 unit, 117 simulator, 133 integration, and 133 executed browser/accessibility tests plus 3 intentional live-demo skips. Fresh independent Standards and Spec review then proved refetchOnMount checks for zero observers after TanStack has already added the mounting observer, so a stale first observer on a real route remount still cannot refresh; no route-remount regression covered it. The candidate remains preserved unintegrated. Successor: fidelity-integration-closure-r05."
     gates:
       unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
+      independentReview: FAIL
+    integratedCommit: null
+
+  fidelity-integration-closure-r05:
+    status: IN_PROGRESS
+    dependencies: [repository-closeout, desktop-demo]
+    ownerSession: "Primary Codex coordinator; sole repository writer and final gate owner for the r04 repair-lineage successor"
+    branch: codex/fidelity-integration-closure
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
+    baseCommit: 6036de9a86f8c826bd64ae45be90830a8c920b94
+    ownedPaths:
+      - apps/web/src/hooks/use-owner-daily-analytics.ts
+      - "tests/browser/phase11-settings.browser.spec.ts: stale full-route remount request-count regression only"
+      - PROJECT_STATE.yaml
+      - docs/phase-records/handoffs/fidelity-integration-closure/**
+    forbiddenPaths:
+      - FITWAY_PRODUCT.md, SPEC.md, PHASES.md, DESIGN_GUIDE.md, docs/WORKFLOW.md, and existing ADRs
+      - all application implementation except the exact Daily first-observer predicate above
+      - apps/server/**, packages/**, edge/**, schemas, migrations, OpenAPI, and locked product/security/privacy/data semantics
+      - Paper mutations, visual-direction-gate/**, the immutable approved theme snapshot, and all canonical baseline updates
+      - unrelated Public, Login, Staff, or Owner product implementation and behavior
+      - historical phase records, terminal attempts, branches, worktrees, repair budgets, and their preserved evidence
+      - deployment, GitHub synchronization, releases, tags, external provisioning, presentation capture, and owner-facing PDF work
+    sharedLeases:
+      - "coordinator lease: exact TanStack first-observer predicate and stale full-route remount proof only"
+      - "coordinator lease: serialized disposable database, browser ports, desktop demo runtime, and evidence directories"
+      - "coordinator lease: PROJECT_STATE and successor closure handoffs"
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-09-02T08:26:10Z"
+    leaseExpiresAt: "2026-09-03T08:26:10Z"
+    handoff: docs/phase-records/handoffs/fidelity-integration-closure/20260902-112610-fidelity_closure_r05-activation.md
+    stopReason: null
+    gates:
+      unit: PENDING
       integration: PENDING
       browser: PENDING
       accessibility: PENDING
