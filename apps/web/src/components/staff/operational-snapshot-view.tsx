@@ -68,8 +68,12 @@ function resolveVariant(snapshot: OperationalSnapshot): BoardVariant {
 function deviceLabel(
 	status: OperationalSnapshot["health"]["camera"],
 	messages: StaffMessages,
+	kind: "process" | "camera",
 ) {
-	return status ? messages.deviceStates[status] : messages.notAvailable;
+	if (!status) return messages.notAvailable;
+	return kind === "process"
+		? messages.processStates[status]
+		: messages.cameraStates[status];
 }
 
 function deviceTone(
@@ -171,7 +175,7 @@ function buildCells(
 					: {
 							key: "device",
 							label: messages.process,
-							value: deviceLabel(health.process, messages),
+							value: deviceLabel(health.process, messages, "process"),
 							tone: deviceTone(health.process),
 						};
 
@@ -188,7 +192,7 @@ function buildCells(
 				? {
 						key: "camera",
 						label: messages.camera,
-						value: deviceLabel(health.camera, messages),
+						value: deviceLabel(health.camera, messages, "camera"),
 						tone: "delayed",
 						secondary: seen,
 						secondaryTone: "delayed",
@@ -196,7 +200,7 @@ function buildCells(
 				: {
 						key: "camera",
 						label: messages.camera,
-						value: deviceLabel(health.camera, messages),
+						value: deviceLabel(health.camera, messages, "camera"),
 						tone: deviceTone(health.camera),
 					};
 

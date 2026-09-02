@@ -174,7 +174,7 @@ test("PIN-first login accepts only Western digits, opens staff, and logs out", a
 
 	await expect(page).toHaveURL(/\/staff$/u);
 	await expect(
-		page.getByRole("heading", { name: "العمليات المباشرة" }),
+		page.getByRole("heading", { name: "لوحة المتابعة" }),
 	).toBeVisible();
 	await expect(page.getByText("37", { exact: true })).toBeVisible();
 	await expect(page.locator(".sboard__band")).toHaveText("متوسط");
@@ -247,9 +247,7 @@ test("English login, logout, and owner shell complete their functional flow", as
 	await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
 	await page.getByLabel("Access code").fill("123456");
 	await page.getByRole("button", { name: "Sign in" }).click();
-	await expect(
-		page.getByRole("heading", { name: "Live operations" }),
-	).toBeVisible();
+	await expect(page.getByRole("heading", { name: "Monitoring" })).toBeVisible();
 	await page.getByRole("button", { name: "Sign out" }).click();
 	await expect(page).toHaveURL(/\/login$/u);
 
@@ -293,9 +291,7 @@ test("a failed background refresh replaces cached live data with transport error
 		.locator(".operations-nav")
 		.getByRole("link", { name: "العمليات المباشرة" })
 		.click();
-	await expect(page.getByRole("alert")).toContainText(
-		"تعذر تحميل الحالة التشغيلية",
-	);
+	await expect(page.getByRole("alert")).toContainText("تعذّر تحميل القراءة");
 	await expect(page.getByText("37", { exact: true })).toHaveCount(0);
 });
 
@@ -335,7 +331,7 @@ test("closed occupancy removes the reading and shows the next opening", async ({
 	await mockStaffPage(page, closedSnapshot);
 	await page.goto("/staff");
 	await expect(
-		page.getByText("النادي مغلق الآن", { exact: true }).first(),
+		page.getByText("مغلق الآن", { exact: true }).first(),
 	).toBeVisible();
 	await expect(page.getByText("8:00 م", { exact: false })).toBeVisible();
 	await expect(page.getByText("37", { exact: true })).toHaveCount(0);
@@ -361,9 +357,7 @@ test("loading and transport failure are honest states, and 401 redirects", async
 		"جارٍ تحميل الحالة التشغيلية",
 	);
 	await captureReview(page, "staff-loading-ar-1280.png");
-	await expect(page.getByRole("alert")).toContainText(
-		"تعذر تحميل الحالة التشغيلية",
-	);
+	await expect(page.getByRole("alert")).toContainText("تعذّر تحميل القراءة");
 	await expect(page.getByText("الإشغال غير متاح", { exact: true })).toHaveCount(
 		0,
 	);
@@ -450,9 +444,7 @@ test("Arabic RTL and English LTR remain accessible and responsive at every requi
 		.getByRole("button", { name: "التبديل إلى اللغة الإنجليزية" })
 		.click();
 	await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
-	await expect(
-		page.getByRole("heading", { name: "Live operations" }),
-	).toBeVisible();
+	await expect(page.getByRole("heading", { name: "Monitoring" })).toBeVisible();
 	results = await new AxeBuilder({ page }).analyze();
 	expect(
 		results.violations.filter(

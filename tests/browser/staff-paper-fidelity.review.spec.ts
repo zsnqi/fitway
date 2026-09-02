@@ -184,9 +184,7 @@ async function switchToEnglish(page: Page) {
 	await page
 		.getByRole("button", { name: "التبديل إلى اللغة الإنجليزية" })
 		.click();
-	await expect(
-		page.getByRole("heading", { name: "Live operations" }),
-	).toBeVisible();
+	await expect(page.getByRole("heading", { name: "Monitoring" })).toBeVisible();
 }
 
 async function expectNoDocumentOverflow(page: Page) {

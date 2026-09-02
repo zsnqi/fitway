@@ -87,9 +87,7 @@ test("real Staff PIN opens monitoring and the server denies Owner", async ({
 	);
 	expect(status).toBe(200);
 	await page.goto("/staff");
-	await expect(
-		page.getByRole("heading", { name: "Live operations" }),
-	).toBeVisible();
+	await expect(page.getByRole("heading", { name: "Monitoring" })).toBeVisible();
 	await expect(page.getByText("Crowd level", { exact: true })).toBeVisible();
 	await expect(page.locator(".sboard__count-value")).toHaveText(/^[1-9]\d*$/u);
 	await expect(page.getByRole("link", { name: "Owner area" })).toHaveCount(0);

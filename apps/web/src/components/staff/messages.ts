@@ -81,7 +81,8 @@ export type StaffWebMessages = {
 		framesPerSecond: (value: string) => string;
 		freshness: Record<"current" | "stale" | "unavailable", string>;
 		conditions: Record<"healthy" | "degraded" | "failed" | "unknown", string>;
-		deviceStates: Record<"ok" | "degraded" | "failed" | "unknown", string>;
+		processStates: Record<"ok" | "degraded" | "failed" | "unknown", string>;
+		cameraStates: Record<"ok" | "degraded" | "failed" | "unknown", string>;
 		bands: Record<"quiet" | "moderate" | "busy" | "packed", string>;
 	};
 	admin: {

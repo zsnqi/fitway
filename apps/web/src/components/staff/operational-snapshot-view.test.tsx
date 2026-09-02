@@ -70,6 +70,18 @@ afterEach(async () => {
 });
 
 describe("operational snapshot truth states", () => {
+	it("uses the accepted Paper wording for the live operational facts", async () => {
+		await render(base);
+
+		expect(container.textContent).toContain("Open now");
+		expect(container.textContent).toContain("Counting device");
+		expect(container.textContent).toContain("Working");
+		expect(container.textContent).toContain("Stable");
+		expect(container.textContent).toContain("Last update");
+		expect(container.textContent).not.toContain("Gym open now");
+		expect(container.textContent).not.toContain("Counting process");
+	});
+
 	it("labels stale values as last known and never calls them live", async () => {
 		await render({
 			...base,
