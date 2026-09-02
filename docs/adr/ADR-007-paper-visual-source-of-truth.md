@@ -34,6 +34,11 @@ These four native top-level areas inside the production zone are the approved re
 - `LOGIN PRODUCTION SET — CURRENT`
 - `PUBLIC CROWD BOARD PRODUCTION SET — CURRENT`
 
+The human-approved `OWNER SHARED NAVIGATION — FULL-ROUTE SUCCESSOR — CURRENT` supplements those
+route families with one shared six-destination Owner shell. Its approved Paper leaf exports,
+generated identifiers, hashes, approval record, and routed-only bounded deviations are tracked in
+`visual-direction-gate/approved/paper-route-authority-20260902/AUTHORITY_MANIFEST.yaml`.
+
 `PUBLIC CROWD BOARD — G3 LIVE BASE CANDIDATE` is a source artifact only. Do not build from it
 and do not treat it as the reference for Public visuals. The former
 `PUBLIC — APPROVED BUILD REFERENCES` area was explicitly rejected by the human and removed

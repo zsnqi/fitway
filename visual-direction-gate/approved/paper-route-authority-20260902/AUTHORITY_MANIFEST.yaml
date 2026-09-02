@@ -1,0 +1,95 @@
+schemaVersion: 1
+status: IN_PROGRESS
+updatedAt: "2026-09-02T19:28:33Z"
+authorityDecision: docs/adr/ADR-007-paper-visual-source-of-truth.md
+milestone: full-route-paper-fidelity-r01
+
+paper:
+  file: "FITWAY UX Exploration"
+  fileId: 01KYPX5AF950XZVVDD88B6J7QB
+  page: "Page 1"
+  pageId: 1-0
+  tokenContentHash: 3b0faca3
+  rejectedAreas:
+    - name: "PUBLIC — APPROVED BUILD REFERENCES"
+      disposition: "Deleted from Paper on 2026-09-02; historical reference only and never active authority."
+
+surfaces:
+  public:
+    area: "PUBLIC CROWD BOARD PRODUCTION SET — CURRENT"
+    areaId: 12IP-0
+    status: ACCEPTED_PAPER_AUTHORITY
+    requiredStates: [loading, delayed-last-known, unavailable, closed, failure-retry]
+    paperViewports: [1440, 768, 390, 320, 200-percent]
+  login:
+    area: "LOGIN PRODUCTION SET — CURRENT"
+    areaId: V39-0
+    status: ACCEPTED_PAPER_AUTHORITY
+    requiredStates: [idle, focus, invalid-code, too-many-attempts, unavailable, submitting]
+  staff:
+    compositionArea: "STAFF MONITORING PRODUCTION SET — CURRENT"
+    compositionAreaId: QPD-0
+    interactionArea: "STAFF MONITORING PRODUCTION SET — SELF-CONTAINED AUTHORITY REPAIR CANDIDATE"
+    interactionAreaId: 146R-0
+    status: ACCEPTED_SPLIT_AUTHORITY
+    requiredStates: [loading, live, delayed, unavailable, closed, failure, combined-trust-failure]
+  ownerSharedNavigation:
+    area: "OWNER SHARED NAVIGATION — FULL-ROUTE SUCCESSOR — CURRENT"
+    areaId: 1GIP-0
+    status: ACCEPTED_PAPER_AUTHORITY
+    humanApprovalRecord: docs/phase-records/handoffs/full-route-paper-fidelity/20260902-192833-owner-shell-approved-activity-candidate-needs-human.md
+    approvedDeviationIds: [owner-shared-navigation-uniform-material]
+    leafExports:
+      - { nodeId: 1GIV-0, locale: en, viewport: 1440, state: daily-active, path: owner-shared-navigation/owner-shared-desktop-en-daily-1440.png, bytes: 280563, sha256: 4706dd4910aa5af9b68f0cb78edda09d9531c4fef98ed111f5fe9be337f5978e }
+      - { nodeId: 1GJY-0, locale: ar, viewport: 1440, state: reports-active, path: owner-shared-navigation/owner-shared-desktop-ar-reports-1440.png, bytes: 253672, sha256: 0eccd88be6e23ac79a9ea361c6d89685fda9fc07a5eb2983e8be0900096f5080 }
+      - { nodeId: 1GL1-0, locale: en, viewport: 768, state: accounts-active, path: owner-shared-navigation/owner-shared-tablet-en-accounts-768.png, bytes: 174930, sha256: f293ac5195cd3fb89b822c218414a8ddf697109ae50b74098130ac0c999fdc35 }
+      - { nodeId: 1GLY-0, locale: ar, viewport: 768, state: activity-active, path: owner-shared-navigation/owner-shared-tablet-ar-activity-768.png, bytes: 169549, sha256: 83f92dd0589903f0812288b9d3347d1b9e53b4d361fd9ef5e9a50f4a679968cd }
+      - { nodeId: 1GMX-0, locale: en, viewport: 390, state: system-status-active, path: owner-shared-navigation/owner-shared-mobile-en-system-status-390.png, bytes: 115454, sha256: aac8acc91d627280b1f0204f4cee5d636dfe891e5cff893c30cc1e10a2ef0547 }
+      - { nodeId: 1GNX-0, locale: ar, viewport: 390, state: settings-active, path: owner-shared-navigation/owner-shared-mobile-ar-settings-390.png, bytes: 109461, sha256: d739d2141234bdbf2830a44bc86e7005525e5c72206ab211ac456a2f29f8fe95 }
+      - { nodeId: 1GOX-0, locale: en, viewport: 320, state: activity-selected-reveal, path: owner-shared-navigation/owner-shared-narrow-en-activity-320.png, bytes: 107413, sha256: 862e72ce8bf71cc23e3ae320cbfdf33341d6241151bc794567acc9be29eb6811 }
+      - { nodeId: 1GPR-0, locale: ar, viewport: 320, state: system-status-selected-reveal, path: owner-shared-navigation/owner-shared-narrow-ar-system-status-320.png, bytes: 100369, sha256: c68c04b5fb2de705b6c73db4b7fe41036deff63052cce0f15a38526842eb8085 }
+      - { nodeId: 1GQP-0, locale: en, viewport: 200-percent, state: accounts-focus-visible, path: owner-shared-navigation/owner-shared-zoom200-en-accounts-focus.png, bytes: 163406, sha256: 4361e9bc78c2cea2c1577dffce67e89f20432624695938545e96d8dae3801f95 }
+      - { nodeId: 1GRK-0, locale: ar, viewport: 200-percent, state: settings-focus-visible, path: owner-shared-navigation/owner-shared-zoom200-ar-settings-focus.png, bytes: 153392, sha256: c7fbd30cca14cab356b3ecf18eec81e675ef96f0a97d64c12b7f46160788ddda }
+      - { nodeId: 1GSG-0, locale: bilingual, viewport: contract, state: interaction-responsive-contract, path: owner-shared-navigation/owner-shared-interaction-contract.png, bytes: 65011, sha256: 2424062ed7e06cc3f4fcd7385aeff0787b5249b026c1305ed1fda2aabd4016e8 }
+  ownerDaily:
+    area: "OWNER DAILY ANALYTICS PRODUCTION SET — CURRENT"
+    areaId: I89-0
+    status: ACCEPTED_PAPER_AUTHORITY
+  ownerReports:
+    area: "OWNER ANALYTICS — PHASE 10 REPORTING EXTENSION — CURRENT"
+    areaId: 17YY-0
+    status: ACCEPTED_PAPER_AUTHORITY
+  ownerAccountsAndSignIn:
+    area: "OWNER ACCESS — BEHAVIOR-CORRECT SUCCESSOR — CURRENT"
+    areaId: 1DHH-0
+    status: ACCEPTED_PAPER_AUTHORITY
+  ownerActivityLog:
+    sourceArea: "OWNER AUDIT PRODUCTION SET — CANDIDATE"
+    sourceAreaId: 1AFO-0
+    successorArea: "OWNER ACTIVITY LOG — SHARED-SHELL SUCCESSOR CANDIDATE"
+    successorAreaId: 1GVI-0
+    status: NEEDS_HUMAN
+    requiredStates: [populated, loading, load-failure-retry, no-matching-records]
+    successorLeaves:
+      - { nodeId: 1HC7-0, locale: en, viewport: 1440, state: populated }
+      - { nodeId: 1H76-0, locale: ar, viewport: 1440, state: populated }
+      - { nodeId: 1H26-0, locale: en, viewport: 390, state: populated }
+      - { nodeId: 1GXE-0, locale: ar, viewport: 390, state: populated }
+      - { nodeId: 1GVJ-0, locale: bilingual, viewport: state-matrix, state: loading-failure-empty }
+      - { nodeId: 1HIV-0, locale: bilingual, viewport: responsive-contract, state: interpolation-rtl }
+  ownerSystemStatus:
+    desktopArea: "OWNER UPTIME & INCIDENTS PRODUCTION SET — CANDIDATE"
+    desktopAreaId: 1AUL-0
+    mobileArea: "OWNER UPTIME — MOBILE STACKED RECORDS SUCCESSOR"
+    mobileAreaId: 1DZC-0
+    status: DURABLY_ACCEPTED_STALE_NAME
+  ownerSettings:
+    area: "OWNER SETTINGS — FRESH r01 SUCCESSOR CANDIDATE"
+    areaId: 1FKS-0
+    status: DURABLY_ACCEPTED_STALE_NAME
+
+acceptancePolicy:
+  paperExportsPending: "All accepted route leaf frames other than the Owner shared navigation must be exported and hashed before this manifest may become CURRENT."
+  routedEvidencePending: "Every registered canonical case must carry a full-route routed screenshot hash and approval record before acceptance."
+  captureReviewIsVerdict: false
+  baselineMayReplacePaper: false

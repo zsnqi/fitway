@@ -1,0 +1,31 @@
+schemaVersion: 1
+id: owner-shared-navigation-uniform-material
+status: APPROVED_PENDING_IMPLEMENTATION_EVIDENCE
+approvedAt: "2026-09-02T19:28:33Z"
+approvedBy: human-rendered-review
+paper:
+  file: "FITWAY UX Exploration"
+  page: "Page 1"
+  area: "OWNER SHARED NAVIGATION — FULL-ROUTE SUCCESSOR — CURRENT"
+affectedRegion: "Shared Owner navigation-row background across all six destinations, locales, and responsive variants."
+observableProblem: >-
+  The accepted Paper candidate carries a noticeable lateral dark/black fade, especially toward the
+  left side, which visually detaches the navigation row from the surrounding Owner material.
+smallestCorrection: >-
+  In routed UI only, remove the lateral gradient/fade and use a uniform background coherent with
+  the surrounding accepted Owner surface material.
+mustPreserve:
+  - six-destination structure and locked order
+  - approved Arabic and English labels
+  - spacing, typography, active underline, hierarchy, and overall Paper visual language
+  - selection, focus, overflow, keyboard, retention, and routing behavior
+paperMutationRequired: false
+reviewEvidence:
+  decision: "Explicitly approved by the human before routed implementation."
+  approvalRecord: docs/phase-records/handoffs/full-route-paper-fidelity/20260902-192833-owner-shell-approved-activity-candidate-needs-human.md
+  routedBefore: PENDING_IMPLEMENTATION
+  routedAfter: PENDING_IMPLEMENTATION
+  independentRenderedReview: PENDING_IMPLEMENTATION
+acceptanceRule: >-
+  This deviation is approved in principle but cannot satisfy final acceptance until before/after
+  routed evidence and independent rendered review are recorded. All other unrecorded drift fails.

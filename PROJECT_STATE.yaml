@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-09-02T16:57:47Z"
+updatedAt: "2026-09-02T19:28:33Z"
 
 coordinator:
-  owner: "Coordinator final authority. fidelity-integration-closure-r01 through r05 are preserved FAILED_VALIDATION; the human-approved successor full-route-paper-fidelity-r01 is NEEDS_HUMAN for rendered approval of its new Owner shared-shell candidate before the dependent Activity Log successor and routed adoption. It starts from preserved functional candidate afa2ef6 and corrects the non-circular Paper authority, full-route visual gate, shared Owner shell, and routed fidelity failures without rewriting historical repository-closeout or desktop-demo claims. Historical phases and terminal attempts remain immutable. LAN/mobile support, presentation work, GitHub synchronization, release/tagging, deployment, owner-facing PDF work, and external go-live gates remain excluded."
+  owner: "Coordinator final authority. fidelity-integration-closure-r01 through r05 are preserved FAILED_VALIDATION; the human-approved successor full-route-paper-fidelity-r01 is NEEDS_HUMAN for rendered approval of its new Activity Log successor before visual-gate construction and routed adoption. The Owner shared navigation is approved and frozen; its routed-only uniform-material deviation is explicitly approved pending implementation evidence. The milestone starts from preserved functional candidate afa2ef6 and corrects the non-circular Paper authority, full-route visual gate, shared Owner shell, and routed fidelity failures without rewriting historical repository-closeout or desktop-demo claims. Historical phases and terminal attempts remain immutable. LAN/mobile support, presentation work, GitHub synchronization, release/tagging, deployment, owner-facing PDF work, and external go-live gates remain excluded."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -2684,10 +2684,10 @@ milestones:
       - "coordinator lease: serialized disposable database, browser ports, desktop demo runtime, and evidence directories"
       - "coordinator lease: PROJECT_STATE and successor handoffs"
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-09-02T16:57:47Z"
+    lastHeartbeatAt: "2026-09-02T19:28:33Z"
     leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/full-route-paper-fidelity/20260902-195747-owner-shared-shell-candidate-needs-human.md
-    stopReason: "Paper cleanup is complete with the rejected Public reference area removed and the accepted Public current plus self-contained Staff authorities verified intact. A new bilingual Owner shared-navigation successor now renders desktop 1440, tablet 768, mobile 390, narrow 320, 200% reflow, selected reveal, and focus treatment while preserving the accepted Owner global rail and six locked destinations. Per the approved implementation sequence and Paper adoption workflow, routed UI adoption and the dependent Activity Log successor must wait for human rendered approval of this shared-shell candidate."
+    handoff: docs/phase-records/handoffs/full-route-paper-fidelity/20260902-192833-owner-shell-approved-activity-candidate-needs-human.md
+    stopReason: "The human approved the Owner shared-navigation successor and its routed-only uniform-material deviation. Paper now names the shared shell CURRENT, and eleven leaf exports are hash-registered in the in-progress route-authority manifest. A separate Activity Log successor preserves the Audit filters, records, states, pagination, and semantics while replacing inherited Daily/History chrome with the shared shell and removing redundant page prose. Its complete bilingual desktop/mobile renders plus responsive/RTL contract are ready for the required separate human review. Per the approved sequence, visual-gate construction and routed UI adoption wait for this rendered approval."
     gates:
       unit: PENDING
       integration: PENDING
