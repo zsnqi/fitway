@@ -148,6 +148,7 @@ export const ar = {
 	},
 	publicPage: {
 		eyebrow: "حالة النادي الآن",
+		updateStatus: "حالة التحديث",
 		open: "النادي مفتوح الآن",
 		crowdLevel: "مستوى الازدحام",
 		approximateCount: "العدد التقريبي",
@@ -182,8 +183,8 @@ export const ar = {
 		currentLevel: "المستوى الحالي",
 		lastKnownLevel: "آخر مستوى معروف",
 		lastUpdatedAt: (absolute) => `آخر تحديث ${absolute}`,
-		staleWarning: (count, time) =>
-			`كان آخر عدد تقريبي معروف ${count} عند ${time}. التحديثات المباشرة متأخرة.`,
+		staleWarning:
+			"القيم أدناه هي آخر قراءة معروفة، وليست الوضع الحالي في النادي.",
 		crowdScaleLabel: "مقياس مستوى الازدحام",
 		crowdScaleValue: (band, completed, pending) =>
 			`مستوى الازدحام: ${band}. المستويات المكتملة: ${completed || "لا يوجد"}. المستويات الأعلى: ${pending || "لا يوجد"}.`,

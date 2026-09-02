@@ -1,6 +1,6 @@
 schemaVersion: 1
 status: IN_PROGRESS
-updatedAt: "2026-09-02T21:07:00Z"
+updatedAt: "2026-09-03T00:18:00Z"
 authorityDecision: docs/adr/ADR-007-paper-visual-source-of-truth.md
 milestone: full-route-paper-fidelity-r01
 
@@ -21,6 +21,51 @@ surfaces:
     status: ACCEPTED_PAPER_AUTHORITY
     requiredStates: [loading, delayed-last-known, unavailable, closed, failure-retry]
     paperViewports: [1440, 768, 390, 320, 200-percent]
+    implementationBrandMark: "Use the locked repository FITWAY asset in Paper's assigned brand position; do not recreate the historical inline circle-slash glyph."
+    comparisonNormalization: "Paper mobile frames include illustrative operating-system status chrome and an external frame caption; routed web evidence begins at the application header and must not reproduce either annotation."
+    routedCandidateReview: "Coordinator Paper/family comparison passed; independent rendered review and final human acceptance remain pending."
+    routedCandidateEvidence:
+      - { locale: en, viewport: 1440, state: live, path: evidence/public/routed-after-live-en-desktop-1440x900.png, bytes: 342908, sha256: a611c29254621bfd3a8a593b969e6dcc409f729fb44e619a77a54a041af082b8 }
+      - { locale: ar, viewport: 390, state: live, path: evidence/public/routed-after-live-ar-mobile-390x844.png, bytes: 136950, sha256: 75776e24cb5ec54a92467d5bb68f84fbe14c162ecd7f8d958441e0848b666b7e }
+      - { locale: en, viewport: 390, state: delayed, path: evidence/public/routed-after-delayed-en-mobile-390x844.png, bytes: 147845, sha256: f836ef3ebe3fbad5641ab361fd40fff3da9aee90c3e0d6daaa1925f936d3894f }
+      - { locale: ar, viewport: 390, state: delayed, path: evidence/public/routed-after-delayed-ar-mobile-390x844.png, bytes: 140436, sha256: e658ab86b47f4f59f0edeacda1bd94bfd497b0b6f8c239fa823e2b05dca4ff1c }
+      - { locale: en, viewport: 390, state: loading, path: evidence/public/routed-after-loading-en-mobile-390x844.png, bytes: 134330, sha256: 635f1621d42b4f016e4e38af4d9749c110066aa6bd4d84506034e885660490ae }
+      - { locale: en, viewport: 390, state: unavailable, path: evidence/public/routed-after-unavailable-en-mobile-390x844.png, bytes: 126411, sha256: 17fe91aa495040d773fa29517e70ab085de78dcd7694a18cfb7df022b9f1d2a2 }
+      - { locale: en, viewport: 390, state: closed, path: evidence/public/routed-after-closed-en-mobile-390x844.png, bytes: 122133, sha256: d7200a1af50ec05428d3bb0e04d3717aa00c88f608ce333831fb09b970dd1a61 }
+      - { locale: en, viewport: 390, state: failure, path: evidence/public/routed-after-failure-en-mobile-390x844.png, bytes: 127837, sha256: d3cc55d9c4f94cc350eb2b3ae375c9d1eb6631953224327e226fe33cf08a5664 }
+    leafExports:
+      - { nodeId: 144O-0, locale: ar, viewport: 1440, state: live, path: public/public-live-ar-1440.png, bytes: 893980, sha256: a873765ed014422dc528abca8b0d83c6de9134cdfaed1b0bf935bf67cb18ef6c }
+      - { nodeId: 142L-0, locale: en, viewport: 1440, state: live, path: public/public-live-en-1440.png, bytes: 902350, sha256: 34386e3659c9f49e3c532a35a33aa44b8447bab39058139c6454649adaa2f943 }
+      - { nodeId: 13VU-0, locale: ar, viewport: 768, state: live, path: public/public-live-ar-768.png, bytes: 636847, sha256: 4aa3fe79ff9f20fcd7ceb70c10fd0a59d0df32ca156fdc2190c9e9e65929003c }
+      - { nodeId: 13TR-0, locale: en, viewport: 768, state: live, path: public/public-live-en-768.png, bytes: 638535, sha256: 3c8c45052c9101bda3e4e8f4562512457b0574d538f48bdfdbc9fef00a05428e }
+      - { nodeId: 1409-0, locale: ar, viewport: 390, state: live, path: public/public-live-ar-390.png, bytes: 321372, sha256: f01b43f071c813829fe29a7341e243a541ca7cb976892212a602712669301c42 }
+      - { nodeId: 13XY-0, locale: en, viewport: 390, state: live, path: public/public-live-en-390.png, bytes: 325137, sha256: 6d3f48358ecf064097dc0b82899c3df06626b60a6a77b1f0f4532d950d2e95d8 }
+      - { nodeId: 13RF-0, locale: ar, viewport: 320, state: live, path: public/public-live-ar-320.png, bytes: 230721, sha256: 7cac6cc44db545feddece2640a2c65ffb47a7c95faa8959fbf14d0e30277f131 }
+      - { nodeId: 13P4-0, locale: en, viewport: 320, state: live, path: public/public-live-en-320.png, bytes: 232172, sha256: a3f66db00e7060572c85be6c489b714c8f3ed95233d282a9ed45f4e091006c3c }
+      - { nodeId: 13N0-0, locale: ar, viewport: 200-percent, state: live, path: public/public-live-ar-zoom200.png, bytes: 483033, sha256: 87fe0453b2719a2a4e0078b8eb3d2a35dbd8c147c38ba7d93349a12dabfec98e }
+      - { nodeId: 13KX-0, locale: en, viewport: 200-percent, state: live, path: public/public-live-en-zoom200.png, bytes: 488889, sha256: d528bc7c3ab50a6bc9f3698623a48098ad1e3941998e10ba3253aeb5074fb936 }
+      - { nodeId: 13IP-0, locale: ar, viewport: 1440, state: loading, path: public/public-loading-ar-1440.png, bytes: 904878, sha256: f36de285c57ff1ed8fc6106934bd9b0e1caba830983d6523a62fb9d9b58fbeb8 }
+      - { nodeId: 13GI-0, locale: en, viewport: 1440, state: loading, path: public/public-loading-en-1440.png, bytes: 905203, sha256: c375d27af6a389acd8e06f0b27e4c25881fe373109fd0c0153ebcab369047a53 }
+      - { nodeId: 13E2-0, locale: ar, viewport: 390, state: loading, path: public/public-loading-ar-390.png, bytes: 316425, sha256: 06b4e1ffe86ed6a032fa515307405c9b8ff54d6ce4d5a07ec19c99a265dc188a }
+      - { nodeId: 13BN-0, locale: en, viewport: 390, state: loading, path: public/public-loading-en-390.png, bytes: 317667, sha256: b58a34c4253986a04a0bd8d2952483e1ec7f789c08cdfd3a58ce06e31c5b30a1 }
+      - { nodeId: 139G-0, locale: ar, viewport: 1440, state: delayed, path: public/public-delayed-ar-1440.png, bytes: 917805, sha256: 88c2e1f30459e26503e971f600cfc8689d96e2ab49bc2af5dbdecde06dbb3c7d }
+      - { nodeId: 137A-0, locale: en, viewport: 1440, state: delayed, path: public/public-delayed-en-1440.png, bytes: 927373, sha256: 4c9f0316e74a195bb7c1fe407dfaf1318e868c24ac24125802b83a44512da75a }
+      - { nodeId: 134V-0, locale: ar, viewport: 390, state: delayed, path: public/public-delayed-ar-390.png, bytes: 329368, sha256: 93e2617918428eaa265ee1864b16ed271aa4bb7a31afbe029cc8d618df3e003e }
+      - { nodeId: 132H-0, locale: en, viewport: 390, state: delayed, path: public/public-delayed-en-390.png, bytes: 337278, sha256: 7265aabc84bac6f2a638914156e196ee476963b24d83f49ee877c791b593fa59 }
+      - { nodeId: 131V-0, locale: ar, viewport: 1440, state: unavailable, path: public/public-unavailable-ar-1440.png, bytes: 809687, sha256: 3499ae219ca45ba1006cbc5f6277d286a035a2d85211fa3bcd8100f2bbc16726 }
+      - { nodeId: 131A-0, locale: en, viewport: 1440, state: unavailable, path: public/public-unavailable-en-1440.png, bytes: 820047, sha256: 8ab49ec509a94b5c3d8d1166efb6943db3a2caadf872b0106945140d503dbe4f }
+      - { nodeId: 130G-0, locale: ar, viewport: 390, state: unavailable, path: public/public-unavailable-ar-390.png, bytes: 300005, sha256: 53f66d76b6c8bc2165bb68f71ca7cc06c718fd599a22d88297c8ea224d4367dd }
+      - { nodeId: 12ZN-0, locale: en, viewport: 390, state: unavailable, path: public/public-unavailable-en-390.png, bytes: 303815, sha256: ad77214ab4192185c85c5f8d750e67524fcd2775a5f806784a73157dad19d8e6 }
+      - { nodeId: 12YZ-0, locale: ar, viewport: 1440, state: closed, path: public/public-closed-ar-1440.png, bytes: 812136, sha256: 26bd1fa1f763151da6c2b517aafa08710342bbc79256031a50e78f8e20772359 }
+      - { nodeId: 12YC-0, locale: en, viewport: 1440, state: closed, path: public/public-closed-en-1440.png, bytes: 811496, sha256: 463c962a7a1a37cdeae3ebfc7f75d14849db1d9769db226499ad6a390d2f38fb }
+      - { nodeId: 12XG-0, locale: ar, viewport: 390, state: closed, path: public/public-closed-ar-390.png, bytes: 298904, sha256: 685ae0a7b0674820ed000003cacc2ff3c57e6011b999645f7b1ccebd6a5d5559 }
+      - { nodeId: 12WL-0, locale: en, viewport: 390, state: closed, path: public/public-closed-en-390.png, bytes: 299944, sha256: 7f0623a99c775ea5e0bf53ac70443b047f9d77663b2d917b38d73eddb2775e92 }
+      - { nodeId: 12VX-0, locale: ar, viewport: 1440, state: failure, path: public/public-failure-ar-1440.png, bytes: 820317, sha256: 276d2ecff3638c44a8362643d680f114ce635282392b187d5176e50a2efca5fd }
+      - { nodeId: 12VA-0, locale: en, viewport: 1440, state: failure, path: public/public-failure-en-1440.png, bytes: 833393, sha256: 2bd07379ddc5eee1bf49a5332c005dc83a6eff5894fe5e5192b370f84e902280 }
+      - { nodeId: 12UE-0, locale: ar, viewport: 390, state: failure, path: public/public-failure-ar-390.png, bytes: 299941, sha256: cafdfb83e0b923bd136592d98dc165559b19c2dc70c249087b7a2fad1f8e48b6 }
+      - { nodeId: 12TJ-0, locale: en, viewport: 390, state: failure, path: public/public-failure-en-390.png, bytes: 301134, sha256: 52f9a67b63e77edde442614498b7e47306ae037f242b6c3c557460ede94d6c35 }
+      - { nodeId: 12ND-0, locale: bilingual, viewport: contract, state: responsive-high-risk-set, path: public/public-responsive-contract.png, bytes: 1516424, sha256: 71b32a50c393dd29d188225fb963780b261f07fb7af1d1d8b50cdd0274194889 }
+      - { nodeId: 12IR-0, locale: bilingual, viewport: contract, state: interaction-accessibility, path: public/public-interaction-accessibility-contract.png, bytes: 319841, sha256: 5315d1d48245bda9e1cf3c01cf90c194985e4994601651cf2d6ba89c3a0e9456 }
   login:
     area: "LOGIN PRODUCTION SET — CURRENT"
     areaId: V39-0

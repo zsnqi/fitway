@@ -151,6 +151,7 @@ export const en = {
 	},
 	publicPage: {
 		eyebrow: "Gym status now",
+		updateStatus: "Update status",
 		open: "Gym open now",
 		crowdLevel: "Crowd level",
 		approximateCount: "Approximate count",
@@ -185,8 +186,8 @@ export const en = {
 		currentLevel: "Current level",
 		lastKnownLevel: "Last known level",
 		lastUpdatedAt: (absolute) => `Updated ${absolute}`,
-		staleWarning: (count, time) =>
-			`The last known approximate count was ${count} at ${time}. Live updates are delayed.`,
+		staleWarning:
+			"The values below are the last known reading, not the situation right now.",
 		crowdScaleLabel: "Crowd-level scale",
 		crowdScaleValue: (band, completed, pending) =>
 			`Crowd level: ${band}. Reached levels: ${completed || "none"}. Higher levels pending: ${pending || "none"}.`,

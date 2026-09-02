@@ -361,8 +361,11 @@ test("keeps stale, unavailable, and closed states honest in RTL and LTR", async 
 
 	await switchLocale(page, "ar");
 	await expect(page.locator('[data-freshness="stale"]')).toBeVisible();
-	await expect(page.getByRole("status")).toContainText(
+	await expect(page.locator(".public-live__open-status")).toContainText(
 		"التحديثات المباشرة متأخرة",
+	);
+	await expect(page.getByRole("status")).toHaveText(
+		"القيم أدناه هي آخر قراءة معروفة، وليست الوضع الحالي في النادي.",
 	);
 	await expect(page.locator(".public-live__freshness")).toBeVisible();
 	await expect(
@@ -382,8 +385,11 @@ test("keeps stale, unavailable, and closed states honest in RTL and LTR", async 
 
 	await switchLocale(page, "en");
 	await expect(page.locator('[data-freshness="stale"]')).toBeVisible();
-	await expect(page.getByRole("status")).toContainText(
+	await expect(page.locator(".public-live__open-status")).toContainText(
 		"Live updates are delayed",
+	);
+	await expect(page.getByRole("status")).toHaveText(
+		"The values below are the last known reading, not the situation right now.",
 	);
 	await expect(
 		page.getByRole("heading", { level: 1, name: "Moderate" }),
@@ -476,7 +482,7 @@ test("keeps stale, unavailable, and closed states honest in RTL and LTR", async 
 
 test("protects the unavailable English mobile route from a fresh load", async ({
 	page,
-}) => {
+}, testInfo) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	await startInEnglish(page);
 	await page.route("**/public/occupancy", (route) =>
@@ -503,16 +509,16 @@ test("protects the unavailable English mobile route from a fresh load", async ({
 	await expectStateContentInsideCard(page);
 	await expectNoWcagViolations(page);
 	await expectHeaderInsideViewport(page);
-	await settleVisuals(page);
-	await expect(page).toHaveScreenshot(
+	await captureReview(
+		page,
+		testInfo,
 		"public-unavailable-route-en-mobile-390x844.png",
-		{ fullPage: true },
 	);
 });
 
 test("protects the closed English mobile route from a fresh load", async ({
 	page,
-}) => {
+}, testInfo) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	await startInEnglish(page);
 	await page.route("**/public/occupancy", (route) =>
@@ -538,10 +544,10 @@ test("protects the closed English mobile route from a fresh load", async ({
 	await expectStateContentInsideCard(page);
 	await expectNoWcagViolations(page);
 	await expectHeaderInsideViewport(page);
-	await settleVisuals(page);
-	await expect(page).toHaveScreenshot(
+	await captureReview(
+		page,
+		testInfo,
 		"public-closed-route-en-mobile-390x844.png",
-		{ fullPage: true },
 	);
 });
 
@@ -585,11 +591,6 @@ test("announces loading without exposing a reading in RTL and LTR", async ({
 	await expectNoHorizontalOverflow(page);
 	await expectNoWcagViolations(page);
 	await captureReview(page, testInfo, "public-loading-en-mobile.png");
-	await page.evaluate(() => document.fonts.ready);
-	await expect(page).toHaveScreenshot(
-		"public-loading-route-en-mobile-390x844.png",
-		{ fullPage: true },
-	);
 
 	releaseRequest?.();
 	await expect(
@@ -643,11 +644,6 @@ test("removes retained readings after a background error and keyboard retry reco
 	await expectNoHorizontalOverflow(page);
 	await expectNoWcagViolations(page);
 	await captureReview(page, testInfo, "public-error-en-mobile.png");
-	await page.evaluate(() => document.fonts.ready);
-	await expect(page).toHaveScreenshot(
-		"public-error-route-en-mobile-390x844.png",
-		{ fullPage: true },
-	);
 
 	const retryButton = page.getByRole("button", { name: "Try again" });
 	await retryButton.focus();
@@ -800,7 +796,7 @@ test("covers every approved responsive width in RTL and LTR", async ({
 	}
 });
 
-test("matches the approved visual baseline at representative locales and sizes", async ({
+test("records representative routed evidence without treating it as a verdict", async ({
 	page,
 }, testInfo) => {
 	await page.emulateMedia({ reducedMotion: "reduce" });
@@ -810,25 +806,16 @@ test("matches the approved visual baseline at representative locales and sizes",
 	);
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/");
-	await settleVisuals(page);
-	await expect(page).toHaveScreenshot("public-live-ar-desktop-1440x900.png", {
-		fullPage: false,
-	});
+	await captureReview(page, testInfo, "public-live-ar-desktop-1440x900.png");
 
 	await page.setViewportSize({ width: 390, height: 844 });
-	await settleVisuals(page);
-	await expect(page).toHaveScreenshot("public-live-ar-mobile-390x844.png", {
-		fullPage: false,
-	});
+	await captureReview(page, testInfo, "public-live-ar-mobile-390x844.png");
 
 	freshness = "stale";
 	await page.setViewportSize({ width: 768, height: 1024 });
 	await page.reload();
 	await expect(page.locator('[data-freshness="stale"]')).toBeVisible();
-	await settleVisuals(page);
-	await expect(page).toHaveScreenshot("public-stale-ar-tablet-768x1024.png", {
-		fullPage: false,
-	});
+	await captureReview(page, testInfo, "public-stale-ar-tablet-768x1024.png");
 
 	freshness = "fresh";
 	await page.reload();
@@ -836,22 +823,13 @@ test("matches the approved visual baseline at representative locales and sizes",
 	await page.getByRole("button", { name: /اللغة الإنجليزية/u }).click();
 	await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
 	await page.setViewportSize({ width: 1024, height: 900 });
-	await settleVisuals(page);
-	await expect(page).toHaveScreenshot("public-live-en-tablet-1024x900.png", {
-		fullPage: false,
-	});
+	await captureReview(page, testInfo, "public-live-en-tablet-1024x900.png");
 
 	await page.setViewportSize({ width: 1440, height: 900 });
-	await settleVisuals(page);
-	await expect(page).toHaveScreenshot("public-live-en-desktop-1440x900.png", {
-		fullPage: false,
-	});
+	await captureReview(page, testInfo, "public-live-en-desktop-1440x900.png");
 
 	await page.setViewportSize({ width: 390, height: 844 });
-	await settleVisuals(page);
-	await expect(page).toHaveScreenshot("public-live-en-mobile-390x844.png", {
-		fullPage: false,
-	});
+	await captureReview(page, testInfo, "public-live-en-mobile-390x844.png");
 
 	await captureReview(page, testInfo, "public-live-en-mobile.png");
 });

@@ -1,5 +1,4 @@
 import type { PublicOccupancyUsablePayload } from "@fitway/api/public-occupancy";
-import { Clock, TriangleAlert } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 import { formatGymTime, formatNumber, formatRelativeTime } from "@/i18n/format";
@@ -48,11 +47,11 @@ export function OccupancyStatus({
 
 	const freshnessContent = (
 		<>
-			{isStale ? (
-				<Clock className="public-live__freshness-icon" aria-hidden="true" />
-			) : (
-				<span className="public-live__broadcast" aria-hidden="true" />
-			)}
+			<span
+				className="public-live__broadcast"
+				data-tone={isStale ? "stale" : "live"}
+				aria-hidden="true"
+			/>
 			<strong className="public-live__freshness-primary">
 				{freshnessText}
 			</strong>
@@ -61,7 +60,11 @@ export function OccupancyStatus({
 				className="public-live__freshness-time"
 				dateTime={payload.lastUpdatedAt}
 			>
-				{messages.publicPage.lastUpdatedAt(absolute)}
+				{isStale ? (
+					<bdi>{absolute}</bdi>
+				) : (
+					messages.publicPage.lastUpdatedAt(absolute)
+				)}
 			</time>
 			<span className="public-live__freshness-relative fw-sr-only">
 				{relative}
@@ -75,7 +78,9 @@ export function OccupancyStatus({
 			data-band={payload.band}
 			aria-labelledby="occupancy-status-title occupancy-title"
 			aria-describedby="occupancy-spoken-summary"
-			statusKicker={messages.publicPage.eyebrow}
+			statusKicker={
+				isStale ? messages.publicPage.updateStatus : messages.publicPage.eyebrow
+			}
 			status={
 				<span id="occupancy-status-title" className="public-live__open-status">
 					<span
@@ -90,8 +95,8 @@ export function OccupancyStatus({
 			alert={
 				isStale ? (
 					<div className="public-live__stale-warning" role="status">
-						<TriangleAlert aria-hidden="true" />
-						<p>{messages.publicPage.staleWarning(count, absolute)}</p>
+						<span className="public-live__stale-marker" aria-hidden="true" />
+						<p>{messages.publicPage.staleWarning}</p>
 					</div>
 				) : undefined
 			}

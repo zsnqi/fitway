@@ -13,6 +13,7 @@ export type MessageCatalog = {
 	};
 	publicPage: {
 		eyebrow: string;
+		updateStatus: string;
 		open: string;
 		crowdLevel: string;
 		approximateCount: string;
@@ -39,7 +40,7 @@ export type MessageCatalog = {
 		currentLevel: string;
 		lastKnownLevel: string;
 		lastUpdatedAt: (absolute: string) => string;
-		staleWarning: (count: string, time: string) => string;
+		staleWarning: string;
 		crowdScaleLabel: string;
 		crowdScaleValue: (
 			band: string,
