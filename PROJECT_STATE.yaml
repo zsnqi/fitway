@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-09-02T08:32:27Z"
+updatedAt: "2026-09-02T12:55:39Z"
 
 coordinator:
-  owner: "Coordinator final authority. fidelity-integration-closure-r01 through r04 are preserved FAILED_VALIDATION; the same-scope repair-lineage successor fidelity-integration-closure-r05 is IN_PROGRESS from preserved candidate 6036de9. It qualifies rather than rewrites the historical repository-closeout and desktop-demo DONE claims. Historical phases and terminal attempts remain immutable. LAN/mobile support, presentation work, GitHub synchronization, release/tagging, deployment, owner-facing PDF work, and external go-live gates remain excluded."
+  owner: "Coordinator final authority. fidelity-integration-closure-r01 through r04 are preserved FAILED_VALIDATION; fidelity-integration-closure-r05 is DONE on canonical main from exact accepted candidate afa2ef6. It qualifies rather than rewrites the historical repository-closeout and desktop-demo DONE claims. Historical phases and terminal attempts remain immutable. LAN/mobile support, presentation work, GitHub synchronization, release/tagging, deployment, owner-facing PDF work, and external go-live gates remain excluded."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -2613,11 +2613,11 @@ milestones:
     integratedCommit: null
 
   fidelity-integration-closure-r05:
-    status: VALIDATING
+    status: DONE
     dependencies: [repository-closeout, desktop-demo]
-    ownerSession: "Primary Codex coordinator; sole repository writer and final gate owner for the r04 repair-lineage successor"
-    branch: codex/fidelity-integration-closure
-    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
+    ownerSession: null
+    branch: main
+    worktree: null
     baseCommit: 6036de9a86f8c826bd64ae45be90830a8c920b94
     ownedPaths:
       - apps/web/src/hooks/use-owner-daily-analytics.ts
@@ -2632,20 +2632,17 @@ milestones:
       - unrelated Public, Login, Staff, or Owner product implementation and behavior
       - historical phase records, terminal attempts, branches, worktrees, repair budgets, and their preserved evidence
       - deployment, GitHub synchronization, releases, tags, external provisioning, presentation capture, and owner-facing PDF work
-    sharedLeases:
-      - "coordinator lease: exact TanStack first-observer predicate and stale full-route remount proof only"
-      - "coordinator lease: serialized disposable database, browser ports, desktop demo runtime, and evidence directories"
-      - "coordinator lease: PROJECT_STATE and successor closure handoffs"
+    sharedLeases: []
     validationRepairAttempts: 1
-    lastHeartbeatAt: "2026-09-02T08:32:27Z"
-    leaseExpiresAt: "2026-09-03T08:26:10Z"
-    handoff: docs/phase-records/handoffs/fidelity-integration-closure/20260902-113227-fidelity_closure_r05-repair1-candidate.md
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/fidelity-integration-closure/20260902-155539-fidelity_closure_r05-coordinator-done.md
     stopReason: null
     gates:
       unit: PASS
-      integration: PENDING
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
-      independentReview: PENDING
-    integratedCommit: null
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
+      independentReview: PASS
+    integratedCommit: SELF
