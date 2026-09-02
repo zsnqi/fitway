@@ -2598,10 +2598,10 @@ milestones:
       - "coordinator lease: routed regression tests and canonical non-live state evidence for the accepted Public, Login, Staff, and Owner families"
       - "coordinator lease: serialized disposable database, browser ports, desktop demo runtime, and evidence directories"
       - "coordinator lease: PROJECT_STATE and successor closure handoffs"
-    validationRepairAttempts: 1
-    lastHeartbeatAt: "2026-09-01T18:45:17Z"
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-09-02T07:51:27Z"
     leaseExpiresAt: "2026-09-02T18:36:29Z"
-    handoff: docs/phase-records/handoffs/fidelity-integration-closure/20260901-214517-fidelity_closure_r04-repair1-candidate.md
+    handoff: docs/phase-records/handoffs/fidelity-integration-closure/20260902-105127-fidelity_closure_r04-repair2-candidate.md
     stopReason: null
     gates:
       unit: PASS

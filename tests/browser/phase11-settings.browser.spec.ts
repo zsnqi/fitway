@@ -380,7 +380,7 @@ test("a late first section visit neither refetches Daily nor loses a mounted Set
 		});
 		window.localStorage.setItem("fitway.locale", "en");
 	});
-	await mockOwnerSurfaces(page, { dailyStatusAfterFirst: 503 });
+	await mockOwnerSurfaces(page);
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/admin");
 	await selectSettings(page);
@@ -404,6 +404,45 @@ test("a late first section visit neither refetches Daily nor loses a mounted Set
 	expect(observedTimeContextRequests).toBe(1);
 	await page.getByRole("tab", { name: "Settings" }).click();
 	await expect(capacity).toHaveValue("333");
+});
+
+test("a failed stale reconnect preserves cached Daily data and a mounted Settings draft", async ({
+	page,
+}) => {
+	await page.addInitScript(() => {
+		const realNow = Date.now.bind(Date);
+		let offset = 0;
+		Date.now = () => realNow() + offset;
+		Object.defineProperty(window, "__fitwayAdvanceNow", {
+			value: (milliseconds: number) => {
+				offset += milliseconds;
+			},
+		});
+		window.localStorage.setItem("fitway.locale", "en");
+	});
+	await mockOwnerSurfaces(page, { dailyStatusAfterFirst: 503 });
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await page.goto("/admin");
+	await selectSettings(page);
+	const capacity = page.locator("input[data-testid='capacity']");
+	await expect(capacity).toHaveValue("220");
+	await capacity.fill("333");
+
+	await page.evaluate(() =>
+		(
+			window as typeof window & {
+				__fitwayAdvanceNow: (milliseconds: number) => void;
+			}
+		).__fitwayAdvanceNow(61_000),
+	);
+	await page.context().setOffline(true);
+	await page.context().setOffline(false);
+	await expect.poll(() => observedDailyRequests).toBe(2);
+	await expect.poll(() => observedTimeContextRequests).toBe(1);
+
+	await expect(page.locator(section)).toBeVisible();
+	await expect(capacity).toHaveValue("333");
+	await expect(page.locator("main h1:visible")).toHaveCount(1);
 });
 
 test("Settings loading retains one active page-level heading", async ({
