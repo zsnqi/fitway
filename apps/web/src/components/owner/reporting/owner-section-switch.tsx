@@ -1,4 +1,11 @@
-import { type KeyboardEvent, type ReactNode, useRef, useState } from "react";
+import {
+	type KeyboardEvent,
+	type ReactNode,
+	useCallback,
+	useLayoutEffect,
+	useRef,
+	useState,
+} from "react";
 
 import { useOwnerDailyAnalytics } from "@/hooks/use-owner-daily-analytics";
 import { useI18n } from "@/i18n/provider";
@@ -27,19 +34,19 @@ const labels = {
 	en: {
 		group: "Management sections",
 		daily: "Daily",
-		history: "History",
-		access: "Access",
-		audit: "Audit",
-		health: "Uptime",
+		history: "Reports",
+		access: "Accounts & Sign-in",
+		audit: "Activity Log",
+		health: "System Status",
 		settings: "Settings",
 	},
 	ar: {
 		group: "أقسام الإدارة",
 		daily: "اليومي",
-		history: "السجل",
-		access: "الوصول",
-		audit: "التدقيق",
-		health: "التشغيل",
+		history: "التقارير",
+		access: "الحسابات والدخول",
+		audit: "سجل النشاط",
+		health: "حالة النظام",
 		settings: "الإعدادات",
 	},
 } as const;
@@ -78,9 +85,83 @@ export function OwnerSectionSwitch(props: OwnerSectionRenderers) {
 		() => new Set(["daily"]),
 	);
 	const tabRefs = useRef<Partial<Record<OwnerSection, HTMLButtonElement>>>({});
+	const containerRef = useRef<HTMLDivElement>(null);
+	const tablistRef = useRef<HTMLDivElement>(null);
 	const copy = labels[locale];
 	const prerequisiteUnavailable =
 		!prerequisite.data && (prerequisite.isPending || prerequisite.isError);
+
+	const revealSelectedTab = useCallback(() => {
+		const tablist = tablistRef.current;
+		const tab = tabRefs.current[selected];
+		if (!tablist || !tab) return;
+		tab.scrollIntoView({ block: "nearest", inline: "center" });
+		const rowBox = tablist.getBoundingClientRect();
+		const tabBox = tab.getBoundingClientRect();
+		const correction =
+			tabBox.left < rowBox.left
+				? tabBox.left - rowBox.left
+				: tabBox.right > rowBox.right
+					? tabBox.right - rowBox.right
+					: 0;
+		if (correction !== 0) tablist.scrollBy({ left: correction });
+	}, [selected]);
+
+	useLayoutEffect(() => {
+		const container = containerRef.current;
+		const tablist = tablistRef.current;
+		if (!container || !tablist) return;
+		if (tablist.getAttribute("aria-label") !== copy.group) return;
+
+		const panel = container.querySelector<HTMLElement>(`#${panelId(selected)}`);
+		const updatePosition = () => {
+			revealSelectedTab();
+			const anchor = panel?.querySelector<HTMLElement>(
+				"[data-owner-navigation-anchor]",
+			);
+			if (!anchor) {
+				container.style.removeProperty(
+					"--owner-section-navigation-block-start",
+				);
+				return;
+			}
+			const containerBox = container.getBoundingClientRect();
+			const anchorBox = anchor.getBoundingClientRect();
+			const gap = Number.parseFloat(
+				getComputedStyle(container).getPropertyValue(
+					"--owner-section-navigation-gap",
+				),
+			);
+			container.style.setProperty(
+				"--owner-section-navigation-block-start",
+				`${anchorBox.bottom - containerBox.top + (Number.isFinite(gap) ? gap : 18)}px`,
+			);
+		};
+
+		updatePosition();
+		const observer =
+			typeof ResizeObserver === "undefined"
+				? null
+				: new ResizeObserver(updatePosition);
+		observer?.observe(panel ?? container);
+		observer?.observe(tablist);
+		const mutationObserver =
+			typeof MutationObserver === "undefined"
+				? null
+				: new MutationObserver(updatePosition);
+		if (panel) {
+			mutationObserver?.observe(panel, { childList: true, subtree: true });
+		}
+		return () => {
+			observer?.disconnect();
+			mutationObserver?.disconnect();
+		};
+	}, [selected, copy.group, revealSelectedTab]);
+
+	useLayoutEffect(() => {
+		if (tablistRef.current?.getAttribute("aria-label") !== copy.group) return;
+		revealSelectedTab();
+	}, [copy.group, revealSelectedTab]);
 
 	function select(section: OwnerSection, focus = false) {
 		setVisited((current) =>
@@ -114,8 +195,12 @@ export function OwnerSectionSwitch(props: OwnerSectionRenderers) {
 	}
 
 	return (
-		<div className="owner-analytics-mode owner-section-switch">
+		<div
+			ref={containerRef}
+			className="owner-analytics-mode owner-section-switch"
+		>
 			<div
+				ref={tablistRef}
 				className="owner-analytics-mode__tabs"
 				role="tablist"
 				aria-label={copy.group}
@@ -127,6 +212,7 @@ export function OwnerSectionSwitch(props: OwnerSectionRenderers) {
 							if (node) tabRefs.current[section] = node;
 						}}
 						id={tabId(section)}
+						data-owner-section={section}
 						type="button"
 						role="tab"
 						aria-controls={panelId(section)}

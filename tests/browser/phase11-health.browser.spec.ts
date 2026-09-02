@@ -6,7 +6,9 @@ import { expect, type Page, test } from "@playwright/test";
 import { expectOwnerReflowAt200Percent } from "./helpers/owner-reflow";
 
 async function selectHealth(page: Page) {
-	const tab = page.getByRole("tab", { name: /^(?:Uptime|التشغيل)$/u });
+	const tab = page.getByRole("tab", {
+		name: /^(?:System Status|حالة النظام)$/u,
+	});
 	await tab.focus();
 	await page.keyboard.press("Enter");
 }

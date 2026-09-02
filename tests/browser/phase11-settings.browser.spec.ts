@@ -396,7 +396,7 @@ test("a late first section visit neither refetches Daily nor loses a mounted Set
 			}
 		).__fitwayAdvanceNow(61_000),
 	);
-	await page.getByRole("tab", { name: "Access" }).click();
+	await page.getByRole("tab", { name: "Accounts & Sign-in" }).click();
 	await expect(page.locator(".owner-access")).toBeVisible();
 	await page.waitForTimeout(300);
 

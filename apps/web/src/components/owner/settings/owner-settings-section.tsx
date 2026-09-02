@@ -87,7 +87,10 @@ export function OwnerSettingsSection({ enabled }: { enabled: boolean }) {
 	if (settings.status === "pending") {
 		return (
 			<section className="owner-settings" aria-busy="true">
-				<header className="owner-settings__intro">
+				<header
+					className="owner-settings__intro"
+					data-owner-navigation-anchor=""
+				>
 					<h1>{messages.title}</h1>
 					<p>{messages.intro}</p>
 				</header>
@@ -100,7 +103,10 @@ export function OwnerSettingsSection({ enabled }: { enabled: boolean }) {
 	if (settings.status === "error" || !snapshot) {
 		return (
 			<section className="owner-settings">
-				<header className="owner-settings__intro">
+				<header
+					className="owner-settings__intro"
+					data-owner-navigation-anchor=""
+				>
 					<h1>{messages.errorTitle}</h1>
 					<p>{messages.errorDescription}</p>
 				</header>
@@ -120,7 +126,10 @@ export function OwnerSettingsSection({ enabled }: { enabled: boolean }) {
 	if (!draft) {
 		return (
 			<section className="owner-settings" aria-busy="true">
-				<header className="owner-settings__intro">
+				<header
+					className="owner-settings__intro"
+					data-owner-navigation-anchor=""
+				>
 					<h1>{messages.title}</h1>
 					<p>{messages.intro}</p>
 				</header>

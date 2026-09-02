@@ -154,7 +154,7 @@ export function OwnerSettingsView({
 				onSubmit={handleSubmit}
 				noValidate
 			>
-				<div className="owner-settings__top">
+				<div className="owner-settings__top" data-owner-navigation-anchor="">
 					<header className="owner-settings__intro">
 						<h1 id={headingId}>{messages.title}</h1>
 						<p>{messages.intro}</p>

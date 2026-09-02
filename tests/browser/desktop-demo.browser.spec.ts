@@ -140,7 +140,7 @@ test("real Owner password opens every populated owner surface", async ({
 		}),
 	).toBeVisible();
 
-	await page.getByRole("tab", { name: "History" }).click();
+	await page.getByRole("tab", { name: "Reports" }).click();
 	await expect(
 		page.getByRole("heading", { name: "Busiest times and direction" }),
 	).toBeVisible({ timeout: 15_000 });
@@ -148,7 +148,7 @@ test("real Owner password opens every populated owner surface", async ({
 		page.getByRole("heading", { name: "Weekday by hour" }),
 	).toBeVisible({ timeout: 45_000 });
 
-	await page.getByRole("tab", { name: "Access" }).click();
+	await page.getByRole("tab", { name: "Accounts & Sign-in" }).click();
 	await expect(
 		page.getByRole("heading", { name: "Access", exact: true }),
 	).toBeVisible({ timeout: 15_000 });
@@ -157,7 +157,7 @@ test("real Owner password opens every populated owner surface", async ({
 	).toBeVisible({ timeout: 15_000 });
 	await expect(page.getByText(ownerEmail, { exact: true })).toBeVisible();
 
-	await page.getByRole("tab", { name: "Audit" }).click();
+	await page.getByRole("tab", { name: "Activity Log" }).click();
 	await expect(
 		page.getByRole("heading", { name: "Audit history", exact: true }),
 	).toBeVisible({ timeout: 15_000 });
@@ -165,7 +165,7 @@ test("real Owner password opens every populated owner surface", async ({
 		page.getByRole("cell", { name: "Staff PIN provisioned", exact: true }),
 	).toBeVisible();
 
-	await page.getByRole("tab", { name: "Uptime" }).click();
+	await page.getByRole("tab", { name: "System Status" }).click();
 	await expect(
 		page.getByRole("heading", {
 			name: "Uptime and incidents",

@@ -417,7 +417,7 @@ export function OwnerAnalyticsView({
 
 	return (
 		<div className="owner-analytics">
-			<header className="owner-daily-heading">
+			<header className="owner-daily-heading" data-owner-navigation-anchor="">
 				<h1>{messages.title}</h1>
 				<p>
 					<bdi dir="auto">{businessDate}</bdi>

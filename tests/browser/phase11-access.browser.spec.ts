@@ -6,8 +6,8 @@ import { expect, type Page, type Route, test } from "@playwright/test";
 import { expectOwnerReflowAt200Percent } from "./helpers/owner-reflow";
 
 const ownerSectionNames = {
-	access: /^(?:Access|الوصول)$/u,
-	audit: /^(?:Audit|التدقيق)$/u,
+	access: /^(?:Accounts & Sign-in|الحسابات والدخول)$/u,
+	audit: /^(?:Activity Log|سجل النشاط)$/u,
 } as const;
 
 async function selectOwnerSection(

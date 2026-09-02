@@ -1124,9 +1124,13 @@
 	}
 }
 
-/* Integrated Management section navigation. The top rail remains the accepted
-   two-destination Monitoring/Management rail; these tabs live within Management. */
+/* One shared Owner navigation across all six retained destinations. Its DOM stays
+   before the active panel for stable tab semantics; a measured page-heading anchor
+   places the single rendered row directly below that heading in every page family. */
 .owner-section-switch {
+	--owner-section-navigation-gap: 18px;
+	--owner-section-navigation-height: 48px;
+	--owner-section-root-gap: 16px;
 	position: relative;
 	min-inline-size: 0;
 }
@@ -1134,24 +1138,65 @@
 .owner-section-switch > .owner-analytics-mode__tabs {
 	position: absolute;
 	z-index: 2;
-	inset-block-start: 0;
-	inset-inline-end: 0;
+	inset-block-start: var(--owner-section-navigation-block-start, 0px);
+	inset-inline: 0;
 	display: flex;
-	inline-size: auto;
-	max-inline-size: min(100%, 560px);
-	block-size: 44px;
+	inline-size: 100%;
+	max-inline-size: none;
+	block-size: var(--owner-section-navigation-height);
 	margin: 0;
 	overflow-x: auto;
-	scrollbar-width: thin;
+	overflow-y: hidden;
+	overscroll-behavior-inline: contain;
+	border-block-end: 1px solid var(--owner-edge, var(--fw-border));
+	background-color: var(--owner-field, #100b0e);
+	background-image: none;
+	scrollbar-width: none;
+	scroll-padding-inline: 16px;
+}
+
+.owner-section-switch > .owner-analytics-mode__tabs::-webkit-scrollbar {
+	display: none;
 }
 
 .owner-section-switch > .owner-analytics-mode__tabs [role="tab"] {
-	flex: 0 0 auto;
-	inline-size: auto;
-	min-inline-size: 80px;
-	padding-inline: 12px;
+	flex: 1 1 0;
+	inline-size: 0;
+	min-inline-size: 0;
+	min-block-size: var(--owner-section-navigation-height);
+	padding-inline: 16px;
 	font-size: 14px;
 	line-height: 20px;
+	white-space: nowrap;
+}
+
+.owner-section-switch
+	> .owner-analytics-mode__tabs
+	[role="tab"][data-owner-section="access"] {
+	flex-grow: 1.35;
+}
+
+.owner-section-switch
+	> .owner-analytics-mode__tabs
+	[role="tab"]:is([data-owner-section="audit"], [data-owner-section="health"]) {
+	flex-grow: 1.2;
+}
+
+.owner-section-switch [data-owner-navigation-anchor] {
+	margin-block-end: calc(
+		var(--owner-section-navigation-height) +
+		var(--owner-section-navigation-gap) +
+		var(--owner-section-navigation-gap) -
+		var(--owner-section-root-gap)
+	);
+}
+
+.owner-section-switch__panel > .owner-analytics {
+	--owner-section-root-gap: 24px;
+}
+
+.owner-section-switch__panel .owner-settings__form {
+	--owner-section-root-gap: 22px;
 }
 
 .owner-section-switch__panel[hidden] {
@@ -1194,38 +1239,53 @@
 	line-height: 23px;
 }
 
-.owner-section-switch__panel > section > header,
-.owner-section-switch__panel .owner-settings__top,
-.owner-section-switch__panel .owner-reporting__heading {
-	padding-inline-end: 510px;
-}
-
 @media (max-width: 900px) {
-	.owner-section-switch > .owner-analytics-mode__tabs {
-		position: static;
-		inline-size: 100%;
-		max-inline-size: none;
-		margin-block-end: 18px;
+	.owner-section-switch {
+		--owner-section-navigation-gap: 14px;
+		--owner-section-navigation-height: 46px;
 	}
 
-	.owner-section-switch__panel > section > header,
-	.owner-section-switch__panel .owner-settings__top,
-	.owner-section-switch__panel .owner-reporting__heading {
-		padding-inline-end: 0;
+	.owner-section-switch > .owner-analytics-mode__tabs [role="tab"] {
+		flex: 0 0 auto;
+		inline-size: auto;
+		min-inline-size: 100px;
+		padding-inline: 14px;
+		font-size: 13px;
+		line-height: 16px;
 	}
 
-	.owner-reporting-page-heading {
-		padding-inline-end: 0;
+	.owner-section-switch
+		> .owner-analytics-mode__tabs
+		[role="tab"][data-owner-section="daily"] {
+		min-inline-size: 92px;
+	}
+
+	.owner-section-switch
+		> .owner-analytics-mode__tabs
+		[role="tab"][data-owner-section="access"] {
+		min-inline-size: 180px;
+	}
+
+	.owner-section-switch
+		> .owner-analytics-mode__tabs
+		[role="tab"][data-owner-section="audit"] {
+		min-inline-size: 140px;
+	}
+
+	.owner-section-switch
+		> .owner-analytics-mode__tabs
+		[role="tab"][data-owner-section="health"] {
+		min-inline-size: 150px;
+	}
+
+	.owner-section-switch
+		> .owner-analytics-mode__tabs
+		[role="tab"][data-owner-section="settings"] {
+		min-inline-size: 128px;
 	}
 }
 
 @media (max-width: 720px) {
-	.owner-section-switch > .owner-analytics-mode__tabs {
-		margin-inline: -16px;
-		padding-inline: 16px;
-		inline-size: calc(100% + 32px);
-	}
-
 	.owner-section-switch__panel
 		:is(
 			.owner-access__heading,

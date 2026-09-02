@@ -65,7 +65,7 @@ export function OwnerAuditSection() {
 
 	return (
 		<section className="owner-audit" aria-labelledby={fieldId("heading")}>
-			<header className="owner-audit__heading">
+			<header className="owner-audit__heading" data-owner-navigation-anchor="">
 				<h1 id={fieldId("heading")}>{messages.title}</h1>
 				<p>{messages.description}</p>
 				<span className="owner-audit__zone">

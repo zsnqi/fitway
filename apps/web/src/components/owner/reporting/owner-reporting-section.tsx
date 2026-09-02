@@ -68,7 +68,10 @@ export function OwnerReportingSection({
 				className="owner-reporting"
 				aria-labelledby={`${ids}-page-heading`}
 			>
-				<header className="owner-reporting-page-heading">
+				<header
+					className="owner-reporting-page-heading"
+					data-owner-navigation-anchor=""
+				>
 					<h1 id={`${ids}-page-heading`}>{pageTitle}</h1>
 				</header>
 				<OwnerReportingLoading />
@@ -82,7 +85,10 @@ export function OwnerReportingSection({
 				className="owner-reporting"
 				aria-labelledby={`${ids}-page-heading`}
 			>
-				<header className="owner-reporting-page-heading">
+				<header
+					className="owner-reporting-page-heading"
+					data-owner-navigation-anchor=""
+				>
 					<h1 id={`${ids}-page-heading`}>{pageTitle}</h1>
 				</header>
 				<OwnerReportingError
@@ -140,7 +146,10 @@ export function OwnerReportingSection({
 			className="owner-reporting"
 			aria-labelledby={`${ids}-page-heading`}
 		>
-			<header className="owner-reporting-page-heading">
+			<header
+				className="owner-reporting-page-heading"
+				data-owner-navigation-anchor=""
+			>
 				<h1 id={`${ids}-page-heading`}>{pageTitle}</h1>
 				<p>
 					<bdi dir="auto">{pageDate}</bdi>

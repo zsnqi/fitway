@@ -23,8 +23,12 @@ paperMutationRequired: false
 reviewEvidence:
   decision: "Explicitly approved by the human before routed implementation."
   approvalRecord: docs/phase-records/handoffs/full-route-paper-fidelity/20260902-192833-owner-shell-approved-activity-candidate-needs-human.md
-  routedBefore: PENDING_IMPLEMENTATION
-  routedAfter: PENDING_IMPLEMENTATION
+  routedBefore:
+    - { path: tests/browser/__screenshots__/win32/chromium/phase9-owner-ui.browser.spec.ts/owner-daily-route-ar-desktop-1440x900.png, bytes: 411700, sha256: b87655ca8110b3ccc8e82dc4463417827210d02066df6b564d13e303daee393d, disposition: REJECTED_R05 }
+    - { path: tests/browser/__screenshots__/win32/chromium/phase9-owner-ui.browser.spec.ts/owner-daily-route-en-mobile-390x844.png, bytes: 167685, sha256: ccfc0b5501f79d4ac6f28f5562276ee8f97295127a1fc6fc9a3c13612ee4339f, disposition: REJECTED_R05 }
+  routedAfter:
+    - { path: visual-direction-gate/approved/paper-route-authority-20260902/evidence/owner-shared-navigation/routed-after-en-desktop-1440x900.png, bytes: 398747, sha256: cbcef686a53a3d67d334d9170e8b2d32c88cce4e48931c5745ed6f6ebbe91eb6, disposition: CANDIDATE_EVIDENCE }
+    - { path: visual-direction-gate/approved/paper-route-authority-20260902/evidence/owner-shared-navigation/routed-after-ar-mobile-390x844.png, bytes: 153590, sha256: cc1459dca47b8f671afa0fc642d373f24bb3a4a94245423a27dafc2924f6c060, disposition: CANDIDATE_EVIDENCE }
   independentRenderedReview: PENDING_IMPLEMENTATION
 acceptanceRule: >-
   This deviation is approved in principle but cannot satisfy final acceptance until before/after

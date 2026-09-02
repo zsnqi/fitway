@@ -30,7 +30,12 @@ export async function expectOwnerReflowAt200Percent(
 			bodyOverflow: document.body.scrollWidth - document.body.clientWidth,
 			rail: rail && { top: rail.top, bottom: rail.bottom },
 			tabs: tabs && { top: tabs.top, bottom: tabs.bottom },
-			title: title && { left: title.left, right: title.right, top: title.top },
+			title: title && {
+				left: title.left,
+				right: title.right,
+				top: title.top,
+				bottom: title.bottom,
+			},
 		};
 	}, headingSelector);
 
@@ -40,8 +45,8 @@ export async function expectOwnerReflowAt200Percent(
 	expect(geometry.tabs).not.toBeNull();
 	expect(geometry.title).not.toBeNull();
 	if (!geometry.rail || !geometry.tabs || !geometry.title) return;
-	expect(geometry.rail.bottom).toBeLessThanOrEqual(geometry.tabs.top);
-	expect(geometry.tabs.bottom).toBeLessThanOrEqual(geometry.title.top);
+	expect(geometry.rail.bottom).toBeLessThanOrEqual(geometry.title.top);
+	expect(geometry.title.bottom).toBeLessThanOrEqual(geometry.tabs.top);
 	expect(geometry.title.left).toBeGreaterThanOrEqual(0);
 	expect(geometry.title.right).toBeLessThanOrEqual(geometry.viewport);
 }

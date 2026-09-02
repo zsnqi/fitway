@@ -81,6 +81,25 @@ function collectLeafExports(value, label = "surfaces") {
 	return records;
 }
 
+function collectFileRecords(value, label = "record") {
+	if (!value || typeof value !== "object") return [];
+	if (Array.isArray(value)) {
+		return value.flatMap((entry, index) =>
+			collectFileRecords(entry, `${label}[${index}]`),
+		);
+	}
+	if (
+		typeof value.path === "string" &&
+		Number.isInteger(value.bytes) &&
+		typeof value.sha256 === "string"
+	) {
+		return [{ label, record: value }];
+	}
+	return Object.entries(value).flatMap(([key, child]) =>
+		collectFileRecords(child, `${label}.${key}`),
+	);
+}
+
 function assertNonempty(value, label) {
 	if (typeof value !== "string" || !value.trim()) fail(`${label} is required`);
 }
@@ -256,6 +275,15 @@ export async function verifyVisualAuthorityRepository(root) {
 			parseYaml(await readFile(path.join(deviationDirectory, name), "utf8")),
 		),
 	);
+	for (const [deviationIndex, deviation] of deviations.entries()) {
+		for (const { record, label } of collectFileRecords(
+			deviation.reviewEvidence,
+			`deviations[${deviationIndex}].reviewEvidence`,
+		)) {
+			const bytes = await readFile(repositoryPath(root, record.path));
+			verifyByteRecord(record, bytes, label);
+		}
+	}
 
 	const baseline = manifest.rejectedRoutedBaseline;
 	if (

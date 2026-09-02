@@ -6,7 +6,7 @@ import { expect, type Page, test } from "@playwright/test";
 import { expectOwnerReflowAt200Percent } from "./helpers/owner-reflow";
 
 async function selectAudit(page: Page) {
-	const tab = page.getByRole("tab", { name: /^(?:Audit|التدقيق)$/u });
+	const tab = page.getByRole("tab", { name: /^(?:Activity Log|سجل النشاط)$/u });
 	await tab.focus();
 	await page.keyboard.press("Enter");
 }

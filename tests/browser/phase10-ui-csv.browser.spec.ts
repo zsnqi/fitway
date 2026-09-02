@@ -540,22 +540,15 @@ async function expectHeadingLayout(
 	const tablist = page.getByRole("tablist", {
 		name: locale === "ar" ? "أقسام الإدارة" : "Management sections",
 	});
-	const [headingBox, titleBox, tabsBox] = await Promise.all([
+	const [headingBox, tabsBox] = await Promise.all([
 		heading.boundingBox(),
-		title.boundingBox(),
 		tablist.boundingBox(),
 	]);
-	if (!headingBox || !titleBox || !tabsBox) {
+	if (!headingBox || !tabsBox) {
 		throw new Error("Analytics heading and tabs require layout boxes");
 	}
-	expect(tabsBox.height).toBe(44);
-	if (width <= 900) {
-		expect(tabsBox.y + tabsBox.height).toBeLessThanOrEqual(titleBox.y);
-	} else {
-		expect(Math.abs(tabsBox.y - headingBox.y)).toBeLessThanOrEqual(1);
-		if (locale === "ar") expect(titleBox.x).toBeGreaterThan(tabsBox.x);
-		else expect(titleBox.x).toBeLessThan(tabsBox.x);
-	}
+	expect(tabsBox.height).toBe(width <= 900 ? 46 : 48);
+	expect(headingBox.y + headingBox.height).toBeLessThanOrEqual(tabsBox.y);
 	const typography = await title.evaluate((element) => {
 		const style = getComputedStyle(element);
 		return { family: style.fontFamily, weight: Number(style.fontWeight) };
@@ -580,10 +573,10 @@ test("the lazy bilingual tabs keep exact prerequisite counts and stable panel sh
 	await expect(tablist).toBeVisible();
 	await expect(tablist.getByRole("tab")).toHaveText([
 		"اليومي",
-		"السجل",
-		"الوصول",
-		"التدقيق",
-		"التشغيل",
+		"التقارير",
+		"الحسابات والدخول",
+		"سجل النشاط",
+		"حالة النظام",
 		"الإعدادات",
 	]);
 	await expect(dailyTab).toHaveAttribute(
@@ -621,10 +614,12 @@ test("the lazy bilingual tabs keep exact prerequisite counts and stable panel sh
 	const tablistBox = await tablist.boundingBox();
 	const dailyTabBox = await dailyTab.boundingBox();
 	const historyTabBox = await historyTab.boundingBox();
-	expect(tablistBox?.width).toBeGreaterThanOrEqual(480);
-	expect(tablistBox?.height).toBe(44);
-	expect(dailyTabBox).toMatchObject({ width: 80, height: 44 });
-	expect(historyTabBox).toMatchObject({ width: 80, height: 44 });
+	expect(tablistBox?.width).toBeGreaterThanOrEqual(1200);
+	expect(tablistBox?.height).toBe(48);
+	expect(dailyTabBox?.width).toBeGreaterThan(150);
+	expect(dailyTabBox?.height).toBe(48);
+	expect(historyTabBox?.width).toBeGreaterThan(150);
+	expect(historyTabBox?.height).toBe(48);
 	await historyTab.focus();
 	await page.keyboard.press("ArrowRight");
 	await expect(dailyTab).toBeFocused();
@@ -649,8 +644,22 @@ test("the lazy bilingual tabs keep exact prerequisite counts and stable panel sh
 		).toBeVisible();
 		await expect(page.getByRole("tablist").getByRole("tab")).toHaveText(
 			locale === "ar"
-				? ["اليومي", "السجل", "الوصول", "التدقيق", "التشغيل", "الإعدادات"]
-				: ["Daily", "History", "Access", "Audit", "Uptime", "Settings"],
+				? [
+						"اليومي",
+						"التقارير",
+						"الحسابات والدخول",
+						"سجل النشاط",
+						"حالة النظام",
+						"الإعدادات",
+					]
+				: [
+						"Daily",
+						"Reports",
+						"Accounts & Sign-in",
+						"Activity Log",
+						"System Status",
+						"Settings",
+					],
 		);
 		const labels =
 			locale === "ar"

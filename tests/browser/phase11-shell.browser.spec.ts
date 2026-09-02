@@ -296,6 +296,92 @@ test("canonical desktop Arabic and mobile English shell compositions match", asy
 	);
 });
 
+test("shared Owner navigation keeps the approved labels, uniform material, and selected reveal", async ({
+	page,
+}) => {
+	await mockOwnerAnalytics(page);
+	await page.goto("/admin");
+	const expected = {
+		en: [
+			"Daily",
+			"Reports",
+			"Accounts & Sign-in",
+			"Activity Log",
+			"System Status",
+			"Settings",
+		],
+		ar: [
+			"اليومي",
+			"التقارير",
+			"الحسابات والدخول",
+			"سجل النشاط",
+			"حالة النظام",
+			"الإعدادات",
+		],
+	} as const;
+
+	for (const locale of ["en", "ar"] as const) {
+		await setLocale(page, locale);
+		const tablist = page.getByRole("tablist", {
+			name: locale === "ar" ? "أقسام الإدارة" : "Management sections",
+		});
+		await expect(tablist.getByRole("tab")).toHaveText(expected[locale]);
+
+		for (const viewport of [
+			{ width: 1440, height: 900 },
+			{ width: 768, height: 1024 },
+			{ width: 390, height: 844 },
+			{ width: 320, height: 720 },
+		]) {
+			await page.setViewportSize(viewport);
+			const dailyTab = tablist.getByRole("tab", { name: expected[locale][0] });
+			const settingsTab = tablist.getByRole("tab", {
+				name: expected[locale][5],
+			});
+			await dailyTab.focus();
+			await page.keyboard.press("End");
+			await expect(settingsTab).toBeFocused();
+			await expect(settingsTab).toHaveAttribute("aria-selected", "true");
+
+			const geometry = await tablist.evaluate((element, width) => {
+				const selected = element.querySelector<HTMLElement>(
+					'[role="tab"][aria-selected="true"]',
+				);
+				const row = element.getBoundingClientRect();
+				const active = selected?.getBoundingClientRect();
+				const style = getComputedStyle(element);
+				return {
+					backgroundColor: style.backgroundColor,
+					backgroundImage: style.backgroundImage,
+					clientWidth: element.clientWidth,
+					scrollWidth: element.scrollWidth,
+					row: { left: row.left, right: row.right, height: row.height },
+					active: active && { left: active.left, right: active.right },
+					viewportWidth: width,
+				};
+			}, viewport.width);
+			expect(geometry.backgroundImage).toBe("none");
+			expect(geometry.backgroundColor).toBe("rgb(16, 11, 14)");
+			expect(geometry.row.height).toBe(viewport.width <= 900 ? 46 : 48);
+			expect(geometry.active).not.toBeNull();
+			if (geometry.active) {
+				expect(geometry.active.left).toBeGreaterThanOrEqual(
+					geometry.row.left - 1,
+				);
+				expect(geometry.active.right).toBeLessThanOrEqual(
+					geometry.row.right + 1,
+				);
+			}
+			if (viewport.width <= 768) {
+				expect(geometry.scrollWidth).toBeGreaterThan(geometry.clientWidth);
+			} else {
+				expect(geometry.scrollWidth).toBe(geometry.clientWidth);
+			}
+			await expectNoOverflow(page);
+		}
+	}
+});
+
 test("navigation, locale, and logout keep their established behavior", async ({
 	page,
 }) => {
