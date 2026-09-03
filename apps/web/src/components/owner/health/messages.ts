@@ -11,10 +11,10 @@ export const ownerHealthMessages = {
 	en: {
 		title: "Uptime and incidents",
 		description:
-			"What maintenance has been keeping running, over the last business days · times shown in the configured gym timezone",
+			"What maintenance has been keeping running, over the last business days",
 		timeZoneLabel: "Gym timezone",
 		windowLabel: "Period",
-		windowDays: "Business days",
+		windowDays: "business days",
 
 		loading: "Loading the uptime summary",
 		loadingDescription: "Preparing the recent incident and uptime history.",
@@ -90,11 +90,10 @@ export const ownerHealthMessages = {
 	},
 	ar: {
 		title: "التشغيل والأعطال",
-		description:
-			"ما الذي أبقته الصيانة يعمل خلال أيام العمل الأخيرة · تُعرض الأوقات بالمنطقة الزمنية المحفوظة للصالة",
-		timeZoneLabel: "المنطقة الزمنية للصالة",
+		description: "ما الذي أبقته الصيانة يعمل خلال أيام العمل الأخيرة",
+		timeZoneLabel: "توقيت الصالة",
 		windowLabel: "الفترة",
-		windowDays: "أيام العمل",
+		windowDays: "يوم عمل",
 
 		loading: "جارٍ تحميل ملخص التشغيل",
 		loadingDescription: "جارٍ تجهيز سجل الأعطال ونسبة التشغيل الأخيرة.",

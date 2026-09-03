@@ -373,7 +373,42 @@ surfaces:
     desktopAreaId: 1AUL-0
     mobileArea: "OWNER UPTIME — MOBILE STACKED RECORDS SUCCESSOR"
     mobileAreaId: 1DZC-0
-    status: DURABLY_ACCEPTED_STALE_NAME
+    status: ACCEPTED_PAPER_AUTHORITY
+    humanApprovalRecord: docs/phase-records/handoffs/phase11-uptime-paper-successor/20260825-003100-p11_uptime_paper_c01-coordinator-done.md
+    approvedDeviationIds: [owner-system-status-shared-shell-runtime-data-and-bidi]
+    requiredStates: [loading, load-failure-retry, no-offline-periods, no-incidents]
+    routedCandidateReview: >-
+      Coordinator direct Paper comparison passed for the accepted desktop family and mobile
+      stacked-record successor, full shared shell plus active panel, bilingual 360 through 1440
+      composition, 200 percent reflow, keyboard navigation, forced colors, reduced motion, axe,
+      complete runtime-backed records, and explicit LTR override of Arabic duration values. The
+      rejected r05 screenshot assertions remain intentionally unpromoted pending final human
+      contact-sheet acceptance.
+    routedCandidateEvidence:
+      - { locale: en, viewport: 1440, state: populated, path: evidence/owner-system-status/owner-health-populated-en-1440x900.png, bytes: 402749, sha256: 085fc4e32863c72023070bd19fb3fca2ea113733bd99a5aad8964866c10e9f55 }
+      - { locale: ar, viewport: 1440, state: populated, path: evidence/owner-system-status/owner-health-populated-ar-1440x900.png, bytes: 408729, sha256: 915cf8ca36c7d8348f72ca5e82351136414dd3145a73684b0daaa5e67764232b }
+      - { locale: en, viewport: 390, state: populated, path: evidence/owner-system-status/owner-health-populated-en-390x844.png, bytes: 268521, sha256: 850db46b98f2b88db30fc492580e45f46ee247e7d0189afab44c9348365f4fe3 }
+      - { locale: en, viewport: 390, state: mobile-stacked-records, path: evidence/owner-system-status/owner-health-mobile-stacked-en-390x844.png, bytes: 268487, sha256: ebc89bf1db79ed6aaae646cf4c54eb302081652dad1693babd3fb8aaa0cdfa20 }
+      - { locale: ar, viewport: 390, state: mobile-stacked-records, path: evidence/owner-system-status/owner-health-mobile-stacked-ar-390x844.png, bytes: 249969, sha256: 6bbd7f09889ca3868d07257d449823aca9d63f73e5a97da97e3192212c892df4 }
+      - { locale: en, viewport: 390, state: loading, path: evidence/owner-system-status/owner-health-loading-en-390x844.png, bytes: 111027, sha256: a8348297249a676ae8d5ff703bdd56949e070a3f79752703342b4340ef1e6bdf }
+      - { locale: en, viewport: 390, state: load-failure-retry, path: evidence/owner-system-status/owner-health-error-en-390x844.png, bytes: 107778, sha256: 30f51736dec6f107f98b0fc29cfb77f4684591a7b584a0a7ac9510884bed8ffc }
+      - { locale: en, viewport: 390, state: no-offline-periods-and-no-incidents, path: evidence/owner-system-status/owner-health-clear-en-390x844.png, bytes: 212978, sha256: 9a72b9f41f6a3c4a8c6d3902bc2adc9b50880dfa08ea09118f20e191dec5262e }
+      - { locale: en, viewport: 390, state: unmonitored, path: evidence/owner-system-status/owner-health-unmonitored-en-390x844.png, bytes: 249096, sha256: 34a9a230c3e9715d77536e79b0350e0443c4e6d2780c6c4da0e072ab345798cb }
+      - { locale: en, viewport: 390, state: delivery-unconfirmed, path: evidence/owner-system-status/owner-health-mobile-unconfirmed-en-390x844.png, bytes: 269359, sha256: 83b13151165612851cb63afe9629c9080d80d725c8620cf08040f6a9a6cd5e1b }
+      - { locale: en, viewport: 360, state: populated, path: evidence/owner-system-status/owner-health-en-360x900.png, bytes: 255132, sha256: 05cc90d6203eca6c9c8995ae7dd7b20641c19be59cf02372e44d9b5bc2a82487 }
+      - { locale: ar, viewport: 360, state: populated, path: evidence/owner-system-status/owner-health-ar-360x900.png, bytes: 236665, sha256: de91edf02864158409445fe3fb60607587a0dd92e1cb87e7f9bfac0d63625df2 }
+      - { locale: en, viewport: 768, state: populated, path: evidence/owner-system-status/owner-health-en-768x1024.png, bytes: 367357, sha256: 762da7f5c1d454f0db1f1b6672677b9037d2296e164ea8698466145c64fe84b5 }
+      - { locale: ar, viewport: 768, state: populated, path: evidence/owner-system-status/owner-health-ar-768x1024.png, bytes: 327029, sha256: e89fd03071fa67fa7972ba022d4bdcb63f008f1b393f7a04514999b660600865 }
+      - { locale: en, viewport: 200-percent, state: text-reflow, path: evidence/owner-system-status/owner-health-en-200-percent-reflow.png, bytes: 297831, sha256: 08416d622ef17073b84b735f794ee13ca07d871e007ab38cb542ad2c4e302d24 }
+    leafExports:
+      - { nodeId: 1B65-0, locale: en, viewport: 1440, state: populated, path: owner-system-status/owner-system-status-desktop-en-1440.png, bytes: 1292488, sha256: 094129121200ceb955d300302b2ddeee5e86e5e8471510a41237a9cc09ebdccc }
+      - { nodeId: 1B38-0, locale: ar, viewport: 1440, state: populated, path: owner-system-status/owner-system-status-desktop-ar-1440.png, bytes: 1253430, sha256: 6fc47ca233a2c99533d5d104e1b9ebf5918de69921f8e0c5393b2f1ac0d014bc }
+      - { nodeId: 1E7J-0, locale: en, viewport: 390, state: populated, path: owner-system-status/owner-system-status-mobile-en-390.png, bytes: 421239, sha256: 65cc8644f19c6a35e253b1c468c070c019ca150f8c7332460daa3e42c8320873 }
+      - { nodeId: 1E2E-0, locale: ar, viewport: 390, state: populated, path: owner-system-status/owner-system-status-mobile-ar-390.png, bytes: 390119, sha256: a434c25fc7b2d5caebd762369b0776af8b82abe3ef6c6e491791f89419463bd2 }
+      - { nodeId: 1AWW-0, locale: bilingual, viewport: state, state: loading, path: owner-system-status/owner-system-status-loading.png, bytes: 26757, sha256: cc88b034d37c47c27cae5e33242aba01123cb9ab6489311e358ebe98ef909ab8 }
+      - { nodeId: 1AWA-0, locale: bilingual, viewport: state, state: load-failure-retry, path: owner-system-status/owner-system-status-load-failure.png, bytes: 25858, sha256: 346611aaefe9beb1bde68e14724f2fda4aef2c9f6c670e4c845416c6d59fc55a }
+      - { nodeId: 1AVS-0, locale: bilingual, viewport: state, state: no-offline-periods, path: owner-system-status/owner-system-status-no-offline-periods.png, bytes: 24871, sha256: 1510b3e80d4bc618f5703a10a356d154be6e9517870f1198ff2d4ec799aba156 }
+      - { nodeId: 1AVA-0, locale: bilingual, viewport: state, state: no-incidents, path: owner-system-status/owner-system-status-no-incidents.png, bytes: 24670, sha256: f8787dd460fe5755c2d3ae61c06591e269684c47f026089a18b4d2a8e064e6b6 }
   ownerSettings:
     area: "OWNER SETTINGS — FRESH r01 SUCCESSOR CANDIDATE"
     areaId: 1FKS-0

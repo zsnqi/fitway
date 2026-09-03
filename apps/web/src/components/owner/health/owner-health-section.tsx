@@ -1,7 +1,7 @@
 import { useId } from "react";
 
 import { useOwnerHealth } from "@/hooks/use-owner-health";
-import { formatDate, formatNumber } from "@/i18n/format";
+import { formatNumber } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
 
 import {
@@ -39,14 +39,6 @@ export function OwnerHealthSection() {
 	// so the section stands down entirely until the page itself has settled.
 	if (health.status === "unavailable") return null;
 
-	const windowLabel = summary
-		? `${formatDate(new Date(`${summary.window.businessDayFrom}T12:00:00.000Z`), locale, { month: "short", day: "numeric" })} - ${formatDate(
-				new Date(`${summary.window.businessDayTo}T12:00:00.000Z`),
-				locale,
-				{ month: "short", day: "numeric", year: "numeric" },
-			)}`
-		: null;
-
 	return (
 		<section className="owner-health" aria-labelledby={headingId}>
 			<header className="owner-health__heading" data-owner-navigation-anchor="">
@@ -56,11 +48,8 @@ export function OwnerHealthSection() {
 					<span className="owner-health__window">
 						<span>
 							{messages.windowLabel}
-							<bdi dir="auto">{windowLabel}</bdi>
-						</span>
-						<span>
-							{messages.windowDays}
 							<bdi>{formatNumber(summary.window.businessDays, locale)}</bdi>
+							{messages.windowDays}
 						</span>
 						<span>
 							{messages.timeZoneLabel}

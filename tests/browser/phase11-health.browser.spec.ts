@@ -234,6 +234,7 @@ async function captureReview(page: Page, name: string) {
 	if (!reviewDirectory) {
 		throw new Error("FITWAY_PLAYWRIGHT_REVIEW_DIR is required");
 	}
+	await hideShellSkipLink(page);
 	await mkdir(reviewDirectory, { recursive: true });
 	await page.screenshot({
 		path: path.join(reviewDirectory, name),
@@ -1404,7 +1405,7 @@ test("Arabic unconfirmed delivery wording is pinned by the independent oracle", 
 	await captureReview(page, "owner-health-mobile-unconfirmed-en-390x844.png");
 });
 
-test("the desktop table composition at 721px and wider is unchanged", async ({
+test("the desktop table composition at 721px and wider keeps its Paper board header", async ({
 	page,
 }) => {
 	await mockOwnerSurfaces(page);
@@ -1451,7 +1452,7 @@ test("the desktop table composition at 721px and wider is unchanged", async ({
 			expect(desktop, `${locale} ${width}px`).toEqual({
 				overflowX: "auto",
 				maxBlockHeight: "420px",
-				boardHeaderDisplay: "none",
+				boardHeaderDisplay: "flex",
 				fieldLabelDisplay: "none",
 				theadPosition: "static",
 				tableDisplay: "table",

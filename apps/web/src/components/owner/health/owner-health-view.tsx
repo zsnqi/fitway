@@ -96,14 +96,20 @@ function Metric({
 	value,
 	detail,
 	tone,
+	indicator,
 }: {
 	label: string;
 	value: string;
 	detail: string;
 	tone: "measured" | "unknown";
+	indicator: "live" | "delayed" | "neutral";
 }) {
 	return (
-		<div className="owner-health-metric" data-tone={tone}>
+		<div
+			className="owner-health-metric"
+			data-tone={tone}
+			data-indicator={indicator}
+		>
 			<p className="owner-health-metric__label">{label}</p>
 			<p className="owner-health-metric__value">
 				<bdi>{value}</bdi>
@@ -131,6 +137,7 @@ export function OwnerHealthMetrics({
 	return (
 		<div className="owner-health-metrics" data-owner-health-metrics="">
 			<Metric
+				indicator="live"
 				tone={connection.uptimeRatio === null ? "unknown" : "measured"}
 				label={messages.uptimeLabel}
 				value={
@@ -145,6 +152,7 @@ export function OwnerHealthMetrics({
 				}
 			/>
 			<Metric
+				indicator="delayed"
 				tone={connection.monitoredRatio === null ? "unknown" : "measured"}
 				label={messages.coverageLabel}
 				value={
@@ -155,14 +163,18 @@ export function OwnerHealthMetrics({
 				detail={`${formatNumber(connection.monitoredOpenMinutes, locale)} / ${formatNumber(connection.expectedOpenMinutes, locale)} ${messages.coverageOf}`}
 			/>
 			<Metric
+				indicator="neutral"
 				tone="measured"
 				label={messages.noticesLabel}
 				value={formatNumber(alerts.noticeCount, locale)}
-				detail={
+				detail={[
+					`${formatNumber(alerts.noticeCount, locale)} ${messages.noticesOf}`,
 					alerts.noticeCount === 0
-						? `${formatNumber(0, locale)} ${messages.noticesOf}`
-						: deliveryLabel(alerts, locale, messages)
-				}
+						? null
+						: deliveryLabel(alerts, locale, messages),
+				]
+					.filter((part): part is string => part !== null)
+					.join(" · ")}
 			/>
 		</div>
 	);
@@ -258,9 +270,9 @@ export function OwnerHealthOfflineTable({
 								<span className="owner-health__field-label" aria-hidden="true">
 									{messages.offlineColumnLength}
 								</span>
-								<bdi>
+								<bdo dir="ltr">
 									{formatDuration(period.elapsedMinutes, locale, messages)}
-								</bdi>
+								</bdo>
 							</td>
 							<td>
 								<span className="owner-health__field-label" aria-hidden="true">
@@ -271,9 +283,9 @@ export function OwnerHealthOfflineTable({
 										{messages.offlineClosedOnly}
 									</span>
 								) : (
-									<bdi>
+									<bdo dir="ltr">
 										{formatDuration(period.openMinutes, locale, messages)}
-									</bdi>
+									</bdo>
 								)}
 							</td>
 						</tr>

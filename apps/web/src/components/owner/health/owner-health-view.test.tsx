@@ -217,6 +217,16 @@ describe("health tables", () => {
 		expect(closed?.hasAttribute("data-closed-only")).toBe(true);
 	});
 
+	it("isolates Arabic duration values so their numeric order stays readable", () => {
+		render(
+			<OwnerHealthOfflineTable periods={periods} timeZone={GYM_TIME_ZONE} />,
+			"ar",
+		);
+		const durations = container.querySelectorAll('bdo[dir="ltr"]');
+		expect(durations).toHaveLength(3);
+		expect(durations[0]?.textContent).toBe("1س 35د");
+	});
+
 	it("shows one incident row per condition with its own delivery outcome", () => {
 		render(
 			<OwnerHealthIncidentTable
