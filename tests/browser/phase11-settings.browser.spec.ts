@@ -276,6 +276,7 @@ async function captureReview(page: Page, name: string) {
 	if (!reviewDirectory) {
 		throw new Error("FITWAY_PLAYWRIGHT_REVIEW_DIR is required");
 	}
+	await hideShellSkipLink(page);
 	await mkdir(reviewDirectory, { recursive: true });
 	await page.screenshot({
 		path: path.join(reviewDirectory, name),
@@ -355,7 +356,7 @@ test("the section stands down while the shared analytics query is pending, issui
 	expect(observedReadRequests).toBe(0);
 	await expect(page.locator(section)).toHaveCount(0);
 	await expect(
-		page.getByRole("heading", { level: 1, name: "Loading owner analytics" }),
+		page.getByRole("heading", { level: 1, name: "Loading today's readings" }),
 	).toBeVisible();
 	await expect(page.locator("main h1:visible")).toHaveCount(1);
 
@@ -509,6 +510,7 @@ test("Settings loading retains one active page-level heading", async ({
 	).toBeVisible();
 	await expect(page.getByRole("status")).toContainText("Loading settings");
 	await expect(page.locator("main h1:visible")).toHaveCount(1);
+	await captureReview(page, "owner-settings-loading-en-desktop-1440.png");
 	await page.evaluate(() => document.fonts.ready);
 	await expect(page).toHaveScreenshot(
 		"owner-settings-loading-route-en-desktop-1440x900.png",
@@ -529,6 +531,7 @@ test("load failure carries its own copy and Retry; clean locks Save and renders 
 		"Settings could not be loaded",
 	);
 	await expect(page.locator("main h1:visible")).toHaveCount(1);
+	await captureReview(page, "owner-settings-load-failure-en-desktop-1440.png");
 	await page.evaluate(() => document.fonts.ready);
 	await expect(page).toHaveScreenshot(
 		"owner-settings-error-route-en-desktop-1440x900.png",
@@ -565,6 +568,7 @@ test("clean state shows the locked timing board with copied values and Western d
 	);
 	await expect(page.locator(saveButtons).first()).toBeDisabled();
 	await expect(page.locator(discardButtons)).toHaveCount(0);
+	await captureReview(page, "owner-settings-clean-en-desktop-1440.png");
 });
 
 test("dirty valid shows the upper Discard, saves once, and announces the created version", async ({
@@ -586,6 +590,7 @@ test("dirty valid shows the upper Discard, saves once, and announces the created
 		page.locator(".owner-settings__board-state").first(),
 	).toContainText("Unsaved changes");
 	await expect(page.locator(lowerFrontier)).toBeHidden();
+	await captureReview(page, "owner-settings-dirty-en-desktop-1440.png");
 
 	updateHold = deferred();
 	await page.locator(saveButtons).first().click();
@@ -595,6 +600,7 @@ test("dirty valid shows the upper Discard, saves once, and announces the created
 		1,
 	);
 	expect(observedUpdateRequests).toHaveLength(1);
+	await captureReview(page, "owner-settings-saving-en-desktop-1440.png");
 
 	updateHold?.resolve();
 	await expect(page.locator(status)).toContainText(
@@ -605,6 +611,7 @@ test("dirty valid shows the upper Discard, saves once, and announces the created
 	await expect(
 		page.locator(`${upperActions} .owner-settings__version`),
 	).toContainText("Current version 8");
+	await captureReview(page, "owner-settings-saved-en-desktop-1440.png");
 
 	// The submitted snapshot is complete, never a delta.
 	expect(observedUpdateRequests[0]).toMatchObject({
@@ -665,6 +672,7 @@ test("dirty invalid locks Save, associates field errors, and announces the summa
 	await expect(capacity.locator("..")).toHaveCSS("outline-style", "solid");
 	await expect(capacity.locator("..")).toHaveCSS("outline-width", "2px");
 	await page.emulateMedia({ forcedColors: "none" });
+	await captureReview(page, "owner-settings-validation-en-desktop-1440.png");
 
 	await page.locator("input[data-testid='capacity']").fill("240");
 	await page.locator("input[data-testid='boundary']").fill("03:00");
@@ -691,6 +699,10 @@ test("an atomic failure preserves the draft and expected version and unlocks Sav
 	await expect(
 		page.locator(`${upperActions} .owner-settings__version`),
 	).toContainText("Current version 7");
+	await captureReview(
+		page,
+		"owner-settings-atomic-failure-en-desktop-1440.png",
+	);
 
 	await page.locator("input[data-testid='capacity']").fill("5000000000");
 	await expect(page.locator(saveButtons).first()).toBeDisabled();
@@ -884,6 +896,7 @@ test("mobile exposes the lower frontier only when dirty, and both Save controls 
 	await expect(
 		page.locator(`${upperActions} .owner-settings__discard`),
 	).toBeHidden();
+	await captureReview(page, "owner-settings-dirty-en-mobile-390.png");
 
 	const mobileFrontier = await page.locator(section).evaluate((root) => {
 		const locked = root.querySelector<HTMLElement>(
@@ -967,6 +980,11 @@ test("Arabic renders the RTL form with explicit semantic order and preserved dra
 	// Arabic action vocabulary and order: Discard then Save in the upper cluster.
 	await expect(page.locator(upperActions)).toContainText("تجاهل التغييرات");
 	await expect(page.locator(upperActions)).toContainText("حفظ الإعدادات");
+	await captureReview(page, "owner-settings-dirty-ar-desktop-1440.png");
+	await page.setViewportSize({ width: 390, height: 844 });
+	await expect(page.locator(lowerFrontier)).toBeVisible();
+	await captureReview(page, "owner-settings-dirty-ar-mobile-390.png");
+	await page.setViewportSize({ width: 1440, height: 900 });
 
 	// The form stays fully operable in Arabic: saving announces in Arabic.
 	updateResponse = { status: 200, body: { json: savedOutput(8, 240) } };
@@ -1051,6 +1069,7 @@ test("all required widths and 200 percent reflow keep the document free of horiz
 	});
 	await page.setViewportSize({ width: 320, height: 900 });
 	await expectNoDocumentOverflow(page);
+	await captureReview(page, "owner-settings-en-200-percent-reflow.png");
 	await page.evaluate(() => {
 		document.documentElement.style.fontSize = "";
 	});

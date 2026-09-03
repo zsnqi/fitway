@@ -11,10 +11,10 @@ authority:
   visualDecisionRecord: docs/adr/ADR-007-paper-visual-source-of-truth.md
   provenanceSnapshot: visual-direction-gate/approved/fitway-theme-20260715
 
-# Paper is the visual source of truth as of 2026-08-06. Paper lives outside this repository,
-# so it carries no bytes or SHA-256 here; identity is the file name, id, and area names below.
-# This block is deliberately outside sourceSnapshot/canonicalScreenshots/legacyArtifactHashes,
-# which are the hash-verified sections of this manifest.
+# Paper is the visual source of truth as of 2026-08-06. Exact current route leaves, generated
+# identifiers, export hashes, routed evidence, and approved deviations live in routeAuthorityManifest.
+# This block keeps the top-level identity and active family index; historical snapshot hashes below
+# remain provenance rather than a substitute for Paper conformance.
 paperAuthority:
   status: CURRENT
   approvedAt: "2026-08-06"
@@ -30,8 +30,13 @@ paperAuthority:
     - "STAFF MONITORING PRODUCTION SET — CURRENT"
     - "LOGIN PRODUCTION SET — CURRENT"
     - "PUBLIC CROWD BOARD PRODUCTION SET — CURRENT"
+    - "OWNER ANALYTICS — PHASE 10 REPORTING EXTENSION — CURRENT"
+    - "OWNER ACCESS — BEHAVIOR-CORRECT SUCCESSOR — CURRENT"
     - "OWNER SHARED NAVIGATION — FULL-ROUTE SUCCESSOR — CURRENT"
     - "OWNER ACTIVITY LOG — SHARED-SHELL SUCCESSOR — CURRENT"
+    - "OWNER UPTIME & INCIDENTS PRODUCTION SET — CANDIDATE"
+    - "OWNER UPTIME — MOBILE STACKED RECORDS SUCCESSOR"
+    - "OWNER SETTINGS — FRESH r01 SUCCESSOR CANDIDATE"
   routeAuthorityManifest:
     status: IN_PROGRESS
     path: visual-direction-gate/approved/paper-route-authority-20260902/AUTHORITY_MANIFEST.yaml

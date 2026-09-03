@@ -1,6 +1,6 @@
 schemaVersion: 1
 status: IN_PROGRESS
-updatedAt: "2026-09-03T00:18:00Z"
+updatedAt: "2026-09-03T14:32:13Z"
 authorityDecision: docs/adr/ADR-007-paper-visual-source-of-truth.md
 milestone: full-route-paper-fidelity-r01
 
@@ -412,7 +412,42 @@ surfaces:
   ownerSettings:
     area: "OWNER SETTINGS — FRESH r01 SUCCESSOR CANDIDATE"
     areaId: 1FKS-0
-    status: DURABLY_ACCEPTED_STALE_NAME
+    status: ACCEPTED_PAPER_AUTHORITY
+    humanApprovalRecord: docs/phase-records/handoffs/phase11-settings-paper-successor/20260830-193000-p11_settings_paper_fresh_r01-done.md
+    approvedDeviationIds: [owner-settings-shared-shell-and-runtime-values]
+    requiredStates: [clean, dirty, inline-validation, saving, saved, atomic-failure]
+    routedCandidateReview: >-
+      Exact Paper JSX and rendered comparison found the routed Settings composition already
+      conformant. The 62px desktop height delta is fully accounted for by the approved shared
+      Owner navigation. Bilingual desktop/mobile layout, all form states, 320 through 1440
+      interpolation, 200 percent reflow, keyboard order, draft retention, forced colors, and axe
+      pass without redesign. Rejected r05 screenshot assertions remain intentionally unpromoted
+      pending final human contact-sheet acceptance.
+    routedCandidateEvidence:
+      - { locale: en, viewport: 1440, state: clean, path: evidence/owner-settings/owner-settings-clean-en-desktop-1440.png, bytes: 522981, sha256: b2cc89a46b40a7517b2ea7a0eac87613908adf3225e052ec92cceac00171adf1 }
+      - { locale: en, viewport: 1440, state: dirty, path: evidence/owner-settings/owner-settings-dirty-en-desktop-1440.png, bytes: 525352, sha256: 0c9b61dbab38da7c1a2a6a0db002c958f7f857179d6c1bc0b31f1140b68aee18 }
+      - { locale: ar, viewport: 1440, state: dirty, path: evidence/owner-settings/owner-settings-dirty-ar-desktop-1440.png, bytes: 491238, sha256: edd16e225b112dcb7bc3beab212c1e9d200f3eb187a5b7bd6d1650075952efba }
+      - { locale: ar, viewport: 1440, state: saved, path: evidence/owner-settings/owner-settings-ar-desktop-1440.png, bytes: 507820, sha256: f53354c21f2cfdfae85bde7abb7d4c296f2211f600a20f3235def9b0b6bc7e91 }
+      - { locale: en, viewport: 390, state: dirty, path: evidence/owner-settings/owner-settings-dirty-en-mobile-390.png, bytes: 374106, sha256: 7523be7daf2e26dc1fd9399215b2c2996bcef863a0657d9f52b5b4a9fad43d01 }
+      - { locale: ar, viewport: 390, state: dirty, path: evidence/owner-settings/owner-settings-dirty-ar-mobile-390.png, bytes: 348974, sha256: e8b29ecf79581cd992b9ac512c454e83337c7df0eda524a5a4de6d65fe050a16 }
+      - { locale: en, viewport: 1440, state: loading, path: evidence/owner-settings/owner-settings-loading-en-desktop-1440.png, bytes: 296678, sha256: 957a47600f4b2a112a6590c5757d61e5d91c6d25eca365649bf6459d6b8d333b }
+      - { locale: en, viewport: 1440, state: load-failure-retry, path: evidence/owner-settings/owner-settings-load-failure-en-desktop-1440.png, bytes: 297553, sha256: 3fd5f7669fe603023544288e79b154261a2f9fcdf3e6743c365a1614afee8a5f }
+      - { locale: en, viewport: 1440, state: inline-validation, path: evidence/owner-settings/owner-settings-validation-en-desktop-1440.png, bytes: 562701, sha256: 415b04b25466656d4d21df9b367d64b6a50e757da8e8f497fa294ce7d5469b41 }
+      - { locale: en, viewport: 1440, state: saving, path: evidence/owner-settings/owner-settings-saving-en-desktop-1440.png, bytes: 563103, sha256: c6401cd5afebf041497606d179f52a4017995329defc18d64d95718f8301ed84 }
+      - { locale: en, viewport: 1440, state: saved, path: evidence/owner-settings/owner-settings-saved-en-desktop-1440.png, bytes: 540619, sha256: a3b49e5a4775618c963510d07c116261e07d2ef04461f3786ec645cbca7fe96d }
+      - { locale: en, viewport: 1440, state: atomic-failure, path: evidence/owner-settings/owner-settings-atomic-failure-en-desktop-1440.png, bytes: 548176, sha256: 250f9fb5fcc95d3777aaba2eea3b0ca3c25a80f0cabff55b523663150511d18d }
+      - { locale: en, viewport: 200-percent, state: dirty-reflow, path: evidence/owner-settings/owner-settings-en-200-percent-reflow.png, bytes: 331977, sha256: 5ff538389e31cf020746defd402451563c5acff64cdfe34d8712ce6ddb70d62c }
+    leafExports:
+      - { nodeId: 1G2Y-0, locale: en, viewport: 1440, state: clean, path: owner-settings/owner-settings-desktop-en-1440.png, bytes: 821262, sha256: c1e77941e2861f0d681ce1345e54147dfae579f0f1d9f33461951d03734e811c }
+      - { nodeId: 1FY6-0, locale: ar, viewport: 1440, state: clean, path: owner-settings/owner-settings-desktop-ar-1440.png, bytes: 785123, sha256: 765cfb7c3a241019396b61f1de37861af26ba677134085ef6691fe9f696ebc10 }
+      - { nodeId: 1FSU-0, locale: en, viewport: 390, state: dirty, path: owner-settings/owner-settings-mobile-en-390.png, bytes: 444894, sha256: 84e4bb383195fb9092e35ec58baf4295858355f186997a10095ca97fb1048788 }
+      - { nodeId: 1FNO-0, locale: ar, viewport: 390, state: dirty, path: owner-settings/owner-settings-mobile-ar-390.png, bytes: 420484, sha256: bb4f5e3e0e2af73e18a119b75c7318f083de26b839410e23fa049160a29e65da }
+      - { nodeId: 1FMZ-0, locale: bilingual, viewport: state, state: clean, path: owner-settings/owner-settings-clean.png, bytes: 33718, sha256: ef07b2fae883775d8102231a466bddf89b606c79738bba74c5eda6835e171a3f }
+      - { nodeId: 1FMH-0, locale: bilingual, viewport: state, state: dirty, path: owner-settings/owner-settings-dirty.png, bytes: 37709, sha256: d65fb90a66f68c2e68884a1206944df8925c5557f307af04152ec1a60aff6f74 }
+      - { nodeId: 1FM0-0, locale: bilingual, viewport: state, state: inline-validation, path: owner-settings/owner-settings-validation.png, bytes: 38759, sha256: f8627547c9cf8f790eaefcb841fd8b50815e9e44be8416cfd20905c8deaf1067 }
+      - { nodeId: 1FLI-0, locale: bilingual, viewport: state, state: saving, path: owner-settings/owner-settings-saving.png, bytes: 27086, sha256: 7bd12c4334eb05c65f0b73d5c9a4a6038b10389771b0bbc5a4c2c0c4961858df }
+      - { nodeId: 1FL8-0, locale: bilingual, viewport: state, state: saved, path: owner-settings/owner-settings-saved.png, bytes: 39623, sha256: b19f94f1aad3d822975a8ff8968e900969365d1fc50740f306fd7f37f453a460 }
+      - { nodeId: 1FKV-0, locale: bilingual, viewport: state, state: atomic-failure, path: owner-settings/owner-settings-atomic-failure.png, bytes: 45247, sha256: d34c228d3cbb119fa75a32db098825ce92b6f56edd64a1694e4d17323ba52dfb }
 
 acceptancePolicy:
   paperExportsPending: "All accepted route leaf frames other than the Owner shared navigation must be exported and hashed before this manifest may become CURRENT."

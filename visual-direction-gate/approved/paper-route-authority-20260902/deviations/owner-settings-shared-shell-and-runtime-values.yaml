@@ -1,0 +1,46 @@
+schemaVersion: 1
+id: owner-settings-shared-shell-and-runtime-values
+status: IMPLEMENTED_PENDING_INDEPENDENT_REVIEW
+approvedAt: "2026-09-03T14:30:00Z"
+approvedBy: approved-shared-shell-and-runtime-contract
+implementedAt: "2026-09-03T14:30:00Z"
+implementedBy: coordinator
+paper:
+  file: "FITWAY UX Exploration"
+  page: "Page 1"
+  area: "OWNER SETTINGS — FRESH r01 SUCCESSOR CANDIDATE"
+affectedRegion: >-
+  Settings global and section navigation, version and form values, focus/state presentation, and
+  runtime interpolation outside the accepted 1440px and 390px endpoint frames.
+observableProblem: >-
+  The Settings successor predates the approved shared six-destination Owner navigation and shows
+  illustrative version, schedule, focus, and dirty-state values. Reproducing those fixtures would
+  detach Settings from the Owner product and overwrite the existing append-only settings contract.
+smallestCorrection: >-
+  Preserve the accepted Settings page composition exactly, insert the approved shared Owner
+  navigation at its established anchor, bind version and editable/locked values to the existing
+  settings snapshot and draft state, and use repository responsive/accessibility contracts between
+  the Paper desktop and mobile endpoints.
+mustPreserve:
+  - all five editable axes and all five locked operational timing values
+  - clean, dirty, inline validation, saving, saved, and atomic failure semantics
+  - append-only versioning, conflict/discard behavior, draft retention, and audit meaning
+  - accepted desktop table and mobile day-card compositions
+  - bilingual copy, Western digits, 44px targets, reading order, and focus visibility
+paperMutationRequired: false
+reviewEvidence:
+  decision: >-
+    The approved shared-shell decision and existing Settings acceptance require this integration;
+    no page-level visual redesign was introduced in this repair slice.
+  approvalRecord: docs/phase-records/handoffs/phase11-settings-paper-successor/20260830-193000-p11_settings_paper_fresh_r01-done.md
+  routedBefore: output/review/fidelity_settings_before_r01
+  routedAfter: visual-direction-gate/approved/paper-route-authority-20260902/evidence/owner-settings
+  implementationRegressionEvidence: >-
+    Existing browser contracts plus new state captures prove shared-shell coverage, field and state
+    semantics, bilingual mobile/desktop endpoints, draft retention, keyboard order, 320–1440
+    interpolation, 200 percent reflow, forced colors, and axe behavior.
+  independentRenderedReview: PENDING_FINAL_MILESTONE_REVIEW
+acceptanceRule: >-
+  This record authorizes only the shared-shell integration, runtime-backed values, state-dependent
+  focus/action presentation, and responsive interpolation. It cannot excuse a changed field set,
+  reordered information hierarchy, invented value, altered versioning behavior, or visual drift.
