@@ -395,7 +395,7 @@ describe("week-over-week", () => {
 
 	it("renders Arabic with Western digits and no reversed range", () => {
 		render(<OwnerReportingComparison comparison={comparable} />, "ar");
-		expect(text()).toContain("أسبوع مقابل أسبوع");
+		expect(text()).toContain("المقارنة الأسبوعية");
 		expect(text()).not.toMatch(/[٠-٩۰-۹]/u);
 		expect(text()).not.toContain("–");
 	});

@@ -219,7 +219,16 @@ export function OwnerReportingHeatmap({ heatmap }: { heatmap: Heatmap }) {
 			<div className="owner-reporting-heatmap__heading">
 				<div>
 					<h3 id={`${ids}-title`}>{messages.heatmapTitle}</h3>
-					<p>{messages.heatmapDescription}</p>
+					<p>
+						{messages.heatmapDescription} ·{" "}
+						<bdi dir="auto">
+							{windowLabel(
+								heatmap.startBusinessDay,
+								heatmap.endBusinessDay,
+								locale,
+							)}
+						</bdi>
+					</p>
 				</div>
 				<ul
 					className="owner-reporting-legend"
@@ -377,8 +386,13 @@ export function OwnerReportingTable({ heatmap }: { heatmap: Heatmap }) {
 	const weekdays = useOwnerReportingWeekdays();
 	const keyboardScrollable = { tabIndex: 0 };
 	return (
-		<details className="owner-reporting-disclosure">
-			<summary>{messages.tableSummary}</summary>
+		<details className="owner-reporting-disclosure" open>
+			<summary>
+				<span>
+					<strong>{messages.tableSummary}</strong>
+					<small>{messages.tableDescription}</small>
+				</span>
+			</summary>
 			<section
 				className="owner-reporting-region"
 				aria-label={messages.tableRegion}
@@ -462,20 +476,23 @@ function ChangeCell({
 		direction === "up" ? ArrowUp : direction === "down" ? ArrowDown : Minus;
 	return (
 		<span className="owner-reporting-change" data-direction={direction}>
+			<span className="fw-sr-only">
+				{format(Math.abs(change.absolute), locale)} {word}
+				{change.percent === null
+					? ""
+					: `, ${formatPercent(Math.abs(change.percent), locale)}`}
+			</span>
 			<Glyph aria-hidden="true" />
-			<bdi>{format(Math.abs(change.absolute), locale)}</bdi>
 			{/*
 			 * The contract's `percent` is a ratio, not a number of percent: `0.088` is
 			 * the +8.8% the approved composition shows. `Intl` does the scaling, so
 			 * nothing here multiplies by a hundred.
 			 */}
-			{change.percent === null ? null : (
-				<bdi className="owner-reporting-change__percent">
-					{formatPercent(Math.abs(change.percent), locale)}
-				</bdi>
-			)}
-			{/* The direction is a word as well as a shape; colour alone never carries it. */}
-			<span className="owner-reporting-change__word">{word}</span>
+			<bdi className="owner-reporting-change__percent" aria-hidden="true">
+				{change.percent === null
+					? format(Math.abs(change.absolute), locale)
+					: formatPercent(Math.abs(change.percent), locale)}
+			</bdi>
 		</span>
 	);
 }

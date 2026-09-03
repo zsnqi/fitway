@@ -2687,9 +2687,9 @@ milestones:
       - "coordinator lease: serialized disposable database, browser ports, desktop demo runtime, and evidence directories"
       - "coordinator lease: PROJECT_STATE and successor handoffs"
     validationRepairAttempts: 1
-    lastHeartbeatAt: "2026-09-03T08:50:00Z"
+    lastHeartbeatAt: "2026-09-03T09:13:00Z"
     leaseExpiresAt: "2026-09-03T20:21:48Z"
-    handoff: docs/phase-records/handoffs/full-route-paper-fidelity/20260903-115000-owner-daily-paper-repair.md
+    handoff: docs/phase-records/handoffs/full-route-paper-fidelity/20260903-121300-owner-reports-paper-repair.md
     stopReason: null
     gates:
       unit: PENDING

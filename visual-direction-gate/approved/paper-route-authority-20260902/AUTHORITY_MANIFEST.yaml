@@ -253,6 +253,47 @@ surfaces:
     area: "OWNER ANALYTICS — PHASE 10 REPORTING EXTENSION — CURRENT"
     areaId: 17YY-0
     status: ACCEPTED_PAPER_AUTHORITY
+    approvedDeviationIds: [owner-reports-runtime-data-and-disclosure]
+    requiredStates: [loading, error, no-observations, insufficient-comparison, invalid-range, export-preparing, export-failure]
+    routedCandidateReview: >-
+      Coordinator direct Paper comparison passed for shared-shell-plus-panel composition, both
+      locales, 320 through 1440 reflow, 200 percent behavior, keyboard interaction, forced colors,
+      reduced motion, range validation, export lifecycle, and complete semantic heatmap access.
+      Independent rendered review and final human acceptance remain pending.
+    routedCandidateEvidence:
+      - { locale: en, viewport: 1440, state: comparable, path: evidence/owner-reports/owner-history-route-en-desktop-1440x900.png, bytes: 419039, sha256: c38f55c49844f98b167e5e796fa46e45f380643f64e9c398c892ce650990ce94 }
+      - { locale: ar, viewport: 390, state: comparable, path: evidence/owner-reports/owner-history-route-ar-mobile-390x844.png, bytes: 307052, sha256: 40b58f5fe08d7e80326769ee58563a28b71f458828f74c6520d6608567d42d4d }
+      - { locale: en, viewport: 390, state: loading, path: evidence/owner-reports/owner-history-loading-route-en-mobile-390x844.png, bytes: 103721, sha256: 877da014722f8236c8ba70a59f44451b9be05d407ba92181012213d6a5f2b4e4 }
+      - { locale: en, viewport: 390, state: error, path: evidence/owner-reports/owner-history-error-route-en-mobile-390x844.png, bytes: 98677, sha256: 94b6fe57ab4f29dc90fd0e60026a3795f5200f21e5482305c3092ad27d248c11 }
+      - { locale: en, viewport: 390, state: insufficient-comparison, path: evidence/owner-reports/phase10-reporting-states-en-390x844.png, bytes: 358091, sha256: 07d88e88368f9abda55f69198138f2fd9e4b6eff74c1d00a3681841525f3ea84 }
+      - { locale: en, viewport: 768, state: export-ready, path: evidence/owner-reports/phase10-reporting-export-en-768x1024.png, bytes: 487228, sha256: 039ba837d04eb6a534f790df77359da21b5a9cd06eedef6ff0fe1261a6dc463e }
+      - { locale: ar, viewport: 768, state: accessibility-reflow, path: evidence/owner-reports/phase10-reporting-a11y-reflow-ar-768x1024.png, bytes: 426065, sha256: 5cf8630b21c227bc4e04fe6aa8e0b11d0294aead7e69750d14f48ad2b658d947 }
+      - { locale: en, viewport: 1440, state: comparable, path: evidence/owner-reports/phase10-reporting-en-1440x900.png, bytes: 419039, sha256: c38f55c49844f98b167e5e796fa46e45f380643f64e9c398c892ce650990ce94 }
+      - { locale: ar, viewport: 1440, state: comparable, path: evidence/owner-reports/phase10-reporting-ar-1440x900.png, bytes: 392082, sha256: 15d41efa9719abc770e64c0fa5f281d9c2d599591a3605f46d29d353b12bb5d5 }
+    leafExports:
+      - { nodeId: 17ZO-0, locale: en, viewport: 1440, state: comparable, path: owner-reports/owner-reports-desktop-en-1440.png, bytes: 1436427, sha256: d256fbef5dc97da50b25b9dcf01757e8d42227b35eb8ad08f7733b190c4ce246 }
+      - { nodeId: 17ZP-0, locale: ar, viewport: 1440, state: comparable, path: owner-reports/owner-reports-desktop-ar-1440.png, bytes: 1416397, sha256: c4601fef155b9af061e10c13230e1c0772e13024889d20b38c9b739bd3c02644 }
+      - { nodeId: 18NW-0, locale: en, viewport: 768, state: comparable, path: owner-reports/owner-reports-tablet-en-768.png, bytes: 664775, sha256: 6bf41b7b8364f628ce837591a4c201d05180a19234d2f2ceb494ba437f3050d3 }
+      - { nodeId: 18NY-0, locale: ar, viewport: 768, state: comparable, path: owner-reports/owner-reports-tablet-ar-768.png, bytes: 655713, sha256: 80654d25237f113ac0c66a849b38991b8e9930211a0afda4e7604565f8a80316 }
+      - { nodeId: 199J-0, locale: en, viewport: 390, state: comparable, path: owner-reports/owner-reports-mobile-en-390.png, bytes: 495257, sha256: 7b8f10dc45d6392413e7c8ad33859d78710aaedade5b3d2a48424572d07872d3 }
+      - { nodeId: 199L-0, locale: ar, viewport: 390, state: comparable, path: owner-reports/owner-reports-mobile-ar-390.png, bytes: 489970, sha256: d8046d39a3e8b4d98ad4062575542bdddb5237a21ad51c9d0703ce50b25402c1 }
+      - { nodeId: 19LF-0, locale: en, viewport: 320, state: narrow, path: owner-reports/owner-reports-narrow-en-320.png, bytes: 243095, sha256: f32662b16c00a40bd9ee99814658cf774166fa9470cd243a95f355e7ce834184 }
+      - { nodeId: 19N7-0, locale: ar, viewport: 320, state: narrow, path: owner-reports/owner-reports-narrow-ar-320.png, bytes: 238003, sha256: 3545525e572809194fe8b3b98dfe7d1e388c2fdcd7ae7691ffeb23d58966d4b1 }
+      - { nodeId: 19P1-0, locale: en, viewport: 200-percent, state: text-reflow, path: owner-reports/owner-reports-zoom200-en.png, bytes: 610539, sha256: 714a893b83e7d1c21fdc210d74f7a6a845de9e4c00035dd5cc86d25bbe2e6d12 }
+      - { nodeId: 19PN-0, locale: ar, viewport: 200-percent, state: text-reflow, path: owner-reports/owner-reports-zoom200-ar.png, bytes: 581094, sha256: de04fd7a6cba8d90bd8b20eaefadc464210dc8485242c6023d64fa4b99f4e31b }
+      - { nodeId: 19QJ-0, locale: bilingual, viewport: state, state: loading, path: owner-reports/owner-reports-loading.png, bytes: 19212, sha256: e5a3a18e6bf4d96f1f87dea1dfe046167d9f5f255a0752ccf339004fc2a27d7d }
+      - { nodeId: 19R0-0, locale: bilingual, viewport: state, state: error, path: owner-reports/owner-reports-error.png, bytes: 17271, sha256: 9f2dd006096100ebf3ffccf1adbba623f98b6b45d624c135f56bce4de503953c }
+      - { nodeId: 19RH-0, locale: bilingual, viewport: state, state: no-observations, path: owner-reports/owner-reports-no-observations.png, bytes: 23043, sha256: ded030e248ed8e8fb99cb407c9966b433cfab7a8465c058d51261d951dcb2268 }
+      - { nodeId: 19RY-0, locale: bilingual, viewport: state, state: insufficient-comparison, path: owner-reports/owner-reports-insufficient-comparison.png, bytes: 23029, sha256: a3de4f211742b4ac2f0b4968ce15ce254c3491d2070eca10892b5bf47f61d552 }
+      - { nodeId: 19SF-0, locale: bilingual, viewport: state, state: invalid-range, path: owner-reports/owner-reports-invalid-range.png, bytes: 22289, sha256: fb73dc7dea506e55ec0dc4e27f1d199ac0982cdac100882effddb139602c1510 }
+      - { nodeId: 19SW-0, locale: bilingual, viewport: state, state: export-preparing, path: owner-reports/owner-reports-export-preparing.png, bytes: 21218, sha256: a1ac4609e4c94945d573d6112015ce45a3d1ba7a129f78eaf6750931fa3d2958 }
+      - { nodeId: 19TD-0, locale: bilingual, viewport: state, state: export-failure, path: owner-reports/owner-reports-export-failed.png, bytes: 21482, sha256: 1f194dea96e11c9da90f48266bfb8db7e875ff248b078bb5e0d3792beabfbe49 }
+      - { nodeId: 19TV-0, locale: bilingual, viewport: contract, state: keyboard-focus, path: owner-reports/owner-reports-keyboard-focus.png, bytes: 12901, sha256: 37709fd1b55e2a06b30d9c97db1bf982ee63095e502854eb8d8c6362fdb0ebd0 }
+      - { nodeId: 19U2-0, locale: bilingual, viewport: contract, state: desktop-hover, path: owner-reports/owner-reports-desktop-hover.png, bytes: 13145, sha256: 1260770382036824d4b0d4d2f2380d8efccbfec85d7ccc8cbea343ad028e9032 }
+      - { nodeId: 19U9-0, locale: bilingual, viewport: contract, state: mobile-tap, path: owner-reports/owner-reports-mobile-tap.png, bytes: 11338, sha256: 3a16ec13c224a424e8d6ec39ceaef1704353741f232409e087016ad04990d6c1 }
+      - { nodeId: 19UG-0, locale: bilingual, viewport: contract, state: forced-colors, path: owner-reports/owner-reports-forced-colors.png, bytes: 13195, sha256: c5b35bd46f9aacab129c92ffd21c7c0e4e4ad9e60361f095098af9329ae5c5e7 }
+      - { nodeId: 19UN-0, locale: bilingual, viewport: contract, state: reduced-motion, path: owner-reports/owner-reports-reduced-motion.png, bytes: 12705, sha256: 7cdf45d208312be129b6769c29a9a9b2b90eeea10bcd546a7c971dd81502f7e7 }
+      - { nodeId: 19UU-0, locale: bilingual, viewport: contract, state: reduced-transparency, path: owner-reports/owner-reports-reduced-transparency.png, bytes: 13428, sha256: 038cc289c7821e4d4a852c6172348162daf8b4a10c8598080c9fff24eb989be0 }
   ownerAccountsAndSignIn:
     area: "OWNER ACCESS — BEHAVIOR-CORRECT SUCCESSOR — CURRENT"
     areaId: 1DHH-0

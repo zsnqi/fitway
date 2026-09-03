@@ -1,0 +1,37 @@
+schemaVersion: 1
+id: owner-reports-runtime-data-and-disclosure
+status: IMPLEMENTED_PENDING_INDEPENDENT_REVIEW
+implementedAt: "2026-09-03T09:07:51Z"
+implementedBy: coordinator
+paper:
+  file: "FITWAY UX Exploration"
+  page: "Page 1"
+  area: "OWNER ANALYTICS — PHASE 10 REPORTING EXTENSION — CURRENT"
+affectedRegion: >-
+  Owner Reports weekly-comparison metrics and heatmap data disclosure beneath the accepted shared
+  Owner navigation.
+observableProblem: >-
+  Paper uses deterministic presentation values, includes a peak metric absent from the API
+  contract, and shows four representative disclosure rows. Literal reproduction would fabricate
+  runtime data or remove keyboard-readable access to the remaining heatmap cells. Paper also
+  contains historical Daily/History tabs that are superseded by the approved six-destination shell.
+smallestCorrection: >-
+  Render only metrics supplied by the WeekComparison contract, keep runtime values authoritative,
+  replace the historical local tabs with the approved shared shell, and retain all 168 heatmap rows
+  in an open, bounded, keyboard-scrollable disclosure card matching Paper's visual weight.
+mustPreserve:
+  - accepted Reports composition, hierarchy, density, controls, copy authority, and visual language
+  - all heatmap value, zero, closed, and missing distinctions
+  - complete keyboard and text-equivalent access to all 168 cells
+  - reporting and CSV range limits, retry, abort, download, and validation behavior
+paperMutationRequired: false
+reviewEvidence:
+  decision: "Covered by the human-approved bounded runtime-polish rule; no product semantics changed."
+  approvalRecord: docs/phase-records/handoffs/full-route-paper-fidelity/20260903-120751-owner-reports-paper-repair.md
+  routedBefore: output/review/fidelity_reports_before_r01
+  routedAfter: visual-direction-gate/approved/paper-route-authority-20260902/evidence/owner-reports
+  independentRenderedReview: PENDING_FINAL_MILESTONE_REVIEW
+acceptanceRule: >-
+  The deviation fails if a Paper-only fixture value is fabricated, any semantic heatmap row becomes
+  unreachable, the shared shell is omitted, or the result ceases to read as the accepted Reports
+  family. Final status requires independent rendered review and human approval of the contact sheet.

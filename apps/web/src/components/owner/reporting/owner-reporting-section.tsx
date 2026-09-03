@@ -2,15 +2,12 @@ import { Button } from "@fitway/ui/components/button";
 import { type FormEvent, useId, useState } from "react";
 
 import {
-	inclusiveBusinessDayCount,
-	REPORTING_DEFAULT_WINDOW_DAYS,
 	REPORTING_QUERY_MAX_RANGE_DAYS,
 	type ReportingRangeSelection,
 	rangeProblem,
 	useOwnerReporting,
-	windowEndingOn,
 } from "@/hooks/use-owner-reporting";
-import { formatDate, formatNumber } from "@/i18n/format";
+import { formatDate } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
 
 import type { OwnerDailyAnalyticsPrerequisite } from "./owner-analytics-mode-switch";
@@ -24,7 +21,6 @@ import {
 	OwnerReportingHeatmap,
 	OwnerReportingLoading,
 	OwnerReportingTable,
-	windowLabel,
 } from "./owner-reporting-view";
 import { useOwnerReportingMessages } from "./use-owner-reporting-messages";
 
@@ -103,7 +99,6 @@ export function OwnerReportingSection({
 		return null;
 	}
 
-	const fallback = windowEndingOn(anchor, REPORTING_DEFAULT_WINDOW_DAYS);
 	const editing = draft ?? current;
 
 	const problem = rangeProblemMessage(
@@ -122,11 +117,6 @@ export function OwnerReportingSection({
 		// beside the field stays, and the answer already on screen stays with it.
 		if (problem) return;
 		setApplied(editing);
-	}
-
-	function restoreDefault() {
-		setDraft(fallback);
-		setApplied(fallback);
 	}
 
 	const heatmap = reporting.heatmap.data;
@@ -152,28 +142,9 @@ export function OwnerReportingSection({
 			>
 				<h1 id={`${ids}-page-heading`}>{pageTitle}</h1>
 				<p>
+					{messages.gymTime} · <bdi>{reporting.timeZone}</bdi> ·{" "}
 					<bdi dir="auto">{pageDate}</bdi>
 				</p>
-			</header>
-			<header className="owner-reporting__heading">
-				<h2>{messages.title}</h2>
-				<p>{messages.description}</p>
-				<span className="owner-reporting__window">
-					<span>
-						{messages.windowLabel}
-						<bdi dir="auto">
-							{windowLabel(
-								current.startBusinessDay,
-								current.endBusinessDay,
-								locale,
-							)}
-						</bdi>
-					</span>
-					<span>
-						{messages.timeZoneLabel}
-						<bdi>{reporting.timeZone}</bdi>
-					</span>
-				</span>
 			</header>
 
 			<div
@@ -231,13 +202,6 @@ export function OwnerReportingSection({
 								<Button type="submit" disabled={problem !== null}>
 									{messages.apply}
 								</Button>
-								<Button
-									type="button"
-									variant="outline"
-									onClick={restoreDefault}
-								>
-									{messages.restoreDefault}
-								</Button>
 							</div>
 						</div>
 						{problem ? (
@@ -256,15 +220,6 @@ export function OwnerReportingSection({
 				<OwnerReportingExport anchorBusinessDay={anchor} />
 			</div>
 
-			{/*
-			 * What the file is, and what it deliberately does not carry, stated as
-			 * section prose beneath the board pair rather than as a row on either
-			 * control board.
-			 */}
-			<p className="owner-reporting__note" data-owner-reporting-csv-notes="">
-				{messages.csvDescription} {messages.csvPrivacyNote}
-			</p>
-
 			{/* One loading card for the section, not one for each leaf in flight. */}
 			{loading ? <OwnerReportingLoading /> : null}
 
@@ -275,41 +230,27 @@ export function OwnerReportingSection({
 						onRetry={reporting.heatmap.retry}
 					/>
 				) : null}
+				{heatmap ? <OwnerReportingHeatmap heatmap={heatmap} /> : null}
+			</div>
+
+			<div className="owner-reporting-lower">
+				<div className="owner-reporting-block">
+					{reporting.comparison.status === "error" ? (
+						<OwnerReportingError
+							title={messages.comparisonErrorTitle}
+							onRetry={reporting.comparison.retry}
+						/>
+					) : null}
+					{comparison ? (
+						<OwnerReportingComparison comparison={comparison} />
+					) : null}
+				</div>
 				{heatmap ? (
-					<>
-						<OwnerReportingHeatmap heatmap={heatmap} />
+					<div className="owner-reporting-block owner-reporting-block--disclosure">
 						<OwnerReportingTable heatmap={heatmap} />
-						{/* The window the cells were actually built from, stated by the
-						    payload itself rather than by the form beside it. */}
-						<p className="owner-reporting__note">
-							{messages.windowDays}{" "}
-							<bdi>
-								{formatNumber(
-									inclusiveBusinessDayCount(
-										heatmap.startBusinessDay,
-										heatmap.endBusinessDay,
-									),
-									locale,
-								)}
-							</bdi>
-						</p>
-					</>
+					</div>
 				) : null}
 			</div>
-
-			<div className="owner-reporting-block">
-				{reporting.comparison.status === "error" ? (
-					<OwnerReportingError
-						title={messages.comparisonErrorTitle}
-						onRetry={reporting.comparison.retry}
-					/>
-				) : null}
-				{comparison ? (
-					<OwnerReportingComparison comparison={comparison} />
-				) : null}
-			</div>
-
-			<p className="owner-reporting__footnote">{messages.footnote}</p>
 		</section>
 	);
 }

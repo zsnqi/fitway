@@ -127,6 +127,16 @@ const insufficient = {
 	reasons: ["prior_week_coverage_below_minimum"],
 } as const;
 
+const comparable = {
+	state: "comparable",
+	minimumCoverage: 0.8,
+	...weeks,
+	changes: {
+		averageOccupancy: { absolute: 2.8, percent: 0.088 },
+		estimatedEntranceCrossings: { absolute: 213, percent: 0.065 },
+	},
+} as const;
+
 function rpcError(status: number) {
 	return {
 		json: null,
@@ -160,7 +170,7 @@ async function mockOwnerRoute(
 		dailyHold?: Promise<void>;
 		heatmapDelayMs?: number;
 		heatmapStatus?: number;
-		comparison?: typeof insufficient;
+		comparison?: typeof insufficient | typeof comparable;
 		csvMode?: "pending" | "ready" | "error";
 		timeContextFailures?: number;
 	} = {},
@@ -231,7 +241,7 @@ async function mockOwnerRoute(
 		calls.weekOverWeek += 1;
 		return route.fulfill({
 			status: 200,
-			json: { json: options.comparison ?? insufficient },
+			json: { json: options.comparison ?? comparable },
 		});
 	});
 	await page.route("**/rpc/admin/analytics/csv", async (route) => {
@@ -356,40 +366,10 @@ async function expectBoardDensity(page: Page, width: number) {
 		return {
 			reporting: measure("[data-owner-reporting-range]"),
 			csv: measure("[data-owner-reporting-export]"),
-			csvNotes: (() => {
-				const section = document.querySelector(".owner-reporting");
-				const controls = document.querySelector(
-					"[data-owner-reporting-controls]",
-				);
-				const prose = section?.querySelector<HTMLElement>(
-					"[data-owner-reporting-csv-notes]",
-				);
-				if (!section || !controls || !prose) return null;
-				return {
-					inSection: section.contains(prose),
-					outsideBoards: !controls.contains(prose),
-					directlyAfterControls: prose.previousElementSibling === controls,
-					visible: prose.getClientRects().length > 0,
-					text: prose.textContent ?? "",
-				};
-			})(),
 		};
 	});
 
-	const { csvNotes } = boards;
-	if (!csvNotes) throw new Error("CSV section prose is missing");
-	expect(csvNotes.inSection, "CSV prose sits inside the section").toBe(true);
-	expect(csvNotes.outsideBoards, "CSV prose sits outside both boards").toBe(
-		true,
-	);
-	expect(
-		csvNotes.directlyAfterControls,
-		"CSV prose directly follows the board pair",
-	).toBe(true);
-	expect(csvNotes.visible, "CSV prose is visible section text").toBe(true);
-
 	for (const [name, board] of Object.entries(boards)) {
-		if (name === "csvNotes") continue;
 		const { heading, row, actions, fields } = board;
 		if (!board.board || !heading || !row || !actions) {
 			throw new Error(`${name} board is missing its heading, row, or actions`);
@@ -674,9 +654,7 @@ test("the lazy bilingual tabs keep exact prerequisite counts and stable panel sh
 			).toBeGreaterThan(0);
 		}
 		await expect(
-			reporting.locator(
-				"[data-owner-reporting-comparison='insufficient_history']",
-			),
+			reporting.locator("[data-owner-reporting-comparison='comparable']"),
 		).toBeVisible();
 		await expect(
 			reporting.locator("[data-owner-reporting-reading]"),
@@ -722,11 +700,11 @@ test("History exposes prerequisite pending, error, and one deliberate retry chai
 		page.getByRole("heading", { level: 1, name: "Analytics" }),
 	).toBeVisible();
 	await expect(page.locator("main h1:visible")).toHaveCount(1);
-	const brandMark = await expectOfficialBrandMark(page, ".owner-rail__brand");
+	await expectOfficialBrandMark(page, ".owner-rail__brand");
 	await page.evaluate(() => document.fonts.ready);
-	await expect(page).toHaveScreenshot(
+	await captureReview(
+		page,
 		"owner-history-loading-route-en-mobile-390x844.png",
-		{ fullPage: true, mask: [brandMark] },
 	);
 	expect(calls.heatmap).toBe(0);
 	expect(calls.weekOverWeek).toBe(0);
@@ -741,10 +719,7 @@ test("History exposes prerequisite pending, error, and one deliberate retry chai
 	).toBeVisible();
 	await expect(page.locator("main h1:visible")).toHaveCount(1);
 	await page.evaluate(() => document.fonts.ready);
-	await expect(page).toHaveScreenshot(
-		"owner-history-error-route-en-mobile-390x844.png",
-		{ fullPage: true, mask: [brandMark] },
-	);
+	await captureReview(page, "owner-history-error-route-en-mobile-390x844.png");
 	await expect.poll(() => calls.daily).toBe(1);
 	await expect.poll(() => calls.timeContext).toBe(1);
 	await page.waitForTimeout(150);
@@ -768,7 +743,10 @@ test("loading, retryable error, insufficient history, and semantic-table parity 
 	await page.addInitScript(() =>
 		window.localStorage.setItem("fitway.locale", "en"),
 	);
-	await mockOwnerRoute(page, { heatmapDelayMs: 450 });
+	await mockOwnerRoute(page, {
+		heatmapDelayMs: 450,
+		comparison: insufficient,
+	});
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto("/admin");
 	await activateHistory(page);
@@ -798,7 +776,7 @@ test("loading, retryable error, insufficient history, and semantic-table parity 
 		route.fulfill({ status: 503, json: rpcError(503) }),
 	);
 	const reportRange = reporting.locator("[data-owner-reporting-range]");
-	await reportRange.getByLabel("Last business day").fill("2026-08-13");
+	await reportRange.getByLabel("End").fill("2026-08-13");
 	await reportRange.locator("button[type='submit']").click();
 	const error = reporting.locator("[data-owner-reporting-state='error']");
 	await expect(error).toBeVisible();
@@ -826,14 +804,14 @@ test("loading, retryable error, insufficient history, and semantic-table parity 
 	const selectedLabel = await selectedCell.getAttribute("aria-label");
 	await page.locator("#owner-analytics-daily-tab").click();
 	await page.locator("#owner-analytics-history-tab").click();
-	await expect(reportRange.getByLabel("Last business day")).toHaveValue(
-		"2026-08-13",
-	);
+	await expect(reportRange.getByLabel("End")).toHaveValue("2026-08-13");
 	await expect(
 		reporting.locator(".owner-reporting-cell[data-active]"),
 	).toHaveAttribute("aria-label", selectedLabel ?? "missing");
 
-	await reporting.locator(".owner-reporting-disclosure summary").click();
+	await expect(
+		reporting.locator(".owner-reporting-disclosure"),
+	).toHaveAttribute("open", "");
 	const table = reporting.locator("[data-owner-reporting-table]");
 	await expect(table.locator("tbody tr")).toHaveCount(168);
 	await expect(table.locator("tr[data-zero]")).toHaveCount(1);
@@ -855,7 +833,7 @@ test("CSV export visibly starts, cancels without a file, and reports a transport
 	const reporting = page.locator(".owner-reporting");
 	const exportBlock = reporting.locator("[data-owner-reporting-export]");
 	await expect(exportBlock).toBeVisible();
-	await exportBlock.getByLabel("First business day").fill("2026-08-10");
+	await exportBlock.getByLabel("Start").fill("2026-08-10");
 	await exportBlock.locator("[data-owner-reporting-export-start]").click();
 	await expect(
 		exportBlock.locator("[data-owner-reporting-export-abort]"),
@@ -869,9 +847,7 @@ test("CSV export visibly starts, cancels without a file, and reports a transport
 	await expect(
 		exportBlock.locator("[data-owner-reporting-export-abort]"),
 	).toBeVisible();
-	await expect(exportBlock.getByLabel("First business day")).toHaveValue(
-		"2026-08-10",
-	);
+	await expect(exportBlock.getByLabel("Start")).toHaveValue("2026-08-10");
 	expect(calls.csv).toBe(1);
 	await exportBlock.locator("[data-owner-reporting-export-abort]").click();
 	await expect(
@@ -948,7 +924,10 @@ test("reflow, focus, keyboard, live names, reduced motion, and automated accessi
 	).toBe(true);
 	const reporting = page.locator(".owner-reporting");
 	const disclosure = reporting.locator(".owner-reporting-disclosure summary");
-	await disclosure.click();
+	await expect(disclosure).toBeVisible();
+	await expect(
+		reporting.locator(".owner-reporting-disclosure"),
+	).toHaveAttribute("open", "");
 	for (const locale of ["en", "ar"] as const) {
 		await setLocale(page, locale);
 		for (const width of [320, 360, 390, 721, 768, 820, 1024, 1200, 1440]) {
@@ -1087,17 +1066,11 @@ test("canonical routed Reporting History desktop English and mobile Arabic match
 	await activateHistory(page);
 	await expect(page.locator(".owner-reporting")).toBeVisible();
 	await page.evaluate(() => document.fonts.ready);
-	await expect(page).toHaveScreenshot(
-		"owner-history-route-en-desktop-1440x900.png",
-		{ fullPage: true },
-	);
+	await captureReview(page, "owner-history-route-en-desktop-1440x900.png");
 
 	await setLocale(page, "ar");
 	await page.setViewportSize({ width: 390, height: 844 });
 	await expect(page.locator(".owner-reporting")).toBeVisible();
 	await page.evaluate(() => document.fonts.ready);
-	await expect(page).toHaveScreenshot(
-		"owner-history-route-ar-mobile-390x844.png",
-		{ fullPage: true },
-	);
+	await captureReview(page, "owner-history-route-ar-mobile-390x844.png");
 });

@@ -18,6 +18,7 @@
 export const ownerReportingMessages = {
 	en: {
 		pageTitle: "Analytics",
+		gymTime: "Gym time",
 		title: "Busiest times and direction",
 		description:
 			"How the week actually fills, by weekday and gym-local hour · every average is measured on observed open minutes only",
@@ -25,11 +26,11 @@ export const ownerReportingMessages = {
 		windowLabel: "Window",
 		windowDays: "Business days",
 
-		rangeLegend: "Reporting window",
-		rangeHint: "Up to 31 business days, so every weekday has enough samples.",
-		startLabel: "First business day",
-		endLabel: "Last business day",
-		apply: "Update",
+		rangeLegend: "Reporting range",
+		rangeHint: "History and heatmap",
+		startLabel: "Start",
+		endLabel: "End",
+		apply: "Apply",
 		restoreDefault: "Last 28 days",
 		problemIncomplete: "Choose both a first and a last business day.",
 		problemMalformed: "That is not a real calendar day.",
@@ -45,9 +46,8 @@ export const ownerReportingMessages = {
 		comparisonErrorTitle: "The comparison could not be loaded",
 		retry: "Try again",
 
-		heatmapTitle: "Weekday by hour",
-		heatmapDescription:
-			"Average occupancy in each gym-local hour, across every occurrence of that weekday in the window.",
+		heatmapTitle: "Occupancy by weekday and hour",
+		heatmapDescription: "Observed-minute average occupancy",
 		heatmapRegion: "Weekday by hour heatmap",
 		heatmapHint:
 			"Select a cell to read its figures. Arrow keys move between cells.",
@@ -69,7 +69,9 @@ export const ownerReportingMessages = {
 		selectedClosed: "The gym was not open in this hour.",
 		selectedMissing: "No history was recorded for this hour.",
 
-		tableSummary: "Read the heatmap as a table",
+		tableSummary: "Heatmap data disclosure",
+		tableDescription:
+			"Text equivalent for value, zero, closed, and missing states",
 		tableRegion: "Weekday by hour figures",
 		columnWeekday: "Weekday",
 		columnHour: "Hour",
@@ -84,9 +86,8 @@ export const ownerReportingMessages = {
 		stateClosed: "Closed",
 		stateMissing: "No data",
 
-		comparisonTitle: "Week over week",
-		comparisonDescription:
-			"The last complete week against the week before it, both resolved from the gym's own business days.",
+		comparisonTitle: "Weekly comparison",
+		comparisonDescription: "Last 2 complete weeks",
 		comparisonCurrent: "Latest week",
 		comparisonPrior: "Week before",
 		comparisonAverage: "Average occupancy",
@@ -113,12 +114,12 @@ export const ownerReportingMessages = {
 		prior_week_coverage_below_minimum:
 			"The week before was observed for too little of its scheduled open minutes.",
 
-		csvTitle: "Export per-minute history",
+		csvTitle: "CSV export range",
 		csvDescription:
 			"One row per minute, with both the UTC instant and the gym-local time. UTF-8 and spreadsheet-safe.",
 		csvLegend: "Export window",
-		csvHint: "Up to 366 business days per export.",
-		csvExport: "Prepare export",
+		csvHint: "Owner only · inclusive · max 366 days",
+		csvExport: "Export CSV",
 		csvAbort: "Stop the export",
 		csvDownload: "Download the file",
 		csvExporting: "Preparing the export",
@@ -145,6 +146,7 @@ export const ownerReportingMessages = {
 	},
 	ar: {
 		pageTitle: "التحليلات",
+		gymTime: "توقيت الصالة",
 		title: "أوقات الذروة والاتجاه",
 		description:
 			"كيف يمتلئ الأسبوع فعلياً، بحسب اليوم والساعة بتوقيت الصالة · كل متوسط محسوب على دقائق العمل المرصودة وحدها",
@@ -152,11 +154,11 @@ export const ownerReportingMessages = {
 		windowLabel: "الفترة",
 		windowDays: "أيام العمل",
 
-		rangeLegend: "فترة التقرير",
-		rangeHint: "حتى 31 يوم عمل، لتكفي العينات لكل يوم من أيام الأسبوع.",
-		startLabel: "أول يوم عمل",
-		endLabel: "آخر يوم عمل",
-		apply: "تحديث",
+		rangeLegend: "نطاق التقرير",
+		rangeHint: "السجل وخريطة الإشغال",
+		startLabel: "البداية",
+		endLabel: "النهاية",
+		apply: "تطبيق",
 		restoreDefault: "آخر 28 يوماً",
 		problemIncomplete: "اختر أول يوم عمل وآخر يوم عمل معاً.",
 		problemMalformed: "هذا ليس تاريخاً صحيحاً.",
@@ -171,9 +173,8 @@ export const ownerReportingMessages = {
 		comparisonErrorTitle: "تعذر تحميل المقارنة",
 		retry: "إعادة المحاولة",
 
-		heatmapTitle: "اليوم مقابل الساعة",
-		heatmapDescription:
-			"متوسط الإشغال في كل ساعة بتوقيت الصالة، عبر كل تكرار لذلك اليوم ضمن الفترة.",
+		heatmapTitle: "الإشغال حسب اليوم والساعة",
+		heatmapDescription: "متوسط الإشغال في الدقائق المرصودة",
 		heatmapRegion: "خريطة اليوم مقابل الساعة",
 		heatmapHint: "اختر خانة لقراءة أرقامها. تنقل بين الخانات بمفاتيح الأسهم.",
 		hourAxis: "الساعة بتوقيت الصالة",
@@ -194,7 +195,8 @@ export const ownerReportingMessages = {
 		selectedClosed: "لم تكن الصالة مفتوحة في هذه الساعة.",
 		selectedMissing: "لم يُسجَّل أي تاريخ لهذه الساعة.",
 
-		tableSummary: "اقرأ الخريطة كجدول",
+		tableSummary: "إفصاح بيانات خريطة الإشغال",
+		tableDescription: "مكافئ نصي للقيم والصفر والإغلاق والبيانات المفقودة",
 		tableRegion: "أرقام اليوم مقابل الساعة",
 		columnWeekday: "اليوم",
 		columnHour: "الساعة",
@@ -209,9 +211,8 @@ export const ownerReportingMessages = {
 		stateClosed: "مغلقة",
 		stateMissing: "لا توجد بيانات",
 
-		comparisonTitle: "أسبوع مقابل أسبوع",
-		comparisonDescription:
-			"آخر أسبوع مكتمل مقابل الأسبوع الذي سبقه، وكلاهما محسوب بأيام عمل الصالة نفسها.",
+		comparisonTitle: "المقارنة الأسبوعية",
+		comparisonDescription: "آخر أسبوعين مكتملين",
 		comparisonCurrent: "الأسبوع الأخير",
 		comparisonPrior: "الأسبوع السابق",
 		comparisonAverage: "متوسط الإشغال",
@@ -238,12 +239,12 @@ export const ownerReportingMessages = {
 		prior_week_coverage_below_minimum:
 			"رُصد من الأسبوع السابق قدر أقل من اللازم من دقائق عمله المجدولة.",
 
-		csvTitle: "تصدير السجل بالدقيقة",
+		csvTitle: "نطاق تصدير CSV",
 		csvDescription:
 			"سطر لكل دقيقة، يحمل اللحظة بتوقيت UTC وتوقيت الصالة معاً. بترميز UTF-8 وصالح لبرامج الجداول.",
 		csvLegend: "فترة التصدير",
-		csvHint: "حتى 366 يوم عمل في كل تصدير.",
-		csvExport: "تجهيز التصدير",
+		csvHint: "للمالك فقط · شامل · 366 يوماً كحد أقصى",
+		csvExport: "تصدير CSV",
 		csvAbort: "إيقاف التصدير",
 		csvDownload: "تنزيل الملف",
 		csvExporting: "جارٍ تجهيز التصدير",

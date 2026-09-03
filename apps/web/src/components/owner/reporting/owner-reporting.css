@@ -99,31 +99,30 @@
 
 .owner-reporting {
 	display: grid;
-	gap: 16px;
-	margin-block-start: 24px;
+	gap: 18px;
+	margin-block-start: 0;
 }
 
 .owner-reporting-page-heading {
 	display: flex;
 	flex-direction: column;
-	gap: 6px;
-	padding-inline-end: 510px;
+	gap: 5px;
 }
 
 .owner-reporting-page-heading h1 {
 	margin: 0;
 	color: var(--fw-chalk);
-	font-size: 32px;
+	font-size: 30px;
 	font-weight: 700;
 	line-height: 40px;
 }
 
 .owner-reporting-page-heading p {
 	margin: 0;
-	color: var(--fw-text-subtle);
-	font-size: 14px;
+	color: var(--fw-text-muted);
+	font-size: 15px;
 	font-variant-numeric: tabular-nums;
-	line-height: 18px;
+	line-height: 23px;
 }
 
 .owner-reporting > * {
@@ -329,7 +328,7 @@
 .owner-reporting-controls > .owner-reporting-range {
 	padding: 16px 18px;
 	border: 1px solid var(--fw-edge-control, rgb(220 197 201 / 18%));
-	border-radius: var(--fw-radius-surface);
+	border-radius: var(--fw-radius-board);
 	background-color: var(--fw-material-board-rest, rgb(29 24 28 / 12.5%));
 	background-image: linear-gradient(
 		in oklab 160deg,
@@ -372,6 +371,11 @@
 	line-height: 22px;
 }
 
+.owner-reporting-heatmap__heading h3 {
+	font-size: 18px;
+	line-height: 26px;
+}
+
 .owner-reporting-heatmap__heading p,
 .owner-reporting-comparison__heading p {
 	max-inline-size: 70ch;
@@ -385,10 +389,17 @@
 
 .owner-reporting-heatmap {
 	display: grid;
-	gap: 12px;
+	grid-template-columns: minmax(0, 1fr) 250px;
+	grid-template-areas:
+		"heading heading"
+		"scroll scroll"
+		"grid reading"
+		"hint reading";
+	gap: 12px 18px;
 }
 
 .owner-reporting-heatmap__heading {
+	grid-area: heading;
 	display: flex;
 	flex-wrap: wrap;
 	gap: 12px 24px;
@@ -458,6 +469,7 @@
 }
 
 .owner-reporting__scroll-hint {
+	grid-area: scroll;
 	display: none;
 	margin: 0;
 	color: var(--fw-text-subtle);
@@ -465,6 +477,7 @@
 }
 
 .owner-reporting-grid-region {
+	grid-area: grid;
 	overflow: auto;
 	scrollbar-width: thin;
 	scrollbar-color: var(--fw-border-strong) transparent;
@@ -598,7 +611,10 @@
 }
 
 .owner-reporting-reading {
+	grid-area: reading;
 	display: grid;
+	align-self: stretch;
+	align-content: start;
 	gap: 10px;
 	padding: 14px 16px;
 	border: 1px solid var(--fw-border);
@@ -656,12 +672,32 @@
 	align-items: center;
 	min-inline-size: 0;
 	min-block-size: 44px;
-	padding-inline: 12px;
-	border: 1px solid var(--fw-border);
-	border-radius: var(--fw-radius-control);
+	padding: 0;
+	border: 0;
+	border-radius: 0;
 	color: var(--fw-text-muted);
 	font-size: 12px;
 	cursor: pointer;
+}
+
+.owner-reporting-disclosure summary > span {
+	display: grid;
+	gap: 3px;
+	min-inline-size: 0;
+	overflow-wrap: anywhere;
+}
+
+.owner-reporting-disclosure summary strong {
+	color: var(--fw-chalk);
+	font-size: 17px;
+	line-height: 24px;
+}
+
+.owner-reporting-disclosure summary small {
+	color: var(--fw-text-muted);
+	font-size: 12px;
+	font-weight: 400;
+	line-height: 18px;
 }
 
 .owner-reporting-disclosure {
@@ -676,13 +712,13 @@
 }
 
 .owner-reporting-disclosure[open] summary {
-	margin-block-end: 10px;
+	margin-block-end: 12px;
 }
 
 .owner-reporting-region {
 	min-inline-size: 0;
 	max-inline-size: 100%;
-	max-block-size: 460px;
+	max-block-size: 252px;
 	overflow: auto;
 	scrollbar-width: thin;
 	scrollbar-color: var(--fw-border-strong) transparent;
@@ -781,6 +817,43 @@
 .owner-reporting-comparison {
 	display: grid;
 	gap: 12px;
+}
+
+.owner-reporting > .owner-reporting-block,
+.owner-reporting-lower > .owner-reporting-block {
+	box-sizing: border-box;
+	inline-size: 100%;
+	overflow: clip;
+	padding: 18px 20px;
+	border: 1px solid var(--fw-edge-control, rgb(220 197 201 / 18%));
+	border-radius: var(--fw-radius-board);
+	background-color: var(--fw-material-board-rest, rgb(29 24 28 / 12.5%));
+	background-image: linear-gradient(
+		in oklab 160deg,
+		oklab(27.3% 0.094 0.032 / 19.6%) 0%,
+		oklab(96.3% 0.018 0.003 / 3%) 46%,
+		oklab(21.7% 0.01 -0.005 / 8.2%) 100%
+	);
+	background-origin: border-box;
+	backdrop-filter: blur(22px) saturate(114%);
+	box-shadow:
+		var(--fw-lift, rgb(255 238 240 / 2.8%)) 0 1px 0 inset,
+		#0000002e 0 8px 8px;
+}
+
+.owner-reporting-lower {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 16px;
+	min-inline-size: 0;
+}
+
+.owner-reporting-lower > .owner-reporting-block {
+	align-content: start;
+}
+
+.owner-reporting-heatmap > .owner-reporting__hint {
+	grid-area: hint;
 }
 
 .owner-reporting-change {
@@ -995,6 +1068,27 @@
 
 	.owner-reporting-heatmap__heading {
 		flex-direction: column;
+	}
+
+	.owner-reporting-heatmap {
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-areas:
+			"heading"
+			"scroll"
+			"grid"
+			"hint"
+			"reading";
+	}
+
+	.owner-reporting-lower {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.owner-reporting > .owner-reporting-block,
+	.owner-reporting-lower > .owner-reporting-block {
+		padding: 16px;
+		background-color: var(--fw-material-board-mobile, rgb(29 24 28 / 25%));
+		backdrop-filter: blur(18px) saturate(112%);
 	}
 
 	.owner-reporting-controls > .owner-reporting-block,

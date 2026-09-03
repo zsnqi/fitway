@@ -139,11 +139,11 @@ test("real Owner password opens every populated owner surface", async ({
 	).toBeVisible();
 
 	await page.getByRole("tab", { name: "Reports" }).click();
+	await expect(page.getByRole("heading", { name: "Analytics" })).toBeVisible({
+		timeout: 15_000,
+	});
 	await expect(
-		page.getByRole("heading", { name: "Busiest times and direction" }),
-	).toBeVisible({ timeout: 15_000 });
-	await expect(
-		page.getByRole("heading", { name: "Weekday by hour" }),
+		page.getByRole("heading", { name: "Occupancy by weekday and hour" }),
 	).toBeVisible({ timeout: 45_000 });
 
 	await page.getByRole("tab", { name: "Accounts & Sign-in" }).click();

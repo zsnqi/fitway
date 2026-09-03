@@ -338,7 +338,9 @@ describe("Owner reporting prerequisite ownership", () => {
 		await settle();
 		expect(daily).toHaveBeenCalledTimes(1);
 		expect(timeContext).toHaveBeenCalledTimes(1);
-		expect(container.querySelector(".owner-reporting__heading")).not.toBeNull();
+		expect(
+			container.querySelector(".owner-reporting-page-heading"),
+		).not.toBeNull();
 	});
 
 	it("does not retry implicitly and one visible retry starts exactly one new chain", async () => {
