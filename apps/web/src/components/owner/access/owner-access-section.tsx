@@ -2,6 +2,8 @@ import { useId } from "react";
 
 import { useOwnerAccess } from "@/hooks/use-owner-access";
 import { useOwnerDailyAnalytics } from "@/hooks/use-owner-daily-analytics";
+import { formatDate } from "@/i18n/format";
+import { useI18n } from "@/i18n/provider";
 
 import {
 	OwnerAccessEmpty,
@@ -37,12 +39,20 @@ import "./owner-access.css";
  * the shared query for a caller who is not allowed to see the page at all.
  */
 export function OwnerAccessSection({ enabled }: { enabled: boolean }) {
+	const { locale } = useI18n();
 	const messages = useOwnerAccessMessages();
 	const analytics = useOwnerDailyAnalytics();
 	const pageSettled = !analytics.isPending && !analytics.isError;
 	const access = useOwnerAccess({ enabled: enabled && pageSettled });
 	const ids = useId();
 	const headingId = `${ids}-heading`;
+	const pageContext = analytics.data
+		? `${analytics.data.timeContext.current.timeZone} · ${formatDate(
+				new Date(`${analytics.data.daily.businessDay}T12:00:00.000Z`),
+				locale,
+				{ weekday: "long", day: "numeric", month: "long", year: "numeric" },
+			)}`
+		: null;
 
 	if (access.status === "standby") return null;
 
@@ -50,7 +60,15 @@ export function OwnerAccessSection({ enabled }: { enabled: boolean }) {
 		<section className="owner-access" aria-labelledby={headingId}>
 			<header className="owner-access__heading" data-owner-navigation-anchor="">
 				<h1 id={headingId}>{messages.title}</h1>
-				<p>{messages.description}</p>
+				<p>
+					{messages.description}
+					{pageContext ? (
+						<>
+							{" · "}
+							<bdi dir="auto">{pageContext}</bdi>
+						</>
+					) : null}
+				</p>
 			</header>
 
 			{access.status === "pending" ? <OwnerAccessLoading /> : null}

@@ -297,6 +297,8 @@ export function OwnerAccessLive({
 	const staff =
 		principals.find((p) => p.principalKind === "shared_staff") ?? null;
 	const owners = principals.filter((p) => p.principalKind === "owner");
+	const activeOwners = owners.filter((owner) => owner.active).length;
+	const inactiveOwners = owners.length - activeOwners;
 
 	// The reveal's focus return target is captured at the moment the trigger is
 	// invoked, not when the reveal mounts, so a pending mutation that blurs its
@@ -414,11 +416,12 @@ export function OwnerAccessLive({
 						<p>{messages.staffPinDescription}</p>
 					</header>
 					<p className="owner-access-card__state">
-						<span>{messages.staffPinStateLabel}</span>
+						<span className="fw-sr-only">{messages.staffPinStateLabel}</span>
 						<bdi data-tone={staffPinTone(staff)}>
 							{staffPinStateLabel(staff, messages)}
 						</bdi>
 					</p>
+					<p className="owner-access-card__detail">{messages.staffPinDetail}</p>
 
 					<div className="owner-access-actions">
 						<Button
@@ -439,7 +442,8 @@ export function OwnerAccessLive({
 						{staff?.credentialActive === true && !staffPinDeactivating ? (
 							<Button
 								type="button"
-								variant="destructive"
+								variant="link"
+								className="owner-access-action-link owner-access-action-link--danger"
 								onClick={() => setStaffPinDeactivating(true)}
 							>
 								{messages.deactivateStaffPin}
@@ -512,6 +516,15 @@ export function OwnerAccessLive({
 						<h3>{messages.ownersTitle}</h3>
 						<p>{messages.ownersDescription}</p>
 					</header>
+					<p className="owner-access-card__state owner-access-card__state--owners">
+						<bdi data-tone={activeOwners > 0 ? "active" : "none"}>
+							{activeOwners} {messages.activeCountLabel}
+						</bdi>
+						<span aria-hidden="true">·</span>
+						<bdi data-tone="inactive">
+							{inactiveOwners} {messages.inactiveCountLabel}
+						</bdi>
+					</p>
 					<Button
 						type="button"
 						className="owner-access-provision__trigger"
@@ -651,10 +664,18 @@ export function OwnerAccessLive({
 			</div>
 
 			<div className="owner-access-owners-board">
+				<header className="owner-access-owners-board__heading">
+					<h3>{messages.ownersBoardTitle}</h3>
+					<p>
+						<bdi>{owners.length}</bdi> {messages.accountsCountLabel}
+					</p>
+				</header>
 				<table className="owner-access-owners">
 					<thead>
 						<tr>
 							<th scope="col">{messages.ownerColumnLabel}</th>
+							<th scope="col">{messages.ownerEmailLabel}</th>
+							<th scope="col">{messages.ownerStatusLabel}</th>
 							<th scope="col">{messages.ownerActionsLabel}</th>
 						</tr>
 					</thead>
@@ -673,11 +694,13 @@ export function OwnerAccessLive({
 										<span className="owner-access-owner__name">
 											<bdi dir="auto">{owner.displayName}</bdi>
 										</span>
+									</td>
+									<td className="owner-access-owner__email">
 										{owner.ownerEmail ? (
-											<span className="owner-access-owner__email">
-												<bdi dir="auto">{owner.ownerEmail}</bdi>
-											</span>
+											<bdi dir="auto">{owner.ownerEmail}</bdi>
 										) : null}
+									</td>
+									<td>
 										<span
 											className="owner-access-owner__state"
 											data-active={owner.active ? "" : undefined}
@@ -810,7 +833,8 @@ export function OwnerAccessLive({
 												<div className="owner-access-owner__actions">
 													<Button
 														type="button"
-														variant="destructive"
+														variant="link"
+														className="owner-access-action-link owner-access-action-link--danger"
 														onClick={() =>
 															setDeactivatingOwnerId(owner.principalId)
 														}
@@ -819,7 +843,8 @@ export function OwnerAccessLive({
 													</Button>
 													<Button
 														type="button"
-														variant="outline"
+														variant="link"
+														className="owner-access-action-link"
 														onClick={() => openReset(owner.principalId)}
 													>
 														{messages.resetCredential}
@@ -830,6 +855,8 @@ export function OwnerAccessLive({
 											<div className="owner-access-owner__actions">
 												<Button
 													type="button"
+													variant="link"
+													className="owner-access-action-link owner-access-action-link--danger"
 													onClick={() => {
 														setReactivatingOwnerId(owner.principalId);
 														reactivateOwner.submit({

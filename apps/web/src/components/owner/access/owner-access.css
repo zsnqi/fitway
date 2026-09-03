@@ -4,15 +4,15 @@
  */
 .owner-access {
 	display: grid;
-	gap: 16px;
-	margin-block-start: 24px;
-	padding-block-start: 24px;
-	border-block-start: 1px solid var(--fw-border);
+	gap: 18px;
+	margin-block-start: 0;
+	padding-block-start: 0;
+	border-block-start: 0;
 }
 
 .owner-access__heading {
 	display: grid;
-	gap: 6px;
+	gap: 4px;
 }
 
 .owner-access__heading h1 {
@@ -26,8 +26,9 @@
 	max-inline-size: 70ch;
 	margin: 0;
 	color: var(--fw-text-subtle);
-	font-size: 12px;
-	line-height: 1.6;
+	font-size: 14px;
+	font-variant-numeric: tabular-nums;
+	line-height: 23px;
 }
 
 .owner-access-card,
@@ -35,9 +36,19 @@
 	display: grid;
 	gap: 12px;
 	padding: 16px;
-	border: 1px solid var(--fw-border);
-	border-radius: var(--fw-radius-surface);
-	background: rgb(16 16 18 / 88%);
+	overflow: clip;
+	border: 1px solid var(--fw-edge-control, rgb(220 197 201 / 18%));
+	border-radius: var(--fw-radius-board);
+	background-color: var(--fw-material-board-rest, rgb(29 24 28 / 12.5%));
+	background-image: linear-gradient(
+		in oklab 160deg,
+		oklab(27.3% 0.094 0.032 / 19.6%) 0%,
+		oklab(96.3% 0.018 0.003 / 3%) 46%,
+		oklab(21.7% 0.01 -0.005 / 8.2%) 100%
+	);
+	background-origin: border-box;
+	backdrop-filter: blur(22px) saturate(114%);
+	box-shadow: var(--fw-lift, rgb(255 238 240 / 2.8%)) 0 1px 0 inset;
 }
 
 /* Desktop leads with two peer summaries; the owner records stay one table below. */
@@ -49,13 +60,16 @@
 }
 
 .owner-access-summary-grid > .owner-access-card {
-	min-block-size: 100%;
+	min-block-size: 172px;
 }
 
 .owner-access-card__heading,
 .owner-access-block__heading {
-	display: grid;
-	gap: 4px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px 16px;
+	align-items: baseline;
+	justify-content: space-between;
 }
 
 .owner-access-card__heading h3,
@@ -82,12 +96,42 @@
 	align-items: baseline;
 	margin: 0;
 	color: var(--fw-text-muted);
-	font-size: 12px;
+	font-size: 18px;
+	font-variant-numeric: tabular-nums;
+	font-weight: 700;
+	line-height: 28px;
 }
 
 .owner-access-card__state bdi {
 	color: var(--fw-chalk);
-	font-weight: 600;
+	font-weight: 700;
+}
+
+.owner-access-card__state bdi::before {
+	content: "";
+	display: inline-block;
+	inline-size: 8px;
+	block-size: 8px;
+	margin-inline-end: 8px;
+	border-radius: 999px;
+	background: var(--fw-live);
+}
+
+.owner-access-card__state bdi[data-tone="inactive"]::before,
+.owner-access-card__state bdi[data-tone="none"]::before {
+	border: 1px solid var(--fw-offline);
+	background: transparent;
+}
+
+.owner-access-card__state--owners bdi[data-tone="inactive"]::before {
+	display: none;
+}
+
+.owner-access-card__detail {
+	margin: -8px 0 0;
+	color: var(--fw-text-muted);
+	font-size: 12px;
+	line-height: 18px;
 }
 
 /* An inactive or absent PIN is a named state, never a bare "off". */
@@ -111,6 +155,27 @@
 
 .owner-access-actions {
 	margin-block-start: 4px;
+}
+
+.owner-access-action-link {
+	padding-inline: 8px;
+	border: 0;
+	border-radius: 0;
+	color: var(--fw-red-bright);
+	background: transparent;
+	text-decoration: underline;
+	text-decoration-color: rgb(255 41 70 / 48%);
+	text-underline-offset: 7px;
+}
+
+.owner-access-action-link:hover {
+	color: var(--fw-chalk);
+	background: transparent;
+	text-decoration-color: currentColor;
+}
+
+.owner-access-action-link--danger {
+	color: var(--fw-red-bright);
 }
 
 /*
@@ -204,9 +269,38 @@
 /* One data board, rather than a stack of unrelated cards. */
 .owner-access-owners-board {
 	overflow: hidden;
-	border: 1px solid var(--fw-border);
-	border-radius: var(--fw-radius-surface);
-	background: rgb(16 16 18 / 88%);
+	border: 1px solid var(--fw-edge-control, rgb(220 197 201 / 18%));
+	border-radius: var(--fw-radius-board);
+	background-color: var(--fw-material-board-open, rgb(29 24 28 / 17%));
+	backdrop-filter: blur(24px) saturate(115%);
+	box-shadow:
+		var(--fw-lift, rgb(255 238 240 / 2.8%)) 0 1px 0 inset,
+		#00000035 0 8px 8px;
+}
+
+.owner-access-owners-board__heading {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	min-block-size: 56px;
+	padding-inline: 32px;
+	border-block-end: 1px solid var(--fw-edge-quiet, rgb(255 255 255 / 6%));
+}
+
+.owner-access-owners-board__heading h3,
+.owner-access-owners-board__heading p {
+	margin: 0;
+}
+
+.owner-access-owners-board__heading h3 {
+	color: var(--fw-chalk);
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.owner-access-owners-board__heading p {
+	color: var(--fw-text-subtle);
+	font-size: 12px;
 }
 
 .owner-access-owners {
@@ -221,7 +315,7 @@
 
 .owner-access-owners th,
 .owner-access-owners td {
-	padding: 14px 16px;
+	padding: 12px 32px;
 	border-block-end: 1px solid var(--fw-border-subtle);
 	text-align: start;
 	vertical-align: top;
@@ -229,10 +323,10 @@
 
 .owner-access-owners th {
 	color: var(--fw-text-muted);
-	font-size: 11px;
+	font-size: 12px;
 	font-weight: 600;
-	letter-spacing: 0.04em;
-	text-transform: uppercase;
+	letter-spacing: 0;
+	text-transform: none;
 }
 
 .owner-access-owners tr:last-child td {
@@ -240,14 +334,12 @@
 }
 
 .owner-access-owner__identity {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 4px 12px;
-	align-items: baseline;
+	inline-size: 24%;
 }
 
 .owner-access-owner__controls {
-	min-inline-size: 220px;
+	inline-size: 34%;
+	min-inline-size: 260px;
 }
 
 .owner-access-owner__name {
@@ -257,24 +349,36 @@
 }
 
 .owner-access-owner__email {
+	inline-size: 26%;
 	color: var(--fw-text-muted);
-	font-size: 12px;
+	font-size: 14px;
 }
 
 /* The active flag is a word, not a colour alone. */
 .owner-access-owner__state {
-	padding-block: 2px;
-	padding-inline: 8px;
-	border: 1px solid var(--fw-border-strong);
-	border-radius: 999px;
+	display: inline-flex;
+	gap: 8px;
+	align-items: center;
 	color: var(--fw-chalk);
-	font-size: 11px;
+	font-size: 14px;
+}
+
+.owner-access-owner__state::before {
+	content: "";
+	inline-size: 8px;
+	block-size: 8px;
+	border: 1px solid var(--fw-offline);
+	border-radius: 999px;
 }
 
 .owner-access-owner__state[data-active] {
-	border-color: rgb(24 180 120 / 28%);
-	color: #63d6a3;
-	background: rgb(16 168 105 / 8%);
+	color: var(--fw-chalk);
+	background: transparent;
+}
+
+.owner-access-owner__state[data-active]::before {
+	border-color: var(--fw-live);
+	background: var(--fw-live);
 }
 
 /* A deactivated owner reads as a resting state, not a live row. */
@@ -511,6 +615,13 @@
 		grid-template-columns: minmax(0, 1fr);
 	}
 
+	.owner-access-summary-grid > .owner-access-card {
+		min-block-size: 0;
+		padding: 16px 18px;
+		background-color: var(--fw-material-board-mobile, rgb(29 24 28 / 25%));
+		backdrop-filter: blur(18px) saturate(112%);
+	}
+
 	/* At this width provisioning has a single deliberate entry action. */
 	.owner-access-provision__trigger {
 		inline-size: 100%;
@@ -533,22 +644,57 @@
 
 	.owner-access-owners,
 	.owner-access-owners tbody,
-	.owner-access-owner,
 	.owner-access-owners td {
 		display: block;
 	}
 
+	.owner-access-owners .owner-access-owner {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		gap: 4px 12px;
+		padding: 16px 18px;
+		border-block-end: 1px solid var(--fw-border-subtle);
+	}
+
+	.owner-access-owners .owner-access-owner:last-child {
+		border-block-end: 0;
+	}
+
 	.owner-access-owner__identity,
+	.owner-access-owner__email,
 	.owner-access-owner__controls {
+		inline-size: auto;
 		min-inline-size: 0;
 	}
 
 	.owner-access-owners td.owner-access-owner__identity {
 		display: flex;
+		grid-column: 1;
+		grid-row: 1;
+		padding: 0;
+	}
+
+	.owner-access-owners td.owner-access-owner__email {
+		grid-column: 1 / -1;
+		grid-row: 2;
+		padding: 0;
+		font-size: 12px;
+	}
+
+	.owner-access-owners .owner-access-owner > td:nth-child(3) {
+		grid-column: 2;
+		grid-row: 1;
+		padding: 0;
 	}
 
 	.owner-access-owners td.owner-access-owner__controls {
-		padding-block-start: 0;
+		grid-column: 1 / -1;
+		grid-row: 3;
+		padding: 8px 0 0;
+	}
+
+	.owner-access-owners-board__heading {
+		padding-inline: 18px;
 	}
 
 	.owner-access-state {
@@ -566,9 +712,17 @@
 	}
 
 	.owner-access-actions > *,
-	.owner-access-owner__actions > *,
 	.owner-access-inline__actions > * {
 		flex: 1 1 auto;
+	}
+
+	.owner-access-actions [data-owner-access-staff-pin-primary] {
+		flex-basis: 100%;
+	}
+
+	.owner-access-actions .owner-access-action-link,
+	.owner-access-owner__actions > * {
+		flex: 0 0 auto;
 	}
 }
 

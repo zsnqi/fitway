@@ -605,8 +605,8 @@ describe("owner access live", () => {
 		const text = container.textContent ?? "";
 		expect(text).toContain(ownerAccessMessages.ar.staffPinTitle);
 		expect(text).not.toMatch(/[٠-٩۰-۹]/u);
-		expect(ownerAccessMessages.ar.staffPinDescription).toContain("6-12");
-		expect(ownerAccessMessages.ar.staffPinDescription).not.toContain("\u2013");
+		expect(ownerAccessMessages.ar.staffPinDetail).toContain("6-12");
+		expect(ownerAccessMessages.ar.staffPinDetail).not.toContain("\u2013");
 		expect(text).toContain(ownerAccessMessages.ar.staffPinActive);
 	});
 

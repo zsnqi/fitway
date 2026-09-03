@@ -151,7 +151,7 @@ test("real Owner password opens every populated owner surface", async ({
 		page.getByRole("heading", { name: "Access", exact: true }),
 	).toBeVisible({ timeout: 15_000 });
 	await expect(
-		page.getByRole("heading", { name: "Shared staff PIN", exact: true }),
+		page.getByRole("heading", { name: "Staff access PIN", exact: true }),
 	).toBeVisible({ timeout: 15_000 });
 	await expect(page.getByText(ownerEmail, { exact: true })).toBeVisible();
 

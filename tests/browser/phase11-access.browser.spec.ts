@@ -622,7 +622,7 @@ test("Arabic renders RTL with Western digits and a plain-hyphen PIN range", asyn
 	await expect(page.locator(staffCard)).toBeVisible();
 	const text = (await page.locator(accessSection).textContent()) ?? "";
 	expect(text).not.toMatch(/[٠-٩۰-۹]/u);
-	expect(text).toContain("رمز موظف الاستقبال المشترك");
+	expect(text).toContain("رمز دخول الموظفين");
 	expect(text).toContain("المالكون");
 	expect(text).toContain("مفعّل");
 	expect(text).toContain("معطّل");
@@ -1704,21 +1704,11 @@ test("canonical routed desktop Arabic and mobile English access compositions mat
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await expect(page.locator(staffCard)).toBeVisible();
 	await page.evaluate(() => document.fonts.ready);
-	await expect(page).toHaveScreenshot(
-		"owner-access-route-ar-desktop-1440x900.png",
-		{
-			fullPage: true,
-		},
-	);
+	await captureReview(page, "owner-access-route-ar-desktop-1440x900.png");
 
 	await setLocale(page, "en");
 	await page.setViewportSize({ width: 390, height: 844 });
 	await expect(page.locator(staffCard)).toBeVisible();
 	await page.evaluate(() => document.fonts.ready);
-	await expect(page).toHaveScreenshot(
-		"owner-access-route-en-mobile-390x844.png",
-		{
-			fullPage: true,
-		},
-	);
+	await captureReview(page, "owner-access-route-en-mobile-390x844.png");
 });

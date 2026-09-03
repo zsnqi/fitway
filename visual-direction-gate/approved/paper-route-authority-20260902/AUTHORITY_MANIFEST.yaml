@@ -298,6 +298,38 @@ surfaces:
     area: "OWNER ACCESS — BEHAVIOR-CORRECT SUCCESSOR — CURRENT"
     areaId: 1DHH-0
     status: ACCEPTED_PAPER_AUTHORITY
+    approvedDeviationIds: [owner-access-runtime-contract-columns]
+    requiredStates: [owner-created, create-credential-entry, reset-credential-entry, deactivate-confirmation, empty, loading, action-failure]
+    routedCandidateReview: >-
+      Coordinator direct Paper comparison passed for shared-shell-plus-panel composition, both
+      locales, 360 through 1440 reflow, 200 percent behavior, keyboard interaction, forced colors,
+      reduced motion, all typed governance refusals, one-time credential reveal, and the complete
+      owner governance action lifecycle. Independent rendered review and final human acceptance
+      remain pending.
+    routedCandidateEvidence:
+      - { locale: ar, viewport: 1440, state: live, path: evidence/owner-access/owner-access-route-ar-desktop-1440x900.png, bytes: 269647, sha256: ecf2c634c22571822a703a9284446cf927f7f5278c4fd0f96e33c8895fd57c81 }
+      - { locale: en, viewport: 390, state: live, path: evidence/owner-access/owner-access-route-en-mobile-390x844.png, bytes: 156451, sha256: bbea59b76a1da59e37ca61a2a33a47da99bfd21488a340b3907756c4a3b1e460 }
+      - { locale: ar, viewport: 360, state: live, path: evidence/owner-access/owner-access-ar-360x900.png, bytes: 145063, sha256: 9fdc8f10a3466332dbbb794762045a1e6895df413e3c205d6096d96ad32f1982 }
+      - { locale: ar, viewport: 768, state: live, path: evidence/owner-access/owner-access-ar-768x1024.png, bytes: 206162, sha256: c32f3f7a5cd241b781acc1088b1c8b4597bbcb26e0ef12a73b6944d070fdddae }
+      - { locale: en, viewport: 360, state: live, path: evidence/owner-access/owner-access-en-360x900.png, bytes: 151544, sha256: 78efa96f708fd5ea005be04ac5ab7f29ee9674de43ea7a1c3b974cb90d987c07 }
+      - { locale: en, viewport: 768, state: live, path: evidence/owner-access/owner-access-en-768x1024.png, bytes: 212508, sha256: 8efb928538c64414a7b8ff341f5b3115033eb400988d0abaca07a55a12b3d91b }
+      - { locale: en, viewport: 200-percent, state: text-reflow, path: evidence/owner-access/owner-access-en-200-percent-reflow.png, bytes: 174289, sha256: ea0d1c1bdd1c7cc2d3ec7632bee2b491d2bb446018ff18466e82ee9751e13f9f }
+      - { locale: en, viewport: 390, state: empty, path: evidence/owner-access/owner-access-empty-en-390x844.png, bytes: 110322, sha256: 1f301260d0a1749dba799c2047c3719e2a28a99c27b3d8973673bba278c9520e }
+      - { locale: en, viewport: 390, state: loading, path: evidence/owner-access/owner-access-loading-en-390x844.png, bytes: 109454, sha256: 2bf4444dfda9bc0e72aeeca153dd9eb6d224e4b3f585a2733a613e8de5111fa4 }
+      - { locale: en, viewport: 390, state: load-failure, path: evidence/owner-access/owner-access-error-en-390x844.png, bytes: 106172, sha256: 22ec6eca7941f9c8fa59f7e01c107a75ab9f40f0498672f9a3c13aa34e535d2a }
+      - { locale: en, viewport: 390, state: live-governance, path: evidence/owner-access/owner-access-live-en-390x844.png, bytes: 156541, sha256: 2808b3fc01a743671b2943f10c781599ae232dc51ee3ac128d7e53b18992fbe1 }
+    leafExports:
+      - { nodeId: 1DUG-0, locale: en, viewport: 1440, state: live, path: owner-access/owner-access-desktop-en-1440.png, bytes: 795197, sha256: 39ed835488ad76564af320bee5c34b4effae05c646971d7a0b63d0b43946c765 }
+      - { nodeId: 1DR4-0, locale: ar, viewport: 1440, state: live, path: owner-access/owner-access-desktop-ar-1440.png, bytes: 780826, sha256: ce341b5eeffaa39ee306747ccd05f907c283c6a844dbad5b25308c750e8c6089 }
+      - { nodeId: 1DNQ-0, locale: en, viewport: 390, state: live, path: owner-access/owner-access-mobile-en-390.png, bytes: 368975, sha256: 02d9e04ad461f6a29b38f71e9c380be0da22f10bcbdbfebb0535e466b2e00909 }
+      - { nodeId: 1DKJ-0, locale: ar, viewport: 390, state: live, path: owner-access/owner-access-mobile-ar-390.png, bytes: 359144, sha256: 29cae4a7f4183ff836cec1191bd3f1d2b65fa239e6a4f69ec4db351e4e962898 }
+      - { nodeId: 1DJS-0, locale: bilingual, viewport: state, state: owner-created, path: owner-access/owner-access-owner-created.png, bytes: 29075, sha256: b09af74647a60b3517dd5722a3f80e9ff67a8e348584b3ab7d5cd45bfaab7682 }
+      - { nodeId: 1DY8-0, locale: bilingual, viewport: state, state: create-credential-entry, path: owner-access/owner-access-create-owner-credential-entry.png, bytes: 24298, sha256: 06262eb64d9ae2e32fff1e91ae5aca5d564a543f1f34f61a1c35b1e01d8b1b21 }
+      - { nodeId: 1DYS-0, locale: bilingual, viewport: state, state: reset-credential-entry, path: owner-access/owner-access-reset-credential-entry.png, bytes: 26634, sha256: 8885e14e64e2b1f49215432c8c6190e4fb23a6dc155ffb4f5359bfa9d79fc770 }
+      - { nodeId: 1DJ6-0, locale: bilingual, viewport: state, state: deactivate-confirmation, path: owner-access/owner-access-deactivate-confirmation.png, bytes: 28311, sha256: d0bb95171dd06b113c5dbb171d7bba73854ecd70fa4d6aca9ba02f97e9476fc0 }
+      - { nodeId: 1DIO-0, locale: bilingual, viewport: state, state: empty, path: owner-access/owner-access-empty.png, bytes: 21701, sha256: f2382ccc9a47acc738ed465d8482c7b1f4e446d939ae99f6025d6c98080afa78 }
+      - { nodeId: 1DI6-0, locale: bilingual, viewport: state, state: loading, path: owner-access/owner-access-loading.png, bytes: 20946, sha256: dd861f6f21733c83b8f3a59ad53ec704a4c0e02cf47d833cf66fb97817d96c57 }
+      - { nodeId: 1DHK-0, locale: bilingual, viewport: state, state: action-failure, path: owner-access/owner-access-action-failure.png, bytes: 23498, sha256: a9e66636fcf8296475a399b7bd36663b980768e861114c968fab5c6ffda83a33 }
   ownerActivityLog:
     sourceArea: "OWNER AUDIT PRODUCTION SET — CANDIDATE"
     sourceAreaId: 1AFO-0

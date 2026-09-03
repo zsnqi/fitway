@@ -1,0 +1,37 @@
+schemaVersion: 1
+id: owner-access-runtime-contract-columns
+status: IMPLEMENTED_PENDING_INDEPENDENT_REVIEW
+implementedAt: "2026-09-03T09:26:59Z"
+implementedBy: coordinator
+paper:
+  file: "FITWAY UX Exploration"
+  page: "Page 1"
+  area: "OWNER ACCESS — BEHAVIOR-CORRECT SUCCESSOR — CURRENT"
+affectedRegion: >-
+  Owner Accounts & Sign-in summary metadata, owner records, row actions, and navigation above the
+  accepted Access panel.
+observableProblem: >-
+  Paper includes deterministic provision, PIN-set, and last-sign-in timestamps that the current
+  PrincipalGovernance API does not supply. Literal reproduction would fabricate user data. Paper
+  also contains historical three-tab navigation and presents record actions as quiet text controls.
+smallestCorrection: >-
+  Omit unavailable timestamps and the Last sign-in column, preserve every contract-backed owner
+  field, replace historical tabs with the approved six-destination shell, and render the existing
+  governance actions as underlined 44-pixel-target controls consistent with Paper rather than
+  visually heavy buttons.
+mustPreserve:
+  - accepted Access composition, hierarchy, density, copy authority, and material treatment
+  - staff PIN and owner governance semantics, security refusals, confirmations, and one-time reveal
+  - exact runtime names, emails, status, credential state, and mutation behavior
+  - keyboard focus, accessible naming, touch targets, RTL/LTR, and responsive stacking
+paperMutationRequired: false
+reviewEvidence:
+  decision: "Covered by the human-approved bounded runtime-polish rule; no data or product semantics changed."
+  approvalRecord: docs/phase-records/handoffs/full-route-paper-fidelity/20260903-122659-owner-access-paper-repair.md
+  routedBefore: output/playwright/fidelity_access_before_r01
+  routedAfter: visual-direction-gate/approved/paper-route-authority-20260902/evidence/owner-access
+  independentRenderedReview: PENDING_FINAL_MILESTONE_REVIEW
+acceptanceRule: >-
+  The deviation fails if the route fabricates timestamps, drops a contract-backed field or action,
+  omits the shared shell, weakens security/accessibility behavior, or ceases to read as the accepted
+  Access family. Final status requires independent rendered review and human contact-sheet approval.
