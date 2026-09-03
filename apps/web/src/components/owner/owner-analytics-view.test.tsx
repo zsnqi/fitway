@@ -147,7 +147,7 @@ describe("owner daily analytics states", () => {
 				timeZoneByVersion={new Map([[2, "America/New_York"]])}
 			/>,
 		);
-		expect(container.textContent).toContain("No observed occupancy data");
+		expect(container.textContent).toContain("No readings yet today");
 
 		await render(
 			<OwnerAnalyticsView
@@ -166,7 +166,7 @@ describe("owner daily analytics states", () => {
 				timeZoneByVersion={new Map([[1, "Asia/Riyadh"]])}
 			/>,
 		);
-		expect(container.textContent).toContain("Scheduled closed day");
+		expect(container.textContent).toContain("FITWAY is closed today");
 	});
 
 	it("provides distinct accessible loading and retryable error states", async () => {

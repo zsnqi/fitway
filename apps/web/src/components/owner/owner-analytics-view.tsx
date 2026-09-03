@@ -4,7 +4,7 @@ import type {
 	DailyAnalytics,
 } from "@fitway/api/analytics/daily-analytics";
 import { Button } from "@fitway/ui/components/button";
-import { AlertTriangle, BarChart3, RefreshCw } from "lucide-react";
+import { BarChart3 } from "lucide-react";
 import {
 	type KeyboardEvent,
 	type PointerEvent,
@@ -115,6 +115,27 @@ function valueRuns(timeline: readonly AnalyticsTimelineBucket[]) {
 		}
 	}
 	return runs;
+}
+
+function smoothPath(points: readonly { x: number; y: number }[]): string {
+	if (points.length === 0) return "";
+	if (points.length === 1) return `M${points[0]?.x},${points[0]?.y}`;
+	const first = points[0];
+	if (!first) return "";
+	let path = `M${first.x},${first.y}`;
+	for (let index = 0; index < points.length - 1; index += 1) {
+		const current = points[index];
+		const next = points[index + 1];
+		if (!current || !next) continue;
+		const previous = points[index - 1] ?? current;
+		const after = points[index + 2] ?? next;
+		const control1X = current.x + (next.x - previous.x) / 6;
+		const control1Y = current.y + (next.y - previous.y) / 6;
+		const control2X = next.x - (after.x - current.x) / 6;
+		const control2Y = next.y - (after.y - current.y) / 6;
+		path += ` C${control1X},${control1Y} ${control2X},${control2Y} ${next.x},${next.y}`;
+	}
+	return path;
 }
 
 function OccupancyChart({
@@ -269,15 +290,15 @@ function OccupancyChart({
 								);
 							})}
 							{runs.map((run) => (
-								<polyline
+								<path
 									key={run[0]?.index}
 									className="owner-chart__line"
-									points={run
-										.map(
-											({ bucket, index }) =>
-												`${xFor(index)},${yFor(bucket.count)}`,
-										)
-										.join(" ")}
+									d={smoothPath(
+										run.map(({ bucket, index }) => ({
+											x: xFor(index),
+											y: yFor(bucket.count),
+										})),
+									)}
 								/>
 							))}
 							{values.map(({ bucket, index }) => (
@@ -344,7 +365,7 @@ function AnalyticsTable({
 				<span>{messages.tableSummary}</span>
 				<small>
 					{formatNumber(daily.observedOpenMinutes, locale)}{" "}
-					{messages.observed.toLocaleLowerCase()}
+					{messages.minutesRecordedSuffix}
 				</small>
 			</summary>
 			<section
@@ -432,18 +453,23 @@ export function OwnerAnalyticsView({
 					<AnalyticsMetric
 						label={messages.peak}
 						value={
-							daily.peak ? (
+							noObserved ? (
+								messages.noReadingValue
+							) : daily.peak ? (
 								<bdi>{formatNumber(daily.peak.count, locale)}</bdi>
 							) : (
 								messages.noValue
 							)
 						}
 						detail={
-							peakTime ? (
-								<>
-									<span>{messages.atTime}</span>{" "}
-									<bdi dir="auto">{peakTime}</bdi>
-								</>
+							noObserved ? (
+								closedDay ? (
+									messages.closedToday
+								) : (
+									messages.noReadingsYet
+								)
+							) : peakTime ? (
+								<bdi dir="auto">{peakTime}</bdi>
 							) : (
 								messages.noValue
 							)
@@ -452,22 +478,40 @@ export function OwnerAnalyticsView({
 					<AnalyticsMetric
 						label={messages.average}
 						value={
-							daily.dailyAverage === null ? (
+							noObserved ? (
+								messages.noReadingValue
+							) : daily.dailyAverage === null ? (
 								messages.noValue
 							) : (
 								<bdi>{formatDecimal(daily.dailyAverage, locale)}</bdi>
 							)
 						}
-						detail={`${formatNumber(daily.observedOpenMinutes, locale)} ${messages.observed.toLocaleLowerCase()}`}
+						detail={
+							noObserved
+								? closedDay
+									? messages.closedToday
+									: messages.noReadingsYet
+								: `${messages.recordedMinutesPrefix} ${formatNumber(daily.observedOpenMinutes, locale)} ${messages.recordedMinutesSuffix}`
+						}
 					/>
 					<AnalyticsMetric
 						label={messages.crossings}
 						value={
-							<bdi>
-								{formatNumber(daily.estimatedEntranceCrossings, locale)}
-							</bdi>
+							noObserved && !closedDay ? (
+								messages.noReadingValue
+							) : (
+								<bdi>
+									{formatNumber(daily.estimatedEntranceCrossings, locale)}
+								</bdi>
+							)
 						}
-						detail={messages.crossingsNote}
+						detail={
+							noObserved
+								? closedDay
+									? messages.closedToday
+									: messages.noReadingsYet
+								: messages.crossingsNote
+						}
 					/>
 				</div>
 				{noObserved ? (
@@ -485,7 +529,9 @@ export function OwnerAnalyticsView({
 				) : (
 					<OccupancyChart daily={daily} timeZoneByVersion={timeZoneByVersion} />
 				)}
-				<AnalyticsTable daily={daily} timeZoneByVersion={timeZoneByVersion} />
+				{noObserved ? null : (
+					<AnalyticsTable daily={daily} timeZoneByVersion={timeZoneByVersion} />
+				)}
 			</section>
 		</div>
 	);
@@ -495,21 +541,30 @@ export function OwnerAnalyticsLoading() {
 	const messages = useOwnerAnalyticsMessages();
 	return (
 		<section
-			className="owner-analytics-state owner-analytics-state--loading"
+			className="owner-analytics-state owner-analytics-state--loading owner-analytics-board"
 			role="status"
 			aria-live="polite"
 		>
-			<BarChart3 aria-hidden="true" />
-			<div>
-				<h1>{messages.loading}</h1>
-				<p>{messages.loadingDescription}</p>
-			</div>
-			<div className="owner-loading-bars" aria-hidden="true">
-				<i />
-				<i />
-				<i />
-				<i />
-				<i />
+			<h1 className="sr-only">{messages.loading}</h1>
+			<p className="sr-only">{messages.loadingDescription}</p>
+			<div className="owner-loading-skeleton" aria-hidden="true">
+				<div className="owner-loading-skeleton__metrics">
+					{[0, 1, 2].map((index) => (
+						<div key={index}>
+							<i />
+							<i />
+							<i />
+						</div>
+					))}
+				</div>
+				<div className="owner-loading-skeleton__chart">
+					<i />
+					<span />
+				</div>
+				<div className="owner-loading-skeleton__summary">
+					<i />
+					<i />
+				</div>
 			</div>
 		</section>
 	);
@@ -519,16 +574,14 @@ export function OwnerAnalyticsError({ onRetry }: { onRetry: () => void }) {
 	const messages = useOwnerAnalyticsMessages();
 	return (
 		<section
-			className="owner-analytics-state owner-analytics-state--error"
+			className="owner-analytics-state owner-analytics-state--error owner-analytics-board"
 			role="alert"
 		>
-			<AlertTriangle aria-hidden="true" />
 			<div>
 				<h1>{messages.errorTitle}</h1>
 				<p>{messages.errorDescription}</p>
 			</div>
 			<Button type="button" onClick={onRetry}>
-				<RefreshCw aria-hidden="true" />
 				{messages.retry}
 			</Button>
 		</section>

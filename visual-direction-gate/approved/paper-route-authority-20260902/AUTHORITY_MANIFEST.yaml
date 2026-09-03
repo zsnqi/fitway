@@ -185,6 +185,70 @@ surfaces:
     area: "OWNER DAILY ANALYTICS PRODUCTION SET — CURRENT"
     areaId: I89-0
     status: ACCEPTED_PAPER_AUTHORITY
+    paperTokenHash: 3b0faca3
+    compositionNote: >-
+      Page content follows this family beneath the separately accepted shared Owner navigation.
+      Runtime values remain semantic API data; Paper fixture values are not fabricated.
+    routedCandidateReview: >-
+      Coordinator direct Paper comparison passed for shell-plus-panel composition, both locales,
+      responsive reflow, loading, failure, no-readings, and scheduled-closed states. Independent
+      rendered review and final human acceptance remain pending.
+    routedCandidateEvidence:
+      - { locale: en, viewport: 1440, state: completed-closed, path: evidence/owner-daily/routed-daily-en-1440.png, bytes: 409258, sha256: c7360703cc52618623ea1f279d8be2eeb121e09bedc8f09d09525cf2f063a0e8 }
+      - { locale: ar, viewport: 1440, state: completed-closed, path: evidence/owner-daily/routed-daily-ar-1440.png, bytes: 399626, sha256: 8f722975eb7934c6a5672fa2973fbeff386fd8642ba17b791c40cf5446c00cf6 }
+      - { locale: en, viewport: 390, state: completed-closed, path: evidence/owner-daily/routed-daily-en-390.png, bytes: 162179, sha256: 47fda3f3987744ef18c150696a35a84ff98ee67080003fc693198dc18e100a73 }
+      - { locale: ar, viewport: 390, state: completed-closed, path: evidence/owner-daily/routed-daily-ar-390.png, bytes: 156964, sha256: 1572c3622b86cdc6f03106163969852c8493a1784fb40fdf39e5621c5ac0b398 }
+      - { locale: ar, viewport: 1440, state: loading, path: evidence/owner-daily/routed-loading-ar-1440.png, bytes: 202789, sha256: 2fe1b2790397ad8d737dd8f3a0c97f2f27361eeb3ade416e8625d27c2b06f9e3 }
+      - { locale: ar, viewport: 1440, state: failure, path: evidence/owner-daily/routed-failure-ar-1440.png, bytes: 215463, sha256: 37b5d32ad15d46322fd7b641d366585d1524169d641491d46726de47e937e993 }
+      - { locale: ar, viewport: 1440, state: no-readings, path: evidence/owner-daily/routed-no-readings-ar-1440.png, bytes: 239515, sha256: e9a8dfcf73e6023b97cb3e0c240dba0a88b6b8ba7451cce5c8429a5f6e8cc40c }
+      - { locale: ar, viewport: 1440, state: scheduled-closed, path: evidence/owner-daily/routed-scheduled-closed-ar-1440.png, bytes: 242657, sha256: 8797bf03fa78404eb47a3064bd1507c955ac56ab3d0f8931aef5bbe7cb2ff629 }
+    leafExports:
+      - { nodeId: I91-0, locale: en, viewport: 1440, state: completed-closed, path: owner-daily/owner-daily-closed-en-1440.png, bytes: 850125, sha256: 9cd6f3ff4e7e3de0c8e4609c87a84368350ff5099080446dd5732cfabe934b53 }
+      - { nodeId: IK7-0, locale: ar, viewport: 1440, state: completed-closed, path: owner-daily/owner-daily-closed-ar-1440.png, bytes: 841386, sha256: 63109032f42fc6ce2ff697d7c9e35e061b38369c1433d69068d3f5b2000975ec }
+      - { nodeId: IB4-0, locale: en, viewport: 1440, state: in-progress-latest, path: owner-daily/owner-daily-latest-en-1440.png, bytes: 846990, sha256: 250bfa43ee4fb6ce115f419d2c392f575c3eb6cf2f102992cf84c49d439ab439 }
+      - { nodeId: IMA-0, locale: ar, viewport: 1440, state: in-progress-latest, path: owner-daily/owner-daily-latest-ar-1440.png, bytes: 838446, sha256: 9a55eca515d9d4de651abeb8b265c946ea058cb9cb5d522df29544e2ab510baa }
+      - { nodeId: ID9-0, locale: en, viewport: 1440, state: completed-open, path: owner-daily/owner-daily-open-en-1440.png, bytes: 1150859, sha256: 64986e305fe6823d2796dd024b3f135b725fcad70117f8c31035bcafa47e0f14 }
+      - { nodeId: IOF-0, locale: ar, viewport: 1440, state: completed-open, path: owner-daily/owner-daily-open-ar-1440.png, bytes: 1134751, sha256: b43ab874f1a3f74e739fdeb6878d7034ed0a4e762716824ca73c795736930102 }
+      - { nodeId: IGK-0, locale: en, viewport: 1440, state: selected-focus, path: owner-daily/owner-daily-focus-en-1440.png, bytes: 1143053, sha256: 54bcc4de50d028b7ea0bf464f4708c9de75a0b0bbed94ac4d60a5e14c234b28f }
+      - { nodeId: IRQ-0, locale: ar, viewport: 1440, state: selected-focus, path: owner-daily/owner-daily-focus-ar-1440.png, bytes: 1125861, sha256: c096c9f022ea537ac45d1715dbe230cee385fe083360c2a65f9a7d5eefac28e6 }
+      - { nodeId: IVC-0, locale: en, viewport: 768, state: completed-open, path: owner-daily/owner-daily-open-en-768.png, bytes: 660765, sha256: 06eb9f626eefb5b503335f3632521fe6631ce91abe87062126c4970acb2ac3ea }
+      - { nodeId: IYJ-0, locale: ar, viewport: 768, state: completed-open, path: owner-daily/owner-daily-open-ar-768.png, bytes: 650544, sha256: 58d7bbb2d622ae98f954d8d5042871c0c1d92a71bd5cce094dd4819adf4d8f78 }
+      - { nodeId: J1W-0, locale: en, viewport: 390, state: completed-closed, path: owner-daily/owner-daily-closed-en-390.png, bytes: 339073, sha256: f2e36563997daf06c5a1b36a9ce59a7b6667e27741c31e07d6701dac6b74d5bb }
+      - { nodeId: JAB-0, locale: ar, viewport: 390, state: completed-closed, path: owner-daily/owner-daily-closed-ar-390.png, bytes: 332127, sha256: 37ffabd5d673620bf749b70062a12f5f4e915d9f8b15a71c86ecb20dfc2f6fce }
+      - { nodeId: J3Q-0, locale: en, viewport: 390, state: in-progress-latest, path: owner-daily/owner-daily-latest-en-390.png, bytes: 341346, sha256: ca91cb27d56054544c02d0da1f5d970bc283e058b1507c7e4c45a8bde6d48076 }
+      - { nodeId: JC5-0, locale: ar, viewport: 390, state: in-progress-latest, path: owner-daily/owner-daily-latest-ar-390.png, bytes: 334537, sha256: 297325e60e32569c0a81d9fbdbb768d61964c14007e6888ce67123356967c7eb }
+      - { nodeId: J5M-0, locale: en, viewport: 390, state: completed-open, path: owner-daily/owner-daily-open-en-390.png, bytes: 468657, sha256: 2fc448d5f724df5215d9cee1c0dab2554a705d56ded8448eb64c5c2a1a9b2bab }
+      - { nodeId: JE1-0, locale: ar, viewport: 390, state: completed-open, path: owner-daily/owner-daily-open-ar-390.png, bytes: 459086, sha256: 96dd603ecc253656df4b7a4b4c47e3b26da006ce898a4cf729d4919d0a2762a6 }
+      - { nodeId: J87-0, locale: en, viewport: 390, state: selected-focus, path: owner-daily/owner-daily-focus-en-390.png, bytes: 339456, sha256: 49ba887c381fadeea63b7c949163e52367e81b95059c0843d68b4fc8898554e4 }
+      - { nodeId: JGM-0, locale: ar, viewport: 390, state: selected-focus, path: owner-daily/owner-daily-focus-ar-390.png, bytes: 332252, sha256: 36adf6a6b91c269746bd1cb9f0b122c74b30542df4153360a7e4ec6eaf86bb68 }
+      - { nodeId: JIP-0, locale: en, viewport: 1440, state: loading, path: owner-daily/owner-daily-loading-en-1440.png, bytes: 473682, sha256: b4be5b4b0045a03c324e0707099d55a7d7a0e2d655f72f07272d521e46d7f11d }
+      - { nodeId: JJM-0, locale: ar, viewport: 1440, state: loading, path: owner-daily/owner-daily-loading-ar-1440.png, bytes: 472710, sha256: 283982a0955ff4b44a98b50417ad06b1f9f3e16176a1b3ad687602a96cbfd465 }
+      - { nodeId: JP3-0, locale: en, viewport: 390, state: loading, path: owner-daily/owner-daily-loading-en-390.png, bytes: 186142, sha256: 59e8ad3db9f507006cab040ae34a5780b6cc442edf75e6fbfbda44363b5c5a89 }
+      - { nodeId: JPT-0, locale: ar, viewport: 390, state: loading, path: owner-daily/owner-daily-loading-ar-390.png, bytes: 186240, sha256: 1443787cfa7c2891cf678613ce5e178a14a8e67bcd30ea55bbfbb3dd3c1047e9 }
+      - { nodeId: JKM-0, locale: en, viewport: 1440, state: failure, path: owner-daily/owner-daily-failure-en-1440.png, bytes: 494845, sha256: fce79e212b6a5565912a6bab84689ecaad96baa1a3517b9762c10c2ce40ddcf8 }
+      - { nodeId: JKS-0, locale: ar, viewport: 1440, state: failure, path: owner-daily/owner-daily-failure-ar-1440.png, bytes: 484310, sha256: 080e08308d9192299422dc5e5f83e2078479ab32f5fb1923818083791566dd65 }
+      - { nodeId: JQL-0, locale: en, viewport: 390, state: failure, path: owner-daily/owner-daily-failure-en-390.png, bytes: 206550, sha256: eb3219abb5bbad7c70fd49719d34510a2de2d1e3fcc3ba22224370b1ae678d2b }
+      - { nodeId: JQR-0, locale: ar, viewport: 390, state: failure, path: owner-daily/owner-daily-failure-ar-390.png, bytes: 197445, sha256: beb518351e8fd7f3bf7b33ca3e076b789e5ae4169f0efdd1747bd910584b5cba }
+      - { nodeId: JMC-0, locale: en, viewport: 1440, state: no-readings, path: owner-daily/owner-daily-no-readings-en-1440.png, bytes: 369962, sha256: 3c89721dd9e48acffdd95ec06e4cf4127a26864776616f7c0f4a116ccfbc2dc2 }
+      - { nodeId: JMW-0, locale: ar, viewport: 1440, state: no-readings, path: owner-daily/owner-daily-no-readings-ar-1440.png, bytes: 360442, sha256: 7fb9f549a60666e6bf4c404d771d5da765eadb09e409930c3b4f073767b07431 }
+      - { nodeId: JQZ-0, locale: en, viewport: 390, state: no-readings, path: owner-daily/owner-daily-no-readings-en-390.png, bytes: 183620, sha256: b294629074d6d20c2ca8b1d2177e9203816785f280b2baa8b0d5732f17bd5a3a }
+      - { nodeId: JRI-0, locale: ar, viewport: 390, state: no-readings, path: owner-daily/owner-daily-no-readings-ar-390.png, bytes: 174755, sha256: 7c4d17fa1de0f92beaace8d07be673c7abe21a0051d9c38ced3233408948c60d }
+      - { nodeId: JNJ-0, locale: en, viewport: 1440, state: scheduled-closed, path: owner-daily/owner-daily-scheduled-closed-en-1440.png, bytes: 372545, sha256: 591ecf49b18f8bbee4e11fd601cd755d117f400cc51f48ddab2dd5412b43f96c }
+      - { nodeId: JO3-0, locale: ar, viewport: 1440, state: scheduled-closed, path: owner-daily/owner-daily-scheduled-closed-ar-1440.png, bytes: 363864, sha256: c5e0636abb2ce50fd3fe38b9507ca88b61840c385c7a44907cd2ccdc89f85c2e }
+      - { nodeId: JS3-0, locale: en, viewport: 390, state: scheduled-closed, path: owner-daily/owner-daily-scheduled-closed-en-390.png, bytes: 185389, sha256: 7035f1907cbcca50c4e02d2aecfb95299582415f661f513860cb6656cd85007b }
+      - { nodeId: JSM-0, locale: ar, viewport: 390, state: scheduled-closed, path: owner-daily/owner-daily-scheduled-closed-ar-390.png, bytes: 176908, sha256: 40000ea01132286eaf33a3540b922dfbfb7c4d17ce11bca63b6f5e6e36ef7b62 }
+      - { nodeId: JOQ-0, locale: en, viewport: 1440, state: forbidden, path: owner-daily/owner-daily-forbidden-en-1440.png, bytes: 314235, sha256: e5cb682d894db872363a9d4817056638f6019600c920e2fef5cf5bb0d1227c8c }
+      - { nodeId: JOT-0, locale: ar, viewport: 1440, state: forbidden, path: owner-daily/owner-daily-forbidden-ar-1440.png, bytes: 308914, sha256: 395449cf7b1753e32f9717db129f544635ea059e1bd84bae44ebbd921ee1bcbd }
+      - { nodeId: JT7-0, locale: en, viewport: 390, state: forbidden, path: owner-daily/owner-daily-forbidden-en-390.png, bytes: 131862, sha256: 396d8cea71190de2c20da3502a97b5f35f902fd75b56b6a75a5e8295efb7d2a6 }
+      - { nodeId: JTA-0, locale: ar, viewport: 390, state: forbidden, path: owner-daily/owner-daily-forbidden-ar-390.png, bytes: 127127, sha256: 2d5df53e2cb1474b687deebe4eb1a0a437e77d77df96feec3900cb3efeee85df }
+      - { nodeId: JTK-0, locale: en, viewport: 320, state: narrow, path: owner-daily/owner-daily-en-320.png, bytes: 192178, sha256: 16587c3909f16cc27d4753c5d71470bd264091ed09875094b9a7702d1fcc44fa }
+      - { nodeId: JUN-0, locale: ar, viewport: 320, state: narrow, path: owner-daily/owner-daily-ar-320.png, bytes: 186761, sha256: 277e0bd0b0391981ae1716e45cb11fecca752fedc10b60315b3c8a8b3c6a7027 }
+      - { nodeId: JVT-0, locale: en, viewport: 200-percent, state: text-reflow, path: owner-daily/owner-daily-en-zoom200.png, bytes: 172486, sha256: bfeb549749068540aa1b4379c8981a6da3edb61aebd8f3771b87468ac6649710 }
+      - { nodeId: JW8-0, locale: ar, viewport: 200-percent, state: text-reflow, path: owner-daily/owner-daily-ar-zoom200.png, bytes: 159568, sha256: 335ef3c60e5a0514e9042b2cf95b2f41875f55780e87eaf33fbf0d96bd8a8057 }
+      - { nodeId: JL0-0, locale: bilingual, viewport: contract, state: retry-actions, path: owner-daily/owner-daily-retry-contract.png, bytes: 17453, sha256: 67a1979d4a6a9b9e623b56e1c9396eeb8a8544a5b184b689065bf5235ec435a0 }
+      - { nodeId: JWP-0, locale: bilingual, viewport: contract, state: reduced-transparency, path: owner-daily/owner-daily-reduced-transparency-contract.png, bytes: 127226, sha256: 90fff005a123788c2132cba3eca616de4c8cf85b6f7be56ab9716e183cacf6c2 }
+      - { nodeId: JXC-0, locale: bilingual, viewport: contract, state: reduced-motion, path: owner-daily/owner-daily-reduced-motion-contract.png, bytes: 151378, sha256: 46c6280328321b2c7109bd2ce8e3d894a5713194a201b56ecfb99d77f7a6e527 }
+      - { nodeId: JXW-0, locale: bilingual, viewport: contract, state: focus-visible, path: owner-daily/owner-daily-focus-contract.png, bytes: 60479, sha256: 7a7c368c7fc74c23b336640e3684456fe1255cf65b12892ddb2f227a101dd346 }
   ownerReports:
     area: "OWNER ANALYTICS — PHASE 10 REPORTING EXTENSION — CURRENT"
     areaId: 17YY-0
