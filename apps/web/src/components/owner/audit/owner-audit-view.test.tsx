@@ -146,7 +146,7 @@ describe("owner audit states", () => {
 	});
 
 	it("explains an empty result without pretending a record exists", async () => {
-		await render(<OwnerAuditEmpty />, "en");
+		await render(<OwnerAuditEmpty onClear={() => undefined} />, "en");
 		expect(
 			container.querySelector('[data-owner-audit-state="empty"]')?.textContent,
 		).toContain(ownerAuditMessages.en.emptyTitle);
@@ -182,6 +182,11 @@ describe("owner audit table", () => {
 		expect(table?.textContent).not.toMatch(/[٠-٩]/u);
 		expect(table?.textContent).toContain("←");
 		expect(table?.textContent).not.toContain("→");
+		expect(
+			[...(table?.querySelectorAll<HTMLElement>('[dir="ltr"]') ?? [])].map(
+				(element) => element.textContent,
+			),
+		).toContain("-9");
 	});
 
 	it("shows a missing prior and a missing reason as states, never as zero or blank", async () => {

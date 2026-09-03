@@ -157,7 +157,7 @@ test("real Owner password opens every populated owner surface", async ({
 
 	await page.getByRole("tab", { name: "Activity Log" }).click();
 	await expect(
-		page.getByRole("heading", { name: "Audit history", exact: true }),
+		page.getByRole("heading", { name: "Activity Log", exact: true }),
 	).toBeVisible({ timeout: 15_000 });
 	await expect(
 		page.getByRole("cell", { name: "Staff PIN provisioned", exact: true }),

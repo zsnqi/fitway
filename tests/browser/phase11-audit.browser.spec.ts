@@ -536,6 +536,12 @@ test("Arabic renders RTL with Western digits and a mirrored change arrow", async
 	expect(text).toContain("←");
 	expect(text).not.toContain("→");
 	expect(text).toContain("النظام التلقائي");
+	await expect(
+		table
+			.locator("tbody tr")
+			.nth(1)
+			.locator('.owner-audit__requested bdi[dir="ltr"]'),
+	).toContainText("-9");
 
 	const direction = await page
 		.locator(".owner-audit")

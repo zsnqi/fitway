@@ -7,10 +7,10 @@
  */
 export const ownerAuditMessages = {
 	en: {
-		title: "Audit history",
-		description:
-			"Every recorded operational change, newest first · times shown in the configured gym timezone",
-		timeZoneLabel: "Gym timezone",
+		title: "Activity Log",
+		description: "Owner and staff actions",
+		timeZoneLabel: "gym-local time",
+		ownerOnly: "Owner only",
 		loading: "Loading audit history",
 		loadingDescription: "Preparing the newest audit records.",
 		errorTitle: "Audit history could not be loaded",
@@ -89,10 +89,10 @@ export const ownerAuditMessages = {
 		flooredNote: "Floored at zero",
 	},
 	ar: {
-		title: "سجل المراجعة",
-		description:
-			"كل تغيير تشغيلي مسجَّل، من الأحدث · تُعرض الأوقات بالمنطقة الزمنية المحفوظة للصالة",
-		timeZoneLabel: "المنطقة الزمنية للصالة",
+		title: "سجل النشاط",
+		description: "إجراءات المالك والموظفين",
+		timeZoneLabel: "توقيت الصالة",
+		ownerOnly: "للمالك فقط",
 		loading: "جارٍ تحميل سجل المراجعة",
 		loadingDescription: "جارٍ تجهيز أحدث السجلات.",
 		errorTitle: "تعذر تحميل سجل المراجعة",

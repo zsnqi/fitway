@@ -1,8 +1,10 @@
 schemaVersion: 1
 id: owner-activity-log-bidi-and-presentation
-status: APPROVED_PENDING_IMPLEMENTATION_EVIDENCE
+status: IMPLEMENTED_PENDING_INDEPENDENT_REVIEW
 approvedAt: "2026-09-02T20:21:48Z"
 approvedBy: human-rendered-review
+implementedAt: "2026-09-03T14:04:37Z"
+implementedBy: coordinator
 paper:
   file: "FITWAY UX Exploration"
   page: "Page 1"
@@ -26,9 +28,13 @@ paperMutationRequired: false
 reviewEvidence:
   decision: "Explicitly approved by the human with the Activity Log successor."
   approvalRecord: docs/phase-records/handoffs/full-route-paper-fidelity/20260902-202148-activity-log-approved.md
-  routedBefore: PENDING_IMPLEMENTATION
-  routedAfter: PENDING_IMPLEMENTATION
-  independentRenderedReview: PENDING_IMPLEMENTATION
+  routedBefore: output/review/fidelity_activity_before_r01
+  routedAfter: visual-direction-gate/approved/paper-route-authority-20260902/evidence/owner-activity-log
+  implementationRegressionEvidence: >-
+    Requested negative values render in explicit dir=ltr bidi isolates; component and routed tests
+    assert the Arabic row presents -9 with its sign on the leading edge rather than reproducing the
+    awkward sign placement visible in the Paper fixture.
+  independentRenderedReview: PENDING_FINAL_MILESTONE_REVIEW
 acceptanceRule: >-
   This deviation authorizes only evident local presentation corrections. Each meaningful routed
   difference still requires before/after evidence and independent rendered review; broad redesign

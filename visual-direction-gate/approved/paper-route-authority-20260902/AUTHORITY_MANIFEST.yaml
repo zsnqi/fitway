@@ -339,6 +339,28 @@ surfaces:
     humanApprovalRecord: docs/phase-records/handoffs/full-route-paper-fidelity/20260902-202148-activity-log-approved.md
     approvedDeviationIds: [owner-activity-log-bidi-and-presentation]
     requiredStates: [populated, loading, load-failure-retry, no-matching-records]
+    routedCandidateReview: >-
+      Coordinator direct Paper comparison passed for the approved shared-shell successor,
+      bilingual desktop/mobile composition, 320 through 1440 interpolation, 200 percent reflow,
+      keyboard-scrollable records, filter transport, paging, forced colors, reduced motion, axe,
+      and explicit LTR isolation of signed values inside Arabic rows. The rejected r05 screenshot
+      assertion remains intentionally unpromoted pending final human contact-sheet acceptance.
+    routedCandidateEvidence:
+      - { locale: en, viewport: 1440, state: populated, path: evidence/owner-activity-log/owner-audit-populated-en-1440x900.png, bytes: 292743, sha256: 3a309f947d1c73c4cde2ae8c6a70d2c437a4276e1d48d824e3b7b1c229fe83dc }
+      - { locale: ar, viewport: 1440, state: populated, path: evidence/owner-activity-log/owner-audit-populated-ar-1440x900.png, bytes: 278888, sha256: 514c08072c3717699e4a414c88e14ebbacdca8516bf1ee0ef2e255aa9e067feb }
+      - { locale: en, viewport: 390, state: populated, path: evidence/owner-activity-log/owner-audit-populated-en-390x844.png, bytes: 178199, sha256: f43cd5c64cd7c788a57c43cc04027beaebba97284895de02ace0d730f470b28a }
+      - { locale: en, viewport: 390, state: loading, path: evidence/owner-activity-log/owner-audit-loading-en-390x844.png, bytes: 153753, sha256: a6b3527b646d50a50a38b534ad6eae89d4ee0133a10ad27849389188fdd35d47 }
+      - { locale: en, viewport: 390, state: load-failure-retry, path: evidence/owner-activity-log/owner-audit-error-en-390x844.png, bytes: 159020, sha256: ab263af391fa00a41c5315040871088e6b75c68b39749306107ff76612cee9a5 }
+      - { locale: en, viewport: 390, state: no-matching-records, path: evidence/owner-activity-log/owner-audit-empty-en-390x844.png, bytes: 154591, sha256: 4bcb2dabe4fa12eb76ef123eea8924a57919971b7a8fe5d3120d881623e9e584 }
+      - { locale: en, viewport: 360, state: populated, path: evidence/owner-activity-log/owner-audit-en-360x900.png, bytes: 172771, sha256: be16405adac9d29e1f01b5b2eb873689b4f32cf16c6d8ab70d43ed4ccbfbee0d }
+      - { locale: ar, viewport: 360, state: populated, path: evidence/owner-activity-log/owner-audit-ar-360x900.png, bytes: 166199, sha256: 725bafa2e47d1aec0d3d5cfd61abfd1854b116b56fb2264cff48052d08bf02e7 }
+      - { locale: en, viewport: 768, state: populated, path: evidence/owner-activity-log/owner-audit-en-768x1024.png, bytes: 232764, sha256: 530d3fd4bac8349ecdec2134a8534159708a904bacf8d60c71179fa46a598260 }
+      - { locale: ar, viewport: 768, state: populated, path: evidence/owner-activity-log/owner-audit-ar-768x1024.png, bytes: 222985, sha256: a12252d683a1b20df007363af0ddddb4787ab2d379a594c74cb11e587e6045c4 }
+      - { locale: en, viewport: 200-percent, state: text-reflow, path: evidence/owner-activity-log/owner-audit-en-200-percent-reflow.png, bytes: 202483, sha256: df1364ddb573d7dd442aa7307522ac27e7fe33ddf11faf7ec1f3199dd8120377 }
+      - { locale: en, viewport: 1440, state: native-select-open-evidence, path: evidence/owner-activity-log/owner-audit-en-select-desktop-1440x900.png, bytes: 292696, sha256: 24e1b24b2c0dc17cbb485e61dbb1011344150192db0181d81c36a273c73f5c6e }
+      - { locale: ar, viewport: 1440, state: native-select-open-evidence, path: evidence/owner-activity-log/owner-audit-ar-select-desktop-1440x900.png, bytes: 278888, sha256: 514c08072c3717699e4a414c88e14ebbacdca8516bf1ee0ef2e255aa9e067feb }
+      - { locale: en, viewport: 390, state: native-select-open-evidence, path: evidence/owner-activity-log/owner-audit-en-select-mobile-390x844.png, bytes: 139410, sha256: ff520765d928e67ec0aaf82110184e82a38c09e07ef29ff686d4b2d79b7ccd80 }
+      - { locale: ar, viewport: 390, state: native-select-open-evidence, path: evidence/owner-activity-log/owner-audit-ar-select-mobile-390x844.png, bytes: 135525, sha256: 21da3083a7aa5927b4f79e6bd67c2558f3fa05423d5385bbdb66b99acc8c09bd }
     successorLeaves:
       - { nodeId: 1HC7-0, locale: en, viewport: 1440, state: populated, path: owner-activity-log/owner-activity-desktop-en-populated-1440.png, bytes: 1081083, sha256: 3b4f4f9024f5db930bd6f1c7ad6fed6fd2c6c59593bd4db625e19d42f0958340 }
       - { nodeId: 1H76-0, locale: ar, viewport: 1440, state: populated, path: owner-activity-log/owner-activity-desktop-ar-populated-1440.png, bytes: 1054183, sha256: a781884fe9f9307392f180e5efc3e6f9cb34d93bfc34f428885ba1c700240a38 }

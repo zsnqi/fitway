@@ -67,10 +67,12 @@ export function OwnerAuditSection() {
 		<section className="owner-audit" aria-labelledby={fieldId("heading")}>
 			<header className="owner-audit__heading" data-owner-navigation-anchor="">
 				<h1 id={fieldId("heading")}>{messages.title}</h1>
-				<p>{messages.description}</p>
-				<span className="owner-audit__zone">
-					{messages.timeZoneLabel} <bdi>{audit.timeZone}</bdi>
-				</span>
+				<p>
+					{messages.description} ·{" "}
+					<span className="owner-audit__zone">
+						{messages.timeZoneLabel} <bdi>{audit.timeZone}</bdi>
+					</span>
+				</p>
 			</header>
 
 			<form
@@ -78,7 +80,12 @@ export function OwnerAuditSection() {
 				aria-label={messages.filtersLabel}
 				onSubmit={handleSubmit}
 			>
-				<div className="owner-audit-field">
+				<header className="owner-audit-filters__heading">
+					<h2>{messages.filtersLabel}</h2>
+					<p>{messages.ownerOnly}</p>
+				</header>
+
+				<div className="owner-audit-field owner-audit-field--action">
 					<label htmlFor={fieldId("action")}>{messages.actionLabel}</label>
 					<select
 						id={fieldId("action")}
@@ -99,7 +106,7 @@ export function OwnerAuditSection() {
 					</select>
 				</div>
 
-				<div className="owner-audit-field">
+				<div className="owner-audit-field owner-audit-field--actor">
 					<label htmlFor={fieldId("actor")}>{messages.actorLabel}</label>
 					<select
 						id={fieldId("actor")}
@@ -120,7 +127,31 @@ export function OwnerAuditSection() {
 					</select>
 				</div>
 
-				<div className="owner-audit-field">
+				<div className="owner-audit-field owner-audit-field--from">
+					<label htmlFor={fieldId("occurred-from")}>
+						{messages.occurredFromLabel}
+					</label>
+					<input
+						id={fieldId("occurred-from")}
+						type="date"
+						value={draft.occurredFromDay}
+						onChange={(event) => update("occurredFromDay", event.target.value)}
+					/>
+				</div>
+
+				<div className="owner-audit-field owner-audit-field--to">
+					<label htmlFor={fieldId("occurred-to")}>
+						{messages.occurredToLabel}
+					</label>
+					<input
+						id={fieldId("occurred-to")}
+						type="date"
+						value={draft.occurredToDay}
+						onChange={(event) => update("occurredToDay", event.target.value)}
+					/>
+				</div>
+
+				<div className="owner-audit-field owner-audit-field--prior">
 					<label htmlFor={fieldId("prior-mode")}>{messages.priorLabel}</label>
 					<div className="owner-audit-field__controls">
 						<select
@@ -151,7 +182,7 @@ export function OwnerAuditSection() {
 					</div>
 				</div>
 
-				<div className="owner-audit-field">
+				<div className="owner-audit-field owner-audit-field--effective">
 					<label htmlFor={fieldId("effective-mode")}>
 						{messages.effectiveLabel}
 					</label>
@@ -185,31 +216,7 @@ export function OwnerAuditSection() {
 					</div>
 				</div>
 
-				<div className="owner-audit-field">
-					<label htmlFor={fieldId("occurred-from")}>
-						{messages.occurredFromLabel}
-					</label>
-					<input
-						id={fieldId("occurred-from")}
-						type="date"
-						value={draft.occurredFromDay}
-						onChange={(event) => update("occurredFromDay", event.target.value)}
-					/>
-				</div>
-
-				<div className="owner-audit-field">
-					<label htmlFor={fieldId("occurred-to")}>
-						{messages.occurredToLabel}
-					</label>
-					<input
-						id={fieldId("occurred-to")}
-						type="date"
-						value={draft.occurredToDay}
-						onChange={(event) => update("occurredToDay", event.target.value)}
-					/>
-				</div>
-
-				<div className="owner-audit-field">
+				<div className="owner-audit-field owner-audit-field--reason">
 					<label htmlFor={fieldId("reason-mode")}>{messages.reasonLabel}</label>
 					<div className="owner-audit-field__controls">
 						<select
@@ -252,7 +259,7 @@ export function OwnerAuditSection() {
 			) : null}
 			{audit.status === "success" ? (
 				audit.entries.length === 0 ? (
-					<OwnerAuditEmpty />
+					<OwnerAuditEmpty onClear={handleClear} />
 				) : (
 					<>
 						<OwnerAuditTable

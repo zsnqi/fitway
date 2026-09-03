@@ -1,6 +1,6 @@
 import type { AuditEntryView } from "@fitway/api/audit/list";
 import { Button } from "@fitway/ui/components/button";
-import { AlertTriangle, History, RefreshCw, ScrollText } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 
 import { formatDate, formatGymTime, formatNumber } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
@@ -135,8 +135,15 @@ export function OwnerAuditTable({
 	// (`DESIGN_GUIDE.md` §8, §13). The same spread is used by the analytics table.
 	const keyboardScrollable = { tabIndex: 0 };
 	return (
-		<>
-			<p className="owner-audit__scroll-hint">{messages.scrollHint}</p>
+		<section className="owner-audit-board">
+			<header className="owner-audit-board__heading">
+				<h2>{messages.tableRegion}</h2>
+				<p className="owner-audit-board__count">
+					{messages.resultsCount}{" "}
+					<bdi>{formatNumber(entries.length, locale)}</bdi>
+				</p>
+				<p className="owner-audit__scroll-hint">{messages.scrollHint}</p>
+			</header>
 			<section
 				className="owner-audit-region"
 				aria-label={messages.tableRegion}
@@ -206,7 +213,7 @@ export function OwnerAuditTable({
 					</tbody>
 				</table>
 			</section>
-		</>
+		</section>
 	);
 }
 
@@ -219,7 +226,6 @@ export function OwnerAuditLoading() {
 			aria-live="polite"
 			data-owner-audit-state="loading"
 		>
-			<History aria-hidden="true" />
 			<div>
 				<h3>{messages.loading}</h3>
 				<p>{messages.loadingDescription}</p>
@@ -241,7 +247,6 @@ export function OwnerAuditError({ onRetry }: { onRetry: () => void }) {
 			role="alert"
 			data-owner-audit-state="error"
 		>
-			<AlertTriangle aria-hidden="true" />
 			<div>
 				<h3>{messages.errorTitle}</h3>
 				<p>{messages.errorDescription}</p>
@@ -254,7 +259,7 @@ export function OwnerAuditError({ onRetry }: { onRetry: () => void }) {
 	);
 }
 
-export function OwnerAuditEmpty() {
+export function OwnerAuditEmpty({ onClear }: { onClear: () => void }) {
 	const messages = useOwnerAuditMessages();
 	return (
 		<section
@@ -262,11 +267,13 @@ export function OwnerAuditEmpty() {
 			role="status"
 			data-owner-audit-state="empty"
 		>
-			<ScrollText aria-hidden="true" />
 			<div>
 				<h3>{messages.emptyTitle}</h3>
 				<p>{messages.emptyDescription}</p>
 			</div>
+			<Button type="button" variant="outline" onClick={onClear}>
+				{messages.clear}
+			</Button>
 		</section>
 	);
 }
