@@ -181,19 +181,18 @@ test("owner curve preserves exact states, historical timezones, and RTL/LTR inte
 		page.getByRole("heading", { name: "التحليلات اليومية" }),
 	).toBeVisible();
 	await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-	await expect(
-		page.getByText("تقدير لمرات الدخول، وليس لعدد الأعضاء الفريدين"),
-	).toBeVisible();
+	// Owner-facing comparison detail only: observed vs scheduled open
+	// minutes. No implementation-disclaimer copy in the reading flow.
+	await expect(page.getByText("6 من 8 دقيقة عمل")).toBeVisible();
+	await expect(page.locator("body")).not.toContainText(/تقدير لمرات الدخول/u);
 	await expect(
 		page.locator(".owner-chart__closed, .owner-chart__missing"),
 	).toHaveCount(0);
+	// Both one-minute gaps keep honest stems but earn no dimension hardware.
 	await expect(page.locator(".owner-chart__gap-stem")).toHaveCount(4);
-	await expect(page.locator(".owner-chart__gap-bracket")).toHaveCount(2);
-	await expect(page.locator(".owner-chart__gap-tick")).toHaveCount(4);
-	await expect(page.locator(".owner-chart__gap-label")).toHaveCount(2);
-	await expect(page.locator(".owner-chart__gap-label").first()).toContainText(
-		"1",
-	);
+	await expect(page.locator(".owner-chart__gap-bracket")).toHaveCount(0);
+	await expect(page.locator(".owner-chart__gap-tick")).toHaveCount(0);
+	await expect(page.locator(".owner-chart__gap-label")).toHaveCount(0);
 	// Human decision 2026-09-05: no zero-square marker. The genuine zero
 	// stays truthful through the line at zero plus the Observed table row.
 	await expect(page.locator(".owner-chart__zero")).toHaveCount(0);
@@ -566,29 +565,18 @@ test("both locales recompose without page overflow at every required width and p
 						coreGeometry.ringHeight / 2,
 				),
 			).toBeLessThanOrEqual(1);
-			// Paper gap language is viewport-specific: desktop shows the
-			// dimension bracket, ticks, and duration label; mobile shows the
-			// dashed stems only. SVG lines have empty geometric boxes, so the
-			// rule is asserted through computed display, not visibility.
-			const gapBracketDisplay = await page
-				.locator(".owner-chart__gap-bracket")
-				.first()
-				.evaluate((element) => getComputedStyle(element).display);
-			const gapLabelDisplay = await page
-				.locator(".owner-chart__gap-label")
-				.first()
-				.evaluate((element) => getComputedStyle(element).display);
+			// Gap language is size-aware: one-minute absences keep honest
+			// dashed stems at every width but earn no dimension hardware
+			// anywhere — this dataset's gaps are all one minute, so no
+			// bracket, tick, or duration label exists to display. SVG lines
+			// have empty geometric boxes, so the rule is asserted through
+			// computed display, not visibility.
+			await expect(page.locator(".owner-chart__gap-bracket")).toHaveCount(0);
+			await expect(page.locator(".owner-chart__gap-label")).toHaveCount(0);
 			const gapStemDisplay = await page
 				.locator(".owner-chart__gap-stem")
 				.first()
 				.evaluate((element) => getComputedStyle(element).display);
-			if (width <= 720) {
-				expect(gapBracketDisplay).toBe("none");
-				expect(gapLabelDisplay).toBe("none");
-			} else {
-				expect(gapBracketDisplay).not.toBe("none");
-				expect(gapLabelDisplay).not.toBe("none");
-			}
 			expect(gapStemDisplay).not.toBe("none");
 
 			const overflow = await page.evaluate(
@@ -604,6 +592,97 @@ test("both locales recompose without page overflow at every required width and p
 		const results = await new AxeBuilder({ page }).analyze();
 		expect(seriousViolations(results)).toEqual([]);
 	}
+});
+
+test("a story-relevant gap keeps the desktop dimension treatment and mobile stems", async ({
+	page,
+}) => {
+	const longGapDaily = {
+		...mixedDaily,
+		timeline: [
+			{
+				state: "closed",
+				minuteStartUtc: "2026-07-21T06:59:00.000Z",
+				count: null,
+				settingsVersion: 11,
+			},
+			{
+				state: "value",
+				minuteStartUtc: "2026-07-21T07:00:00.000Z",
+				count: 10,
+				entries: 10,
+				exits: 0,
+				band: "quiet",
+				capacitySnapshot: 100,
+				settingsVersion: 11,
+				source: "live",
+			},
+			...[
+				"2026-07-21T07:01:00.000Z",
+				"2026-07-21T07:02:00.000Z",
+				"2026-07-21T07:03:00.000Z",
+				"2026-07-21T07:04:00.000Z",
+				"2026-07-21T07:05:00.000Z",
+			].map((minuteStartUtc) => ({
+				state: "missing",
+				minuteStartUtc,
+				count: null,
+				settingsVersion: 11,
+			})),
+			{
+				state: "value",
+				minuteStartUtc: "2026-07-21T07:06:00.000Z",
+				count: 40,
+				entries: 30,
+				exits: 0,
+				band: "moderate",
+				capacitySnapshot: 100,
+				settingsVersion: 12,
+				source: "backfill",
+			},
+			{
+				state: "closed",
+				minuteStartUtc: "2026-07-21T07:07:00.000Z",
+				count: null,
+				settingsVersion: 12,
+			},
+		],
+		peak: {
+			minuteStartUtc: "2026-07-21T07:06:00.000Z",
+			count: 40,
+			band: "moderate",
+			capacitySnapshot: 100,
+			settingsVersion: 12,
+		},
+		dailyAverage: 25,
+		estimatedEntranceCrossings: 40,
+		observedOpenMinutes: 2,
+		expectedOpenMinutes: 7,
+		coverage: 2 / 7,
+	};
+	await mockOwnerAnalytics(page, longGapDaily);
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await page.goto("/admin");
+	await expect(page.locator(".owner-chart__gap-stem")).toHaveCount(2);
+	await expect(page.locator(".owner-chart__gap-bracket")).toHaveCount(1);
+	await expect(page.locator(".owner-chart__gap-tick")).toHaveCount(2);
+	await expect(page.locator(".owner-chart__gap-label")).toHaveCount(1);
+	await expect(page.locator(".owner-chart__gap-label")).toContainText("5");
+
+	await page.setViewportSize({ width: 390, height: 844 });
+	const bracketDisplay = await page
+		.locator(".owner-chart__gap-bracket")
+		.evaluate((element) => getComputedStyle(element).display);
+	const labelDisplay = await page
+		.locator(".owner-chart__gap-label")
+		.evaluate((element) => getComputedStyle(element).display);
+	const stemDisplay = await page
+		.locator(".owner-chart__gap-stem")
+		.first()
+		.evaluate((element) => getComputedStyle(element).display);
+	expect(bracketDisplay).toBe("none");
+	expect(labelDisplay).toBe("none");
+	expect(stemDisplay).not.toBe("none");
 });
 
 test("loading, transport error, missing-only, and scheduled-closed days stay distinct", async ({

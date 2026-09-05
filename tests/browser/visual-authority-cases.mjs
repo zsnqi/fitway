@@ -420,7 +420,7 @@ const acceptedCanonicalOverrides = Object.freeze({
 		routedPath:
 			"win32/chromium/staff-paper-fidelity.review.spec.ts/staff-live-route-ar-desktop-1440x900.png",
 		routedSha256:
-			"aa16abd05cc1a779cc8a5984bc655ddf36fc164dabcaae44bbab066837341696",
+			"83edb648c0b54761cda68b972a547f16616a40f8465efaec6e4c04c471e48f05",
 	},
 	"staff--live--en--mobile": {
 		leafExportPath: "staff/staff-live-en-390.png",
@@ -429,7 +429,7 @@ const acceptedCanonicalOverrides = Object.freeze({
 		routedPath:
 			"win32/chromium/staff-paper-fidelity.review.spec.ts/staff-live-route-en-mobile-390x844.png",
 		routedSha256:
-			"944c51dead7f99a1a093d42df4e42a8ee2f70cc34b4faf9246044a114b93676c",
+			"af5b883af002aa87f15031aee3677aaf7e74b7bbb408588c922c37de64faa356",
 	},
 	"staff--closed--ar--mobile": {
 		leafExportPath: "staff/staff-closed-ar-390.png",
@@ -474,7 +474,7 @@ const acceptedCanonicalOverrides = Object.freeze({
 		routedPath:
 			"win32/chromium/phase9-owner-ui.browser.spec.ts/owner-daily-route-ar-desktop-1440x900.png",
 		routedSha256:
-			"936064884879efbe725ec5a26b852121a45e816738e1074ce4ee86ca1a67f258",
+			"ee2e0e24c96281052eabe51e355a2270bc62bd28ab3a0b2e3614e208e064992b",
 	},
 	"ownerDaily--completed--en--mobile": {
 		leafExportPath: "owner-daily/owner-daily-closed-en-390.png",
@@ -483,7 +483,7 @@ const acceptedCanonicalOverrides = Object.freeze({
 		routedPath:
 			"win32/chromium/phase9-owner-ui.browser.spec.ts/owner-daily-route-en-mobile-390x844.png",
 		routedSha256:
-			"03c4293bc5ea96408374c08f6b9d299278fe32201ef2ec811659c2fb54cb1989",
+			"c4c1668eeb0d4e1f35343d2e03760ddc97ce2e2a4d4386ac2c73a1000381d9b7",
 	},
 	"ownerActivityLog--populated--ar--desktop": {
 		leafExportPath:
@@ -503,7 +503,7 @@ const acceptedCanonicalOverrides = Object.freeze({
 		routedPath:
 			"win32/chromium/phase11-audit.browser.spec.ts/owner-audit-route-en-mobile-390x844.png",
 		routedSha256:
-			"bc3e9149303cfc9bd5a77d9248561ba188ac12ff400d4d9f893f4f0ce8d17023",
+			"2e6e223ed2566aecbfb8670fdbbcfb44221f8c83a444aec0b5525edc4e6d204b",
 	},
 	"ownerSystemStatus--populated--ar--desktop": {
 		leafExportPath:
@@ -513,7 +513,7 @@ const acceptedCanonicalOverrides = Object.freeze({
 		routedPath:
 			"win32/chromium/phase11-health.browser.spec.ts/owner-health-route-ar-desktop-1440x900.png",
 		routedSha256:
-			"c95c6188ef5f3a70383808c4ffa37bad7d1018e7e365c99c16c678f6a4116c49",
+			"83fdc9ee2d5c679a213a9ff3b0d96ef406476169d0ef2d8253ff2228a613c031",
 	},
 	"ownerSystemStatus--populated--en--mobile": {
 		leafExportPath: "owner-system-status/owner-system-status-mobile-en-390.png",
@@ -522,7 +522,7 @@ const acceptedCanonicalOverrides = Object.freeze({
 		routedPath:
 			"win32/chromium/phase11-health.browser.spec.ts/owner-health-route-en-mobile-390x844.png",
 		routedSha256:
-			"8a7fb77edad35571725dd4278960bc272d9160ff9389ae9e00a78a8764b213a9",
+			"b8168d9bab5c42c2ebe130eef98b87ff7ab3195d61538123900cc59525a67d55",
 	},
 	"ownerSettings--clean--en--desktop": {
 		leafExportPath: "owner-settings/owner-settings-desktop-en-1440.png",

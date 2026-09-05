@@ -127,8 +127,15 @@ export function OwnerReportingExport({
 							/>
 						</div>
 						<div className="owner-reporting-range__actions">
+							{/*
+							 * Export stays visually secondary to reading: the
+							 * outline treatment keeps it discoverable and fully
+							 * functional without competing with Apply or the
+							 * report figures, especially on mobile.
+							 */}
 							<Button
 								type="submit"
+								variant="outline"
 								data-owner-reporting-export-start=""
 								disabled={exporting || problem !== null}
 							>

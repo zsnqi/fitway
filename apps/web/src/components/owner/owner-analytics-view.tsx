@@ -134,6 +134,19 @@ type GapSegment = {
 };
 
 /**
+ * Gaps shorter than this keep their honest dashed stems but earn no
+ * dimension bracket, end ticks, or duration label. A lone missing minute
+ * (the routine one-minute outage cadence) is truthful as a stem pair; naming
+ * every one of them annotates noise instead of information. Longer,
+ * story-relevant absences keep the full Paper dimension treatment, and every
+ * gap of any length stays exact in tooltips and the semantic table.
+ */
+export const MIN_ANNOTATED_GAP_MINUTES = 3;
+
+/** How many clock-aligned time ticks the x-axis shows at most. */
+export const OWNER_CHART_MAX_TIME_TICKS = 5;
+
+/**
  * Interior absent stretches only: a maximal run of consecutive non-value
  * buckets with an observed value on both sides. Leading/trailing absent
  * ranges (overnight closed, not-yet-observed) stay in the semantic table but
@@ -183,6 +196,114 @@ function valueRuns(timeline: readonly AnalyticsTimelineBucket[]) {
 		}
 	}
 	return runs;
+}
+
+const NICE_COUNT_STEPS = [5, 10, 20, 25, 50, 100, 200, 500, 1000] as const;
+
+/**
+ * Intentional count scale: the ceiling is the smallest nice multiple at or
+ * above the true peak (never capped, never averaged — the peak keeps its
+ * exact ordinate), and the ticks are the nice multiples between zero and the
+ * ceiling. Replaces the mechanical max / two-thirds / one-third labels with
+ * readable round numbers while every observation keeps its exact value.
+ */
+export function niceCountScale(rawMaxCount: number): {
+	niceMax: number;
+	ticks: number[];
+} {
+	const safe = Math.max(1, Math.floor(rawMaxCount));
+	const step =
+		NICE_COUNT_STEPS.find((candidate) => Math.ceil(safe / candidate) <= 4) ??
+		1000;
+	const niceMax = Math.max(20, Math.ceil(safe / step) * step);
+	const ticks: number[] = [];
+	for (let value = niceMax; value >= 0; value -= step) ticks.push(value);
+	return { niceMax, ticks };
+}
+
+function gymLocalMinute(instant: Date, timeZone: string): number | null {
+	try {
+		const parts = new Intl.DateTimeFormat("en-US", {
+			timeZone,
+			hour: "2-digit",
+			minute: "2-digit",
+			hourCycle: "h23",
+		}).formatToParts(instant);
+		const minute = Number(parts.find((part) => part.type === "minute")?.value);
+		return Number.isSafeInteger(minute) ? minute : null;
+	} catch {
+		return null;
+	}
+}
+
+export type OwnerChartTimeTick = {
+	index: number;
+	bucket: AnalyticsTimelineBucket;
+};
+
+/**
+ * Intentional time ticks: up to `maxTicks` positions snapped to gym-clock
+ * hour boundaries, always including the domain ends so the axis shows the
+ * data extent. Short spans without enough hour boundaries fall back to evenly
+ * spaced distinct minutes (never a duplicated time). Replaces the mechanical
+ * seven-slot index mapping, which could print the same minute twice on short
+ * days and arbitrary mid-hour times on long ones.
+ */
+export function intentionalTimeTicks(
+	timeline: readonly AnalyticsTimelineBucket[],
+	timeZoneByVersion: ReadonlyMap<number, string>,
+	maxTicks: number = OWNER_CHART_MAX_TIME_TICKS,
+): OwnerChartTimeTick[] {
+	if (timeline.length === 0 || maxTicks <= 0) return [];
+	const count = Math.min(maxTicks, timeline.length);
+	if (count === 1) {
+		const only = timeline[0];
+		return only ? [{ index: 0, bucket: only }] : [];
+	}
+	const hourBoundary = new Set<number>();
+	timeline.forEach((bucket, index) => {
+		if (!bucket) return;
+		const timeZone = timeZoneByVersion.get(bucket.settingsVersion);
+		if (!timeZone) return;
+		if (gymLocalMinute(new Date(bucket.minuteStartUtc), timeZone) === 0) {
+			hourBoundary.add(index);
+		}
+	});
+	const last = timeline.length - 1;
+	if (hourBoundary.size >= 2) {
+		const chosen = new Set<number>([0]);
+		for (let slot = 1; slot < count - 1; slot += 1) {
+			const target = Math.round((slot / (count - 1)) * last);
+			let best = -1;
+			let distance = Number.POSITIVE_INFINITY;
+			for (const candidate of hourBoundary) {
+				const next = Math.abs(candidate - target);
+				if (next < distance) {
+					distance = next;
+					best = candidate;
+				}
+			}
+			if (best >= 0) chosen.add(best);
+		}
+		chosen.add(last);
+		return [...chosen]
+			.sort((left, right) => left - right)
+			.flatMap((index) => {
+				const bucket = timeline[index];
+				return bucket ? [{ index, bucket }] : [];
+			});
+	}
+	const indices = new Set<number>(
+		Array.from({ length: count }, (_unused, slot) =>
+			Math.round((slot / (count - 1)) * last),
+		),
+	);
+	return [...indices]
+		.sort((left, right) => left - right)
+		.flatMap((index) => {
+			const bucket = timeline[index];
+			return bucket ? [{ index, bucket }] : [];
+		});
 }
 
 export function smoothPath(
@@ -411,7 +532,9 @@ function OccupancyChart({
 	const chartHeight = height - padTop - padBottom;
 	const baseY = padTop + chartHeight;
 	const rawMaxCount = Math.max(1, ...values.map(({ bucket }) => bucket.count));
-	const maxCount = Math.max(20, Math.ceil(rawMaxCount / 20) * 20);
+	// Intentional readable scale: a nice ceiling at or above the true peak
+	// with round intermediate ticks. Extrema and timestamps are untouched.
+	const { niceMax: maxCount, ticks: countTicks } = niceCountScale(rawMaxCount);
 	const xFor = (index: number) => {
 		const ratio =
 			daily.timeline.length <= 1 ? 0.5 : index / (daily.timeline.length - 1);
@@ -450,18 +573,10 @@ function OccupancyChart({
 			: fallbackMobile
 				? 11
 				: 10;
-	// Seven evenly spaced slots like Paper's hour ticks. Sparse timelines can
-	// map several slots onto the same minute; repeats render blank so the time
-	// is never shown twice.
-	const tickSeen = new Set<number>();
-	const tickSlots = Array.from({ length: 7 }, (_unused, slot) => {
-		const index = Math.round(
-			(slot / 6) * Math.max(0, daily.timeline.length - 1),
-		);
-		if (tickSeen.has(index)) return { index, bucket: undefined };
-		tickSeen.add(index);
-		return { index, bucket: daily.timeline[index] };
-	});
+	// Intentional clock-aligned time ticks (domain ends included, hour
+	// boundaries preferred, never a duplicated time). Exact per-minute detail
+	// stays available through pointer/keyboard selection and the table.
+	const timeTicks = intentionalTimeTicks(daily.timeline, timeZoneByVersion);
 
 	function moveActive(delta: number) {
 		setHasSelected(true);
@@ -524,10 +639,9 @@ function OccupancyChart({
 			</div>
 			<div className="owner-chart-layout">
 				<div className="owner-chart-y-axis" aria-hidden="true">
-					<span>{formatNumber(maxCount, locale)}</span>
-					<span>{formatNumber(Math.round((maxCount * 2) / 3), locale)}</span>
-					<span>{formatNumber(Math.round(maxCount / 3), locale)}</span>
-					<span>{formatNumber(0, locale)}</span>
+					{countTicks.map((tick) => (
+						<span key={tick}>{formatNumber(tick, locale)}</span>
+					))}
 				</div>
 				<div className="owner-chart-plot">
 					<button
@@ -546,14 +660,14 @@ function OccupancyChart({
 							preserveAspectRatio="none"
 							aria-hidden="true"
 						>
-							{[0, 1 / 3, 2 / 3, 1].map((ratio) => (
+							{countTicks.map((tick) => (
 								<line
-									key={ratio}
+									key={tick}
 									className="owner-chart__grid"
 									x1={padX}
 									x2={width - padX}
-									y1={padTop + ratio * chartHeight}
-									y2={padTop + ratio * chartHeight}
+									y1={padTop + (1 - tick / maxCount) * chartHeight}
+									y2={padTop + (1 - tick / maxCount) * chartHeight}
 								/>
 							))}
 							{gaps.flatMap((gap) => {
@@ -571,7 +685,10 @@ function OccupancyChart({
 								const rightX = xFor(right.index);
 								// Paper's dimension bracket: a thin rule spanning the
 								// stems with short end ticks, duration label beneath.
+								// Only story-relevant gaps earn it; tiny gaps keep
+								// their honest stems without the persistent hardware.
 								const bracketY = baseY - 26;
+								const annotated = gap.minutes >= MIN_ANNOTATED_GAP_MINUTES;
 								return [
 									<line
 										key={`${gap.start}-left`}
@@ -589,30 +706,34 @@ function OccupancyChart({
 										y1={yFor(right.bucket.count)}
 										y2={baseY}
 									/>,
-									<line
-										key={`${gap.start}-bracket`}
-										className="owner-chart__gap-bracket"
-										x1={leftX}
-										x2={rightX}
-										y1={bracketY}
-										y2={bracketY}
-									/>,
-									<line
-										key={`${gap.start}-tick-left`}
-										className="owner-chart__gap-tick"
-										x1={leftX}
-										x2={leftX}
-										y1={bracketY - 5}
-										y2={bracketY + 5}
-									/>,
-									<line
-										key={`${gap.start}-tick-right`}
-										className="owner-chart__gap-tick"
-										x1={rightX}
-										x2={rightX}
-										y1={bracketY - 5}
-										y2={bracketY + 5}
-									/>,
+									...(annotated
+										? [
+												<line
+													key={`${gap.start}-bracket`}
+													className="owner-chart__gap-bracket"
+													x1={leftX}
+													x2={rightX}
+													y1={bracketY}
+													y2={bracketY}
+												/>,
+												<line
+													key={`${gap.start}-tick-left`}
+													className="owner-chart__gap-tick"
+													x1={leftX}
+													x2={leftX}
+													y1={bracketY - 5}
+													y2={bracketY + 5}
+												/>,
+												<line
+													key={`${gap.start}-tick-right`}
+													className="owner-chart__gap-tick"
+													x1={rightX}
+													x2={rightX}
+													y1={bracketY - 5}
+													y2={bracketY + 5}
+												/>,
+											]
+										: []),
 								];
 							})}
 							{runs.map((run) => {
@@ -774,33 +895,35 @@ function OccupancyChart({
 								</span>
 							</span>
 						) : null}
-						{gaps.map((gap) => {
-							const leftX = xFor(gap.start - 1);
-							const rightX = xFor(gap.end + 1);
-							const labelRatio = (leftX + rightX) / 2 / width;
-							return (
-								<span
-									key={`gap-${gap.start}`}
-									className="owner-chart__gap-label"
-									aria-hidden="true"
-									style={{
-										left: clampedCaptionLeft(labelRatio, 40),
-									}}
-								>
-									{formatNumber(gap.minutes, locale)} {messages.gapMinutes}
-								</span>
-							);
-						})}
+						{gaps
+							.filter((gap) => gap.minutes >= MIN_ANNOTATED_GAP_MINUTES)
+							.map((gap) => {
+								const leftX = xFor(gap.start - 1);
+								const rightX = xFor(gap.end + 1);
+								const labelRatio = (leftX + rightX) / 2 / width;
+								return (
+									<span
+										key={`gap-${gap.start}`}
+										className="owner-chart__gap-label"
+										aria-hidden="true"
+										style={{
+											left: clampedCaptionLeft(labelRatio, 40),
+										}}
+									>
+										{formatNumber(gap.minutes, locale)} {messages.gapMinutes}
+									</span>
+								);
+							})}
 					</button>
 					<div className="owner-chart-x-axis" aria-hidden="true">
-						{tickSlots.map(({ index, bucket }, slot) => (
+						{timeTicks.map(({ index, bucket }) => (
 							<span
-								key={`${index}-${slot}`}
+								key={index}
 								style={{
 									left: clampedCaptionLeft(xFor(index) / width, 30),
 								}}
 							>
-								{bucket ? bucketTime(bucket, locale, timeZoneByVersion) : ""}
+								{bucketTime(bucket, locale, timeZoneByVersion)}
 							</span>
 						))}
 					</div>
@@ -968,7 +1091,9 @@ export function OwnerAnalyticsView({
 								? closedDay
 									? messages.closedToday
 									: messages.noReadingsYet
-								: messages.crossingsNote
+								: // Concise observed-vs-scheduled comparison for the
+									// total; no methodology disclaimer in the flow.
+									`${formatNumber(daily.observedOpenMinutes, locale)} ${messages.crossingsOf} ${formatNumber(daily.expectedOpenMinutes, locale)} ${messages.crossingsOpenMinutes}`
 						}
 					/>
 				</div>

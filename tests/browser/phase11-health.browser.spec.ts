@@ -366,6 +366,27 @@ async function hideShellSkipLink(page: Page) {
 	await expect(page.locator(".operations-skip-link")).toBeHidden();
 }
 
+/**
+ * The section tablist reveals the active tab through layout/observer-driven
+ * scrolling, whose settled offset races font loading run to run. Centering
+ * the active tab after layout settles — twice, so a late observer-driven
+ * minimal reveal cannot win — keeps the composition baseline deterministic
+ * without touching production behavior.
+ */
+async function stabilizeSectionTabs(page: Page) {
+	const center = () =>
+		page.evaluate(() => {
+			document
+				.querySelector(
+					'.owner-section-switch > .owner-analytics-mode__tabs [role="tab"][aria-selected="true"]',
+				)
+				?.scrollIntoView({ block: "nearest", inline: "center" });
+		});
+	await center();
+	await page.waitForTimeout(300);
+	await center();
+}
+
 test("the summary reads in the gym timezone and adds no request to a neighbour", async ({
 	page,
 }) => {
@@ -665,6 +686,7 @@ test("canonical routed desktop Arabic and mobile English health compositions mat
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await expect(page.locator(incidentTable)).toBeVisible();
 	await page.evaluate(() => document.fonts.ready);
+	await stabilizeSectionTabs(page);
 	await expect(page).toHaveScreenshot(
 		"owner-health-route-ar-desktop-1440x900.png",
 		{
@@ -676,6 +698,7 @@ test("canonical routed desktop Arabic and mobile English health compositions mat
 	await page.setViewportSize({ width: 390, height: 844 });
 	await expect(page.locator(incidentTable)).toBeVisible();
 	await page.evaluate(() => document.fonts.ready);
+	await stabilizeSectionTabs(page);
 	await expect(page).toHaveScreenshot(
 		"owner-health-route-en-mobile-390x844.png",
 		{

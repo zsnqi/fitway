@@ -271,6 +271,19 @@ html[dir="rtl"] .public-site-header__brand {
 	font-weight: 600;
 }
 
+/*
+ * Freshness is its own hierarchy row, not a caption glued to the large band
+ * value: a quiet rule plus breathing room separates the live/last-known line
+ * from the occupancy state above, matching the Staff board's separated
+ * freshness rhythm while keeping Public's capacity-free crowd-first order.
+ */
+.public-live__metric--band .public-live__freshness {
+	max-inline-size: 840px;
+	margin-block-start: 14px;
+	padding-block-start: 12px;
+	border-block-start: 1px solid rgb(255 255 255 / 8%);
+}
+
 .public-live__broadcast {
 	inline-size: 7px;
 	block-size: 7px;

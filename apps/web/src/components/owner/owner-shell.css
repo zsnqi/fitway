@@ -561,20 +561,28 @@
 	}
 }
 
-/* Settings leaf 1G2Y-0 / 1FNO-0 uses the localized single upper wash.
-   Keep this accepted page material local to Settings within the shared shell. */
+/* Settings leaf 1G2Y-0 / 1FNO-0 keeps its restrained form-focused identity,
+   but the atmosphere stays in the shared Owner family: the same dual-glow
+   language as the shell, at a quieter opacity, instead of a separate
+   single-wash application feel. */
 .owner-shell:has(.owner-section-switch__panel--settings:not([hidden])) {
 	--owner-settings-wash-x: 14%;
 	--owner-settings-wash-y: 12%;
-	--owner-settings-wash-opacity: 56%;
-	--owner-settings-wash-stop: 38%;
 	background-color: var(--fw-obsidian);
-	background-image: radial-gradient(
-		circle farthest-corner at var(--owner-settings-wash-x)
-			var(--owner-settings-wash-y) in oklab,
-		oklab(27.3% 0.094 0.032 / var(--owner-settings-wash-opacity)) 0%,
-		oklab(0% 0 0 / 0%) var(--owner-settings-wash-stop)
-	);
+	background-image:
+		radial-gradient(
+			ellipse 82% 64% at var(--owner-settings-wash-x)
+				var(--owner-settings-wash-y) in oklab,
+			oklab(31.3% 0.109 0.036 / 30%) 0%,
+			oklab(27.3% 0.094 0.032 / 10%) 48%,
+			oklab(13.9% -0.001 -0.003 / 0%) 78%
+		),
+		radial-gradient(
+			ellipse 96% 70% at 88% 82% in oklab,
+			oklab(27.3% 0.094 0.032 / 24%) 0%,
+			oklab(27.3% 0.094 0.032 / 8%) 52%,
+			oklab(13.9% -0.001 -0.003 / 0%) 82%
+		);
 }
 :where([lang="ar"])
 	.owner-shell:has(.owner-section-switch__panel--settings:not([hidden])) {
@@ -583,7 +591,5 @@
 @media (max-width: 720px) {
 	.owner-shell:has(.owner-section-switch__panel--settings:not([hidden])) {
 		--owner-settings-wash-y: 8%;
-		--owner-settings-wash-opacity: 60%;
-		--owner-settings-wash-stop: 28%;
 	}
 }

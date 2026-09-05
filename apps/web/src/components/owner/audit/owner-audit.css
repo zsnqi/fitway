@@ -138,9 +138,20 @@
 	font-family: inherit;
 }
 
-/* Preserve a clear native-arrow lane at inline-end in both LTR and RTL. */
+/*
+ * A mode select and its value partner are not equal work: the select holds a
+ * full sentence-length label while the partner holds a small count or a short
+ * search term. Give the select the larger fractional track so its longest
+ * localized option keeps a small shaping margin even at 320px, while the value
+ * control retains a usable floor.
+ *
+ * Native chevron lane, both directions: the arrow sits at inline-end in LTR
+ * and RTL alike, so the lane is logical. The 40px inset keeps Arabic option
+ * text clear of the glyph with a comfortable optical margin while the native
+ * control — and its keyboard behavior — stays untouched.
+ */
 .owner-audit-filters select {
-	padding-inline-end: 36px;
+	padding-inline-end: 40px;
 }
 
 .owner-audit-filters :is(select, input):focus-visible {
@@ -258,7 +269,9 @@
 	z-index: 1;
 	inset-block-start: 0;
 	color: var(--fw-text-muted);
-	background: var(--fw-material-table, rgb(12 13 15 / 92%));
+	/* Shared warm-charcoal header step: anchors the table without dropping
+	   to flat black, matching the reporting and health tables. */
+	background: rgb(24 22 24 / 88%);
 	font-size: 12px;
 	white-space: nowrap;
 }

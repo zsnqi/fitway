@@ -139,6 +139,24 @@ function bandForDemoCount(count: number) {
 	return "packed" as const;
 }
 
+/**
+ * Demo-only live-tail seed, deterministic per Riyadh business day.
+ *
+ * The simulator's canonical `next_flow` random walk is untouched production
+ * semantics; only the demo harness seed varies. A fixed seed every day made
+ * the live tail repeat the identical random shape at any time of day, which
+ * reads as incoherent against the time-of-day gym curve the seed profile
+ * starts from. Deriving the seed from the business day keeps the tail stable
+ * across resets within one demo day while varying believably across days.
+ */
+export function demoSimulatorSeed(businessDay: string): number {
+	let hash = PROFILE_SEED >>> 0;
+	for (let index = 0; index < businessDay.length; index += 1) {
+		hash = (hash * 31 + businessDay.charCodeAt(index)) >>> 0;
+	}
+	return hash % 2_147_483_647;
+}
+
 export function shapeDemoHistory<
 	TRow extends {
 		minuteStartUtc: Date;

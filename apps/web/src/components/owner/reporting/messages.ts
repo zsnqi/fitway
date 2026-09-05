@@ -20,8 +20,7 @@ export const ownerReportingMessages = {
 		pageTitle: "Analytics",
 		gymTime: "Gym time",
 		title: "Busiest times and direction",
-		description:
-			"How the week actually fills, by weekday and gym-local hour · every average is measured on observed open minutes only",
+		description: "How the week actually fills, by weekday and gym-local hour",
 		timeZoneLabel: "Gym timezone",
 		windowLabel: "Window",
 		windowDays: "Business days",
@@ -70,8 +69,7 @@ export const ownerReportingMessages = {
 		selectedMissing: "No history was recorded for this hour.",
 
 		tableSummary: "Heatmap data disclosure",
-		tableDescription:
-			"Text equivalent for value, zero, closed, and missing states",
+		tableDescription: "All figures as text",
 		tableRegion: "Weekday by hour figures",
 		columnWeekday: "Weekday",
 		columnHour: "Hour",
@@ -98,8 +96,7 @@ export const ownerReportingMessages = {
 		comparisonDown: "down",
 		comparisonFlat: "unchanged",
 		comparisonNoAverage: "Not measurable",
-		comparisonCrossingsNote:
-			"Entrance crossings are counted at the door; they are not unique members.",
+		comparisonCrossingsNote: "Door crossings per week.",
 
 		insufficientTitle: "Not enough comparable history yet",
 		insufficientDescription:
@@ -148,8 +145,7 @@ export const ownerReportingMessages = {
 		pageTitle: "التحليلات",
 		gymTime: "توقيت الصالة",
 		title: "أوقات الذروة والاتجاه",
-		description:
-			"كيف يمتلئ الأسبوع فعلياً، بحسب اليوم والساعة بتوقيت الصالة · كل متوسط محسوب على دقائق العمل المرصودة وحدها",
+		description: "كيف يمتلئ الأسبوع فعلياً، بحسب اليوم والساعة بتوقيت الصالة",
 		timeZoneLabel: "المنطقة الزمنية للصالة",
 		windowLabel: "الفترة",
 		windowDays: "أيام العمل",
@@ -196,7 +192,7 @@ export const ownerReportingMessages = {
 		selectedMissing: "لم يُسجَّل أي تاريخ لهذه الساعة.",
 
 		tableSummary: "إفصاح بيانات خريطة الإشغال",
-		tableDescription: "مكافئ نصي للقيم والصفر والإغلاق والبيانات المفقودة",
+		tableDescription: "كل الأرقام كنص",
 		tableRegion: "أرقام اليوم مقابل الساعة",
 		columnWeekday: "اليوم",
 		columnHour: "الساعة",
@@ -223,8 +219,7 @@ export const ownerReportingMessages = {
 		comparisonDown: "انخفاض",
 		comparisonFlat: "بلا تغيّر",
 		comparisonNoAverage: "غير قابل للقياس",
-		comparisonCrossingsNote:
-			"يُحتسب عبور الباب عند المدخل، وهو ليس عدد الأعضاء المختلفين.",
+		comparisonCrossingsNote: "عبور الباب أسبوعياً.",
 
 		insufficientTitle: "لا يوجد سجل كافٍ للمقارنة بعد",
 		insufficientDescription:

@@ -373,8 +373,8 @@ describe("week-over-week", () => {
 		expect(text()).toContain("31.8");
 		expect(text()).toContain("up");
 		expect(text()).toContain("8.8%");
-		// The framing story 21 requires travels with the figure.
-		expect(text()).toContain("not unique members");
+		// The concise per-week crossings basis travels with the figure.
+		expect(text()).toContain("Door crossings per week.");
 	});
 
 	it("withholds the comparison and names the typed reason instead", () => {

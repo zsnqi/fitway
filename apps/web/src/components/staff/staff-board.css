@@ -411,7 +411,15 @@
 	flex-wrap: wrap;
 	gap: 10px;
 	margin: 0;
-	padding-block-start: 6px;
+	/*
+	 * Small optical echo of the Public board's separated freshness row: the
+	 * live/last-known line sits below a quiet rule instead of touching the
+	 * large band value. No typography or structure changes; the operational
+	 * status strip below is untouched.
+	 */
+	margin-block-start: 4px;
+	padding-block-start: 10px;
+	border-block-start: 1px solid rgb(255 255 255 / 8%);
 	font-size: var(--sb-fresh-size);
 	line-height: var(--sb-fresh-line);
 }

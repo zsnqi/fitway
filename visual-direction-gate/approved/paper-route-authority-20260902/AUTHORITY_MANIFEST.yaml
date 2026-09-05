@@ -534,7 +534,7 @@ rejectedRoutedBaseline:
   status: SUPERSEDED_BY_ACCEPTED_CASES
   path: tests/browser/__screenshots__
   fileCount: 41
-  treeSha256: ae99b9cf428aacef0b95b934a6eb370136b18f4923662c0886c23e8b84ef1a8c
+  treeSha256: a7ef4f7b1f78c422d9433f98180078e7f15657b7015f73da0d35c532a4b3f0ba
   rejectionRecord: docs/phase-records/handoffs/fidelity-integration-closure/20260902-193655-fidelity_closure_r05-human-visual-rejection.md
   promotionRecord: docs/phase-records/handoffs/full-route-paper-fidelity/20260905-fidelity-closure.md
   promotionRun: fidelity_promotion_r01
@@ -545,7 +545,12 @@ rejectedRoutedBaseline:
     are accepted-mapped in tests/browser/visual-authority-cases.mjs. Promoted
     files without an honest case/leaf counterpart and untouched orphans remain
     rejected-listed by path and are regression baselines only, never Paper
-    authority.
+    authority. The human-authorized owner-demo repair package (viewport-correct
+    Owner launcher, demo-only devtools gating, Public/Staff freshness
+    separation, truthful Daily chart presentation, concise owner copy, Reports
+    mobile entry, Settings atmosphere continuity, RTL control polish, Owner
+    material hierarchy) re-rendered seven asserted canonicals in place; the
+    tree hash was recomputed to a7ef4f7b… with no file added or removed.
 
 finalReviewPackage:
   status: PROMOTED_ACCEPTED

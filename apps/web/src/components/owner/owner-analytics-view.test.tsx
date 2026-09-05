@@ -9,7 +9,10 @@ import { I18nProvider } from "@/i18n/provider";
 
 import {
 	clampedCaptionLeft,
+	intentionalTimeTicks,
+	MIN_ANNOTATED_GAP_MINUTES,
 	markerExitPoint,
+	niceCountScale,
 	OwnerAnalyticsError,
 	OwnerAnalyticsLoading,
 	OwnerAnalyticsView,
@@ -127,7 +130,7 @@ describe("owner daily analytics states", () => {
 
 		expect(container.textContent).toContain("People present through the day");
 		expect(container.textContent).toContain("Total entries");
-		expect(container.textContent).toContain("not unique members");
+		expect(container.textContent).not.toContain("not unique members");
 		expect(container.textContent).toContain("Scheduled closed");
 		expect(container.textContent).toContain("Missing observation");
 		expect(container.textContent).not.toContain("Observation coverage");
@@ -136,8 +139,10 @@ describe("owner daily analytics states", () => {
 		expect(container.textContent).toContain("3:01 AM");
 		expect(container.querySelectorAll(".owner-chart__point")).toHaveLength(2);
 		// Paper gap language: the interior missing minute renders as dashed
-		// stems plus a duration label, never as a filled band. The leading
-		// closed edge stays in the table only.
+		// stems, never as a filled band. The leading closed edge stays in the
+		// table only. A lone one-minute gap keeps its honest stems but earns
+		// no dimension bracket, end ticks, or duration label — naming every
+		// routine one-minute absence annotates noise, not information.
 		expect(
 			container.querySelectorAll(".owner-chart__closed, .owner-chart__missing"),
 		).toHaveLength(0);
@@ -146,25 +151,14 @@ describe("owner daily analytics states", () => {
 		);
 		expect(
 			container.querySelectorAll(".owner-chart__gap-bracket"),
-		).toHaveLength(1);
+		).toHaveLength(0);
 		expect(container.querySelectorAll(".owner-chart__gap-tick")).toHaveLength(
-			2,
+			0,
 		);
-		expect(
-			container.querySelector(".owner-chart__gap-label")?.textContent,
-		).toContain("1");
-		// Mid-plot gap label stays centered on its bracket: centering comes
-		// from the stylesheet, so no inline transform may override it. The
-		// anchor carries only the minimal edge clamp (happy-dom cannot parse
-		// clamp(), so the helper itself is asserted below and placement is
-		// governed in Chromium).
-		const gapLabel = container.querySelector<HTMLElement>(
-			".owner-chart__gap-label",
+		expect(container.querySelectorAll(".owner-chart__gap-label")).toHaveLength(
+			0,
 		);
-		expect(gapLabel?.style.transform).toBe("");
-		expect(clampedCaptionLeft(0.6622, 40)).toBe(
-			"clamp(40px, 66.22%, calc(100% - 40px))",
-		);
+		expect(MIN_ANNOTATED_GAP_MINUTES).toBe(3);
 		// Human decision 2026-09-05: no zero-square marker on the chart. The
 		// genuine zero stays truthful through the line at the zero ordinate
 		// plus the table's Observed 0 row; nothing may invent a glyph for it.
@@ -187,10 +181,16 @@ describe("owner daily analytics states", () => {
 		expect(
 			container.querySelectorAll(".owner-chart__line[data-trimmed]"),
 		).toHaveLength(0);
-		// Tick labels sit at their exact slot percentages, one slot per
-		// label; no inline transform may override the stylesheet centering.
+		// Intentional time ticks: distinct clock minutes spanning the short
+		// domain (no duplicated time, no blank slots), each centered by the
+		// stylesheet with only the minimal edge clamp inline.
 		const ticks = container.querySelectorAll(".owner-chart-x-axis span");
-		expect(ticks).toHaveLength(7);
+		expect(ticks.length).toBeGreaterThan(0);
+		expect(ticks.length).toBeLessThanOrEqual(5);
+		const tickTimes = new Set(
+			[...ticks].map((tick) => tick.textContent?.trim()),
+		);
+		expect(tickTimes.size).toBe(ticks.length);
 		for (const tick of ticks) {
 			expect((tick as HTMLElement).style.transform).toBe("");
 		}
@@ -371,6 +371,187 @@ describe("owner daily analytics states", () => {
 			/>,
 		);
 		expect(container.textContent).toContain("FITWAY is closed today");
+	});
+
+	it("scales counts to nice round ticks without capping the true peak", () => {
+		expect(niceCountScale(57)).toEqual({
+			niceMax: 60,
+			ticks: [60, 40, 20, 0],
+		});
+		expect(niceCountScale(12)).toEqual({
+			niceMax: 20,
+			ticks: [20, 15, 10, 5, 0],
+		});
+		// The ceiling always covers the peak: a peak near the top of the
+		// scale keeps its exact ordinate instead of being capped or averaged.
+		for (const raw of [1, 19, 20, 68, 120, 400]) {
+			const { niceMax, ticks } = niceCountScale(raw);
+			expect(niceMax).toBeGreaterThanOrEqual(raw);
+			expect(ticks[0]).toBe(niceMax);
+			expect(ticks.at(-1)).toBe(0);
+		}
+	});
+
+	it("aligns time ticks to gym-clock hours without duplicating a time", () => {
+		const atMinute = (iso: string, settingsVersion: number) => ({
+			state: "value" as const,
+			minuteStartUtc: iso,
+			count: 10,
+			entries: 0,
+			exits: 0,
+			band: "quiet" as const,
+			capacitySnapshot: 100,
+			settingsVersion,
+			source: "live" as const,
+		});
+		// A full open day in Riyadh: the axis prefers :00 hours and always
+		// spans the domain ends.
+		const timeline = Array.from({ length: 12 * 60 }, (_unused, minute) => {
+			const base = Date.parse("2026-07-21T01:00:00.000Z") + minute * 60_000;
+			return atMinute(new Date(base).toISOString(), 1);
+		});
+		const zones = new Map([[1, "Asia/Riyadh"]]);
+		const ticks = intentionalTimeTicks(timeline, zones);
+		expect(ticks.length).toBeGreaterThanOrEqual(2);
+		expect(ticks.length).toBeLessThanOrEqual(5);
+		expect(ticks[0]?.index).toBe(0);
+		expect(ticks.at(-1)?.index).toBe(timeline.length - 1);
+		const labels = ticks.map(({ bucket }) => bucket.minuteStartUtc);
+		expect(new Set(labels).size).toBe(labels.length);
+		// Short spans without hour boundaries fall back to distinct minutes.
+		const short = [
+			atMinute("2026-07-21T07:00:00.000Z", 1),
+			atMinute("2026-07-21T07:01:00.000Z", 1),
+		];
+		expect(intentionalTimeTicks(short, zones)).toHaveLength(2);
+		expect(intentionalTimeTicks([], zones)).toHaveLength(0);
+	});
+
+	it("keeps a noisy day readable: every gap stays honest, only long ones are named", async () => {
+		// A demo-like noisy day: routine one-minute absences plus one
+		// five-minute outage and a peak near the top of the scale.
+		const noisy: DailyAnalytics = {
+			businessDay: "2026-07-21",
+			timeline: [
+				{
+					state: "value",
+					minuteStartUtc: "2026-07-21T07:00:00.000Z",
+					count: 58,
+					entries: 58,
+					exits: 0,
+					band: "moderate",
+					capacitySnapshot: 120,
+					settingsVersion: 1,
+					source: "live",
+				},
+				{
+					state: "missing",
+					minuteStartUtc: "2026-07-21T07:01:00.000Z",
+					count: null,
+					settingsVersion: 1,
+				},
+				{
+					state: "value",
+					minuteStartUtc: "2026-07-21T07:02:00.000Z",
+					count: 57,
+					entries: 0,
+					exits: 1,
+					band: "moderate",
+					capacitySnapshot: 120,
+					settingsVersion: 1,
+					source: "live",
+				},
+				{
+					state: "missing",
+					minuteStartUtc: "2026-07-21T07:03:00.000Z",
+					count: null,
+					settingsVersion: 1,
+				},
+				{
+					state: "missing",
+					minuteStartUtc: "2026-07-21T07:04:00.000Z",
+					count: null,
+					settingsVersion: 1,
+				},
+				{
+					state: "missing",
+					minuteStartUtc: "2026-07-21T07:05:00.000Z",
+					count: null,
+					settingsVersion: 1,
+				},
+				{
+					state: "missing",
+					minuteStartUtc: "2026-07-21T07:06:00.000Z",
+					count: null,
+					settingsVersion: 1,
+				},
+				{
+					state: "missing",
+					minuteStartUtc: "2026-07-21T07:07:00.000Z",
+					count: null,
+					settingsVersion: 1,
+				},
+				{
+					state: "value",
+					minuteStartUtc: "2026-07-21T07:08:00.000Z",
+					count: 62,
+					entries: 5,
+					exits: 0,
+					band: "busy",
+					capacitySnapshot: 120,
+					settingsVersion: 1,
+					source: "backfill",
+				},
+			],
+			peak: {
+				minuteStartUtc: "2026-07-21T07:08:00.000Z",
+				count: 62,
+				band: "busy",
+				capacitySnapshot: 120,
+				settingsVersion: 1,
+			},
+			dailyAverage: 59,
+			estimatedEntranceCrossings: 63,
+			observedOpenMinutes: 3,
+			expectedOpenMinutes: 9,
+			coverage: 1 / 3,
+		};
+		await render(
+			<OwnerAnalyticsView
+				daily={noisy}
+				currentTimeZone="Asia/Riyadh"
+				timeZoneByVersion={new Map([[1, "Asia/Riyadh"]])}
+			/>,
+		);
+		// Both gaps keep honest stems (2 each); only the five-minute outage
+		// earns the bracket, ticks, and duration label.
+		expect(container.querySelectorAll(".owner-chart__gap-stem")).toHaveLength(
+			4,
+		);
+		expect(
+			container.querySelectorAll(".owner-chart__gap-bracket"),
+		).toHaveLength(1);
+		expect(container.querySelectorAll(".owner-chart__gap-tick")).toHaveLength(
+			2,
+		);
+		expect(
+			container.querySelector(".owner-chart__gap-label")?.textContent,
+		).toContain("5");
+		// The 62 peak is not capped: the nice ceiling covers it and the
+		// marker rests on the true peak ordinate.
+		expect(niceCountScale(62).niceMax).toBeGreaterThanOrEqual(62);
+		expect(
+			container.querySelector("[data-active-reading]")?.textContent,
+		).toContain("62");
+		// Exact truth survives in the table: all nine minutes listed with
+		// their states, and the missing rows show no invented count.
+		const rows = container.querySelectorAll(".owner-table-region tbody tr");
+		expect(rows).toHaveLength(9);
+		expect(
+			container.querySelectorAll(
+				'.owner-table-region tr[data-state="missing"]',
+			),
+		).toHaveLength(6);
 	});
 
 	describe("marker-geometry fidelity", () => {

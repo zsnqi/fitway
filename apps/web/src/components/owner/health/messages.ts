@@ -42,7 +42,7 @@ export const ownerHealthMessages = {
 
 		offlineTitle: "Offline periods",
 		offlineDescription:
-			"Every recorded stretch with no accepted push, whether or not the gym was open at the time.",
+			"Every recorded stretch without data, whether or not the gym was open at the time.",
 		offlineRegion: "Offline periods",
 		offlineEmptyTitle: "No offline period in this window",
 		offlineEmptyDescription:
@@ -58,7 +58,7 @@ export const ownerHealthMessages = {
 
 		incidentsTitle: "Incidents the maintainer was alerted to",
 		incidentsDescription:
-			"One row per condition, not one per message: a single unresolved condition is re-alerted at most every 30 minutes, and each notice is written twice.",
+			"One row per condition, re-alerted at most every 30 minutes.",
 		incidentsRegion: "Incidents",
 		incidentsEmptyTitle: "No incident in this window",
 		incidentsEmptyDescription:
@@ -120,7 +120,7 @@ export const ownerHealthMessages = {
 
 		offlineTitle: "فترات الانقطاع",
 		offlineDescription:
-			"كل فترة مسجَّلة لم يصل فيها أي إرسال مقبول، سواء كانت الصالة مفتوحة حينها أم لا.",
+			"كل فترة مسجَّلة بلا بيانات، سواء كانت الصالة مفتوحة حينها أم لا.",
 		offlineRegion: "فترات الانقطاع",
 		offlineEmptyTitle: "لا توجد فترة انقطاع في هذه الفترة",
 		offlineEmptyDescription: "بقي الجهاز متصلاً في كل دقيقة مراقَبة من الفترة.",
@@ -135,7 +135,7 @@ export const ownerHealthMessages = {
 
 		incidentsTitle: "الأعطال التي نُبِّهت إليها الصيانة",
 		incidentsDescription:
-			"سطر واحد لكل حالة، لا لكل رسالة: تُعاد التنبيهات للحالة غير المُعالَجة كل 30 دقيقة على الأكثر، ويُكتب كل إشعار مرتين.",
+			"سطر واحد لكل حالة، مع إعادة التنبيه كل 30 دقيقة على الأكثر.",
 		incidentsRegion: "الأعطال",
 		incidentsEmptyTitle: "لا توجد أعطال في هذه الفترة",
 		incidentsEmptyDescription:

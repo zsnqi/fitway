@@ -15,7 +15,12 @@ export const ownerAnalyticsMessages = {
 		peak: "Peak level",
 		average: "Average level",
 		crossings: "Total entries",
-		crossingsNote: "Estimated entrance crossings, not unique members",
+		// Comparison-oriented detail only: observed vs scheduled open minutes
+		// for today's total. The estimated-crossings (not unique members)
+		// distinction stays true in the API contract and reporting semantics;
+		// it is not prominent explanatory copy in the reading flow.
+		crossingsOf: "of",
+		crossingsOpenMinutes: "open minutes",
 		coverage: "Observation coverage",
 		coverageNote: "Observed open minutes / expected open minutes",
 		noValue: "Not available",
@@ -78,8 +83,9 @@ export const ownerAnalyticsMessages = {
 		retry: "إعادة المحاولة",
 		peak: "مستوى الذروة",
 		average: "المستوى المتوسط",
-		crossings: "إجمالي مرات الدخول",
-		crossingsNote: "تقدير لمرات الدخول، وليس لعدد الأعضاء الفريدين",
+		crossings: "إجمالي الدخول",
+		crossingsOf: "من",
+		crossingsOpenMinutes: "دقيقة عمل",
 		coverage: "تغطية الرصد",
 		coverageNote: "الدقائق المفتوحة المرصودة / الدقائق المفتوحة المتوقعة",
 		noValue: "غير متاح",

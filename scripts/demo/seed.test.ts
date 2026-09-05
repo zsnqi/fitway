@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
 	buildDemoProfile,
 	demoOccupancyCount,
+	demoSimulatorSeed,
 	profileFingerprint,
 	riyadhBusinessDay,
 	shapeDemoHistory,
@@ -94,5 +95,16 @@ describe("desktop demo seed profile", () => {
 		expect(Math.abs((shaped[1]?.count ?? 0) - (shaped[0]?.count ?? 0))).toBe(
 			(shaped[1]?.entries ?? 0) + (shaped[1]?.exits ?? 0),
 		);
+	});
+
+	it("derives a stable per-day simulator seed for a coherent live tail", () => {
+		const first = demoSimulatorSeed("2026-09-01");
+		expect(demoSimulatorSeed("2026-09-01")).toBe(first);
+		expect(demoSimulatorSeed("2026-09-02")).not.toBe(first);
+		for (const seed of [first, demoSimulatorSeed("2026-09-02")]) {
+			expect(Number.isSafeInteger(seed)).toBe(true);
+			expect(seed).toBeGreaterThanOrEqual(0);
+			expect(seed).toBeLessThan(2_147_483_647);
+		}
 	});
 });

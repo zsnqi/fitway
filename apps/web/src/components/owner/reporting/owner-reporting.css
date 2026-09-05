@@ -483,7 +483,10 @@
 	scrollbar-color: var(--fw-border-strong) transparent;
 	border: 1px solid var(--fw-border);
 	border-radius: var(--fw-radius-surface);
-	background: rgb(16 16 18 / 92%);
+	/* Board-continuous interior: translucent warm charcoal instead of flat
+	   near-black, so the heatmap sits in the same material family as its
+	   glassy board. Opaque cells keep full contrast; headers below anchor. */
+	background: rgb(22 19 22 / 84%);
 }
 
 .owner-reporting-grid-region::-webkit-scrollbar {
@@ -612,14 +615,30 @@
 
 .owner-reporting-reading {
 	grid-area: reading;
+	position: relative;
 	display: grid;
 	align-self: stretch;
 	align-content: start;
 	gap: 10px;
 	padding: 14px 16px;
+	overflow: clip;
 	border: 1px solid var(--fw-border);
 	border-radius: var(--fw-radius-surface);
-	background: rgb(16 16 18 / 94%);
+	/* The selected-hour readout stays present, not buried: translucent warm
+	   charcoal in the board family, with the same red selection accent the
+	   owner metrics carry. Values stay chalk for contrast. */
+	background: rgb(24 21 24 / 86%);
+}
+
+.owner-reporting-reading::before {
+	position: absolute;
+	inset-block: 14px;
+	inset-inline-start: -1px;
+	inline-size: 2px;
+	border-start-end-radius: 2px;
+	border-end-end-radius: 2px;
+	background: var(--fw-red-bright);
+	content: "";
 }
 
 .owner-reporting-reading__where {
@@ -724,7 +743,9 @@
 	scrollbar-color: var(--fw-border-strong) transparent;
 	border: 1px solid var(--fw-border);
 	border-radius: var(--fw-radius-surface);
-	background: rgb(16 16 18 / 92%);
+	/* Board-continuous table interior; headers below stay a step darker so
+	   the header/row/selected hierarchy survives without flat black. */
+	background: rgb(22 19 22 / 84%);
 }
 
 .owner-reporting-block > .owner-reporting__note {
@@ -765,7 +786,7 @@
 	z-index: 1;
 	inset-block-start: 0;
 	color: var(--fw-text-muted);
-	background: var(--fw-graphite);
+	background: rgb(24 22 24 / 88%);
 }
 
 .owner-reporting-region thead th span {
@@ -923,9 +944,10 @@
 	padding: 20px 24px;
 	border: 1px solid var(--fw-border);
 	border-radius: var(--fw-radius-surface);
+	/* Board-continuous state card; icon and action hierarchy intact. */
 	background:
 		linear-gradient(140deg, rgb(255 255 255 / 2.4%), transparent 35%),
-		rgb(16 16 18 / 94%);
+		rgb(22 19 22 / 84%);
 }
 
 .owner-reporting-state h4 {
@@ -1114,6 +1136,34 @@
 		align-items: stretch;
 		flex-direction: column;
 		gap: 16px;
+	}
+
+	/*
+	 * Mobile reads before it configures: the range (which defines the
+	 * window on screen) stays on top, then the heatmap and comparison
+	 * figures, with the secondary export card last. DOM order is unchanged
+	 * so keyboard and screen-reader sequence still runs controls before
+	 * content; only the visual order relaxes for sighted touch readers.
+	 */
+	.owner-reporting-controls {
+		display: contents;
+	}
+
+	.owner-reporting-controls > .owner-reporting-range {
+		order: 1;
+	}
+
+	.owner-reporting > .owner-reporting-block,
+	.owner-reporting > .owner-reporting-state {
+		order: 2;
+	}
+
+	.owner-reporting-lower {
+		order: 3;
+	}
+
+	.owner-reporting-controls > .owner-reporting-block {
+		order: 4;
 	}
 
 	.operations-page-heading--analytics .owner-analytics-mode__tabs {

@@ -19,7 +19,12 @@ import {
 	type DemoProcessRole,
 	withoutInteractiveDemoCredentials,
 } from "./contract";
-import { type DemoSeedResult, migrateDemoDatabase, seedDemo } from "./seed";
+import {
+	type DemoSeedResult,
+	demoSimulatorSeed,
+	migrateDemoDatabase,
+	seedDemo,
+} from "./seed";
 
 const workspace = path.resolve(
 	path.dirname(fileURLToPath(import.meta.url)),
@@ -162,6 +167,10 @@ function demoEnvironment(value: RuntimeSecrets): NodeJS.ProcessEnv {
 		CORS_ORIGIN: DEMO_WEB_URL,
 		TELEGRAM_BOT_TOKEN: "desktop-demo-disabled",
 		TELEGRAM_CHAT_ID: "desktop-demo-disabled",
+		// Demo presentation only: hide TanStack/Query developer overlays in the
+		// owner-demo environment. Normal development keeps them (gated by this
+		// same variable in __root.tsx); production builds never render them.
+		VITE_HIDE_DEVTOOLS: "1",
 		NODE_ENV: "development",
 		PORT: "3100",
 		FITWAY_EDGE_TOKEN: value.edgeToken,
@@ -430,6 +439,14 @@ async function start() {
 				path.join(runtime, "simulator-state.json"),
 				"--starting-count",
 				`${profile.startingCount}`,
+				// Demo-only coherence: the starting count already sits on the
+				// seeded time-of-day curve; a per-day deterministic seed keeps
+				// the subsequent live random flow stable within the demo day
+				// instead of replaying one fixed shape at any hour.
+				"--seed",
+				`${demoSimulatorSeed(profile.businessDay)}`,
+				"--mode",
+				"normal",
 			],
 			environment,
 		),
@@ -584,9 +601,17 @@ async function openOwner() {
 	await waitFor(DEMO_SERVER_URL, "Demo server");
 	await waitFor(DEMO_WEB_URL, "Demo web app");
 	const { chromium } = await import("@playwright/test");
-	const browser = await chromium.launch({ headless: false });
+	// The Owner demo must present the real application at the real available
+	// viewport: maximizing the window and disabling Playwright's fixed
+	// 1280x720 default viewport lets resizes/maximizes flow through to the
+	// responsive layout instead of leaving an artificial black remainder.
+	// No fake scaling and no application width constraints are involved.
+	const browser = await chromium.launch({
+		headless: false,
+		args: ["--start-maximized"],
+	});
 	try {
-		const context = await browser.newContext();
+		const context = await browser.newContext({ viewport: null });
 		const page = await context.newPage();
 		await page.goto(DEMO_WEB_URL);
 		const statusCode = await page.evaluate(
