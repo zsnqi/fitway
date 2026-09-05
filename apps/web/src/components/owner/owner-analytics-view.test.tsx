@@ -8,6 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { I18nProvider } from "@/i18n/provider";
 
 import {
+	chartOverview,
 	clampedCaptionLeft,
 	intentionalTimeTicks,
 	MIN_ANNOTATED_GAP_MINUTES,
@@ -98,6 +99,180 @@ afterEach(async () => {
 });
 
 describe("owner daily analytics states", () => {
+	function overviewDay(): DailyAnalytics {
+		const timeline: DailyAnalytics["timeline"] = Array.from(
+			{ length: 181 },
+			(_, index) => {
+				const base = {
+					minuteStartUtc: new Date(
+						Date.parse("2026-07-21T07:00:00Z") + index * 60_000,
+					).toISOString(),
+					settingsVersion: 1,
+				};
+				if (index === 23 || (index >= 100 && index < 115))
+					return { ...base, state: "missing", count: null };
+				if (index >= 130 && index < 135)
+					return { ...base, state: "closed", count: null };
+				return {
+					...base,
+					state: "value",
+					count:
+						index === 47
+							? 150
+							: index >= 70 && index <= 73
+								? 0
+								: 30 + (index % 11),
+					entries: 1,
+					exits: 0,
+					capacitySnapshot: 200,
+					band: "quiet",
+					source: "live",
+				};
+			},
+		);
+		const values = timeline.filter((bucket) => bucket.state === "value");
+		return {
+			...mixedDaily,
+			timeline,
+			peak: {
+				minuteStartUtc: "2026-07-21T07:47:00.000Z",
+				count: 150,
+				band: "busy",
+				capacitySnapshot: 200,
+				settingsVersion: 1,
+			},
+			observedOpenMinutes: values.length,
+			expectedOpenMinutes: 176,
+			coverage: values.length / 176,
+			dailyAverage:
+				values.reduce((sum, value) => sum + value.count, 0) / values.length,
+			estimatedEntranceCrossings: values.length,
+		};
+	}
+
+	it("separates half-hour stops from exact peak, zero and outage boundaries", () => {
+		const daily = overviewDay();
+		const overview = chartOverview(daily.timeline, new Map([[1, "UTC"]]));
+		expect(overview.stops.map(({ index }) => index)).toEqual([
+			0, 30, 60, 90, 120, 150, 180,
+		]);
+		expect(overview.runs.flat().length).toBeLessThan(40);
+		expect(overview.runs.flat().map(({ index }) => index)).toEqual(
+			expect.arrayContaining([47, 70, 73, 22, 24, 99, 115, 129, 135]),
+		);
+		for (const run of overview.runs) {
+			for (const point of run)
+				expect(point.bucket).toBe(daily.timeline[point.index]);
+			const first = run[0];
+			const last = run.at(-1);
+			if (!first || !last) throw new Error("Expected a nonempty run");
+			const start = first.index;
+			const end = last.index;
+			expect(
+				daily.timeline
+					.slice(start, end + 1)
+					.every((bucket) => bucket.state === "value"),
+			).toBe(true);
+		}
+	});
+
+	it("retains a secondary peak between half-hour stops without restoring telemetry wiggles", () => {
+		const daily = overviewDay();
+		const point = daily.timeline[80];
+		if (point?.state !== "value")
+			throw new Error("Expected observed fixture point");
+		daily.timeline[80] = { ...point, count: 90 };
+		const overview = chartOverview(daily.timeline, new Map([[1, "UTC"]]));
+		expect(overview.runs.flat().map(({ index }) => index)).toContain(80);
+		expect(overview.stops.map(({ index }) => index)).not.toContain(80);
+		expect(overview.runs.flat().length).toBeLessThan(40);
+	});
+
+	it("dismisses mouse hover on leave and preserves deliberate keyboard selection", async () => {
+		const daily = overviewDay();
+		await render(
+			<OwnerAnalyticsView
+				daily={daily}
+				currentTimeZone="UTC"
+				timeZoneByVersion={new Map([[1, "UTC"]])}
+			/>,
+		);
+		const chart =
+			container.querySelector<HTMLButtonElement>("[data-owner-chart]");
+		if (!chart) throw new Error("Expected the chart control");
+		vi.spyOn(chart, "getBoundingClientRect").mockReturnValue({
+			x: 0,
+			y: 0,
+			top: 0,
+			left: 0,
+			right: 1200,
+			bottom: 240,
+			width: 1200,
+			height: 240,
+			toJSON: () => ({}),
+		});
+		const hover = async (minute: number) =>
+			act(async () => {
+				chart.dispatchEvent(
+					new PointerEvent("pointermove", {
+						bubbles: true,
+						pointerType: "mouse",
+						clientX: 16 + (minute / 180) * 1168,
+					}),
+				);
+			});
+		const leave = async () =>
+			act(async () => {
+				chart.dispatchEvent(
+					new PointerEvent("pointerout", {
+						bubbles: true,
+						pointerType: "mouse",
+						relatedTarget: document.body,
+					}),
+				);
+			});
+		await hover(31);
+		expect(
+			container.querySelector("[data-selected-reading]")?.textContent,
+		).toContain("7:30 AM");
+		await hover(36);
+		expect(
+			container.querySelector("[data-selected-reading]")?.textContent,
+		).toContain("7:30 AM");
+		await leave();
+		expect(container.querySelector("[data-selected-reading]")).toBeNull();
+		await act(async () => {
+			chart.dispatchEvent(
+				new KeyboardEvent("keydown", { key: "Home", bubbles: true }),
+			);
+		});
+		await act(async () => {
+			chart.dispatchEvent(
+				new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }),
+			);
+		});
+		await hover(60);
+		await leave();
+		expect(
+			container.querySelector("[data-selected-reading]")?.textContent,
+		).toContain("7:30 AM");
+		await act(async () => {
+			chart.dispatchEvent(
+				new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
+			);
+		});
+		expect(container.querySelector("[data-selected-reading]")).toBeNull();
+		expect(
+			container.querySelectorAll(".owner-table-region tbody tr"),
+		).toHaveLength(181);
+		expect(container.querySelectorAll(".owner-chart__gap-label")).toHaveLength(
+			1,
+		);
+		expect(
+			container.querySelector(".owner-chart__gap-label")?.textContent,
+		).toContain("15");
+	});
+
 	it("keeps smoothed segments inside their endpoint bounds", () => {
 		const path = smoothPath([
 			{ x: 0, y: 240 },
@@ -133,7 +308,12 @@ describe("owner daily analytics states", () => {
 		expect(container.textContent).not.toContain("not unique members");
 		expect(container.textContent).toContain("Scheduled closed");
 		expect(container.textContent).toContain("Missing observation");
-		expect(container.textContent).not.toContain("Observation coverage");
+		expect(
+			container.querySelector(".owner-metrics")?.textContent,
+		).not.toContain("Observation coverage");
+		expect(
+			container.querySelector(".owner-table-disclosure")?.textContent,
+		).toContain("Observation coverage");
 		expect(container.querySelectorAll(".owner-metric")).toHaveLength(3);
 		expect(container.textContent).toContain("10:00 AM");
 		expect(container.textContent).toContain("3:01 AM");
@@ -158,7 +338,7 @@ describe("owner daily analytics states", () => {
 		expect(container.querySelectorAll(".owner-chart__gap-label")).toHaveLength(
 			0,
 		);
-		expect(MIN_ANNOTATED_GAP_MINUTES).toBe(3);
+		expect(MIN_ANNOTATED_GAP_MINUTES).toBe(15);
 		// Human decision 2026-09-05: no zero-square marker on the chart. The
 		// genuine zero stays truthful through the line at the zero ordinate
 		// plus the table's Observed 0 row; nothing may invent a glyph for it.
@@ -523,20 +703,23 @@ describe("owner daily analytics states", () => {
 				timeZoneByVersion={new Map([[1, "Asia/Riyadh"]])}
 			/>,
 		);
-		// Both gaps keep honest stems (2 each); only the five-minute outage
-		// earns the bracket, ticks, and duration label.
+		// One- and five-minute gaps remain line breaks with short ticks; neither
+		// should dominate the overview with a full-height dimension bracket.
 		expect(container.querySelectorAll(".owner-chart__gap-stem")).toHaveLength(
 			4,
 		);
 		expect(
 			container.querySelectorAll(".owner-chart__gap-bracket"),
-		).toHaveLength(1);
+		).toHaveLength(0);
 		expect(container.querySelectorAll(".owner-chart__gap-tick")).toHaveLength(
-			2,
+			0,
 		);
-		expect(
-			container.querySelector(".owner-chart__gap-label")?.textContent,
-		).toContain("5");
+		expect(container.querySelector(".owner-chart__gap-label")).toBeNull();
+		for (const tick of container.querySelectorAll(".owner-chart__gap-stem")) {
+			expect(
+				Number(tick.getAttribute("y2")) - Number(tick.getAttribute("y1")),
+			).toBeLessThanOrEqual(5);
+		}
 		// The 62 peak is not capped: the nice ceiling covers it and the
 		// marker rests on the true peak ordinate.
 		expect(niceCountScale(62).niceMax).toBeGreaterThanOrEqual(62);

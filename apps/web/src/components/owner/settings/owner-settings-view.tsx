@@ -157,7 +157,6 @@ export function OwnerSettingsView({
 				<div className="owner-settings__top" data-owner-navigation-anchor="">
 					<header className="owner-settings__intro">
 						<h1 id={headingId}>{messages.title}</h1>
-						<p>{messages.intro}</p>
 					</header>
 					<div className="owner-settings__actions owner-settings__actions--upper">
 						<span className="owner-settings__version">
@@ -207,7 +206,6 @@ export function OwnerSettingsView({
 						<h3 id={fieldId("foundations-title")}>
 							{messages.foundationsTitle}
 						</h3>
-						<p>{messages.foundationsHelper}</p>
 						<span
 							className="owner-settings__board-state"
 							data-clean={clean ? "" : undefined}
@@ -344,7 +342,6 @@ export function OwnerSettingsView({
 				>
 					<div className="owner-settings__board-head">
 						<h3 id={fieldId("thresholds-title")}>{messages.thresholdsTitle}</h3>
-						<p>{messages.thresholdsHelper}</p>
 					</div>
 					<div className="owner-settings__triple">
 						{(
@@ -414,7 +411,6 @@ export function OwnerSettingsView({
 				>
 					<div className="owner-settings__board-head">
 						<h3 id={fieldId("weekly-title")}>{messages.weeklyTitle}</h3>
-						<p>{messages.weeklyHelper}</p>
 					</div>
 					<div className="owner-settings__week">
 						<div className="owner-settings__week-header" aria-hidden="true">
@@ -605,14 +601,6 @@ export function OwnerSettingsView({
 								{messages.lockedTitleMobile}
 							</span>
 						</h3>
-						<p>
-							<span className="owner-settings__locked-copy-desktop">
-								{messages.lockedHelper}
-							</span>
-							<span className="owner-settings__locked-copy-mobile">
-								{messages.lockedHelperMobile}
-							</span>
-						</p>
 						<span className="owner-settings__locked-badge">
 							{messages.lockedBadge}
 						</span>
@@ -651,14 +639,6 @@ export function OwnerSettingsView({
 							</dd>
 						</div>
 					</dl>
-					<p className="owner-settings__locked-footer">
-						<span className="owner-settings__locked-footer-long">
-							{messages.lockedFooterLong}
-						</span>
-						<span className="owner-settings__locked-footer-short">
-							{messages.lockedFooterShort}
-						</span>
-					</p>
 				</fieldset>
 
 				{showLowerFrontier ? (

@@ -77,7 +77,11 @@ function bucketState(
  * derived on the client. An unresolvable zone degrades to completed-day
  * presentation rather than failing the chart.
  */
-function isCurrentBusinessDay(businessDay: string, timeZone: string): boolean {
+function isCurrentBusinessDay(
+	businessDay: string,
+	timeZone: string,
+	timeline: readonly AnalyticsTimelineBucket[],
+): boolean {
 	try {
 		const today = new Intl.DateTimeFormat("en-CA", {
 			timeZone,
@@ -85,7 +89,20 @@ function isCurrentBusinessDay(businessDay: string, timeZone: string): boolean {
 			month: "2-digit",
 			day: "2-digit",
 		}).format(new Date());
-		return today === businessDay;
+		// A gym day may continue after civil midnight. The server's timeline
+		// defines that day; do not mislabel its live tail as a completed day.
+		const now = Date.now();
+		const first = timeline[0];
+		const last = timeline.at(-1);
+		return (
+			today === businessDay ||
+			Boolean(
+				first &&
+					last &&
+					now >= Date.parse(first.minuteStartUtc) &&
+					now < Date.parse(last.minuteStartUtc) + 60_000,
+			)
+		);
 	} catch {
 		return false;
 	}
@@ -121,7 +138,7 @@ function AnalyticsMetric({
 		<article className="owner-metric">
 			<span className="owner-metric__heading">{label}</span>
 			<strong>{value}</strong>
-			<p>{detail}</p>
+			{detail ? <p>{detail}</p> : null}
 		</article>
 	);
 }
@@ -134,14 +151,11 @@ type GapSegment = {
 };
 
 /**
- * Gaps shorter than this keep their honest dashed stems but earn no
- * dimension bracket, end ticks, or duration label. A lone missing minute
- * (the routine one-minute outage cadence) is truthful as a stem pair; naming
- * every one of them annotates noise instead of information. Longer,
- * story-relevant absences keep the full Paper dimension treatment, and every
- * gap of any length stays exact in tooltips and the semantic table.
+ * Short interruptions break the curve and use small endpoint ticks. Only a
+ * sustained outage earns a persistent duration annotation. Exact absent
+ * minutes remain in the detail table regardless of their visual weight.
  */
-export const MIN_ANNOTATED_GAP_MINUTES = 3;
+export const MIN_ANNOTATED_GAP_MINUTES = 15;
 
 /** How many clock-aligned time ticks the x-axis shows at most. */
 export const OWNER_CHART_MAX_TIME_TICKS = 5;
@@ -189,7 +203,14 @@ function valueRuns(timeline: readonly AnalyticsTimelineBucket[]) {
 		const bucket = timeline[index];
 		if (bucket?.state !== "value") continue;
 		const previous = runs.at(-1);
-		if (previous?.at(-1)?.index === index - 1) {
+		const last = previous?.at(-1);
+		if (
+			previous &&
+			last?.index === index - 1 &&
+			Date.parse(bucket.minuteStartUtc) -
+				Date.parse(last.bucket.minuteStartUtc) ===
+				60_000
+		) {
 			previous.push({ bucket, index });
 		} else {
 			runs.push([{ bucket, index }]);
@@ -234,6 +255,101 @@ function gymLocalMinute(instant: Date, timeZone: string): number | null {
 	} catch {
 		return null;
 	}
+}
+
+/** Exact half-hour observations, with semantic boundaries kept in the curve.
+ * Raw telemetry is never rewritten or averaged. Missing/closed runs always
+ * split the path; protected peaks and zero boundaries are geometry anchors,
+ * not extra minute-by-minute hover stops. */
+export function chartOverview(
+	timeline: readonly AnalyticsTimelineBucket[],
+	timeZoneByVersion: ReadonlyMap<number, string>,
+) {
+	const cadence = timeline.flatMap((bucket, index) => {
+		if (bucket.state !== "value") return [];
+		const zone = mappedTimeZone(bucket.settingsVersion, timeZoneByVersion);
+		const minute = gymLocalMinute(new Date(bucket.minuteStartUtc), zone);
+		return minute !== null && minute % 30 === 0 ? [{ bucket, index }] : [];
+	});
+	const cadenceIndices = new Set(cadence.map(({ index }) => index));
+	const dayPeak = timeline.reduce(
+		(best, bucket) =>
+			bucket.state === "value" ? Math.max(best, bucket.count) : best,
+		0,
+	);
+	const runs = valueRuns(timeline).map((run) => {
+		const peak = run.reduce((best, point) =>
+			point.bucket.count > best.bucket.count ? point : best,
+		);
+		// Retain the exact high and low in each half-hour window when they
+		// extend beyond both bounding readings by 5% of the day's peak (at
+		// least two people). This is an overview prominence tolerance, never
+		// a value cap: retained points and the global peak stay exact, while
+		// smaller wiggles remain available in the untouched minute table.
+		const extrema = new Set<number>();
+		const prominence = Math.max(2, dayPeak * 0.05);
+		const boundaries = run.filter(
+			(point, position) =>
+				position === 0 ||
+				position === run.length - 1 ||
+				cadenceIndices.has(point.index),
+		);
+		for (let position = 1; position < boundaries.length; position += 1) {
+			const left = boundaries[position - 1];
+			const right = boundaries[position];
+			if (!left || !right) continue;
+			const window = run.filter(
+				(point) => point.index >= left.index && point.index <= right.index,
+			);
+			const high = window.reduce(
+				(best, point) =>
+					point.bucket.count > best.bucket.count ? point : best,
+				left,
+			);
+			const low = window.reduce(
+				(best, point) =>
+					point.bucket.count < best.bucket.count ? point : best,
+				left,
+			);
+			if (
+				high.bucket.count - Math.max(left.bucket.count, right.bucket.count) >=
+				prominence
+			)
+				extrema.add(high.index);
+			if (
+				Math.min(left.bucket.count, right.bucket.count) - low.bucket.count >=
+				prominence
+			)
+				extrema.add(low.index);
+		}
+		return run.filter((point, position) => {
+			const previous = run[position - 1];
+			const next = run[position + 1];
+			return (
+				!previous ||
+				!next ||
+				cadenceIndices.has(point.index) ||
+				extrema.has(point.index) ||
+				point.index === peak.index ||
+				(point.bucket.count === 0 &&
+					(previous.bucket.count !== 0 || next.bucket.count !== 0)) ||
+				previous.bucket.settingsVersion !== point.bucket.settingsVersion ||
+				next.bucket.settingsVersion !== point.bucket.settingsVersion
+			);
+		});
+	});
+	// A short recording may contain no half-hour boundary. Its endpoints still
+	// provide an honest useful interaction instead of an empty chart control.
+	const stops = runs.flatMap((run) => {
+		const first = run[0];
+		const last = run.at(-1);
+		if (!first || !last) return [];
+		if (cadence.length <= 1) return run;
+		const aligned = run.filter((point) => cadenceIndices.has(point.index));
+		if (cadence.length > 1 && aligned.length > 0) return aligned;
+		return first === last ? [first] : [first, last];
+	});
+	return { runs, stops };
 }
 
 export type OwnerChartTimeTick = {
@@ -332,19 +448,33 @@ export function smoothPath(
 			path += ` L${next.x},${next.y}`;
 			continue;
 		}
-		const previous = points[index - 1] ?? current;
-		const after = points[index + 2] ?? next;
-		const control1X = current.x + (next.x - previous.x) / 6;
+		const previous = points[index - 1];
+		const after = points[index + 2];
+		const dx = next.x - current.x;
+		const slope = dx === 0 ? 0 : (next.y - current.y) / dx;
+		// Shape-preserving tangents on the sparse, unevenly spaced observations.
+		// X controls stay inside this time interval; extrema cannot overshoot.
+		const tangent = (other: number) =>
+			other * slope <= 0 ? 0 : (2 * other * slope) / (other + slope);
+		const startSlope =
+			previous && current.x !== previous.x
+				? tangent((current.y - previous.y) / (current.x - previous.x))
+				: slope;
+		const endSlope =
+			after && after.x !== next.x
+				? tangent((after.y - next.y) / (after.x - next.x))
+				: slope;
+		const control1X = current.x + dx / 3;
 		const minimumY = Math.min(current.y, next.y);
 		const maximumY = Math.max(current.y, next.y);
 		const control1Y = Math.min(
 			maximumY,
-			Math.max(minimumY, current.y + (next.y - previous.y) / 6),
+			Math.max(minimumY, current.y + (startSlope * dx) / 3),
 		);
-		const control2X = next.x - (after.x - current.x) / 6;
+		const control2X = next.x - dx / 3;
 		const control2Y = Math.min(
 			maximumY,
-			Math.max(minimumY, next.y - (after.y - current.y) / 6),
+			Math.max(minimumY, next.y - (endSlope * dx) / 3),
 		);
 		path += ` C${control1X},${control1Y} ${control2X},${control2Y} ${next.x},${next.y}`;
 	}
@@ -484,7 +614,11 @@ function OccupancyChart({
 			),
 		[daily.timeline],
 	);
-	const isLatestDay = isCurrentBusinessDay(daily.businessDay, currentTimeZone);
+	const isLatestDay = isCurrentBusinessDay(
+		daily.businessDay,
+		currentTimeZone,
+		daily.timeline,
+	);
 	const initialActive = isLatestDay
 		? Math.max(0, values.length - 1)
 		: Math.max(
@@ -493,12 +627,13 @@ function OccupancyChart({
 					({ bucket }) => bucket.minuteStartUtc === daily.peak?.minuteStartUtc,
 				),
 			);
-	const [activePosition, setActivePosition] = useState(initialActive);
-	// Paper shows the selected/focus readout only once the reader picks a
-	// point (hover, touch, or arrow keys). The pristine default — peak on a
-	// completed day, latest reading on an in-progress day — carries no
-	// tooltip, matching the accepted closed/latest frames.
-	const [hasSelected, setHasSelected] = useState(false);
+	const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+	const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+	const hasSelected = selectedIndex !== null || hoverIndex !== null;
+	const overview = useMemo(
+		() => chartOverview(daily.timeline, timeZoneByVersion),
+		[daily.timeline, timeZoneByVersion],
+	);
 	const interactionRef = useRef<HTMLButtonElement | null>(null);
 	const [plotSize, setPlotSize] = useState<{
 		width: number;
@@ -523,7 +658,8 @@ function OccupancyChart({
 		return () => observer.disconnect();
 	}, []);
 	const active =
-		values[Math.min(activePosition, Math.max(0, values.length - 1))];
+		values.find(({ index }) => index === (hoverIndex ?? selectedIndex)) ??
+		values[initialActive];
 	const width = 1200;
 	const height = 240;
 	const padX = 16;
@@ -542,7 +678,7 @@ function OccupancyChart({
 		return padX + visualRatio * (width - padX * 2);
 	};
 	const yFor = (count: number) => padTop + (1 - count / maxCount) * chartHeight;
-	const runs = valueRuns(daily.timeline);
+	const runs = overview.runs;
 	const gaps = gapSegments(daily.timeline);
 	// Fixed-pixel cutout expressed in viewBox units. The marker's outer
 	// radius is a CSS-pixel constant (10px desktop / 18px→9px mobile,
@@ -579,29 +715,41 @@ function OccupancyChart({
 	const timeTicks = intentionalTimeTicks(daily.timeline, timeZoneByVersion);
 
 	function moveActive(delta: number) {
-		setHasSelected(true);
-		setActivePosition((current) =>
-			Math.min(values.length - 1, Math.max(0, current + delta)),
-		);
+		const index = active?.index ?? 0;
+		const next =
+			delta > 0
+				? (overview.stops.find((point) => point.index > index) ??
+					overview.stops.at(-1))
+				: (overview.stops.findLast((point) => point.index < index) ??
+					overview.stops[0]);
+		setHoverIndex(null);
+		setSelectedIndex(next?.index ?? null);
 	}
 
 	function handleKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
 		if (event.key === "Home") {
-			setHasSelected(true);
-			setActivePosition(0);
+			setHoverIndex(null);
+			setSelectedIndex(overview.stops[0]?.index ?? null);
 		} else if (event.key === "End") {
-			setHasSelected(true);
-			setActivePosition(values.length - 1);
+			setHoverIndex(null);
+			setSelectedIndex(overview.stops.at(-1)?.index ?? null);
+		} else if (event.key === "Escape") {
+			setHoverIndex(null);
+			setSelectedIndex(null);
+		} else if (event.key === "Enter" || event.key === " ") {
+			setSelectedIndex(active?.index ?? null);
 		} else if (event.key === "ArrowRight") moveActive(locale === "ar" ? -1 : 1);
 		else if (event.key === "ArrowLeft") moveActive(locale === "ar" ? 1 : -1);
 		else return;
 		event.preventDefault();
 	}
 
-	function selectFromPointer(event: PointerEvent<HTMLButtonElement>) {
+	function selectFromPointer(
+		event: PointerEvent<HTMLButtonElement>,
+		persistent = false,
+	) {
 		const bounds = event.currentTarget.getBoundingClientRect();
-		if (bounds.width <= 0 || values.length === 0) return;
-		setHasSelected(true);
+		if (bounds.width <= 0 || overview.stops.length === 0) return;
 		const visualRatio = Math.min(
 			1,
 			Math.max(0, (event.clientX - bounds.left) / bounds.width),
@@ -612,16 +760,35 @@ function OccupancyChart({
 		);
 		const ratio = locale === "ar" ? 1 - plotRatio : plotRatio;
 		const timelineIndex = ratio * Math.max(0, daily.timeline.length - 1);
-		let closestPosition = 0;
+		// Hovering an outage must not claim a nearby observation occurred there.
+		if (daily.timeline[Math.round(timelineIndex)]?.state !== "value") {
+			setHoverIndex(null);
+			return;
+		}
+		const run = overview.runs.find(
+			(points) =>
+				timelineIndex >= (points[0]?.index ?? 0) - 0.5 &&
+				timelineIndex <= (points.at(-1)?.index ?? 0) + 0.5,
+		);
+		const stops = overview.stops.filter(
+			(point) =>
+				point.index >= (run?.[0]?.index ?? Number.POSITIVE_INFINITY) &&
+				point.index <= (run?.at(-1)?.index ?? Number.NEGATIVE_INFINITY),
+		);
+		if (stops.length === 0) return;
+		let closestIndex = stops[0]?.index ?? 0;
 		let distance = Number.POSITIVE_INFINITY;
-		values.forEach((value, position) => {
+		stops.forEach((value) => {
 			const nextDistance = Math.abs(value.index - timelineIndex);
 			if (nextDistance < distance) {
 				distance = nextDistance;
-				closestPosition = position;
+				closestIndex = value.index;
 			}
 		});
-		setActivePosition(closestPosition);
+		if (persistent) {
+			setSelectedIndex(closestIndex);
+			setHoverIndex(null);
+		} else setHoverIndex(closestIndex);
 	}
 
 	if (!active) return null;
@@ -651,8 +818,12 @@ function OccupancyChart({
 						data-owner-chart
 						aria-label={`${messages.chartLabel}. ${activeLabel}`}
 						onKeyDown={handleKeyDown}
-						onPointerMove={selectFromPointer}
-						onPointerDown={selectFromPointer}
+						onPointerMove={(event) => {
+							if (event.pointerType !== "touch") selectFromPointer(event);
+						}}
+						onPointerDown={(event) => selectFromPointer(event, true)}
+						onPointerLeave={() => setHoverIndex(null)}
+						onPointerCancel={() => setHoverIndex(null)}
 					>
 						<svg
 							className="owner-chart"
@@ -696,7 +867,12 @@ function OccupancyChart({
 										x1={leftX}
 										x2={leftX}
 										y1={yFor(left.bucket.count)}
-										y2={baseY}
+										y2={
+											annotated
+												? baseY
+												: yFor(left.bucket.count) +
+													(yFor(left.bucket.count) > baseY - 5 ? -5 : 5)
+										}
 									/>,
 									<line
 										key={`${gap.start}-right`}
@@ -704,7 +880,12 @@ function OccupancyChart({
 										x1={rightX}
 										x2={rightX}
 										y1={yFor(right.bucket.count)}
-										y2={baseY}
+										y2={
+											annotated
+												? baseY
+												: yFor(right.bucket.count) +
+													(yFor(right.bucket.count) > baseY - 5 ? -5 : 5)
+										}
 									/>,
 									...(annotated
 										? [
@@ -826,7 +1007,7 @@ function OccupancyChart({
 										/>
 									);
 								})()}
-							{values.map(({ bucket, index }) => (
+							{runs.flat().map(({ bucket, index }) => (
 								<circle
 									key={`point-${index}`}
 									className="owner-chart__point"
@@ -866,7 +1047,7 @@ function OccupancyChart({
 												),
 											}}
 										>
-											{messages.latest} {latestTime}
+											<span>{messages.latest}</span> <bdi>{latestTime}</bdi>
 										</span>
 									);
 								})()
@@ -945,10 +1126,21 @@ function AnalyticsTable({
 			<summary>
 				<span>{messages.tableSummary}</span>
 				<small>
-					{formatNumber(daily.observedOpenMinutes, locale)}{" "}
-					{messages.minutesRecordedSuffix}
+					{messages.coverage}
+					{" · "}
+					<bdi>
+						{daily.coverage === null
+							? "—"
+							: `${formatDecimal(daily.coverage * 100, locale)}%`}
+					</bdi>
 				</small>
 			</summary>
+			<p className="owner-coverage-detail">
+				{messages.observedPrefix}{" "}
+				{formatNumber(daily.observedOpenMinutes, locale)} {messages.crossingsOf}{" "}
+				{formatNumber(daily.expectedOpenMinutes, locale)}{" "}
+				{messages.scheduledMinutes}
+			</p>
 			<section
 				className="owner-table-region"
 				aria-label={messages.tableRegion}
@@ -1004,6 +1196,36 @@ export function OwnerAnalyticsView({
 	const messages = useOwnerAnalyticsMessages();
 	const noObserved = daily.observedOpenMinutes === 0;
 	const closedDay = noObserved && daily.expectedOpenMinutes === 0;
+	const entryHours = new Map<string, { entries: number; label: string }>();
+	for (const bucket of daily.timeline) {
+		if (bucket.state !== "value") continue;
+		const zone = mappedTimeZone(bucket.settingsVersion, timeZoneByVersion);
+		const date = new Date(bucket.minuteStartUtc);
+		const key = new Intl.DateTimeFormat("en-CA", {
+			timeZone: zone,
+			year: "numeric",
+			month: "2-digit",
+			day: "2-digit",
+			hour: "2-digit",
+			hourCycle: "h23",
+		}).format(date);
+		const hour = entryHours.get(key);
+		const label = new Intl.DateTimeFormat(
+			locale === "ar" ? "ar-SA-u-nu-latn" : "en-US",
+			{
+				timeZone: zone,
+				hour: "numeric",
+				hour12: true,
+			},
+		).format(date);
+		entryHours.set(key, {
+			entries: (hour?.entries ?? 0) + bucket.entries,
+			label,
+		});
+	}
+	const busiestEntryHour = [...entryHours.values()].sort(
+		(a, b) => b.entries - a.entries,
+	)[0];
 	const peakTime = daily.peak
 		? formatGymTime(
 				new Date(daily.peak.minuteStartUtc),
@@ -1072,7 +1294,7 @@ export function OwnerAnalyticsView({
 								? closedDay
 									? messages.closedToday
 									: messages.noReadingsYet
-								: `${messages.recordedMinutesPrefix} ${formatNumber(daily.observedOpenMinutes, locale)} ${messages.recordedMinutesSuffix}`
+								: messages.averageInsight
 						}
 					/>
 					<AnalyticsMetric
@@ -1091,9 +1313,9 @@ export function OwnerAnalyticsView({
 								? closedDay
 									? messages.closedToday
 									: messages.noReadingsYet
-								: // Concise observed-vs-scheduled comparison for the
-									// total; no methodology disclaimer in the flow.
-									`${formatNumber(daily.observedOpenMinutes, locale)} ${messages.crossingsOf} ${formatNumber(daily.expectedOpenMinutes, locale)} ${messages.crossingsOpenMinutes}`
+								: busiestEntryHour && busiestEntryHour.entries > 0
+									? `${messages.busiestEntryHour} ${busiestEntryHour.label}`
+									: null
 						}
 					/>
 				</div>

@@ -8,9 +8,9 @@
  * surface values live as component-scoped variables.
  */
 .owner-settings {
-	--ows-field: #100b0e;
+	--ows-field: var(--owner-control);
 	--ows-edge-control: #dcc5c92e;
-	--ows-control: #1a171a;
+	--ows-control: var(--owner-control);
 
 	margin-block-start: 24px;
 	padding-block-start: 24px;

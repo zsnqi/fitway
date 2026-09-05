@@ -15,12 +15,11 @@ export const ownerAnalyticsMessages = {
 		peak: "Peak level",
 		average: "Average level",
 		crossings: "Total entries",
-		// Comparison-oriented detail only: observed vs scheduled open minutes
-		// for today's total. The estimated-crossings (not unique members)
-		// distinction stays true in the API contract and reporting semantics;
-		// it is not prominent explanatory copy in the reading flow.
+		averageInsight: "Throughout the day",
+		busiestEntryHour: "Most entries around",
+		observedPrefix: "Observed",
+		scheduledMinutes: "scheduled minutes",
 		crossingsOf: "of",
-		crossingsOpenMinutes: "open minutes",
 		coverage: "Observation coverage",
 		coverageNote: "Observed open minutes / expected open minutes",
 		noValue: "Not available",
@@ -84,8 +83,11 @@ export const ownerAnalyticsMessages = {
 		peak: "مستوى الذروة",
 		average: "المستوى المتوسط",
 		crossings: "إجمالي الدخول",
+		averageInsight: "خلال اليوم",
+		busiestEntryHour: "أكثر الدخول عند",
+		observedPrefix: "رُصدت",
+		scheduledMinutes: "دقيقة مجدولة",
 		crossingsOf: "من",
-		crossingsOpenMinutes: "دقيقة عمل",
 		coverage: "تغطية الرصد",
 		coverageNote: "الدقائق المفتوحة المرصودة / الدقائق المفتوحة المتوقعة",
 		noValue: "غير متاح",

@@ -172,7 +172,7 @@
 	padding: 16px 18px;
 	border: 1px solid var(--fw-border);
 	border-radius: var(--fw-radius-surface);
-	background: rgb(16 16 18 / 88%);
+	background: var(--owner-control);
 }
 
 .owner-reporting-range legend {
@@ -235,7 +235,7 @@
 	border: 1px solid var(--fw-border-strong);
 	border-radius: var(--fw-radius-control);
 	color: var(--fw-chalk);
-	background: var(--fw-graphite);
+	background: var(--owner-control);
 	font-size: 13px;
 	font-family: inherit;
 }
@@ -319,9 +319,33 @@
 
 .owner-reporting-controls > * {
 	box-sizing: border-box;
-	flex: 0 0 calc((100% - 16px) / 2);
-	inline-size: calc((100% - 16px) / 2);
+	flex: 1;
+	inline-size: 100%;
 	min-inline-size: 0;
+}
+
+.owner-reporting-export-disclosure {
+	padding: 12px 18px;
+	border: 1px solid var(--owner-edge);
+	border-radius: var(--fw-radius-surface);
+	background: var(--owner-inset);
+}
+
+.owner-reporting-export-disclosure > summary {
+	min-block-size: 44px;
+	align-content: center;
+	color: var(--fw-muted);
+	font-size: 14px;
+	cursor: pointer;
+}
+
+.owner-reporting-export-disclosure > summary:focus-visible {
+	outline: 2px solid var(--fw-red-bright);
+	outline-offset: 3px;
+}
+
+.owner-reporting-export-disclosure[open] > summary {
+	margin-block-end: 16px;
 }
 
 .owner-reporting-controls > .owner-reporting-block,
@@ -348,6 +372,19 @@
 	display: grid;
 	align-content: start;
 	gap: 12px;
+}
+
+@media (min-width: 821px) {
+	.owner-reporting-controls > .owner-reporting-range {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.owner-reporting-controls .owner-reporting-board__row {
+		display: grid;
+		grid-template-columns: minmax(130px, 190px) minmax(130px, 190px) auto;
+	}
 }
 
 .owner-reporting-controls
@@ -392,9 +429,7 @@
 	grid-template-columns: minmax(0, 1fr) 250px;
 	grid-template-areas:
 		"heading heading"
-		"scroll scroll"
-		"grid reading"
-		"hint reading";
+		"grid reading";
 	gap: 12px 18px;
 }
 
@@ -483,10 +518,7 @@
 	scrollbar-color: var(--fw-border-strong) transparent;
 	border: 1px solid var(--fw-border);
 	border-radius: var(--fw-radius-surface);
-	/* Board-continuous interior: translucent warm charcoal instead of flat
-	   near-black, so the heatmap sits in the same material family as its
-	   glassy board. Opaque cells keep full contrast; headers below anchor. */
-	background: rgb(22 19 22 / 84%);
+	background: var(--owner-inset);
 }
 
 .owner-reporting-grid-region::-webkit-scrollbar {
@@ -624,10 +656,7 @@
 	overflow: clip;
 	border: 1px solid var(--fw-border);
 	border-radius: var(--fw-radius-surface);
-	/* The selected-hour readout stays present, not buried: translucent warm
-	   charcoal in the board family, with the same red selection accent the
-	   owner metrics carry. Values stay chalk for contrast. */
-	background: rgb(24 21 24 / 86%);
+	background: var(--owner-inset);
 }
 
 .owner-reporting-reading::before {
@@ -674,6 +703,11 @@
 	font-size: 16px;
 	font-weight: 600;
 	font-variant-numeric: tabular-nums;
+}
+
+.owner-reporting-reading__figures > div:first-child dd {
+	font-size: 28px;
+	line-height: 1.3;
 }
 
 .owner-reporting-reading__absent {
@@ -743,9 +777,7 @@
 	scrollbar-color: var(--fw-border-strong) transparent;
 	border: 1px solid var(--fw-border);
 	border-radius: var(--fw-radius-surface);
-	/* Board-continuous table interior; headers below stay a step darker so
-	   the header/row/selected hierarchy survives without flat black. */
-	background: rgb(22 19 22 / 84%);
+	background: var(--owner-inset);
 }
 
 .owner-reporting-block > .owner-reporting__note {
@@ -786,7 +818,8 @@
 	z-index: 1;
 	inset-block-start: 0;
 	color: var(--fw-text-muted);
-	background: rgb(24 22 24 / 88%);
+	background: var(--owner-table-head);
+	backdrop-filter: blur(24px);
 }
 
 .owner-reporting-region thead th span {
@@ -1096,9 +1129,7 @@
 		grid-template-columns: minmax(0, 1fr);
 		grid-template-areas:
 			"heading"
-			"scroll"
 			"grid"
-			"hint"
 			"reading";
 	}
 
@@ -1132,6 +1163,9 @@
 }
 
 @media (max-width: 720px) {
+	.owner-reporting-export-disclosure {
+		order: 4;
+	}
 	.operations-page-heading--analytics {
 		align-items: stretch;
 		flex-direction: column;

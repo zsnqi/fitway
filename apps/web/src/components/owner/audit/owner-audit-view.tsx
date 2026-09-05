@@ -142,7 +142,6 @@ export function OwnerAuditTable({
 					{messages.resultsCount}{" "}
 					<bdi>{formatNumber(entries.length, locale)}</bdi>
 				</p>
-				<p className="owner-audit__scroll-hint">{messages.scrollHint}</p>
 			</header>
 			<section
 				className="owner-audit-region"

@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-09-05T14:34:27Z"
+updatedAt: "2026-09-05T22:04:00Z"
 
 coordinator:
   owner: "Coordinator final authority. fidelity-integration-closure-r01 through r05 are preserved FAILED_VALIDATION; the human-approved successor full-route-paper-fidelity-r01 is DONE (final rendered approval granted 2026-09-05; serialized accepted canonical promotion, accepted-case mapping, clean verify:full with normal snapshots, and final independent verification complete; integratedCommit SELF on codex/fidelity-integration-closure). The Owner shared navigation and Activity Log successor are approved and frozen; their routed-only uniform-material and bidi/presentation deviations are explicitly approved pending implementation evidence. The milestone starts from preserved functional candidate afa2ef6 and corrects the non-circular Paper authority, full-route visual gate, shared Owner shell, and routed fidelity failures without rewriting historical repository-closeout or desktop-demo claims. Main divergence reconciled 2026-09-05: main-only 20260902-155539 r05 DONE claim superseded by 20260902-193655 human visual rejection and preserved as history; main-only 20260902-164414 walkthrough preserved as visual-acceptance evidence. Historical phases and terminal attempts remain immutable. LAN/mobile support, presentation work, GitHub synchronization, release/tagging, deployment, owner-facing PDF work, and external go-live gates remain excluded."
@@ -22,6 +22,44 @@ baseline:
   independentVerification: docs/phase-records/baseline-independent-verification.md
 
 milestones:
+  owner-demo-polish-r01:
+    status: DONE
+    dependencies: [desktop-demo]
+    ownerSession: "Primary Codex coordinator; sole writer for the human-authorized bounded demo polish. Explicit task instructions override Paper workflow/acceptance for this candidate; no Paper mutation or baseline promotion."
+    branch: codex/owner-demo-prep
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
+    baseCommit: 1fc2301a2f351d95f92aedb7ae8d8fe4d10e4941
+    ownedPaths:
+      - apps/web/src/components/owner/**
+      - apps/web/src/components/public-live-card-shell.tsx
+      - apps/web/src/components/staff/staff-board.css
+      - "apps/web/src/index.css: Public presentation only"
+      - tests/browser/phase9-owner-ui.browser.spec.ts
+      - PROJECT_STATE.yaml
+      - docs/phase-records/handoffs/owner-demo-polish/**
+    forbiddenPaths:
+      - Paper, approved visual snapshots, and canonical screenshot baselines
+      - apps/server/**, packages/**, schemas, migrations, root dependency/config files
+      - locked product, privacy, security, permission, and data semantics
+      - main merges, pushes, deployments, and credential or demo data resets
+    sharedLeases:
+      - "coordinator lease: scoped Owner material variables and Public CSS for this user-authorized demo polish"
+      - "coordinator lease: existing local demo read-only browser validation and draft/discard interactions"
+      - "coordinator lease: candidate state and handoff record"
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-09-05T22:04:00Z"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/owner-demo-polish/20260906-owner-demo-polish.md
+    stopReason: null
+    gates:
+      unit: PASS
+      integration: NOT_REQUIRED
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
+      independentReview: PASS
+    integratedCommit: SELF
+
   phase-1:
     status: DONE
     dependencies: []

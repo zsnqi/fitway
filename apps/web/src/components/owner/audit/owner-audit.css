@@ -133,7 +133,7 @@
 	border: 1px solid var(--fw-border-strong);
 	border-radius: var(--fw-radius-control);
 	color: var(--fw-chalk);
-	background: var(--fw-graphite);
+	background: var(--owner-control);
 	font-size: 13px;
 	font-family: inherit;
 }
@@ -146,12 +146,34 @@
  * control retains a usable floor.
  *
  * Native chevron lane, both directions: the arrow sits at inline-end in LTR
- * and RTL alike, so the lane is logical. The 40px inset keeps Arabic option
- * text clear of the glyph with a comfortable optical margin while the native
- * control — and its keyboard behavior — stays untouched.
+ * and RTL alike. Inset the native select inside the visible frame so the
+ * browser-owned arrow also gets breathing room; text padding alone does not
+ * move that arrow. Native appearance and keyboard behavior remain intact.
  */
-.owner-audit-filters select {
-	padding-inline-end: 40px;
+.owner-audit-select {
+	display: block;
+	min-inline-size: 0;
+	padding-inline-end: 8px;
+	border: 1px solid var(--fw-border-strong);
+	border-radius: var(--fw-radius-control);
+	background: var(--owner-control);
+}
+
+.owner-audit-select select {
+	inline-size: 100%;
+	min-block-size: 42px;
+	padding-inline: 11px 18px;
+	border: 0;
+	background: transparent;
+}
+
+.owner-audit-select:has(select:focus-visible) {
+	outline: 2px solid var(--fw-red-bright);
+	outline-offset: 2px;
+}
+
+.owner-audit-filters .owner-audit-select select:focus-visible {
+	outline: none;
 }
 
 .owner-audit-filters :is(select, input):focus-visible {
@@ -232,7 +254,7 @@
 	overflow: auto;
 	scrollbar-width: thin;
 	scrollbar-color: var(--fw-border-strong) transparent;
-	background: var(--fw-material-table, rgb(12 13 15 / 58%));
+	background: var(--owner-inset);
 }
 
 .owner-audit-region::-webkit-scrollbar {
@@ -269,9 +291,8 @@
 	z-index: 1;
 	inset-block-start: 0;
 	color: var(--fw-text-muted);
-	/* Shared warm-charcoal header step: anchors the table without dropping
-	   to flat black, matching the reporting and health tables. */
-	background: rgb(24 22 24 / 88%);
+	background: var(--owner-table-head);
+	backdrop-filter: blur(24px);
 	font-size: 12px;
 	white-space: nowrap;
 }

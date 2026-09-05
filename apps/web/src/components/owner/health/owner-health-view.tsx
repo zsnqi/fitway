@@ -187,21 +187,17 @@ function ScrollRegion({
 	label: string;
 	children: React.ReactNode;
 }) {
-	const messages = useOwnerHealthMessages();
 	// A labeled scroll region must be reachable by keyboard alone
 	// (`DESIGN_GUIDE.md` §8, §13), exactly as the audit and analytics tables are.
 	const keyboardScrollable = { tabIndex: 0 };
 	return (
-		<>
-			<p className="owner-health__scroll-hint">{messages.scrollHint}</p>
-			<section
-				className="owner-health-region"
-				aria-label={label}
-				{...keyboardScrollable}
-			>
-				{children}
-			</section>
-		</>
+		<section
+			className="owner-health-region"
+			aria-label={label}
+			{...keyboardScrollable}
+		>
+			{children}
+		</section>
 	);
 }
 

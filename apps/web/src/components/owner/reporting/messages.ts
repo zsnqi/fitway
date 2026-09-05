@@ -68,7 +68,7 @@ export const ownerReportingMessages = {
 		selectedClosed: "The gym was not open in this hour.",
 		selectedMissing: "No history was recorded for this hour.",
 
-		tableSummary: "Heatmap data disclosure",
+		tableSummary: "Hourly detail",
 		tableDescription: "All figures as text",
 		tableRegion: "Weekday by hour figures",
 		columnWeekday: "Weekday",
@@ -191,7 +191,7 @@ export const ownerReportingMessages = {
 		selectedClosed: "لم تكن الصالة مفتوحة في هذه الساعة.",
 		selectedMissing: "لم يُسجَّل أي تاريخ لهذه الساعة.",
 
-		tableSummary: "إفصاح بيانات خريطة الإشغال",
+		tableSummary: "تفاصيل الساعات",
 		tableDescription: "كل الأرقام كنص",
 		tableRegion: "أرقام اليوم مقابل الساعة",
 		columnWeekday: "اليوم",

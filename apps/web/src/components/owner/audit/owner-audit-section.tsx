@@ -82,49 +82,52 @@ export function OwnerAuditSection() {
 			>
 				<header className="owner-audit-filters__heading">
 					<h2>{messages.filtersLabel}</h2>
-					<p>{messages.ownerOnly}</p>
 				</header>
 
 				<div className="owner-audit-field owner-audit-field--action">
 					<label htmlFor={fieldId("action")}>{messages.actionLabel}</label>
-					<select
-						id={fieldId("action")}
-						value={draft.action}
-						onChange={(event) =>
-							update(
-								"action",
-								event.target.value as OwnerAuditFilterSelection["action"],
-							)
-						}
-					>
-						<option value="any">{messages.anyOption}</option>
-						{AUDIT_ACTIONS.map((action) => (
-							<option key={action} value={action}>
-								{messages[action]}
-							</option>
-						))}
-					</select>
+					<span className="owner-audit-select">
+						<select
+							id={fieldId("action")}
+							value={draft.action}
+							onChange={(event) =>
+								update(
+									"action",
+									event.target.value as OwnerAuditFilterSelection["action"],
+								)
+							}
+						>
+							<option value="any">{messages.anyOption}</option>
+							{AUDIT_ACTIONS.map((action) => (
+								<option key={action} value={action}>
+									{messages[action]}
+								</option>
+							))}
+						</select>
+					</span>
 				</div>
 
 				<div className="owner-audit-field owner-audit-field--actor">
 					<label htmlFor={fieldId("actor")}>{messages.actorLabel}</label>
-					<select
-						id={fieldId("actor")}
-						value={draft.actor}
-						onChange={(event) =>
-							update(
-								"actor",
-								event.target.value as OwnerAuditFilterSelection["actor"],
-							)
-						}
-					>
-						<option value="any">{messages.anyOption}</option>
-						{AUDIT_ACTOR_KINDS.map((kind) => (
-							<option key={kind} value={kind}>
-								{messages[kind]}
-							</option>
-						))}
-					</select>
+					<span className="owner-audit-select">
+						<select
+							id={fieldId("actor")}
+							value={draft.actor}
+							onChange={(event) =>
+								update(
+									"actor",
+									event.target.value as OwnerAuditFilterSelection["actor"],
+								)
+							}
+						>
+							<option value="any">{messages.anyOption}</option>
+							{AUDIT_ACTOR_KINDS.map((kind) => (
+								<option key={kind} value={kind}>
+									{messages[kind]}
+								</option>
+							))}
+						</select>
+					</span>
 				</div>
 
 				<div className="owner-audit-field owner-audit-field--from">
@@ -154,20 +157,23 @@ export function OwnerAuditSection() {
 				<div className="owner-audit-field owner-audit-field--prior">
 					<label htmlFor={fieldId("prior-mode")}>{messages.priorLabel}</label>
 					<div className="owner-audit-field__controls">
-						<select
-							id={fieldId("prior-mode")}
-							value={draft.priorMode}
-							onChange={(event) =>
-								update(
-									"priorMode",
-									event.target.value as OwnerAuditFilterSelection["priorMode"],
-								)
-							}
-						>
-							<option value="any">{messages.priorAny}</option>
-							<option value="value">{messages.priorValue}</option>
-							<option value="missing">{messages.priorMissing}</option>
-						</select>
+						<span className="owner-audit-select">
+							<select
+								id={fieldId("prior-mode")}
+								value={draft.priorMode}
+								onChange={(event) =>
+									update(
+										"priorMode",
+										event.target
+											.value as OwnerAuditFilterSelection["priorMode"],
+									)
+								}
+							>
+								<option value="any">{messages.priorAny}</option>
+								<option value="value">{messages.priorValue}</option>
+								<option value="missing">{messages.priorMissing}</option>
+							</select>
+						</span>
 						<input
 							id={fieldId("prior-value")}
 							type="number"
@@ -187,21 +193,23 @@ export function OwnerAuditSection() {
 						{messages.effectiveLabel}
 					</label>
 					<div className="owner-audit-field__controls">
-						<select
-							id={fieldId("effective-mode")}
-							value={draft.effectiveMode}
-							onChange={(event) =>
-								update(
-									"effectiveMode",
-									event.target
-										.value as OwnerAuditFilterSelection["effectiveMode"],
-								)
-							}
-						>
-							<option value="any">{messages.effectiveAny}</option>
-							<option value="value">{messages.effectiveValue}</option>
-							<option value="missing">{messages.effectiveMissing}</option>
-						</select>
+						<span className="owner-audit-select">
+							<select
+								id={fieldId("effective-mode")}
+								value={draft.effectiveMode}
+								onChange={(event) =>
+									update(
+										"effectiveMode",
+										event.target
+											.value as OwnerAuditFilterSelection["effectiveMode"],
+									)
+								}
+							>
+								<option value="any">{messages.effectiveAny}</option>
+								<option value="value">{messages.effectiveValue}</option>
+								<option value="missing">{messages.effectiveMissing}</option>
+							</select>
+						</span>
 						<input
 							id={fieldId("effective")}
 							type="number"
@@ -219,20 +227,23 @@ export function OwnerAuditSection() {
 				<div className="owner-audit-field owner-audit-field--reason">
 					<label htmlFor={fieldId("reason-mode")}>{messages.reasonLabel}</label>
 					<div className="owner-audit-field__controls">
-						<select
-							id={fieldId("reason-mode")}
-							value={draft.reasonMode}
-							onChange={(event) =>
-								update(
-									"reasonMode",
-									event.target.value as OwnerAuditFilterSelection["reasonMode"],
-								)
-							}
-						>
-							<option value="any">{messages.reasonAny}</option>
-							<option value="contains">{messages.reasonContains}</option>
-							<option value="missing">{messages.reasonMissing}</option>
-						</select>
+						<span className="owner-audit-select">
+							<select
+								id={fieldId("reason-mode")}
+								value={draft.reasonMode}
+								onChange={(event) =>
+									update(
+										"reasonMode",
+										event.target
+											.value as OwnerAuditFilterSelection["reasonMode"],
+									)
+								}
+							>
+								<option value="any">{messages.reasonAny}</option>
+								<option value="contains">{messages.reasonContains}</option>
+								<option value="missing">{messages.reasonMissing}</option>
+							</select>
+						</span>
 						<input
 							id={fieldId("reason-text")}
 							type="text"

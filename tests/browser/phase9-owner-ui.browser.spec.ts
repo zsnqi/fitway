@@ -181,9 +181,10 @@ test("owner curve preserves exact states, historical timezones, and RTL/LTR inte
 		page.getByRole("heading", { name: "التحليلات اليومية" }),
 	).toBeVisible();
 	await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-	// Owner-facing comparison detail only: observed vs scheduled open
-	// minutes. No implementation-disclaimer copy in the reading flow.
-	await expect(page.getByText("6 من 8 دقيقة عمل")).toBeVisible();
+	// Exact coverage belongs to the detail disclosure, below the main summary.
+	expect(
+		(await page.locator(".owner-metric").allTextContents()).join(" "),
+	).not.toContain("دقيقة عمل");
 	await expect(page.locator("body")).not.toContainText(/تقدير لمرات الدخول/u);
 	await expect(
 		page.locator(".owner-chart__closed, .owner-chart__missing"),
@@ -209,7 +210,9 @@ test("owner curve preserves exact states, historical timezones, and RTL/LTR inte
 	await expect(page.locator(".owner-chart__line")).toHaveCount(2);
 	await expect(page.locator(".owner-chart__solo")).toHaveCount(0);
 	await expect(page.locator(".owner-chart__line[data-trimmed]")).toHaveCount(0);
-	await expect(page.getByText("تغطية الرصد")).toHaveCount(0);
+	await expect(page.locator(".owner-table-disclosure")).toContainText(
+		"تغطية الرصد",
+	);
 	await expect(page.locator("body")).not.toContainText(/[٠-٩]/u);
 
 	const chart = page.locator("[data-owner-chart]");
@@ -238,7 +241,7 @@ test("owner curve preserves exact states, historical timezones, and RTL/LTR inte
 		pointerId: 7,
 		isPrimary: true,
 		buttons: 1,
-		clientX: chartBox.x + 12,
+		clientX: chartBox.x + chartBox.width * (162 / 1200),
 		clientY: chartBox.y + chartBox.height / 2,
 	});
 	await expect(page.locator("[data-active-reading]")).toContainText("57");
@@ -359,6 +362,107 @@ test("owner curve preserves exact states, historical timezones, and RTL/LTR inte
 	expect(junction.leftD.trimEnd()).toMatch(/L-?[\d.]+,-?[\d.]+$/);
 	expect(junction.rightD).toMatch(/^M-?[\d.]+,-?[\d.]+ L-?[\d.]+,-?[\d.]+/);
 	await captureReview(page, "owner-analytics-en-1440.png");
+});
+
+test("half-hour hover dismisses on leave while exact peaks and zero gaps remain truthful", async ({
+	page,
+}) => {
+	const timeline = Array.from({ length: 121 }, (_, index) => {
+		const base = {
+			minuteStartUtc: new Date(
+				Date.parse("2026-07-21T07:00:00Z") + index * 60_000,
+			).toISOString(),
+			settingsVersion: index < 90 ? 11 : 12,
+		};
+		if (index === 61) return { ...base, state: "missing", count: null };
+		return {
+			...base,
+			state: "value",
+			count:
+				index === 15
+					? 60
+					: index === 100
+						? 100
+						: index >= 59 && index <= 63
+							? 0
+							: 10,
+			entries: 1,
+			exits: 0,
+			band: "quiet",
+			capacitySnapshot: 200,
+			source: "live",
+		};
+	});
+	await mockOwnerAnalytics(
+		page,
+		{
+			...mixedDaily,
+			timeline,
+			peak: {
+				...mixedDaily.peak,
+				minuteStartUtc: timeline[100]?.minuteStartUtc,
+				count: 100,
+			},
+			dailyAverage: 10,
+			observedOpenMinutes: 120,
+			expectedOpenMinutes: 121,
+			coverage: 120 / 121,
+		},
+		{
+			current: { settingsVersion: 12, timeZone: "UTC" },
+			versions: [
+				{ settingsVersion: 11, timeZone: "UTC" },
+				{ settingsVersion: 12, timeZone: "UTC" },
+			],
+		},
+	);
+	await page.goto("/admin");
+	const chart = page.locator("[data-owner-chart]");
+	await expect(chart).toBeVisible();
+	const points = await page.locator(".owner-chart__point").count();
+	expect(points).toBeLessThan(25);
+	const ticks = await page
+		.locator(".owner-chart__gap-stem")
+		.evaluateAll((elements) =>
+			elements.map((element) =>
+				Math.abs(
+					Number(element.getAttribute("y2")) -
+						Number(element.getAttribute("y1")),
+				),
+			),
+		);
+	expect(ticks).toEqual([5, 5]);
+	for (const locale of ["ar", "en"]) {
+		if (locale === "en")
+			await page
+				.getByRole("button", { name: "التبديل إلى اللغة الإنجليزية" })
+				.click();
+		const box = await chart.boundingBox();
+		if (!box) throw new Error("Expected chart bounds");
+		const hover = async (minute: number) => {
+			const ratio = locale === "ar" ? 1 - minute / 120 : minute / 120;
+			await page.mouse.move(
+				box.x + ((16 + ratio * 1168) / 1200) * box.width,
+				box.y + box.height / 2,
+			);
+		};
+		await hover(31);
+		await expect(page.locator("[data-selected-reading]")).toContainText("7:30");
+		await hover(36);
+		await expect(page.locator("[data-selected-reading]")).toContainText("7:30");
+		await page.mouse.move(0, 0);
+		await expect(page.locator("[data-selected-reading]")).toHaveCount(0);
+		await chart.focus();
+		await page.keyboard.press("Home");
+		await page.keyboard.press(locale === "ar" ? "ArrowLeft" : "ArrowRight");
+		await hover(100);
+		await page.mouse.move(0, 0);
+		await expect(page.locator("[data-selected-reading]")).toContainText("7:30");
+		await page.keyboard.press("Escape");
+		await expect(page.locator("[data-selected-reading]")).toHaveCount(0);
+	}
+	await page.locator(".owner-table-disclosure summary").click();
+	await expect(page.locator(".owner-table-region tbody tr")).toHaveCount(121);
 });
 
 test("latest-day captions stay associated with their points and the section row stays transparent", async ({
@@ -617,21 +721,17 @@ test("a story-relevant gap keeps the desktop dimension treatment and mobile stem
 				settingsVersion: 11,
 				source: "live",
 			},
-			...[
-				"2026-07-21T07:01:00.000Z",
-				"2026-07-21T07:02:00.000Z",
-				"2026-07-21T07:03:00.000Z",
-				"2026-07-21T07:04:00.000Z",
-				"2026-07-21T07:05:00.000Z",
-			].map((minuteStartUtc) => ({
+			...Array.from({ length: 15 }, (_, index) => ({
 				state: "missing",
-				minuteStartUtc,
+				minuteStartUtc: new Date(
+					Date.parse("2026-07-21T07:01:00Z") + index * 60_000,
+				).toISOString(),
 				count: null,
 				settingsVersion: 11,
 			})),
 			{
 				state: "value",
-				minuteStartUtc: "2026-07-21T07:06:00.000Z",
+				minuteStartUtc: "2026-07-21T07:16:00.000Z",
 				count: 40,
 				entries: 30,
 				exits: 0,
@@ -642,13 +742,13 @@ test("a story-relevant gap keeps the desktop dimension treatment and mobile stem
 			},
 			{
 				state: "closed",
-				minuteStartUtc: "2026-07-21T07:07:00.000Z",
+				minuteStartUtc: "2026-07-21T07:17:00.000Z",
 				count: null,
 				settingsVersion: 12,
 			},
 		],
 		peak: {
-			minuteStartUtc: "2026-07-21T07:06:00.000Z",
+			minuteStartUtc: "2026-07-21T07:16:00.000Z",
 			count: 40,
 			band: "moderate",
 			capacitySnapshot: 100,
@@ -657,8 +757,8 @@ test("a story-relevant gap keeps the desktop dimension treatment and mobile stem
 		dailyAverage: 25,
 		estimatedEntranceCrossings: 40,
 		observedOpenMinutes: 2,
-		expectedOpenMinutes: 7,
-		coverage: 2 / 7,
+		expectedOpenMinutes: 17,
+		coverage: 2 / 17,
 	};
 	await mockOwnerAnalytics(page, longGapDaily);
 	await page.setViewportSize({ width: 1440, height: 900 });
@@ -667,7 +767,7 @@ test("a story-relevant gap keeps the desktop dimension treatment and mobile stem
 	await expect(page.locator(".owner-chart__gap-bracket")).toHaveCount(1);
 	await expect(page.locator(".owner-chart__gap-tick")).toHaveCount(2);
 	await expect(page.locator(".owner-chart__gap-label")).toHaveCount(1);
-	await expect(page.locator(".owner-chart__gap-label")).toContainText("5");
+	await expect(page.locator(".owner-chart__gap-label")).toContainText("15");
 
 	await page.setViewportSize({ width: 390, height: 844 });
 	const bracketDisplay = await page

@@ -51,6 +51,9 @@ export function PublicLiveCardShell({
 					) : null}
 				</div>
 				<div className="public-live__metric public-live__metric--count">
+					<span className="public-live__count-accent" aria-hidden="true">
+						<span />
+					</span>
 					<div className="public-live__metric-label">{countLabel}</div>
 					<div className="public-live__metric-primary">{countValue}</div>
 				</div>

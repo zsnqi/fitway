@@ -417,7 +417,7 @@
 	 * large band value. No typography or structure changes; the operational
 	 * status strip below is untouched.
 	 */
-	margin-block-start: 4px;
+	margin-block-start: 10px;
 	padding-block-start: 10px;
 	border-block-start: 1px solid rgb(255 255 255 / 8%);
 	font-size: var(--sb-fresh-size);

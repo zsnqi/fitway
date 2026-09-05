@@ -43,7 +43,6 @@ export function OwnerHealthSection() {
 		<section className="owner-health" aria-labelledby={headingId}>
 			<header className="owner-health__heading" data-owner-navigation-anchor="">
 				<h1 id={headingId}>{messages.title}</h1>
-				<p>{messages.description}</p>
 				{summary ? (
 					<span className="owner-health__window">
 						<span>
@@ -113,7 +112,6 @@ export function OwnerHealthSection() {
 
 					<div className="owner-health-block">
 						<h3>{messages.incidentsTitle}</h3>
-						<p>{messages.incidentsDescription}</p>
 						{summary.alerts.incidents.length === 0 ? (
 							<OwnerHealthEmpty
 								title={messages.incidentsEmptyTitle}
@@ -142,8 +140,6 @@ export function OwnerHealthSection() {
 							</>
 						)}
 					</div>
-
-					<p className="owner-health__footnote">{messages.footnote}</p>
 				</>
 			) : null}
 		</section>

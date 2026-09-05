@@ -231,8 +231,6 @@ export function OwnerReportingSection({
 						) : null}
 					</fieldset>
 				</form>
-
-				<OwnerReportingExport anchorBusinessDay={anchor} />
 			</div>
 
 			{/* One loading card for the section, not one for each leaf in flight. */}
@@ -266,6 +264,10 @@ export function OwnerReportingSection({
 					</div>
 				) : null}
 			</div>
+			<details className="owner-reporting-export-disclosure">
+				<summary>{messages.csvExport}</summary>
+				<OwnerReportingExport anchorBusinessDay={anchor} />
+			</details>
 		</section>
 	);
 }

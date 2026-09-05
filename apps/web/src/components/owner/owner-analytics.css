@@ -1000,8 +1000,8 @@
 
 	.owner-chart-interaction,
 	.owner-chart {
-		min-block-size: 196px;
-		block-size: 196px;
+		min-block-size: 160px;
+		block-size: 160px;
 	}
 
 	.owner-chart__line {
@@ -1318,4 +1318,9 @@
 	.owner-loading-skeleton__summary i:last-child {
 		inline-size: 90px;
 	}
+}
+.owner-coverage-detail {
+	margin: 0 0 16px;
+	color: var(--fw-text-subtle);
+	font-size: 13px;
 }

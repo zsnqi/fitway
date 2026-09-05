@@ -81,9 +81,6 @@ export function OwnerReportingExport({
 			 */}
 			<div className="owner-reporting-board__heading">
 				<h3 className="owner-reporting-board__title">{messages.csvTitle}</h3>
-				<p className="owner-reporting-board__meta" id={`${ids}-export-hint`}>
-					{messages.csvHint}
-				</p>
 			</div>
 
 			<form className="owner-reporting-range" onSubmit={handleSubmit}>
@@ -96,9 +93,7 @@ export function OwnerReportingExport({
 								id={`${ids}-start`}
 								type="date"
 								value={selection.startBusinessDay}
-								aria-describedby={
-									problem ? `${ids}-problem` : `${ids}-export-hint`
-								}
+								aria-describedby={problem ? `${ids}-problem` : undefined}
 								aria-invalid={problem ? true : undefined}
 								onChange={(event) =>
 									setSelection((current) => ({
@@ -114,9 +109,7 @@ export function OwnerReportingExport({
 								id={`${ids}-end`}
 								type="date"
 								value={selection.endBusinessDay}
-								aria-describedby={
-									problem ? `${ids}-problem` : `${ids}-export-hint`
-								}
+								aria-describedby={problem ? `${ids}-problem` : undefined}
 								aria-invalid={problem ? true : undefined}
 								onChange={(event) =>
 									setSelection((current) => ({
@@ -235,7 +228,7 @@ export function OwnerReportingExport({
 					}
 					description={
 						csv.state.reason === "range"
-							? messages.csvHint
+							? messages.problemCsvTooLong
 							: messages.csvTransportErrorDescription
 					}
 					action={

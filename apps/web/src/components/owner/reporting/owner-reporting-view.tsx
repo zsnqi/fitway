@@ -242,7 +242,6 @@ export function OwnerReportingHeatmap({ heatmap }: { heatmap: Heatmap }) {
 				</ul>
 			</div>
 
-			<p className="owner-reporting__scroll-hint">{messages.scrollHint}</p>
 			<section
 				className="owner-reporting-grid-region"
 				aria-label={messages.heatmapRegion}
@@ -318,7 +317,7 @@ export function OwnerReportingHeatmap({ heatmap }: { heatmap: Heatmap }) {
 					</tbody>
 				</table>
 			</section>
-			<p className="owner-reporting__hint" id={`${ids}-hint`}>
+			<p className="fw-sr-only" id={`${ids}-hint`}>
 				{messages.heatmapHint}
 			</p>
 
@@ -390,7 +389,6 @@ export function OwnerReportingTable({ heatmap }: { heatmap: Heatmap }) {
 			<summary>
 				<span>
 					<strong>{messages.tableSummary}</strong>
-					<small>{messages.tableDescription}</small>
 				</span>
 			</summary>
 			<section
