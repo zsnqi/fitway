@@ -184,22 +184,50 @@ test("owner curve preserves exact states, historical timezones, and RTL/LTR inte
 	await expect(
 		page.getByText("تقدير لمرات الدخول، وليس لعدد الأعضاء الفريدين"),
 	).toBeVisible();
-	await expect(page.locator(".owner-chart__missing")).toHaveCount(2);
-	await expect(page.locator(".owner-chart__closed")).toHaveCount(2);
-	await expect(page.locator(".owner-chart__zero")).toHaveCount(1);
+	await expect(
+		page.locator(".owner-chart__closed, .owner-chart__missing"),
+	).toHaveCount(0);
+	await expect(page.locator(".owner-chart__gap-stem")).toHaveCount(4);
+	await expect(page.locator(".owner-chart__gap-bracket")).toHaveCount(2);
+	await expect(page.locator(".owner-chart__gap-tick")).toHaveCount(4);
+	await expect(page.locator(".owner-chart__gap-label")).toHaveCount(2);
+	await expect(page.locator(".owner-chart__gap-label").first()).toContainText(
+		"1",
+	);
+	// Human decision 2026-09-05: no zero-square marker. The genuine zero
+	// stays truthful through the line at zero plus the Observed table row.
+	await expect(page.locator(".owner-chart__zero")).toHaveCount(0);
+	// Completed day (2026-07-21), pristine selection: ring on the peak with
+	// no stem, no Latest label, and no selected readout — Paper's closed
+	// treatment.
+	await expect(page.locator(".owner-chart__stem")).toHaveCount(0);
+	await expect(page.locator(".owner-chart__latest")).toHaveCount(0);
+	await expect(page.locator(".owner-chart-tip")).toHaveCount(0);
+	// Paper terminates the line at the marker's OUTER edge: the pristine
+	// peak is a lone reading hidden behind its own ring (the HTML core
+	// marks it), so only the two connected runs stroke lines and no
+	// solo dot remains.
+	await expect(page.locator(".owner-chart__line")).toHaveCount(2);
+	await expect(page.locator(".owner-chart__solo")).toHaveCount(0);
+	await expect(page.locator(".owner-chart__line[data-trimmed]")).toHaveCount(0);
 	await expect(page.getByText("تغطية الرصد")).toHaveCount(0);
 	await expect(page.locator("body")).not.toContainText(/[٠-٩]/u);
 
 	const chart = page.locator("[data-owner-chart]");
 	await expect(chart).toBeVisible();
 	const rtlX = Number(
-		await page.locator(".owner-chart__active").getAttribute("cx"),
+		await page.locator(".owner-chart__active").getAttribute("data-chart-x"),
 	);
 	expect(rtlX).toBeLessThan(600);
 	await chart.focus();
 	await expect(chart).toBeFocused();
 	await page.keyboard.press("ArrowRight");
 	await expect(page.locator("[data-active-reading]")).toContainText("46");
+	// First explicit selection exposes Paper's visible readout: stem plus a
+	// tooltip card with the reading time and approximate count.
+	await expect(page.locator(".owner-chart__stem")).toHaveCount(1);
+	await expect(page.locator(".owner-chart-tip")).toBeVisible();
+	await expect(page.locator(".owner-chart-tip")).toContainText("46");
 	const chartBox = await chart.boundingBox();
 	if (!chartBox) throw new Error("Owner chart has no bounding box");
 	await chart.hover({
@@ -216,7 +244,7 @@ test("owner curve preserves exact states, historical timezones, and RTL/LTR inte
 	});
 	await expect(page.locator("[data-active-reading]")).toContainText("57");
 	const rtlSelectedX = Number(
-		await page.locator(".owner-chart__active").getAttribute("cx"),
+		await page.locator(".owner-chart__active").getAttribute("data-chart-x"),
 	);
 
 	await page.locator("summary").click();
@@ -233,7 +261,7 @@ test("owner curve preserves exact states, historical timezones, and RTL/LTR inte
 		page.getByRole("heading", { name: "Daily analytics" }),
 	).toBeVisible();
 	const ltrX = Number(
-		await page.locator(".owner-chart__active").getAttribute("cx"),
+		await page.locator(".owner-chart__active").getAttribute("data-chart-x"),
 	);
 	expect(ltrX).toBeGreaterThan(600);
 	expect(Math.abs(rtlSelectedX + ltrX - 1200)).toBeLessThan(1);
@@ -243,7 +271,237 @@ test("owner curve preserves exact states, historical timezones, and RTL/LTR inte
 	await page.keyboard.press("Home");
 	await page.keyboard.press("ArrowRight");
 	await expect(page.locator("[data-active-reading]")).toContainText("8");
+	// The 8 ends its run (one trimmed side); the middle 31 of run
+	// [18, 31, 46] is interior, so both sides trim to the ring.
+	await page.keyboard.press("ArrowRight");
+	await page.keyboard.press("ArrowRight");
+	await expect(page.locator("[data-active-reading]")).toContainText("31");
+	await expect(
+		page.locator('.owner-chart__line[data-trimmed="left"]'),
+	).toHaveCount(1);
+	await expect(
+		page.locator('.owner-chart__line[data-trimmed="right"]'),
+	).toHaveCount(1);
+	// No stroked line coordinate may reach the marker center: parse every
+	// trimmed and untrimmed path and require daylight around the ring.
+	const clearance = await page.evaluate(() => {
+		const marker = document.querySelector<HTMLElement>(".owner-chart__active");
+		const svg = document.querySelector(".owner-chart");
+		if (!marker || !svg) throw new Error("Owner chart is missing");
+		const plot = svg.getBoundingClientRect();
+		const box = marker.getBoundingClientRect();
+		const center = {
+			x: box.x + box.width / 2,
+			y: box.y + box.height / 2,
+		};
+		const toScreen = (viewX: number, viewY: number) => ({
+			x: plot.x + (viewX / 1200) * plot.width,
+			y: plot.y + (viewY / 240) * plot.height,
+		});
+		let closest = Number.POSITIVE_INFINITY;
+		for (const line of document.querySelectorAll(".owner-chart__line")) {
+			const pairs = [
+				...(line.getAttribute("d") ?? "").matchAll(/(-?[\d.]+),(-?[\d.]+)/g),
+			];
+			for (const pair of pairs) {
+				const screen = toScreen(Number(pair[1]), Number(pair[2]));
+				closest = Math.min(
+					closest,
+					Math.hypot(screen.x - center.x, screen.y - center.y),
+				);
+			}
+		}
+		const stem = document.querySelector(".owner-chart__stem");
+		const stemTop = stem ? Number(stem.getAttribute("y1")) : null;
+		const stemScreen =
+			stemTop === null ? null : toScreen(0, stemTop).y - toScreen(0, 0).y;
+		return {
+			closest,
+			markerRadius: box.width / 2,
+			stemGap:
+				stemScreen === null ? null : stemScreen - (center.y - toScreen(0, 0).y),
+		};
+	});
+	// The closest line coordinate stays outside the ring (2px tolerance
+	// covers antialiasing); the stem resumes at the ring's bottom edge.
+	expect(clearance.closest).toBeGreaterThan(clearance.markerRadius - 2);
+	if (clearance.stemGap !== null) {
+		expect(clearance.stemGap).toBeGreaterThanOrEqual(
+			clearance.markerRadius - 3,
+		);
+		expect(clearance.stemGap).toBeLessThanOrEqual(clearance.markerRadius + 3);
+	}
+	// Paint-level junction (Paper outer-edge treatment): trimmed sides meet
+	// the ring with butt caps on straight radial tips, so no round cap or
+	// smoothing bow paints past the outer edge toward the core. The active
+	// stem likewise starts with a butt cap on the ring edge.
+	const junction = await page.evaluate(() => {
+		const capOf = (selector: string) => {
+			const element = document.querySelector(selector);
+			return element ? getComputedStyle(element).strokeLinecap : null;
+		};
+		const left = document.querySelector(
+			'.owner-chart__line[data-trimmed="left"]',
+		);
+		const right = document.querySelector(
+			'.owner-chart__line[data-trimmed="right"]',
+		);
+		return {
+			leftCap: capOf('.owner-chart__line[data-trimmed="left"]'),
+			rightCap: capOf('.owner-chart__line[data-trimmed="right"]'),
+			stemCap: capOf(".owner-chart__stem"),
+			leftD: left?.getAttribute("d") ?? "",
+			rightD: right?.getAttribute("d") ?? "",
+		};
+	});
+	expect(junction.leftCap).toBe("butt");
+	expect(junction.rightCap).toBe("butt");
+	if (junction.stemCap !== null) expect(junction.stemCap).toBe("butt");
+	expect(junction.leftD.trimEnd()).toMatch(/L-?[\d.]+,-?[\d.]+$/);
+	expect(junction.rightD).toMatch(/^M-?[\d.]+,-?[\d.]+ L-?[\d.]+,-?[\d.]+/);
 	await captureReview(page, "owner-analytics-en-1440.png");
+});
+
+test("latest-day captions stay associated with their points and the section row stays transparent", async ({
+	page,
+}) => {
+	const todayNewYork = new Intl.DateTimeFormat("en-CA", {
+		timeZone: "America/New_York",
+		year: "numeric",
+		month: "2-digit",
+		day: "2-digit",
+	}).format(new Date());
+	await mockOwnerAnalytics(page, { ...mixedDaily, businessDay: todayNewYork });
+
+	for (const viewport of [
+		{ width: 390, height: 844 },
+		{ width: 1440, height: 900 },
+	] as const) {
+		await page.setViewportSize(viewport);
+		await page.goto("/admin");
+		await expect(page.locator(".owner-chart__latest")).toBeVisible();
+
+		// Variant B: the six-destination row stays fully transparent over
+		// the page wash; only the Paper divider and active-tab underline
+		// carry the row structure.
+		const tabs = page.locator(
+			".owner-section-switch > .owner-analytics-mode__tabs",
+		);
+		await expect(tabs).toBeVisible();
+		expect(
+			await tabs.evaluate(
+				(element) => getComputedStyle(element).backgroundColor,
+			),
+		).toBe("rgba(0, 0, 0, 0)");
+		expect(
+			await tabs.evaluate(
+				(element) => getComputedStyle(element).backgroundImage,
+			),
+		).toBe("none");
+		expect(
+			await tabs.evaluate(
+				(element) => getComputedStyle(element).borderBottomWidth,
+			),
+		).not.toBe("0px");
+		expect(
+			await page
+				.locator('[role="tab"][aria-selected="true"]')
+				.evaluate((element) => getComputedStyle(element).boxShadow),
+		).toContain("inset");
+
+		// Every caption box stays inside its own row container.
+		const interactionBox = await page
+			.locator(".owner-chart-interaction")
+			.boundingBox();
+		const plotBox = await page.locator(".owner-chart-plot").boundingBox();
+		const axisBox = await page.locator(".owner-chart-x-axis").boundingBox();
+		if (!interactionBox || !plotBox || !axisBox)
+			throw new Error("Owner chart has no bounding box");
+		for (const locator of [
+			page.locator(".owner-chart__latest"),
+			...(await page.locator(".owner-chart__gap-label").all()),
+		]) {
+			const box = await locator.boundingBox();
+			if (!box) continue; // Mobile hides desktop gap labels by design.
+			expect(box.x).toBeGreaterThanOrEqual(interactionBox.x - 1);
+			expect(box.x + box.width).toBeLessThanOrEqual(
+				interactionBox.x + interactionBox.width + 1,
+			);
+		}
+		for (const tick of await page.locator(".owner-chart-x-axis span").all()) {
+			const box = await tick.boundingBox();
+			if (!box || box.width === 0) continue;
+			expect(box.x).toBeGreaterThanOrEqual(plotBox.x - 1);
+			expect(box.x + box.width).toBeLessThanOrEqual(
+				plotBox.x + plotBox.width + 1,
+			);
+		}
+
+		// The Latest caption always covers its own stem x: the marker
+		// center falls inside the caption box, so the label cannot read as
+		// attached to a different point.
+		const markerBox = await page.locator(".owner-chart__active").boundingBox();
+		const latestBox = await page.locator(".owner-chart__latest").boundingBox();
+		if (!markerBox || !latestBox)
+			throw new Error("Latest marker or caption is missing");
+		const markerCenterX = markerBox.x + markerBox.width / 2;
+		expect(markerCenterX).toBeGreaterThanOrEqual(latestBox.x - 2);
+		expect(markerCenterX).toBeLessThanOrEqual(
+			latestBox.x + latestBox.width + 2,
+		);
+
+		// Each gap-duration caption covers its own bracket midpoint.
+		const stemXs = await page
+			.locator(".owner-chart__gap-stem")
+			.evaluateAll((elements) =>
+				elements.map((element) => Number(element.getAttribute("x1"))),
+			);
+		const gapLabels = page.locator(".owner-chart__gap-label");
+		const gapCount = await gapLabels.count();
+		for (let index = 0; index < gapCount; index += 1) {
+			const box = await gapLabels.nth(index).boundingBox();
+			if (!box) continue; // Mobile hides desktop gap labels by design.
+			const midpointViewBox =
+				(Number(stemXs[index * 2]) + Number(stemXs[index * 2 + 1])) / 2;
+			const anchorX = plotBox.x + (midpointViewBox / 1200) * plotBox.width;
+			expect(anchorX).toBeGreaterThanOrEqual(box.x - 3);
+			expect(anchorX).toBeLessThanOrEqual(box.x + box.width + 3);
+		}
+
+		// On desktop the anchors are far enough apart that the Latest
+		// caption and the gap captions must not share any pixels.
+		if (viewport.width > 720 && latestBox) {
+			for (let index = 0; index < gapCount; index += 1) {
+				const box = await gapLabels.nth(index).boundingBox();
+				if (!box) continue;
+				const overlapX =
+					Math.min(latestBox.x + latestBox.width, box.x + box.width) -
+					Math.max(latestBox.x, box.x);
+				const overlapY =
+					Math.min(latestBox.y + latestBox.height, box.y + box.height) -
+					Math.max(latestBox.y, box.y);
+				expect(overlapX <= 0 || overlapY <= 0).toBe(true);
+			}
+		}
+	}
+
+	await page
+		.getByRole("button", { name: "التبديل إلى اللغة الإنجليزية" })
+		.click();
+	await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await page.goto("/admin");
+	await expect(page.locator(".owner-chart__latest")).toBeVisible();
+	await expect(page.locator(".owner-chart__latest")).toContainText("Latest");
+	const enMarkerBox = await page.locator(".owner-chart__active").boundingBox();
+	const enLatestBox = await page.locator(".owner-chart__latest").boundingBox();
+	if (!enMarkerBox || !enLatestBox)
+		throw new Error("Latest marker or caption is missing");
+	const enMarkerCenterX = enMarkerBox.x + enMarkerBox.width / 2;
+	expect(enMarkerCenterX).toBeGreaterThanOrEqual(enLatestBox.x - 2);
+	expect(enMarkerCenterX).toBeLessThanOrEqual(
+		enLatestBox.x + enLatestBox.width + 2,
+	);
 });
 
 test("both locales recompose without page overflow at every required width and pass axe", async ({
@@ -261,6 +519,78 @@ test("both locales recompose without page overflow at every required width and p
 		for (const width of widths) {
 			await page.setViewportSize({ width, height: width <= 390 ? 844 : 900 });
 			await expect(page.locator("[data-owner-chart]")).toBeVisible();
+			const marker = page.locator(".owner-chart__active");
+			const markerBox = await marker.boundingBox();
+			expect(markerBox?.width).toBe(markerBox?.height);
+			// Paper ring anatomy: 20px desktop, 18px mobile, hollow field.
+			expect(markerBox?.width).toBe(width <= 720 ? 18 : 20);
+			expect(
+				await marker.evaluate(
+					(element) => getComputedStyle(element).borderColor,
+				),
+			).toBe("rgb(229, 25, 53)");
+			expect(
+				await marker.evaluate(
+					(element) => getComputedStyle(element).backgroundColor,
+				),
+			).toBe("rgba(0, 0, 0, 0)");
+			// Paper marker anatomy: the solid core stays concentric with the
+			// ring in both directions. A logical inline-start offset leaves
+			// `left` as `auto` in RTL and shifts the core half its own size;
+			// the core center must therefore coincide with the ring center
+			// (1px tolerance covers used-value serialization rounding).
+			const coreGeometry = await marker.evaluate((element) => {
+				const ring = getComputedStyle(element);
+				const core = getComputedStyle(element, "::after");
+				return {
+					ringWidth: Number.parseFloat(ring.width),
+					ringHeight: Number.parseFloat(ring.height),
+					coreWidth: Number.parseFloat(core.width),
+					coreHeight: Number.parseFloat(core.height),
+					coreLeft: core.left,
+					coreTop: core.top,
+				};
+			});
+			expect(coreGeometry.coreLeft).not.toBe("auto");
+			expect(
+				Math.abs(
+					Number.parseFloat(coreGeometry.coreLeft) +
+						coreGeometry.coreWidth / 2 -
+						coreGeometry.ringWidth / 2,
+				),
+			).toBeLessThanOrEqual(1);
+			expect(
+				Math.abs(
+					Number.parseFloat(coreGeometry.coreTop) +
+						coreGeometry.coreHeight / 2 -
+						coreGeometry.ringHeight / 2,
+				),
+			).toBeLessThanOrEqual(1);
+			// Paper gap language is viewport-specific: desktop shows the
+			// dimension bracket, ticks, and duration label; mobile shows the
+			// dashed stems only. SVG lines have empty geometric boxes, so the
+			// rule is asserted through computed display, not visibility.
+			const gapBracketDisplay = await page
+				.locator(".owner-chart__gap-bracket")
+				.first()
+				.evaluate((element) => getComputedStyle(element).display);
+			const gapLabelDisplay = await page
+				.locator(".owner-chart__gap-label")
+				.first()
+				.evaluate((element) => getComputedStyle(element).display);
+			const gapStemDisplay = await page
+				.locator(".owner-chart__gap-stem")
+				.first()
+				.evaluate((element) => getComputedStyle(element).display);
+			if (width <= 720) {
+				expect(gapBracketDisplay).toBe("none");
+				expect(gapLabelDisplay).toBe("none");
+			} else {
+				expect(gapBracketDisplay).not.toBe("none");
+				expect(gapLabelDisplay).not.toBe("none");
+			}
+			expect(gapStemDisplay).not.toBe("none");
+
 			const overflow = await page.evaluate(
 				() =>
 					document.documentElement.scrollWidth >
@@ -485,6 +815,14 @@ test("keyboard order, practical targets, reduced motion, and 200% reflow remain 
 			document.documentElement.clientWidth,
 	);
 	expect(overflow).toBe(false);
+	const navigation = await page.getByRole("tablist").boundingBox();
+	const board = await page.locator(".owner-analytics-board").boundingBox();
+	expect(navigation).not.toBeNull();
+	expect(board).not.toBeNull();
+	if (!navigation || !board)
+		throw new Error("Missing navigation or summary board");
+	expect(navigation.y + navigation.height).toBeLessThanOrEqual(board.y);
+
 	await expect(
 		page.getByRole("heading", { name: "التحليلات اليومية" }),
 	).toBeVisible();
@@ -501,6 +839,10 @@ test("canonical routed Owner Daily desktop Arabic and mobile English are capture
 		page.getByRole("heading", { name: "التحليلات اليومية" }),
 	).toBeVisible();
 	await captureReview(page, "owner-daily-route-ar-desktop-1440x900.png");
+	await expect(page).toHaveScreenshot(
+		"owner-daily-route-ar-desktop-1440x900.png",
+		{ fullPage: true },
+	);
 
 	await page
 		.getByRole("button", { name: "التبديل إلى اللغة الإنجليزية" })
@@ -510,4 +852,8 @@ test("canonical routed Owner Daily desktop Arabic and mobile English are capture
 		page.getByRole("heading", { name: "Daily analytics" }),
 	).toBeVisible();
 	await captureReview(page, "owner-daily-route-en-mobile-390x844.png");
+	await expect(page).toHaveScreenshot(
+		"owner-daily-route-en-mobile-390x844.png",
+		{ fullPage: true },
+	);
 });

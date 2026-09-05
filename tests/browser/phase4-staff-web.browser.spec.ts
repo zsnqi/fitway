@@ -282,14 +282,14 @@ test("a failed background refresh replaces cached live data with transport error
 
 	await page.goto("/staff");
 	await expect(page.getByText("37", { exact: true })).toBeVisible();
-	await page.getByRole("link", { name: "منطقة المالك" }).click();
+	await page.getByRole("link", { name: "الإدارة" }).click();
 	await expect(page.getByRole("tab", { name: "اليومي" })).toHaveAttribute(
 		"aria-selected",
 		"true",
 	);
 	await page
 		.locator(".operations-nav")
-		.getByRole("link", { name: "العمليات المباشرة" })
+		.getByRole("link", { name: "المراقبة" })
 		.click();
 	await expect(page.getByRole("alert")).toContainText("تعذّر تحميل القراءة");
 	await expect(page.getByText("37", { exact: true })).toHaveCount(0);
@@ -400,7 +400,7 @@ test("admin renders localized 403 for staff and the shell only for owner", async
 		"aria-selected",
 		"true",
 	);
-	await expect(page.getByRole("link", { name: "منطقة المالك" })).toBeVisible();
+	await expect(page.getByRole("link", { name: "الإدارة" })).toBeVisible();
 	await captureReview(page, "admin-owner-ar-1280.png");
 });
 

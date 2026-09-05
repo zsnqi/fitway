@@ -23,8 +23,8 @@ import "./owner-health.css";
  * It reads and never writes: the transport leaf behind it exposes no append path, so
  * the frozen Phase 8 evaluator remains the only writer of either log.
  *
- * The window heading is rendered from the payload's own business days, so the period
- * every figure below shares is stated before the first number rather than assumed.
+ * The window heading renders the payload's business-day count and timezone, so the
+ * coverage shared by every figure below is stated before the first number.
  */
 export function OwnerHealthSection() {
 	const { locale } = useI18n();

@@ -1,28 +1,25 @@
 schemaVersion: 1
 id: owner-system-status-shared-shell-runtime-data-and-bidi
-status: IMPLEMENTED_PENDING_INDEPENDENT_REVIEW
-approvedAt: "2026-09-03T17:18:00Z"
+status: IMPLEMENTED_AND_REVIEWED
+approvedAt: 2026-09-03T17:18:00Z
 approvedBy: approved-plan-and-bounded-polish-policy
-implementedAt: "2026-09-03T17:18:00Z"
+implementedAt: 2026-09-03T17:18:00Z
 implementedBy: coordinator
 paper:
-  file: "FITWAY UX Exploration"
-  page: "Page 1"
-  desktopArea: "OWNER UPTIME & INCIDENTS PRODUCTION SET — CANDIDATE"
-  mobileArea: "OWNER UPTIME — MOBILE STACKED RECORDS SUCCESSOR"
-affectedRegion: >-
-  System Status route shell, period context, runtime metrics and records, mobile explanatory
-  density, and mixed numeric/Arabic duration runs.
-observableProblem: >-
-  The accepted Paper frames retain historical Daily/History chrome that the approved shared Owner
-  shell supersedes, contain illustrative dates and values that must not replace API data, and show
-  Arabic duration units whose bidi order becomes visually awkward in a live RTL table. The desktop
-  footnote also overwhelms the narrower mobile hierarchy.
-smallestCorrection: >-
-  Use the approved shared Owner navigation as the only section navigation, bind all values and
-  period context to the existing health response, keep the accepted desktop tables and mobile
-  stacked-record endpoints, hide the long desktop footnote on mobile, and render compact Arabic
-  duration runs in an explicit left-to-right override while retaining Western digits.
+  file: FITWAY UX Exploration
+  page: Page 1
+  desktopArea: OWNER UPTIME & INCIDENTS PRODUCTION SET — CANDIDATE
+  mobileArea: OWNER UPTIME — MOBILE STACKED RECORDS SUCCESSOR
+affectedRegion: System Status route shell, period context, runtime metrics and records, mobile
+  explanatory density, and mixed numeric/Arabic duration runs.
+observableProblem: The accepted Paper frames retain historical Daily/History chrome that the
+  approved shared Owner shell supersedes, contain illustrative dates and values that must not
+  replace API data, and show Arabic duration units whose bidi order becomes visually awkward in a
+  live RTL table. The desktop footnote also overwhelms the narrower mobile hierarchy.
+smallestCorrection: Use the approved shared Owner navigation as the only section navigation, bind
+  all values and period context to the existing health response, keep the accepted desktop tables
+  and mobile stacked-record endpoints, hide the long desktop footnote on mobile, and render compact
+  Arabic duration runs in an explicit left-to-right override while retaining Western digits.
 mustPreserve:
   - accepted desktop summary, table, section, state, and material hierarchy
   - accepted mobile stacked-record composition with every existing field and record
@@ -31,19 +28,26 @@ mustPreserve:
   - bilingual copy meaning, responsive reachability, and accessibility
 paperMutationRequired: false
 reviewEvidence:
-  decision: >-
-    Covered by the approved shared-shell decision and the human-authorized bounded-polish policy
-    for evident spacing, alignment, bidi, control-edge, typography, and runtime constraints.
+  decision: Covered by the approved shared-shell decision and the human-authorized bounded-polish
+    policy for evident spacing, alignment, bidi, control-edge, typography, and runtime constraints.
   approvalRecord: docs/phase-records/handoffs/full-route-paper-fidelity/20260902-204903-owner-shared-navigation-routed.md
   paperAuthorityRecord: docs/phase-records/handoffs/phase11-uptime-paper-successor/20260825-003100-p11_uptime_paper_c01-coordinator-done.md
-  routedBefore: output/review/fidelity_health_before_r01
-  routedAfter: visual-direction-gate/approved/paper-route-authority-20260902/evidence/owner-system-status
-  implementationRegressionEvidence: >-
-    Component and browser tests assert denominator copy, gym-timezone rendering, complete mobile
-    records, no overflow, RTL with Western digits, explicit LTR duration presentation, keyboard,
-    forced-color, reduced-motion, 200 percent reflow, and axe behavior.
-  independentRenderedReview: PENDING_FINAL_MILESTONE_REVIEW
-acceptanceRule: >-
-  This record authorizes only the stated shell, runtime-data, mobile-density, and bidi corrections.
-  It cannot excuse missing records, changed health semantics, invented values, broad redesign, or
-  unreviewed drift from the accepted desktop and mobile Paper families.
+  routedBefore:
+    - path: visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/before/owner-health-mobile-stacked-ar-390x844.png
+      bytes: 248336
+      sha256: 3608b63ed9762603b56bb0695dfd0a277f84aee350b35632a6b9923cbc29eadd
+  routedAfter:
+    - path: visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-health-mobile-stacked-ar-390x844.png
+      bytes: 254934
+      sha256: 6390dcfde6df36a148e06e683b34de83f6b17241fff327a7a44c79a9cabfd137
+  implementationRegressionEvidence: Component and browser tests assert denominator copy, gym-timezone
+    rendering, complete mobile records, no overflow, RTL with Western digits, explicit LTR duration
+    presentation, keyboard, forced-color, reduced-motion, 200 percent reflow, and axe behavior.
+  independentRenderedReview: docs/phase-records/handoffs/full-route-paper-fidelity/20260904-final-independent-reviews.md
+  previousCandidateEvidence:
+    routedBefore: output/review/fidelity_health_before_r01
+    routedAfter: visual-direction-gate/approved/paper-route-authority-20260902/evidence/owner-system-status
+acceptanceRule: This record authorizes only the stated shell, runtime-data, mobile-density, and bidi
+  corrections. It cannot excuse missing records, changed health semantics, invented values, broad
+  redesign, or unreviewed drift from the accepted desktop and mobile Paper families.
+reviewedAt: 2026-09-03T21:15:00Z

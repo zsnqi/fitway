@@ -193,9 +193,10 @@ function buildCells(
 						key: "camera",
 						label: messages.camera,
 						value: deviceLabel(health.camera, messages, "camera"),
-						tone: "delayed",
+						tone: deviceTone(health.camera),
+						danger: health.camera === "failed",
 						secondary: seen,
-						secondaryTone: "delayed",
+						secondaryTone: health.camera === "failed" ? "error" : "delayed",
 					}
 				: {
 						key: "camera",
@@ -274,7 +275,9 @@ export function OperationalSnapshotView({ snapshot }: SnapshotViewProps) {
 		variant === "delayed"
 			? ({ tone: "delayed", text: staff.delayedNotice } as const)
 			: variant === "camera"
-				? ({ tone: "delayed", text: staff.cameraNotice } as const)
+				? snapshot.health.camera === "failed"
+					? ({ tone: "error", text: staff.cameraFailedNotice } as const)
+					: ({ tone: "delayed", text: staff.cameraNotice } as const)
 				: variant === "offline"
 					? ({ tone: "error", text: staff.offlineNotice } as const)
 					: variant === "trust"

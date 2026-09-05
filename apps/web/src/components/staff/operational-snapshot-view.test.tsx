@@ -165,6 +165,41 @@ describe("operational snapshot truth states", () => {
 		expect(container.querySelector(".sboard__tick")).toBeNull();
 	});
 
+	it("distinguishes a failed camera from a degraded camera", async () => {
+		await render({
+			...base,
+			health: { ...base.health, condition: "degraded", camera: "degraded" },
+		});
+		const degraded = [...container.querySelectorAll(".sboard__cell")].find(
+			(cell) => cell.textContent?.includes("Camera"),
+		);
+		expect(degraded?.textContent).toContain("Unstable");
+		expect(
+			degraded?.querySelector(".sboard__marker")?.getAttribute("data-tone"),
+		).toBe("delayed");
+
+		await render({
+			...base,
+			health: { ...base.health, condition: "failed", camera: "failed" },
+		});
+		const failed = [...container.querySelectorAll(".sboard__cell")].find(
+			(cell) => cell.textContent?.includes("Camera"),
+		);
+		expect(failed?.textContent).toContain("Failed");
+		expect(container.querySelector(".sboard__notice")?.textContent).toContain(
+			"Camera failed",
+		);
+		expect(
+			container.querySelector(".sboard__notice")?.getAttribute("data-tone"),
+		).toBe("error");
+		expect(
+			failed?.querySelector(".sboard__marker")?.getAttribute("data-tone"),
+		).toBe("error");
+		expect(
+			failed?.querySelector(".sboard__cell-value")?.getAttribute("data-danger"),
+		).toBe("true");
+	});
+
 	it("keeps private capacity in the DTO and out of the Staff rendering", async () => {
 		await render(base);
 

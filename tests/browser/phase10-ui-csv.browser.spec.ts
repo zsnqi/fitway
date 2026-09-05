@@ -156,6 +156,12 @@ async function captureReview(page: Page, name: string) {
 	if (!reviewDirectory)
 		throw new Error("FITWAY_PLAYWRIGHT_REVIEW_DIR is required");
 	await mkdir(reviewDirectory, { recursive: true });
+	await page.evaluate(() =>
+		(document.activeElement as HTMLElement | null)?.blur(),
+	);
+	await page.addStyleTag({
+		content: ".operations-skip-link { display: none !important; }",
+	});
 	await page.screenshot({
 		path: path.join(reviewDirectory, name),
 		fullPage: true,
@@ -818,6 +824,9 @@ test("loading, retryable error, insufficient history, and semantic-table parity 
 	await expect(table.locator("tr[data-state='missing']")).toHaveCount(1);
 	await expect(table.locator("tr[data-state='closed']")).toHaveCount(1);
 	await captureReview(page, "phase10-reporting-states-en-390x844.png");
+	await reporting.getByRole("button", { name: "Last 28 days" }).click();
+	await expect(reportRange.getByLabel("Start")).toHaveValue("2026-07-18");
+	await expect(reportRange.getByLabel("End")).toHaveValue("2026-08-14");
 });
 
 test("CSV export visibly starts, cancels without a file, and reports a transport failure", async ({

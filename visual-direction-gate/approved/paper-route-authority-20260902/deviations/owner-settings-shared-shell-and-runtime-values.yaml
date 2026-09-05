@@ -1,26 +1,30 @@
 schemaVersion: 1
 id: owner-settings-shared-shell-and-runtime-values
-status: IMPLEMENTED_PENDING_INDEPENDENT_REVIEW
-approvedAt: "2026-09-03T14:30:00Z"
+status: IMPLEMENTED_AND_REVIEWED
+approvedAt: 2026-09-03T14:30:00Z
 approvedBy: approved-shared-shell-and-runtime-contract
-implementedAt: "2026-09-03T14:30:00Z"
+implementedAt: 2026-09-03T14:30:00Z
 implementedBy: coordinator
 paper:
-  file: "FITWAY UX Exploration"
-  page: "Page 1"
-  area: "OWNER SETTINGS — FRESH r01 SUCCESSOR CANDIDATE"
-affectedRegion: >-
-  Settings global and section navigation, version and form values, focus/state presentation, and
-  runtime interpolation outside the accepted 1440px and 390px endpoint frames.
-observableProblem: >-
-  The Settings successor predates the approved shared six-destination Owner navigation and shows
-  illustrative version, schedule, focus, and dirty-state values. Reproducing those fixtures would
-  detach Settings from the Owner product and overwrite the existing append-only settings contract.
-smallestCorrection: >-
-  Preserve the accepted Settings page composition exactly, insert the approved shared Owner
-  navigation at its established anchor, bind version and editable/locked values to the existing
-  settings snapshot and draft state, and use repository responsive/accessibility contracts between
-  the Paper desktop and mobile endpoints.
+  file: FITWAY UX Exploration
+  page: Page 1
+  area: OWNER SETTINGS — FRESH r01 SUCCESSOR CANDIDATE
+affectedRegion: Settings global and section navigation, version and form values, focus/state
+  presentation, and runtime interpolation outside the accepted 1440px and 390px endpoint frames.
+  This also covers the desktop Paper export's accidental light/white upper-right wedge above the
+  dark application canvas, which is not part of the accepted Owner material treatment.
+observableProblem: The Settings successor predates the approved shared six-destination Owner
+  navigation and shows illustrative version, schedule, focus, and dirty-state values. Reproducing
+  those fixtures would detach Settings from the Owner product and overwrite the existing append-only
+  settings contract. Its desktop export also contains an isolated light wedge at the upper-right
+  edge that visually breaks the otherwise continuous dark shell and has no semantic or compositional
+  function.
+smallestCorrection: Preserve the accepted Settings page composition exactly, insert the approved
+  shared Owner navigation at its established anchor, bind version and editable/locked values to the
+  existing settings snapshot and draft state, and use repository responsive/accessibility contracts
+  between the Paper desktop and mobile endpoints. Keep the routed upper-right shell on the same
+  continuous dark material as the surrounding Owner header instead of reproducing the export
+  artifact.
 mustPreserve:
   - all five editable axes and all five locked operational timing values
   - clean, dirty, inline validation, saving, saved, and atomic failure semantics
@@ -29,18 +33,27 @@ mustPreserve:
   - bilingual copy, Western digits, 44px targets, reading order, and focus visibility
 paperMutationRequired: false
 reviewEvidence:
-  decision: >-
-    The approved shared-shell decision and existing Settings acceptance require this integration;
-    no page-level visual redesign was introduced in this repair slice.
+  decision: The approved shared-shell decision and existing Settings acceptance require this
+    integration; no page-level visual redesign was introduced in this repair slice.
   approvalRecord: docs/phase-records/handoffs/phase11-settings-paper-successor/20260830-193000-p11_settings_paper_fresh_r01-done.md
-  routedBefore: output/review/fidelity_settings_before_r01
-  routedAfter: visual-direction-gate/approved/paper-route-authority-20260902/evidence/owner-settings
-  implementationRegressionEvidence: >-
-    Existing browser contracts plus new state captures prove shared-shell coverage, field and state
-    semantics, bilingual mobile/desktop endpoints, draft retention, keyboard order, 320–1440
-    interpolation, 200 percent reflow, forced colors, and axe behavior.
-  independentRenderedReview: PENDING_FINAL_MILESTONE_REVIEW
-acceptanceRule: >-
-  This record authorizes only the shared-shell integration, runtime-backed values, state-dependent
-  focus/action presentation, and responsive interpolation. It cannot excuse a changed field set,
-  reordered information hierarchy, invented value, altered versioning behavior, or visual drift.
+  routedBefore:
+    - path: visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/before/owner-settings-clean-en-desktop-1440.png
+      bytes: 522653
+      sha256: da2cd9c33a3f4a45d14cd3215a2e5969483ad4802f4744f54d142030960982f6
+  routedAfter:
+    - path: visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-settings-clean-en-desktop-1440.png
+      bytes: 320978
+      sha256: 3d7d747460e69f6e863a02a4ae525a64c34c62cb457e563217c694536174f2a4
+  implementationRegressionEvidence: Existing browser contracts plus new state captures prove
+    shared-shell coverage, field and state semantics, bilingual mobile/desktop endpoints, draft
+    retention, keyboard order, 320–1440 interpolation, 200 percent reflow, forced colors, and axe
+    behavior.
+  independentRenderedReview: docs/phase-records/handoffs/full-route-paper-fidelity/20260904-final-independent-reviews.md
+  previousCandidateEvidence:
+    routedBefore: output/review/fidelity_settings_before_r01
+    routedAfter: visual-direction-gate/approved/paper-route-authority-20260902/evidence/owner-settings
+acceptanceRule: This record authorizes only the shared-shell integration, runtime-backed values,
+  state-dependent focus/action presentation, responsive interpolation, and omission of the
+  documented desktop upper-right export artifact. It cannot excuse a changed field set, reordered
+  information hierarchy, invented value, altered versioning behavior, or other visual drift.
+reviewedAt: 2026-09-03T21:15:00Z

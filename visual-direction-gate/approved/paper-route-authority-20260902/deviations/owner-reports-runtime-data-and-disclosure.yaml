@@ -1,37 +1,50 @@
 schemaVersion: 1
 id: owner-reports-runtime-data-and-disclosure
-status: IMPLEMENTED_PENDING_INDEPENDENT_REVIEW
-implementedAt: "2026-09-03T09:07:51Z"
+status: IMPLEMENTED_AND_REVIEWED
+implementedAt: 2026-09-03T09:07:51Z
 implementedBy: coordinator
 paper:
-  file: "FITWAY UX Exploration"
-  page: "Page 1"
-  area: "OWNER ANALYTICS — PHASE 10 REPORTING EXTENSION — CURRENT"
-affectedRegion: >-
-  Owner Reports weekly-comparison metrics and heatmap data disclosure beneath the accepted shared
-  Owner navigation.
-observableProblem: >-
-  Paper uses deterministic presentation values, includes a peak metric absent from the API
-  contract, and shows four representative disclosure rows. Literal reproduction would fabricate
-  runtime data or remove keyboard-readable access to the remaining heatmap cells. Paper also
-  contains historical Daily/History tabs that are superseded by the approved six-destination shell.
-smallestCorrection: >-
-  Render only metrics supplied by the WeekComparison contract, keep runtime values authoritative,
-  replace the historical local tabs with the approved shared shell, and retain all 168 heatmap rows
-  in an open, bounded, keyboard-scrollable disclosure card matching Paper's visual weight.
+  file: FITWAY UX Exploration
+  page: Page 1
+  area: OWNER ANALYTICS — PHASE 10 REPORTING EXTENSION — CURRENT
+affectedRegion: Owner Reports weekly-comparison metrics and heatmap data disclosure beneath the
+  accepted shared Owner navigation, plus the reporting-range action row.
+observableProblem: Paper uses deterministic presentation values, includes a peak metric absent from
+  the API contract, and shows four representative disclosure rows. Literal reproduction would
+  fabricate runtime data or remove keyboard-readable access to the remaining heatmap cells. Paper
+  also contains historical Daily/History tabs that are superseded by the approved six-destination
+  shell. The accepted frame shows only Apply, but the existing product behavior also provides a
+  localized Last 28 days reset; omitting it would remove behavior rather than redundant explanatory
+  copy.
+smallestCorrection: Render only metrics supplied by the WeekComparison contract, keep runtime values
+  authoritative, replace the historical local tabs with the approved shared shell, and retain all
+  168 heatmap rows in an open, bounded, keyboard-scrollable disclosure card matching Paper's visual
+  weight. Preserve Last 28 days as a compact outline action beside Apply using the same control
+  geometry and hierarchy.
 mustPreserve:
   - accepted Reports composition, hierarchy, density, controls, copy authority, and visual language
   - all heatmap value, zero, closed, and missing distinctions
   - complete keyboard and text-equivalent access to all 168 cells
   - reporting and CSV range limits, retry, abort, download, and validation behavior
+  - one-action restoration of the default 28-day reporting window
 paperMutationRequired: false
 reviewEvidence:
-  decision: "Covered by the human-approved bounded runtime-polish rule; no product semantics changed."
+  decision: Covered by the human-approved bounded runtime-polish rule; no product semantics changed.
   approvalRecord: docs/phase-records/handoffs/full-route-paper-fidelity/20260903-120751-owner-reports-paper-repair.md
-  routedBefore: output/review/fidelity_reports_before_r01
-  routedAfter: visual-direction-gate/approved/paper-route-authority-20260902/evidence/owner-reports
-  independentRenderedReview: PENDING_FINAL_MILESTONE_REVIEW
-acceptanceRule: >-
-  The deviation fails if a Paper-only fixture value is fabricated, any semantic heatmap row becomes
-  unreachable, the shared shell is omitted, or the result ceases to read as the accepted Reports
-  family. Final status requires independent rendered review and human approval of the contact sheet.
+  routedBefore:
+    - path: visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/before/phase10-reporting-ar-1440x900.png
+      bytes: 392747
+      sha256: 27b99b9ccde224fd67fd09c5943f678a944351ec075b92d976dcc0747147042d
+  routedAfter:
+    - path: visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/phase10-reporting-ar-1440x900.png
+      bytes: 408961
+      sha256: a12be86babef32ee338a474cc0ecb08e59a8b031eb2236850d2067541b433b1b
+  independentRenderedReview: docs/phase-records/handoffs/full-route-paper-fidelity/20260904-final-independent-reviews.md
+  previousCandidateEvidence:
+    routedBefore: output/review/fidelity_reports_before_r01
+    routedAfter: visual-direction-gate/approved/paper-route-authority-20260902/evidence/owner-reports
+acceptanceRule: The deviation fails if a Paper-only fixture value is fabricated, any semantic
+  heatmap row becomes unreachable, the default-window reset is removed, the shared shell is omitted,
+  or the result ceases to read as the accepted Reports family. Final status requires independent
+  rendered review and human approval of the contact sheet.
+reviewedAt: 2026-09-03T21:15:00Z

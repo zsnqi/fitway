@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-09-02T20:49:03Z"
+updatedAt: "2026-09-03T21:17:00Z"
 
 coordinator:
-  owner: "Coordinator final authority. fidelity-integration-closure-r01 through r05 are preserved FAILED_VALIDATION; the human-approved successor full-route-paper-fidelity-r01 is IN_PROGRESS. The Owner shared navigation and Activity Log successor are approved and frozen; their routed-only uniform-material and bidi/presentation deviations are explicitly approved pending implementation evidence. The milestone starts from preserved functional candidate afa2ef6 and corrects the non-circular Paper authority, full-route visual gate, shared Owner shell, and routed fidelity failures without rewriting historical repository-closeout or desktop-demo claims. Historical phases and terminal attempts remain immutable. LAN/mobile support, presentation work, GitHub synchronization, release/tagging, deployment, owner-facing PDF work, and external go-live gates remain excluded."
+  owner: "Coordinator final authority. fidelity-integration-closure-r01 through r05 are preserved FAILED_VALIDATION; the human-approved successor full-route-paper-fidelity-r01 is DONE (final rendered approval granted 2026-09-05; serialized accepted canonical promotion, accepted-case mapping, clean verify:full with normal snapshots, and final independent verification complete; integratedCommit SELF on codex/fidelity-integration-closure). The Owner shared navigation and Activity Log successor are approved and frozen; their routed-only uniform-material and bidi/presentation deviations are explicitly approved pending implementation evidence. The milestone starts from preserved functional candidate afa2ef6 and corrects the non-circular Paper authority, full-route visual gate, shared Owner shell, and routed fidelity failures without rewriting historical repository-closeout or desktop-demo claims. Historical phases and terminal attempts remain immutable. LAN/mobile support, presentation work, GitHub synchronization, release/tagging, deployment, owner-facing PDF work, and external go-live gates remain excluded."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -2651,7 +2651,7 @@ milestones:
     integratedCommit: null
 
   full-route-paper-fidelity-r01:
-    status: IN_PROGRESS
+    status: DONE
     dependencies: [repository-closeout, desktop-demo]
     ownerSession: "Primary Codex coordinator; sole repository and Paper writer authority for the human-approved full-route Paper fidelity repair"
     branch: codex/fidelity-integration-closure
@@ -2686,16 +2686,16 @@ milestones:
       - "coordinator lease: canonical baseline promotion only after rendered Paper review and human acceptance"
       - "coordinator lease: serialized disposable database, browser ports, desktop demo runtime, and evidence directories"
       - "coordinator lease: PROJECT_STATE and successor handoffs"
-    validationRepairAttempts: 1
-    lastHeartbeatAt: "2026-09-03T14:32:13Z"
-    leaseExpiresAt: "2026-09-03T20:21:48Z"
-    handoff: docs/phase-records/handoffs/full-route-paper-fidelity/20260903-173213-owner-settings-paper-repair.md
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-09-05T12:45:00Z"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/full-route-paper-fidelity/20260905-fidelity-closure.md
     stopReason: null
     gates:
-      unit: PENDING
-      integration: PENDING
-      browser: PENDING
-      accessibility: PENDING
-      visual: PENDING
-      independentReview: PENDING
-    integratedCommit: null
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
+      independentReview: PASS
+    integratedCommit: SELF

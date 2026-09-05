@@ -560,3 +560,30 @@
 		outline-offset: 2px;
 	}
 }
+
+/* Settings leaf 1G2Y-0 / 1FNO-0 uses the localized single upper wash.
+   Keep this accepted page material local to Settings within the shared shell. */
+.owner-shell:has(.owner-section-switch__panel--settings:not([hidden])) {
+	--owner-settings-wash-x: 14%;
+	--owner-settings-wash-y: 12%;
+	--owner-settings-wash-opacity: 56%;
+	--owner-settings-wash-stop: 38%;
+	background-color: var(--fw-obsidian);
+	background-image: radial-gradient(
+		circle farthest-corner at var(--owner-settings-wash-x)
+			var(--owner-settings-wash-y) in oklab,
+		oklab(27.3% 0.094 0.032 / var(--owner-settings-wash-opacity)) 0%,
+		oklab(0% 0 0 / 0%) var(--owner-settings-wash-stop)
+	);
+}
+:where([lang="ar"])
+	.owner-shell:has(.owner-section-switch__panel--settings:not([hidden])) {
+	--owner-settings-wash-x: 86%;
+}
+@media (max-width: 720px) {
+	.owner-shell:has(.owner-section-switch__panel--settings:not([hidden])) {
+		--owner-settings-wash-y: 8%;
+		--owner-settings-wash-opacity: 60%;
+		--owner-settings-wash-stop: 28%;
+	}
+}

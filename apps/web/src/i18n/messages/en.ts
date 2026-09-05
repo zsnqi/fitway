@@ -5,8 +5,8 @@ const isolate = (value: string) => `\u2068${value}\u2069`;
 
 export const staffWeb = {
 	common: {
-		operations: "Live operations",
-		admin: "Owner area",
+		operations: "Monitoring",
+		admin: "Management",
 		languageSwitchLabel: "Switch to Arabic",
 		languageSwitchText: "العربية",
 		logout: "Sign out",
@@ -69,6 +69,8 @@ export const staffWeb = {
 		loadingNotice: "The reading is loading. Nothing is shown until it arrives.",
 		delayedNotice:
 			"Live updates resume automatically once the counting device starts sending again.",
+		cameraFailedNotice:
+			"Camera failed. The counting device is still sending a live reading.",
 		cameraNotice:
 			"The camera is unstable. The counting device is still sending a live reading.",
 		offlineNotice:
@@ -114,7 +116,7 @@ export const staffWeb = {
 		cameraStates: {
 			ok: "Stable",
 			degraded: "Unstable",
-			failed: "Unstable",
+			failed: "Failed",
 			unknown: "Unknown",
 		},
 		bands: {
@@ -126,15 +128,15 @@ export const staffWeb = {
 	},
 	admin: {
 		eyebrow: "Owner access",
-		title: "Owner area",
-		description: "Owner-only navigation for FITWAY operations and governance.",
+		title: "Management",
+		description: "Analytics and settings for your gym.",
 		placeholderTitle: "Owner navigation is ready",
 		placeholderDescription:
 			"Analytics, settings, accounts, audit, and health sections arrive in their assigned phases.",
 		wrongRoleTitle: "Owner access required",
 		wrongRoleDescription:
-			"This staff session can use live operations but cannot open the owner area.",
-		backToOperations: "Back to live operations",
+			"This staff session can use monitoring but cannot access Management.",
+		backToOperations: "Back to monitoring",
 	},
 } satisfies StaffWebMessages;
 

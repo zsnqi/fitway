@@ -834,20 +834,20 @@ export function OwnerAccessLive({
 													<Button
 														type="button"
 														variant="link"
+														className="owner-access-action-link"
+														onClick={() => openReset(owner.principalId)}
+													>
+														{messages.resetCredential}
+													</Button>
+													<Button
+														type="button"
+														variant="link"
 														className="owner-access-action-link owner-access-action-link--danger"
 														onClick={() =>
 															setDeactivatingOwnerId(owner.principalId)
 														}
 													>
 														{messages.deactivateOwner}
-													</Button>
-													<Button
-														type="button"
-														variant="link"
-														className="owner-access-action-link"
-														onClick={() => openReset(owner.principalId)}
-													>
-														{messages.resetCredential}
 													</Button>
 												</div>
 											)

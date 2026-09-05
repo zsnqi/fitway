@@ -114,6 +114,18 @@ const cameraUnstableSnapshot = {
 	},
 } as const;
 
+// Runtime-only semantic state: Paper composes degraded/Unstable, while Spec also
+// requires the stronger server-owned camera failure to remain unmistakable.
+const cameraFailedSnapshot = {
+	...liveSnapshot,
+	health: {
+		...liveSnapshot.health,
+		condition: "failed",
+		camera: "failed",
+		lastSeenAt: "2026-07-21T14:57:00.000Z",
+	},
+} as const;
+
 // S7 — device present and working, but its reading failed verification.
 const trustFailureSnapshot = {
 	schemaVersion: 1,
@@ -153,6 +165,7 @@ const states = [
 	{ name: "s4-closed", snapshot: closedSnapshot },
 	{ name: "s5-device-offline", snapshot: deviceOfflineSnapshot },
 	{ name: "s6-camera-unstable", snapshot: cameraUnstableSnapshot },
+	{ name: "s6b-camera-failed", snapshot: cameraFailedSnapshot },
 	{ name: "s7-trust-failure", snapshot: trustFailureSnapshot },
 ] as const;
 
@@ -187,6 +200,13 @@ async function switchToEnglish(page: Page) {
 	await expect(page.getByRole("heading", { name: "Monitoring" })).toBeVisible();
 }
 
+async function switchToArabic(page: Page) {
+	await page.getByRole("button", { name: "Switch to Arabic" }).click();
+	await expect(
+		page.getByRole("heading", { name: "لوحة المتابعة" }),
+	).toBeVisible();
+}
+
 async function expectNoDocumentOverflow(page: Page) {
 	expect(
 		await page.evaluate(
@@ -216,18 +236,18 @@ for (const state of states) {
 			}
 			await page.waitForTimeout(160);
 			await capture(page, `${state.name}-ar-${viewport.name}`);
+			await switchToEnglish(page);
+			await expectNoDocumentOverflow(page);
+			await page.waitForTimeout(160);
+			await capture(page, `${state.name}-en-${viewport.name}`);
 			if (state.name === "s4-closed" && viewport.name === "390") {
+				await switchToArabic(page);
 				await page.evaluate(() => document.fonts.ready);
 				await expect(page).toHaveScreenshot(
 					"staff-closed-route-ar-mobile-390x844.png",
 					{ fullPage: true },
 				);
 			}
-
-			await switchToEnglish(page);
-			await expectNoDocumentOverflow(page);
-			await page.waitForTimeout(160);
-			await capture(page, `${state.name}-en-${viewport.name}`);
 		});
 	}
 }
@@ -249,14 +269,17 @@ test("s1-loading at every width", async ({ page }) => {
 		await page.goto("/staff");
 		await expect(page.locator(".sboard__skeleton").first()).toBeVisible();
 		await capture(page, `s1-loading-ar-${viewport.name}`);
-		if (viewport.name === "390") {
-			await page.evaluate(() => document.fonts.ready);
-			await expect(page).toHaveScreenshot(
-				"staff-loading-route-ar-mobile-390x844.png",
-				{ fullPage: true },
-			);
-		}
+		await switchToEnglish(page);
+		await capture(page, `s1-loading-en-${viewport.name}`);
+		await switchToArabic(page);
 	}
+
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.evaluate(() => document.fonts.ready);
+	await expect(page).toHaveScreenshot(
+		"staff-loading-route-ar-mobile-390x844.png",
+		{ fullPage: true },
+	);
 });
 
 // S3 load failure with the retry action.

@@ -1243,7 +1243,10 @@
 	overflow-y: hidden;
 	overscroll-behavior-inline: contain;
 	border-block-end: 1px solid var(--owner-edge, var(--fw-border));
-	background-color: var(--owner-field, #100b0e);
+	/* Human decision: Variant B — the six-destination row stays fully
+	   transparent over the page wash like Paper area 1GIP-0; only the Paper
+	   divider and the active-tab underline carry the row structure. */
+	background-color: transparent;
 	background-image: none;
 	scrollbar-width: none;
 	scroll-padding-inline: 16px;
@@ -1260,6 +1263,7 @@
 	min-block-size: var(--owner-section-navigation-height);
 	padding-inline: 16px;
 	font-size: 14px;
+	font-weight: 400;
 	line-height: 20px;
 	white-space: nowrap;
 }

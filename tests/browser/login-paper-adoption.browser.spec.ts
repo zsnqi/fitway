@@ -136,6 +136,7 @@ test("canonical approved Login compositions remain stable", async ({
 	await page.evaluate(() =>
 		(document.activeElement as HTMLElement | null)?.blur(),
 	);
+	await captureReview(page, "login-idle-ar-desktop-1440x900.png");
 	await expect(page).toHaveScreenshot("login-idle-ar-desktop-1440x900.png", {
 		animations: "disabled",
 		fullPage: true,
@@ -147,6 +148,7 @@ test("canonical approved Login compositions remain stable", async ({
 	await page.evaluate(() =>
 		(document.activeElement as HTMLElement | null)?.blur(),
 	);
+	await captureReview(page, "login-idle-en-mobile-390x844.png");
 	await expect(page).toHaveScreenshot("login-idle-en-mobile-390x844.png", {
 		animations: "disabled",
 		fullPage: true,

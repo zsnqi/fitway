@@ -1,0 +1,1452 @@
+{
+	"status": "READY_FOR_HUMAN_REVIEW",
+	"candidateBase": "e20453daabba240177311c834f01e11615630a19",
+	"sourceRun": "fidelity_resume_final_routes_r01",
+	"snapshotAssertions": "Intentionally excluded: rejected canonical baselines remain unchanged pending human approval.",
+	"paperAuthority": "Exact accepted manifest exports; Settings material additionally checked against live Paper 1G2Y-0 and 1FNO-0.",
+	"pairs": [
+		{
+			"title": "Public · Arabic desktop",
+			"paper": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/public/public-live-ar-1440.png",
+				"bytes": 893980,
+				"sha256": "a873765ed014422dc528abca8b0d83c6de9134cdfaed1b0bf935bf67cb18ef6c"
+			},
+			"routed": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-co-f8294-onsive-width-in-RTL-and-LTR-chromium/review/public-live-ar-1440x900.png",
+				"bytes": 337354,
+				"sha256": "a916fa575d10c730c0c23bae0a2cf9afbc71a8d69dd4b25ff2ec43e1ac18f9d7"
+			},
+			"note": "Capacity-free public truth; normalized OS/caption chrome."
+		},
+		{
+			"title": "Public · English mobile",
+			"paper": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/public/public-live-en-390.png",
+				"bytes": 325137,
+				"sha256": "6d3f48358ecf064097dc0b82899c3df06626b60a6a77b1f0f4532d950d2e95d8"
+			},
+			"routed": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-co-f8294-onsive-width-in-RTL-and-LTR-chromium/review/public-live-en-390x844.png",
+				"bytes": 141518,
+				"sha256": "1bc61db1be685b78c1ed4eb17bb92c18a823de9f7965c9c86fdee5d3435ef71b"
+			},
+			"note": "Band order and Western digits preserved."
+		},
+		{
+			"title": "Login · Arabic desktop",
+			"paper": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/login/login-idle-ar-1440.png",
+				"bytes": 735361,
+				"sha256": "57e94c812ef2e4a562884c5ca7550477b9b16c572ba33c552513ee04f1df5c4e"
+			},
+			"routed": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/login-idle-ar-desktop-1440x900.png",
+				"bytes": 316955,
+				"sha256": "81f00333dcc42f4a2741659cd474f58e0517fcc90d53580eab07a74a929d69af"
+			},
+			"note": "Production PIN behavior preserved."
+		},
+		{
+			"title": "Login · English mobile",
+			"paper": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/login/login-idle-en-390.png",
+				"bytes": 268401,
+				"sha256": "6db5a16a2b07aef50589fb1e7bc932d3cdb7a23eb1473746ec8858bf4ece79f2"
+			},
+			"routed": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/login-idle-en-mobile-390x844.png",
+				"bytes": 107610,
+				"sha256": "aea33aa43ea5494e8f3d0eeb3383c15a8b4cdf632f847b8c08105381f867593f"
+			},
+			"note": "Paper OS chrome is not application content."
+		},
+		{
+			"title": "Staff · Arabic desktop",
+			"paper": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/staff/staff-live-ar-1440.png",
+				"bytes": 907162,
+				"sha256": "f5121e33d453302391d0ba726f1fcfbfe25824c7bd1ccabee75447213e3a097b"
+			},
+			"routed": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/staff-live-ar-1440.png",
+				"bytes": 333791,
+				"sha256": "aa16abd05cc1a779cc8a5984bc655ddf36fc164dabcaae44bbab066837341696"
+			},
+			"note": "Monitoring-only surface."
+		},
+		{
+			"title": "Staff · Arabic mobile",
+			"paper": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/staff/staff-live-ar-390.png",
+				"bytes": 328743,
+				"sha256": "f77a684826479e8f18a8fab7b740c231b7839cac8f5be806fe196d88730fd8e6"
+			},
+			"routed": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/staff-live-ar-390.png",
+				"bytes": 141153,
+				"sha256": "007206cbb939f49d1205ad31efc48d8e5f45fab78c0d34586185e53e0b66c536"
+			},
+			"note": "Truth and health have distinct priority."
+		},
+		{
+			"title": "Owner shared navigation · English desktop",
+			"paper": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/owner-shared-navigation/owner-shared-desktop-en-daily-1440.png",
+				"bytes": 280563,
+				"sha256": "4706dd4910aa5af9b68f0cb78edda09d9531c4fef98ed111f5fe9be337f5978e"
+			},
+			"routed": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-analytics-en-1440.png",
+				"bytes": 424821,
+				"sha256": "1bdc099e908ed25db2deb8f08bd333771f27033ad0b12ec1fa267fd59cbabce4"
+			},
+			"note": "Uniform translucent material replaces the detached strip; Monitoring / Management follow Paper."
+		},
+		{
+			"title": "Owner Daily · Arabic desktop",
+			"paper": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/owner-daily/owner-daily-latest-ar-1440.png",
+				"bytes": 838446,
+				"sha256": "9a55eca515d9d4de651abeb8b265c946ea058cb9cb5d522df29544e2ab510baa"
+			},
+			"routed": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-analytics-ar-1440.png",
+				"bytes": 413593,
+				"sha256": "34aad98f243dbda452dc00935238511312ea81a0eadb6c5b4f5217fc45654e0d"
+			},
+			"note": "Runtime values and chart gaps differ from Paper fixtures; bounded curve and circular marker preserve truth."
+		},
+		{
+			"title": "Owner Daily · English mobile",
+			"paper": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/owner-daily/owner-daily-latest-en-390.png",
+				"bytes": 341346,
+				"sha256": "ca91cb27d56054544c02d0da1f5d970bc283e058b1507c7e4c45a8bde6d48076"
+			},
+			"routed": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-analytics-en-390.png",
+				"bytes": 167041,
+				"sha256": "96ed30fdeb17f21675a1e7f16cc75f32f639516af94c0a8ba7124c1057e20d99"
+			},
+			"note": "Marker remains circular; table remains available."
+		},
+		{
+			"title": "Reports · Arabic desktop",
+			"paper": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/owner-reports/owner-reports-desktop-ar-1440.png",
+				"bytes": 1416397,
+				"sha256": "c4601fef155b9af061e10c13230e1c0772e13024889d20b38c9b739bd3c02644"
+			},
+			"routed": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/phase10-reporting-ar-1440x900.png",
+				"bytes": 408961,
+				"sha256": "a12be86babef32ee338a474cc0ecb08e59a8b031eb2236850d2067541b433b1b"
+			},
+			"note": "Last 28 days restored; full data and CSV behavior retained."
+		},
+		{
+			"title": "Reports · English mobile",
+			"paper": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/owner-reports/owner-reports-mobile-en-390.png",
+				"bytes": 495257,
+				"sha256": "7b8f10dc45d6392413e7c8ad33859d78710aaedade5b3d2a48424572d07872d3"
+			},
+			"routed": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/phase10-reporting-states-en-390x844.png",
+				"bytes": 364066,
+				"sha256": "e89015f8028e5f92f5d596c07797867a88602a68cfcc9698efb880de6efb4da8"
+			},
+			"note": "Runtime disclosure and dataset remain truthful."
+		},
+		{
+			"title": "Accounts · Arabic desktop",
+			"paper": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/owner-access/owner-access-desktop-ar-1440.png",
+				"bytes": 780826,
+				"sha256": "ce341b5eeffaa39ee306747ccd05f907c283c6a844dbad5b25308c750e8c6089"
+			},
+			"routed": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-access-route-ar-desktop-1440x900.png",
+				"bytes": 283288,
+				"sha256": "4416d9752763f3ce745035092bd8cc0697d55d009f50ae7bc2fb99ab792607f2"
+			},
+			"note": "Unsupported fixture timestamps omitted."
+		},
+		{
+			"title": "Accounts · English mobile",
+			"paper": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/owner-access/owner-access-mobile-en-390.png",
+				"bytes": 368975,
+				"sha256": "02d9e04ad461f6a29b38f71e9c380be0da22f10bcbdbfebb0535e466b2e00909"
+			},
+			"routed": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-access-route-en-mobile-390x844.png",
+				"bytes": 160720,
+				"sha256": "15d074015395e7efb2f11fe907b10afec03591cd4a378b0f7c9c69ef648de254"
+			},
+			"note": "Reset credential precedes Deactivate as in Paper."
+		},
+		{
+			"title": "Activity Log · Arabic desktop",
+			"paper": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/owner-activity-log/owner-activity-desktop-ar-populated-1440.png",
+				"bytes": 1054183,
+				"sha256": "a781884fe9f9307392f180e5efc3e6f9cb34d93bfc34f428885ba1c700240a38"
+			},
+			"routed": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-audit-populated-ar-1440x900.png",
+				"bytes": 292447,
+				"sha256": "48fcb45e9ceef6495312847bbbcd2009d33c96c11aed56a747f0326d04ea7746"
+			},
+			"note": "Signed numbers isolated; Apply/Clear aligned to reading start."
+		},
+		{
+			"title": "Activity Log · English mobile",
+			"paper": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/owner-activity-log/owner-activity-mobile-en-populated-390.png",
+				"bytes": 362902,
+				"sha256": "01ce22df5ea3f93e07bae05fbd93adfa6a816ad51216087ceea5b97a49bebd47"
+			},
+			"routed": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-audit-populated-en-390x844.png",
+				"bytes": 183215,
+				"sha256": "662f3ed3655f14bf9a25879580463af2ef463ebbbbbb936c7d32e8815ee761c5"
+			},
+			"note": "Single-column filters retain full native option labels and all runtime filters."
+		},
+		{
+			"title": "System Status · English desktop",
+			"paper": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/owner-system-status/owner-system-status-desktop-en-1440.png",
+				"bytes": 1292488,
+				"sha256": "094129121200ceb955d300302b2ddeee5e86e5e8471510a41237a9cc09ebdccc"
+			},
+			"routed": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-health-populated-en-1440x900.png",
+				"bytes": 419470,
+				"sha256": "1b9f807a279ed498b041bd1531cb6a1848b94a5827eabfd4c63efc46c88d2569"
+			},
+			"note": "Runtime incidents, not illustrative fixture identities."
+		},
+		{
+			"title": "System Status · Arabic mobile",
+			"paper": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/owner-system-status/owner-system-status-mobile-ar-390.png",
+				"bytes": 390119,
+				"sha256": "a434c25fc7b2d5caebd762369b0776af8b82abe3ef6c6e491791f89419463bd2"
+			},
+			"routed": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-health-mobile-stacked-ar-390x844.png",
+				"bytes": 254934,
+				"sha256": "6390dcfde6df36a148e06e683b34de83f6b17241fff327a7a44c79a9cabfd137"
+			},
+			"note": "Accepted stacked records and safe bidi values."
+		},
+		{
+			"title": "Settings · English desktop",
+			"paper": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/owner-settings/owner-settings-desktop-en-1440.png",
+				"bytes": 821262,
+				"sha256": "c1e77941e2861f0d681ce1345e54147dfae579f0f1d9f33461951d03734e811c"
+			},
+			"routed": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-settings-clean-en-desktop-1440.png",
+				"bytes": 320978,
+				"sha256": "3d7d747460e69f6e863a02a4ae525a64c34c62cb457e563217c694536174f2a4"
+			},
+			"note": "Exact live Paper upper wash and obsidian lower surface; shared navigation inserted."
+		},
+		{
+			"title": "Settings · Arabic mobile",
+			"paper": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/owner-settings/owner-settings-mobile-ar-390.png",
+				"bytes": 420484,
+				"sha256": "bb4f5e3e0e2af73e18a119b75c7318f083de26b839410e23fa049160a29e65da"
+			},
+			"routed": {
+				"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-settings-ar-mobile-390.png",
+				"bytes": 180197,
+				"sha256": "2a6b8c914e041f9634a24969518e95221253a27585f6d364305a9a9c3956d123"
+			},
+			"note": "Five editable axes and five locked values retained."
+		}
+	],
+	"artifacts": [
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/before/owner-access-route-en-mobile-390x844.png",
+			"bytes": 155565,
+			"sha256": "b585177da7b8d1193fb6a0f433851ff7e51beef232fcc279b8a03abe9f0da31d"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/before/owner-analytics-ar-390.png",
+			"bytes": 155723,
+			"sha256": "f15986c639ac7f24f52425cb9000bfe572363909fa2e87d6e3d60669d00bf02b"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/before/owner-analytics-en-1440.png",
+			"bytes": 409102,
+			"sha256": "f5e7f9b2f26cc2b82b4c9643c3fe526463ea90eb042912fb9c0689ea17733d90"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/before/owner-audit-populated-ar-1440x900.png",
+			"bytes": 277160,
+			"sha256": "cc032574dc7e97bbb0236dc7337940625eb69008eff872d018cb83e4c980ac6d"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/before/owner-health-mobile-stacked-ar-390x844.png",
+			"bytes": 248336,
+			"sha256": "3608b63ed9762603b56bb0695dfd0a277f84aee350b35632a6b9923cbc29eadd"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/before/owner-settings-clean-en-desktop-1440.png",
+			"bytes": 522653,
+			"sha256": "da2cd9c33a3f4a45d14cd3215a2e5969483ad4802f4744f54d142030960982f6"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/before/phase10-reporting-ar-1440x900.png",
+			"bytes": 392747,
+			"sha256": "27b99b9ccde224fd67fd09c5943f678a944351ec075b92d976dcc0747147042d"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/before/s6b-camera-failed-ar-390.png",
+			"bytes": 138383,
+			"sha256": "fe2c206c51b84bd16a9853d65c21c0769689af946b9dee8801b6916786603629"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/admin-forbidden-ar-1280.png",
+			"bytes": 206065,
+			"sha256": "a83ebab468370b239aaac7c7b2aee01e562579e34f0b9000e15eec62aa3c3ee9"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/admin-owner-ar-1280.png",
+			"bytes": 230798,
+			"sha256": "ec9c4ee580d56c4ad53ec2d10908e42b9ad0737fcc5c233f53eddc441931531c"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/baseline-live-ar-1440.png",
+			"bytes": 332711,
+			"sha256": "32c8ea80e8689c24a6be467b670f745961bcece62fe48756d613c3fb957e28fb"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/baseline-live-ar-320.png",
+			"bytes": 122657,
+			"sha256": "4df679624f9b703b1e623f626d7644c5570b93bacc75bc3c5d60035d6f8bdeb9"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/baseline-live-ar-390.png",
+			"bytes": 141153,
+			"sha256": "007206cbb939f49d1205ad31efc48d8e5f45fab78c0d34586185e53e0b66c536"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/baseline-live-ar-768.png",
+			"bytes": 261672,
+			"sha256": "b4774f4483029a6b2d389d3d2eec8d72ebc53e075792b2cdf5b4fda8135c0a17"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/baseline-live-en-1440.png",
+			"bytes": 344516,
+			"sha256": "2cbc389e904304ebc15f336a5da0797d5e29a5359ec1571a9ad66f50c4ed5496"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/baseline-live-en-320.png",
+			"bytes": 128997,
+			"sha256": "6c069e8ee27d18b789b8a1b1a80b1d3a9dc76fc0ab3ea6d68b35afc9292fab66"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/baseline-live-en-390.png",
+			"bytes": 147544,
+			"sha256": "944c51dead7f99a1a093d42df4e42a8ee2f70cc34b4faf9246044a114b93676c"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/baseline-live-en-768.png",
+			"bytes": 269870,
+			"sha256": "dbcae8c3cd1fec7da545dbb1a8c2cd3758600b1b3c4cc0611538556114eebd21"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/login-ar-1440x900.png",
+			"bytes": 316955,
+			"sha256": "81f00333dcc42f4a2741659cd474f58e0517fcc90d53580eab07a74a929d69af"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/login-ar-320x720.png",
+			"bytes": 76552,
+			"sha256": "177e1f0e7ae283ce6533e5b7db9e923850ba1500f879273eb91a67d739803467"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/login-ar-390.png",
+			"bytes": 107002,
+			"sha256": "197385cf7fb4b46a7594e11d479dd00600fd5d21eb27cdbd640c5035d1175eab"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/login-ar-390x844.png",
+			"bytes": 106154,
+			"sha256": "5703318ffe2d7bae4324317a10c9c9a6f464793cac7115cec354e8ea6f7423b1"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/login-ar-768x1024.png",
+			"bytes": 238510,
+			"sha256": "7daeeb41d26fecd56e3d2b17f70454c3b9cd36b450ff5b1e4d9d34b46ee8bf7f"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/login-en-200-percent-zoom.png",
+			"bytes": 224941,
+			"sha256": "785e8c92aef10dc22171039b24db4066801ebe8b87a33c79c385055a51638dd6"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/login-en-320x720.png",
+			"bytes": 77051,
+			"sha256": "06b26560c859bcf93847c0f3db7c4a356ed6ea250fb3c9312e8515359c0fcd52"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/login-en-reduced-transparency.png",
+			"bytes": 183945,
+			"sha256": "8687318cc55e866d9f99fd6d649471c83108cfba384fa2bc73dd67f7ff0529a5"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/login-idle-ar-desktop-1440x900.png",
+			"bytes": 316955,
+			"sha256": "81f00333dcc42f4a2741659cd474f58e0517fcc90d53580eab07a74a929d69af"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/login-idle-en-mobile-390x844.png",
+			"bytes": 107610,
+			"sha256": "aea33aa43ea5494e8f3d0eeb3383c15a8b4cdf632f847b8c08105381f867593f"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/login-invalid-en-320x720.png",
+			"bytes": 82057,
+			"sha256": "530f7efbbb495f4346d1933736ebdc3d949575279f88e77e4fe7b7d10fbf7fe0"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/login-rate-limited-en-320x720.png",
+			"bytes": 83324,
+			"sha256": "18000cff3ab42ddd781723e3ce61515074061382f6f849249c6a9a47e4adb7d5"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/login-service-en-320x720.png",
+			"bytes": 83782,
+			"sha256": "72796d70c98ab5b1d9e90f7493d28da0391c6fe1d6144468c6668fae0dd771b0"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/login-submitting-en-320x720.png",
+			"bytes": 79890,
+			"sha256": "05830f3398bbe517f77da3a0ebe114f0818df1a12ceae229ea2f0496d002a950"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-access-ar-360x900.png",
+			"bytes": 149023,
+			"sha256": "1e97433fdd458529cbd5aec38f7a353f11942412c8818d78dc73fc0659d8b563"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-access-ar-768x1024.png",
+			"bytes": 215495,
+			"sha256": "2cfb62187919c9f7ad7faae47ae186255b5670bc9dd536485fb1ad3986c8d683"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-access-empty-en-390x844.png",
+			"bytes": 116030,
+			"sha256": "f61bd0d739b7ceb299e5dcd6f9f99704de9d65afd39b7b6a272042a9677412e7"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-access-en-200-percent-reflow.png",
+			"bytes": 180400,
+			"sha256": "f6427f8b211adf56c86c71a9fb7b9fa1c5a3a64401ca47684ba3c7f395c4bf71"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-access-en-360x900.png",
+			"bytes": 154796,
+			"sha256": "46d9bfd7f6f072b2f5651e3d1439f6294d7f4e5052a061484036e06561b38a46"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-access-en-768x1024.png",
+			"bytes": 221545,
+			"sha256": "85cdfeb6eb91cefd469baa626ae9b3f0186a5e28c8331175b6a015cfce3cdacd"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-access-error-en-390x844.png",
+			"bytes": 111054,
+			"sha256": "b11989ffa38b468daad49a8adc11f7b621696efc16581cfa33f9f57525d97df7"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-access-live-en-390x844.png",
+			"bytes": 161635,
+			"sha256": "e75f6d24e47bd1d5c07f53ace45530d51a415129e9435dd1791e916ee0d1d74d"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-access-loading-en-390x844.png",
+			"bytes": 115271,
+			"sha256": "4caa397afab7f7a2a7ae7aad60771049584a6d6222b882b9101e74fe6b1d83a9"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-access-route-ar-desktop-1440x900.png",
+			"bytes": 283288,
+			"sha256": "4416d9752763f3ce745035092bd8cc0697d55d009f50ae7bc2fb99ab792607f2"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-access-route-en-mobile-390x844.png",
+			"bytes": 160720,
+			"sha256": "15d074015395e7efb2f11fe907b10afec03591cd4a378b0f7c9c69ef648de254"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-analytics-ar-1440.png",
+			"bytes": 413593,
+			"sha256": "34aad98f243dbda452dc00935238511312ea81a0eadb6c5b4f5217fc45654e0d"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-analytics-ar-200-percent-reflow.png",
+			"bytes": 389216,
+			"sha256": "acb82e7356eebd51d9f0cabcdf7d1179ad4e7b304acaee2f347f8b3ab156177f"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-analytics-ar-390.png",
+			"bytes": 160675,
+			"sha256": "93fdbe7effebf4e4157cd51449ac0977e04fd10bca7bd9312b6b1fadbb14998a"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-analytics-ar-768.png",
+			"bytes": 261040,
+			"sha256": "d6c9838022f52a7d6aa74d263f5859c5a0f08fe9521068ef1eb6df0b60514db3"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-analytics-closed-ar-1440.png",
+			"bytes": 255366,
+			"sha256": "66061dc5d9caf5fd17acde6b47e7e1fb89838041b60befd93219d1e364674aca"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-analytics-en-1440.png",
+			"bytes": 424821,
+			"sha256": "1bdc099e908ed25db2deb8f08bd333771f27033ad0b12ec1fa267fd59cbabce4"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-analytics-en-390.png",
+			"bytes": 167041,
+			"sha256": "96ed30fdeb17f21675a1e7f16cc75f32f639516af94c0a8ba7124c1057e20d99"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-analytics-en-768.png",
+			"bytes": 271305,
+			"sha256": "0fa09eab4ea7ee9dffc86fdaf57bafb46b0284737f21758fc8f6743482e7face"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-analytics-error-ar-1440.png",
+			"bytes": 230798,
+			"sha256": "ec9c4ee580d56c4ad53ec2d10908e42b9ad0737fcc5c233f53eddc441931531c"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-analytics-loading-ar-1440.png",
+			"bytes": 218232,
+			"sha256": "98c25e5acda157954af5287c82cd14b58d5c13f470d781b621a566342b7a8807"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-analytics-no-observed-ar-1440.png",
+			"bytes": 252205,
+			"sha256": "61db525eee4a55428229fd1ad349c48e8ca7f80bdd98d420afd6739804a7d244"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-audit-ar-360x900.png",
+			"bytes": 170419,
+			"sha256": "c609f4349f7c69ffb4c73a732a4c1c54a889121b17a4133f792cbf5592931666"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-audit-ar-768x1024.png",
+			"bytes": 232710,
+			"sha256": "9cc7b094c6300b5ab9c41c36440bdbd2bf8754ef833a4ec9bbd55dfedbff2381"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-audit-ar-select-desktop-1440x900.png",
+			"bytes": 293462,
+			"sha256": "afaedba200bb739e2d34f6a367fadf868181ca121f08e33ec6eba8b8e18fcb97"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-audit-ar-select-mobile-390x844.png",
+			"bytes": 177117,
+			"sha256": "e14dcbd67c723859c5a963960b77d4dcdafbd171b6a23117a4fd832dc2edefa9"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-audit-empty-en-390x844.png",
+			"bytes": 159632,
+			"sha256": "8d2fda323fd3e6c8fc934f2576c674feab0625a53dab3188199346b5f4426b59"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-audit-en-200-percent-reflow.png",
+			"bytes": 208723,
+			"sha256": "0825efa8d2b496eb2ff6226a814c9daa3b83981d91a0445e62cf70262d0a6948"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-audit-en-360x900.png",
+			"bytes": 138674,
+			"sha256": "4dfb6457d17a83c9cd78b938c7c07c928a7e7d445254c7f16a78c6ead6577771"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-audit-en-768x1024.png",
+			"bytes": 242171,
+			"sha256": "b853f5196b17d065cc8ef8acd0f7f4578a299bf904f1ee1fe2581f85709fc0f9"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-audit-en-select-desktop-1440x900.png",
+			"bytes": 307308,
+			"sha256": "22b7d67e06384e73794d300bccb3acc8a4b59787f2c26f1c1e5573c4588c9bff"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-audit-en-select-mobile-390x844.png",
+			"bytes": 182208,
+			"sha256": "e3cac4e57ba562056dda8d111a543c0baee5f5d3e0bbfbb4000b2fef69ff5c02"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-audit-error-en-390x844.png",
+			"bytes": 163446,
+			"sha256": "4717597ab048f2c8de1d750478f34e6273aea27e7491c26655648cdbcffb799b"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-audit-loading-en-390x844.png",
+			"bytes": 157936,
+			"sha256": "f27cefbd95b6bdb1d0cbefeb300ecdf241e1e97f22a4e0ff12e5f2373e9f8fbd"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-audit-populated-ar-1440x900.png",
+			"bytes": 292447,
+			"sha256": "48fcb45e9ceef6495312847bbbcd2009d33c96c11aed56a747f0326d04ea7746"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-audit-populated-en-1440x900.png",
+			"bytes": 307405,
+			"sha256": "38644f8a2167a13547b633604772fd720805635f5704fe12fecc067ff2fc5bae"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-audit-populated-en-390x844.png",
+			"bytes": 183215,
+			"sha256": "662f3ed3655f14bf9a25879580463af2ef463ebbbbbb936c7d32e8815ee761c5"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-daily-route-ar-desktop-1440x900.png",
+			"bytes": 413593,
+			"sha256": "34aad98f243dbda452dc00935238511312ea81a0eadb6c5b4f5217fc45654e0d"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-daily-route-en-mobile-390x844.png",
+			"bytes": 167041,
+			"sha256": "96ed30fdeb17f21675a1e7f16cc75f32f639516af94c0a8ba7124c1057e20d99"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-health-ar-360x900.png",
+			"bytes": 241000,
+			"sha256": "95b587005b211a6ec19fca5e948263835cfaf70dab6a0f4860f9c03668c349b8"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-health-ar-768x1024.png",
+			"bytes": 339295,
+			"sha256": "52dd8dbb745761f416e53af9f7012256ebbbc74fb9cab29ef5328d573a0a1bf6"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-health-clear-en-390x844.png",
+			"bytes": 215757,
+			"sha256": "91a1921c5a989a3aefa1962c0384a6b5d0eeaac1ec4cd7677b5309bbf4f26bba"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-health-en-200-percent-reflow.png",
+			"bytes": 305737,
+			"sha256": "606e3c20d067d29593d57223ff28015b3516a73799e5614c15e5acbb5beb645b"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-health-en-360x900.png",
+			"bytes": 258496,
+			"sha256": "40eafc83804b79552bf96bdcd7595e4b16b35f12c652a3d42110714ee1d59a65"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-health-en-768x1024.png",
+			"bytes": 378259,
+			"sha256": "4c918f3398684634e46e863c6304876f049768ff42651ccc2a1385edf48ceae8"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-health-error-en-390x844.png",
+			"bytes": 112696,
+			"sha256": "342e392a312b1d92ef53b302697851e9b14d40535e942bd709a75d6c77a1febf"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-health-loading-en-390x844.png",
+			"bytes": 117491,
+			"sha256": "41b4f3e874c62b63e10846bfa12695913d9cee35adf53c4dec6a861ae403fcad"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-health-mobile-stacked-ar-390x844.png",
+			"bytes": 254934,
+			"sha256": "6390dcfde6df36a148e06e683b34de83f6b17241fff327a7a44c79a9cabfd137"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-health-mobile-stacked-en-390x844.png",
+			"bytes": 272317,
+			"sha256": "047be2185586b909ead1a72d6f9405d423acf09eaf8d102af22b4630cc50c666"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-health-mobile-unconfirmed-en-390x844.png",
+			"bytes": 273225,
+			"sha256": "379b5012aec3794da3becb89376f689def9895d516a948ef108129a71321c512"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-health-populated-ar-1440x900.png",
+			"bytes": 425324,
+			"sha256": "c78d6d582fa85e88e84dbc122b60e73e3087373e674c033956fa26e132e1fb6c"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-health-populated-en-1440x900.png",
+			"bytes": 419470,
+			"sha256": "1b9f807a279ed498b041bd1531cb6a1848b94a5827eabfd4c63efc46c88d2569"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-health-populated-en-390x844.png",
+			"bytes": 273574,
+			"sha256": "a81f50d66ff531a36cbf1eae14d5d44b423e15432d38ed601677fba0d3e0db6a"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-health-unmonitored-en-390x844.png",
+			"bytes": 255708,
+			"sha256": "cdcc895939f3e5446d11b3821a242567c7d606a2edcdc8cd8f5dfd96b1a5e36f"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-history-error-route-en-mobile-390x844.png",
+			"bytes": 103694,
+			"sha256": "03b548d012a6f813e743edcf155d046e3074dbeaa2d8748ab7d48d4c35b9b59a"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-history-loading-route-en-mobile-390x844.png",
+			"bytes": 107776,
+			"sha256": "bd3ff36552124b6de73db0bc72641c6691ec0214683228d3ee626afc4c4b03c2"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-history-route-ar-mobile-390x844.png",
+			"bytes": 312990,
+			"sha256": "a244cc997385343931c4746a7278397fc5088847c603aa4f555a71300d2c57d8"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-history-route-en-desktop-1440x900.png",
+			"bytes": 437743,
+			"sha256": "624d6babed8ce76655c335339263bfd10457d0b4477ce4d5cd5a2237352f33df"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-settings-ar-desktop-1440.png",
+			"bytes": 297209,
+			"sha256": "1380f1aa6c8c4917bac7e905083786e44b3f1d12e3ffc1867330d85b2ea7e869"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-settings-ar-mobile-390.png",
+			"bytes": 180197,
+			"sha256": "2a6b8c914e041f9634a24969518e95221253a27585f6d364305a9a9c3956d123"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-settings-atomic-failure-en-desktop-1440.png",
+			"bytes": 335559,
+			"sha256": "507e599da91b31970655453adf8f1f83053c3a2f57352289ddd1de5cc9024e0a"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-settings-clean-en-desktop-1440.png",
+			"bytes": 320978,
+			"sha256": "3d7d747460e69f6e863a02a4ae525a64c34c62cb457e563217c694536174f2a4"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-settings-dirty-ar-desktop-1440.png",
+			"bytes": 299733,
+			"sha256": "eac2c12bb9875d6f968caedb4a1e97361560b76aafd05ce5bbbe679a971523cd"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-settings-dirty-ar-mobile-390.png",
+			"bytes": 180487,
+			"sha256": "b89ce36ac046911633741c0902f6ca0755bfce0bcd180285726c01c4ffe990c5"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-settings-dirty-en-desktop-1440.png",
+			"bytes": 323510,
+			"sha256": "1d693f332b5e74fab50136907bb7aa2155171cb61fba81d33de2672b955e5cfc"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-settings-dirty-en-mobile-390.png",
+			"bytes": 198886,
+			"sha256": "94628a68f9303875b6429b8d68511fe4e2f27a10572c14d2e222acefcf2fd337"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-settings-en-200-percent-reflow.png",
+			"bytes": 181592,
+			"sha256": "a8a65eddd7412f8bf75c0107f825f19fc91af6d3b7abcba2f3290d8d65838d61"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-settings-en-desktop-1440.png",
+			"bytes": 320978,
+			"sha256": "3d7d747460e69f6e863a02a4ae525a64c34c62cb457e563217c694536174f2a4"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-settings-en-mobile-390.png",
+			"bytes": 198886,
+			"sha256": "94628a68f9303875b6429b8d68511fe4e2f27a10572c14d2e222acefcf2fd337"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-settings-load-failure-en-desktop-1440.png",
+			"bytes": 169099,
+			"sha256": "fe3608e5d0404486d7c7aac9e30c153a8c8e6cc8e81bc564ea84d0bb834bc3b4"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-settings-loading-en-desktop-1440.png",
+			"bytes": 168955,
+			"sha256": "299dc9db905b977dd5cf1e0fb26664855086d7158dc1ee1148d3557709b014fc"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-settings-saved-en-desktop-1440.png",
+			"bytes": 328070,
+			"sha256": "3c91634e1ced584dec6bad7d5daa7f1163ddf6a1a8dfdec32930afd9540e1aa5"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-settings-saving-en-desktop-1440.png",
+			"bytes": 330846,
+			"sha256": "dadb6a285d3d4d13dae8b50dcbfeebdaa9fedb1942c005bd8f9b837b7d2ea4f1"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-settings-validation-en-desktop-1440.png",
+			"bytes": 343717,
+			"sha256": "2003b659579756390d6e5d766d7adfd5d899f30dd5667aab67517c8a2f7b2210"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-shell-ar-1440x900.png",
+			"bytes": 406733,
+			"sha256": "553c6dfdd6053444e1c319dcbc43dd3c477bf9a3b70b72ea1d09b19e46a0bf4b"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-shell-ar-320x720.png",
+			"bytes": 136938,
+			"sha256": "01de8a6a1a2a77dcc6b56d7bdf3f1f653533da574346b624903a730ef7a1fb68"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-shell-ar-390x844.png",
+			"bytes": 159024,
+			"sha256": "ffb1297d806eee9f6dc10b888d92194ef4e2c7370dd76e65c8533077627d1691"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-shell-ar-768x1024.png",
+			"bytes": 285617,
+			"sha256": "fa8f8db26c57f0ee89a9719dda814de3e497378b23114c679337c3bb46fb423f"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-shell-en-1440x900.png",
+			"bytes": 416068,
+			"sha256": "f5b014909d9e36cb278023974b84f6160820b67ec0e802dbd29c3c439562f054"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-shell-en-200-percent-reflow.png",
+			"bytes": 398251,
+			"sha256": "db60e97e3f7d6774391e2a8507f8f47948b7a1057664ded24cbfb57a16f96c1f"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-shell-en-320x720.png",
+			"bytes": 142159,
+			"sha256": "add4cac10c1d8d11f145f4448c82419eb028199553890a9a3d4fbf6cf1a47ab4"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-shell-en-390x844.png",
+			"bytes": 164757,
+			"sha256": "33a58b4e17caf9f13605c427301d0c4d57a524355a254c04e42857abe8117d34"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-shell-en-768x1024.png",
+			"bytes": 295100,
+			"sha256": "a6de49ed632d5ae7342e68089df08455c54f00def58ac8314f9f816562d2d39a"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-shell-error-en-390x844.png",
+			"bytes": 125089,
+			"sha256": "9f4c5002825c61b0c1f966db5712214ca3b34ce5a529ec9034c0287de934a721"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-shell-forbidden-en-390x844.png",
+			"bytes": 106866,
+			"sha256": "fa76f4460a3540a4f94b460c8a6f42f2a961ecc99a25677146be455fba872fcb"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-shell-loading-en-390x844.png",
+			"bytes": 125089,
+			"sha256": "9f4c5002825c61b0c1f966db5712214ca3b34ce5a529ec9034c0287de934a721"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/phase10-reporting-a11y-reflow-ar-768x1024.png",
+			"bytes": 437540,
+			"sha256": "279f6c224c7642483bfa50fbe485ca0d287ad83a782f71b3399e3c4326939039"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/phase10-reporting-ar-1440x900.png",
+			"bytes": 408961,
+			"sha256": "a12be86babef32ee338a474cc0ecb08e59a8b031eb2236850d2067541b433b1b"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/phase10-reporting-en-1440x900.png",
+			"bytes": 437743,
+			"sha256": "624d6babed8ce76655c335339263bfd10457d0b4477ce4d5cd5a2237352f33df"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/phase10-reporting-export-en-768x1024.png",
+			"bytes": 500811,
+			"sha256": "d8523b4e93643a31cc23737b51ef0666c465d44faa791e0a3c4fbcd520a94181"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/phase10-reporting-states-en-390x844.png",
+			"bytes": 364066,
+			"sha256": "e89015f8028e5f92f5d596c07797867a88602a68cfcc9698efb880de6efb4da8"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-an-37082-ng-a-reading-in-RTL-and-LTR-chromium/review/public-loading-ar-mobile.png",
+			"bytes": 133114,
+			"sha256": "2e672fc0449470f81e4766c083cb661bb67f48cf7800e93f5686dd79d47920b4"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-an-37082-ng-a-reading-in-RTL-and-LTR-chromium/review/public-loading-en-mobile.png",
+			"bytes": 134330,
+			"sha256": "635f1621d42b4f016e4e38af4d9749c110066aa6bd4d84506034e885660490ae"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-co-f8294-onsive-width-in-RTL-and-LTR-chromium/review/public-live-ar-1024x900.png",
+			"bytes": 278715,
+			"sha256": "6c6a006710320c6cd60901b07f6890270257ca01159e63c55ab960ff5ea43735"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-co-f8294-onsive-width-in-RTL-and-LTR-chromium/review/public-live-ar-1200x900.png",
+			"bytes": 303474,
+			"sha256": "c4b1a36de2a94ec7c6af074be3d11bbbad8ed30e5f7b0681190559d64dd940c8"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-co-f8294-onsive-width-in-RTL-and-LTR-chromium/review/public-live-ar-1440x900.png",
+			"bytes": 337354,
+			"sha256": "a916fa575d10c730c0c23bae0a2cf9afbc71a8d69dd4b25ff2ec43e1ac18f9d7"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-co-f8294-onsive-width-in-RTL-and-LTR-chromium/review/public-live-ar-320x844.png",
+			"bytes": 116553,
+			"sha256": "c3eefacb4bd0fa91b79b04c190dafc3b8ad51ac75e93e7d9e0398895d174f9ea"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-co-f8294-onsive-width-in-RTL-and-LTR-chromium/review/public-live-ar-360x800.png",
+			"bytes": 124200,
+			"sha256": "7f9c3360885aab67b7788ee11acbdffbfdd73e48b5ffe4b7b859144f82dd73a3"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-co-f8294-onsive-width-in-RTL-and-LTR-chromium/review/public-live-ar-390x844.png",
+			"bytes": 136950,
+			"sha256": "75776e24cb5ec54a92467d5bb68f84fbe14c162ecd7f8d958441e0848b666b7e"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-co-f8294-onsive-width-in-RTL-and-LTR-chromium/review/public-live-ar-721x1024.png",
+			"bytes": 247083,
+			"sha256": "091c2f2a2762857c5389b53c5c8f96752b0951fac976a135d42fcd1d7d98fe0f"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-co-f8294-onsive-width-in-RTL-and-LTR-chromium/review/public-live-ar-768x1024.png",
+			"bytes": 257049,
+			"sha256": "b6872c40bd67552c8ba2d2e92d2473e233497ab6cfaa5853e34dac4e15c4b334"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-co-f8294-onsive-width-in-RTL-and-LTR-chromium/review/public-live-ar-820x1024.png",
+			"bytes": 266863,
+			"sha256": "855fe27ffafe87b589a978e383f3f62fbac8e73399a1be3d66ae2b832b020ae2"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-co-f8294-onsive-width-in-RTL-and-LTR-chromium/review/public-live-en-1024x900.png",
+			"bytes": 284617,
+			"sha256": "1440fad3732fcea6ecbded0b19250d3f6983d2bbafbedc78488c29c486ca6fb7"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-co-f8294-onsive-width-in-RTL-and-LTR-chromium/review/public-live-en-1200x900.png",
+			"bytes": 309264,
+			"sha256": "99e0143b18eddad6ad4a93d005b61d800df27c4776f80305fec21425b466e36d"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-co-f8294-onsive-width-in-RTL-and-LTR-chromium/review/public-live-en-1440x900.png",
+			"bytes": 342908,
+			"sha256": "a611c29254621bfd3a8a593b969e6dcc409f729fb44e619a77a54a041af082b8"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-co-f8294-onsive-width-in-RTL-and-LTR-chromium/review/public-live-en-320x844.png",
+			"bytes": 120855,
+			"sha256": "69511a7ab7d334030d14eb6cda6a2e89940984d3f19b19073423d9a0df8c0c6a"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-co-f8294-onsive-width-in-RTL-and-LTR-chromium/review/public-live-en-360x800.png",
+			"bytes": 129019,
+			"sha256": "6dc2d1fcd3919620500cfbafbd78ab5568f9f40e69bc5f15f4521aba00e42ba2"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-co-f8294-onsive-width-in-RTL-and-LTR-chromium/review/public-live-en-390x844.png",
+			"bytes": 141518,
+			"sha256": "1bc61db1be685b78c1ed4eb17bb92c18a823de9f7965c9c86fdee5d3435ef71b"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-co-f8294-onsive-width-in-RTL-and-LTR-chromium/review/public-live-en-721x1024.png",
+			"bytes": 253141,
+			"sha256": "5c4185404dfdece4607cd7841295544006e66511f1fdbee49ba0d6de9da4c3f2"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-co-f8294-onsive-width-in-RTL-and-LTR-chromium/review/public-live-en-768x1024.png",
+			"bytes": 263077,
+			"sha256": "551a15de0daf69cb902758f26fe1556656c96d8290a4da13097d52ff2aae14c8"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-co-f8294-onsive-width-in-RTL-and-LTR-chromium/review/public-live-en-820x1024.png",
+			"bytes": 272522,
+			"sha256": "5658b868d9414905818fb6274689e8aff076bb74bbd7d015968b69a06caa920b"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-ke-d3233-tates-honest-in-RTL-and-LTR-chromium/review/public-closed-ar-mobile.png",
+			"bytes": 120867,
+			"sha256": "d39954c3040a3f442a18f1efa8c3d3bd5635977eb241b2758194207a0a151fdc"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-ke-d3233-tates-honest-in-RTL-and-LTR-chromium/review/public-closed-en-mobile.png",
+			"bytes": 122133,
+			"sha256": "d7200a1af50ec05428d3bb0e04d3717aa00c88f608ce333831fb09b970dd1a61"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-ke-d3233-tates-honest-in-RTL-and-LTR-chromium/review/public-stale-ar-mobile.png",
+			"bytes": 140436,
+			"sha256": "e658ab86b47f4f59f0edeacda1bd94bfd497b0b6f8c239fa823e2b05dca4ff1c"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-ke-d3233-tates-honest-in-RTL-and-LTR-chromium/review/public-stale-en-mobile.png",
+			"bytes": 147845,
+			"sha256": "f836ef3ebe3fbad5641ab361fd40fff3da9aee90c3e0d6daaa1925f936d3894f"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-ke-d3233-tates-honest-in-RTL-and-LTR-chromium/review/public-unavailable-ar-mobile.png",
+			"bytes": 121362,
+			"sha256": "903799a405692b809b40ebcebdfa20c6e55f7127e4b08ed8eb37c84fd6694574"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-ke-d3233-tates-honest-in-RTL-and-LTR-chromium/review/public-unavailable-en-mobile.png",
+			"bytes": 126411,
+			"sha256": "17fe91aa495040d773fa29517e70ab085de78dcd7694a18cfb7df022b9f1d2a2"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-pr-1d583-ile-route-from-a-fresh-load-chromium/review/public-unavailable-route-en-mobile-390x844.png",
+			"bytes": 126469,
+			"sha256": "e1add48eedc0026d5053db775a8f88c93a67d2be17fa0cfe9464b9f4bbc831ea"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-pr-22709-ile-route-from-a-fresh-load-chromium/review/public-closed-route-en-mobile-390x844.png",
+			"bytes": 122201,
+			"sha256": "94f43eba6bb2405f5e0824e8df2b7227340a69279702a304e4516142e6fbdac2"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-re-39770-ut-treating-it-as-a-verdict-chromium/review/public-live-ar-desktop-1440x900.png",
+			"bytes": 337354,
+			"sha256": "a916fa575d10c730c0c23bae0a2cf9afbc71a8d69dd4b25ff2ec43e1ac18f9d7"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-re-39770-ut-treating-it-as-a-verdict-chromium/review/public-live-ar-mobile-390x844.png",
+			"bytes": 136950,
+			"sha256": "75776e24cb5ec54a92467d5bb68f84fbe14c162ecd7f8d958441e0848b666b7e"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-re-39770-ut-treating-it-as-a-verdict-chromium/review/public-live-en-desktop-1440x900.png",
+			"bytes": 342908,
+			"sha256": "a611c29254621bfd3a8a593b969e6dcc409f729fb44e619a77a54a041af082b8"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-re-39770-ut-treating-it-as-a-verdict-chromium/review/public-live-en-mobile-390x844.png",
+			"bytes": 141518,
+			"sha256": "1bc61db1be685b78c1ed4eb17bb92c18a823de9f7965c9c86fdee5d3435ef71b"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-re-39770-ut-treating-it-as-a-verdict-chromium/review/public-live-en-mobile.png",
+			"bytes": 141518,
+			"sha256": "1bc61db1be685b78c1ed4eb17bb92c18a823de9f7965c9c86fdee5d3435ef71b"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-re-39770-ut-treating-it-as-a-verdict-chromium/review/public-live-en-tablet-1024x900.png",
+			"bytes": 284617,
+			"sha256": "1440fad3732fcea6ecbded0b19250d3f6983d2bbafbedc78488c29c486ca6fb7"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-re-39770-ut-treating-it-as-a-verdict-chromium/review/public-stale-ar-tablet-768x1024.png",
+			"bytes": 260386,
+			"sha256": "c951e204c44f2b1952848ccb873c7cb95abb074cb706f2dc3678d16833276854"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-re-ca83f-and-keyboard-retry-recovers-chromium/review/public-error-ar-mobile.png",
+			"bytes": 123930,
+			"sha256": "3ba4c0edddef27e30e78153ac8038072cfa533f5246513449be3252952d939ae"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/public/public-baseline.browser-re-ca83f-and-keyboard-retry-recovers-chromium/review/public-error-en-mobile.png",
+			"bytes": 127837,
+			"sha256": "d3cc55d9c4f94cc350eb2b3ae375c9d1eb6631953224327e226fe33cf08a5664"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s1-loading-ar-1440.png",
+			"bytes": 293241,
+			"sha256": "def135900f023378a36688922c7709428472a1346218d3b04cac0f55f1051a94"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s1-loading-ar-320.png",
+			"bytes": 101038,
+			"sha256": "01a6909760f8e28a7e98be449921deacb546a2556e138450be9198e51bcb44b8"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s1-loading-ar-390.png",
+			"bytes": 118705,
+			"sha256": "1c3cb7a6614a212df83d85f001575c264781871b9d4277c35711abebb695a216"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s1-loading-ar-768.png",
+			"bytes": 233616,
+			"sha256": "fb59ae5ad6dec1b832ad0fb850016dd8b7482e95a4831c2f96d9e496411acd83"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s1-loading-en-1440.png",
+			"bytes": 296978,
+			"sha256": "b1092de067577abd1c09e2080562956b93f2612a74c44085f819d79636e73a46"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s1-loading-en-320.png",
+			"bytes": 102271,
+			"sha256": "5ee218b6ebdaa1e3a561cf2b04825384646e9348eff427974523d0c6bbdf4681"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s1-loading-en-390.png",
+			"bytes": 119616,
+			"sha256": "ee30bb19c6ba6e7b142d98e386e289a3b41390a83b4b56dfac805f9e7416e963"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s1-loading-en-768.png",
+			"bytes": 236427,
+			"sha256": "bda8b73ea8f084eeb34bd35d24fd81a7af184fefa2c38aa0585a6eee241ec47d"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s2-delayed-ar-1440.png",
+			"bytes": 325465,
+			"sha256": "e7791ed334542725b2e283eef6fcc02d386c782a48eb476137dc713f8123b1bd"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s2-delayed-ar-320.png",
+			"bytes": 121311,
+			"sha256": "088e7c6edadc4c9627155b3cf59469d2711aca9a77967eba534fb64930f677d8"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s2-delayed-ar-390.png",
+			"bytes": 138811,
+			"sha256": "5cc0940ea1af748de0655aa4ed44807aad6bad87eb967a6fbf04bf62469b148a"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s2-delayed-ar-768.png",
+			"bytes": 257333,
+			"sha256": "a59956b40c4322ce437b28cba217502e0fc3d3870ab91879eb61f84f3a1d36d9"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s2-delayed-en-1440.png",
+			"bytes": 338384,
+			"sha256": "1f2ce795d8920ce79d2d448f6de11528a73bbd7755a0146663f1c68471e5688b"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s2-delayed-en-320.png",
+			"bytes": 130846,
+			"sha256": "95a4717ac52cf4694dff5d640d81262f5df4a0a18d3d1fe0fa0fac3d042626b2"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s2-delayed-en-390.png",
+			"bytes": 148803,
+			"sha256": "e77da8540e76e175feeda86dee3eb3bcefb38d49d102fdcebc7e977fd10f3c3e"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s2-delayed-en-768.png",
+			"bytes": 270211,
+			"sha256": "662a4b92ff7c2c35b8ce13567d83ab33e4ca8cb79bc19b4b4bcd1b54d852821b"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s3-load-failure-ar-1440.png",
+			"bytes": 303915,
+			"sha256": "00bf97aa79e70ce34e15c9d7c2a281d07f5aa841fd33568117f5e4a7a8d81e8d"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s3-load-failure-ar-320.png",
+			"bytes": 110260,
+			"sha256": "8ba4b447f93ccfebfeac0bc19eab4e1db74b006e0d7a7c73fe2bfef36fbb1fbb"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s3-load-failure-ar-390.png",
+			"bytes": 128199,
+			"sha256": "7de6bfbd9a0749507a2a844c7138445432fd3aec4c210f98099db2368c68c417"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s3-load-failure-ar-768.png",
+			"bytes": 245386,
+			"sha256": "901b3f6ddbd1fb4ce8aea68b157c67557d819873dd81c4f106605abc0f22f3cb"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s3-load-failure-en-1440.png",
+			"bytes": 306795,
+			"sha256": "9604f8b6a327c79414ec3f0968c8263e85cf6aefb67f4acea61ccdeb4f7299f1"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s3-load-failure-en-320.png",
+			"bytes": 112593,
+			"sha256": "1d0d210e11c7ed2a47abb9722a72b21d70a84caca851af9794a944ac8e953260"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s3-load-failure-en-390.png",
+			"bytes": 130543,
+			"sha256": "ef5eb7a20e2c5b4c5c94cb09efd67ed3ecfbb03d53189129d29eedf25673cf21"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s3-load-failure-en-768.png",
+			"bytes": 248586,
+			"sha256": "03d60562b5291b81bca5d97e8b5691a1769a510919971f419c23ed6d56574698"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s4-closed-ar-1440.png",
+			"bytes": 316794,
+			"sha256": "b09eb744b006adfa4ea7ec9371112f1f0448e7ce2a805bcf6b89136ea3809bb6"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s4-closed-ar-320.png",
+			"bytes": 111089,
+			"sha256": "09341201090346744377ec193993b02aa587fdf78966a0a32d550db11e9552b7"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s4-closed-ar-390.png",
+			"bytes": 128399,
+			"sha256": "f92e850ab846c70a82c1e5586639415d26faa98d6c73482320895299724df02d"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s4-closed-ar-768.png",
+			"bytes": 249198,
+			"sha256": "7bcdec2e2faa1c18ce090e0f9a0fa9c4b663869c18b2369a54aa6c2664ee59f2"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s4-closed-en-1440.png",
+			"bytes": 323310,
+			"sha256": "9a6361e839b61b47fd7cdefaee84bf827a562df685a21319108ac3640121a817"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s4-closed-en-320.png",
+			"bytes": 114927,
+			"sha256": "f951ff00c45211d0696c46b95f2207a811d039e308f5ccbdc3961c2a73498a3f"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s4-closed-en-390.png",
+			"bytes": 132512,
+			"sha256": "25741a0add157724c29974fec82e77ec82b08778317770907f9fe00de644534c"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s4-closed-en-768.png",
+			"bytes": 254777,
+			"sha256": "92f78d4bd7a8c2d37d06a19168aa2b6d8cb0a8b41d98a1067b5fbf561b98e44a"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s5-device-offline-ar-1440.png",
+			"bytes": 318419,
+			"sha256": "e2ee580b5082ebdf925eff71dc4bd7516a3ef52f8ecb08ee4eecc91106ad5444"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s5-device-offline-ar-320.png",
+			"bytes": 118542,
+			"sha256": "95991e460c8ed2a16c6d947b13908b71dbe31f97ae7b1b38b0ea8792460746c5"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s5-device-offline-ar-390.png",
+			"bytes": 135816,
+			"sha256": "85276252ec8dc3929a89cb8223d9531a4d3d353bf37e10bd7e787067b10bd5cf"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s5-device-offline-ar-768.png",
+			"bytes": 255679,
+			"sha256": "206290eb2bb5fa0a9a9da2b589404516ccf6ba6cf741a1d117c21f0c47db3d07"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s5-device-offline-en-1440.png",
+			"bytes": 331809,
+			"sha256": "77a9cee96264e930014b8d6fe40cddb25a297ab2c95a2b278b86a25f69e3e0af"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s5-device-offline-en-320.png",
+			"bytes": 132182,
+			"sha256": "a7eebb87fd33970b35c4349e856342980ce9e7b034556a1b7929fc48f3e87ae8"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s5-device-offline-en-390.png",
+			"bytes": 149852,
+			"sha256": "50980d50af135810fe50928b66c77427e34eb484b67df2ffa653174d474693c6"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s5-device-offline-en-768.png",
+			"bytes": 270311,
+			"sha256": "049243cb237f731dafcedee43306529dccec2499e0e9b34fdf54fdab49b346d5"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s6-camera-unstable-ar-1440.png",
+			"bytes": 325030,
+			"sha256": "e990463c4bb5b76502c7c7bdfec0933aee7a87cde829043f9aef9c82e6358a5d"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s6-camera-unstable-ar-320.png",
+			"bytes": 121545,
+			"sha256": "fe0f1a90429d8a2b9edccee128e8036fa70e7719b58bcdb28a8c7dd93b808a4c"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s6-camera-unstable-ar-390.png",
+			"bytes": 139347,
+			"sha256": "19787d0bc5bf9ac8c3c43def83dda80ef994186efcf2d75954b9f17b79177707"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s6-camera-unstable-ar-768.png",
+			"bytes": 257781,
+			"sha256": "3ff039572570c72caaf78431441af05310df8cd814bf59274750106bbe36f59f"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s6-camera-unstable-en-1440.png",
+			"bytes": 336181,
+			"sha256": "a9dfc66126172dfec5338709cc1492c0e476fa04d34b4e622f53195813630471"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s6-camera-unstable-en-320.png",
+			"bytes": 129683,
+			"sha256": "f5934ff109ee5177802ab2929c3a20825dcdd75ea6798e61223b2cd8fcdef618"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s6-camera-unstable-en-390.png",
+			"bytes": 147571,
+			"sha256": "f08c1447deb301b905d1616f4a658b6987e433d889676acd3a0b59297d180c9e"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s6-camera-unstable-en-768.png",
+			"bytes": 269511,
+			"sha256": "99521d66634f955f660df2a612dd3047960e3517b43f5796096a947e7ede4c59"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s6b-camera-failed-ar-1440.png",
+			"bytes": 323633,
+			"sha256": "f454d99e17ec16c047a8dd6481b32e164728e059dce2a01ef76eb3ea04c82f91"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s6b-camera-failed-ar-320.png",
+			"bytes": 120500,
+			"sha256": "943f3599ee1113350693f44acfa82cb1e70a8703bcc7bdf3b0ab487f5d78e715"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s6b-camera-failed-ar-390.png",
+			"bytes": 140208,
+			"sha256": "0d76787c89cc20a25c3531df02d09c3efb801afe3d4c6877b63472c414733b49"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s6b-camera-failed-ar-768.png",
+			"bytes": 256444,
+			"sha256": "06b2c0a80918d442329cbd66b4b67cfeff35200ae4eda66b37089b932801b130"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s6b-camera-failed-en-1440.png",
+			"bytes": 335254,
+			"sha256": "856dbf8fa51a80b7a3a22d90977d43a130fb2eb48c524e445f9726d7eb800383"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s6b-camera-failed-en-320.png",
+			"bytes": 128406,
+			"sha256": "62de0ce45a7df2092043df01aee2cffcff087f38f527e888125ac28caf720567"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s6b-camera-failed-en-390.png",
+			"bytes": 146157,
+			"sha256": "05752b9d6024d634316861aeeae03469b2010941b3a12e7671c4c5a46b8832a7"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s6b-camera-failed-en-768.png",
+			"bytes": 268357,
+			"sha256": "71044d258bddaf08ced4134a97c0f18e414e3344c5784ec53e6c62da9de26e96"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s7-trust-failure-ar-1440.png",
+			"bytes": 325556,
+			"sha256": "9b81465c7bb5121f583abbdf2d246ce51d98c478b3d3397dc68d0ba81cf940db"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s7-trust-failure-ar-200pct-720.png",
+			"bytes": 221535,
+			"sha256": "0d52a544f07d4b610631d786da9aaa35221762cfa8bb26497de0f08acca459e8"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s7-trust-failure-ar-320.png",
+			"bytes": 121842,
+			"sha256": "0944116f4ef95d2567db03768c3ed71986c72a492d3f16ce0a88ddd7ce780860"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s7-trust-failure-ar-390.png",
+			"bytes": 140576,
+			"sha256": "fcb5dfc9265460eb8b4f3b1c9d5c103e990e015d9d765a15e67d2be023e9de40"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s7-trust-failure-ar-768.png",
+			"bytes": 258753,
+			"sha256": "35c068385b4531fb08035363fc8447f40db81bbf6fd18a0bdee078e5d0a2673c"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s7-trust-failure-en-1440.png",
+			"bytes": 345502,
+			"sha256": "11996bd7dab26bd2e28c4f352cb9db532d3da369682610d20801dd2befe8879b"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s7-trust-failure-en-200pct-720.png",
+			"bytes": 236216,
+			"sha256": "69aff5ddcc5119d506d1d2db11bb7bc5bb0af0c0079b1cd68bbd4ed6534ae369"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s7-trust-failure-en-320.png",
+			"bytes": 143340,
+			"sha256": "9ab9ef0cae503c3ac430f414f7dc0863481b90809f95cad02567ba90ecacaf52"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s7-trust-failure-en-390.png",
+			"bytes": 153152,
+			"sha256": "242b4a8539dedb0e0a538218cd87a62310bb1b83b85951092b312d378a1bcb02"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s7-trust-failure-en-768.png",
+			"bytes": 275029,
+			"sha256": "8caedbef71494e66b7bc0cbb33db695831e2d8dcc212bed4b4feb159d4ac9693"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/staff-closed-ar-1280.png",
+			"bytes": 240746,
+			"sha256": "85e4ad47dbf653b614e994130255176674f52487d30bdd99d8a88358f2951606"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/staff-error-ar-1280.png",
+			"bytes": 246928,
+			"sha256": "82549355db801e8c91bfc1fd09b58b4f7b0350875c05211d7c2fb374077f1716"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/staff-live-ar-1440.png",
+			"bytes": 333791,
+			"sha256": "aa16abd05cc1a779cc8a5984bc655ddf36fc164dabcaae44bbab066837341696"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/staff-live-ar-390.png",
+			"bytes": 141153,
+			"sha256": "007206cbb939f49d1205ad31efc48d8e5f45fab78c0d34586185e53e0b66c536"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/staff-live-ar-768.png",
+			"bytes": 237218,
+			"sha256": "994356d3b5ca137fff778878399d2062563466fdc175c17386e5a25ccca8667c"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/staff-live-en-1440.png",
+			"bytes": 344516,
+			"sha256": "2cbc389e904304ebc15f336a5da0797d5e29a5359ec1571a9ad66f50c4ed5496"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/staff-loading-ar-1280.png",
+			"bytes": 247427,
+			"sha256": "4f1e3a89efb2f2acd50f3056fb9625f93145317ca4f31bfe18dacb663d2f620b"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/staff-stale-ar-1280.png",
+			"bytes": 281555,
+			"sha256": "8e80130ac4732818459a81407a2f4c9a5b401325d79d5646c22f14e74953e34c"
+		},
+		{
+			"path": "visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/staff-unavailable-ar-1280.png",
+			"bytes": 245714,
+			"sha256": "3bebd1b2ca0f6016c82674ddf7e8f8f32784c49516b52c6053442ecf60f9b96d"
+		}
+	]
+}

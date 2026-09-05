@@ -5,8 +5,8 @@ const isolate = (value: string) => `\u2068${value}\u2069`;
 
 export const staffWeb = {
 	common: {
-		operations: "العمليات المباشرة",
-		admin: "منطقة المالك",
+		operations: "المراقبة",
+		admin: "الإدارة",
 		languageSwitchLabel: "التبديل إلى اللغة الإنجليزية",
 		languageSwitchText: "English",
 		logout: "تسجيل الخروج",
@@ -68,6 +68,7 @@ export const staffWeb = {
 		loadingNotice: "جارٍ تحميل القراءة. لا يُعرض شيء قبل وصولها.",
 		delayedNotice:
 			"يعود التحديث المباشر تلقائيًا عندما يستأنف جهاز العد الإرسال.",
+		cameraFailedNotice: "الكاميرا متوقفة. جهاز العد ما زال يرسل قراءة مباشرة.",
 		cameraNotice: "الكاميرا غير مستقرة. جهاز العد ما زال يرسل قراءة مباشرة.",
 		offlineNotice: "جهاز العد غير متصل. تعود القراءة تلقائيًا عند عودة الاتصال.",
 		trustNotice:
@@ -111,7 +112,7 @@ export const staffWeb = {
 		cameraStates: {
 			ok: "مستقرة",
 			degraded: "غير مستقرة",
-			failed: "غير مستقرة",
+			failed: "فاشلة",
 			unknown: "غير معروفة",
 		},
 		bands: {
@@ -123,15 +124,15 @@ export const staffWeb = {
 	},
 	admin: {
 		eyebrow: "دخول المالك",
-		title: "منطقة المالك",
+		title: "الإدارة",
 		description: "تنقل مخصص للمالك لعمليات فت واي وحوكمتها.",
 		placeholderTitle: "تنقل المالك جاهز",
 		placeholderDescription:
 			"تصل أقسام التحليلات والإعدادات والحسابات وسجل التدقيق والصحة في مراحلها المحددة.",
 		wrongRoleTitle: "يلزم دخول المالك",
 		wrongRoleDescription:
-			"يمكن لجلسة الموظف هذه استخدام العمليات المباشرة، ولا يمكنها فتح منطقة المالك.",
-		backToOperations: "العودة إلى العمليات المباشرة",
+			"يمكن لجلسة الموظف هذه استخدام المراقبة، ولا يمكنها فتح الإدارة.",
+		backToOperations: "العودة إلى المراقبة",
 	},
 } satisfies StaffWebMessages;
 

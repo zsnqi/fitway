@@ -58,6 +58,7 @@ export type StaffWebMessages = {
 		loadingNotice: string;
 		delayedNotice: string;
 		cameraNotice: string;
+		cameraFailedNotice: string;
 		offlineNotice: string;
 		trustNotice: string;
 		capacity: string;

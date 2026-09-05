@@ -95,7 +95,6 @@ export function OwnerSectionSwitch(props: OwnerSectionRenderers) {
 		const tablist = tablistRef.current;
 		const tab = tabRefs.current[selected];
 		if (!tablist || !tab) return;
-		tab.scrollIntoView({ block: "nearest", inline: "center" });
 		const rowBox = tablist.getBoundingClientRect();
 		const tabBox = tab.getBoundingClientRect();
 		const correction =
@@ -104,7 +103,9 @@ export function OwnerSectionSwitch(props: OwnerSectionRenderers) {
 				: tabBox.right > rowBox.right
 					? tabBox.right - rowBox.right
 					: 0;
-		if (correction !== 0) tablist.scrollBy({ left: correction });
+		const scale =
+			tablist.offsetWidth > 0 ? rowBox.width / tablist.offsetWidth : 1;
+		if (correction !== 0) tablist.scrollBy({ left: correction / scale });
 	}, [selected]);
 
 	useLayoutEffect(() => {
@@ -127,6 +128,11 @@ export function OwnerSectionSwitch(props: OwnerSectionRenderers) {
 			}
 			const containerBox = container.getBoundingClientRect();
 			const anchorBox = anchor.getBoundingClientRect();
+			// DOM rectangles include CSS zoom; positioning values use unzoomed layout pixels.
+			const scale =
+				container.offsetWidth > 0
+					? containerBox.width / container.offsetWidth
+					: 1;
 			const gap = Number.parseFloat(
 				getComputedStyle(container).getPropertyValue(
 					"--owner-section-navigation-gap",
@@ -134,7 +140,7 @@ export function OwnerSectionSwitch(props: OwnerSectionRenderers) {
 			);
 			container.style.setProperty(
 				"--owner-section-navigation-block-start",
-				`${anchorBox.bottom - containerBox.top + (Number.isFinite(gap) ? gap : 18)}px`,
+				`${(anchorBox.bottom - containerBox.top) / scale + (Number.isFinite(gap) ? gap : 18)}px`,
 			);
 		};
 

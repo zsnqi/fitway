@@ -1,6 +1,6 @@
 schemaVersion: 1
 status: IN_PROGRESS
-updatedAt: "2026-09-03T14:32:13Z"
+updatedAt: "2026-09-05T12:30:00Z"
 authorityDecision: docs/adr/ADR-007-paper-visual-source-of-truth.md
 milestone: full-route-paper-fidelity-r01
 
@@ -23,7 +23,7 @@ surfaces:
     paperViewports: [1440, 768, 390, 320, 200-percent]
     implementationBrandMark: "Use the locked repository FITWAY asset in Paper's assigned brand position; do not recreate the historical inline circle-slash glyph."
     comparisonNormalization: "Paper mobile frames include illustrative operating-system status chrome and an external frame caption; routed web evidence begins at the application header and must not reproduce either annotation."
-    routedCandidateReview: "Coordinator Paper/family comparison passed; independent rendered review and final human acceptance remain pending."
+    routedCandidateReview: "Coordinator Paper/family comparison passed; independent rendered review passed and final human acceptance was granted 2026-09-05 (closure approval record). The surface carries no asserted canonical; orphaned r05 files remain rejected-listed as regression baselines."
     routedCandidateEvidence:
       - { locale: en, viewport: 1440, state: live, path: evidence/public/routed-after-live-en-desktop-1440x900.png, bytes: 342908, sha256: a611c29254621bfd3a8a593b969e6dcc409f729fb44e619a77a54a041af082b8 }
       - { locale: ar, viewport: 390, state: live, path: evidence/public/routed-after-live-ar-mobile-390x844.png, bytes: 136950, sha256: 75776e24cb5ec54a92467d5bb68f84fbe14c162ecd7f8d958441e0848b666b7e }
@@ -72,6 +72,18 @@ surfaces:
     status: ACCEPTED_PAPER_AUTHORITY
     requiredStates: [idle, focus, invalid-code, too-many-attempts, unavailable, submitting]
     implementationBrandMark: "Use the locked repository FITWAY asset in Paper's assigned brand position; do not recreate the historical inline circle-slash glyph."
+    routedCandidateReview: >-
+      Exact canonical routed screenshots remain unchanged for Arabic desktop and English mobile.
+      Fresh bilingual desktop, tablet, mobile, and narrow evidence confirms the preserved Login
+      composition; independent rendered review passed and final human acceptance was granted 2026-09-05 (closure approval record). Idle desktop/mobile canonicals are accepted-mapped; narrow exception states are promoted for regression.
+    routedCandidateEvidence:
+      - { locale: ar, viewport: 1440, state: idle, path: evidence/login/login-idle-ar-desktop-1440x900.png, bytes: 316955, sha256: 81f00333dcc42f4a2741659cd474f58e0517fcc90d53580eab07a74a929d69af }
+      - { locale: en, viewport: 390, state: idle, path: evidence/login/login-idle-en-mobile-390x844.png, bytes: 107559, sha256: 4cd64498c0312ff05f33a6a9fb6d6ee761ba1e1a24141d55d43ce50fdda21cac }
+      - { locale: ar, viewport: 1440, state: idle-responsive, path: evidence/login/login-ar-1440x900.png, bytes: 316955, sha256: 81f00333dcc42f4a2741659cd474f58e0517fcc90d53580eab07a74a929d69af }
+      - { locale: ar, viewport: 768, state: idle-responsive, path: evidence/login/login-ar-768x1024.png, bytes: 239602, sha256: a8913788792d3e91798db6100c4a7f8b627c0b3dc1b35bcdfbde32340e3c944b }
+      - { locale: ar, viewport: 390, state: idle-responsive, path: evidence/login/login-ar-390x844.png, bytes: 107002, sha256: 197385cf7fb4b46a7594e11d479dd00600fd5d21eb27cdbd640c5035d1175eab }
+      - { locale: ar, viewport: 320, state: idle-responsive, path: evidence/login/login-ar-320x720.png, bytes: 77347, sha256: ec6e8c16039c1eeffb4ae36bb042b8ad4a52ec835cb32ca7dc426de30fc152b1 }
+      - { locale: en, viewport: 320, state: idle-responsive, path: evidence/login/login-en-320x720.png, bytes: 77775, sha256: 43ee5d87e6da17cab6a9b62ea523c6d55e804f2dd3a76b173390cd5347f08b2a }
     leafExports:
       - { nodeId: WBP-0, locale: ar, viewport: 1440, state: idle, path: login/login-idle-ar-1440.png, bytes: 735361, sha256: 57e94c812ef2e4a562884c5ca7550477b9b16c572ba33c552513ee04f1df5c4e }
       - { nodeId: WB3-0, locale: en, viewport: 1440, state: idle, path: login/login-idle-en-1440.png, bytes: 735740, sha256: dae58d231c44455c6b13ebfbe947016946fbf1d80ddfff9355d0f919647fd0c0 }
@@ -116,8 +128,63 @@ surfaces:
     interactionArea: "STAFF MONITORING PRODUCTION SET — SELF-CONTAINED AUTHORITY REPAIR CANDIDATE"
     interactionAreaId: 146R-0
     status: ACCEPTED_SPLIT_AUTHORITY
-    requiredStates: [loading, live, delayed, unavailable, closed, failure, combined-trust-failure]
+    approvedDeviationIds: [staff-camera-failure-semantic-distinction]
+    requiredStates: [loading, live, delayed, unavailable, closed, failure, camera-failed, combined-trust-failure]
     implementationBrandMark: "Use the locked repository FITWAY asset in Paper's assigned brand position; do not recreate the historical inline circle-slash glyph."
+    routedCandidateReview: >-
+      Coordinator comparison preserves the already strong Staff composition. Fresh full-route evidence
+      covers both locales at desktop, tablet, mobile, and narrow widths, all S1-S7 trust states, and
+      200-percent reflow. Behavioral assertions pass; the three remaining image failures are the
+      intentionally rejected r05 baselines and are not acceptance evidence. Independent rendered
+      review passed and final human acceptance was granted 2026-09-05 (closure approval record).
+      Live, loading, closed, failure, and trust-failure canonicals are accepted-mapped and promoted.
+    routedCandidateEvidence:
+      - { locale: ar, viewport: 1440, state: live, path: evidence/staff/baseline-live-ar-1440.png, bytes: 333791, sha256: aa16abd05cc1a779cc8a5984bc655ddf36fc164dabcaae44bbab066837341696 }
+      - { locale: en, viewport: 1440, state: live, path: evidence/staff/baseline-live-en-1440.png, bytes: 344516, sha256: 2cbc389e904304ebc15f336a5da0797d5e29a5359ec1571a9ad66f50c4ed5496 }
+      - { locale: ar, viewport: 768, state: live, path: evidence/staff/baseline-live-ar-768.png, bytes: 261672, sha256: b4774f4483029a6b2d389d3d2eec8d72ebc53e075792b2cdf5b4fda8135c0a17 }
+      - { locale: en, viewport: 768, state: live, path: evidence/staff/baseline-live-en-768.png, bytes: 269870, sha256: dbcae8c3cd1fec7da545dbb1a8c2cd3758600b1b3c4cc0611538556114eebd21 }
+      - { locale: ar, viewport: 390, state: live, path: evidence/staff/baseline-live-ar-390.png, bytes: 141153, sha256: 007206cbb939f49d1205ad31efc48d8e5f45fab78c0d34586185e53e0b66c536 }
+      - { locale: en, viewport: 390, state: live, path: evidence/staff/baseline-live-en-390.png, bytes: 147544, sha256: 944c51dead7f99a1a093d42df4e42a8ee2f70cc34b4faf9246044a114b93676c }
+      - { locale: ar, viewport: 320, state: live, path: evidence/staff/baseline-live-ar-320.png, bytes: 122657, sha256: 4df679624f9b703b1e623f626d7644c5570b93bacc75bc3c5d60035d6f8bdeb9 }
+      - { locale: en, viewport: 320, state: live, path: evidence/staff/baseline-live-en-320.png, bytes: 128997, sha256: 6c069e8ee27d18b789b8a1b1a80b1d3a9dc76fc0ab3ea6d68b35afc9292fab66 }
+      - { locale: ar, viewport: 1440, state: loading, path: evidence/staff/s1-loading-ar-1440.png, bytes: 293241, sha256: def135900f023378a36688922c7709428472a1346218d3b04cac0f55f1051a94 }
+      - { locale: en, viewport: 1440, state: loading, path: evidence/staff/s1-loading-en-1440.png, bytes: 296978, sha256: b1092de067577abd1c09e2080562956b93f2612a74c44085f819d79636e73a46 }
+      - { locale: ar, viewport: 390, state: loading, path: evidence/staff/s1-loading-ar-390.png, bytes: 118705, sha256: 1c3cb7a6614a212df83d85f001575c264781871b9d4277c35711abebb695a216 }
+      - { locale: en, viewport: 390, state: loading, path: evidence/staff/s1-loading-en-390.png, bytes: 119616, sha256: ee30bb19c6ba6e7b142d98e386e289a3b41390a83b4b56dfac805f9e7416e963 }
+      - { locale: ar, viewport: 1440, state: delayed, path: evidence/staff/s2-delayed-ar-1440.png, bytes: 325465, sha256: e7791ed334542725b2e283eef6fcc02d386c782a48eb476137dc713f8123b1bd }
+      - { locale: en, viewport: 1440, state: delayed, path: evidence/staff/s2-delayed-en-1440.png, bytes: 338384, sha256: 1f2ce795d8920ce79d2d448f6de11528a73bbd7755a0146663f1c68471e5688b }
+      - { locale: ar, viewport: 390, state: delayed, path: evidence/staff/s2-delayed-ar-390.png, bytes: 138811, sha256: 5cc0940ea1af748de0655aa4ed44807aad6bad87eb967a6fbf04bf62469b148a }
+      - { locale: en, viewport: 390, state: delayed, path: evidence/staff/s2-delayed-en-390.png, bytes: 148803, sha256: e77da8540e76e175feeda86dee3eb3bcefb38d49d102fdcebc7e977fd10f3c3e }
+      - { locale: ar, viewport: 1440, state: failure, path: evidence/staff/s3-load-failure-ar-1440.png, bytes: 303915, sha256: 00bf97aa79e70ce34e15c9d7c2a281d07f5aa841fd33568117f5e4a7a8d81e8d }
+      - { locale: en, viewport: 1440, state: failure, path: evidence/staff/s3-load-failure-en-1440.png, bytes: 306795, sha256: 9604f8b6a327c79414ec3f0968c8263e85cf6aefb67f4acea61ccdeb4f7299f1 }
+      - { locale: ar, viewport: 390, state: failure, path: evidence/staff/s3-load-failure-ar-390.png, bytes: 128199, sha256: 7de6bfbd9a0749507a2a844c7138445432fd3aec4c210f98099db2368c68c417 }
+      - { locale: en, viewport: 390, state: failure, path: evidence/staff/s3-load-failure-en-390.png, bytes: 130543, sha256: ef5eb7a20e2c5b4c5c94cb09efd67ed3ecfbb03d53189129d29eedf25673cf21 }
+      - { locale: ar, viewport: 1440, state: closed, path: evidence/staff/s4-closed-ar-1440.png, bytes: 316794, sha256: b09eb744b006adfa4ea7ec9371112f1f0448e7ce2a805bcf6b89136ea3809bb6 }
+      - { locale: en, viewport: 1440, state: closed, path: evidence/staff/s4-closed-en-1440.png, bytes: 323310, sha256: 9a6361e839b61b47fd7cdefaee84bf827a562df685a21319108ac3640121a817 }
+      - { locale: ar, viewport: 390, state: closed, path: evidence/staff/s4-closed-ar-390.png, bytes: 127988, sha256: fdb46cc19e3fc5d8b045f23a020225ea95b7fed54a32c05d399a9e765ab86cf7 }
+      - { locale: en, viewport: 390, state: closed, path: evidence/staff/s4-closed-en-390.png, bytes: 132512, sha256: 25741a0add157724c29974fec82e77ec82b08778317770907f9fe00de644534c }
+      - { locale: ar, viewport: 1440, state: device-offline, path: evidence/staff/s5-device-offline-ar-1440.png, bytes: 318419, sha256: e2ee580b5082ebdf925eff71dc4bd7516a3ef52f8ecb08ee4eecc91106ad5444 }
+      - { locale: en, viewport: 1440, state: device-offline, path: evidence/staff/s5-device-offline-en-1440.png, bytes: 331809, sha256: 77a9cee96264e930014b8d6fe40cddb25a297ab2c95a2b278b86a25f69e3e0af }
+      - { locale: ar, viewport: 390, state: device-offline, path: evidence/staff/s5-device-offline-ar-390.png, bytes: 135816, sha256: 85276252ec8dc3929a89cb8223d9531a4d3d353bf37e10bd7e787067b10bd5cf }
+      - { locale: en, viewport: 390, state: device-offline, path: evidence/staff/s5-device-offline-en-390.png, bytes: 149852, sha256: 50980d50af135810fe50928b66c77427e34eb484b67df2ffa653174d474693c6 }
+      - { locale: ar, viewport: 1440, state: camera-unstable, path: evidence/staff/s6-camera-unstable-ar-1440.png, bytes: 325030, sha256: e990463c4bb5b76502c7c7bdfec0933aee7a87cde829043f9aef9c82e6358a5d }
+      - { locale: en, viewport: 1440, state: camera-unstable, path: evidence/staff/s6-camera-unstable-en-1440.png, bytes: 336181, sha256: a9dfc66126172dfec5338709cc1492c0e476fa04d34b4e622f53195813630471 }
+      - { locale: ar, viewport: 390, state: camera-unstable, path: evidence/staff/s6-camera-unstable-ar-390.png, bytes: 139347, sha256: 19787d0bc5bf9ac8c3c43def83dda80ef994186efcf2d75954b9f17b79177707 }
+      - { locale: en, viewport: 390, state: camera-unstable, path: evidence/staff/s6-camera-unstable-en-390.png, bytes: 147571, sha256: f08c1447deb301b905d1616f4a658b6987e433d889676acd3a0b59297d180c9e }
+      - { locale: ar, viewport: 1440, state: camera-failed, path: evidence/staff/s6b-camera-failed-ar-1440.png, bytes: 324081, sha256: 34074a1d4dd738bf15b181a9b100eeaf4509b07210484eff9409598a2c670519 }
+      - { locale: en, viewport: 1440, state: camera-failed, path: evidence/staff/s6b-camera-failed-en-1440.png, bytes: 335434, sha256: 810a30ca50bf734011e90357e1bd169b41822a282eba1b4c79731266b5d80382 }
+      - { locale: ar, viewport: 768, state: camera-failed, path: evidence/staff/s6b-camera-failed-ar-768.png, bytes: 256898, sha256: 1bcd2629aa5679d82f21209b813c5e9d560d80443c680c8f3b1893a763bafceb }
+      - { locale: en, viewport: 768, state: camera-failed, path: evidence/staff/s6b-camera-failed-en-768.png, bytes: 268552, sha256: 54b4dfbf766e8e567fc9742ef2b805a6bcfb1eb36ffc6b864bb9d04f358e28a6 }
+      - { locale: ar, viewport: 390, state: camera-failed, path: evidence/staff/s6b-camera-failed-ar-390.png, bytes: 138383, sha256: fe2c206c51b84bd16a9853d65c21c0769689af946b9dee8801b6916786603629 }
+      - { locale: en, viewport: 390, state: camera-failed, path: evidence/staff/s6b-camera-failed-en-390.png, bytes: 146780, sha256: c4235c9e7e77b112848fde6b2d31ec8b46487ee1607bc4e58bce3e8df6e3ea95 }
+      - { locale: ar, viewport: 320, state: camera-failed, path: evidence/staff/s6b-camera-failed-ar-320.png, bytes: 120742, sha256: 197e6d1fe0d8b43995172e4e3af12d3e1155084a5c2b471e18790affd33ad0ac }
+      - { locale: en, viewport: 320, state: camera-failed, path: evidence/staff/s6b-camera-failed-en-320.png, bytes: 128906, sha256: 6c7d0961fdd8e48cae2ed7f57afa0e4d597dd0911b09ccb5a83baa9eabccefe0 }
+      - { locale: ar, viewport: 1440, state: combined-trust-failure, path: evidence/staff/s7-trust-failure-ar-1440.png, bytes: 325556, sha256: 9b81465c7bb5121f583abbdf2d246ce51d98c478b3d3397dc68d0ba81cf940db }
+      - { locale: en, viewport: 1440, state: combined-trust-failure, path: evidence/staff/s7-trust-failure-en-1440.png, bytes: 345502, sha256: 11996bd7dab26bd2e28c4f352cb9db532d3da369682610d20801dd2befe8879b }
+      - { locale: ar, viewport: 390, state: combined-trust-failure, path: evidence/staff/s7-trust-failure-ar-390.png, bytes: 140576, sha256: fcb5dfc9265460eb8b4f3b1c9d5c103e990e015d9d765a15e67d2be023e9de40 }
+      - { locale: en, viewport: 390, state: combined-trust-failure, path: evidence/staff/s7-trust-failure-en-390.png, bytes: 153152, sha256: 242b4a8539dedb0e0a538218cd87a62310bb1b83b85951092b312d378a1bcb02 }
+      - { locale: ar, viewport: 200-percent, state: combined-trust-failure, path: evidence/staff/s7-trust-failure-ar-200pct-720.png, bytes: 221535, sha256: 0d52a544f07d4b610631d786da9aaa35221762cfa8bb26497de0f08acca459e8 }
+      - { locale: en, viewport: 200-percent, state: combined-trust-failure, path: evidence/staff/s7-trust-failure-en-200pct-720.png, bytes: 236216, sha256: 69aff5ddcc5119d506d1d2db11bb7bc5bb0af0c0079b1cd68bbd4ed6534ae369 }
     leafExports:
       - { nodeId: RDS-0, locale: ar, viewport: 1440, state: live, path: staff/staff-live-ar-1440.png, bytes: 907162, sha256: f5121e33d453302391d0ba726f1fcfbfe25824c7bd1ccabee75447213e3a097b }
       - { nodeId: RB9-0, locale: en, viewport: 1440, state: live, path: staff/staff-live-en-1440.png, bytes: 913212, sha256: 09d1d4e523c386fe6f989658f9d09be06af6eb224a604597df51ac6af93cc942 }
@@ -185,6 +252,7 @@ surfaces:
     area: "OWNER DAILY ANALYTICS PRODUCTION SET — CURRENT"
     areaId: I89-0
     status: ACCEPTED_PAPER_AUTHORITY
+    approvedDeviationIds: [owner-daily-bounded-truthful-curve]
     paperTokenHash: 3b0faca3
     compositionNote: >-
       Page content follows this family beneath the separately accepted shared Owner navigation.
@@ -192,12 +260,14 @@ surfaces:
     routedCandidateReview: >-
       Coordinator direct Paper comparison passed for shell-plus-panel composition, both locales,
       responsive reflow, loading, failure, no-readings, and scheduled-closed states. Independent
-      rendered review and final human acceptance remain pending.
+      rendered review passed and final human acceptance was granted 2026-09-05 (closure approval
+      record, including the marker-closure review). Completed desktop/mobile canonicals are
+      accepted-mapped and promoted.
     routedCandidateEvidence:
-      - { locale: en, viewport: 1440, state: completed-closed, path: evidence/owner-daily/routed-daily-en-1440.png, bytes: 409258, sha256: c7360703cc52618623ea1f279d8be2eeb121e09bedc8f09d09525cf2f063a0e8 }
-      - { locale: ar, viewport: 1440, state: completed-closed, path: evidence/owner-daily/routed-daily-ar-1440.png, bytes: 399626, sha256: 8f722975eb7934c6a5672fa2973fbeff386fd8642ba17b791c40cf5446c00cf6 }
-      - { locale: en, viewport: 390, state: completed-closed, path: evidence/owner-daily/routed-daily-en-390.png, bytes: 162179, sha256: 47fda3f3987744ef18c150696a35a84ff98ee67080003fc693198dc18e100a73 }
-      - { locale: ar, viewport: 390, state: completed-closed, path: evidence/owner-daily/routed-daily-ar-390.png, bytes: 156964, sha256: 1572c3622b86cdc6f03106163969852c8493a1784fb40fdf39e5621c5ac0b398 }
+      - { locale: en, viewport: 1440, state: completed-closed, path: evidence/owner-daily/routed-daily-en-1440.png, bytes: 350665, sha256: b1f8a0e2e5713b339fe01d1d305de5e7641e7646d507f53b4a0d4f6095e0e787 }
+      - { locale: ar, viewport: 1440, state: completed-closed, path: evidence/owner-daily/routed-daily-ar-1440.png, bytes: 342005, sha256: 936064884879efbe725ec5a26b852121a45e816738e1074ce4ee86ca1a67f258 }
+      - { locale: en, viewport: 390, state: completed-closed, path: evidence/owner-daily/routed-daily-en-390.png, bytes: 149298, sha256: 03c4293bc5ea96408374c08f6b9d299278fe32201ef2ec811659c2fb54cb1989 }
+      - { locale: ar, viewport: 390, state: completed-closed, path: evidence/owner-daily/routed-daily-ar-390.png, bytes: 143207, sha256: 720e5328051c63b7bf38d5f07a81c2e54deff1088781b8bd77de1c110623e35b }
       - { locale: ar, viewport: 1440, state: loading, path: evidence/owner-daily/routed-loading-ar-1440.png, bytes: 202789, sha256: 2fe1b2790397ad8d737dd8f3a0c97f2f27361eeb3ade416e8625d27c2b06f9e3 }
       - { locale: ar, viewport: 1440, state: failure, path: evidence/owner-daily/routed-failure-ar-1440.png, bytes: 215463, sha256: 37b5d32ad15d46322fd7b641d366585d1524169d641491d46726de47e937e993 }
       - { locale: ar, viewport: 1440, state: no-readings, path: evidence/owner-daily/routed-no-readings-ar-1440.png, bytes: 239515, sha256: e9a8dfcf73e6023b97cb3e0c240dba0a88b6b8ba7451cce5c8429a5f6e8cc40c }
@@ -259,17 +329,19 @@ surfaces:
       Coordinator direct Paper comparison passed for shared-shell-plus-panel composition, both
       locales, 320 through 1440 reflow, 200 percent behavior, keyboard interaction, forced colors,
       reduced motion, range validation, export lifecycle, and complete semantic heatmap access.
-      Independent rendered review and final human acceptance remain pending.
+      Independent rendered review passed and final human acceptance was granted 2026-09-05
+      (closure approval record). The surface carries no asserted canonical; orphaned r05 files
+      remain rejected-listed as regression baselines.
     routedCandidateEvidence:
-      - { locale: en, viewport: 1440, state: comparable, path: evidence/owner-reports/owner-history-route-en-desktop-1440x900.png, bytes: 419039, sha256: c38f55c49844f98b167e5e796fa46e45f380643f64e9c398c892ce650990ce94 }
-      - { locale: ar, viewport: 390, state: comparable, path: evidence/owner-reports/owner-history-route-ar-mobile-390x844.png, bytes: 307052, sha256: 40b58f5fe08d7e80326769ee58563a28b71f458828f74c6520d6608567d42d4d }
+      - { locale: en, viewport: 1440, state: comparable, path: evidence/owner-reports/owner-history-route-en-desktop-1440x900.png, bytes: 422502, sha256: 61c81e9111b534c0a143f14399bf36152d1754aaac8608c0f61268d1652ffadc }
+      - { locale: ar, viewport: 390, state: comparable, path: evidence/owner-reports/owner-history-route-ar-mobile-390x844.png, bytes: 309321, sha256: fb0e12231ae83838fc2916ccb667ebb314d0a7f6df3f6e846d061c1476a70a4a }
       - { locale: en, viewport: 390, state: loading, path: evidence/owner-reports/owner-history-loading-route-en-mobile-390x844.png, bytes: 103721, sha256: 877da014722f8236c8ba70a59f44451b9be05d407ba92181012213d6a5f2b4e4 }
       - { locale: en, viewport: 390, state: error, path: evidence/owner-reports/owner-history-error-route-en-mobile-390x844.png, bytes: 98677, sha256: 94b6fe57ab4f29dc90fd0e60026a3795f5200f21e5482305c3092ad27d248c11 }
-      - { locale: en, viewport: 390, state: insufficient-comparison, path: evidence/owner-reports/phase10-reporting-states-en-390x844.png, bytes: 358091, sha256: 07d88e88368f9abda55f69198138f2fd9e4b6eff74c1d00a3681841525f3ea84 }
-      - { locale: en, viewport: 768, state: export-ready, path: evidence/owner-reports/phase10-reporting-export-en-768x1024.png, bytes: 487228, sha256: 039ba837d04eb6a534f790df77359da21b5a9cd06eedef6ff0fe1261a6dc463e }
-      - { locale: ar, viewport: 768, state: accessibility-reflow, path: evidence/owner-reports/phase10-reporting-a11y-reflow-ar-768x1024.png, bytes: 426065, sha256: 5cf8630b21c227bc4e04fe6aa8e0b11d0294aead7e69750d14f48ad2b658d947 }
-      - { locale: en, viewport: 1440, state: comparable, path: evidence/owner-reports/phase10-reporting-en-1440x900.png, bytes: 419039, sha256: c38f55c49844f98b167e5e796fa46e45f380643f64e9c398c892ce650990ce94 }
-      - { locale: ar, viewport: 1440, state: comparable, path: evidence/owner-reports/phase10-reporting-ar-1440x900.png, bytes: 392082, sha256: 15d41efa9719abc770e64c0fa5f281d9c2d599591a3605f46d29d353b12bb5d5 }
+      - { locale: en, viewport: 390, state: insufficient-comparison, path: evidence/owner-reports/phase10-reporting-states-en-390x844.png, bytes: 359531, sha256: e038cc6560f3bc834debd88d94ec1e72e6e9f8064ff28bf39845c575955b5fcd }
+      - { locale: en, viewport: 768, state: export-ready, path: evidence/owner-reports/phase10-reporting-export-en-768x1024.png, bytes: 489409, sha256: c1aadf889a614903fd81339795f6c56e123a4054369328b8a5f04fba5e32fc46 }
+      - { locale: ar, viewport: 768, state: accessibility-reflow, path: evidence/owner-reports/phase10-reporting-a11y-reflow-ar-768x1024.png, bytes: 428097, sha256: 6c5f3e6ac296524c2e72f9c0e9f3fe4059974e81d5a0c49ce3e5231c122e31cd }
+      - { locale: en, viewport: 1440, state: comparable, path: evidence/owner-reports/phase10-reporting-en-1440x900.png, bytes: 422502, sha256: 61c81e9111b534c0a143f14399bf36152d1754aaac8608c0f61268d1652ffadc }
+      - { locale: ar, viewport: 1440, state: comparable, path: evidence/owner-reports/phase10-reporting-ar-1440x900.png, bytes: 394581, sha256: e3ff0fdb7b83f5a6677fca6a6a821ad03e366805b55a1ba21cb62a1bb847896d }
     leafExports:
       - { nodeId: 17ZO-0, locale: en, viewport: 1440, state: comparable, path: owner-reports/owner-reports-desktop-en-1440.png, bytes: 1436427, sha256: d256fbef5dc97da50b25b9dcf01757e8d42227b35eb8ad08f7733b190c4ce246 }
       - { nodeId: 17ZP-0, locale: ar, viewport: 1440, state: comparable, path: owner-reports/owner-reports-desktop-ar-1440.png, bytes: 1416397, sha256: c4601fef155b9af061e10c13230e1c0772e13024889d20b38c9b739bd3c02644 }
@@ -304,8 +376,9 @@ surfaces:
       Coordinator direct Paper comparison passed for shared-shell-plus-panel composition, both
       locales, 360 through 1440 reflow, 200 percent behavior, keyboard interaction, forced colors,
       reduced motion, all typed governance refusals, one-time credential reveal, and the complete
-      owner governance action lifecycle. Independent rendered review and final human acceptance
-      remain pending.
+      owner governance action lifecycle. Independent rendered review passed and final human
+      acceptance was granted 2026-09-05 (closure approval record). The surface carries no
+      asserted canonical; orphaned r05 files remain rejected-listed as regression baselines.
     routedCandidateEvidence:
       - { locale: ar, viewport: 1440, state: live, path: evidence/owner-access/owner-access-route-ar-desktop-1440x900.png, bytes: 269647, sha256: ecf2c634c22571822a703a9284446cf927f7f5278c4fd0f96e33c8895fd57c81 }
       - { locale: en, viewport: 390, state: live, path: evidence/owner-access/owner-access-route-en-mobile-390x844.png, bytes: 156451, sha256: bbea59b76a1da59e37ca61a2a33a47da99bfd21488a340b3907756c4a3b1e460 }
@@ -343,8 +416,9 @@ surfaces:
       Coordinator direct Paper comparison passed for the approved shared-shell successor,
       bilingual desktop/mobile composition, 320 through 1440 interpolation, 200 percent reflow,
       keyboard-scrollable records, filter transport, paging, forced colors, reduced motion, axe,
-      and explicit LTR isolation of signed values inside Arabic rows. The rejected r05 screenshot
-      assertion remains intentionally unpromoted pending final human contact-sheet acceptance.
+      and explicit LTR isolation of signed values inside Arabic rows. The populated
+      desktop/mobile screenshot assertions were promoted after final human contact-sheet
+      acceptance (2026-09-05) and are accepted-mapped.
     routedCandidateEvidence:
       - { locale: en, viewport: 1440, state: populated, path: evidence/owner-activity-log/owner-audit-populated-en-1440x900.png, bytes: 292743, sha256: 3a309f947d1c73c4cde2ae8c6a70d2c437a4276e1d48d824e3b7b1c229fe83dc }
       - { locale: ar, viewport: 1440, state: populated, path: evidence/owner-activity-log/owner-audit-populated-ar-1440x900.png, bytes: 278888, sha256: 514c08072c3717699e4a414c88e14ebbacdca8516bf1ee0ef2e255aa9e067feb }
@@ -382,8 +456,8 @@ surfaces:
       stacked-record successor, full shared shell plus active panel, bilingual 360 through 1440
       composition, 200 percent reflow, keyboard navigation, forced colors, reduced motion, axe,
       complete runtime-backed records, and explicit LTR override of Arabic duration values. The
-      rejected r05 screenshot assertions remain intentionally unpromoted pending final human
-      contact-sheet acceptance.
+      populated desktop/mobile screenshot assertions were promoted after final human
+      contact-sheet acceptance (2026-09-05) and are accepted-mapped.
     routedCandidateEvidence:
       - { locale: en, viewport: 1440, state: populated, path: evidence/owner-system-status/owner-health-populated-en-1440x900.png, bytes: 402749, sha256: 085fc4e32863c72023070bd19fb3fca2ea113733bd99a5aad8964866c10e9f55 }
       - { locale: ar, viewport: 1440, state: populated, path: evidence/owner-system-status/owner-health-populated-ar-1440x900.png, bytes: 408729, sha256: 915cf8ca36c7d8348f72ca5e82351136414dd3145a73684b0daaa5e67764232b }
@@ -421,8 +495,9 @@ surfaces:
       conformant. The 62px desktop height delta is fully accounted for by the approved shared
       Owner navigation. Bilingual desktop/mobile layout, all form states, 320 through 1440
       interpolation, 200 percent reflow, keyboard order, draft retention, forced colors, and axe
-      pass without redesign. Rejected r05 screenshot assertions remain intentionally unpromoted
-      pending final human contact-sheet acceptance.
+      pass without redesign. Clean/dirty screenshot assertions were promoted after final human
+      contact-sheet acceptance (2026-09-05) and are accepted-mapped; loading/error assertions
+      are promoted for regression.
     routedCandidateEvidence:
       - { locale: en, viewport: 1440, state: clean, path: evidence/owner-settings/owner-settings-clean-en-desktop-1440.png, bytes: 522981, sha256: b2cc89a46b40a7517b2ea7a0eac87613908adf3225e052ec92cceac00171adf1 }
       - { locale: en, viewport: 1440, state: dirty, path: evidence/owner-settings/owner-settings-dirty-en-desktop-1440.png, bytes: 525352, sha256: 0c9b61dbab38da7c1a2a6a0db002c958f7f857179d6c1bc0b31f1140b68aee18 }
@@ -450,17 +525,36 @@ surfaces:
       - { nodeId: 1FKV-0, locale: bilingual, viewport: state, state: atomic-failure, path: owner-settings/owner-settings-atomic-failure.png, bytes: 45247, sha256: d34c228d3cbb119fa75a32db098825ce92b6f56edd64a1694e4d17323ba52dfb }
 
 acceptancePolicy:
-  paperExportsPending: "All accepted route leaf frames other than the Owner shared navigation must be exported and hashed before this manifest may become CURRENT."
-  routedEvidencePending: "Every registered canonical case must carry a full-route routed screenshot hash and approval record before acceptance."
+  paperExportsPending: "Accepted Paper leaf exports are present and hash-verified; final human acceptance was granted 2026-09-05 and the accepted canonical promotion is recorded below."
+  routedEvidencePending: "Every accepted canonical case carries a full-route routed screenshot hash and the human approval record docs/phase-records/handoffs/full-route-paper-fidelity/20260905-human-visual-approval.md."
   captureReviewIsVerdict: false
   baselineMayReplacePaper: false
 
 rejectedRoutedBaseline:
-  status: REJECTED_R05
+  status: SUPERSEDED_BY_ACCEPTED_CASES
   path: tests/browser/__screenshots__
   fileCount: 41
-  treeSha256: 542c5609c477ed6398f9e4b9f7cdfa2646939c1c9301fa2820538de520972dc9
+  treeSha256: ae99b9cf428aacef0b95b934a6eb370136b18f4923662c0886c23e8b84ef1a8c
   rejectionRecord: docs/phase-records/handoffs/fidelity-integration-closure/20260902-193655-fidelity_closure_r05-human-visual-rejection.md
+  promotionRecord: docs/phase-records/handoffs/full-route-paper-fidelity/20260905-fidelity-closure.md
+  promotionRun: fidelity_promotion_r01
   disposition: >-
-    Hash-frozen provenance only. These implementation-generated screenshots cannot satisfy any
-    current Paper-conformance case and may be replaced only after full-route rendered approval.
+    The REJECTED_R05 tree (frozen at 542c5609…) is preserved as history through
+    the unchanged rejectionRecord and the original per-file provenance. Nineteen
+    asserted snapshots were promoted from the human-approved candidate; sixteen
+    are accepted-mapped in tests/browser/visual-authority-cases.mjs. Promoted
+    files without an honest case/leaf counterpart and untouched orphans remain
+    rejected-listed by path and are regression baselines only, never Paper
+    authority.
+
+finalReviewPackage:
+  status: PROMOTED_ACCEPTED
+  index: visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/EVIDENCE_INDEX.json
+  gallery: visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/index.html
+  independentReview: docs/phase-records/handoffs/full-route-paper-fidelity/20260904-final-independent-reviews.md
+  browserRun: fidelity_resume_final_routes_r01
+  browserTests: 133
+  canonicalBaselineDisposition: PROMOTED_AFTER_HUMAN_ACCEPTANCE
+  humanApproval: docs/phase-records/handoffs/full-route-paper-fidelity/20260905-human-visual-approval.md
+  markerClosureReview: visual-direction-gate/approved/paper-route-authority-20260902/evidence/owner-daily/review-20260905-marker-closure/index.html
+  promotionRun: fidelity_promotion_r01

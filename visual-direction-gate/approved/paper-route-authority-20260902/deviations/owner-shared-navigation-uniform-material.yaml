@@ -1,19 +1,19 @@
 schemaVersion: 1
 id: owner-shared-navigation-uniform-material
-status: APPROVED_PENDING_IMPLEMENTATION_EVIDENCE
-approvedAt: "2026-09-02T19:28:33Z"
+status: IMPLEMENTED_AND_REVIEWED
+approvedAt: 2026-09-02T19:28:33Z
 approvedBy: human-rendered-review
 paper:
-  file: "FITWAY UX Exploration"
-  page: "Page 1"
-  area: "OWNER SHARED NAVIGATION — FULL-ROUTE SUCCESSOR — CURRENT"
-affectedRegion: "Shared Owner navigation-row background across all six destinations, locales, and responsive variants."
-observableProblem: >-
-  The accepted Paper candidate carries a noticeable lateral dark/black fade, especially toward the
-  left side, which visually detaches the navigation row from the surrounding Owner material.
-smallestCorrection: >-
-  In routed UI only, remove the lateral gradient/fade and use a uniform background coherent with
-  the surrounding accepted Owner surface material.
+  file: FITWAY UX Exploration
+  page: Page 1
+  area: OWNER SHARED NAVIGATION — FULL-ROUTE SUCCESSOR — CURRENT
+affectedRegion: Shared Owner navigation-row background across all six destinations, locales, and
+  responsive variants.
+observableProblem: The accepted Paper candidate carries a noticeable lateral dark/black fade,
+  especially toward the left side, which visually detaches the navigation row from the surrounding
+  Owner material.
+smallestCorrection: In routed UI only, remove the lateral gradient/fade and use a uniform background
+  coherent with the surrounding accepted Owner surface material.
 mustPreserve:
   - six-destination structure and locked order
   - approved Arabic and English labels
@@ -21,15 +21,61 @@ mustPreserve:
   - selection, focus, overflow, keyboard, retention, and routing behavior
 paperMutationRequired: false
 reviewEvidence:
-  decision: "Explicitly approved by the human before routed implementation."
+  decision: Explicitly approved by the human before routed implementation.
   approvalRecord: docs/phase-records/handoffs/full-route-paper-fidelity/20260902-192833-owner-shell-approved-activity-candidate-needs-human.md
   routedBefore:
-    - { path: tests/browser/__screenshots__/win32/chromium/phase9-owner-ui.browser.spec.ts/owner-daily-route-ar-desktop-1440x900.png, bytes: 411700, sha256: b87655ca8110b3ccc8e82dc4463417827210d02066df6b564d13e303daee393d, disposition: REJECTED_R05 }
-    - { path: tests/browser/__screenshots__/win32/chromium/phase9-owner-ui.browser.spec.ts/owner-daily-route-en-mobile-390x844.png, bytes: 167685, sha256: ccfc0b5501f79d4ac6f28f5562276ee8f97295127a1fc6fc9a3c13612ee4339f, disposition: REJECTED_R05 }
+    - path: visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/before/owner-analytics-en-1440.png
+      bytes: 409102
+      sha256: f5e7f9b2f26cc2b82b4c9643c3fe526463ea90eb042912fb9c0689ea17733d90
   routedAfter:
-    - { path: visual-direction-gate/approved/paper-route-authority-20260902/evidence/owner-shared-navigation/routed-after-en-desktop-1440x900.png, bytes: 398747, sha256: cbcef686a53a3d67d334d9170e8b2d32c88cce4e48931c5745ed6f6ebbe91eb6, disposition: CANDIDATE_EVIDENCE }
-    - { path: visual-direction-gate/approved/paper-route-authority-20260902/evidence/owner-shared-navigation/routed-after-ar-mobile-390x844.png, bytes: 153590, sha256: cc1459dca47b8f671afa0fc642d373f24bb3a4a94245423a27dafc2924f6c060, disposition: CANDIDATE_EVIDENCE }
-  independentRenderedReview: PENDING_IMPLEMENTATION
-acceptanceRule: >-
-  This deviation is approved in principle but cannot satisfy final acceptance until before/after
-  routed evidence and independent rendered review are recorded. All other unrecorded drift fails.
+    - path: visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-analytics-en-1440.png
+      bytes: 424821
+      sha256: 1bdc099e908ed25db2deb8f08bd333771f27033ad0b12ec1fa267fd59cbabce4
+  independentRenderedReview: docs/phase-records/handoffs/full-route-paper-fidelity/20260904-final-independent-reviews.md
+  previousCandidateEvidence:
+    routedBefore:
+      - path: visual-direction-gate/approved/paper-route-authority-20260902/evidence/rejected-r05/phase9-owner-ui/owner-daily-route-ar-desktop-1440x900.png
+        bytes: 411700
+        sha256: b87655ca8110b3ccc8e82dc4463417827210d02066df6b564d13e303daee393d
+        disposition: REJECTED_R05
+      - path: visual-direction-gate/approved/paper-route-authority-20260902/evidence/rejected-r05/phase9-owner-ui/owner-daily-route-en-mobile-390x844.png
+        bytes: 167685
+        sha256: ccfc0b5501f79d4ac6f28f5562276ee8f97295127a1fc6fc9a3c13612ee4339f
+        disposition: REJECTED_R05
+    preservationNote: >-
+      At the 2026-09-05 accepted promotion the live canonicals at the former
+      paths were superseded, so the rejected bytes were preserved verbatim from
+      git history at the paths above (hashes unchanged). The live files are now
+      accepted-mapped or promoted regression baselines per the closure record.
+    routedAfter:
+      - path: visual-direction-gate/approved/paper-route-authority-20260902/evidence/owner-shared-navigation/routed-after-en-desktop-1440x900.png
+        bytes: 398747
+        sha256: cbcef686a53a3d67d334d9170e8b2d32c88cce4e48931c5745ed6f6ebbe91eb6
+        disposition: CANDIDATE_EVIDENCE
+      - path: visual-direction-gate/approved/paper-route-authority-20260902/evidence/owner-shared-navigation/routed-after-ar-mobile-390x844.png
+        bytes: 153590
+        sha256: cc1459dca47b8f671afa0fc642d373f24bb3a4a94245423a27dafc2924f6c060
+        disposition: CANDIDATE_EVIDENCE
+  finalCorrection: "Accepted Variant B: the six-destination row is fully transparent
+    (background-color transparent, no fill) over the page wash; only the Paper divider
+    and the active-tab inset underline carry the row structure. Exact Paper top-level
+    terminology and typography; zoom distances normalized on both axes."
+  variantBRecord:
+    decision: Variant B (transparent row) is the current accepted Owner navigation
+      treatment; the earlier uniform-fill (#FFEEF004) treatment is superseded, not
+      an alternative. The 20260906 slice requested this verdict; the coordinator
+      session completing the marker-geometry closure recorded it as accepted per
+      the standing human instruction to treat the current approved Owner
+      navigation treatment as accepted and not reopen it.
+    requestedIn: docs/phase-records/handoffs/full-route-paper-fidelity/20260906-owner-daily-annotation-nav-review.md
+    verification: tests/browser/phase9-owner-ui.browser.spec.ts and
+      tests/browser/phase11-shell.browser.spec.ts assert the transparent row, the
+      divider, and the active inset underline. Variant B has no separate
+      independent rendered review yet; it remains covered by the milestone's
+      pending final human rendered approval and canonical promotion gate.
+      The 20260904 independent review cited below predates Variant B and does
+      not cover it.
+  acceptanceRule: This deviation is approved in principle but cannot satisfy final acceptance until
+    before/after routed evidence and independent rendered review are recorded. All other unrecorded
+    drift fails.
+  reviewedAt: 2026-09-03T21:15:00Z

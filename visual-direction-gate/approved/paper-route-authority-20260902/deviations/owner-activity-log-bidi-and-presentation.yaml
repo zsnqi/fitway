@@ -1,24 +1,22 @@
 schemaVersion: 1
 id: owner-activity-log-bidi-and-presentation
-status: IMPLEMENTED_PENDING_INDEPENDENT_REVIEW
-approvedAt: "2026-09-02T20:21:48Z"
+status: IMPLEMENTED_AND_REVIEWED
+approvedAt: 2026-09-02T20:21:48Z
 approvedBy: human-rendered-review
-implementedAt: "2026-09-03T14:04:37Z"
+implementedAt: 2026-09-03T14:04:37Z
 implementedBy: coordinator
 paper:
-  file: "FITWAY UX Exploration"
-  page: "Page 1"
-  area: "OWNER ACTIVITY LOG — SHARED-SHELL SUCCESSOR — CURRENT"
-affectedRegion: >-
-  Activity Log numeric values, mixed-direction runs, control edges, alignment, spacing, and
-  typography where the accepted Paper render contains an obvious presentation defect.
-observableProblem: >-
-  The standalone negative value -3 and similar mixed numeric/RTL details can render with awkward
-  sign placement or alignment. Minor control-edge, spacing, and typographic defects may also be
-  evident when the composition is translated to responsive runtime controls.
-smallestCorrection: >-
-  Use explicit bidi isolation and stable numeric formatting, then make only the smallest local
-  spacing, alignment, control-edge, or typography correction required for a coherent routed render.
+  file: FITWAY UX Exploration
+  page: Page 1
+  area: OWNER ACTIVITY LOG — SHARED-SHELL SUCCESSOR — CURRENT
+affectedRegion: Activity Log numeric values, mixed-direction runs, control edges, alignment,
+  spacing, and typography where the accepted Paper render contains an obvious presentation defect.
+observableProblem: The standalone negative value -3 and similar mixed numeric/RTL details can render
+  with awkward sign placement or alignment. Minor control-edge, spacing, and typographic defects may
+  also be evident when the composition is translated to responsive runtime controls.
+smallestCorrection: Use explicit bidi isolation and stable numeric formatting, then make only the
+  smallest local spacing, alignment, control-edge, or typography correction required for a coherent
+  routed render.
 mustPreserve:
   - approved Activity Log composition, hierarchy, density, and visual language
   - filter, record, pagination, loading, failure/retry, and no-match behavior
@@ -26,16 +24,27 @@ mustPreserve:
   - shared Owner shell structure and navigation behavior
 paperMutationRequired: false
 reviewEvidence:
-  decision: "Explicitly approved by the human with the Activity Log successor."
+  decision: Explicitly approved by the human with the Activity Log successor.
   approvalRecord: docs/phase-records/handoffs/full-route-paper-fidelity/20260902-202148-activity-log-approved.md
-  routedBefore: output/review/fidelity_activity_before_r01
-  routedAfter: visual-direction-gate/approved/paper-route-authority-20260902/evidence/owner-activity-log
-  implementationRegressionEvidence: >-
-    Requested negative values render in explicit dir=ltr bidi isolates; component and routed tests
-    assert the Arabic row presents -9 with its sign on the leading edge rather than reproducing the
-    awkward sign placement visible in the Paper fixture.
-  independentRenderedReview: PENDING_FINAL_MILESTONE_REVIEW
-acceptanceRule: >-
-  This deviation authorizes only evident local presentation corrections. Each meaningful routed
-  difference still requires before/after evidence and independent rendered review; broad redesign
-  or semantic change remains prohibited.
+  routedBefore:
+    - path: visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/before/owner-audit-populated-ar-1440x900.png
+      bytes: 277160
+      sha256: cc032574dc7e97bbb0236dc7337940625eb69008eff872d018cb83e4c980ac6d
+  routedAfter:
+    - path: visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-audit-populated-ar-1440x900.png
+      bytes: 292447
+      sha256: 48fcb45e9ceef6495312847bbbcd2009d33c96c11aed56a747f0326d04ea7746
+  implementationRegressionEvidence: Requested negative values render in explicit dir=ltr bidi
+    isolates; component and routed tests assert the Arabic row presents -9 with its sign on the
+    leading edge rather than reproducing the awkward sign placement visible in the Paper fixture.
+  independentRenderedReview: docs/phase-records/handoffs/full-route-paper-fidelity/20260904-final-independent-reviews.md
+  previousCandidateEvidence:
+    routedBefore: output/review/fidelity_activity_before_r01
+    routedAfter: visual-direction-gate/approved/paper-route-authority-20260902/evidence/owner-activity-log
+  responsiveJustification: Single-column mobile filters preserve every full native select option, as
+    measured by findFilterSelectLabelOverruns; action group follows logical start and signed values
+    use explicit LTR isolation.
+acceptanceRule: This deviation authorizes only evident local presentation corrections. Each
+  meaningful routed difference still requires before/after evidence and independent rendered review;
+  broad redesign or semantic change remains prohibited.
+reviewedAt: 2026-09-03T21:15:00Z

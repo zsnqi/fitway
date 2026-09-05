@@ -1,0 +1,43 @@
+schemaVersion: 1
+id: staff-camera-failure-semantic-distinction
+status: IMPLEMENTED_AND_REVIEWED
+implementedAt: 2026-09-03T16:35:00Z
+implementedBy: coordinator
+paper:
+  file: FITWAY UX Exploration
+  page: Page 1
+  area: STAFF MONITORING PRODUCTION SET — CURRENT + SELF-CONTAINED AUTHORITY REPAIR CANDIDATE
+affectedRegion: Staff camera-health value, marker, and secondary status tone.
+observableProblem: Paper represents the degraded camera as Unstable but does not separately compose
+  the stronger server-owned failed state. Reusing Unstable and delayed severity for failed would
+  collapse two frozen Product/Spec meanings and understate an operational failure.
+smallestCorrection: Preserve Paper's Unstable wording and delayed tone for degraded. For failed
+  only, render the localized Failed value with the existing error marker, danger text treatment, and
+  error-toned last-seen detail; retain the same cell geometry and board composition.
+mustPreserve:
+  - server-owned degraded and failed values as distinct states
+  - all accepted Staff board layout, density, copy, and interaction
+  - occupancy truth independent of camera health
+  - bilingual wording and non-color status indication
+paperMutationRequired: false
+reviewEvidence:
+  decision: SPEC.md semantics take precedence for the Paper-unrepresented stronger runtime state.
+  approvalRecord: SPEC.md
+  routedBefore:
+    - path: visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/before/s6b-camera-failed-ar-390.png
+      bytes: 138383
+      sha256: fe2c206c51b84bd16a9853d65c21c0769689af946b9dee8801b6916786603629
+  routedAfter:
+    - path: visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/s6b-camera-failed-ar-390.png
+      bytes: 140208
+      sha256: 0d76787c89cc20a25c3531df02d09c3efb801afe3d4c6877b63472c414733b49
+  implementationRegressionEvidence: apps/web/src/components/staff/operational-snapshot-view.test.tsx
+  independentRenderedReview: docs/phase-records/handoffs/full-route-paper-fidelity/20260904-final-independent-reviews.md
+  previousCandidateEvidence:
+    routedBefore: git:e20453d
+    routedAfter: visual-direction-gate/approved/paper-route-authority-20260902/evidence/staff
+  finalCorrection: Failed camera status row and notice agree in wording and error severity, distinct
+    from amber degraded state.
+acceptanceRule: This deviation authorizes only the distinct failed-camera semantic state. It cannot
+  recolor the degraded state, alter occupancy values, or excuse any unrelated Staff visual drift.
+reviewedAt: 2026-09-03T21:15:00Z

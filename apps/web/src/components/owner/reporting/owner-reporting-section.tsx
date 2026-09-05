@@ -2,10 +2,12 @@ import { Button } from "@fitway/ui/components/button";
 import { type FormEvent, useId, useState } from "react";
 
 import {
+	REPORTING_DEFAULT_WINDOW_DAYS,
 	REPORTING_QUERY_MAX_RANGE_DAYS,
 	type ReportingRangeSelection,
 	rangeProblem,
 	useOwnerReporting,
+	windowEndingOn,
 } from "@/hooks/use-owner-reporting";
 import { formatDate } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
@@ -99,6 +101,7 @@ export function OwnerReportingSection({
 		return null;
 	}
 
+	const fallback = windowEndingOn(anchor, REPORTING_DEFAULT_WINDOW_DAYS);
 	const editing = draft ?? current;
 
 	const problem = rangeProblemMessage(
@@ -117,6 +120,11 @@ export function OwnerReportingSection({
 		// beside the field stays, and the answer already on screen stays with it.
 		if (problem) return;
 		setApplied(editing);
+	}
+
+	function restoreDefault() {
+		setDraft(fallback);
+		setApplied(fallback);
 	}
 
 	const heatmap = reporting.heatmap.data;
@@ -201,6 +209,13 @@ export function OwnerReportingSection({
 							<div className="owner-reporting-range__actions">
 								<Button type="submit" disabled={problem !== null}>
 									{messages.apply}
+								</Button>
+								<Button
+									type="button"
+									variant="outline"
+									onClick={restoreDefault}
+								>
+									{messages.restoreDefault}
 								</Button>
 							</div>
 						</div>

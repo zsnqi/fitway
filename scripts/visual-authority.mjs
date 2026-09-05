@@ -4,6 +4,9 @@ import path from "node:path";
 import { parse as parseYaml } from "yaml";
 import {
 	r05RejectedCanonicalArtifacts,
+	requiredPaperCoverage,
+	requiredRuntimeCoverage,
+	surfaceAuthorities,
 	visualAuthorityCases,
 } from "../tests/browser/visual-authority-cases.mjs";
 
@@ -38,6 +41,15 @@ export function verifyByteRecord(record, bytes, label = "artifact") {
 	}
 	if (bytes.byteLength !== record.bytes) {
 		fail(`${label} byte count changed: ${record.path}`);
+	}
+	if (sha256(bytes) !== record.sha256) {
+		fail(`${label} SHA-256 changed: ${record.path}`);
+	}
+}
+
+export function verifyShaRecord(record, bytes, label = "artifact") {
+	if (!record?.path || !record.sha256) {
+		fail(`${label} is missing path or sha256`);
 	}
 	if (sha256(bytes) !== record.sha256) {
 		fail(`${label} SHA-256 changed: ${record.path}`);
@@ -113,10 +125,15 @@ export function validateAuthorityRegistry({
 	canonicalArtifacts,
 	rejectedArtifacts,
 	deviations,
+	requiredCoverage = [],
+	availableEvidencePaths = [],
 }) {
-	if (manifest.schemaVersion !== 1 || manifest.status !== "IN_PROGRESS") {
+	if (
+		manifest.schemaVersion !== 1 ||
+		!["IN_PROGRESS", "ACCEPTED_CURRENT"].includes(manifest.status)
+	) {
 		fail(
-			"Route visual-authority manifest must be schema 1 and IN_PROGRESS until final approval",
+			"Route visual-authority manifest must be schema 1 and either IN_PROGRESS or ACCEPTED_CURRENT",
 		);
 	}
 	if (manifest.acceptancePolicy?.captureReviewIsVerdict !== false) {
@@ -128,6 +145,27 @@ export function validateAuthorityRegistry({
 		fail("A routed baseline may not replace Paper as initial visual authority");
 	}
 
+	const evidencePaths = new Set(availableEvidencePaths);
+	const requireEvidence = (value, label) => {
+		const records = Array.isArray(value) ? value : [value];
+		if (!records.length) fail(`${label} is missing evidence`);
+		for (const record of records) {
+			const evidencePath = typeof record === "string" ? record : record?.path;
+			if (
+				!evidencePath ||
+				/PENDING/i.test(evidencePath) ||
+				!evidencePaths.has(evidencePath)
+			)
+				fail(`${label} has unresolved evidence`);
+		}
+	};
+	if (
+		manifest.status === "ACCEPTED_CURRENT" &&
+		(!cases.length || cases.some((entry) => entry.status !== "ACCEPTED"))
+	)
+		fail(
+			"Final visual authority requires every registered case to be ACCEPTED",
+		);
 	const deviationById = new Map(
 		deviations.map((record) => [record.id, record]),
 	);
@@ -167,7 +205,20 @@ export function validateAuthorityRegistry({
 				);
 			}
 		}
+		if (!["PLANNED", "ACCEPTED"].includes(authorityCase.status))
+			fail(`${authorityCase.id} has an unsupported status`);
+		if (
+			!["paper", "runtime-interpolation"].includes(authorityCase.comparisonMode)
+		)
+			fail(`${authorityCase.id} has an unsupported comparison mode`);
 		if (authorityCase.status !== "ACCEPTED") continue;
+		const surface = manifest.surfaces?.[authorityCase.surface];
+		if (
+			!surface ||
+			authorityCase.paperReference.area !==
+				surfaceAuthorities[authorityCase.surface]
+		)
+			fail(`${authorityCase.id} has an unregistered Paper family`);
 
 		if (authorityCase.comparisonMode === "paper") {
 			assertNonempty(
@@ -177,6 +228,20 @@ export function validateAuthorityRegistry({
 			assertNonempty(
 				authorityCase.paperReference.leafExportSha256,
 				`${authorityCase.id}.paperReference.leafExportSha256`,
+			);
+		}
+		if (authorityCase.comparisonMode === "paper") {
+			const matchedLeaf = collectLeafExports(surface).some(
+				({ record }) =>
+					record.path === authorityCase.paperReference.leafExportPath &&
+					record.sha256 === authorityCase.paperReference.leafExportSha256,
+			);
+			if (!matchedLeaf)
+				fail(`${authorityCase.id} has an unregistered Paper export or hash`);
+		} else {
+			requireEvidence(
+				authorityCase.runtimeReviewRecord,
+				`${authorityCase.id}.runtimeReviewRecord`,
 			);
 		}
 		if (authorityCase.routedArtifact?.kind !== "canonical") {
@@ -193,6 +258,10 @@ export function validateAuthorityRegistry({
 			`${authorityCase.id}.routedArtifact.sha256`,
 		);
 		assertNonempty(
+			authorityCase.approvalRecord,
+			`${authorityCase.id}.approvalRecord`,
+		);
+		requireEvidence(
 			authorityCase.approvalRecord,
 			`${authorityCase.id}.approvalRecord`,
 		);
@@ -222,8 +291,29 @@ export function validateAuthorityRegistry({
 				"independentRenderedReview",
 			]) {
 				const value = deviation.reviewEvidence?.[evidence];
-				if (!value || value === "PENDING_IMPLEMENTATION") {
-					fail(`${deviationId} is missing ${evidence}`);
+				requireEvidence(value, `${deviationId}.${evidence}`);
+			}
+		}
+	}
+
+	for (const requirement of requiredCoverage) {
+		for (const locale of ["ar", "en"]) {
+			for (const viewport of requirement.viewports) {
+				const match = cases.some(
+					(authorityCase) =>
+						authorityCase.surface === requirement.surface &&
+						authorityCase.state === requirement.state &&
+						authorityCase.locale === locale &&
+						authorityCase.comparisonMode ===
+							(requirement.comparisonMode ?? "paper") &&
+						authorityCase.viewport?.width === viewport.width &&
+						authorityCase.viewport?.height === viewport.height &&
+						(authorityCase.viewport?.zoom ?? 1) === (viewport.zoom ?? 1),
+				);
+				if (!match) {
+					fail(
+						`Required route visual coverage is missing: ${requirement.surface}/${requirement.state}/${locale}/${viewport.width}x${viewport.height}${viewport.zoom ? `@${viewport.zoom}x` : ""}`,
+					);
 				}
 			}
 		}
@@ -318,13 +408,57 @@ export async function verifyVisualAuthorityRepository(root) {
 		fail(`Rejected routed baseline tree SHA-256 changed: ${baseline.path}`);
 	}
 
+	const availableEvidencePaths = [];
+	const readEvidence = async (value) => {
+		for (const record of Array.isArray(value) ? value : [value]) {
+			const evidencePath = typeof record === "string" ? record : record?.path;
+			if (!evidencePath || /PENDING/i.test(evidencePath))
+				fail("Accepted evidence is missing or pending");
+			const bytes = await readFile(repositoryPath(root, evidencePath));
+			if (!bytes.length) fail(`Empty acceptance evidence: ${evidencePath}`);
+			if (typeof record === "object")
+				verifyByteRecord(record, bytes, evidencePath);
+			availableEvidencePaths.push(evidencePath);
+		}
+	};
+	for (const authorityCase of visualAuthorityCases.filter(
+		(entry) => entry.status === "ACCEPTED",
+	)) {
+		await readEvidence(authorityCase.approvalRecord);
+		if (authorityCase.comparisonMode === "runtime-interpolation")
+			await readEvidence(authorityCase.runtimeReviewRecord);
+		for (const id of authorityCase.approvedDeviationIds ?? []) {
+			const deviation = deviations.find((entry) => entry.id === id);
+			for (const field of [
+				"routedBefore",
+				"routedAfter",
+				"independentRenderedReview",
+			])
+				await readEvidence(deviation?.reviewEvidence?.[field]);
+		}
+	}
 	validateAuthorityRegistry({
+		availableEvidencePaths,
 		manifest,
 		cases: visualAuthorityCases,
 		canonicalArtifacts: screenshotFiles.map((file) => file.relative),
 		rejectedArtifacts: r05RejectedCanonicalArtifacts,
 		deviations,
+		requiredCoverage: [...requiredPaperCoverage, ...requiredRuntimeCoverage],
 	});
+	for (const authorityCase of visualAuthorityCases) {
+		if (authorityCase.status !== "ACCEPTED") continue;
+		const relativeArtifactPath = path.posix.join(
+			baseline.path.replaceAll("\\", "/"),
+			authorityCase.routedArtifact.path,
+		);
+		const bytes = await readFile(repositoryPath(root, relativeArtifactPath));
+		verifyShaRecord(
+			authorityCase.routedArtifact,
+			bytes,
+			`Accepted routed artifact ${authorityCase.id}`,
+		);
+	}
 	return {
 		caseCount: visualAuthorityCases.length,
 		paperExportCount: collectLeafExports(manifest.surfaces).length,

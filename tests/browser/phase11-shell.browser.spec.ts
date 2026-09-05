@@ -296,7 +296,7 @@ test("canonical desktop Arabic and mobile English shell compositions match", asy
 	);
 });
 
-test("shared Owner navigation keeps the approved labels, uniform material, and selected reveal", async ({
+test("shared Owner navigation keeps the approved labels, transparent material, and selected reveal", async ({
 	page,
 }) => {
 	await mockOwnerAnalytics(page);
@@ -326,6 +326,9 @@ test("shared Owner navigation keeps the approved labels, uniform material, and s
 			name: locale === "ar" ? "أقسام الإدارة" : "Management sections",
 		});
 		await expect(tablist.getByRole("tab")).toHaveText(expected[locale]);
+		await expect(page.locator(".owner-nav__link")).toHaveText(
+			locale === "ar" ? ["المراقبة", "الإدارة"] : ["Monitoring", "Management"],
+		);
 
 		for (const viewport of [
 			{ width: 1440, height: 900 },
@@ -361,7 +364,11 @@ test("shared Owner navigation keeps the approved labels, uniform material, and s
 				};
 			}, viewport.width);
 			expect(geometry.backgroundImage).toBe("none");
-			expect(geometry.backgroundColor).toBe("rgb(16, 11, 14)");
+			// Approved Variant B: the six-destination row stays fully
+			// transparent over the page wash (the earlier uniform
+			// #FFEEF004 fill is superseded); only the Paper divider and the
+			// active-tab underline carry the row structure.
+			expect(geometry.backgroundColor).toBe("rgba(0, 0, 0, 0)");
 			expect(geometry.row.height).toBe(viewport.width <= 900 ? 46 : 48);
 			expect(geometry.active).not.toBeNull();
 			if (geometry.active) {
@@ -377,8 +384,64 @@ test("shared Owner navigation keeps the approved labels, uniform material, and s
 			} else {
 				expect(geometry.scrollWidth).toBe(geometry.clientWidth);
 			}
+			if (viewport.width === 320) {
+				const scrollBeforeMutation = await page.evaluate(() => {
+					window.scrollTo(0, document.documentElement.scrollHeight);
+					return window.scrollY;
+				});
+				await page
+					.locator('[role="tabpanel"]:not([hidden])')
+					.evaluate((panel) => {
+						const probe = document.createElement("span");
+						probe.hidden = true;
+						panel.append(probe);
+						probe.remove();
+					});
+				await page.evaluate(
+					() =>
+						new Promise((resolve) =>
+							requestAnimationFrame(() => resolve(null)),
+						),
+				);
+				expect(await page.evaluate(() => window.scrollY)).toBe(
+					scrollBeforeMutation,
+				);
+			}
 			await expectNoOverflow(page);
 		}
+	}
+});
+
+test("selected middle tab stays visible when zoom and viewport resize change", async ({
+	page,
+}) => {
+	await mockOwnerAnalytics(page);
+	await page.goto("/admin");
+	for (const locale of ["en", "ar"] as const) {
+		await page.evaluate(() => {
+			document.documentElement.style.zoom = "1";
+		});
+		await page.setViewportSize({ width: 1440, height: 900 });
+		await setLocale(page, locale);
+		const row = page.getByRole("tablist");
+		const activity = row.locator('[data-owner-section="audit"]');
+		await activity.click();
+		await page.evaluate(() => {
+			document.documentElement.style.zoom = "2";
+		});
+		await page.setViewportSize({ width: 768, height: 900 });
+		await expect
+			.poll(async () => {
+				const bounds = await row.boundingBox();
+				const tab = await activity.boundingBox();
+				return (
+					!!bounds &&
+					!!tab &&
+					tab.x >= bounds.x - 1 &&
+					tab.x + tab.width <= bounds.x + bounds.width + 1
+				);
+			})
+			.toBe(true);
 	}
 });
 

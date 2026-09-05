@@ -220,7 +220,7 @@
 	display: block;
 	inline-size: 100%;
 	block-size: 310px;
-	overflow: visible;
+	overflow: hidden;
 }
 
 .owner-chart__grid {
@@ -228,27 +228,51 @@
 	stroke-width: 1;
 }
 
-.owner-chart__closed {
-	fill: rgb(154 160 170 / 7%);
+/* Paper gap language: transparent plot with thin dashed drop-lines from each
+   bounding observation to the baseline. No filled bands. */
+.owner-chart__gap-stem {
+	fill: none;
+	stroke-width: 1.5;
+	stroke-dasharray: 4 4;
+	stroke-linecap: round;
+	vector-effect: non-scaling-stroke;
 }
 
-.owner-chart__missing {
-	fill: url(#owner-missing);
-	stroke: rgb(170 164 166 / 26%);
+.owner-chart__gap-stem--missing {
+	stroke: rgb(170 164 166 / 55%);
 }
 
-#owner-missing path {
-	stroke: rgb(170 164 166 / 20%);
-	stroke-width: 1;
+.owner-chart__gap-stem--closed {
+	stroke: rgb(154 160 170 / 50%);
+}
+
+.owner-chart__stem {
+	fill: none;
+	stroke: rgb(170 164 166 / 60%);
+	stroke-width: 1.5;
+	stroke-dasharray: 4 4;
+	/* Butt cap: the active stem starts exactly on the marker's outer bottom
+	   edge — a round cap would paint ~0.75px upward into the ring toward the
+	   core. Untrimmed gap stems above keep their round caps. */
+	stroke-linecap: butt;
+	vector-effect: non-scaling-stroke;
 }
 
 .owner-chart__line {
 	fill: none;
-	stroke: var(--fw-red-bright);
+	stroke: var(--fw-red);
 	stroke-linecap: round;
 	stroke-linejoin: round;
-	stroke-width: 3;
+	stroke-width: 2.5;
 	vector-effect: non-scaling-stroke;
+}
+
+/* Paper marker junction: a trimmed side meets the ring's outer edge along a
+   straight radial tip segment (see smoothPath straightTip). The butt cap ends
+   the paint exactly on the edge — a round cap would extend ~1.25px past the
+   endpoint into the ring toward the core. Untrimmed runs keep round caps. */
+.owner-chart__line--trimmed {
+	stroke-linecap: butt;
 }
 
 .owner-chart__point {
@@ -258,56 +282,76 @@
 	vector-effect: non-scaling-stroke;
 }
 
-.owner-chart__zero {
-	fill: var(--fw-obsidian);
-	stroke: var(--fw-chalk);
+/* A lone observation is a point dot: same hue as the line, sized like the
+   active core, circular at every SVG aspect via non-scaling stroke. */
+.owner-chart__solo {
+	stroke-width: 5;
+}
+
+/* Paper's dimension bracket for honest gaps is a desktop treatment: a thin
+   rule spanning the drop stems with short end ticks, duration label beneath
+   it. Paper mobile shows the dashed stems only, so the bracket, ticks, and
+   label are hidden at mobile widths further below. */
+.owner-chart__gap-bracket,
+.owner-chart__gap-tick {
+	fill: none;
+	stroke: var(--fw-text-subtle);
 	stroke-width: 1.5;
+	stroke-linecap: round;
 	vector-effect: non-scaling-stroke;
 }
 
-.owner-chart__active-halo {
-	fill: rgb(255 41 70 / 15%);
-	stroke: var(--fw-red-bright);
-	stroke-width: 2;
-	vector-effect: non-scaling-stroke;
+/* Human decision 2026-09-05: no zero-square marker on the chart. A genuine
+   zero remains truthful without a glyph — the smoothed line passes through
+   the zero ordinate and the semantic table records the 0 count as Observed —
+   while missing and scheduled-closed minutes keep the dashed-stem gap
+   language. Zero, missing, and closed stay distinct per SPEC/DESIGN_GUIDE. */
+
+.owner-chart__gap-label,
+.owner-chart__latest {
+	position: absolute;
+	inset-block-end: 4px;
+	color: var(--fw-text-subtle);
+	font-size: 11px;
+	font-variant-numeric: tabular-nums;
+	line-height: 16px;
+	white-space: nowrap;
+	transform: translateX(-50%);
+	pointer-events: none;
 }
 
-.owner-chart__active {
-	fill: var(--fw-chalk);
-	stroke: var(--fw-red-bright);
-	stroke-width: 2;
-	vector-effect: non-scaling-stroke;
-}
-
-.owner-chart-reading {
+/* Paper's selected/focus readout: a dark card floating above the active
+   point with the reading time and the approximate present count. It appears
+   only once the reader picks a point; the screen-reader live region carries
+   the same reading, so the card itself stays out of the accessibility tree. */
+.owner-chart-tip {
+	position: absolute;
 	display: grid;
-	grid-template-columns: 1fr auto;
-	gap: 3px 16px;
-	min-inline-size: 150px;
+	gap: 2px;
+	min-inline-size: 110px;
+	max-inline-size: 220px;
 	padding: 10px 12px;
 	border: 1px solid var(--fw-border-strong);
 	border-radius: var(--fw-radius-control);
 	background: rgb(26 26 30 / 94%);
 	box-shadow: 0 12px 30px rgb(0 0 0 / 28%);
+	pointer-events: none;
 }
 
-.owner-chart-reading span {
-	grid-column: 1 / -1;
+.owner-chart-tip bdi {
+	color: var(--fw-chalk);
+	font-size: 13px;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+	line-height: 18px;
+}
+
+.owner-chart-tip span {
 	color: var(--fw-text-subtle);
-	font-size: 10px;
-}
-
-.owner-chart-reading strong {
-	grid-row: 2 / 4;
-	grid-column: 2;
-	align-self: center;
-	color: #ff7d91;
-	font-size: 22px;
-}
-
-.owner-chart-reading bdi {
 	font-size: 12px;
 	font-variant-numeric: tabular-nums;
+	line-height: 18px;
+	white-space: nowrap;
 }
 
 .owner-empty-state,
@@ -496,8 +540,9 @@
 		min-block-size: 260px;
 	}
 
-	.owner-chart-reading {
-		min-inline-size: 132px;
+	.owner-chart-tip {
+		min-inline-size: 96px;
+		max-inline-size: 180px;
 		padding: 8px 10px;
 	}
 
@@ -713,6 +758,16 @@
 	text-align: end;
 }
 
+/* End labels center on the extreme gridlines instead of riding half a line
+   into the plot. */
+.owner-chart-y-axis span:first-child {
+	transform: translateY(-50%);
+}
+
+.owner-chart-y-axis span:last-child {
+	transform: translateY(50%);
+}
+
 .owner-chart-plot {
 	flex: 1 1 auto;
 	min-inline-size: 0;
@@ -735,11 +790,12 @@
 	block-size: 240px;
 }
 
+/* Tick labels are positioned at their exact time-slot percentages so end
+   labels sit under the inset end points instead of on grid-column centers. */
 .owner-chart-x-axis {
-	direction: inherit;
-	display: grid;
-	grid-template-columns: repeat(7, minmax(0, 1fr));
-	gap: 0;
+	position: relative;
+	display: block;
+	min-block-size: 20px;
 	margin-block-start: 9px;
 	color: var(--fw-text-subtle);
 	font-size: 12px;
@@ -749,28 +805,56 @@
 }
 
 .owner-chart-x-axis span {
-	text-align: center;
+	position: absolute;
+	inset-block-start: 0;
 	white-space: nowrap;
+	transform: translateX(-50%);
 }
 
-.owner-chart-x-axis span:first-child {
-	text-align: start;
-}
-
-.owner-chart-x-axis span:last-child {
-	text-align: end;
-}
-
-.owner-chart__point,
-.owner-chart__active-halo {
+.owner-chart__point {
 	display: none;
 }
 
+/* Paper's selected marker: a hollow ring with a small solid core, identical
+   in latest, focus, and selected states. Measured authority: 20px ring with
+   a 2.5px stroke and 5px core on desktop; 18px ring, 2px stroke, 4px core on
+   mobile. The ring stays circular at every SVG aspect (HTML, not viewBox). */
 .owner-chart__active {
-	r: 6.4px;
-	fill: var(--fw-red-bright);
-	stroke: var(--owner-field, #100b0e);
-	stroke-width: 6;
+	position: absolute;
+	inline-size: 20px;
+	block-size: 20px;
+	border: 2.5px solid var(--fw-red);
+	border-radius: 50%;
+	background: transparent;
+	transform: translate(-50%, -50%);
+	pointer-events: none;
+}
+
+.owner-chart__active::after {
+	position: absolute;
+	/* Physical offsets, deliberately not logical: centering geometry is
+	   direction-invariant, while inset-inline-start resolves to the right
+	   edge in RTL and decenters the core by half its own size. */
+	top: 50%;
+	left: 50%;
+	inline-size: 5px;
+	block-size: 5px;
+	border-radius: 50%;
+	background: var(--fw-red);
+	transform: translate(-50%, -50%);
+	content: "";
+}
+@media (max-width: 720px) {
+	.owner-chart__active {
+		inline-size: 18px;
+		block-size: 18px;
+		border-width: 2px;
+	}
+
+	.owner-chart__active::after {
+		inline-size: 4px;
+		block-size: 4px;
+	}
 }
 
 .owner-empty-state {
@@ -919,8 +1003,29 @@
 		block-size: 196px;
 	}
 
+	.owner-chart__line {
+		stroke-width: 2;
+	}
+
+	.owner-chart__solo {
+		stroke-width: 4;
+	}
+
+	.owner-chart__gap-label,
+	.owner-chart__latest {
+		font-size: 10px;
+	}
+
+	/* Paper mobile gap language: dashed stems only. The desktop dimension
+	   bracket, its end ticks, and the duration label do not appear on the
+	   accepted 390px frames. */
+	.owner-chart__gap-bracket,
+	.owner-chart__gap-tick,
+	.owner-chart__gap-label {
+		display: none;
+	}
+
 	.owner-chart-x-axis {
-		grid-template-columns: repeat(3, minmax(0, 1fr));
 		font-size: 11px;
 	}
 

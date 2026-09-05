@@ -1,0 +1,44 @@
+schemaVersion: 1
+id: owner-daily-bounded-truthful-curve
+status: IMPLEMENTED_AND_REVIEWED
+implementedAt: 2026-09-03T16:35:00Z
+implementedBy: coordinator
+paper:
+  file: FITWAY UX Exploration
+  page: Page 1
+  area: OWNER DAILY ANALYTICS PRODUCTION SET — CURRENT
+affectedRegion: Owner Daily occupancy chart line between exact minute observations.
+observableProblem: Unbounded cubic controls can visually overshoot both observations, including
+  bending a true plateau beyond its recorded value. That conflicts with the accepted chart language
+  and the repository requirement that smoothing never invent or hide occupancy movement.
+smallestCorrection: Keep the accepted smooth connected line, point positions, axes, interaction, and
+  composition, but clamp each cubic segment's control ordinates to the range of its two observed
+  endpoints. A flat segment therefore remains flat and every curved segment remains inside its data
+  bounds.
+mustPreserve:
+  - exact minute point positions and semantic values
+  - zero, missing, and scheduled-closed distinctions
+  - RTL/LTR timeline direction and keyboard interaction
+  - accepted chart color, weight, density, and surrounding composition
+paperMutationRequired: false
+reviewEvidence:
+  decision: Required by DESIGN_GUIDE.md's truthful-curve contract and the approved bounded-polish rule.
+  approvalRecord: docs/phase-records/handoffs/full-route-paper-fidelity/20260903-115000-owner-daily-paper-repair.md
+  routedBefore:
+    - path: visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/before/owner-analytics-ar-390.png
+      bytes: 155723
+      sha256: f15986c639ac7f24f52425cb9000bfe572363909fa2e87d6e3d60669d00bf02b
+  routedAfter:
+    - path: visual-direction-gate/approved/paper-route-authority-20260902/evidence/final-review-20260904/routed/owner-analytics-ar-390.png
+      bytes: 160675
+      sha256: 93fdbe7effebf4e4157cd51449ac0977e04fd10bca7bd9312b6b1fadbb14998a
+  implementationRegressionEvidence: apps/web/src/components/owner/owner-analytics-view.test.tsx
+  independentRenderedReview: docs/phase-records/handoffs/full-route-paper-fidelity/20260904-final-independent-reviews.md
+  previousCandidateEvidence:
+    routedBefore: git:5789852^
+    routedAfter: visual-direction-gate/approved/paper-route-authority-20260902/evidence/owner-daily
+  finalCorrection: Bounded curve plus a 20px desktop / 18px mobile circular marker independent of SVG
+    scaling; shared navigation clears summary at 200%.
+acceptanceRule: This deviation authorizes only bounded control points. It cannot move observations,
+  alter values, hide gaps, change the chart hierarchy, or excuse any other Paper drift.
+reviewedAt: 2026-09-03T21:15:00Z
