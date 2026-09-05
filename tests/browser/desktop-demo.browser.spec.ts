@@ -97,7 +97,7 @@ test("real Staff PIN opens monitoring and the server denies Owner", async ({
 		page.getByRole("heading", { name: "Owner access required" }),
 	).toBeVisible();
 	await expect(page.getByRole("alert")).toContainText(
-		"This staff session can use live operations",
+		"This staff session can use monitoring but cannot access Management",
 	);
 });
 
