@@ -4,6 +4,7 @@ import { assertDemoDatabaseUrl, DEMO_OWNER_EMAIL } from "./contract";
 
 const CAPACITY = 120;
 const PROFILE_SEED = 20260901;
+const SNAPSHOT_INTERVAL_MS = 5 * 60_000;
 const SCHEDULE = {
 	scheduleSunOpen: "00:00",
 	scheduleSunClose: "00:00",
@@ -33,6 +34,7 @@ export type DemoSeedResult = {
 	fingerprint: string;
 	ownerEmail: string;
 	businessDay: string;
+	startingCount: number;
 };
 
 export function riyadhBusinessDay(now = new Date()) {
@@ -59,10 +61,12 @@ export function buildDemoProfile(now = new Date()) {
 	const historyStartUtc = new Date(
 		businessDayEpoch - 27 * 86_400_000 + 3_600_000,
 	);
-	// Keep the synthetic profile identical for the entire Riyadh business day.
-	// The current day contains its opening minute; the live simulator owns the
-	// wall-clock state shown by Public and Staff after startup.
-	const observedThroughUtc = new Date(businessDayEpoch + 3_600_000);
+	// Snap to a stable five-minute boundary so rapid resets reproduce the same
+	// profile while today's Owner chart remains populated up to the recent past.
+	// The live simulator owns only the wall-clock minutes after this cutoff.
+	const observedThroughUtc = new Date(
+		Math.floor(now.getTime() / SNAPSHOT_INTERVAL_MS) * SNAPSHOT_INTERVAL_MS,
+	);
 	return {
 		businessDay,
 		historyStartUtc: historyStartUtc.toISOString(),
@@ -74,6 +78,89 @@ export function buildDemoProfile(now = new Date()) {
 		businessDayBoundary: "04:00",
 		schedule: SCHEDULE,
 	};
+}
+
+function circularHourDistance(left: number, right: number) {
+	const direct = Math.abs(left - right);
+	return Math.min(direct, 24 - direct);
+}
+
+function peak(hour: number, center: number, width: number, amplitude: number) {
+	const distance = circularHourDistance(hour, center);
+	return amplitude * Math.exp(-(distance * distance) / (2 * width * width));
+}
+
+/**
+ * A deterministic, recognisably gym-shaped synthetic occupancy curve.
+ *
+ * It produces morning, lunch, evening, and late-night demand instead of the
+ * test generator's intentionally uniform sawtooth. Friday and Saturday shift
+ * demand later, and small seeded waves keep neighbouring days from looking
+ * cloned without introducing random or credential-dependent state.
+ */
+export function demoOccupancyCount(
+	minuteStartUtc: Date,
+	businessDay: string,
+	seed = PROFILE_SEED,
+) {
+	const localMinute =
+		(minuteStartUtc.getUTCHours() * 60 +
+			minuteStartUtc.getUTCMinutes() +
+			3 * 60) %
+		(24 * 60);
+	const hour = localMinute / 60;
+	const weekday = new Date(`${businessDay}T00:00:00.000Z`).getUTCDay();
+	const weekend = weekday === 5 || weekday === 6;
+	const dayNumber = Math.floor(
+		Date.parse(`${businessDay}T00:00:00.000Z`) / 86_400_000,
+	);
+	const dayScale = 0.92 + ((dayNumber + seed) % 9) * 0.02;
+	const morning = peak(hour, 7.25, 1.2, weekend ? 22 : 34);
+	const lunch = peak(hour, 13, 1.65, weekend ? 17 : 23);
+	const evening = peak(hour, weekend ? 20.25 : 19.25, 2.15, weekend ? 68 : 60);
+	const late = peak(hour, 23.25, 1.9, weekend ? 16 : 11);
+	const epochMinute = Math.floor(minuteStartUtc.getTime() / 60_000);
+	const texture =
+		Math.sin((epochMinute + seed) * 0.17) * 1.8 +
+		Math.sin((epochMinute + seed * 3) * 0.047) * 1.2;
+	return Math.max(
+		2,
+		Math.min(
+			CAPACITY,
+			Math.round((5 + morning + lunch + evening + late) * dayScale + texture),
+		),
+	);
+}
+
+function bandForDemoCount(count: number) {
+	if (count <= CAPACITY * 0.25) return "quiet" as const;
+	if (count <= CAPACITY * 0.5) return "moderate" as const;
+	if (count <= CAPACITY * 0.75) return "busy" as const;
+	return "packed" as const;
+}
+
+export function shapeDemoHistory<
+	TRow extends {
+		minuteStartUtc: Date;
+		businessDay: string;
+		settingsVersion: number;
+	},
+>(rows: TRow[]) {
+	const previousByDay = new Map<string, number>();
+	return rows.map((row) => {
+		const count = demoOccupancyCount(row.minuteStartUtc, row.businessDay);
+		const previous = previousByDay.get(row.businessDay) ?? count;
+		previousByDay.set(row.businessDay, count);
+		return {
+			...row,
+			count,
+			entries: Math.max(0, count - previous),
+			exits: Math.max(0, previous - count),
+			band: bandForDemoCount(count),
+			capacitySnapshot: CAPACITY,
+			source: "backfill" as const,
+		};
+	});
 }
 
 export function profileFingerprint(
@@ -172,16 +259,20 @@ export async function seedDemo(input: DemoSeedInput): Promise<DemoSeedResult> {
 			pepper: credentialPepper,
 			cookieSecret: input.authSecret,
 		});
-		const createdAt = new Date(`${profile.businessDay}T01:00:00.000Z`);
+		const profileCreatedAt = new Date(profile.historyStartUtc);
+		const currentSettingsAt = new Date(`${profile.businessDay}T01:00:00.000Z`);
 		const owner = await auth.provisionOwner(
 			{
 				email: DEMO_OWNER_EMAIL,
 				displayName: "FITWAY Demo Owner",
 				password: input.ownerPassword,
 			},
-			createdAt,
+			profileCreatedAt,
 		);
-		const staff = await auth.setSharedStaffPin(input.staffPin, createdAt);
+		const staff = await auth.setSharedStaffPin(
+			input.staffPin,
+			new Date(profileCreatedAt.getTime() + 5 * 60_000),
+		);
 		const [historical] = await database
 			.insert(applicationSchema.settingsVersions)
 			.values({
@@ -198,7 +289,7 @@ export async function seedDemo(input: DemoSeedInput): Promise<DemoSeedResult> {
 				effectiveFrom: new Date(
 					new Date(profile.historyStartUtc).getTime() - 60_000,
 				),
-				createdAt,
+				createdAt: profileCreatedAt,
 				createdBy: owner.id,
 				...SCHEDULE,
 			})
@@ -214,11 +305,31 @@ export async function seedDemo(input: DemoSeedInput): Promise<DemoSeedResult> {
 				name: "desktop-demo-simulator",
 				tokenHash,
 				enabled: true,
-				createdAt,
-				updatedAt: createdAt,
+				createdAt: profileCreatedAt,
+				updatedAt: profileCreatedAt,
 			})
 			.returning();
 		if (!device) throw new Error("Demo edge device was not provisioned");
+		const [latest] = await database
+			.insert(applicationSchema.settingsVersions)
+			.values({
+				capacity: CAPACITY,
+				quietMaxPercent: 25,
+				moderateMaxPercent: 50,
+				busyMaxPercent: 75,
+				timezone: "Asia/Riyadh",
+				businessDayBoundary: "04:00",
+				pushIntervalSeconds: 20,
+				freshForSeconds: 90,
+				operationalStaleAfterSeconds: 180,
+				publicPollSeconds: 60,
+				effectiveFrom: currentSettingsAt,
+				createdAt: currentSettingsAt,
+				createdBy: owner.id,
+				...SCHEDULE,
+			})
+			.returning();
+		if (!latest) throw new Error("Demo current settings were not created");
 		const generatedHistory = generateDeterministicAnalyticsHistory({
 			startUtc: new Date(profile.historyStartUtc),
 			days: profile.days,
@@ -244,45 +355,34 @@ export async function seedDemo(input: DemoSeedInput): Promise<DemoSeedResult> {
 				busyMaxPercent: 75,
 			},
 		});
-		// The fixed business-day opening minute keeps resets deterministic without
-		// presenting future history. Live state is populated by the simulator.
+		// History is synthetic and explicitly marked as backfill. It stops at the
+		// profile's recent five-minute cutoff; the simulator owns later live minutes.
 		const observedThrough = new Date(profile.observedThroughUtc).getTime();
-		const history = generatedHistory.filter(
-			(row) => row.minuteStartUtc.getTime() <= observedThrough,
+		const history = shapeDemoHistory(
+			generatedHistory
+				.filter((row) => row.minuteStartUtc.getTime() <= observedThrough)
+				.map((row) => ({
+					...row,
+					settingsVersion:
+						row.businessDay === profile.businessDay
+							? latest.version
+							: historical.version,
+				})),
 		);
 		for (let offset = 0; offset < history.length; offset += 1_000)
 			await database.insert(applicationSchema.occupancyMinutes).values(
 				history.slice(offset, offset + 1_000).map((row) => ({
 					...row,
 					deviceId: device.id,
-					updatedAt: createdAt,
+					updatedAt: profileCreatedAt,
 				})),
 			);
-		const [latest] = await database
-			.insert(applicationSchema.settingsVersions)
-			.values({
-				capacity: CAPACITY,
-				quietMaxPercent: 25,
-				moderateMaxPercent: 50,
-				busyMaxPercent: 75,
-				timezone: "Asia/Riyadh",
-				businessDayBoundary: "04:00",
-				pushIntervalSeconds: 20,
-				freshForSeconds: 90,
-				operationalStaleAfterSeconds: 180,
-				publicPollSeconds: 60,
-				effectiveFrom: new Date(`${profile.businessDay}T01:00:00.000Z`),
-				createdAt,
-				createdBy: owner.id,
-				...SCHEDULE,
-			})
-			.returning();
-		if (!latest) throw new Error("Demo current settings were not created");
 		const now = input.now ?? new Date();
+		const startingCount = demoOccupancyCount(now, profile.businessDay);
 		await database.insert(applicationSchema.currentState).values({
 			id: 1,
-			currentCount: 0,
-			band: "quiet",
+			currentCount: startingCount,
+			band: bandForDemoCount(startingCount),
 			source: "edge",
 			lastPushReceivedAt: now,
 			lastEdgeReportedAt: now,
@@ -361,6 +461,99 @@ export async function seedDemo(input: DemoSeedInput): Promise<DemoSeedResult> {
 			recoveryOfAlertId: alert.id,
 			createdAt: recoveredAt,
 		});
+		const commandFixtures = [
+			{
+				daysAgo: 20,
+				hourUtc: 15,
+				actor: "staff",
+				action: "correction_delta",
+				priorValue: 34,
+				requestedDelta: 3,
+				requestedValue: null,
+				effectiveValue: 37,
+				reason: "Synthetic front-desk headcount reconciliation",
+			},
+			{
+				daysAgo: 12,
+				hourUtc: 10,
+				actor: "owner",
+				action: "correction_absolute",
+				priorValue: 28,
+				requestedDelta: null,
+				requestedValue: 25,
+				effectiveValue: 25,
+				reason: "Synthetic occupancy review",
+			},
+			{
+				daysAgo: 5,
+				hourUtc: 21,
+				actor: "owner",
+				action: "reset",
+				priorValue: 7,
+				requestedDelta: null,
+				requestedValue: 0,
+				effectiveValue: 0,
+				reason: "Synthetic closing walkthrough reset",
+			},
+			{
+				daysAgo: 1,
+				hourUtc: 16,
+				actor: "staff",
+				action: "correction_delta",
+				priorValue: 52,
+				requestedDelta: -2,
+				requestedValue: null,
+				effectiveValue: 50,
+				reason: "Synthetic turnstile reconciliation",
+			},
+		] as const;
+		const commandAuditRows: Array<
+			typeof applicationSchema.auditLog.$inferInsert
+		> = [];
+		for (const fixture of commandFixtures) {
+			const issuedAt = new Date(
+				currentSettingsAt.getTime() -
+					fixture.daysAgo * 86_400_000 +
+					fixture.hourUtc * 3_600_000,
+			);
+			const deliveredAt = new Date(issuedAt.getTime() + 20_000);
+			const appliedAt = new Date(issuedAt.getTime() + 35_000);
+			const actorIsOwner = fixture.actor === "owner";
+			const [command] = await database
+				.insert(applicationSchema.edgeCommands)
+				.values({
+					deviceId: device.id,
+					type: fixture.action === "reset" ? "reset_zero" : "set_count",
+					targetValue:
+						fixture.action === "reset" ? null : fixture.effectiveValue,
+					status: "applied",
+					issuerClass: "human",
+					issuedByPrincipalId: actorIsOwner ? owner.id : staff.principal.id,
+					reason: fixture.reason,
+					issuedAt,
+					deliveredAt,
+					appliedAt,
+				})
+				.returning({ id: applicationSchema.edgeCommands.id });
+			if (!command) throw new Error("Demo command fixture was not created");
+			commandAuditRows.push({
+				eventClass: "command" as const,
+				actorPrincipalId: actorIsOwner ? owner.id : staff.principal.id,
+				actorPrincipalKind: actorIsOwner
+					? ("owner" as const)
+					: ("shared_staff" as const),
+				actorRole: actorIsOwner ? ("owner" as const) : ("staff" as const),
+				commandId: command.id,
+				commandIssuerClass: "human" as const,
+				action: fixture.action,
+				priorValue: fixture.priorValue,
+				requestedDelta: fixture.requestedDelta,
+				requestedValue: fixture.requestedValue,
+				effectiveValue: fixture.effectiveValue,
+				reason: fixture.reason,
+				createdAt: appliedAt,
+			});
+		}
 		await database.insert(applicationSchema.auditLog).values([
 			{
 				eventClass: "access",
@@ -372,7 +565,7 @@ export async function seedDemo(input: DemoSeedInput): Promise<DemoSeedResult> {
 				action: "owner_provisioned",
 				targetPrincipalId: owner.id,
 				reason: null,
-				createdAt,
+				createdAt: profileCreatedAt,
 			},
 			{
 				eventClass: "access",
@@ -384,7 +577,7 @@ export async function seedDemo(input: DemoSeedInput): Promise<DemoSeedResult> {
 				action: "staff_pin_provisioned",
 				targetPrincipalId: staff.principal.id,
 				reason: null,
-				createdAt,
+				createdAt: new Date(profileCreatedAt.getTime() + 5 * 60_000),
 			},
 			{
 				eventClass: "settings",
@@ -399,15 +592,34 @@ export async function seedDemo(input: DemoSeedInput): Promise<DemoSeedResult> {
 				newActive: null,
 				priorCredentialVersion: null,
 				newCredentialVersion: null,
+				settingsVersion: historical.version,
+				reason: "Synthetic demo baseline",
+				createdAt: new Date(profileCreatedAt.getTime() + 10 * 60_000),
+			},
+			...commandAuditRows,
+			{
+				eventClass: "settings",
+				actorPrincipalId: owner.id,
+				actorPrincipalKind: "owner",
+				actorRole: "owner",
+				commandId: null,
+				commandIssuerClass: null,
+				action: "settings_updated",
+				targetPrincipalId: null,
+				priorActive: null,
+				newActive: null,
+				priorCredentialVersion: null,
+				newCredentialVersion: null,
 				settingsVersion: latest.version,
-				reason: "Synthetic desktop-demo profile",
-				createdAt,
+				reason: "Synthetic owner-demo profile refresh",
+				createdAt: currentSettingsAt,
 			},
 		]);
 		return {
 			fingerprint: profileFingerprint(profile, history),
 			ownerEmail: DEMO_OWNER_EMAIL,
 			businessDay: profile.businessDay,
+			startingCount,
 		};
 	} finally {
 		await pool.end();

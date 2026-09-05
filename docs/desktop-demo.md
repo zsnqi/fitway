@@ -4,6 +4,10 @@ The desktop demo is a disposable, loopback-only synthetic environment. It uses t
 reviewed migrations, real authentication, API, and edge protocol; it never uses or modifies
 `apps/server/.env`.
 
+> **Synthetic-data notice:** every preloaded occupancy minute, chart, audit event, access record,
+> health incident, and credential in this environment is a demo fixture. The changing current
+> count after startup comes from the repository's local simulator, not a camera or a live gym.
+
 Run commands from the repository root:
 
 ```powershell
@@ -30,6 +34,34 @@ For a walkthrough:
 5. Optionally run `pnpm demo:verify` from a second terminal and enter the same credentials.
 6. Run `pnpm demo:stop` from a second terminal to preserve the profile. Use `pnpm demo:clean` only
    when you want to remove the disposable profile and its named Docker volume.
+
+## Owner walkthrough
+
+The shortest coherent owner story takes about ten minutes:
+
+1. **Public:** start at `/` and show the live crowd level, approximate count, freshness, and
+   Arabic/English switch without signing in.
+2. **Staff:** open `/login`, sign in with the shared synthetic PIN, and show the monitoring-only
+   operational view. Staff has no Management navigation and cannot open `/admin`.
+3. **Owner daily view:** run `pnpm demo:owner`; show today's populated occupancy curve, peak,
+   average, estimated entrance crossings, coverage, and the expandable minute history.
+4. **Reports:** move through the range summary, weekday/hour heatmap, week-over-week comparison,
+   detailed history, and CSV export controls. The 28-day profile includes varied morning, lunch,
+   evening, late-night, weekday, weekend, and missing-coverage patterns.
+5. **Accounts & Sign-in:** show the real shared-Staff and Owner access model without revealing any
+   stored credential.
+6. **Activity Log:** show synthetic owner and front-desk corrections, a reset, settings history,
+   and bootstrap access events, including the available filters and older-history navigation.
+7. **System Status:** show the healthy current simulator plus the synthetic prior outage, alert,
+   recovery, and uptime history.
+8. **Settings:** show capacity, bands, schedule, freshness, polling, and business-day controls.
+   Avoid saving changes during a presentation unless the intent is to demonstrate the real
+   versioned settings workflow; `demo:reset` restores the canonical profile afterwards.
+
+The seeded history ends at the most recent five-minute snapshot boundary. Rapid resets inside the
+same boundary reproduce the same non-secret fingerprint, while a later reset advances today's
+synthetic chart honestly instead of inserting future observations. The simulator begins near the
+same time-of-day curve so the handoff from seeded history to the changing live count is coherent.
 
 `reset` and `verify` request the owner password and staff PIN through PowerShell secure prompts;
 `owner` requests only the owner password.

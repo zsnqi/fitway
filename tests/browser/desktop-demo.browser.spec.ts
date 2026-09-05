@@ -162,6 +162,13 @@ test("real Owner password opens every populated owner surface", async ({
 	await expect(
 		page.getByRole("cell", { name: "Staff PIN provisioned", exact: true }),
 	).toBeVisible();
+	expect(await page.locator("tr[data-action]").count()).toBeGreaterThanOrEqual(
+		8,
+	);
+	await expect(
+		page.locator('tr[data-action="correction_delta"]').first(),
+	).toBeVisible();
+	await expect(page.locator('tr[data-action="reset"]')).toBeVisible();
 
 	await page.getByRole("tab", { name: "System Status" }).click();
 	await expect(

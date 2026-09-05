@@ -19,7 +19,7 @@ import {
 	type DemoProcessRole,
 	withoutInteractiveDemoCredentials,
 } from "./contract";
-import { migrateDemoDatabase, seedDemo } from "./seed";
+import { type DemoSeedResult, migrateDemoDatabase, seedDemo } from "./seed";
 
 const workspace = path.resolve(
 	path.dirname(fileURLToPath(import.meta.url)),
@@ -244,10 +244,13 @@ async function readProcesses(): Promise<OwnedProcess[]> {
 async function stopProcesses() {
 	for (const entry of await readProcesses()) {
 		if (!(await isLive(entry.pid))) continue;
-		assertOwnedProcessCommand(
-			await processCommandLine(entry.pid),
-			entry.marker,
-		);
+		const commandLine = await processCommandLine(entry.pid);
+		// The foreground supervisor and a second-terminal stop intentionally race.
+		// A process may exit after the liveness probe but before CIM returns its
+		// command line. Treat only a confirmed exit as harmless; a still-live
+		// process without the exact marker continues to fail closed.
+		if (!commandLine && !(await isLive(entry.pid))) continue;
+		assertOwnedProcessCommand(commandLine, entry.marker);
 		try {
 			await child("taskkill.exe", ["/PID", `${entry.pid}`, "/T", "/F"], {
 				stdio: "ignore",
@@ -365,6 +368,17 @@ async function start() {
 	await rm(stopRequestFile, { force: true });
 	if (!existsSync(profileFile))
 		throw new Error("Demo profile is missing; run pnpm demo:reset first");
+	const profile = JSON.parse(
+		await readFile(profileFile, "utf8"),
+	) as DemoSeedResult;
+	if (
+		!Number.isSafeInteger(profile.startingCount) ||
+		profile.startingCount < 0 ||
+		profile.startingCount > 120
+	)
+		throw new Error(
+			"Demo profile is stale or malformed; run pnpm demo:reset before starting",
+		);
 	for (const entry of await readProcesses()) {
 		if (await isLive(entry.pid))
 			throw new Error(
@@ -415,7 +429,7 @@ async function start() {
 				"--state-file",
 				path.join(runtime, "simulator-state.json"),
 				"--starting-count",
-				"18",
+				`${profile.startingCount}`,
 			],
 			environment,
 		),
