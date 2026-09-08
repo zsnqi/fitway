@@ -1,7 +1,9 @@
+import { useNavigate } from "@tanstack/react-router";
 import {
 	type KeyboardEvent,
 	type ReactNode,
 	useCallback,
+	useEffect,
 	useLayoutEffect,
 	useRef,
 	useState,
@@ -81,6 +83,16 @@ function panelId(section: OwnerSection) {
 		: `owner-section-${section}-panel`;
 }
 
+const defaultSection: OwnerSection = "daily";
+
+function sectionFromLocation(): OwnerSection {
+	if (typeof window === "undefined") return defaultSection;
+	const requested = new URLSearchParams(window.location.search).get("section");
+	return sectionOrder.includes(requested as OwnerSection)
+		? (requested as OwnerSection)
+		: defaultSection;
+}
+
 type OwnerSectionRenderers = Record<
 	Exclude<OwnerSection, "history">,
 	ReactNode
@@ -97,20 +109,24 @@ type OwnerSectionRenderers = Record<
  */
 export function OwnerSectionSwitch(props: OwnerSectionRenderers) {
 	const { locale } = useI18n();
+	const navigate = useNavigate();
 	const prerequisite = useOwnerDailyAnalytics();
+	const [initialSection] = useState<OwnerSection>(sectionFromLocation);
 	const [navigation, setNavigation] = useState<OwnerSectionNavigation>({
-		selected: "daily",
+		selected: initialSection,
 		transition: null,
 	});
 	const [visited, setVisited] = useState<ReadonlySet<OwnerSection>>(
-		() => new Set(["daily"]),
+		() => new Set([initialSection]),
 	);
 	const tabRefs = useRef<Partial<Record<OwnerSection, HTMLButtonElement>>>({});
 	const panelRefs = useRef<Partial<Record<OwnerSection, HTMLDivElement>>>({});
 	const containerRef = useRef<HTMLDivElement>(null);
 	const tablistRef = useRef<HTMLDivElement>(null);
-	const selectedRef = useRef<OwnerSection>("daily");
-	const visitedRef = useRef<ReadonlySet<OwnerSection>>(new Set(["daily"]));
+	const selectedRef = useRef<OwnerSection>(initialSection);
+	const visitedRef = useRef<ReadonlySet<OwnerSection>>(
+		new Set([initialSection]),
+	);
 	const scrollBySectionRef = useRef<Partial<Record<OwnerSection, number>>>({});
 	const nextTransitionIdRef = useRef(0);
 	const activeTransitionRef = useRef<OwnerSectionTransition | null>(null);
@@ -353,60 +369,93 @@ export function OwnerSectionSwitch(props: OwnerSectionRenderers) {
 		};
 	}, [navigation.transition, selected]);
 
-	function select(section: OwnerSection, focus = false) {
-		const source = selectedRef.current;
-		if (section === source) {
-			if (focus) {
-				tabRefs.current[section]?.focus({ preventScroll: true });
-				revealTab(section);
+	const select = useCallback(
+		(section: OwnerSection, focus = false) => {
+			const source = selectedRef.current;
+			if (section === source) {
+				if (focus) {
+					tabRefs.current[section]?.focus({ preventScroll: true });
+					revealTab(section);
+				}
+				return;
 			}
-			return;
-		}
-		const container = containerRef.current;
-		const outgoingScroll = window.scrollY;
-		scrollBySectionRef.current[source] = outgoingScroll;
-		const capturedDocumentHeight = Math.max(
-			document.documentElement.scrollHeight,
-			document.body?.scrollHeight ?? 0,
-		);
-		const capturedContainerHeight = container
-			? Math.max(
-					container.offsetHeight,
-					container.getBoundingClientRect().height,
-				)
-			: 0;
-		const firstVisit = !visitedRef.current.has(section);
-		const sectionTop = container
-			? Math.max(0, outgoingScroll + container.getBoundingClientRect().top)
-			: 0;
-		const desiredScroll = firstVisit
-			? sectionTop
-			: (scrollBySectionRef.current[section] ?? sectionTop);
-		cancelRestorationRef.current?.();
-		if (container) {
-			container.style.minBlockSize = `${capturedContainerHeight}px`;
-		}
-		nextTransitionIdRef.current += 1;
-		const transition: OwnerSectionTransition = {
-			id: nextTransitionIdRef.current,
-			source,
-			destination: section,
-			desiredScroll,
-			capturedDocumentHeight,
-			capturedContainerHeight,
-			firstVisit,
-			cancelled: false,
+			// Replace the URL through the router (not raw history.replaceState):
+			// @tanstack/history patches replaceState and notifies the router,
+			// whose scroll restoration would otherwise reset the window scroll
+			// after the remembered-restore transition below settles.
+			if (sectionFromLocation() !== section) {
+				void navigate({
+					to: ".",
+					search: (previous: Record<string, unknown>) => ({
+						...previous,
+						section,
+					}),
+					replace: true,
+					resetScroll: false,
+				});
+			}
+			const container = containerRef.current;
+			const outgoingScroll = window.scrollY;
+			scrollBySectionRef.current[source] = outgoingScroll;
+			const capturedDocumentHeight = Math.max(
+				document.documentElement.scrollHeight,
+				document.body?.scrollHeight ?? 0,
+			);
+			const capturedContainerHeight = container
+				? Math.max(
+						container.offsetHeight,
+						container.getBoundingClientRect().height,
+					)
+				: 0;
+			const firstVisit = !visitedRef.current.has(section);
+			const sectionTop = container
+				? Math.max(0, outgoingScroll + container.getBoundingClientRect().top)
+				: 0;
+			const sourceAnchor = panelRefs.current[
+				source
+			]?.querySelector<HTMLElement>("[data-owner-navigation-anchor]");
+			const anchorRestingTop = sourceAnchor
+				? outgoingScroll + sourceAnchor.getBoundingClientRect().top
+				: sectionTop;
+			const restingScroll = Math.max(0, sectionTop - anchorRestingTop);
+			const desiredScroll = firstVisit
+				? restingScroll
+				: Math.max(0, scrollBySectionRef.current[section] ?? restingScroll);
+			cancelRestorationRef.current?.();
+			if (container) {
+				container.style.minBlockSize = `${capturedContainerHeight}px`;
+			}
+			nextTransitionIdRef.current += 1;
+			const transition: OwnerSectionTransition = {
+				id: nextTransitionIdRef.current,
+				source,
+				destination: section,
+				desiredScroll,
+				capturedDocumentHeight,
+				capturedContainerHeight,
+				firstVisit,
+				cancelled: false,
+			};
+			activeTransitionRef.current = transition;
+			selectedRef.current = section;
+			const nextVisited = firstVisit
+				? new Set([...visitedRef.current, section])
+				: visitedRef.current;
+			visitedRef.current = nextVisited;
+			setVisited(nextVisited);
+			setNavigation({ selected: section, transition });
+			if (focus) tabRefs.current[section]?.focus({ preventScroll: true });
+		},
+		[navigate, revealTab],
+	);
+
+	useEffect(() => {
+		const handlePopState = () => {
+			select(sectionFromLocation());
 		};
-		activeTransitionRef.current = transition;
-		selectedRef.current = section;
-		const nextVisited = firstVisit
-			? new Set([...visitedRef.current, section])
-			: visitedRef.current;
-		visitedRef.current = nextVisited;
-		setVisited(nextVisited);
-		setNavigation({ selected: section, transition });
-		if (focus) tabRefs.current[section]?.focus({ preventScroll: true });
-	}
+		window.addEventListener("popstate", handlePopState);
+		return () => window.removeEventListener("popstate", handlePopState);
+	}, [select]);
 
 	function handleKeyDown(
 		event: KeyboardEvent<HTMLButtonElement>,

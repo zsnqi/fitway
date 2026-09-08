@@ -1,10 +1,15 @@
 ﻿import type { Weekday } from "@fitway/api/occupancy/schedule";
+import { Settings as SettingsIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { useOwnerSettings } from "@/hooks/use-owner-settings";
 import { useI18n } from "@/i18n/provider";
 
-import { type OwnerSettingsUiState, ownerSettingsMessages } from "./messages";
+import {
+	type OwnerSettingsMessages,
+	type OwnerSettingsUiState,
+	ownerSettingsMessages,
+} from "./messages";
 import {
 	buildEditable,
 	draftFromSnapshot,
@@ -18,6 +23,33 @@ import {
 import { OwnerSettingsView } from "./owner-settings-view";
 
 import "./owner-settings.css";
+
+function OwnerSettingsLoading({
+	messages,
+}: {
+	messages: OwnerSettingsMessages;
+}) {
+	return (
+		<section className="owner-settings" aria-busy="true">
+			<header className="owner-settings__intro" data-owner-navigation-anchor="">
+				<h1>{messages.title}</h1>
+				<p>{messages.intro}</p>
+			</header>
+			<div className="owner-settings__state" role="status" aria-live="polite">
+				<SettingsIcon aria-hidden="true" />
+				<div>
+					<h2>{messages.loading}</h2>
+					<p>{messages.loadingDescription}</p>
+				</div>
+				<div className="owner-settings__loading-bars" aria-hidden="true">
+					<i />
+					<i />
+					<i />
+				</div>
+			</div>
+		</section>
+	);
+}
 
 /**
  * The owner Settings section: the five editable axes of the accepted
@@ -76,20 +108,7 @@ export function OwnerSettingsSection({ enabled }: { enabled: boolean }) {
 
 	if (settings.status === "standby") return null;
 	if (settings.status === "pending") {
-		return (
-			<section className="owner-settings" aria-busy="true">
-				<header
-					className="owner-settings__intro"
-					data-owner-navigation-anchor=""
-				>
-					<h1>{messages.title}</h1>
-					<p>{messages.intro}</p>
-				</header>
-				<p className="owner-settings__status" role="status">
-					{messages.loading}
-				</p>
-			</section>
-		);
+		return <OwnerSettingsLoading messages={messages} />;
 	}
 	if (settings.status === "error" || !snapshot) {
 		return (
@@ -115,20 +134,7 @@ export function OwnerSettingsSection({ enabled }: { enabled: boolean }) {
 	// commits. Keep that short handoff in the loading state instead of flashing
 	// a fabricated transport failure before the effect seeds the draft.
 	if (!draft) {
-		return (
-			<section className="owner-settings" aria-busy="true">
-				<header
-					className="owner-settings__intro"
-					data-owner-navigation-anchor=""
-				>
-					<h1>{messages.title}</h1>
-					<p>{messages.intro}</p>
-				</header>
-				<p className="owner-settings__status" role="status">
-					{messages.loading}
-				</p>
-			</section>
-		);
+		return <OwnerSettingsLoading messages={messages} />;
 	}
 
 	// Explicit non-null aliases: the handlers below close over these values

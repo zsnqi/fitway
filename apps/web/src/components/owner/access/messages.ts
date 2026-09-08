@@ -29,7 +29,7 @@ export const ownerAccessMessages = {
 		loadingDescription: "Preparing the front-desk PIN and the owner accounts.",
 		errorTitle: "Access could not be loaded",
 		errorDescription:
-			"No account state has been substituted. Check the connection and try again.",
+			"No placeholder account state is shown. Check the connection and try again.",
 		retry: "Try again",
 		emptyTitle: "No accounts to manage",
 		emptyDescription:
@@ -118,7 +118,8 @@ export const ownerAccessMessages = {
 		loading: "جارٍ تحميل الوصول",
 		loadingDescription: "جارٍ تجهيز رمز موظف الاستقبال وحسابات المالكين.",
 		errorTitle: "تعذر تحميل الوصول",
-		errorDescription: "لم نستبدل أي حالة. تحقق من الاتصال ثم أعد المحاولة.",
+		errorDescription:
+			"لا تُعرض حالة بديلة للحسابات. تحقق من الاتصال ثم أعد المحاولة.",
 		retry: "إعادة المحاولة",
 		emptyTitle: "لا توجد حسابات لإدارتها",
 		emptyDescription:

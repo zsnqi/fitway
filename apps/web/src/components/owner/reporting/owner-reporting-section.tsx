@@ -226,14 +226,16 @@ export function OwnerReportingSection({
 								</Button>
 							</div>
 						</div>
-						<p
-							className="owner-reporting__problem"
-							id={`${ids}-problem`}
-							data-owner-reporting-problem="range"
-							role={problem ? "alert" : undefined}
-						>
-							{problem}
-						</p>
+						{problem ? (
+							<p
+								className="owner-reporting__problem"
+								id={`${ids}-problem`}
+								data-owner-reporting-problem="range"
+								role="alert"
+							>
+								{problem}
+							</p>
+						) : null}
 					</fieldset>
 				</form>
 			</div>

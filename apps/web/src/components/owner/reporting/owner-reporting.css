@@ -149,20 +149,6 @@
 	line-height: 1.6;
 }
 
-.owner-reporting__window {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 4px 20px;
-	color: var(--fw-text-muted);
-	font-size: 12px;
-}
-
-.owner-reporting__window bdi {
-	margin-inline-start: 6px;
-	color: var(--fw-chalk);
-	font-weight: 600;
-}
-
 /* ---------- range controls ---------- */
 
 .owner-reporting-range > fieldset {
@@ -185,9 +171,8 @@
 .owner-reporting-board__heading {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 2px 16px;
+	gap: 4px 12px;
 	align-items: baseline;
-	justify-content: space-between;
 	min-inline-size: 0;
 }
 
@@ -213,49 +198,13 @@
 	min-inline-size: 0;
 }
 
-.owner-reporting-field {
-	display: grid;
-	flex: 1 1 8rem;
-	gap: 5px;
-	min-inline-size: 0;
-}
-
-.owner-reporting-field label {
-	color: var(--fw-text-muted);
-	font-size: 12px;
-	font-weight: 600;
-	line-height: 14px;
-}
-
-.owner-reporting-range input {
-	min-block-size: 44px;
-	min-inline-size: 0;
-	padding-block: 8px;
-	padding-inline: 12px;
-	border: 1px solid var(--fw-border-strong);
-	border-radius: var(--fw-radius-control);
-	color: var(--fw-chalk);
-	background: var(--owner-control);
-	font-size: 13px;
-	font-family: inherit;
-}
-
-.owner-reporting-range input:focus-visible {
-	outline: 2px solid var(--fw-red-bright);
-	outline-offset: 2px;
-}
-
-.owner-reporting-range input[aria-invalid="true"] {
-	border-color: var(--fw-red-bright);
-}
-
 .owner-reporting-range__actions {
 	display: flex;
 	flex: 0 0 auto;
 	flex-wrap: wrap;
 	gap: 8px;
 	align-items: flex-end;
-	justify-content: flex-end;
+	justify-content: flex-start;
 	min-inline-size: 0;
 }
 
@@ -263,8 +212,6 @@
 	min-block-size: 44px;
 }
 
-.owner-reporting__hint,
-.owner-reporting__note,
 .owner-reporting__progress {
 	max-inline-size: 70ch;
 	margin: 0;
@@ -284,11 +231,10 @@
 	gap: 8px;
 	align-items: baseline;
 	max-inline-size: 70ch;
-	margin: 0;
+	margin-block-start: 4px;
 	color: #ff9baa;
 	font-size: 12px;
 	line-height: 1.6;
-	min-block-size: 38px;
 }
 
 .owner-reporting__problem::before {
@@ -357,20 +303,13 @@
 .owner-reporting-controls > .owner-reporting-block,
 .owner-reporting-controls > .owner-reporting-range {
 	padding: 16px 18px;
-	border: 1px solid var(--fw-edge-control, rgb(220 197 201 / 18%));
+	border: 1px solid var(--owner-board-edge);
 	border-radius: var(--fw-radius-board);
-	background-color: var(--fw-material-board-rest, rgb(29 24 28 / 12.5%));
-	background-image: linear-gradient(
-		in oklab 160deg,
-		oklab(27.3% 0.094 0.032 / 19.6%) 0%,
-		oklab(96.3% 0.018 0.003 / 3%) 46%,
-		oklab(21.7% 0.01 -0.005 / 8.2%) 100%
-	);
+	background-color: var(--owner-board-tint);
+	background-image: var(--owner-board-sheen);
 	background-origin: border-box;
-	backdrop-filter: blur(22px) saturate(114%);
-	box-shadow:
-		var(--fw-lift, rgb(255 238 240 / 2.8%)) 0 1px 0 inset,
-		#0000002e 0 8px 8px;
+	backdrop-filter: var(--owner-board-backdrop);
+	box-shadow: var(--owner-board-shadow);
 }
 
 .owner-reporting-controls > .owner-reporting-block,
@@ -381,15 +320,11 @@
 }
 
 @media (min-width: 821px) {
-	.owner-reporting-controls > .owner-reporting-range {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
-
 	.owner-reporting-controls .owner-reporting-board__row {
 		display: grid;
-		grid-template-columns: minmax(130px, 190px) minmax(130px, 190px) auto;
+		grid-template-columns: repeat(auto-fit, minmax(min(236px, 100%), 288px));
+		gap: 12px 16px;
+		align-items: end;
 	}
 }
 
@@ -507,14 +442,6 @@
 		rgb(154 160 170 / 26%) 0 2px,
 		transparent 2px 5px
 	);
-}
-
-.owner-reporting__scroll-hint {
-	grid-area: scroll;
-	display: none;
-	margin: 0;
-	color: var(--fw-text-subtle);
-	font-size: 12px;
 }
 
 .owner-reporting-grid-region {
@@ -662,8 +589,10 @@
 	display: grid;
 	align-self: stretch;
 	align-content: start;
-	gap: 10px;
-	padding: 14px 4px 14px 18px;
+	gap: 12px;
+	padding-block: 14px;
+	padding-inline-start: 18px;
+	padding-inline-end: 12px;
 	overflow: clip;
 	border-inline-start: 1px solid var(--fw-border-subtle);
 	background: transparent;
@@ -696,9 +625,8 @@
 }
 
 .owner-reporting-reading__figures {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 10px 28px;
+	display: grid;
+	gap: 12px;
 	margin: 0;
 }
 
@@ -750,6 +678,11 @@
 	line-height: 24px;
 }
 
+.owner-reporting-comparison__heading h2 {
+	font-size: 17px;
+	line-height: 24px;
+}
+
 .owner-reporting-region {
 	position: relative;
 	isolation: isolate;
@@ -772,10 +705,6 @@
 .owner-reporting-lower .owner-reporting-region {
 	border-block: 0;
 	background: var(--owner-inset);
-}
-
-.owner-reporting-block > .owner-reporting__note {
-	overflow-wrap: anywhere;
 }
 
 .owner-reporting-region::-webkit-scrollbar {
@@ -899,20 +828,13 @@
 	inline-size: 100%;
 	overflow: clip;
 	padding: 18px 20px;
-	border: 1px solid var(--fw-edge-control, rgb(220 197 201 / 18%));
+	border: 1px solid var(--owner-board-edge);
 	border-radius: var(--fw-radius-board);
-	background-color: var(--fw-material-board-rest, rgb(29 24 28 / 12.5%));
-	background-image: linear-gradient(
-		in oklab 160deg,
-		oklab(27.3% 0.094 0.032 / 19.6%) 0%,
-		oklab(96.3% 0.018 0.003 / 3%) 46%,
-		oklab(21.7% 0.01 -0.005 / 8.2%) 100%
-	);
+	background-color: var(--owner-board-tint);
+	background-image: var(--owner-board-sheen);
 	background-origin: border-box;
-	backdrop-filter: blur(22px) saturate(114%);
-	box-shadow:
-		var(--fw-lift, rgb(255 238 240 / 2.8%)) 0 1px 0 inset,
-		#0000002e 0 8px 8px;
+	backdrop-filter: var(--owner-board-backdrop);
+	box-shadow: var(--owner-board-shadow);
 }
 
 .owner-reporting-lower {
@@ -927,10 +849,6 @@
 	gap: 0;
 	align-content: start;
 	padding: 0;
-}
-
-.owner-reporting-heatmap > .owner-reporting__hint {
-	grid-area: hint;
 }
 
 .owner-reporting-change {
@@ -1038,7 +956,7 @@
 
 .owner-reporting-state--error > svg {
 	border-color: rgb(255 41 70 / 24%);
-	color: #ff7d91;
+	color: var(--fw-error-fg);
 	background: rgb(229 25 53 / 8%);
 }
 
@@ -1114,21 +1032,9 @@
 	}
 }
 
-.owner-reporting__footnote {
-	max-inline-size: 78ch;
-	margin: 0;
-	color: var(--fw-text-subtle);
-	font-size: 11px;
-	line-height: 1.7;
-}
-
 /* ---------- responsive ---------- */
 
 @media (max-width: 1199px) {
-	.owner-reporting__scroll-hint {
-		display: block;
-	}
-
 	.owner-reporting-grid__full {
 		display: none;
 	}
@@ -1269,7 +1175,7 @@
 	}
 
 	.owner-reporting-reading__figures {
-		gap: 10px 20px;
+		gap: 10px;
 	}
 }
 

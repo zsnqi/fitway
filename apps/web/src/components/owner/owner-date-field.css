@@ -48,8 +48,8 @@
 	min-block-size: 44px;
 	padding: 0 8px;
 	border: 1px solid var(--fw-border);
-	border-radius: 9px;
-	background: rgb(10 10 12 / 72%);
+	border-radius: var(--fw-radius-control);
+	background: var(--owner-control);
 	color: var(--fw-text);
 	font: inherit;
 	font-size: 13px;
@@ -69,7 +69,7 @@
 }
 
 .owner-date-field__trigger[aria-invalid="true"] {
-	border-color: #ff7b8f;
+	border-color: var(--fw-error-fg);
 }
 
 .owner-date-field__icon {
@@ -141,7 +141,7 @@
 
 .owner-date-field__option[data-selected],
 .owner-date-field__year-option[aria-selected="true"] {
-	color: var(--fw-accent);
+	color: var(--fw-red-bright);
 	font-weight: 650;
 }
 

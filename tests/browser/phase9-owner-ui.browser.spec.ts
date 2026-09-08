@@ -212,7 +212,7 @@ test("owner curve preserves exact states, historical timezones, and RTL/LTR inte
 	await expect(page.locator(".owner-chart__solo")).toHaveCount(1);
 	await expect(page.locator(".owner-chart__line[data-trimmed]")).toHaveCount(0);
 	await expect(page.locator(".owner-table-disclosure")).toContainText(
-		"نسبة الوقت الذي توفرت فيه قراءات",
+		"تغطية القراءات",
 	);
 	await expect(page.locator("body")).not.toContainText(/[٠-٩]/u);
 

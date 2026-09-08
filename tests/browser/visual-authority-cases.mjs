@@ -397,6 +397,9 @@ const definitions = [
 const presentationR06ApprovalRecord =
 	"docs/phase-records/handoffs/owner-demo-polish/20260908-presentation-ready-r06-visual-acceptance.md";
 
+const ownerQualityPassApprovalRecord =
+	"docs/phase-records/handoffs/owner-demo-polish/20260908-owner-quality-pass-visual-acceptance.md";
+
 const acceptedCanonicalOverrides = Object.freeze({
 	"login--idle--ar--desktop": {
 		leafExportPath: "login/login-idle-ar-1440.png",
@@ -473,27 +476,27 @@ const acceptedCanonicalOverrides = Object.freeze({
 			"fcb5dfc9265460eb8b4f3b1c9d5c103e990e015d9d765a15e67d2be023e9de40",
 	},
 	"ownerDaily--completed--ar--desktop": {
-		approvalRecord: presentationR06ApprovalRecord,
+		approvalRecord: ownerQualityPassApprovalRecord,
 		leafExportPath: "owner-daily/owner-daily-closed-ar-1440.png",
 		leafExportSha256:
 			"63109032f42fc6ce2ff697d7c9e35e061b38369c1433d69068d3f5b2000975ec",
 		routedPath:
 			"win32/chromium/phase9-owner-ui.browser.spec.ts/owner-daily-route-ar-desktop-1440x900.png",
 		routedSha256:
-			"55ccf279fdea841f030105bb7b08be79f0a1d6a4626ed4740738824ce196f391",
+			"063721013eb6040fe08835aa31ee2ab8d309c283100585a1453aaf1b08d40342",
 	},
 	"ownerDaily--completed--en--mobile": {
-		approvalRecord: presentationR06ApprovalRecord,
+		approvalRecord: ownerQualityPassApprovalRecord,
 		leafExportPath: "owner-daily/owner-daily-closed-en-390.png",
 		leafExportSha256:
 			"f2e36563997daf06c5a1b36a9ce59a7b6667e27741c31e07d6701dac6b74d5bb",
 		routedPath:
 			"win32/chromium/phase9-owner-ui.browser.spec.ts/owner-daily-route-en-mobile-390x844.png",
 		routedSha256:
-			"8258e4fa9715dc981fc2512d0609a87d4461c7387be26af3982f707fc6656462",
+			"1b4bb75ec97529bb9ca9e38a768b2b86c3832266c1cd3bd07f02f2a8af72e3cc",
 	},
 	"ownerActivityLog--populated--ar--desktop": {
-		approvalRecord: presentationR06ApprovalRecord,
+		approvalRecord: ownerQualityPassApprovalRecord,
 		leafExportPath:
 			"owner-activity-log/owner-activity-desktop-ar-populated-1440.png",
 		leafExportSha256:
@@ -501,10 +504,10 @@ const acceptedCanonicalOverrides = Object.freeze({
 		routedPath:
 			"win32/chromium/phase11-audit.browser.spec.ts/owner-audit-route-ar-desktop-1440x900.png",
 		routedSha256:
-			"8da4c451b08561cad4e4a34fbbe04a122e9082a137112ce0c3dc6552c36c8a4a",
+			"7172973ba75ad4011068103e0f4314b90d7a3024b4a992f9d0f710fd384109e0",
 	},
 	"ownerActivityLog--populated--en--mobile": {
-		approvalRecord: presentationR06ApprovalRecord,
+		approvalRecord: ownerQualityPassApprovalRecord,
 		leafExportPath:
 			"owner-activity-log/owner-activity-mobile-en-populated-390.png",
 		leafExportSha256:
@@ -512,10 +515,10 @@ const acceptedCanonicalOverrides = Object.freeze({
 		routedPath:
 			"win32/chromium/phase11-audit.browser.spec.ts/owner-audit-route-en-mobile-390x844.png",
 		routedSha256:
-			"0df93edd510e011a9ff36795ad14a8be99a287ed3b9f319d6f08b6aa3fddbb1c",
+			"db12e5ebbf8ff99fe5a566e0b7d99f09863da857fc36fcc803ae6e261f8fbda4",
 	},
 	"ownerSystemStatus--populated--ar--desktop": {
-		approvalRecord: presentationR06ApprovalRecord,
+		approvalRecord: ownerQualityPassApprovalRecord,
 		leafExportPath:
 			"owner-system-status/owner-system-status-desktop-ar-1440.png",
 		leafExportSha256:
@@ -523,17 +526,17 @@ const acceptedCanonicalOverrides = Object.freeze({
 		routedPath:
 			"win32/chromium/phase11-health.browser.spec.ts/owner-health-route-ar-desktop-1440x900.png",
 		routedSha256:
-			"8305e00e18d510c58a9c1e342b944e3348fd5a9ad872267b6ac0fcc26a5c0213",
+			"e5d5aebdee76ca295d2ddf4c87230871bb2c6886b689834c8441a889a07c7404",
 	},
 	"ownerSystemStatus--populated--en--mobile": {
-		approvalRecord: presentationR06ApprovalRecord,
+		approvalRecord: ownerQualityPassApprovalRecord,
 		leafExportPath: "owner-system-status/owner-system-status-mobile-en-390.png",
 		leafExportSha256:
 			"65cc8644f19c6a35e253b1c468c070c019ca150f8c7332460daa3e42c8320873",
 		routedPath:
 			"win32/chromium/phase11-health.browser.spec.ts/owner-health-route-en-mobile-390x844.png",
 		routedSha256:
-			"3c90192a0c7a196834fcb8c9a0c81ea0ae961c3cd68c94e965758841ff0b0e02",
+			"df50002fb7c4231172a07c7b71c55cd6c5882554c9ed3683dadbb242188a1ca0",
 	},
 	"ownerSettings--clean--en--desktop": {
 		approvalRecord: presentationR06ApprovalRecord,

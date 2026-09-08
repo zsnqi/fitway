@@ -865,10 +865,9 @@ test("keyboard, targets, reduced motion, 200% reflow, forced colors, and axe hol
 		await control.focus();
 		await expect(control).toBeFocused();
 		const focusRing = await control.evaluate((element) => {
-			// Native selects paint focus on their visible frame, including the chevron lane.
-			const style = getComputedStyle(
-				element.closest(".owner-audit-select") ?? element,
-			);
+			// Focus rings paint on the control itself, including the native
+			// select's visible frame and chevron lane.
+			const style = getComputedStyle(element);
 			return {
 				outline: style.outlineStyle,
 				width: Number.parseFloat(style.outlineWidth),

@@ -5,7 +5,19 @@
 	/* An opaque warm backing prevents scrolling rows from repainting through
 	   sticky headers while remaining part of the surrounding oxblood surface. */
 	--owner-table-head: #281b20;
-	--owner-control: rgb(25 18 23 / 48%);
+	--owner-control: rgb(10 10 12 / 72%);
+	--fw-edge-quiet: var(--owner-edge-quiet);
+	--fw-lift: rgb(255 238 240 / 2.8%);
+	--owner-board-edge: var(--owner-edge-control);
+	--owner-board-tint: var(--fw-material-board-rest, rgb(29 24 28 / 12.5%));
+	--owner-board-sheen: linear-gradient(
+		in oklab 160deg,
+		oklab(27.3% 0.094 0.032 / 19.6%) 0%,
+		oklab(96.3% 0.018 0.003 / 3%) 46%,
+		oklab(21.7% 0.01 -0.005 / 8.2%) 100%
+	);
+	--owner-board-backdrop: blur(22px) saturate(114%);
+	--owner-board-shadow: var(--fw-lift) 0 1px 0 inset, #0000002e 0 8px 8px;
 	--owner-edge-quiet: #dcc5c90f;
 	--owner-edge: #dcc5c91a;
 	--owner-edge-control: #dcc5c92e;

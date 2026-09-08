@@ -185,6 +185,36 @@ approval. Unrecorded or unreviewed deviations fail acceptance. Charts and other 
 content are judged through container geometry, tokens, semantic values, and rendered review rather
 than brittle raw-pixel identity.
 
+### Perceptual and cross-surface review
+
+Canonical comparison proves a surface matches its accepted reference; it cannot judge whether the
+reference itself is good, and it cannot see across surfaces. Three supplementary duties close that
+gap. They apply to any phase that changes Owner, Staff, or Public presentation.
+
+1. Design-judgment gate on baseline promotion. Every canonical baseline promotion requires the
+   new baseline images to be reviewed side-by-side across all affected surfaces — not as diffs —
+   and the acceptance record must state a quality judgment per surface relative to the product's
+   strongest current surface. "The change was intentional" is not an acceptance standard by
+   itself; the record must name what was judged, by whom, and the conclusion. Material
+   promotions of whole-surface compositions require a named human judgment.
+2. Cross-surface consistency sweep. Work that touches shared control families (inputs, selects,
+   popovers, date fields, buttons, cards) must run the Owner cross-surface review spec
+   (`tests/browser/owner-cross-surface.review.spec.ts`) and keep its tripwires green: one popup
+   material, one control fill/radius family, one focus-ring recipe, stable page-context and
+   navigation-rest contracts. New controls reuse the existing family primitives and tokens;
+   introducing a second parallel primitive for an existing control role is a defect, not a
+   style choice.
+3. Exploratory walkthrough. The final gate for user-facing work includes a continuous interactive
+   walkthrough of the real product — navigating between sections, opening controls near viewport
+   edges, refreshing mid-section, switching locale, exercising loading/error/empty states —
+   judged on perceived stability, motion quality, and composition, not only on per-assertion
+   results. A settled screenshot is evidence of state, not of quality.
+
+Token fidelity is enforced in the fast ladder: `scripts/check-owner-tokens.mjs` fails on any
+owner CSS custom property that is used but never defined, the failure mode that lets declarations
+silently vanish. New owner CSS must define or reuse existing tokens; local one-off literals
+require a recorded reason in the phase record.
+
 ## Handoff format
 
 Store handoffs under `docs/phase-records/handoffs/<phase>/<timestamp>-<run-id>.md` and reference

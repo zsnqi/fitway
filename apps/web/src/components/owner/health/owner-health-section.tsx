@@ -55,9 +55,9 @@ export function OwnerHealthSection() {
 			<header className="owner-health__heading" data-owner-navigation-anchor="">
 				<h1 id={headingId}>{messages.title}</h1>
 				{summary ? (
-					<span className="owner-health__window">
+					<p className="owner-health__window">
 						<bdi dir="auto">{windowLabel}</bdi>
-					</span>
+					</p>
 				) : null}
 			</header>
 

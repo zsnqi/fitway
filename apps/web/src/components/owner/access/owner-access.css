@@ -37,18 +37,13 @@
 	gap: 12px;
 	padding: 16px;
 	overflow: clip;
-	border: 1px solid var(--fw-edge-control, rgb(220 197 201 / 18%));
+	border: 1px solid var(--owner-board-edge);
 	border-radius: var(--fw-radius-board);
-	background-color: var(--fw-material-board-rest, rgb(29 24 28 / 12.5%));
-	background-image: linear-gradient(
-		in oklab 160deg,
-		oklab(27.3% 0.094 0.032 / 19.6%) 0%,
-		oklab(96.3% 0.018 0.003 / 3%) 46%,
-		oklab(21.7% 0.01 -0.005 / 8.2%) 100%
-	);
+	background-color: var(--owner-board-tint);
+	background-image: var(--owner-board-sheen);
 	background-origin: border-box;
-	backdrop-filter: blur(22px) saturate(114%);
-	box-shadow: var(--fw-lift, rgb(255 238 240 / 2.8%)) 0 1px 0 inset;
+	backdrop-filter: var(--owner-board-backdrop);
+	box-shadow: var(--owner-board-shadow);
 }
 
 /* Desktop leads with two peer summaries; the owner records stay one table below. */
@@ -238,9 +233,9 @@
 
 .owner-access-provision {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
-	gap: 12px 16px;
-	align-items: end;
+	gap: 14px;
+	align-items: start;
+	max-inline-size: 420px;
 	padding-block-start: 14px;
 	border-block-start: 1px solid var(--fw-border-subtle);
 }
@@ -265,9 +260,8 @@
 	min-inline-size: 0;
 }
 
-/* The provision actions close on their own row. */
 .owner-access-provision__actions {
-	grid-column: 1 / -1;
+	margin-block-start: 2px;
 }
 
 /* One data board, rather than a stack of unrelated cards. */
@@ -397,7 +391,7 @@
 /* A refusal is a short, assertive announcement, not a subtle hint. */
 .owner-access__refusal {
 	margin: 0;
-	color: #ff7d91;
+	color: var(--fw-error-fg);
 	font-size: 12px;
 	line-height: 1.55;
 }
@@ -412,7 +406,7 @@
 .owner-access-field__error,
 .owner-access-inline__error {
 	margin: 0;
-	color: #ff7d91;
+	color: var(--fw-error-fg);
 	font-size: 12px;
 	line-height: 1.55;
 }
@@ -445,23 +439,25 @@
 .owner-access-reveal {
 	display: grid;
 	gap: 12px;
-	padding: 20px;
-	border: 1px solid rgb(255 41 70 / 28%);
-	border-radius: var(--fw-radius-surface);
-	background:
-		linear-gradient(150deg, rgb(255 41 70 / 8%), transparent 45%),
-		rgb(16 16 18 / 96%);
-	box-shadow: 0 0 0 1px rgb(255 41 70 / 12%);
+	margin-block-start: -2px;
+	padding: 16px;
+	border: 1px solid var(--owner-board-edge);
+	border-radius: var(--fw-radius-board);
+	background-color: var(--owner-board-tint);
+	background-image: var(--owner-board-sheen);
+	background-origin: border-box;
+	backdrop-filter: var(--owner-board-backdrop);
+	box-shadow: var(--owner-board-shadow);
 }
 
 .owner-access-reveal > svg {
-	inline-size: 40px;
-	block-size: 40px;
-	padding: 9px;
-	border: 1px solid rgb(255 41 70 / 24%);
-	border-radius: 12px;
-	color: #ff7d91;
-	background: rgb(229 25 53 / 8%);
+	inline-size: 44px;
+	block-size: 44px;
+	padding: 11px;
+	border: 1px solid var(--fw-border-strong);
+	border-radius: 14px;
+	color: var(--fw-text-muted);
+	background: rgb(255 255 255 / 3%);
 }
 
 .owner-access-reveal__copy h3 {
@@ -474,7 +470,7 @@
 .owner-access-reveal__copy p {
 	max-inline-size: 70ch;
 	margin: 6px 0 0;
-	color: var(--fw-text-subtle);
+	color: var(--fw-error-fg);
 	font-size: 12px;
 	line-height: 1.6;
 }
@@ -502,13 +498,16 @@
 }
 
 .owner-access-reveal__dismiss {
+	display: inline-flex;
+	align-items: center;
+	justify-self: start;
 	min-block-size: 44px;
 	padding-block: 8px;
-	padding-inline: 16px;
+	padding-inline: 18px;
 	border: 1px solid var(--fw-border-strong);
 	border-radius: var(--fw-radius-control);
 	color: var(--fw-chalk);
-	background: var(--fw-graphite);
+	background: var(--owner-control);
 	font-size: 13px;
 	font-weight: 600;
 	font-family: inherit;
@@ -565,7 +564,7 @@
 
 .owner-access-state--error > svg {
 	border-color: rgb(255 41 70 / 24%);
-	color: #ff7d91;
+	color: var(--fw-error-fg);
 	background: rgb(229 25 53 / 8%);
 }
 
@@ -633,7 +632,6 @@
 	}
 
 	.owner-access-provision {
-		grid-template-columns: minmax(0, 1fr);
 		padding: 12px;
 	}
 

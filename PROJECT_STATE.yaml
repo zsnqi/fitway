@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-09-08T06:54:46+03:00"
+updatedAt: "2026-09-08T18:10:00+03:00"
 
 coordinator:
   owner: "Coordinator final authority. owner-presentation-ready-r07 is the fresh human-authorized successor for the exact preserved d35fbd3 dirty presentation candidate after r06 exhausted 2/2 repairs and proved one remaining concurrency-only Owner logo rasterization failure. This attempt freezes scope to deterministic decoded-logo settlement in the existing shell canonical assertion, then owns a fresh full gate, fresh independent rendered/functional review, and final live presentation rehearsal. Historical attempts and their repair accounting remain immutable; product, Paper, canonical design, data, auth, deployment, credential, and release changes remain excluded."
@@ -22,6 +22,43 @@ baseline:
   independentVerification: docs/phase-records/baseline-independent-verification.md
 
 milestones:
+  owner-quality-pass-r01:
+    status: DONE
+    dependencies: [owner-presentation-ready-r07]
+    ownerSession: "Coordinator-run post-release quality pass, human-authorized directly by the owner on 2026-09-08 after the consolidated Owner audit. Serialized implementation slices (CSS foundations, control primitives, Reports composition, navigation/deep-link/Daily/Settings, Access/audit/health, tests+baselines, systemic guards, workflow amendment) executed by bounded single-writer subagents; coordinator verified every slice against the live product at 1440/390 and AR/EN. Scope: Owner presentation, shared owner CSS/token system, owner tests, canonical reconciliation for changed Owner surfaces only, docs/WORKFLOW.md perceptual-review amendment. Public, Staff, backend, schemas, credentials, demo history, and Paper untouched."
+    branch: codex/owner-demo-prep
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
+    baseCommit: 601d219000000000000000000000000000000000
+    ownedPaths:
+      - "apps/web/src/components/owner/**"
+      - "packages/ui/src/components/select.tsx and popover.tsx (re-export wrappers, unchanged)"
+      - "tests/browser/** owner-related specs and Owner canonical screenshots"
+      - "scripts/visual-authority-cases.mjs, scripts/visual-authority.mjs (hash records), scripts/check-owner-tokens.mjs (new)"
+      - "scripts/verify.mjs (token-guard registration)"
+      - "docs/WORKFLOW.md (perceptual and cross-surface review section)"
+      - "docs/phase-records/handoffs/owner-demo-polish/**"
+      - PROJECT_STATE.yaml
+    forbiddenPaths:
+      - "apps/server/**, packages/** (beyond reading token definitions), schemas, migrations, OpenAPI"
+      - "Public and Staff components, their CSS, and their canonical screenshots"
+      - "accumulated demo history, credentials, deployment, releases, tags"
+      - "historical terminal attempt records and their repair accounting"
+    sharedLeases:
+      - "Coordinator lease through 2026-09-10T23:59:00+03:00: owner quality pass implementation, Owner canonical reconciliation, and the r01 handoff record"
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-09-08T18:10:00+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/owner-demo-polish/20260908-owner-quality-pass-r01.md
+    stopReason: null
+    gates:
+      unit: PASS
+      integration: NOT_REQUIRED
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
+      independentReview: PASS
+    integratedCommit: null
+
   owner-presentation-ready-r07:
     status: DONE
     dependencies: [owner-demo-polish-r01]

@@ -534,10 +534,10 @@ rejectedRoutedBaseline:
   status: SUPERSEDED_BY_ACCEPTED_CASES
   path: tests/browser/__screenshots__
   fileCount: 41
-  treeSha256: 9d5666e09882215227834a54fc53d0ef681f92d620fcbdfde6fb3959057824f0
+  treeSha256: 7464c87c5eff3881c9bfc2549fd0c767fd4311397bb187392cedbba2265eea87
   rejectionRecord: docs/phase-records/handoffs/fidelity-integration-closure/20260902-193655-fidelity_closure_r05-human-visual-rejection.md
-  promotionRecord: docs/phase-records/handoffs/owner-demo-polish/20260908-presentation-ready-r06-visual-acceptance.md
-  promotionRun: presentation_r06_visual_promote
+  promotionRecord: docs/phase-records/handoffs/owner-demo-polish/20260908-owner-quality-pass-visual-acceptance.md
+  promotionRun: owner_quality_pass_s6a
   disposition: >-
     The REJECTED_R05 tree (frozen at 542c5609…) is preserved as history through
     the unchanged rejectionRecord and the original per-file provenance. Nineteen
@@ -549,9 +549,15 @@ rejectedRoutedBaseline:
     re-rendered eleven existing regression baselines after direct comparison:
     ten honestly mapped Staff, Daily, Activity, Uptime, and Settings frames plus
     the regression-only Settings error frame. The isolated shell canonicals were
-    byte-untouched after their normal assertion passed. The tree hash was
-    recomputed to 9d5666e0… with no file added or removed; exact scope and
-    classification are recorded by the promotionRecord.
+    byte-untouched after their normal assertion passed. A second bounded,
+    human-authorized owner-quality-pass reconciliation (run owner_quality_pass_s6a)
+    then re-rendered seven existing regression baselines after the multi-slice
+    Owner UI material/navigation repair: six honestly mapped Daily, Activity,
+    and Uptime frames plus the regression-only Settings loading frame; Reports,
+    Access, Settings clean/dirty, and shell canonicals stayed byte-untouched
+    after their normal assertions passed. The tree hash was recomputed to
+    7464c87c… with no file added or removed; exact scope and classification are
+    recorded by the promotionRecord.
 
 finalReviewPackage:
   status: PROMOTED_ACCEPTED

@@ -217,6 +217,7 @@ const phases = {
 			"tests/browser/public-baseline.browser.spec.ts",
 			"tests/browser/login-paper-adoption.browser.spec.ts",
 			"tests/browser/staff-paper-fidelity.review.spec.ts",
+			"tests/browser/owner-cross-surface.review.spec.ts",
 			"tests/browser/phase4-staff-web.browser.spec.ts",
 			"tests/browser/phase11-shell.browser.spec.ts",
 			"tests/browser/phase9-owner-ui.browser.spec.ts",
@@ -404,6 +405,10 @@ function fastSteps() {
 	return [
 		["Repository invariants", ["check:repository"]],
 		["Biome check", ["check"]],
+		[
+			"Owner token fidelity",
+			["exec", "node", "scripts/check-owner-tokens.mjs"],
+		],
 		["Type checks", ["check-types"]],
 		["Unit tests", ["test"]],
 		["Python simulator tests", ["test:simulator"]],

@@ -13,9 +13,7 @@
 
 .owner-health__heading {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) auto;
-	gap: 4px 24px;
-	align-items: end;
+	gap: 6px;
 }
 
 .owner-health__heading h1 {
@@ -34,36 +32,17 @@
 }
 
 .owner-health__window {
-	display: flex;
-	flex-wrap: wrap;
-	grid-column: 2;
-	grid-row: 1 / span 2;
-	gap: 8px;
-	justify-content: flex-end;
-	color: var(--fw-text-muted);
-	font-size: 12px;
-}
-
-/*
- * The gap between a label and its value is laid out by the parent, not by a margin on
- * the `<bdi>`. A `bdi` isolates and resolves its own direction, so a logical margin on
- * it resolves against *its* direction: on an LTR value inside an RTL line the space
- * lands on the far side and the label and value collide in Arabic.
- */
-.owner-health__window > span {
-	display: inline-flex;
-	flex-wrap: wrap;
-	gap: 6px;
-	align-items: baseline;
-	padding-block: 7px;
-	padding-inline: 12px;
-	border: 1px solid var(--fw-edge-control, rgb(220 197 201 / 18%));
-	border-radius: 999px;
+	max-inline-size: 70ch;
+	margin: 0;
+	color: var(--fw-text-subtle);
+	font-size: 14px;
+	font-variant-numeric: tabular-nums;
+	line-height: 23px;
 }
 
 .owner-health__window bdi {
-	color: var(--fw-chalk);
-	font-weight: 600;
+	color: var(--fw-text-subtle);
+	font-weight: 400;
 }
 
 .owner-health-metrics {
@@ -285,7 +264,7 @@
 
 /* An unresolved condition is named in words as well as marked. */
 .owner-health__flag {
-	color: #ff7d91;
+	color: var(--fw-error-fg);
 	font-weight: 600;
 }
 
@@ -356,7 +335,7 @@
 
 .owner-health-state--error > svg {
 	border-color: rgb(255 41 70 / 24%);
-	color: #ff7d91;
+	color: var(--fw-error-fg);
 	background: rgb(229 25 53 / 8%);
 }
 
@@ -418,22 +397,15 @@
 }
 
 @media (max-width: 720px) {
-	.owner-health__heading {
-		grid-template-columns: minmax(0, 1fr);
+	.owner-health__heading h1 {
+		font-size: 24px;
+		line-height: 32px;
 	}
 
-	.owner-health__heading :is(h1, p, .owner-health__window) {
-		grid-column: 1;
-		grid-row: auto;
-	}
-
+	.owner-health__heading p,
 	.owner-health__window {
-		justify-content: flex-start;
-	}
-
-	.owner-health__window > span {
-		padding: 0;
-		border: 0;
+		font-size: 13px;
+		line-height: 18px;
 	}
 
 	.owner-health-metrics {

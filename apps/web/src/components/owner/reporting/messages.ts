@@ -45,7 +45,8 @@ export const ownerReportingMessages = {
 		retry: "Try again",
 
 		heatmapTitle: "Occupancy by weekday and hour",
-		heatmapDescription: "Typical crowd level for each hour",
+		heatmapDescription:
+			"How busy the gym usually is at each hour of the working day",
 		heatmapRegion: "Weekday by hour heatmap",
 		heatmapHint:
 			"Select a cell to read its figures. Arrow keys move between cells.",
@@ -169,7 +170,7 @@ export const ownerReportingMessages = {
 		retry: "إعادة المحاولة",
 
 		heatmapTitle: "الإشغال حسب اليوم والساعة",
-		heatmapDescription: "مستوى الازدحام المعتاد لكل ساعة",
+		heatmapDescription: "الزحمة المعتادة في كل ساعة من أيام العمل",
 		heatmapRegion: "خريطة اليوم مقابل الساعة",
 		heatmapHint: "اختر خانة لقراءة أرقامها. تنقل بين الخانات بمفاتيح الأسهم.",
 		hourAxis: "الساعة بتوقيت الصالة",

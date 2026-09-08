@@ -92,6 +92,12 @@ async function openMinuteDetails() {
 	});
 }
 
+async function click(element: HTMLElement) {
+	await act(async () => {
+		element.click();
+	});
+}
+
 beforeEach(() => {
 	Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 	container = document.createElement("div");
@@ -305,6 +311,42 @@ describe("owner daily analytics states", () => {
 		).toContain("15");
 	});
 
+	it("jumps to a minute page through the page select popup", async () => {
+		await render(
+			<OwnerAnalyticsView
+				daily={overviewDay()}
+				currentTimeZone="Asia/Riyadh"
+				timeZoneByVersion={new Map([[1, "UTC"]])}
+			/>,
+		);
+
+		await openMinuteDetails();
+		expect(
+			container.querySelectorAll(".owner-table-region tbody tr"),
+		).toHaveLength(60);
+		const page = container.querySelector<HTMLButtonElement>(
+			'button[aria-label="Minute page"]',
+		);
+		if (!page) throw new Error("Missing minute page control");
+
+		await click(page);
+		const fourth = [
+			...document.querySelectorAll<HTMLElement>(
+				".owner-table-pagination__popup[data-open] [role='option']",
+			),
+		].find((option) => option.textContent?.trim() === "4");
+		if (!fourth) throw new Error("Missing minute page option");
+		await click(fourth);
+
+		expect(
+			container.querySelectorAll(".owner-table-region tbody tr"),
+		).toHaveLength(1);
+		expect(page.textContent).toContain("4");
+		expect(
+			container.querySelector(".owner-table-pagination p")?.textContent,
+		).toContain("181");
+	});
+
 	it("keeps smoothed segments inside their endpoint bounds", () => {
 		const path = smoothPath([
 			{ x: 0, y: 240 },
@@ -343,10 +385,10 @@ describe("owner daily analytics states", () => {
 		expect(container.textContent).toContain("Missing observation");
 		expect(
 			container.querySelector(".owner-metrics")?.textContent,
-		).not.toContain("Observation coverage");
+		).not.toContain("Readings coverage");
 		expect(
 			container.querySelector(".owner-table-disclosure")?.textContent,
-		).toContain("Observation coverage");
+		).toContain("Readings coverage");
 		expect(container.querySelectorAll(".owner-metric")).toHaveLength(3);
 		expect(container.textContent).toContain("10:00 AM");
 		expect(container.textContent).toContain("3:01 AM");
