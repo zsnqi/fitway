@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-09-05T22:04:00Z"
+updatedAt: "2026-09-08T06:54:46+03:00"
 
 coordinator:
-  owner: "Coordinator final authority. fidelity-integration-closure-r01 through r05 are preserved FAILED_VALIDATION; the human-approved successor full-route-paper-fidelity-r01 is DONE (final rendered approval granted 2026-09-05; serialized accepted canonical promotion, accepted-case mapping, clean verify:full with normal snapshots, and final independent verification complete; integratedCommit SELF on codex/fidelity-integration-closure). The Owner shared navigation and Activity Log successor are approved and frozen; their routed-only uniform-material and bidi/presentation deviations are explicitly approved pending implementation evidence. The milestone starts from preserved functional candidate afa2ef6 and corrects the non-circular Paper authority, full-route visual gate, shared Owner shell, and routed fidelity failures without rewriting historical repository-closeout or desktop-demo claims. Main divergence reconciled 2026-09-05: main-only 20260902-155539 r05 DONE claim superseded by 20260902-193655 human visual rejection and preserved as history; main-only 20260902-164414 walkthrough preserved as visual-acceptance evidence. Historical phases and terminal attempts remain immutable. LAN/mobile support, presentation work, GitHub synchronization, release/tagging, deployment, owner-facing PDF work, and external go-live gates remain excluded."
+  owner: "Coordinator final authority. owner-presentation-ready-r07 is the fresh human-authorized successor for the exact preserved d35fbd3 dirty presentation candidate after r06 exhausted 2/2 repairs and proved one remaining concurrency-only Owner logo rasterization failure. This attempt freezes scope to deterministic decoded-logo settlement in the existing shell canonical assertion, then owns a fresh full gate, fresh independent rendered/functional review, and final live presentation rehearsal. Historical attempts and their repair accounting remain immutable; product, Paper, canonical design, data, auth, deployment, credential, and release changes remain excluded."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -22,6 +22,246 @@ baseline:
   independentVerification: docs/phase-records/baseline-independent-verification.md
 
 milestones:
+  owner-presentation-ready-r07:
+    status: DONE
+    dependencies: [owner-demo-polish-r01]
+    ownerSession: "Primary coordinator and sole repository writer for the human-authorized r06 successor. Prior isolated and registered shell assertions passed, but three separate eight-worker full ladders across historical closure and this candidate produced the same 126-pixel antialias delta only around the 24px downscaled official PNG logo. The prior checks waited for fonts and element stability but never awaited image decode/paint settlement. This successor tests that exact hypothesis under repeated concurrent load before any edit, permits only test-harness stabilization that leaves rendered product geometry and canonical bytes unchanged, then restarts the full ladder."
+    branch: codex/owner-demo-prep
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
+    baseCommit: d35fbd3107d6bba4e94f2715a9ae37b81ce02203
+    ownedPaths:
+      - "tests/browser/phase11-shell.browser.spec.ts: exact official-logo decode/paint settlement for canonical capture only"
+      - "tests/browser/desktop-demo.browser.spec.ts: exact Activity Log named-region live-proof oracle only"
+      - PROJECT_STATE.yaml
+      - docs/phase-records/handoffs/owner-demo-polish/**
+    forbiddenPaths:
+      - all application implementation, the official logo asset, Paper, canonical screenshot bytes, and visual authority mappings
+      - schemas, migrations, OpenAPI, authentication, authorization, production API contracts, analytics calculations, and timezone semantics
+      - accumulated demo-history reset, credential changes, deployment, GitHub synchronization, releases, and tags
+      - historical terminal attempt records and their repair accounting
+    sharedLeases:
+      - "Coordinator lease through 2026-09-10T23:59:00+03:00: exact shell-logo canonical test settlement only; no product or baseline rewrite"
+      - "Coordinator lease through 2026-09-10T23:59:00+03:00: fresh disposable browser/database resources, independent review evidence, live presentation rehearsal, PROJECT_STATE, and r07 handoff"
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-09-08T06:54:46+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/owner-demo-polish/20260908-presentation-ready-r07.md
+    stopReason: null
+    gates:
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
+      independentReview: PASS
+    integratedCommit: 7ed5cbcddece324195906ac79ff494ed4978fab9
+
+  owner-presentation-ready-r06:
+    status: FAILED_VALIDATION
+    dependencies: [owner-demo-polish-r01]
+    ownerSession: "Primary coordinator and sole repository writer for the human-authorized r05 successor. Continues the exact preserved d35fbd3 dirty candidate. Prior validation did not settle Owner locale-transition opacity before the Uptime mobile fault-injection baseline and did not classify the seven canonical deltas against the live rendered current design. This successor begins with independent read-only visual and transition diagnosis, uses a deterministic focused Uptime reproduction before any fix, and permits serialized canonical reconciliation only for inspected intentional current-design changes under the human closure authorization."
+    branch: codex/owner-demo-prep
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
+    baseCommit: d35fbd3107d6bba4e94f2715a9ae37b81ce02203
+    ownedPaths:
+      - apps/web/src/components/owner/**
+      - apps/web/src/components/staff/**
+      - apps/web/src/hooks/use-owner-health.ts
+      - apps/web/src/i18n/**
+      - apps/web/src/index.css
+      - packages/ui/src/components/select.tsx
+      - packages/ui/src/components/popover.tsx
+      - tests/browser/**
+      - visual-direction-gate/approved/paper-route-authority-20260902/**
+      - scripts/visual-authority.mjs
+      - scripts/visual-authority.test.ts
+      - scripts/demo/**
+      - edge/simulator.py
+      - edge/test_demo_flow.py
+      - package.json
+      - PROJECT_STATE.yaml
+      - docs/phase-records/handoffs/owner-demo-polish/**
+    forbiddenPaths:
+      - Paper and the immutable fitway-theme-20260715 visual snapshot
+      - schemas, migrations, OpenAPI, authentication, authorization, production API contracts, analytics calculations, and timezone semantics
+      - accumulated demo-history reset, credential changes, deployment, GitHub synchronization, releases, and tags
+      - historical terminal attempt records and their repair accounting
+    sharedLeases:
+      - "Coordinator lease through 2026-09-10T23:59:00+03:00: Owner/Staff presentation implementation and exact routed tests needed to settle the eight r05 failures"
+      - "Coordinator lease through 2026-09-10T23:59:00+03:00: serialized canonical-baseline reconciliation and route-authority approval evidence only after live rendered classification"
+      - "Coordinator lease through 2026-09-10T23:59:00+03:00: disposable browser/database resources, independent review evidence, live presentation rehearsal, PROJECT_STATE, and r06 handoff"
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-09-08T06:03:42+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/owner-demo-polish/20260908-presentation-ready-r06.md
+    stopReason: "Terminal owner-presentation-ready-r06 FAILED_VALIDATION on the third recurrence after 2/2 repairs. Repair 1 settled the Uptime mobile oracle on the active Health panel's completed 180ms entry opacity; focused and registered assertions then passed. Repair 2 corrected the first full-gate launch after the disposable safety guard rejected equal application/test database URLs before any integration test ran. The corrected fresh full gate passed repository invariants, Biome with two inherited non-fatal reporting specificity warnings, types, 632 unit tests, 120 simulator tests, both production builds, and 133 integration tests, then completed the browser ladder 147 passed / 3 intentional live-demo skips / 1 failed. The only failure was the longstanding concurrent Owner shell Arabic desktop canonical: exactly 126 antialiased pixels around the 24px official PNG logo, while the same byte-untouched canonical passed in isolated and registered serialized runs. No third repair is permitted in r06. Successor r07 changes the hypothesis from baseline drift to missing image decode/paint settlement under concurrent load and freezes scope to test-harness stabilization without product or canonical-byte changes."
+    gates:
+      unit: PASS
+      integration: PASS
+      browser: FAIL
+      accessibility: PASS
+      visual: FAIL
+      independentReview: PENDING
+    integratedCommit: null
+
+  owner-presentation-ready-r05:
+    status: FAILED_VALIDATION
+    dependencies: [owner-demo-polish-r01]
+    ownerSession: "Primary coordinator and sole repository writer for the human-authorized r04 successor. Continues the exact preserved d35fbd3 dirty candidate. The missed failure mode was Biome-before-gate: prior focused checks did not include a whole-candidate formatting/lint preflight, leaving formatter drift, incomplete Year listbox option keyboard/focus semantics, and assignment-in-expression lint. This successor makes Biome preflight the first repair gate, then restarts focused checks, verify:fast, full-route-paper-fidelity, verify:full, fresh independent rendered/functional review, and the live presentation rehearsal."
+    branch: codex/owner-demo-prep
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
+    baseCommit: d35fbd3107d6bba4e94f2715a9ae37b81ce02203
+    ownedPaths:
+      - apps/web/src/components/owner/audit/owner-audit-section.tsx
+      - apps/web/src/components/owner/owner-date-field.css
+      - apps/web/src/components/owner/owner-date-field.test.tsx
+      - apps/web/src/components/owner/owner-date-field.tsx
+      - apps/web/src/components/owner/reporting/owner-reporting-view.tsx
+      - apps/web/src/components/owner/reporting/owner-section-switch.tsx
+      - tests/browser/phase10-ui-csv.browser.spec.ts
+      - tests/browser/phase11-audit.browser.spec.ts
+      - tests/browser/phase11-shell.browser.spec.ts
+      - PROJECT_STATE.yaml
+      - docs/phase-records/handoffs/owner-demo-polish/**
+    forbiddenPaths:
+      - Paper, canonical visual baselines, and approved visual provenance
+      - schemas, migrations, OpenAPI, authentication, authorization, production API contracts, analytics calculations, and timezone semantics
+      - accumulated demo-history reset, credential changes, deployment, GitHub synchronization, releases, and tags
+      - unrelated Public, Staff, backend, and database behavior
+      - historical terminal attempt records and their repair accounting
+    sharedLeases:
+      - "Coordinator lease: exact named source/test formatting, Year listbox semantics, transition-ID lint, PROJECT_STATE, and r05 handoff"
+      - "Coordinator lease: serialized local verification, disposable database/browser resources, independent review evidence, and live presentation rehearsal"
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-09-08T05:19:00+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/owner-demo-polish/20260908-presentation-ready-r05.md
+    stopReason: "Terminal owner-presentation-ready-r05 FAILED_VALIDATION after its 2/2 repair budget was exhausted on two process-environment launch corrections and the registered full-route-paper-fidelity gate then finished 134/142 passing with eight failures. Seven failures are canonical visual mismatches in the Owner shell rail, Owner Daily, Owner Activity Log, Owner Uptime, two Owner Settings states, and Staff Live; several include material full-page height changes and cannot be reconciled without fresh human visual acceptance plus explicit canonical-baseline authority. The eighth failure is the Owner Uptime mobile false-pass fault-injection test observing all values under an entering-opacity ancestor before injection, so the baseline is not presentation-ready at that assertion seam. Source hygiene, types, 632 unit tests, 120 simulator tests, and 134 routed functional/accessibility/visual tests pass; every formal run reports zero repository mutation. Per AGENTS.md, no further repair, verify:full, independent final review, live rehearsal, baseline promotion, or completion claim is permitted in this attempt. Preserve the exact dirty candidate and evidence under output/playwright/presentation_ready_r05. Any successor must explicitly own the Health entering-state settlement regression and either obtain human acceptance for the seven changed canonical compositions with serialized baseline reconciliation or change scope to restore accepted visual authority without rolling back unrelated completed work."
+    gates:
+      unit: PASS
+      integration: PENDING
+      browser: FAIL
+      accessibility: FAIL
+      visual: FAIL
+      independentReview: PENDING
+    integratedCommit: null
+
+  owner-presentation-ready-r04:
+    status: FAILED_VALIDATION
+    dependencies: [owner-demo-polish-r01]
+    ownerSession: "Primary coordinator and final integration authority for the human-approved presentation-ready successor. One serialized writer; bounded read-only investigation and fresh review may delegate. Continues the exact preserved d35fbd3 dirty candidate without resetting owner-demo-ready-r03's exhausted 2/2 repair history. Prior checks emphasized settled screenshots, final no-overflow state, and functional route availability; they did not exercise invalid-draft height stability, scroll restoration before outgoing-height collapse, rapid retargeting, section-owned pending fallbacks, default-mounted Hourly Detail rows, or motion continuity in a continuous walkthrough. This successor therefore changes scope to explicit component ownership and deterministic interaction/frame geometry evidence plus a final live rehearsal."
+    branch: codex/owner-demo-prep
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
+    baseCommit: d35fbd3107d6bba4e94f2715a9ae37b81ce02203
+    ownedPaths:
+      - apps/web/src/components/owner/**
+      - apps/web/src/hooks/use-owner-daily-analytics.ts
+      - apps/web/src/hooks/use-owner-health.ts
+      - apps/web/src/i18n/provider.tsx
+      - apps/web/src/i18n/provider.test.tsx
+      - apps/web/src/index.css
+      - packages/ui/src/components/select.tsx
+      - packages/ui/src/components/popover.tsx
+      - package.json
+      - tests/browser/**
+      - scripts/demo/**
+      - edge/simulator.py
+      - edge/test_demo_flow.py
+      - PROJECT_STATE.yaml
+      - docs/phase-records/handoffs/owner-demo-polish/**
+    forbiddenPaths:
+      - Paper, canonical visual baselines, and approved visual provenance
+      - schemas, migrations, OpenAPI, authentication, authorization, production API contracts, analytics calculations, and timezone semantics
+      - accumulated demo-history reset, credential changes, deployment, GitHub synchronization, releases, and tags
+      - unrelated Public, Staff, backend, and database behavior
+    sharedLeases:
+      - "Coordinator lease: PROJECT_STATE and successor handoff; serialized Owner date, Reports, navigation, motion, bilingual copy, and focused browser-test integration"
+      - "Coordinator lease: two thin @fitway/ui Base UI re-export wrappers for Select and Popover; no package manifest, lockfile, or other shared UI changes"
+      - "Coordinator lease: demo fixture-text preview/update tooling and the exact fitway_desktop_demo database only; no reset, identity rewrite, or history deletion"
+      - "Coordinator lease: local demo runtime, browser ports, explicitly named disposable verification resources, and ignored evidence directories"
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-09-08T03:00:00+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/owner-demo-polish/20260908-presentation-ready-r04.md
+    stopReason: "Terminal owner-presentation-ready-r04 FAILED_VALIDATION on the third formal validation recurrence after the permitted 2/2 focused repair attempts. Recurrence 1 stopped at repository invariants because the newly recorded successor rationale used an unsupported PROJECT_STATE field; repair 1 moved it into the schema-approved ownerSession. Recurrence 2 stopped because the active milestone lacked leaseExpiresAt; repair 2 refreshed the lease, completed owned-path declarations, and created the successor handoff. Recurrence 3 passed repository invariants but failed Biome before types/tests: formatter drift in the Audit section, date-field CSS/test/source, reporting view, and Phase 10/11 browser tests; Year listbox option divs lack direct focus/key semantics; and the section coordinator assigns its transition id inside an expression. The two pre-existing reporting specificity warnings are non-fatal. Per AGENTS.md, no third repair, later gate, independent review, canonical promotion, or completion claim is permitted in this attempt. Preserve the exact uncommitted d35fbd3-based candidate and the successfully applied guarded 12-row fitway_desktop_demo text update. Focused evidence remains: demo updater 17/17, Owner copy 37/37, integrated motion/reporting components 54/54, Phase 9 non-canonical 9/9, Reports/navigation browser 17/17, deterministic shell 10/10, and corrected section-independence/Activity Log/accessibility checks. Existing canonical visual mismatches remain unaccepted and every baseline remains byte-untouched. A human-authorized successor must name Biome-before-gate as the previously missed failure mode, format the enumerated files, repair the Year option semantics and transition-id assignment, then restart the full ladder with a fresh budget."
+    gates:
+      unit: PASS
+      integration: PENDING
+      browser: FAIL
+      accessibility: PASS
+      visual: FAIL
+      independentReview: PENDING
+    integratedCommit: null
+
+  owner-demo-ready-r03:
+    status: NEEDS_HUMAN
+    dependencies: [owner-demo-polish-r01]
+    ownerSession: "Primary coordinator, sole writer. Human-authorized complete presentation-ready demo; runtime and videos guide polish, no Paper workflow or mutation. Continues preserved uncommitted r02 with newly provided demo authentication."
+    branch: codex/owner-demo-prep
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
+    baseCommit: d35fbd3107d6bba4e94f2715a9ae37b81ce02203
+    ownedPaths:
+      - apps/web/src/**
+      - packages/api/src/analytics/**
+      - packages/api/src/occupancy/schedule.ts
+      - packages/api/src/occupancy/schedule.test.ts
+      - packages/api/src/occupancy/business-day.ts
+      - apps/server/src/reporting-repository.ts
+      - apps/server/src/reporting-repository.test.ts
+      - tests/browser/**
+      - PROJECT_STATE.yaml
+      - docs/phase-records/handoffs/owner-demo-polish/**
+      - docs/desktop-demo.md
+      - scripts/demo/cli.ts
+      - edge/simulator.py
+      - edge/test_demo_flow.py
+    forbiddenPaths: [Paper, canonical visual baselines, schemas, migrations, deployment, credentials]
+    sharedLeases: ["Coordinator: serialized frontend presentation and bilingual copy, bounded measured Reports optimization and tests, local demo runtime and disposable evidence, durable records"]
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-09-07T08:52:51Z"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/owner-demo-polish/20260907-resumed-demo-review.md
+    stopReason: "Runtime candidate ready for human final visual review. Preserved uncommitted polish passes functional, integration, live-authentication, accessibility and fresh rendered review. Six frozen canonical screenshot comparisons differ from the authorized polish; no baselines were changed. Formal full visual gate remains red pending explicit human visual acceptance and authorized baseline reconciliation. See handoff for exact gate results, test-harness corrections and preserved evidence."
+    gates:
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: FAIL
+      independentReview: PASS
+    integratedCommit: null
+
+  owner-demo-polish-r02:
+    status: FAILED_VALIDATION
+    dependencies: [owner-demo-polish-r01]
+    ownerSession: "Primary coordinator, sole writer; authorized final demo polish. Runtime-led judgment, no Paper mutation."
+    branch: codex/owner-demo-prep
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
+    baseCommit: d35fbd3107d6bba4e94f2715a9ae37b81ce02203
+    ownedPaths:
+      - apps/web/src/components/owner/**
+      - apps/web/src/index.css
+      - packages/api/src/occupancy/business-day.ts
+      - tests/browser/phase9-owner-ui.browser.spec.ts
+      - tests/browser/phase10-ui-csv.browser.spec.ts
+      - PROJECT_STATE.yaml
+      - docs/phase-records/handoffs/owner-demo-polish/**
+    forbiddenPaths: [Paper, canonical visual baselines, schemas, migrations, deployment]
+    sharedLeases: ["Coordinator: scoped Public CSS, Owner UI/copy, date formatter cache, focused tests and durable records"]
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-09-06T16:44:45.866171Z"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/owner-demo-polish/20260906-owner-demo-polish-r02.md
+    stopReason: "Fresh rendered review rejected Daily forced-colors metric text clipping after two recorded focused repairs. Fast and focused browser suites pass, but accessibility/visual acceptance fails. Live Owner end-to-end validation also requires unavailable local credentials and secure interactive authentication. Candidate preserved unintegrated; see handoff."
+    gates:
+      unit: PASS
+      integration: NOT_REQUIRED
+      browser: PASS
+      accessibility: FAIL
+      visual: FAIL
+      independentReview: FAIL
+    integratedCommit: null
+
   owner-demo-polish-r01:
     status: DONE
     dependencies: [desktop-demo]
