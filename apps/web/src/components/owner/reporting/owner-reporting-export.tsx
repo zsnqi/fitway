@@ -13,6 +13,7 @@ import {
 import { formatNumber } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
 
+import { OwnerDateField } from "../owner-date-field";
 import type { OwnerReportingMessages } from "./messages";
 import {
 	OwnerReportingLoading,
@@ -59,16 +60,23 @@ export function OwnerReportingExport({
 	const [selection, setSelection] = useState<ReportingRangeSelection>(() =>
 		windowEndingOn(anchorBusinessDay, CSV_DEFAULT_WINDOW_DAYS),
 	);
-	const problem = rangeProblemMessage(
-		rangeProblem(selection, CSV_MAX_RANGE_DAYS),
-		messages,
-		CSV_MAX_RANGE_DAYS,
-	);
+	const [dateValidity, setDateValidity] = useState({ start: true, end: true });
+	const [validationRequested, setValidationRequested] = useState(false);
+	const rangeValidationProblem =
+		dateValidity.start && dateValidity.end
+			? rangeProblemMessage(
+					rangeProblem(selection, CSV_MAX_RANGE_DAYS),
+					messages,
+					CSV_MAX_RANGE_DAYS,
+				)
+			: messages.problemMalformed;
+	const problem = validationRequested ? rangeValidationProblem : null;
 	const exporting = csv.state.status === "exporting";
 
 	function handleSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
-		if (problem) return;
+		setValidationRequested(true);
+		if (rangeValidationProblem) return;
 		csv.start(selection);
 	}
 
@@ -80,45 +88,51 @@ export function OwnerReportingExport({
 			 * is a group label rather than a second visible heading.
 			 */}
 			<div className="owner-reporting-board__heading">
-				<h3 className="owner-reporting-board__title">{messages.csvTitle}</h3>
+				<h2 className="owner-reporting-board__title">{messages.csvTitle}</h2>
 			</div>
 
 			<form className="owner-reporting-range" onSubmit={handleSubmit}>
 				<fieldset>
 					<legend className="fw-sr-only">{messages.csvLegend}</legend>
 					<div className="owner-reporting-board__row">
-						<div className="owner-reporting-field">
-							<label htmlFor={`${ids}-start`}>{messages.startLabel}</label>
-							<input
-								id={`${ids}-start`}
-								type="date"
-								value={selection.startBusinessDay}
-								aria-describedby={problem ? `${ids}-problem` : undefined}
-								aria-invalid={problem ? true : undefined}
-								onChange={(event) =>
-									setSelection((current) => ({
-										...current,
-										startBusinessDay: event.target.value,
-									}))
-								}
-							/>
-						</div>
-						<div className="owner-reporting-field">
-							<label htmlFor={`${ids}-end`}>{messages.endLabel}</label>
-							<input
-								id={`${ids}-end`}
-								type="date"
-								value={selection.endBusinessDay}
-								aria-describedby={problem ? `${ids}-problem` : undefined}
-								aria-invalid={problem ? true : undefined}
-								onChange={(event) =>
-									setSelection((current) => ({
-										...current,
-										endBusinessDay: event.target.value,
-									}))
-								}
-							/>
-						</div>
+						<OwnerDateField
+							id={`${ids}-start`}
+							label={messages.startLabel}
+							value={selection.startBusinessDay}
+							describedBy={problem ? `${ids}-problem` : undefined}
+							invalid={problem !== null}
+							referenceYear={Number(anchorBusinessDay.slice(0, 4))}
+							onValidationRequest={() => setValidationRequested(true)}
+							onValidationReset={() => setValidationRequested(false)}
+							onValidityChange={(valid) =>
+								setDateValidity((current) => ({ ...current, start: valid }))
+							}
+							onChange={(value) =>
+								setSelection((current) => ({
+									...current,
+									startBusinessDay: value,
+								}))
+							}
+						/>
+						<OwnerDateField
+							id={`${ids}-end`}
+							label={messages.endLabel}
+							value={selection.endBusinessDay}
+							describedBy={problem ? `${ids}-problem` : undefined}
+							invalid={problem !== null}
+							referenceYear={Number(anchorBusinessDay.slice(0, 4))}
+							onValidationRequest={() => setValidationRequested(true)}
+							onValidationReset={() => setValidationRequested(false)}
+							onValidityChange={(valid) =>
+								setDateValidity((current) => ({ ...current, end: valid }))
+							}
+							onChange={(value) =>
+								setSelection((current) => ({
+									...current,
+									endBusinessDay: value,
+								}))
+							}
+						/>
 						<div className="owner-reporting-range__actions">
 							{/*
 							 * Export stays visually secondary to reading: the
@@ -130,7 +144,7 @@ export function OwnerReportingExport({
 								type="submit"
 								variant="outline"
 								data-owner-reporting-export-start=""
-								disabled={exporting || problem !== null}
+								disabled={exporting}
 							>
 								<Download aria-hidden="true" />
 								{messages.csvExport}
@@ -153,16 +167,14 @@ export function OwnerReportingExport({
 							) : null}
 						</div>
 					</div>
-					{problem ? (
-						<p
-							className="owner-reporting__problem"
-							id={`${ids}-problem`}
-							data-owner-reporting-problem="csv"
-							role="alert"
-						>
-							{problem}
-						</p>
-					) : null}
+					<p
+						className="owner-reporting__problem"
+						id={`${ids}-problem`}
+						data-owner-reporting-problem="csv"
+						role={problem ? "alert" : undefined}
+					>
+						{problem}
+					</p>
 				</fieldset>
 			</form>
 

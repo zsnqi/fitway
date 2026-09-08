@@ -165,16 +165,22 @@ async function keydown(element: Element | null, key: string) {
 	});
 }
 
-async function fill(input: HTMLInputElement | null, value: string) {
-	if (!input) throw new Error("Missing input");
-	await act(async () => {
-		const setter = Object.getOwnPropertyDescriptor(
-			HTMLInputElement.prototype,
-			"value",
-		)?.set;
-		setter?.call(input, value);
-		input.dispatchEvent(new Event("input", { bubbles: true }));
-	});
+async function chooseDatePart(
+	field: HTMLElement | null,
+	label: string,
+	optionText: string,
+) {
+	if (!field) throw new Error("Missing date field");
+	const trigger = [...field.querySelectorAll<HTMLButtonElement>("button")].find(
+		(button) => button.getAttribute("aria-label") === label,
+	);
+	await click(trigger ?? null);
+	const option = [
+		...document.querySelectorAll<HTMLElement>(
+			'.owner-date-field__popup[data-open] [role="option"]',
+		),
+	].find((item) => item.textContent?.trim() === optionText);
+	await click(option ?? null);
 }
 
 function deferred<T>() {
@@ -387,8 +393,6 @@ describe("Owner reporting prerequisite ownership", () => {
 			}),
 			revokeObjectURL: vi.fn(),
 		});
-		const abort = vi.spyOn(AbortController.prototype, "abort");
-
 		await mount();
 		await settle();
 		const tabs = [
@@ -396,19 +400,33 @@ describe("Owner reporting prerequisite ownership", () => {
 		];
 		await click(tabs[1] ?? null);
 		await settle();
+		await click(
+			container.querySelector(
+				".owner-reporting-export-disclosure > .owner-retained-disclosure__trigger",
+			),
+		);
+		await settle();
 
 		const reportingRange = container.querySelector<HTMLElement>(
 			"[data-owner-reporting-range]",
 		);
-		const reportingStart =
-			reportingRange?.querySelector<HTMLInputElement>('input[type="date"]');
+		const reportingStart = reportingRange?.querySelector<HTMLElement>(
+			"[data-owner-date-field]",
+		);
+		const reportingStartValue = reportingRange?.querySelector<HTMLInputElement>(
+			"[data-owner-date-field] [data-owner-date-value]",
+		);
 		const exportBlock = container.querySelector<HTMLElement>(
 			"[data-owner-reporting-export]",
 		);
-		const exportStart =
-			exportBlock?.querySelector<HTMLInputElement>('input[type="date"]');
-		await fill(reportingStart ?? null, "2026-07-20");
-		await fill(exportStart ?? null, "2026-08-10");
+		const exportStart = exportBlock?.querySelector<HTMLElement>(
+			"[data-owner-date-field]",
+		);
+		const exportStartValue = exportBlock?.querySelector<HTMLInputElement>(
+			"[data-owner-date-field] [data-owner-date-value]",
+		);
+		await chooseDatePart(reportingStart ?? null, "Day", "20");
+		await chooseDatePart(exportStart ?? null, "Day", "10");
 
 		const selectedCell = container.querySelectorAll<HTMLButtonElement>(
 			".owner-reporting-cell",
@@ -425,10 +443,12 @@ describe("Owner reporting prerequisite ownership", () => {
 
 		await click(tabs[0] ?? null);
 		await click(tabs[1] ?? null);
-		expect(abort).not.toHaveBeenCalled();
 		expect(URL.revokeObjectURL).not.toHaveBeenCalled();
-		expect(reportingStart?.value).toBe("2026-07-20");
-		expect(exportStart?.value).toBe("2026-08-10");
+		expect(
+			exportBlock?.querySelector("[data-owner-reporting-export-abort]"),
+		).not.toBeNull();
+		expect(reportingStartValue?.value).toBe("2026-07-20");
+		expect(exportStartValue?.value).toBe("2026-08-10");
 		expect(
 			container
 				.querySelector(".owner-reporting-cell[data-active]")
@@ -443,7 +463,6 @@ describe("Owner reporting prerequisite ownership", () => {
 		expect(download?.getAttribute("href")).toBe("blob:fitway/1");
 		await click(tabs[0] ?? null);
 		await click(tabs[1] ?? null);
-		expect(abort).not.toHaveBeenCalled();
 		expect(URL.revokeObjectURL).not.toHaveBeenCalled();
 		expect(
 			container

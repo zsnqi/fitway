@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type {
 	AnalyticsSettingsVersion,
 	ObservedOccupancyMinute,
@@ -68,6 +68,33 @@ function isoDateAtOffset(start: string, offset: number): string {
 }
 
 describe("reporting range and heatmap", () => {
+	it("does not resolve the same daily schedule thousands of times while building a range", () => {
+		const formats = vi.spyOn(Intl.DateTimeFormat.prototype, "formatToParts");
+		try {
+			const report = buildReportingRange({
+				startBusinessDay: "2026-07-16",
+				endBusinessDay: "2026-07-17",
+				settingsVersions: [
+					settings({
+						weeklySchedule: Object.fromEntries(
+							Object.keys(closedWeek).map((day) => [
+								day,
+								{ open: "00:00", close: "00:00" },
+							]),
+						) as AnalyticsSettingsVersion["weeklySchedule"],
+					}),
+				],
+				observedMinutes: [],
+			});
+			expect(report.expectedOpenMinutes).toBe(2 * 1440);
+			// A generous work budget for per-minute classification plus a small
+			// number of timezone-aware session resolutions, independent of CPU speed.
+			expect(formats.mock.calls.length).toBeLessThan(20_000);
+		} finally {
+			formats.mockRestore();
+		}
+	});
+
 	it("uses business-day weekday and the effective minute timezone without collapsing zero, missing, or closed", () => {
 		const report = buildReportingRange({
 			startBusinessDay: "2026-07-16",

@@ -3,17 +3,24 @@ const BOUNDARY = /^(\d{2}):(\d{2})(?::(\d{2}))?$/;
 
 export type LocalCivilDate = { year: number; month: number; day: number };
 
+const localFormatters = new Map<string, Intl.DateTimeFormat>();
+
 function localParts(instant: Date, timezone: string) {
-	const formatter = new Intl.DateTimeFormat("en-CA-u-nu-latn", {
-		timeZone: timezone,
-		year: "numeric",
-		month: "2-digit",
-		day: "2-digit",
-		hour: "2-digit",
-		minute: "2-digit",
-		second: "2-digit",
-		hourCycle: "h23",
-	});
+	let formatter = localFormatters.get(timezone);
+	if (!formatter) {
+		formatter = new Intl.DateTimeFormat("en-CA-u-nu-latn", {
+			timeZone: timezone,
+			year: "numeric",
+			month: "2-digit",
+			day: "2-digit",
+			hour: "2-digit",
+			minute: "2-digit",
+			second: "2-digit",
+			hourCycle: "h23",
+		});
+		if (localFormatters.size >= 64) localFormatters.clear();
+		localFormatters.set(timezone, formatter);
+	}
 	const parts = Object.fromEntries(
 		formatter
 			.formatToParts(instant)

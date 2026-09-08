@@ -160,6 +160,19 @@ describe("health formatting", () => {
 			),
 		).toBe("None");
 	});
+
+	it("uses natural Arabic singular, dual, few, many, and general count forms", () => {
+		const ar = ownerHealthMessages.ar;
+		expect(ar.noticesSummary(0, "0")).toBe("لم يُرسل أي إشعار في هذه الفترة");
+		expect(ar.noticesSummary(1, "1")).toBe("أُرسل إشعار واحد في هذه الفترة");
+		expect(ar.noticesSummary(2, "2")).toBe("أُرسل إشعاران في هذه الفترة");
+		expect(ar.noticesSummary(5, "5")).toBe("أُرسلت 5 إشعارات في هذه الفترة");
+		expect(ar.noticesSummary(11, "11")).toBe("أُرسل 11 إشعاراً في هذه الفترة");
+		expect(ar.noticesSummary(100, "100")).toBe("أُرسل 100 إشعار في هذه الفترة");
+		expect(
+			deliveryLabel({ delivered: 2, failed: 1, unconfirmed: 3 }, "ar", ar),
+		).toBe("وصل إشعاران · فشل إرسال إشعار واحد · 3 إشعارات غير مؤكدة");
+	});
 });
 
 describe("health metrics", () => {
@@ -236,11 +249,11 @@ describe("health tables", () => {
 		);
 		const rows = container.querySelectorAll("tbody tr");
 		expect(rows).toHaveLength(2);
-		expect(rows[0]?.textContent).toContain("Device reported a camera failure");
+		expect(rows[0]?.textContent).toContain("Camera issue");
 		expect(rows[0]?.textContent).toContain("Not yet recovered");
 		// Two notices for one condition, one of which never reached Telegram.
 		expect(rows[0]?.textContent).toContain("1 delivered · 1 failed to send");
-		expect(rows[1]?.textContent).toContain("Edge stopped pushing");
+		expect(rows[1]?.textContent).toContain("Counter connection lost");
 		expect(rows[1]?.textContent).toContain("All delivered");
 	});
 

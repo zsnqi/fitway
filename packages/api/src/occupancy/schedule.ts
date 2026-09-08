@@ -277,13 +277,78 @@ export function evaluateSchedule(
 	now: Date,
 ): { open: true } | { open: false; nextOpenAt: Date | null } {
 	assertScheduleSettings(settings);
+	return evaluateValidatedSchedule(
+		settings,
+		now,
+		(date) => resolveScheduleSession(settings, date),
+		(date) => openingAt(settings, date),
+	);
+}
+
+function openingAt(
+	settings: ScheduleSettings,
+	date: ScheduleCivilDate,
+): number | null {
+	const hours = settings.weeklySchedule[weekdayFor(date)];
+	return hours
+		? strictInstant(
+				resolveWallTime(date, parseTime(hours.open), settings.timeZone),
+			).getTime()
+		: null;
+}
+
+/**
+ * Repeated evaluations of one immutable settings snapshot, for a bounded
+ * analytics request. Calendar sessions are resolved once per civil date;
+ * individual instants still use the ordinary half-open/DST rules below.
+ * The cache belongs to the request, never to a live settings version globally.
+ */
+export function createScheduleEvaluator(settings: ScheduleSettings) {
+	assertScheduleSettings(settings);
+	const snapshot: ScheduleSettings = {
+		timeZone: settings.timeZone,
+		weeklySchedule: Object.fromEntries(
+			WEEKDAYS.map((day) => {
+				const hours = settings.weeklySchedule[day];
+				return [day, hours ? { ...hours } : null];
+			}),
+		) as WeeklySchedule,
+	};
+	const sessions = new Map<string, ScheduleSessionResolution | null>();
+	const openings = new Map<string, number | null>();
+	const keyFor = (date: ScheduleCivilDate) =>
+		`${date.year}-${date.month}-${date.day}`;
+	return (now: Date) =>
+		evaluateValidatedSchedule(
+			snapshot,
+			now,
+			(date) => {
+				const key = keyFor(date);
+				if (!sessions.has(key))
+					sessions.set(key, resolveScheduleSession(snapshot, date));
+				return sessions.get(key) ?? null;
+			},
+			(date) => {
+				const key = keyFor(date);
+				if (!openings.has(key)) openings.set(key, openingAt(snapshot, date));
+				return openings.get(key) ?? null;
+			},
+		);
+}
+
+function evaluateValidatedSchedule(
+	settings: ScheduleSettings,
+	now: Date,
+	sessionAt: (date: ScheduleCivilDate) => ScheduleSessionResolution | null,
+	nextOpening: (date: ScheduleCivilDate) => number | null,
+): { open: true } | { open: false; nextOpenAt: Date | null } {
 	if (!(now instanceof Date) || !Number.isFinite(now.getTime())) {
 		throw new RangeError("A valid evaluation instant is required");
 	}
 	const local = localParts(now, settings.timeZone);
 	const today = { year: local.year, month: local.month, day: local.day };
 	for (const anchor of [addDays(today, -1), today]) {
-		const resolution = resolveScheduleSession(settings, anchor);
+		const resolution = sessionAt(anchor);
 		const session = resolution
 			? {
 					start: strictInstant(resolution.start),
@@ -302,11 +367,9 @@ export function evaluateSchedule(
 	const openings: Date[] = [];
 	for (let days = 0; days <= 7; days += 1) {
 		const date = addDays(today, days);
-		const hours = settings.weeklySchedule[weekdayFor(date)];
-		if (!hours) continue;
-		const candidate = strictInstant(
-			resolveWallTime(date, parseTime(hours.open), settings.timeZone),
-		);
+		const timestamp = nextOpening(date);
+		if (timestamp === null) continue;
+		const candidate = new Date(timestamp);
 		if (candidate.getTime() > now.getTime()) openings.push(candidate);
 	}
 	openings.sort((left, right) => left.getTime() - right.getTime());

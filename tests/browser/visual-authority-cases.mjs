@@ -394,6 +394,9 @@ const definitions = [
 // canonicals without an honest case/leaf counterpart (login narrow exception
 // states, shell rail element captures, settings loading/error states) are
 // promoted for regression but intentionally remain rejected-listed.
+const presentationR06ApprovalRecord =
+	"docs/phase-records/handoffs/owner-demo-polish/20260908-presentation-ready-r06-visual-acceptance.md";
+
 const acceptedCanonicalOverrides = Object.freeze({
 	"login--idle--ar--desktop": {
 		leafExportPath: "login/login-idle-ar-1440.png",
@@ -414,22 +417,24 @@ const acceptedCanonicalOverrides = Object.freeze({
 			"aea33aa43ea5494e8f3d0eeb3383c15a8b4cdf632f847b8c08105381f867593f",
 	},
 	"staff--live--ar--desktop": {
+		approvalRecord: presentationR06ApprovalRecord,
 		leafExportPath: "staff/staff-live-ar-1440.png",
 		leafExportSha256:
 			"f5121e33d453302391d0ba726f1fcfbfe25824c7bd1ccabee75447213e3a097b",
 		routedPath:
 			"win32/chromium/staff-paper-fidelity.review.spec.ts/staff-live-route-ar-desktop-1440x900.png",
 		routedSha256:
-			"83edb648c0b54761cda68b972a547f16616a40f8465efaec6e4c04c471e48f05",
+			"28058b9acd63c083e5229d385cb0df27efb1c0616f0f8498635990bc02b6be96",
 	},
 	"staff--live--en--mobile": {
+		approvalRecord: presentationR06ApprovalRecord,
 		leafExportPath: "staff/staff-live-en-390.png",
 		leafExportSha256:
 			"5d6f0e836ff85d78e4ee072100c2cb847867a3eee0c872cdb9da7098df3c53cc",
 		routedPath:
 			"win32/chromium/staff-paper-fidelity.review.spec.ts/staff-live-route-en-mobile-390x844.png",
 		routedSha256:
-			"af5b883af002aa87f15031aee3677aaf7e74b7bbb408588c922c37de64faa356",
+			"d5d1927dfb1f399ab0e07f5be22e63776521720afcfef1aef81fb2be8c29b0de",
 	},
 	"staff--closed--ar--mobile": {
 		leafExportPath: "staff/staff-closed-ar-390.png",
@@ -468,24 +473,27 @@ const acceptedCanonicalOverrides = Object.freeze({
 			"fcb5dfc9265460eb8b4f3b1c9d5c103e990e015d9d765a15e67d2be023e9de40",
 	},
 	"ownerDaily--completed--ar--desktop": {
+		approvalRecord: presentationR06ApprovalRecord,
 		leafExportPath: "owner-daily/owner-daily-closed-ar-1440.png",
 		leafExportSha256:
 			"63109032f42fc6ce2ff697d7c9e35e061b38369c1433d69068d3f5b2000975ec",
 		routedPath:
 			"win32/chromium/phase9-owner-ui.browser.spec.ts/owner-daily-route-ar-desktop-1440x900.png",
 		routedSha256:
-			"ee2e0e24c96281052eabe51e355a2270bc62bd28ab3a0b2e3614e208e064992b",
+			"55ccf279fdea841f030105bb7b08be79f0a1d6a4626ed4740738824ce196f391",
 	},
 	"ownerDaily--completed--en--mobile": {
+		approvalRecord: presentationR06ApprovalRecord,
 		leafExportPath: "owner-daily/owner-daily-closed-en-390.png",
 		leafExportSha256:
 			"f2e36563997daf06c5a1b36a9ce59a7b6667e27741c31e07d6701dac6b74d5bb",
 		routedPath:
 			"win32/chromium/phase9-owner-ui.browser.spec.ts/owner-daily-route-en-mobile-390x844.png",
 		routedSha256:
-			"c4c1668eeb0d4e1f35343d2e03760ddc97ce2e2a4d4386ac2c73a1000381d9b7",
+			"8258e4fa9715dc981fc2512d0609a87d4461c7387be26af3982f707fc6656462",
 	},
 	"ownerActivityLog--populated--ar--desktop": {
+		approvalRecord: presentationR06ApprovalRecord,
 		leafExportPath:
 			"owner-activity-log/owner-activity-desktop-ar-populated-1440.png",
 		leafExportSha256:
@@ -493,9 +501,10 @@ const acceptedCanonicalOverrides = Object.freeze({
 		routedPath:
 			"win32/chromium/phase11-audit.browser.spec.ts/owner-audit-route-ar-desktop-1440x900.png",
 		routedSha256:
-			"b98c68457c4f501c9d55db01001c507549ff67f00c459a08d60040c7dd0d087a",
+			"8da4c451b08561cad4e4a34fbbe04a122e9082a137112ce0c3dc6552c36c8a4a",
 	},
 	"ownerActivityLog--populated--en--mobile": {
+		approvalRecord: presentationR06ApprovalRecord,
 		leafExportPath:
 			"owner-activity-log/owner-activity-mobile-en-populated-390.png",
 		leafExportSha256:
@@ -503,9 +512,10 @@ const acceptedCanonicalOverrides = Object.freeze({
 		routedPath:
 			"win32/chromium/phase11-audit.browser.spec.ts/owner-audit-route-en-mobile-390x844.png",
 		routedSha256:
-			"2e6e223ed2566aecbfb8670fdbbcfb44221f8c83a444aec0b5525edc4e6d204b",
+			"0df93edd510e011a9ff36795ad14a8be99a287ed3b9f319d6f08b6aa3fddbb1c",
 	},
 	"ownerSystemStatus--populated--ar--desktop": {
+		approvalRecord: presentationR06ApprovalRecord,
 		leafExportPath:
 			"owner-system-status/owner-system-status-desktop-ar-1440.png",
 		leafExportSha256:
@@ -513,34 +523,37 @@ const acceptedCanonicalOverrides = Object.freeze({
 		routedPath:
 			"win32/chromium/phase11-health.browser.spec.ts/owner-health-route-ar-desktop-1440x900.png",
 		routedSha256:
-			"83fdc9ee2d5c679a213a9ff3b0d96ef406476169d0ef2d8253ff2228a613c031",
+			"8305e00e18d510c58a9c1e342b944e3348fd5a9ad872267b6ac0fcc26a5c0213",
 	},
 	"ownerSystemStatus--populated--en--mobile": {
+		approvalRecord: presentationR06ApprovalRecord,
 		leafExportPath: "owner-system-status/owner-system-status-mobile-en-390.png",
 		leafExportSha256:
 			"65cc8644f19c6a35e253b1c468c070c019ca150f8c7332460daa3e42c8320873",
 		routedPath:
 			"win32/chromium/phase11-health.browser.spec.ts/owner-health-route-en-mobile-390x844.png",
 		routedSha256:
-			"b8168d9bab5c42c2ebe130eef98b87ff7ab3195d61538123900cc59525a67d55",
+			"3c90192a0c7a196834fcb8c9a0c81ea0ae961c3cd68c94e965758841ff0b0e02",
 	},
 	"ownerSettings--clean--en--desktop": {
+		approvalRecord: presentationR06ApprovalRecord,
 		leafExportPath: "owner-settings/owner-settings-desktop-en-1440.png",
 		leafExportSha256:
 			"c1e77941e2861f0d681ce1345e54147dfae579f0f1d9f33461951d03734e811c",
 		routedPath:
 			"win32/chromium/phase11-settings.browser.spec.ts/owner-settings-route-en-desktop-1440x900.png",
 		routedSha256:
-			"98c6c9a6443423b758b381a2bd44492e195849de683fd9b1f5699becae89e9e6",
+			"b9dc6764a8586e212f6b88e017eabebae3965b886c04471735591fa3dad74d07",
 	},
 	"ownerSettings--dirty--ar--mobile": {
+		approvalRecord: presentationR06ApprovalRecord,
 		leafExportPath: "owner-settings/owner-settings-mobile-ar-390.png",
 		leafExportSha256:
 			"bb4f5e3e0e2af73e18a119b75c7318f083de26b839410e23fa049160a29e65da",
 		routedPath:
 			"win32/chromium/phase11-settings.browser.spec.ts/owner-settings-route-ar-mobile-390x844.png",
 		routedSha256:
-			"5e3abe716418ee43e2d5f9013dbf3d3fd8838dcb47b7f0b1f6709c2de970158f",
+			"06f6e28069234b5e607c21582706249468ba9118ab74ea589671a8482b77dff1",
 	},
 });
 
@@ -564,7 +577,7 @@ function applyAcceptedCanonicalOverrides(cases) {
 				path: override.routedPath,
 				sha256: override.routedSha256,
 			},
-			approvalRecord: acceptedApprovalRecord,
+			approvalRecord: override.approvalRecord ?? acceptedApprovalRecord,
 		};
 	});
 }

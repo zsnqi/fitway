@@ -34,6 +34,12 @@ PLANNED → READY → IN_PROGRESS → VALIDATING → READY_FOR_INTEGRATION → D
 - `FAILED_VALIDATION`: the same gate remains red after two focused repair attempts or the fresh
   verifier rejects the result.
 
+A successor attempt (a fresh attempt record with a reset repair budget) may open only after the
+terminal record of the failed lineage names the failure mode prior checks did not cover, the
+changed hypothesis or changed scope, and why that failure mode will not recur. Human
+authorization for a successor is required whenever any existing rule also requires it; the
+evidence gate above is a minimum, not a substitute.
+
 These states and the two-repair rule govern implementation and validation attempts. A plan whose
 deliverable is handed to the user or to an external executor ends at plan delivery: it may be
 recorded durably, but it is not registered as a milestone, carries no gates, and does not enter
@@ -76,14 +82,12 @@ The baseline's `integratedCommit` remains the immutable BRG hash; `SELF` in an a
 
 ## Clean-session startup
 
-Every worker or verifier reads, in order:
-
-1. `AGENTS.md`;
-2. `FITWAY_PRODUCT.md` and the relevant `SPEC.md` sections;
-3. `DESIGN_GUIDE.md` for UI work;
-4. `PHASES.md` and `PROJECT_STATE.yaml`;
-5. the relevant ADR and phase record;
-6. the latest handoff named in the ledger.
+`AGENTS.md` is loaded automatically and carries the canonical reading order and router table
+(which authority governs what, and when to read it). Every worker or verifier starts there, then
+reads the documents its table names for the work at hand — at minimum `FITWAY_PRODUCT.md`, the
+relevant `SPEC.md` sections, `PROJECT_STATE.yaml`, and the latest handoff named in the ledger,
+plus `DESIGN_GUIDE.md` and ADR-007 for UI work and the relevant ADR and phase record before
+continuing prior work.
 
 Then verify `git status --short`, `git rev-parse HEAD`, the worktree/branch, tool versions
 (including `pnpm exec vitest --version` from the worktree root), required services, and the
@@ -101,7 +105,8 @@ activation head, lease, or ownership differs.
 4. Run `pnpm verify:fast` before broad integration checks.
 5. Run the phase-selected verification with a unique run ID and disposable resources.
 6. If a gate fails, record the command, concise failure, and artifact; make at most two focused
-   repair attempts. Do not reset the count by changing sessions.
+   repair attempts. Do not reset the count by changing sessions. A successor after
+   `FAILED_VALIDATION` must satisfy the evidence gate in the state machine section above.
 7. UI work completes the phase polish loop below.
 8. Produce a durable handoff and set the candidate ready for independent verification.
 

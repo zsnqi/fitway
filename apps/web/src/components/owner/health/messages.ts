@@ -1,3 +1,49 @@
+type ArabicNoticeOutcome = "delivered" | "failed" | "unconfirmed";
+
+function arabicNoticeSummary(count: number, formatted: string): string {
+	switch (new Intl.PluralRules("ar").select(count)) {
+		case "zero":
+			return "لم يُرسل أي إشعار في هذه الفترة";
+		case "one":
+			return "أُرسل إشعار واحد في هذه الفترة";
+		case "two":
+			return "أُرسل إشعاران في هذه الفترة";
+		case "few":
+			return `أُرسلت ${formatted} إشعارات في هذه الفترة`;
+		case "many":
+			return `أُرسل ${formatted} إشعاراً في هذه الفترة`;
+		default:
+			return `أُرسل ${formatted} إشعار في هذه الفترة`;
+	}
+}
+
+function arabicOutcomeSummary(
+	count: number,
+	formatted: string,
+	outcome: ArabicNoticeOutcome,
+): string {
+	const plural = new Intl.PluralRules("ar").select(count);
+	if (outcome === "delivered") {
+		if (plural === "one") return "وصل إشعار واحد";
+		if (plural === "two") return "وصل إشعاران";
+		if (plural === "few") return `${formatted} إشعارات وصلت`;
+		if (plural === "many") return `${formatted} إشعاراً وصل`;
+		return `${formatted} إشعار وصل`;
+	}
+	if (outcome === "failed") {
+		if (plural === "one") return "فشل إرسال إشعار واحد";
+		if (plural === "two") return "فشل إرسال إشعارين";
+		if (plural === "few") return `فشل إرسال ${formatted} إشعارات`;
+		if (plural === "many") return `فشل إرسال ${formatted} إشعاراً`;
+		return `فشل إرسال ${formatted} إشعار`;
+	}
+	if (plural === "one") return "إشعار واحد غير مؤكد";
+	if (plural === "two") return "إشعاران غير مؤكدين";
+	if (plural === "few") return `${formatted} إشعارات غير مؤكدة`;
+	if (plural === "many") return `${formatted} إشعاراً غير مؤكد`;
+	return `${formatted} إشعار غير مؤكد`;
+}
+
 /**
  * Component-owned bilingual copy for the owner incident and uptime summary.
  *
@@ -19,8 +65,7 @@ export const ownerHealthMessages = {
 		loading: "Loading the uptime summary",
 		loadingDescription: "Preparing the recent incident and uptime history.",
 		errorTitle: "The uptime summary could not be loaded",
-		errorDescription:
-			"No figure has been substituted. Check the connection and try again.",
+		errorDescription: "Check the connection and try again.",
 		retry: "Try again",
 
 		unmonitoredTitle: "No health history has been recorded yet",
@@ -37,12 +82,18 @@ export const ownerHealthMessages = {
 		coverageSince: "Health history begins",
 
 		noticesLabel: "Alerts sent to maintenance",
-		noticesOf: "notices sent in this period",
+		noticesSummary: (count: number, formatted: string) =>
+			`${formatted} ${count === 1 ? "notice" : "notices"} sent in this period`,
 		noticesBreakdown: "delivered · failed to send · unconfirmed",
+		deliveredSummary: (_count: number, formatted: string) =>
+			`${formatted} delivered`,
+		failedSummary: (_count: number, formatted: string) =>
+			`${formatted} failed to send`,
+		unconfirmedSummary: (_count: number, formatted: string) =>
+			`${formatted} unconfirmed`,
 
 		offlineTitle: "Offline periods",
-		offlineDescription:
-			"Every recorded stretch without data, whether or not the gym was open at the time.",
+		offlineDescription: "Connection interruptions, including closed hours.",
 		offlineRegion: "Offline periods",
 		offlineEmptyTitle: "No offline period in this window",
 		offlineEmptyDescription:
@@ -71,10 +122,10 @@ export const ownerHealthMessages = {
 		incidentsShown: "Incidents shown",
 		incidentsOngoing: "Not yet recovered",
 
-		stale_push: "Edge stopped pushing",
-		process_failure: "Device reported a process failure",
-		camera_failure: "Device reported a camera failure",
-		feed_failure: "Device reported a feed failure",
+		stale_push: "Counter connection lost",
+		process_failure: "Counter issue",
+		camera_failure: "Camera issue",
+		feed_failure: "Camera feed interrupted",
 
 		delivered: "delivered",
 		failed: "failed to send",
@@ -98,7 +149,7 @@ export const ownerHealthMessages = {
 		loading: "جارٍ تحميل ملخص التشغيل",
 		loadingDescription: "جارٍ تجهيز سجل الأعطال ونسبة التشغيل الأخيرة.",
 		errorTitle: "تعذر تحميل ملخص التشغيل",
-		errorDescription: "لم نستبدل أي رقم. تحقق من الاتصال ثم أعد المحاولة.",
+		errorDescription: "تحقق من الاتصال ثم أعد المحاولة.",
 		retry: "إعادة المحاولة",
 
 		unmonitoredTitle: "لا يوجد سجل حالة حتى الآن",
@@ -115,8 +166,14 @@ export const ownerHealthMessages = {
 		coverageSince: "يبدأ سجل الحالة",
 
 		noticesLabel: "التنبيهات المرسلة للصيانة",
-		noticesOf: "إشعاراً أُرسل في هذه الفترة",
+		noticesSummary: arabicNoticeSummary,
 		noticesBreakdown: "وصل · فشل الإرسال · غير مؤكد",
+		deliveredSummary: (count: number, formatted: string) =>
+			arabicOutcomeSummary(count, formatted, "delivered"),
+		failedSummary: (count: number, formatted: string) =>
+			arabicOutcomeSummary(count, formatted, "failed"),
+		unconfirmedSummary: (count: number, formatted: string) =>
+			arabicOutcomeSummary(count, formatted, "unconfirmed"),
 
 		offlineTitle: "فترات الانقطاع",
 		offlineDescription:
@@ -148,10 +205,10 @@ export const ownerHealthMessages = {
 		incidentsShown: "الأعطال المعروضة",
 		incidentsOngoing: "لم تتعافَ بعد",
 
-		stale_push: "توقف الجهاز عن الإرسال",
-		process_failure: "أبلغ الجهاز عن تعطل التشغيل",
-		camera_failure: "أبلغ الجهاز عن تعطل الكاميرا",
-		feed_failure: "أبلغ الجهاز عن تعطل البث",
+		stale_push: "انقطع اتصال جهاز العد",
+		process_failure: "خلل في جهاز العد",
+		camera_failure: "خلل في الكاميرا",
+		feed_failure: "انقطع بث الكاميرا",
 
 		delivered: "وصل",
 		failed: "فشل الإرسال",

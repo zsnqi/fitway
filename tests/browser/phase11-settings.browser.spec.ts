@@ -336,7 +336,7 @@ async function openOwnerPage(page: Page, options?: { readStatus?: number }) {
 	await expect(page.locator(section)).toBeVisible();
 }
 
-test("the section stands down while the shared analytics query is pending, issuing no settings request", async ({
+test("the section loads independently while the shared analytics query is pending", async ({
 	page,
 }) => {
 	await mockOwnerSurfaces(page);
@@ -352,19 +352,18 @@ test("the section stands down while the shared analytics query is pending, issui
 	await page.goto("/admin");
 	await selectSettings(page);
 
-	await page.waitForTimeout(300);
-	expect(observedReadRequests).toBe(0);
-	await expect(page.locator(section)).toHaveCount(0);
+	await expect.poll(() => observedReadRequests).toBe(1);
+	await expect(page.locator(section)).toBeVisible();
 	await expect(
-		page.getByRole("heading", { level: 1, name: "Loading today's readings" }),
+		page.getByRole("heading", { level: 1, name: "Settings" }),
 	).toBeVisible();
 	await expect(page.locator("main h1:visible")).toHaveCount(1);
 
 	hold.resolve();
-	await expect(page.locator(section)).toBeVisible();
 	await expect(
 		page.locator(`${upperActions} .owner-settings__version`),
 	).toContainText("Current version 7");
+	expect(observedReadRequests).toBe(1);
 });
 
 test("a late first section visit neither refetches Daily nor loses a mounted Settings draft", async ({
@@ -555,17 +554,15 @@ test("clean state shows the locked timing board with copied values and Western d
 	page,
 }) => {
 	await openOwnerPage(page);
-	await expect(page.locator(section)).toContainText("Asia/Riyadh");
-	await expect(page.locator(section)).toContainText("20 s");
-	await expect(page.locator(section)).toContainText("90 s");
-	await expect(page.locator(section)).toContainText("180 s");
-	await expect(page.locator(section)).toContainText("60 s");
 	await expect(page.locator(section)).toContainText(
-		"Versioned owner configuration. Changes apply prospectively and never rewrite history.",
+		"Riyadh time (Asia/Riyadh)",
 	);
-	await expect(page.locator(section)).toContainText(
-		"Operational timing · locked",
-	);
+	await expect(page.locator(section)).toContainText("20 seconds");
+	await expect(page.locator(section)).toContainText("90 seconds");
+	await expect(page.locator(section)).toContainText("180 seconds");
+	await expect(page.locator(section)).toContainText("60 seconds");
+	await expect(page.locator(section)).toContainText("All changes saved");
+	await expect(page.locator(section)).toContainText("System timing");
 	await expect(page.locator(saveButtons).first()).toBeDisabled();
 	await expect(page.locator(discardButtons)).toHaveCount(0);
 	await captureReview(page, "owner-settings-clean-en-desktop-1440.png");
@@ -657,7 +654,7 @@ test("dirty invalid locks Save, associates field errors, and announces the summa
 		"Capacity must be between 1 and 2147483647.",
 	);
 	await expect(page.locator(section)).toContainText(
-		"Use a 24-hour time as HH:mm.",
+		"Use 24-hour time, for example 04:00.",
 	);
 	const describedBy = await capacity.getAttribute("aria-describedby");
 	expect(describedBy).toBeTruthy();
@@ -968,14 +965,16 @@ test("Arabic renders the RTL form with explicit semantic order and preserved dra
 
 	await setLocale(page, "ar");
 	await expect(page.locator(section)).toContainText("الإعدادات");
-	await expect(page.locator(section)).toContainText("حد يوم العمل");
+	await expect(page.locator(section)).toContainText("بداية يوم العمل");
 	await expect(page.locator(section)).toContainText("نهاية النطاق الهادئ");
 	await expect(page.locator("input[data-testid='capacity']")).toHaveValue(
 		"240",
 	);
 	// Locked Latin values keep bidi isolation and Western digits.
-	await expect(page.locator(section)).toContainText("Asia/Riyadh");
-	await expect(page.locator(section)).toContainText("20 s");
+	await expect(page.locator(section)).toContainText(
+		"توقيت الرياض (Asia/Riyadh)",
+	);
+	await expect(page.locator(section)).toContainText("20 ثانية");
 
 	// Arabic action vocabulary and order: Discard then Save in the upper cluster.
 	await expect(page.locator(upperActions)).toContainText("تجاهل التغييرات");
@@ -1100,7 +1099,7 @@ test("automated accessibility finds no serious or critical violations in either 
 
 	await page.locator("input[data-testid='capacity']").fill("5000000000");
 	await setLocale(page, "ar");
-	await expect(page.locator(section)).toContainText("حدود نطاقات الازدحام");
+	await expect(page.locator(section)).toContainText("مستويات الازدحام");
 
 	const arabic = await new AxeBuilder({ page }).include(section).analyze();
 	expect(seriousViolations(arabic)).toEqual([]);

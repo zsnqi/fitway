@@ -2,7 +2,7 @@ import type { OccupancyBand } from "../occupancy/bands";
 import { businessDayFor } from "../occupancy/business-day";
 import {
 	assertScheduleSettings,
-	evaluateSchedule,
+	createScheduleEvaluator,
 	type WeeklySchedule,
 } from "../occupancy/schedule";
 
@@ -187,6 +187,10 @@ export function buildDailyAnalytics({
 	const sortedSettings = validatedSettings(settingsVersions);
 	const rows = observedByInstant(observedMinutes, businessDay);
 	const timeline: AnalyticsTimelineBucket[] = [];
+	const schedules = new Map<
+		AnalyticsSettingsVersion,
+		ReturnType<typeof createScheduleEvaluator>
+	>();
 
 	// IANA offsets are bounded well inside this window. Filtering through the
 	// canonical business-day primitive avoids fixed-offset or host-timezone math.
@@ -206,7 +210,12 @@ export function buildDailyAnalytics({
 			continue;
 		}
 
-		if (!evaluateSchedule(settings, instant).open) {
+		let evaluate = schedules.get(settings);
+		if (!evaluate) {
+			evaluate = createScheduleEvaluator(settings);
+			schedules.set(settings, evaluate);
+		}
+		if (!evaluate(instant).open) {
 			timeline.push({
 				state: "closed",
 				minuteStartUtc: instant.toISOString(),

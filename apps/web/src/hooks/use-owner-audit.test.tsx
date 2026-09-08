@@ -313,7 +313,7 @@ describe("owner audit query", () => {
 		expect(probe().status).toBe("success");
 	});
 
-	it("is unavailable, and reads no history, until the shared timezone resolves", async () => {
+	it("reports the prerequisite as pending and reads no history until the timezone resolves", async () => {
 		let resolveDaily: (value: unknown) => void = () => {};
 		daily.mockReturnValue(
 			new Promise((resolve) => {
@@ -323,7 +323,7 @@ describe("owner audit query", () => {
 		timeContext.mockResolvedValue(timeContextPayload);
 		list.mockResolvedValue({ entries: [], nextCursor: null });
 		await render();
-		expect(probe().status).toBe("unavailable");
+		expect(probe().status).toBe("pending");
 		expect(probe().zone).toBe("");
 		expect(list).not.toHaveBeenCalled();
 
@@ -335,12 +335,12 @@ describe("owner audit query", () => {
 		expect(list).toHaveBeenCalledTimes(1);
 	});
 
-	it("stands down rather than duplicating the failure the analytics surface shows", async () => {
+	it("exposes the shared prerequisite failure under the Activity Log identity", async () => {
 		daily.mockRejectedValue(new Error("Service Unavailable"));
 		timeContext.mockResolvedValue(timeContextPayload);
 		list.mockResolvedValue({ entries: [], nextCursor: null });
 		await render();
-		expect(probe().status).toBe("unavailable");
+		expect(probe().status).toBe("error");
 		expect(list).not.toHaveBeenCalled();
 	});
 
@@ -412,7 +412,7 @@ describe("owner audit query", () => {
 		expect(probe().status).toBe("error");
 	});
 
-	it("stands down when the shared time context cannot be mapped", async () => {
+	it("reports an error when the shared time context cannot be mapped", async () => {
 		daily.mockResolvedValue(dailyPayload);
 		// A mapping that omits the day's settings version is exactly what the
 		// analytics contract rejects; the audit section must not read history from
@@ -423,7 +423,7 @@ describe("owner audit query", () => {
 		});
 		list.mockResolvedValue({ entries: [], nextCursor: null });
 		await render();
-		expect(probe().status).toBe("unavailable");
+		expect(probe().status).toBe("error");
 		expect(list).not.toHaveBeenCalled();
 	});
 });

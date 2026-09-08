@@ -161,10 +161,27 @@
 
 .owner-audit-select select {
 	inline-size: 100%;
-	min-block-size: 42px;
-	padding-inline: 11px 18px;
+	min-block-size: 44px;
+	padding-inline: 12px 18px;
 	border: 0;
 	background: transparent;
+	color-scheme: dark;
+}
+
+.owner-audit-select option {
+	color: #f5f3f2;
+	background: #1c171b;
+}
+
+@media (forced-colors: active) {
+	.owner-audit-select select {
+		color-scheme: light dark;
+	}
+
+	.owner-audit-select option {
+		color: CanvasText;
+		background: Canvas;
+	}
 }
 
 .owner-audit-select:has(select:focus-visible) {
@@ -198,6 +215,21 @@
 	margin-block-start: 4px;
 	padding-block-start: 2px;
 	border-block-start: 0;
+}
+
+.owner-audit-filters__problem {
+	grid-column: 1 / -1;
+	min-block-size: 36px;
+	margin: 0;
+	color: #ff9baa;
+	font-size: 12px;
+	line-height: 18px;
+}
+
+@media (forced-colors: active) {
+	.owner-audit-filters__problem {
+		color: CanvasText;
+	}
 }
 
 .owner-audit__scroll-hint {
@@ -250,6 +282,8 @@
 }
 
 .owner-audit-region {
+	position: relative;
+	isolation: isolate;
 	max-block-size: 480px;
 	overflow: auto;
 	scrollbar-width: thin;
@@ -274,7 +308,8 @@
 
 .owner-audit-region table {
 	inline-size: 100%;
-	border-collapse: collapse;
+	border-collapse: separate;
+	border-spacing: 0;
 	font-size: 14px;
 }
 
@@ -288,11 +323,10 @@
 
 .owner-audit-region th {
 	position: sticky;
-	z-index: 1;
+	z-index: 2;
 	inset-block-start: 0;
 	color: var(--fw-text-muted);
 	background: var(--owner-table-head);
-	backdrop-filter: blur(24px);
 	font-size: 12px;
 	white-space: nowrap;
 }

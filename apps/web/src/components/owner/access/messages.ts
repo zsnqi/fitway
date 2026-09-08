@@ -54,7 +54,8 @@ export const ownerAccessMessages = {
 		ownersBoardTitle: "Owners",
 		activeCountLabel: "active",
 		inactiveCountLabel: "deactivated",
-		accountsCountLabel: "accounts",
+		accountsCountLabel: (count: number) =>
+			count === 1 ? "account" : "accounts",
 		provisionOwner: "Provision owner",
 		ownerFormLegend: "New owner",
 		ownerEmailLabel: "Email",
@@ -82,7 +83,7 @@ export const ownerAccessMessages = {
 		resetPasswordHint: "At least 12 characters.",
 
 		reasonLabel: "Reason",
-		reasonHint: "Required — this action is recorded in the audit history.",
+		reasonHint: "Required — this action is recorded in Activity Log.",
 		confirm: "Confirm",
 		cancel: "Cancel",
 
@@ -141,7 +142,8 @@ export const ownerAccessMessages = {
 		ownersBoardTitle: "المالكون",
 		activeCountLabel: "نشط",
 		inactiveCountLabel: "معطّل",
-		accountsCountLabel: "حسابات",
+		accountsCountLabel: (count: number) =>
+			count >= 3 && count <= 10 ? "حسابات" : "حساب",
 		provisionOwner: "توفير حساب مالك",
 		ownerFormLegend: "مالك جديد",
 		ownerEmailLabel: "البريد الإلكتروني",
@@ -168,7 +170,7 @@ export const ownerAccessMessages = {
 		resetPasswordHint: "12 حرفاً على الأقل.",
 
 		reasonLabel: "السبب",
-		reasonHint: "مطلوب — يُسجَّل هذا الإجراء في سجل المراجعة.",
+		reasonHint: "مطلوب — يُسجَّل هذا الإجراء في سجل النشاط.",
 		confirm: "تأكيد",
 		cancel: "إلغاء",
 

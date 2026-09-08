@@ -1,0 +1,254 @@
+.owner-date-field {
+	display: grid;
+	gap: 6px;
+	inline-size: min(100%, 288px);
+	min-inline-size: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+.owner-date-field > legend {
+	margin: 0 0 6px;
+	padding: 0;
+	color: var(--fw-text-muted);
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.owner-date-field__parts {
+	display: grid;
+	grid-template-columns: minmax(52px, 0.78fr) minmax(94px, 1.32fr) minmax(
+			78px,
+			1fr
+		);
+	gap: 6px;
+	min-inline-size: 0;
+}
+
+.owner-date-field__segment {
+	display: grid;
+	gap: 4px;
+	min-inline-size: 0;
+}
+
+.owner-date-field__segment > span {
+	color: var(--fw-text-subtle);
+	font-size: 10px;
+	font-weight: 500;
+}
+
+.owner-date-field__trigger {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	box-sizing: border-box;
+	inline-size: 100%;
+	min-inline-size: 0;
+	min-block-size: 44px;
+	padding: 0 8px;
+	border: 1px solid var(--fw-border);
+	border-radius: 9px;
+	background: rgb(10 10 12 / 72%);
+	color: var(--fw-text);
+	font: inherit;
+	font-size: 13px;
+	font-variant-numeric: tabular-nums;
+	text-align: start;
+	cursor: pointer;
+}
+
+.owner-date-field__trigger:hover {
+	border-color: var(--fw-border-strong);
+	background: var(--fw-surface-2);
+}
+
+.owner-date-field__trigger:focus-visible {
+	outline: 2px solid var(--fw-focus-ring);
+	outline-offset: 2px;
+}
+
+.owner-date-field__trigger[aria-invalid="true"] {
+	border-color: #ff7b8f;
+}
+
+.owner-date-field__icon {
+	display: inline-flex;
+	flex: 0 0 auto;
+	align-items: center;
+	justify-content: center;
+	inline-size: 16px;
+	block-size: 16px;
+	color: var(--fw-text-subtle);
+}
+
+.owner-date-field__icon svg {
+	inline-size: 14px;
+	block-size: 14px;
+}
+
+.owner-date-field__positioner {
+	z-index: 80;
+}
+
+.owner-date-field__popup {
+	box-sizing: border-box;
+	min-inline-size: var(--anchor-width);
+	max-block-size: min(320px, var(--available-height));
+	padding: 6px;
+	overflow: auto;
+	border: 1px solid var(--fw-border-strong);
+	border-radius: 12px;
+	background: color-mix(in srgb, var(--fw-surface-2) 96%, black);
+	box-shadow: var(--fw-shadow-lg);
+	color: var(--fw-text);
+	transform-origin: var(--transform-origin);
+	transition:
+		opacity 120ms cubic-bezier(0, 0, 0.2, 1),
+		transform 120ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.owner-date-field__popup[data-starting-style],
+.owner-date-field__popup[data-ending-style] {
+	opacity: 0;
+	transform: scale(0.98) translateY(-2px);
+}
+
+.owner-date-field__list {
+	display: grid;
+	gap: 2px;
+	padding: 0;
+}
+
+.owner-date-field__option,
+.owner-date-field__year-option {
+	display: grid;
+	grid-template-columns: 18px minmax(0, 1fr);
+	align-items: center;
+	min-block-size: 40px;
+	padding: 0 8px;
+	border-radius: 8px;
+	font-size: 13px;
+	line-height: 1.2;
+	cursor: pointer;
+	user-select: none;
+}
+
+.owner-date-field__option[data-highlighted],
+.owner-date-field__year-option[data-active] {
+	background: var(--fw-surface-3);
+}
+
+.owner-date-field__option[data-selected],
+.owner-date-field__year-option[aria-selected="true"] {
+	color: var(--fw-accent);
+	font-weight: 650;
+}
+
+.owner-date-field__check {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	inline-size: 16px;
+	block-size: 16px;
+}
+
+.owner-date-field__check svg {
+	inline-size: 14px;
+	block-size: 14px;
+}
+
+.owner-date-field__positioner--year {
+	inline-size: min(280px, calc(100vw - 16px));
+}
+
+.owner-date-field__year-popup {
+	display: grid;
+	gap: 6px;
+	inline-size: 100%;
+	overflow: hidden;
+}
+
+.owner-date-field__year-toolbar {
+	display: flex;
+	justify-content: space-between;
+	gap: 8px;
+}
+
+.owner-date-field__year-toolbar button,
+.owner-date-field__year-later {
+	min-block-size: 40px;
+	padding: 0 10px;
+	border: 0;
+	border-radius: 8px;
+	background: transparent;
+	color: var(--fw-text-muted);
+	font: inherit;
+	font-size: 12px;
+	cursor: pointer;
+}
+
+.owner-date-field__year-toolbar button:hover:not(:disabled),
+.owner-date-field__year-toolbar button:focus-visible,
+.owner-date-field__year-later:hover:not(:disabled),
+.owner-date-field__year-later:focus-visible {
+	background: var(--fw-surface-3);
+	color: var(--fw-text);
+}
+
+.owner-date-field__year-toolbar button:disabled,
+.owner-date-field__year-later:disabled {
+	opacity: 0.45;
+	cursor: default;
+}
+
+.owner-date-field__year-range {
+	margin: 0;
+	color: var(--fw-text-subtle);
+	font-size: 11px;
+	text-align: center;
+}
+
+.owner-date-field__year-list {
+	display: grid;
+	gap: 2px;
+	max-block-size: min(248px, calc(var(--available-height) - 126px));
+	padding: 2px;
+	overflow: auto;
+	scrollbar-gutter: stable;
+}
+
+.owner-date-field__year-option:focus-visible {
+	outline: 2px solid var(--fw-focus-ring);
+	outline-offset: -2px;
+}
+
+.owner-date-field__year-later {
+	inline-size: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.owner-date-field__popup {
+		transition-duration: 0.01ms;
+	}
+
+	.owner-date-field__popup[data-starting-style],
+	.owner-date-field__popup[data-ending-style] {
+		transform: none;
+	}
+}
+
+@media (forced-colors: active) {
+	.owner-date-field__trigger,
+	.owner-date-field__popup {
+		border-color: CanvasText;
+		background: Canvas;
+		color: CanvasText;
+	}
+
+	.owner-date-field__option[data-highlighted],
+	.owner-date-field__year-option[data-active],
+	.owner-date-field__year-option:focus-visible {
+		outline: 2px solid Highlight;
+	}
+}

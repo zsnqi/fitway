@@ -4,12 +4,19 @@ import type {
 	DailyAnalytics,
 } from "@fitway/api/analytics/daily-analytics";
 import { Button } from "@fitway/ui/components/button";
-import { BarChart3 } from "lucide-react";
 import {
-	Fragment,
+	BarChart3,
+	ChevronDown,
+	ChevronLeft,
+	ChevronRight,
+} from "lucide-react";
+import {
+	type CSSProperties,
 	type KeyboardEvent,
 	type PointerEvent,
 	useEffect,
+	useId,
+	useLayoutEffect,
 	useMemo,
 	useRef,
 	useState,
@@ -19,6 +26,7 @@ import { formatDate, formatGymTime, formatNumber } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
 
 import type { OwnerAnalyticsMessages } from "./messages";
+import { OwnerRetainedDisclosure } from "./owner-retained-disclosure";
 import { useOwnerAnalyticsMessages } from "./use-owner-analytics-messages";
 
 import "./owner-analytics.css";
@@ -151,7 +159,7 @@ type GapSegment = {
 };
 
 /**
- * Short interruptions break the curve and use small endpoint ticks. Only a
+ * Short interruptions break the curve without extra endpoint marks. Only a
  * sustained outage earns a persistent duration annotation. Exact absent
  * minutes remain in the detail table regardless of their visual weight.
  */
@@ -242,14 +250,22 @@ export function niceCountScale(rawMaxCount: number): {
 	return { niceMax, ticks };
 }
 
+const minuteFormatters = new Map<string, Intl.DateTimeFormat>();
+
 function gymLocalMinute(instant: Date, timeZone: string): number | null {
 	try {
-		const parts = new Intl.DateTimeFormat("en-US", {
-			timeZone,
-			hour: "2-digit",
-			minute: "2-digit",
-			hourCycle: "h23",
-		}).formatToParts(instant);
+		let formatter = minuteFormatters.get(timeZone);
+		if (!formatter) {
+			formatter = new Intl.DateTimeFormat("en-US", {
+				timeZone,
+				hour: "2-digit",
+				minute: "2-digit",
+				hourCycle: "h23",
+			});
+			if (minuteFormatters.size >= 64) minuteFormatters.clear();
+			minuteFormatters.set(timeZone, formatter);
+		}
+		const parts = formatter.formatToParts(instant);
 		const minute = Number(parts.find((part) => part.type === "minute")?.value);
 		return Number.isSafeInteger(minute) ? minute : null;
 	} catch {
@@ -259,8 +275,8 @@ function gymLocalMinute(instant: Date, timeZone: string): number | null {
 
 /** Exact half-hour observations, with semantic boundaries kept in the curve.
  * Raw telemetry is never rewritten or averaged. Missing/closed runs always
- * split the path; protected peaks and zero boundaries are geometry anchors,
- * not extra minute-by-minute hover stops. */
+ * split the path. Every retained peak and boundary is also inspectable; a
+ * visible peak must not select a different half-hour reading beside it. */
 export function chartOverview(
 	timeline: readonly AnalyticsTimelineBucket[],
 	timeZoneByVersion: ReadonlyMap<number, string>,
@@ -338,17 +354,7 @@ export function chartOverview(
 			);
 		});
 	});
-	// A short recording may contain no half-hour boundary. Its endpoints still
-	// provide an honest useful interaction instead of an empty chart control.
-	const stops = runs.flatMap((run) => {
-		const first = run[0];
-		const last = run.at(-1);
-		if (!first || !last) return [];
-		if (cadence.length <= 1) return run;
-		const aligned = run.filter((point) => cadenceIndices.has(point.index));
-		if (cadence.length > 1 && aligned.length > 0) return aligned;
-		return first === last ? [first] : [first, last];
-	});
+	const stops = runs.flat();
 	return { runs, stops };
 }
 
@@ -424,12 +430,6 @@ export function intentionalTimeTicks(
 
 export function smoothPath(
 	points: readonly { x: number; y: number }[],
-	// Paper marker junction: a trimmed side must meet the ring along its
-	// final radial segment with no smoothing bow past the outer edge.
-	// `straightTip: "end"` draws the last segment straight (left side),
-	// `"start"` draws the first segment straight (right side). All other
-	// segments keep the accepted bounded smoothing; values never move.
-	straightTip: "none" | "start" | "end" = "none",
 ): string {
 	if (points.length === 0) return "";
 	if (points.length === 1) return `M${points[0]?.x},${points[0]?.y}`;
@@ -440,14 +440,6 @@ export function smoothPath(
 		const current = points[index];
 		const next = points[index + 1];
 		if (!current || !next) continue;
-		if (straightTip === "start" && index === 0) {
-			path += ` L${next.x},${next.y}`;
-			continue;
-		}
-		if (straightTip === "end" && index === points.length - 2) {
-			path += ` L${next.x},${next.y}`;
-			continue;
-		}
 		const previous = points[index - 1];
 		const after = points[index + 2];
 		const dx = next.x - current.x;
@@ -486,118 +478,20 @@ export function smoothPath(
  * diameter (20px desktop / 18px mobile, border-box), while the SVG stretches
  * with `preserveAspectRatio="none"`. Paper terminates the chart line at the
  * ring's OUTER edge — the stroke must not continue through the ring toward
- * the solid core. The helpers below trim the active run's line (and the
- * active stem) to the marker ellipse in viewBox units, so the cutout stays
+ * the solid core. An SVG mask cuts out only the marker ellipse without
+ * changing the original curve geometry, so the cutout stays
  * pixel-exact at every responsive width in both RTL and LTR.
  */
 export const OWNER_CHART_MARKER_OUTER_PX_DESKTOP = 10;
 export const OWNER_CHART_MARKER_OUTER_PX_MOBILE = 9;
 
-export type OwnerChartPoint = { x: number; y: number };
-
-function pointInMarker(
-	point: OwnerChartPoint,
-	center: OwnerChartPoint,
-	rx: number,
-	ry: number,
-): boolean {
-	if (!(rx > 0 && ry > 0)) return false;
-	const dx = (point.x - center.x) / rx;
-	const dy = (point.y - center.y) / ry;
-	return dx * dx + dy * dy < 1;
-}
-
-/**
- * Point where the segment inner→outer exits the marker ellipse. `inner`
- * must be strictly inside and `outer` on or outside the edge; returns null
- * otherwise. A degenerate or zero-size marker also returns null (no cutout).
- */
-export function markerExitPoint(
-	inner: OwnerChartPoint,
-	outer: OwnerChartPoint,
-	center: OwnerChartPoint,
-	rx: number,
-	ry: number,
-): OwnerChartPoint | null {
-	if (!(rx > 0 && ry > 0)) return null;
-	const ix = (inner.x - center.x) / rx;
-	const iy = (inner.y - center.y) / ry;
-	const ox = (outer.x - center.x) / rx;
-	const oy = (outer.y - center.y) / ry;
-	const innerQ = ix * ix + iy * iy;
-	const outerQ = ox * ox + oy * oy;
-	if (innerQ >= 1 || outerQ < 1) return null;
-	const dx = ox - ix;
-	const dy = oy - iy;
-	const a = dx * dx + dy * dy;
-	if (a <= 0) return null;
-	const b = 2 * (ix * dx + iy * dy);
-	const c = innerQ - 1;
-	const discriminant = b * b - 4 * a * c;
-	if (discriminant < 0) return null;
-	const root = Math.sqrt(discriminant);
-	const candidates = [(-b - root) / (2 * a), (-b + root) / (2 * a)].filter(
-		(t) => t >= 0 && t <= 1,
-	);
-	if (candidates.length === 0) return null;
-	// Starting inside, the segment can only leave once: take the farthest
-	// valid root so the line ends exactly on the outer edge.
-	const t = Math.max(...candidates);
-	return {
-		x: center.x + (ix + dx * t) * rx,
-		y: center.y + (iy + dy * t) * ry,
-	};
-}
-
-function samePoint(a: OwnerChartPoint, b: OwnerChartPoint): boolean {
-	return Math.abs(a.x - b.x) < 1e-6 && Math.abs(a.y - b.y) < 1e-6;
-}
-
-/**
- * Split one value run around its active point so the stroked line stops at
- * the marker's outer edge on each connected side. Each side walks outward
- * along the polyline past densely packed points until the first segment
- * that leaves the ellipse; fully hidden sides (and lone active readings,
- * which the HTML core already marks) return null and draw nothing. Trimmed
- * endpoints interpolate between true observations, so the bounded
- * truthful-curve contract still holds and no value moves.
- */
-export function trimActiveRun(
-	points: readonly OwnerChartPoint[],
-	activePos: number,
-	rx: number,
-	ry: number,
-): { left: OwnerChartPoint[] | null; right: OwnerChartPoint[] | null } {
-	const center = points[activePos];
-	if (!center || !(rx > 0 && ry > 0)) return { left: null, right: null };
-	let left: OwnerChartPoint[] | null = null;
-	for (let index = activePos; index > 0; index -= 1) {
-		const inner = index === activePos ? center : points[index];
-		const outer = points[index - 1];
-		if (!inner || !outer) break;
-		if (pointInMarker(outer, center, rx, ry)) continue;
-		const exit = markerExitPoint(inner, outer, center, rx, ry);
-		if (!exit) break;
-		left = samePoint(exit, outer)
-			? [...points.slice(0, index)]
-			: [...points.slice(0, index), exit];
-		break;
-	}
-	let right: OwnerChartPoint[] | null = null;
-	for (let index = activePos; index < points.length - 1; index += 1) {
-		const inner = index === activePos ? center : points[index];
-		const outer = points[index + 1];
-		if (!inner || !outer) break;
-		if (pointInMarker(outer, center, rx, ry)) continue;
-		const exit = markerExitPoint(inner, outer, center, rx, ry);
-		if (!exit) break;
-		right = samePoint(exit, outer)
-			? [...points.slice(index + 1)]
-			: [exit, ...points.slice(index + 1)];
-		break;
-	}
-	return { left, right };
-}
+type TooltipPresentation = {
+	id: number;
+	state: "entering" | "open" | "closing";
+	left: string;
+	top: string;
+	y: string;
+};
 
 function OccupancyChart({
 	daily,
@@ -628,13 +522,26 @@ function OccupancyChart({
 				),
 			);
 	const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-	const [hoverIndex, setHoverIndex] = useState<number | null>(null);
-	const hasSelected = selectedIndex !== null || hoverIndex !== null;
+	const [hoverIndex, setHoverIndex] = useState<
+		number | "missing" | "closed" | null
+	>(null);
+	const [animateSelection, setAnimateSelection] = useState(false);
+	const [readingCleared, setReadingCleared] = useState(false);
+	const showActive = typeof hoverIndex !== "string";
+	const hasSelected =
+		showActive && (selectedIndex !== null || hoverIndex !== null);
 	const overview = useMemo(
 		() => chartOverview(daily.timeline, timeZoneByVersion),
 		[daily.timeline, timeZoneByVersion],
 	);
+	const markerMaskId = useId();
 	const interactionRef = useRef<HTMLButtonElement | null>(null);
+	const tooltipPresentationRef = useRef<TooltipPresentation | null>(null);
+	const tooltipPresenceIdRef = useRef(0);
+	const tooltipFrameRef = useRef(0);
+	const tooltipTimeoutRef = useRef(0);
+	const [tooltipPresentation, setTooltipPresentation] =
+		useState<TooltipPresentation | null>(null);
 	const [plotSize, setPlotSize] = useState<{
 		width: number;
 		height: number;
@@ -643,7 +550,7 @@ function OccupancyChart({
 		const element = interactionRef.current;
 		if (!element || typeof ResizeObserver === "undefined") return;
 		const observe = () => {
-			const rect = element.getBoundingClientRect();
+			const rect = { width: element.clientWidth, height: element.clientHeight };
 			setPlotSize((current) =>
 				current &&
 				Math.abs(current.width - rect.width) < 0.5 &&
@@ -660,6 +567,7 @@ function OccupancyChart({
 	const active =
 		values.find(({ index }) => index === (hoverIndex ?? selectedIndex)) ??
 		values[initialActive];
+	const latest = isLatestDay ? values.at(-1) : undefined;
 	const width = 1200;
 	const height = 240;
 	const padX = 16;
@@ -712,7 +620,10 @@ function OccupancyChart({
 	// Intentional clock-aligned time ticks (domain ends included, hour
 	// boundaries preferred, never a duplicated time). Exact per-minute detail
 	// stays available through pointer/keyboard selection and the table.
-	const timeTicks = intentionalTimeTicks(daily.timeline, timeZoneByVersion);
+	const timeTicks = useMemo(
+		() => intentionalTimeTicks(daily.timeline, timeZoneByVersion),
+		[daily.timeline, timeZoneByVersion],
+	);
 
 	function moveActive(delta: number) {
 		const index = active?.index ?? 0;
@@ -724,20 +635,26 @@ function OccupancyChart({
 					overview.stops[0]);
 		setHoverIndex(null);
 		setSelectedIndex(next?.index ?? null);
+		setReadingCleared(false);
 	}
 
 	function handleKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
+		setAnimateSelection(false);
 		if (event.key === "Home") {
 			setHoverIndex(null);
 			setSelectedIndex(overview.stops[0]?.index ?? null);
+			setReadingCleared(false);
 		} else if (event.key === "End") {
 			setHoverIndex(null);
 			setSelectedIndex(overview.stops.at(-1)?.index ?? null);
+			setReadingCleared(false);
 		} else if (event.key === "Escape") {
 			setHoverIndex(null);
 			setSelectedIndex(null);
+			setReadingCleared(true);
 		} else if (event.key === "Enter" || event.key === " ") {
 			setSelectedIndex(active?.index ?? null);
+			setReadingCleared(false);
 		} else if (event.key === "ArrowRight") moveActive(locale === "ar" ? -1 : 1);
 		else if (event.key === "ArrowLeft") moveActive(locale === "ar" ? 1 : -1);
 		else return;
@@ -761,8 +678,11 @@ function OccupancyChart({
 		const ratio = locale === "ar" ? 1 - plotRatio : plotRatio;
 		const timelineIndex = ratio * Math.max(0, daily.timeline.length - 1);
 		// Hovering an outage must not claim a nearby observation occurred there.
-		if (daily.timeline[Math.round(timelineIndex)]?.state !== "value") {
-			setHoverIndex(null);
+		const hoveredBucket = daily.timeline[Math.round(timelineIndex)];
+		if (hoveredBucket?.state !== "value") {
+			setAnimateSelection(false);
+			setHoverIndex(hoveredBucket?.state === "closed" ? "closed" : "missing");
+			setReadingCleared(true);
 			return;
 		}
 		const run = overview.runs.find(
@@ -785,15 +705,121 @@ function OccupancyChart({
 				closestIndex = value.index;
 			}
 		});
+		// Entering the plot, crossing an outage, keyboard navigation and taps
+		// are immediate. Only successive observations in one connected run
+		// ease together; the marker must never fly across absent data.
+		setAnimateSelection(
+			!persistent &&
+				typeof hoverIndex === "number" &&
+				hoverIndex >= (run?.[0]?.index ?? 0) &&
+				hoverIndex <= (run?.at(-1)?.index ?? -1),
+		);
 		if (persistent) {
 			setSelectedIndex(closestIndex);
 			setHoverIndex(null);
 		} else setHoverIndex(closestIndex);
+		setReadingCleared(false);
 	}
 
+	const inspected = hasSelected && showActive ? active : undefined;
+	const combinedMarker =
+		latest !== undefined && inspected?.index === latest.index;
+	const stemPoint = inspected ?? latest;
+	const activeTime = active
+		? bucketTime(active.bucket, locale, timeZoneByVersion)
+		: "";
+	const tooltipY =
+		active &&
+		(yFor(active.bucket.count) / height) * (plotSize?.height ?? height) < 72
+			? "18px"
+			: "calc(-100% - 14px)";
+	const activeLabel = inspected
+		? `${messages.selectedReading}: ${activeTime}, ${messages.count}: ${formatNumber(inspected.bucket.count, locale)}`
+		: !readingCleared && active
+			? `${messages.selectedReading}: ${activeTime}, ${messages.count}: ${formatNumber(active.bucket.count, locale)}`
+			: "";
+	const inspectedIndex = inspected?.index ?? null;
+	const tooltipLeft = inspected
+		? clampedCaptionLeft(xFor(inspected.index) / width, 110)
+		: null;
+	const tooltipTop = inspected
+		? `${(yFor(inspected.bucket.count) / height) * 100}%`
+		: null;
+
+	useLayoutEffect(() => {
+		if (tooltipFrameRef.current) {
+			window.cancelAnimationFrame(tooltipFrameRef.current);
+			tooltipFrameRef.current = 0;
+		}
+		if (tooltipTimeoutRef.current) {
+			window.clearTimeout(tooltipTimeoutRef.current);
+			tooltipTimeoutRef.current = 0;
+		}
+		const presenceId = ++tooltipPresenceIdRef.current;
+		const reducedMotion = Boolean(
+			window.matchMedia?.("(prefers-reduced-motion: reduce)").matches,
+		);
+		const publish = (next: TooltipPresentation | null) => {
+			tooltipPresentationRef.current = next;
+			setTooltipPresentation(next);
+		};
+
+		if (inspectedIndex !== null && tooltipLeft && tooltipTop) {
+			const next: TooltipPresentation = {
+				id: presenceId,
+				state:
+					reducedMotion || tooltipPresentationRef.current ? "open" : "entering",
+				left: tooltipLeft,
+				top: tooltipTop,
+				y: tooltipY,
+			};
+			publish(next);
+			if (next.state === "entering") {
+				tooltipFrameRef.current = window.requestAnimationFrame(() => {
+					tooltipFrameRef.current = 0;
+					if (tooltipPresenceIdRef.current !== presenceId) return;
+					publish({ ...next, state: "open" });
+				});
+			}
+			return;
+		}
+
+		const current = tooltipPresentationRef.current;
+		if (!current) return;
+		if (reducedMotion) {
+			publish(null);
+			return;
+		}
+		publish({ ...current, id: presenceId, state: "closing" });
+		tooltipTimeoutRef.current = window.setTimeout(() => {
+			if (
+				tooltipPresenceIdRef.current === presenceId &&
+				tooltipPresentationRef.current?.state === "closing"
+			) {
+				publish(null);
+			}
+		}, 160);
+	}, [inspectedIndex, tooltipLeft, tooltipTop, tooltipY]);
+
+	useEffect(
+		() => () => {
+			if (tooltipFrameRef.current)
+				window.cancelAnimationFrame(tooltipFrameRef.current);
+			if (tooltipTimeoutRef.current)
+				window.clearTimeout(tooltipTimeoutRef.current);
+		},
+		[],
+	);
+
 	if (!active) return null;
-	const activeTime = bucketTime(active.bucket, locale, timeZoneByVersion);
-	const activeLabel = `${messages.selectedReading}: ${activeTime}, ${messages.count}: ${formatNumber(active.bucket.count, locale)}`;
+	const chartLabel = activeLabel
+		? `${messages.chartLabel}. ${activeLabel}`
+		: messages.chartLabel;
+	function clearHover() {
+		setAnimateSelection(false);
+		setHoverIndex(null);
+		if (selectedIndex === null) setReadingCleared(true);
+	}
 
 	return (
 		<section className="owner-chart-panel" aria-labelledby="owner-chart-title">
@@ -805,25 +831,21 @@ function OccupancyChart({
 				</div>
 			</div>
 			<div className="owner-chart-layout">
-				<div className="owner-chart-y-axis" aria-hidden="true">
-					{countTicks.map((tick) => (
-						<span key={tick}>{formatNumber(tick, locale)}</span>
-					))}
-				</div>
 				<div className="owner-chart-plot">
 					<button
 						type="button"
 						ref={interactionRef}
 						className="owner-chart-interaction"
 						data-owner-chart
-						aria-label={`${messages.chartLabel}. ${activeLabel}`}
+						data-tracking={animateSelection ? "true" : undefined}
+						aria-label={chartLabel}
 						onKeyDown={handleKeyDown}
 						onPointerMove={(event) => {
 							if (event.pointerType !== "touch") selectFromPointer(event);
 						}}
 						onPointerDown={(event) => selectFromPointer(event, true)}
-						onPointerLeave={() => setHoverIndex(null)}
-						onPointerCancel={() => setHoverIndex(null)}
+						onPointerLeave={clearHover}
+						onPointerCancel={clearHover}
 					>
 						<svg
 							className="owner-chart"
@@ -849,17 +871,15 @@ function OccupancyChart({
 									(value) => value.index === gap.end + 1,
 								);
 								if (!left || !right) return [];
+								if (gap.minutes < MIN_ANNOTATED_GAP_MINUTES) return [];
 								const stemClass = gap.allClosed
 									? "owner-chart__gap-stem owner-chart__gap-stem--closed"
 									: "owner-chart__gap-stem owner-chart__gap-stem--missing";
 								const leftX = xFor(left.index);
 								const rightX = xFor(right.index);
-								// Paper's dimension bracket: a thin rule spanning the
-								// stems with short end ticks, duration label beneath.
-								// Only story-relevant gaps earn it; tiny gaps keep
-								// their honest stems without the persistent hardware.
+								// Sustained interruptions retain their duration bracket. Short gaps
+								// remain unconnected without decorative endpoint marks.
 								const bracketY = baseY - 26;
-								const annotated = gap.minutes >= MIN_ANNOTATED_GAP_MINUTES;
 								return [
 									<line
 										key={`${gap.start}-left`}
@@ -867,12 +887,7 @@ function OccupancyChart({
 										x1={leftX}
 										x2={leftX}
 										y1={yFor(left.bucket.count)}
-										y2={
-											annotated
-												? baseY
-												: yFor(left.bucket.count) +
-													(yFor(left.bucket.count) > baseY - 5 ? -5 : 5)
-										}
+										y2={baseY}
 									/>,
 									<line
 										key={`${gap.start}-right`}
@@ -880,99 +895,78 @@ function OccupancyChart({
 										x1={rightX}
 										x2={rightX}
 										y1={yFor(right.bucket.count)}
-										y2={
-											annotated
-												? baseY
-												: yFor(right.bucket.count) +
-													(yFor(right.bucket.count) > baseY - 5 ? -5 : 5)
-										}
+										y2={baseY}
 									/>,
-									...(annotated
-										? [
-												<line
-													key={`${gap.start}-bracket`}
-													className="owner-chart__gap-bracket"
-													x1={leftX}
-													x2={rightX}
-													y1={bracketY}
-													y2={bracketY}
-												/>,
-												<line
-													key={`${gap.start}-tick-left`}
-													className="owner-chart__gap-tick"
-													x1={leftX}
-													x2={leftX}
-													y1={bracketY - 5}
-													y2={bracketY + 5}
-												/>,
-												<line
-													key={`${gap.start}-tick-right`}
-													className="owner-chart__gap-tick"
-													x1={rightX}
-													x2={rightX}
-													y1={bracketY - 5}
-													y2={bracketY + 5}
-												/>,
-											]
-										: []),
+
+									<line
+										key={`${gap.start}-bracket`}
+										className="owner-chart__gap-bracket"
+										x1={leftX}
+										x2={rightX}
+										y1={bracketY}
+										y2={bracketY}
+									/>,
+									<line
+										key={`${gap.start}-tick-left`}
+										className="owner-chart__gap-tick"
+										x1={leftX}
+										x2={leftX}
+										y1={bracketY - 5}
+										y2={bracketY + 5}
+									/>,
+									<line
+										key={`${gap.start}-tick-right`}
+										className="owner-chart__gap-tick"
+										x1={rightX}
+										x2={rightX}
+										y1={bracketY - 5}
+										y2={bracketY + 5}
+									/>,
 								];
 							})}
+							<defs>
+								<mask
+									id={markerMaskId}
+									maskUnits="userSpaceOnUse"
+									x="0"
+									y="-20"
+									width={width}
+									height={height + 40}
+								>
+									<rect
+										x="0"
+										y="-20"
+										width={width}
+										height={height + 40}
+										fill="white"
+									/>
+									{latest ? (
+										<ellipse
+											className="owner-chart__cutout"
+											cx={xFor(latest.index)}
+											cy={yFor(latest.bucket.count)}
+											rx={markerRx}
+											ry={markerRy}
+											fill="black"
+										/>
+									) : null}
+									{inspected && !combinedMarker ? (
+										<ellipse
+											className="owner-chart__cutout"
+											cx={xFor(inspected.index)}
+											cy={yFor(inspected.bucket.count)}
+											rx={markerRx}
+											ry={markerRy}
+											fill="black"
+										/>
+									) : null}
+								</mask>
+							</defs>
 							{runs.map((run) => {
-								const isActiveRun = run.some(
-									(entry) => entry.index === active.index,
-								);
-								if (isActiveRun) {
-									// Paper terminates the line at the marker's OUTER
-									// edge: the active run is redrawn as up to two
-									// trimmed sides that stop on the ring instead of
-									// continuing to the center. The tip segment of
-									// each side is drawn straight along its radial
-									// exit ray (no smoothing bow past the edge) and
-									// uses a butt cap (see .owner-chart__line--trimmed),
-									// so no paint extends past the outer boundary
-									// toward the core. A lone active reading
-									// draws nothing — the HTML core already marks it.
-									const points = run.map(({ bucket, index }) => ({
-										x: xFor(index),
-										y: yFor(bucket.count),
-									}));
-									const activePos = run.findIndex(
-										(entry) => entry.index === active.index,
-									);
-									const { left, right } = trimActiveRun(
-										points,
-										activePos,
-										markerRx,
-										markerRy,
-									);
-									return (
-										<Fragment key={run[0]?.index}>
-											{left && left.length > 1 ? (
-												<path
-													className="owner-chart__line owner-chart__line--trimmed"
-													data-active-run="true"
-													data-trimmed="left"
-													d={smoothPath(left, "end")}
-												/>
-											) : null}
-											{right && right.length > 1 ? (
-												<path
-													className="owner-chart__line owner-chart__line--trimmed"
-													data-active-run="true"
-													data-trimmed="right"
-													d={smoothPath(right, "start")}
-												/>
-											) : null}
-										</Fragment>
-									);
-								}
 								const points = run.map(({ bucket, index }) => ({
 									x: xFor(index),
 									y: yFor(bucket.count),
 								}));
-								// A lone observation has no segment to stroke. Nudging the
-								// pen with round caps renders it as a point dot in the
-								// exact position instead of hiding a real reading.
 								const solo = points.length === 1 && points[0];
 								const line = solo
 									? `M${solo.x},${solo.y} L${solo.x + 0.01},${solo.y}`
@@ -985,28 +979,11 @@ function OccupancyChart({
 												? "owner-chart__line owner-chart__solo"
 												: "owner-chart__line"
 										}
+										mask={`url(#${markerMaskId})`}
 										d={line}
 									/>
 								);
 							})}
-							{(hasSelected || isLatestDay) &&
-								(() => {
-									// The stem drops from the ring's outer bottom edge,
-									// never from the center through the ring. A reading
-									// resting on the baseline leaves no room below the
-									// ring, so the stem is omitted there.
-									const stemTop = yFor(active.bucket.count) + markerRy;
-									if (stemTop >= baseY - 0.5) return null;
-									return (
-										<line
-											className="owner-chart__stem"
-											x1={xFor(active.index)}
-											x2={xFor(active.index)}
-											y1={stemTop}
-											y2={baseY}
-										/>
-									);
-								})()}
 							{runs.flat().map(({ bucket, index }) => (
 								<circle
 									key={`point-${index}`}
@@ -1017,19 +994,43 @@ function OccupancyChart({
 								/>
 							))}
 						</svg>
-						<span
-							className="owner-chart__active"
-							aria-hidden="true"
-							data-chart-x={xFor(active.index)}
-							style={{
-								left: `${(xFor(active.index) / width) * 100}%`,
-								top: `${(yFor(active.bucket.count) / height) * 100}%`,
-							}}
-						/>
-						{isLatestDay && !hasSelected && values.length > 0
+						{stemPoint &&
+							yFor(stemPoint.bucket.count) + markerRy < baseY - 0.5 && (
+								<span
+									className="owner-chart__stem"
+									aria-hidden="true"
+									style={{
+										left: `${(xFor(stemPoint.index) / width) * 100}%`,
+										top: `${((yFor(stemPoint.bucket.count) + markerRy) / height) * 100}%`,
+										height: `${((baseY - yFor(stemPoint.bucket.count) - markerRy) / height) * 100}%`,
+									}}
+								/>
+							)}
+						{latest ? (
+							<span
+								className="owner-chart__active owner-chart__active--latest"
+								aria-hidden="true"
+								data-chart-x={xFor(latest.index)}
+								data-combined={combinedMarker ? "true" : undefined}
+								style={{
+									left: `${(xFor(latest.index) / width) * 100}%`,
+									top: `${(yFor(latest.bucket.count) / height) * 100}%`,
+								}}
+							/>
+						) : null}
+						{inspected && !combinedMarker ? (
+							<span
+								className="owner-chart__active owner-chart__active--inspected"
+								aria-hidden="true"
+								data-chart-x={xFor(inspected.index)}
+								style={{
+									left: `${(xFor(inspected.index) / width) * 100}%`,
+									top: `${(yFor(inspected.bucket.count) / height) * 100}%`,
+								}}
+							/>
+						) : null}
+						{latest
 							? (() => {
-									const latest = values[values.length - 1];
-									if (!latest) return null;
 									const latestTime = bucketTime(
 										latest.bucket,
 										locale,
@@ -1041,6 +1042,10 @@ function OccupancyChart({
 											data-latest-reading
 											aria-hidden="true"
 											style={{
+												bottom:
+													yFor(latest.bucket.count) / height > 0.84
+														? `${(1 - yFor(latest.bucket.count) / height) * (plotSize?.height ?? height) + markerOuterPx + 8}px`
+														: undefined,
 												left: clampedCaptionLeft(
 													xFor(latest.index) / width,
 													55,
@@ -1052,28 +1057,41 @@ function OccupancyChart({
 									);
 								})()
 							: null}
-						{hasSelected ? (
+						{tooltipPresentation ? (
 							<span
 								className="owner-chart-tip"
-								data-selected-reading
+								data-selected-reading={inspected ? "" : undefined}
+								data-tooltip-state={tooltipPresentation.state}
 								aria-hidden="true"
-								style={{
-									left: `${(xFor(active.index) / width) * 100}%`,
-									top: `${(yFor(active.bucket.count) / height) * 100}%`,
-									transform:
-										xFor(active.index) / width > 0.75
-											? "translate(-100%, calc(-100% - 12px))"
-											: xFor(active.index) / width < 0.25
-												? "translate(0, calc(-100% - 12px))"
-												: "translate(-50%, calc(-100% - 12px))",
+								style={
+									{
+										left: tooltipPresentation.left,
+										top: tooltipPresentation.top,
+										"--owner-chart-tip-y": tooltipPresentation.y,
+									} as CSSProperties
+								}
+								onTransitionEnd={(event) => {
+									if (
+										event.propertyName === "opacity" &&
+										tooltipPresentationRef.current?.state === "closing" &&
+										tooltipPresentationRef.current.id ===
+											tooltipPresenceIdRef.current
+									) {
+										tooltipPresentationRef.current = null;
+										setTooltipPresentation(null);
+									}
 								}}
 							>
-								<bdi dir="auto">{activeTime}</bdi>
-								<span>
-									{locale === "ar"
-										? `${messages.presentPrefix} ${formatNumber(active.bucket.count, locale)} ${messages.presentSuffix}`
-										: `${messages.presentPrefix}${formatNumber(active.bucket.count, locale)} ${messages.presentSuffix}`}
-								</span>
+								{inspected ? (
+									<>
+										<bdi dir="auto">{activeTime}</bdi>
+										<span>
+											{locale === "ar"
+												? `${messages.presentPrefix} ${formatNumber(inspected.bucket.count, locale)} ${messages.presentSuffix}`
+												: `${messages.presentPrefix}${formatNumber(inspected.bucket.count, locale)} ${messages.presentSuffix}`}
+										</span>
+									</>
+								) : null}
 							</span>
 						) : null}
 						{gaps
@@ -1120,27 +1138,97 @@ function AnalyticsTable({
 }: Pick<OwnerAnalyticsViewProps, "daily" | "timeZoneByVersion">) {
 	const { locale } = useI18n();
 	const messages = useOwnerAnalyticsMessages();
+	const [page, setPage] = useState(0);
+	const pageSize = 60;
+	const pageCount = Math.max(1, Math.ceil(daily.timeline.length / pageSize));
+	const boundedPage = Math.min(page, pageCount - 1);
+	const pageStart = boundedPage * pageSize;
+	const pageRows = daily.timeline.slice(pageStart, pageStart + pageSize);
 	const keyboardScrollable = { tabIndex: 0 };
+
 	return (
-		<details className="owner-table-disclosure">
-			<summary>
-				<span>{messages.tableSummary}</span>
-				<small>
-					{messages.coverage}
-					{" · "}
-					<bdi>
-						{daily.coverage === null
-							? "—"
-							: `${formatDecimal(daily.coverage * 100, locale)}%`}
-					</bdi>
-				</small>
-			</summary>
+		<OwnerRetainedDisclosure
+			className="owner-table-disclosure"
+			summary={
+				<>
+					<span className="owner-table-disclosure__title">
+						{messages.tableSummary}
+						<ChevronDown aria-hidden="true" />
+					</span>
+					<small>
+						{messages.coverage}
+						{" · "}
+						<bdi>
+							{daily.coverage === null
+								? "—"
+								: `${formatDecimal(daily.coverage * 100, locale)}%`}
+						</bdi>
+					</small>
+				</>
+			}
+		>
 			<p className="owner-coverage-detail">
 				{messages.observedPrefix}{" "}
 				{formatNumber(daily.observedOpenMinutes, locale)} {messages.crossingsOf}{" "}
 				{formatNumber(daily.expectedOpenMinutes, locale)}{" "}
 				{messages.scheduledMinutes}
 			</p>
+			<div className="owner-table-pagination">
+				<p aria-live="polite">
+					{messages.minuteRange}{" "}
+					<bdi>
+						{formatNumber(pageStart + (pageRows.length > 0 ? 1 : 0), locale)}
+					</bdi>
+					{"–"}
+					<bdi>{formatNumber(pageStart + pageRows.length, locale)}</bdi>{" "}
+					{messages.minuteTotal}{" "}
+					<bdi>{formatNumber(daily.timeline.length, locale)}</bdi>
+				</p>
+				<div className="owner-table-pagination__controls">
+					<Button
+						type="button"
+						variant="outline"
+						aria-label={messages.previousPage}
+						disabled={boundedPage === 0}
+						onClick={() => setPage((current) => Math.max(0, current - 1))}
+					>
+						{locale === "ar" ? (
+							<ChevronRight aria-hidden="true" />
+						) : (
+							<ChevronLeft aria-hidden="true" />
+						)}
+					</Button>
+					<label>
+						<span className="sr-only">{messages.minutePage}</span>
+						<select
+							aria-label={messages.minutePage}
+							value={boundedPage}
+							onChange={(event) => setPage(Number(event.target.value))}
+						>
+							{Array.from({ length: pageCount }, (_, index) => (
+								<option key={index} value={index}>
+									{formatNumber(index + 1, locale)}
+								</option>
+							))}
+						</select>
+					</label>
+					<Button
+						type="button"
+						variant="outline"
+						aria-label={messages.nextPage}
+						disabled={boundedPage >= pageCount - 1}
+						onClick={() =>
+							setPage((current) => Math.min(pageCount - 1, current + 1))
+						}
+					>
+						{locale === "ar" ? (
+							<ChevronLeft aria-hidden="true" />
+						) : (
+							<ChevronRight aria-hidden="true" />
+						)}
+					</Button>
+				</div>
+			</div>
 			<section
 				className="owner-table-region"
 				aria-label={messages.tableRegion}
@@ -1157,7 +1245,7 @@ function AnalyticsTable({
 						</tr>
 					</thead>
 					<tbody>
-						{daily.timeline.map((bucket) => (
+						{pageRows.map((bucket) => (
 							<tr key={bucket.minuteStartUtc} data-state={bucket.state}>
 								<td>
 									<bdi dir="auto">
@@ -1183,7 +1271,7 @@ function AnalyticsTable({
 					</tbody>
 				</table>
 			</section>
-		</details>
+		</OwnerRetainedDisclosure>
 	);
 }
 
@@ -1196,36 +1284,48 @@ export function OwnerAnalyticsView({
 	const messages = useOwnerAnalyticsMessages();
 	const noObserved = daily.observedOpenMinutes === 0;
 	const closedDay = noObserved && daily.expectedOpenMinutes === 0;
-	const entryHours = new Map<string, { entries: number; label: string }>();
-	for (const bucket of daily.timeline) {
-		if (bucket.state !== "value") continue;
-		const zone = mappedTimeZone(bucket.settingsVersion, timeZoneByVersion);
-		const date = new Date(bucket.minuteStartUtc);
-		const key = new Intl.DateTimeFormat("en-CA", {
-			timeZone: zone,
-			year: "numeric",
-			month: "2-digit",
-			day: "2-digit",
-			hour: "2-digit",
-			hourCycle: "h23",
-		}).format(date);
-		const hour = entryHours.get(key);
-		const label = new Intl.DateTimeFormat(
-			locale === "ar" ? "ar-SA-u-nu-latn" : "en-US",
-			{
-				timeZone: zone,
-				hour: "numeric",
-				hour12: true,
-			},
-		).format(date);
-		entryHours.set(key, {
-			entries: (hour?.entries ?? 0) + bucket.entries,
-			label,
-		});
-	}
-	const busiestEntryHour = [...entryHours.values()].sort(
-		(a, b) => b.entries - a.entries,
-	)[0];
+	const busiestEntryHour = useMemo(() => {
+		const entryHours = new Map<string, { entries: number; label: string }>();
+		const formatters = new Map<
+			string,
+			{ key: Intl.DateTimeFormat; label: Intl.DateTimeFormat }
+		>();
+		for (const bucket of daily.timeline) {
+			if (bucket.state !== "value") continue;
+			const zone = mappedTimeZone(bucket.settingsVersion, timeZoneByVersion);
+			const date = new Date(bucket.minuteStartUtc);
+			let formatter = formatters.get(zone);
+			if (!formatter) {
+				formatter = {
+					key: new Intl.DateTimeFormat("en-CA", {
+						timeZone: zone,
+						year: "numeric",
+						month: "2-digit",
+						day: "2-digit",
+						hour: "2-digit",
+						hourCycle: "h23",
+					}),
+					label: new Intl.DateTimeFormat(
+						locale === "ar" ? "ar-SA-u-nu-latn" : "en-US",
+						{
+							timeZone: zone,
+							hour: "numeric",
+							hour12: true,
+						},
+					),
+				};
+				formatters.set(zone, formatter);
+			}
+			const key = `${zone}:${formatter.key.format(date)}`;
+			const hour = entryHours.get(key);
+			const label = hour?.label ?? formatter.label.format(date);
+			entryHours.set(key, {
+				entries: (hour?.entries ?? 0) + bucket.entries,
+				label,
+			});
+		}
+		return [...entryHours.values()].sort((a, b) => b.entries - a.entries)[0];
+	}, [daily.timeline, timeZoneByVersion, locale]);
 	const peakTime = daily.peak
 		? formatGymTime(
 				new Date(daily.peak.minuteStartUtc),
@@ -1309,13 +1409,18 @@ export function OwnerAnalyticsView({
 							)
 						}
 						detail={
-							noObserved
-								? closedDay
-									? messages.closedToday
-									: messages.noReadingsYet
-								: busiestEntryHour && busiestEntryHour.entries > 0
-									? `${messages.busiestEntryHour} ${busiestEntryHour.label}`
-									: null
+							noObserved ? (
+								closedDay ? (
+									messages.closedToday
+								) : (
+									messages.noReadingsYet
+								)
+							) : busiestEntryHour && busiestEntryHour.entries > 0 ? (
+								<>
+									{messages.busiestEntryHour}{" "}
+									<bdi>{busiestEntryHour.label}</bdi>
+								</>
+							) : null
 						}
 					/>
 				</div>
@@ -1339,7 +1444,11 @@ export function OwnerAnalyticsView({
 					/>
 				)}
 				{noObserved ? null : (
-					<AnalyticsTable daily={daily} timeZoneByVersion={timeZoneByVersion} />
+					<AnalyticsTable
+						key={daily.businessDay}
+						daily={daily}
+						timeZoneByVersion={timeZoneByVersion}
+					/>
 				)}
 			</section>
 		</div>

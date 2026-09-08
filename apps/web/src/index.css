@@ -275,7 +275,8 @@ html[dir="rtl"] .public-site-header__brand {
  * freshness rhythm while keeping Public's capacity-free crowd-first order.
  */
 .public-live__metric--band .public-live__freshness {
-	max-inline-size: 840px;
+	inline-size: fit-content;
+	max-inline-size: 100%;
 	margin-block-start: 14px;
 	padding-block-start: 12px;
 	border-block-start: 1px solid rgb(255 255 255 / 8%);
@@ -469,50 +470,55 @@ html[dir="rtl"] .public-live__metric--count .public-live__metric-label {
 }
 
 .public-live__signal {
+	--crowd-bar-gap: 6px;
+	--crowd-caption-gap: 16px;
+	--crowd-caption-line: 20px;
+	--crowd-caption-size: 12px;
+	--crowd-group-extra: 0px;
+	--crowd-wave-height: 176px;
 	margin: 28px 48px 40px;
 	padding: 0;
 }
 
 .public-live__signal-caption {
-	display: grid;
-	grid-template-columns: minmax(0, 6fr) minmax(0, 5fr) minmax(0, 8fr) minmax(
-			0,
-			9fr
-		);
-	margin-block-end: 16px;
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+	margin-block-end: var(--crowd-caption-gap);
 	color: var(--fw-text-subtle);
-	font-size: 12px;
+	font-size: var(--crowd-caption-size);
 	font-weight: 600;
 	letter-spacing: 0.06em;
-	line-height: 20px;
+	line-height: var(--crowd-caption-line);
 }
 
 .public-live__signal-caption > * {
+	flex: none;
+	min-inline-size: 0;
 	text-align: start;
+	overflow-wrap: anywhere;
 }
 
 .public-live__signal-caption > [data-current="true"] {
 	color: var(--fw-red-300);
-	font-weight: 700;
+	font-weight: 600;
 }
 
 .public-live__signal-wave {
 	position: relative;
 	display: grid;
-	grid-template-columns: repeat(28, minmax(0, 1fr));
+	grid-template-columns:
+		repeat(6, minmax(0, 1fr)) var(--crowd-group-extra)
+		repeat(5, minmax(0, 1fr)) var(--crowd-group-extra)
+		repeat(8, minmax(0, 1fr)) var(--crowd-group-extra)
+		repeat(9, minmax(0, 1fr));
 	align-items: end;
-	gap: 6px;
-	block-size: 176px;
+	gap: var(--crowd-bar-gap);
+	block-size: var(--crowd-wave-height);
 }
 
 .public-live__signal-wave::before {
-	position: absolute;
-	z-index: 0;
-	inset-inline: 0;
-	inset-block-end: 0;
-	block-size: 1px;
-	background: rgb(255 255 255 / 16%);
-	content: "";
+	content: none;
 }
 
 .public-live__signal-bar {
@@ -526,10 +532,16 @@ html[dir="rtl"] .public-live__metric--count .public-live__metric-label {
 	opacity: 0.78;
 }
 
-.public-live__signal-bar:nth-child(7),
-.public-live__signal-bar:nth-child(12),
+.public-live__signal-bar:nth-child(7) {
+	grid-column-start: 8;
+}
+
+.public-live__signal-bar:nth-child(12) {
+	grid-column-start: 14;
+}
+
 .public-live__signal-bar:nth-child(20) {
-	margin-inline-start: 6px;
+	grid-column-start: 23;
 }
 
 .public-live__signal-bar[data-state="complete"] {
@@ -553,13 +565,14 @@ html[dir="rtl"] .public-live__metric--count .public-live__metric-label {
 }
 
 .public-live__signal-bar[data-current-cap="true"] {
-	box-shadow: 0 -10px 30px rgb(255 41 70 / 32%);
+	overflow: clip;
+	box-shadow: 0 0 22px rgb(229 25 53 / 24%);
 }
 
 .public-live__signal-bar[data-current-cap="true"]::after {
 	position: absolute;
-	inset-inline: -2px;
-	inset-block-start: -4px;
+	inset-inline: 0;
+	inset-block-start: 0;
 	block-size: 3px;
 	border-radius: 2px;
 	background: #fff4f5;
@@ -912,8 +925,8 @@ html[dir="rtl"] .public-state-card--closed h1 {
 	}
 
 	.public-live__signal-wave {
-		gap: 4px;
-		block-size: 150px;
+		--crowd-bar-gap: 4px;
+		--crowd-wave-height: 150px;
 	}
 
 	.public-live__stale-warning {
@@ -1094,28 +1107,18 @@ html[dir="rtl"] .public-state-card--closed h1 {
 	}
 
 	.public-live__signal-caption {
-		grid-template-columns: minmax(0, 6fr) minmax(0, 5fr) minmax(0, 8fr) minmax(
-				0,
-				9fr
-			);
-		margin-block-end: 12px;
-		font-size: 11px;
+		--crowd-caption-gap: 12px;
+		--crowd-caption-size: 11px;
 		letter-spacing: 0.04em;
 	}
 
 	.public-live__signal-wave {
-		gap: 3px;
-		block-size: 136px;
+		--crowd-bar-gap: 3px;
+		--crowd-wave-height: 136px;
 	}
 
 	.public-live__signal-bar {
 		border-radius: 2px 2px 0 0;
-	}
-
-	.public-live__signal-bar:nth-child(7),
-	.public-live__signal-bar:nth-child(12),
-	.public-live__signal-bar:nth-child(20) {
-		margin-inline-start: 3px;
 	}
 
 	.public-live__signal-footer {

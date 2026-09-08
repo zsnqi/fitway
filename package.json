@@ -40,6 +40,8 @@
 		"demo:status": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo.ps1 status",
 		"demo:verify": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo.ps1 verify",
 		"demo:owner": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo.ps1 owner",
+		"demo:text:preview": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo.ps1 text-preview",
+		"demo:text:apply": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo.ps1 text-apply",
 		"demo:stop": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo.ps1 stop",
 		"demo:clean": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo.ps1 clean"
 	},

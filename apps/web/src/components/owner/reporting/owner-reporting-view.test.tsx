@@ -339,6 +339,7 @@ describe("heatmap rendering", () => {
 describe("the semantic table beside the grid", () => {
 	it("lists every cell in the grid, with parity of state", () => {
 		render(<OwnerReportingTable heatmap={heatmapFixture()} />);
+		expect(container.querySelector(".owner-reporting-disclosure")).toBeNull();
 		const rows = container.querySelectorAll(
 			"[data-owner-reporting-table] tbody tr",
 		);
@@ -373,8 +374,8 @@ describe("week-over-week", () => {
 		expect(text()).toContain("31.8");
 		expect(text()).toContain("up");
 		expect(text()).toContain("8.8%");
-		// The concise per-week crossings basis travels with the figure.
-		expect(text()).toContain("Door crossings per week.");
+		expect(text()).toContain("Total entries");
+		expect(text()).not.toContain("repeat visits");
 	});
 
 	it("withholds the comparison and names the typed reason instead", () => {

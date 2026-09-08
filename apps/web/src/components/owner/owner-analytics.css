@@ -247,15 +247,10 @@
 }
 
 .owner-chart__stem {
-	fill: none;
-	stroke: rgb(170 164 166 / 60%);
-	stroke-width: 1.5;
-	stroke-dasharray: 4 4;
-	/* Butt cap: the active stem starts exactly on the marker's outer bottom
-	   edge — a round cap would paint ~0.75px upward into the ring toward the
-	   core. Untrimmed gap stems above keep their round caps. */
-	stroke-linecap: butt;
-	vector-effect: non-scaling-stroke;
+	position: absolute;
+	inline-size: 0;
+	border-left: 1px dashed rgb(170 164 166 / 60%);
+	pointer-events: none;
 }
 
 .owner-chart__line {
@@ -265,14 +260,6 @@
 	stroke-linejoin: round;
 	stroke-width: 2.5;
 	vector-effect: non-scaling-stroke;
-}
-
-/* Paper marker junction: a trimmed side meets the ring's outer edge along a
-   straight radial tip segment (see smoothPath straightTip). The butt cap ends
-   the paint exactly on the edge — a round cap would extend ~1.25px past the
-   endpoint into the ring toward the core. Untrimmed runs keep round caps. */
-.owner-chart__line--trimmed {
-	stroke-linecap: butt;
 }
 
 .owner-chart__point {
@@ -330,12 +317,23 @@
 	gap: 2px;
 	min-inline-size: 110px;
 	max-inline-size: 220px;
-	padding: 10px 12px;
-	border: 1px solid var(--fw-border-strong);
+	padding: 8px 10px;
+	border: 1px solid rgb(255 255 255 / 10%);
 	border-radius: var(--fw-radius-control);
-	background: rgb(26 26 30 / 94%);
-	box-shadow: 0 12px 30px rgb(0 0 0 / 28%);
+	background: rgb(25 20 23 / 88%);
+	backdrop-filter: blur(12px);
+	box-shadow: 0 4px 16px rgb(0 0 0 / 18%);
+	opacity: 1;
+	transform: translate(-50%, var(--owner-chart-tip-y));
 	pointer-events: none;
+}
+
+.owner-chart-tip:is(
+	[data-tooltip-state="entering"],
+	[data-tooltip-state="closing"]
+) {
+	opacity: 0;
+	transform: translate(-50%, var(--owner-chart-tip-y)) translateY(2px);
 }
 
 .owner-chart-tip bdi {
@@ -412,7 +410,7 @@
 	overflow: hidden;
 }
 
-.owner-table-disclosure > summary {
+.owner-table-disclosure > .owner-retained-disclosure__trigger {
 	display: flex;
 	align-items: center;
 	min-block-size: 52px;
@@ -422,12 +420,75 @@
 	font-weight: 600;
 }
 
-.owner-table-disclosure > summary:focus-visible {
+.owner-table-disclosure__title {
+	display: inline-flex;
+	gap: 8px;
+	align-items: center;
+}
+
+.owner-table-disclosure__title svg {
+	inline-size: 18px;
+	block-size: 18px;
+	transition: transform var(--fw-duration-base) var(--fw-ease-out);
+}
+
+.owner-table-disclosure[data-open] .owner-table-disclosure__title svg {
+	transform: rotate(180deg);
+}
+
+.owner-table-pagination {
+	display: flex;
+	gap: 16px;
+	align-items: center;
+	justify-content: space-between;
+	margin: 0 32px 12px;
+	color: var(--fw-text-subtle);
+	font-size: 12px;
+}
+
+.owner-table-pagination p {
+	margin: 0;
+	font-variant-numeric: tabular-nums;
+}
+
+.owner-table-pagination__controls {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+}
+
+.owner-table-pagination__controls button,
+.owner-table-pagination__controls select {
+	min-inline-size: 44px;
+	min-block-size: 44px;
+}
+
+.owner-table-pagination__controls button {
+	padding-inline: 10px;
+}
+
+.owner-table-pagination__controls select {
+	padding-inline: 12px;
+	border: 1px solid var(--fw-border-strong);
+	border-radius: var(--fw-radius-control);
+	color: var(--fw-chalk);
+	background: var(--owner-control);
+	font: inherit;
+}
+
+.owner-table-pagination__controls select:focus-visible {
+	outline: 2px solid var(--fw-red-bright);
+	outline-offset: 2px;
+}
+
+.owner-table-disclosure > .owner-retained-disclosure__trigger:focus-visible {
 	outline: 2px solid var(--fw-red-bright);
 	outline-offset: -3px;
 }
 
 .owner-table-region {
+	position: relative;
+	isolation: isolate;
 	max-block-size: 420px;
 	overflow: auto;
 	border-block-start: 1px solid var(--fw-border);
@@ -454,11 +515,11 @@
 
 .owner-table-region th {
 	position: sticky;
-	z-index: 1;
+	z-index: 2;
 	inset-block-start: 0;
 	color: var(--fw-text-muted);
 	/* Shared warm-charcoal header step, matching audit and reporting. */
-	background: rgb(24 22 24 / 88%);
+	background: var(--owner-table-head);
 }
 
 .owner-table-region td {
@@ -739,34 +800,7 @@
 }
 
 .owner-chart-layout {
-	display: flex;
-	align-items: flex-start;
-	gap: 12px;
-}
-
-.owner-chart-y-axis {
-	display: flex;
-	flex: 0 0 44px;
-	flex-direction: column;
-	justify-content: space-between;
-	block-size: 240px;
-	padding-block: 0;
-	color: var(--fw-text-subtle);
-	font-size: 12px;
-	font-weight: 500;
-	font-variant-numeric: tabular-nums;
-	line-height: 16px;
-	text-align: end;
-}
-
-/* End labels center on the extreme gridlines instead of riding half a line
-   into the plot. */
-.owner-chart-y-axis span:first-child {
-	transform: translateY(-50%);
-}
-
-.owner-chart-y-axis span:last-child {
-	transform: translateY(50%);
+	display: block;
 }
 
 .owner-chart-plot {
@@ -845,6 +879,15 @@
 	transform: translate(-50%, -50%);
 	content: "";
 }
+
+.owner-chart__active--inspected {
+	border-color: var(--fw-chalk);
+	box-shadow: 0 0 0 2px rgb(229 25 53 / 34%);
+}
+
+.owner-chart__active--latest[data-combined="true"] {
+	box-shadow: 0 0 0 2px rgb(255 244 245 / 72%);
+}
 @media (max-width: 720px) {
 	.owner-chart__active {
 		inline-size: 18px;
@@ -894,7 +937,7 @@
 	box-shadow: none;
 }
 
-.owner-table-disclosure > summary {
+.owner-table-disclosure > .owner-retained-disclosure__trigger {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -906,17 +949,13 @@
 	line-height: 20px;
 }
 
-.owner-table-disclosure > summary small {
+.owner-table-disclosure > .owner-retained-disclosure__trigger small {
 	margin-inline-start: auto;
 	padding-inline-end: 26px;
 	color: var(--fw-text-subtle);
 	font-size: 12px;
 	font-weight: 400;
 	line-height: 18px;
-}
-
-.owner-table-disclosure > summary::marker {
-	color: var(--fw-muted);
 }
 
 .owner-table-region {
@@ -953,9 +992,10 @@
 	.owner-metric:first-child,
 	.owner-metric:last-child {
 		display: flex;
+		flex: 0 0 auto;
 		flex-direction: column;
 		justify-content: center;
-		gap: 2px;
+		gap: 4px;
 		min-block-size: 94px;
 		padding: 9px 0;
 		border: 0;
@@ -968,8 +1008,10 @@
 
 	.owner-metric__heading {
 		align-self: auto;
+		flex-shrink: 0;
+		min-block-size: 26px;
 		font-size: 13px;
-		line-height: 18px;
+		line-height: 26px;
 	}
 
 	.owner-metric > strong {
@@ -988,14 +1030,6 @@
 
 	.owner-chart-panel {
 		padding: 20px;
-	}
-
-	.owner-chart-layout {
-		display: block;
-	}
-
-	.owner-chart-y-axis {
-		display: none;
 	}
 
 	.owner-chart-interaction,
@@ -1040,12 +1074,17 @@
 		display: block;
 	}
 
-	.owner-table-disclosure > summary {
+	.owner-table-disclosure > .owner-retained-disclosure__trigger {
 		padding-inline: 20px;
 	}
 
-	.owner-table-disclosure > summary small {
+	.owner-table-disclosure > .owner-retained-disclosure__trigger small {
 		display: none;
+	}
+
+	.owner-table-pagination {
+		align-items: flex-start;
+		margin-inline: 20px;
 	}
 
 	.owner-table-region {
@@ -1323,4 +1362,37 @@
 	margin: 0 0 16px;
 	color: var(--fw-text-subtle);
 	font-size: 13px;
+}
+
+/* Share the button's inner box with its absolute marker and mask geometry. */
+.owner-chart {
+	block-size: 100%;
+	min-block-size: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.owner-chart-tip {
+		transition:
+			opacity var(--fw-duration-fast) var(--fw-ease-out),
+			transform var(--fw-duration-fast) var(--fw-ease-out);
+	}
+
+	.owner-chart-interaction[data-tracking="true"] {
+		.owner-chart__active,
+		.owner-chart__stem,
+		.owner-chart-tip {
+			transition:
+				left 120ms var(--fw-ease-out),
+				top 120ms var(--fw-ease-out),
+				height 120ms var(--fw-ease-out),
+				transform 120ms var(--fw-ease-out),
+				opacity 120ms var(--fw-ease-out);
+		}
+
+		.owner-chart__cutout {
+			transition:
+				cx 120ms var(--fw-ease-out),
+				cy 120ms var(--fw-ease-out);
+		}
+	}
 }

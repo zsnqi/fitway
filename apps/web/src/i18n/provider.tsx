@@ -5,6 +5,7 @@ import {
 	useContext,
 	useEffect,
 	useMemo,
+	useRef,
 	useState,
 } from "react";
 
@@ -27,10 +28,23 @@ type I18nContextValue = {
 const I18nContext = createContext<I18nContextValue | null>(null);
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-	const [locale, setLocale] = useState<Locale>(getInitialLocale);
+	const [locale, setLocale] = useState<Locale>(() => {
+		const initialLocale = getInitialLocale();
+		applyDocumentLocale(initialLocale);
+		return initialLocale;
+	});
+	const localeRef = useRef(locale);
+
+	const publishLocale = useCallback((nextLocale: Locale) => {
+		if (nextLocale === localeRef.current) return;
+		// Direction is part of the locale transaction. Apply it before React can
+		// publish translated descendants so the first measured frame is coherent.
+		applyDocumentLocale(nextLocale);
+		localeRef.current = nextLocale;
+		setLocale(nextLocale);
+	}, []);
 
 	useEffect(() => {
-		applyDocumentLocale(locale);
 		try {
 			window.localStorage.setItem(LOCALE_STORAGE_KEY, locale);
 		} catch {
@@ -41,17 +55,17 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 	useEffect(() => {
 		function handleStorage(event: StorageEvent) {
 			if (event.key === LOCALE_STORAGE_KEY && isLocale(event.newValue)) {
-				setLocale(event.newValue);
+				publishLocale(event.newValue);
 			}
 		}
 
 		window.addEventListener("storage", handleStorage);
 		return () => window.removeEventListener("storage", handleStorage);
-	}, []);
+	}, [publishLocale]);
 
 	const toggleLocale = useCallback(() => {
-		setLocale((current) => getOppositeLocale(current));
-	}, []);
+		publishLocale(getOppositeLocale(localeRef.current));
+	}, [publishLocale]);
 
 	const value = useMemo<I18nContextValue>(
 		() => ({

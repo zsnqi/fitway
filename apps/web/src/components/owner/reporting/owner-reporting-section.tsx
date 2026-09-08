@@ -9,9 +9,10 @@ import {
 	useOwnerReporting,
 	windowEndingOn,
 } from "@/hooks/use-owner-reporting";
-import { formatDate } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
 
+import { OwnerDateField } from "../owner-date-field";
+import { OwnerRetainedDisclosure } from "../owner-retained-disclosure";
 import type { OwnerDailyAnalyticsPrerequisite } from "./owner-analytics-mode-switch";
 import {
 	OwnerReportingExport,
@@ -23,6 +24,7 @@ import {
 	OwnerReportingHeatmap,
 	OwnerReportingLoading,
 	OwnerReportingTable,
+	windowLabel,
 } from "./owner-reporting-view";
 import { useOwnerReportingMessages } from "./use-owner-reporting-messages";
 
@@ -52,6 +54,8 @@ export function OwnerReportingSection({
 	// page on the same window.
 	const [applied, setApplied] = useState<ReportingRangeSelection | null>(null);
 	const [draft, setDraft] = useState<ReportingRangeSelection | null>(null);
+	const [dateValidity, setDateValidity] = useState({ start: true, end: true });
+	const [validationRequested, setValidationRequested] = useState(false);
 	const reporting = useOwnerReporting(applied, {
 		timeZone: prerequisite.data?.timeContext.current.timeZone ?? null,
 		anchorBusinessDay: prerequisite.data?.daily.businessDay ?? null,
@@ -104,11 +108,15 @@ export function OwnerReportingSection({
 	const fallback = windowEndingOn(anchor, REPORTING_DEFAULT_WINDOW_DAYS);
 	const editing = draft ?? current;
 
-	const problem = rangeProblemMessage(
-		rangeProblem(editing, REPORTING_QUERY_MAX_RANGE_DAYS),
-		messages,
-		REPORTING_QUERY_MAX_RANGE_DAYS,
-	);
+	const rangeValidationProblem =
+		dateValidity.start && dateValidity.end
+			? rangeProblemMessage(
+					rangeProblem(editing, REPORTING_QUERY_MAX_RANGE_DAYS),
+					messages,
+					REPORTING_QUERY_MAX_RANGE_DAYS,
+				)
+			: messages.problemMalformed;
+	const problem = validationRequested ? rangeValidationProblem : null;
 
 	function update(key: keyof ReportingRangeSelection, value: string) {
 		setDraft({ ...editing, [key]: value });
@@ -116,28 +124,28 @@ export function OwnerReportingSection({
 
 	function handleSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
+		setValidationRequested(true);
 		// An unusable window is never sent and never silently corrected; the message
 		// beside the field stays, and the answer already on screen stays with it.
-		if (problem) return;
+		if (rangeValidationProblem) return;
 		setApplied(editing);
 	}
 
 	function restoreDefault() {
 		setDraft(fallback);
 		setApplied(fallback);
+		setDateValidity({ start: true, end: true });
+		setValidationRequested(false);
 	}
 
 	const heatmap = reporting.heatmap.data;
 	const comparison = reporting.comparison.data;
-	const loading =
-		reporting.heatmap.status === "pending" ||
-		reporting.comparison.status === "pending";
-	const pageDate = formatDate(new Date(`${anchor}T12:00:00.000Z`), locale, {
-		weekday: "long",
-		day: "numeric",
-		month: "long",
-		year: "numeric",
-	});
+	const loadingHeatmap = reporting.heatmap.status === "pending";
+	const pageDate = windowLabel(
+		current.startBusinessDay,
+		current.endBusinessDay,
+		locale,
+	);
 
 	return (
 		<section
@@ -150,7 +158,6 @@ export function OwnerReportingSection({
 			>
 				<h1 id={`${ids}-page-heading`}>{pageTitle}</h1>
 				<p>
-					{messages.gymTime} · <bdi>{reporting.timeZone}</bdi> ·{" "}
 					<bdi dir="auto">{pageDate}</bdi>
 				</p>
 			</header>
@@ -170,9 +177,9 @@ export function OwnerReportingSection({
 					 * The legend still carries the group name for assistive technology.
 					 */}
 					<div className="owner-reporting-board__heading">
-						<h3 className="owner-reporting-board__title">
+						<h2 className="owner-reporting-board__title">
 							{messages.rangeLegend}
-						</h3>
+						</h2>
 						<p className="owner-reporting-board__meta" id={`${ids}-hint`}>
 							{messages.rangeHint}
 						</p>
@@ -180,36 +187,36 @@ export function OwnerReportingSection({
 					<fieldset>
 						<legend className="fw-sr-only">{messages.rangeLegend}</legend>
 						<div className="owner-reporting-board__row">
-							<div className="owner-reporting-field">
-								<label htmlFor={`${ids}-start`}>{messages.startLabel}</label>
-								<input
-									id={`${ids}-start`}
-									type="date"
-									value={editing.startBusinessDay}
-									aria-describedby={problem ? `${ids}-problem` : `${ids}-hint`}
-									aria-invalid={problem ? true : undefined}
-									onChange={(event) =>
-										update("startBusinessDay", event.target.value)
-									}
-								/>
-							</div>
-							<div className="owner-reporting-field">
-								<label htmlFor={`${ids}-end`}>{messages.endLabel}</label>
-								<input
-									id={`${ids}-end`}
-									type="date"
-									value={editing.endBusinessDay}
-									aria-describedby={problem ? `${ids}-problem` : `${ids}-hint`}
-									aria-invalid={problem ? true : undefined}
-									onChange={(event) =>
-										update("endBusinessDay", event.target.value)
-									}
-								/>
-							</div>
+							<OwnerDateField
+								id={`${ids}-start`}
+								label={messages.startLabel}
+								value={editing.startBusinessDay}
+								describedBy={problem ? `${ids}-problem` : `${ids}-hint`}
+								invalid={problem !== null}
+								referenceYear={Number(anchor.slice(0, 4))}
+								onValidationRequest={() => setValidationRequested(true)}
+								onValidationReset={() => setValidationRequested(false)}
+								onValidityChange={(valid) =>
+									setDateValidity((current) => ({ ...current, start: valid }))
+								}
+								onChange={(value) => update("startBusinessDay", value)}
+							/>
+							<OwnerDateField
+								id={`${ids}-end`}
+								label={messages.endLabel}
+								value={editing.endBusinessDay}
+								describedBy={problem ? `${ids}-problem` : `${ids}-hint`}
+								invalid={problem !== null}
+								referenceYear={Number(anchor.slice(0, 4))}
+								onValidationRequest={() => setValidationRequested(true)}
+								onValidationReset={() => setValidationRequested(false)}
+								onValidityChange={(valid) =>
+									setDateValidity((current) => ({ ...current, end: valid }))
+								}
+								onChange={(value) => update("endBusinessDay", value)}
+							/>
 							<div className="owner-reporting-range__actions">
-								<Button type="submit" disabled={problem !== null}>
-									{messages.apply}
-								</Button>
+								<Button type="submit">{messages.apply}</Button>
 								<Button
 									type="button"
 									variant="outline"
@@ -219,24 +226,20 @@ export function OwnerReportingSection({
 								</Button>
 							</div>
 						</div>
-						{problem ? (
-							<p
-								className="owner-reporting__problem"
-								id={`${ids}-problem`}
-								data-owner-reporting-problem="range"
-								role="alert"
-							>
-								{problem}
-							</p>
-						) : null}
+						<p
+							className="owner-reporting__problem"
+							id={`${ids}-problem`}
+							data-owner-reporting-problem="range"
+							role={problem ? "alert" : undefined}
+						>
+							{problem}
+						</p>
 					</fieldset>
 				</form>
 			</div>
 
-			{/* One loading card for the section, not one for each leaf in flight. */}
-			{loading ? <OwnerReportingLoading /> : null}
-
 			<div className="owner-reporting-block">
+				{loadingHeatmap ? <OwnerReportingLoading embedded /> : null}
 				{reporting.heatmap.status === "error" ? (
 					<OwnerReportingError
 						title={messages.errorTitle}
@@ -248,6 +251,13 @@ export function OwnerReportingSection({
 
 			<div className="owner-reporting-lower">
 				<div className="owner-reporting-block">
+					{reporting.comparison.status === "pending" ? (
+						<OwnerReportingLoading
+							embedded
+							compact
+							announce={!loadingHeatmap}
+						/>
+					) : null}
 					{reporting.comparison.status === "error" ? (
 						<OwnerReportingError
 							title={messages.comparisonErrorTitle}
@@ -262,12 +272,18 @@ export function OwnerReportingSection({
 					<div className="owner-reporting-block owner-reporting-block--disclosure">
 						<OwnerReportingTable heatmap={heatmap} />
 					</div>
+				) : loadingHeatmap ? (
+					<div className="owner-reporting-block">
+						<OwnerReportingLoading embedded compact announce={false} />
+					</div>
 				) : null}
 			</div>
-			<details className="owner-reporting-export-disclosure">
-				<summary>{messages.csvExport}</summary>
+			<OwnerRetainedDisclosure
+				className="owner-reporting-export-disclosure"
+				summary={messages.csvExport}
+			>
 				<OwnerReportingExport anchorBusinessDay={anchor} />
-			</details>
+			</OwnerRetainedDisclosure>
 		</section>
 	);
 }

@@ -16,6 +16,12 @@ async function selectHealth(page: Page) {
 async function openHealth(page: Page) {
 	await page.goto("/admin");
 	await selectHealth(page);
+	const panel = page.locator("#owner-section-health-panel");
+	await expect(panel).toHaveAttribute("data-owner-section-state", "active");
+	// Playwright's visibility contract intentionally ignores opacity. Wait for
+	// the accepted section-entry cross-fade to finish so presentation oracles
+	// inspect the settled panel instead of a valid intermediate frame.
+	await expect(panel).toHaveCSS("opacity", "1");
 }
 
 async function reloadHealth(page: Page) {
@@ -421,6 +427,9 @@ test("the summary reads in the gym timezone and adds no request to a neighbour",
 	await expect(firstOutage).toContainText("12:30 AM");
 	await expect(firstOutage).not.toContainText("2:30 PM");
 	await expect(page.locator(".owner-health__window")).toContainText(
+		"August 1, 2026 – August 14, 2026",
+	);
+	await expect(page.locator(".owner-health__heading")).not.toContainText(
 		GYM_TIME_ZONE,
 	);
 	await captureReview(page, "owner-health-populated-en-1440x900.png");
@@ -452,21 +461,17 @@ test("every figure names its own denominator and the two failure kinds stay apar
 	// send that failed on the wire is named as a messaging failure, not downtime.
 	const incidents = page.locator(`${incidentTable} tbody tr`);
 	await expect(incidents).toHaveCount(2);
-	await expect(incidents.nth(0)).toContainText(
-		"Device reported a camera failure",
-	);
+	await expect(incidents.nth(0)).toContainText("Camera issue");
 	await expect(incidents.nth(0)).toContainText("Not yet recovered");
 	await expect(incidents.nth(0)).toContainText(
 		"1 delivered · 1 failed to send",
 	);
-	await expect(incidents.nth(1)).toContainText("Edge stopped pushing");
+	await expect(incidents.nth(1)).toContainText("Counter connection lost");
 
 	// A closed-hours outage is listed honestly, with no open minute charged to it.
 	const closedOutage = page.locator(`${offlineTable} tbody tr`).nth(1);
 	await expect(closedOutage).toContainText("None — gym closed throughout");
-	await expect(page.locator(".owner-health__footnote")).toContainText(
-		"is not an incident the gym was exposed to",
-	);
+	await expect(closedOutage).toHaveAttribute("data-closed-only", "");
 
 	// Nothing was hidden by the list bound, so no "shown x of y" line is spent.
 	await expect(page.locator(".owner-health__shown")).toHaveCount(0);
@@ -487,7 +492,7 @@ test("Arabic renders RTL with Western digits and no device identity", async ({
 	await expect(page.locator(incidentTable)).toBeVisible();
 	const text = (await page.locator(".owner-health").textContent()) ?? "";
 	expect(text).not.toMatch(/[٠-٩۰-۹]/u);
-	expect(text).toContain("توقف الجهاز عن الإرسال");
+	expect(text).toContain("انقطع اتصال جهاز العد");
 	expect(text).toContain("لم يتعافَ بعد");
 	expect(text).not.toMatch(/deviceId|device_id/i);
 
@@ -738,14 +743,14 @@ const mobileOracle = {
 			columns: ["Condition", "Started", "Recovered", "Alerts sent", "Delivery"],
 			rows: [
 				[
-					"Device reported a camera failure",
+					"Camera issue",
 					"Aug 13 8:00 AM",
 					"Not yet recovered",
 					"2",
 					"1 delivered · 1 failed to send",
 				],
 				[
-					"Edge stopped pushing",
+					"Counter connection lost",
 					"Aug 9 2:15 PM",
 					"Aug 9 2:46 PM",
 					"1",
@@ -776,14 +781,14 @@ const mobileOracle = {
 			columns: ["الحالة", "البداية", "التعافي", "التنبيهات المرسلة", "الإرسال"],
 			rows: [
 				[
-					"أبلغ الجهاز عن تعطل الكاميرا",
+					"خلل في الكاميرا",
 					"13 أغسطس 8:00 ص",
 					"لم تتعافَ بعد",
 					"2",
-					"1 وصل · 1 فشل الإرسال",
+					"وصل إشعار واحد · فشل إرسال إشعار واحد",
 				],
 				[
-					"توقف الجهاز عن الإرسال",
+					"انقطع اتصال جهاز العد",
 					"9 أغسطس 2:15 م",
 					"9 أغسطس 2:46 م",
 					"1",
@@ -810,7 +815,7 @@ const mobileUnconfirmed: Summary = {
 
 const unconfirmedOracle = {
 	en: "1 delivered · 1 failed to send · 1 unconfirmed",
-	ar: "1 وصل · 1 فشل الإرسال · 1 غير مؤكد",
+	ar: "وصل إشعار واحد · فشل إرسال إشعار واحد · إشعار واحد غير مؤكد",
 } as const;
 
 /**
@@ -1469,7 +1474,7 @@ test("the desktop table composition at 721px and wider keeps its Paper board hea
 						(document.querySelector(".owner-health__scroll-hint")
 							? computed(document.querySelector(".owner-health__scroll-hint"))
 									.display
-							: "missing") !== "none",
+							: "none") !== "none",
 				};
 			});
 			expect(desktop, `${locale} ${width}px`).toEqual({
@@ -1481,9 +1486,8 @@ test("the desktop table composition at 721px and wider keeps its Paper board hea
 				tableDisplay: "table",
 				tdDisplay: "table-cell",
 				accent: expect.stringContaining("2px"),
-				// Pre-existing behaviour: the sideways-scroll hint shows only where
-				// the table actually scrolls, 721px through 1023px.
-				scrollHintVisible: width <= 1023,
+				// The region itself provides the scroll affordance and accessible name.
+				scrollHintVisible: false,
 			});
 		}
 	}
@@ -1637,7 +1641,9 @@ test("the mobile contract rejects every false-pass fault injection", async ({
 	);
 	await expectFaultRejected(
 		"text camouflaged as the card background",
-		inject(`${firstValue} { color: rgb(23, 23, 27) !important; }`),
+		inject(
+			`${offlineTable} tbody tr:first-child { background: rgb(23, 23, 27) !important; } ${firstValue} { color: rgb(23, 23, 27) !important; }`,
+		),
 		offlineTable,
 	);
 	await expectFaultRejected(

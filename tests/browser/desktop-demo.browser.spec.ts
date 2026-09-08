@@ -139,7 +139,7 @@ test("real Owner password opens every populated owner surface", async ({
 	).toBeVisible();
 
 	await page.getByRole("tab", { name: "Reports" }).click();
-	await expect(page.getByRole("heading", { name: "Analytics" })).toBeVisible({
+	await expect(page.getByRole("heading", { name: "Reports" })).toBeVisible({
 		timeout: 15_000,
 	});
 	await expect(
@@ -169,6 +169,22 @@ test("real Owner password opens every populated owner surface", async ({
 		page.locator('tr[data-action="correction_delta"]').first(),
 	).toBeVisible();
 	await expect(page.locator('tr[data-action="reset"]')).toBeVisible();
+	const activityTable = page
+		.getByRole("region", { name: "Activity records" })
+		.getByRole("table");
+	await expect(activityTable).toContainText("إدارة نادي FITWAY");
+	await expect(activityTable).toContainText("فريق الاستقبال");
+	await expect(activityTable).toContainText(
+		"مطابقة العدد مع سجل مكتب الاستقبال",
+	);
+	await expect(activityTable).toContainText(
+		"مراجعة العدد بعد جولة داخل الصالة",
+	);
+	await expect(activityTable).toContainText("تصفير العدد عند إغلاق الصالة");
+	await expect(activityTable).toContainText("مطابقة العدد مع سجل بوابة الدخول");
+	await expect(activityTable).toContainText(
+		"تحديث إعدادات التشغيل لشهر سبتمبر",
+	);
 
 	await page.getByRole("tab", { name: "System Status" }).click();
 	await expect(

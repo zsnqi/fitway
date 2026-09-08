@@ -1,6 +1,6 @@
 schemaVersion: 1
 status: IN_PROGRESS
-updatedAt: "2026-09-05T12:30:00Z"
+updatedAt: "2026-09-08T02:50:32Z"
 authorityDecision: docs/adr/ADR-007-paper-visual-source-of-truth.md
 milestone: full-route-paper-fidelity-r01
 
@@ -526,7 +526,7 @@ surfaces:
 
 acceptancePolicy:
   paperExportsPending: "Accepted Paper leaf exports are present and hash-verified; final human acceptance was granted 2026-09-05 and the accepted canonical promotion is recorded below."
-  routedEvidencePending: "Every accepted canonical case carries a full-route routed screenshot hash and the human approval record docs/phase-records/handoffs/full-route-paper-fidelity/20260905-human-visual-approval.md."
+  routedEvidencePending: "Every accepted canonical case carries a full-route routed screenshot hash and either the 2026-09-05 closure approval or the bounded 2026-09-08 presentation reconciliation approval recorded by that case."
   captureReviewIsVerdict: false
   baselineMayReplacePaper: false
 
@@ -534,10 +534,10 @@ rejectedRoutedBaseline:
   status: SUPERSEDED_BY_ACCEPTED_CASES
   path: tests/browser/__screenshots__
   fileCount: 41
-  treeSha256: a7ef4f7b1f78c422d9433f98180078e7f15657b7015f73da0d35c532a4b3f0ba
+  treeSha256: 9d5666e09882215227834a54fc53d0ef681f92d620fcbdfde6fb3959057824f0
   rejectionRecord: docs/phase-records/handoffs/fidelity-integration-closure/20260902-193655-fidelity_closure_r05-human-visual-rejection.md
-  promotionRecord: docs/phase-records/handoffs/full-route-paper-fidelity/20260905-fidelity-closure.md
-  promotionRun: fidelity_promotion_r01
+  promotionRecord: docs/phase-records/handoffs/owner-demo-polish/20260908-presentation-ready-r06-visual-acceptance.md
+  promotionRun: presentation_r06_visual_promote
   disposition: >-
     The REJECTED_R05 tree (frozen at 542c5609…) is preserved as history through
     the unchanged rejectionRecord and the original per-file provenance. Nineteen
@@ -545,12 +545,13 @@ rejectedRoutedBaseline:
     are accepted-mapped in tests/browser/visual-authority-cases.mjs. Promoted
     files without an honest case/leaf counterpart and untouched orphans remain
     rejected-listed by path and are regression baselines only, never Paper
-    authority. The human-authorized owner-demo repair package (viewport-correct
-    Owner launcher, demo-only devtools gating, Public/Staff freshness
-    separation, truthful Daily chart presentation, concise owner copy, Reports
-    mobile entry, Settings atmosphere continuity, RTL control polish, Owner
-    material hierarchy) re-rendered seven asserted canonicals in place; the
-    tree hash was recomputed to a7ef4f7b… with no file added or removed.
+    authority. The bounded, human-authorized presentation-ready reconciliation
+    re-rendered eleven existing regression baselines after direct comparison:
+    ten honestly mapped Staff, Daily, Activity, Uptime, and Settings frames plus
+    the regression-only Settings error frame. The isolated shell canonicals were
+    byte-untouched after their normal assertion passed. The tree hash was
+    recomputed to 9d5666e0… with no file added or removed; exact scope and
+    classification are recorded by the promotionRecord.
 
 finalReviewPackage:
   status: PROMOTED_ACCEPTED

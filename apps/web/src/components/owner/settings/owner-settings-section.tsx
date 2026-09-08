@@ -1,7 +1,6 @@
 ﻿import type { Weekday } from "@fitway/api/occupancy/schedule";
 import { useEffect, useRef, useState } from "react";
 
-import { useOwnerDailyAnalytics } from "@/hooks/use-owner-daily-analytics";
 import { useOwnerSettings } from "@/hooks/use-owner-settings";
 import { useI18n } from "@/i18n/provider";
 
@@ -25,15 +24,9 @@ import "./owner-settings.css";
  * specification, mounted as a sibling of the existing owner governance
  * sections in the settled daily `/admin` branch.
  *
- * ## One live region and one retry per page
- *
- * Enablement is an explicit property and the shared daily analytics are the
- * page prerequisite. While either is unsettled, the hook stands down
- * (`status: "standby"`) and this section renders nothing — `/admin` is
- * already announcing exactly one loading status or showing exactly one error
- * with one retry, and a second copy of either would be noise for a screen
- * reader and a duplicate control for everyone else (the same standing-down
- * the accepted access section performs on this route).
+ * Enablement is explicit. Once this retained panel is visited, Settings owns
+ * its request and section-specific pending/error states; Daily state neither
+ * suppresses the request nor substitutes its content.
  *
  * ## Draft lifecycle
  *
@@ -49,9 +42,7 @@ import "./owner-settings.css";
 export function OwnerSettingsSection({ enabled }: { enabled: boolean }) {
 	const { locale } = useI18n();
 	const messages = ownerSettingsMessages[locale === "ar" ? "ar" : "en"];
-	const analytics = useOwnerDailyAnalytics();
-	const pageSettled = !analytics.isPending && !analytics.isError;
-	const settings = useOwnerSettings({ enabled: enabled && pageSettled });
+	const settings = useOwnerSettings({ enabled });
 
 	const [draft, setDraft] = useState<OwnerSettingsDraft | null>(null);
 	const [prior, setPrior] = useState<OwnerSettingsDraftPrior>(emptyPrior);

@@ -72,8 +72,8 @@
 	justify-content: space-between;
 }
 
-.owner-access-card__heading h3,
-.owner-access-block__heading h3 {
+.owner-access-card__heading h2,
+.owner-access-block__heading h2 {
 	margin: 0;
 	color: var(--fw-chalk);
 	font-size: 15px;
@@ -155,6 +155,10 @@
 
 .owner-access-actions {
 	margin-block-start: 4px;
+}
+
+.owner-access-owner__actions {
+	margin-inline-start: -8px;
 }
 
 .owner-access-action-link {
@@ -287,12 +291,12 @@
 	border-block-end: 1px solid var(--fw-edge-quiet, rgb(255 255 255 / 6%));
 }
 
-.owner-access-owners-board__heading h3,
+.owner-access-owners-board__heading h2,
 .owner-access-owners-board__heading p {
 	margin: 0;
 }
 
-.owner-access-owners-board__heading h3 {
+.owner-access-owners-board__heading h2 {
 	color: var(--fw-chalk);
 	font-size: 14px;
 	font-weight: 600;
@@ -534,7 +538,7 @@
 		rgb(16 16 18 / 94%);
 }
 
-.owner-access-state h3 {
+.owner-access-state h2 {
 	margin: 0;
 	color: var(--fw-chalk);
 	font-size: 16px;

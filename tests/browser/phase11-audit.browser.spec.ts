@@ -21,6 +21,23 @@ async function reloadAudit(page: Page) {
 	await selectAudit(page);
 }
 
+async function selectDate(page: Page, fieldName: string, iso: string) {
+	const [year, month, day] = iso.split("-");
+	const field = page.getByRole("group", { name: fieldName });
+	await field.getByLabel("Year").click();
+	await page.getByRole("option", { name: year, exact: true }).click();
+	await field.getByLabel("Month").click();
+	const monthName = new Intl.DateTimeFormat("en-US-u-ca-gregory-nu-latn", {
+		month: "long",
+		timeZone: "UTC",
+	}).format(new Date(Date.UTC(2000, Number(month) - 1, 1)));
+	await page.getByRole("option", { name: monthName, exact: true }).click();
+	await field.getByLabel("Day").click();
+	await page
+		.getByRole("option", { name: String(Number(day)), exact: true })
+		.click();
+}
+
 const ownerAuth = {
 	principalId: "00000000-0000-4000-8000-000000000091",
 	principalKind: "owner",
@@ -524,7 +541,10 @@ test("audit rows render in the configured gym timezone regardless of the device 
 	await expect(newest).toContainText("Aug 11");
 	await expect(newest).toContainText("12:30 AM");
 	await expect(newest).not.toContainText("2:30 PM");
-	await expect(page.locator(".owner-audit__zone")).toContainText(GYM_TIME_ZONE);
+	await expect(page.locator(".owner-audit__zone")).toHaveCount(0);
+	await expect(page.locator(".owner-audit__heading")).not.toContainText(
+		GYM_TIME_ZONE,
+	);
 
 	const table = page.locator(auditTable);
 	await expect(table).toContainText("Real owner");
@@ -595,7 +615,7 @@ test("loading, empty, error, and populated states each render", async ({
 	await reloadAudit(page);
 	const empty = page.locator('[data-owner-audit-state="empty"]');
 	await expect(empty).toBeVisible();
-	await expect(empty).toContainText("No audit records match");
+	await expect(empty).toContainText("No activity records match");
 	await expect(page.locator(auditTable)).toHaveCount(0);
 	await captureReview(page, "owner-audit-empty-en-390x844.png");
 
@@ -625,14 +645,14 @@ test("filters reach the transport with gym-day bounds and an explicit missing op
 	await openAudit(page);
 	await expect(page.locator(auditTable)).toBeVisible();
 
-	const filters = page.getByRole("form", { name: "Filter audit history" });
+	const filters = page.getByRole("form", { name: "Filter Activity Log" });
 	await filters.getByLabel("Action").selectOption("reset");
 	await filters.getByLabel("Actor").selectOption("system");
 	await filters.getByLabel("From (prior count)").selectOption("missing");
 	await filters.getByLabel("Reason", { exact: true }).selectOption("contains");
 	await filters.getByLabel("Reason text").fill("post-close");
-	await filters.getByLabel("From day").fill("2026-08-09");
-	await filters.getByLabel("To day").fill("2026-08-10");
+	await selectDate(page, "From day", "2026-08-09");
+	await selectDate(page, "To day", "2026-08-10");
 	await filters.getByRole("button", { name: "Apply filters" }).click();
 
 	await expect(page.locator(`${auditTable} tbody tr`)).toHaveCount(1);
@@ -739,7 +759,7 @@ test("governance rows render their resolved target and missing effective-count s
 	await expect(table).toContainText("Inactive");
 	await expect(table).toContainText("Settings version 12");
 
-	const filters = page.getByRole("form", { name: "Filter audit history" });
+	const filters = page.getByRole("form", { name: "Filter Activity Log" });
 	await filters.getByLabel("To (effective count)").selectOption("missing");
 	await filters.getByRole("button", { name: "Apply filters" }).click();
 	await expect(page.locator(`${auditTable} tbody tr`)).toHaveCount(2);
@@ -785,7 +805,8 @@ test("layout holds at every required width in both locales", async ({
 					};
 				});
 			expect(selectPadding.inlineStart).toBe(12);
-			expect(selectPadding.inlineEnd).toBeGreaterThanOrEqual(36);
+			// The native chevron has a separate 8px inset in its frame.
+			expect(selectPadding.inlineEnd).toBeGreaterThanOrEqual(18);
 			const region = await page
 				.locator(".owner-audit-region")
 				.evaluate((element) => ({
@@ -832,7 +853,7 @@ test("keyboard, targets, reduced motion, 200% reflow, forced colors, and axe hol
 	await expect(page.locator(auditTable)).toBeVisible();
 
 	const controls = page.locator(
-		".owner-audit :is(select, input, button, [tabindex='0'])",
+		".owner-audit :is(select, input, button, [tabindex='0']):not([tabindex='-1']):not([aria-hidden='true'])",
 	);
 	const total = await controls.count();
 	expect(total).toBeGreaterThanOrEqual(10);
@@ -844,7 +865,10 @@ test("keyboard, targets, reduced motion, 200% reflow, forced colors, and axe hol
 		await control.focus();
 		await expect(control).toBeFocused();
 		const focusRing = await control.evaluate((element) => {
-			const style = getComputedStyle(element);
+			// Native selects paint focus on their visible frame, including the chevron lane.
+			const style = getComputedStyle(
+				element.closest(".owner-audit-select") ?? element,
+			);
 			return {
 				outline: style.outlineStyle,
 				width: Number.parseFloat(style.outlineWidth),
@@ -886,7 +910,9 @@ test("keyboard, targets, reduced motion, 200% reflow, forced colors, and axe hol
 		await page.evaluate(() => matchMedia("(forced-colors: active)").matches),
 	).toBe(true);
 	for (const control of await page
-		.locator(".owner-audit :is(select, input, button)")
+		.locator(
+			".owner-audit :is(select, input, button):not([tabindex='-1']):not([aria-hidden='true'])",
+		)
 		.all()) {
 		if (!(await control.isVisible()) || (await control.isDisabled())) continue;
 		await control.focus();

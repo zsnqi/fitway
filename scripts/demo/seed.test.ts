@@ -7,8 +7,22 @@ import {
 	riyadhBusinessDay,
 	shapeDemoHistory,
 } from "./seed";
+import { DEMO_PRESENTATION_TEXT } from "./text-update";
 
 describe("desktop demo seed profile", () => {
+	it("uses the approved owner-facing Arabic fixture text", () => {
+		expect(DEMO_PRESENTATION_TEXT).toEqual({
+			ownerDisplayName: "إدارة نادي FITWAY",
+			staffDisplayName: "فريق الاستقبال",
+			settingsBaseline: "اعتماد إعدادات التشغيل الأساسية للصالة",
+			frontDeskReconciliation: "مطابقة العدد مع سجل مكتب الاستقبال",
+			occupancyReview: "مراجعة العدد بعد جولة داخل الصالة",
+			closingReset: "تصفير العدد عند إغلاق الصالة",
+			entryGateReconciliation: "مطابقة العدد مع سجل بوابة الدخول",
+			septemberSettings: "تحديث إعدادات التشغيل لشهر سبتمبر",
+		});
+	});
+
 	it("anchors 28 days to a reproducible five-minute Riyadh snapshot", () => {
 		const beforeBoundary = new Date("2026-09-01T00:30:00.000Z"); // 03:30 Riyadh
 		const afterBoundary = new Date("2026-09-01T01:31:00.000Z"); // 04:31 Riyadh

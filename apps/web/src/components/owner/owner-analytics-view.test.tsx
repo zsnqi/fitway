@@ -12,13 +12,11 @@ import {
 	clampedCaptionLeft,
 	intentionalTimeTicks,
 	MIN_ANNOTATED_GAP_MINUTES,
-	markerExitPoint,
 	niceCountScale,
 	OwnerAnalyticsError,
 	OwnerAnalyticsLoading,
 	OwnerAnalyticsView,
 	smoothPath,
-	trimActiveRun,
 } from "./owner-analytics-view";
 
 const mixedDaily: DailyAnalytics = {
@@ -81,6 +79,16 @@ async function render(node: React.ReactNode, locale: "ar" | "en" = "en") {
 	document.documentElement.dir = locale === "ar" ? "rtl" : "ltr";
 	await act(async () => {
 		root?.render(<I18nProvider>{node}</I18nProvider>);
+	});
+}
+
+async function openMinuteDetails() {
+	const trigger = container.querySelector<HTMLButtonElement>(
+		".owner-table-disclosure > .owner-retained-disclosure__trigger",
+	);
+	await act(async () => {
+		if (!trigger) throw new Error("Missing minute details");
+		trigger.click();
 	});
 }
 
@@ -150,12 +158,12 @@ describe("owner daily analytics states", () => {
 		};
 	}
 
-	it("separates half-hour stops from exact peak, zero and outage boundaries", () => {
+	it("makes the half-hour overview and exact peak, zero and outage boundaries inspectable", () => {
 		const daily = overviewDay();
 		const overview = chartOverview(daily.timeline, new Map([[1, "UTC"]]));
-		expect(overview.stops.map(({ index }) => index)).toEqual([
-			0, 30, 60, 90, 120, 150, 180,
-		]);
+		expect(overview.stops.map(({ index }) => index)).toEqual(
+			expect.arrayContaining([0, 30, 47, 60, 70, 73, 90, 120, 150, 180]),
+		);
 		expect(overview.runs.flat().length).toBeLessThan(40);
 		expect(overview.runs.flat().map(({ index }) => index)).toEqual(
 			expect.arrayContaining([47, 70, 73, 22, 24, 99, 115, 129, 135]),
@@ -184,7 +192,7 @@ describe("owner daily analytics states", () => {
 		daily.timeline[80] = { ...point, count: 90 };
 		const overview = chartOverview(daily.timeline, new Map([[1, "UTC"]]));
 		expect(overview.runs.flat().map(({ index }) => index)).toContain(80);
-		expect(overview.stops.map(({ index }) => index)).not.toContain(80);
+		expect(overview.stops.map(({ index }) => index)).toContain(80);
 		expect(overview.runs.flat().length).toBeLessThan(40);
 	});
 
@@ -239,32 +247,56 @@ describe("owner daily analytics states", () => {
 		expect(
 			container.querySelector("[data-selected-reading]")?.textContent,
 		).toContain("7:30 AM");
+		await hover(23);
+		expect(container.querySelector(".owner-chart__active")).toBeNull();
+		expect(container.querySelector("[data-selected-reading]")).toBeNull();
+		expect(container.querySelector(".owner-chart-tip")?.textContent).toBe("");
+		expect(
+			container
+				.querySelector(".owner-chart-tip")
+				?.getAttribute("data-tooltip-state"),
+		).toBe("closing");
+		expect(container.querySelector(".owner-chart__stem")).toBeNull();
+		await hover(31);
+		expect(
+			container.querySelector("[data-selected-reading]")?.textContent,
+		).toContain("7:30 AM");
+		await act(async () => {
+			container.querySelector(".owner-chart-tip")?.dispatchEvent(
+				new globalThis.TransitionEvent("transitionend", {
+					bubbles: true,
+					propertyName: "opacity",
+				}),
+			);
+		});
+		expect(container.querySelector("[data-selected-reading]")).not.toBeNull();
 		await leave();
 		expect(container.querySelector("[data-selected-reading]")).toBeNull();
+		expect(container.querySelector(".owner-chart-tip")?.textContent).toBe("");
 		await act(async () => {
 			chart.dispatchEvent(
 				new KeyboardEvent("keydown", { key: "Home", bubbles: true }),
-			);
-		});
-		await act(async () => {
-			chart.dispatchEvent(
-				new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }),
 			);
 		});
 		await hover(60);
 		await leave();
 		expect(
 			container.querySelector("[data-selected-reading]")?.textContent,
-		).toContain("7:30 AM");
+		).toContain("7:00 AM");
 		await act(async () => {
 			chart.dispatchEvent(
 				new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
 			);
 		});
 		expect(container.querySelector("[data-selected-reading]")).toBeNull();
+		expect(container.querySelector(".owner-chart-tip")?.textContent).toBe("");
 		expect(
 			container.querySelectorAll(".owner-table-region tbody tr"),
-		).toHaveLength(181);
+		).toHaveLength(0);
+		await openMinuteDetails();
+		expect(
+			container.querySelectorAll(".owner-table-region tbody tr"),
+		).toHaveLength(60);
 		expect(container.querySelectorAll(".owner-chart__gap-label")).toHaveLength(
 			1,
 		);
@@ -305,7 +337,8 @@ describe("owner daily analytics states", () => {
 
 		expect(container.textContent).toContain("People present through the day");
 		expect(container.textContent).toContain("Total entries");
-		expect(container.textContent).not.toContain("not unique members");
+		expect(container.textContent).not.toContain("repeat visits");
+		await openMinuteDetails();
 		expect(container.textContent).toContain("Scheduled closed");
 		expect(container.textContent).toContain("Missing observation");
 		expect(
@@ -327,7 +360,7 @@ describe("owner daily analytics states", () => {
 			container.querySelectorAll(".owner-chart__closed, .owner-chart__missing"),
 		).toHaveLength(0);
 		expect(container.querySelectorAll(".owner-chart__gap-stem")).toHaveLength(
-			2,
+			0,
 		);
 		expect(
 			container.querySelectorAll(".owner-chart__gap-bracket"),
@@ -343,9 +376,10 @@ describe("owner daily analytics states", () => {
 		// genuine zero stays truthful through the line at the zero ordinate
 		// plus the table's Observed 0 row; nothing may invent a glyph for it.
 		expect(container.querySelectorAll(".owner-chart__zero")).toHaveLength(0);
-		// Completed day, pristine selection: ring rests on the peak with no
-		// stem, no Latest label, and no tooltip — Paper's closed treatment.
-		expect(container.querySelectorAll(".owner-chart__active")).toHaveLength(1);
+		expect(container.querySelectorAll(".owner-chart-y-axis")).toHaveLength(0);
+		// A completed day has no false current identity before the owner
+		// deliberately inspects a reading.
+		expect(container.querySelectorAll(".owner-chart__active")).toHaveLength(0);
 		expect(container.querySelectorAll(".owner-chart__stem")).toHaveLength(0);
 		expect(container.querySelectorAll(".owner-chart__latest")).toHaveLength(0);
 		expect(container.querySelectorAll(".owner-chart-tip")).toHaveLength(0);
@@ -353,11 +387,11 @@ describe("owner daily analytics states", () => {
 		// solo reading (the 12 peak) draws no line at all — the HTML core
 		// already marks it — while the idle solo dot (the genuine 0) keeps
 		// its stroked point so no real reading is hidden.
-		expect(container.querySelectorAll(".owner-chart__line")).toHaveLength(1);
+		expect(container.querySelectorAll(".owner-chart__line")).toHaveLength(2);
 		for (const line of container.querySelectorAll(".owner-chart__line")) {
 			expect(line.getAttribute("d")).toContain("L");
 		}
-		expect(container.querySelectorAll(".owner-chart__solo")).toHaveLength(1);
+		expect(container.querySelectorAll(".owner-chart__solo")).toHaveLength(2);
 		expect(
 			container.querySelectorAll(".owner-chart__line[data-trimmed]"),
 		).toHaveLength(0);
@@ -393,6 +427,9 @@ describe("owner daily analytics states", () => {
 		// a tooltip card with the reading time and approximate count. The
 		// screen-reader live region already announced the same reading.
 		expect(container.querySelectorAll(".owner-chart__stem")).toHaveLength(1);
+		expect(
+			container.querySelectorAll(".owner-chart__active--inspected"),
+		).toHaveLength(1);
 		const tip = container.querySelector(".owner-chart-tip");
 		expect(tip).not.toBeNull();
 		expect(tip?.textContent).toContain("12");
@@ -479,9 +516,15 @@ describe("owner daily analytics states", () => {
 				new KeyboardEvent("keydown", { key: "Home", bubbles: true }),
 			),
 		);
-		// An explicit selection replaces the Latest annotation with the
-		// selected-point readout, matching Paper's focus treatment.
-		expect(container.querySelectorAll(".owner-chart__latest")).toHaveLength(0);
+		// Inspection adds a distinct marker and tooltip while the true latest
+		// reading retains its own identity.
+		expect(container.querySelectorAll(".owner-chart__latest")).toHaveLength(1);
+		expect(
+			container.querySelectorAll(".owner-chart__active--latest"),
+		).toHaveLength(1);
+		expect(
+			container.querySelectorAll(".owner-chart__active--inspected"),
+		).toHaveLength(1);
 		expect(container.querySelector(".owner-chart-tip")?.textContent).toContain(
 			"0",
 		);
@@ -706,7 +749,7 @@ describe("owner daily analytics states", () => {
 		// One- and five-minute gaps remain line breaks with short ticks; neither
 		// should dominate the overview with a full-height dimension bracket.
 		expect(container.querySelectorAll(".owner-chart__gap-stem")).toHaveLength(
-			4,
+			0,
 		);
 		expect(
 			container.querySelectorAll(".owner-chart__gap-bracket"),
@@ -728,6 +771,7 @@ describe("owner daily analytics states", () => {
 		).toContain("62");
 		// Exact truth survives in the table: all nine minutes listed with
 		// their states, and the missing rows show no invented count.
+		await openMinuteDetails();
 		const rows = container.querySelectorAll(".owner-table-region tbody tr");
 		expect(rows).toHaveLength(9);
 		expect(
@@ -737,286 +781,67 @@ describe("owner daily analytics states", () => {
 		).toHaveLength(6);
 	});
 
-	describe("marker-geometry fidelity", () => {
-		it("exits the marker ellipse on the outer edge along each axis", () => {
-			expect(
-				markerExitPoint(
-					{ x: 100, y: 100 },
-					{ x: 200, y: 100 },
-					{ x: 100, y: 100 },
-					10,
-					10,
-				),
-			).toEqual({ x: 110, y: 100 });
-			expect(
-				markerExitPoint(
-					{ x: 100, y: 100 },
-					{ x: 100, y: 200 },
-					{ x: 100, y: 100 },
-					10,
-					10,
-				),
-			).toEqual({ x: 100, y: 110 });
-			// Diagonal leaves along the ray: (0.6, 0.8) * 10 = (6, 8).
-			const diagonal = markerExitPoint(
-				{ x: 0, y: 0 },
-				{ x: 30, y: 40 },
-				{ x: 0, y: 0 },
-				10,
-				10,
-			);
-			expect(diagonal?.x).toBeCloseTo(6, 9);
-			expect(diagonal?.y).toBeCloseTo(8, 9);
-			// An outer point exactly on the edge is already a valid end.
-			expect(
-				markerExitPoint(
-					{ x: 0, y: 0 },
-					{ x: 10, y: 0 },
-					{ x: 0, y: 0 },
-					10,
-					10,
-				),
-			).toEqual({ x: 10, y: 0 });
+	it("keeps curve geometry invariant as selection moves and masks only the marker", async () => {
+		const peakUtc = "2026-07-21T07:02:00.000Z";
+		const value = (minuteStartUtc: string, count: number) => ({
+			state: "value" as const,
+			minuteStartUtc,
+			count,
+			entries: 1,
+			exits: 0,
+			band: "moderate" as const,
+			capacitySnapshot: 100,
+			settingsVersion: 1,
+			source: "live" as const,
 		});
-
-		it("rejects inverted or degenerate cutouts", () => {
-			const center = { x: 0, y: 0 };
-			// Inner already outside: nothing to trim from.
-			expect(
-				markerExitPoint({ x: 50, y: 0 }, { x: 100, y: 0 }, center, 10, 10),
-			).toBeNull();
-			// Outer still inside: the segment never leaves.
-			expect(
-				markerExitPoint(center, { x: 5, y: 0 }, center, 10, 10),
-			).toBeNull();
-			expect(
-				markerExitPoint(center, { x: 50, y: 0 }, center, 0, 10),
-			).toBeNull();
-			expect(
-				trimActiveRun(
-					[
-						{ x: 0, y: 0 },
-						{ x: 50, y: 0 },
-					],
-					0,
-					0,
-					10,
-				),
-			).toEqual({ left: null, right: null });
-		});
-
-		it("splits an interior active point into two edge-terminated sides", () => {
-			const points = [
-				{ x: 0, y: 100 },
-				{ x: 100, y: 100 },
-				{ x: 200, y: 100 },
-			];
-			const { left, right } = trimActiveRun(points, 1, 10, 10);
-			expect(left).toEqual([
-				{ x: 0, y: 100 },
-				{ x: 90, y: 100 },
-			]);
-			expect(right).toEqual([
-				{ x: 110, y: 100 },
-				{ x: 200, y: 100 },
-			]);
-		});
-
-		it("keeps a single side when the active point ends its run", () => {
-			const points = [
-				{ x: 0, y: 100 },
-				{ x: 100, y: 100 },
-			];
-			expect(trimActiveRun(points, 1, 10, 10)).toEqual({
-				left: [
-					{ x: 0, y: 100 },
-					{ x: 90, y: 100 },
-				],
-				right: null,
-			});
-			expect(trimActiveRun(points, 0, 10, 10)).toEqual({
-				left: null,
-				right: [
-					{ x: 10, y: 100 },
-					{ x: 100, y: 100 },
-				],
-			});
-		});
-
-		it("draws trimmed tip segments straight so no smoothing bow crosses the ring", () => {
-			const points = [
-				{ x: 0, y: 100 },
-				{ x: 100, y: 60 },
-				{ x: 200, y: 100 },
-			];
-			// Default keeps every segment smoothed.
-			expect(smoothPath(points)).toContain("C");
-			expect(smoothPath(points).trimEnd().endsWith("L")).toBe(false);
-			// Left side: last segment straight, earlier segments smoothed.
-			const leftTip = smoothPath(points, "end");
-			expect(leftTip).toContain("C");
-			expect(leftTip.trimEnd()).toMatch(/L200,100$/);
-			// Right side: first segment straight, later segments smoothed.
-			const rightTip = smoothPath(points, "start");
-			expect(rightTip).toContain("C");
-			expect(rightTip).toMatch(/^M0,100 L100,60/);
-			// Two-point sides are straight lines either way.
-			expect(smoothPath(points.slice(0, 2), "end")).toBe("M0,100 L100,60");
-			expect(smoothPath(points.slice(1), "start")).toBe("M100,60 L200,100");
-		});
-
-		it("terminates rendered lines at the marker outer edge and drops the stem from the ring", async () => {
-			const peakUtc = "2026-07-21T07:02:00.000Z";
-			const value = (minuteStartUtc: string, count: number) => ({
-				state: "value" as const,
-				minuteStartUtc,
-				count,
-				entries: 1,
-				exits: 0,
-				band: "moderate" as const,
+		const connected: DailyAnalytics = {
+			businessDay: "2026-07-21",
+			timeline: [
+				value("2026-07-21T07:00:00.000Z", 10),
+				value("2026-07-21T07:01:00.000Z", 20),
+				value(peakUtc, 30),
+				value("2026-07-21T07:03:00.000Z", 20),
+				value("2026-07-21T07:04:00.000Z", 10),
+			],
+			peak: {
+				minuteStartUtc: peakUtc,
+				count: 30,
+				band: "moderate",
 				capacitySnapshot: 100,
 				settingsVersion: 1,
-				source: "live" as const,
-			});
-			const connected: DailyAnalytics = {
-				businessDay: "2026-07-21",
-				timeline: [
-					value("2026-07-21T07:00:00.000Z", 10),
-					value("2026-07-21T07:01:00.000Z", 20),
-					value(peakUtc, 30),
-					value("2026-07-21T07:03:00.000Z", 20),
-					value("2026-07-21T07:04:00.000Z", 10),
-				],
-				peak: {
-					minuteStartUtc: peakUtc,
-					count: 30,
-					band: "moderate",
-					capacitySnapshot: 100,
-					settingsVersion: 1,
-				},
-				dailyAverage: 18,
-				estimatedEntranceCrossings: 5,
-				observedOpenMinutes: 5,
-				expectedOpenMinutes: 5,
-				coverage: 1,
-			};
-			const markerCenter = () => {
-				const marker = container.querySelector<HTMLElement>(
-					".owner-chart__active",
-				);
-				if (!marker) throw new Error("active marker is missing");
-				return {
-					x: (Number.parseFloat(marker.style.left) / 100) * 1200,
-					y: (Number.parseFloat(marker.style.top) / 100) * 240,
-				};
-			};
-			const closestLineApproach = () => {
-				const center = markerCenter();
-				let closest = Number.POSITIVE_INFINITY;
-				for (const line of container.querySelectorAll(".owner-chart__line")) {
-					const pairs = [
-						...(line.getAttribute("d") ?? "").matchAll(
-							/(-?[\d.]+),(-?[\d.]+)/g,
-						),
-					];
-					for (const pair of pairs) {
-						closest = Math.min(
-							closest,
-							Math.hypot(
-								Number(pair[1]) - center.x,
-								Number(pair[2]) - center.y,
-							),
-						);
-					}
-				}
-				return closest;
-			};
-			await render(
-				<OwnerAnalyticsView
-					daily={connected}
-					currentTimeZone="UTC"
-					timeZoneByVersion={new Map([[1, "UTC"]])}
-				/>,
+			},
+			dailyAverage: 18,
+			estimatedEntranceCrossings: 5,
+			observedOpenMinutes: 5,
+			expectedOpenMinutes: 5,
+			coverage: 1,
+		};
+		await render(
+			<OwnerAnalyticsView
+				daily={connected}
+				currentTimeZone="UTC"
+				timeZoneByVersion={new Map([[1, "UTC"]])}
+			/>,
+		);
+		const paths = () =>
+			[...container.querySelectorAll(".owner-chart__line")].map((line) =>
+				line.getAttribute("d"),
 			);
-			// Pristine completed day: ring on the interior peak with both
-			// sides trimmed to the ring, no stem, no tooltip.
-			expect(
-				container.querySelectorAll('.owner-chart__line[data-trimmed="left"]'),
-			).toHaveLength(1);
-			expect(
-				container.querySelectorAll('.owner-chart__line[data-trimmed="right"]'),
-			).toHaveLength(1);
-			// Paint-level junction: trimmed sides carry the butt-cap class so
-			// no round cap extends past the outer edge toward the core, and
-			// each tip segment is a straight radial line: the left side ends
-			// with L, the right side opens with M..L.
-			for (const line of container.querySelectorAll(
-				".owner-chart__line[data-trimmed]",
-			)) {
-				expect(line.classList.contains("owner-chart__line--trimmed")).toBe(
-					true,
-				);
-				const d = line.getAttribute("d") ?? "";
-				if (line.getAttribute("data-trimmed") === "left") {
-					expect(d.trimEnd()).toMatch(/L-?[\d.]+,-?[\d.]+$/);
-				} else {
-					expect(d).toMatch(/^M-?[\d.]+,-?[\d.]+ L-?[\d.]+,-?[\d.]+/);
-				}
-			}
-			expect(container.querySelectorAll(".owner-chart__stem")).toHaveLength(0);
-			// No stroked coordinate may reach the marker center: the closest
-			// approach is a trimmed edge on the ring (≥10 viewBox units away
-			// under the deterministic unit fallback radii).
-			expect(closestLineApproach()).toBeGreaterThan(5);
-			// Move to the final reading: only the approaching side remains,
-			// and the fresh stem drops from the ring's outer bottom edge.
-			const chart = container.querySelector<HTMLElement>("[data-owner-chart]");
-			chart?.focus();
-			await act(async () =>
-				chart?.dispatchEvent(
-					new KeyboardEvent("keydown", { key: "End", bubbles: true }),
-				),
-			);
-			expect(
-				container.querySelectorAll('.owner-chart__line[data-trimmed="left"]'),
-			).toHaveLength(1);
-			expect(
-				container.querySelectorAll('.owner-chart__line[data-trimmed="right"]'),
-			).toHaveLength(0);
-			expect(closestLineApproach()).toBeGreaterThan(5);
-			const endCenter = markerCenter();
-			const stem = container.querySelector(".owner-chart__stem");
-			expect(stem).not.toBeNull();
-			expect(Number(stem?.getAttribute("y1")) - endCenter.y).toBeCloseTo(10, 5);
-		});
-
-		it("draws nothing for a lone active reading and walks past hidden neighbors", () => {
-			expect(trimActiveRun([{ x: 50, y: 50 }], 0, 10, 10)).toEqual({
-				left: null,
-				right: null,
-			});
-			// Neighbors 8px away sit inside the 10px ring: the whole
-			// three-point run hides behind the marker, so both sides are null.
-			const dense = [
-				{ x: 0, y: 0 },
-				{ x: 8, y: 0 },
-				{ x: 16, y: 0 },
-			];
-			expect(trimActiveRun(dense, 1, 10, 10)).toEqual({
-				left: null,
-				right: null,
-			});
-			// A farther point beyond a hidden neighbor still exits cleanly.
-			const beyond = [
-				{ x: 0, y: 0 },
-				{ x: 12, y: 0 },
-				{ x: 20, y: 0 },
-			];
-			const trimmed = trimActiveRun(beyond, 2, 10, 10);
-			expect(trimmed.right).toBeNull();
-			expect(trimmed.left?.at(-1)).toEqual({ x: 10, y: 0 });
-			expect(trimmed.left?.at(0)).toEqual({ x: 0, y: 0 });
-		});
+		const before = paths();
+		expect(before.join()).toContain("C");
+		expect(container.querySelector("mask ellipse")).toBeNull();
+		const chart = container.querySelector<HTMLElement>("[data-owner-chart]");
+		await act(async () =>
+			chart?.dispatchEvent(
+				new KeyboardEvent("keydown", { key: "End", bubbles: true }),
+			),
+		);
+		expect(paths()).toEqual(before);
+		const ellipse = container.querySelector("mask ellipse");
+		expect(ellipse).not.toBeNull();
+		expect(Number(ellipse?.getAttribute("rx"))).toBeGreaterThan(0);
+		for (const line of container.querySelectorAll(".owner-chart__line"))
+			expect(line.getAttribute("mask")).toContain("url(#");
 	});
 
 	it("provides distinct accessible loading and retryable error states", async () => {

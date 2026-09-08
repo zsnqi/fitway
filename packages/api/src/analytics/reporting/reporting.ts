@@ -1,7 +1,7 @@
 import { businessDayFor } from "../../occupancy/business-day";
 import {
 	assertScheduleSettings,
-	evaluateSchedule,
+	createScheduleEvaluator,
 	WEEKDAYS,
 	type Weekday,
 } from "../../occupancy/schedule";
@@ -247,6 +247,9 @@ export function buildReportingRange(
 	const scanEnd = utcMidnight(parsed.endBusinessDay) + 72 * hourMilliseconds;
 	let settingsIndex = 0;
 	let effectiveSettings: AnalyticsSettingsVersion | null = null;
+	let evaluateCurrentSchedule: ReturnType<
+		typeof createScheduleEvaluator
+	> | null = null;
 	for (
 		let timestamp = scanStart;
 		timestamp < scanEnd;
@@ -258,9 +261,12 @@ export function buildReportingRange(
 				Number.POSITIVE_INFINITY) <= timestamp
 		) {
 			effectiveSettings = settingsVersions[settingsIndex] ?? null;
+			evaluateCurrentSchedule = effectiveSettings
+				? createScheduleEvaluator(effectiveSettings)
+				: null;
 			settingsIndex += 1;
 		}
-		if (!effectiveSettings) continue;
+		if (!effectiveSettings || !evaluateCurrentSchedule) continue;
 		const instant = new Date(timestamp);
 		const businessDay = businessDayFor(
 			instant,
@@ -277,7 +283,7 @@ export function buildReportingRange(
 			minuteStartLocal: localMinute(instant, effectiveSettings.timeZone),
 			timeZone: effectiveSettings.timeZone,
 		};
-		if (!evaluateSchedule(effectiveSettings, instant).open) {
+		if (!evaluateCurrentSchedule(instant).open) {
 			day.timeline.push({
 				...context,
 				state: "closed",

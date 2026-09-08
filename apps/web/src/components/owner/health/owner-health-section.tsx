@@ -1,7 +1,7 @@
 import { useId } from "react";
 
 import { useOwnerHealth } from "@/hooks/use-owner-health";
-import { formatNumber } from "@/i18n/format";
+import { formatDate, formatNumber } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
 
 import {
@@ -33,6 +33,17 @@ export function OwnerHealthSection() {
 	const ids = useId();
 	const headingId = `${ids}-heading`;
 	const summary = health.summary;
+	const windowLabel = summary
+		? [summary.window.businessDayFrom, summary.window.businessDayTo]
+				.map((day) =>
+					formatDate(new Date(`${day}T12:00:00.000Z`), locale, {
+						day: "numeric",
+						month: "long",
+						year: "numeric",
+					}),
+				)
+				.join(" – ")
+		: null;
 
 	// `/admin` already carries one live region and one retry while its own owner
 	// query is in flight or failed. A second copy of either would compete with it,
@@ -45,15 +56,7 @@ export function OwnerHealthSection() {
 				<h1 id={headingId}>{messages.title}</h1>
 				{summary ? (
 					<span className="owner-health__window">
-						<span>
-							{messages.windowLabel}
-							<bdi>{formatNumber(summary.window.businessDays, locale)}</bdi>
-							{messages.windowDays}
-						</span>
-						<span>
-							{messages.timeZoneLabel}
-							<bdi>{summary.window.timeZone}</bdi>
-						</span>
+						<bdi dir="auto">{windowLabel}</bdi>
 					</span>
 				) : null}
 			</header>
@@ -72,7 +75,7 @@ export function OwnerHealthSection() {
 					) : null}
 
 					<div className="owner-health-block">
-						<h3>{messages.offlineTitle}</h3>
+						<h2>{messages.offlineTitle}</h2>
 						<p>{messages.offlineDescription}</p>
 						{summary.connection.offlinePeriods.length === 0 ? (
 							<OwnerHealthEmpty
@@ -111,7 +114,7 @@ export function OwnerHealthSection() {
 					</div>
 
 					<div className="owner-health-block">
-						<h3>{messages.incidentsTitle}</h3>
+						<h2>{messages.incidentsTitle}</h2>
 						{summary.alerts.incidents.length === 0 ? (
 							<OwnerHealthEmpty
 								title={messages.incidentsEmptyTitle}

@@ -4,6 +4,13 @@
 > recorded only in `PROJECT_STATE.yaml`. Product and implementation semantics are defined by
 > `FITWAY_PRODUCT.md` and `SPEC.md`; visual acceptance is defined by `DESIGN_GUIDE.md`.
 >
+> **Status:** the v1 delivery scope of this plan is complete. Every aggregate milestone from
+> `phase-1` through `phase-12` and `repository-closeout` is `DONE` in `PROJECT_STATE.yaml`, with
+> the accepted canonical project-wide verification recorded in
+> `docs/phase-records/repository-closeout.md`. This file remains the durable record of that
+> scope; resumed or successor work is governed by its own ledger entries, not by reinterpreting
+> these sections as open work.
+>
 > The detailed pre-reconciliation plan is historical evidence at
 > `docs/archive/plans/PHASES-pre-brg-20260715.md` and cannot override this file.
 
@@ -200,11 +207,16 @@ introduces no staff-facing manual fallback and no new staff or owner command sur
 Acceptance covers outage, reconnect, duplicate/gap/replay, command ordering, minute
 idempotency, current-state protection, and TypeScript/OpenAPI/Python fixture parity.
 
-**Review item carried from ADR-008 decision 6.** Phase 6 must determine whether any valid
-internal producer of `source=manual` remains — for `operationalSnapshotSchema.source`, the
-occupancy-minute and current-state source enums, and the manual-validity freshness window.
-The enum values and the settings field are retained unchanged until that review; removing
-one requires confirming no internal producer remains and is not authorized before Phase 6.
+**ADR-008 decision-6 review (resolved).** The Phase 6 review established that no valid or
+authorized internal producer of `source=manual` remains on current `main`: the only production
+occupancy writer emits minute sources `live|backfill` and current source `edge`; the remaining
+`manual` values are compatibility readers, historical schema values, labels, or test-only
+fixtures. Evidence is recorded in `docs/phase-records/handoffs/phase-6/`
+(`20260811-203406-p6_offline_b02-r02-plan.md`,
+`20260811-204348-p6_offline_b02-r02-recovery-ratification.md`, and
+`20260811-213035-p6_offline_b02_v02-independent-pass.md`). The enum values, DTO fields, and the
+settings field remain in place as compatibility data; removing one still requires its own
+reviewed migration plus a real-database disposition decision, which no phase record authorizes.
 
 ## Phase 7 — Scheduled reset
 

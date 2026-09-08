@@ -139,8 +139,6 @@ export function OwnerSettingsView({
 				? messages.conflictAnnouncement
 				: messages.unsavedState;
 
-	const seconds = (value: number) => `${value} s`;
-
 	function handleSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 		onSave();
@@ -203,9 +201,9 @@ export function OwnerSettingsView({
 					disabled={saving}
 				>
 					<div className="owner-settings__board-head">
-						<h3 id={fieldId("foundations-title")}>
+						<h2 id={fieldId("foundations-title")}>
 							{messages.foundationsTitle}
-						</h3>
+						</h2>
 						<span
 							className="owner-settings__board-state"
 							data-clean={clean ? "" : undefined}
@@ -265,7 +263,7 @@ export function OwnerSettingsView({
 									inputMode="numeric"
 									autoComplete="off"
 									maxLength={5}
-									placeholder="HH:mm"
+									placeholder={messages.timePlaceholder}
 									value={draft.businessDayBoundary}
 									onChange={(event) =>
 										onFieldChange({ businessDayBoundary: event.target.value })
@@ -341,7 +339,7 @@ export function OwnerSettingsView({
 					disabled={saving}
 				>
 					<div className="owner-settings__board-head">
-						<h3 id={fieldId("thresholds-title")}>{messages.thresholdsTitle}</h3>
+						<h2 id={fieldId("thresholds-title")}>{messages.thresholdsTitle}</h2>
 					</div>
 					<div className="owner-settings__triple">
 						{(
@@ -410,7 +408,7 @@ export function OwnerSettingsView({
 					disabled={saving}
 				>
 					<div className="owner-settings__board-head">
-						<h3 id={fieldId("weekly-title")}>{messages.weeklyTitle}</h3>
+						<h2 id={fieldId("weekly-title")}>{messages.weeklyTitle}</h2>
 					</div>
 					<div className="owner-settings__week">
 						<div className="owner-settings__week-header" aria-hidden="true">
@@ -481,7 +479,7 @@ export function OwnerSettingsView({
 													inputMode="numeric"
 													autoComplete="off"
 													maxLength={5}
-													placeholder="HH:mm"
+													placeholder={messages.timePlaceholder}
 													value={pair.open}
 													onChange={(event) =>
 														onDayTimeChange(day, "open", event.target.value)
@@ -527,7 +525,7 @@ export function OwnerSettingsView({
 													inputMode="numeric"
 													autoComplete="off"
 													maxLength={5}
-													placeholder="HH:mm"
+													placeholder={messages.timePlaceholder}
 													value={pair.close}
 													onChange={(event) =>
 														onDayTimeChange(day, "close", event.target.value)
@@ -593,14 +591,14 @@ export function OwnerSettingsView({
 					disabled={false}
 				>
 					<div className="owner-settings__board-head">
-						<h3 id={fieldId("locked-title")}>
+						<h2 id={fieldId("locked-title")}>
 							<span className="owner-settings__locked-copy-desktop">
 								{messages.lockedTitle}
 							</span>
 							<span className="owner-settings__locked-copy-mobile">
 								{messages.lockedTitleMobile}
 							</span>
-						</h3>
+						</h2>
 						<span className="owner-settings__locked-badge">
 							{messages.lockedBadge}
 						</span>
@@ -609,33 +607,47 @@ export function OwnerSettingsView({
 						<div className="owner-settings__locked-item">
 							<dt>{messages.timezoneLabel}</dt>
 							<dd>
-								<bdi>{snapshot.operational.timezone}</bdi>
+								<bdi>
+									{messages.timezoneValue(snapshot.operational.timezone)}
+								</bdi>
 							</dd>
 						</div>
 						<div className="owner-settings__locked-item">
 							<dt>{messages.pushLabel}</dt>
 							<dd>
-								<bdi>{seconds(snapshot.operational.pushIntervalSeconds)}</bdi>
+								<bdi>
+									{messages.secondsValue(
+										snapshot.operational.pushIntervalSeconds,
+									)}
+								</bdi>
 							</dd>
 						</div>
 						<div className="owner-settings__locked-item">
 							<dt>{messages.freshLabel}</dt>
 							<dd>
-								<bdi>{seconds(snapshot.operational.freshForSeconds)}</bdi>
+								<bdi>
+									{messages.secondsValue(snapshot.operational.freshForSeconds)}
+								</bdi>
 							</dd>
 						</div>
 						<div className="owner-settings__locked-item">
 							<dt>{messages.staleLabel}</dt>
 							<dd>
 								<bdi>
-									{seconds(snapshot.operational.operationalStaleAfterSeconds)}
+									{messages.secondsValue(
+										snapshot.operational.operationalStaleAfterSeconds,
+									)}
 								</bdi>
 							</dd>
 						</div>
 						<div className="owner-settings__locked-item">
 							<dt>{messages.pollLabel}</dt>
 							<dd>
-								<bdi>{seconds(snapshot.operational.publicPollSeconds)}</bdi>
+								<bdi>
+									{messages.secondsValue(
+										snapshot.operational.publicPollSeconds,
+									)}
+								</bdi>
 							</dd>
 						</div>
 					</dl>

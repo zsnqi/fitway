@@ -99,13 +99,17 @@ async function captureReview(page: Page, name: string) {
 	});
 }
 
-async function mockOwnerAnalytics(page: Page) {
+async function mockOwnerAnalytics(
+	page: Page,
+	options: { dailyHold?: Promise<void> } = {},
+) {
 	await page.route("**/rpc/admin/session", (route) =>
 		route.fulfill({ status: 200, json: { json: ownerAuth } }),
 	);
-	await page.route("**/rpc/admin/analytics/daily", (route) =>
-		route.fulfill({ status: 200, json: { json: daily } }),
-	);
+	await page.route("**/rpc/admin/analytics/daily", async (route) => {
+		await options.dailyHold;
+		await route.fulfill({ status: 200, json: { json: daily } });
+	});
 	await page.route("**/rpc/admin/analytics/timeContext", async (route) => {
 		expect(route.request().postDataJSON()).toEqual({
 			json: { settingsVersions: [11, 12] },
@@ -123,6 +127,16 @@ async function setLocale(page: Page, locale: "ar" | "en") {
 		"dir",
 		locale === "ar" ? "rtl" : "ltr",
 	);
+}
+
+async function settleOwnerBrand(page: Page) {
+	const image = page.locator(".owner-rail__brand img");
+	await image.evaluate(async (element) => {
+		await (element as HTMLImageElement).decode();
+		await new Promise<void>((resolve) => {
+			requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+		});
+	});
 }
 
 async function expectNoOverflow(page: Page) {
@@ -278,6 +292,7 @@ test("canonical desktop Arabic and mobile English shell compositions match", asy
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await expect(page.locator("[data-owner-chart]")).toBeVisible();
 	await page.evaluate(() => document.fonts.ready);
+	await settleOwnerBrand(page);
 	// Scoped to the shell chrome rather than the full page, under the human
 	// decision of 2026-08-15. `/admin` is designed to host a growing set of owner
 	// sections, so a full-page capture of this route asserted the composition of
@@ -291,6 +306,7 @@ test("canonical desktop Arabic and mobile English shell compositions match", asy
 	await setLocale(page, "en");
 	await page.setViewportSize({ width: 390, height: 844 });
 	await expect(page.locator("[data-owner-chart]")).toBeVisible();
+	await settleOwnerBrand(page);
 	await expect(page.locator(".owner-rail")).toHaveScreenshot(
 		"owner-shell-en-mobile-390x844.png",
 	);
@@ -410,6 +426,330 @@ test("shared Owner navigation keeps the approved labels, transparent material, a
 			await expectNoOverflow(page);
 		}
 	}
+});
+
+test("every destination keeps its own identity while Daily is pending", async ({
+	page,
+}) => {
+	await page.addInitScript(() =>
+		window.localStorage.setItem("fitway.locale", "en"),
+	);
+	let releaseDaily = () => {};
+	const dailyHold = new Promise<void>((resolve) => {
+		releaseDaily = resolve;
+	});
+	await mockOwnerAnalytics(page, { dailyHold });
+
+	const independentRequests = {
+		access: 0,
+		health: 0,
+		settings: 0,
+	};
+	let releaseIndependent = () => {};
+	const independentHold = new Promise<void>((resolve) => {
+		releaseIndependent = resolve;
+	});
+	for (const section of Object.keys(independentRequests) as Array<
+		keyof typeof independentRequests
+	>) {
+		const endpoint =
+			section === "health"
+				? "summary"
+				: section === "settings"
+					? "read"
+					: "list";
+		await page.route(`**/rpc/admin/${section}/${endpoint}`, async (route) => {
+			independentRequests[section] += 1;
+			await independentHold;
+			await route.fulfill({
+				status: 503,
+				json: rpcError(503, "SERVICE_UNAVAILABLE", "Service Unavailable"),
+			});
+		});
+	}
+	let auditRequests = 0;
+	await page.route("**/rpc/admin/audit/list", async (route) => {
+		auditRequests += 1;
+		await route.fulfill({
+			status: 503,
+			json: rpcError(503, "SERVICE_UNAVAILABLE", "Service Unavailable"),
+		});
+	});
+
+	await page.goto("/admin");
+	await expect(page.getByRole("status")).toContainText("Loading");
+
+	const destinations = [
+		{ section: "history", heading: "Reports", stateRole: "status" },
+		{ section: "access", heading: "Access", stateRole: "status" },
+		{ section: "audit", heading: "Activity Log", stateRole: "status" },
+		{ section: "health", heading: "Uptime and incidents", stateRole: "status" },
+		{ section: "settings", heading: "Settings", stateRole: "status" },
+	] as const;
+
+	for (const destination of destinations) {
+		await page
+			.locator(`[role="tab"][data-owner-section="${destination.section}"]`)
+			.click();
+		const panel = page.locator('[role="tabpanel"]:not([hidden])');
+		await expect(panel.getByRole("heading", { level: 1 })).toHaveText(
+			destination.heading,
+		);
+		await expect(panel.getByRole(destination.stateRole)).toBeVisible();
+	}
+
+	await expect
+		.poll(() => independentRequests)
+		.toEqual({ access: 1, health: 1, settings: 1 });
+	// Audit legitimately shares Daily's resolved gym timezone, but it must render
+	// Activity Log's own pending surface instead of substituting the Daily panel.
+	expect(auditRequests).toBe(0);
+	releaseIndependent();
+	releaseDaily();
+});
+
+test("rapid section changes are latest-wins even when older requests finish late", async ({
+	page,
+}) => {
+	await page.addInitScript(() =>
+		window.localStorage.setItem("fitway.locale", "en"),
+	);
+	await mockOwnerAnalytics(page);
+	let releaseAccess = () => {};
+	let releaseSettings = () => {};
+	const accessHold = new Promise<void>((resolve) => {
+		releaseAccess = resolve;
+	});
+	const settingsHold = new Promise<void>((resolve) => {
+		releaseSettings = resolve;
+	});
+	await page.route("**/rpc/admin/access/list", async (route) => {
+		await accessHold;
+		await route.fulfill({
+			status: 503,
+			json: rpcError(503, "SERVICE_UNAVAILABLE", "Service Unavailable"),
+		});
+	});
+	await page.route("**/rpc/admin/settings/read", async (route) => {
+		await settingsHold;
+		await route.fulfill({
+			status: 503,
+			json: rpcError(503, "SERVICE_UNAVAILABLE", "Service Unavailable"),
+		});
+	});
+
+	await page.goto("/admin");
+	await expect(page.locator("[data-owner-chart]")).toBeVisible();
+	await page.evaluate(() => {
+		for (const section of ["access", "settings"]) {
+			const tab = document.querySelector<HTMLElement>(
+				`[role="tab"][data-owner-section="${section}"]`,
+			);
+			if (!tab) throw new Error(`Missing ${section} tab`);
+			tab.click();
+		}
+	});
+
+	const settingsTab = page.locator(
+		'[role="tab"][data-owner-section="settings"]',
+	);
+	const activePanel = page.locator('[role="tabpanel"]:not([hidden])');
+	await expect(settingsTab).toHaveAttribute("aria-selected", "true");
+	await expect(activePanel).toHaveAttribute(
+		"id",
+		"owner-section-settings-panel",
+	);
+	await expect(activePanel.getByRole("heading", { level: 1 })).toHaveText(
+		"Settings",
+	);
+	const settledScroll = await page.evaluate(() => window.scrollY);
+
+	releaseAccess();
+	await page.waitForTimeout(220);
+	await expect(settingsTab).toHaveAttribute("aria-selected", "true");
+	expect(await page.evaluate(() => window.scrollY)).toBe(settledScroll);
+
+	releaseSettings();
+	await expect(activePanel.getByRole("heading", { level: 1 })).toContainText(
+		"Settings",
+	);
+	await page.waitForTimeout(220);
+	await expect(settingsTab).toHaveAttribute("aria-selected", "true");
+	expect(await page.evaluate(() => window.scrollY)).toBe(settledScroll);
+});
+
+test("section navigation preserves scroll through tall and short retained panels", async ({
+	page,
+}) => {
+	await page.addInitScript(() =>
+		window.localStorage.setItem("fitway.locale", "en"),
+	);
+	await mockOwnerAnalytics(page);
+	await page.route("**/rpc/admin/health/summary", (route) =>
+		route.fulfill({
+			status: 503,
+			json: rpcError(503, "SERVICE_UNAVAILABLE", "Service Unavailable"),
+		}),
+	);
+	await page.setViewportSize({ width: 390, height: 600 });
+	await page.goto("/admin");
+	await expect(page.locator("[data-owner-chart]")).toBeVisible();
+
+	await page.locator("#owner-analytics-daily-panel").evaluate((panel) => {
+		const probe = document.createElement("div");
+		probe.dataset.ownerScrollProbe = "";
+		probe.style.height = "1600px";
+		probe.style.pointerEvents = "none";
+		panel.append(probe);
+	});
+
+	async function activateAndSample(section: string) {
+		await page.evaluate((nextSection) => {
+			const state = window as typeof window & {
+				__ownerScrollSamples?: number[];
+			};
+			state.__ownerScrollSamples = [];
+			let frames = 0;
+			const sample = () => {
+				state.__ownerScrollSamples?.push(window.scrollY);
+				frames += 1;
+				if (frames < 16) requestAnimationFrame(sample);
+			};
+			requestAnimationFrame(sample);
+			const tab = document.querySelector<HTMLElement>(
+				`[role="tab"][data-owner-section="${nextSection}"]`,
+			);
+			if (!tab) throw new Error(`Missing ${nextSection} tab`);
+			tab.click();
+		}, section);
+		await expect(
+			page.locator(
+				`[role="tab"][data-owner-section="${section}"][aria-selected="true"]`,
+			),
+		).toBeVisible();
+		await expect
+			.poll(() =>
+				page
+					.locator('[role="tabpanel"]:not([hidden])')
+					.getAttribute("data-owner-section-state"),
+			)
+			.toBe("active");
+		await page.waitForTimeout(220);
+		return page.evaluate(
+			() =>
+				(window as typeof window & { __ownerScrollSamples?: number[] })
+					.__ownerScrollSamples ?? [],
+		);
+	}
+
+	async function expectNavigationAligned() {
+		const delta = await page.evaluate(() => {
+			const switcher = document.querySelector<HTMLElement>(
+				".owner-section-switch",
+			);
+			const row = switcher?.querySelector<HTMLElement>(
+				":scope > .owner-analytics-mode__tabs",
+			);
+			const anchor = switcher?.querySelector<HTMLElement>(
+				'[role="tabpanel"]:not([hidden]) [data-owner-navigation-anchor]',
+			);
+			if (!switcher || !row || !anchor) {
+				throw new Error("Active navigation geometry is unavailable");
+			}
+			const switcherBox = switcher.getBoundingClientRect();
+			const scale =
+				switcher.offsetWidth > 0 ? switcherBox.width / switcher.offsetWidth : 1;
+			const gap = Number.parseFloat(
+				getComputedStyle(switcher).getPropertyValue(
+					"--owner-section-navigation-gap",
+				),
+			);
+			return Math.abs(
+				row.getBoundingClientRect().top -
+					(anchor.getBoundingClientRect().bottom + gap * scale),
+			);
+		});
+		expect(delta).toBeLessThanOrEqual(1);
+	}
+
+	await page.evaluate(() => window.scrollTo(0, 135));
+	expect(await page.evaluate(() => window.scrollY)).toBe(135);
+	const shortSamples = await activateAndSample("health");
+	await expectNavigationAligned();
+	expect(shortSamples.length).toBeGreaterThan(1);
+	const savedShortScroll = await page.evaluate(() => window.scrollY);
+	// A first visit intentionally starts at the destination top.
+	expect(savedShortScroll).toBe(0);
+
+	const firstRestoreSamples = await activateAndSample("daily");
+	await expectNavigationAligned();
+	expect(Math.min(...firstRestoreSamples)).toBeGreaterThan(0);
+	expect(await page.evaluate(() => window.scrollY)).toBe(135);
+
+	const nearBottom = await page.evaluate(() => {
+		const maximum = Math.max(
+			0,
+			document.documentElement.scrollHeight - window.innerHeight,
+		);
+		const target = Math.max(1, maximum - 40);
+		window.scrollTo(0, target);
+		return window.scrollY;
+	});
+	expect(nearBottom).toBeGreaterThan(135);
+	const revisitShortSamples = await activateAndSample("health");
+	await expectNavigationAligned();
+	expect(revisitShortSamples.length).toBeGreaterThan(1);
+	expect(await page.evaluate(() => window.scrollY)).toBe(savedShortScroll);
+
+	const nearBottomRestoreSamples = await activateAndSample("daily");
+	await expectNavigationAligned();
+	expect(Math.min(...nearBottomRestoreSamples)).toBeGreaterThan(0);
+	expect(await page.evaluate(() => window.scrollY)).toBe(nearBottom);
+
+	// Give the retained short panel a temporary tall body, save a deep position,
+	// then make it short again. A wheel gesture during the bounded settlement
+	// window owns the scroll position and cancels every late automatic restore.
+	await page.locator("#owner-section-health-panel").evaluate((panel) => {
+		const probe = document.createElement("div");
+		probe.dataset.ownerHealthScrollProbe = "";
+		probe.style.height = "1400px";
+		panel.append(probe);
+	});
+	await activateAndSample("health");
+	const deepHealthScroll = await page.evaluate(() => {
+		const maximum = document.documentElement.scrollHeight - window.innerHeight;
+		const target = Math.max(1, maximum - 40);
+		window.scrollTo(0, target);
+		return window.scrollY;
+	});
+	expect(deepHealthScroll).toBeGreaterThan(200);
+	await activateAndSample("daily");
+	await page.locator("[data-owner-health-scroll-probe]").evaluate((probe) => {
+		probe.style.height = "450px";
+	});
+
+	await page.evaluate(() => {
+		document
+			.querySelector<HTMLElement>('[role="tab"][data-owner-section="health"]')
+			?.click();
+	});
+	await expect(
+		page.locator(
+			'[role="tab"][data-owner-section="health"][aria-selected="true"]',
+		),
+	).toBeVisible();
+	const userOwnedScroll = await page.evaluate(() => {
+		window.dispatchEvent(new WheelEvent("wheel", { deltaY: -1 }));
+		const maximum = Math.max(
+			0,
+			document.documentElement.scrollHeight - window.innerHeight,
+		);
+		const target = Math.min(60, maximum);
+		window.scrollTo(0, target);
+		return window.scrollY;
+	});
+	await page.waitForTimeout(240);
+	expect(await page.evaluate(() => window.scrollY)).toBe(userOwnedScroll);
 });
 
 test("selected middle tab stays visible when zoom and viewport resize change", async ({

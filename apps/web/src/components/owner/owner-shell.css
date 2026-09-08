@@ -2,7 +2,9 @@
 	--owner-field: #100b0e;
 	--owner-panel: #171316;
 	--owner-inset: rgb(255 230 238 / 2.5%);
-	--owner-table-head: rgb(255 230 238 / 5%);
+	/* An opaque warm backing prevents scrolling rows from repainting through
+	   sticky headers while remaining part of the surrounding oxblood surface. */
+	--owner-table-head: #281b20;
 	--owner-control: rgb(25 18 23 / 48%);
 	--owner-edge-quiet: #dcc5c90f;
 	--owner-edge: #dcc5c91a;
@@ -44,6 +46,17 @@
 .owner-shell > :not(.operations-skip-link) {
 	position: relative;
 	z-index: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.owner-shell > :not(.operations-skip-link, .owner-rail) {
+		transition: opacity var(--fw-duration-fast) var(--fw-ease-out);
+	}
+
+	.owner-shell[data-locale-transition="entering"]
+		> :not(.operations-skip-link, .owner-rail) {
+		opacity: 0;
+	}
 }
 
 .owner-shell .operations-skip-link {
@@ -266,8 +279,8 @@
 	padding: 38px;
 	border: 1px solid var(--fw-border);
 	border-radius: var(--fw-radius-surface);
-	background: rgb(16 16 18 / 92%);
-	box-shadow: var(--fw-shadow-lg);
+	background: var(--owner-inset);
+	box-shadow: 0 8px 28px rgb(0 0 0 / 12%);
 }
 
 .owner-shell .admin-state > svg {
@@ -288,7 +301,7 @@
 }
 
 .owner-shell .admin-state--forbidden {
-	border-color: rgb(217 164 0 / 28%);
+	border-color: var(--owner-edge);
 }
 
 .owner-shell .admin-state__action {

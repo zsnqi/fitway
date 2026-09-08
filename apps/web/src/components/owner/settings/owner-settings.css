@@ -152,7 +152,7 @@
 	gap: 0;
 }
 
-.owner-settings__board-head h3 {
+.owner-settings__board-head h2 {
 	margin: 0;
 	color: var(--fw-chalk);
 	font-size: 18px;
@@ -227,11 +227,16 @@
 	line-height: 28px;
 }
 
-.owner-settings__control input:focus-visible,
+.owner-settings__control:has(input:focus-visible),
 .owner-settings__time input:focus-visible,
-.owner-settings__toggle-input:focus-visible {
+.owner-settings__toggle:has(.owner-settings__toggle-input:focus-visible) {
 	outline: 2px solid var(--fw-focus-ring);
 	outline-offset: 1px;
+}
+
+.owner-settings__control input:focus-visible,
+.owner-settings__toggle-input:focus-visible {
+	outline: 0;
 }
 
 .owner-settings__unit {
@@ -389,11 +394,6 @@
 	color: var(--fw-chalk);
 }
 
-.owner-settings__toggle:has(.owner-settings__toggle-input:focus-visible) {
-	outline: 2px solid var(--fw-focus-ring);
-	outline-offset: 1px;
-}
-
 .owner-settings__toggle-hint {
 	color: var(--fw-text-subtle);
 	font-size: 11px;
@@ -549,7 +549,7 @@
 		align-items: end;
 	}
 
-	.owner-settings__board-head h3 {
+	.owner-settings__board-head h2 {
 		grid-column: 1;
 		grid-row: 1;
 	}
@@ -800,9 +800,8 @@
 		border-color: GrayText;
 	}
 
-	.owner-settings__control input:focus-visible,
+	.owner-settings__control:has(input:focus-visible),
 	.owner-settings__time input:focus-visible,
-	.owner-settings__toggle-input:focus-visible,
 	.owner-settings__toggle:has(.owner-settings__toggle-input:focus-visible) {
 		outline: 2px solid CanvasText;
 	}

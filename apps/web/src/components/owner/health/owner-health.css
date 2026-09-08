@@ -152,7 +152,7 @@
 	margin-block-start: 4px;
 }
 
-.owner-health-block h3 {
+.owner-health-block h2 {
 	margin: 0;
 	color: var(--fw-chalk);
 	font-size: 15px;
@@ -205,6 +205,8 @@
 }
 
 .owner-health-region {
+	position: relative;
+	isolation: isolate;
 	max-block-size: 420px;
 	overflow: auto;
 	scrollbar-width: thin;
@@ -235,7 +237,8 @@
 
 .owner-health-region table {
 	inline-size: 100%;
-	border-collapse: collapse;
+	border-collapse: separate;
+	border-spacing: 0;
 	font-size: 14px;
 }
 
@@ -249,11 +252,10 @@
 
 .owner-health-region th {
 	position: sticky;
-	z-index: 1;
+	z-index: 2;
 	inset-block-start: 0;
 	color: var(--fw-text-muted);
 	background: var(--owner-table-head);
-	backdrop-filter: blur(24px);
 	font-size: 12px;
 	white-space: nowrap;
 }
@@ -327,7 +329,7 @@
 		rgb(22 19 22 / 84%);
 }
 
-.owner-health-state h3 {
+.owner-health-state h2 {
 	margin: 0;
 	color: var(--fw-chalk);
 	font-size: 16px;

@@ -8,16 +8,15 @@ import {
 	AlertTriangle,
 	ArrowDown,
 	ArrowUp,
-	CalendarClock,
 	CircleCheck,
 	HelpCircle,
 	Minus,
 	RefreshCw,
 } from "lucide-react";
-import { type KeyboardEvent, useId, useRef, useState } from "react";
+import { type KeyboardEvent, useId, useMemo, useRef, useState } from "react";
 
 import type { Locale } from "@/i18n/catalog";
-import { formatDate, formatNumber } from "@/i18n/format";
+import { formatDate } from "@/i18n/format";
 import { localeConfig } from "@/i18n/locale";
 import { useI18n } from "@/i18n/provider";
 
@@ -36,9 +35,66 @@ type HeatmapPosition = { weekday: Weekday; localHour: number };
 
 const HOURS = Array.from({ length: 24 }, (_unused, hour) => hour);
 
-/** Two digits, always, so the 24 column headers keep one width in both locales. */
-function twoDigits(value: number, locale: Locale): string {
-	return formatNumber(value, locale).padStart(2, "0");
+const numberFormatters = new Map<Locale, Intl.NumberFormat>();
+const averageFormatters = new Map<Locale, Intl.NumberFormat>();
+const percentFormatters = new Map<string, Intl.NumberFormat>();
+const hourLabels = new Map<
+	Locale,
+	{ headers: readonly string[]; spans: readonly string[] }
+>();
+
+function numberFormatter(locale: Locale): Intl.NumberFormat {
+	const current = numberFormatters.get(locale);
+	if (current) return current;
+	const created = new Intl.NumberFormat(localeConfig[locale].intl);
+	numberFormatters.set(locale, created);
+	return created;
+}
+
+function formatReportingNumber(value: number, locale: Locale): string {
+	return numberFormatter(locale).format(value);
+}
+
+function averageFormatter(locale: Locale): Intl.NumberFormat {
+	const current = averageFormatters.get(locale);
+	if (current) return current;
+	const created = new Intl.NumberFormat(localeConfig[locale].intl, {
+		minimumFractionDigits: 0,
+		maximumFractionDigits: 1,
+	});
+	averageFormatters.set(locale, created);
+	return created;
+}
+
+function percentFormatter(
+	locale: Locale,
+	minimumFractionDigits: number,
+	maximumFractionDigits: number,
+): Intl.NumberFormat {
+	const key = `${locale}-${minimumFractionDigits}-${maximumFractionDigits}`;
+	const current = percentFormatters.get(key);
+	if (current) return current;
+	const created = new Intl.NumberFormat(localeConfig[locale].intl, {
+		style: "percent",
+		minimumFractionDigits,
+		maximumFractionDigits,
+	});
+	percentFormatters.set(key, created);
+	return created;
+}
+
+function labelsForHours(locale: Locale) {
+	const current = hourLabels.get(locale);
+	if (current) return current;
+	const headers = HOURS.map((hour) =>
+		formatReportingNumber(hour, locale).padStart(2, "0"),
+	);
+	const created = {
+		headers,
+		spans: headers.map((hour) => `${hour}:00-${hour}:59`),
+	};
+	hourLabels.set(locale, created);
+	return created;
 }
 
 /**
@@ -49,7 +105,7 @@ function twoDigits(value: number, locale: Locale): string {
  * backwards. The `<bdi dir="ltr">` around it keeps the clock itself unmirrored.
  */
 function hourSpan(localHour: number, locale: Locale): string {
-	return `${twoDigits(localHour, locale)}:00-${twoDigits(localHour, locale)}:59`;
+	return labelsForHours(locale).spans[localHour] ?? "";
 }
 
 /** A ratio as a percentage with Western digits; `Intl` places the sign for Arabic. */
@@ -58,19 +114,16 @@ export function formatPercent(
 	locale: Locale,
 	fractionDigits = 1,
 ): string {
-	return new Intl.NumberFormat(localeConfig[locale].intl, {
-		style: "percent",
-		minimumFractionDigits: ratio > 0 && ratio < 1 ? fractionDigits : 0,
-		maximumFractionDigits: fractionDigits,
-	}).format(ratio);
+	return percentFormatter(
+		locale,
+		ratio > 0 && ratio < 1 ? fractionDigits : 0,
+		fractionDigits,
+	).format(ratio);
 }
 
 /** An occupancy average, kept to one decimal: it is a mean, not a headcount. */
 export function formatAverage(value: number, locale: Locale): string {
-	return new Intl.NumberFormat(localeConfig[locale].intl, {
-		minimumFractionDigits: Number.isInteger(value) ? 0 : 1,
-		maximumFractionDigits: 1,
-	}).format(value);
+	return averageFormatter(locale).format(value);
 }
 
 /** A business day as a short, locale-correct calendar day. */
@@ -135,13 +188,6 @@ function cellStateLabel(
 	return cell.averageOccupancy === 0 ? messages.stateZero : messages.stateValue;
 }
 
-function cellByPosition(heatmap: Heatmap, weekday: Weekday, localHour: number) {
-	return heatmap.cells.find(
-		(candidate) =>
-			candidate.weekday === weekday && candidate.localHour === localHour,
-	);
-}
-
 function cellKey({ weekday, localHour }: HeatmapPosition): string {
 	return `${weekday}-${localHour}`;
 }
@@ -182,10 +228,37 @@ export function OwnerReportingHeatmap({ heatmap }: { heatmap: Heatmap }) {
 	const [selected, setSelected] = useState<HeatmapPosition>(initialSelection);
 	const selectedRef = useRef<HeatmapPosition>(initialSelection);
 	const cellRefs = useRef(new Map<string, HTMLButtonElement>());
-	const busiest = busiestAverage(heatmap);
-	const active =
-		cellByPosition(heatmap, selected.weekday, selected.localHour) ??
-		heatmap.cells[0];
+	const derived = useMemo(() => {
+		const index = new Map(
+			heatmap.cells.map((cell) => [cellKey(cell), cell] as const),
+		);
+		const busiest = busiestAverage(heatmap);
+		return {
+			index,
+			rows: WEEKDAYS.map((weekday) => ({
+				weekday,
+				label: weekdays.full[weekday],
+				shortLabel: weekdays.short[weekday],
+				cells: HOURS.map((hour) => {
+					const cell = index.get(cellKey({ weekday, localHour: hour }));
+					if (!cell) return null;
+					const stateLabel = cellStateLabel(cell, messages);
+					const reading =
+						cell.state === "value" && cell.averageOccupancy !== null
+							? `${messages.selectedAverage} ${formatAverage(cell.averageOccupancy, locale)}, ${messages.selectedSamples} ${formatReportingNumber(cell.sampleDayCount, locale)}`
+							: stateLabel;
+					return {
+						cell,
+						hour,
+						key: cellKey(cell),
+						level: cellLevel(cell, busiest),
+						ariaLabel: `${weekdays.full[weekday]} ${hourSpan(hour, locale)}, ${stateLabel}. ${reading}`,
+					};
+				}),
+			})),
+		};
+	}, [heatmap, locale, messages, weekdays.full, weekdays.short]);
+	const active = derived.index.get(cellKey(selected)) ?? heatmap.cells[0];
 
 	function select(next: HeatmapPosition, moveFocus = false) {
 		selectedRef.current = next;
@@ -218,7 +291,7 @@ export function OwnerReportingHeatmap({ heatmap }: { heatmap: Heatmap }) {
 		<div className="owner-reporting-heatmap">
 			<div className="owner-reporting-heatmap__heading">
 				<div>
-					<h3 id={`${ids}-title`}>{messages.heatmapTitle}</h3>
+					<h2 id={`${ids}-title`}>{messages.heatmapTitle}</h2>
 					<p>
 						{messages.heatmapDescription} ·{" "}
 						<bdi dir="auto">
@@ -255,9 +328,9 @@ export function OwnerReportingHeatmap({ heatmap }: { heatmap: Heatmap }) {
 					<thead>
 						<tr>
 							<th scope="col">{messages.weekdayAxis}</th>
-							{HOURS.map((hour) => (
+							{labelsForHours(locale).headers.map((label, hour) => (
 								<th key={hour} scope="col">
-									<bdi dir="ltr">{twoDigits(hour, locale)}</bdi>
+									<bdi dir="ltr">{label}</bdi>
 								</th>
 							))}
 						</tr>
@@ -268,46 +341,46 @@ export function OwnerReportingHeatmap({ heatmap }: { heatmap: Heatmap }) {
 					 * across 168 of them is the whole point of the arrangement.
 					 */}
 					<tbody onKeyDown={handleKeyDown}>
-						{WEEKDAYS.map((weekday) => (
-							<tr key={weekday}>
+						{derived.rows.map((row) => (
+							<tr key={row.weekday}>
 								<th scope="row">
 									<span className="owner-reporting-grid__full">
-										{weekdays.full[weekday]}
+										{row.label}
 									</span>
 									<span
 										className="owner-reporting-grid__short"
 										aria-hidden="true"
 									>
-										{weekdays.short[weekday]}
+										{row.shortLabel}
 									</span>
 								</th>
-								{HOURS.map((hour) => {
-									const cell = cellByPosition(heatmap, weekday, hour);
-									if (!cell) return <td key={hour} />;
+								{row.cells.map((derivedCell, hour) => {
+									if (!derivedCell) return <td key={hour} />;
+									const { ariaLabel, cell, key, level } = derivedCell;
 									const isActive =
-										selected.weekday === weekday && selected.localHour === hour;
-									const reading =
-										cell.state === "value" && cell.averageOccupancy !== null
-											? `${messages.selectedAverage} ${formatAverage(cell.averageOccupancy, locale)}, ${messages.selectedSamples} ${formatNumber(cell.sampleDayCount, locale)}`
-											: cellStateLabel(cell, messages);
+										selected.weekday === row.weekday &&
+										selected.localHour === hour;
 									return (
 										<td key={hour}>
 											<button
 												ref={(element) => {
-													const key = cellKey({ weekday, localHour: hour });
 													if (element) cellRefs.current.set(key, element);
 													else cellRefs.current.delete(key);
 												}}
 												type="button"
 												className="owner-reporting-cell"
-												data-level={cellLevel(cell, busiest)}
+												data-level={level}
 												data-state={cell.state}
 												data-active={isActive ? "" : undefined}
 												tabIndex={isActive ? 0 : -1}
 												aria-pressed={isActive}
-												aria-label={`${weekdays.full[weekday]} ${hourSpan(hour, locale)}, ${cellStateLabel(cell, messages)}. ${reading}`}
-												onClick={() => select({ weekday, localHour: hour })}
-												onFocus={() => select({ weekday, localHour: hour })}
+												aria-label={ariaLabel}
+												onClick={() =>
+													select({ weekday: row.weekday, localHour: hour })
+												}
+												onFocus={() =>
+													select({ weekday: row.weekday, localHour: hour })
+												}
 											/>
 										</td>
 									);
@@ -345,16 +418,18 @@ export function OwnerReportingHeatmap({ heatmap }: { heatmap: Heatmap }) {
 							<dt>{messages.selectedObserved}</dt>
 							<dd>
 								<bdi>
-									{formatNumber(active.observedOpenMinutes, locale)}
+									{formatReportingNumber(active.observedOpenMinutes, locale)}
 									{" / "}
-									{formatNumber(active.expectedOpenMinutes, locale)}
+									{formatReportingNumber(active.expectedOpenMinutes, locale)}
 								</bdi>
 							</dd>
 						</div>
 						<div>
 							<dt>{messages.selectedSamples}</dt>
 							<dd>
-								<bdi>{formatNumber(active.sampleDayCount, locale)}</bdi>
+								<bdi>
+									{formatReportingNumber(active.sampleDayCount, locale)}
+								</bdi>
 							</dd>
 						</div>
 					</dl>
@@ -383,16 +458,32 @@ export function OwnerReportingTable({ heatmap }: { heatmap: Heatmap }) {
 	const { locale } = useI18n();
 	const messages = useOwnerReportingMessages();
 	const weekdays = useOwnerReportingWeekdays();
+	const rows = useMemo(
+		() =>
+			heatmap.cells.map((cell) => ({
+				cell,
+				key: cellKey(cell),
+				weekday: weekdays.full[cell.weekday],
+				hour: hourSpan(cell.localHour, locale),
+				state: cellStateLabel(cell, messages),
+				average:
+					cell.averageOccupancy === null
+						? null
+						: formatAverage(cell.averageOccupancy, locale),
+				observed: formatReportingNumber(cell.observedOpenMinutes, locale),
+				expected: formatReportingNumber(cell.expectedOpenMinutes, locale),
+				samples: formatReportingNumber(cell.sampleDayCount, locale),
+			})),
+		[heatmap, locale, messages, weekdays.full],
+	);
 	const keyboardScrollable = { tabIndex: 0 };
 	return (
-		<details className="owner-reporting-disclosure" open>
-			<summary>
-				<span>
-					<strong>{messages.tableSummary}</strong>
-				</span>
-			</summary>
+		<div className="owner-reporting-table">
+			<div className="owner-reporting-table__heading">
+				<h2>{messages.tableSummary}</h2>
+			</div>
 			<section
-				className="owner-reporting-region"
+				className="owner-reporting-region owner-reporting-region--dense"
 				aria-label={messages.tableRegion}
 				{...keyboardScrollable}
 			>
@@ -409,45 +500,43 @@ export function OwnerReportingTable({ heatmap }: { heatmap: Heatmap }) {
 						</tr>
 					</thead>
 					<tbody>
-						{heatmap.cells.map((cell) => (
+						{rows.map((row) => (
 							<tr
-								key={`${cell.weekday}-${cell.localHour}`}
-								data-state={cell.state}
+								key={row.key}
+								data-state={row.cell.state}
 								data-zero={
-									cell.state === "value" && cell.averageOccupancy === 0
+									row.cell.state === "value" && row.cell.averageOccupancy === 0
 										? ""
 										: undefined
 								}
 							>
-								<td>{weekdays.full[cell.weekday]}</td>
+								<td>{row.weekday}</td>
 								<td>
-									<bdi dir="ltr">{hourSpan(cell.localHour, locale)}</bdi>
+									<bdi dir="ltr">{row.hour}</bdi>
 								</td>
-								<td>{cellStateLabel(cell, messages)}</td>
+								<td>{row.state}</td>
 								<td>
-									{cell.averageOccupancy === null ? (
-										<span className="owner-reporting__absent">
-											{cellStateLabel(cell, messages)}
-										</span>
+									{row.average === null ? (
+										<span className="owner-reporting__absent">{row.state}</span>
 									) : (
-										<bdi>{formatAverage(cell.averageOccupancy, locale)}</bdi>
+										<bdi>{row.average}</bdi>
 									)}
 								</td>
 								<td>
-									<bdi>{formatNumber(cell.observedOpenMinutes, locale)}</bdi>
+									<bdi>{row.observed}</bdi>
 								</td>
 								<td>
-									<bdi>{formatNumber(cell.expectedOpenMinutes, locale)}</bdi>
+									<bdi>{row.expected}</bdi>
 								</td>
 								<td>
-									<bdi>{formatNumber(cell.sampleDayCount, locale)}</bdi>
+									<bdi>{row.samples}</bdi>
 								</td>
 							</tr>
 						))}
 					</tbody>
 				</table>
 			</section>
-		</details>
+		</div>
 	);
 }
 
@@ -496,7 +585,22 @@ function ChangeCell({
 }
 
 function weekHeading(week: WeekMetrics, locale: Locale) {
-	return windowLabel(week.startBusinessDay, week.endBusinessDay, locale);
+	const crossesYears =
+		week.startBusinessDay.slice(0, 4) !== week.endBusinessDay.slice(0, 4);
+	return {
+		start: formatDate(
+			new Date(`${week.startBusinessDay}T12:00:00.000Z`),
+			locale,
+			crossesYears
+				? { month: "short", day: "numeric", year: "numeric" }
+				: { month: "short", day: "numeric" },
+		),
+		end: formatDate(new Date(`${week.endBusinessDay}T12:00:00.000Z`), locale, {
+			month: "short",
+			day: "numeric",
+			year: "numeric",
+		}),
+	};
 }
 
 /**
@@ -517,49 +621,68 @@ export function OwnerReportingComparison({
 	const messages = useOwnerReportingMessages();
 	const ids = useId();
 	const comparable = comparison.state === "comparable";
-	const rows = [
-		{
-			key: "average",
-			label: messages.comparisonAverage,
-			value: (week: WeekMetrics) =>
-				week.averageOccupancy === null
-					? messages.comparisonNoAverage
-					: formatAverage(week.averageOccupancy, locale),
-			change: comparable ? comparison.changes.averageOccupancy : null,
-			format: formatAverage,
-		},
-		{
-			key: "crossings",
-			label: messages.comparisonCrossings,
-			value: (week: WeekMetrics) =>
-				formatNumber(week.estimatedEntranceCrossings, locale),
-			change: comparable ? comparison.changes.estimatedEntranceCrossings : null,
-			format: formatNumber,
-		},
-		{
-			key: "coverage",
-			label: messages.comparisonCoverage,
-			value: (week: WeekMetrics) =>
-				week.coverage === null
-					? messages.comparisonNoAverage
-					: `${formatPercent(week.coverage, locale)} (${formatNumber(week.observedOpenMinutes, locale)} / ${formatNumber(week.expectedOpenMinutes, locale)})`,
-			change: null,
-			format: formatNumber,
-		},
-	];
+	const { headings, rows } = useMemo(() => {
+		const valueForAverage = (week: WeekMetrics) =>
+			week.averageOccupancy === null
+				? messages.comparisonNoAverage
+				: formatAverage(week.averageOccupancy, locale);
+		const valueForCoverage = (week: WeekMetrics) =>
+			week.coverage === null
+				? messages.comparisonNoAverage
+				: `${formatPercent(week.coverage, locale)} (${formatReportingNumber(week.observedOpenMinutes, locale)} / ${formatReportingNumber(week.expectedOpenMinutes, locale)})`;
+		return {
+			headings: {
+				current: weekHeading(comparison.currentWeek, locale),
+				prior: weekHeading(comparison.priorWeek, locale),
+			},
+			rows: [
+				{
+					key: "average",
+					label: messages.comparisonAverage,
+					current: valueForAverage(comparison.currentWeek),
+					prior: valueForAverage(comparison.priorWeek),
+					change: comparable ? comparison.changes.averageOccupancy : null,
+					format: formatAverage,
+				},
+				{
+					key: "crossings",
+					label: messages.comparisonCrossings,
+					current: formatReportingNumber(
+						comparison.currentWeek.estimatedEntranceCrossings,
+						locale,
+					),
+					prior: formatReportingNumber(
+						comparison.priorWeek.estimatedEntranceCrossings,
+						locale,
+					),
+					change: comparable
+						? comparison.changes.estimatedEntranceCrossings
+						: null,
+					format: formatReportingNumber,
+				},
+				{
+					key: "coverage",
+					label: messages.comparisonCoverage,
+					current: valueForCoverage(comparison.currentWeek),
+					prior: valueForCoverage(comparison.priorWeek),
+					change: null,
+					format: formatReportingNumber,
+				},
+			],
+		};
+	}, [comparable, comparison, locale, messages]);
 
 	// A labeled scroll region must be reachable by keyboard alone (`DESIGN_GUIDE.md`
 	// §8, §13), exactly as the accepted audit, health, and analytics tables are.
 	const keyboardScrollable = { tabIndex: 0 };
 
 	return (
-		<section
+		<div
 			className="owner-reporting-comparison"
 			data-owner-reporting-comparison={comparison.state}
-			aria-labelledby={`${ids}-title`}
 		>
 			<div className="owner-reporting-comparison__heading">
-				<h3 id={`${ids}-title`}>{messages.comparisonTitle}</h3>
+				<h2 id={`${ids}-title`}>{messages.comparisonTitle}</h2>
 				<p>{messages.comparisonDescription}</p>
 			</div>
 
@@ -583,24 +706,36 @@ export function OwnerReportingComparison({
 			)}
 
 			<section
-				className="owner-reporting-region"
+				className="owner-reporting-region owner-reporting-region--compact"
 				aria-label={messages.comparisonTitle}
 				{...keyboardScrollable}
 			>
 				<table data-owner-reporting-comparison-table="">
+					<colgroup>
+						<col className="owner-reporting-comparison__metric-column" />
+						<col className="owner-reporting-comparison__week-column" />
+						<col className="owner-reporting-comparison__week-column" />
+						{comparable ? (
+							<col className="owner-reporting-comparison__change-column" />
+						) : null}
+					</colgroup>
 					<thead>
 						<tr>
-							<th scope="col">{/* metric name column */}</th>
+							<th scope="col">{messages.comparisonMetric}</th>
 							<th scope="col">
 								<span>{messages.comparisonCurrent}</span>
-								<bdi dir="auto">
-									{weekHeading(comparison.currentWeek, locale)}
+								<bdi className="owner-reporting-week-heading" dir="auto">
+									<span>{headings.current.start}</span>
+									<span aria-hidden="true"> - </span>
+									<span>{headings.current.end}</span>
 								</bdi>
 							</th>
 							<th scope="col">
 								<span>{messages.comparisonPrior}</span>
-								<bdi dir="auto">
-									{weekHeading(comparison.priorWeek, locale)}
+								<bdi className="owner-reporting-week-heading" dir="auto">
+									<span>{headings.prior.start}</span>
+									<span aria-hidden="true"> - </span>
+									<span>{headings.prior.end}</span>
 								</bdi>
 							</th>
 							{comparable ? (
@@ -613,10 +748,10 @@ export function OwnerReportingComparison({
 							<tr key={row.key}>
 								<th scope="row">{row.label}</th>
 								<td>
-									<bdi dir="auto">{row.value(comparison.currentWeek)}</bdi>
+									<bdi dir="auto">{row.current}</bdi>
 								</td>
 								<td>
-									<bdi dir="auto">{row.value(comparison.priorWeek)}</bdi>
+									<bdi dir="auto">{row.prior}</bdi>
 								</td>
 								{comparable ? (
 									<td>
@@ -634,10 +769,7 @@ export function OwnerReportingComparison({
 					</tbody>
 				</table>
 			</section>
-			<p className="owner-reporting__hint">
-				{messages.comparisonCrossingsNote}
-			</p>
-		</section>
+		</div>
 	);
 }
 
@@ -664,7 +796,7 @@ export function OwnerReportingState({
 		>
 			{icon}
 			<div>
-				<h4>{title}</h4>
+				<h3>{title}</h3>
 				<p>{description}</p>
 				{children}
 			</div>
@@ -673,22 +805,35 @@ export function OwnerReportingState({
 	);
 }
 
-export function OwnerReportingLoading() {
+export function OwnerReportingLoading({
+	embedded = false,
+	compact = false,
+	announce = true,
+}: {
+	embedded?: boolean;
+	compact?: boolean;
+	announce?: boolean;
+} = {}) {
 	const messages = useOwnerReportingMessages();
 	return (
-		<OwnerReportingState
-			variant="loading"
-			icon={<CalendarClock aria-hidden="true" />}
-			title={messages.loading}
-			description={messages.loadingDescription}
-			action={
-				<div className="owner-reporting-loading-bars" aria-hidden="true">
-					<i />
-					<i />
-					<i />
-				</div>
-			}
-		/>
+		<div
+			className="owner-reporting-skeleton"
+			data-embedded={embedded ? "true" : undefined}
+			data-compact={compact ? "true" : undefined}
+			data-owner-reporting-state={announce ? "loading" : undefined}
+			role="status"
+			aria-hidden={announce ? undefined : true}
+			aria-label={messages.loading}
+		>
+			<span className="sr-only">{messages.loading}</span>
+			<div className="owner-reporting-skeleton__heading" aria-hidden="true" />
+			<div className="owner-reporting-skeleton__grid" aria-hidden="true">
+				{Array.from({ length: compact ? 9 : 168 }, (_, index) => (
+					<i key={`loading-${index}`} />
+				))}
+			</div>
+			<div className="owner-reporting-skeleton__footer" aria-hidden="true" />
+		</div>
 	);
 }
 

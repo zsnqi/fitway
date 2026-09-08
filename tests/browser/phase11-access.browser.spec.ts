@@ -498,7 +498,7 @@ test("loading, error, empty, and live states each render with their own announce
 	await expectNoDocumentOverflow(page);
 });
 
-test("the section stands down while the shared analytics query is pending, issuing no access request", async ({
+test("the section loads independently while the shared analytics query is pending", async ({
 	page,
 }) => {
 	await page.addInitScript(() =>
@@ -545,18 +545,15 @@ test("the section stands down while the shared analytics query is pending, issui
 	});
 
 	await openOwnerSection(page);
-	// The page's own analytics loading region proves hydration has completed and
-	// the shared query is still pending — not merely that nothing has mounted yet.
-	await expect(page.getByRole("status")).toBeVisible();
-	await expect(page.locator(accessSection)).toHaveCount(0);
-	expect(observedAccessRequests).toHaveLength(0);
+	await expect(page.locator(accessSection)).toBeVisible();
+	await expect(page.locator(staffCard)).toBeVisible();
+	expect(observedAccessRequests).toHaveLength(1);
 
 	dailyGate.resolve();
-	await expect(page.locator(staffCard)).toBeVisible();
 	expect(observedAccessRequests).toHaveLength(1);
 });
 
-test("the section stands down while the shared analytics query has failed, issuing no access request", async ({
+test("the section remains available when the shared analytics query has failed", async ({
 	page,
 }) => {
 	await page.addInitScript(() =>
@@ -603,9 +600,9 @@ test("the section stands down while the shared analytics query has failed, issui
 	});
 
 	await openOwnerSection(page);
-	await expect(page.getByRole("alert")).toBeVisible();
-	await expect(page.locator(accessSection)).toHaveCount(0);
-	expect(observedAccessRequests).toHaveLength(0);
+	await expect(page.locator(accessSection)).toBeVisible();
+	await expect(page.locator(staffCard)).toBeVisible();
+	expect(observedAccessRequests).toHaveLength(1);
 });
 
 test("Arabic renders RTL with Western digits and a plain-hyphen PIN range", async ({

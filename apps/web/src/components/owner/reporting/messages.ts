@@ -17,7 +17,7 @@
  */
 export const ownerReportingMessages = {
 	en: {
-		pageTitle: "Analytics",
+		pageTitle: "Reports",
 		gymTime: "Gym time",
 		title: "Busiest times and direction",
 		description: "How the week actually fills, by weekday and gym-local hour",
@@ -26,7 +26,7 @@ export const ownerReportingMessages = {
 		windowDays: "Business days",
 
 		rangeLegend: "Reporting range",
-		rangeHint: "History and heatmap",
+		rangeHint: "Up to 31 days",
 		startLabel: "Start",
 		endLabel: "End",
 		apply: "Apply",
@@ -40,13 +40,12 @@ export const ownerReportingMessages = {
 		loading: "Loading the reporting window",
 		loadingDescription: "Preparing the weekday averages and the comparison.",
 		errorTitle: "The reporting window could not be loaded",
-		errorDescription:
-			"No figure has been substituted. Check the connection and try again.",
+		errorDescription: "Check the connection and try again.",
 		comparisonErrorTitle: "The comparison could not be loaded",
 		retry: "Try again",
 
 		heatmapTitle: "Occupancy by weekday and hour",
-		heatmapDescription: "Observed-minute average occupancy",
+		heatmapDescription: "Typical crowd level for each hour",
 		heatmapRegion: "Weekday by hour heatmap",
 		heatmapHint:
 			"Select a cell to read its figures. Arrow keys move between cells.",
@@ -69,7 +68,7 @@ export const ownerReportingMessages = {
 		selectedMissing: "No history was recorded for this hour.",
 
 		tableSummary: "Hourly detail",
-		tableDescription: "All figures as text",
+		tableDescription: "Hourly readings",
 		tableRegion: "Weekday by hour figures",
 		columnWeekday: "Weekday",
 		columnHour: "Hour",
@@ -86,17 +85,17 @@ export const ownerReportingMessages = {
 
 		comparisonTitle: "Weekly comparison",
 		comparisonDescription: "Last 2 complete weeks",
+		comparisonMetric: "Metric",
 		comparisonCurrent: "Latest week",
 		comparisonPrior: "Week before",
 		comparisonAverage: "Average occupancy",
-		comparisonCrossings: "Estimated entrance crossings",
+		comparisonCrossings: "Total entries",
 		comparisonCoverage: "Observed coverage",
 		comparisonChange: "Change",
 		comparisonUp: "up",
 		comparisonDown: "down",
 		comparisonFlat: "unchanged",
 		comparisonNoAverage: "Not measurable",
-		comparisonCrossingsNote: "Door crossings per week.",
 
 		insufficientTitle: "Not enough comparable history yet",
 		insufficientDescription:
@@ -113,9 +112,9 @@ export const ownerReportingMessages = {
 
 		csvTitle: "CSV export range",
 		csvDescription:
-			"One row per minute, with both the UTC instant and the gym-local time. UTF-8 and spreadsheet-safe.",
+			"Download minute-by-minute occupancy history for your selected dates.",
 		csvLegend: "Export window",
-		csvHint: "Owner only · inclusive · max 366 days",
+		csvHint: "Up to 366 days",
 		csvExport: "Export CSV",
 		csvAbort: "Stop the export",
 		csvDownload: "Download the file",
@@ -123,10 +122,10 @@ export const ownerReportingMessages = {
 		csvRows: "Rows prepared",
 		csvReadyTitle: "The export is ready",
 		csvReadyDescription:
-			"The file covers the whole window you chose. Nothing was summarised or rounded on the way out.",
+			"Your selected occupancy history is ready to download.",
 		csvAbortedTitle: "The export was stopped",
 		csvAbortedDescription:
-			"Nothing was kept. A stopped export is a partial file, and a partial file would not be the window you asked for.",
+			"Start again when you’re ready to download the file.",
 		csvRangeErrorTitle: "That export window cannot be used",
 		csvTransportErrorTitle: "The export could not be completed",
 		csvTransportErrorDescription:
@@ -142,7 +141,7 @@ export const ownerReportingMessages = {
 		none: "None",
 	},
 	ar: {
-		pageTitle: "التحليلات",
+		pageTitle: "التقارير",
 		gymTime: "توقيت الصالة",
 		title: "أوقات الذروة والاتجاه",
 		description: "كيف يمتلئ الأسبوع فعلياً، بحسب اليوم والساعة بتوقيت الصالة",
@@ -151,7 +150,7 @@ export const ownerReportingMessages = {
 		windowDays: "أيام العمل",
 
 		rangeLegend: "نطاق التقرير",
-		rangeHint: "السجل وخريطة الإشغال",
+		rangeHint: "حتى 31 يوماً",
 		startLabel: "البداية",
 		endLabel: "النهاية",
 		apply: "تطبيق",
@@ -165,12 +164,12 @@ export const ownerReportingMessages = {
 		loading: "جارٍ تحميل فترة التقرير",
 		loadingDescription: "جارٍ تجهيز متوسطات الأيام والمقارنة.",
 		errorTitle: "تعذر تحميل فترة التقرير",
-		errorDescription: "لم نستبدل أي رقم. تحقق من الاتصال ثم أعد المحاولة.",
+		errorDescription: "تحقق من الاتصال ثم أعد المحاولة.",
 		comparisonErrorTitle: "تعذر تحميل المقارنة",
 		retry: "إعادة المحاولة",
 
 		heatmapTitle: "الإشغال حسب اليوم والساعة",
-		heatmapDescription: "متوسط الإشغال في الدقائق المرصودة",
+		heatmapDescription: "مستوى الازدحام المعتاد لكل ساعة",
 		heatmapRegion: "خريطة اليوم مقابل الساعة",
 		heatmapHint: "اختر خانة لقراءة أرقامها. تنقل بين الخانات بمفاتيح الأسهم.",
 		hourAxis: "الساعة بتوقيت الصالة",
@@ -183,10 +182,10 @@ export const ownerReportingMessages = {
 		legendMissing: "لا توجد بيانات",
 
 		selectedTitle: "الساعة المختارة",
-		selectedAverage: "متوسط الإشغال",
-		selectedObserved: "دقائق العمل المرصودة",
+		selectedAverage: "متوسط الازدحام",
+		selectedObserved: "دقائق العمل التي توفرت فيها قراءات",
 		selectedExpected: "دقائق العمل المجدولة",
-		selectedSamples: "الأيام المقيسة",
+		selectedSamples: "عدد الأيام التي توفرت فيها قراءات",
 		selectedNoValue: "لا يوجد متوسط — لم يُرصد شيء في هذه الساعة.",
 		selectedClosed: "لم تكن الصالة مفتوحة في هذه الساعة.",
 		selectedMissing: "لم يُسجَّل أي تاريخ لهذه الساعة.",
@@ -197,10 +196,10 @@ export const ownerReportingMessages = {
 		columnWeekday: "اليوم",
 		columnHour: "الساعة",
 		columnState: "الحالة",
-		columnAverage: "متوسط الإشغال",
-		columnObserved: "دقائق العمل المرصودة",
+		columnAverage: "متوسط الازدحام",
+		columnObserved: "دقائق العمل التي توفرت فيها قراءات",
 		columnExpected: "دقائق العمل المجدولة",
-		columnSamples: "الأيام المقيسة",
+		columnSamples: "عدد الأيام التي توفرت فيها قراءات",
 
 		stateValue: "مرصودة",
 		stateZero: "مفتوحة وفارغة",
@@ -209,22 +208,22 @@ export const ownerReportingMessages = {
 
 		comparisonTitle: "المقارنة الأسبوعية",
 		comparisonDescription: "آخر أسبوعين مكتملين",
+		comparisonMetric: "المؤشر",
 		comparisonCurrent: "الأسبوع الأخير",
 		comparisonPrior: "الأسبوع السابق",
-		comparisonAverage: "متوسط الإشغال",
-		comparisonCrossings: "عبور الباب التقديري",
-		comparisonCoverage: "نسبة الرصد",
+		comparisonAverage: "متوسط الازدحام",
+		comparisonCrossings: "إجمالي الدخول",
+		comparisonCoverage: "نسبة الوقت الذي توفرت فيه قراءات",
 		comparisonChange: "التغيّر",
 		comparisonUp: "ارتفاع",
 		comparisonDown: "انخفاض",
 		comparisonFlat: "بلا تغيّر",
 		comparisonNoAverage: "غير قابل للقياس",
-		comparisonCrossingsNote: "عبور الباب أسبوعياً.",
 
 		insufficientTitle: "لا يوجد سجل كافٍ للمقارنة بعد",
 		insufficientDescription:
 			"يجب أن يُرصد كلا الأسبوعين بهذا القدر على الأقل من دقائق عملهما المجدولة قبل تحديد أي اتجاه. الأرقام أدناه معروضة كما هي، بلا مقارنة.",
-		insufficientMinimum: "الحد الأدنى لنسبة الرصد",
+		insufficientMinimum: "الحد الأدنى لنسبة الوقت الذي توفرت فيها قراءات",
 		current_week_no_expected_open_minutes:
 			"لم تكن للأسبوع الأخير أي دقائق عمل مجدولة أصلاً.",
 		current_week_coverage_below_minimum:
@@ -235,21 +234,18 @@ export const ownerReportingMessages = {
 			"رُصد من الأسبوع السابق قدر أقل من اللازم من دقائق عمله المجدولة.",
 
 		csvTitle: "نطاق تصدير CSV",
-		csvDescription:
-			"سطر لكل دقيقة، يحمل اللحظة بتوقيت UTC وتوقيت الصالة معاً. بترميز UTF-8 وصالح لبرامج الجداول.",
+		csvDescription: "تنزيل سجل الإشغال لكل دقيقة خلال الفترة المحددة.",
 		csvLegend: "فترة التصدير",
-		csvHint: "للمالك فقط · شامل · 366 يوماً كحد أقصى",
+		csvHint: "366 يوماً كحد أقصى",
 		csvExport: "تصدير CSV",
 		csvAbort: "إيقاف التصدير",
 		csvDownload: "تنزيل الملف",
 		csvExporting: "جارٍ تجهيز التصدير",
 		csvRows: "الأسطر المجهّزة",
 		csvReadyTitle: "التصدير جاهز",
-		csvReadyDescription:
-			"يغطي الملف كامل الفترة التي اخترتها. لم نلخّص أو نقرّب أي رقم فيه.",
+		csvReadyDescription: "سجل الإشغال للفترة المحددة جاهز للتنزيل.",
 		csvAbortedTitle: "أُوقف التصدير",
-		csvAbortedDescription:
-			"لم نحتفظ بشيء. التصدير الموقوف ملف ناقص، والملف الناقص ليس الفترة التي طلبتها.",
+		csvAbortedDescription: "يمكنك بدء التصدير مجددًا عندما تريد تنزيل الملف.",
 		csvRangeErrorTitle: "لا يمكن استخدام فترة التصدير هذه",
 		csvTransportErrorTitle: "تعذر إكمال التصدير",
 		csvTransportErrorDescription:
@@ -260,7 +256,7 @@ export const ownerReportingMessages = {
 
 		scrollHint: "يمكن تمرير هذه الشبكة أفقياً لعرض بقية الساعات.",
 		footnote:
-			"يُحسب المتوسط على الدقائق المرصودة فعلاً، فالانقطاع يخفض نسبة الرصد بدل أن يخفض المتوسط بصمت. وتُستبعد ساعات الإغلاق من كل متوسط بدل احتسابها فارغة. وتأتي الفئة والسعة من اللقطة المحفوظة مع كل دقيقة، فتغيير إعداد اليوم لا يعيد كتابة صورة الشهر الماضي.",
+			"يُحسب المتوسط على الدقائق التي توفرت فيها قراءات فعلاً، فالانقطاع يخفض نسبة الوقت الذي توفرت فيه قراءات بدل أن يخفض المتوسط بصمت. وتُستبعد ساعات الإغلاق من كل متوسط بدل احتسابها فارغة. وتأتي الفئة والسعة من اللقطة المحفوظة مع كل دقيقة، فتغيير إعداد اليوم لا يعيد كتابة صورة الشهر الماضي.",
 		of: "من",
 		none: "لا شيء",
 	},

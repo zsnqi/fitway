@@ -7,9 +7,13 @@ import {
 	type OwnerAuditFilterSelection,
 	useOwnerAudit,
 } from "@/hooks/use-owner-audit";
-import { formatNumber } from "@/i18n/format";
+import { formatDate, formatNumber } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
 
+import {
+	OwnerDateField,
+	ownerDateValidationMessage,
+} from "../owner-date-field";
 import {
 	OwnerAuditEmpty,
 	OwnerAuditError,
@@ -36,9 +40,36 @@ export function OwnerAuditSection() {
 	const [applied, setApplied] = useState<OwnerAuditFilterSelection>(
 		emptyOwnerAuditSelection,
 	);
+	const [dateValidity, setDateValidity] = useState({ from: true, to: true });
+	const [validationRequested, setValidationRequested] = useState(false);
 	const audit = useOwnerAudit(applied);
 	const ids = useId();
 	const fieldId = (name: string) => `${ids}-${name}`;
+	const appliedDateContext = [applied.occurredFromDay, applied.occurredToDay]
+		.filter(Boolean)
+		.map((day) =>
+			formatDate(new Date(`${day}T12:00:00.000Z`), locale, {
+				day: "numeric",
+				month: "long",
+				year: "numeric",
+			}),
+		)
+		.join(" – ");
+	const dateValidationProblem =
+		!dateValidity.from || !dateValidity.to
+			? ownerDateValidationMessage(locale, "invalid")
+			: draft.occurredFromDay &&
+					draft.occurredToDay &&
+					draft.occurredFromDay > draft.occurredToDay
+				? ownerDateValidationMessage(locale, "inverted")
+				: null;
+	const dateProblem = validationRequested ? dateValidationProblem : null;
+	const gymYear = Number(
+		new Intl.DateTimeFormat("en-US-u-ca-gregory-nu-latn", {
+			year: "numeric",
+			timeZone: audit.timeZone ?? "UTC",
+		}).format(new Date()),
+	);
 
 	function update<Key extends keyof OwnerAuditFilterSelection>(
 		key: Key,
@@ -49,29 +80,58 @@ export function OwnerAuditSection() {
 
 	function handleSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
+		setValidationRequested(true);
+		if (dateValidationProblem) return;
 		setApplied(draft);
 	}
 
 	function handleClear() {
 		setDraft(emptyOwnerAuditSelection);
 		setApplied(emptyOwnerAuditSelection);
+		setDateValidity({ from: true, to: true });
+		setValidationRequested(false);
 	}
 
-	// Without the configured gym timezone no record can be dated, and `/admin`
-	// already carries one live region and one retry for that same cause. A second
-	// copy would be noise for a screen reader and a duplicate control for everyone
-	// else, so the section stands down entirely until the timezone is known.
-	if (audit.status === "unavailable" || !audit.timeZone) return null;
+	if (audit.status === "pending" || audit.status === "unavailable") {
+		return (
+			<section className="owner-audit" aria-labelledby={fieldId("heading")}>
+				<header
+					className="owner-audit__heading"
+					data-owner-navigation-anchor=""
+				>
+					<h1 id={fieldId("heading")}>{messages.title}</h1>
+					<p>{messages.description}</p>
+				</header>
+				<OwnerAuditLoading />
+			</section>
+		);
+	}
+
+	if (audit.status === "error" || !audit.timeZone) {
+		return (
+			<section className="owner-audit" aria-labelledby={fieldId("heading")}>
+				<header
+					className="owner-audit__heading"
+					data-owner-navigation-anchor=""
+				>
+					<h1 id={fieldId("heading")}>{messages.title}</h1>
+					<p>{messages.description}</p>
+				</header>
+				<OwnerAuditError onRetry={audit.retry} />
+			</section>
+		);
+	}
 
 	return (
 		<section className="owner-audit" aria-labelledby={fieldId("heading")}>
 			<header className="owner-audit__heading" data-owner-navigation-anchor="">
 				<h1 id={fieldId("heading")}>{messages.title}</h1>
 				<p>
-					{messages.description} ·{" "}
-					<span className="owner-audit__zone">
-						{messages.timeZoneLabel} <bdi>{audit.timeZone}</bdi>
-					</span>
+					{appliedDateContext ? (
+						<bdi dir="auto">{appliedDateContext}</bdi>
+					) : (
+						messages.description
+					)}
 				</p>
 			</header>
 
@@ -131,26 +191,36 @@ export function OwnerAuditSection() {
 				</div>
 
 				<div className="owner-audit-field owner-audit-field--from">
-					<label htmlFor={fieldId("occurred-from")}>
-						{messages.occurredFromLabel}
-					</label>
-					<input
+					<OwnerDateField
 						id={fieldId("occurred-from")}
-						type="date"
+						label={messages.occurredFromLabel}
 						value={draft.occurredFromDay}
-						onChange={(event) => update("occurredFromDay", event.target.value)}
+						referenceYear={gymYear}
+						describedBy={fieldId("date-problem")}
+						invalid={dateProblem !== null}
+						onValidationRequest={() => setValidationRequested(true)}
+						onValidationReset={() => setValidationRequested(false)}
+						onValidityChange={(valid) =>
+							setDateValidity((current) => ({ ...current, from: valid }))
+						}
+						onChange={(value) => update("occurredFromDay", value)}
 					/>
 				</div>
 
 				<div className="owner-audit-field owner-audit-field--to">
-					<label htmlFor={fieldId("occurred-to")}>
-						{messages.occurredToLabel}
-					</label>
-					<input
+					<OwnerDateField
 						id={fieldId("occurred-to")}
-						type="date"
+						label={messages.occurredToLabel}
 						value={draft.occurredToDay}
-						onChange={(event) => update("occurredToDay", event.target.value)}
+						referenceYear={gymYear}
+						describedBy={fieldId("date-problem")}
+						invalid={dateProblem !== null}
+						onValidationRequest={() => setValidationRequested(true)}
+						onValidationReset={() => setValidationRequested(false)}
+						onValidityChange={(valid) =>
+							setDateValidity((current) => ({ ...current, to: valid }))
+						}
+						onChange={(value) => update("occurredToDay", value)}
 					/>
 				</div>
 
@@ -256,6 +326,14 @@ export function OwnerAuditSection() {
 					</div>
 				</div>
 
+				<p
+					className="owner-audit-filters__problem"
+					id={fieldId("date-problem")}
+					role={dateProblem ? "alert" : undefined}
+				>
+					{dateProblem}
+				</p>
+
 				<div className="owner-audit-filters__actions">
 					<Button type="submit">{messages.apply}</Button>
 					<Button type="button" variant="outline" onClick={handleClear}>
@@ -264,10 +342,6 @@ export function OwnerAuditSection() {
 				</div>
 			</form>
 
-			{audit.status === "pending" ? <OwnerAuditLoading /> : null}
-			{audit.status === "error" ? (
-				<OwnerAuditError onRetry={audit.retry} />
-			) : null}
 			{audit.status === "success" ? (
 				audit.entries.length === 0 ? (
 					<OwnerAuditEmpty onClear={handleClear} />

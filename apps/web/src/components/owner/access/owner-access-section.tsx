@@ -1,9 +1,6 @@
 import { useId } from "react";
 
 import { useOwnerAccess } from "@/hooks/use-owner-access";
-import { useOwnerDailyAnalytics } from "@/hooks/use-owner-daily-analytics";
-import { formatDate } from "@/i18n/format";
-import { useI18n } from "@/i18n/provider";
 
 import {
 	OwnerAccessEmpty,
@@ -23,36 +20,15 @@ import "./owner-access.css";
  * hook stands down (`enabled: false` yields `standby` and issues zero requests)
  * and this section renders nothing.
  *
- * ## One live region and one retry per page
- *
- * That route-level permission is necessary but not sufficient. While `/admin`'s
- * own shared analytics query is pending or failed, the page is already
- * announcing exactly one "loading" status, or showing exactly one error with one
- * retry. A second copy would be a competing announcement for a screen reader and
- * a duplicate control for everyone else (`DESIGN_GUIDE.md` §13), so this section
- * stands down until the page itself has settled — the same standing-down the
- * accepted audit and health sections perform on this route, for the same reason
- * (see `use-owner-health.ts`).
- *
- * The gate lives here rather than in the route because `/admin` renders a
- * forbidden branch from the same component: a route-level hook call would fire
- * the shared query for a caller who is not allowed to see the page at all.
+ * The route-level permission is the only prerequisite. Once this retained panel
+ * is visited, Accounts owns its request and its loading/error copy; Daily state
+ * cannot substitute for or suppress the selected section.
  */
 export function OwnerAccessSection({ enabled }: { enabled: boolean }) {
-	const { locale } = useI18n();
 	const messages = useOwnerAccessMessages();
-	const analytics = useOwnerDailyAnalytics();
-	const pageSettled = !analytics.isPending && !analytics.isError;
-	const access = useOwnerAccess({ enabled: enabled && pageSettled });
+	const access = useOwnerAccess({ enabled });
 	const ids = useId();
 	const headingId = `${ids}-heading`;
-	const pageContext = analytics.data
-		? `${analytics.data.timeContext.current.timeZone} · ${formatDate(
-				new Date(`${analytics.data.daily.businessDay}T12:00:00.000Z`),
-				locale,
-				{ weekday: "long", day: "numeric", month: "long", year: "numeric" },
-			)}`
-		: null;
 
 	if (access.status === "standby") return null;
 
@@ -60,15 +36,7 @@ export function OwnerAccessSection({ enabled }: { enabled: boolean }) {
 		<section className="owner-access" aria-labelledby={headingId}>
 			<header className="owner-access__heading" data-owner-navigation-anchor="">
 				<h1 id={headingId}>{messages.title}</h1>
-				<p>
-					{messages.description}
-					{pageContext ? (
-						<>
-							{" · "}
-							<bdi dir="auto">{pageContext}</bdi>
-						</>
-					) : null}
-				</p>
+				<p>{messages.description}</p>
 			</header>
 
 			{access.status === "pending" ? <OwnerAccessLoading /> : null}

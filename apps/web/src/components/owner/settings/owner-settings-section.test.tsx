@@ -27,6 +27,7 @@ vi.mock("@/hooks/use-owner-daily-analytics", () => ({
 	useOwnerDailyAnalytics: () => dailyAnalytics,
 }));
 
+import { ownerSettingsMessages } from "./messages";
 import { OwnerSettingsSection } from "./owner-settings-section";
 
 const snapshot = {
@@ -185,6 +186,15 @@ afterEach(async () => {
 });
 
 describe("owner settings section", () => {
+	it("keeps unknown configured timezone identifiers exact", () => {
+		expect(ownerSettingsMessages.en.timezoneValue("Europe/London")).toBe(
+			"Europe/London",
+		);
+		expect(ownerSettingsMessages.ar.timezoneValue("Europe/London")).toBe(
+			"Europe/London",
+		);
+	});
+
 	it("renders the form once the prerequisite settles and populates the fixture", async () => {
 		read.mockResolvedValue(snapshot);
 		await render();
@@ -196,7 +206,9 @@ describe("owner settings section", () => {
 		expect(field("reset")?.value).toBe("15");
 		expect(field("quietMaxPercent")?.value).toBe("30");
 		expect(checkboxes()).toHaveLength(7);
-		expect(container.textContent).toContain("Asia/Riyadh");
+		expect(container.textContent).toContain("Riyadh time (Asia/Riyadh)");
+		expect(container.textContent).toContain("20 seconds");
+		expect(field("boundary")?.placeholder).toBe("04:00");
 	});
 
 	it("shows a load failure with Retry and no fabricated settings", async () => {
@@ -368,7 +380,9 @@ describe("owner settings section", () => {
 		expect(container.textContent).toContain(
 			"Capacity must be between 1 and 2147483647.",
 		);
-		expect(container.textContent).toContain("Use a 24-hour time as HH:mm.");
+		expect(container.textContent).toContain(
+			"Use 24-hour time, for example 04:00.",
+		);
 
 		await act(async () => {
 			setControlledValue(field("boundary") ?? null, "03:00");
@@ -467,7 +481,8 @@ describe("owner settings section", () => {
 
 		expect(q("h1")?.textContent).toBe("الإعدادات");
 		expect(field("capacity")?.value).toBe("240");
-		expect(container.textContent).toContain("حد يوم العمل");
-		expect(container.textContent).toContain("Asia/Riyadh");
+		expect(container.textContent).toContain("بداية يوم العمل");
+		expect(container.textContent).toContain("توقيت الرياض (Asia/Riyadh)");
+		expect(container.textContent).toContain("20 ثانية");
 	});
 });

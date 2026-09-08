@@ -1,6 +1,8 @@
 import { createHash, createHmac } from "node:crypto";
 import path from "node:path";
+import { eq } from "drizzle-orm";
 import { assertDemoDatabaseUrl, DEMO_OWNER_EMAIL } from "./contract";
+import { DEMO_PRESENTATION_TEXT } from "./text-update";
 
 const CAPACITY = 120;
 const PROFILE_SEED = 20260901;
@@ -282,7 +284,7 @@ export async function seedDemo(input: DemoSeedInput): Promise<DemoSeedResult> {
 		const owner = await auth.provisionOwner(
 			{
 				email: DEMO_OWNER_EMAIL,
-				displayName: "FITWAY Demo Owner",
+				displayName: DEMO_PRESENTATION_TEXT.ownerDisplayName,
 				password: input.ownerPassword,
 			},
 			profileCreatedAt,
@@ -291,6 +293,17 @@ export async function seedDemo(input: DemoSeedInput): Promise<DemoSeedResult> {
 			input.staffPin,
 			new Date(profileCreatedAt.getTime() + 5 * 60_000),
 		);
+		const renamedStaff = await database
+			.update(authSchema.authPrincipals)
+			.set({ displayName: DEMO_PRESENTATION_TEXT.staffDisplayName })
+			.where(eq(authSchema.authPrincipals.id, staff.principal.id))
+			.returning({ id: authSchema.authPrincipals.id });
+		if (
+			renamedStaff.length !== 1 ||
+			renamedStaff[0]?.id !== staff.principal.id
+		) {
+			throw new Error("Demo shared-staff display name was not updated");
+		}
 		const [historical] = await database
 			.insert(applicationSchema.settingsVersions)
 			.values({
@@ -489,7 +502,7 @@ export async function seedDemo(input: DemoSeedInput): Promise<DemoSeedResult> {
 				requestedDelta: 3,
 				requestedValue: null,
 				effectiveValue: 37,
-				reason: "Synthetic front-desk headcount reconciliation",
+				reason: DEMO_PRESENTATION_TEXT.frontDeskReconciliation,
 			},
 			{
 				daysAgo: 12,
@@ -500,7 +513,7 @@ export async function seedDemo(input: DemoSeedInput): Promise<DemoSeedResult> {
 				requestedDelta: null,
 				requestedValue: 25,
 				effectiveValue: 25,
-				reason: "Synthetic occupancy review",
+				reason: DEMO_PRESENTATION_TEXT.occupancyReview,
 			},
 			{
 				daysAgo: 5,
@@ -511,7 +524,7 @@ export async function seedDemo(input: DemoSeedInput): Promise<DemoSeedResult> {
 				requestedDelta: null,
 				requestedValue: 0,
 				effectiveValue: 0,
-				reason: "Synthetic closing walkthrough reset",
+				reason: DEMO_PRESENTATION_TEXT.closingReset,
 			},
 			{
 				daysAgo: 1,
@@ -522,7 +535,7 @@ export async function seedDemo(input: DemoSeedInput): Promise<DemoSeedResult> {
 				requestedDelta: -2,
 				requestedValue: null,
 				effectiveValue: 50,
-				reason: "Synthetic turnstile reconciliation",
+				reason: DEMO_PRESENTATION_TEXT.entryGateReconciliation,
 			},
 		] as const;
 		const commandAuditRows: Array<
@@ -611,7 +624,7 @@ export async function seedDemo(input: DemoSeedInput): Promise<DemoSeedResult> {
 				priorCredentialVersion: null,
 				newCredentialVersion: null,
 				settingsVersion: historical.version,
-				reason: "Synthetic demo baseline",
+				reason: DEMO_PRESENTATION_TEXT.settingsBaseline,
 				createdAt: new Date(profileCreatedAt.getTime() + 10 * 60_000),
 			},
 			...commandAuditRows,
@@ -629,7 +642,7 @@ export async function seedDemo(input: DemoSeedInput): Promise<DemoSeedResult> {
 				priorCredentialVersion: null,
 				newCredentialVersion: null,
 				settingsVersion: latest.version,
-				reason: "Synthetic owner-demo profile refresh",
+				reason: DEMO_PRESENTATION_TEXT.septemberSettings,
 				createdAt: currentSettingsAt,
 			},
 		]);

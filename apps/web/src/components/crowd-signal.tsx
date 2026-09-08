@@ -19,7 +19,6 @@ export function CrowdSignal({
 	skeleton = false,
 	className,
 	showFooter = true,
-	ramp = CROWD_SIGNAL_LINEAR_HEIGHTS,
 }: {
 	band?: CrowdBand;
 	stale?: boolean;
@@ -28,8 +27,6 @@ export function CrowdSignal({
 	className?: string;
 	/** The public board closes with a reading strip; the staff board does not. */
 	showFooter?: boolean;
-	/** Bar heights as percentages of the wave box, ascending, 28 entries. */
-	ramp?: readonly number[];
 }) {
 	const { locale, messages } = useI18n();
 	const currentBandIndex = band ? bands.indexOf(band) : -1;
@@ -73,7 +70,7 @@ export function CrowdSignal({
 				))}
 			</div>
 			<div className="public-live__signal-wave" aria-hidden="true">
-				{ramp.map((height, index) => {
+				{CROWD_SIGNAL_LINEAR_HEIGHTS.map((height, index) => {
 					const barBand = barBands[index];
 					const barBandIndex = bands.indexOf(barBand);
 					const state = skeleton

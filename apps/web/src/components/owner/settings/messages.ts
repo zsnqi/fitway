@@ -16,8 +16,8 @@ export type OwnerSettingsUiState =
  * fresh successor frames. Runtime-only messages (loading, retry, validation,
  * version conflict, announcements) are native Arabic, never transliteration.
  *
- * Numeric ranges use a plain hyphen in Arabic and Latin values such as
- * `Asia/Riyadh`, `20 s`, and `HH:mm` are rendered inside `bdi` isolation by
+ * Numeric ranges use a plain hyphen in Arabic. Exact timezone identifiers and
+ * localized operational values are isolated by
  * the view, so the bidi algorithm cannot reverse a Western-digit run inside
  * an RTL sentence.
  */
@@ -28,10 +28,9 @@ export const ownerSettingsMessages = {
 			"Versioned owner configuration. Changes apply prospectively and never rewrite history.",
 
 		loading: "Loading settings",
-		loadingDescription: "Preparing the current settings version.",
+		loadingDescription: "Loading your gym settings.",
 		errorTitle: "Settings could not be loaded",
-		errorDescription:
-			"No values have been substituted. Check the connection and try again.",
+		errorDescription: "Check the connection and try again.",
 		retry: "Try again",
 
 		currentVersion: "Current version",
@@ -40,7 +39,7 @@ export const ownerSettingsMessages = {
 		discard: "Discard changes",
 
 		stateShort: {
-			clean: "Clean",
+			clean: "Saved",
 			dirty: "Unsaved",
 			invalid: "Unsaved",
 			saving: "Saving",
@@ -48,14 +47,13 @@ export const ownerSettingsMessages = {
 			failed: "Not saved",
 			conflict: "Changed",
 		},
-		cleanState: "Clean · no unsaved changes",
+		cleanState: "All changes saved",
 		unsavedState: "Unsaved changes",
 		savingState: "Saving settings…",
 		savedState: "Saved",
 
 		savedAnnouncement: "Settings version {version} created.",
-		savedDetail:
-			"The current values are now clean. No secret or credential is recorded.",
+		savedDetail: "Your settings have been saved.",
 		failureAnnouncement:
 			"Nothing was changed. Your entered values remain in the form; try saving again.",
 		conflictAnnouncement:
@@ -63,17 +61,19 @@ export const ownerSettingsMessages = {
 		invalidAnnouncement:
 			"Check the highlighted fields. Save stays locked until they are fixed.",
 
-		foundationsTitle: "Editable gym rules",
+		foundationsTitle: "Gym settings",
 		foundationsHelper:
 			"All fields are private owner settings. Required fields keep persistent labels.",
 		capacityLabel: "Capacity",
 		capacityUnit: "people",
-		boundaryLabel: "Business-day boundary",
-		boundaryUnit: (timezone: string) => `${timezone} time`,
+		boundaryLabel: "Day starts at",
+		boundaryUnit: (timezone: string) =>
+			timezone === "Asia/Riyadh" ? "Riyadh time" : `${timezone} time`,
+		timePlaceholder: "04:00",
 		resetLabel: "Reset buffer",
 		resetUnit: "minutes",
 
-		thresholdsTitle: "Crowd band thresholds",
+		thresholdsTitle: "Crowd levels",
 		thresholdsHelper:
 			"Enter ordered percentage boundaries. Packed begins above Busy.",
 		quietLabel: "Quiet ends at",
@@ -103,21 +103,24 @@ export const ownerSettingsMessages = {
 		closesNextDay: "Closes next day",
 		closedDayMessage: "Open and close unavailable while closed",
 
-		lockedTitle: "Operational timing · locked",
-		lockedTitleMobile: "◇ Operational timing · locked",
+		lockedTitle: "System timing",
+		lockedTitleMobile: "◇ System timing",
 		lockedHelper:
 			"Copied forward unchanged into the new settings version and managed by the system.",
 		lockedHelperMobile: "System-managed · copied forward unchanged.",
 		lockedBadge: "◇ Read-only",
 		timezoneLabel: "Timezone",
-		pushLabel: "Edge push",
-		freshLabel: "Fresh through",
-		staleLabel: "Operational stale",
-		pollLabel: "Public poll",
+		pushLabel: "Counter updates",
+		freshLabel: "Live reading limit",
+		staleLabel: "Connection warning after",
+		pollLabel: "Public refresh",
+		timezoneValue: (timezone: string) =>
+			timezone === "Asia/Riyadh" ? `Riyadh time (${timezone})` : timezone,
+		secondsValue: (value: number) => `${value} seconds`,
 		lockedFooterLong:
-			"Saving creates a new settings version and one existing settings audit entry. No secret values appear here.",
+			"Saving creates a new settings version and a Settings entry in Activity Log. No secret values appear here.",
 		lockedFooterShort:
-			"New settings version + existing settings audit · no secrets.",
+			"New settings version + Settings entry in Activity Log · no secrets.",
 
 		errors: {
 			required: "This field is required.",
@@ -133,7 +136,7 @@ export const ownerSettingsMessages = {
 			},
 			wallTime: {
 				required: "Enter a time.",
-				invalid: "Use a 24-hour time as HH:mm.",
+				invalid: "Use 24-hour time, for example 04:00.",
 			},
 			threshold: {
 				required: "Enter a percentage.",
@@ -160,9 +163,9 @@ export const ownerSettingsMessages = {
 			"إعدادات مالك بإصدارات. تنطبق التغييرات مستقبلاً ولا تعيد كتابة السجل.",
 
 		loading: "جارٍ تحميل الإعدادات",
-		loadingDescription: "جارٍ تجهيز إصدار الإعدادات الحالي.",
+		loadingDescription: "جارٍ تحميل إعدادات النادي.",
 		errorTitle: "تعذر تحميل الإعدادات",
-		errorDescription: "لم نستبدل أي قيمة. تحقق من الاتصال ثم أعد المحاولة.",
+		errorDescription: "تحقق من الاتصال ثم أعد المحاولة.",
 		retry: "إعادة المحاولة",
 
 		currentVersion: "الإصدار الحالي",
@@ -171,7 +174,7 @@ export const ownerSettingsMessages = {
 		discard: "تجاهل التغييرات",
 
 		stateShort: {
-			clean: "نظيف",
+			clean: "محفوظ",
 			dirty: "غير محفوظ",
 			invalid: "غير محفوظ",
 			saving: "جارٍ الحفظ",
@@ -179,30 +182,31 @@ export const ownerSettingsMessages = {
 			failed: "لم يتم الحفظ",
 			conflict: "تغيّرت",
 		},
-		cleanState: "نظيف · لا تغييرات غير محفوظة",
+		cleanState: "كل التغييرات محفوظة",
 		unsavedState: "تغييرات غير محفوظة",
 		savingState: "جارٍ حفظ الإعدادات…",
 		savedState: "تم الحفظ",
 
 		savedAnnouncement: "تم إنشاء إصدار الإعدادات {version}.",
-		savedDetail:
-			"القيم الحالية نظيفة الآن، ولا تُسجَّل أي أسرار أو بيانات اعتماد.",
+		savedDetail: "تم حفظ إعداداتك.",
 		failureAnnouncement:
 			"لم يتغير شيء. تبقى القيم التي أدخلتها في النموذج؛ حاول الحفظ مجدداً.",
 		conflictAnnouncement:
 			"تغيّرت الإعدادات من مكان آخر. تجاهل التغييرات يعيد تحميل القيم الحالية، ولا تُطبَّق مسودتك.",
 		invalidAnnouncement: "راجع الحقول المظللة. يبقى الحفظ مقفلاً حتى تُصحَّح.",
 
-		foundationsTitle: "قواعد النادي القابلة للتعديل",
+		foundationsTitle: "إعدادات النادي",
 		foundationsHelper: "كل الحقول إعدادات خاصة بالمالك، مع تسميات ظاهرة دائماً.",
 		capacityLabel: "السعة",
 		capacityUnit: "شخص",
-		boundaryLabel: "حد يوم العمل",
-		boundaryUnit: (timezone: string) => `بتوقيت ${timezone}`,
+		boundaryLabel: "بداية يوم العمل",
+		boundaryUnit: (timezone: string) =>
+			timezone === "Asia/Riyadh" ? "بتوقيت الرياض" : `بتوقيت ${timezone}`,
+		timePlaceholder: "04:00",
 		resetLabel: "مهلة إعادة الضبط",
 		resetUnit: "دقيقة",
 
-		thresholdsTitle: "حدود نطاقات الازدحام",
+		thresholdsTitle: "مستويات الازدحام",
 		thresholdsHelper: "أدخل ثلاث نسب مرتبة. يبدأ النطاق ممتلئ بعد نهاية مزدحم.",
 		quietLabel: "نهاية النطاق الهادئ",
 		moderateLabel: "نهاية النطاق المتوسط",
@@ -231,21 +235,24 @@ export const ownerSettingsMessages = {
 		closesNextDay: "يغلق في اليوم التالي",
 		closedDayMessage: "وقتا الفتح والإغلاق غير متاحين عند الإغلاق",
 
-		lockedTitle: "التوقيت التشغيلي · مقفل",
-		lockedTitleMobile: "◇ التوقيت التشغيلي · مقفل",
+		lockedTitle: "توقيت النظام",
+		lockedTitleMobile: "◇ توقيت النظام",
 		lockedHelper:
 			"ينسخه النظام دون تغيير إلى إصدار الإعدادات الجديد ويديره مركزياً.",
 		lockedHelperMobile: "يديرها النظام · تُنسخ دون تغيير.",
 		lockedBadge: "◇ للقراءة فقط",
 		timezoneLabel: "المنطقة الزمنية",
-		pushLabel: "فاصل دفع التحديثات الطرفية",
-		freshLabel: "مدة حداثة البيانات",
-		staleLabel: "حد التقادم التشغيلي",
-		pollLabel: "فاصل تحديث العرض العام",
+		pushLabel: "تحديث جهاز العد",
+		freshLabel: "مدة القراءة المباشرة",
+		staleLabel: "التنبيه عن تأخر الاتصال",
+		pollLabel: "تحديث العرض العام",
+		timezoneValue: (timezone: string) =>
+			timezone === "Asia/Riyadh" ? `توقيت الرياض (${timezone})` : timezone,
+		secondsValue: (value: number) => `${value} ثانية`,
 		lockedFooterLong:
-			"ينشئ الحفظ إصدار إعدادات جديداً وسجل تدقيق الإعدادات الحالي فقط. لا تظهر أي قيم سرية هنا.",
+			"ينشئ الحفظ إصدار إعدادات جديداً وسجلاً للإعدادات في سجل النشاط. لا تظهر أي قيم سرية هنا.",
 		lockedFooterShort:
-			"إصدار إعدادات جديد + سجل تدقيق الإعدادات الحالي · بلا أسرار.",
+			"إصدار إعدادات جديد + سجل للإعدادات في سجل النشاط · بلا أسرار.",
 
 		errors: {
 			required: "هذا الحقل مطلوب.",
@@ -261,7 +268,7 @@ export const ownerSettingsMessages = {
 			},
 			wallTime: {
 				required: "أدخل الوقت.",
-				invalid: "استخدم توقيت 24 ساعة بالصيغة HH:mm.",
+				invalid: "استخدم نظام 24 ساعة، مثلاً 04:00.",
 			},
 			threshold: {
 				required: "أدخل النسبة.",

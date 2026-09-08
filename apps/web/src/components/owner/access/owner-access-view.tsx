@@ -154,7 +154,7 @@ function StateCard({
 		>
 			{icon}
 			<div>
-				<h3>{title}</h3>
+				<h2>{title}</h2>
 				<p>{description}</p>
 			</div>
 			{action}
@@ -412,7 +412,7 @@ export function OwnerAccessLive({
 			<div className="owner-access-summary-grid">
 				<div className="owner-access-card" data-owner-access-staff-pin="">
 					<header className="owner-access-card__heading">
-						<h3>{messages.staffPinTitle}</h3>
+						<h2>{messages.staffPinTitle}</h2>
 						<p>{messages.staffPinDescription}</p>
 					</header>
 					<p className="owner-access-card__state">
@@ -513,7 +513,7 @@ export function OwnerAccessLive({
 					data-owner-access-owners-summary=""
 				>
 					<header className="owner-access-block__heading">
-						<h3>{messages.ownersTitle}</h3>
+						<h2>{messages.ownersTitle}</h2>
 						<p>{messages.ownersDescription}</p>
 					</header>
 					<p className="owner-access-card__state owner-access-card__state--owners">
@@ -665,9 +665,10 @@ export function OwnerAccessLive({
 
 			<div className="owner-access-owners-board">
 				<header className="owner-access-owners-board__heading">
-					<h3>{messages.ownersBoardTitle}</h3>
+					<h2>{messages.ownersBoardTitle}</h2>
 					<p>
-						<bdi>{owners.length}</bdi> {messages.accountsCountLabel}
+						<bdi>{owners.length}</bdi>{" "}
+						{messages.accountsCountLabel(owners.length)}
 					</p>
 				</header>
 				<table className="owner-access-owners">

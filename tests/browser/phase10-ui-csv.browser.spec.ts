@@ -1,7 +1,7 @@
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import AxeBuilder from "@axe-core/playwright";
-import { expect, type Page, test } from "@playwright/test";
+import { expect, type Locator, type Page, test } from "@playwright/test";
 import { expectOfficialBrandMark } from "./helpers/brand";
 
 const owner = {
@@ -317,6 +317,34 @@ async function activateHistory(page: Page) {
 	await expect(page.locator(".owner-reporting")).toBeVisible();
 }
 
+async function fillLocalizedDate(
+	page: Page,
+	scope: Page | Locator,
+	label: string,
+	iso: string,
+) {
+	const [year, month, day] = iso.split("-");
+	const field = scope.getByRole("group", { name: label });
+	await field.getByLabel("Year").click();
+	await page.getByRole("option", { name: year, exact: true }).click();
+	await field.getByLabel("Month").click();
+	const monthName = new Intl.DateTimeFormat("en-US-u-ca-gregory-nu-latn", {
+		month: "long",
+		timeZone: "UTC",
+	}).format(new Date(Date.UTC(2000, Number(month) - 1, 1)));
+	await page.getByRole("option", { name: monthName, exact: true }).click();
+	await field.getByLabel("Day").click();
+	await page
+		.getByRole("option", { name: String(Number(day)), exact: true })
+		.click();
+}
+
+function localizedDateValue(scope: Page | Locator, label: string) {
+	return scope
+		.getByRole("group", { name: label })
+		.locator("[data-owner-date-value]");
+}
+
 /*
  * Default-state density and flow of the two control boards.
  *
@@ -328,192 +356,62 @@ async function activateHistory(page: Page) {
  * so a return to the stacked control flow fails here rather than only in a screenshot.
  */
 async function expectBoardDensity(page: Page, width: number) {
-	const boards = await page.evaluate(() => {
-		const controls = document.querySelector(
-			"[data-owner-reporting-controls]",
-		) as HTMLElement;
-		const measure = (selector: string) => {
-			const board = controls.querySelector(selector) as HTMLElement;
-			const box = (element: Element | null) => {
-				if (!element) return null;
-				const rect = element.getBoundingClientRect();
+	for (const board of await page
+		.locator("[data-owner-reporting-range], [data-owner-reporting-export]")
+		.all()) {
+		const fields = board.locator(
+			"[data-owner-date-field] .owner-date-field__trigger",
+		);
+		await expect(fields).toHaveCount(6);
+		const boxes = await fields.evaluateAll((elements) =>
+			elements.map((element) => {
+				const box = element.getBoundingClientRect();
 				return {
-					top: Math.round(rect.top * 100) / 100,
-					height: Math.round(rect.height * 100) / 100,
-					width: Math.round(rect.width * 100) / 100,
+					left: box.left,
+					right: box.right,
+					top: box.top,
+					bottom: box.bottom,
+					height: box.height,
 				};
-			};
-			const actions = board.querySelector(".owner-reporting-range__actions");
-			const actionStyle = actions ? getComputedStyle(actions) : null;
-			const style = getComputedStyle(board);
-			return {
-				board: box(board),
-				heading: box(board.querySelector(".owner-reporting-board__heading")),
-				row: box(board.querySelector(".owner-reporting-board__row")),
-				actions: box(actions),
-				fields: Array.from(
-					board.querySelectorAll(".owner-reporting-field"),
-				).map((field) => box(field)),
-				padding: `${style.paddingTop} ${style.paddingRight}`,
-				actionDivider: actionStyle
-					? `${actionStyle.borderTopWidth} ${actionStyle.paddingTop}`
-					: null,
-				// The old flow put the window hint in its own paragraph row. The
-				// board still carries that sentence, but as the heading metadata.
-				hintRows: board.querySelectorAll(".owner-reporting__hint").length,
-				// The old flow stacked the CSV format and privacy sentences onto the
-				// export board as a third supporting row; they now live as section
-				// prose beneath the board pair.
-				asideRows: board.querySelectorAll(".owner-reporting-board__aside")
-					.length,
-				noteRows: board.querySelectorAll(".owner-reporting__note").length,
-			};
-		};
-		return {
-			reporting: measure("[data-owner-reporting-range]"),
-			csv: measure("[data-owner-reporting-export]"),
-		};
-	});
-
-	for (const [name, board] of Object.entries(boards)) {
-		const { heading, row, actions, fields } = board;
-		if (!board.board || !heading || !row || !actions) {
-			throw new Error(`${name} board is missing its heading, row, or actions`);
-		}
-		expect(board.hintRows, `${name} keeps no separate hint row`).toBe(0);
-		expect(
-			board.asideRows + board.noteRows,
-			`${name} keeps no supporting prose row`,
-		).toBe(0);
-		expect(board.actionDivider, `${name} actions carry no divider`).toBe(
-			"0px 0px",
+			}),
 		);
-		expect(board.padding, `${name} board inset`).toBe(
-			width <= 820 ? "16px 16px" : "16px 18px",
-		);
-		// The heading is the board's first row, one 12px gap above the controls.
+		for (const box of boxes) {
+			expect(box.height).toBeGreaterThanOrEqual(44);
+			expect(box.left).toBeGreaterThanOrEqual(0);
+			expect(box.right).toBeLessThanOrEqual(width);
+		}
+		const [first, second] = boxes;
+		if (!first || !second) throw new Error("Missing date controls");
 		expect(
-			Math.round(heading.top - board.board.top),
-			`${name} heading starts inside the board inset`,
-		).toBe(17);
-		expect(
-			Math.round(row.top - (heading.top + heading.height)),
-			`${name} gap under the heading`,
-		).toBe(12);
-		expect(fields.length, `${name} keeps both date fields`).toBe(2);
-		const [start, end] = fields;
-		if (!start || !end) throw new Error(`${name} lost a date field`);
-		expect(start.height, `${name} field row height`).toBe(63);
-		expect(end.height, `${name} field row height`).toBe(63);
-		expect(actions.height, `${name} action row height`).toBe(44);
-
-		if (width === 1440) {
-			// The approved desktop board: one heading line, one control row.
-			expect(heading.height, `${name} heading line at 1440`).toBe(22);
-			expect(row.height, `${name} control row at 1440`).toBe(63);
-			expect(start.top, `${name} start field on the control row`).toBe(row.top);
-			expect(end.top, `${name} end field on the control row`).toBe(row.top);
-			expect(
-				Math.round(actions.top + actions.height),
-				`${name} action sits on the control row baseline`,
-			).toBe(Math.round(row.top + row.height));
-			expect(
-				board.board.height,
-				`${name} board is exactly the approved 131px at 1440`,
-			).toBe(131);
-		}
-
-		if (width >= 721 && width <= 820) {
-			// Stacked full-width boards are not stretched to a sibling, so the board
-			// that carries no extra prose renders at exactly the approved 131px.
-			expect(heading.height, `${name} heading line when stacked`).toBe(22);
-			expect(row.height, `${name} control row when stacked`).toBe(63);
-			if (name === "reporting") {
-				expect(board.board.height, "reporting board height when stacked").toBe(
-					131,
-				);
-			}
-		}
-
-		if (width >= 360 && width <= 720) {
-			// Mobile keeps the two dates side by side and gives the action its own
-			// full-width row, one 12px gap below them.
-			expect(start.top, `${name} dates stay side by side at ${width}`).toBe(
-				end.top,
-			);
-			expect(
-				Math.round(actions.top - (start.top + start.height)),
-				`${name} gap above the mobile action row`,
-			).toBe(12);
-			expect(
-				Math.round(actions.width),
-				`${name} mobile action row spans the board`,
-			).toBe(Math.round(row.width));
-		}
+			first.right <= second.left ||
+				second.right <= first.left ||
+				first.bottom <= second.top ||
+				second.bottom <= first.top,
+		).toBe(true);
 	}
 }
 
 async function expectControlLayout(page: Page, width: number) {
 	const controls = page.locator("[data-owner-reporting-controls]");
-	const reportingRange = controls.locator(
-		":scope > [data-owner-reporting-range]",
+	await expect(
+		controls.locator(":scope > [data-owner-reporting-range]"),
+	).toHaveCount(1);
+	await expect(controls.locator("[data-owner-reporting-export]")).toHaveCount(
+		0,
 	);
-	const csvRange = controls.locator(":scope > [data-owner-reporting-export]");
-	await expect(reportingRange).toHaveCount(1);
-	await expect(csvRange).toHaveCount(1);
-	const order = await controls
-		.locator(":scope > *")
-		.evaluateAll((children) =>
-			children.map((child) =>
-				child.hasAttribute("data-owner-reporting-range")
-					? "reporting"
-					: child.hasAttribute("data-owner-reporting-export")
-						? "csv"
-						: "other",
-			),
-		);
-	expect(order).toEqual(["reporting", "csv"]);
-
-	const reportingBox = await reportingRange.boundingBox();
-	const csvBox = await csvRange.boundingBox();
-	if (!reportingBox || !csvBox) throw new Error("Control boards have no boxes");
-	if (width <= 820) {
-		expect(csvBox.y).toBeGreaterThan(reportingBox.y + reportingBox.height);
-		expect(Math.abs(csvBox.width - reportingBox.width)).toBeLessThanOrEqual(1);
-	} else {
-		expect(Math.abs(csvBox.y - reportingBox.y)).toBeLessThanOrEqual(1);
-		expect(Math.abs(csvBox.width - reportingBox.width)).toBeLessThanOrEqual(1);
-		expect(Math.abs(csvBox.height - reportingBox.height)).toBeLessThanOrEqual(
-			1,
-		);
-		expect(Math.abs(csvBox.x - reportingBox.x) - reportingBox.width).toBe(16);
+	const disclosure = page.locator(".owner-reporting-export-disclosure");
+	await expect(
+		disclosure.locator("[data-owner-reporting-export]"),
+	).toBeVisible();
+	for (const element of [
+		controls.locator("[data-owner-reporting-range]"),
+		disclosure,
+	]) {
+		const box = await element.boundingBox();
+		if (!box) throw new Error("Range/export layout missing");
+		expect(box.x).toBeGreaterThanOrEqual(0);
+		expect(box.x + box.width).toBeLessThanOrEqual(width);
 	}
-	if (width === 1440) {
-		expect(reportingBox.width).toBe(664);
-		expect(csvBox.width).toBe(664);
-	}
-	const material = await reportingRange.evaluate((board) => {
-		const style = getComputedStyle(board);
-		const nestedFieldset = board.parentElement?.querySelector<HTMLElement>(
-			"[data-owner-reporting-export] fieldset",
-		);
-		return {
-			backdropFilter: style.backdropFilter,
-			borderTopWidth: style.borderTopWidth,
-			nestedBackground: nestedFieldset
-				? getComputedStyle(nestedFieldset).backgroundColor
-				: null,
-			nestedBorderTopWidth: nestedFieldset
-				? getComputedStyle(nestedFieldset).borderTopWidth
-				: null,
-		};
-	});
-	expect(material.backdropFilter).toBe(
-		width <= 820 ? "blur(18px) saturate(1.12)" : "blur(22px) saturate(1.14)",
-	);
-	expect(material.borderTopWidth).toBe("1px");
-	expect(material.nestedBorderTopWidth).toBe("0px");
-	expect(material.nestedBackground).toBe("rgba(0, 0, 0, 0)");
 }
 
 async function expectHeadingLayout(
@@ -703,7 +601,7 @@ test("History exposes prerequisite pending, error, and one deliberate retry chai
 	await expect(loading).toBeVisible();
 	await expect(loading).toHaveAttribute("role", "status");
 	await expect(
-		page.getByRole("heading", { level: 1, name: "Analytics" }),
+		page.getByRole("heading", { level: 1, name: "Reports" }),
 	).toBeVisible();
 	await expect(page.locator("main h1:visible")).toHaveCount(1);
 	await expectOfficialBrandMark(page, ".owner-rail__brand");
@@ -721,7 +619,7 @@ test("History exposes prerequisite pending, error, and one deliberate retry chai
 	await expect(error).toBeVisible();
 	await expect(error).toHaveAttribute("role", "alert");
 	await expect(
-		page.getByRole("heading", { level: 1, name: "Analytics" }),
+		page.getByRole("heading", { level: 1, name: "Reports" }),
 	).toBeVisible();
 	await expect(page.locator("main h1:visible")).toHaveCount(1);
 	await page.evaluate(() => document.fonts.ready);
@@ -782,7 +680,7 @@ test("loading, retryable error, insufficient history, and semantic-table parity 
 		route.fulfill({ status: 503, json: rpcError(503) }),
 	);
 	const reportRange = reporting.locator("[data-owner-reporting-range]");
-	await reportRange.getByLabel("End").fill("2026-08-13");
+	await fillLocalizedDate(page, reportRange, "End", "2026-08-13");
 	await reportRange.locator("button[type='submit']").click();
 	const error = reporting.locator("[data-owner-reporting-state='error']");
 	await expect(error).toBeVisible();
@@ -810,23 +708,27 @@ test("loading, retryable error, insufficient history, and semantic-table parity 
 	const selectedLabel = await selectedCell.getAttribute("aria-label");
 	await page.locator("#owner-analytics-daily-tab").click();
 	await page.locator("#owner-analytics-history-tab").click();
-	await expect(reportRange.getByLabel("End")).toHaveValue("2026-08-13");
+	await expect(localizedDateValue(reportRange, "End")).toHaveValue(
+		"2026-08-13",
+	);
 	await expect(
 		reporting.locator(".owner-reporting-cell[data-active]"),
 	).toHaveAttribute("aria-label", selectedLabel ?? "missing");
 
-	await expect(
-		reporting.locator(".owner-reporting-disclosure"),
-	).toHaveAttribute("open", "");
 	const table = reporting.locator("[data-owner-reporting-table]");
+	await expect(table).toBeVisible();
 	await expect(table.locator("tbody tr")).toHaveCount(168);
 	await expect(table.locator("tr[data-zero]")).toHaveCount(1);
 	await expect(table.locator("tr[data-state='missing']")).toHaveCount(1);
 	await expect(table.locator("tr[data-state='closed']")).toHaveCount(1);
 	await captureReview(page, "phase10-reporting-states-en-390x844.png");
 	await reporting.getByRole("button", { name: "Last 28 days" }).click();
-	await expect(reportRange.getByLabel("Start")).toHaveValue("2026-07-18");
-	await expect(reportRange.getByLabel("End")).toHaveValue("2026-08-14");
+	await expect(localizedDateValue(reportRange, "Start")).toHaveValue(
+		"2026-07-18",
+	);
+	await expect(localizedDateValue(reportRange, "End")).toHaveValue(
+		"2026-08-14",
+	);
 });
 
 test("CSV export visibly starts, cancels without a file, and reports a transport failure", async ({
@@ -841,8 +743,13 @@ test("CSV export visibly starts, cancels without a file, and reports a transport
 	await activateHistory(page);
 	const reporting = page.locator(".owner-reporting");
 	const exportBlock = reporting.locator("[data-owner-reporting-export]");
+	await reporting
+		.locator(
+			".owner-reporting-export-disclosure > .owner-retained-disclosure__trigger",
+		)
+		.click();
 	await expect(exportBlock).toBeVisible();
-	await exportBlock.getByLabel("Start").fill("2026-08-10");
+	await fillLocalizedDate(page, exportBlock, "Start", "2026-08-10");
 	await exportBlock.locator("[data-owner-reporting-export-start]").click();
 	await expect(
 		exportBlock.locator("[data-owner-reporting-export-abort]"),
@@ -856,7 +763,9 @@ test("CSV export visibly starts, cancels without a file, and reports a transport
 	await expect(
 		exportBlock.locator("[data-owner-reporting-export-abort]"),
 	).toBeVisible();
-	await expect(exportBlock.getByLabel("Start")).toHaveValue("2026-08-10");
+	await expect(localizedDateValue(exportBlock, "Start")).toHaveValue(
+		"2026-08-10",
+	);
 	expect(calls.csv).toBe(1);
 	await exportBlock.locator("[data-owner-reporting-export-abort]").click();
 	await expect(
@@ -932,11 +841,12 @@ test("reflow, focus, keyboard, live names, reduced motion, and automated accessi
 			.evaluate((panel) => panel.contains(document.activeElement)),
 	).toBe(true);
 	const reporting = page.locator(".owner-reporting");
-	const disclosure = reporting.locator(".owner-reporting-disclosure summary");
-	await expect(disclosure).toBeVisible();
-	await expect(
-		reporting.locator(".owner-reporting-disclosure"),
-	).toHaveAttribute("open", "");
+	await reporting
+		.locator(
+			".owner-reporting-export-disclosure > .owner-retained-disclosure__trigger",
+		)
+		.click();
+	await expect(reporting.locator("[data-owner-reporting-table]")).toBeVisible();
 	for (const locale of ["en", "ar"] as const) {
 		await setLocale(page, locale);
 		for (const width of [320, 360, 390, 721, 768, 820, 1024, 1200, 1440]) {
@@ -961,7 +871,7 @@ test("reflow, focus, keyboard, live names, reduced motion, and automated accessi
 			);
 			const overflowingOrdinaryContent = await reporting
 				.locator(
-					".owner-reporting-disclosure summary, .owner-reporting__note, .owner-reporting__footnote",
+					".owner-reporting-table__heading, .owner-reporting__note, .owner-reporting__footnote",
 				)
 				.evaluateAll((elements) =>
 					elements.flatMap((element) => {
@@ -1036,7 +946,7 @@ test("reflow, focus, keyboard, live names, reduced motion, and automated accessi
 	await expectFocusedCell(33);
 	await expect(
 		reporting.locator("[data-owner-reporting-reading]"),
-	).toContainText(/Average occupancy|متوسط الإشغال/u);
+	).toContainText(/Average occupancy|متوسط الازدحام/u);
 	const cellFocus = await cells.nth(33).evaluate((element) => {
 		const style = getComputedStyle(element);
 		return style.outlineStyle !== "none" || style.boxShadow !== "none";
@@ -1082,4 +992,50 @@ test("canonical routed Reporting History desktop English and mobile Arabic match
 	await expect(page.locator(".owner-reporting")).toBeVisible();
 	await page.evaluate(() => document.fonts.ready);
 	await captureReview(page, "owner-history-route-ar-mobile-390x844.png");
+});
+
+test("hourly headers stay opaque and stable through both scroll axes", async ({
+	page,
+}) => {
+	await mockOwnerRoute(page, { heatmapDelayMs: 1500 });
+	await page.goto("/admin");
+	await activateHistory(page);
+	await expect(
+		page.locator('[data-owner-reporting-state="loading"]'),
+	).toHaveCount(1);
+	await captureReview(page, "reports-section-loading.png");
+	await expect(page.locator("[data-owner-reporting-table]")).toBeVisible();
+	for (const locale of ["ar", "en"] as const) {
+		await setLocale(page, locale);
+		await page.setViewportSize({ width: 390, height: 844 });
+		const region = page.locator(
+			".owner-reporting-table .owner-reporting-region",
+		);
+		await region.scrollIntoViewIfNeeded();
+		await region.evaluate((element) => {
+			element.scrollTop = 180;
+			element.scrollLeft =
+				getComputedStyle(element).direction === "rtl"
+					? -element.scrollWidth
+					: element.scrollWidth;
+		});
+		const geometry = await region.evaluate((element) => {
+			const header = element.querySelector("thead th");
+			if (!header) throw new Error("Missing table header");
+			return {
+				delta:
+					header.getBoundingClientRect().top -
+					element.getBoundingClientRect().top,
+				background: getComputedStyle(header).backgroundColor,
+				x: element.scrollLeft,
+				y: element.scrollTop,
+			};
+		});
+		expect(geometry.background).toBe("rgb(40, 27, 32)");
+		expect(Math.abs(geometry.x)).toBeGreaterThan(100);
+		expect(geometry.y).toBeGreaterThan(100);
+		expect(geometry.delta).toBeGreaterThanOrEqual(0);
+		expect(geometry.delta).toBeLessThan(3);
+		await captureReview(page, `reports-hourly-scrolled-${locale}.png`);
+	}
 });

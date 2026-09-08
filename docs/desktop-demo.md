@@ -44,7 +44,7 @@ The shortest coherent owner story takes about ten minutes:
 2. **Staff:** open `/login`, sign in with the shared synthetic PIN, and show the monitoring-only
    operational view. Staff has no Management navigation and cannot open `/admin`.
 3. **Owner daily view:** run `pnpm demo:owner`; show today's populated occupancy curve, peak,
-   average, estimated entrance crossings, coverage, and the expandable minute history.
+   average, total entries, coverage, and the expandable minute history.
 4. **Reports:** move through the range summary, weekday/hour heatmap, week-over-week comparison,
    detailed history, and CSV export controls. The 28-day profile includes varied morning, lunch,
    evening, late-night, weekday, weekend, and missing-coverage patterns.
@@ -62,6 +62,10 @@ The seeded history ends at the most recent five-minute snapshot boundary. Rapid 
 same boundary reproduce the same non-secret fingerprint, while a later reset advances today's
 synthetic chart honestly instead of inserting future observations. The simulator begins near the
 same time-of-day curve so the handoff from seeded history to the changing live count is coherent.
+The demo opts into a mean-reverting simulator mode that follows that demand profile through
+synthetic arrivals and departures. It stays bounded during long walkthroughs; normal, rush,
+and exit-heavy protocol scenarios retain their existing behavior. A previously inflated saved
+demo count drains through recorded departures after restart, without rewriting its history.
 
 `reset` and `verify` request the owner password and staff PIN through PowerShell secure prompts;
 `owner` requests only the owner password.

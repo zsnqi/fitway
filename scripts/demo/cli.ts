@@ -25,6 +25,10 @@ import {
 	migrateDemoDatabase,
 	seedDemo,
 } from "./seed";
+import {
+	formatDemoTextUpdate,
+	updateDemoPresentationText,
+} from "./text-update";
 
 const workspace = path.resolve(
 	path.dirname(fileURLToPath(import.meta.url)),
@@ -55,6 +59,8 @@ type Action =
 	| "status"
 	| "verify"
 	| "owner"
+	| "text-preview"
+	| "text-apply"
 	| "stop"
 	| "clean";
 
@@ -446,7 +452,7 @@ async function start() {
 				"--seed",
 				`${demoSimulatorSeed(profile.businessDay)}`,
 				"--mode",
-				"normal",
+				"demo",
 			],
 			environment,
 		),
@@ -668,12 +674,14 @@ if (
 		"status",
 		"verify",
 		"owner",
+		"text-preview",
+		"text-apply",
 		"stop",
 		"clean",
 	].includes(action)
 )
 	throw new Error(
-		"Usage: scripts/demo.ps1 <prepare|reset|start|status|verify|owner|stop|clean>",
+		"Usage: scripts/demo.ps1 <prepare|reset|start|status|verify|owner|text-preview|text-apply|stop|clean>",
 	);
 if (action === "prepare") {
 	if (!existsSync(path.join(workspace, "node_modules")))
@@ -704,7 +712,12 @@ else if (action === "start") await start();
 else if (action === "status") await status();
 else if (action === "verify") await verify();
 else if (action === "owner") await openOwner();
-else if (action === "stop") {
+else if (action === "text-preview" || action === "text-apply") {
+	const result = await updateDemoPresentationText({
+		mode: action === "text-preview" ? "preview" : "apply",
+	});
+	console.log(formatDemoTextUpdate(result));
+} else if (action === "stop") {
 	await requestStop();
 	await compose(["stop", "postgres"]);
 	console.log(

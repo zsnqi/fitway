@@ -163,7 +163,7 @@ export function toAuditFilters(
 }
 
 export type OwnerAuditResult = {
-	/** `unavailable` means the gym timezone is not resolved, so no row can be dated. */
+	/** `unavailable` is retained for compatibility; pending/error identify the prerequisite. */
 	status: "unavailable" | "pending" | "error" | "success";
 	entries: AuditEntryView[];
 	timeZone: string | null;
@@ -182,9 +182,9 @@ export type OwnerAuditResult = {
  * the audit section issues no request beyond `admin.audit.list` and leaves the
  * request behaviour of the Phase 9 surface exactly as it was.
  *
- * While that shared query is pending or failed the section is `unavailable` and
- * renders nothing: no row can be dated without the gym timezone, and `/admin`
- * already carries one louder live region and one retry for that same cause.
+ * While that shared query is pending or failed, this hook exposes that state to
+ * the selected Activity Log section. The section keeps its own heading and uses
+ * the shared query's retry without issuing a second timezone request.
  *
  * Every page is validated against the shared transport schema, so a malformed row
  * surfaces as an error instead of rendering as a plausible-looking audit record.
@@ -214,7 +214,9 @@ export function useOwnerAudit(
 
 	const status: OwnerAuditResult["status"] =
 		timeZone === null
-			? "unavailable"
+			? analytics.isError
+				? "error"
+				: "pending"
 			: history.isError
 				? "error"
 				: history.isPending
@@ -228,6 +230,7 @@ export function useOwnerAudit(
 		hasNextPage: history.hasNextPage,
 		isFetchingNextPage: history.isFetchingNextPage,
 		fetchNextPage: () => void history.fetchNextPage(),
-		retry: () => void history.refetch(),
+		retry: () =>
+			void (timeZone === null ? analytics.refetch() : history.refetch()),
 	};
 }

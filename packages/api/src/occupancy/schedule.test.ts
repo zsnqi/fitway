@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+	createScheduleEvaluator,
 	type DailyHours,
 	evaluateSchedule,
 	type ScheduleSettings,
@@ -34,11 +35,23 @@ function closedWeek(): Record<Weekday, DailyHours | null> {
 	};
 }
 
-function resultAt(settings: ScheduleSettings, instant: string) {
-	return evaluateSchedule(settings, new Date(instant));
-}
-
-describe("weekly schedule evaluation", () => {
+describe.each([
+	"direct",
+	"request snapshot",
+])("weekly schedule evaluation: %s", (mode) => {
+	const evaluators = new WeakMap<
+		ScheduleSettings,
+		ReturnType<typeof createScheduleEvaluator>
+	>();
+	function resultAt(settings: ScheduleSettings, instant: string) {
+		if (mode === "direct") return evaluateSchedule(settings, new Date(instant));
+		let evaluate = evaluators.get(settings);
+		if (!evaluate) {
+			evaluate = createScheduleEvaluator(settings);
+			evaluators.set(settings, evaluate);
+		}
+		return evaluate(new Date(instant));
+	}
 	it("uses half-open boundaries and handles a past-midnight session", () => {
 		expect(resultAt(riyadh, "2026-07-15T02:59:59.999Z")).toEqual({
 			open: false,
@@ -264,5 +277,25 @@ describe("weekly schedule evaluation", () => {
 				"2026-07-17T12:00:00.000Z",
 			),
 		).toThrow(/Schedule time/u);
+	});
+});
+
+it("keeps a request snapshot isolated from settings and returned-Date mutation", () => {
+	const hours = closedWeek();
+	hours.mon = { open: "06:00", close: "08:00" };
+	const settings = { timeZone: "UTC", weeklySchedule: hours };
+	const evaluate = createScheduleEvaluator(settings);
+	const instant = new Date("2026-07-20T05:00:00Z");
+	const first = evaluate(instant);
+	if (!first.open) first.nextOpenAt?.setUTCFullYear(2000);
+	hours.mon.open = "07:00";
+	expect(evaluate(instant)).toEqual({
+		open: false,
+		nextOpenAt: new Date("2026-07-20T06:00:00Z"),
+	});
+	expect(evaluate(new Date("2026-07-20T06:30:00Z"))).toEqual({ open: true });
+	expect(createScheduleEvaluator(settings)(instant)).toEqual({
+		open: false,
+		nextOpenAt: new Date("2026-07-20T07:00:00Z"),
 	});
 });

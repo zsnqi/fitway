@@ -190,16 +190,17 @@ test("owner curve preserves exact states, historical timezones, and RTL/LTR inte
 		page.locator(".owner-chart__closed, .owner-chart__missing"),
 	).toHaveCount(0);
 	// Both one-minute gaps keep honest stems but earn no dimension hardware.
-	await expect(page.locator(".owner-chart__gap-stem")).toHaveCount(4);
+	await expect(page.locator(".owner-chart__gap-stem")).toHaveCount(0);
 	await expect(page.locator(".owner-chart__gap-bracket")).toHaveCount(0);
 	await expect(page.locator(".owner-chart__gap-tick")).toHaveCount(0);
 	await expect(page.locator(".owner-chart__gap-label")).toHaveCount(0);
 	// Human decision 2026-09-05: no zero-square marker. The genuine zero
 	// stays truthful through the line at zero plus the Observed table row.
 	await expect(page.locator(".owner-chart__zero")).toHaveCount(0);
-	// Completed day (2026-07-21), pristine selection: ring on the peak with
-	// no stem, no Latest label, and no selected readout — Paper's closed
-	// treatment.
+	await expect(page.locator(".owner-chart-y-axis")).toHaveCount(0);
+	// Completed day (2026-07-21), pristine selection: no false current
+	// identity, no stem, no Latest label, and no selected readout.
+	await expect(page.locator(".owner-chart__active")).toHaveCount(0);
 	await expect(page.locator(".owner-chart__stem")).toHaveCount(0);
 	await expect(page.locator(".owner-chart__latest")).toHaveCount(0);
 	await expect(page.locator(".owner-chart-tip")).toHaveCount(0);
@@ -207,24 +208,26 @@ test("owner curve preserves exact states, historical timezones, and RTL/LTR inte
 	// peak is a lone reading hidden behind its own ring (the HTML core
 	// marks it), so only the two connected runs stroke lines and no
 	// solo dot remains.
-	await expect(page.locator(".owner-chart__line")).toHaveCount(2);
-	await expect(page.locator(".owner-chart__solo")).toHaveCount(0);
+	await expect(page.locator(".owner-chart__line")).toHaveCount(3);
+	await expect(page.locator(".owner-chart__solo")).toHaveCount(1);
 	await expect(page.locator(".owner-chart__line[data-trimmed]")).toHaveCount(0);
 	await expect(page.locator(".owner-table-disclosure")).toContainText(
-		"تغطية الرصد",
+		"نسبة الوقت الذي توفرت فيه قراءات",
 	);
 	await expect(page.locator("body")).not.toContainText(/[٠-٩]/u);
 
 	const chart = page.locator("[data-owner-chart]");
 	await expect(chart).toBeVisible();
-	const rtlX = Number(
-		await page.locator(".owner-chart__active").getAttribute("data-chart-x"),
-	);
-	expect(rtlX).toBeLessThan(600);
 	await chart.focus();
 	await expect(chart).toBeFocused();
 	await page.keyboard.press("ArrowRight");
 	await expect(page.locator("[data-active-reading]")).toContainText("46");
+	const rtlX = Number(
+		await page
+			.locator(".owner-chart__active--inspected")
+			.getAttribute("data-chart-x"),
+	);
+	expect(rtlX).toBeLessThan(600);
 	// First explicit selection exposes Paper's visible readout: stem plus a
 	// tooltip card with the reading time and approximate count.
 	await expect(page.locator(".owner-chart__stem")).toHaveCount(1);
@@ -249,7 +252,9 @@ test("owner curve preserves exact states, historical timezones, and RTL/LTR inte
 		await page.locator(".owner-chart__active").getAttribute("data-chart-x"),
 	);
 
-	await page.locator("summary").click();
+	await page
+		.locator(".owner-table-disclosure > .owner-retained-disclosure__trigger")
+		.click();
 	await expect(
 		page.getByRole("region", { name: "بيانات التحليلات لكل دقيقة" }),
 	).toBeVisible();
@@ -273,98 +278,32 @@ test("owner curve preserves exact states, historical timezones, and RTL/LTR inte
 	await page.keyboard.press("Home");
 	await page.keyboard.press("ArrowRight");
 	await expect(page.locator("[data-active-reading]")).toContainText("8");
-	// The 8 ends its run (one trimmed side); the middle 31 of run
-	// [18, 31, 46] is interior, so both sides trim to the ring.
+	const geometry = await page
+		.locator(".owner-chart__line")
+		.evaluateAll((lines) => lines.map((line) => line.getAttribute("d")));
 	await page.keyboard.press("ArrowRight");
 	await page.keyboard.press("ArrowRight");
 	await expect(page.locator("[data-active-reading]")).toContainText("31");
-	await expect(
-		page.locator('.owner-chart__line[data-trimmed="left"]'),
-	).toHaveCount(1);
-	await expect(
-		page.locator('.owner-chart__line[data-trimmed="right"]'),
-	).toHaveCount(1);
-	// No stroked line coordinate may reach the marker center: parse every
-	// trimmed and untrimmed path and require daylight around the ring.
-	const clearance = await page.evaluate(() => {
-		const marker = document.querySelector<HTMLElement>(".owner-chart__active");
-		const svg = document.querySelector(".owner-chart");
-		if (!marker || !svg) throw new Error("Owner chart is missing");
-		const plot = svg.getBoundingClientRect();
-		const box = marker.getBoundingClientRect();
-		const center = {
-			x: box.x + box.width / 2,
-			y: box.y + box.height / 2,
-		};
-		const toScreen = (viewX: number, viewY: number) => ({
-			x: plot.x + (viewX / 1200) * plot.width,
-			y: plot.y + (viewY / 240) * plot.height,
-		});
-		let closest = Number.POSITIVE_INFINITY;
-		for (const line of document.querySelectorAll(".owner-chart__line")) {
-			const pairs = [
-				...(line.getAttribute("d") ?? "").matchAll(/(-?[\d.]+),(-?[\d.]+)/g),
-			];
-			for (const pair of pairs) {
-				const screen = toScreen(Number(pair[1]), Number(pair[2]));
-				closest = Math.min(
-					closest,
-					Math.hypot(screen.x - center.x, screen.y - center.y),
-				);
-			}
-		}
-		const stem = document.querySelector(".owner-chart__stem");
-		const stemTop = stem ? Number(stem.getAttribute("y1")) : null;
-		const stemScreen =
-			stemTop === null ? null : toScreen(0, stemTop).y - toScreen(0, 0).y;
+	expect(
+		await page
+			.locator(".owner-chart__line")
+			.evaluateAll((lines) => lines.map((line) => line.getAttribute("d"))),
+	).toEqual(geometry);
+	const cutout = await page.locator("mask ellipse").evaluate((ellipse) => {
+		const svg = ellipse.closest("svg");
+		if (!svg) throw new Error("Chart SVG missing");
+		const box = svg.getBoundingClientRect();
 		return {
-			closest,
-			markerRadius: box.width / 2,
-			stemGap:
-				stemScreen === null ? null : stemScreen - (center.y - toScreen(0, 0).y),
+			rx: (Number(ellipse.getAttribute("rx")) / 1200) * box.width,
+			ry: (Number(ellipse.getAttribute("ry")) / 240) * box.height,
 		};
 	});
-	// The closest line coordinate stays outside the ring (2px tolerance
-	// covers antialiasing); the stem resumes at the ring's bottom edge.
-	expect(clearance.closest).toBeGreaterThan(clearance.markerRadius - 2);
-	if (clearance.stemGap !== null) {
-		expect(clearance.stemGap).toBeGreaterThanOrEqual(
-			clearance.markerRadius - 3,
-		);
-		expect(clearance.stemGap).toBeLessThanOrEqual(clearance.markerRadius + 3);
-	}
-	// Paint-level junction (Paper outer-edge treatment): trimmed sides meet
-	// the ring with butt caps on straight radial tips, so no round cap or
-	// smoothing bow paints past the outer edge toward the core. The active
-	// stem likewise starts with a butt cap on the ring edge.
-	const junction = await page.evaluate(() => {
-		const capOf = (selector: string) => {
-			const element = document.querySelector(selector);
-			return element ? getComputedStyle(element).strokeLinecap : null;
-		};
-		const left = document.querySelector(
-			'.owner-chart__line[data-trimmed="left"]',
-		);
-		const right = document.querySelector(
-			'.owner-chart__line[data-trimmed="right"]',
-		);
-		return {
-			leftCap: capOf('.owner-chart__line[data-trimmed="left"]'),
-			rightCap: capOf('.owner-chart__line[data-trimmed="right"]'),
-			stemCap: capOf(".owner-chart__stem"),
-			leftD: left?.getAttribute("d") ?? "",
-			rightD: right?.getAttribute("d") ?? "",
-		};
-	});
-	expect(junction.leftCap).toBe("butt");
-	expect(junction.rightCap).toBe("butt");
-	if (junction.stemCap !== null) expect(junction.stemCap).toBe("butt");
-	expect(junction.leftD.trimEnd()).toMatch(/L-?[\d.]+,-?[\d.]+$/);
-	expect(junction.rightD).toMatch(/^M-?[\d.]+,-?[\d.]+ L-?[\d.]+,-?[\d.]+/);
+	expect(cutout.rx).toBeCloseTo(10, 0);
+	expect(cutout.ry).toBeCloseTo(10, 0);
 	await captureReview(page, "owner-analytics-en-1440.png");
 });
 
-test("half-hour hover dismisses on leave while exact peaks and zero gaps remain truthful", async ({
+test("overview hover dismisses on leave while exact peaks and zero gaps remain truthful", async ({
 	page,
 }) => {
 	const timeline = Array.from({ length: 121 }, (_, index) => {
@@ -431,7 +370,7 @@ test("half-hour hover dismisses on leave while exact peaks and zero gaps remain 
 				),
 			),
 		);
-	expect(ticks).toEqual([5, 5]);
+	expect(ticks).toEqual([]);
 	for (const locale of ["ar", "en"]) {
 		if (locale === "en")
 			await page
@@ -450,31 +389,87 @@ test("half-hour hover dismisses on leave while exact peaks and zero gaps remain 
 		await expect(page.locator("[data-selected-reading]")).toContainText("7:30");
 		await hover(36);
 		await expect(page.locator("[data-selected-reading]")).toContainText("7:30");
+		await hover(61);
+		await expect(page.locator(".owner-chart__active")).toHaveCount(0);
+		await expect(page.locator("[data-selected-reading]")).toHaveCount(0);
+		await expect(page.locator(".owner-chart__stem")).toHaveCount(0);
+		await hover(36);
+		await expect(page.locator("[data-selected-reading]")).toContainText("7:30");
 		await page.mouse.move(0, 0);
 		await expect(page.locator("[data-selected-reading]")).toHaveCount(0);
 		await chart.focus();
 		await page.keyboard.press("Home");
-		await page.keyboard.press(locale === "ar" ? "ArrowLeft" : "ArrowRight");
 		await hover(100);
+		await expect(page.locator("[data-selected-reading]")).toContainText("100");
 		await page.mouse.move(0, 0);
-		await expect(page.locator("[data-selected-reading]")).toContainText("7:30");
+		await expect(page.locator("[data-selected-reading]")).toContainText("7:00");
 		await page.keyboard.press("Escape");
 		await expect(page.locator("[data-selected-reading]")).toHaveCount(0);
 	}
-	await page.locator(".owner-table-disclosure summary").click();
-	await expect(page.locator(".owner-table-region tbody tr")).toHaveCount(121);
+	await expect(page.locator(".owner-table-region tbody tr")).toHaveCount(0);
+	await page
+		.locator(".owner-table-disclosure > .owner-retained-disclosure__trigger")
+		.click();
+	await expect(page.locator(".owner-table-region tbody tr")).toHaveCount(60);
+	await page.getByRole("button", { name: "Next 60 minutes" }).click();
+	await expect(page.locator(".owner-table-region tbody tr")).toHaveCount(60);
+	await page.getByRole("button", { name: "Next 60 minutes" }).click();
+	await expect(page.locator(".owner-table-region tbody tr")).toHaveCount(1);
+	await page.locator("#owner-analytics-history-tab").click();
+	await page.locator("#owner-analytics-daily-tab").click();
+	await expect(page.locator(".owner-table-disclosure")).toHaveAttribute(
+		"data-open",
+		"",
+	);
+	await expect(page.locator(".owner-table-region tbody tr")).toHaveCount(1);
+});
+
+test("metric glyphs remain unobscured in forced colors at mobile and tablet widths", async ({
+	page,
+}) => {
+	await mockOwnerAnalytics(page);
+	await page.emulateMedia({ forcedColors: "active" });
+	await page.goto("/admin");
+	await expect(page.locator(".owner-metric")).toHaveCount(3);
+	await page.evaluate(() => document.fonts.ready);
+	for (const locale of ["ar", "en"]) {
+		if (locale === "en")
+			await page
+				.getByRole("button", { name: "التبديل إلى اللغة الإنجليزية" })
+				.click();
+		for (const width of [320, 390, 640, 768]) {
+			await page.setViewportSize({ width, height: 900 });
+			const obscured = await page
+				.locator(".owner-metric")
+				.evaluateAll((elements) =>
+					elements.flatMap((element) => {
+						const heading = element.querySelector(".owner-metric__heading");
+						const value = element.querySelector("strong");
+						if (!heading || !value) return ["missing metric content"];
+						const range = document.createRange();
+						range.selectNodeContents(heading);
+						return range.getBoundingClientRect().bottom >
+							value.getBoundingClientRect().top
+							? [heading.textContent]
+							: [];
+					}),
+				);
+			expect(
+				obscured,
+				`${locale} ${width}px glyph paint must not run under the value backplate`,
+			).toEqual([]);
+			await captureReview(page, `daily-forced-${locale}-${width}.png`);
+		}
+	}
 });
 
 test("latest-day captions stay associated with their points and the section row stays transparent", async ({
 	page,
 }) => {
-	const todayNewYork = new Intl.DateTimeFormat("en-CA", {
-		timeZone: "America/New_York",
-		year: "numeric",
-		month: "2-digit",
-		day: "2-digit",
-	}).format(new Date());
-	await mockOwnerAnalytics(page, { ...mixedDaily, businessDay: todayNewYork });
+	// Keep the current gym day deterministic even when London and New York
+	// are on different civil dates; bucket labels retain their historical zones.
+	await page.clock.setFixedTime(new Date("2026-07-21T12:00:00.000Z"));
+	await mockOwnerAnalytics(page);
 
 	for (const viewport of [
 		{ width: 390, height: 844 },
@@ -612,6 +607,9 @@ test("both locales recompose without page overflow at every required width and p
 }) => {
 	await mockOwnerAnalytics(page);
 	await page.goto("/admin");
+	const chart = page.locator("[data-owner-chart]");
+	await chart.focus();
+	await page.keyboard.press("Home");
 	const widths = [320, 360, 390, 721, 768, 820, 1024, 1200, 1440];
 	for (const locale of ["ar", "en"] as const) {
 		if (locale === "en") {
@@ -622,7 +620,7 @@ test("both locales recompose without page overflow at every required width and p
 		for (const width of widths) {
 			await page.setViewportSize({ width, height: width <= 390 ? 844 : 900 });
 			await expect(page.locator("[data-owner-chart]")).toBeVisible();
-			const marker = page.locator(".owner-chart__active");
+			const marker = page.locator(".owner-chart__active--inspected");
 			const markerBox = await marker.boundingBox();
 			expect(markerBox?.width).toBe(markerBox?.height);
 			// Paper ring anatomy: 20px desktop, 18px mobile, hollow field.
@@ -631,7 +629,7 @@ test("both locales recompose without page overflow at every required width and p
 				await marker.evaluate(
 					(element) => getComputedStyle(element).borderColor,
 				),
-			).toBe("rgb(229, 25, 53)");
+			).toBe("rgb(245, 243, 242)");
 			expect(
 				await marker.evaluate(
 					(element) => getComputedStyle(element).backgroundColor,
@@ -677,11 +675,7 @@ test("both locales recompose without page overflow at every required width and p
 			// computed display, not visibility.
 			await expect(page.locator(".owner-chart__gap-bracket")).toHaveCount(0);
 			await expect(page.locator(".owner-chart__gap-label")).toHaveCount(0);
-			const gapStemDisplay = await page
-				.locator(".owner-chart__gap-stem")
-				.first()
-				.evaluate((element) => getComputedStyle(element).display);
-			expect(gapStemDisplay).not.toBe("none");
+			await expect(page.locator(".owner-chart__gap-stem")).toHaveCount(0);
 
 			const overflow = await page.evaluate(
 				() =>
@@ -963,13 +957,16 @@ test("keyboard order, practical targets, reduced motion, and 200% reflow remain 
 	await page.keyboard.press("ArrowRight");
 	await expect(page.locator("[data-active-reading]")).toContainText("46");
 
-	await page.locator("summary").focus();
-	await expect(page.locator("summary")).toBeFocused();
+	const minuteDetailTrigger = page.locator(
+		".owner-table-disclosure > .owner-retained-disclosure__trigger",
+	);
+	await minuteDetailTrigger.focus();
+	await expect(minuteDetailTrigger).toBeFocused();
 	for (const locator of [
 		page.getByRole("button", { name: "التبديل إلى اللغة الإنجليزية" }),
 		page.getByRole("button", { name: "تسجيل الخروج" }),
 		chart,
-		page.locator("summary"),
+		minuteDetailTrigger,
 	]) {
 		const box = await locator.boundingBox();
 		expect(box?.height).toBeGreaterThanOrEqual(44);

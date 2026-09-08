@@ -77,15 +77,23 @@ export function deliveryLabel(
 	const parts: string[] = [];
 	if (value.delivered > 0) {
 		parts.push(
-			`${formatNumber(value.delivered, locale)} ${messages.delivered}`,
+			messages.deliveredSummary(
+				value.delivered,
+				formatNumber(value.delivered, locale),
+			),
 		);
 	}
 	if (value.failed > 0) {
-		parts.push(`${formatNumber(value.failed, locale)} ${messages.failed}`);
+		parts.push(
+			messages.failedSummary(value.failed, formatNumber(value.failed, locale)),
+		);
 	}
 	if (value.unconfirmed > 0) {
 		parts.push(
-			`${formatNumber(value.unconfirmed, locale)} ${messages.unconfirmed}`,
+			messages.unconfirmedSummary(
+				value.unconfirmed,
+				formatNumber(value.unconfirmed, locale),
+			),
 		);
 	}
 	return parts.length === 0 ? messages.none : parts.join(" · ");
@@ -168,7 +176,10 @@ export function OwnerHealthMetrics({
 				label={messages.noticesLabel}
 				value={formatNumber(alerts.noticeCount, locale)}
 				detail={[
-					`${formatNumber(alerts.noticeCount, locale)} ${messages.noticesOf}`,
+					messages.noticesSummary(
+						alerts.noticeCount,
+						formatNumber(alerts.noticeCount, locale),
+					),
 					alerts.noticeCount === 0
 						? null
 						: deliveryLabel(alerts, locale, messages),
@@ -406,7 +417,7 @@ function StateCard({
 		>
 			{icon}
 			<div>
-				<h3>{title}</h3>
+				<h2>{title}</h2>
 				<p>{description}</p>
 			</div>
 			{action}

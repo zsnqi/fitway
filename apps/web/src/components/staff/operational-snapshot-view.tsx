@@ -2,7 +2,6 @@ import type { OperationalSnapshot } from "@fitway/api/health/snapshot";
 import type { CSSProperties } from "react";
 
 import { CrowdSignal } from "@/components/crowd-signal";
-import { CROWD_SIGNAL_LINEAR_HEIGHTS } from "@/components/crowd-signal-ramp";
 import type { StaffWebMessages } from "@/components/staff/messages";
 import { useStaffMessages } from "@/hooks/use-staff-messages";
 import { formatGymTime, formatNumber, formatRelativeTime } from "@/i18n/format";
@@ -355,7 +354,6 @@ export function OperationalSnapshotView({ snapshot }: SnapshotViewProps) {
 								band={occupancy.band}
 								className="sboard__signal"
 								showFooter={false}
-								ramp={CROWD_SIGNAL_LINEAR_HEIGHTS}
 							/>
 						</>
 					) : variant === "closed" ? (

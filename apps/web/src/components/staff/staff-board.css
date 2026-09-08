@@ -410,6 +410,8 @@
 	align-items: center;
 	flex-wrap: wrap;
 	gap: 10px;
+	inline-size: fit-content;
+	max-inline-size: 100%;
 	margin: 0;
 	/*
 	 * Small optical echo of the Public board's separated freshness row: the
@@ -604,9 +606,15 @@
 
 /* ---- Crowd instrument, staff geometry ---------------------------------- */
 
-/* The public board's own rule set stays exactly as it is; only the staff
-   surface re-expresses the geometry Paper draws for this board. */
+/* Both public and staff use the same explicit 6/5/8/9 track geometry. The
+   staff board changes only scale tokens required by its composition. */
 .public-live__signal.sboard__signal {
+	--crowd-bar-gap: var(--sb-bar-gap);
+	--crowd-caption-gap: var(--sb-signal-gap);
+	--crowd-caption-line: var(--sb-caption-line);
+	--crowd-caption-size: var(--sb-caption-size);
+	--crowd-group-extra: var(--sb-group-extra);
+	--crowd-wave-height: var(--sb-wave-height);
 	margin: 0;
 	padding: 0;
 	padding-block-start: 6px;
@@ -614,63 +622,16 @@
 }
 
 .sboard__signal .public-live__signal-caption {
-	display: flex;
-	justify-content: space-between;
-	gap: 12px;
-	margin-block-end: var(--sb-signal-gap);
-	font-size: var(--sb-caption-size);
-	font-weight: 600;
 	letter-spacing: 0.04em;
-	line-height: var(--sb-caption-line);
 }
 
 [dir="rtl"] .sboard__signal .public-live__signal-caption {
 	letter-spacing: 0.02em;
 }
 
-/* Paper sets all four captions at 600 and distinguishes the current one by tint
-   alone; the public board bolds it, which this surface does not inherit. */
-.sboard__signal .public-live__signal-caption > [data-current="true"] {
-	font-weight: 600;
-}
-
-.sboard__signal .public-live__signal-caption > * {
-	flex: none;
-	min-inline-size: 0;
-	overflow-wrap: anywhere;
-}
-
-/* Three zero-width tracks split the ramp into its 6/5/8/9 bands, so the group
-   separation is exactly twice the bar gap and every bar keeps one width. */
-.sboard__signal .public-live__signal-wave {
-	grid-template-columns:
-		repeat(6, minmax(0, 1fr)) var(--sb-group-extra)
-		repeat(5, minmax(0, 1fr)) var(--sb-group-extra)
-		repeat(8, minmax(0, 1fr)) var(--sb-group-extra)
-		repeat(9, minmax(0, 1fr));
-	gap: var(--sb-bar-gap);
-	block-size: var(--sb-wave-height);
-}
-
-.sboard__signal .public-live__signal-wave::before {
-	content: none;
-}
-
 .sboard__signal .public-live__signal-bar {
 	min-block-size: 0;
 	border-radius: 2px;
-}
-
-.sboard__signal .public-live__signal-bar:nth-child(7) {
-	grid-column-start: 8;
-}
-
-.sboard__signal .public-live__signal-bar:nth-child(12) {
-	grid-column-start: 14;
-}
-
-.sboard__signal .public-live__signal-bar:nth-child(20) {
-	grid-column-start: 23;
 }
 
 /* The cap sits flush at the top of the tallest bar of the current band, which

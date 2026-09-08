@@ -16,7 +16,7 @@ import signal
 import sys
 import tempfile
 import time
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 from urllib import error, request
@@ -96,6 +96,38 @@ def save_state(path: Path, state: dict[str, Any]) -> None:
             os.unlink(temporary)
 
 
+def demo_flow(rng: random.Random, count: int, observed: datetime) -> tuple[int, int]:
+    """Demo-only mean-reverting flow; normal/rush contract fixtures stay unchanged.
+
+    Follow the local demo's Riyadh demand profile using synthetic crossings,
+    never by replacing a count or rewriting a previously recorded minute.
+    """
+    local = observed.astimezone(timezone(timedelta(hours=3)))
+    business_date = (local - timedelta(hours=4)).date()
+    hour = local.hour + local.minute / 60
+    weekend = business_date.weekday() in (4, 5)
+    day_number = (business_date - datetime(1970, 1, 1).date()).days
+    seed = 20260901
+    def peak(center: float, width: float, amplitude: float) -> float:
+        direct = abs(hour - center)
+        distance = min(direct, 24 - direct)
+        return amplitude * math.exp(-(distance * distance) / (2 * width * width))
+    minute = math.floor(observed.timestamp() / 60)
+    texture = math.sin((minute + seed) * .17) * 1.8 + math.sin((minute + seed * 3) * .047) * 1.2
+    demand = (5 + peak(7.25, 1.2, 22 if weekend else 34)
+              + peak(13, 1.65, 17 if weekend else 23)
+              + peak(20.25 if weekend else 19.25, 2.15, 68 if weekend else 60)
+              + peak(23.25, 1.9, 16 if weekend else 11)) * (.92 + ((day_number + seed) % 9) * .02)
+    target = max(2, min(120, math.floor(demand + texture + .5)))
+    # Small turnover remains visible at equilibrium. An old runaway demo
+    # count drains through explicit departures, at most eight net per sample.
+    turnover = rng.choices([0, 1, 2], weights=[60, 35, 5])[0]
+    delta = max(-8, min(3, target - count))
+    entries = turnover + max(0, delta)
+    exits = min(count, turnover + max(0, -delta))
+    return entries, exits
+
+
 def record_sample(
     state: dict[str, Any],
     rng: random.Random,
@@ -114,7 +146,8 @@ def record_sample(
         state["entries"] = 0
         state["exits"] = 0
     state["minute"] = minute
-    entries, exits = next_flow(rng, mode, state["count"])
+    entries, exits = (demo_flow(rng, state["count"], observed) if mode == "demo"
+                      else next_flow(rng, mode, state["count"]))
     state["entries"] += entries
     state["exits"] += exits
     state["count"] = max(0, state["count"] + entries - exits)
@@ -299,7 +332,7 @@ def parser() -> argparse.ArgumentParser:
     value.add_argument("--seed", type=int, default=42)
     value.add_argument("--starting-count", type=int, default=0)
     value.add_argument("--state-file", default=".local/edge-simulator-state.json")
-    value.add_argument("--mode", choices=["normal", "rush", "exit-heavy"], default="normal")
+    value.add_argument("--mode", choices=["normal", "rush", "exit-heavy", "demo"], default="normal")
     for name in ("process", "camera", "feed"):
         value.add_argument(
             f"--health-{name}",

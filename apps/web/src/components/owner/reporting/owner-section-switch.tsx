@@ -21,6 +21,24 @@ type OwnerSection =
 	| "health"
 	| "settings";
 
+type OwnerSectionTransition = {
+	id: number;
+	source: OwnerSection;
+	destination: OwnerSection;
+	desiredScroll: number;
+	capturedDocumentHeight: number;
+	capturedContainerHeight: number;
+	firstVisit: boolean;
+	cancelled: boolean;
+};
+
+type OwnerSectionNavigation = {
+	selected: OwnerSection;
+	transition: OwnerSectionTransition | null;
+};
+
+const SETTLEMENT_WINDOW_MS = 180;
+
 const sectionOrder: readonly OwnerSection[] = [
 	"daily",
 	"history",
@@ -80,20 +98,29 @@ type OwnerSectionRenderers = Record<
 export function OwnerSectionSwitch(props: OwnerSectionRenderers) {
 	const { locale } = useI18n();
 	const prerequisite = useOwnerDailyAnalytics();
-	const [selected, setSelected] = useState<OwnerSection>("daily");
+	const [navigation, setNavigation] = useState<OwnerSectionNavigation>({
+		selected: "daily",
+		transition: null,
+	});
 	const [visited, setVisited] = useState<ReadonlySet<OwnerSection>>(
 		() => new Set(["daily"]),
 	);
 	const tabRefs = useRef<Partial<Record<OwnerSection, HTMLButtonElement>>>({});
+	const panelRefs = useRef<Partial<Record<OwnerSection, HTMLDivElement>>>({});
 	const containerRef = useRef<HTMLDivElement>(null);
 	const tablistRef = useRef<HTMLDivElement>(null);
+	const selectedRef = useRef<OwnerSection>("daily");
+	const visitedRef = useRef<ReadonlySet<OwnerSection>>(new Set(["daily"]));
+	const scrollBySectionRef = useRef<Partial<Record<OwnerSection, number>>>({});
+	const nextTransitionIdRef = useRef(0);
+	const activeTransitionRef = useRef<OwnerSectionTransition | null>(null);
+	const cancelRestorationRef = useRef<(() => void) | null>(null);
+	const selected = navigation.selected;
 	const copy = labels[locale];
-	const prerequisiteUnavailable =
-		!prerequisite.data && (prerequisite.isPending || prerequisite.isError);
 
-	const revealSelectedTab = useCallback(() => {
+	const revealTab = useCallback((section: OwnerSection) => {
 		const tablist = tablistRef.current;
-		const tab = tabRefs.current[selected];
+		const tab = tabRefs.current[section];
 		if (!tablist || !tab) return;
 		const rowBox = tablist.getBoundingClientRect();
 		const tabBox = tab.getBoundingClientRect();
@@ -106,7 +133,11 @@ export function OwnerSectionSwitch(props: OwnerSectionRenderers) {
 		const scale =
 			tablist.offsetWidth > 0 ? rowBox.width / tablist.offsetWidth : 1;
 		if (correction !== 0) tablist.scrollBy({ left: correction / scale });
-	}, [selected]);
+	}, []);
+	const revealSelectedTab = useCallback(
+		() => revealTab(selected),
+		[revealTab, selected],
+	);
 
 	useLayoutEffect(() => {
 		const container = containerRef.current;
@@ -169,12 +200,212 @@ export function OwnerSectionSwitch(props: OwnerSectionRenderers) {
 		revealSelectedTab();
 	}, [copy.group, revealSelectedTab]);
 
-	function select(section: OwnerSection, focus = false) {
-		setVisited((current) =>
-			current.has(section) ? current : new Set([...current, section]),
+	useLayoutEffect(() => {
+		const pendingTransition = navigation.transition;
+		const pendingContainer = containerRef.current;
+		const pendingPanel = panelRefs.current[selected];
+		if (!pendingTransition || !pendingContainer || !pendingPanel) return;
+		if (activeTransitionRef.current?.id !== pendingTransition.id) return;
+		const transition: OwnerSectionTransition = pendingTransition;
+		const container: HTMLDivElement = pendingContainer;
+		const panel: HTMLDivElement = pendingPanel;
+
+		let frame = 0;
+		let timeout = 0;
+		let observer: ResizeObserver | null = null;
+		let programmaticTarget: number | null = null;
+		let finished = false;
+		const documentHeight = () =>
+			Math.max(
+				document.documentElement.scrollHeight,
+				document.body?.scrollHeight ?? 0,
+			);
+		const maximumScroll = () =>
+			Math.max(0, documentHeight() - window.innerHeight);
+		const isCurrent = () =>
+			activeTransitionRef.current?.id === transition.id &&
+			!transition.cancelled;
+
+		function removeListeners() {
+			window.removeEventListener("wheel", cancelForIntent);
+			window.removeEventListener("touchstart", cancelForIntent);
+			window.removeEventListener("pointerdown", cancelForIntent);
+			window.removeEventListener("scroll", cancelForScroll);
+		}
+
+		function stopAsyncWork() {
+			if (frame !== 0) window.cancelAnimationFrame(frame);
+			if (timeout !== 0) window.clearTimeout(timeout);
+			observer?.disconnect();
+			removeListeners();
+		}
+
+		function writeScroll(top: number) {
+			programmaticTarget = top;
+			window.scrollTo({ left: window.scrollX, top, behavior: "auto" });
+		}
+
+		function naturalMaximumScroll() {
+			const containerHeight = Math.max(
+				container.offsetHeight,
+				container.getBoundingClientRect().height,
+			);
+			const panelHeight = Math.max(
+				panel.offsetHeight,
+				panel.scrollHeight,
+				panel.getBoundingClientRect().height,
+			);
+			return Math.max(
+				0,
+				documentHeight() -
+					Math.max(0, containerHeight - panelHeight) -
+					window.innerHeight,
+			);
+		}
+
+		function finish(cancelled = false) {
+			if (finished) return;
+			finished = true;
+			stopAsyncWork();
+			panel.dataset.ownerSectionState = "active";
+			if (activeTransitionRef.current?.id !== transition.id) return;
+			activeTransitionRef.current = null;
+			cancelRestorationRef.current = null;
+			container.style.removeProperty("min-block-size");
+			if (!cancelled) {
+				writeScroll(Math.min(transition.desiredScroll, maximumScroll()));
+			}
+		}
+
+		function cancelForIntent() {
+			if (!isCurrent()) return;
+			transition.cancelled = true;
+			finish(true);
+		}
+
+		function cancelForScroll() {
+			if (!isCurrent()) return;
+			if (
+				programmaticTarget !== null &&
+				Math.abs(window.scrollY - programmaticTarget) <= 1
+			) {
+				programmaticTarget = null;
+				return;
+			}
+			cancelForIntent();
+		}
+
+		function settleIfReady() {
+			if (!isCurrent()) return;
+			const target = Math.min(transition.desiredScroll, maximumScroll());
+			if (Math.abs(window.scrollY - target) > 1) writeScroll(target);
+			if (
+				transition.firstVisit ||
+				naturalMaximumScroll() >= transition.desiredScroll
+			) {
+				finish();
+			}
+		}
+
+		const missingHeight = Math.max(
+			0,
+			transition.capturedDocumentHeight - documentHeight(),
 		);
-		setSelected(section);
-		if (focus) tabRefs.current[section]?.focus();
+		container.style.minBlockSize = `${Math.max(
+			transition.capturedContainerHeight,
+			transition.capturedContainerHeight + missingHeight,
+		)}px`;
+
+		window.addEventListener("wheel", cancelForIntent, { passive: true });
+		window.addEventListener("touchstart", cancelForIntent, { passive: true });
+		window.addEventListener("pointerdown", cancelForIntent, { passive: true });
+		window.addEventListener("scroll", cancelForScroll, { passive: true });
+		writeScroll(Math.min(transition.desiredScroll, maximumScroll()));
+
+		const reducedMotion = window.matchMedia?.(
+			"(prefers-reduced-motion: reduce)",
+		).matches;
+		if (reducedMotion) {
+			panel.dataset.ownerSectionState = "active";
+		} else {
+			frame = window.requestAnimationFrame(() => {
+				frame = 0;
+				if (isCurrent()) panel.dataset.ownerSectionState = "active";
+			});
+		}
+
+		observer =
+			typeof ResizeObserver === "undefined"
+				? null
+				: new ResizeObserver(settleIfReady);
+		observer?.observe(panel);
+		timeout = window.setTimeout(() => finish(), SETTLEMENT_WINDOW_MS);
+		settleIfReady();
+		cancelRestorationRef.current = cancelForIntent;
+
+		return () => {
+			stopAsyncWork();
+			if (activeTransitionRef.current?.id === transition.id) {
+				activeTransitionRef.current = null;
+				cancelRestorationRef.current = null;
+				container.style.removeProperty("min-block-size");
+			}
+		};
+	}, [navigation.transition, selected]);
+
+	function select(section: OwnerSection, focus = false) {
+		const source = selectedRef.current;
+		if (section === source) {
+			if (focus) {
+				tabRefs.current[section]?.focus({ preventScroll: true });
+				revealTab(section);
+			}
+			return;
+		}
+		const container = containerRef.current;
+		const outgoingScroll = window.scrollY;
+		scrollBySectionRef.current[source] = outgoingScroll;
+		const capturedDocumentHeight = Math.max(
+			document.documentElement.scrollHeight,
+			document.body?.scrollHeight ?? 0,
+		);
+		const capturedContainerHeight = container
+			? Math.max(
+					container.offsetHeight,
+					container.getBoundingClientRect().height,
+				)
+			: 0;
+		const firstVisit = !visitedRef.current.has(section);
+		const sectionTop = container
+			? Math.max(0, outgoingScroll + container.getBoundingClientRect().top)
+			: 0;
+		const desiredScroll = firstVisit
+			? sectionTop
+			: (scrollBySectionRef.current[section] ?? sectionTop);
+		cancelRestorationRef.current?.();
+		if (container) {
+			container.style.minBlockSize = `${capturedContainerHeight}px`;
+		}
+		nextTransitionIdRef.current += 1;
+		const transition: OwnerSectionTransition = {
+			id: nextTransitionIdRef.current,
+			source,
+			destination: section,
+			desiredScroll,
+			capturedDocumentHeight,
+			capturedContainerHeight,
+			firstVisit,
+			cancelled: false,
+		};
+		activeTransitionRef.current = transition;
+		selectedRef.current = section;
+		const nextVisited = firstVisit
+			? new Set([...visitedRef.current, section])
+			: visitedRef.current;
+		visitedRef.current = nextVisited;
+		setVisited(nextVisited);
+		setNavigation({ selected: section, transition });
+		if (focus) tabRefs.current[section]?.focus({ preventScroll: true });
 	}
 
 	function handleKeyDown(
@@ -235,20 +466,30 @@ export function OwnerSectionSwitch(props: OwnerSectionRenderers) {
 			{sectionOrder.map((section) => (
 				<div
 					key={section}
+					ref={(node) => {
+						if (node) panelRefs.current[section] = node;
+					}}
 					id={panelId(section)}
 					className={`owner-analytics-mode__panel owner-section-switch__panel owner-section-switch__panel--${section}`}
 					role="tabpanel"
 					aria-labelledby={tabId(section)}
 					hidden={selected !== section}
+					aria-hidden={selected !== section ? true : undefined}
+					inert={selected !== section}
+					data-owner-section-state={
+						selected === section &&
+						navigation.transition &&
+						activeTransitionRef.current?.id === navigation.transition.id
+							? "entering"
+							: selected === section
+								? "active"
+								: "inactive"
+					}
 				>
 					{visited.has(section)
-						? section !== "daily" &&
-							section !== "history" &&
-							prerequisiteUnavailable
-							? props.daily
-							: section === "history"
-								? props.history(prerequisite)
-								: props[section]
+						? section === "history"
+							? props.history(prerequisite)
+							: props[section]
 						: null}
 				</div>
 			))}
