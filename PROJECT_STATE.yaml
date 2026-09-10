@@ -23,7 +23,7 @@ baseline:
 
 milestones:
   owner-surface-completion-r01:
-    status: IN_PROGRESS
+    status: DONE
     dependencies: [owner-quality-pass-r01]
     ownerSession: "Primary coordinator, integration authority, final rendered-product reviewer, and sole serialized repository writer for the human-authorized audit-driven Owner implementation pass opened 2026-09-10. Human instruction: implement the consolidated Owner UI audit and execution plan through implementation, live rendered inspection, independent review, verification, final presentation walkthrough, and completion. Scope: Owner composition, control/field anatomy, unified states, async continuity, owner copy, atmosphere decoupling, and restrained motion inside apps/web/src/components/owner/**; Owner-focused tests and Owner canonical reconciliation with per-surface quality records under this authorization; PROJECT_STATE and the r01 handoff. Public, Staff, backend contracts, authentication, Paper, demo data, credentials, historical records, and existing untracked user inspection artifacts remain frozen. The r03 NEEDS_HUMAN baseline-approval blocker is superseded by this pass's explicit human authorization to complete the presentation implementation."
     branch: codex/owner-demo-prep
@@ -56,7 +56,7 @@ milestones:
       accessibility: PASS
       visual: PASS
       independentReview: PASS
-    integratedCommit: null
+    integratedCommit: ea0dc7316b8b18cfccdf97a1a4c9c98f57d5aa21
 
   owner-audit-closure-r03:
     status: NEEDS_HUMAN
