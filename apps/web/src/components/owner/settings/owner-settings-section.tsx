@@ -1,9 +1,17 @@
 ﻿import type { Weekday } from "@fitway/api/occupancy/schedule";
-import { Settings as SettingsIcon } from "lucide-react";
+import { Button } from "@fitway/ui/components/button";
+import {
+	AlertTriangle,
+	RefreshCw,
+	Settings as SettingsIcon,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { useOwnerSettings } from "@/hooks/use-owner-settings";
 import { useI18n } from "@/i18n/provider";
+
+import { OwnerAsyncSwap } from "../owner-async-swap";
+import { OwnerStatePanel } from "../owner-state-panel";
 
 import {
 	type OwnerSettingsMessages,
@@ -35,18 +43,26 @@ function OwnerSettingsLoading({
 				<h1>{messages.title}</h1>
 				<p>{messages.intro}</p>
 			</header>
-			<div className="owner-settings__state" role="status" aria-live="polite">
-				<SettingsIcon aria-hidden="true" />
-				<div>
-					<h2>{messages.loading}</h2>
-					<p>{messages.loadingDescription}</p>
-				</div>
-				<div className="owner-settings__loading-bars" aria-hidden="true">
-					<i />
-					<i />
-					<i />
-				</div>
-			</div>
+			<OwnerAsyncSwap stateKey="loading">
+				<OwnerStatePanel
+					variant="loading"
+					className="owner-state-panel--card owner-settings__state"
+					dataAttribute={{ "data-owner-settings-state": "loading" }}
+					icon={<SettingsIcon aria-hidden="true" />}
+					loadingContent={
+						<div className="owner-settings__loading-bars" aria-hidden="true">
+							<i />
+							<i />
+							<i />
+						</div>
+					}
+				>
+					<div>
+						<h2>{messages.loading}</h2>
+						<p>{messages.loadingDescription}</p>
+					</div>
+				</OwnerStatePanel>
+			</OwnerAsyncSwap>
 		</section>
 	);
 }
@@ -117,16 +133,28 @@ export function OwnerSettingsSection({ enabled }: { enabled: boolean }) {
 					className="owner-settings__intro"
 					data-owner-navigation-anchor=""
 				>
-					<h1>{messages.errorTitle}</h1>
-					<p>{messages.errorDescription}</p>
+					<h1>{messages.title}</h1>
+					<p>{messages.intro}</p>
 				</header>
-				<button
-					type="button"
-					className="owner-settings__discard owner-settings__retry"
-					onClick={settings.retry}
-				>
-					{messages.retry}
-				</button>
+				<OwnerAsyncSwap stateKey="error">
+					<OwnerStatePanel
+						variant="error"
+						className="owner-state-panel--card owner-settings__state"
+						dataAttribute={{ "data-owner-settings-state": "error" }}
+						icon={<AlertTriangle aria-hidden="true" />}
+						action={
+							<Button type="button" onClick={settings.retry}>
+								<RefreshCw aria-hidden="true" />
+								{messages.retry}
+							</Button>
+						}
+					>
+						<div>
+							<h2>{messages.errorTitle}</h2>
+							<p>{messages.errorDescription}</p>
+						</div>
+					</OwnerStatePanel>
+				</OwnerAsyncSwap>
 			</section>
 		);
 	}
@@ -228,22 +256,24 @@ export function OwnerSettingsSection({ enabled }: { enabled: boolean }) {
 	}
 
 	return (
-		<OwnerSettingsView
-			messages={messages}
-			state={uiState}
-			snapshot={activeSnapshot}
-			draft={activeDraft}
-			errors={errors}
-			savedVersion={
-				uiState === "saved" && saveOutcome.phase === "success"
-					? saveOutcome.output.settings.version
-					: null
-			}
-			onFieldChange={handleFieldChange}
-			onDayToggle={handleDayToggle}
-			onDayTimeChange={handleDayTimeChange}
-			onSave={handleSave}
-			onDiscard={handleDiscard}
-		/>
+		<OwnerAsyncSwap stateKey="content" className="owner-async-swap--settings">
+			<OwnerSettingsView
+				messages={messages}
+				state={uiState}
+				snapshot={activeSnapshot}
+				draft={activeDraft}
+				errors={errors}
+				savedVersion={
+					uiState === "saved" && saveOutcome.phase === "success"
+						? saveOutcome.output.settings.version
+						: null
+				}
+				onFieldChange={handleFieldChange}
+				onDayToggle={handleDayToggle}
+				onDayTimeChange={handleDayTimeChange}
+				onSave={handleSave}
+				onDiscard={handleDiscard}
+			/>
+		</OwnerAsyncSwap>
 	);
 }

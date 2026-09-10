@@ -149,3 +149,20 @@ their scoped re-render). The visual-authority registry validation invocation
 used by the repository invariants was executed against the updated records.
 `verify:fast` / `verify:full` and the mutation-guarded full ladder remain the
 coordinator's to run before integration; no commit was created by this slice.
+
+## Append-only addendum — 2026-09-10 owner-surface-completion acceptance
+
+The human owner's 2026-09-10 authorization of the `owner-surface-completion-r01`
+pass supersedes the `owner-audit-closure-r03` `NEEDS_HUMAN` Owner-baseline
+blocker for Owner surfaces only. Under that authorization the coordinator
+inspected the regenerated renders against the live product and accepted them;
+the human did not perform a separate contact-sheet inspection. The original
+2026-09-08 account above is unchanged. The full per-surface acceptance record is
+`docs/phase-records/handoffs/owner-demo-polish/20260910-owner-surface-completion-visual-acceptance.md`.
+
+The canonical this record remains the `approvalRecord` for now carries:
+
+- Owner Daily completed Arabic desktop
+  (`win32/chromium/phase9-owner-ui.browser.spec.ts/owner-daily-route-ar-desktop-1440x900.png`):
+  `063721013eb6040fe08835aa31ee2ab8d309c283100585a1453aaf1b08d40342` →
+  `1c3dfc4006df48252f69e707e7619d7e8460810525668f26ef8afd1120f07d89`.

@@ -534,10 +534,10 @@ rejectedRoutedBaseline:
   status: SUPERSEDED_BY_ACCEPTED_CASES
   path: tests/browser/__screenshots__
   fileCount: 41
-  treeSha256: 7464c87c5eff3881c9bfc2549fd0c767fd4311397bb187392cedbba2265eea87
+  treeSha256: 64b8fb6b6ec88c71c5bdefa338680cede29106ad37075da2c7652e53f0a2fa5f
   rejectionRecord: docs/phase-records/handoffs/fidelity-integration-closure/20260902-193655-fidelity_closure_r05-human-visual-rejection.md
-  promotionRecord: docs/phase-records/handoffs/owner-demo-polish/20260908-owner-quality-pass-visual-acceptance.md
-  promotionRun: owner_quality_pass_s6a
+  promotionRecord: docs/phase-records/handoffs/owner-demo-polish/20260910-owner-surface-completion-visual-acceptance.md
+  promotionRun: local_b7bb8bab8088
   disposition: >-
     The REJECTED_R05 tree (frozen at 542c5609…) is preserved as history through
     the unchanged rejectionRecord and the original per-file provenance. Nineteen
@@ -556,8 +556,38 @@ rejectedRoutedBaseline:
     and Uptime frames plus the regression-only Settings loading frame; Reports,
     Access, Settings clean/dirty, and shell canonicals stayed byte-untouched
     after their normal assertions passed. The tree hash was recomputed to
-    7464c87c… with no file added or removed; exact scope and classification are
-    recorded by the promotionRecord.
+    7464c87c… with no file added or removed. The human-approved Owner audit
+    closure reconciliation then re-rendered nine inspected regression baselines:
+    three Settings states and the Health desktop frame differ only at the
+    selected tab's neutral focus boundary, Daily mobile records the approved
+    logical-edge tab alignment, and Activity desktop records that focus boundary
+    plus the shared explicit-chevron select geometry. Three additional mobile
+    frames record the same logical-edge navigation settlement; Activity also
+    records the shared select geometry and its localized scroll affordance. No
+    Public or Staff frame changed. The tree hash was recomputed to 4de951a4c7… with the inventory still
+    at 41 files; exact scope and classification are recorded by that
+    promotionRecord. The human-authorized owner-surface-completion-r01 pass then
+    regenerated and coordinator-inspected ten Owner canonicals against the live
+    product: eight honestly mapped Daily, Activity, Uptime, and Settings frames
+    plus the regression-only Settings loading and error frames. The 2026-09-10
+    human authorization supersedes the owner-audit-closure-r03 NEEDS_HUMAN
+    Owner-baseline blocker for Owner surfaces only; the coordinator inspected
+    the regenerated renders under that authorization and accepted them, and the
+    human did not perform a separate contact-sheet inspection. No Public, Staff,
+    Login, or other canonical byte changed. The tree hash was recomputed to
+    8764d805a5… with the inventory still at 41 files; the exact per-file accepted
+    hashes and per-surface judgments are recorded by the 2026-09-10
+    owner-surface-completion visual-acceptance record named in promotionRecord.
+    The bounded, human-authorized owner-surface repair slice F (2026-09-10) then
+    re-rendered the same four Settings frames against the live product: the two
+    accepted cases (clean English desktop, dirty Arabic mobile) now record the
+    state-only Settings chip, the reserved description line that keeps the
+    settings header height constant across states, and the single-line runtime
+    description; the two regression-only frames (English loading and error)
+    record the same header geometry. No Public, Staff, Login, or other canonical
+    byte changed. The tree hash was recomputed to 64b8fb6b6ec8… with the
+    inventory still at 41 files; the exact bytes and rationale are recorded in
+    the same acceptance record.
 
 finalReviewPackage:
   status: PROMOTED_ACCEPTED

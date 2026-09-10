@@ -16,7 +16,6 @@ import { useI18n } from "@/i18n/provider";
 import { OwnerDateField } from "../owner-date-field";
 import type { OwnerReportingMessages } from "./messages";
 import {
-	OwnerReportingLoading,
 	OwnerReportingReady,
 	OwnerReportingState,
 } from "./owner-reporting-view";
@@ -34,6 +33,56 @@ export function rangeProblemMessage(
 	return maximumDays === CSV_MAX_RANGE_DAYS
 		? messages.problemCsvTooLong
 		: messages.problemTooLong;
+}
+
+/**
+ * The streaming export's inline progress.
+ *
+ * The export has its own window and its own bound, so it carries its own progress in a
+ * compact, height-stable strip instead of borrowing the reporting window's 168-cell
+ * skeleton: that skeleton named ("Loading the reporting window") and drew something the
+ * export is not doing. The fixed row height keeps the board from jumping as the count
+ * grows. The count itself is `aria-hidden` so the polite region announces the export
+ * once rather than a new row total on every chunk (`DESIGN_GUIDE.md` §13).
+ */
+function OwnerReportingExportProgress({
+	rows,
+	onAbort,
+}: {
+	rows: number;
+	onAbort: () => void;
+}) {
+	const { locale } = useI18n();
+	const messages = useOwnerReportingMessages();
+	return (
+		<div className="owner-reporting-export__progress">
+			<div
+				className="owner-reporting-export__progress-live"
+				data-owner-reporting-state="loading"
+				role="status"
+				aria-label={messages.csvExporting}
+			>
+				<span className="fw-sr-only">{messages.csvExporting}</span>
+				<div className="owner-reporting-loading-bars" aria-hidden="true">
+					<i />
+					<i />
+					<i />
+				</div>
+				<p className="owner-reporting-export__progress-copy" aria-hidden="true">
+					{messages.csvPreparingRows}… <bdi>{formatNumber(rows, locale)}</bdi>
+				</p>
+			</div>
+			<Button
+				type="button"
+				variant="outline"
+				data-owner-reporting-export-abort=""
+				onClick={onAbort}
+			>
+				<Square aria-hidden="true" />
+				{messages.csvAbort}
+			</Button>
+		</div>
+	);
 }
 
 /**
@@ -81,7 +130,10 @@ export function OwnerReportingExport({
 	}
 
 	return (
-		<div className="owner-reporting-block" data-owner-reporting-export="">
+		<div
+			className="owner-reporting-block owner-reporting-export"
+			data-owner-reporting-export=""
+		>
 			{/*
 			 * One title, one line, with the export's own limit beside it. The window
 			 * legend stays as the field group's name for assistive technology, where it
@@ -89,6 +141,7 @@ export function OwnerReportingExport({
 			 */}
 			<div className="owner-reporting-board__heading">
 				<h2 className="owner-reporting-board__title">{messages.csvTitle}</h2>
+				<p className="owner-reporting-board__meta">{messages.csvHint}</p>
 			</div>
 
 			<form className="owner-reporting-range" onSubmit={handleSubmit}>
@@ -133,63 +186,44 @@ export function OwnerReportingExport({
 								}))
 							}
 						/>
-						<div className="owner-reporting-range__actions">
-							{/*
-							 * Export stays visually secondary to reading: the
-							 * outline treatment keeps it discoverable and fully
-							 * functional without competing with Apply or the
-							 * report figures, especially on mobile.
-							 */}
-							<Button
-								type="submit"
-								variant="outline"
-								data-owner-reporting-export-start=""
-								disabled={exporting}
-							>
-								<Download aria-hidden="true" />
-								{messages.csvExport}
-							</Button>
-							{/*
-							 * The abort control exists only while there is something to
-							 * abort, so it is never a disabled control the owner has to
-							 * interpret.
-							 */}
-							{exporting ? (
+						<div className="owner-reporting-range__tools">
+							<div className="owner-reporting-range__actions">
+								{/*
+								 * Export stays visually secondary to reading: the
+								 * outline treatment keeps it discoverable and fully
+								 * functional without competing with Apply or the
+								 * report figures, especially on mobile.
+								 */}
 								<Button
-									type="button"
+									type="submit"
 									variant="outline"
-									data-owner-reporting-export-abort=""
-									onClick={csv.abort}
+									data-owner-reporting-export-start=""
+									disabled={exporting}
 								>
-									<Square aria-hidden="true" />
-									{messages.csvAbort}
+									<Download aria-hidden="true" />
+									{messages.csvExport}
 								</Button>
-							) : null}
+							</div>
 						</div>
 					</div>
-					<p
-						className="owner-reporting__problem"
-						id={`${ids}-problem`}
-						data-owner-reporting-problem="csv"
-						role={problem ? "alert" : undefined}
-					>
-						{problem}
-					</p>
+					{problem ? (
+						<p
+							className="owner-reporting__problem"
+							id={`${ids}-problem`}
+							data-owner-reporting-problem="csv"
+							role="alert"
+						>
+							{problem}
+						</p>
+					) : null}
 				</fieldset>
 			</form>
 
 			{csv.state.status === "exporting" ? (
-				<>
-					<OwnerReportingLoading />
-					{/*
-					 * Outside the live region on purpose. The card announces once that an
-					 * export began; a growing row count announced on every chunk would be
-					 * an unusable stream of speech (`DESIGN_GUIDE.md` §13).
-					 */}
-					<p className="owner-reporting__progress">
-						{messages.csvRows} <bdi>{formatNumber(csv.state.rows, locale)}</bdi>
-					</p>
-				</>
+				<OwnerReportingExportProgress
+					rows={csv.state.rows}
+					onAbort={csv.abort}
+				/>
 			) : null}
 
 			{csv.state.status === "ready" ? (

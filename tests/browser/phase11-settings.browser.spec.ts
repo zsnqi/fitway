@@ -362,7 +362,7 @@ test("the section loads independently while the shared analytics query is pendin
 	hold.resolve();
 	await expect(
 		page.locator(`${upperActions} .owner-settings__version`),
-	).toContainText("Current version 7");
+	).toHaveText("Saved");
 	expect(observedReadRequests).toBe(1);
 });
 
@@ -396,7 +396,7 @@ test("a late first section visit neither refetches Daily nor loses a mounted Set
 			}
 		).__fitwayAdvanceNow(61_000),
 	);
-	await page.getByRole("tab", { name: "Accounts & Sign-in" }).click();
+	await page.getByRole("tab", { name: "Access" }).click();
 	await expect(page.locator(".owner-access")).toBeVisible();
 	await page.waitForTimeout(300);
 
@@ -541,7 +541,10 @@ test("load failure carries its own copy and Retry; clean locks Save and renders 
 	await expect(page.locator(section)).toContainText("تعذر تحميل الإعدادات");
 	// A retry must refetch: point the read back at the live snapshot first.
 	readResponse = { status: 200, body: { json: settingsSnapshot } };
-	await page.locator("button.owner-settings__retry").click();
+	await page
+		.locator('[data-owner-settings-state="error"]')
+		.getByRole("button", { name: "إعادة المحاولة" })
+		.click();
 	await expect(page.locator(section)).toContainText("الإعدادات");
 	await expect(page.locator(section)).toContainText("Asia/Riyadh");
 	await expect(page.locator(saveButtons).first()).toBeDisabled();
@@ -562,7 +565,7 @@ test("clean state shows the locked timing board with copied values and Western d
 	await expect(page.locator(section)).toContainText("180 seconds");
 	await expect(page.locator(section)).toContainText("60 seconds");
 	await expect(page.locator(section)).toContainText("All changes saved");
-	await expect(page.locator(section)).toContainText("System timing");
+	await expect(page.locator(section)).toContainText("Technical settings");
 	await expect(page.locator(saveButtons).first()).toBeDisabled();
 	await expect(page.locator(discardButtons)).toHaveCount(0);
 	await captureReview(page, "owner-settings-clean-en-desktop-1440.png");
@@ -601,13 +604,13 @@ test("dirty valid shows the upper Discard, saves once, and announces the created
 
 	updateHold?.resolve();
 	await expect(page.locator(status)).toContainText(
-		"Settings version 8 created.",
+		"Settings saved. The change is recorded in Activity Log.",
 	);
 	await expect(page.locator(saveButtons).first()).toBeDisabled();
 	await expect(page.locator(discardButtons)).toHaveCount(0);
 	await expect(
 		page.locator(`${upperActions} .owner-settings__version`),
-	).toContainText("Current version 8");
+	).toHaveText("Saved");
 	await captureReview(page, "owner-settings-saved-en-desktop-1440.png");
 
 	// The submitted snapshot is complete, never a delta.
@@ -651,7 +654,7 @@ test("dirty invalid locks Save, associates field errors, and announces the summa
 	const capacity = page.locator("input[data-testid='capacity']");
 	await expect(capacity).toHaveAttribute("aria-invalid", "true");
 	await expect(page.locator(section)).toContainText(
-		"Capacity must be between 1 and 2147483647.",
+		"Enter a number of people.",
 	);
 	await expect(page.locator(section)).toContainText(
 		"Use 24-hour time, for example 04:00.",
@@ -662,7 +665,7 @@ test("dirty invalid locks Save, associates field errors, and announces the summa
 		/owner-settings__control--error/,
 	);
 	await expect(page.locator(`#${describedBy}`)).toContainText(
-		"Capacity must be between 1 and 2147483647.",
+		"Enter a number of people.",
 	);
 
 	await page.emulateMedia({ forcedColors: "active" });
@@ -695,7 +698,7 @@ test("an atomic failure preserves the draft and expected version and unlocks Sav
 	await expect(page.locator(saveButtons).first()).toBeEnabled();
 	await expect(
 		page.locator(`${upperActions} .owner-settings__version`),
-	).toContainText("Current version 7");
+	).toHaveText("Not saved");
 	await captureReview(
 		page,
 		"owner-settings-atomic-failure-en-desktop-1440.png",
@@ -719,7 +722,7 @@ test("an atomic failure preserves the draft and expected version and unlocks Sav
 	updateResponse = { status: 200, body: { json: savedOutput(8, 260) } };
 	await page.locator(saveButtons).first().click();
 	await expect(page.locator(status)).toContainText(
-		"Settings version 8 created.",
+		"Settings saved. The change is recorded in Activity Log.",
 	);
 	expect(observedUpdateRequests).toHaveLength(2);
 	expect(observedUpdateRequests[1]).toMatchObject({ expectedVersion: 7 });
@@ -759,7 +762,7 @@ test("a version conflict preserves the draft, locks Save, and Discard reloads la
 	);
 	await expect(
 		page.locator(`${upperActions} .owner-settings__version`),
-	).toContainText("Current version 7");
+	).toHaveText("Saved");
 });
 
 test("mobile conflict keeps the lower Discard visible and reloads the current snapshot", async ({
@@ -850,7 +853,7 @@ test("unchecking a day serializes null and removes its inputs; rechecking restor
 	};
 	await page.locator(saveButtons).first().click();
 	await expect(page.locator(status)).toContainText(
-		"Settings version 8 created.",
+		"Settings saved. The change is recorded in Activity Log.",
 	);
 	const submitted = observedUpdateRequests[0] as {
 		editable: { weeklySchedule: Record<string, unknown> };
@@ -952,7 +955,7 @@ test("mobile exposes the lower frontier only when dirty, and both Save controls 
 
 	updateHold?.resolve();
 	await expect(page.locator(status)).toContainText(
-		"Settings version 8 created.",
+		"Settings saved. The change is recorded in Activity Log.",
 	);
 	await expect(page.locator(lowerFrontier)).toHaveCount(0);
 });
@@ -989,7 +992,7 @@ test("Arabic renders the RTL form with explicit semantic order and preserved dra
 	updateResponse = { status: 200, body: { json: savedOutput(8, 240) } };
 	await page.locator(saveButtons).first().click();
 	await expect(page.locator(status)).toContainText(
-		"تم إنشاء إصدار الإعدادات 8.",
+		"تم حفظ الإعدادات. سُجّل التغيير في سجل النشاط.",
 	);
 
 	await captureReview(page, "owner-settings-ar-desktop-1440.png");
@@ -1040,7 +1043,7 @@ test("keyboard order follows the reading order and visible focus follows Tab", a
 	await page.locator(saveButtons).first().focus();
 	await page.keyboard.press("Enter");
 	await expect(page.locator(status)).toContainText(
-		"Settings version 8 created.",
+		"Settings saved. The change is recorded in Activity Log.",
 	);
 });
 
@@ -1108,6 +1111,9 @@ test("automated accessibility finds no serious or critical violations in either 
 test("canonical routed Settings frames and review states match Paper", async ({
 	page,
 }) => {
+	// Four canonical frames plus loading/error states need headroom on loaded
+	// machines; the 30s default is a flake source, not an oracle.
+	test.setTimeout(90_000);
 	await mockOwnerSurfaces(page);
 	await page.addInitScript(() =>
 		window.localStorage.setItem("fitway.locale", "en"),

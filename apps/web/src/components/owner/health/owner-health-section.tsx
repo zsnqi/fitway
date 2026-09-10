@@ -4,6 +4,7 @@ import { useOwnerHealth } from "@/hooks/use-owner-health";
 import { formatDate, formatNumber } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
 
+import { OwnerAsyncSwap } from "../owner-async-swap";
 import {
 	OwnerHealthEmpty,
 	OwnerHealthError,
@@ -58,93 +59,104 @@ export function OwnerHealthSection() {
 					<p className="owner-health__window">
 						<bdi dir="auto">{windowLabel}</bdi>
 					</p>
-				) : null}
+				) : (
+					/* The measured navigation anchor keeps the applied period's line
+					   height before the window is known, so the section tab strip cannot
+					   move when the payload lands. */
+					<p
+						className="owner-health__window owner-health__window--reserved"
+						data-owner-health-window-reserved=""
+						aria-hidden="true"
+					/>
+				)}
 			</header>
 
-			{health.status === "pending" ? <OwnerHealthLoading /> : null}
-			{health.status === "error" ? (
-				<OwnerHealthError onRetry={health.retry} />
-			) : null}
+			<OwnerAsyncSwap stateKey={health.status} className="owner-health__swap">
+				{health.status === "pending" ? <OwnerHealthLoading /> : null}
+				{health.status === "error" ? (
+					<OwnerHealthError onRetry={health.retry} />
+				) : null}
 
-			{summary ? (
-				<>
-					<OwnerHealthMetrics summary={summary} />
+				{summary ? (
+					<>
+						<OwnerHealthMetrics summary={summary} />
 
-					{summary.connection.monitoringStartedAtUtc === null ? (
-						<OwnerHealthUnmonitored />
-					) : null}
+						{summary.connection.monitoringStartedAtUtc === null ? (
+							<OwnerHealthUnmonitored />
+						) : null}
 
-					<div className="owner-health-block">
-						<h2>{messages.offlineTitle}</h2>
-						<p>{messages.offlineDescription}</p>
-						{summary.connection.offlinePeriods.length === 0 ? (
-							<OwnerHealthEmpty
-								title={messages.offlineEmptyTitle}
-								description={messages.offlineEmptyDescription}
-							/>
-						) : (
-							<>
-								<OwnerHealthOfflineTable
-									periods={summary.connection.offlinePeriods}
-									totalCount={summary.connection.offlinePeriodCount}
-									timeZone={summary.window.timeZone}
+						<div className="owner-health-block">
+							<h2>{messages.offlineTitle}</h2>
+							<p>{messages.offlineDescription}</p>
+							{summary.connection.offlinePeriods.length === 0 ? (
+								<OwnerHealthEmpty
+									title={messages.offlineEmptyTitle}
+									description={messages.offlineEmptyDescription}
 								/>
-								{/* The bound only earns a line when it actually hid a row. */}
-								{summary.connection.offlinePeriodCount >
-								summary.connection.offlinePeriods.length ? (
-									<p className="owner-health__shown">
-										{messages.offlineShown}{" "}
-										<bdi>
-											{formatNumber(
-												summary.connection.offlinePeriods.length,
-												locale,
-											)}
-										</bdi>{" "}
-										{messages.offlineOf}{" "}
-										<bdi>
-											{formatNumber(
-												summary.connection.offlinePeriodCount,
-												locale,
-											)}
-										</bdi>
-									</p>
-								) : null}
-							</>
-						)}
-					</div>
+							) : (
+								<>
+									<OwnerHealthOfflineTable
+										periods={summary.connection.offlinePeriods}
+										totalCount={summary.connection.offlinePeriodCount}
+										timeZone={summary.window.timeZone}
+									/>
+									{/* The bound only earns a line when it actually hid a row. */}
+									{summary.connection.offlinePeriodCount >
+									summary.connection.offlinePeriods.length ? (
+										<p className="owner-health__shown">
+											{messages.offlineShown}{" "}
+											<bdi>
+												{formatNumber(
+													summary.connection.offlinePeriods.length,
+													locale,
+												)}
+											</bdi>{" "}
+											{messages.offlineOf}{" "}
+											<bdi>
+												{formatNumber(
+													summary.connection.offlinePeriodCount,
+													locale,
+												)}
+											</bdi>
+										</p>
+									) : null}
+								</>
+							)}
+						</div>
 
-					<div className="owner-health-block">
-						<h2>{messages.incidentsTitle}</h2>
-						{summary.alerts.incidents.length === 0 ? (
-							<OwnerHealthEmpty
-								title={messages.incidentsEmptyTitle}
-								description={messages.incidentsEmptyDescription}
-							/>
-						) : (
-							<>
-								<OwnerHealthIncidentTable
-									incidents={summary.alerts.incidents}
-									totalCount={summary.alerts.incidentCount}
-									timeZone={summary.window.timeZone}
+						<div className="owner-health-block">
+							<h2>{messages.incidentsTitle}</h2>
+							{summary.alerts.incidents.length === 0 ? (
+								<OwnerHealthEmpty
+									title={messages.incidentsEmptyTitle}
+									description={messages.incidentsEmptyDescription}
 								/>
-								{summary.alerts.incidentCount >
-								summary.alerts.incidents.length ? (
-									<p className="owner-health__shown">
-										{messages.incidentsShown}{" "}
-										<bdi>
-											{formatNumber(summary.alerts.incidents.length, locale)}
-										</bdi>{" "}
-										{messages.offlineOf}{" "}
-										<bdi>
-											{formatNumber(summary.alerts.incidentCount, locale)}
-										</bdi>
-									</p>
-								) : null}
-							</>
-						)}
-					</div>
-				</>
-			) : null}
+							) : (
+								<>
+									<OwnerHealthIncidentTable
+										incidents={summary.alerts.incidents}
+										totalCount={summary.alerts.incidentCount}
+										timeZone={summary.window.timeZone}
+									/>
+									{summary.alerts.incidentCount >
+									summary.alerts.incidents.length ? (
+										<p className="owner-health__shown">
+											{messages.incidentsShown}{" "}
+											<bdi>
+												{formatNumber(summary.alerts.incidents.length, locale)}
+											</bdi>{" "}
+											{messages.offlineOf}{" "}
+											<bdi>
+												{formatNumber(summary.alerts.incidentCount, locale)}
+											</bdi>
+										</p>
+									) : null}
+								</>
+							)}
+						</div>
+					</>
+				) : null}
+			</OwnerAsyncSwap>
 		</section>
 	);
 }

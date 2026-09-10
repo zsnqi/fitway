@@ -169,6 +169,25 @@ describe("owner access states", () => {
 		).toContain(ownerAccessMessages.en.emptyTitle);
 		expect(container.textContent).not.toContain("@");
 	});
+
+	it("nests every state in the shared async entry seam", async () => {
+		await render(<OwnerAccessLoading />, "en");
+		expect(container.querySelector("[data-owner-async-swap]")).not.toBeNull();
+		expect(
+			container.querySelector(".owner-async-swap__current"),
+		).not.toBeNull();
+
+		await render(<OwnerAccessError onRetry={() => undefined} />, "en");
+		expect(container.querySelector("[data-owner-async-swap]")).not.toBeNull();
+
+		await render(<OwnerAccessEmpty />, "en");
+		expect(container.querySelector("[data-owner-async-swap]")).not.toBeNull();
+
+		await render(<OwnerAccessLive {...liveProps([staffPrincipal()])} />, "en");
+		expect(container.querySelectorAll("[data-owner-async-swap]")).toHaveLength(
+			2,
+		);
+	});
 });
 
 describe("typed refusals", () => {
@@ -298,7 +317,9 @@ describe("owner access live", () => {
 		);
 		expect(success?.getAttribute("role")).toBe("status");
 		expect(success?.textContent).toContain("Owner created");
-		expect(success?.textContent).toContain("No credential returned");
+		expect(success?.textContent).toContain(
+			ownerAccessMessages.en.ownerCreatedDescription,
+		);
 		expect(success?.textContent).not.toMatch(
 			/password|PIN|copy|returned secret/iu,
 		);
@@ -410,6 +431,79 @@ describe("owner access live", () => {
 				});
 			}
 			expect(reset.submitSpy).toHaveBeenCalledTimes(2);
+		}
+	});
+
+	it("toggles both owner password fields without losing the value or validation wiring", async () => {
+		for (const locale of ["en", "ar"] as const) {
+			await render(
+				<OwnerAccessLive
+					{...liveProps([staffPrincipal(), ownerPrincipal()])}
+				/>,
+				locale,
+			);
+
+			await act(async () => {
+				container
+					.querySelector<HTMLButtonElement>(
+						"[data-owner-access-provision-trigger]",
+					)
+					?.click();
+			});
+
+			const assertToggle = async (scope: string, value: string) => {
+				const input = container.querySelector<HTMLInputElement>(
+					`${scope} .owner-access-password input`,
+				);
+				const toggle = container.querySelector<HTMLButtonElement>(
+					`${scope} .owner-access-password__toggle`,
+				);
+				expect(input).not.toBeNull();
+				expect(toggle).not.toBeNull();
+				if (input === null || toggle === null) return;
+				expect(input.type).toBe("password");
+				expect(input.getAttribute("autocomplete")).toBe("new-password");
+				expect(input.nextElementSibling).toBe(toggle);
+				expect(toggle.getAttribute("type")).toBe("button");
+				expect(toggle.getAttribute("aria-label")).toBe(
+					ownerAccessMessages[locale].showPassword,
+				);
+				const describedBy = input.getAttribute("aria-describedby");
+
+				await act(async () => {
+					setControlledValue(input, value);
+					toggle.click();
+				});
+				expect(input.type).toBe("text");
+				expect(input.value).toBe(value);
+				expect(input.getAttribute("aria-describedby")).toBe(describedBy);
+				expect(toggle.getAttribute("aria-label")).toBe(
+					ownerAccessMessages[locale].hidePassword,
+				);
+
+				await act(async () => toggle.click());
+				expect(input.type).toBe("password");
+				expect(input.value).toBe(value);
+				expect(input.getAttribute("aria-describedby")).toBe(describedBy);
+				expect(toggle.getAttribute("aria-label")).toBe(
+					ownerAccessMessages[locale].showPassword,
+				);
+			};
+
+			await assertToggle(".owner-access-provision", "a-typed-secret");
+
+			const resetButton = [...container.querySelectorAll(".owner-access-owner")]
+				.flatMap((row) => [
+					...row.querySelectorAll<HTMLButtonElement>("button"),
+				])
+				.find((button) =>
+					button.textContent?.includes(
+						ownerAccessMessages[locale].resetCredential,
+					),
+				);
+			expect(resetButton).toBeDefined();
+			await act(async () => resetButton?.click());
+			await assertToggle(".owner-access-inline--reset", "a-reset-secret");
 		}
 	});
 
@@ -618,10 +712,14 @@ describe("owner access live", () => {
 			/>,
 			"en",
 		);
-		expect(
-			container.querySelector("[data-owner-access-reveal]"),
-		).not.toBeNull();
+		const reveal = container.querySelector("[data-owner-access-reveal]");
+		expect(reveal).not.toBeNull();
 		expect(container.textContent).toContain("48291057");
+		// The one-time reveal keeps its instant appearance: it never rides the
+		// data-entry seam.
+		for (const swap of container.querySelectorAll("[data-owner-async-swap]")) {
+			expect(swap.contains(reveal)).toBe(false);
+		}
 	});
 });
 

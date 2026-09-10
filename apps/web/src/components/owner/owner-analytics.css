@@ -142,8 +142,10 @@
 }
 
 .owner-chart-interaction:focus-visible {
-	border-color: var(--fw-red-bright);
-	box-shadow: 0 0 0 3px rgb(229 25 53 / 20%);
+	border-color: var(--owner-focus-ring);
+	outline: 2px solid var(--owner-focus-ring);
+	outline-offset: 2px;
+	box-shadow: none;
 }
 
 .owner-chart {
@@ -396,7 +398,7 @@
 }
 
 .owner-table-pagination__page:focus-visible {
-	outline: 2px solid var(--fw-focus-ring);
+	outline: 2px solid var(--owner-focus-ring);
 	outline-offset: 2px;
 }
 
@@ -509,7 +511,7 @@
 }
 
 .owner-table-disclosure > .owner-retained-disclosure__trigger:focus-visible {
-	outline: 2px solid var(--fw-red-bright);
+	outline: 2px solid var(--owner-focus-ring);
 	outline-offset: -3px;
 }
 
@@ -522,7 +524,7 @@
 }
 
 .owner-table-region:focus-visible {
-	outline: 2px solid var(--fw-red-bright);
+	outline: 2px solid var(--owner-focus-ring);
 	outline-offset: -3px;
 }
 
@@ -1397,21 +1399,10 @@
 	}
 
 	.owner-chart-interaction[data-tracking="true"] {
-		.owner-chart__active,
-		.owner-chart__stem,
 		.owner-chart-tip {
 			transition:
-				left 120ms var(--fw-ease-out),
-				top 120ms var(--fw-ease-out),
-				height 120ms var(--fw-ease-out),
 				transform 120ms var(--fw-ease-out),
 				opacity 120ms var(--fw-ease-out);
-		}
-
-		.owner-chart__cutout {
-			transition:
-				cx 120ms var(--fw-ease-out),
-				cy 120ms var(--fw-ease-out);
 		}
 	}
 }

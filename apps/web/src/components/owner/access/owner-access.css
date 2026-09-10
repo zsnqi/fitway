@@ -205,18 +205,69 @@
 	min-inline-size: 0;
 	padding-block: 8px;
 	padding-inline: 12px;
-	border: 1px solid var(--fw-border-strong);
+	border: 1px solid var(--owner-edge-control);
 	border-radius: var(--fw-radius-control);
 	color: var(--fw-chalk);
-	background: var(--fw-graphite);
-	font-size: 13px;
+	background: var(--owner-control);
+	font-size: 15px;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
 	font-family: inherit;
+	line-height: 22px;
+	transition:
+		border-color var(--fw-duration-fast) var(--fw-ease-out),
+		background-color var(--fw-duration-fast) var(--fw-ease-out),
+		color var(--fw-duration-fast) var(--fw-ease-out);
 }
 
 .owner-access-inline :is(input, textarea):focus-visible,
 .owner-access-field input:focus-visible {
-	outline: 2px solid var(--fw-red-bright);
+	outline: 2px solid var(--owner-focus-ring);
 	outline-offset: 2px;
+}
+
+.owner-access-password {
+	position: relative;
+	display: flex;
+	align-items: center;
+	min-inline-size: 0;
+}
+
+.owner-access-password > input {
+	flex: 1 1 auto;
+	padding-inline-end: 52px;
+}
+
+.owner-access-password__toggle {
+	position: absolute;
+	inset-block: 0;
+	inset-inline-end: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	inline-size: 44px;
+	padding: 0;
+	border: 0;
+	border-start-end-radius: var(--fw-radius-control);
+	border-end-end-radius: var(--fw-radius-control);
+	background: transparent;
+	color: var(--fw-text-subtle);
+	cursor: pointer;
+	transition: color var(--fw-duration-fast) var(--fw-ease-out);
+}
+
+.owner-access-password__toggle:hover {
+	color: var(--fw-chalk);
+}
+
+.owner-access-password__toggle:focus-visible {
+	outline: 2px solid var(--owner-focus-ring);
+	outline-offset: -4px;
+}
+
+.owner-access-password__toggle svg {
+	inline-size: 18px;
+	block-size: 18px;
 }
 
 .owner-access-inline__hint,
@@ -498,28 +549,11 @@
 }
 
 .owner-access-reveal__dismiss {
-	display: inline-flex;
-	align-items: center;
 	justify-self: start;
-	min-block-size: 44px;
-	padding-block: 8px;
-	padding-inline: 18px;
-	border: 1px solid var(--fw-border-strong);
-	border-radius: var(--fw-radius-control);
-	color: var(--fw-chalk);
-	background: var(--owner-control);
-	font-size: 13px;
-	font-weight: 600;
-	font-family: inherit;
-	cursor: pointer;
-}
-
-.owner-access-reveal__dismiss:hover {
-	background: rgb(255 255 255 / 6%);
 }
 
 .owner-access-reveal__dismiss:focus-visible {
-	outline: 2px solid var(--fw-red-bright);
+	outline: 2px solid var(--owner-focus-ring);
 	outline-offset: 2px;
 }
 
@@ -729,6 +763,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+	.owner-access-inline :is(input, textarea),
+	.owner-access-field input,
+	.owner-access-password__toggle {
+		transition: none;
+	}
+
 	.owner-access-loading-bars i {
 		transform: scaleY(0.7);
 		animation: none;
@@ -738,6 +778,7 @@
 @media (forced-colors: active) {
 	.owner-access-inline :is(input, textarea):focus-visible,
 	.owner-access-field input:focus-visible,
+	.owner-access-password__toggle:focus-visible,
 	.owner-access-reveal__dismiss:focus-visible {
 		outline: 2px solid CanvasText;
 	}

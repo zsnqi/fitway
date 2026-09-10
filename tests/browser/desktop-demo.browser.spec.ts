@@ -97,7 +97,7 @@ test("real Staff PIN opens monitoring and the server denies Owner", async ({
 		page.getByRole("heading", { name: "Owner access required" }),
 	).toBeVisible();
 	await expect(page.getByRole("alert")).toContainText(
-		"This staff session can use monitoring but cannot access Management",
+		"Monitoring stays available here. Sign in with the owner account to open Management",
 	);
 });
 
@@ -146,7 +146,7 @@ test("real Owner password opens every populated owner surface", async ({
 		page.getByRole("heading", { name: "Occupancy by weekday and hour" }),
 	).toBeVisible({ timeout: 45_000 });
 
-	await page.getByRole("tab", { name: "Accounts & Sign-in" }).click();
+	await page.getByRole("tab", { name: "Access" }).click();
 	await expect(
 		page.getByRole("heading", { name: "Access", exact: true }),
 	).toBeVisible({ timeout: 15_000 });
@@ -160,7 +160,7 @@ test("real Owner password opens every populated owner surface", async ({
 		page.getByRole("heading", { name: "Activity Log", exact: true }),
 	).toBeVisible({ timeout: 15_000 });
 	await expect(
-		page.getByRole("cell", { name: "Staff PIN provisioned", exact: true }),
+		page.getByRole("cell", { name: "Staff PIN created", exact: true }),
 	).toBeVisible();
 	expect(await page.locator("tr[data-action]").count()).toBeGreaterThanOrEqual(
 		8,
@@ -186,10 +186,10 @@ test("real Owner password opens every populated owner surface", async ({
 		"تحديث إعدادات التشغيل لشهر سبتمبر",
 	);
 
-	await page.getByRole("tab", { name: "System Status" }).click();
+	await page.getByRole("tab", { name: "Operations" }).click();
 	await expect(
 		page.getByRole("heading", {
-			name: "Uptime and incidents",
+			name: "Operations & incidents",
 			exact: true,
 		}),
 	).toBeVisible({ timeout: 15_000 });

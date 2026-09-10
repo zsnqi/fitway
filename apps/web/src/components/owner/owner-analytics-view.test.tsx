@@ -385,10 +385,10 @@ describe("owner daily analytics states", () => {
 		expect(container.textContent).toContain("Missing observation");
 		expect(
 			container.querySelector(".owner-metrics")?.textContent,
-		).not.toContain("Readings coverage");
+		).not.toContain("Data coverage");
 		expect(
 			container.querySelector(".owner-table-disclosure")?.textContent,
-		).toContain("Readings coverage");
+		).toContain("Data coverage");
 		expect(container.querySelectorAll(".owner-metric")).toHaveLength(3);
 		expect(container.textContent).toContain("10:00 AM");
 		expect(container.textContent).toContain("3:01 AM");

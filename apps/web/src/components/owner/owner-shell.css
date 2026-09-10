@@ -6,6 +6,7 @@
 	   sticky headers while remaining part of the surrounding oxblood surface. */
 	--owner-table-head: #281b20;
 	--owner-control: rgb(10 10 12 / 72%);
+	--owner-focus-ring: #efd4dc;
 	--fw-edge-quiet: var(--owner-edge-quiet);
 	--fw-lift: rgb(255 238 240 / 2.8%);
 	--owner-board-edge: var(--owner-edge-control);
@@ -28,6 +29,18 @@
 	min-block-size: 100vh;
 	overflow-x: clip;
 	background-color: var(--owner-field);
+}
+
+/* The atmosphere is anchored to the viewport, not to the content-height shell:
+   the glow ellipses keep one size and one centre while the document grows and
+   scrolls. The shell keeps its own field colour underneath; this layer is
+   decorative only, never receives a pointer, and paints below content, which
+   the direct-child rule below promotes to z-index 1. */
+.owner-shell::before {
+	position: fixed;
+	z-index: 0;
+	inset: 0;
+	pointer-events: none;
 	background-image:
 		radial-gradient(
 			ellipse 82% 64% at 14% 22% in oklab,
@@ -41,6 +54,7 @@
 			oklab(27.3% 0.094 0.032 / 12%) 52%,
 			oklab(13.9% -0.001 -0.003 / 0%) 82%
 		);
+	content: "";
 }
 
 @supports (height: 100svh) {
@@ -167,7 +181,7 @@
 .owner-rail__brand:focus-visible,
 .owner-nav__link:focus-visible {
 	outline: 0;
-	box-shadow: 0 0 0 2px var(--fw-focus-ring);
+	box-shadow: 0 0 0 2px var(--owner-focus-ring);
 }
 
 .owner-rail__separator,
@@ -331,7 +345,17 @@
 
 .owner-shell .admin-state__action:focus-visible {
 	outline: 0;
-	box-shadow: 0 0 0 2px var(--fw-focus-ring);
+	box-shadow: 0 0 0 2px var(--owner-focus-ring);
+}
+
+/* Accessibility exception over the shared Button recipe: its default variant
+   hovers to --fw-red-bright (#ff2946), about 3.7:1 with the white label, below
+   the binding WCAG AA 4.5:1. Owner primary buttons hover to a darker mix of
+   --fw-red (about 6:1) instead. The global token, the shared Button, and every
+   non-owner surface stay untouched; disabled buttons keep their disabled
+   appearance. */
+.owner-shell [data-slot="button"].bg-primary:hover:not(:disabled) {
+	background-color: color-mix(in srgb, var(--fw-red) 86%, black);
 }
 
 @media (min-width: 721px) and (max-width: 820px) {
@@ -563,6 +587,12 @@
 }
 
 @media (forced-colors: active) {
+	/* The atmosphere is pure decoration; high-contrast mode drops it so the
+	   forced Canvas field is never tinted by the glows. */
+	.owner-shell::before {
+		background-image: none;
+	}
+
 	.owner-rail,
 	.owner-shell .owner-nav {
 		border-block-end: 1px solid CanvasText;

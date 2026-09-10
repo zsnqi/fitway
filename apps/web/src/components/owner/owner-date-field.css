@@ -1,15 +1,17 @@
 .owner-date-field {
 	display: grid;
 	gap: 6px;
-	inline-size: min(100%, 288px);
+	inline-size: min(100%, 324px);
 	min-inline-size: 0;
 	margin: 0;
 	padding: 0;
 	border: 0;
 }
 
+/* A single visible label per date field: the group legend. Day, month, and year stay
+   readable to assistive technology as the trigger's own accessible name. */
 .owner-date-field > legend {
-	margin: 0 0 6px;
+	margin: 0;
 	padding: 0;
 	color: var(--fw-text-muted);
 	font-size: 12px;
@@ -18,77 +20,64 @@
 
 .owner-date-field__parts {
 	display: grid;
-	grid-template-columns: minmax(52px, 0.78fr) minmax(94px, 1.32fr) minmax(
-			78px,
-			1fr
-		);
+	grid-template-columns:
+		minmax(0, 88px)
+		minmax(0, 128px)
+		minmax(0, 96px);
 	gap: 6px;
 	min-inline-size: 0;
 }
 
 .owner-date-field__segment {
-	display: grid;
-	gap: 4px;
 	min-inline-size: 0;
 }
 
-.owner-date-field__segment > span {
-	color: var(--fw-text-subtle);
-	font-size: 10px;
-	font-weight: 500;
+/* A deliberate extension of the shared Owner select recipe, not an import-order
+ * accident: the composed class pair sets its own padding, edge, and hover-rate
+ * transition at a specificity that holds in every bundle order. The value gets a
+ * 12px optical start, the chevron an 18px lane inside a 10px end inset, so value
+ * and chevron read balanced. */
+.owner-select__trigger.owner-date-field__trigger {
+	padding-block: 0;
+	padding-inline: 12px 10px;
+	border: 1px solid var(--fw-border-strong);
+	transition:
+		border-color var(--fw-duration-fast) var(--fw-ease-out),
+		background-color var(--fw-duration-fast) var(--fw-ease-out);
 }
 
-.owner-date-field__trigger {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	box-sizing: border-box;
-	inline-size: 100%;
+.owner-select__trigger.owner-date-field__trigger > :first-child {
 	min-inline-size: 0;
-	min-block-size: 44px;
-	padding: 0 8px;
-	border: 1px solid var(--fw-border);
-	border-radius: var(--fw-radius-control);
-	background: var(--owner-control);
-	color: var(--fw-text);
-	font: inherit;
-	font-size: 13px;
-	font-variant-numeric: tabular-nums;
-	text-align: start;
-	cursor: pointer;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
-.owner-date-field__trigger:hover {
-	border-color: var(--fw-border-strong);
-	background: var(--fw-surface-2);
-}
-
-.owner-date-field__trigger:focus-visible {
-	outline: 2px solid var(--fw-focus-ring);
-	outline-offset: 2px;
-}
-
-.owner-date-field__trigger[aria-invalid="true"] {
-	border-color: var(--fw-error-fg);
-}
-
-.owner-date-field__icon {
+.owner-date-field__icon,
+.owner-select__trigger.owner-date-field__trigger .owner-select__icon {
 	display: inline-flex;
 	flex: 0 0 auto;
 	align-items: center;
 	justify-content: center;
-	inline-size: 16px;
-	block-size: 16px;
+	inline-size: 18px;
+	block-size: 18px;
 	color: var(--fw-text-subtle);
 }
 
-.owner-date-field__icon svg {
+.owner-date-field__icon svg,
+.owner-select__trigger.owner-date-field__trigger .owner-select__icon svg {
 	inline-size: 14px;
 	block-size: 14px;
 }
 
 .owner-date-field__positioner {
 	z-index: 80;
+}
+
+/* A short day or month trigger no longer dictates a same-width option list; the
+   composed class pair holds the floor in every bundle order. */
+.owner-select__popup.owner-date-field__popup {
+	min-inline-size: max(160px, var(--anchor-width));
 }
 
 .owner-date-field__popup {
@@ -219,7 +208,7 @@
 }
 
 .owner-date-field__year-option:focus-visible {
-	outline: 2px solid var(--fw-focus-ring);
+	outline: 2px solid var(--owner-focus-ring);
 	outline-offset: -2px;
 }
 
@@ -228,6 +217,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+	.owner-select__trigger.owner-date-field__trigger {
+		transition: none;
+	}
+
 	.owner-date-field__popup {
 		transition-duration: 0.01ms;
 	}

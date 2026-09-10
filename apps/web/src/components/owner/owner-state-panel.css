@@ -1,0 +1,103 @@
+.owner-state-panel {
+	box-sizing: border-box;
+	min-inline-size: 0;
+}
+
+/*
+ * The unified Owner state card: one material family, border, icon tile, and
+ * content rhythm shared by Settings, System Status, and Activity Log. It stays
+ * an explicit modifier so the frozen reporting and access panels, which own
+ * their recipes, are not restyled from underneath.
+ */
+.owner-state-panel--card {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr) auto;
+	align-items: center;
+	gap: 18px;
+	padding: 24px;
+	border: 1px solid var(--fw-border);
+	border-radius: var(--fw-radius-surface);
+	background:
+		linear-gradient(
+			140deg,
+			color-mix(in srgb, var(--fw-chalk) 2.4%, transparent),
+			transparent 35%
+		),
+		color-mix(in srgb, var(--owner-panel) 84%, transparent);
+}
+
+.owner-state-panel--card :is(h2, h3) {
+	margin: 0;
+	color: var(--fw-chalk);
+	font-size: 16px;
+	line-height: 1.35;
+}
+
+.owner-state-panel--card p {
+	max-inline-size: 70ch;
+	margin: 6px 0 0;
+	color: var(--fw-text-subtle);
+	font-size: 12px;
+	line-height: 1.6;
+}
+
+.owner-state-panel--card > svg {
+	inline-size: 44px;
+	block-size: 44px;
+	padding: 11px;
+	border: 1px solid var(--fw-border-strong);
+	border-radius: 14px;
+	color: var(--fw-offline);
+	background: color-mix(in srgb, var(--fw-chalk) 3%, transparent);
+}
+
+.owner-state-panel--card:where([data-owner-state-variant="error"]) > svg {
+	border-color: color-mix(in srgb, var(--fw-red-bright) 24%, transparent);
+	color: var(--fw-error-fg);
+	background: color-mix(in srgb, var(--fw-red) 8%, transparent);
+}
+
+.owner-state-panel--card:where([data-owner-state-variant="empty"]) > svg {
+	color: var(--fw-text-muted);
+}
+
+.owner-state-panel--card button {
+	min-block-size: 44px;
+}
+
+.owner-state-panel[data-owner-state-variant="loading"] {
+	min-block-size: 128px;
+}
+
+@media (max-width: 720px) {
+	.owner-state-panel--card {
+		grid-template-columns: minmax(0, 1fr);
+		justify-items: start;
+		padding: 20px;
+	}
+
+	.owner-state-panel--card button {
+		inline-size: 100%;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.owner-state-panel * {
+		scroll-behavior: auto;
+	}
+}
+
+@media (forced-colors: active) {
+	.owner-state-panel--card {
+		border-color: CanvasText;
+	}
+
+	.owner-state-panel--card > svg {
+		border-color: CanvasText;
+	}
+
+	.owner-state-panel--card:where([data-owner-state-variant="error"]) > svg {
+		color: CanvasText;
+		background: Canvas;
+	}
+}

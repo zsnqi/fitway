@@ -1,0 +1,54 @@
+.owner-scroll-region__frame {
+	position: relative;
+	min-inline-size: 0;
+}
+
+.owner-scroll-region__hint {
+	margin: 0;
+	padding-block: 8px;
+	padding-inline: 16px;
+	border-block-end: 1px solid var(--fw-border);
+	color: var(--fw-text-subtle);
+	font-size: 12px;
+	line-height: 18px;
+}
+
+.owner-scroll-region {
+	position: relative;
+	isolation: isolate;
+	overflow: auto;
+}
+
+.owner-scroll-region:focus-visible {
+	outline: 2px solid var(--owner-focus-ring);
+	outline-offset: -3px;
+}
+
+.owner-scroll-region__frame[data-scrollable="true"]::after {
+	position: absolute;
+	z-index: 4;
+	inset-block: 0;
+	inset-inline-end: 0;
+	inline-size: 18px;
+	pointer-events: none;
+	content: "";
+	background: linear-gradient(to left, rgb(9 7 9 / 54%), transparent);
+}
+
+:where([dir="rtl"]) .owner-scroll-region__frame[data-scrollable="true"]::after {
+	background: linear-gradient(to right, rgb(9 7 9 / 54%), transparent);
+}
+
+.owner-scroll-region__frame[data-inline-end="true"]::after {
+	display: none;
+}
+
+@media (forced-colors: active) {
+	.owner-scroll-region:focus-visible {
+		outline-color: Highlight;
+	}
+
+	.owner-scroll-region__frame::after {
+		display: none;
+	}
+}

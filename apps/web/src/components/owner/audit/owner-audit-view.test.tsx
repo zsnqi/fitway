@@ -129,6 +129,8 @@ describe("owner audit states", () => {
 		expect(status?.getAttribute("role")).toBe("status");
 		expect(status?.getAttribute("aria-live")).toBe("polite");
 		expect(status?.textContent).toContain(ownerAuditMessages.en.loading);
+		expect(status?.hasAttribute("data-owner-state-panel")).toBe(true);
+		expect(status?.querySelector("svg")).not.toBeNull();
 	});
 
 	it("raises an error alert that offers a retry and substitutes no record", async () => {
@@ -136,6 +138,7 @@ describe("owner audit states", () => {
 		await render(<OwnerAuditError onRetry={() => (retried += 1)} />, "en");
 		const alert = container.querySelector('[data-owner-audit-state="error"]');
 		expect(alert?.getAttribute("role")).toBe("alert");
+		expect(alert?.querySelector("svg")).not.toBeNull();
 		expect(container.querySelector("table")).toBeNull();
 		await act(async () => {
 			container
@@ -147,10 +150,27 @@ describe("owner audit states", () => {
 
 	it("explains an empty result without pretending a record exists", async () => {
 		await render(<OwnerAuditEmpty onClear={() => undefined} />, "en");
-		expect(
-			container.querySelector('[data-owner-audit-state="empty"]')?.textContent,
-		).toContain(ownerAuditMessages.en.emptyTitle);
+		const empty = container.querySelector('[data-owner-audit-state="empty"]');
+		expect(empty?.textContent).toContain(ownerAuditMessages.en.emptyTitle);
+		expect(empty?.querySelector("svg")).not.toBeNull();
 		expect(container.querySelector("table")).toBeNull();
+	});
+
+	it("nests every state in the shared async entry seam", async () => {
+		await render(<OwnerAuditLoading />, "en");
+		expect(container.querySelector("[data-owner-async-swap]")).not.toBeNull();
+		expect(
+			container.querySelector(".owner-async-swap__current"),
+		).not.toBeNull();
+
+		await render(<OwnerAuditError onRetry={() => undefined} />, "en");
+		expect(container.querySelector("[data-owner-async-swap]")).not.toBeNull();
+
+		await render(<OwnerAuditEmpty onClear={() => undefined} />, "en");
+		expect(container.querySelector("[data-owner-async-swap]")).not.toBeNull();
+
+		await render(<OwnerAuditTable entries={entries} timeZone="UTC" />, "en");
+		expect(container.querySelector("[data-owner-async-swap]")).not.toBeNull();
 	});
 });
 

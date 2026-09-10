@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-09-08T18:10:00+03:00"
+updatedAt: "2026-09-09T23:24:57+03:00"
 
 coordinator:
-  owner: "Coordinator final authority. owner-presentation-ready-r07 is the fresh human-authorized successor for the exact preserved d35fbd3 dirty presentation candidate after r06 exhausted 2/2 repairs and proved one remaining concurrency-only Owner logo rasterization failure. This attempt freezes scope to deterministic decoded-logo settlement in the existing shell canonical assertion, then owns a fresh full gate, fresh independent rendered/functional review, and final live presentation rehearsal. Historical attempts and their repair accounting remain immutable; product, Paper, canonical design, data, auth, deployment, credential, and release changes remain excluded."
+  owner: "Coordinator final authority and sole serialized writer for the human-approved owner-audit-closure-r03 successor. This attempt preserves the completed Owner implementation and green r02 phase/full evidence, changes only the deterministic shell/back-forward review-harness hypothesis, preflights the final three shell scenarios, then owns the required phase/full disposable-database ladder, continuous live Owner rehearsal, fresh independent review, commit, and final acceptance. Production navigation semantics, Public, Staff, backend contracts, authentication, authorization, analytics semantics, CSV transport, Paper, production data, historical records, and current untracked inspection artifacts remain frozen."
   stateFilePolicy: coordinator-only
 
 baseline:
@@ -22,6 +22,146 @@ baseline:
   independentVerification: docs/phase-records/baseline-independent-verification.md
 
 milestones:
+  owner-surface-completion-r01:
+    status: IN_PROGRESS
+    dependencies: [owner-quality-pass-r01]
+    ownerSession: "Primary coordinator, integration authority, final rendered-product reviewer, and sole serialized repository writer for the human-authorized audit-driven Owner implementation pass opened 2026-09-10. Human instruction: implement the consolidated Owner UI audit and execution plan through implementation, live rendered inspection, independent review, verification, final presentation walkthrough, and completion. Scope: Owner composition, control/field anatomy, unified states, async continuity, owner copy, atmosphere decoupling, and restrained motion inside apps/web/src/components/owner/**; Owner-focused tests and Owner canonical reconciliation with per-surface quality records under this authorization; PROJECT_STATE and the r01 handoff. Public, Staff, backend contracts, authentication, Paper, demo data, credentials, historical records, and existing untracked user inspection artifacts remain frozen. The r03 NEEDS_HUMAN baseline-approval blocker is superseded by this pass's explicit human authorization to complete the presentation implementation."
+    branch: codex/owner-demo-prep
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
+    baseCommit: bfa4a0b869c1667210ff7eb0d746228229ea0302
+    ownedPaths:
+      - "apps/web/src/components/owner/**"
+      - "apps/web/src/hooks/use-owner-* only where an owned surface requires it"
+      - "apps/web/src/i18n/messages/en.ts and ar.ts owner-only keys that render exclusively on the owner route (staffWeb.admin description/placeholder/wrong-role strings)"
+      - "tests/browser/** owner-specific specs, support, and Owner canonical screenshots only"
+      - "scripts/owner-review.ts, scripts/verify.mjs, package.json only if the Owner verification profile requires it"
+      - "Owner visual-authority records and hash mappings only"
+      - "docs/phase-records/handoffs/owner-demo-polish/**"
+      - PROJECT_STATE.yaml
+    forbiddenPaths:
+      - "Public and Staff implementation and canonical screenshots"
+      - "apps/server/**, packages/**, schemas, migrations, OpenAPI, authentication, authorization, analytics and CSV contracts/transport"
+      - "Paper, production data, accumulated demo history, credentials, deployment, releases, and historical milestone records"
+      - "existing untracked user inspection artifacts"
+    sharedLeases: []
+    validationRepairAttempts: 1
+    lastHeartbeatAt: "2026-09-10T21:35:00+03:00"
+    leaseExpiresAt: "2026-09-12T23:59:00+03:00"
+    handoff: docs/phase-records/handoffs/owner-demo-polish/20260910-owner-surface-completion-r01.md
+    stopReason: null
+    gates:
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
+      independentReview: PASS
+    integratedCommit: null
+
+  owner-audit-closure-r03:
+    status: NEEDS_HUMAN
+    dependencies: [owner-quality-pass-r01]
+    ownerSession: "Primary coordinator, integration authority, final rendered-product reviewer, and sole serialized repository writer for the human-authorized successor to terminal owner-audit-closure-r02. The exact preserved uncommitted Owner candidate and green r02 phase/full evidence continue unchanged. The r02 terminal failure was isolated to shell/back-forward in tests/browser/owner-presentation.review.spec.ts: its section clicks correctly replaced the only in-app history entry, so browser Back returned to about:blank and the harness waited for a nonexistent shell. This successor changes only that hypothesis: establish a genuine prior in-app history entry, explicitly prove Back and Forward select the expected sections under the production replace contract, preflight shell/back-forward, shell/rapid-retarget, and shell/locale-round-trip, then repeat the required acceptance ladder, continuous live rehearsal, frozen-surface proof, fresh independent review, commit, and final acceptance. No product navigation change, demo reset, direct SQL, credential bypass, canonical rewrite, or redo of accepted UI work is authorized."
+    branch: codex/owner-demo-prep
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
+    baseCommit: bfa4a0b869c1667210ff7eb0d746228229ea0302
+    ownedPaths:
+      - "apps/web/src/components/owner/**"
+      - "tests/browser/** owner-specific specs, support, and accepted Owner canonical screenshots only"
+      - "scripts/owner-review.ts, scripts/verify.mjs, package.json"
+      - "Owner visual-authority records and hash mappings only"
+      - "docs/phase-records/handoffs/owner-demo-polish/**"
+      - PROJECT_STATE.yaml
+    forbiddenPaths:
+      - "Public and Staff implementation and canonical screenshots"
+      - "apps/server/**, packages/**, schemas, migrations, OpenAPI, authentication, authorization, analytics and CSV contracts/transport"
+      - "Paper, production data, accumulated demo history, credentials, deployment, releases, and historical milestone records"
+      - "existing untracked user inspection artifacts"
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-09-09T23:24:57+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/owner-demo-polish/20260909-owner-audit-closure-r03.md
+    stopReason: "NEEDS_HUMAN: fresh independent review found that the preserved candidate changes nine Owner canonical screenshots and routed authority hashes, but the r02 successor that performed those promotions explicitly froze canonical bytes and its terminal FAILED_VALIDATION handoff cannot serve as human baseline approval. The earlier r01 plan allowed inspected Owner-only visual reconciliation but stopped before any promotion, while r03 authorization was narrowly for the remaining review-harness issue and completion. PHASES requires explicit human approval for baseline screenshot updates. No commit was created; automated phase/full/41-scenario gates and live rehearsal remain green, demo history is preserved, and all leases are released. Unblock condition: the human explicitly accepts the nine inspected Owner-only baseline updates (Daily EN mobile; Activity AR desktop and EN mobile; Health AR desktop and EN mobile; Settings EN desktop clean/loading/error and AR mobile), after which the authority manifest/record must be reconciled and a fresh independent review completed before integration."
+    gates:
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+
+  owner-audit-closure-r02:
+    status: FAILED_VALIDATION
+    dependencies: [owner-quality-pass-r01]
+    ownerSession: "Primary coordinator, integration authority, final rendered-product reviewer, and sole serialized repository writer for the human-authorized successor to terminal owner-audit-closure-r01. The exact preserved uncommitted Owner candidate and completed rendered evidence continue unchanged. The r01 phase failures occurred before the Owner browser profile because unit-process environment bootstrap did not cover every packages/env/src/server.ts key. This successor changes only that hypothesis: restore the frozen-lockfile toolchain, preflight cron.test.ts and reference-gating.test.ts with a complete synthetic non-routable unit environment, then run a fresh formal phase, a uniquely named disposable-Postgres full gate whose application and test URLs differ, continuous live Owner rehearsal, frozen-surface proof, fresh independent review, and final acceptance. No demo reset, direct SQL, credential bypass, canonical rewrite, or redo of accepted UI work is authorized."
+    branch: codex/owner-demo-prep
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
+    baseCommit: bfa4a0b869c1667210ff7eb0d746228229ea0302
+    ownedPaths:
+      - "apps/web/src/components/owner/**"
+      - "tests/browser/** owner-specific specs, support, and accepted Owner canonical screenshots only"
+      - "scripts/owner-review.ts, scripts/verify.mjs, package.json"
+      - "Owner visual-authority records and hash mappings only"
+      - "docs/phase-records/handoffs/owner-demo-polish/**"
+      - PROJECT_STATE.yaml
+    forbiddenPaths:
+      - "Public and Staff implementation and canonical screenshots"
+      - "apps/server/**, packages/**, schemas, migrations, OpenAPI, authentication, authorization, analytics and CSV contracts/transport"
+      - "Paper, production data, accumulated demo history, credentials, deployment, releases, and historical milestone records"
+      - "existing untracked user inspection artifacts"
+    sharedLeases: []
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-09-09T20:08:23+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/owner-demo-polish/20260909-owner-audit-closure-r02.md
+    stopReason: "Terminal owner-audit-closure-r02 FAILED_VALIDATION after its two permitted focused repairs and a third validation failure. Preserve the green candidate and evidence: formal phase owner_audit_phase_r02_02 passed invariants, Biome, Owner token fidelity, types, 633/633 unit/component, 120/120 simulator, 106/106 Owner browser, and mutation guard; full owner_audit_full_r02_02 passed builds, 133/133 disposable-database integration, 173/173 applicable browser/accessibility assertions, and mutation guard; all disposable containers were removed. The all-scenario Owner presentation pass then completed the first 38/41 named scenarios without mutation before shell/back-forward deterministically failed: section clicks intentionally replace the current URL, so page.goBack() has no prior app history entry and returns to the initial blank page, after which settle waits for a nonexistent .owner-shell. shell/rapid-retarget and shell/locale-round-trip were not reached in that batch, though prior rapid-retarget motion evidence passed. A successor requires explicit human authorization and a changed hypothesis: seed a genuine second in-app history entry (or explicitly verify replace semantics) before Back/Forward, preflight the final three shell scenarios, then rerun the required acceptance ladder without changing product navigation semantics. No implementation, Public/Staff/backend/Paper contract, or demo data failed."
+    gates:
+      unit: PASS
+      integration: PASS
+      browser: FAIL
+      accessibility: PASS
+      visual: FAIL
+      independentReview: PENDING
+    integratedCommit: null
+
+  owner-audit-closure-r01:
+    status: FAILED_VALIDATION
+    dependencies: [owner-quality-pass-r01]
+    ownerSession: "Primary coordinator, integration authority, final rendered-product reviewer, and sole serialized repository writer for the approved Owner audit-closure plan. Bounded read-only investigation and fresh independent review may delegate. Work begins from committed owner-quality-pass-r01 without repeating completed investigation, keeps Public/Staff/backend/Paper bytes frozen, establishes deterministic Owner presentation evidence before UI edits, then owns focused repair, trusted fast/phase/full gates, a continuous live Owner rehearsal, inspection-led Owner-only baseline promotion, and final acceptance. The restarted local demo is healthy; its Staff credential was legitimately rotated during prior Access review, so this pass preserves audited history and neither resets data nor bypasses the supported credential workflow."
+    branch: codex/owner-demo-prep
+    worktree: C:/Users/Pc Force/.codex/worktrees/f2a7/phase5-staff-integration
+    baseCommit: bfa4a0b869c1667210ff7eb0d746228229ea0302
+    ownedPaths:
+      - "apps/web/src/components/owner/**"
+      - "tests/browser/** owner-specific specs, support, and accepted Owner canonical screenshots only"
+      - "scripts/owner-review.ts, scripts/verify.mjs, package.json"
+      - "Owner visual-authority records and hash mappings only"
+      - "docs/phase-records/handoffs/owner-demo-polish/**"
+      - PROJECT_STATE.yaml
+    forbiddenPaths:
+      - "Public and Staff implementation and canonical screenshots"
+      - "apps/server/**, packages/**, schemas, migrations, OpenAPI, authentication, authorization, analytics and CSV contracts/transport"
+      - "Paper, production data, accumulated demo history, credentials, deployment, releases, and historical milestone records"
+      - "existing untracked user inspection artifacts"
+    sharedLeases:
+      - "Coordinator lease through 2026-09-10T23:59:00+03:00: serialized Owner components, Owner browser/review tooling, Owner-only canonical reconciliation, verification profile, PROJECT_STATE, and r01 handoff"
+      - "Coordinator lease through 2026-09-10T23:59:00+03:00: local demo runtime and explicitly named disposable verification resources; no demo reset, credential bypass, or history rewrite"
+    validationRepairAttempts: 2
+    lastHeartbeatAt: "2026-09-09T13:23:36+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/owner-demo-polish/20260909-owner-audit-closure-r01.md
+    stopReason: "Terminal owner-audit-closure-r01 FAILED_VALIDATION after its permitted two focused repairs were consumed by the same repository server-unit process-environment bootstrap failure before the registered Owner browser profile ran. The initial phase gate passed repository invariants, repository-wide Biome, Owner token fidelity, and types, then the unit step lacked CRON_SECRET and both Telegram variables. Repair 1 supplied those three non-secret test placeholders; the next gate again passed every earlier step and 631/633 unit assertions, but two isolated cron module-reload assertions then exposed four additional absent schema variables: DATABASE_URL, BETTER_AUTH_SECRET, BETTER_AUTH_URL, and CORS_ORIGIN. A complete synthetic, non-routable test environment covering every packages/env/src/server.ts key is the changed successor hypothesis, but a third r01 retry was correctly rejected under the repair limit. Preserve the uncommitted Owner-only implementation and evidence: the focused Owner component suite passed 103/103; the mutation-guarded presentation matrix passed 20/20; focused corrected Reports and Activity captures passed; and rapid-retarget motion capture passed with inspected start/middle/settled frames. No Owner implementation assertion failed, no repository mutation occurred during either formal attempt, no canonical was changed, and Public/Staff/backend/Paper remained untouched. A successor r02 requires explicit human authorization, must preflight the two server unit files with the complete synthetic environment before spending a formal run, and must then restart the phase/full/live/independent-review ladder with a fresh repair budget."
+    gates:
+      unit: FAIL
+      integration: PENDING
+      browser: PENDING
+      accessibility: PENDING
+      visual: PASS
+      independentReview: PENDING
+    integratedCommit: null
+
   owner-quality-pass-r01:
     status: DONE
     dependencies: [owner-presentation-ready-r07]

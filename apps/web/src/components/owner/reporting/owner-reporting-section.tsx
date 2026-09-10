@@ -11,8 +11,8 @@ import {
 } from "@/hooks/use-owner-reporting";
 import { useI18n } from "@/i18n/provider";
 
+import { OwnerAsyncSwap } from "../owner-async-swap";
 import { OwnerDateField } from "../owner-date-field";
-import { OwnerRetainedDisclosure } from "../owner-retained-disclosure";
 import type { OwnerDailyAnalyticsPrerequisite } from "./owner-analytics-mode-switch";
 import {
 	OwnerReportingExport,
@@ -56,6 +56,7 @@ export function OwnerReportingSection({
 	const [draft, setDraft] = useState<ReportingRangeSelection | null>(null);
 	const [dateValidity, setDateValidity] = useState({ start: true, end: true });
 	const [validationRequested, setValidationRequested] = useState(false);
+	const [appliedNotice, setAppliedNotice] = useState(false);
 	const reporting = useOwnerReporting(applied, {
 		timeZone: prerequisite.data?.timeContext.current.timeZone ?? null,
 		anchorBusinessDay: prerequisite.data?.daily.businessDay ?? null,
@@ -105,8 +106,23 @@ export function OwnerReportingSection({
 		return null;
 	}
 
-	const fallback = windowEndingOn(anchor, REPORTING_DEFAULT_WINDOW_DAYS);
 	const editing = draft ?? current;
+	// The 31-day preset is the reporting query's own bound, so the preset group states
+	// the relationship between the quick ranges and the limit instead of leaving it out.
+	// The pressed state marks the window in force, not the draft being edited.
+	const presets = [
+		{ days: 7, label: messages.presetLast7 },
+		{ days: REPORTING_DEFAULT_WINDOW_DAYS, label: messages.presetLast28 },
+		{ days: REPORTING_QUERY_MAX_RANGE_DAYS, label: messages.presetLast31 },
+	].map((preset) => {
+		const presetWindow = windowEndingOn(anchor, preset.days);
+		return {
+			...preset,
+			applied:
+				current.startBusinessDay === presetWindow.startBusinessDay &&
+				current.endBusinessDay === presetWindow.endBusinessDay,
+		};
+	});
 
 	const rangeValidationProblem =
 		dateValidity.start && dateValidity.end
@@ -117,9 +133,23 @@ export function OwnerReportingSection({
 				)
 			: messages.problemMalformed;
 	const problem = validationRequested ? rangeValidationProblem : null;
+	// An unapplied edit is only worth calling out when it is a window the section could
+	// actually send. The invalid case already has its own message beside the fields.
+	const pending =
+		rangeValidationProblem === null &&
+		(editing.startBusinessDay !== current.startBusinessDay ||
+			editing.endBusinessDay !== current.endBusinessDay);
 
 	function update(key: keyof ReportingRangeSelection, value: string) {
 		setDraft({ ...editing, [key]: value });
+	}
+
+	function applySelection(selection: ReportingRangeSelection) {
+		setDraft(null);
+		setApplied(selection);
+		setDateValidity({ start: true, end: true });
+		setValidationRequested(false);
+		setAppliedNotice(true);
 	}
 
 	function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -128,14 +158,9 @@ export function OwnerReportingSection({
 		// An unusable window is never sent and never silently corrected; the message
 		// beside the field stays, and the answer already on screen stays with it.
 		if (rangeValidationProblem) return;
+		setDraft(null);
 		setApplied(editing);
-	}
-
-	function restoreDefault() {
-		setDraft(fallback);
-		setApplied(fallback);
-		setDateValidity({ start: true, end: true });
-		setValidationRequested(false);
+		setAppliedNotice(true);
 	}
 
 	const heatmap = reporting.heatmap.data;
@@ -215,15 +240,39 @@ export function OwnerReportingSection({
 								}
 								onChange={(value) => update("endBusinessDay", value)}
 							/>
-							<div className="owner-reporting-range__actions">
-								<Button type="submit">{messages.apply}</Button>
-								<Button
-									type="button"
-									variant="outline"
-									onClick={restoreDefault}
-								>
-									{messages.restoreDefault}
-								</Button>
+							<div className="owner-reporting-range__tools">
+								<div className="owner-reporting-range__actions">
+									{pending ? (
+										<p className="owner-reporting-range__pending" role="status">
+											{messages.rangePending}
+										</p>
+									) : null}
+									<Button type="submit">{messages.apply}</Button>
+								</div>
+								{/*
+								 * A preset applies the moment it is chosen, exactly like the
+								 * restore control it replaces; the pressed state marks the
+								 * window currently in force, not the draft being edited.
+								 */}
+								<fieldset className="owner-reporting-range__presets">
+									<legend className="fw-sr-only">
+										{messages.presetsLegend}
+									</legend>
+									{presets.map((preset) => (
+										<Button
+											key={preset.days}
+											type="button"
+											variant="outline"
+											aria-pressed={preset.applied}
+											data-owner-reporting-preset={preset.days}
+											onClick={() =>
+												applySelection(windowEndingOn(anchor, preset.days))
+											}
+										>
+											{preset.label}
+										</Button>
+									))}
+								</fieldset>
 							</div>
 						</div>
 						{problem ? (
@@ -236,39 +285,51 @@ export function OwnerReportingSection({
 								{problem}
 							</p>
 						) : null}
+						<p className="fw-sr-only" role="status" aria-live="polite">
+							{appliedNotice ? `${messages.rangeApplied}: ${pageDate}` : ""}
+						</p>
 					</fieldset>
 				</form>
+				<OwnerReportingExport anchorBusinessDay={anchor} />
 			</div>
 
 			<div className="owner-reporting-block">
-				{loadingHeatmap ? <OwnerReportingLoading embedded /> : null}
-				{reporting.heatmap.status === "error" ? (
-					<OwnerReportingError
-						title={messages.errorTitle}
-						onRetry={reporting.heatmap.retry}
-					/>
-				) : null}
-				{heatmap ? <OwnerReportingHeatmap heatmap={heatmap} /> : null}
+				<OwnerAsyncSwap
+					stateKey={`${reporting.heatmap.status}:${heatmap ? "content" : "none"}`}
+				>
+					{loadingHeatmap ? <OwnerReportingLoading embedded /> : null}
+					{reporting.heatmap.status === "error" ? (
+						<OwnerReportingError
+							title={messages.errorTitle}
+							onRetry={reporting.heatmap.retry}
+						/>
+					) : null}
+					{heatmap ? <OwnerReportingHeatmap heatmap={heatmap} /> : null}
+				</OwnerAsyncSwap>
 			</div>
 
 			<div className="owner-reporting-lower">
 				<div className="owner-reporting-block">
-					{reporting.comparison.status === "pending" ? (
-						<OwnerReportingLoading
-							embedded
-							compact
-							announce={!loadingHeatmap}
-						/>
-					) : null}
-					{reporting.comparison.status === "error" ? (
-						<OwnerReportingError
-							title={messages.comparisonErrorTitle}
-							onRetry={reporting.comparison.retry}
-						/>
-					) : null}
-					{comparison ? (
-						<OwnerReportingComparison comparison={comparison} />
-					) : null}
+					<OwnerAsyncSwap
+						stateKey={`${reporting.comparison.status}:${comparison ? "content" : "none"}`}
+					>
+						{reporting.comparison.status === "pending" ? (
+							<OwnerReportingLoading
+								embedded
+								compact
+								announce={!loadingHeatmap}
+							/>
+						) : null}
+						{reporting.comparison.status === "error" ? (
+							<OwnerReportingError
+								title={messages.comparisonErrorTitle}
+								onRetry={reporting.comparison.retry}
+							/>
+						) : null}
+						{comparison ? (
+							<OwnerReportingComparison comparison={comparison} />
+						) : null}
+					</OwnerAsyncSwap>
 				</div>
 				{heatmap ? (
 					<div className="owner-reporting-block owner-reporting-block--disclosure">
@@ -280,12 +341,6 @@ export function OwnerReportingSection({
 					</div>
 				) : null}
 			</div>
-			<OwnerRetainedDisclosure
-				className="owner-reporting-export-disclosure"
-				summary={messages.csvExport}
-			>
-				<OwnerReportingExport anchorBusinessDay={anchor} />
-			</OwnerRetainedDisclosure>
 		</section>
 	);
 }

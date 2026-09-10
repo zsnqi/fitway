@@ -155,16 +155,19 @@ export function OwnerSettingsView({
 				<div className="owner-settings__top" data-owner-navigation-anchor="">
 					<header className="owner-settings__intro">
 						<h1 id={headingId}>{messages.title}</h1>
+						{/* The settled header reserves the description line the loading and
+						   error states render, so the shared section tab strip cannot move
+						   when the payload lands. The line stays empty and unannounced;
+						   only its measured height is load-bearing. */}
+						<p
+							className="owner-settings__intro-reserved"
+							data-owner-settings-intro-reserved=""
+							aria-hidden="true"
+						/>
 					</header>
 					<div className="owner-settings__actions owner-settings__actions--upper">
 						<span className="owner-settings__version">
-							<bdi>
-								{messages.currentVersion} {snapshot.version}
-							</bdi>
-							<span className="owner-settings__version-state">
-								{" · "}
-								{stateShort}
-							</span>
+							<bdi>{stateShort}</bdi>
 						</span>
 						{showDiscardInUpper ? (
 							<button
@@ -221,6 +224,7 @@ export function OwnerSettingsView({
 									"owner-settings__control",
 									errors.capacity !== null,
 								)}
+								data-width="6ch"
 							>
 								<input
 									id={fieldId("capacity")}
@@ -256,6 +260,7 @@ export function OwnerSettingsView({
 									"owner-settings__control",
 									errors.businessDayBoundary !== null,
 								)}
+								data-width="6ch"
 							>
 								<input
 									id={fieldId("boundary")}
@@ -298,6 +303,7 @@ export function OwnerSettingsView({
 									"owner-settings__control",
 									errors.resetBufferMinutes !== null,
 								)}
+								data-width="5ch"
 							>
 								<input
 									id={fieldId("reset")}
@@ -371,6 +377,7 @@ export function OwnerSettingsView({
 										"owner-settings__control",
 										error !== null,
 									)}
+									data-width="5ch"
 								>
 									<input
 										id={fieldId(key)}

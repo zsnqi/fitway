@@ -208,6 +208,10 @@ describe("owner settings section", () => {
 		expect(checkboxes()).toHaveLength(7);
 		expect(container.textContent).toContain("Riyadh time (Asia/Riyadh)");
 		expect(container.textContent).toContain("20 seconds");
+		// The status chip carries the save state only; a revision numeral would
+		// read as internal versioning.
+		expect(q(".owner-settings__version bdi")?.textContent).toBe("Saved");
+		expect(q(".owner-settings__version")?.textContent).not.toContain("7");
 		expect(field("boundary")?.placeholder).toBe("04:00");
 	});
 
@@ -215,7 +219,12 @@ describe("owner settings section", () => {
 		read.mockRejectedValue(new Error("Service Unavailable"));
 		await render();
 
-		expect(q("h1")?.textContent).toBe("Settings could not be loaded");
+		expect(q("h1")?.textContent).toBe("Settings");
+		const state = q('[data-owner-settings-state="error"]');
+		expect(state?.getAttribute("role")).toBe("alert");
+		expect(state?.textContent).toContain(ownerSettingsMessages.en.errorTitle);
+		expect(state?.querySelector("svg")).not.toBeNull();
+		expect(q("[data-owner-async-swap]")).not.toBeNull();
 		expect(timeInputs()).toHaveLength(0);
 		const retry = all("button").find((b) => b.textContent === "Try again");
 		expect(retry).toBeDefined();
@@ -226,6 +235,37 @@ describe("owner settings section", () => {
 		});
 		await settle();
 		expect(field("capacity")?.value).toBe("220");
+	});
+
+	it("shows the shared state card while the settings read is pending", async () => {
+		read.mockReturnValue(new Promise(() => undefined));
+		await render();
+
+		expect(q("h1")?.textContent).toBe("Settings");
+		const state = q('[data-owner-settings-state="loading"]');
+		expect(state?.getAttribute("role")).toBe("status");
+		expect(state?.getAttribute("aria-live")).toBe("polite");
+		expect(state?.querySelector("svg")).not.toBeNull();
+		expect(
+			state?.querySelector(".owner-settings__loading-bars"),
+		).not.toBeNull();
+		expect(q("[data-owner-async-swap]")).not.toBeNull();
+		expect(timeInputs()).toHaveLength(0);
+	});
+
+	it("keys the settled form inside the heading-preserving entry seam", async () => {
+		read.mockResolvedValue(snapshot);
+		await render();
+
+		const swap = q("[data-owner-async-swap]");
+		expect(swap).not.toBeNull();
+		expect(swap?.classList).toContain("owner-async-swap--settings");
+		expect(
+			swap?.querySelector(".owner-async-swap__current .owner-settings"),
+		).not.toBeNull();
+		expect(swap?.querySelector(".owner-settings__top h1")?.textContent).toBe(
+			"Settings",
+		);
 	});
 
 	it("stays clean and locks Save until a value changes; Discard restores the server values", async () => {
@@ -241,6 +281,7 @@ describe("owner settings section", () => {
 		expect(saveButton()?.disabled).toBe(false);
 		expect(container.textContent).toContain("Discard changes");
 		expect(container.textContent).toContain("Unsaved changes");
+		expect(q(".owner-settings__version bdi")?.textContent).toBe("Unsaved");
 
 		await act(async () => {
 			clickButton(
@@ -250,6 +291,7 @@ describe("owner settings section", () => {
 		await settle();
 		expect(field("capacity")?.value).toBe("220");
 		expect(saveButton()?.disabled).toBe(true);
+		expect(q(".owner-settings__version bdi")?.textContent).toBe("Saved");
 	});
 
 	it("announces the created version through the polite status region", async () => {
@@ -270,7 +312,9 @@ describe("owner settings section", () => {
 			expectedVersion: 7,
 			editable: { ...snapshot.editable, capacity: 240 },
 		});
-		expect(statusText()).toContain("Settings version 8 created.");
+		expect(statusText()).toContain(
+			"Settings saved. The change is recorded in Activity Log.",
+		);
 		expect(field("capacity")?.value).toBe("240");
 	});
 
@@ -290,6 +334,7 @@ describe("owner settings section", () => {
 		expect(field("capacity")?.value).toBe("260");
 		expect(statusText()).toContain("Nothing was changed.");
 		expect(saveButton()?.disabled).toBe(false);
+		expect(q(".owner-settings__version bdi")?.textContent).toBe("Not saved");
 
 		// Editing after a failure leaves the old outcome behind. Validation and
 		// clean-state truth take precedence over an obsolete retry message.
@@ -318,7 +363,9 @@ describe("owner settings section", () => {
 		});
 		await settle();
 		expect(update).toHaveBeenCalledTimes(2);
-		expect(statusText()).toContain("Settings version 9 created.");
+		expect(statusText()).toContain(
+			"Settings saved. The change is recorded in Activity Log.",
+		);
 	});
 
 	it("keeps the draft on a version conflict, disables Save, and reloads on Discard", async () => {
@@ -377,9 +424,7 @@ describe("owner settings section", () => {
 		expect(field("capacity")?.parentElement?.classList).toContain(
 			"owner-settings__control--error",
 		);
-		expect(container.textContent).toContain(
-			"Capacity must be between 1 and 2147483647.",
-		);
+		expect(container.textContent).toContain("Enter a number of people.");
 		expect(container.textContent).toContain(
 			"Use 24-hour time, for example 04:00.",
 		);
@@ -391,6 +436,25 @@ describe("owner settings section", () => {
 			setControlledValue(field("capacity") ?? null, "240");
 		});
 		expect(saveButton()?.disabled).toBe(false);
+	});
+
+	it("keeps each value and its unit together in one control sized to the value", async () => {
+		read.mockResolvedValue(snapshot);
+		await render();
+
+		for (const [name, width, unitText] of [
+			["capacity", "6ch", "people"],
+			["boundary", "6ch", "Riyadh time"],
+			["reset", "5ch", "minutes"],
+			["quietMaxPercent", "5ch", "%"],
+		] as const) {
+			const input = field(name);
+			const control = input?.parentElement;
+			expect(control?.getAttribute("data-width")).toBe(width);
+			const unit = control?.querySelector(".owner-settings__unit");
+			expect(unit?.textContent).toBe(unitText);
+			expect(input?.nextElementSibling).toBe(unit);
+		}
 	});
 
 	it("orders thresholds Quiet, Moderate, Busy and reports an order error on Moderate", async () => {
@@ -484,5 +548,6 @@ describe("owner settings section", () => {
 		expect(container.textContent).toContain("بداية يوم العمل");
 		expect(container.textContent).toContain("توقيت الرياض (Asia/Riyadh)");
 		expect(container.textContent).toContain("20 ثانية");
+		expect(q(".owner-settings__version bdi")?.textContent).toBe("غير محفوظ");
 	});
 });

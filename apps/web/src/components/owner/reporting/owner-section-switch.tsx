@@ -25,6 +25,7 @@ type OwnerSection =
 
 type OwnerSectionTransition = {
 	id: number;
+	mode: "pointer" | "instant";
 	source: OwnerSection;
 	destination: OwnerSection;
 	desiredScroll: number;
@@ -55,18 +56,18 @@ const labels = {
 		group: "Management sections",
 		daily: "Daily",
 		history: "Reports",
-		access: "Accounts & Sign-in",
+		access: "Access",
 		audit: "Activity Log",
-		health: "System Status",
+		health: "Operations",
 		settings: "Settings",
 	},
 	ar: {
 		group: "أقسام الإدارة",
 		daily: "اليومي",
 		history: "التقارير",
-		access: "الحسابات والدخول",
+		access: "الوصول",
 		audit: "سجل النشاط",
-		health: "حالة النظام",
+		health: "التشغيل",
 		settings: "الإعدادات",
 	},
 } as const;
@@ -140,12 +141,16 @@ export function OwnerSectionSwitch(props: OwnerSectionRenderers) {
 		if (!tablist || !tab) return;
 		const rowBox = tablist.getBoundingClientRect();
 		const tabBox = tab.getBoundingClientRect();
+		const rightToLeft = getComputedStyle(tablist).direction === "rtl";
+		// Align the selected tab to the logical reading edge when the row
+		// overflows. This leaves whole neighboring labels in view instead of an
+		// orphaned tail from the preceding destination.
 		const correction =
-			tabBox.left < rowBox.left
-				? tabBox.left - rowBox.left
-				: tabBox.right > rowBox.right
+			tablist.scrollWidth > tablist.clientWidth + 1
+				? rightToLeft
 					? tabBox.right - rowBox.right
-					: 0;
+					: tabBox.left - rowBox.left
+				: 0;
 		const scale =
 			tablist.offsetWidth > 0 ? rowBox.width / tablist.offsetWidth : 1;
 		if (correction !== 0) tablist.scrollBy({ left: correction / scale });
@@ -261,24 +266,6 @@ export function OwnerSectionSwitch(props: OwnerSectionRenderers) {
 			window.scrollTo({ left: window.scrollX, top, behavior: "auto" });
 		}
 
-		function naturalMaximumScroll() {
-			const containerHeight = Math.max(
-				container.offsetHeight,
-				container.getBoundingClientRect().height,
-			);
-			const panelHeight = Math.max(
-				panel.offsetHeight,
-				panel.scrollHeight,
-				panel.getBoundingClientRect().height,
-			);
-			return Math.max(
-				0,
-				documentHeight() -
-					Math.max(0, containerHeight - panelHeight) -
-					window.innerHeight,
-			);
-		}
-
 		function finish(cancelled = false) {
 			if (finished) return;
 			finished = true;
@@ -288,6 +275,11 @@ export function OwnerSectionSwitch(props: OwnerSectionRenderers) {
 			activeTransitionRef.current = null;
 			cancelRestorationRef.current = null;
 			container.style.removeProperty("min-block-size");
+			setNavigation((current) =>
+				current.transition?.id === transition.id
+					? { ...current, transition: null }
+					: current,
+			);
 			if (!cancelled) {
 				writeScroll(Math.min(transition.desiredScroll, maximumScroll()));
 			}
@@ -315,12 +307,6 @@ export function OwnerSectionSwitch(props: OwnerSectionRenderers) {
 			if (!isCurrent()) return;
 			const target = Math.min(transition.desiredScroll, maximumScroll());
 			if (Math.abs(window.scrollY - target) > 1) writeScroll(target);
-			if (
-				transition.firstVisit ||
-				naturalMaximumScroll() >= transition.desiredScroll
-			) {
-				finish();
-			}
 		}
 
 		const missingHeight = Math.max(
@@ -331,6 +317,12 @@ export function OwnerSectionSwitch(props: OwnerSectionRenderers) {
 			transition.capturedContainerHeight,
 			transition.capturedContainerHeight + missingHeight,
 		)}px`;
+
+		if (transition.mode === "instant") {
+			writeScroll(Math.min(transition.desiredScroll, maximumScroll()));
+			finish();
+			return;
+		}
 
 		window.addEventListener("wheel", cancelForIntent, { passive: true });
 		window.addEventListener("touchstart", cancelForIntent, { passive: true });
@@ -370,7 +362,11 @@ export function OwnerSectionSwitch(props: OwnerSectionRenderers) {
 	}, [navigation.transition, selected]);
 
 	const select = useCallback(
-		(section: OwnerSection, focus = false) => {
+		(
+			section: OwnerSection,
+			focus = false,
+			mode: OwnerSectionTransition["mode"] = "instant",
+		) => {
 			const source = selectedRef.current;
 			if (section === source) {
 				if (focus) {
@@ -408,6 +404,11 @@ export function OwnerSectionSwitch(props: OwnerSectionRenderers) {
 					)
 				: 0;
 			const firstVisit = !visitedRef.current.has(section);
+			const effectiveMode =
+				mode === "pointer" &&
+				window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+					? "instant"
+					: mode;
 			const sectionTop = container
 				? Math.max(0, outgoingScroll + container.getBoundingClientRect().top)
 				: 0;
@@ -428,6 +429,7 @@ export function OwnerSectionSwitch(props: OwnerSectionRenderers) {
 			nextTransitionIdRef.current += 1;
 			const transition: OwnerSectionTransition = {
 				id: nextTransitionIdRef.current,
+				mode: effectiveMode,
 				source,
 				destination: section,
 				desiredScroll,
@@ -504,7 +506,9 @@ export function OwnerSectionSwitch(props: OwnerSectionRenderers) {
 						aria-controls={panelId(section)}
 						aria-selected={selected === section}
 						tabIndex={selected === section ? 0 : -1}
-						onClick={() => select(section)}
+						onClick={(event) =>
+							select(section, false, event.detail > 0 ? "pointer" : "instant")
+						}
 						onKeyDown={(event) => handleKeyDown(event, section)}
 					>
 						{copy[section]}
@@ -529,10 +533,15 @@ export function OwnerSectionSwitch(props: OwnerSectionRenderers) {
 						selected === section &&
 						navigation.transition &&
 						activeTransitionRef.current?.id === navigation.transition.id
-							? "entering"
+							? navigation.transition.mode === "pointer"
+								? "entering"
+								: "active"
 							: selected === section
 								? "active"
-								: "inactive"
+								: navigation.transition?.mode === "pointer" &&
+										section === navigation.transition.source
+									? "leaving"
+									: "inactive"
 					}
 				>
 					{visited.has(section)

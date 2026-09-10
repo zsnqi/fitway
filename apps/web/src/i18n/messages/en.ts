@@ -129,13 +129,13 @@ export const staffWeb = {
 	admin: {
 		eyebrow: "Owner access",
 		title: "Management",
-		description: "Analytics and settings for your gym.",
-		placeholderTitle: "Owner navigation is ready",
+		description: "Reports, settings, accounts, and health for your gym.",
+		placeholderTitle: "Management is ready",
 		placeholderDescription:
-			"Analytics, settings, accounts, audit, and health sections arrive in their assigned phases.",
+			"Reports, settings, accounts, audit, and health are ready in the Management sections.",
 		wrongRoleTitle: "Owner access required",
 		wrongRoleDescription:
-			"This staff session can use monitoring but cannot access Management.",
+			"Monitoring stays available here. Sign in with the owner account to open Management.",
 		backToOperations: "Back to monitoring",
 	},
 } satisfies StaffWebMessages;

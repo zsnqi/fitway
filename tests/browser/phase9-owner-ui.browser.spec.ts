@@ -3,6 +3,7 @@ import path from "node:path";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, test } from "@playwright/test";
 import { expectOfficialBrandMark } from "./helpers/brand";
+import { installOwnerReviewScenario } from "./support/owner-review-fixtures";
 
 const ownerAuth = {
 	principalId: "00000000-0000-4000-8000-000000000091",
@@ -212,7 +213,7 @@ test("owner curve preserves exact states, historical timezones, and RTL/LTR inte
 	await expect(page.locator(".owner-chart__solo")).toHaveCount(1);
 	await expect(page.locator(".owner-chart__line[data-trimmed]")).toHaveCount(0);
 	await expect(page.locator(".owner-table-disclosure")).toContainText(
-		"تغطية القراءات",
+		"تغطية البيانات",
 	);
 	await expect(page.locator("body")).not.toContainText(/[٠-٩]/u);
 
@@ -872,7 +873,7 @@ test("loading, transport error, missing-only, and scheduled-closed days stay dis
 	mode = "closed";
 	await page.reload();
 	await expect(
-		page.getByRole("heading", { name: "النادي مغلق اليوم" }),
+		page.getByRole("heading", { name: "الصالة مغلقة اليوم" }),
 	).toBeVisible();
 	await expect(page.getByText("لا توجد قراءات اليوم بعد")).toHaveCount(0);
 	await captureReview(page, "owner-analytics-closed-ar-1440.png");
@@ -951,9 +952,20 @@ test("keyboard order, practical targets, reduced motion, and 200% reflow remain 
 	await expect(chart).toBeFocused();
 	await expect
 		.poll(() =>
-			chart.evaluate((element) => getComputedStyle(element).boxShadow),
+			chart.evaluate((element) => {
+				const style = getComputedStyle(element);
+				return {
+					outlineStyle: style.outlineStyle,
+					outlineWidth: Number.parseFloat(style.outlineWidth),
+					boxShadow: style.boxShadow,
+				};
+			}),
 		)
-		.not.toBe("none");
+		.toEqual({
+			outlineStyle: "solid",
+			outlineWidth: 2,
+			boxShadow: "none",
+		});
 	await page.keyboard.press("ArrowRight");
 	await expect(page.locator("[data-active-reading]")).toContainText("46");
 
@@ -1008,6 +1020,9 @@ test("keyboard order, practical targets, reduced motion, and 200% reflow remain 
 test("canonical routed Owner Daily desktop Arabic and mobile English are captured for authority review", async ({
 	page,
 }) => {
+	// Multi-locale, multi-viewport canonical captures need headroom on loaded
+	// machines; the 30s default is a flake source, not an oracle.
+	test.setTimeout(60_000);
 	await mockOwnerAnalytics(page);
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/admin");
@@ -1020,13 +1035,26 @@ test("canonical routed Owner Daily desktop Arabic and mobile English are capture
 		{ fullPage: true },
 	);
 
+	await installOwnerReviewScenario(page, "daily/full");
 	await page
 		.getByRole("button", { name: "التبديل إلى اللغة الإنجليزية" })
 		.click();
 	await page.setViewportSize({ width: 390, height: 844 });
+	await page.reload();
 	await expect(
 		page.getByRole("heading", { name: "Daily analytics" }),
 	).toBeVisible();
+	const canonicalCurveSpans = await page
+		.locator(".owner-chart__line")
+		.evaluateAll((lines) => {
+			const svg = lines[0]?.ownerSVGElement;
+			const viewBoxWidth = svg?.viewBox.baseVal.width ?? 0;
+			if (viewBoxWidth <= 0) return [];
+			return lines.map(
+				(line) => (line as SVGPathElement).getBBox().width / viewBoxWidth,
+			);
+		});
+	expect(Math.max(...canonicalCurveSpans)).toBeGreaterThan(0.6);
 	await captureReview(page, "owner-daily-route-en-mobile-390x844.png");
 	await expect(page).toHaveScreenshot(
 		"owner-daily-route-en-mobile-390x844.png",

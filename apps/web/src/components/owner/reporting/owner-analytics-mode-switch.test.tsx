@@ -400,13 +400,6 @@ describe("Owner reporting prerequisite ownership", () => {
 		];
 		await click(tabs[1] ?? null);
 		await settle();
-		await click(
-			container.querySelector(
-				".owner-reporting-export-disclosure > .owner-retained-disclosure__trigger",
-			),
-		);
-		await settle();
-
 		const reportingRange = container.querySelector<HTMLElement>(
 			"[data-owner-reporting-range]",
 		);
@@ -473,5 +466,97 @@ describe("Owner reporting prerequisite ownership", () => {
 		expect(timeContext).toHaveBeenCalledTimes(1);
 		expect(heatmap).toHaveBeenCalledTimes(1);
 		expect(weekOverWeek).toHaveBeenCalledTimes(1);
+	});
+});
+
+describe("Owner reporting range presets and pending edits", () => {
+	async function openHistory() {
+		await mount();
+		await settle();
+		const historyTab = container.querySelectorAll('[role="tab"]')[1];
+		await click(historyTab ?? null);
+		await settle();
+	}
+
+	it("applies a preset immediately, marks it pressed, and announces the window", async () => {
+		await openHistory();
+		const presets = [
+			...container.querySelectorAll<HTMLButtonElement>(
+				"[data-owner-reporting-preset]",
+			),
+		];
+		expect(presets.map((button) => button.textContent)).toEqual([
+			"Last 7 days",
+			"Last 28 days",
+			"Last 31 days",
+		]);
+		expect(
+			presets.map((button) => button.getAttribute("aria-pressed")),
+		).toEqual(["false", "true", "false"]);
+		// The anchor is 2026-08-15, so the 28-day default starts on 2026-07-19.
+		expect(heatmap).toHaveBeenLastCalledWith({
+			startBusinessDay: "2026-07-19",
+			endBusinessDay: "2026-08-15",
+		});
+
+		await click(presets[0] ?? null);
+		await settle();
+		expect(
+			presets.map((button) => button.getAttribute("aria-pressed")),
+		).toEqual(["true", "false", "false"]);
+		expect(heatmap).toHaveBeenLastCalledWith({
+			startBusinessDay: "2026-08-09",
+			endBusinessDay: "2026-08-15",
+		});
+		const startValue = container.querySelector<HTMLInputElement>(
+			"[data-owner-reporting-range] [data-owner-date-value]",
+		);
+		expect(startValue?.value).toBe("2026-08-09");
+		expect(container.textContent).toContain("Report window applied");
+	});
+
+	it("shows the unapplied-changes cue for a draft edit and clears it on Apply", async () => {
+		await openHistory();
+		const range = container.querySelector<HTMLElement>(
+			"[data-owner-reporting-range]",
+		);
+		expect(container.textContent).not.toContain("Changes not applied yet");
+		// July 20 is still inside the 31-day bound; July 10 would make a 37-day window
+		// and the invalid-range path owns that case instead of the pending cue.
+		await chooseDatePart(range, "Day", "20");
+		expect(container.textContent).toContain("Changes not applied yet");
+		await click(range?.querySelector("button[type='submit']") ?? null);
+		await settle();
+		expect(container.textContent).not.toContain("Changes not applied yet");
+		expect(heatmap).toHaveBeenLastCalledWith({
+			startBusinessDay: "2026-07-20",
+			endBusinessDay: "2026-08-15",
+		});
+	});
+
+	it("keeps the export progress compact and free of the reporting skeleton", async () => {
+		csv.mockResolvedValue(
+			(async function* stream() {
+				yield "﻿business_day,count\r\n";
+				await new Promise(() => undefined);
+			})(),
+		);
+		await openHistory();
+		const exportBlock = container.querySelector<HTMLElement>(
+			"[data-owner-reporting-export]",
+		);
+		await click(
+			exportBlock?.querySelector("[data-owner-reporting-export-start]") ?? null,
+		);
+		await settle();
+		const progress = exportBlock?.querySelector(
+			"[data-owner-reporting-state='loading']",
+		);
+		expect(progress?.getAttribute("role")).toBe("status");
+		expect(progress?.textContent).toContain("Preparing rows");
+		expect(exportBlock?.querySelector(".owner-reporting-skeleton")).toBeNull();
+		expect(
+			exportBlock?.querySelector("[data-owner-reporting-export-abort]"),
+		).not.toBeNull();
 	});
 });

@@ -7,14 +7,22 @@ import type {
 	StaffPinDeactivateInput,
 } from "@fitway/api/access/contracts";
 import { Button } from "@fitway/ui/components/button";
-import { AlertTriangle, KeyRound, RefreshCw, Users } from "lucide-react";
+import {
+	AlertTriangle,
+	Eye,
+	EyeOff,
+	KeyRound,
+	RefreshCw,
+	Users,
+} from "lucide-react";
 import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 
 import type {
 	OwnerAccessMutation,
 	OwnerAccessMutationOutcome,
 } from "@/hooks/use-owner-access";
-
+import { OwnerAsyncSwap } from "../owner-async-swap";
+import { OwnerStatePanel } from "../owner-state-panel";
 import type { OwnerAccessMessages } from "./messages";
 import { useOwnerAccessMessages } from "./use-owner-access-messages";
 
@@ -120,14 +128,15 @@ export function OwnerAccessReveal({
 					<bdi dir="ltr">{pin}</bdi>
 				</dd>
 			</dl>
-			<button
+			<Button
 				ref={dismissRef}
 				type="button"
+				variant="outline"
 				className="owner-access-reveal__dismiss"
 				onClick={onDismiss}
 			>
 				{messages.revealDismiss}
-			</button>
+			</Button>
 		</section>
 	);
 }
@@ -146,19 +155,20 @@ function StateCard({
 	action?: React.ReactNode;
 }) {
 	return (
-		<section
-			className={`owner-access-state owner-access-state--${variant}`}
-			role={variant === "error" ? "alert" : "status"}
-			{...(variant === "loading" ? { "aria-live": "polite" as const } : {})}
-			data-owner-access-state={variant}
-		>
-			{icon}
-			<div>
-				<h2>{title}</h2>
-				<p>{description}</p>
-			</div>
-			{action}
-		</section>
+		<OwnerAsyncSwap stateKey={variant}>
+			<OwnerStatePanel
+				variant={variant}
+				className={`owner-access-state owner-access-state--${variant}`}
+				dataAttribute={{ "data-owner-access-state": variant }}
+			>
+				{icon}
+				<div>
+					<h2>{title}</h2>
+					<p>{description}</p>
+				</div>
+				{action}
+			</OwnerStatePanel>
+		</OwnerAsyncSwap>
 	);
 }
 
@@ -243,6 +253,49 @@ function closeOnSuccess(
 	close: () => void,
 ) {
 	if (phase === "success") close();
+}
+
+function PasswordField({
+	id,
+	value,
+	onChange,
+	autoComplete,
+	invalid,
+	describedBy,
+	showLabel,
+	hideLabel,
+}: {
+	id: string;
+	value: string;
+	onChange: (value: string) => void;
+	autoComplete: string;
+	invalid: boolean;
+	describedBy: string;
+	showLabel: string;
+	hideLabel: string;
+}) {
+	const [visible, setVisible] = useState(false);
+	return (
+		<div className="owner-access-password">
+			<input
+				id={id}
+				type={visible ? "text" : "password"}
+				autoComplete={autoComplete}
+				value={value}
+				onChange={(event) => onChange(event.target.value)}
+				aria-invalid={invalid}
+				aria-describedby={describedBy}
+			/>
+			<button
+				type="button"
+				className="owner-access-password__toggle"
+				aria-label={visible ? hideLabel : showLabel}
+				onClick={() => setVisible((current) => !current)}
+			>
+				{visible ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}
+			</button>
+		</div>
+	);
 }
 
 export function OwnerAccessLive({
@@ -409,478 +462,491 @@ export function OwnerAccessLive({
 
 	return (
 		<>
-			<div className="owner-access-summary-grid">
-				<div className="owner-access-card" data-owner-access-staff-pin="">
-					<header className="owner-access-card__heading">
-						<h2>{messages.staffPinTitle}</h2>
-						<p>{messages.staffPinDescription}</p>
-					</header>
-					<p className="owner-access-card__state">
-						<span className="fw-sr-only">{messages.staffPinStateLabel}</span>
-						<bdi data-tone={staffPinTone(staff)}>
-							{staffPinStateLabel(staff, messages)}
-						</bdi>
-					</p>
-					<p className="owner-access-card__detail">{messages.staffPinDetail}</p>
+			<OwnerAsyncSwap stateKey="content">
+				<div className="owner-access-summary-grid">
+					<div className="owner-access-card" data-owner-access-staff-pin="">
+						<header className="owner-access-card__heading">
+							<h2>{messages.staffPinTitle}</h2>
+							<p>{messages.staffPinDescription}</p>
+						</header>
+						<p className="owner-access-card__state">
+							<span className="fw-sr-only">{messages.staffPinStateLabel}</span>
+							<bdi data-tone={staffPinTone(staff)}>
+								{staffPinStateLabel(staff, messages)}
+							</bdi>
+						</p>
+						<p className="owner-access-card__detail">
+							{messages.staffPinDetail}
+						</p>
 
-					<div className="owner-access-actions">
-						<Button
-							type="button"
-							data-owner-access-staff-pin-primary=""
-							onClick={() =>
-								requestReveal(() =>
-									staff?.credentialActive === true
-										? rotateStaffPin.submit()
-										: provisionStaffPin.submit(),
-								)
-							}
-						>
-							{staff?.credentialActive === true
-								? messages.rotateStaffPin
-								: messages.provisionStaffPin}
-						</Button>
-						{staff?.credentialActive === true && !staffPinDeactivating ? (
+						<div className="owner-access-actions">
 							<Button
 								type="button"
-								variant="link"
-								className="owner-access-action-link owner-access-action-link--danger"
-								onClick={() => setStaffPinDeactivating(true)}
+								data-owner-access-staff-pin-primary=""
+								onClick={() =>
+									requestReveal(() =>
+										staff?.credentialActive === true
+											? rotateStaffPin.submit()
+											: provisionStaffPin.submit(),
+									)
+								}
 							>
-								{messages.deactivateStaffPin}
+								{staff?.credentialActive === true
+									? messages.rotateStaffPin
+									: messages.provisionStaffPin}
 							</Button>
+							{staff?.credentialActive === true && !staffPinDeactivating ? (
+								<Button
+									type="button"
+									variant="link"
+									className="owner-access-action-link owner-access-action-link--danger"
+									onClick={() => setStaffPinDeactivating(true)}
+								>
+									{messages.deactivateStaffPin}
+								</Button>
+							) : null}
+						</div>
+						<OwnerAccessRefusal
+							outcome={
+								staff?.credentialActive === true
+									? rotateStaffPin.outcome
+									: provisionStaffPin.outcome
+							}
+						/>
+						{staff?.credentialActive === true && staffPinDeactivating ? (
+							<form
+								className="owner-access-inline"
+								onSubmit={handleDeactivateStaffPin}
+							>
+								<label htmlFor={fieldId("staff-pin-reason")}>
+									{messages.reasonLabel}
+								</label>
+								<input
+									id={fieldId("staff-pin-reason")}
+									type="text"
+									maxLength={500}
+									autoComplete="off"
+									aria-describedby={fieldId("staff-pin-reason-hint")}
+									value={staffPinReason}
+									onChange={(event) => setStaffPinReason(event.target.value)}
+								/>
+								<p
+									id={fieldId("staff-pin-reason-hint")}
+									className="owner-access-inline__hint"
+								>
+									{messages.staffPinReasonHint} {messages.reasonHint}
+								</p>
+								<OwnerAccessRefusal outcome={deactivateStaffPin.outcome} />
+								<div className="owner-access-inline__actions">
+									<Button
+										type="submit"
+										variant="destructive"
+										disabled={
+											deactivateStaffPin.outcome.phase === "pending" ||
+											staffPinReason.trim().length === 0
+										}
+									>
+										{messages.confirm}
+									</Button>
+									<Button
+										type="button"
+										variant="outline"
+										onClick={() => setStaffPinDeactivating(false)}
+									>
+										{messages.cancel}
+									</Button>
+								</div>
+							</form>
 						) : null}
 					</div>
-					<OwnerAccessRefusal
-						outcome={
-							staff?.credentialActive === true
-								? rotateStaffPin.outcome
-								: provisionStaffPin.outcome
+
+					<div
+						className={
+							provisionOpen
+								? "owner-access-card owner-access-owners-summary owner-access-owners-summary--provision-open"
+								: "owner-access-card owner-access-owners-summary"
 						}
-					/>
-					{staff?.credentialActive === true && staffPinDeactivating ? (
-						<form
-							className="owner-access-inline"
-							onSubmit={handleDeactivateStaffPin}
+						data-owner-access-owners-summary=""
+					>
+						<header className="owner-access-block__heading">
+							<h2>{messages.ownersTitle}</h2>
+							<p>{messages.ownersDescription}</p>
+						</header>
+						<p className="owner-access-card__state owner-access-card__state--owners">
+							<bdi data-tone={activeOwners > 0 ? "active" : "none"}>
+								{activeOwners} {messages.activeCountLabel}
+							</bdi>
+							<span aria-hidden="true">·</span>
+							<bdi data-tone="inactive">
+								{inactiveOwners} {messages.inactiveCountLabel}
+							</bdi>
+						</p>
+						<Button
+							type="button"
+							className="owner-access-provision__trigger"
+							data-owner-access-provision-trigger=""
+							onClick={() => setProvisionOpen(true)}
 						>
-							<label htmlFor={fieldId("staff-pin-reason")}>
-								{messages.reasonLabel}
-							</label>
-							<input
-								id={fieldId("staff-pin-reason")}
-								type="text"
-								maxLength={500}
-								autoComplete="off"
-								aria-describedby={fieldId("staff-pin-reason-hint")}
-								value={staffPinReason}
-								onChange={(event) => setStaffPinReason(event.target.value)}
-							/>
-							<p
-								id={fieldId("staff-pin-reason-hint")}
-								className="owner-access-inline__hint"
-							>
-								{messages.staffPinReasonHint} {messages.reasonHint}
-							</p>
-							<OwnerAccessRefusal outcome={deactivateStaffPin.outcome} />
-							<div className="owner-access-inline__actions">
+							{messages.provisionOwner}
+						</Button>
+
+						<form
+							className="owner-access-provision"
+							data-open={provisionOpen ? "" : undefined}
+							aria-labelledby={fieldId("provision-legend")}
+							onSubmit={handleProvisionOwner}
+						>
+							<h4 id={fieldId("provision-legend")} className="fw-sr-only">
+								{messages.ownerFormLegend}
+							</h4>
+							<div className="owner-access-field">
+								<label htmlFor={fieldId("owner-email")}>
+									{messages.ownerEmailLabel}
+								</label>
+								<input
+									id={fieldId("owner-email")}
+									type="email"
+									autoComplete="off"
+									value={provisionDraft.email}
+									onChange={(event) =>
+										setProvisionDraft((current) => ({
+											...current,
+											email: event.target.value,
+										}))
+									}
+								/>
+							</div>
+							<div className="owner-access-field">
+								<label htmlFor={fieldId("owner-name")}>
+									{messages.ownerDisplayNameLabel}
+								</label>
+								<input
+									id={fieldId("owner-name")}
+									type="text"
+									maxLength={120}
+									autoComplete="off"
+									value={provisionDraft.displayName}
+									onChange={(event) =>
+										setProvisionDraft((current) => ({
+											...current,
+											displayName: event.target.value,
+										}))
+									}
+								/>
+							</div>
+							<div className="owner-access-field">
+								<label htmlFor={fieldId("owner-password")}>
+									{messages.ownerPasswordLabel}
+								</label>
+								<PasswordField
+									id={fieldId("owner-password")}
+									value={provisionDraft.password}
+									onChange={(password) => {
+										setProvisionDraft((current) => ({
+											...current,
+											password,
+										}));
+										setProvisionPasswordError(null);
+									}}
+									autoComplete="new-password"
+									invalid={provisionPasswordError !== null}
+									describedBy={
+										provisionPasswordError === null
+											? fieldId("owner-password-hint")
+											: `${fieldId("owner-password-hint")} ${fieldId("owner-password-error")}`
+									}
+									showLabel={messages.showPassword}
+									hideLabel={messages.hidePassword}
+								/>
+								<p
+									id={fieldId("owner-password-hint")}
+									className="owner-access-field__hint"
+								>
+									{messages.ownerPasswordHint}
+								</p>
+								{provisionPasswordError !== null ? (
+									<p
+										id={fieldId("owner-password-error")}
+										className="owner-access-field__error"
+										role="alert"
+									>
+										{passwordValidationMessage(provisionPasswordError)}
+									</p>
+								) : null}
+							</div>
+							<div className="owner-access-provision__actions">
 								<Button
 									type="submit"
-									variant="destructive"
-									disabled={
-										deactivateStaffPin.outcome.phase === "pending" ||
-										staffPinReason.trim().length === 0
-									}
+									disabled={provisionOwner.outcome.phase === "pending"}
 								>
-									{messages.confirm}
+									{messages.provisionOwner}
 								</Button>
 								<Button
 									type="button"
 									variant="outline"
-									onClick={() => setStaffPinDeactivating(false)}
+									className="owner-access-provision__cancel"
+									onClick={() => {
+										setProvisionDraft(provisionDraftInitial);
+										setProvisionPasswordError(null);
+										setProvisionOpen(false);
+										provisionOwner.reset();
+									}}
 								>
 									{messages.cancel}
 								</Button>
 							</div>
 						</form>
-					) : null}
-				</div>
-
-				<div
-					className={
-						provisionOpen
-							? "owner-access-card owner-access-owners-summary owner-access-owners-summary--provision-open"
-							: "owner-access-card owner-access-owners-summary"
-					}
-					data-owner-access-owners-summary=""
-				>
-					<header className="owner-access-block__heading">
-						<h2>{messages.ownersTitle}</h2>
-						<p>{messages.ownersDescription}</p>
-					</header>
-					<p className="owner-access-card__state owner-access-card__state--owners">
-						<bdi data-tone={activeOwners > 0 ? "active" : "none"}>
-							{activeOwners} {messages.activeCountLabel}
-						</bdi>
-						<span aria-hidden="true">·</span>
-						<bdi data-tone="inactive">
-							{inactiveOwners} {messages.inactiveCountLabel}
-						</bdi>
-					</p>
-					<Button
-						type="button"
-						className="owner-access-provision__trigger"
-						data-owner-access-provision-trigger=""
-						onClick={() => setProvisionOpen(true)}
-					>
-						{messages.provisionOwner}
-					</Button>
-
-					<form
-						className="owner-access-provision"
-						data-open={provisionOpen ? "" : undefined}
-						aria-labelledby={fieldId("provision-legend")}
-						onSubmit={handleProvisionOwner}
-					>
-						<h4 id={fieldId("provision-legend")} className="fw-sr-only">
-							{messages.ownerFormLegend}
-						</h4>
-						<div className="owner-access-field">
-							<label htmlFor={fieldId("owner-email")}>
-								{messages.ownerEmailLabel}
-							</label>
-							<input
-								id={fieldId("owner-email")}
-								type="email"
-								autoComplete="off"
-								value={provisionDraft.email}
-								onChange={(event) =>
-									setProvisionDraft((current) => ({
-										...current,
-										email: event.target.value,
-									}))
-								}
-							/>
-						</div>
-						<div className="owner-access-field">
-							<label htmlFor={fieldId("owner-name")}>
-								{messages.ownerDisplayNameLabel}
-							</label>
-							<input
-								id={fieldId("owner-name")}
-								type="text"
-								maxLength={120}
-								autoComplete="off"
-								value={provisionDraft.displayName}
-								onChange={(event) =>
-									setProvisionDraft((current) => ({
-										...current,
-										displayName: event.target.value,
-									}))
-								}
-							/>
-						</div>
-						<div className="owner-access-field">
-							<label htmlFor={fieldId("owner-password")}>
-								{messages.ownerPasswordLabel}
-							</label>
-							<input
-								id={fieldId("owner-password")}
-								type="password"
-								autoComplete="new-password"
-								value={provisionDraft.password}
-								onChange={(event) => {
-									setProvisionDraft((current) => ({
-										...current,
-										password: event.target.value,
-									}));
-									setProvisionPasswordError(null);
-								}}
-								aria-invalid={provisionPasswordError !== null}
-								aria-describedby={
-									provisionPasswordError === null
-										? fieldId("owner-password-hint")
-										: `${fieldId("owner-password-hint")} ${fieldId("owner-password-error")}`
-								}
-							/>
+						<OwnerAccessRefusal outcome={provisionOwner.outcome} />
+						{provisionOwner.outcome.phase === "success" ? (
 							<p
-								id={fieldId("owner-password-hint")}
-								className="owner-access-field__hint"
+								className="owner-access__owner-created"
+								data-owner-access-owner-created=""
+								role="status"
+								aria-live="polite"
 							>
-								{messages.ownerPasswordHint}
+								<span>
+									<strong>{messages.ownerCreatedTitle}</strong>{" "}
+									{messages.ownerCreatedDescription}
+								</span>
+								<Button
+									type="button"
+									variant="outline"
+									onClick={() => provisionOwner.reset()}
+								>
+									{messages.done}
+								</Button>
 							</p>
-							{provisionPasswordError !== null ? (
-								<p
-									id={fieldId("owner-password-error")}
-									className="owner-access-field__error"
-									role="alert"
-								>
-									{passwordValidationMessage(provisionPasswordError)}
-								</p>
-							) : null}
-						</div>
-						<div className="owner-access-provision__actions">
-							<Button
-								type="submit"
-								disabled={provisionOwner.outcome.phase === "pending"}
-							>
-								{messages.provisionOwner}
-							</Button>
-							<Button
-								type="button"
-								variant="outline"
-								className="owner-access-provision__cancel"
-								onClick={() => {
-									setProvisionDraft(provisionDraftInitial);
-									setProvisionPasswordError(null);
-									setProvisionOpen(false);
-									provisionOwner.reset();
-								}}
-							>
-								{messages.cancel}
-							</Button>
-						</div>
-					</form>
-					<OwnerAccessRefusal outcome={provisionOwner.outcome} />
-					{provisionOwner.outcome.phase === "success" ? (
-						<p
-							className="owner-access__owner-created"
-							data-owner-access-owner-created=""
-							role="status"
-							aria-live="polite"
-						>
-							<span>
-								<strong>{messages.ownerCreatedTitle}</strong>{" "}
-								{messages.ownerCreatedDescription}
-							</span>
-							<Button
-								type="button"
-								variant="outline"
-								onClick={() => provisionOwner.reset()}
-							>
-								{messages.done}
-							</Button>
-						</p>
-					) : null}
+						) : null}
+					</div>
 				</div>
-			</div>
+			</OwnerAsyncSwap>
 
-			<div className="owner-access-owners-board">
-				<header className="owner-access-owners-board__heading">
-					<h2>{messages.ownersBoardTitle}</h2>
-					<p>
-						<bdi>{owners.length}</bdi>{" "}
-						{messages.accountsCountLabel(owners.length)}
-					</p>
-				</header>
-				<table className="owner-access-owners">
-					<thead>
-						<tr>
-							<th scope="col">{messages.ownerColumnLabel}</th>
-							<th scope="col">{messages.ownerEmailLabel}</th>
-							<th scope="col">{messages.ownerStatusLabel}</th>
-							<th scope="col">{messages.ownerActionsLabel}</th>
-						</tr>
-					</thead>
-					<tbody>
-						{owners.map((owner) => {
-							const isDeactivating = deactivatingOwnerId === owner.principalId;
-							const isResetting = resettingOwnerId === owner.principalId;
-							const isReactivating = reactivatingOwnerId === owner.principalId;
-							return (
-								<tr
-									key={owner.principalId}
-									className="owner-access-owner"
-									data-inactive={owner.active ? undefined : ""}
-								>
-									<td className="owner-access-owner__identity">
-										<span className="owner-access-owner__name">
-											<bdi dir="auto">{owner.displayName}</bdi>
-										</span>
-									</td>
-									<td className="owner-access-owner__email">
-										{owner.ownerEmail ? (
-											<bdi dir="auto">{owner.ownerEmail}</bdi>
-										) : null}
-									</td>
-									<td>
-										<span
-											className="owner-access-owner__state"
-											data-active={owner.active ? "" : undefined}
-										>
-											{owner.active
-												? messages.ownerActive
-												: messages.ownerInactive}
-										</span>
-									</td>
+			<OwnerAsyncSwap stateKey="content">
+				<div className="owner-access-owners-board">
+					<header className="owner-access-owners-board__heading">
+						<h2>{messages.ownersBoardTitle}</h2>
+						<p>
+							<bdi>{owners.length}</bdi>{" "}
+							{messages.accountsCountLabel(owners.length)}
+						</p>
+					</header>
+					<table className="owner-access-owners">
+						<thead>
+							<tr>
+								<th scope="col">{messages.ownerColumnLabel}</th>
+								<th scope="col">{messages.ownerEmailLabel}</th>
+								<th scope="col">{messages.ownerStatusLabel}</th>
+								<th scope="col">{messages.ownerActionsLabel}</th>
+							</tr>
+						</thead>
+						<tbody>
+							{owners.map((owner) => {
+								const isDeactivating =
+									deactivatingOwnerId === owner.principalId;
+								const isResetting = resettingOwnerId === owner.principalId;
+								const isReactivating =
+									reactivatingOwnerId === owner.principalId;
+								return (
+									<tr
+										key={owner.principalId}
+										className="owner-access-owner"
+										data-inactive={owner.active ? undefined : ""}
+									>
+										<td className="owner-access-owner__identity">
+											<span className="owner-access-owner__name">
+												<bdi dir="auto">{owner.displayName}</bdi>
+											</span>
+										</td>
+										<td className="owner-access-owner__email">
+											{owner.ownerEmail ? (
+												<bdi dir="auto">{owner.ownerEmail}</bdi>
+											) : null}
+										</td>
+										<td>
+											<span
+												className="owner-access-owner__state"
+												data-active={owner.active ? "" : undefined}
+											>
+												{owner.active
+													? messages.ownerActive
+													: messages.ownerInactive}
+											</span>
+										</td>
 
-									<td className="owner-access-owner__controls">
-										{owner.active ? (
-											isDeactivating ? (
-												<form
-													className="owner-access-inline"
-													onSubmit={handleDeactivateOwner}
-												>
-													<label
-														htmlFor={fieldId(`reason-${owner.principalId}`)}
+										<td className="owner-access-owner__controls">
+											{owner.active ? (
+												isDeactivating ? (
+													<form
+														className="owner-access-inline"
+														onSubmit={handleDeactivateOwner}
 													>
-														{messages.reasonLabel}
-													</label>
-													<input
-														id={fieldId(`reason-${owner.principalId}`)}
-														type="text"
-														maxLength={500}
-														autoComplete="off"
-														aria-describedby={fieldId(
-															`reason-hint-${owner.principalId}`,
-														)}
-														value={ownerReason}
-														onChange={(event) =>
-															setOwnerReason(event.target.value)
-														}
-													/>
-													<p
-														id={fieldId(`reason-hint-${owner.principalId}`)}
-														className="owner-access-inline__hint"
-													>
-														{messages.reasonHint}
-													</p>
-													<OwnerAccessRefusal
-														outcome={deactivateOwner.outcome}
-													/>
-													<div className="owner-access-inline__actions">
-														<Button
-															type="submit"
-															variant="destructive"
-															disabled={
-																deactivateOwner.outcome.phase === "pending" ||
-																ownerReason.trim().length === 0
-															}
+														<label
+															htmlFor={fieldId(`reason-${owner.principalId}`)}
 														>
-															{messages.confirm}
-														</Button>
-														<Button
-															type="button"
-															variant="outline"
-															onClick={() => setDeactivatingOwnerId(null)}
-														>
-															{messages.cancel}
-														</Button>
-													</div>
-												</form>
-											) : isResetting ? (
-												<form
-													className="owner-access-inline owner-access-inline--reset"
-													onSubmit={handleResetOwner}
-												>
-													<label
-														htmlFor={fieldId(`password-${owner.principalId}`)}
-													>
-														{messages.resetPasswordLabel}
-													</label>
-													<input
-														id={fieldId(`password-${owner.principalId}`)}
-														type="password"
-														autoComplete="new-password"
-														value={ownerPassword}
-														onChange={(event) => {
-															setOwnerPassword(event.target.value);
-															setResetPasswordError(null);
-														}}
-														aria-invalid={resetPasswordError !== null}
-														aria-describedby={
-															resetPasswordError === null
-																? fieldId(`password-hint-${owner.principalId}`)
-																: `${fieldId(`password-hint-${owner.principalId}`)} ${fieldId(`password-error-${owner.principalId}`)}`
-														}
-													/>
-													<p
-														id={fieldId(`password-hint-${owner.principalId}`)}
-														className="owner-access-inline__hint"
-													>
-														{messages.resetPasswordHint}
-													</p>
-													{resetPasswordError !== null ? (
-														<p
-															id={fieldId(
-																`password-error-${owner.principalId}`,
+															{messages.reasonLabel}
+														</label>
+														<input
+															id={fieldId(`reason-${owner.principalId}`)}
+															type="text"
+															maxLength={500}
+															autoComplete="off"
+															aria-describedby={fieldId(
+																`reason-hint-${owner.principalId}`,
 															)}
-															className="owner-access-inline__error"
-															role="alert"
-														>
-															{passwordValidationMessage(resetPasswordError)}
-														</p>
-													) : null}
-													<OwnerAccessRefusal
-														outcome={resetOwnerCredential.outcome}
-													/>
-													<div className="owner-access-inline__actions">
-														<Button
-															type="submit"
-															disabled={
-																resetOwnerCredential.outcome.phase === "pending"
+															value={ownerReason}
+															onChange={(event) =>
+																setOwnerReason(event.target.value)
 															}
+														/>
+														<p
+															id={fieldId(`reason-hint-${owner.principalId}`)}
+															className="owner-access-inline__hint"
 														>
-															{messages.confirm}
+															{messages.reasonHint}
+														</p>
+														<OwnerAccessRefusal
+															outcome={deactivateOwner.outcome}
+														/>
+														<div className="owner-access-inline__actions">
+															<Button
+																type="submit"
+																variant="destructive"
+																disabled={
+																	deactivateOwner.outcome.phase === "pending" ||
+																	ownerReason.trim().length === 0
+																}
+															>
+																{messages.confirm}
+															</Button>
+															<Button
+																type="button"
+																variant="outline"
+																onClick={() => setDeactivatingOwnerId(null)}
+															>
+																{messages.cancel}
+															</Button>
+														</div>
+													</form>
+												) : isResetting ? (
+													<form
+														className="owner-access-inline owner-access-inline--reset"
+														onSubmit={handleResetOwner}
+													>
+														<label
+															htmlFor={fieldId(`password-${owner.principalId}`)}
+														>
+															{messages.resetPasswordLabel}
+														</label>
+														<PasswordField
+															id={fieldId(`password-${owner.principalId}`)}
+															value={ownerPassword}
+															onChange={(password) => {
+																setOwnerPassword(password);
+																setResetPasswordError(null);
+															}}
+															autoComplete="new-password"
+															invalid={resetPasswordError !== null}
+															describedBy={
+																resetPasswordError === null
+																	? fieldId(
+																			`password-hint-${owner.principalId}`,
+																		)
+																	: `${fieldId(`password-hint-${owner.principalId}`)} ${fieldId(`password-error-${owner.principalId}`)}`
+															}
+															showLabel={messages.showPassword}
+															hideLabel={messages.hidePassword}
+														/>
+														<p
+															id={fieldId(`password-hint-${owner.principalId}`)}
+															className="owner-access-inline__hint"
+														>
+															{messages.resetPasswordHint}
+														</p>
+														{resetPasswordError !== null ? (
+															<p
+																id={fieldId(
+																	`password-error-${owner.principalId}`,
+																)}
+																className="owner-access-inline__error"
+																role="alert"
+															>
+																{passwordValidationMessage(resetPasswordError)}
+															</p>
+														) : null}
+														<OwnerAccessRefusal
+															outcome={resetOwnerCredential.outcome}
+														/>
+														<div className="owner-access-inline__actions">
+															<Button
+																type="submit"
+																disabled={
+																	resetOwnerCredential.outcome.phase ===
+																	"pending"
+																}
+															>
+																{messages.confirm}
+															</Button>
+															<Button
+																type="button"
+																variant="outline"
+																onClick={clearReset}
+															>
+																{messages.cancel}
+															</Button>
+														</div>
+													</form>
+												) : (
+													<div className="owner-access-owner__actions">
+														<Button
+															type="button"
+															variant="link"
+															className="owner-access-action-link"
+															onClick={() => openReset(owner.principalId)}
+														>
+															{messages.resetCredential}
 														</Button>
 														<Button
 															type="button"
-															variant="outline"
-															onClick={clearReset}
+															variant="link"
+															className="owner-access-action-link owner-access-action-link--danger"
+															onClick={() =>
+																setDeactivatingOwnerId(owner.principalId)
+															}
 														>
-															{messages.cancel}
+															{messages.deactivateOwner}
 														</Button>
 													</div>
-												</form>
+												)
 											) : (
 												<div className="owner-access-owner__actions">
 													<Button
 														type="button"
 														variant="link"
-														className="owner-access-action-link"
-														onClick={() => openReset(owner.principalId)}
-													>
-														{messages.resetCredential}
-													</Button>
-													<Button
-														type="button"
-														variant="link"
 														className="owner-access-action-link owner-access-action-link--danger"
-														onClick={() =>
-															setDeactivatingOwnerId(owner.principalId)
-														}
+														onClick={() => {
+															setReactivatingOwnerId(owner.principalId);
+															reactivateOwner.submit({
+																targetPrincipalId: owner.principalId,
+															});
+														}}
 													>
-														{messages.deactivateOwner}
+														{messages.reactivateOwner}
 													</Button>
+													{isReactivating ? (
+														<OwnerAccessRefusal
+															outcome={reactivateOwner.outcome}
+														/>
+													) : null}
 												</div>
-											)
-										) : (
-											<div className="owner-access-owner__actions">
-												<Button
-													type="button"
-													variant="link"
-													className="owner-access-action-link owner-access-action-link--danger"
-													onClick={() => {
-														setReactivatingOwnerId(owner.principalId);
-														reactivateOwner.submit({
-															targetPrincipalId: owner.principalId,
-														});
-													}}
-												>
-													{messages.reactivateOwner}
-												</Button>
-												{isReactivating ? (
-													<OwnerAccessRefusal
-														outcome={reactivateOwner.outcome}
-													/>
-												) : null}
-											</div>
-										)}
-									</td>
-								</tr>
-							);
-						})}
-					</tbody>
-				</table>
-			</div>
+											)}
+										</td>
+									</tr>
+								);
+							})}
+						</tbody>
+					</table>
+				</div>
+			</OwnerAsyncSwap>
 
 			{revealedPin !== null ? (
 				<OwnerAccessReveal

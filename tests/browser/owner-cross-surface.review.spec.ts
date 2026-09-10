@@ -468,10 +468,12 @@ test("the control family keeps one fill, one radius, and a visible focus ring", 
 		};
 	});
 
-	// Audit: the native filter select and text input.
+	// Audit: the shared filter trigger and text input.
 	await activateSection(page, "audit");
 	await expect(page.locator(".owner-audit-filters")).toBeVisible();
-	const auditSelect = page.locator(".owner-audit-filters select").first();
+	const auditSelect = page
+		.locator(".owner-audit-select > [data-owner-select-trigger]")
+		.first();
 	const auditInput = page.locator(".owner-audit-filters input").first();
 	const auditSelectMaterial = await auditSelect.evaluate((element) => {
 		const style = getComputedStyle(element);

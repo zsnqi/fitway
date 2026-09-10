@@ -396,16 +396,13 @@ async function expectControlLayout(page: Page, width: number) {
 	await expect(
 		controls.locator(":scope > [data-owner-reporting-range]"),
 	).toHaveCount(1);
-	await expect(controls.locator("[data-owner-reporting-export]")).toHaveCount(
-		0,
+	const exportBlock = controls.locator(
+		":scope > [data-owner-reporting-export]",
 	);
-	const disclosure = page.locator(".owner-reporting-export-disclosure");
-	await expect(
-		disclosure.locator("[data-owner-reporting-export]"),
-	).toBeVisible();
+	await expect(exportBlock).toHaveCount(1);
 	for (const element of [
 		controls.locator("[data-owner-reporting-range]"),
-		disclosure,
+		exportBlock,
 	]) {
 		const box = await element.boundingBox();
 		if (!box) throw new Error("Range/export layout missing");
@@ -458,9 +455,9 @@ test("the lazy bilingual tabs keep exact prerequisite counts and stable panel sh
 	await expect(tablist.getByRole("tab")).toHaveText([
 		"اليومي",
 		"التقارير",
-		"الحسابات والدخول",
+		"الوصول",
 		"سجل النشاط",
-		"حالة النظام",
+		"التشغيل",
 		"الإعدادات",
 	]);
 	await expect(dailyTab).toHaveAttribute(
@@ -528,20 +525,13 @@ test("the lazy bilingual tabs keep exact prerequisite counts and stable panel sh
 		).toBeVisible();
 		await expect(page.getByRole("tablist").getByRole("tab")).toHaveText(
 			locale === "ar"
-				? [
-						"اليومي",
-						"التقارير",
-						"الحسابات والدخول",
-						"سجل النشاط",
-						"حالة النظام",
-						"الإعدادات",
-					]
+				? ["اليومي", "التقارير", "الوصول", "سجل النشاط", "التشغيل", "الإعدادات"]
 				: [
 						"Daily",
 						"Reports",
-						"Accounts & Sign-in",
+						"Access",
 						"Activity Log",
-						"System Status",
+						"Operations",
 						"Settings",
 					],
 		);
@@ -655,7 +645,6 @@ test("loading, retryable error, insufficient history, and semantic-table parity 
 	await page.goto("/admin");
 	await activateHistory(page);
 	const reporting = page.locator(".owner-reporting");
-	const controls = reporting.locator("[data-owner-reporting-controls]");
 	// Daily remains mounted to preserve its query and UI state, but its accepted
 	// siblings are correctly hidden while the History panel is selected.
 	await expect(page.locator("[data-owner-health-state='error']")).toBeHidden();
@@ -663,15 +652,18 @@ test("loading, retryable error, insufficient history, and semantic-table parity 
 	await expect(loading).toBeVisible();
 	await expect(loading).toHaveAttribute("role", "status");
 	expect(
-		await controls.evaluate((element) =>
-			Boolean(
-				element.compareDocumentPosition(
-					element.parentElement?.querySelector(
-						'[data-owner-reporting-state="loading"]',
-					) as Node,
-				) & Node.DOCUMENT_POSITION_FOLLOWING,
-			),
-		),
+		await reporting.evaluate((element) => {
+			const controls = element.querySelector("[data-owner-reporting-controls]");
+			const firstDataBlock = element.querySelector(
+				":scope > .owner-reporting-block",
+			);
+			return Boolean(
+				controls &&
+					firstDataBlock &&
+					controls.compareDocumentPosition(firstDataBlock) &
+						Node.DOCUMENT_POSITION_FOLLOWING,
+			);
+		}),
 	).toBe(true);
 	await expect(reporting.locator("[data-owner-reporting-grid]")).toBeVisible();
 
@@ -686,15 +678,18 @@ test("loading, retryable error, insufficient history, and semantic-table parity 
 	await expect(error).toBeVisible();
 	await expect(error).toHaveAttribute("role", "alert");
 	expect(
-		await controls.evaluate((element) =>
-			Boolean(
-				element.compareDocumentPosition(
-					element.parentElement?.querySelector(
-						'[data-owner-reporting-state="error"]',
-					) as Node,
-				) & Node.DOCUMENT_POSITION_FOLLOWING,
-			),
-		),
+		await reporting.evaluate((element) => {
+			const controls = element.querySelector("[data-owner-reporting-controls]");
+			const error = element.querySelector(
+				':scope > .owner-reporting-block [data-owner-reporting-state="error"]',
+			);
+			return Boolean(
+				controls &&
+					error &&
+					controls.compareDocumentPosition(error) &
+						Node.DOCUMENT_POSITION_FOLLOWING,
+			);
+		}),
 	).toBe(true);
 
 	await page.unroute("**/rpc/admin/analytics/heatmap");
@@ -743,11 +738,6 @@ test("CSV export visibly starts, cancels without a file, and reports a transport
 	await activateHistory(page);
 	const reporting = page.locator(".owner-reporting");
 	const exportBlock = reporting.locator("[data-owner-reporting-export]");
-	await reporting
-		.locator(
-			".owner-reporting-export-disclosure > .owner-retained-disclosure__trigger",
-		)
-		.click();
 	await expect(exportBlock).toBeVisible();
 	await fillLocalizedDate(page, exportBlock, "Start", "2026-08-10");
 	await exportBlock.locator("[data-owner-reporting-export-start]").click();
@@ -841,11 +831,6 @@ test("reflow, focus, keyboard, live names, reduced motion, and automated accessi
 			.evaluate((panel) => panel.contains(document.activeElement)),
 	).toBe(true);
 	const reporting = page.locator(".owner-reporting");
-	await reporting
-		.locator(
-			".owner-reporting-export-disclosure > .owner-retained-disclosure__trigger",
-		)
-		.click();
 	await expect(reporting.locator("[data-owner-reporting-table]")).toBeVisible();
 	for (const locale of ["en", "ar"] as const) {
 		await setLocale(page, locale);
@@ -854,6 +839,42 @@ test("reflow, focus, keyboard, live names, reduced motion, and automated accessi
 			await expect(
 				reporting.locator("[data-owner-reporting-grid]"),
 			).toBeVisible();
+			const comparisonRegion = reporting.locator(
+				".owner-reporting-region--compact",
+			);
+			const comparisonGeometry = await comparisonRegion.evaluate((element) => ({
+				ariaLabel: element.getAttribute("aria-label"),
+				clientWidth: element.clientWidth,
+				overflowX: getComputedStyle(element).overflowX,
+				scrollWidth: element.scrollWidth,
+				tabIndex: element.getAttribute("tabindex"),
+			}));
+			expect(comparisonGeometry.ariaLabel).toBeTruthy();
+			expect(comparisonGeometry.tabIndex).toBe("0");
+			if (width <= 620) {
+				expect(comparisonGeometry.scrollWidth).toBeLessThanOrEqual(
+					comparisonGeometry.clientWidth + 1,
+				);
+				expect(comparisonGeometry.overflowX).toBe("visible");
+			}
+			if (width === 1024) {
+				expect(comparisonGeometry.scrollWidth).toBeGreaterThan(
+					comparisonGeometry.clientWidth,
+				);
+				await comparisonRegion.focus();
+				await page.keyboard.press("Shift+Tab");
+				await page.keyboard.press("Tab");
+				await expect(comparisonRegion).toBeFocused();
+				const comparisonFocus = await comparisonRegion.evaluate((element) => {
+					const style = getComputedStyle(element);
+					return {
+						outlineStyle: style.outlineStyle,
+						outlineWidth: Number.parseFloat(style.outlineWidth),
+					};
+				});
+				expect(comparisonFocus.outlineStyle).toBe("solid");
+				expect(comparisonFocus.outlineWidth).toBeGreaterThanOrEqual(2);
+			}
 			await expectControlLayout(page, width);
 			await expectBoardDensity(page, width);
 			await expectHeadingLayout(page, locale, width);
@@ -897,6 +918,13 @@ test("reflow, focus, keyboard, live names, reduced motion, and automated accessi
 			await expect(historyTab).toBeFocused();
 		}
 	}
+	const comparisonTable = reporting.locator(
+		"[data-owner-reporting-comparison-table]",
+	);
+	await expect(comparisonTable.locator("thead")).toHaveCount(1);
+	await expect(comparisonTable.locator("tbody")).toHaveCount(1);
+	await expect(comparisonTable.locator("thead th[scope='col']")).toHaveCount(4);
+	await expect(comparisonTable.locator("tbody th[scope='row']")).toHaveCount(3);
 
 	await page.setViewportSize({ width: 768, height: 1024 });
 	const cells = reporting.locator(".owner-reporting-cell");
@@ -976,6 +1004,9 @@ test("reflow, focus, keyboard, live names, reduced motion, and automated accessi
 test("canonical routed Reporting History desktop English and mobile Arabic match", async ({
 	page,
 }) => {
+	// Multi-locale, multi-viewport capture sweep needs headroom on loaded
+	// machines; the 30s default is a flake source, not an oracle.
+	test.setTimeout(60_000);
 	await page.addInitScript(() =>
 		window.localStorage.setItem("fitway.locale", "en"),
 	);

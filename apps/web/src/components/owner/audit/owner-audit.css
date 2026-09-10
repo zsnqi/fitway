@@ -141,6 +141,10 @@
 	background: var(--owner-control);
 	font-size: 13px;
 	font-family: inherit;
+	transition:
+		border-color var(--fw-duration-fast) var(--fw-ease-out),
+		background-color var(--fw-duration-fast) var(--fw-ease-out),
+		color var(--fw-duration-fast) var(--fw-ease-out);
 }
 
 /*
@@ -176,7 +180,7 @@
 }
 
 .owner-audit-filters :is(select, input):focus-visible {
-	outline: 2px solid var(--fw-red-bright);
+	outline: 2px solid var(--owner-focus-ring);
 	outline-offset: 2px;
 }
 
@@ -284,7 +288,7 @@
 }
 
 .owner-audit-region:focus-visible {
-	outline: 2px solid var(--fw-red-bright);
+	outline: 2px solid var(--owner-focus-ring);
 	outline-offset: -3px;
 }
 
@@ -385,36 +389,8 @@
 	font-size: 12px;
 }
 
-.owner-audit-state {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) auto;
-	align-items: center;
-	gap: 18px;
-	min-block-size: 114px;
-	padding: 18px;
-	border: 1px solid var(--fw-edge-control, rgb(220 197 201 / 18%));
-	border-radius: var(--fw-radius-surface);
-	background: var(--fw-material-board-rest, rgb(29 24 28 / 12.5%));
-}
-
-.owner-audit-state h3 {
-	margin: 0;
-	color: var(--fw-chalk);
-	font-size: 16px;
-	line-height: 1.35;
-}
-
-.owner-audit-state p {
-	max-inline-size: 70ch;
-	margin: 6px 0 0;
-	color: var(--fw-text-subtle);
-	font-size: 12px;
-	line-height: 1.6;
-}
-
-.owner-audit-state button {
-	min-block-size: 44px;
-}
+/* Audit state cards use the shared `owner-state-panel--card` language for their
+   material, border, icon tile, and rhythm. */
 
 .owner-audit-loading-bars {
 	display: grid;
@@ -491,16 +467,6 @@
 		border-block-start: 1px solid var(--fw-edge-quiet);
 	}
 
-	.owner-audit-state {
-		grid-template-columns: minmax(0, 1fr);
-		justify-items: start;
-		padding: 20px;
-	}
-
-	.owner-audit-state button {
-		inline-size: 100%;
-	}
-
 	.owner-audit-loading-bars {
 		inline-size: 100%;
 	}
@@ -520,6 +486,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+	.owner-audit-filters :is(select, input) {
+		transition: none;
+	}
+
 	.owner-audit-loading-bars i {
 		opacity: 0.7;
 		animation: none;

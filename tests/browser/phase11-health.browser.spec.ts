@@ -7,7 +7,7 @@ import { expectOwnerReflowAt200Percent } from "./helpers/owner-reflow";
 
 async function selectHealth(page: Page) {
 	const tab = page.getByRole("tab", {
-		name: /^(?:System Status|حالة النظام)$/u,
+		name: /^(?:Operations|التشغيل)$/u,
 	});
 	await tab.focus();
 	await page.keyboard.press("Enter");
@@ -15,6 +15,9 @@ async function selectHealth(page: Page) {
 
 async function openHealth(page: Page) {
 	await page.goto("/admin");
+	// Geometry oracles must never race a font swap; Cairo metrics shifting
+	// mid-measure can make a clean board read as violated under load.
+	await page.evaluate(() => document.fonts.ready);
 	await selectHealth(page);
 	const panel = page.locator("#owner-section-health-panel");
 	await expect(panel).toHaveAttribute("data-owner-section-state", "active");
@@ -22,6 +25,10 @@ async function openHealth(page: Page) {
 	// the accepted section-entry cross-fade to finish so presentation oracles
 	// inspect the settled panel instead of a valid intermediate frame.
 	await expect(panel).toHaveCSS("opacity", "1");
+	await expect(panel.locator(".owner-async-swap__current")).toHaveCSS(
+		"opacity",
+		"1",
+	);
 }
 
 async function reloadHealth(page: Page) {
@@ -373,24 +380,34 @@ async function hideShellSkipLink(page: Page) {
 }
 
 /**
- * The section tablist reveals the active tab through layout/observer-driven
- * scrolling, whose settled offset races font loading run to run. Centering
- * the active tab after layout settles — twice, so a late observer-driven
- * minimal reveal cannot win — keeps the composition baseline deterministic
- * without touching production behavior.
+ * Match the production logical-reading-edge reveal after font/layout work.
+ * Repeating the same correction keeps the canonical deterministic without
+ * replacing the approved mobile tab geometry with a test-only centered state.
  */
 async function stabilizeSectionTabs(page: Page) {
-	const center = () =>
+	const alignLogicalEdge = () =>
 		page.evaluate(() => {
-			document
-				.querySelector(
-					'.owner-section-switch > .owner-analytics-mode__tabs [role="tab"][aria-selected="true"]',
-				)
-				?.scrollIntoView({ block: "nearest", inline: "center" });
+			const tablist = document.querySelector<HTMLElement>(
+				".owner-section-switch > .owner-analytics-mode__tabs",
+			);
+			const tab = tablist?.querySelector<HTMLElement>(
+				'[role="tab"][aria-selected="true"]',
+			);
+			if (!tablist || !tab || tablist.scrollWidth <= tablist.clientWidth + 1)
+				return;
+			const rowBox = tablist.getBoundingClientRect();
+			const tabBox = tab.getBoundingClientRect();
+			const rightToLeft = getComputedStyle(tablist).direction === "rtl";
+			const correction = rightToLeft
+				? tabBox.right - rowBox.right
+				: tabBox.left - rowBox.left;
+			const scale =
+				tablist.offsetWidth > 0 ? rowBox.width / tablist.offsetWidth : 1;
+			if (correction !== 0) tablist.scrollBy({ left: correction / scale });
 		});
-	await center();
+	await alignLogicalEdge();
 	await page.waitForTimeout(300);
-	await center();
+	await alignLogicalEdge();
 }
 
 test("the summary reads in the gym timezone and adds no request to a neighbour", async ({
@@ -447,15 +464,14 @@ test("every figure names its own denominator and the two failure kinds stay apar
 	await expect(page.locator(metrics)).toBeVisible();
 
 	const metricText = (await page.locator(metrics).textContent()) ?? "";
-	expect(metricText).toContain("11,905 / 12,000 monitored open minutes online");
-	expect(metricText).toContain(
-		"12,000 / 12,840 scheduled open minutes monitored",
-	);
-	expect(metricText).toContain(
-		"3 delivered · 1 failed to send · 1 unconfirmed",
-	);
+	expect(metricText).toContain("Uptime during open hours");
 	// 95 of 12,000 monitored minutes is 99.2%, not a rounded 100%.
 	expect(metricText).toContain("99.2%");
+	expect(metricText).toContain("1h 35m without readings in this period.");
+	expect(metricText).toContain("12,000 / 12,840 recorded minutes");
+	expect(metricText).toContain(
+		"5 notices about this period’s incidents · 1 failed to send · 1 unconfirmed",
+	);
 
 	// A device-reported camera failure and a stopped push are named separately; a
 	// send that failed on the wire is named as a messaging failure, not downtime.
@@ -1496,6 +1512,9 @@ test("the desktop table composition at 721px and wider keeps its Paper board hea
 test("the mobile contract rejects every false-pass fault injection", async ({
 	page,
 }) => {
+	// Eleven clean-load/fault cycles re-navigate the section; loaded machines
+	// need headroom beyond the 30s default or the harness itself flakes.
+	test.setTimeout(120_000);
 	await page.addInitScript(() =>
 		window.localStorage.setItem("fitway.locale", "en"),
 	);

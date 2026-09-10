@@ -7,11 +7,12 @@ import type {
 } from "@fitway/api/health/incidents";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { I18nProvider } from "@/i18n/provider";
 
 import { ownerHealthMessages } from "./messages";
+import { OwnerHealthSection } from "./owner-health-section";
 import {
 	deliveryLabel,
 	formatDuration,
@@ -22,6 +23,18 @@ import {
 	OwnerHealthOfflineTable,
 	OwnerHealthUnmonitored,
 } from "./owner-health-view";
+
+const { healthValue } = vi.hoisted(() => ({
+	healthValue: {
+		status: "pending" as "pending" | "success" | "error",
+		summary: null as unknown,
+		retry: () => undefined,
+	},
+}));
+
+vi.mock("@/hooks/use-owner-health", () => ({
+	useOwnerHealth: () => healthValue,
+}));
 
 const GYM_TIME_ZONE = "Asia/Riyadh";
 
@@ -163,12 +176,23 @@ describe("health formatting", () => {
 
 	it("uses natural Arabic singular, dual, few, many, and general count forms", () => {
 		const ar = ownerHealthMessages.ar;
-		expect(ar.noticesSummary(0, "0")).toBe("لم يُرسل أي إشعار في هذه الفترة");
-		expect(ar.noticesSummary(1, "1")).toBe("أُرسل إشعار واحد في هذه الفترة");
-		expect(ar.noticesSummary(2, "2")).toBe("أُرسل إشعاران في هذه الفترة");
-		expect(ar.noticesSummary(5, "5")).toBe("أُرسلت 5 إشعارات في هذه الفترة");
-		expect(ar.noticesSummary(11, "11")).toBe("أُرسل 11 إشعاراً في هذه الفترة");
-		expect(ar.noticesSummary(100, "100")).toBe("أُرسل 100 إشعار في هذه الفترة");
+		expect(ar.noticesSummary(0, "0")).toBe("لم تُرسل تنبيهات في هذه الفترة");
+		expect(ar.noticesSummary(1, "1")).toBe(
+			"أُرسل إشعار واحد عن أعطال هذه الفترة",
+		);
+		expect(ar.noticesSummary(2, "2")).toBe("أُرسل إشعاران عن أعطال هذه الفترة");
+		expect(ar.noticesSummary(5, "5")).toBe(
+			"أُرسلت 5 إشعارات عن أعطال هذه الفترة",
+		);
+		expect(ar.noticesSummary(11, "11")).toBe(
+			"أُرسل 11 إشعاراً عن أعطال هذه الفترة",
+		);
+		expect(ar.noticesSummary(100, "100")).toBe(
+			"أُرسل 100 إشعار عن أعطال هذه الفترة",
+		);
+		expect(ar.noticesAllDelivered(2, "2")).toBe(
+			"وصل إشعاران عن أعطال هذه الفترة",
+		);
 		expect(
 			deliveryLabel({ delivered: 2, failed: 1, unconfirmed: 3 }, "ar", ar),
 		).toBe("وصل إشعاران · فشل إرسال إشعار واحد · 3 إشعارات غير مؤكدة");
@@ -176,12 +200,39 @@ describe("health formatting", () => {
 });
 
 describe("health metrics", () => {
-	it("states the denominator of every figure it shows", () => {
+	it("states each figure's owner outcome instead of a raw fraction", () => {
 		render(<OwnerHealthMetrics summary={summary} />);
 		const text = container.textContent ?? "";
-		expect(text).toContain("11,905 / 12,000 monitored open minutes online");
-		expect(text).toContain("12,000 / 12,840 scheduled open minutes monitored");
-		expect(text).toContain("3 delivered · 1 failed to send");
+		expect(text).toContain("99.2%");
+		expect(text).toContain("1h 35m without readings in this period.");
+		expect(text).toContain("93.5%");
+		expect(text).toContain("12,000 / 12,840 recorded minutes");
+		expect(text).toContain(
+			"4 notices about this period’s incidents · 1 failed to send",
+		);
+		expect(text).not.toContain("11,905 / 12,000");
+	});
+
+	it("says plainly when the counter stayed connected and every minute was recorded", () => {
+		render(
+			<OwnerHealthMetrics
+				summary={{
+					...summary,
+					connection: {
+						...summary.connection,
+						monitoredOpenMinutes: 12_840,
+						onlineOpenMinutes: 12_840,
+						offlineOpenMinutes: 0,
+						uptimeRatio: 1,
+						monitoredRatio: 1,
+					},
+				}}
+			/>,
+		);
+		const text = container.textContent ?? "";
+		expect(text).toContain(ownerHealthMessages.en.offlineEmptyDescription);
+		expect(text).toContain(ownerHealthMessages.en.coverageComplete);
+		expect(text).not.toContain(" / ");
 	});
 
 	it("renders unmeasurable uptime as a named state, never as a percentage", () => {
@@ -207,6 +258,60 @@ describe("health metrics", () => {
 		expect(text).toContain("Not measurable");
 		expect(text).not.toContain("100%");
 		expect(container.querySelector('[data-tone="unknown"]')).not.toBeNull();
+	});
+
+	it("isolates each fraction as one LTR run so RTL keeps the numerator first", () => {
+		render(<OwnerHealthMetrics summary={summary} />, "ar");
+		const fractions = [...container.querySelectorAll('bdi[dir="ltr"]')].map(
+			(node) => node.textContent,
+		);
+		expect(fractions).toContain("12,000 / 12,840");
+		expect(fractions).not.toContain("11,905 / 12,000");
+	});
+});
+
+describe("operations header", () => {
+	it("reserves the applied-period row before data and swaps in the same row after", () => {
+		healthValue.status = "pending";
+		healthValue.summary = null;
+		render(<OwnerHealthSection />);
+
+		const anchor = container.querySelector("[data-owner-navigation-anchor]");
+		expect(anchor).not.toBeNull();
+		expect(anchor?.querySelector("h1")?.textContent).toBe(
+			ownerHealthMessages.en.title,
+		);
+		const reserved = anchor?.querySelector(
+			".owner-health__window[data-owner-health-window-reserved]",
+		);
+		expect(reserved).not.toBeNull();
+		expect(reserved?.getAttribute("aria-hidden")).toBe("true");
+
+		healthValue.status = "success";
+		healthValue.summary = summary;
+		render(<OwnerHealthSection />);
+
+		const rows = container.querySelectorAll(
+			".owner-health__heading .owner-health__window",
+		);
+		expect(rows).toHaveLength(1);
+		expect(rows[0]?.textContent).toContain("2026");
+		expect(
+			container.querySelector("[data-owner-health-window-reserved]"),
+		).toBeNull();
+	});
+
+	it("renders loading through the shared state panel with its icon anatomy", () => {
+		healthValue.status = "pending";
+		healthValue.summary = null;
+		render(<OwnerHealthSection />);
+
+		const card = container.querySelector(
+			'[data-owner-state-panel][data-owner-health-state="loading"]',
+		);
+		expect(card?.getAttribute("role")).toBe("status");
+		expect(card?.querySelector("svg")).not.toBeNull();
+		expect(card?.querySelector(".owner-health-loading-bars")).not.toBeNull();
 	});
 });
 

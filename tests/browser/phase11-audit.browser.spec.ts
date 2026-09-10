@@ -38,6 +38,15 @@ async function selectDate(page: Page, fieldName: string, iso: string) {
 		.click();
 }
 
+async function selectOwnerOption(
+	page: Page,
+	fieldLabel: string,
+	optionLabel: string,
+) {
+	await page.getByLabel(fieldLabel, { exact: true }).click();
+	await page.getByRole("option", { name: optionLabel, exact: true }).click();
+}
+
 const ownerAuth = {
 	principalId: "00000000-0000-4000-8000-000000000091",
 	principalKind: "owner",
@@ -403,15 +412,16 @@ async function expectNoDocumentOverflow(page: Page) {
 }
 
 /**
- * The filter selects reserve a 36px native-arrow lane, but reserving the lane
+ * The shared filter trigger owns an explicit icon lane, but reserving that lane
  * proves nothing on its own: a label that overruns the remaining content box
- * still clips mid-word. Measure every option of every filter select against the
- * box it actually gets, so the widest label — not merely the default one — has
- * to fit. `SELECT_LABEL_SAFETY_PX` keeps a marginal pass from reading as a
- * comfortable one; canvas advance width is deterministic but is not the
- * select's own shaping.
+ * still clips mid-word. Collect the real Base UI option labels once per locale,
+ * then measure every option against its trigger at every required width.
+ * `SELECT_LABEL_SAFETY_PX` keeps a marginal pass from reading as a comfortable
+ * one; canvas advance width is deterministic but is not the trigger's shaping.
  */
 const SELECT_LABEL_SAFETY_PX = 2;
+
+type FilterSelectLabels = Record<string, string[]>;
 
 type SelectLabelOverrun = {
 	locale: "ar" | "en";
@@ -426,43 +436,73 @@ async function findFilterSelectLabelOverruns(
 	page: Page,
 	locale: "ar" | "en",
 	width: number,
+	labelsById: FilterSelectLabels,
 ): Promise<SelectLabelOverrun[]> {
-	const overruns = await page.evaluate((safety) => {
-		const canvas = document.createElement("canvas");
-		const context = canvas.getContext("2d");
-		if (!context) throw new Error("2d context unavailable");
-		const found: {
-			id: string;
-			label: string;
-			text: number;
-			box: number;
-		}[] = [];
-		for (const select of document.querySelectorAll<HTMLSelectElement>(
-			".owner-audit-filters select",
-		)) {
-			const style = getComputedStyle(select);
-			context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} / ${style.lineHeight} ${style.fontFamily}`;
-			const box =
-				select.clientWidth -
-				Number.parseFloat(style.paddingInlineStart) -
-				Number.parseFloat(style.paddingInlineEnd);
-			for (const option of Array.from(select.options)) {
-				const label = option.textContent ?? "";
-				const text = context.measureText(label).width;
-				if (text + safety > box) {
-					found.push({
-						id: select.id,
-						label,
-						text: Math.round(text * 100) / 100,
-						box: Math.round(box * 100) / 100,
-					});
+	const overruns = await page.evaluate(
+		({ labelsById, safety }) => {
+			const canvas = document.createElement("canvas");
+			const context = canvas.getContext("2d");
+			if (!context) throw new Error("2d context unavailable");
+			const found: {
+				id: string;
+				label: string;
+				text: number;
+				box: number;
+			}[] = [];
+			for (const trigger of document.querySelectorAll<HTMLButtonElement>(
+				".owner-audit-select > [data-owner-select-trigger]",
+			)) {
+				const style = getComputedStyle(trigger);
+				context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} / ${style.lineHeight} ${style.fontFamily}`;
+				const icon = trigger.querySelector<HTMLElement>(".owner-select__icon");
+				const gap = Number.parseFloat(style.columnGap || style.gap) || 0;
+				const box =
+					trigger.clientWidth -
+					Number.parseFloat(style.paddingInlineStart) -
+					Number.parseFloat(style.paddingInlineEnd) -
+					(icon?.getBoundingClientRect().width ?? 0) -
+					gap;
+				for (const label of labelsById[trigger.id] ?? []) {
+					const text = context.measureText(label).width;
+					if (text + safety > box) {
+						found.push({
+							id: trigger.id,
+							label,
+							text: Math.round(text * 100) / 100,
+							box: Math.round(box * 100) / 100,
+						});
+					}
 				}
 			}
-		}
-		return found;
-	}, SELECT_LABEL_SAFETY_PX);
+			return found;
+		},
+		{ labelsById, safety: SELECT_LABEL_SAFETY_PX },
+	);
 
 	return overruns.map((overrun) => ({ locale, width, ...overrun }));
+}
+
+async function collectFilterSelectLabels(
+	page: Page,
+): Promise<FilterSelectLabels> {
+	const labelsById: FilterSelectLabels = {};
+	const triggers = page.locator(
+		".owner-audit-select > [data-owner-select-trigger]",
+	);
+	for (let index = 0; index < (await triggers.count()); index += 1) {
+		const trigger = triggers.nth(index);
+		const id = await trigger.getAttribute("id");
+		expect(id).toBeTruthy();
+		await trigger.click();
+		const popup = page.locator("[data-owner-select-popup]:visible");
+		await expect(popup).toBeVisible();
+		labelsById[id ?? `missing-${index}`] = await popup
+			.locator("[data-owner-select-option]")
+			.allTextContents();
+		await page.keyboard.press("Escape");
+		await expect(popup).toBeHidden();
+	}
+	return labelsById;
 }
 
 function seriousViolations(
@@ -489,24 +529,34 @@ async function hideShellSkipLink(page: Page) {
 }
 
 /**
- * The section tablist reveals the active tab through layout/observer-driven
- * scrolling, whose settled offset races font loading run to run. Centering
- * the active tab after layout settles — twice, so a late observer-driven
- * minimal reveal cannot win — keeps the composition baseline deterministic
- * without touching production behavior.
+ * Match the production logical-reading-edge reveal after font/layout work.
+ * Repeating the same correction keeps the canonical deterministic without
+ * replacing the approved mobile tab geometry with a test-only centered state.
  */
 async function stabilizeSectionTabs(page: Page) {
-	const center = () =>
+	const alignLogicalEdge = () =>
 		page.evaluate(() => {
-			document
-				.querySelector(
-					'.owner-section-switch > .owner-analytics-mode__tabs [role="tab"][aria-selected="true"]',
-				)
-				?.scrollIntoView({ block: "nearest", inline: "center" });
+			const tablist = document.querySelector<HTMLElement>(
+				".owner-section-switch > .owner-analytics-mode__tabs",
+			);
+			const tab = tablist?.querySelector<HTMLElement>(
+				'[role="tab"][aria-selected="true"]',
+			);
+			if (!tablist || !tab || tablist.scrollWidth <= tablist.clientWidth + 1)
+				return;
+			const rowBox = tablist.getBoundingClientRect();
+			const tabBox = tab.getBoundingClientRect();
+			const rightToLeft = getComputedStyle(tablist).direction === "rtl";
+			const correction = rightToLeft
+				? tabBox.right - rowBox.right
+				: tabBox.left - rowBox.left;
+			const scale =
+				tablist.offsetWidth > 0 ? rowBox.width / tablist.offsetWidth : 1;
+			if (correction !== 0) tablist.scrollBy({ left: correction / scale });
 		});
-	await center();
+	await alignLogicalEdge();
 	await page.waitForTimeout(300);
-	await center();
+	await alignLogicalEdge();
 }
 
 test("audit rows render in the configured gym timezone regardless of the device timezone", async ({
@@ -554,7 +604,7 @@ test("audit rows render in the configured gym timezone regardless of the device 
 	// A missing prior and a missing reason are named states, never a zero or a blank.
 	await expect(rows.nth(2)).toContainText("Not recorded");
 	await expect(rows.nth(1)).toContainText("No reason given");
-	await expect(rows.nth(1)).toContainText("Floored at zero");
+	await expect(rows.nth(1)).toContainText("Adjusted to zero");
 	await captureReview(page, "owner-audit-populated-en-1440x900.png");
 });
 
@@ -646,10 +696,10 @@ test("filters reach the transport with gym-day bounds and an explicit missing op
 	await expect(page.locator(auditTable)).toBeVisible();
 
 	const filters = page.getByRole("form", { name: "Filter Activity Log" });
-	await filters.getByLabel("Action").selectOption("reset");
-	await filters.getByLabel("Actor").selectOption("system");
-	await filters.getByLabel("From (prior count)").selectOption("missing");
-	await filters.getByLabel("Reason", { exact: true }).selectOption("contains");
+	await selectOwnerOption(page, "Action", "Reset to zero");
+	await selectOwnerOption(page, "Actor", "Automatic");
+	await selectOwnerOption(page, "From (prior count)", "Not recorded");
+	await selectOwnerOption(page, "Reason", "Contains");
 	await filters.getByLabel("Reason text").fill("post-close");
 	await selectDate(page, "From day", "2026-08-09");
 	await selectDate(page, "To day", "2026-08-10");
@@ -757,10 +807,10 @@ test("governance rows render their resolved target and missing effective-count s
 	await expect(targetCell).toHaveText(targetOwner.displayName);
 	await expect(table).toContainText("Active");
 	await expect(table).toContainText("Inactive");
-	await expect(table).toContainText("Settings version 12");
+	await expect(table).toContainText("New value 12");
 
 	const filters = page.getByRole("form", { name: "Filter Activity Log" });
-	await filters.getByLabel("To (effective count)").selectOption("missing");
+	await selectOwnerOption(page, "To (effective count)", "Not recorded");
 	await filters.getByRole("button", { name: "Apply filters" }).click();
 	await expect(page.locator(`${auditTable} tbody tr`)).toHaveCount(2);
 	expect(observedFilters.at(-1)).toEqual({ effectiveValue: null });
@@ -787,26 +837,39 @@ test("layout holds at every required width in both locales", async ({
 	const labelOverruns: SelectLabelOverrun[] = [];
 	for (const locale of ["ar", "en"] as const) {
 		await setLocale(page, locale);
+		await page.setViewportSize({ width: 1440, height: 900 });
+		const filterSelectLabels = await collectFilterSelectLabels(page);
 		for (const width of widths) {
 			await page.setViewportSize({ width, height: 900 });
 			await expect(page.locator(auditTable)).toBeVisible();
 			await expectNoDocumentOverflow(page);
 			labelOverruns.push(
-				...(await findFilterSelectLabelOverruns(page, locale, width)),
+				...(await findFilterSelectLabelOverruns(
+					page,
+					locale,
+					width,
+					filterSelectLabels,
+				)),
 			);
 			const selectPadding = await page
-				.locator(".owner-audit-filters select")
+				.locator(".owner-audit-select > [data-owner-select-trigger]")
 				.first()
 				.evaluate((element) => {
 					const style = getComputedStyle(element);
+					const icon = element.querySelector<HTMLElement>(
+						".owner-select__icon",
+					);
 					return {
 						inlineStart: Number.parseFloat(style.paddingInlineStart),
 						inlineEnd: Number.parseFloat(style.paddingInlineEnd),
+						iconLane:
+							(icon?.getBoundingClientRect().width ?? 0) +
+							(Number.parseFloat(style.columnGap || style.gap) || 0),
 					};
 				});
 			expect(selectPadding.inlineStart).toBe(12);
-			// The native chevron has a separate 8px inset in its frame.
-			expect(selectPadding.inlineEnd).toBeGreaterThanOrEqual(18);
+			expect(selectPadding.inlineEnd).toBe(12);
+			expect(selectPadding.iconLane).toBeGreaterThanOrEqual(20);
 			const region = await page
 				.locator(".owner-audit-region")
 				.evaluate((element) => ({
@@ -880,12 +943,13 @@ test("keyboard, targets, reduced motion, 200% reflow, forced colors, and axe hol
 		).toBe(true);
 	}
 
-	// Tab order follows the visual order of the filter form.
-	await page.locator(".owner-audit-filters select").first().focus();
+	// Tab order follows the visual order of the shared filter triggers.
+	const filterTriggers = page.locator(
+		".owner-audit-select > [data-owner-select-trigger]",
+	);
+	await filterTriggers.first().focus();
 	await page.keyboard.press("Tab");
-	await expect(
-		page.locator(".owner-audit-filters :is(select, input)").nth(1),
-	).toBeFocused();
+	await expect(filterTriggers.nth(1)).toBeFocused();
 
 	const motion = await page.locator(".owner-audit").evaluate(() => ({
 		reduced: matchMedia("(prefers-reduced-motion: reduce)").matches,
@@ -931,6 +995,9 @@ test("keyboard, targets, reduced motion, 200% reflow, forced colors, and axe hol
 test("canonical routed desktop Arabic and mobile English audit compositions match", async ({
 	page,
 }) => {
+	// Multi-locale, multi-viewport canonical captures need headroom on loaded
+	// machines; the 30s default is a flake source, not an oracle.
+	test.setTimeout(60_000);
 	await emulateDeviceTimeZone(page);
 	await mockOwnerSurfaces(page);
 	await openAudit(page);

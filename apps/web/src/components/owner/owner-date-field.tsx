@@ -1,5 +1,4 @@
 import { Popover } from "@fitway/ui/components/popover";
-import { Select } from "@fitway/ui/components/select";
 import { Check, ChevronDown } from "lucide-react";
 import {
 	type FocusEvent as ReactFocusEvent,
@@ -12,6 +11,8 @@ import {
 } from "react";
 
 import { useI18n } from "@/i18n/provider";
+
+import { OwnerSelect } from "./owner-select";
 
 import "./owner-date-field.css";
 
@@ -120,70 +121,19 @@ function SegmentSelect({
 	popupOwner: string;
 }) {
 	return (
-		<Select.Root
+		<OwnerSelect
 			items={[{ value: null, label: clearLabel }, ...items]}
 			value={value || null}
-			modal={false}
+			placeholder="—"
+			className="owner-date-field__trigger"
+			positionerClassName="owner-date-field__positioner"
+			popupClassName="owner-date-field__popup"
+			popupOwner={popupOwner}
+			ariaLabel={label}
+			invalid={invalid}
+			ariaDescribedBy={describedBy}
 			onValueChange={(next) => onChange(next ?? "")}
-		>
-			<Select.Trigger
-				className="owner-date-field__trigger"
-				aria-label={label}
-				aria-invalid={invalid || undefined}
-				aria-describedby={describedBy}
-			>
-				<Select.Value>
-					{(selected: string | null) =>
-						selected
-							? (items.find((item) => item.value === selected)?.label ??
-								selected)
-							: "—"
-					}
-				</Select.Value>
-				<Select.Icon className="owner-date-field__icon">
-					<ChevronDown aria-hidden="true" />
-				</Select.Icon>
-			</Select.Trigger>
-			<Select.Portal>
-				<Select.Positioner
-					className="owner-date-field__positioner"
-					data-owner-date-popup={popupOwner}
-					align="start"
-					alignItemWithTrigger={false}
-					sideOffset={6}
-					collisionPadding={8}
-					collisionAvoidance={{ side: "flip", align: "shift" }}
-				>
-					<Select.Popup className="owner-date-field__popup">
-						<Select.List className="owner-date-field__list">
-							<Select.Item
-								value={null}
-								label={clearLabel}
-								className="owner-date-field__option"
-							>
-								<Select.ItemIndicator className="owner-date-field__check">
-									<Check aria-hidden="true" />
-								</Select.ItemIndicator>
-								<Select.ItemText>{clearLabel}</Select.ItemText>
-							</Select.Item>
-							{items.map((item) => (
-								<Select.Item
-									key={item.value}
-									value={item.value}
-									label={item.label}
-									className="owner-date-field__option"
-								>
-									<Select.ItemIndicator className="owner-date-field__check">
-										<Check aria-hidden="true" />
-									</Select.ItemIndicator>
-									<Select.ItemText>{item.label}</Select.ItemText>
-								</Select.Item>
-							))}
-						</Select.List>
-					</Select.Popup>
-				</Select.Positioner>
-			</Select.Portal>
-		</Select.Root>
+		/>
 	);
 }
 
@@ -304,7 +254,7 @@ function YearSegment({
 	return (
 		<Popover.Root open={open} onOpenChange={handleOpenChange} modal={false}>
 			<Popover.Trigger
-				className="owner-date-field__trigger"
+				className="owner-select__trigger owner-date-field__trigger"
 				aria-label={label}
 				aria-invalid={invalid || undefined}
 				aria-describedby={describedBy}
@@ -507,7 +457,6 @@ export function OwnerDateField({
 			<legend>{label}</legend>
 			<div className="owner-date-field__parts">
 				<div className="owner-date-field__segment">
-					<span>{copy.day}</span>
 					<SegmentSelect
 						label={copy.day}
 						value={parts.day}
@@ -520,7 +469,6 @@ export function OwnerDateField({
 					/>
 				</div>
 				<div className="owner-date-field__segment">
-					<span>{copy.month}</span>
 					<SegmentSelect
 						label={copy.month}
 						value={parts.month}
@@ -533,7 +481,6 @@ export function OwnerDateField({
 					/>
 				</div>
 				<div className="owner-date-field__segment">
-					<span>{copy.year}</span>
 					<YearSegment
 						label={copy.year}
 						value={parts.year}

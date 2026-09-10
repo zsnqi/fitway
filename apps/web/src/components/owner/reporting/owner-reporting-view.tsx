@@ -20,6 +20,8 @@ import { formatDate } from "@/i18n/format";
 import { localeConfig } from "@/i18n/locale";
 import { useI18n } from "@/i18n/provider";
 
+import { OwnerScrollRegion } from "../owner-scroll-region";
+import { OwnerStatePanel } from "../owner-state-panel";
 import type { OwnerReportingMessages } from "./messages";
 import {
 	useOwnerReportingMessages,
@@ -476,16 +478,15 @@ export function OwnerReportingTable({ heatmap }: { heatmap: Heatmap }) {
 			})),
 		[heatmap, locale, messages, weekdays.full],
 	);
-	const keyboardScrollable = { tabIndex: 0 };
 	return (
 		<div className="owner-reporting-table">
 			<div className="owner-reporting-table__heading">
 				<h2>{messages.tableSummary}</h2>
 			</div>
-			<section
+			<OwnerScrollRegion
 				className="owner-reporting-region owner-reporting-region--dense"
-				aria-label={messages.tableRegion}
-				{...keyboardScrollable}
+				ariaLabel={messages.tableRegion}
+				hint={messages.scrollHint}
 			>
 				<table data-owner-reporting-table="">
 					<thead>
@@ -535,7 +536,7 @@ export function OwnerReportingTable({ heatmap }: { heatmap: Heatmap }) {
 						))}
 					</tbody>
 				</table>
-			</section>
+			</OwnerScrollRegion>
 		</div>
 	);
 }
@@ -671,9 +672,8 @@ export function OwnerReportingComparison({
 			],
 		};
 	}, [comparable, comparison, locale, messages]);
-
-	// A labeled scroll region must be reachable by keyboard alone (`DESIGN_GUIDE.md`
-	// §8, §13), exactly as the accepted audit, health, and analytics tables are.
+	// Above the mobile semantic-row breakpoint this table can overflow its
+	// half-width board. Keep that real scroll container keyboard reachable.
 	const keyboardScrollable = { tabIndex: 0 };
 
 	return (
@@ -789,10 +789,10 @@ export function OwnerReportingState({
 	children?: React.ReactNode;
 }) {
 	return (
-		<section
+		<OwnerStatePanel
+			variant={variant}
 			className={`owner-reporting-state owner-reporting-state--${variant}`}
-			role={variant === "error" ? "alert" : "status"}
-			data-owner-reporting-state={variant}
+			dataAttribute={{ "data-owner-reporting-state": variant }}
 		>
 			{icon}
 			<div>
@@ -801,7 +801,7 @@ export function OwnerReportingState({
 				{children}
 			</div>
 			{action}
-		</section>
+		</OwnerStatePanel>
 	);
 }
 

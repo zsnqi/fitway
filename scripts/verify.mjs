@@ -230,6 +230,21 @@ const phases = {
 		integrationFiles: [],
 		label: "Full-route Paper fidelity repair",
 	},
+	"owner-audit-closure": {
+		browserFiles: [
+			"tests/browser/phase9-owner-ui.browser.spec.ts",
+			"tests/browser/phase10-ui-csv.browser.spec.ts",
+			"tests/browser/phase11-shell.browser.spec.ts",
+			"tests/browser/phase11-audit.browser.spec.ts",
+			"tests/browser/phase11-access.browser.spec.ts",
+			"tests/browser/phase11-health.browser.spec.ts",
+			"tests/browser/phase11-settings.browser.spec.ts",
+			"tests/browser/owner-cross-surface.review.spec.ts",
+			"tests/browser/owner-presentation.review.spec.ts",
+		],
+		integrationFiles: [],
+		label: "Owner audit closure",
+	},
 };
 
 const phaseNames = Object.keys(phases).join("|");

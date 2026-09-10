@@ -4,10 +4,8 @@ import type {
 	DailyAnalytics,
 } from "@fitway/api/analytics/daily-analytics";
 import { Button } from "@fitway/ui/components/button";
-import { Select } from "@fitway/ui/components/select";
 import {
 	BarChart3,
-	Check,
 	ChevronDown,
 	ChevronLeft,
 	ChevronRight,
@@ -29,6 +27,7 @@ import { useI18n } from "@/i18n/provider";
 
 import type { OwnerAnalyticsMessages } from "./messages";
 import { OwnerRetainedDisclosure } from "./owner-retained-disclosure";
+import { OwnerSelect } from "./owner-select";
 import { useOwnerAnalyticsMessages } from "./use-owner-analytics-messages";
 
 import "./owner-analytics.css";
@@ -1208,56 +1207,17 @@ function AnalyticsTable({
 							<ChevronLeft aria-hidden="true" />
 						)}
 					</Button>
-					<Select.Root
+					<OwnerSelect
 						items={pageItems}
 						value={String(boundedPage)}
-						modal={false}
+						className="owner-table-pagination__page"
+						positionerClassName="owner-table-pagination__positioner"
+						popupClassName="owner-table-pagination__popup"
+						ariaLabel={messages.minutePage}
 						onValueChange={(next) => {
 							if (next !== null) setPage(Number(next));
 						}}
-					>
-						<Select.Trigger
-							className="owner-table-pagination__page"
-							aria-label={messages.minutePage}
-						>
-							<Select.Value>
-								{(selected: string | null) =>
-									formatNumber(Number(selected ?? boundedPage) + 1, locale)
-								}
-							</Select.Value>
-							<Select.Icon className="owner-table-pagination__page-icon">
-								<ChevronDown aria-hidden="true" />
-							</Select.Icon>
-						</Select.Trigger>
-						<Select.Portal>
-							<Select.Positioner
-								className="owner-table-pagination__positioner"
-								align="start"
-								alignItemWithTrigger={false}
-								sideOffset={6}
-								collisionPadding={8}
-								collisionAvoidance={{ side: "flip", align: "shift" }}
-							>
-								<Select.Popup className="owner-table-pagination__popup">
-									<Select.List className="owner-table-pagination__list">
-										{pageItems.map((item) => (
-											<Select.Item
-												key={item.value}
-												value={item.value}
-												label={item.label}
-												className="owner-table-pagination__option"
-											>
-												<Select.ItemIndicator className="owner-table-pagination__check">
-													<Check aria-hidden="true" />
-												</Select.ItemIndicator>
-												<Select.ItemText>{item.label}</Select.ItemText>
-											</Select.Item>
-										))}
-									</Select.List>
-								</Select.Popup>
-							</Select.Positioner>
-						</Select.Portal>
-					</Select.Root>
+					/>
 					<Button
 						type="button"
 						variant="outline"

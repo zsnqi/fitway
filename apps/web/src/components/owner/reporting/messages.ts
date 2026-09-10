@@ -30,7 +30,12 @@ export const ownerReportingMessages = {
 		startLabel: "Start",
 		endLabel: "End",
 		apply: "Apply",
-		restoreDefault: "Last 28 days",
+		presetsLegend: "Quick ranges",
+		presetLast7: "Last 7 days",
+		presetLast28: "Last 28 days",
+		presetLast31: "Last 31 days",
+		rangePending: "Changes not applied yet",
+		rangeApplied: "Report window applied",
 		problemIncomplete: "Choose both a first and a last business day.",
 		problemMalformed: "That is not a real calendar day.",
 		problemInverted: "The last day comes before the first day.",
@@ -91,7 +96,7 @@ export const ownerReportingMessages = {
 		comparisonPrior: "Week before",
 		comparisonAverage: "Average occupancy",
 		comparisonCrossings: "Total entries",
-		comparisonCoverage: "Observed coverage",
+		comparisonCoverage: "Data coverage",
 		comparisonChange: "Change",
 		comparisonUp: "up",
 		comparisonDown: "down",
@@ -100,8 +105,8 @@ export const ownerReportingMessages = {
 
 		insufficientTitle: "Not enough comparable history yet",
 		insufficientDescription:
-			"Both weeks must be observed for at least this much of their scheduled open minutes before a direction can be stated. The figures below are shown as they stand, without a comparison.",
-		insufficientMinimum: "Coverage a week must reach",
+			"Both weeks need at least this much data coverage before a direction can be stated. The figures below are shown as they are, without a comparison.",
+		insufficientMinimum: "Data coverage a week must reach",
 		current_week_no_expected_open_minutes:
 			"The latest week had no scheduled open minutes at all.",
 		current_week_coverage_below_minimum:
@@ -120,6 +125,7 @@ export const ownerReportingMessages = {
 		csvAbort: "Stop the export",
 		csvDownload: "Download the file",
 		csvExporting: "Preparing the export",
+		csvPreparingRows: "Preparing rows",
 		csvRows: "Rows prepared",
 		csvReadyTitle: "The export is ready",
 		csvReadyDescription:
@@ -137,7 +143,7 @@ export const ownerReportingMessages = {
 
 		scrollHint: "This grid scrolls sideways to reveal every hour.",
 		footnote:
-			"An average is taken over the minutes that were actually observed, so an outage lowers the coverage figure rather than quietly lowering the average. Closed hours are excluded from every average instead of being counted as empty. Band and capacity come from the snapshot stored on each minute, so changing a setting today never rewrites what last month looked like.",
+			"An average is taken over the minutes that were actually observed, so an outage lowers the data coverage rather than quietly lowering the average. Closed hours are excluded from every average instead of being counted as empty. Changing a setting today never rewrites what last month looked like.",
 		of: "of",
 		none: "None",
 	},
@@ -155,7 +161,12 @@ export const ownerReportingMessages = {
 		startLabel: "البداية",
 		endLabel: "النهاية",
 		apply: "تطبيق",
-		restoreDefault: "آخر 28 يوماً",
+		presetsLegend: "فترات سريعة",
+		presetLast7: "آخر 7 أيام",
+		presetLast28: "آخر 28 يوماً",
+		presetLast31: "آخر 31 يوماً",
+		rangePending: "تغييرات لم تُطبق بعد",
+		rangeApplied: "تم تطبيق فترة التقرير",
 		problemIncomplete: "اختر أول يوم عمل وآخر يوم عمل معاً.",
 		problemMalformed: "هذا ليس تاريخاً صحيحاً.",
 		problemInverted: "آخر يوم يسبق أول يوم.",
@@ -192,7 +203,7 @@ export const ownerReportingMessages = {
 		selectedMissing: "لم يُسجَّل أي تاريخ لهذه الساعة.",
 
 		tableSummary: "تفاصيل الساعات",
-		tableDescription: "كل الأرقام كنص",
+		tableDescription: "قراءات كل ساعة",
 		tableRegion: "أرقام اليوم مقابل الساعة",
 		columnWeekday: "اليوم",
 		columnHour: "الساعة",
@@ -214,7 +225,7 @@ export const ownerReportingMessages = {
 		comparisonPrior: "الأسبوع السابق",
 		comparisonAverage: "متوسط الازدحام",
 		comparisonCrossings: "إجمالي الدخول",
-		comparisonCoverage: "نسبة الوقت الذي توفرت فيه قراءات",
+		comparisonCoverage: "تغطية البيانات",
 		comparisonChange: "التغيّر",
 		comparisonUp: "ارتفاع",
 		comparisonDown: "انخفاض",
@@ -223,16 +234,16 @@ export const ownerReportingMessages = {
 
 		insufficientTitle: "لا يوجد سجل كافٍ للمقارنة بعد",
 		insufficientDescription:
-			"يجب أن يُرصد كلا الأسبوعين بهذا القدر على الأقل من دقائق عملهما المجدولة قبل تحديد أي اتجاه. الأرقام أدناه معروضة كما هي، بلا مقارنة.",
-		insufficientMinimum: "الحد الأدنى لنسبة الوقت الذي توفرت فيها قراءات",
+			"يجب أن تصل تغطية البيانات في كلا الأسبوعين إلى هذا الحد قبل تحديد أي اتجاه. الأرقام أدناه معروضة كما هي، بلا مقارنة.",
+		insufficientMinimum: "الحد الأدنى لتغطية البيانات أسبوعياً",
 		current_week_no_expected_open_minutes:
 			"لم تكن للأسبوع الأخير أي دقائق عمل مجدولة أصلاً.",
 		current_week_coverage_below_minimum:
-			"رُصد من الأسبوع الأخير قدر أقل من اللازم من دقائق عمله المجدولة.",
+			"كانت تغطية بيانات الأسبوع الأخير أقل من اللازم.",
 		prior_week_no_expected_open_minutes:
 			"لم تكن للأسبوع السابق أي دقائق عمل مجدولة أصلاً.",
 		prior_week_coverage_below_minimum:
-			"رُصد من الأسبوع السابق قدر أقل من اللازم من دقائق عمله المجدولة.",
+			"كانت تغطية بيانات الأسبوع السابق أقل من اللازم.",
 
 		csvTitle: "نطاق تصدير CSV",
 		csvDescription: "تنزيل سجل الإشغال لكل دقيقة خلال الفترة المحددة.",
@@ -242,6 +253,7 @@ export const ownerReportingMessages = {
 		csvAbort: "إيقاف التصدير",
 		csvDownload: "تنزيل الملف",
 		csvExporting: "جارٍ تجهيز التصدير",
+		csvPreparingRows: "جارٍ تجهيز الأسطر",
 		csvRows: "الأسطر المجهّزة",
 		csvReadyTitle: "التصدير جاهز",
 		csvReadyDescription: "سجل الإشغال للفترة المحددة جاهز للتنزيل.",
@@ -257,7 +269,7 @@ export const ownerReportingMessages = {
 
 		scrollHint: "يمكن تمرير هذه الشبكة أفقياً لعرض بقية الساعات.",
 		footnote:
-			"يُحسب المتوسط على الدقائق التي توفرت فيها قراءات فعلاً، فالانقطاع يخفض نسبة الوقت الذي توفرت فيه قراءات بدل أن يخفض المتوسط بصمت. وتُستبعد ساعات الإغلاق من كل متوسط بدل احتسابها فارغة. وتأتي الفئة والسعة من اللقطة المحفوظة مع كل دقيقة، فتغيير إعداد اليوم لا يعيد كتابة صورة الشهر الماضي.",
+			"يُحسب المتوسط على الدقائق التي توفرت فيها قراءات فعلاً، فالانقطاع يخفض تغطية البيانات بدل أن يخفض المتوسط بصمت. وتُستبعد ساعات الإغلاق من كل متوسط بدل احتسابها فارغة. وتغيير أي إعداد اليوم لا يعيد كتابة صورة الشهر الماضي.",
 		of: "من",
 		none: "لا شيء",
 	},

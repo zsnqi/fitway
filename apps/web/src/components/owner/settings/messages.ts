@@ -25,7 +25,7 @@ export const ownerSettingsMessages = {
 	en: {
 		title: "Settings",
 		intro:
-			"Versioned owner configuration. Changes apply prospectively and never rewrite history.",
+			"Set capacity, crowd levels, business day, and weekly hours. Changes apply from now on and never rewrite past reports.",
 
 		loading: "Loading settings",
 		loadingDescription: "Loading your gym settings.",
@@ -33,7 +33,6 @@ export const ownerSettingsMessages = {
 		errorDescription: "Check the connection and try again.",
 		retry: "Try again",
 
-		currentVersion: "Current version",
 		save: "Save settings",
 		saveShort: "Saving…",
 		discard: "Discard changes",
@@ -52,7 +51,8 @@ export const ownerSettingsMessages = {
 		savingState: "Saving settings…",
 		savedState: "Saved",
 
-		savedAnnouncement: "Settings version {version} created.",
+		savedAnnouncement:
+			"Settings saved. The change is recorded in Activity Log.",
 		savedDetail: "Your settings have been saved.",
 		failureAnnouncement:
 			"Nothing was changed. Your entered values remain in the form; try saving again.",
@@ -62,20 +62,19 @@ export const ownerSettingsMessages = {
 			"Check the highlighted fields. Save stays locked until they are fixed.",
 
 		foundationsTitle: "Gym settings",
-		foundationsHelper:
-			"All fields are private owner settings. Required fields keep persistent labels.",
+		foundationsHelper: "Your private gym settings.",
 		capacityLabel: "Capacity",
 		capacityUnit: "people",
 		boundaryLabel: "Day starts at",
 		boundaryUnit: (timezone: string) =>
 			timezone === "Asia/Riyadh" ? "Riyadh time" : `${timezone} time`,
 		timePlaceholder: "04:00",
-		resetLabel: "Reset buffer",
+		resetLabel: "Count reset delay",
 		resetUnit: "minutes",
 
 		thresholdsTitle: "Crowd levels",
 		thresholdsHelper:
-			"Enter ordered percentage boundaries. Packed begins above Busy.",
+			"Enter three ordered percentages that set the crowd levels. Packed begins above Busy.",
 		quietLabel: "Quiet ends at",
 		moderateLabel: "Moderate ends at",
 		busyLabel: "Busy ends at",
@@ -86,7 +85,7 @@ export const ownerSettingsMessages = {
 		columnDay: "Day",
 		columnOpens: "Opens",
 		columnCloses: "Closes",
-		columnState: "Closed",
+		columnState: "Status",
 		opensSub: "Opens",
 		closesSub: "Closes",
 		weekdays: {
@@ -103,36 +102,33 @@ export const ownerSettingsMessages = {
 		closesNextDay: "Closes next day",
 		closedDayMessage: "Open and close unavailable while closed",
 
-		lockedTitle: "System timing",
-		lockedTitleMobile: "◇ System timing",
-		lockedHelper:
-			"Copied forward unchanged into the new settings version and managed by the system.",
-		lockedHelperMobile: "System-managed · copied forward unchanged.",
+		lockedTitle: "Technical settings",
+		lockedTitleMobile: "◇ Technical settings",
+		lockedHelper: "Managed automatically. You cannot change these here.",
+		lockedHelperMobile: "Managed automatically · read-only",
 		lockedBadge: "◇ Read-only",
 		timezoneLabel: "Timezone",
-		pushLabel: "Counter updates",
-		freshLabel: "Live reading limit",
-		staleLabel: "Connection warning after",
-		pollLabel: "Public refresh",
+		pushLabel: "Counter update interval",
+		freshLabel: "Reading stays live for",
+		staleLabel: "Warning after no update for",
+		pollLabel: "Public page refresh",
 		timezoneValue: (timezone: string) =>
 			timezone === "Asia/Riyadh" ? `Riyadh time (${timezone})` : timezone,
 		secondsValue: (value: number) => `${value} seconds`,
-		lockedFooterLong:
-			"Saving creates a new settings version and a Settings entry in Activity Log. No secret values appear here.",
-		lockedFooterShort:
-			"New settings version + Settings entry in Activity Log · no secrets.",
+		lockedFooterLong: "Saving records the change in Activity Log.",
+		lockedFooterShort: "Changes are recorded in Activity Log.",
 
 		errors: {
 			required: "This field is required.",
 			capacity: {
 				required: "Enter a capacity.",
 				invalid: "Capacity must be a whole number.",
-				range: "Capacity must be between 1 and 2147483647.",
+				range: "Enter a number of people.",
 			},
 			reset: {
 				required: "Enter a reset buffer.",
 				invalid: "The reset buffer must be a whole number.",
-				range: "The reset buffer must be between 0 and 2147483647.",
+				range: "Enter a number of minutes.",
 			},
 			wallTime: {
 				required: "Enter a time.",
@@ -160,15 +156,14 @@ export const ownerSettingsMessages = {
 	ar: {
 		title: "الإعدادات",
 		intro:
-			"إعدادات مالك بإصدارات. تنطبق التغييرات مستقبلاً ولا تعيد كتابة السجل.",
+			"اضبط السعة ومستويات الازدحام ويوم العمل وساعات الأسبوع. تنطبق التغييرات من الآن ولا تعيد كتابة التقارير السابقة.",
 
 		loading: "جارٍ تحميل الإعدادات",
-		loadingDescription: "جارٍ تحميل إعدادات النادي.",
+		loadingDescription: "جارٍ تحميل إعدادات الصالة.",
 		errorTitle: "تعذر تحميل الإعدادات",
 		errorDescription: "تحقق من الاتصال ثم أعد المحاولة.",
 		retry: "إعادة المحاولة",
 
-		currentVersion: "الإصدار الحالي",
 		save: "حفظ الإعدادات",
 		saveShort: "جارٍ الحفظ…",
 		discard: "تجاهل التغييرات",
@@ -179,7 +174,7 @@ export const ownerSettingsMessages = {
 			invalid: "غير محفوظ",
 			saving: "جارٍ الحفظ",
 			saved: "تم الحفظ",
-			failed: "لم يتم الحفظ",
+			failed: "لم يُحفظ",
 			conflict: "تغيّرت",
 		},
 		cleanState: "كل التغييرات محفوظة",
@@ -187,7 +182,7 @@ export const ownerSettingsMessages = {
 		savingState: "جارٍ حفظ الإعدادات…",
 		savedState: "تم الحفظ",
 
-		savedAnnouncement: "تم إنشاء إصدار الإعدادات {version}.",
+		savedAnnouncement: "تم حفظ الإعدادات. سُجّل التغيير في سجل النشاط.",
 		savedDetail: "تم حفظ إعداداتك.",
 		failureAnnouncement:
 			"لم يتغير شيء. تبقى القيم التي أدخلتها في النموذج؛ حاول الحفظ مجدداً.",
@@ -195,30 +190,30 @@ export const ownerSettingsMessages = {
 			"تغيّرت الإعدادات من مكان آخر. تجاهل التغييرات يعيد تحميل القيم الحالية، ولا تُطبَّق مسودتك.",
 		invalidAnnouncement: "راجع الحقول المظللة. يبقى الحفظ مقفلاً حتى تُصحَّح.",
 
-		foundationsTitle: "إعدادات النادي",
-		foundationsHelper: "كل الحقول إعدادات خاصة بالمالك، مع تسميات ظاهرة دائماً.",
+		foundationsTitle: "إعدادات الصالة",
+		foundationsHelper: "إعدادات صالتك الخاصة.",
 		capacityLabel: "السعة",
 		capacityUnit: "شخص",
 		boundaryLabel: "بداية يوم العمل",
 		boundaryUnit: (timezone: string) =>
 			timezone === "Asia/Riyadh" ? "بتوقيت الرياض" : `بتوقيت ${timezone}`,
 		timePlaceholder: "04:00",
-		resetLabel: "مهلة إعادة الضبط",
+		resetLabel: "مهلة تصفير العداد",
 		resetUnit: "دقيقة",
 
 		thresholdsTitle: "مستويات الازدحام",
-		thresholdsHelper: "أدخل ثلاث نسب مرتبة. يبدأ النطاق ممتلئ بعد نهاية مزدحم.",
+		thresholdsHelper: "أدخل ثلاث نسب مرتبة تحدد مستويات الازدحام.",
 		quietLabel: "نهاية النطاق الهادئ",
 		moderateLabel: "نهاية النطاق المتوسط",
 		busyLabel: "نهاية النطاق المزدحم",
 
-		weeklyTitle: "ساعات النادي الأسبوعية",
+		weeklyTitle: "ساعات الصالة الأسبوعية",
 		weeklyHelper:
 			"لكل يوم وقت فتح وإغلاق. الإغلاق بعد منتصف الليل يبقى مع يوم الفتح.",
 		columnDay: "اليوم",
 		columnOpens: "يفتح",
 		columnCloses: "يغلق",
-		columnState: "مغلق",
+		columnState: "الحالة",
 		opensSub: "يفتح",
 		closesSub: "يغلق",
 		weekdays: {
@@ -235,36 +230,33 @@ export const ownerSettingsMessages = {
 		closesNextDay: "يغلق في اليوم التالي",
 		closedDayMessage: "وقتا الفتح والإغلاق غير متاحين عند الإغلاق",
 
-		lockedTitle: "توقيت النظام",
-		lockedTitleMobile: "◇ توقيت النظام",
-		lockedHelper:
-			"ينسخه النظام دون تغيير إلى إصدار الإعدادات الجديد ويديره مركزياً.",
-		lockedHelperMobile: "يديرها النظام · تُنسخ دون تغيير.",
+		lockedTitle: "إعدادات فنية",
+		lockedTitleMobile: "◇ إعدادات فنية",
+		lockedHelper: "تُدار تلقائياً ولا يمكن تغييرها من هنا.",
+		lockedHelperMobile: "تُدار تلقائياً · للقراءة فقط",
 		lockedBadge: "◇ للقراءة فقط",
 		timezoneLabel: "المنطقة الزمنية",
-		pushLabel: "تحديث جهاز العد",
-		freshLabel: "مدة القراءة المباشرة",
-		staleLabel: "التنبيه عن تأخر الاتصال",
-		pollLabel: "تحديث العرض العام",
+		pushLabel: "الفاصل بين تحديثات جهاز العد",
+		freshLabel: "مدة بقاء القراءة مباشرة",
+		staleLabel: "التحذير بعد توقف التحديث",
+		pollLabel: "تحديث الصفحة العامة",
 		timezoneValue: (timezone: string) =>
 			timezone === "Asia/Riyadh" ? `توقيت الرياض (${timezone})` : timezone,
 		secondsValue: (value: number) => `${value} ثانية`,
-		lockedFooterLong:
-			"ينشئ الحفظ إصدار إعدادات جديداً وسجلاً للإعدادات في سجل النشاط. لا تظهر أي قيم سرية هنا.",
-		lockedFooterShort:
-			"إصدار إعدادات جديد + سجل للإعدادات في سجل النشاط · بلا أسرار.",
+		lockedFooterLong: "سيُسجَّل التغيير في سجل النشاط عند الحفظ.",
+		lockedFooterShort: "يُسجَّل التغيير في سجل النشاط.",
 
 		errors: {
 			required: "هذا الحقل مطلوب.",
 			capacity: {
 				required: "أدخل السعة.",
 				invalid: "يجب أن تكون السعة رقماً صحيحاً.",
-				range: "يجب أن تكون السعة بين 1 و2147483647.",
+				range: "أدخل عدداً من الأشخاص.",
 			},
 			reset: {
 				required: "أدخل مهلة إعادة الضبط.",
 				invalid: "يجب أن تكون المهلة رقماً صحيحاً.",
-				range: "يجب أن تكون المهلة بين 0 و2147483647.",
+				range: "أدخل عدداً من الدقائق.",
 			},
 			wallTime: {
 				required: "أدخل الوقت.",

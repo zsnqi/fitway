@@ -16,6 +16,7 @@ import type { Locale } from "@/i18n/catalog";
 import { formatDate, formatGymTime, formatNumber } from "@/i18n/format";
 import { localeConfig } from "@/i18n/locale";
 import { useI18n } from "@/i18n/provider";
+import { OwnerStatePanel } from "../owner-state-panel";
 
 import type { OwnerHealthMessages } from "./messages";
 import { useOwnerHealthMessages } from "./use-owner-health-messages";
@@ -108,7 +109,7 @@ function Metric({
 }: {
 	label: string;
 	value: string;
-	detail: string;
+	detail: React.ReactNode;
 	tone: "measured" | "unknown";
 	indicator: "live" | "delayed" | "neutral";
 }) {
@@ -130,9 +131,9 @@ function Metric({
 /**
  * The three headline figures.
  *
- * Each one states its own denominator in the detail line: uptime is over monitored
- * open minutes, coverage is over scheduled open minutes, and the notice outcomes are
- * over notices sent. No figure is presented over an implied whole.
+ * Each one leads with the outcome the owner cares about: uptime with how long
+ * readings were missing (if at all), coverage with whether every scheduled open
+ * minute was recorded, and alerts with whether maintenance was reached.
  */
 export function OwnerHealthMetrics({
 	summary,
@@ -142,6 +143,53 @@ export function OwnerHealthMetrics({
 	const { locale } = useI18n();
 	const messages = useOwnerHealthMessages();
 	const { connection, alerts } = summary;
+
+	const coverageDetail =
+		connection.monitoredRatio === null ? (
+			messages.coverageUnknownDetail
+		) : connection.monitoredOpenMinutes === connection.expectedOpenMinutes ? (
+			messages.coverageComplete
+		) : (
+			<>
+				{/* One isolated LTR run: RTL must not reorder a numerator past
+				    its denominator. */}
+				<bdi dir="ltr">
+					{formatNumber(connection.monitoredOpenMinutes, locale)} /{" "}
+					{formatNumber(connection.expectedOpenMinutes, locale)}
+				</bdi>{" "}
+				{messages.coverageOf}
+			</>
+		);
+
+	const noticesDetail =
+		alerts.noticeCount === 0
+			? messages.noticesSummary(0, formatNumber(0, locale))
+			: alerts.failed === 0 && alerts.unconfirmed === 0
+				? messages.noticesAllDelivered(
+						alerts.noticeCount,
+						formatNumber(alerts.noticeCount, locale),
+					)
+				: [
+						messages.noticesSummary(
+							alerts.noticeCount,
+							formatNumber(alerts.noticeCount, locale),
+						),
+						alerts.failed > 0
+							? messages.failedSummary(
+									alerts.failed,
+									formatNumber(alerts.failed, locale),
+								)
+							: null,
+						alerts.unconfirmed > 0
+							? messages.unconfirmedSummary(
+									alerts.unconfirmed,
+									formatNumber(alerts.unconfirmed, locale),
+								)
+							: null,
+					]
+						.filter((part): part is string => part !== null)
+						.join(" · ");
+
 	return (
 		<div className="owner-health-metrics" data-owner-health-metrics="">
 			<Metric
@@ -156,7 +204,15 @@ export function OwnerHealthMetrics({
 				detail={
 					connection.uptimeRatio === null
 						? messages.uptimeUnknownDetail
-						: `${formatNumber(connection.onlineOpenMinutes, locale)} / ${formatNumber(connection.monitoredOpenMinutes, locale)} ${messages.uptimeOf}`
+						: connection.offlineOpenMinutes === 0
+							? messages.offlineEmptyDescription
+							: messages.uptimeOfflineDetail(
+									formatDuration(
+										connection.offlineOpenMinutes,
+										locale,
+										messages,
+									),
+								)
 				}
 			/>
 			<Metric
@@ -168,24 +224,14 @@ export function OwnerHealthMetrics({
 						? messages.uptimeUnknown
 						: formatRatio(connection.monitoredRatio, locale)
 				}
-				detail={`${formatNumber(connection.monitoredOpenMinutes, locale)} / ${formatNumber(connection.expectedOpenMinutes, locale)} ${messages.coverageOf}`}
+				detail={coverageDetail}
 			/>
 			<Metric
 				indicator="neutral"
 				tone="measured"
 				label={messages.noticesLabel}
 				value={formatNumber(alerts.noticeCount, locale)}
-				detail={[
-					messages.noticesSummary(
-						alerts.noticeCount,
-						formatNumber(alerts.noticeCount, locale),
-					),
-					alerts.noticeCount === 0
-						? null
-						: deliveryLabel(alerts, locale, messages),
-				]
-					.filter((part): part is string => part !== null)
-					.join(" · ")}
+				detail={noticesDetail}
 			/>
 		</div>
 	);
@@ -401,27 +447,29 @@ function StateCard({
 	title,
 	description,
 	action,
+	loadingContent,
 }: {
 	variant: "loading" | "error" | "empty" | "unmonitored";
 	icon: React.ReactNode;
 	title: string;
 	description: string;
 	action?: React.ReactNode;
+	loadingContent?: React.ReactNode;
 }) {
 	return (
-		<section
-			className={`owner-health-state owner-health-state--${variant}`}
-			role={variant === "error" ? "alert" : "status"}
-			{...(variant === "loading" ? { "aria-live": "polite" as const } : {})}
-			data-owner-health-state={variant}
+		<OwnerStatePanel
+			variant={variant}
+			className={`owner-state-panel--card owner-health-state owner-health-state--${variant}`}
+			dataAttribute={{ "data-owner-health-state": variant }}
+			icon={icon}
+			loadingContent={loadingContent}
+			action={action}
 		>
-			{icon}
 			<div>
 				<h2>{title}</h2>
 				<p>{description}</p>
 			</div>
-			{action}
-		</section>
+		</OwnerStatePanel>
 	);
 }
 
@@ -433,7 +481,7 @@ export function OwnerHealthLoading() {
 			icon={<Activity aria-hidden="true" />}
 			title={messages.loading}
 			description={messages.loadingDescription}
-			action={
+			loadingContent={
 				<div className="owner-health-loading-bars" aria-hidden="true">
 					<i />
 					<i />

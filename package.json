@@ -34,6 +34,7 @@
 		"verify:fast": "node scripts/verify.mjs fast",
 		"verify:phase": "node scripts/verify.mjs phase",
 		"verify:full": "node scripts/verify.mjs full",
+		"owner:review": "tsx scripts/owner-review.ts",
 		"demo:prepare": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo.ps1 prepare",
 		"demo:reset": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo.ps1 reset",
 		"demo:start": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo.ps1 start",

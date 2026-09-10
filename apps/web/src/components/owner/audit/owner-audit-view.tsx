@@ -1,10 +1,13 @@
 import type { AuditEntryView } from "@fitway/api/audit/list";
 import { Button } from "@fitway/ui/components/button";
-import { RefreshCw } from "lucide-react";
+import { Activity, AlertTriangle, CircleCheck, RefreshCw } from "lucide-react";
 
 import { formatDate, formatGymTime, formatNumber } from "@/i18n/format";
 import { useI18n } from "@/i18n/provider";
 
+import { OwnerAsyncSwap } from "../owner-async-swap";
+import { OwnerScrollRegion } from "../owner-scroll-region";
+import { OwnerStatePanel } from "../owner-state-panel";
 import type { OwnerAuditMessages } from "./messages";
 import { useOwnerAuditMessages } from "./use-owner-audit-messages";
 
@@ -131,148 +134,161 @@ export function OwnerAuditTable({
 }) {
 	const { locale } = useI18n();
 	const messages = useOwnerAuditMessages();
-	// A labeled scroll region must be reachable by keyboard alone
-	// (`DESIGN_GUIDE.md` §8, §13). The same spread is used by the analytics table.
-	const keyboardScrollable = { tabIndex: 0 };
 	return (
-		<section className="owner-audit-board">
-			<header className="owner-audit-board__heading">
-				<h2>{messages.tableRegion}</h2>
-				<p className="owner-audit-board__count">
-					{messages.resultsCount}{" "}
-					<bdi>{formatNumber(entries.length, locale)}</bdi>
-				</p>
-			</header>
-			<section
-				className="owner-audit-region"
-				aria-label={messages.tableRegion}
-				{...keyboardScrollable}
-			>
-				<table data-owner-audit-table="">
-					<thead>
-						<tr>
-							<th scope="col">{messages.columnTime}</th>
-							<th scope="col">{messages.columnActor}</th>
-							<th scope="col">{messages.columnTarget}</th>
-							<th scope="col">{messages.columnAction}</th>
-							<th scope="col">{messages.columnChange}</th>
-							<th scope="col">{messages.columnRequested}</th>
-							<th scope="col">{messages.columnReason}</th>
-						</tr>
-					</thead>
-					<tbody>
-						{entries.map((entry) => (
-							<tr
-								key={entry.id}
-								data-action={entry.action}
-								data-actor={entry.actor.kind}
-							>
-								<td>
-									<bdi dir="auto">
-										{gymDay(entry.createdAtUtc, locale, timeZone)}
-									</bdi>{" "}
-									<bdi dir="auto">
-										{formatGymTime(
-											new Date(entry.createdAtUtc),
-											locale,
-											timeZone,
-										)}
-									</bdi>
-								</td>
-								<td>
-									<bdi dir="auto">{actorLabel(entry.actor, messages)}</bdi>
-								</td>
-								<td>
-									{entry.target === null ? (
-										<span className="owner-audit__absent">
-											{messages.noTarget}
-										</span>
-									) : (
-										<bdi dir="auto">{entry.target.displayName}</bdi>
-									)}
-								</td>
-								<td>{messages[entry.action]}</td>
-								<td>
-									<ChangeValue entry={entry} />
-								</td>
-								<td>
-									<RequestedValue entry={entry} />
-								</td>
-								<td>
-									{entry.reason === null ? (
-										<span className="owner-audit__absent">
-											{messages.noReason}
-										</span>
-									) : (
-										<bdi dir="auto">{entry.reason}</bdi>
-									)}
-								</td>
+		<OwnerAsyncSwap stateKey="table">
+			<section className="owner-audit-board">
+				<header className="owner-audit-board__heading">
+					<h2>{messages.tableRegion}</h2>
+					<p className="owner-audit-board__count">
+						{messages.resultsCount}{" "}
+						<bdi>{formatNumber(entries.length, locale)}</bdi>
+					</p>
+				</header>
+				<OwnerScrollRegion
+					className="owner-audit-region"
+					ariaLabel={messages.tableRegion}
+					hint={messages.scrollHint}
+				>
+					<table data-owner-audit-table="">
+						<thead>
+							<tr>
+								<th scope="col">{messages.columnTime}</th>
+								<th scope="col">{messages.columnActor}</th>
+								<th scope="col">{messages.columnTarget}</th>
+								<th scope="col">{messages.columnAction}</th>
+								<th scope="col">{messages.columnChange}</th>
+								<th scope="col">{messages.columnRequested}</th>
+								<th scope="col">{messages.columnReason}</th>
 							</tr>
-						))}
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							{entries.map((entry) => (
+								<tr
+									key={entry.id}
+									data-action={entry.action}
+									data-actor={entry.actor.kind}
+								>
+									<td>
+										<bdi dir="auto">
+											{gymDay(entry.createdAtUtc, locale, timeZone)}
+										</bdi>{" "}
+										<bdi dir="auto">
+											{formatGymTime(
+												new Date(entry.createdAtUtc),
+												locale,
+												timeZone,
+											)}
+										</bdi>
+									</td>
+									<td>
+										<bdi dir="auto">{actorLabel(entry.actor, messages)}</bdi>
+									</td>
+									<td>
+										{entry.target === null ? (
+											<span className="owner-audit__absent">
+												{messages.noTarget}
+											</span>
+										) : (
+											<bdi dir="auto">{entry.target.displayName}</bdi>
+										)}
+									</td>
+									<td>{messages[entry.action]}</td>
+									<td>
+										<ChangeValue entry={entry} />
+									</td>
+									<td>
+										<RequestedValue entry={entry} />
+									</td>
+									<td>
+										{entry.reason === null ? (
+											<span className="owner-audit__absent">
+												{messages.noReason}
+											</span>
+										) : (
+											<bdi dir="auto">{entry.reason}</bdi>
+										)}
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</OwnerScrollRegion>
 			</section>
-		</section>
+		</OwnerAsyncSwap>
 	);
 }
 
 export function OwnerAuditLoading() {
 	const messages = useOwnerAuditMessages();
 	return (
-		<section
-			className="owner-audit-state owner-audit-state--loading"
-			role="status"
-			aria-live="polite"
-			data-owner-audit-state="loading"
-		>
-			<div>
-				<h3>{messages.loading}</h3>
-				<p>{messages.loadingDescription}</p>
-			</div>
-			<div className="owner-audit-loading-bars" aria-hidden="true">
-				<i />
-				<i />
-				<i />
-			</div>
-		</section>
+		<OwnerAsyncSwap stateKey="loading">
+			<OwnerStatePanel
+				variant="loading"
+				className="owner-state-panel--card owner-audit-state owner-audit-state--loading"
+				dataAttribute={{ "data-owner-audit-state": "loading" }}
+				icon={<Activity aria-hidden="true" />}
+				loadingContent={
+					<div className="owner-audit-loading-bars" aria-hidden="true">
+						<i />
+						<i />
+						<i />
+					</div>
+				}
+			>
+				<div>
+					<h3>{messages.loading}</h3>
+					<p>{messages.loadingDescription}</p>
+				</div>
+			</OwnerStatePanel>
+		</OwnerAsyncSwap>
 	);
 }
 
 export function OwnerAuditError({ onRetry }: { onRetry: () => void }) {
 	const messages = useOwnerAuditMessages();
 	return (
-		<section
-			className="owner-audit-state owner-audit-state--error"
-			role="alert"
-			data-owner-audit-state="error"
-		>
-			<div>
-				<h3>{messages.errorTitle}</h3>
-				<p>{messages.errorDescription}</p>
-			</div>
-			<Button type="button" onClick={onRetry}>
-				<RefreshCw aria-hidden="true" />
-				{messages.retry}
-			</Button>
-		</section>
+		<OwnerAsyncSwap stateKey="error">
+			<OwnerStatePanel
+				variant="error"
+				className="owner-state-panel--card owner-audit-state owner-audit-state--error"
+				dataAttribute={{ "data-owner-audit-state": "error" }}
+				icon={<AlertTriangle aria-hidden="true" />}
+				action={
+					<Button type="button" onClick={onRetry}>
+						<RefreshCw aria-hidden="true" />
+						{messages.retry}
+					</Button>
+				}
+			>
+				<div>
+					<h3>{messages.errorTitle}</h3>
+					<p>{messages.errorDescription}</p>
+				</div>
+			</OwnerStatePanel>
+		</OwnerAsyncSwap>
 	);
 }
 
 export function OwnerAuditEmpty({ onClear }: { onClear: () => void }) {
 	const messages = useOwnerAuditMessages();
 	return (
-		<section
-			className="owner-audit-state owner-audit-state--empty"
-			role="status"
-			data-owner-audit-state="empty"
-		>
-			<div>
-				<h3>{messages.emptyTitle}</h3>
-				<p>{messages.emptyDescription}</p>
-			</div>
-			<Button type="button" variant="outline" onClick={onClear}>
-				{messages.clear}
-			</Button>
-		</section>
+		<OwnerAsyncSwap stateKey="empty">
+			<OwnerStatePanel
+				variant="empty"
+				className="owner-state-panel--card owner-audit-state owner-audit-state--empty"
+				dataAttribute={{ "data-owner-audit-state": "empty" }}
+				icon={<CircleCheck aria-hidden="true" />}
+				action={
+					<Button type="button" variant="outline" onClick={onClear}>
+						{messages.clear}
+					</Button>
+				}
+			>
+				<div>
+					<h3>{messages.emptyTitle}</h3>
+					<p>{messages.emptyDescription}</p>
+				</div>
+			</OwnerStatePanel>
+		</OwnerAsyncSwap>
 	);
 }

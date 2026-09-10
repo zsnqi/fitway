@@ -321,19 +321,12 @@ test("shared Owner navigation keeps the approved labels, transparent material, a
 		en: [
 			"Daily",
 			"Reports",
-			"Accounts & Sign-in",
+			"Access",
 			"Activity Log",
-			"System Status",
+			"Operations",
 			"Settings",
 		],
-		ar: [
-			"اليومي",
-			"التقارير",
-			"الحسابات والدخول",
-			"سجل النشاط",
-			"حالة النظام",
-			"الإعدادات",
-		],
+		ar: ["اليومي", "التقارير", "الوصول", "سجل النشاط", "التشغيل", "الإعدادات"],
 	} as const;
 
 	for (const locale of ["en", "ar"] as const) {
@@ -483,7 +476,11 @@ test("every destination keeps its own identity while Daily is pending", async ({
 		{ section: "history", heading: "Reports", stateRole: "status" },
 		{ section: "access", heading: "Access", stateRole: "status" },
 		{ section: "audit", heading: "Activity Log", stateRole: "status" },
-		{ section: "health", heading: "Uptime and incidents", stateRole: "status" },
+		{
+			section: "health",
+			heading: "Operations & incidents",
+			stateRole: "status",
+		},
 		{ section: "settings", heading: "Settings", stateRole: "status" },
 	] as const;
 

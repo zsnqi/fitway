@@ -3,17 +3,34 @@ type ArabicNoticeOutcome = "delivered" | "failed" | "unconfirmed";
 function arabicNoticeSummary(count: number, formatted: string): string {
 	switch (new Intl.PluralRules("ar").select(count)) {
 		case "zero":
-			return "لم يُرسل أي إشعار في هذه الفترة";
+			return "لم تُرسل تنبيهات في هذه الفترة";
 		case "one":
-			return "أُرسل إشعار واحد في هذه الفترة";
+			return "أُرسل إشعار واحد عن أعطال هذه الفترة";
 		case "two":
-			return "أُرسل إشعاران في هذه الفترة";
+			return "أُرسل إشعاران عن أعطال هذه الفترة";
 		case "few":
-			return `أُرسلت ${formatted} إشعارات في هذه الفترة`;
+			return `أُرسلت ${formatted} إشعارات عن أعطال هذه الفترة`;
 		case "many":
-			return `أُرسل ${formatted} إشعاراً في هذه الفترة`;
+			return `أُرسل ${formatted} إشعاراً عن أعطال هذه الفترة`;
 		default:
-			return `أُرسل ${formatted} إشعار في هذه الفترة`;
+			return `أُرسل ${formatted} إشعار عن أعطال هذه الفترة`;
+	}
+}
+
+function arabicNoticeDelivered(count: number, formatted: string): string {
+	switch (new Intl.PluralRules("ar").select(count)) {
+		case "zero":
+			return "لم تصل أي تنبيهات في هذه الفترة";
+		case "one":
+			return "وصل إشعار واحد عن أعطال هذه الفترة";
+		case "two":
+			return "وصل إشعاران عن أعطال هذه الفترة";
+		case "few":
+			return `وصلت ${formatted} إشعارات عن أعطال هذه الفترة`;
+		case "many":
+			return `وصل ${formatted} إشعاراً عن أعطال هذه الفترة`;
+		default:
+			return `وصل ${formatted} إشعار عن أعطال هذه الفترة`;
 	}
 }
 
@@ -55,35 +72,44 @@ function arabicOutcomeSummary(
  */
 export const ownerHealthMessages = {
 	en: {
-		title: "Uptime and incidents",
-		description:
-			"What maintenance has been keeping running, over the last business days",
+		title: "Operations & incidents",
+		description: "Counter uptime and incidents over the last business days",
 		timeZoneLabel: "Gym timezone",
 		windowLabel: "Period",
 		windowDays: "business days",
 
-		loading: "Loading the uptime summary",
-		loadingDescription: "Preparing the recent incident and uptime history.",
-		errorTitle: "The uptime summary could not be loaded",
+		loading: "Loading the operations summary",
+		loadingDescription: "Preparing the recent uptime and incident history.",
+		errorTitle: "The operations summary could not be loaded",
 		errorDescription: "Check the connection and try again.",
 		retry: "Try again",
 
-		unmonitoredTitle: "No health history has been recorded yet",
+		unmonitoredTitle: "No monitoring record for this period",
 		unmonitoredDescription:
-			"Uptime cannot be reported for a period with no recorded health transition. This is not the same as a period with no downtime.",
+			"Without a monitoring record, uptime cannot be shown. This is not the same as a period with no downtime.",
 
 		uptimeLabel: "Uptime during open hours",
-		uptimeOf: "monitored open minutes online",
 		uptimeUnknown: "Not measurable",
-		uptimeUnknownDetail: "No monitored open minute exists in this period.",
+		uptimeUnknownDetail: "There were no open minutes in this period.",
+		uptimeOfflineDetail: (duration: string) =>
+			`${duration} without readings in this period.`,
 
-		coverageLabel: "Monitoring coverage",
-		coverageOf: "scheduled open minutes monitored",
-		coverageSince: "Health history begins",
+		coverageLabel: "Data coverage",
+		coverageOf: "recorded minutes",
+		coverageComplete: "Every scheduled open minute was recorded.",
+		coverageUnknownDetail:
+			"There are no scheduled open minutes in this period.",
+		coverageSince: "Monitoring history begins",
 
 		noticesLabel: "Alerts sent to maintenance",
 		noticesSummary: (count: number, formatted: string) =>
-			`${formatted} ${count === 1 ? "notice" : "notices"} sent in this period`,
+			count === 0
+				? "No alerts were sent in this period."
+				: `${formatted} ${count === 1 ? "notice" : "notices"} about this period’s incidents`,
+		noticesAllDelivered: (count: number, formatted: string) =>
+			count === 1
+				? "1 notice delivered about this period’s incidents."
+				: `${formatted} notices delivered about this period’s incidents.`,
 		noticesBreakdown: "delivered · failed to send · unconfirmed",
 		deliveredSummary: (_count: number, formatted: string) =>
 			`${formatted} delivered`,
@@ -93,11 +119,11 @@ export const ownerHealthMessages = {
 			`${formatted} unconfirmed`,
 
 		offlineTitle: "Offline periods",
-		offlineDescription: "Connection interruptions, including closed hours.",
+		offlineDescription: "Periods when readings paused, including closed hours.",
 		offlineRegion: "Offline periods",
 		offlineEmptyTitle: "No offline period in this window",
 		offlineEmptyDescription:
-			"The edge stayed connected for every monitored minute of this period.",
+			"The counter stayed connected throughout this period.",
 		offlineColumnStarted: "Started",
 		offlineColumnEnded: "Recovered",
 		offlineColumnLength: "Length",
@@ -107,13 +133,12 @@ export const ownerHealthMessages = {
 		offlineShown: "Periods shown",
 		offlineOf: "of",
 
-		incidentsTitle: "Incidents the maintainer was alerted to",
+		incidentsTitle: "Incidents",
 		incidentsDescription:
-			"One row per condition, re-alerted at most every 30 minutes.",
+			"Each incident, when it started, and how alerts were delivered.",
 		incidentsRegion: "Incidents",
 		incidentsEmptyTitle: "No incident in this window",
-		incidentsEmptyDescription:
-			"No alert condition was raised over this period. Conditions suppressed during closed hours never reach this list.",
+		incidentsEmptyDescription: "Nothing went wrong in this period.",
 		incidentsColumnCondition: "Condition",
 		incidentsColumnStarted: "Started",
 		incidentsColumnRecovered: "Recovered",
@@ -134,39 +159,43 @@ export const ownerHealthMessages = {
 
 		scrollHint: "This table scrolls sideways to reveal every column.",
 		footnote:
-			"Uptime counts open minutes only, so a failure entirely outside opening hours does not reduce it. Alerting suppresses closed-hours conditions until shortly before opening, so such a condition is not an incident the gym was exposed to and does not appear above. A notice that failed to send is a messaging failure, not extra downtime.",
+			"Uptime covers open hours only, so a failure while the gym is closed does not lower it. Closed-hour alerts are held until shortly before opening and are not listed above. A notice that failed to send does not mean extra downtime.",
 		hoursShort: "h",
 		minutesShort: "m",
 		none: "None",
 	},
 	ar: {
 		title: "التشغيل والأعطال",
-		description: "ما الذي أبقته الصيانة يعمل خلال أيام العمل الأخيرة",
+		description: "تشغيل جهاز العد والأعطال خلال أيام العمل الأخيرة",
 		timeZoneLabel: "توقيت الصالة",
 		windowLabel: "الفترة",
 		windowDays: "يوم عمل",
 
 		loading: "جارٍ تحميل ملخص التشغيل",
-		loadingDescription: "جارٍ تجهيز سجل الأعطال ونسبة التشغيل الأخيرة.",
+		loadingDescription: "جارٍ تجهيز سجل التشغيل والأعطال الأخير.",
 		errorTitle: "تعذر تحميل ملخص التشغيل",
 		errorDescription: "تحقق من الاتصال ثم أعد المحاولة.",
 		retry: "إعادة المحاولة",
 
-		unmonitoredTitle: "لا يوجد سجل حالة حتى الآن",
+		unmonitoredTitle: "لا يوجد سجل مراقبة لهذه الفترة",
 		unmonitoredDescription:
-			"لا يمكن احتساب نسبة التشغيل لفترة لا تحتوي على أي تغيّر حالة مسجَّل. هذا ليس مثل فترة بلا انقطاع.",
+			"بدون سجل مراقبة لا يمكن عرض نسبة التشغيل. وهذا ليس مثل فترة بلا انقطاع.",
 
 		uptimeLabel: "التشغيل خلال ساعات العمل",
-		uptimeOf: "من دقائق العمل المراقَبة كانت متصلة",
 		uptimeUnknown: "غير قابل للقياس",
-		uptimeUnknownDetail: "لا توجد دقيقة عمل مراقَبة ضمن هذه الفترة.",
+		uptimeUnknownDetail: "لم تكن هناك دقائق عمل في هذه الفترة.",
+		uptimeOfflineDetail: (duration: string) =>
+			`${duration} بلا قراءات في هذه الفترة.`,
 
-		coverageLabel: "تغطية المراقبة",
-		coverageOf: "من دقائق العمل المجدولة كانت مراقَبة",
-		coverageSince: "يبدأ سجل الحالة",
+		coverageLabel: "تغطية البيانات",
+		coverageOf: "دقيقة مسجّلة",
+		coverageComplete: "تم تسجيل كل دقائق العمل المجدولة.",
+		coverageUnknownDetail: "لا توجد دقائق عمل مجدولة في هذه الفترة.",
+		coverageSince: "يبدأ سجل المراقبة",
 
 		noticesLabel: "التنبيهات المرسلة للصيانة",
 		noticesSummary: arabicNoticeSummary,
+		noticesAllDelivered: arabicNoticeDelivered,
 		noticesBreakdown: "وصل · فشل الإرسال · غير مؤكد",
 		deliveredSummary: (count: number, formatted: string) =>
 			arabicOutcomeSummary(count, formatted, "delivered"),
@@ -177,10 +206,10 @@ export const ownerHealthMessages = {
 
 		offlineTitle: "فترات الانقطاع",
 		offlineDescription:
-			"كل فترة مسجَّلة بلا بيانات، سواء كانت الصالة مفتوحة حينها أم لا.",
+			"الفترات التي توقفت فيها القراءات، بما فيها ساعات الإغلاق.",
 		offlineRegion: "فترات الانقطاع",
 		offlineEmptyTitle: "لا توجد فترة انقطاع في هذه الفترة",
-		offlineEmptyDescription: "بقي الجهاز متصلاً في كل دقيقة مراقَبة من الفترة.",
+		offlineEmptyDescription: "بقي جهاز العد متصلاً طوال هذه الفترة.",
 		offlineColumnStarted: "البداية",
 		offlineColumnEnded: "التعافي",
 		offlineColumnLength: "المدة",
@@ -190,13 +219,11 @@ export const ownerHealthMessages = {
 		offlineShown: "الفترات المعروضة",
 		offlineOf: "من",
 
-		incidentsTitle: "الأعطال التي نُبِّهت إليها الصيانة",
-		incidentsDescription:
-			"سطر واحد لكل حالة، مع إعادة التنبيه كل 30 دقيقة على الأكثر.",
+		incidentsTitle: "الأعطال",
+		incidentsDescription: "كل عطل ووقت بدايته وكيف وصلت التنبيهات.",
 		incidentsRegion: "الأعطال",
 		incidentsEmptyTitle: "لا توجد أعطال في هذه الفترة",
-		incidentsEmptyDescription:
-			"لم تُرصد أي حالة تنبيه خلال الفترة. الحالات المكبوتة أثناء الإغلاق لا تظهر في هذه القائمة أصلاً.",
+		incidentsEmptyDescription: "لم يحدث أي عطل في هذه الفترة.",
 		incidentsColumnCondition: "الحالة",
 		incidentsColumnStarted: "البداية",
 		incidentsColumnRecovered: "التعافي",
@@ -217,7 +244,7 @@ export const ownerHealthMessages = {
 
 		scrollHint: "يمكن تمرير هذا الجدول أفقياً لعرض بقية الأعمدة.",
 		footnote:
-			"تحتسب نسبة التشغيل دقائق العمل فقط، لذا لا يخفضها عطل يقع كاملاً خارج ساعات العمل. ويكبت نظام التنبيه حالات الإغلاق حتى ما قبل الافتتاح، فلا تُعد تلك الحالة عطلاً تعرّضت له الصالة ولا تظهر أعلاه. وفشل إرسال إشعار هو فشل في المراسلة لا انقطاع إضافي.",
+			"تحتسب نسبة التشغيل دقائق العمل فقط، فلا يخفضها عطل يقع أثناء الإغلاق. وتُؤجَّل تنبيهات ساعات الإغلاق إلى ما قبل الافتتاح ولا تظهر أعلاه. وفشل إرسال إشعار لا يعني انقطاعاً إضافياً.",
 		hoursShort: "س",
 		minutesShort: "د",
 		none: "لا شيء",

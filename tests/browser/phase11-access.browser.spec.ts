@@ -6,7 +6,7 @@ import { expect, type Page, type Route, test } from "@playwright/test";
 import { expectOwnerReflowAt200Percent } from "./helpers/owner-reflow";
 
 const ownerSectionNames = {
-	access: /^(?:Accounts & Sign-in|الحسابات والدخول)$/u,
+	access: /^(?:Access|الوصول)$/u,
 	audit: /^(?:Activity Log|سجل النشاط)$/u,
 } as const;
 
@@ -644,7 +644,7 @@ test("Arabic renders RTL with Western digits and a plain-hyphen PIN range", asyn
 	await page.getByLabel("كلمة المرور الأولية").fill("long-enough-passphrase");
 	await page
 		.getByLabel("مالك جديد")
-		.getByRole("button", { name: "توفير حساب مالك" })
+		.getByRole("button", { name: "إنشاء حساب مالك" })
 		.click();
 	const note = page.locator('[data-owner-access-refusal="owner_email_taken"]');
 	await expect(note).toBeVisible();
@@ -670,7 +670,7 @@ test("each of the nine typed refusals reaches the owner as its own named copy", 
 
 	async function resetOwnerNamed(page: Page, name: string) {
 		const row = page.locator(".owner-access-owner").filter({ hasText: name });
-		await row.getByRole("button", { name: "Reset credential" }).click();
+		await row.getByRole("button", { name: "Reset sign-in details" }).click();
 		await row.getByLabel("New password").fill("another-long-passphrase");
 		await row.getByRole("button", { name: "Confirm" }).click();
 	}
@@ -687,7 +687,7 @@ test("each of the nine typed refusals reaches the owner as its own named copy", 
 		await page.getByLabel("Initial password").fill("long-enough-passphrase");
 		await page
 			.getByLabel("New owner")
-			.getByRole("button", { name: "Provision owner" })
+			.getByRole("button", { name: "Create owner" })
 			.click();
 	}
 
@@ -702,11 +702,11 @@ test("each of the nine typed refusals reaches the owner as its own named copy", 
 			code: "staff_pin_already_active",
 			principals: [unprovisionedStaff],
 			route: "staffPin/provision",
-			copy: "A staff PIN is already active. Rotate it instead of provisioning a new one.",
+			copy: "A staff PIN is already active. Change it instead of creating a new one.",
 			run: async (page) => {
 				await page
 					.locator(staffCard)
-					.getByRole("button", { name: "Provision staff PIN" })
+					.getByRole("button", { name: "Create staff PIN" })
 					.click();
 			},
 		},
@@ -714,11 +714,11 @@ test("each of the nine typed refusals reaches the owner as its own named copy", 
 			code: "staff_pin_not_active",
 			principals: [staff],
 			route: "staffPin/rotate",
-			copy: "There is no active staff PIN to change. Provision one first.",
+			copy: "There is no active staff PIN to change. Create one first.",
 			run: async (page) => {
 				await page
 					.locator(staffCard)
-					.getByRole("button", { name: "Rotate staff PIN" })
+					.getByRole("button", { name: "Change staff PIN" })
 					.click();
 			},
 		},
@@ -800,7 +800,7 @@ test("the generator-defect staff_pin_shape code is a generic failure, not a refu
 	await expect(page.locator(staffCard)).toBeVisible();
 	await page
 		.locator(staffCard)
-		.getByRole("button", { name: "Provision staff PIN" })
+		.getByRole("button", { name: "Create staff PIN" })
 		.click();
 
 	// No named refusal: the surface reports the generic retry line instead.
@@ -823,11 +823,11 @@ test("the one-time PIN reveal appears only after provision and rotate, focuses i
 	await mockOwnerSurfaces(page, { principals: [unprovisionedStaff] });
 	await openOwnerSection(page);
 	const card = page.locator(staffCard);
-	await expect(card).toContainText("Not provisioned");
+	await expect(card).toContainText("Not created yet");
 	await expect(page.locator(reveal)).toHaveCount(0);
 
 	const provisionButton = card.getByRole("button", {
-		name: "Provision staff PIN",
+		name: "Create staff PIN",
 	});
 	listPrincipals = [staff];
 	await provisionButton.click();
@@ -837,11 +837,13 @@ test("the one-time PIN reveal appears only after provision and rotate, focuses i
 	// Focus lands on the dismiss control the moment the reveal appears.
 	await expect(page.locator(revealDismiss)).toBeFocused();
 	// The copy names the once-only nature and the value reads in an LTR run.
-	await expect(revealRegion).toContainText("shown once");
+	await expect(revealRegion).toContainText(
+		"Record it now. You will not see it again after closing.",
+	);
 	await expect(revealRegion.locator("dd bdi")).toHaveText(REVEALED_PIN);
 	await expect(revealRegion.locator("dd bdi")).toHaveAttribute("dir", "ltr");
 	const refreshedRotateButton = card.getByRole("button", {
-		name: "Rotate staff PIN",
+		name: "Change staff PIN",
 	});
 	await expect(refreshedRotateButton).toBeVisible();
 	await page.keyboard.press("Tab");
@@ -861,7 +863,7 @@ test("the one-time PIN reveal appears only after provision and rotate, focuses i
 	listPrincipals = [unprovisionedStaff];
 	await reloadOwnerSection(page);
 	const delayedProvisionButton = card.getByRole("button", {
-		name: "Provision staff PIN",
+		name: "Create staff PIN",
 	});
 	await expect(delayedProvisionButton).toBeVisible();
 	listHoldOpen = true;
@@ -874,7 +876,7 @@ test("the one-time PIN reveal appears only after provision and rotate, focuses i
 	releaseList?.();
 	releaseList = null;
 	const delayedRotateButton = card.getByRole("button", {
-		name: "Rotate staff PIN",
+		name: "Change staff PIN",
 	});
 	await expect(delayedRotateButton).toBeVisible();
 	await expect(delayedRotateButton).toBeFocused();
@@ -883,7 +885,7 @@ test("the one-time PIN reveal appears only after provision and rotate, focuses i
 	await mockOwnerSurfaces(page, { principals: [staff] });
 	await reloadOwnerSection(page);
 	await expect(card).toContainText("Active");
-	const rotateButton = card.getByRole("button", { name: "Rotate staff PIN" });
+	const rotateButton = card.getByRole("button", { name: "Change staff PIN" });
 	await rotateButton.click();
 	await expect(revealRegion).toBeVisible();
 	await expect(page.locator(revealDismiss)).toBeFocused();
@@ -1321,7 +1323,7 @@ test("all seven successful governance actions correlate browser responses, submi
 	const staffProvision = await performMutation(
 		"staffPin/provision",
 		async () => {
-			await page.getByRole("button", { name: "Provision staff PIN" }).click();
+			await page.getByRole("button", { name: "Create staff PIN" }).click();
 		},
 	);
 	await page.keyboard.press("Escape");
@@ -1339,7 +1341,7 @@ test("all seven successful governance actions correlate browser responses, submi
 	);
 
 	const staffRotate = await performMutation("staffPin/rotate", async () => {
-		await page.getByRole("button", { name: "Rotate staff PIN" }).click();
+		await page.getByRole("button", { name: "Change staff PIN" }).click();
 	});
 	await page.keyboard.press("Escape");
 	const staffRotateRow = await checkRenderedAudit(
@@ -1349,8 +1351,8 @@ test("all seven successful governance actions correlate browser responses, submi
 			newCredentialVersion: 2,
 		}),
 	);
-	await expect(staffRotateRow).toContainText("Credential version 1");
-	await expect(staffRotateRow).toContainText("Credential version 2");
+	await expect(staffRotateRow).toContainText("Value 1");
+	await expect(staffRotateRow).toContainText("Value 2");
 	await selectOwnerSection(page, "access");
 	expect(await fixtureSessionStatus(staffInitialSession)).toBe(401);
 	expect(
@@ -1413,7 +1415,7 @@ test("all seven successful governance actions correlate browser responses, submi
 		),
 	);
 	const ownerProvision = await performMutation("owner/provision", async () => {
-		await page.getByRole("button", { name: "Provision owner" }).click();
+		await page.getByRole("button", { name: "Create owner" }).click();
 	});
 	const submittedOwnerCredential = (await ownerProvisionRequest).postDataJSON()
 		?.json?.password;
@@ -1497,7 +1499,9 @@ test("all seven successful governance actions correlate browser responses, submi
 	const otherOwnerRow = page
 		.locator(".owner-access-owner")
 		.filter({ hasText: otherOwner.displayName });
-	await otherOwnerRow.getByRole("button", { name: "Reset credential" }).click();
+	await otherOwnerRow
+		.getByRole("button", { name: "Reset sign-in details" })
+		.click();
 	await otherOwnerRow.getByLabel("New password").fill(OWNER_REPLACEMENT);
 	const ownerResetRequest = page.waitForRequest((request) =>
 		new URL(request.url()).pathname.endsWith(
@@ -1521,8 +1525,8 @@ test("all seven successful governance actions correlate browser responses, submi
 			newCredentialVersion: 2,
 		}),
 	);
-	await expect(ownerResetRow).toContainText("Credential version 1");
-	await expect(ownerResetRow).toContainText("Credential version 2");
+	await expect(ownerResetRow).toContainText("Value 1");
+	await expect(ownerResetRow).toContainText("Value 2");
 	await selectOwnerSection(page, "access");
 	expect(await fixtureSessionStatus(otherOwnerOldSession)).toBe(401);
 	expect(

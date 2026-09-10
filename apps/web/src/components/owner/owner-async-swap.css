@@ -1,0 +1,49 @@
+.owner-async-swap,
+.owner-async-swap__current {
+	display: grid;
+	min-inline-size: 0;
+}
+
+.owner-async-swap {
+	min-block-size: 128px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.owner-async-swap__current {
+		animation: owner-async-swap-in 140ms var(--fw-ease-out) both;
+	}
+
+	@keyframes owner-async-swap-in {
+		from {
+			opacity: 0;
+			transform: translateY(2px);
+		}
+	}
+}
+
+/* Settings carries its own heading inside the swapped view, so moving the
+   whole current layer would move the heading. Its entry stays the same 140ms
+   opacity and 2px rise, but runs on the form body, leaving the heading still. */
+@media (prefers-reduced-motion: no-preference) {
+	.owner-async-swap--settings > .owner-async-swap__current {
+		animation: none;
+	}
+
+	.owner-async-swap--settings
+		> .owner-async-swap__current
+		> .owner-settings
+		> .owner-settings__form
+		> :not(.owner-settings__top, .owner-settings__actions--lower) {
+		animation: owner-async-swap-in 140ms var(--fw-ease-out) both;
+	}
+}
+
+/* The section-switch panel zeroes every direct-child section's top edge. The
+   Settings wrapper sits between the panel and the view section, so it carries
+   that reset forward for this one nested case; wrapped geometry matches the
+   unwrapped surface. */
+.owner-async-swap--settings > .owner-async-swap__current > .owner-settings {
+	margin-block-start: 0;
+	padding-block-start: 0;
+	border-block-start: 0;
+}

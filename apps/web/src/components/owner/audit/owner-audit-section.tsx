@@ -14,6 +14,7 @@ import {
 	OwnerDateField,
 	ownerDateValidationMessage,
 } from "../owner-date-field";
+import { OwnerSelect } from "../owner-select";
 import {
 	OwnerAuditEmpty,
 	OwnerAuditError,
@@ -147,46 +148,46 @@ export function OwnerAuditSection() {
 				<div className="owner-audit-field owner-audit-field--action">
 					<label htmlFor={fieldId("action")}>{messages.actionLabel}</label>
 					<span className="owner-audit-select">
-						<select
+						<OwnerSelect
 							id={fieldId("action")}
 							value={draft.action}
-							onChange={(event) =>
+							items={[
+								{ value: "any", label: messages.anyOption },
+								...AUDIT_ACTIONS.map((action) => ({
+									value: action,
+									label: messages[action],
+								})),
+							]}
+							onValueChange={(value) =>
 								update(
 									"action",
-									event.target.value as OwnerAuditFilterSelection["action"],
+									(value ?? "any") as OwnerAuditFilterSelection["action"],
 								)
 							}
-						>
-							<option value="any">{messages.anyOption}</option>
-							{AUDIT_ACTIONS.map((action) => (
-								<option key={action} value={action}>
-									{messages[action]}
-								</option>
-							))}
-						</select>
+						/>
 					</span>
 				</div>
 
 				<div className="owner-audit-field owner-audit-field--actor">
 					<label htmlFor={fieldId("actor")}>{messages.actorLabel}</label>
 					<span className="owner-audit-select">
-						<select
+						<OwnerSelect
 							id={fieldId("actor")}
 							value={draft.actor}
-							onChange={(event) =>
+							items={[
+								{ value: "any", label: messages.anyOption },
+								...AUDIT_ACTOR_KINDS.map((kind) => ({
+									value: kind,
+									label: messages[kind],
+								})),
+							]}
+							onValueChange={(value) =>
 								update(
 									"actor",
-									event.target.value as OwnerAuditFilterSelection["actor"],
+									(value ?? "any") as OwnerAuditFilterSelection["actor"],
 								)
 							}
-						>
-							<option value="any">{messages.anyOption}</option>
-							{AUDIT_ACTOR_KINDS.map((kind) => (
-								<option key={kind} value={kind}>
-									{messages[kind]}
-								</option>
-							))}
-						</select>
+						/>
 					</span>
 				</div>
 
@@ -228,21 +229,21 @@ export function OwnerAuditSection() {
 					<label htmlFor={fieldId("prior-mode")}>{messages.priorLabel}</label>
 					<div className="owner-audit-field__controls">
 						<span className="owner-audit-select">
-							<select
+							<OwnerSelect
 								id={fieldId("prior-mode")}
 								value={draft.priorMode}
-								onChange={(event) =>
+								items={[
+									{ value: "any", label: messages.priorAny },
+									{ value: "value", label: messages.priorValue },
+									{ value: "missing", label: messages.priorMissing },
+								]}
+								onValueChange={(value) =>
 									update(
 										"priorMode",
-										event.target
-											.value as OwnerAuditFilterSelection["priorMode"],
+										(value ?? "any") as OwnerAuditFilterSelection["priorMode"],
 									)
 								}
-							>
-								<option value="any">{messages.priorAny}</option>
-								<option value="value">{messages.priorValue}</option>
-								<option value="missing">{messages.priorMissing}</option>
-							</select>
+							/>
 						</span>
 						<input
 							id={fieldId("prior-value")}
@@ -264,21 +265,22 @@ export function OwnerAuditSection() {
 					</label>
 					<div className="owner-audit-field__controls">
 						<span className="owner-audit-select">
-							<select
+							<OwnerSelect
 								id={fieldId("effective-mode")}
 								value={draft.effectiveMode}
-								onChange={(event) =>
+								items={[
+									{ value: "any", label: messages.effectiveAny },
+									{ value: "value", label: messages.effectiveValue },
+									{ value: "missing", label: messages.effectiveMissing },
+								]}
+								onValueChange={(value) =>
 									update(
 										"effectiveMode",
-										event.target
-											.value as OwnerAuditFilterSelection["effectiveMode"],
+										(value ??
+											"any") as OwnerAuditFilterSelection["effectiveMode"],
 									)
 								}
-							>
-								<option value="any">{messages.effectiveAny}</option>
-								<option value="value">{messages.effectiveValue}</option>
-								<option value="missing">{messages.effectiveMissing}</option>
-							</select>
+							/>
 						</span>
 						<input
 							id={fieldId("effective")}
@@ -298,21 +300,21 @@ export function OwnerAuditSection() {
 					<label htmlFor={fieldId("reason-mode")}>{messages.reasonLabel}</label>
 					<div className="owner-audit-field__controls">
 						<span className="owner-audit-select">
-							<select
+							<OwnerSelect
 								id={fieldId("reason-mode")}
 								value={draft.reasonMode}
-								onChange={(event) =>
+								items={[
+									{ value: "any", label: messages.reasonAny },
+									{ value: "contains", label: messages.reasonContains },
+									{ value: "missing", label: messages.reasonMissing },
+								]}
+								onValueChange={(value) =>
 									update(
 										"reasonMode",
-										event.target
-											.value as OwnerAuditFilterSelection["reasonMode"],
+										(value ?? "any") as OwnerAuditFilterSelection["reasonMode"],
 									)
 								}
-							>
-								<option value="any">{messages.reasonAny}</option>
-								<option value="contains">{messages.reasonContains}</option>
-								<option value="missing">{messages.reasonMissing}</option>
-							</select>
+							/>
 						</span>
 						<input
 							id={fieldId("reason-text")}
