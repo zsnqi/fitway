@@ -91,7 +91,7 @@ test("expires cached closed honestly and transitions to open without reload", as
 	// closed payload arrives and renders no matter how slow the machine is.
 	await expect
 		.poll(async () => {
-			await page.clock.fastForward(0);
+			await page.clock.fastForward(1);
 			return page.getByRole("heading", { name: "مغلق الآن" }).isVisible();
 		})
 		.toBe(true);
@@ -115,7 +115,7 @@ test("expires cached closed honestly and transitions to open without reload", as
 	await expect
 		.poll(
 			async () => {
-				await page.clock.fastForward(0);
+				await page.clock.fastForward(1);
 				return page.getByRole("heading", { name: "هادئ" }).isVisible();
 			},
 			{ timeout: 4_000 },

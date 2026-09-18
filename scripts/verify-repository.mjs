@@ -6,6 +6,10 @@ import process from "node:process";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { parse as parseYaml } from "yaml";
+import {
+	assertHistoryMutationOwnership,
+	verifyHistoryTransition,
+} from "./project-state-history-transition.mjs";
 import { verifyVisualAuthorityRepository } from "./visual-authority.mjs";
 
 const root = process.cwd();
@@ -103,10 +107,12 @@ function assertAcyclicMilestones(milestones) {
 	for (const id of Object.keys(milestones)) visit(id);
 }
 
-function assertProjectStateInvariants(state) {
-	const baselineMilestone = state.milestones["baseline-reconciliation-gate"];
+function assertProjectStateInvariants(state, milestones) {
+	const baselineMilestone = milestones["baseline-reconciliation-gate"];
 	if (!baselineMilestone) {
-		fail("PROJECT_STATE.yaml is missing baseline-reconciliation-gate");
+		fail(
+			"Active and history milestone records are missing baseline-reconciliation-gate",
+		);
 	}
 	if (state.baseline.status !== baselineMilestone.status) {
 		fail(
@@ -152,7 +158,7 @@ function assertProjectStateInvariants(state) {
 	const assignedBranches = new Map();
 	const assignedWorktrees = new Map();
 	const assignedLeases = new Map();
-	for (const [id, milestone] of Object.entries(state.milestones)) {
+	for (const [id, milestone] of Object.entries(milestones)) {
 		if (stoppedStatuses.has(milestone.status)) {
 			if (!milestone.stopReason?.trim()) {
 				fail(`${id} is ${milestone.status} without an explicit stop reason`);
@@ -162,13 +168,24 @@ function assertProjectStateInvariants(state) {
 		}
 		if (dependencyReadyStatuses.has(milestone.status)) {
 			for (const dependency of milestone.dependencies) {
-				if (state.milestones[dependency].status !== "DONE") {
+				if (milestones[dependency].status !== "DONE") {
 					fail(
 						`${id} cannot be ${milestone.status} while ${dependency} is not DONE`,
 					);
 				}
 			}
 		}
+		if (milestone.status !== "DONE") continue;
+		if (!milestone.integratedCommit) {
+			fail(`${id} is DONE without an integrated commit`);
+		}
+		for (const [gate, result] of Object.entries(milestone.gates)) {
+			if (result !== "PASS" && result !== "NOT_REQUIRED") {
+				fail(`${id} is DONE while ${gate} is ${result}`);
+			}
+		}
+	}
+	for (const [id, milestone] of Object.entries(state.milestones)) {
 		if (activeWorkerStatuses.has(milestone.status)) {
 			for (const field of [
 				"ownerSession",
@@ -201,15 +218,6 @@ function assertProjectStateInvariants(state) {
 				const assigned = assignedLeases.get(lease);
 				if (assigned) fail(`${id} and ${assigned} share lease ${lease}`);
 				assignedLeases.set(lease, id);
-			}
-		}
-		if (milestone.status !== "DONE") continue;
-		if (!milestone.integratedCommit) {
-			fail(`${id} is DONE without an integrated commit`);
-		}
-		for (const [gate, result] of Object.entries(milestone.gates)) {
-			if (result !== "PASS" && result !== "NOT_REQUIRED") {
-				fail(`${id} is DONE while ${gate} is ${result}`);
 			}
 		}
 	}
@@ -255,9 +263,11 @@ async function main() {
 		"RESEARCH.md",
 		"README.md",
 		"PROJECT_STATE.yaml",
+		"PROJECT_STATE_HISTORY.yaml",
 		"docs/WORKFLOW.md",
 		"docs/POLISH_BACKLOG.md",
 		"docs/schemas/project-state.schema.json",
+		"docs/schemas/project-state-history.schema.json",
 		"visual-direction-gate/approved/APPROVAL_MANIFEST.yaml",
 	];
 	for (const relativePath of required) await readBytes(relativePath);
@@ -265,33 +275,85 @@ async function main() {
 	const state = parseYaml(
 		(await readBytes("PROJECT_STATE.yaml")).toString("utf8"),
 	);
+	const history = parseYaml(
+		(await readBytes("PROJECT_STATE_HISTORY.yaml")).toString("utf8"),
+	);
 	const stateSchema = JSON.parse(
 		(await readBytes("docs/schemas/project-state.schema.json")).toString(
 			"utf8",
 		),
 	);
+	const historySchema = JSON.parse(
+		(
+			await readBytes("docs/schemas/project-state-history.schema.json")
+		).toString("utf8"),
+	);
 	const ajv = new Ajv2020({ allErrors: true, strict: true });
 	addFormats(ajv);
-	const validate = ajv.compile(stateSchema);
-	if (!validate(state)) {
+	ajv.addSchema(stateSchema);
+	const validateState = ajv.compile(stateSchema);
+	const validateHistory = ajv.compile(historySchema);
+	if (!validateState(state)) {
 		fail(
-			`PROJECT_STATE.yaml schema validation failed:\n${JSON.stringify(validate.errors, null, 2)}`,
+			`PROJECT_STATE.yaml schema validation failed:\n${JSON.stringify(validateState.errors, null, 2)}`,
 		);
 	}
-	assertAcyclicMilestones(state.milestones);
-	assertProjectStateInvariants(state);
-	for (const milestone of Object.values(state.milestones)) {
-		if (
-			new Set([
-				"READY",
-				"IN_PROGRESS",
-				"VALIDATING",
-				"READY_FOR_INTEGRATION",
-			]).has(milestone.status)
-		) {
-			await readBytes(milestone.handoff);
+	if (!validateHistory(history)) {
+		fail(
+			`PROJECT_STATE_HISTORY.yaml schema validation failed:\n${JSON.stringify(validateHistory.errors, null, 2)}`,
+		);
+	}
+	const openMilestoneStatuses = new Set([
+		"PLANNED",
+		"READY",
+		"IN_PROGRESS",
+		"VALIDATING",
+		"READY_FOR_INTEGRATION",
+	]);
+	for (const [id, milestone] of Object.entries(history.milestones)) {
+		if (Object.hasOwn(state.milestones, id)) {
+			fail(
+				`Milestone ${id} is duplicated in PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml`,
+			);
+		}
+		if (openMilestoneStatuses.has(milestone.status)) {
+			fail(
+				`PROJECT_STATE_HISTORY.yaml must contain only terminal milestone records: ${id} is ${milestone.status}`,
+			);
 		}
 	}
+	const allMilestones = { ...history.milestones, ...state.milestones };
+	assertAcyclicMilestones(allMilestones);
+	assertProjectStateInvariants(state, allMilestones);
+	const handoffRequiredStatuses = new Set([
+		"READY",
+		"IN_PROGRESS",
+		"VALIDATING",
+		"READY_FOR_INTEGRATION",
+		"DONE",
+		"BLOCKED",
+		"NEEDS_HUMAN",
+		"FAILED_VALIDATION",
+	]);
+	for (const [id, milestone] of Object.entries(state.milestones)) {
+		if (!handoffRequiredStatuses.has(milestone.status)) continue;
+		if (
+			typeof milestone.handoff !== "string" ||
+			milestone.handoff.trim().length === 0
+		) {
+			fail(`${id} is ${milestone.status} without a non-empty handoff path`);
+		}
+		await readBytes(milestone.handoff);
+	}
+	assertHistoryMutationOwnership(state);
+	const historyTransition = await verifyHistoryTransition({
+		root,
+		state,
+		history,
+	});
+	console.log(
+		`History transition evidence: pre-phase3-clock-flush anchor ${historyTransition.anchorSha256}; ${historyTransition.beforeCount} anchored milestones, ${historyTransition.afterCount} candidate milestones, ${historyTransition.addedIds.length} added (${historyTransition.addedIds.join(", ") || "none"}), ${historyTransition.removedIds.length} removed, ${historyTransition.modifiedIds.length} modified, ${historyTransition.declaredTargets.length} declared archive target(s).`,
+	);
 	for (const relativePath of [
 		state.baseline.visualManifest,
 		state.baseline.validationRecord,
@@ -354,7 +416,7 @@ async function main() {
 	const routeAuthority = await verifyVisualAuthorityRepository(root);
 
 	console.log(
-		`Repository invariants passed: ${Object.keys(state.milestones).length} milestones, ${(manifest.canonicalScreenshots ?? []).length} canonical approval screenshots, ${routeAuthority.caseCount} registered full-route visual-authority cases, ${routeAuthority.paperExportCount} hash-verified Paper exports, and ${routeAuthority.rejectedArtifactCount} hash-frozen rejected r05 screenshots.`,
+		`Repository invariants passed: ${Object.keys(state.milestones).length} active milestones, ${Object.keys(history.milestones).length} archived milestones, ${(manifest.canonicalScreenshots ?? []).length} canonical approval screenshots, ${routeAuthority.caseCount} registered full-route visual-authority cases (${routeAuthority.acceptedCaseCount} accepted, ${routeAuthority.supersededCaseCount} superseded), ${routeAuthority.paperExportCount} hash-verified Paper exports, and ${routeAuthority.rejectedArtifactCount} hash-frozen rejected r05 screenshots.`,
 	);
 }
 

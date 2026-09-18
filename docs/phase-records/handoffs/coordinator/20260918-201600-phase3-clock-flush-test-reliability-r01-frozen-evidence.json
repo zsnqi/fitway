@@ -1,0 +1,239 @@
+{
+	"schemaVersion": 1,
+	"kind": "frozen-evidence-inventory",
+	"recordedAt": "2026-09-18T20:17:27+03:00",
+	"recordedAtBasis": "observed local timestamp; metadata only, not authoritative capture time",
+	"purpose": "Frozen byte-identity and command-evidence inventory for the completed phase3-clock-flush-test-reliability-r01 successor. Hashes were recomputed from the live tree after the final state and handoff writes and before this inventory was created.",
+	"candidate": {
+		"status": "READY_FOR_INTEGRATION",
+		"branch": "codex/owner-distill-r01",
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/6d57/phase5-staff-integration",
+		"head": "1a24a973570371949008a7a5f037c47b818c0e01",
+		"integratedCommit": null,
+		"frontierStatusEntryCountExcludingThisInventory": 233,
+		"repairBudgetConsumed": 0,
+		"scope": "Two Playwright clock flush arguments in tests/browser/phase3.browser.spec.ts plus the r08 append-only history transition, its anchor retarget, and successor records only."
+	},
+	"verdict": {
+		"state": "READY_FOR_INTEGRATION",
+		"independentVerification": "PASS",
+		"currentFull": "11 failed / 3 skipped / 170 passed; exactly the 11 documented pre-existing canonical screenshot mismatches; 0 functional, accessibility, or Phase 3 recurrence failures",
+		"freshFull": "11 failed / 3 skipped / 170 passed; the identical 11 documented pre-existing canonical screenshot mismatches; 0 functional, accessibility, or Phase 3 recurrence failures",
+		"independentPhase3": "86/86 unit files, 1033/1033 unit tests, 120/120 Python, 9/9 integration, 3/3 browser; mutation clean",
+		"qualification": "The explicit D4 red-command carve-out applies. Neither full command is a pass; no canonical is waived or promoted; no integration commit exists."
+	},
+	"finalHygiene": {
+		"repositoryInvariants": "PASS after READY_FOR_INTEGRATION state and final handoff write: 1 active milestone, 100 archived milestones, 99 anchored to 100 candidate with only r08 added and zero removed/modified",
+		"frontierPreservation": "PASS after this inventory was written: 116 baseline entries, 110 non-excluded protected entries, 3 excluded protected entries, 118 additions informational",
+		"diffCheck": "PASS with no output",
+		"behavioralRerunAfterRecords": "Not required: final writes are state, handoff, independent report, and this inventory only; candidate executable/test bytes did not change after the independent Phase 3 ladder."
+	},
+	"governanceChain": [
+		{
+			"path": "docs/phase-records/handoffs/coordinator/20260918-185500-phase3-clock-flush-test-reliability-r01-plan.md",
+			"bytes": 15525,
+			"sha256": "596e3125f9bdf8785f5c5635dbabaec6261542bd56efc7e6d26e92dafd1ff1e7"
+		},
+		{
+			"path": "docs/phase-records/handoffs/coordinator/20260918-185500-phase3-clock-flush-test-reliability-r01-pre-transition-anchor.json",
+			"bytes": 11293,
+			"sha256": "c77ecd3c933c2c51128ef74de703357e7619264c0334557c3f9e13dacc3d3869"
+		},
+		{
+			"path": "docs/phase-records/handoffs/coordinator/20260918-185500-phase3-clock-flush-test-reliability-r01-pre-transition-anchor.json.sha256",
+			"bytes": 149,
+			"sha256": "b3601f1a8647b92dbd5f7ffb9931bd26c8208c624a64f9bc28c2a7951234a392"
+		},
+		{
+			"path": "docs/phase-records/handoffs/coordinator/20260918-185500-phase3-clock-flush-test-reliability-r01-pre-transition-history.yaml",
+			"bytes": 310308,
+			"sha256": "9bc48c5f1303855767e804f424fd7ae635218ddb936600f00805aae8c4e0fae6"
+		},
+		{
+			"path": "docs/phase-records/handoffs/coordinator/20260918-185500-phase3-clock-flush-test-reliability-r01-pre-transition-history.yaml.sha256",
+			"bytes": 150,
+			"sha256": "fc89594434ae75048e91dd30dff2663352161ed60962d2f96d5b870b73356e39"
+		},
+		{
+			"path": "docs/phase-records/handoffs/coordinator/20260918-185600-phase3-clock-flush-test-reliability-r01-history-transition-receipt.json",
+			"bytes": 1215,
+			"sha256": "f7596002962c8901a4693910ba41bd60f79c115a295cd33211247b62f45e8958"
+		},
+		{
+			"path": "docs/phase-records/handoffs/coordinator/20260918-200000-phase3-clock-flush-test-reliability-r01-independent-verification.md",
+			"bytes": 14784,
+			"sha256": "f25a6a19df3621286cd8e744328baeb5b5c09b8d9e52b7f3c3f758afa4aee05e"
+		},
+		{
+			"path": "docs/phase-records/handoffs/coordinator/20260918-201500-phase3-clock-flush-test-reliability-r01.md",
+			"bytes": 7900,
+			"sha256": "4befb603dc0b56ce930bb6872b146f63eb04f2152a173b7fba87bedeca5b0923"
+		}
+	],
+	"stateAndCandidateFiles": [
+		{
+			"path": "PROJECT_STATE.yaml",
+			"bytes": 6605,
+			"sha256": "1b4531558ec2ef3530b53ba87a98ed770bdadb77c6cdf09c848119551045e79d"
+		},
+		{
+			"path": "PROJECT_STATE_HISTORY.yaml",
+			"bytes": 318816,
+			"sha256": "8f500211f873c70d76fc20ab0f075a6a01801e448f3863d659a1d594dac0ac59"
+		},
+		{
+			"path": "tests/browser/phase3.browser.spec.ts",
+			"bytes": 4655,
+			"sha256": "947126bf588d707644f4df2676e5122dcb4e1c895cf0718f67491ba30001e607"
+		},
+		{
+			"path": "scripts/project-state-history-transition.mjs",
+			"bytes": 21439,
+			"sha256": "b63c1d669be16f86377f525389afd6c8a5e80e5d6bd7d54d995a20b23d69c672"
+		},
+		{
+			"path": "scripts/project-state-history-transition.test.ts",
+			"bytes": 24114,
+			"sha256": "91dd8a3abcfffa3faf092e149f76e19ea02909b44e75fc9186d5487a6d83349a"
+		},
+		{
+			"path": "scripts/verify-repository.mjs",
+			"bytes": 13835,
+			"sha256": "6007d4bd1d722c1fb00ed53c1d17841f1bdfeed2a306d7882d87933e2c8fe767"
+		},
+		{
+			"path": "pnpm-lock.yaml",
+			"bytes": 256587,
+			"sha256": "d386db6f36a7bf3df699767408f86e0d32aa987bf37e9b3de27ee31b315fb827"
+		}
+	],
+	"currentEvidence": [
+		{
+			"path": "test-results/phase3_clock_flush_test_reliability_r01/logs/01c-phase3-preflight.log",
+			"bytes": 1794,
+			"sha256": "9bf41ac41d28c39de3513838d92ec636798d72f7e99d9e9540e9f15a02d0afcd"
+		},
+		{
+			"path": "test-results/phase3_clock_flush_test_reliability_r01/logs/02-fast.log",
+			"bytes": 43436,
+			"sha256": "865fb3e6e573eec8c499bd33aba5698d88e9e7a34fba2ffb0a9ae097b3fc2999"
+		},
+		{
+			"path": "test-results/phase3_clock_flush_test_reliability_r01/logs/03c-phase.log",
+			"bytes": 45646,
+			"sha256": "55dea4c6f3d912844bb1c35d6afe3698f6725e1ed0b789449334833c8ab4ecd7"
+		},
+		{
+			"path": "test-results/phase3_clock_flush_test_reliability_r01/logs/04c-full.log",
+			"bytes": 188794,
+			"sha256": "7d5b875e77d8ad144a90cb865b428112020155643e0a488a39fc97109f98a9e6"
+		},
+		{
+			"path": "test-results/phase3_clock_flush_test_reliability_r01/logs/04c-failures.txt",
+			"bytes": 1624,
+			"sha256": "3510927f89893ff979e64bab3f9b86f7e6a5a01eaf6bf6178b2e25ffbcb54bda"
+		},
+		{
+			"path": "test-results/phase3_clock_flush_test_reliability_r01/status-pre-c.txt",
+			"bytes": 412,
+			"sha256": "5905dbddafb91c3f901e11c60823fcbb5f7aaf9fb8ad2d7cce1d45e5d8d46146"
+		},
+		{
+			"path": "test-results/phase3_clock_flush_test_reliability_r01/status-post-c.txt",
+			"bytes": 412,
+			"sha256": "5905dbddafb91c3f901e11c60823fcbb5f7aaf9fb8ad2d7cce1d45e5d8d46146"
+		}
+	],
+	"freshEvidence": [
+		{
+			"path": "test-results/phase3_clock_flush_test_reliability_r01/fresh/logs/00-install.log",
+			"bytes": 2948,
+			"sha256": "de2f572a7e2fba7a48e5a7e77e95806956864613d5f3e428fe23f940120aeb09"
+		},
+		{
+			"path": "test-results/phase3_clock_flush_test_reliability_r01/fresh/logs/01-bootstrap.log",
+			"bytes": 4908,
+			"sha256": "b03a894a4d1a0b69094abf4a4e2302c9e642e1d755b1ab86e3dfc130c62e2f8f"
+		},
+		{
+			"path": "test-results/phase3_clock_flush_test_reliability_r01/fresh/logs/02-diagnostic.log",
+			"bytes": 12094,
+			"sha256": "b3e9adbf2cba8b3c1dcee25089b7198546bbd6b1f2f64d6d2fd0e1d1c4216f85"
+		},
+		{
+			"path": "test-results/phase3_clock_flush_test_reliability_r01/fresh/logs/03-focused.log",
+			"bytes": 4386,
+			"sha256": "e34d645614a8096181b6a13d9076a65c65e747ca3ed367fff5eff540d6aad49b"
+		},
+		{
+			"path": "test-results/phase3_clock_flush_test_reliability_r01/fresh/logs/04-fast.log",
+			"bytes": 43424,
+			"sha256": "11ae5b6cee3d0e1e1433047203b6f03555fc49e58254b17552e0ef379d6f601e"
+		},
+		{
+			"path": "test-results/phase3_clock_flush_test_reliability_r01/fresh/logs/05-phase3-preflight.log",
+			"bytes": 1794,
+			"sha256": "67e876c80b48f0f3a235cc9e93bd5ae3d5f0d09d5eb215f93d7c07bb05d2a0d4"
+		},
+		{
+			"path": "test-results/phase3_clock_flush_test_reliability_r01/fresh/logs/06-full.log",
+			"bytes": 187520,
+			"sha256": "52e8cad788ff1b4e6abe2c7b8f3bbaf2426d01e4065d65c1aefc00a60eb0a7cd"
+		},
+		{
+			"path": "test-results/phase3_clock_flush_test_reliability_r01/fresh/logs/06-failures.txt",
+			"bytes": 1624,
+			"sha256": "2d823fbf690a2ceef2c1e68c91f6d9a42620e1fc6ab6dbd8b8b208a5d6980a97"
+		},
+		{
+			"path": "test-results/phase3_clock_flush_test_reliability_r01/fresh/status-pre.txt",
+			"bytes": 784,
+			"sha256": "272119bf628d1beb56ad866397f9c5f78cb41a0922ecb9e35d17a496c3d1b647"
+		},
+		{
+			"path": "test-results/phase3_clock_flush_test_reliability_r01/fresh/status-post.txt",
+			"bytes": 814,
+			"sha256": "26c14972c91af11582e57dd3c5521b77d1935869f1ad4d4de17fad38db8bb936"
+		}
+	],
+	"independentEvidence": [
+		{
+			"path": "test-results/phase3_clock_flush_test_reliability_r01_independent_v2/logs/01-phase3.log",
+			"bytes": 24289,
+			"sha256": "e4395daa7317c7bd9806d30b2c54c36d169fd71f9acd62e7fd83777ed65d14b5",
+			"classification": "environment provisioning: disposable database absent; no candidate repair"
+		},
+		{
+			"path": "test-results/phase3_clock_flush_test_reliability_r01_independent_v2/logs/02-phase3-rerun.log",
+			"bytes": 23128,
+			"sha256": "ac05a0deddfd7ada7052075b7ea7843e69add6071494a7037bee2a719e389649",
+			"classification": "authoritative passing independent Phase 3 ladder"
+		},
+		{
+			"path": "test-results/phase3_clock_flush_test_reliability_r01_independent_v2/identity-pre.json",
+			"bytes": 438,
+			"sha256": "20871901d324f8cfca7259cba0d28ed7116cb97357926caf7208ac97db45cafb"
+		},
+		{
+			"path": "test-results/phase3_clock_flush_test_reliability_r01_independent_v2/identity-post.json",
+			"bytes": 438,
+			"sha256": "20871901d324f8cfca7259cba0d28ed7116cb97357926caf7208ac97db45cafb"
+		},
+		{
+			"path": "test-results/phase3_clock_flush_test_reliability_r01_independent_v2/status-pre.txt",
+			"bytes": 16308,
+			"sha256": "4eb59d5e939183674b7fae5133b968dcbed6c413be79210497344e7259f9c5e9"
+		},
+		{
+			"path": "test-results/phase3_clock_flush_test_reliability_r01_independent_v2/status-post.txt",
+			"bytes": 16308,
+			"sha256": "4eb59d5e939183674b7fae5133b968dcbed6c413be79210497344e7259f9c5e9"
+		}
+	],
+	"limitations": [
+		"This inventory proves byte identity only for the paths and bytes listed.",
+		"It is repository-internal and co-mutable; it does not authenticate authorship, human authorization, host state, dependency safety, or capture time.",
+		"The fresh pre/post wrapper files have different file hashes because their explanatory wrappers differ, while both embed the same candidate entry count, candidate SHA-256, and HEAD.",
+		"No Owner design, canonical promotion, Paper change, or visual acceptance is claimed."
+	]
+}

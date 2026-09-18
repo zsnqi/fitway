@@ -1,0 +1,28 @@
+{
+	"schemaVersion": 1,
+	"kind": "history-transition-receipt",
+	"recordedAt": "2026-09-18T15:55:35.123Z",
+	"predecessorAnchor": {
+		"path": "docs/phase-records/handoffs/coordinator/20260918-185500-phase3-clock-flush-test-reliability-r01-pre-transition-anchor.json",
+		"sha256": "c77ecd3c933c2c51128ef74de703357e7619264c0334557c3f9e13dacc3d3869",
+		"companionPath": "docs/phase-records/handoffs/coordinator/20260918-185500-phase3-clock-flush-test-reliability-r01-pre-transition-anchor.json.sha256"
+	},
+	"before": {
+		"path": "PROJECT_STATE_HISTORY.yaml",
+		"bytes": 310308,
+		"sha256": "9bc48c5f1303855767e804f424fd7ae635218ddb936600f00805aae8c4e0fae6",
+		"milestoneCount": 99
+	},
+	"after": {
+		"path": "PROJECT_STATE_HISTORY.yaml",
+		"bytes": 318816,
+		"sha256": "8f500211f873c70d76fc20ab0f075a6a01801e448f3863d659a1d594dac0ac59",
+		"milestoneCount": 100
+	},
+	"addedMilestoneIds": ["design-environment-audit-remediation-r08"],
+	"modifiedPreExistingIds": [],
+	"deletedPreExistingIds": [],
+	"openStatusArchived": false,
+	"successorMilestoneId": "phase3-clock-flush-test-reliability-r01",
+	"limitation": "untracked, co-mutable receipt; proves the forward transition from the recorded pre-successor anchor bytes only"
+}
