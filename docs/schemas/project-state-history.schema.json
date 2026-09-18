@@ -1,0 +1,19 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://fitway.local/schemas/project-state-history.schema.json",
+	"title": "FITWAY closed project execution history",
+	"type": "object",
+	"additionalProperties": false,
+	"required": ["schemaVersion", "updatedAt", "milestones"],
+	"properties": {
+		"schemaVersion": { "const": 1 },
+		"updatedAt": { "type": "string", "format": "date-time" },
+		"milestones": {
+			"type": "object",
+			"minProperties": 1,
+			"additionalProperties": {
+				"$ref": "https://fitway.local/schemas/project-state.schema.json#/$defs/milestone"
+			}
+		}
+	}
+}

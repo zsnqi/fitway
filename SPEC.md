@@ -2,7 +2,8 @@
 
 > **Status.** Implemented v1 pilot specification / Definition of Done. Written 2026-07-12;
 > repository implementation closed 2026-08-31. All aggregate phases 1–12 and the
-> `repository-closeout` milestone are `DONE` in `PROJECT_STATE.yaml`. The accepted canonical
+> `repository-closeout` milestone are `DONE` and archived in `PROJECT_STATE_HISTORY.yaml`,
+> with the active ledger holding only open or unarchived work. The accepted canonical
 > project-wide verification is recorded in `docs/phase-records/repository-closeout.md`.
 > This document turns the agreed product and design into implementable, verifiable
 > requirements. It participates in the repository hierarchy defined by `AGENTS.md`:

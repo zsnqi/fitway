@@ -30,7 +30,9 @@
 			"!**/.svelte-kit",
 			"!**/wrangler.jsonc",
 			"!**/.source",
-			"!**/convex/_generated"
+			"!**/convex/_generated",
+			"!**/docs/phase-records/handoffs/coordinator/20260917-161500-design-environment-audit-remediation-r06-gate-evidence",
+			"!**/docs/phase-records/handoffs/coordinator/20260917-161500-design-environment-audit-remediation-r06-gate-adversarial-replay"
 		]
 	},
 	"formatter": {

@@ -178,6 +178,34 @@
 						{ "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
 						{ "type": "null" }
 					]
+				},
+				"historyMutations": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"additionalProperties": false,
+						"required": [
+							"operation",
+							"targetMilestoneId",
+							"targetStatus",
+							"targetCanonicalSha256",
+							"receipt",
+							"successorMilestoneId"
+						],
+						"properties": {
+							"operation": { "const": "archive-terminal" },
+							"targetMilestoneId": { "type": "string", "minLength": 1 },
+							"targetStatus": {
+								"enum": ["DONE", "BLOCKED", "NEEDS_HUMAN", "FAILED_VALIDATION"]
+							},
+							"targetCanonicalSha256": {
+								"type": "string",
+								"pattern": "^[0-9a-f]{64}$"
+							},
+							"receipt": { "type": "string", "minLength": 1 },
+							"successorMilestoneId": { "type": "string", "minLength": 1 }
+						}
+					}
 				}
 			},
 			"allOf": [

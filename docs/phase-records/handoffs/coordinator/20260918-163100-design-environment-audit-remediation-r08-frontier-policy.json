@@ -1,0 +1,58 @@
+{
+	"schemaVersion": 1,
+	"kind": "frontier-evidence-policy-pointer",
+	"recordedAt": "2026-09-18T16:27:00+03:00",
+	"pinnedSnapshot": {
+		"path": "docs/phase-records/handoffs/coordinator/20260915-183000-design-agent-environment-repair-r01-frontier-preservation-pre-r02-anchor.json",
+		"sha256": "86e416a729208bdce28670c41fcf1feb5c55443f6e0443d46b4ea8d7969f2d41",
+		"companionPath": "docs/phase-records/handoffs/coordinator/20260915-183000-design-agent-environment-repair-r01-frontier-preservation-pre-r02-anchor.json.sha256"
+	},
+	"predecessor": {
+		"path": "docs/phase-records/handoffs/coordinator/20260915-183000-design-agent-environment-repair-r01-frontier-preservation.json",
+		"sha256": "18e17a34252864a598d485443f47a74762f45a7b36a03583597c4ea30420cc99",
+		"note": "superseded pointer preserved byte-for-byte; this r08 pointer supersedes the r04 pointer document without modifying it"
+	},
+	"repairOwnedExclusions": [
+		"PROJECT_STATE.yaml",
+		"package.json",
+		".gitignore",
+		"AGENTS.md",
+		"DESIGN_GUIDE.md",
+		"PHASES.md",
+		"docs/POLISH_BACKLOG.md",
+		"docs/WORKFLOW.md",
+		"docs/schemas/project-state.schema.json",
+		"scripts/verify-repository.mjs",
+		"visual-direction-gate/approved/APPROVAL_MANIFEST.yaml",
+		"visual-direction-gate/approved/paper-route-authority-20260902/AUTHORITY_MANIFEST.yaml",
+		"scripts/verify.mjs",
+		"tests/browser/staff-paper-fidelity.review.spec.ts",
+		"tests/browser/phase2.browser.spec.ts",
+		".impeccable/"
+	],
+	"transition": {
+		"recordedAt": "2026-09-18T16:27:00+03:00",
+		"addedExclusions": [
+			{
+				"path": "scripts/verify.mjs",
+				"reason": "the r04 round owns scripts/verify.mjs fast-ladder wiring for the trusted test-runtime gate and the frontier check; verification tooling, not product or UI content",
+				"pinnedSha256BeforeTransition": "8ebb454a13e7c31f048c6f5fbfdb2b0c1d314bfb3dfa815b451145f08439bcfe"
+			},
+			{
+				"path": "tests/browser/staff-paper-fidelity.review.spec.ts",
+				"reason": "the r08 round holds the one human-authorized Staff test-reliability scope change: the 200pct text zoom reflow assertion is scoped to the resolved wrapper and the shared resolved-board wait is bounded; test-only content, recorded in docs/phase-records/handoffs/coordinator/20260918-163000-design-environment-audit-remediation-r08-scope-change-staff-test-reliability.md",
+				"pinnedSha256BeforeTransition": "55ff7913da3dc070c77fe52ad9fa05b3b10ad9a0e0b1f8239e36c72b5970dc86"
+			},
+			{
+				"path": "tests/browser/phase2.browser.spec.ts",
+				"reason": "the r08 round holds a second recorded test-reliability scope change: the cache-expiry poll advances the paused Playwright clock by one tick so a delay-0 notify timer created during a clock tick is flushed; test-only content, recorded in docs/phase-records/handoffs/coordinator/20260918-180000-design-environment-audit-remediation-r08-scope-change-phase2-clock-flush.md",
+				"pinnedSha256BeforeTransition": "6dbe8f56e24357cf0c22459d82e534d37de4d4163fffe7e683ee9fce0f43fe03"
+			}
+		],
+		"roundOpenVerification": {
+			"command": "& \"C:\\Program Files\\nodejs\\node.exe\" scripts/check-frontier-preservation.mjs",
+			"result": "PASS: 116 baseline entries, 112 non-excluded protected entries verified, 1 excluded protected entries, 102 additions (informational; additions are unconstrained); protected hashes recorded in snapshot 86e416a729208bdce28670c41fcf1feb5c55443f6e0443d46b4ea8d7969f2d41. Phase-2 amendment round-open (same round, before the phase2 transition): PASS: 116 baseline entries, 111 non-excluded protected entries verified, 2 excluded protected entries, 104 additions.",
+			"note": "Both runs were executed from the worktree root immediately before their respective transitions; every protected hash still matched the pinned snapshot and the newly excluded files still hashed to their pinned values."
+		}
+	}
+}

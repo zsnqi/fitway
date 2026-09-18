@@ -1,0 +1,77 @@
+{
+	"$comment": "Owner class names that legitimately have no CSS rule of their own. Every entry needs a reason; keep this list short. Dynamic composition (owner-x--${variant}) is matched by the check itself and does not belong here.",
+	"classes": [
+		{
+			"name": "owner-reporting-export",
+			"reason": "Block identity hook on the CSV export board; its visuals come from owner-reporting-block and its behavior contract from [data-owner-reporting-export]."
+		},
+		{
+			"name": "owner-retained-disclosure__body",
+			"reason": "Unit-test query hook for the retained disclosure body; the disclosure owns its own visibility styling."
+		},
+		{
+			"name": "owner-audit-state",
+			"reason": "State composition hook rendered with owner-state-panel--card; the loading/error/empty contract is expressed by [data-owner-audit-state]."
+		},
+		{
+			"name": "owner-audit-state--loading",
+			"reason": "Semantic state hook for the audit loading panel; visuals come from owner-state-panel--card and the skeleton."
+		},
+		{
+			"name": "owner-audit-state--error",
+			"reason": "Semantic state hook for the audit error panel; visuals come from owner-state-panel--card."
+		},
+		{
+			"name": "owner-audit-state--empty",
+			"reason": "Semantic state hook for the audit empty panel; visuals come from owner-state-panel--card."
+		},
+		{
+			"name": "owner-health-state",
+			"reason": "State composition hook rendered with owner-state-panel--card; the variant contract is expressed by [data-owner-health-state]."
+		},
+		{
+			"name": "owner-health-state--",
+			"reason": "Dynamic state identity prefix used for semantic and test hooks; state visuals are owned by owner-state-panel--card and data-owner-health-state."
+		},
+		{
+			"name": "owner-section-switch__panel--",
+			"reason": "Dynamic section identity prefix used for retained panel bookkeeping; panel styling is owned by owner-section-switch__panel and data attributes."
+		},
+		{
+			"name": "owner-access-owners-summary",
+			"reason": "Identity hook styled by owner-access-card; only its --provision-open modifier needs a rule of its own."
+		},
+		{
+			"name": "owner-access-inline--reset",
+			"reason": "Unit-test query hook for the inline PIN reset form; the form is styled through owner-access-inline."
+		},
+		{
+			"name": "owner-chart__cutout",
+			"reason": "SVG geometry hook styled by element attributes, not a CSS rule."
+		},
+		{
+			"name": "owner-chart__gap-stem",
+			"reason": "A local chart-state variable composes this SVG gap marker before it reaches className; its CSS rule is exercised by component and browser tests."
+		},
+		{
+			"name": "owner-chart__gap-stem--missing",
+			"reason": "A local chart-state variable composes the missing-range modifier before it reaches className; its CSS rule is exercised by component and browser tests."
+		},
+		{
+			"name": "owner-chart__gap-stem--closed",
+			"reason": "A local chart-state variable composes the closed-range modifier before it reaches className; its CSS rule is exercised by component and browser tests."
+		},
+		{
+			"name": "owner-settings__control--error",
+			"reason": "The shared withErrorClass helper derives this modifier from the control base class at runtime; Settings tests exercise the invalid state."
+		},
+		{
+			"name": "owner-settings__time--error",
+			"reason": "The shared withErrorClass helper derives this modifier from the time-field base class at runtime; Settings tests exercise the invalid state."
+		},
+		{
+			"name": "owner-analytics-state--loading",
+			"reason": "Loading-state hook on the analytics board; visuals come from owner-analytics-state and owner-analytics-board."
+		}
+	]
+}

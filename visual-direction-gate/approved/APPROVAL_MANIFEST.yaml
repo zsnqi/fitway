@@ -15,6 +15,7 @@ authority:
 # identifiers, export hashes, routed evidence, and approved deviations live in routeAuthorityManifest.
 # This block keeps the top-level identity and active family index; historical snapshot hashes below
 # remain provenance rather than a substitute for Paper conformance.
+# Owner composition authority was superseded by ADR-009 (docs/adr/ADR-009-owner-composition-authority-supersession.md); the Owner families below are reference-only for the redesign.
 paperAuthority:
   status: CURRENT
   approvedAt: "2026-08-06"
@@ -37,6 +38,7 @@ paperAuthority:
     - "OWNER UPTIME & INCIDENTS PRODUCTION SET — CANDIDATE"
     - "OWNER UPTIME — MOBILE STACKED RECORDS SUCCESSOR"
     - "OWNER SETTINGS — FRESH r01 SUCCESSOR CANDIDATE"
+  # Route-manifest note: top-level IN_PROGRESS means the registered case map is incomplete and the individually accepted cases are authoritative meanwhile; CANDIDATE/SUCCESSOR area names are Paper provenance labels, not status, and the entry `status:` field is the authority signal. Legend: docs/design/VISUAL_AUTHORITY_STATUS.md, which changes nothing by itself.
   routeAuthorityManifest:
     status: IN_PROGRESS
     path: visual-direction-gate/approved/paper-route-authority-20260902/AUTHORITY_MANIFEST.yaml

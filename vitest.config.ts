@@ -19,6 +19,7 @@ export default defineConfig({
 			"**/dist/**",
 			"tests/browser/**",
 			"**/*.integration.test.ts",
+			"scripts/vitest-runtime.bootstrap.test.mjs",
 		],
 		// The suite's two heaviest deterministic-compute tests measure 5.9s and
 		// 4.0s under full-file parallelism, so Vitest's 5000ms default left the

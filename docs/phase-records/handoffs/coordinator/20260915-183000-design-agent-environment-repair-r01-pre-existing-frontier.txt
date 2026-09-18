@@ -1,0 +1,116 @@
+﻿ M PROJECT_STATE.yaml
+ M apps/web/src/components/owner/access/messages.ts
+ M apps/web/src/components/owner/access/owner-access-section.tsx
+ M apps/web/src/components/owner/access/owner-access-view.test.tsx
+ M apps/web/src/components/owner/access/owner-access-view.tsx
+ M apps/web/src/components/owner/access/owner-access.css
+ M apps/web/src/components/owner/audit/messages.ts
+ M apps/web/src/components/owner/audit/owner-audit-section.tsx
+ M apps/web/src/components/owner/audit/owner-audit-view.test.tsx
+ M apps/web/src/components/owner/audit/owner-audit-view.tsx
+ M apps/web/src/components/owner/audit/owner-audit.css
+ M apps/web/src/components/owner/health/messages.ts
+ M apps/web/src/components/owner/health/owner-health-section.tsx
+ M apps/web/src/components/owner/health/owner-health-view.test.tsx
+ M apps/web/src/components/owner/health/owner-health-view.tsx
+ M apps/web/src/components/owner/health/owner-health.css
+ M apps/web/src/components/owner/messages.ts
+ M apps/web/src/components/owner/owner-analytics-view.test.tsx
+ M apps/web/src/components/owner/owner-analytics-view.tsx
+ M apps/web/src/components/owner/owner-analytics.css
+ M apps/web/src/components/owner/owner-date-field.css
+ M apps/web/src/components/owner/owner-date-field.tsx
+ M apps/web/src/components/owner/owner-retained-disclosure.css
+ M apps/web/src/components/owner/owner-retained-disclosure.test.tsx
+ M apps/web/src/components/owner/owner-retained-disclosure.tsx
+ M apps/web/src/components/owner/owner-scroll-region.tsx
+ M apps/web/src/components/owner/owner-select.css
+ M apps/web/src/components/owner/owner-select.tsx
+ M apps/web/src/components/owner/owner-shell.css
+ M apps/web/src/components/owner/owner-shell.tsx
+ M apps/web/src/components/owner/reporting/messages.ts
+ M apps/web/src/components/owner/reporting/owner-analytics-mode-switch.test.tsx
+ M apps/web/src/components/owner/reporting/owner-reporting-export.tsx
+ M apps/web/src/components/owner/reporting/owner-reporting-section.tsx
+ M apps/web/src/components/owner/reporting/owner-reporting-view.tsx
+ M apps/web/src/components/owner/reporting/owner-reporting.css
+ M apps/web/src/components/owner/reporting/owner-section-switch.tsx
+ M apps/web/src/components/owner/settings/messages.ts
+ M apps/web/src/components/owner/settings/owner-settings-section.test.tsx
+ M apps/web/src/components/owner/settings/owner-settings-section.tsx
+ M apps/web/src/components/owner/settings/owner-settings-view.tsx
+ M apps/web/src/components/owner/settings/owner-settings.css
+ M apps/web/src/components/staff/operational-snapshot-view.test.tsx
+ M apps/web/src/components/staff/staff-board.css
+ M apps/web/src/components/staff/staff.css
+ M apps/web/src/hooks/use-owner-audit.test.tsx
+ M apps/web/src/hooks/use-owner-audit.ts
+ M apps/web/src/i18n/messages/ar.ts
+ M apps/web/src/i18n/messages/en.ts
+ M apps/web/src/routes/index.tsx
+ M apps/web/src/routes/staff.tsx
+ M package.json
+ M scripts/verify.mjs
+ M tests/browser/desktop-demo.browser.spec.ts
+ M tests/browser/owner-cross-surface.review.spec.ts
+ M tests/browser/owner-presentation.review.spec.ts
+ M tests/browser/phase10-ui-csv.browser.spec.ts
+ M tests/browser/phase11-access.browser.spec.ts
+ M tests/browser/phase11-audit.browser.spec.ts
+ M tests/browser/phase11-health.browser.spec.ts
+ M tests/browser/phase11-settings.browser.spec.ts
+ M tests/browser/phase11-shell.browser.spec.ts
+ M tests/browser/phase2.browser.spec.ts
+ M tests/browser/phase4-staff-web.browser.spec.ts
+ M tests/browser/phase9-owner-ui.browser.spec.ts
+ M tests/browser/public-baseline.browser.spec.ts
+ M tests/browser/staff-paper-fidelity.review.spec.ts
+?? .impeccable/
+?? access-full.png
+?? admin-ar-1440.png
+?? apps/web/src/components/initial-load-transition.css
+?? apps/web/src/components/initial-load-transition.test.tsx
+?? apps/web/src/components/initial-load-transition.tsx
+?? apps/web/src/components/owner/owner-layout.css
+?? audit-scroll.png
+?? audit-top.png
+?? audit/
+?? daily-expanded.png
+?? daily-footer.png
+?? daily-scroll.png
+?? daily-table.png
+?? docs/phase-records/handoffs/coordinator/20260915-165423-design-agent-environment-diagnosis.md
+?? docs/phase-records/handoffs/owner-demo-polish/20260912-owner-presentation-audit-r01.md
+?? docs/phase-records/handoffs/owner-demo-polish/20260912-owner-presentation-polish-r01.md
+?? docs/phase-records/handoffs/owner-demo-polish/20260912-owner-presentation-polish-r02.md
+?? docs/phase-records/handoffs/owner-demo-polish/20260914-owner-activity-log-simplify-r01.md
+?? docs/phase-records/handoffs/owner-demo-polish/20260914-owner-copy-clarity-r01.md
+?? docs/phase-records/handoffs/owner-demo-polish/20260914-owner-distill-r01.md
+?? docs/phase-records/handoffs/owner-demo-polish/20260914-owner-distill-r02.md
+?? docs/phase-records/handoffs/owner-demo-polish/20260914-owner-layout-composition-r01.md
+?? docs/phase-records/handoffs/owner-demo-polish/20260915-owner-governance-layout-recomposition-plan-r01.md
+?? docs/phase-records/handoffs/owner-demo-polish/20260915-owner-governance-layout-recomposition-r01.md
+?? docs/phase-records/handoffs/owner-demo-polish/20260915-owner-governance-layout-recomposition-r02.md
+?? docs/phase-records/handoffs/owner-demo-polish/20260915-owner-layout-composition-r02.md
+?? health-full.png
+?? hourly-midscroll.png
+?? marker-zoom.png
+?? marker-zoom4.png
+?? plans/
+?? public-ar-1440.png
+?? public-ar-1440b.png
+?? public-ar-390.png
+?? reports-full.png
+?? reports-top.png
+?? scripts/check-owner-classes.mjs
+?? scripts/check-owner-classes.test.ts
+?? scripts/check-owner-spacing.mjs
+?? scripts/check-owner-spacing.test.ts
+?? scripts/owner-classes-allowlist.json
+?? scripts/owner-spacing-baseline.json
+?? select-open.png
+?? select-open2.png
+?? select-open3.png
+?? settings-full.png
+?? staff-ar-1440.png
+?? staff-en-390.png

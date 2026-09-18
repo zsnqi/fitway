@@ -12,9 +12,11 @@ where that policy says it lives, and `docs/WORKFLOW.md` is the procedure for bot
 Claude's auto memory is machine-local and untracked. Codex cannot see it, other machines cannot
 see it, and it is never a source of truth or a handoff channel. Keep it to durable facts that are
 expensive to reconstruct. Never write session reasoning, implementation state, task status,
-terminal states, decisions, or verification evidence there — those belong in `PROJECT_STATE.yaml`
-and the phase records. A memory entry records only what was true when it was written; verify it
-against the repository before acting on it.
+terminal states, decisions, or verification evidence there — active, unarchived work belongs in
+`PROJECT_STATE.yaml`; once terminal, records are archived append-only in
+`PROJECT_STATE_HISTORY.yaml`, and the phase records still preserve evidence. A memory entry
+records only what was true when it was written; verify it against the repository before acting
+on it.
 
 ### Independent review
 
@@ -28,6 +30,11 @@ must close both:
   session, until you have formed and recorded your own assessment from the diff, the specification,
   the surrounding code, and the verification commands. Read it afterwards to check for a
   constraint you missed — independence is not permission to ignore product reality.
+
+A reviewing session judging Owner visual work applies ADR-009
+(`docs/adr/ADR-009-owner-composition-authority-supersession.md`, per `AGENTS.md` item 4): the
+superseded Owner Paper frames and canonicals are reference-only and cannot accept or reject a
+redesign for differing from them.
 
 Report findings as hypotheses with file and line evidence, and never repair what you review.
 

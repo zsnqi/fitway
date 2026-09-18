@@ -5,12 +5,18 @@
 > gate, after the Baseline Reconciliation Gate (2026-07-15). Product, privacy, security,
 > content, and data semantics remain governed by `FITWAY_PRODUCT.md` and `SPEC.md`.
 >
-> **Visual source of truth:** Paper, not this guide. See
+> **Visual source of truth:** Paper, not this guide, except where superseded (ADR-009). See
 > [ADR-007](docs/adr/ADR-007-paper-visual-source-of-truth.md) for the authority split, the Paper
 > file identity, and the four approved production families. This guide is subject to ADR-007 for
 > visual composition; where an approved Paper production materially conflicts with a section
 > here, Paper governs the visual treatment and this guide is amended through an approved phase
 > record.
+>
+> **Per-surface authority:** current per-surface visual authority and the Paper-versus-Guide
+> conflict map are recorded in `docs/design/VISUAL_AUTHORITY_STATUS.md` and
+> `docs/design/PAPER_GUIDE_CONFLICT_MAP.md`. Those records derive from ADR-007,
+> [ADR-009](docs/adr/ADR-009-owner-composition-authority-supersession.md), and human decisions
+> and do not change this guide's behavioral contract.
 >
 > **Approved evidence:** `visual-direction-gate/approved/APPROVAL_MANIFEST.yaml` and the
 > immutable snapshot under `visual-direction-gate/approved/fitway-theme-20260715/`.
@@ -30,9 +36,16 @@ motion/reduced-motion branch for the background. A page-level FITWAY watermark c
 behind the product surface. Neither atmosphere nor watermark may reduce readability or
 become part of a data card.
 
-Broad visual exploration is complete. Improve a route while implementing that route,
-then close the phase with the focused polish and screenshot loop in `docs/WORKFLOW.md`.
-Do not restart a product-wide redesign.
+Improve a route while implementing that route, then close the phase with the focused polish
+and screenshot loop in `docs/WORKFLOW.md`. No opportunistic product-wide redesign is allowed:
+replacing an approved composition requires an explicit per-surface authority decision recorded
+in `docs/design/VISUAL_AUTHORITY_STATUS.md` — a scoped ADR-007 amendment or a superseding
+human-approved record — plus the concept-selection gate in `docs/WORKFLOW.md`. Until then the
+approved Paper composition remains binding. For the Owner surfaces superseded by
+[ADR-009](docs/adr/ADR-009-owner-composition-authority-supersession.md), the prior Paper
+composition and canonicals are reference only, `docs/design/VISUAL_AUTHORITY_STATUS.md` records
+the state, and the redesign proceeds through the concept gate; for all other surfaces this
+sentence stands unchanged.
 
 ## 2. Product hierarchy
 
@@ -176,7 +189,8 @@ that treatment is refined.
 - Forms group fields by decision, keep labels visible, show inline errors near the field,
   and place save/destructive actions predictably.
 - Compact informational surfaces should adapt to their content rather than carrying fixed
-  minimum heights. Existing fixed-height cases are tracked in the polish backlog.
+  minimum heights. Existing fixed-height cases are tracked by the reopened `VIS-004` in
+  `docs/POLISH_BACKLOG.md`.
 
 Spacing uses a 4px base and recurring 8, 12, 16, 24, 32, 48, and 72px intervals. Broad
 desktop whitespace is intentional; mobile removes or recomposes space instead of shrinking
@@ -327,11 +341,22 @@ A UI-producing phase is not done until its affected routes and states pass:
 4. the applicable canonical widths, including 721–820 when the shell changes;
 5. keyboard/focus, reduced motion, 200% zoom/reflow, screen-reader names, and no page overflow;
 6. automated accessibility plus manual semantic review;
-7. screenshot comparison against the approved baseline or the most recent accepted
-   phase-specific baseline;
+7. on surfaces where Paper composition authority is active (Public, Login, and Staff), screenshot
+   comparison against the approved baseline or the most recent accepted phase-specific baseline;
+   for superseded Owner surfaces (ADR-009), the existing canonicals are reference-only regression
+   evidence and cannot accept or reject the redesign for differing from them; acceptance runs
+   through the concept-selection and perceptual-promotion gates in `docs/WORKFLOW.md` with the
+   human-approved concept/acceptance record;
 8. at most two focused correction cycles;
 9. a fresh independent verifier; and
 10. human approval when a material visual or locked-product judgment is involved.
+
+**Perceptual acceptance.** Automated checks are lint and provenance, not visual acceptance.
+Acceptance must name the exact full-resolution frames inspected and the reviewer, and those
+frames reach the reviewer before test scores, rationale, or canonical comparisons; the reviewer
+may reject the reference itself. Canonical promotion is a separate serialized action after
+explicit human approval. See `docs/WORKFLOW.md` and
+`docs/design/VISUAL_ACCEPTANCE_RECORD_TEMPLATE.md`.
 
 The four known non-blocking refinements—atmospheric blur/position, watermark placement,
 stale-signal treatment, and content-adaptive compact surfaces—are owned by

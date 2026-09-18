@@ -1,7 +1,12 @@
 import { spawn } from "node:child_process";
-import { createHash } from "node:crypto";
-import { readFile } from "node:fs/promises";
-import path from "node:path";
+import { repositoryFingerprint } from "./repository-fingerprint.mjs";
+import {
+	acquireVitestRuntimeSession,
+	describeVitestRuntimeSession,
+	normalizeVitestInvocation,
+	revalidateVitestRuntimeSession,
+	runVitest,
+} from "./vitest-runtime.mjs";
 
 const phases = {
 	"login-paper-adoption": {
@@ -263,6 +268,14 @@ phase  The fast ladder plus the selected phase's integration/browser tests.
        This is focused evidence and never replaces verify:full before integration.
 full   Every fast, integration, browser, accessibility, build, and mutation gate.
 
+The authoritative form invokes this file with the host-selected absolute Node:
+  <absolute-node> scripts/verify.mjs fast
+  <absolute-node> scripts/verify.mjs phase --phase <registered-name>
+  <absolute-node> scripts/verify.mjs full
+The package aliases above are developer conveniences; their exit status is
+corroboration only. One direct invocation acquires exactly one Vitest runtime
+session and revalidates its bounded integrity set around every Vitest launch.
+
 Integration safety requires all three values:
   FITWAY_RUN_ID=<unique_lowercase_run_id>
   TEST_DATABASE_URL=postgresql://.../fitway_integration_<FITWAY_RUN_ID>
@@ -313,82 +326,19 @@ function parseArguments() {
 	return { mode, phase };
 }
 
-function capture(command, args) {
-	return new Promise((resolve, reject) => {
-		const child = spawn(command, args, {
-			cwd: process.cwd(),
-			stdio: ["ignore", "pipe", "pipe"],
-			windowsHide: true,
-		});
-		const chunks = [];
-		const errorChunks = [];
-		child.stdout.on("data", (chunk) => chunks.push(chunk));
-		child.stderr.on("data", (chunk) => errorChunks.push(chunk));
-		child.once("error", reject);
-		child.once("close", (code) => {
-			if (code !== 0) {
-				reject(
-					new Error(
-						`${command} ${args.join(" ")} failed:\n${Buffer.concat(errorChunks).toString("utf8")}`,
-					),
-				);
-				return;
-			}
-			resolve(Buffer.concat(chunks));
-		});
-	});
-}
-
-async function repositoryFingerprint() {
-	const hash = createHash("sha256");
-	const status = await capture("git", [
-		"status",
-		"--porcelain=v1",
-		"-z",
-		"--untracked-files=all",
-	]);
-	hash.update("status\0");
-	hash.update(status);
-	const trackedDiff = await capture("git", [
-		"diff",
-		"--binary",
-		"--no-ext-diff",
-		"HEAD",
-		"--",
-	]);
-	hash.update("tracked\0");
-	hash.update(trackedDiff);
-	const untrackedOutput = await capture("git", [
-		"ls-files",
-		"--others",
-		"--exclude-standard",
-		"-z",
-	]);
-	const paths = untrackedOutput
-		.toString("utf8")
-		.split("\0")
-		.filter(Boolean)
-		.sort();
-	for (const relativePath of paths) {
-		hash.update("untracked\0");
-		hash.update(relativePath);
-		hash.update("\0");
-		try {
-			hash.update(await readFile(path.resolve(relativePath)));
-		} catch (error) {
-			if (error && error.code === "ENOENT") {
-				hash.update("<removed-during-verification>");
-				continue;
-			}
-			throw error;
-		}
-	}
-	return hash.digest("hex");
-}
-
-function runStep(label, args) {
+async function runStep(label, args) {
 	console.log(`\n==> ${label}`);
-	return new Promise((resolve, reject) => {
+	if (typeof args === "function") {
+		try {
+			await args();
+		} catch (error) {
+			throw new Error(
+				`${label} failed: ${error instanceof Error ? error.message : String(error)}`,
+			);
+		}
+		return;
+	}
+	await new Promise((resolve, reject) => {
 		const command =
 			process.platform === "win32"
 				? (process.env.ComSpec ?? "C:\\Windows\\System32\\cmd.exe")
@@ -416,16 +366,71 @@ function runStep(label, args) {
 	});
 }
 
-function fastSteps() {
+// Every Vitest launch in one direct invocation runs through the one runtime
+// session acquired by the first ladder step. The session is never re-resolved
+// after acquisition, and no package alias on this route acquires another one.
+const INTEGRATION_ARGS = ["run", "--config", "vitest.integration.config.ts"];
+
+let vitestSession = null;
+
+async function runVitestArgs(args, configPath) {
+	if (vitestSession === null) {
+		throw new Error(
+			"the Vitest runtime session was not acquired before a Vitest launch",
+		);
+	}
+	const invocation = normalizeVitestInvocation(vitestSession, args, {
+		configPath,
+	});
+	const result = await runVitest(vitestSession, invocation.argv, {
+		configPath: invocation.config === null ? null : invocation.config.path,
+		stdio: "inherit",
+	});
+	if (result.status === 0) return;
+	throw new Error(
+		result.signal !== null
+			? `vitest exited with signal ${result.signal}`
+			: `vitest exited with code ${result.status}`,
+	);
+}
+
+// In-process replacement for the retired `check:test-runtime` child gate. It
+// acquires the one session this invocation owns, prints its provenance, and
+// discloses exactly what the session does and does not cover.
+function acquireProvenanceStep(callerIdentity) {
+	return () => {
+		vitestSession = acquireVitestRuntimeSession(process.cwd(), callerIdentity);
+		console.log(describeVitestRuntimeSession(vitestSession));
+		revalidateVitestRuntimeSession(vitestSession, "diagnostic");
+		console.log(
+			"Vitest runtime disclosure: this session covers only the listed Vitest provenance and bounded integrity properties for its own launches; non-Vitest pnpm, Biome, TypeScript, Python, Playwright, browser, database, and build steps rely on the prepared host environment and their existing checks, and a green overall ladder is project verification evidence, not cryptographic authentication of those external tools.",
+		);
+	};
+}
+
+function fastSteps(callerIdentity) {
 	return [
+		[
+			"Vitest runtime session provenance",
+			acquireProvenanceStep(callerIdentity),
+		],
 		["Repository invariants", ["check:repository"]],
+		["Frontier preservation evidence", ["check:frontier"]],
 		["Biome check", ["check"]],
 		[
 			"Owner token fidelity",
 			["exec", "node", "scripts/check-owner-tokens.mjs"],
 		],
+		[
+			"Owner spacing scale",
+			["exec", "node", "scripts/check-owner-spacing.mjs"],
+		],
+		[
+			"Owner class contracts",
+			["exec", "node", "scripts/check-owner-classes.mjs"],
+		],
 		["Type checks", ["check-types"]],
-		["Unit tests", ["test"]],
+		["Unit tests", () => runVitestArgs(["run"], "vitest.config.ts")],
 		["Python simulator tests", ["test:simulator"]],
 	];
 }
@@ -434,18 +439,18 @@ function focusedSteps(phase) {
 	const profile = phases[phase];
 	const steps = [];
 	if (profile.integrationFiles === null) {
-		steps.push(["All integration tests", ["test:integration"]]);
+		steps.push([
+			"All integration tests",
+			() => runVitestArgs(INTEGRATION_ARGS, "vitest.integration.config.ts"),
+		]);
 	} else if (profile.integrationFiles.length > 0) {
 		steps.push([
 			`${profile.label} integration tests`,
-			[
-				"exec",
-				"vitest",
-				"run",
-				"--config",
-				"vitest.integration.config.ts",
-				...profile.integrationFiles,
-			],
+			() =>
+				runVitestArgs(
+					[...INTEGRATION_ARGS, ...profile.integrationFiles],
+					"vitest.integration.config.ts",
+				),
 		]);
 	}
 	if (profile.browserFiles === null) {
@@ -461,8 +466,9 @@ function focusedSteps(phase) {
 
 async function main() {
 	const { mode, phase } = parseArguments();
+	const callerIdentity = `scripts/verify.mjs ${mode}${phase ? ` --phase ${phase}` : ""}`;
 	const before = await repositoryFingerprint();
-	const steps = fastSteps();
+	const steps = fastSteps(callerIdentity);
 	if (mode === "phase") {
 		console.log(
 			`Focused profile: ${phases[phase].label}. Build and non-profile integration/browser tests are intentionally deferred to verify:full.`,
@@ -472,7 +478,10 @@ async function main() {
 	if (mode === "full") {
 		steps.push(
 			["Build", ["build"]],
-			["All integration tests", ["test:integration"]],
+			[
+				"All integration tests",
+				() => runVitestArgs(INTEGRATION_ARGS, "vitest.integration.config.ts"),
+			],
 			["All browser and accessibility tests", ["test:browser"]],
 		);
 	}
@@ -504,7 +513,7 @@ async function main() {
 	if (failure) throw failure;
 	console.log(`\nVerification ${mode} passed without repository mutation.`);
 	if (mode === "phase") {
-		console.log("Run pnpm verify:full before integration or DONE.");
+		console.log("Run the full ladder before integration or DONE.");
 	}
 }
 

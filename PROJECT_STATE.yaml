@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-09-18T20:50:00+03:00"
+updatedAt: "2026-09-19T00:50:00+03:00"
 coordinator:
-  owner: "Primary coordinator and integrator for the completed 2026-09-18 phase3 clock-flush test-reliability successor (FITWAY_RUN_ID phase3_clock_flush_test_reliability_r01). The independently verified candidate was integrated as ecc26a9eccad1c25e12667fd066af6e5caa155ae and is now DONE under the documented D4 carve-out: both full ladders remain red only on the exact same 11 pre-existing canonical screenshot mismatches, with zero functional, accessibility, or Phase 3 recurrence failures. The lease is released. No product/design change, canonical promotion, screenshot modification, or verify:full PASS claim is made."
+  owner: "Primary coordinator and integrator for agent-context-architecture-migration-r01."
   stateFilePolicy: "coordinator-only"
 baseline:
   status: "DONE"
@@ -19,6 +19,40 @@ baseline:
   validationRecord: "docs/phase-records/baseline-reconciliation-gate.md"
   independentVerification: "docs/phase-records/baseline-independent-verification.md"
 milestones:
+
+  agent-context-architecture-migration-r01:
+    status: IN_PROGRESS
+    dependencies: []
+    ownerSession: "Primary coordinator and integrator for the authorized agent-context architecture migration r01."
+    branch: codex/owner-distill-r01
+    worktree: C:/Users/Pc Force/.codex/worktrees/6d57/phase5-staff-integration
+    baseCommit: 19e28f4f0874d96569bc6944e38ad94b89924b60
+    ownedPaths:
+      - AGENTS.md, CLAUDE.md, PRODUCT.md, DESIGN.md, docs/WORKFLOW.md, and the authority-neutral routing text needed by the migration
+      - PROJECT_STATE.yaml, project state/history schemas, task packets, transition receipts, and migration coordinator records
+      - docs/agent-context/** and scripts/check-agent-context*, scripts/show-agent-context.mjs, package/verification wiring, and focused tests
+      - the selectively integrated predecessor-owned portability closure recorded by the M0 handoff
+    forbiddenPaths:
+      - all application behavior and UI implementation under apps/** and packages/**
+      - database schemas/migrations, OpenAPI/DTO behavior, dependencies, and pnpm-lock.yaml bytes
+      - canonical screenshots, Paper artifacts, and any visual baseline promotion
+      - preserved Owner/Staff presentation candidates, screenshots, audits, plans, and unrelated handoffs
+      - Product, Spec, security, privacy, data, accessibility, or visual-authority semantic changes beyond faithfully routing existing authority
+    sharedLeases:
+      - coordinator-exclusive root routing, state/history, package/verification, and migration-record surfaces
+    validationRepairAttempts: 0
+    lastHeartbeatAt: "2026-09-19T00:50:00+03:00"
+    leaseExpiresAt: "2026-09-20T00:50:00+03:00"
+    handoff: docs/phase-records/handoffs/coordinator/20260919-005000-agent-context-architecture-migration-r01-m0-freeze.md
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: NOT_REQUIRED
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null
 
   phase3-clock-flush-test-reliability-r01:
     status: DONE

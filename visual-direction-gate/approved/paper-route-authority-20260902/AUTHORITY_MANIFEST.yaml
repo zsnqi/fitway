@@ -1,3 +1,17 @@
+# Status note (comments only; no key or value below is changed by this block):
+# - Top-level `status: IN_PROGRESS` means the registered case map is not complete across all 424
+#   cases; the individually accepted Public, Login, and Staff cases remain authoritative meanwhile.
+#   The code contract in `scripts/visual-authority.mjs` defines the global domain
+#   IN_PROGRESS | ACCEPTED_CURRENT and requires ACCEPTED_CURRENT only when every registered case is
+#   ACCEPTED.
+# - Owner surface entries are superseded for the Owner redesign by
+#   `docs/adr/ADR-009-owner-composition-authority-supersession.md`; they remain reference-only
+#   provenance and comparison material and must not be cited as acceptance authority. Public,
+#   Login, and Staff entries are unchanged.
+# - Area names containing `CANDIDATE` or `SUCCESSOR` are Paper provenance labels, not status; the
+#   entry-level `status:` field is the authority signal.
+# - The status legend is defined in `docs/design/VISUAL_AUTHORITY_STATUS.md`, which changes nothing
+#   by itself.
 schemaVersion: 1
 status: IN_PROGRESS
 updatedAt: "2026-09-08T02:50:32Z"
@@ -233,7 +247,9 @@ surfaces:
   ownerSharedNavigation:
     area: "OWNER SHARED NAVIGATION — FULL-ROUTE SUCCESSOR — CURRENT"
     areaId: 1GIP-0
-    status: ACCEPTED_PAPER_AUTHORITY
+    status: SUPERSEDED_FOR_OWNER_REDESIGN
+    supersededBy: docs/adr/ADR-009-owner-composition-authority-supersession.md
+    referenceStatus: provenance-and-comparison-only
     humanApprovalRecord: docs/phase-records/handoffs/full-route-paper-fidelity/20260902-192833-owner-shell-approved-activity-candidate-needs-human.md
     approvedDeviationIds: [owner-shared-navigation-uniform-material]
     leafExports:
@@ -251,7 +267,9 @@ surfaces:
   ownerDaily:
     area: "OWNER DAILY ANALYTICS PRODUCTION SET — CURRENT"
     areaId: I89-0
-    status: ACCEPTED_PAPER_AUTHORITY
+    status: SUPERSEDED_FOR_OWNER_REDESIGN
+    supersededBy: docs/adr/ADR-009-owner-composition-authority-supersession.md
+    referenceStatus: provenance-and-comparison-only
     approvedDeviationIds: [owner-daily-bounded-truthful-curve]
     paperTokenHash: 3b0faca3
     compositionNote: >-
@@ -322,7 +340,9 @@ surfaces:
   ownerReports:
     area: "OWNER ANALYTICS — PHASE 10 REPORTING EXTENSION — CURRENT"
     areaId: 17YY-0
-    status: ACCEPTED_PAPER_AUTHORITY
+    status: SUPERSEDED_FOR_OWNER_REDESIGN
+    supersededBy: docs/adr/ADR-009-owner-composition-authority-supersession.md
+    referenceStatus: provenance-and-comparison-only
     approvedDeviationIds: [owner-reports-runtime-data-and-disclosure]
     requiredStates: [loading, error, no-observations, insufficient-comparison, invalid-range, export-preparing, export-failure]
     routedCandidateReview: >-
@@ -369,7 +389,9 @@ surfaces:
   ownerAccountsAndSignIn:
     area: "OWNER ACCESS — BEHAVIOR-CORRECT SUCCESSOR — CURRENT"
     areaId: 1DHH-0
-    status: ACCEPTED_PAPER_AUTHORITY
+    status: SUPERSEDED_FOR_OWNER_REDESIGN
+    supersededBy: docs/adr/ADR-009-owner-composition-authority-supersession.md
+    referenceStatus: provenance-and-comparison-only
     approvedDeviationIds: [owner-access-runtime-contract-columns]
     requiredStates: [owner-created, create-credential-entry, reset-credential-entry, deactivate-confirmation, empty, loading, action-failure]
     routedCandidateReview: >-
@@ -408,7 +430,9 @@ surfaces:
     sourceAreaId: 1AFO-0
     successorArea: "OWNER ACTIVITY LOG — SHARED-SHELL SUCCESSOR — CURRENT"
     successorAreaId: 1GVI-0
-    status: ACCEPTED_PAPER_AUTHORITY
+    status: SUPERSEDED_FOR_OWNER_REDESIGN
+    supersededBy: docs/adr/ADR-009-owner-composition-authority-supersession.md
+    referenceStatus: provenance-and-comparison-only
     humanApprovalRecord: docs/phase-records/handoffs/full-route-paper-fidelity/20260902-202148-activity-log-approved.md
     approvedDeviationIds: [owner-activity-log-bidi-and-presentation]
     requiredStates: [populated, loading, load-failure-retry, no-matching-records]
@@ -447,7 +471,9 @@ surfaces:
     desktopAreaId: 1AUL-0
     mobileArea: "OWNER UPTIME — MOBILE STACKED RECORDS SUCCESSOR"
     mobileAreaId: 1DZC-0
-    status: ACCEPTED_PAPER_AUTHORITY
+    status: SUPERSEDED_FOR_OWNER_REDESIGN
+    supersededBy: docs/adr/ADR-009-owner-composition-authority-supersession.md
+    referenceStatus: provenance-and-comparison-only
     humanApprovalRecord: docs/phase-records/handoffs/phase11-uptime-paper-successor/20260825-003100-p11_uptime_paper_c01-coordinator-done.md
     approvedDeviationIds: [owner-system-status-shared-shell-runtime-data-and-bidi]
     requiredStates: [loading, load-failure-retry, no-offline-periods, no-incidents]
@@ -486,7 +512,9 @@ surfaces:
   ownerSettings:
     area: "OWNER SETTINGS — FRESH r01 SUCCESSOR CANDIDATE"
     areaId: 1FKS-0
-    status: ACCEPTED_PAPER_AUTHORITY
+    status: SUPERSEDED_FOR_OWNER_REDESIGN
+    supersededBy: docs/adr/ADR-009-owner-composition-authority-supersession.md
+    referenceStatus: provenance-and-comparison-only
     humanApprovalRecord: docs/phase-records/handoffs/phase11-settings-paper-successor/20260830-193000-p11_settings_paper_fresh_r01-done.md
     approvedDeviationIds: [owner-settings-shared-shell-and-runtime-values]
     requiredStates: [clean, dirty, inline-validation, saving, saved, atomic-failure]

@@ -1,5 +1,5 @@
 /**
- * @typedef {"PLANNED" | "ACCEPTED"} VisualAuthorityStatus
+ * @typedef {"PLANNED" | "ACCEPTED" | "SUPERSEDED"} VisualAuthorityStatus
  * @typedef {"paper" | "runtime-interpolation"} ComparisonMode
  * @typedef {{ width: number, height: number, zoom?: number }} AuthorityViewport
  * @typedef {{
@@ -16,8 +16,16 @@
  *   routedArtifact: null | { kind: "canonical" | "review", path: string, sha256?: string },
  *   landmarkContracts: string[],
  *   approvalRecord: null | string,
+ *   supersessionRecord?: string,
  *   approvedDeviationIds: string[],
  * }} VisualAuthorityCase
+ * @typedef {{
+ *   path: string,
+ *   bytes: number,
+ *   sha256: string,
+ *   surfaces: string[],
+ *   revokedBy: null | { path: string, bytes: number, sha256: string },
+ * }} SupersessionAuthority
  */
 
 export const surfaceAuthorities = Object.freeze({
@@ -35,6 +43,51 @@ export const surfaceAuthorities = Object.freeze({
 		"OWNER UPTIME & INCIDENTS PRODUCTION SET — CANDIDATE + OWNER UPTIME — MOBILE STACKED RECORDS SUCCESSOR",
 	ownerSettings: "OWNER SETTINGS — FRESH r01 SUCCESSOR CANDIDATE",
 });
+
+// Registry-side evidence mirrored from the enforcement-owned policy in
+// `scripts/owner-supersession-policy.mjs` (`OWNER_SUPERSEDED_SURFACES`). This
+// export is not the policy root: verification reads the policy module directly,
+// so trimming this list or the registry cannot retire a surface's re-acceptance
+// guard. A test asserts this evidence mirrors the policy, and a surface leaves
+// the domain only through a reviewed successor decision, never by editing this
+// list or the registry.
+export const requiredOwnerSupersededSurfaces = Object.freeze([
+	"ownerSharedNavigation",
+	"ownerDaily",
+	"ownerReports",
+	"ownerAccountsAndSignIn",
+	"ownerActivityLog",
+	"ownerSystemStatus",
+	"ownerSettings",
+]);
+
+// Byte-pinned supersession records. These are the only records that may hold a
+// manifest surface out of active authority; repository verification re-reads
+// each file and enforces its exact byte count and SHA-256. `revokedBy: null`
+// means the record stands: its surfaces cannot return to active authority and
+// its cases stay SUPERSEDED. Revocation is disabled by
+// `scripts/owner-supersession-policy.mjs`: any non-null `revokedBy` fails closed
+// because repository bytes cannot prove a human authorization event, and no
+// successor protocol is enabled. The `surfaces` list below is deliberately its
+// own literal (not derived from `requiredOwnerSupersededSurfaces`) so
+// verification can cross-check the two.
+export const supersessionAuthorities = Object.freeze([
+	Object.freeze({
+		path: "docs/adr/ADR-009-owner-composition-authority-supersession.md",
+		bytes: 5574,
+		sha256: "701302a2fd62fbb22f6b2be3a8b748ae1e2d3fe1a33b262140fdf90afe299971",
+		surfaces: Object.freeze([
+			"ownerSharedNavigation",
+			"ownerDaily",
+			"ownerReports",
+			"ownerAccountsAndSignIn",
+			"ownerActivityLog",
+			"ownerSystemStatus",
+			"ownerSettings",
+		]),
+		revokedBy: null,
+	}),
+]);
 
 const endpointViewports = [
 	{ key: "desktop", width: 1440, height: 900 },
@@ -394,6 +447,9 @@ const definitions = [
 // canonicals without an honest case/leaf counterpart (login narrow exception
 // states, shell rail element captures, settings loading/error states) are
 // promoted for regression but intentionally remain rejected-listed.
+// The eight Owner entries below additionally carry superseded: true and an ADR-009
+// supersessionRecord: they remain provenance for the prior Owner composition but are
+// no longer acceptance authority (docs/adr/ADR-009-owner-composition-authority-supersession.md).
 const presentationR06ApprovalRecord =
 	"docs/phase-records/handoffs/owner-demo-polish/20260908-presentation-ready-r06-visual-acceptance.md";
 
@@ -487,6 +543,9 @@ const acceptedCanonicalOverrides = Object.freeze({
 			"win32/chromium/phase9-owner-ui.browser.spec.ts/owner-daily-route-ar-desktop-1440x900.png",
 		routedSha256:
 			"1c3dfc4006df48252f69e707e7619d7e8460810525668f26ef8afd1120f07d89",
+		superseded: true,
+		supersessionRecord:
+			"docs/adr/ADR-009-owner-composition-authority-supersession.md",
 	},
 	"ownerDaily--completed--en--mobile": {
 		approvalRecord: ownerAuditClosureApprovalRecord,
@@ -497,6 +556,9 @@ const acceptedCanonicalOverrides = Object.freeze({
 			"win32/chromium/phase9-owner-ui.browser.spec.ts/owner-daily-route-en-mobile-390x844.png",
 		routedSha256:
 			"b43131097456b32e92b61226eb91fde796a1ecd05989f82830cfd19fab0ae67d",
+		superseded: true,
+		supersessionRecord:
+			"docs/adr/ADR-009-owner-composition-authority-supersession.md",
 	},
 	"ownerActivityLog--populated--ar--desktop": {
 		approvalRecord: ownerAuditClosureApprovalRecord,
@@ -508,6 +570,9 @@ const acceptedCanonicalOverrides = Object.freeze({
 			"win32/chromium/phase11-audit.browser.spec.ts/owner-audit-route-ar-desktop-1440x900.png",
 		routedSha256:
 			"c63e6675cdfdecdf8b3d504d7a2836a98908cb4c6765b8ad7a582e4db9c969eb",
+		superseded: true,
+		supersessionRecord:
+			"docs/adr/ADR-009-owner-composition-authority-supersession.md",
 	},
 	"ownerActivityLog--populated--en--mobile": {
 		approvalRecord: ownerAuditClosureApprovalRecord,
@@ -519,6 +584,9 @@ const acceptedCanonicalOverrides = Object.freeze({
 			"win32/chromium/phase11-audit.browser.spec.ts/owner-audit-route-en-mobile-390x844.png",
 		routedSha256:
 			"472aa6a031c2f119a529d250675a023c2127d8eb3586fb8070050e1d1c21a69f",
+		superseded: true,
+		supersessionRecord:
+			"docs/adr/ADR-009-owner-composition-authority-supersession.md",
 	},
 	"ownerSystemStatus--populated--ar--desktop": {
 		approvalRecord: ownerAuditClosureApprovalRecord,
@@ -530,6 +598,9 @@ const acceptedCanonicalOverrides = Object.freeze({
 			"win32/chromium/phase11-health.browser.spec.ts/owner-health-route-ar-desktop-1440x900.png",
 		routedSha256:
 			"943a5b72be3a0c5a8c16fb9737e1321f7215ec79e086596af09258238ab5b516",
+		superseded: true,
+		supersessionRecord:
+			"docs/adr/ADR-009-owner-composition-authority-supersession.md",
 	},
 	"ownerSystemStatus--populated--en--mobile": {
 		approvalRecord: ownerAuditClosureApprovalRecord,
@@ -540,6 +611,9 @@ const acceptedCanonicalOverrides = Object.freeze({
 			"win32/chromium/phase11-health.browser.spec.ts/owner-health-route-en-mobile-390x844.png",
 		routedSha256:
 			"5c12cadce982570c5c7de3fcbd90262a9e15378691dd141f3572d0bdd86c5e53",
+		superseded: true,
+		supersessionRecord:
+			"docs/adr/ADR-009-owner-composition-authority-supersession.md",
 	},
 	"ownerSettings--clean--en--desktop": {
 		approvalRecord: ownerAuditClosureApprovalRecord,
@@ -550,6 +624,9 @@ const acceptedCanonicalOverrides = Object.freeze({
 			"win32/chromium/phase11-settings.browser.spec.ts/owner-settings-route-en-desktop-1440x900.png",
 		routedSha256:
 			"f74e35849af287114402841ef39e8efbdad8f33835200bdcec7308058a1a74ec",
+		superseded: true,
+		supersessionRecord:
+			"docs/adr/ADR-009-owner-composition-authority-supersession.md",
 	},
 	"ownerSettings--dirty--ar--mobile": {
 		approvalRecord: ownerAuditClosureApprovalRecord,
@@ -560,6 +637,9 @@ const acceptedCanonicalOverrides = Object.freeze({
 			"win32/chromium/phase11-settings.browser.spec.ts/owner-settings-route-ar-mobile-390x844.png",
 		routedSha256:
 			"394323e714c63515cf7ae880890544fe54d041773de74148c7d5cbf910bf931a",
+		superseded: true,
+		supersessionRecord:
+			"docs/adr/ADR-009-owner-composition-authority-supersession.md",
 	},
 });
 
@@ -572,7 +652,10 @@ function applyAcceptedCanonicalOverrides(cases) {
 		if (!override) return authorityCase;
 		return {
 			...authorityCase,
-			status: "ACCEPTED",
+			status: override.superseded ? "SUPERSEDED" : "ACCEPTED",
+			...(override.supersessionRecord
+				? { supersessionRecord: override.supersessionRecord }
+				: {}),
 			paperReference: {
 				...authorityCase.paperReference,
 				leafExportPath: override.leafExportPath,

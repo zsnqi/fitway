@@ -8,8 +8,8 @@ operations and governance without storing visitor identity, images, video, or pe
 ## Repository status
 
 FITWAY v1 is **repository-complete**. Canonical `main` contains every accepted aggregate phase
-from 1 through 12, and the `repository-closeout` milestone is `DONE` in
-[PROJECT_STATE.yaml](PROJECT_STATE.yaml). The accepted project-wide `pnpm verify:full` run at
+from 1 through 12, and the `repository-closeout` milestone is `DONE` in the closed history
+([PROJECT_STATE_HISTORY.yaml](PROJECT_STATE_HISTORY.yaml)). The accepted project-wide `pnpm verify:full` run at
 commit `b46f496ac2f217278d2706be02a8061bb199403d` passed the repository invariants, build and type
 gates, 566 TypeScript unit/component tests, 117 Python tests, 133 disposable-Postgres integration
 tests, and 125 Chromium browser/accessibility/visual tests. The durable evidence and exact run
@@ -71,11 +71,16 @@ Current authority is intentionally separate from implementation history:
    security, privacy, data, interface, and acceptance contract.
 3. Reviewed migrations, Zod/OpenAPI schemas, and shared DTOs — executable conformance evidence.
 4. [ADR-007](docs/adr/ADR-007-paper-visual-source-of-truth.md) — Paper is authoritative for visual
-   composition; repository behavior remains authoritative. [DESIGN_GUIDE.md](DESIGN_GUIDE.md) and
-   the [approval manifest](visual-direction-gate/approved/APPROVAL_MANIFEST.yaml) govern responsive,
+   composition; repository behavior remains authoritative. For the seven Owner surfaces,
+   [ADR-009](docs/adr/ADR-009-owner-composition-authority-supersession.md) supersedes that
+   composition authority and keeps the prior Owner Paper frames and canonicals reference-only.
+   [DESIGN_GUIDE.md](DESIGN_GUIDE.md) and the
+   [approval manifest](visual-direction-gate/approved/APPROVAL_MANIFEST.yaml) govern responsive,
    RTL, interaction, accessibility, tokens, and provenance within that split.
 5. [PHASES.md](PHASES.md) — the completed delivery scope and dependency/acceptance plan;
-   [PROJECT_STATE.yaml](PROJECT_STATE.yaml) — the canonical closeout and milestone ledger.
+   [PROJECT_STATE.yaml](PROJECT_STATE.yaml) — the coordinator-owned active frontier ledger;
+   [PROJECT_STATE_HISTORY.yaml](PROJECT_STATE_HISTORY.yaml) — the closed, append-only terminal
+   history.
 6. [ADRs](docs/adr/), [RESEARCH.md](RESEARCH.md), and
    [phase records](docs/phase-records/) — durable rationale and accepted engineering evidence.
 

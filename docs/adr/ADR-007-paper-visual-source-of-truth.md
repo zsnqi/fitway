@@ -2,7 +2,7 @@
 
 - Status: Accepted by human decision
 - Date: 2026-08-06
-- Supersedes ADR-006 in part, limited to visual composition
+- Supersedes ADR-006 in part, limited to visual composition; superseded in part by ADR-009, limited to Owner composition authority (2026-09-15)
 
 ## Context
 
@@ -98,3 +98,14 @@ the per-surface conflict list is implementation-phase work and has not been done
 - Evidence and history: `docs/phase-records/paper-design-phase-closeout.md`, and the original
   closing handoff preserved at
   `docs/archive/handoffs/HANDOFF-paper-design-phase-close-20260805.md`.
+
+## Supersession note (2026-09-15)
+
+ADR-009 (`docs/adr/ADR-009-owner-composition-authority-supersession.md`) supersedes this ADR in
+part for the seven Owner surfaces (`owner-shared-navigation`, `owner-daily`, `owner-reports`,
+`owner-access`, `owner-activity-log`, `owner-system-status`, `owner-settings`). Their prior Paper
+compositions, accepted canonical routed screenshots, and accepted-case authority mappings are
+reference-only: they remain immutable provenance and comparison references, must not constrain
+the redesign, must not be cited as acceptance authority, and cannot reject a redesign for
+differing from them. Per-surface authority status is recorded in
+`docs/design/VISUAL_AUTHORITY_STATUS.md`.

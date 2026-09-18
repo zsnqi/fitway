@@ -1,0 +1,706 @@
+{
+	"recordedAt": "2026-09-15T19:22:49.941Z",
+	"baselineListing": {
+		"path": "docs/phase-records/handoffs/coordinator/20260915-183000-design-agent-environment-repair-r01-pre-existing-frontier.txt",
+		"sha256": "8bca7d43d29e51cb7bb319e843cb7dd7782375c7abac449e3f8e939e28db555f"
+	},
+	"repairOwnedExclusions": [
+		"PROJECT_STATE.yaml",
+		"package.json",
+		".gitignore",
+		"AGENTS.md",
+		"DESIGN_GUIDE.md",
+		"PHASES.md",
+		"docs/POLISH_BACKLOG.md",
+		"docs/WORKFLOW.md",
+		"docs/schemas/project-state.schema.json",
+		"scripts/verify-repository.mjs",
+		"visual-direction-gate/approved/APPROVAL_MANIFEST.yaml",
+		"visual-direction-gate/approved/paper-route-authority-20260902/AUTHORITY_MANIFEST.yaml",
+		".impeccable/"
+	],
+	"protectedPaths": [
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/access/messages.ts",
+			"kind": "file",
+			"sha256": "213bba3995efa303bff6cec41e4037bcbdf1ac7614a7537169770e593f333290"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/access/owner-access-section.tsx",
+			"kind": "file",
+			"sha256": "b8a145d5d517d671ebe1baf7203f79c816b7c885bc98f01f3cb93fc3e3f0c03a"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/access/owner-access-view.test.tsx",
+			"kind": "file",
+			"sha256": "21fb6a404c0565bb4ce24f3b6acebf724f5674e9fa416e81f1e30249e5455e1f"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/access/owner-access-view.tsx",
+			"kind": "file",
+			"sha256": "60d1d4be95ab3dde030a3dc9062ac904df398abbec300afbca186340be56e2b9"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/access/owner-access.css",
+			"kind": "file",
+			"sha256": "30347716d3789456b244c1b5c9416bc59f1da4f8620160ca9c07f0b2a06a96e1"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/audit/messages.ts",
+			"kind": "file",
+			"sha256": "98855850f50dad304439a8c1d39ec94a9df916ef85c3384cc93f93c6d887904c"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/audit/owner-audit-section.tsx",
+			"kind": "file",
+			"sha256": "b651b7c15d74d0bce6de5137b60a9322acb66fd9d9143f3b3e1814e0e5bc702d"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/audit/owner-audit-view.test.tsx",
+			"kind": "file",
+			"sha256": "edbb51f85fe07908e50bcb2b9c6ffbaa1abd7b9ce64a405c14d828cb1ed97481"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/audit/owner-audit-view.tsx",
+			"kind": "file",
+			"sha256": "1218237f8c733bcbb4091cb0e7181f7a188a8be728ab2dc1a08e2a7379272886"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/audit/owner-audit.css",
+			"kind": "file",
+			"sha256": "d27357723be8f6181856f7170fd5d72e6db5fedfb957d692ea21d7a9efcf817f"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/health/messages.ts",
+			"kind": "file",
+			"sha256": "0575d740b4f8ebffc6f00cc7fc95c0fe44122938f44b9fae491063350e7aeae4"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/health/owner-health-section.tsx",
+			"kind": "file",
+			"sha256": "0189b55f332d7e53ee347954b37bf5caddb2c028b441d95fe78b8a072613b89a"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/health/owner-health-view.test.tsx",
+			"kind": "file",
+			"sha256": "7ff7affd192c49bf649f3f59d37a8e3f53a72da90ba647c4ae755593378dda12"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/health/owner-health-view.tsx",
+			"kind": "file",
+			"sha256": "ac1019988f3b96ccd7822007eb371a2f4bcb051f34fa3473e080bb3c3a167fac"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/health/owner-health.css",
+			"kind": "file",
+			"sha256": "6670ee1a857ca2db2d28c72360ffb0076981976f0de009c90045aea0365c49fc"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/messages.ts",
+			"kind": "file",
+			"sha256": "5e9a19d3682d4c39e9e3ff9cfcf0cdd5ca7f5e9bad11f8b8885e3b084f44931d"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/owner-analytics-view.test.tsx",
+			"kind": "file",
+			"sha256": "b123a7ee04d0564b9d262da074565f285d38d3e4d2ff19fc3e4b345e04416409"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/owner-analytics-view.tsx",
+			"kind": "file",
+			"sha256": "90a2fbab21f00621a4299431be8690bacbdad68f359c1a7cdfff26738a814e21"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/owner-analytics.css",
+			"kind": "file",
+			"sha256": "fe3490095c31a4e5ffdb0084c1c13583b5f5a5a7d7b59caaf011e6c1ea60ac35"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/owner-date-field.css",
+			"kind": "file",
+			"sha256": "ca92a60e5789b60599bcc6463dce6b13aeaa1971dfbdeb7c2712bdfb3c44fe79"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/owner-date-field.tsx",
+			"kind": "file",
+			"sha256": "035545805619f8bf9610b79488cec35d26d806700ebaf611d18ef043baf27312"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/owner-retained-disclosure.css",
+			"kind": "file",
+			"sha256": "7907d3d3d6f0653731b8b4e1229821129a0b9d01adff4e9f6f85ac05d9295a17"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/owner-retained-disclosure.test.tsx",
+			"kind": "file",
+			"sha256": "96e681c8ecfe0aba579cb02b22af34b971af79b19bcbcb42bde013d985a45629"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/owner-retained-disclosure.tsx",
+			"kind": "file",
+			"sha256": "10ac2c6bcc2b52c7313bb96642da20228f1503b03492f2708e258629face2289"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/owner-scroll-region.tsx",
+			"kind": "file",
+			"sha256": "8cad1b91492f517576bdea090d565a144c9632f4b7e5a1e7194ce13067eb00b1"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/owner-select.css",
+			"kind": "file",
+			"sha256": "165dcc8b9960936ab4841eb87d1568490f89e84349848b29c1a370008eb35423"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/owner-select.tsx",
+			"kind": "file",
+			"sha256": "293e5ecaf8b5faf6a61ac1343ce2aa8b3cbe7e52f0de4a6d6895fe3b6d6efa90"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/owner-shell.css",
+			"kind": "file",
+			"sha256": "972aa65011ea1af7b9b1fc2b140a06ce560ae824f35bf07fab979f5c0f0ef99b"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/owner-shell.tsx",
+			"kind": "file",
+			"sha256": "7737fab3404dbe0fdd20b75d43d0d605c853a1787616197ee6213dd722a218af"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/reporting/messages.ts",
+			"kind": "file",
+			"sha256": "ba994f34c15cf500d4816267fa2047e9a2f94f5a0a00e2ef23ea3c7abfc6aada"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/reporting/owner-analytics-mode-switch.test.tsx",
+			"kind": "file",
+			"sha256": "b25e006cf924a68423fb212a016200912307914368561c8e5d29af66b4eb27e4"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/reporting/owner-reporting-export.tsx",
+			"kind": "file",
+			"sha256": "4f67a76c9e1e50a8dcf2a1b93e418eca8427b431193e3b22cf234325beade5a9"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/reporting/owner-reporting-section.tsx",
+			"kind": "file",
+			"sha256": "648f7258c8676bc6a80bc762e0170e135103509fc5169b9f7a84dd1c4e1fd8dc"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/reporting/owner-reporting-view.tsx",
+			"kind": "file",
+			"sha256": "7664548a97b3aaae8a94f284955652462f9472a96ddf071fe4b779d930b2b7b7"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/reporting/owner-reporting.css",
+			"kind": "file",
+			"sha256": "c05f24d702053b92437e0310d7b2b453e6cff927e8e74c09f084c63edb2a26ca"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/reporting/owner-section-switch.tsx",
+			"kind": "file",
+			"sha256": "ddc7c0ec77ccab5f9abaee9fb9f23ec391f60a43661881dc7deaa38ff603a96b"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/settings/messages.ts",
+			"kind": "file",
+			"sha256": "19b20b15b1b60dd275c1ef9ca983d8b9b5eb9afff0cc4e3e557c04da075c7a93"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/settings/owner-settings-section.test.tsx",
+			"kind": "file",
+			"sha256": "aa83215b6eec15a92f68a55c7862e3ecdbc6d2ad0c5bbae7f1e5c68b5fbf4204"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/settings/owner-settings-section.tsx",
+			"kind": "file",
+			"sha256": "c6ca2a2cc938000ab4ec7f28428b42119f17f2a4726f6678e307103eb631f61b"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/settings/owner-settings-view.tsx",
+			"kind": "file",
+			"sha256": "78fe9079543599ddefd607b8920037b8ae1fc6581eec302e752a436bf7f0af76"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/owner/settings/owner-settings.css",
+			"kind": "file",
+			"sha256": "e5de702899fb75a980f78024282ac6456cd4a6a62c5ca0007f214ef5dbf4b105"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/staff/operational-snapshot-view.test.tsx",
+			"kind": "file",
+			"sha256": "55434e42256661c7079e5bbf3f62c19e869e697d215c9ed0f69d6aec8e57147d"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/staff/staff-board.css",
+			"kind": "file",
+			"sha256": "fa6754b4f35ad781c4710a83c33376c54aa773c42c9d42253f1d6cd3d49c1b83"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/components/staff/staff.css",
+			"kind": "file",
+			"sha256": "c6c9b0cdecaa7eb3e8647af3f0d415b1f8e405336986deda4b2a27282c9cca77"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/hooks/use-owner-audit.test.tsx",
+			"kind": "file",
+			"sha256": "fa55ba0db8e1a2778976d1e724efc5ecf40c186209468dacacea70c56b514ea7"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/hooks/use-owner-audit.ts",
+			"kind": "file",
+			"sha256": "f6eca0953400f4d60abec4ab3917458696aa091c8a0166f1c5beb51987f59947"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/i18n/messages/ar.ts",
+			"kind": "file",
+			"sha256": "ac094359a6429120c4c8c440d7b30f0bf3d85d23a3a60eb331cbf6e2ee137584"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/i18n/messages/en.ts",
+			"kind": "file",
+			"sha256": "1ad673e1ca0b087fc97d8a370966d44b9cb78273a63ece773592574b5966666e"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/routes/index.tsx",
+			"kind": "file",
+			"sha256": "4262061917fc0944b1fe5fc908fe9a06d9ca8cfc043639e4da14166bdce8f989"
+		},
+		{
+			"status": " M",
+			"path": "apps/web/src/routes/staff.tsx",
+			"kind": "file",
+			"sha256": "6a02891a70f41151d7422959ab4a3b9a43291a0134a54641f6c7989aa319c79d"
+		},
+		{
+			"status": " M",
+			"path": "scripts/verify.mjs",
+			"kind": "file",
+			"sha256": "8ebb454a13e7c31f048c6f5fbfdb2b0c1d314bfb3dfa815b451145f08439bcfe"
+		},
+		{
+			"status": " M",
+			"path": "tests/browser/desktop-demo.browser.spec.ts",
+			"kind": "file",
+			"sha256": "84da10fe6633d07133db67cf32901e88c521bb63e0a7208f6d7ffafb5d1b683f"
+		},
+		{
+			"status": " M",
+			"path": "tests/browser/owner-cross-surface.review.spec.ts",
+			"kind": "file",
+			"sha256": "aa1fa695caf2e2f24b101b6a2c0b1733824c2c4af733d86807aa02c8c0c8f11c"
+		},
+		{
+			"status": " M",
+			"path": "tests/browser/owner-presentation.review.spec.ts",
+			"kind": "file",
+			"sha256": "5133fac1954e380ba95efbb1a8572ef72c1af05b85fae34bfbf2f0bb0e94806a"
+		},
+		{
+			"status": " M",
+			"path": "tests/browser/phase10-ui-csv.browser.spec.ts",
+			"kind": "file",
+			"sha256": "6d2fbf95b1d9ad2b3e60bc47b7e1ca634d33a9119f37d977df5cfb21a03e0f32"
+		},
+		{
+			"status": " M",
+			"path": "tests/browser/phase11-access.browser.spec.ts",
+			"kind": "file",
+			"sha256": "c18ee0b520b94022e0549e5e7ee416a19df75b6516cdf564601fdadb06b3bf14"
+		},
+		{
+			"status": " M",
+			"path": "tests/browser/phase11-audit.browser.spec.ts",
+			"kind": "file",
+			"sha256": "0a62ff6f433d9cc60570edbdbc2bbe35304cd1be8ab6593353950968d885679e"
+		},
+		{
+			"status": " M",
+			"path": "tests/browser/phase11-health.browser.spec.ts",
+			"kind": "file",
+			"sha256": "3fd95e71c0212fb198f3edc5c5524240ca7681f7650f890e70a3934cbf41c324"
+		},
+		{
+			"status": " M",
+			"path": "tests/browser/phase11-settings.browser.spec.ts",
+			"kind": "file",
+			"sha256": "5e5aad962591eca5d92b800d5c9df573a8d6e0c10b7e48b5fe822d8ef266a063"
+		},
+		{
+			"status": " M",
+			"path": "tests/browser/phase11-shell.browser.spec.ts",
+			"kind": "file",
+			"sha256": "8bfa84765ccf4159479515f898fff8d3c43e7ec256ef3f36fd7dbcd24ad764c0"
+		},
+		{
+			"status": " M",
+			"path": "tests/browser/phase2.browser.spec.ts",
+			"kind": "file",
+			"sha256": "6dbe8f56e24357cf0c22459d82e534d37de4d4163fffe7e683ee9fce0f43fe03"
+		},
+		{
+			"status": " M",
+			"path": "tests/browser/phase4-staff-web.browser.spec.ts",
+			"kind": "file",
+			"sha256": "74d4e1d04c0784156430e59dbea5c3a68986cb3d5b923861bde373694280a040"
+		},
+		{
+			"status": " M",
+			"path": "tests/browser/phase9-owner-ui.browser.spec.ts",
+			"kind": "file",
+			"sha256": "f9362f031b086e5bea63872987bed8abd6b71ce6fd4241bf73cf3c0976ac074f"
+		},
+		{
+			"status": " M",
+			"path": "tests/browser/public-baseline.browser.spec.ts",
+			"kind": "file",
+			"sha256": "491e09d0cddf1241729e07fee55630a817508e70480a070a821a65a457e25ca5"
+		},
+		{
+			"status": " M",
+			"path": "tests/browser/staff-paper-fidelity.review.spec.ts",
+			"kind": "file",
+			"sha256": "55ff7913da3dc070c77fe52ad9fa05b3b10ad9a0e0b1f8239e36c72b5970dc86"
+		},
+		{
+			"status": "??",
+			"path": "access-full.png",
+			"kind": "file",
+			"sha256": "396c434dcbbf877ca50de46244035c6247212919a52977e2926a539028377918"
+		},
+		{
+			"status": "??",
+			"path": "admin-ar-1440.png",
+			"kind": "file",
+			"sha256": "50d0a53cb5f817332b6701c58de8ee7d89884d5619f24d4ce4c45b73d429b7a9"
+		},
+		{
+			"status": "??",
+			"path": "apps/web/src/components/initial-load-transition.css",
+			"kind": "file",
+			"sha256": "2a24463b3bb2ed64a6f88c0ad1512db4d541e6eb65885f1d8b4ae4c1753a24b5"
+		},
+		{
+			"status": "??",
+			"path": "apps/web/src/components/initial-load-transition.test.tsx",
+			"kind": "file",
+			"sha256": "77e61dc4f1e0fda00a9e221569584f488df4eafa57c8b2ee2b6124dc62b87e26"
+		},
+		{
+			"status": "??",
+			"path": "apps/web/src/components/initial-load-transition.tsx",
+			"kind": "file",
+			"sha256": "7fefa13752f8cf03692741113bdd0508a71630c14b4467c1242da4b12a0e6f7e"
+		},
+		{
+			"status": "??",
+			"path": "apps/web/src/components/owner/owner-layout.css",
+			"kind": "file",
+			"sha256": "dbd17865cf8f972ba3e38022415b5f826da2a7d16023984ceca89dec11854dbe"
+		},
+		{
+			"status": "??",
+			"path": "audit-scroll.png",
+			"kind": "file",
+			"sha256": "312fdb4664eb2670730f26ea89467dbc518be51eff68fbc96ba6ecde33db6584"
+		},
+		{
+			"status": "??",
+			"path": "audit-top.png",
+			"kind": "file",
+			"sha256": "69c25c3979909e4237a9896c686ab6f4fae6340f181f61485c0494d96721592a"
+		},
+		{
+			"status": "??",
+			"path": "audit/",
+			"kind": "directory",
+			"sha256": "94223fa7916cf8b9d5392bc761cf7f1e13347cc07df8c4af9f12f76970f3d25f",
+			"fileCount": 18
+		},
+		{
+			"status": "??",
+			"path": "daily-expanded.png",
+			"kind": "file",
+			"sha256": "2235b42cf1005068b6e81fcf6cedd4ec19ba1f0cf4a35647ea5ac388e8dfe0c3"
+		},
+		{
+			"status": "??",
+			"path": "daily-footer.png",
+			"kind": "file",
+			"sha256": "e8b1480812ba45de99d1b1e30d7bae9e4405c208800f2f13aa6b03e8586701d2"
+		},
+		{
+			"status": "??",
+			"path": "daily-scroll.png",
+			"kind": "file",
+			"sha256": "b6f465e8703d8963f2f4e83239130dd3242acfdd936318c42e9e3d11bca22f8f"
+		},
+		{
+			"status": "??",
+			"path": "daily-table.png",
+			"kind": "file",
+			"sha256": "e498aa4da7bb837e05e7a0747df8f9d586ed1399309c66641f0ea66f785627be"
+		},
+		{
+			"status": "??",
+			"path": "docs/phase-records/handoffs/coordinator/20260915-165423-design-agent-environment-diagnosis.md",
+			"kind": "file",
+			"sha256": "62eb7b2a6a6e68342e1d32cd2d267b3ac7337a965eb9d646eec604b09b7e6e86"
+		},
+		{
+			"status": "??",
+			"path": "docs/phase-records/handoffs/owner-demo-polish/20260912-owner-presentation-audit-r01.md",
+			"kind": "file",
+			"sha256": "fe2650dd7e5c3f0acbac93425abc032a5ea4174d01a0db5e0ca75ce151861046"
+		},
+		{
+			"status": "??",
+			"path": "docs/phase-records/handoffs/owner-demo-polish/20260912-owner-presentation-polish-r01.md",
+			"kind": "file",
+			"sha256": "1eeba8298a37b0e491ef2aa71b41561994ff4fec334a9bf608e408cae0fac77c"
+		},
+		{
+			"status": "??",
+			"path": "docs/phase-records/handoffs/owner-demo-polish/20260912-owner-presentation-polish-r02.md",
+			"kind": "file",
+			"sha256": "0753bfb1afac22a3a86bb037355c1cf7785e541e1693ae89a4710bd39b99a1f8"
+		},
+		{
+			"status": "??",
+			"path": "docs/phase-records/handoffs/owner-demo-polish/20260914-owner-activity-log-simplify-r01.md",
+			"kind": "file",
+			"sha256": "1f995ae32004b352bebc05d6c5d49360366e2792c59f994706dd10a5375a5a34"
+		},
+		{
+			"status": "??",
+			"path": "docs/phase-records/handoffs/owner-demo-polish/20260914-owner-copy-clarity-r01.md",
+			"kind": "file",
+			"sha256": "b98f8ef7a86f73606a2d0d96e9d15bd583a6c674539ad867bccde448f3c6bb38"
+		},
+		{
+			"status": "??",
+			"path": "docs/phase-records/handoffs/owner-demo-polish/20260914-owner-distill-r01.md",
+			"kind": "file",
+			"sha256": "9a09a9fda99e0dcb3f9630d5e225837b6a03f0c37726566de0101474bacc9340"
+		},
+		{
+			"status": "??",
+			"path": "docs/phase-records/handoffs/owner-demo-polish/20260914-owner-distill-r02.md",
+			"kind": "file",
+			"sha256": "b14d9d1159665424b66f49963b494011571ce60352d42eef819a03464ed1da63"
+		},
+		{
+			"status": "??",
+			"path": "docs/phase-records/handoffs/owner-demo-polish/20260914-owner-layout-composition-r01.md",
+			"kind": "file",
+			"sha256": "93a4c5e4f8a516f07b539568c7a54661141dba48ed752f8f9b7137caf25b0222"
+		},
+		{
+			"status": "??",
+			"path": "docs/phase-records/handoffs/owner-demo-polish/20260915-owner-governance-layout-recomposition-plan-r01.md",
+			"kind": "file",
+			"sha256": "f6bc293fc7954380a3483906afd0b33c9b2e4e473b4304bad00915302670ed62"
+		},
+		{
+			"status": "??",
+			"path": "docs/phase-records/handoffs/owner-demo-polish/20260915-owner-governance-layout-recomposition-r01.md",
+			"kind": "file",
+			"sha256": "4f3f1d2bca587936257da37d0e231feccef2487ba10e787d0a4cd7ef28c4ccc6"
+		},
+		{
+			"status": "??",
+			"path": "docs/phase-records/handoffs/owner-demo-polish/20260915-owner-governance-layout-recomposition-r02.md",
+			"kind": "file",
+			"sha256": "83af2eebef66c9a204a23e078a9ec776e56053360fb97803dacb6521edcaf911"
+		},
+		{
+			"status": "??",
+			"path": "docs/phase-records/handoffs/owner-demo-polish/20260915-owner-layout-composition-r02.md",
+			"kind": "file",
+			"sha256": "f8e159757203f281a7e59cf7dbf82c1f06fba5b5348b7ca1a33b807f6e87cb93"
+		},
+		{
+			"status": "??",
+			"path": "health-full.png",
+			"kind": "file",
+			"sha256": "3b0aeb75d2f95b19b67b2df9fff535cafc6af0213a931cebd55cf28a384e9a60"
+		},
+		{
+			"status": "??",
+			"path": "hourly-midscroll.png",
+			"kind": "file",
+			"sha256": "bedabea752dcf6983a75348977fcb1b99f7a14826087ec32667d02f3c40309e9"
+		},
+		{
+			"status": "??",
+			"path": "marker-zoom.png",
+			"kind": "file",
+			"sha256": "403095e3c2e18aea457e1f0862af0514488c5d477d2b48f824f0eba3153f50d3"
+		},
+		{
+			"status": "??",
+			"path": "marker-zoom4.png",
+			"kind": "file",
+			"sha256": "43cdb0956a066666cee0a1c7eb49c8ffd103fc870fa0e6b1cdf59924035efaf7"
+		},
+		{
+			"status": "??",
+			"path": "plans/",
+			"kind": "directory",
+			"sha256": "11fa783e7e3c3f48217187391a06ec58ea99bced6d9050885886246f0708e8f3",
+			"fileCount": 4
+		},
+		{
+			"status": "??",
+			"path": "public-ar-1440.png",
+			"kind": "file",
+			"sha256": "e7aaba47df7d192e186d33839de159047be857639bbcfc534ca2e926d35d11f1"
+		},
+		{
+			"status": "??",
+			"path": "public-ar-1440b.png",
+			"kind": "file",
+			"sha256": "eab9667bc8579f02a53112352b42bbf9f82611627ce70dd4ae9c24827e8fb69e"
+		},
+		{
+			"status": "??",
+			"path": "public-ar-390.png",
+			"kind": "file",
+			"sha256": "717b556a1d0b6d43d76190bdb2e8145302c6f38ea61f24ad95a8cc124503086a"
+		},
+		{
+			"status": "??",
+			"path": "reports-full.png",
+			"kind": "file",
+			"sha256": "295c0f07e3ab7e4d646bb73b3983cf8f78b82a6e2caccb477d258874a15774ec"
+		},
+		{
+			"status": "??",
+			"path": "reports-top.png",
+			"kind": "file",
+			"sha256": "3ba2ab26e437c926e19e2605f7a6414c268b825e4a9f3ee1e6e53a2462daf0ba"
+		},
+		{
+			"status": "??",
+			"path": "scripts/check-owner-classes.mjs",
+			"kind": "file",
+			"sha256": "bbfc0b5c80e74fd683b8f94afd5b3a48ab7ffb690474bef3d1d0ff1dc05eabc5"
+		},
+		{
+			"status": "??",
+			"path": "scripts/check-owner-classes.test.ts",
+			"kind": "file",
+			"sha256": "1d0e2669b5430cd21ece8c4c728606a4c4767d74c33f1560cb246add766c13a3"
+		},
+		{
+			"status": "??",
+			"path": "scripts/check-owner-spacing.mjs",
+			"kind": "file",
+			"sha256": "f4329b233055ab29ba22821f1d4e958a84d46aeffd0652fa0453b9b4f942fa7a"
+		},
+		{
+			"status": "??",
+			"path": "scripts/check-owner-spacing.test.ts",
+			"kind": "file",
+			"sha256": "f88a964a71f79677d2054639508dd8206506196c8852b7be00711ba952284af6"
+		},
+		{
+			"status": "??",
+			"path": "scripts/owner-classes-allowlist.json",
+			"kind": "file",
+			"sha256": "5d79e506fd73b88c5740ef211f819085149271265eb057ec2be280998fdb9818"
+		},
+		{
+			"status": "??",
+			"path": "scripts/owner-spacing-baseline.json",
+			"kind": "file",
+			"sha256": "6f6e0fa4487f3eabb0e03ee3d0caf10377fc41ccf9d391ec63632dee30e04ef5"
+		},
+		{
+			"status": "??",
+			"path": "select-open.png",
+			"kind": "file",
+			"sha256": "959d3b514b63de8d88b1b7af1e7fa42a7ea34cfe40908fc104c547130bd7e79d"
+		},
+		{
+			"status": "??",
+			"path": "select-open2.png",
+			"kind": "file",
+			"sha256": "64197ccaed532b5b28b9743c3d29e29905700a4727e6965c3b6f5c85f0f12cb2"
+		},
+		{
+			"status": "??",
+			"path": "select-open3.png",
+			"kind": "file",
+			"sha256": "f31284905364a2c94d4e8324a86c74add36053d87903e0f21a6af259ef341646"
+		},
+		{
+			"status": "??",
+			"path": "settings-full.png",
+			"kind": "file",
+			"sha256": "5fc24e998003ffd9c53cc765a07919ad50242e0187250d5b4bdcc8124412fda2"
+		},
+		{
+			"status": "??",
+			"path": "staff-ar-1440.png",
+			"kind": "file",
+			"sha256": "d4108c80f1aec305b51cce2cbe958b2c937523da329a1fde59f364f1e37d5105"
+		},
+		{
+			"status": "??",
+			"path": "staff-en-390.png",
+			"kind": "file",
+			"sha256": "95bc131a8b0296bd8138f420077553e875cbfa432d74949831a769d5c763c3fc"
+		}
+	],
+	"baselineEntryCount": 116,
+	"protectedEntryCount": 113
+}

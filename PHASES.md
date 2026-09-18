@@ -1,12 +1,14 @@
 # FITWAY Delivery Phases
 
-> **Purpose:** durable dependency, scope, merge-gate, and acceptance plan. Live status is
-> recorded only in `PROJECT_STATE.yaml`. Product and implementation semantics are defined by
-> `FITWAY_PRODUCT.md` and `SPEC.md`; visual acceptance is defined by `DESIGN_GUIDE.md`.
+> **Purpose:** durable dependency, scope, merge-gate, and acceptance plan. The active frontier is
+> `PROJECT_STATE.yaml`; closed terminal records live in `PROJECT_STATE_HISTORY.yaml`. Product and
+> implementation semantics are defined by `FITWAY_PRODUCT.md` and `SPEC.md`; visual acceptance is
+> defined by `DESIGN_GUIDE.md`.
 >
 > **Status:** the v1 delivery scope of this plan is complete. Every aggregate milestone from
-> `phase-1` through `phase-12` and `repository-closeout` is `DONE` in `PROJECT_STATE.yaml`, with
-> the accepted canonical project-wide verification recorded in
+> `phase-1` through `phase-12` and `repository-closeout` is `DONE`, recorded in the closed history
+> (`PROJECT_STATE_HISTORY.yaml`), with the active ledger holding only open or unarchived work.
+> The accepted canonical project-wide verification is recorded in
 > `docs/phase-records/repository-closeout.md`. This file remains the durable record of that
 > scope; resumed or successor work is governed by its own ledger entries, not by reinterpreting
 > these sections as open work.
@@ -21,7 +23,7 @@
 | Phase 1 | `e43d38a6e547bb5dff15c4248f22f57e115c7a49` | Arabic-first/English public shell, self-hosted Cairo, dark FITWAY foundation, public states |
 | Phase 2 | `928f3b3737e474be630a603e97bf54659a8ce8d4` | Simulated edge → authenticated push → transactional engine → Postgres → cached public page |
 | Phase 3 | `ab4126dd30598a916ca2aa2e6f8b815a21d86bba` | Gym-local schedule, past-midnight behavior, closed override, next opening |
-| Baseline Reconciliation Gate | `PROJECT_STATE.yaml`; `integratedCommit: SELF` only in the passing baseline commit | Approved FITWAY theme promoted; public schema v2 and baseline reconciled; workflow and test resources stabilized |
+| Baseline Reconciliation Gate | terminal record in `PROJECT_STATE_HISTORY.yaml`; active ledger `baseline` block mirrors its status/commit; `integratedCommit: SELF` only in the passing baseline commit | Approved FITWAY theme promoted; public schema v2 and baseline reconciled; workflow and test resources stabilized |
 
 Phase records under `docs/phase-records/` preserve accepted evidence. Historical checklists
 are not live status.
@@ -101,7 +103,7 @@ authorization through the Phase 4 aggregate.
 
 ## Parallel execution batches
 
-No phase worktree starts until BRG is `DONE` in `PROJECT_STATE.yaml`.
+No phase worktree starts until BRG is `DONE`, archived in `PROJECT_STATE_HISTORY.yaml` with its status and commit mirrored in the active ledger's `baseline` block.
 
 | Batch | Concurrent bounded streams | Integration condition |
 | --- | --- | --- |
@@ -178,6 +180,13 @@ Acceptance includes the exact cookie/session/rotation/deactivation/401/403 rules
 transaction/evaluator/DTO rules in `SPEC.md`; replay, gap, backfill, validation failure, and
 rollback cannot mutate current health. Staff UI proves loading/live/stale/unavailable/error,
 keyboard, both directions, responsive density, and private capacity visibility.
+
+> **Coordination note:** the 2026-08-09 human decision recorded in
+> `docs/phase-records/handoffs/phase5-staff-ui/20260809-030128-p5_staff_monitoring-activation-ratification.md`
+> (decision 2) supersedes the Phase 4 "private capacity visibility" wording for the `/staff`
+> surface: capacity remains an authorized DTO/data field and is intentionally not rendered; the
+> sentence above is retained as historical Phase 4 acceptance text. Current per-surface authority
+> is recorded in `docs/design/VISUAL_AUTHORITY_STATUS.md`.
 
 ## Phase 5 — Commands, corrections, resets, and audit
 

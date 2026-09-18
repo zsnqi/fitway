@@ -4,11 +4,22 @@ import path from "node:path";
 import { parse as parseYaml } from "yaml";
 import {
 	r05RejectedCanonicalArtifacts,
+	supersessionAuthorities as registeredSupersessionAuthorities,
+	requiredOwnerSupersededSurfaces,
 	requiredPaperCoverage,
 	requiredRuntimeCoverage,
 	surfaceAuthorities,
 	visualAuthorityCases,
 } from "../tests/browser/visual-authority-cases.mjs";
+import {
+	assertPlainAuthorityCase,
+	OWNER_SUPERSEDED_SURFACES,
+	OWNER_SUPERSESSION_DECISION,
+	OWNER_SURFACE_BINDINGS,
+	ownerSupersessionRevocationFailure,
+	resolveCaseAuthorityIdentity,
+	validateOwnerSurfaceBindings,
+} from "./owner-supersession-policy.mjs";
 
 const manifestRelativePath =
 	"visual-direction-gate/approved/paper-route-authority-20260902/AUTHORITY_MANIFEST.yaml";
@@ -17,6 +28,17 @@ const requiredOwnerLandmarks = [
 	"owner-shared-navigation",
 	"owner-active-panel",
 ];
+const activeSurfaceAuthorityStatuses = new Set([
+	"ACCEPTED_PAPER_AUTHORITY",
+	"ACCEPTED_SPLIT_AUTHORITY",
+]);
+const supersededSurfaceAuthorityStatuses = new Set([
+	"SUPERSEDED_FOR_OWNER_REDESIGN",
+]);
+const manifestSurfaceStatuses = new Set([
+	...activeSurfaceAuthorityStatuses,
+	...supersededSurfaceAuthorityStatuses,
+]);
 
 function fail(message) {
 	throw new Error(message);
@@ -54,6 +76,92 @@ export function verifyShaRecord(record, bytes, label = "artifact") {
 	if (sha256(bytes) !== record.sha256) {
 		fail(`${label} SHA-256 changed: ${record.path}`);
 	}
+}
+
+/**
+ * Fail-closed ADR-009 policy cross-check shared by repository verification and
+ * registry validation. The closed seven-surface Owner domain and the standing
+ * decision identity come from `scripts/owner-supersession-policy.mjs`, never
+ * from the registry, the manifest, or a caller, so trimming or mutating
+ * repository data cannot shrink the domain. Byte verification elsewhere proves
+ * file identity only; it never proves a human decision, and no revocation is
+ * accepted while the successor protocol is disabled.
+ */
+function assertOwnerSupersessionPolicy(authorities) {
+	if (!Array.isArray(authorities)) {
+		fail("Registered supersession authorities must be an array");
+	}
+	for (const authority of authorities) {
+		if (!Array.isArray(authority?.surfaces)) {
+			fail(
+				`Supersession authority ${authority?.path ?? "(missing path)"} must list its surfaces`,
+			);
+		}
+	}
+	const standingDecisions = authorities.filter(
+		(authority) => authority.path === OWNER_SUPERSESSION_DECISION.path,
+	);
+	if (standingDecisions.length !== 1) {
+		fail(
+			`Owner supersession policy requires exactly one registered authority at ${OWNER_SUPERSESSION_DECISION.path}; found ${standingDecisions.length}`,
+		);
+	}
+	const [decision] = standingDecisions;
+	if (
+		decision.bytes !== OWNER_SUPERSESSION_DECISION.bytes ||
+		decision.sha256 !== OWNER_SUPERSESSION_DECISION.sha256
+	) {
+		fail(
+			`Supersession authority ${OWNER_SUPERSESSION_DECISION.path} does not match the pinned ADR-009 decision byte count and SHA-256`,
+		);
+	}
+	const decisionSurfaces = new Set(decision.surfaces);
+	const missing = OWNER_SUPERSEDED_SURFACES.filter(
+		(surfaceKey) => !decisionSurfaces.has(surfaceKey),
+	);
+	const extra = decision.surfaces.filter(
+		(surfaceKey) => !OWNER_SUPERSEDED_SURFACES.includes(surfaceKey),
+	);
+	if (missing.length || extra.length) {
+		fail(
+			`Owner supersession policy requires the exact ADR-009 surface set; missing: [${missing.join(", ")}]; extra: [${extra.join(", ")}]`,
+		);
+	}
+	for (const authority of authorities) {
+		if (authority === decision) continue;
+		const overlaps = authority.surfaces.filter((surfaceKey) =>
+			OWNER_SUPERSEDED_SURFACES.includes(surfaceKey),
+		);
+		if (overlaps.length) {
+			fail(
+				`Supersession authority ${authority.path} may not name Owner supersession policy surfaces: ${overlaps.join(", ")}`,
+			);
+		}
+	}
+	for (const authority of authorities) {
+		if (authority.revokedBy === null || authority.revokedBy === undefined) {
+			continue;
+		}
+		fail(ownerSupersessionRevocationFailure(authority.path));
+	}
+}
+
+/**
+ * Reads every registered supersession record and enforces its real-file byte
+ * pin, then enforces the ADR-009 Owner supersession policy against the
+ * registered records. A non-null `revokedBy` is never followed to another byte
+ * record: with no successor protocol enabled it fails closed, because
+ * repository bytes cannot prove human authorization.
+ */
+export async function verifySupersessionAuthorities(
+	root,
+	authorities = registeredSupersessionAuthorities,
+) {
+	for (const authority of authorities) {
+		const bytes = await readFile(repositoryPath(root, authority.path));
+		verifyByteRecord(authority, bytes, `Supersession record ${authority.path}`);
+	}
+	assertOwnerSupersessionPolicy(authorities);
 }
 
 async function walkFiles(directory, prefix = "") {
@@ -127,7 +235,21 @@ export function validateAuthorityRegistry({
 	deviations,
 	requiredCoverage = [],
 	availableEvidencePaths = [],
+	supersessionAuthorities = registeredSupersessionAuthorities,
 }) {
+	// Enforcement-owned policy first: the exact seven-surface binding table is
+	// validated before any manifest, registry, or case data is interpreted.
+	validateOwnerSurfaceBindings();
+	// Plainness gate and single normalization: every case is checked for own
+	// accessors and non-data values, then cloned once into a data snapshot. No
+	// raw case object is read after this point, so a code-shaped case cannot
+	// present different claims to different consumers.
+	const authorityCases = Array.isArray(cases)
+		? cases.map((authorityCase) => {
+				assertPlainAuthorityCase(undefined, authorityCase);
+				return structuredClone(authorityCase);
+			})
+		: cases;
 	if (
 		manifest.schemaVersion !== 1 ||
 		!["IN_PROGRESS", "ACCEPTED_CURRENT"].includes(manifest.status)
@@ -143,6 +265,211 @@ export function validateAuthorityRegistry({
 	}
 	if (manifest.acceptancePolicy?.baselineMayReplacePaper !== false) {
 		fail("A routed baseline may not replace Paper as initial visual authority");
+	}
+	for (const [surfaceKey, surface] of Object.entries(manifest.surfaces ?? {})) {
+		if (!manifestSurfaceStatuses.has(surface?.status)) {
+			fail(
+				`surface ${surfaceKey} has unknown authority status ${surface?.status ?? "(missing)"}`,
+			);
+		}
+	}
+
+	const supersessionByPath = new Map();
+	for (const authority of supersessionAuthorities) {
+		const authorityPath = authority?.path;
+		assertNonempty(authorityPath, "SupersessionAuthority.path");
+		if (supersessionByPath.has(authorityPath)) {
+			fail(`Duplicate supersession authority: ${authorityPath}`);
+		}
+		if (!Number.isInteger(authority.bytes) || !authority.sha256) {
+			fail(`Supersession authority ${authorityPath} is missing its byte pin`);
+		}
+		if (!Array.isArray(authority.surfaces)) {
+			fail(`Supersession authority ${authorityPath} must list its surfaces`);
+		}
+		for (const surfaceKey of authority.surfaces) {
+			if (typeof surfaceKey !== "string" || !surfaceKey.trim()) {
+				fail(
+					`Supersession authority ${authorityPath} must name its surfaces with non-empty strings`,
+				);
+			}
+		}
+		supersessionByPath.set(authorityPath, authority);
+	}
+	// Enforcement-owned ADR-009 policy: the closed seven-surface Owner domain and
+	// the standing decision identity come from
+	// `scripts/owner-supersession-policy.mjs`, never from a caller, the registry,
+	// or the manifest. The registry is evidence to cross-check: trimming it
+	// cannot shrink the domain (the exact difference is reported), no other
+	// authority may name a policy surface, any non-null revocation fails closed,
+	// and each policy surface must stay superseded, name the standing decision,
+	// carry no ACCEPTED case, and keep at least one registered case.
+	assertOwnerSupersessionPolicy(supersessionAuthorities);
+	// Registry evidence cross-checks: the registry's Paper family map and its
+	// exported superseded-surface mirror must agree with the policy root, so
+	// editing registry evidence cannot move a binding's Paper area or shrink the
+	// enforced domain.
+	for (const binding of OWNER_SURFACE_BINDINGS) {
+		if (surfaceAuthorities[binding.surface] !== binding.paperArea) {
+			fail(
+				`Registry Paper family for ${binding.surface} is ${JSON.stringify(surfaceAuthorities[binding.surface] ?? null)}; the enforcement-owned binding pins ${JSON.stringify(binding.paperArea)}`,
+			);
+		}
+	}
+	const registryPolicySurfaces = new Set(requiredOwnerSupersededSurfaces);
+	const missingRegistrySurfaces = OWNER_SUPERSEDED_SURFACES.filter(
+		(surfaceKey) => !registryPolicySurfaces.has(surfaceKey),
+	);
+	const extraRegistrySurfaces = [...registryPolicySurfaces].filter(
+		(surfaceKey) => !OWNER_SUPERSEDED_SURFACES.includes(surfaceKey),
+	);
+	if (
+		registryPolicySurfaces.size !== OWNER_SUPERSEDED_SURFACES.length ||
+		missingRegistrySurfaces.length ||
+		extraRegistrySurfaces.length
+	) {
+		fail(
+			`Registry evidence must mirror the enforcement-owned Owner surface domain exactly; missing: [${missingRegistrySurfaces.join(", ")}]; extra: [${extraRegistrySurfaces.join(", ")}]`,
+		);
+	}
+	// Identity resolution precedes every status-specific check: mutable claims
+	// are normalized against the enforcement-owned bindings first, so a
+	// relabeled or partially substituted Owner case fails here before any
+	// acceptance logic, evidence read, or status-conditioned inventory.
+	const identityByCase = new Map();
+	for (const authorityCase of authorityCases) {
+		const identity = resolveCaseAuthorityIdentity(authorityCase);
+		if (
+			identity.domain === "owner" &&
+			!OWNER_SURFACE_BINDINGS.some(
+				(binding) => binding.surface === identity.surface,
+			)
+		) {
+			fail(
+				`${authorityCase.id} normalized to an unregistered Owner surface ${identity.surface}`,
+			);
+		}
+		identityByCase.set(authorityCase, identity);
+	}
+	// Artifact inventory: a routed artifact may be presented by at most one
+	// case. Every case here already has a normalized identity.
+	const acceptedArtifacts = new Map();
+	for (const authorityCase of authorityCases) {
+		const artifactPath = authorityCase?.routedArtifact?.path;
+		if (!artifactPath || authorityCase.status === "PLANNED") continue;
+		if (acceptedArtifacts.has(artifactPath)) {
+			fail(
+				`${artifactPath} is assigned to both ${acceptedArtifacts.get(artifactPath)} and ${authorityCase.id}`,
+			);
+		}
+		acceptedArtifacts.set(artifactPath, authorityCase.id);
+	}
+	for (const surfaceKey of OWNER_SUPERSEDED_SURFACES) {
+		const surface = manifest.surfaces?.[surfaceKey];
+		if (!surface) {
+			fail(
+				`required superseded Owner surface ${surfaceKey} is missing from the manifest surfaces`,
+			);
+		}
+		if (!supersededSurfaceAuthorityStatuses.has(surface.status)) {
+			fail(
+				`surface ${surfaceKey} cannot return to active authority while supersession authority ${OWNER_SUPERSESSION_DECISION.path} is not revoked (found status ${surface.status ?? "(missing)"})`,
+			);
+		}
+		if (surface.supersededBy !== OWNER_SUPERSESSION_DECISION.path) {
+			fail(
+				`surface ${surfaceKey} supersededBy must be the standing supersession decision ${OWNER_SUPERSESSION_DECISION.path}`,
+			);
+		}
+		const acceptedCase = authorityCases.find(
+			(authorityCase) =>
+				authorityCase.status === "ACCEPTED" &&
+				identityByCase.get(authorityCase).surface === surfaceKey,
+		);
+		if (acceptedCase) {
+			fail(
+				`${acceptedCase.id} cannot be ACCEPTED on surface ${surfaceKey} while supersession authority ${OWNER_SUPERSESSION_DECISION.path} is not revoked`,
+			);
+		}
+		if (
+			!authorityCases.some(
+				(authorityCase) =>
+					identityByCase.get(authorityCase).surface === surfaceKey,
+			)
+		) {
+			fail(
+				`required superseded Owner surface ${surfaceKey} has no registered visual-authority case; deleting a surface's cases cannot sanitize its supersession record`,
+			);
+		}
+	}
+	// Production-coverage completeness: every pinned canonical artifact is
+	// presented by exactly one case whose normalized identity is that binding.
+	for (const binding of OWNER_SURFACE_BINDINGS) {
+		for (const artifactPath of binding.canonicalArtifacts) {
+			const presenters = authorityCases.filter(
+				(authorityCase) => authorityCase?.routedArtifact?.path === artifactPath,
+			);
+			if (presenters.length !== 1) {
+				fail(
+					`${binding.surface} pinned canonical artifact ${artifactPath} must be presented by exactly one registered case; found ${presenters.length}`,
+				);
+			}
+			const [presenter] = presenters;
+			const presenterIdentity = identityByCase.get(presenter);
+			if (presenterIdentity?.surface !== binding.surface) {
+				fail(
+					`${artifactPath} is pinned to ${binding.surface} but presented by ${presenter.id} with normalized identity ${presenterIdentity?.surface ?? "(none)"}`,
+				);
+			}
+		}
+	}
+	// Re-acceptance guard: a surface covered by a supersession record may not
+	// regain active authority. Revocation is disabled by policy, so the guard is
+	// unconditional: neither a manifest status change nor a re-accepted case can
+	// retire it.
+	for (const authority of supersessionAuthorities) {
+		for (const surfaceKey of authority.surfaces) {
+			const surface = manifest.surfaces?.[surfaceKey];
+			if (!surface) {
+				fail(
+					`Supersession authority ${authority.path} covers unregistered surface ${surfaceKey}`,
+				);
+			}
+			if (!supersededSurfaceAuthorityStatuses.has(surface.status)) {
+				fail(
+					`surface ${surfaceKey} cannot return to active authority while supersession authority ${authority.path} is not revoked (found status ${surface.status ?? "(missing)"})`,
+				);
+			}
+			if (surface.supersededBy !== authority.path) {
+				fail(
+					`surface ${surfaceKey} supersededBy must be the registered supersession record ${authority.path}`,
+				);
+			}
+			for (const authorityCase of authorityCases) {
+				if (
+					authorityCase.status === "ACCEPTED" &&
+					identityByCase.get(authorityCase).surface === surfaceKey
+				) {
+					fail(
+						`${authorityCase.id} cannot be ACCEPTED on surface ${surfaceKey} while supersession authority ${authority.path} is not revoked`,
+					);
+				}
+			}
+		}
+	}
+	// Coverage guard: a surface that is still superseded must remain named by a
+	// registered record, so deleting its coverage is itself a detectable change.
+	// The guard is unconditional; it never consults revocation state.
+	const registeredSupersessionSurfaces = new Set(
+		supersessionAuthorities.flatMap((authority) => authority.surfaces),
+	);
+	for (const [surfaceKey, surface] of Object.entries(manifest.surfaces ?? {})) {
+		if (
+			supersededSurfaceAuthorityStatuses.has(surface?.status) &&
+			!registeredSupersessionSurfaces.has(surfaceKey)
+		) {
+			fail(`surface ${surfaceKey} has no registered supersession authority`);
+		}
 	}
 
 	const evidencePaths = new Set(availableEvidencePaths);
@@ -161,10 +488,11 @@ export function validateAuthorityRegistry({
 	};
 	if (
 		manifest.status === "ACCEPTED_CURRENT" &&
-		(!cases.length || cases.some((entry) => entry.status !== "ACCEPTED"))
+		(!authorityCases.length ||
+			authorityCases.some((entry) => entry.status !== "ACCEPTED"))
 	)
 		fail(
-			"Final visual authority requires every registered case to be ACCEPTED",
+			"Final visual authority requires every registered case to be ACCEPTED; superseded cases must be replaced by a new accepted case before final authority can be claimed",
 		);
 	const deviationById = new Map(
 		deviations.map((record) => [record.id, record]),
@@ -172,8 +500,7 @@ export function validateAuthorityRegistry({
 	if (deviationById.size !== deviations.length)
 		fail("Deviation IDs must be unique");
 	const caseIds = new Set();
-	const acceptedArtifacts = new Map();
-	for (const authorityCase of cases) {
+	for (const authorityCase of authorityCases) {
 		assertNonempty(authorityCase.id, "VisualAuthorityCase.id");
 		if (caseIds.has(authorityCase.id)) {
 			fail(`Duplicate visual-authority case: ${authorityCase.id}`);
@@ -205,20 +532,47 @@ export function validateAuthorityRegistry({
 				);
 			}
 		}
-		if (!["PLANNED", "ACCEPTED"].includes(authorityCase.status))
-			fail(`${authorityCase.id} has an unsupported status`);
+		if (!["PLANNED", "ACCEPTED", "SUPERSEDED"].includes(authorityCase.status))
+			fail(
+				`${authorityCase.id} has an unsupported status; expected PLANNED, ACCEPTED, or SUPERSEDED`,
+			);
 		if (
 			!["paper", "runtime-interpolation"].includes(authorityCase.comparisonMode)
 		)
 			fail(`${authorityCase.id} has an unsupported comparison mode`);
+		if (authorityCase.status === "SUPERSEDED") {
+			assertNonempty(
+				authorityCase.supersessionRecord,
+				`${authorityCase.id}.supersessionRecord`,
+			);
+			if (!supersessionByPath.has(authorityCase.supersessionRecord)) {
+				fail(
+					`${authorityCase.id} supersessionRecord is not a registered supersession authority: ${authorityCase.supersessionRecord}`,
+				);
+			}
+			assertNonempty(
+				authorityCase.routedArtifact?.path,
+				`${authorityCase.id}.routedArtifact.path`,
+			);
+			requireEvidence(
+				authorityCase.supersessionRecord,
+				`${authorityCase.id}.supersessionRecord`,
+			);
+			continue;
+		}
 		if (authorityCase.status !== "ACCEPTED") continue;
-		const surface = manifest.surfaces?.[authorityCase.surface];
+		const identity = identityByCase.get(authorityCase);
+		const surface = manifest.surfaces?.[identity.surface];
 		if (
 			!surface ||
-			authorityCase.paperReference.area !==
-				surfaceAuthorities[authorityCase.surface]
+			authorityCase.paperReference.area !== surfaceAuthorities[identity.surface]
 		)
 			fail(`${authorityCase.id} has an unregistered Paper family`);
+		if (!activeSurfaceAuthorityStatuses.has(surface.status)) {
+			fail(
+				`${authorityCase.id} cannot be ACCEPTED while surface ${identity.surface} is ${surface.status}`,
+			);
+		}
 
 		if (authorityCase.comparisonMode === "paper") {
 			assertNonempty(
@@ -265,13 +619,7 @@ export function validateAuthorityRegistry({
 			authorityCase.approvalRecord,
 			`${authorityCase.id}.approvalRecord`,
 		);
-		if (acceptedArtifacts.has(authorityCase.routedArtifact.path)) {
-			fail(
-				`${authorityCase.routedArtifact.path} is assigned to both ${acceptedArtifacts.get(authorityCase.routedArtifact.path)} and ${authorityCase.id}`,
-			);
-		}
-		acceptedArtifacts.set(authorityCase.routedArtifact.path, authorityCase.id);
-		if (authorityCase.ownerSection) {
+		if (identity.ownerSection) {
 			for (const landmark of requiredOwnerLandmarks) {
 				if (!authorityCase.landmarkContracts.includes(landmark)) {
 					fail(
@@ -299,9 +647,9 @@ export function validateAuthorityRegistry({
 	for (const requirement of requiredCoverage) {
 		for (const locale of ["ar", "en"]) {
 			for (const viewport of requirement.viewports) {
-				const match = cases.some(
+				const match = authorityCases.some(
 					(authorityCase) =>
-						authorityCase.surface === requirement.surface &&
+						identityByCase.get(authorityCase).surface === requirement.surface &&
 						authorityCase.state === requirement.state &&
 						authorityCase.locale === locale &&
 						authorityCase.comparisonMode ===
@@ -348,6 +696,20 @@ export function validateAuthorityRegistry({
 }
 
 export async function verifyVisualAuthorityRepository(root) {
+	// Identity normalization precedes every evidence read: contradictory
+	// authority claims fail before any acceptance logic can consume a raw,
+	// mutable classification field. Plainness and normalization come first:
+	// accessor-bearing cases are rejected, and every later read — identity,
+	// evidence collection, final byte checks, counts — consumes one data
+	// snapshot per case, never the raw possibly code-shaped object.
+	const authorityCases = visualAuthorityCases.map((authorityCase) => {
+		assertPlainAuthorityCase(undefined, authorityCase);
+		return structuredClone(authorityCase);
+	});
+	const authorityIdentities = authorityCases.map((authorityCase) => ({
+		authorityCase,
+		identity: resolveCaseAuthorityIdentity(authorityCase),
+	}));
 	const manifestPath = repositoryPath(root, manifestRelativePath);
 	const manifest = parseYaml(await readFile(manifestPath, "utf8"));
 	const manifestDirectory = path.dirname(manifestPath);
@@ -355,6 +717,7 @@ export async function verifyVisualAuthorityRepository(root) {
 		const bytes = await readFile(path.resolve(manifestDirectory, record.path));
 		verifyByteRecord(record, bytes, `Paper ${label}`);
 	}
+	await verifySupersessionAuthorities(root);
 
 	const deviationDirectory = path.join(manifestDirectory, "deviations");
 	const deviationFiles = (await readdir(deviationDirectory))
@@ -421,7 +784,7 @@ export async function verifyVisualAuthorityRepository(root) {
 			availableEvidencePaths.push(evidencePath);
 		}
 	};
-	for (const authorityCase of visualAuthorityCases.filter(
+	for (const authorityCase of authorityCases.filter(
 		(entry) => entry.status === "ACCEPTED",
 	)) {
 		await readEvidence(authorityCase.approvalRecord);
@@ -437,16 +800,27 @@ export async function verifyVisualAuthorityRepository(root) {
 				await readEvidence(deviation?.reviewEvidence?.[field]);
 		}
 	}
+	for (const { authorityCase, identity } of authorityIdentities) {
+		if (authorityCase.status !== "SUPERSEDED") continue;
+		// The normalized identity supplies the enforcement-owned standing
+		// decision for Owner cases; the raw record is only evidence for any
+		// non-Owner supersession.
+		await readEvidence(
+			identity.domain === "owner"
+				? identity.standingDecision
+				: authorityCase.supersessionRecord,
+		);
+	}
 	validateAuthorityRegistry({
 		availableEvidencePaths,
 		manifest,
-		cases: visualAuthorityCases,
+		cases: authorityCases,
 		canonicalArtifacts: screenshotFiles.map((file) => file.relative),
 		rejectedArtifacts: r05RejectedCanonicalArtifacts,
 		deviations,
 		requiredCoverage: [...requiredPaperCoverage, ...requiredRuntimeCoverage],
 	});
-	for (const authorityCase of visualAuthorityCases) {
+	for (const authorityCase of authorityCases) {
 		if (authorityCase.status !== "ACCEPTED") continue;
 		const relativeArtifactPath = path.posix.join(
 			baseline.path.replaceAll("\\", "/"),
@@ -460,7 +834,13 @@ export async function verifyVisualAuthorityRepository(root) {
 		);
 	}
 	return {
-		caseCount: visualAuthorityCases.length,
+		caseCount: authorityCases.length,
+		acceptedCaseCount: authorityCases.filter(
+			(entry) => entry.status === "ACCEPTED",
+		).length,
+		supersededCaseCount: authorityCases.filter(
+			(entry) => entry.status === "SUPERSEDED",
+		).length,
 		paperExportCount: collectLeafExports(manifest.surfaces).length,
 		rejectedArtifactCount: screenshotFiles.length,
 	};

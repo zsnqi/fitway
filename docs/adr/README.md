@@ -14,3 +14,4 @@ why and must not silently override them.
 | [ADR-006](ADR-006-visual-authority.md) | Approved theme, provenance, and per-phase polish model |
 | [ADR-007](ADR-007-paper-visual-source-of-truth.md) | Paper as visual source of truth, G3 ADAPTIVE GLASS, and the visual/behavioral split |
 | [ADR-008](ADR-008-staff-monitoring-only.md) | `/staff` is monitoring-only; staff command mutations retired, internal command infrastructure preserved |
+| [ADR-009](ADR-009-owner-composition-authority-supersession.md) | Owner composition authority superseded for redesign; prior Owner Paper/canonical composition is reference only |

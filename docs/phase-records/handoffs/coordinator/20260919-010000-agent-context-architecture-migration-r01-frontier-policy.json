@@ -1,0 +1,94 @@
+{
+	"schemaVersion": 1,
+	"kind": "frontier-evidence-policy-pointer",
+	"recordedAt": "2026-09-19T00:57:30+03:00",
+	"pinnedSnapshot": {
+		"path": "docs/phase-records/handoffs/coordinator/20260915-183000-design-agent-environment-repair-r01-frontier-preservation-pre-r02-anchor.json",
+		"sha256": "86e416a729208bdce28670c41fcf1feb5c55443f6e0443d46b4ea8d7969f2d41",
+		"companionPath": "docs/phase-records/handoffs/coordinator/20260915-183000-design-agent-environment-repair-r01-frontier-preservation-pre-r02-anchor.json.sha256"
+	},
+	"predecessor": {
+		"path": "docs/phase-records/handoffs/coordinator/20260915-183000-design-agent-environment-repair-r01-frontier-preservation.json",
+		"sha256": "18e17a34252864a598d485443f47a74762f45a7b36a03583597c4ea30420cc99",
+		"note": "the 20260918 r08 policy pointer is preserved byte-for-byte; this migration pointer supersedes it for live frontier checks while retaining the same pinned snapshot and predecessor manifest"
+	},
+	"repairOwnedExclusions": [
+		"PROJECT_STATE.yaml",
+		"package.json",
+		".gitignore",
+		"AGENTS.md",
+		"DESIGN_GUIDE.md",
+		"PHASES.md",
+		"docs/POLISH_BACKLOG.md",
+		"docs/WORKFLOW.md",
+		"docs/schemas/project-state.schema.json",
+		"scripts/verify-repository.mjs",
+		"visual-direction-gate/approved/APPROVAL_MANIFEST.yaml",
+		"visual-direction-gate/approved/paper-route-authority-20260902/AUTHORITY_MANIFEST.yaml",
+		"scripts/verify.mjs",
+		"tests/browser/staff-paper-fidelity.review.spec.ts",
+		"tests/browser/phase2.browser.spec.ts",
+		"scripts/check-owner-classes.mjs",
+		"scripts/check-owner-classes.test.ts",
+		"scripts/check-owner-spacing.mjs",
+		"scripts/check-owner-spacing.test.ts",
+		"scripts/owner-classes-allowlist.json",
+		"scripts/owner-spacing-baseline.json",
+		".impeccable/"
+	],
+	"transition": {
+		"recordedAt": "2026-09-19T00:57:30+03:00",
+		"addedExclusions": [
+			{
+				"path": "scripts/verify.mjs",
+				"reason": "the r04 round owns scripts/verify.mjs fast-ladder wiring for the trusted test-runtime gate and the frontier check; verification tooling, not product or UI content",
+				"pinnedSha256BeforeTransition": "8ebb454a13e7c31f048c6f5fbfdb2b0c1d314bfb3dfa815b451145f08439bcfe"
+			},
+			{
+				"path": "tests/browser/staff-paper-fidelity.review.spec.ts",
+				"reason": "the r08 round holds the human-authorized Staff test-reliability scope change recorded in the r08 frontier policy; this migration does not integrate that test",
+				"pinnedSha256BeforeTransition": "55ff7913da3dc070c77fe52ad9fa05b3b10ad9a0e0b1f8239e36c72b5970dc86"
+			},
+			{
+				"path": "tests/browser/phase2.browser.spec.ts",
+				"reason": "the r08 round holds the recorded phase2 clock-flush test-reliability scope change; this migration does not integrate that test",
+				"pinnedSha256BeforeTransition": "6dbe8f56e24357cf0c22459d82e534d37de4d4163fffe7e683ee9fce0f43fe03"
+			},
+			{
+				"path": "scripts/check-owner-classes.mjs",
+				"reason": "M1 integrates the already-active Owner class-contract validator because the trusted fast ladder requires it; it is verification infrastructure only and changes no Owner UI bytes",
+				"pinnedSha256BeforeTransition": "bbfc0b5c80e74fd683b8f94afd5b3a48ab7ffb690474bef3d1d0ff1dc05eabc5"
+			},
+			{
+				"path": "scripts/check-owner-classes.test.ts",
+				"reason": "M1 integrates the focused tests for the required Owner class-contract validator; it is verification infrastructure only",
+				"pinnedSha256BeforeTransition": "1d0e2669b5430cd21ece8c4c728606a4c4767d74c33f1560cb246add766c13a3"
+			},
+			{
+				"path": "scripts/check-owner-spacing.mjs",
+				"reason": "M1 integrates the already-active Owner spacing validator because the trusted fast ladder requires it; it is verification infrastructure only and changes no Owner UI bytes",
+				"pinnedSha256BeforeTransition": "f4329b233055ab29ba22821f1d4e958a84d46aeffd0652fa0453b9b4f942fa7a"
+			},
+			{
+				"path": "scripts/check-owner-spacing.test.ts",
+				"reason": "M1 integrates the focused tests for the required Owner spacing validator; it is verification infrastructure only",
+				"pinnedSha256BeforeTransition": "f88a964a71f79677d2054639508dd8206506196c8852b7be00711ba952284af6"
+			},
+			{
+				"path": "scripts/owner-classes-allowlist.json",
+				"reason": "M1 integrates the data dependency required by the Owner class-contract validator; it grants no design authority and changes no Owner UI bytes",
+				"pinnedSha256BeforeTransition": "5d79e506fd73b88c5740ef211f819085149271265eb057ec2be280998fdb9818"
+			},
+			{
+				"path": "scripts/owner-spacing-baseline.json",
+				"reason": "M1 integrates the data dependency required by the Owner spacing validator; it is lint evidence, not visual acceptance or baseline promotion",
+				"pinnedSha256BeforeTransition": "6f6e0fa4487f3eabb0e03ee3d0caf10377fc41ccf9d391ec63632dee30e04ef5"
+			}
+		],
+		"roundOpenVerification": {
+			"command": "& \"C:\\Program Files\\nodejs\\node.exe\" scripts/check-frontier-preservation.mjs",
+			"result": "Pending rerun after the M1 ownership transition; the coordinator verified every newly excluded path still matched its pinned pre-transition SHA-256 before writing this pointer.",
+			"note": "The 20260918 r08 policy pointer, pinned snapshot, companion, baseline listing, and predecessor manifest remain byte-unchanged. The six new exclusions are required verifier dependencies, not application or visual-authority changes."
+		}
+	}
+}
