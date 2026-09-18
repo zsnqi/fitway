@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-09-18T20:15:17+03:00"
+updatedAt: "2026-09-18T20:50:00+03:00"
 coordinator:
-  owner: "Primary coordinator and integrator for the completed 2026-09-18 phase3 clock-flush test-reliability successor (FITWAY_RUN_ID phase3_clock_flush_test_reliability_r01) on the preserved dirty frontier at HEAD 1a24a973570371949008a7a5f037c47b818c0e01. The exact two-call Playwright clock-flush repair and governance transition are independently verified and READY_FOR_INTEGRATION under the documented D4 carve-out: both full ladders remain red only on the exact same 11 pre-existing canonical screenshot mismatches, with zero functional, accessibility, or Phase 3 recurrence failures. No integration commit, product/design change, canonical promotion, or verify:full PASS claim is made."
+  owner: "Primary coordinator and integrator for the completed 2026-09-18 phase3 clock-flush test-reliability successor (FITWAY_RUN_ID phase3_clock_flush_test_reliability_r01). The independently verified candidate was integrated as ecc26a9eccad1c25e12667fd066af6e5caa155ae and is now DONE under the documented D4 carve-out: both full ladders remain red only on the exact same 11 pre-existing canonical screenshot mismatches, with zero functional, accessibility, or Phase 3 recurrence failures. The lease is released. No product/design change, canonical promotion, screenshot modification, or verify:full PASS claim is made."
   stateFilePolicy: "coordinator-only"
 baseline:
   status: "DONE"
@@ -21,7 +21,7 @@ baseline:
 milestones:
 
   phase3-clock-flush-test-reliability-r01:
-    status: READY_FOR_INTEGRATION
+    status: DONE
     dependencies: []
     ownerSession: "Primary coordinator and integrator for the 2026-09-18 phase3 clock-flush test-reliability successor (FITWAY_RUN_ID phase3_clock_flush_test_reliability_r01) on the preserved dirty frontier at HEAD 1a24a973570371949008a7a5f037c47b818c0e01, opened under the docs/WORKFLOW.md successor rule after design-environment-audit-remediation-r08 terminated FAILED_VALIDATION because the fresh frozen-install full ladder recurred the tests/browser/phase3.browser.spec.ts:57 failure at assertion line 97 (expect.poll 5000 ms, Expected true / Received false) after its preflight and the current full ladder passed it, exactly as r08 plan section R4.4 required. The execution contract is docs/phase-records/handoffs/coordinator/20260918-185500-phase3-clock-flush-test-reliability-r01-plan.md; the human coordinator's 2026-09-18 resume instruction authorized this narrow successor and directed implementation and independent verification to subagents with coordinator review. `dependencies` is deliberately empty: verify-repository.mjs refuses any ready status whose declared dependency is not DONE, and the failed predecessor is a lineage predecessor, not a prerequisite, so the successor relationship is disclosed here and in the r08 terminal record. The round owns exactly the two-call Playwright clock-flush repair in tests/browser/phase3.browser.spec.ts (fastForward(0) to fastForward(1) at the two delay-0 notify flushes), the r08 archive transition, and its coordinator records. The round open corrected the r08 independent-verification label that described the phase3 spec as frontier-protected: the pinned pre-r02 snapshot, baseline listing, and r01 predecessor manifest contain no phase3 record and the file is clean at HEAD, so no frontier-policy transition is required or authorized. The round performs no integration commit and no product, visual, canonical, Paper, authority, or Owner change; its terminal target is READY_FOR_INTEGRATION only after current and fresh full ladders, focused gates, and a fresh independent verification all pass."
     branch: codex/owner-distill-r01
@@ -40,12 +40,11 @@ milestones:
       - FITWAY_PRODUCT.md, SPEC.md, DESIGN_GUIDE.md, ADR-007, ADR-009, PHASES.md, Paper exports, authority manifests/mappings/hashes, and canonicals
       - prior handoffs, inventories, receipts, and history entries other than the r08 archive append
       - all Owner, Staff, or Public design or presentation work, and existing untracked user inspection artifacts
-    sharedLeases:
-      - "Coordinator lease through 2026-09-30T23:59:00+03:00: serialized phase3 clock-flush test-reliability repair and coordinator-record edits for the r08 successor"
+    sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: "2026-09-18T20:15:17+03:00"
-    leaseExpiresAt: 2026-09-30T23:59:00+03:00
-    handoff: docs/phase-records/handoffs/coordinator/20260918-201500-phase3-clock-flush-test-reliability-r01.md
+    lastHeartbeatAt: "2026-09-18T20:50:00+03:00"
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/coordinator/20260918-205000-phase3-clock-flush-test-reliability-r01-integration-closure.md
     stopReason: null
     gates:
       unit: PASS
@@ -54,7 +53,7 @@ milestones:
       accessibility: PASS
       visual: NOT_REQUIRED
       independentReview: PASS
-    integratedCommit: null
+    integratedCommit: ecc26a9eccad1c25e12667fd066af6e5caa155ae
     historyMutations:
       - operation: archive-terminal
         targetMilestoneId: design-environment-audit-remediation-r08

@@ -1,0 +1,90 @@
+{
+	"schemaVersion": 1,
+	"kind": "integration-closure-evidence",
+	"recordedAt": "2026-09-18T20:51:00+03:00",
+	"recordedAtBasis": "observed local timestamp; metadata only, not authoritative capture time",
+	"milestone": "phase3-clock-flush-test-reliability-r01",
+	"verdict": "DONE",
+	"repository": {
+		"branch": "codex/owner-distill-r01",
+		"worktree": "C:/Users/Pc Force/.codex/worktrees/6d57/phase5-staff-integration",
+		"candidateBaseHead": "1a24a973570371949008a7a5f037c47b818c0e01",
+		"integrationCommit": "ecc26a9eccad1c25e12667fd066af6e5caa155ae",
+		"stateAndEvidenceCommit": "the commit containing this evidence; reported by the closing coordinator to avoid a self-reference"
+	},
+	"integratedBoundary": {
+		"pathCount": 15,
+		"diffCheck": "PASS with no output before integration",
+		"productImplementationChanged": false,
+		"canonicalScreenshotChanged": false,
+		"visualAuthorityChanged": false,
+		"summary": "The verified successor boundary only: two Phase 3 Playwright clock flush arguments, the append-only r08 history transition and anchor retarget, and the successor's durable plan, verification, handoff, and evidence records."
+	},
+	"stateTransition": {
+		"from": "READY_FOR_INTEGRATION",
+		"to": "DONE",
+		"integratedCommit": "ecc26a9eccad1c25e12667fd066af6e5caa155ae",
+		"sharedLeasesReleased": true,
+		"visualGate": "NOT_REQUIRED",
+		"independentReview": "PASS"
+	},
+	"frozenFiles": [
+		{
+			"path": "PROJECT_STATE.yaml",
+			"bytes": 6389,
+			"sha256": "9a01e8251b9610ab241cc745310ed12993a54b8ef8c9855469b8197210a36d2d"
+		},
+		{
+			"path": "docs/phase-records/handoffs/coordinator/20260918-205000-phase3-clock-flush-test-reliability-r01-integration-closure.md",
+			"bytes": 3954,
+			"sha256": "43befa3769390699fe6a62c89bfef2d29faf9d72dc8523194292c816364f0f6e"
+		},
+		{
+			"path": "docs/phase-records/handoffs/coordinator/20260918-201600-phase3-clock-flush-test-reliability-r01-frozen-evidence.json",
+			"bytes": 10873,
+			"sha256": "5704b9a82270e68b467e564c25e25dc4174e4648e6e9c2b639d6a947fa8a189f",
+			"note": "Biome-only formatting identity after the integration pre-commit hook; executable hashes referenced by this inventory were unchanged."
+		},
+		{
+			"path": "docs/phase-records/handoffs/coordinator/20260918-201500-phase3-clock-flush-test-reliability-r01.md",
+			"bytes": 7900,
+			"sha256": "4befb603dc0b56ce930bb6872b146f63eb04f2152a173b7fba87bedeca5b0923"
+		},
+		{
+			"path": "docs/phase-records/handoffs/coordinator/20260918-200000-phase3-clock-flush-test-reliability-r01-independent-verification.md",
+			"bytes": 14784,
+			"sha256": "f25a6a19df3621286cd8e744328baeb5b5c09b8d9e52b7f3c3f758afa4aee05e"
+		}
+	],
+	"postTransitionHygiene": {
+		"repositoryInvariants": "PASS: 1 active milestone, 100 archived milestones; 99 anchored to 100 candidate, exactly r08 added, 0 removed, 0 modified",
+		"frontierPreservation": "PASS: 116 baseline entries, 110 non-excluded protected entries, 3 excluded protected entries, 105 additions informational",
+		"diffCheck": "PASS with no output",
+		"behavioralRerun": "Not repeated: the exact executable candidate hashes remained identical to the independently verified READY evidence; the post-integration writes are coordinator state, Markdown handoff, and this JSON evidence only."
+	},
+	"visualCarveOut": {
+		"currentFull": "11 failed / 3 skipped / 170 passed",
+		"freshFull": "11 failed / 3 skipped / 170 passed",
+		"classification": "the identical 11 pre-existing canonical screenshot mismatches; zero functional, accessibility, or Phase 3 recurrence failures",
+		"promotedOrModified": false,
+		"verifyFullPassClaimed": false,
+		"canonicalNames": [
+			"login-idle-ar-desktop-1440x900",
+			"login-service-route-en-320x720",
+			"owner-audit-route-ar-desktop-1440x900",
+			"owner-daily-route-ar-desktop-1440x900",
+			"owner-health-route-ar-desktop-1440x900",
+			"owner-settings-loading-route-en-desktop-1440x900",
+			"owner-settings-error-route-en-desktop-1440x900",
+			"owner-settings-route-en-desktop-1440x900",
+			"owner-shell-ar-desktop-1440x900",
+			"staff-closed-route-ar-mobile-390x844",
+			"staff-live-route-ar-desktop-1440x900"
+		]
+	},
+	"limitations": [
+		"This is repository-internal, co-mutable evidence; it does not authenticate authorship, host state, dependencies, human authority, or capture time.",
+		"The worktree retains unrelated pre-existing dirty Owner/UI and inspection artifacts outside these integration commits.",
+		"This closure is not visual acceptance and grants no authority to promote or replace the 11 canonical mismatches."
+	]
+}
