@@ -26,8 +26,6 @@
 		"deploy:check": "vercel deploy --dry",
 		"check": "biome check .",
 		"check:repository": "node scripts/verify-repository.mjs",
-		"check:owner-spacing": "node scripts/check-owner-spacing.mjs",
-		"check:owner-classes": "node scripts/check-owner-classes.mjs",
 		"check:design-context": "node scripts/check-design-context.mjs",
 		"check:frontier": "node scripts/check-frontier-preservation.mjs",
 		"check:test-runtime": "node scripts/check-test-runtime.mjs",

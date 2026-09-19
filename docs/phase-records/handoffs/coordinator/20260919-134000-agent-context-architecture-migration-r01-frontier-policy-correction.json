@@ -1,0 +1,64 @@
+{
+	"schemaVersion": 1,
+	"kind": "frontier-evidence-policy-pointer",
+	"recordedAt": "2026-09-19T13:40:00+03:00",
+	"m0BaseCommit": "19e28f4f0874d96569bc6944e38ad94b89924b60",
+	"supersedes": {
+		"path": "docs/phase-records/handoffs/coordinator/20260919-010000-agent-context-architecture-migration-r01-frontier-policy.json",
+		"sha256": "fb131bf6c5d3018c6180900c2d01f0eb02d3cef940a22791409660ab752d944b",
+		"reason": "The M1 clean-worktree fast ladder proved that the six Owner class/spacing validator files are coupled to the protected dirty Owner UI frontier. This successor reverses only those provisional exclusions; the superseded pointer remains immutable evidence."
+	},
+	"pinnedSnapshot": {
+		"path": "docs/phase-records/handoffs/coordinator/20260915-183000-design-agent-environment-repair-r01-frontier-preservation-pre-r02-anchor.json",
+		"sha256": "86e416a729208bdce28670c41fcf1feb5c55443f6e0443d46b4ea8d7969f2d41",
+		"companionPath": "docs/phase-records/handoffs/coordinator/20260915-183000-design-agent-environment-repair-r01-frontier-preservation-pre-r02-anchor.json.sha256"
+	},
+	"predecessor": {
+		"path": "docs/phase-records/handoffs/coordinator/20260915-183000-design-agent-environment-repair-r01-frontier-preservation.json",
+		"sha256": "18e17a34252864a598d485443f47a74762f45a7b36a03583597c4ea30420cc99",
+		"note": "The r08 predecessor manifest, pinned snapshot, companion, and baseline listing remain byte-unchanged. The superseded 20260919-010000 pointer is preserved separately and linked above."
+	},
+	"repairOwnedExclusions": [
+		"PROJECT_STATE.yaml",
+		"package.json",
+		".gitignore",
+		"AGENTS.md",
+		"DESIGN_GUIDE.md",
+		"PHASES.md",
+		"docs/POLISH_BACKLOG.md",
+		"docs/WORKFLOW.md",
+		"docs/schemas/project-state.schema.json",
+		"scripts/verify-repository.mjs",
+		"visual-direction-gate/approved/APPROVAL_MANIFEST.yaml",
+		"visual-direction-gate/approved/paper-route-authority-20260902/AUTHORITY_MANIFEST.yaml",
+		"scripts/verify.mjs",
+		"tests/browser/staff-paper-fidelity.review.spec.ts",
+		"tests/browser/phase2.browser.spec.ts",
+		".impeccable/"
+	],
+	"transition": {
+		"recordedAt": "2026-09-19T13:40:00+03:00",
+		"addedExclusions": [
+			{
+				"path": "scripts/verify.mjs",
+				"reason": "The r04 round owns scripts/verify.mjs fast-ladder wiring for the trusted test-runtime gate and frontier check; the Owner-specific validator steps are deferred by this successor.",
+				"pinnedSha256BeforeTransition": "8ebb454a13e7c31f048c6f5fbfdb2b0c1d314bfb3dfa815b451145f08439bcfe"
+			},
+			{
+				"path": "tests/browser/staff-paper-fidelity.review.spec.ts",
+				"reason": "The r08 round holds the human-authorized Staff test-reliability scope change recorded in the r08 frontier policy; this migration does not integrate that test.",
+				"pinnedSha256BeforeTransition": "55ff7913da3dc070c77fe52ad9fa05b3b10ad9a0e0b1f8239e36c72b5970dc86"
+			},
+			{
+				"path": "tests/browser/phase2.browser.spec.ts",
+				"reason": "The r08 round holds the recorded phase2 clock-flush test-reliability scope change; this migration does not integrate that test.",
+				"pinnedSha256BeforeTransition": "6dbe8f56e24357cf0c22459d82e534d37de4d4163fffe7e683ee9fce0f43fe03"
+			}
+		],
+		"roundOpenVerification": {
+			"command": "& \"C:\\Program Files\\nodejs\\node.exe\" scripts/check-frontier-preservation.mjs",
+			"result": "Pending authoritative rerun after the M1 clean-portability correction.",
+			"note": "The six Owner class/spacing validator, test, and data paths remain protected dirty-frontier work until integrated with their matching Owner UI. No Owner UI, canonical, or visual-acceptance bytes are included."
+		}
+	}
+}

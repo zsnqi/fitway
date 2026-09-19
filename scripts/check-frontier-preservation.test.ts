@@ -451,38 +451,32 @@ describe("real repository acceptance", () => {
 			})) as VerifyResult;
 			const output = spy.mock.calls.map((args) => args.join(" ")).join("\n");
 			expect(result.baselineEntryCount).toBe(116);
-			expect(result.protectedEntryCount).toBe(104);
-			expect(result.excludedEntryCount).toBe(9);
+			expect(result.protectedEntryCount).toBe(110);
+			expect(result.excludedEntryCount).toBe(3);
 			expect(result.excludedProtectedPaths).toEqual([
 				"scripts/verify.mjs",
 				"tests/browser/phase2.browser.spec.ts",
 				"tests/browser/staff-paper-fidelity.review.spec.ts",
-				"scripts/check-owner-classes.mjs",
-				"scripts/check-owner-classes.test.ts",
-				"scripts/check-owner-spacing.mjs",
-				"scripts/check-owner-spacing.test.ts",
-				"scripts/owner-classes-allowlist.json",
-				"scripts/owner-spacing-baseline.json",
 			]);
 			expect(result.pinnedSnapshotSha256).toBe(PIPELINE_PINNED_SNAPSHOT_SHA256);
 			expect(result.timestampsAuthoritative).toBe(false);
 			expect(result.recordedAt).toMatch(/^20\d{2}-\d{2}-\d{2}T/);
-			expect(result.protectedRecords).toHaveLength(104);
+			expect(result.protectedRecords).toHaveLength(110);
 			expect(output).toContain(PIPELINE_PINNED_SNAPSHOT_SHA256);
 			expect(output).toMatch(/timestampsAuthoritative: false/);
 			expect(output).toMatch(/not evidence of capture time/);
 			expect(output).not.toMatch(/captured at/i);
 			if (result.mode === "dirty") {
 				expect(output).toContain("116 baseline entries");
-				expect(output).toContain("104 non-excluded protected entries verified");
-				expect(output).toContain("9 excluded protected entries");
+				expect(output).toContain("110 non-excluded protected entries verified");
+				expect(output).toContain("3 excluded protected entries");
 				expect(output).toMatch(/additions are unconstrained/);
 				expect(output).toMatch(/recorded in snapshot/);
 			} else {
 				expect(result.baseCommit).toBe(M0_BASE_COMMIT);
 				expect(output).toContain("worktree is clean");
 				expect(output).toContain(
-					"104 non-excluded protected paths were not integrated",
+					"110 non-excluded protected paths were not integrated",
 				);
 			}
 		} finally {
@@ -500,8 +494,8 @@ describe("real repository acceptance", () => {
 			const output = spy.mock.calls.map((args) => args.join(" ")).join("\n");
 			expect(result.mode).toBe("clean-candidate");
 			expect(result.baseCommit).toBe(M0_BASE_COMMIT);
-			expect(result.protectedEntryCount).toBe(104);
-			expect(result.excludedEntryCount).toBe(9);
+			expect(result.protectedEntryCount).toBe(110);
+			expect(result.excludedEntryCount).toBe(3);
 			expect(output).toContain(
 				`not integrated relative to frozen M0 base ${M0_BASE_COMMIT}`,
 			);

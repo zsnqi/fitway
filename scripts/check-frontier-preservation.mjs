@@ -53,7 +53,7 @@ export const PIPELINE_PINNED_SNAPSHOT = Object.freeze({
 	sha256: PIPELINE_PINNED_SNAPSHOT_SHA256,
 });
 export const POINTER_DOCUMENT_PATH =
-	"docs/phase-records/handoffs/coordinator/20260919-010000-agent-context-architecture-migration-r01-frontier-policy.json";
+	"docs/phase-records/handoffs/coordinator/20260919-134000-agent-context-architecture-migration-r01-frontier-policy-correction.json";
 export const PREDECESSOR_MANIFEST_PATH =
 	"docs/phase-records/handoffs/coordinator/20260915-183000-design-agent-environment-repair-r01-frontier-preservation.json";
 // M0 froze the preserved source frontier immediately before the M1 portability
@@ -66,10 +66,10 @@ export const M0_BASE_COMMIT = "19e28f4f0874d96569bc6944e38ad94b89924b60";
 // tooling, not product or UI content. The r08 round owns two recorded
 // test-only test-reliability repairs under scope changes #1 and #2 in
 // tests/browser/staff-paper-fidelity.review.spec.ts and
-// tests/browser/phase2.browser.spec.ts. M1 of the agent-context architecture
-// migration additionally owns the six Owner class/spacing validator, test,
-// and data paths already required by the trusted fast ladder. They are
-// verification infrastructure and include no Owner UI or canonical bytes.
+// tests/browser/phase2.browser.spec.ts. M1 clean-worktree verification proved
+// that the six Owner class/spacing validator, test, and data paths are coupled
+// to the protected dirty Owner UI, so the successor policy leaves them in that
+// frontier until their owning workstream integrates them with the matching UI.
 // The pointer document must repeat this list exactly, so an exclusion cannot
 // be added or hidden without a code change.
 export const REPAIR_OWNED_EXCLUSIONS = Object.freeze([
@@ -88,12 +88,6 @@ export const REPAIR_OWNED_EXCLUSIONS = Object.freeze([
 	"scripts/verify.mjs",
 	"tests/browser/staff-paper-fidelity.review.spec.ts",
 	"tests/browser/phase2.browser.spec.ts",
-	"scripts/check-owner-classes.mjs",
-	"scripts/check-owner-classes.test.ts",
-	"scripts/check-owner-spacing.mjs",
-	"scripts/check-owner-spacing.test.ts",
-	"scripts/owner-classes-allowlist.json",
-	"scripts/owner-spacing-baseline.json",
 	".impeccable/",
 ]);
 

@@ -421,14 +421,6 @@ function fastSteps(callerIdentity) {
 			"Owner token fidelity",
 			["exec", "node", "scripts/check-owner-tokens.mjs"],
 		],
-		[
-			"Owner spacing scale",
-			["exec", "node", "scripts/check-owner-spacing.mjs"],
-		],
-		[
-			"Owner class contracts",
-			["exec", "node", "scripts/check-owner-classes.mjs"],
-		],
 		["Type checks", ["check-types"]],
 		["Unit tests", () => runVitestArgs(["run"], "vitest.config.ts")],
 		["Python simulator tests", ["test:simulator"]],
