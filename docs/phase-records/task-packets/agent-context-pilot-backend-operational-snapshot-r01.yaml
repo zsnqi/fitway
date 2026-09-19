@@ -1,0 +1,118 @@
+schemaVersion: 1
+milestoneId: agent-context-pilot-backend-operational-snapshot-r01
+taskClass: backend-api-data
+packetStatus: DRAFT
+stateRef: PROJECT_STATE.yaml#/milestones/agent-context-pilot-backend-operational-snapshot-r01
+baseCommit: 7e79de90c52adb60127b3dfd57c88013985bbfc1
+task:
+  objective: Read-only rehearsal of the existing Staff operationalSnapshot DTO, repository, procedure, and focused evidence without changing product or implementation behavior.
+  acceptanceCriteria:
+    - A fresh agent discovers this packet from active state and identifies the exact canonical authorities, bounded implementation sources, conditional triggers, and stop conditions.
+    - Focused unit and disposable-Postgres phase4-health evidence confirm the existing DTO shape, role boundary, fresh/stale/unavailable semantics, rejected-write immutability, and public privacy exclusions.
+    - Repository status is unchanged by task execution apart from the coordinator-owned evidence receipt.
+  explicitExclusions:
+    - Any DTO, API, repository, migration, database, authentication, or product-semantic change.
+    - Any Public, Staff, Login, or Owner UI change.
+    - Any read of historical material unless a registered conditional trigger is actually reached.
+scope:
+  ownedPaths:
+    - docs/phase-records/handoffs/coordinator/20260919-190000-agent-context-pilot-backend-operational-snapshot-r01-evidence.md
+  forbiddenPaths:
+    - apps/** and packages/** are read-only; no implementation or test bytes may change
+    - PROJECT_STATE_HISTORY.yaml and all existing historical records
+    - database migrations, public payloads, command/correction/reset behavior, UI, screenshots, Paper artifacts, and visual authority
+  sharedLeases: []
+authorities:
+  required:
+    - role: product
+      path: FITWAY_PRODUCT.md
+      selector: { kind: markdown-heading, value: "Surface boundaries" }
+      reason: Preserve the user and surface boundary.
+    - role: spec
+      path: SPEC.md
+      selector: { kind: markdown-heading, value: "Architecture & Schema" }
+      reason: Use canonical backend and schema semantics.
+    - role: contract
+      path: docs/schemas/project-state.schema.json
+      selector: { kind: json-pointer, value: "/properties/milestones" }
+      reason: Resolve the structured active-task contract used to discover this rehearsal.
+    - role: adr
+      path: docs/adr/ADR-003-edge-authority-and-reconciliation.md
+      selector: { kind: markdown-heading, value: "Decision" }
+      reason: Preserve the edge-authority and reconciliation boundary exercised by health state.
+    - role: workflow
+      path: docs/WORKFLOW.md
+      selector: { kind: markdown-heading, value: "Verification ladder" }
+      reason: Run the required execution and verification gates.
+    - role: test
+      path: scripts/verify-repository.mjs
+      selector: { kind: whole-file, value: "" }
+      reason: Confirm repository invariants remain executable.
+    - role: adr
+      path: docs/adr/ADR-002-auth-principals-sessions.md
+      selector: { kind: markdown-heading, value: "Decision" }
+      reason: The rehearsal explicitly verifies Staff role enforcement.
+    - role: spec
+      path: SPEC.md
+      selector: { kind: markdown-heading, value: "Interfaces & Contracts" }
+      reason: The rehearsal explicitly inspects the reviewed operationalSnapshot DTO.
+    - role: adr
+      path: docs/adr/ADR-008-staff-monitoring-only.md
+      selector: { kind: markdown-heading, value: "Decision" }
+      reason: Preserve the monitoring-only boundary and prohibit command affordances.
+    - role: contract
+      path: packages/api/src/health/snapshot.ts
+      selector: { kind: whole-file, value: "" }
+      reason: Bounded implementation contract for DTO construction and freshness semantics; not a new authority.
+    - role: contract
+      path: apps/server/src/health-repository.ts
+      selector: { kind: whole-file, value: "" }
+      reason: Bounded read-only repository contract under review; not a new authority.
+    - role: contract
+      path: packages/api/src/routers/index.ts
+      selector: { kind: whole-file, value: "" }
+      reason: Bounded monitoring-only procedure and output-schema evidence; not a new authority.
+    - role: test
+      path: packages/api/src/health/snapshot.test.ts
+      selector: { kind: whole-file, value: "" }
+      reason: Focused unit evidence for DTO state semantics.
+    - role: test
+      path: apps/server/src/phase4-health.integration.test.ts
+      selector: { kind: whole-file, value: "" }
+      reason: Focused disposable-Postgres evidence for role, privacy, rejection, and freshness behavior.
+  conditional:
+    - trigger: the change handles credentials, roles, or personal data
+      role: adr
+      path: docs/adr/ADR-002-auth-principals-sessions.md
+      selector: { kind: markdown-heading, value: "Decision" }
+      actionIfTriggered: READ
+    - trigger: the change alters a reviewed migration or DTO
+      role: spec
+      path: SPEC.md
+      selector: { kind: markdown-heading, value: "Interfaces & Contracts" }
+      actionIfTriggered: READ
+continuity:
+  predecessorMilestones:
+    - agent-context-architecture-migration-r01
+  currentHandoff: docs/phase-records/handoffs/coordinator/20260919-174000-agent-context-architecture-migration-r01-m3-pilot-kickoff.md
+  unresolvedDecisions: []
+verification:
+  profile: phase4-health plus focused operationalSnapshot unit tests
+  orderedGates:
+    - strict packet/state/selector/hash validation
+    - focused operationalSnapshot unit tests
+    - registered phase4-health disposable-Postgres verification
+    - repository invariants and unchanged-status comparison
+    - independent fresh-agent review
+  independentReviewRequired: true
+evidence:
+  receiptTemplate: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
+  requiredArtifacts:
+    - exact packet/state hash and context:show output
+    - authoritative focused unit output
+    - registered phase4-health disposable-Postgres output
+    - pre/post repository-status comparison
+    - fresh-agent discovery and independent-review verdict
+limitations:
+  - This rehearsal changes no backend or product behavior and cannot prove behavior outside the named operationalSnapshot path.
+  - No visual evidence is required or claimed.

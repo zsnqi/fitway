@@ -1,0 +1,155 @@
+schemaVersion: 1
+milestoneId: agent-context-pilot-ui-login-r01
+taskClass: ui-maintenance
+packetStatus: DRAFT
+stateRef: PROJECT_STATE.yaml#/milestones/agent-context-pilot-ui-login-r01
+baseCommit: 7e79de90c52adb60127b3dfd57c88013985bbfc1
+task:
+  objective: Read-only rehearsal of the existing Login route, RTL/LTR, accessibility, responsive, and named visual evidence without changing UI or visual authority.
+  acceptanceCriteria:
+    - A fresh agent discovers this packet from active state and identifies the Login authorities, bounded source/test evidence, Paper conditional, and Owner exclusion without loading history by default.
+    - The focused Login browser profile confirms responsive RTL/LTR states, keyboard/accessibility behavior, operational-state truth, and the named Arabic desktop frame.
+    - Exact current/reference frame hashes are validated and visually inspected without promoting or changing any baseline.
+  explicitExclusions:
+    - Any UI, copy, interaction, responsive, accessibility, or visual-authority change.
+    - Any screenshot, Paper artifact, manifest, canonical, Owner surface, or Staff surface change.
+    - Any use of the known English mobile difference as an approval or promotion claim.
+scope:
+  ownedPaths:
+    - docs/phase-records/handoffs/coordinator/20260919-190500-agent-context-pilot-ui-login-r01-evidence.md
+  forbiddenPaths:
+    - apps/** and tests/browser/** are read-only; no implementation, test, or screenshot bytes may change
+    - visual-direction-gate/**, design-research/**, Paper artifacts, manifests, canonicals, and visual authority records
+    - all Owner and Staff source, evidence, preserved candidates, and unrelated handoffs
+    - PROJECT_STATE_HISTORY.yaml and all existing historical records
+  sharedLeases: []
+authorities:
+  required:
+    - role: product
+      path: FITWAY_PRODUCT.md
+      selector: { kind: markdown-heading, value: "Operational states" }
+      reason: Preserve state truth and false-live rules.
+    - role: spec
+      path: SPEC.md
+      selector: { kind: markdown-heading, value: "Acceptance Criteria" }
+      reason: Preserve behavior and accessibility acceptance.
+    - role: design
+      path: DESIGN_GUIDE.md
+      selector: { kind: markdown-heading, value: "8. Responsive contract" }
+      reason: Use the current responsive, RTL, interaction, and accessibility contract.
+    - role: visual-status
+      path: docs/design/VISUAL_AUTHORITY_STATUS.md
+      selector: { kind: markdown-heading, value: "Register" }
+      reason: Resolve Login's active Paper composition authority.
+    - role: visual-status
+      path: visual-direction-gate/approved/APPROVAL_MANIFEST.yaml
+      selector: { kind: yaml-key, value: "paperAuthority" }
+      reason: Resolve the approved visual baseline and its route-authority manifest pointer.
+    - role: visual-status
+      path: visual-direction-gate/approved/paper-route-authority-20260902/AUTHORITY_MANIFEST.yaml
+      selector: { kind: yaml-key, value: "surfaces.login" }
+      reason: Resolve the exact accepted Login route entry and stored evidence hashes.
+    - role: visual-status
+      path: docs/design/PAPER_GUIDE_CONFLICT_MAP.md
+      selector: { kind: whole-file, value: "" }
+      reason: Preserve the reviewed Login Paper-versus-accessibility hover resolution.
+    - role: design
+      path: docs/design/ACTIVE_DESIGN_PACKET_TEMPLATE.md
+      selector: { kind: markdown-heading, value: "Paper availability/provenance" }
+      reason: Preserve the compatibility rule for live-Paper availability and stored-export provenance during the pilot.
+    - role: workflow
+      path: docs/WORKFLOW.md
+      selector: { kind: markdown-heading, value: "Phase UI polish loop" }
+      reason: Run the required browser, accessibility, and visual checks.
+    - role: test
+      path: scripts/verify.mjs
+      selector: { kind: whole-file, value: "" }
+      reason: Use the registered verification runner and profiles.
+    - role: adr
+      path: docs/adr/ADR-007-paper-visual-source-of-truth.md
+      selector: { kind: markdown-heading, value: "Authority split" }
+      reason: Login is Paper-controlled according to the active visual register.
+    - role: design
+      path: apps/web/src/routes/login.tsx
+      selector: { kind: whole-file, value: "" }
+      reason: Bounded Login route implementation evidence under the governing design authorities; not a new authority.
+    - role: design
+      path: apps/web/src/components/login/login-chrome.tsx
+      selector: { kind: whole-file, value: "" }
+      reason: Bounded Login structure evidence under the governing design authorities; not a new authority.
+    - role: design
+      path: apps/web/src/components/login/login.css
+      selector: { kind: whole-file, value: "" }
+      reason: Bounded responsive and bidirectional implementation evidence; not a new authority.
+    - role: test
+      path: tests/browser/login-paper-adoption.browser.spec.ts
+      selector: { kind: whole-file, value: "" }
+      reason: Focused browser, responsive, keyboard, accessibility, and screenshot evidence.
+  conditional:
+    - trigger: the route or surface is Owner
+      role: adr
+      path: docs/adr/ADR-009-owner-composition-authority-supersession.md
+      selector: { kind: markdown-heading, value: "Decision" }
+      actionIfTriggered: READ
+    - trigger: the surface has a Paper-controlled status
+      role: adr
+      path: docs/adr/ADR-007-paper-visual-source-of-truth.md
+      selector: { kind: markdown-heading, value: "Authority split" }
+      actionIfTriggered: READ
+continuity:
+  predecessorMilestones:
+    - agent-context-architecture-migration-r01
+  currentHandoff: docs/phase-records/handoffs/coordinator/20260919-174000-agent-context-architecture-migration-r01-m3-pilot-kickoff.md
+  unresolvedDecisions: []
+verification:
+  profile: focused Login Playwright corroboration plus authoritative migration fast/full ladders
+  orderedGates:
+    - strict packet/state/selector/frame-hash validation
+    - pnpm check:design-context
+    - focused Login browser and responsive verification
+    - accessibility verification
+    - exact named-frame perceptual inspection
+    - authoritative migration fast and full verification ladders
+    - independent fresh-agent review
+  independentReviewRequired: true
+evidence:
+  receiptTemplate: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
+  requiredArtifacts:
+    - exact packet/state hash and context:show output
+    - design-context check output
+    - focused Login browser/accessibility output
+    - exact current/reference frame hashes and named-frame inspection verdict
+    - pre/post repository-status comparison
+    - fresh-agent discovery and independent-review verdict
+limitations:
+  - This rehearsal changes no Login behavior or visual authority and does not approve the known English mobile frame difference.
+  - The named Arabic desktop current/reference frames are exact-hash equal, but hash equality is not a substitute for the required explicit visual inspection.
+  - Live Paper tooling is unavailable in this session; stored provenance is the route-authority manifest updated 2026-09-08T02:50:32Z and its exact approved Login evidence path.
+  - The focused Login Playwright run is corroboration only; authoritative migration acceptance comes from the directly invoked repository verification ladder.
+visual:
+  surfaceKey: login
+  authorityStatus: ACTIVE
+  authorityKey: login
+  governingDecision: docs/adr/ADR-007-paper-visual-source-of-truth.md#authority-split
+  currentFrames:
+    - path: tests/browser/__screenshots__/win32/chromium/login-paper-adoption.browser.spec.ts/login-idle-ar-desktop-1440x900.png
+      sha256: 81f00333dcc42f4a2741659cd474f58e0517fcc90d53580eab07a74a929d69af
+  referenceFrames:
+    - path: visual-direction-gate/approved/paper-route-authority-20260902/evidence/login/login-idle-ar-desktop-1440x900.png
+      sha256: 81f00333dcc42f4a2741659cd474f58e0517fcc90d53580eab07a74a929d69af
+  openHumanDecisions: []
+  paperAvailability: UNAVAILABLE
+  perceptualGate:
+    status: PENDING
+    criteria: Explicit inspection of the named Arabic desktop implementation and Paper reference frames.
+  promotionGate:
+    status: PENDING
+    criteria: No promotion is authorized; the coordinator must record NOT_REQUIRED after confirming that the rehearsal changes no visual bytes or authority.
+  acceptanceAuthority: PAPER
+designContextCheck:
+  command: pnpm check:design-context
+  status: PENDING
+  artifact: null
+accessibilityGate:
+  status: PENDING
+  criteria: Focused Login browser evidence has no serious or critical Axe violation and preserves keyboard order, focus, target size, and zoom behavior.

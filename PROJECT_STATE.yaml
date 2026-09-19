@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 1
-updatedAt: "2026-09-19T15:55:00+03:00"
+updatedAt: "2026-09-19T17:45:00+03:00"
 coordinator:
   owner: "Primary coordinator and integrator for agent-context-architecture-migration-r01."
   stateFilePolicy: "coordinator-only"
@@ -41,9 +41,9 @@ milestones:
     sharedLeases:
       - coordinator-exclusive root routing, state/history, package/verification, and migration-record surfaces
     validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-09-19T15:55:00+03:00"
+    lastHeartbeatAt: "2026-09-19T17:45:00+03:00"
     leaseExpiresAt: "2026-09-20T02:55:00+03:00"
-    handoff: docs/phase-records/handoffs/coordinator/20260919-155500-agent-context-architecture-migration-r01-m2-closure.md
+    handoff: docs/phase-records/handoffs/coordinator/20260919-174000-agent-context-architecture-migration-r01-m3-pilot-kickoff.md
     stopReason: null
     gates:
       unit: PASS
@@ -52,6 +52,69 @@ milestones:
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
       independentReview: PASS
+    integratedCommit: null
+
+  agent-context-pilot-backend-operational-snapshot-r01:
+    status: PLANNED
+    taskClass: backend-api-data
+    taskPacket: docs/phase-records/task-packets/agent-context-pilot-backend-operational-snapshot-r01.yaml
+    taskPacketSha256: 59625278375b7d11b5e603bc5d99b1c3abc58dfda5254aacb9a7ef2039b24559
+    dependencies: []
+    ownerSession: "Fresh-agent read-only M3 backend rehearsal; no worker lease or implementation authority."
+    branch: null
+    worktree: null
+    baseCommit: 7e79de90c52adb60127b3dfd57c88013985bbfc1
+    ownedPaths:
+      - docs/phase-records/handoffs/coordinator/20260919-190000-agent-context-pilot-backend-operational-snapshot-r01-evidence.md
+    forbiddenPaths:
+      - apps/** and packages/** are read-only; no implementation or test bytes may change
+      - PROJECT_STATE_HISTORY.yaml and all existing historical records
+      - database migrations, public payloads, command/correction/reset behavior, UI, screenshots, Paper artifacts, and visual authority
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/coordinator/20260919-174000-agent-context-architecture-migration-r01-m3-pilot-kickoff.md
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null
+
+  agent-context-pilot-ui-login-r01:
+    status: PLANNED
+    taskClass: ui-maintenance
+    taskPacket: docs/phase-records/task-packets/agent-context-pilot-ui-login-r01.yaml
+    taskPacketSha256: 455ee3c0f90162c466e93d42da67eed7811ed65f1f8adffb2a8e0a1ca584ecac
+    dependencies: []
+    ownerSession: "Fresh-agent read-only M3 Login rehearsal; no worker lease or implementation authority."
+    branch: null
+    worktree: null
+    baseCommit: 7e79de90c52adb60127b3dfd57c88013985bbfc1
+    ownedPaths:
+      - docs/phase-records/handoffs/coordinator/20260919-190500-agent-context-pilot-ui-login-r01-evidence.md
+    forbiddenPaths:
+      - apps/** and tests/browser/** are read-only; no implementation, test, or screenshot bytes may change
+      - visual-direction-gate/**, design-research/**, Paper artifacts, manifests, canonicals, and visual authority records
+      - all Owner and Staff source, evidence, preserved candidates, and unrelated handoffs
+      - PROJECT_STATE_HISTORY.yaml and all existing historical records
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/coordinator/20260919-174000-agent-context-architecture-migration-r01-m3-pilot-kickoff.md
+    stopReason: null
+    gates:
+      unit: NOT_REQUIRED
+      integration: NOT_REQUIRED
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
     integratedCommit: null
 
   phase3-clock-flush-test-reliability-r01:
