@@ -529,16 +529,29 @@ async function checkHistoricalPointers({
 			continue;
 		const recordPath = `${HISTORY_FILE}#/milestones/${milestoneId}/handoff`;
 		const details = await inspectPath(root, milestone.handoff);
-		if (details.exists) {
-			// Historical records are immutable provenance. A preserved dirty frontier may carry
-			// an existing target outside the current candidate index; only missing targets use
-			// the explicit exception policy below.
+		const exception = exceptionByRecord.get(recordPath);
+		if (!checkTracked && details.exists && exception) {
+			seenBroken.add(recordPath);
+			warnings.push(
+				`historical pointer exception admitted without tracking classification: ${recordPath} -> ${milestone.handoff}`,
+			);
 			continue;
 		}
-		const exception = exceptionByRecord.get(recordPath);
+		const targetIsTracked =
+			details.exists &&
+			(!checkTracked || trackedPath(root, details.normalized));
+		if (targetIsTracked) {
+			// Historical records are immutable provenance. A target that is present in the
+			// candidate index keeps the current stale-exception behavior. When tracking checks
+			// are disabled, existence is the only meaningful fixture signal.
+			continue;
+		}
 		if (!exception) {
+			const targetState = details.exists
+				? "untracked target"
+				: "missing target";
 			errors.push(
-				`historical handoff ${recordPath}: missing target ${milestone.handoff} has no exception`,
+				`historical handoff ${recordPath}: ${targetState} ${milestone.handoff} has no exception`,
 			);
 			continue;
 		}
@@ -552,7 +565,7 @@ async function checkHistoricalPointers({
 			);
 		}
 		warnings.push(
-			`historical pointer exception admitted: ${recordPath} -> ${milestone.handoff}`,
+			`${details.exists ? "historical pointer exception admitted for untracked target" : "historical pointer exception admitted"}: ${recordPath} -> ${milestone.handoff}`,
 		);
 		if (exception.replacement) {
 			await validatePathReference({
@@ -580,7 +593,9 @@ async function checkHistoricalPointers({
 		}
 		const target = history.milestones[match[1]]?.handoff;
 		const details = await inspectPath(root, target);
-		if (details.exists)
+		const targetIsTracked =
+			checkTracked && details.exists && trackedPath(root, details.normalized);
+		if (targetIsTracked)
 			errors.push(
 				`historical pointer exception is stale; target now exists: ${target}`,
 			);

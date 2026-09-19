@@ -247,6 +247,34 @@ function isolateFixtureHistory(root: string): void {
 	);
 }
 
+function isolateFixtureToHistoricalPointer(
+	root: string,
+	handoff: string,
+): void {
+	isolateFixtureHistory(root);
+	const historyPath = path.resolve(root, "PROJECT_STATE_HISTORY.yaml");
+	const history = parseYaml(readFileSync(historyPath, "utf8")) as JsonObject;
+	history.milestones = { "phase10-ui-csv": { handoff } };
+	writeFileSync(historyPath, stringifyYaml(history), "utf8");
+	writeFixtureFile(
+		root,
+		"docs/agent-context/HISTORY_POINTER_EXCEPTIONS.yaml",
+		stringifyYaml({
+			schemaVersion: 1,
+			exceptions: [
+				{
+					recordPath:
+						"PROJECT_STATE_HISTORY.yaml#/milestones/phase10-ui-csv/handoff",
+					brokenTarget: handoff,
+					reason: "Test historical pointer exception.",
+					disposition: "Preserve the immutable record.",
+					reviewer: "test",
+				},
+			],
+		}),
+	);
+}
+
 function fixtureRoute(
 	root: string,
 	taskClass: string,
@@ -430,6 +458,48 @@ describe("check-agent-context", () => {
 				(error) =>
 					error.includes("phase10-ui-csv/handoff") &&
 					error.includes("no exception"),
+			),
+		).toBe(true);
+	});
+
+	it("admits an existing but untracked historical target through its exception", async () => {
+		const root = makeFixture();
+		const target =
+			"docs/phase-records/handoffs/phase10-ui-csv/20260816-153500-p10_ui_csv_b02-failure-diagnosis-correction.md";
+		isolateFixtureToHistoricalPointer(root, target);
+		initTrackedFixture(root);
+		writeFixtureFile(root, target, "# Protected historical handoff\n");
+		const result = await checkAgentContext({ root, checkTracked: true });
+		expect(result.ok).toBe(true);
+		expect(
+			result.warnings.some(
+				(warning) =>
+					warning.includes("admitted for untracked target") &&
+					warning.includes("phase10-ui-csv/handoff"),
+			),
+		).toBe(true);
+		expect(
+			result.errors.some((error) =>
+				error.includes("historical pointer exception is stale"),
+			),
+		).toBe(false);
+	});
+
+	it("marks a historical pointer exception stale once its target is tracked", async () => {
+		const root = makeFixture();
+		const target =
+			"docs/phase-records/handoffs/phase10-ui-csv/20260816-153500-p10_ui_csv_b02-failure-diagnosis-correction.md";
+		isolateFixtureToHistoricalPointer(root, target);
+		initTrackedFixture(root);
+		writeFixtureFile(root, target, "# Tracked historical handoff\n");
+		execFileSync("git", ["add", "--", target], { cwd: root, stdio: "ignore" });
+		const result = await checkAgentContext({ root, checkTracked: true });
+		expect(result.ok).toBe(false);
+		expect(
+			result.errors.some(
+				(error) =>
+					error.includes("historical pointer exception is stale") &&
+					error.includes(target),
 			),
 		).toBe(true);
 	});
