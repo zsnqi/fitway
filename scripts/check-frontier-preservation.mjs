@@ -33,7 +33,8 @@
 // predecessor manifest, or the baseline listing.
 //
 // Usage:
-//   node scripts/check-frontier-preservation.mjs
+//   node scripts/check-frontier-preservation.mjs [auto-selects dirty or clean-candidate mode]
+//   node scripts/check-frontier-preservation.mjs --clean-candidate <base-commit>
 //   node scripts/check-frontier-preservation.mjs --generate <new-path>
 
 import { execFileSync, spawnSync } from "node:child_process";
@@ -55,6 +56,10 @@ export const POINTER_DOCUMENT_PATH =
 	"docs/phase-records/handoffs/coordinator/20260919-010000-agent-context-architecture-migration-r01-frontier-policy.json";
 export const PREDECESSOR_MANIFEST_PATH =
 	"docs/phase-records/handoffs/coordinator/20260915-183000-design-agent-environment-repair-r01-frontier-preservation.json";
+// M0 froze the preserved source frontier immediately before the M1 portability
+// candidate. Clean-candidate verification is intentionally anchored to this
+// immutable commit rather than to the candidate's current parent or HEAD.
+export const M0_BASE_COMMIT = "19e28f4f0874d96569bc6944e38ad94b89924b60";
 
 // The r04 round owns fast-ladder wiring in scripts/verify.mjs (the trusted
 // test-runtime gate and the frontier check itself); it is verification
@@ -105,10 +110,39 @@ export function sha256(bytes) {
 	return createHash("sha256").update(bytes).digest("hex");
 }
 
+function matchHistoricalTextHash(bytes, expectedSha256) {
+	const exactSha256 = sha256(bytes);
+	if (exactSha256 === expectedSha256) {
+		return { matchedSha256: exactSha256, compatibility: "exact" };
+	}
+	// The preserved pre-r02 baseline was recorded from a Windows CRLF worktree,
+	// while Git stores and cleanly checks out the text as LF under .gitattributes.
+	// Accept only that deterministic line-ending projection; all other byte drift
+	// remains a failure and the output states that this is not byte identity.
+	if (!bytes.includes(0x0d)) {
+		const recordedWindowsBytes = Buffer.from(
+			bytes.toString("utf8").replace(/\n/g, "\r\n"),
+			"utf8",
+		);
+		if (sha256(recordedWindowsBytes) === expectedSha256) {
+			return {
+				matchedSha256: expectedSha256,
+				compatibility: "git-lf-to-recorded-crlf",
+			};
+		}
+	}
+	return { matchedSha256: exactSha256, compatibility: "none" };
+}
+
 function isExcludedBy(exclusions, relativePath) {
-	return (
-		exclusions.includes(relativePath) || exclusions.includes(`${relativePath}/`)
-	);
+	const normalizedPath = relativePath.replace(/\/+$/, "");
+	return exclusions.some((entry) => {
+		const normalizedEntry = entry.replace(/\/+$/, "");
+		return (
+			normalizedPath === normalizedEntry ||
+			normalizedPath.startsWith(`${normalizedEntry}/`)
+		);
+	});
 }
 
 function isRepairOwned(relativePath) {
@@ -165,6 +199,149 @@ function readCurrentStatus(root) {
 		}),
 		"Current git status",
 	);
+}
+
+function assertCleanCandidateBase(root, baseCommit) {
+	if (typeof baseCommit !== "string" || baseCommit.length === 0) {
+		fail(
+			`Clean-candidate mode requires the frozen M0 base commit ${M0_BASE_COMMIT}`,
+		);
+	}
+	if (!/^[0-9a-f]{40}$/.test(baseCommit)) {
+		fail(
+			`Clean-candidate base commit is invalid: ${JSON.stringify(baseCommit)}; expected the frozen M0 commit ${M0_BASE_COMMIT}`,
+		);
+	}
+	if (baseCommit !== M0_BASE_COMMIT) {
+		fail(
+			`Clean-candidate base commit ${baseCommit} is not the frozen M0 base commit ${M0_BASE_COMMIT}`,
+		);
+	}
+
+	const resolved = spawnSync(
+		"git",
+		["rev-parse", "--verify", `${baseCommit}^{commit}`],
+		{ cwd: root, encoding: "utf8" },
+	);
+	if (resolved.error) {
+		fail(
+			`Unable to resolve clean-candidate base commit ${baseCommit}: ${resolved.error.message}`,
+		);
+	}
+	if (resolved.status !== 0) {
+		const detail = resolved.stderr ? resolved.stderr.trim() : "";
+		fail(
+			`Clean-candidate base commit ${baseCommit} is missing or is not a commit${detail ? `: ${detail}` : ""}`,
+		);
+	}
+	const resolvedCommit = resolved.stdout.trim().toLowerCase();
+	if (resolvedCommit !== baseCommit) {
+		fail(
+			`Clean-candidate base commit resolved unexpectedly: requested ${baseCommit}, got ${resolvedCommit}`,
+		);
+	}
+
+	const head = spawnSync("git", ["rev-parse", "--verify", "HEAD^{commit}"], {
+		cwd: root,
+		encoding: "utf8",
+	});
+	if (head.error) {
+		fail(`Unable to resolve clean-candidate HEAD: ${head.error.message}`);
+	}
+	if (head.status !== 0) {
+		const detail = head.stderr ? head.stderr.trim() : "";
+		fail(
+			`Clean-candidate HEAD is missing or is not a commit${detail ? `: ${detail}` : ""}`,
+		);
+	}
+
+	const ancestry = spawnSync(
+		"git",
+		["merge-base", "--is-ancestor", baseCommit, "HEAD"],
+		{ cwd: root, encoding: "utf8" },
+	);
+	if (ancestry.error) {
+		fail(
+			`Unable to verify clean-candidate ancestry from ${baseCommit}: ${ancestry.error.message}`,
+		);
+	}
+	if (ancestry.status !== 0) {
+		fail(
+			`Clean-candidate HEAD does not descend from the frozen M0 base commit ${baseCommit}`,
+		);
+	}
+}
+
+function assertFrozenBasePolicy(pointer) {
+	if (pointer.m0BaseCommit !== M0_BASE_COMMIT) {
+		fail(
+			`Policy pointer m0BaseCommit is ${JSON.stringify(pointer.m0BaseCommit)}, expected the source-owned frozen M0 base commit ${M0_BASE_COMMIT}`,
+		);
+	}
+}
+
+function assertNoHiddenIndexFlagsInRepository(root) {
+	const listing = spawnSync("git", ["ls-files", "-v", "-z"], {
+		cwd: root,
+		encoding: "utf8",
+	});
+	if (listing.error) {
+		fail(
+			`Unable to inspect clean-candidate index flags: ${listing.error.message}`,
+		);
+	}
+	if (listing.status !== 0) {
+		const detail = listing.stderr ? listing.stderr.trim() : "";
+		fail(
+			`Unable to inspect clean-candidate index flags (git ls-files -v status ${String(listing.status)}${detail ? `: ${detail}` : ""})`,
+		);
+	}
+	for (const line of listing.stdout.split("\0")) {
+		if (line.length === 0) continue;
+		const flag = line[0];
+		if (flag !== "S" && !/^[a-z]$/.test(flag)) continue;
+		fail(
+			`Clean-candidate tracked path is hidden from git status by an index flag (assume-unchanged/skip-worktree) and cannot be verified: ${line.slice(2)}`,
+		);
+	}
+}
+
+function assertCleanCandidateTree(current) {
+	if (current.size === 0) return;
+	const entries = [...current]
+		.map(([entryPath, status]) => `${status} ${entryPath}`)
+		.join(", ");
+	fail(
+		`Clean-candidate worktree is dirty; expected no git status entries (found ${current.size}: ${entries})`,
+	);
+}
+
+function countIntegratedAdditions(root, baseCommit) {
+	const diff = spawnSync(
+		"git",
+		[
+			"diff",
+			"--no-ext-diff",
+			"--no-renames",
+			"--name-only",
+			"--diff-filter=A",
+			baseCommit,
+			"HEAD",
+		],
+		{ cwd: root, encoding: "utf8" },
+	);
+	if (diff.error) {
+		fail(
+			`Unable to count clean-candidate additions from frozen M0 base ${baseCommit}: ${diff.error.message}`,
+		);
+	}
+	if (diff.status !== 0) {
+		const detail = diff.stderr ? diff.stderr.trim() : "";
+		fail(
+			`Unable to count clean-candidate additions from frozen M0 base ${baseCommit} (git diff status ${String(diff.status)}${detail ? `: ${detail}` : ""})`,
+		);
+	}
+	return diff.stdout.split(/\r?\n/).filter((line) => line.length > 0).length;
 }
 
 async function pathExists(absolute) {
@@ -637,7 +814,41 @@ function assertRepairOwnedBaselineEntries(root, baselineEntries, current) {
 			continue;
 		}
 		if (status === "??") {
-			fail(`Repair-owned untracked baseline entry disappeared: ${entryPath}`);
+			const tracked = spawnSync("git", ["ls-files", "--", entryPath], {
+				cwd: root,
+				encoding: "utf8",
+			});
+			if (tracked.error) {
+				fail(
+					`Unable to inspect promoted repair-owned baseline entry: ${entryPath} (${tracked.error.message})`,
+				);
+			}
+			if (tracked.status !== 0 || tracked.stdout.trim().length === 0) {
+				fail(`Repair-owned untracked baseline entry disappeared: ${entryPath}`);
+			}
+			assertNoHiddenIndexFlags(root, entryPath);
+			const promotedDiff = spawnSync(
+				"git",
+				["diff", "--quiet", "HEAD", "--", entryPath],
+				{ cwd: root },
+			);
+			if (promotedDiff.error) {
+				fail(
+					`Unable to compare promoted repair-owned baseline entry against HEAD: ${entryPath} (${promotedDiff.error.message})`,
+				);
+			}
+			if (promotedDiff.status === 0) continue;
+			if (promotedDiff.status === 1) {
+				fail(
+					`Promoted repair-owned baseline entry is dirty against HEAD: ${entryPath}`,
+				);
+			}
+			const stderr = promotedDiff.stderr
+				? promotedDiff.stderr.toString().trim()
+				: "";
+			fail(
+				`Unable to compare promoted repair-owned baseline entry against HEAD: ${entryPath} (git diff --quiet status ${String(promotedDiff.status)}${promotedDiff.signal ? `, signal ${promotedDiff.signal}` : ""}${stderr ? `: ${stderr}` : ""})`,
+			);
 		}
 		assertNoHiddenIndexFlags(root, entryPath);
 		const diff = spawnSync(
@@ -663,11 +874,58 @@ function assertRepairOwnedBaselineEntries(root, baselineEntries, current) {
 	}
 }
 
+function assertProtectedPathsNotIntegrated(root, baseCommit, snapshot) {
+	const verifiedRecords = [];
+	for (const record of snapshot.protectedPaths) {
+		if (isRepairOwned(record.path)) continue;
+		const diff = spawnSync(
+			"git",
+			[
+				"diff",
+				"--no-ext-diff",
+				"--no-renames",
+				"--name-status",
+				baseCommit,
+				"HEAD",
+				"--",
+				record.path,
+			],
+			{ cwd: root, encoding: "utf8" },
+		);
+		if (diff.error) {
+			fail(
+				`Unable to compare protected path against frozen M0 base ${baseCommit}: ${record.path} (${diff.error.message})`,
+			);
+		}
+		if (diff.status !== 0) {
+			const detail = diff.stderr ? diff.stderr.trim() : "";
+			fail(
+				`Unable to compare protected path against frozen M0 base ${baseCommit}: ${record.path} (git diff status ${String(diff.status)}${detail ? `: ${detail}` : ""})`,
+			);
+		}
+		const integrated = diff.stdout.trim();
+		if (integrated.length > 0) {
+			fail(
+				`Protected path was integrated relative to frozen M0 base ${baseCommit}: ${record.path}\n${integrated}`,
+			);
+		}
+		verifiedRecords.push(record.path);
+	}
+	return verifiedRecords;
+}
+
 export async function verifyFrontierPreservation({
 	root = process.cwd(),
 	pointerPath = POINTER_DOCUMENT_PATH,
 	pinnedSnapshot = PIPELINE_PINNED_SNAPSHOT,
+	mode = "auto",
+	baseCommit = M0_BASE_COMMIT,
 } = {}) {
+	if (mode !== "auto" && mode !== "dirty" && mode !== "clean-candidate") {
+		fail(
+			`Unknown frontier verification mode ${JSON.stringify(mode)}; expected "auto", "dirty", or "clean-candidate"`,
+		);
+	}
 	const nowMs = Date.now();
 	const pointerBytes = await readFileOrFail(
 		root,
@@ -711,8 +969,12 @@ export async function verifyFrontierPreservation({
 		snapshot.baselineListing.path,
 		"Baseline listing",
 	);
-	const baselineSha256 = sha256(baselineBytes);
-	if (snapshot.baselineListing.sha256 !== baselineSha256) {
+	const baselineHashMatch = matchHistoricalTextHash(
+		baselineBytes,
+		snapshot.baselineListing.sha256,
+	);
+	const baselineSha256 = baselineHashMatch.matchedSha256;
+	if (baselineHashMatch.compatibility === "none") {
 		fail(
 			`Pinned snapshot baselineListing.sha256 differs from the baseline listing file: snapshot ${snapshot.baselineListing.sha256}, file ${baselineSha256}`,
 		);
@@ -732,6 +994,15 @@ export async function verifyFrontierPreservation({
 	);
 	assertSnapshotGrounding(snapshot, baselineEntries);
 	const { newlyExcluded } = assertTransition(pointer, snapshot, nowMs);
+	assertFrozenBasePolicy(pointer);
+	const current = readCurrentStatus(root);
+	const effectiveMode =
+		mode === "auto" ? (current.size === 0 ? "clean-candidate" : "dirty") : mode;
+	if (effectiveMode === "clean-candidate") {
+		assertCleanCandidateBase(root, baseCommit);
+		assertCleanCandidateTree(current);
+		assertNoHiddenIndexFlagsInRepository(root);
+	}
 
 	const predecessorBytes = await readFileOrFail(
 		root,
@@ -754,17 +1025,62 @@ export async function verifyFrontierPreservation({
 	console.log(
 		`Baseline listing ${snapshot.baselineListing.path} SHA-256 ${baselineSha256} matches its .sha256 companion and the pinned snapshot.`,
 	);
+	if (baselineHashMatch.compatibility === "git-lf-to-recorded-crlf") {
+		console.log(
+			"Baseline listing uses the clean-checkout LF projection of the recorded Windows CRLF bytes; normalized content matches, but checkout byte identity is not claimed.",
+		);
+	}
 	console.log(
 		`Predecessor pointer ${PREDECESSOR_MANIFEST_PATH} preserved at SHA-256 ${predecessorSha256}; candidate snapshots link to the pinned snapshot, never the reverse.`,
 	);
 	console.log(
 		`Repair-owned exclusions (${REPAIR_OWNED_EXCLUSIONS.length}) are enforced from source: ${REPAIR_OWNED_EXCLUSIONS.join(", ")}. Newly excluded by the recorded transition: ${newlyExcluded.length} (${newlyExcluded.join(", ") || "none"}).`,
 	);
-	console.log(
-		`Protected hashes are recorded in snapshot ${pinnedSnapshot.sha256}; this check does not prove byte-identity before the snapshot was recorded, does not prove the snapshot capture time, and does not constrain additions (additions are unconstrained).`,
-	);
+	if (effectiveMode === "clean-candidate") {
+		console.log(
+			`Clean-candidate base ${baseCommit} is present, is an ancestor of HEAD, and the worktree is clean.`,
+		);
+	} else {
+		console.log(
+			`Protected hashes are recorded in snapshot ${pinnedSnapshot.sha256}; this check does not prove byte-identity before the snapshot was recorded, does not prove the snapshot capture time, and does not constrain additions (additions are unconstrained).`,
+		);
+	}
 
-	const current = readCurrentStatus(root);
+	if (effectiveMode === "clean-candidate") {
+		const protectedRecords = assertProtectedPathsNotIntegrated(
+			root,
+			baseCommit,
+			snapshot,
+		);
+		console.log(
+			`Clean-candidate frontier preservation PASS: ${protectedRecords.length} non-excluded protected paths were not integrated relative to frozen M0 base ${baseCommit}; ${snapshot.protectedPaths.length - protectedRecords.length} protected paths are explicitly excluded by policy.`,
+		);
+		return {
+			mode: effectiveMode,
+			baseCommit,
+			baselineEntryCount: baselineEntries.size,
+			protectedEntryCount: protectedRecords.length,
+			excludedEntryCount:
+				snapshot.protectedPaths.length - protectedRecords.length,
+			additionCount: countIntegratedAdditions(root, baseCommit),
+			pinnedSnapshotSha256: pinnedSnapshot.sha256,
+			pinnedSnapshotPath: pinnedSnapshot.path,
+			recordedAt: pointer.recordedAt,
+			timestampsAuthoritative: false,
+			protectedRecords: protectedRecords.map((entryPath) =>
+				snapshot.protectedPaths.find((record) => record.path === entryPath),
+			),
+			excludedProtectedPaths: snapshot.protectedPaths
+				.filter((record) => isRepairOwned(record.path))
+				.map((record) => record.path),
+			baselineListing: {
+				path: snapshot.baselineListing.path,
+				sha256: baselineSha256,
+			},
+			predecessorSha256,
+		};
+	}
+
 	const protectedRecords = [];
 	const excludedProtectedPaths = [];
 	for (const record of snapshot.protectedPaths) {
@@ -813,6 +1129,7 @@ export async function verifyFrontierPreservation({
 		`Frontier preservation PASS: ${baselineEntries.size} baseline entries, ${protectedRecords.length} non-excluded protected entries verified, ${excludedProtectedPaths.length} excluded protected entries, ${additions.length} additions (informational; additions are unconstrained); protected hashes recorded in snapshot ${pinnedSnapshot.sha256}.`,
 	);
 	return {
+		mode: effectiveMode,
 		baselineEntryCount: baselineEntries.size,
 		protectedEntryCount: protectedRecords.length,
 		excludedEntryCount: excludedProtectedPaths.length,
@@ -923,12 +1240,19 @@ async function main() {
 		await verifyFrontierPreservation();
 		return;
 	}
+	if (args.length === 2 && args[0] === "--clean-candidate") {
+		await verifyFrontierPreservation({
+			mode: "clean-candidate",
+			baseCommit: args[1],
+		});
+		return;
+	}
 	if (args.length === 2 && args[0] === "--generate") {
 		await generateFrontierCandidate({ candidatePath: args[1] });
 		return;
 	}
 	fail(
-		`Usage: node scripts/check-frontier-preservation.mjs [--generate <new-path>] (unexpected arguments: ${args.join(" ")})`,
+		`Usage: node scripts/check-frontier-preservation.mjs [--clean-candidate <base-commit> | --generate <new-path>] (unexpected arguments: ${args.join(" ")})`,
 	);
 }
 

@@ -2,6 +2,7 @@
 	"schemaVersion": 1,
 	"kind": "frontier-evidence-policy-pointer",
 	"recordedAt": "2026-09-19T00:57:30+03:00",
+	"m0BaseCommit": "19e28f4f0874d96569bc6944e38ad94b89924b60",
 	"pinnedSnapshot": {
 		"path": "docs/phase-records/handoffs/coordinator/20260915-183000-design-agent-environment-repair-r01-frontier-preservation-pre-r02-anchor.json",
 		"sha256": "86e416a729208bdce28670c41fcf1feb5c55443f6e0443d46b4ea8d7969f2d41",

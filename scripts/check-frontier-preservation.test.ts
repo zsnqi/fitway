@@ -14,6 +14,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
 	generateFrontierCandidate,
 	hashDirectory,
+	M0_BASE_COMMIT,
+	PIPELINE_PINNED_SNAPSHOT_PATH,
 	PIPELINE_PINNED_SNAPSHOT_SHA256,
 	POINTER_DOCUMENT_PATH,
 	PREDECESSOR_MANIFEST_PATH,
@@ -55,6 +57,7 @@ interface PointerFixture {
 	schemaVersion: number;
 	kind: string;
 	recordedAt: string;
+	m0BaseCommit?: string;
 	pinnedSnapshot: { path: string; sha256: string; companionPath: string };
 	predecessor: { path: string; sha256: string; note: string };
 	repairOwnedExclusions: string[];
@@ -257,6 +260,7 @@ async function createFixture(
 		schemaVersion: 1,
 		kind: "frontier-evidence-policy-pointer",
 		recordedAt: "2026-09-01T00:00:01.000Z",
+		m0BaseCommit: M0_BASE_COMMIT,
 		pinnedSnapshot: {
 			path: SNAPSHOT_PATH,
 			sha256: snapshotSha256,
@@ -327,6 +331,61 @@ function verifyOptions(fixture: Fixture) {
 	return { root: fixture.root, pinnedSnapshot: fixture.pinnedSnapshot };
 }
 
+function createCleanCandidate(): string {
+	const parent = mkdtempSync(path.join(tmpdir(), "fitway-frontier-candidate-"));
+	fixtureRoots.push(parent);
+	const candidate = path.join(parent, "candidate");
+	git(parent, [
+		"-c",
+		"core.autocrlf=false",
+		"clone",
+		"--quiet",
+		"--shared",
+		"--no-checkout",
+		REAL_ROOT,
+		"candidate",
+	]);
+	git(candidate, ["config", "core.autocrlf", "false"]);
+	git(candidate, ["config", "core.longpaths", "true"]);
+	git(candidate, ["checkout", "-q", "HEAD"]);
+	git(candidate, ["config", "user.email", "fixture@example.test"]);
+	git(candidate, ["config", "user.name", "Frontier Fixture"]);
+	const pointerPath = path.resolve(candidate, POINTER_DOCUMENT_PATH);
+	const pointer = JSON.parse(
+		readFileSync(pointerPath, "utf8"),
+	) as PointerFixture;
+	if (pointer.m0BaseCommit !== M0_BASE_COMMIT) {
+		pointer.m0BaseCommit = M0_BASE_COMMIT;
+		writeFileSync(pointerPath, `${JSON.stringify(pointer, null, "\t")}\n`);
+		git(candidate, ["add", "--", POINTER_DOCUMENT_PATH]);
+		git(candidate, ["commit", "-q", "-m", "pin M0 frontier base"]);
+	}
+	return candidate;
+}
+
+async function captureCleanCandidateFailure(
+	root: string,
+	options: Record<string, unknown> = {},
+): Promise<{ message: string; output: string }> {
+	const spy = vi.spyOn(console, "log").mockImplementation(() => {});
+	let message = "";
+	let failed = false;
+	try {
+		await verifyFrontierPreservation({
+			root,
+			mode: "clean-candidate",
+			...options,
+		} as never);
+	} catch (error) {
+		failed = true;
+		message = error instanceof Error ? error.message : String(error);
+	}
+	const output = spy.mock.calls.map((args) => args.join(" ")).join("\n");
+	spy.mockRestore();
+	if (!failed) throw new Error("Expected clean-candidate verification to fail");
+	return { message, output };
+}
+
 async function verifyQuietly(
 	fixture: Fixture,
 ): Promise<{ result: VerifyResult; output: string }> {
@@ -388,24 +447,31 @@ describe("real repository acceptance", () => {
 		try {
 			const result = (await verifyFrontierPreservation({
 				root: REAL_ROOT,
+				mode: "dirty",
 			})) as VerifyResult;
 			const output = spy.mock.calls.map((args) => args.join(" ")).join("\n");
 			expect(result.baselineEntryCount).toBe(116);
-			expect(result.protectedEntryCount).toBe(110);
-			expect(result.excludedEntryCount).toBe(3);
+			expect(result.protectedEntryCount).toBe(104);
+			expect(result.excludedEntryCount).toBe(9);
 			expect(result.excludedProtectedPaths).toEqual([
 				"scripts/verify.mjs",
 				"tests/browser/phase2.browser.spec.ts",
 				"tests/browser/staff-paper-fidelity.review.spec.ts",
+				"scripts/check-owner-classes.mjs",
+				"scripts/check-owner-classes.test.ts",
+				"scripts/check-owner-spacing.mjs",
+				"scripts/check-owner-spacing.test.ts",
+				"scripts/owner-classes-allowlist.json",
+				"scripts/owner-spacing-baseline.json",
 			]);
 			expect(result.pinnedSnapshotSha256).toBe(PIPELINE_PINNED_SNAPSHOT_SHA256);
 			expect(result.timestampsAuthoritative).toBe(false);
 			expect(result.recordedAt).toMatch(/^20\d{2}-\d{2}-\d{2}T/);
-			expect(result.protectedRecords).toHaveLength(110);
+			expect(result.protectedRecords).toHaveLength(104);
 			expect(output).toContain(PIPELINE_PINNED_SNAPSHOT_SHA256);
 			expect(output).toContain("116 baseline entries");
-			expect(output).toContain("110 non-excluded protected entries verified");
-			expect(output).toContain("3 excluded protected entries");
+			expect(output).toContain("104 non-excluded protected entries verified");
+			expect(output).toContain("9 excluded protected entries");
 			expect(output).toMatch(/timestampsAuthoritative: false/);
 			expect(output).toMatch(/not evidence of capture time/);
 			expect(output).not.toMatch(/captured at/i);
@@ -415,6 +481,98 @@ describe("real repository acceptance", () => {
 			spy.mockRestore();
 		}
 	});
+
+	it("verifies a clean M1 candidate against the frozen M0 base", async () => {
+		const root = createCleanCandidate();
+		const spy = vi.spyOn(console, "log").mockImplementation(() => {});
+		try {
+			const result = (await verifyFrontierPreservation({
+				root,
+			})) as VerifyResult & { mode: string; baseCommit: string };
+			const output = spy.mock.calls.map((args) => args.join(" ")).join("\n");
+			expect(result.mode).toBe("clean-candidate");
+			expect(result.baseCommit).toBe(M0_BASE_COMMIT);
+			expect(result.protectedEntryCount).toBe(104);
+			expect(result.excludedEntryCount).toBe(9);
+			expect(output).toContain(
+				`not integrated relative to frozen M0 base ${M0_BASE_COMMIT}`,
+			);
+			expect(output).toContain("worktree is clean");
+			expect(output).toContain("clean-checkout LF projection");
+		} finally {
+			spy.mockRestore();
+		}
+	}, 60_000);
+
+	it("rejects clean-candidate integration of a protected path", async () => {
+		const root = createCleanCandidate();
+		const protectedPath = "apps/web/src/components/owner/access/messages.ts";
+		writeFileSync(
+			path.resolve(root, protectedPath),
+			`${readFileSync(path.resolve(root, protectedPath), "utf8")}\nprotected integration\n`,
+		);
+		git(root, ["add", "--", protectedPath]);
+		git(root, ["commit", "-q", "-m", "adversarial protected integration"]);
+		const { message } = await captureCleanCandidateFailure(root);
+		expect(message).toMatch(
+			/Protected path was integrated relative to frozen M0 base .*owner\/access\/messages\.ts/,
+		);
+	}, 60_000);
+
+	it("rejects a dirty clean-candidate worktree", async () => {
+		const root = createCleanCandidate();
+		writeFileSync(
+			path.resolve(root, "AGENTS.md"),
+			`${readFileSync(path.resolve(root, "AGENTS.md"), "utf8")}\nclean-mode dirt\n`,
+		);
+		const { message } = await captureCleanCandidateFailure(root);
+		expect(message).toMatch(/Clean-candidate worktree is dirty/);
+	}, 60_000);
+
+	it.each([
+		["assume-unchanged", "--assume-unchanged"],
+		["skip-worktree", "--skip-worktree"],
+	])(
+		"rejects a clean candidate with a hidden %s path",
+		async (_label, indexFlag) => {
+			const root = createCleanCandidate();
+			const hiddenPath = "AGENTS.md";
+			git(root, ["update-index", indexFlag, hiddenPath]);
+			writeFileSync(
+				path.resolve(root, hiddenPath),
+				`${readFileSync(path.resolve(root, hiddenPath), "utf8")}\nhidden clean-mode dirt\n`,
+			);
+			expect(git(root, ["status", "--short"]).trim()).toBe("");
+			const { message } = await captureCleanCandidateFailure(root);
+			expect(message).toMatch(
+				/hidden from git status by an index flag \(assume-unchanged\/skip-worktree\).*AGENTS\.md/,
+			);
+		},
+		60_000,
+	);
+
+	it("rejects a missing or invalid clean-candidate base", async () => {
+		const root = createCleanCandidate();
+		const { message } = await captureCleanCandidateFailure(root, {
+			baseCommit: "0".repeat(40),
+		});
+		expect(message).toMatch(/not the frozen M0 base commit|invalid|missing/);
+	}, 60_000);
+
+	it("rejects a tampered policy before clean-tree acceptance", async () => {
+		const root = createCleanCandidate();
+		const pointerPath = path.resolve(root, POINTER_DOCUMENT_PATH);
+		const pointer = JSON.parse(
+			readFileSync(pointerPath, "utf8"),
+		) as PointerFixture;
+		pointer.repairOwnedExclusions = [
+			...pointer.repairOwnedExclusions,
+			"apps/web/src/evil.tsx",
+		];
+		writeFileSync(pointerPath, `${JSON.stringify(pointer, null, "\t")}\n`);
+		const { message } = await captureCleanCandidateFailure(root);
+		expect(message).toMatch(/repairOwnedExclusions does not exactly match/);
+	}, 60_000);
 
 	it("rejects the removed --write interface and advertises --generate", () => {
 		const result = spawnSync(
