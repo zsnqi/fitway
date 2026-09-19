@@ -76,6 +76,8 @@ interface PointerFixture {
 }
 
 interface VerifyResult {
+	mode: "dirty" | "clean-candidate";
+	baseCommit?: string;
 	baselineEntryCount: number;
 	protectedEntryCount: number;
 	excludedEntryCount: number;
@@ -446,7 +448,6 @@ describe("real repository acceptance", () => {
 		try {
 			const result = (await verifyFrontierPreservation({
 				root: REAL_ROOT,
-				mode: "dirty",
 			})) as VerifyResult;
 			const output = spy.mock.calls.map((args) => args.join(" ")).join("\n");
 			expect(result.baselineEntryCount).toBe(116);
@@ -468,14 +469,22 @@ describe("real repository acceptance", () => {
 			expect(result.recordedAt).toMatch(/^20\d{2}-\d{2}-\d{2}T/);
 			expect(result.protectedRecords).toHaveLength(104);
 			expect(output).toContain(PIPELINE_PINNED_SNAPSHOT_SHA256);
-			expect(output).toContain("116 baseline entries");
-			expect(output).toContain("104 non-excluded protected entries verified");
-			expect(output).toContain("9 excluded protected entries");
 			expect(output).toMatch(/timestampsAuthoritative: false/);
 			expect(output).toMatch(/not evidence of capture time/);
 			expect(output).not.toMatch(/captured at/i);
-			expect(output).toMatch(/additions are unconstrained/);
-			expect(output).toMatch(/recorded in snapshot/);
+			if (result.mode === "dirty") {
+				expect(output).toContain("116 baseline entries");
+				expect(output).toContain("104 non-excluded protected entries verified");
+				expect(output).toContain("9 excluded protected entries");
+				expect(output).toMatch(/additions are unconstrained/);
+				expect(output).toMatch(/recorded in snapshot/);
+			} else {
+				expect(result.baseCommit).toBe(M0_BASE_COMMIT);
+				expect(output).toContain("worktree is clean");
+				expect(output).toContain(
+					"104 non-excluded protected paths were not integrated",
+				);
+			}
 		} finally {
 			spy.mockRestore();
 		}
