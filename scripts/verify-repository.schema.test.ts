@@ -128,6 +128,50 @@ describe("project-state schemas", () => {
 		expect(validateState(activeState({ archiveIndex: "legacy" }))).toBe(false);
 	});
 
+	it("accepts optional schema-version 1 packet fields and rejects malformed or unknown fields", () => {
+		const packetFields = {
+			taskClass: "backend-api-data",
+			taskPacket: "docs/phase-records/task-packets/example-task.yaml",
+			taskPacketSha256: "a".repeat(64),
+		};
+		expect(
+			validateState(
+				activeState({
+					milestones: { "active-frontier": milestone(packetFields) },
+				}),
+			),
+		).toBe(true);
+		expect(
+			validateHistory(
+				historyState({
+					milestones: { "closed-record": milestone(packetFields) },
+				}),
+			),
+		).toBe(true);
+
+		const malformed = [
+			{ taskClass: "unknown-class" },
+			{ taskPacket: "docs/phase-records/task-packets/Example-task.yaml" },
+			{ taskPacket: "docs/phase-records/task-packets/example-task.json" },
+			{ taskPacket: "docs/phase-records/task-packets/../escape.yaml" },
+			{ taskPacketSha256: "A".repeat(64) },
+			{ taskPacketSha256: "short" },
+			{ taskPacketSha256: null },
+			{ packetStatus: "READY" },
+		];
+		for (const entry of malformed) {
+			expect(
+				validateState(
+					activeState({
+						milestones: {
+							"active-frontier": milestone({ ...packetFields, ...entry }),
+						},
+					}),
+				),
+			).toBe(false);
+		}
+	});
+
 	it("rejects a milestone missing a required field in both shapes", () => {
 		expect(
 			validateState(

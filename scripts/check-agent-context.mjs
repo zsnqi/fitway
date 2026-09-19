@@ -23,6 +23,12 @@ export const OPEN_STATUSES = new Set([
 	"VALIDATING",
 	"READY_FOR_INTEGRATION",
 ]);
+export const TERMINAL_STATUSES = new Set([
+	"DONE",
+	"BLOCKED",
+	"NEEDS_HUMAN",
+	"FAILED_VALIDATION",
+]);
 export const TASK_CLASSES = [
 	"analysis-review",
 	"backend-api-data",
@@ -50,6 +56,10 @@ const CONTEXT_FILES = [
 const HISTORY_FILE = "PROJECT_STATE_HISTORY.yaml";
 const PACKET_DIRECTORY = "docs/phase-records/task-packets";
 const RECEIPT_DIRECTORY = "docs/phase-records/history-transitions";
+const TASK_PACKET_PATH_PATTERN =
+	/^docs\/phase-records\/task-packets\/[a-z0-9][a-z0-9-]{0,127}\.yaml$/;
+const UI_TASK_CLASSES = new Set(["ui-maintenance", "visual-authority-change"]);
+const PACKET_METADATA_FIELDS = ["taskClass", "taskPacket", "taskPacketSha256"];
 const HISTORICAL_PREFIXES = [
 	"docs/archive/",
 	"docs/phase-records/",
@@ -78,6 +88,29 @@ function normalizeRelativePath(value) {
 
 function sha256(bytes) {
 	return createHash("sha256").update(bytes).digest("hex");
+}
+
+function stablePacketPath(milestoneId) {
+	return `${PACKET_DIRECTORY}/${milestoneId}.yaml`;
+}
+
+function isValidTaskClass(value) {
+	return typeof value === "string" && TASK_CLASSES.includes(value);
+}
+
+function isValidTaskPacketPath(value) {
+	return typeof value === "string" && TASK_PACKET_PATH_PATTERN.test(value);
+}
+
+function isValidSha256(value) {
+	return typeof value === "string" && /^[0-9a-f]{64}$/.test(value);
+}
+
+function isValidBaseCommit(value) {
+	return (
+		value === "SELF" ||
+		(typeof value === "string" && /^[0-9a-f]{7,40}$/.test(value))
+	);
 }
 
 function equalJson(left, right) {
@@ -750,17 +783,99 @@ async function validatePacket({
 	errors,
 }) {
 	const milestone = state?.milestones?.[packet.milestoneId];
+	const historyMilestone = history?.milestones?.[packet.milestoneId];
+	const expectedStateRef = `PROJECT_STATE.yaml#/milestones/${packet.milestoneId}`;
+	if (packet.stateRef !== expectedStateRef)
+		errors.push(`${packetPath}: stateRef does not identify its milestone`);
 	const route = routeForPacket(registry, packet.taskClass);
 	if (!route) {
 		errors.push(`${packetPath}: taskClass ${packet.taskClass} has no route`);
 		return;
 	}
 	if (!milestone) {
-		if (
-			packet.packetStatus !== "CLOSED" ||
-			!history?.milestones?.[packet.milestoneId]
-		) {
+		if (packet.packetStatus !== "CLOSED") {
 			errors.push(`${packetPath}: packet points to no active milestone`);
+		} else if (!historyMilestone) {
+			errors.push(
+				`${packetPath}: CLOSED packet requires a matching terminal history milestone ${packet.milestoneId}`,
+			);
+		} else if (!TERMINAL_STATUSES.has(historyMilestone.status)) {
+			errors.push(
+				`${packetPath}: CLOSED packet history milestone ${packet.milestoneId} must be terminal, got ${historyMilestone.status}`,
+			);
+		} else {
+			for (const field of [
+				"taskClass",
+				"taskPacket",
+				"taskPacketSha256",
+				"baseCommit",
+				"ownedPaths",
+				"forbiddenPaths",
+				"sharedLeases",
+				"handoff",
+			]) {
+				if (!Object.hasOwn(historyMilestone, field))
+					errors.push(
+						`${packetPath}: CLOSED packet history is missing ${field}`,
+					);
+			}
+			const expectedPacketPath = stablePacketPath(packet.milestoneId);
+			if (!isValidTaskClass(historyMilestone.taskClass))
+				errors.push(
+					`${packetPath}: CLOSED packet history taskClass is invalid or missing`,
+				);
+			if (!isValidTaskPacketPath(historyMilestone.taskPacket))
+				errors.push(
+					`${packetPath}: CLOSED packet history taskPacket is invalid or missing`,
+				);
+			if (historyMilestone.taskPacket !== expectedPacketPath)
+				errors.push(
+					`${packetPath}: CLOSED packet history taskPacket must be the stable path ${expectedPacketPath}`,
+				);
+			if (historyMilestone.taskPacket !== packetPath)
+				errors.push(
+					`${packetPath}: taskPacket differs from closed history milestone`,
+				);
+			if (!isValidSha256(historyMilestone.taskPacketSha256))
+				errors.push(
+					`${packetPath}: CLOSED packet history taskPacketSha256 is invalid or missing`,
+				);
+			else if (
+				sha256(await readFile(packetAbsolutePath)) !==
+				historyMilestone.taskPacketSha256
+			)
+				errors.push(
+					`${packetPath}: taskPacketSha256 differs from closed history milestone`,
+				);
+			if (packet.taskClass !== historyMilestone.taskClass)
+				errors.push(
+					`${packetPath}: taskClass differs from closed history milestone`,
+				);
+			if (!isValidBaseCommit(historyMilestone.baseCommit))
+				errors.push(
+					`${packetPath}: CLOSED packet history baseCommit is invalid or missing`,
+				);
+			if (packet.baseCommit !== historyMilestone.baseCommit)
+				errors.push(
+					`${packetPath}: baseCommit differs from closed history milestone`,
+				);
+			for (const field of ["ownedPaths", "forbiddenPaths", "sharedLeases"]) {
+				if (!Array.isArray(historyMilestone[field]))
+					errors.push(
+						`${packetPath}: CLOSED packet history ${field} is invalid or missing`,
+					);
+				else if (!equalJson(packet.scope[field], historyMilestone[field]))
+					errors.push(
+						`${packetPath}: scope.${field} differs from closed history milestone`,
+					);
+			}
+			if (
+				!Object.hasOwn(historyMilestone, "handoff") ||
+				packet.continuity.currentHandoff !== historyMilestone.handoff
+			)
+				errors.push(
+					`${packetPath}: continuity.currentHandoff differs from closed history handoff`,
+				);
 		}
 	} else {
 		if (!OPEN_STATUSES.has(milestone.status)) {
@@ -773,30 +888,43 @@ async function validatePacket({
 				`${packetPath}: active milestone ${packet.milestoneId} cannot route a CLOSED packet`,
 			);
 		}
+		if (packet.packetStatus === "DRAFT" && milestone.status !== "PLANNED") {
+			errors.push(
+				`${packetPath}: DRAFT packet is only valid while active milestone is PLANNED`,
+			);
+		}
+		const presentMetadataFields = PACKET_METADATA_FIELDS.filter((field) =>
+			Object.hasOwn(milestone, field),
+		);
+		if (
+			presentMetadataFields.length > 0 &&
+			presentMetadataFields.length < PACKET_METADATA_FIELDS.length
+		)
+			errors.push(
+				`${packetPath}: active milestone packet metadata must be all-or-none`,
+			);
 		if (milestone.status !== "PLANNED" && packet.packetStatus !== "READY") {
 			errors.push(
 				`${packetPath}: active milestone status ${milestone.status} requires a READY packet`,
 			);
 		}
-		if (typeof milestone.taskClass !== "string" || milestone.taskClass === "")
+		if (!isValidTaskClass(milestone.taskClass))
 			errors.push(
-				`${packetPath}: active milestone must record taskClass when a packet exists`,
+				`${packetPath}: active milestone taskClass must be one of the registered task classes`,
 			);
-		if (typeof milestone.taskPacket !== "string" || milestone.taskPacket === "")
+		if (!isValidTaskPacketPath(milestone.taskPacket))
 			errors.push(
-				`${packetPath}: active milestone must record taskPacket when a packet exists`,
+				`${packetPath}: active milestone must record a stable taskPacket path`,
 			);
-		if (
-			typeof milestone.taskPacketSha256 !== "string" ||
-			milestone.taskPacketSha256 === ""
-		)
+		if (!isValidSha256(milestone.taskPacketSha256))
 			errors.push(
-				`${packetPath}: active milestone must record taskPacketSha256 when a packet exists`,
+				`${packetPath}: active milestone must record a lowercase taskPacketSha256`,
 			);
-		if (
-			packet.stateRef !== `PROJECT_STATE.yaml#/milestones/${packet.milestoneId}`
-		)
-			errors.push(`${packetPath}: stateRef does not identify its milestone`);
+		const expectedPacketPath = stablePacketPath(packet.milestoneId);
+		if (milestone.taskPacket !== expectedPacketPath)
+			errors.push(
+				`${packetPath}: active milestone taskPacket must be the stable path ${expectedPacketPath}`,
+			);
 		if (packet.baseCommit !== milestone.baseCommit)
 			errors.push(`${packetPath}: baseCommit differs from active milestone`);
 		if (
@@ -812,7 +940,7 @@ async function validatePacket({
 		}
 		if (milestone.taskPacket && milestone.taskPacket !== packetPath)
 			errors.push(`${packetPath}: active milestone taskPacket pointer differs`);
-		if (milestone.taskPacketSha256) {
+		if (isValidSha256(milestone.taskPacketSha256)) {
 			const actual = sha256(await readFile(packetAbsolutePath));
 			if (actual !== milestone.taskPacketSha256)
 				errors.push(
@@ -874,18 +1002,43 @@ async function validatePacket({
 		packetConditionals: packet.authorities.conditional,
 		errors,
 	});
-	if (
-		packet.taskClass === "ui-maintenance" ||
-		packet.taskClass === "visual-authority-change"
-	) {
+	if (UI_TASK_CLASSES.has(packet.taskClass)) {
+		const requiresReadyUiGates =
+			packet.packetStatus === "READY" ||
+			(milestone !== undefined &&
+				OPEN_STATUSES.has(milestone.status) &&
+				milestone.status !== "PLANNED") ||
+			(packet.packetStatus === "CLOSED" && historyMilestone?.status === "DONE");
 		if (
 			!packet.verification.orderedGates.some((gate) =>
 				/accessibility/i.test(gate),
 			)
 		)
 			errors.push(`${packetPath}: UI packet lacks an accessibility gate`);
-		if (packet.designContextCheck.status !== "PASS")
-			errors.push(`${packetPath}: UI packet design-context check is not PASS`);
+		if (packet.visual.perceptualGate.status === "NOT_REQUIRED")
+			errors.push(
+				`${packetPath}: UI packet perceptual gate cannot be NOT_REQUIRED`,
+			);
+		if (requiresReadyUiGates) {
+			if (packet.designContextCheck.status !== "PASS")
+				errors.push(
+					`${packetPath}: READY/executing UI packet design-context check is not PASS`,
+				);
+			if (packet.accessibilityGate.status !== "PASS")
+				errors.push(
+					`${packetPath}: READY/executing UI packet accessibility gate is not PASS`,
+				);
+			if (packet.visual.perceptualGate.status !== "PASS")
+				errors.push(
+					`${packetPath}: READY/executing UI packet perceptual gate is not PASS`,
+				);
+			if (
+				!["PASS", "NOT_REQUIRED"].includes(packet.visual.promotionGate.status)
+			)
+				errors.push(
+					`${packetPath}: READY/executing UI packet promotion gate is not PASS or NOT_REQUIRED`,
+				);
+		}
 		await validateVisualFrames({
 			root,
 			frames: packet.visual.currentFrames,
@@ -1069,15 +1222,28 @@ async function validatePackets({
 	for (const [milestoneId, milestone] of Object.entries(
 		state?.milestones ?? {},
 	)) {
-		if (!OPEN_STATUSES.has(milestone.status)) continue;
-		const packetPath =
-			milestone.taskPacket ?? `${PACKET_DIRECTORY}/${milestoneId}.yaml`;
+		const presentMetadataFields = PACKET_METADATA_FIELDS.filter((field) =>
+			Object.hasOwn(milestone, field),
+		);
+		if (
+			presentMetadataFields.length > 0 &&
+			presentMetadataFields.length < PACKET_METADATA_FIELDS.length
+		)
+			errors.push(
+				`${milestoneId}: active milestone packet metadata must be all-or-none`,
+			);
+		const expectedPacketPath = stablePacketPath(milestoneId);
+		const packetPath = milestone.taskPacket ?? expectedPacketPath;
+		if (milestone.taskPacket && milestone.taskPacket !== expectedPacketPath)
+			errors.push(
+				`${milestoneId}: active taskPacket pointer must be the stable path ${expectedPacketPath}`,
+			);
 		if (!packets.has(milestoneId)) {
-			if (milestone.taskPacket)
+			if (presentMetadataFields.length > 0)
 				errors.push(
-					`${milestoneId}: active taskPacket pointer has no packet: ${packetPath}`,
+					`${milestoneId}: active packet metadata points to no packet: ${packetPath}`,
 				);
-			else
+			else if (OPEN_STATUSES.has(milestone.status))
 				warnings.push(
 					`${milestoneId}: no active task packet; compatibility mode skips packet validation`,
 				);
