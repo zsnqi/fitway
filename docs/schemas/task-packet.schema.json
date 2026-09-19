@@ -1,0 +1,309 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://fitway.local/schemas/task-packet.schema.json",
+	"title": "FITWAY task packet",
+	"type": "object",
+	"additionalProperties": false,
+	"required": [
+		"schemaVersion",
+		"milestoneId",
+		"taskClass",
+		"packetStatus",
+		"stateRef",
+		"baseCommit",
+		"task",
+		"scope",
+		"authorities",
+		"continuity",
+		"verification",
+		"evidence",
+		"limitations"
+	],
+	"properties": {
+		"schemaVersion": { "const": 1 },
+		"milestoneId": {
+			"type": "string",
+			"pattern": "^[a-z0-9][a-z0-9-]{0,127}$"
+		},
+		"taskClass": { "$ref": "#/$defs/taskClass" },
+		"packetStatus": { "enum": ["DRAFT", "READY", "CLOSED"] },
+		"stateRef": {
+			"type": "string",
+			"pattern": "^PROJECT_STATE\\.yaml#/milestones/[a-z0-9][a-z0-9-]{0,127}$"
+		},
+		"baseCommit": {
+			"oneOf": [
+				{ "const": "SELF" },
+				{ "type": "string", "pattern": "^[0-9a-f]{7,40}$" }
+			]
+		},
+		"task": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["objective", "acceptanceCriteria", "explicitExclusions"],
+			"properties": {
+				"objective": { "type": "string", "minLength": 1, "maxLength": 500 },
+				"acceptanceCriteria": {
+					"type": "array",
+					"minItems": 1,
+					"items": { "type": "string", "minLength": 1 }
+				},
+				"explicitExclusions": {
+					"type": "array",
+					"items": { "type": "string", "minLength": 1 }
+				}
+			}
+		},
+		"scope": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["ownedPaths", "forbiddenPaths", "sharedLeases"],
+			"properties": {
+				"ownedPaths": {
+					"type": "array",
+					"minItems": 1,
+					"items": { "type": "string", "minLength": 1 },
+					"uniqueItems": true
+				},
+				"forbiddenPaths": {
+					"type": "array",
+					"items": { "type": "string", "minLength": 1 },
+					"uniqueItems": true
+				},
+				"sharedLeases": {
+					"type": "array",
+					"items": { "type": "string", "minLength": 1 },
+					"uniqueItems": true
+				}
+			}
+		},
+		"authorities": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["required", "conditional"],
+			"properties": {
+				"required": {
+					"type": "array",
+					"minItems": 1,
+					"items": { "$ref": "#/$defs/authority" }
+				},
+				"conditional": {
+					"type": "array",
+					"items": { "$ref": "#/$defs/conditionalAuthority" }
+				}
+			}
+		},
+		"continuity": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": [
+				"predecessorMilestones",
+				"currentHandoff",
+				"unresolvedDecisions"
+			],
+			"properties": {
+				"predecessorMilestones": {
+					"type": "array",
+					"items": { "type": "string", "minLength": 1 },
+					"uniqueItems": true
+				},
+				"currentHandoff": { "type": ["string", "null"], "minLength": 1 },
+				"unresolvedDecisions": {
+					"type": "array",
+					"items": { "type": "string", "minLength": 1 }
+				}
+			}
+		},
+		"verification": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["profile", "orderedGates", "independentReviewRequired"],
+			"properties": {
+				"profile": { "type": "string", "minLength": 1 },
+				"orderedGates": {
+					"type": "array",
+					"minItems": 1,
+					"items": { "type": "string", "minLength": 1 }
+				},
+				"independentReviewRequired": { "type": "boolean" }
+			}
+		},
+		"evidence": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["receiptTemplate", "requiredArtifacts"],
+			"properties": {
+				"receiptTemplate": {
+					"const": "docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md"
+				},
+				"requiredArtifacts": {
+					"type": "array",
+					"items": { "type": "string", "minLength": 1 }
+				}
+			}
+		},
+		"limitations": {
+			"type": "array",
+			"items": { "type": "string", "minLength": 1 }
+		},
+		"visual": { "$ref": "#/$defs/visual" },
+		"designContextCheck": { "$ref": "#/$defs/designContextCheck" },
+		"accessibilityGate": { "$ref": "#/$defs/gate" }
+	},
+	"allOf": [
+		{
+			"if": {
+				"properties": {
+					"taskClass": { "enum": ["ui-maintenance", "visual-authority-change"] }
+				},
+				"required": ["taskClass"]
+			},
+			"then": {
+				"required": ["visual", "designContextCheck", "accessibilityGate"],
+				"properties": {
+					"visual": { "$ref": "#/$defs/visual" },
+					"designContextCheck": { "$ref": "#/$defs/designContextCheck" },
+					"accessibilityGate": { "$ref": "#/$defs/gate" }
+				}
+			}
+		}
+	],
+	"$defs": {
+		"taskClass": {
+			"enum": [
+				"analysis-review",
+				"backend-api-data",
+				"ui-maintenance",
+				"visual-authority-change",
+				"verification-independent",
+				"resume-integration",
+				"historical-audit",
+				"repository-infrastructure"
+			]
+		},
+		"selector": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["kind", "value"],
+			"properties": {
+				"kind": {
+					"enum": ["whole-file", "markdown-heading", "yaml-key", "json-pointer"]
+				},
+				"value": { "type": "string" }
+			}
+		},
+		"authorityRole": {
+			"enum": [
+				"product",
+				"spec",
+				"workflow",
+				"adr",
+				"contract",
+				"design",
+				"visual-status",
+				"test",
+				"historical"
+			]
+		},
+		"authority": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["role", "path", "selector", "reason"],
+			"properties": {
+				"role": { "$ref": "#/$defs/authorityRole" },
+				"path": { "type": "string", "minLength": 1 },
+				"selector": { "$ref": "#/$defs/selector" },
+				"reason": { "type": "string", "minLength": 1 }
+			}
+		},
+		"conditionalAuthority": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["trigger", "role", "path", "selector", "actionIfTriggered"],
+			"properties": {
+				"trigger": { "type": "string", "minLength": 1 },
+				"role": { "$ref": "#/$defs/authorityRole" },
+				"path": { "type": "string", "minLength": 1 },
+				"selector": { "$ref": "#/$defs/selector" },
+				"actionIfTriggered": { "enum": ["READ", "NEEDS_HUMAN"] }
+			}
+		},
+		"frame": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["path", "sha256"],
+			"properties": {
+				"path": { "type": "string", "minLength": 1 },
+				"sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+			}
+		},
+		"gate": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["status", "criteria"],
+			"properties": {
+				"status": {
+					"enum": ["PASS", "PENDING", "NOT_REQUIRED", "NEEDS_HUMAN"]
+				},
+				"criteria": { "type": "string", "minLength": 1 }
+			}
+		},
+		"visual": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": [
+				"surfaceKey",
+				"authorityStatus",
+				"authorityKey",
+				"governingDecision",
+				"currentFrames",
+				"referenceFrames",
+				"openHumanDecisions",
+				"paperAvailability",
+				"perceptualGate",
+				"promotionGate",
+				"acceptanceAuthority"
+			],
+			"properties": {
+				"surfaceKey": { "type": "string", "minLength": 1 },
+				"authorityStatus": {
+					"enum": ["ACTIVE", "SUPERSEDED", "VACANT", "UNRESOLVED"]
+				},
+				"authorityKey": { "type": "string", "minLength": 1 },
+				"governingDecision": { "type": "string", "minLength": 1 },
+				"currentFrames": {
+					"type": "array",
+					"minItems": 1,
+					"items": { "$ref": "#/$defs/frame" }
+				},
+				"referenceFrames": {
+					"type": "array",
+					"minItems": 1,
+					"items": { "$ref": "#/$defs/frame" }
+				},
+				"openHumanDecisions": {
+					"type": "array",
+					"items": { "type": "string", "minLength": 1 }
+				},
+				"paperAvailability": {
+					"enum": ["AVAILABLE", "UNAVAILABLE", "NOT_APPLICABLE"]
+				},
+				"perceptualGate": { "$ref": "#/$defs/gate" },
+				"promotionGate": { "$ref": "#/$defs/gate" },
+				"acceptanceAuthority": {
+					"enum": ["PAPER", "MANIFEST", "HUMAN_DECISION", "NONE"]
+				}
+			}
+		},
+		"designContextCheck": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["command", "status"],
+			"properties": {
+				"command": { "type": "string", "minLength": 1 },
+				"status": { "enum": ["PASS", "PENDING", "NEEDS_HUMAN"] },
+				"artifact": { "type": ["string", "null"] }
+			}
+		}
+	}
+}

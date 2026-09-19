@@ -6,6 +6,7 @@ import process from "node:process";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { parse as parseYaml } from "yaml";
+import { checkAgentContext } from "./check-agent-context.mjs";
 import {
 	assertHistoryMutationOwnership,
 	verifyHistoryTransition,
@@ -414,9 +415,18 @@ async function main() {
 	}
 
 	const routeAuthority = await verifyVisualAuthorityRepository(root);
+	const agentContext = await checkAgentContext({ root });
+	if (!agentContext.ok) {
+		fail(
+			`Agent context validation failed:\n${agentContext.errors.map((error) => `- ${error}`).join("\n")}`,
+		);
+	}
+	for (const warning of agentContext.warnings) {
+		console.warn(`Agent context warning: ${warning}`);
+	}
 
 	console.log(
-		`Repository invariants passed: ${Object.keys(state.milestones).length} active milestones, ${Object.keys(history.milestones).length} archived milestones, ${(manifest.canonicalScreenshots ?? []).length} canonical approval screenshots, ${routeAuthority.caseCount} registered full-route visual-authority cases (${routeAuthority.acceptedCaseCount} accepted, ${routeAuthority.supersededCaseCount} superseded), ${routeAuthority.paperExportCount} hash-verified Paper exports, and ${routeAuthority.rejectedArtifactCount} hash-frozen rejected r05 screenshots.`,
+		`Repository invariants passed: ${Object.keys(state.milestones).length} active milestones, ${Object.keys(history.milestones).length} archived milestones, ${(manifest.canonicalScreenshots ?? []).length} canonical approval screenshots, ${routeAuthority.caseCount} registered full-route visual-authority cases (${routeAuthority.acceptedCaseCount} accepted, ${routeAuthority.supersededCaseCount} superseded), ${routeAuthority.paperExportCount} hash-verified Paper exports, ${routeAuthority.rejectedArtifactCount} hash-frozen rejected r05 screenshots, and ${Object.keys(agentContext.registry?.routes ?? {}).length} agent-context routes.`,
 	);
 }
 

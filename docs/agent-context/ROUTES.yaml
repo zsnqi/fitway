@@ -1,0 +1,172 @@
+schemaVersion: 1
+mode: compatibility
+
+# This registry routes retrieval; it creates no Product, Spec, visual, security, privacy, or data
+# authority. The checker validates every concrete path and selector below.
+routes:
+  analysis-review:
+    responsibility: Review a named question against the implicated current authorities and bounded target evidence.
+    destinations:
+      - kind: task-packet
+        path: docs/phase-records/task-packets/<milestone-id>.yaml
+        selector: { kind: whole-file, value: "" }
+      - kind: evidence-receipt
+        path: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
+        selector: { kind: markdown-heading, value: "Evidence receipt" }
+    normalStartup:
+      - { path: AGENTS.md, selector: { kind: whole-file, value: "" }, reason: "Repository policy is automatic context." }
+      - { path: PROJECT_STATE.yaml, selector: { kind: yaml-key, value: "milestones" }, reason: "Current execution state is coordinator-owned." }
+    required:
+      - { role: product, path: FITWAY_PRODUCT.md, selector: { kind: markdown-heading, value: "Product and success truth" }, reason: "Check product identity and the implicated user-facing boundary." }
+      - { role: spec, path: SPEC.md, selector: { kind: markdown-heading, value: "Implementation authority and fidelity contract" }, reason: "Check security, data, and acceptance semantics." }
+      - { role: workflow, path: docs/WORKFLOW.md, selector: { kind: markdown-heading, value: "Independent verification" }, reason: "Use the repository review and evidence procedure." }
+      - { role: test, path: scripts/verify-repository.mjs, selector: { kind: whole-file, value: "" }, reason: "Inspect executable repository invariants for the reviewed surface." }
+    conditional:
+      - { trigger: "the question names a terminal decision or incident", role: historical, path: PROJECT_STATE_HISTORY.yaml, selector: { kind: yaml-key, value: "milestones" }, actionIfTriggered: READ, reason: "Expand only to the named historical evidence." }
+
+  backend-api-data:
+    responsibility: Change or review backend, API, persistence, DTO, or data-flow behavior under the Product and Spec contract.
+    destinations:
+      - kind: task-packet
+        path: docs/phase-records/task-packets/<milestone-id>.yaml
+        selector: { kind: whole-file, value: "" }
+      - kind: source-and-tests
+        path: packages
+        selector: { kind: whole-file, value: "" }
+    normalStartup:
+      - { path: AGENTS.md, selector: { kind: whole-file, value: "" }, reason: "Repository policy is automatic context." }
+      - { path: PROJECT_STATE.yaml, selector: { kind: yaml-key, value: "milestones" }, reason: "Current execution state is coordinator-owned." }
+    required:
+      - { role: product, path: FITWAY_PRODUCT.md, selector: { kind: markdown-heading, value: "Surface boundaries" }, reason: "Preserve the user and surface boundary." }
+      - { role: spec, path: SPEC.md, selector: { kind: markdown-heading, value: "Architecture & Schema" }, reason: "Use the canonical backend and schema semantics." }
+      - { role: contract, path: docs/schemas/project-state.schema.json, selector: { kind: json-pointer, value: "/properties/milestones" }, reason: "Check the affected structured contract." }
+      - { role: adr, path: docs/adr/ADR-003-edge-authority-and-reconciliation.md, selector: { kind: markdown-heading, value: "Decision" }, reason: "Expand the edge-authority decision when the data path touches it." }
+      - { role: workflow, path: docs/WORKFLOW.md, selector: { kind: markdown-heading, value: "Verification ladder" }, reason: "Run the required execution and verification gates." }
+      - { role: test, path: scripts/verify-repository.mjs, selector: { kind: whole-file, value: "" }, reason: "Confirm repository invariants remain executable." }
+    conditional:
+      - { trigger: "the change handles credentials, roles, or personal data", role: adr, path: docs/adr/ADR-002-auth-principals-sessions.md, selector: { kind: markdown-heading, value: "Decision" }, actionIfTriggered: READ, reason: "Security and privacy authority is conditional on the affected contract." }
+      - { trigger: "the change alters a reviewed migration or DTO", role: spec, path: SPEC.md, selector: { kind: markdown-heading, value: "Interfaces & Contracts" }, actionIfTriggered: READ, reason: "Re-read the exact interface contract." }
+
+  ui-maintenance:
+    responsibility: Maintain an existing public, staff, login, or owner surface without changing visual authority or locked semantics.
+    destinations:
+      - kind: task-packet
+        path: docs/phase-records/task-packets/<milestone-id>.yaml
+        selector: { kind: whole-file, value: "" }
+      - kind: evidence-receipt
+        path: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
+        selector: { kind: markdown-heading, value: "Rendered and accessibility evidence" }
+    normalStartup:
+      - { path: AGENTS.md, selector: { kind: whole-file, value: "" }, reason: "Repository policy is automatic context." }
+      - { path: PROJECT_STATE.yaml, selector: { kind: yaml-key, value: "milestones" }, reason: "Current execution state is coordinator-owned." }
+    required:
+      - { role: product, path: FITWAY_PRODUCT.md, selector: { kind: markdown-heading, value: "Operational states" }, reason: "Preserve state truth and false-live rules." }
+      - { role: spec, path: SPEC.md, selector: { kind: markdown-heading, value: "Acceptance Criteria" }, reason: "Preserve behavior and accessibility acceptance." }
+      - { role: design, path: DESIGN_GUIDE.md, selector: { kind: markdown-heading, value: "8. Responsive contract" }, reason: "Use the current responsive, RTL, interaction, and accessibility detail." }
+      - { role: visual-status, path: docs/design/VISUAL_AUTHORITY_STATUS.md, selector: { kind: markdown-heading, value: "Register" }, reason: "Check the surface's current visual-authority status." }
+      - { role: workflow, path: docs/WORKFLOW.md, selector: { kind: markdown-heading, value: "Phase UI polish loop" }, reason: "Run the required browser, accessibility, and visual checks." }
+      - { role: test, path: scripts/verify.mjs, selector: { kind: whole-file, value: "" }, reason: "Use the registered verification profile." }
+    conditional:
+      - { trigger: "the route or surface is Owner", role: adr, path: docs/adr/ADR-009-owner-composition-authority-supersession.md, selector: { kind: markdown-heading, value: "Decision" }, actionIfTriggered: READ, reason: "Owner composition has a named supersession boundary." }
+      - { trigger: "the surface has a Paper-controlled status", role: adr, path: docs/adr/ADR-007-paper-visual-source-of-truth.md, selector: { kind: markdown-heading, value: "Authority split" }, actionIfTriggered: READ, reason: "Expand the active Paper authority only when the register requires it." }
+
+  visual-authority-change:
+    responsibility: Propose or implement a material visual-authority change with explicit human and perceptual gates.
+    destinations:
+      - kind: task-packet
+        path: docs/phase-records/task-packets/<milestone-id>.yaml
+        selector: { kind: whole-file, value: "" }
+      - kind: visual-acceptance-record
+        path: docs/design/VISUAL_ACCEPTANCE_RECORD_TEMPLATE.md
+        selector: { kind: whole-file, value: "" }
+    normalStartup:
+      - { path: AGENTS.md, selector: { kind: whole-file, value: "" }, reason: "Repository policy is automatic context." }
+      - { path: PROJECT_STATE.yaml, selector: { kind: yaml-key, value: "milestones" }, reason: "Current execution state is coordinator-owned." }
+    required:
+      - { role: product, path: FITWAY_PRODUCT.md, selector: { kind: markdown-heading, value: "Approved visual baseline" }, reason: "Retain FITWAY identity and locked semantics." }
+      - { role: spec, path: SPEC.md, selector: { kind: markdown-heading, value: "Implementation authority and fidelity contract" }, reason: "Preserve product, accessibility, and data constraints." }
+      - { role: design, path: DESIGN_GUIDE.md, selector: { kind: markdown-heading, value: "15. Phase visual gate" }, reason: "Use the visual gate and responsive contract." }
+      - { role: visual-status, path: docs/design/VISUAL_AUTHORITY_STATUS.md, selector: { kind: markdown-heading, value: "Register" }, reason: "Resolve the current surface status." }
+      - { role: adr, path: docs/adr/ADR-007-paper-visual-source-of-truth.md, selector: { kind: markdown-heading, value: "Authority split" }, reason: "Use the approved Paper authority split where applicable." }
+      - { role: workflow, path: docs/WORKFLOW.md, selector: { kind: markdown-heading, value: "Design work: authority, concepts, and perceptual gates" }, reason: "Run concept, perceptual, and promotion gates." }
+      - { role: test, path: scripts/verify-repository.mjs, selector: { kind: whole-file, value: "" }, reason: "Preserve repository invariants and artifact hashes." }
+    conditional:
+      - { trigger: "the route or surface is Owner", role: adr, path: docs/adr/ADR-009-owner-composition-authority-supersession.md, selector: { kind: markdown-heading, value: "Decision" }, actionIfTriggered: READ, reason: "Owner composition has a named supersession boundary." }
+      - { trigger: "Paper is unavailable and composition depends on it", role: visual-status, path: docs/design/PAPER_GUIDE_CONFLICT_MAP.md, selector: { kind: whole-file, value: "" }, actionIfTriggered: NEEDS_HUMAN, reason: "A missing live Paper decision is a human stop condition." }
+
+  verification-independent:
+    responsibility: Independently judge a candidate against its packet, source selectors, acceptance criteria, and executable evidence.
+    destinations:
+      - kind: evidence-receipt
+        path: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
+        selector: { kind: markdown-heading, value: "Independent verifier findings" }
+      - kind: task-packet
+        path: docs/phase-records/task-packets/<milestone-id>.yaml
+        selector: { kind: whole-file, value: "" }
+    normalStartup:
+      - { path: AGENTS.md, selector: { kind: whole-file, value: "" }, reason: "Repository policy is automatic context." }
+      - { path: PROJECT_STATE.yaml, selector: { kind: yaml-key, value: "milestones" }, reason: "Current execution state is coordinator-owned." }
+    required:
+      - { role: workflow, path: docs/WORKFLOW.md, selector: { kind: markdown-heading, value: "Independent verification" }, reason: "Use the independent verifier boundary." }
+      - { role: contract, path: docs/schemas/project-state.schema.json, selector: { kind: json-pointer, value: "/properties/milestones" }, reason: "Inspect structured acceptance contracts." }
+      - { role: test, path: scripts/verify.mjs, selector: { kind: whole-file, value: "" }, reason: "Run the exact registered verification profile." }
+    conditional:
+      - { trigger: "baseline attribution is disputed", role: historical, path: PROJECT_STATE_HISTORY.yaml, selector: { kind: yaml-key, value: "milestones" }, actionIfTriggered: READ, reason: "Read only the named predecessor record." }
+
+  resume-integration:
+    responsibility: Resume or integrate an active candidate using the current ledger, exact packet, handoff, and predecessor identity.
+    destinations:
+      - kind: evidence-receipt
+        path: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
+        selector: { kind: markdown-heading, value: "Exact resume command" }
+      - kind: task-packet
+        path: docs/phase-records/task-packets/<milestone-id>.yaml
+        selector: { kind: whole-file, value: "" }
+    normalStartup:
+      - { path: AGENTS.md, selector: { kind: whole-file, value: "" }, reason: "Repository policy is automatic context." }
+      - { path: PROJECT_STATE.yaml, selector: { kind: yaml-key, value: "milestones" }, reason: "Current execution state is coordinator-owned." }
+    required:
+      - { role: workflow, path: docs/WORKFLOW.md, selector: { kind: markdown-heading, value: "Clean-session startup" }, reason: "Follow the resume and lease checks." }
+      - { role: contract, path: PROJECT_STATE.yaml, selector: { kind: yaml-key, value: "milestones" }, reason: "Resolve the current active milestone and handoff." }
+      - { role: test, path: scripts/verify-repository.mjs, selector: { kind: whole-file, value: "" }, reason: "Confirm state and repository invariants before integration." }
+    conditional:
+      - { trigger: "the predecessor or dependency is unresolved", role: historical, path: PROJECT_STATE_HISTORY.yaml, selector: { kind: yaml-key, value: "milestones" }, actionIfTriggered: READ, reason: "Expand only to the named dependency lineage." }
+
+  historical-audit:
+    responsibility: Answer a named historical question while comparing immutable evidence with current authority.
+    destinations:
+      - kind: evidence-receipt
+        path: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
+        selector: { kind: markdown-heading, value: "Named historical evidence" }
+      - kind: history-record
+        path: PROJECT_STATE_HISTORY.yaml
+        selector: { kind: yaml-key, value: "milestones" }
+    normalStartup:
+      - { path: AGENTS.md, selector: { kind: whole-file, value: "" }, reason: "Repository policy is automatic context." }
+      - { path: PROJECT_STATE.yaml, selector: { kind: yaml-key, value: "milestones" }, reason: "Compare against current state." }
+    required:
+      - { role: workflow, path: docs/WORKFLOW.md, selector: { kind: markdown-heading, value: "Active ledger and closed history" }, reason: "Keep terminal evidence separate from current authority." }
+      - { role: contract, path: PROJECT_STATE_HISTORY.yaml, selector: { kind: yaml-key, value: "milestones" }, historicalException: "Named terminal records only; never normal startup", reason: "The named audit target is immutable history." }
+      - { role: test, path: docs/phase-records/phase-10-aggregate.md, selector: { kind: markdown-heading, value: "Completed" }, historicalException: "Named phase record only", reason: "Use a named phase record when the audit asks for it." }
+    conditional:
+      - { trigger: "the audit identifies an adjacent terminal record", role: historical, path: PROJECT_STATE_HISTORY.yaml, selector: { kind: yaml-key, value: "milestones" }, actionIfTriggered: READ, reason: "Expand through an explicit historical pointer only." }
+
+  repository-infrastructure:
+    responsibility: Change repository process, schemas, scripts, validation, or context infrastructure without changing product semantics.
+    destinations:
+      - kind: evidence-receipt
+        path: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
+        selector: { kind: markdown-heading, value: "Validation commands and results" }
+      - kind: task-packet
+        path: docs/phase-records/task-packets/<milestone-id>.yaml
+        selector: { kind: whole-file, value: "" }
+    normalStartup:
+      - { path: AGENTS.md, selector: { kind: whole-file, value: "" }, reason: "Repository policy is automatic context." }
+      - { path: PROJECT_STATE.yaml, selector: { kind: yaml-key, value: "milestones" }, reason: "Current execution state is coordinator-owned." }
+    required:
+      - { role: workflow, path: docs/WORKFLOW.md, selector: { kind: markdown-heading, value: "Roles" }, reason: "Preserve coordinator, worker, and verifier ownership." }
+      - { role: contract, path: docs/schemas/project-state.schema.json, selector: { kind: json-pointer, value: "/properties/milestones" }, reason: "Inspect current state invariants before additive infrastructure work." }
+      - { role: test, path: scripts/verify-repository.mjs, selector: { kind: whole-file, value: "" }, reason: "Keep the repository ladder and mutation guards intact." }
+    conditional:
+      - { trigger: "the infrastructure can affect a Product or Spec guarantee", role: product, path: FITWAY_PRODUCT.md, selector: { kind: markdown-heading, value: "Canonical detail" }, actionIfTriggered: READ, reason: "Expand to the affected canonical guarantee." }
+      - { trigger: "the infrastructure changes a design-context bridge", role: design, path: DESIGN.md, selector: { kind: markdown-heading, value: "Design" }, actionIfTriggered: READ, reason: "The tool router is conditional context, not authority." }

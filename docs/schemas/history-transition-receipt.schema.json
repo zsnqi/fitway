@@ -1,0 +1,90 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://fitway.local/schemas/history-transition-receipt.schema.json",
+	"title": "FITWAY history transition receipt",
+	"type": "object",
+	"additionalProperties": false,
+	"required": ["schemaVersion", "kind", "recordedAt"],
+	"properties": {
+		"schemaVersion": { "const": 1 },
+		"kind": {
+			"enum": ["history-genesis-receipt", "history-transition-receipt"]
+		},
+		"recordedAt": { "type": "string", "format": "date-time" },
+		"historySha256": { "$ref": "#/$defs/hash" },
+		"milestoneCount": { "type": "integer", "minimum": 0 },
+		"recordDigestMap": {
+			"type": "object",
+			"additionalProperties": { "$ref": "#/$defs/hash" }
+		},
+		"previousReceiptSha256": {
+			"type": ["string", "null"],
+			"pattern": "^[0-9a-f]{64}$"
+		},
+		"beforeHistorySha256": { "$ref": "#/$defs/hash" },
+		"afterHistorySha256": { "$ref": "#/$defs/hash" },
+		"addedTerminal": { "$ref": "#/$defs/addedTerminal" },
+		"closedPacketSha256": { "$ref": "#/$defs/hash" },
+		"removedActiveMilestoneId": { "type": "string", "minLength": 1 },
+		"coordinatorRun": { "type": "string", "minLength": 1 }
+	},
+	"allOf": [
+		{
+			"if": {
+				"properties": { "kind": { "const": "history-genesis-receipt" } },
+				"required": ["kind"]
+			},
+			"then": {
+				"type": "object",
+				"required": ["historySha256", "milestoneCount", "recordDigestMap"],
+				"properties": {
+					"historySha256": { "$ref": "#/$defs/hash" },
+					"milestoneCount": { "type": "integer" },
+					"recordDigestMap": { "type": "object" }
+				}
+			}
+		},
+		{
+			"if": {
+				"properties": { "kind": { "const": "history-transition-receipt" } },
+				"required": ["kind"]
+			},
+			"then": {
+				"type": "object",
+				"required": [
+					"previousReceiptSha256",
+					"beforeHistorySha256",
+					"afterHistorySha256",
+					"addedTerminal",
+					"closedPacketSha256",
+					"removedActiveMilestoneId",
+					"coordinatorRun"
+				],
+				"properties": {
+					"previousReceiptSha256": { "type": ["string", "null"] },
+					"beforeHistorySha256": { "$ref": "#/$defs/hash" },
+					"afterHistorySha256": { "$ref": "#/$defs/hash" },
+					"addedTerminal": { "$ref": "#/$defs/addedTerminal" },
+					"closedPacketSha256": { "$ref": "#/$defs/hash" },
+					"removedActiveMilestoneId": { "type": "string" },
+					"coordinatorRun": { "type": "string" }
+				}
+			}
+		}
+	],
+	"$defs": {
+		"hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+		"addedTerminal": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["milestoneId", "status", "digest"],
+			"properties": {
+				"milestoneId": { "type": "string", "minLength": 1 },
+				"status": {
+					"enum": ["DONE", "BLOCKED", "NEEDS_HUMAN", "FAILED_VALIDATION"]
+				},
+				"digest": { "$ref": "#/$defs/hash" }
+			}
+		}
+	}
+}

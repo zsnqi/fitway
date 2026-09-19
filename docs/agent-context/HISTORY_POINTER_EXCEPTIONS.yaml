@@ -1,0 +1,17 @@
+schemaVersion: 1
+
+# These are immutable historical pointers. They admit only the two known missing Phase 10 handoff
+# targets; they do not rewrite history or make the replacements current authority.
+exceptions:
+  - recordPath: PROJECT_STATE_HISTORY.yaml#/milestones/phase10-ui-csv/handoff
+    brokenTarget: docs/phase-records/handoffs/phase10-ui-csv/20260816-153500-p10_ui_csv_b02-failure-diagnosis-correction.md
+    reason: The archived phase10-ui-csv predecessor record retains a handoff path that was never carried into this clean repository frontier.
+    disposition: Replaced by the named successor lineage; preserve the immutable record and do not recreate the missing file.
+    replacement: docs/phase-records/handoffs/coordinator/20260821-193000-p10_ui_csv_b06-done.md
+    reviewer: coordinator-agent-context-migration-r01
+  - recordPath: PROJECT_STATE_HISTORY.yaml#/milestones/phase10-ui-csv-b03/handoff
+    brokenTarget: docs/phase-records/handoffs/phase10-ui-csv/20260816-211500-p10_ui_csv_b03-paper-fidelity-needs-human.md
+    reason: The archived phase10-ui-csv b03 record retains a handoff path that is absent from the preserved clean repository frontier.
+    disposition: Replaced by the later coordinator continuation records; preserve the immutable record and do not recreate the missing file.
+    replacement: docs/phase-records/handoffs/coordinator/20260821-193000-p10_ui_csv_b06-done.md
+    reviewer: coordinator-agent-context-migration-r01

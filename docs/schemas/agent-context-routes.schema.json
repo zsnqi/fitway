@@ -1,0 +1,134 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://fitway.local/schemas/agent-context-routes.schema.json",
+	"title": "FITWAY agent-context route registry",
+	"type": "object",
+	"additionalProperties": false,
+	"required": ["schemaVersion", "mode", "routes"],
+	"properties": {
+		"schemaVersion": { "const": 1 },
+		"mode": { "const": "compatibility" },
+		"routes": {
+			"type": "object",
+			"minProperties": 8,
+			"propertyNames": { "pattern": "^[a-z][a-z0-9-]*$" },
+			"additionalProperties": { "$ref": "#/$defs/route" }
+		}
+	},
+	"$defs": {
+		"role": {
+			"enum": [
+				"product",
+				"spec",
+				"workflow",
+				"adr",
+				"contract",
+				"design",
+				"visual-status",
+				"test",
+				"historical"
+			]
+		},
+		"selector": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["kind", "value"],
+			"properties": {
+				"kind": {
+					"enum": ["whole-file", "markdown-heading", "yaml-key", "json-pointer"]
+				},
+				"value": { "type": "string" }
+			}
+		},
+		"source": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["path", "selector", "reason"],
+			"properties": {
+				"path": { "type": "string", "minLength": 1 },
+				"selector": { "$ref": "#/$defs/selector" },
+				"reason": { "type": "string", "minLength": 1 },
+				"historicalException": { "type": "string", "minLength": 1 },
+				"role": { "$ref": "#/$defs/role" },
+				"trigger": { "type": "string", "minLength": 1 },
+				"actionIfTriggered": { "enum": ["READ", "NEEDS_HUMAN"] }
+			}
+		},
+		"requiredSource": {
+			"allOf": [
+				{ "$ref": "#/$defs/source" },
+				{
+					"type": "object",
+					"required": ["role"],
+					"properties": { "role": { "$ref": "#/$defs/role" } }
+				}
+			]
+		},
+		"conditionalSource": {
+			"allOf": [
+				{ "$ref": "#/$defs/source" },
+				{
+					"type": "object",
+					"required": ["trigger", "role", "actionIfTriggered"],
+					"properties": {
+						"trigger": { "type": "string", "minLength": 1 },
+						"role": { "$ref": "#/$defs/role" },
+						"actionIfTriggered": { "enum": ["READ", "NEEDS_HUMAN"] }
+					}
+				}
+			]
+		},
+		"startupSource": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["path", "selector", "reason"],
+			"properties": {
+				"path": { "type": "string", "minLength": 1 },
+				"selector": { "$ref": "#/$defs/selector" },
+				"reason": { "type": "string", "minLength": 1 }
+			}
+		},
+		"destination": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": ["kind", "path", "selector"],
+			"properties": {
+				"kind": { "type": "string", "minLength": 1 },
+				"path": { "type": "string", "minLength": 1 },
+				"selector": { "$ref": "#/$defs/selector" }
+			}
+		},
+		"route": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": [
+				"responsibility",
+				"destinations",
+				"normalStartup",
+				"required",
+				"conditional"
+			],
+			"properties": {
+				"responsibility": { "type": "string", "minLength": 1 },
+				"destinations": {
+					"type": "array",
+					"minItems": 1,
+					"items": { "$ref": "#/$defs/destination" }
+				},
+				"normalStartup": {
+					"type": "array",
+					"items": { "$ref": "#/$defs/startupSource" }
+				},
+				"required": {
+					"type": "array",
+					"minItems": 1,
+					"items": { "$ref": "#/$defs/requiredSource" }
+				},
+				"conditional": {
+					"type": "array",
+					"items": { "$ref": "#/$defs/conditionalSource" }
+				}
+			}
+		}
+	}
+}

@@ -415,6 +415,7 @@ function fastSteps(callerIdentity) {
 			acquireProvenanceStep(callerIdentity),
 		],
 		["Repository invariants", ["check:repository"]],
+		["Agent context", ["check:agent-context"]],
 		["Frontier preservation evidence", ["check:frontier"]],
 		["Biome check", ["check"]],
 		[

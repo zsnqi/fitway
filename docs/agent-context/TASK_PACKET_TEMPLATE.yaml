@@ -1,0 +1,42 @@
+# Coordinator-authored derived context template. This file is not an active packet and is not
+# authority. Replace every placeholder before a packet becomes READY.
+schemaVersion: 1
+milestoneId: <milestone-id>
+taskClass: repository-infrastructure
+packetStatus: DRAFT
+stateRef: PROJECT_STATE.yaml#/milestones/<milestone-id>
+baseCommit: SELF
+task:
+  objective: <one bounded observable outcome>
+  acceptanceCriteria:
+    - <observable result>
+  explicitExclusions:
+    - <not authorized>
+scope:
+  ownedPaths:
+    - <exact path or bounded pattern>
+  forbiddenPaths:
+    - <exact path or bounded pattern>
+  sharedLeases: []
+authorities:
+  required:
+    - role: workflow
+      path: docs/WORKFLOW.md
+      selector: { kind: markdown-heading, value: "Roles" }
+      reason: <why this task needs it>
+  conditional: []
+continuity:
+  predecessorMilestones: []
+  currentHandoff: null
+  unresolvedDecisions: []
+verification:
+  profile: <registered verify phase or explicit focused profile>
+  orderedGates:
+    - <gate>
+  independentReviewRequired: true
+evidence:
+  receiptTemplate: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
+  requiredArtifacts:
+    - <artifact kind/path rule>
+limitations:
+  - <known non-claim>
