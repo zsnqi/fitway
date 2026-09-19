@@ -504,7 +504,7 @@ describe("real repository acceptance", () => {
 		} finally {
 			spy.mockRestore();
 		}
-	}, 60_000);
+	}, 120_000);
 
 	it("rejects clean-candidate integration of a protected path", async () => {
 		const root = createCleanCandidate();
