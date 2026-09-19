@@ -1,7 +1,7 @@
 schemaVersion: 1
 milestoneId: agent-context-pilot-backend-operational-snapshot-r01
 taskClass: backend-api-data
-packetStatus: DRAFT
+packetStatus: READY
 stateRef: PROJECT_STATE.yaml#/milestones/agent-context-pilot-backend-operational-snapshot-r01
 baseCommit: 7e79de90c52adb60127b3dfd57c88013985bbfc1
 task:
@@ -94,12 +94,12 @@ authorities:
 continuity:
   predecessorMilestones:
     - agent-context-architecture-migration-r01
-  currentHandoff: docs/phase-records/handoffs/coordinator/20260919-174000-agent-context-architecture-migration-r01-m3-pilot-kickoff.md
+  currentHandoff: docs/phase-records/handoffs/coordinator/20260919-190000-agent-context-pilot-backend-operational-snapshot-r01-evidence.md
   unresolvedDecisions: []
 verification:
   profile: phase4-health plus focused operationalSnapshot unit tests
   orderedGates:
-    - strict packet/state/selector/hash validation
+    - bounded context:show continuity plus repository-wide tracked packet/state/selector/hash validation
     - focused operationalSnapshot unit tests
     - registered phase4-health disposable-Postgres verification
     - repository invariants and unchanged-status comparison
