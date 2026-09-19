@@ -41,9 +41,9 @@ milestones:
     sharedLeases:
       - coordinator-exclusive root routing, state/history, package/verification, and migration-record surfaces
     validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-09-19T17:45:00+03:00"
-    leaseExpiresAt: "2026-09-20T02:55:00+03:00"
-    handoff: docs/phase-records/handoffs/coordinator/20260919-174000-agent-context-architecture-migration-r01-m3-pilot-kickoff.md
+    lastHeartbeatAt: "2026-09-19T19:55:00+03:00"
+    leaseExpiresAt: "2026-09-20T04:00:00+03:00"
+    handoff: docs/phase-records/handoffs/coordinator/20260919-195500-agent-context-architecture-migration-r01-m3-closure.md
     stopReason: null
     gates:
       unit: PASS
