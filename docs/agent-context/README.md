@@ -25,23 +25,34 @@ sources that may be promoted to required for a packet. Supplemental packet sourc
 affected files/selectors only under a role registered by that route; arbitrary or unauthorized
 historical authorities are rejected.
 
-During M2 the layer is in compatibility mode. Existing active milestones may have no packet; the
-checker reports that condition as a warning and does not pretend that packet context was loaded.
-Once the prospective active-state migration makes packets mandatory, the same condition becomes a
-failure. Any evaluable path, case, tracking, schema, selector, scope, or pointer violation fails
-even in compatibility mode.
+Existing active milestones may have no packet; the checker reports that condition as a warning and
+does not pretend that packet context was loaded. When all packet metadata is absent,
+`context:show` preserves its legacy output. Partial packet metadata fails closed. Any evaluable
+path, case, tracking, schema, selector, scope, or pointer violation fails even in compatibility
+mode.
 
-Use:
+At startup, use the bounded route and continuity check:
 
 ```text
-pnpm check:agent-context
 pnpm context:show -- --milestone <milestone-id>
 ```
 
-`context:show` prints a bounded route plan, selectors, conditional triggers, destinations, and
-stop conditions. When a packet exists, it also prints that packet's exact required and conditional
-authority entries. It does not concatenate source files, claim that a source was read, summarize an
-authority, or resolve a conflict automatically.
+`context:show` reads `ROUTES.yaml` and `PROJECT_STATE.yaml`, then inspects and reads only the
+selected packet, plus filesystem path inspection. For registered packets, it checks the stable
+path, state hash, packet identity, task class, base, state reference, scope, handoff, and lifecycle
+before printing a plan. It does not open history, concatenate authority files, claim those sources
+were read, summarize an authority, or resolve a conflict automatically.
+
+For repository-wide mechanical validation, run:
+
+```text
+pnpm check:agent-context
+```
+
+`check-agent-context` is a repository-wide mechanical validator that checks active context
+invariants and audits closed ledger records against `PROJECT_STATE_HISTORY.yaml`. Its mechanical
+history parsing is validator work; it does not load historical content into an agent's reasoning or
+startup context. Agents open historical content only when a named trigger or pointer requires it.
 
 Historical pointer exceptions are deliberately narrow. They document immutable records whose
 targets are known to be absent; they do not repair, rewrite, or promote historical material.
