@@ -40,6 +40,9 @@ const CONTEXT_FILES = [
 	"docs/schemas/task-packet.schema.json",
 	"docs/schemas/history-transition-receipt.schema.json",
 ];
+const FIXTURE_MILESTONES = [
+	"agent-context-architecture-migration-r01",
+] as const;
 const fixtureRoots: string[] = [];
 
 type JsonObject = Record<string, unknown>;
@@ -124,6 +127,8 @@ function makeFixture(): string {
 			copyFixtureFile(root, source.path);
 		}
 	}
+	// Route sources include PROJECT_STATE.yaml, so isolate after copying every authority.
+	isolateFixtureMilestones(root, FIXTURE_MILESTONES);
 	copyFixtureFile(
 		root,
 		docsPath(
@@ -134,6 +139,28 @@ function makeFixture(): string {
 	return root;
 }
 
+function isolateFixtureMilestones(
+	root: string,
+	milestoneIds: readonly string[],
+): void {
+	const statePath = path.resolve(root, "PROJECT_STATE.yaml");
+	const state = parseYaml(
+		readFileSync(statePath, "utf8"),
+	) as unknown as FixtureState;
+	const milestones = Object.fromEntries(
+		milestoneIds.map((milestoneId) => {
+			const milestone = state.milestones[milestoneId];
+			if (!milestone)
+				throw new Error(
+					`fixture milestone ${milestoneId} must exist in copied PROJECT_STATE.yaml`,
+				);
+			return [milestoneId, milestone];
+		}),
+	) as FixtureState["milestones"];
+	state.milestones = milestones;
+	writeFileSync(statePath, stringifyYaml(state), "utf8");
+}
+
 function docsPath(value: string): string {
 	return value;
 }
@@ -142,8 +169,7 @@ function activeHandoffPath(root = REAL_ROOT): string {
 	const state = parseYaml(
 		readFileSync(path.resolve(root, "PROJECT_STATE.yaml"), "utf8"),
 	) as unknown as FixtureState;
-	const handoff =
-		state.milestones["agent-context-architecture-migration-r01"]?.handoff;
+	const handoff = state.milestones[FIXTURE_MILESTONES[0]]?.handoff;
 	if (typeof handoff !== "string" || handoff.trim() === "")
 		throw new Error("fixture migration milestone must have a handoff path");
 	return handoff;
@@ -185,7 +211,7 @@ function basePacket(
 	const state = parseYaml(
 		readFileSync(path.resolve(root, "PROJECT_STATE.yaml"), "utf8"),
 	) as unknown as FixtureState;
-	const milestoneId = "agent-context-architecture-migration-r01";
+	const milestoneId = FIXTURE_MILESTONES[0];
 	const milestone = state.milestones[milestoneId];
 	const registry = parseYaml(
 		readFileSync(path.resolve(root, "docs/agent-context/ROUTES.yaml"), "utf8"),
@@ -461,6 +487,14 @@ afterEach(() => {
 });
 
 describe("check-agent-context", () => {
+	it("isolates fixture active state to the milestones under test", () => {
+		const root = makeFixture();
+		const state = parseYaml(
+			readFileSync(path.resolve(root, "PROJECT_STATE.yaml"), "utf8"),
+		) as unknown as FixtureState;
+		expect(Object.keys(state.milestones)).toEqual([...FIXTURE_MILESTONES]);
+	});
+
 	it("passes the current compatibility-mode registry and warns when the active packet is absent", async () => {
 		const result = await checkAgentContext({
 			root: REAL_ROOT,
