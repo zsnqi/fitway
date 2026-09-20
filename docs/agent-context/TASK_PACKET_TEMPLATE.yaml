@@ -38,5 +38,27 @@ evidence:
   receiptTemplate: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
   requiredArtifacts:
     - <artifact kind/path rule>
+# UI/design packets (taskClass ui-maintenance or visual-authority-change) additionally require the
+# three objects below. The checker rejects a UI packet without them and requires
+# designContextCheck.command to run check:design-context; uncomment and fill them for UI work.
+# visual:
+#   surfaceKey: <surface key>
+#   authorityStatus: ACTIVE | SUPERSEDED | VACANT | UNRESOLVED
+#   authorityKey: <register or manifest key>
+#   governingDecision: <ADR or decision-record path>
+#   currentFrames:
+#     - { path: <tracked frame path>, sha256: <64 lowercase hex> }
+#   referenceFrames:
+#     - { path: <tracked frame path>, sha256: <64 lowercase hex> }
+#   openHumanDecisions: []
+#   paperAvailability: AVAILABLE | UNAVAILABLE | NOT_APPLICABLE
+#   perceptualGate: { status: PASS | PENDING | NOT_REQUIRED | NEEDS_HUMAN, criteria: <what was judged> }
+#   promotionGate: { status: PASS | PENDING | NOT_REQUIRED | NEEDS_HUMAN, criteria: <separate approval rule> }
+#   acceptanceAuthority: PAPER | MANIFEST | HUMAN_DECISION | NONE
+# designContextCheck:
+#   command: pnpm check:design-context
+#   status: PASS | PENDING | NEEDS_HUMAN
+#   artifact: <evidence path or null>
+# accessibilityGate: { status: PASS | PENDING | NOT_REQUIRED | NEEDS_HUMAN, criteria: <judgment> }
 limitations:
   - <known non-claim>
