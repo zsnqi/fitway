@@ -76,6 +76,7 @@ interface WrittenDocuments {
 }
 
 interface TransitionResult {
+	mode?: string;
 	anchorSha256: string;
 	beforeCount: number;
 	afterCount: number;
@@ -85,6 +86,10 @@ interface TransitionResult {
 	declaredTargets: string[];
 	receiptPath: string | null;
 	receiptPaths: string[];
+	genesisPath?: string;
+	lastReceiptPath?: string;
+	currentHistorySha256?: string;
+	legacyReceiptPaths?: string[];
 }
 
 const fixtureRoots: string[] = [];
@@ -445,10 +450,23 @@ describe("real repository transition evidence", () => {
 		expect(canonicalMilestoneDigest(r03)).toBe(R03_DIGEST);
 	});
 
-	it("holds for the real state and history before and after the phase3-clock-flush transition that archived r08", async () => {
+	it("holds for the real transition while archived pre-genesis receipts remain provenance", async () => {
 		const result = (await verifyHistoryTransition({
 			root: REAL_ROOT,
 		})) as TransitionResult;
+		if (result.mode === "v2") {
+			expect(result.genesisPath).toMatch(
+				/^docs\/phase-records\/history-transitions\/.*\.json$/,
+			);
+			expect(result.lastReceiptPath).toMatch(
+				/^docs\/phase-records\/history-transitions\/.*\.json$/,
+			);
+			expect(result.beforeCount).toBeGreaterThanOrEqual(100);
+			expect(result.afterCount).toBeGreaterThanOrEqual(result.beforeCount);
+			expect(result.currentHistorySha256).toMatch(/^[0-9a-f]{64}$/);
+			expect(result.legacyReceiptPaths).toEqual([]);
+			return;
+		}
 		expect(TRANSITION_ANCHOR_SHA256).toBe(
 			"c77ecd3c933c2c51128ef74de703357e7619264c0334557c3f9e13dacc3d3869",
 		);

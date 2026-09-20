@@ -1,0 +1,87 @@
+schemaVersion: 1
+milestoneId: phase3-clock-flush-test-reliability-r01
+taskClass: repository-infrastructure
+packetStatus: CLOSED
+stateRef: PROJECT_STATE.yaml#/milestones/phase3-clock-flush-test-reliability-r01
+baseCommit: 1a24a973570371949008a7a5f037c47b818c0e01
+task:
+  objective: Close the verified Phase 3 clock-flush reliability successor through the v2 append-only history transition without changing its accepted implementation or evidence.
+  acceptanceCriteria:
+    - The two authorized Playwright delay-zero clock flushes remain the only implementation change attributed to the successor.
+    - The accepted integration commit and all recorded unit, integration, browser, accessibility, and independent-review gates remain unchanged.
+    - The terminal record is appended without modifying any pre-existing history byte or canonical digest.
+    - The preserved r08 legacy transition declaration and receipt remain valid compatibility evidence.
+  explicitExclusions:
+    - Any new application, Product, Spec, UI, visual-authority, screenshot, dependency, schema, or migration change.
+    - Any rewrite of r08, phase3, or other pre-existing evidence.
+    - Any claim that the recorded canonical screenshot mismatches were accepted or promoted.
+scope:
+  ownedPaths:
+    - "the single authorized test-reliability edit in tests/browser/phase3.browser.spec.ts: the two delay-0 Playwright clock flushes advance one tick (fastForward(0) to fastForward(1)); nothing else in the file"
+    - "anchor retarget: scripts/project-state-history-transition.mjs and scripts/project-state-history-transition.test.ts successor pre-transition anchor pin only, and scripts/verify-repository.mjs anchor-era label only"
+    - the successor pre-transition anchor, frozen history copy, and .sha256 companions, and the r08 history transition receipt under docs/phase-records/handoffs/coordinator/ only
+    - PROJECT_STATE.yaml, the successor plan, the successor handoff, the independent-verification record, and the successor frozen evidence under docs/phase-records/handoffs/coordinator/**
+    - PROJECT_STATE_HISTORY.yaml
+  forbiddenPaths:
+    - all apps/**, packages/**, product behavior, APIs, schemas, migrations, dependencies, and pnpm-lock.yaml bytes
+    - vitest.config.ts, vitest.integration.config.ts, playwright.config.ts, and root package.json behavior
+    - all tests/browser/** except the exact two-call edit in tests/browser/phase3.browser.spec.ts (including every screenshot, canonical, and scripts/check-frontier-preservation.mjs and its test)
+    - FITWAY_PRODUCT.md, SPEC.md, DESIGN_GUIDE.md, ADR-007, ADR-009, PHASES.md, Paper exports, authority manifests/mappings/hashes, and canonicals
+    - prior handoffs, inventories, receipts, and history entries other than the r08 archive append
+    - all Owner, Staff, or Public design or presentation work, and existing untracked user inspection artifacts
+  sharedLeases: []
+authorities:
+  required:
+    - role: workflow
+      path: docs/WORKFLOW.md
+      selector: { kind: markdown-heading, value: "Roles" }
+      reason: Preserve coordinator ownership of the terminal transition.
+    - role: contract
+      path: docs/schemas/project-state.schema.json
+      selector: { kind: json-pointer, value: "/properties/milestones" }
+      reason: Close the legacy active record through the prospective v2 contract.
+    - role: test
+      path: scripts/verify-repository.mjs
+      selector: { kind: whole-file, value: "" }
+      reason: Preserve repository and append-only history invariants.
+    - role: workflow
+      path: docs/WORKFLOW.md
+      selector: { kind: markdown-heading, value: "Verification ladder" }
+      reason: Retain the accepted verification meaning recorded by the successor.
+    - role: test
+      path: tests/browser/phase3.browser.spec.ts
+      selector: { kind: whole-file, value: "" }
+      reason: Identify the exact accepted two-call test-reliability implementation.
+  conditional:
+    - trigger: the infrastructure can affect a Product or Spec guarantee
+      role: product
+      path: FITWAY_PRODUCT.md
+      selector: { kind: markdown-heading, value: "Canonical detail" }
+      actionIfTriggered: READ
+    - trigger: the infrastructure changes a design-context bridge
+      role: design
+      path: DESIGN.md
+      selector: { kind: markdown-heading, value: "Design" }
+      actionIfTriggered: READ
+continuity:
+  predecessorMilestones:
+    - design-environment-audit-remediation-r08
+  currentHandoff: docs/phase-records/handoffs/coordinator/20260918-205000-phase3-clock-flush-test-reliability-r01-integration-closure.md
+  unresolvedDecisions: []
+verification:
+  profile: accepted phase3 clock-flush successor evidence; no new behavioral run required for archival
+  orderedGates:
+    - validate the closed packet and preserved terminal record
+    - verify the legacy r08 receipt against its original byte boundary
+    - verify the v2 append-only receipt chain and repository invariants
+    - obtain independent review of the M4 transition
+  independentReviewRequired: true
+evidence:
+  receiptTemplate: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
+  requiredArtifacts:
+    - accepted integration commit ecc26a9eccad1c25e12667fd066af6e5caa155ae
+    - phase3 integration closure and independent-verification records
+    - v2 terminal transition receipt and raw-prefix proof
+limitations:
+  - Archival does not add or re-run product behavior and does not accept any historical screenshot mismatch.
+  - The v2 and legacy receipts are repository-internal provenance rather than external attestation.

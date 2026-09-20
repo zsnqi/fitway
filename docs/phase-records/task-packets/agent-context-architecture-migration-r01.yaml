@@ -1,0 +1,90 @@
+schemaVersion: 1
+milestoneId: agent-context-architecture-migration-r01
+taskClass: repository-infrastructure
+packetStatus: READY
+stateRef: PROJECT_STATE.yaml#/milestones/agent-context-architecture-migration-r01
+baseCommit: 19e28f4f0874d96569bc6944e38ad94b89924b60
+task:
+  objective: Complete the approved agent-context architecture migration through strict active packets, append-only history transitions, bounded startup routing, responsibility migration, design specialization, fresh-agent validation, and final independent verification without changing product or application semantics.
+  acceptanceCriteria:
+    - Active state is a compact v2 execution ledger in which every open milestone has exactly one validated packet and terminal records are absent.
+    - History transitions preserve every pre-existing byte and canonical record digest while chaining reviewed genesis and per-terminal receipts.
+    - Fresh agents in clean checkouts discover the assigned task and canonical selectors, expand conditionals deliberately, and avoid historical material by default.
+    - Product, Spec, security, privacy, accessibility, visual-authority, and historical semantics remain unchanged.
+    - The registered migration verification profile, required fast and full ladders, and fresh independent review pass without repository mutation.
+  explicitExclusions:
+    - Any application behavior or UI implementation change under apps/** or packages/**.
+    - Any database, OpenAPI, DTO, dependency, lockfile, Product, Spec, security, privacy, accessibility, or visual-authority semantic change.
+    - Any canonical screenshot, Paper artifact, or visual baseline promotion.
+    - Any rewrite of pre-existing terminal history or unrelated preserved frontier work.
+scope:
+  ownedPaths:
+    - AGENTS.md, CLAUDE.md, PRODUCT.md, DESIGN.md, docs/WORKFLOW.md, and the authority-neutral routing text needed by the migration
+    - PROJECT_STATE.yaml, project state/history schemas, task packets, transition receipts, and migration coordinator records
+    - docs/agent-context/** and scripts/check-agent-context*, scripts/show-agent-context.mjs, package/verification wiring, and focused tests
+    - the selectively integrated predecessor-owned portability closure recorded by the M0 handoff
+  forbiddenPaths:
+    - all application behavior and UI implementation under apps/** and packages/**
+    - database schemas/migrations, OpenAPI/DTO behavior, dependencies, and pnpm-lock.yaml bytes
+    - canonical screenshots, Paper artifacts, and any visual baseline promotion
+    - preserved Owner/Staff presentation candidates, screenshots, audits, plans, and unrelated handoffs
+    - Product, Spec, security, privacy, data, accessibility, or visual-authority semantic changes beyond faithfully routing existing authority
+  sharedLeases:
+    - coordinator-exclusive root routing, state/history, package/verification, and migration-record surfaces
+authorities:
+  required:
+    - role: workflow
+      path: docs/WORKFLOW.md
+      selector: { kind: markdown-heading, value: "Roles" }
+      reason: Preserve coordinator, worker, verifier, lease, and integration ownership.
+    - role: contract
+      path: docs/schemas/project-state.schema.json
+      selector: { kind: json-pointer, value: "/properties/milestones" }
+      reason: Govern the prospective active-only v2 ledger.
+    - role: test
+      path: scripts/verify-repository.mjs
+      selector: { kind: whole-file, value: "" }
+      reason: Preserve repository, state, history, and context invariants.
+    - role: contract
+      path: docs/schemas/history-transition-receipt.schema.json
+      selector: { kind: whole-file, value: "" }
+      reason: Govern the append-only v2 receipt chain without changing legacy history records.
+    - role: test
+      path: scripts/project-state-history-transition.mjs
+      selector: { kind: whole-file, value: "" }
+      reason: Verify raw history prefixes, canonical record digests, receipt links, and closed packets.
+  conditional:
+    - trigger: the infrastructure can affect a Product or Spec guarantee
+      role: product
+      path: FITWAY_PRODUCT.md
+      selector: { kind: markdown-heading, value: "Canonical detail" }
+      actionIfTriggered: READ
+    - trigger: the infrastructure changes a design-context bridge
+      role: design
+      path: DESIGN.md
+      selector: { kind: markdown-heading, value: "Design" }
+      actionIfTriggered: READ
+continuity:
+  predecessorMilestones: []
+  currentHandoff: docs/phase-records/handoffs/coordinator/20260920-020000-agent-context-architecture-migration-r01-m4-closure.md
+  unresolvedDecisions: []
+verification:
+  profile: agent-context-architecture-migration
+  orderedGates:
+    - focused active-state, packet-lifecycle, history-chain, routing, and schema tests
+    - repository and agent-context mechanical validation
+    - clean-checkout authoritative fast ladder and migration phase profile
+    - clean-checkout authoritative full ladder when required by the final stage
+    - fresh-agent scenario suite and independent architecture and verification review
+  independentReviewRequired: true
+evidence:
+  receiptTemplate: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
+  requiredArtifacts:
+    - exact packet/state hashes and bounded context discovery output
+    - append-only history genesis and transition receipts with byte and canonical digest evidence
+    - fresh-agent scenario transcripts and source/read accounting
+    - authoritative verification outputs with unchanged pre/post repository status
+    - independent architecture and verification verdicts
+limitations:
+  - Routing, schemas, validators, and receipts are repository-internal co-mutable evidence rather than external attestation or a sandbox.
+  - This migration changes context architecture only and makes no Product, application, or visual acceptance claim.

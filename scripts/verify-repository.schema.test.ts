@@ -18,11 +18,21 @@ const historySchema = JSON.parse(
 		"utf8",
 	),
 );
+const receiptSchema = JSON.parse(
+	readFileSync(
+		new URL(
+			"../docs/schemas/history-transition-receipt.schema.json",
+			import.meta.url,
+		),
+		"utf8",
+	),
+);
 const ajv = new Ajv2020({ allErrors: true, strict: true });
 addFormats(ajv);
 ajv.addSchema(stateSchema);
 const validateState = ajv.compile(stateSchema);
 const validateHistory = ajv.compile(historySchema);
+const validateReceipt = ajv.compile(receiptSchema);
 
 const INTEGRATED_COMMIT = "4df79885ef7e039dcf2d27eb87cf41f8c78b73e2";
 const UPDATED_AT = "2026-09-15T14:35:00+03:00";
@@ -54,6 +64,18 @@ function milestone(overrides: Record<string, unknown> = {}) {
 	};
 }
 
+function activeMilestone(overrides: Record<string, unknown> = {}) {
+	return milestone({
+		status: "IN_PROGRESS",
+		objective: "Validate the active migration frontier",
+		taskClass: "repository-infrastructure",
+		taskPacket: "docs/phase-records/task-packets/active-frontier.yaml",
+		taskPacketSha256: "a".repeat(64),
+		ownerSession: "coordinator-session",
+		...overrides,
+	});
+}
+
 function historyState(overrides: Record<string, unknown> = {}) {
 	return {
 		schemaVersion: 1,
@@ -65,7 +87,7 @@ function historyState(overrides: Record<string, unknown> = {}) {
 
 function activeState(overrides: Record<string, unknown> = {}) {
 	return {
-		schemaVersion: 1,
+		schemaVersion: 2,
 		updatedAt: UPDATED_AT,
 		coordinator: {
 			owner: "coordinator",
@@ -89,7 +111,9 @@ function activeState(overrides: Record<string, unknown> = {}) {
 			validationRecord: null,
 			independentVerification: null,
 		},
-		milestones: { "active-frontier": milestone() },
+		milestones: {
+			"active-frontier": activeMilestone(),
+		},
 		...overrides,
 	};
 }
@@ -137,7 +161,7 @@ describe("project-state schemas", () => {
 		expect(
 			validateState(
 				activeState({
-					milestones: { "active-frontier": milestone(packetFields) },
+					milestones: { "active-frontier": activeMilestone(packetFields) },
 				}),
 			),
 		).toBe(true);
@@ -164,7 +188,7 @@ describe("project-state schemas", () => {
 				validateState(
 					activeState({
 						milestones: {
-							"active-frontier": milestone({ ...packetFields, ...entry }),
+							"active-frontier": activeMilestone({ ...packetFields, ...entry }),
 						},
 					}),
 				),
@@ -176,7 +200,9 @@ describe("project-state schemas", () => {
 		expect(
 			validateState(
 				activeState({
-					milestones: { "active-frontier": withoutStopReason(milestone()) },
+					milestones: {
+						"active-frontier": withoutStopReason(activeMilestone()),
+					},
 				}),
 			),
 		).toBe(false);
@@ -210,7 +236,7 @@ describe("project-state schemas", () => {
 			receipt: "docs/phase-records/handoffs/coordinator/receipt.json",
 			successorMilestoneId: "active-frontier",
 		};
-		const declaring = milestone({ historyMutations: [declaration] });
+		const declaring = activeMilestone({ historyMutations: [declaration] });
 		expect(
 			validateState(
 				activeState({ milestones: { "active-frontier": declaring } }),
@@ -235,11 +261,170 @@ describe("project-state schemas", () => {
 				validateState(
 					activeState({
 						milestones: {
-							"active-frontier": milestone({ historyMutations: [entry] }),
+							"active-frontier": activeMilestone({ historyMutations: [entry] }),
 						},
 					}),
 				),
 			).toBe(false);
 		}
+	});
+
+	it("allows an empty active v2 state while requiring strict open milestone metadata", () => {
+		expect(validateState(activeState({ milestones: {} }))).toBe(true);
+		expect(
+			validateState(
+				activeState({
+					milestones: {
+						"active-frontier": {
+							...(activeState().milestones as Record<string, unknown>)[
+								"active-frontier"
+							],
+							status: "DONE",
+						},
+					},
+				}),
+			),
+		).toBe(false);
+		expect(
+			validateState(
+				activeState({
+					milestones: {
+						"active-frontier": activeMilestone({ ownerSession: null }),
+					},
+				}),
+			),
+		).toBe(false);
+		expect(
+			validateState(
+				activeState({
+					milestones: {
+						"active-frontier": activeMilestone({
+							ownerSession: "owner session prose",
+						}),
+					},
+				}),
+			),
+		).toBe(false);
+		expect(
+			validateState(
+				activeState({
+					milestones: {
+						"active-frontier": {
+							...(activeState().milestones as Record<string, unknown>)[
+								"active-frontier"
+							],
+							objective: undefined,
+						},
+					},
+				}),
+			),
+		).toBe(false);
+		expect(
+			validateState(
+				activeState({
+					milestones: {
+						"active-frontier": {
+							...(activeState().milestones as Record<string, unknown>)[
+								"active-frontier"
+							],
+							ownerSession: "x".repeat(129),
+						},
+					},
+				}),
+			),
+		).toBe(false);
+	});
+
+	it("keeps the history schema permissive for terminal narratives and accepts the v2 receipt forms", () => {
+		const historical = historyState({
+			milestones: {
+				"closed-record": milestone({
+					ownerSession: "historical narrative ".repeat(40),
+					status: "DONE",
+				}),
+			},
+		});
+		expect(validateHistory(historical)).toBe(true);
+
+		const genesis = {
+			schemaVersion: 2,
+			kind: "history-genesis-receipt",
+			recordedAt: UPDATED_AT,
+			historyPath: "PROJECT_STATE_HISTORY.yaml",
+			historySha256: "a".repeat(64),
+			milestoneCount: 1,
+			historyByteLength: 100,
+			recordDigestMap: { "closed-record": "b".repeat(64) },
+			activeMilestoneDigests: { "active-frontier": "c".repeat(64) },
+			legacyCheckpoint: {
+				receiptPath: "docs/phase-records/handoffs/coordinator/r08.json",
+				receiptSha256: "d".repeat(64),
+				afterHistorySha256: "a".repeat(64),
+				afterHistoryBytes: 100,
+			},
+		};
+		const transition = {
+			schemaVersion: 2,
+			kind: "history-transition-receipt",
+			recordedAt: UPDATED_AT,
+			previousReceiptSha256: "c".repeat(64),
+			beforeHistorySha256: "a".repeat(64),
+			afterHistorySha256: "d".repeat(64),
+			beforeHistoryBytes: 100,
+			afterHistoryBytes: 200,
+			beforeMilestoneCount: 1,
+			afterMilestoneCount: 2,
+			addedTerminal: {
+				milestoneId: "closed-next",
+				status: "DONE",
+				digest: "e".repeat(64),
+			},
+			closedPacketSha256: "f".repeat(64),
+			removedActiveMilestoneId: "active-frontier",
+			removedActiveMilestoneDigest: "1".repeat(64),
+			coordinatorRun: "m4-v2-test",
+		};
+		expect(validateReceipt(genesis)).toBe(true);
+		expect(
+			validateReceipt({
+				...genesis,
+				historyPath: undefined,
+			}),
+		).toBe(false);
+		expect(
+			validateReceipt({
+				...genesis,
+				activeMilestoneDigests: undefined,
+			}),
+		).toBe(false);
+		expect(
+			validateReceipt({ ...genesis, historyPath: "wrong-history.yaml" }),
+		).toBe(false);
+		expect(validateReceipt(transition)).toBe(true);
+		expect(
+			validateReceipt({ ...transition, previousReceiptSha256: null }),
+		).toBe(false);
+		expect(
+			validateReceipt({
+				schemaVersion: 1,
+				kind: "history-genesis-receipt",
+				recordedAt: UPDATED_AT,
+				historySha256: "a".repeat(64),
+				milestoneCount: 1,
+				recordDigestMap: { "closed-record": "b".repeat(64) },
+			}),
+		).toBe(true);
+		expect(
+			validateReceipt({
+				...Object.fromEntries(
+					Object.entries(transition).filter(
+						([key]) =>
+							key !== "beforeHistoryBytes" && key !== "afterHistoryBytes",
+					),
+				),
+				schemaVersion: 1,
+				previousReceiptSha256: null,
+			}),
+		).toBe(true);
 	});
 });

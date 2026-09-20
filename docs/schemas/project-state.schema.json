@@ -12,7 +12,7 @@
 		"milestones"
 	],
 	"properties": {
-		"schemaVersion": { "const": 1 },
+		"schemaVersion": { "const": 2 },
 		"updatedAt": { "type": "string", "format": "date-time" },
 		"coordinator": {
 			"type": "object",
@@ -59,8 +59,8 @@
 		},
 		"milestones": {
 			"type": "object",
-			"minProperties": 1,
-			"additionalProperties": { "$ref": "#/$defs/milestone" }
+			"minProperties": 0,
+			"additionalProperties": { "$ref": "#/$defs/activeMilestone" }
 		}
 	},
 	"$defs": {
@@ -92,6 +92,10 @@
 		"taskPacketPath": {
 			"type": "string",
 			"pattern": "^docs/phase-records/task-packets/[a-z0-9][a-z0-9-]{0,127}\\.yaml$"
+		},
+		"sha256": {
+			"type": "string",
+			"pattern": "^[0-9a-f]{64}$"
 		},
 		"checkpoint": {
 			"type": "object",
@@ -126,6 +130,11 @@
 			],
 			"properties": {
 				"status": { "$ref": "#/$defs/status" },
+				"objective": {
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 512
+				},
 				"taskClass": { "$ref": "#/$defs/taskClass" },
 				"taskPacket": { "$ref": "#/$defs/taskPacketPath" },
 				"taskPacketSha256": {
@@ -264,6 +273,46 @@
 					},
 					"then": {
 						"properties": { "stopReason": { "type": "null" } }
+					}
+				}
+			]
+		},
+		"activeMilestone": {
+			"allOf": [
+				{ "$ref": "#/$defs/milestone" },
+				{
+					"type": "object",
+					"required": [
+						"objective",
+						"taskClass",
+						"taskPacket",
+						"taskPacketSha256",
+						"ownerSession"
+					],
+					"properties": {
+						"objective": {
+							"type": "string",
+							"minLength": 1,
+							"maxLength": 512
+						},
+						"taskClass": { "$ref": "#/$defs/taskClass" },
+						"taskPacket": { "$ref": "#/$defs/taskPacketPath" },
+						"taskPacketSha256": { "$ref": "#/$defs/sha256" },
+						"status": {
+							"enum": [
+								"PLANNED",
+								"READY",
+								"IN_PROGRESS",
+								"VALIDATING",
+								"READY_FOR_INTEGRATION"
+							]
+						},
+						"ownerSession": {
+							"type": "string",
+							"minLength": 1,
+							"maxLength": 64,
+							"pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$"
+						}
 					}
 				}
 			]

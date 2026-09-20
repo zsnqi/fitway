@@ -1,7 +1,7 @@
 schemaVersion: 1
 milestoneId: agent-context-pilot-ui-login-r01
 taskClass: ui-maintenance
-packetStatus: READY
+packetStatus: CLOSED
 stateRef: PROJECT_STATE.yaml#/milestones/agent-context-pilot-ui-login-r01
 baseCommit: 7e79de90c52adb60127b3dfd57c88013985bbfc1
 task:

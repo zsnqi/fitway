@@ -495,7 +495,7 @@ describe("check-agent-context", () => {
 		expect(Object.keys(state.milestones)).toEqual([...FIXTURE_MILESTONES]);
 	});
 
-	it("passes the current compatibility-mode registry and warns when the active packet is absent", async () => {
+	it("passes the current compatibility-mode registry with its strict active packet", async () => {
 		const result = await checkAgentContext({
 			root: REAL_ROOT,
 			checkTracked: false,
@@ -505,7 +505,7 @@ describe("check-agent-context", () => {
 			result.warnings.some((warning) =>
 				warning.includes("no active task packet"),
 			),
-		).toBe(true);
+		).toBe(false);
 	});
 
 	it("keeps DRAFT packets limited to PLANNED milestones and accepts a ready packet for execution", async () => {
@@ -721,9 +721,12 @@ describe("check-agent-context", () => {
 		const target =
 			"docs/phase-records/handoffs/phase10-ui-csv/20260816-153500-p10_ui_csv_b02-failure-diagnosis-correction.md";
 		isolateFixtureToHistoricalPointer(root, target);
+		const fixture = basePacket(root);
+		materializePacket(root, fixture.state, fixture.packet, fixture.packetPath);
 		initTrackedFixture(root);
 		writeFixtureFile(root, target, "# Protected historical handoff\n");
 		const result = await checkAgentContext({ root, checkTracked: true });
+		expect(result.errors).toEqual([]);
 		expect(result.ok).toBe(true);
 		expect(
 			result.warnings.some(

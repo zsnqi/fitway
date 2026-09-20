@@ -1,0 +1,21 @@
+{
+	"schemaVersion": 2,
+	"kind": "history-transition-receipt",
+	"recordedAt": "2026-09-19T21:31:00.000Z",
+	"previousReceiptSha256": "2271a8a4016b080afeb2b26f77ca64c95afeea3120e1cf3aaa29fe8e52c991fe",
+	"beforeHistorySha256": "8f500211f873c70d76fc20ab0f075a6a01801e448f3863d659a1d594dac0ac59",
+	"afterHistorySha256": "fc253a09c18a5389edbb2ded20ec47b39018cb925b1f798ad942a52bcdbc5338",
+	"beforeHistoryBytes": 318816,
+	"afterHistoryBytes": 324496,
+	"beforeMilestoneCount": 100,
+	"afterMilestoneCount": 101,
+	"addedTerminal": {
+		"milestoneId": "phase3-clock-flush-test-reliability-r01",
+		"status": "DONE",
+		"digest": "47d30c84c137ad439735ff37613dbea2411bf29ec0ff03c45ceb84abf25e91f5"
+	},
+	"closedPacketSha256": "c30eb9b627512502d3ce196a674f2ab28c54a215a904945ab5e05a4fe8f0d6b0",
+	"removedActiveMilestoneId": "phase3-clock-flush-test-reliability-r01",
+	"removedActiveMilestoneDigest": "6f54d8b609dc1e1d1716ca32faa11ded3fc37d55520a6f78b8f1e21b0fb2df01",
+	"coordinatorRun": "agent-context-m4-cutover-r01"
+}

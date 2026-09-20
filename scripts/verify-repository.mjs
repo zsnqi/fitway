@@ -269,6 +269,7 @@ async function main() {
 		"docs/POLISH_BACKLOG.md",
 		"docs/schemas/project-state.schema.json",
 		"docs/schemas/project-state-history.schema.json",
+		"docs/schemas/history-transition-receipt.schema.json",
 		"visual-direction-gate/approved/APPROVAL_MANIFEST.yaml",
 	];
 	for (const relativePath of required) await readBytes(relativePath);
@@ -352,8 +353,12 @@ async function main() {
 		state,
 		history,
 	});
+	const transitionEvidence =
+		historyTransition.mode === "v2"
+			? `v2 receipt chain ${historyTransition.genesisPath} -> ${historyTransition.lastReceiptPath}`
+			: `pre-phase3-clock-flush anchor ${historyTransition.anchorSha256}`;
 	console.log(
-		`History transition evidence: pre-phase3-clock-flush anchor ${historyTransition.anchorSha256}; ${historyTransition.beforeCount} anchored milestones, ${historyTransition.afterCount} candidate milestones, ${historyTransition.addedIds.length} added (${historyTransition.addedIds.join(", ") || "none"}), ${historyTransition.removedIds.length} removed, ${historyTransition.modifiedIds.length} modified, ${historyTransition.declaredTargets.length} declared archive target(s).`,
+		`History transition evidence: ${transitionEvidence}; ${historyTransition.beforeCount} anchored milestones, ${historyTransition.afterCount} candidate milestones, ${historyTransition.addedIds.length} added (${historyTransition.addedIds.join(", ") || "none"}), ${historyTransition.removedIds.length} removed, ${historyTransition.modifiedIds.length} modified, ${historyTransition.declaredTargets.length} declared archive target(s).`,
 	);
 	for (const relativePath of [
 		state.baseline.visualManifest,

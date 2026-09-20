@@ -1,0 +1,21 @@
+{
+	"schemaVersion": 2,
+	"kind": "history-transition-receipt",
+	"recordedAt": "2026-09-19T21:33:00.000Z",
+	"previousReceiptSha256": "8d4f780ac06f1f972122e39ea3a1e29a5c8dcfca35b8338950c0c32cdab00b44",
+	"beforeHistorySha256": "3b15d7c99e105b4ea722d12dfc6de1bdaf06a8f766f489fcc04a10c0cb1436de",
+	"afterHistorySha256": "cfb5be2612e3f9331a9ecc06df8e14bcdde1b32aad401f4ec194cd6f5d645669",
+	"beforeHistoryBytes": 326184,
+	"afterHistoryBytes": 327871,
+	"beforeMilestoneCount": 102,
+	"afterMilestoneCount": 103,
+	"addedTerminal": {
+		"milestoneId": "agent-context-pilot-ui-login-r01",
+		"status": "DONE",
+		"digest": "b53c575b127470f979457c5a806be25b20a41c0113f9013e17dde47bfc834bda"
+	},
+	"closedPacketSha256": "59f2206e71af2fd18f7fd8d3e1bc567d0e4cc440540416d09921a7a443ef1dfb",
+	"removedActiveMilestoneId": "agent-context-pilot-ui-login-r01",
+	"removedActiveMilestoneDigest": "65df0015ef3afc5ffdc0dc26348acff2416665a5bd785bb0228d6c326065bee3",
+	"coordinatorRun": "agent-context-m4-cutover-r01"
+}

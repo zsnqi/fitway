@@ -3878,3 +3878,173 @@ milestones:
         targetCanonicalSha256: 9afcf047074240317d4d6b471b0318c62d9b89cd0ec17732fc6d51399677d987
         receipt: docs/phase-records/handoffs/coordinator/20260918-013100-design-environment-audit-remediation-r08-history-transition-receipt.json
         successorMilestoneId: design-environment-audit-remediation-r08
+
+  phase3-clock-flush-test-reliability-r01:
+    status: DONE
+    objective: Close the verified Phase 3 clock-flush reliability successor through
+      the v2 append-only history transition without changing its accepted
+      implementation or evidence.
+    taskClass: repository-infrastructure
+    taskPacket: docs/phase-records/task-packets/phase3-clock-flush-test-reliability-r01.yaml
+    taskPacketSha256: c30eb9b627512502d3ce196a674f2ab28c54a215a904945ab5e05a4fe8f0d6b0
+    dependencies: []
+    ownerSession: "Primary coordinator and integrator for the 2026-09-18 phase3
+      clock-flush test-reliability successor (FITWAY_RUN_ID
+      phase3_clock_flush_test_reliability_r01) on the preserved dirty frontier at
+      HEAD 1a24a973570371949008a7a5f037c47b818c0e01, opened under the
+      docs/WORKFLOW.md successor rule after
+      design-environment-audit-remediation-r08 terminated FAILED_VALIDATION
+      because the fresh frozen-install full ladder recurred the
+      tests/browser/phase3.browser.spec.ts:57 failure at assertion line 97
+      (expect.poll 5000 ms, Expected true / Received false) after its preflight
+      and the current full ladder passed it, exactly as r08 plan section R4.4
+      required. The execution contract is
+      docs/phase-records/handoffs/coordinator/20260918-185500-phase3-clock-flush-\
+      test-reliability-r01-plan.md; the human coordinator's 2026-09-18 resume
+      instruction authorized this narrow successor and directed implementation and
+      independent verification to subagents with coordinator review.
+      `dependencies` is deliberately empty: verify-repository.mjs refuses any
+      ready status whose declared dependency is not DONE, and the failed
+      predecessor is a lineage predecessor, not a prerequisite, so the successor
+      relationship is disclosed here and in the r08 terminal record. The round
+      owns exactly the two-call Playwright clock-flush repair in
+      tests/browser/phase3.browser.spec.ts (fastForward(0) to fastForward(1) at
+      the two delay-0 notify flushes), the r08 archive transition, and its
+      coordinator records. The round open corrected the r08
+      independent-verification label that described the phase3 spec as
+      frontier-protected: the pinned pre-r02 snapshot, baseline listing, and r01
+      predecessor manifest contain no phase3 record and the file is clean at HEAD,
+      so no frontier-policy transition is required or authorized. The round
+      performs no integration commit and no product, visual, canonical, Paper,
+      authority, or Owner change; its terminal target is READY_FOR_INTEGRATION
+      only after current and fresh full ladders, focused gates, and a fresh
+      independent verification all pass."
+    branch: codex/owner-distill-r01
+    worktree: C:/Users/Pc Force/.codex/worktrees/6d57/phase5-staff-integration
+    baseCommit: 1a24a973570371949008a7a5f037c47b818c0e01
+    ownedPaths:
+      - "the single authorized test-reliability edit in
+        tests/browser/phase3.browser.spec.ts: the two delay-0 Playwright clock
+        flushes advance one tick (fastForward(0) to fastForward(1)); nothing else
+        in the file"
+      - "anchor retarget: scripts/project-state-history-transition.mjs and
+        scripts/project-state-history-transition.test.ts successor pre-transition
+        anchor pin only, and scripts/verify-repository.mjs anchor-era label only"
+      - the successor pre-transition anchor, frozen history copy, and .sha256
+        companions, and the r08 history transition receipt under
+        docs/phase-records/handoffs/coordinator/ only
+      - PROJECT_STATE.yaml, the successor plan, the successor handoff, the
+        independent-verification record, and the successor frozen evidence under
+        docs/phase-records/handoffs/coordinator/**
+      - PROJECT_STATE_HISTORY.yaml
+    forbiddenPaths:
+      - all apps/**, packages/**, product behavior, APIs, schemas, migrations,
+        dependencies, and pnpm-lock.yaml bytes
+      - vitest.config.ts, vitest.integration.config.ts, playwright.config.ts, and
+        root package.json behavior
+      - all tests/browser/** except the exact two-call edit in
+        tests/browser/phase3.browser.spec.ts (including every screenshot,
+        canonical, and scripts/check-frontier-preservation.mjs and its test)
+      - FITWAY_PRODUCT.md, SPEC.md, DESIGN_GUIDE.md, ADR-007, ADR-009, PHASES.md,
+        Paper exports, authority manifests/mappings/hashes, and canonicals
+      - prior handoffs, inventories, receipts, and history entries other than the
+        r08 archive append
+      - all Owner, Staff, or Public design or presentation work, and existing
+        untracked user inspection artifacts
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: 2026-09-18T20:50:00+03:00
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/coordinator/20260918-205000-phase3-clock-flush-test-reliability-r01-integration-closure.md
+    stopReason: null
+    gates:
+      unit: PASS
+      integration: PASS
+      browser: PASS
+      accessibility: PASS
+      visual: NOT_REQUIRED
+      independentReview: PASS
+    integratedCommit: ecc26a9eccad1c25e12667fd066af6e5caa155ae
+    historyMutations:
+      - operation: archive-terminal
+        targetMilestoneId: design-environment-audit-remediation-r08
+        targetStatus: FAILED_VALIDATION
+        targetCanonicalSha256: 011335942ed7bbd562f0904cf55509a42e481c2e985145be4f4dd21dd4f87ea2
+        receipt: docs/phase-records/handoffs/coordinator/20260918-185600-phase3-clock-flush-test-reliability-r01-history-transition-receipt.json
+        successorMilestoneId: phase3-clock-flush-test-reliability-r01
+
+  agent-context-pilot-backend-operational-snapshot-r01:
+    status: DONE
+    objective: Read-only rehearsal of the existing Staff operationalSnapshot DTO,
+      repository, procedure, and focused evidence without changing product or
+      implementation behavior.
+    taskClass: backend-api-data
+    taskPacket: docs/phase-records/task-packets/agent-context-pilot-backend-operational-snapshot-r01.yaml
+    taskPacketSha256: 696be440d166abb653353885cdf9ef21a03eece89445f92ef2433e20434f3fdc
+    dependencies: []
+    ownerSession: Fresh-agent read-only M3 backend rehearsal; no worker lease or
+      implementation authority.
+    branch: null
+    worktree: null
+    baseCommit: 7e79de90c52adb60127b3dfd57c88013985bbfc1
+    ownedPaths:
+      - docs/phase-records/handoffs/coordinator/20260919-190000-agent-context-pilot-backend-operational-snapshot-r01-evidence.md
+    forbiddenPaths:
+      - apps/** and packages/** are read-only; no implementation or test bytes may
+        change
+      - PROJECT_STATE_HISTORY.yaml and all existing historical records
+      - database migrations, public payloads, command/correction/reset behavior,
+        UI, screenshots, Paper artifacts, and visual authority
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/coordinator/20260919-190000-agent-context-pilot-backend-operational-snapshot-r01-evidence.md
+    stopReason: null
+    gates:
+      unit: PASS
+      integration: PASS
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PASS
+    integratedCommit: ba3b6e8dca704663c84413744e742e16b4cb7853
+
+  agent-context-pilot-ui-login-r01:
+    status: DONE
+    objective: Read-only rehearsal of the existing Login route, RTL/LTR,
+      accessibility, responsive, and named visual evidence without changing UI or
+      visual authority.
+    taskClass: ui-maintenance
+    taskPacket: docs/phase-records/task-packets/agent-context-pilot-ui-login-r01.yaml
+    taskPacketSha256: 59f2206e71af2fd18f7fd8d3e1bc567d0e4cc440540416d09921a7a443ef1dfb
+    dependencies: []
+    ownerSession: Fresh-agent read-only M3 Login rehearsal; no worker lease or
+      implementation authority.
+    branch: null
+    worktree: null
+    baseCommit: 7e79de90c52adb60127b3dfd57c88013985bbfc1
+    ownedPaths:
+      - docs/phase-records/handoffs/coordinator/20260919-190500-agent-context-pilot-ui-login-r01-evidence.md
+    forbiddenPaths:
+      - apps/** and tests/browser/** are read-only; no implementation, test, or
+        screenshot bytes may change
+      - visual-direction-gate/**, design-research/**, Paper artifacts, manifests,
+        canonicals, and visual authority records
+      - all Owner and Staff source, evidence, preserved candidates, and unrelated
+        handoffs
+      - PROJECT_STATE_HISTORY.yaml and all existing historical records
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/coordinator/20260919-190500-agent-context-pilot-ui-login-r01-evidence.md
+    stopReason: null
+    gates:
+      unit: NOT_REQUIRED
+      integration: NOT_REQUIRED
+      browser: PASS
+      accessibility: PASS
+      visual: PASS
+      independentReview: PASS
+    integratedCommit: ba3b6e8dca704663c84413744e742e16b4cb7853
