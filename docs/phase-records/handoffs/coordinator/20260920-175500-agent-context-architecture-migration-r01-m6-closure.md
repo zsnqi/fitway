@@ -53,3 +53,16 @@
 - M7 may now decide the compact visual-index question, strengthen UI packet/design-context
   validation, retire the old active-design-packet template to a compatibility pointer, and mark
   legacy whole-history transition tooling deprecated while retaining its evidence.
+
+## Final-commit gates
+
+- Clean detached worktree at the closure commit
+  `48905edb8f1107a43801b7c6f28b03ed1353b48c`: `scripts/check-agent-context.mjs` PASS (8 task
+  classes, active mode); `scripts/verify-repository.mjs` PASS (1 active, 103 archived);
+  clean-candidate `scripts/check-frontier-preservation.mjs` PASS (110 non-excluded protected paths
+  not integrated relative to the frozen M0 base; 3 policy exclusions).
+- Authoritative focused runner at the same commit: 3 files / 69 tests PASS.
+- `git status --short` remained empty after every final-commit gate.
+- The behavioral candidate `1b376783381e4e2a777871c485d06af80436db2e` differs from the closure
+  commit only by this report-only record, the packet continuity pointer/hash, and the coordinator
+  state handoff pointer/packet hash.
