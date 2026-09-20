@@ -250,6 +250,11 @@ const phases = {
 		integrationFiles: [],
 		label: "Owner audit closure",
 	},
+	"agent-context-architecture-migration": {
+		browserFiles: [],
+		integrationFiles: [],
+		label: "Agent-context architecture migration",
+	},
 };
 
 const phaseNames = Object.keys(phases).join("|");

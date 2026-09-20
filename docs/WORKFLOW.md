@@ -119,13 +119,37 @@ The baseline's `integratedCommit` remains the immutable BRG hash; `SELF` in an a
 
 ## Clean-session startup
 
-`AGENTS.md` is loaded automatically and carries the canonical reading order and router table
-(which authority governs what, and when to read it). Every worker or verifier starts there, then
-reads the documents its table names for the work at hand — at minimum `FITWAY_PRODUCT.md`, the
-relevant `SPEC.md` sections, `PROJECT_STATE.yaml` (the active frontier), and the latest handoff
-named in the ledger, plus `DESIGN_GUIDE.md` and ADR-007 for UI work and the relevant ADR and
-phase record before continuing prior work. Consult `PROJECT_STATE_HISTORY.yaml` only when the
-next decision requires closed-record evidence, never by default.
+`AGENTS.md` is loaded automatically and carries the repository-wide safety, ownership, and
+conflict rules. Startup then follows the bounded route in this order:
+
+1. **Root policy.** Read `AGENTS.md`. It is the only automatic instruction file.
+2. **Active state.** Read `PROJECT_STATE.yaml` for the active frontier. If no milestone is open,
+   no task is assigned; do not infer one.
+3. **Assigned packet.** Run the bounded continuity check
+   `pnpm context:show -- --milestone <milestone-id>` (authoritative form:
+   `<absolute-node> scripts/show-agent-context.mjs --milestone <milestone-id>`). It validates the
+   stable packet path, state hash, packet identity, task class, base commit, scope, handoff, and
+   lifecycle, then prints the ordered required sources/selectors and conditional triggers. A
+   missing, stale, hash-mismatched, untracked, case-mismatched, or conflicting required packet is
+   a stop condition; the coordinator repairs the packet before any work continues.
+4. **Required sources.** Load exactly the packet's ordered required sources and selectors against
+   their canonical files. `docs/agent-context/ROUTES.yaml` names the minimum authority roles for
+   each task class; the packet supplies the exact paths, headings, keys, or pointers.
+5. **Conditional expansion.** Expand a conditional source only when its recorded trigger is
+   actually observed, and perform the recorded action (`READ`, or stop at `NEEDS_HUMAN`).
+6. **History stays out of startup.** `PROJECT_STATE_HISTORY.yaml`, `docs/archive/**`, phase
+   records, and unrelated handoffs are retrieved only through a named decision, predecessor,
+   incident, or audit pointer. Never read them by default.
+
+`context:show` never claims that a source was loaded, never summarizes an authority, and never
+resolves a conflict automatically. If a packet contradicts a cited authority, the authority
+governs and execution stops for packet repair.
+
+Legacy broad reading remains available only as a documented compatibility fallback: a session
+whose coordinator has explicitly authorized the legacy route may read the route's required
+authorities directly from `docs/agent-context/ROUTES.yaml` without a packet. The fallback is not
+the default, is not authorized by a green checker, and must never be used to skip a required
+packet on the active route.
 
 Then verify `git status --short`, `git rev-parse HEAD`, the worktree/branch, tool versions, the
 repository-local test runtime with the direct diagnostic

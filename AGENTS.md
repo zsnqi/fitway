@@ -43,6 +43,12 @@
 
 `AGENTS.md` is loaded automatically; every other authority below is an explicit read.
 
+Startup follows the bounded route in `docs/WORKFLOW.md`: read the active state, load the assigned
+task packet with `pnpm context:show -- --milestone <milestone-id>`, resolve the packet's required
+sources, and expand conditional sources only when their trigger is observed. Never load closed
+history by default. The table below is the compatibility reference for deliberately expanded
+work; it is not a startup reading list.
+
 | Document | Read when |
 | --- | --- |
 | `FITWAY_PRODUCT.md` and the relevant `SPEC.md` sections | before any implementation, verification, or review |

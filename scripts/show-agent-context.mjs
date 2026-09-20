@@ -83,7 +83,7 @@ function normalizePath(value) {
 	return normalized.replace(/^\.\//, "");
 }
 
-function packetMetadataMode(milestone, milestoneId) {
+function packetMetadataMode(milestone, milestoneId, registryMode) {
 	const presentFields = PACKET_METADATA_FIELDS.filter((field) =>
 		Object.hasOwn(milestone, field),
 	);
@@ -94,9 +94,13 @@ function packetMetadataMode(milestone, milestoneId) {
 		throw new Error(
 			`${milestoneId}: active milestone packet metadata must be all-or-none`,
 		);
-	return presentFields.length === PACKET_METADATA_FIELDS.length
-		? "registered"
-		: "compatibility";
+	if (presentFields.length === PACKET_METADATA_FIELDS.length)
+		return "registered";
+	if (registryMode === "active")
+		throw new Error(
+			`${milestoneId}: active routing requires packet metadata and a validated task packet for an open milestone`,
+		);
+	return "compatibility";
 }
 
 function validateRegisteredPacket({
@@ -210,6 +214,10 @@ export async function buildAgentContextPlan({
 			readFileImpl,
 		});
 	const registry = await readYaml("docs/agent-context/ROUTES.yaml");
+	if (registry.mode !== "compatibility" && registry.mode !== "active")
+		throw new Error(
+			`ROUTES.yaml mode must be "compatibility" or "active", got ${JSON.stringify(registry.mode)}`,
+		);
 	const state = await readYaml("PROJECT_STATE.yaml");
 	const active = state.milestones ?? {};
 	const selectedId =
@@ -235,7 +243,7 @@ export async function buildAgentContextPlan({
 		throw new Error(
 			`requested milestone does not exist in PROJECT_STATE.yaml: ${selectedId}`,
 		);
-	const metadataMode = packetMetadataMode(milestone, selectedId);
+	const metadataMode = packetMetadataMode(milestone, selectedId, registry.mode);
 	const expectedPacketPath = stablePacketPath(selectedId);
 	if (
 		metadataMode === "registered" &&

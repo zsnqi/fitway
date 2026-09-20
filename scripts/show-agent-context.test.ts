@@ -52,6 +52,7 @@ type FixtureOptions = {
 	milestoneStatus?: string;
 	packetStatus?: string;
 	metadataFields?: PacketMetadataField[];
+	registryMode?: string;
 	editPacket?: (packet: Packet) => void;
 	editMilestone?: (milestone: Milestone) => void;
 	omitPacket?: boolean;
@@ -149,6 +150,8 @@ function createFixture(options: FixtureOptions = {}) {
 		root,
 		ROUTES_PATH,
 		stringifyYaml({
+			schemaVersion: 1,
+			mode: options.registryMode ?? "compatibility",
 			routes: {
 				"backend-api-data": {
 					responsibility: "Review the bounded backend contract.",
@@ -354,6 +357,35 @@ describe("context:show bounded packet discovery", () => {
 		expect(absentPlan).toContain(`packet: ${PACKET_PATH} (absent)`);
 		expect(absentPlan).toContain(
 			"compatibility warning: no active packet is available; packet context is not claimed",
+		);
+	});
+
+	it("fails closed when active routing has no packet metadata", async () => {
+		const active = createFixture({
+			registryMode: "active",
+			metadataFields: [],
+		});
+		await expectBuildToFail(
+			active.root,
+			/active routing requires packet metadata and a validated task packet for an open milestone/,
+		);
+
+		const activeOmit = createFixture({
+			registryMode: "active",
+			metadataFields: [],
+			omitPacket: true,
+		});
+		await expectBuildToFail(
+			activeOmit.root,
+			/active routing requires packet metadata and a validated task packet for an open milestone/,
+		);
+	});
+
+	it("rejects an unknown startup routing mode", async () => {
+		const unknown = createFixture({ registryMode: "legacy" });
+		await expectBuildToFail(
+			unknown.root,
+			/ROUTES\.yaml mode must be "compatibility" or "active"/,
 		);
 	});
 

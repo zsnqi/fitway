@@ -1,5 +1,5 @@
 schemaVersion: 1
-mode: compatibility
+mode: active
 
 # This registry routes retrieval; it creates no Product, Spec, visual, security, privacy, or data
 # authority. The checker validates every concrete path and selector below.

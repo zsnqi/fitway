@@ -1243,10 +1243,16 @@ async function validatePackets({
 				errors.push(
 					`${milestoneId}: active packet metadata points to no packet: ${packetPath}`,
 				);
-			else if (OPEN_STATUSES.has(milestone.status))
-				warnings.push(
-					`${milestoneId}: no active task packet; compatibility mode skips packet validation`,
-				);
+			else if (OPEN_STATUSES.has(milestone.status)) {
+				if (registry.mode === "active")
+					errors.push(
+						`${milestoneId}: active routing requires exactly one validated packet for an open milestone`,
+					);
+				else
+					warnings.push(
+						`${milestoneId}: no active task packet; compatibility mode skips packet validation`,
+					);
+			}
 		}
 	}
 }
@@ -1476,7 +1482,7 @@ export function formatAgentContextResult(result) {
 		lines.push(`WARNING: ${warning}`);
 	if (result.ok) {
 		lines.push(
-			`check-agent-context passed: ${Object.keys(result.registry?.routes ?? {}).length} task classes; compatibility mode remains active.`,
+			`check-agent-context passed: ${Object.keys(result.registry?.routes ?? {}).length} task classes; startup routing mode: ${result.registry?.mode ?? "unknown"}.`,
 		);
 	} else {
 		lines.push("check-agent-context FAILED:");

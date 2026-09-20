@@ -7,7 +7,7 @@
 	"required": ["schemaVersion", "mode", "routes"],
 	"properties": {
 		"schemaVersion": { "const": 1 },
-		"mode": { "const": "compatibility" },
+		"mode": { "enum": ["compatibility", "active"] },
 		"routes": {
 			"type": "object",
 			"minProperties": 8,

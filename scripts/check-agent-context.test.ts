@@ -111,6 +111,19 @@ function makeFixture(): string {
 	const root = mkdtempSync(path.join(tmpdir(), "fitway-agent-context-"));
 	fixtureRoots.push(root);
 	for (const relativePath of CONTEXT_FILES) copyFixtureFile(root, relativePath);
+	// The checker mechanics suite keeps the legacy compatibility route explicit; active-mode
+	// enforcement is covered by the real-repository and dedicated active-fixture tests below.
+	const fixtureRoutesPath = path.resolve(
+		root,
+		"docs/agent-context/ROUTES.yaml",
+	);
+	const fixtureRoutesText = readFileSync(fixtureRoutesPath, "utf8");
+	expect(fixtureRoutesText).toContain("mode: active");
+	writeFileSync(
+		fixtureRoutesPath,
+		fixtureRoutesText.replace("mode: active", "mode: compatibility"),
+		"utf8",
+	);
 	const registry = parseYaml(
 		readFileSync(
 			path.resolve(REAL_ROOT, "docs/agent-context/ROUTES.yaml"),
@@ -495,12 +508,44 @@ describe("check-agent-context", () => {
 		expect(Object.keys(state.milestones)).toEqual([...FIXTURE_MILESTONES]);
 	});
 
-	it("passes the current compatibility-mode registry with its strict active packet", async () => {
+	it("passes the current active-mode registry with its strict active packet", async () => {
 		const result = await checkAgentContext({
 			root: REAL_ROOT,
 			checkTracked: false,
 		});
+		expect(result.registry?.mode).toBe("active");
 		expect(result.ok).toBe(true);
+		expect(
+			result.warnings.some((warning) =>
+				warning.includes("no active task packet"),
+			),
+		).toBe(false);
+	});
+
+	it("blocks an open milestone with no packet once routing is active", async () => {
+		const root = makeFixture();
+		isolateFixtureHistory(root);
+		replaceOnce(
+			root,
+			"docs/agent-context/ROUTES.yaml",
+			"mode: compatibility",
+			"mode: active",
+		);
+		const fixture = basePacket(root);
+		const milestone = fixture.state.milestones[fixture.packet.milestoneId];
+		delete milestone.taskClass;
+		delete milestone.taskPacket;
+		delete milestone.taskPacketSha256;
+		writeFixtureState(root, fixture.state);
+		const result = await checkAgentContext({ root, checkTracked: false });
+		expect(result.ok).toBe(false);
+		expect(
+			result.errors.some((error) =>
+				error.includes(
+					"active routing requires exactly one validated packet for an open milestone",
+				),
+			),
+		).toBe(true);
 		expect(
 			result.warnings.some((warning) =>
 				warning.includes("no active task packet"),

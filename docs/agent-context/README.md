@@ -25,11 +25,13 @@ sources that may be promoted to required for a packet. Supplemental packet sourc
 affected files/selectors only under a role registered by that route; arbitrary or unauthorized
 historical authorities are rejected.
 
-Existing active milestones may have no packet; the checker reports that condition as a warning and
-does not pretend that packet context was loaded. When all packet metadata is absent,
-`context:show` preserves its legacy output. Partial packet metadata fails closed. Any evaluable
-path, case, tracking, schema, selector, scope, or pointer violation fails even in compatibility
-mode.
+`ROUTES.yaml` records the startup-routing mode. In `active` mode every open milestone must have
+exactly one validated packet: a missing, partial, stale, or untracked packet is a blocking failure
+for `check-agent-context` and `context:show`, and a milestone may not reach `READY` without it.
+`compatibility` mode is the documented one-release fallback for the legacy broad route; it warns
+instead of failing when an open milestone has no packet, while every evaluable path, case,
+tracking, schema, selector, scope, pointer, and lifecycle violation still fails. Partial packet
+metadata fails closed in both modes.
 
 At startup, use the bounded route and continuity check:
 
