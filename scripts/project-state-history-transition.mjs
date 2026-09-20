@@ -22,6 +22,12 @@
 // Receipt timestamps are observed metadata with a sanity future bound only and
 // never enter a proof statement.
 //
+// Deprecation: new transitions use only the v2 receipt chain under
+// docs/phase-records/history-transitions/. The legacy phase3 anchor constants and
+// the full-snapshot compatibility claim below are retained evidence for
+// already-recorded history; they are never regenerated, and no new whole-history
+// snapshot may be created from them.
+//
 // The check is read-only; it never writes to the repository.
 
 import { createHash } from "node:crypto";

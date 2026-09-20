@@ -60,7 +60,9 @@ Open-status milestones may never be archived. Archived records stay dependency-r
 mutable only through an explicit successor milestone whose own record carries the new attempt.
 `pnpm check:repository` fails on duplicate ids, on any open status in history, on unknown
 dependencies across the union, and on `DONE` records missing commit/gates. Closed history is
-retrieved only when a decision requires it and is never read wholesale into a session.
+retrieved only when a decision requires it and is never read wholesale into a session. New
+transitions append v2 receipts under `docs/phase-records/history-transitions/`; legacy whole-file
+snapshot anchors remain immutable compatibility evidence and are never regenerated.
 
 ## Before creating a phase worktree
 
@@ -316,11 +318,14 @@ require a recorded reason in the phase record.
    human approval. Use `docs/design/VISUAL_ACCEPTANCE_RECORD_TEMPLATE.md` for the record.
 6. **Automated visual checks.** Detectors, token/class/spacing guards, canonical comparison, and
    hash verification are lint and provenance, not taste.
-7. **Active design packet.** Use `docs/design/ACTIVE_DESIGN_PACKET_TEMPLATE.md` to brief the
-   implementation session with only: surface/user task, locked behavior/content/accessibility/
-   data semantics, current authority status, open visual decisions, known perceptual failures,
-   exact current/reference screenshots, accepted spatial thesis, allowed source paths, and
-   verification/promotion gates.
+7. **Active task packet.** Brief the implementation session with the active task packet's
+   `visual`, `designContextCheck`, `accessibilityGate`, `scope`, and `verification` fields
+   (`docs/agent-context/TASK_PACKET_TEMPLATE.yaml`, schema
+   `docs/schemas/task-packet.schema.json`): surface/user task, locked behavior/content/
+   accessibility/data semantics, current authority status, open visual decisions, known
+   perceptual failures, exact current/reference screenshots and hashes, accepted spatial thesis,
+   allowed source paths, Paper availability, and verification/promotion gates. The retired
+   `docs/design/ACTIVE_DESIGN_PACKET_TEMPLATE.md` remains only as a compatibility pointer.
 
 ### Standing review duties
 

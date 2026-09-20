@@ -496,6 +496,68 @@ function makeVisualPacket(root: string): {
 	return fixture;
 }
 
+function makeUiFamilyFixture(
+	root: string,
+	taskClass: "ui-maintenance" | "visual-authority-change",
+	visualOverrides: JsonObject,
+): {
+	state: FixtureState;
+	packet: FixturePacket;
+	packetPath: string;
+} {
+	const fixture = basePacket(root, taskClass);
+	const route = fixtureRoute(root, taskClass);
+	const frameBytes = readFileSync(path.resolve(root, "DESIGN.md"));
+	fixture.packet.taskClass = taskClass;
+	fixture.packet.authorities.required = route.required.map((source) => ({
+		role: source.role,
+		path: source.path,
+		selector: source.selector,
+		reason: source.reason,
+	}));
+	fixture.packet.authorities.conditional = route.conditional.map((source) => ({
+		trigger: source.trigger,
+		role: source.role,
+		path: source.path,
+		selector: source.selector,
+		actionIfTriggered: source.actionIfTriggered,
+	}));
+	fixture.packet.verification.orderedGates = [
+		"accessibility",
+		"perceptual",
+		"promotion",
+	];
+	fixture.packet.designContextCheck = {
+		command: "pnpm check:design-context",
+		status: "PASS",
+	};
+	fixture.packet.accessibilityGate = {
+		status: "PASS",
+		criteria: "Keyboard and screen-reader checks pass.",
+	};
+	fixture.packet.visual = {
+		surfaceKey: "public",
+		authorityStatus: "ACTIVE",
+		authorityKey: "public",
+		governingDecision: "docs/adr/ADR-007-paper-visual-source-of-truth.md",
+		currentFrames: [{ path: "DESIGN.md", sha256: hashBytes(frameBytes) }],
+		referenceFrames: [{ path: "DESIGN.md", sha256: hashBytes(frameBytes) }],
+		openHumanDecisions: [],
+		paperAvailability: "UNAVAILABLE",
+		perceptualGate: {
+			status: "PASS",
+			criteria: "Named perceptual review passed.",
+		},
+		promotionGate: {
+			status: "NOT_REQUIRED",
+			criteria: "No baseline promotion is authorized.",
+		},
+		acceptanceAuthority: "PAPER",
+		...visualOverrides,
+	};
+	return fixture;
+}
+
 afterEach(() => {
 	for (const root of fixtureRoots.splice(0))
 		rmSync(root, { recursive: true, force: true });
@@ -1656,6 +1718,141 @@ describe("check-agent-context", () => {
 		expect(
 			result.errors.some((error) =>
 				error.includes("missing frame missing-frame.png"),
+			),
+		).toBe(true);
+	});
+
+	it("resolves the Public, Login, Staff, Owner-maintenance, and Owner-redesign UI packet families", async () => {
+		const families: Array<{
+			label: string;
+			taskClass: "ui-maintenance" | "visual-authority-change";
+			visual: JsonObject;
+			addAdr009Required?: boolean;
+		}> = [
+			{
+				label: "public",
+				taskClass: "ui-maintenance",
+				visual: {
+					surfaceKey: "public",
+					authorityStatus: "ACTIVE",
+					authorityKey: "public",
+					acceptanceAuthority: "PAPER",
+				},
+			},
+			{
+				label: "login",
+				taskClass: "ui-maintenance",
+				visual: {
+					surfaceKey: "login",
+					authorityStatus: "ACTIVE",
+					authorityKey: "login",
+					acceptanceAuthority: "PAPER",
+				},
+			},
+			{
+				label: "staff",
+				taskClass: "ui-maintenance",
+				visual: {
+					surfaceKey: "staff",
+					authorityStatus: "ACTIVE",
+					authorityKey: "staff",
+					acceptanceAuthority: "MANIFEST",
+				},
+			},
+			{
+				label: "owner-maintenance",
+				taskClass: "ui-maintenance",
+				visual: {
+					surfaceKey: "owner-settings",
+					authorityStatus: "SUPERSEDED",
+					authorityKey: "owner-settings",
+					governingDecision:
+						"docs/adr/ADR-009-owner-composition-authority-supersession.md",
+					paperAvailability: "NOT_APPLICABLE",
+					acceptanceAuthority: "HUMAN_DECISION",
+				},
+			},
+			{
+				label: "owner-redesign",
+				taskClass: "visual-authority-change",
+				addAdr009Required: true,
+				visual: {
+					surfaceKey: "owner-settings",
+					authorityStatus: "SUPERSEDED",
+					authorityKey: "owner-settings",
+					governingDecision:
+						"docs/adr/ADR-009-owner-composition-authority-supersession.md",
+					paperAvailability: "NOT_APPLICABLE",
+					acceptanceAuthority: "HUMAN_DECISION",
+				},
+			},
+		];
+		for (const family of families) {
+			const root = makeFixture();
+			isolateFixtureHistory(root);
+			const fixture = makeUiFamilyFixture(
+				root,
+				family.taskClass,
+				family.visual,
+			);
+			if (family.addAdr009Required) {
+				const ownerConditional = fixtureRoute(
+					root,
+					family.taskClass,
+				).conditional.find((source) => source.path.includes("ADR-009"));
+				expect(ownerConditional, family.label).toBeDefined();
+				if (ownerConditional) {
+					fixture.packet.authorities.required.push({
+						role: ownerConditional.role,
+						path: ownerConditional.path,
+						selector: ownerConditional.selector,
+						reason: "Owner redesign authority.",
+					});
+				}
+			}
+			materializePacket(
+				root,
+				fixture.state,
+				fixture.packet,
+				fixture.packetPath,
+			);
+			const result = await checkAgentContext({ root, checkTracked: false });
+			expect(result.errors, family.label).toEqual([]);
+		}
+	});
+
+	it("rejects a UI packet whose design-context command skips check:design-context", async () => {
+		const root = makeFixture();
+		isolateFixtureHistory(root);
+		const fixture = makeUiFamilyFixture(root, "ui-maintenance", {});
+		(fixture.packet.designContextCheck as JsonObject).command =
+			"pnpm verify:fast";
+		materializePacket(root, fixture.state, fixture.packet, fixture.packetPath);
+		const result = await checkAgentContext({ root, checkTracked: false });
+		expect(result.ok).toBe(false);
+		expect(
+			result.errors.some((error) =>
+				error.includes("must run check:design-context"),
+			),
+		).toBe(true);
+	});
+
+	it("requires an Owner UI packet to carry the registered ADR-009 conditional", async () => {
+		const root = makeFixture();
+		isolateFixtureHistory(root);
+		const fixture = makeUiFamilyFixture(root, "ui-maintenance", {
+			surfaceKey: "owner-settings",
+		});
+		fixture.packet.authorities.conditional =
+			fixture.packet.authorities.conditional.filter(
+				(rule) => !rule.path.includes("ADR-009"),
+			);
+		materializePacket(root, fixture.state, fixture.packet, fixture.packetPath);
+		const result = await checkAgentContext({ root, checkTracked: false });
+		expect(result.ok).toBe(false);
+		expect(
+			result.errors.some((error) =>
+				error.includes("packet conditionals omit registered rule"),
 			),
 		).toBe(true);
 	});

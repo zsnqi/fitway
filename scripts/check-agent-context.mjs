@@ -1012,6 +1012,10 @@ async function validatePacket({
 				OPEN_STATUSES.has(milestone.status) &&
 				milestone.status !== "PLANNED") ||
 			(packet.packetStatus === "CLOSED" && historyMilestone?.status === "DONE");
+		if (!/check:design-context/.test(packet.designContextCheck?.command ?? ""))
+			errors.push(
+				`${packetPath}: UI packet design-context command must run check:design-context`,
+			);
 		if (
 			!packet.verification.orderedGates.some((gate) =>
 				/accessibility/i.test(gate),
