@@ -54,3 +54,17 @@
   to skip a required packet on the active route.
 - M6 may now shorten `AGENTS.md`, move the full handoff contract onto the evidence template, and
   build the sentence-level responsibility migration map.
+
+## Final-commit gates
+
+- Clean detached worktree at the closure commit
+  `1e05fbf641a6a3a56674bfbcaf40a7a5e5ec2a33`: `scripts/check-agent-context.mjs` PASS (8 task
+  classes, `startup routing mode: active`, admitted historical-pointer warnings only);
+  `scripts/verify-repository.mjs` PASS (1 active, 103 archived milestones); clean-candidate
+  `scripts/check-frontier-preservation.mjs` PASS (110 non-excluded protected paths not integrated
+  relative to the frozen M0 base; 3 policy exclusions).
+- Authoritative focused runner at the same commit: 5 files / 99 tests PASS.
+- `git status --short` remained empty after every final-commit gate.
+- The behavioral candidate `fe3a0f035c2bd9495e6d1a5962063e6c54bc0792` differs from the closure
+  commit only by this report-only record, the packet continuity pointer/hash, and the coordinator
+  state handoff pointer/packet hash.
