@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: "2026-09-20T18:20:00+03:00"
+updatedAt: "2026-09-20T18:22:28+03:00"
 coordinator:
-  owner: "Primary coordinator and integrator for agent-context-architecture-migration-r01."
+  owner: "Primary coordinator and integrator for the FITWAY repository; no open milestone."
   stateFilePolicy: "coordinator-only"
 baseline:
   status: "DONE"

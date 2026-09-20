@@ -77,3 +77,20 @@
 
 None. M0-M8 are complete. A future task starts only when the coordinator opens a new milestone and
 its validated packet.
+
+## Final gates
+
+- Clean detached worktree at the terminal transition commit
+  `154b3e26c60f980f9029a468c2f787951b075e48`: authoritative
+  `scripts/verify.mjs phase --phase agent-context-architecture-migration` — PASS, 86 files / 1096
+  unit tests and 120 Python simulator tests, with repository, agent-context, frontier, Biome,
+  type, and build steps plus the mutation guard green; `git status --short --untracked-files=all`
+  was empty after the run.
+- Repository invariants at the terminal commit: 0 active and 104 archived milestones, valid v2
+  receipt chain, 8 task classes, and 110 non-excluded protected frontier entries preserved
+  relative to the frozen M0 base.
+- Full-ladder coverage for the runtime code remains the `agent_context_m8b_full_r01` run at
+  `0360df1`; between `0360df1` and the terminal commit the only non-report change is the checker
+  test fixture update that models the now-empty active state.
+- `check-agent-context` and `verify-repository` are also green in the coordinator worktree at the
+  same commit.
