@@ -6,15 +6,22 @@ sources.
 
 The precedence order is:
 
-1. `AGENTS.md` for repository-wide safety, ownership, conflict, and stop rules.
-2. `FITWAY_PRODUCT.md`, `SPEC.md`, reviewed schemas/DTOs, ADRs, and the approved visual-authority
-   chain for the truth governed by each source.
-3. `docs/WORKFLOW.md` for execution and verification procedure.
-4. `PROJECT_STATE.yaml` for the coordinator-owned active frontier.
-5. A task packet for the bounded assignment and exact selectors, only insofar as it agrees with the
+1. `AGENTS.md` — repository-wide safety, ownership, conflict, and stop rules.
+2. `FITWAY_PRODUCT.md` and `SPEC.md` — product identity, surface boundaries, security, privacy,
+   data, interfaces, and acceptance; a conflict between them stops the work.
+3. Reviewed migrations, schemas, and DTOs — implementation conformance.
+4. The approved visual-authority chain — Paper where ADR-007 keeps it active, `DESIGN_GUIDE.md`,
+   the approval manifest, and named human decisions that supersede them for a surface.
+5. `PHASES.md` for durable dependency and acceptance scope, and `PROJECT_STATE.yaml` for the
+   coordinator-owned active frontier.
+6. `docs/WORKFLOW.md` for execution and verification procedure.
+7. A task packet for the bounded assignment and exact selectors, only insofar as it agrees with the
    sources above.
-6. `PROJECT_STATE_HISTORY.yaml`, handoffs, archives, and other phase records only when a named
+8. `PROJECT_STATE_HISTORY.yaml`, handoffs, archives, and other phase records only when a named
    decision, predecessor, incident, or audit requires them.
+
+`AGENTS.md` is checked against a documented 120,000-byte cumulative instruction cap; growth above a
+conservative 24,000-byte warning threshold is reported but is not itself a failure.
 
 `ROUTES.yaml` names the minimum initial route for each task class. It does not copy authority text.
 `TASK_PACKET_TEMPLATE.yaml` and `EVIDENCE_RECEIPT_TEMPLATE.md` are templates, not authority. A

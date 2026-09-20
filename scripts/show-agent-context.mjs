@@ -281,6 +281,10 @@ export async function buildAgentContextPlan({
 				packetBytes,
 				packetPath: safePacketPath,
 			});
+		} else {
+			packetMessages.push(
+				"compatibility note: this packet was not validated against active state; packet context is not claimed",
+			);
 		}
 		packetMessages.push(`packet: ${safePacketPath}`);
 		packetMessages.push(

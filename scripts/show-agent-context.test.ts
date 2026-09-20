@@ -346,6 +346,9 @@ describe("context:show bounded packet discovery", () => {
 		expect(plan).toContain("compatibility mode does not infer one");
 		expect(plan).toContain("packetStatus: DRAFT");
 		expect(plan).toContain(
+			"compatibility note: this packet was not validated against active state",
+		);
+		expect(plan).toContain(
 			"route: unavailable because the active state does not record a task class",
 		);
 

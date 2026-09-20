@@ -119,8 +119,9 @@ be reviewed against that history before reuse.
    §9 must pass before anything below starts (decision record "Limits of this record").
 2. **Concept selection for the Owner redesign — only after the audit passes.** Two or three
    whole-page alternatives, judged by the concept-selection gate in `docs/WORKFLOW.md` ("Design
-   work: authority, concepts, and perceptual gates"), using the active design packet
-   `docs/design/ACTIVE_DESIGN_PACKET_TEMPLATE.md`.
+   work: authority, concepts, and perceptual gates"), briefed through the active task packet's
+   `visual` fields (`docs/agent-context/TASK_PACKET_TEMPLATE.yaml`); the retired briefing template
+   `docs/design/ACTIVE_DESIGN_PACKET_TEMPLATE.md` remains only as a compatibility pointer.
 3. **Semantic composition primitives remain deferred** until after concept selection.
 4. **The redesign must start from an explicitly owned clean candidate frontier**, not the preserved
    dirty frontier (ADR-009 consequences).
