@@ -228,7 +228,11 @@ exact printed config path, SHA-256, and byte length with the requested focus/fil
 repository-local Node/Vitest selection and the bounded integrity set, for bounded pre/post-launch
 integrity, and for unchanged repository content during that invocation. It does not prove the fast,
 phase, or full ladder, does not authenticate dependencies, and does not confine test code; package
-aliases remain developer conveniences whose own bootstrap is not authoritative.
+aliases remain developer conveniences whose own bootstrap is not authoritative. The session's
+coverage is bounded to its recorded Vitest provenance, lockfile resolution, realpath containment,
+and integrity set: it is not authentication, attestation, or a sandbox, it says nothing about bytes
+outside the bounded set, and native addons, forks/Workers, subprocesses, and external executables
+remain permitted runtime behavior.
 
 Commands may write ignored transient output only under the run-specific directories. A bare
 `pnpm verify:fast` in a fresh shell can fail `apps/server/src/cron.test.ts` and
@@ -347,24 +351,10 @@ changes Owner, Staff, or Public presentation, in addition to the gates above.
 ## Handoff format
 
 Store handoffs under `docs/phase-records/handoffs/<phase>/<timestamp>-<run-id>.md` and reference
-the latest file from `PROJECT_STATE.yaml`. Keep them concise and evidence-based:
-
-```markdown
-# <phase/slice> handoff
-
-- Status:
-- Base commit / candidate commit:
-- Branch / worktree / run ID:
-- Owned paths / shared leases used:
-- Decisions made (with canonical source):
-- Changes by file:
-- Validation commands and results:
-- Browser/a11y/visual artifacts:
-- Independent verifier findings:
-- Remaining work or exact blocker:
-- Exact resume command:
-- Stop/escalation conditions:
-```
+the latest file from `PROJECT_STATE.yaml` through the active packet's `continuity.currentHandoff`.
+Use `docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md`, which carries the canonical field contract,
+the required evidence sections, and the current-repository-relative resume-command rule. Keep
+handoffs concise and evidence-based.
 
 Do not paste secrets, raw PINs/tokens, unbounded logs, screenshots containing sensitive data, or
 claims that were not independently observed.

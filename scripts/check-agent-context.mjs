@@ -16,6 +16,9 @@ import addFormats from "ajv-formats";
 import { parse as parseYaml } from "yaml";
 
 export const AGENTS_INSTRUCTION_CAP_BYTES = 120_000;
+// Conservative growth warning well below the documented cumulative instruction cap. It is a
+// warning only: a routing invariant or the documented cap itself is what fails.
+export const AGENTS_INSTRUCTION_WARN_BYTES = 24_000;
 export const OPEN_STATUSES = new Set([
 	"PLANNED",
 	"READY",
@@ -1423,6 +1426,10 @@ export async function checkAgentContext({
 		if (agentsBytes > AGENTS_INSTRUCTION_CAP_BYTES)
 			errors.push(
 				`AGENTS.md exceeds documented instruction cap of ${AGENTS_INSTRUCTION_CAP_BYTES} bytes`,
+			);
+		else if (agentsBytes > AGENTS_INSTRUCTION_WARN_BYTES)
+			warnings.push(
+				`AGENTS.md is ${agentsBytes} bytes, above the conservative ${AGENTS_INSTRUCTION_WARN_BYTES}-byte warning threshold and below the ${AGENTS_INSTRUCTION_CAP_BYTES}-byte documented cap`,
 			);
 		const mentions = [
 			...agentsText.matchAll(

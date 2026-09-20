@@ -131,6 +131,7 @@ routes:
       - { role: test, path: scripts/verify-repository.mjs, selector: { kind: whole-file, value: "" }, reason: "Confirm state and repository invariants before integration." }
     conditional:
       - { trigger: "the predecessor or dependency is unresolved", role: historical, path: PROJECT_STATE_HISTORY.yaml, selector: { kind: yaml-key, value: "milestones" }, actionIfTriggered: READ, reason: "Expand only to the named dependency lineage." }
+      - { trigger: "the milestone's durable dependency or acceptance scope is unresolved", role: workflow, path: PHASES.md, selector: { kind: markdown-heading, value: "Dependency DAG" }, actionIfTriggered: READ, reason: "Read only the durable dependency section the resume task names; PHASES.md is not startup context." }
 
   historical-audit:
     responsibility: Answer a named historical question while comparing immutable evidence with current authority.

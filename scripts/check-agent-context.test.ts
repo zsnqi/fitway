@@ -15,6 +15,8 @@ import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
 import { parse as parseYaml, stringify as stringifyYaml } from "yaml";
 import {
+	AGENTS_INSTRUCTION_CAP_BYTES,
+	AGENTS_INSTRUCTION_WARN_BYTES,
 	checkAgentContext,
 	validateReceiptChain,
 } from "./check-agent-context.mjs";
@@ -520,6 +522,39 @@ describe("check-agent-context", () => {
 				warning.includes("no active task packet"),
 			),
 		).toBe(false);
+	});
+
+	it("warns conservatively below the instruction cap and fails only above it", async () => {
+		const root = makeFixture();
+		isolateFixtureHistory(root);
+		const fixture = basePacket(root);
+		materializePacket(root, fixture.state, fixture.packet, fixture.packetPath);
+		writeFixtureFile(
+			root,
+			"AGENTS.md",
+			"x".repeat(AGENTS_INSTRUCTION_WARN_BYTES + 1),
+		);
+		let result = await checkAgentContext({ root, checkTracked: false });
+		expect(result.ok, JSON.stringify(result.errors)).toBe(true);
+		expect(
+			result.warnings.some(
+				(warning) =>
+					warning.includes("conservative") &&
+					warning.includes("warning threshold"),
+			),
+		).toBe(true);
+
+		writeFixtureFile(
+			root,
+			"AGENTS.md",
+			"x".repeat(AGENTS_INSTRUCTION_CAP_BYTES + 1),
+		);
+		result = await checkAgentContext({ root, checkTracked: false });
+		expect(
+			result.errors.some((error) =>
+				error.includes("exceeds documented instruction cap"),
+			),
+		).toBe(true);
 	});
 
 	it("blocks an open milestone with no packet once routing is active", async () => {
