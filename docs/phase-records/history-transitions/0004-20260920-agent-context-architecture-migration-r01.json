@@ -1,0 +1,21 @@
+{
+	"schemaVersion": 2,
+	"kind": "history-transition-receipt",
+	"recordedAt": "2026-09-20T15:15:07.903Z",
+	"previousReceiptSha256": "8d864d969070bd7873a796b0ab6012839cdc47350733599a8619b86920cfde8e",
+	"beforeHistorySha256": "cfb5be2612e3f9331a9ecc06df8e14bcdde1b32aad401f4ec194cd6f5d645669",
+	"afterHistorySha256": "31f846bc52c607e6c7b0b4a934bd6aefed6a83e27ed1a9ba4ce983062793013a",
+	"beforeHistoryBytes": 327871,
+	"afterHistoryBytes": 330477,
+	"beforeMilestoneCount": 103,
+	"afterMilestoneCount": 104,
+	"addedTerminal": {
+		"milestoneId": "agent-context-architecture-migration-r01",
+		"status": "DONE",
+		"digest": "004adbaa1ebd1da2fea7349ba6aa2e315904bd3de3868d346b61f8cbf03e5cfa"
+	},
+	"closedPacketSha256": "2333e86a3220af87f42dc5e74f933490b255b6c7b629ae858d51a418b620b43e",
+	"removedActiveMilestoneId": "agent-context-architecture-migration-r01",
+	"removedActiveMilestoneDigest": "99258d0f757e4626c74157ed6a74cb601e33c7c2fe3afbc758deeb992250338e",
+	"coordinatorRun": "agent-context-m8-terminal-r01"
+}

@@ -45,6 +45,9 @@ const CONTEXT_FILES = [
 const FIXTURE_MILESTONES = [
 	"agent-context-architecture-migration-r01",
 ] as const;
+const FIXTURE_BASE_COMMIT = "19e28f4f0874d96569bc6944e38ad94b89924b60";
+const FIXTURE_HANDOFF =
+	"docs/phase-records/handoffs/coordinator/20260920-182500-agent-context-architecture-migration-r01-m8-closure.md";
 const fixtureRoots: string[] = [];
 
 type JsonObject = Record<string, unknown>;
@@ -154,6 +157,41 @@ function makeFixture(): string {
 	return root;
 }
 
+function fixtureMilestone(): FixtureMilestone {
+	return JSON.parse(
+		JSON.stringify({
+			status: "IN_PROGRESS",
+			objective: "Fixture milestone for the checker mechanics suite.",
+			taskClass: "repository-infrastructure",
+			taskPacket:
+				"docs/phase-records/task-packets/agent-context-architecture-migration-r01.yaml",
+			taskPacketSha256: "a".repeat(64),
+			dependencies: [],
+			ownerSession: "fixture-coordinator",
+			branch: "fixture-branch",
+			worktree: "C:/fixture/worktree",
+			baseCommit: FIXTURE_BASE_COMMIT,
+			ownedPaths: ["docs/agent-context/**", "scripts/check-agent-context*"],
+			forbiddenPaths: ["apps/**", "packages/**"],
+			sharedLeases: ["fixture-lease"],
+			validationRepairAttempts: 0,
+			lastHeartbeatAt: "2026-09-20T18:20:00+03:00",
+			leaseExpiresAt: "2026-09-21T18:00:00+03:00",
+			handoff: FIXTURE_HANDOFF,
+			stopReason: null,
+			gates: {
+				unit: "PENDING",
+				integration: "NOT_REQUIRED",
+				browser: "NOT_REQUIRED",
+				accessibility: "NOT_REQUIRED",
+				visual: "NOT_REQUIRED",
+				independentReview: "PENDING",
+			},
+			integratedCommit: null,
+		}),
+	) as FixtureMilestone;
+}
+
 function isolateFixtureMilestones(
 	root: string,
 	milestoneIds: readonly string[],
@@ -163,14 +201,7 @@ function isolateFixtureMilestones(
 		readFileSync(statePath, "utf8"),
 	) as unknown as FixtureState;
 	const milestones = Object.fromEntries(
-		milestoneIds.map((milestoneId) => {
-			const milestone = state.milestones[milestoneId];
-			if (!milestone)
-				throw new Error(
-					`fixture milestone ${milestoneId} must exist in copied PROJECT_STATE.yaml`,
-				);
-			return [milestoneId, milestone];
-		}),
+		milestoneIds.map((milestoneId) => [milestoneId, fixtureMilestone()]),
 	) as FixtureState["milestones"];
 	state.milestones = milestones;
 	writeFileSync(statePath, stringifyYaml(state), "utf8");
@@ -180,14 +211,8 @@ function docsPath(value: string): string {
 	return value;
 }
 
-function activeHandoffPath(root = REAL_ROOT): string {
-	const state = parseYaml(
-		readFileSync(path.resolve(root, "PROJECT_STATE.yaml"), "utf8"),
-	) as unknown as FixtureState;
-	const handoff = state.milestones[FIXTURE_MILESTONES[0]]?.handoff;
-	if (typeof handoff !== "string" || handoff.trim() === "")
-		throw new Error("fixture migration milestone must have a handoff path");
-	return handoff;
+function activeHandoffPath(): string {
+	return FIXTURE_HANDOFF;
 }
 
 function initTrackedFixture(root: string): void {
@@ -572,12 +597,17 @@ describe("check-agent-context", () => {
 		expect(Object.keys(state.milestones)).toEqual([...FIXTURE_MILESTONES]);
 	});
 
-	it("passes the current active-mode registry with its strict active packet", async () => {
+	it("passes the current active-mode registry with no open milestone and its closed archived packet", async () => {
 		const result = await checkAgentContext({
 			root: REAL_ROOT,
 			checkTracked: false,
 		});
 		expect(result.registry?.mode).toBe("active");
+		expect(Object.keys(result.state?.milestones ?? {})).toEqual([]);
+		expect(
+			result.history?.milestones?.["agent-context-architecture-migration-r01"]
+				?.status,
+		).toBe("DONE");
 		expect(result.ok).toBe(true);
 		expect(
 			result.warnings.some((warning) =>

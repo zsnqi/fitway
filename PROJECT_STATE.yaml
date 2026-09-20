@@ -18,41 +18,4 @@ baseline:
   visualManifest: "visual-direction-gate/approved/APPROVAL_MANIFEST.yaml"
   validationRecord: "docs/phase-records/baseline-reconciliation-gate.md"
   independentVerification: "docs/phase-records/baseline-independent-verification.md"
-milestones:
-  agent-context-architecture-migration-r01:
-    status: IN_PROGRESS
-    objective: Complete the approved agent-context architecture migration through strict active packets, append-only history transitions, bounded startup routing, responsibility migration, design specialization, fresh-agent validation, and final independent verification without changing product or application semantics.
-    taskClass: repository-infrastructure
-    taskPacket: docs/phase-records/task-packets/agent-context-architecture-migration-r01.yaml
-    taskPacketSha256: 8f5430025b80d939789ba07a1d7ae2b4ed9ee7e251bcbf16a72f122df0ac98c5
-    dependencies: []
-    ownerSession: agent-context-m5-m8-coordinator
-    branch: codex/owner-distill-r01
-    worktree: C:/Users/Pc Force/.codex/worktrees/6d57/phase5-staff-integration
-    baseCommit: 19e28f4f0874d96569bc6944e38ad94b89924b60
-    ownedPaths:
-      - AGENTS.md, CLAUDE.md, PRODUCT.md, DESIGN.md, docs/WORKFLOW.md, and the authority-neutral routing text needed by the migration
-      - PROJECT_STATE.yaml, project state/history schemas, task packets, transition receipts, and migration coordinator records
-      - docs/agent-context/** and scripts/check-agent-context*, scripts/show-agent-context.mjs, package/verification wiring, and focused tests
-      - the selectively integrated predecessor-owned portability closure recorded by the M0 handoff
-    forbiddenPaths:
-      - all application behavior and UI implementation under apps/** and packages/**
-      - database schemas/migrations, OpenAPI/DTO behavior, dependencies, and pnpm-lock.yaml bytes
-      - canonical screenshots, Paper artifacts, and any visual baseline promotion
-      - preserved Owner/Staff presentation candidates, screenshots, audits, plans, and unrelated handoffs
-      - Product, Spec, security, privacy, data, accessibility, or visual-authority semantic changes beyond faithfully routing existing authority
-    sharedLeases:
-      - coordinator-exclusive root routing, state/history, package/verification, and migration-record surfaces
-    validationRepairAttempts: 2
-    lastHeartbeatAt: "2026-09-20T17:01:39+03:00"
-    leaseExpiresAt: "2026-09-21T18:00:00+03:00"
-    handoff: docs/phase-records/handoffs/coordinator/20260920-182000-agent-context-architecture-migration-r01-m7-closure.md
-    stopReason: null
-    gates:
-      unit: PASS
-      integration: NOT_REQUIRED
-      browser: NOT_REQUIRED
-      accessibility: NOT_REQUIRED
-      visual: NOT_REQUIRED
-      independentReview: PASS
-    integratedCommit: null
+milestones: {}
