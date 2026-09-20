@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: "2026-09-20T18:22:28+03:00"
+updatedAt: "2026-09-20T20:51:14+03:00"
 coordinator:
-  owner: "Primary coordinator and integrator for the FITWAY repository; no open milestone."
+  owner: "Primary coordinator and integrator for the FITWAY repository; owner-design-exploration-r01 is open as PLANNED."
   stateFilePolicy: "coordinator-only"
 baseline:
   status: "DONE"
@@ -18,4 +18,44 @@ baseline:
   visualManifest: "visual-direction-gate/approved/APPROVAL_MANIFEST.yaml"
   validationRecord: "docs/phase-records/baseline-reconciliation-gate.md"
   independentVerification: "docs/phase-records/baseline-independent-verification.md"
-milestones: {}
+milestones:
+  owner-design-exploration-r01:
+    status: PLANNED
+    objective: >-
+      After the standing design-environment audit gate is resolved, produce and judge two or
+      three whole-page Owner composition alternatives through the concept-selection gate for the
+      seven ADR-009 surfaces, with no production implementation, no canonical or visual-authority
+      change, and explicit human approval of the selected concept as a separate decision.
+    taskClass: visual-authority-change
+    taskPacket: docs/phase-records/task-packets/owner-design-exploration-r01.yaml
+    taskPacketSha256: 1ae50acab7b713cd9c38ec74b00dd3d7b396a3644ce6df5bf306fe86c1fe2a5e
+    dependencies: []
+    ownerSession: owner-design-exploration-r01-coordinator
+    branch: codex/owner-design-exploration-r01
+    worktree: C:/Users/Pc Force/.codex/worktrees/owner-design-exploration-r01/phase5-staff-integration
+    baseCommit: SELF
+    ownedPaths:
+      - design-research/owner-composition-exploration-r01/** (concept input and artifacts; not authority)
+      - docs/phase-records/handoffs/owner-design-exploration/** (milestone handoffs and records)
+      - docs/phase-records/task-packets/owner-design-exploration-r01.yaml and PROJECT_STATE.yaml (coordinator state only)
+    forbiddenPaths:
+      - apps/** and packages/** production code, copy, behavior, and data semantics
+      - tests/browser/** including every screenshot and canonical
+      - visual-direction-gate/**, docs/design/VISUAL_AUTHORITY_STATUS.md, docs/design/PAPER_GUIDE_CONFLICT_MAP.md, docs/adr/**, approval manifests, and pinned hashes
+      - PROJECT_STATE_HISTORY.yaml, docs/archive/**, prior handoffs, and phase records
+      - pnpm-lock.yaml, dependency versions, and database schema or migrations
+    sharedLeases:
+      - Coordinator-exclusive PROJECT_STATE.yaml, this packet, and owner-design-exploration handoff surfaces for owner-design-exploration-r01
+    validationRepairAttempts: 0
+    lastHeartbeatAt: 2026-09-20T20:51:14+03:00
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/owner-design-exploration/20260920-205114-owner-design-exploration-r01-opening.md
+    stopReason: null
+    gates:
+      unit: NOT_REQUIRED
+      integration: NOT_REQUIRED
+      browser: NOT_REQUIRED
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
