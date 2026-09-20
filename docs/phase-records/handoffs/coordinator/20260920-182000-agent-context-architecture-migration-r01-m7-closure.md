@@ -81,3 +81,16 @@
 - M8 remains: fresh-agent scenario validation, independent architecture and verification reviews,
   the authoritative fast/phase/full ladders in a clean worktree, and the terminal v2 history
   transition.
+
+## Final-commit gates
+
+- Clean detached worktree at the closure commit
+  `6eb1e78651ef35174a52f23190043535ecec5c6c`: `scripts/check-agent-context.mjs` PASS (8 task
+  classes, active mode); `scripts/verify-repository.mjs` PASS (1 active, 103 archived);
+  clean-candidate `scripts/check-frontier-preservation.mjs` PASS (110 non-excluded protected paths
+  not integrated relative to the frozen M0 base; 3 policy exclusions).
+- Authoritative focused runner at the same commit: 3 files / 72 tests PASS.
+- `git status --short` remained empty after every final-commit gate.
+- The behavioral candidate `fde3988cf37f037f20dfcfcee949fb63b6454f59` differs from the closure
+  commit only by this report-only record, the packet continuity pointer/hash, and the coordinator
+  state handoff pointer/packet hash.
