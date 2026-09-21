@@ -1012,6 +1012,12 @@ async function validatePacket({
 				OPEN_STATUSES.has(milestone.status) &&
 				milestone.status !== "PLANNED") ||
 			(packet.packetStatus === "CLOSED" && historyMilestone?.status === "DONE");
+		const vacantConceptPhase =
+			packet.taskClass === "visual-authority-change" &&
+			packet.visual.authorityStatus === "VACANT" &&
+			packet.packetStatus === "READY" &&
+			milestone !== undefined &&
+			(milestone.status === "READY" || milestone.status === "IN_PROGRESS");
 		if (!/check:design-context/.test(packet.designContextCheck?.command ?? ""))
 			errors.push(
 				`${packetPath}: UI packet design-context command must run check:design-context`,
@@ -1031,14 +1037,16 @@ async function validatePacket({
 				errors.push(
 					`${packetPath}: READY/executing UI packet design-context check is not PASS`,
 				);
-			if (packet.accessibilityGate.status !== "PASS")
-				errors.push(
-					`${packetPath}: READY/executing UI packet accessibility gate is not PASS`,
-				);
-			if (packet.visual.perceptualGate.status !== "PASS")
-				errors.push(
-					`${packetPath}: READY/executing UI packet perceptual gate is not PASS`,
-				);
+			if (!vacantConceptPhase) {
+				if (packet.accessibilityGate.status !== "PASS")
+					errors.push(
+						`${packetPath}: READY/executing UI packet accessibility gate is not PASS`,
+					);
+				if (packet.visual.perceptualGate.status !== "PASS")
+					errors.push(
+						`${packetPath}: READY/executing UI packet perceptual gate is not PASS`,
+					);
+			}
 			if (
 				!["PASS", "NOT_REQUIRED"].includes(packet.visual.promotionGate.status)
 			)

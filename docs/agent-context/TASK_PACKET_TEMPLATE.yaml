@@ -63,6 +63,10 @@ evidence:
 #     antiRuts: [<incumbent, frozen, or prior directions not to reproduce>]
 #     promotionRule: <how a departure could ever reach production>
 #     authorizingDecision: <tracked human decision record path>
+# VACANT concept phase (visual-authority-change only): designContextCheck must be PASS;
+# accessibilityGate and visual.perceptualGate may stay PENDING while the milestone is READY or
+# IN_PROGRESS, and both must be PASS from VALIDATING onward and before any DONE record or
+# promotion.
 # designContextCheck:
 #   command: pnpm check:design-context
 #   status: PASS | PENDING | NEEDS_HUMAN

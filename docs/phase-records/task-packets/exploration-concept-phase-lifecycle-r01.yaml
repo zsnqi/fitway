@@ -1,0 +1,92 @@
+# Coordinator-authored derived context. Not authority. READY while the lifecycle repair milestone
+# is IN_PROGRESS; it authorizes the bounded concept-phase lifecycle amendment and nothing else.
+schemaVersion: 1
+milestoneId: exploration-concept-phase-lifecycle-r01
+taskClass: repository-infrastructure
+packetStatus: READY
+stateRef: PROJECT_STATE.yaml#/milestones/exploration-concept-phase-lifecycle-r01
+baseCommit: SELF
+task:
+  objective: >-
+    Allow an honest concept phase for VACANT exploration packets: permit pending
+    accessibility/perceptual gates while READY/IN_PROGRESS with design-context PASS, require both
+    PASS from VALIDATING onward and for CLOSED/DONE, and record the rule in the workflow.
+  acceptanceCriteria:
+    - A VACANT READY visual packet with design-context PASS and pending accessibility/perceptual gates validates for a READY or IN_PROGRESS milestone.
+    - The same packet fails validation at VALIDATING and for a CLOSED DONE record.
+    - A non-VACANT READY UI packet still requires all three gates PASS.
+    - docs/WORKFLOW.md and the packet template record the concept-phase semantics; focused tests, checks, and an independent review pass.
+  explicitExclusions:
+    - Any production UI, CSS, token, copy, behavior, i18n, dependency, schema-migration, API, or data-semantics change under apps/**, packages/**, or tests/**.
+    - Any canonical, Paper, manifest, approval-hash, register, ADR, approval, or visual-authority change.
+    - Any change to non-VACANT gate requirements; no gate may be exempted for implementation packets.
+scope:
+  ownedPaths:
+    - scripts/check-agent-context.mjs
+    - scripts/check-agent-context.test.ts
+    - docs/WORKFLOW.md
+    - docs/agent-context/TASK_PACKET_TEMPLATE.yaml
+    - docs/agent-context/README.md
+    - docs/phase-records/handoffs/exploration-concept-phase-lifecycle-r01/**
+    - docs/phase-records/task-packets/exploration-concept-phase-lifecycle-r01.yaml
+    - PROJECT_STATE.yaml (coordinator state only)
+  forbiddenPaths:
+    - apps/** and packages/** production code, copy, behavior, and data semantics
+    - tests/browser/** including every screenshot and canonical
+    - visual-direction-gate/**, docs/design/**, docs/adr/**, approval manifests, and pinned hashes
+    - PROJECT_STATE_HISTORY.yaml, docs/archive/**, prior handoffs, and phase records
+    - pnpm-lock.yaml, dependency versions, and database schema or migrations
+  sharedLeases:
+    - Coordinator-exclusive PROJECT_STATE.yaml, this packet, and the concept-phase lifecycle repair handoff surfaces for exploration-concept-phase-lifecycle-r01
+authorities:
+  required:
+    - role: workflow
+      path: docs/WORKFLOW.md
+      selector: { kind: markdown-heading, value: "Roles" }
+      reason: Preserve coordinator, worker, and verifier ownership while amending the packet lifecycle.
+    - role: contract
+      path: docs/schemas/project-state.schema.json
+      selector: { kind: json-pointer, value: "/properties/milestones" }
+      reason: Keep active milestone and packet metadata valid while adding the repair milestone.
+    - role: test
+      path: scripts/verify-repository.mjs
+      selector: { kind: whole-file, value: "" }
+      reason: Keep repository invariants and mutation guards intact.
+  conditional:
+    - trigger: the infrastructure can affect a Product or Spec guarantee
+      role: product
+      path: FITWAY_PRODUCT.md
+      selector: { kind: markdown-heading, value: "Canonical detail" }
+      actionIfTriggered: READ
+    - trigger: the infrastructure changes a design-context bridge
+      role: design
+      path: DESIGN.md
+      selector: { kind: markdown-heading, value: "Design" }
+      actionIfTriggered: READ
+continuity:
+  predecessorMilestones: []
+  currentHandoff: docs/phase-records/handoffs/exploration-concept-phase-lifecycle-r01/20260921-202232-concept-phase-lifecycle-opening.md
+  unresolvedDecisions:
+    - "The standing design-environment audit gate is resolved only by a fresh independent audit PASS after this repair; this packet does not resolve it."
+    - "Activation of owner-design-exploration-r01 remains a coordinator action after the audit PASS."
+verification:
+  profile: >-
+    repository-infrastructure: focused checker tests plus check:agent-context, check:repository,
+    check:frontier-preservation, and check:design-context on a clean tree
+  orderedGates:
+    - "focused unit: node scripts/run-vitest.mjs run scripts/check-agent-context.test.ts"
+    - "node scripts/check-agent-context.mjs"
+    - "node scripts/verify-repository.mjs"
+    - "node scripts/check-frontier-preservation.mjs"
+    - "pnpm check:design-context"
+    - "fresh independent review with file:line evidence before DONE"
+  independentReviewRequired: true
+evidence:
+  receiptTemplate: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
+  requiredArtifacts:
+    - exact commands and observed results for the focused checks
+    - the authorization record path and the amendment diff summary
+    - the independent reviewer verdict naming inspected files and lines
+limitations:
+  - This packet changes no production code, token, canonical, manifest, register, ADR, or pinned hash.
+  - It does not activate owner-design-exploration-r01 and authorizes no concept work.

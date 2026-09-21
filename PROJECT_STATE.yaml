@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-09-21T16:35:22.683Z
+updatedAt: 2026-09-21T17:22:32.000Z
 coordinator:
-  owner: "Primary coordinator and integrator for the FITWAY repository; owner-design-exploration-r01 is open as PLANNED, and owner-design-exploration-envelope-repair-r01 is open as IN_PROGRESS."
+  owner: "Primary coordinator and integrator for the FITWAY repository; owner-design-exploration-r01 is open as PLANNED, and exploration-concept-phase-lifecycle-r01 is open as IN_PROGRESS."
   stateFilePolicy: "coordinator-only"
 baseline:
   status: "DONE"
@@ -57,5 +57,49 @@ milestones:
       browser: NOT_REQUIRED
       accessibility: PENDING
       visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+  exploration-concept-phase-lifecycle-r01:
+    status: IN_PROGRESS
+    objective: >-
+      Allow an honest concept phase for VACANT exploration packets: permit pending
+      accessibility/perceptual gates while READY/IN_PROGRESS with design-context PASS, require both
+      PASS from VALIDATING onward and for CLOSED/DONE, and record the rule in the workflow.
+    taskClass: repository-infrastructure
+    taskPacket: docs/phase-records/task-packets/exploration-concept-phase-lifecycle-r01.yaml
+    taskPacketSha256: 33c47d89025be920e1facf78320658a858ce2e32f1a2d942205e2b393be8db08
+    dependencies: []
+    ownerSession: exploration-concept-phase-lifecycle-r01-coordinator
+    branch: codex/owner-design-exploration-r01
+    worktree: C:/Users/Pc Force/.codex/worktrees/owner-design-exploration-r01/phase5-staff-integration
+    baseCommit: SELF
+    ownedPaths:
+      - scripts/check-agent-context.mjs
+      - scripts/check-agent-context.test.ts
+      - docs/WORKFLOW.md
+      - docs/agent-context/TASK_PACKET_TEMPLATE.yaml
+      - docs/agent-context/README.md
+      - docs/phase-records/handoffs/exploration-concept-phase-lifecycle-r01/**
+      - docs/phase-records/task-packets/exploration-concept-phase-lifecycle-r01.yaml
+      - PROJECT_STATE.yaml (coordinator state only)
+    forbiddenPaths:
+      - apps/** and packages/** production code, copy, behavior, and data semantics
+      - tests/browser/** including every screenshot and canonical
+      - visual-direction-gate/**, docs/design/**, docs/adr/**, approval manifests, and pinned hashes
+      - PROJECT_STATE_HISTORY.yaml, docs/archive/**, prior handoffs, and phase records
+      - pnpm-lock.yaml, dependency versions, and database schema or migrations
+    sharedLeases:
+      - Coordinator-exclusive PROJECT_STATE.yaml, this packet, and the concept-phase lifecycle repair handoff surfaces for exploration-concept-phase-lifecycle-r01
+    validationRepairAttempts: 0
+    lastHeartbeatAt: 2026-09-21T20:22:32+03:00
+    leaseExpiresAt: 2026-09-22T20:22:32+03:00
+    handoff: docs/phase-records/handoffs/exploration-concept-phase-lifecycle-r01/20260921-202232-concept-phase-lifecycle-opening.md
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: NOT_REQUIRED
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
       independentReview: PENDING
     integratedCommit: null

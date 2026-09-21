@@ -340,6 +340,11 @@ attempts), and the promotion rule.
   that says so.
 - A restyle that keeps the incumbent palette, material, and atmosphere and changes only layout
   does not satisfy the envelope.
+- Concept-phase lifecycle: a `visual-authority-change` packet with `authorityStatus: VACANT` may
+  be `READY` while its milestone is `READY` or `IN_PROGRESS` with the design-context check `PASS`
+  and the accessibility and perceptual gates still `PENDING`; both gates must be `PASS` before the
+  milestone advances to `VALIDATING` or reaches a `DONE` record, and before any concept is
+  promoted.
 5. **Perceptual promotion gate.** The perceptual reviewer receives full-resolution rendered
    frames before test scores, implementation rationale, or canonical comparisons and is allowed
    to reject the reference itself. A pass must name the exact frames inspected and the reviewer;

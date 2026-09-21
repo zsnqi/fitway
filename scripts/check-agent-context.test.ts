@@ -612,15 +612,15 @@ describe("check-agent-context", () => {
 		expect(Object.keys(state.milestones)).toEqual([...FIXTURE_MILESTONES]);
 	});
 
-	it("passes the current active-mode registry with one open exploration milestone and its closed archived packets", async () => {
+	it("passes the current active-mode registry with its open exploration frontier and closed archived packets", async () => {
 		const result = await checkAgentContext({
 			root: REAL_ROOT,
 			checkTracked: false,
 		});
 		expect(result.registry?.mode).toBe("active");
-		expect(Object.keys(result.state?.milestones ?? {})).toEqual([
+		expect(Object.keys(result.state?.milestones ?? {})).toContain(
 			"owner-design-exploration-r01",
-		]);
+		);
 		expect(
 			result.history?.milestones?.[
 				"owner-design-exploration-envelope-repair-r01"
@@ -1692,6 +1692,90 @@ describe("check-agent-context", () => {
 		expect(
 			result.errors.some((error) =>
 				error.includes("perceptual gate cannot be NOT_REQUIRED"),
+			),
+		).toBe(true);
+	});
+
+	it("allows pending accessibility and perceptual gates for a VACANT concept phase until validating", async () => {
+		const root = makeFixture();
+		isolateFixtureHistory(root);
+		const decisionPath = "docs/phase-records/handoffs/exploration-decision.md";
+		const fixture = makeUiFamilyFixture(root, "visual-authority-change", {
+			surfaceKey: "owner-composition-family",
+			authorityStatus: "VACANT",
+			authorityKey: "ADR-009",
+			acceptanceAuthority: "NONE",
+			explorationEnvelope: explorationEnvelopeFixture(decisionPath),
+		});
+		const ownerRoute = fixtureRoute(root, "visual-authority-change");
+		const ownerConditional = ownerRoute.conditional.find((source) =>
+			source.path.includes("ADR-009"),
+		);
+		fixture.packet.authorities.required.push({
+			role: ownerConditional?.role ?? "adr",
+			path:
+				ownerConditional?.path ??
+				"docs/adr/ADR-009-owner-composition-authority-supersession.md",
+			selector: ownerConditional?.selector ?? {
+				kind: "markdown-heading",
+				value: "Decision",
+			},
+			reason: "Owner redesign authority.",
+		});
+		fixture.packet.packetStatus = "READY";
+		fixture.state.milestones[fixture.packet.milestoneId].status = "READY";
+		(fixture.packet.accessibilityGate as JsonObject).status = "PENDING";
+		(fixture.packet.visual.perceptualGate as JsonObject).status = "PENDING";
+		writeFixtureFile(root, decisionPath, "# Exploration decision\n");
+		materializePacket(root, fixture.state, fixture.packet, fixture.packetPath);
+		let result = await checkAgentContext({ root, checkTracked: false });
+		expect(result.ok).toBe(true);
+
+		fixture.state.milestones[fixture.packet.milestoneId].status = "IN_PROGRESS";
+		materializePacket(root, fixture.state, fixture.packet, fixture.packetPath);
+		result = await checkAgentContext({ root, checkTracked: false });
+		expect(result.ok).toBe(true);
+
+		fixture.state.milestones[fixture.packet.milestoneId].status = "VALIDATING";
+		materializePacket(root, fixture.state, fixture.packet, fixture.packetPath);
+		result = await checkAgentContext({ root, checkTracked: false });
+		expect(result.ok).toBe(false);
+		expect(
+			result.errors.some((error) =>
+				error.includes("accessibility gate is not PASS"),
+			),
+		).toBe(true);
+		expect(
+			result.errors.some((error) =>
+				error.includes("perceptual gate is not PASS"),
+			),
+		).toBe(true);
+	});
+
+	it("requires accessibility and perceptual PASS for a non-visual-authority VACANT packet", async () => {
+		const root = makeFixture();
+		isolateFixtureHistory(root);
+		const decisionPath = "docs/phase-records/handoffs/exploration-decision.md";
+		const fixture = makeUiFamilyFixture(root, "ui-maintenance", {
+			authorityStatus: "VACANT",
+			explorationEnvelope: explorationEnvelopeFixture(decisionPath),
+		});
+		fixture.packet.packetStatus = "READY";
+		fixture.state.milestones[fixture.packet.milestoneId].status = "IN_PROGRESS";
+		(fixture.packet.accessibilityGate as JsonObject).status = "PENDING";
+		(fixture.packet.visual.perceptualGate as JsonObject).status = "PENDING";
+		writeFixtureFile(root, decisionPath, "# Exploration decision\n");
+		materializePacket(root, fixture.state, fixture.packet, fixture.packetPath);
+		const result = await checkAgentContext({ root, checkTracked: false });
+		expect(result.ok).toBe(false);
+		expect(
+			result.errors.some((error) =>
+				error.includes("accessibility gate is not PASS"),
+			),
+		).toBe(true);
+		expect(
+			result.errors.some((error) =>
+				error.includes("perceptual gate is not PASS"),
 			),
 		).toBe(true);
 	});
