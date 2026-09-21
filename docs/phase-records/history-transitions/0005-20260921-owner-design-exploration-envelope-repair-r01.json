@@ -1,0 +1,21 @@
+{
+	"schemaVersion": 2,
+	"kind": "history-transition-receipt",
+	"recordedAt": "2026-09-21T16:35:22.682Z",
+	"previousReceiptSha256": "ebd03a0c5b0bbeca40761ad6db676d56c6d9af8868a432da9ed675f4b9df0f1f",
+	"beforeHistorySha256": "31f846bc52c607e6c7b0b4a934bd6aefed6a83e27ed1a9ba4ce983062793013a",
+	"afterHistorySha256": "b471161225027bc3d3c386c4b964d92e4d05003e534b8a6b0811609af76a3cb7",
+	"beforeHistoryBytes": 330477,
+	"afterHistoryBytes": 333323,
+	"beforeMilestoneCount": 104,
+	"afterMilestoneCount": 105,
+	"addedTerminal": {
+		"milestoneId": "owner-design-exploration-envelope-repair-r01",
+		"status": "DONE",
+		"digest": "d12a82af0bf8fe33683c17a1fe2feba6aaf3f3f8e1b37b4527cbe0ccc7d9d1fb"
+	},
+	"closedPacketSha256": "05ff0b86109f891545540506b904dafe61614d577e6aeae761a70492dd0b6d39",
+	"removedActiveMilestoneId": "owner-design-exploration-envelope-repair-r01",
+	"removedActiveMilestoneDigest": "49f0c3f2cba7dd7de56cd04c75869118a3fb4cc6dd5a71599f18ed86c3d2a285",
+	"coordinatorRun": "owner-design-exploration-envelope-repair-r01-closure"
+}

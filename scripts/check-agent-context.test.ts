@@ -612,7 +612,7 @@ describe("check-agent-context", () => {
 		expect(Object.keys(state.milestones)).toEqual([...FIXTURE_MILESTONES]);
 	});
 
-	it("passes the current active-mode registry with two open exploration milestones and its closed archived packet", async () => {
+	it("passes the current active-mode registry with one open exploration milestone and its closed archived packets", async () => {
 		const result = await checkAgentContext({
 			root: REAL_ROOT,
 			checkTracked: false,
@@ -620,8 +620,12 @@ describe("check-agent-context", () => {
 		expect(result.registry?.mode).toBe("active");
 		expect(Object.keys(result.state?.milestones ?? {})).toEqual([
 			"owner-design-exploration-r01",
-			"owner-design-exploration-envelope-repair-r01",
 		]);
+		expect(
+			result.history?.milestones?.[
+				"owner-design-exploration-envelope-repair-r01"
+			]?.status,
+		).toBe("DONE");
 		expect(
 			result.history?.milestones?.["agent-context-architecture-migration-r01"]
 				?.status,

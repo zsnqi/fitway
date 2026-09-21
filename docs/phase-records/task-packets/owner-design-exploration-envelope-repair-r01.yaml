@@ -3,7 +3,7 @@
 schemaVersion: 1
 milestoneId: owner-design-exploration-envelope-repair-r01
 taskClass: repository-infrastructure
-packetStatus: READY
+packetStatus: CLOSED
 stateRef: PROJECT_STATE.yaml#/milestones/owner-design-exploration-envelope-repair-r01
 baseCommit: SELF
 task:
@@ -72,7 +72,7 @@ authorities:
       actionIfTriggered: READ
 continuity:
   predecessorMilestones: []
-  currentHandoff: docs/phase-records/handoffs/owner-design-exploration-envelope-repair-r01/20260921-184926-envelope-repair-result.md
+  currentHandoff: docs/phase-records/handoffs/owner-design-exploration-envelope-repair-r01/20260921-193303-envelope-repair-closure.md
   unresolvedDecisions:
     - "Human authorization to commit or stage-finalize the repair is pending; tracking-dependent checks (frontier clean mode and verify:fast) cannot go green until the new files are tracked."
     - "The standing design-environment audit gate remains unresolved and gates any Owner concept selection."
