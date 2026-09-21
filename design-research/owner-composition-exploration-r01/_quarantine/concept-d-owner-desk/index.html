@@ -1,0 +1,1515 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="dark" />
+<title>FITWAY — الإدارة</title>
+<style>
+/* ============================================================
+   Concept D — "The Owner's Desk" (مكتب المالك)
+   Informal exploration fixture. Not authority. No network calls.
+   Navigation model: hub-and-spoke (desk home + destinations popover
+   + breadcrumb). No side rail, no chapter column, no tab strip.
+   ============================================================ */
+@font-face { font-family:"Cairo"; src:url("fonts/cairo-arabic-400-normal.woff2") format("woff2"); font-weight:400; font-style:normal; font-display:swap; unicode-range:U+0600-06FF,U+0750-077F,U+08A0-08FF,U+FB50-FDFF,U+FE70-FEFC; }
+@font-face { font-family:"Cairo"; src:url("fonts/cairo-arabic-500-normal.woff2") format("woff2"); font-weight:500; font-style:normal; font-display:swap; unicode-range:U+0600-06FF,U+0750-077F,U+08A0-08FF,U+FB50-FDFF,U+FE70-FEFC; }
+@font-face { font-family:"Cairo"; src:url("fonts/cairo-arabic-600-normal.woff2") format("woff2"); font-weight:600; font-style:normal; font-display:swap; unicode-range:U+0600-06FF,U+0750-077F,U+08A0-08FF,U+FB50-FDFF,U+FE70-FEFC; }
+@font-face { font-family:"Cairo"; src:url("fonts/cairo-arabic-700-normal.woff2") format("woff2"); font-weight:700; font-style:normal; font-display:swap; unicode-range:U+0600-06FF,U+0750-077F,U+08A0-08FF,U+FB50-FDFF,U+FE70-FEFC; }
+@font-face { font-family:"Cairo"; src:url("fonts/cairo-latin-400-normal.woff2") format("woff2"); font-weight:400; font-style:normal; font-display:swap; unicode-range:U+0000-05FF,U+2000-206F; }
+@font-face { font-family:"Cairo"; src:url("fonts/cairo-latin-500-normal.woff2") format("woff2"); font-weight:500; font-style:normal; font-display:swap; unicode-range:U+0000-05FF,U+2000-206F; }
+@font-face { font-family:"Cairo"; src:url("fonts/cairo-latin-600-normal.woff2") format("woff2"); font-weight:600; font-style:normal; font-display:swap; unicode-range:U+0000-05FF,U+2000-206F; }
+@font-face { font-family:"Cairo"; src:url("fonts/cairo-latin-700-normal.woff2") format("woff2"); font-weight:700; font-style:normal; font-display:swap; unicode-range:U+0000-05FF,U+2000-206F; }
+
+:root {
+  color-scheme: dark;
+  --fw-obsidian:#08090a; --fw-coal:#101012; --fw-graphite:#1a1a1e;
+  --fw-oxblood:#4d0713; --fw-red:#e51935; --fw-red-bright:#ff2946;
+  --fw-chalk:#f5f3f2; --fw-muted:#c9c3c4; --fw-text-subtle:#aaa4a6;
+  --fw-live:#4be29b; --fw-delayed:#d9a400; --fw-offline:#9aa0aa;
+  --fw-space-1:4px; --fw-space-2:8px; --fw-space-3:12px; --fw-space-4:16px;
+  --fw-space-6:24px; --fw-space-8:32px; --fw-space-12:48px; --fw-space-18:72px;
+  --fw-radius-control:8px; --fw-radius-surface:16px; --fw-radius-board:28px;
+  --fw-duration-fast:120ms; --fw-duration-base:180ms;
+  --fw-ease-out:cubic-bezier(0,0,0.2,1);
+  --hairline:1px solid color-mix(in srgb, var(--fw-chalk) 9%, transparent);
+  --hairline-strong:1px solid color-mix(in srgb, var(--fw-chalk) 16%, transparent);
+  --measure: 1064px;
+  --measure-narrow: 720px;
+}
+* { box-sizing:border-box; }
+html { background:var(--fw-obsidian); }
+body {
+  margin:0; min-height:100vh; min-height:100svh;
+  background:var(--fw-obsidian); color:var(--fw-chalk);
+  font-family:"Cairo", system-ui, sans-serif; font-weight:400;
+  font-size:16px; line-height:1.55;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+bdi { unicode-bidi:isolate; }
+.num { font-variant-numeric:tabular-nums; unicode-bidi:isolate; }
+[lang] .lat { font-feature-settings:"tnum"; }
+h1,h2,h3,h4,p { margin:0; }
+button { font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
+input,select { font:inherit; }
+a { color:inherit; }
+:focus { outline:none; }
+:focus-visible {
+  outline:2px solid var(--fw-red-bright); outline-offset:2px; border-radius:4px;
+}
+::selection { background:color-mix(in srgb, var(--fw-red) 60%, transparent); }
+.sr-only {
+  position:absolute; width:1px; height:1px; margin:-1px; padding:0;
+  clip-path:inset(50%); overflow:hidden; white-space:nowrap; border:0;
+}
+.skip {
+  position:fixed; inset-block-start:10px; inset-inline-start:12px; z-index:80;
+  transform:translateY(-300%);
+  background:var(--fw-graphite); color:var(--fw-chalk);
+  padding:10px 18px; border-radius:var(--fw-radius-control); border:var(--hairline-strong);
+  text-decoration:none; font-weight:600; font-size:14px;
+  transition:transform var(--fw-duration-base) var(--fw-ease-out);
+}
+.skip:focus-visible { transform:translateY(0); }
+
+/* ---------- static atmosphere (never animated) ---------- */
+.atmo { position:fixed; inset:0; z-index:-2; pointer-events:none; background:var(--fw-obsidian); }
+.atmo::before {
+  content:""; position:absolute; inset:0;
+  background:
+    radial-gradient(58% 44% at 78% -6%, color-mix(in srgb, var(--fw-oxblood) 62%, transparent) 0%, transparent 70%),
+    radial-gradient(42% 34% at 8% 108%, color-mix(in srgb, var(--fw-oxblood) 34%, transparent) 0%, transparent 72%),
+    linear-gradient(180deg, #0a0b0d 0%, var(--fw-obsidian) 46%, #070809 100%);
+}
+.atmo::after {
+  content:""; position:absolute; inset-block-start:-16%; inset-inline-end:-10%;
+  width:54vw; height:54vw; border-radius:50%;
+  background:radial-gradient(circle, color-mix(in srgb, var(--fw-red) 9%, transparent), transparent 62%);
+  filter:blur(90px);
+}
+.watermark {
+  position:fixed; inset-block-end:-4vw; inset-inline-start:-1vw; z-index:-1;
+  font-weight:700; font-size:22vw; line-height:.8; letter-spacing:.04em;
+  color:transparent; -webkit-text-stroke:1px color-mix(in srgb, var(--fw-chalk) 5%, transparent);
+  pointer-events:none; user-select:none;
+}
+
+/* ---------- masthead ---------- */
+.mast {
+  position:sticky; inset-block-start:0; z-index:40;
+  background:color-mix(in srgb, var(--fw-coal) 88%, transparent);
+  border-block-end:var(--hairline);
+}
+.mast__in {
+  max-width:var(--measure); margin-inline:auto; padding-inline:var(--fw-space-6);
+  min-height:60px; display:flex; align-items:center; gap:var(--fw-space-4);
+}
+.brand { display:flex; align-items:center; gap:10px; min-width:0; }
+.brand svg { flex:none; color:var(--fw-chalk); }
+.brand__word { font-weight:700; letter-spacing:.14em; font-size:15px; }
+.brand__scope {
+  font-size:12px; font-weight:600; color:var(--fw-text-subtle);
+  border-inline-start:var(--hairline-strong); padding-inline-start:10px; margin-inline-start:2px;
+}
+.crumb {
+  display:flex; align-items:center; gap:8px; min-width:0;
+  font-size:13px; color:var(--fw-text-subtle); margin-inline-start:var(--fw-space-3);
+}
+.crumb button {
+  color:var(--fw-muted); font-size:13px; font-weight:600; padding:6px 2px;
+  border-radius:6px; transition:color var(--fw-duration-fast) var(--fw-ease-out);
+}
+.crumb button:hover { color:var(--fw-chalk); }
+.crumb .sep { color:var(--fw-text-subtle); }
+[dir="rtl"] .crumb .sep { transform:scaleX(-1); }
+.crumb .here { color:var(--fw-chalk); font-weight:600; }
+.mast__end { margin-inline-start:auto; display:flex; align-items:center; gap:var(--fw-space-2); }
+.mbtn {
+  min-height:44px; padding:0 14px; border-radius:var(--fw-radius-control);
+  color:var(--fw-muted); font-size:14px; font-weight:600;
+  display:inline-flex; align-items:center; gap:8px;
+  transition:color var(--fw-duration-fast) var(--fw-ease-out), background var(--fw-duration-fast) var(--fw-ease-out);
+}
+.mbtn:hover { color:var(--fw-chalk); background:color-mix(in srgb, var(--fw-chalk) 5%, transparent); }
+.mbtn--dest { color:var(--fw-chalk); border:var(--hairline-strong); }
+.mbtn--dest:hover { border-color:color-mix(in srgb, var(--fw-chalk) 30%, transparent); background:transparent; }
+.mbtn svg { flex:none; }
+.mast__vr { width:1px; height:22px; background:color-mix(in srgb, var(--fw-chalk) 14%, transparent); margin-inline:4px; }
+
+/* destinations popover */
+.pop-veil { position:fixed; inset:0; z-index:48; background:transparent; }
+.pop {
+  position:fixed; z-index:49; inset-block-start:66px; inset-inline-end:max(24px, calc((100vw - var(--measure))/2 + 24px));
+  width:300px; background:var(--fw-coal); border:var(--hairline-strong);
+  border-radius:var(--fw-radius-surface); padding:8px;
+  box-shadow:0 24px 48px color-mix(in srgb, #000 55%, transparent);
+  opacity:0; transform:translateY(-4px); pointer-events:none;
+  transition:opacity var(--fw-duration-base) var(--fw-ease-out), transform var(--fw-duration-base) var(--fw-ease-out);
+}
+.pop.open { opacity:1; transform:none; pointer-events:auto; }
+.pop__label { font-size:11px; font-weight:600; color:var(--fw-text-subtle); padding:8px 10px 6px; }
+.pop a {
+  display:flex; align-items:center; gap:12px; padding:10px;
+  border-radius:10px; text-decoration:none; min-height:44px;
+  transition:background var(--fw-duration-fast) var(--fw-ease-out);
+}
+.pop a:hover, .pop a:focus-visible { background:var(--fw-graphite); }
+.pop a[aria-current="page"] { background:color-mix(in srgb, var(--fw-oxblood) 42%, transparent); }
+.pop a[aria-current="page"] .pop__name { color:var(--fw-chalk); }
+.pop__name { font-weight:600; font-size:14px; color:var(--fw-muted); }
+.pop__fact { margin-inline-start:auto; font-size:12px; color:var(--fw-text-subtle); }
+.pop__dot { width:6px; height:6px; border-radius:50%; background:var(--fw-red); flex:none; }
+</style>
+<style>
+/* ---------- live status band (route-level truth, always visible) ---------- */
+.band {
+  position:sticky; inset-block-start:60px; z-index:30;
+  background:color-mix(in srgb, var(--fw-obsidian) 90%, transparent);
+  border-block-end:var(--hairline);
+}
+.band__in {
+  max-width:var(--measure); margin-inline:auto; padding:10px var(--fw-space-6);
+  display:flex; align-items:center; gap:var(--fw-space-4); flex-wrap:wrap;
+}
+.livechip { display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:600; color:var(--fw-chalk); }
+.livechip .dot {
+  width:8px; height:8px; border-radius:50%; background:var(--fw-live); flex:none;
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--fw-live) 18%, transparent);
+}
+.bandchip {
+  display:inline-flex; align-items:center; gap:8px;
+  min-height:28px; padding:2px 12px; border-radius:999px;
+  background:color-mix(in srgb, var(--fw-oxblood) 55%, var(--fw-coal));
+  border:1px solid color-mix(in srgb, var(--fw-red) 38%, transparent);
+  font-size:13px; font-weight:700; color:var(--fw-chalk);
+}
+.bandchip svg { color:var(--fw-red-bright); }
+.band__fact { font-size:13px; color:var(--fw-muted); display:inline-flex; align-items:baseline; gap:6px; }
+.band__fact b { color:var(--fw-chalk); font-weight:600; }
+.band__time { margin-inline-start:auto; font-size:12px; color:var(--fw-text-subtle); }
+.band__sep { width:1px; height:16px; background:color-mix(in srgb, var(--fw-chalk) 12%, transparent); }
+
+/* ---------- page frame ---------- */
+.view { max-width:var(--measure); margin-inline:auto; padding:0 var(--fw-space-6) var(--fw-space-18); }
+.phead { padding-block:var(--fw-space-12) var(--fw-space-8); }
+.phead .eyebrow {
+  font-size:12px; font-weight:600; letter-spacing:.02em; color:var(--fw-red-bright);
+  display:flex; align-items:center; gap:10px;
+}
+.phead .eyebrow::after { content:""; flex:0 0 44px; height:1px; background:color-mix(in srgb, var(--fw-red) 55%, transparent); }
+.phead h1 {
+  font-size:clamp(30px, 4.4vw, 44px); font-weight:700; line-height:1.14;
+  margin-block-start:12px; letter-spacing:0;
+}
+.phead .lede { margin-block-start:10px; color:var(--fw-muted); font-size:16px; max-width:60ch; }
+
+/* section rails: separators, not card walls */
+.rail { border-block-start:var(--hairline); padding-block:var(--fw-space-8); }
+.rail__head { display:flex; align-items:baseline; gap:var(--fw-space-4); flex-wrap:wrap; margin-block-end:var(--fw-space-6); }
+.rail__head h2 { font-size:20px; font-weight:700; }
+.rail__head .helper { color:var(--fw-text-subtle); font-size:13px; }
+.rail__head .rail__aside { margin-inline-start:auto; font-size:13px; color:var(--fw-muted); }
+
+/* ---------- desk hero ---------- */
+.hero { padding-block:var(--fw-space-8) var(--fw-space-12); }
+.hero__top { display:grid; grid-template-columns:auto min-content; gap:var(--fw-space-8); align-items:end; }
+.hero__band-label { font-size:13px; font-weight:600; color:var(--fw-text-subtle); margin-block-end:6px; }
+.hero__band { font-size:clamp(52px, 8vw, 84px); font-weight:700; line-height:1.04; color:var(--fw-chalk); }
+.hero__band .u { display:block; height:6px; width:.9em; margin-block-start:14px; border-radius:3px;
+  background:linear-gradient(90deg, var(--fw-red), var(--fw-red-bright)); }
+.hero__count { text-align:end; border-inline-start:var(--hairline-strong); padding-inline-start:var(--fw-space-8); }
+.hero__count .l { font-size:13px; font-weight:600; color:var(--fw-text-subtle); }
+.hero__count .v { font-size:clamp(34px, 4.6vw, 52px); font-weight:700; line-height:1.1; }
+.hero__count .s { font-size:12px; color:var(--fw-text-subtle); }
+.signal { margin-block-start:var(--fw-space-8); }
+.signal__bars { display:flex; gap:4px; height:40px; align-items:flex-end; }
+.signal__bars i { flex:1; border-radius:3px 3px 2px 2px; }
+.signal__bars i.done { background:linear-gradient(180deg, var(--fw-red), var(--fw-oxblood)); }
+.signal__bars i.now  { background:linear-gradient(180deg, var(--fw-red-bright), var(--fw-red)); box-shadow:0 0 12px color-mix(in srgb, var(--fw-red) 40%, transparent); }
+.signal__bars i.todo { background:var(--fw-graphite); }
+.signal__scale { display:flex; justify-content:space-between; margin-block-start:8px; font-size:11px; color:var(--fw-text-subtle); }
+.signal__scale .cur { color:var(--fw-chalk); font-weight:600; }
+
+/* glance figures */
+.glance { display:grid; grid-template-columns:repeat(3, 1fr); border-block-start:var(--hairline); }
+.glance > div { padding:var(--fw-space-6); }
+.glance > div:first-child { padding-inline-start:0; }
+.glance > div + div { border-inline-start:var(--hairline); }
+.glance .l { font-size:12px; font-weight:600; color:var(--fw-text-subtle); }
+.glance .v { font-size:28px; font-weight:700; margin-block-start:4px; }
+.glance .s { font-size:12px; color:var(--fw-text-subtle); margin-block-start:2px; }
+
+/* ---------- desk destination index (text-led rows, not cards) ---------- */
+.index { border-block-start:var(--hairline); }
+.index a {
+  display:grid; grid-template-columns:auto 1fr auto auto; align-items:center;
+  gap:var(--fw-space-6); padding:var(--fw-space-6) var(--fw-space-2);
+  border-block-end:var(--hairline); text-decoration:none; min-height:64px;
+  transition:background var(--fw-duration-fast) var(--fw-ease-out), padding var(--fw-duration-base) var(--fw-ease-out);
+}
+.index a:hover { background:color-mix(in srgb, var(--fw-chalk) 3%, transparent); }
+.index a:hover .index__go { color:var(--fw-red-bright); transform:translateX(0); }
+.index a:hover .index__name { color:var(--fw-chalk); }
+.index__key { font-size:12px; font-weight:600; color:var(--fw-text-subtle); width:22px; }
+.index__body { min-width:0; }
+.index__name { font-size:20px; font-weight:700; color:var(--fw-muted); transition:color var(--fw-duration-fast) var(--fw-ease-out); }
+.index__desc { font-size:13px; color:var(--fw-text-subtle); margin-block-start:2px; }
+.index__fact { font-size:13px; color:var(--fw-muted); text-align:end; max-width:220px; }
+.index__fact b { color:var(--fw-chalk); font-weight:600; }
+.index__go { color:var(--fw-text-subtle); transition:color var(--fw-duration-fast) var(--fw-ease-out), transform var(--fw-duration-base) var(--fw-ease-out); }
+[dir="rtl"] .index__go svg { transform:scaleX(-1); }
+[dir="rtl"] .index a:hover .index__go { transform:translateX(0); }
+
+/* ---------- data board (charts/tables get the full measure) ---------- */
+.board {
+  background:color-mix(in srgb, var(--fw-coal) 72%, transparent);
+  border:var(--hairline); border-radius:var(--fw-radius-board);
+  padding:var(--fw-space-8);
+}
+.board__head { display:flex; align-items:baseline; gap:var(--fw-space-4); flex-wrap:wrap; margin-block-end:var(--fw-space-6); }
+.board__head h3 { font-size:16px; font-weight:700; }
+.board__head .hint { font-size:12px; color:var(--fw-text-subtle); }
+.legend { display:flex; gap:var(--fw-space-4); flex-wrap:wrap; margin-inline-start:auto; font-size:12px; color:var(--fw-muted); }
+.legend span { display:inline-flex; align-items:center; gap:6px; }
+.legend i { width:12px; height:12px; border-radius:3px; display:inline-block; }
+.curve { width:100%; height:auto; display:block; }
+.curve text { font-family:"Cairo", sans-serif; }
+.figrow { display:grid; grid-template-columns:repeat(4, 1fr); gap:0; margin-block-start:var(--fw-space-6); border-block-start:var(--hairline); }
+.figrow > div { padding:var(--fw-space-4) var(--fw-space-4) 0; }
+.figrow > div:first-child { padding-inline-start:0; }
+.figrow > div + div { border-inline-start:var(--hairline); }
+.figrow .l { font-size:12px; font-weight:600; color:var(--fw-text-subtle); }
+.figrow .v { font-size:22px; font-weight:700; margin-block-start:2px; }
+.figrow .v small { font-size:13px; font-weight:500; color:var(--fw-muted); }
+.figrow .s { font-size:11px; color:var(--fw-text-subtle); }
+
+/* tables */
+.tblwrap { overflow-x:auto; border:var(--hairline); border-radius:var(--fw-radius-surface); }
+.tblwrap:focus-visible { outline-offset:3px; }
+table.data { width:100%; border-collapse:collapse; font-size:14px; min-width:560px; }
+table.data caption { text-align:start; font-size:12px; color:var(--fw-text-subtle); padding:10px 16px; }
+table.data th {
+  text-align:start; font-size:12px; font-weight:600; color:var(--fw-text-subtle);
+  padding:12px 16px; border-block-end:var(--hairline-strong); background:color-mix(in srgb, var(--fw-graphite) 55%, transparent);
+}
+table.data td { padding:12px 16px; border-block-end:var(--hairline); color:var(--fw-muted); vertical-align:top; }
+table.data td.k { color:var(--fw-chalk); font-weight:600; white-space:nowrap; }
+table.data tr:last-child td { border-block-end:0; }
+table.data tbody tr { transition:background var(--fw-duration-fast) var(--fw-ease-out); }
+table.data tbody tr:hover { background:color-mix(in srgb, var(--fw-chalk) 3%, transparent); }
+.pill {
+  display:inline-flex; align-items:center; gap:6px; padding:2px 10px; border-radius:999px;
+  font-size:12px; font-weight:600; border:1px solid transparent; white-space:nowrap;
+}
+.pill--live { color:var(--fw-live); border-color:color-mix(in srgb, var(--fw-live) 40%, transparent); background:color-mix(in srgb, var(--fw-live) 8%, transparent); }
+.pill--warn { color:var(--fw-delayed); border-color:color-mix(in srgb, var(--fw-delayed) 40%, transparent); background:color-mix(in srgb, var(--fw-delayed) 8%, transparent); }
+.pill--off  { color:var(--fw-offline); border-color:color-mix(in srgb, var(--fw-offline) 36%, transparent); background:color-mix(in srgb, var(--fw-offline) 8%, transparent); }
+.pill--red  { color:var(--fw-red-bright); border-color:color-mix(in srgb, var(--fw-red) 45%, transparent); background:color-mix(in srgb, var(--fw-red) 8%, transparent); }
+/* ---------- heatmap ---------- */
+.heat { overflow-x:auto; }
+.heat__grid { display:grid; grid-template-columns:max-content repeat(18, minmax(26px,1fr)); gap:3px; min-width:760px; }
+.heat__axis { font-size:11px; color:var(--fw-text-subtle); display:flex; align-items:center; justify-content:center; padding:2px 0; }
+.heat__day { font-size:12px; font-weight:600; color:var(--fw-muted); display:flex; align-items:center; padding-inline-end:10px; }
+.heat button {
+  aspect-ratio:1; min-height:30px; border-radius:5px; background:var(--fw-graphite);
+  transition:transform var(--fw-duration-fast) var(--fw-ease-out), box-shadow var(--fw-duration-fast) var(--fw-ease-out);
+}
+.heat button:hover { transform:scale(1.12); }
+.heat button[aria-pressed="true"] { box-shadow:0 0 0 2px var(--fw-chalk); }
+.heat button.closed { background:repeating-linear-gradient(45deg, var(--fw-graphite) 0 3px, transparent 3px 6px); }
+.heat__detail {
+  margin-block-start:var(--fw-space-6); border:var(--hairline); border-radius:var(--fw-radius-surface);
+  padding:var(--fw-space-4) var(--fw-space-6); display:flex; gap:var(--fw-space-6); flex-wrap:wrap; align-items:baseline;
+  background:color-mix(in srgb, var(--fw-coal) 72%, transparent);
+}
+.heat__detail .t { font-weight:700; }
+.heat__detail .d { font-size:13px; color:var(--fw-muted); }
+.heat__detail .d b { color:var(--fw-chalk); }
+
+/* ---------- forms ---------- */
+.formgrid { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:var(--fw-space-6); max-width:var(--measure-narrow); }
+.field { display:flex; flex-direction:column; gap:8px; }
+.field > label { font-size:13px; font-weight:600; color:var(--fw-muted); }
+.field .unit { font-size:12px; color:var(--fw-text-subtle); font-weight:400; }
+.field input, .field select {
+  min-height:48px; padding:10px 14px; border-radius:var(--fw-radius-control);
+  background:var(--fw-graphite); border:1px solid color-mix(in srgb, var(--fw-chalk) 14%, transparent);
+  color:var(--fw-chalk); font-variant-numeric:tabular-nums; width:100%;
+  transition:border-color var(--fw-duration-fast) var(--fw-ease-out), background var(--fw-duration-fast) var(--fw-ease-out);
+}
+.field input:hover, .field select:hover { border-color:color-mix(in srgb, var(--fw-chalk) 26%, transparent); }
+.field input:focus-visible, .field select:focus-visible { outline:2px solid var(--fw-red-bright); outline-offset:1px; border-color:transparent; }
+.field input[aria-invalid="true"] { border-color:var(--fw-red); }
+.field .err { font-size:12px; color:var(--fw-red-bright); display:none; }
+.field.invalid .err { display:block; }
+.field .ro {
+  min-height:48px; display:flex; align-items:center; gap:8px; padding:10px 0;
+  color:var(--fw-muted); font-size:14px; border-block-end:var(--hairline);
+}
+.weektbl { max-width:var(--measure-narrow); }
+.weektbl .row {
+  display:grid; grid-template-columns:minmax(96px,1fr) repeat(2, minmax(0,140px)) auto;
+  gap:var(--fw-space-4); align-items:center; padding:10px 0; border-block-end:var(--hairline);
+}
+.weektbl .row:last-child { border-block-end:0; }
+.weektbl .d { font-weight:600; }
+.weektbl .row select { min-height:44px; padding:8px 12px; border-radius:var(--fw-radius-control);
+  background:var(--fw-graphite); border:1px solid color-mix(in srgb, var(--fw-chalk) 14%, transparent); color:var(--fw-chalk); }
+.weektbl .row select:disabled { opacity:.45; }
+.chk { display:inline-flex; align-items:center; gap:8px; font-size:13px; color:var(--fw-muted); min-height:44px; cursor:pointer; }
+.chk input { width:18px; height:18px; accent-color:var(--fw-red); }
+
+/* separated action zone for governance */
+.actionzone {
+  margin-block-start:var(--fw-space-8); border:1px solid color-mix(in srgb, var(--fw-red) 26%, transparent);
+  border-radius:var(--fw-radius-surface); background:color-mix(in srgb, var(--fw-oxblood) 20%, var(--fw-coal));
+  padding:var(--fw-space-6); display:flex; align-items:center; gap:var(--fw-space-4); flex-wrap:wrap;
+}
+.actionzone .z { font-size:13px; color:var(--fw-muted); max-width:52ch; }
+.actionzone .z b { color:var(--fw-chalk); display:block; font-size:14px; margin-block-end:2px; }
+.actionzone .acts { margin-inline-start:auto; display:flex; gap:var(--fw-space-3); flex-wrap:wrap; }
+
+/* buttons */
+.btn {
+  min-height:44px; padding:0 18px; border-radius:var(--fw-radius-control);
+  font-size:14px; font-weight:600; display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  transition:background var(--fw-duration-fast) var(--fw-ease-out), border-color var(--fw-duration-fast) var(--fw-ease-out), color var(--fw-duration-fast) var(--fw-ease-out);
+}
+.btn--primary { background:var(--fw-red); color:var(--fw-chalk); }
+.btn--primary:hover { background:var(--fw-red-bright); }
+.btn--primary:disabled { background:var(--fw-graphite); color:var(--fw-text-subtle); cursor:not-allowed; }
+.btn--ghost { border:var(--hairline-strong); color:var(--fw-muted); }
+.btn--ghost:hover { color:var(--fw-chalk); border-color:color-mix(in srgb, var(--fw-chalk) 30%, transparent); }
+.btn--danger { border:1px solid color-mix(in srgb, var(--fw-red) 45%, transparent); color:var(--fw-red-bright); }
+.btn--danger:hover { background:color-mix(in srgb, var(--fw-red) 10%, transparent); }
+.statechip { font-size:12px; font-weight:600; padding:3px 10px; border-radius:999px; border:var(--hairline-strong); color:var(--fw-muted); }
+.statechip.dirty { color:var(--fw-delayed); border-color:color-mix(in srgb, var(--fw-delayed) 40%, transparent); }
+.statechip.saved { color:var(--fw-live); border-color:color-mix(in srgb, var(--fw-live) 40%, transparent); }
+/* ---------- dialogs ---------- */
+.dlg-veil {
+  position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center;
+  background:color-mix(in srgb, #000 62%, transparent); padding:var(--fw-space-4);
+  opacity:0; pointer-events:none; transition:opacity var(--fw-duration-base) var(--fw-ease-out);
+}
+.dlg-veil.open { opacity:1; pointer-events:auto; }
+.dlg {
+  width:min(480px, 100%); background:var(--fw-coal); border:var(--hairline-strong);
+  border-radius:var(--fw-radius-surface); padding:var(--fw-space-8);
+  transform:translateY(6px); transition:transform var(--fw-duration-base) var(--fw-ease-out);
+  max-height:calc(100vh - 48px); max-height:calc(100svh - 48px); overflow:auto;
+}
+.dlg-veil.open .dlg { transform:none; }
+.dlg h3 { font-size:20px; font-weight:700; margin-block-end:6px; }
+.dlg .sub { font-size:14px; color:var(--fw-muted); margin-block-end:var(--fw-space-6); }
+.dlg .acts { display:flex; gap:var(--fw-space-3); justify-content:flex-end; margin-block-start:var(--fw-space-6); flex-wrap:wrap; }
+
+/* toasts */
+.toasts { position:fixed; inset-block-end:20px; inset-inline-start:20px; z-index:70; display:flex; flex-direction:column; gap:10px; max-width:min(420px, calc(100vw - 40px)); }
+.toast {
+  background:var(--fw-graphite); border:var(--hairline-strong); border-inline-start:3px solid var(--fw-live);
+  border-radius:var(--fw-radius-control); padding:12px 16px; font-size:14px; color:var(--fw-chalk);
+  box-shadow:0 16px 32px color-mix(in srgb, #000 50%, transparent);
+}
+.toast.err { border-inline-start-color:var(--fw-red); }
+
+/* system status strips */
+.statline { display:grid; grid-template-columns:repeat(4,1fr); border-block-start:var(--hairline); }
+.statline > div { padding:var(--fw-space-6) var(--fw-space-4) 0; }
+.statline > div:first-child { padding-inline-start:0; }
+.statline > div + div { border-inline-start:var(--hairline); }
+.statline .l { font-size:12px; font-weight:600; color:var(--fw-text-subtle); }
+.statline .v { font-size:24px; font-weight:700; margin-block-start:4px; }
+.statline .v small { font-size:13px; font-weight:500; color:var(--fw-muted); }
+.statline .s { font-size:11px; color:var(--fw-text-subtle); }
+
+/* owners list */
+.owners { border-block-start:var(--hairline); }
+.owners li {
+  list-style:none; display:flex; align-items:center; gap:var(--fw-space-4);
+  padding:var(--fw-space-4) 0; border-block-end:var(--hairline);
+}
+.owners .avatar {
+  width:40px; height:40px; border-radius:50%; flex:none;
+  background:color-mix(in srgb, var(--fw-oxblood) 60%, var(--fw-graphite));
+  color:var(--fw-chalk); display:flex; align-items:center; justify-content:center; font-weight:700;
+}
+.owners .who b { display:block; font-size:15px; }
+.owners .who span { font-size:12px; color:var(--fw-text-subtle); }
+.owners .tail { margin-inline-start:auto; display:flex; align-items:center; gap:var(--fw-space-3); }
+.owners { padding:0; margin:0; }
+
+/* wow comparison */
+.wow { display:grid; grid-template-columns:1fr 1fr; gap:var(--fw-space-6); }
+.wow .cell { border:var(--hairline); border-radius:var(--fw-radius-surface); padding:var(--fw-space-6); }
+.wow .l { font-size:12px; font-weight:600; color:var(--fw-text-subtle); }
+.wow .v { font-size:30px; font-weight:700; margin-block-start:4px; }
+.wow .d { font-size:13px; margin-block-start:4px; }
+.wow .up { color:var(--fw-red-bright); font-weight:600; }
+
+/* footer */
+.foot {
+  max-width:var(--measure); margin:var(--fw-space-12) auto 0; padding:var(--fw-space-6);
+  border-block-start:var(--hairline); font-size:12px; color:var(--fw-text-subtle);
+  display:flex; gap:var(--fw-space-4); flex-wrap:wrap;
+}
+.foot .sp { margin-inline-start:auto; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1080px) {
+  .heat__grid { min-width:720px; }
+}
+@media (max-width: 820px) {
+  .mast__in { padding-inline:var(--fw-space-4); }
+  .band__in { padding-inline:var(--fw-space-4); }
+  .view { padding-inline:var(--fw-space-4); }
+  .crumb { display:none; }
+  .hero__top { grid-template-columns:1fr; gap:var(--fw-space-6); align-items:start; }
+  .hero__count { text-align:start; border-inline-start:0; padding-inline-start:0; border-block-start:var(--hairline-strong); padding-block-start:var(--fw-space-4); }
+  .glance { grid-template-columns:1fr 1fr; }
+  .glance > div { border-inline-start:0; padding-inline-start:0; }
+  .figrow, .statline { grid-template-columns:1fr 1fr; }
+  .figrow > div + div, .statline > div + div { border-inline-start:0; }
+  .formgrid { grid-template-columns:1fr 1fr; }
+  .wow { grid-template-columns:1fr; }
+  .index a { grid-template-columns:auto 1fr auto; }
+  .index__fact { display:none; }
+  .board { padding:var(--fw-space-4); border-radius:var(--fw-radius-surface); }
+  .band__time { flex-basis:100%; margin-inline-start:0; }
+}
+@media (max-width: 480px) {
+  .brand__scope { display:none; }
+  .mbtn { padding:0 10px; font-size:13px; }
+  .formgrid { grid-template-columns:1fr; }
+  .weektbl .row { grid-template-columns:1fr 1fr; }
+  .weektbl .row .d { grid-column:1 / -1; }
+  .actionzone .acts { margin-inline-start:0; width:100%; }
+  .actionzone .acts .btn { flex:1; }
+  .pop { inset-inline:12px; width:auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration:0.01ms !important; animation:none !important; }
+}
+/* ---- end of css ---- */
+</style>
+</head>
+<body>
+<div class="atmo" aria-hidden="true"></div>
+<div class="watermark" aria-hidden="true">FITWAY</div>
+<a class="skip" href="#main" id="skip">…</a>
+<header class="mast"><div class="mast__in" id="mastIn"></div></header>
+<div class="band" id="band"><div class="band__in" id="bandIn"></div></div>
+<main id="main" tabindex="-1"><div class="view" id="view"></div>
+  <footer class="foot" id="foot"></footer>
+</main>
+<div id="popRoot"></div>
+<div id="dlgRoot"></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<noscript><p style="padding:48px 24px">هذا النموذج الاستكشافي يحتاج JavaScript. / This exploration fixture needs JavaScript.</p></noscript>
+<script>
+"use strict";
+/* Concept D — hub-and-spoke Owner composition fixture.
+   Static deterministic data; nothing is fetched, stored, or transmitted. */
+
+const STR = {
+ar: {
+  scope:"الإدارة", desk:"المكتب", deskShort:"المكتب",
+  skip:"الانتقال إلى المحتوى", logout:"تسجيل الخروج", langBtn:"English",
+  destBtn:"الأقسام", destLabel:"الانتقال بين أقسام الإدارة",
+  live:"مباشر", gymOpen:"النادي مفتوح الآن", approxCount:"العدد التقريبي",
+  crowdLevel:"مستوى الازدحام", updated:"آخر تحديث", gymTz:"بتوقيت الرياض",
+  bands:{ quiet:"هادئ", moderate:"متوسط", busy:"مزدحم", packed:"شديد الازدحام" },
+  signalName:"إشارة مستوى الازدحام",
+  signalSummary:"مستوى الازدحام الحالي متوسط. تم الوصول إلى هادئ، ومتوسط هو المستوى الحالي، والمستويات الأعلى لم تُسجَّل بعد.",
+  deskEyebrow:"نظرة المالك", deskTitle:"صالتك، الآن وبهدوء",
+  deskLede:"كل ما يحتاجه المالك من مكان واحد: الحالة الحية أولاً، ثم ستة أقسام مركّزة.",
+  glancePeak:"ذروة اليوم", glanceAvg:"متوسط الإشغال", glanceEntries:"إجمالي الدخول",
+  peakNote:"عند 7:00 م", avgNote:"خلال اليوم", entriesNote:"منذ 6:00 ص",
+  indexTitle:"الأقسام", indexHelper:"ستة أقسام، لكل قسم صفحة مركّزة.",
+  nav:{
+    daily:{ name:"اليوم", desc:"منحنى الإشغال والقراءات الدقيقة لهذا اليوم", fact:"الذروة مزدحم عند 7:00 م" },
+    reports:{ name:"التقارير", desc:"أكثر الأوقات ازدحاماً ومقارنة الأسابيع وتصدير CSV", fact:"الثلاثاء 7:00 م الأكثر ازدحاماً" },
+    activity:{ name:"سجل النشاط", desc:"إجراءات المالك والموظفين مع سبب كل إجراء", fact:"آخر إجراء قبل 29 دقيقة" },
+    system:{ name:"حالة النظام", desc:"تشغيل جهاز العد والأعطال خلال أيام العمل", fact:"تشغيل 99.3%" },
+    access:{ name:"الوصول", desc:"رمز وصول الموظفين وحسابات المالك", fact:"حسابا مالك نشطان" },
+    settings:{ name:"الإعدادات", desc:"السعة ومستويات الازدحام وساعات الأسبوع", fact:"كل التغييرات محفوظة" }
+  },
+  footerNote:"النموذج D — عينة استكشافية غير ملزمة", footerFixture:"بيانات ثابتة توضيحية",
+  footerTz:"كل الأوقات بتوقيت الصالة (الرياض)",
+  // Daily
+  dailyEyebrow:"تحليلات المالك", dailyTitle:"التحليلات اليومية",
+  dailyLede:"يوم صالتك، مع عرض الأوقات بتوقيت الصالة",
+  businessDay:"يوم العمل", businessDayValue:"الثلاثاء 15 سبتمبر 2026",
+  curveTitle:"عدد الموجودين خلال اليوم",
+  curveHint:"رسم ثابت للقراءات المرصودة حتى 8:41 م؛ القيم القادمة غير معروضة.",
+  legendObserved:"قيمة مرصودة", legendMissing:"رصد مفقود", legendClosed:"إغلاق مجدول", legendZero:"صفر فعلي",
+  figPeak:"مستوى الذروة", figAvg:"متوسط الإشغال", figEntries:"إجمالي الدخول", figCoverage:"تغطية البيانات",
+  coverageNote:"دقائق العمل المسجَّلة / المجدولة",
+  tableTitle:"تفاصيل الدقائق", tableRegion:"بيانات التحليلات دقيقة بدقيقة",
+  thTime:"توقيت الصالة", thState:"الحالة", thCount:"الإشغال التقريبي", thBand:"مستوى الازدحام", thSource:"المصدر",
+  stObserved:"مرصودة", stMissing:"رصد مفقود", srcObserved:"مرصود", srcBackfill:"سُجّل لاحقاً",
+  // Reports
+  repEyebrow:"التقارير", repTitle:"أكثر الأوقات ازدحاماً والاتجاه",
+  repLede:"كيف يمتلئ الأسبوع فعلاً، حسب اليوم والساعة بتوقيت الصالة",
+  rangeLegend:"نافذة التقرير", rangeHint:"حتى 31 يوماً", startLabel:"البداية", endLabel:"النهاية",
+  apply:"تطبيق", presets:"نوافذ سريعة", p7:"آخر 7 أيام", p28:"آخر 28 يوماً", p31:"آخر 31 يوماً",
+  rangeApplied:"طُبِّقت نافذة التقرير",
+  heatTitle:"الإشغال حسب اليوم والساعة", heatDesc:"مدى ازدحام الصالة عادةً في كل ساعة من يوم العمل",
+  heatRegion:"خريطة حرارية لليوم والساعة", heatHint:"اختر خلية لقراءة أرقامها. الأسهم تتنقل بين الخلايا.",
+  legendQuiet:"أهدأ", legendBusy:"أكثر ازدحاماً", legendZero2:"مفتوح وفارغ", legendClosed2:"مغلق", legendMissing2:"لا بيانات",
+  selTitle:"الساعة المحددة", selAvg:"متوسط الإشغال", selObs:"دقائق مرصودة", selExp:"دقائق مجدولة", selDays:"أيام قيست",
+  wowTitle:"هذا الأسبوع مقابل الماضي", wowThis:"هذا الأسبوع", wowLast:"الأسبوع الماضي",
+  wowAvg:"متوسط الإشغال خلال دقائق العمل", wowEntries:"إجمالي الدخول", wowUp:"أعلى من الأسبوع الماضي",
+  csv:"تصدير CSV", csvNote:"يغطي التصدير نافذة التقرير الحالية (28 يوم عمل) ويُسجَّل في سجل النشاط.",
+  // Activity
+  actEyebrow:"سجل النشاط", actTitle:"سجل النشاط", actLede:"إجراءات المالك والموظفين",
+  actFilters:"تصفية سجل النشاط", actActor:"الجهة", actAll:"الكل", actApply:"تطبيق التصفية", actClear:"مسح التصفية",
+  thWhen:"الوقت", thWho:"الجهة", thAction:"الإجراء", thReason:"السبب",
+  actRegion:"سجل الإجراءات", actMore:"تحميل إجراءات أقدم", actLoaded:"أُضيفت إجراءات أقدم",
+  roleOwner:"مالك", roleSystem:"النظام",
+  // System status
+  sysEyebrow:"العمليات", sysTitle:"التشغيل والأعطال", sysLede:"تشغيل جهاز العد والأعطال خلال أيام العمل الأخيرة",
+  sysWindow:"الفترة", sysWindowValue:"آخر 14 يوم عمل", sysTz:"المنطقة الزمنية", sysTzValue:"توقيت الرياض",
+  statUptime:"تشغيل العداد", statUptimeNote:"خلال ساعات العمل فقط",
+  statIncidents:"الأعطال", statIncidentsNote:"خلال الفترة نفسها",
+  statLastPush:"آخر دفعة من جهاز العد", statLastPushNote:"كل 20 ثانية تقريباً",
+  statAlerts:"تنبيهات غير مؤكدة", statAlertsNote:"عبر Telegram",
+  incTitle:"الأعطال الأخيرة", incHelper:"لا تُحسب الانقطاعات خارج ساعات العمل أعطالاً، ولا تُرسل عنها تنبيهات.",
+  inc1Title:"انقطاع قراءات جهاز العد", inc1When:"الخميس 10 سبتمبر · 3:12 م", inc1Detail:"استُؤنفت القراءات 3:31 م بعد 19 دقيقة. أُرسل تنبيه للمشرف وأُكد.",
+  incRecovered:"تم التعافي", incAck:"مؤكد",
+  devTitle:"الأجهزة الآن", devCounter:"جهاز العد", devCounterOk:"متصل ويحدّث",
+  devCamera:"الكاميرا", devCameraOk:"تصل عبر جهاز العد", devBuffer:"المخزن المؤقت", devBufferOk:"فارغ — لا رصد معلّق",
+  // Access
+  accEyebrow:"الوصول", accTitle:"الوصول", accLede:"رمز وصول الموظفين وحسابات المالك",
+  pinTitle:"رمز وصول الموظفين", pinDesc:"مشترك · مراقبة فقط", pinDetail:"6-12 أرقام",
+  pinState:"الحالة الحالية", pinActive:"مفعَّل", pinSince:"أُنشئ في 2 مارس 2026",
+  pinRotate:"تغيير الرمز", pinDeactivate:"إيقاف الرمز",
+  pinRotateTitle:"تغيير رمز وصول الموظفين", pinRotateSub:"يحل الرمز الجديد محل القديم فوراً، ويُسجَّل الإجراء في سجل النشاط.",
+  pinNewLabel:"الرمز الجديد", pinNewHint:"6-12 أرقام، بلا مسافات",
+  pinErrLen:"أدخل 6-12 رقماً.", pinErrDigits:"أرقام غربية 0-9 فقط.",
+  reasonLabel:"السبب", reasonHint:"يظهر في سجل النشاط", reasonErr:"اكتب سبباً قبل المتابعة.",
+  confirm:"تأكيد", cancel:"إلغاء",
+  pinDeactTitle:"إيقاف رمز وصول الموظفين", pinDeactSub:"لن يتمكن الموظفون من فتح صفحة المراقبة حتى يُنشأ رمز جديد.",
+  pinRotateDone:"تم تغيير رمز وصول الموظفين.", pinDeactDone:"أُوقف رمز وصول الموظفين.",
+  ownersTitle:"وصول المالك", ownersDesc:"المالك فقط", ownersBoard:"المالكون",
+  ownersCount:"حسابان نشطان", ownerActive:"نشط", ownerRole:"مالك",
+  ownerCreate:"إنشاء حساب مالك", ownerFormLegend:"مالك جديد",
+  emailLabel:"البريد الإلكتروني", nameLabel:"الاسم الظاهر", passLabel:"كلمة المرور الأولية",
+  passHint:"12 حرفاً على الأقل. لن تراها مرة أخرى بعد الإغلاق.",
+  showPass:"إظهار كلمة المرور", hidePass:"إخفاء كلمة المرور",
+  emailErr:"أدخل بريداً إلكترونياً صحيحاً.", nameErr:"أدخل الاسم الظاهر.", passErr:"استخدم 12 حرفاً على الأقل.",
+  ownerCreatedTitle:"تم إنشاء الحساب.", ownerCreatedDesc:"يمكن للمالك الجديد تسجيل الدخول بالبيانات التي حددتها.",
+  done:"تم",
+  accNoteTitle:"كل إجراءات الوصول تُسجَّل", accNote:"إنشاء الحسابات وتغيير الرموز وإيقافها تظهر في سجل النشاط مع سببها.",
+  // Settings
+  setEyebrow:"الإعدادات", setTitle:"الإعدادات",
+  setLede:"اضبط السعة ومستويات الازدحام ويوم العمل وساعات الأسبوع. تنطبق التغييرات من الآن ولا تعيد كتابة التقارير السابقة.",
+  foundTitle:"إعدادات الصالة", foundHelper:"إعدادات صالتك الخاصة.",
+  capLabel:"السعة", capUnit:"شخص", dayLabel:"بداية يوم العمل", dayUnit:"بتوقيت الرياض",
+  resetLabel:"مهلة تصفير العداد", resetUnit:"دقيقة",
+  thrTitle:"مستويات الازدحام", thrHelper:"أدخل ثلاث نسب مرتبة تحدد مستويات الازدحام.",
+  quietEnd:"نهاية النطاق الهادئ", modEnd:"نهاية النطاق المتوسط", busyEnd:"نهاية النطاق المزدحم",
+  weekTitle:"ساعات الصالة الأسبوعية", weekHelper:"لكل يوم وقت فتح وإغلاق. الإغلاق بعد منتصف الليل يبقى مع يوم الفتح.",
+  colDay:"اليوم", colOpens:"يفتح", colCloses:"يغلق", colClosed:"مغلق",
+  days:["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"],
+  closesNext:"يغلق في اليوم التالي",
+  lockTitle:"إعدادات فنية", lockHelper:"تُدار تلقائياً ولا يمكن تغييرها من هنا.", lockBadge:"للقراءة فقط",
+  lockTz:"المنطقة الزمنية", lockTzValue:"توقيت الرياض (Asia/Riyadh)",
+  lockPush:"الفاصل بين تحديثات جهاز العد", lockFresh:"مدة بقاء القراءة مباشرة",
+  lockStale:"التحذير بعد توقف التحديث", lockPoll:"تحديث الصفحة العامة",
+  sec:(n)=>`${n} ثانية`, min:(n)=>`${n} دقائق`,
+  lockFooter:"يُسجَّل التغيير في سجل النشاط عند الحفظ.",
+  save:"حفظ الإعدادات", saving:"جارٍ الحفظ…", discard:"تجاهل التغييرات",
+  stateSaved:"كل التغييرات محفوظة", stateDirty:"تغييرات غير محفوظة",
+  savedToast:"تم حفظ الإعدادات. سُجّل التغيير في سجل النشاط.",
+  invalidToast:"راجع الحقول المظللة. يبقى الحفظ مقفلاً حتى تُصحَّح.",
+  errRequired:"هذا الحقل مطلوب.", errInt:"أدخل رقماً صحيحاً.", errRange:"يجب أن تكون النسبة بين 0 و100.",
+  errTime:"استخدم نظام 24 ساعة، مثلاً 04:00.",
+  errOrderMod:(q)=>`يجب أن يكون متوسط أكبر من هادئ (${q}%).`,
+  errOrderBusy:(m)=>`يجب أن يكون مزدحم أكبر من متوسط (${m}%).`,
+  // toasts / misc
+  navTo:(n)=>`انتقلت إلى ${n}`, langSwitched:"تم التبديل إلى العربية",
+},
+en: {
+  scope:"Owner", desk:"The Desk", deskShort:"Desk",
+  skip:"Skip to content", logout:"Sign out", langBtn:"العربية",
+  destBtn:"Sections", destLabel:"Move between owner sections",
+  live:"Live", gymOpen:"The gym is open now", approxCount:"Approximate count",
+  crowdLevel:"Crowd level", updated:"Last updated", gymTz:"Riyadh time",
+  bands:{ quiet:"Quiet", moderate:"Moderate", busy:"Busy", packed:"Packed" },
+  signalName:"Crowd level signal",
+  signalSummary:"Current crowd level is Moderate. Quiet was reached, Moderate is the current level, and higher levels have not been recorded yet.",
+  deskEyebrow:"Owner overview", deskTitle:"Your gym, now and calmly",
+  deskLede:"Everything the owner needs from one place: the live truth first, then six focused sections.",
+  glancePeak:"Today's peak", glanceAvg:"Average occupancy", glanceEntries:"Total entries",
+  peakNote:"at 7:00 PM", avgNote:"throughout the day", entriesNote:"since 6:00 AM",
+  indexTitle:"Sections", indexHelper:"Six sections, each a focused page.",
+  nav:{
+    daily:{ name:"Daily", desc:"Today's occupancy curve and minute readings", fact:"Peak Busy at 7:00 PM" },
+    reports:{ name:"Reports", desc:"Busiest times, week-over-week, and CSV export", fact:"Tue 7:00 PM is busiest" },
+    activity:{ name:"Activity Log", desc:"Owner and staff actions, each with its reason", fact:"Last action 29 min ago" },
+    system:{ name:"System Status", desc:"Counter uptime and incidents over business days", fact:"99.3% uptime" },
+    access:{ name:"Access", desc:"Front-desk PIN and owner accounts", fact:"2 active owner accounts" },
+    settings:{ name:"Settings", desc:"Capacity, crowd levels, and weekly hours", fact:"All changes saved" }
+  },
+  footerNote:"Concept D — non-binding exploration fixture", footerFixture:"Static illustrative data",
+  footerTz:"All times in the gym timezone (Riyadh)",
+  dailyEyebrow:"Owner analytics", dailyTitle:"Daily analytics",
+  dailyLede:"Your gym day, with times shown in the gym's timezone",
+  businessDay:"Business day", businessDayValue:"Tuesday 15 September 2026",
+  curveTitle:"People present through the day",
+  curveHint:"Static chart of observed readings up to 8:41 PM; future values are not shown.",
+  legendObserved:"Observed value", legendMissing:"Missing observation", legendClosed:"Scheduled closed", legendZero:"Genuine zero",
+  figPeak:"Peak level", figAvg:"Average occupancy", figEntries:"Total entries", figCoverage:"Data coverage",
+  coverageNote:"Recorded open minutes / scheduled open minutes",
+  tableTitle:"Minute details", tableRegion:"Minute-by-minute analytics data",
+  thTime:"Gym-local time", thState:"State", thCount:"Approximate occupancy", thBand:"Crowd band", thSource:"Source",
+  stObserved:"Observed", stMissing:"Missing observation", srcObserved:"Observed", srcBackfill:"Recorded later",
+  repEyebrow:"Reports", repTitle:"Busiest times and direction",
+  repLede:"How the week actually fills, by weekday and gym-local hour",
+  rangeLegend:"Reporting range", rangeHint:"Up to 31 days", startLabel:"Start", endLabel:"End",
+  apply:"Apply", presets:"Quick ranges", p7:"Last 7 days", p28:"Last 28 days", p31:"Last 31 days",
+  rangeApplied:"Report window applied",
+  heatTitle:"Occupancy by weekday and hour", heatDesc:"How busy the gym usually is at each hour of the working day",
+  heatRegion:"Weekday by hour heatmap", heatHint:"Select a cell to read its figures. Arrow keys move between cells.",
+  legendQuiet:"Quieter", legendBusy:"Busier", legendZero2:"Open and empty", legendClosed2:"Closed", legendMissing2:"No data",
+  selTitle:"Selected hour", selAvg:"Average occupancy", selObs:"Observed open minutes", selExp:"Scheduled open minutes", selDays:"Weekdays measured",
+  wowTitle:"This week vs last", wowThis:"This week", wowLast:"Last week",
+  wowAvg:"Average occupancy over open minutes", wowEntries:"Total entries", wowUp:"higher than last week",
+  csv:"Export CSV", csvNote:"The export covers the current report window (28 business days) and is recorded in the Activity Log.",
+  actEyebrow:"Activity Log", actTitle:"Activity Log", actLede:"Owner and staff actions",
+  actFilters:"Filter Activity Log", actActor:"Actor", actAll:"All", actApply:"Apply filters", actClear:"Clear filters",
+  thWhen:"Time", thWho:"Actor", thAction:"Action", thReason:"Reason",
+  actRegion:"Activity records", actMore:"Load older records", actLoaded:"Older records added",
+  roleOwner:"Owner", roleSystem:"System",
+  sysEyebrow:"Operations", sysTitle:"Operations & incidents", sysLede:"Counter uptime and incidents over the last business days",
+  sysWindow:"Period", sysWindowValue:"Last 14 business days", sysTz:"Timezone", sysTzValue:"Riyadh time",
+  statUptime:"Counter uptime", statUptimeNote:"open hours only",
+  statIncidents:"Incidents", statIncidentsNote:"same period",
+  statLastPush:"Last counter push", statLastPushNote:"about every 20 seconds",
+  statAlerts:"Unacknowledged alerts", statAlertsNote:"via Telegram",
+  incTitle:"Recent incidents", incHelper:"Gaps outside opening hours are not counted as incidents and raise no alerts.",
+  inc1Title:"Counter readings stopped", inc1When:"Thursday 10 September · 3:12 PM", inc1Detail:"Readings resumed 3:31 PM after 19 minutes. A maintainer alert was sent and acknowledged.",
+  incRecovered:"Recovered", incAck:"Acknowledged",
+  devTitle:"Devices now", devCounter:"Counter", devCounterOk:"Connected and updating",
+  devCamera:"Camera", devCameraOk:"Reachable via the counter", devBuffer:"Offline buffer", devBufferOk:"Empty — no pending readings",
+  accEyebrow:"Access", accTitle:"Access", accLede:"Staff PIN and owner accounts",
+  pinTitle:"Staff access PIN", pinDesc:"Shared · monitoring only", pinDetail:"6-12 digits",
+  pinState:"Current state", pinActive:"Active", pinSince:"Created 2 March 2026",
+  pinRotate:"Change PIN", pinDeactivate:"Deactivate PIN",
+  pinRotateTitle:"Change the staff access PIN", pinRotateSub:"The new PIN replaces the old one immediately, and the action is recorded in the Activity Log.",
+  pinNewLabel:"New PIN", pinNewHint:"6-12 digits, no spaces",
+  pinErrLen:"Enter 6-12 digits.", pinErrDigits:"Western digits 0-9 only.",
+  reasonLabel:"Reason", reasonHint:"Shown in the Activity Log", reasonErr:"Enter a reason before continuing.",
+  confirm:"Confirm", cancel:"Cancel",
+  pinDeactTitle:"Deactivate the staff access PIN", pinDeactSub:"Staff cannot open the monitoring page until a new PIN is created.",
+  pinRotateDone:"Staff access PIN changed.", pinDeactDone:"Staff access PIN deactivated.",
+  ownersTitle:"Owner access", ownersDesc:"Owner only", ownersBoard:"Owners",
+  ownersCount:"2 active accounts", ownerActive:"Active", ownerRole:"Owner",
+  ownerCreate:"Create owner", ownerFormLegend:"New owner",
+  emailLabel:"Email", nameLabel:"Display name", passLabel:"Initial password",
+  passHint:"At least 12 characters. You will not see it again after closing.",
+  showPass:"Show password", hidePass:"Hide password",
+  emailErr:"Enter a valid email address.", nameErr:"Enter the display name.", passErr:"Use at least 12 characters.",
+  ownerCreatedTitle:"Owner created.", ownerCreatedDesc:"The new owner can now sign in with the details you set.",
+  done:"Done",
+  accNoteTitle:"Every access action is recorded", accNote:"Creating accounts and changing or deactivating PINs appears in the Activity Log with its reason.",
+  setEyebrow:"Settings", setTitle:"Settings",
+  setLede:"Set capacity, crowd levels, business day, and weekly hours. Changes apply from now on and never rewrite past reports.",
+  foundTitle:"Gym settings", foundHelper:"Your private gym settings.",
+  capLabel:"Capacity", capUnit:"people", dayLabel:"Day starts at", dayUnit:"Riyadh time",
+  resetLabel:"Count reset delay", resetUnit:"minutes",
+  thrTitle:"Crowd levels", thrHelper:"Enter three ordered percentages that set the crowd levels.",
+  quietEnd:"Quiet ends at", modEnd:"Moderate ends at", busyEnd:"Busy ends at",
+  weekTitle:"Weekly gym hours", weekHelper:"Each day has an open/close pair. Past-midnight closing stays with the opening day.",
+  colDay:"Day", colOpens:"Opens", colCloses:"Closes", colClosed:"Closed",
+  days:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+  closesNext:"Closes next day",
+  lockTitle:"Technical settings", lockHelper:"Managed automatically. You cannot change these here.", lockBadge:"Read-only",
+  lockTz:"Timezone", lockTzValue:"Riyadh time (Asia/Riyadh)",
+  lockPush:"Counter update interval", lockFresh:"Reading stays live for",
+  lockStale:"Warning after no update for", lockPoll:"Public page refresh",
+  sec:(n)=>`${n} seconds`, min:(n)=>`${n} minutes`,
+  lockFooter:"Saving records the change in the Activity Log.",
+  save:"Save settings", saving:"Saving…", discard:"Discard changes",
+  stateSaved:"All changes saved", stateDirty:"Unsaved changes",
+  savedToast:"Settings saved. The change is recorded in the Activity Log.",
+  invalidToast:"Check the highlighted fields. Save stays locked until they are fixed.",
+  errRequired:"This field is required.", errInt:"Enter a whole number.", errRange:"Must be between 0 and 100.",
+  errTime:"Use 24-hour time, e.g. 04:00.",
+  errOrderMod:(q)=>`Moderate must be greater than Quiet (${q}%).`,
+  errOrderBusy:(m)=>`Busy must be greater than Moderate (${m}%).`,
+  navTo:(n)=>`Navigated to ${n}`, langSwitched:"Switched to English",
+},
+
+};
+
+/* ================= fixtures (static, deterministic) ================= */
+const NOW = { ar:"8:41 م", en:"8:41 PM", dayAr:"الثلاثاء", dayEn:"Tuesday" };
+const CURVE = [ // [hour24, people] — observed today up to 20:41
+  [6,2],[7,8],[8,18],[9,26],[10,22],[11,20],[12,30],[13,40],[14,33],
+  [15,28],[16,38],[17,52],[18,74],[19,104],[20,61]
+];
+const CURVE_NOW = [20.68, 37]; // 8:41 PM
+const MINUTES = [ // newest first; st: o=observed m=missing; src: o=observed b=backfilled
+  {h:20,m:41,v:37,b:"moderate",st:"o",src:"o"},{h:20,m:40,v:39,b:"moderate",st:"o",src:"o"},
+  {h:20,m:39,v:41,b:"moderate",st:"o",src:"o"},{h:20,m:38,v:44,b:"moderate",st:"o",src:"o"},
+  {h:20,m:37,v:null,b:null,st:"m",src:null},{h:20,m:36,v:47,b:"moderate",st:"o",src:"b"},
+  {h:20,m:35,v:49,b:"moderate",st:"o",src:"o"},{h:20,m:34,v:52,b:"moderate",st:"o",src:"o"},
+  {h:20,m:33,v:55,b:"moderate",st:"o",src:"o"},{h:20,m:32,v:58,b:"moderate",st:"o",src:"o"}
+];
+/* heatmap: 7 days (sun..sat) x hours 6..23 ; 0..4 intensity, -1 closed, null no data */
+const HEAT = [
+  [0,0,1,1,1,1,2,2,2,1,2,3,4,4,3,2,1,1],
+  [0,1,1,2,1,1,2,3,2,2,2,3,4,3,3,2,1,0],
+  [0,1,2,2,2,1,2,3,3,2,3,4,4,4,3,2,1,1],
+  [0,0,1,1,1,1,2,2,2,1,2,3,3,3,2,2,1,0],
+  [0,1,1,2,2,1,2,3,3,2,3,4,4,3,3,2,1,1],
+  [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+  [-1,-1,0,1,1,1,1,2,2,2,2,3,3,3,2,2,-1,-1]
+];
+HEAT[4][9] = null; // one missing cell (Thursday 15:00)
+const HEAT_HOURS = Array.from({length:18}, (_,i)=>6+i);
+const ACTIVITY = [
+  {ar:{w:"اليوم · 8:12 م", who:"نورة", act:"حفظت الإعدادات", why:"رفع السعة إلى 240 قبل موسم سبتمبر"},
+   en:{w:"Today · 8:12 PM", who:"Noura", act:"Saved settings", why:"Raised capacity to 240 ahead of the September season"}, sys:false},
+  {ar:{w:"أمس · 9:03 م", who:"فهد", act:"غيّر رمز وصول الموظفين", why:"تدوير دوري كل 30 يوماً"},
+   en:{w:"Yesterday · 9:03 PM", who:"Fahad", act:"Changed the staff access PIN", why:"Routine 30-day rotation"}, sys:false},
+  {ar:{w:"أمس · 4:00 ص", who:"النظام", act:"صفّر العداد لبداية يوم العمل", why:"تلقائي عند 04:00"},
+   en:{w:"Yesterday · 4:00 AM", who:"System", act:"Reset the counter at the business-day start", why:"Automatic at 04:00"}, sys:true},
+  {ar:{w:"السبت · 7:55 م", who:"نورة", act:"صدّرت تقرير CSV", why:"نافذة 28 يوم عمل"},
+   en:{w:"Saturday · 7:55 PM", who:"Noura", act:"Exported a CSV report", why:"28-business-day window"}, sys:false},
+  {ar:{w:"الخميس · 3:31 م", who:"النظام", act:"تعافى جهاز العد بعد انقطاع", why:"توقف 19 دقيقة ثم عاد"},
+   en:{w:"Thursday · 3:31 PM", who:"System", act:"Counter recovered after an outage", why:"Stopped 19 minutes, then returned"}, sys:true},
+  {ar:{w:"8 سبتمبر · 6:14 م", who:"فهد", act:"أنشأ حساب مالك", why:"نورة — مديرة التشغيل"},
+   en:{w:"8 September · 6:14 PM", who:"Fahad", act:"Created an owner account", why:"Noura — operations manager"}, sys:false}
+];
+const ACT_OLDER = [
+  {ar:{w:"7 سبتمبر · 10:02 ص", who:"نورة", act:"عدّلت ساعات الجمعة", why:"إغلاق الجمعة بطلب المركز"},
+   en:{w:"7 September · 10:02 AM", who:"Noura", act:"Edited Friday hours", why:"Friday closure requested by the mall"}, sys:false},
+  {ar:{w:"5 سبتمبر · 5:40 م", who:"النظام", act:"أرسل تنبيه انقطاع للمشرف", why:"لا قراءات 3 دقائق خلال الدوام"},
+   en:{w:"5 September · 5:40 PM", who:"System", act:"Sent a maintainer outage alert", why:"No readings for 3 minutes during open hours"}, sys:true}
+];
+const OWNERS = [
+  {ar:"نورة", en:"Noura", role:{ar:"مالك · مديرة التشغيل", en:"Owner · operations manager"}, since:{ar:"منذ 8 سبتمبر 2026", en:"since 8 September 2026"}},
+  {ar:"فهد", en:"Fahad", role:{ar:"مالك", en:"Owner"}, since:{ar:"منذ 2 مارس 2026", en:"since 2 March 2026"}}
+];
+const HOURS0 = [ // sun..sat: [opens, closes] 24h, null = closed
+  ["06:00","23:00"],["06:00","23:00"],["06:00","23:00"],["06:00","23:00"],
+  ["06:00","23:00"],null,["08:00","22:00"]
+];
+const SETTINGS0 = { cap:"240", day:"04:00", reset:"30", q:"15", m:"40", b:"70" };
+
+/* ================= state ================= */
+const state = {
+  locale:"ar", surface:"desk",
+  saved:{ ...SETTINGS0, hours:HOURS0.map(h=>h ? [...h] : null) },
+  owners:OWNERS.map(o=>({...o})),
+  pinActive:true,
+  activity:ACTIVITY.map(a=>({...a})), olderLoaded:false,
+  heatSel:{d:2, h:13}, // Tuesday 19:00
+  ownerCreated:null
+};
+const SURFACES = ["daily","reports","activity","system","access","settings"];
+
+
+/* ================= helpers ================= */
+const $ = (s, r=document) => r.querySelector(s);
+const S = () => STR[state.locale];
+const esc = (s) => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const rtl = () => state.locale === "ar";
+function fmtT(h, m=0){ // gym-local 12h; ar ص/م, en AM/PM — Western digits both
+  const ap = h < 12 ? (rtl() ? "ص" : "AM") : (rtl() ? "م" : "PM");
+  let hh = h % 24; if (hh >= 12) hh -= 12; if (hh === 0) hh = 12;
+  return `${hh}:${String(m).padStart(2,"0")} ${ap}`;
+}
+function toast(msg, isErr=false){
+  const t = document.createElement("div");
+  t.className = "toast" + (isErr ? " err" : ""); t.textContent = msg;
+  $("#toasts").appendChild(t);
+  setTimeout(()=>{ t.remove(); }, 4200);
+}
+
+/* ================= shell ================= */
+const ICON = {
+  mark:`<svg width="26" height="26" viewBox="0 0 28 28" aria-hidden="true"><rect x="1.5" y="1.5" width="25" height="25" rx="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 9.5h11M8.5 14h8M8.5 18.5h5.5" stroke="#ff2946" stroke-width="2.4" stroke-linecap="round"/></svg>`,
+  pulse:`<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h3l2-5 3 9 2.5-6H20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  chev:`<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  down:`<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+};
+function surfaceName(id){ return id === "desk" ? S().desk : S().nav[id].name; }
+function renderMast(){
+  const s = S();
+  const crumb = state.surface === "desk"
+    ? `<span class="here">${esc(s.desk)}</span>`
+    : `<button type="button" data-go="desk">${esc(s.desk)}</button><span class="sep" aria-hidden="true">›</span><span class="here">${esc(surfaceName(state.surface))}</span>`;
+  $("#mastIn").innerHTML = `
+    <div class="brand">${ICON.mark}<span class="brand__word"><bdi>FITWAY</bdi></span><span class="brand__scope">${esc(s.scope)}</span></div>
+    <nav class="crumb" aria-label="${esc(s.scope)}">${crumb}</nav>
+    <div class="mast__end">
+      <button type="button" class="mbtn mbtn--dest" id="destBtn" aria-haspopup="true" aria-expanded="false">${esc(s.destBtn)} ${ICON.down}</button>
+      <button type="button" class="mbtn" id="langBtn"><bdi>${esc(s.langBtn)}</bdi></button>
+      <span class="mast__vr" aria-hidden="true"></span>
+      <button type="button" class="mbtn" id="logoutBtn">${esc(s.logout)}</button>
+    </div>`;
+}
+function renderBand(){
+  const s = S();
+  $("#bandIn").innerHTML = `
+    <span class="livechip"><span class="dot" aria-hidden="true"></span>${esc(s.gymOpen)} · ${esc(s.live)}</span>
+    <span class="bandchip">${ICON.pulse}${esc(s.bands.moderate)}</span>
+    <span class="band__fact">${esc(s.approxCount)} <b class="num">37</b></span>
+    <span class="band__sep" aria-hidden="true"></span>
+    <span class="band__fact">${esc(s.updated)} <b class="num">${rtl()? NOW.ar : NOW.en}</b></span>
+    <span class="band__time"><bdi>${rtl()? NOW.dayAr : NOW.dayEn} · ${esc(s.gymTz)} · ${rtl()? NOW.ar : NOW.en}</bdi></span>`;
+}
+function renderFoot(){
+  const s = S();
+  $("#foot").innerHTML = `
+    <span>${esc(s.footerNote)}</span><span aria-hidden="true">·</span><span>${esc(s.footerFixture)}</span>
+    <span class="sp">${esc(s.footerTz)}</span>`;
+}
+function renderPop(open){
+  const s = S();
+  const items = ["desk", ...SURFACES].map(id => {
+    const cur = id === state.surface ? ` aria-current="page"` : "";
+    const fact = id === "desk" ? `<span class="pop__dot" aria-hidden="true"></span>` : `<span class="pop__fact">${esc(s.nav[id].fact)}</span>`;
+    return `<a href="#/${id}" data-go="${id}"${cur} role="menuitem"><span class="pop__name">${esc(surfaceName(id))}</span>${fact}</a>`;
+  }).join("");
+  $("#popRoot").innerHTML = open ? `
+    <div class="pop-veil" data-closepop></div>
+    <div class="pop open" role="menu" aria-label="${esc(s.destLabel)}" id="destPop">
+      <div class="pop__label">${esc(s.destLabel)}</div>${items}
+    </div>` : "";
+  const btn = $("#destBtn"); if (btn) btn.setAttribute("aria-expanded", open ? "true" : "false");
+}
+
+
+/* ================= views ================= */
+function phead(eyebrow, title, lede, aside=""){
+  return `<header class="phead">
+    <p class="eyebrow">${esc(eyebrow)}</p>
+    <h1 id="pageTitle" tabindex="-1">${esc(title)}</h1>
+    <p class="lede">${esc(lede)}</p>${aside}
+  </header>`;
+}
+function signalHTML(){
+  const s = S(); // 28 bars, 7 per band; current band = moderate
+  const bars = Array.from({length:28}, (_,i) => {
+    const cls = i < 7 ? "done" : i < 14 ? "now" : "todo";
+    const h = 12 + Math.round((i % 7) * 4) + (i < 7 ? 0 : i < 14 ? 6 : 0);
+    return `<i class="${cls}" style="height:${h}px" aria-hidden="true"></i>`;
+  }).join("");
+  return `<div class="signal" role="img" aria-label="${esc(s.signalName)}: ${esc(s.signalSummary)}">
+    <div class="signal__bars">${bars}</div>
+    <div class="signal__scale" aria-hidden="true">
+      <span>${esc(s.bands.quiet)}</span><span class="cur">${esc(s.bands.moderate)}</span>
+      <span>${esc(s.bands.busy)}</span><span>${esc(s.bands.packed)}</span>
+    </div>
+  </div>`;
+}
+function viewDesk(){
+  const s = S();
+  const rows = SURFACES.map((id, i) => `
+    <a href="#/${id}" data-go="${id}">
+      <span class="index__key num">${String(i+1).padStart(2,"0")}</span>
+      <span class="index__body">
+        <span class="index__name">${esc(s.nav[id].name)}</span>
+        <span class="index__desc">${esc(s.nav[id].desc)}</span>
+      </span>
+      <span class="index__fact"><b>${esc(s.nav[id].fact)}</b></span>
+      <span class="index__go">${ICON.chev}</span>
+    </a>`).join("");
+  return `
+  ${phead(s.deskEyebrow, s.deskTitle, s.deskLede)}
+  <section class="hero" aria-label="${esc(s.crowdLevel)}">
+    <div class="hero__top">
+      <div>
+        <p class="hero__band-label">${esc(s.crowdLevel)}</p>
+        <p class="hero__band">${esc(s.bands.moderate)}<span class="u" aria-hidden="true"></span></p>
+      </div>
+      <div class="hero__count">
+        <p class="l">${esc(s.approxCount)}</p>
+        <p class="v num">37</p>
+        <p class="s">${esc(s.updated)} ${rtl()? NOW.ar : NOW.en} · ${esc(s.live)}</p>
+      </div>
+    </div>
+    ${signalHTML()}
+  </section>
+  <section class="glance" aria-label="${esc(s.glancePeak)}">
+    <div><p class="l">${esc(s.glancePeak)}</p><p class="v">${esc(s.bands.busy)} · <span class="num">104</span></p><p class="s">${esc(s.peakNote)}</p></div>
+    <div><p class="l">${esc(s.glanceAvg)}</p><p class="v num">34</p><p class="s">${esc(s.avgNote)}</p></div>
+    <div><p class="l">${esc(s.glanceEntries)}</p><p class="v num">486</p><p class="s">${esc(s.entriesNote)}</p></div>
+  </section>
+  <section class="rail" aria-labelledby="idxH">
+    <div class="rail__head"><h2 id="idxH">${esc(s.indexTitle)}</h2><p class="helper">${esc(s.indexHelper)}</p></div>
+    <div class="index">${rows}</div>
+  </section>`;
+}
+
+function curveSVG(){
+  const W = 960, H = 260, P = 28, X0 = 6, X1 = 23, Y1 = 120;
+  const x = (t) => { const f = (t - X0) / (X1 - X0); return rtl() ? W - P - f * (W - 2 * P) : P + f * (W - 2 * P); };
+  const y = (v) => H - P - (v / Y1) * (H - 2 * P);
+  const pts = [...CURVE, CURVE_NOW];
+  const line = pts.map((p, i) => `${i ? "L" : "M"}${x(p[0]).toFixed(1)},${y(p[1]).toFixed(1)}`).join(" ");
+  const area = `${line} L${x(pts[pts.length-1][0]).toFixed(1)},${y(0)} L${x(6).toFixed(1)},${y(0)} Z`;
+  const ticks = [6, 9, 12, 15, 18, 21].map(h =>
+    `<text x="${x(h)}" y="${H - 8}" font-size="11" fill="#aaa4a6" text-anchor="middle" class="num">${esc(fmtT(h, 0))}</text>`).join("");
+  const grid = [30, 60, 90].map(v =>
+    `<line x1="${P}" x2="${W - P}" y1="${y(v)}" y2="${y(v)}" stroke="#f5f3f2" stroke-opacity="0.07"/><text x="${rtl()? W - 8 : 8}" y="${y(v) + 4}" font-size="10" fill="#aaa4a6" class="num">${v}</text>`).join("");
+  const dots = CURVE.map(p => `<circle cx="${x(p[0])}" cy="${y(p[1])}" r="2.4" fill="#ff2946"/>`).join("");
+  return `<svg class="curve" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(S().curveTitle)}">
+    <defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e51935" stop-opacity="0.34"/><stop offset="1" stop-color="#4d0713" stop-opacity="0.05"/>
+    </linearGradient></defs>
+    ${grid}
+    <path d="${area}" fill="url(#cg)"/>
+    <path d="${line}" fill="none" stroke="#ff2946" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+    ${dots}
+    <circle cx="${x(CURVE_NOW[0])}" cy="${y(CURVE_NOW[1])}" r="5.5" fill="#ff2946" stroke="#08090a" stroke-width="2"/>
+    ${ticks}
+  </svg>`;
+}
+function viewDaily(){
+  const s = S();
+  const rows = MINUTES.map(r => `
+    <tr>
+      <td class="k num">${esc(fmtT(r.h, r.m))}</td>
+      <td>${r.st === "o" ? `<span class="pill pill--live">${esc(s.stObserved)}</span>` : `<span class="pill pill--warn">${esc(s.stMissing)}</span>`}</td>
+      <td class="num">${r.v === null ? "—" : r.v}</td>
+      <td>${r.b ? esc(s.bands[r.b]) : "—"}</td>
+      <td>${r.src ? esc(r.src === "b" ? s.srcBackfill : s.srcObserved) : "—"}</td>
+    </tr>`).join("");
+  return `
+  ${phead(s.dailyEyebrow, s.dailyTitle, s.dailyLede,
+    `<p class="lede" style="font-size:13px;margin-block-start:6px">${esc(s.businessDay)}: <bdi>${esc(s.businessDayValue)}</bdi> · ${esc(s.sysTz)}: ${esc(s.sysTzValue)}</p>`)}
+  <section class="board" aria-labelledby="curveH">
+    <div class="board__head">
+      <h3 id="curveH">${esc(s.curveTitle)}</h3>
+      <div class="legend" aria-hidden="true">
+        <span><i style="background:#ff2946"></i>${esc(s.legendObserved)}</span>
+        <span><i style="background:repeating-linear-gradient(45deg,#d9a400 0 3px,transparent 3px 6px)"></i>${esc(s.legendMissing)}</span>
+        <span><i style="background:var(--fw-graphite)"></i>${esc(s.legendClosed)}</span>
+      </div>
+    </div>
+    ${curveSVG()}
+    <p class="hint" style="margin-block-start:10px;font-size:12px;color:var(--fw-text-subtle)">${esc(s.curveHint)}</p>
+    <div class="figrow">
+      <div><p class="l">${esc(s.figPeak)}</p><p class="v">${esc(s.bands.busy)} · <span class="num">104</span></p><p class="s">${esc(s.peakNote)}</p></div>
+      <div><p class="l">${esc(s.figAvg)}</p><p class="v num">34</p><p class="s">${esc(s.avgNote)}</p></div>
+      <div><p class="l">${esc(s.figEntries)}</p><p class="v num">486</p><p class="s">${esc(s.entriesNote)}</p></div>
+      <div><p class="l">${esc(s.figCoverage)}</p><p class="v"><span class="num">846</span> <small>/ <bdi class="num">1020</bdi></small></p><p class="s">${esc(s.coverageNote)}</p></div>
+    </div>
+  </section>
+  <section class="rail" aria-labelledby="minH">
+    <div class="rail__head"><h2 id="minH">${esc(s.tableTitle)}</h2><p class="helper">${esc(s.tableRegion)}</p></div>
+    <div class="tblwrap" tabindex="0" role="region" aria-label="${esc(s.tableRegion)}">
+      <table class="data"><thead><tr><th>${esc(s.thTime)}</th><th>${esc(s.thState)}</th><th>${esc(s.thCount)}</th><th>${esc(s.thBand)}</th><th>${esc(s.thSource)}</th></tr></thead>
+      <tbody>${rows}</tbody></table>
+    </div>
+  </section>`;
+}
+
+function heatColor(v){
+  if (v === -1) return "";
+  if (v === null) return "background:repeating-linear-gradient(45deg,var(--fw-graphite) 0 3px,#0c0d0f 3px 6px)";
+  const ramp = ["#1a1a1e","#3a0a15","#5c0b1d","#8f1027","#c9152f"];
+  return `background:${ramp[v]}`;
+}
+function heatDetail(){
+  const s = S(); const {d, h} = state.heatSel;
+  const v = HEAT[d][h];
+  const day = s.days[d]; const hr = fmtT(HEAT_HOURS[h]);
+  if (v === -1) return `<span class="t">${esc(day)} · <bdi class="num">${esc(hr)}</bdi></span><span class="d">${esc(s.legendClosed2)}</span>`;
+  if (v === null) return `<span class="t">${esc(day)} · <bdi class="num">${esc(hr)}</bdi></span><span class="d">${esc(s.legendMissing2)}</span>`;
+  const avg = [4, 18, 34, 62, 96][v];
+  return `<span class="t">${esc(day)} · <bdi class="num">${esc(hr)}</bdi></span>
+    <span class="d">${esc(s.selAvg)} <b class="num">${avg}</b></span>
+    <span class="d">${esc(s.selObs)} <b class="num">54</b> / <bdi class="num">60</bdi></span>
+    <span class="d">${esc(s.selDays)} <b class="num">4</b></span>`;
+}
+
+function viewReports(){
+  const s = S();
+  const head = `<span class="heat__axis" aria-hidden="true"></span>` + HEAT_HOURS.map(h => `<span class="heat__axis num" aria-hidden="true">${h % 3 === 0 ? h : ""}</span>`).join("");
+  const body = HEAT.map((row, d) => {
+    const cells = row.map((v, h) => {
+      const sel = state.heatSel.d === d && state.heatSel.h === h;
+      const style = v === -1 ? "" : ` style="${heatColor(v)}"`;
+      const cls = v === -1 ? ` class="closed"` : "";
+      const lbl = `${s.days[d]} ${fmtT(HEAT_HOURS[h])}`;
+      return `<button type="button" data-cell="${d},${h}"${cls}${style} aria-pressed="${sel}" aria-label="${esc(lbl)}"></button>`;
+    }).join("");
+    return `<span class="heat__day">${esc(s.days[d])}</span>${cells}`;
+  }).join("");
+  return `
+  ${phead(s.repEyebrow, s.repTitle, s.repLede)}
+  <section class="rail" aria-labelledby="rangeH">
+    <div class="rail__head"><h2 id="rangeH">${esc(s.rangeLegend)}</h2><p class="helper">${esc(s.rangeHint)}</p></div>
+    <form class="formgrid" id="rangeForm" novalidate>
+      <div class="field"><label for="rStart">${esc(s.startLabel)}</label><input id="rStart" type="date" value="2026-08-19" /></div>
+      <div class="field"><label for="rEnd">${esc(s.endLabel)}</label><input id="rEnd" type="date" value="2026-09-15" /></div>
+      <div class="field"><label aria-hidden="true">&nbsp;</label><button class="btn btn--ghost" type="submit">${esc(s.apply)}</button></div>
+    </form>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-block-start:16px" role="group" aria-label="${esc(s.presets)}">
+      <button type="button" class="statechip" data-preset="7">${esc(s.p7)}</button>
+      <button type="button" class="statechip" data-preset="28">${esc(s.p28)}</button>
+      <button type="button" class="statechip" data-preset="31">${esc(s.p31)}</button>
+    </div>
+  </section>
+  <section class="rail" aria-labelledby="heatH">
+    <div class="rail__head">
+      <h2 id="heatH">${esc(s.heatTitle)}</h2><p class="helper">${esc(s.heatDesc)}</p>
+      <div class="legend" aria-hidden="true">
+        <span><i style="background:#1a1a1e;border:1px solid #333"></i>${esc(s.legendQuiet)}</span>
+        <span><i style="background:#c9152f"></i>${esc(s.legendBusy)}</span>
+        <span><i style="background:repeating-linear-gradient(45deg,#1a1a1e 0 3px,transparent 3px 6px);border:1px solid #333"></i>${esc(s.legendClosed2)}</span>
+        <span><i style="background:repeating-linear-gradient(45deg,#1a1a1e 0 3px,#0c0d0f 3px 6px);border:1px solid #333"></i>${esc(s.legendMissing2)}</span>
+      </div>
+    </div>
+    <div class="heat" tabindex="0" role="region" aria-label="${esc(s.heatRegion)}">
+      <div class="heat__grid">${head}${body}</div>
+    </div>
+    <p class="helper" style="font-size:12px;margin-block-start:10px">${esc(s.heatHint)}</p>
+    <div class="heat__detail" id="heatDetail" aria-live="polite">${heatDetail()}</div>
+  </section>
+  <section class="rail" aria-labelledby="wowH">
+    <div class="rail__head"><h2 id="wowH">${esc(s.wowTitle)}</h2></div>
+    <div class="wow">
+      <div class="cell"><p class="l">${esc(s.wowThis)} · ${esc(s.wowAvg)}</p><p class="v num">34</p><p class="d"><span class="up">+17%</span> ${esc(s.wowUp)}</p></div>
+      <div class="cell"><p class="l">${esc(s.wowThis)} · ${esc(s.wowEntries)}</p><p class="v num">3,180</p><p class="d"><span class="up">+9%</span> ${esc(s.wowUp)} (<bdi class="num">2,917</bdi> ${esc(s.wowLast)})</p></div>
+    </div>
+    <div class="actionzone">
+      <p class="z"><b>${esc(s.csv)}</b>${esc(s.csvNote)}</p>
+      <div class="acts"><button type="button" class="btn btn--primary" id="csvBtn">${esc(s.csv)}</button></div>
+    </div>
+  </section>`;
+}
+
+function viewActivity(){
+  const s = S();
+  const rows = state.activity.map(a => { const t = rtl() ? a.ar : a.en; return `
+    <tr>
+      <td class="k num">${esc(t.w)}</td>
+      <td>${esc(t.who)} <span style="color:var(--fw-text-subtle);font-size:12px">· ${esc(a.sys ? s.roleSystem : s.roleOwner)}</span></td>
+      <td>${esc(t.act)}</td><td>${esc(t.why)}</td>
+    </tr>`; }).join("");
+  return `
+  ${phead(s.actEyebrow, s.actTitle, s.actLede)}
+  <section class="rail" aria-labelledby="fltH">
+    <div class="rail__head"><h2 id="fltH">${esc(s.actFilters)}</h2></div>
+    <form class="formgrid" id="actForm" novalidate>
+      <div class="field"><label for="fActor">${esc(s.actActor)}</label>
+        <select id="fActor"><option>${esc(s.actAll)}</option><option>${esc(s.roleOwner)}</option><option>${esc(s.roleSystem)}</option></select></div>
+      <div class="field"><label aria-hidden="true">&nbsp;</label><button class="btn btn--ghost" type="submit">${esc(s.actApply)}</button></div>
+      <div class="field"><label aria-hidden="true">&nbsp;</label><button class="btn btn--ghost" type="button" id="actClear">${esc(s.actClear)}</button></div>
+    </form>
+  </section>
+  <section class="rail" aria-labelledby="logH">
+    <div class="rail__head"><h2 id="logH">${esc(s.actTitle)}</h2><p class="helper">${esc(s.gymTz)}</p></div>
+    <div class="tblwrap" tabindex="0" role="region" aria-label="${esc(s.actRegion)}">
+      <table class="data"><thead><tr><th>${esc(s.thWhen)}</th><th>${esc(s.thWho)}</th><th>${esc(s.thAction)}</th><th>${esc(s.thReason)}</th></tr></thead>
+      <tbody id="actBody">${rows}</tbody></table>
+    </div>
+    <div style="margin-block-start:16px">${state.olderLoaded ? "" : `<button type="button" class="btn btn--ghost" id="actMore">${esc(s.actMore)}</button>`}</div>
+  </section>`;
+}
+function viewSystem(){
+  const s = S();
+  return `
+  ${phead(s.sysEyebrow, s.sysTitle, s.sysLede,
+    `<p class="lede" style="font-size:13px;margin-block-start:6px">${esc(s.sysWindow)}: ${esc(s.sysWindowValue)} · ${esc(s.sysTz)}: ${esc(s.sysTzValue)}</p>`)}
+  <section class="statline" aria-label="${esc(s.sysTitle)}">
+    <div><p class="l">${esc(s.statUptime)}</p><p class="v num">99.3%</p><p class="s">${esc(s.statUptimeNote)}</p></div>
+    <div><p class="l">${esc(s.statIncidents)}</p><p class="v num">1</p><p class="s">${esc(s.statIncidentsNote)}</p></div>
+    <div><p class="l">${esc(s.statLastPush)}</p><p class="v">${rtl()? "قبل" : ""} <span class="num">18</span> ${rtl()? "ثانية" : "seconds ago"}</p><p class="s">${esc(s.statLastPushNote)}</p></div>
+    <div><p class="l">${esc(s.statAlerts)}</p><p class="v num">0</p><p class="s">${esc(s.statAlertsNote)}</p></div>
+  </section>
+  <section class="rail" aria-labelledby="devH">
+    <div class="rail__head"><h2 id="devH">${esc(s.devTitle)}</h2></div>
+    <div class="statline" style="grid-template-columns:repeat(3,1fr);border-block-start:0">
+      <div><p class="l">${esc(s.devCounter)}</p><p class="v" style="font-size:17px">${esc(s.devCounterOk)}</p><p class="s"><span class="pill pill--live">${esc(s.live)}</span></p></div>
+      <div><p class="l">${esc(s.devCamera)}</p><p class="v" style="font-size:17px">${esc(s.devCameraOk)}</p><p class="s"><span class="pill pill--live">${esc(s.live)}</span></p></div>
+      <div><p class="l">${esc(s.devBuffer)}</p><p class="v" style="font-size:17px">${esc(s.devBufferOk)}</p><p class="s"><span class="pill pill--live">${esc(s.live)}</span></p></div>
+    </div>
+  </section>
+  <section class="rail" aria-labelledby="incH">
+    <div class="rail__head"><h2 id="incH">${esc(s.incTitle)}</h2><p class="helper">${esc(s.incHelper)}</p></div>
+    <div class="tblwrap" tabindex="0" role="region" aria-label="${esc(s.incTitle)}">
+      <table class="data"><thead><tr><th>${esc(s.thWhen)}</th><th>${esc(s.incTitle)}</th><th>${esc(s.thState)}</th><th>${esc(s.thReason)}</th></tr></thead>
+      <tbody><tr>
+        <td class="k num">${esc(s.inc1When)}</td>
+        <td>${esc(s.inc1Title)}</td>
+        <td><span class="pill pill--live">${esc(s.incRecovered)}</span> <span class="pill pill--off">${esc(s.incAck)}</span></td>
+        <td>${esc(s.inc1Detail)}</td>
+      </tr></tbody></table>
+    </div>
+  </section>`;
+}
+
+function viewAccess(){
+  const s = S();
+  const owners = state.owners.map(o => `
+    <li>
+      <span class="avatar" aria-hidden="true">${esc((rtl()? o.ar : o.en).slice(0,1))}</span>
+      <span class="who"><b>${esc(rtl()? o.ar : o.en)}</b><span>${esc(rtl()? o.role.ar : o.role.en)} · ${esc(rtl()? o.since.ar : o.since.en)}</span></span>
+      <span class="tail"><span class="pill pill--live">${esc(s.ownerActive)}</span></span>
+    </li>`).join("");
+  const created = state.ownerCreated ? `
+    <div class="heat__detail" role="status">
+      <span class="t">${esc(s.ownerCreatedTitle)}</span>
+      <span class="d">${esc(s.ownerCreatedDesc)} <b>${esc(state.ownerCreated.name)}</b> · <bdi>${esc(state.ownerCreated.email)}</bdi></span>
+    </div>` : "";
+  return `
+  ${phead(s.accEyebrow, s.accTitle, s.accLede)}
+  <section class="rail" aria-labelledby="pinH">
+    <div class="rail__head">
+      <h2 id="pinH">${esc(s.pinTitle)}</h2><p class="helper">${esc(s.pinDesc)} · ${esc(s.pinDetail)}</p>
+      <p class="rail__aside">${esc(s.pinState)}: <span class="pill ${state.pinActive? "pill--live":"pill--off"}">${esc(state.pinActive? s.pinActive : s.pinDeactivate)}</span></p>
+    </div>
+    <p class="helper" style="margin-block-end:16px">${esc(s.pinSince)}</p>
+    <div class="actionzone" style="margin-block-start:0">
+      <p class="z"><b>${esc(s.accNoteTitle)}</b>${esc(s.accNote)}</p>
+      <div class="acts">
+        <button type="button" class="btn btn--ghost" id="pinRotateBtn" ${state.pinActive? "":"disabled"}>${esc(s.pinRotate)}</button>
+        <button type="button" class="btn btn--danger" id="pinDeactBtn" ${state.pinActive? "":"disabled"}>${esc(s.pinDeactivate)}</button>
+      </div>
+    </div>
+  </section>
+  <section class="rail" aria-labelledby="ownH">
+    <div class="rail__head">
+      <h2 id="ownH">${esc(s.ownersBoard)}</h2><p class="helper">${esc(s.ownersDesc)}</p>
+      <p class="rail__aside num">${state.owners.length} ${esc(s.ownerActive)}</p>
+    </div>
+    <ul class="owners">${owners}</ul>
+    ${created}
+  </section>
+  <section class="rail" aria-labelledby="newH">
+    <div class="rail__head"><h2 id="newH">${esc(s.ownerFormLegend)}</h2></div>
+    <form id="ownerForm" novalidate>
+      <div class="formgrid" style="grid-template-columns:1fr 1fr;max-width:var(--measure-narrow)">
+        <div class="field" id="fEmail"><label for="oEmail">${esc(s.emailLabel)}</label>
+          <input id="oEmail" type="email" autocomplete="off" placeholder="name@example.com" dir="ltr" />
+          <p class="err" id="eEmail">${esc(s.emailErr)}</p></div>
+        <div class="field" id="fName"><label for="oName">${esc(s.nameLabel)}</label>
+          <input id="oName" type="text" autocomplete="off" />
+          <p class="err" id="eName">${esc(s.nameErr)}</p></div>
+        <div class="field" id="fPass" style="grid-column:1 / -1"><label for="oPass">${esc(s.passLabel)}</label>
+          <div style="display:flex;gap:8px">
+            <input id="oPass" type="password" autocomplete="new-password" style="flex:1" />
+            <button type="button" class="btn btn--ghost" id="passToggle" aria-pressed="false">${esc(s.showPass)}</button>
+          </div>
+          <p class="helper" style="font-size:12px">${esc(s.passHint)}</p>
+          <p class="err" id="ePass">${esc(s.passErr)}</p></div>
+      </div>
+      <div class="actionzone">
+        <p class="z"><b>${esc(s.ownerCreate)}</b>${esc(s.accNote)}</p>
+        <div class="acts"><button type="submit" class="btn btn--primary">${esc(s.ownerCreate)}</button></div>
+      </div>
+    </form>
+  </section>`;
+}
+
+function hoursOptions(sel){
+  const out = [];
+  for (let h = 0; h < 24; h++){
+    for (const m of [0, 30]){
+      const v = `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
+      out.push(`<option value="${v}"${v === sel ? " selected" : ""}>${esc(fmtT(h, m))}</option>`);
+    }
+  }
+  return out.join("");
+}
+function viewSettings(){
+  const s = S(); const d = state.draft;
+  const weekRows = d.hours.map((h, i) => `
+    <div class="row" data-day="${i}">
+      <span class="d">${esc(s.days[i])}</span>
+      <select data-h="open" ${h ? "" : "disabled"} aria-label="${esc(s.days[i])} — ${esc(s.colOpens)}">${hoursOptions(h ? h[0] : "06:00")}</select>
+      <select data-h="close" ${h ? "" : "disabled"} aria-label="${esc(s.days[i])} — ${esc(s.colCloses)}">${hoursOptions(h ? h[1] : "23:00")}</select>
+      <label class="chk"><input type="checkbox" data-h="closed" ${h ? "" : "checked"} /> ${esc(s.colClosed)}</label>
+    </div>`).join("");
+  const dirty = JSON.stringify(d) !== JSON.stringify(state.saved);
+  return `
+  ${phead(s.setEyebrow, s.setTitle, s.setLede)}
+  <form id="setForm" novalidate>
+  <section class="rail" aria-labelledby="foundH">
+    <div class="rail__head"><h2 id="foundH">${esc(s.foundTitle)}</h2><p class="helper">${esc(s.foundHelper)}</p></div>
+    <div class="formgrid">
+      <div class="field" id="fCap"><label for="sCap">${esc(s.capLabel)} <span class="unit">(${esc(s.capUnit)})</span></label>
+        <input id="sCap" inputmode="numeric" value="${esc(d.cap)}" /><p class="err" id="eCap"></p></div>
+      <div class="field" id="fDay"><label for="sDay">${esc(s.dayLabel)} <span class="unit">${esc(s.dayUnit)}</span></label>
+        <input id="sDay" inputmode="numeric" placeholder="04:00" dir="ltr" value="${esc(d.day)}" /><p class="err" id="eDay"></p></div>
+      <div class="field" id="fReset"><label for="sReset">${esc(s.resetLabel)} <span class="unit">(${esc(s.resetUnit)})</span></label>
+        <input id="sReset" inputmode="numeric" value="${esc(d.reset)}" /><p class="err" id="eReset"></p></div>
+    </div>
+  </section>
+  <section class="rail" aria-labelledby="thrH">
+    <div class="rail__head"><h2 id="thrH">${esc(s.thrTitle)}</h2><p class="helper">${esc(s.thrHelper)}</p></div>
+    <div class="formgrid">
+      <div class="field" id="fQ"><label for="sQ">${esc(s.quietEnd)} <span class="unit">%</span></label>
+        <input id="sQ" inputmode="numeric" value="${esc(d.q)}" /><p class="err" id="eQ"></p></div>
+      <div class="field" id="fM"><label for="sM">${esc(s.modEnd)} <span class="unit">%</span></label>
+        <input id="sM" inputmode="numeric" value="${esc(d.m)}" /><p class="err" id="eM"></p></div>
+      <div class="field" id="fB"><label for="sB">${esc(s.busyEnd)} <span class="unit">%</span></label>
+        <input id="sB" inputmode="numeric" value="${esc(d.b)}" /><p class="err" id="eB"></p></div>
+    </div>
+  </section>
+  <section class="rail" aria-labelledby="weekH">
+    <div class="rail__head"><h2 id="weekH">${esc(s.weekTitle)}</h2><p class="helper">${esc(s.weekHelper)}</p></div>
+    <div class="weektbl">${weekRows}</div>
+  </section>
+  <section class="rail" aria-labelledby="lockH">
+    <div class="rail__head"><h2 id="lockH">${esc(s.lockTitle)}</h2><p class="helper">${esc(s.lockHelper)}</p>
+      <p class="rail__aside"><span class="statechip">${esc(s.lockBadge)}</span></p></div>
+    <div class="formgrid" style="max-width:none">
+      <div class="field"><label>${esc(s.lockTz)}</label><div class="ro"><bdi>${esc(s.lockTzValue)}</bdi></div></div>
+      <div class="field"><label>${esc(s.lockPush)}</label><div class="ro num">${esc(s.sec(20))}</div></div>
+      <div class="field"><label>${esc(s.lockFresh)}</label><div class="ro num">${esc(s.sec(90))}</div></div>
+      <div class="field"><label>${esc(s.lockStale)}</label><div class="ro num">${esc(s.min(5))}</div></div>
+      <div class="field"><label>${esc(s.lockPoll)}</label><div class="ro num">${esc(s.sec(30))}</div></div>
+    </div>
+    <p class="helper" style="margin-block-start:12px">${esc(s.lockFooter)}</p>
+  </section>
+  <div class="actionzone" id="saveBar">
+    <p class="z"><b><span class="statechip ${dirty? "dirty":"saved"}" id="saveChip">${esc(dirty? s.stateDirty : s.stateSaved)}</span></b>${esc(s.lockFooter)}</p>
+    <div class="acts">
+      <button type="button" class="btn btn--ghost" id="discardBtn" ${dirty? "":"disabled"}>${esc(s.discard)}</button>
+      <button type="submit" class="btn btn--primary" id="saveBtn">${esc(s.save)}</button>
+    </div>
+  </div>
+  </form>`;
+}
+
+/* ================= dialogs ================= */
+let dlgReturnFocus = null;
+function openDialog(inner){
+  dlgReturnFocus = document.activeElement;
+  $("#dlgRoot").innerHTML = `<div class="dlg-veil open" id="dlgVeil">
+    <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="dlgT">${inner}</div>
+  </div>`;
+  const dlg = $(".dlg"); const first = $("input, button.btn--primary, button", dlg);
+  (first || dlg).focus();
+}
+function closeDialog(){
+  $("#dlgRoot").innerHTML = "";
+  if (dlgReturnFocus) dlgReturnFocus.focus();
+}
+function pinDialog(mode){ // "rotate" | "deact"
+  const s = S();
+  const isR = mode === "rotate";
+  openDialog(`
+    <h3 id="dlgT">${esc(isR? s.pinRotateTitle : s.pinDeactTitle)}</h3>
+    <p class="sub">${esc(isR? s.pinRotateSub : s.pinDeactSub)}</p>
+    ${isR ? `<div class="field" id="dPinF"><label for="dPin">${esc(s.pinNewLabel)}</label>
+      <input id="dPin" inputmode="numeric" dir="ltr" autocomplete="off" placeholder="6-12" />
+      <p class="helper" style="font-size:12px">${esc(s.pinNewHint)}</p>
+      <p class="err" id="dPinE"></p></div>` : ""}
+    <div class="field" id="dWhyF" style="margin-block-start:16px"><label for="dWhy">${esc(s.reasonLabel)}</label>
+      <input id="dWhy" type="text" autocomplete="off" />
+      <p class="helper" style="font-size:12px">${esc(s.reasonHint)}</p>
+      <p class="err" id="dWhyE">${esc(s.reasonErr)}</p></div>
+    <div class="acts">
+      <button type="button" class="btn btn--ghost" data-closedlg>${esc(s.cancel)}</button>
+      <button type="button" class="btn ${isR? "btn--primary":"btn--danger"}" id="dlgOk">${esc(s.confirm)}</button>
+    </div>`);
+  $("#dlgOk").addEventListener("click", () => {
+    let ok = true;
+    if (isR){
+      const v = $("#dPin").value.trim();
+      const f = $("#dPinF"), e = $("#dPinE");
+      if (!/^[0-9]{6,12}$/.test(v)){
+        e.textContent = /[^0-9]/.test(v) ? s.pinErrDigits : s.pinErrLen;
+        f.classList.add("invalid"); $("#dPin").setAttribute("aria-invalid","true"); ok = false;
+      } else { f.classList.remove("invalid"); $("#dPin").removeAttribute("aria-invalid"); }
+    }
+    const why = $("#dWhy").value.trim();
+    if (!why){ $("#dWhyF").classList.add("invalid"); $("#dWhy").setAttribute("aria-invalid","true"); ok = false; }
+    else { $("#dWhyF").classList.remove("invalid"); $("#dWhy").removeAttribute("aria-invalid"); }
+    if (!ok) return;
+    state.pinActive = isR ? true : false;
+    pushActivity(isR ? {ar:{who:"نورة", act:"غيّرت رمز وصول الموظفين"}, en:{who:"Noura", act:"Changed the staff access PIN"}}
+                     : {ar:{who:"نورة", act:"أوقفت رمز وصول الموظفين"}, en:{who:"Noura", act:"Deactivated the staff access PIN"}}, why);
+    closeDialog();
+    toast(isR ? s.pinRotateDone : s.pinDeactDone);
+    renderView();
+  });
+}
+function pushActivity(act, why){
+  const wAr = "الآن · 8:41 م", wEn = "Now · 8:41 PM";
+  state.activity.unshift({ ar:{w:wAr, who:act.ar.who, act:act.ar.act, why}, en:{w:wEn, who:act.en.who, act:act.en.act, why}, sys:false });
+}
+
+/* ================= render + router ================= */
+const VIEWS = { desk:viewDesk, daily:viewDaily, reports:viewReports, activity:viewActivity, system:viewSystem, access:viewAccess, settings:viewSettings };
+function renderView(){
+  if (state.surface === "settings" && !state.draft) state.draft = JSON.parse(JSON.stringify(state.saved));
+  if (state.surface !== "settings") state.draft = null;
+  $("#view").innerHTML = VIEWS[state.surface]();
+  renderMast();
+  const h = $("#pageTitle"); if (h) h.focus({ preventScroll:true });
+}
+function renderAll(){
+  document.documentElement.lang = state.locale;
+  document.documentElement.dir = rtl() ? "rtl" : "ltr";
+  document.title = rtl() ? "FITWAY — الإدارة" : "FITWAY — Owner";
+  $("#skip").textContent = S().skip;
+  renderBand(); renderFoot(); renderView();
+}
+function go(id){
+  if (!VIEWS[id]) id = "desk";
+  state.surface = id;
+  if (location.hash !== `#/${id}`) history.replaceState(null, "", `#/${id}`);
+  renderPop(false); renderView();
+  window.scrollTo(0, 0);
+}
+/* ================= events ================= */
+document.addEventListener("click", (e) => {
+  const t = e.target.closest("[data-go], #destBtn, #langBtn, #logoutBtn, [data-closepop], [data-closedlg], [data-cell], [data-preset], #csvBtn, #actMore, #actClear, #pinRotateBtn, #pinDeactBtn, #passToggle, #discardBtn");
+  if (!t) return;
+  if (t.dataset.go){ e.preventDefault(); go(t.dataset.go); toast(S().navTo(surfaceName(t.dataset.go))); return; }
+  if (t.id === "destBtn"){
+    const open = !$("#destPop"); renderPop(open);
+    if (open){ const f = $("#destPop a"); if (f) f.focus(); }
+    return;
+  }
+  if (t.id === "langBtn"){
+    state.locale = rtl() ? "en" : "ar"; renderAll(); toast(S().langSwitched); return;
+  }
+  if (t.id === "logoutBtn"){ toast(rtl()? "هذه عينة ثابتة — لا جلسة حقيقية." : "Static fixture — no real session."); return; }
+  if ("closepop" in t.dataset){ renderPop(false); const b = $("#destBtn"); if (b) b.focus(); return; }
+  if ("closedlg" in t.dataset){ closeDialog(); return; }
+  if (t.dataset.cell){
+    const [d, h] = t.dataset.cell.split(",").map(Number);
+    state.heatSel = { d, h };
+    document.querySelectorAll("[data-cell]").forEach(b => b.setAttribute("aria-pressed", b === t ? "true" : "false"));
+    $("#heatDetail").innerHTML = heatDetail(); return;
+  }
+  if (t.dataset.preset){ toast(S().rangeApplied); return; }
+  if (t.id === "csvBtn"){
+    const head = "day,hour,avg_occupancy\n";
+    const body = HEAT.map((r, d) => r.map((v, h) => `${d},${HEAT_HOURS[h]},${v}`).join("\n")).join("\n");
+    const url = URL.createObjectURL(new Blob(["\uFEFF" + head + body], { type:"text/csv" }));
+    const a = Object.assign(document.createElement("a"), { href:url, download:"fitway-report-2026-08-19_2026-09-15.csv" });
+    a.click(); URL.revokeObjectURL(url);
+    pushActivity({ar:{who:"نورة", act:"صدّرت تقرير CSV"}, en:{who:"Noura", act:"Exported a CSV report"}}, rtl()? "نافذة 28 يوم عمل" : "28-business-day window");
+    toast(rtl()? "تم تنزيل CSV. سُجّل الإجراء في سجل النشاط." : "CSV downloaded. The action is recorded in the Activity Log."); return;
+  }
+  if (t.id === "actMore"){ state.activity.push(...ACT_OLDER); state.olderLoaded = true; renderView(); toast(S().actLoaded); return; }
+  if (t.id === "actClear"){ const sel = $("#fActor"); if (sel) sel.selectedIndex = 0; return; }
+  if (t.id === "pinRotateBtn"){ pinDialog("rotate"); return; }
+  if (t.id === "pinDeactBtn"){ pinDialog("deact"); return; }
+  if (t.id === "passToggle"){
+    const inp = $("#oPass"); const show = inp.type === "password";
+    inp.type = show ? "text" : "password";
+    t.setAttribute("aria-pressed", String(show)); t.textContent = show ? S().hidePass : S().showPass; return;
+  }
+  if (t.id === "discardBtn"){ state.draft = JSON.parse(JSON.stringify(state.saved)); renderView(); return; }
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape"){
+    if ($("#destPop")){ renderPop(false); const b = $("#destBtn"); if (b) b.focus(); }
+    else if ($("#dlgVeil")) closeDialog();
+  }
+  const cell = e.target.closest ? e.target.closest("[data-cell]") : null;
+  if (cell && ["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)){
+    e.preventDefault();
+    const [d, h] = cell.dataset.cell.split(",").map(Number);
+    const dd = e.key === "ArrowUp" ? -1 : e.key === "ArrowDown" ? 1 : 0;
+    const dh = e.key === "ArrowLeft" ? (rtl()? 1 : -1) : e.key === "ArrowRight" ? (rtl()? -1 : 1) : 0;
+    const nd = Math.min(6, Math.max(0, d + dd)), nh = Math.min(17, Math.max(0, h + dh));
+    const next = document.querySelector(`[data-cell="${nd},${nh}"]`);
+    if (next){ next.focus(); next.click(); }
+  }
+});
+
+document.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const s = S();
+  if (e.target.id === "rangeForm"){ toast(s.rangeApplied); return; }
+  if (e.target.id === "actForm"){ toast(rtl()? "طُبِّقت التصفية." : "Filters applied."); return; }
+  if (e.target.id === "ownerForm"){
+    let ok = true;
+    const chk = (cond, f, inp) => {
+      const F = $(f), I = $(inp);
+      F.classList.toggle("invalid", !cond);
+      if (cond) I.removeAttribute("aria-invalid"); else I.setAttribute("aria-invalid","true");
+      if (!cond) ok = false;
+    };
+    chk(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($("#oEmail").value.trim()), "#fEmail", "#oEmail");
+    chk($("#oName").value.trim().length > 0, "#fName", "#oName");
+    chk($("#oPass").value.length >= 12 && $("#oPass").value.length <= 200, "#fPass", "#oPass");
+    if (!ok) return;
+    const name = $("#oName").value.trim(), email = $("#oEmail").value.trim();
+    state.ownerCreated = { name, email };
+    state.owners.push({ ar:name, en:name, role:{ar:"مالك", en:"Owner"}, since:{ar:"اليوم", en:"today"} });
+    pushActivity({ar:{who:"نورة", act:"أنشأت حساب مالك"}, en:{who:"Noura", act:"Created an owner account"}}, `${name} · ${email}`);
+    toast(s.ownerCreatedTitle);
+    renderView(); return;
+  }
+  if (e.target.id === "setForm"){
+    const d = state.draft;
+    const int = (v) => /^[0-9]+$/.test(v.trim());
+    const time = (v) => /^([01][0-9]|2[0-3]):[0-5][0-9]$/.test(v.trim());
+    const mark = (cond, f, inp, err, msg) => {
+      const F = $(f), I = $(inp);
+      F.classList.toggle("invalid", !cond);
+      if (err && msg) $(err).textContent = msg;
+      if (cond) I.removeAttribute("aria-invalid"); else I.setAttribute("aria-invalid","true");
+      return cond;
+    };
+    let ok = true;
+    ok = mark(d.cap.trim() !== "" && int(d.cap), "#fCap", "#sCap", "#eCap", d.cap.trim() === "" ? s.errRequired : s.errInt) && ok;
+    ok = mark(time(d.day), "#fDay", "#sDay", "#eDay", s.errTime) && ok;
+    ok = mark(d.reset.trim() !== "" && int(d.reset), "#fReset", "#sReset", "#eReset", s.errInt) && ok;
+    const pct = (v) => int(v) && +v >= 0 && +v <= 100;
+    ok = mark(pct(d.q), "#fQ", "#sQ", "#eQ", s.errRange) && ok;
+    ok = mark(pct(d.m), "#fM", "#sM", "#eM", s.errRange) && ok;
+    ok = mark(pct(d.b), "#fB", "#sB", "#eB", s.errRange) && ok;
+    if (ok && +d.m <= +d.q) ok = mark(false, "#fM", "#sM", "#eM", s.errOrderMod(d.q)) && ok;
+    if (ok && +d.b <= +d.m) ok = mark(false, "#fB", "#sB", "#eB", s.errOrderBusy(d.m)) && ok;
+    if (!ok){ toast(s.invalidToast, true); return; }
+    const btn = $("#saveBtn"); btn.disabled = true; btn.textContent = s.saving;
+    setTimeout(() => {
+      state.saved = JSON.parse(JSON.stringify(d));
+      pushActivity({ar:{who:"نورة", act:"حفظت الإعدادات"}, en:{who:"Noura", act:"Saved settings"}}, rtl()? "تحديث من صفحة الإعدادات" : "Updated from the Settings page");
+      toast(s.savedToast);
+      renderView();
+    }, 450);
+  }
+});
+/* settings draft tracking */
+document.addEventListener("input", (e) => {
+  if (state.surface !== "settings" || !state.draft) return;
+  const map = { sCap:"cap", sDay:"day", sReset:"reset", sQ:"q", sM:"m", sB:"b" };
+  if (map[e.target.id]){
+    state.draft[map[e.target.id]] = e.target.value;
+    const dirty = JSON.stringify(state.draft) !== JSON.stringify(state.saved);
+    const chip = $("#saveChip");
+    if (chip){ chip.textContent = dirty? S().stateDirty : S().stateSaved; chip.className = `statechip ${dirty? "dirty":"saved"}`; }
+    const db = $("#discardBtn"); if (db) db.disabled = !dirty;
+  }
+});
+document.addEventListener("change", (e) => {
+  if (state.surface !== "settings" || !state.draft) return;
+  const row = e.target.closest("[data-day]"); if (!row) return;
+  const d = +row.dataset.day; const kind = e.target.dataset.h;
+  if (kind === "closed"){
+    state.draft.hours[d] = e.target.checked ? null : ["06:00","23:00"];
+    renderView();
+  } else if (kind === "open"){ state.draft.hours[d][0] = e.target.value; }
+  else if (kind === "close"){ state.draft.hours[d][1] = e.target.value; }
+});
+window.addEventListener("hashchange", () => {
+  const id = location.hash.replace(/^#\//, "");
+  if (VIEWS[id] && id !== state.surface){ state.surface = id; renderView(); }
+});
+
+/* ================= init ================= */
+const initial = location.hash.replace(/^#\//, "");
+if (VIEWS[initial]) state.surface = initial;
+renderAll();
+
+</script>
+</body>
+</html>

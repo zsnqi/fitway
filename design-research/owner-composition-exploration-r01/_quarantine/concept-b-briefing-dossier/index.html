@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FITWAY Owner — Concept B: Briefing Dossier (design exploration, not authority)</title>
+<meta name="description" content="Standalone Owner composition concept B. Fixture only — not production, not authority.">
+<style>
+:root{
+  color-scheme:dark;
+  --fw-obsidian:#08090a; --fw-coal:#101012; --fw-graphite:#1a1a1e;
+  --fw-oxblood:#4d0713; --fw-red:#e51935; --fw-red-bright:#ff2946;
+  --fw-chalk:#f5f3f2; --fw-muted:#c9c3c4; --fw-text-subtle:#aaa4a6;
+  --fw-live:#4be29b; --fw-delayed:#d9a400; --fw-offline:#9aa0aa;
+  --fw-radius-control:8px;
+  --fw-duration-fast:120ms; --fw-duration-base:180ms;
+  --fw-ease-out:cubic-bezier(0,0,.2,1);
+  --ink:#f5f3f2; --ink-2:#c9c3c4; --ink-3:#aaa4a6;
+  --rule:#26262c; --paper:#0d0d10;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--fw-obsidian); color:var(--ink);
+  font-family:"Cairo","Segoe UI",Tahoma,Arial,sans-serif;
+  font-variant-numeric:tabular-nums; line-height:1.7;
+  min-height:100vh; min-height:100svh}
+body::before{content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background:radial-gradient(1000px 500px at 50% -10%, rgba(77,7,19,.5), transparent 65%)}
+button{font:inherit; color:inherit}
+:focus-visible{outline:2px solid var(--fw-red-bright); outline-offset:3px; border-radius:4px}
+.skip{position:absolute; inset-inline-start:12px; top:-64px; z-index:99; background:var(--fw-chalk); color:#111; padding:10px 16px; border-radius:8px}
+.skip:focus{top:12px; color:#111}
+.fixture{border-bottom:1px solid var(--rule); background:#131316; color:var(--ink-2); font-size:12.5px; padding:8px 16px; text-align:center}
+.fixture strong{color:var(--ink); letter-spacing:.08em}
+/* Slim sticky chapter index — the only navigation; no rail, no sidebar */
+.indexbar{position:sticky; top:0; z-index:40; background:rgba(8,9,10,.94); backdrop-filter:blur(10px); border-bottom:1px solid var(--rule)}
+.indexbar-in{max-width:960px; margin:0 auto; padding:10px 16px; display:flex; align-items:center; gap:12px}
+.wordmark{font-weight:700; letter-spacing:.14em; font-size:13px; white-space:nowrap}
+.wordmark i{font-style:normal; color:var(--fw-red-bright)}
+.liveflag{display:inline-flex; align-items:center; gap:7px; font-size:12px; color:var(--ink-2); border:1px solid var(--rule); border-radius:999px; padding:4px 11px; white-space:nowrap}
+.liveflag::before{content:""; width:8px; height:8px; border-radius:50%; background:var(--fw-live)}
+.chapters{display:flex; gap:4px; overflow-x:auto; flex:1; padding:2px; scrollbar-width:thin}
+.chapters a{flex:none; text-decoration:none; font-size:12.5px; color:var(--ink-2); border:1px solid transparent; border-radius:999px; padding:7px 12px; min-height:36px; display:inline-flex; align-items:center; gap:6px}
+.chapters a b{font-weight:600; color:var(--ink-3)}
+.chapters a[aria-current="true"]{color:var(--ink); border-color:#3d222a; background:#1d1216}
+.chapters a[aria-current="true"] b{color:var(--fw-red-bright)}
+.mini-btn{flex:none; border:1px solid #33333b; background:#17171b; border-radius:var(--fw-radius-control); min-height:36px; padding:6px 12px; font-size:12.5px; cursor:pointer; white-space:nowrap}
+.mini-btn{flex:none; border:1px solid #33333b; background:#17171b; border-radius:var(--fw-radius-control); min-height:36px; padding:6px 12px; font-size:12.5px; cursor:pointer; white-space:nowrap}
+/* Editorial dossier: one centered column, generous measure, chapters separated by rules */
+.dossier{max-width:960px; margin:0 auto; padding:8px 20px 90px}
+.dateline{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; padding:34px 0 8px; color:var(--ink-3); font-size:13px}
+.dateline .no{font-size:12px; letter-spacing:.18em; border:1px solid var(--rule); border-radius:999px; padding:4px 12px}
+h1.lede{font-size:clamp(30px,4.6vw,46px); line-height:1.25; margin:10px 0 8px; letter-spacing:-.01em}
+.lede-sub{color:var(--ink-2); font-size:clamp(15px,2vw,18px); max-width:62ch; margin:0}
+.byline{display:flex; gap:10px; flex-wrap:wrap; margin:16px 0 0; font-size:12.5px; color:var(--ink-3)}
+.byline span{border:1px solid var(--rule); border-radius:999px; padding:4px 12px}
+.chapter{border-top:1px solid var(--rule); margin-top:44px; padding-top:6px; scroll-margin-top:76px}
+.kicker{display:flex; align-items:center; gap:10px; margin:22px 0 4px}
+.kicker .n{width:30px; height:30px; flex:none; border-radius:50%; display:grid; place-items:center; font-size:13px; font-weight:700; background:#1c1215; border:1px solid #3d222a; color:var(--fw-red-bright)}
+.kicker .k{font-size:12px; letter-spacing:.2em; color:var(--ink-3); font-weight:600}
+h2.cht{font-size:clamp(21px,3vw,28px); margin:0 0 4px; line-height:1.35}
+.dek{color:var(--ink-2); margin:0 0 16px; max-width:68ch}
+.prose{max-width:72ch}
+.prose p{margin:0 0 12px; color:var(--ink-2)}
+.prose p strong{color:var(--ink)}
+.pull{border-inline-start:3px solid var(--fw-red); padding:2px 0 2px 16px; margin:18px 0; font-size:clamp(17px,2.4vw,21px); line-height:1.5; color:var(--ink); max-width:60ch}
+[dir="rtl"] .pull{padding:2px 16px 2px 0}
+.factstrip{display:grid; grid-template-columns:repeat(3,1fr); border:1px solid var(--rule); border-radius:14px; overflow:hidden; margin:16px 0}
+.fact{padding:14px 16px; background:var(--paper)}
+.fact + .fact{border-inline-start:1px solid var(--rule)}
+.fact small{display:block; color:var(--ink-3); font-size:12px}
+.fact b{font-size:clamp(20px,2.6vw,27px); font-weight:700}
+.fact span{font-size:12.5px; color:var(--ink-2)}
+.exhibit{margin:18px 0; border:1px solid var(--rule); border-radius:14px; background:var(--paper); padding:16px}
+.exhibit figcaption{font-size:12px; color:var(--ink-3); margin-top:10px}
+.tape{display:grid; grid-template-columns:repeat(28,1fr); gap:3px; direction:ltr}
+.tape i{display:block; height:30px; border-radius:2px; background:#222228}
+.tape i.f{background:#4d0713}
+.tape i.c{background:var(--fw-red-bright)}
+svg.line{width:100%; height:200px; display:block}
+.cols2{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+.margin-note{font-size:12.5px; color:var(--ink-3); border-top:1px dashed #33333b; padding-top:8px}
+.ledger{width:100%; border-collapse:collapse; font-size:13.5px}
+.ledger th,.ledger td{padding:10px 8px; border-bottom:1px solid #202026; text-align:start; vertical-align:top}
+.ledger thead th{font-size:11.5px; letter-spacing:.08em; color:var(--ink-3)}
+.ledger .t{color:var(--ink-3); white-space:nowrap}
+.tag{display:inline-block; font-size:11.5px; border:1px solid #33333b; border-radius:999px; padding:2px 10px; color:var(--ink-2)}
+.tag.g{color:#9df0c6; border-color:#1f4d3a}
+.tag.a{color:#ffd9a0; border-color:#6b3a12}
+.tag.r{color:#ff9aa6; border-color:#5c1f28}
+.tag.n{color:var(--ink-3)}
+.filters{display:flex; flex-wrap:wrap; gap:10px; align-items:end; margin-bottom:12px}
+.field{display:grid; gap:5px; font-size:12.5px; color:var(--ink-2)}
+.input{background:#0f0f13; border:1px solid #2d2d34; border-radius:var(--fw-radius-control); color:var(--ink); padding:9px 12px; min-height:44px; min-width:150px; font:inherit; font-size:13.5px}
+.btn{border:1px solid #33333b; background:#1b1b20; border-radius:var(--fw-radius-control); padding:10px 16px; min-height:44px; cursor:pointer; font-size:14px}
+.btn.primary{background:var(--fw-red); border-color:var(--fw-red); color:#fff; font-weight:600}
+.btn.ghost{background:transparent}
+.btn.danger{border-color:#5c1f28; color:#ffb3bd}
+.btn.small{min-height:38px; padding:7px 12px; font-size:13px}
+details.act{border:1px solid var(--rule); border-radius:12px; background:#101013; margin:10px 0}
+details.act summary{cursor:pointer; padding:13px 15px; min-height:48px; list-style:none; display:flex; gap:10px; align-items:center; font-weight:600}
+details.act summary::-webkit-details-marker{display:none}
+details.act summary .caret{margin-inline-start:auto; color:var(--ink-3)}
+details.act .act-body{padding:0 15px 15px; display:grid; gap:10px}
+.foot-rule{border-top:1px solid var(--rule); margin-top:52px; padding-top:14px; color:var(--ink-3); font-size:12.5px}
+.toast-region{position:fixed; bottom:16px; inset-inline:0; display:grid; justify-items:center; z-index:80; pointer-events:none}
+.toast{background:#171318; border:1px solid #3d222a; border-radius:12px; padding:10px 16px; font-size:13.5px; opacity:0}
+.toast.show{opacity:1}
+.dlg-back{position:fixed; inset:0; background:rgba(0,0,0,.64); display:none; place-items:center; padding:18px; z-index:90}
+.dlg-back.open{display:grid}
+.dlg{width:min(520px,100%); background:#141417; border:1px solid #2e2e36; border-radius:16px; padding:20px}
+.dlg-actions{display:flex; gap:10px; justify-content:flex-end; margin-top:14px; flex-wrap:wrap}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0)}
+@media (max-width:720px){.factstrip{grid-template-columns:1fr}.fact + .fact{border-inline-start:0; border-top:1px solid var(--rule)}.cols2{grid-template-columns:1fr}.dossier{padding-inline:14px}}
+@media (prefers-reduced-motion:reduce){*{animation:none !important; transition:none !important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#dossier" data-i18n="skip">تخطَّ إلى الموجز</a>
+<div class="fixture"><strong>CONCEPT B · FIXTURE</strong> — <span data-i18n="banner">موجز تحريري مستقل — ليس إنتاجًا ولا مرجعية. كل الأرقام افتراضية.</span></div>
+<header class="indexbar"><div class="indexbar-in">
+<span class="wordmark">FITWAY <i>·</i> <span data-i18n="owner">المالك</span></span>
+<span class="liveflag"><bdi id="liveLabel">مباشر · قبل 40 ثانية</bdi></span>
+<nav class="chapters" id="chapterIndex" aria-label="Chapters"></nav>
+<button class="mini-btn" id="langToggle">EN</button>
+</div></header>
+<!--M3-->
+<main class="dossier" id="dossier" tabindex="-1">
+<div class="dateline"><span class="no">N° 07</span><bdi id="datelineText">الأحد 20 سبتمبر 2026 · يوم عمل مكتمل · Asia/Riyadh</bdi></div>
+<h1 class="lede" id="ledeTitle">الصالة مزدحمة الآن، والباقي تفاصيل تُقرأ عند الحاجة.</h1>
+<p class="lede-sub" id="ledeSub">موجز واحد يُقرأ من أعلى إلى أسفل: الحالة الآن، ثم منحنى اليوم، ثم الأسبوع، ثم من فعل ماذا، ثم صحة العدّاد، ثم الوصول، ثم الإعدادات — كل فصل يختم بما يحتاج قرارك فعلًا.</p>
+<div class="byline"><span><bdi id="stateLine">مفتوح · مزدحم · ≈ 61 حاضرًا</bdi></span><span><bdi id="freshLine">مباشر · آخر قراءة قبل 40 ثانية</bdi></span><span><bdi id="closeLine">يغلق 11:00 م</bdi></span></div>
+<div id="chaptersRoot"></div>
+<div class="foot-rule" id="footNote">كل الأرقام في هذا الموجز افتراضية للتجربة. لا يُرسل أي إجراء إلى الخادم.</div>
+</main>
+<script>
+"use strict";
+let locale="ar";
+const COPY={
+ar:{skip:"تخطَّ إلى الموجز",banner:"موجز تحريري مستقل — ليس إنتاجًا ولا مرجعية. كل الأرقام افتراضية.",owner:"المالك",live:"مباشر · قبل 40 ثانية",
+dateline:"الأحد 20 سبتمبر 2026 · يوم عمل مكتمل · Asia/Riyadh",lede:"الصالة مزدحمة الآن، والباقي تفاصيل تُقرأ عند الحاجة.",
+sub:"موجز واحد يُقرأ من أعلى إلى أسفل: الحالة الآن، ثم منحنى اليوم، ثم الأسبوع، ثم من فعل ماذا، ثم صحة العدّاد، ثم الوصول، ثم الإعدادات — كل فصل يختم بما يحتاج قرارك فعلًا.",
+state:"مفتوح · مزدحم · ≈ 61 حاضرًا",fresh:"مباشر · آخر قراءة قبل 40 ثانية",close:"يغلق 11:00 م",
+foot:"كل الأرقام في هذا الموجز افتراضية للتجربة. لا يُرسل أي إجراء إلى الخادم.",
+ch:["الآن","اليوم","الأسبوع","النشاط","العدّاد","الوصول","الإعدادات"]},
+en:{skip:"Skip to the briefing",banner:"Standalone editorial briefing — not production, not authority. All figures are fixtures.",owner:"Owner",live:"Live · 40s ago",
+dateline:"Sunday 20 September 2026 · full business day · Asia/Riyadh",lede:"The gym is busy right now; the rest can wait its turn.",
+sub:"One briefing read top to bottom: now, today, the week, who did what, counter health, access, settings — each chapter ends with what actually needs your call.",
+state:"Open · Busy · ≈ 61 present",fresh:"Live · last reading 40s ago",close:"Closes 11:00 PM",
+foot:"Every figure here is an illustrative fixture. No action is sent to any server.",
+ch:["Now","Today","Week","Activity","Counter","Access","Settings"]}
+};
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");}
+function tape(active){
+let h="<div class='tape' role='img' aria-label='crowd'>";
+for(let i=0;i<28;i++) h+=`<i class='${i<active?"f":""} ${i===active?"c":""}'></i>`;
+return h+"</div>";
+}
+function lineSVG(){
+const pts=[4,6,9,14,22,31,37,42,48,44,52,61,58,49,55,63,66,58,47,38,30,24,18,14];
+const W=760,H=200,P=16,max=72,step=(W-P*2)/(pts.length-1);
+let d=`M ${P} ${(H-P-(pts[0]/max)*(H-P*2)).toFixed(1)}`;
+for(let i=1;i<pts.length;i++) d+=` L ${(P+i*step).toFixed(1)} ${(H-P-(pts[i]/max)*(H-P*2)).toFixed(1)}`;
+let g=""; for(let k=0;k<=4;k++){const y=P+k*(H-P*2)/4; g+=`<line x1='${P}' y1='${y.toFixed(1)}' x2='${W-P}' y2='${y.toFixed(1)}' stroke='#22222a'/>`;}
+return `<svg class='line' viewBox='0 0 ${W} ${H}' role='img' aria-label='curve'><g>${g}</g><path d='${d} L ${W-P} ${H-P} L ${P} ${H-P} Z' fill='rgba(229,25,53,.14)'/><path d='${d}' fill='none' stroke='#e51935' stroke-width='2.6'/><circle cx='${(P+11*step).toFixed(1)}' cy='${(H-P-(61/max)*(H-P*2)).toFixed(1)}' r='5' fill='none' stroke='#f5f3f2' stroke-width='1.6'/></svg>`;
+}
+function heat(){
+const days=locale==="ar"?["سبت","جمعة","خميس","أربعاء","ثلاثاء","اثنين","أحد"]:["Sat","Fri","Thu","Wed","Tue","Mon","Sun"];
+let h="<div style='display:grid;gap:4px' role='img' aria-label='heatmap'>";
+days.forEach((d,ri)=>{
+h+="<div style='display:grid;grid-template-columns:52px repeat(12,1fr);gap:4px;align-items:center;font-size:11.5px;color:var(--ink-2)'><span>"+d+"</span>";
+for(let c=0;c<12;c++){
+if((ri===2&&c===5)||(ri===4&&c===7)) h+="<span style='height:26px;border-radius:6px;display:grid;place-items:center;background:#242429;color:#aaa4a6'>×</span>";
+else if(ri===0&&c<2) h+="<span style='height:26px;border-radius:6px;display:grid;place-items:center;background:#1b1b20;color:#aaa4a6'>—</span>";
+else{const v=20+((ri*13+c*17)%70); h+=`<span style='height:26px;border-radius:6px;display:grid;place-items:center;font-size:10.5px;color:#0c0c0e;background:rgba(229,25,53,${(0.12+v/130).toFixed(2)})'>${v}</span>`;}
+}
+h+="</div>";
+});
+return h+"</div>";
+}
+function chapter(n,id,kicker,title,dek,body,verdict){
+const ask=locale==="ar"?"قرار هذا الفصل:":"This chapter asks:";
+return `<section class='chapter' id='${id}'><div class='kicker'><span class='n'>${n}</span><span class='k'>${esc(kicker)}</span></div><h2 class='cht'>${esc(title)}</h2><p class='dek'>${esc(dek)}</p>${body}<div class='margin-note'><strong>${ask}</strong> ${verdict}</div></section>`;
+}
+function chNow(){
+if(locale==="ar") return chapter("1","ch-now","الفصل الأول · الحالة","مزدحم، مباشر، ولا مفاجآت في الباب","آخر قراءة قبل 40 ثانية. المستوى يتقدم على الرقم.",
+`<div class='factstrip'><div class='fact'><small>الموجودون (تقريبي)</small><b><bdi>≈ 61</bdi></b><br><span>مزدحم · 17/28</span></div><div class='fact'><small>ذروة اليوم</small><b><bdi>66</bdi></b><br><span>06:42 م · 96%</span></div><div class='fact'><small>الساعات</small><b style='font-size:19px'>مفتوح حتى 11:00 م</b><br><span>Asia/Riyadh</span></div></div><figure class='exhibit' style='margin-inline:0'><figcaption style='margin:0 0 8px'>الإشارة الآن — هادئ · متوسط · <b>مزدحم</b> · شديد الازدحام</figcaption>${tape(17)}</figure><div class='prose'><p>عشر ثوانٍ تكفي: <strong>الصالة مفتوحة ومزدحمة</strong> والقراءة طازجة. ما بعد هذا سياق لمن يملك دقيقة.</p></div>`,`لا شيء — تابع فقط للسياق.`);
+return chapter("1","ch-now","Chapter one · state","Busy, live, no surprises at the door","Last reading 40s ago. Band leads the number.",
+`<div class='factstrip'><div class='fact'><small>Present (approx)</small><b><bdi>≈ 61</bdi></b><br><span>Busy · 17/28</span></div><div class='fact'><small>Today peak</small><b><bdi>66</bdi></b><br><span>06:42 PM · 96%</span></div><div class='fact'><small>Hours</small><b style='font-size:19px'>Open till 11:00 PM</b><br><span>Asia/Riyadh</span></div></div><figure class='exhibit' style='margin-inline:0'><figcaption style='margin:0 0 8px'>Signal now — Quiet · Moderate · <b>Busy</b> · Packed</figcaption>${tape(17)}</figure><div class='prose'><p>Ten seconds suffice: <strong>open and busy</strong>, reading fresh. The rest is context.</p></div>`,`Nothing — read on for context only.`);
+}
+function chToday(){
+if(locale==="ar") return chapter("2","ch-today","الفصل الثاني · المنحنى","ذروة مسائية واحدة ثم انحدار نظيف","612 من 640 دقيقة. المفقود والمغلق مميزان.",
+`<figure class='exhibit' style='margin-inline:0'>${lineSVG()}<figcaption>الذروة 66 عند 06:42 م · ○ مفقود · — مغلق</figcaption></figure><div class='prose'><p>ارتفع المنحنى بعد الخامسة إلى <strong>66</strong> ثم انحدر معتادًا. المتوسط <strong>41</strong> والدخول <strong>512 عبورًا تقديريًا</strong>.</p></div><table class='ledger'><thead><tr><th>الوقت</th><th>الحالة</th><th>المستوى</th><th>العدد</th></tr></thead><tbody><tr><td class='t'><bdi>06:00 م</bdi></td><td><span class='tag g'>مرصود</span></td><td>مزدحم</td><td><bdi>61</bdi></td></tr><tr><td class='t'><bdi>05:58 م</bdi></td><td><span class='tag g'>مرصود</span></td><td>متوسط</td><td><bdi>49</bdi></td></tr><tr><td class='t'><bdi>05:57 م</bdi></td><td><span class='tag n'>مفقود</span></td><td>—</td><td><bdi>—</bdi></td></tr></tbody></table>`,`لا قرار — ذروة معتادة وتغطية سليمة.`);
+return chapter("2","ch-today","Chapter two · curve","One evening peak, then a clean fall","612 of 640 minutes. Missing and closed stay distinct.",
+`<figure class='exhibit' style='margin-inline:0'>${lineSVG()}<figcaption>Peak 66 at 06:42 PM · ○ missing · — closed</figcaption></figure><div class='prose'><p>Rose after five to <strong>66</strong>, then fell as usual. Average <strong>41</strong>; entries <strong>512 crossings</strong>.</p></div><table class='ledger'><thead><tr><th>Time</th><th>State</th><th>Band</th><th>Count</th></tr></thead><tbody><tr><td class='t'><bdi>06:00 PM</bdi></td><td><span class='tag g'>Observed</span></td><td>Busy</td><td><bdi>61</bdi></td></tr><tr><td class='t'><bdi>05:58 PM</bdi></td><td><span class='tag g'>Observed</span></td><td>Moderate</td><td><bdi>49</bdi></td></tr><tr><td class='t'><bdi>05:57 PM</bdi></td><td><span class='tag n'>Missing</span></td><td>—</td><td><bdi>—</bdi></td></tr></tbody></table>`,`No call — usual peak, healthy coverage.`);
+}
+function chWeek(){
+if(locale==="ar") return chapter("3","ch-week","الفصل الثالث · الأسبوع","المساءات تزدحم والصباحات تتنفس","× لا بيانات، — مغلق. المقارنة تنتظر أسبوعًا ثانيًا.",
+`<figure class='exhibit' style='margin-inline:0'>${heat()}<figcaption>متوسط الإشغال: يوم × ساعة</figcaption></figure><div class='prose'><p><strong>لا مقارنة بعد.</strong> رسم فرق ناقص الآن كذبة بصرية.</p></div><div class='filters'><div class='field'><label>من<input class='input' type='date' value='2026-09-14'></label></div><div class='field'><label>إلى<input class='input' type='date' value='2026-09-20'></label></div><button class='btn primary' id='csvBtn'>تنزيل CSV</button></div>`,`حمّل CSV الخام عند الحاجة.`);
+return chapter("3","ch-week","Chapter three · week","Evenings crowd, mornings breathe","× is no data, — is closed. Comparison waits for a second week.",
+`<figure class='exhibit' style='margin-inline:0'>${heat()}<figcaption>Average occupancy: weekday × hour</figcaption></figure><div class='prose'><p><strong>No comparison yet.</strong> A partial delta would be a visual lie.</p></div><div class='filters'><div class='field'><label>From<input class='input' type='date' value='2026-09-14'></label></div><div class='field'><label>To<input class='input' type='date' value='2026-09-20'></label></div><button class='btn primary' id='csvBtn'>Download CSV</button></div>`,`Download raw CSV when needed.`);
+}
+function chActivity(){
+if(locale==="ar") return chapter("4","ch-activity","الفصل الرابع · من فعل ماذا","خمسة أسطر صادقة: الفاعل والفعل والسبب","لا يُكتب حساس بدون سبب — والسبب يظهر حرفيًا.",
+`<div class='filters'><div class='field'><label>الفاعل<select class='input' id='fActor'><option>الكل</option><option>owner@example.com</option><option>second@example.com</option></select></label></div><div class='field'><label>الإجراء<select class='input'><option>الكل</option><option>سعة</option><option>رمز</option><option>مالك</option></select></label></div><button class='btn' id='applyF'>تطبيق</button></div><table class='ledger'><thead><tr><th>الوقت</th><th>الفاعل</th><th>الفعل</th><th>السبب</th></tr></thead><tbody><tr><td class='t'><bdi>09-19 06:12 م</bdi></td><td><bdi>owner@…</bdi></td><td>السعة 220 ← 240</td><td>توسعة المساء</td></tr><tr><td class='t'><bdi>09-18 09:02 م</bdi></td><td><bdi>second@…</bdi></td><td>تدوير الرمز</td><td>تدوير دوري</td></tr><tr><td class='t'><bdi>09-17 11:40 ص</bdi></td><td><bdi>owner@…</bdi></td><td>تعطيل مالك</td><td>مغادرة الفريق</td></tr><tr><td class='t'><bdi>09-16 08:15 م</bdi></td><td><bdi>owner@…</bdi></td><td>حد المتوسط 50 ← 55</td><td>تخفيف الازدحام</td></tr></tbody></table>`,`راجع سطر التعطيل — هل سببه مقنع؟`);
+return chapter("4","ch-activity","Chapter four · who did what","Five honest lines: actor, action, reason","No sensitive write without a reason — shown verbatim.",
+`<div class='filters'><div class='field'><label>Actor<select class='input' id='fActor'><option>All</option><option>owner@example.com</option><option>second@example.com</option></select></label></div><div class='field'><label>Action<select class='input'><option>All</option><option>Capacity</option><option>PIN</option><option>Owner</option></select></label></div><button class='btn' id='applyF'>Apply</button></div><table class='ledger'><thead><tr><th>Time</th><th>Actor</th><th>Action</th><th>Reason</th></tr></thead><tbody><tr><td class='t'><bdi>09-19 06:12 PM</bdi></td><td><bdi>owner@…</bdi></td><td>Capacity 220 → 240</td><td>Evening stretch</td></tr><tr><td class='t'><bdi>09-18 09:02 PM</bdi></td><td><bdi>second@…</bdi></td><td>PIN rotated</td><td>Routine</td></tr><tr><td class='t'><bdi>09-17 11:40 AM</bdi></td><td><bdi>owner@…</bdi></td><td>Owner deactivated</td><td>Left team</td></tr><tr><td class='t'><bdi>09-16 08:15 PM</bdi></td><td><bdi>owner@…</bdi></td><td>Moderate 50 → 55</td><td>Ease crowding</td></tr></tbody></table>`,`Check the deactivation line — is its reason convincing?`);
+}
+function chCounter(){
+if(locale==="ar") return chapter("5","ch-counter","الفصل الخامس · صحة العدّاد","التشغيل يُحتسب في ساعات العمل فقط","عطل الإغلاق لا يخفض النسبة؛ تنبيهه يُؤجل لما قبل الافتتاح.",
+`<div class='pull'>التشغيل 98.4% خلال 7 أيام عمل — 9 دقائق بلا قراءات، وحادثة واحدة مفتوحة تتعافى.</div><table class='ledger'><thead><tr><th>الحالة</th><th>البداية</th><th>الوضع</th><th>التنبيه</th></tr></thead><tbody><tr><td>انقطاع دفع</td><td class='t'><bdi>05:41 م</bdi></td><td><span class='tag a'>يتعافى</span></td><td><span class='tag g'>وصل</span></td></tr><tr><td>خلل كاميرا</td><td class='t'><bdi>أمس 09:12 م</bdi></td><td><span class='tag g'>متعافٍ</span></td><td><span class='tag g'>وصل</span></td></tr></tbody></table>`,`لا تفعل شيئًا الليلة — الصيانة بُلّغت.`);
+return chapter("5","ch-counter","Chapter five · counter health","Uptime counts open hours only","A closed-hours fault never lowers it; its alert waits for pre-open.",
+`<div class='pull'>Uptime 98.4% over 7 business days — 9 unread minutes, one open incident recovering.</div><table class='ledger'><thead><tr><th>Condition</th><th>Started</th><th>State</th><th>Notice</th></tr></thead><tbody><tr><td>Push gap</td><td class='t'><bdi>05:41 PM</bdi></td><td><span class='tag a'>Recovering</span></td><td><span class='tag g'>Delivered</span></td></tr><tr><td>Camera fault</td><td class='t'><bdi>Yesterday 09:12 PM</bdi></td><td><span class='tag g'>Recovered</span></td><td><span class='tag g'>Delivered</span></td></tr></tbody></table>`,`Do nothing tonight — maintenance was told.`);
+}
+function chAccess(){
+if(locale==="ar") return chapter("6","ch-access","الفصل السادس · الوصول","بابان فقط: رمز مشترك وحسابات مالكين","التعطيل الذاتي وتعطيل آخر مالك مرفوضان.",
+`<div class='prose'><p>رمز الموظفين <strong>مفعّل</strong> — دوّر قبل 21 يومًا. التدوير يُبطل القديم فورًا. المالكون <strong>2 نشط</strong>.</p></div><details class='act' open><summary>تغيير رمز الموظفين <span class='caret'>▾</span></summary><div class='act-body'><div class='field'><label>سبب التدوير (يُسجل)<input class='input' id='pinWhy' placeholder='مثال: تدوير دوري'></label></div><div><button class='btn' id='rotateBtn'>تدوير الرمز</button> <button class='btn danger' id='deactBtn'>تعطيل الرمز</button></div></div></details><details class='act'><summary>إنشاء مالك جديد <span class='caret'>▾</span></summary><div class='act-body'><div class='cols2'><div class='field'><label>البريد<input class='input' id='oEmail' type='email' placeholder='owner@example.com'></label></div><div class='field'><label>اسم العرض<input class='input' id='oName' placeholder='سارة'></label></div></div><div class='cols2'><div class='field'><label>كلمة أولية (12+)<input class='input' id='oPass' type='password'></label></div><div class='field'><label>السبب (مطلوب)<input class='input' id='oWhy' placeholder='مالك الفترة المسائية'></label></div></div><div id='oErr' style='display:none;color:#ffd9a0;font-size:13px'></div><div><button class='btn primary' id='oCreate'>إنشاء</button></div></div></details>`,`دوّر الرمز إن تجاوز 30 يومًا.`);
+return chapter("6","ch-access","Chapter six · access","Two doors only: one shared PIN, owner accounts","Self-deactivation and last-owner removal are refused.",
+`<div class='prose'><p>Staff PIN is <strong>active</strong> — rotated 21 days ago. Rotation voids the old at once. Owners: <strong>2 active</strong>.</p></div><details class='act' open><summary>Rotate staff PIN <span class='caret'>▾</span></summary><div class='act-body'><div class='field'><label>Rotation reason (logged)<input class='input' id='pinWhy' placeholder='e.g. routine'></label></div><div><button class='btn' id='rotateBtn'>Rotate PIN</button> <button class='btn danger' id='deactBtn'>Deactivate PIN</button></div></div></details><details class='act'><summary>Create owner <span class='caret'>▾</span></summary><div class='act-body'><div class='cols2'><div class='field'><label>Email<input class='input' id='oEmail' type='email' placeholder='owner@example.com'></label></div><div class='field'><label>Display name<input class='input' id='oName' placeholder='Sara'></label></div></div><div class='cols2'><div class='field'><label>Initial password (12+)<input class='input' id='oPass' type='password'></label></div><div class='field'><label>Reason (required)<input class='input' id='oWhy' placeholder='Evening owner'></label></div></div><div id='oErr' style='display:none;color:#ffd9a0;font-size:13px'></div><div><button class='btn primary' id='oCreate'>Create</button></div></div></details>`,`Rotate the PIN past 30 days.`);
+}
+function chSettings(){
+if(locale==="ar") return chapter("7","ch-settings","الفصل السابع · الإعدادات","كل تغيير نسخة جديدة — الماضي لا يُعدَّل","السعة تغير النطاق العام التالي فقط، والقديم يقرأ لقطاته.",
+`<div class='cols2'><div class='field'><label>السعة (v124: 220)<input class='input' id='sCap' type='number' value='240' min='20' max='2000'></label></div><div class='field'><label>حد الهادئ % (25)<input class='input' type='number' value='25' min='5' max='60'></label></div></div><div class='cols2' style='margin-top:10px'><div class='field'><label>حد المتوسط % (55)<input class='input' type='number' value='55' min='10' max='85'></label></div><div class='field'><label>حد التأخير (3 دقائق)<input class='input' type='number' value='3' min='1' max='15'></label></div></div><div class='cols2' style='margin-top:10px'><div class='field'><label>الافتتاح<input class='input' type='time' value='06:00'></label></div><div class='field'><label>الإغلاق<input class='input' type='time' value='23:00'></label></div></div><div class='field' style='margin-top:10px'><label>سبب التغيير (مطلوب)<input class='input' id='sWhy' placeholder='توسعة المساء'></label></div><div style='margin-top:12px'><button class='btn primary' id='sSave'>حفظ مسودة v125</button> <button class='btn ghost' id='sDrop'>تجاهل</button></div>`,`أضف السبب أولًا — بدونه لا تُحفظ المسودة.`);
+return chapter("7","ch-settings","Chapter seven · settings","Every change is a new version — history sealed","Capacity moves only the next public band; old rows keep snapshots.",
+`<div class='cols2'><div class='field'><label>Capacity (v124: 220)<input class='input' id='sCap' type='number' value='240' min='20' max='2000'></label></div><div class='field'><label>Quiet max % (25)<input class='input' type='number' value='25' min='5' max='60'></label></div></div><div class='cols2' style='margin-top:10px'><div class='field'><label>Moderate max % (55)<input class='input' type='number' value='55' min='10' max='85'></label></div><div class='field'><label>Stale after (3 min)<input class='input' type='number' value='3' min='1' max='15'></label></div></div><div class='cols2' style='margin-top:10px'><div class='field'><label>Opens<input class='input' type='time' value='06:00'></label></div><div class='field'><label>Closes<input class='input' type='time' value='23:00'></label></div></div><div class='field' style='margin-top:10px'><label>Reason (required)<input class='input' id='sWhy' placeholder='Evening stretch'></label></div><div style='margin-top:12px'><button class='btn primary' id='sSave'>Save draft v125</button> <button class='btn ghost' id='sDrop'>Discard</button></div>`,`Add the reason first — no draft without it.`);
+}
+function toast(msg){
+let r=document.querySelector(".toast-region");
+if(!r){r=document.createElement("div");r.className="toast-region";r.setAttribute("role","status");document.body.appendChild(r);}
+const el=document.createElement("div");el.className="toast";el.textContent=msg;r.appendChild(el);
+requestAnimationFrame(()=>el.classList.add("show"));
+setTimeout(()=>{el.classList.remove("show");setTimeout(()=>el.remove(),300);},2600);
+}
+function confirmDlg(title,lines,okLabel,onOk){
+let back=document.getElementById("cfBack");
+if(!back){back=document.createElement("div");back.className="dlg-back";back.id="cfBack";
+back.innerHTML="<div class='dlg' role='dialog' aria-modal='true'><h3 id='cfT'></h3><p id='cfP' style='color:var(--ink-2);font-size:13.5px'></p><div class='field'><label id='cfL'></label><input class='input' id='cfWhy'></div><div class='dlg-actions'><button class='btn ghost' id='cfNo'></button><button class='btn danger' id='cfYes'></button></div></div>";
+document.body.appendChild(back);}
+const isAr=locale==="ar";
+back.querySelector("#cfT").textContent=title;
+back.querySelector("#cfP").textContent=lines;
+back.querySelector("#cfL").textContent=isAr?"السبب (مطلوب)":"Reason (required)";
+back.querySelector("#cfWhy").value="";
+back.querySelector("#cfNo").textContent=isAr?"تراجع":"Cancel";
+back.querySelector("#cfYes").textContent=okLabel;
+back.classList.add("open");
+const prev=document.activeElement, why=back.querySelector("#cfWhy");
+const close=()=>{back.classList.remove("open");if(prev&&prev.focus)prev.focus();};
+back.querySelector("#cfNo").onclick=close;
+back.onmousedown=e=>{if(e.target===back)close();};
+document.onkeydown=e=>{if(e.key==="Escape"&&back.classList.contains("open"))close();};
+back.querySelector("#cfYes").onclick=()=>{if(!why.value.trim()){why.focus();toast(isAr?"أدخل السبب أولًا.":"Enter a reason first.");return;}close();onOk();};
+setTimeout(()=>why.focus(),30);
+}
+function renderIndex(){
+const ids=["ch-now","ch-today","ch-week","ch-activity","ch-counter","ch-access","ch-settings"];
+const nav=document.getElementById("chapterIndex");
+nav.innerHTML=COPY[locale].ch.map((c,i)=>`<a href='#${ids[i]}' data-ch='${ids[i]}' aria-current='${i===0?"true":"false"}'><b>${i+1}</b> ${esc(c)}</a>`).join("");
+nav.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{
+nav.querySelectorAll("a").forEach(x=>x.setAttribute("aria-current","false"));
+a.setAttribute("aria-current","true");
+}));
+const secs=[...document.querySelectorAll(".chapter")];
+const io=new IntersectionObserver(es=>{
+es.forEach(e=>{if(e.isIntersecting){
+nav.querySelectorAll("a").forEach(x=>x.setAttribute("aria-current",x.dataset.ch===e.target.id?"true":"false"));
+}});
+},{rootMargin:"-40% 0px -55% 0px"});
+secs.forEach(s=>io.observe(s));
+}
+function wire(){
+const csv=document.getElementById("csvBtn");
+if(csv) csv.onclick=()=>{
+const b=new Blob(["business_day,minute_start_utc,count,band\n2026-09-20,15:00:00Z,61,busy\n"],{type:"text/csv"});
+const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="fitway-concept-b-fixture.csv";a.click();
+setTimeout(()=>URL.revokeObjectURL(a.href),800);
+toast(locale==="ar"?"نُزّل CSV افتراضي للتجربة.":"Illustrative CSV downloaded.");};
+const af=document.getElementById("applyF");
+if(af) af.onclick=()=>toast(locale==="ar"?"طُبّق الترشيح افتراضيًا.":"Fixture filter applied.");
+const rb=document.getElementById("rotateBtn");
+if(rb) rb.onclick=()=>{
+const w=document.getElementById("pinWhy").value.trim();
+if(!w){document.getElementById("pinWhy").focus();toast(locale==="ar"?"أدخل سبب التدوير أولًا.":"Enter rotation reason first.");return;}
+toast(locale==="ar"?"دُوّر الرمز افتراضيًا وسُجل السبب.":"PIN rotated as a fixture; reason logged.");};
+const db=document.getElementById("deactBtn");
+if(db) db.onclick=()=>confirmDlg(locale==="ar"?"تعطيل رمز الموظفين":"Deactivate staff PIN",
+locale==="ar"?"سيتوقف دخول الاستقبال فورًا، وسيُسجل السبب في النشاط.":"Front-desk entry stops at once; the reason is logged.",
+locale==="ar"?"تأكيد التعطيل":"Confirm deactivate",
+()=>toast(locale==="ar"?"عُطّل الرمز افتراضيًا.":"PIN deactivated as a fixture."));
+const oc=document.getElementById("oCreate");
+if(oc) oc.onclick=()=>{
+const e=document.getElementById("oEmail").value.trim(),p=document.getElementById("oPass").value,w=document.getElementById("oWhy").value.trim();
+const err=document.getElementById("oErr");let m="";
+if(!e||!e.includes("@"))m=locale==="ar"?"أدخل بريدًا صحيحًا.":"Enter a valid email.";
+else if(!p||p.length<12)m=locale==="ar"?"كلمة المرور 12 حرفًا على الأقل.":"Password needs 12+ characters.";
+else if(!w)m=locale==="ar"?"السبب مطلوب ويُسجل.":"Reason is required and logged.";
+if(m){err.style.display="block";err.textContent=m;return;}
+err.style.display="none";
+confirmDlg(locale==="ar"?"إنشاء مالك":"Create owner",(locale==="ar"?"سيتمكن ":"Will sign in as ")+e,locale==="ar"?"تأكيد الإنشاء":"Confirm create",
+()=>toast(locale==="ar"?"أُنشئ المالك افتراضيًا.":"Owner created as a fixture."));};
+const ss=document.getElementById("sSave");
+if(ss) ss.onclick=()=>{
+const w=document.getElementById("sWhy").value.trim();
+if(!w){document.getElementById("sWhy").focus();toast(locale==="ar"?"أضف السبب أولًا.":"Add the reason first.");return;}
+toast(locale==="ar"?"حُفظت مسودة v125 افتراضيًا.":"Draft v125 saved as a fixture.");};
+const sd=document.getElementById("sDrop");
+if(sd) sd.onclick=()=>toast(locale==="ar"?"تُجاهلت المسودة.":"Draft discarded.");
+}
+function render(){
+const C=COPY[locale];
+document.documentElement.lang=locale;
+document.documentElement.dir=locale==="ar"?"rtl":"ltr";
+document.querySelector("[data-i18n='skip']").textContent=C.skip;
+document.querySelector("[data-i18n='banner']").textContent=C.banner;
+document.querySelector("[data-i18n='owner']").textContent=C.owner;
+document.getElementById("liveLabel").textContent=C.live;
+document.getElementById("datelineText").textContent=C.dateline;
+document.getElementById("ledeTitle").textContent=C.lede;
+document.getElementById("ledeSub").textContent=C.sub;
+document.getElementById("stateLine").textContent=C.state;
+document.getElementById("freshLine").textContent=C.fresh;
+document.getElementById("closeLine").textContent=C.close;
+document.getElementById("footNote").textContent=C.foot;
+document.getElementById("langToggle").textContent=locale==="ar"?"EN":"عربي";
+document.getElementById("chaptersRoot").innerHTML=chNow()+chToday()+chWeek()+chActivity()+chCounter()+chAccess()+chSettings();
+renderIndex();wire();
+}
+document.getElementById("langToggle").addEventListener("click",()=>{locale=locale==="ar"?"en":"ar";render();});
+render();
+</script>
+</body>
+</html>

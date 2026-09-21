@@ -32,7 +32,8 @@
 			"!**/.source",
 			"!**/convex/_generated",
 			"!**/docs/phase-records/handoffs/coordinator/20260917-161500-design-environment-audit-remediation-r06-gate-evidence",
-			"!**/docs/phase-records/handoffs/coordinator/20260917-161500-design-environment-audit-remediation-r06-gate-adversarial-replay"
+			"!**/docs/phase-records/handoffs/coordinator/20260917-161500-design-environment-audit-remediation-r06-gate-adversarial-replay",
+			"!**/design-research/owner-composition-exploration-r01/_quarantine"
 		]
 	},
 	"formatter": {

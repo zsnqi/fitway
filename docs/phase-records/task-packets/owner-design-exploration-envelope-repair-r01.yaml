@@ -1,0 +1,102 @@
+# Coordinator-authored derived context. Not authority. READY while the repair milestone is
+# IN_PROGRESS; it authorizes the bounded envelope repair and nothing else.
+schemaVersion: 1
+milestoneId: owner-design-exploration-envelope-repair-r01
+taskClass: repository-infrastructure
+packetStatus: READY
+stateRef: PROJECT_STATE.yaml#/milestones/owner-design-exploration-envelope-repair-r01
+baseCommit: SELF
+task:
+  objective: >-
+    Repair the Owner exploration context so direction alternatives can differ materially without
+    changing production identity: add a require-when-VACANT visual exploration envelope,
+    direction-distinctness concept-gate rules, a router exploration mode, and quarantine of prior
+    attempts.
+  acceptanceCriteria:
+    - A VACANT visual packet without visual.explorationEnvelope fails validation; the exploration packet carries a valid envelope and recomputed SHA-256 pins.
+    - The concept gate in docs/WORKFLOW.md requires direction-level alternatives, named worlds, anti-ruts, side-by-side rendered evidence, and prohibits wholesale production-CSS copying in exploration artifacts.
+    - DESIGN.md exposes an Exploration mode clause and still resolves through pnpm check:design-context.
+    - Prior attempts are quarantined with preserved bytes and recorded hashes; no production, authority, canonical, ADR, register, manifest, or pinned-hash change exists.
+    - Focused checker tests pass and the repair is independently reviewed with named evidence.
+  explicitExclusions:
+    - Any production UI, CSS, token, copy, behavior, i18n, dependency, schema-migration, API, or data-semantics change under apps/**, packages/**, or tests/**.
+    - Any canonical, Paper, manifest, approval-hash, register, ADR, approval, or visual-authority change; the exploration milestone stays PLANNED/DRAFT and the standing design-environment audit gate stays unresolved.
+    - Any concept selection, concept approval, or design acceptance; the envelope authorizes exploration artifacts only.
+scope:
+  ownedPaths:
+    - docs/WORKFLOW.md
+    - DESIGN.md
+    - biome.json
+    - docs/schemas/task-packet.schema.json
+    - docs/agent-context/TASK_PACKET_TEMPLATE.yaml
+    - docs/agent-context/README.md
+    - scripts/check-agent-context.mjs
+    - scripts/check-agent-context.test.ts
+    - design-research/owner-composition-exploration-r01/** (quarantine notice, milestone brief, and exploration artifacts; not authority)
+    - docs/phase-records/handoffs/owner-design-exploration-envelope-repair-r01/** (decision record and repair handoffs)
+    - docs/phase-records/task-packets/owner-design-exploration-envelope-repair-r01.yaml
+    - docs/phase-records/task-packets/owner-design-exploration-r01.yaml
+    - PROJECT_STATE.yaml (coordinator state only)
+  forbiddenPaths:
+    - apps/** and packages/** production code, copy, behavior, and data semantics
+    - tests/browser/** including every screenshot and canonical
+    - visual-direction-gate/**, docs/design/**, docs/adr/**, approval manifests, and pinned hashes
+    - PROJECT_STATE_HISTORY.yaml, docs/archive/**, prior handoffs, and phase records
+    - pnpm-lock.yaml, dependency versions, and database schema or migrations
+  sharedLeases:
+    - Coordinator-exclusive PROJECT_STATE.yaml, both owner-design-exploration task packets, and the envelope-repair handoff and decision surfaces for owner-design-exploration-envelope-repair-r01
+authorities:
+  required:
+    - role: workflow
+      path: docs/WORKFLOW.md
+      selector: { kind: markdown-heading, value: "Roles" }
+      reason: Preserve coordinator, worker, and verifier ownership while repairing the concept gate.
+    - role: contract
+      path: docs/schemas/project-state.schema.json
+      selector: { kind: json-pointer, value: "/properties/milestones" }
+      reason: Keep the active milestone and packet metadata valid while adding the repair milestone.
+    - role: test
+      path: scripts/verify-repository.mjs
+      selector: { kind: whole-file, value: "" }
+      reason: Keep repository invariants and mutation guards intact.
+  conditional:
+    - trigger: the infrastructure can affect a Product or Spec guarantee
+      role: product
+      path: FITWAY_PRODUCT.md
+      selector: { kind: markdown-heading, value: "Canonical detail" }
+      actionIfTriggered: READ
+    - trigger: the infrastructure changes a design-context bridge
+      role: design
+      path: DESIGN.md
+      selector: { kind: markdown-heading, value: "Design" }
+      actionIfTriggered: READ
+continuity:
+  predecessorMilestones: []
+  currentHandoff: docs/phase-records/handoffs/owner-design-exploration-envelope-repair-r01/20260921-184926-envelope-repair-result.md
+  unresolvedDecisions:
+    - "Human authorization to commit or stage-finalize the repair is pending; tracking-dependent checks (frontier clean mode and verify:fast) cannot go green until the new files are tracked."
+    - "The standing design-environment audit gate remains unresolved and gates any Owner concept selection."
+    - "Promotion of any exploration departure requires a separate explicit human baseline decision."
+verification:
+  profile: >-
+    repository-infrastructure: focused checker tests plus check:agent-context, check:repository,
+    and check:design-context; no production verification ladder while only context, docs, and
+    checker code change
+  orderedGates:
+    - "focused unit: node scripts/run-vitest.mjs run scripts/check-agent-context.test.ts"
+    - "node scripts/check-agent-context.mjs"
+    - "node scripts/verify-repository.mjs"
+    - "pnpm check:design-context at design-context entry"
+    - "fresh independent review with file:line evidence before DONE"
+  independentReviewRequired: true
+evidence:
+  receiptTemplate: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
+  requiredArtifacts:
+    - exact commands and observed results for the focused checks
+    - the decision record path and the updated exploration packet SHA-256
+    - the quarantine inventory with preserved content hashes
+    - the independent reviewer verdict naming inspected files and lines
+limitations:
+  - This packet changes no production code, token, canonical, manifest, register, ADR, or pinned hash.
+  - The exploration milestone stays PLANNED with a DRAFT packet, and the audit gate stays unresolved.
+  - Frontier and verify:fast cannot pass in this worktree until the untracked design-research artifacts are tracked or retired by the human; that condition pre-dates this repair.

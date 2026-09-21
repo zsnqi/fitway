@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FITWAY Owner — Concept A: Command Rail (design exploration, not authority)</title>
+<meta name="description" content="Standalone interactive Owner composition concept. Concept fixture only — not production, not authority.">
+<style>
+/* FITWAY token baseline (DESIGN_GUIDE §14) */
+:root{
+  color-scheme:dark;
+  --fw-obsidian:#08090a; --fw-coal:#101012; --fw-graphite:#1a1a1e;
+  --fw-oxblood:#4d0713; --fw-red:#e51935; --fw-red-bright:#ff2946;
+  --fw-chalk:#f5f3f2; --fw-muted:#c9c3c4; --fw-text-subtle:#aaa4a6;
+  --fw-live:#4be29b; --fw-delayed:#d9a400; --fw-offline:#9aa0aa;
+  --fw-space-1:4px; --fw-space-2:8px; --fw-space-3:12px; --fw-space-4:16px;
+  --fw-space-6:24px; --fw-space-8:32px; --fw-space-12:48px; --fw-space-18:72px;
+  --fw-radius-control:8px; --fw-radius-surface:16px; --fw-radius-board:28px;
+  --fw-duration-fast:120ms; --fw-duration-base:180ms;
+  --fw-ease-out:cubic-bezier(0,0,.2,1);
+  --rail-w:288px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--fw-obsidian); color:var(--fw-chalk);
+  font-family:"Cairo","Segoe UI",Tahoma,Arial,sans-serif;
+  font-variant-numeric:tabular-nums; line-height:1.55;
+  min-height:100vh; min-height:100svh;
+}
+/* static atmosphere only — no animation per guide */
+body::before{
+  content:""; position:fixed; inset:0; z-index:-2; pointer-events:none;
+  background:
+    radial-gradient(900px 520px at 82% -8%, rgba(229,25,53,.16), transparent 62%),
+    radial-gradient(760px 480px at 8% 12%, rgba(77,7,19,.55), transparent 60%),
+    linear-gradient(180deg,#0b0c0e 0%, #08090a 60%);
+}
+body::after{
+  content:"FITWAY"; position:fixed; inset-inline:0; bottom:-4vw; z-index:-1;
+  text-align:center; font-weight:700; font-size:18vw; letter-spacing:.04em;
+  color:rgba(245,243,242,.022); pointer-events:none; user-select:none;
+}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--fw-red-bright); outline-offset:3px; border-radius:6px}
+.skip{position:absolute; inset-inline-start:12px; top:-60px; z-index:50; background:var(--fw-chalk); color:#111; padding:10px 16px; border-radius:8px; transition:top var(--fw-duration-fast) var(--fw-ease-out)}
+.skip:focus{top:12px; color:#111}
+.concept-banner{
+  border-bottom:1px solid #2a2a30; background:#141316; color:var(--fw-muted);
+  font-size:12.5px; padding:8px 16px; display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap;
+}
+.concept-banner strong{color:var(--fw-chalk)}
+.shell{max-width:1440px; margin:0 auto; padding:20px clamp(12px,3vw,32px) 72px;}
+.topbar{display:flex; align-items:center; gap:14px; padding:14px 0 18px;}
+.brand{display:flex; align-items:center; gap:12px; font-weight:700; letter-spacing:.12em}
+.brand-mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(140deg,var(--fw-red),#7a0b1c);display:grid;place-items:center;font-size:15px;font-weight:700}
+.brand small{display:block; letter-spacing:0; font-weight:500; color:var(--fw-muted); font-size:12px}
+.topbar-spacer{flex:1}
+.pill{display:inline-flex; align-items:center; gap:8px; border:1px solid #2c2c33; background:#151518; border-radius:999px; padding:7px 12px; font-size:13px; color:var(--fw-muted)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--fw-live); box-shadow:0 0 0 4px rgba(75,226,155,.14)}
+.dot.stale{background:var(--fw-delayed); box-shadow:0 0 0 4px rgba(217,164,0,.15)}
+.btn{border:1px solid #33333b; background:#1c1c21; border-radius:var(--fw-radius-control); padding:10px 14px; min-height:44px; cursor:pointer; transition:border-color var(--fw-duration-fast) var(--fw-ease-out), transform var(--fw-duration-fast) var(--fw-ease-out), background var(--fw-duration-fast) var(--fw-ease-out)}
+.btn:hover{border-color:var(--fw-red); transform:translateY(-1px)}
+.btn.primary{background:var(--fw-red); border-color:var(--fw-red); color:#fff; font-weight:600}
+.btn.ghost{background:transparent}
+.btn.danger{border-color:#5c1f28; color:#ffb3bd}
+.btn.small{min-height:36px; padding:6px 10px; font-size:13px}
+.layout{display:grid; grid-template-columns:var(--rail-w) minmax(0,1fr); gap:20px; align-items:start}
+.rail{position:sticky; top:16px; background:rgba(16,16,18,.92); border:1px solid #26262c; border-radius:20px; padding:14px}
+.rail h2{font-size:12px; letter-spacing:.14em; color:var(--fw-text-subtle); margin:4px 6px 10px}
+.nav-list{display:grid; gap:6px; margin:0; padding:0; list-style:none}
+.nav-btn{width:100%; display:flex; gap:12px; align-items:flex-start; text-align:start; background:transparent; border:1px solid transparent; border-radius:12px; padding:11px 12px; min-height:56px; cursor:pointer}
+.nav-btn:hover{background:#1b1b20}
+.nav-btn[aria-current="page"]{background:#211318; border-color:#3d222a}
+.nav-ico{width:34px;height:34px; flex:none; border-radius:10px; display:grid; place-items:center; background:#222228; border:1px solid #2e2e36}
+.nav-btn[aria-current="page"] .nav-ico{background:var(--fw-red); border-color:var(--fw-red); color:#fff}
+.nav-t{font-weight:600; font-size:14.5px}
+.nav-d{font-size:12px; color:var(--fw-text-subtle)}
+.nav-badge{margin-inline-start:auto; font-size:11px; border:1px solid #34343c; border-radius:999px; padding:2px 8px; color:var(--fw-muted); align-self:center}
+.nav-badge.alert{color:#ffd9a0; border-color:#6b3a12; background:rgba(217,164,0,.12)}
+.nav-badge.ok{color:#9df0c6; border-color:#1f4d3a; background:rgba(75,226,155,.1)}
+.rail-foot{margin-top:12px; border-top:1px solid #242429; padding-top:12px; display:grid; gap:8px; font-size:12.5px; color:var(--fw-muted)}
+.board{background:#121215; border:1px solid #2a2a31; border-radius:var(--fw-radius-board); overflow:hidden; position:relative}
+.board::before{content:""; position:absolute; inset-inline:0; top:0; height:3px; background:linear-gradient(90deg,transparent,var(--fw-red),transparent)}
+.board-head{padding:22px clamp(16px,2.6vw,30px) 6px}
+.eyebrow{font-size:12px; letter-spacing:.16em; color:var(--fw-text-subtle); font-weight:600}
+h1.surface-title{margin:6px 0 4px; font-size:clamp(24px,3vw,34px)}
+.sub{color:var(--fw-muted); margin:0 0 6px; max-width:72ch}
+.meta-row{display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 4px}
+.board-body{padding:10px clamp(16px,2.6vw,30px) 26px; display:grid; gap:16px}
+.kpis{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px}
+.kpi{background:#131316; border:1px solid #26262c; border-radius:16px; padding:14px 15px}
+.kpi label{font-size:12.5px; color:var(--fw-text-subtle); display:block}
+.kpi strong{font-size:26px; display:block; margin-top:2px}
+.kpi span{font-size:12.5px; color:var(--fw-muted)}
+.grid2{display:grid; grid-template-columns:1.55fr 1fr; gap:12px}
+.panel{background:#121215; border:1px solid #25252b; border-radius:16px; padding:16px}
+.panel h3{margin:0 0 4px; font-size:16px}
+.panel p.hint{margin:0 0 12px; font-size:13px; color:var(--fw-muted)}
+.bars28{display:grid; grid-template-columns:repeat(28,1fr); gap:3px; direction:ltr; margin:10px 0 6px}
+.bars28 i{display:block; height:34px; border-radius:3px; background:#26262c}
+.bars28 i.done{background:#4d0713}
+.bars28 i.now{background:var(--fw-red-bright); box-shadow:0 0 0 1px rgba(255,41,70,.5)}
+.legend{display:flex; flex-wrap:wrap; gap:8px 14px; font-size:12.5px; color:var(--fw-muted)}
+svg.chart{width:100%; height:220px; display:block; background:#0d0d10; border:1px solid #232329; border-radius:12px}
+.table-wrap{overflow:auto; border:1px solid #26262c; border-radius:12px; background:#0f0f12}
+table.data{border-collapse:collapse; width:100%; min-width:640px; font-size:13.5px}
+table.data th,table.data td{padding:10px 12px; border-bottom:1px solid #202026; text-align:start}
+table.data thead th{background:#151519; font-size:12px; color:var(--fw-muted)}
+.status{display:inline-flex; align-items:center; gap:7px; border-radius:999px; padding:3px 10px; font-size:12.5px; border:1px solid #333}
+.status.live{color:var(--fw-live); border-color:#1f4d3a; background:rgba(75,226,155,.08)}
+.status.delayed{color:var(--fw-delayed); border-color:#5d4a12; background:rgba(217,164,0,.1)}
+.status.closed{color:var(--fw-offline); border-color:#33333b; background:rgba(154,160,170,.08)}
+.status.crit{color:#ff8f9d; border-color:#5c1f28; background:rgba(229,25,53,.1)}
+.toolbar{display:flex; flex-wrap:wrap; gap:10px; align-items:end}
+.field{display:grid; gap:6px; font-size:13px; color:var(--fw-muted)}
+.input{background:#0f0f13; border:1px solid #2d2d34; border-radius:var(--fw-radius-control); color:var(--fw-chalk); padding:10px 12px; min-height:44px; min-width:180px; font:inherit}
+textarea.input{min-height:84px; min-width:min(420px,100%)}
+.form-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px}
+.notice{border:1px solid #2b2b32; border-inline-start:3px solid var(--fw-red); background:#151318; border-radius:12px; padding:12px 14px; font-size:13.5px; color:var(--fw-muted)}
+.dialog-back{position:fixed; inset:0; background:rgba(0,0,0,.62); display:none; place-items:center; padding:18px; z-index:60}
+.dialog-back.open{display:grid}
+.dialog{width:min(520px,100%); background:#141417; border:1px solid #2e2e36; border-radius:18px; padding:20px}
+.dialog-actions{display:flex; gap:10px; justify-content:flex-end; margin-top:16px; flex-wrap:wrap}
+.toast-region{position:fixed; bottom:18px; inset-inline:0; display:grid; justify-items:center; z-index:70; pointer-events:none}
+.toast{background:#171318; border:1px solid #3d222a; border-radius:12px; padding:10px 16px; font-size:13.5px; opacity:0}
+.toast.show{opacity:1}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0)}
+.skeleton{border-radius:12px; background:#1a1a20; min-height:64px; border:1px solid #232329}
+@media (max-width:1080px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:1fr}}
+@media (max-width:860px){.layout{grid-template-columns:1fr}.rail{position:static; order:2}.nav-list{display:flex; overflow-x:auto; gap:8px; padding-bottom:6px}.nav-btn{min-width:210px}#operations-main{order:1}.form-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<a class="skip" href="#operations-main" data-i18n="skip">تخطَّ إلى المحتوى</a>
+<div class="concept-banner"><strong>CONCEPT FIXTURE</strong><span data-i18n="banner">نموذج تصوّري مستقل — ليس إنتاجًا ولا مرجعية معتمدة. كل الأرقام افتراضية للتجربة فقط.</span></div>
+<div class="shell">
+<header class="topbar">
+<div class="brand"><span class="brand-mark">F</span><span>FITWAY<small data-i18n="ownerConsole">وحدة تحكم المالك · تجربة مفهوم</small></span></div>
+<div class="topbar-spacer"></div>
+<span class="pill"><span class="dot" id="liveDot"></span><bdi id="liveLabel">مباشر · آخر تحديث قبل 40 ثانية</bdi></span>
+<button class="btn small" id="langToggle" aria-label="Switch language">EN</button>
+<button class="btn small ghost" id="motionToggle" aria-pressed="false">تقليل الحركة: مغلق</button>
+</header>
+<div class="layout">
+<nav class="rail" aria-label="Owner" id="ownerNav"></nav>
+<main id="operations-main" tabindex="-1" aria-live="off">
+<section id="surfaceRoot" aria-label="Owner surface"></section>
+</main>
+</div>
+</div>
+<script>
+"use strict";
+const STR={
+ar:{skip:"تخطَّ إلى المحتوى",banner:"نموذج تصوّري مستقل — ليس إنتاجًا ولا مرجعية معتمدة. كل الأرقام افتراضية للتجربة فقط.",ownerConsole:"وحدة تحكم المالك · تجربة مفهوم",live:"مباشر · آخر تحديث قبل 40 ثانية",navTitle:"أقسام المالك",surfaces:{daily:["اليومي","الذروة والتغطية والمنحنى"],reports:["التقارير","الخريطة الحرارية والمقارنة"],access:["الوصول","رمز الموظفين والمالكون"],activity:["سجل النشاط","من فعل ماذا ولماذا"],health:["حالة النظام","التشغيل والأعطال"],settings:["الإعدادات","السعة والحدود والجدول"],overview:["نظرة عامة","الصالة الآن أولًا"]}},
+en:{skip:"Skip to content",banner:"Standalone concept fixture — not production, not authority. All figures are illustrative fixtures.",ownerConsole:"Owner console · concept test",live:"Live · updated 40s ago",navTitle:"Owner sections",surfaces:{daily:["Daily","Peak, coverage, curve"],reports:["Reports","Heatmap and compare"],access:["Access","Staff PIN and owners"],activity:["Activity log","Who did what, why"],health:["System status","Uptime and incidents"],settings:["Settings","Capacity, bands, hours"],overview:["Overview","The gym right now"]}}
+};
+let locale="ar";
+const ORDER=["overview","daily","reports","access","activity","health","settings"];
+let route="overview";
+const ICONS={overview:"◉",daily:"〜",reports:"▦",access:"⚿",activity:"≡",health:"♥",settings:"⚙"};
+const BADGES={overview:"",daily:"",reports:"",access:"",activity:"",health:"!",settings:""};
+function t(path){return path.split(".").reduce((o,k)=>o&&o[k],STR[locale]);}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");}
+function renderNav(){
+const nav=document.getElementById("ownerNav");
+let h="<h2>"+esc(STR[locale].navTitle)+"</h2><ul class='nav-list'>";
+ORDER.forEach(k=>{
+const s=STR[locale].surfaces[k];
+const cur=k===route?" aria-current='page'":"";
+const b=BADGES[k]?`<span class='nav-badge ${k==="health"?"alert":"ok"}'>${k==="health"?"1":"•"}</span>`:"";
+h+=`<li><button class='nav-btn' data-route='${k}'${cur}><span class='nav-ico' aria-hidden='true'>${ICONS[k]}</span><span><span class='nav-t'>${esc(s[0])}</span><br><span class='nav-d'>${esc(s[1])}</span></span>${b}</button></li>`;
+});
+h+="</ul><div class='rail-foot'><span>Asia/Riyadh · 06:00–23:00</span><span>v124 · append-only</span></div>";
+nav.innerHTML=h;
+nav.querySelectorAll("[data-route]").forEach(b=>b.addEventListener("click",()=>{route=b.dataset.route;render();document.getElementById("operations-main").focus({preventScroll:true});window.scrollTo({top:0,behavior:"auto"});}));
+}
+function board(eyebrow,title,sub,metas,body){
+return `<article class='board'><div class='board-head'><div class='eyebrow'>${esc(eyebrow)}</div><h1 class='surface-title'>${esc(title)}</h1><p class='sub'>${esc(sub)}</p><div class='meta-row'>${metas}</div></div><div class='board-body'>${body}</div></article>`;
+}
+function pill(txt,cls){return `<span class='pill'><span class='dot ${cls||""}'></span><bdi>${esc(txt)}</bdi></span>`;}
+function bars28HTML(active){
+let h="<div class='bars28' role='img' aria-label='crowd signal'>";
+for(let i=0;i<28;i++){h+=`<i class='${i<active?"done":""} ${i===active?"now":""}'></i>`;}
+return h+"</div>";
+}
+function chartSVG(localeDir){
+const pts=[4,6,9,14,22,31,37,42,48,44,52,61,58,49,55,63,66,58,47,38,30,24,18,14];
+const W=720,H=220,P=18;
+const max=72;
+const step=(W-P*2)/(pts.length-1);
+let d="M "+P+" "+(H-P-(pts[0]/max)*(H-P*2));
+for(let i=1;i<pts.length;i++){d+=" L "+(P+i*step).toFixed(1)+" "+(H-P-(pts[i]/max)*(H-P*2)).toFixed(1);}
+let area=d+` L ${(P+(pts.length-1)*step).toFixed(1)} ${H-P} L ${P} ${H-P} Z`;
+let dots="";
+pts.forEach((v,i)=>{if(i%4===2){const x=P+i*step,y=H-P-(v/max)*(H-P*2);dots+=`<circle cx='${x.toFixed(1)}' cy='${y.toFixed(1)}' r='3.4' fill='#ff2946'><title>${v}</title></circle>`;}});
+let grid="";
+for(let g=0;g<=4;g++){const y=P+g*(H-P*2)/4;grid+=`<line x1='${P}' y1='${y}' x2='${W-P}' y2='${y}' stroke='#22222a' stroke-width='1'/>`;}
+return `<svg class='chart' viewBox='0 0 ${W} ${H}' role='img' aria-label='occupancy curve'><g>${grid}</g><path d='${area}' fill='rgba(229,25,53,.16)'/><path d='${d}' fill='none' stroke='#e51935' stroke-width='2.6'/>${dots}<circle cx='${(P+11*step).toFixed(1)}' cy='${(H-P-(61/max)*(H-P*2)).toFixed(1)}' r='5' fill='none' stroke='#f5f3f2' stroke-width='1.6'/></svg>`;
+}
+function tableHTML(rows){
+let h="<div class='table-wrap' tabindex='0'><table class='data'><thead><tr><th>Time</th><th>State</th><th>Band</th><th>Count</th></tr></thead><tbody>";
+rows.forEach(r=>{h+=`<tr><td><bdi>${r[0]}</bdi></td><td>${r[1]}</td><td>${r[2]}</td><td><bdi>${r[3]}</bdi></td></tr>`;});
+return h+"</tbody></table></div>";
+}
+function vOverview(){
+if(locale==="ar"){
+return board("الصالة الآن","نظرة عامة على التشغيل","كل ما يحتاجه المالك في أول نظرة: الحالة الآن، ثم ما يستحق الانتباه.",
+pill("مفتوح · مزدحم","") + pill("مباشر · قبل 40 ثانية","") + pill("حادثة واحدة مفتوحة","stale"),
+`<div class='kpis'>
+<div class='kpi r'><label>الموجودون الآن (تقريبي)</label><strong><bdi>≈ 61</bdi></strong><span>مزدحم · الإشارة 17/28</span></div>
+<div class='kpi g'><label>ذروة اليوم</label><strong><bdi>66</bdi></strong><span>عند 06:42 م · تغطية 96%</span></div>
+<div class='kpi a'><label>الحالة</label><strong style='font-size:19px'>مفتوح · مباشر</strong><span>Asia/Riyadh · يغلق 11:00 م</span></div>
+<div class='kpi n'><label>التنبيهات</label><strong style='font-size:19px'>1 مفتوحة</strong><span>انقطاع دفع · يتعافى</span></div>
+</div>
+<div class='grid2'>
+<div class='panel'><h3>إشارة الازدحام الآن</h3><p class='hint'>المستوى يتقدم على الرقم. هذه لقطة مفهوم ثابتة.</p>${bars28HTML(17)}<div class='legend'><span>هادئ</span><span>متوسط</span><span><b>مزدحم</b></span><span>شديد الازدحام</span></div></div>
+<div class='panel'><h3>يستحق الانتباه</h3><p class='hint'>مرتبة حسب ما يغير قرار اليوم.</p><div style='display:grid;gap:10px'>
+<div class='notice'><b>انقطاع دفع واحد</b> — 9 دقائق · تم إرسال تنبيه الصيانة · <button class='btn small' data-goto='health'>عرض النظام</button></div>
+<div class='notice'><b>رمز الموظفين نشط</b> — آخر تدوير قبل 21 يومًا · <button class='btn small' data-goto='access'>مراجعة الوصول</button></div>
+<div class='notice'><b>إعدادات معلقة</b> — مسودة سعة 240 بانتظار التأكيد · <button class='btn small' data-goto='settings'>مراجعة المسودة</button></div>
+</div></div>
+</div>`);
+}
+return board("Right now","Operations overview","Everything an owner needs at first glance: the gym now, then what deserves attention.",
+pill("Open · Busy","") + pill("Live · 40s ago","") + pill("1 open incident","stale"),
+`<div class='kpis'>
+<div class='kpi r'><label>Present now (approx)</label><strong><bdi>≈ 61</bdi></strong><span>Busy · signal 17/28</span></div>
+<div class='kpi g'><label>Today peak</label><strong><bdi>66</bdi></strong><span>at 06:42 PM · 96% coverage</span></div>
+<div class='kpi a'><label>State</label><strong style='font-size:19px'>Open · live</strong><span>Asia/Riyadh · closes 11:00 PM</span></div>
+<div class='kpi n'><label>Alerts</label><strong style='font-size:19px'>1 open</strong><span>push gap · recovering</span></div>
+</div>
+<div class='grid2'>
+<div class='panel'><h3>Crowd signal now</h3><p class='hint'>Band leads the number. Static concept snapshot.</p>${bars28HTML(17)}<div class='legend'><span>Quiet</span><span>Moderate</span><span><b>Busy</b></span><span>Packed</span></div></div>
+<div class='panel'><h3>Needs attention</h3><p class='hint'>Ranked by what changes today.</p><div style='display:grid;gap:10px'>
+<div class='notice'><b>One push gap</b> — 9 min · maintainer notified · <button class='btn small' data-goto='health'>Open status</button></div>
+<div class='notice'><b>Staff PIN active</b> — rotated 21 days ago · <button class='btn small' data-goto='access'>Review access</button></div>
+<div class='notice'><b>Pending settings</b> — capacity 240 draft awaits confirm · <button class='btn small' data-goto='settings'>Review draft</button></div>
+</div></div>
+</div>`);
+}
+function vDaily(){
+const rows=[["06:00 م","مرصود","مزدحم","61"],["05:59 م","مرصود","مزدحم","58"],["05:58 م","مرصود","متوسط","49"],["05:57 م","رصد مفقود","—","—"],["05:56 م","إغلاق مجدول","—","—"]];
+const rowsEn=[["06:00 PM","Observed","Busy","61"],["05:59 PM","Observed","Busy","58"],["05:58 PM","Observed","Moderate","49"],["05:57 PM","Missing","—","—"],["05:56 PM","Closed","—","—"]];
+if(locale==="ar") return board("تحليلات المالك","التحليلات اليومية","منحنى اليوم مع ذروته وتغطيته، وجدول دقائق مكافئ.",
+pill("يوم العمل 2026-09-20","")+pill("التغطية 612 / 640 دقيقة","")+pill("آخر قراءة 06:00 م",""),
+`<div class='kpis'><div class='kpi r'><label>ذروة اليوم</label><strong><bdi>66</bdi></strong><span>عند 06:42 م</span></div><div class='kpi g'><label>متوسط الازدحام</label><strong><bdi>41</bdi></strong><span>خلال اليوم</span></div><div class='kpi a'><label>إجمالي الدخول</label><strong><bdi>512</bdi></strong><span>عبور تقديري، ليس أعضاء</span></div><div class='kpi n'><label>التغطية</label><strong><bdi>96%</bdi></strong><span>612 من 640 دقيقة</span></div></div><div class='grid2'><div class='panel'><h3>الموجودون خلال اليوم</h3><p class='hint'>النقاط القابلة للتركيز بلوحة المفاتيح هي نفسها للنقر.</p>${chartSVG()}<div class='legend'><span>● مرصود</span><span>○ مفقود</span><span>— مغلق</span><span>◉ الذروة</span></div></div><div class='panel'><h3>تفاصيل الدقائق</h3><p class='hint'>مكافئ دلالي للمنحنى.</p>${tableHTML(rows)}<div class='toolbar' style='margin-top:10px'><button class='btn small'>الدقائق السابقة</button><button class='btn small'>الدقائق التالية</button></div></div></div>`);
+return board("Owner analytics","Daily analytics","Today curve with peak and coverage, plus an equivalent minute table.",
+pill("Business day 2026-09-20","")+pill("Coverage 612 / 640 min","")+pill("Latest 06:00 PM",""),
+`<div class='kpis'><div class='kpi r'><label>Today peak</label><strong><bdi>66</bdi></strong><span>at 06:42 PM</span></div><div class='kpi g'><label>Average</label><strong><bdi>41</bdi></strong><span>through the day</span></div><div class='kpi a'><label>Total entries</label><strong><bdi>512</bdi></strong><span>estimated crossings</span></div><div class='kpi n'><label>Coverage</label><strong><bdi>96%</bdi></strong><span>612 of 640 min</span></div></div><div class='grid2'><div class='panel'><h3>People through the day</h3><p class='hint'>Keyboard-focusable points match tap.</p>${chartSVG()}<div class='legend'><span>● observed</span><span>○ missing</span><span>— closed</span><span>◉ peak</span></div></div><div class='panel'><h3>Minute details</h3><p class='hint'>Semantic equivalent of the curve.</p>${tableHTML(rowsEn)}<div class='toolbar' style='margin-top:10px'><button class='btn small'>Previous minutes</button><button class='btn small'>Next minutes</button></div></div></div>`);
+}
+function heatHTML(){
+const days=locale==="ar"?["السبت","الجمعة","الخميس","الأربعاء","الثلاثاء","الاثنين","الأحد"]:["Sat","Fri","Thu","Wed","Tue","Mon","Sun"];
+let h="<div class='heatmap' role='img' aria-label='heatmap'>";
+days.forEach((d,ri)=>{
+h+=`<div class='hrow'><span>${d}</span>`;
+for(let c=0;c<12;c++){
+let v="";
+if((ri===2&&c===5)||(ri===4&&c===7)){v="<span class='hcell' style='background:#2a2a30;color:#aaa4a6'>×</span>";}
+else if((ri===0&&c<2)){v="<span class='hcell' style='background:#1b1b20;color:#aaa4a6'>—</span>";}
+else{const heat=Math.round(20+((ri*13+c*17)%70));v=`<span class='hcell' style='background:rgba(229,25,53,${(0.12+heat/130).toFixed(2)})'>${heat}</span>`;}
+h+=v;
+}
+h+="</div>";
+});
+return h+"</div>";
+}
+function vReports(){
+if(locale==="ar") return board("التقارير","الأسبوع والذروات","خريطة حرارية ليوم × ساعة، ومقارنة أسبوعية صادقة، وتصدير CSV.",
+pill("آخر 7 أيام عمل","")+pill("مقارنة الأسبوع: أسبوع واحد فقط","stale"),
+`<div class='grid2'><div class='panel'><h3>متوسط الإشغال حسب اليوم والساعة</h3><p class='hint'>× تعني لا بيانات، — تعني مغلق. الأحمر الداكن ازدحام أعلى.</p>${heatHTML()}</div><div class='panel'><h3>مقارنة أسبوعية</h3><p class='hint'>لا توجد مقارنة بعد — نحتاج أسبوعين متماثلين.</p><div class='notice'><b>لا توجد مقارنة بعد.</b> سيظهر الفرق عند اكتمال أسبوع ثانٍ قابل للمقارنة.</div><div class='toolbar' style='margin-top:12px'><div class='field'><label>من</label><input class='input' type='date' value='2026-09-14'></div><div class='field'><label>إلى</label><input class='input' type='date' value='2026-09-20'></div><button class='btn primary' id='csvBtn'>تنزيل CSV</button></div><p class='hint' style='margin-top:10px'>CSV بترميز UTF-8 مع وقت UTC والمحلي، ويشمل الحقول الخاصة المصرح بها فقط.</p></div></div>`);
+return board("Reports","Weeks and peaks","Weekday × hour heatmap, honest week comparison, CSV export.",
+pill("Last 7 business days","")+pill("Week compare: one week only","stale"),
+`<div class='grid2'><div class='panel'><h3>Average occupancy by day and hour</h3><p class='hint'>× is no data, — is closed. Deeper red is busier.</p>${heatHTML()}</div><div class='panel'><h3>Week over week</h3><p class='hint'>No comparison yet — two comparable weeks needed.</p><div class='notice'><b>No comparison yet.</b> The delta appears after a second comparable week.</div><div class='toolbar' style='margin-top:12px'><div class='field'><label>From</label><input class='input' type='date' value='2026-09-14'></div><div class='field'><label>To</label><input class='input' type='date' value='2026-09-20'></div><button class='btn primary' id='csvBtn'>Download CSV</button></div><p class='hint' style='margin-top:10px'>UTF-8 CSV with UTC and local time, authorized private fields only.</p></div></div>`);
+}
+function vAccess(){
+if(locale==="ar") return board("الوصول","رمز الموظفين والمالكون","قرارات الوصول مجمعة حسب الخطر، وكل إجراء حساس يطلب سببًا.",
+pill("رمز الموظفين: نشط","")+pill("المالكون: 2 نشط",""),
+`<div class='grid2'><div class='panel'><h3>رمز دخول الموظفين</h3><p class='hint'>مشترك · لوحة المراقبة · 6-12 رقمًا.</p><div class='notice'><b>الحالة: مفعّل.</b> آخر تدوير قبل 21 يومًا. التدوير يبطل الرمز القديم فورًا.</div><div class='toolbar' style='margin-top:12px'><button class='btn' data-act='rotate'>تغيير الرمز</button><button class='btn danger' data-act='deactivate-pin'>تعطيل الرمز</button></div></div><div class='panel'><h3>المالكون</h3><p class='hint'>للمالك فقط. التعطيل الذاتي وتعطيل آخر مالك مرفوضان.</p>${tableHTML([["owner@example.com","نشط","—","إعادة تعيين · تعطيل"],["second@example.com","نشط","—","إعادة تعيين · تعطيل"]])}<div class='toolbar' style='margin-top:12px'><button class='btn primary' data-act='new-owner'>إنشاء مالك</button></div></div></div>
+<div class='panel'><h3>إنشاء مالك جديد</h3><p class='hint'>كلمة المرور 12 حرفًا على الأقل، ولن تظهر بعد الإغلاق.</p><div class='form-grid'><div class='field'><label>البريد الإلكتروني</label><input class='input' id='f-email' type='email' placeholder='owner@example.com'></div><div class='field'><label>اسم العرض</label><input class='input' id='f-name' type='text' placeholder='مثال: سارة'></div><div class='field'><label>كلمة المرور الأولية</label><input class='input' id='f-pass' type='password'></div><div class='field'><label>السبب (يُسجل في النشاط)</label><input class='input' id='f-why' type='text' placeholder='مثال: مالك جديد للفترة المسائية'></div></div><div id='f-err' class='notice' style='display:none;margin-top:12px;border-inline-start-color:var(--fw-delayed)'></div><div class='toolbar' style='margin-top:12px'><button class='btn primary' id='createOwner'>إنشاء</button><button class='btn ghost' id='clearOwner'>مسح</button></div></div>`);
+return board("Access","Staff PIN and owners","Access decisions grouped by risk; sensitive actions ask for a reason.",
+pill("Staff PIN: active","")+pill("Owners: 2 active",""),
+`<div class='grid2'><div class='panel'><h3>Staff access PIN</h3><p class='hint'>Shared · monitoring · 6-12 digits.</p><div class='notice'><b>State: active.</b> Rotated 21 days ago. Rotation voids the old PIN at once.</div><div class='toolbar' style='margin-top:12px'><button class='btn' data-act='rotate'>Rotate PIN</button><button class='btn danger' data-act='deactivate-pin'>Deactivate PIN</button></div></div><div class='panel'><h3>Owners</h3><p class='hint'>Owner only. Self-deactivation and last-owner removal are refused.</p>${tableHTML([["owner@example.com","Active","—","Reset · Deactivate"],["second@example.com","Active","—","Reset · Deactivate"]])}<div class='toolbar' style='margin-top:12px'><button class='btn primary' data-act='new-owner'>Create owner</button></div></div></div>
+<div class='panel'><h3>New owner</h3><p class='hint'>Password is 12+ characters and never shown again.</p><div class='form-grid'><div class='field'><label>Email</label><input class='input' id='f-email' type='email' placeholder='owner@example.com'></div><div class='field'><label>Display name</label><input class='input' id='f-name' type='text' placeholder='e.g. Sara'></div><div class='field'><label>Initial password</label><input class='input' id='f-pass' type='password'></div><div class='field'><label>Reason (logged)</label><input class='input' id='f-why' type='text' placeholder='e.g. evening-shift owner'></div></div><div id='f-err' class='notice' style='display:none;margin-top:12px;border-inline-start-color:var(--fw-delayed)'></div><div class='toolbar' style='margin-top:12px'><button class='btn primary' id='createOwner'>Create</button><button class='btn ghost' id='clearOwner'>Clear</button></div></div>`);
+}
+function vActivity(){
+if(locale==="ar") return board("سجل النشاط","من فعل ماذا ولماذا","كل تغيير إداري في سطر واحد صادق: الفاعل، الفعل، السبب، والوقت.",
+pill("آخر 30 يومًا","")+pill("5 إجراءات",""),
+`<div class='toolbar'><div class='field'><label>الفاعل</label><select class='input' id='f-actor'><option>الكل</option><option>owner@example.com</option><option>second@example.com</option></select></div><div class='field'><label>الإجراء</label><select class='input'><option>الكل</option><option>إنشاء رمز</option><option>تغيير إعدادات</option><option>تعطيل مالك</option></select></div><div class='field'><label>من</label><input class='input' type='date' value='2026-08-21'></div><div class='field'><label>إلى</label><input class='input' type='date' value='2026-09-20'></div><button class='btn' id='applyF'>تطبيق</button></div>${tableHTML([["2026-09-19 06:12 م","owner@example.com","تغيير السعة 220 ← 240","توسعة المساء"],["2026-09-18 09:02 م","second@example.com","تدوير رمز الموظفين","تدوير دوري"],["2026-09-17 11:40 ص","owner@example.com","تعطيل مالك","مغادرة الفريق"],["2026-09-16 08:15 م","owner@example.com","تغيير حد المتوسط 50 ← 55","تخفيف الازدحام"],["2026-09-15 07:44 م","second@example.com","إعادة تعيين كلمة مرور","طلب المالك"]])}<div class='notice'><b>قاعدة واحدة.</b> لا يُكتب أي إجراء حساس بدون سبب — والسبب يظهر هنا حرفيًا.</div>`);
+return board("Activity log","Who did what, why","Every admin change in one honest line: actor, action, reason, time.",
+pill("Last 30 days","")+pill("5 actions",""),
+`<div class='toolbar'><div class='field'><label>Actor</label><select class='input' id='f-actor'><option>All</option><option>owner@example.com</option><option>second@example.com</option></select></div><div class='field'><label>Action</label><select class='input'><option>All</option><option>PIN create</option><option>Settings change</option><option>Owner deactivate</option></select></div><div class='field'><label>From</label><input class='input' type='date' value='2026-08-21'></div><div class='field'><label>To</label><input class='input' type='date' value='2026-09-20'></div><button class='btn' id='applyF'>Apply</button></div>${tableHTML([["2026-09-19 06:12 PM","owner@example.com","Capacity 220 → 240","Evening stretch"],["2026-09-18 09:02 PM","second@example.com","Staff PIN rotated","Routine rotation"],["2026-09-17 11:40 AM","owner@example.com","Owner deactivated","Left the team"],["2026-09-16 08:15 PM","owner@example.com","Moderate band 50 → 55","Ease crowding"],["2026-09-15 07:44 PM","second@example.com","Password reset","Owner request"]])}<div class='notice'><b>One rule.</b> No sensitive action is written without a reason — shown here verbatim.</div>`);
+}
+function vHealth(){
+if(locale==="ar") return board("حالة النظام","التشغيل والأعطال","تشغيل جهاز العد خلال ساعات العمل فقط — عطل الإغلاق لا يخفض النسبة.",
+pill("التشغيل 98.4%","")+pill("حادثة واحدة مفتوحة","stale")+pill("التنبيهات: وصلت كلها",""),
+`<div class='kpis'><div class='kpi g'><label>التشغيل (ساعات العمل)</label><strong><bdi>98.4%</bdi></strong><span>7 أيام عمل · 9 دقائق بلا قراءات</span></div><div class='kpi a'><label>التغطية</label><strong><bdi>96%</bdi></strong><span>612 من 640 دقيقة</span></div><div class='kpi r'><label>انقطاعات الفترة</label><strong><bdi>2</bdi></strong><span>واحدة مفتوحة · واحدة متعافية</span></div><div class='kpi n'><label>التنبيهات</label><strong style='font-size:19px'>وصلت كلها</strong><span>2 أُرسلت · 0 فشل</span></div></div>${tableHTML([["انقطاع دفع","05:41 م","يتعافى","وصل"],["خلل كاميرا","أمس 09:12 م","متعافٍ","وصل"]])}<div class='notice'><b>ملاحظة صادقة.</b> عطل وقع أثناء الإغلاق أُجّل تنبيهه إلى ما قبل الافتتاح، ولم يُحتسب ضد التشغيل.</div>`);
+return board("System status","Uptime and incidents","Counter uptime counts open hours only — a closed-hours fault never lowers it.",
+pill("Uptime 98.4%","")+pill("1 open incident","stale")+pill("Notices: all delivered",""),
+`<div class='kpis'><div class='kpi g'><label>Uptime (open hours)</label><strong><bdi>98.4%</bdi></strong><span>7 business days · 9 min unread</span></div><div class='kpi a'><label>Coverage</label><strong><bdi>96%</bdi></strong><span>612 of 640 min</span></div><div class='kpi r'><label>Period gaps</label><strong><bdi>2</bdi></strong><span>1 open · 1 recovered</span></div><div class='kpi n'><label>Notices</label><strong style='font-size:19px'>All delivered</strong><span>2 sent · 0 failed</span></div></div>${tableHTML([["Push gap","05:41 PM","Recovering","Delivered"],["Camera fault","Yesterday 09:12 PM","Recovered","Delivered"]])}<div class='notice'><b>Honest note.</b> A closed-hours fault alert was deferred to pre-open and never counted against uptime.</div>`);
+}
+function vSettings(){
+if(locale==="ar") return board("الإعدادات","السعة والحدود والجدول","كل تغيير نسخة جديدة تُلحق بالسجل — لا تعديل على الماضي، والطازجية تشرح نفسها.",
+pill("الإصدار الحالي v124","")+pill("مسودة معلقة: السعة 240","stale"),
+`<div class='grid2'><div class='panel'><h3>السعة ومستويات الازدحام</h3><p class='hint'>تغيير السعة يغير النطاق العام التالي فقط، ولا يكشف نسبة للزوار.</p><div class='form-grid'><div class='field'><label>السعة (v124: 220)</label><input class='input' id='s-cap' type='number' value='240' min='20' max='2000'></div><div class='field'><label>حد الهادئ % (حالي 25)</label><input class='input' type='number' value='25' min='5' max='60'></div><div class='field'><label>حد المتوسط % (حالي 55)</label><input class='input' type='number' value='55' min='10' max='85'></div><div class='field'><label>سبب التغيير (مطلوب)</label><input class='input' id='s-why' type='text' placeholder='مثال: توسعة المساء'></div></div><div class='toolbar' style='margin-top:12px'><button class='btn primary' id='saveDraft'>حفظ مسودة (v125)</button><button class='btn ghost' id='discardDraft'>تجاهل المسودة</button></div></div><div class='panel'><h3>الجدول والطازجية</h3><p class='hint'>الأوقات بتوقيت الصالة Asia/Riyadh.</p><div class='form-grid'><div class='field'><label>الافتتاح</label><input class='input' type='time' value='06:00'></div><div class='field'><label>الإغلاق</label><input class='input' type='time' value='23:00'></div><div class='field'><label>حد التأخير (دقائق)</label><input class='input' type='number' value='3' min='1' max='15'></div><div class='field'><label>بداية يوم العمل</label><input class='input' type='time' value='04:00'></div></div><div class='notice' style='margin-top:12px'><b>الماضي محفوظ.</b> التحليلات القديمة تقرأ لقطات صفوفها، لا إعدادات اليوم.</div></div></div>`);
+return board("Settings","Capacity, bands, hours","Every change is a new appended version — history is never edited, and freshness explains itself.",
+pill("Current v124","")+pill("Pending draft: capacity 240","stale"),
+`<div class='grid2'><div class='panel'><h3>Capacity and bands</h3><p class='hint'>Capacity changes only the next public band, never a public percent.</p><div class='form-grid'><div class='field'><label>Capacity (v124: 220)</label><input class='input' id='s-cap' type='number' value='240' min='20' max='2000'></div><div class='field'><label>Quiet max % (now 25)</label><input class='input' type='number' value='25' min='5' max='60'></div><div class='field'><label>Moderate max % (now 55)</label><input class='input' type='number' value='55' min='10' max='85'></div><div class='field'><label>Reason (required)</label><input class='input' id='s-why' type='text' placeholder='e.g. evening stretch'></div></div><div class='toolbar' style='margin-top:12px'><button class='btn primary' id='saveDraft'>Save draft (v125)</button><button class='btn ghost' id='discardDraft'>Discard draft</button></div></div><div class='panel'><h3>Hours and freshness</h3><p class='hint'>Times are gym-local Asia/Riyadh.</p><div class='form-grid'><div class='field'><label>Opens</label><input class='input' type='time' value='06:00'></div><div class='field'><label>Closes</label><input class='input' type='time' value='23:00'></div><div class='field'><label>Stale after (min)</label><input class='input' type='number' value='3' min='1' max='15'></div><div class='field'><label>Business day starts</label><input class='input' type='time' value='04:00'></div></div><div class='notice' style='margin-top:12px'><b>History is sealed.</b> Old analytics read their row snapshots, not today settings.</div></div></div>`);
+}
+function render(){
+renderNav();
+const root=document.getElementById("surfaceRoot");
+const V={overview:vOverview,daily:vDaily,reports:vReports,access:vAccess,activity:vActivity,health:vHealth,settings:vSettings};
+root.innerHTML=V[route]();
+root.querySelectorAll("[data-goto]").forEach(b=>b.addEventListener("click",()=>{route=b.dataset.goto;render();}));
+const csv=document.getElementById("csvBtn");
+if(csv) csv.addEventListener("click",()=>{
+const blob=new Blob(["business_day,minute_start_utc,count,band\n2026-09-20,15:00:00Z,61,busy\n"],{type:"text/csv"});
+const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="fitway-concept-fixture.csv";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),800);
+toast(locale==="ar"?"نُزّل ملف CSV افتراضي للتجربة فقط.":"Downloaded an illustrative CSV fixture.");
+});
+const co=document.getElementById("createOwner");
+if(co) co.addEventListener("click",()=>{
+const em=document.getElementById("f-email").value.trim();
+const pw=document.getElementById("f-pass").value;
+const why=document.getElementById("f-why").value.trim();
+const err=document.getElementById("f-err");
+let msg="";
+if(!em||!em.includes("@")) msg=locale==="ar"?"أدخل بريدًا صحيحًا قبل المتابعة.":"Enter a valid email first.";
+else if(!pw||pw.length<12) msg=locale==="ar"?"استخدم 12 حرفًا على الأقل.":"Use at least 12 characters.";
+else if(!why) msg=locale==="ar"?"يتطلب هذا الإجراء سببًا.":"This action needs a reason.";
+if(msg){err.style.display="block";err.textContent=msg;return;}
+err.style.display="none";openDialog(em);
+});
+const cl=document.getElementById("clearOwner");
+if(cl) cl.addEventListener("click",()=>{["f-email","f-name","f-pass","f-why"].forEach(id=>document.getElementById(id).value="");});
+const sd=document.getElementById("saveDraft");
+if(sd) sd.addEventListener("click",()=>{
+const why=document.getElementById("s-why").value.trim();
+if(!why){toast(locale==="ar"?"احفظ سبب التغيير أولًا — يُسجل في النشاط.":"Add the change reason first — it is logged.");document.getElementById("s-why").focus();return;}
+toast(locale==="ar"?"حُفظت المسودة v125 افتراضيًا (لا تُرسل للخادم).":"Draft v125 saved as a fixture (never sent).");
+});
+const dd=document.getElementById("discardDraft");
+if(dd) dd.addEventListener("click",()=>toast(locale==="ar"?"تُجاهلت المسودة الافتراضية.":"Fixture draft discarded."));
+root.querySelectorAll("[data-act]").forEach(b=>b.addEventListener("click",()=>{
+const a=b.dataset.act;
+if(a==="deactivate-pin") openDialog("PIN");
+else toast(locale==="ar"?"إجراء افتراضي للتجربة فقط.":"Illustrative action only.");
+}));
+const af=document.getElementById("applyF");
+if(af) af.addEventListener("click",()=>toast(locale==="ar"?"طُبّق الترشيح افتراضيًا.":"Fixture filter applied."));
+}
+function toast(msg){
+let r=document.querySelector(".toast-region");
+if(!r){r=document.createElement("div");r.className="toast-region";r.setAttribute("role","status");document.body.appendChild(r);}
+const el=document.createElement("div");el.className="toast";el.textContent=msg;r.appendChild(el);
+requestAnimationFrame(()=>el.classList.add("show"));
+setTimeout(()=>{el.classList.remove("show");setTimeout(()=>el.remove(),250);},2600);
+}
+function openDialog(subject){
+let back=document.getElementById("dlgBack");
+if(!back){
+back=document.createElement("div");back.className="dialog-back";back.id="dlgBack";
+back.innerHTML=`<div class='dialog' role='dialog' aria-modal='true' aria-labelledby='dlgT'><h3 id='dlgT'></h3><p id='dlgP'></p><div class='field'><label id='dlgL'></label><input class='input' id='dlgWhy' type='text'></div><div class='dialog-actions'><button class='btn ghost' id='dlgCancel'></button><button class='btn danger' id='dlgOk'></button></div></div>`;
+document.body.appendChild(back);
+}
+const isAr=locale==="ar";
+back.querySelector("#dlgT").textContent=isAr?"تأكيد إجراء حساس":"Confirm sensitive action";
+back.querySelector("#dlgP").textContent=isAr?`سيُسجل هذا ضد (${subject}) في سجل النشاط.`: `This will be logged against (${subject}) in the activity log.`;
+back.querySelector("#dlgL").textContent=isAr?"السبب (مطلوب)":"Reason (required)";
+back.querySelector("#dlgWhy").value="";
+back.querySelector("#dlgCancel").textContent=isAr?"تراجع":"Cancel";
+back.querySelector("#dlgOk").textContent=isAr?"تأكيد التعطيل":"Confirm deactivate";
+back.classList.add("open");
+const prev=document.activeElement;
+const why=back.querySelector("#dlgWhy");
+const close=()=>{back.classList.remove("open");if(prev&&prev.focus)prev.focus();};
+back.querySelector("#dlgCancel").onclick=close;
+back.onmousedown=e=>{if(e.target===back)close();};
+document.onkeydown=e=>{if(e.key==="Escape"&&back.classList.contains("open"))close();};
+back.querySelector("#dlgOk").onclick=()=>{
+if(!why.value.trim()){why.focus();toast(isAr?"أدخل السبب قبل التأكيد.":"Enter a reason first.");return;}
+close();toast(isAr?"سُجل الإجراء افتراضيًا في السجل.":"Action logged as a fixture.");
+};
+setTimeout(()=>why.focus(),30);
+}
+document.getElementById("langToggle").addEventListener("click",()=>{
+locale=locale==="ar"?"en":"ar";
+document.documentElement.lang=locale;
+document.documentElement.dir=locale==="ar"?"rtl":"ltr";
+document.querySelector("[data-i18n='skip']").textContent=STR[locale].skip;
+document.querySelector("[data-i18n='banner']").textContent=STR[locale].banner;
+document.querySelector("[data-i18n='ownerConsole']").textContent=STR[locale].ownerConsole;
+document.getElementById("liveLabel").textContent=STR[locale].live;
+document.getElementById("langToggle").textContent=locale==="ar"?"EN":"عربي";
+render();
+});
+render();
+</script>
+</body>
+</html>

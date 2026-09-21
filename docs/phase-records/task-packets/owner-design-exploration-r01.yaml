@@ -9,13 +9,15 @@ baseCommit: SELF
 task:
   objective: >-
     After the standing design-environment audit gate is resolved, produce and judge two or three
-    whole-page Owner composition alternatives through the concept-selection gate for the seven
-    ADR-009 surfaces, with no production implementation, no canonical or visual-authority change,
-    and explicit human approval of the selected concept as a separate decision.
+    whole-page Owner direction alternatives (composition and visual treatment) inside the recorded
+    exploration envelope for the seven ADR-009 surfaces, with no production implementation, no
+    canonical or visual-authority change, and explicit human approval of the selected concept as a
+    separate decision.
   acceptanceCriteria:
     - The standing environment-audit gate is resolved by a recorded PASS or a recorded human decision superseding it before any concept work starts.
-    - Two or three whole-page Owner composition alternatives exist as inspectable concept artifacts for the ADR-009 surface family.
-    - Each alternative is judged against the full concept-selection gate — spatial thesis, first-glance focal hierarchy, grouping and reading order, vertical and horizontal rhythm, density and intentional whitespace, separation of governance/controls/actions/data, and behavior at 1440px, mobile 390x844, 320px/200% reflow, EN, and AR.
+    - Two or three whole-page Owner direction alternatives exist as inspectable concept artifacts for the ADR-009 surface family, each naming its own visual world and stating which envelope axes it varies; no two share a world.
+    - At least one alternative deliberately departs the incumbent near-black/oxblood/FITWAY-red atmosphere (it may be non-dark and non-red), every artifact is labeled concept-only, and no alternative is a layout-only restyle of the incumbent.
+    - Each alternative is judged against the full concept-selection gate — spatial thesis, first-glance focal hierarchy, grouping and reading order, vertical and horizontal rhythm, density and intentional whitespace, separation of governance/controls/actions/data, and behavior at 1440px, mobile 390x844, 320px/200% reflow, EN, and AR — and the set is judged for direction distinctness from side-by-side full-resolution rendered frames.
     - The judged selection is presented to the human for explicit concept approval, and the record names the exact inspected frames with paths and hashes.
     - No production UI, copy, behavior, canonical, Paper, manifest, register, ADR, or authority change occurs.
   explicitExclusions:
@@ -24,6 +26,7 @@ task:
     - Any Public, Staff, or Login composition change (ADR-009 decisions 4-5).
     - Any use of the superseded Owner compositions, canonicals, or the frozen owner-governance-layout-recomposition-r02 candidate as acceptance authority or as a reason to reject a concept.
     - Any semantic composition primitives; they remain deferred until after concept selection (ADR-009 consequences).
+    - "Any assumption that an exploration departure is implementable: production identity stays locked until a separate explicit human baseline decision."
 scope:
   ownedPaths:
     - design-research/owner-composition-exploration-r01/** (concept input and artifacts; not authority)
@@ -51,6 +54,10 @@ authorities:
       path: DESIGN_GUIDE.md
       selector: { kind: markdown-heading, value: "15. Phase visual gate" }
       reason: Use the visual gate and responsive contract that any accepted concept must satisfy.
+    - role: design
+      path: DESIGN.md
+      selector: { kind: markdown-heading, value: "Exploration mode" }
+      reason: Route the design skill to the exploration-mode clause instead of incumbent inheritance.
     - role: visual-status
       path: docs/design/VISUAL_AUTHORITY_STATUS.md
       selector: { kind: markdown-heading, value: "Register" }
@@ -92,6 +99,7 @@ continuity:
   unresolvedDecisions:
     - "Standing gate: no fresh independent audit of the repaired design-agent environment has a recorded PASS (r01-r08 chain ended FAILED_VALIDATION; the phase3 test-reliability successor recorded no verdict). Resolution must precede any concept work."
     - "Human concept approval of the selected whole-page alternative is required before any implementation or promotion."
+    - "Promotion of any exploration departure from a locked production visual rule requires a separate explicit human baseline decision with its own perceptual gate."
     - "Live Paper tool exposure is unresolved; a composition decision that depends on it stops at NEEDS_HUMAN."
 verification:
   profile: design exploration (concepts only); context checks plus the concept-selection gate, no production verification ladder while code is out of scope
@@ -117,11 +125,33 @@ limitations:
   - Live Paper tool exposure was not re-probed at opening; the 2026-09-15 register records it as not exposed, and stored exports and canonicals are provenance only.
   - The design-context check passed in this opening worktree on 2026-09-20; the required per-session entry check must be re-run when the design session starts.
   - This packet makes no Product, Spec, accessibility, data, privacy, or visual-acceptance claim.
+  - Exploration-envelope departures are concept-only; the packet authorizes no production styling from a departing concept, and any promotion requires the separate human baseline decision.
 visual:
   surfaceKey: owner-composition-family
   authorityStatus: VACANT
   authorityKey: ADR-009
   governingDecision: docs/adr/ADR-009-owner-composition-authority-supersession.md#decision
+  explorationEnvelope:
+    mode: EXPLORATION
+    lockedAxes:
+      - "FITWAY identity: Arabic-first RTL with English LTR, Cairo 400-700, Western digits, and locked copy."
+      - "Security, privacy, data semantics, accessibility baseline, and all non-visual Product/Spec contracts."
+      - "Production stays dark-only: v1 ships no light theme or theme toggle, and the --fw-* production baseline is unchanged until a successor human baseline decision."
+    variableAxes:
+      - "Color strategy and atmosphere inside exploration artifacts: alternatives may leave the incumbent near-black/graphite + oxblood + FITWAY-red treatment, including non-dark and non-red worlds."
+      - "Surface and material language, density and rhythm, type voice, chart treatment, motion character, and navigation/composition model."
+    requiredDepartures:
+      - "At least one whole-page alternative must deliberately depart the incumbent atmosphere rather than restyle it; no two alternatives may share the same named visual world."
+    antiRuts:
+      - "The incumbent near-black/graphite + oxblood glow atmosphere and its production radial-gradient recipes."
+      - "The quarantined pre-envelope attempts (concept-a-command-rail, concept-b-briefing-dossier, concept-c-strata, concept-d-owner-desk)."
+      - "Defaulting to the frozen owner-governance-layout-recomposition-r02 topology described in OWNER_COMPOSITION_REDESIGN_READINESS.md; it is provenance only and must not constrain the redesign."
+      - "A restyle that keeps the incumbent palette, material, and atmosphere and changes only layout."
+    promotionRule: >-
+      A concept that departs from a locked production visual rule reaches production only through a
+      separate explicit human baseline decision with its own perceptual gate; this envelope, a
+      concept-selection record, or a green check never promotes a departure.
+    authorizingDecision: docs/phase-records/handoffs/owner-design-exploration-envelope-repair-r01/20260921-183100-exploration-envelope-decision.md
   currentFrames:
     - path: tests/browser/__screenshots__/win32/chromium/phase11-settings.browser.spec.ts/owner-settings-route-en-desktop-1440x900.png
       sha256: f74e35849af287114402841ef39e8efbdad8f33835200bdcec7308058a1a74ec
@@ -131,6 +161,7 @@ visual:
   openHumanDecisions:
     - "Standing gate: no fresh independent audit of the repaired design-agent environment has a recorded PASS; the audit charge remains open (docs/phase-records/handoffs/coordinator/20260915-194000-owner-visual-authority-supersession-r01.md sections 6-7)."
     - "Explicit human concept approval is required before any implementation or promotion."
+    - "Promotion of any exploration departure is a separate human baseline decision; the envelope never promotes."
     - "Live Paper tool exposure is unresolved; a composition decision that depends on it stops at NEEDS_HUMAN."
   paperAvailability: UNAVAILABLE
   perceptualGate:

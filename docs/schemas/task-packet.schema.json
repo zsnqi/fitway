@@ -166,6 +166,31 @@
 					"accessibilityGate": { "$ref": "#/$defs/gate" }
 				}
 			}
+		},
+		{
+			"if": {
+				"type": "object",
+				"properties": {
+					"visual": {
+						"type": "object",
+						"properties": { "authorityStatus": { "const": "VACANT" } },
+						"required": ["authorityStatus"]
+					}
+				},
+				"required": ["visual"]
+			},
+			"then": {
+				"type": "object",
+				"properties": {
+					"visual": {
+						"type": "object",
+						"properties": {
+							"explorationEnvelope": { "$ref": "#/$defs/explorationEnvelope" }
+						},
+						"required": ["explorationEnvelope"]
+					}
+				}
+			}
 		}
 	],
 	"$defs": {
@@ -292,7 +317,46 @@
 				"promotionGate": { "$ref": "#/$defs/gate" },
 				"acceptanceAuthority": {
 					"enum": ["PAPER", "MANIFEST", "HUMAN_DECISION", "NONE"]
-				}
+				},
+				"explorationEnvelope": { "$ref": "#/$defs/explorationEnvelope" }
+			}
+		},
+		"explorationEnvelope": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": [
+				"mode",
+				"lockedAxes",
+				"variableAxes",
+				"requiredDepartures",
+				"antiRuts",
+				"promotionRule",
+				"authorizingDecision"
+			],
+			"properties": {
+				"mode": { "const": "EXPLORATION" },
+				"lockedAxes": {
+					"type": "array",
+					"minItems": 1,
+					"items": { "type": "string", "minLength": 1 }
+				},
+				"variableAxes": {
+					"type": "array",
+					"minItems": 1,
+					"items": { "type": "string", "minLength": 1 }
+				},
+				"requiredDepartures": {
+					"type": "array",
+					"minItems": 1,
+					"items": { "type": "string", "minLength": 1 }
+				},
+				"antiRuts": {
+					"type": "array",
+					"minItems": 1,
+					"items": { "type": "string", "minLength": 1 }
+				},
+				"promotionRule": { "type": "string", "minLength": 1 },
+				"authorizingDecision": { "type": "string", "minLength": 1 }
 			}
 		},
 		"designContextCheck": {

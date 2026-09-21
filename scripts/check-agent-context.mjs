@@ -1060,6 +1060,21 @@ async function validatePacket({
 			checkTracked,
 			errors,
 		});
+		const explorationEnvelope = packet.visual.explorationEnvelope;
+		if (explorationEnvelope !== undefined) {
+			if (packet.visual.authorityStatus !== "VACANT")
+				errors.push(
+					`${packetPath}: visual.explorationEnvelope is only valid for authorityStatus VACANT`,
+				);
+			await validatePathReference({
+				root,
+				relativePath: explorationEnvelope.authorizingDecision,
+				label: `${packetPath} visual.explorationEnvelope.authorizingDecision`,
+				checkTracked,
+				errors,
+				allowHistorical: true,
+			});
+		}
 		if (
 			packet.taskClass === "visual-authority-change" &&
 			/owner/i.test(packet.visual.surfaceKey)

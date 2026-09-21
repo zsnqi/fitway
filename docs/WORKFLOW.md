@@ -304,12 +304,42 @@ require a recorded reason in the phase record.
    export package and its timestamp. Stored exports and canonicals are provenance and comparison
    references, never live authority. Any composition decision that depends on live Paper stops at
    `NEEDS_HUMAN`.
-4. **Concept before code.** For a topology change, produce two or three whole-page alternatives
-   and judge them before production implementation or token polish. The concept gate scores
-   spatial thesis, first-glance focal hierarchy, grouping and reading order, vertical and
-   horizontal rhythm, density and intentional whitespace, separation of
-   governance/controls/actions/data, and behavior at 1440px, mobile, 320px/200% reflow, EN, and
-   AR. Incumbent component placement is not authority merely because code exists.
+4. **Concept before code.** For a topology or material visual-direction change, produce two or
+   three whole-page *direction* alternatives and judge them before production implementation or
+   token polish. Each alternative names its own visual world and states, against the packet's
+   exploration envelope, which axes it keeps and which it varies; no two alternatives may share a
+   world, and when the envelope requires a departure from the incumbent atmosphere, at least one
+   alternative must make it rather than restyle the incumbent. Exploration artifacts derive their
+   own palette, type, and material basis and must not inline production token files, production
+   atmosphere recipes, or shell CSS wholesale except in a fidelity reference the packet explicitly
+   requires. The concept gate scores spatial thesis, first-glance focal hierarchy, grouping and
+   reading order, vertical and horizontal rhythm, density and intentional whitespace, separation
+   of governance/controls/actions/data, behavior at 1440px, mobile, 320px/200% reflow, EN, and AR,
+   and direction distinctness from side-by-side full-resolution rendered frames. Incumbent
+   component placement is not authority merely because code exists; neither is the incumbent skin.
+
+### Exploration envelope
+
+A concept exploration runs inside the envelope its active packet records in
+`visual.explorationEnvelope`. The envelope exists only while the packet's `visual.authorityStatus`
+is `VACANT`, and it authorizes exploration artifacts only. It names the locked axes (identity,
+semantics, and any system rule a human decision keeps binding), the variable axes (the visual
+decisions alternatives may genuinely change), the required departures from the incumbent, the
+anti-ruts (the incumbent atmosphere, named frozen or rejected candidates, and quarantined prior
+attempts), and the promotion rule.
+
+- Exploration artifacts are concept-only. They change no production code, token, canonical,
+  authority, manifest, or hash, and they are labeled as exploration artifacts rather than
+  milestone concepts until the human selects one.
+- A direction that departs from a locked production rule reaches production only through a new
+  explicit human baseline decision with its own perceptual gate. The envelope, a green check, or a
+  concept-selection record never promotes a departure.
+- Rejected directions, superseded candidates, and prior attempts are evidence, not references. A
+  new alternative derives from the brief and its own world; copying a prior attempt's
+  composition, material, or tokens forward is a defect, and quarantined attempts carry a notice
+  that says so.
+- A restyle that keeps the incumbent palette, material, and atmosphere and changes only layout
+  does not satisfy the envelope.
 5. **Perceptual promotion gate.** The perceptual reviewer receives full-resolution rendered
    frames before test scores, implementation rationale, or canonical comparisons and is allowed
    to reject the reference itself. A pass must name the exact frames inspected and the reviewer;

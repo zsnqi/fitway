@@ -18,6 +18,10 @@ Shared control families are exported from `packages/ui`; Owner, Staff, and Publi
 
 Composition and per-surface layout authority is recorded in `docs/design/VISUAL_AUTHORITY_STATUS.md` under ADR-007 and ADR-009. Paper is the visual source of truth only where that register records it; this router derives no layout.
 
+## Exploration mode
+
+When the active task packet records a `visual.explorationEnvelope` (required while `visual.authorityStatus` is `VACANT`), this router's palette, type, and component pointers are the incumbent reference and anti-rut, not the required world. Follow the envelope and the concept gate in `docs/WORKFLOW.md`: derive each alternative from its own named world, label every artifact concept-only, and promote nothing without a recorded successor human decision. When no envelope is recorded, this router resolves the current visual authority as before. Production rules, tokens, and authority are unchanged in either case.
+
 ## Motion
 
 Motion and interaction behavior follow `DESIGN_GUIDE.md` and the shared tokens under `packages/ui`; this router states no motion values.

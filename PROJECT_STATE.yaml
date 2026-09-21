@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: "2026-09-20T20:51:14+03:00"
+updatedAt: "2026-09-21T18:49:26+03:00"
 coordinator:
-  owner: "Primary coordinator and integrator for the FITWAY repository; owner-design-exploration-r01 is open as PLANNED."
+  owner: "Primary coordinator and integrator for the FITWAY repository; owner-design-exploration-r01 is open as PLANNED, and owner-design-exploration-envelope-repair-r01 is open as IN_PROGRESS."
   stateFilePolicy: "coordinator-only"
 baseline:
   status: "DONE"
@@ -28,7 +28,7 @@ milestones:
       change, and explicit human approval of the selected concept as a separate decision.
     taskClass: visual-authority-change
     taskPacket: docs/phase-records/task-packets/owner-design-exploration-r01.yaml
-    taskPacketSha256: 1ae50acab7b713cd9c38ec74b00dd3d7b396a3644ce6df5bf306fe86c1fe2a5e
+    taskPacketSha256: cd3a65bc35462debb2947e810a7fd3ac6421b0d5c3c71487a3c503e946a395a7
     dependencies: []
     ownerSession: owner-design-exploration-r01-coordinator
     branch: codex/owner-design-exploration-r01
@@ -58,4 +58,54 @@ milestones:
       accessibility: PENDING
       visual: PENDING
       independentReview: PENDING
+    integratedCommit: null
+  owner-design-exploration-envelope-repair-r01:
+    status: READY_FOR_INTEGRATION
+    objective: >-
+      Repair the Owner exploration context so direction alternatives can differ materially without
+      changing production identity: add a require-when-VACANT visual exploration envelope,
+      direction-distinctness concept-gate rules, a router exploration mode, and quarantine of prior
+      attempts.
+    taskClass: repository-infrastructure
+    taskPacket: docs/phase-records/task-packets/owner-design-exploration-envelope-repair-r01.yaml
+    taskPacketSha256: ae36b8580fc5436a62c16409385456f7955e9765c5c01ba375ccce9b365d07fe
+    dependencies: []
+    ownerSession: owner-design-exploration-envelope-repair-r01-coordinator
+    branch: codex/owner-design-exploration-r01
+    worktree: C:/Users/Pc Force/.codex/worktrees/owner-design-exploration-r01/phase5-staff-integration
+    baseCommit: SELF
+    ownedPaths:
+      - docs/WORKFLOW.md
+      - DESIGN.md
+      - biome.json
+      - docs/schemas/task-packet.schema.json
+      - docs/agent-context/TASK_PACKET_TEMPLATE.yaml
+      - docs/agent-context/README.md
+      - scripts/check-agent-context.mjs
+      - scripts/check-agent-context.test.ts
+      - design-research/owner-composition-exploration-r01/** (quarantine notice, milestone brief, and exploration artifacts; not authority)
+      - docs/phase-records/handoffs/owner-design-exploration-envelope-repair-r01/** (decision record and repair handoffs)
+      - docs/phase-records/task-packets/owner-design-exploration-envelope-repair-r01.yaml
+      - docs/phase-records/task-packets/owner-design-exploration-r01.yaml
+      - PROJECT_STATE.yaml (coordinator state only)
+    forbiddenPaths:
+      - apps/** and packages/** production code, copy, behavior, and data semantics
+      - tests/browser/** including every screenshot and canonical
+      - visual-direction-gate/**, docs/design/**, docs/adr/**, approval manifests, and pinned hashes
+      - PROJECT_STATE_HISTORY.yaml, docs/archive/**, prior handoffs, and phase records
+      - pnpm-lock.yaml, dependency versions, and database schema or migrations
+    sharedLeases:
+      - Coordinator-exclusive PROJECT_STATE.yaml, both owner-design-exploration task packets, and the envelope-repair handoff and decision surfaces for owner-design-exploration-envelope-repair-r01
+    validationRepairAttempts: 0
+    lastHeartbeatAt: 2026-09-21T18:49:26+03:00
+    leaseExpiresAt: 2026-09-22T18:31:11+03:00
+    handoff: docs/phase-records/handoffs/owner-design-exploration-envelope-repair-r01/20260921-184926-envelope-repair-result.md
+    stopReason: null
+    gates:
+      unit: PASS
+      integration: NOT_REQUIRED
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PASS
     integratedCommit: null

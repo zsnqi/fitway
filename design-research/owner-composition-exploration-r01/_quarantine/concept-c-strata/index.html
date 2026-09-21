@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="dark" />
+<title>FITWAY — الإدارة</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="atmosphere" aria-hidden="true"></div>
+
+  <a class="skip-link" href="#main" id="skipLink">الانتقال إلى المحتوى</a>
+
+  <header class="chrome" id="chrome">
+    <div class="chrome__inner">
+      <div class="chrome__brandzone">
+        <div class="brand" aria-label="FITWAY">
+          <svg class="brand__mark" viewBox="0 0 28 28" aria-hidden="true">
+            <rect x="1.5" y="1.5" width="25" height="25" rx="7" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path d="M8.5 9.5h11M8.5 14h8M8.5 18.5h5.5" stroke="var(--fw-red-bright)" stroke-width="2.4" stroke-linecap="round"/>
+          </svg>
+          <span class="brand__word"><bdi>FITWAY</bdi></span>
+          <span class="brand__scope" id="brandScope">الإدارة</span>
+        </div>
+      </div>
+
+      <nav class="seg" aria-label="أقسام الإدارة" id="segNav">
+        <div class="seg__track" id="segTrack"></div>
+      </nav>
+
+      <div class="chrome__actions">
+        <a class="chrome__monitor" href="#monitoring" id="monitorLink">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="ic"><path d="M4 13h3l2-5 3 9 2.5-6H20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span id="monitorLabel">المراقبة</span>
+        </a>
+        <button type="button" class="chrome__btn" id="localeBtn" aria-label="التبديل إلى اللغة الإنجليزية"><bdi>English</bdi></button>
+        <span class="chrome__sep" aria-hidden="true"></span>
+        <button type="button" class="chrome__btn chrome__btn--quiet" id="logoutBtn"><bdi>تسجيل الخروج</bdi></button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="main" tabindex="-1">
+    <section class="page" data-page="now"      id="page-now"      aria-labelledby="h-now"></section>
+    <section class="page" data-page="daily"    id="page-daily"    aria-labelledby="h-daily" hidden></section>
+    <section class="page" data-page="reports"  id="page-reports"  aria-labelledby="h-reports" hidden></section>
+    <section class="page" data-page="activity" id="page-activity" aria-labelledby="h-activity" hidden></section>
+    <section class="page" data-page="ops"      id="page-ops"      aria-labelledby="h-ops" hidden></section>
+    <section class="page" data-page="access"   id="page-access"   aria-labelledby="h-access" hidden></section>
+    <section class="page" data-page="settings" id="page-settings" aria-labelledby="h-settings" hidden></section>
+    <footer class="foot" id="foot"></footer>
+  </main>
+
+  <nav class="tabbar" aria-label="أقسام الإدارة" id="tabbar">
+    <div class="tabbar__track" id="tabbarTrack"></div>
+  </nav>
+
+  <div class="overlay-root" id="overlayRoot"></div>
+  <div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+  <div class="sr-live" id="srLive" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

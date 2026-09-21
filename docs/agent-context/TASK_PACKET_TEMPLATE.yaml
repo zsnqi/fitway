@@ -55,6 +55,14 @@ evidence:
 #   perceptualGate: { status: PASS | PENDING | NOT_REQUIRED | NEEDS_HUMAN, criteria: <what was judged> }
 #   promotionGate: { status: PASS | PENDING | NOT_REQUIRED | NEEDS_HUMAN, criteria: <separate approval rule> }
 #   acceptanceAuthority: PAPER | MANIFEST | HUMAN_DECISION | NONE
+#   explorationEnvelope:            # required by the schema when authorityStatus is VACANT
+#     mode: EXPLORATION
+#     lockedAxes: [<axes the exploration may not change>]
+#     variableAxes: [<axes alternatives may genuinely change>]
+#     requiredDepartures: [<what the set must deliberately depart>]
+#     antiRuts: [<incumbent, frozen, or prior directions not to reproduce>]
+#     promotionRule: <how a departure could ever reach production>
+#     authorizingDecision: <tracked human decision record path>
 # designContextCheck:
 #   command: pnpm check:design-context
 #   status: PASS | PENDING | NEEDS_HUMAN

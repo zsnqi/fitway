@@ -583,6 +583,21 @@ function makeUiFamilyFixture(
 	return fixture;
 }
 
+function explorationEnvelopeFixture(authorizingDecision: string): JsonObject {
+	return {
+		mode: "EXPLORATION",
+		lockedAxes: ["FITWAY identity and the accessibility baseline stay locked."],
+		variableAxes: ["Atmosphere, material, and composition may vary."],
+		requiredDepartures: [
+			"At least one alternative departs the incumbent atmosphere.",
+		],
+		antiRuts: ["The incumbent near-black and oxblood atmosphere."],
+		promotionRule:
+			"A separate explicit human baseline decision promotes any departure.",
+		authorizingDecision,
+	};
+}
+
 afterEach(() => {
 	for (const root of fixtureRoots.splice(0))
 		rmSync(root, { recursive: true, force: true });
@@ -597,13 +612,16 @@ describe("check-agent-context", () => {
 		expect(Object.keys(state.milestones)).toEqual([...FIXTURE_MILESTONES]);
 	});
 
-	it("passes the current active-mode registry with no open milestone and its closed archived packet", async () => {
+	it("passes the current active-mode registry with two open exploration milestones and its closed archived packet", async () => {
 		const result = await checkAgentContext({
 			root: REAL_ROOT,
 			checkTracked: false,
 		});
 		expect(result.registry?.mode).toBe("active");
-		expect(Object.keys(result.state?.milestones ?? {})).toEqual([]);
+		expect(Object.keys(result.state?.milestones ?? {})).toEqual([
+			"owner-design-exploration-r01",
+			"owner-design-exploration-envelope-repair-r01",
+		]);
 		expect(
 			result.history?.milestones?.["agent-context-architecture-migration-r01"]
 				?.status,
@@ -1883,6 +1901,128 @@ describe("check-agent-context", () => {
 		expect(
 			result.errors.some((error) =>
 				error.includes("packet conditionals omit registered rule"),
+			),
+		).toBe(true);
+	});
+
+	it("requires the schema envelope for VACANT visual packets and validates its authorizing decision", async () => {
+		const decisionPath =
+			"docs/phase-records/handoffs/owner-design-exploration-envelope-repair-r01/20260921-183100-exploration-envelope-decision.md";
+
+		const vacantRoot = makeFixture();
+		isolateFixtureHistory(vacantRoot);
+		const withoutEnvelope = makeUiFamilyFixture(vacantRoot, "ui-maintenance", {
+			authorityStatus: "VACANT",
+		});
+		materializePacket(
+			vacantRoot,
+			withoutEnvelope.state,
+			withoutEnvelope.packet,
+			withoutEnvelope.packetPath,
+		);
+		let result = await checkAgentContext({
+			root: vacantRoot,
+			checkTracked: false,
+		});
+		expect(result.ok).toBe(false);
+		expect(
+			result.errors.some((error) => error.includes("explorationEnvelope")),
+		).toBe(true);
+
+		const envelopeRoot = makeFixture();
+		isolateFixtureHistory(envelopeRoot);
+		const withEnvelope = makeUiFamilyFixture(envelopeRoot, "ui-maintenance", {
+			authorityStatus: "VACANT",
+			explorationEnvelope: explorationEnvelopeFixture(decisionPath),
+		});
+		copyFixtureFile(envelopeRoot, decisionPath);
+		materializePacket(
+			envelopeRoot,
+			withEnvelope.state,
+			withEnvelope.packet,
+			withEnvelope.packetPath,
+		);
+		result = await checkAgentContext({
+			root: envelopeRoot,
+			checkTracked: false,
+		});
+		expect(result.errors).toEqual([]);
+		expect(result.ok).toBe(true);
+	});
+
+	it("rejects an exploration envelope on a non-VACANT visual packet", async () => {
+		const root = makeFixture();
+		isolateFixtureHistory(root);
+		const decisionPath =
+			"docs/phase-records/handoffs/exploration-envelope-decision.md";
+		const fixture = makeUiFamilyFixture(root, "ui-maintenance", {
+			authorityStatus: "SUPERSEDED",
+			explorationEnvelope: explorationEnvelopeFixture(decisionPath),
+		});
+		writeFixtureFile(root, decisionPath, "# Exploration envelope decision\n");
+		materializePacket(root, fixture.state, fixture.packet, fixture.packetPath);
+		const result = await checkAgentContext({ root, checkTracked: false });
+		expect(result.ok).toBe(false);
+		expect(
+			result.errors.some((error) =>
+				error.includes(
+					"visual.explorationEnvelope is only valid for authorityStatus VACANT",
+				),
+			),
+		).toBe(true);
+	});
+
+	it("rejects a missing or untracked exploration authorizing decision record", async () => {
+		const decisionPath =
+			"docs/phase-records/handoffs/exploration-envelope-r01/decision.md";
+
+		const missingRoot = makeFixture();
+		isolateFixtureHistory(missingRoot);
+		const missing = makeUiFamilyFixture(missingRoot, "ui-maintenance", {
+			authorityStatus: "VACANT",
+			explorationEnvelope: explorationEnvelopeFixture(decisionPath),
+		});
+		materializePacket(
+			missingRoot,
+			missing.state,
+			missing.packet,
+			missing.packetPath,
+		);
+		let result = await checkAgentContext({
+			root: missingRoot,
+			checkTracked: false,
+		});
+		expect(
+			result.errors.some(
+				(error) =>
+					error.includes("visual.explorationEnvelope.authorizingDecision") &&
+					error.includes(`missing path ${decisionPath}`),
+			),
+		).toBe(true);
+
+		const untrackedRoot = makeFixture();
+		isolateFixtureHistory(untrackedRoot);
+		const untracked = makeUiFamilyFixture(untrackedRoot, "ui-maintenance", {
+			authorityStatus: "VACANT",
+			explorationEnvelope: explorationEnvelopeFixture(decisionPath),
+		});
+		initTrackedFixture(untrackedRoot);
+		writeFixtureFile(untrackedRoot, decisionPath, "# Decision\n");
+		materializePacket(
+			untrackedRoot,
+			untracked.state,
+			untracked.packet,
+			untracked.packetPath,
+		);
+		result = await checkAgentContext({
+			root: untrackedRoot,
+			checkTracked: true,
+		});
+		expect(
+			result.errors.some(
+				(error) =>
+					error.includes("visual.explorationEnvelope.authorizingDecision") &&
+					error.includes(`untracked path ${decisionPath}`),
 			),
 		).toBe(true);
 	});
