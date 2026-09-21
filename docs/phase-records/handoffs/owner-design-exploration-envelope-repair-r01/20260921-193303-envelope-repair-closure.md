@@ -2,8 +2,11 @@
 
 - Recorded: 2026-09-21 19:33 +03:00 (observed local clock; report-name timestamps follow the
   session convention and are not authoritative capture times).
-- Status: **DONE**. Integrated commit: `90f56fd` (`feat: add exploration envelope and
-  anti-convergence concept gates`).
+- Status: **DONE**. Work commit: `90f56fd` (`feat: add exploration envelope and
+  anti-convergence concept gates`). Closure commit: `83094fb` (`docs: close
+  owner-design-exploration-envelope-repair-r01 as DONE`), carrying history transition receipt
+  `docs/phase-records/history-transitions/0005-20260921-owner-design-exploration-envelope-repair-r01.json`
+  and the archive of this milestone into `PROJECT_STATE_HISTORY.yaml` (105 archived, 1 active).
 - Opening record:
   `docs/phase-records/handoffs/owner-design-exploration-envelope-repair-r01/20260921-183100-envelope-repair-opening.md`.
 - Decision record:
@@ -25,6 +28,11 @@
 - `git status --short` was empty before and after the ladder run.
 - Independent review verdict before integration: PASS with no blocking findings; the one LOW
   validator gap was fixed and re-verified (52 focused tests passed).
+- Final authoritative fast ladder on the closure tree (`scripts/verify.mjs fast`, synthetic
+  non-secret env): exit 0 — unit tests 86 files / 1099 tests passed, Python simulator 120 tests
+  OK, "Verification fast passed without repository mutation", `git status` unchanged.
+- `node scripts/check-frontier-preservation.mjs` — clean-candidate PASS: 110 non-excluded
+  protected paths were not integrated relative to frozen M0 base `19e28f4f…`.
 
 ## State after closure
 
