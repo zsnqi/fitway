@@ -3,7 +3,7 @@
 schemaVersion: 1
 milestoneId: exploration-concept-phase-lifecycle-r01
 taskClass: repository-infrastructure
-packetStatus: READY
+packetStatus: CLOSED
 stateRef: PROJECT_STATE.yaml#/milestones/exploration-concept-phase-lifecycle-r01
 baseCommit: SELF
 task:
@@ -65,7 +65,7 @@ authorities:
       actionIfTriggered: READ
 continuity:
   predecessorMilestones: []
-  currentHandoff: docs/phase-records/handoffs/exploration-concept-phase-lifecycle-r01/20260921-202232-concept-phase-lifecycle-opening.md
+  currentHandoff: docs/phase-records/handoffs/exploration-concept-phase-lifecycle-r01/20260921-203700-concept-phase-lifecycle-closure.md
   unresolvedDecisions:
     - "The standing design-environment audit gate is resolved only by a fresh independent audit PASS after this repair; this packet does not resolve it."
     - "Activation of owner-design-exploration-r01 remains a coordinator action after the audit PASS."

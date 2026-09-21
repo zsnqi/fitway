@@ -1,0 +1,21 @@
+{
+	"schemaVersion": 2,
+	"kind": "history-transition-receipt",
+	"recordedAt": "2026-09-21T17:38:56.537Z",
+	"previousReceiptSha256": "3c943927e4d503d5bfd485d9353067000cecd4e892d8921baa02bcdd3d9f38a3",
+	"beforeHistorySha256": "b471161225027bc3d3c386c4b964d92e4d05003e534b8a6b0811609af76a3cb7",
+	"afterHistorySha256": "dc7b2c3f130c9050b34291273c94e06c2520e13ba4455ae91736a34f27136a6b",
+	"beforeHistoryBytes": 333323,
+	"afterHistoryBytes": 335732,
+	"beforeMilestoneCount": 105,
+	"afterMilestoneCount": 106,
+	"addedTerminal": {
+		"milestoneId": "exploration-concept-phase-lifecycle-r01",
+		"status": "DONE",
+		"digest": "b912335f0a9de10b7ee35878396b69628f6b316001f5c42274a435c1aca367ee"
+	},
+	"closedPacketSha256": "85dee0095e944c939a74fc6ae52ffa139a5f198cadc3d260acffdd026591fb21",
+	"removedActiveMilestoneId": "exploration-concept-phase-lifecycle-r01",
+	"removedActiveMilestoneDigest": "b889dab30277df919c66c549ce1fcdb2aaa0d9b295384eea3b48abfc7a5afdae",
+	"coordinatorRun": "exploration-concept-phase-lifecycle-r01-closure"
+}
