@@ -3,7 +3,7 @@
 schemaVersion: 1
 milestoneId: owner-design-exploration-r01
 taskClass: visual-authority-change
-packetStatus: DRAFT
+packetStatus: READY
 stateRef: PROJECT_STATE.yaml#/milestones/owner-design-exploration-r01
 baseCommit: SELF
 task:
@@ -95,9 +95,8 @@ authorities:
       actionIfTriggered: NEEDS_HUMAN
 continuity:
   predecessorMilestones: []
-  currentHandoff: docs/phase-records/handoffs/owner-design-exploration/20260920-205114-owner-design-exploration-r01-opening.md
+  currentHandoff: docs/phase-records/handoffs/owner-design-exploration/20260921-205000-design-environment-audit-resolution-and-activation.md
   unresolvedDecisions:
-    - "Standing gate: no fresh independent audit of the repaired design-agent environment has a recorded PASS (r01-r08 chain ended FAILED_VALIDATION; the phase3 test-reliability successor recorded no verdict). Resolution must precede any concept work."
     - "Human concept approval of the selected whole-page alternative is required before any implementation or promotion."
     - "Promotion of any exploration departure from a locked production visual rule requires a separate explicit human baseline decision with its own perceptual gate."
     - "Live Paper tool exposure is unresolved; a composition decision that depends on it stops at NEEDS_HUMAN."
@@ -106,7 +105,7 @@ verification:
   orderedGates:
     - bounded context:show continuity and repository-wide check:agent-context validation of this packet, state, scope, and frame hashes
     - pnpm check:design-context at design-session entry
-    - standing environment-audit gate resolved (recorded PASS or recorded human supersession)
+    - standing environment-audit gate resolved by the recorded fresh independent audit PASS (docs/phase-records/handoffs/owner-design-exploration/20260921-205000-design-environment-audit-resolution-and-activation.md)
     - concept alternatives produced and judged through the full concept-selection gate, including EN/AR, mobile, 1440px, and 320px/200% behavior
     - accessibility review of the selected concept against the DESIGN_GUIDE accessibility baseline and SPEC acceptance criteria
     - exact concept frames and the concept-gate judgment recorded with paths and hashes
@@ -121,7 +120,8 @@ evidence:
     - the concept-gate judgment naming its criteria and the frames inspected
     - the human concept decision record
 limitations:
-  - This packet is DRAFT while the milestone is PLANNED; it authorizes no work until the coordinator activates the milestone and marks the packet READY.
+  - This packet is READY from its 2026-09-21 activation; it authorizes concept exploration artifacts only, under the recorded exploration envelope.
+  - "Concept-phase lifecycle: the accessibility and perceptual gates remain PENDING until the concept gate completes; both must be PASS before VALIDATING, any DONE record, or promotion."
   - Live Paper tool exposure was not re-probed at opening; the 2026-09-15 register records it as not exposed, and stored exports and canonicals are provenance only.
   - The design-context check passed in this opening worktree on 2026-09-20; the required per-session entry check must be re-run when the design session starts.
   - This packet makes no Product, Spec, accessibility, data, privacy, or visual-acceptance claim.
@@ -159,14 +159,13 @@ visual:
     - path: visual-direction-gate/approved/paper-route-authority-20260902/evidence/owner-settings/owner-settings-clean-en-desktop-1440.png
       sha256: b2cc89a46b40a7517b2ea7a0eac87613908adf3225e052ec92cceac00171adf1
   openHumanDecisions:
-    - "Standing gate: no fresh independent audit of the repaired design-agent environment has a recorded PASS; the audit charge remains open (docs/phase-records/handoffs/coordinator/20260915-194000-owner-visual-authority-supersession-r01.md sections 6-7)."
     - "Explicit human concept approval is required before any implementation or promotion."
     - "Promotion of any exploration departure is a separate human baseline decision; the envelope never promotes."
     - "Live Paper tool exposure is unresolved; a composition decision that depends on it stops at NEEDS_HUMAN."
   paperAvailability: UNAVAILABLE
   perceptualGate:
     status: PENDING
-    criteria: Independent perceptual review of rendered frames is required after concept selection; no rendered implementation exists yet.
+    criteria: Independent perceptual review of the selected concept's full-resolution rendered frames runs after concept selection and must be PASS before VALIDATING, any DONE record, or promotion; pending during the concept phase under the authorized concept-phase lifecycle.
   promotionGate:
     status: NOT_REQUIRED
     criteria: Canonical promotion is a separate serialized action requiring explicit human approval and is not part of this exploration.
@@ -177,4 +176,4 @@ designContextCheck:
   artifact: null
 accessibilityGate:
   status: PENDING
-  criteria: Concept-level accessibility review (RTL/LTR, 320px/200% reflow, focus and target-size intent, state truth) is part of the concept gate and pending; no implementation exists to verify.
+  criteria: Concept-level accessibility review (RTL/LTR, 320px/200% reflow, focus and target-size intent, state truth) runs with the concept gate after concept selection and must be PASS before VALIDATING, any DONE record, or promotion; pending during the concept phase under the authorized concept-phase lifecycle.

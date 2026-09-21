@@ -2,7 +2,7 @@
 schemaVersion: 2
 updatedAt: 2026-09-21T17:38:56.539Z
 coordinator:
-  owner: "Primary coordinator and integrator for the FITWAY repository; owner-design-exploration-r01 is open as PLANNED, and exploration-concept-phase-lifecycle-r01 is open as IN_PROGRESS."
+  owner: "Primary coordinator and integrator for the FITWAY repository; owner-design-exploration-r01 is open as READY, and exploration-concept-phase-lifecycle-r01 is archived DONE."
   stateFilePolicy: "coordinator-only"
 baseline:
   status: "DONE"
@@ -20,7 +20,7 @@ baseline:
   independentVerification: "docs/phase-records/baseline-independent-verification.md"
 milestones:
   owner-design-exploration-r01:
-    status: PLANNED
+    status: READY
     objective: >-
       After the standing design-environment audit gate is resolved, produce and judge two or
       three whole-page Owner composition alternatives through the concept-selection gate for the
@@ -28,7 +28,7 @@ milestones:
       change, and explicit human approval of the selected concept as a separate decision.
     taskClass: visual-authority-change
     taskPacket: docs/phase-records/task-packets/owner-design-exploration-r01.yaml
-    taskPacketSha256: cd3a65bc35462debb2947e810a7fd3ac6421b0d5c3c71487a3c503e946a395a7
+    taskPacketSha256: 9d7cf201c87a49f2b95747a40b7f62c3f69a664b09c1a350480a0493866e1d65
     dependencies: []
     ownerSession: owner-design-exploration-r01-coordinator
     branch: codex/owner-design-exploration-r01
@@ -47,9 +47,9 @@ milestones:
     sharedLeases:
       - Coordinator-exclusive PROJECT_STATE.yaml, this packet, and owner-design-exploration handoff surfaces for owner-design-exploration-r01
     validationRepairAttempts: 0
-    lastHeartbeatAt: 2026-09-20T20:51:14+03:00
-    leaseExpiresAt: null
-    handoff: docs/phase-records/handoffs/owner-design-exploration/20260920-205114-owner-design-exploration-r01-opening.md
+    lastHeartbeatAt: 2026-09-21T20:50:00+03:00
+    leaseExpiresAt: 2026-09-22T20:50:00+03:00
+    handoff: docs/phase-records/handoffs/owner-design-exploration/20260921-205000-design-environment-audit-resolution-and-activation.md
     stopReason: null
     gates:
       unit: NOT_REQUIRED

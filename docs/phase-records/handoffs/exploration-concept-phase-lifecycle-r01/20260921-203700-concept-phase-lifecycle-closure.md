@@ -32,7 +32,7 @@
 - `node scripts/check-agent-context.mjs`, `node scripts/verify-repository.mjs`,
   `pnpm check:design-context`, `pnpm exec biome check .` — all pass.
 - `node scripts/verify.mjs fast` on `61c191f` with synthetic non-secret env — exit 0; unit 86 files /
-  1099 tests, simulator 120 tests, "passed without repository mutation", clean tree.
+  1101 tests, simulator 120 tests, "passed without repository mutation", clean tree.
 - Scratch probes: VACANT + CLOSED/DONE + pending gates rejected; ui-maintenance VACANT READY with
   pending gates rejected after the scope restriction.
 - Independent review verdict: **PASS**; the two scope findings (taskClass restriction, documented
