@@ -38,7 +38,7 @@ const copy = {
 		day: "Monday, 21 September 2026",
 		title: "The day, recorded",
 		intro:
-			"Read the shape of a gym day alongside the gaps in its record. Every figure below belongs to a completed illustrative business day.",
+			"The observed pattern and gaps of this completed illustrative gym day.",
 		currentLabel: "Current view · separate sample",
 		currentSource:
 			"Current view uses a separate operational snapshot. The daily record below is historical.",
@@ -141,8 +141,7 @@ const copy = {
 		unavailable: "غير متاحة",
 		day: "الاثنين، 21 سبتمبر 2026",
 		title: "اليوم كما سُجّل",
-		intro:
-			"اقرأ نمط يوم الصالة مع الفجوات في سجله. كل رقم أدناه يخص يوم عمل توضيحي مكتملًا.",
+		intro: "النمط المرصود وفجوات هذا اليوم التوضيحي المكتمل في الصالة.",
 		currentLabel: "الحالة الحالية · عينة منفصلة",
 		currentSource:
 			"تأتي الحالة الحالية من لقطة تشغيل منفصلة. سجل اليوم أدناه تاريخي.",

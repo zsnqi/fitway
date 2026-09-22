@@ -26,7 +26,7 @@ The day selector also includes scheduled-closed, no-readings, loading, and error
 
 ## Language and device behavior
 
-Arabic RTL and English LTR are separately laid out. Ratios and time runs use bidi isolation and Western digits; Arabic controls place the chevron at the logical end with reserved padding. The record remains full width at tablet sizes. Mobile presents each hour as an evidence row with its coverage beside its reading and keeps the minute table within an internal scroll area. The 320 CSS px / 200% reflow capture uses a 640 px viewport with page zoom 2. All information remains visible without motion; the optional single record arrival is removed by reduced-motion preference.
+Arabic RTL and English LTR are separately laid out. Ratios and time runs use bidi isolation and Western digits; Arabic controls place the chevron at the logical end with reserved padding. The record remains full width at tablet sizes. Mobile places the separate current sample first, compresses the historical heading, and brings coverage and the first observed-hour rows into the opening viewport. Each hour keeps coverage beside its reading, and the minute table stays within an internal scroll area. The 320 CSS px / 200% reflow capture uses a 640 px viewport with page zoom 2. All information remains visible without motion; the optional single record arrival is removed by reduced-motion preference.
 
 ## Inspection boundary
 
