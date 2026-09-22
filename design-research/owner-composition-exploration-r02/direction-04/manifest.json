@@ -1,0 +1,104 @@
+{
+	"title": "The Black Folio / الملف المفتوح",
+	"status": "CONCEPT_ONLY",
+	"authority": "NONE",
+	"data": "deterministic illustrative fixtures, no network calls",
+	"captureTool": "repository @playwright/test Chromium",
+	"desktopViewport": "1440x900 CSS px",
+	"mobileViewport": "390x844 CSS px",
+	"reflow": "320 CSS px rasterized at 2x device scale",
+	"checkedWidths": [320, 360, 390, 721, 768, 820, 1024, 1200, 1440],
+	"checkedLocales": ["en LTR", "ar RTL"],
+	"checkedStates": [
+		"populated",
+		"closed",
+		"no-readings",
+		"loading",
+		"error",
+		"stale",
+		"unavailable"
+	],
+	"programmaticFailures": [],
+	"frames": [
+		{
+			"path": "frames/en-desktop-1440x900-populated.png",
+			"sha256": "774ef3f69b5cf466fdba9b45d030895de9ad25251cbda1aa08da3dbcbe71e8e0"
+		},
+		{
+			"path": "frames/en-mobile-390x844-populated.png",
+			"sha256": "16523c764d6de69a34c5e4c7a6f4ed1891cca207584e6460b585d08a44ca688b"
+		},
+		{
+			"path": "frames/en-mobile-390-full-populated.png",
+			"sha256": "e11d07520ea8f2ca6c985735965e72b4710bba2b2616a34a9a4e574ae7b120e6"
+		},
+		{
+			"path": "frames/en-reflow-320css-200pct.png",
+			"sha256": "a43e48f3f3d325acc86c819cc7375e2c35a07549493ac7d368c23a367da48335"
+		},
+		{
+			"path": "frames/en-mobile-390-closed.png",
+			"sha256": "d4f910130b450886006f583d7b30f7626b87b3a01cee924bd6b33243546cc109"
+		},
+		{
+			"path": "frames/en-mobile-390-no-readings.png",
+			"sha256": "434d312c4b5a6cfef3756dd7fa7832d52e97fdb018afed8f5465f1233bdf74fd"
+		},
+		{
+			"path": "frames/en-mobile-390-loading.png",
+			"sha256": "53adc8bc8769fb7f61dcd86a2ffac0ff70d97ec8e09ec0d900160c75a4f9151b"
+		},
+		{
+			"path": "frames/en-mobile-390-error.png",
+			"sha256": "542c440a0123eb435c441b78e10d29275a1e42917d4c5dd023edfbcabfe79ca1"
+		},
+		{
+			"path": "frames/en-mobile-390-stale.png",
+			"sha256": "355cf5016c31ff5e66a3606eb2b7b0dde39d445f0bdf35302d156597b0548bf8"
+		},
+		{
+			"path": "frames/en-mobile-390-unavailable.png",
+			"sha256": "90412e60e19ce4e348905ab98a0725757753a115a250c0ec7f62cfe0cc02d2c6"
+		},
+		{
+			"path": "frames/ar-desktop-1440x900-populated.png",
+			"sha256": "eefea53f2445816eef737539d252fc2fdf708f4cfb4c1a3b1ca6ae60956fe53d"
+		},
+		{
+			"path": "frames/ar-mobile-390x844-populated.png",
+			"sha256": "668403c1b2ae2e6bf017f6e5ddeb04f4ccb48fb3ee6c42ac1a87df13e67d49d0"
+		},
+		{
+			"path": "frames/ar-mobile-390-full-populated.png",
+			"sha256": "de5720efda3393890450dd830169c28497c8499eb21df16d39ae6f1e173aa210"
+		},
+		{
+			"path": "frames/ar-reflow-320css-200pct.png",
+			"sha256": "45b06fd526143d9e677737b19e57b250593bd073808a3235a1e9db106e2a48e5"
+		},
+		{
+			"path": "frames/ar-mobile-390-closed.png",
+			"sha256": "ff823215b384ea924f6ffc1d41b8af3d270df4f62ac553530eeaa812f6b499f4"
+		},
+		{
+			"path": "frames/ar-mobile-390-no-readings.png",
+			"sha256": "dcafba14086b80e8a631c3a33c6c4afb364eb9ee47c44f5b510e3516065722d2"
+		},
+		{
+			"path": "frames/ar-mobile-390-loading.png",
+			"sha256": "eb30a0286cb3df4168e6e94e91e1774ae2e5a29869d1351e661072b2e6e85090"
+		},
+		{
+			"path": "frames/ar-mobile-390-error.png",
+			"sha256": "b98b2d2d52b0eec341280970ac7ea4afc99d1bfa22deace8e6d311feb68776bb"
+		},
+		{
+			"path": "frames/ar-mobile-390-stale.png",
+			"sha256": "7218470dbef10d9e494d2a1b791b86a16903829b5b2881bc2a7b99bad535f782"
+		},
+		{
+			"path": "frames/ar-mobile-390-unavailable.png",
+			"sha256": "50661a2d7ed85bc224de957191cba3a9850b57a0820e040fb501a370fdd72ca3"
+		}
+	]
+}
