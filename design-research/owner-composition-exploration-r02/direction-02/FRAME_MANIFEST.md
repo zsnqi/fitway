@@ -4,7 +4,7 @@
 
 ## Exact frames personally inspected
 
-The direction-02 designer opened and visually inspected the following final PNG files after the last stylesheet and state edits. The four viewport anchors were inspected at their exact pixel size; full-page mobile frames were opened separately to check the whole reading order. The 320 CSS-pixel reflow capture used device scale factor 2, producing a 640 physical-pixel-wide image.
+The direction-02 designer opened and visually inspected the following final PNG files after the semantic HTML and stylesheet-format repair. The four viewport anchors were inspected at their exact pixel size; full-page mobile frames were opened separately to check the whole reading order. Both reflow captures use a 320 CSS-pixel layout viewport at device scale factor 2, producing 640 physical-pixel-wide images. This verifies equivalent effective reflow geometry; it is not a test of a browser's zoom command.
 
 | Frame | Fixture and purpose | SHA-256 |
 | --- | --- | --- |
@@ -14,6 +14,7 @@ The direction-02 designer opened and visually inspected the following final PNG 
 | `frames/dayline-ar-mobile-390x844.png` | Arabic RTL first viewport | `b3e20ae8056842e1a51a84f47da2cdab5cb1ef54e0f6a8521dbd0b9a3b3f9400` |
 | `frames/dayline-en-mobile-full-390.png` | English full-page reading order | `b8bfad5d90fd3fa0478f90e9e99978bdad5b50953b15155e69f7f2545805f500` |
 | `frames/dayline-ar-mobile-full-390.png` | Arabic full-page reading order | `98cb74abe905d0742fa554544f80486e19e200620e48ccb59f8964b11b485f73` |
+| `frames/dayline-en-reflow-320-200pct.png` | English, 320 CSS pixels at device scale 2, full page | `7723c87a6ad5e87bf9ef2a1b72141c799ea1874831edb49682869c11b1d8c5b8` |
 | `frames/dayline-ar-reflow-320-200pct.png` | Arabic, 320 CSS pixels at device scale 2, full page | `8af44f6c64ed5ae50265a8124b2ce1b2218d801992e85a0d19b304a276ab8ad2` |
 | `frames/dayline-en-stale-desktop-1440x900.png` | Distinct last-known gym state, no live implication from the historical curve | `cf13d8926611486a57323f99971055c824885b48914495ae071b08532cec813e` |
 | `frames/dayline-ar-closed-mobile-390x844.png` | Closed gym and closed selected day, no occupancy values | `82f787facb1f6da759b59367957d38a8faa2cdee72e22a07a44b8280cb9d768c` |
@@ -26,12 +27,13 @@ The direction-02 designer opened and visually inspected the following final PNG 
 - `node --check app.js`: passed.
 - `scripts/check-design-context.mjs`: passed with host child-process permission; resolved FITWAY Product/Design routers and Impeccable 4.0.0.
 - `capture.mjs`: passed. `frames/capture-results.json` records the measured viewport, document direction, heading, state mode, and scroll widths for the captures.
-- No document-level horizontal overflow in English or Arabic at 320, 360, 390, 721, 768, 820, 1024, 1200, and 1440 CSS pixels. The 320 CSS-pixel/device-scale-2 capture also measured `scrollWidth = clientWidth = 320`.
+- Folder-scoped Biome check on `index.html` and `style.css`: passed with two existing reduced-motion `!important` warnings and no errors.
+- No document-level horizontal overflow in English or Arabic at 320, 360, 390, 721, 768, 820, 1024, 1200, and 1440 CSS pixels. Both 320 CSS-pixel/device-scale-2 captures measured `innerWidth = clientWidth = scrollWidth = 320`, `devicePixelRatio = 2`, a true `(max-width: 320px)` media query, and a 640-pixel PNG width. Browser zoom itself was not exercised.
 - Keyboard Tab first reached the skip link. A plotted point received a visible solid focus outline and Enter changed the persistent detail dock from the default peak to `7:10 AM · 7 people · Quiet`. Opening the minute record revealed its labeled table. Switching language changed `lang` to `ar`, `dir` to `rtl`, and the heading to `مسار اليوم`.
 - An Impeccable detector pass found small mobile functional text; the final stylesheet enlarged chart keys, time labels, annotation text, and mobile button text. The detector also flagged the chart's measurement grid as a repeating gradient; it is intentionally the plot grid, not a decorative page texture. The main plane's border/shadow combination was resolved by removing the shadow. A design-context pass or detector result is never perceptual acceptance.
 
 ## Visual judgment and limits
 
-The final inspected frames show one clear historical trajectory, a separate current-state strip, a visible break for missing minutes, and RTL chronology that reverses time without reversing the dataset. The full mobile pages retain the sequence through the detailed-record disclosure and footer. Loading, error, closed, and no-readings frames remove unsupported counts and the historical path. The 320/200% frame reflows without page overflow; the detailed table is intentionally a separately scrollable, labeled region.
+The final inspected frames show one clear historical trajectory, a separate current-state strip, a visible break for missing minutes, and RTL chronology that reverses time without reversing the dataset. The full mobile pages retain the sequence through the detailed-record disclosure and footer. Loading, error, closed, and no-readings frames remove unsupported counts and the historical path. Both 320 CSS-pixel/DPR2 frames reflow without page overflow; the detailed table is intentionally a separately scrollable, labeled region.
 
 These are static concept fixtures. They do not exercise production APIs, authorization, translation catalogs, real daily timezone changes, or screen reader output. The current operational snapshot is an explicit later integration dependency. Human concept selection and independent perceptual/accessibility review remain outstanding.

@@ -5,10 +5,14 @@
 		"dir": "ltr",
 		"scrollWidth": 1440,
 		"clientWidth": 1440,
+		"innerWidth": 1440,
+		"devicePixelRatio": 1,
+		"reflowMediaQuery": false,
 		"font": "Cairo, Arial, sans-serif",
 		"heading": "The day's course",
 		"dayMode": "populated",
-		"bodyText": "Skip to content\nDesign study · illustrative readings\nTHE DAYLINE / مسار اليوم\nFITWAY\nDay\nRecords\nExplore\nالعربية\nGym state now\nOpen · current reading\nModerate · approximately 37 present\nCurrent\nUpdated 5:42 PM\nThe day's course\n\nA clear view of what was recorded, from opening to close.\n\nRecorded day\nMonday, 21 September 2026\nTimes shown in the gym's timezone\nObserved occupancy\n\nMinute readings acro"
+		"bodyText": "Skip to content\nDesign study · illustrative readings\nTHE DAYLINE / مسار اليوم\nFITWAY\nDay\nRecords\nExplore\nالعربية\nGym state now\nOpen · current reading\nModerate · approximately 37 present\nCurrent\nUpdated 5:42 PM\nThe day's course\n\nA clear view of what was recorded, from opening to close.\n\nRecorded day\nMonday, 21 September 2026\nTimes shown in the gym's timezone\nObserved occupancy\n\nMinute readings acro",
+		"imageWidth": 1440
 	},
 	{
 		"name": "dayline-ar-desktop-1440x900.png",
@@ -16,10 +20,14 @@
 		"dir": "rtl",
 		"scrollWidth": 1440,
 		"clientWidth": 1440,
+		"innerWidth": 1440,
+		"devicePixelRatio": 1,
+		"reflowMediaQuery": false,
 		"font": "Cairo, Arial, sans-serif",
 		"heading": "مسار اليوم",
 		"dayMode": "populated",
-		"bodyText": "Skip to content\nدراسة تصميمية · قراءات توضيحية\nTHE DAYLINE / مسار اليوم\nFITWAY\nاليوم\nالسجل\nاستكشاف\nEnglish\nحالة النادي الآن\nمفتوح · قراءة حالية\nمتوسط · نحو 37 حاضرًا\nحالي\nتحديث 5:42 م\nمسار اليوم\n\nصورة واضحة لما سُجّل من الافتتاح حتى الإغلاق.\n\nاليوم المسجّل\nالاثنين، 21 سبتمبر 2026\nالأوقات حسب المنطقة الزمنية للنادي\nالإشغال المرصود\n\nقراءات الدقائق خلال اليوم المجدول\n\nمرصود\nلا قراءة\nمغلق\n80\n60\n40\n20\n"
+		"bodyText": "Skip to content\nدراسة تصميمية · قراءات توضيحية\nTHE DAYLINE / مسار اليوم\nFITWAY\nاليوم\nالسجل\nاستكشاف\nEnglish\nحالة النادي الآن\nمفتوح · قراءة حالية\nمتوسط · نحو 37 حاضرًا\nحالي\nتحديث 5:42 م\nمسار اليوم\n\nصورة واضحة لما سُجّل من الافتتاح حتى الإغلاق.\n\nاليوم المسجّل\nالاثنين، 21 سبتمبر 2026\nالأوقات حسب المنطقة الزمنية للنادي\nالإشغال المرصود\n\nقراءات الدقائق خلال اليوم المجدول\n\nمرصود\nلا قراءة\nمغلق\n80\n60\n40\n20\n",
+		"imageWidth": 1440
 	},
 	{
 		"name": "dayline-en-mobile-390x844.png",
@@ -27,10 +35,14 @@
 		"dir": "ltr",
 		"scrollWidth": 390,
 		"clientWidth": 390,
+		"innerWidth": 390,
+		"devicePixelRatio": 1,
+		"reflowMediaQuery": false,
 		"font": "Cairo, Arial, sans-serif",
 		"heading": "The day's course",
 		"dayMode": "populated",
-		"bodyText": "Skip to content\nDesign study · illustrative readings\nFITWAY\nDay\nالعربية\nGym state now\nOpen · current reading\nModerate · approximately 37 present\nCurrent\nUpdated 5:42 PM\nThe day's course\n\nA clear view of what was recorded, from opening to close.\n\nRecorded day\nMonday, 21 September 2026\nTimes shown in the gym's timezone\nObserved occupancy\n\nMinute readings across the scheduled day\n\nRecorded\nNo reading"
+		"bodyText": "Skip to content\nDesign study · illustrative readings\nFITWAY\nDay\nالعربية\nGym state now\nOpen · current reading\nModerate · approximately 37 present\nCurrent\nUpdated 5:42 PM\nThe day's course\n\nA clear view of what was recorded, from opening to close.\n\nRecorded day\nMonday, 21 September 2026\nTimes shown in the gym's timezone\nObserved occupancy\n\nMinute readings across the scheduled day\n\nRecorded\nNo reading",
+		"imageWidth": 390
 	},
 	{
 		"name": "dayline-ar-mobile-390x844.png",
@@ -38,10 +50,14 @@
 		"dir": "rtl",
 		"scrollWidth": 390,
 		"clientWidth": 390,
+		"innerWidth": 390,
+		"devicePixelRatio": 1,
+		"reflowMediaQuery": false,
 		"font": "Cairo, Arial, sans-serif",
 		"heading": "مسار اليوم",
 		"dayMode": "populated",
-		"bodyText": "Skip to content\nدراسة تصميمية · قراءات توضيحية\nFITWAY\nاليوم\nEnglish\nحالة النادي الآن\nمفتوح · قراءة حالية\nمتوسط · نحو 37 حاضرًا\nحالي\nتحديث 5:42 م\nمسار اليوم\n\nصورة واضحة لما سُجّل من الافتتاح حتى الإغلاق.\n\nاليوم المسجّل\nالاثنين، 21 سبتمبر 2026\nالأوقات حسب المنطقة الزمنية للنادي\nالإشغال المرصود\n\nقراءات الدقائق خلال اليوم المجدول\n\nمرصود\nلا قراءة\nمغلق\n80\n60\n40\n20\n0\n6:00 ص\n10:00 ص\n2:00 م\n6:00 م\n10:00 م\n"
+		"bodyText": "Skip to content\nدراسة تصميمية · قراءات توضيحية\nFITWAY\nاليوم\nEnglish\nحالة النادي الآن\nمفتوح · قراءة حالية\nمتوسط · نحو 37 حاضرًا\nحالي\nتحديث 5:42 م\nمسار اليوم\n\nصورة واضحة لما سُجّل من الافتتاح حتى الإغلاق.\n\nاليوم المسجّل\nالاثنين، 21 سبتمبر 2026\nالأوقات حسب المنطقة الزمنية للنادي\nالإشغال المرصود\n\nقراءات الدقائق خلال اليوم المجدول\n\nمرصود\nلا قراءة\nمغلق\n80\n60\n40\n20\n0\n6:00 ص\n10:00 ص\n2:00 م\n6:00 م\n10:00 م\n",
+		"imageWidth": 390
 	},
 	{
 		"name": "dayline-en-mobile-full-390.png",
@@ -49,10 +65,14 @@
 		"dir": "ltr",
 		"scrollWidth": 390,
 		"clientWidth": 390,
+		"innerWidth": 390,
+		"devicePixelRatio": 1,
+		"reflowMediaQuery": false,
 		"font": "Cairo, Arial, sans-serif",
 		"heading": "The day's course",
 		"dayMode": "populated",
-		"bodyText": "Skip to content\nDesign study · illustrative readings\nFITWAY\nDay\nالعربية\nGym state now\nOpen · current reading\nModerate · approximately 37 present\nCurrent\nUpdated 5:42 PM\nThe day's course\n\nA clear view of what was recorded, from opening to close.\n\nRecorded day\nMonday, 21 September 2026\nTimes shown in the gym's timezone\nObserved occupancy\n\nMinute readings across the scheduled day\n\nRecorded\nNo reading"
+		"bodyText": "Skip to content\nDesign study · illustrative readings\nFITWAY\nDay\nالعربية\nGym state now\nOpen · current reading\nModerate · approximately 37 present\nCurrent\nUpdated 5:42 PM\nThe day's course\n\nA clear view of what was recorded, from opening to close.\n\nRecorded day\nMonday, 21 September 2026\nTimes shown in the gym's timezone\nObserved occupancy\n\nMinute readings across the scheduled day\n\nRecorded\nNo reading",
+		"imageWidth": 390
 	},
 	{
 		"name": "dayline-ar-mobile-full-390.png",
@@ -60,10 +80,29 @@
 		"dir": "rtl",
 		"scrollWidth": 390,
 		"clientWidth": 390,
+		"innerWidth": 390,
+		"devicePixelRatio": 1,
+		"reflowMediaQuery": false,
 		"font": "Cairo, Arial, sans-serif",
 		"heading": "مسار اليوم",
 		"dayMode": "populated",
-		"bodyText": "Skip to content\nدراسة تصميمية · قراءات توضيحية\nFITWAY\nاليوم\nEnglish\nحالة النادي الآن\nمفتوح · قراءة حالية\nمتوسط · نحو 37 حاضرًا\nحالي\nتحديث 5:42 م\nمسار اليوم\n\nصورة واضحة لما سُجّل من الافتتاح حتى الإغلاق.\n\nاليوم المسجّل\nالاثنين، 21 سبتمبر 2026\nالأوقات حسب المنطقة الزمنية للنادي\nالإشغال المرصود\n\nقراءات الدقائق خلال اليوم المجدول\n\nمرصود\nلا قراءة\nمغلق\n80\n60\n40\n20\n0\n6:00 ص\n10:00 ص\n2:00 م\n6:00 م\n10:00 م\n"
+		"bodyText": "Skip to content\nدراسة تصميمية · قراءات توضيحية\nFITWAY\nاليوم\nEnglish\nحالة النادي الآن\nمفتوح · قراءة حالية\nمتوسط · نحو 37 حاضرًا\nحالي\nتحديث 5:42 م\nمسار اليوم\n\nصورة واضحة لما سُجّل من الافتتاح حتى الإغلاق.\n\nاليوم المسجّل\nالاثنين، 21 سبتمبر 2026\nالأوقات حسب المنطقة الزمنية للنادي\nالإشغال المرصود\n\nقراءات الدقائق خلال اليوم المجدول\n\nمرصود\nلا قراءة\nمغلق\n80\n60\n40\n20\n0\n6:00 ص\n10:00 ص\n2:00 م\n6:00 م\n10:00 م\n",
+		"imageWidth": 390
+	},
+	{
+		"name": "dayline-en-reflow-320-200pct.png",
+		"title": "FITWAY — The Dayline concept",
+		"dir": "ltr",
+		"scrollWidth": 320,
+		"clientWidth": 320,
+		"innerWidth": 320,
+		"devicePixelRatio": 2,
+		"reflowMediaQuery": true,
+		"font": "Cairo, Arial, sans-serif",
+		"heading": "The day's course",
+		"dayMode": "populated",
+		"bodyText": "Skip to content\nDesign study · illustrative readings\nFITWAY\nDay\nالعربية\nGym state now\nOpen · current reading\nModerate · approximately 37 present\nCurrent\nUpdated 5:42 PM\nThe day's course\n\nA clear view of what was recorded, from opening to close.\n\nRecorded day\nMonday, 21 September 2026\nTimes shown in the gym's timezone\nObserved occupancy\n\nMinute readings across the scheduled day\n\nRecorded\nNo reading",
+		"imageWidth": 640
 	},
 	{
 		"name": "dayline-ar-reflow-320-200pct.png",
@@ -71,10 +110,14 @@
 		"dir": "rtl",
 		"scrollWidth": 320,
 		"clientWidth": 320,
+		"innerWidth": 320,
+		"devicePixelRatio": 2,
+		"reflowMediaQuery": true,
 		"font": "Cairo, Arial, sans-serif",
 		"heading": "مسار اليوم",
 		"dayMode": "populated",
-		"bodyText": "Skip to content\nدراسة تصميمية · قراءات توضيحية\nFITWAY\nاليوم\nEnglish\nحالة النادي الآن\nمفتوح · قراءة حالية\nمتوسط · نحو 37 حاضرًا\nحالي\nتحديث 5:42 م\nمسار اليوم\n\nصورة واضحة لما سُجّل من الافتتاح حتى الإغلاق.\n\nاليوم المسجّل\nالاثنين، 21 سبتمبر 2026\nالأوقات حسب المنطقة الزمنية للنادي\nالإشغال المرصود\n\nقراءات الدقائق خلال اليوم المجدول\n\nمرصود\nلا قراءة\nمغلق\n80\n60\n40\n20\n0\n6:00 ص\n2:00 م\n10:00 م\nينقطع الخط عندم"
+		"bodyText": "Skip to content\nدراسة تصميمية · قراءات توضيحية\nFITWAY\nاليوم\nEnglish\nحالة النادي الآن\nمفتوح · قراءة حالية\nمتوسط · نحو 37 حاضرًا\nحالي\nتحديث 5:42 م\nمسار اليوم\n\nصورة واضحة لما سُجّل من الافتتاح حتى الإغلاق.\n\nاليوم المسجّل\nالاثنين، 21 سبتمبر 2026\nالأوقات حسب المنطقة الزمنية للنادي\nالإشغال المرصود\n\nقراءات الدقائق خلال اليوم المجدول\n\nمرصود\nلا قراءة\nمغلق\n80\n60\n40\n20\n0\n6:00 ص\n2:00 م\n10:00 م\nينقطع الخط عندم",
+		"imageWidth": 640
 	},
 	{
 		"name": "dayline-en-stale-desktop-1440x900.png",
@@ -82,10 +125,14 @@
 		"dir": "ltr",
 		"scrollWidth": 1440,
 		"clientWidth": 1440,
+		"innerWidth": 1440,
+		"devicePixelRatio": 1,
+		"reflowMediaQuery": false,
 		"font": "Cairo, Arial, sans-serif",
 		"heading": "The day's course",
 		"dayMode": "populated",
-		"bodyText": "Skip to content\nDesign study · illustrative readings\nTHE DAYLINE / مسار اليوم\nFITWAY\nDay\nRecords\nExplore\nالعربية\nGym state now\nLast known reading\nModerate · approximately 37 present\nDelayed\nLast updated 4:31 PM\nThe day's course\n\nA clear view of what was recorded, from opening to close.\n\nRecorded day\nMonday, 21 September 2026\nTimes shown in the gym's timezone\nObserved occupancy\n\nMinute readings acr"
+		"bodyText": "Skip to content\nDesign study · illustrative readings\nTHE DAYLINE / مسار اليوم\nFITWAY\nDay\nRecords\nExplore\nالعربية\nGym state now\nLast known reading\nModerate · approximately 37 present\nDelayed\nLast updated 4:31 PM\nThe day's course\n\nA clear view of what was recorded, from opening to close.\n\nRecorded day\nMonday, 21 September 2026\nTimes shown in the gym's timezone\nObserved occupancy\n\nMinute readings acr",
+		"imageWidth": 1440
 	},
 	{
 		"name": "dayline-ar-closed-mobile-390x844.png",
@@ -93,10 +140,14 @@
 		"dir": "rtl",
 		"scrollWidth": 390,
 		"clientWidth": 390,
+		"innerWidth": 390,
+		"devicePixelRatio": 1,
+		"reflowMediaQuery": false,
 		"font": "Cairo, Arial, sans-serif",
 		"heading": "مسار اليوم",
 		"dayMode": "state",
-		"bodyText": "Skip to content\nدراسة تصميمية · قراءات توضيحية\nFITWAY\nاليوم\nEnglish\nحالة النادي الآن\nمغلق\nالافتتاح التالي 7:00 ص\nمسار اليوم\n\nصورة واضحة لما سُجّل من الافتتاح حتى الإغلاق.\n\nاليوم المسجّل\nالاثنين، 21 سبتمبر 2026\nالأوقات حسب المنطقة الزمنية للنادي\nكان النادي مغلقًا في هذا اليوم\n\nلا توجد دقائق افتتاح مجدولة أو قراءات إشغال لهذا التاريخ.\n\nافحص القراءات الدقيقة\n\nتحتفظ كل دقيقة مجدولة بحالتها: مرصودة أو "
+		"bodyText": "Skip to content\nدراسة تصميمية · قراءات توضيحية\nFITWAY\nاليوم\nEnglish\nحالة النادي الآن\nمغلق\nالافتتاح التالي 7:00 ص\nمسار اليوم\n\nصورة واضحة لما سُجّل من الافتتاح حتى الإغلاق.\n\nاليوم المسجّل\nالاثنين، 21 سبتمبر 2026\nالأوقات حسب المنطقة الزمنية للنادي\nكان النادي مغلقًا في هذا اليوم\n\nلا توجد دقائق افتتاح مجدولة أو قراءات إشغال لهذا التاريخ.\n\nافحص القراءات الدقيقة\n\nتحتفظ كل دقيقة مجدولة بحالتها: مرصودة أو ",
+		"imageWidth": 390
 	},
 	{
 		"name": "dayline-en-no-readings-mobile-390x844.png",
@@ -104,10 +155,14 @@
 		"dir": "ltr",
 		"scrollWidth": 390,
 		"clientWidth": 390,
+		"innerWidth": 390,
+		"devicePixelRatio": 1,
+		"reflowMediaQuery": false,
 		"font": "Cairo, Arial, sans-serif",
 		"heading": "The day's course",
 		"dayMode": "state",
-		"bodyText": "Skip to content\nDesign study · illustrative readings\nFITWAY\nDay\nالعربية\nGym state now\nReading unavailable\nCrowd level cannot be confirmed\nThe day's course\n\nA clear view of what was recorded, from opening to close.\n\nRecorded day\nMonday, 21 September 2026\nTimes shown in the gym's timezone\nNo occupancy readings for this day\n\nThe scheduled open minutes have no recorded occupancy. No count, peak, or av"
+		"bodyText": "Skip to content\nDesign study · illustrative readings\nFITWAY\nDay\nالعربية\nGym state now\nReading unavailable\nCrowd level cannot be confirmed\nThe day's course\n\nA clear view of what was recorded, from opening to close.\n\nRecorded day\nMonday, 21 September 2026\nTimes shown in the gym's timezone\nNo occupancy readings for this day\n\nThe scheduled open minutes have no recorded occupancy. No count, peak, or av",
+		"imageWidth": 390
 	},
 	{
 		"name": "dayline-en-loading-mobile-390x844.png",
@@ -115,10 +170,14 @@
 		"dir": "ltr",
 		"scrollWidth": 390,
 		"clientWidth": 390,
+		"innerWidth": 390,
+		"devicePixelRatio": 1,
+		"reflowMediaQuery": false,
 		"font": "Cairo, Arial, sans-serif",
 		"heading": "The day's course",
 		"dayMode": "state",
-		"bodyText": "Skip to content\nDesign study · illustrative readings\nFITWAY\nDay\nالعربية\nGym state now\nChecking gym state\nWaiting for a current reading\nThe day's course\n\nA clear view of what was recorded, from opening to close.\n\nRecorded day\nMonday, 21 September 2026\nTimes shown in the gym's timezone\nLoading the day record\n\nThe recorded trajectory will appear when the request completes.\n\nFITWAY\nConcept-only Owner "
+		"bodyText": "Skip to content\nDesign study · illustrative readings\nFITWAY\nDay\nالعربية\nGym state now\nChecking gym state\nWaiting for a current reading\nThe day's course\n\nA clear view of what was recorded, from opening to close.\n\nRecorded day\nMonday, 21 September 2026\nTimes shown in the gym's timezone\nLoading the day record\n\nThe recorded trajectory will appear when the request completes.\n\nFITWAY\nConcept-only Owner ",
+		"imageWidth": 390
 	},
 	{
 		"name": "dayline-ar-error-mobile-390x844.png",
@@ -126,10 +185,14 @@
 		"dir": "rtl",
 		"scrollWidth": 390,
 		"clientWidth": 390,
+		"innerWidth": 390,
+		"devicePixelRatio": 1,
+		"reflowMediaQuery": false,
 		"font": "Cairo, Arial, sans-serif",
 		"heading": "مسار اليوم",
 		"dayMode": "state",
-		"bodyText": "Skip to content\nدراسة تصميمية · قراءات توضيحية\nFITWAY\nاليوم\nEnglish\nحالة النادي الآن\nتعذر تحميل حالة النادي\nتعذر استرجاع الحالة الحالية\nأعد المحاولة\nمسار اليوم\n\nصورة واضحة لما سُجّل من الافتتاح حتى الإغلاق.\n\nاليوم المسجّل\nالاثنين، 21 سبتمبر 2026\nالأوقات حسب المنطقة الزمنية للنادي\nتعذر تحميل سجل اليوم\n\nحاول مجددًا لعرض الدقائق المسجلة.\n\nأعد المحاولة\nFITWAY\nاستكشاف تصوري للمالك · قيم توضيحية\nعاين حا"
+		"bodyText": "Skip to content\nدراسة تصميمية · قراءات توضيحية\nFITWAY\nاليوم\nEnglish\nحالة النادي الآن\nتعذر تحميل حالة النادي\nتعذر استرجاع الحالة الحالية\nأعد المحاولة\nمسار اليوم\n\nصورة واضحة لما سُجّل من الافتتاح حتى الإغلاق.\n\nاليوم المسجّل\nالاثنين، 21 سبتمبر 2026\nالأوقات حسب المنطقة الزمنية للنادي\nتعذر تحميل سجل اليوم\n\nحاول مجددًا لعرض الدقائق المسجلة.\n\nأعد المحاولة\nFITWAY\nاستكشاف تصوري للمالك · قيم توضيحية\nعاين حا",
+		"imageWidth": 390
 	},
 	{
 		"width": 320,

@@ -52,11 +52,19 @@ const cases = [
 		fullPage: true,
 	},
 	{
+		name: "dayline-en-reflow-320-200pct.png",
+		lang: "en",
+		width: 320,
+		height: 844,
+		reflow: true,
+		fullPage: true,
+	},
+	{
 		name: "dayline-ar-reflow-320-200pct.png",
 		lang: "ar",
 		width: 320,
 		height: 844,
-		dpr: 2,
+		reflow: true,
 		fullPage: true,
 	},
 	{
@@ -102,7 +110,7 @@ const cases = [
 for (const item of cases) {
 	const page = await browser.newPage({
 		viewport: { width: item.width, height: item.height },
-		deviceScaleFactor: item.dpr ?? 1,
+		deviceScaleFactor: item.reflow ? 2 : 1,
 		reducedMotion: "reduce",
 	});
 	const query = new URLSearchParams({
@@ -112,7 +120,7 @@ for (const item of cases) {
 	});
 	await page.goto(`${base}?${query}`, { waitUntil: "networkidle" });
 	await page.evaluate(() => document.fonts.ready);
-	await page.screenshot({
+	const screenshot = await page.screenshot({
 		path: path.join(folder, item.name),
 		fullPage: !!item.fullPage,
 		animations: "disabled",
@@ -122,12 +130,28 @@ for (const item of cases) {
 		dir: document.documentElement.dir,
 		scrollWidth: document.documentElement.scrollWidth,
 		clientWidth: document.documentElement.clientWidth,
+		innerWidth: window.innerWidth,
+		devicePixelRatio: window.devicePixelRatio,
+		reflowMediaQuery: matchMedia("(max-width: 320px)").matches,
 		font: getComputedStyle(document.querySelector("h1")).fontFamily,
 		heading: document.querySelector("h1")?.textContent,
 		dayMode: document.querySelector(".day-stage")?.dataset.mode,
 		bodyText: document.body.innerText.slice(0, 400),
 	}));
-	results.push({ name: item.name, ...values });
+	const imageWidth = screenshot.readUInt32BE(16);
+	if (
+		item.reflow &&
+		(values.innerWidth !== 320 ||
+			values.clientWidth !== 320 ||
+			values.devicePixelRatio !== 2 ||
+			!values.reflowMediaQuery ||
+			imageWidth !== 640)
+	) {
+		throw new Error(
+			`Reflow metrics did not resolve to 320 CSS px / 640 physical px: ${JSON.stringify({ name: item.name, ...values, imageWidth })}`,
+		);
+	}
+	results.push({ name: item.name, ...values, imageWidth });
 	await page.close();
 }
 for (const width of [320, 360, 390, 721, 768, 820, 1024, 1200, 1440]) {
