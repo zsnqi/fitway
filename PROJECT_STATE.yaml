@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-09-21T17:38:56.539Z
+updatedAt: 2026-09-22T19:55:00+03:00
 coordinator:
-  owner: "Primary coordinator and integrator for the FITWAY repository; owner-design-exploration-r01 is open as READY, and exploration-concept-phase-lifecycle-r01 is archived DONE."
+  owner: "Primary coordinator and integrator for the FITWAY repository; owner-design-exploration-r01 is archived NEEDS_HUMAN after the explicit stop, and owner-design-exploration-r02 is PLANNED with a DRAFT packet that authorizes no work."
   stateFilePolicy: "coordinator-only"
 baseline:
   status: "DONE"
@@ -19,37 +19,41 @@ baseline:
   validationRecord: "docs/phase-records/baseline-reconciliation-gate.md"
   independentVerification: "docs/phase-records/baseline-independent-verification.md"
 milestones:
-  owner-design-exploration-r01:
-    status: READY
+  owner-design-exploration-r02:
+    status: PLANNED
     objective: >-
-      After the standing design-environment audit gate is resolved, produce and judge two or
-      three whole-page Owner composition alternatives through the concept-selection gate for the
-      seven ADR-009 surfaces, with no production implementation, no canonical or visual-authority
-      change, and explicit human approval of the selected concept as a separate decision.
+      Preserve a durable, user-directed successor context for a future Owner composition
+      exploration after r01 was explicitly stopped, without starting design work or changing
+      production, canonical, Paper, or visual-authority state.
     taskClass: visual-authority-change
-    taskPacket: docs/phase-records/task-packets/owner-design-exploration-r01.yaml
-    taskPacketSha256: 9d7cf201c87a49f2b95747a40b7f62c3f69a664b09c1a350480a0493866e1d65
+    taskPacket: docs/phase-records/task-packets/owner-design-exploration-r02.yaml
+    taskPacketSha256: a7eefbeb360026065d27cc48e292ccec711a68782da4ba85e5a45f3f243ef5fc
     dependencies: []
-    ownerSession: owner-design-exploration-r01-coordinator
+    ownerSession: owner-design-exploration-r02-coordinator
     branch: codex/owner-design-exploration-r01
     worktree: C:/Users/Pc Force/.codex/worktrees/owner-design-exploration-r01/phase5-staff-integration
-    baseCommit: SELF
+    baseCommit: 210b5df538bb6c71b250790725fc9b7329a0dc1a
     ownedPaths:
-      - design-research/owner-composition-exploration-r01/** (concept input and artifacts; not authority)
-      - docs/phase-records/handoffs/owner-design-exploration/** (milestone handoffs and records)
-      - docs/phase-records/task-packets/owner-design-exploration-r01.yaml and PROJECT_STATE.yaml (coordinator state only)
+      - design-research/owner-composition-exploration-r02/** (future concept input and artifacts only; not authority)
+      - docs/phase-records/handoffs/owner-design-exploration/** (successor planning and future milestone handoffs)
+      - docs/phase-records/task-packets/owner-design-exploration-r02.yaml (successor packet only)
+      - PROJECT_STATE_HISTORY.yaml
+      - docs/phase-records/history-transitions/0007-20260922-owner-design-exploration-r01-stop.json
     forbiddenPaths:
+      - design-research/owner-composition-exploration-r01/** (preserved r01 diagnostic/provenance frontier; read-only, including the required discovery brief)
       - apps/** and packages/** production code, copy, behavior, and data semantics
       - tests/browser/** including every screenshot and canonical
       - visual-direction-gate/**, docs/design/VISUAL_AUTHORITY_STATUS.md, docs/design/PAPER_GUIDE_CONFLICT_MAP.md, docs/adr/**, approval manifests, and pinned hashes
-      - PROJECT_STATE_HISTORY.yaml, docs/archive/**, prior handoffs, and phase records
+      - docs/phase-records/task-packets/owner-design-exploration-r01.yaml
+      - PROJECT_STATE.yaml
+      - docs/archive/**, prior handoffs, and unrelated phase records
+      - docs/WORKFLOW.md
       - pnpm-lock.yaml, dependency versions, and database schema or migrations
-    sharedLeases:
-      - Coordinator-exclusive PROJECT_STATE.yaml, this packet, and owner-design-exploration handoff surfaces for owner-design-exploration-r01
+    sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: 2026-09-21T20:50:00+03:00
-    leaseExpiresAt: 2026-09-22T20:50:00+03:00
-    handoff: docs/phase-records/handoffs/owner-design-exploration/20260921-205000-design-environment-audit-resolution-and-activation.md
+    lastHeartbeatAt: null
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/owner-design-exploration/20260922-193949-owner-design-exploration-r02-planned-context.md
     stopReason: null
     gates:
       unit: NOT_REQUIRED

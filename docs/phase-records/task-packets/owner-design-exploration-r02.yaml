@@ -1,0 +1,187 @@
+# Coordinator-authored derived context. Not authority. DRAFT while the milestone is PLANNED;
+# it authorizes no work, lease, activation, or design session until the coordinator explicitly
+# activates the successor and marks this packet READY.
+schemaVersion: 1
+milestoneId: owner-design-exploration-r02
+taskClass: visual-authority-change
+packetStatus: DRAFT
+stateRef: PROJECT_STATE.yaml#/milestones/owner-design-exploration-r02
+baseCommit: 210b5df538bb6c71b250790725fc9b7329a0dc1a
+task:
+  objective: >-
+    Preserve a durable, user-directed successor context for a future Owner composition
+    exploration after r01 was explicitly stopped, without starting design work or changing
+    production, canonical, Paper, or visual-authority state.
+  acceptanceCriteria:
+    - The packet remains DRAFT while the successor milestone is PLANNED and authorizes no work, lease, activation, or design session.
+    - The complete Owner discovery brief is routed as a supplemental whole-file design source and is explicitly treated as non-authoritative human-interview and diagnostic evidence.
+    - Any later activated exploration begins from the recorded dark black/red FITWAY foundation search space with room for supporting colors, lighter breathing room, material depth, type voice, intentional motion, bilingual clarity, low cognitive load, and progressive disclosure; no fixed direction count or forced non-dark/non-red departure is imposed here.
+    - Any later concept remains concept-only until the concept, accessibility, perceptual, independent-review, and explicit human-approval gates complete; promotion remains a separate human baseline decision.
+    - The stopped r01 artifacts, rejected directions, prior prototypes, Public/Staff surfaces, and Paper frames remain preserved as diagnostic/provenance evidence and are not copied as future Owner visual references.
+    - "Production remains unchanged: dark-only v1, the --fw-* baseline, Cairo actual weights 400/500/600/700, static atmosphere, RTL/LTR, Western digits, accessibility, security, privacy, data semantics, and Product/Spec contracts."
+  explicitExclusions:
+    - Any design exploration, prototype, production UI, CSS, copy, behavior, hook, route, i18n, dependency, schema, API, or data-semantics change while this packet is DRAFT/PLANNED.
+    - Any fixed number of future directions or requirement to produce a wholly non-dark/non-red direction.
+    - Any reuse of rejected D1-D3 or earlier Owner prototype palettes, font voice, repeated-box language, slider treatment, Public/Staff composition, or Paper frame as a future Owner visual reference.
+    - Any canonical, Paper, manifest, approval-hash, register, ADR, or visual-authority change; concept promotion remains a separate serialized human action.
+    - Any Owner composition authority claim, concept selection, or assumption that the human search-space preference is a locked production token or theme decision.
+scope:
+  ownedPaths:
+    - design-research/owner-composition-exploration-r02/** (future concept input and artifacts only; not authority)
+    - docs/phase-records/handoffs/owner-design-exploration/** (successor planning and future milestone handoffs)
+    - docs/phase-records/task-packets/owner-design-exploration-r02.yaml (successor packet only)
+    - PROJECT_STATE_HISTORY.yaml
+    - docs/phase-records/history-transitions/0007-20260922-owner-design-exploration-r01-stop.json
+  forbiddenPaths:
+    - design-research/owner-composition-exploration-r01/** (preserved r01 diagnostic/provenance frontier; read-only, including the required discovery brief)
+    - apps/** and packages/** production code, copy, behavior, and data semantics
+    - tests/browser/** including every screenshot and canonical
+    - visual-direction-gate/**, docs/design/VISUAL_AUTHORITY_STATUS.md, docs/design/PAPER_GUIDE_CONFLICT_MAP.md, docs/adr/**, approval manifests, and pinned hashes
+    - docs/phase-records/task-packets/owner-design-exploration-r01.yaml
+    - PROJECT_STATE.yaml
+    - docs/archive/**, prior handoffs, and unrelated phase records
+    - docs/WORKFLOW.md
+    - pnpm-lock.yaml, dependency versions, and database schema or migrations
+  sharedLeases: []
+authorities:
+  required:
+    - role: product
+      path: FITWAY_PRODUCT.md
+      selector: { kind: markdown-heading, value: "Approved visual baseline" }
+      reason: Preserve FITWAY identity, the production dark-only baseline, and locked product semantics while future Owner questions are explored.
+    - role: spec
+      path: SPEC.md
+      selector: { kind: markdown-heading, value: "Implementation authority and fidelity contract" }
+      reason: Preserve security, privacy, accessibility, bilingual behavior, and data contracts in any later concept.
+    - role: design
+      path: DESIGN_GUIDE.md
+      selector: { kind: markdown-heading, value: "15. Phase visual gate" }
+      reason: Route the responsive, RTL/LTR, typography, accessibility, motion, and visual-gate baseline for any later concept.
+    - role: design
+      path: DESIGN.md
+      selector: { kind: markdown-heading, value: "Exploration mode" }
+      reason: Keep future concept work inside exploration mode and prevent incumbent inheritance from becoming authority.
+    - role: visual-status
+      path: docs/design/VISUAL_AUTHORITY_STATUS.md
+      selector: { kind: markdown-heading, value: "Register" }
+      reason: Confirm that Owner composition authority remains vacant under ADR-009 and that other surfaces are unaffected.
+    - role: adr
+      path: docs/adr/ADR-007-paper-visual-source-of-truth.md
+      selector: { kind: markdown-heading, value: "Authority split" }
+      reason: Preserve the Paper-versus-repository authority split and stop at NEEDS_HUMAN when unavailable Paper is required.
+    - role: workflow
+      path: docs/WORKFLOW.md
+      selector: { kind: markdown-heading, value: "Design work: authority, concepts, and perceptual gates" }
+      reason: Route the concept, perceptual, accessibility, promotion, and human-approval gates for any later activation.
+    - role: test
+      path: scripts/verify-repository.mjs
+      selector: { kind: whole-file, value: "" }
+      reason: Preserve repository state, authority, history, and artifact invariants.
+    - role: adr
+      path: docs/adr/ADR-009-owner-composition-authority-supersession.md
+      selector: { kind: markdown-heading, value: "Decision" }
+      reason: Owner composition authority is vacant; prior Owner compositions remain provenance and cannot authorize promotion.
+    - role: design
+      path: design-research/owner-composition-exploration-r01/OWNER_DISCOVERY_BRIEF.md
+      selector: { kind: whole-file, value: "" }
+      reason: "Required supplemental read: human-interview and diagnostic evidence only; it is non-authoritative and cannot approve a concept, redefine tokens, establish visual authority, or promote production."
+  conditional:
+    - trigger: the route or surface is Owner
+      role: adr
+      path: docs/adr/ADR-009-owner-composition-authority-supersession.md
+      selector: { kind: markdown-heading, value: "Decision" }
+      actionIfTriggered: READ
+    - trigger: Paper is unavailable and composition depends on it
+      role: visual-status
+      path: docs/design/PAPER_GUIDE_CONFLICT_MAP.md
+      selector: { kind: whole-file, value: "" }
+      actionIfTriggered: NEEDS_HUMAN
+continuity:
+  predecessorMilestones:
+    - owner-design-exploration-r01
+  currentHandoff: docs/phase-records/handoffs/owner-design-exploration/20260922-193949-owner-design-exploration-r02-planned-context.md
+  unresolvedDecisions:
+    - "The coordinator must explicitly activate r02 after a future user request; this DRAFT packet starts no design work and has no lease."
+    - "The future direction set and its count remain user/coordinator decisions; the successor does not require a wholly non-dark or non-red direction."
+    - "Owner composition authority remains vacant; any selected concept needs explicit human approval before implementation or promotion."
+    - "Any departure from a locked production visual rule requires a separate human baseline decision and its own perceptual gate."
+    - "Live Paper tool exposure is unresolved; a composition decision that depends on it stops at NEEDS_HUMAN."
+verification:
+  profile: planned Owner exploration successor context; no design or production verification while DRAFT/PLANNED
+  orderedGates:
+    - Read the complete supplemental design source design-research/owner-composition-exploration-r01/OWNER_DISCOVERY_BRIEF.md before any future action; label it human-interview and diagnostic evidence only, not authority.
+    - Read docs/phase-records/handoffs/owner-design-exploration/20260922-193949-owner-design-exploration-r02-planned-context.md and preserve the no-copy boundary for rejected D1-D3, prior prototypes, Public/Staff, and Paper.
+    - "Run bounded context:show and check:agent-context validation after coordinator activation confirms the r02 state, packet hash, scope, current handoff, and supplemental source route."
+    - "At future design-session entry, run pnpm check:design-context; do not treat a passing context check as visual acceptance."
+    - If activated, articulate a user-requested set of distinct whole-page visual worlds with no fixed count implied by this packet, preserving dark black/red FITWAY foundation search-space qualities, bilingual clarity, low cognitive load, and progressive disclosure.
+    - Run the concept-selection, accessibility, perceptual, independent-review, and explicit-human-approval gates with exact EN/AR, responsive, reflow, state-truth, and focus evidence before any implementation milestone.
+    - Keep canonical promotion separate and serialized through an explicit human baseline decision; no green check or concept record promotes a departure.
+  independentReviewRequired: true
+evidence:
+  receiptTemplate: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
+  requiredArtifacts:
+    - "exact context:show and check:agent-context outputs and the r02 packet SHA-256 after activation"
+    - the supplemental OWNER_DISCOVERY_BRIEF.md and its referenced diagnostic evidence, preserved as non-authoritative provenance
+    - the planned-context handoff and any later activation handoff
+    - future concept artifacts, exact inspected frames, accessibility/perceptual judgments, and explicit human concept decision if r02 is activated
+limitations:
+  - This packet is DRAFT while r02 is PLANNED and authorizes no work, lease, activation, design session, or production change.
+  - The r01 exploration folder and all rejected directions are preserved diagnostic/provenance evidence only; they are not copied or accepted as future Owner visual references.
+  - The discovery brief is a required supplemental read but is not Product, Spec, design-system, visual-authority, canonical, acceptance, or promotion authority.
+  - The human dark black/red foundation preference is a successor search-space direction, not a production token lock, light-theme decision, or concept selection.
+  - The prior r01 envelope's non-dark/non-red requirement is not carried forward as a successor requirement; any future departure remains optional and separately gated.
+  - Live Paper tool exposure is unavailable; stored Paper frames are provenance only and cannot authorize an Owner composition decision.
+  - The schema-required visual.currentFrames and visual.referenceFrames are provenance/regression context only; they are not accepted frames, acceptance authority, or visual references for future concepts.
+visual:
+  surfaceKey: owner-composition-family
+  authorityStatus: VACANT
+  authorityKey: ADR-009
+  governingDecision: docs/adr/ADR-009-owner-composition-authority-supersession.md#decision
+  explorationEnvelope:
+    mode: EXPLORATION
+    lockedAxes:
+      - "Arabic-first RTL with English LTR, Western digits, bilingual clarity, and locked Product/Spec semantics."
+      - "Security, privacy, data semantics, accessibility baseline, and all non-visual Product/Spec contracts remain binding."
+      - "Production stays dark-only: v1 has no light theme or theme toggle; the --fw-* baseline, Cairo actual weights 400/500/600/700, and static-atmosphere contract remain unchanged."
+    variableAxes:
+      - "Concepts may begin from the human dark black/red FITWAY foundation while exploring supporting colors and lighter breathing room without creating a production light theme."
+      - "Surface and material depth, density and rhythm, type voice, chart and information hierarchy, navigation/composition, and intentional motion."
+      - "Low-cognitive-load reading order and progressive disclosure as concept questions, while state truth, trust, and semantic behavior remain locked."
+    requiredDepartures:
+      - "Each future direction must name a distinct visual world and make a meaningful composition, material, information-order, or interaction choice; this packet sets no fixed count and requires no wholly non-dark/non-red direction."
+    antiRuts:
+      - "Rejected fresh-round Directions 1–3 and their palettes, font voice, repeated hard-edged boxes, and slider treatment; they are diagnostic/provenance only."
+      - "Earlier Owner prototypes, including quarantined and independent rounds, plus Public/Staff surfaces and Paper frames; they are not future Owner visual references."
+      - "The incumbent production recipes and frozen prior Owner topology; provenance does not constrain or authorize the successor."
+    promotionRule: >-
+      A concept that departs from a locked production visual rule reaches production only through a
+      separate explicit human baseline decision with its own perceptual gate; this packet, the
+      discovery brief, a concept-selection record, or a green check never promotes a departure.
+    authorizingDecision: docs/phase-records/handoffs/owner-design-exploration/20260922-193949-owner-design-exploration-r02-planned-context.md
+  currentFrames:
+    - path: tests/browser/__screenshots__/win32/chromium/phase11-settings.browser.spec.ts/owner-settings-route-en-desktop-1440x900.png
+      sha256: f74e35849af287114402841ef39e8efbdad8f33835200bdcec7308058a1a74ec
+  referenceFrames:
+    - path: visual-direction-gate/approved/paper-route-authority-20260902/evidence/owner-settings/owner-settings-clean-en-desktop-1440.png
+      sha256: b2cc89a46b40a7517b2ea7a0eac87613908adf3225e052ec92cceac00171adf1
+  openHumanDecisions:
+    - "The coordinator must explicitly activate r02 after a future user request; this packet is DRAFT/PLANNED."
+    - "The future direction set, count, and selected concept require a later human decision; no direction is selected here."
+    - "Owner composition authority remains vacant under ADR-009."
+    - "Any departure from a locked production visual rule requires a separate human baseline decision and perceptual gate."
+    - "Live Paper tool exposure is unresolved; any composition decision that depends on it stops at NEEDS_HUMAN."
+  paperAvailability: UNAVAILABLE
+  perceptualGate:
+    status: PENDING
+    criteria: Future activated concepts require independent perceptual review of exact full-resolution EN/AR, desktop/mobile, reflow, and state-truth frames before VALIDATING, DONE, or promotion.
+  promotionGate:
+    status: NOT_REQUIRED
+    criteria: Canonical promotion is a separate serialized action requiring explicit human approval and is not part of this planned successor context.
+  acceptanceAuthority: NONE
+designContextCheck:
+  command: pnpm check:design-context
+  status: PENDING
+  artifact: null
+accessibilityGate:
+  status: PENDING
+  criteria: Future activated concepts require accessibility review for RTL/LTR, bilingual clarity, 320px/200% reflow, focus and target-size intent, low cognitive load, progressive disclosure, and truthful states before VALIDATING, DONE, or promotion.

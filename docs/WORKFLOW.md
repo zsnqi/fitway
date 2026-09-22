@@ -381,7 +381,9 @@ changes Owner, Staff, or Public presentation, in addition to the gates above.
    material, one control fill/radius family, one focus-ring recipe, stable page-context and
    navigation-rest contracts. New controls reuse the existing family primitives and tokens;
    introducing a second parallel primitive for an existing control role is a defect, not a
-   style choice.
+   style choice. When a dropdown or select is in scope, visually check the rendered indicator
+   inset and label clearance in Arabic RTL and English LTR at desktop, mobile, and 200% reflow;
+   native-arrow placement cannot be inferred from text padding.
 3. **Exploratory walkthrough.** The final gate for user-facing work includes a continuous interactive
    walkthrough of the real product — navigating between sections, opening controls near viewport
    edges, refreshing mid-section, switching locale, exercising loading/error/empty states —

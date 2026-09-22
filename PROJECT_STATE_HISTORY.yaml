@@ -4206,3 +4206,53 @@ milestones:
       visual: NOT_REQUIRED
       independentReview: PASS
     integratedCommit: 61c191f
+  owner-design-exploration-r01:
+    status: NEEDS_HUMAN
+    objective: >-
+      After the standing design-environment audit gate is resolved, produce and judge four
+      whole-page Owner composition alternatives through the concept-selection gate for the
+      seven ADR-009 surfaces, with no production implementation, no canonical or visual-authority
+      change, and explicit human approval of the selected concept as a separate decision.
+    taskClass: visual-authority-change
+    taskPacket: docs/phase-records/task-packets/owner-design-exploration-r01.yaml
+    taskPacketSha256: a492b6f222138d7029a84e67b8bd4db08b45f38eb04be6e3e113e1983b0333b6
+    dependencies: []
+    ownerSession: owner-design-exploration-r01-coordinator
+    branch: codex/owner-design-exploration-r01
+    worktree: C:/Users/Pc Force/.codex/worktrees/owner-design-exploration-r01/phase5-staff-integration
+    baseCommit: SELF
+    ownedPaths:
+      - design-research/owner-composition-exploration-r01/** (concept input and artifacts; not authority)
+      - docs/phase-records/handoffs/owner-design-exploration/** (milestone handoffs and records)
+      - docs/phase-records/task-packets/owner-design-exploration-r01.yaml and PROJECT_STATE.yaml (coordinator state only)
+      - docs/phase-records/task-packets/owner-design-exploration-r02.yaml (planned successor context only)
+      - docs/WORKFLOW.md (one-line cross-surface dropdown review clarification)
+      - PROJECT_STATE_HISTORY.yaml and docs/phase-records/history-transitions/0007-20260922-owner-design-exploration-r01-stop.json (coordinator-only terminal archive)
+    forbiddenPaths:
+      - apps/** and packages/** production code, copy, behavior, and data semantics
+      - tests/browser/** including every screenshot and canonical
+      - visual-direction-gate/**, docs/design/VISUAL_AUTHORITY_STATUS.md, docs/design/PAPER_GUIDE_CONFLICT_MAP.md, docs/adr/**, approval manifests, and pinned hashes
+      - docs/archive/**, prior handoffs, and unrelated phase records
+      - pnpm-lock.yaml, dependency versions, and database schema or migrations
+    sharedLeases:
+      - Coordinator-exclusive PROJECT_STATE.yaml, this packet, and owner-design-exploration handoff surfaces for owner-design-exploration-r01
+      - Coordinator-held docs/WORKFLOW.md and successor packet, with one delegated writer at a time
+      - Coordinator-exclusive PROJECT_STATE_HISTORY.yaml and history-transition receipt 0007
+    validationRepairAttempts: 0
+    lastHeartbeatAt: 2026-09-22T11:33:01+03:00
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/owner-design-exploration/20260922-193948-owner-design-exploration-r01-stop.md
+    stopReason: >-
+      NEEDS_HUMAN: the user explicitly stopped the Owner design exploration before concept
+      selection, accessibility review, perceptual review, independent review, or visual approval.
+      The preserved artifacts and the interview brief are diagnostic/provenance evidence only;
+      rejected directions are not future visual references. Resumption requires a separate explicit
+      request and activation of the DRAFT owner-design-exploration-r02 successor packet.
+    gates:
+      unit: NOT_REQUIRED
+      integration: NOT_REQUIRED
+      browser: NOT_REQUIRED
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null

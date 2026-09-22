@@ -1,21 +1,21 @@
-# Coordinator-authored derived context. Not authority. DRAFT while the milestone is PLANNED;
-# it authorizes no work until the coordinator activates the milestone and marks the packet READY.
+# Coordinator-authored derived context. Not authority. CLOSED after the explicit user stop;
+# the original exploration envelope and criteria below are historical and authorize no new work.
 schemaVersion: 1
 milestoneId: owner-design-exploration-r01
 taskClass: visual-authority-change
-packetStatus: READY
+packetStatus: CLOSED
 stateRef: PROJECT_STATE.yaml#/milestones/owner-design-exploration-r01
 baseCommit: SELF
 task:
   objective: >-
-    After the standing design-environment audit gate is resolved, produce and judge two or three
+    After the standing design-environment audit gate is resolved, produce and judge four
     whole-page Owner direction alternatives (composition and visual treatment) inside the recorded
     exploration envelope for the seven ADR-009 surfaces, with no production implementation, no
     canonical or visual-authority change, and explicit human approval of the selected concept as a
     separate decision.
   acceptanceCriteria:
     - The standing environment-audit gate is resolved by a recorded PASS or a recorded human decision superseding it before any concept work starts.
-    - Two or three whole-page Owner direction alternatives exist as inspectable concept artifacts for the ADR-009 surface family, each naming its own visual world and stating which envelope axes it varies; no two share a world.
+    - Four whole-page Owner direction alternatives exist as inspectable concept artifacts for the ADR-009 surface family, each naming its own visual world and stating which envelope axes it varies; no two share a world.
     - At least one alternative deliberately departs the incumbent near-black/oxblood/FITWAY-red atmosphere (it may be non-dark and non-red), every artifact is labeled concept-only, and no alternative is a layout-only restyle of the incumbent.
     - Each alternative is judged against the full concept-selection gate — spatial thesis, first-glance focal hierarchy, grouping and reading order, vertical and horizontal rhythm, density and intentional whitespace, separation of governance/controls/actions/data, and behavior at 1440px, mobile 390x844, 320px/200% reflow, EN, and AR — and the set is judged for direction distinctness from side-by-side full-resolution rendered frames.
     - The judged selection is presented to the human for explicit concept approval, and the record names the exact inspected frames with paths and hashes.
@@ -32,14 +32,19 @@ scope:
     - design-research/owner-composition-exploration-r01/** (concept input and artifacts; not authority)
     - docs/phase-records/handoffs/owner-design-exploration/** (milestone handoffs and records)
     - docs/phase-records/task-packets/owner-design-exploration-r01.yaml and PROJECT_STATE.yaml (coordinator state only)
+    - docs/phase-records/task-packets/owner-design-exploration-r02.yaml (planned successor context only)
+    - docs/WORKFLOW.md (one-line cross-surface dropdown review clarification)
+    - PROJECT_STATE_HISTORY.yaml and docs/phase-records/history-transitions/0007-20260922-owner-design-exploration-r01-stop.json (coordinator-only terminal archive)
   forbiddenPaths:
     - apps/** and packages/** production code, copy, behavior, and data semantics
     - tests/browser/** including every screenshot and canonical
     - visual-direction-gate/**, docs/design/VISUAL_AUTHORITY_STATUS.md, docs/design/PAPER_GUIDE_CONFLICT_MAP.md, docs/adr/**, approval manifests, and pinned hashes
-    - PROJECT_STATE_HISTORY.yaml, docs/archive/**, prior handoffs, and phase records
+    - docs/archive/**, prior handoffs, and unrelated phase records
     - pnpm-lock.yaml, dependency versions, and database schema or migrations
   sharedLeases:
     - Coordinator-exclusive PROJECT_STATE.yaml, this packet, and owner-design-exploration handoff surfaces for owner-design-exploration-r01
+    - Coordinator-held docs/WORKFLOW.md and successor packet, with one delegated writer at a time
+    - Coordinator-exclusive PROJECT_STATE_HISTORY.yaml and history-transition receipt 0007
 authorities:
   required:
     - role: product
@@ -95,7 +100,7 @@ authorities:
       actionIfTriggered: NEEDS_HUMAN
 continuity:
   predecessorMilestones: []
-  currentHandoff: docs/phase-records/handoffs/owner-design-exploration/20260921-205000-design-environment-audit-resolution-and-activation.md
+  currentHandoff: docs/phase-records/handoffs/owner-design-exploration/20260922-193948-owner-design-exploration-r01-stop.md
   unresolvedDecisions:
     - "Human concept approval of the selected whole-page alternative is required before any implementation or promotion."
     - "Promotion of any exploration departure from a locked production visual rule requires a separate explicit human baseline decision with its own perceptual gate."
@@ -120,7 +125,9 @@ evidence:
     - the concept-gate judgment naming its criteria and the frames inspected
     - the human concept decision record
 limitations:
-  - This packet is READY from its 2026-09-21 activation; it authorizes concept exploration artifacts only, under the recorded exploration envelope.
+  - Explicit human stop ended r01 without concept selection, visual acceptance, accessibility or perceptual PASS, independent review, or promotion; this CLOSED packet and its old required departures are historical only.
+  - The successor's distinct DRAFT packet routes the later human interview evidence; rejected r01 directions and this packet are not future visual references.
+  - This packet was READY from its 2026-09-21 activation until the explicit stop; it now authorizes no work.
   - "Concept-phase lifecycle: the accessibility and perceptual gates remain PENDING until the concept gate completes; both must be PASS before VALIDATING, any DONE record, or promotion."
   - Live Paper tool exposure was not re-probed at opening; the 2026-09-15 register records it as not exposed, and stored exports and canonicals are provenance only.
   - The design-context check passed in this opening worktree on 2026-09-20; the required per-session entry check must be re-run when the design session starts.
