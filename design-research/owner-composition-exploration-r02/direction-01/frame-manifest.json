@@ -139,8 +139,10 @@
 			"lang": "en",
 			"dir": "ltr",
 			"h1": "Open by schedule. Current crowd unknown.",
-			"current": "UnavailableDaily history has no current reading.",
-			"source": "admin.analytics.daily · historical only.",
+			"current": "Unavailable",
+			"source": "",
+			"dayTop": 577,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -151,8 +153,10 @@
 			"lang": "en",
 			"dir": "ltr",
 			"h1": "Open by schedule. Current crowd unknown.",
-			"current": "UnavailableDaily history has no current reading.",
-			"source": "admin.analytics.daily · historical only.",
+			"current": "Unavailable",
+			"source": "",
+			"dayTop": 584,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -163,8 +167,10 @@
 			"lang": "en",
 			"dir": "ltr",
 			"h1": "Open by schedule. Current crowd unknown.",
-			"current": "UnavailableDaily history has no current reading.",
-			"source": "admin.analytics.daily · historical only.",
+			"current": "Unavailable",
+			"source": "",
+			"dayTop": 550,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -175,8 +181,10 @@
 			"lang": "en",
 			"dir": "ltr",
 			"h1": "Open by schedule. Current crowd unknown.",
-			"current": "UnavailableDaily history has no current reading.",
-			"source": "admin.analytics.daily · historical only.",
+			"current": "Unavailable",
+			"source": "",
+			"dayTop": 611,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -187,8 +195,10 @@
 			"lang": "en",
 			"dir": "ltr",
 			"h1": "Open by schedule. Current crowd unknown.",
-			"current": "UnavailableDaily history has no current reading.",
-			"source": "admin.analytics.daily · historical only.",
+			"current": "Unavailable",
+			"source": "",
+			"dayTop": 611,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -199,8 +209,10 @@
 			"lang": "en",
 			"dir": "ltr",
 			"h1": "Open by schedule. Current crowd unknown.",
-			"current": "UnavailableDaily history has no current reading.",
-			"source": "admin.analytics.daily · historical only.",
+			"current": "Unavailable",
+			"source": "",
+			"dayTop": 611,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -211,8 +223,10 @@
 			"lang": "en",
 			"dir": "ltr",
 			"h1": "Open by schedule. Current crowd unknown.",
-			"current": "UnavailableDaily history has no current reading.",
-			"source": "admin.analytics.daily · historical only.",
+			"current": "Unavailable",
+			"source": "",
+			"dayTop": 533,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -223,8 +237,10 @@
 			"lang": "en",
 			"dir": "ltr",
 			"h1": "Open by schedule. Current crowd unknown.",
-			"current": "UnavailableDaily history has no current reading.",
-			"source": "admin.analytics.daily · historical only.",
+			"current": "Unavailable",
+			"source": "",
+			"dayTop": 465,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -235,8 +251,10 @@
 			"lang": "en",
 			"dir": "ltr",
 			"h1": "Open by schedule. Current crowd unknown.",
-			"current": "UnavailableDaily history has no current reading.",
-			"source": "admin.analytics.daily · historical only.",
+			"current": "Unavailable",
+			"source": "",
+			"dayTop": 465,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -247,8 +265,10 @@
 			"lang": "ar",
 			"dir": "rtl",
 			"h1": "مفتوح حسب الجدول. الازدحام الحالي غير معروف.",
-			"current": "غير متاحلا قراءة حالية في سجلّ اليوم.",
-			"source": "admin.analytics.daily · سجلّ تاريخي فقط.",
+			"current": "غير متاح",
+			"source": "",
+			"dayTop": 574,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -259,8 +279,10 @@
 			"lang": "ar",
 			"dir": "rtl",
 			"h1": "مفتوح حسب الجدول. الازدحام الحالي غير معروف.",
-			"current": "غير متاحلا قراءة حالية في سجلّ اليوم.",
-			"source": "admin.analytics.daily · سجلّ تاريخي فقط.",
+			"current": "غير متاح",
+			"source": "",
+			"dayTop": 581,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -271,8 +293,10 @@
 			"lang": "ar",
 			"dir": "rtl",
 			"h1": "مفتوح حسب الجدول. الازدحام الحالي غير معروف.",
-			"current": "غير متاحلا قراءة حالية في سجلّ اليوم.",
-			"source": "admin.analytics.daily · سجلّ تاريخي فقط.",
+			"current": "غير متاح",
+			"source": "",
+			"dayTop": 581,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -283,8 +307,10 @@
 			"lang": "ar",
 			"dir": "rtl",
 			"h1": "مفتوح حسب الجدول. الازدحام الحالي غير معروف.",
-			"current": "غير متاحلا قراءة حالية في سجلّ اليوم.",
-			"source": "admin.analytics.daily · سجلّ تاريخي فقط.",
+			"current": "غير متاح",
+			"source": "",
+			"dayTop": 615,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -295,8 +321,10 @@
 			"lang": "ar",
 			"dir": "rtl",
 			"h1": "مفتوح حسب الجدول. الازدحام الحالي غير معروف.",
-			"current": "غير متاحلا قراءة حالية في سجلّ اليوم.",
-			"source": "admin.analytics.daily · سجلّ تاريخي فقط.",
+			"current": "غير متاح",
+			"source": "",
+			"dayTop": 615,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -307,8 +335,10 @@
 			"lang": "ar",
 			"dir": "rtl",
 			"h1": "مفتوح حسب الجدول. الازدحام الحالي غير معروف.",
-			"current": "غير متاحلا قراءة حالية في سجلّ اليوم.",
-			"source": "admin.analytics.daily · سجلّ تاريخي فقط.",
+			"current": "غير متاح",
+			"source": "",
+			"dayTop": 615,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -319,8 +349,10 @@
 			"lang": "ar",
 			"dir": "rtl",
 			"h1": "مفتوح حسب الجدول. الازدحام الحالي غير معروف.",
-			"current": "غير متاحلا قراءة حالية في سجلّ اليوم.",
-			"source": "admin.analytics.daily · سجلّ تاريخي فقط.",
+			"current": "غير متاح",
+			"source": "",
+			"dayTop": 533,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -331,8 +363,10 @@
 			"lang": "ar",
 			"dir": "rtl",
 			"h1": "مفتوح حسب الجدول. الازدحام الحالي غير معروف.",
-			"current": "غير متاحلا قراءة حالية في سجلّ اليوم.",
-			"source": "admin.analytics.daily · سجلّ تاريخي فقط.",
+			"current": "غير متاح",
+			"source": "",
+			"dayTop": 465,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -343,8 +377,10 @@
 			"lang": "ar",
 			"dir": "rtl",
 			"h1": "مفتوح حسب الجدول. الازدحام الحالي غير معروف.",
-			"current": "غير متاحلا قراءة حالية في سجلّ اليوم.",
-			"source": "admin.analytics.daily · سجلّ تاريخي فقط.",
+			"current": "غير متاح",
+			"source": "",
+			"dayTop": 467,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -355,8 +391,10 @@
 			"lang": "en",
 			"dir": "ltr",
 			"h1": "Open by schedule. Current crowd unknown.",
-			"current": "UnavailableDaily history has no current reading.",
-			"source": "admin.analytics.daily · historical only.",
+			"current": "Unavailable",
+			"source": "",
+			"dayTop": 465,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -367,8 +405,10 @@
 			"lang": "en",
 			"dir": "ltr",
 			"h1": "Open by schedule. Current crowd unknown.",
-			"current": "UnavailableDaily history has no current reading.",
-			"source": "admin.analytics.daily · historical only.",
+			"current": "Unavailable",
+			"source": "",
+			"dayTop": 550,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -379,8 +419,10 @@
 			"lang": "en",
 			"dir": "ltr",
 			"h1": "Open by schedule. Current crowd unknown.",
-			"current": "UnavailableDaily history has no current reading.",
-			"source": "admin.analytics.daily · historical only.",
+			"current": "Unavailable",
+			"source": "",
+			"dayTop": 550,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -391,8 +433,10 @@
 			"lang": "ar",
 			"dir": "rtl",
 			"h1": "مفتوح حسب الجدول. الازدحام الحالي غير معروف.",
-			"current": "غير متاحلا قراءة حالية في سجلّ اليوم.",
-			"source": "admin.analytics.daily · سجلّ تاريخي فقط.",
+			"current": "غير متاح",
+			"source": "",
+			"dayTop": 467,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -403,8 +447,10 @@
 			"lang": "ar",
 			"dir": "rtl",
 			"h1": "مفتوح حسب الجدول. الازدحام الحالي غير معروف.",
-			"current": "غير متاحلا قراءة حالية في سجلّ اليوم.",
-			"source": "admin.analytics.daily · سجلّ تاريخي فقط.",
+			"current": "غير متاح",
+			"source": "",
+			"dayTop": 581,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -415,8 +461,10 @@
 			"lang": "ar",
 			"dir": "rtl",
 			"h1": "مفتوح حسب الجدول. الازدحام الحالي غير معروف.",
-			"current": "غير متاحلا قراءة حالية في سجلّ اليوم.",
-			"source": "admin.analytics.daily · سجلّ تاريخي فقط.",
+			"current": "غير متاح",
+			"source": "",
+			"dayTop": 581,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -426,9 +474,11 @@
 			"bodyWidth": 390,
 			"lang": "en",
 			"dir": "ltr",
-			"h1": "Open by schedule. A separate snapshot is available.",
-			"current": "42Moderateapproximate count · Fresh within the illustrative fixture clock.",
-			"source": "Separate sample staff.operationalSnapshot · observed 21:14 · fixture clock 21:15. This is not a real live reading.",
+			"h1": "Open by schedule. A recent sample reading is available.",
+			"current": "42Moderateapproximate count · Sample checked at 21:15.",
+			"source": "",
+			"dayTop": 639,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -438,9 +488,11 @@
 			"bodyWidth": 390,
 			"lang": "ar",
 			"dir": "rtl",
-			"h1": "مفتوح حسب الجدول. تتوفر لقطة تشغيلية منفصلة.",
-			"current": "42متوسطعدد تقريبي · حديثة وفق ساعة الحالة التوضيحية.",
-			"source": "لقطة توضيحية منفصلة من staff.operationalSnapshot · رُصدت 21:14 · ساعة الحالة 21:15. ليست قراءة حية حقيقية.",
+			"h1": "مفتوح حسب الجدول. تتوفر قراءة توضيحية حديثة.",
+			"current": "42متوسطعدد تقريبي · قراءة توضيحية تم التحقق منها عند 21:15.",
+			"source": "",
+			"dayTop": 654,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -452,7 +504,9 @@
 			"dir": "ltr",
 			"h1": "Closed today. No current crowd reading.",
 			"current": "No current valueClosed periods have no count or crowd band.",
-			"source": "Source: illustrative schedule state plus closed historical buckets.",
+			"source": "",
+			"dayTop": 561,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -464,7 +518,9 @@
 			"dir": "rtl",
 			"h1": "مغلق اليوم. لا توجد قراءة حالية للازدحام.",
 			"current": "لا توجد قيمة حاليةلا يحمل وقت الإغلاق عددًا أو مستوى ازدحام.",
-			"source": "المصدر: جدول توضيحي مع فترات تاريخية مغلقة.",
+			"source": "",
+			"dayTop": 575,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -475,8 +531,10 @@
 			"lang": "en",
 			"dir": "ltr",
 			"h1": "Open by schedule. No readings yet.",
-			"current": "UnavailableDaily history has no current reading.",
-			"source": "Source: illustrative schedule state; Daily Analytics has missing buckets only.",
+			"current": "Unavailable",
+			"source": "",
+			"dayTop": 550,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -487,8 +545,10 @@
 			"lang": "ar",
 			"dir": "rtl",
 			"h1": "مفتوح حسب الجدول. لا توجد قراءات بعد.",
-			"current": "غير متاحلا قراءة حالية في سجلّ اليوم.",
-			"source": "المصدر: جدول توضيحي؛ فترات تحليلات اليوم مفقودة فقط.",
+			"current": "غير متاح",
+			"source": "",
+			"dayTop": 557,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -500,7 +560,9 @@
 			"dir": "ltr",
 			"h1": "Checking the day’s record.",
 			"current": "PendingNo reading is shown while data loads.",
-			"source": "Sources unresolved in this preview. Nothing shown as live.",
+			"source": "",
+			"dayTop": 550,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -512,7 +574,9 @@
 			"dir": "rtl",
 			"h1": "جارٍ التحقق من سجل اليوم.",
 			"current": "قيد الانتظارلا تُعرض قراءة أثناء التحميل.",
-			"source": "المصادر قيد التحميل في هذه المعاينة. لا تُعرض قيمة حية.",
+			"source": "",
+			"dayTop": 554,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -523,8 +587,10 @@
 			"lang": "en",
 			"dir": "ltr",
 			"h1": "The day’s record could not load.",
-			"current": "UnavailableThe historical request failed; current crowd is still unknown.",
-			"source": "Historical query error in this preview. No last-known value is asserted.",
+			"current": "UnavailableCurrent crowd is also unknown.",
+			"source": "",
+			"dayTop": 550,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{
@@ -535,8 +601,10 @@
 			"lang": "ar",
 			"dir": "rtl",
 			"h1": "تعذّر تحميل سجل اليوم.",
-			"current": "غير متاحفشل طلب السجل التاريخي؛ الازدحام الحالي غير معروف أيضًا.",
-			"source": "خطأ في طلب السجل التاريخي. لا نفترض آخر قيمة معروفة.",
+			"current": "غير متاحالازدحام الحالي غير معروف أيضًا.",
+			"source": "",
+			"dayTop": 550,
+			"internalNameVisible": false,
 			"fontReady": true
 		},
 		{

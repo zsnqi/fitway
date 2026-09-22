@@ -6,7 +6,7 @@
 
 A training floor's single, continuous readout: near-black wall, FITWAY red as an active line, warm light on the text, and no repeated boxed dashboard tiles. The page reads like a calm evidence register. A long horizontal boundary separates *what can be said about now* from *what was recorded today*. The chart is an open field within that same surface, not a competing card. Governance moves to quiet disclosure rows after orientation.
 
-The first viewport states the schedule state and the current-reading trust status in words. The bold headline is intentionally factual. Red carries identity and chart emphasis; unavailable, closed, loading, error, and missing history each have distinct text and non-color cues. English and Arabic receive natural word order; the historical curve runs left-to-right in English and right-to-left in Arabic.
+The first viewport states the schedule state and the current-reading trust status in words. Visible copy uses Owner language; API names and payload mechanics stay in this brief. The bold headline is intentionally factual. Red carries identity and chart emphasis; unavailable, closed, loading, error, and missing history each have distinct text and non-color cues. English and Arabic receive natural word order; the historical curve runs left-to-right in English and right-to-left in Arabic.
 
 ## Data boundary and fixtures
 

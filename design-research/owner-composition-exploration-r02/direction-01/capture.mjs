@@ -31,6 +31,13 @@ async function inspect(page, label) {
 		h1: document.querySelector("h1")?.textContent,
 		current: document.querySelector("#current-reading")?.textContent,
 		source: document.querySelector("#current-source")?.textContent,
+		dayTop: Math.round(
+			document.querySelector("#day")?.getBoundingClientRect().top ?? 0,
+		),
+		internalNameVisible:
+			/admin\.analytics|staff\.operationalSnapshot|Daily Analytics/.test(
+				document.body.innerText,
+			),
 		fontReady: document.fonts.status === "loaded",
 	}));
 	checks.push({ label, ...result });
@@ -40,6 +47,16 @@ async function inspect(page, label) {
 	) {
 		throw new Error(
 			`Horizontal overflow at ${label}: document ${result.documentWidth}, viewport ${result.viewport}`,
+		);
+	}
+	if (result.internalNameVisible)
+		throw new Error(`Internal API name visible at ${label}`);
+	if (
+		(label === "en-populated-390" || label === "ar-populated-390") &&
+		result.dayTop > 650
+	) {
+		throw new Error(
+			`Recorded-day section begins too low at ${label}: ${result.dayTop}px`,
 		);
 	}
 }
