@@ -3,7 +3,7 @@
 schemaVersion: 1
 milestoneId: owner-design-exploration-r02
 taskClass: visual-authority-change
-packetStatus: READY
+packetStatus: CLOSED
 stateRef: PROJECT_STATE.yaml#/milestones/owner-design-exploration-r02
 baseCommit: 210b5df538bb6c71b250790725fc9b7329a0dc1a
 task:
@@ -31,6 +31,7 @@ scope:
     - docs/phase-records/task-packets/owner-design-exploration-r02.yaml (successor packet only)
     - PROJECT_STATE_HISTORY.yaml
     - docs/phase-records/history-transitions/0007-20260922-owner-design-exploration-r01-stop.json
+    - docs/phase-records/history-transitions/0008-20260923-owner-design-exploration-r02-human-rejection.json
   forbiddenPaths:
     - design-research/owner-composition-exploration-r01/** (preserved r01 diagnostic/provenance frontier; read-only, including the required discovery brief)
     - apps/** and packages/** production code, copy, behavior, and data semantics
@@ -98,7 +99,7 @@ authorities:
 continuity:
   predecessorMilestones:
     - owner-design-exploration-r01
-  currentHandoff: docs/phase-records/handoffs/owner-design-exploration/20260922-221000-owner-design-exploration-r02-activation.md
+  currentHandoff: docs/phase-records/handoffs/owner-design-exploration/20260923-010426-owner-design-exploration-r02-human-rejection.md
   unresolvedDecisions:
     - "Owner composition authority remains vacant; any selected concept needs explicit human approval before implementation or promotion."
     - "Any departure from a locked production visual rule requires a separate human baseline decision and its own perceptual gate."
