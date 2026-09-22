@@ -1,0 +1,1164 @@
+[
+	{
+		"file": "en-desktop-1440x900.png",
+		"viewport": 1440,
+		"scrollWidth": 1440,
+		"height": 2129,
+		"title": "The day, recorded — FITWAY",
+		"lang": "en",
+		"dir": "ltr",
+		"font": "CairoLatin, Arial, sans-serif",
+		"focusable": 15,
+		"horizontalOverflow": false,
+		"outliers": []
+	},
+	{
+		"file": "en-mobile-390x844.png",
+		"viewport": 390,
+		"scrollWidth": 390,
+		"height": 3408,
+		"title": "The day, recorded — FITWAY",
+		"lang": "en",
+		"dir": "ltr",
+		"font": "CairoLatin, Arial, sans-serif",
+		"focusable": 15,
+		"horizontalOverflow": false,
+		"outliers": [
+			{
+				"tag": "TABLE",
+				"class": "minute-table",
+				"left": 18,
+				"right": 558
+			},
+			{
+				"tag": "THEAD",
+				"class": "",
+				"left": 18,
+				"right": 558
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": 18,
+				"right": 558
+			},
+			{
+				"tag": "TH",
+				"class": "",
+				"left": 258,
+				"right": 412
+			},
+			{
+				"tag": "TH",
+				"class": "",
+				"left": 412,
+				"right": 558
+			},
+			{
+				"tag": "TBODY",
+				"class": "",
+				"left": 18,
+				"right": 558
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": 18,
+				"right": 558
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": 258,
+				"right": 412
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": 412,
+				"right": 558
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": 18,
+				"right": 558
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": 258,
+				"right": 412
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": 412,
+				"right": 558
+			}
+		]
+	},
+	{
+		"file": "en-mobile-full.png",
+		"viewport": 390,
+		"scrollWidth": 390,
+		"height": 3408,
+		"title": "The day, recorded — FITWAY",
+		"lang": "en",
+		"dir": "ltr",
+		"font": "CairoLatin, Arial, sans-serif",
+		"focusable": 15,
+		"horizontalOverflow": false,
+		"outliers": [
+			{
+				"tag": "TABLE",
+				"class": "minute-table",
+				"left": 18,
+				"right": 558
+			},
+			{
+				"tag": "THEAD",
+				"class": "",
+				"left": 18,
+				"right": 558
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": 18,
+				"right": 558
+			},
+			{
+				"tag": "TH",
+				"class": "",
+				"left": 258,
+				"right": 412
+			},
+			{
+				"tag": "TH",
+				"class": "",
+				"left": 412,
+				"right": 558
+			},
+			{
+				"tag": "TBODY",
+				"class": "",
+				"left": 18,
+				"right": 558
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": 18,
+				"right": 558
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": 258,
+				"right": 412
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": 412,
+				"right": 558
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": 18,
+				"right": 558
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": 258,
+				"right": 412
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": 412,
+				"right": 558
+			}
+		]
+	},
+	{
+		"file": "ar-desktop-1440x900.png",
+		"viewport": 1440,
+		"scrollWidth": 1440,
+		"height": 2129,
+		"title": "اليوم كما سُجّل — FITWAY",
+		"lang": "ar",
+		"dir": "rtl",
+		"font": "CairoArabic, CairoLatin, Arial, sans-serif",
+		"focusable": 15,
+		"horizontalOverflow": false,
+		"outliers": []
+	},
+	{
+		"file": "ar-mobile-390x844.png",
+		"viewport": 390,
+		"scrollWidth": 390,
+		"height": 3319,
+		"title": "اليوم كما سُجّل — FITWAY",
+		"lang": "ar",
+		"dir": "rtl",
+		"font": "CairoArabic, CairoLatin, Arial, sans-serif",
+		"focusable": 15,
+		"horizontalOverflow": false,
+		"outliers": [
+			{
+				"tag": "TABLE",
+				"class": "minute-table",
+				"left": -168,
+				"right": 372
+			},
+			{
+				"tag": "THEAD",
+				"class": "",
+				"left": -168,
+				"right": 372
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": -168,
+				"right": 372
+			},
+			{
+				"tag": "TH",
+				"class": "",
+				"left": -35,
+				"right": 140
+			},
+			{
+				"tag": "TH",
+				"class": "",
+				"left": -168,
+				"right": -35
+			},
+			{
+				"tag": "TBODY",
+				"class": "",
+				"left": -168,
+				"right": 372
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": -168,
+				"right": 372
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": -35,
+				"right": 140
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": -168,
+				"right": -35
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": -168,
+				"right": 372
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": -35,
+				"right": 140
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": -168,
+				"right": -35
+			}
+		]
+	},
+	{
+		"file": "ar-mobile-full.png",
+		"viewport": 390,
+		"scrollWidth": 390,
+		"height": 3319,
+		"title": "اليوم كما سُجّل — FITWAY",
+		"lang": "ar",
+		"dir": "rtl",
+		"font": "CairoArabic, CairoLatin, Arial, sans-serif",
+		"focusable": 15,
+		"horizontalOverflow": false,
+		"outliers": [
+			{
+				"tag": "TABLE",
+				"class": "minute-table",
+				"left": -168,
+				"right": 372
+			},
+			{
+				"tag": "THEAD",
+				"class": "",
+				"left": -168,
+				"right": 372
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": -168,
+				"right": 372
+			},
+			{
+				"tag": "TH",
+				"class": "",
+				"left": -35,
+				"right": 140
+			},
+			{
+				"tag": "TH",
+				"class": "",
+				"left": -168,
+				"right": -35
+			},
+			{
+				"tag": "TBODY",
+				"class": "",
+				"left": -168,
+				"right": 372
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": -168,
+				"right": 372
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": -35,
+				"right": 140
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": -168,
+				"right": -35
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": -168,
+				"right": 372
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": -35,
+				"right": 140
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": -168,
+				"right": -35
+			}
+		]
+	},
+	{
+		"file": "en-reflow-320-200.png",
+		"viewport": 640,
+		"scrollWidth": 640,
+		"height": 7141,
+		"title": "The day, recorded — FITWAY",
+		"lang": "en",
+		"dir": "ltr",
+		"font": "CairoLatin, Arial, sans-serif",
+		"focusable": 15,
+		"horizontalOverflow": false,
+		"outliers": [
+			{
+				"tag": "TABLE",
+				"class": "minute-table",
+				"left": 36,
+				"right": 1116
+			},
+			{
+				"tag": "THEAD",
+				"class": "",
+				"left": 36,
+				"right": 1116
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": 36,
+				"right": 1116
+			},
+			{
+				"tag": "TH",
+				"class": "",
+				"left": 515,
+				"right": 823
+			},
+			{
+				"tag": "TH",
+				"class": "",
+				"left": 823,
+				"right": 1116
+			},
+			{
+				"tag": "TBODY",
+				"class": "",
+				"left": 36,
+				"right": 1116
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": 36,
+				"right": 1116
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": 515,
+				"right": 823
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": 823,
+				"right": 1116
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": 36,
+				"right": 1116
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": 515,
+				"right": 823
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": 823,
+				"right": 1116
+			}
+		]
+	},
+	{
+		"file": "ar-reflow-320-200.png",
+		"viewport": 640,
+		"scrollWidth": 640,
+		"height": 6894,
+		"title": "اليوم كما سُجّل — FITWAY",
+		"lang": "ar",
+		"dir": "rtl",
+		"font": "CairoArabic, CairoLatin, Arial, sans-serif",
+		"focusable": 15,
+		"horizontalOverflow": false,
+		"outliers": [
+			{
+				"tag": "TABLE",
+				"class": "minute-table",
+				"left": -476,
+				"right": 604
+			},
+			{
+				"tag": "THEAD",
+				"class": "",
+				"left": -476,
+				"right": 604
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": -476,
+				"right": 604
+			},
+			{
+				"tag": "TH",
+				"class": "",
+				"left": -210,
+				"right": 140
+			},
+			{
+				"tag": "TH",
+				"class": "",
+				"left": -476,
+				"right": -210
+			},
+			{
+				"tag": "TBODY",
+				"class": "",
+				"left": -476,
+				"right": 604
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": -476,
+				"right": 604
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": -210,
+				"right": 140
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": -476,
+				"right": -210
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": -476,
+				"right": 604
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": -210,
+				"right": 140
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": -476,
+				"right": -210
+			}
+		]
+	},
+	{
+		"file": "en-closed-mobile.png",
+		"viewport": 390,
+		"scrollWidth": 390,
+		"height": 2222,
+		"title": "The day, recorded — FITWAY",
+		"lang": "en",
+		"dir": "ltr",
+		"font": "CairoLatin, Arial, sans-serif",
+		"focusable": 8,
+		"horizontalOverflow": false,
+		"outliers": []
+	},
+	{
+		"file": "ar-no-readings-mobile.png",
+		"viewport": 390,
+		"scrollWidth": 390,
+		"height": 2157,
+		"title": "اليوم كما سُجّل — FITWAY",
+		"lang": "ar",
+		"dir": "rtl",
+		"font": "CairoArabic, CairoLatin, Arial, sans-serif",
+		"focusable": 8,
+		"horizontalOverflow": false,
+		"outliers": []
+	},
+	{
+		"file": "en-loading-mobile.png",
+		"viewport": 390,
+		"scrollWidth": 390,
+		"height": 2222,
+		"title": "The day, recorded — FITWAY",
+		"lang": "en",
+		"dir": "ltr",
+		"font": "CairoLatin, Arial, sans-serif",
+		"focusable": 8,
+		"horizontalOverflow": false,
+		"outliers": []
+	},
+	{
+		"file": "ar-error-mobile.png",
+		"viewport": 390,
+		"scrollWidth": 390,
+		"height": 2133,
+		"title": "اليوم كما سُجّل — FITWAY",
+		"lang": "ar",
+		"dir": "rtl",
+		"font": "CairoArabic, CairoLatin, Arial, sans-serif",
+		"focusable": 9,
+		"horizontalOverflow": false,
+		"outliers": []
+	},
+	{
+		"check": "en-320",
+		"horizontalOverflow": false,
+		"viewport": 320,
+		"scrollWidth": 320,
+		"outliers": [
+			{
+				"tag": "TABLE",
+				"class": "minute-table",
+				"left": 13,
+				"right": 553
+			},
+			{
+				"tag": "THEAD",
+				"class": "",
+				"left": 13,
+				"right": 553
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": 13,
+				"right": 553
+			},
+			{
+				"tag": "TH",
+				"class": "",
+				"left": 253,
+				"right": 407
+			},
+			{
+				"tag": "TH",
+				"class": "",
+				"left": 407,
+				"right": 553
+			},
+			{
+				"tag": "TBODY",
+				"class": "",
+				"left": 13,
+				"right": 553
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": 13,
+				"right": 553
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": 253,
+				"right": 407
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": 407,
+				"right": 553
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": 13,
+				"right": 553
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": 253,
+				"right": 407
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": 407,
+				"right": 553
+			}
+		]
+	},
+	{
+		"check": "ar-320",
+		"horizontalOverflow": false,
+		"viewport": 320,
+		"scrollWidth": 320,
+		"outliers": [
+			{
+				"tag": "TABLE",
+				"class": "minute-table",
+				"left": -233,
+				"right": 307
+			},
+			{
+				"tag": "THEAD",
+				"class": "",
+				"left": -233,
+				"right": 307
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": -233,
+				"right": 307
+			},
+			{
+				"tag": "TH",
+				"class": "",
+				"left": -100,
+				"right": 75
+			},
+			{
+				"tag": "TH",
+				"class": "",
+				"left": -233,
+				"right": -100
+			},
+			{
+				"tag": "TBODY",
+				"class": "",
+				"left": -233,
+				"right": 307
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": -233,
+				"right": 307
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": -100,
+				"right": 75
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": -233,
+				"right": -100
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": -233,
+				"right": 307
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": -100,
+				"right": 75
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": -233,
+				"right": -100
+			}
+		]
+	},
+	{
+		"check": "en-360",
+		"horizontalOverflow": false,
+		"viewport": 360,
+		"scrollWidth": 360,
+		"outliers": [
+			{
+				"tag": "TABLE",
+				"class": "minute-table",
+				"left": 13,
+				"right": 553
+			},
+			{
+				"tag": "THEAD",
+				"class": "",
+				"left": 13,
+				"right": 553
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": 13,
+				"right": 553
+			},
+			{
+				"tag": "TH",
+				"class": "",
+				"left": 253,
+				"right": 407
+			},
+			{
+				"tag": "TH",
+				"class": "",
+				"left": 407,
+				"right": 553
+			},
+			{
+				"tag": "TBODY",
+				"class": "",
+				"left": 13,
+				"right": 553
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": 13,
+				"right": 553
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": 253,
+				"right": 407
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": 407,
+				"right": 553
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": 13,
+				"right": 553
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": 253,
+				"right": 407
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": 407,
+				"right": 553
+			}
+		]
+	},
+	{
+		"check": "ar-360",
+		"horizontalOverflow": false,
+		"viewport": 360,
+		"scrollWidth": 360,
+		"outliers": [
+			{
+				"tag": "TABLE",
+				"class": "minute-table",
+				"left": -193,
+				"right": 347
+			},
+			{
+				"tag": "THEAD",
+				"class": "",
+				"left": -193,
+				"right": 347
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": -193,
+				"right": 347
+			},
+			{
+				"tag": "TH",
+				"class": "",
+				"left": -60,
+				"right": 115
+			},
+			{
+				"tag": "TH",
+				"class": "",
+				"left": -193,
+				"right": -60
+			},
+			{
+				"tag": "TBODY",
+				"class": "",
+				"left": -193,
+				"right": 347
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": -193,
+				"right": 347
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": -60,
+				"right": 115
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": -193,
+				"right": -60
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": -193,
+				"right": 347
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": -60,
+				"right": 115
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": -193,
+				"right": -60
+			}
+		]
+	},
+	{
+		"check": "en-390",
+		"horizontalOverflow": false,
+		"viewport": 390,
+		"scrollWidth": 390,
+		"outliers": [
+			{
+				"tag": "TABLE",
+				"class": "minute-table",
+				"left": 18,
+				"right": 558
+			},
+			{
+				"tag": "THEAD",
+				"class": "",
+				"left": 18,
+				"right": 558
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": 18,
+				"right": 558
+			},
+			{
+				"tag": "TH",
+				"class": "",
+				"left": 258,
+				"right": 412
+			},
+			{
+				"tag": "TH",
+				"class": "",
+				"left": 412,
+				"right": 558
+			},
+			{
+				"tag": "TBODY",
+				"class": "",
+				"left": 18,
+				"right": 558
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": 18,
+				"right": 558
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": 258,
+				"right": 412
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": 412,
+				"right": 558
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": 18,
+				"right": 558
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": 258,
+				"right": 412
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": 412,
+				"right": 558
+			}
+		]
+	},
+	{
+		"check": "ar-390",
+		"horizontalOverflow": false,
+		"viewport": 390,
+		"scrollWidth": 390,
+		"outliers": [
+			{
+				"tag": "TABLE",
+				"class": "minute-table",
+				"left": -168,
+				"right": 372
+			},
+			{
+				"tag": "THEAD",
+				"class": "",
+				"left": -168,
+				"right": 372
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": -168,
+				"right": 372
+			},
+			{
+				"tag": "TH",
+				"class": "",
+				"left": -35,
+				"right": 140
+			},
+			{
+				"tag": "TH",
+				"class": "",
+				"left": -168,
+				"right": -35
+			},
+			{
+				"tag": "TBODY",
+				"class": "",
+				"left": -168,
+				"right": 372
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": -168,
+				"right": 372
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": -35,
+				"right": 140
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": -168,
+				"right": -35
+			},
+			{
+				"tag": "TR",
+				"class": "",
+				"left": -168,
+				"right": 372
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": -35,
+				"right": 140
+			},
+			{
+				"tag": "TD",
+				"class": "",
+				"left": -168,
+				"right": -35
+			}
+		]
+	},
+	{
+		"check": "en-721",
+		"horizontalOverflow": false,
+		"viewport": 721,
+		"scrollWidth": 721,
+		"outliers": []
+	},
+	{
+		"check": "ar-721",
+		"horizontalOverflow": false,
+		"viewport": 721,
+		"scrollWidth": 721,
+		"outliers": []
+	},
+	{
+		"check": "en-768",
+		"horizontalOverflow": false,
+		"viewport": 768,
+		"scrollWidth": 768,
+		"outliers": []
+	},
+	{
+		"check": "ar-768",
+		"horizontalOverflow": false,
+		"viewport": 768,
+		"scrollWidth": 768,
+		"outliers": []
+	},
+	{
+		"check": "en-820",
+		"horizontalOverflow": false,
+		"viewport": 820,
+		"scrollWidth": 820,
+		"outliers": []
+	},
+	{
+		"check": "ar-820",
+		"horizontalOverflow": false,
+		"viewport": 820,
+		"scrollWidth": 820,
+		"outliers": []
+	},
+	{
+		"check": "en-1024",
+		"horizontalOverflow": false,
+		"viewport": 1024,
+		"scrollWidth": 1024,
+		"outliers": []
+	},
+	{
+		"check": "ar-1024",
+		"horizontalOverflow": false,
+		"viewport": 1024,
+		"scrollWidth": 1024,
+		"outliers": []
+	},
+	{
+		"check": "en-1200",
+		"horizontalOverflow": false,
+		"viewport": 1200,
+		"scrollWidth": 1200,
+		"outliers": []
+	},
+	{
+		"check": "ar-1200",
+		"horizontalOverflow": false,
+		"viewport": 1200,
+		"scrollWidth": 1200,
+		"outliers": []
+	},
+	{
+		"check": "en-1440",
+		"horizontalOverflow": false,
+		"viewport": 1440,
+		"scrollWidth": 1440,
+		"outliers": []
+	},
+	{
+		"check": "ar-1440",
+		"horizontalOverflow": false,
+		"viewport": 1440,
+		"scrollWidth": 1440,
+		"outliers": []
+	},
+	{
+		"interaction": "focus, 60-minute disclosure, zero/missing, unavailable fallback, RTL toggle",
+		"passed": true
+	}
+]

@@ -1,0 +1,68 @@
+{
+	"status": "concept-only",
+	"captureRoute": "repository Playwright Chromium",
+	"viewports": "1440x900 desktop; 390x844 mobile; 320 CSS px at 200% zoom (640 physical); state mobile frames",
+	"inspectedBy": "direction-03 author",
+	"frames": [
+		{
+			"file": "en-desktop-1440x900.png",
+			"bytes": 113307,
+			"sha256": "f53b1e517c74a2e2228f1c628e7c2f2ca26910b78d92b6654c97ca8ccd22d624"
+		},
+		{
+			"file": "en-mobile-390x844.png",
+			"bytes": 53034,
+			"sha256": "6b54a685e94a59760b33186b200666873ed14054dc43ba6eaac36f7ac0761ea2"
+		},
+		{
+			"file": "en-mobile-full.png",
+			"bytes": 172633,
+			"sha256": "29d683ef587709312d13c0d0e1c5bc80f51f616b781c26a4d3231c2d7cdf5380"
+		},
+		{
+			"file": "ar-desktop-1440x900.png",
+			"bytes": 85988,
+			"sha256": "6c6365f700151c1f5c1c635dccfe12a9a20965b2923151153402cd7c3af4eae3"
+		},
+		{
+			"file": "ar-mobile-390x844.png",
+			"bytes": 40755,
+			"sha256": "ba9b248e82d5a04c2ddf5a71b2ad232b2845eaae5628fab72629caa2cf0c28d2"
+		},
+		{
+			"file": "ar-mobile-full.png",
+			"bytes": 132946,
+			"sha256": "f8c709cdb37bdc5ba1509e30936e48ceb9dbb11ee1ef1f7ecea8dea06394f8a7"
+		},
+		{
+			"file": "en-reflow-320-200.png",
+			"bytes": 392607,
+			"sha256": "9f4e5ab15798e93b3f8d2b1a1ca31a48dc9e17e0761dda5d6e65b57d5fc67324"
+		},
+		{
+			"file": "ar-reflow-320-200.png",
+			"bytes": 283043,
+			"sha256": "4dfc1e0cfabf458022020e93c4b861cc7792e0464ab8effbf7379092463e5d19"
+		},
+		{
+			"file": "en-closed-mobile.png",
+			"bytes": 106495,
+			"sha256": "a2e7fb9e5f7daf8722ccd602404356cf2537718d7bf88d86fa953bc858eab680"
+		},
+		{
+			"file": "ar-no-readings-mobile.png",
+			"bytes": 77018,
+			"sha256": "1713700b4e44121d1fc22362a841403932cd24e31c140c36a319c27f158a708c"
+		},
+		{
+			"file": "en-loading-mobile.png",
+			"bytes": 102633,
+			"sha256": "91b8c4e6714742b4b3a6f7ba281a70cbba9f1ee78f5b175181db455621299f48"
+		},
+		{
+			"file": "ar-error-mobile.png",
+			"bytes": 69559,
+			"sha256": "a2d9f656f02da7de1aceb883c0203c7a474a401e270baaf2eb9fc3202c0da179"
+		}
+	]
+}
