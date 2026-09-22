@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>FITWAY — The Dayline concept</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="study-note"><span data-i18n="studyNote">Design study · illustrative readings</span><span class="study-note__mark">THE DAYLINE / مسار اليوم</span></div>
+  <div class="page-shell">
+    <header class="topbar">
+      <a class="brand" href="#main" aria-label="FITWAY overview"><img class="brand__symbol" src="fitway-logo.png" alt=""><span>FITWAY</span></a>
+      <nav class="main-nav" aria-label="Owner sections">
+        <a href="#day" aria-current="page" data-i18n="navDay">Day</a>
+        <a href="#records" data-i18n="navRecords">Records</a>
+        <a href="#more" data-i18n="navMore">Explore</a>
+      </nav>
+      <button class="language-button" type="button" id="language-button" aria-label="Switch language"><span id="language-label">العربية</span><svg aria-hidden="true" viewBox="0 0 16 16"><path d="M2 5.5h12M8 2v12M4.5 5.5c.2 3 1.5 5.6 3.5 7.2M11.5 5.5c-.2 3-1.5 5.6-3.5 7.2"/></svg></button>
+    </header>
+
+    <main id="main" tabindex="-1">
+      <section class="state-strip" aria-labelledby="state-title">
+        <div class="state-strip__label"><span class="state-strip__rule"></span><h2 id="state-title" data-i18n="stateTitle">Gym state now</h2></div>
+        <div class="state-strip__reading" id="state-reading" role="status"></div>
+        <div class="state-strip__meta" id="state-meta"></div>
+      </section>
+
+      <section class="day-section" id="day" aria-labelledby="page-title">
+        <header class="day-header">
+          <div class="day-header__heading">
+            <h1 id="page-title" data-i18n="pageTitle">The day's course</h1>
+            <p class="day-header__description" data-i18n="pageDescription">A clear view of what was recorded, from opening to close.</p>
+          </div>
+          <div class="day-header__date"><span data-i18n="recordedDay">Recorded day</span><strong data-i18n="businessDate">Monday, 21 September 2026</strong><small data-i18n="gymTime">Times shown in the gym's timezone</small></div>
+        </header>
+
+        <div class="day-stage" id="day-stage">
+          <div class="stage-heading">
+            <div><h2 data-i18n="stageTitle">Observed occupancy</h2><p data-i18n="stageSubtitle">Minute readings across the scheduled day</p></div>
+            <div class="stage-key" aria-label="Chart key"><span><i class="key-line"></i><span data-i18n="keyRecorded">Recorded</span></span><span><i class="key-gap"></i><span data-i18n="keyGap">No reading</span></span><span><i class="key-closed"></i><span data-i18n="keyClosed">Closed</span></span></div>
+          </div>
+
+          <div class="stage-grid">
+            <div class="plot-column">
+              <div class="plot" id="plot" role="group" aria-label="Occupancy trajectory with selectable moments">
+                <div class="plot__scale" aria-hidden="true"><span>80</span><span>60</span><span>40</span><span>20</span><span>0</span></div>
+                <div class="plot__surface" id="plot-surface">
+                  <svg id="trajectory" viewBox="0 0 1000 290" preserveAspectRatio="none" role="img" aria-labelledby="chart-title chart-desc"><title id="chart-title">Observed occupancy across the day</title><desc id="chart-desc">The line stops where records are missing. Exact readings are available in the record table.</desc></svg>
+                  <div class="plot__points" id="plot-points"></div>
+                </div>
+              </div>
+              <div class="plot__times" id="plot-times" aria-hidden="true"></div>
+              <div class="plot-caption"><span class="plot-caption__lead" data-i18n="plotCaption">A missing reading leaves a visible break in the line.</span><span data-i18n="plotHint">Select a marked moment to inspect it.</span></div>
+            </div>
+            <aside class="day-margin" aria-labelledby="margin-title">
+              <h3 id="margin-title" data-i18n="marginTitle">The shape of this day</h3>
+              <div class="margin-stat"><span data-i18n="peakLabel">Observed peak</span><strong id="peak-value">73</strong><small id="peak-time">18:20</small></div>
+              <div class="margin-stat margin-stat--line"><span data-i18n="averageLabel">Daily average</span><strong id="average-value">—</strong><small data-i18n="averageNote">Across observed open minutes</small></div>
+              <div class="coverage-line"><span data-i18n="coverageLabel">Recorded minutes</span><strong id="coverage-value">—</strong><small data-i18n="coverageNote">of scheduled open minutes</small></div>
+            </aside>
+          </div>
+          <div class="detail-dock" id="detail-dock" aria-live="polite"></div>
+        </div>
+
+        <div class="day-after" id="day-after"><div><h2 data-i18n="afterTitle">What this record can tell you</h2><p data-i18n="afterText">The peak and average describe recorded occupancy. Gaps are unobserved time, not zero.</p></div><div class="crossings"><span data-i18n="crossingsLabel">Estimated entrance crossings</span><strong id="crossings-value">—</strong><small data-i18n="crossingsNote">Entrance crossings, not unique members</small></div></div>
+      </section>
+
+      <section class="records-section" id="records" aria-labelledby="records-title">
+        <div class="section-heading"><h2 id="records-title" data-i18n="recordsTitle">Read the underlying minutes</h2><p data-i18n="recordsDescription">Each scheduled minute keeps its recorded, missing, or closed state.</p></div>
+        <details id="records-disclosure"><summary><span data-i18n="openRecords">Open minute record</span><span class="summary-arrow" aria-hidden="true"></span></summary><div class="record-inner"><div class="table-meta"><p id="table-count"></p><div class="pager"><button id="page-previous" type="button" data-i18n-aria="previousPage" aria-label="Previous page">‹</button><span id="page-number"></span><button id="page-next" type="button" data-i18n-aria="nextPage" aria-label="Next page">›</button></div></div><div class="table-region" tabindex="0" role="region" aria-label="Minute records"><table><thead><tr><th scope="col" data-i18n="columnTime">Time</th><th scope="col" data-i18n="columnState">State</th><th scope="col" data-i18n="columnCount">Approx. count</th><th scope="col" data-i18n="columnBand">Crowd band</th></tr></thead><tbody id="record-rows"></tbody></table></div></div></details>
+      </section>
+
+      <section class="more-section" id="more" aria-labelledby="more-title"><div><h2 id="more-title" data-i18n="moreTitle">Continue from the day</h2><p data-i18n="moreDescription">Move from the observed pattern to longer-range reporting or operational review.</p></div><div class="more-links"><a href="#records"><span data-i18n="moreReports">Review records</span><span aria-hidden="true">↗</span></a><a href="#main"><span data-i18n="moreStatus">Return to gym state</span><span aria-hidden="true">↗</span></a></div></section>
+    </main>
+    <footer class="footer"><span>FITWAY</span><span data-i18n="footerNote">Concept-only Owner exploration · illustrative values</span></footer>
+  </div>
+  <div class="fixture-tools"><details><summary data-i18n="fixtureTitle">Preview other states</summary><div class="fixture-tools__inner"><label><span data-i18n="dailyFixtureLabel">Day record</span><select id="daily-fixture"><option value="populated">Populated</option><option value="closed">Closed day</option><option value="no-readings">No readings</option><option value="loading">Loading</option><option value="error">Request error</option></select></label><label><span data-i18n="snapshotFixtureLabel">Gym state</span><select id="snapshot-fixture"><option value="current">Current</option><option value="stale">Last known</option><option value="closed">Closed</option><option value="unavailable">Unavailable</option><option value="loading">Loading</option><option value="error">Request error</option></select></label></div></details></div>
+</body>
+</html>
