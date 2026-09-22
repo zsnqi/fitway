@@ -45,6 +45,14 @@ try {
 				(lang === "ar" ? "rtl" : "ltr")
 			)
 				failures.push(`${lang}/${name}: direction`);
+			const switchName = await page.locator("#lang").getAttribute("aria-label");
+			if (
+				switchName !==
+				(lang === "ar" ? "التبديل إلى الإنجليزية" : "Switch to Arabic")
+			)
+				failures.push(
+					`${lang}/${name}: language action name is not in the current locale`,
+				);
 			await overflow(page, `${lang}/${name}`);
 			const file = path.join(frames, `${lang}-${name}-populated.png`);
 			await page.screenshot({ path: file });
