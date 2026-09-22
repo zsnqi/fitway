@@ -1,0 +1,570 @@
+{
+	"capturedWith": "local Playwright Chromium; reduced motion; file URL",
+	"frames": [
+		{
+			"file": "frames/en-desktop-1440x900.png",
+			"lang": "en",
+			"state": "populated",
+			"viewport": "1440x900",
+			"fullPage": false
+		},
+		{
+			"file": "frames/en-mobile-390x844.png",
+			"lang": "en",
+			"state": "populated",
+			"viewport": "390x844",
+			"fullPage": false
+		},
+		{
+			"file": "frames/en-mobile-full.png",
+			"lang": "en",
+			"state": "populated",
+			"viewport": "390x844",
+			"fullPage": true
+		},
+		{
+			"file": "frames/ar-desktop-1440x900.png",
+			"lang": "ar",
+			"state": "populated",
+			"viewport": "1440x900",
+			"fullPage": false
+		},
+		{
+			"file": "frames/ar-mobile-390x844.png",
+			"lang": "ar",
+			"state": "populated",
+			"viewport": "390x844",
+			"fullPage": false
+		},
+		{
+			"file": "frames/ar-mobile-full.png",
+			"lang": "ar",
+			"state": "populated",
+			"viewport": "390x844",
+			"fullPage": true
+		},
+		{
+			"file": "frames/en-current-mobile-390x844.png",
+			"lang": "en",
+			"state": "current",
+			"viewport": "390x844",
+			"fullPage": false
+		},
+		{
+			"file": "frames/ar-current-mobile-390x844.png",
+			"lang": "ar",
+			"state": "current",
+			"viewport": "390x844",
+			"fullPage": false
+		},
+		{
+			"file": "frames/en-closed-mobile-390x844.png",
+			"lang": "en",
+			"state": "closed",
+			"viewport": "390x844",
+			"fullPage": false
+		},
+		{
+			"file": "frames/ar-closed-mobile-390x844.png",
+			"lang": "ar",
+			"state": "closed",
+			"viewport": "390x844",
+			"fullPage": false
+		},
+		{
+			"file": "frames/en-noReadings-mobile-390x844.png",
+			"lang": "en",
+			"state": "noReadings",
+			"viewport": "390x844",
+			"fullPage": false
+		},
+		{
+			"file": "frames/ar-noReadings-mobile-390x844.png",
+			"lang": "ar",
+			"state": "noReadings",
+			"viewport": "390x844",
+			"fullPage": false
+		},
+		{
+			"file": "frames/en-loading-mobile-390x844.png",
+			"lang": "en",
+			"state": "loading",
+			"viewport": "390x844",
+			"fullPage": false
+		},
+		{
+			"file": "frames/ar-loading-mobile-390x844.png",
+			"lang": "ar",
+			"state": "loading",
+			"viewport": "390x844",
+			"fullPage": false
+		},
+		{
+			"file": "frames/en-error-mobile-390x844.png",
+			"lang": "en",
+			"state": "error",
+			"viewport": "390x844",
+			"fullPage": false
+		},
+		{
+			"file": "frames/ar-error-mobile-390x844.png",
+			"lang": "ar",
+			"state": "error",
+			"viewport": "390x844",
+			"fullPage": false
+		},
+		{
+			"file": "frames/en-reflow-320-at-200-percent.png",
+			"lang": "en",
+			"state": "populated",
+			"viewport": "640x1000",
+			"zoom": "200%",
+			"effectiveCssWidth": 320
+		},
+		{
+			"file": "frames/ar-reflow-320-at-200-percent.png",
+			"lang": "ar",
+			"state": "populated",
+			"viewport": "640x1000",
+			"zoom": "200%",
+			"effectiveCssWidth": 320
+		}
+	],
+	"checks": [
+		{
+			"label": "en-populated-320",
+			"viewport": 320,
+			"documentWidth": 320,
+			"bodyWidth": 320,
+			"lang": "en",
+			"dir": "ltr",
+			"h1": "Open by schedule. Current crowd unknown.",
+			"current": "UnavailableDaily history has no current reading.",
+			"source": "admin.analytics.daily · historical only.",
+			"fontReady": true
+		},
+		{
+			"label": "en-populated-360",
+			"viewport": 360,
+			"documentWidth": 360,
+			"bodyWidth": 360,
+			"lang": "en",
+			"dir": "ltr",
+			"h1": "Open by schedule. Current crowd unknown.",
+			"current": "UnavailableDaily history has no current reading.",
+			"source": "admin.analytics.daily · historical only.",
+			"fontReady": true
+		},
+		{
+			"label": "en-populated-390",
+			"viewport": 390,
+			"documentWidth": 390,
+			"bodyWidth": 390,
+			"lang": "en",
+			"dir": "ltr",
+			"h1": "Open by schedule. Current crowd unknown.",
+			"current": "UnavailableDaily history has no current reading.",
+			"source": "admin.analytics.daily · historical only.",
+			"fontReady": true
+		},
+		{
+			"label": "en-populated-721",
+			"viewport": 721,
+			"documentWidth": 721,
+			"bodyWidth": 721,
+			"lang": "en",
+			"dir": "ltr",
+			"h1": "Open by schedule. Current crowd unknown.",
+			"current": "UnavailableDaily history has no current reading.",
+			"source": "admin.analytics.daily · historical only.",
+			"fontReady": true
+		},
+		{
+			"label": "en-populated-768",
+			"viewport": 768,
+			"documentWidth": 768,
+			"bodyWidth": 768,
+			"lang": "en",
+			"dir": "ltr",
+			"h1": "Open by schedule. Current crowd unknown.",
+			"current": "UnavailableDaily history has no current reading.",
+			"source": "admin.analytics.daily · historical only.",
+			"fontReady": true
+		},
+		{
+			"label": "en-populated-820",
+			"viewport": 820,
+			"documentWidth": 820,
+			"bodyWidth": 820,
+			"lang": "en",
+			"dir": "ltr",
+			"h1": "Open by schedule. Current crowd unknown.",
+			"current": "UnavailableDaily history has no current reading.",
+			"source": "admin.analytics.daily · historical only.",
+			"fontReady": true
+		},
+		{
+			"label": "en-populated-1024",
+			"viewport": 1024,
+			"documentWidth": 1024,
+			"bodyWidth": 1024,
+			"lang": "en",
+			"dir": "ltr",
+			"h1": "Open by schedule. Current crowd unknown.",
+			"current": "UnavailableDaily history has no current reading.",
+			"source": "admin.analytics.daily · historical only.",
+			"fontReady": true
+		},
+		{
+			"label": "en-populated-1200",
+			"viewport": 1200,
+			"documentWidth": 1200,
+			"bodyWidth": 1200,
+			"lang": "en",
+			"dir": "ltr",
+			"h1": "Open by schedule. Current crowd unknown.",
+			"current": "UnavailableDaily history has no current reading.",
+			"source": "admin.analytics.daily · historical only.",
+			"fontReady": true
+		},
+		{
+			"label": "en-populated-1440",
+			"viewport": 1440,
+			"documentWidth": 1440,
+			"bodyWidth": 1440,
+			"lang": "en",
+			"dir": "ltr",
+			"h1": "Open by schedule. Current crowd unknown.",
+			"current": "UnavailableDaily history has no current reading.",
+			"source": "admin.analytics.daily · historical only.",
+			"fontReady": true
+		},
+		{
+			"label": "ar-populated-320",
+			"viewport": 320,
+			"documentWidth": 320,
+			"bodyWidth": 320,
+			"lang": "ar",
+			"dir": "rtl",
+			"h1": "مفتوح حسب الجدول. الازدحام الحالي غير معروف.",
+			"current": "غير متاحلا قراءة حالية في سجلّ اليوم.",
+			"source": "admin.analytics.daily · سجلّ تاريخي فقط.",
+			"fontReady": true
+		},
+		{
+			"label": "ar-populated-360",
+			"viewport": 360,
+			"documentWidth": 360,
+			"bodyWidth": 360,
+			"lang": "ar",
+			"dir": "rtl",
+			"h1": "مفتوح حسب الجدول. الازدحام الحالي غير معروف.",
+			"current": "غير متاحلا قراءة حالية في سجلّ اليوم.",
+			"source": "admin.analytics.daily · سجلّ تاريخي فقط.",
+			"fontReady": true
+		},
+		{
+			"label": "ar-populated-390",
+			"viewport": 390,
+			"documentWidth": 390,
+			"bodyWidth": 390,
+			"lang": "ar",
+			"dir": "rtl",
+			"h1": "مفتوح حسب الجدول. الازدحام الحالي غير معروف.",
+			"current": "غير متاحلا قراءة حالية في سجلّ اليوم.",
+			"source": "admin.analytics.daily · سجلّ تاريخي فقط.",
+			"fontReady": true
+		},
+		{
+			"label": "ar-populated-721",
+			"viewport": 721,
+			"documentWidth": 721,
+			"bodyWidth": 721,
+			"lang": "ar",
+			"dir": "rtl",
+			"h1": "مفتوح حسب الجدول. الازدحام الحالي غير معروف.",
+			"current": "غير متاحلا قراءة حالية في سجلّ اليوم.",
+			"source": "admin.analytics.daily · سجلّ تاريخي فقط.",
+			"fontReady": true
+		},
+		{
+			"label": "ar-populated-768",
+			"viewport": 768,
+			"documentWidth": 768,
+			"bodyWidth": 768,
+			"lang": "ar",
+			"dir": "rtl",
+			"h1": "مفتوح حسب الجدول. الازدحام الحالي غير معروف.",
+			"current": "غير متاحلا قراءة حالية في سجلّ اليوم.",
+			"source": "admin.analytics.daily · سجلّ تاريخي فقط.",
+			"fontReady": true
+		},
+		{
+			"label": "ar-populated-820",
+			"viewport": 820,
+			"documentWidth": 820,
+			"bodyWidth": 820,
+			"lang": "ar",
+			"dir": "rtl",
+			"h1": "مفتوح حسب الجدول. الازدحام الحالي غير معروف.",
+			"current": "غير متاحلا قراءة حالية في سجلّ اليوم.",
+			"source": "admin.analytics.daily · سجلّ تاريخي فقط.",
+			"fontReady": true
+		},
+		{
+			"label": "ar-populated-1024",
+			"viewport": 1024,
+			"documentWidth": 1024,
+			"bodyWidth": 1024,
+			"lang": "ar",
+			"dir": "rtl",
+			"h1": "مفتوح حسب الجدول. الازدحام الحالي غير معروف.",
+			"current": "غير متاحلا قراءة حالية في سجلّ اليوم.",
+			"source": "admin.analytics.daily · سجلّ تاريخي فقط.",
+			"fontReady": true
+		},
+		{
+			"label": "ar-populated-1200",
+			"viewport": 1200,
+			"documentWidth": 1200,
+			"bodyWidth": 1200,
+			"lang": "ar",
+			"dir": "rtl",
+			"h1": "مفتوح حسب الجدول. الازدحام الحالي غير معروف.",
+			"current": "غير متاحلا قراءة حالية في سجلّ اليوم.",
+			"source": "admin.analytics.daily · سجلّ تاريخي فقط.",
+			"fontReady": true
+		},
+		{
+			"label": "ar-populated-1440",
+			"viewport": 1440,
+			"documentWidth": 1440,
+			"bodyWidth": 1440,
+			"lang": "ar",
+			"dir": "rtl",
+			"h1": "مفتوح حسب الجدول. الازدحام الحالي غير معروف.",
+			"current": "غير متاحلا قراءة حالية في سجلّ اليوم.",
+			"source": "admin.analytics.daily · سجلّ تاريخي فقط.",
+			"fontReady": true
+		},
+		{
+			"label": "en-desktop-1440x900.png",
+			"viewport": 1440,
+			"documentWidth": 1440,
+			"bodyWidth": 1440,
+			"lang": "en",
+			"dir": "ltr",
+			"h1": "Open by schedule. Current crowd unknown.",
+			"current": "UnavailableDaily history has no current reading.",
+			"source": "admin.analytics.daily · historical only.",
+			"fontReady": true
+		},
+		{
+			"label": "en-mobile-390x844.png",
+			"viewport": 390,
+			"documentWidth": 390,
+			"bodyWidth": 390,
+			"lang": "en",
+			"dir": "ltr",
+			"h1": "Open by schedule. Current crowd unknown.",
+			"current": "UnavailableDaily history has no current reading.",
+			"source": "admin.analytics.daily · historical only.",
+			"fontReady": true
+		},
+		{
+			"label": "en-mobile-full.png",
+			"viewport": 390,
+			"documentWidth": 390,
+			"bodyWidth": 390,
+			"lang": "en",
+			"dir": "ltr",
+			"h1": "Open by schedule. Current crowd unknown.",
+			"current": "UnavailableDaily history has no current reading.",
+			"source": "admin.analytics.daily · historical only.",
+			"fontReady": true
+		},
+		{
+			"label": "ar-desktop-1440x900.png",
+			"viewport": 1440,
+			"documentWidth": 1440,
+			"bodyWidth": 1440,
+			"lang": "ar",
+			"dir": "rtl",
+			"h1": "مفتوح حسب الجدول. الازدحام الحالي غير معروف.",
+			"current": "غير متاحلا قراءة حالية في سجلّ اليوم.",
+			"source": "admin.analytics.daily · سجلّ تاريخي فقط.",
+			"fontReady": true
+		},
+		{
+			"label": "ar-mobile-390x844.png",
+			"viewport": 390,
+			"documentWidth": 390,
+			"bodyWidth": 390,
+			"lang": "ar",
+			"dir": "rtl",
+			"h1": "مفتوح حسب الجدول. الازدحام الحالي غير معروف.",
+			"current": "غير متاحلا قراءة حالية في سجلّ اليوم.",
+			"source": "admin.analytics.daily · سجلّ تاريخي فقط.",
+			"fontReady": true
+		},
+		{
+			"label": "ar-mobile-full.png",
+			"viewport": 390,
+			"documentWidth": 390,
+			"bodyWidth": 390,
+			"lang": "ar",
+			"dir": "rtl",
+			"h1": "مفتوح حسب الجدول. الازدحام الحالي غير معروف.",
+			"current": "غير متاحلا قراءة حالية في سجلّ اليوم.",
+			"source": "admin.analytics.daily · سجلّ تاريخي فقط.",
+			"fontReady": true
+		},
+		{
+			"label": "en-current-mobile-390x844.png",
+			"viewport": 390,
+			"documentWidth": 390,
+			"bodyWidth": 390,
+			"lang": "en",
+			"dir": "ltr",
+			"h1": "Open by schedule. A separate snapshot is available.",
+			"current": "42Moderateapproximate count · Fresh within the illustrative fixture clock.",
+			"source": "Separate sample staff.operationalSnapshot · observed 21:14 · fixture clock 21:15. This is not a real live reading.",
+			"fontReady": true
+		},
+		{
+			"label": "ar-current-mobile-390x844.png",
+			"viewport": 390,
+			"documentWidth": 390,
+			"bodyWidth": 390,
+			"lang": "ar",
+			"dir": "rtl",
+			"h1": "مفتوح حسب الجدول. تتوفر لقطة تشغيلية منفصلة.",
+			"current": "42متوسطعدد تقريبي · حديثة وفق ساعة الحالة التوضيحية.",
+			"source": "لقطة توضيحية منفصلة من staff.operationalSnapshot · رُصدت 21:14 · ساعة الحالة 21:15. ليست قراءة حية حقيقية.",
+			"fontReady": true
+		},
+		{
+			"label": "en-closed-mobile-390x844.png",
+			"viewport": 390,
+			"documentWidth": 390,
+			"bodyWidth": 390,
+			"lang": "en",
+			"dir": "ltr",
+			"h1": "Closed today. No current crowd reading.",
+			"current": "No current valueClosed periods have no count or crowd band.",
+			"source": "Source: illustrative schedule state plus closed historical buckets.",
+			"fontReady": true
+		},
+		{
+			"label": "ar-closed-mobile-390x844.png",
+			"viewport": 390,
+			"documentWidth": 390,
+			"bodyWidth": 390,
+			"lang": "ar",
+			"dir": "rtl",
+			"h1": "مغلق اليوم. لا توجد قراءة حالية للازدحام.",
+			"current": "لا توجد قيمة حاليةلا يحمل وقت الإغلاق عددًا أو مستوى ازدحام.",
+			"source": "المصدر: جدول توضيحي مع فترات تاريخية مغلقة.",
+			"fontReady": true
+		},
+		{
+			"label": "en-noReadings-mobile-390x844.png",
+			"viewport": 390,
+			"documentWidth": 390,
+			"bodyWidth": 390,
+			"lang": "en",
+			"dir": "ltr",
+			"h1": "Open by schedule. No readings yet.",
+			"current": "UnavailableDaily history has no current reading.",
+			"source": "Source: illustrative schedule state; Daily Analytics has missing buckets only.",
+			"fontReady": true
+		},
+		{
+			"label": "ar-noReadings-mobile-390x844.png",
+			"viewport": 390,
+			"documentWidth": 390,
+			"bodyWidth": 390,
+			"lang": "ar",
+			"dir": "rtl",
+			"h1": "مفتوح حسب الجدول. لا توجد قراءات بعد.",
+			"current": "غير متاحلا قراءة حالية في سجلّ اليوم.",
+			"source": "المصدر: جدول توضيحي؛ فترات تحليلات اليوم مفقودة فقط.",
+			"fontReady": true
+		},
+		{
+			"label": "en-loading-mobile-390x844.png",
+			"viewport": 390,
+			"documentWidth": 390,
+			"bodyWidth": 390,
+			"lang": "en",
+			"dir": "ltr",
+			"h1": "Checking the day’s record.",
+			"current": "PendingNo reading is shown while data loads.",
+			"source": "Sources unresolved in this preview. Nothing shown as live.",
+			"fontReady": true
+		},
+		{
+			"label": "ar-loading-mobile-390x844.png",
+			"viewport": 390,
+			"documentWidth": 390,
+			"bodyWidth": 390,
+			"lang": "ar",
+			"dir": "rtl",
+			"h1": "جارٍ التحقق من سجل اليوم.",
+			"current": "قيد الانتظارلا تُعرض قراءة أثناء التحميل.",
+			"source": "المصادر قيد التحميل في هذه المعاينة. لا تُعرض قيمة حية.",
+			"fontReady": true
+		},
+		{
+			"label": "en-error-mobile-390x844.png",
+			"viewport": 390,
+			"documentWidth": 390,
+			"bodyWidth": 390,
+			"lang": "en",
+			"dir": "ltr",
+			"h1": "The day’s record could not load.",
+			"current": "UnavailableThe historical request failed; current crowd is still unknown.",
+			"source": "Historical query error in this preview. No last-known value is asserted.",
+			"fontReady": true
+		},
+		{
+			"label": "ar-error-mobile-390x844.png",
+			"viewport": 390,
+			"documentWidth": 390,
+			"bodyWidth": 390,
+			"lang": "ar",
+			"dir": "rtl",
+			"h1": "تعذّر تحميل سجل اليوم.",
+			"current": "غير متاحفشل طلب السجل التاريخي؛ الازدحام الحالي غير معروف أيضًا.",
+			"source": "خطأ في طلب السجل التاريخي. لا نفترض آخر قيمة معروفة.",
+			"fontReady": true
+		},
+		{
+			"label": "en-320-effective-at-200-percent",
+			"viewport": 640,
+			"width": 640,
+			"body": 320,
+			"zoom": "2",
+			"brandControlOverlap": false
+		},
+		{
+			"label": "ar-320-effective-at-200-percent",
+			"viewport": 640,
+			"width": 640,
+			"body": 320,
+			"zoom": "2",
+			"brandControlOverlap": false
+		},
+		{
+			"label": "keyboard-and-rtl-control",
+			"skipFocused": true,
+			"pointDetail": "16:00 · الإشغال المرصود 18",
+			"tableOpened": true,
+			"indicatorGap": {
+				"selectLeft": 150,
+				"iconLeft": 163,
+				"iconBorderGap": 13
+			}
+		}
+	]
+}

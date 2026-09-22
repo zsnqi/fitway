@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>FITWAY — The Evidence Line</title>
+  <link rel="stylesheet" href="./style.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main" data-i18n="skip">انتقل إلى المحتوى</a>
+  <div class="page">
+    <header class="site-header">
+      <div class="brand" aria-label="FITWAY Owner">
+        <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span class="brand-word">FITWAY</span>
+        <span class="brand-role" data-i18n="owner">المالك</span>
+      </div>
+      <nav class="primary-nav" aria-label="Owner sections" data-aria-i18n="navLabel">
+        <a href="#main" aria-current="page" data-i18n="overview">نظرة عامة</a>
+        <a href="#day" data-i18n="dayRecord">سجل اليوم</a>
+        <a href="#next" data-i18n="nextSteps">المتابعة</a>
+      </nav>
+      <div class="header-actions">
+        <label class="fixture-field">
+          <span data-i18n="previewState">حالة المعاينة</span>
+          <span class="select-shell"><select id="fixture" aria-label="Preview state"></select><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 6 5 5 5-5"/></svg></span>
+        </label>
+        <button type="button" class="language-button" id="language" aria-label="Switch to English">EN</button>
+      </div>
+    </header>
+
+    <main id="main" tabindex="-1">
+      <div class="intro">
+        <p class="concept-note" data-i18n="conceptNote">تصوّر استكشافي · بيانات توضيحية فقط</p>
+        <p class="date-line"><span data-i18n="date">22 سبتمبر 2026</span><span aria-hidden="true"> · </span><span data-i18n="gymTime">بتوقيت النادي</span></p>
+      </div>
+      <section class="orientation" aria-labelledby="orientation-title">
+        <div class="orientation-main">
+          <div class="state-line">
+            <span class="state-symbol" id="state-symbol" aria-hidden="true"></span>
+            <span id="schedule-state"></span>
+          </div>
+          <h1 id="orientation-title"></h1>
+          <p class="orientation-explain" id="orientation-explain"></p>
+        </div>
+        <div class="trust-column">
+          <div class="trust-heading"><span data-i18n="trustHeading">ما الذي نعرفه الآن</span><span class="trust-rule" aria-hidden="true"></span></div>
+          <div id="current-reading"></div>
+          <p class="source-note" id="current-source"></p>
+        </div>
+      </section>
+
+      <section class="day-section" id="day" aria-labelledby="day-heading">
+        <div class="section-head">
+          <div>
+            <h2 id="day-heading" data-i18n="dayHeading">اليوم كما رُصد</h2>
+            <p class="section-sub" data-i18n="daySub">سجلّ تاريخي للساعات المرصودة، وليس قراءة لحظية.</p>
+          </div>
+          <p class="day-context" id="day-context"></p>
+        </div>
+        <div class="day-body">
+          <div class="chart-side">
+            <div class="chart-topline">
+              <span data-i18n="chartTitle">الإشغال المرصود عبر ساعات العمل</span>
+              <span class="legend"><i aria-hidden="true"></i><span data-i18n="observed">مرصود</span><b aria-hidden="true"></b><span data-i18n="missing">لا توجد بيانات</span></span>
+            </div>
+            <div id="chart-region" class="chart-region"></div>
+            <p id="point-note" class="point-note" aria-live="polite"></p>
+          </div>
+          <div class="evidence-side" id="evidence-side"></div>
+        </div>
+        <details class="table-disclosure" id="table-disclosure">
+          <summary><span data-i18n="tableSummary">عرض القيم المرصودة والحالات حسب الساعة</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 6 5 5 5-5"/></svg></summary>
+          <div class="table-scroll" role="region" tabindex="0" data-aria-i18n="tableRegion"><table><caption data-i18n="tableCaption">القراءات التاريخية التوضيحية</caption><thead><tr><th scope="col" data-i18n="time">الوقت</th><th scope="col" data-i18n="state">الحالة</th><th scope="col" data-i18n="recordedCount">الإشغال المرصود</th></tr></thead><tbody id="table-body"></tbody></table></div>
+        </details>
+      </section>
+
+      <section class="next-section" id="next" aria-labelledby="next-heading">
+        <div>
+          <h2 id="next-heading" data-i18n="nextHeading">من النظرة إلى القرار</h2>
+          <p data-i18n="nextIntro">تفاصيل أعمق عند الحاجة، بعد وضوح حالة البيانات وسجل اليوم.</p>
+        </div>
+        <div class="next-list">
+          <details><summary><span data-i18n="reports">التقارير</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></summary><p data-i18n="reportsDesc">قارن الأيام المتماثلة وراجع نطاق التصدير قبل تنزيل التقرير.</p></details>
+          <details><summary><span data-i18n="operations">التشغيل</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></summary><p data-i18n="operationsDesc">افحص صحة الأجهزة والتنبيهات في المسار التشغيلي.</p></details>
+          <details><summary><span data-i18n="governance">الإدارة</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></summary><p data-i18n="governanceDesc">راجع الوصول والإعدادات وسجل النشاط في مواضعها المخصصة.</p></details>
+        </div>
+      </section>
+    </main>
+    <footer><span>FITWAY</span><span data-i18n="footer">اتجاه تصوّري فقط · لا يعرض بيانات نادٍ حقيقية ولا يغيّر المنتج</span></footer>
+  </div>
+</body>
+</html>
