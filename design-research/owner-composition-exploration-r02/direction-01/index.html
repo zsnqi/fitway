@@ -12,7 +12,7 @@
   <a class="skip" href="#main" data-i18n="skip">انتقل إلى المحتوى</a>
   <div class="page">
     <header class="site-header">
-      <div class="brand" aria-label="FITWAY Owner">
+      <div class="brand">
         <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
         <span class="brand-word">FITWAY</span>
         <span class="brand-role" data-i18n="owner">المالك</span>
@@ -42,8 +42,9 @@
             <span class="state-symbol" id="state-symbol" aria-hidden="true"></span>
             <span id="schedule-state"></span>
           </div>
-          <h1 id="orientation-title"></h1>
+          <h1 id="orientation-title">مفتوح حسب الجدول. الازدحام الحالي غير معروف.</h1>
           <p class="orientation-explain" id="orientation-explain"></p>
+          <button type="button" class="retry-button" id="retry-day" data-i18n="retryDay" hidden>إعادة محاولة تحميل سجل اليوم</button>
         </div>
         <div class="trust-column">
           <div class="trust-heading"><span data-i18n="trustHeading">ما الذي نعرفه الآن</span><span class="trust-rule" aria-hidden="true"></span></div>
@@ -73,7 +74,7 @@
         </div>
         <details class="table-disclosure" id="table-disclosure">
           <summary><span data-i18n="tableSummary">عرض القيم المرصودة والحالات حسب الساعة</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 6 5 5 5-5"/></svg></summary>
-          <div class="table-scroll" role="region" tabindex="0" data-aria-i18n="tableRegion"><table><caption data-i18n="tableCaption">القراءات التاريخية التوضيحية</caption><thead><tr><th scope="col" data-i18n="time">الوقت</th><th scope="col" data-i18n="state">الحالة</th><th scope="col" data-i18n="recordedCount">الإشغال المرصود</th></tr></thead><tbody id="table-body"></tbody></table></div>
+          <section class="table-scroll" aria-label="جدول القراءات التاريخية؛ يمكن تمريره أفقيًا عند الحاجة" data-aria-i18n="tableRegion"><table><caption data-i18n="tableCaption">القراءات التاريخية التوضيحية</caption><thead><tr><th scope="col" data-i18n="time">الوقت</th><th scope="col" data-i18n="state">الحالة</th><th scope="col" data-i18n="recordedCount">الإشغال المرصود</th></tr></thead><tbody id="table-body"></tbody></table></section>
         </details>
       </section>
 

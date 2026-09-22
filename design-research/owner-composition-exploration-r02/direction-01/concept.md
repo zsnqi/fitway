@@ -10,13 +10,13 @@ The first viewport states the schedule state and the current-reading trust statu
 
 ## Data boundary and fixtures
 
-The default **Recorded day** fixture models `admin.analytics.daily` as historical business-day buckets. It provides observed minutes, coverage, a historical peak, and a missing interval. It provides **no current snapshot and no freshness**. The default first glance therefore says current crowd unknown, despite a populated trend.
+The default **Recorded day** fixture models `admin.analytics.daily` as historical business-day buckets. It provides observed minutes, coverage, a historical peak, and a missing interval. Its illustrative as-of time is 21:00 on 22 September 2026. The denominator is **300 elapsed open minutes through 21:00**, not all scheduled minutes; future minutes are excluded. It provides **no current snapshot and no freshness**. The default first glance therefore says current crowd unknown, despite a populated trend.
 
-The schedule label comes from a separate, explicit *sample schedule* fixture. It is never inferred from a Daily Analytics bucket. **Separate snapshot** is an optional demonstration of a distinct sample `staff.operationalSnapshot` at fixture clock 21:15, observed 21:14, with approximate count 42 and Moderate band. It is labeled illustrative and is not a real live reading. The chart remains historical in that state.
+The schedule label comes from a separate, explicit *sample schedule* fixture. It is never inferred from a Daily Analytics bucket. **Sample reading** is an optional demonstration of a distinct sample `staff.operationalSnapshot` at fixture clock 21:01, observed 21:00, with approximate count 42 and Moderate band. It is labeled illustrative and is not a real live reading. The chart remains historical in that state.
 
-Other fixture choices are **Closed**, **No readings**, **Loading**, and **Error**. Closed hides count and band; no readings does not become zero; loading shows no claimed state; error does not carry a historical value forward. Every state is available through the preview select in either language and can be linked with `?lang=en|ar&state=...`.
+Other fixture choices are **Closed**, **No readings**, **Loading**, and **Error**. Closed hides count and band; no readings does not become zero; loading shows no claimed state; error does not carry a historical value forward. Error exposes a localized retry button; in the concept fixture it transitions through loading to the populated sample. Every state is available through the preview select in either language and can be linked with `?lang=en|ar&state=...`.
 
-The six chart slots are illustrative hourly samples, not a full minute-level Daily Analytics payload. Coverage (240/300 observed open minutes) is a separate fixture summary, so the sparse plotted points must not be read as its calculation. The table disclosure gives the same slot values and missing/closed labels as the chart.
+The six chart slots are illustrative hourly samples, not a full minute-level Daily Analytics payload. Coverage (240/300 elapsed open minutes) is a separate fixture summary, so the sparse plotted points must not be read as its calculation. The table disclosure gives the same slot values and missing/closed labels as the chart.
 
 ## Interaction and adaptation
 

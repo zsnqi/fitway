@@ -93,6 +93,18 @@ try {
 			await page.goto(url(lang, "populated"));
 			await page.evaluate(() => document.fonts.ready);
 			await inspect(page, `${lang}-populated-${width}`);
+			if (width === 320) {
+				await page.locator("#table-disclosure summary").click();
+				const tableWidths = await page
+					.locator(".table-scroll")
+					.evaluate((el) => ({
+						client: el.clientWidth,
+						scroll: el.scrollWidth,
+					}));
+				checks.push({ label: `${lang}-table-320`, ...tableWidths });
+				if (tableWidths.scroll > tableWidths.client + 1)
+					throw new Error(`Table needs horizontal scroll at 320px in ${lang}`);
+			}
 			await page.close();
 		}
 	}
@@ -188,6 +200,23 @@ try {
 	if (!skipFocused || !tableOpened || indicatorGap.iconBorderGap < 8)
 		throw new Error("Keyboard or RTL indicator check failed");
 	await focus.close();
+	for (const lang of ["en", "ar"]) {
+		const retry = await browser.newPage({
+			viewport: { width: 390, height: 844 },
+			reducedMotion: "reduce",
+		});
+		await retry.goto(url(lang, "error"));
+		const button = retry.locator("#retry-day");
+		if (!(await button.isVisible()))
+			throw new Error(`Retry missing in ${lang}`);
+		await button.click();
+		await retry.waitForFunction(
+			() => new URL(location.href).searchParams.get("state") === "populated",
+		);
+		const recovered = await retry.locator("#orientation-title").textContent();
+		checks.push({ label: `${lang}-error-retry`, recovered });
+		await retry.close();
+	}
 	await writeFile(
 		path.join(here, "frame-manifest.json"),
 		JSON.stringify(

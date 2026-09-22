@@ -146,6 +146,11 @@
 			"fontReady": true
 		},
 		{
+			"label": "en-table-320",
+			"client": 292,
+			"scroll": 292
+		},
+		{
 			"label": "en-populated-360",
 			"viewport": 360,
 			"documentWidth": 360,
@@ -270,6 +275,11 @@
 			"dayTop": 574,
 			"internalNameVisible": false,
 			"fontReady": true
+		},
+		{
+			"label": "ar-table-320",
+			"client": 292,
+			"scroll": 292
 		},
 		{
 			"label": "ar-populated-360",
@@ -475,7 +485,7 @@
 			"lang": "en",
 			"dir": "ltr",
 			"h1": "Open by schedule. A recent sample reading is available.",
-			"current": "42Moderateapproximate count · Sample checked at 21:15.",
+			"current": "42Moderateapproximate count · Sample checked at 21:01.",
 			"source": "",
 			"dayTop": 639,
 			"internalNameVisible": false,
@@ -489,7 +499,7 @@
 			"lang": "ar",
 			"dir": "rtl",
 			"h1": "مفتوح حسب الجدول. تتوفر قراءة توضيحية حديثة.",
-			"current": "42متوسطعدد تقريبي · قراءة توضيحية تم التحقق منها عند 21:15.",
+			"current": "42متوسطعدد تقريبي · قراءة توضيحية تم التحقق منها عند 21:01.",
 			"source": "",
 			"dayTop": 654,
 			"internalNameVisible": false,
@@ -589,7 +599,7 @@
 			"h1": "The day’s record could not load.",
 			"current": "UnavailableCurrent crowd is also unknown.",
 			"source": "",
-			"dayTop": 550,
+			"dayTop": 608,
 			"internalNameVisible": false,
 			"fontReady": true
 		},
@@ -603,7 +613,7 @@
 			"h1": "تعذّر تحميل سجل اليوم.",
 			"current": "غير متاحالازدحام الحالي غير معروف أيضًا.",
 			"source": "",
-			"dayTop": 550,
+			"dayTop": 576,
 			"internalNameVisible": false,
 			"fontReady": true
 		},
@@ -633,6 +643,14 @@
 				"iconLeft": 163,
 				"iconBorderGap": 13
 			}
+		},
+		{
+			"label": "en-error-retry",
+			"recovered": "Open by schedule. Current crowd unknown."
+		},
+		{
+			"label": "ar-error-retry",
+			"recovered": "مفتوح حسب الجدول. الازدحام الحالي غير معروف."
 		}
 	]
 }

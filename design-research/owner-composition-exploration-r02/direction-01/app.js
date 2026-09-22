@@ -39,6 +39,7 @@ const labels = {
 		noReadings: "No readings",
 		loading: "Loading",
 		error: "Error",
+		retryDay: "Retry day record",
 		openBySchedule: "OPEN BY SCHEDULE",
 		closedBySchedule: "CLOSED BY SCHEDULE",
 		scheduleUnknown: "SCHEDULE NOT YET CHECKED",
@@ -51,7 +52,7 @@ const labels = {
 		populatedExplain:
 			"Today's chart shows recorded readings, not a current crowd count.",
 		currentExplain:
-			"This separate sample reading was observed at 21:14. The chart below still shows the recorded day.",
+			"This separate sample reading was observed at 21:00. The chart below still shows the recorded day.",
 		closedExplain:
 			"The sample schedule marks this period closed. Occupancy and crowd band are withheld.",
 		noReadingsExplain:
@@ -70,21 +71,21 @@ const labels = {
 		errorDetail: "Current crowd is also unknown.",
 		currentBand: "Moderate",
 		currentApprox: "approximate count",
-		currentDetail: "Sample checked at 21:15.",
+		currentDetail: "Sample checked at 21:01.",
 		currentSource: "",
 		dailySource: "",
 		closedSource: "",
 		noReadingsSource: "",
 		loadingSource: "",
 		errorSource: "",
-		businessDay: "Business day · 22 Sep 2026",
+		businessDay: "Business day · 22 Sep 2026 · through 21:00",
 		closedDay: "Scheduled closed period · 22 Sep 2026",
 		noReadingsDay: "Open period · 22 Sep 2026",
 		loadingDay: "Checking today's record",
 		errorDay: "Today's record unavailable",
 		coverage: "Observed coverage",
-		coverageValue: "240 of 300 open minutes",
-		coverageNote: "80% of scheduled open minutes; gaps remain visible.",
+		coverageValue: "240 of 300 elapsed open minutes",
+		coverageNote: "80% through 21:00; future minutes excluded.",
 		peak: "Recorded peak",
 		peakValue: "68 at 19:00",
 		peakNote: "Historical peak within observed minutes.",
@@ -106,7 +107,7 @@ const labels = {
 		switchLanguage: "Switch to Arabic",
 		notAvailable: "Not available",
 		noPeak: "No observed peak",
-		noCoverage: "0 of 300 open minutes",
+		noCoverage: "0 of 300 elapsed open minutes",
 		none: "No observed interval",
 		errorEvidence: "No historical summary while the request has failed",
 		loadingEvidence: "Historical summary pending",
@@ -150,6 +151,7 @@ const labels = {
 		noReadings: "لا قراءات",
 		loading: "جارٍ التحميل",
 		error: "خطأ",
+		retryDay: "إعادة محاولة تحميل سجل اليوم",
 		openBySchedule: "مفتوح حسب الجدول",
 		closedBySchedule: "مغلق حسب الجدول",
 		scheduleUnknown: "لم يُتحقق من الجدول بعد",
@@ -161,7 +163,7 @@ const labels = {
 		errorTitle: "تعذّر تحميل سجل اليوم.",
 		populatedExplain: "يعرض مخطط اليوم قراءات سابقة، ولا يبيّن الازدحام الحالي.",
 		currentExplain:
-			"رُصدت هذه القراءة التوضيحية المنفصلة عند 21:14. يبقى المخطط سجلًا لليوم.",
+			"رُصدت هذه القراءة التوضيحية المنفصلة عند 21:00. يبقى المخطط سجلًا لليوم.",
 		closedExplain:
 			"يشير الجدول التوضيحي إلى إغلاق هذه الفترة. لا يُعرض عدد إشغال أو مستوى ازدحام.",
 		noReadingsExplain:
@@ -178,21 +180,21 @@ const labels = {
 		errorDetail: "الازدحام الحالي غير معروف أيضًا.",
 		currentBand: "متوسط",
 		currentApprox: "عدد تقريبي",
-		currentDetail: "قراءة توضيحية تم التحقق منها عند 21:15.",
+		currentDetail: "قراءة توضيحية تم التحقق منها عند 21:01.",
 		currentSource: "",
 		dailySource: "",
 		closedSource: "",
 		noReadingsSource: "",
 		loadingSource: "",
 		errorSource: "",
-		businessDay: "يوم العمل · 22 سبتمبر 2026",
+		businessDay: "يوم العمل · 22 سبتمبر 2026 · حتى 21:00",
 		closedDay: "فترة مغلقة حسب الجدول · 22 سبتمبر 2026",
 		noReadingsDay: "فترة عمل · 22 سبتمبر 2026",
 		loadingDay: "جارٍ التحقق من سجل اليوم",
 		errorDay: "سجل اليوم غير متاح",
 		coverage: "تغطية الرصد",
-		coverageValue: "240 من 300 دقيقة عمل",
-		coverageNote: "80% من دقائق العمل المجدولة؛ تبقى الفجوات ظاهرة.",
+		coverageValue: "240 من 300 دقيقة عمل انقضت",
+		coverageNote: "80% حتى 21:00؛ لا تدخل الدقائق المقبلة في الحساب.",
 		peak: "الذروة المرصودة",
 		peakValue: "68 عند 19:00",
 		peakNote: "ذروة تاريخية ضمن الدقائق المرصودة.",
@@ -214,7 +216,7 @@ const labels = {
 		switchLanguage: "Switch to English",
 		notAvailable: "غير متاح",
 		noPeak: "لا توجد ذروة مرصودة",
-		noCoverage: "0 من 300 دقيقة عمل",
+		noCoverage: "0 من 300 دقيقة عمل انقضت",
 		none: "لا توجد فترة مرصودة",
 		errorEvidence: "لا ملخص تاريخي بعد فشل الطلب",
 		loadingEvidence: "ملخص السجل التاريخي قيد التحميل",
@@ -365,6 +367,7 @@ function render() {
 	$("state-symbol").dataset.kind = fixture;
 	setText("orientation-title", t[fixture + "Title"]);
 	setText("orientation-explain", t[fixture + "Explain"]);
+	$("retry-day").hidden = fixture !== "error";
 	if (fixture === "current") {
 		$("current-reading").innerHTML =
 			`<div class="reading-count"><strong>42</strong><span>${t.currentBand}</span></div><p class="reading-detail">${t.currentApprox} · ${t.currentDetail}</p>`;
@@ -456,5 +459,15 @@ $("fixture").addEventListener("change", (e) => {
 $("language").addEventListener("click", () => {
 	lang = lang === "ar" ? "en" : "ar";
 	render();
+});
+$("retry-day").addEventListener("click", () => {
+	fixture = "loading";
+	render();
+	window.setTimeout(() => {
+		if (fixture === "loading") {
+			fixture = "populated";
+			render();
+		}
+	}, 500);
 });
 render();
