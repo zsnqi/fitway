@@ -195,6 +195,10 @@ html[dir="rtl"] .select-wrap:after {
 	padding: 50px 0 44px;
 	align-items: end;
 }
+.head-intro {
+	grid-column: 1;
+	grid-row: 1;
+}
 .head h1 {
 	font-size: clamp(44px, 5.4vw, 80px);
 	line-height: 1.08;
@@ -217,6 +221,8 @@ html[dir="rtl"] .select-wrap:after {
 	margin-bottom: 18px;
 }
 .current {
+	grid-column: 2;
+	grid-row: 1;
 	border-top: 3px solid var(--red);
 	padding: 22px 0 4px;
 }
@@ -659,6 +665,11 @@ html[dir="rtl"] .minute-table td {
 		gap: 30px;
 		padding: 36px 0;
 	}
+	.head-intro,
+	.current {
+		grid-column: 1;
+		grid-row: auto;
+	}
 	.current {
 		max-width: 620px;
 	}
@@ -909,7 +920,7 @@ html[dir="rtl"] .minute-table td {
 	}
 	.head {
 		display: flex;
-		flex-direction: column-reverse;
+		flex-direction: column;
 		align-items: stretch;
 		gap: 15px;
 		padding: 15px 0 18px;

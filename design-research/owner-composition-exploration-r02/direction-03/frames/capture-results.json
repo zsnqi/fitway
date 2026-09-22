@@ -1158,7 +1158,7 @@
 		"outliers": []
 	},
 	{
-		"interaction": "focus, 60-minute disclosure, zero/missing, unavailable fallback, RTL toggle",
+		"interaction": "mobile current visual/DOM order, focus, 60-minute disclosure, zero/missing, unavailable fallback, RTL toggle",
 		"passed": true
 	}
 ]

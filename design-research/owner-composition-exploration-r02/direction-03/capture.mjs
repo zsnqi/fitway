@@ -131,6 +131,17 @@ const checkPage = await browser.newPage({
 	reducedMotion: "reduce",
 });
 await checkPage.goto(`${base}?lang=en&day=populated&current=fresh`);
+const currentFirst = await checkPage.evaluate(() => {
+	const head = document.querySelector(".head");
+	return (
+		head?.firstElementChild?.classList.contains("current") &&
+		head?.children[1]?.classList.contains("head-intro") &&
+		head.firstElementChild.getBoundingClientRect().top <
+			head.children[1].getBoundingClientRect().top
+	);
+});
+if (!currentFirst)
+	throw new Error("Mobile current view must lead visually and in DOM order");
 await checkPage.keyboard.press("Tab");
 const focus = await checkPage.evaluate(() => ({
 	tag: document.activeElement.tagName,
@@ -160,9 +171,17 @@ if ((await checkPage.locator(".current-main").innerText()).includes("18"))
 await checkPage.locator("#language").click();
 if ((await checkPage.evaluate(() => document.documentElement.dir)) !== "rtl")
 	throw new Error("Language toggle did not switch direction");
+if (
+	!(await checkPage.evaluate(() =>
+		document
+			.querySelector(".head")
+			?.firstElementChild?.classList.contains("current"),
+	))
+)
+	throw new Error("Arabic current view must lead in DOM order");
 results.push({
 	interaction:
-		"focus, 60-minute disclosure, zero/missing, unavailable fallback, RTL toggle",
+		"mobile current visual/DOM order, focus, 60-minute disclosure, zero/missing, unavailable fallback, RTL toggle",
 	passed: true,
 });
 await checkPage.close();
