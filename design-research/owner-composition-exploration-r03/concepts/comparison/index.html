@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FITWAY Owner · four direction comparison</title>
+  <style>
+    :root { color-scheme: dark; font-family: "Cairo", "Segoe UI", sans-serif; background: #0b090b; color: #f8f4f2; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: radial-gradient(circle at 18% -8%, #421a21 0, transparent 34rem), #0b090b; }
+    button, select, a { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; }
+    :focus-visible { outline: 3px solid #ffb1a7; outline-offset: 3px; }
+    .shell { max-width: 1920px; padding: clamp(20px, 3vw, 52px); margin: auto; }
+    header { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: end; margin-bottom: 28px; }
+    .eyebrow { color: #e99a99; font-size: 12px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    h1 { margin: 8px 0 6px; font-size: clamp(32px, 3.4vw, 58px); line-height: 1.13; letter-spacing: -.045em; }
+    .intro { margin: 0; color: #c9bdc0; max-width: 800px; line-height: 1.65; }
+    .language { min-height: 44px; border: 1px solid #6c4146; background: #21191d; color: #f8f4f2; border-radius: 999px; padding: 9px 15px; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 14px; border: 1px solid #493036; background: #1b1418d9; border-radius: 18px; margin-bottom: 14px; }
+    .toolgroup { display: flex; gap: 3px; padding: 3px; margin: 0; min-width: 0; border: 1px solid #57363e; background: #100d10; border-radius: 13px; }
+    .toolgroup button { min-height: 44px; border: 0; border-radius: 10px; padding: 8px 15px; background: transparent; color: #d1bdc1; }
+    .toolgroup button[aria-pressed="true"] { background: #7d2d3a; color: white; box-shadow: inset 0 1px #ad5d67; }
+    .toolbar label { color: #cbbec0; font-size: 13px; margin-inline-start: auto; }
+    select { min-height: 44px; border: 1px solid #68434b; background: #120e11; color: #fff; padding: 9px 12px; border-radius: 10px; }
+    .notice { margin: 0 0 18px; color: #bdaeb1; font-size: 13px; line-height: 1.5; }
+    .cards { display: grid; grid-template-columns: repeat(5, minmax(250px, 1fr)); gap: 14px; overflow-x: auto; padding-bottom: 18px; align-items: start; scroll-snap-type: x proximity; }
+    .card { min-width: 250px; scroll-snap-align: start; border: 1px solid #50333a; background: linear-gradient(155deg, #24191e, #140f13 66%); border-radius: 20px; overflow: hidden; }
+    .card.current { border-color: #766369; background: linear-gradient(155deg, #31272b, #171216 66%); }
+    .card-head { min-height: 148px; padding: 18px; display: flex; flex-direction: column; align-items: start; }
+    .number { display: inline-flex; border: 1px solid #78545a; border-radius: 999px; padding: 3px 9px; color: #eaa8a9; font-size: 11px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+    .card h2 { font-size: 19px; letter-spacing: -.02em; line-height: 1.25; margin: 11px 0 5px; }
+    .card p { color: #c7b6ba; margin: 0; font-size: 13px; line-height: 1.55; }
+    .frame-wrap { background: #09080a; aspect-ratio: 1440 / 900; display: block; border-block: 1px solid #493038; overflow: hidden; cursor: zoom-in; }
+    .frame { display: block; width: 100%; height: 100%; object-fit: contain; object-position: top; }
+    .cards[data-size="mobile"] .frame-wrap { aspect-ratio: 390 / 844; }
+    .card-foot { padding: 15px 18px 18px; display: grid; gap: 9px; }
+    .surface { color: #d99a9c; font-size: 12px; font-weight: 700; }
+    .open { display: inline-flex; min-height: 44px; justify-content: space-between; align-items: center; gap: 14px; padding: 9px 12px; border: 1px solid #91515b; background: #612331; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 13px; }
+    .open:hover { background: #7b3041; }
+    .open[hidden] { display: none; }
+    .footnote { max-width: 900px; color: #b9a9ac; font-size: 13px; line-height: 1.6; padding-block: 7px 36px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+    @media (max-width: 1320px) { .cards { grid-auto-flow: column; grid-auto-columns: minmax(300px, 36vw); grid-template-columns: none; } }
+    @media (max-width: 680px) { header { grid-template-columns: 1fr; } .language { justify-self: start; } .cards { grid-auto-columns: minmax(280px, 86vw); } .toolbar label { margin-inline-start: 0; } }
+    @media (prefers-reduced-motion: no-preference) { .toolgroup button, .open { transition: background-color .16s ease, color .16s ease; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <div class="eyebrow">FITWAY / Owner exploration · r03</div>
+        <h1 data-i18n="title">Four ways to read the day</h1>
+        <p class="intro" data-i18n="intro">Early, interactive composition studies beside the current synthetic-demo interface. Compare the first read, mobile density, chart grammar, governance records, and motion before choosing a direction.</p>
+      </div>
+      <button class="language" id="language" type="button" aria-label="Switch language">العربية</button>
+    </header>
+    <section class="toolbar" aria-label="Comparison controls">
+      <fieldset class="toolgroup" data-group="surface">
+        <legend class="sr-only" data-i18n="surfaceGroup">Surface</legend>
+        <button type="button" data-choice="surface" data-value="daily" aria-pressed="true" data-i18n="daily">Daily</button>
+        <button type="button" data-choice="surface" data-value="governance" aria-pressed="false" data-i18n="governance">Governance</button>
+      </fieldset>
+      <fieldset class="toolgroup" data-group="size">
+        <legend class="sr-only" data-i18n="viewportGroup">Viewport</legend>
+        <button type="button" data-choice="size" data-value="desktop" aria-pressed="true" data-i18n="desktop">1440 × 900</button>
+        <button type="button" data-choice="size" data-value="mobile" aria-pressed="false" data-i18n="mobile">390 × 844</button>
+      </fieldset>
+      <label for="currentGovernance" data-i18n="currentSurface">Current baseline surface</label>
+      <select id="currentGovernance"><option value="activity" data-i18n="activity">Activity Log</option><option value="reports" data-i18n="reports">Reports</option></select>
+    </section>
+    <p class="notice" data-i18n="notice">The baseline is a diagnostic capture from a synthetic local demo. Each direction is a concept, not an approved design or production implementation.</p>
+    <div class="cards" id="cards" data-size="desktop">
+      <article class="card current" data-direction="current"><div class="card-head"><span class="number" data-i18n="baseline">Current baseline</span><h2 data-i18n="currentTitle">Running Owner interface</h2><p data-i18n="currentDesc">Reference for visual character and usability, not a composition constraint.</p></div><div class="frame-wrap"><img class="frame" alt="" loading="eager"></div><div class="card-foot"><span class="surface"></span></div></article>
+      <article class="card" data-direction="direction-01"><div class="card-head"><span class="number">01</span><h2 data-i18n="d1Title">Temporal observatory</h2><p data-i18n="d1Desc">A broad day horizon with a compact section rail and record-first governance.</p></div><div class="frame-wrap"><img class="frame" alt="" loading="lazy"></div><div class="card-foot"><span class="surface"></span><a class="open" href="../direction-01/index.html" target="_blank" rel="noopener" data-i18n="open">Open interactive concept ↗</a></div></article>
+      <article class="card" data-direction="direction-02"><div class="card-head"><span class="number">02</span><h2 data-i18n="d2Title">Operations journal</h2><p data-i18n="d2Desc">An editorial state masthead and a chapter-like day narrative.</p></div><div class="frame-wrap"><img class="frame" alt="" loading="lazy"></div><div class="card-foot"><span class="surface"></span><a class="open" href="../direction-02/index.html" target="_blank" rel="noopener" data-i18n="open">Open interactive concept ↗</a></div></article>
+      <article class="card" data-direction="direction-03"><div class="card-head"><span class="number">03</span><h2 data-i18n="d3Title">Operational instrument</h2><p data-i18n="d3Desc">Layered controls, distinct signals, and a matrix-first report.</p></div><div class="frame-wrap"><img class="frame" alt="" loading="lazy"></div><div class="card-foot"><span class="surface"></span><a class="open" href="../direction-03/index.html" target="_blank" rel="noopener" data-i18n="open">Open interactive concept ↗</a></div></article>
+      <article class="card" data-direction="direction-04"><div class="card-head"><span class="number">04</span><h2 data-i18n="d4Title">Evidence desk</h2><p data-i18n="d4Desc">A signal wall that opens records into focused detail.</p></div><div class="frame-wrap"><img class="frame" alt="" loading="lazy"></div><div class="card-foot"><span class="surface"></span><a class="open" href="../direction-04/index.html" target="_blank" rel="noopener" data-i18n="open">Open interactive concept ↗</a></div></article>
+    </div>
+    <p class="footnote" data-i18n="footnote">Choose, revise, or reject a direction after inspecting its interactive screen. A chosen concept still needs the complete Owner scope and a separate production decision.</p>
+  </main>
+  <script>
+    const strings = {
+      en: { title:'Four ways to read the day', intro:'Early, interactive composition studies beside the current synthetic-demo interface. Compare the first read, mobile density, chart grammar, governance records, and motion before choosing a direction.', surfaceGroup:'Surface', viewportGroup:'Viewport', daily:'Daily', governance:'Governance', desktop:'1440 × 900', mobile:'390 × 844', currentSurface:'Current baseline surface', activity:'Activity Log', reports:'Reports', notice:'The baseline is a diagnostic capture from a synthetic local demo. Each direction is a concept, not an approved design or production implementation. Select a frame to enlarge it; swipe cards sideways on narrow screens.', baseline:'Current baseline', currentTitle:'Running Owner interface', currentDesc:'Reference for visual character and usability, not a composition constraint.', d1Title:'Temporal observatory', d1Desc:'A broad day horizon with a compact section rail and record-first governance.', d2Title:'Operations journal', d2Desc:'An editorial state masthead and a chapter-like day narrative.', d3Title:'Operational instrument', d3Desc:'Layered controls, distinct signals, and a matrix-first report.', d4Title:'Evidence desk', d4Desc:'A signal wall that opens records into focused detail.', open:'Open interactive concept ↗', footnote:'Choose, revise, or reject a direction after inspecting its interactive screen. A chosen concept still needs the complete Owner scope and a separate production decision.' },
+      ar: { title:'أربع طرق لقراءة اليوم', intro:'تجارب تركيبية تفاعلية مبكرة بجانب الواجهة الحالية في عرض تجريبي اصطناعي. قارن وضوح البداية، وكثافة الجوال، وطريقة قراءة الرسم، والسجلات، والحركة قبل اختيار توجه.', surfaceGroup:'السطح', viewportGroup:'مقاس العرض', daily:'اليومي', governance:'السجلات والتقارير', desktop:'1440 × 900', mobile:'390 × 844', currentSurface:'سطح الواجهة الحالية', activity:'سجل النشاط', reports:'التقارير', notice:'الواجهة الحالية لقطة تشخيصية من عرض محلي ببيانات اصطناعية. كل توجه مفهوم تجريبي، وليس تصميمًا معتمدًا أو تنفيذًا إنتاجيًا. افتح أي إطار لتكبيره؛ واسحب البطاقات أفقيًا على الشاشة الصغيرة.', baseline:'الواجهة الحالية', currentTitle:'مساحة Owner الحالية', currentDesc:'مرجع للطابع البصري وتجربة الاستخدام، وليس قيدًا لتركيب الصفحات.', d1Title:'مرصد الزمن', d1Desc:'أفق واسع لليوم مع شريط تنقل مدمج وسجلات في المقدمة.', d2Title:'دفتر العمليات', d2Desc:'ترويسة حالة تحريرية وسرد لليوم على هيئة فصول.', d3Title:'لوحة الأدوات التشغيلية', d3Desc:'أدوات متعددة الطبقات، وإشارات متمايزة، وتقرير يبدأ بمصفوفة.', d4Title:'مكتب الأدلة', d4Desc:'جدار إشارات يفتح السجل في تفاصيل مركزة.', open:'افتح المفهوم التفاعلي ↗', footnote:'اختر توجهًا أو اطلب تعديله أو ارفضه بعد معاينة شاشته التفاعلية. التوجه المختار يحتاج إكمال نطاق Owner وقرارًا مستقلًا قبل التنفيذ الإنتاجي.' }
+    };
+    const params = new URLSearchParams(location.search);
+    const valid = (key, allowed, fallback) => allowed.includes(params.get(key)) ? params.get(key) : fallback;
+    const state = { language: valid('lang', ['en', 'ar'], 'en'), surface: valid('surface', ['daily', 'governance'], 'daily'), size: valid('size', ['desktop', 'mobile'], 'desktop'), currentGovernance: valid('baseline', ['activity', 'reports'], 'activity') };
+    const governance = { current: () => state.currentGovernance, 'direction-01': () => 'activity-log', 'direction-02': () => 'log', 'direction-03': () => 'reports', 'direction-04': () => 'activity' };
+    const cards = document.getElementById('cards');
+    const select = document.getElementById('currentGovernance');
+    for (const card of cards.children) {
+      const wrap = card.querySelector('.frame-wrap');
+      const frameLink = document.createElement('a');
+      frameLink.className = 'frame-wrap';
+      frameLink.target = '_blank';
+      frameLink.rel = 'noopener';
+      wrap.replaceWith(frameLink);
+      frameLink.append(wrap.querySelector('img'));
+    }
+    function render() {
+      document.documentElement.lang = state.language;
+      document.documentElement.dir = state.language === 'ar' ? 'rtl' : 'ltr';
+      document.getElementById('language').textContent = state.language === 'ar' ? 'English' : 'العربية';
+      document.getElementById('language').setAttribute('aria-label', state.language === 'ar' ? 'Switch to English' : 'التحويل إلى العربية');
+      document.querySelector('.toolbar').setAttribute('aria-label', state.language === 'ar' ? 'أدوات المقارنة' : 'Comparison controls');
+      document.querySelectorAll('[data-i18n]').forEach(node => { node.textContent = strings[state.language][node.dataset.i18n]; });
+      document.querySelectorAll('[data-choice]').forEach(button => { button.setAttribute('aria-pressed', String(state[button.dataset.choice] === button.dataset.value)); });
+      cards.dataset.size = state.size;
+      select.value = state.currentGovernance;
+      select.disabled = state.surface === 'daily';
+      for (const card of cards.children) {
+        const key = card.dataset.direction;
+        const surface = state.surface === 'daily' ? 'daily' : governance[key]();
+        const displaySurface = surface === 'log' || surface === 'activity-log' ? 'activity' : surface;
+        const suffix = state.size === 'desktop' ? '1440x900' : '390x844';
+        const prefix = key === 'current' ? './evidence/current/current-' : `../${key}/evidence/`;
+        const filename = key === 'current' ? `${surface}-${state.language}-${suffix}.png` : `${surface}-${state.language}-${suffix}.png`;
+        const image = card.querySelector('img');
+        image.src = prefix + filename;
+        image.alt = `${card.querySelector('h2').textContent} · ${strings[state.language][displaySurface]} · ${state.language.toUpperCase()} · ${suffix}`;
+        card.querySelector('.frame-wrap').href = image.src;
+        card.querySelector('.surface').textContent = `${strings[state.language][displaySurface]} · ${state.language.toUpperCase()} · ${suffix}`;
+        const conceptLink = card.querySelector('.open');
+        if (conceptLink) {
+          const conceptParams = new URLSearchParams();
+          conceptParams.set('lang', state.language);
+          conceptParams.set(key === 'direction-01' ? 'view' : 'section', key === 'direction-01' && surface === 'activity-log' ? 'activity' : surface);
+          conceptLink.href = `../${key}/index.html?${conceptParams}`;
+        }
+      }
+      const current = new URL(location.href);
+      current.search = new URLSearchParams({ lang: state.language, surface: state.surface, size: state.size, baseline: state.currentGovernance }).toString();
+      history.replaceState(null, '', current);
+    }
+    document.querySelectorAll('[data-choice]').forEach(button => { button.addEventListener('click', () => { state[button.dataset.choice] = button.dataset.value; render(); }); });
+    document.getElementById('language').addEventListener('click', () => { state.language = state.language === 'en' ? 'ar' : 'en'; render(); });
+    select.addEventListener('change', () => { state.currentGovernance = select.value; render(); });
+    render();
+  </script>
+</body>
+</html>
