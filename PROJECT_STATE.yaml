@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-09-23T01:10:28+03:00
+updatedAt: 2026-09-23T11:57:00+03:00
 coordinator:
-  owner: "Primary coordinator and integrator for the FITWAY repository; both Owner exploration rounds are archived NEEDS_HUMAN after explicit human rejection, and no Owner design milestone is active."
+  owner: "Primary coordinator and integrator for FITWAY; Owner design remains paused while repository-policy-alignment-r01 is active."
   stateFilePolicy: "coordinator-only"
 baseline:
   status: "DONE"
@@ -18,4 +18,44 @@ baseline:
   visualManifest: "visual-direction-gate/approved/APPROVAL_MANIFEST.yaml"
   validationRecord: "docs/phase-records/baseline-reconciliation-gate.md"
   independentVerification: "docs/phase-records/baseline-independent-verification.md"
-milestones: {}
+milestones:
+  repository-policy-alignment-r01:
+    status: READY
+    objective: >-
+      Align the agent concurrency rule with isolated worktree ownership and align
+      terminal milestone wording with the active-state schema and immediate archival.
+    taskClass: repository-infrastructure
+    taskPacket: docs/phase-records/task-packets/repository-policy-alignment-r01.yaml
+    taskPacketSha256: 3dcff61e0fff62bacf8a40512f0a50d708966eeb70cee6c5c5d7579cf92ce0c3
+    dependencies: []
+    ownerSession: repository-policy-alignment-r01-coordinator
+    branch: codex/owner-design-exploration-r01
+    worktree: C:/Users/Pc Force/.codex/worktrees/owner-design-exploration-r01/phase5-staff-integration
+    baseCommit: SELF
+    ownedPaths:
+      - AGENTS.md
+      - docs/WORKFLOW.md
+      - docs/phase-records/handoffs/repository-policy-alignment/**
+      - docs/phase-records/task-packets/repository-policy-alignment-r01.yaml and PROJECT_STATE.yaml (coordinator only)
+    forbiddenPaths:
+      - apps/** and packages/**
+      - design-research/**, including the untracked r03 brief
+      - visual-direction-gate/** and docs/design/**
+      - FITWAY_PRODUCT.md, SPEC.md, DESIGN_GUIDE.md, and docs/adr/**
+      - PROJECT_STATE_HISTORY.yaml except the coordinator's terminal append and receipt
+      - pnpm-lock.yaml, migrations, and canonical screenshots
+    sharedLeases:
+      - Coordinator grants the policy worker exclusive AGENTS.md and docs/WORKFLOW.md edits during its bounded worktree assignment; coordinator alone updates state, packet, handoff, and integrates.
+    validationRepairAttempts: 0
+    lastHeartbeatAt: 2026-09-23T11:57:00+03:00
+    leaseExpiresAt: 2026-09-24T11:57:00+03:00
+    handoff: docs/phase-records/handoffs/repository-policy-alignment/20260923-115700-repository-policy-alignment-r01-activation.md
+    stopReason: null
+    gates:
+      unit: NOT_REQUIRED
+      integration: NOT_REQUIRED
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null

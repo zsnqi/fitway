@@ -1,0 +1,82 @@
+# Coordinator-authored derived context. Not product or design authority.
+schemaVersion: 1
+milestoneId: repository-policy-alignment-r01
+taskClass: repository-infrastructure
+packetStatus: READY
+stateRef: PROJECT_STATE.yaml#/milestones/repository-policy-alignment-r01
+baseCommit: SELF
+task:
+  objective: >-
+    Align the agent concurrency rule with isolated worktree ownership and align
+    terminal milestone wording with the active-state schema and immediate archival.
+  acceptanceCriteria:
+    - AGENTS.md permits genuinely independent concurrent writers only in separate worktrees with disjoint owned paths, explicit shared-file leases, isolated resources, and serialized integration.
+    - The policy retains a clear stop for overlapping ownership, unleased shared files, shared canonicals, migrations, and other unsafe concurrent mutation.
+    - WORKFLOW.md states that a terminal milestone moves directly to append-only PROJECT_STATE_HISTORY.yaml with its transition receipt and is removed from PROJECT_STATE.yaml as one coordinator transition.
+    - Any other directly conflicting process wording is reconciled without changing Product, Spec, design authority, or state schema unless executable evidence requires it.
+    - Relevant repository/context checks pass and the coordinator independently reviews the changed policy and lifecycle behavior.
+  explicitExclusions:
+    - Owner design exploration, UI production edits, Product/Spec contracts, and visual-authority promotion.
+    - Parallel writes to the same worktree or shared path, and concurrent canonical or integration updates.
+    - Broad process refactors, new state machinery, or changing the active-state schema merely to preserve stale wording.
+scope:
+  ownedPaths:
+    - AGENTS.md
+    - docs/WORKFLOW.md
+    - docs/phase-records/handoffs/repository-policy-alignment/**
+    - docs/phase-records/task-packets/repository-policy-alignment-r01.yaml and PROJECT_STATE.yaml (coordinator only)
+  forbiddenPaths:
+    - apps/** and packages/**
+    - design-research/**, including the untracked r03 brief
+    - visual-direction-gate/** and docs/design/**
+    - FITWAY_PRODUCT.md, SPEC.md, DESIGN_GUIDE.md, and docs/adr/**
+    - PROJECT_STATE_HISTORY.yaml except the coordinator's terminal append and receipt
+    - pnpm-lock.yaml, migrations, and canonical screenshots
+  sharedLeases:
+    - Coordinator grants the policy worker exclusive AGENTS.md and docs/WORKFLOW.md edits during its bounded worktree assignment; coordinator alone updates state, packet, handoff, and integrates.
+authorities:
+  required:
+    - role: workflow
+      path: docs/WORKFLOW.md
+      selector: { kind: markdown-heading, value: "Roles" }
+      reason: Reconcile concurrent worker rules and terminal transition procedure across the complete workflow.
+    - role: contract
+      path: docs/schemas/project-state.schema.json
+      selector: { kind: json-pointer, value: "/properties/milestones" }
+      reason: Keep active status wording aligned with the executable schema.
+    - role: test
+      path: scripts/verify-repository.mjs
+      selector: { kind: whole-file, value: "" }
+      reason: Check how active and historical milestone invariants and receipts are verified.
+  conditional:
+    - trigger: the infrastructure can affect a Product or Spec guarantee
+      role: product
+      path: FITWAY_PRODUCT.md
+      selector: { kind: markdown-heading, value: "Canonical detail" }
+      actionIfTriggered: READ
+    - trigger: the infrastructure changes a design-context bridge
+      role: design
+      path: DESIGN.md
+      selector: { kind: markdown-heading, value: "Design" }
+      actionIfTriggered: READ
+continuity:
+  predecessorMilestones: []
+  currentHandoff: docs/phase-records/handoffs/repository-policy-alignment/20260923-115700-repository-policy-alignment-r01-activation.md
+  unresolvedDecisions: []
+verification:
+  profile: Focused repository policy and lifecycle documentation alignment; no product code changes.
+  orderedGates:
+    - Run context:show for this milestone and read the ordered sources before edits.
+    - Inspect all direct concurrency and terminal archival references implicated by the two edits.
+    - Make the minimum coherent policy/documentation changes inside leased paths.
+    - Run focused context and repository invariant checks; review their results and unchanged worktree status.
+    - Coordinator reviews the diff and independently runs the repository checks before terminal archival.
+  independentReviewRequired: true
+evidence:
+  receiptTemplate: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
+  requiredArtifacts:
+    - Policy worker's exact changed files, rationale, and check outputs.
+    - Coordinator diff review, direct repository/context verification, and terminal transition receipt.
+limitations:
+  - This task aligns repository process only and does not start the Owner redesign.
+  - The existing untracked r03 redesign brief is preserved outside this task.
