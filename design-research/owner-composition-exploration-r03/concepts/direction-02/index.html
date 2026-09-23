@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b090c">
+  <title>FITWAY / Owner Journal — Direction 02</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-daily" viewBox="0 0 24 24"><path d="M4 19V5m0 14h16M8 15l3-3 3 2 5-6"/><circle cx="8" cy="15" r="1"/><circle cx="11" cy="12" r="1"/><circle cx="14" cy="14" r="1"/><circle cx="19" cy="8" r="1"/></symbol>
+    <symbol id="i-reports" viewBox="0 0 24 24"><path d="M4 20V4h16M8 16v-4m4 4V8m4 8V6"/></symbol>
+    <symbol id="i-access" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v3"/></symbol>
+    <symbol id="i-log" viewBox="0 0 24 24"><path d="M7 4h10M7 9h10M7 14h7M7 19h10M3 4h.01M3 9h.01M3 14h.01M3 19h.01"/></symbol>
+    <symbol id="i-operations" viewBox="0 0 24 24"><path d="M3 12h4l2-5 4 10 2-5h6"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="11" cy="18" r="2"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v.2"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5 5 19"/></symbol>
+  </svg>
+  <div class="atmosphere" aria-hidden="true"></div>
+  <div class="app-shell">
+    <aside class="rail" aria-label="FITWAY Owner">
+      <div class="rail-head">
+        <div class="brand" aria-label="FITWAY">FIT<span>WAY</span><i></i></div>
+        <span class="edition" id="edition">OWNER / JOURNAL</span>
+      </div>
+      <nav class="desktop-nav" aria-label="Owner sections" id="desktopNav"></nav>
+      <div class="rail-foot">
+        <span id="railFootTop">Operational record</span>
+        <span id="railFootBottom">Concept exploration · synthetic data</span>
+      </div>
+    </aside>
+    <div class="main-shell">
+      <header class="topbar">
+        <div class="mobile-brand"><div class="brand" aria-label="FITWAY">FIT<span>WAY</span><i></i></div></div>
+        <div class="topbar-trail"><span class="trail-mark"></span><span id="topbarContext">Owner journal</span><span class="trail-divider">/</span><strong id="topbarSection">Daily</strong></div>
+        <div class="topbar-actions">
+          <span class="demo-mark" id="demoMark">ILLUSTRATIVE DATA</span>
+          <button class="lang-btn" id="langBtn" type="button" aria-label="Switch to Arabic">العربية</button>
+          <button class="mobile-menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="mobileNav" aria-label="Open sections"><svg><use href="#i-menu"/></svg></button>
+        </div>
+      </header>
+      <nav class="mobile-nav" id="mobileNav" aria-label="Owner sections" hidden></nav>
+      <main id="main" tabindex="-1"></main>
+      <footer class="page-footer"><span id="footerText">Direction 02 — Editorial operations journal</span><span>FITWAY · 2026</span></footer>
+    </div>
+  </div>
+  <div id="announce" class="sr-only" role="status" aria-live="polite"></div>
+  <script src="./app.js"></script>
+</body>
+</html>
