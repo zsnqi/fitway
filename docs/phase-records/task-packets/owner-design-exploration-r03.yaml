@@ -1,0 +1,180 @@
+# Coordinator-authored derived context; concept exploration only, not visual authority.
+schemaVersion: 1
+milestoneId: owner-design-exploration-r03
+taskClass: visual-authority-change
+packetStatus: READY
+stateRef: PROJECT_STATE.yaml#/milestones/owner-design-exploration-r03
+baseCommit: 4a8c01e3b5b6bcc137876bb55fb5d62fca4637bb
+task:
+  objective: >-
+    Prepare four genuinely distinct, interactive Owner redesign concept slices for an early
+    human comparison, preserving FITWAY's current dark and glass character in spirit while
+    rethinking composition, hierarchy, icons, charts, color roles, and motion.
+  acceptanceCriteria:
+    - Four independently conceived directions each show shared navigation, a truthful Daily opening and chart, and a dense Reports or Activity Log surface.
+    - Each direction renders exact EN/AR 1440x900 desktop and 390x844 mobile frames and demonstrates section navigation, chart or detail interaction, control feedback, and reduced-motion behavior.
+    - Each direction explains its distinct spatial and interaction thesis, icon/color system, and concise extension to Access, Operations, and Settings.
+    - The coordinator personally inspects exact rendered frames and interaction, compares the four with the running Owner UI, and presents an early side-by-side taste gate for the user's choose, revise, or reject decision.
+    - Product, Spec, security, privacy, data truth, accessibility, RTL/LTR, Western digits, and production dark-only rules remain binding; concepts are labeled exploration only.
+  explicitExclusions:
+    - Production UI, CSS, copy, hooks, routes, i18n, dependencies, schemas, APIs, and data semantics.
+    - Selecting a direction on behalf of the user or extending one to the complete seven-surface implementation before the human taste decision.
+    - Canonical, Paper, manifest, token-baseline, authority-register, ADR, approval-hash, or production promotion changes.
+    - Reusing the four rejected r02 concepts, earlier rejected prototypes, Public or Staff compositions, or superseded Owner Paper frames as future visual references.
+scope:
+  ownedPaths:
+    - design-research/owner-composition-exploration-r03/concepts/**
+    - docs/phase-records/handoffs/owner-design-exploration/20260923-123000-owner-design-exploration-r03-activation.md
+    - docs/phase-records/task-packets/owner-design-exploration-r03.yaml
+  forbiddenPaths:
+    - design-research/owner-composition-exploration-r03/OWNER_REDESIGN_BRIEF.md
+    - design-research/owner-composition-exploration-r01/** and design-research/owner-composition-exploration-r02/** (preserved diagnostic evidence)
+    - apps/** and packages/** production code, copy, behavior, and data semantics
+    - tests/browser/** including canonicals and screenshots
+    - visual-direction-gate/**, docs/design/VISUAL_AUTHORITY_STATUS.md, docs/design/PAPER_GUIDE_CONFLICT_MAP.md, docs/adr/**, approval manifests, and pinned hashes
+    - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
+    - docs/archive/**, prior handoffs, and unrelated phase records
+    - docs/WORKFLOW.md, pnpm-lock.yaml, dependencies, and migrations
+  sharedLeases: []
+authorities:
+  required:
+    - role: product
+      path: FITWAY_PRODUCT.md
+      selector: { kind: markdown-heading, value: "Approved visual baseline" }
+      reason: Retain FITWAY identity and locked product semantics.
+    - role: spec
+      path: SPEC.md
+      selector: { kind: markdown-heading, value: "Implementation authority and fidelity contract" }
+      reason: Preserve security, privacy, accessibility, bilingual behavior, and data contracts.
+    - role: design
+      path: DESIGN_GUIDE.md
+      selector: { kind: markdown-heading, value: "15. Phase visual gate" }
+      reason: Preserve responsive, RTL/LTR, typography, accessibility, motion, and visual-gate rules.
+    - role: design
+      path: DESIGN.md
+      selector: { kind: markdown-heading, value: "Exploration mode" }
+      reason: Route Impeccable through the FITWAY exploration envelope without making this router authority.
+    - role: visual-status
+      path: docs/design/VISUAL_AUTHORITY_STATUS.md
+      selector: { kind: markdown-heading, value: "Register" }
+      reason: Confirm Owner composition authority remains vacant and other surfaces remain unaffected.
+    - role: adr
+      path: docs/adr/ADR-007-paper-visual-source-of-truth.md
+      selector: { kind: markdown-heading, value: "Authority split" }
+      reason: Preserve the Paper versus repository boundary where applicable.
+    - role: workflow
+      path: docs/WORKFLOW.md
+      selector: { kind: markdown-heading, value: "Design work: authority, concepts, and perceptual gates" }
+      reason: Follow concept, perceptual, accessibility, review, and human decision gates.
+    - role: test
+      path: scripts/verify-repository.mjs
+      selector: { kind: whole-file, value: "" }
+      reason: Preserve repository state and artifact invariants.
+    - role: adr
+      path: docs/adr/ADR-009-owner-composition-authority-supersession.md
+      selector: { kind: markdown-heading, value: "Decision" }
+      reason: Owner composition is vacant; prior Owner compositions are provenance only.
+    - role: design
+      path: design-research/owner-composition-exploration-r03/OWNER_REDESIGN_BRIEF.md
+      selector: { kind: whole-file, value: "" }
+      reason: Required human brief and diagnostic evidence; not independent visual authority or concept approval.
+    - role: design
+      path: design-research/owner-composition-exploration-r01/OWNER_DISCOVERY_BRIEF.md
+      selector: { kind: whole-file, value: "" }
+      reason: Required predecessor interview evidence; rejected designs remain non-authoritative.
+  conditional:
+    - trigger: the route or surface is Owner
+      role: adr
+      path: docs/adr/ADR-009-owner-composition-authority-supersession.md
+      selector: { kind: markdown-heading, value: "Decision" }
+      actionIfTriggered: READ
+    - trigger: Paper is unavailable and composition depends on it
+      role: visual-status
+      path: docs/design/PAPER_GUIDE_CONFLICT_MAP.md
+      selector: { kind: whole-file, value: "" }
+      actionIfTriggered: NEEDS_HUMAN
+continuity:
+  predecessorMilestones:
+    - owner-design-exploration-r02
+    - repository-policy-alignment-r01
+  currentHandoff: docs/phase-records/handoffs/owner-design-exploration/20260923-123000-owner-design-exploration-r03-activation.md
+  unresolvedDecisions:
+    - The user must choose, revise, or reject the early comparison before full seven-surface development.
+    - Owner composition authority remains vacant until explicit concept selection and perceptual promotion.
+    - Any production baseline departure or canonical promotion requires a separate explicit human decision.
+verification:
+  profile: four-direction Owner concept comparison; no production or promotion verification
+  orderedGates:
+    - Validate the READY packet and ledger with context:show and check:agent-context, then read ordered routed sources.
+    - Record the allowed rendering route; inspect Browser or Playwright instructions before opening a page.
+    - Inspect the running Owner UI interaction and animation in the disposable synthetic demo; avoid storing credentials in tracked records.
+    - Give independent concept writers disjoint paths and separate worktrees; isolate runtime resources and integrate serially.
+    - Inspect every direction's exact EN/AR desktop/mobile frames, functional interactions, reduced-motion behavior, and current-UI comparison personally.
+    - Check 320px and 200% reflow, keyboard and focus, truthful loading/stale/closed/error semantics, accessibility, and distinctness before the human comparison.
+    - Obtain independent perceptual and accessibility review before VALIDATING; ask the user to choose, revise, or reject at the early taste gate.
+  independentReviewRequired: true
+evidence:
+  receiptTemplate: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
+  requiredArtifacts:
+    - Exact context:show and check:agent-context results with packet SHA-256.
+    - Impeccable design-context PASS and the rendered inspection route.
+    - Four concept slices, exact inspected frames, interaction findings, and an early comparison with current Owner UI.
+    - Human taste decision, or an explicit pending decision; no implied selection.
+limitations:
+  - This packet authorizes concept exploration only and records no accepted direction, implementation, or promotion.
+  - Existing screenshots and Paper exports are provenance or diagnostic references, not acceptance authority for Owner composition.
+  - The current runtime inspection must be refreshed; ignored demo frames from the prior session may be absent in another worktree.
+visual:
+  surfaceKey: owner-composition-family
+  authorityStatus: VACANT
+  authorityKey: ADR-009
+  governingDecision: docs/adr/ADR-009-owner-composition-authority-supersession.md#decision
+  explorationEnvelope:
+    mode: EXPLORATION
+    lockedAxes:
+      - FITWAY identity, Arabic-first RTL and English LTR, Western digits, and Product/Spec semantics.
+      - Security, privacy, data truth, accessibility, and all non-visual Product/Spec contracts.
+      - Production remains dark-only with the current --fw-* baseline, Cairo actual weights 400/500/600/700, and static-atmosphere rules until separately approved.
+    variableAxes:
+      - Owner concept composition, content order, navigation, material depth, panel geometry, density, rhythm, chart grammar, and form grouping.
+      - Icon family and semantic color roles, purposeful orientation and feedback motion, with reduced-motion handling.
+      - Supporting colors and lighter breathing room within a recognizably dark FITWAY character.
+    requiredDepartures:
+      - Four directions must have distinct observable spatial and interaction theses, page skeletons, and chart treatments.
+      - Each direction must meaningfully redesign hierarchy, icon and color coherence, and motion rather than merely polish or rearrange the current UI.
+    antiRuts:
+      - All four rejected r02 directions and earlier rejected concepts; their geometry, palette, chart, and ordering are diagnostic evidence only.
+      - Superseded Owner Paper frames and canonicals, Public and Staff compositions, and frozen candidates are not future Owner visual references.
+      - The incumbent Owner layout, metric stacking, clipped mobile navigation, and near-absent motion are problems to solve, not topology to preserve.
+    promotionRule: >-
+      Human concept choice precedes full seven-surface work; any locked production visual
+      departure then needs a separate explicit human baseline decision and perceptual gate.
+      This concept packet, green checks, and prior frames promote nothing.
+    authorizingDecision: docs/phase-records/handoffs/owner-design-exploration/20260923-123000-owner-design-exploration-r03-activation.md
+  currentFrames:
+    - path: tests/browser/__screenshots__/win32/chromium/phase9-owner-ui.browser.spec.ts/owner-daily-route-ar-desktop-1440x900.png
+      sha256: 1c3dfc4006df48252f69e707e7619d7e8460810525668f26ef8afd1120f07d89
+    - path: tests/browser/__screenshots__/win32/chromium/phase9-owner-ui.browser.spec.ts/owner-daily-route-en-mobile-390x844.png
+      sha256: b43131097456b32e92b61226eb91fde796a1ecd05989f82830cfd19fab0ae67d
+  referenceFrames:
+    - path: visual-direction-gate/approved/paper-route-authority-20260902/evidence/owner-daily/routed-daily-en-1440.png
+      sha256: b1f8a0e2e5713b339fe01d1d305de5e7641e7646d507f53b4a0d4f6095e0e787
+  openHumanDecisions:
+    - The early direction choice belongs to the user; none is selected.
+    - Owner composition authority remains vacant under ADR-009.
+    - Production and canonical promotion require separate explicit human approval.
+  paperAvailability: UNAVAILABLE
+  perceptualGate:
+    status: PENDING
+    criteria: Exact full-resolution EN/AR desktop/mobile frames and interaction need independent perceptual review before VALIDATING, completion, or promotion.
+  promotionGate:
+    status: NOT_REQUIRED
+    criteria: This comparison task changes no canonical or production baseline; promotion is a separate serialized human decision.
+  acceptanceAuthority: NONE
+designContextCheck:
+  command: pnpm check:design-context
+  status: PASS
+  artifact: docs/phase-records/handoffs/owner-design-exploration/20260923-123000-owner-design-exploration-r03-activation.md
+accessibilityGate:
+  status: PENDING
+  criteria: Review RTL/LTR, 320px and 200% reflow, keyboard/focus, reduced motion, truthful states, and chart equivalents before VALIDATING.
