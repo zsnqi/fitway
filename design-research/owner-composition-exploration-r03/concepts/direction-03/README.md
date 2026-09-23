@@ -33,7 +33,7 @@ For future full-surface work, the readout must switch content by actual state: l
 
 ## Accessibility and limits
 
-The concept uses Cairo at actual 400/600/700 weights, Arabic RTL and English LTR with Western digits; native buttons, headings, landmarks, a skip link, visible focus, text labels for state, and reduced motion. Matrix cells are at least 44px tall on mobile. The six-item mobile dock remains visible and the document scrolls beneath it with bottom padding; controls lower on Reports are reachable by scrolling. This is an early visual comparison, not a fully verified seven-surface product. It has no live data or authenticated behavior.
+The concept uses Cairo at actual 400/600/700 weights, Arabic RTL and English LTR with Western digits; native buttons, headings, landmarks, a skip link, visible focus, text labels for state, and reduced motion. Matrix cells are at least 44px tall on mobile. The selected Daily period detail and static-sample explanation precede the period bands so the bottom dock cannot cover their first-screen reading. The six-item mobile dock remains visible and the document scrolls beneath it with bottom padding; controls lower on Reports are reachable by scrolling. This is an early visual comparison, not a fully verified seven-surface product. It has no live data or authenticated behavior.
 
 ## Preview and evidence
 

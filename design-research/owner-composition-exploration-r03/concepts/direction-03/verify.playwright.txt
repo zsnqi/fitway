@@ -16,6 +16,18 @@ async (page) => {
 		(await page.locator(".detail-strip").innerText()).includes("Early"),
 		"Daily detail did not update",
 	);
+	for (const locale of ["en", "ar"]) {
+		await page.goto(base + "?lang=" + locale + "&section=daily");
+		await page.locator('[data-period="0"]').click();
+		const blocks = await page.evaluate(() => ({
+			detail: document.querySelector(".detail-strip").getBoundingClientRect().bottom,
+			note: document.querySelector(".truth-note").getBoundingClientRect().bottom,
+			dock: document.querySelector(".instrument-nav").getBoundingClientRect().top,
+		}));
+		assert(blocks.detail < blocks.dock && blocks.note < blocks.dock,
+			"Daily feedback covered by dock in " + locale + ": " + JSON.stringify(blocks));
+	}
+	await page.goto(base + "?lang=en&section=daily");
 	await page.locator('[data-section="reports"]').click();
 	assert((await page.title()).includes("Reports"), "Section navigation failed");
 	await page.locator('[data-cell="4-0"]').focus();
@@ -60,6 +72,20 @@ async (page) => {
 				": " +
 				JSON.stringify(widthInfo),
 		);
+	}
+	for (const locale of ["en", "ar"]) {
+		await page.goto(base + "?lang=" + locale + "&section=daily");
+		for (const width of [320, 390, 720]) {
+			await page.setViewportSize({ width, height: 900 });
+			const widthInfo = await page.evaluate(() => ({
+				viewport: document.documentElement.clientWidth,
+				document: document.documentElement.scrollWidth,
+			}));
+			assert(
+				widthInfo.document <= widthInfo.viewport + 1,
+				"Daily overflow at " + width + " " + locale + ": " + JSON.stringify(widthInfo),
+			);
+		}
 	}
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	const duration = await page

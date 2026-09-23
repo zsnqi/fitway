@@ -280,6 +280,8 @@ function daily() {
     </section>
     <section class="period-section" aria-labelledby="period-title">
       <div class="section-heading"><div><h2 id="period-title">${t("intervals")}</h2><p>${t("periodHint")}</p></div><div class="legend"><span><i class="legend-observed"></i>${t("observed")}</span><span><i class="legend-missing"></i>${t("missing")}</span><span><i class="legend-future"></i>${t("notYet")}</span></div></div>
+      <div class="detail-strip" role="status" aria-live="polite"><span>${t("selected")}: <strong>${t("period" + selectedPeriod)} <bdi dir="ltr">${t("period" + selectedPeriod + "time")}</bdi></strong></span><p>${t("period" + selectedPeriod + "detail")}</p></div>
+      <p class="truth-note">${t("sampleNotice")}</p>
       <div class="period-track">${periods
 				.map(
 					(
@@ -292,8 +294,6 @@ function daily() {
       </button>`,
 				)
 				.join("")}</div>
-      <div class="detail-strip" role="status" aria-live="polite"><span>${t("selected")}: <strong>${t("period" + selectedPeriod)} <bdi dir="ltr">${t("period" + selectedPeriod + "time")}</bdi></strong></span><p>${t("period" + selectedPeriod + "detail")}</p></div>
-      <p class="truth-note">${t("sampleNotice")}</p>
     </section>
   </div>`;
 }

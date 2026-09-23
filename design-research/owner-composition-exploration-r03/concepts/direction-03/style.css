@@ -110,4 +110,8 @@ table{border-collapse:collapse;width:100%;min-width:510px;font-size:12px}caption
 @media(max-width:350px){.nav-item{font-size:8px}.matrix-axis,.matrix-row{grid-template-columns:43px repeat(6,minmax(0,1fr));gap:2px}.matrix-row strong{font-size:8px}.matrix-bottom{margin-inline-start:45px}.heat-cell{font-size:10px}}
 @media(max-width:580px){.mobile-truth{display:inline-block;color:var(--amber);font-size:10px;line-height:1.4;margin-block-start:5px}.page-lead{margin-block-end:14px}main{padding-block-start:19px}}
 @media(max-width:580px){.heat-cell{height:44px}.reports-layout{padding-block-end:30px}}
+/* Keep selected-period feedback and sample truth ahead of the banded chart. */
+.period-section .detail-strip{border-radius:10px}
+.period-section .truth-note{margin-block:8px 13px}
+@media(max-width:580px){.period-section .detail-strip{padding:7px 10px}.period-section .truth-note{margin-block:5px 10px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition-duration:0.01ms!important;animation-duration:0.01ms!important}}
