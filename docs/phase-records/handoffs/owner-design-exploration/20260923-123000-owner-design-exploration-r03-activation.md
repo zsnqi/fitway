@@ -16,3 +16,16 @@ Use Browser for interactive inspection and repository Playwright for repeatable 
 `pnpm context:show -- --milestone owner-design-exploration-r03` reported `READY`, the expected base commit and handoff, packet status `READY`, and packet SHA-256 `100f232c6b661f4de779a30135a6568a3dea94206b5e726d954bc32d8218cd2e`. `pnpm check:agent-context` passed in active routing mode with Git tracking checks enabled; its warnings were the existing named historical pointer exceptions. The host-direct `C:/Program Files/nodejs/node.exe scripts/verify-repository.mjs` passed with one active and 109 archived milestones, preserving all registered authority and artifact hashes. `git diff --cached --check` passed, and the validation run left `git status --short` unchanged.
 
 Read the routed sources in order before concept production. Assign disjoint concept paths and isolated worktrees and runtimes before concurrent writers. Inspect the exact frames and motion personally, then present the early comparison to the user for choose, revise, or reject.
+
+## In-progress concept allocation (2026-09-23 12:52 +03:00)
+
+All four worktrees were created from activation commit `174078c881059e00c368ca6810b29d2b7a7f1b73` and completed `pnpm install --frozen-lockfile` successfully. Each concept writer owns only its assigned path below. No writer has a lease for `PROJECT_STATE.yaml`, shared UI, tests, or visual-authority files. The coordinator serializes cherry-pick integration and owns the comparison, visual inspection, and ledger.
+
+| Direction | Exclusive concept path | Isolated worktree | Optional loopback preview port |
+| --- | --- | --- | --- |
+| 01 | `design-research/owner-composition-exploration-r03/concepts/direction-01/**` | `C:/Users/Pc Force/.codex/worktrees/owner-r03-direction-01/phase5-staff-integration` | 3111 |
+| 02 | `design-research/owner-composition-exploration-r03/concepts/direction-02/**` | `C:/Users/Pc Force/.codex/worktrees/owner-r03-direction-02/phase5-staff-integration` | 3112 |
+| 03 | `design-research/owner-composition-exploration-r03/concepts/direction-03/**` | `C:/Users/Pc Force/.codex/worktrees/owner-r03-direction-03/phase5-staff-integration` | 3113 |
+| 04 | `design-research/owner-composition-exploration-r03/concepts/direction-04/**` | `C:/Users/Pc Force/.codex/worktrees/owner-r03-direction-04/phase5-staff-integration` | 3114 |
+
+Preview processes, browser contexts, and screenshots must remain within each worktree's assigned resource and path. The disposable current-UI demo uses only the coordinator worktree and its documented 3100/3101 and 55432 ports. Writers do not reset or mutate it.

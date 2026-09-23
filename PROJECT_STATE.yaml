@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-09-23T12:33:29+03:00
+updatedAt: 2026-09-23T12:52:12+03:00
 coordinator:
-  owner: Primary coordinator and integrator for FITWAY; Owner redesign r03 is READY for a concept-only comparison after the explicit new-session request.
+  owner: Primary coordinator and integrator for FITWAY; Owner redesign r03 is IN_PROGRESS with four separately owned concept worktrees.
   stateFilePolicy: coordinator-only
 baseline:
   status: DONE
@@ -20,7 +20,7 @@ baseline:
   independentVerification: docs/phase-records/baseline-independent-verification.md
 milestones:
   owner-design-exploration-r03:
-    status: READY
+    status: IN_PROGRESS
     objective: >-
       Prepare four genuinely distinct, interactive Owner redesign concept slices for an early
       human comparison, without changing production, canonical, Paper, or visual-authority state.
@@ -47,8 +47,8 @@ milestones:
       - docs/WORKFLOW.md, pnpm-lock.yaml, dependencies, and migrations
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: 2026-09-23T12:33:29+03:00
-    leaseExpiresAt: 2026-09-24T12:33:29+03:00
+    lastHeartbeatAt: 2026-09-23T12:52:12+03:00
+    leaseExpiresAt: 2026-09-24T12:52:12+03:00
     handoff: docs/phase-records/handoffs/owner-design-exploration/20260923-123000-owner-design-exploration-r03-activation.md
     stopReason: null
     gates:
