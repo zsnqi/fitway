@@ -53,9 +53,11 @@ blocked/failed item receives a new attempt record; history is never overwritten.
 
 ## Active ledger and closed history
 
-`PROJECT_STATE.yaml` holds the active frontier and any blocking or terminal record the coordinator
-has not yet archived. `PROJECT_STATE_HISTORY.yaml` holds only terminal records (`DONE`, `BLOCKED`,
-`NEEDS_HUMAN`, `FAILED_VALIDATION`), is append-only, is coordinator-owned, and is never rewritten.
+`PROJECT_STATE.yaml` holds only open-status milestones in the active frontier. When a milestone
+reaches a terminal outcome, the coordinator appends its record to `PROJECT_STATE_HISTORY.yaml`
+with a transition receipt and removes it from `PROJECT_STATE.yaml` in the same transition.
+`PROJECT_STATE_HISTORY.yaml` holds only terminal records (`DONE`, `BLOCKED`, `NEEDS_HUMAN`,
+`FAILED_VALIDATION`), is append-only, is coordinator-owned, and is never rewritten.
 Open-status milestones may never be archived. Archived records stay dependency-resolvable and are
 mutable only through an explicit successor milestone whose own record carries the new attempt.
 `pnpm check:repository` fails on duplicate ids, on any open status in history, on unknown
@@ -73,7 +75,9 @@ snapshot anchors remain immutable compatibility evidence and are never regenerat
    required verification commands.
 4. Assign a unique lowercase `FITWAY_RUN_ID`, for example `p4_auth_s01`.
 5. Register the slice's focused verification profile and exact test paths before launch.
-6. Create a non-overlapping branch/worktree. Never start from another worker's unintegrated branch.
+6. Create a separate branch/worktree for each writer. Concurrent writers require disjoint owned
+   paths, exclusive leases for any shared files, and isolated runtime resources; stop if any
+   overlap or unsafe shared mutation remains. Never start from another worker's unintegrated branch.
 7. Prepare the new worktree before any agent or test work. `node_modules` is untracked, so a fresh
    worktree starts without it, and a partial install leaves `node_modules/.bin` without the root
    tool links. From the worktree root run `pnpm install --frozen-lockfile`; the frozen install and
@@ -427,14 +431,16 @@ and artifact locations—not the implementer's reasoning transcript. It must:
 
 ## Integration
 
-The coordinator integrates candidates in the order defined by `PHASES.md`:
+The coordinator integrates candidates one at a time in the order defined by `PHASES.md`:
 
 1. inspect candidate history and diff;
 2. reconcile coordinator-owned shared files and generate any single ordered migration;
 3. run focused checks after each shared-spine integration;
 4. run `pnpm verify:full` at the completed batch;
 5. confirm validation left the worktree clean;
-6. record integrated commit and evidence, release leases, and mark `DONE`.
+6. record integrated commit and evidence, append the `DONE` record and transition receipt to
+   closed history while removing it from the active ledger in one coordinator transition, then
+   release leases.
 
 A worker branch being green is `READY_FOR_INTEGRATION`, never `DONE`. Do not push, deploy, or
 provision external systems unless separately authorized.

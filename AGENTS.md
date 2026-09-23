@@ -23,7 +23,7 @@ The route registry `docs/agent-context/ROUTES.yaml` names the minimum authority 
 
 ## Working agreements
 
-- One writer at a time. Never run concurrent writers; parallelism is for genuinely independent read-only work. Freeze the exact target and outcome before handing mechanical work to a lighter writer.
+- Genuinely independent writers may work concurrently only in separate worktrees with disjoint owned paths, exclusive leases for any shared files, and isolated runtime resources. Each worktree has one writer; the coordinator serializes integration. Stop on overlapping ownership, unleased shared-file work, concurrent canonical or migration updates, or unsafe shared runtime use. Freeze the exact target and outcome before handing mechanical work to a lighter writer.
 - Use subagents when they materially help with broad reading, narrow investigation, test execution, or bounded fixes; delegation buys context cleanliness and permission narrowing, not speed alone. The main session retains final ownership and reviews every returned result against rendered or executed evidence — a subagent's own claim of success is not evidence.
 - Impeccable is FITWAY's single broad design skill, entered through the FITWAY bridge (`pnpm check:design-context`, the active packet's visual authority fields, and the authority register/conflict map); do not stack competing design or taste skills. Reserve structured audit skills for a fresh final review or a deliberately requested polish session, and use brainstorming only when substantial planning or real ambiguity benefits from alternatives.
 - Use Browser for interactive visual inspection and repository Playwright for repeatable screenshots, responsive checks, RTL/LTR, keyboard behavior, and functional verification.
