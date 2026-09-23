@@ -14,6 +14,7 @@ const copy = {
 		demo: "ILLUSTRATIVE",
 		language: "العربية",
 		languageLabel: "Switch to Arabic",
+		navLabel: "Owner workspace sections",
 		closeMenu: "Close workspace switcher",
 		footer: "Direction 04 · Evidence Desk / Signal Wall",
 		skip: "Skip to content",
@@ -29,7 +30,8 @@ const copy = {
 			ratioA11y: "11 of 12 scheduled hours",
 			gap: "12:00–13:00 has no data. It is not zero and is excluded from observed averages.",
 			signalTitle: "Observed by hour",
-			signalHelp: "Choose a bar to inspect its exact value or missing state.",
+			signalHelp: "Choose an hour to inspect its exact value or missing state.",
+			chooseHour: "Hourly readings · scroll to choose",
 			signalStamp: "06:00–18:00 · sample schedule",
 			selected: "Selected interval",
 			count: "approximate people",
@@ -175,7 +177,8 @@ const copy = {
 		menuFoot: "استكشاف تصميم · بلا بيانات إنتاج",
 		demo: "قيم توضيحية",
 		language: "English",
-		languageLabel: "Switch to English",
+		languageLabel: "التبديل إلى الإنجليزية",
+		navLabel: "أقسام مساحة المالك",
 		closeMenu: "إغلاق قائمة الأقسام",
 		footer: "التوجه 04 · مكتب الأدلة والإشارات",
 		skip: "تخطّ إلى المحتوى",
@@ -191,7 +194,8 @@ const copy = {
 			ratioA11y: "11 من 12 ساعة مجدولة",
 			gap: "لا توجد بيانات من 12:00 إلى 13:00. ليست صفرًا ولا تدخل في متوسط المرصود.",
 			signalTitle: "القراءات حسب الساعة",
-			signalHelp: "اختر عمودًا لمعرفة القيمة الدقيقة أو حالة غياب البيانات.",
+			signalHelp: "اختر ساعة لمعرفة القيمة الدقيقة أو حالة غياب البيانات.",
+			chooseHour: "القراءات بالساعة · مرّر للاختيار",
 			signalStamp: "06:00–18:00 · جدول توضيحي",
 			selected: "الفترة المختارة",
 			count: "شخصًا تقريبًا",
@@ -405,16 +409,34 @@ function daily() {
 			return `<button type="button" class="bar-slot ${hour.missing ? "missing" : ""}" data-hour="${index}" aria-label="${safe(label)}" aria-pressed="${index === selectedHour}" style="--bar:${h}px"><span class="bar-fill"></span><span class="hour"><bdi>${hour.time.slice(0, 2)}</bdi></span></button>`;
 		})
 		.join("");
+	const mobileBars = hours
+		.map((hour, index) => {
+			const h = hour.missing
+				? 25
+				: Math.max(4, Math.round((hour.value / 60) * 138));
+			return `<span class="mobile-bar ${hour.missing ? "missing" : ""} ${index === selectedHour ? "selected" : ""}" style="--mobile-bar:${h}px"><i></i></span>`;
+		})
+		.join("");
+	const hourChoices = hours
+		.map((hour, index) => {
+			const label = hour.missing
+				? `${hour.time}: ${t.missing}`
+				: `${hour.time}: ${hour.value} ${t.count}`;
+			return `<button type="button" class="hour-choice ${hour.missing ? "missing" : ""}" data-hour="${index}" aria-label="${safe(label)}" aria-pressed="${index === selectedHour}"><bdi>${hour.time.slice(0, 2)}</bdi><span aria-hidden="true">${hour.missing ? "—" : ""}</span></button>`;
+		})
+		.join("");
+	const desktopChart = `<div class="bar-chart" role="group" aria-label="${safe(t.signalTitle)}">${bars}</div>`;
+	const mobileChart = `<div class="mobile-signal-chart" aria-hidden="true"><div class="mobile-bars">${mobileBars}</div><div class="mobile-times"><bdi>06:00</bdi><bdi>12:00</bdi><bdi>17:00</bdi></div></div><div class="hour-selector-label">${safe(t.chooseHour)}</div><div class="hour-selector" role="group" aria-label="${safe(t.chooseHour)}">${hourChoices}</div>`;
 	const chosen = hours[selectedHour];
 	const detail = chosen.missing
 		? t.missing
 		: chosen.value === 0
 			? t.zero
 			: `${chosen.value} ${t.count}`;
-	return (
+	const markup =
 		pageHead(t.title, t.intro, t.stamp) +
-		`<div class="daily-wall"><section class="status-bay" aria-labelledby="coverage-title">${svg("signal")}<h2 id="coverage-title">${safe(t.statusTitle)}</h2><p>${safe(t.statusBody)}</p><div class="big-ratio" aria-label="${safe(t.ratioA11y)}"><bdi dir="ltr">11<small>/</small>12</bdi></div><div class="ratio-label">${safe(t.ratioLabel)}</div><div class="coverage-track" aria-hidden="true">${hours.map((h) => `<span class="${h.missing ? "missing" : ""}"></span>`).join("")}</div><div class="status-foot">${svg("gap")}<span>${safe(t.gap)}</span></div></section><section class="signal-bay" aria-labelledby="signal-title"><div class="signal-top"><div><h2 id="signal-title">${safe(t.signalTitle)}</h2><p>${safe(t.signalHelp)}</p></div><span class="sample-stamp"><bdi>${safe(t.signalStamp)}</bdi></span></div><div class="bar-chart" role="group" aria-label="${safe(t.signalTitle)}">${bars}</div><div class="signal-detail"><div class="detail-copy"><span>${safe(t.selected)}</span><strong><bdi>${chosen.time}</bdi></strong></div><div class="detail-value">${safe(detail)}<small>${safe(t.selectedTime)}</small></div></div><div class="signal-legend"><div class="legend-items"><span><i></i>${safe(t.observed)}</span><span><i class="gap-icon"></i>${safe(t.absent)}</span></div><p>${safe(t.count)}</p></div></section></div><div class="evidence-strip"><div class="evidence-item"><strong><bdi>54</bdi></strong><span>${safe(t.peak)}</span><p>${safe(t.peakNote)}</p></div><div class="evidence-item"><strong><bdi dir="ltr">${safe(t.coverageValue)}</bdi> <small>${safe(t.coverageUnit)}</small></strong><span>${safe(t.coverage)}</span><p>${safe(t.coverageNote)}</p></div><div class="evidence-item"><strong><bdi>${safe(t.crossingsValue)}</bdi></strong><span>${safe(t.crossings)}</span><p>${safe(t.crossingsNote)}</p></div></div><div class="sr-only"><table><caption>${safe(t.signalTitle)}</caption><thead><tr><th>${safe(t.timeHead)}</th><th>${safe(t.valueHead)}</th></tr></thead><tbody>${hours.map((h) => `<tr><td>${h.time}</td><td>${h.missing ? safe(t.missing) : h.value}</td></tr>`).join("")}</tbody></table></div>`
-	);
+		`<div class="daily-wall"><section class="status-bay" aria-labelledby="coverage-title">${svg("signal")}<h2 id="coverage-title">${safe(t.statusTitle)}</h2><p>${safe(t.statusBody)}</p><div class="big-ratio" aria-label="${safe(t.ratioA11y)}"><bdi dir="ltr">11<small>/</small>12</bdi></div><div class="ratio-label">${safe(t.ratioLabel)}</div><div class="coverage-track" aria-hidden="true">${hours.map((h) => `<span class="${h.missing ? "missing" : ""}"></span>`).join("")}</div><div class="status-foot">${svg("gap")}<span>${safe(t.gap)}</span></div></section><section class="signal-bay" aria-labelledby="signal-title"><div class="signal-top"><div><h2 id="signal-title">${safe(t.signalTitle)}</h2><p>${safe(t.signalHelp)}</p></div><span class="sample-stamp"><bdi>${safe(t.signalStamp)}</bdi></span></div><div class="bar-chart" role="group" aria-label="${safe(t.signalTitle)}">${bars}</div><div class="signal-detail"><div class="detail-copy"><span>${safe(t.selected)}</span><strong><bdi>${chosen.time}</bdi></strong></div><div class="detail-value">${safe(detail)}<small>${safe(t.selectedTime)}</small></div></div><div class="signal-legend"><div class="legend-items"><span><i></i>${safe(t.observed)}</span><span><i class="gap-icon"></i>${safe(t.absent)}</span></div><p>${safe(t.count)}</p></div></section></div><div class="evidence-strip"><div class="evidence-item"><strong><bdi>54</bdi></strong><span>${safe(t.peak)}</span><p>${safe(t.peakNote)}</p></div><div class="evidence-item"><strong><bdi dir="ltr">${safe(t.coverageValue)}</bdi> <small>${safe(t.coverageUnit)}</small></strong><span>${safe(t.coverage)}</span><p>${safe(t.coverageNote)}</p></div><div class="evidence-item"><strong><bdi>${safe(t.crossingsValue)}</bdi></strong><span>${safe(t.crossings)}</span><p>${safe(t.crossingsNote)}</p></div></div><div class="sr-only"><table><caption>${safe(t.signalTitle)}</caption><thead><tr><th>${safe(t.timeHead)}</th><th>${safe(t.valueHead)}</th></tr></thead><tbody>${hours.map((h) => `<tr><td>${h.time}</td><td>${h.missing ? safe(t.missing) : h.value}</td></tr>`).join("")}</tbody></table></div>`;
+	return markup.replace(desktopChart, `${desktopChart}${mobileChart}`);
 }
 function activity() {
 	const t = copy[language].activity;
@@ -450,6 +472,7 @@ function render() {
 	byId("menuTitle").textContent = t.menu;
 	byId("closeMenu").setAttribute("aria-label", t.closeMenu);
 	byId("menuFoot").textContent = t.menuFoot;
+	byId("menuLinks").setAttribute("aria-label", t.navLabel);
 	byId("menuLinks").innerHTML = menuMarkup();
 	byId("demoFlag").textContent = t.demo;
 	byId("langButton").textContent = t.language;
@@ -461,6 +484,14 @@ function render() {
 			: section === "activity"
 				? activity()
 				: stub();
+	const hourSelector = byId("main").querySelector(".hour-selector");
+	if (hourSelector && matchMedia("(max-width: 720px)").matches) {
+		const active = hourSelector.querySelector('[aria-pressed="true"]');
+		const area = hourSelector.getBoundingClientRect();
+		const target = active.getBoundingClientRect();
+		hourSelector.scrollLeft +=
+			target.left + target.width / 2 - (area.left + area.width / 2);
+	}
 	closeWorkspace();
 	setLocation();
 }
@@ -486,7 +517,13 @@ document.addEventListener("click", (event) => {
 		selectedHour = Number(bar.dataset.hour);
 		const label = bar.getAttribute("aria-label");
 		render();
-		byId("main").querySelector(`[data-hour="${selectedHour}"]`).focus();
+		byId("main")
+			.querySelector(
+				matchMedia("(max-width: 720px)").matches
+					? `.hour-choice[data-hour="${selectedHour}"]`
+					: `.bar-slot[data-hour="${selectedHour}"]`,
+			)
+			.focus();
 		byId("main")
 			.querySelector(".signal-detail")
 			.classList.add("selection-enter");

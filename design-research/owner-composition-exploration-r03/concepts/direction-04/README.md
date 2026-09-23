@@ -14,11 +14,12 @@ This world is deliberately different from an editorial journal: its navigation i
 - One square-ended 1.8px SVG stroke family covers switching, chart, reports, access, activity, operations, settings, and gap states. Labels and position carry meaning alongside color.
 - Cairo is self-hosted at actual 400/500/600/700 weights. Both languages use Western numerals. Arabic is RTL with a true RTL time flow; the complete 11/12 and 660/720 fractions are explicitly isolated LTR so their numerator and denominator keep the correct order. English is LTR.
 - The six-section switcher shows all destinations in two columns without clipping. Its mobile panel rises from the bottom; Escape or the close control returns focus to the trigger.
-- Controls have persistent accessible names, visible keyboard focus, and scoped polite feedback.
+- Mobile keeps all 12 rectangular signal bars in one non-interactive overview, including the hatched missing hour. A separate horizontal hour selector uses 48×48px, non-overlapping buttons and opens with the selected hour visible. The missing hour remains selectable and explicitly says "no data." The language and switcher-close controls meet 44×44px.
+- Controls have persistent accessible names, visible keyboard focus, and scoped polite feedback. The switcher's navigation landmark and language-switch label are localized in Arabic.
 
 ## Interaction and motion
 
-- Select an hourly bar by mouse, touch, or keyboard. The time, value, or missing state updates in a persistent detail row, and focus stays on the selected bar.
+- Select an hourly bar on desktop or an hour button beneath the complete chart on mobile by mouse, touch, or keyboard. The time, value, or missing state updates in a persistent detail row, and focus stays on the selected control.
 - Open an Activity Log event to reveal actor, before, after, and reason. Focus remains on the event button. The first event is open on entry so a full record is immediately visible.
 - The 7/30-day control updates the example record set in place and names the new scope.
 - The switcher and selected detail settle with a short blur/translation reveal. Background, readings and chart bars remain still at rest. Reduced-motion preference makes these changes effectively instantaneous.
@@ -43,4 +44,4 @@ node design-research/owner-composition-exploration-r03/concepts/direction-04/pre
 node design-research/owner-composition-exploration-r03/concepts/direction-04/verify.mjs
 ```
 
-The static preview listens only on `127.0.0.1:3114`. Query examples: `?section=daily&lang=en` and `?section=activity&lang=ar`. The `evidence/` directory contains exact Daily and Activity Log viewport PNGs in EN/AR at 1440×900 and 390×844. The verification script checks switcher/Escape, bar detail and focus, event expansion and focus, range feedback, RTL, horizontal overflow at 320/390/720/1440, reduced-motion behavior and runtime page errors. A 720px CSS viewport approximates 1440px desktop reflow at 200%. The coordinator owns the cross-direction visual comparison and acceptance gate.
+The static preview listens only on `127.0.0.1:3114`. Query examples: `?section=daily&lang=en` and `?section=activity&lang=ar`. The `evidence/` directory contains exact Daily and Activity Log viewport PNGs in EN/AR at 1440×900 and 390×844. The verification script refreshes those frames and checks switcher/Escape/close recovery, 48px non-overlapping hour targets at 320/390/720, keyboard selection and focus, event expansion, range feedback, localized labels, RTL fractions, horizontal reflow at 320/390/720/1440, reduced motion, no external requests, and no runtime page errors. A 720px CSS viewport approximates 1440px desktop reflow at 200%. The coordinator owns the cross-direction visual comparison and acceptance gate.
