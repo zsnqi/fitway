@@ -1,0 +1,21 @@
+{
+	"schemaVersion": 2,
+	"kind": "history-transition-receipt",
+	"recordedAt": "2026-09-23T09:16:59.529Z",
+	"previousReceiptSha256": "da4f176111fb508724488713de43ffa3f0c47834d86f50272925f5cf867ed144",
+	"beforeHistorySha256": "8645db7a95c90accc5de3c71e0d430a56f4e0defc1bfc4c697fb2beb56df2b1d",
+	"afterHistorySha256": "7628445fa3ace477794d9df10ace85adabf41f3880d972b5371e07f19ad9c166",
+	"beforeHistoryBytes": 342280,
+	"afterHistoryBytes": 344371,
+	"beforeMilestoneCount": 108,
+	"afterMilestoneCount": 109,
+	"addedTerminal": {
+		"milestoneId": "repository-policy-alignment-r01",
+		"status": "DONE",
+		"digest": "0efb17ee00881d4be2719cdd658537a070d575963b7ffb81d38965a55fc56ed2"
+	},
+	"closedPacketSha256": "36516987846c72cebc35f952814b98d1185eb2826acc2718f7f684c43ed40650",
+	"removedActiveMilestoneId": "repository-policy-alignment-r01",
+	"removedActiveMilestoneDigest": "0efb17ee00881d4be2719cdd658537a070d575963b7ffb81d38965a55fc56ed2",
+	"coordinatorRun": "repository-policy-alignment-r01-done"
+}

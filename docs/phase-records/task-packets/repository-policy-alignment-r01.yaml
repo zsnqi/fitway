@@ -2,7 +2,7 @@
 schemaVersion: 1
 milestoneId: repository-policy-alignment-r01
 taskClass: repository-infrastructure
-packetStatus: READY
+packetStatus: CLOSED
 stateRef: PROJECT_STATE.yaml#/milestones/repository-policy-alignment-r01
 baseCommit: SELF
 task:
@@ -61,7 +61,7 @@ authorities:
       actionIfTriggered: READ
 continuity:
   predecessorMilestones: []
-  currentHandoff: docs/phase-records/handoffs/repository-policy-alignment/20260923-115700-repository-policy-alignment-r01-activation.md
+  currentHandoff: docs/phase-records/handoffs/repository-policy-alignment/20260923-121500-repository-policy-alignment-r01-done.md
   unresolvedDecisions: []
 verification:
   profile: Focused repository policy and lifecycle documentation alignment; no product code changes.

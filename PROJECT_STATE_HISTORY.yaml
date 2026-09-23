@@ -4315,3 +4315,49 @@ milestones:
       visual: PENDING
       independentReview: PENDING
     integratedCommit: null
+
+  repository-policy-alignment-r01:
+    status: DONE
+    objective: Align the agent concurrency rule with isolated worktree ownership and
+      align terminal milestone wording with the active-state schema and immediate
+      archival.
+    taskClass: repository-infrastructure
+    taskPacket: docs/phase-records/task-packets/repository-policy-alignment-r01.yaml
+    taskPacketSha256: 36516987846c72cebc35f952814b98d1185eb2826acc2718f7f684c43ed40650
+    dependencies: []
+    ownerSession: repository-policy-alignment-r01-coordinator
+    branch: codex/owner-design-exploration-r01
+    worktree: C:/Users/Pc
+      Force/.codex/worktrees/owner-design-exploration-r01/phase5-staff-integration
+    baseCommit: SELF
+    ownedPaths:
+      - AGENTS.md
+      - docs/WORKFLOW.md
+      - docs/phase-records/handoffs/repository-policy-alignment/**
+      - docs/phase-records/task-packets/repository-policy-alignment-r01.yaml and
+        PROJECT_STATE.yaml (coordinator only)
+    forbiddenPaths:
+      - apps/** and packages/**
+      - design-research/**, including the untracked r03 brief
+      - visual-direction-gate/** and docs/design/**
+      - FITWAY_PRODUCT.md, SPEC.md, DESIGN_GUIDE.md, and docs/adr/**
+      - PROJECT_STATE_HISTORY.yaml except the coordinator's terminal append and
+        receipt
+      - pnpm-lock.yaml, migrations, and canonical screenshots
+    sharedLeases:
+      - Coordinator grants the policy worker exclusive AGENTS.md and
+        docs/WORKFLOW.md edits during its bounded worktree assignment; coordinator
+        alone updates state, packet, handoff, and integrates.
+    validationRepairAttempts: 0
+    lastHeartbeatAt: 2026-09-23T12:16:59.529+03:00
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/repository-policy-alignment/20260923-121500-repository-policy-alignment-r01-done.md
+    stopReason: null
+    gates:
+      unit: NOT_REQUIRED
+      integration: NOT_REQUIRED
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PASS
+    integratedCommit: 634109371e241d0781bbab7f7916ce30c59a4922
