@@ -14,6 +14,7 @@ The first desktop viewport presents the day title, its non-live sample context, 
 - Uses one authored, 1.7px rounded-stroke SVG icon family. Red identifies the current chapter and chart selection; pink denotes historical observations, neutral marks missing data, and white carries core reading. No green is used because nothing in this concept is verified live.
 - Cairo is self-hosted at actual 400/500/600/700 weights for Arabic and Latin. Numerals stay Western in both languages.
 - Desktop navigation is a fixed chapter rail. Mobile navigation is a full, explicit six-item drawer with an open/close control and Escape recovery; it cannot silently clip.
+- On mobile, a non-interactive 12-interval overview keeps the whole day and missing hour visible. The detailed readings scroll horizontally in 44px-wide, non-overlapping button targets; menu and language controls also meet 44×44px. The overview and hint are localized, as are skip-link and landmark labels.
 - Arabic is composed in RTL, including the time sequence and the directional change arrow. English is LTR. Critical labels wrap instead of truncating.
 
 ## Interaction and motion
@@ -43,4 +44,4 @@ node design-research/owner-composition-exploration-r03/concepts/direction-02/pre
 node design-research/owner-composition-exploration-r03/concepts/direction-02/verify.mjs
 ```
 
-The isolated preview listens only on `127.0.0.1:3112`. Use `?section=daily&lang=en` or `?section=log&lang=ar` for deterministic frames. Evidence in `evidence/` contains Daily and Activity Log at EN/AR 1440×900 and 390×844. The verification script checks navigation, chart selection/focus, range feedback, locale direction, Escape recovery, 320/390/1440 horizontal overflow, the 720px equivalent of 1440px at 200% reflow, reduced-motion duration, and page errors. The coordinator still owns the cross-direction visual comparison and acceptance gate.
+The isolated preview listens only on `127.0.0.1:3112`. Use `?section=daily&lang=en` or `?section=log&lang=ar` for deterministic frames. Evidence in `evidence/` contains Daily and Activity Log at EN/AR 1440×900 and 390×844. The verification script refreshes those exact frames and checks navigation, chart selection/focus, non-overlapping 44×44px mobile targets, localized landmarks, range feedback, locale direction, Escape recovery, 320/390/720/1440 horizontal overflow, the 720px equivalent of 1440px at 200% reflow, reduced-motion duration, and page errors. The coordinator still owns the cross-direction visual comparison and acceptance gate.

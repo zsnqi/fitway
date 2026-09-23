@@ -4,6 +4,9 @@ const data = {
 		demo: "ILLUSTRATIVE DATA",
 		switch: "العربية",
 		switchLabel: "Switch to Arabic",
+		skipLink: "Skip to content",
+		sectionsLabel: "Owner sections",
+		railLabel: "FITWAY Owner workspace",
 		openSections: "Open sections",
 		closeSections: "Close sections",
 		edition: "OWNER / JOURNAL",
@@ -32,6 +35,7 @@ const data = {
 			chartHeading: "The day in intervals",
 			chartDescription:
 				"Select a point to read its time, value and data state.",
+			mobileChartHint: "Full day above · scroll hourly readings below",
 			dotLegend: "Dot = observed count",
 			gapLegend: "Dash = no data",
 			timeHead: "Time",
@@ -170,7 +174,10 @@ const data = {
 		journal: "سجل المالك",
 		demo: "بيانات توضيحية",
 		switch: "English",
-		switchLabel: "Switch to English",
+		switchLabel: "التبديل إلى الإنجليزية",
+		skipLink: "تخطَّ إلى المحتوى",
+		sectionsLabel: "أقسام مساحة المالك",
+		railLabel: "مساحة مالك FITWAY",
 		openSections: "فتح الأقسام",
 		closeSections: "إغلاق الأقسام",
 		edition: "المالك / السجل",
@@ -198,6 +205,7 @@ const data = {
 			chartSub: "عدد تقريبي مرصود",
 			chartHeading: "مراحل اليوم",
 			chartDescription: "اختر نقطة لقراءة وقتها وقيمتها وحالة بياناتها.",
+			mobileChartHint: "اليوم كاملًا أعلاه · مرّر القراءات بالساعة أدناه",
 			dotLegend: "النقطة = عدد مرصود",
 			gapLegend: "الشرطة = لا بيانات",
 			timeHead: "الوقت",
@@ -406,6 +414,12 @@ function hero(chapter, title, intro, aside1, aside1b, aside2, aside2b) {
 }
 function dailyMarkup() {
 	const t = data[lang].daily;
+	const overview = observations
+		.map((o) => {
+			const h = o.state ? 0 : Math.max(3, Math.round((o.value / 60) * 22));
+			return `<span class="overview-cell ${o.state || ""}" style="--mini-height:${h}px"><i></i></span>`;
+		})
+		.join("");
 	const cols = observations
 		.map((o, i) => {
 			const h = o.state ? 0 : Math.max(4, Math.round((o.value / 60) * 180));
@@ -429,7 +443,7 @@ function dailyMarkup() {
 			t.aside2,
 			t.aside2b,
 		) +
-		`<section class="daily-story" aria-label="${esc(t.chartTitle)}"><div class="story-main"><div class="story-heading"><h2>${esc(t.chartHeading)}</h2><p>${esc(t.chartDescription)}</p></div><div class="plot"><div class="plot-head"><strong>${esc(t.chartTitle)}</strong><span>${esc(t.chartSub)}</span></div><div class="plot-body" role="group" aria-label="${esc(t.chartTitle)}">${cols}</div><div class="plot-axis"><bdi>06:00</bdi><bdi>12:00</bdi><bdi>17:00</bdi></div><p class="plot-explain"><span class="legend-dot"></span>${esc(t.dotLegend)} &nbsp; — ${esc(t.gapLegend)}</p><div class="plot-detail"><span>${esc(t.selected)} · <bdi>${o.time}</bdi></span>${detail}</div></div><p class="annotation">${icon("info")}<span>${esc(t.annotation)}</span></p></div><aside class="story-sidebar" aria-label="${esc(t.measure2)}"><div class="side-measure"><span>${esc(t.measure1)}</span><strong><bdi>54</bdi></strong><p>${esc(t.measure1n)}</p></div><div class="side-measure coverage"><span>${esc(t.measure2)}</span><strong><bdi dir="ltr">${esc(t.measure2v)}</bdi></strong><p>${esc(t.measure2n)}</p></div><div class="side-measure"><span>${esc(t.measure3)}</span><strong><bdi>148</bdi></strong><p>${esc(t.measure3n)}</p></div></aside></section><section class="continuation"><h2>${esc(t.closingTitle)}</h2><div><p>${esc(t.closingText)}</p><div class="day-steps"><span class="day-step"><bdi>${esc(t.step1)}</bdi></span><span class="day-step"><bdi>${esc(t.step2)}</bdi></span><span class="day-step"><bdi>${esc(t.step3)}</bdi></span></div></div></section><div class="sr-only"><table><caption>${esc(t.chartTitle)} · ${esc(t.chartSub)}</caption><thead><tr><th>${esc(t.timeHead)}</th><th>${esc(t.valueHead)}</th></tr></thead><tbody>${observations.map((o) => `<tr><td>${o.time}</td><td>${o.state ? esc(t.noData) : o.value}</td></tr>`).join("")}</tbody></table></div>`
+		`<section class="daily-story" aria-label="${esc(t.chartTitle)}"><div class="story-main"><div class="story-heading"><h2>${esc(t.chartHeading)}</h2><p>${esc(t.chartDescription)}</p></div><div class="plot"><div class="plot-head"><strong>${esc(t.chartTitle)}</strong><span>${esc(t.chartSub)}</span></div><div class="plot-overview-wrap" aria-hidden="true"><div class="plot-overview">${overview}</div><div class="overview-axis"><bdi>06:00</bdi><bdi>12:00</bdi><bdi>17:00</bdi></div></div><p class="mobile-chart-hint">${esc(t.mobileChartHint)}</p><div class="plot-body" role="group" aria-label="${esc(t.chartTitle)}">${cols}</div><div class="plot-axis"><bdi>06:00</bdi><bdi>12:00</bdi><bdi>17:00</bdi></div><p class="plot-explain"><span class="legend-dot"></span>${esc(t.dotLegend)} &nbsp; — ${esc(t.gapLegend)}</p><div class="plot-detail"><span>${esc(t.selected)} · <bdi>${o.time}</bdi></span>${detail}</div></div><p class="annotation">${icon("info")}<span>${esc(t.annotation)}</span></p></div><aside class="story-sidebar" aria-label="${esc(t.measure2)}"><div class="side-measure"><span>${esc(t.measure1)}</span><strong><bdi>54</bdi></strong><p>${esc(t.measure1n)}</p></div><div class="side-measure coverage"><span>${esc(t.measure2)}</span><strong><bdi dir="ltr">${esc(t.measure2v)}</bdi></strong><p>${esc(t.measure2n)}</p></div><div class="side-measure"><span>${esc(t.measure3)}</span><strong><bdi>148</bdi></strong><p>${esc(t.measure3n)}</p></div></aside></section><section class="continuation"><h2>${esc(t.closingTitle)}</h2><div><p>${esc(t.closingText)}</p><div class="day-steps"><span class="day-step"><bdi>${esc(t.step1)}</bdi></span><span class="day-step"><bdi>${esc(t.step2)}</bdi></span><span class="day-step"><bdi>${esc(t.step3)}</bdi></span></div></div></section><div class="sr-only"><table><caption>${esc(t.chartTitle)} · ${esc(t.chartSub)}</caption><thead><tr><th>${esc(t.timeHead)}</th><th>${esc(t.valueHead)}</th></tr></thead><tbody>${observations.map((o) => `<tr><td>${o.time}</td><td>${o.state ? esc(t.noData) : o.value}</td></tr>`).join("")}</tbody></table></div>`
 	);
 }
 function logMarkup() {
@@ -468,6 +482,10 @@ function render() {
 	document.documentElement.lang = lang;
 	document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
 	document.title = `FITWAY / ${t.sections[section]} — Direction 02`;
+	document.querySelector(".skip-link").textContent = t.skipLink;
+	document.querySelector(".rail").setAttribute("aria-label", t.railLabel);
+	el("desktopNav").setAttribute("aria-label", t.sectionsLabel);
+	el("mobileNav").setAttribute("aria-label", t.sectionsLabel);
 	el("edition").textContent = t.edition;
 	el("railFootTop").textContent = t.railTop;
 	el("railFootBottom").textContent = t.railBottom;
