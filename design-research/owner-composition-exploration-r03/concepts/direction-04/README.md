@@ -12,7 +12,7 @@ This world is deliberately different from an editorial journal: its navigation i
 
 - The dark FITWAY field, oxblood atmosphere, red signal, and limited translucent chrome preserve recognizable character. Historical values use a single red family; muted steel denotes coverage context, and dashed warm neutral denotes missing history. Green is reserved for verified live/healthy production state, so this completed sample does not use it.
 - One square-ended 1.8px SVG stroke family covers switching, chart, reports, access, activity, operations, settings, and gap states. Labels and position carry meaning alongside color.
-- Cairo is self-hosted at actual 400/500/600/700 weights. Both languages use Western numerals. Arabic is RTL with a true RTL time flow; English is LTR.
+- Cairo is self-hosted at actual 400/500/600/700 weights. Both languages use Western numerals. Arabic is RTL with a true RTL time flow; the complete 11/12 and 660/720 fractions are explicitly isolated LTR so their numerator and denominator keep the correct order. English is LTR.
 - The six-section switcher shows all destinations in two columns without clipping. Its mobile panel rises from the bottom; Escape or the close control returns focus to the trigger.
 - Controls have persistent accessible names, visible keyboard focus, and scoped polite feedback.
 

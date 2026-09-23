@@ -66,6 +66,31 @@ try {
 					height: width === 1440 ? 900 : 844,
 				});
 				await page.evaluate(() => document.fonts.ready);
+				if (
+					language === "ar" &&
+					section === "daily" &&
+					[390, 1440].includes(width)
+				) {
+					assert.equal(await page.locator("html").getAttribute("dir"), "rtl");
+					assert.equal(
+						await page.locator(".big-ratio bdi").getAttribute("dir"),
+						"ltr",
+					);
+					assert.equal(
+						await page.locator(".big-ratio bdi").innerText(),
+						"11/12",
+					);
+					assert.equal(
+						await page
+							.locator(".evidence-item:nth-child(2) bdi")
+							.getAttribute("dir"),
+						"ltr",
+					);
+					assert.equal(
+						await page.locator(".evidence-item:nth-child(2) bdi").innerText(),
+						"660 / 720",
+					);
+				}
 				const overflow = await page.evaluate(
 					() => document.documentElement.scrollWidth - innerWidth,
 				);

@@ -26,6 +26,7 @@ const copy = {
 			statusBody:
 				"Of 12 scheduled open hours, one has no usable reading. This is coverage of history, not system uptime.",
 			ratioLabel: "scheduled hours represented",
+			ratioA11y: "11 of 12 scheduled hours",
 			gap: "12:00–13:00 has no data. It is not zero and is excluded from observed averages.",
 			signalTitle: "Observed by hour",
 			signalHelp: "Choose a bar to inspect its exact value or missing state.",
@@ -40,7 +41,8 @@ const copy = {
 			peak: "Peak observed",
 			peakNote: "54 at 16:00 · illustrative",
 			coverage: "History coverage",
-			coverageValue: "660 / 720 min",
+			coverageValue: "660 / 720",
+			coverageUnit: "min",
 			coverageNote: "Observed / expected open minutes",
 			crossings: "Estimated entrance crossings",
 			crossingsValue: "148",
@@ -186,6 +188,7 @@ const copy = {
 			statusBody:
 				"من أصل 12 ساعة فتح متوقعة، لا توجد قراءة صالحة لساعة واحدة. هذه تغطية السجل وليست جاهزية النظام.",
 			ratioLabel: "ساعة ممثلة من الجدول",
+			ratioA11y: "11 من 12 ساعة مجدولة",
 			gap: "لا توجد بيانات من 12:00 إلى 13:00. ليست صفرًا ولا تدخل في متوسط المرصود.",
 			signalTitle: "القراءات حسب الساعة",
 			signalHelp: "اختر عمودًا لمعرفة القيمة الدقيقة أو حالة غياب البيانات.",
@@ -200,7 +203,8 @@ const copy = {
 			peak: "أعلى عدد مرصود",
 			peakNote: "54 عند 16:00 · توضيحي",
 			coverage: "تغطية السجل",
-			coverageValue: "660 / 720 دقيقة",
+			coverageValue: "660 / 720",
+			coverageUnit: "دقيقة",
 			coverageNote: "دقائق مرصودة / متوقعة أثناء الفتح",
 			crossings: "عبور دخول مقدّر",
 			crossingsValue: "148",
@@ -409,7 +413,7 @@ function daily() {
 			: `${chosen.value} ${t.count}`;
 	return (
 		pageHead(t.title, t.intro, t.stamp) +
-		`<div class="daily-wall"><section class="status-bay" aria-labelledby="coverage-title">${svg("signal")}<h2 id="coverage-title">${safe(t.statusTitle)}</h2><p>${safe(t.statusBody)}</p><div class="big-ratio" aria-label="11 of 12"><bdi>11</bdi><small>/</small><bdi>12</bdi></div><div class="ratio-label">${safe(t.ratioLabel)}</div><div class="coverage-track" aria-hidden="true">${hours.map((h) => `<span class="${h.missing ? "missing" : ""}"></span>`).join("")}</div><div class="status-foot">${svg("gap")}<span>${safe(t.gap)}</span></div></section><section class="signal-bay" aria-labelledby="signal-title"><div class="signal-top"><div><h2 id="signal-title">${safe(t.signalTitle)}</h2><p>${safe(t.signalHelp)}</p></div><span class="sample-stamp"><bdi>${safe(t.signalStamp)}</bdi></span></div><div class="bar-chart" role="group" aria-label="${safe(t.signalTitle)}">${bars}</div><div class="signal-detail"><div class="detail-copy"><span>${safe(t.selected)}</span><strong><bdi>${chosen.time}</bdi></strong></div><div class="detail-value">${safe(detail)}<small>${safe(t.selectedTime)}</small></div></div><div class="signal-legend"><div class="legend-items"><span><i></i>${safe(t.observed)}</span><span><i class="gap-icon"></i>${safe(t.absent)}</span></div><p>${safe(t.count)}</p></div></section></div><div class="evidence-strip"><div class="evidence-item"><strong><bdi>54</bdi></strong><span>${safe(t.peak)}</span><p>${safe(t.peakNote)}</p></div><div class="evidence-item"><strong><bdi>${safe(t.coverageValue)}</bdi></strong><span>${safe(t.coverage)}</span><p>${safe(t.coverageNote)}</p></div><div class="evidence-item"><strong><bdi>${safe(t.crossingsValue)}</bdi></strong><span>${safe(t.crossings)}</span><p>${safe(t.crossingsNote)}</p></div></div><div class="sr-only"><table><caption>${safe(t.signalTitle)}</caption><thead><tr><th>${safe(t.timeHead)}</th><th>${safe(t.valueHead)}</th></tr></thead><tbody>${hours.map((h) => `<tr><td>${h.time}</td><td>${h.missing ? safe(t.missing) : h.value}</td></tr>`).join("")}</tbody></table></div>`
+		`<div class="daily-wall"><section class="status-bay" aria-labelledby="coverage-title">${svg("signal")}<h2 id="coverage-title">${safe(t.statusTitle)}</h2><p>${safe(t.statusBody)}</p><div class="big-ratio" aria-label="${safe(t.ratioA11y)}"><bdi dir="ltr">11<small>/</small>12</bdi></div><div class="ratio-label">${safe(t.ratioLabel)}</div><div class="coverage-track" aria-hidden="true">${hours.map((h) => `<span class="${h.missing ? "missing" : ""}"></span>`).join("")}</div><div class="status-foot">${svg("gap")}<span>${safe(t.gap)}</span></div></section><section class="signal-bay" aria-labelledby="signal-title"><div class="signal-top"><div><h2 id="signal-title">${safe(t.signalTitle)}</h2><p>${safe(t.signalHelp)}</p></div><span class="sample-stamp"><bdi>${safe(t.signalStamp)}</bdi></span></div><div class="bar-chart" role="group" aria-label="${safe(t.signalTitle)}">${bars}</div><div class="signal-detail"><div class="detail-copy"><span>${safe(t.selected)}</span><strong><bdi>${chosen.time}</bdi></strong></div><div class="detail-value">${safe(detail)}<small>${safe(t.selectedTime)}</small></div></div><div class="signal-legend"><div class="legend-items"><span><i></i>${safe(t.observed)}</span><span><i class="gap-icon"></i>${safe(t.absent)}</span></div><p>${safe(t.count)}</p></div></section></div><div class="evidence-strip"><div class="evidence-item"><strong><bdi>54</bdi></strong><span>${safe(t.peak)}</span><p>${safe(t.peakNote)}</p></div><div class="evidence-item"><strong><bdi dir="ltr">${safe(t.coverageValue)}</bdi> <small>${safe(t.coverageUnit)}</small></strong><span>${safe(t.coverage)}</span><p>${safe(t.coverageNote)}</p></div><div class="evidence-item"><strong><bdi>${safe(t.crossingsValue)}</bdi></strong><span>${safe(t.crossings)}</span><p>${safe(t.crossingsNote)}</p></div></div><div class="sr-only"><table><caption>${safe(t.signalTitle)}</caption><thead><tr><th>${safe(t.timeHead)}</th><th>${safe(t.valueHead)}</th></tr></thead><tbody>${hours.map((h) => `<tr><td>${h.time}</td><td>${h.missing ? safe(t.missing) : h.value}</td></tr>`).join("")}</tbody></table></div>`
 	);
 }
 function activity() {
