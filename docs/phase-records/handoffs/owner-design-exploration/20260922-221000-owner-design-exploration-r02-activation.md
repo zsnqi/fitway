@@ -1,6 +1,6 @@
 # owner-design-exploration-r02 — activation for four Owner directions
 
-- User request: 2026-09-22, design four new directions for the Owner page; the coordinator delegates each direction to a distinct GPT-6 Sol agent at Extra High effort and repo inspection to GPT-6 Luna at Max effort.
+- User request: 2026-09-22, design four new directions for the Owner page; the coordinator delegates each direction to a distinct design agent and repository inspection to a separate agent.
 - The request satisfies the planned successor's future-request condition and resolves the direction count as four. It does not select a concept or authorize production implementation, canonical promotion, Paper changes, or a visual-authority decision.
 - The coordinator owns the state and packet transition. Concept agents own only separately assigned artifacts within `design-research/owner-composition-exploration-r02/`, with one writer at a time.
 - The recorded dark black/red search space and no-copy boundary from the planned context remain in force. Prior r01 directions, prototypes, Public/Staff compositions, and Paper frames are diagnostic or provenance material only.

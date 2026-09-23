@@ -4,7 +4,7 @@
 
 Four independent, concept-only Owner page directions are integrated under `design-research/owner-composition-exploration-r02/`. `COMPARISON.md` links their briefs, runnable standalone previews, and exact populated English and Arabic desktop/mobile frames. Each folder also records responsive, reflow, and state captures. No production code, canonical frame, Paper artifact, or visual authority changed. No concept was selected.
 
-The coordinator used four GPT-6 Sol agents at Extra High effort for the directions, with serial writer turns in isolated worktrees under the current one-writer rule. A GPT-6 Luna agent at Max effort inspected the repository. A separate GPT-6 Sol agent at Extra High effort reviewed repository policy. A fifth GPT-6 Sol agent at Extra High effort performed focused independent visual review after integration.
+The coordinator used four design agents for the directions, with serial writer turns in isolated worktrees under the current one-writer rule. A separate agent inspected the repository, another reviewed repository policy, and a fresh reviewer performed focused independent visual review after integration. These historical role assignments do not prescribe future staffing.
 
 ## Visual and data evidence
 
