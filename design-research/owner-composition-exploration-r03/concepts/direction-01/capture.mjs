@@ -18,6 +18,7 @@ for (const [view, label] of [
 		for (const [width, height] of [
 			[1440, 900],
 			[390, 844],
+			[320, 700],
 		]) {
 			const page = await browser.newPage({
 				viewport: { width, height },
@@ -43,6 +44,52 @@ for (const [view, label] of [
 				() => document.documentElement.scrollWidth - innerWidth,
 			);
 			const heading = await page.locator("h1").innerText();
+			const skip = await page.locator(".skip").innerText();
+			if (skip !== (lang === "ar" ? "تجاوز إلى المحتوى" : "Skip to content"))
+				problems.push(`${view}/${lang}/${width}: skip link not localized`);
+			if (width <= 390) {
+				const languageSize = await page.locator("#language").boundingBox();
+				if (languageSize.width < 44 || languageSize.height < 44)
+					problems.push(`${view}/${lang}/${width}: language target below 44px`);
+			}
+			if (view === "daily") {
+				if (width <= 390) {
+					const stateSize = await page.locator("#reading-state").boundingBox();
+					if (stateSize.width < 44 || stateSize.height < 44)
+						problems.push(`${view}/${lang}/${width}: state target below 44px`);
+				}
+				const targets = await page.locator(".chart-hit").evaluateAll((nodes) =>
+					nodes.map((node) => {
+						const box = node.getBoundingClientRect();
+						return { x: box.x, y: box.y, width: box.width, height: box.height };
+					}),
+				);
+				if (targets.length !== (width <= 390 ? 5 : 14))
+					problems.push(
+						`${view}/${lang}/${width}: unexpected chart target count ${targets.length}`,
+					);
+				for (let i = 0; i < targets.length; i++) {
+					if (targets[i].width < 44 || targets[i].height < 44)
+						problems.push(
+							`${view}/${lang}/${width}: chart target ${i} below 44px`,
+						);
+					for (let j = i + 1; j < targets.length; j++) {
+						const a = targets[i];
+						const b = targets[j];
+						const overlapX =
+							Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x);
+						const overlapY =
+							Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y);
+						if (overlapX > 0.5 && overlapY > 0.5)
+							problems.push(
+								`${view}/${lang}/${width}: chart targets ${i}/${j} overlap`,
+							);
+					}
+				}
+				console.log(
+					`${lang}/${width} chart targets: ${targets.length}, minimum ${Math.min(...targets.map((v) => v.width)).toFixed(1)}px`,
+				);
+			}
 			const file = path.join(
 				evidence,
 				`${label}-${lang}-${width}x${height}.png`,
@@ -70,9 +117,13 @@ const page = await browser.newPage({
 	reducedMotion: "reduce",
 });
 await page.goto(`${base}?view=daily&lang=en`, { waitUntil: "networkidle" });
-await page.locator('[data-point="10"]').click();
-if (!(await page.locator(".selected-reading").innerText()).includes("16:00"))
+await page.locator('[data-point="9"]').click();
+if (!(await page.locator(".selected-reading").innerText()).includes("15:00"))
 	problems.push("chart point selection did not update detail");
+await page.locator('[data-point="6"]').focus();
+await page.keyboard.press("Enter");
+if (!(await page.locator(".selected-reading").innerText()).includes("12:00"))
+	problems.push("keyboard chart point selection did not update detail");
 await page.locator("#reading-state").selectOption("delayed");
 if (!(await page.locator(".current-meta").innerText()).includes("last-known"))
 	problems.push("delayed state lacks last-known qualifier");
@@ -105,24 +156,8 @@ console.log(
 	problems.length ? problems.join(" | ") : "PASS",
 );
 await page.close();
-for (const view of ["daily", "activity"])
-	for (const lang of ["en", "ar"]) {
-		const small = await browser.newPage({
-			viewport: { width: 320, height: 700 },
-			reducedMotion: "reduce",
-		});
-		await small.goto(`${base}?view=${view}&lang=${lang}`, {
-			waitUntil: "networkidle",
-		});
-		const overflow = await small.evaluate(
-			() => document.documentElement.scrollWidth - innerWidth,
-		);
-		if (overflow > 1)
-			problems.push(`320px ${view}/${lang}: document overflow ${overflow}px`);
-		await small.close();
-	}
 console.log(
-	"320px reflow check:",
+	"320/390/1440 reflow and target checks:",
 	problems.length ? problems.join(" | ") : "PASS",
 );
 await browser.close();

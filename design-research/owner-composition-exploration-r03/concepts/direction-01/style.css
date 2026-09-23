@@ -14,3 +14,6 @@
 @media(max-width:600px){.filters{grid-template-columns:repeat(5,minmax(0,1fr))}.filter{font-size:8px}.record{grid-template-areas:'action time chev' 'actor actor chev' 'target target chev';min-height:91px}.record-target{display:block;grid-area:target;font-size:9px;color:var(--soft)}.chart-svg{height:215px}}
 @media(max-width:600px){.rail-link{min-height:44px}.rail-link span,.filter,.record-target,.concept-note{font-size:10px}.filter{min-height:44px}.record-target{color:var(--muted)}}
 .truth-banner button{display:block;margin-top:12px;min-height:44px;padding:8px 16px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.06);border-radius:9px;color:var(--ink);font-weight:600}.truth-banner button:hover{background:rgba(255,255,255,.12)}
+.chart-hit{fill:transparent;stroke:transparent;stroke-width:1.5;pointer-events:all;cursor:pointer}.chart-hit:focus-visible{fill:transparent;stroke:#fff;stroke-width:1.5;outline:none}.chart-point-visual{fill:#ff5a71;stroke:#32151c;stroke-width:3;pointer-events:none;transition:r .18s ease,fill .18s ease}.chart-point-visual.selected,.chart-point-unit:hover .chart-point-visual,.chart-point-unit:focus-within .chart-point-visual{r:7;fill:#fff}
+@media(max-width:600px){.language,.state-select{min-height:44px}.language{min-width:44px}}
+@media(prefers-reduced-motion:reduce){.chart-point-visual{transition:none}}

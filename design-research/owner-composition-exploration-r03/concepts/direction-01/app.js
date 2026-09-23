@@ -423,12 +423,17 @@ function chart() {
 		.join("");
 	const gapX = x(7);
 	const nowX = x(14);
+	// On phones, five spaced anchor readings keep every SVG hit area at least
+	// 44px wide without overlapping adjacent targets. The table retains all hours.
+	const mobileAnchors = new Set([0, 3, 6, 9, 14]);
 	const points = sample
-		.map((v, i) =>
-			v === null
-				? ""
-				: `<circle class="chart-point ${state.selected === i ? "selected" : ""}" data-point="${i}" role="button" tabindex="0" aria-label="${times[i]}: ${v} ${t.approxCount}" aria-pressed="${state.selected === i}" cx="${x(i)}" cy="${y(v)}" r="4.5"><title>${times[i]} · ${v}</title></circle>`,
-		)
+		.map((v, i) => {
+			if (v === null) return "";
+			const active = !mobile || mobileAnchors.has(i);
+			const visual = `<circle class="chart-point-visual ${active ? "selectable" : ""} ${state.selected === i ? "selected" : ""}" data-visual="${i}" cx="${x(i)}" cy="${y(v)}" r="${active ? 4.5 : 3.5}"/>`;
+			if (!active) return `<g aria-hidden="true">${visual}</g>`;
+			return `<g class="chart-point-unit"><circle class="chart-hit" data-point="${i}" role="button" tabindex="0" aria-label="${times[i]}: ${v} ${t.approxCount}" aria-pressed="${state.selected === i}" cx="${x(i)}" cy="${y(v)}" r="${mobile ? 31 : 22}"><title>${times[i]} · ${v}</title></circle>${visual}</g>`;
+		})
 		.join("");
 	const labels = [0, 3, 6, 9, 12, 14]
 		.map(
@@ -534,8 +539,13 @@ function bind() {
 		const select = () => {
 			state.selected = Number(point.dataset.point);
 			document.querySelectorAll("[data-point]").forEach((p) => {
-				p.classList.toggle("selected", p === point);
 				p.setAttribute("aria-pressed", String(p === point));
+			});
+			document.querySelectorAll("[data-visual]").forEach((p) => {
+				p.classList.toggle(
+					"selected",
+					p.dataset.visual === point.dataset.point,
+				);
 			});
 			const selected = document.querySelector(".selected-reading");
 			const t = c();

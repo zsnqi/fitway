@@ -16,7 +16,7 @@ A panoramic temporal observatory makes the current gym state the first read and 
 
 ## Interaction and motion
 
-Open `index.html` through the local preview server. Navigation changes all six destinations and keeps the active section marked. Daily's chart points support click, keyboard Enter/Space, and tap; the selected hour updates a text readout. The hourly table is an equivalent text representation. The data-state control previews fresh, delayed, closed, unavailable, error, and loading truth; error has a retry-preview action. Activity Log filters and record disclosure give immediate visible feedback. A short section reveal and restrained control transitions aid orientation. Under `prefers-reduced-motion: reduce`, the view reveal and transitions are removed while all information stays present.
+Open `index.html` through the local preview server. Navigation changes all six destinations and keeps the active section marked. Daily's chart anchor points support click, keyboard Enter/Space, and tap; the selected hour updates a text readout. Desktop exposes all 14 observed points as 44px-or-larger targets. Mobile exposes five spaced anchor points as 44px-or-larger nonoverlapping targets so the panoramic chart remains legible; the hourly table gives every observed value and the missing interval as text. The data-state control previews fresh, delayed, closed, unavailable, error, and loading truth; error has a retry-preview action. Activity Log filters and record disclosure give immediate visible feedback. A short section reveal and restrained control transitions aid orientation. Under `prefers-reduced-motion: reduce`, the view reveal and transitions are removed while all information stays present.
 
 The preview includes an illustrative access/operations/settings/reports destination note. A full version would use this grammar as follows:
 
@@ -44,7 +44,9 @@ The preview is on `127.0.0.1:3111`. The capture script uses the repository's ins
 | --- | --- | --- |
 | Daily desktop | `evidence/daily-en-1440x900.png` | `evidence/daily-ar-1440x900.png` |
 | Daily mobile | `evidence/daily-en-390x844.png` | `evidence/daily-ar-390x844.png` |
+| Daily narrow reflow | `evidence/daily-en-320x700.png` | `evidence/daily-ar-320x700.png` |
 | Activity Log desktop | `evidence/activity-log-en-1440x900.png` | `evidence/activity-log-ar-1440x900.png` |
 | Activity Log mobile | `evidence/activity-log-en-390x844.png` | `evidence/activity-log-ar-390x844.png` |
+| Activity Log narrow reflow | `evidence/activity-log-en-320x700.png` | `evidence/activity-log-ar-320x700.png` |
 
-The final eight files were opened and inspected at native dimensions. The script checked EN/LTR and AR/RTL, absence of document overflow at 1440px, 390px, and 320px, chart selection, state truth and retry feedback, navigation, filter/disclosure, locale switching, and reduced-motion style. `pnpm check:design-context` passed with permitted child-process execution. Impeccable `detect --json` returned `[]`. These checks and frames support concept comparison only; they do not approve an Owner direction or production promotion.
+The final twelve files were opened and inspected at native dimensions. The script checked EN/LTR and AR/RTL, localized skip-link text, absence of document overflow at 1440px, 390px, and 320px, chart hit-area dimensions and nonoverlap, keyboard/pointer chart selection, 44px mobile language and state controls, state truth and retry feedback, navigation, filter/disclosure, locale switching, and reduced-motion style. At 320px the smallest chart target measured 46.2px in both languages; at 390px it measured 56.0px; at 1440px it measured 45.1px. `pnpm check:design-context` passed with permitted child-process execution. Impeccable `detect --json` returned `[]` after this repair. These checks and frames support concept comparison only; they do not approve an Owner direction or production promotion.
