@@ -153,7 +153,6 @@ bdi { unicode-bidi: isolate; }
 	width: 7px; height: 7px;
 	border-radius: 50%;
 	background: var(--red);
-	box-shadow: 0 0 12px rgba(229, 25, 53, 0.8);
 	transform: translateY(-1px);
 }
 
@@ -199,7 +198,6 @@ bdi { unicode-bidi: isolate; }
 	height: 44px;
 	border-radius: 3px;
 	background: var(--red-bright);
-	box-shadow: 0 0 16px rgba(255, 41, 70, 0.7);
 	transition: transform 300ms var(--ease);
 	pointer-events: none;
 }
@@ -315,8 +313,8 @@ bdi { unicode-bidi: isolate; }
 .chip strong { color: var(--chalk); font-weight: 600; }
 .chip--concept { color: var(--subtle); border-style: dashed; background: transparent; }
 .status-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
-.status-dot--live { background: var(--live); box-shadow: 0 0 0 3px rgba(75, 226, 155, 0.16); }
-.status-dot--delayed { background: var(--delayed); box-shadow: 0 0 0 3px rgba(217, 164, 0, 0.18); }
+.status-dot--live { background: var(--live); }
+.status-dot--delayed { background: var(--delayed); }
 .chip--delayed strong { color: var(--delayed); }
 
 /* ---------- Lead reading ---------- */
@@ -358,7 +356,7 @@ bdi { unicode-bidi: isolate; }
 .legend { display: flex; gap: 20px; flex-wrap: wrap; font-size: 13px; color: var(--subtle); }
 .swatch-wait { width: 16px; height: 12px; border-radius: 3px; background: repeating-linear-gradient(135deg, rgba(217, 164, 0, 0.5) 0 2px, transparent 2px 6px); }
 .legend span { display: inline-flex; align-items: center; gap: 8px; }
-.swatch-line { width: 22px; height: 3px; border-radius: 3px; background: var(--red); box-shadow: 0 0 8px rgba(229, 25, 53, 0.7); }
+.swatch-line { width: 22px; height: 3px; border-radius: 3px; background: var(--red); }
 .swatch-ahead { width: 16px; height: 12px; border-radius: 3px; border: 1px dashed rgba(245, 243, 242, 0.28); }
 .swatch-gap { width: 16px; height: 12px; border-radius: 3px; background: repeating-linear-gradient(135deg, rgba(154, 160, 170, 0.45) 0 2px, transparent 2px 6px); }
 
