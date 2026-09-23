@@ -1,0 +1,21 @@
+{
+	"schemaVersion": 2,
+	"kind": "history-transition-receipt",
+	"recordedAt": "2026-09-23T12:29:01.799Z",
+	"previousReceiptSha256": "52fbe2173bb15d6f670c46c7ba1ed6520c16dc9a2e8b3359e6d468e206283e5d",
+	"beforeHistorySha256": "7628445fa3ace477794d9df10ace85adabf41f3880d972b5371e07f19ad9c166",
+	"afterHistorySha256": "7a3cf31a92f3e9ed7e71680f949992d9ffdf66ac29d5a1b3ebb654e832c6075c",
+	"beforeHistoryBytes": 344371,
+	"afterHistoryBytes": 347153,
+	"beforeMilestoneCount": 109,
+	"afterMilestoneCount": 110,
+	"addedTerminal": {
+		"milestoneId": "owner-design-exploration-r03",
+		"status": "NEEDS_HUMAN",
+		"digest": "98cc1de02dc1035bf23d34f6f53fd96c318b6550b7b429511d9ecd0251912a39"
+	},
+	"closedPacketSha256": "1683a72a67780ca074b53f53ef1fd4d996e747b0dadaf00d01da0625b9b058c7",
+	"removedActiveMilestoneId": "owner-design-exploration-r03",
+	"removedActiveMilestoneDigest": "98cc1de02dc1035bf23d34f6f53fd96c318b6550b7b429511d9ecd0251912a39",
+	"coordinatorRun": "owner-design-exploration-r03-human-rejection"
+}

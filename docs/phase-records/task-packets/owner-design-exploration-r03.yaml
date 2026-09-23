@@ -1,8 +1,8 @@
-# Coordinator-authored derived context; concept exploration only, not visual authority.
+# Closed r03 context: all concepts rejected; historical evidence only, not a future design instruction.
 schemaVersion: 1
 milestoneId: owner-design-exploration-r03
 taskClass: visual-authority-change
-packetStatus: READY
+packetStatus: CLOSED
 stateRef: PROJECT_STATE.yaml#/milestones/owner-design-exploration-r03
 baseCommit: 4a8c01e3b5b6bcc137876bb55fb5d62fca4637bb
 task:
@@ -97,7 +97,7 @@ continuity:
   predecessorMilestones:
     - owner-design-exploration-r02
     - repository-policy-alignment-r01
-  currentHandoff: docs/phase-records/handoffs/owner-design-exploration/20260923-123000-owner-design-exploration-r03-activation.md
+  currentHandoff: docs/phase-records/handoffs/owner-design-exploration/20260923-owner-design-exploration-r03-rejection.md
   unresolvedDecisions:
     - The user must choose, revise, or reject the early comparison before full seven-surface development.
     - Owner composition authority remains vacant until explicit concept selection and perceptual promotion.

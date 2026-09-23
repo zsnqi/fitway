@@ -4361,3 +4361,55 @@ milestones:
       visual: NOT_REQUIRED
       independentReview: PASS
     integratedCommit: 634109371e241d0781bbab7f7916ce30c59a4922
+  owner-design-exploration-r03:
+    status: NEEDS_HUMAN
+    objective: Prepare four genuinely distinct, interactive Owner redesign concept
+      slices for an early human comparison, without changing production,
+      canonical, Paper, or visual-authority state.
+    taskClass: visual-authority-change
+    taskPacket: docs/phase-records/task-packets/owner-design-exploration-r03.yaml
+    taskPacketSha256: 1683a72a67780ca074b53f53ef1fd4d996e747b0dadaf00d01da0625b9b058c7
+    dependencies: []
+    ownerSession: owner-design-exploration-r03-coordinator
+    branch: codex/owner-redesign-r03
+    worktree: C:/Users/Pc
+      Force/.codex/worktrees/owner-design-exploration-r01/phase5-staff-integration
+    baseCommit: 4a8c01e3b5b6bcc137876bb55fb5d62fca4637bb
+    ownedPaths:
+      - design-research/owner-composition-exploration-r03/concepts/**
+      - docs/phase-records/handoffs/owner-design-exploration/20260923-123000-owner-design-exploration-r03-activation.md
+      - docs/phase-records/task-packets/owner-design-exploration-r03.yaml
+    forbiddenPaths:
+      - design-research/owner-composition-exploration-r03/OWNER_REDESIGN_BRIEF.md
+      - design-research/owner-composition-exploration-r01/** and
+        design-research/owner-composition-exploration-r02/** (preserved
+        diagnostic evidence)
+      - apps/** and packages/** production code, copy, behavior, and data
+        semantics
+      - tests/browser/** including canonicals and screenshots
+      - visual-direction-gate/**, docs/design/VISUAL_AUTHORITY_STATUS.md,
+        docs/design/PAPER_GUIDE_CONFLICT_MAP.md, docs/adr/**, approval
+        manifests, and pinned hashes
+      - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
+      - docs/archive/**, prior handoffs, and unrelated phase records
+      - docs/WORKFLOW.md, pnpm-lock.yaml, dependencies, and migrations
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: 2026-09-23T12:52:12+03:00
+    leaseExpiresAt: null
+    handoff: docs/phase-records/handoffs/owner-design-exploration/20260923-owner-design-exploration-r03-rejection.md
+    stopReason: "NEEDS_HUMAN: the user rejected all four r03 directions, disliked
+      their color treatment and overall appearance, and stopped design work in
+      this session. The user prefers a smooth, flowing red chart line as a
+      quality reference, not an exact copied chart. No concept was selected or
+      promoted. Future design has no inherited r03 composition, palette,
+      direction-count, or model assignment; open a new task packet after a new
+      request."
+    gates:
+      unit: NOT_REQUIRED
+      integration: NOT_REQUIRED
+      browser: PENDING
+      accessibility: PENDING
+      visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
