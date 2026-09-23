@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0a0d">
+  <title>FITWAY / Evidence Desk</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <a class="skip" href="#main">تخطّ إلى المحتوى</a>
+  <svg class="defs" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="ic-switch" viewBox="0 0 24 24"><path d="M3 7h18M3 12h18M3 17h18"/><path d="m17 4 4 3-4 3"/></symbol>
+    <symbol id="ic-close" viewBox="0 0 24 24"><path d="M5 5 19 19M19 5 5 19"/></symbol>
+    <symbol id="ic-down" viewBox="0 0 24 24"><path d="m5 9 7 7 7-7"/></symbol>
+    <symbol id="ic-arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
+    <symbol id="ic-signal" viewBox="0 0 24 24"><path d="M3 17h4V9h4v5h4V5h4v12h3"/></symbol>
+    <symbol id="ic-report" viewBox="0 0 24 24"><path d="M5 3h10l4 4v14H5zM14 3v5h5M8 12h8M8 16h6"/></symbol>
+    <symbol id="ic-access" viewBox="0 0 24 24"><path d="M8 10V7a4 4 0 0 1 8 0v3M5 10h14v11H5zM12 14v3"/></symbol>
+    <symbol id="ic-activity" viewBox="0 0 24 24"><path d="M4 5h16M4 10h16M4 15h16M4 20h16M7 5v15"/></symbol>
+    <symbol id="ic-ops" viewBox="0 0 24 24"><path d="M3 12h4l2-4 4 8 2-4h6"/></symbol>
+    <symbol id="ic-settings" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16M9 4v6M15 14v6"/></symbol>
+    <symbol id="ic-gap" viewBox="0 0 24 24"><path d="M4 6h16M4 18h16M8 12h2m4 0h2"/></symbol>
+    <symbol id="ic-check" viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></symbol>
+  </svg>
+  <div class="ambient" aria-hidden="true"></div>
+  <div class="shell">
+    <header class="chrome">
+      <div class="chrome-start">
+        <div class="brand" aria-label="FITWAY">FIT<span>WAY</span><i></i></div>
+        <span class="chrome-divider"></span>
+        <button id="workspaceButton" class="workspace-button" type="button" aria-controls="workspaceMenu" aria-expanded="false"></button>
+      </div>
+      <div class="chrome-end">
+        <span id="demoFlag" class="demo-flag"></span>
+        <button id="langButton" class="lang-button" type="button"></button>
+      </div>
+    </header>
+    <div id="workspaceMenu" class="workspace-menu" hidden>
+      <div class="menu-top"><strong id="menuTitle"></strong><button id="closeMenu" type="button" class="icon-button" aria-label="Close menu"><svg><use href="#ic-close"/></svg></button></div>
+      <nav id="menuLinks" aria-label="Owner workspace"></nav>
+      <p id="menuFoot"></p>
+    </div>
+    <main id="main" tabindex="-1"></main>
+    <footer><span id="footerCopy"></span><span>FITWAY / 2026</span></footer>
+  </div>
+  <div id="announce" class="sr-only" aria-live="polite" role="status"></div>
+  <script src="./app.js"></script>
+</body>
+</html>
