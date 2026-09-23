@@ -23,6 +23,14 @@
 > The pre-gate guide is retained only as history at
 > `docs/archive/design/DESIGN_GUIDE-pre-brg-20260715.md`.
 
+> **Owner concept scope:** the appearance rules below describe the current production baseline.
+> Under the human decision recorded in the active Owner exploration handoff, concept-only work
+> keeps red and black as the broad FITWAY identity anchor but may explore visual style freely.
+> Cairo, exact red values, color proportions, dark-only treatment, static atmosphere, materials,
+> layout, and chart grammar are not concept requirements; Cairo is excluded from this Owner exploration. No radial
+> red glow is required. RTL/LTR, numerals, truthful data, interaction, accessibility, and reduced
+> motion remain binding. Concepts do not change the production baseline.
+>
 ## 1. Direction
 
 FITWAY is **premium first, athletic second, minimal third**. It should feel focused,

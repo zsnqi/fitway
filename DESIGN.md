@@ -20,7 +20,7 @@ Composition and per-surface layout authority is recorded in `docs/design/VISUAL_
 
 ## Exploration mode
 
-When the active task packet records a `visual.explorationEnvelope` (required while `visual.authorityStatus` is `VACANT`), this router's palette, type, and component pointers are the incumbent reference and anti-rut, not the required world. Follow the envelope and the concept gate in `docs/WORKFLOW.md`: derive each alternative from its own named world, label every artifact concept-only, and promote nothing without a recorded successor human decision. When no envelope is recorded, this router resolves the current visual authority as before. Production rules, tokens, and authority are unchanged in either case.
+When the active task packet records an exploration envelope while Owner composition authority is vacant, follow that packet and the latest named human decision. This router's palette, type, and component pointers describe production references; they do not prescribe a concept's visual form. For the current Owner exploration, red and black are the broad identity anchor and Cairo is not wanted. No exact shades, proportions, light/dark treatment, typography, materials, atmosphere, composition, chart form, glow, or number of directions is prescribed. The user directs whether and how exploration continues. Preserve Product/Spec behavior, truthful data, privacy, security, accessibility, RTL/LTR, Western digits, and other non-visual contracts. Label concepts as exploratory and do not promote them without a separate human decision. When no envelope is recorded, this router resolves the current visual authority as before. Production rules, tokens, and authority remain unchanged.
 
 ## Motion
 

@@ -6,51 +6,77 @@ stateRef: PROJECT_STATE.yaml#/milestones/owner-design-exploration-r04
 baseCommit: e5d5027ab67966c38612dd973f2f4bcb85f3441b
 task:
   objective: >-
-    Design one fresh, exploratory Owner visual direction in FITWAY red whose data reads as a
-    smooth, continuous curve, and show it to the user early for a choose, revise, or reject
-    decision, without changing production, canonical, Paper, or visual-authority state.
+    Clarify project authority and process so the user can continue Owner design exploration without
+    inherited visual prescriptions. Preserve Redline as an unselected concept. This policy update
+    does not create or select a new design and changes no production, canonical, Paper, or visual-
+    authority state.
   acceptanceCriteria:
-    - The coordinating session designs the direction itself, without delegating design to a subagent, and names its visual world and thesis.
-    - The concept uses the FITWAY red family (#E51935, #FF2946, #4D0713) as the dominant accent, and the user's red-line reference informs the line's feel without being copied.
-    - Occupancy renders as a smooth continuous curve that passes through the observed values, does not overshoot them, and keeps missing, closed, and not-yet-reached time visibly distinct from zero.
-    - The concept shows shared navigation and a Daily opening with the chart, plus enough of one dense governance surface to show the direction extends beyond the chart.
-    - Exact EN/AR 1440x900 desktop and 390x844 mobile frames are rendered and personally inspected before the early presentation to the user.
-    - Product, Spec, security, privacy, data truth, RTL/LTR, Western digits, and dark-only rules remain binding; the artifact is labeled exploration only and uses synthetic data.
+    - Record the user's red-and-black identity anchor and instruction not to use Cairo for this exploration.
+    - Remove fixed visual-direction counts and clarify that future design choices are user-directed, not selected or defined by the coordinating session in this policy update.
+    - Distinguish production styling from concept-only Owner exploration without changing shipped behavior, product semantics, data truth, privacy, security, accessibility, Western digits, or RTL/LTR requirements.
+    - Keep Redline and its evidence unchanged and unselected; do not create, present, or promote a new visual concept as part of this policy task.
+    - Keep the Owner composition authority vacant and production/canonical/Paper state unchanged.
   explicitExclusions:
+    - Creating or choosing a new visual concept, style, composition, layout, palette recipe, typography, atmosphere, or chart form.
     - Production UI, CSS, copy, hooks, routes, i18n, dependencies, schemas, APIs, and data semantics.
-    - Polishing minor presentation issues before the user's direction decision, as the user requested.
-    - Selecting the direction on the user's behalf or extending it to all seven surfaces before the human decision.
-    - Canonical, Paper, manifest, token-baseline, authority-register, ADR, approval-hash, or production promotion changes.
-    - Reusing rejected r02 or r03 concepts, their palettes, skeletons, or chart treatments as references.
+    - Declaring visual acceptance or promoting any concept on the user's behalf.
+    - Canonical, Paper, manifest, token-baseline, authority-register, approval-hash, or production promotion changes.
+    - Reusing rejected r02 or r03 concepts as design directions.
 scope:
   ownedPaths:
-    - design-research/owner-composition-exploration-r04/**
     - docs/phase-records/handoffs/owner-design-exploration/20260923-165000-owner-design-exploration-r04-activation.md
     - docs/phase-records/task-packets/owner-design-exploration-r04.yaml
+    - FITWAY_PRODUCT.md
+    - SPEC.md
+    - DESIGN_GUIDE.md
+    - DESIGN.md
+    - docs/WORKFLOW.md
   forbiddenPaths:
     - design-research/owner-composition-exploration-r01/**, design-research/owner-composition-exploration-r02/**, and design-research/owner-composition-exploration-r03/** (preserved diagnostic evidence)
     - design-research/owner-visual-preferences/** (user-supplied reference; read only)
+    - design-research/owner-composition-exploration-r04/** (policy-only pass; preserve existing concept and evidence)
     - apps/** and packages/** production code, copy, behavior, and data semantics
     - tests/browser/** including canonicals and screenshots
     - visual-direction-gate/**, docs/design/VISUAL_AUTHORITY_STATUS.md, docs/design/PAPER_GUIDE_CONFLICT_MAP.md, docs/adr/**, approval manifests, and pinned hashes
     - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
     - docs/archive/**, prior handoffs, and unrelated phase records
-    - docs/WORKFLOW.md, pnpm-lock.yaml, dependencies, and migrations
-  sharedLeases: []
+    - pnpm-lock.yaml, dependencies, and migrations
+  sharedLeases:
+    - FITWAY_PRODUCT.md
+    - SPEC.md
+    - DESIGN_GUIDE.md
+    - DESIGN.md
+    - docs/WORKFLOW.md
 authorities:
   required:
     - role: product
       path: FITWAY_PRODUCT.md
       selector: { kind: markdown-heading, value: "Approved visual baseline" }
-      reason: Retain FITWAY identity, FITWAY red, and locked product semantics.
+      reason: Distinguish the production baseline from the human-authorized concept-only Owner exploration.
+    - role: product
+      path: RESEARCH.md
+      selector: { kind: markdown-heading, value: "2. Product Anchor & Business Context" }
+      reason: "Product context only: identify the pilot gym and Owner use cases; this research is not visual authority."
     - role: spec
       path: SPEC.md
       selector: { kind: markdown-heading, value: "Implementation authority and fidelity contract" }
       reason: Preserve security, privacy, accessibility, bilingual behavior, and data contracts.
     - role: design
       path: DESIGN_GUIDE.md
+      selector: { kind: markdown-heading, value: "1. Direction" }
+      reason: Read the production appearance baseline with the current Owner exploration exception.
+    - role: design
+      path: DESIGN_GUIDE.md
+      selector: { kind: markdown-heading, value: "3. Color and surfaces" }
+      reason: Retain semantic color, contrast, and production context without locking concept colors or materials.
+    - role: design
+      path: DESIGN_GUIDE.md
+      selector: { kind: markdown-heading, value: "4. Typography and numerals" }
+      reason: Keep locale and numeral behavior while allowing non-Cairo concept typography.
+    - role: design
+      path: DESIGN_GUIDE.md
       selector: { kind: markdown-heading, value: "12. Data visualization" }
-      reason: The smooth curve must keep rises, falls, plateaus, gaps, and zero truthful.
+      reason: Preserve truthful data, states, and accessible equivalents while allowing any chart form.
     - role: design
       path: DESIGN_GUIDE.md
       selector: { kind: markdown-heading, value: "15. Phase visual gate" }
@@ -95,31 +121,31 @@ continuity:
     - owner-design-exploration-r03
   currentHandoff: docs/phase-records/handoffs/owner-design-exploration/20260923-165000-owner-design-exploration-r04-activation.md
   unresolvedDecisions:
-    - The user must choose, revise, or reject this early direction before further surfaces or polish.
-    - Owner composition authority remains vacant until explicit concept selection and perceptual promotion.
+    - The user has not chosen a new visual direction. Future design exploration follows the user's direction and has no prescribed style or attempt count.
+    - Owner composition authority remains vacant until the user selects a concept and it passes the explicit perceptual and authority-promotion gates.
     - Any production baseline departure or canonical promotion requires a separate explicit human decision.
 verification:
-  profile: single-direction early Owner concept; no production or promotion verification
+  profile: policy and authority clarification only; no concept, production, or promotion verification
   orderedGates:
     - Validate the READY packet and ledger with context:show and check:agent-context, then read the ordered routed sources.
-    - Render the concept with repository Playwright and inspect exact EN/AR desktop/mobile frames personally.
-    - Check chart truth (no overshoot, gaps and future time distinct from zero), keyboard and tap point selection, and reduced motion at concept depth.
-    - Present the early concept to the user for choose, revise, or reject; record the decision or an explicit pending decision.
-    - Before VALIDATING, a selected direction still needs the full WORKFLOW concept gate, independent perceptual and accessibility review, and 320px/200% reflow evidence.
+    - Confirm the process has no fixed direction count and does not prescribe a visual form for the user.
+    - Confirm Product/Spec semantics, data truth, privacy, security, accessibility, Western digits, and RTL/LTR remain in force.
+    - Run repository policy and design-context checks; do not render or present a new visual concept in this policy pass.
+    - Future concept work follows the user's direction and the exact rendered/perceptual gates recorded in WORKFLOW.
   independentReviewRequired: true
 evidence:
   receiptTemplate: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
   requiredArtifacts:
     - Exact context:show and check:agent-context results with packet SHA-256.
-    - Impeccable design-context PASS and the rendered inspection route.
-    - The concept artifact, its README with the named world and thesis, and the exact inspected frames.
-    - Human taste decision, or an explicit pending decision; no implied selection.
+    - Impeccable design-context PASS from the authorized host context.
+    - The recorded user scope clarification and updated authority/process sources.
+    - Confirmation that Redline remains unchanged and unselected; no new concept is implied.
 limitations:
-  - The r03 rejection handoff and its red-line preference are reached only through the named predecessor pointer; they are diagnostic context, not visual authority.
-  - This packet authorizes concept exploration only and records no accepted direction, implementation, or promotion.
-  - The user explicitly requested one self-designed direction shown early; the WORKFLOW concept gate's two or three alternatives remain required before any production implementation.
-  - Minor presentation issues are deliberately left unpolished until the user chooses a direction.
-  - Existing screenshots and Paper exports are provenance or diagnostic references, not acceptance authority for Owner composition.
+  - This packet updates process and authority only; it does not authorize the coordinating session to choose or create a visual direction.
+  - Redline remains intact and unselected. No new concept, layout, palette recipe, typography, atmosphere, or chart form is determined here.
+  - Red and black are the broad identity anchor; Cairo is excluded from this exploration. Other visual choices remain for the user to direct.
+  - Product/Spec behavior, data semantics, privacy, security, accessibility, Western digits, and RTL/LTR remain binding. Production and canonical state do not change.
+  - The required reference-frame entry is retained as historical provenance only; it is not an instruction, preferred style, or required chart treatment. Existing Owner screenshots and Paper exports are also not composition authority.
 visual:
   surfaceKey: owner-composition-family
   authorityStatus: VACANT
@@ -128,23 +154,22 @@ visual:
   explorationEnvelope:
     mode: EXPLORATION
     lockedAxes:
-      - FITWAY identity and FITWAY red, Arabic-first RTL and English LTR, Western digits, and Product/Spec semantics.
-      - Security, privacy, data truth, accessibility, and all non-visual Product/Spec contracts.
-      - Production remains dark-only with the current --fw-* baseline, Cairo actual weights 400/500/600/700, and static-atmosphere rules until separately approved.
+      - FITWAY identity expressed through red and black as the broad theme; exact shades, ratios, and semantic color assignments are open.
+      - Product/Spec behavior and content semantics, estimated occupancy truth, privacy, security, accessibility, Western digits, and Arabic RTL / English LTR.
+      - Production theme, tokens, Cairo typography, and production atmosphere remain unchanged; they are not mandatory recipes for concept-only Owner exploration.
     variableAxes:
-      - Owner concept composition, content order, navigation, material depth, panel geometry, density, rhythm, and form grouping.
-      - Chart grammar within a smooth, continuous, truthful red curve; icon family, semantic color roles, and purposeful feedback motion with reduced-motion handling.
+      - All visual choices for Owner concepts, including composition, information order, density, navigation, typography, color roles and shades, light/dark treatment, surface depth, materials, atmosphere, gradients, glow, motion, and chart form.
+      - Interaction and chart treatments, provided their data, state distinctions, accessibility, locale behavior, and reduced-motion behavior remain truthful and operable.
     requiredDepartures:
-      - The red must read as FITWAY red rather than the rejected r03 pink or desaturated reds.
-      - The direction must make consequential choices in hierarchy and composition rather than polish the incumbent layout.
+      - No visual departure or design concept is required by this policy-only task.
     antiRuts:
-      - All rejected r02 and r03 directions; their geometry, palette, chart, and ordering are diagnostic evidence only.
-      - Superseded Owner Paper frames and canonicals, Public and Staff compositions, and frozen candidates are not Owner visual references.
-      - The incumbent Owner layout, metric stacking, and clipped mobile navigation are problems to solve, not topology to preserve.
+      - Redline and its frames are unselected prior work. This policy pass neither selects nor revises them; a fresh direction derives from the brief without copying prior composition, material, or tokens.
+      - Rejected r02 and r03 concepts remain diagnostic history; none is current composition authority.
+      - Superseded Owner Paper frames and canonicals are not composition authority. Public and Staff compositions are not Owner references.
     promotionRule: >-
-      Human concept choice precedes any further surfaces or polish; any locked production visual
-      departure then needs a separate explicit human baseline decision and perceptual gate.
-      This concept packet, green checks, and rendered frames promote nothing.
+      This policy update selects, validates, or promotes no visual concept. Future exploration is
+      directed by the user with no fixed count. Any production change requires separate human
+      selection, baseline approval, and perceptual gate.
     authorizingDecision: docs/phase-records/handoffs/owner-design-exploration/20260923-165000-owner-design-exploration-r04-activation.md
   currentFrames:
     - path: tests/browser/__screenshots__/win32/chromium/phase9-owner-ui.browser.spec.ts/owner-daily-route-ar-desktop-1440x900.png
@@ -155,13 +180,14 @@ visual:
     - path: design-research/owner-visual-preferences/20260923-smooth-red-line-reference.png
       sha256: e50627e0d5218adbd9c00f712b07ff6c13c00dfd2386b4b6a6c57be7de8c132e
   openHumanDecisions:
-    - The early direction choice belongs to the user; none is selected.
-    - Owner composition authority remains vacant under ADR-009.
+    - Redline remains unselected. The user has not asked the coordinator to define a new visual shape.
+    - The user will direct if and how exploration continues; no attempt count or style is prescribed.
+    - Owner composition authority remains vacant under ADR-009 until a concept is explicitly selected and promoted.
     - Production and canonical promotion require separate explicit human approval.
   paperAvailability: UNAVAILABLE
   perceptualGate:
     status: PENDING
-    criteria: Exact full-resolution EN/AR desktop/mobile frames and interaction need independent perceptual review before VALIDATING, completion, or promotion.
+    criteria: No visual artifact is included in this policy update; exact rendered and perceptual review remains pending for any future concept the user requests.
   promotionGate:
     status: NOT_REQUIRED
     criteria: This early concept changes no canonical or production baseline; promotion is a separate serialized human decision.

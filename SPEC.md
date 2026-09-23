@@ -20,7 +20,9 @@
 > resolution **[Resolved here]**. Everything else preserves the recorded decisions:
 > the two-path cache-first architecture, edge-authoritative counting, Hono + Drizzle +
 > Supabase Postgres, signed server-side sessions and authorization, Arabic-first RTL,
-> **dark-only**, and **Western digits 0–9 exclusively**.
+> **dark-only for the shipped v1 product**, and **Western digits 0–9 exclusively**.
+> The named human decision for concept-only Owner exploration may vary appearance, including
+> light/dark treatment and typography other than Cairo; it does not change the shipped contract.
 >
 > This spec deliberately does **not** split work into phases and does not cover
 > deployment/provisioning execution (Supabase project creation, Vercel spend caps, domain).
@@ -30,13 +32,15 @@
 
 ## Implementation authority and fidelity contract
 
-Broad visual exploration and repository implementation are closed. The following contract governed
+Production baseline reconciliation and implementation phases are complete. This contract governs the shipped product and maintenance. It does not close concept-only Owner exploration authorized by ADR-009 and a named human decision; concepts change neither this contract nor production until separately approved. The following contract governed
 the implementation phases and remains the conformance boundary for maintenance or later changes:
 
 - Hard product, security, privacy, content, accessibility, and data-semantic decisions remain
   binding. A material proposal to change one must be surfaced explicitly before implementation;
   it must never be changed silently through UI or technical convenience.
-- The approved FITWAY theme and manifest are the visual baseline. G1B and the final Claude
+- The approved FITWAY theme and manifest are the production visual baseline. Concept-only Owner
+  exploration may vary visual direction under its active human-authorized packet without changing
+  production. G1B and the final Claude
   Design product family remain historical lineage only where the manifest says they apply.
   Implementation may improve composition, hierarchy, spacing,
   typography, responsive/mobile behavior, motion, interaction, charts, tables, accessibility,
@@ -52,7 +56,7 @@ the implementation phases and remains the conformance boundary for maintenance o
 - Correct wrapping, RTL/Bidi isolation, Western-digit number and gym-time formatting,
   overflow, responsive tables, mobile operational density, keyboard behavior, reduced motion,
   and loading/stale/unavailable/error semantics before a surface can be accepted.
-- The current Design Guide and approval manifest govern page layout. The historical Claude
+- The current Design Guide and approval manifest govern shipped production layout. Owner concept-only exploration follows its active human-authorized envelope. The historical Claude
   Analytics PNG preserves occupancy-curve behavior lineage only; `DESIGN_GUIDE.md` §12 defines
   normative chart interaction, accessibility, RTL, formatting, and reduced-motion rules.
 
@@ -235,7 +239,7 @@ measurable pilot targets):
 - [ ] Public page is Arabic RTL by default with a persistent English/LTR toggle; all copy
       comes from a message catalog; Western digits and `-u-nu-latn` formatting everywhere
       (both languages), per DESIGN_GUIDE §§4, 9, and 14.
-- [ ] The product is dark-only: no theme toggle, no light theme, `--fw-*` tokens from
+- [ ] The shipped product is dark-only: no theme toggle, no light theme, `--fw-*` tokens from
       DESIGN_GUIDE §14 replace the scaffold's default palette.
 - [ ] Staff view provides live count + health and nothing that mutates the count: it exposes
       no stepper correction, direct count entry, or reset (ADR-008). Every command that any
@@ -630,11 +634,15 @@ Layout uses logical properties; charts follow reading direction
 (DESIGN_GUIDE §§4, 9, 12). The document default (`index.html`) is Arabic/RTL with localized
 title/meta and the approved FITWAY favicon.
 
-**Dark-only visual system.** The scaffold's theme toggle and light theme are removed; the
+**Shipped dark-only visual system.** The scaffold's theme toggle and light theme are removed; the
 `--fw-*` token set in DESIGN_GUIDE §14 is the single palette. Cairo is self-hosted at actual
 weights 400–700. The crowd level, approximate count, continuous 28-bar signal, badges,
 freshness, operational panels, KPI cards, charts, skeletons, and empty/error states follow
 DESIGN_GUIDE §§3–13, including reduced motion and accessibility.
+
+This implementation rule does not constrain concept-only Owner visual exploration under the named
+human decision. Those artifacts may use a different light/dark treatment and non-Cairo type, but
+they cannot change production styling, data semantics, accessibility, or the approval gates.
 
 **Scaffold cleanup (first implementation act, recorded here so nothing demo-shaped
 survives).** Remove: the ASCII demo home page, sign-up form/route, theme

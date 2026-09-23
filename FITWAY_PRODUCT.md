@@ -55,19 +55,19 @@ All user-facing numerals are Western digits `0–9` in both languages. Public Ar
 
 ## Visual and inclusive constraints
 
-The v1 product is dark-only; there is no light theme or theme toggle. Cairo is self-hosted for Arabic and Latin subsets at the actual weights 400, 500, 600, and 700. Do not depend on synthetic 800/900 faces.
+The shipped v1 product is dark-only; there is no production light theme or theme toggle. Cairo is self-hosted for Arabic and Latin subsets at the actual weights 400, 500, 600, and 700; production must not depend on synthetic 800/900 faces. These appearance rules do not prescribe concept-only Owner exploration under the named human decision: such artifacts may try light or dark treatments and typography other than Cairo without changing the shipped product or creating a theme option.
 
 Fitway must remain keyboard-operable, screen-reader legible, color-independent, and WCAG-conscious. Interactive touch targets, visible focus, concise live-region updates, text alternatives for data, and contrast requirements follow [DESIGN_GUIDE.md](DESIGN_GUIDE.md). `prefers-reduced-motion` must remove non-essential motion and replace animated loading or number changes with static/instant behavior. No essential meaning may depend on motion.
 
 ## Approved visual baseline
 
-Broad visual exploration is complete. The one-time Baseline Reconciliation Gate promotes the current approved FITWAY theme, provenance, canonical screenshots, and supersession rules indexed by [`visual-direction-gate/approved/APPROVAL_MANIFEST.yaml`](visual-direction-gate/approved/APPROVAL_MANIFEST.yaml). Its live completion state is recorded in [PROJECT_STATE.yaml](PROJECT_STATE.yaml). The durable implementation rules live in [DESIGN_GUIDE.md](DESIGN_GUIDE.md).
+The approved production visual baseline was established. This records production authority and does not close concept-only Owner exploration authorized by ADR-009 and a named human decision; exploratory concepts do not change shipped product or production authority. The one-time Baseline Reconciliation Gate promotes the current approved FITWAY theme, provenance, canonical screenshots, and supersession rules indexed by [`visual-direction-gate/approved/APPROVAL_MANIFEST.yaml`](visual-direction-gate/approved/APPROVAL_MANIFEST.yaml). Its live completion state is recorded in [PROJECT_STATE.yaml](PROJECT_STATE.yaml). The durable implementation rules live in [DESIGN_GUIDE.md](DESIGN_GUIDE.md).
 
 The theme retains the strongest lineage from G1B and the approved Claude Design family—global header discipline, panoramic public board, asymmetric metrics, near-black/graphite surfaces, FITWAY red, and purpose-built operational/data routes—but those artifacts are now historical provenance. Their percentage copy, fake identities, email/password mockups, fixture labels, demo notices, unavailable font weights, and preview-only annotations are explicitly superseded.
 
 The production baseline uses a continuous cumulative 28-bar public crowd signal, makes crowd level dominant over the approximate count, uses a static blurred oxblood/FITWAY-red atmosphere behind the interface, and supports the canonical 320–1440 responsive matrix. The page background and live data do not animate. English LTR is composed naturally rather than mechanically mirrored from Arabic.
 
-Further visual improvement happens in the focused polish loop at the end of the relevant implementation phase. It may improve composition, spacing, typography, mobile behavior, interaction, charts, tables, and accessibility while retaining FITWAY's identity and locked semantics. A material product or visual-direction change must be surfaced explicitly.
+Further visual improvement to shipped routes happens in the focused polish loop at the end of the relevant implementation phase. It may improve composition, spacing, typography, mobile behavior, interaction, charts, tables, and accessibility while retaining FITWAY's identity and locked semantics. Concept-only Owner exploration may continue for as many attempts as the user requests; it is not limited by the production polish loop. A material product or production visual-direction change must be surfaced explicitly.
 
 ## Canonical detail
 

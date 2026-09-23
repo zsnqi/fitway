@@ -28,3 +28,39 @@ The coordinating session designed one direction itself, without design delegatio
 `node design-research/owner-composition-exploration-r04/concept/capture.mjs` rendered the exact frames under `concept/evidence/` over a loopback server. Every frame loaded Cairo and reported zero horizontal page overflow and no page or console errors. The coordinator personally inspected `daily-{en,ar}-1440x900`, `daily-{en,ar}-390x844`, `activity-en-1440x900`, `activity-ar-1440x900`, `activity-en-390x844`, `activity-ar-390x844`, `daily-en-1440x900-gap`, `daily-ar-390x844-delayed`, and `daily-en-1440x900-selected`. One repair round followed the first inspection. It moved the latest figure into the chart's empty upper region on wide screens and strengthened the red fill. It also resolved mobile label collisions, aligned Activity Log columns across day groups, and put mobile Activity Log records ahead of a filter toggle. The keyboard-selected frame confirmed slider value text and the inspection readout. A browser motion probe confirmed the one-time line draw, the section cross-fade with the sliding indicator, and immediate final rendering under reduced motion. The page also opens directly from disk with Cairo loaded. Biome check passed after formatting.
 
 The user explicitly deferred minor polish until after a direction choice. Known minor items are listed in the README. The 320px/200% reflow, tablet, accessibility, and independent perceptual gates have not run, so this is no gate PASS. The milestone is `IN_PROGRESS` with the human decision pending: choose, revise, or reject. Exact resume: `pnpm context:show -- --milestone owner-design-exploration-r04`.
+
+
+## Human scope clarification (2026-09-23)
+
+The user likes the Redline concept but is not choosing it now and wants to continue discovering visual
+directions. Redline remains intact and unselected. Red and black are the broad FITWAY identity
+anchor, and Cairo is not wanted for this exploration. The user did not ask the coordinating session
+to define a new visual shape. No exact shades, proportions, background, typography, materials,
+atmosphere, composition, chart form, or number of directions is prescribed. The user will direct
+whether and how exploration continues. This human decision supersedes the appearance-only
+restrictions in ADR-009 for concept-only Owner exploration and removes the fixed two-or-three
+direction requirement from WORKFLOW. It does not change the production baseline, product semantics,
+data contracts, or Owner composition authority; no concept is selected or promoted.
+
+Only the concept is exploratory. Product/Spec behavior, honest data, privacy, security,
+accessibility, Western digits, and Arabic RTL / English LTR remain binding. Production styling,
+tokens, canonicals, and authority are unchanged unless the user makes a separate promotion
+decision. RESEARCH.md is the product context for FITWAY's gym and Owner use cases; it does not
+prescribe a visual style or Arabic typeface.
+
+## Design-context check clarification
+
+The sandboxed pnpm check:design-context invocation failed because Node could not spawn child
+processes (EPERM). The installed Impeccable 4.0.0 helper and FITWAY routes remain available; the
+same check passed when run in the authorized host context. The earlier recorded PASS and the
+sandbox failure reflect different process-launch permissions, not a missing or changed Impeccable
+installation. The required check already reran successfully in the authorized host context.
+
+## Scoped concept authority confirmation (2026-09-23)
+
+The user explicitly approved a Product/Spec text change that separates the shipped dark-only,
+Cairo-based v1 product from concept-only Owner exploration. Owner concepts may try light or dark
+treatments and typography other than Cairo. This changes no production style, behavior, data,
+privacy, security, accessibility, canonical, Paper, manifest, or visual-authority state. The
+earlier "Next transition" instruction to render Redline is historical: Redline was delivered and
+remains unselected. The policy-only packet governs until a further activation is recorded.

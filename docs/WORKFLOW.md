@@ -308,19 +308,22 @@ require a recorded reason in the phase record.
    export package and its timestamp. Stored exports and canonicals are provenance and comparison
    references, never live authority. Any composition decision that depends on live Paper stops at
    `NEEDS_HUMAN`.
-4. **Concept before code.** For a topology or material visual-direction change, produce two or
-   three whole-page *direction* alternatives and judge them before production implementation or
-   token polish. Each alternative names its own visual world and states, against the packet's
-   exploration envelope, which axes it keeps and which it varies; no two alternatives may share a
-   world, and when the envelope requires a departure from the incumbent atmosphere, at least one
-   alternative must make it rather than restyle the incumbent. Exploration artifacts derive their
-   own palette, type, and material basis and must not inline production token files, production
-   atmosphere recipes, or shell CSS wholesale except in a fidelity reference the packet explicitly
-   requires. The concept gate scores spatial thesis, first-glance focal hierarchy, grouping and
-   reading order, vertical and horizontal rhythm, density and intentional whitespace, separation
-   of governance/controls/actions/data, behavior at 1440px, mobile, 320px/200% reflow, EN, and AR,
-   and direction distinctness from side-by-side full-resolution rendered frames. Incumbent
-   component placement is not authority merely because code exists; neither is the incumbent skin.
+4. **Concept before code.** For a topology or material visual-direction change, explore as many
+   whole-page *directions* or revisions as the user wants. There is no fixed minimum, required
+   count, or maximum; a request for one fresh attempt is enough to begin, and the user may compare,
+   revise, request more, or pause without an implied selection. Production implementation waits
+   for an explicit selected direction and separate authority/promotion decision, not for a
+   prescribed number of alternatives. Each concept names its own visual world and follows the
+   active packet's human-authorized exploration envelope. When comparing multiple concepts, keep
+   their worlds meaningfully distinct. Exploration artifacts derive their own palette, type, and
+   material basis within only the identity and non-visual requirements the user kept; do not inline
+   production token files, production atmosphere recipes, or shell CSS wholesale except in a
+   fidelity reference the packet explicitly requires. The concept gate scores spatial thesis,
+   first-glance focal hierarchy, grouping and reading order, vertical and horizontal rhythm,
+   density and intentional whitespace, separation of governance/controls/actions/data, behavior
+   at 1440px, mobile, 320px/200% reflow, EN, and AR, and distinctness where concepts are compared
+   side by side. Incumbent component placement is not authority merely because code exists; neither
+   is the incumbent skin.
 
 ### Exploration envelope
 
