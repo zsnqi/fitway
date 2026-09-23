@@ -64,3 +64,30 @@ treatments and typography other than Cairo. This changes no production style, be
 privacy, security, accessibility, canonical, Paper, manifest, or visual-authority state. The
 earlier "Next transition" instruction to render Redline is historical: Redline was delivered and
 remains unselected. The policy-only packet governs until a further activation is recorded.
+
+## Fresh-direction activation (2026-09-23)
+
+The user now asks to prepare a task for new Owner visual directions and intends to use Opus 5.5.
+This names the intended execution model, not a product or visual decision. The scoped policy
+clarification was committed as `4a94182`; the active r04 packet now authorizes fresh, concept-only
+directions in `design-research/owner-composition-exploration-r04/directions/`. No direction count,
+exact style, layout, palette recipe, material, atmosphere, chart form, or typeface is selected here.
+The broad identity remains red and black, and these concepts do not use Cairo. Product/Spec truth,
+privacy, security, accessibility, Western digits, Arabic RTL, and English LTR remain binding.
+
+Redline stays unselected and its existing `concept/` subtree must remain unchanged (Git tree
+`992f41f376d4ed661453b9922d91d2669021627b`). New directions must derive from the brief and
+their own worlds rather than copy Redline, rejected r02/r03 concepts, or superseded Owner Paper
+composition. The supplied smooth-line image is historical preference evidence, not a chart-form
+requirement for this task. Production UI, tokens, canonicals, Paper, manifests, and Owner visual
+authority remain untouched.
+
+The allowed rendering route is interactive Browser inspection plus repository Playwright for
+repeatable exact screenshots. Before opening a page, the design session reads the relevant
+browser/Playwright instructions and runs `pnpm check:design-context` in the authorized host. It
+may show a direction early with exact personally inspected EN/AR frames at 1440x900 and 390x844,
+but labels it exploratory; the 320px/200% reflow, accessibility, and independent perceptual gates
+must pass before VALIDATING or DONE. The user alone chooses, revises, requests more, or pauses.
+
+Use one writer in this worktree at a time. Exact resume:
+`pnpm context:show -- --milestone owner-design-exploration-r04`.

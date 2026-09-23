@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-09-23T21:25:46+03:00
+updatedAt: 2026-09-23T21:29:49+03:00
 coordinator:
-  owner: Primary coordinator and integrator for FITWAY; Owner r04 is IN_PROGRESS with Redline preserved and policy scope clarified before the next concept activation.
+  owner: Primary coordinator and integrator for FITWAY; Owner r04 is IN_PROGRESS with fresh concept-only directions authorized and Redline unselected.
   stateFilePolicy: coordinator-only
 baseline:
   status: DONE
@@ -22,44 +22,36 @@ milestones:
   owner-design-exploration-r04:
     status: IN_PROGRESS
     objective: >-
-      Clarify the authority and process for open-ended, user-directed Owner design exploration.
-      Preserve the Redline concept without selecting or defining a new visual direction, and leave
+      Continue user-directed, concept-only Owner design exploration with fresh visual directions.
+      Show reviewable directions early, preserve Redline unchanged and unselected, and leave
       production, canonical, Paper, and visual-authority state unchanged.
     taskClass: visual-authority-change
     taskPacket: docs/phase-records/task-packets/owner-design-exploration-r04.yaml
-    taskPacketSha256: da1b7e7c0d4b914db04650bfd11b4787459641a8c1b38337c3b0240a013afe2f
+    taskPacketSha256: c01e4c2bc6cbc0b0d9a2cca4f19a773ed7a22c9ed539cbdde558ea0816683e09
     dependencies: []
     ownerSession: owner-design-exploration-r04-coordinator
     branch: codex/owner-redesign-r04
     worktree: D:/Projects/fitway-worktrees/owner-design-exploration-r04
     baseCommit: e5d5027ab67966c38612dd973f2f4bcb85f3441b
     ownedPaths:
+      - design-research/owner-composition-exploration-r04/directions/**
       - docs/phase-records/handoffs/owner-design-exploration/20260923-165000-owner-design-exploration-r04-activation.md
       - docs/phase-records/task-packets/owner-design-exploration-r04.yaml
-      - FITWAY_PRODUCT.md
-      - SPEC.md
-      - DESIGN_GUIDE.md
-      - DESIGN.md
-      - docs/WORKFLOW.md
     forbiddenPaths:
       - design-research/owner-composition-exploration-r01/**, design-research/owner-composition-exploration-r02/**, and design-research/owner-composition-exploration-r03/** (preserved diagnostic evidence)
       - design-research/owner-visual-preferences/** (user-supplied reference; read only)
-      - design-research/owner-composition-exploration-r04/** (policy-only pass; preserve existing concept and evidence)
+      - design-research/owner-composition-exploration-r04/concept/** and design-research/owner-composition-exploration-r04/README.md (preserve Redline and its evidence)
       - apps/** and packages/** production code, copy, behavior, and data semantics
       - tests/browser/** including canonicals and screenshots
       - visual-direction-gate/**, docs/design/VISUAL_AUTHORITY_STATUS.md, docs/design/PAPER_GUIDE_CONFLICT_MAP.md, docs/adr/**, approval manifests, and pinned hashes
       - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
+      - FITWAY_PRODUCT.md, SPEC.md, DESIGN_GUIDE.md, DESIGN.md, and docs/WORKFLOW.md (policy clarification committed; no concept-stage edits)
       - docs/archive/**, prior handoffs, and unrelated phase records
       - pnpm-lock.yaml, dependencies, and migrations
-    sharedLeases:
-      - FITWAY_PRODUCT.md
-      - SPEC.md
-      - DESIGN_GUIDE.md
-      - DESIGN.md
-      - docs/WORKFLOW.md
+    sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: 2026-09-23T17:42:00+03:00
-    leaseExpiresAt: 2026-09-24T17:42:00+03:00
+    lastHeartbeatAt: 2026-09-23T21:29:49+03:00
+    leaseExpiresAt: 2026-09-24T21:29:49+03:00
     handoff: docs/phase-records/handoffs/owner-design-exploration/20260923-165000-owner-design-exploration-r04-activation.md
     stopReason: null
     gates:
