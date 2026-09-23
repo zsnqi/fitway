@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-09-23T16:50:00+03:00
+updatedAt: 2026-09-23T17:42:00+03:00
 coordinator:
-  owner: Primary coordinator and integrator for FITWAY; Owner redesign r04 is READY for one self-designed, early, concept-only direction after the user's new request.
+  owner: Primary coordinator and integrator for FITWAY; Owner redesign r04 is IN_PROGRESS with one early concept-only direction awaiting the user's choose, revise, or reject decision.
   stateFilePolicy: coordinator-only
 baseline:
   status: DONE
@@ -20,7 +20,7 @@ baseline:
   independentVerification: docs/phase-records/baseline-independent-verification.md
 milestones:
   owner-design-exploration-r04:
-    status: READY
+    status: IN_PROGRESS
     objective: >-
       Design one fresh, exploratory Owner visual direction in FITWAY red with a smooth,
       continuous occupancy curve, and show it to the user early, without changing production,
@@ -48,8 +48,8 @@ milestones:
       - docs/WORKFLOW.md, pnpm-lock.yaml, dependencies, and migrations
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: 2026-09-23T16:50:00+03:00
-    leaseExpiresAt: 2026-09-24T16:50:00+03:00
+    lastHeartbeatAt: 2026-09-23T17:42:00+03:00
+    leaseExpiresAt: 2026-09-24T17:42:00+03:00
     handoff: docs/phase-records/handoffs/owner-design-exploration/20260923-165000-owner-design-exploration-r04-activation.md
     stopReason: null
     gates:
