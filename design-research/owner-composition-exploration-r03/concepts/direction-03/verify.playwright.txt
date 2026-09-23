@@ -1,0 +1,76 @@
+async (page) => {
+	const base =
+		"http://127.0.0.1:3113/design-research/owner-composition-exploration-r03/concepts/direction-03/index.html";
+	const assert = (okay, message) => {
+		if (!okay) throw new Error(message);
+	};
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto(base + "?lang=en&section=daily");
+	await page.locator('[data-period="0"]').click();
+	assert(
+		(await page.locator('[data-period="0"]').getAttribute("aria-pressed")) ===
+			"true",
+		"Daily period selection failed",
+	);
+	assert(
+		(await page.locator(".detail-strip").innerText()).includes("Early"),
+		"Daily detail did not update",
+	);
+	await page.locator('[data-section="reports"]').click();
+	assert((await page.title()).includes("Reports"), "Section navigation failed");
+	await page.locator('[data-cell="4-0"]').focus();
+	await page.locator('[data-cell="4-0"]').press("Enter");
+	assert(
+		(await page.locator(".cell-detail").innerText()).includes(
+			"Missing reading",
+		),
+		"Missing cell detail failed",
+	);
+	await page.locator('[data-action="table"]').click();
+	assert(
+		(await page
+			.locator('[data-action="table"]')
+			.getAttribute("aria-expanded")) === "true",
+		"Values table disclosure failed",
+	);
+	await page.locator('[data-action="export"]').click();
+	assert(
+		await page.locator(".feedback").isVisible(),
+		"Local control feedback failed",
+	);
+	await page.locator('[data-action="language"]').click();
+	assert(
+		(await page.locator("html").getAttribute("dir")) === "rtl",
+		"RTL locale switch failed",
+	);
+	assert(
+		(await page.locator(".matrix-heading").innerText()).includes("الساعة"),
+		"Arabic labels failed",
+	);
+	for (const width of [320, 390, 720]) {
+		await page.setViewportSize({ width, height: 900 });
+		const widthInfo = await page.evaluate(() => ({
+			viewport: document.documentElement.clientWidth,
+			document: document.documentElement.scrollWidth,
+		}));
+		assert(
+			widthInfo.document <= widthInfo.viewport + 1,
+			"Document horizontal overflow at " +
+				width +
+				": " +
+				JSON.stringify(widthInfo),
+		);
+	}
+	await page.emulateMedia({ reducedMotion: "reduce" });
+	const duration = await page
+		.locator(".nav-item")
+		.first()
+		.evaluate((el) => getComputedStyle(el).transitionDuration);
+	assert(
+		duration.split(",").every((part) => Number.parseFloat(part) <= 0.001),
+		"Reduced motion transition not removed: " + duration,
+	);
+	console.log(
+		"Direction 03 interaction checks passed: period, navigation, missing detail, table, control feedback, RTL, 320/390/720 reflow, reduced motion.",
+	);
+}

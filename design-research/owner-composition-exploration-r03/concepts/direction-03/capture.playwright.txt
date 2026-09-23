@@ -1,0 +1,24 @@
+async (page) => {
+	const base =
+		"http://127.0.0.1:3113/design-research/owner-composition-exploration-r03/concepts/direction-03/index.html";
+	const out =
+		"design-research/owner-composition-exploration-r03/concepts/direction-03/evidence/";
+	const frames = [];
+	await page.emulateMedia({ reducedMotion: "no-preference" });
+	for (const section of ["daily", "reports"]) {
+		for (const lang of ["en", "ar"]) {
+			for (const [width, height] of [
+				[1440, 900],
+				[390, 844],
+			]) {
+				await page.setViewportSize({ width, height });
+				await page.goto(base + "?lang=" + lang + "&section=" + section);
+				await page.evaluate(() => document.fonts.ready);
+				const name = section + "-" + lang + "-" + width + "x" + height + ".png";
+				await page.screenshot({ path: out + name, scale: "css" });
+				frames.push({ name, title: await page.title(), width, height });
+			}
+		}
+	}
+	console.log(JSON.stringify(frames));
+}
