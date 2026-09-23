@@ -1,0 +1,45 @@
+async (page) => {
+	const base = "http://127.0.0.1:3113/design-research/owner-composition-exploration-r03/concepts/direction-03/index.html";
+	const check = (ok, message) => { if (!ok) throw new Error(message); };
+	for (const locale of ["en", "ar"]) {
+		await page.goto(base + "?lang=" + locale + "&section=reports");
+		check((await page.locator(".matrix-date").innerText()).includes("13–19"), "Week label mismatch");
+		check((await page.locator(".matrix-row").first().innerText()).includes("13"), "Monday date mismatch");
+		check((await page.locator(".matrix-row").last().innerText()).includes("19"), "Sunday date mismatch");
+		await page.locator('[data-action="table"]').click();
+		check((await page.locator("table").innerText()).includes("13"), "Equivalent table date mismatch");
+		await page.setViewportSize({ width: 320, height: 844 });
+		await page.locator(".table-wrap").focus();
+		check(await page.evaluate(() => document.activeElement?.classList.contains("table-wrap")), "Values table not focusable");
+		const tableBefore = await page.locator(".table-wrap").evaluate(el => el.scrollLeft);
+		await page.keyboard.press(locale === "ar" ? "ArrowLeft" : "ArrowRight");
+		await page.waitForTimeout(250);
+		const tableAfter = await page.locator(".table-wrap").evaluate(el => el.scrollLeft);
+		check(tableAfter !== tableBefore, "Keyboard did not scroll 320px values table: " + locale);
+		for (const width of [320, 390, 720, 1440]) {
+			await page.setViewportSize({ width, height: width === 1440 ? 900 : 844 });
+			const g = await page.evaluate(() => {
+				const shell = document.querySelector(".matrix-shell");
+				const cells = [...document.querySelectorAll(".heat-cell")];
+				return {
+					document: document.documentElement.scrollWidth,
+					viewport: document.documentElement.clientWidth,
+					scrollable: shell.scrollWidth > shell.clientWidth,
+					width: Math.min(...cells.map(c => c.getBoundingClientRect().width)),
+					height: Math.min(...cells.map(c => c.getBoundingClientRect().height)),
+				};
+			});
+			check(g.document <= g.viewport + 1, "Reports document overflow: " + JSON.stringify({ locale, width, g }));
+			if (width <= 390) check(g.width >= 44 && g.height >= 44, "Cell under 44px: " + JSON.stringify({ locale, width, g }));
+			if (width === 320) check(g.scrollable, "320px matrix must scroll internally");
+		}
+		await page.setViewportSize({ width: 320, height: 844 });
+		await page.locator(".matrix-shell").focus();
+		const before = await page.locator(".matrix-shell").evaluate(el => el.scrollLeft);
+		await page.keyboard.press(locale === "ar" ? "ArrowLeft" : "ArrowRight");
+		await page.waitForTimeout(250);
+		const after = await page.locator(".matrix-shell").evaluate(el => el.scrollLeft);
+		check(after !== before, "Keyboard did not scroll 320px matrix: " + locale);
+	}
+	console.log("Direction 03 matrix checks passed: dated week, table, 44px cells, internal keyboard scroll, reflow.");
+}

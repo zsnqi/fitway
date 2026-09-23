@@ -9,7 +9,9 @@ async (page) => {
 		for (const lang of ["en", "ar"]) {
 			for (const [width, height] of [
 				[1440, 900],
+				[720, 900],
 				[390, 844],
+				[320, 844],
 			]) {
 				await page.setViewportSize({ width, height });
 				await page.goto(base + "?lang=" + lang + "&section=" + section);

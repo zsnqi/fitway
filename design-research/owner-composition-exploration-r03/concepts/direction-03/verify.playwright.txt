@@ -45,6 +45,15 @@ async (page) => {
 			.getAttribute("aria-expanded")) === "true",
 		"Values table disclosure failed",
 	);
+	await page.locator(".table-wrap").focus();
+	assert(
+		await page.evaluate(() => document.activeElement?.classList.contains("table-wrap")),
+		"Revealed values table cannot receive keyboard focus",
+	);
+	assert(
+		await page.locator(".table-wrap").evaluate((el) => el.scrollWidth > el.clientWidth),
+		"Values table no longer exercises horizontal keyboard scroll",
+	);
 	await page.locator('[data-action="export"]').click();
 	assert(
 		await page.locator(".feedback").isVisible(),
@@ -59,7 +68,7 @@ async (page) => {
 		(await page.locator(".matrix-heading").innerText()).includes("الساعة"),
 		"Arabic labels failed",
 	);
-	for (const width of [320, 390, 720]) {
+	for (const width of [320, 390, 720, 1440]) {
 		await page.setViewportSize({ width, height: 900 });
 		const widthInfo = await page.evaluate(() => ({
 			viewport: document.documentElement.clientWidth,
@@ -75,7 +84,7 @@ async (page) => {
 	}
 	for (const locale of ["en", "ar"]) {
 		await page.goto(base + "?lang=" + locale + "&section=daily");
-		for (const width of [320, 390, 720]) {
+		for (const width of [320, 390, 720, 1440]) {
 			await page.setViewportSize({ width, height: 900 });
 			const widthInfo = await page.evaluate(() => ({
 				viewport: document.documentElement.clientWidth,
@@ -97,6 +106,6 @@ async (page) => {
 		"Reduced motion transition not removed: " + duration,
 	);
 	console.log(
-		"Direction 03 interaction checks passed: period, navigation, missing detail, table, control feedback, RTL, 320/390/720 reflow, reduced motion.",
+		"Direction 03 interaction checks passed: period, navigation, missing detail, keyboard table focus, control feedback, RTL, 320/390/720/1440 Daily reflow, reduced motion.",
 	);
 }

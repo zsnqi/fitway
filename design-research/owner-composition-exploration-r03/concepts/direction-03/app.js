@@ -59,13 +59,17 @@ const labels = {
 		matrixSub:
 			"Typical observed occupancy by sampled hour. Select a cell to read it precisely.",
 		matrixCoverage: "Coverage: 39 of 42 cells observed",
-		week: "14–20 July 2026 · sample week",
+		matrixScrollLabel: "Scrollable hour by day matrix",
+		matrixScrollHint: "Scroll across to read the later hours.",
+		week: "13–19 July 2026 · sample week",
+		valuesTableRegion: "Scrollable values table for 13–19 July 2026",
 		showTable: "Show values table",
 		hideTable: "Hide values table",
 		cellDetails: "Selected cell",
 		reportControl: "Prepare sample CSV",
+		reportControlLabel: "Prepare sample CSV for 13–19 July 2026",
 		reportFeedback:
-			"Sample preview prepared locally. No export or account action occurred.",
+			"Sample preview for 13–19 July 2026 prepared locally. No export or account action occurred.",
 		reportNote:
 			"This matrix is historical illustration. Missing cells mean no usable reading; they are not zero.",
 		mon: "Mon",
@@ -153,12 +157,17 @@ const labels = {
 		matrixSub:
 			"العدد التقريبي المرصود في ساعات العينة. اختر خانة لقراءتها بدقة.",
 		matrixCoverage: "التغطية: 39 من 42 خانة مرصودة",
-		week: "14–20 يوليو 2026 · أسبوع توضيحي",
+		matrixScrollLabel: "مصفوفة الأيام والساعات القابلة للتمرير",
+		matrixScrollHint: "مرّر أفقيًا لقراءة الساعات الأخرى.",
+		week: "13–19 يوليو 2026 · أسبوع توضيحي",
+		valuesTableRegion: "جدول قيم قابل للتمرير للأسبوع 13–19 يوليو 2026",
 		showTable: "عرض جدول القيم",
 		hideTable: "إخفاء جدول القيم",
 		cellDetails: "الخانة المختارة",
 		reportControl: "تجهيز ملف CSV توضيحي",
-		reportFeedback: "جُهزت معاينة محلية فقط. لم يحدث تصدير أو إجراء على الحساب.",
+		reportControlLabel: "تجهيز ملف CSV توضيحي للأسبوع 13–19 يوليو 2026",
+		reportFeedback:
+			"جُهزت معاينة محلية للأسبوع 13–19 يوليو 2026 فقط. لم يحدث تصدير أو إجراء على الحساب.",
 		reportNote:
 			"هذه المصفوفة توضيح تاريخي. الخانات المفقودة تعني غياب قراءة صالحة، لا قيمة صفر.",
 		mon: "الإثنين",
@@ -297,9 +306,17 @@ function daily() {
     </section>
   </div>`;
 }
-function cellName(day, hour, value) {
+const weekDates = [13, 14, 15, 16, 17, 18, 19];
+function dayName(day) {
 	return (
 		t(["mon", "tue", "wed", "thu", "fri", "sat", "sun"][day]) +
+		" " +
+		weekDates[day]
+	);
+}
+function cellName(day, hour, value) {
+	return (
+		dayName(day) +
 		" " +
 		hours[hour] +
 		":00 — " +
@@ -313,12 +330,12 @@ function reports() {
     ${lead(t("reportsTitle"), t("reportsSub"))}
     <section class="matrix-panel" aria-labelledby="matrix-title">
       <div class="matrix-heading"><div><h2 id="matrix-title">${t("matrixTitle")}</h2><p>${t("matrixSub")}</p></div><div class="matrix-date"><span>${t("week")}</span><strong>${t("matrixCoverage")}</strong></div></div>
-      <div class="matrix-shell"><div class="matrix-axis"><span></span>${hours.map((hour) => `<span dir="ltr">${hour}:00</span>`).join("")}</div>
-      ${matrix.map((row, i) => `<div class="matrix-row"><strong>${t(["mon", "tue", "wed", "thu", "fri", "sat", "sun"][i])}</strong>${row.map((v, j) => `<button type="button" class="heat-cell ${v === null ? "is-missing" : ""} ${d === i && h === j ? "is-selected" : ""}" data-cell="${i}-${j}" aria-label="${cellName(i, j, v)}" aria-pressed="${d === i && h === j}" style="--level:${v === null ? 0 : (0.13 + v / 80).toFixed(2)}"><span>${v === null ? "—" : v}</span></button>`).join("")}</div>`).join("")}</div>
+      <p class="matrix-scroll-hint">${t("matrixScrollHint")}</p><div class="matrix-shell" role="region" aria-label="${t("matrixScrollLabel")}" tabindex="0"><div class="matrix-axis"><span></span>${hours.map((hour) => `<span dir="ltr">${hour}:00</span>`).join("")}</div>
+      ${matrix.map((row, i) => `<div class="matrix-row"><strong>${dayName(i)}</strong>${row.map((v, j) => `<button type="button" class="heat-cell ${v === null ? "is-missing" : ""} ${d === i && h === j ? "is-selected" : ""}" data-cell="${i}-${j}" aria-label="${cellName(i, j, v)}" aria-pressed="${d === i && h === j}" style="--level:${v === null ? 0 : (0.13 + v / 80).toFixed(2)}"><span>${v === null ? "—" : v}</span></button>`).join("")}</div>`).join("")}</div>
       <div class="matrix-bottom"><span>0</span><div class="ramp" aria-hidden="true"></div><span>57</span><span class="ramp-label">${t("people")}</span><span class="missing-key"><i>—</i>${t("missing")}</span></div>
       <div class="cell-detail" aria-live="polite"><span>${t("cellDetails")}</span><strong>${cellName(d, h, value)}</strong><span>${t("reportNote")}</span></div>
-      <div class="report-actions"><button class="text-action" type="button" data-action="table" aria-expanded="${tableVisible}">${tableVisible ? t("hideTable") : t("showTable")} ${icon("arrow")}</button><button class="csv-action" type="button" data-action="export">${t("reportControl")}</button></div>
-      <div class="table-wrap ${tableVisible ? "" : "visually-hidden-table"}" id="values-table"><table><caption>${t("matrixTitle")} — ${t("week")}</caption><thead><tr><th scope="col">${t("dayColumn")}</th>${hours.map((hour) => `<th scope="col" dir="ltr">${hour}:00</th>`).join("")}</tr></thead><tbody>${matrix.map((row, i) => `<tr><th scope="row">${t(["mon", "tue", "wed", "thu", "fri", "sat", "sun"][i])}</th>${row.map((v) => `<td>${v === null ? t("missingCell") : v}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
+      <div class="report-actions"><button class="text-action" type="button" data-action="table" aria-controls="values-table" aria-expanded="${tableVisible}">${tableVisible ? t("hideTable") : t("showTable")} ${icon("arrow")}</button><button class="csv-action" type="button" data-action="export" aria-label="${t("reportControlLabel")}">${t("reportControl")}</button></div>
+      <div class="table-wrap ${tableVisible ? "" : "visually-hidden-table"}" id="values-table" role="region" aria-label="${t("valuesTableRegion")}" tabindex="${tableVisible ? "0" : "-1"}"><table><caption>${t("matrixTitle")} — ${t("week")}</caption><thead><tr><th scope="col">${t("dayColumn")}</th>${hours.map((hour) => `<th scope="col" dir="ltr">${hour}:00</th>`).join("")}</tr></thead><tbody>${matrix.map((row, i) => `<tr><th scope="row">${dayName(i)}</th>${row.map((v) => `<td>${v === null ? t("missingCell") : v}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
     </section>
     ${feedback ? `<div class="feedback" role="status">${icon("check")}<span>${t("reportFeedback")}</span></div>` : ""}
   </div>`;
