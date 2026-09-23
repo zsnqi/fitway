@@ -7,7 +7,7 @@
 >
 > **Status:** the v1 delivery scope of this plan is complete. Every aggregate milestone from
 > `phase-1` through `phase-12` and `repository-closeout` is `DONE`, recorded in the closed history
-> (`PROJECT_STATE_HISTORY.yaml`), with the active ledger holding only open or unarchived work.
+> (`PROJECT_STATE_HISTORY.yaml`), with the active ledger holding only open-status work.
 > The accepted canonical project-wide verification is recorded in
 > `docs/phase-records/repository-closeout.md`. This file remains the durable record of that
 > scope; resumed or successor work is governed by its own ledger entries, not by reinterpreting
