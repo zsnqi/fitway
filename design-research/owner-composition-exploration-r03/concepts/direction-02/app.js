@@ -44,7 +44,7 @@ const data = {
 			measure1: "Peak observed",
 			measure1n: "At 16:00 · illustrative",
 			measure2: "History coverage",
-			measure2v: "660 / 720 min",
+			measure2v: "660 / 720",
 			measure2n: "Observed / expected open minutes. One hour has no data.",
 			measure3: "Estimated entrance crossings",
 			measure3n: "Not unique members. Illustrative count.",
@@ -210,7 +210,7 @@ const data = {
 			measure1: "أعلى عدد مرصود",
 			measure1n: "عند 16:00 · قيمة توضيحية",
 			measure2: "تغطية السجل",
-			measure2v: "660 / 720 دقيقة",
+			measure2v: "660 / 720",
 			measure2n: "دقائق مرصودة / متوقعة خلال الفتح. ساعة بلا بيانات.",
 			measure3: "عبور دخول مقدّر",
 			measure3n: "ليس عدد أعضاء فريدين. قيمة توضيحية.",
@@ -429,7 +429,7 @@ function dailyMarkup() {
 			t.aside2,
 			t.aside2b,
 		) +
-		`<section class="daily-story" aria-label="${esc(t.chartTitle)}"><div class="story-main"><div class="story-heading"><h2>${esc(t.chartHeading)}</h2><p>${esc(t.chartDescription)}</p></div><div class="plot"><div class="plot-head"><strong>${esc(t.chartTitle)}</strong><span>${esc(t.chartSub)}</span></div><div class="plot-body" role="group" aria-label="${esc(t.chartTitle)}">${cols}</div><div class="plot-axis"><bdi>06:00</bdi><bdi>12:00</bdi><bdi>17:00</bdi></div><p class="plot-explain"><span class="legend-dot"></span>${esc(t.dotLegend)} &nbsp; — ${esc(t.gapLegend)}</p><div class="plot-detail"><span>${esc(t.selected)} · <bdi>${o.time}</bdi></span>${detail}</div></div><p class="annotation">${icon("info")}<span>${esc(t.annotation)}</span></p></div><aside class="story-sidebar" aria-label="${esc(t.measure2)}"><div class="side-measure"><span>${esc(t.measure1)}</span><strong><bdi>54</bdi></strong><p>${esc(t.measure1n)}</p></div><div class="side-measure coverage"><span>${esc(t.measure2)}</span><strong><bdi>${esc(t.measure2v)}</bdi></strong><p>${esc(t.measure2n)}</p></div><div class="side-measure"><span>${esc(t.measure3)}</span><strong><bdi>148</bdi></strong><p>${esc(t.measure3n)}</p></div></aside></section><section class="continuation"><h2>${esc(t.closingTitle)}</h2><div><p>${esc(t.closingText)}</p><div class="day-steps"><span class="day-step"><bdi>${esc(t.step1)}</bdi></span><span class="day-step"><bdi>${esc(t.step2)}</bdi></span><span class="day-step"><bdi>${esc(t.step3)}</bdi></span></div></div></section><div class="sr-only"><table><caption>${esc(t.chartTitle)} · ${esc(t.chartSub)}</caption><thead><tr><th>${esc(t.timeHead)}</th><th>${esc(t.valueHead)}</th></tr></thead><tbody>${observations.map((o) => `<tr><td>${o.time}</td><td>${o.state ? esc(t.noData) : o.value}</td></tr>`).join("")}</tbody></table></div>`
+		`<section class="daily-story" aria-label="${esc(t.chartTitle)}"><div class="story-main"><div class="story-heading"><h2>${esc(t.chartHeading)}</h2><p>${esc(t.chartDescription)}</p></div><div class="plot"><div class="plot-head"><strong>${esc(t.chartTitle)}</strong><span>${esc(t.chartSub)}</span></div><div class="plot-body" role="group" aria-label="${esc(t.chartTitle)}">${cols}</div><div class="plot-axis"><bdi>06:00</bdi><bdi>12:00</bdi><bdi>17:00</bdi></div><p class="plot-explain"><span class="legend-dot"></span>${esc(t.dotLegend)} &nbsp; — ${esc(t.gapLegend)}</p><div class="plot-detail"><span>${esc(t.selected)} · <bdi>${o.time}</bdi></span>${detail}</div></div><p class="annotation">${icon("info")}<span>${esc(t.annotation)}</span></p></div><aside class="story-sidebar" aria-label="${esc(t.measure2)}"><div class="side-measure"><span>${esc(t.measure1)}</span><strong><bdi>54</bdi></strong><p>${esc(t.measure1n)}</p></div><div class="side-measure coverage"><span>${esc(t.measure2)}</span><strong><bdi dir="ltr">${esc(t.measure2v)}</bdi></strong><p>${esc(t.measure2n)}</p></div><div class="side-measure"><span>${esc(t.measure3)}</span><strong><bdi>148</bdi></strong><p>${esc(t.measure3n)}</p></div></aside></section><section class="continuation"><h2>${esc(t.closingTitle)}</h2><div><p>${esc(t.closingText)}</p><div class="day-steps"><span class="day-step"><bdi>${esc(t.step1)}</bdi></span><span class="day-step"><bdi>${esc(t.step2)}</bdi></span><span class="day-step"><bdi>${esc(t.step3)}</bdi></span></div></div></section><div class="sr-only"><table><caption>${esc(t.chartTitle)} · ${esc(t.chartSub)}</caption><thead><tr><th>${esc(t.timeHead)}</th><th>${esc(t.valueHead)}</th></tr></thead><tbody>${observations.map((o) => `<tr><td>${o.time}</td><td>${o.state ? esc(t.noData) : o.value}</td></tr>`).join("")}</tbody></table></div>`
 	);
 }
 function logMarkup() {

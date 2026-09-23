@@ -3,7 +3,7 @@ import { chromium } from "@playwright/test";
 
 const browser = await chromium.launch({ headless: true });
 const errors = [];
-const base = "http://127.0.0.1:3112/";
+const base = process.env.FITWAY_DIRECTION_02_BASE ?? "http://127.0.0.1:3112/";
 const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
 page.on("pageerror", (error) => errors.push(error.message));
 
