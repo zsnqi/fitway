@@ -205,23 +205,6 @@ the latest file from `PROJECT_STATE.yaml`. Keep them concise and evidence-based:
 Do not paste secrets, raw PINs/tokens, unbounded logs, screenshots containing sensitive data, or
 claims that were not independently observed.
 
-### External worker data boundary
-
-Two 2026-08-21 human authorizations, recorded in
-`docs/phase-records/handoffs/coordinator/20260821-021800-fitway-external-worker-authorization.md`
-and
-`docs/phase-records/handoffs/coordinator/20260821-152000-fitway-external-worker-pool-authorization.md`,
-permit FITWAY non-secret repository source code and non-secret project artifacts to be sent to and
-processed by the currently qualified OpenCode external-worker pool — DeepSeek V4 Pro, Ox Alpha,
-GLM-5.3, and MiniMax M3 — when the active `agent-project-workflow` route-first comparison selects
-that route. The authorization is durable for FITWAY and need not be requested again at each stage.
-It follows the currently qualified pool: a candidate that is not qualified is not authorized by it.
-
-This grant does not include credentials, secrets, API keys, `.env` contents, personal/private data,
-or any artifact prohibited elsewhere by repository policy. Route selection remains stage-specific:
-the authorization removes the data-processing-consent blocker but does not predetermine that the
-external route wins the required native-versus-external comparison.
-
 ## Independent verification
 
 The verifier receives outcome, base/candidate commits, owned scope, acceptance criteria, commands,
