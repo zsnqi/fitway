@@ -1,0 +1,282 @@
+{
+  "capturedAt": "2026-09-24T12:15:31.676Z",
+  "port": 3172,
+  "frames": [
+    {
+      "frame": "light-a-ar-1440x900",
+      "recipe": "a",
+      "deviceScaleFactor": 1,
+      "recipeApplied": "a",
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Readex Pro\" مرحبا": true,
+        "500 16px \"Readex Pro\" مرحبا": true,
+        "400 16px \"Readex Pro\" 0123 EN": true,
+        "500 16px \"Readex Pro\" 0123": true
+      },
+      "loadedFaces": [
+        "Readex Pro 400",
+        "Readex Pro 500"
+      ],
+      "overflowX": 0,
+      "overflowY": 0,
+      "chartCard": {
+        "x": 16,
+        "y": 290.25,
+        "width": 1304,
+        "height": 593.75
+      },
+      "figures": {
+        "now": 49,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "usualNow": 45
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "overshoot": 0,
+        "segments": 2,
+        "lastKnot": 822
+      },
+      "errors": []
+    },
+    {
+      "frame": "light-b-ar-1440x900",
+      "recipe": "b",
+      "deviceScaleFactor": 1,
+      "recipeApplied": "b",
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Readex Pro\" مرحبا": true,
+        "500 16px \"Readex Pro\" مرحبا": true,
+        "400 16px \"Readex Pro\" 0123 EN": true,
+        "500 16px \"Readex Pro\" 0123": true
+      },
+      "loadedFaces": [
+        "Readex Pro 400",
+        "Readex Pro 500"
+      ],
+      "overflowX": 0,
+      "overflowY": 0,
+      "chartCard": {
+        "x": 16,
+        "y": 290.25,
+        "width": 1304,
+        "height": 593.75
+      },
+      "figures": {
+        "now": 49,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "usualNow": 45
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "overshoot": 0,
+        "segments": 2,
+        "lastKnot": 822
+      },
+      "errors": []
+    },
+    {
+      "frame": "light-c-ar-1440x900",
+      "recipe": "c",
+      "deviceScaleFactor": 1,
+      "recipeApplied": "c",
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Readex Pro\" مرحبا": true,
+        "500 16px \"Readex Pro\" مرحبا": true,
+        "400 16px \"Readex Pro\" 0123 EN": true,
+        "500 16px \"Readex Pro\" 0123": true
+      },
+      "loadedFaces": [
+        "Readex Pro 400",
+        "Readex Pro 500"
+      ],
+      "overflowX": 0,
+      "overflowY": 0,
+      "chartCard": {
+        "x": 16,
+        "y": 290.25,
+        "width": 1304,
+        "height": 593.75
+      },
+      "figures": {
+        "now": 49,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "usualNow": 45
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "overshoot": 0,
+        "segments": 2,
+        "lastKnot": 822
+      },
+      "errors": []
+    },
+    {
+      "frame": "light-a-chart-2x",
+      "recipe": "a",
+      "deviceScaleFactor": 2,
+      "recipeApplied": "a",
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Readex Pro\" مرحبا": true,
+        "500 16px \"Readex Pro\" مرحبا": true,
+        "400 16px \"Readex Pro\" 0123 EN": true,
+        "500 16px \"Readex Pro\" 0123": true
+      },
+      "loadedFaces": [
+        "Readex Pro 400",
+        "Readex Pro 500"
+      ],
+      "overflowX": 0,
+      "overflowY": 0,
+      "chartCard": {
+        "x": 16,
+        "y": 290.25,
+        "width": 1304,
+        "height": 593.75
+      },
+      "figures": {
+        "now": 49,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "usualNow": 45
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "overshoot": 0,
+        "segments": 2,
+        "lastKnot": 822
+      },
+      "errors": []
+    },
+    {
+      "frame": "light-b-chart-2x",
+      "recipe": "b",
+      "deviceScaleFactor": 2,
+      "recipeApplied": "b",
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Readex Pro\" مرحبا": true,
+        "500 16px \"Readex Pro\" مرحبا": true,
+        "400 16px \"Readex Pro\" 0123 EN": true,
+        "500 16px \"Readex Pro\" 0123": true
+      },
+      "loadedFaces": [
+        "Readex Pro 400",
+        "Readex Pro 500"
+      ],
+      "overflowX": 0,
+      "overflowY": 0,
+      "chartCard": {
+        "x": 16,
+        "y": 290.25,
+        "width": 1304,
+        "height": 593.75
+      },
+      "figures": {
+        "now": 49,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "usualNow": 45
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "overshoot": 0,
+        "segments": 2,
+        "lastKnot": 822
+      },
+      "errors": []
+    },
+    {
+      "frame": "light-c-chart-2x",
+      "recipe": "c",
+      "deviceScaleFactor": 2,
+      "recipeApplied": "c",
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Readex Pro\" مرحبا": true,
+        "500 16px \"Readex Pro\" مرحبا": true,
+        "400 16px \"Readex Pro\" 0123 EN": true,
+        "500 16px \"Readex Pro\" 0123": true
+      },
+      "loadedFaces": [
+        "Readex Pro 400",
+        "Readex Pro 500"
+      ],
+      "overflowX": 0,
+      "overflowY": 0,
+      "chartCard": {
+        "x": 16,
+        "y": 290.25,
+        "width": 1304,
+        "height": 593.75
+      },
+      "figures": {
+        "now": 49,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "usualNow": 45
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "overshoot": 0,
+        "segments": 2,
+        "lastKnot": 822
+      },
+      "errors": []
+    }
+  ]
+}

@@ -1,0 +1,396 @@
+/* FITWAY light study. Concept only, synthetic data. Arabic RTL, 1440x900, static.
+ * One composition, three light recipes: html[data-recipe="a|b|c"].
+ * Every light is owned by an element (page, card), clipped by it, and never fixed to the viewport. */
+
+:root {
+  --page: #070707;
+  --card: rgba(15, 14, 15, 0.94);
+  --tile: rgba(255, 255, 255, 0.018);
+  --line: rgba(255, 255, 255, 0.075);
+  --line-2: rgba(255, 255, 255, 0.1);
+  --ink: #f5f3f2;
+  --ink-2: #c9c3c4;
+  --ink-3: #aaa4a6;
+  --red: #e51935;
+  --red-hi: #ff2946;
+  --live: #4be29b;
+  --font: "Readex Pro", "Segoe UI", system-ui, sans-serif;
+
+  /* Film grain: grey fractal noise centred on 50% so overlay leaves the average untouched. */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n' x='0' y='0' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.34 .33 .33 0 0 .34 .33 .33 0 0 .34 .33 .33 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.4' intercept='-.7'/%3E%3CfeFuncG type='linear' slope='2.4' intercept='-.7'/%3E%3CfeFuncB type='linear' slope='2.4' intercept='-.7'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ------------------------------------------------------------------ recipes
+ * Every light uses the same stop positions; a recipe only supplies colours. The fading stops lean
+ * slightly warmer than FITWAY red because a dark mix drifts toward rose; measured, every visible
+ * stop stays at OKLCH hue 16-24 (FITWAY red is 22).
+ * kc: hottest point.  k0..k3: the red light outward from it.  r0..r1: the lit 1px rim.
+ * w0..w2: the page wash.  h0..h1: neutral frost (recipe C only; transparent elsewhere). */
+:root { --h0: transparent; --h1: transparent; --hr: transparent; }
+
+/* A: Deep. Saturated FITWAY red that only ever fades toward black. */
+[data-recipe="a"] {
+  --kc: rgba(229, 25, 53, 0.95);
+  --k0: rgba(229, 27, 50, 0.9);
+  --k1: rgba(212, 24, 40, 0.7);
+  --k2: rgba(176, 18, 26, 0.38);
+  --k3: rgba(124, 12, 12, 0.13);
+  --r0: rgba(255, 58, 80, 0.95);
+  --r1: rgba(229, 27, 46, 0.34);
+  --w0: rgba(229, 27, 50, 0.74);
+  --w1: rgba(200, 20, 34, 0.34);
+  --w2: rgba(134, 12, 14, 0.11);
+  --grain-o: 0.26;
+}
+
+/* B: Warm core. Only the hottest point leans orange-red, so it can be brighter without going pink;
+ * by a quarter of the way out it is FITWAY bright red again. */
+[data-recipe="b"] {
+  --kc: rgba(255, 70, 46, 1);
+  --k0: rgba(255, 43, 62, 0.94);
+  --k1: rgba(234, 28, 44, 0.72);
+  --k2: rgba(184, 20, 28, 0.4);
+  --k3: rgba(126, 12, 12, 0.13);
+  --r0: rgba(255, 96, 66, 1);
+  --r1: rgba(240, 34, 46, 0.38);
+  --w0: rgba(255, 58, 50, 0.8);
+  --w1: rgba(216, 24, 38, 0.36);
+  --w2: rgba(138, 12, 14, 0.11);
+  --grain-o: 0.26;
+}
+
+/* C: Deep red plus a neutral frost. The red is A's, slightly lower. The milky feel is a separate
+ * grey-white veil (a hair warm, so the mix never leans rose). It sits only where the red is strong,
+ * or past a sharp red edge where it reads as pure charcoal; never over a dim red tail, where the
+ * mix would turn dusty brown. The rim takes a neutral sheen just beyond its red part. */
+[data-recipe="c"] {
+  --kc: rgba(229, 25, 53, 0.9);
+  --k0: rgba(229, 27, 50, 0.86);
+  --k1: rgba(210, 24, 40, 0.64);
+  --k2: rgba(174, 18, 26, 0.33);
+  --k3: rgba(124, 12, 12, 0.1);
+  --r0: rgba(255, 58, 80, 0.85);
+  --r1: rgba(229, 27, 46, 0.3);
+  --w0: rgba(229, 27, 50, 0.68);
+  --w1: rgba(194, 20, 34, 0.3);
+  --w2: rgba(128, 12, 14, 0.1);
+  --h0: rgba(232, 225, 212, 0.09);
+  --h1: rgba(232, 225, 212, 0.04);
+  --hr: rgba(238, 232, 222, 0.26);
+  --grain-o: 0.3;
+}
+
+/* ------------------------------------------------------------------- base */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, p, ul, figure { margin: 0; padding: 0; }
+ul { list-style: none; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+bdi, .num { font-variant-numeric: tabular-nums; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* -------------------------------------------------------------- page shell */
+.page {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;           /* the wash is clipped by the page it belongs to */
+  min-height: 900px;
+  display: grid;
+  grid-template-columns: 80px 1fr;   /* RTL: the rail is the first column, on the right */
+  gap: 24px;
+  padding: 16px;
+}
+
+/* Page wash: owned by .page (absolute, scrolls with it). It hugs the top edge from the inline-start
+ * corner and fades quickly downward, like a light just above the page. */
+.wash {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 320px;
+  z-index: -1;
+  pointer-events: none;
+  --wash-red:
+    radial-gradient(ellipse 880px 150px at 100% 0%, var(--w0) 0%, var(--w0) 16%, var(--w1) 48%, var(--w2) 74%, transparent 100%),
+    radial-gradient(ellipse 300px 230px at 100% 0%, var(--w1) 0%, var(--w2) 58%, transparent 100%);
+  --wash-haze: radial-gradient(ellipse 880px 150px at 100% 0%, var(--h0) 0%, var(--h0) 16%, var(--h1) 40%, transparent 62%);
+  --wash: var(--wash-red);
+  background: var(--wash);
+}
+[data-recipe="c"] .wash { --wash: var(--wash-haze), var(--wash-red); }
+.wash::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grain);
+  background-size: 180px 180px;
+  mix-blend-mode: overlay;
+  opacity: var(--grain-o);
+  -webkit-mask-image: var(--wash);
+  mask-image: var(--wash);
+}
+
+/* -------------------------------------------------------------------- rail */
+.rail {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  height: 868px;
+  padding: 15px 0;
+  border-radius: 24px;
+  background: rgba(12, 12, 15, 0.7);
+  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(22px);
+  border: 1px solid var(--line);
+}
+/* The rail's rim catches the page wash where it sits in it. */
+.rail::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(ellipse 140px 260px at 100% 0%, var(--r1), transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.rail-group { display: flex; flex-direction: column; gap: 10px; }
+.rail .brand { margin-block-end: 26px; }
+.rail-foot { margin-block-start: auto; }
+
+.tile {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  border: 1px solid var(--line-2);
+  background: var(--tile);
+  color: var(--ink-2);
+}
+.tile svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.tile svg .fill { fill: currentColor; stroke: none; }
+.tile svg.mirror { transform: scaleX(-1); }
+.tile.is-active {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fff;
+}
+.tile-lang span { font-size: 13px; font-weight: 500; letter-spacing: 0.04em; }
+.brand svg { width: 28px; height: 28px; }
+.brand .mk { fill: none; stroke: var(--ink); stroke-linecap: butt; }
+.brand .mk-dot { fill: var(--ink); stroke: none; }
+
+/* -------------------------------------------------------------------- main */
+.main {
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  gap: 18px;
+  height: 868px;
+  padding-block-start: 10px;
+  min-width: 0;
+}
+
+.head { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; padding-inline: 4px 0; }
+h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
+.sub { margin-block-start: 6px; font-size: 13.5px; color: var(--ink-3); }
+.sub .sep { margin-inline: 8px; opacity: 0.7; }
+.head-meta { display: flex; gap: 10px; align-items: center; padding-block-start: 4px; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding-inline: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line-2);
+  background: rgba(255, 255, 255, 0.015);
+  font-size: 13px;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--live); }
+.chip .strong { color: var(--ink); font-weight: 500; }
+.concept { color: var(--ink-3); }
+
+/* ------------------------------------------------------------------- cards */
+.card {
+  --rad: 24px;
+  position: relative;
+  border-radius: var(--rad);
+  background: var(--card);
+  border: 1px solid var(--line);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
+.cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.stat {
+  height: 166px;
+  padding: 18px 20px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.stat-head { display: flex; align-items: center; gap: 12px; width: 100%; }
+.itile {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 10px;
+  border: 1px solid var(--line-2);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--ink-2);
+}
+.itile svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.stat-label { font-size: 14px; font-weight: 400; color: var(--ink-2); }
+.stat-meta { margin-inline-start: auto; font-size: 12.5px; color: var(--ink-3); white-space: nowrap; }
+.stat-meta.live { display: inline-flex; align-items: center; gap: 7px; }
+.stat-meta.live::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--live); }
+.stat-value { display: flex; align-items: baseline; gap: 10px; margin-block: 14px 12px; line-height: 1; }
+.stat-value .num { font-size: 46px; font-weight: 500; letter-spacing: 0; }
+.stat-value .word { font-size: 38px; }
+.stat-value .unit { font-size: 13px; color: var(--ink-3); }
+.stat-note { font-size: 12.5px; color: var(--ink-3); margin-block-start: auto; }
+
+.level {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 26px;
+  padding-inline: 10px;
+  margin-block-start: auto;
+  border-radius: 8px;
+  border: 1px solid var(--line-2);
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 12.5px;
+  color: var(--ink);
+}
+.level .bars { display: inline-flex; align-items: flex-end; gap: 2px; height: 11px; }
+.level .bars i { width: 3px; border-radius: 1px; background: rgba(255, 255, 255, 0.16); }
+.level .bars i:nth-child(1) { height: 4px; }
+.level .bars i:nth-child(2) { height: 6.5px; }
+.level .bars i:nth-child(3) { height: 9px; }
+.level .bars i:nth-child(4) { height: 11px; }
+.level .bars i.on { background: var(--red-hi); }
+
+/* ---------------------------------------------------------------- lighting
+ * .lit      the element that owns a light (clips it, gets the rim)
+ * .lamp     the light itself: ::before is the glow, ::after the grain masked by the glow */
+.lit { isolation: isolate; }
+.lit > :not(.lamp) { position: relative; z-index: 1; }
+/* The lamp fills the padding box and is clipped to it, so no light can leave its element. */
+.lamp { position: absolute; inset: 0; overflow: hidden; border-radius: calc(var(--rad) - 1px); pointer-events: none; z-index: 0; }
+.lamp::before { content: ""; position: absolute; inset: 0; background: var(--glow); }
+.lamp::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grain);
+  background-size: 180px 180px;
+  mix-blend-mode: overlay;
+  opacity: var(--grain-o);
+  -webkit-mask-image: var(--glow);
+  mask-image: var(--glow);
+}
+/* Rim: the 1px border, brightened where the light touches it. */
+.lit::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: 2;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--rim);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* One small card, lit from its bottom inline-end corner (bottom-left in Arabic): a compact ellipse
+ * centred just below the bottom edge, a solid core and a short, distinct fall-off. */
+.lit-corner {
+  --red-light: radial-gradient(ellipse 150px 112px at 16px calc(100% + 12px), var(--kc) 0%, var(--k0) 26%, var(--k1) 56%, var(--k2) 73%, var(--k3) 85%, transparent 94%);
+  --haze: radial-gradient(ellipse 236px 150px at 16px calc(100% + 12px), var(--h0) 0%, var(--h0) 42%, var(--h1) 72%, transparent 100%);
+  --rim-red: radial-gradient(ellipse 176px 132px at 16px calc(100% + 12px), var(--r0) 0%, var(--r0) 30%, var(--r1) 70%, transparent 96%);
+  --rim-haze: radial-gradient(ellipse 236px 176px at 16px calc(100% + 12px), transparent 40%, var(--hr) 62%, transparent 96%);
+}
+
+/* The chart card, lit from its bottom edge: a soft glow along the whole edge, strongest at the
+ * inline-end corner (bottom-left), a little lift at the other corner. Softer than the small light. */
+.lit-bottom {
+  --red-light:
+    radial-gradient(ellipse 620px 240px at 0% 100%, var(--k0) 0%, var(--k1) 14%, var(--k2) 40%, var(--k3) 70%, transparent 100%),
+    radial-gradient(ellipse 420px 160px at 100% 100%, var(--k2) 0%, var(--k3) 52%, transparent 100%),
+    radial-gradient(ellipse 980px 104px at 50% 100%, var(--k2) 0%, var(--k3) 54%, transparent 100%);
+  --haze:
+    radial-gradient(ellipse 620px 240px at 0% 100%, var(--h0) 0%, var(--h0) 20%, var(--h1) 40%, transparent 60%);
+  --rim-red:
+    radial-gradient(ellipse 640px 270px at 0% 100%, var(--r0) 0%, var(--r1) 45%, transparent 90%),
+    radial-gradient(ellipse 900px 70px at 48% 100%, var(--r1) 0%, transparent 100%),
+    radial-gradient(ellipse 380px 150px at 100% 100%, var(--r1) 0%, transparent 100%);
+  --rim-haze: radial-gradient(ellipse 640px 270px at 0% 100%, transparent 30%, var(--hr) 50%, transparent 80%);
+}
+
+.lit-corner, .lit-bottom { --glow: var(--red-light); --rim: var(--rim-red); }
+/* C adds the neutral frost (same geometry): a veil over the strong red, and a neutral sheen on the rim. */
+[data-recipe="c"] .lit-corner,
+[data-recipe="c"] .lit-bottom { --glow: var(--haze), var(--red-light); --rim: var(--rim-haze), var(--rim-red); }
+
+/* ------------------------------------------------------------------- chart */
+.chart { display: flex; flex-direction: column; padding: 22px 26px 18px; min-height: 0; }
+.chart-head { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.chart-head h2 { font-size: 19px; font-weight: 500; }
+.key {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  height: 38px;
+  padding-inline: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line-2);
+  font-size: 12.5px;
+  color: var(--ink-2);
+}
+.key li { display: inline-flex; align-items: center; gap: 8px; }
+.key-note { color: var(--ink-3); }
+.sw { display: inline-block; width: 18px; height: 0; }
+.sw-today { border-top: 3px solid var(--red-hi); border-radius: 2px; }
+.sw-usual { border-top: 1.5px dashed rgba(245, 243, 242, 0.7); }
+
+.plot { position: relative; flex: 1; min-height: 0; margin-block-start: 10px; }
+.plot-svg, .plot-labels { position: absolute; inset: 0; }
+.plot-svg svg { display: block; }
+.plot-labels > * { position: absolute; white-space: nowrap; }
+.ax-y { font-size: 12px; color: var(--ink-3); }
+.ax-x { font-size: 12px; color: var(--ink-3); }
+
+.tip {
+  padding: 8px 12px 9px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(15, 14, 15, 0.9);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  line-height: 1.25;
+}
+.tip-top { display: flex; align-items: baseline; gap: 8px; }
+.tip-v { font-size: 20px; font-weight: 500; color: var(--ink); }
+.tip-l { font-size: 12px; color: var(--ink-2); }
+.tip-t { margin-block-start: 3px; font-size: 11.5px; color: var(--ink-3); }

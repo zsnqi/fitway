@@ -1,0 +1,35 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "icon-tile-stack",
+        "value": "*",
+        "files": [
+          "design-research/owner-composition-exploration-r04/directions/eclipse/index.html"
+        ],
+        "createdAt": "2026-09-24T15:09:48.750Z",
+        "reason": "coordinator: false positive, verified in eclipse frames and style.css:263; .stat-head is a flex row, so the icon tile sits beside the heading"
+      },
+      {
+        "rule": "radial-halo",
+        "value": "*",
+        "files": [
+          "design-research/owner-composition-exploration-r04/directions/eclipse/index.html"
+        ],
+        "createdAt": "2026-09-24T15:09:48.781Z",
+        "reason": "user confirmed on 2026-09-24 the owned eclipse lighting (page wash plus card lights built from masked radial gradients); verified against the reference brightness maps"
+      },
+      {
+        "rule": "border-accent-on-rounded",
+        "value": "*",
+        "files": [
+          "design-research/owner-composition-exploration-r04/directions/eclipse/style.css"
+        ],
+        "createdAt": "2026-09-24T15:09:48.809Z",
+        "reason": "coordinator: false positive, style.css:406 is the 18px legend line swatch (.sw-line), not a rounded card"
+      }
+    ]
+  }
+}

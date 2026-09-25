@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FITWAY Backlight</title>
+  <meta name="description" content="FITWAY Owner Daily page. Exploration concept with synthetic data. Not production.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip" href="#main" data-t="skip"></a>
+  <div class="atmos" aria-hidden="true"></div>
+
+  <div class="app" id="app" data-rail="collapsed">
+    <nav class="rail glass" id="rail" data-t-label="railLabel">
+      <button class="brand" id="brand" type="button" aria-expanded="false" aria-controls="rail-list">
+        <svg class="mark" viewBox="0 0 1024 1024" aria-hidden="true" focusable="false">
+          <defs>
+            <mask id="mark-outer" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+              <rect width="1024" height="1024" fill="#fff"/>
+              <polygon points="447,447 565,565 65,1065 -53,947" fill="#000"/>
+            </mask>
+            <mask id="mark-inner" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+              <rect width="1024" height="1024" fill="#fff"/>
+              <polygon points="562,488 -138,-212 -300,-212 -300,1188 -138,1188" fill="#000"/>
+              <polygon points="508,516 1008,1016 968,1056 468,556" fill="#000"/>
+            </mask>
+          </defs>
+          <circle class="mark-ring" cx="512" cy="512" r="360" fill="none" stroke-width="64" mask="url(#mark-outer)"/>
+          <circle class="mark-ring" cx="512" cy="512" r="215" fill="none" stroke-width="60" mask="url(#mark-inner)"/>
+          <circle class="mark-dot" cx="572" cy="445" r="64"/>
+          <polyline class="mark-chevron" points="315,363 480,530 230,780" fill="none" stroke-width="58" stroke-linejoin="miter" stroke-linecap="butt"/>
+        </svg>
+        <span class="wordmark" aria-hidden="true">FITWAY</span>
+      </button>
+
+      <ul class="rail-list" id="rail-list">
+        <li><a class="rail-item" href="#main" data-nav="daily" aria-current="page">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.6" y="5.2" width="16.8" height="15.2" rx="3.6"/><path d="M3.6 9.6h16.8M8.2 3.2v3.6M15.8 3.2v3.6"/><circle class="fill" cx="12" cy="15" r="1.9"/></svg>
+          <span class="rail-label"></span><span class="flyout" aria-hidden="true"></span></a></li>
+        <li><a class="rail-item" href="#" data-nav="reports" data-inert>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20.2h16"/><rect x="5.4" y="11.4" width="3.2" height="5.8" rx="1.1"/><rect x="10.4" y="6.4" width="3.2" height="10.8" rx="1.1"/><rect x="15.4" y="9" width="3.2" height="8.2" rx="1.1"/></svg>
+          <span class="rail-label"></span><span class="flyout" aria-hidden="true"></span></a></li>
+        <li><a class="rail-item" href="#" data-nav="access" data-inert>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="12" r="3.9"/><path d="M11.9 12h8.6M17.6 12v3.1M20.5 12v2.3"/></svg>
+          <span class="rail-label"></span><span class="flyout" aria-hidden="true"></span></a></li>
+        <li><a class="rail-item" href="#" data-nav="activity" data-inert>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.2 6.6h10.6M9.2 12h10.6M9.2 17.4h7"/><circle class="fill" cx="4.9" cy="6.6" r="1.25"/><circle class="fill" cx="4.9" cy="12" r="1.25"/><circle class="fill" cx="4.9" cy="17.4" r="1.25"/></svg>
+          <span class="rail-label"></span><span class="flyout" aria-hidden="true"></span></a></li>
+        <li><a class="rail-item" href="#" data-nav="operations" data-inert>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.2 12.4h4l2.3-5.6 4.4 10.8 2.4-5.2h4.5"/></svg>
+          <span class="rail-label"></span><span class="flyout" aria-hidden="true"></span></a></li>
+        <li><a class="rail-item" href="#" data-nav="settings" data-inert>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.2h8.6M17.4 7.2H20M4 16.8h2.6M11.4 16.8H20"/><circle cx="15" cy="7.2" r="2.3"/><circle cx="9" cy="16.8" r="2.3"/></svg>
+          <span class="rail-label"></span><span class="flyout" aria-hidden="true"></span></a></li>
+      </ul>
+
+      <ul class="rail-list rail-foot">
+        <li><a class="rail-item" href="#" data-nav="monitoring" data-inert>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.2" y="4.6" width="17.6" height="12" rx="2.8"/><path d="M8.6 20h6.8M12 16.6V20"/><circle class="fill" cx="12" cy="10.6" r="1.7"/></svg>
+          <span class="rail-label"></span><span class="flyout" aria-hidden="true"></span></a></li>
+        <li><a class="rail-item" href="?lang=en" data-nav="lang" id="lang-link">
+          <span class="glyph" aria-hidden="true"></span>
+          <span class="rail-label"></span><span class="flyout" aria-hidden="true"></span></a></li>
+        <li><a class="rail-item" href="#" data-nav="signout" data-inert>
+          <svg class="flip" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4.4H6.6a2.1 2.1 0 0 0-2.1 2.1v11a2.1 2.1 0 0 0 2.1 2.1H10"/><path d="M14.6 8l4 4-4 4M18.6 12H9.6"/></svg>
+          <span class="rail-label"></span><span class="flyout" aria-hidden="true"></span></a></li>
+      </ul>
+    </nav>
+
+    <main id="main" tabindex="-1">
+      <div class="fold">
+        <header class="top">
+          <div class="top-title">
+            <h1 data-t="title"></h1>
+            <p class="top-sub" id="top-sub"></p>
+          </div>
+          <div class="top-end">
+            <p class="status" id="status" role="status"></p>
+            <p class="concept" data-t="concept"></p>
+          </div>
+        </header>
+
+        <section class="stats" aria-labelledby="stats-title">
+          <h2 class="sr-only" id="stats-title" data-t="glance"></h2>
+          <article class="glass stat stat--now" id="card-now"></article>
+          <article class="glass stat" id="card-peak"></article>
+          <article class="glass stat" id="card-entries"></article>
+          <article class="glass stat" id="card-busiest"></article>
+        </section>
+
+        <section class="glass chart-card" aria-labelledby="chart-title">
+          <div class="chart-head">
+            <h2 id="chart-title" data-t="chartTitle"></h2>
+            <button class="btn" id="details-btn" type="button" aria-expanded="false" aria-controls="details">
+              <span data-t="details"></span>
+              <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg>
+            </button>
+            <p class="compare" id="compare"></p>
+            <ul class="legend" id="legend"></ul>
+          </div>
+          <div class="plot" id="plot">
+            <div class="plot-svg" id="plot-svg"></div>
+            <div class="plot-labels" id="plot-labels" aria-hidden="true"></div>
+            <div class="readout" id="readout" aria-hidden="true" hidden></div>
+            <div class="plot-hit" id="plot-hit" role="slider" tabindex="0" aria-orientation="horizontal"
+                 aria-describedby="chart-summary chart-keys"></div>
+          </div>
+          <p class="sr-only" id="chart-summary"></p>
+          <p class="sr-only" id="chart-keys" data-t="keys"></p>
+        </section>
+      </div>
+
+      <section class="details" id="details" aria-labelledby="details-title" hidden>
+        <h2 id="details-title" data-t="detailsTitle"></h2>
+        <div class="details-grid">
+          <div class="glass panel panel-coverage" id="coverage"></div>
+          <div class="glass panel panel-minutes" id="minutes"></div>
+          <div class="glass panel panel-heat" id="heat"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

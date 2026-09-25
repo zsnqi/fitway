@@ -1,0 +1,32 @@
+{
+    "note":  "SHA-256 of the Eclipse v3 evidence frames as they were before motion was added (captured 2026-09-25 with the v3 capture.mjs, reducedMotion reduce, Chromium via @playwright/test 1.61). capture.mjs compares its static frames and the ?motion=off frames against these. The tuner-open frame is expected to change (the tuner gained a Motion group).",
+    "frames":  {
+                   "daily-ar-1440x900":  "9a1d863c761c5a88afaf0b98ef3a727169d748c092e1f838b44477de03c616f1",
+                   "daily-ar-1440x900-delayed":  "d7b76d244ec5d098371bac5f0bcd63c2bbc93df7ecfa25fd6e2b2fdf26caeb1b",
+                   "daily-ar-1440x900-details":  "1b66802561bd1efd46e260bc7e29294905563e4eb8699813fddfa31604f8cb4e",
+                   "daily-ar-1440x900-hover":  "23f3d01babcfb96a0a0f5742df20e2c53760f15f995d190355677a71922cd8b1",
+                   "daily-ar-1440x900-nohistory":  "ca4b1b4c5e8406fdc9c068ff2224a19a8e308e8b67792f35da473089762ac78b",
+                   "daily-ar-1440x900-rail-open":  "1de72699e0e7ceb3f6bb6fa352395b1660029715912eb7e610d09344f579a208",
+                   "daily-ar-1440x900-tuner-open":  "7ea7b8b778a490bc9d8071a289ac2caf455d620d0657744e1ce1bb62d815d7a8",
+                   "daily-en-1440x900":  "2aa6a56a2723025c4b08c59175fa95a86428f172dad7d667710156cdc0d82bd1",
+                   "daily-en-1440x900-rail-open":  "244e345387133f533eeedeeebd31c3dc7d94849714b6a50d47623bcab58cf58c",
+                   "daily-en-nowcard-2x":  "7c298766b4107da311705c858ed7a902ef2d59c76ae2ba824f67b0a4771e1999",
+                   "levels-chart":  "666c84cb2f612507edd242bb9c5d86f45805a815ca8c7f5916762c302aa4d679",
+                   "levels-nowcard":  "27eb5f533ceb96d6e584dea10f015a95146f69ea550857f460d1197bd9ad3a14",
+                   "preset-a-like-ar-1440x900":  "298fab89542bca8036cba995ed611350b8bacc907418144ad45fa15d243bc3cc",
+                   "preset-a-like-chart-2x":  "12001e4e6a454a1fa38ffae38716f4564ae2bc8af7fbe8ac33fe928a7586c03e",
+                   "preset-a-like-chart-light":  "ca0f658331cf982574742c9ad0e887b8701c14aa371855bb7f35109fa8883bab",
+                   "preset-a-like-nowcard-2x":  "8635b3e9954d09e04b63d70ae574187768ce3d138adcbbf00416454af4421804",
+                   "preset-a-like-nowcard-light":  "fbca592efe12b89eae9fa959c4fc8eef60cac78bd48c133f009d550b0907cada",
+                   "preset-recommended-ar-1440x900":  "9a1d863c761c5a88afaf0b98ef3a727169d748c092e1f838b44477de03c616f1",
+                   "preset-recommended-chart-2x":  "dd4d502e13d79911bad33c7dbfe1359b87e4bd308a15a5a2c6feb2e90a522ea6",
+                   "preset-recommended-chart-light":  "e7adc69d052d8e515187fce59998b6eac7ddec78d6829dfd1758612d500b286b",
+                   "preset-recommended-nowcard-2x":  "8635b3e9954d09e04b63d70ae574187768ce3d138adcbbf00416454af4421804",
+                   "preset-recommended-nowcard-light":  "fbca592efe12b89eae9fa959c4fc8eef60cac78bd48c133f009d550b0907cada",
+                   "preset-v2-ar-1440x900":  "ded08a5307b9cb54035d2e56d62060892e89c7f1d31697053a07e0746df19491",
+                   "preset-v2-chart-2x":  "ab57491d7dd430741ce7add5c58426eb04476758cc7259e79820b4bc814a57e7",
+                   "preset-v2-chart-light":  "366e804620d41c46bce290e780a45a5dbd306e2ced69ed84f8151e40b30ceec7",
+                   "preset-v2-nowcard-2x":  "9cf498968263641a9feca8a38e9326575aa6263c441b75ce4e4a9378d6c79bef",
+                   "preset-v2-nowcard-light":  "805b3cbf84e356d8552b9394fc570d955847fb684f2ce589ffc5709c89690451"
+               }
+}

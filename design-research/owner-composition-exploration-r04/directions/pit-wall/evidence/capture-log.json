@@ -1,0 +1,523 @@
+{
+  "capturedAt": "2026-09-23T20:03:12.147Z",
+  "port": 3163,
+  "frames": [
+    {
+      "frame": "daily-en-1440x900",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"IBM Plex Sans\"": true,
+        "500 16px \"IBM Plex Sans\"": true,
+        "600 16px \"IBM Plex Sans\"": true,
+        "700 17px \"IBM Plex Sans\"": true,
+        "500 16px \"JetBrains Mono\"": true,
+        "600 16px \"JetBrains Mono\"": true
+      },
+      "loadedFaces": [
+        "IBM Plex Sans 400",
+        "IBM Plex Sans 500",
+        "IBM Plex Sans 600",
+        "IBM Plex Sans 700",
+        "IBM Plex Sans Arabic 500",
+        "JetBrains Mono 400",
+        "JetBrains Mono 500",
+        "JetBrains Mono 600"
+      ],
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "daily-ar-1440x900",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"IBM Plex Sans Arabic\"": true,
+        "500 16px \"IBM Plex Sans Arabic\"": true,
+        "600 16px \"IBM Plex Sans Arabic\"": true,
+        "700 17px \"IBM Plex Sans\"": true,
+        "500 16px \"JetBrains Mono\"": true,
+        "600 16px \"JetBrains Mono\"": true
+      },
+      "loadedFaces": [
+        "IBM Plex Sans 400",
+        "IBM Plex Sans 500",
+        "IBM Plex Sans 600",
+        "IBM Plex Sans 700",
+        "IBM Plex Sans Arabic 400",
+        "IBM Plex Sans Arabic 500",
+        "IBM Plex Sans Arabic 600",
+        "JetBrains Mono 400",
+        "JetBrains Mono 500",
+        "JetBrains Mono 600"
+      ],
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "history-en-1440x900",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"IBM Plex Sans\"": true,
+        "500 16px \"IBM Plex Sans\"": true,
+        "600 16px \"IBM Plex Sans\"": true,
+        "700 17px \"IBM Plex Sans\"": true,
+        "500 16px \"JetBrains Mono\"": true,
+        "600 16px \"JetBrains Mono\"": true
+      },
+      "loadedFaces": [
+        "IBM Plex Sans 400",
+        "IBM Plex Sans 500",
+        "IBM Plex Sans 600",
+        "IBM Plex Sans 700",
+        "IBM Plex Sans Arabic 500",
+        "JetBrains Mono 400",
+        "JetBrains Mono 500",
+        "JetBrains Mono 600"
+      ],
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "history-ar-1440x900",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"IBM Plex Sans Arabic\"": true,
+        "500 16px \"IBM Plex Sans Arabic\"": true,
+        "600 16px \"IBM Plex Sans Arabic\"": true,
+        "700 17px \"IBM Plex Sans\"": true,
+        "500 16px \"JetBrains Mono\"": true,
+        "600 16px \"JetBrains Mono\"": true
+      },
+      "loadedFaces": [
+        "IBM Plex Sans 400",
+        "IBM Plex Sans 500",
+        "IBM Plex Sans 600",
+        "IBM Plex Sans 700",
+        "IBM Plex Sans Arabic 400",
+        "IBM Plex Sans Arabic 500",
+        "IBM Plex Sans Arabic 600",
+        "JetBrains Mono 400",
+        "JetBrains Mono 500",
+        "JetBrains Mono 600"
+      ],
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "daily-en-1440x900-delayed",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"IBM Plex Sans\"": true,
+        "500 16px \"IBM Plex Sans\"": true,
+        "600 16px \"IBM Plex Sans\"": true,
+        "700 17px \"IBM Plex Sans\"": true,
+        "500 16px \"JetBrains Mono\"": true,
+        "600 16px \"JetBrains Mono\"": true
+      },
+      "loadedFaces": [
+        "IBM Plex Sans 400",
+        "IBM Plex Sans 500",
+        "IBM Plex Sans 600",
+        "IBM Plex Sans 700",
+        "IBM Plex Sans Arabic 500",
+        "JetBrains Mono 400",
+        "JetBrains Mono 500",
+        "JetBrains Mono 600"
+      ],
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "daily-ar-1440x900-delayed",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"IBM Plex Sans Arabic\"": true,
+        "500 16px \"IBM Plex Sans Arabic\"": true,
+        "600 16px \"IBM Plex Sans Arabic\"": true,
+        "700 17px \"IBM Plex Sans\"": true,
+        "500 16px \"JetBrains Mono\"": true,
+        "600 16px \"JetBrains Mono\"": true
+      },
+      "loadedFaces": [
+        "IBM Plex Sans 400",
+        "IBM Plex Sans 500",
+        "IBM Plex Sans 600",
+        "IBM Plex Sans 700",
+        "IBM Plex Sans Arabic 400",
+        "IBM Plex Sans Arabic 500",
+        "IBM Plex Sans Arabic 600",
+        "JetBrains Mono 400",
+        "JetBrains Mono 500",
+        "JetBrains Mono 600"
+      ],
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "daily-ar-1440x900-keyboard",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"IBM Plex Sans Arabic\"": true,
+        "500 16px \"IBM Plex Sans Arabic\"": true,
+        "600 16px \"IBM Plex Sans Arabic\"": true,
+        "700 17px \"IBM Plex Sans\"": true,
+        "500 16px \"JetBrains Mono\"": true,
+        "600 16px \"JetBrains Mono\"": true
+      },
+      "loadedFaces": [
+        "IBM Plex Sans 400",
+        "IBM Plex Sans 500",
+        "IBM Plex Sans 600",
+        "IBM Plex Sans 700",
+        "IBM Plex Sans Arabic 400",
+        "IBM Plex Sans Arabic 500",
+        "IBM Plex Sans Arabic 600",
+        "JetBrains Mono 400",
+        "JetBrains Mono 500",
+        "JetBrains Mono 600"
+      ],
+      "overflowX": 0,
+      "errors": [],
+      "focused": "scope",
+      "valuetext": "6:27 م، نحو 64 حاضرًا، مزدحم"
+    },
+    {
+      "frame": "extra-daily-ar-1440-fullpage",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"IBM Plex Sans Arabic\"": true,
+        "600 16px \"IBM Plex Sans Arabic\"": true,
+        "700 17px \"IBM Plex Sans\"": true,
+        "400 14px \"JetBrains Mono\"": true
+      },
+      "loadedFaces": [
+        "IBM Plex Sans 400",
+        "IBM Plex Sans 500",
+        "IBM Plex Sans 600",
+        "IBM Plex Sans 700",
+        "IBM Plex Sans Arabic 400",
+        "IBM Plex Sans Arabic 500",
+        "IBM Plex Sans Arabic 600",
+        "JetBrains Mono 400",
+        "JetBrains Mono 500",
+        "JetBrains Mono 600"
+      ],
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "extra-daily-en-1440-fullpage",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"IBM Plex Sans\"": true,
+        "600 16px \"IBM Plex Sans\"": true,
+        "700 17px \"IBM Plex Sans\"": true,
+        "400 14px \"JetBrains Mono\"": true
+      },
+      "loadedFaces": [
+        "IBM Plex Sans 400",
+        "IBM Plex Sans 500",
+        "IBM Plex Sans 600",
+        "IBM Plex Sans 700",
+        "IBM Plex Sans Arabic 500",
+        "JetBrains Mono 400",
+        "JetBrains Mono 500",
+        "JetBrains Mono 600"
+      ],
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "extra-history-ar-1440-fullpage",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"IBM Plex Sans Arabic\"": true,
+        "600 16px \"IBM Plex Sans Arabic\"": true,
+        "700 17px \"IBM Plex Sans\"": true,
+        "400 14px \"JetBrains Mono\"": true
+      },
+      "loadedFaces": [
+        "IBM Plex Sans 400",
+        "IBM Plex Sans 500",
+        "IBM Plex Sans 600",
+        "IBM Plex Sans 700",
+        "IBM Plex Sans Arabic 400",
+        "IBM Plex Sans Arabic 500",
+        "IBM Plex Sans Arabic 600",
+        "JetBrains Mono 400",
+        "JetBrains Mono 500",
+        "JetBrains Mono 600"
+      ],
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "extra-history-en-1440-fullpage",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"IBM Plex Sans\"": true,
+        "600 16px \"IBM Plex Sans\"": true,
+        "700 17px \"IBM Plex Sans\"": true,
+        "400 14px \"JetBrains Mono\"": true
+      },
+      "loadedFaces": [
+        "IBM Plex Sans 400",
+        "IBM Plex Sans 500",
+        "IBM Plex Sans 600",
+        "IBM Plex Sans 700",
+        "IBM Plex Sans Arabic 500",
+        "JetBrains Mono 400",
+        "JetBrains Mono 500",
+        "JetBrains Mono 600"
+      ],
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "extra-daily-ar-1440x900-closed",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"IBM Plex Sans Arabic\"": true,
+        "600 16px \"IBM Plex Sans Arabic\"": true,
+        "700 17px \"IBM Plex Sans\"": true,
+        "400 14px \"JetBrains Mono\"": true
+      },
+      "loadedFaces": [
+        "IBM Plex Sans 400",
+        "IBM Plex Sans 500",
+        "IBM Plex Sans 600",
+        "IBM Plex Sans 700",
+        "IBM Plex Sans Arabic 400",
+        "IBM Plex Sans Arabic 500",
+        "IBM Plex Sans Arabic 600",
+        "JetBrains Mono 400"
+      ],
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "extra-daily-ar-1440x900-empty",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"IBM Plex Sans Arabic\"": true,
+        "600 16px \"IBM Plex Sans Arabic\"": true,
+        "700 17px \"IBM Plex Sans\"": true,
+        "400 14px \"JetBrains Mono\"": true
+      },
+      "loadedFaces": [
+        "IBM Plex Sans 400",
+        "IBM Plex Sans 500",
+        "IBM Plex Sans 600",
+        "IBM Plex Sans 700",
+        "IBM Plex Sans Arabic 400",
+        "IBM Plex Sans Arabic 500",
+        "IBM Plex Sans Arabic 600",
+        "JetBrains Mono 400"
+      ],
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "extra-daily-ar-1440x900-loading",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"IBM Plex Sans Arabic\"": true,
+        "600 16px \"IBM Plex Sans Arabic\"": true,
+        "700 17px \"IBM Plex Sans\"": true,
+        "400 14px \"JetBrains Mono\"": true
+      },
+      "loadedFaces": [
+        "IBM Plex Sans 400",
+        "IBM Plex Sans 500",
+        "IBM Plex Sans 600",
+        "IBM Plex Sans 700",
+        "IBM Plex Sans Arabic 400",
+        "IBM Plex Sans Arabic 500",
+        "IBM Plex Sans Arabic 600",
+        "JetBrains Mono 400"
+      ],
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "extra-daily-en-1440x900-error",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"IBM Plex Sans\"": true,
+        "600 16px \"IBM Plex Sans\"": true,
+        "700 17px \"IBM Plex Sans\"": true,
+        "400 14px \"JetBrains Mono\"": true
+      },
+      "loadedFaces": [
+        "IBM Plex Sans 400",
+        "IBM Plex Sans 500",
+        "IBM Plex Sans 600",
+        "IBM Plex Sans 700",
+        "IBM Plex Sans Arabic 500",
+        "JetBrains Mono 400",
+        "JetBrains Mono 700"
+      ],
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "extra-access-ar-1440x900",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"IBM Plex Sans Arabic\"": true,
+        "600 16px \"IBM Plex Sans Arabic\"": true,
+        "700 17px \"IBM Plex Sans\"": true
+      },
+      "loadedFaces": [
+        "IBM Plex Sans 400",
+        "IBM Plex Sans 500",
+        "IBM Plex Sans 600",
+        "IBM Plex Sans 700",
+        "IBM Plex Sans Arabic 400",
+        "IBM Plex Sans Arabic 500",
+        "IBM Plex Sans Arabic 600"
+      ],
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "daily-en-1280x800",
+      "viewport": "1280x800",
+      "screenshot": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"IBM Plex Sans\"": true,
+        "500 16px \"IBM Plex Sans\"": true,
+        "600 16px \"IBM Plex Sans\"": true,
+        "700 17px \"IBM Plex Sans\"": true,
+        "500 16px \"JetBrains Mono\"": true,
+        "600 16px \"JetBrains Mono\"": true
+      },
+      "loadedFaces": [
+        "IBM Plex Sans 400",
+        "IBM Plex Sans 500",
+        "IBM Plex Sans 600",
+        "IBM Plex Sans 700",
+        "IBM Plex Sans Arabic 500",
+        "JetBrains Mono 400",
+        "JetBrains Mono 500",
+        "JetBrains Mono 600"
+      ],
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "daily-ar-1280x800",
+      "viewport": "1280x800",
+      "screenshot": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"IBM Plex Sans Arabic\"": true,
+        "500 16px \"IBM Plex Sans Arabic\"": true,
+        "600 16px \"IBM Plex Sans Arabic\"": true,
+        "700 17px \"IBM Plex Sans\"": true,
+        "500 16px \"JetBrains Mono\"": true,
+        "600 16px \"JetBrains Mono\"": true
+      },
+      "loadedFaces": [
+        "IBM Plex Sans 400",
+        "IBM Plex Sans 500",
+        "IBM Plex Sans 600",
+        "IBM Plex Sans 700",
+        "IBM Plex Sans Arabic 400",
+        "IBM Plex Sans Arabic 500",
+        "IBM Plex Sans Arabic 600",
+        "JetBrains Mono 400",
+        "JetBrains Mono 500",
+        "JetBrains Mono 600"
+      ],
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "history-en-1280x800",
+      "viewport": "1280x800",
+      "screenshot": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"IBM Plex Sans\"": true,
+        "500 16px \"IBM Plex Sans\"": true,
+        "600 16px \"IBM Plex Sans\"": true,
+        "700 17px \"IBM Plex Sans\"": true,
+        "500 16px \"JetBrains Mono\"": true,
+        "600 16px \"JetBrains Mono\"": true
+      },
+      "loadedFaces": [
+        "IBM Plex Sans 400",
+        "IBM Plex Sans 500",
+        "IBM Plex Sans 600",
+        "IBM Plex Sans 700",
+        "IBM Plex Sans Arabic 500",
+        "JetBrains Mono 400",
+        "JetBrains Mono 500",
+        "JetBrains Mono 600"
+      ],
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "history-ar-1280x800",
+      "viewport": "1280x800",
+      "screenshot": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"IBM Plex Sans Arabic\"": true,
+        "500 16px \"IBM Plex Sans Arabic\"": true,
+        "600 16px \"IBM Plex Sans Arabic\"": true,
+        "700 17px \"IBM Plex Sans\"": true,
+        "500 16px \"JetBrains Mono\"": true,
+        "600 16px \"JetBrains Mono\"": true
+      },
+      "loadedFaces": [
+        "IBM Plex Sans 400",
+        "IBM Plex Sans 500",
+        "IBM Plex Sans 600",
+        "IBM Plex Sans 700",
+        "IBM Plex Sans Arabic 400",
+        "IBM Plex Sans Arabic 500",
+        "IBM Plex Sans Arabic 600",
+        "JetBrains Mono 400",
+        "JetBrains Mono 500",
+        "JetBrains Mono 600"
+      ],
+      "overflowX": 0,
+      "errors": []
+    }
+  ]
+}

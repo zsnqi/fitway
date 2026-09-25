@@ -1,0 +1,1431 @@
+{
+  "capturedAt": "2026-09-24T08:50:17.842Z",
+  "port": 3171,
+  "frames": [
+    {
+      "frame": "daily-ar-1440x900",
+      "url": "index.html?lang=ar",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fullPage": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Alexandria\" arabic": true,
+        "400 16px \"Alexandria\" latin": true,
+        "500 16px \"Alexandria\" arabic": true,
+        "500 16px \"Alexandria\" digits": true,
+        "600 16px \"Alexandria\" latin": true
+      },
+      "loadedFaces": [
+        "Alexandria 400 arabic",
+        "Alexandria 400 latin",
+        "Alexandria 500 arabic",
+        "Alexandria 500 latin",
+        "Alexandria 600 arabic",
+        "Alexandria 600 latin"
+      ],
+      "overflowX": 0,
+      "dir": "rtl",
+      "active": "BODY",
+      "valuetext": "7:42 م، 49 في الداخل، مزدحم. الأربعاء المعتاد 44.",
+      "railExpanded": "false",
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "busier",
+        "usualNow": 44
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "drawnMaxAt": 749,
+        "overshoot": 0,
+        "lastKnot": 822,
+        "last": 822,
+        "segments": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "daily-en-1440x900",
+      "url": "index.html?lang=en",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fullPage": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Alexandria\" arabic": true,
+        "400 16px \"Alexandria\" latin": true,
+        "500 16px \"Alexandria\" arabic": true,
+        "500 16px \"Alexandria\" digits": true,
+        "600 16px \"Alexandria\" latin": true
+      },
+      "loadedFaces": [
+        "Alexandria 400 arabic",
+        "Alexandria 400 latin",
+        "Alexandria 500 arabic",
+        "Alexandria 500 latin",
+        "Alexandria 600 arabic",
+        "Alexandria 600 latin"
+      ],
+      "overflowX": 0,
+      "dir": "ltr",
+      "active": "BODY",
+      "valuetext": "7:42 PM, 49 inside, Busy. Usual Wednesday 44.",
+      "railExpanded": "false",
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "busier",
+        "usualNow": 44
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "drawnMaxAt": 749,
+        "overshoot": 0,
+        "lastKnot": 822,
+        "last": 822,
+        "segments": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "daily-ar-1440x900-inspect",
+      "url": "index.html?lang=ar",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fullPage": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Alexandria\" arabic": true,
+        "400 16px \"Alexandria\" latin": true,
+        "500 16px \"Alexandria\" arabic": true,
+        "500 16px \"Alexandria\" digits": true,
+        "600 16px \"Alexandria\" latin": true
+      },
+      "loadedFaces": [
+        "Alexandria 400 arabic",
+        "Alexandria 400 latin",
+        "Alexandria 500 arabic",
+        "Alexandria 500 latin",
+        "Alexandria 600 arabic",
+        "Alexandria 600 latin"
+      ],
+      "overflowX": 0,
+      "dir": "rtl",
+      "active": "plot-hit",
+      "valuetext": "6:29 م، 62 في الداخل، مزدحم، الذروة. الأربعاء المعتاد 49.",
+      "railExpanded": "false",
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "busier",
+        "usualNow": 44
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "drawnMaxAt": 749,
+        "overshoot": 0,
+        "lastKnot": 822,
+        "last": 822,
+        "segments": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "daily-en-1440x900-inspect",
+      "url": "index.html?lang=en",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fullPage": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Alexandria\" arabic": true,
+        "400 16px \"Alexandria\" latin": true,
+        "500 16px \"Alexandria\" arabic": true,
+        "500 16px \"Alexandria\" digits": true,
+        "600 16px \"Alexandria\" latin": true
+      },
+      "loadedFaces": [
+        "Alexandria 400 arabic",
+        "Alexandria 400 latin",
+        "Alexandria 500 arabic",
+        "Alexandria 500 latin",
+        "Alexandria 600 arabic",
+        "Alexandria 600 latin"
+      ],
+      "overflowX": 0,
+      "dir": "ltr",
+      "active": "BODY",
+      "valuetext": "6:29 PM, 62 inside, Busy, Peak. Usual Wednesday 49.",
+      "railExpanded": "false",
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "busier",
+        "usualNow": 44
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "drawnMaxAt": 749,
+        "overshoot": 0,
+        "lastKnot": 822,
+        "last": 822,
+        "segments": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "daily-ar-1440x900-rail-open",
+      "url": "index.html?lang=ar",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fullPage": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Alexandria\" arabic": true,
+        "400 16px \"Alexandria\" latin": true,
+        "500 16px \"Alexandria\" arabic": true,
+        "500 16px \"Alexandria\" digits": true,
+        "600 16px \"Alexandria\" latin": true
+      },
+      "loadedFaces": [
+        "Alexandria 400 arabic",
+        "Alexandria 400 latin",
+        "Alexandria 500 arabic",
+        "Alexandria 500 latin",
+        "Alexandria 600 arabic",
+        "Alexandria 600 latin"
+      ],
+      "overflowX": 0,
+      "dir": "rtl",
+      "active": "brand",
+      "valuetext": "7:42 م، 49 في الداخل، مزدحم. الأربعاء المعتاد 44.",
+      "railExpanded": "true",
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "busier",
+        "usualNow": 44
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "drawnMaxAt": 749,
+        "overshoot": 0,
+        "lastKnot": 822,
+        "last": 822,
+        "segments": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "daily-en-1440x900-rail-open",
+      "url": "index.html?lang=en",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fullPage": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Alexandria\" arabic": true,
+        "400 16px \"Alexandria\" latin": true,
+        "500 16px \"Alexandria\" arabic": true,
+        "500 16px \"Alexandria\" digits": true,
+        "600 16px \"Alexandria\" latin": true
+      },
+      "loadedFaces": [
+        "Alexandria 400 arabic",
+        "Alexandria 400 latin",
+        "Alexandria 500 arabic",
+        "Alexandria 500 latin",
+        "Alexandria 600 arabic",
+        "Alexandria 600 latin"
+      ],
+      "overflowX": 0,
+      "dir": "ltr",
+      "active": "brand",
+      "valuetext": "7:42 PM, 49 inside, Busy. Usual Wednesday 44.",
+      "railExpanded": "true",
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "busier",
+        "usualNow": 44
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "drawnMaxAt": 749,
+        "overshoot": 0,
+        "lastKnot": 822,
+        "last": 822,
+        "segments": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "daily-ar-1440x900-delayed",
+      "url": "index.html?lang=ar&state=delayed",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fullPage": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Alexandria\" arabic": true,
+        "400 16px \"Alexandria\" latin": true,
+        "500 16px \"Alexandria\" arabic": true,
+        "500 16px \"Alexandria\" digits": true,
+        "600 16px \"Alexandria\" latin": true
+      },
+      "loadedFaces": [
+        "Alexandria 400 arabic",
+        "Alexandria 400 latin",
+        "Alexandria 500 arabic",
+        "Alexandria 500 latin",
+        "Alexandria 600 arabic",
+        "Alexandria 600 latin"
+      ],
+      "overflowX": 0,
+      "dir": "rtl",
+      "active": "BODY",
+      "valuetext": "7:29 م، 46 في الداخل، متوسط. الأربعاء المعتاد 46.",
+      "railExpanded": "false",
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "figures": {
+        "now": 46,
+        "last": 809,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 322,
+        "observed": 792,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "same",
+        "usualNow": 46
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "drawnMaxAt": 749,
+        "overshoot": 0,
+        "lastKnot": 809,
+        "last": 809,
+        "segments": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "daily-en-1440x900-delayed",
+      "url": "index.html?lang=en&state=delayed",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fullPage": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Alexandria\" arabic": true,
+        "400 16px \"Alexandria\" latin": true,
+        "500 16px \"Alexandria\" arabic": true,
+        "500 16px \"Alexandria\" digits": true,
+        "600 16px \"Alexandria\" latin": true
+      },
+      "loadedFaces": [
+        "Alexandria 400 arabic",
+        "Alexandria 400 latin",
+        "Alexandria 500 arabic",
+        "Alexandria 500 latin",
+        "Alexandria 600 arabic",
+        "Alexandria 600 latin"
+      ],
+      "overflowX": 0,
+      "dir": "ltr",
+      "active": "BODY",
+      "valuetext": "7:29 PM, 46 inside, Moderate. Usual Wednesday 46.",
+      "railExpanded": "false",
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "figures": {
+        "now": 46,
+        "last": 809,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 322,
+        "observed": 792,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "same",
+        "usualNow": 46
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "drawnMaxAt": 749,
+        "overshoot": 0,
+        "lastKnot": 809,
+        "last": 809,
+        "segments": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "daily-ar-1440x900-nohistory",
+      "url": "index.html?lang=ar&state=nohistory",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fullPage": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Alexandria\" arabic": true,
+        "400 16px \"Alexandria\" latin": true,
+        "500 16px \"Alexandria\" arabic": true,
+        "500 16px \"Alexandria\" digits": true,
+        "600 16px \"Alexandria\" latin": true
+      },
+      "loadedFaces": [
+        "Alexandria 400 arabic",
+        "Alexandria 400 latin",
+        "Alexandria 500 arabic",
+        "Alexandria 500 latin",
+        "Alexandria 600 arabic",
+        "Alexandria 600 latin"
+      ],
+      "overflowX": 0,
+      "dir": "rtl",
+      "active": "BODY",
+      "valuetext": "7:42 م، 49 في الداخل، مزدحم",
+      "railExpanded": "false",
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": null,
+        "usualNow": 44
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "drawnMaxAt": 749,
+        "overshoot": 0,
+        "lastKnot": 822,
+        "last": 822,
+        "segments": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "daily-ar-1440x900-details",
+      "url": "index.html?lang=ar",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fullPage": true,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Alexandria\" arabic": true,
+        "400 16px \"Alexandria\" latin": true,
+        "500 16px \"Alexandria\" arabic": true,
+        "500 16px \"Alexandria\" digits": true,
+        "600 16px \"Alexandria\" latin": true
+      },
+      "loadedFaces": [
+        "Alexandria 400 arabic",
+        "Alexandria 400 latin",
+        "Alexandria 500 arabic",
+        "Alexandria 500 latin",
+        "Alexandria 600 arabic",
+        "Alexandria 600 latin"
+      ],
+      "overflowX": 0,
+      "dir": "rtl",
+      "active": "details-btn",
+      "valuetext": "7:42 م، 49 في الداخل، مزدحم. الأربعاء المعتاد 44.",
+      "railExpanded": "false",
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "busier",
+        "usualNow": 44
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "drawnMaxAt": 749,
+        "overshoot": 0,
+        "lastKnot": 822,
+        "last": 822,
+        "segments": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "daily-ar-1440x900-focusname",
+      "url": "index.html?lang=ar",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fullPage": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Alexandria\" arabic": true,
+        "400 16px \"Alexandria\" latin": true,
+        "500 16px \"Alexandria\" arabic": true,
+        "500 16px \"Alexandria\" digits": true,
+        "600 16px \"Alexandria\" latin": true
+      },
+      "loadedFaces": [
+        "Alexandria 400 arabic",
+        "Alexandria 400 latin",
+        "Alexandria 500 arabic",
+        "Alexandria 500 latin",
+        "Alexandria 600 arabic",
+        "Alexandria 600 latin"
+      ],
+      "overflowX": 0,
+      "dir": "rtl",
+      "active": "reports",
+      "valuetext": "7:42 م، 49 في الداخل، مزدحم. الأربعاء المعتاد 44.",
+      "railExpanded": "false",
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "busier",
+        "usualNow": 44
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "drawnMaxAt": 749,
+        "overshoot": 0,
+        "lastKnot": 822,
+        "last": 822,
+        "segments": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "extra-daily-en-1440x900-details",
+      "url": "index.html?lang=en",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fullPage": true,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Alexandria\" arabic": true,
+        "400 16px \"Alexandria\" latin": true,
+        "500 16px \"Alexandria\" arabic": true,
+        "500 16px \"Alexandria\" digits": true,
+        "600 16px \"Alexandria\" latin": true
+      },
+      "loadedFaces": [
+        "Alexandria 400 arabic",
+        "Alexandria 400 latin",
+        "Alexandria 500 arabic",
+        "Alexandria 500 latin",
+        "Alexandria 600 arabic",
+        "Alexandria 600 latin"
+      ],
+      "overflowX": 0,
+      "dir": "ltr",
+      "active": "details-btn",
+      "valuetext": "7:42 PM, 49 inside, Busy. Usual Wednesday 44.",
+      "railExpanded": "false",
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "busier",
+        "usualNow": 44
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "drawnMaxAt": 749,
+        "overshoot": 0,
+        "lastKnot": 822,
+        "last": 822,
+        "segments": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "extra-daily-en-1440x900-nohistory",
+      "url": "index.html?lang=en&state=nohistory",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fullPage": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Alexandria\" arabic": true,
+        "400 16px \"Alexandria\" latin": true,
+        "500 16px \"Alexandria\" arabic": true,
+        "500 16px \"Alexandria\" digits": true,
+        "600 16px \"Alexandria\" latin": true
+      },
+      "loadedFaces": [
+        "Alexandria 400 arabic",
+        "Alexandria 400 latin",
+        "Alexandria 500 arabic",
+        "Alexandria 500 latin",
+        "Alexandria 600 arabic",
+        "Alexandria 600 latin"
+      ],
+      "overflowX": 0,
+      "dir": "ltr",
+      "active": "BODY",
+      "valuetext": "7:42 PM, 49 inside, Busy",
+      "railExpanded": "false",
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": null,
+        "usualNow": 44
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "drawnMaxAt": 749,
+        "overshoot": 0,
+        "lastKnot": 822,
+        "last": 822,
+        "segments": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "extra-daily-ar-1440x900-closed",
+      "url": "index.html?lang=ar&state=closed",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fullPage": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Alexandria\" arabic": true,
+        "400 16px \"Alexandria\" latin": true,
+        "500 16px \"Alexandria\" arabic": true,
+        "500 16px \"Alexandria\" digits": true,
+        "600 16px \"Alexandria\" latin": true
+      },
+      "loadedFaces": [
+        "Alexandria 400 arabic",
+        "Alexandria 400 latin",
+        "Alexandria 500 arabic",
+        "Alexandria 500 latin",
+        "Alexandria 600 arabic",
+        "Alexandria 600 latin"
+      ],
+      "overflowX": 0,
+      "dir": "rtl",
+      "active": "BODY",
+      "valuetext": null,
+      "railExpanded": "false",
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "figures": {
+        "now": null,
+        "last": -1,
+        "nowM": -20,
+        "peak": -1,
+        "peakM": -1,
+        "entries": 0,
+        "observed": 0,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 46
+        },
+        "compare": null,
+        "usualNow": null
+      },
+      "checks": {
+        "peak": -1,
+        "peakM": -1,
+        "drawnMax": null,
+        "drawnMaxAt": -1,
+        "overshoot": 0,
+        "lastKnot": null,
+        "last": -1,
+        "segments": 0
+      },
+      "errors": []
+    },
+    {
+      "frame": "extra-daily-en-1440x900-closed",
+      "url": "index.html?lang=en&state=closed",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fullPage": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Alexandria\" arabic": true,
+        "400 16px \"Alexandria\" latin": true,
+        "500 16px \"Alexandria\" arabic": true,
+        "500 16px \"Alexandria\" digits": true,
+        "600 16px \"Alexandria\" latin": true
+      },
+      "loadedFaces": [
+        "Alexandria 400 arabic",
+        "Alexandria 400 latin",
+        "Alexandria 500 arabic",
+        "Alexandria 500 latin",
+        "Alexandria 600 arabic",
+        "Alexandria 600 latin"
+      ],
+      "overflowX": 0,
+      "dir": "ltr",
+      "active": "BODY",
+      "valuetext": null,
+      "railExpanded": "false",
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "figures": {
+        "now": null,
+        "last": -1,
+        "nowM": -20,
+        "peak": -1,
+        "peakM": -1,
+        "entries": 0,
+        "observed": 0,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 46
+        },
+        "compare": null,
+        "usualNow": null
+      },
+      "checks": {
+        "peak": -1,
+        "peakM": -1,
+        "drawnMax": null,
+        "drawnMaxAt": -1,
+        "overshoot": 0,
+        "lastKnot": null,
+        "last": -1,
+        "segments": 0
+      },
+      "errors": []
+    },
+    {
+      "frame": "extra-daily-ar-1440x900-loading",
+      "url": "index.html?lang=ar&state=loading",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fullPage": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Alexandria\" arabic": true,
+        "400 16px \"Alexandria\" latin": true,
+        "500 16px \"Alexandria\" arabic": true,
+        "500 16px \"Alexandria\" digits": true,
+        "600 16px \"Alexandria\" latin": true
+      },
+      "loadedFaces": [
+        "Alexandria 400 arabic",
+        "Alexandria 400 latin",
+        "Alexandria 500 arabic",
+        "Alexandria 500 latin",
+        "Alexandria 600 arabic",
+        "Alexandria 600 latin"
+      ],
+      "overflowX": 0,
+      "dir": "rtl",
+      "active": "BODY",
+      "valuetext": null,
+      "railExpanded": "false",
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "figures": {
+        "now": null,
+        "last": -1,
+        "nowM": 822,
+        "peak": -1,
+        "peakM": -1,
+        "entries": 0,
+        "observed": 0,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 47
+        },
+        "compare": null,
+        "usualNow": null
+      },
+      "checks": {
+        "peak": -1,
+        "peakM": -1,
+        "drawnMax": null,
+        "drawnMaxAt": -1,
+        "overshoot": 0,
+        "lastKnot": null,
+        "last": -1,
+        "segments": 0
+      },
+      "errors": []
+    },
+    {
+      "frame": "extra-daily-en-1440x900-loading",
+      "url": "index.html?lang=en&state=loading",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fullPage": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Alexandria\" arabic": true,
+        "400 16px \"Alexandria\" latin": true,
+        "500 16px \"Alexandria\" arabic": true,
+        "500 16px \"Alexandria\" digits": true,
+        "600 16px \"Alexandria\" latin": true
+      },
+      "loadedFaces": [
+        "Alexandria 400 arabic",
+        "Alexandria 400 latin",
+        "Alexandria 500 arabic",
+        "Alexandria 500 latin",
+        "Alexandria 600 arabic",
+        "Alexandria 600 latin"
+      ],
+      "overflowX": 0,
+      "dir": "ltr",
+      "active": "BODY",
+      "valuetext": null,
+      "railExpanded": "false",
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "figures": {
+        "now": null,
+        "last": -1,
+        "nowM": 822,
+        "peak": -1,
+        "peakM": -1,
+        "entries": 0,
+        "observed": 0,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 47
+        },
+        "compare": null,
+        "usualNow": null
+      },
+      "checks": {
+        "peak": -1,
+        "peakM": -1,
+        "drawnMax": null,
+        "drawnMaxAt": -1,
+        "overshoot": 0,
+        "lastKnot": null,
+        "last": -1,
+        "segments": 0
+      },
+      "errors": []
+    },
+    {
+      "frame": "extra-daily-en-1440x900-focusname",
+      "url": "index.html?lang=en",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fullPage": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Alexandria\" arabic": true,
+        "400 16px \"Alexandria\" latin": true,
+        "500 16px \"Alexandria\" arabic": true,
+        "500 16px \"Alexandria\" digits": true,
+        "600 16px \"Alexandria\" latin": true
+      },
+      "loadedFaces": [
+        "Alexandria 400 arabic",
+        "Alexandria 400 latin",
+        "Alexandria 500 arabic",
+        "Alexandria 500 latin",
+        "Alexandria 600 arabic",
+        "Alexandria 600 latin"
+      ],
+      "overflowX": 0,
+      "dir": "ltr",
+      "active": "reports",
+      "valuetext": "7:42 PM, 49 inside, Busy. Usual Wednesday 44.",
+      "railExpanded": "false",
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "busier",
+        "usualNow": 44
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "drawnMaxAt": 749,
+        "overshoot": 0,
+        "lastKnot": 822,
+        "last": 822,
+        "segments": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "extra-daily-en-1440x900-inspect-gap",
+      "url": "index.html?lang=en",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fullPage": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Alexandria\" arabic": true,
+        "400 16px \"Alexandria\" latin": true,
+        "500 16px \"Alexandria\" arabic": true,
+        "500 16px \"Alexandria\" digits": true,
+        "600 16px \"Alexandria\" latin": true
+      },
+      "loadedFaces": [
+        "Alexandria 400 arabic",
+        "Alexandria 400 latin",
+        "Alexandria 500 arabic",
+        "Alexandria 500 latin",
+        "Alexandria 600 arabic",
+        "Alexandria 600 latin"
+      ],
+      "overflowX": 0,
+      "dir": "ltr",
+      "active": "BODY",
+      "valuetext": "2:20 PM, No reading (2:14 PM - 2:31 PM)",
+      "railExpanded": "false",
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "busier",
+        "usualNow": 44
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "drawnMaxAt": 749,
+        "overshoot": 0,
+        "lastKnot": 822,
+        "last": 822,
+        "segments": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "extra-daily-ar-1440x900-motion-off",
+      "url": "index.html?lang=ar&motion=off",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fullPage": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Alexandria\" arabic": true,
+        "400 16px \"Alexandria\" latin": true,
+        "500 16px \"Alexandria\" arabic": true,
+        "500 16px \"Alexandria\" digits": true,
+        "600 16px \"Alexandria\" latin": true
+      },
+      "loadedFaces": [
+        "Alexandria 400 arabic",
+        "Alexandria 400 latin",
+        "Alexandria 500 arabic",
+        "Alexandria 500 latin",
+        "Alexandria 600 arabic",
+        "Alexandria 600 latin"
+      ],
+      "overflowX": 0,
+      "dir": "rtl",
+      "active": "BODY",
+      "valuetext": "7:42 م، 49 في الداخل، مزدحم. الأربعاء المعتاد 44.",
+      "railExpanded": "false",
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "busier",
+        "usualNow": 44
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "drawnMaxAt": 749,
+        "overshoot": 0,
+        "lastKnot": 822,
+        "last": 822,
+        "segments": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "extra-daily-en-1440x900-rail-hover",
+      "url": "index.html?lang=en",
+      "viewport": "1440x900",
+      "screenshot": true,
+      "fullPage": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Alexandria\" arabic": true,
+        "400 16px \"Alexandria\" latin": true,
+        "500 16px \"Alexandria\" arabic": true,
+        "500 16px \"Alexandria\" digits": true,
+        "600 16px \"Alexandria\" latin": true
+      },
+      "loadedFaces": [
+        "Alexandria 400 arabic",
+        "Alexandria 400 latin",
+        "Alexandria 500 arabic",
+        "Alexandria 500 latin",
+        "Alexandria 600 arabic",
+        "Alexandria 600 latin"
+      ],
+      "overflowX": 0,
+      "dir": "ltr",
+      "active": "BODY",
+      "valuetext": "7:42 PM, 49 inside, Busy. Usual Wednesday 44.",
+      "railExpanded": "false",
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "busier",
+        "usualNow": 44
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "drawnMaxAt": 749,
+        "overshoot": 0,
+        "lastKnot": 822,
+        "last": 822,
+        "segments": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "daily-en-1280x800",
+      "url": "index.html?lang=en",
+      "viewport": "1280x800",
+      "screenshot": false,
+      "fullPage": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Alexandria\" arabic": true,
+        "400 16px \"Alexandria\" latin": true,
+        "500 16px \"Alexandria\" arabic": true,
+        "500 16px \"Alexandria\" digits": true,
+        "600 16px \"Alexandria\" latin": true
+      },
+      "loadedFaces": [
+        "Alexandria 400 arabic",
+        "Alexandria 400 latin",
+        "Alexandria 500 arabic",
+        "Alexandria 500 latin",
+        "Alexandria 600 arabic",
+        "Alexandria 600 latin"
+      ],
+      "overflowX": 0,
+      "dir": "ltr",
+      "active": "BODY",
+      "valuetext": "7:42 PM, 49 inside, Busy. Usual Wednesday 44.",
+      "railExpanded": "false",
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "busier",
+        "usualNow": 44
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "drawnMaxAt": 749,
+        "overshoot": 0,
+        "lastKnot": 822,
+        "last": 822,
+        "segments": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "daily-ar-1280x800",
+      "url": "index.html?lang=ar",
+      "viewport": "1280x800",
+      "screenshot": false,
+      "fullPage": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Alexandria\" arabic": true,
+        "400 16px \"Alexandria\" latin": true,
+        "500 16px \"Alexandria\" arabic": true,
+        "500 16px \"Alexandria\" digits": true,
+        "600 16px \"Alexandria\" latin": true
+      },
+      "loadedFaces": [
+        "Alexandria 400 arabic",
+        "Alexandria 400 latin",
+        "Alexandria 500 arabic",
+        "Alexandria 500 latin",
+        "Alexandria 600 arabic",
+        "Alexandria 600 latin"
+      ],
+      "overflowX": 0,
+      "dir": "rtl",
+      "active": "BODY",
+      "valuetext": "7:42 م، 49 في الداخل، مزدحم. الأربعاء المعتاد 44.",
+      "railExpanded": "false",
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "busier",
+        "usualNow": 44
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "drawnMaxAt": 749,
+        "overshoot": 0,
+        "lastKnot": 822,
+        "last": 822,
+        "segments": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "daily-en-1280x800-rail-open",
+      "url": "index.html?lang=en",
+      "viewport": "1280x800",
+      "screenshot": false,
+      "fullPage": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Alexandria\" arabic": true,
+        "400 16px \"Alexandria\" latin": true,
+        "500 16px \"Alexandria\" arabic": true,
+        "500 16px \"Alexandria\" digits": true,
+        "600 16px \"Alexandria\" latin": true
+      },
+      "loadedFaces": [
+        "Alexandria 400 arabic",
+        "Alexandria 400 latin",
+        "Alexandria 500 arabic",
+        "Alexandria 500 latin",
+        "Alexandria 600 arabic",
+        "Alexandria 600 latin"
+      ],
+      "overflowX": 0,
+      "dir": "ltr",
+      "active": "brand",
+      "valuetext": "7:42 PM, 49 inside, Busy. Usual Wednesday 44.",
+      "railExpanded": "true",
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "busier",
+        "usualNow": 44
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "drawnMaxAt": 749,
+        "overshoot": 0,
+        "lastKnot": 822,
+        "last": 822,
+        "segments": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "daily-ar-1280x800-rail-open",
+      "url": "index.html?lang=ar",
+      "viewport": "1280x800",
+      "screenshot": false,
+      "fullPage": false,
+      "fontsOk": true,
+      "fonts": {
+        "400 16px \"Alexandria\" arabic": true,
+        "400 16px \"Alexandria\" latin": true,
+        "500 16px \"Alexandria\" arabic": true,
+        "500 16px \"Alexandria\" digits": true,
+        "600 16px \"Alexandria\" latin": true
+      },
+      "loadedFaces": [
+        "Alexandria 400 arabic",
+        "Alexandria 400 latin",
+        "Alexandria 500 arabic",
+        "Alexandria 500 latin",
+        "Alexandria 600 arabic",
+        "Alexandria 600 latin"
+      ],
+      "overflowX": 0,
+      "dir": "rtl",
+      "active": "brand",
+      "valuetext": "7:42 م، 49 في الداخل، مزدحم. الأربعاء المعتاد 44.",
+      "railExpanded": "true",
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "busier",
+        "usualNow": 44
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "drawnMax": 62,
+        "drawnMaxAt": 749,
+        "overshoot": 0,
+        "lastKnot": 822,
+        "last": 822,
+        "segments": 2
+      },
+      "errors": []
+    }
+  ]
+}

@@ -1,0 +1,3926 @@
+{
+  "capturedAt": "2026-09-25T01:47:00.067Z",
+  "port": 3173,
+  "motion": {
+    "method": "Pre-motion frames: evidence/pre-motion-hashes.json (SHA-256 of the v3 frames before motion). The capture is byte-deterministic, so equal hashes mean identical pixels.",
+    "staticFramesIdentical": true,
+    "motionOffFramesIdentical": true,
+    "settledMotionFramesIdenticalWithPulseHidden": false,
+    "settledDomEqualsMotionOff": true,
+    "liveUpdateEndsAtCanonical": {
+      "identicalWithPulseHidden": false,
+      "pixelDiff": {
+        "changedPixels": 16828,
+        "maxChannelDiff": 2,
+        "bbox": {
+          "x": 42,
+          "y": 39,
+          "width": 327,
+          "height": 845
+        }
+      },
+      "domEqual": true
+    },
+    "identity": {
+      "staticFrames": {
+        "daily-ar-1440x900": {
+          "identical": true
+        },
+        "daily-en-1440x900": {
+          "identical": true
+        },
+        "daily-ar-1440x900-hover": {
+          "identical": true
+        },
+        "daily-ar-1440x900-rail-open": {
+          "identical": true
+        },
+        "daily-en-1440x900-rail-open": {
+          "identical": true
+        },
+        "daily-ar-1440x900-delayed": {
+          "identical": true
+        },
+        "daily-ar-1440x900-nohistory": {
+          "identical": true
+        },
+        "daily-ar-1440x900-details": {
+          "identical": true
+        },
+        "daily-ar-1440x900-tuner-open": {
+          "identical": false,
+          "expectedToChange": "the tuner panel gained its Motion group"
+        },
+        "preset-v2-ar-1440x900": {
+          "identical": true
+        },
+        "preset-v2-nowcard-light": {
+          "identical": true
+        },
+        "preset-v2-chart-light": {
+          "identical": true
+        },
+        "preset-v2-nowcard-2x": {
+          "identical": true
+        },
+        "preset-v2-chart-2x": {
+          "identical": true
+        },
+        "preset-a-like-ar-1440x900": {
+          "identical": true
+        },
+        "preset-a-like-nowcard-light": {
+          "identical": true
+        },
+        "preset-a-like-chart-light": {
+          "identical": true
+        },
+        "preset-a-like-nowcard-2x": {
+          "identical": true
+        },
+        "preset-a-like-chart-2x": {
+          "identical": true
+        },
+        "preset-recommended-ar-1440x900": {
+          "identical": true
+        },
+        "preset-recommended-nowcard-light": {
+          "identical": true
+        },
+        "preset-recommended-chart-light": {
+          "identical": true
+        },
+        "preset-recommended-nowcard-2x": {
+          "identical": true
+        },
+        "preset-recommended-chart-2x": {
+          "identical": true
+        },
+        "levels-nowcard": {
+          "identical": true
+        },
+        "levels-chart": {
+          "identical": true
+        },
+        "daily-en-nowcard-2x": {
+          "identical": true
+        }
+      },
+      "motionOffFrames": {
+        "daily-ar-1440x900": {
+          "url": "index.html?lang=ar&tuner=0&motion=off",
+          "reducedMotion": "no-preference",
+          "identical": true,
+          "dataMotion": "off",
+          "errors": []
+        },
+        "daily-en-1440x900": {
+          "url": "index.html?lang=en&tuner=0&motion=off",
+          "reducedMotion": "no-preference",
+          "identical": true,
+          "dataMotion": "off",
+          "errors": []
+        },
+        "daily-ar-1440x900-hover": {
+          "url": "index.html?lang=ar&tuner=0&motion=off",
+          "reducedMotion": "no-preference",
+          "identical": true,
+          "dataMotion": "off",
+          "errors": []
+        },
+        "daily-ar-1440x900-rail-open": {
+          "url": "index.html?lang=ar&tuner=0&motion=off",
+          "reducedMotion": "no-preference",
+          "identical": true,
+          "dataMotion": "off",
+          "errors": []
+        },
+        "daily-en-1440x900-rail-open": {
+          "url": "index.html?lang=en&tuner=0&motion=off",
+          "reducedMotion": "no-preference",
+          "identical": true,
+          "dataMotion": "off",
+          "errors": []
+        },
+        "daily-ar-1440x900-delayed": {
+          "url": "index.html?lang=ar&state=delayed&tuner=0&motion=off",
+          "reducedMotion": "no-preference",
+          "identical": true,
+          "dataMotion": "off",
+          "errors": []
+        },
+        "daily-ar-1440x900-nohistory": {
+          "url": "index.html?lang=ar&state=nohistory&tuner=0&motion=off",
+          "reducedMotion": "no-preference",
+          "identical": true,
+          "dataMotion": "off",
+          "errors": []
+        },
+        "daily-ar-1440x900-details": {
+          "url": "index.html?lang=ar&tuner=0&motion=off",
+          "reducedMotion": "no-preference",
+          "identical": true,
+          "dataMotion": "off",
+          "errors": []
+        }
+      },
+      "motionSettled": {
+        "daily-ar-1440x900": {
+          "url": "index.html?lang=ar&tuner=0",
+          "dataMotion": "on",
+          "pendingLeft": null,
+          "entranceClassLeft": 0,
+          "pulse": true,
+          "runningAnimations": [
+            "css:ping"
+          ],
+          "errors": [],
+          "identicalWithPulseHidden": true,
+          "pixelsThatDifferWithPulseShown": {
+            "changedPixels": 0,
+            "maxChannelDiff": 0,
+            "bbox": null
+          },
+          "domEqualsMotionOff": true
+        },
+        "daily-en-1440x900": {
+          "url": "index.html?lang=en&tuner=0",
+          "dataMotion": "on",
+          "pendingLeft": null,
+          "entranceClassLeft": 0,
+          "pulse": true,
+          "runningAnimations": [
+            "css:ping"
+          ],
+          "errors": [],
+          "identicalWithPulseHidden": true,
+          "pixelsThatDifferWithPulseShown": {
+            "changedPixels": 0,
+            "maxChannelDiff": 0,
+            "bbox": null
+          },
+          "domEqualsMotionOff": true
+        },
+        "daily-ar-1440x900-delayed": {
+          "url": "index.html?lang=ar&state=delayed&tuner=0",
+          "dataMotion": "on",
+          "pendingLeft": null,
+          "entranceClassLeft": 0,
+          "pulse": false,
+          "runningAnimations": [],
+          "errors": [],
+          "identicalWithPulseHidden": false,
+          "pixelsThatDifferWithPulseShown": {
+            "changedPixels": 16572,
+            "maxChannelDiff": 2,
+            "bbox": {
+              "x": 42,
+              "y": 526,
+              "width": 229,
+              "height": 358
+            }
+          },
+          "domEqualsMotionOff": true
+        },
+        "daily-ar-1440x900-nohistory": {
+          "url": "index.html?lang=ar&state=nohistory&tuner=0",
+          "dataMotion": "on",
+          "pendingLeft": null,
+          "entranceClassLeft": 0,
+          "pulse": true,
+          "runningAnimations": [
+            "css:ping"
+          ],
+          "errors": [],
+          "identicalWithPulseHidden": true,
+          "pixelsThatDifferWithPulseShown": {
+            "changedPixels": 0,
+            "maxChannelDiff": 0,
+            "bbox": null
+          },
+          "domEqualsMotionOff": true
+        }
+      },
+      "liveUpdateEndsAtCanonical": {
+        "identicalWithPulseHidden": false,
+        "pixelDiff": {
+          "changedPixels": 16828,
+          "maxChannelDiff": 2,
+          "bbox": {
+            "x": 42,
+            "y": 39,
+            "width": 327,
+            "height": 845
+          }
+        },
+        "domEqual": true
+      }
+    },
+    "spec": [
+      {
+        "motion": "Load: stat cards enter",
+        "animates": "opacity 0 to 1, transform translateY(14px) to none",
+        "delayMs": [
+          0,
+          60,
+          120,
+          180
+        ],
+        "durationMs": 620,
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "note": "reading order (Inside now first)"
+      },
+      {
+        "motion": "Load: chart card enters",
+        "animates": "opacity 0 to 1, transform translateY(18px) to none",
+        "delayMs": 200,
+        "durationMs": 700,
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)"
+      },
+      {
+        "motion": "Load: the line draws from opening to now",
+        "animates": "SVG stroke-dasharray (drawn length) of today's line; fine vertical lines opacity behind the head (36px soft edge)",
+        "delayMs": 560,
+        "durationMs": 1100,
+        "easing": "cubic-bezier(0.5, 0, 0.2, 1)"
+      },
+      {
+        "motion": "Load: end point appears (when the line reaches now)",
+        "animates": "opacity 0 to 1, scale 0.4 to 1",
+        "delayMs": 1660,
+        "durationMs": 320,
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)"
+      },
+      {
+        "motion": "Load: peak marker appears (after the line)",
+        "animates": "opacity 0 to 1; ring scale 0.5 to 1; label translate 0 5px to 0",
+        "delayMs": 1740,
+        "durationMs": 420,
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)"
+      },
+      {
+        "motion": "Load: Inside now light slides in behind the fixed disc, out of the lit corner",
+        "animates": "transform translate(-105.2px, 91.3px) to translate(0px, 0px) on the light layer and its grain (.lamp-in ::before and ::after, overscan --lp 148px); the disc (the mask on .lamp-in) stays; no opacity change",
+        "delayMs": 380,
+        "durationMs": 1400,
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "note": "lights entrance: the tuner's \"switch on at load\", on by default; the light starts 50% of the corner-to-disc-centre distance beyond the lit corner, on that axis (computed from the light settings)"
+      },
+      {
+        "motion": "Load: Inside now lit border catches the light",
+        "animates": "opacity along the movement's own progress (same timing and easing): 0%: 0, 35%: 0.45, 70%: 0.9, 100%: 1 of the rest value, on .lamp-rim",
+        "delayMs": 470,
+        "durationMs": 1400,
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)"
+      },
+      {
+        "motion": "Load: chart light rises from under the bottom edge with the line",
+        "animates": "transform translate(0px, 297px) to translate(0px, 0px) on the light layer and its grain (50% of the card height); the disc stays",
+        "delayMs": 560,
+        "durationMs": 1350,
+        "easing": "cubic-bezier(0.5, 0, 0.2, 1)",
+        "note": "starts with the line (same delay) and settles just after it reaches now"
+      },
+      {
+        "motion": "Load: chart light brightens as it rises",
+        "animates": "opacity along the movement's own progress (same timing and easing): 0%: 0, 25%: 0.8, 100%: 1 of the rest value, on .lamp-in",
+        "delayMs": 560,
+        "durationMs": 1350,
+        "easing": "cubic-bezier(0.5, 0, 0.2, 1)"
+      },
+      {
+        "motion": "Load: chart lit border catches the light",
+        "animates": "opacity along the movement's own progress (same timing and easing): 0%: 0, 35%: 0.45, 70%: 0.9, 100%: 1 of the rest value, on .lamp-rim",
+        "delayMs": 650,
+        "durationMs": 1350,
+        "easing": "cubic-bezier(0.5, 0, 0.2, 1)"
+      },
+      {
+        "motion": "Load: page wash drifts in from its corner",
+        "animates": "transform translate(120px, -60px) to translate(0px, 0px) on .wash-light; opacity along the movement's own progress (same timing and easing): 0%: 0, 30%: 0.5, 60%: 0.85, 100%: 1 of the rest value, on .wash",
+        "delayMs": 60,
+        "durationMs": 1700,
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)"
+      },
+      {
+        "motion": "Load: the rail's rim catches the wash",
+        "animates": "opacity along the movement's own progress (same timing and easing): 0%: 0, 35%: 0.45, 70%: 0.9, 100%: 1 of the rest value, on .rail::after",
+        "delayMs": 270,
+        "durationMs": 1700,
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)"
+      },
+      {
+        "motion": "Live: end-point pulse (live state only; none while delayed)",
+        "animates": "a ring: opacity 0.7 to 0, transform scale 0.28 to 1 (9px to 32px)",
+        "delayMs": 400,
+        "durationMs": 3600,
+        "easing": "cubic-bezier(0.22, 0.61, 0.36, 1)",
+        "note": "infinite, the ring is visible for the first 62% of each 3.6s cycle; HTML layer, composited"
+      },
+      {
+        "motion": "Live: new reading, tail morph and extension",
+        "animates": "SVG path d of the last ~15-30 minutes only (from the last line point before the first changed minute), end point cx/cy, the tail's fine lines, the now clip",
+        "delayMs": 0,
+        "durationMs": 700,
+        "easing": "cubic-bezier(0.4, 0, 0.2, 1)"
+      },
+      {
+        "motion": "Numbers: cross-fade",
+        "animates": "new value opacity 0 to 1; old value (a copy) opacity 1 to 0",
+        "delayMs": 0,
+        "durationMs": [
+          200,
+          140
+        ],
+        "easing": [
+          "cubic-bezier(0.2, 0.7, 0.2, 1)",
+          "ease-out"
+        ]
+      },
+      {
+        "motion": "Tooltip and guide follow (pointer and keyboard)",
+        "animates": "transform translate from the previous position to none",
+        "delayMs": 0,
+        "durationMs": [
+          140,
+          320
+        ],
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "note": "140ms plus 0.12ms per px moved, at most 320ms; the tooltip fades in 120ms and out 90ms"
+      },
+      {
+        "motion": "Rail opens",
+        "animates": "end cap transform translateX(0 to 156px, inline-end), middle transform scaleX(0 to 1) from the inline-start, surface opacity 0.7 to 0.94 (a layer's opacity), shadow layer opacity 0 to 1; names opacity + translateX(6px) with 80ms delay, 240ms",
+        "delayMs": 0,
+        "durationMs": 300,
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "note": "width switches at once and is never animated"
+      },
+      {
+        "motion": "Rail closes",
+        "animates": "the same in reverse; names opacity 1 to 0 in 110ms",
+        "delayMs": 0,
+        "durationMs": 240,
+        "easing": "cubic-bezier(0.4, 0, 0.2, 1)"
+      },
+      {
+        "motion": "Lights follow the pointer (desktop, fine pointer only; Inside now; chart card off by default)",
+        "animates": "transform translate on the light and grain layers (overscan --lp 24px), at most 10px x 7px (chart 6px x 4px); nothing is promoted to its own layer at rest, so a pointer at the card centre (offset 0) leaves the light where it is",
+        "delayMs": 0,
+        "durationMs": 900,
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "note": "CSS transition, restarted per frame while the pointer moves; returns to rest in 900ms on leave"
+      },
+      {
+        "motion": "Light follows crowd (toggle, off by default)",
+        "animates": "opacity of the Inside now light: Quiet 0.42, Moderate 0.7, Busy 1, Packed 1",
+        "delayMs": 0,
+        "durationMs": 1200,
+        "easing": "cubic-bezier(0.45, 0, 0.25, 1)"
+      }
+    ],
+    "introTotalMs": 2160,
+    "loadAnimationsAsRun": [
+      {
+        "target": "#card-now",
+        "kind": "web animation",
+        "properties": [
+          "opacity",
+          "transform"
+        ],
+        "delayMs": 0,
+        "durationMs": 620,
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "iterations": 1,
+        "keyframes": [
+          {
+            "offset": null,
+            "opacity": "0",
+            "transform": "translateY(14px)"
+          },
+          {
+            "offset": null,
+            "opacity": "1",
+            "transform": "none"
+          }
+        ]
+      },
+      {
+        "target": "#card-peak",
+        "kind": "web animation",
+        "properties": [
+          "opacity",
+          "transform"
+        ],
+        "delayMs": 60,
+        "durationMs": 620,
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "iterations": 1,
+        "keyframes": [
+          {
+            "offset": null,
+            "opacity": "0",
+            "transform": "translateY(14px)"
+          },
+          {
+            "offset": null,
+            "opacity": "1",
+            "transform": "none"
+          }
+        ]
+      },
+      {
+        "target": "#card-entries",
+        "kind": "web animation",
+        "properties": [
+          "opacity",
+          "transform"
+        ],
+        "delayMs": 120,
+        "durationMs": 620,
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "iterations": 1,
+        "keyframes": [
+          {
+            "offset": null,
+            "opacity": "0",
+            "transform": "translateY(14px)"
+          },
+          {
+            "offset": null,
+            "opacity": "1",
+            "transform": "none"
+          }
+        ]
+      },
+      {
+        "target": "#card-busiest",
+        "kind": "web animation",
+        "properties": [
+          "opacity",
+          "transform"
+        ],
+        "delayMs": 180,
+        "durationMs": 620,
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "iterations": 1,
+        "keyframes": [
+          {
+            "offset": null,
+            "opacity": "0",
+            "transform": "translateY(14px)"
+          },
+          {
+            "offset": null,
+            "opacity": "1",
+            "transform": "none"
+          }
+        ]
+      },
+      {
+        "target": "section.card.chart.lit.lit-chart",
+        "kind": "web animation",
+        "properties": [
+          "opacity",
+          "transform"
+        ],
+        "delayMs": 200,
+        "durationMs": 700,
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "iterations": 1,
+        "keyframes": [
+          {
+            "offset": null,
+            "opacity": "0",
+            "transform": "translateY(18px)"
+          },
+          {
+            "offset": null,
+            "opacity": "1",
+            "transform": "none"
+          }
+        ]
+      },
+      {
+        "target": "i.lamp-in::before",
+        "kind": "web animation",
+        "properties": [
+          "transform"
+        ],
+        "delayMs": 380,
+        "durationMs": 1400,
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "iterations": 1,
+        "keyframes": [
+          {
+            "offset": null,
+            "transform": "translate(-105.2px, 91.3px)"
+          },
+          {
+            "offset": null,
+            "transform": "translate(0px, 0px)"
+          }
+        ]
+      },
+      {
+        "target": "i.lamp-in::after",
+        "kind": "web animation",
+        "properties": [
+          "transform"
+        ],
+        "delayMs": 380,
+        "durationMs": 1400,
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "iterations": 1,
+        "keyframes": [
+          {
+            "offset": null,
+            "transform": "translate(-105.2px, 91.3px)"
+          },
+          {
+            "offset": null,
+            "transform": "translate(0px, 0px)"
+          }
+        ]
+      },
+      {
+        "target": "i.lamp-rim",
+        "kind": "web animation",
+        "properties": [
+          "opacity"
+        ],
+        "delayMs": 470,
+        "durationMs": 1400,
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "iterations": 1,
+        "keyframes": [
+          {
+            "offset": 0,
+            "opacity": "0"
+          },
+          {
+            "offset": 0.35,
+            "opacity": "0.45"
+          },
+          {
+            "offset": 0.7,
+            "opacity": "0.9"
+          },
+          {
+            "offset": 1,
+            "opacity": "1"
+          }
+        ]
+      },
+      {
+        "target": "i.lamp-in::before",
+        "kind": "web animation",
+        "properties": [
+          "transform"
+        ],
+        "delayMs": 560,
+        "durationMs": 1350,
+        "easing": "cubic-bezier(0.5, 0, 0.2, 1)",
+        "iterations": 1,
+        "keyframes": [
+          {
+            "offset": null,
+            "transform": "translate(0px, 297px)"
+          },
+          {
+            "offset": null,
+            "transform": "translate(0px, 0px)"
+          }
+        ]
+      },
+      {
+        "target": "i.lamp-in::after",
+        "kind": "web animation",
+        "properties": [
+          "transform"
+        ],
+        "delayMs": 560,
+        "durationMs": 1350,
+        "easing": "cubic-bezier(0.5, 0, 0.2, 1)",
+        "iterations": 1,
+        "keyframes": [
+          {
+            "offset": null,
+            "transform": "translate(0px, 297px)"
+          },
+          {
+            "offset": null,
+            "transform": "translate(0px, 0px)"
+          }
+        ]
+      },
+      {
+        "target": "i.lamp-in",
+        "kind": "web animation",
+        "properties": [
+          "opacity"
+        ],
+        "delayMs": 560,
+        "durationMs": 1350,
+        "easing": "cubic-bezier(0.5, 0, 0.2, 1)",
+        "iterations": 1,
+        "keyframes": [
+          {
+            "offset": 0,
+            "opacity": "0"
+          },
+          {
+            "offset": 0.25,
+            "opacity": "0.8"
+          },
+          {
+            "offset": 1,
+            "opacity": "1"
+          }
+        ]
+      },
+      {
+        "target": "i.lamp-rim",
+        "kind": "web animation",
+        "properties": [
+          "opacity"
+        ],
+        "delayMs": 650,
+        "durationMs": 1350,
+        "easing": "cubic-bezier(0.5, 0, 0.2, 1)",
+        "iterations": 1,
+        "keyframes": [
+          {
+            "offset": 0,
+            "opacity": "0"
+          },
+          {
+            "offset": 0.35,
+            "opacity": "0.45"
+          },
+          {
+            "offset": 0.7,
+            "opacity": "0.9"
+          },
+          {
+            "offset": 1,
+            "opacity": "1"
+          }
+        ]
+      },
+      {
+        "target": "i.wash-light",
+        "kind": "web animation",
+        "properties": [
+          "transform"
+        ],
+        "delayMs": 60,
+        "durationMs": 1700,
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "iterations": 1,
+        "keyframes": [
+          {
+            "offset": null,
+            "transform": "translate(120px, -60px)"
+          },
+          {
+            "offset": null,
+            "transform": "translate(0px, 0px)"
+          }
+        ]
+      },
+      {
+        "target": "i.wash",
+        "kind": "web animation",
+        "properties": [
+          "opacity"
+        ],
+        "delayMs": 60,
+        "durationMs": 1700,
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "iterations": 1,
+        "keyframes": [
+          {
+            "offset": 0,
+            "opacity": "0"
+          },
+          {
+            "offset": 0.3,
+            "opacity": "0.5"
+          },
+          {
+            "offset": 0.6,
+            "opacity": "0.85"
+          },
+          {
+            "offset": 1,
+            "opacity": "1"
+          }
+        ]
+      },
+      {
+        "target": "#rail::after",
+        "kind": "web animation",
+        "properties": [
+          "opacity"
+        ],
+        "delayMs": 270,
+        "durationMs": 1700,
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "iterations": 1,
+        "keyframes": [
+          {
+            "offset": 0,
+            "opacity": "0"
+          },
+          {
+            "offset": 0.35,
+            "opacity": "0.45"
+          },
+          {
+            "offset": 0.7,
+            "opacity": "0.9"
+          },
+          {
+            "offset": 1,
+            "opacity": "1"
+          }
+        ]
+      },
+      {
+        "target": "#end-halo",
+        "kind": "web animation",
+        "properties": [
+          "opacity",
+          "scale"
+        ],
+        "delayMs": 1660,
+        "durationMs": 320,
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "iterations": 1,
+        "keyframes": [
+          {
+            "offset": null,
+            "opacity": "0",
+            "scale": "0.4"
+          },
+          {
+            "offset": null,
+            "opacity": "1",
+            "scale": "1"
+          }
+        ]
+      },
+      {
+        "target": "#end-dot",
+        "kind": "web animation",
+        "properties": [
+          "opacity",
+          "scale"
+        ],
+        "delayMs": 1660,
+        "durationMs": 320,
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "iterations": 1,
+        "keyframes": [
+          {
+            "offset": null,
+            "opacity": "0",
+            "scale": "0.4"
+          },
+          {
+            "offset": null,
+            "opacity": "1",
+            "scale": "1"
+          }
+        ]
+      },
+      {
+        "target": "#pk-drop",
+        "kind": "web animation",
+        "properties": [
+          "opacity"
+        ],
+        "delayMs": 1740,
+        "durationMs": 420,
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "iterations": 1,
+        "keyframes": [
+          {
+            "offset": null,
+            "opacity": "0"
+          },
+          {
+            "offset": null,
+            "opacity": "1"
+          }
+        ]
+      },
+      {
+        "target": "#pk-dot",
+        "kind": "web animation",
+        "properties": [
+          "opacity",
+          "scale"
+        ],
+        "delayMs": 1740,
+        "durationMs": 420,
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "iterations": 1,
+        "keyframes": [
+          {
+            "offset": null,
+            "opacity": "0",
+            "scale": "0.5"
+          },
+          {
+            "offset": null,
+            "opacity": "1",
+            "scale": "1"
+          }
+        ]
+      },
+      {
+        "target": "#peak-tag",
+        "kind": "web animation",
+        "properties": [
+          "translate",
+          "opacity"
+        ],
+        "delayMs": 1740,
+        "durationMs": 420,
+        "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "iterations": 1,
+        "keyframes": [
+          {
+            "offset": null,
+            "translate": "0px 5px",
+            "opacity": "0"
+          },
+          {
+            "offset": null,
+            "translate": "0px",
+            "opacity": "1"
+          }
+        ]
+      }
+    ],
+    "load_ar": {
+      "frames": [
+        {
+          "t": 0,
+          "name": "motion-load-ar-0000ms"
+        },
+        {
+          "t": 150,
+          "name": "motion-load-ar-0150ms"
+        },
+        {
+          "t": 300,
+          "name": "motion-load-ar-0300ms"
+        },
+        {
+          "t": 450,
+          "name": "motion-load-ar-0450ms"
+        },
+        {
+          "t": 600,
+          "name": "motion-load-ar-0600ms"
+        },
+        {
+          "t": 800,
+          "name": "motion-load-ar-0800ms"
+        },
+        {
+          "t": 1000,
+          "name": "motion-load-ar-1000ms"
+        },
+        {
+          "t": 1200,
+          "name": "motion-load-ar-1200ms"
+        },
+        {
+          "t": 1400,
+          "name": "motion-load-ar-1400ms"
+        },
+        {
+          "t": 1700,
+          "name": "motion-load-ar-1700ms"
+        },
+        {
+          "t": 2000,
+          "name": "motion-load-ar-2000ms"
+        },
+        {
+          "t": 2160,
+          "name": "motion-load-ar-2160ms",
+          "identicalToStaticFrame": true
+        }
+      ],
+      "errors": []
+    },
+    "load_en": {
+      "frames": [
+        {
+          "t": 300,
+          "name": "motion-load-en-0300ms"
+        },
+        {
+          "t": 600,
+          "name": "motion-load-en-0600ms"
+        },
+        {
+          "t": 1000,
+          "name": "motion-load-en-1000ms"
+        },
+        {
+          "t": 1400,
+          "name": "motion-load-en-1400ms"
+        },
+        {
+          "t": 2160,
+          "name": "motion-load-en-2160ms",
+          "identicalToStaticFrame": true
+        }
+      ],
+      "errors": []
+    },
+    "lightStrips_ar": {
+      "nowTimesAfterStart": [
+        0,
+        150,
+        300,
+        500,
+        800,
+        1200
+      ],
+      "chartTimesAfterStart": [
+        0,
+        200,
+        400,
+        600,
+        900,
+        1300
+      ],
+      "errors": []
+    },
+    "lightStrips_en": {
+      "nowTimesAfterStart": [
+        0,
+        150,
+        300,
+        500,
+        800,
+        1200
+      ],
+      "chartTimesAfterStart": [
+        0,
+        200,
+        400,
+        600,
+        900,
+        1300
+      ],
+      "errors": []
+    },
+    "brightness": {
+      "ar": {
+        "lang": "ar",
+        "stepMs": 40,
+        "tolerance": "+0.01 in cube-root luminance (about OKLab L), 7x7 blur",
+        "insideNow": {
+          "framesChecked": 45,
+          "framesWithAPixelBrighterThanRest": 0,
+          "pixelsEverBrighterThanRest": 0,
+          "largestBrighteningL": 0.005,
+          "largestAtMs": 1060
+        },
+        "chart": {
+          "framesChecked": 41,
+          "framesWithAPixelBrighterThanRest": 0,
+          "pixelsEverBrighterThanRest": 0,
+          "largestBrighteningL": 0.005,
+          "largestAtMs": 560
+        },
+        "wash": {
+          "framesChecked": 53,
+          "framesWithAPixelBrighterThanRest": 0,
+          "pixelsEverBrighterThanRest": 0,
+          "largestBrighteningL": 0.006,
+          "largestAtMs": 60
+        },
+        "errors": []
+      },
+      "en": {
+        "lang": "en",
+        "stepMs": 40,
+        "tolerance": "+0.01 in cube-root luminance (about OKLab L), 7x7 blur",
+        "insideNow": {
+          "framesChecked": 45,
+          "framesWithAPixelBrighterThanRest": 0,
+          "pixelsEverBrighterThanRest": 0,
+          "largestBrighteningL": 0.004,
+          "largestAtMs": 1020
+        },
+        "chart": {
+          "framesChecked": 41,
+          "framesWithAPixelBrighterThanRest": 0,
+          "pixelsEverBrighterThanRest": 0,
+          "largestBrighteningL": 0.005,
+          "largestAtMs": 560
+        },
+        "wash": {
+          "framesChecked": 53,
+          "framesWithAPixelBrighterThanRest": 0,
+          "pixelsEverBrighterThanRest": 0,
+          "largestBrighteningL": 0.006,
+          "largestAtMs": 60
+        },
+        "errors": []
+      },
+      "counterfactualTowardDiscCentreAr": {
+        "note": "The Inside now light started 34% of the way from the lit corner toward the disc's centre (nowFrom -0.34) and slid out from there, everything else as built; then the same with its opacity rising along the way. Only the Inside now results apply.",
+        "slideOnly": {
+          "framesChecked": 45,
+          "framesWithAPixelBrighterThanRest": 21,
+          "pixelsEverBrighterThanRest": 9532,
+          "largestBrighteningL": 0.176,
+          "largestAtMs": 500
+        },
+        "slideWithFade": {
+          "framesChecked": 45,
+          "framesWithAPixelBrighterThanRest": 17,
+          "pixelsEverBrighterThanRest": 6827,
+          "largestBrighteningL": 0.087,
+          "largestAtMs": 660
+        },
+        "errors": []
+      }
+    },
+    "live": {
+      "step": {
+        "reading": true,
+        "morph": true,
+        "from": 822,
+        "to": 823,
+        "firstChangedMinute": 791,
+        "tailFrom": 790,
+        "tailFromTime": "7:10 م"
+      },
+      "figuresAfter": {
+        "now": 49,
+        "last": 823,
+        "nowM": 823,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 333,
+        "observed": 806,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "same",
+        "avgNow": 47.7,
+        "usualLatest": 45.3,
+        "usualEntries": 318,
+        "crestM": 751
+      },
+      "errors": []
+    },
+    "follow": {
+      "ar": {
+        "restIdenticalToStatic": true,
+        "points": [
+          {
+            "id": "a",
+            "label": "pointer near the far top corner (top right in Arabic)",
+            "fx": 0.86,
+            "fy": 0.18,
+            "cls": "card stat lit lit-card is-peek",
+            "transform": "matrix(1, 0, 0, 1, 7.2, -4.48)",
+            "peek": [
+              "7.20px",
+              "-4.48px"
+            ]
+          },
+          {
+            "id": "b",
+            "label": "pointer by the lit corner (bottom left in Arabic)",
+            "fx": 0.1,
+            "fy": 0.86,
+            "cls": "card stat lit lit-card is-peek",
+            "transform": "matrix(1, 0, 0, 1, -8, 5.04)",
+            "peek": [
+              "-8.00px",
+              "5.04px"
+            ]
+          }
+        ],
+        "zeroOffset": {
+          "cls": "card stat lit lit-card is-peek",
+          "transform": "matrix(1, 0, 0, 1, 0, 0)",
+          "peek": [
+            "0.00px",
+            "0.00px"
+          ],
+          "identicalToRest": false,
+          "pixelDiff": {
+            "changedPixels": 1,
+            "maxChannelDiff": 1,
+            "bbox": {
+              "x": 340,
+              "y": 318,
+              "width": 1,
+              "height": 1
+            }
+          }
+        },
+        "afterLeaveIdenticalToStatic": true,
+        "afterLeave": {
+          "cls": "card stat lit lit-card",
+          "transform": "none",
+          "peek": [
+            "",
+            ""
+          ]
+        },
+        "errors": []
+      },
+      "en": {
+        "restIdenticalToStatic": true,
+        "points": [],
+        "zeroOffset": {
+          "cls": "card stat lit lit-card is-peek",
+          "transform": "matrix(1, 0, 0, 1, 0, 0)",
+          "peek": [
+            "0.00px",
+            "0.00px"
+          ],
+          "identicalToRest": true,
+          "pixelDiff": {
+            "changedPixels": 0,
+            "maxChannelDiff": 0,
+            "bbox": null
+          }
+        },
+        "afterLeaveIdenticalToStatic": true,
+        "afterLeave": {
+          "cls": "card stat lit lit-card",
+          "transform": "none",
+          "peek": [
+            "",
+            ""
+          ]
+        },
+        "errors": []
+      }
+    },
+    "rail": {
+      "arOpen": {
+        "railWidth": "236px",
+        "morph": true,
+        "animatedProps": [
+          "backgroundColor",
+          "borderBottomColor",
+          "borderLeftColor",
+          "borderRightColor",
+          "borderTopColor",
+          "color",
+          "opacity",
+          "transform"
+        ]
+      },
+      "arOpenSettledIdenticalToStatic": true,
+      "arOpenSettledPixelDiff": {
+        "changedPixels": 0,
+        "maxChannelDiff": 0,
+        "bbox": null
+      },
+      "arErrors": [],
+      "enOpen": {
+        "railWidth": "236px",
+        "morph": true,
+        "animatedProps": [
+          "backgroundColor",
+          "borderBottomColor",
+          "borderLeftColor",
+          "borderRightColor",
+          "borderTopColor",
+          "color",
+          "opacity",
+          "transform"
+        ]
+      },
+      "enErrors": []
+    },
+    "glide": {
+      "valuetext": "6:42 م، 59 داخل الصالة، مزدحم، المعتاد 49",
+      "errors": []
+    },
+    "delayed": {
+      "pulseDuringLoad": false,
+      "pulseAtRest": false,
+      "runningAnimationsAtRest": 0,
+      "step": {
+        "reading": false,
+        "morph": false
+      },
+      "lastBefore": 809,
+      "lastAfter": 809,
+      "nowBefore": 822,
+      "nowAfter": 823,
+      "rightAfterTheMinute": {
+        "liveMorph": false,
+        "running": [
+          "now-meta cross-fade",
+          "now-meta cross-fade"
+        ]
+      },
+      "pulseAfter": false,
+      "liveMorph": false,
+      "runningAnimations400msAfter": 0,
+      "meta": "قبل 14 دقيقة",
+      "errors": [],
+      "pass": true
+    },
+    "switchOnAtLoad": {
+      "off": {
+        "lightsHiddenBeforeStart": null,
+        "lightAnimations": 0,
+        "entranceClass": 0,
+        "introActive": true
+      },
+      "on": {
+        "lightAnimations": 10,
+        "entranceClass": 1
+      },
+      "errors": [],
+      "pass": true
+    },
+    "frames": [
+      "motion-load-ar-0000ms.png",
+      "motion-load-ar-0150ms.png",
+      "motion-load-ar-0300ms.png",
+      "motion-load-ar-0450ms.png",
+      "motion-load-ar-0600ms.png",
+      "motion-load-ar-0800ms.png",
+      "motion-load-ar-1000ms.png",
+      "motion-load-ar-1200ms.png",
+      "motion-load-ar-1400ms.png",
+      "motion-load-ar-1700ms.png",
+      "motion-load-ar-2000ms.png",
+      "motion-load-ar-2160ms.png",
+      "motion-load-en-0300ms.png",
+      "motion-load-en-0600ms.png",
+      "motion-load-en-1000ms.png",
+      "motion-load-en-1400ms.png",
+      "motion-load-en-2160ms.png",
+      "motion-light-nowcard-ar-2x.png",
+      "motion-light-chart-corners-ar-2x.png",
+      "motion-light-nowcard-en-2x.png",
+      "motion-light-chart-corners-en-2x.png",
+      "motion-live-ar-cards-before.png",
+      "motion-live-ar-cards-0100ms.png",
+      "motion-live-ar-cards-0350ms.png",
+      "motion-live-ar-cards-after.png",
+      "motion-live-ar-tail-before-2x.png",
+      "motion-live-ar-tail-0100ms-2x.png",
+      "motion-live-ar-tail-0350ms-2x.png",
+      "motion-live-ar-tail-after-2x.png",
+      "motion-follow-now-rest-2x.png",
+      "motion-follow-now-a-2x.png",
+      "motion-follow-now-b-2x.png",
+      "motion-rail-ar-open-0120ms.png",
+      "motion-rail-ar-close-0110ms.png",
+      "motion-rail-en-open-0120ms.png",
+      "motion-glide-ar-0090ms.png",
+      "motion-contact-sheet.png"
+    ]
+  },
+  "lightMeasurement": {
+    "method": "OKLab L relative to the card's own base on light-only 1x captures (content hidden); see capture.mjs measure()",
+    "targets": {
+      "chart": "pure dark >= ~75%, dim haze <= 15%, light fades to black within ~15-35% of the card height (NEXT-DIRECTION-BRIEF Round 5 section 2)",
+      "insideNowReference": "reference light 4 at y=0.98: far corner 0.45, middle 0.19-0.30, lit corner 0.74-0.79; at y=0.95 the middle 0.15 (coordinator's measurement)"
+    },
+    "presets": {
+      "v2": {
+        "settings": {
+          "--now-int": "1.6",
+          "--now-core": "229 25 53",
+          "--now-disc-size": "61",
+          "--now-disc-x": "83",
+          "--now-soft": "40",
+          "--now-rim": "-22",
+          "--now-far": "0",
+          "--now-end": "18",
+          "--chart-int": "0.55",
+          "--chart-fade": "40",
+          "--chart-side": "48",
+          "--chart-balance": "0",
+          "--chart-soft": "260",
+          "--wash-int": "1",
+          "--grain-o": "0.15"
+        },
+        "chart": {
+          "base": 0.161,
+          "pureDarkPct": 66.6,
+          "hazePct": 30,
+          "litPct": 3.5,
+          "fadeToBlackPctOfHeight": {
+            "middle": 28.8,
+            "inlineEndCorner": 43.8,
+            "inlineStartCorner": 43.9,
+            "min": 25.9,
+            "median": 31,
+            "max": 43.9
+          },
+          "lowerCornerPeakL": {
+            "inlineEnd": 0.347,
+            "inlineStart": 0.347
+          }
+        },
+        "insideNow": {
+          "base": 0.161,
+          "peakL": 0.642,
+          "rowAt098": [
+            {
+              "fromFarCorner": 0.05,
+              "L": 0.161
+            },
+            {
+              "fromFarCorner": 0.1,
+              "L": 0.161
+            },
+            {
+              "fromFarCorner": 0.14,
+              "L": 0.161
+            },
+            {
+              "fromFarCorner": 0.19,
+              "L": 0.161
+            },
+            {
+              "fromFarCorner": 0.24,
+              "L": 0.161
+            },
+            {
+              "fromFarCorner": 0.29,
+              "L": 0.161
+            },
+            {
+              "fromFarCorner": 0.33,
+              "L": 0.161
+            },
+            {
+              "fromFarCorner": 0.38,
+              "L": 0.161
+            },
+            {
+              "fromFarCorner": 0.43,
+              "L": 0.161
+            },
+            {
+              "fromFarCorner": 0.48,
+              "L": 0.161
+            },
+            {
+              "fromFarCorner": 0.52,
+              "L": 0.162
+            },
+            {
+              "fromFarCorner": 0.57,
+              "L": 0.185
+            },
+            {
+              "fromFarCorner": 0.62,
+              "L": 0.232
+            },
+            {
+              "fromFarCorner": 0.67,
+              "L": 0.269
+            },
+            {
+              "fromFarCorner": 0.71,
+              "L": 0.372
+            },
+            {
+              "fromFarCorner": 0.76,
+              "L": 0.506
+            },
+            {
+              "fromFarCorner": 0.81,
+              "L": 0.585
+            },
+            {
+              "fromFarCorner": 0.86,
+              "L": 0.617
+            },
+            {
+              "fromFarCorner": 0.9,
+              "L": 0.634
+            },
+            {
+              "fromFarCorner": 0.95,
+              "L": 0.639
+            }
+          ],
+          "rowAt095": [
+            {
+              "fromFarCorner": 0.05,
+              "L": 0.161
+            },
+            {
+              "fromFarCorner": 0.1,
+              "L": 0.161
+            },
+            {
+              "fromFarCorner": 0.14,
+              "L": 0.161
+            },
+            {
+              "fromFarCorner": 0.19,
+              "L": 0.161
+            },
+            {
+              "fromFarCorner": 0.24,
+              "L": 0.161
+            },
+            {
+              "fromFarCorner": 0.29,
+              "L": 0.161
+            },
+            {
+              "fromFarCorner": 0.33,
+              "L": 0.161
+            },
+            {
+              "fromFarCorner": 0.38,
+              "L": 0.161
+            },
+            {
+              "fromFarCorner": 0.43,
+              "L": 0.161
+            },
+            {
+              "fromFarCorner": 0.48,
+              "L": 0.161
+            },
+            {
+              "fromFarCorner": 0.52,
+              "L": 0.161
+            },
+            {
+              "fromFarCorner": 0.57,
+              "L": 0.168
+            },
+            {
+              "fromFarCorner": 0.62,
+              "L": 0.201
+            },
+            {
+              "fromFarCorner": 0.67,
+              "L": 0.248
+            },
+            {
+              "fromFarCorner": 0.71,
+              "L": 0.357
+            },
+            {
+              "fromFarCorner": 0.76,
+              "L": 0.485
+            },
+            {
+              "fromFarCorner": 0.81,
+              "L": 0.561
+            },
+            {
+              "fromFarCorner": 0.86,
+              "L": 0.609
+            },
+            {
+              "fromFarCorner": 0.9,
+              "L": 0.632
+            },
+            {
+              "fromFarCorner": 0.95,
+              "L": 0.641
+            }
+          ],
+          "inlineEndSideColumn": [
+            {
+              "y": 0.05,
+              "L": 0.161
+            },
+            {
+              "y": 0.1,
+              "L": 0.161
+            },
+            {
+              "y": 0.15,
+              "L": 0.161
+            },
+            {
+              "y": 0.2,
+              "L": 0.161
+            },
+            {
+              "y": 0.25,
+              "L": 0.161
+            },
+            {
+              "y": 0.3,
+              "L": 0.161
+            },
+            {
+              "y": 0.35,
+              "L": 0.161
+            },
+            {
+              "y": 0.4,
+              "L": 0.161
+            },
+            {
+              "y": 0.45,
+              "L": 0.175
+            },
+            {
+              "y": 0.5,
+              "L": 0.249
+            },
+            {
+              "y": 0.55,
+              "L": 0.389
+            },
+            {
+              "y": 0.6,
+              "L": 0.475
+            },
+            {
+              "y": 0.65,
+              "L": 0.51
+            },
+            {
+              "y": 0.7,
+              "L": 0.559
+            },
+            {
+              "y": 0.75,
+              "L": 0.59
+            },
+            {
+              "y": 0.8,
+              "L": 0.614
+            },
+            {
+              "y": 0.85,
+              "L": 0.629
+            },
+            {
+              "y": 0.9,
+              "L": 0.637
+            },
+            {
+              "y": 0.95,
+              "L": 0.644
+            }
+          ]
+        }
+      },
+      "a-like": {
+        "settings": {
+          "--now-int": "0.7",
+          "--now-core": "229 25 53",
+          "--now-disc-size": "77",
+          "--now-disc-x": "67",
+          "--now-soft": "34",
+          "--now-rim": "8",
+          "--now-far": "0.9",
+          "--now-end": "19",
+          "--chart-int": "1.1",
+          "--chart-fade": "16",
+          "--chart-side": "36",
+          "--chart-balance": "0.95",
+          "--chart-soft": "48",
+          "--wash-int": "1",
+          "--grain-o": "0.15"
+        },
+        "chart": {
+          "base": 0.161,
+          "pureDarkPct": 81.5,
+          "hazePct": 12.1,
+          "litPct": 6.4,
+          "fadeToBlackPctOfHeight": {
+            "middle": 13.6,
+            "inlineEndCorner": 32.7,
+            "inlineStartCorner": 25.8,
+            "min": 13.3,
+            "median": 16.2,
+            "max": 33.7
+          },
+          "lowerCornerPeakL": {
+            "inlineEnd": 0.57,
+            "inlineStart": 0.321
+          }
+        },
+        "insideNow": {
+          "base": 0.161,
+          "peakL": 0.491,
+          "rowAt098": [
+            {
+              "fromFarCorner": 0.05,
+              "L": 0.312
+            },
+            {
+              "fromFarCorner": 0.1,
+              "L": 0.265
+            },
+            {
+              "fromFarCorner": 0.14,
+              "L": 0.233
+            },
+            {
+              "fromFarCorner": 0.19,
+              "L": 0.221
+            },
+            {
+              "fromFarCorner": 0.24,
+              "L": 0.218
+            },
+            {
+              "fromFarCorner": 0.29,
+              "L": 0.208
+            },
+            {
+              "fromFarCorner": 0.33,
+              "L": 0.218
+            },
+            {
+              "fromFarCorner": 0.38,
+              "L": 0.219
+            },
+            {
+              "fromFarCorner": 0.43,
+              "L": 0.209
+            },
+            {
+              "fromFarCorner": 0.48,
+              "L": 0.226
+            },
+            {
+              "fromFarCorner": 0.52,
+              "L": 0.239
+            },
+            {
+              "fromFarCorner": 0.57,
+              "L": 0.25
+            },
+            {
+              "fromFarCorner": 0.62,
+              "L": 0.258
+            },
+            {
+              "fromFarCorner": 0.67,
+              "L": 0.273
+            },
+            {
+              "fromFarCorner": 0.71,
+              "L": 0.315
+            },
+            {
+              "fromFarCorner": 0.76,
+              "L": 0.366
+            },
+            {
+              "fromFarCorner": 0.81,
+              "L": 0.408
+            },
+            {
+              "fromFarCorner": 0.86,
+              "L": 0.447
+            },
+            {
+              "fromFarCorner": 0.9,
+              "L": 0.481
+            },
+            {
+              "fromFarCorner": 0.95,
+              "L": 0.491
+            }
+          ],
+          "rowAt095": [
+            {
+              "fromFarCorner": 0.05,
+              "L": 0.287
+            },
+            {
+              "fromFarCorner": 0.1,
+              "L": 0.243
+            },
+            {
+              "fromFarCorner": 0.14,
+              "L": 0.215
+            },
+            {
+              "fromFarCorner": 0.19,
+              "L": 0.211
+            },
+            {
+              "fromFarCorner": 0.24,
+              "L": 0.196
+            },
+            {
+              "fromFarCorner": 0.29,
+              "L": 0.19
+            },
+            {
+              "fromFarCorner": 0.33,
+              "L": 0.191
+            },
+            {
+              "fromFarCorner": 0.38,
+              "L": 0.193
+            },
+            {
+              "fromFarCorner": 0.43,
+              "L": 0.186
+            },
+            {
+              "fromFarCorner": 0.48,
+              "L": 0.192
+            },
+            {
+              "fromFarCorner": 0.52,
+              "L": 0.219
+            },
+            {
+              "fromFarCorner": 0.57,
+              "L": 0.24
+            },
+            {
+              "fromFarCorner": 0.62,
+              "L": 0.24
+            },
+            {
+              "fromFarCorner": 0.67,
+              "L": 0.252
+            },
+            {
+              "fromFarCorner": 0.71,
+              "L": 0.288
+            },
+            {
+              "fromFarCorner": 0.76,
+              "L": 0.339
+            },
+            {
+              "fromFarCorner": 0.81,
+              "L": 0.361
+            },
+            {
+              "fromFarCorner": 0.86,
+              "L": 0.413
+            },
+            {
+              "fromFarCorner": 0.9,
+              "L": 0.457
+            },
+            {
+              "fromFarCorner": 0.95,
+              "L": 0.479
+            }
+          ],
+          "inlineEndSideColumn": [
+            {
+              "y": 0.05,
+              "L": 0.161
+            },
+            {
+              "y": 0.1,
+              "L": 0.161
+            },
+            {
+              "y": 0.15,
+              "L": 0.161
+            },
+            {
+              "y": 0.2,
+              "L": 0.161
+            },
+            {
+              "y": 0.25,
+              "L": 0.161
+            },
+            {
+              "y": 0.3,
+              "L": 0.161
+            },
+            {
+              "y": 0.35,
+              "L": 0.161
+            },
+            {
+              "y": 0.4,
+              "L": 0.161
+            },
+            {
+              "y": 0.45,
+              "L": 0.16
+            },
+            {
+              "y": 0.5,
+              "L": 0.183
+            },
+            {
+              "y": 0.55,
+              "L": 0.248
+            },
+            {
+              "y": 0.6,
+              "L": 0.3
+            },
+            {
+              "y": 0.65,
+              "L": 0.33
+            },
+            {
+              "y": 0.7,
+              "L": 0.365
+            },
+            {
+              "y": 0.75,
+              "L": 0.392
+            },
+            {
+              "y": 0.8,
+              "L": 0.414
+            },
+            {
+              "y": 0.85,
+              "L": 0.441
+            },
+            {
+              "y": 0.9,
+              "L": 0.456
+            },
+            {
+              "y": 0.95,
+              "L": 0.484
+            }
+          ]
+        }
+      },
+      "recommended": {
+        "settings": {
+          "--now-int": "0.7",
+          "--now-core": "229 25 53",
+          "--now-disc-size": "77",
+          "--now-disc-x": "67",
+          "--now-soft": "34",
+          "--now-rim": "8",
+          "--now-far": "0.9",
+          "--now-end": "19",
+          "--chart-int": "0.95",
+          "--chart-fade": "11.5",
+          "--chart-side": "48.5",
+          "--chart-balance": "0",
+          "--chart-soft": "260",
+          "--wash-int": "1",
+          "--grain-o": "0.15"
+        },
+        "chart": {
+          "base": 0.161,
+          "pureDarkPct": 80.7,
+          "hazePct": 13.4,
+          "litPct": 5.9,
+          "fadeToBlackPctOfHeight": {
+            "middle": 8.2,
+            "inlineEndCorner": 40.7,
+            "inlineStartCorner": 40.7,
+            "min": 8.1,
+            "median": 13.5,
+            "max": 41.8
+          },
+          "lowerCornerPeakL": {
+            "inlineEnd": 0.441,
+            "inlineStart": 0.441
+          }
+        },
+        "insideNow": {
+          "base": 0.161,
+          "peakL": 0.491,
+          "rowAt098": [
+            {
+              "fromFarCorner": 0.05,
+              "L": 0.312
+            },
+            {
+              "fromFarCorner": 0.1,
+              "L": 0.265
+            },
+            {
+              "fromFarCorner": 0.14,
+              "L": 0.233
+            },
+            {
+              "fromFarCorner": 0.19,
+              "L": 0.221
+            },
+            {
+              "fromFarCorner": 0.24,
+              "L": 0.218
+            },
+            {
+              "fromFarCorner": 0.29,
+              "L": 0.208
+            },
+            {
+              "fromFarCorner": 0.33,
+              "L": 0.218
+            },
+            {
+              "fromFarCorner": 0.38,
+              "L": 0.219
+            },
+            {
+              "fromFarCorner": 0.43,
+              "L": 0.209
+            },
+            {
+              "fromFarCorner": 0.48,
+              "L": 0.226
+            },
+            {
+              "fromFarCorner": 0.52,
+              "L": 0.239
+            },
+            {
+              "fromFarCorner": 0.57,
+              "L": 0.25
+            },
+            {
+              "fromFarCorner": 0.62,
+              "L": 0.258
+            },
+            {
+              "fromFarCorner": 0.67,
+              "L": 0.273
+            },
+            {
+              "fromFarCorner": 0.71,
+              "L": 0.315
+            },
+            {
+              "fromFarCorner": 0.76,
+              "L": 0.366
+            },
+            {
+              "fromFarCorner": 0.81,
+              "L": 0.408
+            },
+            {
+              "fromFarCorner": 0.86,
+              "L": 0.447
+            },
+            {
+              "fromFarCorner": 0.9,
+              "L": 0.481
+            },
+            {
+              "fromFarCorner": 0.95,
+              "L": 0.491
+            }
+          ],
+          "rowAt095": [
+            {
+              "fromFarCorner": 0.05,
+              "L": 0.287
+            },
+            {
+              "fromFarCorner": 0.1,
+              "L": 0.243
+            },
+            {
+              "fromFarCorner": 0.14,
+              "L": 0.215
+            },
+            {
+              "fromFarCorner": 0.19,
+              "L": 0.211
+            },
+            {
+              "fromFarCorner": 0.24,
+              "L": 0.196
+            },
+            {
+              "fromFarCorner": 0.29,
+              "L": 0.19
+            },
+            {
+              "fromFarCorner": 0.33,
+              "L": 0.191
+            },
+            {
+              "fromFarCorner": 0.38,
+              "L": 0.193
+            },
+            {
+              "fromFarCorner": 0.43,
+              "L": 0.186
+            },
+            {
+              "fromFarCorner": 0.48,
+              "L": 0.192
+            },
+            {
+              "fromFarCorner": 0.52,
+              "L": 0.219
+            },
+            {
+              "fromFarCorner": 0.57,
+              "L": 0.24
+            },
+            {
+              "fromFarCorner": 0.62,
+              "L": 0.24
+            },
+            {
+              "fromFarCorner": 0.67,
+              "L": 0.252
+            },
+            {
+              "fromFarCorner": 0.71,
+              "L": 0.288
+            },
+            {
+              "fromFarCorner": 0.76,
+              "L": 0.339
+            },
+            {
+              "fromFarCorner": 0.81,
+              "L": 0.361
+            },
+            {
+              "fromFarCorner": 0.86,
+              "L": 0.413
+            },
+            {
+              "fromFarCorner": 0.9,
+              "L": 0.457
+            },
+            {
+              "fromFarCorner": 0.95,
+              "L": 0.479
+            }
+          ],
+          "inlineEndSideColumn": [
+            {
+              "y": 0.05,
+              "L": 0.161
+            },
+            {
+              "y": 0.1,
+              "L": 0.161
+            },
+            {
+              "y": 0.15,
+              "L": 0.161
+            },
+            {
+              "y": 0.2,
+              "L": 0.161
+            },
+            {
+              "y": 0.25,
+              "L": 0.161
+            },
+            {
+              "y": 0.3,
+              "L": 0.161
+            },
+            {
+              "y": 0.35,
+              "L": 0.161
+            },
+            {
+              "y": 0.4,
+              "L": 0.161
+            },
+            {
+              "y": 0.45,
+              "L": 0.16
+            },
+            {
+              "y": 0.5,
+              "L": 0.183
+            },
+            {
+              "y": 0.55,
+              "L": 0.248
+            },
+            {
+              "y": 0.6,
+              "L": 0.3
+            },
+            {
+              "y": 0.65,
+              "L": 0.33
+            },
+            {
+              "y": 0.7,
+              "L": 0.365
+            },
+            {
+              "y": 0.75,
+              "L": 0.392
+            },
+            {
+              "y": 0.8,
+              "L": 0.414
+            },
+            {
+              "y": 0.85,
+              "L": 0.441
+            },
+            {
+              "y": 0.9,
+              "L": 0.456
+            },
+            {
+              "y": 0.95,
+              "L": 0.484
+            }
+          ]
+        }
+      },
+      "recommendedLtrInsideNow": {
+        "base": 0.161,
+        "peakL": 0.49,
+        "rowAt098": [
+          {
+            "fromFarCorner": 0.05,
+            "L": 0.308
+          },
+          {
+            "fromFarCorner": 0.1,
+            "L": 0.272
+          },
+          {
+            "fromFarCorner": 0.14,
+            "L": 0.231
+          },
+          {
+            "fromFarCorner": 0.19,
+            "L": 0.225
+          },
+          {
+            "fromFarCorner": 0.24,
+            "L": 0.219
+          },
+          {
+            "fromFarCorner": 0.29,
+            "L": 0.211
+          },
+          {
+            "fromFarCorner": 0.33,
+            "L": 0.21
+          },
+          {
+            "fromFarCorner": 0.38,
+            "L": 0.208
+          },
+          {
+            "fromFarCorner": 0.43,
+            "L": 0.217
+          },
+          {
+            "fromFarCorner": 0.48,
+            "L": 0.226
+          },
+          {
+            "fromFarCorner": 0.52,
+            "L": 0.24
+          },
+          {
+            "fromFarCorner": 0.57,
+            "L": 0.242
+          },
+          {
+            "fromFarCorner": 0.62,
+            "L": 0.269
+          },
+          {
+            "fromFarCorner": 0.67,
+            "L": 0.285
+          },
+          {
+            "fromFarCorner": 0.71,
+            "L": 0.311
+          },
+          {
+            "fromFarCorner": 0.76,
+            "L": 0.364
+          },
+          {
+            "fromFarCorner": 0.81,
+            "L": 0.407
+          },
+          {
+            "fromFarCorner": 0.86,
+            "L": 0.448
+          },
+          {
+            "fromFarCorner": 0.9,
+            "L": 0.478
+          },
+          {
+            "fromFarCorner": 0.95,
+            "L": 0.492
+          }
+        ],
+        "rowAt095": [
+          {
+            "fromFarCorner": 0.05,
+            "L": 0.295
+          },
+          {
+            "fromFarCorner": 0.1,
+            "L": 0.249
+          },
+          {
+            "fromFarCorner": 0.14,
+            "L": 0.209
+          },
+          {
+            "fromFarCorner": 0.19,
+            "L": 0.19
+          },
+          {
+            "fromFarCorner": 0.24,
+            "L": 0.201
+          },
+          {
+            "fromFarCorner": 0.29,
+            "L": 0.19
+          },
+          {
+            "fromFarCorner": 0.33,
+            "L": 0.189
+          },
+          {
+            "fromFarCorner": 0.38,
+            "L": 0.192
+          },
+          {
+            "fromFarCorner": 0.43,
+            "L": 0.204
+          },
+          {
+            "fromFarCorner": 0.48,
+            "L": 0.205
+          },
+          {
+            "fromFarCorner": 0.52,
+            "L": 0.204
+          },
+          {
+            "fromFarCorner": 0.57,
+            "L": 0.212
+          },
+          {
+            "fromFarCorner": 0.62,
+            "L": 0.241
+          },
+          {
+            "fromFarCorner": 0.67,
+            "L": 0.254
+          },
+          {
+            "fromFarCorner": 0.71,
+            "L": 0.291
+          },
+          {
+            "fromFarCorner": 0.76,
+            "L": 0.331
+          },
+          {
+            "fromFarCorner": 0.81,
+            "L": 0.384
+          },
+          {
+            "fromFarCorner": 0.86,
+            "L": 0.421
+          },
+          {
+            "fromFarCorner": 0.9,
+            "L": 0.452
+          },
+          {
+            "fromFarCorner": 0.95,
+            "L": 0.471
+          }
+        ],
+        "inlineEndSideColumn": [
+          {
+            "y": 0.05,
+            "L": 0.161
+          },
+          {
+            "y": 0.1,
+            "L": 0.161
+          },
+          {
+            "y": 0.15,
+            "L": 0.161
+          },
+          {
+            "y": 0.2,
+            "L": 0.161
+          },
+          {
+            "y": 0.25,
+            "L": 0.161
+          },
+          {
+            "y": 0.3,
+            "L": 0.161
+          },
+          {
+            "y": 0.35,
+            "L": 0.161
+          },
+          {
+            "y": 0.4,
+            "L": 0.161
+          },
+          {
+            "y": 0.45,
+            "L": 0.16
+          },
+          {
+            "y": 0.5,
+            "L": 0.184
+          },
+          {
+            "y": 0.55,
+            "L": 0.248
+          },
+          {
+            "y": 0.6,
+            "L": 0.306
+          },
+          {
+            "y": 0.65,
+            "L": 0.332
+          },
+          {
+            "y": 0.7,
+            "L": 0.366
+          },
+          {
+            "y": 0.75,
+            "L": 0.394
+          },
+          {
+            "y": 0.8,
+            "L": 0.419
+          },
+          {
+            "y": 0.85,
+            "L": 0.429
+          },
+          {
+            "y": 0.9,
+            "L": 0.454
+          },
+          {
+            "y": 0.95,
+            "L": 0.465
+          }
+        ]
+      }
+    },
+    "calibration": {
+      "lightStudyA": {
+        "source": "../light-study/index.html?recipe=a (read-only, content hidden)",
+        "chart": {
+          "base": 0.161,
+          "pureDarkPct": 80.4,
+          "hazePct": 13,
+          "litPct": 6.6,
+          "fadeToBlackPctOfHeight": {
+            "middle": 13,
+            "inlineEndCorner": 33.5,
+            "inlineStartCorner": 19.7,
+            "min": 12,
+            "median": 16,
+            "max": 33.5
+          },
+          "lowerCornerPeakL": {
+            "inlineEnd": 0.535,
+            "inlineStart": 0.311
+          }
+        },
+        "errors": []
+      }
+    }
+  },
+  "tunerFileCheck": {
+    "url": "file:///D:/Projects/fitway-worktrees/owner-design-exploration-r04/design-research/owner-composition-exploration-r04/directions/eclipse/index.html?lang=ar",
+    "protocol": "file:",
+    "collapsedByDefault": {
+      "toggle": true,
+      "expanded": "false",
+      "panelHidden": true
+    },
+    "toggleRect": {
+      "x": 869.203125,
+      "y": 8,
+      "width": 118.796875,
+      "height": 28
+    },
+    "before": {
+      "--now-int": "0.7"
+    },
+    "after": {
+      "--now-int": "0.4",
+      "inputValue": "0.4",
+      "output": "40%"
+    },
+    "pixelsChanged": {
+      "changedPixels": 9843,
+      "meanAbsRgbDiff": 6.79
+    },
+    "copyClipboard": {
+      "validJson": true,
+      "preset": "custom",
+      "nowInt": 0.4,
+      "cssNowInt": "0.4",
+      "keys": 17,
+      "status": "نُسخت القيم"
+    },
+    "copyFallback": {
+      "textareaVisible": true,
+      "validJson": true,
+      "focused": true,
+      "status": "تعذّر النسخ، انسخ القيم من المربع"
+    },
+    "escapeCloses": {
+      "panelHidden": true,
+      "focusOnToggle": true
+    },
+    "persistedAfterReload": {
+      "--now-int": "0.4",
+      "tunerValue": 0.4
+    },
+    "tunerOff": {
+      "tunerElement": false,
+      "--now-int": "0.7"
+    },
+    "reset": {
+      "--now-int": "0.7",
+      "preset": "recommended",
+      "inlineOverrides": ""
+    },
+    "presetV2": {
+      "preset": "v2",
+      "--now-int": "1.6",
+      "expected": "1.6"
+    },
+    "presetRecommended": {
+      "preset": "recommended",
+      "--now-int": "0.7",
+      "inlineOverrides": ""
+    },
+    "drag": {
+      "moved": {
+        "dx": -200,
+        "dy": 120
+      },
+      "expanded": [
+        "false",
+        "false"
+      ],
+      "storedPosition": "{\"edge\":652,\"top\":128}",
+      "homeReturns": true,
+      "pass": true
+    },
+    "motionGroup": {
+      "defaults": {
+        "motion": true,
+        "follow": true,
+        "followChart": false,
+        "switchOn": true,
+        "crowd": false
+      },
+      "group": {
+        "present": true,
+        "switches": [
+          {
+            "id": "t-mo-motion",
+            "checked": false,
+            "disabled": true
+          },
+          {
+            "id": "t-mo-switchOn",
+            "checked": true,
+            "disabled": false
+          },
+          {
+            "id": "t-mo-follow",
+            "checked": true,
+            "disabled": false
+          },
+          {
+            "id": "t-mo-crowd",
+            "checked": false,
+            "disabled": false
+          },
+          {
+            "id": "t-mo-followChart",
+            "checked": false,
+            "disabled": false
+          }
+        ],
+        "note": "النظام يطلب حركة أقل، فالحركة متوقفة"
+      },
+      "switchesShowDefaults": true,
+      "newReading": {
+        "lastBefore": 822,
+        "lastAfter": 823,
+        "nowBefore": 49,
+        "nowAfter": 49,
+        "entriesBefore": 332,
+        "entriesAfter": 333,
+        "statusTime": "7:43 م",
+        "latestAfter": "7:43 م",
+        "tunerStatus": "آخر قراءة 7:43 م"
+      },
+      "stored": {
+        "motion": "{\"motion\":true,\"follow\":false,\"followChart\":false,\"switchOn\":false,\"crowd\":false}",
+        "lightsKeyStillSeparate": true
+      },
+      "persistedAfterReload": {
+        "follow": false,
+        "switchOn": false,
+        "followBox": false,
+        "switchOnBox": false,
+        "dayRestartsAt": 822
+      },
+      "tunerOffIgnoresStored": true,
+      "pass": true
+    },
+    "errors": [],
+    "expected": {
+      "default": "0.7",
+      "afterSixSteps": "0.4"
+    },
+    "pass": true,
+    "replayFromFile": {
+      "introActive": true,
+      "entranceClass": 1,
+      "lightAnimations": 9,
+      "status": "تُعاد حركة الفتح",
+      "settledAfter": {
+        "entranceClass": 0,
+        "pending": null
+      },
+      "errors": [],
+      "pass": true
+    }
+  },
+  "frames": [
+    {
+      "frame": "daily-ar-1440x900",
+      "url": "index.html?lang=ar&tuner=0",
+      "viewport": "1440x900",
+      "deviceScaleFactor": 1,
+      "fullPage": false,
+      "act": null,
+      "fontsOk": true,
+      "chartRect": {
+        "x": 16,
+        "y": 290.25,
+        "width": 1304,
+        "height": 593.75
+      },
+      "lang": "ar",
+      "dir": "rtl",
+      "state": "live",
+      "tunerPresent": false,
+      "fonts": {
+        "400 16px \"Readex Pro\" مرحبا": true,
+        "500 16px \"Readex Pro\" مرحبا": true,
+        "400 16px \"Readex Pro\" Today 0123": true,
+        "500 16px \"Readex Pro\" 0123": true
+      },
+      "loadedFaces": [
+        "Readex Pro 400",
+        "Readex Pro 500"
+      ],
+      "overflowX": 0,
+      "overflowY": 0,
+      "spill": [],
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "railExpanded": "false",
+      "detailsExpanded": "false",
+      "tipVisible": false,
+      "tipText": "",
+      "valuetext": "7:42 م، 49 داخل الصالة، مزدحم، آخر قراءة، المعتاد 45",
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "same",
+        "avgNow": 47.5,
+        "usualLatest": 45.4,
+        "usualEntries": 318,
+        "crestM": 751
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "overshoot": 0,
+        "drawnMax": 58.93,
+        "drawnMin": 0,
+        "avgMax": 58.93,
+        "avgMin": 0,
+        "withinAverage": true,
+        "zeroKept": true,
+        "segments": [
+          [
+            0,
+            493
+          ],
+          [
+            512,
+            822
+          ]
+        ],
+        "lineStopsAtGap": true,
+        "lineEndsAtLast": true,
+        "crestM": 751,
+        "crest": 58.93,
+        "crestMinusPeakMinutes": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "daily-en-1440x900",
+      "url": "index.html?lang=en&tuner=0",
+      "viewport": "1440x900",
+      "deviceScaleFactor": 1,
+      "fullPage": false,
+      "act": null,
+      "fontsOk": true,
+      "chartRect": {
+        "x": 120,
+        "y": 290.25,
+        "width": 1304,
+        "height": 593.75
+      },
+      "lang": "en",
+      "dir": "ltr",
+      "state": "live",
+      "tunerPresent": false,
+      "fonts": {
+        "400 16px \"Readex Pro\" Today 0123": true,
+        "500 16px \"Readex Pro\" 0123": true
+      },
+      "loadedFaces": [
+        "Readex Pro 400",
+        "Readex Pro 500"
+      ],
+      "overflowX": 0,
+      "overflowY": 0,
+      "spill": [],
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "railExpanded": "false",
+      "detailsExpanded": "false",
+      "tipVisible": false,
+      "tipText": "",
+      "valuetext": "7:42 PM, 49 inside, Busy, Latest, Usual 45",
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "same",
+        "avgNow": 47.5,
+        "usualLatest": 45.4,
+        "usualEntries": 318,
+        "crestM": 751
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "overshoot": 0,
+        "drawnMax": 58.93,
+        "drawnMin": 0,
+        "avgMax": 58.93,
+        "avgMin": 0,
+        "withinAverage": true,
+        "zeroKept": true,
+        "segments": [
+          [
+            0,
+            493
+          ],
+          [
+            512,
+            822
+          ]
+        ],
+        "lineStopsAtGap": true,
+        "lineEndsAtLast": true,
+        "crestM": 751,
+        "crest": 58.93,
+        "crestMinusPeakMinutes": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "daily-ar-1440x900-hover",
+      "url": "index.html?lang=ar&tuner=0",
+      "viewport": "1440x900",
+      "deviceScaleFactor": 1,
+      "fullPage": false,
+      "act": "hover-peak",
+      "fontsOk": true,
+      "chartRect": {
+        "x": 16,
+        "y": 290.25,
+        "width": 1304,
+        "height": 593.75
+      },
+      "lang": "ar",
+      "dir": "rtl",
+      "state": "live",
+      "tunerPresent": false,
+      "fonts": {
+        "400 16px \"Readex Pro\" مرحبا": true,
+        "500 16px \"Readex Pro\" مرحبا": true,
+        "400 16px \"Readex Pro\" Today 0123": true,
+        "500 16px \"Readex Pro\" 0123": true
+      },
+      "loadedFaces": [
+        "Readex Pro 400",
+        "Readex Pro 500"
+      ],
+      "overflowX": 0,
+      "overflowY": 0,
+      "spill": [],
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "railExpanded": "false",
+      "detailsExpanded": "false",
+      "tipVisible": true,
+      "tipText": "6:29 م الذروة 62 مزدحم المعتاد 49",
+      "valuetext": "6:29 م، 62 داخل الصالة، مزدحم، الذروة، المعتاد 49",
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "same",
+        "avgNow": 47.5,
+        "usualLatest": 45.4,
+        "usualEntries": 318,
+        "crestM": 751
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "overshoot": 0,
+        "drawnMax": 58.93,
+        "drawnMin": 0,
+        "avgMax": 58.93,
+        "avgMin": 0,
+        "withinAverage": true,
+        "zeroKept": true,
+        "segments": [
+          [
+            0,
+            493
+          ],
+          [
+            512,
+            822
+          ]
+        ],
+        "lineStopsAtGap": true,
+        "lineEndsAtLast": true,
+        "crestM": 751,
+        "crest": 58.93,
+        "crestMinusPeakMinutes": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "daily-ar-1440x900-rail-open",
+      "url": "index.html?lang=ar&tuner=0",
+      "viewport": "1440x900",
+      "deviceScaleFactor": 1,
+      "fullPage": false,
+      "act": "rail-open",
+      "fontsOk": true,
+      "chartRect": {
+        "x": 16,
+        "y": 290.25,
+        "width": 1304,
+        "height": 593.75
+      },
+      "lang": "ar",
+      "dir": "rtl",
+      "state": "live",
+      "tunerPresent": false,
+      "fonts": {
+        "400 16px \"Readex Pro\" مرحبا": true,
+        "500 16px \"Readex Pro\" مرحبا": true,
+        "400 16px \"Readex Pro\" Today 0123": true,
+        "500 16px \"Readex Pro\" 0123": true
+      },
+      "loadedFaces": [
+        "Readex Pro 400",
+        "Readex Pro 500"
+      ],
+      "overflowX": 0,
+      "overflowY": 0,
+      "spill": [],
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "railExpanded": "true",
+      "detailsExpanded": "false",
+      "tipVisible": false,
+      "tipText": "",
+      "valuetext": "7:42 م، 49 داخل الصالة، مزدحم، آخر قراءة، المعتاد 45",
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "same",
+        "avgNow": 47.5,
+        "usualLatest": 45.4,
+        "usualEntries": 318,
+        "crestM": 751
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "overshoot": 0,
+        "drawnMax": 58.93,
+        "drawnMin": 0,
+        "avgMax": 58.93,
+        "avgMin": 0,
+        "withinAverage": true,
+        "zeroKept": true,
+        "segments": [
+          [
+            0,
+            493
+          ],
+          [
+            512,
+            822
+          ]
+        ],
+        "lineStopsAtGap": true,
+        "lineEndsAtLast": true,
+        "crestM": 751,
+        "crest": 58.93,
+        "crestMinusPeakMinutes": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "daily-en-1440x900-rail-open",
+      "url": "index.html?lang=en&tuner=0",
+      "viewport": "1440x900",
+      "deviceScaleFactor": 1,
+      "fullPage": false,
+      "act": "rail-open",
+      "fontsOk": true,
+      "chartRect": {
+        "x": 120,
+        "y": 290.25,
+        "width": 1304,
+        "height": 593.75
+      },
+      "lang": "en",
+      "dir": "ltr",
+      "state": "live",
+      "tunerPresent": false,
+      "fonts": {
+        "400 16px \"Readex Pro\" Today 0123": true,
+        "500 16px \"Readex Pro\" 0123": true
+      },
+      "loadedFaces": [
+        "Readex Pro 400",
+        "Readex Pro 500"
+      ],
+      "overflowX": 0,
+      "overflowY": 0,
+      "spill": [],
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "railExpanded": "true",
+      "detailsExpanded": "false",
+      "tipVisible": false,
+      "tipText": "",
+      "valuetext": "7:42 PM, 49 inside, Busy, Latest, Usual 45",
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "same",
+        "avgNow": 47.5,
+        "usualLatest": 45.4,
+        "usualEntries": 318,
+        "crestM": 751
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "overshoot": 0,
+        "drawnMax": 58.93,
+        "drawnMin": 0,
+        "avgMax": 58.93,
+        "avgMin": 0,
+        "withinAverage": true,
+        "zeroKept": true,
+        "segments": [
+          [
+            0,
+            493
+          ],
+          [
+            512,
+            822
+          ]
+        ],
+        "lineStopsAtGap": true,
+        "lineEndsAtLast": true,
+        "crestM": 751,
+        "crest": 58.93,
+        "crestMinusPeakMinutes": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "daily-ar-1440x900-delayed",
+      "url": "index.html?lang=ar&state=delayed&tuner=0",
+      "viewport": "1440x900",
+      "deviceScaleFactor": 1,
+      "fullPage": false,
+      "act": null,
+      "fontsOk": true,
+      "chartRect": {
+        "x": 16,
+        "y": 290.25,
+        "width": 1304,
+        "height": 593.75
+      },
+      "lang": "ar",
+      "dir": "rtl",
+      "state": "delayed",
+      "tunerPresent": false,
+      "fonts": {
+        "400 16px \"Readex Pro\" مرحبا": true,
+        "500 16px \"Readex Pro\" مرحبا": true,
+        "400 16px \"Readex Pro\" Today 0123": true,
+        "500 16px \"Readex Pro\" 0123": true
+      },
+      "loadedFaces": [
+        "Readex Pro 400",
+        "Readex Pro 500"
+      ],
+      "overflowX": 0,
+      "overflowY": 0,
+      "spill": [],
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "railExpanded": "false",
+      "detailsExpanded": "false",
+      "tipVisible": false,
+      "tipText": "",
+      "valuetext": "7:29 م، 46 داخل الصالة، متوسط، آخر قراءة، المعتاد 46",
+      "figures": {
+        "now": 46,
+        "last": 809,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 322,
+        "observed": 792,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": null,
+        "avgNow": 48.3,
+        "usualLatest": null,
+        "usualEntries": 309,
+        "crestM": 751
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "overshoot": 0,
+        "drawnMax": 58.93,
+        "drawnMin": 0,
+        "avgMax": 58.93,
+        "avgMin": 0,
+        "withinAverage": true,
+        "zeroKept": true,
+        "segments": [
+          [
+            0,
+            493
+          ],
+          [
+            512,
+            809
+          ]
+        ],
+        "lineStopsAtGap": true,
+        "lineEndsAtLast": true,
+        "crestM": 751,
+        "crest": 58.93,
+        "crestMinusPeakMinutes": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "daily-ar-1440x900-nohistory",
+      "url": "index.html?lang=ar&state=nohistory&tuner=0",
+      "viewport": "1440x900",
+      "deviceScaleFactor": 1,
+      "fullPage": false,
+      "act": null,
+      "fontsOk": true,
+      "chartRect": {
+        "x": 16,
+        "y": 290.25,
+        "width": 1304,
+        "height": 593.75
+      },
+      "lang": "ar",
+      "dir": "rtl",
+      "state": "nohistory",
+      "tunerPresent": false,
+      "fonts": {
+        "400 16px \"Readex Pro\" مرحبا": true,
+        "500 16px \"Readex Pro\" مرحبا": true,
+        "400 16px \"Readex Pro\" Today 0123": true,
+        "500 16px \"Readex Pro\" 0123": true
+      },
+      "loadedFaces": [
+        "Readex Pro 400",
+        "Readex Pro 500"
+      ],
+      "overflowX": 0,
+      "overflowY": 0,
+      "spill": [],
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "railExpanded": "false",
+      "detailsExpanded": "false",
+      "tipVisible": false,
+      "tipText": "",
+      "valuetext": "7:42 م، 49 داخل الصالة، مزدحم، آخر قراءة",
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": null,
+        "avgNow": 47.5,
+        "usualLatest": null,
+        "usualEntries": 318,
+        "crestM": 751
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "overshoot": 0,
+        "drawnMax": 58.93,
+        "drawnMin": 0,
+        "avgMax": 58.93,
+        "avgMin": 0,
+        "withinAverage": true,
+        "zeroKept": true,
+        "segments": [
+          [
+            0,
+            493
+          ],
+          [
+            512,
+            822
+          ]
+        ],
+        "lineStopsAtGap": true,
+        "lineEndsAtLast": true,
+        "crestM": 751,
+        "crest": 58.93,
+        "crestMinusPeakMinutes": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "daily-ar-1440x900-details",
+      "url": "index.html?lang=ar&tuner=0",
+      "viewport": "1440x900",
+      "deviceScaleFactor": 1,
+      "fullPage": true,
+      "act": "details",
+      "fontsOk": true,
+      "chartRect": {
+        "x": 16,
+        "y": 290.25,
+        "width": 1304,
+        "height": 593.75
+      },
+      "lang": "ar",
+      "dir": "rtl",
+      "state": "live",
+      "tunerPresent": false,
+      "fonts": {
+        "400 16px \"Readex Pro\" مرحبا": true,
+        "500 16px \"Readex Pro\" مرحبا": true,
+        "400 16px \"Readex Pro\" Today 0123": true,
+        "500 16px \"Readex Pro\" 0123": true
+      },
+      "loadedFaces": [
+        "Readex Pro 400",
+        "Readex Pro 500"
+      ],
+      "overflowX": 0,
+      "overflowY": 564,
+      "spill": [],
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "railExpanded": "false",
+      "detailsExpanded": "true",
+      "tipVisible": false,
+      "tipText": "2:25 ملا قراءة2:14 م - 2:31 م",
+      "valuetext": "2:25 م، لا قراءة (2:14 م - 2:31 م)",
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "same",
+        "avgNow": 47.5,
+        "usualLatest": 45.4,
+        "usualEntries": 318,
+        "crestM": 751
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "overshoot": 0,
+        "drawnMax": 58.93,
+        "drawnMin": 0,
+        "avgMax": 58.93,
+        "avgMin": 0,
+        "withinAverage": true,
+        "zeroKept": true,
+        "segments": [
+          [
+            0,
+            493
+          ],
+          [
+            512,
+            822
+          ]
+        ],
+        "lineStopsAtGap": true,
+        "lineEndsAtLast": true,
+        "crestM": 751,
+        "crest": 58.93,
+        "crestMinusPeakMinutes": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "daily-ar-1440x900-tuner-open",
+      "url": "index.html?lang=ar",
+      "viewport": "1440x900",
+      "deviceScaleFactor": 1,
+      "fullPage": false,
+      "act": "tuner-open",
+      "fontsOk": true,
+      "chartRect": {
+        "x": 16,
+        "y": 290.25,
+        "width": 1304,
+        "height": 593.75
+      },
+      "lang": "ar",
+      "dir": "rtl",
+      "state": "live",
+      "tunerPresent": true,
+      "fonts": {
+        "400 16px \"Readex Pro\" مرحبا": true,
+        "500 16px \"Readex Pro\" مرحبا": true,
+        "400 16px \"Readex Pro\" Today 0123": true,
+        "500 16px \"Readex Pro\" 0123": true
+      },
+      "loadedFaces": [
+        "Readex Pro 400",
+        "Readex Pro 500"
+      ],
+      "overflowX": 0,
+      "overflowY": 0,
+      "spill": [],
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "railExpanded": "false",
+      "detailsExpanded": "false",
+      "tipVisible": false,
+      "tipText": "",
+      "valuetext": "7:42 م، 49 داخل الصالة، مزدحم، آخر قراءة، المعتاد 45",
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "same",
+        "avgNow": 47.5,
+        "usualLatest": 45.4,
+        "usualEntries": 318,
+        "crestM": 751
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "overshoot": 0,
+        "drawnMax": 58.93,
+        "drawnMin": 0,
+        "avgMax": 58.93,
+        "avgMin": 0,
+        "withinAverage": true,
+        "zeroKept": true,
+        "segments": [
+          [
+            0,
+            493
+          ],
+          [
+            512,
+            822
+          ]
+        ],
+        "lineStopsAtGap": true,
+        "lineEndsAtLast": true,
+        "crestM": 751,
+        "crest": 58.93,
+        "crestMinusPeakMinutes": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "preset-v2-ar-1440x900",
+      "url": "index.html?lang=ar&tuner=0&preset=v2",
+      "viewport": "1440x900",
+      "deviceScaleFactor": 1,
+      "appliedLightSettings": {
+        "--now-int": "1.6",
+        "--now-core": "229 25 53",
+        "--now-disc-size": "61",
+        "--now-disc-x": "83",
+        "--now-soft": "40",
+        "--now-rim": "-22",
+        "--now-far": "0",
+        "--now-end": "18",
+        "--chart-int": "0.55",
+        "--chart-fade": "40",
+        "--chart-side": "48",
+        "--chart-balance": "0",
+        "--chart-soft": "260",
+        "--wash-int": "1",
+        "--grain-o": "0.15"
+      },
+      "fontsOk": true,
+      "chartRect": {
+        "x": 16,
+        "y": 290.25,
+        "width": 1304,
+        "height": 593.75
+      },
+      "lang": "ar",
+      "dir": "rtl",
+      "state": "live",
+      "tunerPresent": false,
+      "fonts": {
+        "400 16px \"Readex Pro\" مرحبا": true,
+        "500 16px \"Readex Pro\" مرحبا": true,
+        "400 16px \"Readex Pro\" Today 0123": true,
+        "500 16px \"Readex Pro\" 0123": true
+      },
+      "loadedFaces": [
+        "Readex Pro 400",
+        "Readex Pro 500"
+      ],
+      "overflowX": 0,
+      "overflowY": 0,
+      "spill": [],
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "railExpanded": "false",
+      "detailsExpanded": "false",
+      "tipVisible": false,
+      "tipText": "",
+      "valuetext": "7:42 م، 49 داخل الصالة، مزدحم، آخر قراءة، المعتاد 45",
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "same",
+        "avgNow": 47.5,
+        "usualLatest": 45.4,
+        "usualEntries": 318,
+        "crestM": 751
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "overshoot": 0,
+        "drawnMax": 58.93,
+        "drawnMin": 0,
+        "avgMax": 58.93,
+        "avgMin": 0,
+        "withinAverage": true,
+        "zeroKept": true,
+        "segments": [
+          [
+            0,
+            493
+          ],
+          [
+            512,
+            822
+          ]
+        ],
+        "lineStopsAtGap": true,
+        "lineEndsAtLast": true,
+        "crestM": 751,
+        "crest": 58.93,
+        "crestMinusPeakMinutes": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "preset-a-like-ar-1440x900",
+      "url": "index.html?lang=ar&tuner=0&preset=a-like",
+      "viewport": "1440x900",
+      "deviceScaleFactor": 1,
+      "appliedLightSettings": {
+        "--now-int": "0.7",
+        "--now-core": "229 25 53",
+        "--now-disc-size": "77",
+        "--now-disc-x": "67",
+        "--now-soft": "34",
+        "--now-rim": "8",
+        "--now-far": "0.9",
+        "--now-end": "19",
+        "--chart-int": "1.1",
+        "--chart-fade": "16",
+        "--chart-side": "36",
+        "--chart-balance": "0.95",
+        "--chart-soft": "48",
+        "--wash-int": "1",
+        "--grain-o": "0.15"
+      },
+      "fontsOk": true,
+      "chartRect": {
+        "x": 16,
+        "y": 290.25,
+        "width": 1304,
+        "height": 593.75
+      },
+      "lang": "ar",
+      "dir": "rtl",
+      "state": "live",
+      "tunerPresent": false,
+      "fonts": {
+        "400 16px \"Readex Pro\" مرحبا": true,
+        "500 16px \"Readex Pro\" مرحبا": true,
+        "400 16px \"Readex Pro\" Today 0123": true,
+        "500 16px \"Readex Pro\" 0123": true
+      },
+      "loadedFaces": [
+        "Readex Pro 400",
+        "Readex Pro 500"
+      ],
+      "overflowX": 0,
+      "overflowY": 0,
+      "spill": [],
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "railExpanded": "false",
+      "detailsExpanded": "false",
+      "tipVisible": false,
+      "tipText": "",
+      "valuetext": "7:42 م، 49 داخل الصالة، مزدحم، آخر قراءة، المعتاد 45",
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "same",
+        "avgNow": 47.5,
+        "usualLatest": 45.4,
+        "usualEntries": 318,
+        "crestM": 751
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "overshoot": 0,
+        "drawnMax": 58.93,
+        "drawnMin": 0,
+        "avgMax": 58.93,
+        "avgMin": 0,
+        "withinAverage": true,
+        "zeroKept": true,
+        "segments": [
+          [
+            0,
+            493
+          ],
+          [
+            512,
+            822
+          ]
+        ],
+        "lineStopsAtGap": true,
+        "lineEndsAtLast": true,
+        "crestM": 751,
+        "crest": 58.93,
+        "crestMinusPeakMinutes": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "preset-recommended-ar-1440x900",
+      "url": "index.html?lang=ar&tuner=0&preset=recommended",
+      "viewport": "1440x900",
+      "deviceScaleFactor": 1,
+      "appliedLightSettings": {
+        "--now-int": "0.7",
+        "--now-core": "229 25 53",
+        "--now-disc-size": "77",
+        "--now-disc-x": "67",
+        "--now-soft": "34",
+        "--now-rim": "8",
+        "--now-far": "0.9",
+        "--now-end": "19",
+        "--chart-int": "0.95",
+        "--chart-fade": "11.5",
+        "--chart-side": "48.5",
+        "--chart-balance": "0",
+        "--chart-soft": "260",
+        "--wash-int": "1",
+        "--grain-o": "0.15"
+      },
+      "fontsOk": true,
+      "chartRect": {
+        "x": 16,
+        "y": 290.25,
+        "width": 1304,
+        "height": 593.75
+      },
+      "lang": "ar",
+      "dir": "rtl",
+      "state": "live",
+      "tunerPresent": false,
+      "fonts": {
+        "400 16px \"Readex Pro\" مرحبا": true,
+        "500 16px \"Readex Pro\" مرحبا": true,
+        "400 16px \"Readex Pro\" Today 0123": true,
+        "500 16px \"Readex Pro\" 0123": true
+      },
+      "loadedFaces": [
+        "Readex Pro 400",
+        "Readex Pro 500"
+      ],
+      "overflowX": 0,
+      "overflowY": 0,
+      "spill": [],
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "railExpanded": "false",
+      "detailsExpanded": "false",
+      "tipVisible": false,
+      "tipText": "",
+      "valuetext": "7:42 م، 49 داخل الصالة، مزدحم، آخر قراءة، المعتاد 45",
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "same",
+        "avgNow": 47.5,
+        "usualLatest": 45.4,
+        "usualEntries": 318,
+        "crestM": 751
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "overshoot": 0,
+        "drawnMax": 58.93,
+        "drawnMin": 0,
+        "avgMax": 58.93,
+        "avgMin": 0,
+        "withinAverage": true,
+        "zeroKept": true,
+        "segments": [
+          [
+            0,
+            493
+          ],
+          [
+            512,
+            822
+          ]
+        ],
+        "lineStopsAtGap": true,
+        "lineEndsAtLast": true,
+        "crestM": 751,
+        "crest": 58.93,
+        "crestMinusPeakMinutes": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "levels",
+      "levelsNowcard": {
+        "bg": 13.3,
+        "top": 59.8
+      },
+      "levelsChart": {
+        "bg": 13.3,
+        "top": 88.6
+      },
+      "errors": []
+    },
+    {
+      "frame": "daily-en-nowcard-2x",
+      "viewport": "1440x900",
+      "deviceScaleFactor": 2,
+      "clip": {
+        "x": 120,
+        "y": 106.25,
+        "width": 314,
+        "height": 166
+      },
+      "errors": []
+    },
+    {
+      "frame": "keyboard-ar",
+      "screenshot": false,
+      "steps": [
+        {
+          "key": "focus",
+          "active": "plot-hit",
+          "focusVisible": true,
+          "valuetext": "7:42 م، 49 داخل الصالة، مزدحم، آخر قراءة، المعتاد 45",
+          "tip": "7:42 م آخر قراءة 49 مزدحم المعتاد 45"
+        },
+        {
+          "key": "ArrowRight (earlier, RTL)",
+          "active": "plot-hit",
+          "focusVisible": true,
+          "valuetext": "7:37 م، 46 داخل الصالة، متوسط، المعتاد 45",
+          "tip": "7:37 م 46 متوسط المعتاد 45"
+        },
+        {
+          "key": "Home",
+          "active": "plot-hit",
+          "focusVisible": true,
+          "valuetext": "6:00 ص، 0، الصالة خالية",
+          "tip": "6:00 ص 0 الصالة خالية"
+        },
+        {
+          "key": "End",
+          "active": "plot-hit",
+          "focusVisible": true,
+          "valuetext": "7:42 م، 49 داخل الصالة، مزدحم، آخر قراءة، المعتاد 45",
+          "tip": "7:42 م آخر قراءة 49 مزدحم المعتاد 45"
+        },
+        {
+          "key": "ArrowLeft (later, RTL)",
+          "active": "plot-hit",
+          "focusVisible": true,
+          "valuetext": "7:47 م، لم يحن بعد، المعتاد 44",
+          "tip": "7:47 م لم يحن بعد المعتاد 44"
+        }
+      ],
+      "errors": []
+    },
+    {
+      "frame": "daily-ar-1280x800",
+      "url": "index.html?lang=ar&tuner=0",
+      "viewport": "1280x800",
+      "screenshot": false,
+      "fontsOk": true,
+      "chartRect": {
+        "x": 16,
+        "y": 290.25,
+        "width": 1144,
+        "height": 493.75
+      },
+      "lang": "ar",
+      "dir": "rtl",
+      "state": "live",
+      "tunerPresent": false,
+      "fonts": {
+        "400 16px \"Readex Pro\" مرحبا": true,
+        "500 16px \"Readex Pro\" مرحبا": true,
+        "400 16px \"Readex Pro\" Today 0123": true,
+        "500 16px \"Readex Pro\" 0123": true
+      },
+      "loadedFaces": [
+        "Readex Pro 400",
+        "Readex Pro 500"
+      ],
+      "overflowX": 0,
+      "overflowY": 0,
+      "spill": [],
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "railExpanded": "false",
+      "detailsExpanded": "false",
+      "tipVisible": false,
+      "tipText": "",
+      "valuetext": "7:42 م، 49 داخل الصالة، مزدحم، آخر قراءة، المعتاد 45",
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "same",
+        "avgNow": 47.5,
+        "usualLatest": 45.4,
+        "usualEntries": 318,
+        "crestM": 751
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "overshoot": 0,
+        "drawnMax": 58.93,
+        "drawnMin": 0,
+        "avgMax": 58.93,
+        "avgMin": 0,
+        "withinAverage": true,
+        "zeroKept": true,
+        "segments": [
+          [
+            0,
+            493
+          ],
+          [
+            512,
+            822
+          ]
+        ],
+        "lineStopsAtGap": true,
+        "lineEndsAtLast": true,
+        "crestM": 751,
+        "crest": 58.93,
+        "crestMinusPeakMinutes": 2
+      },
+      "errors": []
+    },
+    {
+      "frame": "daily-en-1280x800",
+      "url": "index.html?lang=en&tuner=0",
+      "viewport": "1280x800",
+      "screenshot": false,
+      "fontsOk": true,
+      "chartRect": {
+        "x": 120,
+        "y": 290.25,
+        "width": 1144,
+        "height": 493.75
+      },
+      "lang": "en",
+      "dir": "ltr",
+      "state": "live",
+      "tunerPresent": false,
+      "fonts": {
+        "400 16px \"Readex Pro\" Today 0123": true,
+        "500 16px \"Readex Pro\" 0123": true
+      },
+      "loadedFaces": [
+        "Readex Pro 400",
+        "Readex Pro 500"
+      ],
+      "overflowX": 0,
+      "overflowY": 0,
+      "spill": [],
+      "easternDigits": false,
+      "enDashInArabic": false,
+      "railExpanded": "false",
+      "detailsExpanded": "false",
+      "tipVisible": false,
+      "tipText": "",
+      "valuetext": "7:42 PM, 49 inside, Busy, Latest, Usual 45",
+      "figures": {
+        "now": 49,
+        "last": 822,
+        "nowM": 822,
+        "peak": 62,
+        "peakM": 749,
+        "entries": 332,
+        "observed": 805,
+        "busiest": {
+          "from": 720,
+          "to": 840,
+          "avg": 48
+        },
+        "compare": "same",
+        "avgNow": 47.5,
+        "usualLatest": 45.4,
+        "usualEntries": 318,
+        "crestM": 751
+      },
+      "checks": {
+        "peak": 62,
+        "peakM": 749,
+        "overshoot": 0,
+        "drawnMax": 58.93,
+        "drawnMin": 0,
+        "avgMax": 58.93,
+        "avgMin": 0,
+        "withinAverage": true,
+        "zeroKept": true,
+        "segments": [
+          [
+            0,
+            493
+          ],
+          [
+            512,
+            822
+          ]
+        ],
+        "lineStopsAtGap": true,
+        "lineEndsAtLast": true,
+        "crestM": 751,
+        "crest": 58.93,
+        "crestMinusPeakMinutes": 2
+      },
+      "errors": []
+    }
+  ]
+}

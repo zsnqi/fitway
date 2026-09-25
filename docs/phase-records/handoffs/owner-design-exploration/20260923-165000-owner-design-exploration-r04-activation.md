@@ -91,3 +91,572 @@ must pass before VALIDATING or DONE. The user alone chooses, revises, requests m
 
 Use one writer in this worktree at a time. Exact resume:
 `pnpm context:show -- --milestone owner-design-exploration-r04`.
+
+## Iron & Chalk and three dark directions (2026-09-23)
+
+The user asked for one fresh direction. After a pre-build question, they chose **Iron & Chalk**:
+chalk-white field, iron-black structure, and FITWAY red as a solid per-minute mass. They limited it
+to the shell, Daily, and Reports. It is at `directions/iron-and-chalk/`. The user then stopped
+work on it. Its last three label and data edits were never re-captured, so its evidence predates
+them. They called it pretty but said it does not suit them because it is light. This is a steer
+toward dark treatment, not a rejection record.
+
+The user then made this session the coordinator and asked for three more directions. They are to
+be dark and designed by three parallel Opus subagents, desktop 1440x900 only, with mobile out of
+scope this round. Each subagent worked in its own isolated worktree from one shared brief, used
+the same synthetic data, and was assigned a distinct world. The coordinator copied each folder
+here, verified it byte-identical, and personally inspected Daily and Reports EN/AR 1440x900
+frames:
+
+- **Floodlight** (`directions/floodlight/`): night scoreboard with 10-minute max columns and a
+  numeric heatmap.
+- **Chronograph** (`directions/chronograph/`): 24-hour dial with a radial weekday ring heatmap.
+- **Pit Wall** (`directions/pit-wall/`): synchronized telemetry strips with a numeric matrix.
+
+Subagents ran at the session's inherited effort. An `xhigh` agent definition could not load
+mid-session.
+
+**Checks not run:** mobile, 320px or 200% reflow, screen reader, and independent perceptual
+review. None of this is a gate PASS.
+
+Nothing is selected. Redline, production, canonical, Paper, and authority state are unchanged.
+The user's choose, revise, request-more, or pause decision is pending.
+
+## Discovery discussion and next brief (2026-09-24)
+
+The user found all four latest directions good but not the intended form, and paused design to
+discuss first. The agreed intent for the next attempt is recorded in
+`design-research/owner-composition-exploration-r04/directions/NEXT-DIRECTION-BRIEF.md`:
+
+- **Look:** a clear, calm, premium, non-technical Daily page with low cognitive load and details
+  on demand. It is dark, with glass cards and a soft red light behind them. The structure is
+  familiar.
+- **Navigation:** an icon rail on the inline-start that the FITWAY logo expands.
+- **Content:** today's smooth red line against a dashed "usual weekday" line, plus 3–4 small cards.
+- **Scope:** desktop only, one direction, made by one subagent.
+
+Design has not started; the user paused it to conserve usage. No direction is selected.
+
+## Backlight, reference study, and lighting test (2026-09-24)
+
+The user made this session the coordinator for the brief. One `owner-direction-designer`
+subagent built **Backlight** (`directions/backlight/`), the Daily page only, at desktop 1440x900
+in Arabic and English. Before the run, the coordinator recorded SHA-256 hashes of every existing
+direction file and of the coordinator-owned files. After the run it confirmed that nothing outside
+`backlight/` changed and that Redline's tree is still `992f41f…`. The coordinator then inspected
+these Backlight frames itself:
+
+- live, AR and EN
+- inspect, AR and EN
+- rail open, AR and EN
+- delayed, AR and EN
+- no history, AR
+- details, AR and EN
+- focus name, AR
+- closed, EN
+- gap inspect, EN
+
+The structure was right, but the user judged the finish below the reference. They named these
+problems:
+
+- the round red light
+- weak glass
+- a busy chart
+- the tall hatched gap column
+- the rail
+
+The coordinator studied the reference from its original sources. The Behance project's designer
+posted flat 1600x1200 screens on Dribbble (shots 27382937, 27558213, 27411273, 27452143). The
+brief's "Round 2" section records the findings and the user's decisions. Those decisions cover
+owned lights, glass made from light rather than transparency, the red-light rule, grain, a quieter
+chart, the missing-span treatment, rail tiles, delay shown once, and the comparison thresholds.
+
+A second subagent then built the **lighting test** (`directions/light-study/`): Arabic only,
+1440x900, static, with three red-light recipes. The coordinator confirmed again that nothing
+outside that folder changed. It inspected `light-{a,b,c}-ar-1440x900.png` and the 2x chart crops.
+At full-page scale the recipes differ by about 1/255 on average; the difference shows mainly on
+the lit card.
+
+The user's decisions:
+
+- **Light recipe:** recipe **A** (deep red that fades toward black). B is too strong, and C does
+  not read as red.
+- **Grain:** lighter than in the test.
+- **Light shape:** the reference's lights are not circles. Each one is light wrapping around a
+  large dark ellipse (see the brief, "Round 3").
+- **Line:** a 30-minute moving average, plus a separate marker for the true peak. This is a
+  concept-stage choice. Before any production promotion it must be reviewed against
+  `DESIGN_GUIDE.md` §12 ("without smoothing away truth").
+- **Settings icon:** a gear, not a sun.
+- **Fonts:** Cairo is not required; Readex Pro is approved for the concept.
+- **Records:** the user authorized this handoff update and the lease renewal in
+  `PROJECT_STATE.yaml`.
+
+**Checks not run:** mobile, 320px, 200% reflow, screen reader, forced colors, measured contrast,
+and independent perceptual review. None of this is a gate PASS. Nothing is selected, and Redline,
+production, canonical, Paper, and authority state are unchanged. **Next:** the full Daily page
+(desktop, AR and EN) from the brief's "Round 3", after the user confirms.
+
+## Full Daily page start and Spec amendment (2026-09-24)
+
+The user confirmed two decisions:
+
+- The dashed usual line continues faintly after now, with no caption.
+- The page carries no explanatory captions, because the owner will explain the page to the gym.
+
+A third `owner-direction-designer` subagent then started the full Daily page from the brief's
+Round 3, at desktop 1440x900 in Arabic and English. Before it started, the coordinator recorded
+hashes of all existing direction files and of the owned files.
+
+The user also explicitly asked for the Spec to drop the entries caption. The coordinator made
+one narrow amendment:
+
+- **What changed in `SPEC.md`:** user story 21 and "Analytics semantics" now say that the entries
+  figure is named as entries, never as members or unique visitors, and needs no explanatory
+  caption. The measure itself is unchanged.
+- **Packet and ledger:** `SPEC.md` was added to the packet's and the ledger's `ownedPaths`, and
+  every other part of it stays forbidden. A limitations entry records the authorization, and the
+  packet SHA-256 in `PROJECT_STATE.yaml` was updated.
+- **Validation:** `check:agent-context` and `check:repository` pass.
+- **What did not change:** production copy in `packages/api` still shows the old caption. That
+  still conforms to the relaxed rule, and it was not changed.
+
+The user also intends to amend `DESIGN_GUIDE.md` §12 so that the 30-minute average plus the
+true-peak marker is allowed. That amendment has not been made; it is not part of this change.
+
+## Eclipse delivered (2026-09-24)
+
+The third designer delivered **Eclipse** (`directions/eclipse/`), the full Daily page at 1440x900.
+
+**Scope check.** The coordinator re-hashed the existing direction files and the owned files, now
+including `SPEC.md`. Nothing outside `eclipse/` changed, Redline is unchanged, and every frame was
+captured after the last source edit.
+
+**Frames the coordinator inspected:**
+
+- live, AR and EN
+- hover, AR
+- rail open, AR and EN
+- delayed, AR
+- no history, AR
+- details, AR
+- 2x crops of the chart card and the "Inside now" card
+- the designer's brightness maps, which the coordinator compared with the reference maps
+
+**Findings:**
+
+- The eclipse light shape matches the reference structure. The lit card has an edge band that
+  thickens into the corner, and the chart card has a U shape around a dark center. The light now
+  stays with its card, so it is no longer cut off when the details open.
+- The line is a *trailing* 30-minute average (`eclipse/app.js:218`), so the curve lags the data
+  by about 15 minutes. Its crest falls near 6:45 PM while the true-peak marker is at 6:29 PM. A
+  centered window would align them.
+- The chart card's lower third is about 40% brighter than in light-study A, because the light
+  now wraps both corners and sides.
+
+**Hook findings.** The coordinator added three narrow ignores for verified false positives or
+user-confirmed choices in `eclipse/`: `icon-tile-stack`, `radial-halo`, and
+`border-accent-on-rounded`, each with its reason.
+
+**Checks not run:**
+
+- mobile, 320px, and 200% reflow
+- screen reader and measured contrast
+- English hover, state, and details frames
+- independent perceptual review
+
+**Status.** Nothing is selected. The user's decision on Eclipse is pending.
+
+## Eclipse revision 2 (2026-09-24)
+
+The coordinator measured the lights against the reference, using OKLab lightness and chroma
+along set lines plus color strips. It found three causes of the difference: distribution, edge,
+and saturation. The user agreed the brief's "Round 4" decisions. The same designer session
+revised `eclipse/` in place. Before the revision, the coordinator kept a copy of the v1 evidence
+in its scratchpad.
+
+**Scope check.** Nothing outside `eclipse/` changed. The only additions are the `.impeccable/`
+ignore configs that the coordinator's hook ignores created inside owned direction folders.
+
+**What the coordinator measured on v2:**
+
+- **Crest alignment.** The curve's crest is at 6:31 PM, against the true peak at 6:29 PM. The line
+  is a centered, center-weighted 30-minute average, and the details panel discloses this.
+- **Lit card.** The light now matches the reference's distribution. The bottom edge stays dark
+  for about 60% of its length, then rises quickly into the corner third, with one smooth fall-off.
+- **Lit card core.** The core is much more saturated than the reference: chroma 0.23 against
+  0.10.
+- **Chart card.** It is now oxblood with red corners. Its lower-third mean is 27.1, about the same
+  as light-study A. It is dimmer than the reference, and its side light is confined to the lower
+  part.
+- **Comparison chip and Entries card.** The chip is hidden when today is about usual, and the
+  Entries card shows «المعتاد 318».
+
+**Checks not run:** the same as for v1. Nothing is selected, and the user's decision is pending.
+
+## Pause and new-session resume point (2026-09-24)
+
+The user reviewed Eclipse v2 and liked it overall. They asked for four things:
+
+- the "Inside now" light rebuilt as a dark disc in front of a light, with a thin bottom rim, a
+  far-corner glow, and ring ends that fade to transparent;
+- the chart light moved back toward light-study A;
+- a live light tuner they can operate themselves;
+- motion that they can judge by opening the page.
+
+A revision 3 was sent to the designer. The user then paused it to discuss before it wrote
+anything. Every `eclipse/` file is still timestamped at or before the v2 completion (20:29), so
+Eclipse is exactly v2.
+
+The user then decided the following:
+
+- **New designers.** Use fresh `owner-direction-designer` agents instead of the long-context one,
+  one after the other, each with its own clean context:
+  1. The disc light, the A-like chart, and the tuner (brief "Round 5" §1–3). The user tunes the
+     values themselves; the coordinator then fixes the chosen values as defaults.
+  2. Motion on the settled look (§4), including the user's choice on light interactivity.
+- **New coordinator session.** Continue in a new coordinator session, because this one has grown
+  very large.
+- **How the user sees motion.** The user opens pages themselves, so videos are optional.
+
+**Current authority for decisions:** `directions/NEXT-DIRECTION-BRIEF.md`, where later rounds
+win. Round 5 holds the open work, and its §4 holds the pending light-interactivity proposal.
+
+**Reference material** for design feel only; never copy it. These are local copies in the old
+session's scratchpad, and they may be cleaned:
+`C:\Users\PCFORC~1\AppData\Local\Temp\claude\D--Projects-fitway-worktrees-owner-design-exploration-r04\f1af38ec-e53d-46e6-bd9a-33e84709e13f\scratchpad\`.
+
+- `ref\drib\db1.png` is the main page. The Dribbble shots listed in the brief can be downloaded
+  again.
+- The rest are the coordinator's analysis images and can be regenerated: `ref\db1-light-map.png`,
+  `ref\light4-4x.png`, `ref\light4-levels.png`, `ref\light2-levels.png`, `light-strips-v2.png`,
+  and `disc-model.png` (a principle sketch only).
+- `eclipse-v1\` and `eclipse-v2\` hold the evidence before each revision.
+
+**Ledger and packet:** `PROJECT_STATE.yaml` records a lease valid until 2026-09-25T17:05+03:00, so
+renew it if work continues past then. The packet SHA-256 is
+`bed004b23f3a1b1fc5071b38aee0daaf3e8a998d6ff1dd3ecd32e7a76cb9bf35`.
+
+**Other open items:**
+
+- The user intends to amend `DESIGN_GUIDE.md` §12 (average line plus a true-peak marker). This
+  has not been done, and it is outside this packet.
+- Impeccable hook ignores that the coordinator wrote landed in
+  `eclipse/.impeccable/config.json` and `light-study/.impeccable/config.json`. The hook still
+  re-reports the same three verified findings, so treat them as already triaged.
+
+**Resume:**
+
+1. Run `pnpm context:show -- --milestone owner-design-exploration-r04`.
+2. Read this section and the brief's Round 5.
+3. Snapshot hashes of all direction files outside the target folder, then launch designer 1.
+
+Nothing is selected, and Redline, production, canonical, Paper, and authority state are
+unchanged, apart from the user-authorized `SPEC.md` entries-framing amendment recorded above.
+
+## Eclipse v3 and the draggable tuner (2026-09-24 to 2026-09-25)
+
+A new coordinator session resumed from the section above. It launched a fresh
+`owner-direction-designer` for Round 5 §1–3, confined to `eclipse/`. It did not touch §4 (motion).
+Before the launch, the coordinator recorded hashes of the 120 direction files outside `eclipse/`, the
+owned files, the git status, the index, and the tracked diff. It also kept a full copy of Eclipse v2 in
+its scratchpad.
+
+**Scope check.**
+- After the designer finished, all 120 files, the owned files, the git status, the index, and the tracked
+  diff were unchanged.
+- In `eclipse/`, `app.js` and `.impeccable/config.json` are unchanged. `tuner.js` is new. `index.html`
+  only gained the lamp layers and the tuner script tag.
+- `style.css` was edited after the capture ran. The coordinator's own renders match the delivered frames
+  pixel for pixel, so the evidence was current.
+
+**How the coordinator measured.**
+- **Renderer:** its own Playwright renderer and server, on a separate port, at 1440x900. For measurement,
+  every non-light descendant of the two lit cards is hidden.
+- **Metrics:** OKLab L relative to each card's own dark base.
+- **Calibration:** on Eclipse v2 the method gives 64.6 / 33.6 / 1.8 (pure dark / haze / lit, in %). On
+  light-study A it gives 80.3 / 13.0 / 6.7, with corners 0.52 and 0.31. These match the previous session's
+  figures (64/33/3, 79/13/8, and 0.52 against about 0.30).
+
+**Findings on Recommended (the page default).**
+
+- **Chart card:**
+  - 79.6 / 13.5 / 6.9, against the targets of at least 75% pure dark and at most 15% haze.
+  - The middle of the bottom fades to black at 15.0–20.5% of the card height. The side arms reach about
+    31.5%.
+  - The lower corners are balanced at L 0.458 / 0.458, with hue 21.6.
+  - The English frame measures the same.
+  - The disc edge shows as a fairly defined curve where the side arms end, near the 20 gridline. It is
+    more defined than in A, and is flagged for the user's judgment.
+- **Inside now, against reference light 4 (db1):**
+  - Bottom row y = 0.98, from the far corner to the middle to the lit corner: 0.35, then 0.21–0.28, then
+    0.62. The reference reads 0.48, then 0.19–0.21, then 0.79.
+  - At y = 0.95 the middle is dark: 0.16 here, 0.15 in the reference.
+  - The rim is about 5.4% of the card height, against 5.0% in the reference.
+  - The light rises about 56% of the height up the lit side, against about 61%.
+  - The core is hue 21.6, C 0.234, L 0.62.
+  - The level maps show one continuous arc with a rim and a far-corner glow; v2 had neither.
+  - The crescent sits lower and more diagonal than in the reference, because the card is 1.89:1 against
+    1.33:1. There is also a dim shelf mid-bottom before the crescent rises.
+- **Presets:** the v2 and A-like presets are approximate by design.
+
+**Tuner check from `file://` (coordinator's own run).**
+- A control change updates the custom property and the pixels.
+- The values persist after a reload, and the three presets apply.
+- Copy gives valid JSON. In headless mode it goes through the textarea fallback.
+- Reset works, and Escape closes the panel and returns focus.
+- `?tuner=0` removes the tuner and ignores stored tuning.
+- There were no page errors.
+
+**User feedback and the fix.**
+- **Feedback:** the user reported that the tool is excellent, but the fixed panel covered what they were
+  tuning. They asked to be able to drag it anywhere.
+- **What was changed:** at the user's request the coordinator made a tool-only change, not a design
+  change, in `eclipse/tuner.js`, the tuner section of `eclipse/style.css`, and `eclipse/README.md`:
+  - The toggle and the panel now move as one unit. The user drags the toggle or the panel header.
+  - A ⠿ grip takes the arrow keys and Home. A double-click on the header resets the spot.
+  - The unit is clamped to the viewport, and its spot persists in `fitway.eclipse.v3.tuner-pos`.
+  - The light-values key is unchanged, so the user's in-progress tuning is kept.
+- **Verification:** the coordinator's drag check passed in AR and EN from `file://`:
+  - a drag does not open the panel, and a plain click still opens it;
+  - opening near an edge pulls the unit back into view, and extreme drags are clamped;
+  - keyboard moves, persistence after a reload, the Home and double-click resets, the controls, and the
+    close button all work;
+  - there were no errors.
+- **Evidence:** it was re-captured with `capture.mjs` after the fix.
+
+**Status.** The user is tuning the lights. When they send the "Copy values" JSON, the coordinator sets
+those values as the defaults. Designer 2 then does §4 (motion).
+
+**Checks not run:**
+- accessibility and contrast audits, and a screen-reader pass;
+- Firefox and Safari (the lights use container units, `sqrt()`, and `mask-composite`);
+- mobile;
+- English hover, delayed, and details frames;
+- an independent perceptual review.
+
+**Other changes and state.**
+- **Ledger:** the lease was renewed to 2026-09-26T00:05+03:00.
+- **Decisions:** nothing is selected. Redline, production, canonical, Paper, and authority state are
+  unchanged.
+
+**Lit-corner glow controls (2026-09-25).**
+- **Request:** while tuning, the user asked to control the glow at the "Inside now" card's lit corner
+  (bottom-left in Arabic).
+- **What was changed:** the coordinator added two tuner controls, «توهج الزاوية المضاءة» (strength) and
+  «حجم توهج الزاوية» (size). They drive the new `--now-hot` and `--now-hot-size` custom properties on
+  the `#FF2946` hot spot. The v2 preset carries the defaults.
+- **Defaults:** 1 and 100%. At the defaults, Recommended, A-like, and v2 in AR and EN render pixel-identical
+  to before (max diff 0 on the 1x frames and the 2x card crops).
+- **Verification:**
+  - Tuning saved before these controls existed still loads, with no undefined values.
+  - The sliders change the corner pixels, and the presets apply cleanly.
+  - Copy values includes the two new keys (17 keys), and the values persist after a reload.
+  - The taller panel still fits the viewport.
+- **Evidence:** it was re-captured after the change.
+
+**The user's tuning is now the default (2026-09-25).**
+
+The user sent their "Copy values" JSON and asked the coordinator to apply it and give an opinion. The
+coordinator set the values as the `:root` defaults in `eclipse/style.css`, so Recommended is now the user's
+tuning. The designer's first values are recorded in `eclipse/README.md`, and a copy of the pre-change
+folder is kept in the coordinator's scratchpad.
+
+- **Values:**
+  - **Inside now:** int 0.7, disc 77, position 67, soft 34, rim 8, hot 0.05 at 110%, far 0.9, end 19.
+  - **Chart:** int 0.95, fade 11.5, sides 48.5, balance 0, soft 260.
+  - **Page:** wash 1, grain 0.15.
+- **Check:** the new defaults render pixel-identical to the user's stored tuning on the old defaults
+  (AR and EN, 1x frames and 2x crops, max diff 0).
+- **Chart, measured by the coordinator:**
+  - 80.6 / 13.4 / 6.0 (pure dark / haze / lit, in %).
+  - The middle of the bottom fades at 8.6–9.3% of the card height. That is thinner than A's 13–15% and
+    below the brief's 15–35%, by the user's own choice.
+  - The side arms reach about 42.5%.
+  - The corners are balanced at L 0.43 / 0.43, with hue 20.8.
+  - The 260px edge removes the defined disc curve the coordinator had flagged.
+- **Inside now, measured by the coordinator:**
+  - The core is L 0.48, C 0.178, hue 21.1. It is calmer and deeper than the designer's L 0.62 / C 0.234.
+  - The bottom-row profile, from the far corner to the middle to the lit corner, is 0.28, then 0.20–0.27,
+    then 0.48.
+  - The rim is 6.6% of the height, against 5.0% in the reference. At y = 0.95 the middle is 0.19–0.20; the
+    reference reads 0.15 there.
+- **Coordinator's reading:** the disc edge is softer, and the bottom rim reads as a wider haze. The effect
+  is less of a crisp eclipse and more of a soft corner glow.
+- **Suggestion tested and dropped:** the coordinator tried softness 20 and rim 4.5 on top of the user's
+  values. The middle of the bottom at y = 0.95 went from 0.19 to 0.17–0.18, which is barely visible at 2x,
+  so the suggestion was dropped. The softness comes mainly from the lower intensity and the near-off hot
+  spot, which the user chose. Nothing was changed beyond the user's values.
+- **Evidence re-capture:**
+  - With the new defaults, `capture.mjs` first reported its tuner check as FAIL. The tool itself behaved
+    correctly: the default was 0.7, six steps took it to 0.4, the value persisted, and both off and reset
+    returned 0.7.
+  - The cause was that the check hard-coded the old default values, "1" and "0.7". The coordinator changed
+    it to derive its expectations from the page's default. It is equally strict.
+  - The re-capture now passes: every frame is clean and the tuner check passes. The capture's own
+    measurement of the user's tuning, 80.7 / 13.4 / 5.9 with corners 0.441 / 0.441, agrees with the
+    coordinator's.
+
+**Motion designer launched (2026-09-25).**
+- **Launch:** the user asked the coordinator to start designer 2 for Round 5 §4 (motion) on the settled
+  look. A fresh `owner-direction-designer` was launched, confined to `eclipse/`.
+- **Baseline for the acceptance check:** before the launch, the coordinator kept a copy of `eclipse/`,
+  including the user-tuned defaults and their evidence, and recorded hashes of that folder and of the owned
+  files.
+- **Acceptance check:** with motion reduced or off, every static frame except the tuner frame must stay
+  pixel-identical to that evidence.
+
+## Motion delivered (2026-09-25)
+
+**Interruption and restart.**
+- **Interruption:** the first motion designer was cut off by a usage limit. It left most of Round 5 §4 in
+  `eclipse/`, plus debug files. `capture.mjs`, the README, and the cleanup were unfinished.
+- **User feedback:** while waiting, the user opened the page. They found the lights' load animation (a
+  plain 1.5 s opacity fade) dull.
+- **User instructions:** the user asked the coordinator to decide what fits, to use a fresh designer rather
+  than resume the long-context one, and to shut down the PC when done. They will review the results
+  afterwards.
+- **Preparation:** the coordinator backed up the partial state to its new scratchpad. It confirmed that
+  `evidence/pre-motion-hashes.json` matches its own pre-motion copy.
+- **Brief:** a fresh `owner-direction-designer` was launched to finish §4, clean up, and replace the
+  light entrance. Its direction was that the light emerges from behind the fixed disc, the chart U rises
+  with the line, and the wash drifts in from its corner.
+
+**What the designer delivered.**
+- **New light entrance:**
+  - quint-out easing, `cubic-bezier(0.22, 1, 0.36, 1)`, with no overshoot and no fade on the "Inside now"
+    light;
+  - "Inside now": 1,400 ms starting at 380 ms, with the rim 90 ms later;
+  - chart U: rises from below over 1,350 ms, in step with the line;
+  - page wash: drifts in over 1,700 ms;
+  - the whole intro takes 2,160 ms.
+- **Deviation:** the "Inside now" light starts beyond the lit corner, on the disc's axis, not toward the
+  disc centre. Starting from the centre made the crescent brighter than at rest (+0.18 L). With the
+  corner start, no pixel is ever brighter than at rest. This is a disclosed deviation for the user to
+  judge.
+- **Kept from the first designer:** the card entrance, the end point, the peak, the live update with its
+  tail morph, the cross-fades, the pulse, and the tooltip glide.
+- **Changed from the first designer:**
+  - the line draw timing;
+  - pointer-follow, now a plain 2D translate, so there is no jump on hover;
+  - the rail blur while it opens;
+  - fonts are loaded up front;
+  - `capture.mjs` gained tuner, drag, and replay checks, and fails the run when the still-frame guard fails.
+- **Also finished:** the README gained a Motion section, and the debug files are gone.
+
+**Coordinator's independent verification.**
+- **Scope:** nothing outside `eclipse/` changed, the owned files match the pre-motion snapshot, and git
+  status is unchanged.
+- **Still frames:**
+  - with `reducedMotion: reduce` and with `?motion=off`, AR, EN, delayed, and nohistory are pixel-identical
+    to the pre-motion copy (8 of 8, max diff 0, no errors);
+  - with motion on, after the intro settles and with the pulse hidden, AR, EN, and delayed are also
+    pixel-identical.
+- **Real-time recordings (Playwright video, 25 fps, decoded with OpenCV):**
+  - the load in AR and EN has no flash or overshoot, and the lights settle monotonically at their final
+    values;
+  - the "Inside now" crescent grows from the corner along the arc;
+  - the chart U climbs from the bottom as the line draws;
+  - pointer-follow is a subtle shift and returns on leave;
+  - delayed is still after settling (max diff 7 within a video segment, which is encoding noise);
+  - in live, the only change is the pulse at the line end.
+  - A whole-frame blip at frame 128 in every video is an encoder keyframe artifact, not the page.
+- **Finding, minor:** the intro waits for `document.fonts.ready`. The fonts come from Google Fonts, so on a
+  cold cache the page shows only the header and rail for about 1.25 s after navigation before the intro
+  starts. On a warm cache it starts after about 40 ms. The user's own browser is warm. A cap on the wait is
+  possible later.
+- **Residual:** after a simulated live update, the settled chart differs from a fresh render by at most
+  2/255, which is invisible. The DOM is equal. The designer reports this was already present before this
+  work.
+
+**Checks not run:**
+- screen reader, touch devices, and Firefox or Safari;
+- real-device frame-rate profiling;
+- an independent perceptual review.
+
+**Status.** §4 is delivered for the user's review. Nothing is selected, and Redline, production, canonical,
+Paper, and authority state are unchanged.
+
+## Motion review, Round 6, and new-session resume point (2026-09-25)
+
+**What happened.**
+- The user reviewed the delivered motion. They judged it cliché and below the visual quality, and
+  disliked the number cross-fade, including on the small crowd bars, and the lights' entrance.
+- The coordinator diagnosed the causes from the code and `eclipse/README.md`. It ran two web-research
+  subagents on the Sonnet model: one on premium product motion and number transitions, one on chart
+  hover granularity.
+- The coordinator also found that the hover marker sits on the raw minute reading (`app.js`, marker at
+  `Y(occ[m])`) while the drawn line is the centred 30-minute average, so the marker floats off the line.
+  The keyboard steps 5 minutes, or 1 with Shift.
+- The user agreed the diagnosis and decided the Daily page's motion and hover. The decisions are recorded
+  as **"Round 6"** in `directions/NEXT-DIRECTION-BRIEF.md`:
+  - no load motion;
+  - static lights, with the pointer-follow and crowd-light options removed;
+  - numbers that roll by digit;
+  - crowd bars that never cross-fade;
+  - hover that snaps to half-hour stops, plus the peak and now, with the line's own value;
+  - a new hover marker that glides along the curve;
+  - a short live update with a calmer pulse.
+- **Plan after Daily:** the brief's "After the Daily page" section records the plan the user agreed:
+  - **Screen order:** Reports, Activity Log, Access, Settings, Operations, then mobile.
+  - **Merges:** the coordinator's merge proposals are pending the user's decision.
+  - **Content freedom:** the remaining screens may depart from current production content. Locked
+    Product/Spec changes are surfaced and amended explicitly.
+  - **Authority:** the finished direction is to become the primary interface reference, and Paper and the
+    older designs are to be withdrawn later through a formal authority record. Its scope is still to be
+    confirmed.
+  - **Production:** production goes to Codex later. The coordinator prepares the plan and the environment
+    for it.
+
+**Nothing was designed or changed in `eclipse/` in this step.** Nothing is selected. Redline,
+production, canonical, Paper, and authority state are unchanged.
+
+**New session.** The user will continue in a new coordinator session, because this one's context is
+large. Resume:
+
+1. Run `pnpm context:show -- --milestone owner-design-exploration-r04`.
+2. Read this section, then `directions/NEXT-DIRECTION-BRIEF.md` "Round 6" and "After the Daily page".
+   Then read `directions/eclipse/README.md` "Motion" for what exists now.
+3. Record hashes of every direction file outside `eclipse/` and of the owned files. Keep a copy of
+   `eclipse/`.
+4. Launch one fresh `owner-direction-designer` for Round 6, confined to `eclipse/`.
+5. Verify its work independently before showing the user:
+   - **Still frames:** they are pixel-identical to `eclipse/evidence/pre-motion-hashes.json`, except the
+     tuner-open and hover frames. Check this with `reducedMotion: reduce` and with `?motion=off`.
+   - **Motion:** record real-time video and inspect it.
+   - **Hover:** the marker stays on the line at every stop, and the peak and now stops work.
+   - **Numbers:** the digit roll has no cross-fade anywhere, including the crowd bars.
+   - **States:** delayed has no live motion.
+   - **Scope:** nothing outside `eclipse/` changed.
+6. Then agree the merge proposals and start Reports.
+
+**Local tools from this session.** These are in scratchpads that may be cleaned, and each can be rebuilt.
+The coordinator's measurement and verification scripts are:
+- `render.mjs`, `render-seed.mjs`, `measure.py`, and `show.py`: OKLab light measurement.
+- `static-identity.mjs` with `compare.py`, `video.mjs` with `frames.py`, `settled.mjs`, and `timing.mjs`.
+
+They live in the two scratchpads of the previous coordinator sessions,
+`...\d329255d-7158-42d6-8349-b9c7d39168a4\scratchpad\` and
+`...\97026a10-9619-4c2e-9614-93af33679041\scratchpad\`, under
+`C:\Users\PCFORC~1\AppData\Local\Temp\claude\D--Projects-fitway-worktrees-owner-design-exploration-r04\`.
+The pre-motion copy of `eclipse/` is `...\d329255d...\scratchpad\eclipse-v3-user-copy\`.
+
+**Ledger:** the lease was renewed. It is valid until 2026-09-26T14:25+03:00.
+
+**Checkpoint commit and Biome exemption (2026-09-25).**
+- **The problem:** all exploration work was untracked, 51 MB across seven directions. The pre-commit
+  Biome hook treated the concept scripts as production code: 407 errors, about 165 of them not
+  auto-fixable, across all seven directions.
+- **Options put to the user:** rewriting the scripts would have touched the protected directions and
+  invalidated their evidence. The coordinator therefore proposed a narrow exemption.
+- **Decision:** the user explicitly authorized one change to `biome.json`. It excludes
+  `design-research/owner-composition-exploration-r04/directions` from Biome, mirroring the r01 `_quarantine`
+  exclusion.
+- **Records:** `biome.json` was added to the packet's and the ledger's `ownedPaths`, with a limitations entry.
+  The packet SHA-256 in `PROJECT_STATE.yaml` was updated to
+  `6b47033d29311a3deb8e31a485111fa21f756c85a6e7f20d7d569328fa4fb211`.
+- **The commit:**
+  - It is a local checkpoint commit on `codex/owner-redesign-r04`, and nothing is pushed.
+  - It contains the directions, the brief, this handoff, the packet, the ledger, the user-authorized
+    `SPEC.md` amendment, and `biome.json`.
+  - `.impeccable/hook.cache.json` is left untracked, because it is a machine cache.

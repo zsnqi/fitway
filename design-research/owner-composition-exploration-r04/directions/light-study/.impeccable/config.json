@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "icon-tile-stack",
+        "value": "*",
+        "files": [
+          "design-research/owner-composition-exploration-r04/directions/light-study/index.html"
+        ],
+        "createdAt": "2026-09-24T14:07:49.441Z",
+        "reason": "coordinator: false positive, verified in light-study frames and markup; .stat-head is a flex row, so the icon tile sits beside the heading, not above it (reference-matching tile language)"
+      }
+    ]
+  }
+}

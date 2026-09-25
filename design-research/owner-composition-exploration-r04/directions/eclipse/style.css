@@ -1,0 +1,787 @@
+/* Eclipse: FITWAY Owner Daily concept. Concept only, synthetic data, desktop 1440x900, ar (RTL) and en (LTR).
+ * Evolved from ../light-study (recipe A). Every light is owned by one element, clipped by it, and never fixed
+ * to the viewport. v3: the card lights are a light behind the glass (--light) with a large dark disc in front of
+ * it (--disc-mask, transparent inside, opaque outside), so the light shows only around the disc's edge. Every
+ * light setting is a custom property on :root that the light tuner (tuner.js) can override live. */
+
+:root {
+  --page: #070707;
+  --card: rgba(15, 14, 15, 0.94);
+  --card-solid: #0f0e0f;
+  --tile: rgba(255, 255, 255, 0.018);
+  --line: rgba(255, 255, 255, 0.075);
+  --line-2: rgba(255, 255, 255, 0.1);
+  --line-3: rgba(255, 255, 255, 0.24);
+  --ink: #f5f3f2;
+  --ink-2: #c9c3c4;
+  --ink-3: #aaa4a6;
+  --red: #e51935;
+  --red-hi: #ff2946;
+  --live: #4be29b;
+  --delayed: #d9a400;
+  --font: "Readex Pro", "Segoe UI", system-ui, sans-serif;
+
+  /* The light ramp: four steps from FITWAY's own palette (Round 4), mirroring the reference's four steps.
+   *   obsidian #08090A  the base every light fades into
+   *   oxblood  #4D0713  broad and outer areas
+   *   red      #E51935  the core
+   *   bright   #FF2946  only at the single hottest point */
+  --obsidian-0: rgba(8, 9, 10, 0);
+  --ox: #4d0713;
+  --r1: rgba(229, 25, 53, 0.3);
+
+  /* Film grain: finer (1.4 base frequency, 2 octaves, 120px tile) and fainter than the lighting test.
+   * Grey noise centred on 50% so the overlay blend leaves the average untouched; it only shows where lit. */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n' x='0' y='0' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.34 .33 .33 0 0 .34 .33 .33 0 0 .34 .33 .33 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncG type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncB type='linear' slope='2.2' intercept='-.6'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  /* ---- Light settings (v3). These are the Recommended values: since 2026-09-25 they are the user's own tuning,
+   * copied from the tuner's "Copy values" (the designer's first Recommended values are in README.md). The
+   * light tuner (tuner.js) reads them from here as its Recommended preset and overrides them live on <html>.
+   * Plain numbers, so they tune and copy cleanly; the lighting section turns them into geometry.
+   * Inside now: a light behind the card, brightest at the inline-end bottom corner, and a large dark disc
+   * in front of it. */
+  --now-int: 0.7;          /* light intensity (alpha multiplier) */
+  --now-core: 229 25 53;   /* core colour, sRGB; the tuner only offers FITWAY reds (OKLCH hue 21-29) */
+  --now-disc-size: 77;     /* disc radius along the card, % of card width */
+  --now-disc-aspect: 0.7;  /* disc height / width, in pixels */
+  --now-disc-x: 67;        /* disc centre, % of card width from the lit side */
+  --now-soft: 34;          /* disc edge feather, px (along the card; x0.7 across) */
+  --now-rim: 8;            /* gap between the disc and the bottom edge, % of card height */
+  --now-hot: 0.05;         /* lit-corner glow: strength of the #FF2946 hot spot just inside the lit corner */
+  --now-hot-size: 110;     /* lit-corner glow size, % of its default ellipse (22cqw x 34cqh) */
+  --now-far: 0.9;          /* far bottom corner glow */
+  --now-end: 19;           /* how long the ring takes to fade out up the lit side, % of card height */
+  /* Chart card: a U of light around a dark disc; oxblood broad areas, red only near the lower corners. */
+  --chart-int: 0.95;
+  --chart-fade: 11.5;      /* thickness of the U at the middle of the bottom, % of card height */
+  --chart-side: 48.5;      /* height of the U's arms at the sides, % of card height */
+  --chart-balance: 0;      /* -1..1; above 0 the inline-end corner is stronger */
+  --chart-soft: 260;       /* disc edge feather, px */
+  /* Page */
+  --wash-int: 1;           /* top-corner wash (alpha multiplier) */
+  --grain-o: 0.15;         /* film grain, inside lit areas only */
+}
+/* Positions measured from the lit (inline-end) side mirror with the page. cq units resolve inside each lamp. */
+[dir="rtl"] { --lit-o: 0cqw; --lit-s: 1; --far-o: 100cqw; }
+[dir="ltr"] { --lit-o: 100cqw; --lit-s: -1; --far-o: 0cqw; }
+
+/* ------------------------------------------------------------------- base */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, p, ul, dl, dd, figure { margin: 0; padding: 0; }
+ul { list-style: none; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+bdi, .num { font-variant-numeric: tabular-nums; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+[dir="rtl"] .mirror { transform: scaleX(-1); }
+
+.skip {
+  position: absolute;
+  inset-inline-start: 112px;
+  top: 12px;
+  z-index: 50;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: var(--ink);
+  color: #0b0b0b;
+  font-size: 14px;
+  transform: translateY(-160%);
+}
+.skip:focus-visible { transform: none; outline-color: var(--red-hi); }
+
+/* -------------------------------------------------------------- page shell */
+.page {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 80px minmax(0, 1fr);
+  gap: 24px;
+  padding: 16px;
+}
+.main { min-width: 0; outline: none; }
+/* The first screen: header, cards and the chart. Its height is fixed to the viewport so the chart keeps its
+ * geometry whether or not the details panel is open below it. */
+.fold {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  height: calc(100vh - 32px);
+  min-height: 720px;
+  padding-block-start: 10px;
+}
+
+/* ------------------------------------------------------------- page wash
+ * Owned by .page (absolute, scrolls with it). An arc along the top edge from the inline-start corner: the
+ * light is anchored at the corner and hugs the top edge; a large dark ellipse rising from below pushes it up
+ * against the edge, so the band is thick at the corner and thins to nothing along the top. */
+.wash { position: absolute; inset: 0 0 auto 0; height: 400px; z-index: -1; pointer-events: none; overflow: hidden; }
+.wash-light {
+  position: absolute;
+  inset: 0;
+  background: var(--wash-light);
+  -webkit-mask-image: var(--wash-eclipse);
+  mask-image: var(--wash-eclipse);
+}
+.wash-light::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grain);
+  background-size: 120px 120px;
+  mix-blend-mode: overlay;
+  opacity: var(--grain-o);
+  -webkit-mask-image: var(--wash-light);
+  mask-image: var(--wash-light);
+}
+/* Red only near the corner; the body of the arc is oxblood, fading into obsidian. --wash-int scales it. */
+.wash {
+  --wi: var(--wash-int);
+  --wash-ramp: rgb(229 25 53 / calc(0.74 * var(--wi))) 0%, rgb(229 25 53 / calc(0.46 * var(--wi))) 7%, rgb(77 7 19 / calc(0.92 * var(--wi))) 24%, rgb(77 7 19 / calc(0.56 * var(--wi))) 52%, var(--obsidian-0) 100%;
+}
+[dir="rtl"] .wash {
+  --wash-light: radial-gradient(ellipse 1120px 250px at 100% 0%, var(--wash-ramp));
+  --wash-eclipse: radial-gradient(ellipse 1060px 420px at calc(100% - 740px) 404px, transparent 0%, transparent 86%, #000 100%);
+}
+[dir="ltr"] .wash {
+  --wash-light: radial-gradient(ellipse 1120px 250px at 0% 0%, var(--wash-ramp));
+  --wash-eclipse: radial-gradient(ellipse 1060px 420px at 740px 404px, transparent 0%, transparent 86%, #000 100%);
+}
+
+/* -------------------------------------------------------------------- rail */
+.rail-slot { position: relative; min-width: 0; }
+.rail {
+  position: sticky;
+  top: 16px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 80px;
+  height: calc(100vh - 32px);
+  min-height: 620px;
+  padding: 15px;
+  border-radius: 24px;
+  background: rgba(12, 12, 15, 0.7);
+  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(22px);
+  border: 1px solid var(--line);
+}
+/* Expanded: the rail overlays the page. Width switches without animation; only the names fade in. */
+.rail[data-open="true"] {
+  width: 236px;
+  background: rgba(12, 12, 15, 0.94);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+/* The rail's rim catches the page wash where it sits in it. */
+.rail::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(ellipse 130px 240px at var(--rail-lit, 100%) 0%, var(--r1), transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+[dir="ltr"] .rail { --rail-lit: 0%; }
+.rail-group { display: flex; flex-direction: column; gap: 10px; }
+.rail-brand { margin-block-end: 26px; }
+.rail-foot { margin-block-start: auto; }
+
+.rail-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 48px;
+  border-radius: 14px;
+  color: var(--ink-2);
+  text-align: start;
+}
+.rail-item:focus-visible { outline: none; }
+.rail-item:focus-visible .tile { outline: 2px solid var(--ink); outline-offset: 3px; }
+.tile {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  border: 1px solid var(--line-2);
+  background: var(--tile);
+  color: var(--ink-2);
+  transition: border-color 0.16s ease-out, background-color 0.16s ease-out, color 0.16s ease-out;
+}
+.tile svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.tile svg .fill { fill: currentColor; stroke: none; }
+.rail-item:hover .tile { border-color: var(--line-3); background: rgba(255, 255, 255, 0.06); color: var(--ink); }
+.rail-item.is-active .tile { background: var(--red); border-color: var(--red); color: #fff; }
+.rail-item.is-active:hover .tile { background: #f0223e; border-color: #f0223e; }
+.glyph { font-size: 13px; font-weight: 500; letter-spacing: 0.04em; }
+.brand .tile svg { width: 28px; height: 28px; }
+.brand .mk { fill: none; stroke: var(--ink); stroke-linecap: butt; }
+.brand .mk-dot { fill: var(--ink); stroke: none; }
+
+.rail-name { display: none; font-size: 14px; white-space: nowrap; color: var(--ink-2); }
+.rail-item.is-active .rail-name, .wordmark { color: var(--ink); }
+.wordmark { font-size: 15px; font-weight: 500; letter-spacing: 0.12em; }
+.rail[data-open="true"] .rail-name { display: block; animation: name-in 0.18s ease-out both; }
+[dir="rtl"] { --nudge: 6px; }
+[dir="ltr"] { --nudge: -6px; }
+@keyframes name-in { from { opacity: 0; transform: translateX(var(--nudge)); } }
+
+/* ------------------------------------------------------------------ header */
+.head { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
+.sub { margin-block-start: 6px; font-size: 13.5px; color: var(--ink-3); }
+.sep { margin-inline: 8px; opacity: 0.7; }
+.head-meta { display: flex; gap: 10px; align-items: center; padding-block-start: 4px; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding-inline: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line-2);
+  background: rgba(255, 255, 255, 0.015);
+  font-size: 13px;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--live); }
+.chip .strong { color: var(--ink); font-weight: 500; }
+.status.is-delayed { border-color: rgba(217, 164, 0, 0.36); }
+.status.is-delayed .strong { color: #f0c23c; }
+.ico { width: 15px; height: 15px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.status .ico { color: var(--delayed); }
+.concept { color: var(--ink-3); }
+
+/* ------------------------------------------------------------------- cards */
+.card {
+  --rad: 24px;
+  position: relative;
+  border-radius: var(--rad);
+  background: var(--card);
+  border: 1px solid var(--line);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+.cards { position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; flex: none; }
+.stat {
+  height: 166px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+.stat-head { display: flex; align-items: center; gap: 12px; width: 100%; min-width: 0; }
+.itile {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 10px;
+  border: 1px solid var(--line-2);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--ink-2);
+}
+.itile svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.stat-label { font-size: 14px; font-weight: 400; color: var(--ink-2); white-space: nowrap; }
+.stat-meta { margin-inline-start: auto; display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--ink-3); white-space: nowrap; }
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--live); flex: none; }
+.stat-meta.warn { color: #e8b62e; }
+.stat-meta.warn .ico { width: 14px; height: 14px; }
+.stat-value { display: flex; align-items: baseline; gap: 10px; margin-block-start: 14px; line-height: 1; }
+.stat-value .num { font-size: 46px; font-weight: 500; letter-spacing: 0; }
+.stat-value .word { font-size: 38px; }
+.stat-value .unit { font-size: 13px; color: var(--ink-3); }
+.is-stale .stat-value .num { color: var(--ink-2); }
+.stat-foot { display: flex; align-items: center; gap: 8px; margin-block-start: auto; }
+.stat-note { font-size: 12.5px; color: var(--ink-3); margin-block-start: auto; }
+
+.level, .cmp {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 26px;
+  padding-inline: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--line-2);
+  background: rgba(15, 14, 15, 0.55);
+  font-size: 12.5px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.level .bars { display: inline-flex; align-items: flex-end; gap: 2px; height: 11px; }
+.level .bars i { width: 3px; border-radius: 1px; background: rgba(255, 255, 255, 0.16); }
+.level .bars i:nth-child(1) { height: 4px; }
+.level .bars i:nth-child(2) { height: 6.5px; }
+.level .bars i:nth-child(3) { height: 9px; }
+.level .bars i:nth-child(4) { height: 11px; }
+.level .bars i.on { background: var(--red-hi); }
+.cmp { color: var(--ink-2); gap: 6px; padding-inline: 8px 10px; }
+.cmp svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.cmp-busier svg { color: var(--red-hi); }
+[dir="rtl"] .cmp svg.trend { transform: scaleX(-1); }
+
+/* ---------------------------------------------------------------- lighting (v3)
+ * Every light is two layers: a light behind the glass, and a large dark disc in front of it. The disc is a
+ * mask (transparent inside), so where it sits you see the card's own dark base, never a painted patch.
+ *   .lit        the element that owns a light: it clips it
+ *   .lamp       the border box, clipped to the card's outer radius; a size container, so the geometry below is
+ *               in cqw/cqh of the card
+ *   .lamp-in    masked by the disc (and, on Inside now, by the fade at the ring's upper end)
+ *     ::before  the light;  ::after  the grain, masked by the light, so it only shows where lit
+ *   .lamp-rim   the 1px border, brightened where the light touches it (it sits under the same disc) */
+.lit { isolation: isolate; --lp: 0px; }
+.lit > :not(.lamp, .sr-only) { position: relative; z-index: 1; }
+.lamp {
+  position: absolute;
+  inset: -1px;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: var(--rad);
+  pointer-events: none;
+  container-type: size;
+}
+.lamp-in {
+  position: absolute;
+  inset: 0;
+  -webkit-mask-image: var(--disc-mask), var(--end-mask);
+  mask-image: var(--disc-mask), var(--end-mask);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+.lamp-in::before { content: ""; position: absolute; inset: 0; background: var(--light); }
+.lamp-in::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grain);
+  background-size: 120px 120px;
+  mix-blend-mode: overlay;
+  opacity: var(--grain-o);
+  -webkit-mask-image: var(--light);
+  mask-image: var(--light);
+}
+.lamp-rim {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--rad);
+  padding: 1px;
+  background: var(--rim-light);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+
+/* Inside now: a dark disc in front of a light.
+ * Light: brightest just inside the inline-end bottom corner (#FF2946 only there), FITWAY red for the core,
+ * oxblood outward, fading to obsidian. A flat band along the whole bottom edge feeds the thin rim, and a small
+ * glow sits in the far bottom corner.
+ * Disc: an ellipse (0.7 as tall as wide, in pixels) whose lowest point sits --now-rim above the bottom edge.
+ * Its feather is eased and centred on the nominal edge, so the edge reads as one clean arc.
+ * Ring ends: up the lit side the ring fades out over --now-end before the disc meets the side (--yc); toward
+ * the far end the band thins out on its own before the far-corner glow. */
+.lit-card {
+  --ni: var(--now-int);
+  --rx: calc(var(--now-disc-size) * 1cqw);
+  --ry: calc(var(--now-disc-size) * var(--now-disc-aspect) * 1cqw);
+  --cx: calc(var(--lit-o) + var(--lit-s) * var(--now-disc-x) * 1cqw);
+  --cy: calc(100cqh - var(--now-rim) * 1cqh - var(--ry));
+  --fe: calc(var(--now-soft) * 1px);
+  --disc-mask: radial-gradient(ellipse var(--rx) var(--ry) at var(--cx) var(--cy),
+    transparent calc(100% - var(--fe) / 2), rgb(0 0 0 / 0.16) calc(100% - var(--fe) / 4), rgb(0 0 0 / 0.5) 100%,
+    rgb(0 0 0 / 0.84) calc(100% + var(--fe) / 4), #000 calc(100% + var(--fe) / 2));
+  /* Where the disc meets the lit side, measured from the top. */
+  --yc: calc(100cqh - var(--now-rim) * 1cqh - var(--ry) * (1 - sqrt(max(0, 1 - pow(min(1, var(--now-disc-x) / var(--now-disc-size)), 2)))));
+  --en: calc(var(--now-end) * 1cqh);
+  --end-mask: linear-gradient(to bottom, transparent var(--yc), rgb(0 0 0 / 0.16) calc(var(--yc) + var(--en) * 0.25),
+    rgb(0 0 0 / 0.5) calc(var(--yc) + var(--en) * 0.5), rgb(0 0 0 / 0.84) calc(var(--yc) + var(--en) * 0.75), #000 calc(var(--yc) + var(--en)));
+  /* --lp is 0 at rest. While the light moves (the load entrance, or following the pointer; see the motion
+   * section), the light layer grows by --lp on every side and every position below moves by the same --lp, so the
+   * light sits exactly where it was and its edges stay covered while it slides. */
+  --light:
+    radial-gradient(ellipse calc(0.22cqw * var(--now-hot-size)) calc(0.34cqh * var(--now-hot-size)) at calc(var(--lit-o) + var(--lit-s) * 4cqw + var(--lp)) calc(97cqh + var(--lp)),
+      rgb(255 41 70 / calc(0.9 * var(--now-hot) * var(--ni))) 0%, rgb(255 41 70 / calc(0.4 * var(--now-hot) * var(--ni))) 45%, rgb(255 41 70 / 0) 100%),
+    radial-gradient(ellipse 52cqw 96cqh at calc(var(--lit-o) + var(--lp)) calc(100cqh + var(--lp)),
+      rgb(var(--now-core) / var(--ni)) 0%, rgb(var(--now-core) / calc(0.84 * var(--ni))) 20%, rgb(var(--now-core) / calc(0.45 * var(--ni))) 42%,
+      rgb(77 7 19 / calc(0.75 * var(--ni))) 62%, rgb(77 7 19 / calc(0.3 * var(--ni))) 82%, rgb(77 7 19 / 0) 100%),
+    radial-gradient(ellipse 110cqw 12cqh at calc(var(--lit-o) + var(--lp)) calc(100cqh + var(--lp)),
+      rgb(var(--now-core) / calc(0.55 * var(--ni))) 0%, rgb(77 7 19 / calc(0.7 * var(--ni))) 50%, rgb(77 7 19 / 0) 100%),
+    radial-gradient(ellipse 30cqw 26cqh at calc(var(--far-o) + var(--lp)) calc(100cqh + var(--lp)),
+      rgb(var(--now-core) / calc(0.8 * var(--now-far) * var(--ni))) 0%, rgb(77 7 19 / calc(0.7 * var(--now-far) * var(--ni))) 45%, rgb(77 7 19 / 0) 100%);
+  --rim-light:
+    radial-gradient(ellipse 70cqw 100cqh at var(--lit-o) 100cqh,
+      rgb(255 41 70 / var(--ni)) 0%, rgb(var(--now-core) / calc(0.85 * var(--ni))) 35%, rgb(120 14 28 / calc(0.6 * var(--ni))) 70%, rgb(120 14 28 / 0) 100%),
+    radial-gradient(ellipse 130cqw 20cqh at var(--lit-o) 100cqh,
+      rgb(var(--now-core) / calc(0.8 * var(--ni))) 0%, rgb(120 14 28 / calc(0.7 * var(--ni))) 60%, rgb(120 14 28 / 0) 100%),
+    radial-gradient(ellipse 40cqw 30cqh at var(--far-o) 100cqh,
+      rgb(var(--now-core) / calc(0.9 * var(--now-far) * var(--ni))) 0%, rgb(120 14 28 / 0) 100%);
+}
+
+/* The chart card: a U along the bottom and up both sides around a dark disc. The broad areas are oxblood; red
+ * lives only near the two lower corners. The disc is 54cqw wide (just past the sides), its lowest point
+ * --chart-fade above the bottom and its edge meeting the sides at --chart-side; 0.6223 = 1 - sqrt(1 - 1/1.08^2).
+ * It lies under the data. */
+.lit-chart {
+  --ci: var(--chart-int);
+  --ce: clamp(0, 1 + var(--chart-balance) * 0.8, 2);
+  --cs: clamp(0, 1 - var(--chart-balance) * 0.8, 2);
+  --ry: calc(max(2, (var(--chart-side) - var(--chart-fade)) / 0.6223) * 1cqh);
+  --cy: calc(100cqh - var(--chart-fade) * 1cqh - var(--ry));
+  --fe: calc(var(--chart-soft) * 1px);
+  --disc-mask: radial-gradient(ellipse 54cqw var(--ry) at 50% var(--cy),
+    transparent calc(100% - var(--fe) / 2), rgb(0 0 0 / 0.16) calc(100% - var(--fe) / 4), rgb(0 0 0 / 0.5) 100%,
+    rgb(0 0 0 / 0.84) calc(100% + var(--fe) / 4), #000 calc(100% + var(--fe) / 2));
+  --end-mask: linear-gradient(#000 0 0);
+  --corner-h: calc(var(--chart-side) * 1.3cqh);
+  /* --lp: see the Inside now card (0 at rest). */
+  --light:
+    radial-gradient(ellipse 36cqw var(--corner-h) at calc(var(--lit-o) + var(--lp)) calc(100cqh + var(--lp)),
+      rgb(229 25 53 / calc(0.6 * var(--ce) * var(--ci))) 0%, rgb(229 25 53 / calc(0.3 * var(--ce) * var(--ci))) 24%,
+      rgb(77 7 19 / calc(0.5 * var(--ce) * var(--ci))) 52%, rgb(77 7 19 / calc(0.14 * var(--ce) * var(--ci))) 78%, rgb(77 7 19 / 0) 100%),
+    radial-gradient(ellipse 36cqw var(--corner-h) at calc(var(--far-o) + var(--lp)) calc(100cqh + var(--lp)),
+      rgb(229 25 53 / calc(0.6 * var(--cs) * var(--ci))) 0%, rgb(229 25 53 / calc(0.3 * var(--cs) * var(--ci))) 24%,
+      rgb(77 7 19 / calc(0.5 * var(--cs) * var(--ci))) 52%, rgb(77 7 19 / calc(0.14 * var(--cs) * var(--ci))) 78%, rgb(77 7 19 / 0) 100%),
+    linear-gradient(to top, rgb(77 7 19 / calc(0.9 * var(--ci))) calc(0px + var(--lp)), rgb(77 7 19 / calc(0.42 * var(--ci))) calc(var(--chart-fade) * 0.45cqh + var(--lp)),
+      rgb(77 7 19 / calc(0.12 * var(--ci))) calc(var(--chart-fade) * 0.85cqh + var(--lp)), rgb(77 7 19 / 0) calc(var(--chart-fade) * 1.15cqh + var(--lp)));
+  --rim-light:
+    radial-gradient(ellipse 24cqw calc(var(--chart-side) * 1.4cqh) at var(--lit-o) 100cqh,
+      rgb(255 41 70 / calc(0.8 * var(--ce) * var(--ci))) 0%, rgb(229 25 53 / calc(0.34 * var(--ce) * var(--ci))) 50%, rgb(229 25 53 / 0) 100%),
+    radial-gradient(ellipse 24cqw calc(var(--chart-side) * 1.4cqh) at var(--far-o) 100cqh,
+      rgb(255 41 70 / calc(0.8 * var(--cs) * var(--ci))) 0%, rgb(229 25 53 / calc(0.34 * var(--cs) * var(--ci))) 50%, rgb(229 25 53 / 0) 100%),
+    linear-gradient(to top, rgb(120 14 28 / calc(0.6 * var(--ci))) 0%, rgb(120 14 28 / 0) calc(var(--chart-fade) * 2cqh));
+}
+
+/* ------------------------------------------------------------------- chart */
+.chart { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; padding: 22px 26px 16px; }
+.chart-head { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.chart-head h2 { font-size: 19px; font-weight: 500; }
+.chart-tools { display: flex; align-items: center; gap: 10px; }
+.key {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  height: 38px;
+  padding-inline: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line-2);
+  font-size: 12.5px;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.key li { display: inline-flex; align-items: center; gap: 8px; }
+.key .key-note { color: var(--ink-3); }
+.key .key-note svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
+.sw { display: inline-block; width: 18px; height: 0; flex: none; }
+.sw-line { border-top: 3px solid var(--red-hi); border-radius: 2px; }
+.sw-usual { border-top: 1.5px dashed rgba(245, 243, 242, 0.7); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding-inline: 14px 11px;
+  border-radius: 12px;
+  border: 1px solid var(--line-2);
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 13px;
+  color: var(--ink);
+  white-space: nowrap;
+  transition: border-color 0.16s ease-out, background-color 0.16s ease-out;
+}
+.btn:hover { border-color: var(--line-3); background: rgba(255, 255, 255, 0.05); }
+.btn svg { width: 16px; height: 16px; fill: none; stroke: var(--ink-2); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.16s ease-out; }
+.btn[aria-expanded="true"] svg { transform: rotate(180deg); }
+
+.plot { position: relative; flex: 1; min-height: 0; margin-block-start: 12px; }
+.plot-svg, .plot-labels, .plot-hit { position: absolute; inset: 0; }
+.plot-svg svg { display: block; }
+.plot-labels { pointer-events: none; }
+.plot-labels > * { position: absolute; white-space: nowrap; }
+.plot-hit { z-index: 3; cursor: crosshair; border-radius: 12px; }
+.plot-hit:focus-visible { outline-offset: 2px; }
+.ax-y, .ax-x { font-size: 12px; color: var(--ink-3); }
+.peak-tag { display: inline-flex; align-items: baseline; gap: 6px; font-size: 12px; color: var(--ink-2); }
+.peak-tag b { font-size: 14px; font-weight: 500; color: var(--ink); }
+.is-covered { visibility: hidden; }
+
+.tip {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  min-width: 108px;
+  padding: 9px 12px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(15, 14, 15, 0.92);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  line-height: 1.25;
+  white-space: nowrap;
+}
+.tip-t { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-3); }
+.tip-flag { padding-inline: 6px; border-radius: 5px; border: 1px solid var(--line-2); font-size: 11px; color: var(--ink-2); line-height: 17px; }
+.tip-main { display: flex; align-items: baseline; gap: 8px; margin-block-start: 4px; }
+.tip-v { font-size: 20px; font-weight: 500; color: var(--ink); }
+.tip-l { font-size: 12.5px; color: var(--ink-2); }
+.tip-word { font-size: 14px; color: var(--ink); }
+.tip-u { display: flex; align-items: center; gap: 7px; margin-block-start: 5px; font-size: 12px; color: var(--ink-3); }
+.tip-u .sw { width: 12px; }
+
+/* ----------------------------------------------------------------- details
+ * Deliberately plain: a truthful minute table and the day's data coverage. */
+.details { margin-block-start: 18px; padding: 22px 26px 24px; }
+.details h2 { font-size: 19px; font-weight: 500; }
+.details-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 32px; margin-block-start: 16px; }
+.details h3 { font-size: 14px; font-weight: 500; color: var(--ink-2); }
+.strip { position: relative; height: 10px; margin-block: 14px 6px; border-radius: 5px; overflow: hidden; background: rgba(255, 255, 255, 0.04); }
+.strip span { position: absolute; inset-block: 0; }
+.s-read { background: rgba(229, 25, 53, 0.72); }
+.s-zero { background: rgba(245, 243, 242, 0.6); }
+.s-miss { background: repeating-linear-gradient(90deg, rgba(245, 243, 242, 0.55) 0 1px, transparent 1px 3px); }
+.s-wait { background: rgba(217, 164, 0, 0.45); }
+.s-ahead { background: rgba(255, 255, 255, 0.07); }
+.strip-axis { position: relative; height: 18px; font-size: 11.5px; color: var(--ink-3); }
+.strip-axis span { position: absolute; top: 0; white-space: nowrap; transform: translateX(-50%); }
+[dir="rtl"] .strip-axis span { transform: translateX(50%); }
+.strip-axis span.first { transform: none; }
+.strip-axis span.last { transform: translateX(-100%); }
+[dir="rtl"] .strip-axis span.last { transform: translateX(100%); }
+.facts { margin-block-start: 14px; }
+.facts > div { display: flex; justify-content: space-between; gap: 16px; padding-block: 10px; border-block-start: 1px solid var(--line); font-size: 13px; }
+.facts dt { display: inline-flex; align-items: center; gap: 9px; color: var(--ink-2); white-space: nowrap; }
+.facts dd { color: var(--ink); text-align: end; }
+.k { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+.k-read { background: rgba(229, 25, 53, 0.72); }
+.k-zero { background: rgba(245, 243, 242, 0.6); }
+.k-miss { background: repeating-linear-gradient(90deg, rgba(245, 243, 242, 0.6) 0 1px, transparent 1px 3px); border: 1px solid var(--line-2); }
+.k-wait { background: rgba(217, 164, 0, 0.45); }
+.k-ahead { background: rgba(255, 255, 255, 0.07); border: 1px solid var(--line-2); }
+.k-none { background: none; }
+.scroller { max-height: 420px; margin-block-start: 12px; overflow: auto; border: 1px solid var(--line-2); border-radius: 14px; }
+.scroller:focus-visible { outline-offset: 2px; }
+.minutes-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.minutes-table th { position: sticky; top: 0; padding: 10px 14px; background: #131213; text-align: start; font-weight: 400; color: var(--ink-3); }
+.minutes-table td { padding: 6px 14px; border-block-start: 1px solid rgba(255, 255, 255, 0.05); color: var(--ink-2); }
+.minutes-table td.n { color: var(--ink); }
+.minutes-table tr.miss td { color: var(--ink-3); }
+.minutes-table tr.peak td { color: var(--ink); background: rgba(229, 25, 53, 0.1); }
+
+/* ------------------------------------------------------------- light tuner
+ * A working tool, not part of the design: neutral greys, a dashed toggle, no red. By default it sits above the
+ * middle cards (452px in from the inline-start edge). The toggle and the panel move together as one unit: drag
+ * the toggle or the panel's header anywhere (tuner.js keeps it inside the viewport and remembers the spot).
+ * Always Arabic-first and right-to-left; the toggle stays on the page's inline-start side of the unit. */
+.tuner {
+  --t-line: rgba(255, 255, 255, 0.14);
+  position: fixed;
+  z-index: 60;
+  top: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  font-family: var(--font);
+  color: var(--ink-2);
+}
+html[dir="rtl"] .tuner { right: 452px; }
+html[dir="ltr"] .tuner { left: 452px; align-items: flex-end; }
+.tuner.is-dragging, .tuner.is-dragging * { cursor: grabbing !important; user-select: none; }
+.tuner.is-dragging .tuner-panel { box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7); }
+.tuner-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 28px;
+  padding-inline: 9px 11px;
+  border-radius: 8px;
+  border: 1px dashed rgba(255, 255, 255, 0.24);
+  background: rgba(14, 14, 16, 0.86);
+  font-size: 12px;
+  color: var(--ink-3);
+}
+.tuner-toggle:hover, .tuner.is-open .tuner-toggle { color: var(--ink); border-color: rgba(255, 255, 255, 0.4); }
+.tuner-toggle svg, .tuner-x svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
+.tuner .t-en { font-size: 10.5px; color: #8d8789; letter-spacing: 0.01em; }
+.tuner-panel {
+  width: 544px;
+  max-height: calc(100vh - 50px);
+  overflow: auto;
+  padding: 14px 16px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--t-line);
+  background: rgba(17, 17, 19, 0.97);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+  font-size: 12px;
+}
+.tuner-panel[hidden] { display: none; }
+.tuner-head { display: flex; align-items: flex-start; gap: 10px; cursor: grab; touch-action: none; user-select: none; }
+.tuner-grip { display: grid; place-items: center; width: 24px; height: 24px; margin-block-start: -3px; border-radius: 6px; color: var(--ink-3); cursor: grab; }
+.tuner-grip:hover { color: var(--ink); background: rgba(255, 255, 255, 0.06); }
+.tuner-grip svg { width: 14px; height: 14px; fill: currentColor; }
+.tuner-toggle { touch-action: none; }
+.tuner-head h2 { font-size: 13.5px; font-weight: 500; color: var(--ink); }
+.tuner-sub { margin-inline-start: auto; padding-block-start: 2px; font-size: 11px; color: #8d8789; }
+.tuner-x { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 6px; color: var(--ink-3); }
+.tuner-x:hover { color: var(--ink); background: rgba(255, 255, 255, 0.06); }
+.tuner-presets { display: flex; gap: 6px; margin-block: 10px 4px; }
+.tuner-presets button, .t-btn {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  height: 28px;
+  padding-inline: 10px;
+  border-radius: 7px;
+  border: 1px solid var(--t-line);
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 12px;
+  color: var(--ink-2);
+  line-height: 26px;
+}
+.tuner-presets button:hover, .t-btn:hover { border-color: rgba(255, 255, 255, 0.3); color: var(--ink); }
+.tuner-presets button[aria-pressed="true"] { background: rgba(245, 243, 242, 0.12); border-color: rgba(245, 243, 242, 0.5); color: var(--ink); }
+.tuner-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.tuner-group { margin: 0; padding: 0; border: 0; min-width: 0; }
+.tuner-group + .tuner-group { margin-block-start: 8px; }
+.tuner-group legend { padding: 8px 0 4px; font-size: 12px; font-weight: 500; color: var(--ink); }
+.t-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "label out" "input input"; align-items: baseline; column-gap: 8px; padding-block: 3px 4px; }
+.t-row label { grid-area: label; display: flex; align-items: baseline; gap: 6px; min-width: 0; line-height: 1.3; color: var(--ink-2); white-space: nowrap; }
+.t-row output { grid-area: out; }
+.t-row input[type="range"] { grid-area: input; width: 100%; height: 16px; margin: 2px 0 0; accent-color: #cfc9ca; }
+.t-row output { font-size: 11px; color: var(--ink-3); font-variant-numeric: tabular-nums; text-align: end; white-space: nowrap; }
+.t-row output.t-hue::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-inline-end: 4px; border-radius: 2px; background: var(--sw, #e51935); vertical-align: 0; }
+/* Motion group (Round 5 section 4): replay, a simulated reading, and the motion switches. */
+.tuner-motion { margin-block-start: 10px; padding-block-start: 2px; border-block-start: 1px solid rgba(255, 255, 255, 0.08); }
+.t-motion-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-block: 2px 8px; }
+.t-btn:disabled { opacity: 0.45; cursor: default; }
+.t-latest { margin-inline-start: auto; font-size: 11px; color: var(--ink-3); white-space: nowrap; }
+.t-toggles { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 16px; }
+.t-check { display: flex; align-items: baseline; gap: 7px; padding-block: 4px; color: var(--ink-2); line-height: 1.3; white-space: nowrap; cursor: pointer; }
+.t-check input { margin: 0; accent-color: #cfc9ca; translate: 0 2px; cursor: pointer; }
+.t-check.is-sub { padding-inline-start: 20px; }
+.t-check:has(input:disabled) { opacity: 0.5; cursor: default; }
+.t-seg { display: flex; flex-wrap: wrap; gap: 4px; margin-block-start: 6px; }
+.t-seg[hidden] { display: none; }
+.t-seg button { display: inline-flex; align-items: baseline; gap: 5px; height: 24px; padding-inline: 8px; border-radius: 6px; border: 1px solid var(--t-line); font-size: 11.5px; color: var(--ink-2); line-height: 22px; }
+.t-seg button:hover { border-color: rgba(255, 255, 255, 0.3); color: var(--ink); }
+.t-seg button[aria-pressed="true"] { background: rgba(245, 243, 242, 0.12); border-color: rgba(245, 243, 242, 0.5); color: var(--ink); }
+.t-note { margin-block-start: 6px; font-size: 11px; color: var(--ink-3); }
+.t-note[hidden] { display: none; }
+.tuner-actions { display: flex; align-items: center; gap: 8px; margin-block-start: 12px; padding-block-start: 12px; border-block-start: 1px solid rgba(255, 255, 255, 0.08); }
+.tuner-status { margin-inline-start: auto; font-size: 11px; color: var(--ink-3); }
+.tuner-json {
+  display: block;
+  width: 100%;
+  margin-block-start: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--t-line);
+  background: #0c0c0d;
+  color: var(--ink-2);
+  font: 11px/1.45 ui-monospace, "Cascadia Mono", Consolas, monospace;
+  resize: vertical;
+}
+.tuner-json[hidden] { display: none; }
+.tuner :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* ------------------------------------------------------------------ motion
+ * Round 5 section 4. app.js drives the load sequence, the live update, the rail and the glides with the Web
+ * Animations API; this section holds the states they start from and the few CSS-driven parts. Transform and
+ * opacity only. With ?motion=off (html[data-motion="off"]) or prefers-reduced-motion everything is final at once.
+ * Before the load sequence starts (motion on only), the cards and the chart wait unseen, and the lights too when
+ * "switch on at load" is on; the inline script in index.html sets these before first paint. */
+html[data-intro="pending"] .cards > .card,
+html[data-intro="pending"] .chart,
+html[data-lights="pending"] .lamp,
+html[data-lights="pending"] .wash,
+html[data-lights="pending"] .rail::after { opacity: 0; }
+
+/* Rail: the section names fade in just behind the end cap (see the rail pieces below). */
+html[data-motion="on"] .rail[data-open="true"] .rail-name { animation: name-in 0.24s cubic-bezier(0.22, 1, 0.36, 1) 0.08s backwards; }
+/* While the rail opens or closes, its own surface steps aside for three pieces that move with transforms only: a
+ * fixed start cap, a middle that scales from the inline-start, and an end cap that slides. Each piece is the
+ * collapsed surface (0.7, with the rail's own blur) plus a darker layer that fades in to make the open surface
+ * (0.94). The blur stays on the pieces, so the page under the moving rail never shows through as sharp text and
+ * the first frame matches the collapsed rail. */
+.rail.is-morph { background: transparent; border-color: transparent; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.rail-surface { position: absolute; inset: -1px; z-index: -1; pointer-events: none; }
+.rail-surface > i { position: absolute; top: 0; bottom: 0; overflow: hidden; background: rgba(12, 12, 15, 0.7); border: 1px solid var(--line); }
+.rail-surface > i:not(.rs-shadow) { -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px); }
+.rail-surface > i > i { position: absolute; inset: 0; background: rgba(12, 12, 15, 0.8); opacity: 0; }
+.rail-surface > .rs-start { inset-inline-start: 0; width: 40px; border-inline-end-width: 0; border-start-start-radius: 24px; border-end-start-radius: 24px; }
+.rail-surface > .rs-mid { inset-inline-start: 40px; width: 156px; border-inline-width: 0; transform: scaleX(0); transform-origin: var(--rs-o) 50%; }
+.rail-surface > .rs-end { inset-inline-start: 40px; width: 40px; border-inline-start-width: 0; border-start-end-radius: 24px; border-end-end-radius: 24px; }
+.rail-surface > .rs-shadow { inset: 0; overflow: visible; border: 0; border-radius: 24px; background: none; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6); opacity: 0; }
+[dir="rtl"] .rail-surface { --rs-o: right; }
+[dir="ltr"] .rail-surface { --rs-o: left; }
+
+/* A light that moves: its light layer (and the grain that lives in it) grows by --lp on every side, and every
+ * position in the light moves by the same --lp (see the lighting section), so at rest it sits exactly where the
+ * static page puts it; a transform then slides it and no edge of the layer is ever exposed. The disc (the mask on
+ * .lamp-in) and the rim stay. Two things move a light, and they never run at once:
+ *   .is-entering  the load entrance (app.js: Web Animations; --enter-lp is the overscan it needs)
+ *   .is-peek      the light follows the pointer (desktop): app.js sets --peek-x/--peek-y, a transition eases them */
+.lit.is-entering { --lp: var(--enter-lp, 0px); }
+.lit.is-peek { --lp: 24px; }
+.lit.is-entering .lamp-in::before,
+.lit.is-entering .lamp-in::after,
+.lit.is-peek .lamp-in::before,
+.lit.is-peek .lamp-in::after { inset: calc(-1 * var(--lp)); }
+.lit.is-entering .lamp-in::after,
+.lit.is-peek .lamp-in::after { background-position: var(--lp) var(--lp); }
+/* A plain 2D translate and no will-change: at rest (offset 0) nothing is promoted to its own layer, so hovering
+ * without moving renders exactly as the static card; the transition itself runs on the compositor. */
+.lit.is-peek .lamp-in::before,
+.lit.is-peek .lamp-in::after {
+  transform: translate(var(--peek-x, 0px), var(--peek-y, 0px));
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Optional: the Inside now light dimmer when quiet (tuner toggle, off by default). */
+html[data-crowd="on"] #card-now .lamp-in { opacity: var(--crowd-o, 1); transition: opacity 1.2s cubic-bezier(0.45, 0, 0.25, 1); }
+
+/* Live: a slow ping from the line's end point, only while live. An HTML layer above the chart, so it is composited
+ * and never repaints the chart. It starts at the end point's size and fades as it widens. */
+.ping {
+  position: absolute;
+  z-index: 1;
+  width: 32px;
+  height: 32px;
+  margin: -16px 0 0 -16px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 41, 70, 0.85);
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.28);
+}
+html[data-motion="on"] .ping.is-on { animation: ping 3.6s cubic-bezier(0.22, 0.61, 0.36, 1) 0.4s infinite; }
+@keyframes ping {
+  0% { opacity: 0.7; transform: scale(0.28); }
+  62% { opacity: 0; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1); }
+}
+
+html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="off"] *::after { animation: none !important; transition: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FITWAY · Chronograph</title>
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@160..700&display=swap">
+<link rel="stylesheet" href="style.css">
+<script>
+  (function () {
+    var en = new URLSearchParams(location.search).get("lang") === "en";
+    document.documentElement.lang = en ? "en" : "ar";
+    document.documentElement.dir = en ? "ltr" : "rtl";
+  })();
+</script>
+</head>
+<body>
+<div id="app"></div>
+<script src="app.js" defer></script>
+</body>
+</html>

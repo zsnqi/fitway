@@ -26,6 +26,8 @@ scope:
     - design-research/owner-composition-exploration-r04/directions/**
     - docs/phase-records/handoffs/owner-design-exploration/20260923-165000-owner-design-exploration-r04-activation.md
     - docs/phase-records/task-packets/owner-design-exploration-r04.yaml
+    - SPEC.md
+    - biome.json
   forbiddenPaths:
     - design-research/owner-composition-exploration-r01/**, design-research/owner-composition-exploration-r02/**, and design-research/owner-composition-exploration-r03/** (preserved diagnostic evidence)
     - design-research/owner-visual-preferences/** (user-supplied reference; read only)
@@ -34,7 +36,7 @@ scope:
     - tests/browser/** including canonicals and screenshots
     - visual-direction-gate/**, docs/design/VISUAL_AUTHORITY_STATUS.md, docs/design/PAPER_GUIDE_CONFLICT_MAP.md, docs/adr/**, approval manifests, and pinned hashes
     - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
-    - FITWAY_PRODUCT.md, SPEC.md, DESIGN_GUIDE.md, DESIGN.md, and docs/WORKFLOW.md (policy clarification committed; no concept-stage edits)
+    - FITWAY_PRODUCT.md, DESIGN_GUIDE.md, DESIGN.md, and docs/WORKFLOW.md (policy clarification committed; no concept-stage edits), and all of SPEC.md except the user-authorized 2026-09-24 entries-framing wording
     - docs/archive/**, prior handoffs, and unrelated phase records
     - pnpm-lock.yaml, dependencies, and migrations
   sharedLeases: []
@@ -139,6 +141,8 @@ limitations:
   - Red and black are the broad identity anchor and Cairo is excluded from these concepts. The user has not fixed a direction count, layout, shade, light/dark treatment, material, atmosphere, chart form, or typography beyond that exclusion.
   - Product/Spec behavior, data semantics, privacy, security, accessibility, Western digits, and RTL/LTR remain binding. Production and canonical state do not change.
   - The required reference-frame entry is historical provenance only; it is not a preferred style or required chart treatment. Existing Owner screenshots and Paper exports are not composition authority.
+  - On 2026-09-24 the user authorized one SPEC.md amendment. The Owner entries figure no longer requires the "estimated entrance crossings, not unique members" caption, because the owner will explain the measure directly. The figure must still be named as entries and never as members or unique visitors. No other SPEC.md text changes in this packet.
+  - On 2026-09-25 the user authorized one biome.json change. It excludes `design-research/owner-composition-exploration-r04/directions` from Biome, both formatter and linter, mirroring the existing r01 `_quarantine` exclusion. The reason is that the concept scripts are exploration code, not production, and can then be committed exactly as captured. Rewriting them would touch protected directions and invalidate their evidence. No other biome.json change is made in this packet.
 visual:
   surfaceKey: owner-composition-family
   authorityStatus: VACANT

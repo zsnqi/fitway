@@ -1,0 +1,183 @@
+{
+  "playwrightFrom": "D:\\Projects\\fitway\\.claude\\worktrees\\agent-ae35c4f4ea09f42e3\\design-research\\owner-composition-exploration-r04\\directions\\chronograph",
+  "frames": [
+    {
+      "frame": "daily-en-1440x900",
+      "fontsCheckLatin": true,
+      "fontsCheckArabic": true,
+      "readexFacesLoaded": 2,
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "daily-ar-1440x900",
+      "fontsCheckLatin": true,
+      "fontsCheckArabic": true,
+      "readexFacesLoaded": 2,
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "history-en-1440x900",
+      "fontsCheckLatin": true,
+      "fontsCheckArabic": true,
+      "readexFacesLoaded": 2,
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "history-ar-1440x900",
+      "fontsCheckLatin": true,
+      "fontsCheckArabic": true,
+      "readexFacesLoaded": 2,
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "daily-en-1440x900-delayed",
+      "fontsCheckLatin": true,
+      "fontsCheckArabic": true,
+      "readexFacesLoaded": 2,
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "daily-ar-1440x900-delayed",
+      "fontsCheckLatin": true,
+      "fontsCheckArabic": true,
+      "readexFacesLoaded": 2,
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "daily-en-1440x900-keyboard",
+      "fontsCheckLatin": true,
+      "fontsCheckArabic": true,
+      "readexFacesLoaded": 2,
+      "overflowX": 0,
+      "errors": [],
+      "keyboard": {
+        "focused": "dial",
+        "hub": "SELECTED READING 7:20 AM ≈ 32 present Moderate"
+      }
+    },
+    {
+      "frame": "extra-daily-en-1440-fullpage",
+      "fontsCheckLatin": true,
+      "fontsCheckArabic": true,
+      "readexFacesLoaded": 2,
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "extra-daily-ar-1440-fullpage",
+      "fontsCheckLatin": true,
+      "fontsCheckArabic": true,
+      "readexFacesLoaded": 2,
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "extra-history-en-1440-fullpage",
+      "fontsCheckLatin": true,
+      "fontsCheckArabic": true,
+      "readexFacesLoaded": 2,
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "extra-history-ar-1440-fullpage",
+      "fontsCheckLatin": true,
+      "fontsCheckArabic": true,
+      "readexFacesLoaded": 2,
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "extra-daily-ar-1440x900-keyboard",
+      "fontsCheckLatin": true,
+      "fontsCheckArabic": true,
+      "readexFacesLoaded": 2,
+      "overflowX": 0,
+      "errors": [],
+      "keyboard": {
+        "focused": "dial",
+        "hub": "القراءة المحددة 7:20 ص نحو 32 حاضرًا متوسط"
+      }
+    },
+    {
+      "frame": "extra-daily-en-1440x900-closed",
+      "fontsCheckLatin": true,
+      "fontsCheckArabic": true,
+      "readexFacesLoaded": 2,
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "extra-daily-ar-1440x900-empty",
+      "fontsCheckLatin": true,
+      "fontsCheckArabic": true,
+      "readexFacesLoaded": 2,
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "extra-daily-en-1440x900-loading",
+      "fontsCheckLatin": true,
+      "fontsCheckArabic": true,
+      "readexFacesLoaded": 2,
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "extra-daily-ar-1440x900-error",
+      "fontsCheckLatin": true,
+      "fontsCheckArabic": true,
+      "readexFacesLoaded": 2,
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "frame": "extra-access-ar-1440x900",
+      "fontsCheckLatin": true,
+      "fontsCheckArabic": true,
+      "readexFacesLoaded": 2,
+      "overflowX": 0,
+      "errors": []
+    }
+  ],
+  "overflowOnly": [
+    {
+      "check": "daily-en-1280x800",
+      "fontsCheckLatin": true,
+      "fontsCheckArabic": true,
+      "readexFacesLoaded": 2,
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "check": "daily-ar-1280x800",
+      "fontsCheckLatin": true,
+      "fontsCheckArabic": true,
+      "readexFacesLoaded": 2,
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "check": "history-en-1280x800",
+      "fontsCheckLatin": true,
+      "fontsCheckArabic": true,
+      "readexFacesLoaded": 2,
+      "overflowX": 0,
+      "errors": []
+    },
+    {
+      "check": "history-ar-1280x800",
+      "fontsCheckLatin": true,
+      "fontsCheckArabic": true,
+      "readexFacesLoaded": 2,
+      "overflowX": 0,
+      "errors": []
+    }
+  ]
+}

@@ -160,8 +160,8 @@ count (RESEARCH.md §9 governing rule).
 20. As the owner, I want a day-of-week × hour-of-day busiest-times heatmap, so that I can
     schedule staff and plan offers around real peaks and quiet hours.
 21. As the owner, I want per-day peak occupancy, daily averages, and estimated daily visits
-    (framed as "estimated entrance crossings, not unique members"), so that I understand
-    volume honestly.
+    (named as entries, never as members or unique visitors), so that I understand volume
+    honestly.
 22. As the owner, I want week-over-week comparison once enough history exists (and an
     honest empty state before that), so that I can see direction.
 23. As the owner, I want CSV export of per-minute history for a date range, so that I can
@@ -610,8 +610,10 @@ bot message to the maintainer chat. Owner-facing capacity alerts remain out of s
 (RESEARCH.md §16).
 
 **Analytics semantics.** All aggregation is business-day and gym-timezone aware. "Daily
-visits" = sum of entries per business day, always presented with the "estimated entrance
-crossings, not unique members" framing (RESEARCH.md §5, §20). Heatmap averages occupancy
+visits" = sum of entries per business day: estimated entrance crossings, not unique members
+(RESEARCH.md §5, §20). The UI names this figure as entries and never as members or unique
+visitors. It needs no explanatory caption, because the owner explains the measure directly
+(user decision, 2026-09-24). Heatmap averages occupancy
 by (weekday, local hour); closed periods render as "closed", and missing history renders
 as "no data" — visually distinct from zero (DESIGN_GUIDE §12). Week-over-week shows
 an honest empty state until two comparable weeks exist. Analytics read historical band

@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-recipe="a">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FITWAY Light Study</title>
+  <meta name="description" content="FITWAY Owner lighting test, three red light recipes on one static Daily composition. Exploration concept with synthetic data. Not production.">
+  <script>
+    // Pick the light recipe before first paint: ?recipe=a|b|c (default a).
+    (function () {
+      var r = new URLSearchParams(location.search).get("recipe");
+      document.documentElement.dataset.recipe = r === "b" || r === "c" ? r : "a";
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="page">
+    <!-- The page's own top-corner wash. It is part of the page box and scrolls with it. -->
+    <i class="wash" aria-hidden="true"></i>
+
+    <nav class="rail" aria-label="الأقسام">
+      <button class="tile brand" type="button" aria-expanded="false" aria-label="FITWAY، إظهار أسماء الأقسام">
+        <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+          <path class="mk" d="M20.6 50.4A23 23 0 1 0 13.6 43.4" stroke-width="4.4"/>
+          <path class="mk" d="M24.2 20.8A13.6 13.6 0 1 1 26.4 44.2" stroke-width="4"/>
+          <path class="mk" d="M19.4 21.4 30.2 32.2 14.6 47.8" stroke-width="4.2" stroke-linejoin="miter" stroke-linecap="butt"/>
+          <circle class="mk-dot" cx="36" cy="28.2" r="4.2"/>
+        </svg>
+      </button>
+
+      <ul class="rail-group">
+        <li><a class="tile is-active" href="#main" aria-current="page" aria-label="اليومي">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 13.5a7.5 7.5 0 0 1 15 0"/><path d="M12 13.5 15.6 9.9"/><path d="M3.5 18h17"/><circle class="fill" cx="12" cy="13.5" r="1.3"/></svg>
+        </a></li>
+        <li><a class="tile" href="#" aria-label="التقارير">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5h16"/><path d="M7 16v-4.5M12 16V6.5M17 16v-7"/></svg>
+        </a></li>
+        <li><a class="tile" href="#" aria-label="الوصول">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8.2" cy="12" r="3.6"/><path d="M11.8 12h8.4M17.2 12v2.8M20.2 12v2"/></svg>
+        </a></li>
+        <li><a class="tile" href="#" aria-label="سجل النشاط">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3.8" width="14" height="16.4" rx="3"/><path d="M8.6 8.6h6.8M8.6 12h6.8M8.6 15.4h4"/></svg>
+        </a></li>
+        <li><a class="tile" href="#" aria-label="التشغيل">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 7.5h9M17.5 7.5h2M4.5 16.5h2M10.5 16.5h9"/><circle cx="15.5" cy="7.5" r="2"/><circle cx="8.5" cy="16.5" r="2"/></svg>
+        </a></li>
+      </ul>
+
+      <ul class="rail-group rail-foot">
+        <li><a class="tile" href="#" aria-label="شاشة المراقبة">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.6" y="4.6" width="16.8" height="11.4" rx="2.4"/><path d="M9 20h6M12 16v4"/></svg>
+        </a></li>
+        <li><a class="tile tile-lang" href="#" aria-label="التبديل إلى اللغة الإنجليزية"><span lang="en">EN</span></a></li>
+        <li><a class="tile" href="#" aria-label="الإعدادات">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2.9"/><path d="M12 3.6v2.2M12 18.2v2.2M3.6 12h2.2M18.2 12h2.2M6.1 6.1l1.55 1.55M16.35 16.35l1.55 1.55M6.1 17.9l1.55-1.55M16.35 7.65l1.55-1.55"/></svg>
+        </a></li>
+        <li><a class="tile" href="#" aria-label="تسجيل الخروج">
+          <svg class="mirror" viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 4.5H7.2a2.2 2.2 0 0 0-2.2 2.2v10.6a2.2 2.2 0 0 0 2.2 2.2h6.3"/><path d="M10.5 12h9M16.5 8.8 19.7 12l-3.2 3.2"/></svg>
+        </a></li>
+      </ul>
+    </nav>
+
+    <main class="main" id="main">
+      <header class="head">
+        <div class="head-titles">
+          <h1>اليوم</h1>
+          <p class="sub" id="sub"></p>
+        </div>
+        <div class="head-meta">
+          <span class="chip status" id="status"></span>
+          <span class="chip concept">مفهوم استكشافي · بيانات افتراضية</span>
+        </div>
+      </header>
+
+      <section class="cards" aria-label="اليوم باختصار">
+        <article class="card stat lit lit-corner">
+          <i class="lamp" aria-hidden="true"></i>
+          <div class="stat-head">
+            <span class="itile" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8.2" r="3.4"/><path d="M5.6 19.4a6.4 6.4 0 0 1 12.8 0"/></svg></span>
+            <h2 class="stat-label">داخل الصالة الآن</h2>
+            <span class="stat-meta live" id="now-meta"></span>
+          </div>
+          <p class="stat-value"><bdi class="num" id="now-v"></bdi><span class="unit">تقريبًا</span></p>
+          <span class="level" id="now-level"></span>
+        </article>
+
+        <article class="card stat">
+          <div class="stat-head">
+            <span class="itile" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 17.5 9.2 11l3.4 3.2L20 6.5"/><path d="M15.4 6.5H20v4.6"/></svg></span>
+            <h2 class="stat-label">ذروة اليوم</h2>
+            <span class="stat-meta" id="peak-meta"></span>
+          </div>
+          <p class="stat-value"><bdi class="num" id="peak-v"></bdi></p>
+          <span class="level" id="peak-level"></span>
+        </article>
+
+        <article class="card stat">
+          <div class="stat-head">
+            <span class="itile" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 4.5H6.8a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2H10"/><path d="M20 12h-9M14.2 8.8 11 12l3.2 3.2"/></svg></span>
+            <h2 class="stat-label">الدخول حتى الآن</h2>
+          </div>
+          <p class="stat-value"><bdi class="num" id="entries-v"></bdi></p>
+          <p class="stat-note">تقدير لمرات الدخول، لا لعدد الأعضاء</p>
+        </article>
+
+        <article class="card stat">
+          <div class="stat-head">
+            <span class="itile" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.6"/><path d="M12 7.8V12l2.8 1.8"/></svg></span>
+            <h2 class="stat-label">أكثر الأوقات ازدحامًا</h2>
+            <span class="stat-meta">آخر <bdi>7</bdi> أيام</span>
+          </div>
+          <p class="stat-value"><span class="num word" id="busy-v"></span></p>
+          <p class="stat-note" id="busy-note"></p>
+        </article>
+      </section>
+
+      <section class="card chart lit lit-bottom" aria-labelledby="chart-title">
+        <i class="lamp" aria-hidden="true"></i>
+        <header class="chart-head">
+          <h2 id="chart-title">ازدحام اليوم</h2>
+          <ul class="key" aria-label="مفتاح المخطط">
+            <li><span class="sw sw-today" aria-hidden="true"></span>اليوم</li>
+            <li><span class="sw sw-usual" aria-hidden="true"></span>الأربعاء المعتاد <span class="key-note">(متوسط آخر <bdi>4</bdi>)</span></li>
+          </ul>
+        </header>
+        <figure class="plot" id="plot" aria-describedby="chart-summary">
+          <div class="plot-svg" id="plot-svg"></div>
+          <div class="plot-labels" id="plot-labels"></div>
+        </figure>
+        <p class="sr-only" id="chart-summary"></p>
+      </section>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
