@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-09-25T22:00:00+03:00
+updatedAt: 2026-09-26T00:10:00+03:00
 coordinator:
   owner: Primary coordinator and integrator for FITWAY; Owner r04 is IN_PROGRESS with fresh concept-only directions authorized and Redline unselected.
   stateFilePolicy: coordinator-only
@@ -29,9 +29,9 @@ milestones:
     taskPacket: docs/phase-records/task-packets/owner-design-exploration-r04.yaml
     taskPacketSha256: 93dca6a2af8f6f83409a4d05b9444fbb4083b7bfe76134f19fceab4c034e09ca
     dependencies: []
-    ownerSession: owner-design-exploration-r04-coordinator
+    ownerSession: r04-coordinator-cloud:session_015ieHuPjwSGP8rCDCeq5nrf
     branch: codex/owner-redesign-r04
-    worktree: D:/Projects/fitway-worktrees/owner-design-exploration-r04
+    worktree: /home/user/fitway (Claude Code cloud session container)
     baseCommit: e5d5027ab67966c38612dd973f2f4bcb85f3441b
     ownedPaths:
       - design-research/owner-composition-exploration-r04/directions/**
@@ -55,7 +55,7 @@ milestones:
       - pnpm-lock.yaml, dependencies, and migrations
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: 2026-09-25T22:00:00+03:00
+    lastHeartbeatAt: 2026-09-26T00:10:00+03:00
     leaseExpiresAt: 2026-09-26T22:00:00+03:00
     handoff: docs/phase-records/handoffs/owner-design-exploration/20260923-165000-owner-design-exploration-r04-activation.md
     stopReason: null
