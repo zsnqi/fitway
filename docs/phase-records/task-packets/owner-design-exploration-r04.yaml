@@ -28,6 +28,9 @@ scope:
     - docs/phase-records/task-packets/owner-design-exploration-r04.yaml
     - SPEC.md
     - biome.json
+    - CLAUDE.md
+    - .claude/agents/**
+    - .claude/skills/**
   forbiddenPaths:
     - design-research/owner-composition-exploration-r01/**, design-research/owner-composition-exploration-r02/**, and design-research/owner-composition-exploration-r03/** (preserved diagnostic evidence)
     - design-research/owner-visual-preferences/** (user-supplied reference; read only)
@@ -143,6 +146,8 @@ limitations:
   - The required reference-frame entry is historical provenance only; it is not a preferred style or required chart treatment. Existing Owner screenshots and Paper exports are not composition authority.
   - On 2026-09-24 the user authorized one SPEC.md amendment. The Owner entries figure no longer requires the "estimated entrance crossings, not unique members" caption, because the owner will explain the measure directly. The figure must still be named as entries and never as members or unique visitors. No other SPEC.md text changes in this packet.
   - On 2026-09-25 the user authorized one biome.json change. It excludes `design-research/owner-composition-exploration-r04/directions` from Biome, both formatter and linter, mirroring the existing r01 `_quarantine` exclusion. The reason is that the concept scripts are exploration code, not production, and can then be committed exactly as captured. Rewriting them would touch protected directions and invalidate their evidence. No other biome.json change is made in this packet.
+  - On 2026-09-25 the user authorized continuing this milestone in Claude Code cloud sessions, which see only committed files. They therefore authorized tracking `.claude/agents/` and `.claude/skills/`. `.claude/agents/` holds the four Owner-direction agent definitions with fixed effort levels, and Impeccable's four shipped agents. `.claude/skills/` holds copies of the skills this work uses, namely Impeccable 4.3.1 (Apache-2.0) and ux-araby (MIT), with their licences and `.claude/skills/SOURCES.md`. They also authorized one CLAUDE.md change, in its "Repository-local Claude configuration" section. That section now states what is tracked and gives the rule for choosing a definition by effort; the rest of `.claude/` stays untracked and nothing in it is normative. The Impeccable engine binary is not vendored. No other CLAUDE.md or `.claude/` change is made in this packet.
+  - On 2026-09-25 the user authorized a second biome.json change, which adds `!**/.claude/skills` to the Biome includes. Before it, the pre-commit Biome hook linted the vendored skill code as project code and failed. It also rewrote seven vendored files, which were restored to their exact originals. Vendored skills stay copies of their upstream sources. The only exception is trailing whitespace removed from four Markdown files (27 lines), so that the repository's `git diff --check` invariant passes; this is recorded in `.claude/skills/SOURCES.md`. No other biome.json change is made in this packet.
 visual:
   surfaceKey: owner-composition-family
   authorityStatus: VACANT

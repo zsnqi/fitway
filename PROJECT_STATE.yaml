@@ -27,7 +27,7 @@ milestones:
       production, canonical, Paper, and visual-authority state unchanged.
     taskClass: visual-authority-change
     taskPacket: docs/phase-records/task-packets/owner-design-exploration-r04.yaml
-    taskPacketSha256: 6b47033d29311a3deb8e31a485111fa21f756c85a6e7f20d7d569328fa4fb211
+    taskPacketSha256: 93dca6a2af8f6f83409a4d05b9444fbb4083b7bfe76134f19fceab4c034e09ca
     dependencies: []
     ownerSession: owner-design-exploration-r04-coordinator
     branch: codex/owner-redesign-r04
@@ -39,6 +39,9 @@ milestones:
       - docs/phase-records/task-packets/owner-design-exploration-r04.yaml
       - SPEC.md
       - biome.json
+      - CLAUDE.md
+      - .claude/agents/**
+      - .claude/skills/**
     forbiddenPaths:
       - design-research/owner-composition-exploration-r01/**, design-research/owner-composition-exploration-r02/**, and design-research/owner-composition-exploration-r03/** (preserved diagnostic evidence)
       - design-research/owner-visual-preferences/** (user-supplied reference; read only)

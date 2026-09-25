@@ -918,5 +918,116 @@ It may be cleaned, and everything in it can be rebuilt.
   - `.impeccable/hook.cache.json` stays untracked, because it is a machine cache.
   - `.claude/` is still untracked. Whether cloud sessions need it committed is being researched.
 - **Stops:** the user confirmed half-hour stops.
+
+## Moving to Claude Code cloud sessions (2026-09-25)
+
+The user will continue this milestone in Claude Code cloud sessions (claude.ai/code), using the one-time cloud
+credit Anthropic gave Pro subscribers. Codex will push the branch to GitHub first.
+
+**Where each fact comes from:**
+- The coordinator checked these facts itself in the official documentation (links below).
+- A research subagent added the credit details, from @ClaudeDevs posts on X. These are not in the documentation
+  the coordinator read.
+- Its claim that "cloud sessions cannot run a browser or take screenshots" is **not** in the documentation, and
+  is unverified.
+
+**Documented facts**
+([cloud environments](https://code.claude.com/docs/en/cloud-environments),
+[cloud sessions](https://code.claude.com/docs/en/claude-code-on-the-web)):
+- **The clone:** a session clones the GitHub remote at the chosen branch. Only committed files exist, so push
+  first.
+- **What loads from the repository:** `CLAUDE.md` and the committed `.claude/agents/`, `.claude/skills/`,
+  `.claude/commands/`, and `.claude/rules/`. In single-repository sessions, `.claude/settings.json` hooks and
+  permissions and `.mcp.json` load too.
+- **What does not load:**
+  - plugins and marketplaces declared in `.claude/settings.json`;
+  - everything user-level in `~/.claude`: `CLAUDE.md`, skills, agents, and user-enabled plugins;
+  - auto memory.
+- **Skills from claude.ai:** skills the user enables on claude.ai load automatically.
+- **Subagents** work as they do locally, and the repository's `.claude/agents/` is picked up.
+- **The environment:**
+  - Ubuntu 24.04 on x86_64, with Node 20–22, pnpm, chromedriver, and Python with pip.
+  - A setup script runs as root before Claude starts. It must exit 0 and finish in under about 5 minutes, and
+    it is cached as a filesystem snapshot for about 7 days.
+  - The "Trusted" network level allows the npm registry, PyPI, GitHub, `fonts.googleapis.com`, and
+    `fonts.gstatic.com`. The Playwright browser CDN is not in the documented default list.
+  - GitHub API and release-asset requests reach only the repositories attached to the session.
+- **Usage:** cloud sessions share the account's rate limits. There is no separate compute charge.
+
+**The credit.** The user confirmed their account shows "Cloud session credits: $100 of $100 left", expiring
+2026-11-05 at 10:59 +03:00.
+
+**Committed for the move** (a second local checkpoint, not pushed):
+- **The agents:**
+  - `.claude/agents/`: the designer (`xhigh`), the builder (`high`), the verifier (`xhigh`), and the fixer
+    (`medium`).
+  - Also Impeccable's four shipped agents, which the skill calls by name.
+- **The skills:** `.claude/skills/` holds copies of the skills this work uses (whitespace-only changes, see below). Sources are in
+  `.claude/skills/SOURCES.md`.
+  - **Impeccable 4.3.1:** FITWAY's single design skill, Apache-2.0, with its LICENSE and NOTICE.
+  - **`ux-araby`:** for Arabic interface copy on the coming screens, MIT.
+  - **Left out:** other design or taste skills, because `AGENTS.md` forbids stacking competing design skills;
+    and the Impeccable engine binary.
+- **The authorization and the records:**
+  - The user authorized tracking both folders, and the `CLAUDE.md` change that says so, with the effort rule.
+  - The rest of `.claude/` stays untracked, including `launch.json`, which is local to the user's machine.
+  - The packet and the ledger gained `CLAUDE.md`, `.claude/agents/**`, and `.claude/skills/**` in
+    `ownedPaths`, and the packet a limitations entry.
+  - The packet SHA-256 is now `93dca6a2af8f6f83409a4d05b9444fbb4083b7bfe76134f19fceab4c034e09ca`.
+- **Locally:** the project copy of `impeccable` sits beside the user's installed plugin `impeccable:impeccable`.
+  This is harmless, and the cloud has only the project copy.
+- **The second `biome.json` change (user-authorized):**
+  - **The problem:** the first commit attempt was blocked by the pre-commit Biome hook. It linted the vendored
+    skill code as project code and failed, with 278 errors.
+  - **Side effect:** the hook also rewrote seven vendored files. They were restored to byte-identical copies of
+    their sources, and verified with `diff -r`.
+  - **The change:** the user authorized adding `!**/.claude/skills` to the Biome includes, so that vendored
+    skills are never reformatted. It is recorded in the packet's limitations.
+- **The repository check (`git diff HEAD --check`) then flagged trailing whitespace** in four vendored Markdown
+  files, 27 lines. That whitespace was removed. No wording changed. This is recorded in `.claude/skills/SOURCES.md`.
+- **The tools:** `directions/_tools/`. This holds the coordinator's Round 6 scripts, the verifier's Round 7
+  step-1 scripts, and the checklist template `CHECKLIST-r7a.md`, with a README. **The scripts contain Windows
+  paths; the README says how to adapt them.**
+- **The clip:** `directions/_reference/clip-hover/` holds its analysis (`track.json`, two images, and a README
+  with the measured easing). The clip itself stays on the user's machine.
+
+**Setting up the cloud environment** (the user does this once, at claude.ai/code, in the environment dialog):
+- **Network:** "Custom", with the default list plus the Playwright download hosts: `cdn.playwright.dev`,
+  `playwright.download.prss.microsoft.com`, and `playwright.azureedge.net`. Or use "Full".
+- **Setup script:**
+
+  ```bash
+  #!/bin/bash
+  pip install --quiet opencv-python-headless numpy pillow || true
+  npx -y playwright@1.61.1 install-deps chromium || true
+  ```
+
+**First steps in the cloud session:**
+1. Prepare the checkout:
+   - run `pnpm install --frozen-lockfile`;
+   - then `pnpm exec playwright install chromium`;
+   - then confirm that a headless Chromium screenshot and `recordVideo` work.
+
+   The repository pins no Node version. Locally it was Node 24, and the cloud offers 20–22. If `pnpm` or a
+   script rejects the Node version, stop and report.
+2. Run `pnpm check:design-context`. **It is expected to fail in the cloud.** The Impeccable engine is found
+   through `IMPECCABLE_BIN`, then `impeccable` on the PATH, then a Windows-only path. The plugin does not
+   install in the cloud, and its launcher downloads the engine from GitHub release assets, which may be blocked.
+   - If it fails, it is `NEEDS_HUMAN`. The user chooses between two options:
+     - make Impeccable available, for example by enabling it as a claude.ai skill or installing the engine in
+       the setup script;
+     - record an explicit cloud exception for the check.
+   - Do not skip the check silently.
+3. Continue with the resume steps in the section above, "User choice after step 1, …":
+   - **The verifier's tools:** `directions/_tools/`, adapted.
+   - **Its checklist template:** `directions/_tools/CHECKLIST-r7a.md`.
+   - **The reference-clip data:** `directions/_reference/clip-hover/`.
+4. **Pixels:** rendering on Linux differs from Windows. The still-frame identity rule is applied **relative to
+   the previous commit rendered in the same cloud environment**, not to `pre-motion-hashes.json`. A cloud run
+   must not rewrite the Windows evidence just because of the platform. See `directions/_tools/README.md`.
+5. **Showing the user:** either the user pulls the branch locally and opens `eclipse/index.html`, or the cloud
+   session publishes the page as a private claude.ai artifact.
+6. **The ledger:** it still names the Windows worktree path. The cloud coordinator updates `worktree` and
+   `ownerSession` when it takes over the lease.
 - **Status:** nothing is selected. Redline, production, canonical, Paper, and authority state are unchanged.
 - **Ledger:** the lease was renewed until 2026-09-26T22:00+03:00.

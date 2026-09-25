@@ -40,5 +40,20 @@ Report findings as hypotheses with file and line evidence, and never repair what
 
 ### Repository-local Claude configuration
 
-`.claude/` here is untracked and differs between worktrees, so nothing in it is normative. Where a
-local skill and the root policy disagree, the root policy and the files it names win.
+`.claude/agents/` and `.claude/skills/` are tracked, because cloud sessions see only committed files.
+- **`.claude/skills/`** holds copies of Impeccable (FITWAY's single design skill, Apache-2.0) and `ux-araby`
+  (Arabic interface copy, MIT). They are unchanged apart from trailing whitespace; see
+  `.claude/skills/SOURCES.md`.
+- **`.claude/agents/`** holds Impeccable's shipped agents and the Owner-direction definitions.
+
+Each Owner-direction definition fixes one effort level, and the coordinator picks by task:
+
+| Definition | Effort | Use |
+| --- | --- | --- |
+| `owner-direction-designer` | `xhigh` | new visual design and taste judgment |
+| `owner-direction-builder` | `high` | implementing an agreed, precisely specified decision |
+| `owner-direction-verifier` | `xhigh` | independent verification |
+| `owner-direction-fixer` | `medium` | a mechanical edit with a frozen target |
+
+The rest of `.claude/` is untracked and differs between worktrees. Nothing in `.claude/` is normative. Where a
+local skill or an agent definition disagrees with the root policy, the root policy and the files it names win.
