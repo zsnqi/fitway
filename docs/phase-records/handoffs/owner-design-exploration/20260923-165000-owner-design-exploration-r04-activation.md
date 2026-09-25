@@ -660,3 +660,263 @@ The pre-motion copy of `eclipse/` is `...\d329255d...\scratchpad\eclipse-v3-user
   - It contains the directions, the brief, this handoff, the packet, the ledger, the user-authorized
     `SPEC.md` amendment, and `biome.json`.
   - `.impeccable/hook.cache.json` is left untracked, because it is a machine cache.
+
+## Round 6 designer launched (2026-09-25)
+
+- **Session:** a new coordinator session resumed from the section above. `pnpm check:design-context`
+  passed.
+- **Baseline for the scope check:** before the launch, the coordinator recorded hashes of the 120
+  direction files outside `eclipse/`, of the owned files, of `PROJECT_STATE.yaml` and
+  `PROJECT_STATE_HISTORY.yaml`, and of the git status, index, tracked diff, and untracked list. It also
+  kept a full copy of `eclipse/` in its own scratchpad.
+- **Reference check:** the pre-motion copy (`...\d329255d...\scratchpad\eclipse-v3-user-copy\evidence`)
+  matches all 27 hashes in `eclipse/evidence/pre-motion-hashes.json`. The coordinator's own still-frame
+  renderer reproduces 23 of those frames pixel-identically from the pre-Round-6 copy, which validates the
+  renderer before it is used on the new work.
+- **Launch:** one fresh `owner-direction-designer`, confined to `eclipse/`, for Round 6 decisions 1–10.
+  At the user's request its effort is `high`. Its local agent definition, which is untracked, was changed
+  from `xhigh` to `high`.
+
+## Round 6 delivered and independently verified (2026-09-25)
+
+**What the designer delivered** (all in `eclipse/`; details in `eclipse/README.md` "Motion"):
+- **Load and lights:** no load motion. Nothing is hidden before first paint, and the lights never move. The
+  pointer-follow and crowd-light code is removed.
+- **Numbers:**
+  - Digits roll by transform only, in 280 ms: up when a value rises, down when it falls, clipped to the
+    digits' ink box.
+  - They cover Inside now, Entries and its usual value, the times, the delayed "minutes ago", the peak, and the
+    busiest time.
+  - One polite live region announces each change. The plain markup returns at rest.
+- **Crowd level:** each bar fills or empties by `scaleY` in 200 ms, and the level word swaps at once.
+- **Chart hover:**
+  - It snaps to half-hour stops, plus the peak and the latest reading. A half-hour stop within 10 minutes of
+    either is folded into it, giving 40 stops live.
+  - The missing span has one "no reading" stop.
+  - The new marker, the "reading sight", is a red core with two chalk level ticks. It lights that minute's
+    hairline and glides along the drawn path in 120–150 ms.
+  - After now it is hollow chalk on the usual line. With no history there is no marker after now.
+- **Live:** the tail morph takes 280 ms. The pulse is calmer, with a ring every 5 s at 40% at most, and there is
+  none while delayed.
+- **Rail:** 240 ms open and 200 ms close. The names are uncovered by the moving edge, never faded.
+- **Tuner:** "Replay load", "Follow", "Switch on at load", and the crowd light are removed. It keeps New reading,
+  Reset readings, and Motion, and adds Level up / Level down.
+
+**Disclosed deviations:**
+- Readex Pro has no tabular figures, so a rolling slot eases its width over the roll.
+- The tooltip appears, changes, and leaves at once.
+- Hover colour transitions and the jump to details are instant.
+
+**Coordinator's independent verification** (own scripts, in this session's scratchpad `tools\`):
+- **Scope:**
+  - The 120 direction files outside `eclipse/`, the packet, `SPEC.md`, `biome.json`, the ledger, the history,
+    and the git index are unchanged.
+  - The handoff changed only by the coordinator's own notes.
+  - Inside `eclipse/`, `pre-motion-hashes.json`, `.impeccable/**`, and the `:root` light block are unchanged.
+  - The evidence was captured after the last code edit.
+- **Still frames:**
+  - 23 frames (AR, EN, rail-open AR/EN, delayed, nohistory, details, the three presets' AR frames, and the 2x
+    and light-only crops) were rendered with `reducedMotion: reduce` and with `?motion=off`.
+  - All 46 are pixel-identical to the pre-motion copy (max diff 0), with no page errors and no running
+    animation.
+  - With motion on, once the fonts have settled (network idle), AR and EN with the pulse hidden are identical
+    in 20 of 20 renders. Only the pulse runs at load, and nothing runs while delayed.
+  - An earlier render taken before network idle differed by a sub-pixel on "6-8". This is the other script's
+    font subset arriving, not motion.
+- **Hover, measured from the DOM against the SVG paths sampled every 0.2 px:**
+  - This covers AR and EN, in the live, no-history, and delayed states.
+  - The marker stays within 0.1 px of the line and of the usual line, which is the sampling resolution. The
+    peak and latest stops are exactly on their dots.
+  - Every tooltip value matches the line's height read back from the axis labels.
+  - The pointer sweep had 0 mismatches in 416 samples each. The keyboard order is correct, and Home and End
+    work.
+  - Glides stay within 0.1 px of the curve. They take 124–171 ms by rAF sampling, and they are instant across
+    the gap and into the future.
+- **Motion probes:**
+  - During a roll, the only animations are `transform` on the digits and `width` on the slot, and no text
+    element's opacity drops below 1.
+  - The direction is correct, and the live region is announced once.
+  - The bars animate only `transform`.
+  - Delayed has no pulse and no line motion. When a minute passes, only the "minutes ago" digits roll and the
+    usual line's now boundary moves.
+- **Real-time video:**
+  - Playwright recorded 1440x900 at 25 fps with a warm font cache, plus a cold load and 0.2x slow-motion
+    copies through CDP.
+  - The videos cover load AR/EN/cold, live AR/EN, hover AR/EN, keyboard, rail AR/EN, delayed, and slow-motion
+    live and keyboard. They were decoded with OpenCV and inspected as strips.
+  - **Load:** complete at the first frame, cold or warm.
+  - **Digits:** a clean odometer roll with no ghosting. Only the changed digit moves.
+  - **Bars:** they fill and empty from the bottom.
+  - **Marker:** it runs along the curve and up the peak's drop into its ring.
+  - **Rail:** the names are uncovered, not faded.
+  - The early whole-frame changes and frames 128–129 are the encoder's quality ramp and keyframe, not the page.
+- **Header chip:** after a live update and a reset it is identical to before (max diff 0). The capture's
+  settled-after-live difference is 1/255.
+
+**Open question for the user (product truth):**
+- The latest stop's tooltip is flagged "Latest reading" but shows the line's value, 47 Moderate. The Inside now
+  card shows 49 Busy for the same 7:42 PM.
+- The coordinator recommends that this stop show the latest reading itself, 49 Busy. Alternatively it keeps 47
+  but drops the "Latest reading" flag.
+
+**Checks not run:** screen reader, Firefox or Safari, touch devices, frame pacing on a real display, and
+accessibility or contrast audits.
+
+**Status:** Round 6 is delivered for the user's review. Nothing is selected. Redline, production, canonical,
+Paper, and authority state are unchanged. Next: the user's review and the latest-stop question, then the merge
+proposals and Reports.
+
+**Ledger:** the heartbeat was updated and the lease renewed until 2026-09-26T15:55+03:00. Nothing is committed.
+
+## User review of Round 6 and Round 7 decisions (2026-09-25)
+
+- **The user's review:**
+  - The digit roll is excellent and stays.
+  - The marker looks like a shooter game's crosshair.
+  - Its movement between stops is too fast and not smooth.
+  - They supplied a reference clip for smooth hover motion. The coordinator measured it; see the brief.
+- **Recorded as "Round 7"** in `directions/NEXT-DIRECTION-BRIEF.md`, which is now the authority for these
+  decisions:
+  - the latest stop shows 49 · Busy;
+  - marker forms A (a lit bead) and B (a hollow ring), which the user chooses with a tuner switch;
+  - a smooth follow of about 350–400 ms along the curve, which replaces the ≤ 150 ms limit;
+  - a first-open intro, only on the first open in a tab, never on F5. It moves only the content: the digits
+    roll and the line draws once. It lasts about 1 s or less and has a speed control and a replay button;
+  - the merge decisions: contextual history, Operations as a header status, and Daily and Reports kept
+    separate.
+- **Work plan:** fresh designers one after another (the forms, then the follow and the latest stop, then the
+  intro). Each is followed by an independent `xhigh` verifier, whose evidence the coordinator reviews. Defining
+  the verifier role in `docs/WORKFLOW.md` is a later, separate task that needs the user's approval.
+- **Verifier definition:** a local `.claude/agents/owner-direction-verifier.md`, untracked, with `effort: xhigh`,
+  was added for this.
+
+## Round 7 step 1: marker forms A and B (2026-09-25)
+
+- **Baseline:** before the launch, the coordinator took a snapshot in its scratchpad (`r7a-before\`) and kept a
+  copy of `eclipse/` (`eclipse-before-r7a\`). The checklist is `r7a-verify\CHECKLIST.md`.
+- **Designer:** a fresh `owner-direction-designer` built both forms in `eclipse/`.
+  - A tuner switch, «علامة المخطط: A / B», changes between them. It is saved in its own key, ignored with
+    `?tuner=0`, and set by `?marker=a|b`. The default is A.
+  - **A** is a red bead with a chalk rim, and its glow lights the line.
+  - **B** is a hollow ring with a dark centre and a red edge.
+  - Neither form has ticks or anything above the point. Each has variants for the peak, the missing span, and
+    still ahead. In delayed, the latest stop turns grey with no glow, so it never looks live.
+- **Verifier:**
+  - The new `owner-direction-verifier` type could not be launched at first: right after the file was created,
+    the Agent tool reported it as not found. It became available later in the same session. The verifier
+    therefore ran as a `general-purpose` agent on Opus, with the same role rules in its prompt. Its effort was
+    the default, not `xhigh`.
+  - It received the brief, the checklist, and the baseline only, not the designer's report.
+- **Verifier result:** all ten checks passed.
+  - Scope held.
+  - All still frames were identical in both modes, except the hover and tuner-open frames, which change by
+    design.
+  - It checked 468 marker stops: at most 0.094 px from the path in the DOM, and 0.286 px by a circle fit on
+    rendered 3x pixels.
+  - The glide stayed within 0.104 px of the track.
+  - The switch works, and the behaviour that should not change did not.
+  - Its real-time and 0.2x video showed no flicker and no double marker.
+  - Its tools were controlled with a shifted marker and a Round 6 positive.
+- **Findings:**
+  - **F1, medium:** at the latest stop, the live pulse draws a ring inside B, or around A, every 5 s, which
+    brings back a target look.
+  - **F2, low:** when a live update arrives with the latest stop selected, the end halo flashes for 50–75 ms.
+  - **F3, low:** at the peak, A's round glow leaves a faint red haze on the background.
+  - **F5, information, already in Round 6:** the first move into the future blocks the main thread for about
+    180 ms while the usual line's table is built.
+- **Coordinator's review:** the coordinator opened the verifier's 3x crops, the pulse zoom, and its numbers
+  files (60 static rows, and 0 differences outside the frames that change by design). They support the report.
+- **Status:** waiting for the user's choice of A or B, and a decision on the pulse at the latest stop. F1–F3 and
+  F5 are carried into step 2.
+
+## User choice after step 1, agent effort set, and new-session resume point (2026-09-25)
+
+**Decisions.** They are recorded in `directions/NEXT-DIRECTION-BRIEF.md`, "Round 7" → "Decisions after step 1":
+- **Form B** is chosen.
+- **The missing-span stop** uses A's lit-dots variant.
+- **The live pulse** stays as it is (F1 is accepted).
+- **Hover motion**, specified from the coordinator's frame-by-frame tracking of the user's reference clip:
+  - text changes at once;
+  - fast start and soft landing: about 20% by 33 ms, 60% by 100 ms, 90% by 230 ms, settled at about 400 ms;
+  - it moves in x and y together;
+  - B glides along the curve with the tooltip, never restarting;
+  - a hover-speed control in the tuner.
+- **Step 2** covers B only (with A's gap variant), that follow, the latest stop showing 49 · Busy, and the
+  verifier's F2 and F5.
+- **Step 3** is the first-open intro, as decided.
+- **Nothing is implemented for these yet.**
+
+**Agent effort.**
+- **The problem:** the Agent tool cannot set effort per call. Effort comes from each definition's frontmatter.
+  `.claude/agents/*.md` is not reloaded at once: a definition created mid-session was "not found" right away,
+  and appeared later in the same session. Whether a mid-session effort edit applies is unconfirmed. A new
+  session loads the definitions reliably.
+- **The fix:** local, untracked definitions in this worktree with a fixed effort each. The coordinator picks one
+  by task:
+
+  | Definition | Effort | Use |
+  | --- | --- | --- |
+  | `owner-direction-designer` | `xhigh` | new visual design, taste judgment |
+  | `owner-direction-builder` | `high` | implementing an agreed, precisely specified decision (steps 2 and 3) |
+  | `owner-direction-verifier` | `xhigh` | independent verification |
+  | `owner-direction-fixer` | `medium` | a mechanical edit with a frozen target |
+
+  The designer definition was restored to `xhigh`. It is unknown whether the earlier edit to `high` applied to
+  the Round 6 and step-1 designers.
+- **Pending as a separate task, with the user's approval:**
+  - write this selection rule into `CLAUDE.md`, which is where Claude-specific mechanisms belong;
+  - define the independent-verifier role in `docs/WORKFLOW.md`.
+
+**Resume in a new coordinator session.** The user asked for a new session before step 2, because this one's
+context is large and the new definitions load only at start.
+
+1. Run `pnpm context:show -- --milestone owner-design-exploration-r04`.
+2. Read this section.
+3. Read `directions/NEXT-DIRECTION-BRIEF.md`, "Round 7": its decisions, its work plan, and "Decisions after
+   step 1".
+4. Read `directions/eclipse/README.md` for the current marker and motion.
+5. Take a baseline:
+   - hashes of the direction files outside `eclipse/`, of the owned files, and of the git status, index, and
+     the tracked diff outside `eclipse/`;
+   - a copy of `eclipse/`.
+6. Launch one fresh `owner-direction-builder` (`high`) for step 2, confined to `eclipse/`. Its brief is the
+   Round 7 text above plus the hard scope used before:
+   - write only in `eclipse/`;
+   - `pre-motion-hashes.json`, `.impeccable/**`, and the `:root` light values are untouched;
+   - the digit roll, bars, live tail and pulse, and rail are unchanged;
+   - the still-frame identity rule holds, except the hover and tuner frames.
+7. Launch one fresh `owner-direction-verifier` (`xhigh`) with the brief, the baseline, and a checklist, and
+   without the builder's report.
+   - **Template:** this session's `r7a-verify\CHECKLIST.md`.
+   - **Add these checks:**
+     - the follow curve measured from real-time video against the clip's figures;
+     - the marker on the curve at every frame;
+     - no restart when sweeping across stops;
+     - F2 fixed;
+     - no long task over 50 ms on the first move into the future;
+     - the latest stop shows 49 · Busy;
+     - only B remains, plus the lit-dots gap.
+8. Review the verifier's evidence files (not only its words), then show the user. Step 3 follows in the same
+   way.
+
+**Tools from this session.** They are in the scratchpad
+`C:\Users\PCFORC~1\AppData\Local\Temp\claude\D--Projects-fitway-worktrees-owner-design-exploration-r04\8f6a215f-9d39-4251-a39f-d9ed1baf14d0\scratchpad\`.
+It may be cleaned, and everything in it can be rebuilt.
+- `tools\` holds the coordinator's scripts:
+  - `static.mjs` and `compare.py`;
+  - `hover.mjs`, which assumes the Round 6 DOM;
+  - `motion.mjs`;
+  - `video.mjs`, `frames.py`, and `marks.py`.
+- `r7a-verify\` holds the checklist, and the verifier's scripts and outputs.
+- `ref-video\` holds `track.json` (the clip's tooltip track) and `ref-ring-3x.png`.
+- The user's clip is `D:\Projects\LLM_HANDOFFS\FITWAY\20260317-1837-34.2222242.mp4`.
+
+**State.**
+- **Git:** at the user's request ("احفظ"), the Round 6 work, Round 7 step 1, the brief, this handoff, and the
+  ledger were committed as a local checkpoint on `codex/owner-redesign-r04`, on top of `4851ccc`.
+  - Nothing was pushed. The user will have Codex push the branch.
+  - `.impeccable/hook.cache.json` stays untracked, because it is a machine cache.
+  - `.claude/` is still untracked. Whether cloud sessions need it committed is being researched.
+- **Stops:** the user confirmed half-hour stops.
+- **Status:** nothing is selected. Redline, production, canonical, Paper, and authority state are unchanged.
+- **Ledger:** the lease was renewed until 2026-09-26T22:00+03:00.

@@ -224,7 +224,6 @@ bdi, .num { font-variant-numeric: tabular-nums; }
   border: 1px solid var(--line-2);
   background: var(--tile);
   color: var(--ink-2);
-  transition: border-color 0.16s ease-out, background-color 0.16s ease-out, color 0.16s ease-out;
 }
 .tile svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .tile svg .fill { fill: currentColor; stroke: none; }
@@ -239,10 +238,7 @@ bdi, .num { font-variant-numeric: tabular-nums; }
 .rail-name { display: none; font-size: 14px; white-space: nowrap; color: var(--ink-2); }
 .rail-item.is-active .rail-name, .wordmark { color: var(--ink); }
 .wordmark { font-size: 15px; font-weight: 500; letter-spacing: 0.12em; }
-.rail[data-open="true"] .rail-name { display: block; animation: name-in 0.18s ease-out both; }
-[dir="rtl"] { --nudge: 6px; }
-[dir="ltr"] { --nudge: -6px; }
-@keyframes name-in { from { opacity: 0; transform: translateX(var(--nudge)); } }
+.rail[data-open="true"] .rail-name { display: block; }
 
 /* ------------------------------------------------------------------ header */
 .head { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
@@ -350,7 +346,7 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
  *   .lamp-in    masked by the disc (and, on Inside now, by the fade at the ring's upper end)
  *     ::before  the light;  ::after  the grain, masked by the light, so it only shows where lit
  *   .lamp-rim   the 1px border, brightened where the light touches it (it sits under the same disc) */
-.lit { isolation: isolate; --lp: 0px; }
+.lit { isolation: isolate; }
 .lit > :not(.lamp, .sr-only) { position: relative; z-index: 1; }
 .lamp {
   position: absolute;
@@ -415,18 +411,15 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
   --en: calc(var(--now-end) * 1cqh);
   --end-mask: linear-gradient(to bottom, transparent var(--yc), rgb(0 0 0 / 0.16) calc(var(--yc) + var(--en) * 0.25),
     rgb(0 0 0 / 0.5) calc(var(--yc) + var(--en) * 0.5), rgb(0 0 0 / 0.84) calc(var(--yc) + var(--en) * 0.75), #000 calc(var(--yc) + var(--en)));
-  /* --lp is 0 at rest. While the light moves (the load entrance, or following the pointer; see the motion
-   * section), the light layer grows by --lp on every side and every position below moves by the same --lp, so the
-   * light sits exactly where it was and its edges stay covered while it slides. */
   --light:
-    radial-gradient(ellipse calc(0.22cqw * var(--now-hot-size)) calc(0.34cqh * var(--now-hot-size)) at calc(var(--lit-o) + var(--lit-s) * 4cqw + var(--lp)) calc(97cqh + var(--lp)),
+    radial-gradient(ellipse calc(0.22cqw * var(--now-hot-size)) calc(0.34cqh * var(--now-hot-size)) at calc(var(--lit-o) + var(--lit-s) * 4cqw) 97cqh,
       rgb(255 41 70 / calc(0.9 * var(--now-hot) * var(--ni))) 0%, rgb(255 41 70 / calc(0.4 * var(--now-hot) * var(--ni))) 45%, rgb(255 41 70 / 0) 100%),
-    radial-gradient(ellipse 52cqw 96cqh at calc(var(--lit-o) + var(--lp)) calc(100cqh + var(--lp)),
+    radial-gradient(ellipse 52cqw 96cqh at var(--lit-o) 100cqh,
       rgb(var(--now-core) / var(--ni)) 0%, rgb(var(--now-core) / calc(0.84 * var(--ni))) 20%, rgb(var(--now-core) / calc(0.45 * var(--ni))) 42%,
       rgb(77 7 19 / calc(0.75 * var(--ni))) 62%, rgb(77 7 19 / calc(0.3 * var(--ni))) 82%, rgb(77 7 19 / 0) 100%),
-    radial-gradient(ellipse 110cqw 12cqh at calc(var(--lit-o) + var(--lp)) calc(100cqh + var(--lp)),
+    radial-gradient(ellipse 110cqw 12cqh at var(--lit-o) 100cqh,
       rgb(var(--now-core) / calc(0.55 * var(--ni))) 0%, rgb(77 7 19 / calc(0.7 * var(--ni))) 50%, rgb(77 7 19 / 0) 100%),
-    radial-gradient(ellipse 30cqw 26cqh at calc(var(--far-o) + var(--lp)) calc(100cqh + var(--lp)),
+    radial-gradient(ellipse 30cqw 26cqh at var(--far-o) 100cqh,
       rgb(var(--now-core) / calc(0.8 * var(--now-far) * var(--ni))) 0%, rgb(77 7 19 / calc(0.7 * var(--now-far) * var(--ni))) 45%, rgb(77 7 19 / 0) 100%);
   --rim-light:
     radial-gradient(ellipse 70cqw 100cqh at var(--lit-o) 100cqh,
@@ -453,16 +446,15 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
     rgb(0 0 0 / 0.84) calc(100% + var(--fe) / 4), #000 calc(100% + var(--fe) / 2));
   --end-mask: linear-gradient(#000 0 0);
   --corner-h: calc(var(--chart-side) * 1.3cqh);
-  /* --lp: see the Inside now card (0 at rest). */
   --light:
-    radial-gradient(ellipse 36cqw var(--corner-h) at calc(var(--lit-o) + var(--lp)) calc(100cqh + var(--lp)),
+    radial-gradient(ellipse 36cqw var(--corner-h) at var(--lit-o) 100cqh,
       rgb(229 25 53 / calc(0.6 * var(--ce) * var(--ci))) 0%, rgb(229 25 53 / calc(0.3 * var(--ce) * var(--ci))) 24%,
       rgb(77 7 19 / calc(0.5 * var(--ce) * var(--ci))) 52%, rgb(77 7 19 / calc(0.14 * var(--ce) * var(--ci))) 78%, rgb(77 7 19 / 0) 100%),
-    radial-gradient(ellipse 36cqw var(--corner-h) at calc(var(--far-o) + var(--lp)) calc(100cqh + var(--lp)),
+    radial-gradient(ellipse 36cqw var(--corner-h) at var(--far-o) 100cqh,
       rgb(229 25 53 / calc(0.6 * var(--cs) * var(--ci))) 0%, rgb(229 25 53 / calc(0.3 * var(--cs) * var(--ci))) 24%,
       rgb(77 7 19 / calc(0.5 * var(--cs) * var(--ci))) 52%, rgb(77 7 19 / calc(0.14 * var(--cs) * var(--ci))) 78%, rgb(77 7 19 / 0) 100%),
-    linear-gradient(to top, rgb(77 7 19 / calc(0.9 * var(--ci))) calc(0px + var(--lp)), rgb(77 7 19 / calc(0.42 * var(--ci))) calc(var(--chart-fade) * 0.45cqh + var(--lp)),
-      rgb(77 7 19 / calc(0.12 * var(--ci))) calc(var(--chart-fade) * 0.85cqh + var(--lp)), rgb(77 7 19 / 0) calc(var(--chart-fade) * 1.15cqh + var(--lp)));
+    linear-gradient(to top, rgb(77 7 19 / calc(0.9 * var(--ci))) 0px, rgb(77 7 19 / calc(0.42 * var(--ci))) calc(var(--chart-fade) * 0.45cqh),
+      rgb(77 7 19 / calc(0.12 * var(--ci))) calc(var(--chart-fade) * 0.85cqh), rgb(77 7 19 / 0) calc(var(--chart-fade) * 1.15cqh));
   --rim-light:
     radial-gradient(ellipse 24cqw calc(var(--chart-side) * 1.4cqh) at var(--lit-o) 100cqh,
       rgb(255 41 70 / calc(0.8 * var(--ce) * var(--ci))) 0%, rgb(229 25 53 / calc(0.34 * var(--ce) * var(--ci))) 50%, rgb(229 25 53 / 0) 100%),
@@ -507,10 +499,9 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
   font-size: 13px;
   color: var(--ink);
   white-space: nowrap;
-  transition: border-color 0.16s ease-out, background-color 0.16s ease-out;
 }
 .btn:hover { border-color: var(--line-3); background: rgba(255, 255, 255, 0.05); }
-.btn svg { width: 16px; height: 16px; fill: none; stroke: var(--ink-2); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.16s ease-out; }
+.btn svg { width: 16px; height: 16px; fill: none; stroke: var(--ink-2); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .btn[aria-expanded="true"] svg { transform: rotate(180deg); }
 
 .plot { position: relative; flex: 1; min-height: 0; margin-block-start: 12px; }
@@ -670,21 +661,20 @@ html[dir="ltr"] .tuner { left: 452px; align-items: flex-end; }
 .t-row input[type="range"] { grid-area: input; width: 100%; height: 16px; margin: 2px 0 0; accent-color: #cfc9ca; }
 .t-row output { font-size: 11px; color: var(--ink-3); font-variant-numeric: tabular-nums; text-align: end; white-space: nowrap; }
 .t-row output.t-hue::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-inline-end: 4px; border-radius: 2px; background: var(--sw, #e51935); vertical-align: 0; }
-/* Motion group (Round 5 section 4): replay, a simulated reading, and the motion switches. */
+/* Marker group (Round 7): the chart marker's two candidate forms, A and B. */
+.tuner-marker { margin-block-start: 10px; padding-block-start: 2px; border-block-start: 1px solid rgba(255, 255, 255, 0.08); }
+.t-seg { display: flex; gap: 6px; margin-block: 2px 4px; }
+.t-seg .t-btn b { font-weight: 500; color: var(--ink); }
+.t-seg .t-btn[aria-pressed="true"] { background: rgba(245, 243, 242, 0.12); border-color: rgba(245, 243, 242, 0.5); color: var(--ink); }
+/* Motion group (Round 6): a simulated reading, a simulated crowd-level change, and the Motion switch. */
 .tuner-motion { margin-block-start: 10px; padding-block-start: 2px; border-block-start: 1px solid rgba(255, 255, 255, 0.08); }
 .t-motion-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-block: 2px 8px; }
 .t-btn:disabled { opacity: 0.45; cursor: default; }
 .t-latest { margin-inline-start: auto; font-size: 11px; color: var(--ink-3); white-space: nowrap; }
-.t-toggles { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 16px; }
+.t-label { display: inline-flex; align-items: baseline; gap: 6px; margin-inline-end: 4px; color: var(--ink-2); white-space: nowrap; }
 .t-check { display: flex; align-items: baseline; gap: 7px; padding-block: 4px; color: var(--ink-2); line-height: 1.3; white-space: nowrap; cursor: pointer; }
 .t-check input { margin: 0; accent-color: #cfc9ca; translate: 0 2px; cursor: pointer; }
-.t-check.is-sub { padding-inline-start: 20px; }
 .t-check:has(input:disabled) { opacity: 0.5; cursor: default; }
-.t-seg { display: flex; flex-wrap: wrap; gap: 4px; margin-block-start: 6px; }
-.t-seg[hidden] { display: none; }
-.t-seg button { display: inline-flex; align-items: baseline; gap: 5px; height: 24px; padding-inline: 8px; border-radius: 6px; border: 1px solid var(--t-line); font-size: 11.5px; color: var(--ink-2); line-height: 22px; }
-.t-seg button:hover { border-color: rgba(255, 255, 255, 0.3); color: var(--ink); }
-.t-seg button[aria-pressed="true"] { background: rgba(245, 243, 242, 0.12); border-color: rgba(245, 243, 242, 0.5); color: var(--ink); }
 .t-note { margin-block-start: 6px; font-size: 11px; color: var(--ink-3); }
 .t-note[hidden] { display: none; }
 .tuner-actions { display: flex; align-items: center; gap: 8px; margin-block-start: 12px; padding-block-start: 12px; border-block-start: 1px solid rgba(255, 255, 255, 0.08); }
@@ -705,24 +695,29 @@ html[dir="ltr"] .tuner { left: 452px; align-items: flex-end; }
 .tuner :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 
 /* ------------------------------------------------------------------ motion
- * Round 5 section 4. app.js drives the load sequence, the live update, the rail and the glides with the Web
- * Animations API; this section holds the states they start from and the few CSS-driven parts. Transform and
- * opacity only. With ?motion=off (html[data-motion="off"]) or prefers-reduced-motion everything is final at once.
- * Before the load sequence starts (motion on only), the cards and the chart wait unseen, and the lights too when
- * "switch on at load" is on; the inline script in index.html sets these before first paint. */
-html[data-intro="pending"] .cards > .card,
-html[data-intro="pending"] .chart,
-html[data-lights="pending"] .lamp,
-html[data-lights="pending"] .wash,
-html[data-lights="pending"] .rail::after { opacity: 0; }
+ * Round 6. The page is complete at first paint and the lights never move. app.js moves only what the data changes
+ * (digits, level bars, the line's tail) or what the owner acts on (the chart's reading sight, the rail), with the
+ * Web Animations API; this section holds the few pieces those use. No glyph ever changes opacity. With ?motion=off
+ * (html[data-motion="off"]) or prefers-reduced-motion every change is instant. */
 
-/* Rail: the section names fade in just behind the end cap (see the rail pieces below). */
-html[data-motion="on"] .rail[data-open="true"] .rail-name { animation: name-in 0.24s cubic-bezier(0.22, 1, 0.36, 1) 0.08s backwards; }
+/* Numbers roll by digit, and only while a digit changes: at rest a number is plain text. The numeric run is an LTR
+ * isolate (so bidi order holds inside Arabic text); each changed digit is a slot holding the new digit (in flow) and
+ * the old one (on top, hidden from assistive technology). app.js clips each slot to the digits' own ink box (cap line
+ * to baseline, measured in place); the clip below is only its starting point. */
+.roll-run { direction: ltr; unicode-bidi: isolate; }
+.roll-slot { display: inline-block; position: relative; vertical-align: baseline; clip-path: inset(0 -0.3em); }
+.roll-new { display: block; text-align: center; white-space: nowrap; }
+.roll-old { position: absolute; top: 0; left: 50%; width: max-content; translate: -50% 0; }
+
+/* A crowd-level bar that changes fills (or empties) with its own red fill, from the bottom. */
+.level .bars i.lv-anim { position: relative; }
+.lv-fill { position: absolute; inset: 0; border-radius: inherit; background: var(--red-hi); transform-origin: 50% 100%; }
+
 /* While the rail opens or closes, its own surface steps aside for three pieces that move with transforms only: a
  * fixed start cap, a middle that scales from the inline-start, and an end cap that slides. Each piece is the
  * collapsed surface (0.7, with the rail's own blur) plus a darker layer that fades in to make the open surface
- * (0.94). The blur stays on the pieces, so the page under the moving rail never shows through as sharp text and
- * the first frame matches the collapsed rail. */
+ * (0.94); these layers hold no text. The blur stays on the pieces, so the page under the moving rail never shows
+ * through as sharp text and the first frame matches the collapsed rail. The names are uncovered by a clip (app.js). */
 .rail.is-morph { background: transparent; border-color: transparent; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
 .rail-surface { position: absolute; inset: -1px; z-index: -1; pointer-events: none; }
 .rail-surface > i { position: absolute; top: 0; bottom: 0; overflow: hidden; background: rgba(12, 12, 15, 0.7); border: 1px solid var(--line); }
@@ -735,49 +730,25 @@ html[data-motion="on"] .rail[data-open="true"] .rail-name { animation: name-in 0
 [dir="rtl"] .rail-surface { --rs-o: right; }
 [dir="ltr"] .rail-surface { --rs-o: left; }
 
-/* A light that moves: its light layer (and the grain that lives in it) grows by --lp on every side, and every
- * position in the light moves by the same --lp (see the lighting section), so at rest it sits exactly where the
- * static page puts it; a transform then slides it and no edge of the layer is ever exposed. The disc (the mask on
- * .lamp-in) and the rim stay. Two things move a light, and they never run at once:
- *   .is-entering  the load entrance (app.js: Web Animations; --enter-lp is the overscan it needs)
- *   .is-peek      the light follows the pointer (desktop): app.js sets --peek-x/--peek-y, a transition eases them */
-.lit.is-entering { --lp: var(--enter-lp, 0px); }
-.lit.is-peek { --lp: 24px; }
-.lit.is-entering .lamp-in::before,
-.lit.is-entering .lamp-in::after,
-.lit.is-peek .lamp-in::before,
-.lit.is-peek .lamp-in::after { inset: calc(-1 * var(--lp)); }
-.lit.is-entering .lamp-in::after,
-.lit.is-peek .lamp-in::after { background-position: var(--lp) var(--lp); }
-/* A plain 2D translate and no will-change: at rest (offset 0) nothing is promoted to its own layer, so hovering
- * without moving renders exactly as the static card; the transition itself runs on the compositor. */
-.lit.is-peek .lamp-in::before,
-.lit.is-peek .lamp-in::after {
-  transform: translate(var(--peek-x, 0px), var(--peek-y, 0px));
-  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-/* Optional: the Inside now light dimmer when quiet (tuner toggle, off by default). */
-html[data-crowd="on"] #card-now .lamp-in { opacity: var(--crowd-o, 1); transition: opacity 1.2s cubic-bezier(0.45, 0, 0.25, 1); }
-
-/* Live: a slow ping from the line's end point, only while live. An HTML layer above the chart, so it is composited
- * and never repaints the chart. It starts at the end point's size and fades as it widens. */
+/* Live: a calm ping from the line's end point, only while live (never while delayed). One thin ring every 5 s, from
+ * inside the end point to just past its halo, at 40% at most. An HTML layer above the chart, so it is composited and
+ * never repaints the chart. */
 .ping {
   position: absolute;
   z-index: 1;
-  width: 32px;
-  height: 32px;
-  margin: -16px 0 0 -16px;
+  width: 28px;
+  height: 28px;
+  margin: -14px 0 0 -14px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 41, 70, 0.85);
+  border: 1px solid rgba(255, 41, 70, 0.9);
   pointer-events: none;
   opacity: 0;
-  transform: scale(0.28);
+  transform: scale(0.34);
 }
-html[data-motion="on"] .ping.is-on { animation: ping 3.6s cubic-bezier(0.22, 0.61, 0.36, 1) 0.4s infinite; }
+html[data-motion="on"] .ping.is-on { animation: ping 5s cubic-bezier(0.22, 0.61, 0.36, 1) 1s infinite; }
 @keyframes ping {
-  0% { opacity: 0.7; transform: scale(0.28); }
-  62% { opacity: 0; transform: scale(1); }
+  0% { opacity: 0.4; transform: scale(0.34); }
+  48% { opacity: 0; transform: scale(1); }
   100% { opacity: 0; transform: scale(1); }
 }
 

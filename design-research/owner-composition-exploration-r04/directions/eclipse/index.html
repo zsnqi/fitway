@@ -14,20 +14,7 @@
       r.dir = en ? "ltr" : "rtl";
       var s = p.get("state");
       r.dataset.state = s === "delayed" || s === "nohistory" ? s : "live";
-      // Motion before first paint (app.js applies the same rule): off with ?motion=off, with the system's reduced
-      // motion, or when the tuner's stored choice says so (ignored with ?tuner=0). With motion on, the cards and the
-      // chart (and the lights, when "switch on at load" is on) wait unseen until the load sequence starts.
-      var mo = null;
-      if (p.get("tuner") !== "0") { try { mo = JSON.parse(localStorage.getItem("fitway.eclipse.v3.motion")); } catch (e) { mo = null; } }
-      var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-      var on = p.get("motion") !== "off" && !reduce && !(mo && mo.motion === false);
-      r.dataset.motion = on ? "on" : "off";
-      if (on) {
-        r.dataset.intro = "pending";
-        if (!(mo && mo.switchOn === false)) r.dataset.lights = "pending";
-        // Failsafe: if the load sequence has not started after 4s, show everything as it is.
-        setTimeout(function () { delete r.dataset.intro; delete r.dataset.lights; }, 4000);
-      }
+      // Nothing is hidden before first paint: the page is complete at once (Round 6). Motion is decided in app.js.
     })();
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -116,6 +103,8 @@
 
       <section class="cards" id="cards">
         <h2 class="sr-only" id="cards-title" data-t="glance"></h2>
+        <!-- One polite live region: a new reading is announced once, as whole figures, never digit by digit. -->
+        <p class="sr-only" id="live-say" aria-live="polite" aria-atomic="true"></p>
 
         <article class="card stat lit lit-card" id="card-now">
           <i class="lamp" aria-hidden="true"><i class="lamp-in"><i class="lamp-rim"></i></i></i>

@@ -1,10 +1,11 @@
 /* Eclipse: FITWAY Owner Daily concept. Synthetic data only; not production.
- * Query: lang=ar|en (default ar), state=live|delayed|nohistory (default live), motion=off (final states at once).
+ * Query: lang=ar|en (default ar), state=live|delayed|nohistory (default live), motion=off (every change instant).
  * The data logic (seeded minute simulation, day constants, monotone interpolation) is reused from
  * ../light-study/app.js, which took it from ../backlight/app.js. Western digits only: numbers are printed with
  * String(), never Intl or toLocaleString.
- * Motion (Round 5 section 4) lives in the "motion" section at the end. It only ever animates toward today's final
- * state: with prefers-reduced-motion or ?motion=off the page renders exactly as it did without motion. */
+ * Motion (Round 6) lives in the "motion" section at the end. The page is complete at first paint; something moves
+ * only when the data changes or the owner acts. With prefers-reduced-motion or ?motion=off every change is instant,
+ * and the page at rest is the same either way. */
 (() => {
   "use strict";
   const $ = (s, r = document) => r.querySelector(s);
@@ -54,7 +55,10 @@
       levels: ["هادئ", "متوسط", "مزدحم", "شديد الازدحام"],
       ro: { usual: "المعتاد", peak: "الذروة", latest: "آخر قراءة", empty: "الصالة خالية", noReading: "لا قراءة", noReadingYet: "لا قراءة بعد", ahead: "لم يحن بعد", inside: "داخل الصالة" },
       chartAria: "ازدحام اليوم حسب الوقت",
-      keys: "استخدم مفتاحي السهمين للتنقل كل 5 دقائق، ومع Shift كل دقيقة. Home لوقت الفتح، وEnd لآخر قراءة.",
+      keys: "استخدم مفتاحي السهمين للتنقل بين نقاط كل نصف ساعة، ومنها الذروة وآخر قراءة. Home لوقت الفتح، وEnd لآخر قراءة.",
+      avgInside: (v) => `${v} داخل الصالة في المتوسط`,
+      crowdIs: (l) => `الازدحام ${l}`,
+      say: (v, l, e) => `داخل الصالة الآن ${v} تقريبًا، ${l}. مرات الدخول ${e}.`,
       detailsTitle: "التفاصيل",
       coverageTitle: "تغطية البيانات",
       cov: { read: "فيها قراءة", zero: "مفتوحة وخالية", miss: "لا قراءة", wait: "لا قراءة بعد", ahead: "لم يحن بعد", line: "الخط", usual: "الأربعاء المعتاد" },
@@ -104,7 +108,10 @@
       levels: ["Quiet", "Moderate", "Busy", "Packed"],
       ro: { usual: "Usual", peak: "Peak", latest: "Latest", empty: "Empty", noReading: "No reading", noReadingYet: "No reading yet", ahead: "Still ahead", inside: "inside" },
       chartAria: "Today's crowd by time",
-      keys: "Use the arrow keys to move 5 minutes, or 1 minute with Shift. Home goes to opening time and End to the latest reading.",
+      keys: "Use the arrow keys to move between the half-hour points, including the peak and the latest reading. Home goes to opening time and End to the latest reading.",
+      avgInside: (v) => `${v} inside on average`,
+      crowdIs: (l) => l,
+      say: (v, l, e) => `Inside now about ${v}, ${l}. Entries ${e}.`,
       detailsTitle: "Details",
       coverageTitle: "Data coverage",
       cov: { read: "With a reading", zero: "Open, nobody inside", miss: "No reading", wait: "No reading yet", ahead: "Still ahead", line: "The line", usual: "Usual Wednesday" },
@@ -381,27 +388,35 @@
   };
 
   /* ------------------------------------------------------------ motion settings
-   * Read before anything renders. Motion is on unless the system asks for reduced motion, the URL says
-   * ?motion=off, or the tuner's stored choice turned it off (stored choices are ignored with ?tuner=0).
-   * The inline script in index.html applies the same rule before first paint. */
+   * Motion is on unless the system asks for reduced motion, the URL says ?motion=off, or the tuner's stored
+   * choice turned it off (stored choices are ignored with ?tuner=0). Nothing waits for it: the page is complete at
+   * first paint either way. */
   const params = new URLSearchParams(location.search);
   const URL_OFF = params.get("motion") === "off";
   const TUNER_OFF = params.get("tuner") === "0";
   const MOTION_STORE = "fitway.eclipse.v3.motion";
-  const MOTION_DEFAULTS = { motion: true, follow: true, followChart: false, switchOn: true, crowd: false };
+  const MOTION_DEFAULTS = { motion: true };
   const mqReduce = matchMedia("(prefers-reduced-motion: reduce)");
-  const mqFine = matchMedia("(hover: hover) and (pointer: fine)");
   let opts = (() => {
     const o = { ...MOTION_DEFAULTS };
     if (TUNER_OFF) return o;
     try {
       const raw = JSON.parse(localStorage.getItem(MOTION_STORE));
-      if (raw && typeof raw === "object") Object.keys(o).forEach((k) => { if (typeof raw[k] === "boolean") o[k] = raw[k]; });
+      if (raw && typeof raw.motion === "boolean") o.motion = raw.motion;
     } catch (e) { /* storage unavailable: defaults */ }
     return o;
   })();
   const motionOn = () => opts.motion && !URL_OFF && !mqReduce.matches;
   root.dataset.motion = motionOn() ? "on" : "off";
+
+  /* The chart marker's form (Round 7, for the user's choice): "a", the lit bead (default), or "b", the hollow ring.
+   * ?marker=a|b wins and is not stored; otherwise the tuner's stored choice (its own key), ignored with ?tuner=0. */
+  const MARKER_STORE = "fitway.eclipse.v3.marker";
+  const MARKER_URL = ["a", "b"].includes((params.get("marker") || "").toLowerCase()) ? params.get("marker").toLowerCase() : null;
+  let markerForm = MARKER_URL || (() => {
+    if (TUNER_OFF) return "a";
+    try { return localStorage.getItem(MARKER_STORE) === "b" ? "b" : "a"; } catch (e) { return "a"; }
+  })();
 
   /* ---------------------------------------------------------------- shell */
   document.title = L.docTitle;
@@ -455,6 +470,10 @@
   const cmpChip = (c) => (c === "busier" || c === "quieter"
     ? `<span class="cmp cmp-${c}">${c === "busier" ? ICON.up : c === "quieter" ? ICON.down : ICON.same}${L.cmp[c]}</span>`
     : "");
+  // The tuner can simulate a crowd-level change on the Inside now card (a value across the nearest level boundary);
+  // null means the card shows the latest reading. A new reading or "Reset readings" clears it.
+  let crowdShown = null;
+  const shownNow = () => (crowdShown == null ? occ[M.last] : crowdShown);
   const cardNow = $("#card-now");
   $("#now-v").textContent = String(occ[M.last]);
   if (STATE === "delayed") {
@@ -477,22 +496,22 @@
   $("#busy-note").innerHTML = L.busiestNote(bdi(M.busiest.avg));
   $("#cards").setAttribute("aria-labelledby", "cards-title");
 
-  // After a simulated new reading: only the values that changed are replaced, each with a quick cross-fade.
-  const norm = (() => { const t = document.createElement("template"); return (html) => { t.innerHTML = html; return t.innerHTML; }; })();
-  function updateCards() {
-    const set = (el, html) => { if (el && el.innerHTML !== norm(html)) swap(el, html); };
-    set($("#status bdi"), fmtTime(M.last));
-    set($("#now-v"), String(occ[M.last]));
-    if (STATE === "delayed") set($("#now-meta span"), L.ago(M.nowM - M.last));
-    else set($("#now-meta bdi"), fmtTime(M.last));
-    set($("#now-foot"), levelChip(occ[M.last]) + cmpChip(M.compare));
-    set($("#peak-meta bdi"), fmtTime(M.peakM));
-    set($("#peak-v"), String(M.peak));
-    set($("#peak-foot"), levelChip(M.peak));
-    set($("#entries-v"), String(M.entries));
-    if (HAS_HISTORY) set($("#entries-usual bdi"), String(M.usualEntries));
-    set($("#busy-v"), hourRange(M.busiest.from, M.busiest.to));
-    set($("#busy-note bdi"), String(M.busiest.avg));
+  // After a live change only the values that changed move: digits roll, level bars fill or empty, and words swap
+  // at once (motion section). Everything ends on exactly the markup the page renders at load.
+  function updateCards(prev) {
+    const dt = Math.sign(M.last - prev.last);
+    rollTo($("#status bdi"), fmtTime(M.last), dt);
+    rollTo($("#now-v"), String(shownNow()));
+    if (STATE === "delayed") rollTo($("#now-meta span"), L.ago(M.nowM - M.last));
+    else rollTo($("#now-meta bdi"), fmtTime(M.last), dt);
+    setFoot($("#now-foot"), shownNow(), cmpChip(M.compare));
+    rollTo($("#peak-meta bdi"), fmtTime(M.peakM), Math.sign(M.peakM - prev.peakM));
+    rollTo($("#peak-v"), String(M.peak));
+    setFoot($("#peak-foot"), M.peak, "");
+    rollTo($("#entries-v"), String(M.entries));
+    if (HAS_HISTORY) rollTo($("#entries-usual bdi"), String(M.usualEntries));
+    rollTo($("#busy-v"), hourRange(M.busiest.from, M.busiest.to));
+    rollTo($("#busy-note bdi"), String(M.busiest.avg));
   }
 
   /* --------------------------------------------------------------- legend */
@@ -506,7 +525,6 @@
   const plot = $("#plot"), svgHost = $("#plot-svg"), labels = $("#plot-labels"), tip = $("#tip"), hit = $("#plot-hit");
   const f = (n) => n.toFixed(2);
   let geo = null;
-  let sel = null; // selected minute, or null
   const endPoint = () => (geo ? { x: geo.X(M.last), y: geo.Y(M.avg[M.last]) } : null);
   // Fine vertical lines every 6px from opening time, from the line down, fading out halfway. None inside the missing
   // span, none after the latest reading. `valueAt` is the line, or during a live update the morphing line.
@@ -568,6 +586,8 @@
       s.push(`<path id="us-ahead" d="${d}" fill="none" stroke="rgba(245,243,242,0.24)" stroke-width="1.5" stroke-dasharray="3.5 4.5" stroke-linecap="round" clip-path="url(#c-ahead)"/>`);
     }
 
+    // The marker's light under today's line (empty at rest; see paintMarker).
+    s.push(`<g id="sel-under"></g>`);
     // Today: the 30-minute average, thick and bright, with round caps where it stops.
     splines.forEach((sp, i) => s.push(`<path id="ln-${i}" d="${sp.path(X, Y)}" fill="none" stroke="#ff2946" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`));
 
@@ -591,95 +611,286 @@
     lab.push(`<span class="ax-x" style="left:${f(X(DAY))}px;top:${f(yb + 13)}px;transform:translateX(${RTL ? "0" : "-100%"})">${bdi(fmtHour(DAY))}</span>`);
     lab.push(`<span class="peak-tag" id="peak-tag" style="left:${f(px)}px;top:${f(py - 12)}px;transform:translate(-50%,-100%)">${L.peakTag}<b>${bdi(String(peak))}</b></span>`);
     labels.innerHTML = lab.join("");
-    guide.x = null; // the selection is redrawn in place, without a glide
-    drawSelection();
-    afterRender(); // motion section: keeps a running load sequence and the live pulse attached to the new chart
+    buildStops();
+    restoreSelection(); // the selection, if any, redrawn at rest on the new chart (no glide)
+    placePing();
   }
 
-  /* ------------------------------------------------------ chart inspection */
-  const kindAt = (m) => (m > M.nowM ? "ahead" : m > M.last ? "wait" : m >= GAP0 && m <= GAP1 ? "miss" : m <= ZERO_END ? "zero" : "read");
-  const sepc = RTL ? "، " : ", ";
-  function valueText(m) {
-    const k = kindAt(m), t = fmtTime(m);
-    if (k === "miss") return `${t}${sepc}${L.ro.noReading} (${plainRange(fmtTime(GAP0), fmtTime(GAP1))})`;
-    if (k === "wait") return `${t}${sepc}${L.ro.noReadingYet}`;
-    if (k === "ahead") return `${t}${sepc}${L.ro.ahead}${HAS_HISTORY ? `${sepc}${L.ro.usual} ${usualAt(m)}` : ""}`;
-    if (k === "zero") return `${t}${sepc}0${sepc}${L.ro.empty}`;
-    const v = occ[m];
-    let out = `${t}${sepc}${v} ${L.ro.inside}${sepc}${L.levels[levelOf(v)]}`;
-    if (m === M.peakM) out += `${sepc}${L.ro.peak}`;
-    if (m === M.last) out += `${sepc}${L.ro.latest}`;
-    if (HAS_HISTORY) out += `${sepc}${L.ro.usual} ${usualAt(m)}`;
-    return out;
-  }
-
-  // The guide line and the tooltip glide to a new minute (pointer or keyboard) instead of jumping. At rest they
-  // sit exactly where the static page puts them: the glide is a transform that runs out to none.
-  const guide = { x: null, y: null, anim: [], tipAnim: null };
-  function drawSelection() {
-    const g = $("#sel");
-    const peakTag = $("#peak-tag");
-    if (!geo || !g) return;
-    if (sel == null) {
-      g.innerHTML = "";
-      guide.x = guide.y = null;
-      guide.anim = [];
-      hideTip();
-      if (peakTag) peakTag.classList.remove("is-covered");
-      return;
+  /* ------------------------------------------------------ chart inspection
+   * Round 6: the reading snaps to stops. A stop every half hour from opening (6:00 AM) to closing (1:00 AM), aligned
+   * with the drawn line, plus two of their own: the true peak and the latest reading. A half-hour stop within FOLD
+   * minutes of either is folded into it (the peak at 6:29 PM takes the 6:30 PM stop). The missing span has one stop
+   * of its own, "no reading", and no normal stop. Values are the line's own (the centred average it draws, never a
+   * raw minute), except at the peak, whose marker is the true reading. After now a stop shows "still ahead" and the
+   * usual value. Minute detail stays in View details. */
+  const FOLD = 10;    // minutes
+  const MAGNET = 10;  // px: the pointer takes the peak or the latest reading when this close to it
+  let stops = [];
+  let sel = null;     // the selected stop, or null
+  function buildStops() {
+    const { last, nowM, peakM, segments, lineAt } = M;
+    const { X } = geo;
+    const segOf = (m) => segments.findIndex((sg) => m >= sg[0] && m <= sg[sg.length - 1]);
+    const specials = peakM >= 0 ? [peakM, last] : [last];
+    const out = [];
+    for (let m = 0; m <= DAY; m += 30) {
+      if (m <= last && m >= GAP0 && m <= GAP1) continue;                 // inside the missing span
+      if (specials.some((sp) => Math.abs(sp - m) < FOLD)) continue;      // folded into the peak or the latest reading
+      if (m <= last) {
+        const sg = segOf(m);
+        if (sg < 0) continue;
+        out.push({ key: `h${m}`, kind: m <= ZERO_END ? "zero" : "read", m, x: X(m), value: m <= ZERO_END ? 0 : Math.round(lineAt(m)), track: `L${sg}`, lift: 0 });
+      } else {
+        // After the latest reading: no reading yet (delayed, before now) or still ahead. The only value is the usual one.
+        out.push({ key: `h${m}`, kind: m <= nowM ? "wait" : "ahead", m, x: X(Math.min(m, DAY - 1)), value: HAS_HISTORY ? usualAt(m) : null, track: HAS_HISTORY ? "U" : null, lift: 0 });
+      }
     }
-    const { X, Y, yt, yb, W, H } = geo;
-    const m = sel, k = kindAt(m), x = X(m);
-    const onPoint = k === "read" || k === "zero";
-    const v = onPoint ? occ[m] : null;
-    // Where the guide and the tip are on screen right now (mid-glide included), before they move.
-    const glide = motionOn() && guide.x != null && !tip.hidden && !tipHiding;
-    const fromX = glide ? guide.x + currentOffset(guide.anim[0], "x") : null;
-    const fromY = glide && guide.y != null ? guide.y + currentOffset(guide.anim[1], "y") : null;
-    const tipFrom = glide ? tip.getBoundingClientRect() : null;
-    guide.anim.forEach((a) => a && a.cancel());
-    guide.anim = [];
+    if (last > GAP1) {
+      // Centred on the dotted mark as render() draws it (dots every 4px from 2.5px inside the span), so the brackets
+      // frame what the eye sees.
+      const gl = Math.min(X(GAP0 - 0.5), X(GAP1 + 0.5)), gr = Math.max(X(GAP0 - 0.5), X(GAP1 + 0.5));
+      const first = gl + 2.5, lastDot = first + 4 * Math.floor((gr - 1.5 - first) / 4);
+      out.push({ key: "gap", kind: "gap", m: (GAP0 + GAP1) / 2, x: (first + lastDot) / 2, w: lastDot - first + 2, value: null, track: null, lift: 0 });
+    }
+    if (peakM >= 0) out.push({ key: "peak", kind: "peak", m: peakM, x: X(peakM), value: M.peak, track: `L${segOf(peakM)}`, lift: 1 });
+    out.push({ key: "latest", kind: "latest", m: last, x: X(last), value: Math.round(lineAt(last)), track: `L${segOf(last)}`, lift: 0 });
+    out.sort((a, b) => a.m - b.m || (a.kind === "peak" ? -1 : b.kind === "peak" ? 1 : 0));
+    out.forEach((st, i) => { st.i = i; });
+    stops = out;
+  }
+  const stopBy = (key) => stops.find((st) => st.key === key) || null;
 
-    let out = `<path d="M${f(Math.round(x) + 0.5)},${yt}V${yb}" stroke="rgba(245,243,242,${onPoint ? 0.42 : 0.3})" stroke-width="1"${onPoint ? "" : ' stroke-dasharray="2 3"'}/>`;
-    if (onPoint) out += `<circle cx="${f(x)}" cy="${f(Y(v))}" r="5.2" fill="#0f0e0f" stroke="#f5f3f2" stroke-width="2"/><circle cx="${f(x)}" cy="${f(Y(v))}" r="2" fill="#ff2946"/>`;
-    g.innerHTML = out;
+  const sepc = RTL ? "، " : ", ";
+  function valueText(st) {
+    const t = fmtTime(Math.round(st.m));
+    const u = HAS_HISTORY ? `${sepc}${L.ro.usual} ${usualAt(st.m)}` : "";
+    const lvl = (v) => L.crowdIs(L.levels[levelOf(v)]);
+    switch (st.kind) {
+      case "gap": return `${plainRange(fmtTime(GAP0), fmtTime(GAP1))}${sepc}${L.ro.noReading}`;
+      case "wait": return `${t}${sepc}${L.ro.noReadingYet}${u}`;
+      case "ahead": return `${t}${sepc}${L.ro.ahead}${u}`;
+      case "zero": return `${t}${sepc}0${sepc}${L.ro.empty}`;
+      case "peak": return `${t}${sepc}${L.ro.peak} ${st.value}${sepc}${lvl(st.value)}${u}`;
+      case "latest": return `${t}${sepc}${L.ro.latest}${sepc}${L.avgInside(st.value)}${sepc}${lvl(st.value)}${u}`;
+      default: return `${t}${sepc}${L.avgInside(st.value)}${sepc}${lvl(st.value)}${u}`;
+    }
+  }
+  function tipHTML(st) {
+    if (st.kind === "gap") return `<div class="tip-t">${timeRange(GAP0, GAP1)}</div><div class="tip-main"><span class="tip-word">${L.ro.noReading}</span></div>`;
+    const usualRow = HAS_HISTORY && st.kind !== "zero" ? `<div class="tip-u"><span class="sw sw-usual" aria-hidden="true"></span><span>${L.ro.usual} ${bdi(usualAt(st.m))}</span></div>` : "";
+    const flag = st.kind === "peak" ? L.ro.peak : st.kind === "latest" ? L.ro.latest : "";
+    let html = `<div class="tip-t">${tb(st.m)}${flag ? `<span class="tip-flag">${flag}</span>` : ""}</div>`;
+    if (st.kind === "zero") html += `<div class="tip-main"><span class="tip-v">${bdi(0)}</span><span class="tip-l">${L.ro.empty}</span></div>`;
+    else if (st.kind === "wait") html += `<div class="tip-main"><span class="tip-word">${L.ro.noReadingYet}</span></div>${usualRow}`;
+    else if (st.kind === "ahead") html += `<div class="tip-main"><span class="tip-word">${L.ro.ahead}</span></div>${usualRow}`;
+    else html += `<div class="tip-main"><span class="tip-v">${bdi(st.value)}</span><span class="tip-l">${L.levels[levelOf(st.value)]}</span></div>${usualRow}`;
+    return html;
+  }
 
-    const flag = m === M.peakM && k === "read" ? L.ro.peak : m === M.last && k === "read" ? L.ro.latest : "";
-    const usualRow = HAS_HISTORY && k !== "miss" && k !== "zero" ? `<div class="tip-u"><span class="sw sw-usual" aria-hidden="true"></span><span>${L.ro.usual} ${bdi(usualAt(m))}</span></div>` : "";
-    let html = `<div class="tip-t">${tb(m)}${flag ? `<span class="tip-flag">${flag}</span>` : ""}</div>`;
-    if (k === "read") html += `<div class="tip-main"><span class="tip-v">${bdi(v)}</span><span class="tip-l">${L.levels[levelOf(v)]}</span></div>${usualRow}`;
-    else if (k === "zero") html += `<div class="tip-main"><span class="tip-v">${bdi(0)}</span><span class="tip-l">${L.ro.empty}</span></div>`;
-    else if (k === "miss") html += `<div class="tip-main"><span class="tip-word">${L.ro.noReading}</span></div><div class="tip-u"><span>${timeRange(GAP0, GAP1)}</span></div>`;
-    else if (k === "wait") html += `<div class="tip-main"><span class="tip-word">${L.ro.noReadingYet}</span></div>`;
-    else html += `<div class="tip-main"><span class="tip-word">${L.ro.ahead}</span></div>${usualRow}`;
-    const appearing = tip.hidden || tipHiding;
-    showTip(html);
+  /* ---- track geometry: the marker sits on the SVG paths as drawn (sampled with getPointAtLength, then refined on the
+   * real geometry), never on a separate formula. */
+  const tables = new WeakMap();
+  const trackPath = (track) => (track === "U" ? $("#us-ahead") : track ? $(`#ln-${track.slice(1)}`) : null);
+  function table(path) {
+    let t = tables.get(path);
+    if (t) return t;
+    const total = path.getTotalLength(), n = Math.max(16, Math.ceil(total / 1.5));
+    const xs = new Float64Array(n + 1), ys = new Float64Array(n + 1), ls = new Float64Array(n + 1);
+    for (let i = 0; i <= n; i++) { const l = (total * i) / n, p = path.getPointAtLength(l); xs[i] = p.x; ys[i] = p.y; ls[i] = l; }
+    t = { path, total, n, xs, ys, ls, dir: xs[n] >= xs[0] ? 1 : -1 };
+    tables.set(path, t);
+    return t;
+  }
+  // Arc length at which the path reaches x (x runs one way along the path: the curve is a function of time).
+  function lengthAt(t, x) {
+    const { xs, ls, n, dir } = t;
+    if ((x - xs[0]) * dir <= 0) return 0;
+    if ((x - xs[n]) * dir >= 0) return t.total;
+    let lo = 0, hi = n;
+    while (hi - lo > 1) { const mid = (lo + hi) >> 1; if ((xs[mid] - x) * dir < 0) lo = mid; else hi = mid; }
+    let a = ls[lo], b = ls[hi];
+    for (let i = 0; i < 24; i++) { const mid = (a + b) / 2; if ((t.path.getPointAtLength(mid).x - x) * dir < 0) a = mid; else b = mid; }
+    return (a + b) / 2;
+  }
+  const pointAt = (t, l) => { const p = t.path.getPointAtLength(l); return { x: p.x, y: p.y }; };
+  const peakPoint = () => { const d = $("#pk-dot"); return d ? { x: Number(d.getAttribute("cx")), y: Number(d.getAttribute("cy")) } : null; };
+  // Where the marker rests for a stop: { x, y, lift, ly (the line under it), track }, or null when there is nothing
+  // to sit on (still ahead without history).
+  function restPoint(st) {
+    if (!st || !geo) return null;
+    if (st.kind === "gap") return { x: st.x, y: Math.round(geo.Y(0)) + 0.5, lift: 0, track: null };
+    const path = trackPath(st.track);
+    if (!path) return null;
+    const t = table(path);
+    if (st.kind === "peak") {
+      const pk = peakPoint(), base = pointAt(t, lengthAt(t, pk.x));
+      return { x: pk.x, y: pk.y, lift: 1, ly: base.y, track: st.track };
+    }
+    const p = pointAt(t, lengthAt(t, st.x));
+    return { x: p.x, y: p.y, lift: 0, ly: p.y, track: st.track };
+  }
 
-    // Beside the guide, on the earlier side of the day when it fits; its bottom just above the point.
+  /* ---- the marker (Round 7): two candidate forms for the user to choose between, switched with ?marker=a|b or the
+   * tuner. Both share one rule: nothing above the point (no guide, no level ticks); below it, that moment's own thin
+   * hairline runs down to the time axis.
+   *   A, the lit bead: a solid FITWAY-red bead with a thin chalk rim. Its light is on the line: today's line itself,
+   *      bloomed and faded out around the bead, drawn under the line (so the line stays crisp), plus a small soft glow.
+   *   B, the hollow ring: a dark centre and a red edge, sitting on the line so that the line passes behind it, with a
+   *      soft red glow around the edge.
+   * Variants of the same family:
+   *   peak: A fills the peak ring itself with red (the chalk ring becomes the bead's rim); B's ring takes the peak
+   *     ring's place. On the way up the dotted drop, A's line light fades and its rim thickens into the ring's.
+   *   latest, live: the end point's thin halo steps aside while the marker sits on it (a bead or a ring inside a
+   *     second ring would read as a target). Delayed: the latest reading is stale, so the marker takes the end
+   *     point's neutral grey and has no light.
+   *   after now: a hollow chalk ring on the usual line, never red, with no light; a dashed chalk hairline below.
+   *     Without history there is no usual line and no marker, only a short tick on the time axis.
+   *   missing span: never a point. A lights the dotted mark on the axis in chalk; B outlines it with a hollow chalk
+   *     capsule, its ring stretched over the span. */
+  const RED = "#ff2946", CHALK = "#f5f3f2", CARD = "#0f0e0f", STALE = "#8f898b";
+  const MK = {
+    a: { r: 4.5, rim: 1, lit: 8, aheadR: 3.8 },
+    b: { r: 6.5, edge: 1.5, lit: 10, aheadR: 6.5 },
+  };
+  function paintMarker(pt, st) {
+    const g = $("#sel"), gu = $("#sel-under");
+    if (!g || !geo || !st) return;
+    const { yb } = geo;
+    const axis = Math.round(geo.Y(0)) + 0.5;
+    const form = st.kind === "gap" ? "gap" : !pt ? "none" : pt.track === "U" ? "usual" : "line";
+    const x = pt ? pt.x : st.x, gx = Math.round(x) + 0.5;
+    const B = markerForm === "b", k = MK[markerForm];
+    const out = [], under = [];
+    const hairline = (top, color, a0) => (yb - top > 1 ? `<linearGradient id="sel-lit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${color}" stop-opacity="${a0}"/><stop offset="1" stop-color="${color}" stop-opacity="0.1"/></linearGradient><rect class="sg-lit" x="${gx - 0.5}" y="${f(top)}" width="1" height="${f(yb - top)}" fill="url(#sel-lit)"/>` : "");
+    // The end point: is the marker sitting on it?
+    const end = endPoint();
+    const lift = pt ? pt.lift || 0 : 0;
+    const onEnd = form === "line" && lift === 0 && end && Math.hypot(pt.x - end.x, pt.y - end.y) < 1.5;
+    const halo = $("#end-halo");
+    if (halo) { if (onEnd) halo.setAttribute("visibility", "hidden"); else halo.removeAttribute("visibility"); }
+    const stale = onEnd && STATE === "delayed";
+    let ay;
+    if (form === "line") {
+      const ly = pt.ly == null ? pt.y : pt.ly;
+      const hot = stale ? STALE : RED;
+      out.push(hairline(ly + k.lit, stale ? "#c9c3c4" : RED, stale ? 0.5 : 0.78));
+      const dataForm = lift >= 1 ? "peak" : lift > 0 ? "drop" : "line";
+      const at = `transform="translate(${f(pt.x)} ${f(pt.y)})"`;
+      if (B) {
+        const glow = stale ? "" : `<circle r="${k.r}" fill="none" stroke="${RED}" stroke-width="3.5" opacity="0.55" filter="url(#sel-soft)"/>`;
+        out.push(`<filter id="sel-soft" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation="2.4"/></filter>`);
+        out.push(`<g class="sg-mark" data-form="${dataForm}" data-marker="b" ${at}>${glow}<circle class="sg-core" r="${k.r}" fill="${CARD}" stroke="${hot}" stroke-width="${k.edge}"/></g>`);
+      } else {
+        if (!stale) {
+          // Light on the line: today's line, bloomed and faded out around the bead, under the line itself.
+          const line = trackPath(pt.track);
+          const R = 30, bx = f(pt.x - R), by = f(pt.y - R), bw = 2 * R;
+          const k1 = 1 - lift;
+          under.push(`<defs><filter id="sel-bloom" filterUnits="userSpaceOnUse" x="${bx}" y="${by}" width="${bw}" height="${bw}" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="2.8"/><feComponentTransfer><feFuncA type="linear" slope="2"/></feComponentTransfer></filter>` +
+            `<radialGradient id="sel-fade" gradientUnits="userSpaceOnUse" cx="${f(pt.x)}" cy="${f(pt.y)}" r="${R}"><stop offset="0" stop-color="#fff"/><stop offset="0.35" stop-color="#fff" stop-opacity="0.7"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>` +
+            `<mask id="sel-mask" maskUnits="userSpaceOnUse" x="${bx}" y="${by}" width="${bw}" height="${bw}"><rect x="${bx}" y="${by}" width="${bw}" height="${bw}" fill="url(#sel-fade)"/></mask>` +
+            `<radialGradient id="sel-glow"><stop offset="0" stop-color="${RED}" stop-opacity="0.34"/><stop offset="0.5" stop-color="${RED}" stop-opacity="0.12"/><stop offset="1" stop-color="${RED}" stop-opacity="0"/></radialGradient></defs>` +
+            (line && k1 > 0 ? `<g mask="url(#sel-mask)" opacity="${f(k1)}"><use href="#${line.id}" filter="url(#sel-bloom)"/></g>` : "") +
+            // Off the line (up the drop to the peak) the small glow dims, so it never becomes a halo on the background.
+            `<circle cx="${f(pt.x)}" cy="${f(pt.y)}" r="13" fill="url(#sel-glow)"${lift > 0 ? ` opacity="${f(1 - 0.5 * lift)}"` : ""}/>`);
+        }
+        // At the peak the bead grows just enough to cover the peak ring (outer radius 5.6), keeping its thin rim.
+        const r = k.r + (5.6 - k.rim / 2 - k.r) * lift;
+        out.push(`<g class="sg-mark" data-form="${dataForm}" data-marker="a" ${at}><circle class="sg-core" r="${f(r)}" fill="${hot}" stroke="${CHALK}" stroke-opacity="0.94" stroke-width="${k.rim}"/></g>`);
+      }
+      ay = pt.y;
+    } else if (form === "usual") {
+      out.push(`<path class="sg-drop" d="M${gx},${f(pt.y + k.aheadR + 3)}V${yb}" fill="none" stroke="rgba(245,243,242,0.3)" stroke-width="1" stroke-dasharray="2 3"/>`);
+      out.push(`<g class="sg-mark" data-form="usual" data-marker="${markerForm}" transform="translate(${f(pt.x)} ${f(pt.y)})"><circle class="sg-core" r="${k.aheadR}" fill="${CARD}" stroke="rgba(245,243,242,0.85)" stroke-width="${B ? 1.25 : 1.5}"/></g>`);
+      ay = pt.y;
+    } else if (form === "gap") {
+      // The dotted mark as render() draws it: dots every 4px from 2.5px inside the span.
+      const gl = Math.min(geo.X(GAP0 - 0.5), geo.X(GAP1 + 0.5)), gr = Math.max(geo.X(GAP0 - 0.5), geo.X(GAP1 + 0.5));
+      const dots = [];
+      for (let dx = gl + 2.5; dx <= gr - 1.5; dx += 4) dots.push(dx - st.x);
+      const h = st.w / 2;
+      if (B) {
+        out.push(`<g class="sg-mark" data-form="gap" data-marker="b" transform="translate(${f(st.x)} ${axis})"><rect x="${f(-h - 5)}" y="-5.5" width="${f(2 * h + 10)}" height="11" rx="5.5" fill="none" stroke="rgba(245,243,242,0.8)" stroke-width="1.25"/></g>`);
+      } else {
+        out.push(`<radialGradient id="sel-chalk"><stop offset="0" stop-color="${CHALK}" stop-opacity="0.2"/><stop offset="1" stop-color="${CHALK}" stop-opacity="0"/></radialGradient>`);
+        out.push(`<g class="sg-mark" data-form="gap" data-marker="a" transform="translate(${f(st.x)} ${axis})"><ellipse rx="${f(h + 9)}" ry="7" fill="url(#sel-chalk)"/>${dots.map((d) => `<circle cx="${f(d)}" r="1.25" fill="${CHALK}"/>`).join("")}</g>`);
+      }
+      // The tooltip sits above both ends of the line at the gap, so it never covers them.
+      ay = Math.min(geo.Y(M.lineAt(GAP0 - 1)), geo.Y(M.lineAt(GAP1 + 1))) - 12;
+    } else {
+      // Still ahead without history: no usual line, so no marker; only a short tick on the time axis.
+      out.push(`<path class="sg-tick" d="M${gx},${axis - 3.5}V${axis + 4.5}" stroke="rgba(245,243,242,0.6)" stroke-width="1"/>`);
+      ay = geo.yt + (yb - geo.yt) * 0.35;
+    }
+    if (gu) gu.innerHTML = under.join("");
+    g.innerHTML = out.join("");
+    placeTip(x, ay, st.kind === "ahead" || st.kind === "wait");
+  }
+  function clearMarker() {
+    const g = $("#sel"), gu = $("#sel-under"), halo = $("#end-halo");
+    if (g) g.innerHTML = "";
+    if (gu) gu.innerHTML = "";
+    if (halo) halo.removeAttribute("visibility");
+  }
+  // Beside the guide, on the earlier side of the day when it fits (after now: on the later side, so it never covers
+  // the end of today's line); its bottom just above the point.
+  function placeTip(x, py, later = false) {
+    const { W, H } = geo;
     const tw = tip.offsetWidth, th = tip.offsetHeight;
-    const py = onPoint ? Y(v) : yt + (yb - yt) * 0.35;
-    const earlierRight = RTL;
-    let left = earlierRight ? x + 12 : x - 12 - tw;
-    if (left < 2 || left + tw > W - 2) left = earlierRight ? x - 12 - tw : x + 12;
+    const right = RTL !== later; // the earlier side is on the right in Arabic
+    let left = right ? x + 12 : x - 12 - tw;
+    if (left < 2 || left + tw > W - 2) left = right ? x - 12 - tw : x + 12;
     left = Math.max(2, Math.min(W - tw - 2, left));
     let top = py - th - 10;
     if (top < 0) top = Math.min(py + 12, H - th);
     tip.style.left = `${f(left)}px`;
     tip.style.top = `${f(top)}px`;
-
-    if (glide) glideSelection(g, x, fromX, onPoint ? Y(v) : null, fromY, tipFrom);
-    else if (appearing && motionOn()) tipAppear();
-    guide.x = x;
-    guide.y = onPoint ? Y(v) : null;
-
+    const peakTag = $("#peak-tag");
     if (peakTag) {
       const pr = plot.getBoundingClientRect(), b = peakTag.getBoundingClientRect();
       const r = { l: left - 4, r: left + tw + 4, t: top - 4, b: top + th + 4 };
       const covered = !(b.right - pr.left < r.l || b.left - pr.left > r.r || b.bottom - pr.top < r.t || b.top - pr.top > r.b);
       peakTag.classList.toggle("is-covered", covered);
     }
-    hit.setAttribute("aria-valuenow", String(m));
-    hit.setAttribute("aria-valuetext", valueText(m));
+  }
+  function selectStop(st, instant = false) {
+    if (!st) { clearSelection(); return; }
+    if (sel && sel.key === st.key && !instant) return;
+    const from = instant || tip.hidden ? null : currentPlace();
+    stopGlide();
+    sel = st;
+    tip.innerHTML = tipHTML(st); // text and numbers change at once: no cross-fade
+    tip.hidden = false;
+    hit.setAttribute("aria-valuenow", String(Math.round(st.m)));
+    hit.setAttribute("aria-valuetext", valueText(st));
+    const to = restPoint(st);
+    if (!glideAlong(from, to, st)) paintMarker(to, st);
+  }
+  function clearSelection() {
+    stopGlide();
+    sel = null;
+    clearMarker();
+    tip.hidden = true;
+    const peakTag = $("#peak-tag");
+    if (peakTag) peakTag.classList.remove("is-covered");
+  }
+  // Switches the marker's form (the tuner, or scripts); a shown marker is repainted in place, mid-glide included.
+  function setMarker(form, persist = true) {
+    if (form !== "a" && form !== "b") return markerForm;
+    markerForm = form;
+    if (persist && !TUNER_OFF) { try { localStorage.setItem(MARKER_STORE, form); } catch (e) { /* storage unavailable */ } }
+    if (glide.clock) glideFrame();
+    else if (sel) paintMarker(restPoint(sel), sel);
+    return form;
+  }
+  function restoreSelection() {
+    stopGlide();
+    const latest = stopBy("latest");
+    if (latest && !sel) { hit.setAttribute("aria-valuenow", String(latest.m)); hit.setAttribute("aria-valuetext", valueText(latest)); }
+    if (!sel) return;
+    const st = stopBy(sel.key);
+    if (!st) { clearSelection(); return; }
+    selectStop(st, true);
   }
 
   // Slider semantics for keyboard inspection. The same readout follows the pointer, a tap, or the arrow keys.
@@ -687,41 +898,44 @@
   hit.setAttribute("aria-valuemin", "0");
   hit.setAttribute("aria-valuemax", String(DAY));
   hit.setAttribute("aria-valuenow", String(M.last));
-  hit.setAttribute("aria-valuetext", valueText(M.last));
   $("#chart-keys").textContent = L.keys;
-  const minuteAt = (clientX) => {
-    const pr = plot.getBoundingClientRect();
-    const x = clientX - pr.left;
-    const x0 = geo.X(0), x1 = geo.X(DAY);
-    return ((x - x0) / (x1 - x0)) * DAY;
-  };
-  const pick = (clientX) => {
-    if (!geo) return;
-    const m = Math.round(minuteAt(clientX));
-    sel = m < 0 || m > DAY ? null : m;
-    drawSelection();
-  };
+  // The pointer snaps to the nearest stop; the peak and the latest reading also win whenever the pointer is within
+  // MAGNET px of them. Beyond the first and last stop by more than 16px, nothing is selected.
+  function stopAt(clientX) {
+    if (!geo || !stops.length) return null;
+    const x = clientX - plot.getBoundingClientRect().left;
+    const xs = stops.map((st) => st.x), lo = Math.min(...xs) - 16, hi = Math.max(...xs) + 16;
+    if (x < lo || x > hi) return null;
+    let best = null, bd = Infinity, pull = null, pd = Infinity;
+    stops.forEach((st) => {
+      const d = Math.abs(st.x - x);
+      if (d < bd) { bd = d; best = st; }
+      if ((st.kind === "peak" || st.kind === "latest") && d <= MAGNET && d < pd) { pd = d; pull = st; }
+    });
+    return pull || best;
+  }
   let pinned = false;
-  hit.addEventListener("pointermove", (e) => { if (e.pointerType === "mouse" && !pinned) pick(e.clientX); });
-  hit.addEventListener("pointerleave", (e) => { if (e.pointerType === "mouse" && !pinned && document.activeElement !== hit) { sel = null; drawSelection(); } });
-  hit.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse") { pinned = true; pick(e.clientX); } });
-  hit.addEventListener("focus", () => { if (sel == null) { sel = M.last; drawSelection(); } });
-  hit.addEventListener("blur", () => { pinned = false; sel = null; drawSelection(); });
+  hit.addEventListener("pointermove", (e) => { if (e.pointerType === "mouse" && !pinned) selectStop(stopAt(e.clientX)); });
+  hit.addEventListener("pointerleave", (e) => { if (e.pointerType === "mouse" && !pinned && document.activeElement !== hit) clearSelection(); });
+  hit.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse") { pinned = true; selectStop(stopAt(e.clientX)); } });
+  hit.addEventListener("focus", () => { if (!sel) selectStop(stopBy("latest"), true); });
+  hit.addEventListener("blur", () => { pinned = false; clearSelection(); });
   hit.addEventListener("keydown", (e) => {
-    let m = sel ?? M.last;
-    const step = e.shiftKey ? 1 : 5;
+    if (!stops.length) return;
+    const latest = stopBy("latest").i;
+    const i = sel ? sel.i : latest;
     const later = RTL ? "ArrowLeft" : "ArrowRight", earlier = RTL ? "ArrowRight" : "ArrowLeft";
-    if (e.key === later || e.key === "ArrowUp") m += step;
-    else if (e.key === earlier || e.key === "ArrowDown") m -= step;
-    else if (e.key === "PageUp") m += 60;
-    else if (e.key === "PageDown") m -= 60;
-    else if (e.key === "Home") m = 0;
-    else if (e.key === "End") m = M.last;
-    else if (e.key === "Escape") { sel = null; drawSelection(); return; }
+    let j;
+    if (e.key === later || e.key === "ArrowUp") j = i + 1;
+    else if (e.key === earlier || e.key === "ArrowDown") j = i - 1;
+    else if (e.key === "PageUp") j = i + 4;
+    else if (e.key === "PageDown") j = i - 4;
+    else if (e.key === "Home") j = 0;
+    else if (e.key === "End") j = latest;
+    else if (e.key === "Escape") { clearSelection(); return; }
     else return;
     e.preventDefault();
-    sel = Math.max(0, Math.min(DAY, m));
-    drawSelection();
+    selectStop(stops[Math.max(0, Math.min(stops.length - 1, j))]);
   });
 
   // Text equivalent of the chart.
@@ -788,339 +1002,291 @@
     details.hidden = !open;
     detailsBtn.setAttribute("aria-expanded", String(open));
     detailsLabel.textContent = open ? L.hideDetails : L.details;
-    if (open) details.scrollIntoView({ behavior: motionOn() ? "smooth" : "auto", block: "start" });
+    // Round 6: nothing animates that is not data or a direct result of the owner's action; the jump is instant.
+    if (open) details.scrollIntoView({ behavior: "auto", block: "start" });
   });
 
   /* ================================================================ motion
-   * Round 5 section 4. Transform and opacity only, except the line itself (its drawn length) and the live tail
-   * (its shape), which are SVG geometry by nature. Everything runs out to the static page's final state: at rest
-   * no inline style, attribute or extra element from this section remains (the live pulse is the one exception,
-   * and only while live). */
+   * Round 6: motion carries information and decoration never moves. The page is complete at first paint: no load
+   * sequence, no line draw, and the lights never move. Something moves only when the data changes (a new reading:
+   * the changed digits roll, level bars fill or empty, the line's tail extends) or when the owner acts (the chart's
+   * marker glides between stops, the rail opens). No glyph ever changes opacity: numbers roll inside a clip,
+   * words swap at once, and the tooltip appears, changes and leaves at once. With prefers-reduced-motion,
+   * ?motion=off or the tuner's Motion switch, every change is instant. At rest no inline style, attribute or extra
+   * element from this section remains (the live pulse is the one exception, and only while live). */
   const EASE = {
-    enter: "cubic-bezier(0.22, 1, 0.36, 1)",     // cards and chart arrive: quick start, long quiet settle
-    draw: "cubic-bezier(0.5, 0, 0.2, 1)",        // the line: under way at once, then a long ease into now
-    reveal: "cubic-bezier(0.22, 1, 0.36, 1)",    // end point and peak marker
-    slide: "cubic-bezier(0.22, 1, 0.36, 1)",     // a light slides into place: decisive start, long gentle settle (quint-out)
-    rise: "cubic-bezier(0.5, 0, 0.2, 1)",        // the chart's light rises on the line's own curve, so they arrive together
-    swap: "cubic-bezier(0.2, 0.7, 0.2, 1)",      // number cross-fade
-    morph: "cubic-bezier(0.4, 0, 0.2, 1)",       // live tail
+    roll: "cubic-bezier(0.25, 1, 0.5, 1)",       // digits: decisive start, soft landing (quart out)
+    bar: "cubic-bezier(0.25, 1, 0.5, 1)",        // a level bar fills or empties
+    glide: "cubic-bezier(0.25, 1, 0.5, 1)",      // the marker along the curve
+    morph: "cubic-bezier(0.4, 0, 0.2, 1)",       // the live tail (a data transition: symmetric)
     rail: "cubic-bezier(0.22, 1, 0.36, 1)",      // rail opens
     railClose: "cubic-bezier(0.4, 0, 0.2, 1)",   // rail closes
-    glide: "cubic-bezier(0.22, 1, 0.36, 1)",     // tooltip and guide
   };
   const T = {
-    cardStagger: 60, cardDur: 620, cardRise: 14,
-    chartDelay: 200, chartDur: 700, chartRise: 18,
-    drawDelay: 560, drawDur: 1100,
-    endDotDur: 320, peakGap: 80, peakDur: 420,
-    // Lights entrance (see lightsEnter). Opacity curves are [progress along the movement, share of the rest opacity];
-    // null means the light only moves.
-    nowDelay: 380, nowSlide: 1400, nowFrom: 0.5, nowOpacity: null,
-    chartLightDelay: 560, chartLightRise: 1350, chartLightDrop: 0.5, chartOpacity: [[0, 0], [0.25, 0.8]],
-    washDelay: 60, washDur: 1700, washDrift: [120, 60], washOpacity: [[0, 0], [0.3, 0.5], [0.6, 0.85]],
-    rimLag: 90, rimOpacity: [[0, 0], [0.35, 0.45], [0.7, 0.9]],
-    swapIn: 200, swapOut: 140,
-    morphDur: 700,
-    railOpen: 300, railClose: 240, railNamesOut: 110, railDist: 156,
-    glideMin: 140, glideMax: 320,
-    tipIn: 120, tipOut: 90,
+    roll: 280,
+    bar: 200, barStagger: 50,
+    glideMin: 120, glideMax: 150, glidePerPx: 0.25, glideMaxPx: 240,
+    morph: 280,
+    railOpen: 240, railClose: 200, railDist: 156, railReveal: 12,
+    pulse: 5000,
   };
   const played = []; // every animation this section started, so motion off can finish them at once
-
-  // A clock: an animation with no target and no keyframes, whose eased progress drives the SVG line work.
-  const clockAnim = (timing) => { const a = new Animation(new KeyframeEffect(null, [], timing), document.timeline); a.play(); return a; };
   function track(a) { played.push(a); a.finished.catch(() => {}).then(() => { const i = played.indexOf(a); if (i >= 0) played.splice(i, 1); }); return a; }
-  // Offset still left on a glide (the transform keyframe runs from `from` to 0 with the easing applied).
-  function currentOffset(a, axis) {
-    if (!a || !a._from) return 0;
-    const p = a.effect.getComputedTiming().progress;
-    return p == null ? 0 : a._from[axis] * (1 - p);
-  }
+  // A clock: an animation with no target and no keyframes, whose eased progress drives SVG geometry.
+  const clockAnim = (timing) => { const a = new Animation(new KeyframeEffect(null, [], timing), document.timeline); a.play(); return a; };
+  const norm = (() => { const t = document.createElement("template"); return (html) => { t.innerHTML = html; return t.innerHTML; }; })();
 
-  /* ---- numbers: a quick cross-fade (never a count) */
-  function swap(el, html) {
-    if (!motionOn() || !el.isConnected || !el.offsetParent) { el.innerHTML = html; return; }
-    const ghost = el.cloneNode(true);
-    ghost.removeAttribute("id");
-    ghost.querySelectorAll("[id]").forEach((n) => n.removeAttribute("id"));
-    ghost.setAttribute("aria-hidden", "true");
-    ghost.classList.add("x-ghost");
-    Object.assign(ghost.style, { position: "absolute", left: `${el.offsetLeft}px`, top: `${el.offsetTop}px`, width: `${el.offsetWidth}px`, height: `${el.offsetHeight}px`, margin: "0", pointerEvents: "none" });
-    el.after(ghost);
-    el.innerHTML = html;
-    track(el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: T.swapIn, easing: EASE.swap }));
-    const out = track(ghost.animate([{ opacity: 1 }, { opacity: 0 }], { duration: T.swapOut, easing: "ease-out", fill: "forwards" }));
-    out.finished.catch(() => {}).then(() => ghost.remove());
+  /* ---- numbers roll by digit (odometer). Only the digits that change move: up when the value rises, down when it
+   * falls, inside a clip the size of the digits' own ink box, so a digit never fades and two digits never overlap. The number is
+   * restructured only for the roll: each changed digit becomes a slot holding the old and the new digit, and the
+   * numeric run is an LTR isolate so bidi order holds in Arabic. At the end the element gets back exactly its
+   * plain markup. Readex Pro has no tabular figures (its digit widths do not change with tabular-nums), so a slot
+   * eases its width from the old digit's to the new digit's over the same roll instead of jumping. */
+  const rolls = new Map(); // element -> { anims, html }
+  const NUM = /\d+(?:[:.,]\d+)*/g;
+  const numValue = (s) => Number(s.replace(/\D/g, "")) || 0;
+  function finishRoll(el) {
+    const r = rolls.get(el);
+    if (!r) return;
+    rolls.delete(el);
+    r.anims.forEach((a) => a.cancel());
+    el.innerHTML = r.html;
   }
-
-  /* ---- tooltip and guide: fade in once, then glide */
-  let tipHiding = false;
-  function showTip(html) {
-    if (tipHiding && guide.tipAnim) { guide.tipAnim.cancel(); guide.tipAnim = null; }
-    tipHiding = false;
-    tip.innerHTML = html;
-    tip.hidden = false;
-  }
-  function hideTip() {
-    if (tip.hidden || tipHiding) return;
-    if (!motionOn()) { tip.hidden = true; return; }
-    tipHiding = true;
-    const a = track(tip.animate([{ opacity: 1 }, { opacity: 0 }], { duration: T.tipOut, easing: "ease-out", fill: "forwards" }));
-    guide.tipAnim = a;
-    a.finished.then(() => { if (tipHiding) { tip.hidden = true; tipHiding = false; } a.cancel(); }).catch(() => {});
-  }
-  function tipAppear() {
-    track(tip.animate([{ opacity: 0 }, { opacity: 1 }], { duration: T.tipIn, easing: "ease-out" }));
-  }
-  function glideSelection(g, x, fromX, y, fromY, tipFrom) {
-    const dist = Math.abs(fromX - x);
-    if (dist < 0.01 && (fromY == null || y == null || Math.abs(fromY - y) < 0.01)) return;
-    const duration = Math.round(Math.min(T.glideMax, T.glideMin + dist * 0.12));
-    const o = { duration, easing: EASE.glide };
-    // Guide line: along x only. The point: along x and y (it rides the reading, not the average).
-    const line = g.firstElementChild;
-    const gx = fromX - x;
-    const a = track(line.animate([{ transform: `translate(${gx}px, 0px)` }, { transform: "none" }], o));
-    a._from = { x: gx, y: 0 };
-    const b = [];
-    if (y != null) {
-      const dy = fromY == null ? 0 : fromY - y;
-      [...g.querySelectorAll("circle")].forEach((c) => {
-        const an = track(c.animate([{ transform: `translate(${gx}px, ${dy}px)` }, { transform: "none" }], o));
-        an._from = { x: gx, y: dy };
-        b.push(an);
-      });
-    }
-    guide.anim = [a, b[0] || null, ...b.slice(1)];
-    if (guide.tipAnim) { guide.tipAnim.cancel(); guide.tipAnim = null; }
-    const to = tip.getBoundingClientRect();
-    const tx = tipFrom.left - to.left, ty = tipFrom.top - to.top;
-    if (Math.abs(tx) + Math.abs(ty) > 0.25) guide.tipAnim = track(tip.animate([{ transform: `translate(${tx}px, ${ty}px)` }, { transform: "none" }], o));
-  }
-
-  /* ---- load: cards and chart enter once, the line draws from opening to now, then the peak marker appears;
-   * the lights switch on after the cards (optional). One timeline, so it can be replayed and seeked. */
-  const intro = { anims: [], clock: null, raf: 0, active: false, paused: false, started: false, hairs: null, nowPath: null, chartDrop: 0 };
-  const chartCard = $(".chart");
-  function introHide() {
-    // The end point and the peak marker wait for the line (they are revealed by their own animations).
-    ["#end-dot", "#end-halo", "#pk-dot", "#pk-drop", "#peak-tag"].forEach((s) => { const n = $(s); if (n) n.style.opacity = "0"; });
-  }
-  function introBindChart() {
-    // (Re)attach the chart parts of the load sequence to the current chart DOM, in step with the clock.
-    if (!intro.active) return;
-    intro.anims.filter((a) => a._chart).forEach((a) => a.cancel());
-    intro.anims = intro.anims.filter((a) => !a._chart);
-    const t = intro.clock.currentTime;
-    const endAt = T.drawDelay + T.drawDur, peakAt = endAt + T.peakGap;
-    const add = (sel, kf, delay, dur, prep) => {
-      const n = $(sel);
-      if (!n) return;
-      if (prep) prep(n);
-      n.style.removeProperty("opacity");
-      const a = n.animate(kf, { duration: dur, delay, easing: EASE.reveal, fill: "backwards" });
-      a._chart = true;
-      a.currentTime = t;
-      if (intro.paused) a.pause();
-      intro.anims.push(track(a));
-    };
-    const box = (n) => { n.style.transformBox = "fill-box"; n.style.transformOrigin = "center"; };
-    add("#end-halo", [{ opacity: 0, scale: "0.4" }, { opacity: 1, scale: "1" }], endAt, T.endDotDur, box);
-    add("#end-dot", [{ opacity: 0, scale: "0.4" }, { opacity: 1, scale: "1" }], endAt, T.endDotDur, box);
-    add("#pk-drop", [{ opacity: 0 }, { opacity: 1 }], peakAt, T.peakDur);
-    add("#pk-dot", [{ opacity: 0, scale: "0.5" }, { opacity: 1, scale: "1" }], peakAt, T.peakDur, box);
-    add("#peak-tag", [{ opacity: 0, translate: "0 5px" }, { opacity: 1, translate: "0 0" }], peakAt, T.peakDur);
-    intro.hairs = null;
-    applyDraw();
-  }
-  // The line's drawn length follows a minute that runs from opening to the latest reading; the fine vertical
-  // lines appear behind it with a short soft edge.
-  const lenTables = new WeakMap();
-  function lengthTable(path) {
-    let t = lenTables.get(path);
-    if (t) return t;
-    const total = path.getTotalLength(), n = Math.max(32, Math.ceil(total / 3)), xs = new Float64Array(n + 1), ls = new Float64Array(n + 1);
-    for (let i = 0; i <= n; i++) { const l = (total * i) / n; ls[i] = l; xs[i] = path.getPointAtLength(l).x; }
-    t = { total, xs, ls, n };
-    lenTables.set(path, t);
-    return t;
-  }
-  function lengthAtX(t, x) {
-    const dir = RTL ? -1 : 1;
-    if ((x - t.xs[0]) * dir <= 0) return 0;
-    if ((x - t.xs[t.n]) * dir >= 0) return t.total;
-    let lo = 0, hi = t.n;
-    while (hi - lo > 1) { const mid = (lo + hi) >> 1; if ((t.xs[mid] - x) * dir < 0) lo = mid; else hi = mid; }
-    const k = (x - t.xs[lo]) / (t.xs[hi] - t.xs[lo] || 1);
-    return t.ls[lo] + k * (t.ls[hi] - t.ls[lo]);
-  }
-  function applyDraw() {
-    if (!intro.active || !geo) return;
-    const p = intro.clock.effect.getComputedTiming().progress ?? 0;
-    const done = p >= 1;
-    const head = p * M.last, hx = geo.X(head), dir = RTL ? -1 : 1;
-    M.segments.forEach((seg, i) => {
-      const path = $(`#ln-${i}`);
-      if (!path) return;
-      if (done || head >= seg[seg.length - 1]) { path.removeAttribute("stroke-dasharray"); path.removeAttribute("visibility"); return; }
-      if (head <= seg[0]) { path.setAttribute("visibility", "hidden"); return; }
-      const t = lengthTable(path), l = lengthAtX(t, hx);
-      path.removeAttribute("visibility");
-      path.setAttribute("stroke-dasharray", `${l.toFixed(2)} ${(t.total + 10).toFixed(2)}`);
+  // The markup with every text emptied: two contents with the same shape differ only in their text.
+  const shapeOf = (nodes) => {
+    const c = document.createElement("div");
+    c.append(...[...nodes].map((n) => n.cloneNode(true)));
+    const w = document.createTreeWalker(c, NodeFilter.SHOW_TEXT);
+    for (let n = w.nextNode(); n; n = w.nextNode()) n.nodeValue = "";
+    return c.innerHTML;
+  };
+  const textNodes = (node) => { const out = [], w = document.createTreeWalker(node, NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) out.push(n); return out; };
+  function rollTo(el, html, dir = 0) {
+    if (!el) return;
+    finishRoll(el);
+    if (el.innerHTML === norm(html)) return;
+    if (!motionOn() || !el.isConnected || !el.getClientRects().length) { el.innerHTML = html; return; }
+    const tpl = document.createElement("template");
+    tpl.innerHTML = html;
+    if (shapeOf(el.childNodes) !== shapeOf(tpl.content.childNodes)) { el.innerHTML = html; return; }
+    const olds = textNodes(el), news = textNodes(tpl.content);
+    const slots = [];
+    olds.forEach((t, i) => {
+      const a = t.nodeValue, b = news[i].nodeValue;
+      if (a !== b) t.replaceWith(rollFragment(a, b, dir, slots));
     });
-    if (!intro.hairs) intro.hairs = [...svgHost.querySelectorAll('rect[fill="url(#hair)"]')].map((r) => ({ r, x: Number(r.getAttribute("x")) }));
-    intro.hairs.forEach(({ r, x }) => {
-      if (done) { r.removeAttribute("opacity"); return; }
-      const behind = (hx - x) * dir; // px behind the head
-      const o = behind <= 0 ? 0 : Math.min(1, behind / 36);
-      if (o >= 1) r.removeAttribute("opacity"); else r.setAttribute("opacity", o.toFixed(3));
-    });
-  }
-  function introLoop() {
-    intro.raf = 0;
-    if (!intro.active) return;
-    applyDraw();
-    // Done when every part has run out (a seeked, paused sequence never ends on its own).
-    if (!intro.paused && [intro.clock, ...intro.anims].every((a) => a.playState === "finished")) { introCleanup(); startPulse(); return; }
-    intro.raf = requestAnimationFrame(introLoop);
-  }
-  function introCleanup() {
-    const wasActive = intro.active;
-    cancelAnimationFrame(intro.raf);
-    intro.raf = 0;
-    intro.active = false;
-    intro.anims.forEach((a) => a.cancel());
-    intro.anims = [];
-    if (intro.clock) intro.clock.cancel();
-    intro.clock = null;
-    intro.hairs = null;
-    // Back to the static chart exactly: no dash, no opacity, no inline styles on the revealed marks.
-    M.segments.forEach((_, i) => { const p = $(`#ln-${i}`); if (p) { p.removeAttribute("stroke-dasharray"); p.removeAttribute("visibility"); } });
-    svgHost.querySelectorAll('rect[fill="url(#hair)"][opacity]').forEach((r) => r.removeAttribute("opacity"));
-    ["#end-dot", "#end-halo", "#pk-dot", "#pk-drop", "#peak-tag"].forEach((s) => { const n = $(s); if (n) { n.style.removeProperty("opacity"); n.style.removeProperty("transform-box"); n.style.removeProperty("transform-origin"); if (!n.getAttribute("style")) n.removeAttribute("style"); } });
-    delete root.dataset.intro;
-    delete root.dataset.lights;
-    lightsRest();
-    if (wasActive) render(); // the canonical chart markup, exactly as the static page draws it
-  }
-
-  /* ---- lights: the load entrance (the tuner's "switch on at load"). Transform and opacity only; each light runs
-   * out to exactly its rest geometry, and no pixel is ever brighter than it is at rest.
-   *   Inside now: the light slides in behind the disc. The disc, the mask on .lamp-in, stays fixed; the light layer
-   *     behind it (the light and its grain) starts out beyond the lit bottom corner, on the axis that runs from that
-   *     corner to the disc's centre, and slides along it into place. The crescent grows out of the lit corner along
-   *     the disc's arc, and the thin bottom rim and the far-corner glow arrive with it; the disc's edge takes shape as
-   *     the light reaches it. It is the pointer-follow light's own mechanism: the layer is larger than the card by
-   *     --lp, so no edge is ever exposed. It only moves; it does not fade.
-   *     Why from beyond the corner and not from the disc's centre: a light that starts toward the disc's centre
-   *     passes over the crescent on its way out, so the crescent is brighter than at rest for most of the way (about
-   *     7,000 pixels of the card; it would have to stay below about 20% opacity to avoid that, which is a fade
-   *     again). Coming in from beyond the corner, every pixel only ever brightens (measured; see README).
-   *   Chart card: the U rises from under the bottom edge on the line's own curve, starting with it, so light and
-   *     data arrive together; it settles a moment after the line reaches now.
-   *   Page wash: drifts in from its corner (the inline-start top corner, off the page) while it brightens.
-   *   Rims: each lit border (and the rail's rim, for the wash) catches the light a beat after it arrives. */
-  function nowPath() {
-    const lamp = $("#card-now .lamp");
-    const W = lamp.clientWidth, H = lamp.clientHeight;
-    const cs = getComputedStyle(root);
-    const n = (v, d) => { const x = parseFloat(cs.getPropertyValue(v)); return Number.isFinite(x) ? x : d; };
-    // The disc, as the lighting section draws it: centre measured from the lit side, lowest point --now-rim above
-    // the bottom edge. So the path follows the light settings, including the tuner's.
-    const rx = (n("--now-disc-size", 77) / 100) * W, ry = rx * n("--now-disc-aspect", 0.7);
-    const cx = (n("--now-disc-x", 67) / 100) * W, cy = H - (n("--now-rim", 8) / 100) * H - ry;
-    // The axis from the lit bottom corner to the disc's centre; the light starts nowFrom of that distance beyond the
-    // corner (away from the disc) and slides along it.
-    const vx = cx, vy = cy - H, len = Math.hypot(vx, vy) || 1, dist = len * T.nowFrom;
-    const dx = -(RTL ? 1 : -1) * (vx / len) * dist, dy = -(vy / len) * dist;
-    return { dx: Math.round(dx * 10) / 10, dy: Math.round(dy * 10) / 10, lp: Math.ceil(Math.abs(dist)) + 8 };
-  }
-  function lightsEnter(add) {
-    const light = (card) => ({ card, lampIn: $(".lamp-in", card), rim: $(".lamp-rim", card) });
-    const now = light($("#card-now")), chart = light(chartCard);
-    const layers = (l, kf, o) => ["::before", "::after"].forEach((pe) => add(l.lampIn, kf, { ...o, pseudoElement: pe }));
-    // Opacity along a curve of [progress, share of the rest value] pairs. It shares the movement's timing and easing,
-    // so each share belongs to a place along the way; the rest value is read first, so a tuned or crowd opacity holds.
-    const ramp = (el, curve, o, pe) => {
-      if (!curve) return;
-      const base = parseFloat(getComputedStyle(el, pe || null).opacity) || 1;
-      add(el, [...curve.map(([offset, v]) => ({ offset, opacity: +(base * v).toFixed(4) })), { offset: 1, opacity: base }], pe ? { ...o, pseudoElement: pe } : o);
-    };
-
-    // Inside now. A pointer that reached the card before the load began lets go of the light first (the follow
-    // stays off until the load ends), so only the entrance moves it.
-    resetPeeks();
-    const p = nowPath();
-    now.card.classList.add("is-entering");
-    now.card.style.setProperty("--enter-lp", `${p.lp}px`);
-    const slide = { duration: T.nowSlide, delay: T.nowDelay, easing: EASE.slide };
-    layers(now, [{ transform: `translate(${p.dx}px, ${p.dy}px)` }, { transform: "translate(0px, 0px)" }], slide);
-    ramp(now.lampIn, T.nowOpacity, slide);
-    ramp(now.rim, T.rimOpacity, { ...slide, delay: T.nowDelay + T.rimLag });
-
-    // Chart card.
-    const drop = Math.round(chart.lampIn.clientHeight * T.chartLightDrop);
-    const rise = { duration: T.chartLightRise, delay: T.chartLightDelay, easing: EASE.rise };
-    layers(chart, [{ transform: `translate(0px, ${drop}px)` }, { transform: "translate(0px, 0px)" }], rise);
-    ramp(chart.lampIn, T.chartOpacity, rise);
-    ramp(chart.rim, T.rimOpacity, { ...rise, delay: T.chartLightDelay + T.rimLag });
-
-    // Page wash, from its corner; the rail's rim catches it.
-    const [wx, wy] = T.washDrift;
-    const drift = { duration: T.washDur, delay: T.washDelay, easing: EASE.slide };
-    add($(".wash-light"), [{ transform: `translate(${RTL ? wx : -wx}px, ${-wy}px)` }, { transform: "translate(0px, 0px)" }], drift);
-    ramp($(".wash"), T.washOpacity, drift);
-    ramp(rail, T.rimOpacity, { ...drift, delay: T.washDelay + T.rimLag + 120 }, "::after");
-    intro.nowPath = p;
-    intro.chartDrop = drop;
-  }
-  function lightsRest() {
-    const c = $("#card-now");
-    c.classList.remove("is-entering");
-    c.style.removeProperty("--enter-lp");
-    if (!c.getAttribute("style")) c.removeAttribute("style");
-  }
-  function startIntro() {
-    finishIntro();
-    stopPulse();
-    if (!motionOn()) { introCleanup(); return; }
-    intro.active = true;
-    intro.paused = false;
-    intro.started = true;
+    const o = { duration: T.roll, easing: EASE.roll };
     const anims = [];
-    const add = (el, kf, o) => { const a = el.animate(kf, { fill: "backwards", ...o }); anims.push(track(a)); return a; };
-    [...document.querySelectorAll(".cards > .card")].forEach((el, i) => add(el,
-      [{ opacity: 0, transform: `translateY(${T.cardRise}px)` }, { opacity: 1, transform: "none" }],
-      { duration: T.cardDur, delay: i * T.cardStagger, easing: EASE.enter }));
-    add(chartCard, [{ opacity: 0, transform: `translateY(${T.chartRise}px)` }, { opacity: 1, transform: "none" }],
-      { duration: T.chartDur, delay: T.chartDelay, easing: EASE.enter });
-    if (opts.switchOn) lightsEnter(add);
-    // The clock is an empty animation: its eased progress is the line's head.
-    intro.clock = track(clockAnim({ duration: T.drawDur, delay: T.drawDelay, easing: EASE.draw, fill: "both" }));
-    intro.anims = anims;
-    introHide();
-    introBindChart();
-    delete root.dataset.intro;
-    delete root.dataset.lights;
-    intro.raf = requestAnimationFrame(introLoop);
+    slots.forEach(({ slot, nw, old, up }) => {
+      const wOld = old.getBoundingClientRect().width, wNew = nw.getBoundingClientRect().width;
+      // The window is the digits' own ink box (cap line to baseline, plus a hair), not the taller line box, so a
+      // digit enters at the baseline and leaves at the cap line; it travels exactly the window's height.
+      const w = digitWindow(slot, nw);
+      slot.style.clipPath = `inset(${f(w.top)}px -0.3em ${f(w.bottom)}px -0.3em)`;
+      const d = (up ? 1 : -1) * w.height;
+      anims.push(nw.animate([{ transform: `translateY(${f(d)}px)` }, { transform: "translateY(0px)" }], o));
+      anims.push(old.animate([{ transform: "translateY(0px)" }, { transform: `translateY(${f(-d)}px)` }], { ...o, fill: "forwards" }));
+      if (Math.abs(wOld - wNew) > 0.01) anims.push(slot.animate([{ width: `${wOld}px` }, { width: `${wNew}px` }], o));
+    });
+    anims.forEach(track);
+    const run = { anims, html };
+    rolls.set(el, run);
+    Promise.all(anims.map((a) => a.finished)).then(() => { if (rolls.get(el) === run) finishRoll(el); }).catch(() => {});
   }
-  function finishIntro() { if (intro.active) { introCleanup(); } }
-  // For evidence and the tuner: hold the load sequence at a moment (ms from its start).
-  function seekIntro(ms) {
-    if (!intro.active) return false;
-    intro.paused = true;
-    [intro.clock, ...intro.anims].forEach((a) => { a.pause(); a.currentTime = ms; });
-    applyDraw();
+  // The ink box of the digits in this slot: the baseline is measured in place (a zero-size probe on it), the digits'
+  // ascent and descent come from the font itself (canvas measureText of 0-9), with 0.08em to spare on each side.
+  const measureCtx = document.createElement("canvas").getContext("2d");
+  function digitWindow(slot, nw) {
+    const cs = getComputedStyle(nw), size = parseFloat(cs.fontSize);
+    measureCtx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    const m = measureCtx.measureText("0123456789");
+    const probe = document.createElement("i");
+    probe.style.cssText = "display:inline-block;width:0;height:0;vertical-align:baseline";
+    nw.append(probe);
+    const base = probe.getBoundingClientRect().top - slot.getBoundingClientRect().top;
+    probe.remove();
+    const h = slot.getBoundingClientRect().height, pad = 0.08 * size;
+    const top = Math.max(0, base - m.actualBoundingBoxAscent - pad), bottom = Math.min(h, base + m.actualBoundingBoxDescent + pad);
+    return { top, bottom: h - bottom, height: bottom - top };
+  }
+  // The old and new text of one text node: words and separators take the new text at once; each numeric run is
+  // compared digit by digit from the right, and every digit that differs becomes a rolling slot.
+  function rollFragment(a, b, dir, slots) {
+    const split = (s) => { const out = []; let i = 0; for (const m of s.matchAll(NUM)) { if (m.index > i) out.push({ num: false, s: s.slice(i, m.index) }); out.push({ num: true, s: m[0] }); i = m.index + m[0].length; } if (i < s.length) out.push({ num: false, s: s.slice(i) }); return out; };
+    const ta = split(a).filter((x) => x.num), tbs = split(b);
+    const frag = document.createDocumentFragment();
+    if (ta.length !== tbs.filter((x) => x.num).length) { frag.append(b); return frag; }
+    let k = 0;
+    tbs.forEach((tok) => {
+      if (!tok.num) { frag.append(tok.s); return; }
+      const A = ta[k++].s, B = tok.s;
+      if (A === B) { frag.append(B); return; }
+      const up = dir ? dir > 0 : numValue(B) >= numValue(A);
+      const run = document.createElement("span");
+      run.className = "roll-run";
+      const n = Math.max(A.length, B.length);
+      let plain = "";
+      const flush = () => { if (plain) { run.append(plain); plain = ""; } };
+      for (let i = 0; i < n; i++) {
+        const ca = A[i - (n - A.length)] || "", cb = B[i - (n - B.length)] || "";
+        if (ca === cb) { plain += cb; continue; }
+        flush();
+        const slot = document.createElement("span"), nw = document.createElement("span"), old = document.createElement("span");
+        slot.className = "roll-slot"; nw.className = "roll-new"; old.className = "roll-old";
+        old.setAttribute("aria-hidden", "true");
+        nw.textContent = cb; old.textContent = ca;
+        slot.append(nw, old);
+        run.append(slot);
+        slots.push({ slot, nw, old, up });
+      }
+      flush();
+      frag.append(run);
+    });
+    return frag;
+  }
+
+  /* ---- the crowd-level chip never cross-fades: each bar that changes fills (or empties) on its own with a short
+   * scaleY from the bottom, lower bars first when the level rises and upper bars first when it falls; the level
+   * word swaps at once. The comparison chip appears or leaves at once. */
+  const feet = new Map(); // foot element -> { anims, html }
+  function finishFoot(foot) {
+    const r = feet.get(foot);
+    if (!r) return;
+    feet.delete(foot);
+    r.anims.forEach((a) => a.cancel());
+    foot.innerHTML = r.html;
+  }
+  function setFoot(foot, v, cmp) {
+    if (!foot) return;
+    finishFoot(foot);
+    const html = levelChip(v) + cmp;
+    if (foot.innerHTML === norm(html)) return;
+    const chip = $(".level", foot);
+    if (!motionOn() || !chip || !foot.getClientRects().length) { foot.innerHTML = html; return; }
+    const li = levelOf(v);
+    chip.lastChild.nodeValue = L.levels[li];
+    foot.querySelectorAll(".cmp").forEach((n) => n.remove());
+    if (cmp) chip.insertAdjacentHTML("afterend", cmp);
+    const bars = [...chip.querySelectorAll(".bars i")];
+    const changed = bars.map((b, i) => ({ b, i, on: i <= li })).filter(({ b, on }) => b.classList.contains("on") !== on);
+    const rising = changed.length && changed[0].on;
+    const order = rising ? changed : changed.slice().reverse();
+    const anims = order.map(({ b, on }, k) => {
+      b.classList.remove("on");
+      b.classList.add("lv-anim");
+      const fill = document.createElement("b");
+      fill.className = "lv-fill";
+      b.append(fill);
+      return track(fill.animate([{ transform: `scaleY(${on ? 0 : 1})` }, { transform: `scaleY(${on ? 1 : 0})` }], { duration: T.bar, delay: k * T.barStagger, easing: EASE.bar, fill: "both" }));
+    });
+    const run = { anims, html };
+    feet.set(foot, run);
+    if (!anims.length) { finishFoot(foot); return; }
+    Promise.all(anims.map((a) => a.finished)).then(() => { if (feet.get(foot) === run) finishFoot(foot); }).catch(() => {});
+  }
+
+  /* ---- screen readers hear the new figures once per change, through one polite live region (never per digit:
+   * the rolling digits' old copies are hidden from assistive technology). */
+  const liveSay = $("#live-say");
+  const announce = () => { if (liveSay) liveSay.textContent = L.say(shownNow(), L.levels[levelOf(shownNow())], M.entries); };
+
+  /* ---- the marker glides between stops along the drawn curve itself (a route sampled from the SVG path),
+   * in 120-150 ms; its light, the lit hairline and the tooltip follow it every frame (either form, A or B). Between the line and the peak
+   * it runs along the line to the peak's minute, then up the dotted drop into the peak ring. Where no drawn track
+   * joins two stops (across the missing span, from the latest reading into the future, onto the gap stop) or the
+   * route is longer than 240px, it moves at once. */
+  const glide = { clock: null, raf: 0, route: null, stop: null };
+  function currentPlace() {
+    if (glide.clock) return routeAt(glide.route, (glide.clock.effect.getComputedTiming().progress ?? 1) * glide.route.total);
+    return sel ? restPoint(sel) : null;
+  }
+  function buildRoute(a, b) {
+    if (!a || !b || !a.track || a.track !== b.track) return null;
+    const path = trackPath(a.track);
+    if (!path) return null;
+    const t = table(path);
+    const pts = [];
+    const peakX = b.lift > 0 ? b.x : a.lift > 0 ? a.x : null;
+    let base = null, pk = null;
+    if (peakX != null) { pk = peakPoint(); base = pointAt(t, lengthAt(t, pk.x)); }
+    const drop = (l0, l1) => { for (let i = 0; i <= 10; i++) { const l = l0 + ((l1 - l0) * i) / 10; pts.push({ x: pk.x, y: base.y + (pk.y - base.y) * l, lift: l, ly: base.y }); } };
+    if (a.lift > 0 && b.lift > 0) drop(a.lift, b.lift); // already on the drop: straight to the ring
+    if (a.lift > 0 && b.lift > 0) return finishRoute(pts, a.track);
+    if (a.lift > 0) drop(a.lift, 0);
+    const la = lengthAt(t, a.lift > 0 ? pk.x : a.x), lb = lengthAt(t, b.lift > 0 ? pk.x : b.x);
+    const pa = pointAt(t, la);
+    pts.push({ ...pa, lift: 0, ly: pa.y });
+    const step = lb >= la ? 1 : -1;
+    for (let i = 0; i <= t.n; i++) {
+      const j = step > 0 ? i : t.n - i, l = t.ls[j];
+      if ((l - la) * step > 0.01 && (lb - l) * step > 0.01) pts.push({ x: t.xs[j], y: t.ys[j], lift: 0, ly: t.ys[j] });
+    }
+    const pb = pointAt(t, lb);
+    pts.push({ ...pb, lift: 0, ly: pb.y });
+    if (b.lift > 0) drop(0, b.lift);
+    return finishRoute(pts, a.track);
+  }
+  function finishRoute(pts, trk) {
+    const s = [0];
+    for (let i = 1; i < pts.length; i++) s.push(s[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y));
+    return { pts, s, total: s[s.length - 1], track: trk };
+  }
+  function routeAt(r, d) {
+    const { pts, s } = r;
+    if (d <= 0) return { ...pts[0], track: r.track };
+    if (d >= r.total) return { ...pts[pts.length - 1], track: r.track };
+    let lo = 0, hi = s.length - 1;
+    while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (s[mid] < d) lo = mid; else hi = mid; }
+    const k = (d - s[lo]) / (s[hi] - s[lo] || 1), p = pts[lo], q = pts[hi];
+    return { x: p.x + (q.x - p.x) * k, y: p.y + (q.y - p.y) * k, lift: p.lift + (q.lift - p.lift) * k, ly: p.ly + (q.ly - p.ly) * k, track: r.track };
+  }
+  function glideAlong(from, to, st) {
+    if (!motionOn() || !from || !to) return false;
+    const r = buildRoute(from, to);
+    if (!r || r.total < 0.5 || r.total > T.glideMaxPx) return false;
+    const duration = Math.round(Math.min(T.glideMax, T.glideMin + r.total * T.glidePerPx));
+    glide.route = r;
+    glide.stop = st;
+    glide.clock = track(clockAnim({ duration, easing: EASE.glide, fill: "both" }));
+    const run = glide.clock;
+    glideFrame();
+    run.finished.then(() => { if (glide.clock === run) stopGlide(); }).catch(() => {});
+    glide.raf = requestAnimationFrame(glideLoop);
     return true;
   }
-  const introTotal = () => Math.max(T.drawDelay + T.drawDur + T.peakGap + T.peakDur, opts.switchOn
-    ? Math.max(T.nowDelay + T.rimLag + T.nowSlide, T.chartLightDelay + T.rimLag + T.chartLightRise, T.washDelay + T.rimLag + 120 + T.washDur)
-    : 0);
+  function glideFrame() {
+    if (!glide.clock) return;
+    const p = glide.clock.effect.getComputedTiming().progress ?? 1;
+    paintMarker(routeAt(glide.route, p * glide.route.total), glide.stop);
+  }
+  function glideLoop() { glide.raf = 0; if (!glide.clock) return; glideFrame(); glide.raf = requestAnimationFrame(glideLoop); }
+  // Ends a glide at once, with the marker at rest on its stop.
+  function stopGlide() {
+    if (!glide.clock) return;
+    cancelAnimationFrame(glide.raf);
+    glide.raf = 0;
+    const st = glide.stop;
+    glide.clock.cancel();
+    glide.clock = null;
+    glide.route = null;
+    glide.stop = null;
+    if (st && sel && sel.key === st.key) paintMarker(restPoint(st), st);
+  }
+  function seekGlide(fraction) {
+    if (!glide.clock) return false;
+    cancelAnimationFrame(glide.raf);
+    glide.raf = 0;
+    glide.clock.pause();
+    glide.clock.currentTime = glide.clock.effect.getTiming().duration * fraction;
+    glideFrame();
+    return true;
+  }
 
-  /* ---- live: the pulse on the line's end point (live state only; never while delayed) */
+  /* ---- live: the pulse on the line's end point (live state only; never while delayed). Calmer than Round 5: one
+   * thin ring every 5 s, from inside the end point to just past its halo, at 40% at most. */
   let ping = null;
   function startPulse() {
-    if (!motionOn() || STATE === "delayed" || intro.active) return;
+    if (!motionOn() || STATE === "delayed") return;
     if (!ping) { ping = document.createElement("span"); ping.className = "ping"; ping.setAttribute("aria-hidden", "true"); plot.insertBefore(ping, tip); }
     placePing();
     ping.classList.add("is-on");
@@ -1134,23 +1300,30 @@
     ping.style.top = `${f(p.y)}px`;
   }
 
-  /* ---- live: a new reading extends the line. The centred average is cut at the latest reading, so when a reading
-   * arrives the last ~15 minutes of the average legitimately change: only that tail morphs, in place, while it
-   * extends to the new point. Everything earlier is untouched. */
-  const liveRun = { clock: null, raf: 0, from: null, to: null, K: 0, seg: 0, body: "", oldEnd: null };
+  /* ---- live: a new reading extends the line; it never redraws. The centred average is cut at the latest reading,
+   * so when a reading arrives the last ~15 minutes of the average legitimately change: only that tail morphs, in
+   * place, while it extends to the new point (280 ms). Everything earlier is untouched. The changed digits roll and
+   * the level bars change at the same moment. */
+  const liveRun = { clock: null, raf: 0, from: null, to: null, K: 0, seg: 0, body: "" };
   function stepReading() {
     finishLive();
+    stopGlide();
     const from = M;
     if (from.nowM >= DAY - 1) return null;
     const reading = STATE !== "delayed"; // delayed: the minute passes and no reading arrives
     const to = compute(reading ? from.last + 1 : from.last, from.nowM + 1);
     M = to;
-    updateCards();
+    if (reading) crowdShown = null;
+    updateCards(from);
+    if (reading) announce();
     $("#chart-summary").textContent = summary();
-    if (!details.hidden) { built = false; buildDetails(); } else built = false;
-    applyCrowd();
-    const canMorph = reading && motionOn() && geo && !intro.active && from.segments.length === to.segments.length;
+    built = false;
+    if (!details.hidden) buildDetails();
+    const canMorph = reading && motionOn() && geo && from.segments.length === to.segments.length;
     if (!canMorph) { render(); return { reading, morph: false }; }
+    // The stops for the new reading (the geometry's scale is unchanged); a selected stop keeps its key.
+    buildStops();
+    if (sel) { const st = stopBy(sel.key); if (st) { sel = st; tip.innerHTML = tipHTML(st); hit.setAttribute("aria-valuetext", valueText(st)); } }
     // The first minute where the drawn line changes; the tail starts at the line point before it.
     const si = to.segments.length - 1, segNew = to.segments[si];
     let m0 = from.last;
@@ -1159,8 +1332,7 @@
     while (ki < segNew.length - 1 && segNew[ki + 1] <= m0) ki++;
     liveRun.from = from; liveRun.to = to; liveRun.seg = si; liveRun.K = segNew[ki];
     liveRun.body = to.splines[si].path(geo.X, geo.Y, ki);
-    liveRun.peakMoved = from.peakM !== to.peakM;
-    liveRun.clock = track(clockAnim({ duration: T.morphDur, easing: EASE.morph, fill: "both" }));
+    liveRun.clock = track(clockAnim({ duration: T.morph, easing: EASE.morph, fill: "both" }));
     const run = liveRun.clock;
     applyMorph();
     run.finished.then(() => { if (liveRun.clock === run) finishLive(); }).catch(() => {});
@@ -1184,7 +1356,7 @@
     let d = body;
     for (let i = 1; i <= n; i++) { const m = K + ((end - K) * i) / n; d += `L${f(X(m))},${f(Y(morphValue(m, t)))}`; }
     const path = $(`#ln-${seg}`);
-    if (path) path.setAttribute("d", d);
+    if (path) { path.setAttribute("d", d); tables.delete(path); }
     // The fine vertical lines of the tail follow the morphing line (same place in the paint order as the static ones:
     // under the usual line and today's line).
     const dir = RTL ? -1 : 1;
@@ -1196,45 +1368,63 @@
     ["#end-halo", "#end-dot"].forEach((s) => { const c = $(s); if (c) { c.setAttribute("cx", f(ex)); c.setAttribute("cy", f(ey)); } });
     placePing({ x: ex, y: ey });
     const nowT = from.nowM + (to.nowM - from.nowM) * t;
-    const pr = $("#c-past-r"), ar = $("#c-ahead-r");
     const setBand = (r, a, b) => { if (!r) return; const l = Math.min(X(a), X(b)), rr = Math.max(X(a), X(b)); r.setAttribute("x", f(l)); r.setAttribute("width", f(rr - l)); };
-    setBand(pr, -8, nowT);
-    setBand(ar, nowT, DAY + 8);
+    setBand($("#c-past-r"), -8, nowT);
+    setBand($("#c-ahead-r"), nowT, DAY + 8);
+    // A selected stop on the moving tail stays on the line.
+    if (sel && sel.track === `L${seg}` && (sel.kind === "latest" || (sel.kind === "read" && sel.m >= K))) {
+      const m = sel.kind === "latest" ? end : sel.m, y = Y(morphValue(m, t));
+      paintMarker({ x: X(m), y, lift: 0, ly: y, track: sel.track }, sel);
+    }
   }
   function liveLoop() { liveRun.raf = 0; if (!liveRun.clock) return; applyMorph(); liveRun.raf = requestAnimationFrame(liveLoop); }
   function finishLive() {
     if (!liveRun.clock) return;
     cancelAnimationFrame(liveRun.raf);
     liveRun.raf = 0;
-    const moved = liveRun.peakMoved;
     liveRun.clock.cancel();
     liveRun.clock = null;
     render(); // the canonical chart for the new reading; identical to the morph's last frame
-    if (moved && motionOn()) ["#pk-dot", "#pk-drop", "#peak-tag"].forEach((s) => { const n = $(s); if (n) track(n.animate([{ opacity: 0 }, { opacity: 1 }], { duration: T.peakDur, easing: EASE.reveal })); });
   }
   function seekLive(fraction) {
     if (!liveRun.clock) return false;
     cancelAnimationFrame(liveRun.raf);
     liveRun.raf = 0;
     liveRun.clock.pause();
-    liveRun.clock.currentTime = T.morphDur * fraction;
+    liveRun.clock.currentTime = T.morph * fraction;
     applyMorph();
     return true;
   }
   function resetReadings() {
     finishLive();
+    const from = M;
     M = compute(START.last, START.nowM);
-    updateCards();
+    crowdShown = null;
+    updateCards(from);
+    announce();
     $("#chart-summary").textContent = summary();
     built = false;
     if (!details.hidden) buildDetails();
-    applyCrowd();
     render();
   }
+  // Tuner: a crowd-level change on the Inside now card, across the nearest level boundary by the smallest step
+  // (Busy 49 goes down to Moderate 48, or up to Packed 69). Live only: a delayed card never moves.
+  function crowdStep(dir) {
+    if (STATE === "delayed") return null;
+    const v = shownNow(), li = levelOf(v);
+    const next = dir > 0 ? (li >= 3 ? null : [25, 49, 69][li]) : (li <= 0 ? null : [24, 48, 68][li - 1]);
+    if (next == null) return null;
+    crowdShown = next === occ[M.last] ? null : next;
+    rollTo($("#now-v"), String(next));
+    setFoot($("#now-foot"), next, cmpChip(M.compare));
+    announce();
+    return { from: v, to: next, level: L.levels[levelOf(next)], fromLevel: L.levels[li] };
+  }
 
-  /* ---- rail: opens with transform and opacity only. Its width switches at once (never animated); during the
-   * change the rail's own surface steps aside for three pieces: a fixed start cap, a middle that scales from the
-   * inline-start, and an end cap that slides. The names fade in behind the end cap. */
+  /* ---- rail: opens with transforms (the width switches at once and is never animated). During the change the
+   * rail's own surface steps aside for three pieces: a fixed start cap, a middle that scales from the inline-start,
+   * and an end cap that slides. The section names never fade: the moving end cap uncovers them (a clip on each name
+   * that keeps 12px inside the moving edge, on the same timing and curve), and covers them again on close. */
   const railRun = { anims: [], surface: null, open: false };
   function animateRail(open) {
     finishRail();
@@ -1257,7 +1447,19 @@
     an.push(mid.animate(kf({ transform: "scaleX(0)" }, { transform: "scaleX(1)" }), o));
     an.push(shadow.animate(kf({ opacity: 0 }, { opacity: 1 }), o));
     [start, mid, end].forEach((p) => an.push(p.firstElementChild.animate(kf({ opacity: 0 }, { opacity: 1 }), o)));
-    if (!open) rail.querySelectorAll(".rail-name").forEach((n) => an.push(n.animate([{ opacity: 1 }, { opacity: 0 }], { duration: T.railNamesOut, easing: "ease-out", fill: "forwards" })));
+    // Each name is uncovered by the moving edge. The keyframe offsets are points along the eased progress, which is
+    // exactly where the end cap is (it moves linearly in eased progress), so name and edge stay locked together.
+    const rr = rail.getBoundingClientRect(), closedW = rr.width - T.railDist; // the collapsed rail's width (80px)
+    rail.querySelectorAll(".rail-name").forEach((n) => {
+      const b = n.getBoundingClientRect();
+      const a = RTL ? rr.right - b.right : b.left - rr.left, w = b.width; // the name's inline-start offset in the rail
+      const p0 = Math.min(1, Math.max(0, (a + T.railReveal - closedW) / T.railDist));
+      const p1 = Math.min(1, Math.max(p0, (a + w + T.railReveal - closedW) / T.railDist));
+      // Fully hidden: the whole name and its 8px bleed are cut from the inline-end side. Shown: nothing is cut.
+      const clip = (hidden) => { const e = f(hidden ? w + 8 : -8); return RTL ? `inset(-8px -8px -8px ${e}px)` : `inset(-8px ${e}px -8px -8px)`; };
+      const frames = [{ offset: 0, clipPath: clip(1) }, { offset: p0, clipPath: clip(1) }, { offset: p1, clipPath: clip(0) }, { offset: 1, clipPath: clip(0) }];
+      an.push(n.animate(open ? frames : frames.map((k) => ({ ...k, offset: 1 - k.offset })).reverse(), o));
+    });
     railRun.anims = an.map(track);
     const run = railRun.anims;
     Promise.all(run.map((a) => a.finished)).then(() => { if (railRun.anims === run) finishRail(); }).catch(() => {});
@@ -1273,95 +1475,65 @@
     rail.dataset.open = String(railRun.open);
   }
 
-  /* ---- lights: follow the pointer (desktop only). The light behind the disc shifts a few pixels toward the
-   * pointer, as if it peeks around the disc; the disc stays. It moves by a transform on the light layer (with a
-   * transition), never by rewriting the gradients. The chart card does not follow by default: see README. */
-  const PEEK = { now: { x: 10, y: 7 }, chart: { x: 6, y: 4 }, returnMs: 900 };
-  // Not while the load entrance moves the same layer.
-  const followable = (card) => motionOn() && opts.follow && mqFine.matches && !intro.active && (card.id === "card-now" || opts.followChart);
-  function peekTo(card, dx, dy) {
-    card.style.setProperty("--peek-x", `${f(dx)}px`);
-    card.style.setProperty("--peek-y", `${f(dy)}px`);
-  }
-  function peekRest(card, now) {
-    clearTimeout(card._peekOff);
-    const off = () => { card.classList.remove("is-peek"); card.style.removeProperty("--peek-x"); card.style.removeProperty("--peek-y"); if (!card.getAttribute("style")) card.removeAttribute("style"); };
-    if (now) { off(); return; }
-    peekTo(card, 0, 0);
-    card._peekOff = setTimeout(off, PEEK.returnMs + 60);
-  }
-  document.querySelectorAll(".lit").forEach((card) => {
-    let raf = 0, px = 0, py = 0;
-    const move = () => {
-      raf = 0;
-      if (!card.classList.contains("is-peek")) return;
-      const r = card.getBoundingClientRect(), lim = card.id === "card-now" ? PEEK.now : PEEK.chart;
-      const nx = Math.max(-1, Math.min(1, ((px - r.left) / r.width) * 2 - 1));
-      const ny = Math.max(-1, Math.min(1, ((py - r.top) / r.height) * 2 - 1));
-      peekTo(card, nx * lim.x, ny * lim.y);
-    };
-    card.addEventListener("pointermove", (e) => {
-      if (e.pointerType !== "mouse" || !followable(card)) return;
-      clearTimeout(card._peekOff);
-      if (!card.classList.contains("is-peek")) { card.classList.add("is-peek"); peekTo(card, 0, 0); }
-      px = e.clientX; py = e.clientY;
-      if (!raf) raf = requestAnimationFrame(move);
-    });
-    card.addEventListener("pointerleave", () => { if (card.classList.contains("is-peek")) peekRest(card, !motionOn()); });
-  });
-
-  /* ---- lights: optional, "Inside now" dimmer when quiet and at full strength when busy (tuner toggle, off by
-   * default). The number and the level chip still carry the truth. */
-  const CROWD_OPACITY = [0.42, 0.7, 1, 1];
-  let crowdPreview = null; // tuner preview of a level, or null for the real one
-  function applyCrowd() {
-    const card = $("#card-now");
-    if (!opts.crowd) { delete root.dataset.crowd; card.style.removeProperty("--crowd-o"); if (!card.getAttribute("style")) card.removeAttribute("style"); return; }
-    const lvl = crowdPreview ?? levelOf(occ[M.last]);
-    root.dataset.crowd = "on";
-    card.style.setProperty("--crowd-o", String(CROWD_OPACITY[lvl]));
-  }
-
   /* ---- switching motion on and off at runtime (tuner) */
+  function settleAll() {
+    finishLive(); stopGlide(); finishRail();
+    [...rolls.keys()].forEach(finishRoll);
+    [...feet.keys()].forEach(finishFoot);
+  }
   function setOptions(next, persist = true) {
     const was = motionOn();
-    Object.keys(MOTION_DEFAULTS).forEach((k) => { if (typeof next[k] === "boolean") opts[k] = next[k]; });
+    if (typeof next.motion === "boolean") opts.motion = next.motion;
     if (persist && !TUNER_OFF) { try { localStorage.setItem(MOTION_STORE, JSON.stringify(opts)); } catch (e) { /* storage unavailable */ } }
     const on = motionOn();
     root.dataset.motion = on ? "on" : "off";
     if (was && !on) {
-      finishIntro(); finishLive(); finishRail(); stopPulse();
+      settleAll();
+      stopPulse();
       played.slice().forEach((a) => { try { a.finish(); } catch (e) { a.cancel(); } });
-      document.querySelectorAll(".lit").forEach((c) => peekRest(c, true));
     }
-    if (on && !was && !intro.active) startPulse();
-    if (!opts.follow || !opts.followChart) document.querySelectorAll(".lit").forEach((c) => { if (!followable(c)) peekRest(c, true); });
-    applyCrowd();
+    if (on && !was) startPulse();
   }
   mqReduce.addEventListener("change", () => setOptions({}, false));
 
-  function afterRender() {
-    if (intro.active) { introHide(); introBindChart(); }
-    placePing();
-  }
-
-  /* ------------------------------------------------------------ lifecycle */
+  /* ------------------------------------------------------------ lifecycle
+   * Rendered at once; nothing is hidden while the fonts load. The chart is measured again when they arrive (the
+   * header's text sets the chart's height) and whenever its box changes. */
   new ResizeObserver(() => render()).observe(plot);
   render();
+  startPulse();
   window.__eclipse = {
     ready: false,
     lang: LANG,
     state: STATE,
     get figures() {
       const { last, nowM, peak, peakM, entries, observed, busiest, compare, avg, usualLatest, usualEntries, crestM } = M;
-      return { now: occ[last], last, nowM, peak, peakM, entries, observed, busiest, compare, avgNow: Math.round(avg[last] * 10) / 10, usualLatest: usualLatest == null ? null : Math.round(usualLatest * 10) / 10, usualEntries, crestM };
+      return { now: occ[last], shownNow: shownNow(), last, nowM, peak, peakM, entries, observed, busiest, compare, avgNow: Math.round(avg[last] * 10) / 10, usualLatest: usualLatest == null ? null : Math.round(usualLatest * 10) / 10, usualEntries, crestM };
     },
     get checks() { return M.checks; },
     minuteClient(m) {
       const pr = plot.getBoundingClientRect();
-      const k = kindAt(m);
-      const y = k === "read" || k === "zero" ? geo.Y(occ[m]) : (geo.yt + geo.yb) / 2;
+      const k = m > M.last ? "after" : m >= GAP0 && m <= GAP1 ? "miss" : "read";
+      const y = k === "read" ? geo.Y(occ[m]) : (geo.yt + geo.yb) / 2;
       return { x: pr.left + geo.X(m), y: pr.top + y };
+    },
+    // The chart's stops and the marker, for the capture checks.
+    chart: {
+      get stops() {
+        const pr = plot.getBoundingClientRect();
+        return stops.map((st) => ({ key: st.key, kind: st.kind, m: st.m, time: st.kind === "gap" ? plainRange(fmtTime(GAP0), fmtTime(GAP1)) : fmtTime(Math.round(st.m)), value: st.value, track: st.track, clientX: pr.left + st.x }));
+      },
+      select: (key) => { const st = stopBy(key); if (!st) return null; selectStop(st); return hit.getAttribute("aria-valuetext"); },
+      clear: () => clearSelection(),
+      get selected() { return sel ? sel.key : null; },
+      // The marker's form: "a" (lit bead, default) or "b" (hollow ring); see paintMarker.
+      get marker() { return markerForm; },
+      get markerFromUrl() { return MARKER_URL; },
+      markerStore: MARKER_STORE,
+      setMarker: (form, persist = true) => setMarker(form, persist),
+      get glideActive() { return Boolean(glide.clock); },
+      seekGlide,
+      get timings() { return { glideMin: T.glideMin, glideMax: T.glideMax, glidePerPx: T.glidePerPx, glideMaxPx: T.glideMaxPx, fold: FOLD, magnet: MAGNET }; },
     },
     motion: {
       get on() { return motionOn(); },
@@ -1369,67 +1541,35 @@
       defaults: { ...MOTION_DEFAULTS },
       get urlOff() { return URL_OFF; },
       get systemReduced() { return mqReduce.matches; },
-      get introActive() { return intro.active; },
-      get introStarted() { return intro.started; },
       get liveActive() { return Boolean(liveRun.clock); },
+      get rolling() { return rolls.size + feet.size; },
       get latest() { return fmtTime(M.last); },
-      get atStart() { return M.last === START.last && M.nowM === START.nowM; },
-      introTotal,
+      get atStart() { return M.last === START.last && M.nowM === START.nowM && crowdShown == null; },
+      get canCrowd() { return STATE !== "delayed"; },
       timings: T,
       easings: EASE,
       // Every motion, as built above (for the capture log and the README).
       spec: () => [
-        { motion: "Load: stat cards enter", animates: "opacity 0 to 1, transform translateY(14px) to none", delayMs: [0, 1, 2, 3].map((i) => i * T.cardStagger), durationMs: T.cardDur, easing: EASE.enter, note: "reading order (Inside now first)" },
-        { motion: "Load: chart card enters", animates: "opacity 0 to 1, transform translateY(18px) to none", delayMs: T.chartDelay, durationMs: T.chartDur, easing: EASE.enter },
-        { motion: "Load: the line draws from opening to now", animates: "SVG stroke-dasharray (drawn length) of today's line; fine vertical lines opacity behind the head (36px soft edge)", delayMs: T.drawDelay, durationMs: T.drawDur, easing: EASE.draw },
-        { motion: "Load: end point appears (when the line reaches now)", animates: "opacity 0 to 1, scale 0.4 to 1", delayMs: T.drawDelay + T.drawDur, durationMs: T.endDotDur, easing: EASE.reveal },
-        { motion: "Load: peak marker appears (after the line)", animates: "opacity 0 to 1; ring scale 0.5 to 1; label translate 0 5px to 0", delayMs: T.drawDelay + T.drawDur + T.peakGap, durationMs: T.peakDur, easing: EASE.reveal },
-        ...(() => {
-          const e = intro.nowPath || nowPath();
-          const drop = intro.chartDrop || Math.round($(".chart .lamp-in").clientHeight * T.chartLightDrop);
-          const tg = "lights entrance: the tuner's \"switch on at load\", on by default";
-          const curve = (c) => `opacity along the movement's own progress (same timing and easing): ${[...c, [1, 1]].map(([p, v]) => `${Math.round(p * 100)}%: ${v}`).join(", ")} of the rest value`;
-          return [
-            { motion: "Load: Inside now light slides in behind the fixed disc, out of the lit corner", animates: `transform translate(${e.dx}px, ${e.dy}px) to translate(0px, 0px) on the light layer and its grain (.lamp-in ::before and ::after, overscan --lp ${e.lp}px); the disc (the mask on .lamp-in) stays; no opacity change${T.nowOpacity ? ` (${curve(T.nowOpacity)})` : ""}`, delayMs: T.nowDelay, durationMs: T.nowSlide, easing: EASE.slide, note: `${tg}; the light starts ${Math.round(T.nowFrom * 100)}% of the corner-to-disc-centre distance beyond the lit corner, on that axis (computed from the light settings)` },
-            { motion: "Load: Inside now lit border catches the light", animates: `${curve(T.rimOpacity)}, on .lamp-rim`, delayMs: T.nowDelay + T.rimLag, durationMs: T.nowSlide, easing: EASE.slide },
-            { motion: "Load: chart light rises from under the bottom edge with the line", animates: `transform translate(0px, ${drop}px) to translate(0px, 0px) on the light layer and its grain (${Math.round(T.chartLightDrop * 100)}% of the card height); the disc stays`, delayMs: T.chartLightDelay, durationMs: T.chartLightRise, easing: EASE.rise, note: "starts with the line (same delay) and settles just after it reaches now" },
-            { motion: "Load: chart light brightens as it rises", animates: `${curve(T.chartOpacity)}, on .lamp-in`, delayMs: T.chartLightDelay, durationMs: T.chartLightRise, easing: EASE.rise },
-            { motion: "Load: chart lit border catches the light", animates: `${curve(T.rimOpacity)}, on .lamp-rim`, delayMs: T.chartLightDelay + T.rimLag, durationMs: T.chartLightRise, easing: EASE.rise },
-            { motion: "Load: page wash drifts in from its corner", animates: `transform translate(${RTL ? T.washDrift[0] : -T.washDrift[0]}px, ${-T.washDrift[1]}px) to translate(0px, 0px) on .wash-light; ${curve(T.washOpacity)}, on .wash`, delayMs: T.washDelay, durationMs: T.washDur, easing: EASE.slide },
-            { motion: "Load: the rail's rim catches the wash", animates: `${curve(T.rimOpacity)}, on .rail::after`, delayMs: T.washDelay + T.rimLag + 120, durationMs: T.washDur, easing: EASE.slide },
-          ];
-        })(),
-        { motion: "Live: end-point pulse (live state only; none while delayed)", animates: "a ring: opacity 0.7 to 0, transform scale 0.28 to 1 (9px to 32px)", delayMs: 400, durationMs: 3600, easing: "cubic-bezier(0.22, 0.61, 0.36, 1)", note: "infinite, the ring is visible for the first 62% of each 3.6s cycle; HTML layer, composited" },
-        { motion: "Live: new reading, tail morph and extension", animates: "SVG path d of the last ~15-30 minutes only (from the last line point before the first changed minute), end point cx/cy, the tail's fine lines, the now clip", delayMs: 0, durationMs: T.morphDur, easing: EASE.morph },
-        { motion: "Numbers: cross-fade", animates: "new value opacity 0 to 1; old value (a copy) opacity 1 to 0", delayMs: 0, durationMs: [T.swapIn, T.swapOut], easing: [EASE.swap, "ease-out"] },
-        { motion: "Tooltip and guide follow (pointer and keyboard)", animates: "transform translate from the previous position to none", delayMs: 0, durationMs: [T.glideMin, T.glideMax], easing: EASE.glide, note: "140ms plus 0.12ms per px moved, at most 320ms; the tooltip fades in 120ms and out 90ms" },
-        { motion: "Rail opens", animates: "end cap transform translateX(0 to 156px, inline-end), middle transform scaleX(0 to 1) from the inline-start, surface opacity 0.7 to 0.94 (a layer's opacity), shadow layer opacity 0 to 1; names opacity + translateX(6px) with 80ms delay, 240ms", delayMs: 0, durationMs: T.railOpen, easing: EASE.rail, note: "width switches at once and is never animated" },
-        { motion: "Rail closes", animates: "the same in reverse; names opacity 1 to 0 in 110ms", delayMs: 0, durationMs: T.railClose, easing: EASE.railClose },
-        { motion: "Lights follow the pointer (desktop, fine pointer only; Inside now; chart card off by default)", animates: "transform translate on the light and grain layers (overscan --lp 24px), at most 10px x 7px (chart 6px x 4px); nothing is promoted to its own layer at rest, so a pointer at the card centre (offset 0) leaves the light where it is", delayMs: 0, durationMs: 900, easing: "cubic-bezier(0.22, 1, 0.36, 1)", note: "CSS transition, restarted per frame while the pointer moves; returns to rest in 900ms on leave" },
-        { motion: "Light follows crowd (toggle, off by default)", animates: "opacity of the Inside now light: Quiet 0.42, Moderate 0.7, Busy 1, Packed 1", delayMs: 0, durationMs: 1200, easing: "cubic-bezier(0.45, 0, 0.25, 1)" },
+        { motion: "Load", animates: "nothing: the page is complete at first paint (no stagger, no line draw, no light entrance)", note: "only the live pulse runs at rest, and only while live" },
+        { motion: "Lights", animates: "nothing, ever", note: "no entrance, no pointer-follow, no crowd-dependent light" },
+        { motion: "Numbers: digit roll", animates: "transform translateY of the changed digits only, by the height of the digits' ink box (the new digit from below when rising, from above when falling; the old one leaves the other way), clipped to that ink box; the slot's width eases from the old digit's width to the new one's (Readex Pro has no tabular figures)", delayMs: 0, durationMs: T.roll, easing: EASE.roll, note: "no opacity on any glyph; words swap at once; plain markup restored at the end" },
+        { motion: "Crowd level: bars", animates: "transform scaleY (from the bottom) of a red fill in each bar that changes", delayMs: `0, +${T.barStagger} per further bar (lower bars first when rising, upper first when falling)`, durationMs: T.bar, easing: EASE.bar, note: "the level word swaps at once" },
+        { motion: "Chart: the marker glides between stops", animates: "SVG geometry each frame along the drawn path (the marker in its form A or B, its light on the line, the lit hairline); the tooltip's left/top follow", delayMs: 0, durationMs: [T.glideMin, T.glideMax], easing: EASE.glide, note: `${T.glideMin} ms plus ${T.glidePerPx} ms per px of route, at most ${T.glideMax} ms; at once across the missing span, into the future, onto the gap stop, or beyond ${T.glideMaxPx}px; the tooltip appears, changes and leaves at once` },
+        { motion: "Live: new reading, tail morph and extension", animates: "SVG path d of the last ~15-30 minutes only, end point cx/cy, the tail's fine lines, the now clip", delayMs: 0, durationMs: T.morph, easing: EASE.morph },
+        { motion: "Live: end-point pulse (live state only; none while delayed)", animates: "a 1px ring: opacity 0.4 to 0, transform scale 0.34 to 1 (9.5px to 28px)", delayMs: 1000, durationMs: T.pulse, easing: "cubic-bezier(0.22, 0.61, 0.36, 1)", note: "infinite; the ring is visible for the first 48% of each 5 s cycle" },
+        { motion: "Rail opens", animates: "end cap translateX (0 to 156px, inline-end), middle scaleX (0 to 1) from the inline-start, darker surface layers and shadow opacity 0 to 1 (no text); each name uncovered by a clip-path that follows the end cap", delayMs: 0, durationMs: T.railOpen, easing: EASE.rail, note: "the width switches at once and is never animated; names never fade" },
+        { motion: "Rail closes", animates: "the same in reverse", delayMs: 0, durationMs: T.railClose, easing: EASE.railClose },
       ],
-      settle: () => { finishLive(); finishRail(); if (intro.active) { introCleanup(); startPulse(); } },
+      settle: () => settleAll(),
       set: (o) => setOptions(o),
-      replay: () => { resetPeeks(); render(); startIntro(); },
-      seek: seekIntro,
       step: stepReading,
       seekLive,
       reset: resetReadings,
-      previewCrowd: (lvl) => { crowdPreview = lvl == null ? null : Math.max(0, Math.min(3, lvl)); applyCrowd(); },
+      crowd: crowdStep,
     },
   };
-  function resetPeeks() { document.querySelectorAll(".lit").forEach((c) => peekRest(c, true)); }
-  applyCrowd();
-  // The load sequence starts once the fonts are in (or after 1.2s at most, if they are slow), so it plays on the
-  // final text. Without motion nothing waits. The other script's subset of Readex Pro is fetched up front too (the
-  // rail's language item is written in it), so opening the rail never swaps a font mid-way; this changes no pixel.
+  // The other script's subset of Readex Pro is fetched up front too (the rail's language item is written in it), so
+  // opening the rail never swaps a font mid-way; this changes no pixel.
   if (document.fonts && document.fonts.load) ["400", "500"].forEach((w) => document.fonts.load(`${w} 16px "Readex Pro"`, RTL ? "English FITWAY" : "العربية").catch(() => {}));
-  let begun = false;
-  const begin = () => {
-    if (begun) return;
-    begun = true;
-    if (motionOn()) startIntro();
-  };
-  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { render(); window.__eclipse.ready = true; begin(); });
-  setTimeout(begin, 1200);
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { render(); window.__eclipse.ready = true; });
 })();

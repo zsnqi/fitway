@@ -5,7 +5,8 @@
  *   ?tuner=0                   the tuner is off entirely: no panel, and no stored tuning is applied
  *   ?preset=v2|a-like|recommended   start from that preset (not stored); with tuner=0 it applies the preset
  *                                   and shows no panel, which is how the preset evidence frames are captured
- * The panel also has a Motion group (Round 5 section 4) that drives app.js's window.__eclipse.motion. */
+ * The panel also has a Marker group (Round 7, window.__eclipse.chart.setMarker) and a Motion group (Round 6) that
+ * drives app.js's window.__eclipse.motion. */
 (() => {
   "use strict";
   const params = new URLSearchParams(location.search);
@@ -176,8 +177,10 @@
     (grp.g === "now" ? colA : colB).append(fs);
   });
   /* ------------------------------------------------------------ motion group
-   * Drives app.js's motion (window.__eclipse.motion; Round 5 section 4). app.js keeps these choices in their own
-   * localStorage key (fitway.eclipse.v3.motion), separate from the light values, and ignores them with ?tuner=0. */
+   * Drives app.js's motion (window.__eclipse.motion; Round 6): a simulated new reading, a simulated crowd-level
+   * change on the Inside now card (across the nearest level boundary, up or down), and the Motion switch. app.js
+   * keeps the switch in its own localStorage key (fitway.eclipse.v3.motion), separate from the light values, and
+   * ignores it with ?tuner=0. */
   const MO = window.__eclipse && window.__eclipse.motion;
   let syncMotion = () => {};
   const motionGroup = el("fieldset", { class: "tuner-group tuner-motion" });
@@ -185,65 +188,67 @@
     const tb = (ar, en) => el("button", { type: "button", class: "t-btn" }, `<span>${ar}</span><span class="t-en" lang="en" dir="ltr">${en}</span>`);
     motionGroup.append(el("legend", {}, `الحركة <span class="t-en" lang="en" dir="ltr">Motion</span>`));
     const acts = el("div", { class: "t-motion-acts" });
-    const replayBtn = tb("إعادة حركة الفتح", "Replay load");
     const stepBtn = tb("قراءة جديدة", "New reading");
     const backBtn = tb("إعادة القراءات", "Reset readings");
     const latest = el("span", { class: "t-latest", role: "status" });
-    acts.append(replayBtn, stepBtn, backBtn, latest);
-    const TOGGLES = [
-      { key: "motion", ar: "الحركة", en: "Motion" },
-      { key: "switchOn", ar: "تشغيل الأضواء عند الفتح", en: "Switch on at load" },
-      { key: "follow", ar: "الضوء يتبع المؤشر", en: "Follow the pointer" },
-      { key: "crowd", ar: "الضوء حسب الازدحام", en: "Light follows crowd" },
-      { key: "followChart", ar: "والمخطط أيضًا", en: "Chart card too", sub: "follow" },
-    ];
-    const grid = el("div", { class: "t-toggles" });
-    const checks = {};
-    TOGGLES.forEach((tg) => {
-      const id = `t-mo-${tg.key}`;
-      const lab = el("label", { class: `t-check${tg.sub ? " is-sub" : ""}`, for: id });
-      const box = el("input", { type: "checkbox", id });
-      box.addEventListener("change", () => { MO.set({ [tg.key]: box.checked }); syncMotion(); });
-      lab.append(box);
-      lab.insertAdjacentHTML("beforeend", `<span>${tg.ar}</span><span class="t-en" lang="en" dir="ltr">${tg.en}</span>`);
-      grid.append(lab);
-      checks[tg.key] = box;
-    });
-    // Preview of the crowd light at each level (the data is not changed; the number and the chip keep the truth).
-    const seg = el("div", { class: "t-seg", role: "group", "aria-label": "معاينة ضوء الازدحام" });
-    const LEVELS = [{ v: null, ar: "فعلي", en: "Actual" }, { v: 0, ar: "هادئ" }, { v: 1, ar: "متوسط" }, { v: 2, ar: "مزدحم" }, { v: 3, ar: "شديد الازدحام" }];
-    let preview = null;
-    const segBtns = LEVELS.map((lv) => {
-      const b = el("button", { type: "button", "aria-pressed": "false" }, `<span>${lv.ar}</span>${lv.en ? `<span class="t-en" lang="en" dir="ltr">${lv.en}</span>` : ""}`);
-      b.addEventListener("click", () => { preview = lv.v; MO.previewCrowd(lv.v); syncMotion(); });
-      seg.append(b);
-      return b;
-    });
+    acts.append(stepBtn, backBtn, latest);
+    const crowd = el("div", { class: "t-motion-acts", role: "group", "aria-labelledby": "t-crowd-label" });
+    const upBtn = tb("مستوى أعلى", "Level up");
+    const downBtn = tb("مستوى أدنى", "Level down");
+    crowd.append(el("span", { class: "t-label", id: "t-crowd-label" }, `مستوى الازدحام <span class="t-en" lang="en" dir="ltr">Crowd level</span>`), upBtn, downBtn);
+    const lab = el("label", { class: "t-check", for: "t-mo-motion" });
+    const box = el("input", { type: "checkbox", id: "t-mo-motion" });
+    box.addEventListener("change", () => { MO.set({ motion: box.checked }); syncMotion(); });
+    lab.append(box);
+    lab.insertAdjacentHTML("beforeend", `<span>الحركة</span><span class="t-en" lang="en" dir="ltr">Motion</span>`);
     const note = el("p", { class: "t-note" });
-    motionGroup.append(acts, grid, seg, note);
+    motionGroup.append(acts, crowd, lab, note);
     const say = (s) => { latest.textContent = s; };
-    replayBtn.addEventListener("click", () => { MO.replay(); say(MO.on ? "تُعاد حركة الفتح" : "الحركة متوقفة"); });
     stepBtn.addEventListener("click", () => {
       const r = MO.step();
       say(!r ? "انتهى اليوم" : r.reading ? `آخر قراءة ${MO.latest}` : `لم تصل قراءة · آخر قراءة ${MO.latest}`);
       syncMotion();
     });
     backBtn.addEventListener("click", () => { MO.reset(); say(`آخر قراءة ${MO.latest}`); syncMotion(); });
+    const crowdBy = (dir) => { const r = MO.crowd(dir); if (r) say(`داخل الصالة ${r.to} · ${r.level}`); syncMotion(); };
+    upBtn.addEventListener("click", () => crowdBy(1));
+    downBtn.addEventListener("click", () => crowdBy(-1));
     syncMotion = () => {
-      const o = MO.options;
-      Object.entries(checks).forEach(([k, box]) => { box.checked = Boolean(o[k]); });
       const blocked = MO.urlOff || MO.systemReduced;
-      checks.motion.disabled = blocked;
-      if (blocked) checks.motion.checked = false;
-      checks.followChart.disabled = !o.follow;
-      seg.hidden = !o.crowd;
-      segBtns.forEach((b, i) => b.setAttribute("aria-pressed", String(LEVELS[i].v === preview)));
+      box.checked = !blocked && Boolean(MO.options.motion);
+      box.disabled = blocked;
+      upBtn.disabled = downBtn.disabled = !MO.canCrowd;
       backBtn.disabled = MO.atStart;
-      note.textContent = MO.urlOff ? "الحركة متوقفة بالرابط (motion=off)" : MO.systemReduced ? "النظام يطلب حركة أقل، فالحركة متوقفة" : "";
+      note.innerHTML = MO.urlOff ? "الحركة متوقفة بالرابط (motion=off)" : MO.systemReduced ? "النظام يطلب حركة أقل، فالحركة متوقفة"
+        : !MO.canCrowd ? `بطاقة «آخر قراءة» ثابتة ما دامت البيانات متأخرة <span class="t-en" lang="en" dir="ltr">Fixed while delayed</span>` : "";
       note.hidden = !note.textContent;
       if (!latest.textContent) say(`آخر قراءة ${MO.latest}`);
     };
     syncMotion();
+  }
+
+  /* ------------------------------------------------------------ marker group
+   * Round 7: the chart marker's two candidate forms, A (lit bead) and B (hollow ring), for the user to choose on
+   * the real page. app.js keeps the choice in its own localStorage key (fitway.eclipse.v3.marker), ignores it with
+   * ?tuner=0, and lets ?marker=a|b override it. */
+  const CH = window.__eclipse && window.__eclipse.chart;
+  const markerGroup = el("fieldset", { class: "tuner-group tuner-marker" });
+  let syncMarker = () => {};
+  if (CH && CH.setMarker) {
+    markerGroup.append(el("legend", {}, `علامة المخطط: A / B <span class="t-en" lang="en" dir="ltr">Marker: A / B</span>`));
+    const seg = el("div", { class: "t-seg", role: "group", "aria-label": "شكل علامة المخطط" });
+    const forms = [
+      { id: "a", ar: "خرزة مضيئة", en: "Lit bead" },
+      { id: "b", ar: "حلقة مجوفة", en: "Hollow ring" },
+    ].map((m) => {
+      const b = el("button", { type: "button", class: "t-btn", "data-marker": m.id, "aria-pressed": "false" }, `<b lang="en" dir="ltr">${m.id.toUpperCase()}</b><span>${m.ar}</span><span class="t-en" lang="en" dir="ltr">${m.en}</span>`);
+      b.addEventListener("click", () => { CH.setMarker(m.id); syncMarker(); });
+      seg.append(b);
+      return b;
+    });
+    syncMarker = () => forms.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.marker === CH.marker)));
+    markerGroup.append(seg);
+    syncMarker();
   }
 
   const actions = el("div", { class: "tuner-actions" });
@@ -252,7 +257,7 @@
   const status = el("span", { class: "tuner-status", role: "status" });
   actions.append(copyBtn, resetBtn, status);
   const jsonBox = el("textarea", { class: "tuner-json", readonly: "", rows: "7", "aria-label": "القيم بصيغة JSON", dir: "ltr", hidden: "" });
-  panel.append(head, presets, cols, ...(MO ? [motionGroup] : []), actions, jsonBox);
+  panel.append(head, presets, cols, ...(CH && CH.setMarker ? [markerGroup] : []), ...(MO ? [motionGroup] : []), actions, jsonBox);
   wrap.append(toggle, panel);
   document.body.append(wrap);
 

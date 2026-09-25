@@ -4,9 +4,11 @@ This is a concept only, built on synthetic data. Nothing is selected. It is the 
 1440×900, in Arabic RTL (the default) and English LTR. It evolves `../light-study/` recipe A, and the data
 logic (seeded simulation, day constants and monotone interpolation) comes from there. v3 applies Round 5 §1-§3
 of `../NEXT-DIRECTION-BRIEF.md`: a new "Inside now" light, a chart light back toward light-study A, and a live
-light tuner. It then adds the motion of §4 (see "Motion" below); with reduced motion or `?motion=off` the page is
-pixel-identical to the still frames. Everything that is not a light layer or motion is unchanged from v2: the
-layout, rail, copy, data simulation, centred average, chip rule, states and details panel.
+light tuner. Its motion is Round 6 (the motion reset and chart hover; see "Motion" below): the page is complete at
+first paint, the lights never move, and something moves only when the data changes or the owner acts. With reduced
+motion or `?motion=off` every still frame is pixel-identical to the frames before motion was added, except the hover
+and tuner frames, which change by design. Everything that is not a light layer, motion or the chart's hover is
+unchanged from v2: the layout, rail, copy, data simulation, centred average, chip rule, states and details panel.
 
 ## Thesis
 
@@ -121,10 +123,20 @@ It is a working tool, not part of the design.
   textarea shows the JSON. "Reset to Recommended" removes every override.
 - **Storage:** tuning is kept in `localStorage` (`fitway.eclipse.v3.lights`). Every access is wrapped in
   try/catch.
-- **Motion group** (added with the motion): "Replay load", "New reading" (the next minute of the same simulated
-  day), "Reset readings", and switches for motion, "switch on at load" (the lights' entrance), "follow the pointer"
-  (and "chart card too"), and "light follows crowd" with a level preview. The switches are kept in their own
-  `localStorage` key (`fitway.eclipse.v3.motion`), separate from the light values, and are ignored with `?tuner=0`.
+- **Marker group** (Round 7): «علامة المخطط: A / B» "Marker: A / B", two pressed-state buttons for the chart marker's
+  forms, kept in their own key (`fitway.eclipse.v3.marker`) and ignored with `?tuner=0`; see "Motion", 6.
+- **Motion group** (Round 6):
+  - «قراءة جديدة» "New reading": the next minute of the same simulated day. «إعادة القراءات» "Reset readings".
+  - «مستوى الازدحام» "Crowd level": «مستوى أعلى» "Level up" and «مستوى أدنى» "Level down" simulate a crowd-level change
+    on the Inside now card. Each crosses the nearest level boundary by the smallest step, so Busy 49 goes down to
+    Moderate 48 or up to Packed 69. It changes the card only, and "New reading" or "Reset readings" clears it. It is
+    off while delayed, because a stale card never moves, and a short note says so in both languages.
+  - «الحركة» "Motion": one switch, kept in its own `localStorage` key (`fitway.eclipse.v3.motion`), separate from the
+    light values, and ignored with `?tuner=0`.
+  - Removed in Round 6: "Replay load", "switch on at load", "follow the pointer" (and "chart card too"), and "light
+    follows crowd" with its level preview.
+  - Scripts reach the same actions on `window.__eclipse.motion`: `step()`, `reset()`, `crowd(1 | -1)`,
+    `set({ motion })` and `settle()`.
 - **URL:**
   - `?tuner=0` means no panel and no stored tuning.
   - `?preset=v2|a-like|recommended` starts from that preset without storing it.
@@ -174,112 +186,211 @@ the areas). Recommended's middle, 14.3, is above A's 13.0 on the same method.
 - **Entries:** «مرات الدخول», with «المعتاد 318» below it.
 - **States:** `?state=live|delayed|nohistory`, `?lang=ar|en`. Delayed shows only in the header status and
   the Inside now card. Its lights stay as they are, as Round 2 allows.
+- **Hover:** Round 6 changed the chart's hover. It snaps to stops and shows the line's own value; see "Motion".
 
 ## Motion
 
-Round 5 §4. Everything is in `app.js` (the "motion" section: Web Animations, held and replayed as one timeline),
-the motion section at the end of `style.css`, and the inline script in `index.html`, which hides what is about to
-enter before the first paint. Motion changes only transform and opacity, except the line (its drawn length and,
-on a live update, the shape of its last 15-30 minutes), which is SVG geometry by nature. Every animation runs out
-to exactly the still page: once settled, the AR, EN, delayed and no-history pages are pixel-identical to the
-still frames (with the live pulse hidden; one rare exception is under "Checks not run"), and their DOM equals the
-`?motion=off` DOM.
+Round 6 (`../NEXT-DIRECTION-BRIEF.md`, decisions 1-10) replaced the Round 5 motion.
 
-**Load, once (and on "Replay load").** The whole load takes 2,160 ms.
+**Principle:** motion carries information, and decoration never moves. The page is an instrument: it is complete at
+first paint, and something moves only when the data really changes or the owner acts.
 
-| What | Starts | Lasts | Easing | Moves |
+The motion lives in the "motion" section of `app.js`, which uses the Web Animations API. The few pieces it needs are
+in the motion section of `style.css`. No glyph ever changes opacity, anywhere:
+- numbers roll inside a clip;
+- words swap at once;
+- the tooltip appears, changes and leaves at once;
+- the rail's names are uncovered, never faded.
+
+At rest no inline style, attribute or extra element from the motion remains. The one exception is the live pulse,
+and only while live.
+
+**What moves, and when**
+
+| What | When | Moves | Lasts | Easing |
 | --- | --- | --- | --- | --- |
-| Four small cards, in reading order | 0, 60, 120, 180 ms | 620 ms | `cubic-bezier(0.22, 1, 0.36, 1)` | opacity 0 to 1, rise 14px |
-| Chart card | 200 ms | 700 ms | same | opacity 0 to 1, rise 18px |
-| Page wash drifts in from its corner | 60 ms | 1,700 ms | same | `.wash-light` from 120px out and 60px up (toward its own corner) to rest; `.wash` opacity 0, 0.5 at 30% of the way, 0.85 at 60%, 1 |
-| The rail's rim catches the wash | 270 ms | 1,700 ms | same | opacity 0, 0.45 at 35%, 0.9 at 70%, 1 |
-| Inside now light slides in | 380 ms | 1,400 ms | same | the light layer and its grain, from 105px out past the lit side and 91px below the bottom (the corner-to-disc axis, outward) to rest; no fade |
-| Inside now lit border | 470 ms | 1,400 ms | same | opacity along the rims' curve |
-| Line draws from opening to now | 560 ms | 1,100 ms | `cubic-bezier(0.5, 0, 0.2, 1)` | drawn length; the fine vertical lines appear 36px behind the head |
-| Chart light rises with the line | 560 ms | 1,350 ms | the line's curve | the light layer and its grain, from 297px (half the card) below to rest; opacity 0, 0.8 at 25%, 1 |
-| Chart lit border | 650 ms | 1,350 ms | the line's curve | opacity along the rims' curve |
-| End point | 1,660 ms | 320 ms | `cubic-bezier(0.22, 1, 0.36, 1)` | opacity, scale 0.4 to 1 |
-| Peak marker | 1,740 ms | 420 ms | same | opacity; ring scale 0.5 to 1; label rises 5px |
+| Changed digits | a number changes (a new reading, a level change, a minute passing while delayed) | transform: the new digit rolls in, the old one rolls out | 280 ms | `cubic-bezier(0.25, 1, 0.5, 1)` |
+| A level bar | the crowd level changes | transform: scaleY of a red fill, from the bottom | 200 ms, then 50 ms between bars | same |
+| The chart's marker (form A or B) | the owner moves between stops (pointer or keys) | SVG geometry each frame, along the drawn path; its light, the lit hairline and the tooltip follow | 120 ms plus 0.25 ms per px, at most 150 ms | same |
+| The line's tail | a new reading | SVG path of the last 15-30 minutes, end point, the tail's fine lines, the now clip | 280 ms | `cubic-bezier(0.4, 0, 0.2, 1)` |
+| Live pulse | while live only; none while delayed | a thin ring, opacity 0.4 to 0 and scale 0.34 to 1, from inside the end point to just past its halo | every 5 s, visible for the first 48% | `cubic-bezier(0.22, 0.61, 0.36, 1)` |
+| Rail | the logo is pressed | transforms: the end cap slides and the middle scales; the darker surface layers and the shadow fade (no text); each name is uncovered by a clip | 240 ms open, 200 ms close | `cubic-bezier(0.22, 1, 0.36, 1)` open, `cubic-bezier(0.4, 0, 0.2, 1)` close |
 
-- **The lights' entrance** (the user's note: the old one was a plain fade). Each light now arrives by moving,
-  behind a disc that stays still, which is the same mechanism as the pointer-follow light. Transform only, except
-  the fades listed above.
-  - **Inside now:** the light and its grain start beyond the lit bottom corner, on the axis that runs from that
-    corner to the disc's centre, and slide along it into place. The crescent grows out of the lit corner along the
-    disc's arc, the thin bottom rim and the far-corner glow arrive with it, and the disc's edge takes shape as the
-    light reaches it. The border catches the light 90 ms later. The start is decisive and the settle long (quint
-    out), with no overshoot. The offset follows the disc settings, so a tuned disc keeps the same path.
-  - **Chart card:** the U rises from under the bottom edge, starting with the line and on the line's own curve, so
-    light and data arrive together; the light settles 250 ms after the line reaches now.
-  - **Page wash:** it drifts in from the corner while it brightens, and the rail's rim catches it.
-  - **Overscan:** while it moves, the Inside now light layer is larger than the card by `--lp` (148px) on every
-    side, and every position in the light moves by the same `--lp`, so no edge of the layer is ever exposed. At
-    rest the class (`.is-entering`) is removed and the light is exactly the still geometry.
-- **One change from the brief.** The coordinator proposed starting the light displaced toward the disc's centre.
-  Measured, that light passes over the crescent on its way out, so the crescent is brighter than at rest during
-  the slide. The AR check, with the offset at 34% of the way, finds 9,532 pixels brighter than rest (up to +0.176
-  L). With its opacity rising along the way it is still 6,827 pixels (up to +0.087 L). To avoid it, the light
-  would have to stay under about 20% opacity for most of the slide (a probe in this session, not repeated by
-  `capture.mjs`), which is a fade again. Starting beyond the lit corner on the same axis, no pixel is ever
-  brighter than at rest. The motion matches the brief's description (the crescent grows from the lit corner along
-  the arc), but the light does not come from behind the disc.
-- **Brightness check** (`capture.mjs`, `motion.brightness` in the log). Each light is captured every 40 ms,
-  content hidden, and compared with its rest frame after a 7x7 blur (the grain moves with the light), as the cube
-  root of luminance, which is close to OKLab L. In AR and EN, no pixel of the Inside now light, the chart light or
-  the wash is ever more than +0.01 brighter than at rest. The largest difference is +0.004 to +0.006, which is grain
-  noise.
-- **The line** now draws with `cubic-bezier(0.5, 0, 0.2, 1)` over 1,100 ms. The previous designer's curve was
-  `(0.65, 0, 0.35, 1)` over 1,150 ms, which barely moved for the first 300 ms. The new curve is under way at once and
-  eases long into now, so the chart light can share it.
+Nothing else animates: the load, the lights, the wash, the hover colours of the rail tiles and buttons, the details
+chevron, and the jump to "View details" are all instant.
 
-**Live.**
-- **Pulse:** a slow ring from the line's end point, only while live. It is an HTML layer above the chart: opacity
-  0.7 to 0 and scale 0.28 to 1 over the first 62% of a 3.6 s cycle, repeating, with
-  `cubic-bezier(0.22, 0.61, 0.36, 1)`. There is none while delayed, not even during the load.
-- **New reading** (the tuner's "New reading"): the line extends to the new minute. Only its last 15-30 minutes
-  morph, because the centred average legitimately changes there; everything earlier stays exactly as drawn. The
-  end point, the tail's fine lines and the "now" clip move with it. It lasts 700 ms with
-  `cubic-bezier(0.4, 0, 0.2, 1)`.
-- **Delayed:** a minute passes with no reading. The line does not move, and only the "minutes ago" text
-  cross-fades.
+**1. No load motion.**
+- There is no stagger, rise, line draw, light entrance, wash drift, or end-point or peak entrance.
+- The inline script in `index.html` sets only language, direction and state. Nothing is hidden before first paint.
+- The chart renders at once. It is measured again when the fonts arrive, because the header's text sets its height,
+  and again whenever its box changes.
+- With motion on, the first settled paint (the live pulse hidden) is identical to the still frame. On load
+  `document.getAnimations()` holds only the pulse while live, and nothing while delayed.
 
-**Numbers:** a quick cross-fade, never a count. The new value fades in over 200 ms with
-`cubic-bezier(0.2, 0.7, 0.2, 1)`, and a copy of the old one fades out over 140 ms.
+**2. Lights are static, always.**
+- The entrance, the pointer-follow light and the crowd-dependent light are gone, with their code and CSS, including
+  the light layers' `--lp` overscan.
+- The tuned light values in `:root` are untouched, and the lights render exactly as before.
 
-**Interaction.**
-- **Tooltip and guide:** they glide to the new minute, for the pointer and the keyboard. The move lasts 140 ms
-  plus 0.12 ms per pixel, at most 320 ms, with `cubic-bezier(0.22, 1, 0.36, 1)`. The tooltip fades in over 120 ms
-  and out over 90 ms.
-- **Rail:** the width switches at once and is never animated. For the change, the rail's surface steps aside for
-  three pieces: a fixed start cap, a middle that scales from the inline-start, and an end cap that slides 156px.
-  Opening takes 300 ms with `cubic-bezier(0.22, 1, 0.36, 1)`. Closing takes 240 ms with
-  `cubic-bezier(0.4, 0, 0.2, 1)`. The names fade in over 240 ms after 80 ms.
-  - **Changed from the previous designer:** the pieces now keep the rail's own blur (22px). Before, the rail lost
-    its blur for the transition, so the page's text showed through the moving rail as sharp ghost text, and the
-    first frame jumped from the collapsed rail.
-- **Lights follow the pointer** (desktop, fine pointer, Inside now only by default): the light layer shifts at most
-  10px by 7px toward the pointer (the chart card, if switched on, 6px by 4px). It uses a 900 ms transition with
-  `cubic-bezier(0.22, 1, 0.36, 1)` and returns to rest on leave. It never runs during the load entrance.
-  - **Changed from the previous designer:** the transform is a plain 2D translate with no `will-change`. With
-    the old `translate3d` and `will-change`, a pointer at the card's centre (offset 0) re-rendered about 5,000
-    pixels of the 2x card (mostly by 1/255, up to 35 at one icon pixel; measured in this session).
-  - **Now:** at offset 0, the 2x EN card is identical to the card at rest. The 2x AR card differs at one pixel by
-    1/255, which is not a shift. After the pointer leaves, both are identical to the still frame.
-- **Light follows crowd** (a tuner toggle, off by default): the Inside now light is 0.42 of its strength when
-  Quiet, 0.7 when Moderate, and full when Busy or Packed. It uses a 1.2 s opacity transition. The number and the
-  level chip still carry the truth.
+**3. Digits roll (odometer, option A).**
+- **Where:**
+  - Inside now;
+  - Entries and its usual value;
+  - the header's "Last reading" time and the Inside now card's time;
+  - the delayed card's "minutes ago";
+  - Today's peak value and time;
+  - the busiest time and its average.
+- **How:** only the digits that change move. They roll up when the value rises and down when it falls. Times roll
+  forward with the clock.
+- **Rest form:** for the roll only, the number becomes a numeric run and a slot per changed digit.
+  - The numeric run is an LTR isolate, so bidi order holds in Arabic, for example «قبل 14 دقيقة».
+  - Each slot holds the new digit and the old one; the old one is hidden from assistive technology.
+  - At the end the element gets back exactly its plain markup.
+- **The window is the digits' own ink box:** the cap line to the baseline, plus 0.08em, not the taller line box.
+  - The baseline is measured in place, and the digits' ascent and descent come from the font.
+  - A digit therefore enters at the baseline and leaves at the cap line, and the two digits never overlap.
+- **Words** change at once. Examples are «دقائق» to «دقيقة», and the level word.
+- **Screen readers:** one polite live region (`#live-say`) announces the new figures once per reading or level
+  change, for example «داخل الصالة الآن 48 تقريبًا، متوسط. مرات الدخول 332.».
+- **Reduced motion or motion off:** every value swaps at once.
 
-**Toggles and reduced motion.**
-- **Motion is off** with `prefers-reduced-motion: reduce`, with `?motion=off`, or with the tuner's Motion switch.
-  The page then shows final states at once.
-- **Pixel identity:** in both the reduced-motion and `?motion=off` cases, every still evidence frame except
-  tuner-open is pixel-identical to `evidence/pre-motion-hashes.json` (26 reduced-motion frames and 8 `?motion=off`
-  frames).
-- **"Switch on at load"** (on by default) switches the lights' entrance. When it is off, the cards and the line
-  still enter, and the lights are simply there.
-- **Font preload:** the page now also fetches the other script's subset of Readex Pro up front. This fixes a flaky
-  still frame: opening the rail in English wrote «العربية» in a subset that was not loaded yet. It changes no
-  pixel.
+**4. The crowd level never cross-fades.**
+- Each bar that changes fills or empties with its own red fill (scaleY from the bottom).
+- Lower bars fill first when the level rises, and upper bars empty first when it falls.
+- The level word swaps at once. The comparison chip appears or leaves at once.
+
+**5. The chart's hover snaps to stops.**
+- **Stops:**
+  - every half hour from opening, 6:00 AM, to closing, 1:00 AM, on the drawn line;
+  - two of their own: the true peak (62 at 6:29 PM) and the latest reading (7:42 PM).
+- **Folding:** a half-hour stop within 10 minutes of either special stop is folded into it. The peak takes the
+  6:30 PM stop, and while delayed the latest reading (7:29 PM) takes 7:30 PM. The live page has 40 stops.
+- **Missing span (2:14-2:31 PM):** one stop, "no reading" («لا قراءة»), with the range. There is no normal stop inside
+  it, and the line is never bridged.
+- **Values:**
+  - Each stop on the line shows the line's own value, the centred average rounded to a whole person, with its level
+    and the usual value. The raw minute stays in "View details".
+  - The peak stop shows the true peak, because its marker is the true reading.
+  - The zero stop at 6:00 AM shows 0 and «الصالة خالية» "Empty".
+  - After now, a stop shows «لم يحن بعد» "Still ahead" and the usual value.
+- **Pointer:** it takes the nearest stop, but the peak or the latest reading wins whenever the pointer is within
+  10px of it. More than 16px beyond the first or last stop, nothing is selected.
+- **Keyboard:** the page's convention is kept. In Arabic, ArrowLeft and ArrowUp go later and ArrowRight and
+  ArrowDown go earlier; English mirrors it.
+  - Each arrow moves one stop, and PageUp or PageDown moves four.
+  - Home goes to opening and End to the latest reading. Focus starts on the latest reading, and Escape clears.
+  - The screen-reader text says the value is an average, for example «6:00 م، 46 داخل الصالة في المتوسط، الازدحام
+    متوسط، المعتاد 46».
+- **Measured:** the marker sits on what it describes at every stop, in AR and EN, live, delayed and without history.
+  - The check runs against the SVG path's own geometry: an arc-length search with `getPointAtLength`, not a formula.
+  - The largest distance is 0.004 px on the line, and 0 px on the peak ring, the usual line and the gap mark.
+  - Round 7: the same for both marker forms, A and B, in AR and EN, each live, delayed and without history (12
+    runs): the largest distance is 0.004 px on the line and 0 px elsewhere, for either form.
+
+**6. The marker: two candidate forms, A and B (Round 7, decision 2).**
+
+The user rejected Round 6's "reading sight" (a red core with chalk level ticks and a guide above): it read as a shooter
+game's crosshair. Round 7 offers two forms for the user to choose between on the real page. Both are in `paintMarker()`
+in `app.js`.
+
+- **Common to both:**
+  - Nothing above the point: no guide line, no level ticks, at every kind of stop.
+  - Below the point, that moment's own thin red hairline runs down to the time axis (it starts 8px below the point for
+    A and 10px for B, clear of the marker).
+  - The marker sits on what its tooltip describes (see "Measured" above; both forms are measured).
+- **A, the lit bead (the default):**
+  - A solid `#FF2946` bead, 4.5px radius, with a 1px chalk rim (`#F5F3F2` at 94%).
+  - Its light is on the line, not on the background: today's line itself is drawn a second time under the line,
+    blurred (a bloom), and faded out within 30px of the bead with a radial mask. A small red glow (13px, at most 34%)
+    sits under the bead. Both are under today's line, in `#sel-under`, so the line stays crisp and the peak ring and
+    end point are never tinted.
+- **B, the hollow ring:**
+  - A ring of 6.5px radius with a 1.5px `#FF2946` edge and a dark centre (the card's own `#0F0E0F`), so the line passes
+    behind it and stops at its edge. A soft red glow (the edge, blurred, at 55%) surrounds the edge.
+  - There is never a dot inside the ring: a ring with a dot, or two rings, would read as a target.
+- **Variants of each form:**
+
+| Stop | A, lit bead | B, hollow ring |
+| --- | --- | --- |
+| On the line | the bead, with the line lit around it | the ring, with the line behind it |
+| The peak (on the peak ring) | the bead grows just enough (5.1px) to cover the chalk peak ring, keeping its thin rim; the line light fades out as it climbs the dotted drop, and the small glow dims to half, so it never becomes a halo on the background | the ring takes the peak ring's place (it covers it); no dot inside |
+| The latest reading, live | the bead sits on the end point; the end point's thin halo steps aside while the marker is on it | the same: the ring covers the end point and the halo steps aside |
+| The latest reading, delayed | stale, so the bead takes the end point's neutral grey `#8F898B` and has no light; the hairline is chalk | the ring's edge is the same neutral grey, with no glow |
+| Still ahead (on the usual line) | a hollow chalk ring, 3.8px, never red and without light; a dashed chalk hairline below | a hollow chalk ring at B's own size, 6.5px; a dashed chalk hairline below |
+| Still ahead, no history | no marker (there is no usual line), only a short chalk tick on the time axis | the same |
+| The missing span | never a point: the dotted mark on the axis lights up in chalk (brighter dots, a faint chalk glow) | never a point: a hollow chalk capsule outlines the dotted mark, B's ring stretched over the span |
+
+- **Switch:**
+  - The tuner has a "Marker: A / B" group («علامة المخطط: A / B»), with the buttons «A خرزة مضيئة» "Lit bead" and
+    «B حلقة مجوفة» "Hollow ring". A shown marker is repainted in place, mid-glide included.
+  - The choice is kept in its own `localStorage` key, `fitway.eclipse.v3.marker`, and ignored with `?tuner=0`.
+  - `?marker=a|b` wins over the stored choice and is not stored. The default is A.
+  - Scripts read `window.__eclipse.chart.marker` and call `window.__eclipse.chart.setMarker("a" | "b")`.
+- **Glide (Round 6, unchanged for now; Round 7 decision 3 replaces it in the next step):** between stops the marker
+  glides along the curve itself, a route sampled from the SVG path, in 120-150 ms.
+  - Its light, the lit hairline and the tooltip follow it every frame, in either form.
+  - Between the line and the peak it runs along the line to 6:29 PM and then up the peak's dotted drop onto the ring.
+    A's bead grows to the ring's size as it climbs; B's ring keeps its size.
+  - The tooltip's text and numbers change at once, at the start of the move.
+- **Where it moves at once instead:** where no drawn track joins two stops, or the route is longer than 240px:
+  - across the missing span;
+  - from the latest reading into the future;
+  - onto or off the gap stop;
+  - Home and End from far away.
+- **Without history:** after now there is no usual line, so there is no marker, only the short tick on the time axis
+  and "Still ahead".
+- **Round 7 choices the brief left open, with the reason:**
+  - **The delayed latest reading is grey, not red, in both forms.** The brief asks for a red marker, but that stop is
+    the stale reading, which the page already draws as a neutral grey end point; a red, glowing marker there would
+    look live.
+  - **The end point's halo steps aside** while the marker sits on the end point, so neither form becomes a dot inside
+    a ring (a target). The live pulse still runs from the end point, because it carries "live".
+  - **The tick without history** is not a marker; it only shows where on the time axis the tooltip's time is.
+  - **The comparison sheet hides the tooltip,** so the shapes can be judged; the hover frames show it.
+- **Tooltip placement:** after now the tooltip sits on the later side of the guide, so it never covers the end of
+  today's line. Over the gap it sits above both ends of the line.
+- **Reduced motion:** the marker jumps.
+
+**7. Live update.**
+- **Extend, never redraw.** A new reading morphs only the tail of the line that the centred average legitimately
+  changes (the last 15-30 minutes), in 280 ms. Everything earlier stays exactly as drawn. The changed digits roll and
+  the level bars change at the same moment.
+- **With the marker on the tail:** a marker selected on the moving tail, or on the latest reading, rides the line
+  during the morph.
+- **The pulse is calmer:** a 1px ring every 5 s, at 40% at most, reaching 28px. Round 5 used 3.6 s, 70% and 32px.
+  There is no pulse while delayed.
+- **Delayed:** a minute passes with no reading. The line does not move, and only "minutes ago" rolls.
+
+**8. Rail.** It is transform-only and quicker than Round 5, at 240 ms open and 200 ms close instead of 300 and 240 ms.
+- The width still switches at once.
+- The names no longer fade. A clip on each name keeps 12px inside the moving edge, on the same timing and curve, so
+  the edge uncovers them.
+
+**9. Tuner.** See "Light tuner" above: the Motion group now has New reading, Reset readings, the crowd-level buttons
+and the Motion switch.
+
+**10. Motion off.** Motion is off with `prefers-reduced-motion: reduce`, with `?motion=off`, or with the tuner's
+Motion switch; every change is then instant. See "Evidence" for the static guard.
+
+**Deviations from the brief, and choices it left open**
+
+- **No tabular figures:** Readex Pro has none. Its digit widths are the same with and without `tabular-nums`, for
+  example 0 is 28.9px and 1 is 24.0px at 46px.
+  - Fixed-width digit boxes, or another font for numbers, would change the page at rest, which must stay
+    pixel-identical.
+  - So each rolling slot eases its width from the old digit's to the new digit's over the same 280 ms. The width
+    glides a few pixels instead of jumping.
+- **Rolls direct, not through intermediate digits:** a digit rolls straight from old to new; 2 to 5 does not spin
+  through 3 and 4. This is calmer and stays legible at 280 ms.
+- **One live region:** a single polite region announces the whole update once, rather than a region on each number,
+  so two numbers never compete.
+  - While delayed, the minute passing is not announced, because no reading arrived and the header already says
+    delayed.
+- **Tooltip timing:** the tooltip appears and leaves at once, with no fade, to keep the no-opacity-on-glyphs rule.
+- **Glide cap:** the glide is capped at 150 ms, not 160 ms, to meet decision 8's limit of 150 ms or less.
+- **A product note for the coordinator (not changed):** the latest stop shows the line's value at 7:42 PM, 47,
+  Moderate. The Inside now card shows the latest reading, 49, Busy. This follows the brief (the line's own value,
+  never the raw minute), but the owner sees two numbers for 7:42 PM.
 
 ## Open and capture
 
@@ -290,88 +401,105 @@ worktree root:
 node design-research/owner-composition-exploration-r04/directions/eclipse/capture.mjs
 ```
 
-It serves the folder on `127.0.0.1:3173` and uses a fresh Playwright chromium context per frame, at
-deviceScaleFactor 1 (2 for the crops). The still frames use reducedMotion "reduce"; the motion part uses
-"no-preference". It writes everything below and `evidence/capture-log.json`, and takes about four minutes. It
-exits with code 1 if the static guard or a tuner check fails.
+It serves the folder on `127.0.0.1:3173` and uses a fresh Playwright chromium context per frame. Frames are at
+deviceScaleFactor 1, and 2 for the crops. The still frames use reducedMotion "reduce", and the motion part uses
+"no-preference". It writes everything under "Evidence" and `evidence/capture-log.json`, and takes about five minutes.
+It exits with code 1 if any check below fails; the last run passed all of them.
 
 The log records:
 
-- fonts, overflow, spill, errors, Western digits, en dashes in Arabic, and the line checks;
-- the keyboard steps and the 1280×800 overflow checks;
-- the light measurements per preset;
-- the light-study A calibration, rendered read-only from `file://`;
-- the `file://` tuner check. It changes one control by keyboard and confirms the custom property and the
-  rendered pixels change. It checks that Copy values gives valid JSON on both paths, that the value persists
-  across a reload, that `?tuner=0` shows no tuner and ignores storage, and that Reset works. It also applies the v2
-  and Recommended presets and drags the tuner 200px by 120px (Home on the grip brings it back). The Motion group
-  switches show the page's own defaults (`window.__eclipse.motion.defaults`), "New reading" advances one minute, and
-  two switches persist in their own key and are ignored with `?tuner=0`. With motion on, still from `file://`,
-  "Replay load" runs the lights' entrance again. All of it passes.
-- `motion` (the motion part):
-  - the static guard: `staticFramesIdentical`, `motionOffFramesIdentical`, and the settled motion pages;
-  - `spec` (every motion as built) and `loadAnimationsAsRun` (every load animation as the browser runs it: target,
-    properties, delay, duration, easing, keyframes);
-  - `brightness`, the lights-never-brighter check, including the counterfactual;
-  - `follow` (rest, zero offset and after leave, AR and EN), `live`, `rail`, `glide`, `delayed` and
-    `switchOnAtLoad`.
+- **Still frames:** fonts, overflow, spill, errors, Western digits, en dashes in Arabic, and the line checks, plus the
+  1280×800 overflow checks and the light measurements per preset.
+- **Calibration:** light-study A, rendered read-only from `file://`.
+- **The tuner from `file://`:**
+  - keyboard, presets, drag, copy (both paths), persistence, `?tuner=0` and reset;
+  - the Motion group: no obsolete controls, New reading, the crowd buttons, and the switch persisting in its own key;
+  - a crowd change with motion on: the number rolls, the bars change, no light moves and no glyph fades.
+- **`motion` (Round 6):**
+  - **Static guard:** `identity.staticFrames` and `identity.motionOffFrames`. The frames that change by design are
+    compared with this run's reduced-motion frame.
+  - **First paint:** `identity.motionFirstPaint` holds the first paint with motion on, the animations on load, and
+    whether the DOM equals the `?motion=off` DOM.
+  - **`chart`** (Round 7: for each marker form, A and B, in AR and EN, each live, delayed and without history; the B
+    keys end in `B`):
+    - every stop, with the half-hour coverage, the gap stop and the two line segments (no bridge);
+    - at every stop, the marker's distance to its target, its form, that nothing is drawn above the point, the tooltip,
+      and the screen-reader text;
+    - pointer snapping (7 probes) and keyboard stepping.
+  - **`marker`** (Round 7): the comparison sheet, and the switch from `file://` (the default, the tuner's buttons, its
+    storage key, a reload, `?marker=a` over a stored B, `?tuner=0`, and a shown marker repainted in place).
+  - **`glide`** (both forms; the B keys end in `B`): the marker held at shares of its time stays on the line, or
+    straight above the peak on the drop, in its own form and with nothing above the point. It is not a straight hop.
+    It moves at once across the gap and into the future.
+  - **`roll`** (AR and EN):
+    - every animation of a crowd change down and up and of a new reading, with direction and properties;
+    - no glyph opacity, the digits that moved, and the bars;
+    - the live region's text, and the rest markup afterwards.
+  - **`live`:** the tail morph. **`delayed`:** no pulse, nothing running, and only "minutes ago" rolls.
+  - **`rail`:** the animated properties, the names by clip only, and the settled open rail against the still frame.
 
 ## Evidence
 
-- **1440×900, Recommended:**
-  - `daily-ar-1440x900`
-  - `daily-en-1440x900`
-  - `-hover`
+- **Still frames, 1440×900, Recommended:**
+  - `daily-ar-1440x900` and `daily-en-1440x900`
+  - `daily-ar-1440x900-hover` and `daily-en-1440x900-hover`: the peak stop with marker A, the lit bead
+  - `daily-ar-1440x900-hover-b` and `daily-en-1440x900-hover-b` (Round 7): the same with marker B, the hollow ring
   - `-rail-open` (AR and EN)
-  - `-delayed`
-  - `-nohistory`
-  - `-details` (full page)
-  - `daily-ar-1440x900-tuner-open`
-- **Per preset (`v2`, `a-like`, `recommended`):**
-  - `preset-<id>-ar-1440x900`
-  - `preset-<id>-nowcard-2x`
-  - `preset-<id>-chart-2x`
-  - `preset-<id>-nowcard-light`, 1x with content hidden
-  - `preset-<id>-chart-light`, 1x with content hidden
-- **Other:**
-  - `daily-en-nowcard-2x`, the LTR mirror
-  - `levels-nowcard` and `levels-chart`, the level maps of the Recommended 2x crops
-- **Removed:** v2's `daily-ar-chart-2x` and `daily-ar-nowcard-2x` are replaced by the
-  `preset-recommended-*-2x` crops.
-- **Motion** (every `motion-*` frame is rewritten on each run; frames from earlier motion runs are deleted first):
-  - `motion-load-ar-<ms>` at 0, 150, 300, 450, 600, 800, 1000, 1200, 1400, 1700, 2000 and 2160 ms (the end, which
-    is identical to the still frame), and `motion-load-en-<ms>` at 300, 600, 1000, 1400 and 2160 ms;
-  - `motion-light-nowcard-ar-2x` and `-en-2x`: the Inside now light at 0, 150, 300, 500, 800 and 1200 ms after it
-    starts, and final;
-  - `motion-light-chart-corners-ar-2x` and `-en-2x`: the chart card's two lower corners at 0, 200, 400, 600, 900
-    and 1300 ms after its light starts, and final;
-  - `motion-live-ar-cards-*` and `motion-live-ar-tail-*-2x`: a new reading before, at 100 ms, at 350 ms and after;
-  - `motion-follow-now-rest-2x`, `-a-2x` and `-b-2x`: the light following the pointer;
-  - `motion-rail-ar-open-0120ms`, `motion-rail-ar-close-0110ms` and `motion-rail-en-open-0120ms`;
-  - `motion-glide-ar-0090ms`;
+  - `-delayed`, `-nohistory` and `-details` (full page), in AR
+  - `daily-ar-1440x900-tuner-open`, with the Round 7 Marker group and the Round 6 Motion group
+- **`marker-compare-ar-3x.png` (Round 7), the first file to open:** A and B side by side, tight 3x crops of the real
+  AR page at rest, the tooltip hidden: on the line (5:00 PM), the peak, the latest reading live and delayed, still
+  ahead (9:00 PM), the missing span, and still ahead without history.
+- **Per preset (`v2`, `a-like`, `recommended`):** `preset-<id>-ar-1440x900`, `-nowcard-2x`, `-chart-2x`, and the
+  light-only 1x captures `-nowcard-light` and `-chart-light`.
+- **Other:** `daily-en-nowcard-2x`, `levels-nowcard` and `levels-chart`.
+- **Motion** (every `motion-*` frame is rewritten on each run, and older ones are deleted first):
+  - `motion-roll-ar-2x` and `motion-roll-en-2x`: held digit rolls. Inside now 49 to 48 at 30, 70 and 140 ms and at
+    rest; 49 to 69 (only the tens digit moves); Entries 332 to 333; and the header time 7:42 to 7:43.
+  - `motion-bars-ar-2x`: the third and fourth level bars filling, enlarged 4x, with the chip before and after.
+  - `motion-glide-ar-a-2x` and `motion-glide-ar-b-2x` (Round 7; they replace `motion-glide-ar-2x`): each marker form
+    held mid-glide along the line (5:00 to 5:30 PM), and climbing from 6:00 PM onto the peak ring. There is one fixed
+    crop per run. The glide is still Round 6's; the next step replaces it.
+  - `motion-live-ar-tail-2x`: the line's tail around the end point, before, at 70 and 140 ms, and after (enlarged 3x).
+  - `motion-rail-ar-open-0100ms`, `motion-rail-ar-close-0090ms` and `motion-rail-en-open-0100ms`.
   - `motion-contact-sheet`: all of them on one page.
+- **Round 5 frames:** the `motion-load-*`, `motion-light-*`, `motion-follow-*` and `motion-glide-ar-0090ms` frames are
+  gone with the motion they showed.
+- **Static guard (last run, Round 7, exit code 0):**
+  - Reduced motion: 25 of 27 pre-motion frames are identical. The other two, the AR hover and the tuner frames,
+    change by design.
+  - `?motion=off`: 11 of 11 frames are identical (the pre-motion frame, or this run's still frame for the frames that
+    change by design and for the new EN hover and `-hover-b` frames).
+  - With motion on, the first paint is identical in 4 of 4 pages, and only the live pulse runs on load.
+- **Videos:** the designer's real-time recordings (1440×900) are outside the repository and are not evidence here.
 
 ## Checks not run
 
-- **Audits:** no accessibility or contrast audit, and no screen-reader pass. The tuner was checked only for
-  keyboard use, labels and Escape.
-- **Browsers:** Chromium only, sRGB only. The lights need `container-type: size`, cq units, `sqrt()`/`pow()`
-  in `calc()`, `mask-composite: intersect` and `rgb(... / calc())`. The motion needs the Web Animations API with
-  `pseudoElement`. None of this was tested in Firefox or Safari.
+- **Audits:** no accessibility or contrast audit.
+  - There was no screen-reader pass. The live region and the chart's screen-reader text were checked only as text.
+  - The tuner was checked only for keyboard use, labels and Escape.
+- **Browsers:** Chromium only, sRGB only.
+  - The lights need `container-type: size`, cq units, `sqrt()`/`pow()` in `calc()`, `mask-composite: intersect`
+    and `rgb(... / calc())`.
+  - The motion needs the Web Animations API, keyframe offsets on eased progress (for the rail's name clip), and
+    `translate` alongside `transform`.
+  - None of this was tried in Firefox or Safari.
 - **Motion:**
-  - It was judged from held frames only, not from a recording or from real-time playback on a real display.
-  - Frame pacing and jank were not measured.
-  - The pointer-follow and rail were checked with Playwright's mouse, not a real touchpad.
-  - Touch devices were not tried (follow is off there by design).
+  - It was judged from held frames and from the designer's real-time Playwright recordings, decoded frame by frame
+    (about 25 frames per second). It was not judged on a real display.
+  - Frame pacing and jank were not measured. Pointer and keys came from Playwright, not a real touchpad or keyboard.
+  - Touch was not tried; a tap pins the reading, as before.
+- **Marker (Round 7):**
+  - The two forms were judged from the 3x comparison sheet, the 1x hover frames and the held 2x glide frames, not on a
+    real display or in motion in real time.
+  - The live pulse still runs from the end point while a marker sits on it; its look with B's ring over the end point
+    was not judged in motion.
+  - The filter and mask of A's line light were not profiled for frame cost during the glide.
 - **Known differences:**
-  - After a simulated live update settles, the page's DOM equals the canonical page, but some pixels differ by
-    1/255 (`liveUpdateEndsAtCanonical`). This comes from compositing after the cross-fades and was already there
-    before this session.
-  - With the pointer at the card's centre, one 2x AR pixel differs by 1/255.
-  - In one of four full capture runs, the settled delayed page differed from its still frame by at most 2/255 in
-    the chart's lower inline-end corner, where the rising light had just been composited. Six separate repeats of
-    that check were identical, and so were the other runs. It looks like timing in the capture, not a difference
-    in geometry.
-- **Scope:** no English frames for hover, delayed, nohistory or details. Mobile is out of scope.
-- **Repository:** no repository verification. `pnpm check:design-context` passed at the start of v3 and again at
-  the start of the motion work.
+  - After a simulated live update settles, the page's DOM and geometry equal the canonical page, measured to 0.001px.
+  - But Chromium rasterizes the header chip's text differently: about 1,100 pixels, up to 84/255 on glyph edges.
+  - It happens once anything positioned or animated has existed inside that chip. Even a plain `top` animation on a
+    span does it, so it is a raster state, not a layout change.
+  - The cards' text is not affected (their layers are already composited).
+- **Scope:** no English frames for delayed, no history or details. Mobile is out of scope.
+- **Repository:** no repository verification. `pnpm check:design-context` passed at the start of Round 7 (step 1).
