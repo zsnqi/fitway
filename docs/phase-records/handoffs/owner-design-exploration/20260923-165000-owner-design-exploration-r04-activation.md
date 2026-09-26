@@ -1157,3 +1157,27 @@ visual acceptance. The revised tooltip remains the current exploratory implement
 is unresolved and should be revisited with the user before treating it as the chosen layout. This does not retract
 their positive feedback on the overall Eclipse result and hover speed. No code or visual authority change follows
 from this note.
+
+## Coordinator moves to a local Claude Code session (2026-09-26)
+
+At the user's explicit request, the coordinator lease moved from local Codex session
+`01a0dce3-11d9-7e11-997c-42c8785e9458` to local Claude Code desktop session
+`1a5ac4b9-d170-48f9-a59a-e53d3054e080`, in the same worktree and branch (`codex/owner-redesign-r04` at `cb45c5f`,
+level with `origin`). The packet SHA-256 matched and `context:show` reported `READY` before the move.
+
+**User steer recorded in this session.**
+- **Round 7 step 2:** the user looked at the live page again and finds the result, including hover speed, excellent
+  with no problems apart from the tooltip. They regard step 2 as accepted in principle. The coordinator records this
+  as the user closing their step 2 review. It is not the formal visual acceptance of the page: that still needs exact
+  named current frames, the first-open intro, the tooltip fix, and the mobile work in the "After the Daily page"
+  plan.
+- **Tooltip:** the coordinator rendered the integrated peak, latest, delayed-latest and ordinary tooltips (AR and EN,
+  3x, in its scratchpad) and named three likely causes. The user confirmed them: the number moves between ends when
+  the marker crosses a special stop, because ordinary stops put the number first and peak/latest put it last; the
+  number is split from its crowd-level word; and the lower rows (usual, delayed age) do not follow the upper rows'
+  two-edge layout, so nothing lines up. The fix is agreed in principle; its exact layout is pending the user's choice.
+- **Evidence:** the committed `evidence/` PNGs are stale because step 2 was built in a Linux cloud container. This
+  worktree is the original Windows machine, so `eclipse/capture.mjs` and its static guard are valid here again. The
+  next delivery regenerates `evidence/` here.
+- **Order (the coordinator's recommendation, at the user's request):** the tooltip fix first, then Round 7 step 3
+  (the first-open intro), each with a fresh independent verifier, as the Round 7 work plan specifies.
