@@ -349,6 +349,12 @@ and `setMarker`. The one part of A that stays is its missing-span variant, the l
   - The tuner's simulated crowd-level change still changes the card only, as before; the latest stop keeps the reading.
 - **Tooltip placement:** after now the tooltip sits on the later side of the hairline, so it never covers the end of
   today's line. Over the gap it sits above both ends of the line.
+- **Peak and latest tooltip reading order (2026-09-26):** the special label and crowd-level word sit at inline-start
+  (right in Arabic, left in English); the time and main number sit at inline-end. The usual comparison and delayed age
+  remain below. Values, marker B, hover follow, and the chart's screen-reader text are unchanged. This scoped layout
+  revision has not regenerated the committed `evidence/` PNGs.
+  After seeing it, the user said they do not like the arrangement of text and numbers inside this tooltip. This is an
+  open design note for the next session, not an acceptance of the revised layout; the user asked to record it only.
 
 **6b. The smooth follow (Round 7 step 2).** It replaces the Round 6 glide (120-150 ms, at most 150 ms). It is the
 "follow" part of the motion section in `app.js`.

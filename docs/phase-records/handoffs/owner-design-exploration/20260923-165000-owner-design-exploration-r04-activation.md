@@ -1124,3 +1124,36 @@ The coordinator lease moved from cloud session `session_015ieHuPjwSGP8rCDCeq5nrf
 with run ID `owner_tip_r04_s01`. It owns only the Eclipse tooltip implementation files. The coordinator owns this
 handoff and `PROJECT_STATE.yaml` and will integrate and inspect the change. Step 3's first-open intro remains the
 next distinct design task. The existing committed `evidence/` PNGs still predate Round 7 step 2.
+
+**Tooltip revision delivered and reviewed.** The requested GPT-6 Sol worker changed only `eclipse/app.js` and
+`eclipse/style.css` in its isolated worktree, committing `231bd726`; the coordinator reviewed that diff and
+cherry-picked it onto `codex/owner-redesign-r04` as `04984e9`. Peak and latest tooltips now put the special label and
+crowd-level word at inline-start, with the time and main number at inline-end. This puts the label/word on the right
+and the number on the left in Arabic, with natural LTR inverse in English. Other tooltip kinds and data semantics
+were left alone. The coordinator also updated `eclipse/README.md` to describe the revision.
+
+**Rendered review and checks.** The coordinator personally inspected the worker's exact full-resolution
+`1440x900` frames in `C:/Users/Pc Force/AppData/Local/Temp/`:
+`fitway-tooltip-r04-20260926-8937-{ar,en}-live-{peak,latest}-1440x900.png` and
+`fitway-tooltip-r04-20260926-8937-{ar,en}-delayed-latest-1440x900.png` (six frames). The placement and density look
+correct in these frames, including delayed age and usual comparison. A separate coordinator Playwright check on
+the integrated local page passed all six AR/EN live peak, live latest, and delayed latest cases: physical inline
+ordering, Western-digit values and screen-reader text, marker B, no horizontal overflow, and no page errors. The
+worker also checked hover/keyboard selection, tooltip containment, JavaScript syntax, and `git diff --check`.
+The coordinator's `pnpm check:design-context` passed on the Windows host; Impeccable's final detector returned one
+pre-existing `style.css:487` border warning outside the changed lines. The worker's sandbox could not launch that
+engine, so the worker used the documented direct-context fallback. The committed PNGs under `evidence/` remain
+older than both Round 7 step 2 and this tooltip revision; do not use them to judge the current tooltip.
+
+**Decision boundary.** The user's praise of the current result and hover speed is feedback, not final selection or
+visual acceptance. The concept remains exploratory and `IN_PROGRESS`; production, canonicals, Paper, Redline, and
+Owner visual authority remain unchanged. Next distinct requested work is Round 7 step 3, the first-open intro,
+after the next user steer. Resume with `pnpm context:show -- --milestone owner-design-exploration-r04`.
+
+**Follow-up user judgment (2026-09-26).** After reviewing the integrated tooltip, the user said they do **not** like
+the arrangement of text and numbers inside the card. They explicitly asked to record this observation only and did
+not ask for another fix in this session. The preceding coordinator checks establish functional placement, not human
+visual acceptance. The revised tooltip remains the current exploratory implementation, but its internal arrangement
+is unresolved and should be revisited with the user before treating it as the chosen layout. This does not retract
+their positive feedback on the overall Eclipse result and hover speed. No code or visual authority change follows
+from this note.
