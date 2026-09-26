@@ -348,7 +348,8 @@ and `setMarker`. The one part of A that stays is its missing-span variant, the l
     While delayed it adds how old it is: «آخر قراءة قبل 13 دقيقة».
   - The tuner's simulated crowd-level change still changes the card only, as before; the latest stop keeps the reading.
 - **Tooltip placement:** after now the tooltip sits on the later side of the hairline, so it never covers the end of
-  today's line. Over the gap it sits above both ends of the line.
+  today's line, unless it would not fit there: the last stops of the day (11:30 PM to 1:00 AM) flip to the earlier
+  side. Over the gap it sits above both ends of the line.
 - **Tooltip layout (2026-09-26):** one start-aligned arrangement for every tooltip. Every row starts at the same
   inline-start edge (right in Arabic, left in English), and nothing is pushed to the far edge.
   - At the peak and the latest reading (live and delayed), the label chip comes first, then the time. The number then
@@ -564,9 +565,10 @@ The log records:
   motion they showed. `motion-follow-ar-2x` reuses an old Round 5 name for the new follow frame.
 - **Re-rendered on 2026-09-26 (tooltip layout close-out):** `capture.mjs` was run on the original Windows machine into
   `evidence/`, after the tooltip layout change. It exited with code 0.
-  - Changed by design: the AR and EN hover frames (the tooltip layout) and `motion-contact-sheet` and
-    `motion-roll-*-2x` (motion frames, rewritten on each run). `daily-ar-1440x900-tuner-open` and `capture-log.json`
-    now show step 2 (the hover speed, no Marker group); they had not been re-rendered since step 1.
+  - Changed by design: the AR and EN hover frames (the tooltip layout). `daily-ar-1440x900-tuner-open` and
+    `capture-log.json` now show step 2 (the hover speed, no Marker group); they had not been re-rendered since step 1.
+  - Changed with no change in behaviour: `motion-contact-sheet` and `motion-roll-*-2x`, which differ between runs only
+    by glyph raster and mid-roll timing noise.
   - New: `marker-variants-ar-3x.png` and `motion-follow-ar-2x.png`.
   - Removed, because `capture.mjs` no longer writes them: `daily-ar-1440x900-hover-b.png`,
     `daily-en-1440x900-hover-b.png`, `marker-compare-ar-3x.png`, `motion-glide-ar-a-2x.png` and
