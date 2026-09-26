@@ -672,3 +672,16 @@ tried both.
 - **Then:** mobile at 390 px, 320 px and 200% reflow for every screen, and the polish.
 - **Then:** the formal, human-approved authority record that makes this direction the design reference, as in
   "Authority intent" above.
+
+### Follow-up after step 3 (agreed 2026-09-26)
+
+A small separate round after the intro, so that the intro's verifier judges the intro alone and no two writers share
+`capture.mjs`:
+
+1. **Tooltip width (pending the user's before/after review):** in English the number still moves about 9 px on screen
+   between the peak and 7:00 PM. The tooltip widens (108 to 117.4 px) and is anchored at the hairline. The proposal is
+   one fixed tooltip width, the widest content in either language, so the number never moves. The user will judge it
+   from a before/after comparison before it is kept.
+2. **Capture noise (user-agreed):** Chromium's glyph raster is not always byte-identical between runs, so the static
+   guard can fail spuriously. The guard stays exact: a frame that differs is captured again, and it counts as a
+   difference only if it differs in two consecutive attempts. No tolerance threshold is added.

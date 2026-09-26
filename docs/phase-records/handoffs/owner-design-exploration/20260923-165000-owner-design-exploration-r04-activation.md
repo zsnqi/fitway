@@ -1235,3 +1235,36 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
 - **User review (2026-09-26):** the user looked at the integrated tooltip and called it excellent. This closes their
   review of the tooltip fix. It is not the formal visual acceptance of the page. They left pushing to the coordinator,
   who pushed `codex/owner-redesign-r04` so that cloud sessions see the current state.
+
+## Round 7 step 3 started, then paused for a shutdown (2026-09-26)
+
+- **Launched:** a fresh `owner-direction-designer` (`xhigh`), run `owner_intro_r04_s03`. Its worktree is
+  `D:/Projects/fitway-worktrees/owner-intro-r04-s03`, on branch `owner-intro-r04-build` from `934adc1`, allocated by the
+  coordinator. The brief adds constraints from binding rules to Round 7 decision 4:
+  - no false value may be held long enough to read as data (a reveal, not a count-up);
+  - screen readers get the final values from the first paint;
+  - the intro yields to any interaction or live update, and never blocks one;
+  - each state ends at its still frame, and the missing span is never bridged;
+  - no glyph opacity, no layout shift and no long task.
+  The brief and a frozen baseline copy (`base/`, hashes in `base-eclipse.sha256`) are in this session's scratchpad
+  `intro/`, with the designer's scratch in `intro/work/`. The scratchpad is outside the repository and may not survive
+  a cleanup.
+- **Paused at the user's request** so the machine could shut down. The coordinator stopped the designer and confirmed
+  that no capture process was left and port 3173 was free. It then committed the designer's work unchanged as
+  `16b86af` ("WIP") on `owner-intro-r04-build` and pushed that branch. It is not integrated and not verified.
+  - `app.js`, `tuner.js` and `capture.mjs` carry the intro, with one repair made after the first full capture run.
+    The repair budget used so far is 1 of 2.
+  - `evidence/` holds that first run, from before the repair, so it does not match the code. The designer had just
+    started its second run.
+  - `README.md` is not updated, and there is no designer report.
+- **Also agreed on 2026-09-26:** a small follow-up round after step 3, recorded in `NEXT-DIRECTION-BRIEF.md`,
+  "Follow-up after step 3":
+  - one fixed tooltip width, pending the user's before/after review;
+  - the capture recaptures a differing frame and counts it only if it differs twice in a row.
+- **Resume:**
+  1. Run `pnpm context:show -- --milestone owner-design-exploration-r04` and read this section.
+  2. Rebase `owner-intro-r04-build` onto the current `codex/owner-redesign-r04`. It changes only `eclipse/`, so no
+     conflict is expected.
+  3. Resume a designer in that worktree to finish the second capture run, the README, the report and a proper commit.
+     Keep or squash the WIP commit.
+  4. Only then brief a fresh verifier. The follow-up round waits until step 3 is integrated.
