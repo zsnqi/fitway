@@ -685,3 +685,20 @@ A small separate round after the intro, so that the intro's verifier judges the 
 2. **Capture noise (user-agreed):** Chromium's glyph raster is not always byte-identical between runs, so the static
    guard can fail spuriously. The guard stays exact: a frame that differs is captured again, and it counts as a
    difference only if it differs in two consecutive attempts. No tolerance threshold is added.
+3. **README wording (low):** `eclipse/README.md` says the answers are hidden "for at most 200 ms". The re-check saw
+   the still page at 195-231 ms after first paint, which is inside the 250 ms gate. Correct the wording to the
+   measured range.
+
+### Decisions on the step 3 intro (user-agreed 2026-09-26)
+
+1. **Font wait capped at 200 ms.** The intro needs the fonts ready before it starts, so the numbers are hidden until
+   then. That can conflict with Round 6 §1, "content is never hidden while fonts load". If the fonts are not ready
+   within 200 ms, the intro is skipped and the still page shows at once. The numbers are therefore hidden for at most
+   200 ms, and only on a first open. This replaces the designer's 1 s cap.
+2. **Session restore is a known limit.** When Chrome's "continue where you left off" restores a tab's session storage
+   after a restart, the intro probably does not replay. The browser treats that as the same session. This is accepted
+   and no workaround is added.
+3. **Pending the user's answer (asked 2026-09-26):** with the 200 ms cap, a cold first visit fetches the Google
+   fonts in about 0.4-1 s, so the intro plays only once the browser has the fonts cached, which means later new tabs.
+   The coordinator recommends keeping 200 ms for the concept. Production will host its own fonts, and the cap can be
+   revisited then. The alternative is a higher cap, such as 500 ms, which hides the numbers longer on slow networks.

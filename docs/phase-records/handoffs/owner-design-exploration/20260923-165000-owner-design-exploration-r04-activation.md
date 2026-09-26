@@ -1268,3 +1268,63 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   3. Resume a designer in that worktree to finish the second capture run, the README, the report and a proper commit.
      Keep or squash the WIP commit.
   4. Only then brief a fresh verifier. The follow-up round waits until step 3 is integrated.
+
+## Round 7 step 3 delivered, verified and integrated (2026-09-26 to 2026-09-27)
+
+- **Resume:** the coordinator rebased the WIP locally onto `02ab34d` (as `faf24e5`) and resumed the same designer. The
+  designer finished its capture runs, README and report, and amended the WIP into `d4d019a`. It used both of its
+  repairs on capture-check failures: late fonts, and glyph-fringe noise in the intro's end check. The final run exited 0.
+  The old WIP `16b86af` remains on `origin/owner-intro-r04-build` as provenance.
+- **The intro (`d4d019a`):**
+  - Still from the first paint: surfaces, lights, labels, grid, axes and the usual line.
+  - The four answers roll into their final place in about 280 ms, while today's line draws by minutes since open in
+    about 640 ms (right to left in Arabic, the gap never bridged). Then the end point and the peak appear. It lasts
+    about 0.85-0.9 s at 1×.
+  - It is a reveal, not a count-up, and the live region stays silent.
+  - It plays only on a tab's first open. Any interaction, a new reading, a resize or hiding the tab settles it at once.
+- **Verification, split in two** (following the user's request to keep contexts lean). Both used fresh
+  `owner-direction-verifier` agents in parallel, read-only, without the designer's report.
+  - **A, stills, identity, when it plays, evidence: 6 of 6 PASS.**
+    - The end state equals the still frame 12 of 12, and a 1 px planted change fails the check.
+    - Stills against the base: 50 of 54 identical; only the tuner-open frame differs, by design.
+    - The when-it-plays cases all pass, and the capture exited 0 twice.
+    - F1 (Medium): answers blank for up to 1 s when fonts are late. F2: three capture gaps. F3: a `window.open` tab
+      inherits the session. F4: the tuner panel is taller than 900 px.
+  - **B, motion, truthfulness, yielding, accessibility: 6 of 6 PASS.**
+    - Only content moves.
+    - No false digit appears at any held frame.
+    - The line tip stays within 2.4 px of the model, and the gap stays empty at every 1 ms.
+    - No glyph opacity, no box change and no long task.
+    - 34 yield cases pass.
+    - Low: `#peak-tag` was out of the accessibility tree for 0-640 ms. Measured: answers absent for 0.59-0.96 s on a
+      cold network.
+- **User decisions:** a 200 ms font cap, and session restore accepted as a known limit. The coordinator extended the
+  known limit to page-opened and duplicated tabs, which fall in the same class, and recorded it in the README. Both
+  decisions are in the brief, "Decisions on the step 3 intro".
+- **Fix round** (a fresh `owner-direction-builder`, `high`, `2d9ffa0`):
+  - the 200 ms cap;
+  - `#peak-tag` hidden by `clip-path` only;
+  - three new capture gates: the held-frame end, first-paint surfaces, and slow fonts;
+  - README corrections.
+  The capture exited 0 twice.
+- **Focused re-check** (a fresh verifier, base `d4d019a`): 6 of 6 PASS.
+  - With fonts held 600 and 1400 ms, there is no intro and the still page appears 195-231 ms after first paint.
+  - With warm fonts, the intro is pixel-identical to `d4d019a` (8 of 8).
+  - The accessibility tree equals the still's at 0, 200 and 500 ms in all 6 variants; the base fails the same check.
+  - The gates are wired into the exit code.
+  - No regression: 36 of 36 identical.
+  - One low README wording note, recorded in the brief's follow-up list.
+- **Coordinator review:**
+  - B's held-frame contact sheet and its decoded Arabic real-time strip;
+  - B's peak-label finding;
+  - the re-check's slow-font frame at 250 ms (the whole still page, fallback font).
+  They support the reports. The evidence is in this session's scratchpad `intro/verify-a/`, `verify-b/` and
+  `verify-fix/`, which is not committed. The coordinator removed three junctions that verifier A had left in its
+  scratch pointing at the worktree's `node_modules`.
+- **Integration:** `codex/owner-redesign-r04` was fast-forwarded to `2d9ffa0`, which keeps the verified SHAs.
+- **Status:** Round 7 is complete as exploration work, and the user's own look at the intro is pending.
+  - Pending question: whether to keep the 200 ms cap, given that a cold first visit then shows no intro. The
+    coordinator recommends keeping it.
+  - Next, after the user's review: the follow-up round in the brief (tooltip width pending review, recapture on
+    mismatch, the README wording). Then the "After the Daily page" screen plan, starting with Reports.
+  - Nothing is selected, accepted or promoted.
