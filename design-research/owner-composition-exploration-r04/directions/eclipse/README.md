@@ -4,16 +4,22 @@ This is a concept only, built on synthetic data. Nothing is selected. It is the 
 1440×900, in Arabic RTL (the default) and English LTR. It evolves `../light-study/` recipe A, and the data
 logic (seeded simulation, day constants and monotone interpolation) comes from there. v3 applies Round 5 §1-§3
 of `../NEXT-DIRECTION-BRIEF.md`: a new "Inside now" light, a chart light back toward light-study A, and a live
-light tuner. Its motion is Round 6 (the motion reset and chart hover; see "Motion" below): the page is complete at
-first paint, the lights never move, and something moves only when the data changes or the owner acts. With reduced
-motion or `?motion=off` every still frame is pixel-identical to the frames before motion was added, except the hover
-and tuner frames, which change by design. Everything that is not a light layer, motion or the chart's hover is
+light tuner. Its motion is Round 6 (the motion reset and chart hover; see "Motion" below): the lights never move, and
+something moves only when the data changes or the owner acts. The one exception is Round 7's first-open intro (see
+"Motion", 11): on the first open in a browser tab the answers roll into place and the line draws once, and then the
+page is exactly its still self. With reduced motion or `?motion=off` every still frame is pixel-identical to the frames
+before motion was added, except the hover and tuner frames, which change by design. Everything that is not a light layer, motion or the chart's hover is
 unchanged from v2: the layout, rail, copy, data simulation, centred average, chip rule, states and details panel.
 
-**Round 7 step 2 (this version):** the chart marker is form B, the hollow ring, only (with form A's lit dots at the missing
-span); it follows its stop along the curve with the reference clip's feel, with a hover speed in the tuner; the latest
-stop shows the latest reading (49 · Busy); and the verifier's F2 (a halo flash on a live update) and F5 (a long task on the
-first move into the future) are fixed. See "Motion", 6 and 6b, and "Evidence".
+**Round 7 step 2:** the chart marker is form B, the hollow ring, only (with form A's lit dots at the missing span); it
+follows its stop along the curve with the reference clip's feel, with a hover speed in the tuner; the latest stop shows
+the latest reading (49 · Busy); and the verifier's F2 (a halo flash on a live update) and F5 (a long task on the first
+move into the future) are fixed. See "Motion", 6 and 6b, and "Evidence".
+
+**Round 7 step 3 (this version):** the first-open intro (Round 7, decision 4). On a tab's first open the four answers roll
+into place and today's line draws once from opening to now, then the end point and the peak land: about 820 ms in all.
+It never plays on a reload, on a return in the same tab or with motion off, and it settles at once when the owner acts.
+The tuner gains an intro speed and "Replay intro". See "Motion", 11, and "Evidence".
 
 ## Thesis
 
@@ -140,12 +146,19 @@ It is a working tool, not part of the design.
   - «سرعة انتقال العلامة» "Hover speed" (Round 7 step 2): a range from 0.5× to 2×, default 1× (the reference clip's feel),
     with a small «الافتراضي» "Default" button. It divides the follow's time constants; the output shows the multiplier
     and the settle time, for example "1.00× · 400 ms".
-    - It is kept in the same key as the Motion switch (`{ motion, hoverSpeed }`), which app.js already owns and ignores
-      with `?tuner=0`. The light values' key and "Copy values" stay about lights only.
+    - It is kept in the same key as the Motion switch (`{ motion, hoverSpeed, introSpeed }`), which app.js already owns
+      and ignores with `?tuner=0`. The light values' key and "Copy values" stay about lights only.
+  - «سرعة المقدمة» "Intro speed" (Round 7 step 3): a range from 0.5× to 2×, default 1×, with its own «الافتراضي»
+    "Default" button. It divides every duration of the first-open intro; the output shows the multiplier and the
+    intro's length, for example "1.00× · 820 ms". It is kept in the same key and ignored with `?tuner=0`. A new speed
+    applies to the next intro, never to one that is playing.
+  - «إعادة المقدمة» "Replay intro" (Round 7 step 3): plays the intro again on the page as it is now (the current
+    reading). It is disabled with reduced motion, `?motion=off` or the Motion switch off, because there is no intro then.
   - Removed in Round 6: "Replay load", "switch on at load", "follow the pointer" (and "chart card too"), and "light
     follows crowd" with its level preview.
   - Scripts reach the same actions on `window.__eclipse.motion`: `step()`, `reset()`, `crowd(1 | -1)`,
-    `set({ motion, hoverSpeed })` and `settle()`.
+    `set({ motion, hoverSpeed, introSpeed })` and `settle()`. The intro has its own `window.__eclipse.intro`: `state`,
+    `played`, `reason`, `yieldedBy`, `timings`, `replay()`, `seek(ms)`, `release()` and `settle()`.
 - **URL:**
   - `?tuner=0` means no panel and no stored tuning.
   - `?preset=v2|a-like|recommended` starts from that preset without storing it.
@@ -202,7 +215,8 @@ the areas). Recommended's middle, 14.3, is above A's 13.0 on the same method.
 Round 6 (`../NEXT-DIRECTION-BRIEF.md`, decisions 1-10) replaced the Round 5 motion.
 
 **Principle:** motion carries information, and decoration never moves. The page is an instrument: it is complete at
-first paint, and something moves only when the data really changes or the owner acts.
+first paint, and something moves only when the data really changes or the owner acts. Round 7 (decision 4) makes one
+exception, the first-open intro (11 below): once per browser tab, the content inside the still surfaces arrives.
 
 The motion lives in the "motion" section of `app.js`, which uses the Web Animations API. The few pieces it needs are
 in the motion section of `style.css`. No glyph ever changes opacity, anywhere:
@@ -224,17 +238,27 @@ and only while live.
 | The line's tail | a new reading | SVG path of the last 15-30 minutes, end point, the tail's fine lines, the now clip | 280 ms | `cubic-bezier(0.4, 0, 0.2, 1)` |
 | Live pulse | while live only; none while delayed | a thin ring, opacity 0.4 to 0 and scale 0.34 to 1, from inside the end point to just past its halo | every 5 s, visible for the first 48% | `cubic-bezier(0.22, 0.61, 0.36, 1)` |
 | Rail | the logo is pressed | transforms: the end cap slides and the middle scales; the darker surface layers and the shadow fade (no text); each name is uncovered by a clip | 240 ms open, 200 ms close | `cubic-bezier(0.22, 1, 0.36, 1)` open, `cubic-bezier(0.4, 0, 0.2, 1)` close |
+| Intro: the answers | a tab's first open only (Round 7 step 3) | transform: each answer's value enters its final place from below, inside the digits' ink box (the digit roll) | 280 ms, from the start | `cubic-bezier(0.25, 1, 0.5, 1)` |
+| Intro: the line | the same | `stroke-dasharray` of today's line parts, by minutes since open; one clip uncovers the fine lines under it | 640 ms, from the start | `cubic-bezier(0.3, 0.2, 0.4, 1)` |
+| Intro: the end point and the peak | the same, when the line arrives | SVG transform: the live end point and its halo, and the peak ring, scale from 0.34 to 1; the peak's drop and label appear at once | 180 ms, from 640 ms | `cubic-bezier(0.25, 1, 0.5, 1)` |
 
-Nothing else animates: the load, the lights, the wash, the hover colours of the rail tiles and buttons, the details
-chevron, and the jump to "View details" are all instant.
+The intro's durations are at 1×; the tuner's intro speed divides them. Nothing else animates: the lights, the wash, the
+hover colours of the rail tiles and buttons, the details chevron, and the jump to "View details" are all instant.
 
-**1. No load motion.**
-- There is no stagger, rise, line draw, light entrance, wash drift, or end-point or peak entrance.
-- The inline script in `index.html` sets only language, direction and state. Nothing is hidden before first paint.
+**1. Load: the first-open intro only (the changed first-paint rule).**
+- Round 6 had no load motion. Round 7 (decision 4) amends that with the first-open intro (11 below), and only that:
+  there is still no stagger, rise, light entrance or wash drift, and the surfaces are complete at first paint.
+- Without an intro (a reload, a return in the same tab, reduced motion, `?motion=off`, the Motion switch off) the page is
+  complete at first paint, as before, and nothing is hidden while the fonts load.
+- With an intro, the four answers wait out of sight and today's line is not drawn until the fonts are in (at most 1 s;
+  11 below). Everything else is complete at first paint.
+- The inline script in `index.html` sets only language, direction and state. app.js decides the intro before the first
+  paint.
 - The chart renders at once. It is measured again when the fonts arrive, because the header's text sets its height,
   and again whenever its box changes.
-- With motion on, the first settled paint (the live pulse hidden) is identical to the still frame. On load
-  `document.getAnimations()` holds only the pulse while live, and nothing while delayed.
+- **The rule the capture checks now:** on a first open the intro plays and ends identical to the still frame (the live
+  pulse hidden), with the DOM equal to the `?motion=off` DOM and only the pulse running after it (nothing while delayed);
+  a reload in the same tab has no intro at all and is the still frame at once, with only the pulse on load.
 
 **2. Lights are static, always.**
 - The entrance, the pointer-follow light and the crowd-dependent light are gone, with their code and CSS, including
@@ -456,10 +480,91 @@ and `setMarker`. The one part of A that stays is its missing-span variant, the l
   the edge uncovers them.
 
 **9. Tuner.** See "Light tuner" above: the Motion group now has New reading, Reset readings, the crowd-level buttons,
-the Motion switch and (Round 7 step 2) the hover speed.
+the Motion switch, (Round 7 step 2) the hover speed and (Round 7 step 3) the intro speed and "Replay intro".
 
 **10. Motion off.** Motion is off with `prefers-reduced-motion: reduce`, with `?motion=off`, or with the tuner's
-Motion switch; every change is then instant. See "Evidence" for the static guard.
+Motion switch; every change is then instant, and there is no intro. See "Evidence" for the static guard.
+
+**11. The first-open intro (Round 7 step 3).** Round 7, decision 4. It is "the first-open intro" part of the motion
+section in `app.js`.
+
+- **When it plays:** only on the first open of the page in a browser tab.
+  - A flag in `sessionStorage` (`fitway.eclipse.v3.intro`) marks the tab. It is interface state, never visitor data.
+  - So F5, a reload, the language link and any other return in the same tab have no intro. A new tab starts with empty
+    session storage and plays it, and so does a new browser session.
+  - The flag is set on every open, also with motion off, so the intro belongs to the tab's first open only.
+  - If session storage is unavailable, there is no intro (fail safe).
+  - There is none with reduced motion, `?motion=off` or the tuner's Motion switch off (`?tuner=0` ignores the stored
+    switch, as before).
+  - A tab opened in the background keeps its intro waiting until the tab is first shown.
+- **What is still from the first paint:** every surface (the glass cards and their lights, the wash, the rail), every
+  label, unit, time of day and reference value (the usual entries, the average), the level chips, the header's status,
+  and the chart's grid, axes, legend and usual Wednesday line.
+- **What moves, in order (at 1×):**
+  1. **The answers**, 0-280 ms: Inside now, Today's peak, Entries and Busiest time roll into place with the page's own
+     digit roll, from below into the digits' ink box, all together. Each value is one slot: «6-8 م» rolls with its own
+     «م», which is part of the time, unlike a unit such as «تقريبًا».
+  2. **Today's line**, 0-640 ms: it draws once by minutes since open, from opening to the latest reading, with a firm
+     start, an even day and a soft landing into now. The fine vertical lines under it are uncovered with it.
+  3. **The landing**, 640-820 ms: the end point swells out of the line's tip (from the tip's own size, 0.34, to 1) with
+     its halo; the peak ring swells in the same way, and its dotted drop and label appear with it. The pulse then starts.
+- **Truthful at every instant:** it is a reveal of the current reading, not a count-up.
+  - Each value enters its final place. No zero or intermediate value is ever drawn, so nothing false can be read.
+  - The DOM text is the final value from the first paint; only its position in the clip changes.
+- **Geometry:** the line is each drawn part's own path, drawn as a dash as long as the path is to that minute, so its front
+  is the line's round-capped tip.
+  - It draws in time order, so right to left in Arabic and left to right in English.
+  - The missing span stays a gap throughout: the two parts are separate paths and are never joined.
+- **States:**
+  - **Live:** all of the above.
+  - **Delayed:** the three other answers roll and the line draws to 7:29 PM. The stale Inside now number and its age are
+    still from the first paint, because a stale card never moves. The grey end point appears at once when the line
+    arrives, with no swell and no pulse.
+  - **No history:** as live, without the usual line.
+  - Each ends exactly at its still frame (see "Evidence").
+- **How it yields:** it never blocks, and nothing meets a half-drawn page. It settles at once to the still page on:
+  - any pointer press or key anywhere, or the wheel (capture phase, before the action is handled);
+  - a hover, tap, key or focus on the chart; the rail; a new reading; a crowd change; a resize; leaving the tab; motion
+    switched off.
+  - The action then happens as it would have anyway: the hover shows its stop, the rail opens with its own motion, and a
+    new reading lands with its roll and tail. A reading during the intro is never lost.
+- **Screen readers:** the answers' text is final from the first paint, the chart's text is untouched, and the intro
+  announces nothing (the live region stays empty).
+- **Transform, clip and draw only:** no glyph changes opacity, and no element's box changes (the slot holds the final
+  value in flow). At the end every element, attribute and style the intro added is removed.
+- **Fonts and performance:** it starts only once both weights of Readex Pro are loaded for both scripts, and the tab is
+  visible, so no font swaps mid-intro.
+  - Until then the answers wait out of sight and the line is not drawn. If the fonts take longer than 1 s, the page
+    settles at once instead (fail safe).
+  - Each frame sets a few attributes; the arc lengths come from the page's own path tables.
+- **Tuner:** the intro speed (0.5× to 2×) divides every duration; "Replay intro" plays it again on the current page. See
+  "Light tuner".
+- **Choices the brief left open, with the reason:**
+  - **Only the four answers roll.** They answer the owner's first question. Times of day, the usual entries, the average
+    and the level chips are context, and less motion is the page's default.
+  - **The numbers and the line start together.** The numbers settle by 280 ms, well before the line (640 ms), so they
+    are read first without a delay that would lengthen the whole.
+  - **Grid, axes and the usual line are still.** They are the instrument's frame and the reference that today's line is
+    drawn against, not today's data.
+  - **The landing:** the live end point grows out of the pen's tip, so the drawing ends on it. The peak ring uses the same
+    swell, and its label appears at once, because text never fades.
+  - **Delayed:** the stale number stays still and the grey end point simply appears, so nothing stale gains an arrival.
+  - **Yielding:** settle at once rather than hurry, so a hover or a new reading always meets the real page.
+  - **Waiting for the fonts:** the answers are hidden (by the slot's clip, never opacity) for as long as the fonts take,
+    at most 1 s. With a warm browser cache this is a frame or two; see "Measured".
+- **Measured (on the original Windows machine, headless Chromium, 1440×900):**
+  - **capture.mjs:** each first open played and settled in 849-876 ms from its start (the 820 ms design plus a frame to
+    start and a frame to finish). No long task (> 50 ms) and no font load ran during any intro, in AR and EN, live,
+    delayed and no history.
+  - **Real-time recordings** (Playwright `recordVideo`, decoded frames timed on the page's own clock):
+    - AR: the answers show from 24 ms and are settled by 220 ms; the line starts at about 50-100 ms, reaches now at
+      663 ms, and the end point and the peak ring are whole by 814 ms.
+    - EN: the answers show from 26 ms and are settled by 338 ms (the next decoded frame after 285 ms); the line reaches
+      now at 645 ms, and the end point and the peak ring are whole by 772 ms.
+    - The recordings hold about 22 frames in the intro (headless Chromium paints at about 30 frames per second).
+  - **Font wait:** 17-28 ms with a warm cache (a second tab, or the capture's font cache); 390-1010 ms for a cold
+    network fetch in a fresh context (the first capture run; once, 1007 ms went past the cap and the page settled at
+    once, as designed).
 
 **Deviations from the brief, and choices it left open**
 
@@ -492,10 +597,18 @@ deviceScaleFactor 1, and 2 for the crops. The still frames use reducedMotion "re
 "no-preference". It writes everything under "Evidence" and `capture-log.json` into `outDir` (default `evidence/`), and
 takes about five minutes. It exits with code 1 if any check below fails.
 
+- **The intro (Round 7 step 3):** every fresh context is a new tab, so with motion on its first open plays the intro.
+  `open()` waits for the intro to end, so every older check starts from the still page, as before.
+  - The intro part serves the Google Fonts files from the capture's own memory after their first network fetch (the same
+    bytes), as a browser cache does for a returning owner. Without it, a fresh context's font fetch (390-1010 ms here)
+    races the intro's 1 s font cap.
+  - `--intro-frames=<dir>` also writes every full-size held 2x intro frame to that folder. They are large and are not
+    evidence.
+
 - **Other machines:** the static guard compares with `evidence/pre-motion-hashes.json`, which was rendered on the
   original Windows machine. Fonts render differently elsewhere, so on another machine pass a scratch `outDir`, expect
-  that guard (and the checks built on the same hashes: the first paint and the settled rail) to fail, and never let
-  such a run rewrite `evidence/`.
+  that guard (and the checks built on the same hashes: the intro's end state, the reload and the settled rail) to fail,
+  and never let such a run rewrite `evidence/`.
 - **Fonts:** Readex Pro loads from Google Fonts over verified TLS. In a fresh cloud container, the proxy's CA must first be
   in Chromium's NSS store (`~/.pki/nssdb`).
 - **Round 7 step 2:** it was first run only in the cloud container, into a scratch folder. Every check not built on the
@@ -509,14 +622,33 @@ The log records:
 - **Calibration:** light-study A, rendered read-only from `file://`.
 - **The tuner from `file://`:**
   - keyboard, presets, drag, copy (both paths), persistence, `?tuner=0` and reset;
-  - the Motion group: no obsolete controls, New reading, the crowd buttons, and the switch persisting in its own key;
+  - the Motion group: no obsolete controls, New reading, the crowd buttons, the switch persisting in its own key, and
+    (Round 7 step 3) the intro speed and "Replay intro", disabled with reduced motion;
   - (in `marker`) the hover speed: its row, its storage with the switch, a reload, and `?tuner=0`;
   - a crowd change with motion on: the number rolls, the bars change, no light moves and no glyph fades.
 - **`motion` (Round 6):**
   - **Static guard:** `identity.staticFrames` and `identity.motionOffFrames`. The frames that change by design are
     compared with this run's reduced-motion frame.
-  - **First paint:** `identity.motionFirstPaint` holds the first paint with motion on, the animations on load, and
-    whether the DOM equals the `?motion=off` DOM.
+  - **First paint (Round 7 step 3, the changed rule):** `identity.firstOpen` and `identity.reload`, in AR and EN, live,
+    delayed and no history. A first open plays the intro and ends identical to the still frame (the pre-motion frame, or
+    this run's reduced-motion frame for EN delayed and no history), with the DOM equal to the `?motion=off` DOM, only
+    the pulse running after it, no long task and no font load during it. A reload in the same tab has no intro (no
+    rolling slot or line dash appears at any time), is the still frame, and runs only the pulse on load.
+  - **`intro`** (Round 7 step 3):
+    - `whenItPlays`: a new tab plays it; a reload, the language link in the same tab, reduced motion, `?motion=off` and a
+      new tab with the Motion switch off do not; a second tab does; `?tuner=0` ignores the stored switch. "Replay intro"
+      plays it at 1×, 0.5× and 2× (measured against 820, 1640 and 410 ms) and ends at the still frame; the speed is
+      stored, kept on a reload and ignored with `?tuner=0`.
+    - `yields`: a hover, keys, the rail, a tap, a new reading and a resize, each at 100 and 400 ms into it. It settles at
+      once; the hover, tap and keys select their stop with the marker on the line; the rail settles at the still
+      rail-open frame; the reading is not lost (7:43 PM, Entries 333, the canonical DOM); the resize equals a fresh
+      1280×800 page.
+    - `held`: held 2x frames (live 0-760 ms, delayed and no history 0 and 320 ms, AR and EN). At every held frame no box
+      moves, the answers' text is final, the live region is silent, the chart's text is final, no glyph animates
+      opacity, text moves by transform only, and the line has its two parts. The end is judged on an intro that plays by
+      itself against the 2x reduced-motion frame; the end after the holds is reported too. At 2x one glyph («6-8»)
+      rasterizes in one of two ways on this machine, with no intro too, so if the two differ one more of each is
+      rendered and the end must equal one of the still renderings.
   - **`chart`** (Round 7 step 2: form B, in AR and EN, each live, delayed and without history):
     - every stop, with the half-hour coverage, the gap stop and the two line segments (no bridge);
     - at every stop, the marker's distance to its target, its form, that nothing is drawn above the point, the tooltip,
@@ -544,7 +676,18 @@ The log records:
     start-aligned tooltip (label chip then time; number then word)
   - `-rail-open` (AR and EN)
   - `-delayed`, `-nohistory` and `-details` (full page), in AR
-  - `daily-ar-1440x900-tuner-open`, with the Round 6 Motion group and the Round 7 step 2 hover speed
+  - `daily-ar-1440x900-tuner-open`, with the Round 6 Motion group, the Round 7 step 2 hover speed and the Round 7 step 3
+    intro speed and "Replay intro" (disabled here, with reduced motion). The panel is now taller than the frame and
+    scrolls; its Copy values and Reset row sits at the fold.
+- **The first-open intro (Round 7 step 3;** every `intro-*` sheet is rewritten on each run, and older ones are deleted
+  first):
+  - `intro-contact-sheet`: live, AR and EN side by side, 1440×900 at 2x, held at 0, 60, 120, 200, 350, 500 and 700 ms
+    and at the settled end.
+  - `intro-states-2x`: delayed and no history, AR and EN, 2x, at the start, the middle (320 ms) and the end.
+  - `intro-detail-ar-2x`: 2x details in AR: the four answers at 0, 60, 120, 200 and 280 ms, and the line landing at 600,
+    640, 660, 700 and 760 ms and at the end.
+  - `intro-yield-ar`: 1x, the page 50 ms after a hover, keys, the rail, a tap, a new reading and a resize at 100 and
+    400 ms into the intro.
 - **`marker-variants-ar-3x.png` (Round 7 step 2):** marker B only, tight 3x crops of the real AR page at rest, the
   tooltip hidden: on the line (5:00 PM), the peak, the latest reading live and delayed, still ahead (9:00 PM), the
   missing span (the lit dots), and still ahead without history.
@@ -560,7 +703,7 @@ The log records:
     (`motion-glide-ar-a-2x` and `motion-glide-ar-b-2x`), which are gone.
   - `motion-live-ar-tail-2x`: the line's tail around the end point, before, at 70 and 140 ms, and after (enlarged 3x).
   - `motion-rail-ar-open-0100ms`, `motion-rail-ar-close-0090ms` and `motion-rail-en-open-0100ms`.
-  - `motion-contact-sheet`: all of them on one page.
+  - `motion-contact-sheet`: all of them on one page. Its title now points to the intro's own sheet.
 - **Round 5 frames:** the `motion-load-*`, `motion-light-*` and `motion-glide-ar-0090ms` frames are gone with the
   motion they showed. `motion-follow-ar-2x` reuses an old Round 5 name for the new follow frame.
 - **Re-rendered on 2026-09-26 (tooltip layout close-out):** `capture.mjs` was run on the original Windows machine into
@@ -589,15 +732,38 @@ The log records:
   - Only the tuner-open frame and the latest stop (its new value) differ, by design.
   - With motion on, a hover that has followed and settled matches the still hover frame, except for a few faint
     raster differences on anti-aliased edges (at most 42/255 in AR). Step 1 shows the same kind with its glide.
-- **Static guard (last run on Windows on 2026-09-26, after the tooltip layout change, exit code 0):**
+- **Re-rendered for Round 7 step 3 (the intro), on the original Windows machine into `evidence/`, four runs:**
+  - **Run 1, exit 1:** in AR delayed the fonts came over the network in 1007 ms, past the 1 s cap, so that page settled
+    at once without an intro (its end still equalled the still frame). And the AR 2x end after the held frames differed
+    from the 2x still in 142 fringe pixels on the «8» of «6-8 م» (max 32/255). Repair 1: the intro part got its font
+    cache, and the 2x end is judged on an intro that plays by itself.
+  - **Run 2, exit 1:** every intro check passed; the static guard flagged `preset-a-like-ar-1440x900`, a reduced-motion
+    frame with no intro, by 67 fringe pixels on the same «6-8» (max 84/255): the known glyph-fringe noise.
+  - **Run 3, unchanged, exit 1:** the static guard passed; in AR no history, both the natural and the held 2x ends
+    differed from the 2x still by the same 144 fringe pixels on «6-8», so the still was the odd raster. Repair 2: when
+    they differ, one more still and one more natural end are rendered and the end must equal one of the stills.
+  - **Run 4, exit 0:** these files. No second rendering was needed.
+  - Scratch checks behind repair 2: with no intro, the held sequence of clipped 2x screenshots left the page identical
+    8 of 8 times; intros that played by themselves ended identical at 2x 11 of 11 times; held intros with clipped
+    screenshots 4 of 5 times.
+  - Changed by design: `daily-ar-1440x900-tuner-open` (the intro rows) and `capture-log.json`.
+  - Changed with no change in behaviour: `motion-contact-sheet` (its title) and `motion-roll-en-2x` (mid-roll timing
+    noise).
+  - New: the four `intro-*` sheets. Every other PNG was rewritten byte-identically.
+- **Static guard (run 4, exit code 0):**
   - Reduced motion: 25 of 27 pre-motion frames are identical. The other two, the AR hover and the tuner frames,
     change by design.
   - `?motion=off`: 9 of 9 frames are identical (the pre-motion frame, or this run's still frame for the frames that
     change by design and for the EN hover frame).
-  - With motion on, the first paint is identical in 4 of 4 pages, and only the live pulse runs on load.
+  - **The intro's end state:** 6 of 6 first opens (AR and EN, live, delayed and no history) played and ended identical to
+    the still frame, with the DOM equal to the `?motion=off` DOM and only the pulse running after it. 6 of 6 same-tab
+    reloads had no intro and were the still frame. At 2x, 6 of 6 ends that played by themselves equalled the 2x still
+    frame, and so did 6 of 6 ends after the held frames.
+  - When it plays, the 12 yields and every held-frame check passed.
   - Every `chart`, `follow`, `marker`, `roll`, `delayed`, `rail` and tuner check passed.
 - **Videos:** the designer's real-time recordings (1440×900) are outside the repository and are not evidence here. The
-  step 2 recordings are in the builder's scratch folder.
+  step 2 recordings are in the builder's scratch folder; the step 3 recordings, their decoded frames and their strips are
+  in the step 3 designer's scratch folder.
 
 ## Checks not run
 
@@ -614,7 +780,8 @@ The log records:
   - It was judged from held frames and from the designer's real-time Playwright recordings, decoded frame by frame
     (about 25 frames per second). It was not judged on a real display.
   - Frame pacing and jank were not measured. Pointer and keys came from Playwright, not a real touchpad or keyboard.
-  - Touch was not tried; a tap pins the reading, as before.
+  - Touch was tried only as a Playwright tap during the intro (it settles, and the tap pins its stop); a tap pins the
+    reading, as before.
 - **Marker and follow (Round 7 step 2):**
   - The follow was judged from rAF logs, held frames and real-time Playwright recordings in headless Chromium, which
     paints at about 30 frames per second there (the recordings hold about 20 distinct frames per second). It was not
@@ -622,12 +789,29 @@ The log records:
   - The live pulse still runs from the end point while the ring sits on it (the user kept it); it was not judged in
     motion.
   - The ring's blur filter was not profiled for frame cost; the ring's elements are moved, not rebuilt, each frame.
+- **The intro (Round 7 step 3):**
+  - It was judged from held 2x frames, the capture's checks and two real-time Playwright recordings in headless
+    Chromium (about 22 frames in the intro). It was not seen on a real display at 60 or 120 Hz, and not by the user.
+  - A new browser session was tried only as a fresh browser context. Chrome's "continue where you left off" restores a
+    tab's session storage, so a restored tab would likely not replay it; that was not tried.
+  - A tab opened in the background (the intro waits until it is first shown) and leaving the tab mid-intro (it settles)
+    are in the code but were not exercised.
+  - The 1 s font cap was seen to expire once, on a cold network fetch in the capture (the page settled at once). A slow
+    real network was not tried.
+  - The pre-intro wait hides the answers (a clip) while the fonts load: a frame or two with a warm cache, up to 1 s cold.
+    Round 6 said nothing is hidden while the fonts load; decision 4 needs the answers absent before they roll.
+  - No screen-reader pass: the answers' text, the chart's text and the silent live region were checked as text only.
+  - At 2x the raster of «6-8» in Arabic is bistable on this machine (two variants, a few dozen fringe pixels), with and
+    without the intro; see "Evidence".
 - **Known differences:**
   - After a simulated live update settles, the page's DOM and geometry equal the canonical page, measured to 0.001px.
   - But Chromium rasterizes the header chip's text differently: about 1,100 pixels, up to 84/255 on glyph edges.
   - It happens once anything positioned or animated has existed inside that chip. Even a plain `top` animation on a
     span does it, so it is a raster state, not a layout change.
   - The cards' text is not affected (their layers are already composited).
-- **Scope:** no English frames for delayed, no history or details. Mobile is out of scope.
-- **Repository:** no repository verification. `pnpm check:design-context` passed at the start of Round 7 (step 1); it was
-  not run for step 2.
+  - A new reading that lands during the intro ends at the canonical page's DOM; its pixels differed from it by at most
+    1/255 in 1,149 header-chip pixels once (at 100 ms) and not at all once (at 400 ms).
+- **Scope:** no English still frames for delayed, no history or details (the intro's sheets have English delayed and no
+  history). Mobile is out of scope.
+- **Repository:** no repository verification. `pnpm check:design-context` passed at the start of Round 7 (step 1) and
+  of step 3; it was not run for step 2.

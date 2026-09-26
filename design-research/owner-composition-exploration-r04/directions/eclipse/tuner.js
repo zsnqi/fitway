@@ -5,8 +5,8 @@
  *   ?tuner=0                   the tuner is off entirely: no panel, and no stored tuning is applied
  *   ?preset=v2|a-like|recommended   start from that preset (not stored); with tuner=0 it applies the preset
  *                                   and shows no panel, which is how the preset evidence frames are captured
- * The panel also has a Motion group (Round 6; Round 7 step 2 adds the hover speed) that drives app.js's
- * window.__eclipse.motion. */
+ * The panel also has a Motion group (Round 6; Round 7 step 2 adds the hover speed, step 3 the intro speed and
+ * "Replay intro") that drives app.js's window.__eclipse.motion and window.__eclipse.intro. */
 (() => {
   "use strict";
   const params = new URLSearchParams(location.search);
@@ -178,9 +178,10 @@
   });
   /* ------------------------------------------------------------ motion group
    * Drives app.js's motion (window.__eclipse.motion; Round 6): a simulated new reading, a simulated crowd-level
-   * change on the Inside now card (across the nearest level boundary, up or down), the Motion switch, and (Round 7
-   * step 2) the hover speed of the chart marker's follow. app.js keeps the switch and the speed in their own
-   * localStorage key (fitway.eclipse.v3.motion), separate from the light values, and ignores them with ?tuner=0. */
+   * change on the Inside now card (across the nearest level boundary, up or down), the Motion switch, (Round 7
+   * step 2) the hover speed of the chart marker's follow, and (Round 7 step 3) the first-open intro's speed and a
+   * "Replay intro" button. app.js keeps the switch and both speeds in their own localStorage key
+   * (fitway.eclipse.v3.motion), separate from the light values, and ignores them with ?tuner=0. */
   const MO = window.__eclipse && window.__eclipse.motion;
   let syncMotion = () => {};
   const motionGroup = el("fieldset", { class: "tuner-group tuner-motion" });
@@ -211,8 +212,26 @@
     speed.addEventListener("input", () => { MO.set({ hoverSpeed: Number(speed.value) }); showSpeed(MO.options.hoverSpeed); });
     speedReset.addEventListener("click", () => { MO.set({ hoverSpeed: MO.defaults.hoverSpeed }); showSpeed(MO.options.hoverSpeed); });
     speedRow.append(speedLabel, speedOut, speedReset, speed);
+    // The first-open intro (Round 7 step 3): its speed (a multiplier on every intro duration; 1 is the designed
+    // length, about 820 ms) and a button that replays it on the page as it is now. The speed is kept in the same
+    // motion key and ignored with ?tuner=0.
+    const IN = window.__eclipse.intro;
+    const introRow = el("div", { class: "t-row t-speed t-intro-speed" });
+    const introLabel = el("label", { for: "t-mo-intro" }, `<span>سرعة المقدمة</span><span class="t-en" lang="en" dir="ltr">Intro speed</span>`);
+    const introSpeed = el("input", { type: "range", id: "t-mo-intro", min: "0.5", max: "2", step: "0.05" });
+    const introOut = el("output", { for: "t-mo-intro", dir: "ltr" });
+    const introReset = el("button", { type: "button", class: "t-mini", "aria-label": "سرعة المقدمة الافتراضية" }, `<span>الافتراضي</span><span class="t-en" lang="en" dir="ltr">Default</span>`);
+    const showIntro = (v) => { introSpeed.value = String(v); introOut.textContent = `${Number(v).toFixed(2)}× · ${Math.round(IN.totalMs(Number(v)))} ms`; introReset.disabled = Number(v) === MO.defaults.introSpeed; };
+    introSpeed.addEventListener("input", () => { MO.set({ introSpeed: Number(introSpeed.value) }); showIntro(MO.options.introSpeed); });
+    introReset.addEventListener("click", () => { MO.set({ introSpeed: MO.defaults.introSpeed }); showIntro(MO.options.introSpeed); });
+    introRow.append(introLabel, introOut, introReset, introSpeed);
+    const introActs = el("div", { class: "t-motion-acts" });
+    const replayBtn = tb("إعادة المقدمة", "Replay intro");
+    replayBtn.id = "t-mo-replay";
+    replayBtn.addEventListener("click", () => { IN.replay(); });
+    introActs.append(replayBtn);
     const note = el("p", { class: "t-note" });
-    motionGroup.append(acts, crowd, lab, speedRow, note);
+    motionGroup.append(acts, crowd, lab, speedRow, introRow, introActs, note);
     const say = (s) => { latest.textContent = s; };
     stepBtn.addEventListener("click", () => {
       const r = MO.step();
@@ -229,6 +248,8 @@
       box.disabled = blocked;
       upBtn.disabled = downBtn.disabled = !MO.canCrowd;
       showSpeed(MO.options.hoverSpeed);
+      showIntro(MO.options.introSpeed);
+      replayBtn.disabled = !MO.on; // no intro with reduced motion, ?motion=off or the Motion switch off
       backBtn.disabled = MO.atStart;
       note.innerHTML = MO.urlOff ? "الحركة متوقفة بالرابط (motion=off)" : MO.systemReduced ? "النظام يطلب حركة أقل، فالحركة متوقفة"
         : !MO.canCrowd ? `بطاقة «آخر قراءة» ثابتة ما دامت البيانات متأخرة <span class="t-en" lang="en" dir="ltr">Fixed while delayed</span>` : "";

@@ -1,13 +1,14 @@
 {
-  "capturedAt": "2026-09-26T10:27:59.811Z",
+  "capturedAt": "2026-09-26T13:17:36.873Z",
   "port": 3173,
   "motion": {
     "method": "Pre-motion frames: evidence/pre-motion-hashes.json (SHA-256 of the v3 frames before motion). The capture is byte-deterministic, so equal hashes mean identical pixels.",
     "staticFramesIdentical": true,
     "motionOffFramesIdentical": true,
-    "firstPaintWithMotionIdenticalWithPulseHidden": true,
-    "onlyThePulseRunsOnLoad": true,
-    "firstPaintDomEqualsMotionOff": true,
+    "introEndsAtStillFrame": true,
+    "introEndsAtMotionOffDom": true,
+    "onlyThePulseRunsAfterIntro": true,
+    "reloadHasNoIntroAndIsStillFrame": true,
     "liveUpdateEndsAtCanonical": {
       "identicalWithPulseHidden": false,
       "pixelDiff": {
@@ -89,7 +90,7 @@
         },
         "daily-ar-1440x900-tuner-open": {
           "identical": false,
-          "expectedToChange": "Round 6: the tuner's Motion group; Round 7 step 2: its hover speed (the step-1 Marker group is gone)"
+          "expectedToChange": "Round 6: the tuner's Motion group; Round 7 step 2: its hover speed (the step-1 Marker group is gone); Round 7 step 3: the intro speed and Replay intro"
         },
         "preset-v2-ar-1440x900": {
           "identical": true
@@ -220,60 +221,240 @@
           "errors": []
         }
       },
-      "motionFirstPaint": {
+      "firstOpen": {
         "daily-ar-1440x900": {
           "url": "index.html?lang=ar&tuner=0",
-          "dataMotion": "on",
-          "pendingAttributes": [],
-          "hiddenCards": 0,
-          "pulse": true,
-          "errors": [],
-          "animationsOnLoad": [
+          "against": "pre-motion frame",
+          "played": true,
+          "reason": "first open in this tab",
+          "yieldedBy": "complete",
+          "measuredMs": 876,
+          "expectedMs": 820,
+          "fontWaitMs": 18,
+          "introElementsSeen": {
+            "slots": 5,
+            "dashes": 31
+          },
+          "endIdenticalToStill": true,
+          "onlyThePulseAfter": true,
+          "animationsAfter": [
             "css @keyframes ping on span.ping.is-on"
           ],
-          "onlyThePulse": true,
-          "identicalWithPulseHidden": true,
-          "domEqualsMotionOff": true
+          "domEqualsMotionOff": true,
+          "longTasksDuringIntro": [],
+          "longTaskObserver": true,
+          "fontLoadsDuringIntro": [],
+          "framesDuringIntro": 46,
+          "maxFrameGapMs": 33.4,
+          "errors": [],
+          "pass": true
         },
         "daily-en-1440x900": {
           "url": "index.html?lang=en&tuner=0",
-          "dataMotion": "on",
-          "pendingAttributes": [],
-          "hiddenCards": 0,
-          "pulse": true,
-          "errors": [],
-          "animationsOnLoad": [
+          "against": "pre-motion frame",
+          "played": true,
+          "reason": "first open in this tab",
+          "yieldedBy": "complete",
+          "measuredMs": 850,
+          "expectedMs": 820,
+          "fontWaitMs": 17,
+          "introElementsSeen": {
+            "slots": 5,
+            "dashes": 32
+          },
+          "endIdenticalToStill": true,
+          "onlyThePulseAfter": true,
+          "animationsAfter": [
             "css @keyframes ping on span.ping.is-on"
           ],
-          "onlyThePulse": true,
-          "identicalWithPulseHidden": true,
-          "domEqualsMotionOff": true
+          "domEqualsMotionOff": true,
+          "longTasksDuringIntro": [],
+          "longTaskObserver": true,
+          "fontLoadsDuringIntro": [],
+          "framesDuringIntro": 45,
+          "maxFrameGapMs": 50,
+          "errors": [],
+          "pass": true
         },
         "daily-ar-1440x900-delayed": {
           "url": "index.html?lang=ar&state=delayed&tuner=0",
-          "dataMotion": "on",
-          "pendingAttributes": [],
-          "hiddenCards": 0,
-          "pulse": false,
+          "against": "pre-motion frame",
+          "played": true,
+          "reason": "first open in this tab",
+          "yieldedBy": "complete",
+          "measuredMs": 870,
+          "expectedMs": 820,
+          "fontWaitMs": 22,
+          "introElementsSeen": {
+            "slots": 4,
+            "dashes": 34
+          },
+          "endIdenticalToStill": true,
+          "onlyThePulseAfter": true,
+          "animationsAfter": [],
+          "domEqualsMotionOff": true,
+          "longTasksDuringIntro": [],
+          "longTaskObserver": true,
+          "fontLoadsDuringIntro": [],
+          "framesDuringIntro": 48,
+          "maxFrameGapMs": 33.4,
           "errors": [],
-          "animationsOnLoad": [],
-          "onlyThePulse": true,
-          "identicalWithPulseHidden": true,
-          "domEqualsMotionOff": true
+          "pass": true
         },
         "daily-ar-1440x900-nohistory": {
           "url": "index.html?lang=ar&state=nohistory&tuner=0",
-          "dataMotion": "on",
-          "pendingAttributes": [],
-          "hiddenCards": 0,
-          "pulse": true,
+          "against": "pre-motion frame",
+          "played": true,
+          "reason": "first open in this tab",
+          "yieldedBy": "complete",
+          "measuredMs": 857,
+          "expectedMs": 820,
+          "fontWaitMs": 22,
+          "introElementsSeen": {
+            "slots": 5,
+            "dashes": 33
+          },
+          "endIdenticalToStill": true,
+          "onlyThePulseAfter": true,
+          "animationsAfter": [
+            "css @keyframes ping on span.ping.is-on"
+          ],
+          "domEqualsMotionOff": true,
+          "longTasksDuringIntro": [],
+          "longTaskObserver": true,
+          "fontLoadsDuringIntro": [],
+          "framesDuringIntro": 47,
+          "maxFrameGapMs": 50,
           "errors": [],
+          "pass": true
+        },
+        "daily-en-1440x900-delayed": {
+          "url": "index.html?lang=en&state=delayed&tuner=0",
+          "against": "this run's reduced-motion frame",
+          "played": true,
+          "reason": "first open in this tab",
+          "yieldedBy": "complete",
+          "measuredMs": 868,
+          "expectedMs": 820,
+          "fontWaitMs": 22,
+          "introElementsSeen": {
+            "slots": 4,
+            "dashes": 34
+          },
+          "endIdenticalToStill": true,
+          "onlyThePulseAfter": true,
+          "animationsAfter": [],
+          "domEqualsMotionOff": true,
+          "longTasksDuringIntro": [],
+          "longTaskObserver": true,
+          "fontLoadsDuringIntro": [],
+          "framesDuringIntro": 47,
+          "maxFrameGapMs": 33.3,
+          "errors": [],
+          "pass": true
+        },
+        "daily-en-1440x900-nohistory": {
+          "url": "index.html?lang=en&state=nohistory&tuner=0",
+          "against": "this run's reduced-motion frame",
+          "played": true,
+          "reason": "first open in this tab",
+          "yieldedBy": "complete",
+          "measuredMs": 849,
+          "expectedMs": 820,
+          "fontWaitMs": 22,
+          "introElementsSeen": {
+            "slots": 5,
+            "dashes": 34
+          },
+          "endIdenticalToStill": true,
+          "onlyThePulseAfter": true,
+          "animationsAfter": [
+            "css @keyframes ping on span.ping.is-on"
+          ],
+          "domEqualsMotionOff": true,
+          "longTasksDuringIntro": [],
+          "longTaskObserver": true,
+          "fontLoadsDuringIntro": [],
+          "framesDuringIntro": 48,
+          "maxFrameGapMs": 33.4,
+          "errors": [],
+          "pass": true
+        }
+      },
+      "reload": {
+        "daily-ar-1440x900": {
+          "played": false,
+          "state": "off",
+          "reason": "already opened in this tab",
+          "introElementsSeen": 0,
+          "identicalToStill": true,
+          "onlyThePulse": true,
           "animationsOnLoad": [
             "css @keyframes ping on span.ping.is-on"
           ],
+          "domEqualsMotionOff": true,
+          "pass": true
+        },
+        "daily-en-1440x900": {
+          "played": false,
+          "state": "off",
+          "reason": "already opened in this tab",
+          "introElementsSeen": 0,
+          "identicalToStill": true,
           "onlyThePulse": true,
-          "identicalWithPulseHidden": true,
-          "domEqualsMotionOff": true
+          "animationsOnLoad": [
+            "css @keyframes ping on span.ping.is-on"
+          ],
+          "domEqualsMotionOff": true,
+          "pass": true
+        },
+        "daily-ar-1440x900-delayed": {
+          "played": false,
+          "state": "off",
+          "reason": "already opened in this tab",
+          "introElementsSeen": 0,
+          "identicalToStill": true,
+          "onlyThePulse": true,
+          "animationsOnLoad": [],
+          "domEqualsMotionOff": true,
+          "pass": true
+        },
+        "daily-ar-1440x900-nohistory": {
+          "played": false,
+          "state": "off",
+          "reason": "already opened in this tab",
+          "introElementsSeen": 0,
+          "identicalToStill": true,
+          "onlyThePulse": true,
+          "animationsOnLoad": [
+            "css @keyframes ping on span.ping.is-on"
+          ],
+          "domEqualsMotionOff": true,
+          "pass": true
+        },
+        "daily-en-1440x900-delayed": {
+          "played": false,
+          "state": "off",
+          "reason": "already opened in this tab",
+          "introElementsSeen": 0,
+          "identicalToStill": true,
+          "onlyThePulse": true,
+          "animationsOnLoad": [],
+          "domEqualsMotionOff": true,
+          "pass": true
+        },
+        "daily-en-1440x900-nohistory": {
+          "played": false,
+          "state": "off",
+          "reason": "already opened in this tab",
+          "introElementsSeen": 0,
+          "identicalToStill": true,
+          "onlyThePulse": true,
+          "animationsOnLoad": [
+            "css @keyframes ping on span.ping.is-on"
+          ],
+          "domEqualsMotionOff": true,
+          "pass": true
         }
       },
       "liveUpdateEndsAtCanonical": {
@@ -294,8 +475,32 @@
     "spec": [
       {
         "motion": "Load",
-        "animates": "nothing: the page is complete at first paint (no stagger, no line draw, no light entrance)",
-        "note": "only the live pulse runs at rest, and only while live"
+        "animates": "nothing but the first-open intro: the surfaces, lights, labels, grid, axes and usual line are complete at first paint (no stagger, no rise, no light entrance)",
+        "note": "a reload or a return in the same tab has no intro; only the live pulse runs at rest, and only while live"
+      },
+      {
+        "motion": "First-open intro (Round 7 step 3): the answers",
+        "animates": "transform translateY of each answer's numeric expression (Inside now, Today's peak, Entries, Busiest time), from below into the digits' ink box, clipped to it: the digit roll entering the final value; while delayed the stale Inside now number is still",
+        "delayMs": 0,
+        "durationMs": 280,
+        "easing": "cubic-bezier(0.25, 1, 0.5, 1)",
+        "note": "only on the first open in a tab; no count-up and no intermediate value; the DOM text is final from the first paint; nothing is announced"
+      },
+      {
+        "motion": "First-open intro: the line",
+        "animates": "stroke-dasharray of today's line parts, drawn by minutes since open from opening to the latest reading (right to left in Arabic), and one clip uncovering the fine vertical lines to the same minute",
+        "delayMs": 0,
+        "durationMs": 640,
+        "easing": "cubic-bezier(0.3, 0.2, 0.4, 1)",
+        "note": "the missing span stays a gap throughout; the grid, axes and usual line are still from the first paint"
+      },
+      {
+        "motion": "First-open intro: the end point and the peak",
+        "animates": "SVG transform scale: the live end point and halo from the line tip's size (0.34) to 1, the peak ring from the same 0.34 to 1; the stale end point, the peak's drop and its label appear at once when the line arrives",
+        "delayMs": 640,
+        "durationMs": 180,
+        "easing": "cubic-bezier(0.25, 1, 0.5, 1)",
+        "note": "about 820 ms in all; it settles at once on any action, a new reading or a resize; the pulse starts when it ends"
       },
       {
         "motion": "Lights",
@@ -357,6 +562,1227 @@
         "easing": "cubic-bezier(0.4, 0, 0.2, 1)"
       }
     ],
+    "intro": {
+      "firstOpen": {
+        "daily-ar-1440x900": {
+          "url": "index.html?lang=ar&tuner=0",
+          "against": "pre-motion frame",
+          "played": true,
+          "reason": "first open in this tab",
+          "yieldedBy": "complete",
+          "measuredMs": 876,
+          "expectedMs": 820,
+          "fontWaitMs": 18,
+          "introElementsSeen": {
+            "slots": 5,
+            "dashes": 31
+          },
+          "endIdenticalToStill": true,
+          "onlyThePulseAfter": true,
+          "animationsAfter": [
+            "css @keyframes ping on span.ping.is-on"
+          ],
+          "domEqualsMotionOff": true,
+          "longTasksDuringIntro": [],
+          "longTaskObserver": true,
+          "fontLoadsDuringIntro": [],
+          "framesDuringIntro": 46,
+          "maxFrameGapMs": 33.4,
+          "errors": [],
+          "pass": true
+        },
+        "daily-en-1440x900": {
+          "url": "index.html?lang=en&tuner=0",
+          "against": "pre-motion frame",
+          "played": true,
+          "reason": "first open in this tab",
+          "yieldedBy": "complete",
+          "measuredMs": 850,
+          "expectedMs": 820,
+          "fontWaitMs": 17,
+          "introElementsSeen": {
+            "slots": 5,
+            "dashes": 32
+          },
+          "endIdenticalToStill": true,
+          "onlyThePulseAfter": true,
+          "animationsAfter": [
+            "css @keyframes ping on span.ping.is-on"
+          ],
+          "domEqualsMotionOff": true,
+          "longTasksDuringIntro": [],
+          "longTaskObserver": true,
+          "fontLoadsDuringIntro": [],
+          "framesDuringIntro": 45,
+          "maxFrameGapMs": 50,
+          "errors": [],
+          "pass": true
+        },
+        "daily-ar-1440x900-delayed": {
+          "url": "index.html?lang=ar&state=delayed&tuner=0",
+          "against": "pre-motion frame",
+          "played": true,
+          "reason": "first open in this tab",
+          "yieldedBy": "complete",
+          "measuredMs": 870,
+          "expectedMs": 820,
+          "fontWaitMs": 22,
+          "introElementsSeen": {
+            "slots": 4,
+            "dashes": 34
+          },
+          "endIdenticalToStill": true,
+          "onlyThePulseAfter": true,
+          "animationsAfter": [],
+          "domEqualsMotionOff": true,
+          "longTasksDuringIntro": [],
+          "longTaskObserver": true,
+          "fontLoadsDuringIntro": [],
+          "framesDuringIntro": 48,
+          "maxFrameGapMs": 33.4,
+          "errors": [],
+          "pass": true
+        },
+        "daily-ar-1440x900-nohistory": {
+          "url": "index.html?lang=ar&state=nohistory&tuner=0",
+          "against": "pre-motion frame",
+          "played": true,
+          "reason": "first open in this tab",
+          "yieldedBy": "complete",
+          "measuredMs": 857,
+          "expectedMs": 820,
+          "fontWaitMs": 22,
+          "introElementsSeen": {
+            "slots": 5,
+            "dashes": 33
+          },
+          "endIdenticalToStill": true,
+          "onlyThePulseAfter": true,
+          "animationsAfter": [
+            "css @keyframes ping on span.ping.is-on"
+          ],
+          "domEqualsMotionOff": true,
+          "longTasksDuringIntro": [],
+          "longTaskObserver": true,
+          "fontLoadsDuringIntro": [],
+          "framesDuringIntro": 47,
+          "maxFrameGapMs": 50,
+          "errors": [],
+          "pass": true
+        },
+        "daily-en-1440x900-delayed": {
+          "url": "index.html?lang=en&state=delayed&tuner=0",
+          "against": "this run's reduced-motion frame",
+          "played": true,
+          "reason": "first open in this tab",
+          "yieldedBy": "complete",
+          "measuredMs": 868,
+          "expectedMs": 820,
+          "fontWaitMs": 22,
+          "introElementsSeen": {
+            "slots": 4,
+            "dashes": 34
+          },
+          "endIdenticalToStill": true,
+          "onlyThePulseAfter": true,
+          "animationsAfter": [],
+          "domEqualsMotionOff": true,
+          "longTasksDuringIntro": [],
+          "longTaskObserver": true,
+          "fontLoadsDuringIntro": [],
+          "framesDuringIntro": 47,
+          "maxFrameGapMs": 33.3,
+          "errors": [],
+          "pass": true
+        },
+        "daily-en-1440x900-nohistory": {
+          "url": "index.html?lang=en&state=nohistory&tuner=0",
+          "against": "this run's reduced-motion frame",
+          "played": true,
+          "reason": "first open in this tab",
+          "yieldedBy": "complete",
+          "measuredMs": 849,
+          "expectedMs": 820,
+          "fontWaitMs": 22,
+          "introElementsSeen": {
+            "slots": 5,
+            "dashes": 34
+          },
+          "endIdenticalToStill": true,
+          "onlyThePulseAfter": true,
+          "animationsAfter": [
+            "css @keyframes ping on span.ping.is-on"
+          ],
+          "domEqualsMotionOff": true,
+          "longTasksDuringIntro": [],
+          "longTaskObserver": true,
+          "fontLoadsDuringIntro": [],
+          "framesDuringIntro": 48,
+          "maxFrameGapMs": 33.4,
+          "errors": [],
+          "pass": true
+        }
+      },
+      "reload": {
+        "daily-ar-1440x900": {
+          "played": false,
+          "state": "off",
+          "reason": "already opened in this tab",
+          "introElementsSeen": 0,
+          "identicalToStill": true,
+          "onlyThePulse": true,
+          "animationsOnLoad": [
+            "css @keyframes ping on span.ping.is-on"
+          ],
+          "domEqualsMotionOff": true,
+          "pass": true
+        },
+        "daily-en-1440x900": {
+          "played": false,
+          "state": "off",
+          "reason": "already opened in this tab",
+          "introElementsSeen": 0,
+          "identicalToStill": true,
+          "onlyThePulse": true,
+          "animationsOnLoad": [
+            "css @keyframes ping on span.ping.is-on"
+          ],
+          "domEqualsMotionOff": true,
+          "pass": true
+        },
+        "daily-ar-1440x900-delayed": {
+          "played": false,
+          "state": "off",
+          "reason": "already opened in this tab",
+          "introElementsSeen": 0,
+          "identicalToStill": true,
+          "onlyThePulse": true,
+          "animationsOnLoad": [],
+          "domEqualsMotionOff": true,
+          "pass": true
+        },
+        "daily-ar-1440x900-nohistory": {
+          "played": false,
+          "state": "off",
+          "reason": "already opened in this tab",
+          "introElementsSeen": 0,
+          "identicalToStill": true,
+          "onlyThePulse": true,
+          "animationsOnLoad": [
+            "css @keyframes ping on span.ping.is-on"
+          ],
+          "domEqualsMotionOff": true,
+          "pass": true
+        },
+        "daily-en-1440x900-delayed": {
+          "played": false,
+          "state": "off",
+          "reason": "already opened in this tab",
+          "introElementsSeen": 0,
+          "identicalToStill": true,
+          "onlyThePulse": true,
+          "animationsOnLoad": [],
+          "domEqualsMotionOff": true,
+          "pass": true
+        },
+        "daily-en-1440x900-nohistory": {
+          "played": false,
+          "state": "off",
+          "reason": "already opened in this tab",
+          "introElementsSeen": 0,
+          "identicalToStill": true,
+          "onlyThePulse": true,
+          "animationsOnLoad": [
+            "css @keyframes ping on span.ping.is-on"
+          ],
+          "domEqualsMotionOff": true,
+          "pass": true
+        }
+      },
+      "fontCache": {
+        "note": "every intro context serves the Google Fonts files from memory after their first network fetch (same bytes), as a browser cache does for a returning owner",
+        "arFirstFetch": {
+          "fontWaitMs": 501,
+          "played": true,
+          "yieldedBy": "complete"
+        },
+        "enFirstFetch": {
+          "fontWaitMs": 17,
+          "played": true,
+          "yieldedBy": "complete"
+        },
+        "files": 3
+      },
+      "whenItPlays": {
+        "newTab": {
+          "played": true,
+          "state": "done",
+          "reason": "first open in this tab",
+          "fontWaitMs": 28
+        },
+        "reloadSameTab": {
+          "played": false,
+          "state": "off",
+          "reason": "already opened in this tab",
+          "fontWaitMs": null
+        },
+        "sameTabLanguageLink": {
+          "played": false,
+          "state": "off",
+          "reason": "already opened in this tab",
+          "fontWaitMs": null
+        },
+        "secondTab": {
+          "played": true,
+          "state": "done",
+          "reason": "first open in this tab",
+          "fontWaitMs": 18
+        },
+        "newTabWithMotionSwitchOff": {
+          "played": false,
+          "state": "off",
+          "reason": "motion switch off",
+          "fontWaitMs": null
+        },
+        "newTabWithSwitchOffButTunerOff": {
+          "played": true,
+          "state": "done",
+          "reason": "first open in this tab",
+          "fontWaitMs": 23
+        },
+        "errors": [],
+        "reducedMotion": {
+          "played": false,
+          "state": "off",
+          "reason": "reduced motion",
+          "firstOpen": true
+        },
+        "motionOffUrl": {
+          "played": false,
+          "state": "off",
+          "reason": "motion=off",
+          "firstOpen": true
+        },
+        "replayAndSpeed": {
+          "row": {
+            "label": "سرعة المقدمةIntro speed",
+            "out": "1.00× · 820 ms",
+            "value": "1",
+            "replay": "إعادة المقدمةReplay intro",
+            "replayDisabled": false
+          },
+          "replay1x": {
+            "sawRunning": true,
+            "count": 2,
+            "yieldedBy": "complete",
+            "measuredMs": 842,
+            "expectedMs": 820,
+            "speed": 1
+          },
+          "replayEndIdenticalToStill": true,
+          "at05": {
+            "out": "0.50× · 1640 ms",
+            "sawRunning": true,
+            "count": 3,
+            "yieldedBy": "complete",
+            "measuredMs": 1672,
+            "expectedMs": 1640,
+            "speed": 0.5
+          },
+          "at2": {
+            "out": "2.00× · 410 ms",
+            "sawRunning": true,
+            "count": 4,
+            "yieldedBy": "complete",
+            "measuredMs": 437,
+            "expectedMs": 410,
+            "speed": 2
+          },
+          "stored": {
+            "motion": true,
+            "hoverSpeed": 1,
+            "introSpeed": 2
+          },
+          "afterReload": {
+            "introSpeed": 2,
+            "played": false
+          },
+          "tunerOffIgnoresStored": 1,
+          "errors": [],
+          "reducedMotion": {
+            "replayDisabled": true,
+            "replayReturns": false,
+            "state": "off"
+          },
+          "pass": true
+        },
+        "pass": true
+      },
+      "yields": {
+        "hover@100": {
+          "action": "hover",
+          "at": 100,
+          "settled": {
+            "state": "done",
+            "yieldedBy": "chart",
+            "settledAtMs": 118
+          },
+          "answersAtRest": true,
+          "chartWhole": true,
+          "selected": "h720",
+          "marker": {
+            "form": "line",
+            "distancePx": 0,
+            "tip": "6:00 م 46 متوسط المعتاد 46"
+          },
+          "pass": true,
+          "errors": []
+        },
+        "hover@400": {
+          "action": "hover",
+          "at": 400,
+          "settled": {
+            "state": "done",
+            "yieldedBy": "chart",
+            "settledAtMs": 422
+          },
+          "answersAtRest": true,
+          "chartWhole": true,
+          "selected": "h720",
+          "marker": {
+            "form": "line",
+            "distancePx": 0,
+            "tip": "6:00 م 46 متوسط المعتاد 46"
+          },
+          "pass": true,
+          "errors": []
+        },
+        "keys@100": {
+          "action": "keys",
+          "at": 100,
+          "afterFirstKey": {
+            "state": "done",
+            "yieldedBy": "keydown"
+          },
+          "settled": {
+            "state": "done",
+            "yieldedBy": "keydown",
+            "settledAtMs": 108
+          },
+          "answersAtRest": true,
+          "chartWhole": true,
+          "selected": "h810",
+          "marker": {
+            "form": "line",
+            "distancePx": 0,
+            "tip": "7:30 م 48 متوسط المعتاد 46"
+          },
+          "pass": true,
+          "errors": []
+        },
+        "keys@400": {
+          "action": "keys",
+          "at": 400,
+          "afterFirstKey": {
+            "state": "done",
+            "yieldedBy": "keydown"
+          },
+          "settled": {
+            "state": "done",
+            "yieldedBy": "keydown",
+            "settledAtMs": 406
+          },
+          "answersAtRest": true,
+          "chartWhole": true,
+          "selected": "h810",
+          "marker": {
+            "form": "line",
+            "distancePx": 0,
+            "tip": "7:30 م 48 متوسط المعتاد 46"
+          },
+          "pass": true,
+          "errors": []
+        },
+        "rail@100": {
+          "action": "rail",
+          "at": 100,
+          "settled": {
+            "state": "done",
+            "yieldedBy": "pointerdown",
+            "settledAtMs": 150
+          },
+          "answersAtRest": true,
+          "chartWhole": true,
+          "railOpen": "true",
+          "settledIdenticalToStill": true,
+          "pass": true,
+          "errors": []
+        },
+        "rail@400": {
+          "action": "rail",
+          "at": 400,
+          "settled": {
+            "state": "done",
+            "yieldedBy": "pointerdown",
+            "settledAtMs": 446
+          },
+          "answersAtRest": true,
+          "chartWhole": true,
+          "railOpen": "true",
+          "settledIdenticalToStill": true,
+          "pass": true,
+          "errors": []
+        },
+        "tap@100": {
+          "action": "tap",
+          "at": 100,
+          "settled": {
+            "state": "done",
+            "yieldedBy": "pointerdown",
+            "settledAtMs": 159
+          },
+          "answersAtRest": true,
+          "chartWhole": true,
+          "selected": "h720",
+          "marker": {
+            "form": "line",
+            "distancePx": 0,
+            "tip": "6:00 م 46 متوسط المعتاد 46"
+          },
+          "pass": true,
+          "errors": []
+        },
+        "tap@400": {
+          "action": "tap",
+          "at": 400,
+          "settled": {
+            "state": "done",
+            "yieldedBy": "pointerdown",
+            "settledAtMs": 439
+          },
+          "answersAtRest": true,
+          "chartWhole": true,
+          "selected": "h720",
+          "marker": {
+            "form": "line",
+            "distancePx": 0,
+            "tip": "6:00 م 46 متوسط المعتاد 46"
+          },
+          "pass": true,
+          "errors": []
+        },
+        "reading@100": {
+          "action": "reading",
+          "at": 100,
+          "step": {
+            "reading": true,
+            "morph": true,
+            "from": 822,
+            "to": 823,
+            "firstChangedMinute": 791,
+            "tailFrom": 790,
+            "tailFromTime": "7:10 م"
+          },
+          "settled": {
+            "state": "done",
+            "yieldedBy": "new reading",
+            "settledAtMs": 108
+          },
+          "answersAtRest": true,
+          "chartWhole": true,
+          "figures": {
+            "last": 823,
+            "entries": 333,
+            "now": 49
+          },
+          "domEqualsCanonical": true,
+          "pixelDiffFromCanonical": {
+            "changedPixels": 1149,
+            "maxChannelDiff": 1,
+            "bbox": {
+              "x": 330,
+              "y": 30,
+              "width": 112,
+              "height": 29
+            }
+          },
+          "pass": true,
+          "errors": []
+        },
+        "reading@400": {
+          "action": "reading",
+          "at": 400,
+          "step": {
+            "reading": true,
+            "morph": true,
+            "from": 822,
+            "to": 823,
+            "firstChangedMinute": 791,
+            "tailFrom": 790,
+            "tailFromTime": "7:10 م"
+          },
+          "settled": {
+            "state": "done",
+            "yieldedBy": "new reading",
+            "settledAtMs": 403
+          },
+          "answersAtRest": true,
+          "chartWhole": true,
+          "figures": {
+            "last": 823,
+            "entries": 333,
+            "now": 49
+          },
+          "domEqualsCanonical": true,
+          "pixelDiffFromCanonical": {
+            "changedPixels": 0,
+            "maxChannelDiff": 0,
+            "bbox": null
+          },
+          "pass": true,
+          "errors": []
+        },
+        "resize@100": {
+          "action": "resize",
+          "at": 100,
+          "settled": {
+            "state": "done",
+            "yieldedBy": "resize",
+            "settledAtMs": 114
+          },
+          "answersAtRest": true,
+          "chartWhole": true,
+          "identicalToFresh1280": true,
+          "pass": true,
+          "errors": []
+        },
+        "resize@400": {
+          "action": "resize",
+          "at": 400,
+          "settled": {
+            "state": "done",
+            "yieldedBy": "resize",
+            "settledAtMs": 413
+          },
+          "answersAtRest": true,
+          "chartWhole": true,
+          "identicalToFresh1280": true,
+          "pass": true,
+          "errors": []
+        },
+        "pass": true
+      },
+      "held": {
+        "ar": {
+          "url": "index.html?lang=ar&state=live&tuner=0",
+          "held": true,
+          "fontsLoadedAtStart": true,
+          "yieldedBy": "complete",
+          "naturalEndIdenticalToStill2x": true,
+          "naturalRuns": {
+            "runs": [
+              {
+                "played": true,
+                "yieldedBy": "complete",
+                "sha": "56ba183334a2627f"
+              }
+            ],
+            "stills": [
+              "56ba183334a2627f"
+            ],
+            "stillsAgree": true
+          },
+          "naturalPixelDiff": null,
+          "heldEndIdenticalToStill2x": true,
+          "heldEndPixelDiff": null,
+          "frames": [
+            {
+              "ms": 0,
+              "line": [
+                "hidden",
+                "hidden"
+              ],
+              "answers": [
+                "49",
+                "62",
+                "332",
+                "6-8 م"
+              ],
+              "animations": 4
+            },
+            {
+              "ms": 60,
+              "line": [
+                "dash 182.20",
+                "hidden"
+              ],
+              "answers": [
+                "49",
+                "62",
+                "332",
+                "6-8 م"
+              ],
+              "animations": 4
+            },
+            {
+              "ms": 120,
+              "line": [
+                "dash 343.47",
+                "hidden"
+              ],
+              "answers": [
+                "49",
+                "62",
+                "332",
+                "6-8 م"
+              ],
+              "animations": 4
+            },
+            {
+              "ms": 200,
+              "line": [
+                "dash 563.59",
+                "hidden"
+              ],
+              "answers": [
+                "49",
+                "62",
+                "332",
+                "6-8 م"
+              ],
+              "animations": 4
+            },
+            {
+              "ms": 280,
+              "line": [
+                "whole",
+                "dash 29.24"
+              ],
+              "answers": [
+                "49",
+                "62",
+                "332",
+                "6-8 م"
+              ],
+              "animations": 4
+            },
+            {
+              "ms": 350,
+              "line": [
+                "whole",
+                "dash 274.89"
+              ],
+              "answers": [
+                "49",
+                "62",
+                "332",
+                "6-8 م"
+              ],
+              "animations": 4
+            },
+            {
+              "ms": 500,
+              "line": [
+                "whole",
+                "dash 502.23"
+              ],
+              "answers": [
+                "49",
+                "62",
+                "332",
+                "6-8 م"
+              ],
+              "animations": 4
+            },
+            {
+              "ms": 600,
+              "line": [
+                "whole",
+                "dash 546.80"
+              ],
+              "answers": [
+                "49",
+                "62",
+                "332",
+                "6-8 م"
+              ],
+              "animations": 4
+            },
+            {
+              "ms": 640,
+              "line": [
+                "whole",
+                "whole"
+              ],
+              "answers": [
+                "49",
+                "62",
+                "332",
+                "6-8 م"
+              ],
+              "animations": 4
+            },
+            {
+              "ms": 660,
+              "line": [
+                "whole",
+                "whole"
+              ],
+              "answers": [
+                "49",
+                "62",
+                "332",
+                "6-8 م"
+              ],
+              "animations": 4
+            },
+            {
+              "ms": 700,
+              "line": [
+                "whole",
+                "whole"
+              ],
+              "answers": [
+                "49",
+                "62",
+                "332",
+                "6-8 م"
+              ],
+              "animations": 4
+            },
+            {
+              "ms": 760,
+              "line": [
+                "whole",
+                "whole"
+              ],
+              "answers": [
+                "49",
+                "62",
+                "332",
+                "6-8 م"
+              ],
+              "animations": 4
+            }
+          ],
+          "boxesNeverMove": true,
+          "boxesThatMoved": [],
+          "answersFinalThroughout": true,
+          "liveRegionSilent": true,
+          "chartTextFinalThroughout": true,
+          "glyphOpacity": [],
+          "textAnimationProperties": [
+            "transform"
+          ],
+          "lineNeverBridged": true,
+          "errors": [],
+          "pass": true
+        },
+        "en": {
+          "url": "index.html?lang=en&state=live&tuner=0",
+          "held": true,
+          "fontsLoadedAtStart": true,
+          "yieldedBy": "complete",
+          "naturalEndIdenticalToStill2x": true,
+          "naturalRuns": {
+            "runs": [
+              {
+                "played": true,
+                "yieldedBy": "complete",
+                "sha": "6ba4ed4ac88d66ef"
+              }
+            ],
+            "stills": [
+              "6ba4ed4ac88d66ef"
+            ],
+            "stillsAgree": true
+          },
+          "naturalPixelDiff": null,
+          "heldEndIdenticalToStill2x": true,
+          "heldEndPixelDiff": null,
+          "frames": [
+            {
+              "ms": 0,
+              "line": [
+                "hidden",
+                "hidden"
+              ],
+              "answers": [
+                "49",
+                "62",
+                "332",
+                "6–8 PM"
+              ],
+              "animations": 4
+            },
+            {
+              "ms": 60,
+              "line": [
+                "dash 182.20",
+                "hidden"
+              ],
+              "answers": [
+                "49",
+                "62",
+                "332",
+                "6–8 PM"
+              ],
+              "animations": 4
+            },
+            {
+              "ms": 120,
+              "line": [
+                "dash 343.47",
+                "hidden"
+              ],
+              "answers": [
+                "49",
+                "62",
+                "332",
+                "6–8 PM"
+              ],
+              "animations": 4
+            },
+            {
+              "ms": 200,
+              "line": [
+                "dash 563.59",
+                "hidden"
+              ],
+              "answers": [
+                "49",
+                "62",
+                "332",
+                "6–8 PM"
+              ],
+              "animations": 4
+            },
+            {
+              "ms": 350,
+              "line": [
+                "whole",
+                "dash 274.89"
+              ],
+              "answers": [
+                "49",
+                "62",
+                "332",
+                "6–8 PM"
+              ],
+              "animations": 4
+            },
+            {
+              "ms": 500,
+              "line": [
+                "whole",
+                "dash 502.23"
+              ],
+              "answers": [
+                "49",
+                "62",
+                "332",
+                "6–8 PM"
+              ],
+              "animations": 4
+            },
+            {
+              "ms": 700,
+              "line": [
+                "whole",
+                "whole"
+              ],
+              "answers": [
+                "49",
+                "62",
+                "332",
+                "6–8 PM"
+              ],
+              "animations": 4
+            }
+          ],
+          "boxesNeverMove": true,
+          "boxesThatMoved": [],
+          "answersFinalThroughout": true,
+          "liveRegionSilent": true,
+          "chartTextFinalThroughout": true,
+          "glyphOpacity": [],
+          "textAnimationProperties": [
+            "transform"
+          ],
+          "lineNeverBridged": true,
+          "errors": [],
+          "pass": true
+        },
+        "ar-delayed": {
+          "url": "index.html?lang=ar&state=delayed&tuner=0",
+          "held": true,
+          "fontsLoadedAtStart": true,
+          "yieldedBy": "complete",
+          "naturalEndIdenticalToStill2x": true,
+          "naturalRuns": {
+            "runs": [
+              {
+                "played": true,
+                "yieldedBy": "complete",
+                "sha": "69dd526ad3f4299f"
+              }
+            ],
+            "stills": [
+              "69dd526ad3f4299f"
+            ],
+            "stillsAgree": true
+          },
+          "naturalPixelDiff": null,
+          "heldEndIdenticalToStill2x": true,
+          "heldEndPixelDiff": null,
+          "frames": [
+            {
+              "ms": 0,
+              "line": [
+                "hidden",
+                "hidden"
+              ],
+              "answers": [
+                "46",
+                "62",
+                "322",
+                "6-8 م"
+              ],
+              "animations": 3
+            },
+            {
+              "ms": 320,
+              "line": [
+                "whole",
+                "dash 139.53"
+              ],
+              "answers": [
+                "46",
+                "62",
+                "322",
+                "6-8 م"
+              ],
+              "animations": 3
+            }
+          ],
+          "boxesNeverMove": true,
+          "boxesThatMoved": [],
+          "answersFinalThroughout": true,
+          "liveRegionSilent": true,
+          "chartTextFinalThroughout": true,
+          "glyphOpacity": [],
+          "textAnimationProperties": [
+            "transform"
+          ],
+          "lineNeverBridged": true,
+          "errors": [],
+          "pass": true
+        },
+        "ar-nohistory": {
+          "url": "index.html?lang=ar&state=nohistory&tuner=0",
+          "held": true,
+          "fontsLoadedAtStart": true,
+          "yieldedBy": "complete",
+          "naturalEndIdenticalToStill2x": true,
+          "naturalRuns": {
+            "runs": [
+              {
+                "played": true,
+                "yieldedBy": "complete",
+                "sha": "69a4205f9ae96034"
+              }
+            ],
+            "stills": [
+              "69a4205f9ae96034"
+            ],
+            "stillsAgree": true
+          },
+          "naturalPixelDiff": null,
+          "heldEndIdenticalToStill2x": true,
+          "heldEndPixelDiff": null,
+          "frames": [
+            {
+              "ms": 0,
+              "line": [
+                "hidden",
+                "hidden"
+              ],
+              "answers": [
+                "49",
+                "62",
+                "332",
+                "6-8 م"
+              ],
+              "animations": 4
+            },
+            {
+              "ms": 320,
+              "line": [
+                "whole",
+                "dash 171.71"
+              ],
+              "answers": [
+                "49",
+                "62",
+                "332",
+                "6-8 م"
+              ],
+              "animations": 4
+            }
+          ],
+          "boxesNeverMove": true,
+          "boxesThatMoved": [],
+          "answersFinalThroughout": true,
+          "liveRegionSilent": true,
+          "chartTextFinalThroughout": true,
+          "glyphOpacity": [],
+          "textAnimationProperties": [
+            "transform"
+          ],
+          "lineNeverBridged": true,
+          "errors": [],
+          "pass": true
+        },
+        "en-delayed": {
+          "url": "index.html?lang=en&state=delayed&tuner=0",
+          "held": true,
+          "fontsLoadedAtStart": true,
+          "yieldedBy": "complete",
+          "naturalEndIdenticalToStill2x": true,
+          "naturalRuns": {
+            "runs": [
+              {
+                "played": true,
+                "yieldedBy": "complete",
+                "sha": "b7bdaf935a90a412"
+              }
+            ],
+            "stills": [
+              "b7bdaf935a90a412"
+            ],
+            "stillsAgree": true
+          },
+          "naturalPixelDiff": null,
+          "heldEndIdenticalToStill2x": true,
+          "heldEndPixelDiff": null,
+          "frames": [
+            {
+              "ms": 0,
+              "line": [
+                "hidden",
+                "hidden"
+              ],
+              "answers": [
+                "46",
+                "62",
+                "322",
+                "6–8 PM"
+              ],
+              "animations": 3
+            },
+            {
+              "ms": 320,
+              "line": [
+                "whole",
+                "dash 139.53"
+              ],
+              "answers": [
+                "46",
+                "62",
+                "322",
+                "6–8 PM"
+              ],
+              "animations": 3
+            }
+          ],
+          "boxesNeverMove": true,
+          "boxesThatMoved": [],
+          "answersFinalThroughout": true,
+          "liveRegionSilent": true,
+          "chartTextFinalThroughout": true,
+          "glyphOpacity": [],
+          "textAnimationProperties": [
+            "transform"
+          ],
+          "lineNeverBridged": true,
+          "errors": [],
+          "pass": true
+        },
+        "en-nohistory": {
+          "url": "index.html?lang=en&state=nohistory&tuner=0",
+          "held": true,
+          "fontsLoadedAtStart": true,
+          "yieldedBy": "complete",
+          "naturalEndIdenticalToStill2x": true,
+          "naturalRuns": {
+            "runs": [
+              {
+                "played": true,
+                "yieldedBy": "complete",
+                "sha": "502019e99938903a"
+              }
+            ],
+            "stills": [
+              "502019e99938903a"
+            ],
+            "stillsAgree": true
+          },
+          "naturalPixelDiff": null,
+          "heldEndIdenticalToStill2x": true,
+          "heldEndPixelDiff": null,
+          "frames": [
+            {
+              "ms": 0,
+              "line": [
+                "hidden",
+                "hidden"
+              ],
+              "answers": [
+                "49",
+                "62",
+                "332",
+                "6–8 PM"
+              ],
+              "animations": 4
+            },
+            {
+              "ms": 320,
+              "line": [
+                "whole",
+                "dash 171.71"
+              ],
+              "answers": [
+                "49",
+                "62",
+                "332",
+                "6–8 PM"
+              ],
+              "animations": 4
+            }
+          ],
+          "boxesNeverMove": true,
+          "boxesThatMoved": [],
+          "answersFinalThroughout": true,
+          "liveRegionSilent": true,
+          "chartTextFinalThroughout": true,
+          "glyphOpacity": [],
+          "textAnimationProperties": [
+            "transform"
+          ],
+          "lineNeverBridged": true,
+          "errors": [],
+          "pass": true
+        },
+        "pass": true
+      },
+      "sheets": [
+        "intro-contact-sheet.png",
+        "intro-states-2x.png",
+        "intro-detail-ar-2x.png",
+        "intro-yield-ar.png"
+      ],
+      "pass": true
+    },
     "chart": {
       "ar": {
         "url": "index.html?lang=ar&state=live&tuner=0",
@@ -7831,7 +9257,7 @@
         },
         "afterSet": {
           "speed": 1.5,
-          "stored": "{\"motion\":true,\"hoverSpeed\":1.5}",
+          "stored": "{\"motion\":true,\"hoverSpeed\":1.5,\"introSpeed\":1}",
           "tau1": 60
         },
         "afterReload": 1.5,
@@ -9779,7 +11205,11 @@
       "motion-rail-ar-open-0100ms.png",
       "motion-rail-ar-close-0090ms.png",
       "motion-rail-en-open-0100ms.png",
-      "motion-contact-sheet.png"
+      "motion-contact-sheet.png",
+      "intro-contact-sheet.png",
+      "intro-states-2x.png",
+      "intro-detail-ar-2x.png",
+      "intro-yield-ar.png"
     ]
   },
   "lightMeasurement": {
@@ -10912,7 +12342,7 @@
     }
   },
   "tunerFileCheck": {
-    "url": "file:///D:/Projects/fitway-worktrees/owner-tip-r04-s02/design-research/owner-composition-exploration-r04/directions/eclipse/index.html?lang=ar",
+    "url": "file:///D:/Projects/fitway-worktrees/owner-intro-r04-s03/design-research/owner-composition-exploration-r04/directions/eclipse/index.html?lang=ar",
     "protocol": "file:",
     "collapsedByDefault": {
       "toggle": true,
@@ -10994,7 +12424,8 @@
     "motionGroup": {
       "defaults": {
         "motion": true,
-        "hoverSpeed": 1
+        "hoverSpeed": 1,
+        "introSpeed": 1
       },
       "group": {
         "present": true,
@@ -11010,11 +12441,19 @@
           "إعادة القراءاتReset readings",
           "مستوى أعلىLevel up",
           "مستوى أدنىLevel down",
-          "الافتراضيDefault"
+          "الافتراضيDefault",
+          "الافتراضيDefault",
+          "إعادة المقدمةReplay intro"
         ],
         "note": "النظام يطلب حركة أقل، فالحركة متوقفة"
       },
       "noObsoleteControls": true,
+      "introControls": {
+        "speed": "1",
+        "out": "1.00× · 820 ms",
+        "replay": "إعادة المقدمةReplay intro",
+        "replayDisabledWithReducedMotion": true
+      },
       "newReading": {
         "lastBefore": 822,
         "lastAfter": 823,
@@ -11035,7 +12474,7 @@
         "level": "مزدحم"
       },
       "stored": {
-        "motion": "{\"motion\":false,\"hoverSpeed\":1}",
+        "motion": "{\"motion\":false,\"hoverSpeed\":1,\"introSpeed\":1}",
         "lightsKeyStillSeparate": true
       },
       "persistedAfterReload": {
@@ -11052,6 +12491,10 @@
     },
     "pass": true,
     "crowdFromFile": {
+      "introFromFile": {
+        "played": true,
+        "yieldedBy": "complete"
+      },
       "motionOn": true,
       "animations": [
         "span.ping.is-on opacity+transform",
