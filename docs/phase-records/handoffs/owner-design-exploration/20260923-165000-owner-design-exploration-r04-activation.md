@@ -1181,3 +1181,54 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   next delivery regenerates `evidence/` here.
 - **Order (the coordinator's recommendation, at the user's request):** the tooltip fix first, then Round 7 step 3
   (the first-open intro), each with a fresh independent verifier, as the Round 7 work plan specifies.
+
+## Tooltip alignment fix delivered and verified (2026-09-26)
+
+- **Session id:** the lease above recorded `1a5ac4b9-…`, a transcript id that changes when the app resumes the session.
+  The ledger now records the stable desktop session id, `local_6e08884a-7dce-4148-88e5-8b47a115bef5`.
+- **User decisions:**
+  - The user approved the start-aligned tooltip layout from a rendered comparison of the real page (a DOM-only mock,
+    no repository change).
+  - They agreed the screen plan, including one early mobile feasibility check of the table system at Reports.
+  - Both are recorded in `directions/NEXT-DIRECTION-BRIEF.md`, "Round 7 close-out and the screen plan".
+- **Worktree incident (no file changed):**
+  - The `Agent` worktree isolation cut the builder's worktree from `main` (`bbb5170`), not from this branch, and the
+    builder stopped as briefed. The empty worktree was then removed automatically.
+  - The builder's next `git switch -c owner-tip-r04-s02` ran in the coordinator worktree after a failed `Set-Location`.
+    That put this worktree on a new branch at the same commit.
+  - With the user's approval, the coordinator restored `codex/owner-redesign-r04` and deleted the stray branch.
+  - It then allocated `D:/Projects/fitway-worktrees/owner-tip-r04-s02` itself (branch `owner-tip-r04-build` at
+    `d417ef0`) and required `git -C` and guarded `Set-Location` in the brief.
+- **Builder** (`owner-direction-builder`, `high`, run `owner_tip_r04_s02`):
+  - `5b9bae7` changes `tipHTML` in `eclipse/app.js`, removes the `space-between` rule in `style.css`, and updates the
+    README and `evidence/`.
+  - `788c958` corrects two README statements from the verifier's findings, with text frozen by the coordinator.
+  - `pnpm check:design-context` passed in its worktree.
+  - `capture.mjs` ran on this Windows machine into `evidence/` and exited 0. Static guard: reduced motion 25 of 27 (the
+    AR hover and tuner-open change by design); `?motion=off` 9 of 9; first paint 4 of 4.
+  - Evidence: 2 PNGs added, 7 files changed, 5 superseded PNGs removed (both `-hover-b`, `marker-compare-ar-3x`, both
+    `motion-glide-ar-*`); `pre-motion-hashes.json` and `capture.mjs` unchanged.
+- **Independent verifier** (`owner-direction-verifier`, `xhigh`), fresh, without the builder's report or scratch:
+  7 of 7 checks passed, each tool with a control.
+  - Pixel identity: 452 of 452 non-peak and non-latest stop frames identical, and 32 of 32 still frames.
+  - Content: `aria-valuetext` and the tooltip word set equal at 476 of 476 stops.
+  - Alignment: row start spread 0 px; the number sits 13 px from the start edge at every stop (base: 74-88 px).
+  - Crossing the peak, the number's jump beyond the follow fell from 60-67 px to 1.36 px (AR) and 9 px (EN).
+  - The capture log shrank because the removed marker-A, switch and glide sections belong to behaviour the script
+    no longer has; no current check is missing.
+- **Low findings:**
+  - H1: capture is not always byte-deterministic, despite its comment (`capture.mjs:336`). One of 476 base frames
+    differed on a rerun, and 37 frames in one candidate run, on glyph fringes, so the static guard can fail spuriously.
+  - H2: in EN the number still moves 9 px on screen between the peak and 7:00 PM. The tooltip widens (108 to 117.4 px)
+    and is anchored at the hairline (`app.js:910-914`). This placement predates the fix. A fixed tooltip width would
+    remove it; that is a design choice left to the user.
+  - H3 and H4: README wording, fixed in `788c958`.
+  - Unconfirmed: `README.md` says the header chip rasterizes "up to 84/255" after a live update; both logs record at
+    most 1/255. That text predates this work and is left unchanged pending a measurement.
+- **Coordinator review:** the coordinator opened the verifier's side-by-side crops (AR and EN), the peak diff image
+  (only the number-and-word row differs), and the committed `evidence/daily-ar-1440x900-hover.png`. They support the
+  report. The evidence is in this session's scratchpad `tip-fix/verify/`, which is not committed.
+- **Integration:** `codex/owner-redesign-r04` was fast-forwarded to `788c958`, so the verified SHAs are kept. Not pushed.
+- **Status:** the tooltip fix is integrated as exploration work, and the user's look at the result is pending. Next:
+  Round 7 step 3 (the first-open intro), with a fresh designer (`xhigh`), then a fresh verifier. Nothing is selected
+  or promoted.

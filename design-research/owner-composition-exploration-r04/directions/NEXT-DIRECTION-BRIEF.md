@@ -648,3 +648,27 @@ tried both.
    - the latest stop showing the latest reading (decision 1: 49 · Busy);
    - F2 and F5.
    Step 3, the first-open intro, stays as decision 4.
+
+## Round 7 close-out and the screen plan (agreed 2026-09-26)
+
+### Step 2 and the tooltip (user-agreed)
+
+- **Step 2 is closed in principle.** The user finds marker B, the follow and the hover speed excellent. This closes
+  their review of step 2. It is not the formal visual acceptance of the page.
+- **Tooltip layout:** the two-edge layout of `04984e9` is rejected. Nothing lined up, the number was split from its
+  word, and the number jumped between ends when the marker crossed the peak or the latest reading.
+- **The approved layout:** one start-aligned arrangement for every tooltip. For peak and latest, the label chip comes
+  first and then the time; the number comes first and then its crowd word, as at ordinary stops. The user approved it
+  from a rendered comparison of the real page (a DOM-only mock).
+- **Order:** the tooltip fix, then step 3 (the first-open intro, decision 4), each with a fresh independent verifier.
+
+### Screen plan (user-agreed)
+
+- **Desktop first:** finish every screen in "After the Daily page" at desktop, and review them together.
+- **One early mobile check:** when the table, form and dialog system is designed, on the first screen that needs it
+  (Reports), check quickly that the system works at 390 px and 320 px. This is a feasibility check of that system
+  only, not a mobile design. The reason is that tables are the hardest part on a phone; finding late that the system
+  fails there would mean reworking every screen.
+- **Then:** mobile at 390 px, 320 px and 200% reflow for every screen, and the polish.
+- **Then:** the formal, human-approved authority record that makes this direction the design reference, as in
+  "Authority intent" above.
