@@ -10,6 +10,11 @@ motion or `?motion=off` every still frame is pixel-identical to the frames befor
 and tuner frames, which change by design. Everything that is not a light layer, motion or the chart's hover is
 unchanged from v2: the layout, rail, copy, data simulation, centred average, chip rule, states and details panel.
 
+**Round 7 step 2 (this version):** the chart marker is form B, the hollow ring, only (with form A's lit dots at the missing
+span); it follows its stop along the curve with the reference clip's feel, with a hover speed in the tuner; the latest
+stop shows the latest reading (49 · Busy); and the verifier's F2 (a halo flash on a live update) and F5 (a long task on the
+first move into the future) are fixed. See "Motion", 6 and 6b, and "Evidence".
+
 ## Thesis
 
 The structure is familiar: the rail, a header, four small cards and one chart card. The finish is where
@@ -123,8 +128,7 @@ It is a working tool, not part of the design.
   textarea shows the JSON. "Reset to Recommended" removes every override.
 - **Storage:** tuning is kept in `localStorage` (`fitway.eclipse.v3.lights`). Every access is wrapped in
   try/catch.
-- **Marker group** (Round 7): «علامة المخطط: A / B» "Marker: A / B", two pressed-state buttons for the chart marker's
-  forms, kept in their own key (`fitway.eclipse.v3.marker`) and ignored with `?tuner=0`; see "Motion", 6.
+- **Marker group:** step 1's «علامة المخطط: A / B» switch is gone with form A (Round 7 step 2).
 - **Motion group** (Round 6):
   - «قراءة جديدة» "New reading": the next minute of the same simulated day. «إعادة القراءات» "Reset readings".
   - «مستوى الازدحام» "Crowd level": «مستوى أعلى» "Level up" and «مستوى أدنى» "Level down" simulate a crowd-level change
@@ -133,10 +137,15 @@ It is a working tool, not part of the design.
     off while delayed, because a stale card never moves, and a short note says so in both languages.
   - «الحركة» "Motion": one switch, kept in its own `localStorage` key (`fitway.eclipse.v3.motion`), separate from the
     light values, and ignored with `?tuner=0`.
+  - «سرعة انتقال العلامة» "Hover speed" (Round 7 step 2): a range from 0.5× to 2×, default 1× (the reference clip's feel),
+    with a small «الافتراضي» "Default" button. It divides the follow's time constants; the output shows the multiplier
+    and the settle time, for example "1.00× · 400 ms".
+    - It is kept in the same key as the Motion switch (`{ motion, hoverSpeed }`), which app.js already owns and ignores
+      with `?tuner=0`. The light values' key and "Copy values" stay about lights only.
   - Removed in Round 6: "Replay load", "switch on at load", "follow the pointer" (and "chart card too"), and "light
     follows crowd" with its level preview.
   - Scripts reach the same actions on `window.__eclipse.motion`: `step()`, `reset()`, `crowd(1 | -1)`,
-    `set({ motion })` and `settle()`.
+    `set({ motion, hoverSpeed })` and `settle()`.
 - **URL:**
   - `?tuner=0` means no panel and no stored tuning.
   - `?preset=v2|a-like|recommended` starts from that preset without storing it.
@@ -211,7 +220,7 @@ and only while live.
 | --- | --- | --- | --- | --- |
 | Changed digits | a number changes (a new reading, a level change, a minute passing while delayed) | transform: the new digit rolls in, the old one rolls out | 280 ms | `cubic-bezier(0.25, 1, 0.5, 1)` |
 | A level bar | the crowd level changes | transform: scaleY of a red fill, from the bottom | 200 ms, then 50 ms between bars | same |
-| The chart's marker (form A or B) | the owner moves between stops (pointer or keys) | SVG geometry each frame, along the drawn path; its light, the lit hairline and the tooltip follow | 120 ms plus 0.25 ms per px, at most 150 ms | same |
+| The chart's marker (form B) | the owner moves between stops (pointer or keys) | SVG geometry each frame, along the drawn path; the lit hairline and the tooltip follow (the smooth follow, Round 7 step 2) | settled in about 400 ms, whatever the distance | two lags in series, 90 ms and 15 ms (divided by the hover speed) |
 | The line's tail | a new reading | SVG path of the last 15-30 minutes, end point, the tail's fine lines, the now clip | 280 ms | `cubic-bezier(0.4, 0, 0.2, 1)` |
 | Live pulse | while live only; none while delayed | a thin ring, opacity 0.4 to 0 and scale 0.34 to 1, from inside the end point to just past its halo | every 5 s, visible for the first 48% | `cubic-bezier(0.22, 0.61, 0.36, 1)` |
 | Rail | the logo is pressed | transforms: the end cap slides and the middle scales; the darker surface layers and the shadow fade (no text); each name is uncovered by a clip | 240 ms open, 200 ms close | `cubic-bezier(0.22, 1, 0.36, 1)` open, `cubic-bezier(0.4, 0, 0.2, 1)` close |
@@ -271,6 +280,7 @@ chevron, and the jump to "View details" are all instant.
   - Each stop on the line shows the line's own value, the centred average rounded to a whole person, with its level
     and the usual value. The raw minute stays in "View details".
   - The peak stop shows the true peak, because its marker is the true reading.
+  - The latest stop shows the latest reading itself (Round 7 step 2): 49 · Busy, the Inside now card's number; see 6.
   - The zero stop at 6:00 AM shows 0 and «الصالة خالية» "Empty".
   - After now, a stop shows «لم يحن بعد» "Still ahead" and the usual value.
 - **Pointer:** it takes the nearest stop, but the peak or the latest reading wins whenever the pointer is within
@@ -280,76 +290,131 @@ chevron, and the jump to "View details" are all instant.
   - Each arrow moves one stop, and PageUp or PageDown moves four.
   - Home goes to opening and End to the latest reading. Focus starts on the latest reading, and Escape clears.
   - The screen-reader text says the value is an average, for example «6:00 م، 46 داخل الصالة في المتوسط، الازدحام
-    متوسط، المعتاد 46».
+    متوسط، المعتاد 46». The latest stop is the exception: it is the reading, never called an average.
 - **Measured:** the marker sits on what it describes at every stop, in AR and EN, live, delayed and without history.
   - The check runs against the SVG path's own geometry: an arc-length search with `getPointAtLength`, not a formula.
   - The largest distance is 0.004 px on the line, and 0 px on the peak ring, the usual line and the gap mark.
-  - Round 7: the same for both marker forms, A and B, in AR and EN, each live, delayed and without history (12
-    runs): the largest distance is 0.004 px on the line and 0 px elsewhere, for either form.
+  - Round 7 step 2 (form B only; in this cloud container): AR and EN, each live, delayed and without history (6 runs),
+    the largest distance is 0.004 px on the line and 0 px elsewhere.
 
-**6. The marker: two candidate forms, A and B (Round 7, decision 2).**
+**6. The marker: form B, the hollow ring (Round 7 step 2).**
 
 The user rejected Round 6's "reading sight" (a red core with chalk level ticks and a guide above): it read as a shooter
-game's crosshair. Round 7 offers two forms for the user to choose between on the real page. Both are in `paintMarker()`
-in `app.js`.
+game's crosshair. Step 1 offered two forms, A (a lit bead) and B (a hollow ring), with a tuner switch. The user chose B.
+Step 2 removed form A everywhere: its drawing code, the tuner's A/B switch, the `fitway.eclipse.v3.marker` key, `?marker=`
+and `setMarker`. The one part of A that stays is its missing-span variant, the lit dots. The marker is drawn in
+`paintMarker()` in `app.js`.
 
-- **Common to both:**
-  - Nothing above the point: no guide line, no level ticks, at every kind of stop.
-  - Below the point, that moment's own thin red hairline runs down to the time axis (it starts 8px below the point for
-    A and 10px for B, clear of the marker).
-  - The marker sits on what its tooltip describes (see "Measured" above; both forms are measured).
-- **A, the lit bead (the default):**
-  - A solid `#FF2946` bead, 4.5px radius, with a 1px chalk rim (`#F5F3F2` at 94%).
-  - Its light is on the line, not on the background: today's line itself is drawn a second time under the line,
-    blurred (a bloom), and faded out within 30px of the bead with a radial mask. A small red glow (13px, at most 34%)
-    sits under the bead. Both are under today's line, in `#sel-under`, so the line stays crisp and the peak ring and
-    end point are never tinted.
-- **B, the hollow ring:**
-  - A ring of 6.5px radius with a 1.5px `#FF2946` edge and a dark centre (the card's own `#0F0E0F`), so the line passes
-    behind it and stops at its edge. A soft red glow (the edge, blurred, at 55%) surrounds the edge.
-  - There is never a dot inside the ring: a ring with a dot, or two rings, would read as a target.
-- **Variants of each form:**
+- **Common to every stop:**
+  - Nothing above the point: no guide line, no level ticks.
+  - Below the point, that moment's own thin red hairline runs down to the time axis. It starts 10px below the point.
+  - The marker sits on what its tooltip describes (see "Measured" above).
+- **The ring:** 6.5px radius, a 1.5px `#FF2946` edge and a dark centre (the card's own `#0F0E0F`). The line passes behind
+  it and stops at its edge. A soft red glow (the edge, blurred, at 55%) surrounds the edge. There is never a dot inside
+  the ring: a ring with a dot, or two rings, would read as a target.
+- **Variants:**
 
-| Stop | A, lit bead | B, hollow ring |
-| --- | --- | --- |
-| On the line | the bead, with the line lit around it | the ring, with the line behind it |
-| The peak (on the peak ring) | the bead grows just enough (5.1px) to cover the chalk peak ring, keeping its thin rim; the line light fades out as it climbs the dotted drop, and the small glow dims to half, so it never becomes a halo on the background | the ring takes the peak ring's place (it covers it); no dot inside |
-| The latest reading, live | the bead sits on the end point; the end point's thin halo steps aside while the marker is on it | the same: the ring covers the end point and the halo steps aside |
-| The latest reading, delayed | stale, so the bead takes the end point's neutral grey `#8F898B` and has no light; the hairline is chalk | the ring's edge is the same neutral grey, with no glow |
-| Still ahead (on the usual line) | a hollow chalk ring, 3.8px, never red and without light; a dashed chalk hairline below | a hollow chalk ring at B's own size, 6.5px; a dashed chalk hairline below |
-| Still ahead, no history | no marker (there is no usual line), only a short chalk tick on the time axis | the same |
-| The missing span | never a point: the dotted mark on the axis lights up in chalk (brighter dots, a faint chalk glow) | never a point: a hollow chalk capsule outlines the dotted mark, B's ring stretched over the span |
+| Stop | Marker |
+| --- | --- |
+| On the line | the ring, with the line behind it |
+| The peak (on the peak ring) | the ring takes the peak ring's place (it covers it); no dot inside |
+| The latest reading, live | the ring sits on the end point; the end point's thin halo steps aside (see "Marks the ring replaces") |
+| The latest reading, delayed | stale, so the ring's edge is the end point's neutral grey `#8F898B`, with no glow; the hairline is chalk |
+| Still ahead (on the usual line) | a hollow chalk ring at the same size, never red and without glow; a dashed chalk hairline below |
+| Still ahead, no history | no marker (there is no usual line), only a short chalk tick on the time axis |
+| The missing span | never a point: the dotted mark on the axis lights up in chalk (brighter dots, a faint chalk light). This is form A's variant; B's capsule outline is gone. |
 
-- **Switch:**
-  - The tuner has a "Marker: A / B" group («علامة المخطط: A / B»), with the buttons «A خرزة مضيئة» "Lit bead" and
-    «B حلقة مجوفة» "Hollow ring". A shown marker is repainted in place, mid-glide included.
-  - The choice is kept in its own `localStorage` key, `fitway.eclipse.v3.marker`, and ignored with `?tuner=0`.
-  - `?marker=a|b` wins over the stored choice and is not stored. The default is A.
-  - Scripts read `window.__eclipse.chart.marker` and call `window.__eclipse.chart.setMarker("a" | "b")`.
-- **Glide (Round 6, unchanged for now; Round 7 decision 3 replaces it in the next step):** between stops the marker
-  glides along the curve itself, a route sampled from the SVG path, in 120-150 ms.
-  - Its light, the lit hairline and the tooltip follow it every frame, in either form.
-  - Between the line and the peak it runs along the line to 6:29 PM and then up the peak's dotted drop onto the ring.
-    A's bead grows to the ring's size as it climbs; B's ring keeps its size.
-  - The tooltip's text and numbers change at once, at the start of the move.
-- **Where it moves at once instead:** where no drawn track joins two stops, or the route is longer than 240px:
-  - across the missing span;
-  - from the latest reading into the future;
-  - onto or off the gap stop;
-  - Home and End from far away.
-- **Without history:** after now there is no usual line, so there is no marker, only the short tick on the time axis
-  and "Still ahead".
-- **Round 7 choices the brief left open, with the reason:**
-  - **The delayed latest reading is grey, not red, in both forms.** The brief asks for a red marker, but that stop is
-    the stale reading, which the page already draws as a neutral grey end point; a red, glowing marker there would
-    look live.
-  - **The end point's halo steps aside** while the marker sits on the end point, so neither form becomes a dot inside
-    a ring (a target). The live pulse still runs from the end point, because it carries "live".
-  - **The tick without history** is not a marker; it only shows where on the time axis the tooltip's time is.
-  - **The comparison sheet hides the tooltip,** so the shapes can be judged; the hover frames show it.
-- **Tooltip placement:** after now the tooltip sits on the later side of the guide, so it never covers the end of
+- **Marks the ring replaces (the verifier's H1 and H2):** the chalk peak ring and the end point's thin halo.
+  - Each steps aside at once, with no fade, on the first frame at which the ring's outer edge would touch or overlap the
+    mark's outer extent. That is when the centre distance is below 7.25 px (the ring's outer radius) plus the mark's
+    outer radius: 5.6 px for the peak ring, 9.5 px for the halo.
+  - It comes back on the first frame the distance is beyond that, or when the selection clears.
+  - It works the same both ways, during the follow, with keys and during a live update.
+  - One case is left as drawn: a mark wholly under the ring's opaque centre, which is the peak ring when the ring sits
+    on it. That mark cannot show, and leaving it keeps the peak hover exactly as before.
+  - At rest this also hides the halo at the 7:30 PM stop, whose ring is 12.6 px from the end point.
+  - The end point's solid core is never hidden. While the ring approaches or leaves the end point, the core shows beside
+    the ring's edge for about 170 ms.
+- **Tags:** the ring's group is `data-marker="b"`; the missing span's lit dots are `data-marker="gap"`.
+- **Scripts:** `window.__eclipse.chart.marker` reports `"b"`. The chart API (`stops`, `select`, `clear`, `selected`) is
+  unchanged.
+- **The latest stop shows the latest reading (Round 7, decision 1):**
+  - Live, it shows 7:42 PM, 49 · Busy, the same as the Inside now card, not the line's 47 · Moderate. The ring still sits
+    on the line's end point.
+  - While delayed, it shows the delayed card's reading (7:29 PM, 46 · Moderate), treated as the card treats it: a muted
+    number and «قبل 13 دقيقة» "13 min ago" in the delayed colour, with the clock icon.
+  - After a simulated new reading, it shows the new reading.
+  - The screen-reader text never calls it an average: «7:42 م، آخر قراءة، 49 داخل الصالة، الازدحام مزدحم، المعتاد 45».
+    While delayed it adds how old it is: «آخر قراءة قبل 13 دقيقة».
+  - The tuner's simulated crowd-level change still changes the card only, as before; the latest stop keeps the reading.
+- **Tooltip placement:** after now the tooltip sits on the later side of the hairline, so it never covers the end of
   today's line. Over the gap it sits above both ends of the line.
-- **Reduced motion:** the marker jumps.
+
+**6b. The smooth follow (Round 7 step 2).** It replaces the Round 6 glide (120-150 ms, at most 150 ms). It is the
+"follow" part of the motion section in `app.js`.
+
+- **What moves:** the ring, its hairline and the tooltip chase their target along the drawn curve itself, x and y
+  together. They never take a straight hop between two points on the line.
+  - The route runs along today's line (or the usual line) by arc length. Between the line and the peak ring it runs
+    along the line to 6:29 PM, then up the peak's dotted drop onto the ring.
+  - The ring's elements are moved in place each frame, not rebuilt. At rest the marker is drawn exactly as without
+    motion.
+- **The feel, from the reference clip:** two first-order lags in series (an overdamped spring), with time constants of
+  90 ms and 15 ms. It is time-based, so any distance takes the same time.
+  - From rest it covers 0.19 of a step at 33 ms, 0.43 at 66, 0.60 at 100, 0.73 at 133, 0.87 at 200, 0.94 at 266 and
+    0.99 at 400 ms. The clip's figures are 0.19, 0.43, 0.60, 0.72, 0.87, 0.95 and settled. This is the least-squares fit
+    to them; the largest difference is 0.012.
+  - Positions are exact functions of the time since the last target, so the frame rate never changes the path.
+- **No restart:** a new target keeps the current position and velocity; only the target moves. A quick sweep over
+  several stops is one continuous movement. Approaching a target, it never overshoots it.
+- **Text:** the tooltip's text changes at once when the stop changes, and then the tooltip travels. No glyph fades.
+- **Keys:** the arrow keys, PageUp/PageDown and Home/End use the same follow.
+- **Reduced motion, `?motion=off` or the Motion switch:** it jumps, as before.
+- **Hover speed:** the tuner's «سرعة انتقال العلامة» "Hover speed" divides both time constants (0.5× to 2×; 1× is the
+  clip's feel). See "Light tuner".
+- **Choices the brief left open, with the reason:**
+  - **First appearance: at once.** On the first hover the tooltip and the ring appear at once, as in Round 6, not over
+    60-100 ms like the clip.
+    - A fade would change glyph opacity, which the page never does.
+    - The only other ways to appear gradually are a clip or a scale. At 100 ms or less they read as a flicker, not as
+      softness.
+    - The follow already gives the hover its smoothness. The tooltip also leaves at once.
+  - **Where no drawn track joins two stops, the ring moves at once and the tooltip eases.** This covers crossing the
+    missing span, going from the latest reading into the future, and going onto or off the gap stop.
+    - The ring is never drawn off the line, and the line is never bridged.
+    - The tooltip keeps where it was drawn, with its velocity, and eases into its new place on the same curve.
+    - The same easing takes the tooltip across when it changes side: after now it moves to the later side, and it flips
+      near the chart's edges.
+  - **The old 240 px "move at once" limit is replaced by a 6-hour limit, measured along the time axis.**
+    - The old limit would now trigger in the middle of fast sweeps on steep parts of the line, where the arc length
+      between the ring and the pointer grows.
+    - Beyond 6 hours of the day (about 380 px), the ring and the tooltip both move at once, as on a first appearance.
+      That is Home or End from far away. Without the limit, the ring would race across the whole day in 400 ms.
+    - A sweep of the pointer never reaches this limit, because the ring trails the pointer by far less. PageUp and
+      PageDown (2 hours) follow.
+- **Measured (in this cloud container, Chromium headless, 1440×900):**
+  - **rAF sampling:** a mutation observer logged the ring's position at every paint, on six half-hour steps each in AR
+    and EN. The covered arc length was, on average:
+
+| After | 33 ms | 66 ms | 100 ms | 133 ms | 200 ms | 266 ms | 400 ms |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Clip (the brief) | 0.19 | 0.43 | 0.60 | 0.72 | 0.87 | 0.95 | settled |
+| Model | 0.191 | 0.426 | 0.605 | 0.726 | 0.870 | 0.938 | 0.986 |
+| rAF, AR (6 steps) | 0.188 | 0.414 | 0.599 | 0.721 | 0.868 | 0.937 | 0.986 |
+| rAF, EN (6 steps) | 0.189 | 0.414 | 0.597 | 0.719 | 0.867 | 0.936 | 0.986 |
+| Video, AR (4 steps) | 0.215 | 0.433 | 0.604 | 0.731 | 0.865 | 0.930 | 0.984 |
+| Video, EN (4 steps) | 0.211 | 0.426 | 0.617 | 0.737 | 0.870 | 0.933 | 0.990 |
+
+  - **Video:** real-time Playwright `recordVideo` recordings. A test-only strip in the corner carried the page's clock
+    into every frame, so each frame is timed on the page's own clock from the key press. The ring was found by the red
+    it adds to the page.
+  - **On the curve:** at every sampled frame the ring's centre was within 0.0064 px of the drawn path. This was measured
+    with `getPointAtLength`, independently of the page's own table.
+  - **Sweeps:** a two-key sweep (the second key 55 ms after the first) and a four-stop pointer sweep each moved in one
+    direction only, with no stop between stops.
+  - **Timing:** 99% of a step is covered at about 450 ms; the last sub-pixel paint is at about 550-650 ms.
+- **Held frames:** `window.__eclipse.chart.seekFollow(ms)` holds the follow at a time after its latest target, and
+  `releaseFollow()` lets it go on. `followActive`, `follow` and `response()` report its state and its curve.
 
 **7. Live update.**
 - **Extend, never redraw.** A new reading morphs only the tail of the line that the centred average legitimately
@@ -357,6 +422,20 @@ in `app.js`.
   the level bars change at the same moment.
 - **With the marker on the tail:** a marker selected on the moving tail, or on the latest reading, rides the line
   during the morph.
+- **F2, fixed (Round 7 step 2):** with the latest stop selected, the end point's halo used to flash for about 50-75 ms at
+  the start of a live update.
+  - The cause: whether the ring sat on the end point was tested against the new reading's end point, while the morph
+    still drew the end point at its old place.
+  - The test now uses the end point as drawn, so the halo stays aside for the whole morph.
+  - Held frames and frame logs show no halo in any frame, AR and EN. The step-1 copy, as a control, shows it for the
+    first 10-15% of the morph.
+- **F5, fixed (Round 7 step 2):** the first move into the future used to block the main thread for about 180 ms.
+  - The cause: the usual line's lookup table was sampled lazily with about 1,000 `getPointAtLength` calls.
+  - Every path's table is now read from its own `d` and evaluated as the same cubic Béziers the browser draws, in well
+    under a millisecond.
+  - A point for a given time is solved on the curve itself, not interpolated.
+  - With a long-task observer, the first move into the future shows no long task in AR or EN. The step-1 copy, as a
+    control, shows one of 412-430 ms on this machine.
 - **The pulse is calmer:** a 1px ring every 5 s, at 40% at most, reaching 28px. Round 5 used 3.6 s, 70% and 32px.
   There is no pulse while delayed.
 - **Delayed:** a minute passes with no reading. The line does not move, and only "minutes ago" rolls.
@@ -366,8 +445,8 @@ in `app.js`.
 - The names no longer fade. A clip on each name keeps 12px inside the moving edge, on the same timing and curve, so
   the edge uncovers them.
 
-**9. Tuner.** See "Light tuner" above: the Motion group now has New reading, Reset readings, the crowd-level buttons
-and the Motion switch.
+**9. Tuner.** See "Light tuner" above: the Motion group now has New reading, Reset readings, the crowd-level buttons,
+the Motion switch and (Round 7 step 2) the hover speed.
 
 **10. Motion off.** Motion is off with `prefers-reduced-motion: reduce`, with `?motion=off`, or with the tuner's
 Motion switch; every change is then instant. See "Evidence" for the static guard.
@@ -386,11 +465,8 @@ Motion switch; every change is then instant. See "Evidence" for the static guard
   so two numbers never compete.
   - While delayed, the minute passing is not announced, because no reading arrived and the header already says
     delayed.
-- **Tooltip timing:** the tooltip appears and leaves at once, with no fade, to keep the no-opacity-on-glyphs rule.
-- **Glide cap:** the glide is capped at 150 ms, not 160 ms, to meet decision 8's limit of 150 ms or less.
-- **A product note for the coordinator (not changed):** the latest stop shows the line's value at 7:42 PM, 47,
-  Moderate. The Inside now card shows the latest reading, 49, Busy. This follows the brief (the line's own value,
-  never the raw minute), but the owner sees two numbers for 7:42 PM.
+- **Tooltip timing:** the tooltip appears and leaves at once, with no fade, to keep the no-opacity-on-glyphs rule. It
+  then travels with the marker (Round 7 step 2; see 6b).
 
 ## Open and capture
 
@@ -398,13 +474,23 @@ Open `index.html` directly. Fonts load from Google Fonts. To capture, run this f
 worktree root:
 
 ```
-node design-research/owner-composition-exploration-r04/directions/eclipse/capture.mjs
+node design-research/owner-composition-exploration-r04/directions/eclipse/capture.mjs [outDir]
 ```
 
 It serves the folder on `127.0.0.1:3173` and uses a fresh Playwright chromium context per frame. Frames are at
 deviceScaleFactor 1, and 2 for the crops. The still frames use reducedMotion "reduce", and the motion part uses
-"no-preference". It writes everything under "Evidence" and `evidence/capture-log.json`, and takes about five minutes.
-It exits with code 1 if any check below fails; the last run passed all of them.
+"no-preference". It writes everything under "Evidence" and `capture-log.json` into `outDir` (default `evidence/`), and
+takes about five minutes. It exits with code 1 if any check below fails.
+
+- **Other machines:** the static guard compares with `evidence/pre-motion-hashes.json`, which was rendered on the
+  original Windows machine. Fonts render differently elsewhere, so on another machine pass a scratch `outDir`, expect
+  that guard (and the checks built on the same hashes: the first paint and the settled rail) to fail, and never let
+  such a run rewrite `evidence/`.
+- **Fonts:** Readex Pro loads from Google Fonts over verified TLS. In a fresh cloud container, the proxy's CA must first be
+  in Chromium's NSS store (`~/.pki/nssdb`).
+- **Round 7 step 2:** it was run only in the cloud container, into a scratch folder. Every check not built on the
+  Windows hashes passed, including `chart`, `follow`, `marker`, `roll`, `delayed`, `live` and the tuner. The hash-based
+  ones failed as expected.
 
 The log records:
 
@@ -414,23 +500,25 @@ The log records:
 - **The tuner from `file://`:**
   - keyboard, presets, drag, copy (both paths), persistence, `?tuner=0` and reset;
   - the Motion group: no obsolete controls, New reading, the crowd buttons, and the switch persisting in its own key;
+  - (in `marker`) the hover speed: its row, its storage with the switch, a reload, and `?tuner=0`;
   - a crowd change with motion on: the number rolls, the bars change, no light moves and no glyph fades.
 - **`motion` (Round 6):**
   - **Static guard:** `identity.staticFrames` and `identity.motionOffFrames`. The frames that change by design are
     compared with this run's reduced-motion frame.
   - **First paint:** `identity.motionFirstPaint` holds the first paint with motion on, the animations on load, and
     whether the DOM equals the `?motion=off` DOM.
-  - **`chart`** (Round 7: for each marker form, A and B, in AR and EN, each live, delayed and without history; the B
-    keys end in `B`):
+  - **`chart`** (Round 7 step 2: form B, in AR and EN, each live, delayed and without history):
     - every stop, with the half-hour coverage, the gap stop and the two line segments (no bridge);
     - at every stop, the marker's distance to its target, its form, that nothing is drawn above the point, the tooltip,
       and the screen-reader text;
-    - pointer snapping (7 probes) and keyboard stepping.
-  - **`marker`** (Round 7): the comparison sheet, and the switch from `file://` (the default, the tuner's buttons, its
-    storage key, a reload, `?marker=a` over a stored B, `?tuner=0`, and a shown marker repainted in place).
-  - **`glide`** (both forms; the B keys end in `B`): the marker held at shares of its time stays on the line, or
-    straight above the peak on the drop, in its own form and with nothing above the point. It is not a straight hop.
-    It moves at once across the gap and into the future.
+    - pointer snapping (7 probes) and keyboard stepping;
+    - that the latest stop shows the latest reading and its screen-reader text never calls it an average.
+  - **`marker`** (Round 7 step 2): B's variants sheet; that form A is gone (no Marker group, `?marker=a` ignored, no
+    `setMarker`); and the hover speed.
+  - **`follow`** (Round 7 step 2, AR and EN): the follow's own curve against the clip's figures (within 0.07); the
+    marker held at 33, 66, 100, 200 and 400 ms after a new target stays on the line, the usual line or straight above
+    the peak on the drop, with nothing above the point, and it is not a straight hop. Across the gap and into the
+    future the marker is on its new stop at once and only the tooltip eases.
   - **`roll`** (AR and EN):
     - every animation of a crowd change down and up and of a new reading, with direction and properties;
     - no glyph opacity, the digits that moved, and the bars;
@@ -442,14 +530,19 @@ The log records:
 
 - **Still frames, 1440×900, Recommended:**
   - `daily-ar-1440x900` and `daily-en-1440x900`
-  - `daily-ar-1440x900-hover` and `daily-en-1440x900-hover`: the peak stop with marker A, the lit bead
+  - `daily-ar-1440x900-hover` and `daily-en-1440x900-hover`: the peak stop with marker A, the lit bead (superseded;
+    `capture.mjs` now writes these names with form B)
   - `daily-ar-1440x900-hover-b` and `daily-en-1440x900-hover-b` (Round 7): the same with marker B, the hollow ring
+    (still current: step 2 renders the peak hover pixel-identically)
   - `-rail-open` (AR and EN)
   - `-delayed`, `-nohistory` and `-details` (full page), in AR
-  - `daily-ar-1440x900-tuner-open`, with the Round 7 Marker group and the Round 6 Motion group
-- **`marker-compare-ar-3x.png` (Round 7), the first file to open:** A and B side by side, tight 3x crops of the real
-  AR page at rest, the tooltip hidden: on the line (5:00 PM), the peak, the latest reading live and delayed, still
-  ahead (9:00 PM), the missing span, and still ahead without history.
+  - `daily-ar-1440x900-tuner-open`, with the Round 7 Marker group and the Round 6 Motion group (superseded: step 2
+    removes the Marker group and adds the hover speed)
+- **`marker-compare-ar-3x.png` (Round 7 step 1):** A and B side by side, tight 3x crops of the real AR page at rest, the
+  tooltip hidden: on the line (5:00 PM), the peak, the latest reading live and delayed, still ahead (9:00 PM), the
+  missing span, and still ahead without history.
+  - Superseded in part: step 2 keeps the B row except at the missing span, where it uses the A row's lit dots.
+  - `capture.mjs` now writes `marker-variants-ar-3x.png` (B only) instead.
 - **Per preset (`v2`, `a-like`, `recommended`):** `preset-<id>-ar-1440x900`, `-nowcard-2x`, `-chart-2x`, and the
   light-only 1x captures `-nowcard-light` and `-chart-light`.
 - **Other:** `daily-en-nowcard-2x`, `levels-nowcard` and `levels-chart`.
@@ -459,19 +552,42 @@ The log records:
   - `motion-bars-ar-2x`: the third and fourth level bars filling, enlarged 4x, with the chip before and after.
   - `motion-glide-ar-a-2x` and `motion-glide-ar-b-2x` (Round 7; they replace `motion-glide-ar-2x`): each marker form
     held mid-glide along the line (5:00 to 5:30 PM), and climbing from 6:00 PM onto the peak ring. There is one fixed
-    crop per run. The glide is still Round 6's; the next step replaces it.
+    crop per run. Superseded: they show the Round 6 glide, which step 2 replaced with the follow. `capture.mjs` now
+    writes `motion-follow-ar-2x` instead (a new file with an old Round 5 name; the Round 5 frames of that name are
+    gone, see below).
   - `motion-live-ar-tail-2x`: the line's tail around the end point, before, at 70 and 140 ms, and after (enlarged 3x).
   - `motion-rail-ar-open-0100ms`, `motion-rail-ar-close-0090ms` and `motion-rail-en-open-0100ms`.
-  - `motion-contact-sheet`: all of them on one page.
+  - `motion-contact-sheet`: all of them on one page (superseded in part: it holds the glide frames).
 - **Round 5 frames:** the `motion-load-*`, `motion-light-*`, `motion-follow-*` and `motion-glide-ar-0090ms` frames are
   gone with the motion they showed.
-- **Static guard (last run, Round 7, exit code 0):**
+- **Round 7 step 2: the committed PNGs and `capture-log.json` were not re-rendered.**
+  - They were rendered on Windows before step 2. This step was built in a Linux cloud container, where fonts render
+    differently, so its renders are not comparable with them, and `evidence/` was left untouched.
+  - The frames that now show superseded behaviour:
+    - form A: `daily-*-1440x900-hover` and the A row of `marker-compare-ar-3x`;
+    - B's capsule at the missing span: that cell of `marker-compare-ar-3x`;
+    - the Round 6 glide: `motion-glide-ar-a-2x`, `motion-glide-ar-b-2x` and those cells of `motion-contact-sheet`;
+    - the Marker group: `daily-ar-1440x900-tuner-open`.
+  - The latest stop's new value (49 · Busy) and the follow appear in no committed frame.
+  - The capture log also describes step 1 (form A, the switch and the glide).
+- **Round 7 step 2, identity (in the cloud container):**
+  - The step-1 folder and this step were rendered with the same script on the same machine, and compared pixel for
+    pixel, with reduced motion and with `?motion=off`.
+  - All 23 still frames are identical in both modes.
+  - The peak hover with B is identical to step 1's `-hover-b`, in AR and EN, in both modes.
+  - The missing-span stop is identical to step 1's form A there. The 5:00 PM and 9:00 PM stops, with and without
+    history, are identical too.
+  - Only the tuner-open frame and the latest stop (its new value) differ, by design.
+  - With motion on, a hover that has followed and settled matches the still hover frame, except for a few faint
+    raster differences on anti-aliased edges (at most 42/255 in AR). Step 1 shows the same kind with its glide.
+- **Static guard (last run on Windows, Round 7 step 1, exit code 0):**
   - Reduced motion: 25 of 27 pre-motion frames are identical. The other two, the AR hover and the tuner frames,
     change by design.
   - `?motion=off`: 11 of 11 frames are identical (the pre-motion frame, or this run's still frame for the frames that
     change by design and for the new EN hover and `-hover-b` frames).
   - With motion on, the first paint is identical in 4 of 4 pages, and only the live pulse runs on load.
-- **Videos:** the designer's real-time recordings (1440×900) are outside the repository and are not evidence here.
+- **Videos:** the designer's real-time recordings (1440×900) are outside the repository and are not evidence here. The
+  step 2 recordings are in the builder's scratch folder.
 
 ## Checks not run
 
@@ -489,12 +605,13 @@ The log records:
     (about 25 frames per second). It was not judged on a real display.
   - Frame pacing and jank were not measured. Pointer and keys came from Playwright, not a real touchpad or keyboard.
   - Touch was not tried; a tap pins the reading, as before.
-- **Marker (Round 7):**
-  - The two forms were judged from the 3x comparison sheet, the 1x hover frames and the held 2x glide frames, not on a
-    real display or in motion in real time.
-  - The live pulse still runs from the end point while a marker sits on it; its look with B's ring over the end point
-    was not judged in motion.
-  - The filter and mask of A's line light were not profiled for frame cost during the glide.
+- **Marker and follow (Round 7 step 2):**
+  - The follow was judged from rAF logs, held frames and real-time Playwright recordings in headless Chromium, which
+    paints at about 30 frames per second there (the recordings hold about 20 distinct frames per second). It was not
+    seen on a real display at 60 or 120 Hz.
+  - The live pulse still runs from the end point while the ring sits on it (the user kept it); it was not judged in
+    motion.
+  - The ring's blur filter was not profiled for frame cost; the ring's elements are moved, not rebuilt, each frame.
 - **Known differences:**
   - After a simulated live update settles, the page's DOM and geometry equal the canonical page, measured to 0.001px.
   - But Chromium rasterizes the header chip's text differently: about 1,100 pixels, up to 84/255 on glyph edges.
@@ -502,4 +619,5 @@ The log records:
     span does it, so it is a raster state, not a layout change.
   - The cards' text is not affected (their layers are already composited).
 - **Scope:** no English frames for delayed, no history or details. Mobile is out of scope.
-- **Repository:** no repository verification. `pnpm check:design-context` passed at the start of Round 7 (step 1).
+- **Repository:** no repository verification. `pnpm check:design-context` passed at the start of Round 7 (step 1); it was
+  not run for step 2.

@@ -1031,3 +1031,76 @@ credit Anthropic gave Pro subscribers. Codex will push the branch to GitHub firs
    `ownerSession` when it takes over the lease.
 - **Status:** nothing is selected. Redline, production, canonical, Paper, and authority state are unchanged.
 - **Ledger:** the lease was renewed until 2026-09-26T22:00+03:00.
+
+## First cloud session: setup, and Round 7 step 2 delivered and verified (2026-09-26)
+
+The coordinator ran in a Claude Code cloud session (`session_015ieHuPjwSGP8rCDCeq5nrf`) on
+`codex/owner-redesign-r04`, starting at `c67b1e4`. The ledger's `worktree` and `ownerSession` now name this session
+(`949ecba`, pushed).
+
+**Cloud first steps.**
+- **Checkout:** `pnpm install --frozen-lockfile` passed on Node 22.22.2 and left `git status` unchanged. Playwright
+  1.61.1's Chromium (v1228) installed from the Playwright CDN. Headless screenshots and `recordVideo` work, and
+  Python has OpenCV, numpy and pillow.
+- **Fonts:** the headless Chromium rejected the session proxy's certificate, so Google Fonts did not load
+  (`ERR_CERT_AUTHORITY_INVALID`) and pages rendered in a fallback font. The fix keeps TLS verification on: the
+  proxy CA (`/root/.ccr/agent-proxy-ca.crt`) was added to Chromium's NSS store (`~/.pki/nssdb`, trust `C,,`). Readex
+  Pro then loads. A fresh container needs the same step; it could go in the setup script.
+- **`pnpm check:design-context`:** it failed first, as expected, with no engine on the PATH. The committed launcher
+  `.claude/skills/impeccable/scripts/impeccable engine-probe` downloaded engine 0.1.5 from the project's GitHub
+  release, verified it against its `.sha256`, and cached it in `~/.impeccable/bin/0.1.5/`, outside the repository.
+  With `IMPECCABLE_BIN` set to that binary, the check **passed** (the engine reports Impeccable 4.0.0; both routers
+  resolve at the repo root and from `apps/web`). So this was not `NEEDS_HUMAN`. A new container must repeat the
+  probe, or the setup script can do it.
+  - Pitfall: pointing `IMPECCABLE_BIN` at the launcher itself makes the launcher exec itself in a loop.
+- **`pnpm context:show`:** takes `--milestone <id>` directly; `pnpm context:show -- --milestone …` fails with
+  "Unknown argument: --".
+
+**Step 2 (Round 7 → "Decisions after step 1", item 5).**
+- **Baseline:** hashes of every direction file outside `eclipse/`, of every tracked file outside it, the status,
+  the index and the diff, and a copy of `eclipse/` at `c67b1e4`. The pixel baseline is that copy rendered in the
+  same container, not `pre-motion-hashes.json` (see `directions/_tools/README.md`).
+- **Builder:** one fresh `owner-direction-builder` (`high`), confined to `eclipse/`. It changed `app.js`, `tuner.js`,
+  `style.css`, `capture.mjs` and `README.md`. `evidence/**`, `pre-motion-hashes.json`, `.impeccable/**`,
+  `index.html` and the `:root` light values are unchanged.
+  - **Form B only:** form A, its switch, its storage key, `?marker=` and `setMarker` are gone. The missing-span
+    stop uses A's lit chalk dots, pixel-identical to step 1's A.
+  - **The follow:** two lags in series (90 ms and 15 ms), fitted to the clip. It moves along the drawn path's arc
+    length, keeps position and velocity on a new target, and the tooltip text changes at once. The tooltip appears
+    at once on first hover. Where no drawn track joins two stops (the gap, into the future), the ring jumps and the
+    tooltip eases. Beyond 6 hours on the time axis, both move at once (replacing the 240 px rule).
+  - **Tuner:** «سرعة انتقال العلامة» "Hover speed", 0.5–2×, default 1×, kept in the motion key.
+  - **Latest stop:** live 7:42 PM, 49 · Busy; delayed 7:29 PM, 46 · Moderate with "13 min ago". Its screen-reader
+    text does not call it an average.
+  - **F2** fixed (the halo no longer shows during a live update). **F5** fixed (the lookup tables are computed from
+    each path's `d` in well under a millisecond; no long task).
+  - `capture.mjs` takes an output folder; its hash-based guards fail on Linux by design and were not used.
+- **Independent verifier:** a fresh `owner-direction-verifier` (`xhigh`) with the brief, the checklist and the
+  baseline only. It passed all 11 checks, each tool with a control, and found:
+  - **H1:** landing on or leaving the peak showed B over the chalk peak ring for about 200 ms (two rings).
+  - **H2:** approaching the latest reading, B sat inside the end halo for about 80 ms (a target look).
+  - H3 (a stale README font note), H4 (the tuner's Default button had no English label; the gap mark was tagged `b`),
+    and H5 (information: with the tuner's crowd simulation on, the card shows 69 and the latest stop 49).
+- **The coordinator's review:** it opened the follow-fraction chart, the held 3x on-curve sheet, the variants sheet,
+  the F2 strips and their control, and the H2 approach strip. They support the report, and H1 and H2 are visible.
+- **Repair (one round):** the coordinator gave the builder a fixed rule: a mark that B replaces (the peak ring, the
+  end halo) steps aside instantly while B's edge would touch it, both ways. The builder added one exemption: a mark
+  wholly under B's opaque centre stays drawn, so the peak hover stays identical. H3 and H4 were fixed too.
+  - Accepted by the coordinator: at the 7:30 PM rest stop the halo is now hidden (B is 12.7 px from the end point),
+    and on the approach to the latest reading the end point's core shows beside B's edge, never inside, for about
+    180 ms.
+- **Re-check (the same verifier, with the previous `app.js` as a control):** all 5 items passed.
+  - No frame shows two overlapping rings or B inside a visible halo: 0 of 864 held frames per language, and 0 in
+    real-time mouse and key logs. The control has 228 and 700.
+  - All 64 non-by-design still frames are identical to the baseline in both modes, and the peak hover is identical.
+  - The follow is within 0.021 of the clip's figures. The ring stays within 0.0072 px of the path, and there is no
+    restart. There are no long tasks.
+  - Remaining note: the Default button's `aria-label` is Arabic only, so screen readers do not hear its English
+    text (`tuner.js`, the tuner only).
+- **Not done:** the committed PNGs in `evidence/` are Windows renders from before step 2, and some show
+  superseded behaviour (the README lists which). The follow was judged in headless Chromium at about 20–40 fps, not
+  on a real display. Evidence and tools are in this session's scratchpad (`r7b-builder/`, `r7b-verify/`), which is
+  not committed.
+
+**Status.** Step 2 is ready for the user's review. Step 3, the first-open intro (Round 7 decision 4), comes next in
+the same way. Nothing is selected. Redline, production, canonical, Paper and authority state are unchanged.

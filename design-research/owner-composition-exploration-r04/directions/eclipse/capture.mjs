@@ -11,25 +11,31 @@
 // Round 6 checks (motion part, reducedMotion "no-preference" unless noted): the first settled paint with motion on
 // equals the still frame and only the live pulse runs on load; the chart's stops (half hours, the peak, the latest
 // reading, the missing span), the marker's distance to what it describes at every stop (AR and EN, against the SVG
-// path's own geometry), pointer snapping, keyboard stepping, the glide staying on the curve, the digit roll (direction,
+// path's own geometry), pointer snapping, keyboard stepping, the follow staying on the curve, the digit roll (direction,
 // transform only, never opacity on a glyph), the live region, a crowd-level change, the live tail, the delayed state
 // and the rail. Held 2x motion frames and a contact sheet are written as motion-*.png. Any failed check sets exit 1.
-// Round 7 (the marker's two forms, A the lit bead and B the hollow ring): hover stills for both (-hover and -hover-b,
-// AR and EN), marker-compare-ar-3x.png (both forms side by side at the line, the peak, the latest reading live and
-// delayed, still ahead, the missing span, and still ahead without history), the chart checks and the held glide frames
-// for both forms (nothing drawn above the point), and the switch (?marker=a|b, the tuner's buttons, its storage key).
+// Round 7 step 2 (form B, the hollow ring, only; the smooth follow): hover stills (-hover, AR and EN, form B),
+// marker-variants-ar-3x.png (B at the line, the peak, the latest reading live and delayed, still ahead, the missing span
+// with the lit dots, and still ahead without history), the chart checks (the latest stop shows the latest reading and is
+// never called an average), that form A and its switch are gone, the hover speed control, and the follow: held at
+// times after a new target, the marker stays on the drawn curve, covers the clip's share of the distance, is not a
+// straight hop, and moves at once where no drawn track joins two stops (the tooltip then eases).
 // Run from PowerShell at the worktree root:
-//   node design-research/owner-composition-exploration-r04/directions/eclipse/capture.mjs
+//   node design-research/owner-composition-exploration-r04/directions/eclipse/capture.mjs [outDir]
+// outDir defaults to evidence/. The static guard compares with evidence/pre-motion-hashes.json, which was rendered on
+// the original Windows machine; on another machine (fonts render differently) pass a scratch outDir, and expect that
+// guard to fail, so never let such a run rewrite evidence/.
 // Add --motion-only to record only the motion part (the log is then printed, not written).
 import { createHash } from "node:crypto";
 import { createServer } from "node:http";
 import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
-import { dirname, extname, join, normalize, sep } from "node:path";
+import { dirname, extname, join, normalize, resolve, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { chromium } from "@playwright/test";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const OUT = join(HERE, "evidence");
+const OUT_ARG = process.argv.slice(2).find((a) => !a.startsWith("--"));
+const OUT = OUT_ARG ? resolve(OUT_ARG) : join(HERE, "evidence");
 const PORT = 3173;
 const ORIGIN = `http://127.0.0.1:${PORT}`;
 const FILE_URL = pathToFileURL(join(HERE, "index.html")).href;
@@ -63,11 +69,9 @@ await new Promise((resolve) => server.listen(PORT, "127.0.0.1", resolve));
 const FRAMES = [
   { name: "daily-ar-1440x900", q: "lang=ar&tuner=0" },
   { name: "daily-en-1440x900", q: "lang=en&tuner=0" },
+  // Round 7 step 2: the hover frames show form B, the only form (the step-1 -hover-b frames showed the same at the peak).
   { name: "daily-ar-1440x900-hover", q: "lang=ar&tuner=0", act: "hover-peak" },
   { name: "daily-en-1440x900-hover", q: "lang=en&tuner=0", act: "hover-peak" },
-  // Round 7: marker form B (the hover frames above are form A, the default).
-  { name: "daily-ar-1440x900-hover-b", q: "lang=ar&tuner=0&marker=b", act: "hover-peak" },
-  { name: "daily-en-1440x900-hover-b", q: "lang=en&tuner=0&marker=b", act: "hover-peak" },
   { name: "daily-ar-1440x900-rail-open", q: "lang=ar&tuner=0", act: "rail-open" },
   { name: "daily-en-1440x900-rail-open", q: "lang=en&tuner=0", act: "rail-open" },
   { name: "daily-ar-1440x900-delayed", q: "lang=ar&state=delayed&tuner=0" },
@@ -75,14 +79,14 @@ const FRAMES = [
   { name: "daily-ar-1440x900-details", q: "lang=ar&tuner=0", act: "details", full: true },
   { name: "daily-ar-1440x900-tuner-open", q: "lang=ar", act: "tuner-open" },
 ];
-// These change by design: the hover frame (Round 6: the tooltip's value is the line's own; Round 7: marker form A, the
-// lit bead, replaces the reading sight) and the tuner (Round 6: its Motion group; Round 7: its Marker group). The
-// English hover frame and the -hover-b frames have no pre-motion frame.
+// These change by design: the hover frame (Round 6: the tooltip's value is the line's own; Round 7: marker form B, the
+// hollow ring, replaces the reading sight) and the tuner (Round 6: its Motion group; Round 7 step 2: the hover speed).
+// The English hover frame has no pre-motion frame.
 const EXPECTED_TO_CHANGE = {
-  "daily-ar-1440x900-hover": "Round 7: marker form A (the lit bead) replaces the Round 6 reading sight; the value at the peak stop is unchanged (62)",
-  "daily-ar-1440x900-tuner-open": "Round 6: the tuner's Motion group; Round 7: its Marker group (A / B)",
+  "daily-ar-1440x900-hover": "Round 7: marker form B (the hollow ring) replaces the Round 6 reading sight; the value at the peak stop is unchanged (62)",
+  "daily-ar-1440x900-tuner-open": "Round 6: the tuner's Motion group; Round 7 step 2: its hover speed (the step-1 Marker group is gone)",
 };
-const MARKERS = ["a", "b"];
+const MARKERS = ["b"];
 const PRESETS = ["v2", "a-like", "recommended"];
 const OVERFLOW_ONLY = [
   { name: "daily-ar-1280x800", q: "lang=ar&tuner=0" },
@@ -103,7 +107,7 @@ await mkdir(OUT, { recursive: true });
 for (const stale of ["daily-ar-chart-2x.png", "daily-ar-nowcard-2x.png"]) await rm(join(OUT, stale), { force: true });
 const browser = await chromium.launch();
 const log = [];
-const PRE = JSON.parse(await readFile(join(OUT, "pre-motion-hashes.json"), "utf8")).frames;
+const PRE = JSON.parse(await readFile(join(HERE, "evidence", "pre-motion-hashes.json"), "utf8")).frames;
 const sha = (buf) => createHash("sha256").update(buf).digest("hex");
 const identity = { staticFrames: {}, motionOffFrames: {}, motionFirstPaint: {}, liveUpdateEndsAtCanonical: null };
 const stillBuffers = {}; // this run's still frames, for frames with no pre-motion hash (or one that changes by design)
@@ -342,7 +346,7 @@ async function hashFile(name) {
 
 /* ------------------------------------------------------------------ motion helpers
  * Contexts with reducedMotion "no-preference". Animations are held at exact times through Document.getAnimations()
- * and the page's own seeks (window.__eclipse.chart.seekGlide, window.__eclipse.motion.seekLive), so every held frame
+ * and the page's own seeks (window.__eclipse.chart.seekFollow, window.__eclipse.motion.seekLive), so every held frame
  * is deterministic. */
 async function pixelDiff(a, b) {
   const { context, page } = await newPage({ width: 400, height: 300 });
@@ -454,8 +458,8 @@ const measureMarker = (page) => page.evaluate(() => {
 });
 
 /* ------------------------------------------------------------------ Round 6 checks */
-async function chartChecks(lang, state = "live", marker = "a") {
-  const q = `lang=${lang}&state=${state}&tuner=0&marker=${marker}`;
+async function chartChecks(lang, state = "live", marker = "b") {
+  const q = `lang=${lang}&state=${state}&tuner=0`;
   const { context, page, errors } = await open(q); // reduced motion: every selection is at rest at once
   const res = { url: `index.html?${q}`, marker, markerReported: await page.evaluate(() => window.__eclipse.chart.marker), errors };
   res.stops = await page.evaluate(() => window.__eclipse.chart.stops);
@@ -475,6 +479,8 @@ async function chartChecks(lang, state = "live", marker = "a") {
   res.normalStopsInsideGap = res.stops.filter((s) => s.kind !== "gap" && s.m >= 494 && s.m <= 511).length;
   res.peakStop = res.stops.find((s) => s.key === "peak") || null;
   res.latestStop = res.stops.find((s) => s.key === "latest") || null;
+  // Round 7 decision 1: the latest stop shows the latest reading (the Inside now card's number), never the line's value.
+  res.latestShowsReading = Boolean(res.latestStop) && res.latestStop.value === f.now;
   // The marker at every stop.
   res.perStop = [];
   for (const s of res.stops) {
@@ -490,8 +496,11 @@ async function chartChecks(lang, state = "live", marker = "a") {
   };
   res.maxCoreRenderedOffsetPx = Math.max(...res.perStop.filter((p) => p.coreRenderedOffsetPx != null).map((p) => p.coreRenderedOffsetPx));
   res.aheadWithoutMarker = res.perStop.filter((p) => (p.kind === "ahead" || p.kind === "wait") && !p.marker).length;
-  res.wrongForm = res.perStop.filter((p) => p.marker && p.markerForm !== marker).map((p) => p.key);
+  res.wrongForm = res.perStop.filter((p) => p.marker && p.markerForm !== (p.kind === "gap" ? "gap" : marker)).map((p) => p.key);
   res.drawnAbovePoint = res.perStop.filter((p) => p.drawnAbovePoint).map((p) => p.key);
+  const latestAt = res.perStop.find((p) => p.key === "latest");
+  res.latestText = latestAt ? { tip: latestAt.tip, valuetext: latestAt.valuetext } : null;
+  res.latestNotCalledAverage = Boolean(latestAt) && !/average|المتوسط/.test(latestAt.valuetext) && latestAt.valuetext.includes(String(f.now));
   // Pointer snapping (a mouse over the chart): on each half-hour stop, 6px beside the peak and the latest reading,
   // in the middle of the missing span, and 40px past the last stop.
   await page.evaluate(() => window.__eclipse.chart.clear());
@@ -532,7 +541,7 @@ async function chartChecks(lang, state = "live", marker = "a") {
   expectIdx.push(0, idx("latest"), idx("latest") + 1);
   res.keyboard = { later, earlier, steps: seq, pass: seq.every((s, i) => idx(s.selected) === expectIdx[i]) && seq[0].focusVisible === true };
   await context.close();
-  res.pass = res.markerReported === marker && res.wrongForm.length === 0 && res.drawnAbovePoint.length === 0 && res.everyHalfHourAccountedFor &&res.gapStops === (f.last > 511 ? 1 : 0) && res.normalStopsInsideGap === 0 && res.lineSegments === 2 &&
+  res.pass = res.latestShowsReading && res.latestNotCalledAverage && res.markerReported === marker && res.wrongForm.length === 0 && res.drawnAbovePoint.length === 0 && res.everyHalfHourAccountedFor &&res.gapStops === (f.last > 511 ? 1 : 0) && res.normalStopsInsideGap === 0 && res.lineSegments === 2 &&
     res.peakStop && res.peakStop.value === f.peak && res.latestStop && res.latestStop.m === f.last &&
     res.maxDistancePx.lineStops <= 0.5 && res.maxDistancePx.peak <= 0.5 && (res.maxDistancePx.usualLine == null || res.maxDistancePx.usualLine <= 0.5) && (res.maxDistancePx.gapMark == null || res.maxDistancePx.gapMark <= 0.5) &&
     res.maxCoreRenderedOffsetPx <= 0.5 && (state !== "nohistory" || res.perStop.filter((p) => p.kind === "ahead").every((p) => !p.marker)) &&
@@ -540,10 +549,10 @@ async function chartChecks(lang, state = "live", marker = "a") {
   return res;
 }
 
-/* ------------------------------------------------------------------ Round 7: the marker's two forms
- * An enlarged side-by-side of A and B (reduced motion, 3x, tight crops, the tooltip hidden so the shapes can be
- * judged), and the switch: ?marker=a|b, the default, the tuner's buttons, its own storage key, ?tuner=0, and a
- * shown marker repainted in place when the form changes. */
+/* ------------------------------------------------------------------ Round 7 step 2: form B only
+ * B's variants on one enlarged sheet (reduced motion, 3x, tight crops, the tooltip hidden so the shapes can be judged),
+ * and that form A and its switch are gone: no Marker group in the tuner, ?marker=a is ignored, no setMarker; plus the
+ * hover speed control (its own row in the Motion group, kept in the motion key, ignored with ?tuner=0). */
 async function markerChecks() {
   const out = {};
   const cols = [
@@ -552,75 +561,69 @@ async function markerChecks() {
     ["live", "latest", "the latest reading (live)"],
     ["delayed", "latest", "the latest reading (delayed, stale)"],
     ["live", "h900", "still ahead, 9:00 PM"],
-    ["live", "gap", "the missing span"],
+    ["live", "gap", "the missing span (lit dots)"],
     ["nohistory", "h900", "still ahead, no history"],
   ];
-  const cells = { a: [], b: [] };
-  for (const mk of MARKERS) {
-    for (const [state, key, caption] of cols) {
-      const { context, page, errors } = await open(`lang=ar&state=${state}&tuner=0&marker=${mk}`, { scale: 3 });
-      await page.addStyleTag({ content: ".tip { visibility: hidden !important; }" });
-      await page.evaluate((k) => window.__eclipse.chart.select(k), key);
-      const c = await page.evaluate((k) => {
-        const s = document.querySelector("#plot-svg svg").getBoundingClientRect();
-        const m = document.querySelector("#sel .sg-mark") || document.querySelector("#sel .sg-tick");
-        let x, y;
-        if (m.classList.contains("sg-mark")) { const t = m.transform.baseVal.consolidate().matrix; x = t.e; y = t.f; } else { const b = m.getBBox(); x = b.x + b.width / 2; y = b.y + b.height / 2; }
-        if (k === "peak") y += 10; // the ring and the line under it
-        return { x: s.x + x, y: s.y + y };
-      }, key);
-      const W = 110, H = 76;
-      cells[mk].push({ buf: await page.screenshot({ clip: { x: Math.round(c.x - W / 2), y: Math.round(c.y - H / 2), width: W, height: H } }), caption, errors });
-      await context.close();
-    }
+  const cells = [];
+  for (const [state, key, caption] of cols) {
+    const { context, page, errors } = await open(`lang=ar&state=${state}&tuner=0`, { scale: 3 });
+    await page.addStyleTag({ content: ".tip { visibility: hidden !important; }" });
+    await page.evaluate((k) => window.__eclipse.chart.select(k), key);
+    const c = await page.evaluate((k) => {
+      const s = document.querySelector("#plot-svg svg").getBoundingClientRect();
+      const m = document.querySelector("#sel .sg-mark") || document.querySelector("#sel .sg-tick");
+      let x, y;
+      if (m.classList.contains("sg-mark")) { const t = m.transform.baseVal.consolidate().matrix; x = t.e; y = t.f; } else { const b = m.getBBox(); x = b.x + b.width / 2; y = b.y + b.height / 2; }
+      if (k === "peak") y += 10; // the ring and the line under it
+      return { x: s.x + x, y: s.y + y };
+    }, key);
+    const W = 110, H = 76;
+    cells.push({ buf: await page.screenshot({ clip: { x: Math.round(c.x - W / 2), y: Math.round(c.y - H / 2), width: W, height: H } }), caption, errors });
+    await context.close();
   }
   {
     const { context, page } = await newPage({ width: 2400, height: 200 });
-    const row = (mk, label) => `<div class="lab">${label}</div>${cells[mk].map((c) => `<figure><img src="data:image/png;base64,${c.buf.toString("base64")}"><figcaption>${c.caption}</figcaption></figure>`).join("")}`;
     await page.setContent(`<!doctype html><html><head><style>
       body { margin: 0; padding: 18px; background: #161616; color: #cfcfcf; font: 15px/1.35 "Segoe UI", system-ui, sans-serif; width: max-content; }
       h1 { margin: 0 0 4px; font-size: 19px; font-weight: 600; color: #eee; } p { margin: 0 0 14px; color: #a9a9a9; max-width: 1900px; }
-      .g { display: grid; grid-template-columns: 150px repeat(${cols.length}, max-content); gap: 14px 12px; align-items: start; }
-      .lab { padding-top: 90px; font-size: 16px; color: #eee; } figure { margin: 0; } img { display: block; } figcaption { margin-top: 5px; max-width: 330px; }
-    </style></head><body><h1>Chart marker: A and B side by side (Eclipse concept, synthetic data), Arabic, 3x</h1>
-    <p>Tight crops of the real page at rest (reduced motion); the tooltip is hidden here so only the shapes show. Nothing is drawn above the point; the thin hairline below runs to the time axis.</p>
-    <div class="g">${row("a", "A · lit bead")}${row("b", "B · hollow ring")}</div></body></html>`);
+      .g { display: grid; grid-template-columns: repeat(${cols.length}, max-content); gap: 14px 12px; align-items: start; }
+      figure { margin: 0; } img { display: block; } figcaption { margin-top: 5px; max-width: 330px; }
+    </style></head><body><h1>Chart marker B, the hollow ring, and its variants (Eclipse concept, synthetic data), Arabic, 3x</h1>
+    <p>Tight crops of the real page at rest (reduced motion); the tooltip is hidden here so only the shapes show. Nothing is drawn above the point; the thin hairline below runs to the time axis. The missing span keeps the lit dots.</p>
+    <div class="g">${cells.map((c) => `<figure><img src="data:image/png;base64,${c.buf.toString("base64")}"><figcaption>${c.caption}</figcaption></figure>`).join("")}</div></body></html>`);
     await page.waitForTimeout(150);
-    await page.screenshot({ path: join(OUT, "marker-compare-ar-3x.png"), fullPage: true });
+    await page.screenshot({ path: join(OUT, "marker-variants-ar-3x.png"), fullPage: true });
     await context.close();
   }
-  out.compareErrors = [...cells.a, ...cells.b].flatMap((c) => c.errors);
-  // The switch, from file:// (the tuner's own world): default A; the tuner's B button sets the form, stores it in its
-  // own key and repaints a shown marker in place; a reload keeps B; ?marker=a wins over the stored B and is not
-  // stored; ?tuner=0 ignores the stored B.
+  out.variantErrors = cells.flatMap((c) => c.errors);
   {
     const { context, page, errors } = await newPage();
     const ready = async (url) => { await page.goto(url, { waitUntil: "networkidle" }); await page.waitForFunction(() => window.__eclipse?.ready === true); };
-    const form = () => page.evaluate(() => window.__eclipse.chart.marker);
-    const shown = () => page.evaluate(() => document.querySelector("#sel .sg-mark")?.dataset.marker || null);
-    await ready(`${FILE_URL}?lang=ar`);
-    const s = { defaultForm: await form(), buttons: await page.evaluate(() => [...document.querySelectorAll(".tuner-marker button")].map((b) => ({ marker: b.dataset.marker, pressed: b.getAttribute("aria-pressed"), text: b.textContent.trim() }))), legend: await page.evaluate(() => document.querySelector(".tuner-marker legend")?.textContent.trim()) };
-    await page.evaluate(() => window.__eclipse.chart.select("h660"));
-    s.shownBefore = await shown();
-    await page.click(".tuner-toggle");
-    await page.click(".tuner-marker button[data-marker='b']");
-    s.afterClick = { form: await form(), shown: await shown(), stillSelected: await page.evaluate(() => window.__eclipse.chart.selected), stored: await page.evaluate((k) => localStorage.getItem(k), await page.evaluate(() => window.__eclipse.chart.markerStore)), pressed: await page.evaluate(() => document.querySelector(".tuner-marker button[data-marker='b']").getAttribute("aria-pressed")) };
-    await ready(`${FILE_URL}?lang=ar`);
-    s.afterReload = await form();
     await ready(`${FILE_URL}?lang=ar&marker=a`);
-    s.urlWins = { form: await form(), fromUrl: await page.evaluate(() => window.__eclipse.chart.markerFromUrl), storedStill: await page.evaluate(() => localStorage.getItem("fitway.eclipse.v3.marker")) };
+    await page.evaluate(() => window.__eclipse.chart.select("h660"));
+    const r = {
+      reported: await page.evaluate(() => window.__eclipse.chart.marker),
+      shown: await page.evaluate(() => document.querySelector("#sel .sg-mark")?.dataset.marker || null),
+      setMarker: await page.evaluate(() => typeof window.__eclipse.chart.setMarker),
+      markerGroup: await page.evaluate(() => Boolean(document.querySelector(".tuner-marker"))),
+    };
+    await page.click(".tuner-toggle");
+    r.speedRow = await page.evaluate(() => ({ label: document.querySelector("label[for=t-mo-speed]")?.textContent.trim(), out: document.querySelector("output[for=t-mo-speed]")?.textContent, value: document.getElementById("t-mo-speed")?.value }));
+    await page.evaluate(() => { const i = document.getElementById("t-mo-speed"); i.value = "1.5"; i.dispatchEvent(new Event("input")); });
+    r.afterSet = await page.evaluate(() => ({ speed: window.__eclipse.motion.options.hoverSpeed, stored: localStorage.getItem("fitway.eclipse.v3.motion"), tau1: window.__eclipse.chart.timings.tau1 }));
+    await ready(`${FILE_URL}?lang=ar`);
+    r.afterReload = await page.evaluate(() => window.__eclipse.motion.options.hoverSpeed);
     await ready(`${FILE_URL}?lang=ar&tuner=0`);
-    s.tunerOffIgnoresStored = await form();
-    await page.evaluate(() => localStorage.removeItem("fitway.eclipse.v3.marker"));
-    s.errors = errors;
-    s.pass = s.defaultForm === "a" && s.buttons.length === 2 && s.buttons[0].pressed === "true" && /Marker: A \/ B/.test(s.legend || "") && s.shownBefore === "a" &&
-      s.afterClick.form === "b" && s.afterClick.shown === "b" && s.afterClick.stillSelected === "h660" && s.afterClick.stored === "b" && s.afterClick.pressed === "true" &&
-      s.afterReload === "b" && s.urlWins.form === "a" && s.urlWins.fromUrl === "a" && s.urlWins.storedStill === "b" && s.tunerOffIgnoresStored === "a" && errors.length === 0;
-    out.switch = s;
+    r.tunerOffIgnoresStored = await page.evaluate(() => window.__eclipse.motion.options.hoverSpeed);
+    await page.evaluate(() => localStorage.removeItem("fitway.eclipse.v3.motion"));
+    r.errors = errors;
+    r.pass = r.reported === "b" && r.shown === "b" && r.setMarker === "undefined" && !r.markerGroup && /Hover speed/.test(r.speedRow.label || "") && r.speedRow.value === "1" &&
+      r.afterSet.speed === 1.5 && JSON.parse(r.afterSet.stored || "{}").hoverSpeed === 1.5 && r.afterSet.tau1 === 60 && r.afterReload === 1.5 && r.tunerOffIgnoresStored === 1 && errors.length === 0;
+    out.formAGoneAndSpeed = r;
     await context.close();
   }
-  out.pass = out.compareErrors.length === 0 && out.switch.pass;
-  console.log(`marker: compare sheet written; switch ${out.switch.pass ? "pass" : "FAIL"}`);
+  out.pass = out.variantErrors.length === 0 && out.formAGoneAndSpeed.pass;
+  console.log(`marker: variants sheet written; form A gone and hover speed ${out.formAGoneAndSpeed.pass ? "pass" : "FAIL"}`);
   return out;
 }
 
@@ -677,10 +680,10 @@ async function captureMotion() {
   }
 
   // 3. The chart: stops, the marker at every stop (AR and EN; delayed and no history in AR), pointer and keyboard.
-  //    Round 7: both marker forms, A (lit bead) and B (hollow ring).
+  //    Round 7 step 2: form B only; the latest stop shows the latest reading.
   M.chart = {};
   for (const mk of MARKERS) {
-    const s = mk === "a" ? "" : "B";
+    const s = "";
     M.chart[`ar${s}`] = await chartChecks("ar", "live", mk);
     M.chart[`en${s}`] = await chartChecks("en", "live", mk);
     M.chart[`arDelayed${s}`] = await chartChecks("ar", "delayed", mk);
@@ -689,63 +692,64 @@ async function captureMotion() {
     M.chart[`enNoHistory${s}`] = await chartChecks("en", "nohistory", mk);
   }
 
-  // 3b. Round 7: the two marker forms side by side, and the switch.
+  // 3b. Round 7 step 2: B's variants, form A gone, the hover speed.
   M.marker = await markerChecks();
 
-  // 4. The glide stays on the curve: held at time fractions between two stops, the marker is on today's line (or on
-  //    the peak's dotted drop, straight above the peak's minute); it is not a straight hop (its largest distance from
-  //    the straight segment between the two stops). Held 2x frames are written.
-  //    Round 7: both marker forms; the held frames for each (the glide itself is still Round 6's).
-  const glide = {};
-  for (const mk of MARKERS) {
+  // 4. The follow (Round 7 step 2) stays on the curve: held at times after a new target, the marker is on today's line
+  //    (or the usual line, or the peak's dotted drop, straight above the peak's minute); it covers the clip's share of
+  //    the distance within 0.07 (the covered arc length is read from the page's own response); it is not a straight
+  //    hop. Where no drawn track joins two stops, the marker is at once on its new stop and only the tooltip eases.
+  //    Held 2x frames are written.
+  const follow = {};
+  {
     const cells = [];
     for (const lang of ["ar", "en"]) {
-      const { context, page, errors } = await open(`lang=${lang}&tuner=0&marker=${mk}`, { motion: true, scale: 2 });
+      const { context, page, errors } = await open(`lang=${lang}&tuner=0`, { motion: true, scale: 2 });
       await page.addStyleTag({ content: HIDE_PULSE });
+      const response = await page.evaluate(() => window.__eclipse.chart.response());
       const runs = [];
-      for (const [a, b, fracs] of [["h660", "h690", [0.04, 0.12, 0.3]], ["h720", "peak", [0.04, 0.12, 0.3]], ["h630", "h600", [0.12, 0.3]], ["h870", "h900", [0.2]]]) {
+      for (const [a, b] of [["h660", "h690"], ["h720", "peak"], ["h630", "h600"], ["h870", "h900"]]) {
         await page.evaluate((k) => { window.__eclipse.chart.clear(); window.__eclipse.chart.select(k); }, a);
         const start = await measureMarker(page);
         await page.evaluate((k) => window.__eclipse.chart.select(k), b);
-        const active = await page.evaluate(() => window.__eclipse.chart.glideActive);
-        await page.evaluate(() => window.__eclipse.chart.seekGlide(1));
+        const state = await page.evaluate(() => window.__eclipse.chart.follow);
+        await page.evaluate(() => window.__eclipse.chart.seekFollow(5000));
         const end = await measureMarker(page);
-        // One fixed crop per run, centred between the two stops, so the frames read as one movement.
         const pr = await rectOf(page, "#plot");
-        const crop = { x: Math.round(pr.x + (start.marker.x + end.marker.x) / 2 - 170), y: Math.round(pr.y + (start.marker.y + end.marker.y) / 2 - 120), width: 340, height: 230 };
+        const crop = { x: Math.round(pr.x + (start.marker.x + end.marker.x) / 2 - 170), y: Math.round(pr.y + (start.marker.y + end.marker.y) / 2 - 150), width: 340, height: 260 };
         const shots = [];
-        if (lang === "ar" && runs.length < 2) shots.push({ buf: await page.screenshot({ clip: crop }), caption: `${a} to ${b}: at ${b}` });
         const samples = [];
-        for (const fr of fracs) {
-          await page.evaluate((x) => window.__eclipse.chart.seekGlide(x), fr);
+        for (const ms of [33, 66, 100, 200, 400]) {
+          await page.evaluate((t) => window.__eclipse.chart.seekFollow(t), ms);
           const m = await measureMarker(page);
-          samples.push({ timeFraction: fr, marker: m.marker, form: m.form, markerForm: m.markerForm, distancePx: m.distancePx, drawnAbovePoint: m.drawnAbovePoint });
-          if (lang === "ar" && runs.length < 2) shots.unshift({ buf: await page.screenshot({ clip: crop }), caption: `${a} to ${b}: ${Math.round(fr * 100)}% of the time` });
+          samples.push({ ms, marker: m.marker, form: m.form, markerForm: m.markerForm, distancePx: m.distancePx, drawnAbovePoint: m.drawnAbovePoint });
+          if (lang === "ar" && runs.length < 2 && ms <= 200) shots.push({ buf: await page.screenshot({ clip: crop }), caption: `${a} to ${b}: ${ms} ms after the new target` });
         }
-        // Order: the held moments first (earliest first), then the arrival.
-        if (shots.length) cells.push(...shots.slice(0, -1).reverse(), shots[shots.length - 1]);
-        await page.evaluate(() => window.__eclipse.motion.settle());
-        // Largest distance of a sample from the straight segment start-end (a straight hop would be ~0).
+        if (shots.length) cells.push(...shots, { buf: await page.screenshot({ clip: crop }), caption: `${a} to ${b}: 400 ms` });
+        await page.evaluate(() => { window.__eclipse.chart.releaseFollow(); window.__eclipse.motion.settle(); });
         const seg = (p) => { const A = start.marker, B = end.marker; const vx = B.x - A.x, vy = B.y - A.y, L = Math.hypot(vx, vy) || 1; return Math.abs((p.x - A.x) * vy - (p.y - A.y) * vx) / L; };
-        const offStraight = Math.max(...samples.map((s) => seg(s.marker)));
-        runs.push({ from: a, to: b, glided: active, start: start.marker, end: end.marker, samples, maxDistanceFromTrackPx: Math.max(...samples.map((s) => (s.distancePx == null ? Infinity : s.distancePx)), 0), maxOffStraightSegmentPx: Math.round(offStraight * 100) / 100 });
+        runs.push({ from: a, to: b, followed: state.marker, start: start.marker, end: end.marker, samples, maxDistanceFromTrackPx: Math.max(...samples.map((s) => (s.distancePx == null ? Infinity : s.distancePx)), 0), maxOffStraightSegmentPx: Math.round(Math.max(...samples.map((s) => seg(s.marker))) * 100) / 100 });
       }
-      // The latest reading into the future, and across the missing span: no drawn track joins them, so no glide.
+      // No drawn track joins these: the marker is on its new stop at once; the tooltip eases.
       const cut = [];
       for (const [a, b] of [["latest", "h840"], ["h480", "gap"], ["gap", "h540"]]) {
         await page.evaluate((k) => { window.__eclipse.chart.clear(); window.__eclipse.chart.select(k); }, a);
         await page.evaluate((k) => window.__eclipse.chart.select(k), b);
-        cut.push({ from: a, to: b, glided: await page.evaluate(() => window.__eclipse.chart.glideActive) });
+        const st = await page.evaluate(() => window.__eclipse.chart.follow);
+        const m = await measureMarker(page);
+        cut.push({ from: a, to: b, markerFollowed: st.marker, tooltipEases: st.tooltip, markerOnTargetPx: m.distancePx, form: m.form });
         await page.evaluate(() => window.__eclipse.motion.settle());
       }
-      const key = mk === "a" ? lang : `${lang}B`;
-      glide[key] = { marker: mk, runs, cutsInstead: cut, errors, pass: runs.every((r) => r.glided && r.maxDistanceFromTrackPx <= 0.5 && r.samples.every((s) => s.markerForm === mk && !s.drawnAbovePoint)) && runs.filter((r) => r.to !== "peak").some((r) => r.maxOffStraightSegmentPx > 0.5) && cut.every((c) => !c.glided) && errors.length === 0 };
+      const ref = [0.19, 0.43, 0.6, 0.72, 0.87, 0.95];
+      const fit = response.slice(0, 6).map((r, i) => Math.abs(r.fraction - ref[i]));
+      follow[lang] = { response, maxDeviationFromClip: Math.round(Math.max(...fit) * 1000) / 1000, runs, cutsInstead: cut, errors,
+        pass: Math.max(...fit) <= 0.07 && runs.every((r) => r.followed && r.maxDistanceFromTrackPx <= 0.5 && r.samples.every((s) => s.markerForm === "b" && !s.drawnAbovePoint)) &&
+          runs.filter((r) => r.to !== "peak").some((r) => r.maxOffStraightSegmentPx > 0.5) && cut.every((c) => !c.markerFollowed && c.tooltipEases && (c.markerOnTargetPx == null || c.markerOnTargetPx <= 0.5)) && errors.length === 0 };
       await context.close();
     }
-    const name = mk === "a" ? "A, the lit bead" : "B, the hollow ring";
-    await sheet(`motion-glide-ar-${mk}-2x`, `Marker ${name}, gliding along the curve between stops (the Round 6 glide, kept for now), AR, 2x, held at a share of its 120-150 ms (quart-out, so most of the distance is covered early). One fixed crop per run.`, cells, 4);
+    await sheet("motion-follow-ar-2x", "Marker B following its stop along the curve (Round 7 step 2), AR, 2x, held at times after the new target: 0.19 of the way at 33 ms, 0.43 at 66, 0.60 at 100, 0.87 at 200, settled by 400. One fixed crop per run.", cells, 5);
   }
-  M.glide = glide;
+  M.follow = follow;
 
   // 5. Numbers roll and level bars (AR and EN): a crowd-level change down and up across a boundary (the tuner's
   //    simulation on the Inside now card), and a new reading (Entries and the times). Every animation is listed:
@@ -956,7 +960,7 @@ async function captureMotion() {
   const c = M.chart;
   console.log(`motion: off-frames identical ${Object.values(identity.motionOffFrames).filter((v) => v.identical).length}/${Object.keys(identity.motionOffFrames).length}; first paint identical ${Object.values(identity.motionFirstPaint).filter((v) => v.identicalWithPulseHidden).length}/${Object.keys(identity.motionFirstPaint).length}, only the pulse on load ${Object.values(identity.motionFirstPaint).every((v) => v.onlyThePulse)}; live ends at canonical ${identity.liveUpdateEndsAtCanonical?.identicalWithPulseHidden} (DOM ${identity.liveUpdateEndsAtCanonical?.domEqual})`);
   for (const k of Object.keys(c)) console.log(`chart ${k}: ${c[k].pass ? "pass" : "FAIL"}; stops ${c[k].stops.length}; marker max distance line ${c[k].maxDistancePx.lineStops} px, peak ${c[k].maxDistancePx.peak}, usual ${c[k].maxDistancePx.usualLine}, gap ${c[k].maxDistancePx.gapMark}; pointer ${c[k].pointer.filter((p) => p.pass).length}/${c[k].pointer.length}; keyboard ${c[k].keyboard.pass}`);
-  console.log(`glide: ${Object.entries(M.glide).map(([k, v]) => `${k} ${v.pass}`).join(", ")}; roll: ar ${M.roll.ar.pass}, en ${M.roll.en.pass}; delayed ${M.delayed.pass}; rail ${M.rail.pass}`);
+  console.log(`follow: ${Object.entries(M.follow).map(([k, v]) => `${k} ${v.pass}`).join(", ")}; roll: ar ${M.roll.ar.pass}, en ${M.roll.en.pass}; delayed ${M.delayed.pass}; rail ${M.rail.pass}`);
 }
 
 const lights = {};
@@ -1239,6 +1243,6 @@ const compared = Object.values(identity.staticFrames);
 if (!MOTION_ONLY) console.log(changed.length ? `STATIC GUARD FAILED (reduced motion): ${changed.join(", ")}` : `Static guard, reduced motion: ${compared.filter((v) => v.identical).length} of ${compared.length} pre-motion frames identical; the other ${compared.filter((v) => !v.identical).length} change by design (${Object.keys(EXPECTED_TO_CHANGE).join(", ")}).`);
 console.log(changedOff.length ? `STATIC GUARD FAILED (?motion=off): ${changedOff.join(", ")}` : `Static guard, ?motion=off: all ${Object.keys(identity.motionOffFrames).length} frames identical (pre-motion frame, or this run's still frame for the frames that change by design).`);
 console.log(firstPaintBad.length ? `FIRST PAINT WITH MOTION FAILED: ${firstPaintBad.join(", ")}` : `First paint with motion on: identical to the still frames, only the live pulse runs (${Object.keys(identity.motionFirstPaint).length} pages).`);
-const round6 = motionLog.chart ? [...Object.values(motionLog.chart).map((v) => v.pass), ...Object.values(motionLog.glide).map((v) => v.pass), motionLog.marker?.pass, motionLog.roll.ar.pass, motionLog.roll.en.pass, motionLog.delayed.pass, motionLog.rail.pass, identity.liveUpdateEndsAtCanonical?.domEqual] : [false];
-if (round6.some((v) => !v)) console.log("A Round 6 or Round 7 check did not pass; see motion.chart, glide, marker, roll, delayed, rail and liveUpdateEndsAtCanonical in the log.");
+const round6 = motionLog.chart ? [...Object.values(motionLog.chart).map((v) => v.pass), ...Object.values(motionLog.follow).map((v) => v.pass), motionLog.marker?.pass, motionLog.roll.ar.pass, motionLog.roll.en.pass, motionLog.delayed.pass, motionLog.rail.pass, identity.liveUpdateEndsAtCanonical?.domEqual] : [false];
+if (round6.some((v) => !v)) console.log("A Round 6 or Round 7 check did not pass; see motion.chart, follow, marker, roll, delayed, rail and liveUpdateEndsAtCanonical in the log.");
 if (changed.length || changedOff.length || firstPaintBad.length || round6.some((v) => !v) || !tunerCheck?.pass || !tunerCheck?.motionGroup?.pass || !tunerCheck?.crowdFromFile?.pass || bad.length) process.exitCode = 1;

@@ -538,6 +538,11 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
 .tip-word { font-size: 14px; color: var(--ink); }
 .tip-u { display: flex; align-items: center; gap: 7px; margin-block-start: 5px; font-size: 12px; color: var(--ink-3); }
 .tip-u .sw { width: 12px; }
+/* Round 7 step 2: the latest stop while delayed shows the stale reading as the delayed card does: a muted number,
+ * and how old it is in the delayed colour. */
+.tip-main.is-stale .tip-v { color: var(--ink-2); }
+.tip-ago { display: flex; align-items: center; gap: 6px; margin-block-start: 5px; font-size: 12px; color: #e8b62e; }
+.tip-ago .ico { width: 13px; height: 13px; }
 
 /* ----------------------------------------------------------------- details
  * Deliberately plain: a truthful minute table and the day's data coverage. */
@@ -661,12 +666,13 @@ html[dir="ltr"] .tuner { left: 452px; align-items: flex-end; }
 .t-row input[type="range"] { grid-area: input; width: 100%; height: 16px; margin: 2px 0 0; accent-color: #cfc9ca; }
 .t-row output { font-size: 11px; color: var(--ink-3); font-variant-numeric: tabular-nums; text-align: end; white-space: nowrap; }
 .t-row output.t-hue::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-inline-end: 4px; border-radius: 2px; background: var(--sw, #e51935); vertical-align: 0; }
-/* Marker group (Round 7): the chart marker's two candidate forms, A and B. */
-.tuner-marker { margin-block-start: 10px; padding-block-start: 2px; border-block-start: 1px solid rgba(255, 255, 255, 0.08); }
-.t-seg { display: flex; gap: 6px; margin-block: 2px 4px; }
-.t-seg .t-btn b { font-weight: 500; color: var(--ink); }
-.t-seg .t-btn[aria-pressed="true"] { background: rgba(245, 243, 242, 0.12); border-color: rgba(245, 243, 242, 0.5); color: var(--ink); }
-/* Motion group (Round 6): a simulated reading, a simulated crowd-level change, and the Motion switch. */
+/* Motion group (Round 6): a simulated reading, a simulated crowd-level change, and the Motion switch; Round 7 step 2
+ * adds the hover speed, a range row with a small "Default" button. */
+.t-speed { grid-template-columns: minmax(0, 1fr) auto auto; grid-template-areas: "label out reset" "input input input"; }
+.t-speed .t-mini { grid-area: reset; padding: 0 6px; border: 1px solid var(--line-2, rgba(255, 255, 255, 0.14)); border-radius: 5px; background: none; color: var(--ink-3); font: inherit; font-size: 10.5px; line-height: 17px; cursor: pointer; }
+.t-speed .t-mini { display: inline-flex; align-items: baseline; gap: 4px; }
+.t-speed .t-mini:hover { color: var(--ink); }
+.t-speed .t-mini:disabled { opacity: 0.45; cursor: default; }
 .tuner-motion { margin-block-start: 10px; padding-block-start: 2px; border-block-start: 1px solid rgba(255, 255, 255, 0.08); }
 .t-motion-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-block: 2px 8px; }
 .t-btn:disabled { opacity: 0.45; cursor: default; }
@@ -696,7 +702,7 @@ html[dir="ltr"] .tuner { left: 452px; align-items: flex-end; }
 
 /* ------------------------------------------------------------------ motion
  * Round 6. The page is complete at first paint and the lights never move. app.js moves only what the data changes
- * (digits, level bars, the line's tail) or what the owner acts on (the chart's reading sight, the rail), with the
+ * (digits, level bars, the line's tail) or what the owner acts on (the chart's marker, the rail), with the
  * Web Animations API; this section holds the few pieces those use. No glyph ever changes opacity. With ?motion=off
  * (html[data-motion="off"]) or prefers-reduced-motion every change is instant. */
 

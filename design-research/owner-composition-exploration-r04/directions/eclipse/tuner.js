@@ -5,8 +5,8 @@
  *   ?tuner=0                   the tuner is off entirely: no panel, and no stored tuning is applied
  *   ?preset=v2|a-like|recommended   start from that preset (not stored); with tuner=0 it applies the preset
  *                                   and shows no panel, which is how the preset evidence frames are captured
- * The panel also has a Marker group (Round 7, window.__eclipse.chart.setMarker) and a Motion group (Round 6) that
- * drives app.js's window.__eclipse.motion. */
+ * The panel also has a Motion group (Round 6; Round 7 step 2 adds the hover speed) that drives app.js's
+ * window.__eclipse.motion. */
 (() => {
   "use strict";
   const params = new URLSearchParams(location.search);
@@ -178,9 +178,9 @@
   });
   /* ------------------------------------------------------------ motion group
    * Drives app.js's motion (window.__eclipse.motion; Round 6): a simulated new reading, a simulated crowd-level
-   * change on the Inside now card (across the nearest level boundary, up or down), and the Motion switch. app.js
-   * keeps the switch in its own localStorage key (fitway.eclipse.v3.motion), separate from the light values, and
-   * ignores it with ?tuner=0. */
+   * change on the Inside now card (across the nearest level boundary, up or down), the Motion switch, and (Round 7
+   * step 2) the hover speed of the chart marker's follow. app.js keeps the switch and the speed in their own
+   * localStorage key (fitway.eclipse.v3.motion), separate from the light values, and ignores them with ?tuner=0. */
   const MO = window.__eclipse && window.__eclipse.motion;
   let syncMotion = () => {};
   const motionGroup = el("fieldset", { class: "tuner-group tuner-motion" });
@@ -201,8 +201,18 @@
     box.addEventListener("change", () => { MO.set({ motion: box.checked }); syncMotion(); });
     lab.append(box);
     lab.insertAdjacentHTML("beforeend", `<span>الحركة</span><span class="t-en" lang="en" dir="ltr">Motion</span>`);
+    // Hover speed: a multiplier on the follow's timing; 1 is the reference clip's feel (settled in about 400 ms).
+    const speedRow = el("div", { class: "t-row t-speed" });
+    const speedLabel = el("label", { for: "t-mo-speed" }, `<span>سرعة انتقال العلامة</span><span class="t-en" lang="en" dir="ltr">Hover speed</span>`);
+    const speed = el("input", { type: "range", id: "t-mo-speed", min: "0.5", max: "2", step: "0.05" });
+    const speedOut = el("output", { for: "t-mo-speed", dir: "ltr" });
+    const speedReset = el("button", { type: "button", class: "t-mini", "aria-label": "سرعة انتقال العلامة الافتراضية" }, `<span>الافتراضي</span><span class="t-en" lang="en" dir="ltr">Default</span>`);
+    const showSpeed = (v) => { speed.value = String(v); speedOut.textContent = `${Number(v).toFixed(2)}× · ${Math.round(400 / v)} ms`; speedReset.disabled = Number(v) === MO.defaults.hoverSpeed; };
+    speed.addEventListener("input", () => { MO.set({ hoverSpeed: Number(speed.value) }); showSpeed(MO.options.hoverSpeed); });
+    speedReset.addEventListener("click", () => { MO.set({ hoverSpeed: MO.defaults.hoverSpeed }); showSpeed(MO.options.hoverSpeed); });
+    speedRow.append(speedLabel, speedOut, speedReset, speed);
     const note = el("p", { class: "t-note" });
-    motionGroup.append(acts, crowd, lab, note);
+    motionGroup.append(acts, crowd, lab, speedRow, note);
     const say = (s) => { latest.textContent = s; };
     stepBtn.addEventListener("click", () => {
       const r = MO.step();
@@ -218,6 +228,7 @@
       box.checked = !blocked && Boolean(MO.options.motion);
       box.disabled = blocked;
       upBtn.disabled = downBtn.disabled = !MO.canCrowd;
+      showSpeed(MO.options.hoverSpeed);
       backBtn.disabled = MO.atStart;
       note.innerHTML = MO.urlOff ? "الحركة متوقفة بالرابط (motion=off)" : MO.systemReduced ? "النظام يطلب حركة أقل، فالحركة متوقفة"
         : !MO.canCrowd ? `بطاقة «آخر قراءة» ثابتة ما دامت البيانات متأخرة <span class="t-en" lang="en" dir="ltr">Fixed while delayed</span>` : "";
@@ -227,37 +238,13 @@
     syncMotion();
   }
 
-  /* ------------------------------------------------------------ marker group
-   * Round 7: the chart marker's two candidate forms, A (lit bead) and B (hollow ring), for the user to choose on
-   * the real page. app.js keeps the choice in its own localStorage key (fitway.eclipse.v3.marker), ignores it with
-   * ?tuner=0, and lets ?marker=a|b override it. */
-  const CH = window.__eclipse && window.__eclipse.chart;
-  const markerGroup = el("fieldset", { class: "tuner-group tuner-marker" });
-  let syncMarker = () => {};
-  if (CH && CH.setMarker) {
-    markerGroup.append(el("legend", {}, `علامة المخطط: A / B <span class="t-en" lang="en" dir="ltr">Marker: A / B</span>`));
-    const seg = el("div", { class: "t-seg", role: "group", "aria-label": "شكل علامة المخطط" });
-    const forms = [
-      { id: "a", ar: "خرزة مضيئة", en: "Lit bead" },
-      { id: "b", ar: "حلقة مجوفة", en: "Hollow ring" },
-    ].map((m) => {
-      const b = el("button", { type: "button", class: "t-btn", "data-marker": m.id, "aria-pressed": "false" }, `<b lang="en" dir="ltr">${m.id.toUpperCase()}</b><span>${m.ar}</span><span class="t-en" lang="en" dir="ltr">${m.en}</span>`);
-      b.addEventListener("click", () => { CH.setMarker(m.id); syncMarker(); });
-      seg.append(b);
-      return b;
-    });
-    syncMarker = () => forms.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.marker === CH.marker)));
-    markerGroup.append(seg);
-    syncMarker();
-  }
-
   const actions = el("div", { class: "tuner-actions" });
   const copyBtn = el("button", { type: "button", class: "t-btn" }, `<span>نسخ القيم</span><span class="t-en" lang="en" dir="ltr">Copy values</span>`);
   const resetBtn = el("button", { type: "button", class: "t-btn" }, `<span>إعادة المقترح</span><span class="t-en" lang="en" dir="ltr">Reset to Recommended</span>`);
   const status = el("span", { class: "tuner-status", role: "status" });
   actions.append(copyBtn, resetBtn, status);
   const jsonBox = el("textarea", { class: "tuner-json", readonly: "", rows: "7", "aria-label": "القيم بصيغة JSON", dir: "ltr", hidden: "" });
-  panel.append(head, presets, cols, ...(CH && CH.setMarker ? [markerGroup] : []), ...(MO ? [motionGroup] : []), actions, jsonBox);
+  panel.append(head, presets, cols, ...(MO ? [motionGroup] : []), actions, jsonBox);
   wrap.append(toggle, panel);
   document.body.append(wrap);
 

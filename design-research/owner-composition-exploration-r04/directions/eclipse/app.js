@@ -394,8 +394,12 @@
   const params = new URLSearchParams(location.search);
   const URL_OFF = params.get("motion") === "off";
   const TUNER_OFF = params.get("tuner") === "0";
+  // The tuner's Motion group keeps two values in this key: the Motion switch, and the hover speed (Round 7 step 2),
+  // a multiplier on the chart marker's follow (1 is the reference clip's feel; 2 settles twice as fast).
   const MOTION_STORE = "fitway.eclipse.v3.motion";
-  const MOTION_DEFAULTS = { motion: true };
+  const MOTION_DEFAULTS = { motion: true, hoverSpeed: 1 };
+  const HOVER_SPEED = { min: 0.5, max: 2 };
+  const clampSpeed = (v) => Math.min(HOVER_SPEED.max, Math.max(HOVER_SPEED.min, v));
   const mqReduce = matchMedia("(prefers-reduced-motion: reduce)");
   let opts = (() => {
     const o = { ...MOTION_DEFAULTS };
@@ -403,20 +407,12 @@
     try {
       const raw = JSON.parse(localStorage.getItem(MOTION_STORE));
       if (raw && typeof raw.motion === "boolean") o.motion = raw.motion;
+      if (raw && Number.isFinite(raw.hoverSpeed)) o.hoverSpeed = clampSpeed(raw.hoverSpeed);
     } catch (e) { /* storage unavailable: defaults */ }
     return o;
   })();
   const motionOn = () => opts.motion && !URL_OFF && !mqReduce.matches;
   root.dataset.motion = motionOn() ? "on" : "off";
-
-  /* The chart marker's form (Round 7, for the user's choice): "a", the lit bead (default), or "b", the hollow ring.
-   * ?marker=a|b wins and is not stored; otherwise the tuner's stored choice (its own key), ignored with ?tuner=0. */
-  const MARKER_STORE = "fitway.eclipse.v3.marker";
-  const MARKER_URL = ["a", "b"].includes((params.get("marker") || "").toLowerCase()) ? params.get("marker").toLowerCase() : null;
-  let markerForm = MARKER_URL || (() => {
-    if (TUNER_OFF) return "a";
-    try { return localStorage.getItem(MARKER_STORE) === "b" ? "b" : "a"; } catch (e) { return "a"; }
-  })();
 
   /* ---------------------------------------------------------------- shell */
   document.title = L.docTitle;
@@ -586,8 +582,6 @@
       s.push(`<path id="us-ahead" d="${d}" fill="none" stroke="rgba(245,243,242,0.24)" stroke-width="1.5" stroke-dasharray="3.5 4.5" stroke-linecap="round" clip-path="url(#c-ahead)"/>`);
     }
 
-    // The marker's light under today's line (empty at rest; see paintMarker).
-    s.push(`<g id="sel-under"></g>`);
     // Today: the 30-minute average, thick and bright, with round caps where it stops.
     splines.forEach((sp, i) => s.push(`<path id="ln-${i}" d="${sp.path(X, Y)}" fill="none" stroke="#ff2946" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`));
 
@@ -611,8 +605,9 @@
     lab.push(`<span class="ax-x" style="left:${f(X(DAY))}px;top:${f(yb + 13)}px;transform:translateX(${RTL ? "0" : "-100%"})">${bdi(fmtHour(DAY))}</span>`);
     lab.push(`<span class="peak-tag" id="peak-tag" style="left:${f(px)}px;top:${f(py - 12)}px;transform:translate(-50%,-100%)">${L.peakTag}<b>${bdi(String(peak))}</b></span>`);
     labels.innerHTML = lab.join("");
+    peakTagBox = null;
     buildStops();
-    restoreSelection(); // the selection, if any, redrawn at rest on the new chart (no glide)
+    restoreSelection(); // the selection, if any, redrawn at rest on the new chart (no follow)
     placePing();
   }
 
@@ -653,7 +648,10 @@
       out.push({ key: "gap", kind: "gap", m: (GAP0 + GAP1) / 2, x: (first + lastDot) / 2, w: lastDot - first + 2, value: null, track: null, lift: 0 });
     }
     if (peakM >= 0) out.push({ key: "peak", kind: "peak", m: peakM, x: X(peakM), value: M.peak, track: `L${segOf(peakM)}`, lift: 1 });
-    out.push({ key: "latest", kind: "latest", m: last, x: X(last), value: Math.round(lineAt(last)), track: `L${segOf(last)}`, lift: 0 });
+    // Round 7 decision 1: the latest stop shows the latest reading itself, the same number as the Inside now card
+    // (live 49, Busy at 7:42 PM; while delayed, the stale reading the delayed card shows), not the line's value there.
+    // The marker still sits on the line's end point.
+    out.push({ key: "latest", kind: "latest", m: last, x: X(last), value: occ[last], track: `L${segOf(last)}`, lift: 0 });
     out.sort((a, b) => a.m - b.m || (a.kind === "peak" ? -1 : b.kind === "peak" ? 1 : 0));
     out.forEach((st, i) => { st.i = i; });
     stops = out;
@@ -671,7 +669,8 @@
       case "ahead": return `${t}${sepc}${L.ro.ahead}${u}`;
       case "zero": return `${t}${sepc}0${sepc}${L.ro.empty}`;
       case "peak": return `${t}${sepc}${L.ro.peak} ${st.value}${sepc}${lvl(st.value)}${u}`;
-      case "latest": return `${t}${sepc}${L.ro.latest}${sepc}${L.avgInside(st.value)}${sepc}${lvl(st.value)}${u}`;
+      // The latest reading itself, never called an average; while delayed, how old it is.
+      case "latest": return `${t}${sepc}${L.ro.latest}${STATE === "delayed" ? ` ${L.ago(M.nowM - M.last)}` : ""}${sepc}${st.value} ${L.ro.inside}${sepc}${lvl(st.value)}${u}`;
       default: return `${t}${sepc}${L.avgInside(st.value)}${sepc}${lvl(st.value)}${u}`;
     }
   }
@@ -683,39 +682,98 @@
     if (st.kind === "zero") html += `<div class="tip-main"><span class="tip-v">${bdi(0)}</span><span class="tip-l">${L.ro.empty}</span></div>`;
     else if (st.kind === "wait") html += `<div class="tip-main"><span class="tip-word">${L.ro.noReadingYet}</span></div>${usualRow}`;
     else if (st.kind === "ahead") html += `<div class="tip-main"><span class="tip-word">${L.ro.ahead}</span></div>${usualRow}`;
+    else if (st.kind === "latest" && STATE === "delayed") {
+      // The stale reading, treated as the delayed card treats it: a muted number and how old it is, in the delayed colour.
+      html += `<div class="tip-main is-stale"><span class="tip-v">${bdi(st.value)}</span><span class="tip-l">${L.levels[levelOf(st.value)]}</span></div>` +
+        `<div class="tip-ago">${ICON.clock}<span>${L.ago(M.nowM - M.last)}</span></div>${usualRow}`;
+    }
     else html += `<div class="tip-main"><span class="tip-v">${bdi(st.value)}</span><span class="tip-l">${L.levels[levelOf(st.value)]}</span></div>${usualRow}`;
     return html;
   }
 
-  /* ---- track geometry: the marker sits on the SVG paths as drawn (sampled with getPointAtLength, then refined on the
-   * real geometry), never on a separate formula. */
+  /* ---- track geometry: the marker sits on the SVG paths as drawn, never on a separate formula. Round 7 step 2 (F5):
+   * each path's table is read from its own `d` (the M, C and L commands this page writes, in absolute coordinates) and
+   * evaluated as the same cubic Béziers the browser draws, so building it costs well under a millisecond, and a
+   * point for a given time is solved exactly on the drawn curve. Before, the table was sampled with getPointAtLength,
+   * which blocked the main thread for about 180 ms the first time the usual line was needed. */
   const tables = new WeakMap();
   const trackPath = (track) => (track === "U" ? $("#us-ahead") : track ? $(`#ln-${track.slice(1)}`) : null);
+  function parsePath(d) {
+    const segs = [];
+    let cx = 0, cy = 0;
+    for (const [, cmd, body] of d.matchAll(/([MCL])([^MCL]*)/g)) {
+      const n = body.trim().split(/[\s,]+/).filter(Boolean).map(Number);
+      if (cmd === "M") { cx = n[0]; cy = n[1]; continue; }
+      const k = cmd === "C" ? 6 : 2;
+      for (let i = 0; i + k <= n.length; i += k) {
+        const s = cmd === "C"
+          ? [cx, cy, n[i], n[i + 1], n[i + 2], n[i + 3], n[i + 4], n[i + 5]]
+          : [cx, cy, cx, cy, n[i], n[i + 1], n[i], n[i + 1]]; // a line: evaluated linearly below
+        s.line = cmd === "L";
+        segs.push(s);
+        cx = n[i + k - 2]; cy = n[i + k - 1];
+      }
+    }
+    return segs;
+  }
+  // The point at parameter u = segment index + t on the drawn geometry.
+  function evalAt(segs, u) {
+    const i = Math.min(segs.length - 1, Math.max(0, Math.floor(u))), t = Math.min(1, Math.max(0, u - i)), s = segs[i];
+    if (s.line) return { x: s[0] + (s[6] - s[0]) * t, y: s[1] + (s[7] - s[1]) * t };
+    const a = (1 - t) * (1 - t) * (1 - t), b = 3 * (1 - t) * (1 - t) * t, c = 3 * (1 - t) * t * t, e = t * t * t;
+    return { x: a * s[0] + b * s[2] + c * s[4] + e * s[6], y: a * s[1] + b * s[3] + c * s[5] + e * s[7] };
+  }
   function table(path) {
     let t = tables.get(path);
-    if (t) return t;
-    const total = path.getTotalLength(), n = Math.max(16, Math.ceil(total / 1.5));
-    const xs = new Float64Array(n + 1), ys = new Float64Array(n + 1), ls = new Float64Array(n + 1);
-    for (let i = 0; i <= n; i++) { const l = (total * i) / n, p = path.getPointAtLength(l); xs[i] = p.x; ys[i] = p.y; ls[i] = l; }
-    t = { path, total, n, xs, ys, ls, dir: xs[n] >= xs[0] ? 1 : -1 };
+    if (t && t.d === path.getAttribute("d")) return t;
+    const d = path.getAttribute("d"), segs = parsePath(d);
+    const us = [], xs = [], ys = [], ls = [];
+    let l = 0, px = null, py = null;
+    segs.forEach((s, i) => {
+      const k = Math.max(4, Math.ceil(Math.hypot(s[6] - s[0], s[7] - s[1]) * 1.5)); // about every 0.7 px
+      for (let j = i === 0 ? 0 : 1; j <= k; j++) {
+        const u = i + j / k, p = evalAt(segs, u);
+        if (px != null) l += Math.hypot(p.x - px, p.y - py);
+        us.push(u); xs.push(p.x); ys.push(p.y); ls.push(l);
+        px = p.x; py = p.y;
+      }
+    });
+    const n = us.length - 1;
+    t = { path, d, segs, us, xs, ys, ls, n, total: l, dir: xs[n] >= xs[0] ? 1 : -1 };
     tables.set(path, t);
     return t;
   }
-  // Arc length at which the path reaches x (x runs one way along the path: the curve is a function of time).
-  function lengthAt(t, x) {
-    const { xs, ls, n, dir } = t;
+  // The parameter where the path reaches x, solved on the curve itself (x runs one way along the path: the curve is a
+  // function of time), and its arc length.
+  function uAtX(t, x) {
+    const { xs, us, n, dir } = t;
     if ((x - xs[0]) * dir <= 0) return 0;
-    if ((x - xs[n]) * dir >= 0) return t.total;
+    if ((x - xs[n]) * dir >= 0) return us[n];
     let lo = 0, hi = n;
     while (hi - lo > 1) { const mid = (lo + hi) >> 1; if ((xs[mid] - x) * dir < 0) lo = mid; else hi = mid; }
-    let a = ls[lo], b = ls[hi];
-    for (let i = 0; i < 24; i++) { const mid = (a + b) / 2; if ((t.path.getPointAtLength(mid).x - x) * dir < 0) a = mid; else b = mid; }
+    let a = us[lo], b = us[hi];
+    for (let i = 0; i < 48; i++) { const mid = (a + b) / 2; if ((evalAt(t.segs, mid).x - x) * dir < 0) a = mid; else b = mid; }
     return (a + b) / 2;
   }
-  const pointAt = (t, l) => { const p = t.path.getPointAtLength(l); return { x: p.x, y: p.y }; };
+  function lengthOfU(t, u) {
+    const { us, ls, n } = t;
+    if (u <= us[0]) return 0;
+    if (u >= us[n]) return t.total;
+    let lo = 0, hi = n;
+    while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (us[mid] < u) lo = mid; else hi = mid; }
+    return ls[lo] + (ls[hi] - ls[lo]) * ((u - us[lo]) / (us[hi] - us[lo] || 1));
+  }
+  function uOfLength(t, l) {
+    const { us, ls, n } = t;
+    if (l <= 0) return 0;
+    if (l >= t.total) return us[n];
+    let lo = 0, hi = n;
+    while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (ls[mid] < l) lo = mid; else hi = mid; }
+    return us[lo] + (us[hi] - us[lo]) * ((l - ls[lo]) / (ls[hi] - ls[lo] || 1));
+  }
   const peakPoint = () => { const d = $("#pk-dot"); return d ? { x: Number(d.getAttribute("cx")), y: Number(d.getAttribute("cy")) } : null; };
-  // Where the marker rests for a stop: { x, y, lift, ly (the line under it), track }, or null when there is nothing
-  // to sit on (still ahead without history).
+  // Where the marker rests for a stop: { x, y, lift, ly (the line under it), track, l (arc length on the track) }, or
+  // null when there is nothing to sit on (still ahead without history).
   function restPoint(st) {
     if (!st || !geo) return null;
     if (st.kind === "gap") return { x: st.x, y: Math.round(geo.Y(0)) + 0.5, lift: 0, track: null };
@@ -723,168 +781,186 @@
     if (!path) return null;
     const t = table(path);
     if (st.kind === "peak") {
-      const pk = peakPoint(), base = pointAt(t, lengthAt(t, pk.x));
-      return { x: pk.x, y: pk.y, lift: 1, ly: base.y, track: st.track };
+      const pk = peakPoint(), u = uAtX(t, pk.x), base = evalAt(t.segs, u);
+      return { x: pk.x, y: pk.y, lift: 1, ly: base.y, track: st.track, l: lengthOfU(t, u) };
     }
-    const p = pointAt(t, lengthAt(t, st.x));
-    return { x: p.x, y: p.y, lift: 0, ly: p.y, track: st.track };
+    const u = uAtX(t, st.x), p = evalAt(t.segs, u);
+    return { x: p.x, y: p.y, lift: 0, ly: p.y, track: st.track, l: lengthOfU(t, u) };
   }
 
-  /* ---- the marker (Round 7): two candidate forms for the user to choose between, switched with ?marker=a|b or the
-   * tuner. Both share one rule: nothing above the point (no guide, no level ticks); below it, that moment's own thin
-   * hairline runs down to the time axis.
-   *   A, the lit bead: a solid FITWAY-red bead with a thin chalk rim. Its light is on the line: today's line itself,
-   *      bloomed and faded out around the bead, drawn under the line (so the line stays crisp), plus a small soft glow.
-   *   B, the hollow ring: a dark centre and a red edge, sitting on the line so that the line passes behind it, with a
-   *      soft red glow around the edge.
-   * Variants of the same family:
-   *   peak: A fills the peak ring itself with red (the chalk ring becomes the bead's rim); B's ring takes the peak
-   *     ring's place. On the way up the dotted drop, A's line light fades and its rim thickens into the ring's.
-   *   latest, live: the end point's thin halo steps aside while the marker sits on it (a bead or a ring inside a
-   *     second ring would read as a target). Delayed: the latest reading is stale, so the marker takes the end
-   *     point's neutral grey and has no light.
-   *   after now: a hollow chalk ring on the usual line, never red, with no light; a dashed chalk hairline below.
+  /* ---- the marker (Round 7): form B, the hollow ring, chosen by the user after step 1. Nothing above the point (no
+   * guide, no level ticks); below it, that moment's own thin hairline runs down to the time axis.
+   *   On the line: a ring with a dark centre (the card's own colour) and a FITWAY-red edge with a soft red glow, so
+   *     the line passes behind it and stops at its edge.
+   *   Peak: the ring takes the peak ring's place (it covers it); no dot inside.
+   *   Latest, live: the end point's thin halo steps aside while the ring sits on it (a ring inside a second ring would
+   *     read as a target). Delayed: the latest reading is stale, so the ring takes the end point's neutral grey and
+   *     has no glow.
+   *   After now: a hollow chalk ring on the usual line, never red, with no glow; a dashed chalk hairline below.
    *     Without history there is no usual line and no marker, only a short tick on the time axis.
-   *   missing span: never a point. A lights the dotted mark on the axis in chalk; B outlines it with a hollow chalk
-   *     capsule, its ring stretched over the span. */
+   *   Missing span: never a point (data-marker="gap"). The dotted mark on the axis lights up in chalk, with a faint
+   *     chalk light (the lit bead's variant, kept by the user when form A was removed).
+   * While the marker follows, only its position changes: the same elements are moved, not rebuilt. */
   const RED = "#ff2946", CHALK = "#f5f3f2", CARD = "#0f0e0f", STALE = "#8f898b";
-  const MK = {
-    a: { r: 4.5, rim: 1, lit: 8, aheadR: 3.8 },
-    b: { r: 6.5, edge: 1.5, lit: 10, aheadR: 6.5 },
-  };
-  function paintMarker(pt, st) {
-    const g = $("#sel"), gu = $("#sel-under");
+  const MK = { r: 6.5, edge: 1.5, lit: 10, aheadR: 6.5 };
+  let painted = null; // what #sel holds: { key } when its elements can be moved in place
+  // Is the marker on the line's end point? Measured against the end point as drawn (a live update moves it).
+  function onEndPoint(pt) {
+    const e = $("#end-dot");
+    return Boolean(e) && Math.hypot(pt.x - Number(e.getAttribute("cx")), pt.y - Number(e.getAttribute("cy"))) < 1.5;
+  }
+  // The stationary marks that the ring replaces (the chalk peak ring and the end point's thin halo) step aside, at once
+  // and with no fade, on the first frame at which the ring's outer edge would touch or overlap the mark's outer extent
+  // (centre distance < the ring's outer radius + the mark's), and come back on the first frame it is beyond that, or
+  // when the selection clears. Symmetric, and the same whether the ring follows, steps by keys or rides a live update:
+  // a ring overlapping a second ring off-centre, or sitting inside a halo, would read as two rings or a target.
+  // One case is left as drawn: a mark lying wholly under the ring's opaque centre (the peak ring with the ring on it,
+  // within 0.15 px) is already replaced and cannot show, and leaving it keeps the rest frames exactly as before.
+  const REPLACED = ["#pk-dot", "#end-halo"];
+  function stepAside(pt) {
+    const R = MK.r + MK.edge / 2, inner = MK.r - MK.edge / 2;
+    REPLACED.forEach((id) => {
+      const el = $(id);
+      if (!el) return;
+      const outer = Number(el.getAttribute("r")) + Number(el.getAttribute("stroke-width") || 0) / 2;
+      const d = pt ? Math.hypot(pt.x - Number(el.getAttribute("cx")), pt.y - Number(el.getAttribute("cy"))) : Infinity;
+      const near = d < R + outer && d + outer > inner;
+      if (near) el.setAttribute("visibility", "hidden"); else el.removeAttribute("visibility");
+    });
+  }
+  function paintMarker(pt, st, rebuild = false) {
+    const g = $("#sel");
     if (!g || !geo || !st) return;
+    follow.at = pt;
     const { yb } = geo;
     const axis = Math.round(geo.Y(0)) + 0.5;
     const form = st.kind === "gap" ? "gap" : !pt ? "none" : pt.track === "U" ? "usual" : "line";
     const x = pt ? pt.x : st.x, gx = Math.round(x) + 0.5;
-    const B = markerForm === "b", k = MK[markerForm];
-    const out = [], under = [];
-    const hairline = (top, color, a0) => (yb - top > 1 ? `<linearGradient id="sel-lit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${color}" stop-opacity="${a0}"/><stop offset="1" stop-color="${color}" stop-opacity="0.1"/></linearGradient><rect class="sg-lit" x="${gx - 0.5}" y="${f(top)}" width="1" height="${f(yb - top)}" fill="url(#sel-lit)"/>` : "");
-    // The end point: is the marker sitting on it?
-    const end = endPoint();
     const lift = pt ? pt.lift || 0 : 0;
-    const onEnd = form === "line" && lift === 0 && end && Math.hypot(pt.x - end.x, pt.y - end.y) < 1.5;
-    const halo = $("#end-halo");
-    if (halo) { if (onEnd) halo.setAttribute("visibility", "hidden"); else halo.removeAttribute("visibility"); }
+    const onEnd = form === "line" && lift === 0 && onEndPoint(pt);
+    stepAside(form === "line" || form === "usual" ? pt : null);
     const stale = onEnd && STATE === "delayed";
-    let ay;
+    let ay, key, html = null;
     if (form === "line") {
-      const ly = pt.ly == null ? pt.y : pt.ly;
-      const hot = stale ? STALE : RED;
-      out.push(hairline(ly + k.lit, stale ? "#c9c3c4" : RED, stale ? 0.5 : 0.78));
+      const ly = pt.ly == null ? pt.y : pt.ly, top = ly + MK.lit, lit = yb - top > 1;
       const dataForm = lift >= 1 ? "peak" : lift > 0 ? "drop" : "line";
-      const at = `transform="translate(${f(pt.x)} ${f(pt.y)})"`;
-      if (B) {
-        const glow = stale ? "" : `<circle r="${k.r}" fill="none" stroke="${RED}" stroke-width="3.5" opacity="0.55" filter="url(#sel-soft)"/>`;
-        out.push(`<filter id="sel-soft" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation="2.4"/></filter>`);
-        out.push(`<g class="sg-mark" data-form="${dataForm}" data-marker="b" ${at}>${glow}<circle class="sg-core" r="${k.r}" fill="${CARD}" stroke="${hot}" stroke-width="${k.edge}"/></g>`);
+      key = `line|${stale}|${lit}`;
+      const at = `translate(${f(pt.x)} ${f(pt.y)})`;
+      if (!rebuild && painted && painted.key === key && g.firstChild) {
+        const r = g.querySelector(".sg-lit"), m = g.querySelector(".sg-mark");
+        if (r) { r.setAttribute("x", String(gx - 0.5)); r.setAttribute("y", f(top)); r.setAttribute("height", f(yb - top)); }
+        m.setAttribute("transform", at);
+        m.dataset.form = dataForm;
       } else {
-        if (!stale) {
-          // Light on the line: today's line, bloomed and faded out around the bead, under the line itself.
-          const line = trackPath(pt.track);
-          const R = 30, bx = f(pt.x - R), by = f(pt.y - R), bw = 2 * R;
-          const k1 = 1 - lift;
-          under.push(`<defs><filter id="sel-bloom" filterUnits="userSpaceOnUse" x="${bx}" y="${by}" width="${bw}" height="${bw}" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="2.8"/><feComponentTransfer><feFuncA type="linear" slope="2"/></feComponentTransfer></filter>` +
-            `<radialGradient id="sel-fade" gradientUnits="userSpaceOnUse" cx="${f(pt.x)}" cy="${f(pt.y)}" r="${R}"><stop offset="0" stop-color="#fff"/><stop offset="0.35" stop-color="#fff" stop-opacity="0.7"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>` +
-            `<mask id="sel-mask" maskUnits="userSpaceOnUse" x="${bx}" y="${by}" width="${bw}" height="${bw}"><rect x="${bx}" y="${by}" width="${bw}" height="${bw}" fill="url(#sel-fade)"/></mask>` +
-            `<radialGradient id="sel-glow"><stop offset="0" stop-color="${RED}" stop-opacity="0.34"/><stop offset="0.5" stop-color="${RED}" stop-opacity="0.12"/><stop offset="1" stop-color="${RED}" stop-opacity="0"/></radialGradient></defs>` +
-            (line && k1 > 0 ? `<g mask="url(#sel-mask)" opacity="${f(k1)}"><use href="#${line.id}" filter="url(#sel-bloom)"/></g>` : "") +
-            // Off the line (up the drop to the peak) the small glow dims, so it never becomes a halo on the background.
-            `<circle cx="${f(pt.x)}" cy="${f(pt.y)}" r="13" fill="url(#sel-glow)"${lift > 0 ? ` opacity="${f(1 - 0.5 * lift)}"` : ""}/>`);
-        }
-        // At the peak the bead grows just enough to cover the peak ring (outer radius 5.6), keeping its thin rim.
-        const r = k.r + (5.6 - k.rim / 2 - k.r) * lift;
-        out.push(`<g class="sg-mark" data-form="${dataForm}" data-marker="a" ${at}><circle class="sg-core" r="${f(r)}" fill="${hot}" stroke="${CHALK}" stroke-opacity="0.94" stroke-width="${k.rim}"/></g>`);
+        const hot = stale ? STALE : RED, color = stale ? "#c9c3c4" : RED, a0 = stale ? 0.5 : 0.78;
+        const hair = lit ? `<linearGradient id="sel-lit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${color}" stop-opacity="${a0}"/><stop offset="1" stop-color="${color}" stop-opacity="0.1"/></linearGradient><rect class="sg-lit" x="${gx - 0.5}" y="${f(top)}" width="1" height="${f(yb - top)}" fill="url(#sel-lit)"/>` : "";
+        const glow = stale ? "" : `<circle r="${MK.r}" fill="none" stroke="${RED}" stroke-width="3.5" opacity="0.55" filter="url(#sel-soft)"/>`;
+        html = hair + `<filter id="sel-soft" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation="2.4"/></filter>` +
+          `<g class="sg-mark" data-form="${dataForm}" data-marker="b" transform="${at}">${glow}<circle class="sg-core" r="${MK.r}" fill="${CARD}" stroke="${hot}" stroke-width="${MK.edge}"/></g>`;
       }
       ay = pt.y;
     } else if (form === "usual") {
-      out.push(`<path class="sg-drop" d="M${gx},${f(pt.y + k.aheadR + 3)}V${yb}" fill="none" stroke="rgba(245,243,242,0.3)" stroke-width="1" stroke-dasharray="2 3"/>`);
-      out.push(`<g class="sg-mark" data-form="usual" data-marker="${markerForm}" transform="translate(${f(pt.x)} ${f(pt.y)})"><circle class="sg-core" r="${k.aheadR}" fill="${CARD}" stroke="rgba(245,243,242,0.85)" stroke-width="${B ? 1.25 : 1.5}"/></g>`);
+      key = "usual";
+      const d = `M${gx},${f(pt.y + MK.aheadR + 3)}V${yb}`, at = `translate(${f(pt.x)} ${f(pt.y)})`;
+      if (!rebuild && painted && painted.key === key && g.firstChild) {
+        g.querySelector(".sg-drop").setAttribute("d", d);
+        g.querySelector(".sg-mark").setAttribute("transform", at);
+      } else {
+        html = `<path class="sg-drop" d="${d}" fill="none" stroke="rgba(245,243,242,0.3)" stroke-width="1" stroke-dasharray="2 3"/>` +
+          `<g class="sg-mark" data-form="usual" data-marker="b" transform="${at}"><circle class="sg-core" r="${MK.aheadR}" fill="${CARD}" stroke="rgba(245,243,242,0.85)" stroke-width="1.25"/></g>`;
+      }
       ay = pt.y;
     } else if (form === "gap") {
-      // The dotted mark as render() draws it: dots every 4px from 2.5px inside the span.
+      key = "gap";
+      // The dotted mark as render() draws it: dots every 4px from 2.5px inside the span, lit in chalk.
       const gl = Math.min(geo.X(GAP0 - 0.5), geo.X(GAP1 + 0.5)), gr = Math.max(geo.X(GAP0 - 0.5), geo.X(GAP1 + 0.5));
       const dots = [];
       for (let dx = gl + 2.5; dx <= gr - 1.5; dx += 4) dots.push(dx - st.x);
       const h = st.w / 2;
-      if (B) {
-        out.push(`<g class="sg-mark" data-form="gap" data-marker="b" transform="translate(${f(st.x)} ${axis})"><rect x="${f(-h - 5)}" y="-5.5" width="${f(2 * h + 10)}" height="11" rx="5.5" fill="none" stroke="rgba(245,243,242,0.8)" stroke-width="1.25"/></g>`);
-      } else {
-        out.push(`<radialGradient id="sel-chalk"><stop offset="0" stop-color="${CHALK}" stop-opacity="0.2"/><stop offset="1" stop-color="${CHALK}" stop-opacity="0"/></radialGradient>`);
-        out.push(`<g class="sg-mark" data-form="gap" data-marker="a" transform="translate(${f(st.x)} ${axis})"><ellipse rx="${f(h + 9)}" ry="7" fill="url(#sel-chalk)"/>${dots.map((d) => `<circle cx="${f(d)}" r="1.25" fill="${CHALK}"/>`).join("")}</g>`);
-      }
+      html = `<radialGradient id="sel-chalk"><stop offset="0" stop-color="${CHALK}" stop-opacity="0.2"/><stop offset="1" stop-color="${CHALK}" stop-opacity="0"/></radialGradient>` +
+        `<g class="sg-mark" data-form="gap" data-marker="gap" transform="translate(${f(st.x)} ${axis})"><ellipse rx="${f(h + 9)}" ry="7" fill="url(#sel-chalk)"/>${dots.map((dd) => `<circle cx="${f(dd)}" r="1.25" fill="${CHALK}"/>`).join("")}</g>`;
       // The tooltip sits above both ends of the line at the gap, so it never covers them.
       ay = Math.min(geo.Y(M.lineAt(GAP0 - 1)), geo.Y(M.lineAt(GAP1 + 1))) - 12;
     } else {
+      key = "none";
       // Still ahead without history: no usual line, so no marker; only a short tick on the time axis.
-      out.push(`<path class="sg-tick" d="M${gx},${axis - 3.5}V${axis + 4.5}" stroke="rgba(245,243,242,0.6)" stroke-width="1"/>`);
+      html = `<path class="sg-tick" d="M${gx},${axis - 3.5}V${axis + 4.5}" stroke="rgba(245,243,242,0.6)" stroke-width="1"/>`;
       ay = geo.yt + (yb - geo.yt) * 0.35;
     }
-    if (gu) gu.innerHTML = under.join("");
-    g.innerHTML = out.join("");
+    if (html != null) { g.innerHTML = html; painted = { key: form === "line" || form === "usual" ? key : null }; }
     placeTip(x, ay, st.kind === "ahead" || st.kind === "wait");
   }
   function clearMarker() {
-    const g = $("#sel"), gu = $("#sel-under"), halo = $("#end-halo");
+    const g = $("#sel");
     if (g) g.innerHTML = "";
-    if (gu) gu.innerHTML = "";
-    if (halo) halo.removeAttribute("visibility");
+    painted = null;
+    stepAside(null);
   }
-  // Beside the guide, on the earlier side of the day when it fits (after now: on the later side, so it never covers
-  // the end of today's line); its bottom just above the point.
+  // Beside the hairline, on the earlier side of the day when it fits (after now: on the later side, so it never covers
+  // the end of today's line); its bottom just above the point. While the marker follows, the tooltip rides with it;
+  // when its side flips, or the marker changes track at once, the tooltip keeps where it was and eases into its new
+  // place on the follow's own curve (the offset below, see "follow" in the motion section).
+  let tipSize = null, peakTagBox = null, tipShown = null; // tipShown: { left, top, mode } as last drawn
   function placeTip(x, py, later = false) {
     const { W, H } = geo;
-    const tw = tip.offsetWidth, th = tip.offsetHeight;
+    if (!tipSize) tipSize = { tw: tip.offsetWidth, th: tip.offsetHeight };
+    const { tw, th } = tipSize;
     const right = RTL !== later; // the earlier side is on the right in Arabic
     let left = right ? x + 12 : x - 12 - tw;
-    if (left < 2 || left + tw > W - 2) left = right ? x - 12 - tw : x + 12;
+    let side = right;
+    if (left < 2 || left + tw > W - 2) { left = right ? x - 12 - tw : x + 12; side = !right; }
     left = Math.max(2, Math.min(W - tw - 2, left));
-    let top = py - th - 10;
-    if (top < 0) top = Math.min(py + 12, H - th);
-    tip.style.left = `${f(left)}px`;
-    tip.style.top = `${f(top)}px`;
-    const peakTag = $("#peak-tag");
-    if (peakTag) {
-      const pr = plot.getBoundingClientRect(), b = peakTag.getBoundingClientRect();
-      const r = { l: left - 4, r: left + tw + 4, t: top - 4, b: top + th + 4 };
-      const covered = !(b.right - pr.left < r.l || b.left - pr.left > r.r || b.bottom - pr.top < r.t || b.top - pr.top > r.b);
-      peakTag.classList.toggle("is-covered", covered);
+    let top = py - th - 10, below = false;
+    if (top < 0) { top = Math.min(py + 12, H - th); below = true; }
+    const mode = `${side}|${below}`;
+    if (tipShown && (tipForce || tipShown.mode !== mode)) tipJump(tipShown.left - left, tipShown.top - top, tipForce);
+    const off = tipOffset();
+    const L0 = left + off.x, T0 = top + off.y;
+    tip.style.left = `${f(L0)}px`;
+    tip.style.top = `${f(T0)}px`;
+    // The tooltip's displayed velocity (px/ms), handed to it when the marker jumps.
+    const tn = nowMs(), dtv = tn - tipVel.t;
+    if (!tipShown || dtv >= 50) tipVel = { x: 0, y: 0, t: tn };
+    else if (dtv > 0) tipVel = { x: (L0 - tipShown.left) / dtv, y: (T0 - tipShown.top) / dtv, t: tn };
+    tipShown = { left: L0, top: T0, mode };
+    if (!peakTagBox) {
+      const peakTag = $("#peak-tag");
+      if (peakTag) { const pr = plot.getBoundingClientRect(), b = peakTag.getBoundingClientRect(); peakTagBox = { l: b.left - pr.left, r: b.right - pr.left, t: b.top - pr.top, b: b.bottom - pr.top }; }
+    }
+    if (peakTagBox) {
+      const b = peakTagBox, r = { l: L0 - 4, r: L0 + tw + 4, t: T0 - 4, b: T0 + th + 4 };
+      const covered = !(b.r < r.l || b.l > r.r || b.b < r.t || b.t > r.b);
+      $("#peak-tag").classList.toggle("is-covered", covered);
     }
   }
   function selectStop(st, instant = false) {
     if (!st) { clearSelection(); return; }
     if (sel && sel.key === st.key && !instant) return;
-    const from = instant || tip.hidden ? null : currentPlace();
-    stopGlide();
+    const moving = !instant && !tip.hidden && motionOn();
+    if (!moving) stopFollow();
+    const prev = sel;
     sel = st;
-    tip.innerHTML = tipHTML(st); // text and numbers change at once: no cross-fade
+    tip.innerHTML = tipHTML(st); // text and numbers change at once, then the tooltip travels: no cross-fade
     tip.hidden = false;
+    tipSize = null;
     hit.setAttribute("aria-valuenow", String(Math.round(st.m)));
     hit.setAttribute("aria-valuetext", valueText(st));
     const to = restPoint(st);
-    if (!glideAlong(from, to, st)) paintMarker(to, st);
+    if (moving) followTo(to, st, prev);
+    else { tipShown = null; paintMarker(to, st, true); }
   }
   function clearSelection() {
-    stopGlide();
+    stopFollow();
     sel = null;
     clearMarker();
     tip.hidden = true;
+    tipShown = null;
     const peakTag = $("#peak-tag");
     if (peakTag) peakTag.classList.remove("is-covered");
   }
-  // Switches the marker's form (the tuner, or scripts); a shown marker is repainted in place, mid-glide included.
-  function setMarker(form, persist = true) {
-    if (form !== "a" && form !== "b") return markerForm;
-    markerForm = form;
-    if (persist && !TUNER_OFF) { try { localStorage.setItem(MARKER_STORE, form); } catch (e) { /* storage unavailable */ } }
-    if (glide.clock) glideFrame();
-    else if (sel) paintMarker(restPoint(sel), sel);
-    return form;
-  }
   function restoreSelection() {
-    stopGlide();
+    stopFollow();
+    tipSize = null;
     const latest = stopBy("latest");
     if (latest && !sel) { hit.setAttribute("aria-valuenow", String(latest.m)); hit.setAttribute("aria-valuetext", valueText(latest)); }
     if (!sel) return;
@@ -1010,14 +1086,13 @@
    * Round 6: motion carries information and decoration never moves. The page is complete at first paint: no load
    * sequence, no line draw, and the lights never move. Something moves only when the data changes (a new reading:
    * the changed digits roll, level bars fill or empty, the line's tail extends) or when the owner acts (the chart's
-   * marker glides between stops, the rail opens). No glyph ever changes opacity: numbers roll inside a clip,
-   * words swap at once, and the tooltip appears, changes and leaves at once. With prefers-reduced-motion,
+   * marker follows its stop along the curve, the rail opens). No glyph ever changes opacity: numbers roll inside a
+   * clip, words swap at once, and the tooltip appears, changes and leaves at once (then travels with the marker). With prefers-reduced-motion,
    * ?motion=off or the tuner's Motion switch, every change is instant. At rest no inline style, attribute or extra
    * element from this section remains (the live pulse is the one exception, and only while live). */
   const EASE = {
     roll: "cubic-bezier(0.25, 1, 0.5, 1)",       // digits: decisive start, soft landing (quart out)
     bar: "cubic-bezier(0.25, 1, 0.5, 1)",        // a level bar fills or empties
-    glide: "cubic-bezier(0.25, 1, 0.5, 1)",      // the marker along the curve
     morph: "cubic-bezier(0.4, 0, 0.2, 1)",       // the live tail (a data transition: symmetric)
     rail: "cubic-bezier(0.22, 1, 0.36, 1)",      // rail opens
     railClose: "cubic-bezier(0.4, 0, 0.2, 1)",   // rail closes
@@ -1025,7 +1100,6 @@
   const T = {
     roll: 280,
     bar: 200, barStagger: 50,
-    glideMin: 120, glideMax: 150, glidePerPx: 0.25, glideMaxPx: 240,
     morph: 280,
     railOpen: 240, railClose: 200, railDist: 156, railReveal: 12,
     pulse: 5000,
@@ -1190,96 +1264,193 @@
   const liveSay = $("#live-say");
   const announce = () => { if (liveSay) liveSay.textContent = L.say(shownNow(), L.levels[levelOf(shownNow())], M.entries); };
 
-  /* ---- the marker glides between stops along the drawn curve itself (a route sampled from the SVG path),
-   * in 120-150 ms; its light, the lit hairline and the tooltip follow it every frame (either form, A or B). Between the line and the peak
-   * it runs along the line to the peak's minute, then up the dotted drop into the peak ring. Where no drawn track
-   * joins two stops (across the missing span, from the latest reading into the future, onto the gap stop) or the
-   * route is longer than 240px, it moves at once. */
-  const glide = { clock: null, raf: 0, route: null, stop: null };
-  function currentPlace() {
-    if (glide.clock) return routeAt(glide.route, (glide.clock.effect.getComputedTiming().progress ?? 1) * glide.route.total);
-    return sel ? restPoint(sel) : null;
+  /* ---- the smooth follow (Round 7 step 2; it replaces the Round 6 glide of 120-150 ms). The marker, its hairline and
+   * the tooltip chase their target along the drawn curve itself, x and y together, with the reference clip's feel: a
+   * fast start and a long, soft landing, time-based and independent of distance.
+   *   Response: two first-order lags in series (an overdamped spring), tau 90 ms and 15 ms at the default hover speed.
+   *     From rest it covers 0.19 of a step at 33 ms, 0.43 at 66, 0.60 at 100, 0.73 at 133, 0.87 at 200, 0.94 at 266
+   *     and 0.99 at 400 ms: the clip's figures (0.19, 0.43, 0.60, 0.72, 0.87, 0.95, settled) within 0.012.
+   *   No restart: the state (position and velocity) is kept when a new target arrives; only the target moves. A quick
+   *     sweep over several stops is one continuous movement, and it never overshoots a target it approaches.
+   *   The route: along today's line (or the usual line) by arc length, and between the line and the peak ring up the
+   *     peak's dotted drop. It is rebuilt from the marker's current place at each new target, carrying the velocity.
+   *   Where no drawn track joins the two stops (across the missing span, from the latest reading into the future,
+   *     onto or off the gap stop), the marker moves at once, never off the line and never across the gap, while the
+   *     tooltip keeps its place and eases into its new one on the same curve. The same easing takes the tooltip
+   *     across when it changes side.
+   *   Far moves (more than 6 hours of the day, such as Home or End from far away): the marker and the tooltip both
+   *     move at once, as on a first appearance, rather than racing across the whole chart in 400 ms. A sweep of the
+   *     pointer never reaches this, because the marker trails the pointer by far less.
+   *   The hover speed (tuner) divides both time constants. Positions are exact functions of the time since the last
+   *   target, so frame rate never changes the path. */
+  const FOLLOW = { tau1: 90, tau2: 15, jumpMinutes: 360, ext: 160, settlePx: 0.1, settleV: 0.003 };
+  const follow = { raf: 0, route: null, stop: null, t0: 0, e0: 0, v0: 0, tip: null, hold: null, snap: null, tLast: 0, at: null, settle: false };
+  let tipForce = null; // set just before a jump: the tooltip's displayed velocity, for the next placeTip
+  let tipVel = { x: 0, y: 0, t: 0, left: 0, top: 0 };
+  const nowMs = () => (follow.hold != null ? follow.hold : performance.now());
+  const taus = () => { const k = opts.hoverSpeed || 1; return [FOLLOW.tau1 / k, FOLLOW.tau2 / k]; };
+  // The follow's response to a step, from error e0 and velocity v0 (px, px/ms), after dt ms: exact, so any frame rate
+  // lands on the same path.
+  function spring(e0, v0, dt) {
+    const [a, b] = taus(), r1 = -1 / a, r2 = -1 / b;
+    const B = (v0 - r1 * e0) / (r2 - r1), A = e0 - B, x1 = Math.exp(r1 * dt), x2 = Math.exp(r2 * dt);
+    return { e: A * x1 + B * x2, v: A * r1 * x1 + B * r2 * x2 };
   }
-  function buildRoute(a, b) {
-    if (!a || !b || !a.track || a.track !== b.track) return null;
-    const path = trackPath(a.track);
+  const lineLeg = (t, l0, l1) => ({ kind: "line", t, l0, dir: Math.sign(l1 - l0) || 1, len: Math.abs(l1 - l0) });
+  const dropLeg = (pk, base, a, b) => ({ kind: "drop", pk, base, a, dir: Math.sign(b - a) || 1, H: base.y - pk.y, len: Math.abs(b - a) * (base.y - pk.y) });
+  function legAt(leg, d) {
+    d = Math.max(0, Math.min(leg.len, d));
+    if (leg.kind === "line") { const l = leg.l0 + leg.dir * d, p = evalAt(leg.t.segs, uOfLength(leg.t, l)); return { x: p.x, y: p.y, lift: 0, ly: p.y, l }; }
+    const lift = leg.a + (leg.dir * d) / leg.H;
+    return { x: leg.pk.x, y: leg.base.y + (leg.pk.y - leg.base.y) * lift, lift, ly: leg.base.y, l: leg.lPk };
+  }
+  // From the marker's current place to a stop's rest point, on one track: [back extension] legs [forward extension].
+  // The extensions carry on along the same track, so a marker moving away from a new target turns back on the line.
+  function buildRoute(cur, to) {
+    if (!cur || !to || !cur.track || cur.track !== to.track) return null;
+    const path = trackPath(cur.track);
     if (!path) return null;
     const t = table(path);
-    const pts = [];
-    const peakX = b.lift > 0 ? b.x : a.lift > 0 ? a.x : null;
-    let base = null, pk = null;
-    if (peakX != null) { pk = peakPoint(); base = pointAt(t, lengthAt(t, pk.x)); }
-    const drop = (l0, l1) => { for (let i = 0; i <= 10; i++) { const l = l0 + ((l1 - l0) * i) / 10; pts.push({ x: pk.x, y: base.y + (pk.y - base.y) * l, lift: l, ly: base.y }); } };
-    if (a.lift > 0 && b.lift > 0) drop(a.lift, b.lift); // already on the drop: straight to the ring
-    if (a.lift > 0 && b.lift > 0) return finishRoute(pts, a.track);
-    if (a.lift > 0) drop(a.lift, 0);
-    const la = lengthAt(t, a.lift > 0 ? pk.x : a.x), lb = lengthAt(t, b.lift > 0 ? pk.x : b.x);
-    const pa = pointAt(t, la);
-    pts.push({ ...pa, lift: 0, ly: pa.y });
-    const step = lb >= la ? 1 : -1;
-    for (let i = 0; i <= t.n; i++) {
-      const j = step > 0 ? i : t.n - i, l = t.ls[j];
-      if ((l - la) * step > 0.01 && (lb - l) * step > 0.01) pts.push({ x: t.xs[j], y: t.ys[j], lift: 0, ly: t.ys[j] });
+    const lOf = (p) => (p.l != null && p.lift === 0 ? p.l : lengthOfU(t, uAtX(t, p.x)));
+    let pk = null, base = null, lPk = 0;
+    if (cur.lift > 0 || to.lift > 0) { pk = peakPoint(); const u = uAtX(t, pk.x); base = evalAt(t.segs, u); lPk = lengthOfU(t, u); }
+    const lc = cur.lift > 0 ? lPk : lOf(cur), lt = to.lift > 0 ? lPk : lOf(to);
+    const drop = (a, b) => ({ ...dropLeg(pk, base, a, b), lPk });
+    let legs = [];
+    if (cur.lift > 0 && to.lift > 0) legs.push(drop(cur.lift, to.lift));
+    else {
+      if (cur.lift > 0) legs.push(drop(cur.lift, 0));
+      legs.push(lineLeg(t, lc, lt));
+      if (to.lift > 0) legs.push(drop(0, to.lift));
     }
-    const pb = pointAt(t, lb);
-    pts.push({ ...pb, lift: 0, ly: pb.y });
-    if (b.lift > 0) drop(0, b.lift);
-    return finishRoute(pts, a.track);
+    const main = legs.filter((g) => g.len > 1e-6);
+    if (!main.length) main.push(legs[0]);
+    const first = main[0], last = main[main.length - 1];
+    const lineExt = (l0, dir) => { const bound = dir > 0 ? t.total : 0; return lineLeg(t, l0, l0 + dir * Math.min(FOLLOW.ext, Math.abs(bound - l0))); };
+    let back = null, fwd = null;
+    if (first.kind === "line") back = lineExt(lc, -first.dir);
+    else if (first.dir < 0) back = drop(cur.lift, 1);
+    else if (cur.lift > 0) back = drop(cur.lift, 0);
+    if (last.kind === "line") fwd = lineExt(lt, last.dir);
+    const R = main.reduce((s, g) => s + g.len, 0);
+    return { track: cur.track, legs: main, back: back && back.len > 1e-6 ? back : null, fwd: fwd && fwd.len > 1e-6 ? fwd : null, R };
   }
-  function finishRoute(pts, trk) {
-    const s = [0];
-    for (let i = 1; i < pts.length; i++) s.push(s[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y));
-    return { pts, s, total: s[s.length - 1], track: trk };
+  function pointAtS(r, s) {
+    let p;
+    if (s < 0) p = r.back ? legAt(r.back, -s) : legAt(r.legs[0], 0);
+    else if (s > r.R) p = r.fwd ? legAt(r.fwd, s - r.R) : legAt(r.legs[r.legs.length - 1], r.legs[r.legs.length - 1].len);
+    else { let d = s, i = 0; while (i < r.legs.length - 1 && d > r.legs[i].len) { d -= r.legs[i].len; i++; } p = legAt(r.legs[i], d); }
+    return { ...p, track: r.track };
   }
-  function routeAt(r, d) {
-    const { pts, s } = r;
-    if (d <= 0) return { ...pts[0], track: r.track };
-    if (d >= r.total) return { ...pts[pts.length - 1], track: r.track };
-    let lo = 0, hi = s.length - 1;
-    while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (s[mid] < d) lo = mid; else hi = mid; }
-    const k = (d - s[lo]) / (s[hi] - s[lo] || 1), p = pts[lo], q = pts[hi];
-    return { x: p.x + (q.x - p.x) * k, y: p.y + (q.y - p.y) * k, lift: p.lift + (q.lift - p.lift) * k, ly: p.ly + (q.ly - p.ly) * k, track: r.track };
+  // The direction the route runs at s (what "forward" means there), to carry the velocity into a new route.
+  function dirAt(r, s) {
+    if (s < 0 && r.back) return { kind: r.back.kind, dir: -r.back.dir };
+    if (s > r.R && r.fwd) return { kind: r.fwd.kind, dir: r.fwd.dir };
+    let d = s, i = 0;
+    while (i < r.legs.length - 1 && d > r.legs[i].len) { d -= r.legs[i].len; i++; }
+    return { kind: r.legs[i].kind, dir: r.legs[i].dir };
   }
-  function glideAlong(from, to, st) {
-    if (!motionOn() || !from || !to) return false;
-    const r = buildRoute(from, to);
-    if (!r || r.total < 0.5 || r.total > T.glideMaxPx) return false;
-    const duration = Math.round(Math.min(T.glideMax, T.glideMin + r.total * T.glidePerPx));
-    glide.route = r;
-    glide.stop = st;
-    glide.clock = track(clockAnim({ duration, easing: EASE.glide, fill: "both" }));
-    const run = glide.clock;
-    glideFrame();
-    run.finished.then(() => { if (glide.clock === run) stopGlide(); }).catch(() => {});
-    glide.raf = requestAnimationFrame(glideLoop);
+  function followState(now) {
+    const r = follow.route, st = spring(follow.e0, follow.v0, Math.max(0, now - follow.t0));
+    let s = r.R + st.e, v = st.v;
+    const lo = r.back ? -r.back.len : 0, hi = r.R + (r.fwd ? r.fwd.len : 0);
+    if (s < lo || s > hi) { s = Math.min(hi, Math.max(lo, s)); v = 0; follow.t0 = now; follow.e0 = s - r.R; follow.v0 = 0; }
+    return { s, v, e: s - r.R };
+  }
+  function tipState(now) {
+    const o = follow.tip, dt = Math.max(0, now - o.t0), x = spring(o.ox, o.vx, dt), y = spring(o.oy, o.vy, dt);
+    return { x: x.e, y: y.e, vx: x.v, vy: y.v };
+  }
+  function tipOffset() { return follow.tip ? tipState(nowMs()) : { x: 0, y: 0 }; }
+  // The tooltip keeps where it was drawn (dx, dy from its new place) and eases in. A side flip keeps its own velocity;
+  // a jump of the marker hands it the tooltip's displayed velocity.
+  function tipJump(dx, dy, vel) {
+    if (!motionOn() || tip.hidden || Math.hypot(dx, dy) < 0.05) return;
+    const now = nowMs(), cur = follow.tip ? tipState(now) : { vx: 0, vy: 0 };
+    follow.tip = { t0: now, ox: dx, oy: dy, vx: vel ? vel.x : cur.vx, vy: vel ? vel.y : cur.vy };
+    loopFollow();
+  }
+  function loopFollow() { if (!follow.raf && follow.hold == null) follow.raf = requestAnimationFrame(followFrame); }
+  function followTo(to, st, prev) {
+    const now = nowMs();
+    let cur = follow.at, v = 0, r0 = follow.route;
+    if (r0) { const s = followState(now); cur = pointAtS(r0, s.s); v = s.v; }
+    follow.stop = st;
+    follow.tLast = now;
+    const far = Math.abs((to ? to.x : st.x) - (cur ? cur.x : prev ? prev.x : st.x)) > (FOLLOW.jumpMinutes / DAY) * geo.span;
+    if (far) { follow.route = null; follow.tip = null; tipShown = null; paintMarker(to, st, true); return; }
+    const r = buildRoute(cur, to);
+    if (r && r.R > 0.05) {
+      let v0 = 0;
+      if (r0) { const a = dirAt(r0, followState(now).s), b = r.legs[0]; if (a.kind === b.kind) v0 = v * a.dir * b.dir; }
+      follow.route = r; follow.t0 = now; follow.e0 = -r.R; follow.v0 = v0;
+      followFrame();
+      return;
+    }
+    // No drawn track joins them, or it is far: the marker moves at once; the tooltip keeps its place and eases in.
+    follow.route = null;
+    tipForce = { x: tipVel.x, y: tipVel.y };
+    paintMarker(to, st, true);
+    tipForce = null;
+    loopFollow();
+  }
+  function followFrame() {
+    follow.raf = 0;
+    if (!sel || tip.hidden) return;
+    const now = nowMs();
+    let moving = false;
+    if (follow.route) {
+      const s = followState(now);
+      if (Math.abs(s.e) <= FOLLOW.settlePx && Math.abs(s.v) <= FOLLOW.settleV) { follow.route = null; follow.settle = true; }
+      else { moving = true; paintMarker(pointAtS(follow.route, s.s), follow.stop); }
+    }
+    if (follow.tip) {
+      const o = tipState(now);
+      if (Math.hypot(o.x, o.y) <= FOLLOW.settlePx && Math.hypot(o.vx, o.vy) <= FOLLOW.settleV) follow.tip = null;
+      else moving = true;
+    }
+    // At rest the marker is drawn exactly on its stop, the same as without motion.
+    if (!follow.route) { paintMarker(restPoint(sel), sel, follow.settle); follow.settle = false; }
+    if (moving) loopFollow();
+  }
+  // Ends the follow at once, with the marker and the tooltip at rest on the selected stop.
+  function stopFollow() {
+    const was = Boolean(follow.route || follow.tip || follow.hold != null);
+    cancelAnimationFrame(follow.raf);
+    follow.raf = 0;
+    follow.route = null;
+    follow.tip = null;
+    follow.hold = null;
+    follow.snap = null;
+    if (was && sel && !tip.hidden) paintMarker(restPoint(sel), sel, true);
+  }
+  // Holds the follow at `ms` after its latest target (for held frames; it can be held again at another time), or
+  // releases it.
+  function seekFollow(ms) {
+    if (!follow.snap) {
+      if (!follow.route && !follow.tip) return false;
+      follow.snap = { route: follow.route, t0: follow.t0, e0: follow.e0, v0: follow.v0, tip: follow.tip && { ...follow.tip }, tipShown };
+    }
+    const k = follow.snap;
+    Object.assign(follow, { route: k.route, t0: k.t0, e0: k.e0, v0: k.v0, tip: k.tip && { ...k.tip } });
+    tipShown = k.tipShown;
+    cancelAnimationFrame(follow.raf);
+    follow.raf = 0;
+    follow.hold = follow.tLast + ms;
+    followFrame();
     return true;
   }
-  function glideFrame() {
-    if (!glide.clock) return;
-    const p = glide.clock.effect.getComputedTiming().progress ?? 1;
-    paintMarker(routeAt(glide.route, p * glide.route.total), glide.stop);
+  function releaseFollow() {
+    if (follow.hold == null) return;
+    follow.hold = null;
+    if (follow.snap) { const k = follow.snap; Object.assign(follow, { route: k.route, t0: k.t0, e0: k.e0, v0: k.v0, tip: k.tip }); follow.snap = null; }
+    loopFollow();
   }
-  function glideLoop() { glide.raf = 0; if (!glide.clock) return; glideFrame(); glide.raf = requestAnimationFrame(glideLoop); }
-  // Ends a glide at once, with the marker at rest on its stop.
-  function stopGlide() {
-    if (!glide.clock) return;
-    cancelAnimationFrame(glide.raf);
-    glide.raf = 0;
-    const st = glide.stop;
-    glide.clock.cancel();
-    glide.clock = null;
-    glide.route = null;
-    glide.stop = null;
-    if (st && sel && sel.key === st.key) paintMarker(restPoint(st), st);
-  }
-  function seekGlide(fraction) {
-    if (!glide.clock) return false;
-    cancelAnimationFrame(glide.raf);
-    glide.raf = 0;
-    glide.clock.pause();
-    glide.clock.currentTime = glide.clock.effect.getTiming().duration * fraction;
-    glideFrame();
-    return true;
+  // A new hover speed takes effect from now, from where the marker and tooltip are.
+  function rebaseFollow() {
+    const now = nowMs();
+    if (follow.route) { const s = followState(now); follow.t0 = now; follow.e0 = s.e; follow.v0 = s.v; }
+    if (follow.tip) { const o = tipState(now); follow.tip = { t0: now, ox: o.x, oy: o.y, vx: o.vx, vy: o.vy }; }
   }
 
   /* ---- live: the pulse on the line's end point (live state only; never while delayed). Calmer than Round 5: one
@@ -1307,7 +1478,7 @@
   const liveRun = { clock: null, raf: 0, from: null, to: null, K: 0, seg: 0, body: "" };
   function stepReading() {
     finishLive();
-    stopGlide();
+    stopFollow();
     const from = M;
     if (from.nowM >= DAY - 1) return null;
     const reading = STATE !== "delayed"; // delayed: the minute passes and no reading arrives
@@ -1477,12 +1648,13 @@
 
   /* ---- switching motion on and off at runtime (tuner) */
   function settleAll() {
-    finishLive(); stopGlide(); finishRail();
+    finishLive(); stopFollow(); finishRail();
     [...rolls.keys()].forEach(finishRoll);
     [...feet.keys()].forEach(finishFoot);
   }
   function setOptions(next, persist = true) {
     const was = motionOn();
+    if (Number.isFinite(next.hoverSpeed)) { rebaseFollow(); opts.hoverSpeed = clampSpeed(next.hoverSpeed); }
     if (typeof next.motion === "boolean") opts.motion = next.motion;
     if (persist && !TUNER_OFF) { try { localStorage.setItem(MOTION_STORE, JSON.stringify(opts)); } catch (e) { /* storage unavailable */ } }
     const on = motionOn();
@@ -1526,14 +1698,16 @@
       select: (key) => { const st = stopBy(key); if (!st) return null; selectStop(st); return hit.getAttribute("aria-valuetext"); },
       clear: () => clearSelection(),
       get selected() { return sel ? sel.key : null; },
-      // The marker's form: "a" (lit bead, default) or "b" (hollow ring); see paintMarker.
-      get marker() { return markerForm; },
-      get markerFromUrl() { return MARKER_URL; },
-      markerStore: MARKER_STORE,
-      setMarker: (form, persist = true) => setMarker(form, persist),
-      get glideActive() { return Boolean(glide.clock); },
-      seekGlide,
-      get timings() { return { glideMin: T.glideMin, glideMax: T.glideMax, glidePerPx: T.glidePerPx, glideMaxPx: T.glideMaxPx, fold: FOLD, magnet: MAGNET }; },
+      // The marker's form: always "b", the hollow ring (form A was removed in Round 7 step 2).
+      get marker() { return "b"; },
+      // The smooth follow (Round 7 step 2), for the capture checks.
+      get followActive() { return Boolean(follow.route || follow.tip); },
+      get follow() { return { marker: Boolean(follow.route), tooltip: Boolean(follow.tip), held: follow.hold != null, route: follow.route ? Math.round(follow.route.R * 100) / 100 : null }; },
+      seekFollow,
+      releaseFollow,
+      // The follow's response to one step from rest, as fractions of the distance at the given times (ms).
+      response: (times = [33, 66, 100, 133, 200, 266, 400]) => times.map((t) => ({ ms: t, fraction: Math.round((1 - spring(1, 0, t).e) * 1000) / 1000 })),
+      get timings() { const [a, b] = taus(); return { tau1: a, tau2: b, hoverSpeed: opts.hoverSpeed, jumpMinutes: FOLLOW.jumpMinutes, settlePx: FOLLOW.settlePx, fold: FOLD, magnet: MAGNET }; },
     },
     motion: {
       get on() { return motionOn(); },
@@ -1554,7 +1728,7 @@
         { motion: "Lights", animates: "nothing, ever", note: "no entrance, no pointer-follow, no crowd-dependent light" },
         { motion: "Numbers: digit roll", animates: "transform translateY of the changed digits only, by the height of the digits' ink box (the new digit from below when rising, from above when falling; the old one leaves the other way), clipped to that ink box; the slot's width eases from the old digit's width to the new one's (Readex Pro has no tabular figures)", delayMs: 0, durationMs: T.roll, easing: EASE.roll, note: "no opacity on any glyph; words swap at once; plain markup restored at the end" },
         { motion: "Crowd level: bars", animates: "transform scaleY (from the bottom) of a red fill in each bar that changes", delayMs: `0, +${T.barStagger} per further bar (lower bars first when rising, upper first when falling)`, durationMs: T.bar, easing: EASE.bar, note: "the level word swaps at once" },
-        { motion: "Chart: the marker glides between stops", animates: "SVG geometry each frame along the drawn path (the marker in its form A or B, its light on the line, the lit hairline); the tooltip's left/top follow", delayMs: 0, durationMs: [T.glideMin, T.glideMax], easing: EASE.glide, note: `${T.glideMin} ms plus ${T.glidePerPx} ms per px of route, at most ${T.glideMax} ms; at once across the missing span, into the future, onto the gap stop, or beyond ${T.glideMaxPx}px; the tooltip appears, changes and leaves at once` },
+        { motion: "Chart: the marker follows its stop (Round 7 step 2)", animates: "SVG geometry each frame along the drawn path (the ring B and its lit hairline, moved in place); the tooltip's left/top ride with it", delayMs: 0, durationMs: "about 400 ms to settle, whatever the distance", easing: `two first-order lags in series, tau ${FOLLOW.tau1} ms and ${FOLLOW.tau2} ms, divided by the hover speed (${opts.hoverSpeed})`, note: `no restart: a new target keeps the position and velocity; at once (the marker) across the missing span, into the future, onto or off the gap stop, or more than ${FOLLOW.jumpMinutes} minutes away, while the tooltip eases into its new place; the tooltip's text changes at once and it appears and leaves at once` },
         { motion: "Live: new reading, tail morph and extension", animates: "SVG path d of the last ~15-30 minutes only, end point cx/cy, the tail's fine lines, the now clip", delayMs: 0, durationMs: T.morph, easing: EASE.morph },
         { motion: "Live: end-point pulse (live state only; none while delayed)", animates: "a 1px ring: opacity 0.4 to 0, transform scale 0.34 to 1 (9.5px to 28px)", delayMs: 1000, durationMs: T.pulse, easing: "cubic-bezier(0.22, 0.61, 0.36, 1)", note: "infinite; the ring is visible for the first 48% of each 5 s cycle" },
         { motion: "Rail opens", animates: "end cap translateX (0 to 156px, inline-end), middle scaleX (0 to 1) from the inline-start, darker surface layers and shadow opacity 0 to 1 (no text); each name uncovered by a clip-path that follows the end cap", delayMs: 0, durationMs: T.railOpen, easing: EASE.rail, note: "the width switches at once and is never animated; names never fade" },
