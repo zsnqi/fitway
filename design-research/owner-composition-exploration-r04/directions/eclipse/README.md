@@ -349,12 +349,15 @@ and `setMarker`. The one part of A that stays is its missing-span variant, the l
   - The tuner's simulated crowd-level change still changes the card only, as before; the latest stop keeps the reading.
 - **Tooltip placement:** after now the tooltip sits on the later side of the hairline, so it never covers the end of
   today's line. Over the gap it sits above both ends of the line.
-- **Peak and latest tooltip reading order (2026-09-26):** the special label and crowd-level word sit at inline-start
-  (right in Arabic, left in English); the time and main number sit at inline-end. The usual comparison and delayed age
-  remain below. Values, marker B, hover follow, and the chart's screen-reader text are unchanged. This scoped layout
-  revision has not regenerated the committed `evidence/` PNGs.
-  After seeing it, the user said they do not like the arrangement of text and numbers inside this tooltip. This is an
-  open design note for the next session, not an acceptance of the revised layout; the user asked to record it only.
+- **Tooltip layout (2026-09-26):** one start-aligned arrangement for every tooltip. Every row starts at the same
+  inline-start edge (right in Arabic, left in English), and nothing is pushed to the far edge.
+  - At the peak and the latest reading (live and delayed), the label chip comes first, then the time. The number then
+    comes first and its crowd-level word after it, as at every other stop («62 مزدحم», "62 Busy").
+  - The usual comparison and the delayed age stay below, start-aligned, as before.
+  - It replaces the two-edge layout of `04984e9`, which the user rejected: nothing lined up, the number was split from
+    its word, and the number jumped between ends when the marker crossed the peak or the latest stop.
+  - The user approved this layout on 2026-09-26 from a rendered comparison.
+  - Values, words, placement, marker B, the follow and the chart's screen-reader text are unchanged.
 
 **6b. The smooth follow (Round 7 step 2).** It replaces the Round 6 glide (120-150 ms, at most 150 ms). It is the
 "follow" part of the motion section in `app.js`.
@@ -494,9 +497,9 @@ takes about five minutes. It exits with code 1 if any check below fails.
   such a run rewrite `evidence/`.
 - **Fonts:** Readex Pro loads from Google Fonts over verified TLS. In a fresh cloud container, the proxy's CA must first be
   in Chromium's NSS store (`~/.pki/nssdb`).
-- **Round 7 step 2:** it was run only in the cloud container, into a scratch folder. Every check not built on the
+- **Round 7 step 2:** it was first run only in the cloud container, into a scratch folder. Every check not built on the
   Windows hashes passed, including `chart`, `follow`, `marker`, `roll`, `delayed`, `live` and the tuner. The hash-based
-  ones failed as expected.
+  ones failed as expected. On 2026-09-26 it was run on the original Windows machine into `evidence/` (see "Evidence").
 
 The log records:
 
@@ -536,19 +539,14 @@ The log records:
 
 - **Still frames, 1440×900, Recommended:**
   - `daily-ar-1440x900` and `daily-en-1440x900`
-  - `daily-ar-1440x900-hover` and `daily-en-1440x900-hover`: the peak stop with marker A, the lit bead (superseded;
-    `capture.mjs` now writes these names with form B)
-  - `daily-ar-1440x900-hover-b` and `daily-en-1440x900-hover-b` (Round 7): the same with marker B, the hollow ring
-    (still current: step 2 renders the peak hover pixel-identically)
+  - `daily-ar-1440x900-hover` and `daily-en-1440x900-hover`: the peak stop with marker B, the hollow ring, and the
+    start-aligned tooltip (label chip then time; number then word)
   - `-rail-open` (AR and EN)
   - `-delayed`, `-nohistory` and `-details` (full page), in AR
-  - `daily-ar-1440x900-tuner-open`, with the Round 7 Marker group and the Round 6 Motion group (superseded: step 2
-    removes the Marker group and adds the hover speed)
-- **`marker-compare-ar-3x.png` (Round 7 step 1):** A and B side by side, tight 3x crops of the real AR page at rest, the
+  - `daily-ar-1440x900-tuner-open`, with the Round 6 Motion group and the Round 7 step 2 hover speed
+- **`marker-variants-ar-3x.png` (Round 7 step 2):** marker B only, tight 3x crops of the real AR page at rest, the
   tooltip hidden: on the line (5:00 PM), the peak, the latest reading live and delayed, still ahead (9:00 PM), the
-  missing span, and still ahead without history.
-  - Superseded in part: step 2 keeps the B row except at the missing span, where it uses the A row's lit dots.
-  - `capture.mjs` now writes `marker-variants-ar-3x.png` (B only) instead.
+  missing span (the lit dots), and still ahead without history.
 - **Per preset (`v2`, `a-like`, `recommended`):** `preset-<id>-ar-1440x900`, `-nowcard-2x`, `-chart-2x`, and the
   light-only 1x captures `-nowcard-light` and `-chart-light`.
 - **Other:** `daily-en-nowcard-2x`, `levels-nowcard` and `levels-chart`.
@@ -556,26 +554,29 @@ The log records:
   - `motion-roll-ar-2x` and `motion-roll-en-2x`: held digit rolls. Inside now 49 to 48 at 30, 70 and 140 ms and at
     rest; 49 to 69 (only the tens digit moves); Entries 332 to 333; and the header time 7:42 to 7:43.
   - `motion-bars-ar-2x`: the third and fourth level bars filling, enlarged 4x, with the chip before and after.
-  - `motion-glide-ar-a-2x` and `motion-glide-ar-b-2x` (Round 7; they replace `motion-glide-ar-2x`): each marker form
-    held mid-glide along the line (5:00 to 5:30 PM), and climbing from 6:00 PM onto the peak ring. There is one fixed
-    crop per run. Superseded: they show the Round 6 glide, which step 2 replaced with the follow. `capture.mjs` now
-    writes `motion-follow-ar-2x` instead (a new file with an old Round 5 name; the Round 5 frames of that name are
-    gone, see below).
+  - `motion-follow-ar-2x` (Round 7 step 2): marker B following its stop along the curve, held at 33, 66, 100, 200 and
+    400 ms after a new target. There is one fixed crop per run. It replaces the Round 6 glide frames
+    (`motion-glide-ar-a-2x` and `motion-glide-ar-b-2x`), which are gone.
   - `motion-live-ar-tail-2x`: the line's tail around the end point, before, at 70 and 140 ms, and after (enlarged 3x).
   - `motion-rail-ar-open-0100ms`, `motion-rail-ar-close-0090ms` and `motion-rail-en-open-0100ms`.
-  - `motion-contact-sheet`: all of them on one page (superseded in part: it holds the glide frames).
-- **Round 5 frames:** the `motion-load-*`, `motion-light-*`, `motion-follow-*` and `motion-glide-ar-0090ms` frames are
-  gone with the motion they showed.
-- **Round 7 step 2: the committed PNGs and `capture-log.json` were not re-rendered.**
-  - They were rendered on Windows before step 2. This step was built in a Linux cloud container, where fonts render
-    differently, so its renders are not comparable with them, and `evidence/` was left untouched.
-  - The frames that now show superseded behaviour:
-    - form A: `daily-*-1440x900-hover` and the A row of `marker-compare-ar-3x`;
-    - B's capsule at the missing span: that cell of `marker-compare-ar-3x`;
-    - the Round 6 glide: `motion-glide-ar-a-2x`, `motion-glide-ar-b-2x` and those cells of `motion-contact-sheet`;
-    - the Marker group: `daily-ar-1440x900-tuner-open`.
-  - The latest stop's new value (49 · Busy) and the follow appear in no committed frame.
-  - The capture log also describes step 1 (form A, the switch and the glide).
+  - `motion-contact-sheet`: all of them on one page.
+- **Round 5 frames:** the `motion-load-*`, `motion-light-*` and `motion-glide-ar-0090ms` frames are gone with the
+  motion they showed. `motion-follow-ar-2x` reuses an old Round 5 name for the new follow frame.
+- **Re-rendered on 2026-09-26 (tooltip layout close-out):** `capture.mjs` was run on the original Windows machine into
+  `evidence/`, after the tooltip layout change. It exited with code 0.
+  - Changed by design: the AR and EN hover frames (the tooltip layout) and `motion-contact-sheet` and
+    `motion-roll-*-2x` (motion frames, rewritten on each run). `daily-ar-1440x900-tuner-open` and `capture-log.json`
+    now show step 2 (the hover speed, no Marker group); they had not been re-rendered since step 1.
+  - New: `marker-variants-ar-3x.png` and `motion-follow-ar-2x.png`.
+  - Removed, because `capture.mjs` no longer writes them: `daily-ar-1440x900-hover-b.png`,
+    `daily-en-1440x900-hover-b.png`, `marker-compare-ar-3x.png`, `motion-glide-ar-a-2x.png` and
+    `motion-glide-ar-b-2x.png`.
+  - Every other PNG was rewritten byte-identically.
+  - Base and candidate were also rendered with one script on this machine, from `file://`, in reduced motion and
+    with `?motion=off`: 28 of 28 still frames without a tooltip (AR and EN, live, delayed and without history, the
+    rail, details, the tuner open in AR and EN, each preset) and 452 of 452 frames at every stop other than the peak
+    and the latest are identical. The 24 peak and latest frames differ, by design. The tooltip's words and the chart's
+    screen-reader text are the same at all 476 stops.
 - **Round 7 step 2, identity (in the cloud container):**
   - The step-1 folder and this step were rendered with the same script on the same machine, and compared pixel for
     pixel, with reduced motion and with `?motion=off`.
@@ -586,12 +587,13 @@ The log records:
   - Only the tuner-open frame and the latest stop (its new value) differ, by design.
   - With motion on, a hover that has followed and settled matches the still hover frame, except for a few faint
     raster differences on anti-aliased edges (at most 42/255 in AR). Step 1 shows the same kind with its glide.
-- **Static guard (last run on Windows, Round 7 step 1, exit code 0):**
+- **Static guard (last run on Windows on 2026-09-26, after the tooltip layout change, exit code 0):**
   - Reduced motion: 25 of 27 pre-motion frames are identical. The other two, the AR hover and the tuner frames,
     change by design.
-  - `?motion=off`: 11 of 11 frames are identical (the pre-motion frame, or this run's still frame for the frames that
-    change by design and for the new EN hover and `-hover-b` frames).
+  - `?motion=off`: 9 of 9 frames are identical (the pre-motion frame, or this run's still frame for the frames that
+    change by design and for the EN hover frame).
   - With motion on, the first paint is identical in 4 of 4 pages, and only the live pulse runs on load.
+  - Every `chart`, `follow`, `marker`, `roll`, `delayed`, `rail` and tuner check passed.
 - **Videos:** the designer's real-time recordings (1440×900) are outside the repository and are not evidence here. The
   step 2 recordings are in the builder's scratch folder.
 

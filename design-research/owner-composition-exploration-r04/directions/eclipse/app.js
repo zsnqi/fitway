@@ -678,17 +678,18 @@
     if (st.kind === "gap") return `<div class="tip-t">${timeRange(GAP0, GAP1)}</div><div class="tip-main"><span class="tip-word">${L.ro.noReading}</span></div>`;
     const usualRow = HAS_HISTORY && st.kind !== "zero" ? `<div class="tip-u"><span class="sw sw-usual" aria-hidden="true"></span><span>${L.ro.usual} ${bdi(usualAt(st.m))}</span></div>` : "";
     const flag = st.kind === "peak" ? L.ro.peak : st.kind === "latest" ? L.ro.latest : "";
-    const special = Boolean(flag);
-    let html = `<div class="tip-t${special ? " is-special" : ""}">${special ? `<span class="tip-flag">${flag}</span>` : ""}${tb(st.m)}</div>`;
+    // One start-aligned arrangement for every tooltip: at the peak and the latest the label chip comes first, then
+    // the time; the number then its word, as at every other stop, so the number never moves between ends.
+    let html = `<div class="tip-t">${flag ? `<span class="tip-flag">${flag}</span>` : ""}${tb(st.m)}</div>`;
     if (st.kind === "zero") html += `<div class="tip-main"><span class="tip-v">${bdi(0)}</span><span class="tip-l">${L.ro.empty}</span></div>`;
     else if (st.kind === "wait") html += `<div class="tip-main"><span class="tip-word">${L.ro.noReadingYet}</span></div>${usualRow}`;
     else if (st.kind === "ahead") html += `<div class="tip-main"><span class="tip-word">${L.ro.ahead}</span></div>${usualRow}`;
     else if (st.kind === "latest" && STATE === "delayed") {
       // The stale reading, treated as the delayed card treats it: a muted number and how old it is, in the delayed colour.
-      html += `<div class="tip-main is-special is-stale"><span class="tip-l">${L.levels[levelOf(st.value)]}</span><span class="tip-v">${bdi(st.value)}</span></div>` +
+      html += `<div class="tip-main is-stale"><span class="tip-v">${bdi(st.value)}</span><span class="tip-l">${L.levels[levelOf(st.value)]}</span></div>` +
         `<div class="tip-ago">${ICON.clock}<span>${L.ago(M.nowM - M.last)}</span></div>${usualRow}`;
     }
-    else html += `<div class="tip-main${special ? " is-special" : ""}">${special ? `<span class="tip-l">${L.levels[levelOf(st.value)]}</span><span class="tip-v">${bdi(st.value)}</span>` : `<span class="tip-v">${bdi(st.value)}</span><span class="tip-l">${L.levels[levelOf(st.value)]}</span>`}</div>${usualRow}`;
+    else html += `<div class="tip-main"><span class="tip-v">${bdi(st.value)}</span><span class="tip-l">${L.levels[levelOf(st.value)]}</span></div>${usualRow}`;
     return html;
   }
 
