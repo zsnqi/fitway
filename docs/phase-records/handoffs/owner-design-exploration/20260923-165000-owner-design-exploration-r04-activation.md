@@ -1104,3 +1104,23 @@ The coordinator ran in a Claude Code cloud session (`session_015ieHuPjwSGP8rCDCe
 
 **Status.** Step 2 is ready for the user's review. Step 3, the first-open intro (Round 7 decision 4), comes next in
 the same way. Nothing is selected. Redline, production, canonical, Paper and authority state are unchanged.
+
+## Local user review and tooltip layout request (2026-09-26)
+
+Codex fetched and fast-forwarded `codex/owner-redesign-r04` to `87a6da5`. At this review, the remote branch had no
+additional commits. The user opened the current Eclipse page locally and supplied cropped Arabic peak and latest
+tooltip images. They said the result, including the hover speed, is excellent. This is positive concept feedback,
+not a selection, visual acceptance, or production promotion.
+
+The requested revision is limited to the chart tooltip for **peak** and **latest reading**: put the special label
+(`الذروة` / `آخر قراءة`) at the inline start (right in Arabic), and the main number at the inline end (left in
+Arabic). English should use its natural LTR inverse. Keep the time, crowd-level wording, usual comparison, delayed
+age, data values, marker form B, and follow motion. The user explicitly asked for a GPT-6 Sol subagent to implement
+this bounded change and for the Codex coordinator to review the rendered result.
+
+The coordinator lease moved from cloud session `session_015ieHuPjwSGP8rCDCeq5nrf` to local Codex session
+`01a0dce3-11d9-7e11-997c-42c8785e9458`. The worker has a separate managed worktree at
+`D:/Projects/fitway-worktrees/owner-tooltip-layout-r04/owner-design-exploration-r04`, initially at `87a6da5`,
+with run ID `owner_tip_r04_s01`. It owns only the Eclipse tooltip implementation files. The coordinator owns this
+handoff and `PROJECT_STATE.yaml` and will integrate and inspect the change. Step 3's first-open intro remains the
+next distinct design task. The existing committed `evidence/` PNGs still predate Round 7 step 2.
