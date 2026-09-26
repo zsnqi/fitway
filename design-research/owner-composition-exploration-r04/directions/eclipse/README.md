@@ -21,6 +21,11 @@ into place and today's line draws once from opening to now, then the end point a
 It never plays on a reload, on a return in the same tab or with motion off, and it settles at once when the owner acts.
 The tuner gains an intro speed and "Replay intro". See "Motion", 11, and "Evidence".
 
+**Intro fix round (Round 7 step 3, run `owner_intro_r04_s03_fix`):** the wait for the fonts is capped at 200 ms from the
+first paint, and a late font means no intro (user decision, 2026-09-26). The peak's label stays in the accessibility tree
+while it waits. The capture gains three gates: the surfaces at the first frames, the end after the held frames, and
+slow fonts. What moves, its order and its timings are unchanged.
+
 ## Thesis
 
 The structure is familiar: the rail, a header, four small cards and one chart card. The finish is where
@@ -250,8 +255,8 @@ hover colours of the rail tiles and buttons, the details chevron, and the jump t
   there is still no stagger, rise, light entrance or wash drift, and the surfaces are complete at first paint.
 - Without an intro (a reload, a return in the same tab, reduced motion, `?motion=off`, the Motion switch off) the page is
   complete at first paint, as before, and nothing is hidden while the fonts load.
-- With an intro, the four answers wait out of sight and today's line is not drawn until the fonts are in (at most 1 s;
-  11 below). Everything else is complete at first paint.
+- With an intro, the four answers wait out of sight and today's line is not drawn until the fonts are in (at most
+  200 ms from the first paint; 11 below). Everything else is complete at first paint.
 - The inline script in `index.html` sets only language, direction and state. app.js decides the intro before the first
   paint.
 - The chart renders at once. It is measured again when the fonts arrive, because the header's text sets its height,
@@ -490,8 +495,12 @@ section in `app.js`.
 
 - **When it plays:** only on the first open of the page in a browser tab.
   - A flag in `sessionStorage` (`fitway.eclipse.v3.intro`) marks the tab. It is interface state, never visitor data.
-  - So F5, a reload, the language link and any other return in the same tab have no intro. A new tab starts with empty
-    session storage and plays it, and so does a new browser session.
+  - So F5, a reload, the language link and any other return in the same tab have no intro.
+  - A tab the owner opens plays it: a new tab, a typed address, or a link opened in a new tab. These start with empty
+    session storage.
+  - Some tabs inherit session storage and so probably do not play it: a tab the page opens with `window.open`, a
+    duplicated tab, and a tab Chrome restores after a restart. This is the known limit the user accepted on 2026-09-26;
+    there is no workaround.
   - The flag is set on every open, also with motion off, so the intro belongs to the tab's first open only.
   - If session storage is unavailable, there is no intro (fail safe).
   - There is none with reduced motion, `?motion=off` or the tuner's Motion switch off (`?tuner=0` ignores the stored
@@ -528,14 +537,25 @@ section in `app.js`.
     switched off.
   - The action then happens as it would have anyway: the hover shows its stop, the rail opens with its own motion, and a
     new reading lands with its roll and tail. A reading during the intro is never lost.
-- **Screen readers:** the answers' text is final from the first paint, the chart's text is untouched, and the intro
-  announces nothing (the live region stays empty).
+- **Screen readers:** nothing leaves the accessibility tree during the intro. The answers' text is final from the first
+  paint. The peak's label («الذروة 62», "Peak 62") waits out of sight by an empty clip until the line arrives, never by
+  `visibility` or opacity, so it stays in the tree. The intro announces nothing (the live region stays empty).
+  - Checked: the accessibility tree held at 0, 200 and 500 ms equals the still page's, in AR and EN, live, delayed and
+    no history (Chromium's full tree over CDP). Before this fix, «الذروة» / "Peak" and «62» were missing for 0-640 ms.
 - **Transform, clip and draw only:** no glyph changes opacity, and no element's box changes (the slot holds the final
   value in flow). At the end every element, attribute and style the intro added is removed.
 - **Fonts and performance:** it starts only once both weights of Readex Pro are loaded for both scripts, and the tab is
   visible, so no font swaps mid-intro.
-  - Until then the answers wait out of sight and the line is not drawn. If the fonts take longer than 1 s, the page
-    settles at once instead (fail safe).
+  - Until then the answers wait out of sight and the line is not drawn.
+  - **The cap is 200 ms from the first paint** (user decision, 2026-09-26). It replaces the designer's 1 s cap, because
+    Round 6 said content is never hidden while the fonts load. The answers are therefore hidden for at most 200 ms, and
+    only on a first open.
+  - **When the fonts are late,** there is no intro. The owner sees the still page at once: the numbers in the fallback
+    font until Readex Pro arrives (as on a page without an intro), and the line whole. The tab's flag is already set,
+    so a reload in that tab has no intro either.
+  - The cap counts from the first paint, or from when app.js runs if that is earlier, so it never runs longer. For a
+    tab opened in the background, it counts from when the tab is first shown.
+  - When the fonts are in time, nothing changes.
   - Each frame sets a few attributes; the arc lengths come from the page's own path tables.
 - **Tuner:** the intro speed (0.5× to 2×) divides every duration; "Replay intro" plays it again on the current page. See
   "Light tuner".
@@ -551,7 +571,11 @@ section in `app.js`.
   - **Delayed:** the stale number stays still and the grey end point simply appears, so nothing stale gains an arrival.
   - **Yielding:** settle at once rather than hurry, so a hover or a new reading always meets the real page.
   - **Waiting for the fonts:** the answers are hidden (by the slot's clip, never opacity) for as long as the fonts take,
-    at most 1 s. With a warm browser cache this is a frame or two; see "Measured".
+    at most 200 ms. With a warm browser cache this is a frame or two; see "Measured".
+  - **The peak's label while it waits** (intro fix round): an empty clip (`inset(50%)`, like the page's `.sr-only`),
+    so it is out of sight but stays in the accessibility tree. It is the only text the intro hides. The answers already
+    wait by a clip. The line's parts, the end point and the peak ring keep SVG `visibility`, because the chart's SVG is
+    `aria-hidden` and carries no text.
 - **Measured (on the original Windows machine, headless Chromium, 1440×900):**
   - **capture.mjs:** each first open played and settled in 849-876 ms from its start (the 820 ms design plus a frame to
     start and a frame to finish). No long task (> 50 ms) and no font load ran during any intro, in AR and EN, live,
@@ -563,8 +587,18 @@ section in `app.js`.
       now at 645 ms, and the end point and the peak ring are whole by 772 ms.
     - The recordings hold about 22 frames in the intro (headless Chromium paints at about 30 frames per second).
   - **Font wait:** 17-28 ms with a warm cache (a second tab, or the capture's font cache); 390-1010 ms for a cold
-    network fetch in a fresh context (the first capture run; once, 1007 ms went past the cap and the page settled at
-    once, as designed).
+    network fetch in a fresh context in the step 3 runs.
+  - **Re-measured in the intro fix round** (capture.mjs, two runs into `evidence/`, the 200 ms cap):
+    - Each first open with the font cache played and settled in 846-883 ms from its start, with a font wait of
+      17-28 ms. No long task and no font load ran during any intro. The recordings above were not re-made; the intro's
+      motion is unchanged, and the held 2x frames at 0, 120, 350 and 700 ms equal `d4d019a`'s pixel for pixel (AR and EN).
+    - A cold network fetch now misses the cap: the capture's first AR page had no intro in both runs (font wait 205 and
+      212 ms, `fonts late`).
+    - With each font file held 600 ms: no intro, and the answers are in view 153-211 ms after the first paint (the cap,
+      plus the frame that paints the settled page). Held 50 ms: the intro plays; font wait 62-69 ms.
+    - With the files held 600 and 1400 ms (a scratch check), the page at 100 ms after the first paint still has its
+      answers out of sight and today's line undrawn. From 200 ms it is the still page, in the fallback font, and once
+      the fonts arrive it equals the still frame.
 
 **Deviations from the brief, and choices it left open**
 
@@ -601,7 +635,9 @@ takes about five minutes. It exits with code 1 if any check below fails.
   `open()` waits for the intro to end, so every older check starts from the still page, as before.
   - The intro part serves the Google Fonts files from the capture's own memory after their first network fetch (the same
     bytes), as a browser cache does for a returning owner. Without it, a fresh context's font fetch (390-1010 ms here)
-    races the intro's 1 s font cap.
+    would miss the intro's 200 ms font cap.
+  - The slow-font check holds each font file (fonts.gstatic.com) from that cache for a set time. The Google Fonts
+    stylesheet is not held, because it blocks rendering, so holding it would only delay the first paint.
   - `--intro-frames=<dir>` also writes every full-size held 2x intro frame to that folder. They are large and are not
     evidence.
 
@@ -634,7 +670,15 @@ The log records:
     this run's reduced-motion frame for EN delayed and no history), with the DOM equal to the `?motion=off` DOM, only
     the pulse running after it, no long task and no font load during it. A reload in the same tab has no intro (no
     rolling slot or line dash appears at any time), is the still frame, and runs only the pulse on load.
+  - **Surfaces at the first frames (intro fix round):** at the first frame after app.js runs (the first paint) and at
+    the intro's first frame, every surface (`.card`, `.lamp` and its layers, `.wash` and its light, `.rail`) has its
+    rest display, visibility, opacity, transform, clip and filter. Nothing runs but the intro's content transforms (a
+    transform on an answer's rolling digits, or the intro's clocks, which have no target and no keyframes) and the
+    pulse. It replaces the base's `hiddenCards` probe and is part of each first open's pass.
   - **`intro`** (Round 7 step 3):
+    - `slowFonts` (intro fix round; AR and EN, live): with each font file held 600 ms there is no intro
+      (`yieldedBy: "fonts late"`), the answers are in view within 250 ms of the first paint, and once the fonts are in
+      the DOM equals the `?motion=off` DOM and the page is the still frame. Held 50 ms, the intro plays and completes.
     - `whenItPlays`: a new tab plays it; a reload, the language link in the same tab, reduced motion, `?motion=off` and a
       new tab with the Motion switch off do not; a second tab does; `?tuner=0` ignores the stored switch. "Replay intro"
       plays it at 1×, 0.5× and 2× (measured against 820, 1640 and 410 ms) and ends at the still frame; the speed is
@@ -645,10 +689,11 @@ The log records:
       1280×800 page.
     - `held`: held 2x frames (live 0-760 ms, delayed and no history 0 and 320 ms, AR and EN). At every held frame no box
       moves, the answers' text is final, the live region is silent, the chart's text is final, no glyph animates
-      opacity, text moves by transform only, and the line has its two parts. The end is judged on an intro that plays by
-      itself against the 2x reduced-motion frame; the end after the holds is reported too. At 2x one glyph («6-8»)
-      rasterizes in one of two ways on this machine, with no intro too, so if the two differ one more of each is
-      rendered and the end must equal one of the still renderings.
+      opacity, text moves by transform only, and the line has its two parts. Two ends are judged against the 2x
+      reduced-motion frame, and both set the exit code: an intro that plays by itself, and (since the intro fix round)
+      the end after the holds. At 2x one glyph («6-8») rasterizes in one of two ways on this machine, with no intro
+      too. So if an end differs, one more still and one more of that end are rendered, and the end must equal one of
+      the still renderings.
   - **`chart`** (Round 7 step 2: form B, in AR and EN, each live, delayed and without history):
     - every stop, with the half-hour coverage, the gap stop and the two line segments (no bridge);
     - at every stop, the marker's distance to its target, its form, that nothing is drawn above the point, the tooltip,
@@ -687,7 +732,8 @@ The log records:
   - `intro-detail-ar-2x`: 2x details in AR: the four answers at 0, 60, 120, 200 and 280 ms, and the line landing at 600,
     640, 660, 700 and 760 ms and at the end.
   - `intro-yield-ar`: 1x, the page 50 ms after a hover, keys, the rail, a tap, a new reading and a resize at 100 and
-    400 ms into the intro.
+    400 ms into the intro. It is taken in real time, so it depends on timing and can differ between runs (for example,
+    the digit roll of a new reading is caught at another point).
 - **`marker-variants-ar-3x.png` (Round 7 step 2):** marker B only, tight 3x crops of the real AR page at rest, the
   tooltip hidden: on the line (5:00 PM), the peak, the latest reading live and delayed, still ahead (9:00 PM), the
   missing span (the lit dots), and still ahead without history.
@@ -750,7 +796,26 @@ The log records:
   - Changed with no change in behaviour: `motion-contact-sheet` (its title) and `motion-roll-en-2x` (mid-roll timing
     noise).
   - New: the four `intro-*` sheets. Every other PNG was rewritten byte-identically.
-- **Static guard (run 4, exit code 0):**
+- **Re-rendered for the intro fix round, on the original Windows machine into `evidence/`, two runs, both exit 0:**
+  - Every gate passed in both runs, including the new ones. Surfaces at the first frames: 6 of 6 first opens. Slow
+    fonts: 4 of 4. The end after the held frames: 6 of 6, with no second rendering needed.
+  - Static guard, both runs: reduced motion 25 of 27 pre-motion frames identical (the other two change by design), and
+    `?motion=off` 9 of 9.
+  - These files are run 2's. Changed by design: `capture-log.json` (the new gates).
+  - Changed with no change in behaviour, compared with `d4d019a`:
+    - `intro-yield-ar` (timing), `motion-contact-sheet` and `motion-roll-ar-2x` (mid-roll timing and glyph raster).
+      `motion-roll-en-2x` differed in run 1 only.
+    - `motion-follow-ar-2x`: it differed in both runs, the same way. A scratch check rendered the capture's follow
+      sequence 8 times, on `d4d019a` and on this version, with cold and warm fonts. The crops fell into three
+      renderings with no relation to the version or the fonts: `d4d019a` and this version each gave more than one,
+      and they shared them. So it is the follow sheet's own run-to-run variation, not this change.
+  - Every other PNG, including the three held intro sheets, was rewritten byte-identically.
+  - Each new gate was shown to fail on a planted defect in a scratch copy, and to pass on the unchanged copy:
+    - an outline left on the peak's label after a release fails the held end (6 of 6), while the natural end passes;
+    - a light at half opacity until the start fails the first-paint probe, and a wash animation at the start fails the
+      intro's first frame (6 of 6 each);
+    - the old 1 s cap fails the slow-font check (the intro plays with the fonts held 600 ms).
+- **Static guard (step 3 run 4, exit code 0):**
   - Reduced motion: 25 of 27 pre-motion frames are identical. The other two, the AR hover and the tuner frames,
     change by design.
   - `?motion=off`: 9 of 9 frames are identical (the pre-motion frame, or this run's still frame for the frames that
@@ -792,15 +857,19 @@ The log records:
 - **The intro (Round 7 step 3):**
   - It was judged from held 2x frames, the capture's checks and two real-time Playwright recordings in headless
     Chromium (about 22 frames in the intro). It was not seen on a real display at 60 or 120 Hz, and not by the user.
-  - A new browser session was tried only as a fresh browser context. Chrome's "continue where you left off" restores a
-    tab's session storage, so a restored tab would likely not replay it; that was not tried.
+  - A new browser session was tried only as a fresh browser context. A tab Chrome restores after a restart, a
+    duplicated tab and a tab opened with `window.open` inherit session storage and probably do not replay it (the
+    accepted limit); none of them was tried.
   - A tab opened in the background (the intro waits until it is first shown) and leaving the tab mid-intro (it settles)
     are in the code but were not exercised.
-  - The 1 s font cap was seen to expire once, on a cold network fetch in the capture (the page settled at once). A slow
-    real network was not tried.
-  - The pre-intro wait hides the answers (a clip) while the fonts load: a frame or two with a warm cache, up to 1 s cold.
-    Round 6 said nothing is hidden while the fonts load; decision 4 needs the answers absent before they roll.
-  - No screen-reader pass: the answers' text, the chart's text and the silent live region were checked as text only.
+  - The 200 ms font cap was tested only with font files held by route interception (50, 600 and 1400 ms) and on cold
+    fetches in fresh contexts. A slow real network, and a cap that ends while the page is busy, were not tried.
+  - The pre-intro wait hides the answers (a clip) while the fonts load: a frame or two with a warm cache, at most
+    200 ms otherwise, on a first open only (the user's decision on Round 6 §1, 2026-09-26).
+  - No screen-reader pass. The accessibility tree was compared as Chromium exposes it over CDP. The live region was
+    checked as text only.
+  - The surface probe reads computed styles at two frames, not pixels. The frames in between are covered by the held
+    frames' checks.
   - At 2x the raster of «6-8» in Arabic is bistable on this machine (two variants, a few dozen fringe pixels), with and
     without the intro; see "Evidence".
 - **Known differences:**
@@ -814,4 +883,7 @@ The log records:
 - **Scope:** no English still frames for delayed, no history or details (the intro's sheets have English delayed and no
   history). Mobile is out of scope.
 - **Repository:** no repository verification. `pnpm check:design-context` passed at the start of Round 7 (step 1) and
-  of step 3; it was not run for step 2.
+  of step 3, and in the intro fix round; it was not run for step 2.
+- **Intro fix round:** the accessibility-tree comparison, the slow-font frames at 100-400 ms and the planted defects
+  were run as scratch checks outside the repository. The accessibility tree is not a capture gate. No verifier has
+  checked this round yet.

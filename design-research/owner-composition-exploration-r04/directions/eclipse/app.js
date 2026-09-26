@@ -1688,17 +1688,22 @@
    *   About 820 ms in all at 1× (the tuner's intro speed divides every duration). Transform, clip and draw only: no glyph
    *   changes opacity, no element's box changes, and nothing is announced (the live region is untouched).
    * When it starts: once the page's fonts are loaded (no font swaps mid-intro) and the tab is visible. Until then the
-   *   numbers wait out of sight and the line is not drawn; if the fonts take longer than 1 s, the page settles at once.
+   *   numbers wait out of sight and the line is not drawn; if the fonts are not in within 200 ms of the first paint
+   *   (user decision, 2026-09-26; it replaces a 1 s cap), there is no intro: the still page shows at once, its numbers
+   *   in the fallback font until the font arrives, as on a page without an intro. The tab's flag is already set then.
    * How it yields: any action (a pointer press or a key anywhere, the wheel, a hover, tap, key or focus on the chart, the
    *   rail), a new reading, a crowd change, a resize, leaving the tab, or motion switched off settles it at once to the
    *   still page, and the action then happens as it would have anyway. Nothing waits for the intro and nothing is lost.
    *   A tab opened in the background keeps its intro waiting until the tab is first shown.
    * At the end the page is exactly the still page: every element, attribute and style the intro added is removed. */
   const INTRO_STORE = "fitway.eclipse.v3.intro";
-  const INTRO_T = { line: 640, mark: 180, fontCap: 1000 }; // ms at 1×; the numbers use the digit roll's own T.roll
+  // ms at 1×; the numbers use the digit roll's own T.roll. fontCap is not scaled: it counts from the first paint.
+  const INTRO_T = { line: 640, mark: 180, fontCap: 200 };
   // A whole value: 49, 332, or a time with its own AM/PM (6-8 م, 6–8 PM), which is part of the value, unlike a unit.
   const INTRO_NUM = /\d+(?:[-–:.,]\d+)*(?: (?:ص|م|AM|PM)(?![\p{L}]))?/gu;
-  const INTRO_HIDE = ";visibility:hidden";
+  // The peak's label waits by an empty clip, like the answers' slots: out of sight, but still in the accessibility tree
+  // (visibility or display would remove it), and never by opacity.
+  const INTRO_HIDE = ";clip-path:inset(50%)";
   const SVGNS = "http://www.w3.org/2000/svg";
   const intro = { state: "off", firstOpen: false, played: false, count: 0, reason: "", yieldedBy: null, nums: [], run: null, tagStyle: null, fontWaitMs: null, startedAt: null, endedAt: null };
   const introTotal = (k = opts.introSpeed || 1) => (Math.max(T.roll, INTRO_T.line) + INTRO_T.mark) / k;
@@ -1744,17 +1749,22 @@
       return { el, html, slots };
     });
   }
-  // Waits for a visible tab and the page's fonts (both weights, both scripts), then starts on the next frame.
+  // Waits for a visible tab and the page's fonts (both weights, both scripts), then starts on the next frame. The wait
+  // for the fonts is capped at INTRO_T.fontCap from the first paint (or from now, if the page has not painted yet, which
+  // is earlier); past it, there is no intro and the still page shows at once (endIntro).
   async function introWait() {
     if (document.visibilityState !== "visible") {
       await new Promise((res) => { const on = () => { if (document.visibilityState === "visible") { document.removeEventListener("visibilitychange", on); res(); } }; document.addEventListener("visibilitychange", on); });
     }
     if (intro.state !== "pending") return;
-    const tv = performance.now(), sample = "العربية FITWAY 0123456789";
+    let tv = performance.now();
+    try { const p = performance.getEntriesByType("paint")[0]; if (p && p.startTime < tv) tv = p.startTime; } catch (e) { /* no paint timing */ }
+    const sample = "العربية FITWAY 0123456789";
     const fontsIn = document.fonts
       ? Promise.all(["400", "500"].map((w) => document.fonts.load(`${w} 16px "Readex Pro"`, sample))).then(() => document.fonts.ready)
       : Promise.resolve();
-    const ok = await Promise.race([fontsIn.then(() => true, () => false), new Promise((res) => setTimeout(() => res(false), INTRO_T.fontCap))]);
+    const cap = new Promise((res) => setTimeout(() => res(false), Math.max(0, tv + INTRO_T.fontCap - performance.now())));
+    const ok = await Promise.race([fontsIn.then(() => true, () => false), cap]);
     intro.fontWaitMs = Math.round(performance.now() - tv);
     if (intro.state !== "pending") return;
     if (!ok) { endIntro("fonts late"); return; }
@@ -1952,8 +1962,9 @@
 
   /* ------------------------------------------------------------ lifecycle
    * Rendered at once. Without an intro nothing is hidden while the fonts load. On a tab's first open (the intro), the
-   * four answers wait out of sight and the line is not drawn until the fonts are in (at most 1 s), and then the intro
-   * plays; every other part of the page is complete at first paint. The chart is measured again when the fonts arrive
+   * four answers wait out of sight and the line is not drawn until the fonts are in, and then the intro plays; if the
+   * fonts are not in within 200 ms of the first paint there is no intro and the still page shows at once. Every other
+   * part of the page is complete at first paint. The chart is measured again when the fonts arrive
    * (the header's text sets the chart's height) and whenever its box changes. */
   new ResizeObserver(() => render()).observe(plot);
   introDecide();

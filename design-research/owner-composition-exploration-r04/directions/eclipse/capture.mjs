@@ -26,7 +26,10 @@
 // history), and a reload in the same tab has no intro at all. The intro part also checks when it plays (a second tab,
 // reduced motion, ?motion=off, the tuner's Motion switch, Replay intro, the intro speed), that it yields at once to a
 // hover, keys, the rail, a tap, a new reading and a resize (at 100 and 400 ms), that no box moves, no glyph fades, no
-// long task runs and no font loads during it, and writes held 2x frames on intro-*.png sheets.
+// long task runs and no font loads during it, and writes held 2x frames on intro-*.png sheets. The intro fix round:
+// every surface is present and unchanged at the first paint and at the intro's first frame, with nothing running but
+// the intro's content transforms and the pulse; the end after the held frames sets the exit code; and with the font
+// files held 600 ms there is no intro and the answers are in view within 250 ms of the first paint (held 50 ms, it plays).
 // Run from PowerShell at the worktree root:
 //   node design-research/owner-composition-exploration-r04/directions/eclipse/capture.mjs [outDir] [--intro-frames=<dir>]
 // --intro-frames=<dir> also writes every full-size held 2x intro frame there (they are large; they are not evidence).
@@ -121,13 +124,17 @@ const sha = (buf) => createHash("sha256").update(buf).digest("hex");
 const identity = { staticFrames: {}, motionOffFrames: {}, firstOpen: {}, reload: {}, liveUpdateEndsAtCanonical: null };
 const stillBuffers = {}; // this run's still frames, for frames with no pre-motion hash (or one that changes by design)
 
-// Round 7 step 3: the intro waits for the fonts (at most 1 s, then it settles at once). A fresh context has an empty
-// HTTP cache, so its fonts come over the network (390-1010 ms in the first run here), which would race that cap. The
-// intro part therefore serves the Google Fonts files from this process's memory after their first fetch, the same bytes,
-// as a browser's own cache does for an owner who has opened the page before (a warm second tab took 29 ms).
+// Round 7 step 3: the intro waits for the fonts (at most 200 ms from the first paint, then there is no intro and the
+// still page shows at once; user decision, 2026-09-26, replacing a 1 s cap). A fresh context has an empty HTTP cache,
+// so its fonts come over the network (390-1010 ms in the step 3 runs here), which would miss that cap. The intro part
+// therefore serves the Google Fonts files from this process's memory after their first fetch, the same bytes, as a
+// browser's own cache does for an owner who has opened the page before (a warm second tab took 29 ms). With
+// `fontDelayMs`, each font file (fonts.gstatic.com, not the render-blocking stylesheet) is held that long first: the
+// slow-font check.
 const FONT_CACHE = new Map();
-async function serveFont(route) {
+async function serveFont(route, delayMs = 0) {
   const url = route.request().url();
+  if (delayMs > 0 && /^https:\/\/fonts\.gstatic\.com\//.test(url)) await new Promise((res) => setTimeout(res, delayMs));
   let hit = FONT_CACHE.get(url);
   if (!hit) {
     const resp = await route.fetch();
@@ -137,9 +144,9 @@ async function serveFont(route) {
   }
   await route.fulfill(hit);
 }
-async function newPage({ width = 1440, height = 900, scale = 1, motion = false, touch = false, fontCache = false } = {}) {
+async function newPage({ width = 1440, height = 900, scale = 1, motion = false, touch = false, fontCache = false, fontDelayMs = 0 } = {}) {
   const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: scale, reducedMotion: motion ? "no-preference" : "reduce", colorScheme: "dark", hasTouch: touch });
-  if (fontCache) await context.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, serveFont);
+  if (fontCache || fontDelayMs) await context.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (route) => serveFont(route, fontDelayMs));
   const page = await context.newPage();
   const errors = [];
   page.on("pageerror", (e) => errors.push(`pageerror: ${e.message}`));
@@ -674,9 +681,25 @@ async function motionOffDom(q) {
   return d;
 }
 // Every trace of the intro from the document's start: its rolling slots and line dashes, font loads, long tasks and
-// frame times (an init script, so it runs again on a reload).
+// frame times (an init script, so it runs again on a reload). Two surface probes too: at the first frame once the page's
+// script has run (the first paint) and at the intro's first frame, every surface (the cards, the lights, the wash, the
+// rail) as its computed style stands then, with every animation running; `surfaceProbe` below judges them against rest.
+// It also notes the first frame at which the four answers are in view (no clipped slot is waiting in them).
 const INTRO_PROBE = () => {
-  const P = (window.__introProbe = { slotsSeen: 0, dashSeen: 0, fontLoads: [], long: [], frames: [] });
+  const P = (window.__introProbe = { slotsSeen: 0, dashSeen: 0, fontLoads: [], long: [], frames: [], firstPaint: null, introFirstFrame: null, answersInViewAt: null });
+  const SURF = ".card, .lamp, .lamp-in, .lamp-rim, .wash, .wash-light, .rail";
+  const snap = (t) => ({
+    t: Math.round(t), sinceStartMs: window.__eclipse?.intro?.startedAt != null ? Math.round(t - window.__eclipse.intro.startedAt) : null, state: window.__eclipse?.intro?.state || null,
+    surfaces: [...document.querySelectorAll(SURF)].map((n) => { const s = getComputedStyle(n); return `${n.className}|${s.display}|${s.visibility}|${s.opacity}|${s.transform}|${s.clipPath}|${s.filter}`; }),
+    animations: document.getAnimations().map((a) => { const e = a.effect, el = e && e.target; return { target: el ? `${el.tagName.toLowerCase()}.${[...el.classList].join(".")}` : "(clock)", kind: a.animationName ? `css @keyframes ${a.animationName}` : "web animation", properties: [...new Set((e?.getKeyframes?.() || []).flatMap((k) => Object.keys(k).filter((x) => !["offset", "easing", "composite", "computedOffset"].includes(x))))] }; }),
+  });
+  const waiting = () => ["#now-v", "#peak-v", "#entries-v", "#busy-v"].some((s) => { const n = document.querySelector(s); return !n || !n.textContent.trim() || (window.__eclipse?.intro?.state === "pending" && n.querySelector(".roll-slot")); });
+  const look = (t) => {
+    if (!window.__eclipse || !document.querySelector(".card")) return;
+    if (!P.firstPaint) P.firstPaint = snap(t);
+    if (!P.introFirstFrame && window.__eclipse.intro?.state === "running") P.introFirstFrame = snap(t);
+    if (P.answersInViewAt == null && !waiting()) P.answersInViewAt = Math.round(t);
+  };
   new MutationObserver((ms) => {
     for (const m of ms) {
       if (m.type === "attributes" && m.target.getAttribute("stroke-dasharray")) P.dashSeen++;
@@ -685,8 +708,28 @@ const INTRO_PROBE = () => {
   }).observe(document, { subtree: true, childList: true, attributes: true, attributeFilter: ["stroke-dasharray"] });
   try { new PerformanceObserver((l) => l.getEntries().forEach((e) => P.long.push({ start: Math.round(e.startTime), ms: Math.round(e.duration) }))).observe({ type: "longtask", buffered: true }); } catch (e) { P.longUnsupported = true; }
   if (document.fonts) document.fonts.addEventListener("loading", () => P.fontLoads.push(Math.round(performance.now())));
-  const tick = (t) => { P.frames.push(t); if (P.frames.length < 4000) requestAnimationFrame(tick); };
+  const tick = (t) => { P.frames.push(t); try { look(performance.now()); } catch (e) { P.lookError = String(e); } if (P.frames.length < 4000) requestAnimationFrame(tick); };
   requestAnimationFrame(tick);
+};
+// The surface probes against the page at rest (the same page after the intro): every surface present and unchanged
+// (display, visibility, opacity, transform, clip and filter as at rest, never hidden or transparent when shown), and nothing
+// running but the intro's content transforms (a transform on an answer's rolling digits, or the intro's clocks, which
+// have no target and no keyframes) and the live pulse.
+const surfaceProbe = async (page) => {
+  const rest = await page.evaluate(() => [...document.querySelectorAll(".card, .lamp, .lamp-in, .lamp-rim, .wash, .wash-light, .rail")].map((n) => { const s = getComputedStyle(n); return `${n.className}|${s.display}|${s.visibility}|${s.opacity}|${s.transform}|${s.clipPath}|${s.filter}`; }));
+  const P = await page.evaluate(() => ({ firstPaint: window.__introProbe?.firstPaint || null, introFirstFrame: window.__introProbe?.introFirstFrame || null, lookError: window.__introProbe?.lookError || null }));
+  const allowed = (a) => (a.kind === "css @keyframes ping") || (a.kind === "web animation" && ((a.target === "(clock)" && a.properties.length === 0) || (/^span\.roll-new/.test(a.target) && a.properties.join() === "transform")));
+  const judge = (s) => {
+    if (!s) return { seen: false, pass: false };
+    // As at rest (the collapsed details card is display: none at rest too), and never hidden or transparent where the
+    // rest page shows it.
+    const bad = s.surfaces.filter((v, i) => { const [, display, visibility, opacity] = v.split("|"); return v !== rest[i] || (display !== "none" && (visibility !== "visible" || Number(opacity) === 0)); });
+    const others = s.animations.filter((a) => !allowed(a));
+    return { seen: true, t: s.t, sinceStartMs: s.sinceStartMs, state: s.state, surfaces: s.surfaces.length, restSurfaces: rest.length, hiddenOrChanged: bad.slice(0, 6), animations: s.animations.length, notAllowed: others.slice(0, 6), pass: s.surfaces.length === rest.length && rest.length > 0 && bad.length === 0 && others.length === 0 };
+  };
+  const out = { firstPaint: judge(P.firstPaint), introFirstFrame: judge(P.introFirstFrame), lookError: P.lookError };
+  out.pass = out.firstPaint.pass && out.introFirstFrame.pass && !out.lookError;
+  return out;
 };
 const introPerf = (page) => page.evaluate(() => {
   const I = window.__eclipse.intro, P = window.__introProbe || {};
@@ -735,35 +778,41 @@ async function introSheet(name, title, cells, cols, width) {
 // is compared with this run's reduced-motion 2x frame. `crops` names 2x clips taken at some of the times.
 async function introHeld(lang, state, times, crops = null) {
   const q = `lang=${lang}&state=${state}&tuner=0`;
-  const { context, page, errors } = await newPage({ motion: true, scale: 2, fontCache: true });
-  await page.goto(`${ORIGIN}/index.html?${q}`);
-  await page.waitForFunction(() => ["running", "done", "off"].includes(window.__eclipse?.intro?.state), null, { timeout: 15000 });
-  const held = await page.evaluate(() => window.__eclipse.intro.seek(0));
-  await page.addStyleTag({ content: HIDE_PULSE });
-  const fontsIn = await page.evaluate(() => ["400", "500"].every((w) => document.fonts.check(`${w} 46px "Readex Pro"`, "0123456789 العربية")));
-  const frames = [], clips = [];
-  for (const t of times) {
-    await page.evaluate((ms) => window.__eclipse.intro.seek(ms), t);
-    await page.waitForTimeout(40);
-    const buf = await page.screenshot();
-    frames.push({ t, buf, at: await introProbeNow(page) });
-    if (INTRO_FRAMES) { await mkdir(INTRO_FRAMES, { recursive: true }); await writeFile(join(INTRO_FRAMES, `intro-${lang}-${state}-${String(t).padStart(4, "0")}ms-2x.png`), buf); }
-    if (crops) for (const c of crops.filter((k) => k.times.includes(t))) clips.push({ name: c.name, t, buf: await page.screenshot({ clip: await c.clip(page) }) });
-  }
-  await page.evaluate(() => window.__eclipse.intro.release());
-  await introSettled(page);
-  await page.waitForTimeout(120);
-  const endBuf = await page.screenshot();
-  const end = await introProbeNow(page);
-  if (INTRO_FRAMES) await writeFile(join(INTRO_FRAMES, `intro-${lang}-${state}-end-2x.png`), endBuf);
-  if (crops) for (const c of crops.filter((k) => k.times.includes("end"))) clips.push({ name: c.name, t: "end", buf: await page.screenshot({ clip: await c.clip(page) }) });
-  const yieldedBy = await page.evaluate(() => window.__eclipse.intro.yieldedBy);
-  await context.close();
-  // The end state is judged on an intro that plays by itself, as the owner sees it, against this page's reduced-motion
-  // 2x frame. At 2x the raster of one glyph («6-8» in Arabic, a few dozen fringe pixels, max 32-84/255) is bistable on
-  // this machine, in reduced-motion frames with no intro too; so when the two differ, one more still and one more
-  // natural end are rendered, every hash is kept, and the end passes only if it equals a still rendering of the page.
-  // The end after the held frames is reported as well.
+  // One held sequence: each part held at every time in `times`, then released to its end. `keep` writes the frames.
+  const heldRun = async (keep) => {
+    const { context, page, errors } = await newPage({ motion: true, scale: 2, fontCache: true });
+    await page.goto(`${ORIGIN}/index.html?${q}`);
+    await page.waitForFunction(() => ["running", "done", "off"].includes(window.__eclipse?.intro?.state), null, { timeout: 15000 });
+    const held = await page.evaluate(() => window.__eclipse.intro.seek(0));
+    await page.addStyleTag({ content: HIDE_PULSE });
+    const fontsIn = await page.evaluate(() => ["400", "500"].every((w) => document.fonts.check(`${w} 46px "Readex Pro"`, "0123456789 العربية")));
+    const frames = [], clips = [];
+    for (const t of times) {
+      await page.evaluate((ms) => window.__eclipse.intro.seek(ms), t);
+      await page.waitForTimeout(40);
+      const buf = await page.screenshot();
+      frames.push({ t, buf, at: await introProbeNow(page) });
+      if (keep && INTRO_FRAMES) { await mkdir(INTRO_FRAMES, { recursive: true }); await writeFile(join(INTRO_FRAMES, `intro-${lang}-${state}-${String(t).padStart(4, "0")}ms-2x.png`), buf); }
+      if (keep && crops) for (const c of crops.filter((k) => k.times.includes(t))) clips.push({ name: c.name, t, buf: await page.screenshot({ clip: await c.clip(page) }) });
+    }
+    await page.evaluate(() => window.__eclipse.intro.release());
+    await introSettled(page);
+    await page.waitForTimeout(120);
+    const endBuf = await page.screenshot();
+    const end = await introProbeNow(page);
+    if (keep && INTRO_FRAMES) await writeFile(join(INTRO_FRAMES, `intro-${lang}-${state}-end-2x.png`), endBuf);
+    if (keep && crops) for (const c of crops.filter((k) => k.times.includes("end"))) clips.push({ name: c.name, t: "end", buf: await page.screenshot({ clip: await c.clip(page) }) });
+    const yieldedBy = await page.evaluate(() => window.__eclipse.intro.yieldedBy);
+    await context.close();
+    return { held, fontsIn, frames, clips, endBuf, end, yieldedBy, errors };
+  };
+  const first = await heldRun(true);
+  const { held, fontsIn, frames, clips, endBuf, end, yieldedBy, errors } = first;
+  // The end state is judged on an intro that plays by itself, as the owner sees it, and on the end after the held
+  // frames, each against this page's reduced-motion 2x frame. At 2x the raster of one glyph («6-8» in Arabic, a few
+  // dozen fringe pixels, max 32-84/255) is bistable on this machine, in reduced-motion frames with no intro too; so when
+  // an end differs, one more still and one more of that end are rendered, every hash is kept, and the end passes only if
+  // one of its renderings equals a still rendering of the page. Both ends set the exit code.
   const still2x = async () => { const s = await open(q, { scale: 2 }); const buf = await s.page.screenshot(); await s.context.close(); return buf; };
   const natural2x = async () => {
     const n = await newPage({ motion: true, scale: 2, fontCache: true });
@@ -781,11 +830,18 @@ async function introHeld(lang, state, times, crops = null) {
   if (sha(nat[0].buf) !== stills[0]) { stills.push(sha(await still2x())); nat.push(await natural2x()); }
   const natural = { runs: nat.map((x) => ({ ...x.run, sha: sha(x.buf).slice(0, 16) })), stills: stills.map((h) => h.slice(0, 16)), stillsAgree: new Set(stills).size === 1 };
   const naturalIdentical = nat.every((x) => x.run.played && x.run.yieldedBy === "complete") && nat.some((x) => stills.includes(sha(x.buf)));
-  const endIdentical = stills.includes(sha(endBuf));
+  const heldEnds = [{ sha: sha(endBuf), yieldedBy, errors: errors.length }];
+  if (!stills.includes(heldEnds[0].sha)) {
+    if (stills.length === 1) stills.push(sha(await still2x()));
+    const again = await heldRun(false);
+    heldEnds.push({ sha: sha(again.endBuf), yieldedBy: again.yieldedBy, errors: again.errors.length });
+    errors.push(...again.errors);
+  }
+  const endIdentical = heldEnds.some((x) => stills.includes(x.sha));
   const r = {
     url: `index.html?${q}`, held, fontsLoadedAtStart: fontsIn, yieldedBy,
-    naturalEndIdenticalToStill2x: naturalIdentical, naturalRuns: natural, naturalPixelDiff: sha(nat[0].buf) === stills[0] ? null : await pixelDiff(nat[0].buf, stillBuf),
-    heldEndIdenticalToStill2x: endIdentical, heldEndPixelDiff: sha(endBuf) === stills[0] ? null : await pixelDiff(endBuf, stillBuf),
+    naturalEndIdenticalToStill2x: naturalIdentical, naturalRuns: { ...natural, stills: stills.map((h) => h.slice(0, 16)), stillsAgree: new Set(stills).size === 1 }, naturalPixelDiff: sha(nat[0].buf) === stills[0] ? null : await pixelDiff(nat[0].buf, stillBuf),
+    heldEndIdenticalToStill2x: endIdentical, heldEndRuns: heldEnds.map((x) => ({ ...x, sha: x.sha.slice(0, 16) })), heldEndPixelDiff: sha(endBuf) === stills[0] ? null : await pixelDiff(endBuf, stillBuf),
     frames: frames.map((fr) => ({ ms: fr.t, line: fr.at.line, answers: fr.at.answers, animations: fr.at.animations.length })),
     boxesNeverMove: frames.every((fr) => fr.at.boxes.join("|") === end.boxes.join("|")),
     boxesThatMoved: frames.flatMap((fr) => fr.at.boxes.map((b, i) => (b === end.boxes[i] ? null : { ms: fr.t, i, during: b, rest: end.boxes[i] })).filter(Boolean)).slice(0, 10),
@@ -797,14 +853,15 @@ async function introHeld(lang, state, times, crops = null) {
     lineNeverBridged: frames.every((fr) => fr.at.lineParts === 2),
     errors,
   };
-  r.pass = held && fontsIn && naturalIdentical && r.boxesNeverMove && r.answersFinalThroughout && r.liveRegionSilent && r.chartTextFinalThroughout && r.glyphOpacity.length === 0 &&
+  r.pass = held && fontsIn && naturalIdentical && endIdentical && r.boxesNeverMove && r.answersFinalThroughout && r.liveRegionSilent && r.chartTextFinalThroughout && r.glyphOpacity.length === 0 &&
     ["", "transform"].includes(r.textAnimationProperties.join()) && r.lineNeverBridged && errors.length === 0;
   return { r, frames, endBuf, clips };
 }
 async function captureIntro() {
   const out = { firstOpen: identity.firstOpen, reload: identity.reload };
   // 0. Fill the font cache (see serveFont) over the network once per language; the first page's font wait is a cold
-  //    network fetch, recorded here with whether its intro still played (the cap is 1 s).
+  //    network fetch, recorded here with whether its intro still played (the cap is 200 ms from the first paint, so a
+  //    cold fetch usually misses it and the page shows the still page at once, as designed).
   out.fontCache = { note: "every intro context serves the Google Fonts files from memory after their first network fetch (same bytes), as a browser cache does for a returning owner" };
   for (const lang of ["ar", "en"]) {
     const { context, page } = await newPage({ motion: true, fontCache: true });
@@ -826,6 +883,7 @@ async function captureIntro() {
     await introSettled(page);
     await page.waitForTimeout(150);
     const perf = await introPerf(page);
+    const surfaces = await surfaceProbe(page);
     const after = await listAnimations(page);
     const dom = await restDom(page);
     await page.addStyleTag({ content: HIDE_PULSE });
@@ -849,15 +907,55 @@ async function captureIntro() {
       url: `index.html?${q}`, against, played: perf.played, reason: perf.reason, yieldedBy: perf.yieldedBy, measuredMs: perf.measuredMs, expectedMs: perf.expectedMs, fontWaitMs: perf.fontWaitMs,
       introElementsSeen: { slots: perf.slotsSeen, dashes: perf.dashSeen }, endIdenticalToStill: endSha === stillSha, onlyThePulseAfter: pulseOnly(after),
       animationsAfter: after.map((a) => `${a.kind} on ${a.target}`), domEqualsMotionOff: dom === domOff,
-      longTasksDuringIntro: perf.longTasksDuringIntro, longTaskObserver: perf.longTaskObserver, fontLoadsDuringIntro: perf.fontLoadsDuringIntro, framesDuringIntro: perf.framesDuringIntro, maxFrameGapMs: perf.maxFrameGapMs, errors,
+      longTasksDuringIntro: perf.longTasksDuringIntro, longTaskObserver: perf.longTaskObserver, fontLoadsDuringIntro: perf.fontLoadsDuringIntro, framesDuringIntro: perf.framesDuringIntro, maxFrameGapMs: perf.maxFrameGapMs,
+      surfacesAtFirstFrames: surfaces, errors,
     };
-    fo.pass = fo.played && fo.yieldedBy === "complete" && fo.endIdenticalToStill && fo.onlyThePulseAfter && fo.domEqualsMotionOff && fo.longTasksDuringIntro.length === 0 && fo.fontLoadsDuringIntro.length === 0 && errors.length === 0;
+    fo.pass = fo.played && fo.yieldedBy === "complete" && fo.endIdenticalToStill && fo.onlyThePulseAfter && fo.domEqualsMotionOff && fo.longTasksDuringIntro.length === 0 && fo.fontLoadsDuringIntro.length === 0 && surfaces.pass && errors.length === 0;
     identity.firstOpen[name] = fo;
     const rl = { played: rPerf.played, state: rPerf.state, reason: rPerf.reason, introElementsSeen: rPerf.slotsSeen + rPerf.dashSeen, identicalToStill: rSha === stillSha, onlyThePulse: pulseOnly(rAnims), animationsOnLoad: rAnims.map((a) => `${a.kind} on ${a.target}`), domEqualsMotionOff: rDom === domOff };
     rl.pass = !rl.played && rl.state === "off" && rl.introElementsSeen === 0 && rl.identicalToStill && rl.onlyThePulse && rl.domEqualsMotionOff;
     identity.reload[name] = rl;
-    console.log(`intro ${name}: first open ${fo.pass ? "pass" : "FAIL"} (${fo.measuredMs} ms, fonts ${fo.fontWaitMs} ms, end = still ${fo.endIdenticalToStill}); reload ${rl.pass ? "pass" : "FAIL"} (no intro ${!rl.played}, = still ${rl.identicalToStill})`);
+    console.log(`intro ${name}: first open ${fo.pass ? "pass" : "FAIL"} (${fo.measuredMs} ms, fonts ${fo.fontWaitMs} ms, end = still ${fo.endIdenticalToStill}, surfaces at first paint ${surfaces.firstPaint.pass} and at the intro's first frame ${surfaces.introFirstFrame.pass}); reload ${rl.pass ? "pass" : "FAIL"} (no intro ${!rl.played}, = still ${rl.identicalToStill})`);
   }
+
+  // 1b. Slow fonts (user decision, 2026-09-26: the wait for the fonts is capped at 200 ms from the first paint). Each
+  //     font file held 600 ms: no intro, the answers in view within 250 ms of the first paint, and the page, once its
+  //     fonts are in, has the ?motion=off DOM and is the still frame. Held 50 ms: the intro plays. (AR and EN, live; the
+  //     files come from the font cache, so the delay is the only wait.)
+  const slowFonts = {};
+  for (const [lang, name] of [["ar", "daily-ar-1440x900"], ["en", "daily-en-1440x900"]]) {
+    const q = `lang=${lang}&tuner=0`;
+    const domOff = await motionOffDom(q);
+    for (const delay of [600, 50]) {
+      const cached = FONT_CACHE.size;
+      const { context, page, errors } = await newPage({ motion: true, fontDelayMs: delay });
+      await context.addInitScript(INTRO_PROBE);
+      await page.goto(`${ORIGIN}/index.html?${q}`, { waitUntil: "networkidle" });
+      await page.waitForFunction(() => window.__eclipse?.ready === true);
+      await introSettled(page);
+      await page.evaluate(() => document.fonts.ready);
+      await page.waitForTimeout(150);
+      const s = await page.evaluate(() => {
+        const I = window.__eclipse.intro, P = window.__introProbe || {}, fp = performance.getEntriesByName("first-paint")[0];
+        return { played: I.played, state: I.state, reason: I.reason, yieldedBy: I.yieldedBy, fontWaitMs: I.fontWaitMs, firstPaintMs: fp ? Math.round(fp.startTime) : null, answersInViewAtMs: P.answersInViewAt, introEverRan: Boolean(P.introFirstFrame), fontsInAtEnd: ["400", "500"].every((w) => document.fonts.check(`${w} 46px "Readex Pro"`, "0123456789 العربية")) };
+      });
+      s.answersInViewAfterFirstPaintMs = s.firstPaintMs != null && s.answersInViewAtMs != null ? s.answersInViewAtMs - s.firstPaintMs : null;
+      s.domEqualsMotionOff = (await restDom(page)) === domOff;
+      await page.addStyleTag({ content: HIDE_PULSE });
+      await page.waitForTimeout(60);
+      s.endIdenticalToStill = sha(await page.screenshot()) === PRE[name];
+      s.onlyCachedFonts = FONT_CACHE.size === cached;
+      s.errors = errors;
+      await context.close();
+      s.pass = delay === 600
+        ? !s.played && !s.introEverRan && s.reason === "first open in this tab" && s.yieldedBy === "fonts late" && s.answersInViewAfterFirstPaintMs != null && s.answersInViewAfterFirstPaintMs <= 250 && s.domEqualsMotionOff && s.endIdenticalToStill && s.fontsInAtEnd && s.onlyCachedFonts && errors.length === 0
+        : s.played && s.yieldedBy === "complete" && s.domEqualsMotionOff && s.endIdenticalToStill && s.onlyCachedFonts && errors.length === 0;
+      slowFonts[`${lang}@${delay}ms`] = s;
+    }
+  }
+  slowFonts.pass = Object.values(slowFonts).every((v) => v.pass);
+  out.slowFonts = slowFonts;
+  console.log(`intro slow fonts: ${slowFonts.pass ? "pass" : "FAIL"} (${Object.entries(slowFonts).filter(([k]) => k !== "pass").map(([k, v]) => `${k} played ${v.played} by ${v.yieldedBy}, answers in view ${v.answersInViewAfterFirstPaintMs} ms after first paint, DOM = motion=off ${v.domEqualsMotionOff}, = still ${v.endIdenticalToStill}`).join("; ")})`);
 
   // 2. When it plays.
   const when = {};
@@ -1085,7 +1183,7 @@ async function captureIntro() {
   out.held = held;
   out.sheets = sheets;
   console.log(`intro held frames: ${held.pass ? "pass" : "FAIL"} (${Object.entries(held).filter(([k]) => k !== "pass").map(([k, v]) => `${k} end=still ${v.naturalEndIdenticalToStill2x} (after holds ${v.heldEndIdenticalToStill2x}), boxes still ${v.boxesNeverMove}`).join("; ")})`);
-  out.pass = Object.values(identity.firstOpen).every((v) => v.pass) && Object.values(identity.reload).every((v) => v.pass) && when.pass && yields.pass && held.pass;
+  out.pass = Object.values(identity.firstOpen).every((v) => v.pass) && Object.values(identity.reload).every((v) => v.pass) && slowFonts.pass && when.pass && yields.pass && held.pass;
   return out;
 }
 
@@ -1701,5 +1799,5 @@ console.log(firstPaintBad.length ? `INTRO END STATE OR RELOAD FAILED: ${firstPai
 const round6 = motionLog.chart ? [...Object.values(motionLog.chart).map((v) => v.pass), ...Object.values(motionLog.follow).map((v) => v.pass), motionLog.marker?.pass, motionLog.roll.ar.pass, motionLog.roll.en.pass, motionLog.delayed.pass, motionLog.rail.pass, identity.liveUpdateEndsAtCanonical?.domEqual] : [false];
 if (round6.some((v) => !v)) console.log("A Round 6 or Round 7 check did not pass; see motion.chart, follow, marker, roll, delayed, rail and liveUpdateEndsAtCanonical in the log.");
 const introOk = Boolean(motionLog.intro?.pass);
-if (!introOk) console.log("An intro check did not pass; see motion.intro (whenItPlays, yields, held) and motion.identity.firstOpen / reload in the log.");
+if (!introOk) console.log("An intro check did not pass; see motion.intro (slowFonts, whenItPlays, yields, held) and motion.identity.firstOpen / reload in the log.");
 if (changed.length || changedOff.length || firstPaintBad.length || round6.some((v) => !v) || !introOk || !tunerCheck?.pass || !tunerCheck?.motionGroup?.pass || !tunerCheck?.crowdFromFile?.pass || bad.length) process.exitCode = 1;
