@@ -4,8 +4,10 @@
  * ../light-study/app.js, which took it from ../backlight/app.js. Western digits only: numbers are printed with
  * String(), never Intl or toLocaleString.
  * Motion (Round 6) lives in the "motion" section at the end. The page is complete at first paint; something moves
- * only when the data changes or the owner acts. With prefers-reduced-motion or ?motion=off every change is instant,
- * and the page at rest is the same either way. */
+ * only when the data changes or the owner acts. The one exception is the first-open intro (Round 7 step 3): on the
+ * first open in a browser tab the numbers roll into place and the line draws once, then the page is exactly its still
+ * self. With prefers-reduced-motion or ?motion=off every change is instant, there is no intro, and the page at rest is
+ * the same either way. */
 (() => {
   "use strict";
   const $ = (s, r = document) => r.querySelector(s);
@@ -394,12 +396,15 @@
   const params = new URLSearchParams(location.search);
   const URL_OFF = params.get("motion") === "off";
   const TUNER_OFF = params.get("tuner") === "0";
-  // The tuner's Motion group keeps two values in this key: the Motion switch, and the hover speed (Round 7 step 2),
-  // a multiplier on the chart marker's follow (1 is the reference clip's feel; 2 settles twice as fast).
+  // The tuner's Motion group keeps three values in this key: the Motion switch; the hover speed (Round 7 step 2), a
+  // multiplier on the chart marker's follow (1 is the reference clip's feel; 2 settles twice as fast); and the intro
+  // speed (Round 7 step 3), a multiplier on the first-open intro (1 is the designed length; 2 plays it twice as fast).
   const MOTION_STORE = "fitway.eclipse.v3.motion";
-  const MOTION_DEFAULTS = { motion: true, hoverSpeed: 1 };
+  const MOTION_DEFAULTS = { motion: true, hoverSpeed: 1, introSpeed: 1 };
   const HOVER_SPEED = { min: 0.5, max: 2 };
   const clampSpeed = (v) => Math.min(HOVER_SPEED.max, Math.max(HOVER_SPEED.min, v));
+  const INTRO_SPEED = { min: 0.5, max: 2 };
+  const clampIntroSpeed = (v) => Math.min(INTRO_SPEED.max, Math.max(INTRO_SPEED.min, v));
   const mqReduce = matchMedia("(prefers-reduced-motion: reduce)");
   let opts = (() => {
     const o = { ...MOTION_DEFAULTS };
@@ -408,6 +413,7 @@
       const raw = JSON.parse(localStorage.getItem(MOTION_STORE));
       if (raw && typeof raw.motion === "boolean") o.motion = raw.motion;
       if (raw && Number.isFinite(raw.hoverSpeed)) o.hoverSpeed = clampSpeed(raw.hoverSpeed);
+      if (raw && Number.isFinite(raw.introSpeed)) o.introSpeed = clampIntroSpeed(raw.introSpeed);
     } catch (e) { /* storage unavailable: defaults */ }
     return o;
   })();
@@ -439,6 +445,7 @@
   let railOpen = false;
   const setRail = (open) => {
     if (open === railOpen) return;
+    endIntro("rail"); // the intro yields to the owner: it settles at once (motion section)
     railOpen = open;
     brand.setAttribute("aria-expanded", String(open));
     animateRail(open); // motion section; without motion it only switches data-open
@@ -609,6 +616,7 @@
     buildStops();
     restoreSelection(); // the selection, if any, redrawn at rest on the new chart (no follow)
     placePing();
+    introAfterRender(W, H); // the first-open intro, if it is waiting or playing, on the new chart (motion section)
   }
 
   /* ------------------------------------------------------ chart inspection
@@ -936,6 +944,7 @@
     }
   }
   function selectStop(st, instant = false) {
+    endIntro("chart"); // a hover, a tap, a key or focus on the chart: the intro settles at once first (motion section)
     if (!st) { clearSelection(); return; }
     if (sel && sel.key === st.key && !instant) return;
     const moving = !instant && !tip.hidden && motionOn();
@@ -1086,7 +1095,9 @@
 
   /* ================================================================ motion
    * Round 6: motion carries information and decoration never moves. The page is complete at first paint: no load
-   * sequence, no line draw, and the lights never move. Something moves only when the data changes (a new reading:
+   * sequence, and the lights never move. The one exception (Round 7 step 3) is the first-open intro, once per browser
+   * tab: the answers roll into place and the line draws once, then the page is its still self (see "the first-open
+   * intro" below). Otherwise something moves only when the data changes (a new reading:
    * the changed digits roll, level bars fill or empty, the line's tail extends) or when the owner acts (the chart's
    * marker follows its stop along the curve, the rail opens). No glyph ever changes opacity: numbers roll inside a
    * clip, words swap at once, and the tooltip appears, changes and leaves at once (then travels with the marker). With prefers-reduced-motion,
@@ -1098,6 +1109,7 @@
     morph: "cubic-bezier(0.4, 0, 0.2, 1)",       // the live tail (a data transition: symmetric)
     rail: "cubic-bezier(0.22, 1, 0.36, 1)",      // rail opens
     railClose: "cubic-bezier(0.4, 0, 0.2, 1)",   // rail closes
+    introLine: "cubic-bezier(0.3, 0.2, 0.4, 1)", // the intro's line: a firm start, an even day, a soft landing into now
   };
   const T = {
     roll: 280,
@@ -1172,17 +1184,20 @@
   // The ink box of the digits in this slot: the baseline is measured in place (a zero-size probe on it), the digits'
   // ascent and descent come from the font itself (canvas measureText of 0-9), with 0.08em to spare on each side.
   const measureCtx = document.createElement("canvas").getContext("2d");
-  function digitWindow(slot, nw) {
+  // The intro passes the slot's own text too, so a time's «م» (whose tail drops below the digits) fits the window.
+  function digitWindow(slot, nw, extra = "") {
     const cs = getComputedStyle(nw), size = parseFloat(cs.fontSize);
     measureCtx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
-    const m = measureCtx.measureText("0123456789");
+    const m = measureCtx.measureText(`0123456789${extra}`);
     const probe = document.createElement("i");
     probe.style.cssText = "display:inline-block;width:0;height:0;vertical-align:baseline";
     nw.append(probe);
     const base = probe.getBoundingClientRect().top - slot.getBoundingClientRect().top;
     probe.remove();
     const h = slot.getBoundingClientRect().height, pad = 0.08 * size;
-    const top = Math.max(0, base - m.actualBoundingBoxAscent - pad), bottom = Math.min(h, base + m.actualBoundingBoxDescent + pad);
+    // (For the intro the window may reach past the slot's line box, where a tail like «م»'s can hang.)
+    const t0 = base - m.actualBoundingBoxAscent - pad, b0 = base + m.actualBoundingBoxDescent + pad;
+    const top = extra ? t0 : Math.max(0, t0), bottom = extra ? b0 : Math.min(h, b0);
     return { top, bottom: h - bottom, height: bottom - top };
   }
   // The old and new text of one text node: words and separators take the new text at once; each numeric run is
@@ -1479,6 +1494,7 @@
    * the level bars change at the same moment. */
   const liveRun = { clock: null, raf: 0, from: null, to: null, K: 0, seg: 0, body: "" };
   function stepReading() {
+    endIntro("new reading"); // a reading during the intro is never lost: the intro settles at once, then the reading lands
     finishLive();
     stopFollow();
     const from = M;
@@ -1569,6 +1585,7 @@
     return true;
   }
   function resetReadings() {
+    endIntro("reset readings");
     finishLive();
     const from = M;
     M = compute(START.last, START.nowM);
@@ -1584,6 +1601,7 @@
   // (Busy 49 goes down to Moderate 48, or up to Packed 69). Live only: a delayed card never moves.
   function crowdStep(dir) {
     if (STATE === "delayed") return null;
+    endIntro("crowd change");
     const v = shownNow(), li = levelOf(v);
     const next = dir > 0 ? (li >= 3 ? null : [25, 49, 69][li]) : (li <= 0 ? null : [24, 48, 68][li - 1]);
     if (next == null) return null;
@@ -1648,8 +1666,268 @@
     rail.dataset.open = String(railRun.open);
   }
 
+  /* ---- the first-open intro (Round 7 step 3; it amends Round 6 §1, "No load motion").
+   * When: only on the first open of the page in a browser tab. A flag in sessionStorage (interface state, never visitor
+   *   data) marks the tab as having opened the page, so F5, a reload, the language link or coming back in the same tab
+   *   never play it; a new tab or a new browser session starts with empty session storage and plays it. If storage is
+   *   unavailable there is no intro (fail safe). There is none with reduced motion, ?motion=off or the tuner's Motion
+   *   switch off, and the flag is still set then: the intro belongs to the tab's first open only.
+   * What is still: every surface (the cards and their lights, the wash, the rail), every label, unit, time of day and
+   *   reference value (usual, average), the chart's grid, axes and legend, and the usual Wednesday line are present from
+   *   the first paint and never move.
+   * What moves, content only:
+   *   1. The four answers (Inside now, Today's peak, Entries, Busiest time) roll into place with the page's own digit
+   *      roll (280 ms, from below, inside the digits' ink box). It is a reveal of the current reading, not a count-up:
+   *      each value enters its final place, no zero or intermediate value is ever drawn, and the DOM text is the final
+   *      value from the first paint. While delayed, the stale Inside now number stays still (a stale card never moves).
+   *   2. Today's line draws once, by minutes since open, from opening to the latest reading (640 ms, a soft landing),
+   *      and its fine vertical lines are uncovered with it. It draws in time order, so right to left in Arabic. The
+   *      missing span stays a gap throughout: each part of the line is its own path and is never joined.
+   *   3. When the line arrives, the end point swells out of the line's tip (live; while delayed the grey point simply
+   *      appears), and the peak ring swells into place with its dotted drop and its label (180 ms). The pulse starts then.
+   *   About 820 ms in all at 1× (the tuner's intro speed divides every duration). Transform, clip and draw only: no glyph
+   *   changes opacity, no element's box changes, and nothing is announced (the live region is untouched).
+   * When it starts: once the page's fonts are loaded (no font swaps mid-intro) and the tab is visible. Until then the
+   *   numbers wait out of sight and the line is not drawn; if the fonts take longer than 1 s, the page settles at once.
+   * How it yields: any action (a pointer press or a key anywhere, the wheel, a hover, tap, key or focus on the chart, the
+   *   rail), a new reading, a crowd change, a resize, leaving the tab, or motion switched off settles it at once to the
+   *   still page, and the action then happens as it would have anyway. Nothing waits for the intro and nothing is lost.
+   *   A tab opened in the background keeps its intro waiting until the tab is first shown.
+   * At the end the page is exactly the still page: every element, attribute and style the intro added is removed. */
+  const INTRO_STORE = "fitway.eclipse.v3.intro";
+  const INTRO_T = { line: 640, mark: 180, fontCap: 1000 }; // ms at 1×; the numbers use the digit roll's own T.roll
+  // A whole value: 49, 332, or a time with its own AM/PM (6-8 م, 6–8 PM), which is part of the value, unlike a unit.
+  const INTRO_NUM = /\d+(?:[-–:.,]\d+)*(?: (?:ص|م|AM|PM)(?![\p{L}]))?/gu;
+  const INTRO_HIDE = ";visibility:hidden";
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const intro = { state: "off", firstOpen: false, played: false, count: 0, reason: "", yieldedBy: null, nums: [], run: null, tagStyle: null, fontWaitMs: null, startedAt: null, endedAt: null };
+  const introTotal = (k = opts.introSpeed || 1) => (Math.max(T.roll, INTRO_T.line) + INTRO_T.mark) / k;
+  function introDecide() {
+    let first = false;
+    try {
+      first = sessionStorage.getItem(INTRO_STORE) == null;
+      sessionStorage.setItem(INTRO_STORE, "1");
+      if (sessionStorage.getItem(INTRO_STORE) !== "1") throw new Error("not kept");
+    } catch (e) { intro.reason = "session storage unavailable"; return; }
+    intro.firstOpen = first;
+    if (!first) { intro.reason = "already opened in this tab"; return; }
+    if (!motionOn()) { intro.reason = URL_OFF ? "motion=off" : mqReduce.matches ? "reduced motion" : "motion switch off"; return; }
+    intro.reason = "first open in this tab";
+    introPark();
+  }
+  // Each answer's value becomes one rolling slot (the digit roll's own slot: the value in flow, so its box is final),
+  // clipped out of sight. It inherits the text's own direction, so «6-8 م» keeps its order. Its text is the final value
+  // throughout, so assistive technology reads the final value from the first paint.
+  function introPark() {
+    intro.state = "pending";
+    const targets = [STATE === "delayed" ? null : $("#now-v"), $("#peak-v"), $("#entries-v"), $("#busy-v")].filter(Boolean);
+    intro.nums = targets.map((el) => {
+      const html = el.innerHTML, slots = [];
+      textNodes(el).forEach((t) => {
+        const s = t.nodeValue, frag = document.createDocumentFragment();
+        let i = 0, any = false;
+        for (const m of s.matchAll(INTRO_NUM)) {
+          any = true;
+          if (m.index > i) frag.append(s.slice(i, m.index));
+          const slot = document.createElement("span"), nw = document.createElement("span");
+          slot.className = "roll-slot"; nw.className = "roll-new";
+          slot.style.clipPath = "inset(0 0 100% 0)"; // out of sight until the roll starts: a clip, never opacity
+          nw.textContent = m[0];
+          slot.append(nw); frag.append(slot);
+          slots.push({ slot, nw });
+          i = m.index + m[0].length;
+        }
+        if (!any) return;
+        if (i < s.length) frag.append(s.slice(i));
+        t.replaceWith(frag);
+      });
+      return { el, html, slots };
+    });
+  }
+  // Waits for a visible tab and the page's fonts (both weights, both scripts), then starts on the next frame.
+  async function introWait() {
+    if (document.visibilityState !== "visible") {
+      await new Promise((res) => { const on = () => { if (document.visibilityState === "visible") { document.removeEventListener("visibilitychange", on); res(); } }; document.addEventListener("visibilitychange", on); });
+    }
+    if (intro.state !== "pending") return;
+    const tv = performance.now(), sample = "العربية FITWAY 0123456789";
+    const fontsIn = document.fonts
+      ? Promise.all(["400", "500"].map((w) => document.fonts.load(`${w} 16px "Readex Pro"`, sample))).then(() => document.fonts.ready)
+      : Promise.resolve();
+    const ok = await Promise.race([fontsIn.then(() => true, () => false), new Promise((res) => setTimeout(() => res(false), INTRO_T.fontCap))]);
+    intro.fontWaitMs = Math.round(performance.now() - tv);
+    if (intro.state !== "pending") return;
+    if (!ok) { endIntro("fonts late"); return; }
+    render(); // measured with the final font (the header's text sets the chart's height); the pre-state is kept
+    await new Promise((res) => requestAnimationFrame(() => res()));
+    if (intro.state === "pending") introStart();
+  }
+  function introStart() {
+    if (!geo) { endIntro("no chart"); return; }
+    const k = opts.introSpeed || 1;
+    const d = { roll: T.roll / k, line: INTRO_T.line / k, mark: INTRO_T.mark / k };
+    intro.state = "running";
+    intro.played = true;
+    intro.count++;
+    intro.startedAt = performance.now();
+    const anims = [];
+    // 1. The numbers: the digit roll, from below into the digits' ink box (measured now, with the final font).
+    intro.nums.forEach(({ slots }) => slots.forEach(({ slot, nw }) => {
+      const w = digitWindow(slot, nw, nw.textContent);
+      slot.style.clipPath = `inset(${f(w.top)}px -0.3em ${f(w.bottom)}px -0.3em)`;
+      anims.push(nw.animate([{ transform: `translateY(${f(w.height)}px)` }, { transform: "translateY(0px)" }], { duration: d.roll, easing: EASE.roll, fill: "both" }));
+    }));
+    // 2 and 3. The chart: clocks whose eased progress draws the line, then lands the end point and the peak.
+    const line = clockAnim({ duration: d.line, easing: EASE.introLine, fill: "both" });
+    const mark = clockAnim({ duration: d.mark, delay: d.line, easing: EASE.roll, fill: "both" });
+    anims.push(line, mark);
+    const run = { anims: anims.map(track), line, mark, W: geo.W, H: geo.H, d, raf: 0, held: false };
+    intro.run = run;
+    introChartSetup();
+    introChartFrame();
+    run.raf = requestAnimationFrame(introLoop);
+    Promise.all(anims.map((a) => a.finished)).then(() => { if (intro.run === run) endIntro("complete"); }).catch(() => {});
+  }
+  function introLoop() {
+    const run = intro.run;
+    if (!run) return;
+    run.raf = 0;
+    introChartFrame();
+    if (!run.held) run.raf = requestAnimationFrame(introLoop);
+  }
+  // The chart as the intro holds it, on whatever render() last drew: the hairlines take one clip, the rest is attributes.
+  function introChartSetup() {
+    const svg = svgHost.querySelector("svg");
+    if (!svg || !geo) return;
+    if (!$("#intro-hair")) {
+      const cp = document.createElementNS(SVGNS, "clipPath"), r = document.createElementNS(SVGNS, "rect");
+      cp.setAttribute("id", "intro-hair");
+      r.setAttribute("id", "intro-hair-r");
+      r.setAttribute("x", "0"); r.setAttribute("y", "0"); r.setAttribute("width", "0"); r.setAttribute("height", String(geo.H));
+      cp.append(r);
+      svg.querySelector("defs").append(cp);
+    }
+    svg.querySelectorAll('rect[fill="url(#hair)"]').forEach((r) => r.setAttribute("clip-path", "url(#intro-hair)"));
+    const tag = $("#peak-tag");
+    if (tag) { const s = tag.getAttribute("style") || ""; intro.tagStyle = s.endsWith(INTRO_HIDE) ? s.slice(0, -INTRO_HIDE.length) : s; }
+  }
+  const introProgress = (a) => { const p = a.effect.getComputedTiming().progress; return p == null ? 0 : p; };
+  function introChartFrame(pl, pm) {
+    if (!geo) return;
+    if (pl == null) { const run = intro.run; pl = run ? introProgress(run.line) : 0; pm = run ? introProgress(run.mark) : 0; }
+    const { X } = geo, landed = pl >= 1;
+    const m = pl * M.last; // the minute the line has reached, in minutes since open
+    // Today's line, part by part: each part is drawn up to that minute along its own path (a dash as long as the path
+    // is to that minute), so the drawn front is a round-capped tip, and the missing span between the parts is never drawn.
+    M.segments.forEach((sg, i) => {
+      const path = $(`#ln-${i}`);
+      if (!path) return;
+      if (landed || m >= sg[sg.length - 1]) { path.removeAttribute("stroke-dasharray"); path.removeAttribute("visibility"); return; }
+      if (m <= sg[0]) { path.setAttribute("visibility", "hidden"); path.removeAttribute("stroke-dasharray"); return; }
+      const t = table(path), l = lengthOfU(t, uAtX(t, X(m)));
+      path.removeAttribute("visibility");
+      path.setAttribute("stroke-dasharray", `${f(l)} ${f(t.total + 16)}`);
+    });
+    // The fine vertical lines under it are uncovered up to the same minute.
+    const hr = $("#intro-hair-r");
+    if (hr) { const a = X(-8), b = X(landed ? DAY + 8 : m), l = Math.min(a, b); hr.setAttribute("x", f(l)); hr.setAttribute("width", f(Math.max(a, b) - l)); }
+    // The end point: while live it swells out of the line's tip (the tip's own size, 0.34, to 1); a stale point appears.
+    const about = (c, s) => { const x = Number(c.getAttribute("cx")), y = Number(c.getAttribute("cy")); return `translate(${f(x)} ${f(y)}) scale(${s.toFixed(4)}) translate(${f(-x)} ${f(-y)})`; };
+    const show = (c, s) => {
+      if (!c) return;
+      if (!landed) { c.setAttribute("visibility", "hidden"); c.removeAttribute("transform"); return; }
+      c.removeAttribute("visibility");
+      if (s == null || pm >= 1) c.removeAttribute("transform"); else c.setAttribute("transform", about(c, s));
+    };
+    const endScale = STATE === "delayed" ? null : 0.34 + 0.66 * pm;
+    show($("#end-halo"), endScale);
+    show($("#end-dot"), endScale);
+    // The peak: its ring swells into place from the same small size; its dotted drop and its label appear with it.
+    show($("#pk-dot"), 0.34 + 0.66 * pm);
+    show($("#pk-drop"), null);
+    const tag = $("#peak-tag");
+    if (tag && intro.tagStyle != null) {
+      const s = tag.getAttribute("style");
+      if (!landed && s === intro.tagStyle) tag.setAttribute("style", intro.tagStyle + INTRO_HIDE);
+      else if (landed && s === intro.tagStyle + INTRO_HIDE) tag.setAttribute("style", intro.tagStyle);
+    }
+  }
+  function introChartClear() {
+    const svg = svgHost.querySelector("svg");
+    if (svg) {
+      svg.querySelectorAll('rect[clip-path="url(#intro-hair)"]').forEach((r) => r.removeAttribute("clip-path"));
+      const cp = svg.querySelector("#intro-hair");
+      if (cp) cp.remove();
+      svg.querySelectorAll('path[id^="ln-"]').forEach((p) => { p.removeAttribute("stroke-dasharray"); p.removeAttribute("visibility"); });
+      ["#end-halo", "#end-dot", "#pk-dot", "#pk-drop"].forEach((s) => { const n = $(s); if (n) { n.removeAttribute("visibility"); n.removeAttribute("transform"); } });
+    }
+    const tag = $("#peak-tag");
+    if (tag && intro.tagStyle != null && tag.getAttribute("style") === intro.tagStyle + INTRO_HIDE) tag.setAttribute("style", intro.tagStyle);
+    intro.tagStyle = null;
+  }
+  // After every render(): a waiting intro keeps its start state; a playing one keeps its frame on a redraw of the same
+  // size, and settles at once on a real resize.
+  function introAfterRender(W, H) {
+    if (intro.state === "pending") { introChartSetup(); introChartFrame(0, 0); return; }
+    if (intro.state !== "running" || !intro.run) return;
+    if (W !== intro.run.W || H !== intro.run.H) { endIntro("resize"); return; }
+    introChartSetup();
+    introChartFrame();
+  }
+  // Settles the intro at once: the still page, exactly. Safe to call at any time; it does nothing when no intro is on.
+  function endIntro(reason) {
+    if (intro.state !== "pending" && intro.state !== "running") return;
+    const run = intro.run;
+    intro.run = null;
+    if (run) { cancelAnimationFrame(run.raf); run.anims.forEach((a) => a.cancel()); }
+    intro.nums.forEach(({ el, html }) => { el.innerHTML = html; });
+    intro.nums = [];
+    introChartClear();
+    intro.state = "done";
+    intro.yieldedBy = reason;
+    intro.endedAt = performance.now();
+    startPulse();
+  }
+  // Any action by the owner settles the intro before the action is handled (capture phase), so nothing ever meets a
+  // half-drawn page and nothing is blocked.
+  ["pointerdown", "keydown", "wheel"].forEach((type) => addEventListener(type, (e) => endIntro(e.type), { capture: true, passive: true }));
+  // Leaving the tab mid-intro settles it too, so coming back never finds a half-drawn page. (A tab opened in the
+  // background keeps its intro waiting until it is first shown; see introWait.)
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") endIntro("hidden"); });
+  // Tuner: replay the intro on the page as it is now (the current reading). Not while motion is off.
+  function replayIntro() {
+    if (!motionOn()) return false;
+    settleAll();
+    clearSelection();
+    stopPulse();
+    introPark();
+    render(); // the chart's start state
+    introStart();
+    return true;
+  }
+  // Held frames: every part of the intro held at `ms` after its start (it can be held again at another time).
+  function seekIntro(ms) {
+    const run = intro.run;
+    if (!run) return false;
+    run.held = true;
+    cancelAnimationFrame(run.raf);
+    run.raf = 0;
+    run.anims.forEach((a) => { a.pause(); a.currentTime = ms; });
+    introChartFrame();
+    return true;
+  }
+  function releaseIntro() {
+    const run = intro.run;
+    if (!run || !run.held) return false;
+    run.held = false;
+    run.anims.forEach((a) => { if (a.currentTime >= a.effect.getComputedTiming().endTime) a.finish(); else a.play(); });
+    if (intro.run === run) run.raf = requestAnimationFrame(introLoop);
+    return true;
+  }
+
   /* ---- switching motion on and off at runtime (tuner) */
   function settleAll() {
+    endIntro("settle");
     finishLive(); stopFollow(); finishRail();
     [...rolls.keys()].forEach(finishRoll);
     [...feet.keys()].forEach(finishFoot);
@@ -1657,6 +1935,8 @@
   function setOptions(next, persist = true) {
     const was = motionOn();
     if (Number.isFinite(next.hoverSpeed)) { rebaseFollow(); opts.hoverSpeed = clampSpeed(next.hoverSpeed); }
+    // A new intro speed applies to the next intro (a replay, or the next first open), never to one that is playing.
+    if (Number.isFinite(next.introSpeed)) opts.introSpeed = clampIntroSpeed(next.introSpeed);
     if (typeof next.motion === "boolean") opts.motion = next.motion;
     if (persist && !TUNER_OFF) { try { localStorage.setItem(MOTION_STORE, JSON.stringify(opts)); } catch (e) { /* storage unavailable */ } }
     const on = motionOn();
@@ -1671,11 +1951,14 @@
   mqReduce.addEventListener("change", () => setOptions({}, false));
 
   /* ------------------------------------------------------------ lifecycle
-   * Rendered at once; nothing is hidden while the fonts load. The chart is measured again when they arrive (the
-   * header's text sets the chart's height) and whenever its box changes. */
+   * Rendered at once. Without an intro nothing is hidden while the fonts load. On a tab's first open (the intro), the
+   * four answers wait out of sight and the line is not drawn until the fonts are in (at most 1 s), and then the intro
+   * plays; every other part of the page is complete at first paint. The chart is measured again when the fonts arrive
+   * (the header's text sets the chart's height) and whenever its box changes. */
   new ResizeObserver(() => render()).observe(plot);
+  introDecide();
   render();
-  startPulse();
+  if (intro.state !== "pending") startPulse(); // with an intro, the pulse starts when the end point has landed
   window.__eclipse = {
     ready: false,
     lang: LANG,
@@ -1726,7 +2009,10 @@
       easings: EASE,
       // Every motion, as built above (for the capture log and the README).
       spec: () => [
-        { motion: "Load", animates: "nothing: the page is complete at first paint (no stagger, no line draw, no light entrance)", note: "only the live pulse runs at rest, and only while live" },
+        { motion: "Load", animates: "nothing but the first-open intro: the surfaces, lights, labels, grid, axes and usual line are complete at first paint (no stagger, no rise, no light entrance)", note: "a reload or a return in the same tab has no intro; only the live pulse runs at rest, and only while live" },
+        { motion: "First-open intro (Round 7 step 3): the answers", animates: "transform translateY of each answer's numeric expression (Inside now, Today's peak, Entries, Busiest time), from below into the digits' ink box, clipped to it: the digit roll entering the final value; while delayed the stale Inside now number is still", delayMs: 0, durationMs: T.roll / (opts.introSpeed || 1), easing: EASE.roll, note: "only on the first open in a tab; no count-up and no intermediate value; the DOM text is final from the first paint; nothing is announced" },
+        { motion: "First-open intro: the line", animates: "stroke-dasharray of today's line parts, drawn by minutes since open from opening to the latest reading (right to left in Arabic), and one clip uncovering the fine vertical lines to the same minute", delayMs: 0, durationMs: INTRO_T.line / (opts.introSpeed || 1), easing: EASE.introLine, note: "the missing span stays a gap throughout; the grid, axes and usual line are still from the first paint" },
+        { motion: "First-open intro: the end point and the peak", animates: "SVG transform scale: the live end point and halo from the line tip's size (0.34) to 1, the peak ring from the same 0.34 to 1; the stale end point, the peak's drop and its label appear at once when the line arrives", delayMs: INTRO_T.line / (opts.introSpeed || 1), durationMs: INTRO_T.mark / (opts.introSpeed || 1), easing: EASE.roll, note: `about ${Math.round(introTotal())} ms in all; it settles at once on any action, a new reading or a resize; the pulse starts when it ends` },
         { motion: "Lights", animates: "nothing, ever", note: "no entrance, no pointer-follow, no crowd-dependent light" },
         { motion: "Numbers: digit roll", animates: "transform translateY of the changed digits only, by the height of the digits' ink box (the new digit from below when rising, from above when falling; the old one leaves the other way), clipped to that ink box; the slot's width eases from the old digit's width to the new one's (Readex Pro has no tabular figures)", delayMs: 0, durationMs: T.roll, easing: EASE.roll, note: "no opacity on any glyph; words swap at once; plain markup restored at the end" },
         { motion: "Crowd level: bars", animates: "transform scaleY (from the bottom) of a red fill in each bar that changes", delayMs: `0, +${T.barStagger} per further bar (lower bars first when rising, upper first when falling)`, durationMs: T.bar, easing: EASE.bar, note: "the level word swaps at once" },
@@ -1743,7 +2029,26 @@
       reset: resetReadings,
       crowd: crowdStep,
     },
+    // The first-open intro (Round 7 step 3), for the tuner and the capture checks.
+    intro: {
+      get state() { return intro.state; },   // "off" (no intro on this open), "pending", "running" or "done"
+      get firstOpen() { return intro.firstOpen; },
+      get played() { return intro.played; },  // started on this page (on the first open, or by a replay)
+      get count() { return intro.count; },
+      get reason() { return intro.reason; },
+      get yieldedBy() { return intro.yieldedBy; }, // "complete", or what settled it early
+      get fontWaitMs() { return intro.fontWaitMs; },
+      get startedAt() { return intro.startedAt; },
+      get endedAt() { return intro.endedAt; },
+      get timings() { const k = opts.introSpeed || 1; return { speed: k, rollMs: T.roll / k, lineMs: INTRO_T.line / k, markMs: INTRO_T.mark / k, totalMs: introTotal(k), fontCapMs: INTRO_T.fontCap, easings: { roll: EASE.roll, line: EASE.introLine, mark: EASE.roll } }; },
+      totalMs: (k) => introTotal(k),
+      replay: replayIntro,
+      seek: seekIntro,
+      release: releaseIntro,
+      settle: () => endIntro("script"),
+    },
   };
+  if (intro.state === "pending") introWait().catch(() => endIntro("error"));
   // The other script's subset of Readex Pro is fetched up front too (the rail's language item is written in it), so
   // opening the rail never swaps a font mid-way; this changes no pixel.
   if (document.fonts && document.fonts.load) ["400", "500"].forEach((w) => document.fonts.load(`${w} 16px "Readex Pro"`, RTL ? "English FITWAY" : "العربية").catch(() => {}));
