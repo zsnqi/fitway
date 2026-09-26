@@ -1232,3 +1232,6 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
 - **Status:** the tooltip fix is integrated as exploration work, and the user's look at the result is pending. Next:
   Round 7 step 3 (the first-open intro), with a fresh designer (`xhigh`), then a fresh verifier. Nothing is selected
   or promoted.
+- **User review (2026-09-26):** the user looked at the integrated tooltip and called it excellent. This closes their
+  review of the tooltip fix. It is not the formal visual acceptance of the page. They left pushing to the coordinator,
+  who pushed `codex/owner-redesign-r04` so that cloud sessions see the current state.
