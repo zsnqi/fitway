@@ -1538,3 +1538,18 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   before committing, and the fresh verifier runs the same.
 - **Brief:** session `f8e879d9`'s scratchpad, `repair3/BRIEF.md`, based on `3b1c3da`, owned path `eclipse/**`. The
   executor is not chosen yet.
+
+## ui-forensics trial results, and the skill installed (2026-09-27)
+
+- **Run 1, Codex without the skill:** Q1 5 of 6 (it called the planted 1 px dot "noise" without proof), Q2 and Q3
+  full. About 16 min.
+- **Run 2, Codex with the skill:**
+  - Q1 6 of 6: it proved the dot by a fresh-render repeat. Q2 and Q3 full.
+  - It picked up the skill without being told: the self-test, `diff_map` and its own controls.
+  - About 9.5 min.
+- **Scores and both runs' outputs:** session `f8e879d9`'s scratchpad, `trial/runs/`. The inputs were unchanged after
+  both runs.
+- **The skill is installed** at `~/.agents/skills/ui-forensics`, a copy of the staging folder, with junctions from
+  `~/.claude/skills` and `~/.codex/skills`.
+- **Next:** the user decides whether Codex runs repair 3 (`repair3/BRIEF.md`, which now points to the skill's
+  tools). The coordinator runs nothing until the user says so.
