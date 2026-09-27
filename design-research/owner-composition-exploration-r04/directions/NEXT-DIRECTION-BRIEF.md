@@ -698,7 +698,19 @@ A small separate round after the intro, so that the intro's verifier judges the 
 2. **Session restore is a known limit.** When Chrome's "continue where you left off" restores a tab's session storage
    after a restart, the intro probably does not replay. The browser treats that as the same session. This is accepted
    and no workaround is added.
-3. **Pending the user's answer (asked 2026-09-26):** with the 200 ms cap, a cold first visit fetches the Google
-   fonts in about 0.4-1 s, so the intro plays only once the browser has the fonts cached, which means later new tabs.
-   The coordinator recommends keeping 200 ms for the concept. Production will host its own fonts, and the cap can be
-   revisited then. The alternative is a higher cap, such as 500 ms, which hides the numbers longer on slow networks.
+3. **The 200 ms cap stays (user decision, 2026-09-27; asked 2026-09-26).** With the cap, a cold first visit fetches
+   the Google fonts in about 0.4-1 s, so the intro plays only once the browser has the fonts cached, which means later
+   new tabs. The user left the choice to the coordinator, who keeps 200 ms for the concept. Production will host its
+   own fonts, and the cap can be revisited then. The rejected alternative was a higher cap, such as 500 ms, which
+   hides the numbers longer on slow networks.
+
+### Decisions after the step 3 report (user-agreed 2026-09-27)
+
+- **The follow-up round goes ahead** with all three items of "Follow-up after step 3". The fixed tooltip width is
+  still kept only after the user's before/after review.
+- **The screen plan is confirmed:** desktop first, in the order of "After the Daily page", with the one early mobile
+  check at 390 px and 320 px on Reports.
+- **Merge proposals:** the user answered "excellent" to a summary that listed the two merge proposals (contextual
+  history, and Operations as a header status) as pending. The coordinator reads this as agreement to the plan, and
+  confirms the two proposals explicitly before the first screen that depends on them is designed.
+- **The user's own look at the intro is still pending.** The coordinator serves the page for the review.

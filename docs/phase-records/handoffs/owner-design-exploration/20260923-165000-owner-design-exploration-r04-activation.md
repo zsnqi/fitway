@@ -1328,3 +1328,18 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - Next, after the user's review: the follow-up round in the brief (tooltip width pending review, recapture on
     mismatch, the README wording). Then the "After the Daily page" screen plan, starting with Reports.
   - Nothing is selected, accepted or promoted.
+
+## User answers and the follow-up round (2026-09-27)
+
+- **User answers:** the coordinator keeps the 200 ms font cap (the user left it to the coordinator); the follow-up round
+  and the desktop-first screen plan are agreed. The merge proposals are read as agreed in principle and are confirmed
+  explicitly before the first screen that depends on them. Recorded in the brief, "Decisions after the step 3 report".
+- **Review route:** `.claude/launch.json` entry `eclipse` serves `eclipse/` at `http://localhost:3174` for the user's
+  own look at the intro. The intro plays only on a tab's first open with the fonts cached, so a new tab shows it.
+- **Launched:** a fresh `owner-direction-builder` (`high`), run `owner_followup_r04_s04`, in the coordinator-allocated
+  worktree `D:/Projects/fitway-worktrees/owner-followup-r04-s04`, branch `owner-followup-r04-build` from `622cd0b`.
+  Owned path: `eclipse/**` only. Its brief is in this session's scratchpad `followup/BRIEF.md` (outside the
+  repository): one fixed tooltip width with a before/after comparison for the user, recapture on a hash mismatch
+  (counted only if it differs twice in a row, with a planted-change negative control), and the README wording.
+- **Next:** inspect the builder's result, show the user the tooltip before/after, then a fresh independent verifier;
+  integrate only after the user keeps the width. Then Reports.
