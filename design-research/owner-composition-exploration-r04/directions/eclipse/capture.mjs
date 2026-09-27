@@ -42,8 +42,8 @@
 // Run from PowerShell at the worktree root:
 //   node design-research/owner-composition-exploration-r04/directions/eclipse/capture.mjs [outDir] [--intro-frames=<dir>]
 // --intro-frames=<dir> also writes every full-size held 2x intro frame there (they are large; they are not evidence).
-// --plant=always|once (a negative control, into a scratch outDir only; an outDir that resolves to evidence/ or inside
-// it is refused): a 1px chalk dot is painted into the compared frame of every exact comparison, at (720, 450) or the
+// --plant=always|once (a negative control, into a local scratch outDir under the real system temp directory only;
+// every output folder is checked): a 1px chalk dot is painted into the compared frame of every exact comparison, at (720, 450) or the
 // nearest pixel inside a smaller frame, never into a reference, so a reference rendered in the same run stays clean;
 // with "once" only the first attempt is planted, so a recapture is clean (the noise path).
 // outDir defaults to evidence/. The static guard compares with evidence/pre-motion-hashes.json, which was rendered on
@@ -52,6 +52,7 @@
 // Add --motion-only to record only the motion part (the log is then printed, not written).
 import { createHash } from "node:crypto";
 import { createServer } from "node:http";
+import { tmpdir } from "node:os";
 import { realpathSync } from "node:fs";
 import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { basename, dirname, extname, join, normalize, resolve, sep } from "node:path";
@@ -131,18 +132,28 @@ const MOTION_ONLY = process.argv.includes("--motion-only");
 const INTRO_FRAMES = (process.argv.find((a) => a.startsWith("--intro-frames=")) || "").slice("--intro-frames=".length) || null;
 const PLANT = (process.argv.find((a) => a.startsWith("--plant=")) || "").slice("--plant=".length) || null;
 if (PLANT && !["once", "always"].includes(PLANT)) throw new Error("--plant takes once or always");
-// The plant guard: a planted run never writes into evidence/. The outDir is resolved through any existing links (and
-// compared without case on Windows); it is refused when it is evidence/ itself or anywhere inside it.
+// A planted run may write only below the real system temp directory. Resolve existing ancestors through
+// junctions and short names before checking whole path segments; never normalize a UNC/device path into a drive.
 const realish = (p) => {
   const rest = [];
   for (let cur = resolve(p); ; ) {
-    try { return join(realpathSync.native(cur), ...rest); } catch { const up = dirname(cur); if (up === cur) return resolve(p); rest.unshift(basename(cur)); cur = up; }
+    try { return join(realpathSync.native(cur), ...rest); } catch (error) { if (error.code !== "ENOENT") throw new Error(`Cannot resolve planted output path: ${p} (${error.code})`); const up = dirname(cur); if (up === cur) throw new Error(`Cannot resolve planted output path: ${p}`); rest.unshift(basename(cur)); cur = up; }
   }
 };
 const pathKey = (p) => (process.platform === "win32" ? realish(p).toLowerCase() : realish(p));
 if (PLANT) {
-  const ev = pathKey(join(HERE, "evidence")), out = pathKey(OUT);
-  if (!OUT_ARG || out === ev || out.startsWith(ev + sep)) throw new Error(`--plant is a negative control: pass a scratch outDir, never evidence/ or a folder inside it (got ${OUT})`);
+  const temp = pathKey(tmpdir());
+  const outputs = [["outDir", OUT_ARG], ["--intro-frames", INTRO_FRAMES]].filter(([, p]) => p != null);
+  if (!OUT_ARG) throw new Error("--plant requires an explicit scratch outDir inside the system temp directory");
+  for (const [name, raw] of outputs) {
+    if (!/^[a-z]:[\\/]/i.test(raw) || raw.startsWith("\\\\")) {
+      throw new Error(`--plant ${name} must be a local absolute drive path, not a relative, UNC or device path: ${raw}`);
+    }
+    const out = pathKey(raw);
+    if (!out.startsWith(temp + sep)) {
+      throw new Error(`--plant ${name} must resolve inside the system temp directory (${temp}): ${raw}`);
+    }
+  }
 }
 await mkdir(OUT, { recursive: true });
 // v2 file names that v3 replaced with preset-recommended-* crops.

@@ -40,6 +40,12 @@ slow fonts. What moves, its order and its timings are unchanged.
   earlier. With the font files held 600 ms, the still page's answers were in view 153-231 ms after the first paint
   across the recorded runs (see "Measured").
 
+**Repair 2 (last repair, 2026-09-27):** a tooltip near closing could flip across today's end point. The original
+`622cd0b` did so late at night; the wider chart-following box in `6123863` started doing so earlier. This repair
+keeps every already-clear placement and moves only boxes that breach the 11 px clearance around the end point.
+Its plant guard checks all output folders against the real system temp directory, and a selected box is placed again
+during each frame of a live-reading morph. The full-day sweep and capture evidence are recorded below.
+
 Nothing else changes.
 
 ## Thesis
@@ -393,9 +399,15 @@ and `setMarker`. The one part of A that stays is its missing-span variant, the l
   - The screen-reader text never calls it an average: «7:42 م، آخر قراءة، 49 داخل الصالة، الازدحام مزدحم، المعتاد 45».
     While delayed it adds how old it is: «آخر قراءة قبل 13 دقيقة».
   - The tuner's simulated crowd-level change still changes the card only, as before; the latest stop keeps the reading.
-- **Tooltip placement:** after now the tooltip sits on the later side of the hairline, so it never covers the end of
-  today's line, unless it would not fit there: the last stops of the day (11:00 PM to 1:00 AM with the fixed width;
-  11:30 PM to 1:00 AM before it) flip to the earlier side. Over the gap it sits above both ends of the line.
+- **Tooltip placement:** before now the box starts on the earlier side of the hairline; after now it starts on the
+  later side. It keeps the 12 px side gap, flips when that side does not fit, and sits above the point (or below when
+  there is no room above). Over the gap it sits above both ends of the line. In every state the box clears the centre
+  of today's end point by at least 11 px, the 9 px halo radius plus 2 px, even when the halo is hidden. If the usual
+  placement would breach that clearance, the box is centred above its stop and clamped 2 px inside the plot. If above
+  has no room, it centres below; if that still breaches the clearance, it makes the smallest vertical shift that
+  clears it, preferring upward on a tie. A change of mode eases with the follow. If the box's moving path would
+  cross the end point between two clear rest positions, it bends by the smallest available displacement and stays
+  on that side until clear; neither rest position changes.
 - **Tooltip layout (2026-09-26):** one start-aligned arrangement for every tooltip. Every row starts at the same
   inline-start edge (right in Arabic, left in English), and nothing is pushed to the far edge.
   - At the peak and the latest reading (live and delayed), the label chip comes first, then the time. The number then
@@ -728,8 +740,10 @@ takes about five minutes. It exits with code 1 if any check below fails.
   - `--plant=always|once` is a negative control: it paints a 1px chalk dot at (720, 450), or the nearest pixel inside
     a smaller frame, into the compared frame of every exact comparison, never into a reference, so a same-run
     reference stays clean and those comparisons are exercised too. `once` plants only the first attempt, so the
-    recapture is clean (the noise path). The run refuses an `outDir` that resolves to `evidence/` or anywhere inside
-    it, and a missing one.
+    recapture is clean (the noise path). A planted run requires an explicit local-drive `outDir`; it checks that
+    folder, `--intro-frames`, and every other output folder against the real `os.tmpdir()` path, resolving existing
+    links and short names. Every output must remain inside that temp directory. UNC, device, and relative paths are
+    refused before any output is written. Runs without `--plant` retain their usual output behaviour.
 
 - **Other machines:** the static guard compares with `evidence/pre-motion-hashes.json`, which was rendered on the
   original Windows machine. Fonts render differently elsewhere, so on another machine pass a scratch `outDir`, expect
@@ -810,6 +824,42 @@ The log records:
   - **`rail`:** the animated properties, the names by clip only, and the settled open rail against the still frame.
 
 ## Evidence
+
+- **Repair 2 (2026-09-27), exact full-day sweep at 1440×900:** 318 snapshots and every available stop in
+  Arabic/English, live/delayed/no-history, Readex Pro and blocked Google Fonts: 149,776 selections. At `622cd0b`,
+  422 live selections per language and font covered the end point; the other eight combinations had zero. At
+  `6123863`, the live counts were AR 588 and EN 589 with Readex Pro, AR/EN 569 each with fallback; the other eight
+  combinations had zero. After repair, all 12 combinations have zero violations, and the minimum measured distance
+  is 11.0019 px. Exactly those 2,315 failing boxes changed; every already-clear rectangle stayed within 0.01 px.
+  The changed choices were 938 centred above, 1,365 shifted upward and 12 shifted downward; none needed centred
+  below. The largest vertical shift was 48.53 px. The number's start-edge spread within a snapshot and placement
+  mode stayed at most 0.024 px.
+- **Motion checks:** at seven settled snapshots per combination, 3,284 selected stops had no clearance violation.
+  Three real-time placement-mode changes began with 0 px jump; 64 adjacent-stop follow transitions sampled frame by
+  frame in both languages never covered the end point (minimum 11.0019 px). A selected box during a width-changing
+  live morph (127 to 128 px, AR/EN, a stationary stop and the moving latest stop) kept a 11.987–12.013 px edge gap
+  and at most 0.014 px number-offset spread over the 280 ms morph.
+- **Plant and quality probes:** 14 path forms were refused before writing, including UNC admin shares, device paths,
+  short names and junctions; a scratch temp outDir was accepted. `--plant=once` exited 0 with 68 one-attempt noises
+  and no persistent differences; `--plant=always` exited 1 with 68 persistent differences. In a same-run browser
+  probe, the normal repair path made no long-animation-frame entries and no rAF gap over 50 ms; the planted 90 ms
+  loop registered a 103–120 ms long animation frame and an 83–100 ms rAF gap. A planted 120 px prepend produced a
+  0.0833 layout shift. Existing tooltip-sourced shifts were fewer after the repair (AR 28 versus 33; EN 30 versus
+  32); no new shift source appeared. The AR and EN accessibility trees matched `6123863`, and no console errors
+  appeared. These checks measure behavior and provenance, not visual acceptance.
+- **Repair 2 captures into `evidence/`:** two unplanted runs exited 0. Each made 70 exact comparisons with zero
+  persistent differences (68 matched on their first attempt). Both 7:42 PM hover frames are byte-identical to
+  `6123863`. Against that commit, run 1 changed `capture-log.json`, `intro-yield-ar.png` (26,468 pixels),
+  `motion-contact-sheet.png` (245), `motion-follow-ar-2x.png` (1,975), and `motion-roll-ar-2x.png` (466). Run 2
+  changed the log, `intro-yield-ar.png` (20,987), `motion-contact-sheet.png` (108), and
+  `motion-follow-ar-2x.png` (1,975). The intro sheet samples 50 ms after actions, so captions and in-progress rail,
+  hover, and chart cells vary with action timing. The contact and follow changes are tooltip text glyph raster only;
+  the box and marker geometry is unchanged. The AR roll change was confined to a mid-roll digit and returned to the
+  committed pixels in run 2. No other frame changed.
+- **Personal frame inspection (Codex):** the exact AR/EN 1440×900 frames at 8:43 PM and the five-case before/after
+  2× crops per language show the box clear of today's end point. Exact 390×844 AR/EN frames were also inspected;
+  this concept's existing mobile horizontal overflow remains outside this 1440×900 repair (document width 662 px
+  in Arabic, 709 px in English). This repair is not mobile visual acceptance.
 
 - **Still frames, 1440×900, Recommended:**
   - `daily-ar-1440x900` and `daily-en-1440x900`

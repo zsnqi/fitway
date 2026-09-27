@@ -954,11 +954,10 @@
     painted = null;
     stepAside(null);
   }
-  // Beside the hairline, on the earlier side of the day when it fits (after now: on the later side, so it never covers
-  // the end of today's line); its bottom just above the point. While the marker follows, the tooltip rides with it;
-  // when its side flips, or the marker changes track at once, the tooltip keeps where it was and eases into its new
-  // place on the follow's own curve (the offset below, see "follow" in the motion section).
-  let tipSize = null, peakTagBox = null, tipShown = null; // tipShown: { left, top, mode } as last drawn
+  // Beside the hairline, earlier before now and later after it when that side fits, with a fallback that clears
+  // the end point by 11px. While the marker follows, the tooltip rides with it; side and placement-mode changes
+  // ease on the follow's curve (the offset below, see "follow" in the motion section).
+  let tipSize = null, peakTagBox = null, tipShown = null; // last drawn position, placement mode and avoidance mode
   function placeTip(x, py, later = false) {
     const { W, H } = geo;
     // The box's rendered width for the content it shows (the missing-span stop may be wider than --tip-w): measured
@@ -972,17 +971,96 @@
     left = Math.max(2, Math.min(W - tw - 2, left));
     let top = py - th - 10, below = false;
     if (top < 0) { top = Math.min(py + 12, H - th); below = true; }
-    const mode = `${side}|${below}`;
+    let mode = `${side}|${below}`;
+    // Preserve the usual placement unless its box enters the end point's 9px halo plus 2px clearance.
+    // The clearance also applies to delayed and no-history states, where the halo is not drawn.
+    const end = $("#end-dot");
+    if (end) {
+      const ex = Number(end.getAttribute("cx")), ey = Number(end.getAttribute("cy"));
+      const distance = (l, t) => Math.hypot(Math.max(l - ex, 0, ex - l - tw), Math.max(t - ey, 0, ey - t - th));
+      // Near the boundary, test the browser's exact rounded rectangle so a placement that already
+      // clears the halo remains pixel-identical. The temporary coordinates cannot paint within this task.
+      let overlaps = distance(left, top) < 11.05;
+      if (overlaps) {
+        const oldLeft = tip.style.left, oldTop = tip.style.top;
+        tip.style.left = `${f(left)}px`;
+        tip.style.top = `${f(top)}px`;
+        const box = tip.getBoundingClientRect(), dot = end.getBoundingClientRect();
+        const dotX = dot.left + dot.width / 2, dotY = dot.top + dot.height / 2;
+        overlaps = Math.hypot(Math.max(box.left - dotX, 0, dotX - box.right), Math.max(box.top - dotY, 0, dotY - box.bottom)) < 11;
+        tip.style.left = oldLeft;
+        tip.style.top = oldTop;
+      }
+      if (overlaps) {
+        left = Math.max(2, Math.min(W - tw - 2, x - tw / 2));
+        const above = py - th - 10, hasAbove = above >= 2 && above + th <= H - 2;
+        top = hasAbove ? above : Math.max(2, Math.min(H - th - 2, py + 12));
+        mode = hasAbove ? "center-above" : "center-below";
+        if (distance(left, top) < 11) {
+          const dx = Math.max(left - ex, 0, ex - left - tw);
+          const dy = Math.sqrt(121 - dx * dx) + 0.02; // account for CSS pixel rounding
+          const up = ey - dy - th, down = ey + dy;
+          const choices = [];
+          if (up >= 2) choices.push({ top: up, mode: "shift-up" });
+          if (down <= H - th - 2) choices.push({ top: down, mode: "shift-down" });
+          choices.sort((a, b) => Math.abs(a.top - top) - Math.abs(b.top - top) || (a.mode === "shift-up" ? -1 : 1));
+          if (!choices.length) throw new Error(`No clear tooltip placement for ${sel?.key ?? "unknown"}`);
+          const chosen = choices[0];
+          top = chosen.top;
+          mode = chosen.mode;
+        }
+      }
+    }
     if (tipShown && (tipForce || tipShown.mode !== mode)) tipJump(tipShown.left - left, tipShown.top - top, tipForce);
-    const off = tipOffset();
-    const L0 = left + off.x, T0 = top + off.y;
+    let off = tipOffset();
+    let L0 = left + off.x, T0 = top + off.y;
+    // When a bent path clears the end point, hand its displayed position back to the follow spring
+    // so it eases to the resting box rather than snapping across the last part of the clearance.
+    const endX = end ? Number(end.getAttribute("cx")) : 0, endY = end ? Number(end.getAttribute("cy")) : 0;
+    const endDistance = (l, t) => Math.hypot(Math.max(l - endX, 0, endX - l - tw), Math.max(t - endY, 0, endY - t - th));
+    if (end && (follow.route || follow.tip || tipShown?.avoiding) && tipShown?.avoiding && endDistance(L0, T0) >= 11) {
+      tipJump(tipShown.left - left, tipShown.top - top, null);
+      off = tipOffset();
+      L0 = left + off.x;
+      T0 = top + off.y;
+    }
+    // The follow can pass through the end point even when both resting boxes clear it. Bend that
+    // intermediate path by the smallest available displacement, without moving either rest box.
+    let avoiding = false, avoidMode = null;
+    if (end && (follow.route || follow.tip || tipShown?.avoiding)) {
+      const ex = endX, ey = endY;
+      const dx = Math.max(L0 - ex, 0, ex - L0 - tw);
+      const dy = Math.max(T0 - ey, 0, ey - T0 - th);
+      if (Math.hypot(dx, dy) < 11) {
+        const clearY = Math.sqrt(121 - dx * dx) + 0.06;
+        const clearX = Math.sqrt(121 - dy * dy) + 0.06;
+        const choices = [
+          { x: L0, y: ey - clearY - th, order: 0 },
+          { x: L0, y: ey + clearY, order: 1 },
+          { x: ex - clearX - tw, y: T0, order: 2 },
+          { x: ex + clearX, y: T0, order: 3 },
+        ].filter((p) => p.x >= 2 && p.x + tw <= W - 2 && p.y >= 2 && p.y + th <= H - 2);
+        if (!choices.length) throw new Error(`No clear moving tooltip placement for ${sel?.key ?? "unknown"}`);
+        choices.sort((a, b) => {
+          if (tipShown?.avoiding && choices.some((p) => p.order === tipShown.avoidMode)) {
+            if (a.order === tipShown.avoidMode) return -1;
+            if (b.order === tipShown.avoidMode) return 1;
+          }
+          return Math.hypot(a.x - L0, a.y - T0) - Math.hypot(b.x - L0, b.y - T0) || a.order - b.order;
+        });
+        L0 = choices[0].x;
+        T0 = choices[0].y;
+        avoiding = true;
+        avoidMode = choices[0].order;
+      }
+    }
     tip.style.left = `${f(L0)}px`;
     tip.style.top = `${f(T0)}px`;
     // The tooltip's displayed velocity (px/ms), handed to it when the marker jumps.
     const tn = nowMs(), dtv = tn - tipVel.t;
     if (!tipShown || dtv >= 50) tipVel = { x: 0, y: 0, t: tn };
     else if (dtv > 0) tipVel = { x: (L0 - tipShown.left) / dtv, y: (T0 - tipShown.top) / dtv, t: tn };
-    tipShown = { left: L0, top: T0, mode };
+    tipShown = { left: L0, top: T0, mode, avoiding, avoidMode };
     if (!peakTagBox) {
       const peakTag = $("#peak-tag");
       if (peakTag) { const pr = plot.getBoundingClientRect(), b = peakTag.getBoundingClientRect(); peakTagBox = { l: b.left - pr.left, r: b.right - pr.left, t: b.top - pr.top, b: b.bottom - pr.top }; }
@@ -1614,6 +1692,10 @@
     if (sel && sel.track === `L${seg}` && (sel.kind === "latest" || (sel.kind === "read" && sel.m >= K))) {
       const m = sel.kind === "latest" ? end : sel.m, y = Y(morphValue(m, t));
       paintMarker({ x: X(m), y, lift: 0, ly: y, track: sel.track }, sel);
+    } else if (sel) {
+      // The selected content may have widened at the new reading; keep its edge beside the hairline
+      // while the end point moves, even when the selected stop itself is stationary.
+      paintMarker(restPoint(sel), sel);
     }
   }
   function liveLoop() { liveRun.raf = 0; if (!liveRun.clock) return; applyMorph(); liveRun.raf = requestAnimationFrame(liveLoop); }
