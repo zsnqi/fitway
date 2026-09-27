@@ -1553,3 +1553,6 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   `~/.claude/skills` and `~/.codex/skills`.
 - **Next:** the user decides whether Codex runs repair 3 (`repair3/BRIEF.md`, which now points to the skill's
   tools). The coordinator runs nothing until the user says so.
+- **Executor chosen:** the user gives repair 3 to Codex, with the skill installed. The worktree is
+  `owner-followup-r04-s04`, clean at `3b1c3da`, and the brief is `repair3/BRIEF.md`. When Codex reports, the
+  coordinator inspects the result, then briefs a fresh independent verifier with M1 and M2.
