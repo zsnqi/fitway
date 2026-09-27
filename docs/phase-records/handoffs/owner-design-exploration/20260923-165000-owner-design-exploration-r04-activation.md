@@ -1354,3 +1354,17 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   brief. A fresh `owner-direction-fixer` (`medium`, run `owner_followup_r04_s04_fix127`) applies it on the same
   branch, from the scratchpad brief `followup/FIX-127.md`. That brief lists the constraints in force explicitly,
   because the brief keeps older sentences that later rounds superseded (Round 6 §1, §5, §8 and Round 7 §4).
+- **127 px kept, then verified:** the fixer's `92398dc` (127 px, placement by the real width) was shown to the user,
+  who kept it. A fresh `owner-direction-verifier` (`xhigh`, read-only, checklist `followup/VERIFY.md` in the
+  scratchpad, no implementer reports) verified `622cd0b..92398dc`: width, stability, gap, placement, interaction and
+  "nothing else changes" PASS; the recapture FAIL (partial). Findings:
+  - a recapture never re-renders a reference rendered in the same run, so one of its two runs exited 1 on noise;
+  - 127 px fits only the 7:42 PM snapshot (later readings reach about 131 px in English and 141 px in Arabic);
+  - the plant guard accepts an explicit `evidence/` path; `liveUpdateEndsAtCanonical` is always false (pre-existing,
+    not in the exit code); three README wording points.
+  The coordinator checked the width finding against the verifier's step data before showing it to the user.
+- **Repair 1 of 2:** the user chose a width measured from the chart's current stops (recorded in the brief). A fresh
+  `owner-direction-builder` (`high`, run `owner_followup_r04_s04_repair1`, brief `followup/FIX-R1.md`) applies it with
+  a two-sided recapture, a negative control that reaches every exact comparison, a stricter plant guard and the
+  README corrections. A fresh verifier follows. The intro-speed round (brief `introspeed/FIX-SPEED.md`, ready) waits
+  until this round is integrated.

@@ -715,6 +715,14 @@ A small separate round after the intro, so that the intro's verifier judges the 
   number sets the width (about 127 px, set by the latest reading), and only the missing-span stop may grow beyond it.
   Placement uses each box's real width, so the grown box keeps its 12 px gap from the hairline. The number still
   never moves. The user sees the same before/after comparison before it is kept.
+- **Kept, then made to follow the chart (user decisions, 2026-09-27):** the user kept 127 px from the before/after.
+  Independent verification then found that 127 px fits only the page's 7:42 PM snapshot: later readings lengthen the
+  latest-reading time ("10:42 PM", "12:12 AM"), about 131 px in English after 10 PM and about 141 px in Arabic after
+  midnight, and the Arabic «شديد الازدحام» needs about 132 px, so the number moved again. The user chose the
+  coordinator's proposal over a fixed 144 px and over keeping 127 px: the same rule is measured from the chart's
+  current stops whenever they change (first render, a new reading, a state change, a resize, a language switch, the
+  fonts loading). Within one snapshot the width never changes, so the number never moves between stops at any hour;
+  it is 127 px for most of the day and wider only late at night.
 - **The screen plan is confirmed:** desktop first, in the order of "After the Daily page", with the one early mobile
   check at 390 px and 320 px on Reports.
 - **Merge proposals:** the user answered "excellent" to a summary that listed the two merge proposals (contextual
