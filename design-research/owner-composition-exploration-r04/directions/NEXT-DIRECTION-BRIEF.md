@@ -678,7 +678,8 @@ tried both.
 A small separate round after the intro, so that the intro's verifier judges the intro alone and no two writers share
 `capture.mjs`:
 
-1. **Tooltip width (pending the user's before/after review):** in English the number still moves about 9 px on screen
+1. **Tooltip width (reviewed 2026-09-27; the user chose the narrower width, see "Decisions after the step 3 report"):**
+   in English the number still moves about 9 px on screen
    between the peak and 7:00 PM. The tooltip widens (108 to 117.4 px) and is anchored at the hairline. The proposal is
    one fixed tooltip width, the widest content in either language, so the number never moves. The user will judge it
    from a before/after comparison before it is kept.
@@ -708,6 +709,12 @@ A small separate round after the intro, so that the intro's verifier judges the 
 
 - **The follow-up round goes ahead** with all three items of "Follow-up after step 3". The fixed tooltip width is
   still kept only after the user's before/after review.
+- **Tooltip width (user review, 2026-09-27):** the first fixed width, 138 px, was set by the missing-span stop, which
+  shows no number. It made ordinary tooltips 20-30 px wider, with empty space at their end, and moved 7:30 AM and
+  11:00 PM to the other side. The user chose the coordinator's proposal instead: the widest tooltip that shows a
+  number sets the width (about 127 px, set by the latest reading), and only the missing-span stop may grow beyond it.
+  Placement uses each box's real width, so the grown box keeps its 12 px gap from the hairline. The number still
+  never moves. The user sees the same before/after comparison before it is kept.
 - **The screen plan is confirmed:** desktop first, in the order of "After the Daily page", with the one early mobile
   check at 390 px and 320 px on Reports.
 - **Merge proposals:** the user answered "excellent" to a summary that listed the two merge proposals (contextual

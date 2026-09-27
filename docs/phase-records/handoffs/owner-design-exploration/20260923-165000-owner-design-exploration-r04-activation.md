@@ -1347,3 +1347,10 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   fast. The user tried the tuner's intro speed at 0.70× and approved it: the intro becomes about 1171 ms instead of
   820 ms, as the new 1× default. It is a separate round after the follow-up round (one writer per round on
   `eclipse/`). Both are recorded in the brief, "Decisions after the step 3 report".
+- **Follow-up round, builder result (`645bd70` on `owner-followup-r04-build`):** fixed tooltip width 138 px, recapture
+  on a hash difference (70 comparisons, no noise; a planted 1 px dot fails twice and exits 1), and the README wording.
+  The coordinator inspected both before/after contact sheets and showed them to the user. The user chose the
+  narrower width (the widest numbered tooltip, about 127 px; only the missing-span stop may grow), recorded in the
+  brief. A fresh `owner-direction-fixer` (`medium`, run `owner_followup_r04_s04_fix127`) applies it on the same
+  branch, from the scratchpad brief `followup/FIX-127.md`. That brief lists the constraints in force explicitly,
+  because the brief keeps older sentences that later rounds superseded (Round 6 §1, §5, §8 and Round 7 §4).
