@@ -1493,3 +1493,30 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   mechanical one. The successor's record must name the changed hypothesis or scope, and why this failure mode will not
   recur. At minimum, its acceptance includes per-frame box sampling through every new-reading placement change, and a
   hover stall-and-jump count no worse than the base.
+
+## The ui-forensics trial folder is ready (2026-09-27)
+
+- **Folder:** `D:/Projects/ui-forensics-trial/`. It is outside the repository and holds no FITWAY answer. Contents:
+  - `eclipse/`: a `git archive` of `6123863`;
+  - `q1/a.png` and `q1/b.png`;
+  - `QUESTIONS.md`;
+  - `@playwright/test` 1.61.1, installed offline with pnpm (0 downloads), so there is no junction into the
+    repository.
+  Chromium launches from the folder.
+- **Answer key, run procedure, pristine manifest (56 files) and the measuring scripts:** in session `f8e879d9`'s
+  scratchpad, `trial/` (`KEY.md`, `pristine.sha256`). They are outside the trial folder.
+  - Q1 has six planted differences, from a removed element down to a 0.3 px move and a single pixel.
+  - Q2: at 9:30 PM, the 11:00 PM and 11:30 PM stops cover "now" (0 and 1.46 px), in AR, EN and both fonts.
+  - Q3: the CSS colours say 7.89:1. As rendered, 1 AM is 3.9-4.0 and 6 AM is 4.1-4.2 in the worst case.
+- **Next for the trial:**
+  1. The user runs Codex without the skill.
+  2. Move `out/` aside and check the manifest.
+  3. Install the skill into `~/.agents/skills/ui-forensics`, with junctions from `~/.claude/skills` and
+     `~/.codex/skills`.
+  4. The user runs Codex again with the same prompt.
+  5. Score both runs against the key.
+- **Next for the milestone:**
+  1. The user decides the follow-up round's successor: the scope, and the design question the key frames raise.
+  2. Then write its terminal-record fields and brief.
+  3. The intro-speed round, the audit patch and Reports wait behind it, in the order given in the resume point
+     above.
