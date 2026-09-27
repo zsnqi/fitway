@@ -30,9 +30,16 @@
 // every surface is present and unchanged at the first paint and at the intro's first frame, with nothing running but
 // the intro's content transforms and the pulse; the end after the held frames sets the exit code; and with the font
 // files held 600 ms there is no intro and the answers are in view within 250 ms of the first paint (held 50 ms, it plays).
+// The follow-up round after step 3: (1) the chart checks also measure the tooltip at every stop (one fixed width in
+// both languages, the number at the same place against the hairline, no wrap and no clip); (2) every exact-hash
+// comparison recaptures a frame that differs, the same way in a fresh context, and counts it as a difference only if it
+// differs in the next attempt too (Chromium's glyph raster is not always byte-identical between runs; there is still
+// no tolerance). Each comparison's attempts are in the log (motion.recaptures); one that differed once is noise.
 // Run from PowerShell at the worktree root:
 //   node design-research/owner-composition-exploration-r04/directions/eclipse/capture.mjs [outDir] [--intro-frames=<dir>]
 // --intro-frames=<dir> also writes every full-size held 2x intro frame there (they are large; they are not evidence).
+// --plant=always|once (a negative control, into a scratch outDir only): every page gets a 1px chalk dot at (720, 450);
+// with "once" only the first attempt of a comparison has it, so a recapture is clean (the noise path).
 // outDir defaults to evidence/. The static guard compares with evidence/pre-motion-hashes.json, which was rendered on
 // the original Windows machine; on another machine (fonts render differently) pass a scratch outDir, and expect that
 // guard to fail, so never let such a run rewrite evidence/.
@@ -94,7 +101,7 @@ const FRAMES = [
 // hollow ring, replaces the reading sight) and the tuner (Round 6: its Motion group; Round 7 step 2: the hover speed).
 // The English hover frame has no pre-motion frame.
 const EXPECTED_TO_CHANGE = {
-  "daily-ar-1440x900-hover": "Round 7: marker form B (the hollow ring) replaces the Round 6 reading sight; the value at the peak stop is unchanged (62)",
+  "daily-ar-1440x900-hover": "Round 7: marker form B (the hollow ring) replaces the Round 6 reading sight; the value at the peak stop is unchanged (62); the follow-up round after step 3: the tooltip's one fixed width",
   "daily-ar-1440x900-tuner-open": "Round 6: the tuner's Motion group; Round 7 step 2: its hover speed (the step-1 Marker group is gone); Round 7 step 3: the intro speed and Replay intro",
 };
 const MARKERS = ["b"];
@@ -114,6 +121,9 @@ const HIDE_PULSE = ".ping { visibility: hidden !important; }";
 
 const MOTION_ONLY = process.argv.includes("--motion-only");
 const INTRO_FRAMES = (process.argv.find((a) => a.startsWith("--intro-frames=")) || "").slice("--intro-frames=".length) || null;
+const PLANT = (process.argv.find((a) => a.startsWith("--plant=")) || "").slice("--plant=".length) || null;
+if (PLANT && !OUT_ARG) throw new Error("--plant is a negative control: pass a scratch outDir, never evidence/");
+let planting = Boolean(PLANT); // "once": off while a comparison recaptures
 await mkdir(OUT, { recursive: true });
 // v2 file names that v3 replaced with preset-recommended-* crops.
 for (const stale of ["daily-ar-chart-2x.png", "daily-ar-nowcard-2x.png"]) await rm(join(OUT, stale), { force: true });
@@ -147,6 +157,7 @@ async function serveFont(route, delayMs = 0) {
 async function newPage({ width = 1440, height = 900, scale = 1, motion = false, touch = false, fontCache = false, fontDelayMs = 0 } = {}) {
   const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: scale, reducedMotion: motion ? "no-preference" : "reduce", colorScheme: "dark", hasTouch: touch });
   if (fontCache || fontDelayMs) await context.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (route) => serveFont(route, fontDelayMs));
+  if (planting) await context.addInitScript(() => document.addEventListener("DOMContentLoaded", () => { const d = document.createElement("i"); d.setAttribute("aria-hidden", "true"); d.style.cssText = "position:fixed;left:720px;top:450px;width:1px;height:1px;background:#f5f3f2;z-index:2147483647;pointer-events:none"; document.documentElement.appendChild(d); }));
   const page = await context.newPage();
   const errors = [];
   page.on("pageerror", (e) => errors.push(`pageerror: ${e.message}`));
@@ -369,16 +380,51 @@ async function levels(pngPath, outPath) {
   return { bg: Math.round(res.bg * 10) / 10, top: Math.round(res.top * 10) / 10 };
 }
 
+// The follow-up round after step 3 (user-agreed): Chromium's glyph raster is not always byte-identical between runs, so
+// a frame whose hash differs from its expected value is captured again, the same way, in a fresh context (`again`),
+// and it counts as a difference only if it differs in that next attempt too. There is no tolerance: every attempt is
+// compared exactly. Every comparison is logged with its attempts; one that differed once and then matched is noise.
+const recaptures = [];
+async function exact(label, buf, expected, again = null) {
+  const want = [].concat(expected).filter(Boolean);
+  const hashes = [sha(buf)];
+  let final = buf;
+  if (!want.includes(hashes[0]) && again) {
+    const was = planting;
+    if (PLANT === "once") planting = false;
+    try { final = await again(); } finally { planting = was; }
+    hashes.push(sha(final));
+  }
+  const identical = want.includes(hashes[hashes.length - 1]);
+  const entry = { label, attempts: hashes.length, identical, noise: hashes.length > 1 && identical, differedTwice: hashes.length > 1 && !identical, hashes: hashes.map((h) => h.slice(0, 16)) };
+  recaptures.push(entry);
+  return { identical, attempts: entry.attempts, noise: entry.noise, buf: final };
+}
+// A fresh capture of a frame, for `again`: open it as the first attempt did, `prep` the page, then screenshot.
+const recapture = (q, openOpts, prep, shotOpts = {}) => async () => {
+  const s = await open(q, openOpts);
+  if (prep) await prep(s.page);
+  const buf = await s.page.screenshot(typeof shotOpts === "function" ? await shotOpts(s.page) : shotOpts);
+  await s.context.close();
+  return buf;
+};
 // A written evidence frame; if it is one of the pre-motion frames, its bytes are compared with the recorded hash
-// (the capture is byte-deterministic on this machine, so equal hashes mean identical pixels).
-async function shot(page, name, opts = {}) {
-  const buf = await page.screenshot({ path: join(OUT, `${name}.png`), ...opts });
+// (equal hashes mean identical pixels), with one recapture (`again`) on a difference. The frame written is the last
+// attempt. Frames that change by design are not recaptured.
+async function shot(page, name, opts = {}, again = null) {
+  let buf = await page.screenshot(opts);
+  if (PRE[name]) {
+    const m = await exact(`static ${name}`, buf, PRE[name], EXPECTED_TO_CHANGE[name] ? null : again);
+    buf = m.buf;
+    identity.staticFrames[name] = { identical: m.identical, attempts: m.attempts, ...(m.noise ? { noise: true } : {}), ...(EXPECTED_TO_CHANGE[name] ? { expectedToChange: EXPECTED_TO_CHANGE[name] } : {}) };
+  }
+  await writeFile(join(OUT, `${name}.png`), buf);
   stillBuffers[name] = buf;
-  if (PRE[name]) identity.staticFrames[name] = { identical: sha(buf) === PRE[name], ...(EXPECTED_TO_CHANGE[name] ? { expectedToChange: EXPECTED_TO_CHANGE[name] } : {}) };
   return buf;
 }
+// The level maps are computed from a 2x crop that `shot` has already compared (and recaptured if it differed).
 async function hashFile(name) {
-  if (PRE[name]) identity.staticFrames[name] = { identical: sha(await readFile(join(OUT, `${name}.png`))) === PRE[name] };
+  if (PRE[name]) identity.staticFrames[name] = { identical: (await exact(`static ${name} (from its crop)`, await readFile(join(OUT, `${name}.png`)), PRE[name])).identical, attempts: 1 };
 }
 
 /* ------------------------------------------------------------------ motion helpers
@@ -494,6 +540,24 @@ const measureMarker = (page) => page.evaluate(() => {
   return out;
 });
 
+/* The tooltip at a stop (the follow-up round after step 3): its drawn width, its content's own width (the same box with
+ * no set width), the start edge of its number (or of its word where there is no number) against the stop's hairline
+ * x, the side it sits on, and whether any row wraps (a row taller than one line) or clips. */
+const measureTip = (page, stopX) => page.evaluate((sx) => {
+  const tip = document.getElementById("tip"), rtl = document.documentElement.dir === "rtl";
+  if (tip.hidden) return null;
+  const r = tip.getBoundingClientRect(), lead = tip.querySelector(".tip-v") || tip.querySelector(".tip-word"), n = lead.getBoundingClientRect();
+  const rows = [...tip.children].map((c) => ({ h: c.getBoundingClientRect().height, sw: c.scrollWidth, cw: c.clientWidth, lh: parseFloat(getComputedStyle(c).lineHeight) || 0, fs: parseFloat(getComputedStyle(c).fontSize) }));
+  const w0 = tip.style.width, m0 = tip.style.minWidth;
+  tip.style.width = "max-content"; tip.style.minWidth = "0px";
+  const natural = tip.getBoundingClientRect().width;
+  tip.style.width = w0; tip.style.minWidth = m0;
+  const start = rtl ? n.right : n.left;
+  const r2 = (v) => Math.round(v * 100) / 100;
+  return { width: r2(r.width), natural: r2(natural), leadIsNumber: lead.classList.contains("tip-v"), leadStartMinusHairline: r2(start - sx), side: r.left + r.width / 2 > sx ? "right" : "left",
+    clipped: tip.scrollWidth > tip.clientWidth || rows.some((x) => x.sw > x.cw + 0.5), wrapped: rows.some((x) => x.h > 1.9 * Math.max(x.lh, x.fs * 1.25)) };
+}, stopX);
+
 /* ------------------------------------------------------------------ Round 6 checks */
 async function chartChecks(lang, state = "live", marker = "b") {
   const q = `lang=${lang}&state=${state}&tuner=0`;
@@ -522,7 +586,21 @@ async function chartChecks(lang, state = "live", marker = "b") {
   res.perStop = [];
   for (const s of res.stops) {
     await page.evaluate((k) => window.__eclipse.chart.select(k), s.key);
-    res.perStop.push({ key: s.key, kind: s.kind, time: s.time, value: s.value, ...(await measureMarker(page)) });
+    res.perStop.push({ key: s.key, kind: s.kind, time: s.time, value: s.value, ...(await measureMarker(page)), tipBox: await measureTip(page, s.clientX) });
+  }
+  // The tooltip (the follow-up round after step 3): one width at every stop, the number (or the word) at the same place
+  // against the hairline on each side, and nothing wraps or clips.
+  {
+    const boxes = res.perStop.map((p) => p.tipBox).filter(Boolean);
+    const spread = (v) => (v.length ? Math.round((Math.max(...v) - Math.min(...v)) * 100) / 100 : null);
+    const bySide = {};
+    for (const side of ["left", "right"]) {
+      const nums = res.perStop.filter((p) => p.tipBox?.side === side && p.tipBox.leadIsNumber).map((p) => p.tipBox.leadStartMinusHairline);
+      const all = res.perStop.filter((p) => p.tipBox?.side === side).map((p) => p.tipBox.leadStartMinusHairline);
+      if (all.length) bySide[side] = { stops: all.length, numberStops: nums.length, numberStartMinusHairline: nums.length ? [Math.min(...nums), Math.max(...nums)] : null, numberSpreadPx: spread(nums), leadSpreadPx: spread(all) };
+    }
+    res.tooltip = { widths: [...new Set(boxes.map((b) => b.width))], widestContent: Math.max(...boxes.map((b) => b.natural)), bySide, clipped: res.perStop.filter((p) => p.tipBox?.clipped).map((p) => p.key), wrapped: res.perStop.filter((p) => p.tipBox?.wrapped).map((p) => p.key) };
+    res.tooltip.pass = boxes.length === res.perStop.length && res.tooltip.widths.length === 1 && res.tooltip.widestContent <= res.tooltip.widths[0] && Object.values(bySide).every((b) => b.leadSpreadPx <= 0.5) && !res.tooltip.clipped.length && !res.tooltip.wrapped.length;
   }
   const on = (kinds) => res.perStop.filter((p) => kinds.includes(p.kind) && p.distancePx != null).map((p) => p.distancePx);
   res.maxDistancePx = {
@@ -578,7 +656,7 @@ async function chartChecks(lang, state = "live", marker = "b") {
   expectIdx.push(0, idx("latest"), idx("latest") + 1);
   res.keyboard = { later, earlier, steps: seq, pass: seq.every((s, i) => idx(s.selected) === expectIdx[i]) && seq[0].focusVisible === true };
   await context.close();
-  res.pass = res.latestShowsReading && res.latestNotCalledAverage && res.markerReported === marker && res.wrongForm.length === 0 && res.drawnAbovePoint.length === 0 && res.everyHalfHourAccountedFor &&res.gapStops === (f.last > 511 ? 1 : 0) && res.normalStopsInsideGap === 0 && res.lineSegments === 2 &&
+  res.pass = res.tooltip.pass && res.latestShowsReading && res.latestNotCalledAverage && res.markerReported === marker && res.wrongForm.length === 0 && res.drawnAbovePoint.length === 0 && res.everyHalfHourAccountedFor &&res.gapStops === (f.last > 511 ? 1 : 0) && res.normalStopsInsideGap === 0 && res.lineSegments === 2 &&
     res.peakStop && res.peakStop.value === f.peak && res.latestStop && res.latestStop.m === f.last &&
     res.maxDistancePx.lineStops <= 0.5 && res.maxDistancePx.peak <= 0.5 && (res.maxDistancePx.usualLine == null || res.maxDistancePx.usualLine <= 0.5) && (res.maxDistancePx.gapMark == null || res.maxDistancePx.gapMark <= 0.5) &&
     res.maxCoreRenderedOffsetPx <= 0.5 && (state !== "nohistory" || res.perStop.filter((p) => p.kind === "ahead").every((p) => !p.marker)) &&
@@ -838,6 +916,9 @@ async function introHeld(lang, state, times, crops = null) {
     errors.push(...again.errors);
   }
   const endIdentical = heldEnds.some((x) => stills.includes(x.sha));
+  // The same rule as `exact` (it predates it, and also renders the still again): logged with its attempts.
+  recaptures.push({ label: `intro held 2x ${lang} ${state}, played by itself`, attempts: nat.length, identical: naturalIdentical, noise: nat.length > 1 && naturalIdentical, differedTwice: nat.length > 1 && !naturalIdentical, hashes: nat.map((x) => sha(x.buf).slice(0, 16)) });
+  recaptures.push({ label: `intro held 2x ${lang} ${state}, end after the holds`, attempts: heldEnds.length, identical: endIdentical, noise: heldEnds.length > 1 && endIdentical, differedTwice: heldEnds.length > 1 && !endIdentical, hashes: heldEnds.map((x) => x.sha.slice(0, 16)) });
   const r = {
     url: `index.html?${q}`, held, fontsLoadedAtStart: fontsIn, yieldedBy,
     naturalEndIdenticalToStill2x: naturalIdentical, naturalRuns: { ...natural, stills: stills.map((h) => h.slice(0, 16)), stillsAgree: new Set(stills).size === 1 }, naturalPixelDiff: sha(nat[0].buf) === stills[0] ? null : await pixelDiff(nat[0].buf, stillBuf),
@@ -888,7 +969,7 @@ async function captureIntro() {
     const dom = await restDom(page);
     await page.addStyleTag({ content: HIDE_PULSE });
     await page.waitForTimeout(60);
-    const endSha = sha(await page.screenshot());
+    const endBuf = await page.screenshot();
     await page.reload({ waitUntil: "networkidle" });
     await page.waitForFunction(() => window.__eclipse?.ready === true);
     await page.evaluate(() => document.fonts.ready);
@@ -898,21 +979,49 @@ async function captureIntro() {
     const rDom = await restDom(page);
     await page.addStyleTag({ content: HIDE_PULSE });
     await page.waitForTimeout(60);
-    const rSha = sha(await page.screenshot());
+    const reloadBuf = await page.screenshot();
     await context.close();
+    // On a difference, the first open (and its reload) is run once more in a fresh context, and the frame compared again;
+    // a recaptured end counts only if that first open played its intro to the end.
+    let rerun = null;
+    const again = async () => {
+      if (rerun) return rerun;
+      const n = await newPage({ motion: true, fontCache: true });
+      await n.page.goto(`${ORIGIN}/index.html?${q}`, { waitUntil: "networkidle" });
+      await n.page.waitForFunction(() => window.__eclipse?.ready === true);
+      await introSettled(n.page);
+      await n.page.waitForTimeout(150);
+      const ran = await n.page.evaluate(() => window.__eclipse.intro.played && window.__eclipse.intro.yieldedBy === "complete");
+      await n.page.addStyleTag({ content: HIDE_PULSE });
+      await n.page.waitForTimeout(60);
+      const e = await n.page.screenshot();
+      await n.page.reload({ waitUntil: "networkidle" });
+      await n.page.waitForFunction(() => window.__eclipse?.ready === true);
+      await n.page.evaluate(() => document.fonts.ready);
+      await n.page.waitForTimeout(150);
+      const noIntro = await n.page.evaluate(() => !window.__eclipse.intro.played);
+      await n.page.addStyleTag({ content: HIDE_PULSE });
+      await n.page.waitForTimeout(60);
+      const r = await n.page.screenshot();
+      await n.context.close();
+      rerun = { end: ran ? e : Buffer.from("the intro did not play to its end"), reload: noIntro ? r : Buffer.from("the reload played an intro") };
+      return rerun;
+    };
+    const endM = await exact(`intro first open end ${name}`, endBuf, stillSha, async () => (await again()).end);
+    const reloadM = await exact(`intro reload ${name}`, reloadBuf, stillSha, async () => (await again()).reload);
     const domOff = await motionOffDom(q);
     const live = !q.includes("delayed");
     const pulseOnly = (list) => (live ? list.length === 1 && list[0].kind === "css @keyframes ping" : list.length === 0);
     const fo = {
       url: `index.html?${q}`, against, played: perf.played, reason: perf.reason, yieldedBy: perf.yieldedBy, measuredMs: perf.measuredMs, expectedMs: perf.expectedMs, fontWaitMs: perf.fontWaitMs,
-      introElementsSeen: { slots: perf.slotsSeen, dashes: perf.dashSeen }, endIdenticalToStill: endSha === stillSha, onlyThePulseAfter: pulseOnly(after),
+      introElementsSeen: { slots: perf.slotsSeen, dashes: perf.dashSeen }, endIdenticalToStill: endM.identical, endAttempts: endM.attempts, ...(endM.noise ? { endNoise: true } : {}), onlyThePulseAfter: pulseOnly(after),
       animationsAfter: after.map((a) => `${a.kind} on ${a.target}`), domEqualsMotionOff: dom === domOff,
       longTasksDuringIntro: perf.longTasksDuringIntro, longTaskObserver: perf.longTaskObserver, fontLoadsDuringIntro: perf.fontLoadsDuringIntro, framesDuringIntro: perf.framesDuringIntro, maxFrameGapMs: perf.maxFrameGapMs,
       surfacesAtFirstFrames: surfaces, errors,
     };
     fo.pass = fo.played && fo.yieldedBy === "complete" && fo.endIdenticalToStill && fo.onlyThePulseAfter && fo.domEqualsMotionOff && fo.longTasksDuringIntro.length === 0 && fo.fontLoadsDuringIntro.length === 0 && surfaces.pass && errors.length === 0;
     identity.firstOpen[name] = fo;
-    const rl = { played: rPerf.played, state: rPerf.state, reason: rPerf.reason, introElementsSeen: rPerf.slotsSeen + rPerf.dashSeen, identicalToStill: rSha === stillSha, onlyThePulse: pulseOnly(rAnims), animationsOnLoad: rAnims.map((a) => `${a.kind} on ${a.target}`), domEqualsMotionOff: rDom === domOff };
+    const rl = { played: rPerf.played, state: rPerf.state, reason: rPerf.reason, introElementsSeen: rPerf.slotsSeen + rPerf.dashSeen, identicalToStill: reloadM.identical, attempts: reloadM.attempts, ...(reloadM.noise ? { noise: true } : {}), onlyThePulse: pulseOnly(rAnims), animationsOnLoad: rAnims.map((a) => `${a.kind} on ${a.target}`), domEqualsMotionOff: rDom === domOff };
     rl.pass = !rl.played && rl.state === "off" && rl.introElementsSeen === 0 && rl.identicalToStill && rl.onlyThePulse && rl.domEqualsMotionOff;
     identity.reload[name] = rl;
     console.log(`intro ${name}: first open ${fo.pass ? "pass" : "FAIL"} (${fo.measuredMs} ms, fonts ${fo.fontWaitMs} ms, end = still ${fo.endIdenticalToStill}, surfaces at first paint ${surfaces.firstPaint.pass} and at the intro's first frame ${surfaces.introFirstFrame.pass}); reload ${rl.pass ? "pass" : "FAIL"} (no intro ${!rl.played}, = still ${rl.identicalToStill})`);
@@ -943,7 +1052,21 @@ async function captureIntro() {
       s.domEqualsMotionOff = (await restDom(page)) === domOff;
       await page.addStyleTag({ content: HIDE_PULSE });
       await page.waitForTimeout(60);
-      s.endIdenticalToStill = sha(await page.screenshot()) === PRE[name];
+      const endM = await exact(`intro slow fonts ${lang}@${delay}ms end`, await page.screenshot(), PRE[name], async () => {
+        const n = await newPage({ motion: true, fontDelayMs: delay });
+        await n.page.goto(`${ORIGIN}/index.html?${q}`, { waitUntil: "networkidle" });
+        await n.page.waitForFunction(() => window.__eclipse?.ready === true);
+        await introSettled(n.page);
+        await n.page.evaluate(() => document.fonts.ready);
+        await n.page.waitForTimeout(150);
+        await n.page.addStyleTag({ content: HIDE_PULSE });
+        await n.page.waitForTimeout(60);
+        const b = await n.page.screenshot();
+        await n.context.close();
+        return b;
+      });
+      s.endIdenticalToStill = endM.identical;
+      s.endAttempts = endM.attempts;
       s.onlyCachedFonts = FONT_CACHE.size === cached;
       s.errors = errors;
       await context.close();
@@ -1014,7 +1137,24 @@ async function captureIntro() {
     const hideTuner = await page.addStyleTag({ content: `${HIDE_PULSE} .tuner { visibility: hidden !important; }` });
     await page.mouse.move(720, 20);
     await page.waitForTimeout(80);
-    r.replayEndIdenticalToStill = sha(await page.screenshot()) === PRE["daily-ar-1440x900"];
+    const replayM = await exact("intro replay end", await page.screenshot(), PRE["daily-ar-1440x900"], async () => {
+      const n = await newPage({ motion: true, fontCache: true });
+      await n.page.goto(`${ORIGIN}/index.html?lang=ar`, { waitUntil: "networkidle" });
+      await n.page.waitForFunction(() => window.__eclipse?.ready === true);
+      await introSettled(n.page);
+      await n.page.click(".tuner-toggle");
+      await n.page.click("#t-mo-replay");
+      await n.page.waitForFunction(() => ["running", "done"].includes(window.__eclipse.intro.state));
+      await introSettled(n.page);
+      await n.page.addStyleTag({ content: `${HIDE_PULSE} .tuner { visibility: hidden !important; }` });
+      await n.page.mouse.move(720, 20);
+      await n.page.waitForTimeout(80);
+      const b = await n.page.screenshot();
+      await n.context.close();
+      return b;
+    });
+    r.replayEndIdenticalToStill = replayM.identical;
+    r.replayEndAttempts = replayM.attempts;
     await hideTuner.evaluate((n) => n.remove());
     const setSpeed = (v) => page.evaluate((x) => { const i = document.getElementById("t-mo-intro"); i.value = String(x); i.dispatchEvent(new Event("input")); }, v);
     await setSpeed(0.5);
@@ -1069,6 +1209,21 @@ async function captureIntro() {
       canon1280 = await c.page.screenshot();
       await c.context.close();
     }
+    // A recapture of the rail or resize frame: the same action at the same moment of a fresh first open.
+    const yieldAgain = (action, at) => async () => {
+      const n = await newPage({ motion: true, fontCache: true });
+      await n.page.goto(`${ORIGIN}/index.html?lang=ar&tuner=0`);
+      await n.page.waitForFunction(() => window.__eclipse?.intro?.state === "running", null, { timeout: 15000 });
+      await n.page.waitForFunction((t) => performance.now() - window.__eclipse.intro.startedAt >= t, at, { polling: 5 });
+      if (action === "rail") await n.page.click("#brand");
+      if (action === "resize") await n.page.setViewportSize({ width: 1280, height: 800 });
+      await n.page.waitForTimeout(750);
+      await n.page.addStyleTag({ content: HIDE_PULSE });
+      if (action === "rail") { await n.page.mouse.move(720, 40); await n.page.waitForTimeout(300); } else await n.page.waitForTimeout(60);
+      const b = await n.page.screenshot();
+      await n.context.close();
+      return b;
+    };
     for (const action of ["hover", "keys", "rail", "tap", "reading", "resize"]) {
       for (const at of [100, 400]) {
         const { context, page, errors } = await newPage({ motion: true, touch: action === "tap", fontCache: true });
@@ -1110,7 +1265,9 @@ async function captureIntro() {
           await page.mouse.move(720, 40);
           await page.waitForTimeout(300);
           r.railOpen = await page.evaluate(() => document.getElementById("brand").getAttribute("aria-expanded"));
-          r.settledIdenticalToStill = sha(await page.screenshot()) === railPre;
+          const m = await exact(`intro yields to the rail at ${at} ms, settled`, await page.screenshot(), railPre, yieldAgain("rail", at));
+          r.settledIdenticalToStill = m.identical;
+          r.attempts = m.attempts;
           r.pass = r.railOpen === "true" && r.settledIdenticalToStill;
         }
         if (action === "reading") {
@@ -1126,7 +1283,9 @@ async function captureIntro() {
           await page.addStyleTag({ content: HIDE_PULSE });
           await page.waitForTimeout(60);
           const buf = await page.screenshot();
-          r.identicalToFresh1280 = sha(buf) === sha(canon1280);
+          const m = await exact(`intro yields to a resize at ${at} ms`, buf, sha(canon1280), yieldAgain("resize", at));
+          r.identicalToFresh1280 = m.identical;
+          r.attempts = m.attempts;
           if (!r.identicalToFresh1280) r.pixelDiffFromFresh1280 = await pixelDiff(buf, canon1280);
           r.pass = r.identicalToFresh1280;
         }
@@ -1209,8 +1368,9 @@ async function captureMotion() {
     let still = stillBuffers[frame.name];
     if (!still) { try { still = await readFile(join(OUT, `${frame.name}.png`)); } catch { still = null; } }
     const against = PRE[frame.name] && !EXPECTED_TO_CHANGE[frame.name] ? "pre-motion frame" : "this run's reduced-motion frame";
-    const identical = against === "pre-motion frame" ? sha(buf) === PRE[frame.name] : Boolean(still) && sha(buf) === sha(still);
-    identity.motionOffFrames[frame.name] = { url: `index.html?${q}`, reducedMotion: "no-preference", against, identical, dataMotion: await page.evaluate(() => document.documentElement.dataset.motion), errors };
+    const m = await exact(`?motion=off ${frame.name}`, buf, against === "pre-motion frame" ? PRE[frame.name] : still && sha(still), recapture(q, { motion: true }, async (p) => { await act(p, frame); await p.waitForTimeout(200); }, { fullPage: Boolean(frame.full) }));
+    const identical = m.identical;
+    identity.motionOffFrames[frame.name] = { url: `index.html?${q}`, reducedMotion: "no-preference", against, identical, attempts: m.attempts, ...(m.noise ? { noise: true } : {}), dataMotion: await page.evaluate(() => document.documentElement.dataset.motion), errors };
     await context.close();
   }
 
@@ -1231,6 +1391,15 @@ async function captureMotion() {
     M.chart[`arNoHistory${s}`] = await chartChecks("ar", "nohistory", mk);
     M.chart[`enDelayed${s}`] = await chartChecks("en", "delayed", mk);
     M.chart[`enNoHistory${s}`] = await chartChecks("en", "nohistory", mk);
+  }
+  // The follow-up round after step 3: the tooltip has one width on every page, in both languages and every state, and
+  // the widest content it shows anywhere fits in it.
+  {
+    const pages = Object.values(M.chart);
+    const widths = [...new Set(pages.flatMap((v) => v.tooltip.widths))];
+    const widest = Math.max(...pages.map((v) => v.tooltip.widestContent));
+    const at = Object.entries(M.chart).flatMap(([k, v]) => v.perStop.filter((p) => p.tipBox?.natural === widest).map((p) => `${k} ${p.key}`));
+    M.tooltipWidth = { widths, widestContentPx: widest, widestAt: at, marginPx: widths.length === 1 ? Math.round((widths[0] - widest) * 100) / 100 : null, pass: widths.length === 1 && widest <= widths[0] && pages.every((v) => v.tooltip.pass) };
   }
 
   // 3b. Round 7 step 2: B's variants, form A gone, the hover speed.
@@ -1463,7 +1632,14 @@ async function captureMotion() {
       await page.mouse.move(720, 40);
       await page.waitForTimeout(300);
       if (lang === "ar") {
-        rail.arOpenSettledIdenticalToStatic = sha(await page.screenshot()) === PRE["daily-ar-1440x900-rail-open"];
+        const railM = await exact("rail AR open, settled", await page.screenshot(), PRE["daily-ar-1440x900-rail-open"], recapture("lang=ar&tuner=0", { motion: true }, async (p) => {
+          await p.addStyleTag({ content: HIDE_PULSE });
+          await p.click("#brand");
+          await p.mouse.move(720, 40);
+          await p.waitForTimeout(700);
+        }));
+        rail.arOpenSettledIdenticalToStatic = railM.identical;
+        rail.arOpenSettledAttempts = railM.attempts;
         await page.click("#brand");
         await pauseAll(page);
         const closeAnims = await listAnimations(page);
@@ -1502,6 +1678,7 @@ async function captureMotion() {
   const fo = Object.values(identity.firstOpen), rl = Object.values(identity.reload);
   console.log(`motion: off-frames identical ${Object.values(identity.motionOffFrames).filter((v) => v.identical).length}/${Object.keys(identity.motionOffFrames).length}; intro end = still frame ${fo.filter((v) => v.endIdenticalToStill).length}/${fo.length}, reload without intro = still frame ${rl.filter((v) => v.pass).length}/${rl.length}; live ends at canonical ${identity.liveUpdateEndsAtCanonical?.identicalWithPulseHidden} (DOM ${identity.liveUpdateEndsAtCanonical?.domEqual})`);
   for (const k of Object.keys(c)) console.log(`chart ${k}: ${c[k].pass ? "pass" : "FAIL"}; stops ${c[k].stops.length}; marker max distance line ${c[k].maxDistancePx.lineStops} px, peak ${c[k].maxDistancePx.peak}, usual ${c[k].maxDistancePx.usualLine}, gap ${c[k].maxDistancePx.gapMark}; pointer ${c[k].pointer.filter((p) => p.pass).length}/${c[k].pointer.length}; keyboard ${c[k].keyboard.pass}`);
+  console.log(`tooltip: ${M.tooltipWidth.pass ? "pass" : "FAIL"}; width ${M.tooltipWidth.widths.join("/")} px on every page, widest content ${M.tooltipWidth.widestContentPx} px (${M.tooltipWidth.widestAt.join(", ")}); the number's start against the hairline, spread per side: ${Object.entries(c).map(([k, v]) => `${k} ${Object.entries(v.tooltip.bySide).map(([sd, b]) => `${sd} ${b.numberSpreadPx}`).join("/")}`).join("; ")}`);
   console.log(`follow: ${Object.entries(M.follow).map(([k, v]) => `${k} ${v.pass}`).join(", ")}; roll: ar ${M.roll.ar.pass}, en ${M.roll.en.pass}; delayed ${M.delayed.pass}; rail ${M.rail.pass}`);
 }
 
@@ -1516,7 +1693,7 @@ try {
     await act(page, frame);
     await page.waitForTimeout(200);
     const result = await inspect(page);
-    await shot(page, frame.name, { fullPage: Boolean(frame.full) });
+    await shot(page, frame.name, { fullPage: Boolean(frame.full) }, recapture(frame.q, {}, async (p) => { await act(p, frame); await p.waitForTimeout(200); }, { fullPage: Boolean(frame.full) }));
     record(frame.name, { url: `index.html?${frame.q}`, viewport: "1440x900", deviceScaleFactor: 1, fullPage: Boolean(frame.full), act: frame.act ?? null }, result, errors);
     await context.close();
   }
@@ -1527,13 +1704,14 @@ try {
     {
       const { context, page, errors } = await open(q);
       const result = await inspect(page);
-      await shot(page, `preset-${id}-ar-1440x900`);
+      await shot(page, `preset-${id}-ar-1440x900`, {}, recapture(q, {}));
       const applied = await page.evaluate(() => Object.fromEntries(["--now-int", "--now-core", "--now-disc-size", "--now-disc-x", "--now-soft", "--now-rim", "--now-far", "--now-end", "--chart-int", "--chart-fade", "--chart-side", "--chart-balance", "--chart-soft", "--wash-int", "--grain-o"].map((v) => [v, getComputedStyle(document.documentElement).getPropertyValue(v).trim()])));
       record(`preset-${id}-ar-1440x900`, { url: `index.html?${q}`, viewport: "1440x900", deviceScaleFactor: 1, appliedLightSettings: applied }, result, errors);
       await page.addStyleTag({ content: HIDE_CONTENT });
       await page.waitForTimeout(80);
-      const now = await shot(page, `preset-${id}-nowcard-light`, { clip: clipOf(await rectOf(page, "#card-now")) });
-      const chart = await shot(page, `preset-${id}-chart-light`, { clip: clipOf(await rectOf(page, ".chart")) });
+      const hidden = async (p) => { await p.addStyleTag({ content: HIDE_CONTENT }); await p.waitForTimeout(80); };
+      const now = await shot(page, `preset-${id}-nowcard-light`, { clip: clipOf(await rectOf(page, "#card-now")) }, recapture(q, {}, hidden, async (p) => ({ clip: clipOf(await rectOf(p, "#card-now")) })));
+      const chart = await shot(page, `preset-${id}-chart-light`, { clip: clipOf(await rectOf(page, ".chart")) }, recapture(q, {}, hidden, async (p) => ({ clip: clipOf(await rectOf(p, ".chart")) })));
       lights[id] = { settings: applied, chart: await measure(chart, "chart", true), insideNow: await measure(now, "now", true) };
       await context.close();
     }
@@ -1541,7 +1719,7 @@ try {
       const { context, page, errors } = await open(q, { scale: 2 });
       for (const [sel, part] of [["#card-now", "nowcard"], [".chart", "chart"]]) {
         const box = await rectOf(page, sel);
-        await shot(page, `preset-${id}-${part}-2x`, { clip: clipOf(box) });
+        await shot(page, `preset-${id}-${part}-2x`, { clip: clipOf(box) }, recapture(q, { scale: 2 }, null, async (p) => ({ clip: clipOf(await rectOf(p, sel)) })));
       }
       if (id === "recommended") {
         log.push({ frame: "levels", levelsNowcard: await levels(join(OUT, "preset-recommended-nowcard-2x.png"), join(OUT, "levels-nowcard.png")), levelsChart: await levels(join(OUT, "preset-recommended-chart-2x.png"), join(OUT, "levels-chart.png")), errors });
@@ -1558,7 +1736,7 @@ try {
   {
     const { context, page, errors } = await open("lang=en&tuner=0", { scale: 2 });
     const box = await rectOf(page, "#card-now");
-    await shot(page, "daily-en-nowcard-2x", { clip: clipOf(box) });
+    await shot(page, "daily-en-nowcard-2x", { clip: clipOf(box) }, recapture("lang=en&tuner=0", { scale: 2 }, null, async (p) => ({ clip: clipOf(await rectOf(p, "#card-now")) })));
     await context.close();
     const l = await open("lang=en&tuner=0");
     await l.page.addStyleTag({ content: HIDE_CONTENT });
@@ -1771,6 +1949,18 @@ const motionSummary = {
   onlyThePulseRunsAfterIntro: allTrue(identity.firstOpen, "onlyThePulseAfter"),
   reloadHasNoIntroAndIsStillFrame: allTrue(identity.reload, "pass"),
   liveUpdateEndsAtCanonical: identity.liveUpdateEndsAtCanonical,
+  // The follow-up round after step 3: each exact-hash comparison, with its attempts.
+  recaptures: {
+    rule: "a frame whose hash differs from its expected value is captured again, the same way, in a fresh context; it counts as a difference only if it differs in that next attempt too (no tolerance)",
+    plant: PLANT,
+    comparisons: recaptures.length,
+    firstAttempt: recaptures.filter((v) => v.attempts === 1 && v.identical).length,
+    noise: recaptures.filter((v) => v.noise).map((v) => v.label),
+    differedTwice: recaptures.filter((v) => v.differedTwice).map((v) => v.label),
+    differedWithoutRecapture: recaptures.filter((v) => !v.identical && v.attempts === 1).map((v) => v.label),
+    entries: recaptures,
+  },
+  tooltipWidth: motionLog.tooltipWidth ?? null,
   markerMaxDistancePx: motionLog.chart ? Object.fromEntries(Object.entries(motionLog.chart).map(([k, v]) => [k, v.maxDistancePx])) : null,
   identity,
   ...motionLog,
@@ -1796,7 +1986,8 @@ const compared = Object.values(identity.staticFrames);
 if (!MOTION_ONLY) console.log(changed.length ? `STATIC GUARD FAILED (reduced motion): ${changed.join(", ")}` : `Static guard, reduced motion: ${compared.filter((v) => v.identical).length} of ${compared.length} pre-motion frames identical; the other ${compared.filter((v) => !v.identical).length} change by design (${Object.keys(EXPECTED_TO_CHANGE).join(", ")}).`);
 console.log(changedOff.length ? `STATIC GUARD FAILED (?motion=off): ${changedOff.join(", ")}` : `Static guard, ?motion=off: all ${Object.keys(identity.motionOffFrames).length} frames identical (pre-motion frame, or this run's still frame for the frames that change by design).`);
 console.log(firstPaintBad.length ? `INTRO END STATE OR RELOAD FAILED: ${firstPaintBad.join(", ")}` : `First open with motion on: the intro plays and ends identical to the still frame, only the live pulse runs after it; a same-tab reload has no intro and is the still frame (${Object.keys(identity.firstOpen).length} pages each).`);
-const round6 = motionLog.chart ? [...Object.values(motionLog.chart).map((v) => v.pass), ...Object.values(motionLog.follow).map((v) => v.pass), motionLog.marker?.pass, motionLog.roll.ar.pass, motionLog.roll.en.pass, motionLog.delayed.pass, motionLog.rail.pass, identity.liveUpdateEndsAtCanonical?.domEqual] : [false];
+console.log(`Recaptures: ${recaptures.length} exact comparisons; ${recaptures.filter((v) => v.attempts === 1 && v.identical).length} matched at once; noise (differed once, then matched) ${recaptures.filter((v) => v.noise).length}${recaptures.some((v) => v.noise) ? ` (${recaptures.filter((v) => v.noise).map((v) => v.label).join(", ")})` : ""}; differed twice ${recaptures.filter((v) => v.differedTwice).length}${recaptures.some((v) => v.differedTwice) ? ` (${recaptures.filter((v) => v.differedTwice).map((v) => v.label).join(", ")})` : ""}.`);
+const round6 = motionLog.chart ? [motionLog.tooltipWidth?.pass, ...Object.values(motionLog.chart).map((v) => v.pass), ...Object.values(motionLog.follow).map((v) => v.pass), motionLog.marker?.pass, motionLog.roll.ar.pass, motionLog.roll.en.pass, motionLog.delayed.pass, motionLog.rail.pass, identity.liveUpdateEndsAtCanonical?.domEqual] : [false];
 if (round6.some((v) => !v)) console.log("A Round 6 or Round 7 check did not pass; see motion.chart, follow, marker, roll, delayed, rail and liveUpdateEndsAtCanonical in the log.");
 const introOk = Boolean(motionLog.intro?.pass);
 if (!introOk) console.log("An intro check did not pass; see motion.intro (slowFonts, whenItPlays, yields, held) and motion.identity.firstOpen / reload in the log.");

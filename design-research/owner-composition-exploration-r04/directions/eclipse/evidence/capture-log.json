@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-09-26T17:59:37.808Z",
+  "capturedAt": "2026-09-27T06:04:31.184Z",
   "port": 3173,
   "motion": {
     "method": "Pre-motion frames: evidence/pre-motion-hashes.json (SHA-256 of the v3 frames before motion). The capture is byte-deterministic, so equal hashes mean identical pixels.",
@@ -22,6 +22,733 @@
         }
       },
       "domEqual": true
+    },
+    "recaptures": {
+      "rule": "a frame whose hash differs from its expected value is captured again, the same way, in a fresh context; it counts as a difference only if it differs in that next attempt too (no tolerance)",
+      "plant": null,
+      "comparisons": 70,
+      "firstAttempt": 68,
+      "noise": [],
+      "differedTwice": [],
+      "differedWithoutRecapture": [
+        "static daily-ar-1440x900-hover",
+        "static daily-ar-1440x900-tuner-open"
+      ],
+      "entries": [
+        {
+          "label": "static daily-ar-1440x900",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "9a1d863c761c5a88"
+          ]
+        },
+        {
+          "label": "static daily-en-1440x900",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "2aa6a56a2723025c"
+          ]
+        },
+        {
+          "label": "static daily-ar-1440x900-hover",
+          "attempts": 1,
+          "identical": false,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "01a980ab97b84459"
+          ]
+        },
+        {
+          "label": "static daily-ar-1440x900-rail-open",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "1de72699e0e7ceb3"
+          ]
+        },
+        {
+          "label": "static daily-en-1440x900-rail-open",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "244e345387133f53"
+          ]
+        },
+        {
+          "label": "static daily-ar-1440x900-delayed",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "d7b76d244ec5d098"
+          ]
+        },
+        {
+          "label": "static daily-ar-1440x900-nohistory",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "ca4b1b4c5e8406fd"
+          ]
+        },
+        {
+          "label": "static daily-ar-1440x900-details",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "1b66802561bd1efd"
+          ]
+        },
+        {
+          "label": "static daily-ar-1440x900-tuner-open",
+          "attempts": 1,
+          "identical": false,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "5285ceae61495bf0"
+          ]
+        },
+        {
+          "label": "static preset-v2-ar-1440x900",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "ded08a5307b9cb54"
+          ]
+        },
+        {
+          "label": "static preset-v2-nowcard-light",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "805b3cbf84e356d8"
+          ]
+        },
+        {
+          "label": "static preset-v2-chart-light",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "366e804620d41c46"
+          ]
+        },
+        {
+          "label": "static preset-v2-nowcard-2x",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "9cf498968263641a"
+          ]
+        },
+        {
+          "label": "static preset-v2-chart-2x",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "ab57491d7dd43074"
+          ]
+        },
+        {
+          "label": "static preset-a-like-ar-1440x900",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "298fab89542bca80"
+          ]
+        },
+        {
+          "label": "static preset-a-like-nowcard-light",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "fbca592efe12b89e"
+          ]
+        },
+        {
+          "label": "static preset-a-like-chart-light",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "ca0f658331cf9825"
+          ]
+        },
+        {
+          "label": "static preset-a-like-nowcard-2x",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "8635b3e9954d09e0"
+          ]
+        },
+        {
+          "label": "static preset-a-like-chart-2x",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "12001e4e6a454a1f"
+          ]
+        },
+        {
+          "label": "static preset-recommended-ar-1440x900",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "9a1d863c761c5a88"
+          ]
+        },
+        {
+          "label": "static preset-recommended-nowcard-light",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "fbca592efe12b89e"
+          ]
+        },
+        {
+          "label": "static preset-recommended-chart-light",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "e7adc69d052d8e51"
+          ]
+        },
+        {
+          "label": "static preset-recommended-nowcard-2x",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "8635b3e9954d09e0"
+          ]
+        },
+        {
+          "label": "static preset-recommended-chart-2x",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "dd4d502e13d79911"
+          ]
+        },
+        {
+          "label": "static levels-nowcard (from its crop)",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "27eb5f533ceb96d6"
+          ]
+        },
+        {
+          "label": "static levels-chart (from its crop)",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "666c84cb2f612507"
+          ]
+        },
+        {
+          "label": "static daily-en-nowcard-2x",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "7c298766b4107da3"
+          ]
+        },
+        {
+          "label": "?motion=off daily-ar-1440x900",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "9a1d863c761c5a88"
+          ]
+        },
+        {
+          "label": "?motion=off daily-en-1440x900",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "2aa6a56a2723025c"
+          ]
+        },
+        {
+          "label": "?motion=off daily-ar-1440x900-hover",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "01a980ab97b84459"
+          ]
+        },
+        {
+          "label": "?motion=off daily-en-1440x900-hover",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "6efb60d3fc4d9811"
+          ]
+        },
+        {
+          "label": "?motion=off daily-ar-1440x900-rail-open",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "1de72699e0e7ceb3"
+          ]
+        },
+        {
+          "label": "?motion=off daily-en-1440x900-rail-open",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "244e345387133f53"
+          ]
+        },
+        {
+          "label": "?motion=off daily-ar-1440x900-delayed",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "d7b76d244ec5d098"
+          ]
+        },
+        {
+          "label": "?motion=off daily-ar-1440x900-nohistory",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "ca4b1b4c5e8406fd"
+          ]
+        },
+        {
+          "label": "?motion=off daily-ar-1440x900-details",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "1b66802561bd1efd"
+          ]
+        },
+        {
+          "label": "intro first open end daily-ar-1440x900",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "9a1d863c761c5a88"
+          ]
+        },
+        {
+          "label": "intro reload daily-ar-1440x900",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "9a1d863c761c5a88"
+          ]
+        },
+        {
+          "label": "intro first open end daily-en-1440x900",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "2aa6a56a2723025c"
+          ]
+        },
+        {
+          "label": "intro reload daily-en-1440x900",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "2aa6a56a2723025c"
+          ]
+        },
+        {
+          "label": "intro first open end daily-ar-1440x900-delayed",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "d7b76d244ec5d098"
+          ]
+        },
+        {
+          "label": "intro reload daily-ar-1440x900-delayed",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "d7b76d244ec5d098"
+          ]
+        },
+        {
+          "label": "intro first open end daily-ar-1440x900-nohistory",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "ca4b1b4c5e8406fd"
+          ]
+        },
+        {
+          "label": "intro reload daily-ar-1440x900-nohistory",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "ca4b1b4c5e8406fd"
+          ]
+        },
+        {
+          "label": "intro first open end daily-en-1440x900-delayed",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "d6d9cb86f897a378"
+          ]
+        },
+        {
+          "label": "intro reload daily-en-1440x900-delayed",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "d6d9cb86f897a378"
+          ]
+        },
+        {
+          "label": "intro first open end daily-en-1440x900-nohistory",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "6a4dcd31df6c6f57"
+          ]
+        },
+        {
+          "label": "intro reload daily-en-1440x900-nohistory",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "6a4dcd31df6c6f57"
+          ]
+        },
+        {
+          "label": "intro slow fonts ar@600ms end",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "9a1d863c761c5a88"
+          ]
+        },
+        {
+          "label": "intro slow fonts ar@50ms end",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "9a1d863c761c5a88"
+          ]
+        },
+        {
+          "label": "intro slow fonts en@600ms end",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "2aa6a56a2723025c"
+          ]
+        },
+        {
+          "label": "intro slow fonts en@50ms end",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "2aa6a56a2723025c"
+          ]
+        },
+        {
+          "label": "intro replay end",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "9a1d863c761c5a88"
+          ]
+        },
+        {
+          "label": "intro yields to the rail at 100 ms, settled",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "1de72699e0e7ceb3"
+          ]
+        },
+        {
+          "label": "intro yields to the rail at 400 ms, settled",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "1de72699e0e7ceb3"
+          ]
+        },
+        {
+          "label": "intro yields to a resize at 100 ms",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "a9c172fd43a36f57"
+          ]
+        },
+        {
+          "label": "intro yields to a resize at 400 ms",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "a9c172fd43a36f57"
+          ]
+        },
+        {
+          "label": "intro held 2x ar live, played by itself",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "56ba183334a2627f"
+          ]
+        },
+        {
+          "label": "intro held 2x ar live, end after the holds",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "56ba183334a2627f"
+          ]
+        },
+        {
+          "label": "intro held 2x en live, played by itself",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "6ba4ed4ac88d66ef"
+          ]
+        },
+        {
+          "label": "intro held 2x en live, end after the holds",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "6ba4ed4ac88d66ef"
+          ]
+        },
+        {
+          "label": "intro held 2x ar delayed, played by itself",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "69dd526ad3f4299f"
+          ]
+        },
+        {
+          "label": "intro held 2x ar delayed, end after the holds",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "69dd526ad3f4299f"
+          ]
+        },
+        {
+          "label": "intro held 2x ar nohistory, played by itself",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "69a4205f9ae96034"
+          ]
+        },
+        {
+          "label": "intro held 2x ar nohistory, end after the holds",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "69a4205f9ae96034"
+          ]
+        },
+        {
+          "label": "intro held 2x en delayed, played by itself",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "b7bdaf935a90a412"
+          ]
+        },
+        {
+          "label": "intro held 2x en delayed, end after the holds",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "b7bdaf935a90a412"
+          ]
+        },
+        {
+          "label": "intro held 2x en nohistory, played by itself",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "502019e99938903a"
+          ]
+        },
+        {
+          "label": "intro held 2x en nohistory, end after the holds",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "502019e99938903a"
+          ]
+        },
+        {
+          "label": "rail AR open, settled",
+          "attempts": 1,
+          "identical": true,
+          "noise": false,
+          "differedTwice": false,
+          "hashes": [
+            "1de72699e0e7ceb3"
+          ]
+        }
+      ]
+    },
+    "tooltipWidth": {
+      "widths": [
+        138
+      ],
+      "widestContentPx": 135.27,
+      "widestAt": [
+        "en gap",
+        "enDelayed gap",
+        "enNoHistory gap"
+      ],
+      "marginPx": 2.73,
+      "pass": true
     },
     "markerMaxDistancePx": {
       "ar": {
@@ -64,87 +791,114 @@
     "identity": {
       "staticFrames": {
         "daily-ar-1440x900": {
-          "identical": true
+          "identical": true,
+          "attempts": 1
         },
         "daily-en-1440x900": {
-          "identical": true
+          "identical": true,
+          "attempts": 1
         },
         "daily-ar-1440x900-hover": {
           "identical": false,
-          "expectedToChange": "Round 7: marker form B (the hollow ring) replaces the Round 6 reading sight; the value at the peak stop is unchanged (62)"
+          "attempts": 1,
+          "expectedToChange": "Round 7: marker form B (the hollow ring) replaces the Round 6 reading sight; the value at the peak stop is unchanged (62); the follow-up round after step 3: the tooltip's one fixed width"
         },
         "daily-ar-1440x900-rail-open": {
-          "identical": true
+          "identical": true,
+          "attempts": 1
         },
         "daily-en-1440x900-rail-open": {
-          "identical": true
+          "identical": true,
+          "attempts": 1
         },
         "daily-ar-1440x900-delayed": {
-          "identical": true
+          "identical": true,
+          "attempts": 1
         },
         "daily-ar-1440x900-nohistory": {
-          "identical": true
+          "identical": true,
+          "attempts": 1
         },
         "daily-ar-1440x900-details": {
-          "identical": true
+          "identical": true,
+          "attempts": 1
         },
         "daily-ar-1440x900-tuner-open": {
           "identical": false,
+          "attempts": 1,
           "expectedToChange": "Round 6: the tuner's Motion group; Round 7 step 2: its hover speed (the step-1 Marker group is gone); Round 7 step 3: the intro speed and Replay intro"
         },
         "preset-v2-ar-1440x900": {
-          "identical": true
+          "identical": true,
+          "attempts": 1
         },
         "preset-v2-nowcard-light": {
-          "identical": true
+          "identical": true,
+          "attempts": 1
         },
         "preset-v2-chart-light": {
-          "identical": true
+          "identical": true,
+          "attempts": 1
         },
         "preset-v2-nowcard-2x": {
-          "identical": true
+          "identical": true,
+          "attempts": 1
         },
         "preset-v2-chart-2x": {
-          "identical": true
+          "identical": true,
+          "attempts": 1
         },
         "preset-a-like-ar-1440x900": {
-          "identical": true
+          "identical": true,
+          "attempts": 1
         },
         "preset-a-like-nowcard-light": {
-          "identical": true
+          "identical": true,
+          "attempts": 1
         },
         "preset-a-like-chart-light": {
-          "identical": true
+          "identical": true,
+          "attempts": 1
         },
         "preset-a-like-nowcard-2x": {
-          "identical": true
+          "identical": true,
+          "attempts": 1
         },
         "preset-a-like-chart-2x": {
-          "identical": true
+          "identical": true,
+          "attempts": 1
         },
         "preset-recommended-ar-1440x900": {
-          "identical": true
+          "identical": true,
+          "attempts": 1
         },
         "preset-recommended-nowcard-light": {
-          "identical": true
+          "identical": true,
+          "attempts": 1
         },
         "preset-recommended-chart-light": {
-          "identical": true
+          "identical": true,
+          "attempts": 1
         },
         "preset-recommended-nowcard-2x": {
-          "identical": true
+          "identical": true,
+          "attempts": 1
         },
         "preset-recommended-chart-2x": {
-          "identical": true
+          "identical": true,
+          "attempts": 1
         },
         "levels-nowcard": {
-          "identical": true
+          "identical": true,
+          "attempts": 1
         },
         "levels-chart": {
-          "identical": true
+          "identical": true,
+          "attempts": 1
         },
         "daily-en-nowcard-2x": {
-          "identical": true
+          "identical": true,
+          "attempts": 1
         }
       },
       "motionOffFrames": {
@@ -153,6 +907,7 @@
           "reducedMotion": "no-preference",
           "against": "pre-motion frame",
           "identical": true,
+          "attempts": 1,
           "dataMotion": "off",
           "errors": []
         },
@@ -161,6 +916,7 @@
           "reducedMotion": "no-preference",
           "against": "pre-motion frame",
           "identical": true,
+          "attempts": 1,
           "dataMotion": "off",
           "errors": []
         },
@@ -169,6 +925,7 @@
           "reducedMotion": "no-preference",
           "against": "this run's reduced-motion frame",
           "identical": true,
+          "attempts": 1,
           "dataMotion": "off",
           "errors": []
         },
@@ -177,6 +934,7 @@
           "reducedMotion": "no-preference",
           "against": "this run's reduced-motion frame",
           "identical": true,
+          "attempts": 1,
           "dataMotion": "off",
           "errors": []
         },
@@ -185,6 +943,7 @@
           "reducedMotion": "no-preference",
           "against": "pre-motion frame",
           "identical": true,
+          "attempts": 1,
           "dataMotion": "off",
           "errors": []
         },
@@ -193,6 +952,7 @@
           "reducedMotion": "no-preference",
           "against": "pre-motion frame",
           "identical": true,
+          "attempts": 1,
           "dataMotion": "off",
           "errors": []
         },
@@ -201,6 +961,7 @@
           "reducedMotion": "no-preference",
           "against": "pre-motion frame",
           "identical": true,
+          "attempts": 1,
           "dataMotion": "off",
           "errors": []
         },
@@ -209,6 +970,7 @@
           "reducedMotion": "no-preference",
           "against": "pre-motion frame",
           "identical": true,
+          "attempts": 1,
           "dataMotion": "off",
           "errors": []
         },
@@ -217,6 +979,7 @@
           "reducedMotion": "no-preference",
           "against": "pre-motion frame",
           "identical": true,
+          "attempts": 1,
           "dataMotion": "off",
           "errors": []
         }
@@ -228,14 +991,15 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 850,
+          "measuredMs": 863,
           "expectedMs": 820,
-          "fontWaitMs": 22,
+          "fontWaitMs": 21,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 33
+            "dashes": 34
           },
           "endIdenticalToStill": true,
+          "endAttempts": 1,
           "onlyThePulseAfter": true,
           "animationsAfter": [
             "css @keyframes ping on span.ping.is-on"
@@ -244,12 +1008,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 47,
-          "maxFrameGapMs": 33.4,
+          "framesDuringIntro": 48,
+          "maxFrameGapMs": 33.3,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 54,
+              "t": 56,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -261,8 +1025,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 101,
-              "sinceStartMs": 24,
+              "t": 130,
+              "sinceStartMs": 27,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -283,14 +1047,15 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 852,
+          "measuredMs": 861,
           "expectedMs": 820,
-          "fontWaitMs": 18,
+          "fontWaitMs": 27,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 33
+            "dashes": 35
           },
           "endIdenticalToStill": true,
+          "endAttempts": 1,
           "onlyThePulseAfter": true,
           "animationsAfter": [
             "css @keyframes ping on span.ping.is-on"
@@ -299,12 +1064,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 47,
-          "maxFrameGapMs": 50,
+          "framesDuringIntro": 48,
+          "maxFrameGapMs": 33.3,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 49,
+              "t": 69,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -316,8 +1081,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 97,
-              "sinceStartMs": 29,
+              "t": 145,
+              "sinceStartMs": 34,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -338,26 +1103,27 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 846,
+          "measuredMs": 880,
           "expectedMs": 820,
-          "fontWaitMs": 24,
+          "fontWaitMs": 31,
           "introElementsSeen": {
             "slots": 4,
-            "dashes": 33
+            "dashes": 34
           },
           "endIdenticalToStill": true,
+          "endAttempts": 1,
           "onlyThePulseAfter": true,
           "animationsAfter": [],
           "domEqualsMotionOff": true,
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 47,
+          "framesDuringIntro": 49,
           "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 53,
+              "t": 69,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -369,8 +1135,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 125,
-              "sinceStartMs": 24,
+              "t": 130,
+              "sinceStartMs": 28,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -391,14 +1157,15 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 862,
+          "measuredMs": 883,
           "expectedMs": 820,
-          "fontWaitMs": 28,
+          "fontWaitMs": 30,
           "introElementsSeen": {
             "slots": 5,
             "dashes": 34
           },
           "endIdenticalToStill": true,
+          "endAttempts": 1,
           "onlyThePulseAfter": true,
           "animationsAfter": [
             "css @keyframes ping on span.ping.is-on"
@@ -407,12 +1174,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 48,
+          "framesDuringIntro": 49,
           "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 67,
+              "t": 69,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -424,8 +1191,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 155,
-              "sinceStartMs": 29,
+              "t": 131,
+              "sinceStartMs": 30,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -446,14 +1213,15 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 878,
+          "measuredMs": 851,
           "expectedMs": 820,
-          "fontWaitMs": 28,
+          "fontWaitMs": 20,
           "introElementsSeen": {
             "slots": 4,
-            "dashes": 33
+            "dashes": 34
           },
           "endIdenticalToStill": true,
+          "endAttempts": 1,
           "onlyThePulseAfter": true,
           "animationsAfter": [],
           "domEqualsMotionOff": true,
@@ -461,11 +1229,11 @@
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
           "framesDuringIntro": 48,
-          "maxFrameGapMs": 33.3,
+          "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 65,
+              "t": 62,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -477,8 +1245,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 141,
-              "sinceStartMs": 30,
+              "t": 111,
+              "sinceStartMs": 27,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -499,14 +1267,15 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 878,
+          "measuredMs": 850,
           "expectedMs": 820,
-          "fontWaitMs": 27,
+          "fontWaitMs": 18,
           "introElementsSeen": {
             "slots": 5,
             "dashes": 35
           },
           "endIdenticalToStill": true,
+          "endAttempts": 1,
           "onlyThePulseAfter": true,
           "animationsAfter": [
             "css @keyframes ping on span.ping.is-on"
@@ -515,12 +1284,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 50,
+          "framesDuringIntro": 49,
           "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 65,
+              "t": 61,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -532,8 +1301,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 140,
-              "sinceStartMs": 27,
+              "t": 107,
+              "sinceStartMs": 23,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -556,6 +1325,7 @@
           "reason": "already opened in this tab",
           "introElementsSeen": 0,
           "identicalToStill": true,
+          "attempts": 1,
           "onlyThePulse": true,
           "animationsOnLoad": [
             "css @keyframes ping on span.ping.is-on"
@@ -569,6 +1339,7 @@
           "reason": "already opened in this tab",
           "introElementsSeen": 0,
           "identicalToStill": true,
+          "attempts": 1,
           "onlyThePulse": true,
           "animationsOnLoad": [
             "css @keyframes ping on span.ping.is-on"
@@ -582,6 +1353,7 @@
           "reason": "already opened in this tab",
           "introElementsSeen": 0,
           "identicalToStill": true,
+          "attempts": 1,
           "onlyThePulse": true,
           "animationsOnLoad": [],
           "domEqualsMotionOff": true,
@@ -593,6 +1365,7 @@
           "reason": "already opened in this tab",
           "introElementsSeen": 0,
           "identicalToStill": true,
+          "attempts": 1,
           "onlyThePulse": true,
           "animationsOnLoad": [
             "css @keyframes ping on span.ping.is-on"
@@ -606,6 +1379,7 @@
           "reason": "already opened in this tab",
           "introElementsSeen": 0,
           "identicalToStill": true,
+          "attempts": 1,
           "onlyThePulse": true,
           "animationsOnLoad": [],
           "domEqualsMotionOff": true,
@@ -617,6 +1391,7 @@
           "reason": "already opened in this tab",
           "introElementsSeen": 0,
           "identicalToStill": true,
+          "attempts": 1,
           "onlyThePulse": true,
           "animationsOnLoad": [
             "css @keyframes ping on span.ping.is-on"
@@ -738,14 +1513,15 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 850,
+          "measuredMs": 863,
           "expectedMs": 820,
-          "fontWaitMs": 22,
+          "fontWaitMs": 21,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 33
+            "dashes": 34
           },
           "endIdenticalToStill": true,
+          "endAttempts": 1,
           "onlyThePulseAfter": true,
           "animationsAfter": [
             "css @keyframes ping on span.ping.is-on"
@@ -754,12 +1530,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 47,
-          "maxFrameGapMs": 33.4,
+          "framesDuringIntro": 48,
+          "maxFrameGapMs": 33.3,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 54,
+              "t": 56,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -771,8 +1547,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 101,
-              "sinceStartMs": 24,
+              "t": 130,
+              "sinceStartMs": 27,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -793,14 +1569,15 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 852,
+          "measuredMs": 861,
           "expectedMs": 820,
-          "fontWaitMs": 18,
+          "fontWaitMs": 27,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 33
+            "dashes": 35
           },
           "endIdenticalToStill": true,
+          "endAttempts": 1,
           "onlyThePulseAfter": true,
           "animationsAfter": [
             "css @keyframes ping on span.ping.is-on"
@@ -809,12 +1586,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 47,
-          "maxFrameGapMs": 50,
+          "framesDuringIntro": 48,
+          "maxFrameGapMs": 33.3,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 49,
+              "t": 69,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -826,8 +1603,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 97,
-              "sinceStartMs": 29,
+              "t": 145,
+              "sinceStartMs": 34,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -848,26 +1625,27 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 846,
+          "measuredMs": 880,
           "expectedMs": 820,
-          "fontWaitMs": 24,
+          "fontWaitMs": 31,
           "introElementsSeen": {
             "slots": 4,
-            "dashes": 33
+            "dashes": 34
           },
           "endIdenticalToStill": true,
+          "endAttempts": 1,
           "onlyThePulseAfter": true,
           "animationsAfter": [],
           "domEqualsMotionOff": true,
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 47,
+          "framesDuringIntro": 49,
           "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 53,
+              "t": 69,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -879,8 +1657,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 125,
-              "sinceStartMs": 24,
+              "t": 130,
+              "sinceStartMs": 28,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -901,14 +1679,15 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 862,
+          "measuredMs": 883,
           "expectedMs": 820,
-          "fontWaitMs": 28,
+          "fontWaitMs": 30,
           "introElementsSeen": {
             "slots": 5,
             "dashes": 34
           },
           "endIdenticalToStill": true,
+          "endAttempts": 1,
           "onlyThePulseAfter": true,
           "animationsAfter": [
             "css @keyframes ping on span.ping.is-on"
@@ -917,12 +1696,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 48,
+          "framesDuringIntro": 49,
           "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 67,
+              "t": 69,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -934,8 +1713,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 155,
-              "sinceStartMs": 29,
+              "t": 131,
+              "sinceStartMs": 30,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -956,14 +1735,15 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 878,
+          "measuredMs": 851,
           "expectedMs": 820,
-          "fontWaitMs": 28,
+          "fontWaitMs": 20,
           "introElementsSeen": {
             "slots": 4,
-            "dashes": 33
+            "dashes": 34
           },
           "endIdenticalToStill": true,
+          "endAttempts": 1,
           "onlyThePulseAfter": true,
           "animationsAfter": [],
           "domEqualsMotionOff": true,
@@ -971,11 +1751,11 @@
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
           "framesDuringIntro": 48,
-          "maxFrameGapMs": 33.3,
+          "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 65,
+              "t": 62,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -987,8 +1767,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 141,
-              "sinceStartMs": 30,
+              "t": 111,
+              "sinceStartMs": 27,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1009,14 +1789,15 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 878,
+          "measuredMs": 850,
           "expectedMs": 820,
-          "fontWaitMs": 27,
+          "fontWaitMs": 18,
           "introElementsSeen": {
             "slots": 5,
             "dashes": 35
           },
           "endIdenticalToStill": true,
+          "endAttempts": 1,
           "onlyThePulseAfter": true,
           "animationsAfter": [
             "css @keyframes ping on span.ping.is-on"
@@ -1025,12 +1806,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 50,
+          "framesDuringIntro": 49,
           "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 65,
+              "t": 61,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1042,8 +1823,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 140,
-              "sinceStartMs": 27,
+              "t": 107,
+              "sinceStartMs": 23,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1066,6 +1847,7 @@
           "reason": "already opened in this tab",
           "introElementsSeen": 0,
           "identicalToStill": true,
+          "attempts": 1,
           "onlyThePulse": true,
           "animationsOnLoad": [
             "css @keyframes ping on span.ping.is-on"
@@ -1079,6 +1861,7 @@
           "reason": "already opened in this tab",
           "introElementsSeen": 0,
           "identicalToStill": true,
+          "attempts": 1,
           "onlyThePulse": true,
           "animationsOnLoad": [
             "css @keyframes ping on span.ping.is-on"
@@ -1092,6 +1875,7 @@
           "reason": "already opened in this tab",
           "introElementsSeen": 0,
           "identicalToStill": true,
+          "attempts": 1,
           "onlyThePulse": true,
           "animationsOnLoad": [],
           "domEqualsMotionOff": true,
@@ -1103,6 +1887,7 @@
           "reason": "already opened in this tab",
           "introElementsSeen": 0,
           "identicalToStill": true,
+          "attempts": 1,
           "onlyThePulse": true,
           "animationsOnLoad": [
             "css @keyframes ping on span.ping.is-on"
@@ -1116,6 +1901,7 @@
           "reason": "already opened in this tab",
           "introElementsSeen": 0,
           "identicalToStill": true,
+          "attempts": 1,
           "onlyThePulse": true,
           "animationsOnLoad": [],
           "domEqualsMotionOff": true,
@@ -1127,6 +1913,7 @@
           "reason": "already opened in this tab",
           "introElementsSeen": 0,
           "identicalToStill": true,
+          "attempts": 1,
           "onlyThePulse": true,
           "animationsOnLoad": [
             "css @keyframes ping on span.ping.is-on"
@@ -1138,12 +1925,12 @@
       "fontCache": {
         "note": "every intro context serves the Google Fonts files from memory after their first network fetch (same bytes), as a browser cache does for a returning owner",
         "arFirstFetch": {
-          "fontWaitMs": 212,
+          "fontWaitMs": 206,
           "played": false,
           "yieldedBy": "fonts late"
         },
         "enFirstFetch": {
-          "fontWaitMs": 17,
+          "fontWaitMs": 19,
           "played": true,
           "yieldedBy": "complete"
         },
@@ -1155,14 +1942,15 @@
           "state": "done",
           "reason": "first open in this tab",
           "yieldedBy": "fonts late",
-          "fontWaitMs": 201,
+          "fontWaitMs": 202,
           "firstPaintMs": 76,
-          "answersInViewAtMs": 287,
+          "answersInViewAtMs": 276,
           "introEverRan": false,
           "fontsInAtEnd": true,
-          "answersInViewAfterFirstPaintMs": 211,
+          "answersInViewAfterFirstPaintMs": 200,
           "domEqualsMotionOff": true,
           "endIdenticalToStill": true,
+          "endAttempts": 1,
           "onlyCachedFonts": true,
           "errors": [],
           "pass": true
@@ -1172,14 +1960,15 @@
           "state": "done",
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "fontWaitMs": 64,
-          "firstPaintMs": 72,
-          "answersInViewAtMs": 145,
+          "fontWaitMs": 66,
+          "firstPaintMs": 60,
+          "answersInViewAtMs": 138,
           "introEverRan": true,
           "fontsInAtEnd": true,
-          "answersInViewAfterFirstPaintMs": 73,
+          "answersInViewAfterFirstPaintMs": 78,
           "domEqualsMotionOff": true,
           "endIdenticalToStill": true,
+          "endAttempts": 1,
           "onlyCachedFonts": true,
           "errors": [],
           "pass": true
@@ -1189,14 +1978,15 @@
           "state": "done",
           "reason": "first open in this tab",
           "yieldedBy": "fonts late",
-          "fontWaitMs": 204,
-          "firstPaintMs": 96,
-          "answersInViewAtMs": 270,
+          "fontWaitMs": 208,
+          "firstPaintMs": 76,
+          "answersInViewAtMs": 274,
           "introEverRan": false,
           "fontsInAtEnd": true,
-          "answersInViewAfterFirstPaintMs": 174,
+          "answersInViewAfterFirstPaintMs": 198,
           "domEqualsMotionOff": true,
           "endIdenticalToStill": true,
+          "endAttempts": 1,
           "onlyCachedFonts": true,
           "errors": [],
           "pass": true
@@ -1206,14 +1996,15 @@
           "state": "done",
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "fontWaitMs": 65,
-          "firstPaintMs": 60,
-          "answersInViewAtMs": 143,
+          "fontWaitMs": 72,
+          "firstPaintMs": 96,
+          "answersInViewAtMs": 146,
           "introEverRan": true,
           "fontsInAtEnd": true,
-          "answersInViewAfterFirstPaintMs": 83,
+          "answersInViewAfterFirstPaintMs": 50,
           "domEqualsMotionOff": true,
           "endIdenticalToStill": true,
+          "endAttempts": 1,
           "onlyCachedFonts": true,
           "errors": [],
           "pass": true
@@ -1225,7 +2016,7 @@
           "played": true,
           "state": "done",
           "reason": "first open in this tab",
-          "fontWaitMs": 21
+          "fontWaitMs": 23
         },
         "reloadSameTab": {
           "played": false,
@@ -1243,7 +2034,7 @@
           "played": true,
           "state": "done",
           "reason": "first open in this tab",
-          "fontWaitMs": 16
+          "fontWaitMs": 19
         },
         "newTabWithMotionSwitchOff": {
           "played": false,
@@ -1255,7 +2046,7 @@
           "played": true,
           "state": "done",
           "reason": "first open in this tab",
-          "fontWaitMs": 20
+          "fontWaitMs": 22
         },
         "errors": [],
         "reducedMotion": {
@@ -1282,17 +2073,18 @@
             "sawRunning": true,
             "count": 2,
             "yieldedBy": "complete",
-            "measuredMs": 839,
+            "measuredMs": 834,
             "expectedMs": 820,
             "speed": 1
           },
           "replayEndIdenticalToStill": true,
+          "replayEndAttempts": 1,
           "at05": {
             "out": "0.50× · 1640 ms",
             "sawRunning": true,
             "count": 3,
             "yieldedBy": "complete",
-            "measuredMs": 1655,
+            "measuredMs": 1658,
             "expectedMs": 1640,
             "speed": 0.5
           },
@@ -1301,7 +2093,7 @@
             "sawRunning": true,
             "count": 4,
             "yieldedBy": "complete",
-            "measuredMs": 425,
+            "measuredMs": 427,
             "expectedMs": 410,
             "speed": 2
           },
@@ -1332,7 +2124,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "chart",
-            "settledAtMs": 116
+            "settledAtMs": 109
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -1351,7 +2143,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "chart",
-            "settledAtMs": 421
+            "settledAtMs": 419
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -1397,7 +2189,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "keydown",
-            "settledAtMs": 404
+            "settledAtMs": 405
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -1416,12 +2208,13 @@
           "settled": {
             "state": "done",
             "yieldedBy": "pointerdown",
-            "settledAtMs": 150
+            "settledAtMs": 138
           },
           "answersAtRest": true,
           "chartWhole": true,
           "railOpen": "true",
           "settledIdenticalToStill": true,
+          "attempts": 1,
           "pass": true,
           "errors": []
         },
@@ -1431,12 +2224,13 @@
           "settled": {
             "state": "done",
             "yieldedBy": "pointerdown",
-            "settledAtMs": 437
+            "settledAtMs": 448
           },
           "answersAtRest": true,
           "chartWhole": true,
           "railOpen": "true",
           "settledIdenticalToStill": true,
+          "attempts": 1,
           "pass": true,
           "errors": []
         },
@@ -1446,7 +2240,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "pointerdown",
-            "settledAtMs": 126
+            "settledAtMs": 130
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -1465,7 +2259,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "pointerdown",
-            "settledAtMs": 425
+            "settledAtMs": 435
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -1504,13 +2298,13 @@
           },
           "domEqualsCanonical": true,
           "pixelDiffFromCanonical": {
-            "changedPixels": 1837,
-            "maxChannelDiff": 4,
+            "changedPixels": 1149,
+            "maxChannelDiff": 1,
             "bbox": {
               "x": 330,
               "y": 30,
-              "width": 969,
-              "height": 195
+              "width": 112,
+              "height": 29
             }
           },
           "pass": true,
@@ -1531,7 +2325,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "new reading",
-            "settledAtMs": 405
+            "settledAtMs": 408
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -1560,11 +2354,12 @@
           "settled": {
             "state": "done",
             "yieldedBy": "resize",
-            "settledAtMs": 108
+            "settledAtMs": 123
           },
           "answersAtRest": true,
           "chartWhole": true,
           "identicalToFresh1280": true,
+          "attempts": 1,
           "pass": true,
           "errors": []
         },
@@ -1574,11 +2369,12 @@
           "settled": {
             "state": "done",
             "yieldedBy": "resize",
-            "settledAtMs": 406
+            "settledAtMs": 407
           },
           "answersAtRest": true,
           "chartWhole": true,
           "identicalToFresh1280": true,
+          "attempts": 1,
           "pass": true,
           "errors": []
         },
@@ -2095,29 +2891,14 @@
                 "played": true,
                 "yieldedBy": "complete",
                 "sha": "b7bdaf935a90a412"
-              },
-              {
-                "played": true,
-                "yieldedBy": "complete",
-                "sha": "b7bdaf935a90a412"
               }
             ],
             "stills": [
-              "1cb0e21ddb16de26",
               "b7bdaf935a90a412"
             ],
-            "stillsAgree": false
+            "stillsAgree": true
           },
-          "naturalPixelDiff": {
-            "changedPixels": 356,
-            "maxChannelDiff": 61,
-            "bbox": {
-              "x": 241,
-              "y": 73,
-              "width": 2147,
-              "height": 602
-            }
-          },
+          "naturalPixelDiff": null,
           "heldEndIdenticalToStill2x": true,
           "heldEndRuns": [
             {
@@ -2126,16 +2907,7 @@
               "errors": 0
             }
           ],
-          "heldEndPixelDiff": {
-            "changedPixels": 356,
-            "maxChannelDiff": 61,
-            "bbox": {
-              "x": 241,
-              "y": 73,
-              "width": 2147,
-              "height": 602
-            }
-          },
+          "heldEndPixelDiff": null,
           "frames": [
             {
               "ms": 0,
@@ -2680,7 +3452,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 909.024
+            "toEndPointPx": 909.024,
+            "tipBox": {
+              "width": 138,
+              "natural": 113.45,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -25,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h30",
@@ -2699,7 +3480,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0.004,
-            "toEndPointPx": 869.484
+            "toEndPointPx": 869.484,
+            "tipBox": {
+              "width": 138,
+              "natural": 91.05,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -25,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h60",
@@ -2718,7 +3508,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 815.05
+            "toEndPointPx": 815.05,
+            "tipBox": {
+              "width": 138,
+              "natural": 97.97,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -25.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h90",
@@ -2737,7 +3536,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 781.689
+            "toEndPointPx": 781.689,
+            "tipBox": {
+              "width": 138,
+              "natural": 98.06,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -25.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h120",
@@ -2756,7 +3564,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 754.135
+            "toEndPointPx": 754.135,
+            "tipBox": {
+              "width": 138,
+              "natural": 97.58,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h150",
@@ -2775,7 +3592,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 734.085
+            "toEndPointPx": 734.085,
+            "tipBox": {
+              "width": 138,
+              "natural": 96.78,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h180",
@@ -2794,7 +3620,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 709.403
+            "toEndPointPx": 709.403,
+            "tipBox": {
+              "width": 138,
+              "natural": 91.38,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.98,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h210",
@@ -2813,7 +3648,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 685.547
+            "toEndPointPx": 685.547,
+            "tipBox": {
+              "width": 138,
+              "natural": 91.11,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h240",
@@ -2832,7 +3676,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 658.152
+            "toEndPointPx": 658.152,
+            "tipBox": {
+              "width": 138,
+              "natural": 91.25,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h270",
@@ -2851,7 +3704,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 621.652
+            "toEndPointPx": 621.652,
+            "tipBox": {
+              "width": 138,
+              "natural": 91.11,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h300",
@@ -2870,7 +3732,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 591.881
+            "toEndPointPx": 591.881,
+            "tipBox": {
+              "width": 138,
+              "natural": 90.94,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h330",
@@ -2889,7 +3760,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 562.55
+            "toEndPointPx": 562.55,
+            "tipBox": {
+              "width": 138,
+              "natural": 91.05,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h360",
@@ -2908,7 +3788,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 526.82
+            "toEndPointPx": 526.82,
+            "tipBox": {
+              "width": 138,
+              "natural": 96.42,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h390",
@@ -2927,7 +3816,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 500.174
+            "toEndPointPx": 500.174,
+            "tipBox": {
+              "width": 138,
+              "natural": 96.78,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h420",
@@ -2946,7 +3844,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 464.352
+            "toEndPointPx": 464.352,
+            "tipBox": {
+              "width": 138,
+              "natural": 97.88,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h450",
@@ -2965,7 +3872,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 436.481
+            "toEndPointPx": 436.481,
+            "tipBox": {
+              "width": 138,
+              "natural": 97.88,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h480",
@@ -2984,7 +3900,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 414.375
+            "toEndPointPx": 414.375,
+            "tipBox": {
+              "width": 138,
+              "natural": 97,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "gap",
@@ -3002,7 +3927,16 @@
             },
             "target": "the dotted mark of the missing span, on the axis",
             "distancePx": 0,
-            "dots": 4
+            "dots": 4,
+            "tipBox": {
+              "width": 138,
+              "natural": 111.05,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 136.98,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h540",
@@ -3021,7 +3955,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 358.997
+            "toEndPointPx": 358.997,
+            "tipBox": {
+              "width": 138,
+              "natural": 97.88,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h570",
@@ -3040,7 +3983,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 328.616
+            "toEndPointPx": 328.616,
+            "tipBox": {
+              "width": 138,
+              "natural": 97.38,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h600",
@@ -3059,7 +4011,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0.003,
-            "toEndPointPx": 263.823
+            "toEndPointPx": 263.823,
+            "tipBox": {
+              "width": 138,
+              "natural": 97.72,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h630",
@@ -3078,7 +4039,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 205.33
+            "toEndPointPx": 205.33,
+            "tipBox": {
+              "width": 138,
+              "natural": 98.72,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h660",
@@ -3097,7 +4067,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 176.548
+            "toEndPointPx": 176.548,
+            "tipBox": {
+              "width": 138,
+              "natural": 100.73,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h690",
@@ -3116,7 +4095,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 140.457
+            "toEndPointPx": 140.457,
+            "tipBox": {
+              "width": 138,
+              "natural": 100.84,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h720",
@@ -3135,7 +4123,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 108.089
+            "toEndPointPx": 108.089,
+            "tipBox": {
+              "width": 138,
+              "natural": 99.44,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "peak",
@@ -3153,7 +4150,16 @@
               "y": 116.15
             },
             "target": "peak ring centre",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 109.36,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h780",
@@ -3172,7 +4178,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 59.145
+            "toEndPointPx": 59.145,
+            "tipBox": {
+              "width": 138,
+              "natural": 98.55,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h810",
@@ -3191,7 +4206,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 12.719
+            "toEndPointPx": 12.719,
+            "tipBox": {
+              "width": 138,
+              "natural": 99.86,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "latest",
@@ -3210,7 +4234,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 0
+            "toEndPointPx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 124.84,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h840",
@@ -3228,7 +4261,16 @@
               "y": 218.51
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 99.31,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -25.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h870",
@@ -3246,7 +4288,16 @@
               "y": 247.23
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 97.39,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -25,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h900",
@@ -3264,7 +4315,16 @@
               "y": 290.43
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 96.78,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -25,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h930",
@@ -3282,7 +4342,16 @@
               "y": 323.4
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 97.83,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -25.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h960",
@@ -3300,7 +4369,16 @@
               "y": 357.03
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 98.3,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -25,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h990",
@@ -3318,7 +4396,16 @@
               "y": 376.25
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 97.11,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -25.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1020",
@@ -3336,7 +4423,16 @@
               "y": 396.6
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 96.78,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1050",
@@ -3354,7 +4450,16 @@
               "y": 418.56
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.58,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1080",
@@ -3372,7 +4477,16 @@
               "y": 435.34
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.58,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1110",
@@ -3390,7 +4504,16 @@
               "y": 445.22
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.58,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1140",
@@ -3408,9 +4531,49 @@
               "y": 452.97
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.58,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           }
         ],
+        "tooltip": {
+          "widths": [
+            138
+          ],
+          "widestContent": 124.84,
+          "bySide": {
+            "left": {
+              "stops": 10,
+              "numberStops": 4,
+              "numberStartMinusHairline": [
+                -25.01,
+                -25
+              ],
+              "numberSpreadPx": 0.01,
+              "leadSpreadPx": 0.01
+            },
+            "right": {
+              "stops": 30,
+              "numberStops": 24,
+              "numberStartMinusHairline": [
+                136.98,
+                137
+              ],
+              "numberSpreadPx": 0.02,
+              "leadSpreadPx": 0.02
+            }
+          },
+          "clipped": [],
+          "wrapped": [],
+          "pass": true
+        },
         "maxDistancePx": {
           "lineStops": 0.004,
           "peak": 0,
@@ -3964,7 +5127,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 909.024
+            "toEndPointPx": 909.024,
+            "tipBox": {
+              "width": 138,
+              "natural": 85.73,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 25,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h30",
@@ -3983,7 +5155,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0.004,
-            "toEndPointPx": 869.484
+            "toEndPointPx": 869.484,
+            "tipBox": {
+              "width": 138,
+              "natural": 86.3,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 24.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h60",
@@ -4002,7 +5183,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 815.05
+            "toEndPointPx": 815.05,
+            "tipBox": {
+              "width": 138,
+              "natural": 113.75,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 24.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h90",
@@ -4021,7 +5211,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 781.689
+            "toEndPointPx": 781.689,
+            "tipBox": {
+              "width": 138,
+              "natural": 113.14,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 24.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h120",
@@ -4040,7 +5239,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 754.135
+            "toEndPointPx": 754.135,
+            "tipBox": {
+              "width": 138,
+              "natural": 92.83,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h150",
@@ -4059,7 +5267,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 734.085
+            "toEndPointPx": 734.085,
+            "tipBox": {
+              "width": 138,
+              "natural": 92.03,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h180",
@@ -4078,7 +5295,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 709.403
+            "toEndPointPx": 709.403,
+            "tipBox": {
+              "width": 138,
+              "natural": 87.78,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h210",
@@ -4097,7 +5323,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 685.547
+            "toEndPointPx": 685.547,
+            "tipBox": {
+              "width": 138,
+              "natural": 86.36,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h240",
@@ -4116,7 +5351,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 658.152
+            "toEndPointPx": 658.152,
+            "tipBox": {
+              "width": 138,
+              "natural": 86.5,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h270",
@@ -4135,7 +5379,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 621.652
+            "toEndPointPx": 621.652,
+            "tipBox": {
+              "width": 138,
+              "natural": 86.36,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h300",
@@ -4154,7 +5407,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 591.881
+            "toEndPointPx": 591.881,
+            "tipBox": {
+              "width": 138,
+              "natural": 89.94,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h330",
@@ -4173,7 +5435,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 562.55
+            "toEndPointPx": 562.55,
+            "tipBox": {
+              "width": 138,
+              "natural": 89.94,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h360",
@@ -4192,7 +5463,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 526.82
+            "toEndPointPx": 526.82,
+            "tipBox": {
+              "width": 138,
+              "natural": 91.67,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h390",
@@ -4211,7 +5491,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 500.174
+            "toEndPointPx": 500.174,
+            "tipBox": {
+              "width": 138,
+              "natural": 92.03,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.02,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h420",
@@ -4230,7 +5519,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 464.352
+            "toEndPointPx": 464.352,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.13,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h450",
@@ -4249,7 +5547,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 436.481
+            "toEndPointPx": 436.481,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.13,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h480",
@@ -4268,7 +5575,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 414.375
+            "toEndPointPx": 414.375,
+            "tipBox": {
+              "width": 138,
+              "natural": 92.25,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "gap",
@@ -4286,7 +5602,16 @@
             },
             "target": "the dotted mark of the missing span, on the axis",
             "distancePx": 0,
-            "dots": 4
+            "dots": 4,
+            "tipBox": {
+              "width": 138,
+              "natural": 135.27,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h540",
@@ -4305,7 +5630,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 358.997
+            "toEndPointPx": 358.997,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.13,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h570",
@@ -4324,7 +5658,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 328.616
+            "toEndPointPx": 328.616,
+            "tipBox": {
+              "width": 138,
+              "natural": 92.63,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h600",
@@ -4343,7 +5686,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0.003,
-            "toEndPointPx": 263.823
+            "toEndPointPx": 263.823,
+            "tipBox": {
+              "width": 138,
+              "natural": 113.5,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h630",
@@ -4362,7 +5714,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 205.33
+            "toEndPointPx": 205.33,
+            "tipBox": {
+              "width": 138,
+              "natural": 114.5,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h660",
@@ -4381,7 +5742,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 176.548
+            "toEndPointPx": 176.548,
+            "tipBox": {
+              "width": 138,
+              "natural": 116.52,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h690",
@@ -4400,7 +5770,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 140.457
+            "toEndPointPx": 140.457,
+            "tipBox": {
+              "width": 138,
+              "natural": 116.63,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h720",
@@ -4419,7 +5798,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 108.089
+            "toEndPointPx": 108.089,
+            "tipBox": {
+              "width": 138,
+              "natural": 115.22,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "peak",
@@ -4437,7 +5825,16 @@
               "y": 116.15
             },
             "target": "peak ring centre",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 117.39,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h780",
@@ -4456,7 +5853,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 59.145
+            "toEndPointPx": 59.145,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.8,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h810",
@@ -4475,7 +5881,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 12.719
+            "toEndPointPx": 12.719,
+            "tipBox": {
+              "width": 138,
+              "natural": 115.64,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "latest",
@@ -4494,7 +5909,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 0
+            "toEndPointPx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 124.72,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h840",
@@ -4512,7 +5936,16 @@
               "y": 218.51
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 25,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h870",
@@ -4530,7 +5963,16 @@
               "y": 247.23
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 24.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h900",
@@ -4548,7 +5990,16 @@
               "y": 290.43
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 24.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h930",
@@ -4566,7 +6017,16 @@
               "y": 323.4
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 24.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h960",
@@ -4584,7 +6044,16 @@
               "y": 357.03
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 24.98,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h990",
@@ -4602,7 +6071,16 @@
               "y": 376.25
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 25,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1020",
@@ -4620,7 +6098,16 @@
               "y": 396.6
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1050",
@@ -4638,7 +6125,16 @@
               "y": 418.56
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1080",
@@ -4656,7 +6152,16 @@
               "y": 435.34
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1110",
@@ -4674,7 +6179,16 @@
               "y": 445.22
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1140",
@@ -4692,9 +6206,49 @@
               "y": 452.97
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           }
         ],
+        "tooltip": {
+          "widths": [
+            138
+          ],
+          "widestContent": 135.27,
+          "bySide": {
+            "left": {
+              "stops": 30,
+              "numberStops": 24,
+              "numberStartMinusHairline": [
+                -137.02,
+                -137
+              ],
+              "numberSpreadPx": 0.02,
+              "leadSpreadPx": 0.02
+            },
+            "right": {
+              "stops": 10,
+              "numberStops": 4,
+              "numberStartMinusHairline": [
+                24.99,
+                25
+              ],
+              "numberSpreadPx": 0.01,
+              "leadSpreadPx": 0.02
+            }
+          },
+          "clipped": [],
+          "wrapped": [],
+          "pass": true
+        },
         "maxDistancePx": {
           "lineStops": 0.004,
           "peak": 0,
@@ -5243,7 +6797,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 897.3
+            "toEndPointPx": 897.3,
+            "tipBox": {
+              "width": 138,
+              "natural": 113.45,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -25,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h30",
@@ -5262,7 +6825,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0.004,
-            "toEndPointPx": 857.556
+            "toEndPointPx": 857.556,
+            "tipBox": {
+              "width": 138,
+              "natural": 91.05,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -25,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h60",
@@ -5281,7 +6853,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 802.241
+            "toEndPointPx": 802.241,
+            "tipBox": {
+              "width": 138,
+              "natural": 97.97,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -25.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h90",
@@ -5300,7 +6881,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 768.81
+            "toEndPointPx": 768.81,
+            "tipBox": {
+              "width": 138,
+              "natural": 98.06,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -25.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h120",
@@ -5319,7 +6909,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 741.501
+            "toEndPointPx": 741.501,
+            "tipBox": {
+              "width": 138,
+              "natural": 97.58,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h150",
@@ -5338,7 +6937,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 722.016
+            "toEndPointPx": 722.016,
+            "tipBox": {
+              "width": 138,
+              "natural": 96.78,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h180",
@@ -5357,7 +6965,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 697.668
+            "toEndPointPx": 697.668,
+            "tipBox": {
+              "width": 138,
+              "natural": 91.38,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.98,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h210",
@@ -5376,7 +6993,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 674.177
+            "toEndPointPx": 674.177,
+            "tipBox": {
+              "width": 138,
+              "natural": 91.11,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h240",
@@ -5395,7 +7021,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 647.02
+            "toEndPointPx": 647.02,
+            "tipBox": {
+              "width": 138,
+              "natural": 91.25,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h270",
@@ -5414,7 +7049,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 610.422
+            "toEndPointPx": 610.422,
+            "tipBox": {
+              "width": 138,
+              "natural": 91.11,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h300",
@@ -5433,7 +7077,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 580.821
+            "toEndPointPx": 580.821,
+            "tipBox": {
+              "width": 138,
+              "natural": 90.94,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h330",
@@ -5452,7 +7105,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 551.692
+            "toEndPointPx": 551.692,
+            "tipBox": {
+              "width": 138,
+              "natural": 91.05,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h360",
@@ -5471,7 +7133,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 515.904
+            "toEndPointPx": 515.904,
+            "tipBox": {
+              "width": 138,
+              "natural": 96.42,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h390",
@@ -5490,7 +7161,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 489.611
+            "toEndPointPx": 489.611,
+            "tipBox": {
+              "width": 138,
+              "natural": 96.78,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h420",
@@ -5509,7 +7189,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 453.745
+            "toEndPointPx": 453.745,
+            "tipBox": {
+              "width": 138,
+              "natural": 97.88,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h450",
@@ -5528,7 +7217,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 426.224
+            "toEndPointPx": 426.224,
+            "tipBox": {
+              "width": 138,
+              "natural": 97.88,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h480",
@@ -5547,7 +7245,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 404.778
+            "toEndPointPx": 404.778,
+            "tipBox": {
+              "width": 138,
+              "natural": 97,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "gap",
@@ -5565,7 +7272,16 @@
             },
             "target": "the dotted mark of the missing span, on the axis",
             "distancePx": 0,
-            "dots": 4
+            "dots": 4,
+            "tipBox": {
+              "width": 138,
+              "natural": 111.05,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 136.98,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h540",
@@ -5584,7 +7300,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 350.334
+            "toEndPointPx": 350.334,
+            "tipBox": {
+              "width": 138,
+              "natural": 97.88,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h570",
@@ -5603,7 +7328,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 320.38
+            "toEndPointPx": 320.38,
+            "tipBox": {
+              "width": 138,
+              "natural": 97.38,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h600",
@@ -5622,7 +7356,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0.003,
-            "toEndPointPx": 253.917
+            "toEndPointPx": 253.917,
+            "tipBox": {
+              "width": 138,
+              "natural": 97.72,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h630",
@@ -5641,7 +7384,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 192.6
+            "toEndPointPx": 192.6,
+            "tipBox": {
+              "width": 138,
+              "natural": 98.72,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h660",
@@ -5660,7 +7412,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 164.548
+            "toEndPointPx": 164.548,
+            "tipBox": {
+              "width": 138,
+              "natural": 100.73,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h690",
@@ -5679,7 +7440,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 127.535
+            "toEndPointPx": 127.535,
+            "tipBox": {
+              "width": 138,
+              "natural": 100.84,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h720",
@@ -5698,7 +7468,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 94.943
+            "toEndPointPx": 94.943,
+            "tipBox": {
+              "width": 138,
+              "natural": 99.44,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "peak",
@@ -5716,7 +7495,16 @@
               "y": 116.15
             },
             "target": "peak ring centre",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 109.36,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h780",
@@ -5735,7 +7523,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 46.187
+            "toEndPointPx": 46.187,
+            "tipBox": {
+              "width": 138,
+              "natural": 98.55,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "latest",
@@ -5754,7 +7551,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 0
+            "toEndPointPx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 124.02,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h840",
@@ -5772,7 +7578,16 @@
               "y": 218.51
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 99.31,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -25.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h870",
@@ -5790,7 +7605,16 @@
               "y": 247.23
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 97.39,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -25,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h900",
@@ -5808,7 +7632,16 @@
               "y": 290.43
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 96.78,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -25,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h930",
@@ -5826,7 +7659,16 @@
               "y": 323.4
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 97.83,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -25.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h960",
@@ -5844,7 +7686,16 @@
               "y": 357.03
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 98.3,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -25,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h990",
@@ -5862,7 +7713,16 @@
               "y": 376.25
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 97.11,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -25.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1020",
@@ -5880,7 +7740,16 @@
               "y": 396.6
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 96.78,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1050",
@@ -5898,7 +7767,16 @@
               "y": 418.56
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.58,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1080",
@@ -5916,7 +7794,16 @@
               "y": 435.34
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.58,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1110",
@@ -5934,7 +7821,16 @@
               "y": 445.22
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.58,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1140",
@@ -5952,9 +7848,49 @@
               "y": 452.97
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.58,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           }
         ],
+        "tooltip": {
+          "widths": [
+            138
+          ],
+          "widestContent": 124.02,
+          "bySide": {
+            "left": {
+              "stops": 10,
+              "numberStops": 4,
+              "numberStartMinusHairline": [
+                -25.01,
+                -25
+              ],
+              "numberSpreadPx": 0.01,
+              "leadSpreadPx": 0.01
+            },
+            "right": {
+              "stops": 29,
+              "numberStops": 23,
+              "numberStartMinusHairline": [
+                136.98,
+                137
+              ],
+              "numberSpreadPx": 0.02,
+              "leadSpreadPx": 0.02
+            }
+          },
+          "clipped": [],
+          "wrapped": [],
+          "pass": true
+        },
         "maxDistancePx": {
           "lineStops": 0.004,
           "peak": 0,
@@ -6508,7 +8444,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 909.024
+            "toEndPointPx": 909.024,
+            "tipBox": {
+              "width": 138,
+              "natural": 113.45,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -25,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h30",
@@ -6527,7 +8472,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0.004,
-            "toEndPointPx": 869.484
+            "toEndPointPx": 869.484,
+            "tipBox": {
+              "width": 138,
+              "natural": 72.98,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -25,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h60",
@@ -6546,7 +8500,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 815.05
+            "toEndPointPx": 815.05,
+            "tipBox": {
+              "width": 138,
+              "natural": 97.97,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -25.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h90",
@@ -6565,7 +8528,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 781.689
+            "toEndPointPx": 781.689,
+            "tipBox": {
+              "width": 138,
+              "natural": 97.36,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -25.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h120",
@@ -6584,7 +8556,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 754.135
+            "toEndPointPx": 754.135,
+            "tipBox": {
+              "width": 138,
+              "natural": 83.66,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h150",
@@ -6603,7 +8584,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 734.085
+            "toEndPointPx": 734.085,
+            "tipBox": {
+              "width": 138,
+              "natural": 84.81,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h180",
@@ -6622,7 +8612,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 709.403
+            "toEndPointPx": 709.403,
+            "tipBox": {
+              "width": 138,
+              "natural": 82.55,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.98,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h210",
@@ -6641,7 +8640,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 685.547
+            "toEndPointPx": 685.547,
+            "tipBox": {
+              "width": 138,
+              "natural": 72.63,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h240",
@@ -6660,7 +8668,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 658.152
+            "toEndPointPx": 658.152,
+            "tipBox": {
+              "width": 138,
+              "natural": 77.14,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h270",
@@ -6679,7 +8696,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 621.652
+            "toEndPointPx": 621.652,
+            "tipBox": {
+              "width": 138,
+              "natural": 76.2,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h300",
@@ -6698,7 +8724,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 591.881
+            "toEndPointPx": 591.881,
+            "tipBox": {
+              "width": 138,
+              "natural": 84.7,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h330",
@@ -6717,7 +8752,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 562.55
+            "toEndPointPx": 562.55,
+            "tipBox": {
+              "width": 138,
+              "natural": 84.7,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h360",
@@ -6736,7 +8780,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 526.82
+            "toEndPointPx": 526.82,
+            "tipBox": {
+              "width": 138,
+              "natural": 83.09,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h390",
@@ -6755,7 +8808,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 500.174
+            "toEndPointPx": 500.174,
+            "tipBox": {
+              "width": 138,
+              "natural": 82.55,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h420",
@@ -6774,7 +8836,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 464.352
+            "toEndPointPx": 464.352,
+            "tipBox": {
+              "width": 138,
+              "natural": 84.81,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h450",
@@ -6793,7 +8864,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 436.481
+            "toEndPointPx": 436.481,
+            "tipBox": {
+              "width": 138,
+              "natural": 84.81,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h480",
@@ -6812,7 +8892,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 414.375
+            "toEndPointPx": 414.375,
+            "tipBox": {
+              "width": 138,
+              "natural": 83.09,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "gap",
@@ -6830,7 +8919,16 @@
             },
             "target": "the dotted mark of the missing span, on the axis",
             "distancePx": 0,
-            "dots": 4
+            "dots": 4,
+            "tipBox": {
+              "width": 138,
+              "natural": 111.05,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 136.98,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h540",
@@ -6849,7 +8947,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 358.997
+            "toEndPointPx": 358.997,
+            "tipBox": {
+              "width": 138,
+              "natural": 83.09,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h570",
@@ -6868,7 +8975,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 328.616
+            "toEndPointPx": 328.616,
+            "tipBox": {
+              "width": 138,
+              "natural": 84.81,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h600",
@@ -6887,7 +9003,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0.003,
-            "toEndPointPx": 263.823
+            "toEndPointPx": 263.823,
+            "tipBox": {
+              "width": 138,
+              "natural": 97.72,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h630",
@@ -6906,7 +9031,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 205.33
+            "toEndPointPx": 205.33,
+            "tipBox": {
+              "width": 138,
+              "natural": 98.72,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h660",
@@ -6925,7 +9059,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 176.548
+            "toEndPointPx": 176.548,
+            "tipBox": {
+              "width": 138,
+              "natural": 100.73,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h690",
@@ -6944,7 +9087,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 140.457
+            "toEndPointPx": 140.457,
+            "tipBox": {
+              "width": 138,
+              "natural": 100.84,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h720",
@@ -6963,7 +9115,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 108.089
+            "toEndPointPx": 108.089,
+            "tipBox": {
+              "width": 138,
+              "natural": 99.44,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "peak",
@@ -6981,7 +9142,16 @@
               "y": 116.15
             },
             "target": "peak ring centre",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 109.36,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h780",
@@ -7000,7 +9170,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 59.145
+            "toEndPointPx": 59.145,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.05,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h810",
@@ -7019,7 +9198,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 12.719
+            "toEndPointPx": 12.719,
+            "tipBox": {
+              "width": 138,
+              "natural": 99.86,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "latest",
@@ -7038,7 +9226,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 0
+            "toEndPointPx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 124.84,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h840",
@@ -7047,7 +9244,16 @@
             "value": null,
             "tip": "8:00 م لم يحن بعد",
             "valuetext": "8:00 م، لم يحن بعد",
-            "marker": null
+            "marker": null,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.58,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -25.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h870",
@@ -7056,7 +9262,16 @@
             "value": null,
             "tip": "8:30 م لم يحن بعد",
             "valuetext": "8:30 م، لم يحن بعد",
-            "marker": null
+            "marker": null,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.58,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -25,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h900",
@@ -7065,7 +9280,16 @@
             "value": null,
             "tip": "9:00 م لم يحن بعد",
             "valuetext": "9:00 م، لم يحن بعد",
-            "marker": null
+            "marker": null,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.58,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -25,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h930",
@@ -7074,7 +9298,16 @@
             "value": null,
             "tip": "9:30 م لم يحن بعد",
             "valuetext": "9:30 م، لم يحن بعد",
-            "marker": null
+            "marker": null,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.58,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -25.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h960",
@@ -7083,7 +9316,16 @@
             "value": null,
             "tip": "10:00 م لم يحن بعد",
             "valuetext": "10:00 م، لم يحن بعد",
-            "marker": null
+            "marker": null,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.58,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -25,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h990",
@@ -7092,7 +9334,16 @@
             "value": null,
             "tip": "10:30 م لم يحن بعد",
             "valuetext": "10:30 م، لم يحن بعد",
-            "marker": null
+            "marker": null,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.58,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -25.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1020",
@@ -7101,7 +9352,16 @@
             "value": null,
             "tip": "11:00 م لم يحن بعد",
             "valuetext": "11:00 م، لم يحن بعد",
-            "marker": null
+            "marker": null,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.58,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 137,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1050",
@@ -7110,7 +9370,16 @@
             "value": null,
             "tip": "11:30 م لم يحن بعد",
             "valuetext": "11:30 م، لم يحن بعد",
-            "marker": null
+            "marker": null,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.58,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1080",
@@ -7119,7 +9388,16 @@
             "value": null,
             "tip": "12:00 ص لم يحن بعد",
             "valuetext": "12:00 ص، لم يحن بعد",
-            "marker": null
+            "marker": null,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.58,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1110",
@@ -7128,7 +9406,16 @@
             "value": null,
             "tip": "12:30 ص لم يحن بعد",
             "valuetext": "12:30 ص، لم يحن بعد",
-            "marker": null
+            "marker": null,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.58,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1140",
@@ -7137,9 +9424,49 @@
             "value": null,
             "tip": "1:00 ص لم يحن بعد",
             "valuetext": "1:00 ص، لم يحن بعد",
-            "marker": null
+            "marker": null,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.58,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 136.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           }
         ],
+        "tooltip": {
+          "widths": [
+            138
+          ],
+          "widestContent": 124.84,
+          "bySide": {
+            "left": {
+              "stops": 10,
+              "numberStops": 4,
+              "numberStartMinusHairline": [
+                -25.01,
+                -25
+              ],
+              "numberSpreadPx": 0.01,
+              "leadSpreadPx": 0.01
+            },
+            "right": {
+              "stops": 30,
+              "numberStops": 24,
+              "numberStartMinusHairline": [
+                136.98,
+                137
+              ],
+              "numberSpreadPx": 0.02,
+              "leadSpreadPx": 0.02
+            }
+          },
+          "clipped": [],
+          "wrapped": [],
+          "pass": true
+        },
         "maxDistancePx": {
           "lineStops": 0.004,
           "peak": 0,
@@ -7688,7 +10015,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 897.3
+            "toEndPointPx": 897.3,
+            "tipBox": {
+              "width": 138,
+              "natural": 85.73,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 25,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h30",
@@ -7707,7 +10043,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0.004,
-            "toEndPointPx": 857.556
+            "toEndPointPx": 857.556,
+            "tipBox": {
+              "width": 138,
+              "natural": 86.3,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 24.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h60",
@@ -7726,7 +10071,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 802.241
+            "toEndPointPx": 802.241,
+            "tipBox": {
+              "width": 138,
+              "natural": 113.75,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 24.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h90",
@@ -7745,7 +10099,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 768.81
+            "toEndPointPx": 768.81,
+            "tipBox": {
+              "width": 138,
+              "natural": 113.14,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 24.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h120",
@@ -7764,7 +10127,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 741.501
+            "toEndPointPx": 741.501,
+            "tipBox": {
+              "width": 138,
+              "natural": 92.83,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h150",
@@ -7783,7 +10155,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 722.016
+            "toEndPointPx": 722.016,
+            "tipBox": {
+              "width": 138,
+              "natural": 92.03,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h180",
@@ -7802,7 +10183,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 697.668
+            "toEndPointPx": 697.668,
+            "tipBox": {
+              "width": 138,
+              "natural": 87.78,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h210",
@@ -7821,7 +10211,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 674.177
+            "toEndPointPx": 674.177,
+            "tipBox": {
+              "width": 138,
+              "natural": 86.36,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h240",
@@ -7840,7 +10239,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 647.02
+            "toEndPointPx": 647.02,
+            "tipBox": {
+              "width": 138,
+              "natural": 86.5,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h270",
@@ -7859,7 +10267,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 610.422
+            "toEndPointPx": 610.422,
+            "tipBox": {
+              "width": 138,
+              "natural": 86.36,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h300",
@@ -7878,7 +10295,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 580.821
+            "toEndPointPx": 580.821,
+            "tipBox": {
+              "width": 138,
+              "natural": 89.94,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h330",
@@ -7897,7 +10323,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 551.692
+            "toEndPointPx": 551.692,
+            "tipBox": {
+              "width": 138,
+              "natural": 89.94,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h360",
@@ -7916,7 +10351,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 515.904
+            "toEndPointPx": 515.904,
+            "tipBox": {
+              "width": 138,
+              "natural": 91.67,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h390",
@@ -7935,7 +10379,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 489.611
+            "toEndPointPx": 489.611,
+            "tipBox": {
+              "width": 138,
+              "natural": 92.03,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.02,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h420",
@@ -7954,7 +10407,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 453.745
+            "toEndPointPx": 453.745,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.13,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h450",
@@ -7973,7 +10435,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 426.224
+            "toEndPointPx": 426.224,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.13,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h480",
@@ -7992,7 +10463,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 404.778
+            "toEndPointPx": 404.778,
+            "tipBox": {
+              "width": 138,
+              "natural": 92.25,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "gap",
@@ -8010,7 +10490,16 @@
             },
             "target": "the dotted mark of the missing span, on the axis",
             "distancePx": 0,
-            "dots": 4
+            "dots": 4,
+            "tipBox": {
+              "width": 138,
+              "natural": 135.27,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h540",
@@ -8029,7 +10518,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 350.334
+            "toEndPointPx": 350.334,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.13,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h570",
@@ -8048,7 +10546,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 320.38
+            "toEndPointPx": 320.38,
+            "tipBox": {
+              "width": 138,
+              "natural": 92.63,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h600",
@@ -8067,7 +10574,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0.003,
-            "toEndPointPx": 253.917
+            "toEndPointPx": 253.917,
+            "tipBox": {
+              "width": 138,
+              "natural": 113.5,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h630",
@@ -8086,7 +10602,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 192.6
+            "toEndPointPx": 192.6,
+            "tipBox": {
+              "width": 138,
+              "natural": 114.5,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h660",
@@ -8105,7 +10630,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 164.548
+            "toEndPointPx": 164.548,
+            "tipBox": {
+              "width": 138,
+              "natural": 116.52,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h690",
@@ -8124,7 +10658,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 127.535
+            "toEndPointPx": 127.535,
+            "tipBox": {
+              "width": 138,
+              "natural": 116.63,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h720",
@@ -8143,7 +10686,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 94.943
+            "toEndPointPx": 94.943,
+            "tipBox": {
+              "width": 138,
+              "natural": 115.22,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "peak",
@@ -8161,7 +10713,16 @@
               "y": 116.15
             },
             "target": "peak ring centre",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 117.39,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h780",
@@ -8180,7 +10741,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 46.187
+            "toEndPointPx": 46.187,
+            "tipBox": {
+              "width": 138,
+              "natural": 93.8,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "latest",
@@ -8199,7 +10769,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 0
+            "toEndPointPx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 124.13,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h840",
@@ -8217,7 +10796,16 @@
               "y": 218.51
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 25,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h870",
@@ -8235,7 +10823,16 @@
               "y": 247.23
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 24.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h900",
@@ -8253,7 +10850,16 @@
               "y": 290.43
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 24.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h930",
@@ -8271,7 +10877,16 @@
               "y": 323.4
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 24.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h960",
@@ -8289,7 +10904,16 @@
               "y": 357.03
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 24.98,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h990",
@@ -8307,7 +10931,16 @@
               "y": 376.25
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 25,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1020",
@@ -8325,7 +10958,16 @@
               "y": 396.6
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1050",
@@ -8343,7 +10985,16 @@
               "y": 418.56
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1080",
@@ -8361,7 +11012,16 @@
               "y": 435.34
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1110",
@@ -8379,7 +11039,16 @@
               "y": 445.22
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1140",
@@ -8397,9 +11066,49 @@
               "y": 452.97
             },
             "target": "usual line (SVG path)",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           }
         ],
+        "tooltip": {
+          "widths": [
+            138
+          ],
+          "widestContent": 135.27,
+          "bySide": {
+            "left": {
+              "stops": 29,
+              "numberStops": 23,
+              "numberStartMinusHairline": [
+                -137.02,
+                -137
+              ],
+              "numberSpreadPx": 0.02,
+              "leadSpreadPx": 0.02
+            },
+            "right": {
+              "stops": 10,
+              "numberStops": 4,
+              "numberStartMinusHairline": [
+                24.99,
+                25
+              ],
+              "numberSpreadPx": 0.01,
+              "leadSpreadPx": 0.02
+            }
+          },
+          "clipped": [],
+          "wrapped": [],
+          "pass": true
+        },
         "maxDistancePx": {
           "lineStops": 0.004,
           "peak": 0,
@@ -8953,7 +11662,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 909.024
+            "toEndPointPx": 909.024,
+            "tipBox": {
+              "width": 138,
+              "natural": 85.73,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 25,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h30",
@@ -8972,7 +11690,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0.004,
-            "toEndPointPx": 869.484
+            "toEndPointPx": 869.484,
+            "tipBox": {
+              "width": 138,
+              "natural": 78.22,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 24.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h60",
@@ -8991,7 +11718,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 815.05
+            "toEndPointPx": 815.05,
+            "tipBox": {
+              "width": 138,
+              "natural": 113.75,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 24.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h90",
@@ -9010,7 +11746,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 781.689
+            "toEndPointPx": 781.689,
+            "tipBox": {
+              "width": 138,
+              "natural": 113.14,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": 24.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h120",
@@ -9029,7 +11774,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 754.135
+            "toEndPointPx": 754.135,
+            "tipBox": {
+              "width": 138,
+              "natural": 88.89,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h150",
@@ -9048,7 +11802,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 734.085
+            "toEndPointPx": 734.085,
+            "tipBox": {
+              "width": 138,
+              "natural": 90.05,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h180",
@@ -9067,7 +11830,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 709.403
+            "toEndPointPx": 709.403,
+            "tipBox": {
+              "width": 138,
+              "natural": 87.78,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h210",
@@ -9086,7 +11858,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 685.547
+            "toEndPointPx": 685.547,
+            "tipBox": {
+              "width": 138,
+              "natural": 77.86,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h240",
@@ -9105,7 +11886,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 658.152
+            "toEndPointPx": 658.152,
+            "tipBox": {
+              "width": 138,
+              "natural": 78.72,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h270",
@@ -9124,7 +11914,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 621.652
+            "toEndPointPx": 621.652,
+            "tipBox": {
+              "width": 138,
+              "natural": 78.13,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h300",
@@ -9143,7 +11942,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 591.881
+            "toEndPointPx": 591.881,
+            "tipBox": {
+              "width": 138,
+              "natural": 89.94,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h330",
@@ -9162,7 +11970,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 562.55
+            "toEndPointPx": 562.55,
+            "tipBox": {
+              "width": 138,
+              "natural": 89.94,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h360",
@@ -9181,7 +11998,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 526.82
+            "toEndPointPx": 526.82,
+            "tipBox": {
+              "width": 138,
+              "natural": 88.33,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h390",
@@ -9200,7 +12026,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 500.174
+            "toEndPointPx": 500.174,
+            "tipBox": {
+              "width": 138,
+              "natural": 87.78,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.02,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h420",
@@ -9219,7 +12054,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 464.352
+            "toEndPointPx": 464.352,
+            "tipBox": {
+              "width": 138,
+              "natural": 90.05,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h450",
@@ -9238,7 +12082,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 436.481
+            "toEndPointPx": 436.481,
+            "tipBox": {
+              "width": 138,
+              "natural": 90.05,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h480",
@@ -9257,7 +12110,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 414.375
+            "toEndPointPx": 414.375,
+            "tipBox": {
+              "width": 138,
+              "natural": 88.33,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "gap",
@@ -9275,7 +12137,16 @@
             },
             "target": "the dotted mark of the missing span, on the axis",
             "distancePx": 0,
-            "dots": 4
+            "dots": 4,
+            "tipBox": {
+              "width": 138,
+              "natural": 135.27,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h540",
@@ -9294,7 +12165,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 358.997
+            "toEndPointPx": 358.997,
+            "tipBox": {
+              "width": 138,
+              "natural": 88.33,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h570",
@@ -9313,7 +12193,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 328.616
+            "toEndPointPx": 328.616,
+            "tipBox": {
+              "width": 138,
+              "natural": 90.05,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h600",
@@ -9332,7 +12221,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0.003,
-            "toEndPointPx": 263.823
+            "toEndPointPx": 263.823,
+            "tipBox": {
+              "width": 138,
+              "natural": 113.5,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h630",
@@ -9351,7 +12249,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 205.33
+            "toEndPointPx": 205.33,
+            "tipBox": {
+              "width": 138,
+              "natural": 114.5,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h660",
@@ -9370,7 +12277,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 176.548
+            "toEndPointPx": 176.548,
+            "tipBox": {
+              "width": 138,
+              "natural": 116.52,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h690",
@@ -9389,7 +12305,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 140.457
+            "toEndPointPx": 140.457,
+            "tipBox": {
+              "width": 138,
+              "natural": 116.63,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h720",
@@ -9408,7 +12333,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 108.089
+            "toEndPointPx": 108.089,
+            "tipBox": {
+              "width": 138,
+              "natural": 115.22,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "peak",
@@ -9426,7 +12360,16 @@
               "y": 116.15
             },
             "target": "peak ring centre",
-            "distancePx": 0
+            "distancePx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 117.39,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h780",
@@ -9445,7 +12388,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 59.145
+            "toEndPointPx": 59.145,
+            "tipBox": {
+              "width": 138,
+              "natural": 87.56,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h810",
@@ -9464,7 +12416,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 12.719
+            "toEndPointPx": 12.719,
+            "tipBox": {
+              "width": 138,
+              "natural": 115.64,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "latest",
@@ -9483,7 +12444,16 @@
             },
             "target": "today's line (SVG path)",
             "distancePx": 0,
-            "toEndPointPx": 0
+            "toEndPointPx": 0,
+            "tipBox": {
+              "width": 138,
+              "natural": 124.72,
+              "leadIsNumber": true,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h840",
@@ -9492,7 +12462,16 @@
             "value": null,
             "tip": "8:00 PM Still ahead",
             "valuetext": "8:00 PM, Still ahead",
-            "marker": null
+            "marker": null,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 25,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h870",
@@ -9501,7 +12480,16 @@
             "value": null,
             "tip": "8:30 PM Still ahead",
             "valuetext": "8:30 PM, Still ahead",
-            "marker": null
+            "marker": null,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 24.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h900",
@@ -9510,7 +12498,16 @@
             "value": null,
             "tip": "9:00 PM Still ahead",
             "valuetext": "9:00 PM, Still ahead",
-            "marker": null
+            "marker": null,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 24.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h930",
@@ -9519,7 +12516,16 @@
             "value": null,
             "tip": "9:30 PM Still ahead",
             "valuetext": "9:30 PM, Still ahead",
-            "marker": null
+            "marker": null,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 24.99,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h960",
@@ -9528,7 +12534,16 @@
             "value": null,
             "tip": "10:00 PM Still ahead",
             "valuetext": "10:00 PM, Still ahead",
-            "marker": null
+            "marker": null,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 24.98,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h990",
@@ -9537,7 +12552,16 @@
             "value": null,
             "tip": "10:30 PM Still ahead",
             "valuetext": "10:30 PM, Still ahead",
-            "marker": null
+            "marker": null,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": 25,
+              "side": "right",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1020",
@@ -9546,7 +12570,16 @@
             "value": null,
             "tip": "11:00 PM Still ahead",
             "valuetext": "11:00 PM, Still ahead",
-            "marker": null
+            "marker": null,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1050",
@@ -9555,7 +12588,16 @@
             "value": null,
             "tip": "11:30 PM Still ahead",
             "valuetext": "11:30 PM, Still ahead",
-            "marker": null
+            "marker": null,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1080",
@@ -9564,7 +12606,16 @@
             "value": null,
             "tip": "12:00 AM Still ahead",
             "valuetext": "12:00 AM, Still ahead",
-            "marker": null
+            "marker": null,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1110",
@@ -9573,7 +12624,16 @@
             "value": null,
             "tip": "12:30 AM Still ahead",
             "valuetext": "12:30 AM, Still ahead",
-            "marker": null
+            "marker": null,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -137,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           },
           {
             "key": "h1140",
@@ -9582,9 +12642,49 @@
             "value": null,
             "tip": "1:00 AM Still ahead",
             "valuetext": "1:00 AM, Still ahead",
-            "marker": null
+            "marker": null,
+            "tipBox": {
+              "width": 138,
+              "natural": 95.33,
+              "leadIsNumber": false,
+              "leadStartMinusHairline": -137.01,
+              "side": "left",
+              "clipped": false,
+              "wrapped": false
+            }
           }
         ],
+        "tooltip": {
+          "widths": [
+            138
+          ],
+          "widestContent": 135.27,
+          "bySide": {
+            "left": {
+              "stops": 30,
+              "numberStops": 24,
+              "numberStartMinusHairline": [
+                -137.02,
+                -137
+              ],
+              "numberSpreadPx": 0.02,
+              "leadSpreadPx": 0.02
+            },
+            "right": {
+              "stops": 10,
+              "numberStops": 4,
+              "numberStartMinusHairline": [
+                24.99,
+                25
+              ],
+              "numberSpreadPx": 0.01,
+              "leadSpreadPx": 0.02
+            }
+          },
+          "clipped": [],
+          "wrapped": [],
+          "pass": true
+        },
         "maxDistancePx": {
           "lineStops": 0.004,
           "peak": 0,
@@ -11637,6 +14737,7 @@
         ]
       },
       "arOpenSettledIdenticalToStatic": true,
+      "arOpenSettledAttempts": 1,
       "arClose": {
         "animatedProperties": [
           "opacity",
@@ -12820,7 +15921,7 @@
     }
   },
   "tunerFileCheck": {
-    "url": "file:///D:/Projects/fitway-worktrees/owner-intro-r04-s03/design-research/owner-composition-exploration-r04/directions/eclipse/index.html?lang=ar",
+    "url": "file:///D:/Projects/fitway-worktrees/owner-followup-r04-s04/design-research/owner-composition-exploration-r04/directions/eclipse/index.html?lang=ar",
     "protocol": "file:",
     "collapsedByDefault": {
       "toggle": true,

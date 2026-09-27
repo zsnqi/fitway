@@ -520,7 +520,13 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
   position: absolute;
   z-index: 2;
   pointer-events: none;
-  min-width: 108px;
+  /* One fixed width for every tooltip, in both languages (the follow-up round after Round 7 step 3): the widest
+   * content it can show, at any stop in any state, is the English missing-span stop, 135.3px in Readex Pro (Segoe UI,
+   * the fallback, 133.6px). So the number and every row sit at the same place inside the box at every stop and never
+   * move against the hairline. 138px leaves a small margin; min-width lets a wider fallback grow, never clip. */
+  --tip-w: 138px;
+  width: var(--tip-w);
+  min-width: max-content;
   padding: 9px 12px 10px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.14);

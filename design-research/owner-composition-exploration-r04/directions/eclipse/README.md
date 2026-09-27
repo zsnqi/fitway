@@ -26,6 +26,15 @@ first paint, and a late font means no intro (user decision, 2026-09-26). The pea
 while it waits. The capture gains three gates: the surfaces at the first frames, the end after the held frames, and
 slow fonts. What moves, its order and its timings are unchanged.
 
+**Follow-up round after step 3 (run `owner_followup_r04_s04`, 2026-09-27):**
+- **Tooltip width (pending the user's before/after review):** every tooltip has one fixed width, 138 px, in both
+  languages, so its number no longer moves against the hairline between stops. See "Motion", 6.
+- **Capture noise:** a frame whose hash differs from its expected value is captured again, and counts as a difference
+  only if it differs twice. The comparison stays exact. See "Open and capture".
+- **Wording:** the font wait's cap is 200 ms from the first paint. The measured still page appeared 195-231 ms after it.
+
+Nothing else changes.
+
 ## Thesis
 
 The structure is familiar: the rail, a header, four small cards and one chart card. The finish is where
@@ -255,8 +264,8 @@ hover colours of the rail tiles and buttons, the details chevron, and the jump t
   there is still no stagger, rise, light entrance or wash drift, and the surfaces are complete at first paint.
 - Without an intro (a reload, a return in the same tab, reduced motion, `?motion=off`, the Motion switch off) the page is
   complete at first paint, as before, and nothing is hidden while the fonts load.
-- With an intro, the four answers wait out of sight and today's line is not drawn until the fonts are in (at most
-  200 ms from the first paint; 11 below). Everything else is complete at first paint.
+- With an intro, the four answers wait out of sight and today's line is not drawn until the fonts are in (the cap is
+  200 ms from the first paint, and the still page was measured 195-231 ms after it; 11 below). Everything else is complete at first paint.
 - The inline script in `index.html` sets only language, direction and state. app.js decides the intro before the first
   paint.
 - The chart renders at once. It is measured again when the fonts arrive, because the header's text sets its height,
@@ -377,8 +386,8 @@ and `setMarker`. The one part of A that stays is its missing-span variant, the l
     While delayed it adds how old it is: «آخر قراءة قبل 13 دقيقة».
   - The tuner's simulated crowd-level change still changes the card only, as before; the latest stop keeps the reading.
 - **Tooltip placement:** after now the tooltip sits on the later side of the hairline, so it never covers the end of
-  today's line, unless it would not fit there: the last stops of the day (11:30 PM to 1:00 AM) flip to the earlier
-  side. Over the gap it sits above both ends of the line.
+  today's line, unless it would not fit there: the last stops of the day (11:00 PM to 1:00 AM with the fixed width;
+  11:30 PM to 1:00 AM before it) flip to the earlier side. Over the gap it sits above both ends of the line.
 - **Tooltip layout (2026-09-26):** one start-aligned arrangement for every tooltip. Every row starts at the same
   inline-start edge (right in Arabic, left in English), and nothing is pushed to the far edge.
   - At the peak and the latest reading (live and delayed), the label chip comes first, then the time. The number then
@@ -388,6 +397,24 @@ and `setMarker`. The one part of A that stays is its missing-span variant, the l
     its word, and the number jumped between ends when the marker crossed the peak or the latest stop.
   - The user approved this layout on 2026-09-26 from a rendered comparison.
   - Values, words, placement, marker B, the follow and the chart's screen-reader text are unchanged.
+- **One fixed tooltip width (follow-up round after step 3, 2026-09-27; pending the user's before/after review):**
+  - **Before:** the width followed the content, from 108 px up to 135.3 px, and the tooltip is anchored at the
+    hairline. So its start-aligned number moved against the hairline between stops. In English it moved 9.0 px between
+    the peak (117.4 px wide) and 7:00 PM (108 px); in Arabic, 1.35 px.
+  - **Now:** every tooltip is 138 px wide (`--tip-w` on `.tip` in `style.css`), in both languages, at every stop and in
+    every state. The number and every row sit at the same place inside the box at every stop, so the number keeps one
+    distance from the hairline on each side. The start-aligned layout above is unchanged.
+  - **How 138 px was found:** the widest content, measured at every stop in AR and EN, live, delayed and no history, is
+    the English missing-span stop («2:14 PM – 2:31 PM», "No reading") at 135.3 px in Readex Pro. Next come the latest
+    reading (124.8 px, AR) and the peak (117.4 px, EN). With the fonts blocked (Segoe UI, the fallback) the widest is
+    the same stop at 133.6 px. 138 px leaves a margin of 2.7 px.
+  - **No wrap and no clip:** the text never wraps (`white-space: nowrap`). `min-width: max-content` lets a fallback font
+    wider than 138 px grow the box rather than clip it. It never happened here: every row is one line at every stop, in
+    both fonts.
+  - **Placement:** the rules are unchanged (the earlier side, the later side after now, the flip at the edges, the
+    follow's easing). The wider box flips at two more stops: 7:30 AM now joins 6:00-7:00 AM on the later side, and
+    11:00 PM now joins 11:30 PM to 1:00 AM on the earlier side.
+  - The capture's `chart` check measures the tooltip at every stop (see "Open and capture").
 
 **6b. The smooth follow (Round 7 step 2).** It replaces the Round 6 glide (120-150 ms, at most 150 ms). It is the
 "follow" part of the motion section in `app.js`.
@@ -548,8 +575,10 @@ section in `app.js`.
   visible, so no font swaps mid-intro.
   - Until then the answers wait out of sight and the line is not drawn.
   - **The cap is 200 ms from the first paint** (user decision, 2026-09-26). It replaces the designer's 1 s cap, because
-    Round 6 said content is never hidden while the fonts load. The answers are therefore hidden for at most 200 ms, and
-    only on a first open.
+    Round 6 said content is never hidden while the fonts load. So the answers wait only on a first open, and the cap is
+    200 ms from the first paint. The still page then needs one more frame to paint: with slow fonts, the verifier's
+    re-check measured the still page at 195-231 ms after the first paint, inside the capture's 250 ms gate (see
+    "Measured").
   - **When the fonts are late,** there is no intro. The owner sees the still page at once: the numbers in the fallback
     font until Readex Pro arrives (as on a page without an intro), and the line whole. The tab's flag is already set,
     so a reload in that tab has no intro either.
@@ -571,7 +600,8 @@ section in `app.js`.
   - **Delayed:** the stale number stays still and the grey end point simply appears, so nothing stale gains an arrival.
   - **Yielding:** settle at once rather than hurry, so a hover or a new reading always meets the real page.
   - **Waiting for the fonts:** the answers are hidden (by the slot's clip, never opacity) for as long as the fonts take,
-    at most 200 ms. With a warm browser cache this is a frame or two; see "Measured".
+    up to the 200 ms cap from the first paint; with slow fonts the still page was measured at 195-231 ms after the first
+    paint. With a warm browser cache this is a frame or two; see "Measured".
   - **The peak's label while it waits** (intro fix round): an empty clip (`inset(50%)`, like the page's `.sr-only`),
     so it is out of sight but stays in the accessibility tree. It is the only text the intro hides. The answers already
     wait by a clip. The line's parts, the end point and the peak ring keep SVG `visibility`, because the chart's SVG is
@@ -640,6 +670,18 @@ takes about five minutes. It exits with code 1 if any check below fails.
     stylesheet is not held, because it blocks rendering, so holding it would only delay the first paint.
   - `--intro-frames=<dir>` also writes every full-size held 2x intro frame to that folder. They are large and are not
     evidence.
+- **Recapture on a difference (the follow-up round after step 3, user-agreed):** Chromium's glyph raster is not always
+  byte-identical between runs, so a single exact-hash difference can be noise.
+  - Every exact-hash comparison now captures a frame that differs once more, the same way, in a fresh context. It counts
+    as a difference only if the next attempt differs too. The comparison stays exact; there is no tolerance.
+  - This covers the static guard (reduced motion and `?motion=off`), the intro's end and the reload, the slow-font end,
+    the replay's end, the rail and resize yields, and the settled open rail. The held 2x intro ends already had a rule
+    of this kind (one more still and one more end), and are logged the same way.
+  - Frames that change by design are not recaptured. The level maps follow their 2x crop, which is compared first.
+  - The log records every comparison with its attempts in `motion.recaptures`: `noise` lists what differed once and
+    then matched, and `differedTwice` what failed. Each frame's entry in `identity` also has its `attempts`.
+  - `--plant=always` (a scratch `outDir` only) adds a 1px chalk dot at (720, 450) to every page, as a negative
+    control; `--plant=once` adds it only to the first attempt, so the recapture is clean.
 
 - **Other machines:** the static guard compares with `evidence/pre-motion-hashes.json`, which was rendered on the
   original Windows machine. Fonts render differently elsewhere, so on another machine pass a scratch `outDir`, expect
@@ -699,7 +741,10 @@ The log records:
     - at every stop, the marker's distance to its target, its form, that nothing is drawn above the point, the tooltip,
       and the screen-reader text;
     - pointer snapping (7 probes) and keyboard stepping;
-    - that the latest stop shows the latest reading and its screen-reader text never calls it an average.
+    - that the latest stop shows the latest reading and its screen-reader text never calls it an average;
+    - (the follow-up round after step 3) the tooltip at every stop: one width on every page, the widest content within
+      it, no row wrapped or clipped, and the number's (or word's) start edge at one distance from the stop's hairline
+      on each side, within 0.5 px (`tooltip` per page, and `tooltipWidth` across pages).
   - **`marker`** (Round 7 step 2): B's variants sheet; that form A is gone (no Marker group, `?marker=a` ignored, no
     `setMarker`); and the hover speed.
   - **`follow`** (Round 7 step 2, AR and EN): the follow's own curve against the clip's figures (within 0.07); the
@@ -815,6 +860,29 @@ The log records:
     - a light at half opacity until the start fails the first-paint probe, and a wash animation at the start fails the
       intro's first frame (6 of 6 each);
     - the old 1 s cap fails the slow-font check (the intro plays with the fonts held 600 ms).
+- **Re-rendered for the follow-up round after step 3, on the original Windows machine into `evidence/`, two runs,
+  both exit 0:**
+  - Changed by design (the fixed tooltip width): `daily-ar-1440x900-hover` and `daily-en-1440x900-hover` (the same
+    bytes in both runs), `motion-follow-ar-2x` and `motion-contact-sheet` (the follow's tooltip), `intro-yield-ar`
+    (the hover, tap and keys cells show the tooltip; it is also timing-dependent), and `capture-log.json`.
+  - Changed with no change in behaviour: `motion-roll-en-2x`, by 529 pixels in the two mid-roll cells (30 and 70 ms),
+    the known mid-roll timing noise; it has no tooltip. `motion-roll-ar-2x` differed in run 1 only.
+  - Every other PNG was rewritten byte-identically to `622cd0b`. `pre-motion-hashes.json` is unchanged: the AR hover
+    frame was already listed as changing by design, and the EN hover frame has no pre-motion hash.
+  - Recaptures: 70 exact comparisons in each run; 68 matched at the first attempt, none was noise and none differed
+    twice. The other two are the frames that change by design (the AR hover and the tuner), which are not recaptured.
+  - Tooltip: 138 px on every page; the widest content 135.27 px (the English missing-span stop, live, delayed and no
+    history); at rest the number's start edge keeps one distance from its stop's hairline on each side, within
+    0.01-0.02 px, in AR and EN, live, delayed and no history.
+  - Slow fonts (this round): with each font file held 600 ms, the answers were in view 179-203 ms after the first
+    paint (inside the 250 ms gate).
+  - **Negative control** (scratch folders, not evidence): `--plant=always` put a 1px dot at (720, 450) into every
+    page. The 39 comparisons whose frames hold that point differed twice and failed, and the run exited 1.
+    `--plant=once` planted it only in the first attempt: the same 39 were reported as noise, and the run exited 0.
+  - Scratch checks: keyboard (Home, then every stop) and pointer (onto every stop), AR and EN, reduced motion and motion
+    on (read once the follow had settled). At all 40 stops the width was 138 px and the number's start edge against
+    the stop's x spread by at most 0.024 px per side. Against the drawn 1 px hairline, which snaps to whole pixels, the
+    spread is up to 0.95 px (each stop within 0.5 px); the tooltip is anchored at the stop's own x, as before.
 - **Static guard (step 3 run 4, exit code 0):**
   - Reduced motion: 25 of 27 pre-motion frames are identical. The other two, the AR hover and the tuner frames,
     change by design.
@@ -864,8 +932,8 @@ The log records:
     are in the code but were not exercised.
   - The 200 ms font cap was tested only with font files held by route interception (50, 600 and 1400 ms) and on cold
     fetches in fresh contexts. A slow real network, and a cap that ends while the page is busy, were not tried.
-  - The pre-intro wait hides the answers (a clip) while the fonts load: a frame or two with a warm cache, at most
-    200 ms otherwise, on a first open only (the user's decision on Round 6 §1, 2026-09-26).
+  - The pre-intro wait hides the answers (a clip) while the fonts load: a frame or two with a warm cache, otherwise up
+    to the 200 ms cap from the first paint (the still page measured 195-231 ms after it), on a first open only (the user's decision on Round 6 §1, 2026-09-26).
   - No screen-reader pass. The accessibility tree was compared as Chromium exposes it over CDP. The live region was
     checked as text only.
   - The surface probe reads computed styles at two frames, not pixels. The frames in between are covered by the held
@@ -887,3 +955,7 @@ The log records:
 - **Intro fix round:** the accessibility-tree comparison, the slow-font frames at 100-400 ms and the planted defects
   were run as scratch checks outside the repository. The accessibility tree is not a capture gate. No verifier has
   checked this round yet.
+- **Follow-up round after step 3:** the fixed tooltip width is pending the user's before/after review (the builder's
+  comparison sheets are in the round's scratch folder). Only Readex Pro and Segoe UI (the Windows fallback) were
+  measured; a wider fallback grows the box rather than clipping. The keyboard and pointer sweep and the negative
+  control were scratch checks. No verifier has checked this round yet.
