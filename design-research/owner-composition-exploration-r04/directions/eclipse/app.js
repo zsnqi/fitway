@@ -913,7 +913,9 @@
   let tipSize = null, peakTagBox = null, tipShown = null; // tipShown: { left, top, mode } as last drawn
   function placeTip(x, py, later = false) {
     const { W, H } = geo;
-    if (!tipSize) tipSize = { tw: tip.offsetWidth, th: tip.offsetHeight };
+    // The box's rendered width for the content it shows (the missing-span stop may be wider than --tip-w): measured
+    // again whenever the content changes (tipSize is cleared then), unrounded so the 12px gap holds at any width.
+    if (!tipSize) tipSize = { tw: tip.getBoundingClientRect().width, th: tip.offsetHeight };
     const { tw, th } = tipSize;
     const right = RTL !== later; // the earlier side is on the right in Arabic
     let left = right ? x + 12 : x - 12 - tw;
@@ -1512,7 +1514,7 @@
     if (!canMorph) { render(); return { reading, morph: false }; }
     // The stops for the new reading (the geometry's scale is unchanged); a selected stop keeps its key.
     buildStops();
-    if (sel) { const st = stopBy(sel.key); if (st) { sel = st; tip.innerHTML = tipHTML(st); hit.setAttribute("aria-valuetext", valueText(st)); } }
+    if (sel) { const st = stopBy(sel.key); if (st) { sel = st; tip.innerHTML = tipHTML(st); tipSize = null; hit.setAttribute("aria-valuetext", valueText(st)); } }
     // The first minute where the drawn line changes; the tail starts at the line point before it.
     const si = to.segments.length - 1, segNew = to.segments[si];
     let m0 = from.last;

@@ -540,7 +540,7 @@ const measureMarker = (page) => page.evaluate(() => {
   return out;
 });
 
-/* The tooltip at a stop (the follow-up round after step 3): its drawn width, its content's own width (the same box with
+/* The tooltip at a stop (the follow-up round after step 3; the 127 px round): whether it shows a number, its drawn width, its content's own width (the same box with
  * no set width), the start edge of its number (or of its word where there is no number) against the stop's hairline
  * x, the side it sits on, and whether any row wraps (a row taller than one line) or clips. */
 const measureTip = (page, stopX) => page.evaluate((sx) => {
@@ -554,7 +554,7 @@ const measureTip = (page, stopX) => page.evaluate((sx) => {
   tip.style.width = w0; tip.style.minWidth = m0;
   const start = rtl ? n.right : n.left;
   const r2 = (v) => Math.round(v * 100) / 100;
-  return { width: r2(r.width), natural: r2(natural), leadIsNumber: lead.classList.contains("tip-v"), leadStartMinusHairline: r2(start - sx), side: r.left + r.width / 2 > sx ? "right" : "left",
+  return { width: r2(r.width), natural: r2(natural), numbered: !!(tip.querySelector(".tip-v") || tip.querySelector(".tip-u")), leadIsNumber: lead.classList.contains("tip-v"), leadStartMinusHairline: r2(start - sx), side: r.left + r.width / 2 > sx ? "right" : "left",
     clipped: tip.scrollWidth > tip.clientWidth || rows.some((x) => x.sw > x.cw + 0.5), wrapped: rows.some((x) => x.h > 1.9 * Math.max(x.lh, x.fs * 1.25)) };
 }, stopX);
 
@@ -596,11 +596,15 @@ async function chartChecks(lang, state = "live", marker = "b") {
     const bySide = {};
     for (const side of ["left", "right"]) {
       const nums = res.perStop.filter((p) => p.tipBox?.side === side && p.tipBox.leadIsNumber).map((p) => p.tipBox.leadStartMinusHairline);
-      const all = res.perStop.filter((p) => p.tipBox?.side === side).map((p) => p.tipBox.leadStartMinusHairline);
+      // The missing-span stop may be wider than the rest (the 127 px round), so its word may start elsewhere.
+      const all = res.perStop.filter((p) => p.tipBox?.side === side && p.kind !== "gap").map((p) => p.tipBox.leadStartMinusHairline);
       if (all.length) bySide[side] = { stops: all.length, numberStops: nums.length, numberStartMinusHairline: nums.length ? [Math.min(...nums), Math.max(...nums)] : null, numberSpreadPx: spread(nums), leadSpreadPx: spread(all) };
     }
-    res.tooltip = { widths: [...new Set(boxes.map((b) => b.width))], widestContent: Math.max(...boxes.map((b) => b.natural)), bySide, clipped: res.perStop.filter((p) => p.tipBox?.clipped).map((p) => p.key), wrapped: res.perStop.filter((p) => p.tipBox?.wrapped).map((p) => p.key) };
-    res.tooltip.pass = boxes.length === res.perStop.length && res.tooltip.widths.length === 1 && res.tooltip.widestContent <= res.tooltip.widths[0] && Object.values(bySide).every((b) => b.leadSpreadPx <= 0.5) && !res.tooltip.clipped.length && !res.tooltip.wrapped.length;
+    // The width is set by the widest tooltip that shows a number; only the missing-span stop (no number) may grow past it.
+    const fixedBoxes = res.perStop.filter((p) => p.tipBox && p.kind !== "gap").map((p) => p.tipBox);
+    const grown = res.perStop.filter((p) => p.tipBox && p.kind === "gap").map((p) => p.tipBox);
+    res.tooltip = { widths: [...new Set(fixedBoxes.map((b) => b.width))], gapWidths: [...new Set(grown.map((b) => b.width))], widestContent: Math.max(...boxes.filter((b) => b.numbered).map((b) => b.natural)), bySide, clipped: res.perStop.filter((p) => p.tipBox?.clipped).map((p) => p.key), wrapped: res.perStop.filter((p) => p.tipBox?.wrapped).map((p) => p.key) };
+    res.tooltip.pass = boxes.length === res.perStop.length && res.tooltip.widths.length === 1 && res.tooltip.widestContent <= res.tooltip.widths[0] && grown.every((b) => b.width >= res.tooltip.widths[0] && b.width >= b.natural - 0.01) && Object.values(bySide).every((b) => b.leadSpreadPx <= 0.5) && !res.tooltip.clipped.length && !res.tooltip.wrapped.length;
   }
   const on = (kinds) => res.perStop.filter((p) => kinds.includes(p.kind) && p.distancePx != null).map((p) => p.distancePx);
   res.maxDistancePx = {
@@ -1392,14 +1396,14 @@ async function captureMotion() {
     M.chart[`enDelayed${s}`] = await chartChecks("en", "delayed", mk);
     M.chart[`enNoHistory${s}`] = await chartChecks("en", "nohistory", mk);
   }
-  // The follow-up round after step 3: the tooltip has one width on every page, in both languages and every state, and
-  // the widest content it shows anywhere fits in it.
+  // The follow-up round after step 3 (the 127 px round): the tooltip has one width on every page, in both languages and
+  // every state, except the missing-span stop, which may grow; the widest tooltip that shows a number fits in it.
   {
     const pages = Object.values(M.chart);
     const widths = [...new Set(pages.flatMap((v) => v.tooltip.widths))];
     const widest = Math.max(...pages.map((v) => v.tooltip.widestContent));
-    const at = Object.entries(M.chart).flatMap(([k, v]) => v.perStop.filter((p) => p.tipBox?.natural === widest).map((p) => `${k} ${p.key}`));
-    M.tooltipWidth = { widths, widestContentPx: widest, widestAt: at, marginPx: widths.length === 1 ? Math.round((widths[0] - widest) * 100) / 100 : null, pass: widths.length === 1 && widest <= widths[0] && pages.every((v) => v.tooltip.pass) };
+    const at = Object.entries(M.chart).flatMap(([k, v]) => v.perStop.filter((p) => p.tipBox?.numbered && p.tipBox.natural === widest).map((p) => `${k} ${p.key}`));
+    M.tooltipWidth = { widths, gapWidths: [...new Set(pages.flatMap((v) => v.tooltip.gapWidths))], widestNumberedContentPx: widest, widestContentPx: widest, widestAt: at, marginPx: widths.length === 1 ? Math.round((widths[0] - widest) * 100) / 100 : null, pass: widths.length === 1 && widest <= widths[0] && pages.every((v) => v.tooltip.pass) };
   }
 
   // 3b. Round 7 step 2: B's variants, form A gone, the hover speed.
@@ -1678,7 +1682,7 @@ async function captureMotion() {
   const fo = Object.values(identity.firstOpen), rl = Object.values(identity.reload);
   console.log(`motion: off-frames identical ${Object.values(identity.motionOffFrames).filter((v) => v.identical).length}/${Object.keys(identity.motionOffFrames).length}; intro end = still frame ${fo.filter((v) => v.endIdenticalToStill).length}/${fo.length}, reload without intro = still frame ${rl.filter((v) => v.pass).length}/${rl.length}; live ends at canonical ${identity.liveUpdateEndsAtCanonical?.identicalWithPulseHidden} (DOM ${identity.liveUpdateEndsAtCanonical?.domEqual})`);
   for (const k of Object.keys(c)) console.log(`chart ${k}: ${c[k].pass ? "pass" : "FAIL"}; stops ${c[k].stops.length}; marker max distance line ${c[k].maxDistancePx.lineStops} px, peak ${c[k].maxDistancePx.peak}, usual ${c[k].maxDistancePx.usualLine}, gap ${c[k].maxDistancePx.gapMark}; pointer ${c[k].pointer.filter((p) => p.pass).length}/${c[k].pointer.length}; keyboard ${c[k].keyboard.pass}`);
-  console.log(`tooltip: ${M.tooltipWidth.pass ? "pass" : "FAIL"}; width ${M.tooltipWidth.widths.join("/")} px on every page, widest content ${M.tooltipWidth.widestContentPx} px (${M.tooltipWidth.widestAt.join(", ")}); the number's start against the hairline, spread per side: ${Object.entries(c).map(([k, v]) => `${k} ${Object.entries(v.tooltip.bySide).map(([sd, b]) => `${sd} ${b.numberSpreadPx}`).join("/")}`).join("; ")}`);
+  console.log(`tooltip: ${M.tooltipWidth.pass ? "pass" : "FAIL"}; width ${M.tooltipWidth.widths.join("/")} px on every page (the missing-span stop ${M.tooltipWidth.gapWidths.join("/")} px), widest numbered content ${M.tooltipWidth.widestContentPx} px (${M.tooltipWidth.widestAt.join(", ")}); the number's start against the hairline, spread per side: ${Object.entries(c).map(([k, v]) => `${k} ${Object.entries(v.tooltip.bySide).map(([sd, b]) => `${sd} ${b.numberSpreadPx}`).join("/")}`).join("; ")}`);
   console.log(`follow: ${Object.entries(M.follow).map(([k, v]) => `${k} ${v.pass}`).join(", ")}; roll: ar ${M.roll.ar.pass}, en ${M.roll.en.pass}; delayed ${M.delayed.pass}; rail ${M.rail.pass}`);
 }
 

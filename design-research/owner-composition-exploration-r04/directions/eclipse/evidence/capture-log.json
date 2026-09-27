@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-09-27T06:04:31.184Z",
+  "capturedAt": "2026-09-27T07:21:27.931Z",
   "port": 3173,
   "motion": {
     "method": "Pre-motion frames: evidence/pre-motion-hashes.json (SHA-256 of the v3 frames before motion). The capture is byte-deterministic, so equal hashes mean identical pixels.",
@@ -62,7 +62,7 @@
           "noise": false,
           "differedTwice": false,
           "hashes": [
-            "01a980ab97b84459"
+            "470f2ddb599a928e"
           ]
         },
         {
@@ -332,7 +332,7 @@
           "noise": false,
           "differedTwice": false,
           "hashes": [
-            "01a980ab97b84459"
+            "470f2ddb599a928e"
           ]
         },
         {
@@ -342,7 +342,7 @@
           "noise": false,
           "differedTwice": false,
           "hashes": [
-            "6efb60d3fc4d9811"
+            "1d973bcac0ef8317"
           ]
         },
         {
@@ -739,15 +739,19 @@
     },
     "tooltipWidth": {
       "widths": [
-        138
+        127
       ],
-      "widestContentPx": 135.27,
+      "gapWidths": [
+        127,
+        135.27
+      ],
+      "widestNumberedContentPx": 124.84,
+      "widestContentPx": 124.84,
       "widestAt": [
-        "en gap",
-        "enDelayed gap",
-        "enNoHistory gap"
+        "ar latest",
+        "arNoHistory latest"
       ],
-      "marginPx": 2.73,
+      "marginPx": 2.16,
       "pass": true
     },
     "markerMaxDistancePx": {
@@ -991,12 +995,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 863,
+          "measuredMs": 868,
           "expectedMs": 820,
-          "fontWaitMs": 21,
+          "fontWaitMs": 18,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 34
+            "dashes": 36
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1008,12 +1012,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 48,
+          "framesDuringIntro": 51,
           "maxFrameGapMs": 33.3,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 56,
+              "t": 60,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1025,8 +1029,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 130,
-              "sinceStartMs": 27,
+              "t": 113,
+              "sinceStartMs": 21,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1047,9 +1051,9 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 861,
+          "measuredMs": 865,
           "expectedMs": 820,
-          "fontWaitMs": 27,
+          "fontWaitMs": 23,
           "introElementsSeen": {
             "slots": 5,
             "dashes": 35
@@ -1064,12 +1068,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 48,
-          "maxFrameGapMs": 33.3,
+          "framesDuringIntro": 49,
+          "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 69,
+              "t": 65,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1081,8 +1085,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 145,
-              "sinceStartMs": 34,
+              "t": 122,
+              "sinceStartMs": 33,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1103,12 +1107,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 880,
+          "measuredMs": 871,
           "expectedMs": 820,
-          "fontWaitMs": 31,
+          "fontWaitMs": 34,
           "introElementsSeen": {
             "slots": 4,
-            "dashes": 34
+            "dashes": 35
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1118,12 +1122,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 49,
-          "maxFrameGapMs": 33.4,
+          "framesDuringIntro": 50,
+          "maxFrameGapMs": 33.3,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 69,
+              "t": 70,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1135,7 +1139,7 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 130,
+              "t": 156,
               "sinceStartMs": 28,
               "state": "running",
               "surfaces": 15,
@@ -1157,12 +1161,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 883,
+          "measuredMs": 854,
           "expectedMs": 820,
-          "fontWaitMs": 30,
+          "fontWaitMs": 20,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 34
+            "dashes": 37
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1174,12 +1178,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 49,
-          "maxFrameGapMs": 33.4,
+          "framesDuringIntro": 51,
+          "maxFrameGapMs": 16.8,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 69,
+              "t": 56,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1191,8 +1195,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 131,
-              "sinceStartMs": 30,
+              "t": 106,
+              "sinceStartMs": 21,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1213,12 +1217,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 851,
+          "measuredMs": 852,
           "expectedMs": 820,
-          "fontWaitMs": 20,
+          "fontWaitMs": 24,
           "introElementsSeen": {
             "slots": 4,
-            "dashes": 34
+            "dashes": 37
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1228,12 +1232,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 48,
-          "maxFrameGapMs": 33.4,
+          "framesDuringIntro": 51,
+          "maxFrameGapMs": 16.8,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 62,
+              "t": 67,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1245,8 +1249,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 111,
-              "sinceStartMs": 27,
+              "t": 124,
+              "sinceStartMs": 21,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1267,12 +1271,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 850,
+          "measuredMs": 852,
           "expectedMs": 820,
-          "fontWaitMs": 18,
+          "fontWaitMs": 20,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 35
+            "dashes": 37
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1284,12 +1288,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 49,
-          "maxFrameGapMs": 33.4,
+          "framesDuringIntro": 51,
+          "maxFrameGapMs": 16.8,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 61,
+              "t": 65,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1301,8 +1305,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 107,
-              "sinceStartMs": 23,
+              "t": 113,
+              "sinceStartMs": 21,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1513,12 +1517,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 863,
+          "measuredMs": 868,
           "expectedMs": 820,
-          "fontWaitMs": 21,
+          "fontWaitMs": 18,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 34
+            "dashes": 36
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1530,12 +1534,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 48,
+          "framesDuringIntro": 51,
           "maxFrameGapMs": 33.3,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 56,
+              "t": 60,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1547,8 +1551,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 130,
-              "sinceStartMs": 27,
+              "t": 113,
+              "sinceStartMs": 21,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1569,9 +1573,9 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 861,
+          "measuredMs": 865,
           "expectedMs": 820,
-          "fontWaitMs": 27,
+          "fontWaitMs": 23,
           "introElementsSeen": {
             "slots": 5,
             "dashes": 35
@@ -1586,12 +1590,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 48,
-          "maxFrameGapMs": 33.3,
+          "framesDuringIntro": 49,
+          "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 69,
+              "t": 65,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1603,8 +1607,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 145,
-              "sinceStartMs": 34,
+              "t": 122,
+              "sinceStartMs": 33,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1625,12 +1629,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 880,
+          "measuredMs": 871,
           "expectedMs": 820,
-          "fontWaitMs": 31,
+          "fontWaitMs": 34,
           "introElementsSeen": {
             "slots": 4,
-            "dashes": 34
+            "dashes": 35
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1640,12 +1644,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 49,
-          "maxFrameGapMs": 33.4,
+          "framesDuringIntro": 50,
+          "maxFrameGapMs": 33.3,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 69,
+              "t": 70,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1657,7 +1661,7 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 130,
+              "t": 156,
               "sinceStartMs": 28,
               "state": "running",
               "surfaces": 15,
@@ -1679,12 +1683,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 883,
+          "measuredMs": 854,
           "expectedMs": 820,
-          "fontWaitMs": 30,
+          "fontWaitMs": 20,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 34
+            "dashes": 37
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1696,12 +1700,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 49,
-          "maxFrameGapMs": 33.4,
+          "framesDuringIntro": 51,
+          "maxFrameGapMs": 16.8,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 69,
+              "t": 56,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1713,8 +1717,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 131,
-              "sinceStartMs": 30,
+              "t": 106,
+              "sinceStartMs": 21,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1735,12 +1739,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 851,
+          "measuredMs": 852,
           "expectedMs": 820,
-          "fontWaitMs": 20,
+          "fontWaitMs": 24,
           "introElementsSeen": {
             "slots": 4,
-            "dashes": 34
+            "dashes": 37
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1750,12 +1754,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 48,
-          "maxFrameGapMs": 33.4,
+          "framesDuringIntro": 51,
+          "maxFrameGapMs": 16.8,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 62,
+              "t": 67,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1767,8 +1771,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 111,
-              "sinceStartMs": 27,
+              "t": 124,
+              "sinceStartMs": 21,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1789,12 +1793,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 850,
+          "measuredMs": 852,
           "expectedMs": 820,
-          "fontWaitMs": 18,
+          "fontWaitMs": 20,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 35
+            "dashes": 37
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1806,12 +1810,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 49,
-          "maxFrameGapMs": 33.4,
+          "framesDuringIntro": 51,
+          "maxFrameGapMs": 16.8,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 61,
+              "t": 65,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1823,8 +1827,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 107,
-              "sinceStartMs": 23,
+              "t": 113,
+              "sinceStartMs": 21,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1925,12 +1929,12 @@
       "fontCache": {
         "note": "every intro context serves the Google Fonts files from memory after their first network fetch (same bytes), as a browser cache does for a returning owner",
         "arFirstFetch": {
-          "fontWaitMs": 206,
+          "fontWaitMs": 209,
           "played": false,
           "yieldedBy": "fonts late"
         },
         "enFirstFetch": {
-          "fontWaitMs": 19,
+          "fontWaitMs": 18,
           "played": true,
           "yieldedBy": "complete"
         },
@@ -1944,10 +1948,10 @@
           "yieldedBy": "fonts late",
           "fontWaitMs": 202,
           "firstPaintMs": 76,
-          "answersInViewAtMs": 276,
+          "answersInViewAtMs": 291,
           "introEverRan": false,
           "fontsInAtEnd": true,
-          "answersInViewAfterFirstPaintMs": 200,
+          "answersInViewAfterFirstPaintMs": 215,
           "domEqualsMotionOff": true,
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1960,12 +1964,12 @@
           "state": "done",
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "fontWaitMs": 66,
-          "firstPaintMs": 60,
-          "answersInViewAtMs": 138,
+          "fontWaitMs": 78,
+          "firstPaintMs": 104,
+          "answersInViewAtMs": 149,
           "introEverRan": true,
           "fontsInAtEnd": true,
-          "answersInViewAfterFirstPaintMs": 78,
+          "answersInViewAfterFirstPaintMs": 45,
           "domEqualsMotionOff": true,
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1978,12 +1982,12 @@
           "state": "done",
           "reason": "first open in this tab",
           "yieldedBy": "fonts late",
-          "fontWaitMs": 208,
-          "firstPaintMs": 76,
-          "answersInViewAtMs": 274,
+          "fontWaitMs": 202,
+          "firstPaintMs": 96,
+          "answersInViewAtMs": 270,
           "introEverRan": false,
           "fontsInAtEnd": true,
-          "answersInViewAfterFirstPaintMs": 198,
+          "answersInViewAfterFirstPaintMs": 174,
           "domEqualsMotionOff": true,
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1996,12 +2000,12 @@
           "state": "done",
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "fontWaitMs": 72,
-          "firstPaintMs": 96,
-          "answersInViewAtMs": 146,
+          "fontWaitMs": 66,
+          "firstPaintMs": 64,
+          "answersInViewAtMs": 139,
           "introEverRan": true,
           "fontsInAtEnd": true,
-          "answersInViewAfterFirstPaintMs": 50,
+          "answersInViewAfterFirstPaintMs": 75,
           "domEqualsMotionOff": true,
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2016,7 +2020,7 @@
           "played": true,
           "state": "done",
           "reason": "first open in this tab",
-          "fontWaitMs": 23
+          "fontWaitMs": 17
         },
         "reloadSameTab": {
           "played": false,
@@ -2034,7 +2038,7 @@
           "played": true,
           "state": "done",
           "reason": "first open in this tab",
-          "fontWaitMs": 19
+          "fontWaitMs": 18
         },
         "newTabWithMotionSwitchOff": {
           "played": false,
@@ -2046,7 +2050,7 @@
           "played": true,
           "state": "done",
           "reason": "first open in this tab",
-          "fontWaitMs": 22
+          "fontWaitMs": 18
         },
         "errors": [],
         "reducedMotion": {
@@ -2073,7 +2077,7 @@
             "sawRunning": true,
             "count": 2,
             "yieldedBy": "complete",
-            "measuredMs": 834,
+            "measuredMs": 859,
             "expectedMs": 820,
             "speed": 1
           },
@@ -2084,7 +2088,7 @@
             "sawRunning": true,
             "count": 3,
             "yieldedBy": "complete",
-            "measuredMs": 1658,
+            "measuredMs": 1656,
             "expectedMs": 1640,
             "speed": 0.5
           },
@@ -2093,7 +2097,7 @@
             "sawRunning": true,
             "count": 4,
             "yieldedBy": "complete",
-            "measuredMs": 427,
+            "measuredMs": 459,
             "expectedMs": 410,
             "speed": 2
           },
@@ -2124,7 +2128,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "chart",
-            "settledAtMs": 109
+            "settledAtMs": 120
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2143,7 +2147,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "chart",
-            "settledAtMs": 419
+            "settledAtMs": 416
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2166,7 +2170,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "keydown",
-            "settledAtMs": 108
+            "settledAtMs": 109
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2189,7 +2193,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "keydown",
-            "settledAtMs": 405
+            "settledAtMs": 409
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2208,7 +2212,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "pointerdown",
-            "settledAtMs": 138
+            "settledAtMs": 152
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2224,7 +2228,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "pointerdown",
-            "settledAtMs": 448
+            "settledAtMs": 451
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2240,7 +2244,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "pointerdown",
-            "settledAtMs": 130
+            "settledAtMs": 134
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2259,7 +2263,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "pointerdown",
-            "settledAtMs": 435
+            "settledAtMs": 442
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2287,7 +2291,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "new reading",
-            "settledAtMs": 104
+            "settledAtMs": 109
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2325,7 +2329,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "new reading",
-            "settledAtMs": 408
+            "settledAtMs": 406
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2354,7 +2358,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "resize",
-            "settledAtMs": 123
+            "settledAtMs": 111
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2369,7 +2373,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "resize",
-            "settledAtMs": 407
+            "settledAtMs": 415
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -3454,8 +3458,9 @@
             "distancePx": 0,
             "toEndPointPx": 909.024,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 113.45,
+              "numbered": true,
               "leadIsNumber": true,
               "leadStartMinusHairline": -25,
               "side": "left",
@@ -3482,8 +3487,9 @@
             "distancePx": 0.004,
             "toEndPointPx": 869.484,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 91.05,
+              "numbered": true,
               "leadIsNumber": true,
               "leadStartMinusHairline": -25,
               "side": "left",
@@ -3510,8 +3516,9 @@
             "distancePx": 0,
             "toEndPointPx": 815.05,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 97.97,
+              "numbered": true,
               "leadIsNumber": true,
               "leadStartMinusHairline": -25.01,
               "side": "left",
@@ -3538,8 +3545,9 @@
             "distancePx": 0,
             "toEndPointPx": 781.689,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 98.06,
+              "numbered": true,
               "leadIsNumber": true,
               "leadStartMinusHairline": -25.01,
               "side": "left",
@@ -3566,10 +3574,11 @@
             "distancePx": 0,
             "toEndPointPx": 754.135,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 97.58,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -3594,10 +3603,11 @@
             "distancePx": 0,
             "toEndPointPx": 734.085,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 96.78,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -3622,10 +3632,11 @@
             "distancePx": 0,
             "toEndPointPx": 709.403,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 91.38,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.98,
+              "leadStartMinusHairline": 125.98,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -3650,10 +3661,11 @@
             "distancePx": 0,
             "toEndPointPx": 685.547,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 91.11,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -3678,10 +3690,11 @@
             "distancePx": 0,
             "toEndPointPx": 658.152,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 91.25,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -3706,10 +3719,11 @@
             "distancePx": 0,
             "toEndPointPx": 621.652,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 91.11,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -3734,10 +3748,11 @@
             "distancePx": 0,
             "toEndPointPx": 591.881,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 90.94,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -3762,10 +3777,11 @@
             "distancePx": 0,
             "toEndPointPx": 562.55,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 91.05,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -3790,10 +3806,11 @@
             "distancePx": 0,
             "toEndPointPx": 526.82,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 96.42,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -3818,10 +3835,11 @@
             "distancePx": 0,
             "toEndPointPx": 500.174,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 96.78,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -3846,10 +3864,11 @@
             "distancePx": 0,
             "toEndPointPx": 464.352,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 97.88,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -3874,10 +3893,11 @@
             "distancePx": 0,
             "toEndPointPx": 436.481,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 97.88,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -3902,10 +3922,11 @@
             "distancePx": 0,
             "toEndPointPx": 414.375,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 97,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -3929,10 +3950,11 @@
             "distancePx": 0,
             "dots": 4,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 111.05,
+              "numbered": false,
               "leadIsNumber": false,
-              "leadStartMinusHairline": 136.98,
+              "leadStartMinusHairline": 125.98,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -3957,10 +3979,11 @@
             "distancePx": 0,
             "toEndPointPx": 358.997,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 97.88,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -3985,10 +4008,11 @@
             "distancePx": 0,
             "toEndPointPx": 328.616,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 97.38,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -4013,10 +4037,11 @@
             "distancePx": 0.003,
             "toEndPointPx": 263.823,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 97.72,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -4041,10 +4066,11 @@
             "distancePx": 0,
             "toEndPointPx": 205.33,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 98.72,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -4069,10 +4095,11 @@
             "distancePx": 0,
             "toEndPointPx": 176.548,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 100.73,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -4097,10 +4124,11 @@
             "distancePx": 0,
             "toEndPointPx": 140.457,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 100.84,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -4125,10 +4153,11 @@
             "distancePx": 0,
             "toEndPointPx": 108.089,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 99.44,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -4152,10 +4181,11 @@
             "target": "peak ring centre",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 109.36,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -4180,10 +4210,11 @@
             "distancePx": 0,
             "toEndPointPx": 59.145,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 98.55,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -4208,10 +4239,11 @@
             "distancePx": 0,
             "toEndPointPx": 12.719,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 99.86,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -4236,10 +4268,11 @@
             "distancePx": 0,
             "toEndPointPx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 124.84,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -4263,8 +4296,9 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 99.31,
+              "numbered": true,
               "leadIsNumber": false,
               "leadStartMinusHairline": -25.01,
               "side": "left",
@@ -4290,8 +4324,9 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 97.39,
+              "numbered": true,
               "leadIsNumber": false,
               "leadStartMinusHairline": -25,
               "side": "left",
@@ -4317,8 +4352,9 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 96.78,
+              "numbered": true,
               "leadIsNumber": false,
               "leadStartMinusHairline": -25,
               "side": "left",
@@ -4344,8 +4380,9 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 97.83,
+              "numbered": true,
               "leadIsNumber": false,
               "leadStartMinusHairline": -25.01,
               "side": "left",
@@ -4371,8 +4408,9 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 98.3,
+              "numbered": true,
               "leadIsNumber": false,
               "leadStartMinusHairline": -25,
               "side": "left",
@@ -4398,8 +4436,9 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 97.11,
+              "numbered": true,
               "leadIsNumber": false,
               "leadStartMinusHairline": -25.01,
               "side": "left",
@@ -4425,10 +4464,11 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 96.78,
+              "numbered": true,
               "leadIsNumber": false,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -4452,10 +4492,11 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.58,
+              "numbered": true,
               "leadIsNumber": false,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -4479,10 +4520,11 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.58,
+              "numbered": true,
               "leadIsNumber": false,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -4506,10 +4548,11 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.58,
+              "numbered": true,
               "leadIsNumber": false,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -4533,10 +4576,11 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.58,
+              "numbered": true,
               "leadIsNumber": false,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -4545,7 +4589,10 @@
         ],
         "tooltip": {
           "widths": [
-            138
+            127
+          ],
+          "gapWidths": [
+            127
           ],
           "widestContent": 124.84,
           "bySide": {
@@ -4560,11 +4607,11 @@
               "leadSpreadPx": 0.01
             },
             "right": {
-              "stops": 30,
+              "stops": 29,
               "numberStops": 24,
               "numberStartMinusHairline": [
-                136.98,
-                137
+                125.98,
+                126
               ],
               "numberSpreadPx": 0.02,
               "leadSpreadPx": 0.02
@@ -5129,8 +5176,9 @@
             "distancePx": 0,
             "toEndPointPx": 909.024,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 85.73,
+              "numbered": true,
               "leadIsNumber": true,
               "leadStartMinusHairline": 25,
               "side": "right",
@@ -5157,8 +5205,9 @@
             "distancePx": 0.004,
             "toEndPointPx": 869.484,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 86.3,
+              "numbered": true,
               "leadIsNumber": true,
               "leadStartMinusHairline": 24.99,
               "side": "right",
@@ -5185,8 +5234,9 @@
             "distancePx": 0,
             "toEndPointPx": 815.05,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 113.75,
+              "numbered": true,
               "leadIsNumber": true,
               "leadStartMinusHairline": 24.99,
               "side": "right",
@@ -5213,8 +5263,9 @@
             "distancePx": 0,
             "toEndPointPx": 781.689,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 113.14,
+              "numbered": true,
               "leadIsNumber": true,
               "leadStartMinusHairline": 24.99,
               "side": "right",
@@ -5241,10 +5292,11 @@
             "distancePx": 0,
             "toEndPointPx": 754.135,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 92.83,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -5269,10 +5321,11 @@
             "distancePx": 0,
             "toEndPointPx": 734.085,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 92.03,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -5297,10 +5350,11 @@
             "distancePx": 0,
             "toEndPointPx": 709.403,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 87.78,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -5325,10 +5379,11 @@
             "distancePx": 0,
             "toEndPointPx": 685.547,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 86.36,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -5353,10 +5408,11 @@
             "distancePx": 0,
             "toEndPointPx": 658.152,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 86.5,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -5381,10 +5437,11 @@
             "distancePx": 0,
             "toEndPointPx": 621.652,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 86.36,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -5409,10 +5466,11 @@
             "distancePx": 0,
             "toEndPointPx": 591.881,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 89.94,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -5437,10 +5495,11 @@
             "distancePx": 0,
             "toEndPointPx": 562.55,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 89.94,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -5465,10 +5524,11 @@
             "distancePx": 0,
             "toEndPointPx": 526.82,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 91.67,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -5493,10 +5553,11 @@
             "distancePx": 0,
             "toEndPointPx": 500.174,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 92.03,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.02,
+              "leadStartMinusHairline": -126.02,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -5521,10 +5582,11 @@
             "distancePx": 0,
             "toEndPointPx": 464.352,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.13,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -5549,10 +5611,11 @@
             "distancePx": 0,
             "toEndPointPx": 436.481,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.13,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -5577,10 +5640,11 @@
             "distancePx": 0,
             "toEndPointPx": 414.375,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 92.25,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -5604,10 +5668,11 @@
             "distancePx": 0,
             "dots": 4,
             "tipBox": {
-              "width": 138,
+              "width": 135.27,
               "natural": 135.27,
+              "numbered": false,
               "leadIsNumber": false,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -134.27,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -5632,10 +5697,11 @@
             "distancePx": 0,
             "toEndPointPx": 358.997,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.13,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -5660,10 +5726,11 @@
             "distancePx": 0,
             "toEndPointPx": 328.616,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 92.63,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -5688,10 +5755,11 @@
             "distancePx": 0.003,
             "toEndPointPx": 263.823,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 113.5,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -5716,10 +5784,11 @@
             "distancePx": 0,
             "toEndPointPx": 205.33,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 114.5,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -5744,10 +5813,11 @@
             "distancePx": 0,
             "toEndPointPx": 176.548,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 116.52,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -5772,10 +5842,11 @@
             "distancePx": 0,
             "toEndPointPx": 140.457,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 116.63,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -5800,10 +5871,11 @@
             "distancePx": 0,
             "toEndPointPx": 108.089,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 115.22,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -5827,10 +5899,11 @@
             "target": "peak ring centre",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 117.39,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -5855,10 +5928,11 @@
             "distancePx": 0,
             "toEndPointPx": 59.145,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.8,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -5883,10 +5957,11 @@
             "distancePx": 0,
             "toEndPointPx": 12.719,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 115.64,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -5911,10 +5986,11 @@
             "distancePx": 0,
             "toEndPointPx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 124.72,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -5938,8 +6014,9 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": true,
               "leadIsNumber": false,
               "leadStartMinusHairline": 25,
               "side": "right",
@@ -5965,8 +6042,9 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": true,
               "leadIsNumber": false,
               "leadStartMinusHairline": 24.99,
               "side": "right",
@@ -5992,8 +6070,9 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": true,
               "leadIsNumber": false,
               "leadStartMinusHairline": 24.99,
               "side": "right",
@@ -6019,8 +6098,9 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": true,
               "leadIsNumber": false,
               "leadStartMinusHairline": 24.99,
               "side": "right",
@@ -6046,8 +6126,9 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": true,
               "leadIsNumber": false,
               "leadStartMinusHairline": 24.98,
               "side": "right",
@@ -6073,8 +6154,9 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": true,
               "leadIsNumber": false,
               "leadStartMinusHairline": 25,
               "side": "right",
@@ -6100,10 +6182,11 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": true,
               "leadIsNumber": false,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -6127,10 +6210,11 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": true,
               "leadIsNumber": false,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -6154,10 +6238,11 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": true,
               "leadIsNumber": false,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -6181,10 +6266,11 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": true,
               "leadIsNumber": false,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -6208,10 +6294,11 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": true,
               "leadIsNumber": false,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -6220,16 +6307,19 @@
         ],
         "tooltip": {
           "widths": [
-            138
+            127
           ],
-          "widestContent": 135.27,
+          "gapWidths": [
+            135.27
+          ],
+          "widestContent": 124.72,
           "bySide": {
             "left": {
-              "stops": 30,
+              "stops": 29,
               "numberStops": 24,
               "numberStartMinusHairline": [
-                -137.02,
-                -137
+                -126.02,
+                -126
               ],
               "numberSpreadPx": 0.02,
               "leadSpreadPx": 0.02
@@ -6799,8 +6889,9 @@
             "distancePx": 0,
             "toEndPointPx": 897.3,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 113.45,
+              "numbered": true,
               "leadIsNumber": true,
               "leadStartMinusHairline": -25,
               "side": "left",
@@ -6827,8 +6918,9 @@
             "distancePx": 0.004,
             "toEndPointPx": 857.556,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 91.05,
+              "numbered": true,
               "leadIsNumber": true,
               "leadStartMinusHairline": -25,
               "side": "left",
@@ -6855,8 +6947,9 @@
             "distancePx": 0,
             "toEndPointPx": 802.241,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 97.97,
+              "numbered": true,
               "leadIsNumber": true,
               "leadStartMinusHairline": -25.01,
               "side": "left",
@@ -6883,8 +6976,9 @@
             "distancePx": 0,
             "toEndPointPx": 768.81,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 98.06,
+              "numbered": true,
               "leadIsNumber": true,
               "leadStartMinusHairline": -25.01,
               "side": "left",
@@ -6911,10 +7005,11 @@
             "distancePx": 0,
             "toEndPointPx": 741.501,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 97.58,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -6939,10 +7034,11 @@
             "distancePx": 0,
             "toEndPointPx": 722.016,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 96.78,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -6967,10 +7063,11 @@
             "distancePx": 0,
             "toEndPointPx": 697.668,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 91.38,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.98,
+              "leadStartMinusHairline": 125.98,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -6995,10 +7092,11 @@
             "distancePx": 0,
             "toEndPointPx": 674.177,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 91.11,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -7023,10 +7121,11 @@
             "distancePx": 0,
             "toEndPointPx": 647.02,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 91.25,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -7051,10 +7150,11 @@
             "distancePx": 0,
             "toEndPointPx": 610.422,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 91.11,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -7079,10 +7179,11 @@
             "distancePx": 0,
             "toEndPointPx": 580.821,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 90.94,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -7107,10 +7208,11 @@
             "distancePx": 0,
             "toEndPointPx": 551.692,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 91.05,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -7135,10 +7237,11 @@
             "distancePx": 0,
             "toEndPointPx": 515.904,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 96.42,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -7163,10 +7266,11 @@
             "distancePx": 0,
             "toEndPointPx": 489.611,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 96.78,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -7191,10 +7295,11 @@
             "distancePx": 0,
             "toEndPointPx": 453.745,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 97.88,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -7219,10 +7324,11 @@
             "distancePx": 0,
             "toEndPointPx": 426.224,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 97.88,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -7247,10 +7353,11 @@
             "distancePx": 0,
             "toEndPointPx": 404.778,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 97,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -7274,10 +7381,11 @@
             "distancePx": 0,
             "dots": 4,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 111.05,
+              "numbered": false,
               "leadIsNumber": false,
-              "leadStartMinusHairline": 136.98,
+              "leadStartMinusHairline": 125.98,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -7302,10 +7410,11 @@
             "distancePx": 0,
             "toEndPointPx": 350.334,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 97.88,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -7330,10 +7439,11 @@
             "distancePx": 0,
             "toEndPointPx": 320.38,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 97.38,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -7358,10 +7468,11 @@
             "distancePx": 0.003,
             "toEndPointPx": 253.917,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 97.72,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -7386,10 +7497,11 @@
             "distancePx": 0,
             "toEndPointPx": 192.6,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 98.72,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -7414,10 +7526,11 @@
             "distancePx": 0,
             "toEndPointPx": 164.548,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 100.73,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -7442,10 +7555,11 @@
             "distancePx": 0,
             "toEndPointPx": 127.535,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 100.84,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -7470,10 +7584,11 @@
             "distancePx": 0,
             "toEndPointPx": 94.943,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 99.44,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -7497,10 +7612,11 @@
             "target": "peak ring centre",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 109.36,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -7525,10 +7641,11 @@
             "distancePx": 0,
             "toEndPointPx": 46.187,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 98.55,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -7553,10 +7670,11 @@
             "distancePx": 0,
             "toEndPointPx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 124.02,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -7580,8 +7698,9 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 99.31,
+              "numbered": true,
               "leadIsNumber": false,
               "leadStartMinusHairline": -25.01,
               "side": "left",
@@ -7607,8 +7726,9 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 97.39,
+              "numbered": true,
               "leadIsNumber": false,
               "leadStartMinusHairline": -25,
               "side": "left",
@@ -7634,8 +7754,9 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 96.78,
+              "numbered": true,
               "leadIsNumber": false,
               "leadStartMinusHairline": -25,
               "side": "left",
@@ -7661,8 +7782,9 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 97.83,
+              "numbered": true,
               "leadIsNumber": false,
               "leadStartMinusHairline": -25.01,
               "side": "left",
@@ -7688,8 +7810,9 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 98.3,
+              "numbered": true,
               "leadIsNumber": false,
               "leadStartMinusHairline": -25,
               "side": "left",
@@ -7715,8 +7838,9 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 97.11,
+              "numbered": true,
               "leadIsNumber": false,
               "leadStartMinusHairline": -25.01,
               "side": "left",
@@ -7742,10 +7866,11 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 96.78,
+              "numbered": true,
               "leadIsNumber": false,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -7769,10 +7894,11 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.58,
+              "numbered": true,
               "leadIsNumber": false,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -7796,10 +7922,11 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.58,
+              "numbered": true,
               "leadIsNumber": false,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -7823,10 +7950,11 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.58,
+              "numbered": true,
               "leadIsNumber": false,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -7850,10 +7978,11 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.58,
+              "numbered": true,
               "leadIsNumber": false,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -7862,7 +7991,10 @@
         ],
         "tooltip": {
           "widths": [
-            138
+            127
+          ],
+          "gapWidths": [
+            127
           ],
           "widestContent": 124.02,
           "bySide": {
@@ -7877,11 +8009,11 @@
               "leadSpreadPx": 0.01
             },
             "right": {
-              "stops": 29,
+              "stops": 28,
               "numberStops": 23,
               "numberStartMinusHairline": [
-                136.98,
-                137
+                125.98,
+                126
               ],
               "numberSpreadPx": 0.02,
               "leadSpreadPx": 0.02
@@ -8446,8 +8578,9 @@
             "distancePx": 0,
             "toEndPointPx": 909.024,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 113.45,
+              "numbered": true,
               "leadIsNumber": true,
               "leadStartMinusHairline": -25,
               "side": "left",
@@ -8474,8 +8607,9 @@
             "distancePx": 0.004,
             "toEndPointPx": 869.484,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 72.98,
+              "numbered": true,
               "leadIsNumber": true,
               "leadStartMinusHairline": -25,
               "side": "left",
@@ -8502,8 +8636,9 @@
             "distancePx": 0,
             "toEndPointPx": 815.05,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 97.97,
+              "numbered": true,
               "leadIsNumber": true,
               "leadStartMinusHairline": -25.01,
               "side": "left",
@@ -8530,8 +8665,9 @@
             "distancePx": 0,
             "toEndPointPx": 781.689,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 97.36,
+              "numbered": true,
               "leadIsNumber": true,
               "leadStartMinusHairline": -25.01,
               "side": "left",
@@ -8558,10 +8694,11 @@
             "distancePx": 0,
             "toEndPointPx": 754.135,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 83.66,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -8586,10 +8723,11 @@
             "distancePx": 0,
             "toEndPointPx": 734.085,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 84.81,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -8614,10 +8752,11 @@
             "distancePx": 0,
             "toEndPointPx": 709.403,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 82.55,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.98,
+              "leadStartMinusHairline": 125.98,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -8642,10 +8781,11 @@
             "distancePx": 0,
             "toEndPointPx": 685.547,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 72.63,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -8670,10 +8810,11 @@
             "distancePx": 0,
             "toEndPointPx": 658.152,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 77.14,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -8698,10 +8839,11 @@
             "distancePx": 0,
             "toEndPointPx": 621.652,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 76.2,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -8726,10 +8868,11 @@
             "distancePx": 0,
             "toEndPointPx": 591.881,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 84.7,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -8754,10 +8897,11 @@
             "distancePx": 0,
             "toEndPointPx": 562.55,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 84.7,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -8782,10 +8926,11 @@
             "distancePx": 0,
             "toEndPointPx": 526.82,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 83.09,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -8810,10 +8955,11 @@
             "distancePx": 0,
             "toEndPointPx": 500.174,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 82.55,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -8838,10 +8984,11 @@
             "distancePx": 0,
             "toEndPointPx": 464.352,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 84.81,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -8866,10 +9013,11 @@
             "distancePx": 0,
             "toEndPointPx": 436.481,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 84.81,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -8894,10 +9042,11 @@
             "distancePx": 0,
             "toEndPointPx": 414.375,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 83.09,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -8921,10 +9070,11 @@
             "distancePx": 0,
             "dots": 4,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 111.05,
+              "numbered": false,
               "leadIsNumber": false,
-              "leadStartMinusHairline": 136.98,
+              "leadStartMinusHairline": 125.98,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -8949,10 +9099,11 @@
             "distancePx": 0,
             "toEndPointPx": 358.997,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 83.09,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -8977,10 +9128,11 @@
             "distancePx": 0,
             "toEndPointPx": 328.616,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 84.81,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -9005,10 +9157,11 @@
             "distancePx": 0.003,
             "toEndPointPx": 263.823,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 97.72,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -9033,10 +9186,11 @@
             "distancePx": 0,
             "toEndPointPx": 205.33,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 98.72,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -9061,10 +9215,11 @@
             "distancePx": 0,
             "toEndPointPx": 176.548,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 100.73,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -9089,10 +9244,11 @@
             "distancePx": 0,
             "toEndPointPx": 140.457,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 100.84,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -9117,10 +9273,11 @@
             "distancePx": 0,
             "toEndPointPx": 108.089,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 99.44,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -9144,10 +9301,11 @@
             "target": "peak ring centre",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 109.36,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -9172,10 +9330,11 @@
             "distancePx": 0,
             "toEndPointPx": 59.145,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.05,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -9200,10 +9359,11 @@
             "distancePx": 0,
             "toEndPointPx": 12.719,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 99.86,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -9228,10 +9388,11 @@
             "distancePx": 0,
             "toEndPointPx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 124.84,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -9246,8 +9407,9 @@
             "valuetext": "8:00 م، لم يحن بعد",
             "marker": null,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.58,
+              "numbered": false,
               "leadIsNumber": false,
               "leadStartMinusHairline": -25.01,
               "side": "left",
@@ -9264,8 +9426,9 @@
             "valuetext": "8:30 م، لم يحن بعد",
             "marker": null,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.58,
+              "numbered": false,
               "leadIsNumber": false,
               "leadStartMinusHairline": -25,
               "side": "left",
@@ -9282,8 +9445,9 @@
             "valuetext": "9:00 م، لم يحن بعد",
             "marker": null,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.58,
+              "numbered": false,
               "leadIsNumber": false,
               "leadStartMinusHairline": -25,
               "side": "left",
@@ -9300,8 +9464,9 @@
             "valuetext": "9:30 م، لم يحن بعد",
             "marker": null,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.58,
+              "numbered": false,
               "leadIsNumber": false,
               "leadStartMinusHairline": -25.01,
               "side": "left",
@@ -9318,8 +9483,9 @@
             "valuetext": "10:00 م، لم يحن بعد",
             "marker": null,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.58,
+              "numbered": false,
               "leadIsNumber": false,
               "leadStartMinusHairline": -25,
               "side": "left",
@@ -9336,8 +9502,9 @@
             "valuetext": "10:30 م، لم يحن بعد",
             "marker": null,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.58,
+              "numbered": false,
               "leadIsNumber": false,
               "leadStartMinusHairline": -25.01,
               "side": "left",
@@ -9354,10 +9521,11 @@
             "valuetext": "11:00 م، لم يحن بعد",
             "marker": null,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.58,
+              "numbered": false,
               "leadIsNumber": false,
-              "leadStartMinusHairline": 137,
+              "leadStartMinusHairline": 126,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -9372,10 +9540,11 @@
             "valuetext": "11:30 م، لم يحن بعد",
             "marker": null,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.58,
+              "numbered": false,
               "leadIsNumber": false,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -9390,10 +9559,11 @@
             "valuetext": "12:00 ص، لم يحن بعد",
             "marker": null,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.58,
+              "numbered": false,
               "leadIsNumber": false,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -9408,10 +9578,11 @@
             "valuetext": "12:30 ص، لم يحن بعد",
             "marker": null,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.58,
+              "numbered": false,
               "leadIsNumber": false,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -9426,10 +9597,11 @@
             "valuetext": "1:00 ص، لم يحن بعد",
             "marker": null,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.58,
+              "numbered": false,
               "leadIsNumber": false,
-              "leadStartMinusHairline": 136.99,
+              "leadStartMinusHairline": 125.99,
               "side": "right",
               "clipped": false,
               "wrapped": false
@@ -9438,7 +9610,10 @@
         ],
         "tooltip": {
           "widths": [
-            138
+            127
+          ],
+          "gapWidths": [
+            127
           ],
           "widestContent": 124.84,
           "bySide": {
@@ -9453,11 +9628,11 @@
               "leadSpreadPx": 0.01
             },
             "right": {
-              "stops": 30,
+              "stops": 29,
               "numberStops": 24,
               "numberStartMinusHairline": [
-                136.98,
-                137
+                125.98,
+                126
               ],
               "numberSpreadPx": 0.02,
               "leadSpreadPx": 0.02
@@ -10017,8 +10192,9 @@
             "distancePx": 0,
             "toEndPointPx": 897.3,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 85.73,
+              "numbered": true,
               "leadIsNumber": true,
               "leadStartMinusHairline": 25,
               "side": "right",
@@ -10045,8 +10221,9 @@
             "distancePx": 0.004,
             "toEndPointPx": 857.556,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 86.3,
+              "numbered": true,
               "leadIsNumber": true,
               "leadStartMinusHairline": 24.99,
               "side": "right",
@@ -10073,8 +10250,9 @@
             "distancePx": 0,
             "toEndPointPx": 802.241,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 113.75,
+              "numbered": true,
               "leadIsNumber": true,
               "leadStartMinusHairline": 24.99,
               "side": "right",
@@ -10101,8 +10279,9 @@
             "distancePx": 0,
             "toEndPointPx": 768.81,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 113.14,
+              "numbered": true,
               "leadIsNumber": true,
               "leadStartMinusHairline": 24.99,
               "side": "right",
@@ -10129,10 +10308,11 @@
             "distancePx": 0,
             "toEndPointPx": 741.501,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 92.83,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -10157,10 +10337,11 @@
             "distancePx": 0,
             "toEndPointPx": 722.016,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 92.03,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -10185,10 +10366,11 @@
             "distancePx": 0,
             "toEndPointPx": 697.668,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 87.78,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -10213,10 +10395,11 @@
             "distancePx": 0,
             "toEndPointPx": 674.177,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 86.36,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -10241,10 +10424,11 @@
             "distancePx": 0,
             "toEndPointPx": 647.02,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 86.5,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -10269,10 +10453,11 @@
             "distancePx": 0,
             "toEndPointPx": 610.422,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 86.36,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -10297,10 +10482,11 @@
             "distancePx": 0,
             "toEndPointPx": 580.821,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 89.94,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -10325,10 +10511,11 @@
             "distancePx": 0,
             "toEndPointPx": 551.692,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 89.94,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -10353,10 +10540,11 @@
             "distancePx": 0,
             "toEndPointPx": 515.904,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 91.67,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -10381,10 +10569,11 @@
             "distancePx": 0,
             "toEndPointPx": 489.611,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 92.03,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.02,
+              "leadStartMinusHairline": -126.02,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -10409,10 +10598,11 @@
             "distancePx": 0,
             "toEndPointPx": 453.745,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.13,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -10437,10 +10627,11 @@
             "distancePx": 0,
             "toEndPointPx": 426.224,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.13,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -10465,10 +10656,11 @@
             "distancePx": 0,
             "toEndPointPx": 404.778,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 92.25,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -10492,10 +10684,11 @@
             "distancePx": 0,
             "dots": 4,
             "tipBox": {
-              "width": 138,
+              "width": 135.27,
               "natural": 135.27,
+              "numbered": false,
               "leadIsNumber": false,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -134.27,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -10520,10 +10713,11 @@
             "distancePx": 0,
             "toEndPointPx": 350.334,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.13,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -10548,10 +10742,11 @@
             "distancePx": 0,
             "toEndPointPx": 320.38,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 92.63,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -10576,10 +10771,11 @@
             "distancePx": 0.003,
             "toEndPointPx": 253.917,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 113.5,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -10604,10 +10800,11 @@
             "distancePx": 0,
             "toEndPointPx": 192.6,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 114.5,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -10632,10 +10829,11 @@
             "distancePx": 0,
             "toEndPointPx": 164.548,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 116.52,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -10660,10 +10858,11 @@
             "distancePx": 0,
             "toEndPointPx": 127.535,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 116.63,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -10688,10 +10887,11 @@
             "distancePx": 0,
             "toEndPointPx": 94.943,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 115.22,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -10715,10 +10915,11 @@
             "target": "peak ring centre",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 117.39,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -10743,10 +10944,11 @@
             "distancePx": 0,
             "toEndPointPx": 46.187,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 93.8,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -10771,10 +10973,11 @@
             "distancePx": 0,
             "toEndPointPx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 124.13,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -10798,8 +11001,9 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": true,
               "leadIsNumber": false,
               "leadStartMinusHairline": 25,
               "side": "right",
@@ -10825,8 +11029,9 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": true,
               "leadIsNumber": false,
               "leadStartMinusHairline": 24.99,
               "side": "right",
@@ -10852,8 +11057,9 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": true,
               "leadIsNumber": false,
               "leadStartMinusHairline": 24.99,
               "side": "right",
@@ -10879,8 +11085,9 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": true,
               "leadIsNumber": false,
               "leadStartMinusHairline": 24.99,
               "side": "right",
@@ -10906,8 +11113,9 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": true,
               "leadIsNumber": false,
               "leadStartMinusHairline": 24.98,
               "side": "right",
@@ -10933,8 +11141,9 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": true,
               "leadIsNumber": false,
               "leadStartMinusHairline": 25,
               "side": "right",
@@ -10960,10 +11169,11 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": true,
               "leadIsNumber": false,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -10987,10 +11197,11 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": true,
               "leadIsNumber": false,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -11014,10 +11225,11 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": true,
               "leadIsNumber": false,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -11041,10 +11253,11 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": true,
               "leadIsNumber": false,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -11068,10 +11281,11 @@
             "target": "usual line (SVG path)",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": true,
               "leadIsNumber": false,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -11080,16 +11294,19 @@
         ],
         "tooltip": {
           "widths": [
-            138
+            127
           ],
-          "widestContent": 135.27,
+          "gapWidths": [
+            135.27
+          ],
+          "widestContent": 124.13,
           "bySide": {
             "left": {
-              "stops": 29,
+              "stops": 28,
               "numberStops": 23,
               "numberStartMinusHairline": [
-                -137.02,
-                -137
+                -126.02,
+                -126
               ],
               "numberSpreadPx": 0.02,
               "leadSpreadPx": 0.02
@@ -11664,8 +11881,9 @@
             "distancePx": 0,
             "toEndPointPx": 909.024,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 85.73,
+              "numbered": true,
               "leadIsNumber": true,
               "leadStartMinusHairline": 25,
               "side": "right",
@@ -11692,8 +11910,9 @@
             "distancePx": 0.004,
             "toEndPointPx": 869.484,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 78.22,
+              "numbered": true,
               "leadIsNumber": true,
               "leadStartMinusHairline": 24.99,
               "side": "right",
@@ -11720,8 +11939,9 @@
             "distancePx": 0,
             "toEndPointPx": 815.05,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 113.75,
+              "numbered": true,
               "leadIsNumber": true,
               "leadStartMinusHairline": 24.99,
               "side": "right",
@@ -11748,8 +11968,9 @@
             "distancePx": 0,
             "toEndPointPx": 781.689,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 113.14,
+              "numbered": true,
               "leadIsNumber": true,
               "leadStartMinusHairline": 24.99,
               "side": "right",
@@ -11776,10 +11997,11 @@
             "distancePx": 0,
             "toEndPointPx": 754.135,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 88.89,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -11804,10 +12026,11 @@
             "distancePx": 0,
             "toEndPointPx": 734.085,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 90.05,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -11832,10 +12055,11 @@
             "distancePx": 0,
             "toEndPointPx": 709.403,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 87.78,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -11860,10 +12084,11 @@
             "distancePx": 0,
             "toEndPointPx": 685.547,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 77.86,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -11888,10 +12113,11 @@
             "distancePx": 0,
             "toEndPointPx": 658.152,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 78.72,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -11916,10 +12142,11 @@
             "distancePx": 0,
             "toEndPointPx": 621.652,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 78.13,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -11944,10 +12171,11 @@
             "distancePx": 0,
             "toEndPointPx": 591.881,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 89.94,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -11972,10 +12200,11 @@
             "distancePx": 0,
             "toEndPointPx": 562.55,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 89.94,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -12000,10 +12229,11 @@
             "distancePx": 0,
             "toEndPointPx": 526.82,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 88.33,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -12028,10 +12258,11 @@
             "distancePx": 0,
             "toEndPointPx": 500.174,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 87.78,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.02,
+              "leadStartMinusHairline": -126.02,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -12056,10 +12287,11 @@
             "distancePx": 0,
             "toEndPointPx": 464.352,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 90.05,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -12084,10 +12316,11 @@
             "distancePx": 0,
             "toEndPointPx": 436.481,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 90.05,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -12112,10 +12345,11 @@
             "distancePx": 0,
             "toEndPointPx": 414.375,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 88.33,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -12139,10 +12373,11 @@
             "distancePx": 0,
             "dots": 4,
             "tipBox": {
-              "width": 138,
+              "width": 135.27,
               "natural": 135.27,
+              "numbered": false,
               "leadIsNumber": false,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -134.27,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -12167,10 +12402,11 @@
             "distancePx": 0,
             "toEndPointPx": 358.997,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 88.33,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -12195,10 +12431,11 @@
             "distancePx": 0,
             "toEndPointPx": 328.616,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 90.05,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -12223,10 +12460,11 @@
             "distancePx": 0.003,
             "toEndPointPx": 263.823,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 113.5,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -12251,10 +12489,11 @@
             "distancePx": 0,
             "toEndPointPx": 205.33,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 114.5,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -12279,10 +12518,11 @@
             "distancePx": 0,
             "toEndPointPx": 176.548,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 116.52,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -12307,10 +12547,11 @@
             "distancePx": 0,
             "toEndPointPx": 140.457,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 116.63,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -12335,10 +12576,11 @@
             "distancePx": 0,
             "toEndPointPx": 108.089,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 115.22,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -12362,10 +12604,11 @@
             "target": "peak ring centre",
             "distancePx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 117.39,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -12390,10 +12633,11 @@
             "distancePx": 0,
             "toEndPointPx": 59.145,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 87.56,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -12418,10 +12662,11 @@
             "distancePx": 0,
             "toEndPointPx": 12.719,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 115.64,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -12446,10 +12691,11 @@
             "distancePx": 0,
             "toEndPointPx": 0,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 124.72,
+              "numbered": true,
               "leadIsNumber": true,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -12464,8 +12710,9 @@
             "valuetext": "8:00 PM, Still ahead",
             "marker": null,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": false,
               "leadIsNumber": false,
               "leadStartMinusHairline": 25,
               "side": "right",
@@ -12482,8 +12729,9 @@
             "valuetext": "8:30 PM, Still ahead",
             "marker": null,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": false,
               "leadIsNumber": false,
               "leadStartMinusHairline": 24.99,
               "side": "right",
@@ -12500,8 +12748,9 @@
             "valuetext": "9:00 PM, Still ahead",
             "marker": null,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": false,
               "leadIsNumber": false,
               "leadStartMinusHairline": 24.99,
               "side": "right",
@@ -12518,8 +12767,9 @@
             "valuetext": "9:30 PM, Still ahead",
             "marker": null,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": false,
               "leadIsNumber": false,
               "leadStartMinusHairline": 24.99,
               "side": "right",
@@ -12536,8 +12786,9 @@
             "valuetext": "10:00 PM, Still ahead",
             "marker": null,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": false,
               "leadIsNumber": false,
               "leadStartMinusHairline": 24.98,
               "side": "right",
@@ -12554,8 +12805,9 @@
             "valuetext": "10:30 PM, Still ahead",
             "marker": null,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": false,
               "leadIsNumber": false,
               "leadStartMinusHairline": 25,
               "side": "right",
@@ -12572,10 +12824,11 @@
             "valuetext": "11:00 PM, Still ahead",
             "marker": null,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": false,
               "leadIsNumber": false,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -12590,10 +12843,11 @@
             "valuetext": "11:30 PM, Still ahead",
             "marker": null,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": false,
               "leadIsNumber": false,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -12608,10 +12862,11 @@
             "valuetext": "12:00 AM, Still ahead",
             "marker": null,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": false,
               "leadIsNumber": false,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -12626,10 +12881,11 @@
             "valuetext": "12:30 AM, Still ahead",
             "marker": null,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": false,
               "leadIsNumber": false,
-              "leadStartMinusHairline": -137,
+              "leadStartMinusHairline": -126,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -12644,10 +12900,11 @@
             "valuetext": "1:00 AM, Still ahead",
             "marker": null,
             "tipBox": {
-              "width": 138,
+              "width": 127,
               "natural": 95.33,
+              "numbered": false,
               "leadIsNumber": false,
-              "leadStartMinusHairline": -137.01,
+              "leadStartMinusHairline": -126.01,
               "side": "left",
               "clipped": false,
               "wrapped": false
@@ -12656,16 +12913,19 @@
         ],
         "tooltip": {
           "widths": [
-            138
+            127
           ],
-          "widestContent": 135.27,
+          "gapWidths": [
+            135.27
+          ],
+          "widestContent": 124.72,
           "bySide": {
             "left": {
-              "stops": 30,
+              "stops": 29,
               "numberStops": 24,
               "numberStartMinusHairline": [
-                -137.02,
-                -137
+                -126.02,
+                -126
               ],
               "numberSpreadPx": 0.02,
               "leadSpreadPx": 0.02

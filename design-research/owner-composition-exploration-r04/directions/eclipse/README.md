@@ -27,8 +27,10 @@ while it waits. The capture gains three gates: the surfaces at the first frames,
 slow fonts. What moves, its order and its timings are unchanged.
 
 **Follow-up round after step 3 (run `owner_followup_r04_s04`, 2026-09-27):**
-- **Tooltip width (pending the user's before/after review):** every tooltip has one fixed width, 138 px, in both
-  languages, so its number no longer moves against the hairline between stops. See "Motion", 6.
+- **Tooltip width:** every tooltip that shows a number has one fixed width, 127 px, in both languages, so its number
+  no longer moves against the hairline between stops. The user chose 127 px over the first 138 px after a before/after
+  review: the widest numbered tooltip sets the width, and only the missing-span stop, which shows no number, may grow
+  past it. See "Motion", 6.
 - **Capture noise:** a frame whose hash differs from its expected value is captured again, and counts as a difference
   only if it differs twice. The comparison stays exact. See "Open and capture".
 - **Wording:** the font wait's cap is 200 ms from the first paint. The measured still page appeared 195-231 ms after it.
@@ -397,23 +399,31 @@ and `setMarker`. The one part of A that stays is its missing-span variant, the l
     its word, and the number jumped between ends when the marker crossed the peak or the latest stop.
   - The user approved this layout on 2026-09-26 from a rendered comparison.
   - Values, words, placement, marker B, the follow and the chart's screen-reader text are unchanged.
-- **One fixed tooltip width (follow-up round after step 3, 2026-09-27; pending the user's before/after review):**
+- **One fixed tooltip width (follow-up round after step 3, 2026-09-27; narrowed to 127 px by the user's decision):**
   - **Before:** the width followed the content, from 108 px up to 135.3 px, and the tooltip is anchored at the
     hairline. So its start-aligned number moved against the hairline between stops. In English it moved 9.0 px between
     the peak (117.4 px wide) and 7:00 PM (108 px); in Arabic, 1.35 px.
-  - **Now:** every tooltip is 138 px wide (`--tip-w` on `.tip` in `style.css`), in both languages, at every stop and in
-    every state. The number and every row sit at the same place inside the box at every stop, so the number keeps one
-    distance from the hairline on each side. The start-aligned layout above is unchanged.
-  - **How 138 px was found:** the widest content, measured at every stop in AR and EN, live, delayed and no history, is
-    the English missing-span stop («2:14 PM – 2:31 PM», "No reading") at 135.3 px in Readex Pro. Next come the latest
-    reading (124.8 px, AR) and the peak (117.4 px, EN). With the fonts blocked (Segoe UI, the fallback) the widest is
-    the same stop at 133.6 px. 138 px leaves a margin of 2.7 px.
-  - **No wrap and no clip:** the text never wraps (`white-space: nowrap`). `min-width: max-content` lets a fallback font
-    wider than 138 px grow the box rather than clip it. It never happened here: every row is one line at every stop, in
-    both fonts.
+  - **First fix (`645bd70`):** every tooltip was 138 px wide, set by the widest content anywhere, the English
+    missing-span stop («2:14 PM – 2:31 PM», "No reading", 135.3 px in Readex Pro, 133.6 px in Segoe UI, the fallback).
+  - **Now (the user's decision after the before/after review):** every tooltip that shows a number is 127 px wide
+    (`--tip-w` on `.tip` in `style.css`), in both languages, at every stop and in every state. The number and every
+    row sit at the same place inside the box at every numbered stop, so the number keeps one distance from the
+    hairline on each side. The start-aligned layout above is unchanged.
+  - **How 127 px was found:** every tooltip that shows a number (ordinary, peak, latest, ahead with the usual,
+    delayed latest, no history) was measured at every stop in AR and EN, live, delayed and no history, in Readex Pro
+    and with the fonts blocked. The widest is the Arabic latest reading at 124.84 px in Readex Pro (the fallback's
+    widest: the English latest reading, 119.45 px). Plus 2 px, rounded up: 127 px.
+  - **The missing-span stop may grow:** it shows no number, so it alone is wider than 127 px where its content needs
+    it: in English 135.27 px in Readex Pro and 133.59 px in the fallback; in Arabic it fits (111.0 px), so it is
+    127 px. No other stop grows, in either font.
+  - **No wrap and no clip:** the text never wraps (`white-space: nowrap`). `min-width: max-content` lets any content
+    wider than 127 px grow the box rather than clip it. Every row is one line at every stop, in both fonts.
+  - **Placement uses the real width:** `placeTip` measures the box's rendered width (unrounded) whenever its content
+    changes, including a new reading that rewrites a selected tooltip, so the grown missing-span box keeps the 12 px
+    gap from its stop (measured 12.00 px in EN, 11.98 px in AR, both fonts, reduced motion and after the follow).
   - **Placement:** the rules are unchanged (the earlier side, the later side after now, the flip at the edges, the
-    follow's easing). The wider box flips at two more stops: 7:30 AM now joins 6:00-7:00 AM on the later side, and
-    11:00 PM now joins 11:30 PM to 1:00 AM on the earlier side.
+    follow's easing). Against `622cd0b` the box flips at two more stops, at 138 px and still at 127 px: 7:30 AM now
+    joins 6:00-7:00 AM on the later side, and 11:00 PM now joins 11:30 PM to 1:00 AM on the earlier side.
   - The capture's `chart` check measures the tooltip at every stop (see "Open and capture").
 
 **6b. The smooth follow (Round 7 step 2).** It replaces the Round 6 glide (120-150 ms, at most 150 ms). It is the
@@ -742,9 +752,11 @@ The log records:
       and the screen-reader text;
     - pointer snapping (7 probes) and keyboard stepping;
     - that the latest stop shows the latest reading and its screen-reader text never calls it an average;
-    - (the follow-up round after step 3) the tooltip at every stop: one width on every page, the widest content within
-      it, no row wrapped or clipped, and the number's (or word's) start edge at one distance from the stop's hairline
-      on each side, within 0.5 px (`tooltip` per page, and `tooltipWidth` across pages).
+    - (the follow-up round after step 3, as narrowed to 127 px) the tooltip at every stop: one width on every page
+      except the missing-span stop, which may only be wider (and never narrower than its content); the widest
+      tooltip that shows a number within it; no row wrapped or clipped; and the number's (or word's) start edge at one
+      distance from the stop's hairline on each side, within 0.5 px, the missing-span stop aside (`tooltip` per page,
+      and `tooltipWidth` across pages).
   - **`marker`** (Round 7 step 2): B's variants sheet; that form A is gone (no Marker group, `?marker=a` ignored, no
     `setMarker`); and the hover speed.
   - **`follow`** (Round 7 step 2, AR and EN): the follow's own curve against the clip's figures (within 0.07); the
@@ -883,6 +895,22 @@ The log records:
     on (read once the follow had settled). At all 40 stops the width was 138 px and the number's start edge against
     the stop's x spread by at most 0.024 px per side. Against the drawn 1 px hairline, which snaps to whole pixels, the
     spread is up to 0.95 px (each stop within 0.5 px); the tooltip is anchored at the stop's own x, as before.
+- **Re-rendered for the 127 px width (the user's decision after the before/after review), on the original Windows
+  machine into `evidence/`, two runs, both exit 0:**
+  - Changed against `645bd70`: `daily-ar-1440x900-hover`, `daily-en-1440x900-hover`, `motion-follow-ar-2x`,
+    `motion-contact-sheet`, `intro-yield-ar` (each shows the tooltip) and `capture-log.json`. Against `622cd0b` the same,
+    plus `motion-roll-en-2x`, which was already the known mid-roll noise of the 138 px round and is unchanged here.
+    Every frame without a tooltip is byte-identical to `622cd0b`; `pre-motion-hashes.json` is unchanged.
+  - Recaptures: 70 exact comparisons in each run; 68 matched at the first attempt, none was noise and none differed
+    twice (the other two change by design and are not recaptured).
+  - Tooltip: 127 px on every page, the missing-span stop aside (135.27 px in English; 127 px in Arabic); the widest
+    numbered content 124.84 px (the Arabic latest reading, live and no history). The number's start edge against its
+    stop's hairline spreads by at most 0.02 px per side, in AR and EN, live, delayed and no history.
+  - Scratch checks: keyboard and pointer through all 40 stops, AR and EN, reduced motion and motion on (after the
+    follow): the number's start edge against the stop's x spread by at most 0.024 px per side; between the peak and
+    7:00 PM it drifts 0.01 px (AR) and -0.01 px (EN). The missing-span box keeps a 12 px gap from its stop in both
+    languages and both fonts (EN: 12.00 px at 135.27 px and 133.59 px wide; AR: 11.98 px at 127 px). No stop's side
+    changed against the 138 px round.
 - **Static guard (step 3 run 4, exit code 0):**
   - Reduced motion: 25 of 27 pre-motion frames are identical. The other two, the AR hover and the tuner frames,
     change by design.
