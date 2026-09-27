@@ -1387,3 +1387,56 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   Worktree `owner-followup-r04-s04`, branch `owner-followup-r04-build` from `6123863`, owned path `eclipse/**` only.
   After Codex reports, the coordinator inspects the result and briefs a fresh independent verifier. A third failure
   is `FAILED_VALIDATION` for this round.
+
+## Repair 2 delivered by Codex, and new-session resume point (2026-09-27)
+
+- **Codex delivered repair 2 as `3b1c3da`** on `owner-followup-r04-build`, on top of `6123863`. It changes `eclipse/`
+  only and leaves the worktree clean. Its report:
+  - violations: at `622cd0b`, 422 per live language/font; at `6123863`, about 570-590; after the repair, 0 across
+    149,776 selections, with a minimum clearance of 11.0019 px;
+  - exactly the 2,315 previously failing boxes changed: 938 centred above, 1,365 shifted up, 12 shifted down, largest
+    shift 48.53 px;
+  - both 7:42 PM hover frames are byte-identical;
+  - the guard refused 14 forms; `--plant` once gives exit 0 and always gives exit 1;
+  - both captures exited 0;
+  - LoAF and rAF gaps were proven with an in-page busy loop.
+- **Coordinator inspection:** the commit scope, and Codex's before/after sheets for AR and EN (five cases each):
+  - "now" is clear in every case;
+  - a shifted box sits just above "now", 2 px outside its halo;
+  - the sheets are in session `92a4c1f1`'s scratchpad, `repair2/work/compare/`.
+  This is not verification.
+- **Resume in a new session (the user asked for a lean context):**
+  1. Brief a fresh `owner-direction-verifier` with the checklist
+     `C:/Users/PCFORC~1/AppData/Local/Temp/claude/D--Projects-fitway-worktrees-owner-design-exploration-r04/92a4c1f1-9e99-491a-86f0-7ac6a992d689/scratchpad/repair2/VERIFY-R2.md`
+     (`622cd0b..3b1c3da`). This was the last allowed repair: a FAIL is `FAILED_VALIDATION` for the round, and needs a
+     terminal record before any successor.
+  2. **On PASS:**
+     - show the user the before/after sheets and the verifier's crowding observation;
+     - integrate while keeping the verified SHAs: rebase the coordinator's unpushed docs commits on
+       `codex/owner-redesign-r04` (`5f2cf96..` onwards, which touch no `eclipse/` file) onto `3b1c3da`, then
+       confirm the branch contains `3b1c3da` unchanged;
+     - pushing needs the user's word.
+  3. **The intro-speed round:**
+     - its fixer brief is in session `bb9e9dc7`'s scratchpad, `introspeed/FIX-SPEED.md`;
+     - before launching, update its base SHA, and add the width rule and the never-cover-now rule to its
+       "Constraints in force";
+     - then a fresh verifier.
+  4. **After the intro-speed round:** run `git apply --check` on the audit patch
+     `C:/Users/PCFORC~1/AppData/Local/Temp/claude/D--Projects-fitway-worktrees-owner-design-exploration-r04/6482348a-04f9-4b87-8e5b-460107b7a201/scratchpad/audit/brief-audit.patch`
+     (brief annotations only). Ask the user before applying it, because it comes from another session.
+  5. **Then the Reports screen**, as in the brief's screen plan.
+- **A side project the user asked for: the `ui-forensics` Agent Skill.**
+  - It is general UI-analysis tooling, with no FITWAY content.
+  - The staging copy is `D:/Projects/ui-forensics-skill-staging/ui-forensics/`: 26 files, image self-test 37/37, web
+    self-test 25/25, both run by the coordinator.
+  - Plan: the user runs Codex in a trial folder, `D:/Projects/ui-forensics-trial/`, without the skill and then with
+    it, on three questions with known answers:
+    - planted differences between two images;
+    - whether the box covers "now" at 9:30 PM in Arabic at `6123863` (yes);
+    - text contrast over glass.
+  - The new session prepares the folder:
+    - the questions and a private answer key kept outside the folder;
+    - a `git archive` of `6123863`'s `eclipse/`;
+    - Playwright access, for example a `node_modules` junction.
+  - After the without-skill run, install the skill into `~/.agents/skills/ui-forensics`, with junctions from
+    `~/.claude/skills` and `~/.codex/skills`, then run with the skill.
