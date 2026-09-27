@@ -1440,3 +1440,56 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
     - Playwright access, for example a `node_modules` junction.
   - After the without-skill run, install the skill into `~/.agents/skills/ui-forensics`, with junctions from
     `~/.claude/skills` and `~/.codex/skills`, then run with the skill.
+
+## Repair 2 verified: the follow-up round ends in FAILED_VALIDATION (2026-09-27)
+
+- **Verifier:** a fresh `owner-direction-verifier` (`xhigh`, read-only, run `owner_followup_r04_s04_verify3`, checklist
+  `repair2/VERIFY-R2.md`) verified `622cd0b..3b1c3da`. The follow-up worktree stayed clean at `3b1c3da`, with no
+  listeners or junctions left. Its evidence is outside the repository, in `%TEMP%/eclipse-verify3/`.
+- **PASS:** items 1-3, 5-7 and 9, the full-day sweep, and quality.
+  - Width: `--tip-w` matched the verifier's own measure with 0 mismatches over 149,776 selections.
+  - Never cover now: the minimum distance is 11.0019 px. The positive control finds 2,315 violations at `6123863`.
+  - Minimal change: 147,461 clear placements are unchanged, and all 2,315 changed ones match the candidate model.
+  - Morph edge gap: 11.985-12.014 px.
+  - Guard: 31 bad spellings were refused before anything was written.
+  - Recapture: one run exited 1 on a machine network error (`ERR_NO_BUFFER_SPACE`), the other exited 0.
+  - Byte-identical 7:42 PM frames; the accessibility tree is unchanged.
+- **FAIL: item 4, placement changes ease.**
+  - A new reading that changes the selected stop's placement snaps the box in 15 of 36 such readings, by up to
+    97.5 px in one frame. The cause: `restoreSelection` → `selectStop(st, true)` places the box at once, and the
+    path-bend code projects straight to the clear point.
+  - During hover following near "now", the box stalls and then jumps in 41-49 of 248 transitions, against 8-12 at
+    `6123863`.
+  - The coordinator checked the first finding in the verifier's per-frame data, `motion-head-morphs.json`:
+    - 97.5 px in one 18 ms frame at `m-ar-1012-h1140` while the marker is still;
+    - 62-78.5 px single-frame moves from side to centred placement.
+    - The strip `frames/strip-ar-1046-h1110-morph.png` shows the box jumping up about 48 px between #23 and #24.
+    The second finding is the verifier's and was not re-measured by the coordinator.
+- **FAIL: item 8, the README.** Its easing claims are contradicted, and "real system temp directory" overstates a guard
+  that trusts TEMP/TMP. The counts all reproduce.
+- **Lower findings:**
+  - the guard follows TEMP/TMP;
+  - app.js:999 accepts a candidate with no rounding margin: 10.987-10.998 px at 1024×640 and 390×844;
+  - app.js:965 uses the integer `offsetHeight` (78 against 77.5), which causes a 0.5 px overshoot.
+- **Observations for the human (key frames checked by the coordinator):**
+  - At 8:43 PM and 9:30 PM, the 11:00 PM stop's box sits above its own ring and reads as its own.
+  - At 10:00 PM, a shifted 11:00 PM box floats about 50 px above its ring with a corner on the halo. It reads almost
+    as the latest reading's tooltip.
+  - At 10:42 PM and 12:05 AM, the boxes are clamped at the plot edge beside or above "now", with their ring at the
+    far corner.
+  - At 10:52 PM, the 1:00 AM stop with the web font shifts down over the 12 AM and 1 AM axis labels and its own
+    ring; with the fallback font it shifts up.
+- **Terminal state: `FAILED_VALIDATION` for the follow-up round lineage** (`645bd70`, `92398dc`, `6123863`,
+  `3b1c3da`). This was the last allowed repair, and the fresh verifier rejected it.
+  - Nothing from the round is integrated. `owner-followup-r04-build` stays unmerged as evidence, and `eclipse/` on
+    `codex/owner-redesign-r04` stays at `622cd0b`.
+  - The milestone itself stays `IN_PROGRESS`.
+  - The intro-speed round waits, because its base was to be the integrated follow-up round.
+- **The failure mode prior checks did not cover:** the box's continuity through placement changes.
+  - Every acceptance sweep so far measured where the box rests, plus the morph edge gap.
+  - None sampled the box every frame through a new reading that changes its placement.
+  - None compared hover-follow continuity near "now" against the base.
+- **Successor:** it needs the user's direction first, because the key frames raise a design question as well as the
+  mechanical one. The successor's record must name the changed hypothesis or scope, and why this failure mode will not
+  recur. At minimum, its acceptance includes per-frame box sampling through every new-reading placement change, and a
+  hover stall-and-jump count no worse than the base.
