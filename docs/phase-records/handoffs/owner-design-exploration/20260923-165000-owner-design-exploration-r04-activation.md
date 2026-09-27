@@ -1343,3 +1343,7 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   (counted only if it differs twice in a row, with a planted-change negative control), and the README wording.
 - **Next:** inspect the builder's result, show the user the tooltip before/after, then a fresh independent verifier;
   integrate only after the user keeps the width. Then Reports.
+- **Later on 2026-09-27:** the user confirmed both merge proposals explicitly, and after viewing the intro found it too
+  fast. The user tried the tuner's intro speed at 0.70× and approved it: the intro becomes about 1171 ms instead of
+  820 ms, as the new 1× default. It is a separate round after the follow-up round (one writer per round on
+  `eclipse/`). Both are recorded in the brief, "Decisions after the step 3 report".

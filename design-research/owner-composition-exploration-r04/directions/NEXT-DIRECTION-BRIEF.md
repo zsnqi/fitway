@@ -711,6 +711,14 @@ A small separate round after the intro, so that the intro's verifier judges the 
 - **The screen plan is confirmed:** desktop first, in the order of "After the Daily page", with the one early mobile
   check at 390 px and 320 px on Reports.
 - **Merge proposals:** the user answered "excellent" to a summary that listed the two merge proposals (contextual
-  history, and Operations as a header status) as pending. The coordinator reads this as agreement to the plan, and
-  confirms the two proposals explicitly before the first screen that depends on them is designed.
-- **The user's own look at the intro is still pending.** The coordinator serves the page for the review.
+  history, and Operations as a header status) as pending. Asked again, the user confirmed both explicitly on
+  2026-09-27: each screen shows its own recent history in place, beside the full Activity Log page, and Operations
+  becomes a persistent header status that opens a detail page, with no primary rail slot.
+- **The intro is too fast (user review, 2026-09-27).** The user opened the page and finds the intro "very fast"; it
+  should be a little slower. The user tried the tuner's «سرعة المقدمة» "Intro speed" at the coordinator's suggested
+  **0.70×** and approved it. The designed intro becomes 0.70× of today's timing: every intro duration and delay is
+  divided by 0.70, so the whole intro lasts about 1171 ms instead of 820 ms (the answers about 400 ms instead of
+  280 ms, the line about 914 ms instead of 640 ms). The easing curves, the order and every rule of "Decisions on the
+  step 3 intro" stay as they are. The new timing is the tuner's 1× (the default), so the tuner still spans 0.5× to
+  2× around it. This is done in a separate round after the follow-up round, because both change `eclipse/` and each
+  round has one writer.
