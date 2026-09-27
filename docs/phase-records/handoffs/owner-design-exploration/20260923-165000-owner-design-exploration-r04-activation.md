@@ -1368,3 +1368,22 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   a two-sided recapture, a negative control that reaches every exact comparison, a stricter plant guard and the
   README corrections. A fresh verifier follows. The intro-speed round (brief `introspeed/FIX-SPEED.md`, ready) waits
   until this round is integrated.
+- **Repair 1 verified (`6123863`):** a second fresh verifier (checklist `followup/VERIFY-R1.md`, resumed once after a
+  usage-limit stop with its scratch intact). Width, number stability, invisibility and "nothing else changes" PASS.
+  Findings:
+  - the box covers "now" from about 8:40 PM (pre-existing in `622cd0b` from about 10:40 PM);
+  - the plant guard can be bypassed by a UNC admin-share path and by `--intro-frames`;
+  - the box stays in its old place during a width-changing morph;
+  - README wording.
+  The coordinator inspected the coverage frames and the verifier's coverage data before showing them to the user.
+- **Repair 2 of 2 (the last), executed by Codex at the user's request:** the user takes the coordinator's brief to
+  Codex and reports back when it is done. The brief is in this session's scratchpad `repair2/CODEX-BRIEF.md`
+  (session `92a4c1f1`), outside the repository. It covers:
+  - the agreed never-cover-now rule, with minimal change;
+  - an allow-list plant guard (temp directory only);
+  - placing the box again during the morph;
+  - README corrections;
+  - a full-day acceptance sweep identical to the next verifier's.
+  Worktree `owner-followup-r04-s04`, branch `owner-followup-r04-build` from `6123863`, owned path `eclipse/**` only.
+  After Codex reports, the coordinator inspects the result and briefs a fresh independent verifier. A third failure
+  is `FAILED_VALIDATION` for this round.

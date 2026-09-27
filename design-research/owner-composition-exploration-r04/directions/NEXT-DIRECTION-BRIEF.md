@@ -723,6 +723,17 @@ A small separate round after the intro, so that the intro's verifier judges the 
   current stops whenever they change (first render, a new reading, a state change, a resize, a language switch, the
   fonts loading). Within one snapshot the width never changes, so the number never moves between stops at any hour;
   it is 127 px for most of the day and wider only late at night.
+- **The box never covers "now" (user-agreed 2026-09-27).** A second independent verification found that a stop after
+  now near the end of the day flips toward now and covers today's end point: from about 8:40 PM with the wider boxes,
+  and already in `622cd0b` from about 10:40 PM. The coordinator's first idea, lifting the box over the end point, was
+  dropped after inspection, because in Arabic it would cover the recent line instead and float far from its own point.
+  The agreed rule:
+  - The box keeps a distance of at least 11 px from the end point's centre (its 9 px halo plus 2 px).
+  - Every placement that already satisfies this stays exactly as it is.
+  - Only where the current placement covers the end point does the box sit centred above its own point (below if
+    there is no room), and, only if still needed, shift vertically by the smallest amount that clears it.
+  - Changes of placement ease on the follow's curve.
+  - The latest-reading tooltip, which sits over the last stretch of the line by approved design, is unaffected.
 - **The screen plan is confirmed:** desktop first, in the order of "After the Daily page", with the one early mobile
   check at 390 px and 320 px on Reports.
 - **Merge proposals:** the user answered "excellent" to a summary that listed the two merge proposals (contextual
