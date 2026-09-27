@@ -520,13 +520,12 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
   position: absolute;
   z-index: 2;
   pointer-events: none;
-  /* One fixed width for every tooltip that shows a number, in both languages (the follow-up round after Round 7
-   * step 3, narrowed by the user's decision): the widest of them, at any stop in any state, AR and EN, is the Arabic
-   * latest reading, 124.8px in Readex Pro (Segoe UI, the fallback: the English latest reading, 119.5px); plus 2px,
-   * rounded up. So the number and every row sit at the same place inside the box at every numbered stop and never
-   * move against the hairline. The missing-span stop shows no number and may grow past it (English: 135.3px in Readex
-   * Pro, 133.6px in the fallback); min-width lets any content grow, never clip or wrap. */
-  --tip-w: 127px;
+  /* The width follows the chart (the user's decision, 2026-09-27): app.js measures, from the chart's current stops,
+   * the widest tooltip that shows a number, adds 2px, rounds up to a whole pixel and sets it as --tip-w on #tip,
+   * whenever the stops or their text change and when a web font finishes loading. So within one snapshot the number
+   * and every row sit at the same place inside the box at every numbered stop and never move against the hairline.
+   * At the page's own 7:42 PM snapshot it is 127px in AR and EN (the Arabic latest reading, 124.84px in Readex Pro).
+   * The missing-span stop shows no number and may grow past it; min-width lets any content grow, never clip or wrap. */
   width: var(--tip-w);
   min-width: max-content;
   padding: 9px 12px 10px;
@@ -551,6 +550,10 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
 .tip-main.is-stale .tip-v { color: var(--ink-2); }
 .tip-ago { display: flex; align-items: center; gap: 6px; margin-block-start: 5px; font-size: 12px; color: #e8b62e; }
 .tip-ago .ico { width: 13px; height: 13px; }
+/* The hidden copies the width is measured on (app.js): never painted, out of the accessibility tree, size-contained
+ * so they never move or resize anything. */
+.tip-measure { position: absolute; inset-block-start: 0; inset-inline-start: 0; width: 0; height: 0; overflow: hidden; visibility: hidden; contain: strict; pointer-events: none; }
+.tip-measure > .tip { width: max-content; min-width: 0; -webkit-backdrop-filter: none; backdrop-filter: none; }
 
 /* ----------------------------------------------------------------- details
  * Deliberately plain: a truthful minute table and the day's data coverage. */

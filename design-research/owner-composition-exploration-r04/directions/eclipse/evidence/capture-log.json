@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-09-27T07:21:27.931Z",
+  "capturedAt": "2026-09-27T09:19:08.280Z",
   "port": 3173,
   "motion": {
     "method": "Pre-motion frames: evidence/pre-motion-hashes.json (SHA-256 of the v3 frames before motion). The capture is byte-deterministic, so equal hashes mean identical pixels.",
@@ -24,8 +24,32 @@
       "domEqual": true
     },
     "recaptures": {
-      "rule": "a frame whose hash differs from its expected value is captured again, the same way, in a fresh context; it counts as a difference only if it differs in that next attempt too (no tolerance)",
+      "rule": "a frame whose hash differs from its expected value is captured again, the same way, in a fresh context; when the expected value is a reference rendered in this run, that reference is rendered again too, in its own fresh context, and the new pair is compared; it counts as a difference only if it differs in that next attempt too (no tolerance); every attempt logs its expected and actual hash",
       "plant": null,
+      "plantReached": null,
+      "plantNotReached": null,
+      "sameRunReferences": [
+        "?motion=off daily-ar-1440x900-hover",
+        "?motion=off daily-en-1440x900-hover",
+        "intro first open end daily-en-1440x900-delayed",
+        "intro reload daily-en-1440x900-delayed",
+        "intro first open end daily-en-1440x900-nohistory",
+        "intro reload daily-en-1440x900-nohistory",
+        "intro yields to a resize at 100 ms",
+        "intro yields to a resize at 400 ms",
+        "intro held 2x ar live, played by itself",
+        "intro held 2x ar live, end after the holds",
+        "intro held 2x en live, played by itself",
+        "intro held 2x en live, end after the holds",
+        "intro held 2x ar delayed, played by itself",
+        "intro held 2x ar delayed, end after the holds",
+        "intro held 2x ar nohistory, played by itself",
+        "intro held 2x ar nohistory, end after the holds",
+        "intro held 2x en delayed, played by itself",
+        "intro held 2x en delayed, end after the holds",
+        "intro held 2x en nohistory, played by itself",
+        "intro held 2x en nohistory, end after the holds"
+      ],
       "comparisons": 70,
       "firstAttempt": 68,
       "noise": [],
@@ -37,702 +61,1332 @@
       "entries": [
         {
           "label": "static daily-ar-1440x900",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "9a1d863c761c5a88"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "9a1d863c761c5a88",
+              "actual": "9a1d863c761c5a88",
+              "match": true
+            }
           ]
         },
         {
           "label": "static daily-en-1440x900",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "2aa6a56a2723025c"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "2aa6a56a2723025c",
+              "actual": "2aa6a56a2723025c",
+              "match": true
+            }
           ]
         },
         {
           "label": "static daily-ar-1440x900-hover",
+          "reference": "committed",
           "attempts": 1,
           "identical": false,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "470f2ddb599a928e"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "23f3d01babcfb96a",
+              "actual": "470f2ddb599a928e",
+              "match": false
+            }
           ]
         },
         {
           "label": "static daily-ar-1440x900-rail-open",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "1de72699e0e7ceb3"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "1de72699e0e7ceb3",
+              "actual": "1de72699e0e7ceb3",
+              "match": true
+            }
           ]
         },
         {
           "label": "static daily-en-1440x900-rail-open",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "244e345387133f53"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "244e345387133f53",
+              "actual": "244e345387133f53",
+              "match": true
+            }
           ]
         },
         {
           "label": "static daily-ar-1440x900-delayed",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "d7b76d244ec5d098"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "d7b76d244ec5d098",
+              "actual": "d7b76d244ec5d098",
+              "match": true
+            }
           ]
         },
         {
           "label": "static daily-ar-1440x900-nohistory",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "ca4b1b4c5e8406fd"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "ca4b1b4c5e8406fd",
+              "actual": "ca4b1b4c5e8406fd",
+              "match": true
+            }
           ]
         },
         {
           "label": "static daily-ar-1440x900-details",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "1b66802561bd1efd"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "1b66802561bd1efd",
+              "actual": "1b66802561bd1efd",
+              "match": true
+            }
           ]
         },
         {
           "label": "static daily-ar-1440x900-tuner-open",
+          "reference": "committed",
           "attempts": 1,
           "identical": false,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "5285ceae61495bf0"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "7ea7b8b778a490bc",
+              "actual": "5285ceae61495bf0",
+              "match": false
+            }
           ]
         },
         {
           "label": "static preset-v2-ar-1440x900",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "ded08a5307b9cb54"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "ded08a5307b9cb54",
+              "actual": "ded08a5307b9cb54",
+              "match": true
+            }
           ]
         },
         {
           "label": "static preset-v2-nowcard-light",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "805b3cbf84e356d8"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "805b3cbf84e356d8",
+              "actual": "805b3cbf84e356d8",
+              "match": true
+            }
           ]
         },
         {
           "label": "static preset-v2-chart-light",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "366e804620d41c46"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "366e804620d41c46",
+              "actual": "366e804620d41c46",
+              "match": true
+            }
           ]
         },
         {
           "label": "static preset-v2-nowcard-2x",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "9cf498968263641a"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "9cf498968263641a",
+              "actual": "9cf498968263641a",
+              "match": true
+            }
           ]
         },
         {
           "label": "static preset-v2-chart-2x",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "ab57491d7dd43074"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "ab57491d7dd43074",
+              "actual": "ab57491d7dd43074",
+              "match": true
+            }
           ]
         },
         {
           "label": "static preset-a-like-ar-1440x900",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "298fab89542bca80"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "298fab89542bca80",
+              "actual": "298fab89542bca80",
+              "match": true
+            }
           ]
         },
         {
           "label": "static preset-a-like-nowcard-light",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "fbca592efe12b89e"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "fbca592efe12b89e",
+              "actual": "fbca592efe12b89e",
+              "match": true
+            }
           ]
         },
         {
           "label": "static preset-a-like-chart-light",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "ca0f658331cf9825"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "ca0f658331cf9825",
+              "actual": "ca0f658331cf9825",
+              "match": true
+            }
           ]
         },
         {
           "label": "static preset-a-like-nowcard-2x",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "8635b3e9954d09e0"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "8635b3e9954d09e0",
+              "actual": "8635b3e9954d09e0",
+              "match": true
+            }
           ]
         },
         {
           "label": "static preset-a-like-chart-2x",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "12001e4e6a454a1f"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "12001e4e6a454a1f",
+              "actual": "12001e4e6a454a1f",
+              "match": true
+            }
           ]
         },
         {
           "label": "static preset-recommended-ar-1440x900",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "9a1d863c761c5a88"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "9a1d863c761c5a88",
+              "actual": "9a1d863c761c5a88",
+              "match": true
+            }
           ]
         },
         {
           "label": "static preset-recommended-nowcard-light",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "fbca592efe12b89e"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "fbca592efe12b89e",
+              "actual": "fbca592efe12b89e",
+              "match": true
+            }
           ]
         },
         {
           "label": "static preset-recommended-chart-light",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "e7adc69d052d8e51"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "e7adc69d052d8e51",
+              "actual": "e7adc69d052d8e51",
+              "match": true
+            }
           ]
         },
         {
           "label": "static preset-recommended-nowcard-2x",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "8635b3e9954d09e0"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "8635b3e9954d09e0",
+              "actual": "8635b3e9954d09e0",
+              "match": true
+            }
           ]
         },
         {
           "label": "static preset-recommended-chart-2x",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "dd4d502e13d79911"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "dd4d502e13d79911",
+              "actual": "dd4d502e13d79911",
+              "match": true
+            }
           ]
         },
         {
           "label": "static levels-nowcard (from its crop)",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "27eb5f533ceb96d6"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "27eb5f533ceb96d6",
+              "actual": "27eb5f533ceb96d6",
+              "match": true
+            }
           ]
         },
         {
           "label": "static levels-chart (from its crop)",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "666c84cb2f612507"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "666c84cb2f612507",
+              "actual": "666c84cb2f612507",
+              "match": true
+            }
           ]
         },
         {
           "label": "static daily-en-nowcard-2x",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "7c298766b4107da3"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "7c298766b4107da3",
+              "actual": "7c298766b4107da3",
+              "match": true
+            }
           ]
         },
         {
           "label": "?motion=off daily-ar-1440x900",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "9a1d863c761c5a88"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "9a1d863c761c5a88",
+              "actual": "9a1d863c761c5a88",
+              "match": true
+            }
           ]
         },
         {
           "label": "?motion=off daily-en-1440x900",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "2aa6a56a2723025c"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "2aa6a56a2723025c",
+              "actual": "2aa6a56a2723025c",
+              "match": true
+            }
           ]
         },
         {
           "label": "?motion=off daily-ar-1440x900-hover",
+          "reference": "rendered in this run (both sides rendered again on a difference)",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "470f2ddb599a928e"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "470f2ddb599a928e",
+              "actual": "470f2ddb599a928e",
+              "match": true
+            }
           ]
         },
         {
           "label": "?motion=off daily-en-1440x900-hover",
+          "reference": "rendered in this run (both sides rendered again on a difference)",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "1d973bcac0ef8317"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "1d973bcac0ef8317",
+              "actual": "1d973bcac0ef8317",
+              "match": true
+            }
           ]
         },
         {
           "label": "?motion=off daily-ar-1440x900-rail-open",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "1de72699e0e7ceb3"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "1de72699e0e7ceb3",
+              "actual": "1de72699e0e7ceb3",
+              "match": true
+            }
           ]
         },
         {
           "label": "?motion=off daily-en-1440x900-rail-open",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "244e345387133f53"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "244e345387133f53",
+              "actual": "244e345387133f53",
+              "match": true
+            }
           ]
         },
         {
           "label": "?motion=off daily-ar-1440x900-delayed",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "d7b76d244ec5d098"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "d7b76d244ec5d098",
+              "actual": "d7b76d244ec5d098",
+              "match": true
+            }
           ]
         },
         {
           "label": "?motion=off daily-ar-1440x900-nohistory",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "ca4b1b4c5e8406fd"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "ca4b1b4c5e8406fd",
+              "actual": "ca4b1b4c5e8406fd",
+              "match": true
+            }
           ]
         },
         {
           "label": "?motion=off daily-ar-1440x900-details",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "1b66802561bd1efd"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "1b66802561bd1efd",
+              "actual": "1b66802561bd1efd",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro first open end daily-ar-1440x900",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "9a1d863c761c5a88"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "9a1d863c761c5a88",
+              "actual": "9a1d863c761c5a88",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro reload daily-ar-1440x900",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "9a1d863c761c5a88"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "9a1d863c761c5a88",
+              "actual": "9a1d863c761c5a88",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro first open end daily-en-1440x900",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "2aa6a56a2723025c"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "2aa6a56a2723025c",
+              "actual": "2aa6a56a2723025c",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro reload daily-en-1440x900",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "2aa6a56a2723025c"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "2aa6a56a2723025c",
+              "actual": "2aa6a56a2723025c",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro first open end daily-ar-1440x900-delayed",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "d7b76d244ec5d098"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "d7b76d244ec5d098",
+              "actual": "d7b76d244ec5d098",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro reload daily-ar-1440x900-delayed",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "d7b76d244ec5d098"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "d7b76d244ec5d098",
+              "actual": "d7b76d244ec5d098",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro first open end daily-ar-1440x900-nohistory",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "ca4b1b4c5e8406fd"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "ca4b1b4c5e8406fd",
+              "actual": "ca4b1b4c5e8406fd",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro reload daily-ar-1440x900-nohistory",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "ca4b1b4c5e8406fd"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "ca4b1b4c5e8406fd",
+              "actual": "ca4b1b4c5e8406fd",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro first open end daily-en-1440x900-delayed",
+          "reference": "rendered in this run (both sides rendered again on a difference)",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "d6d9cb86f897a378"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "d6d9cb86f897a378",
+              "actual": "d6d9cb86f897a378",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro reload daily-en-1440x900-delayed",
+          "reference": "rendered in this run (both sides rendered again on a difference)",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "d6d9cb86f897a378"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "d6d9cb86f897a378",
+              "actual": "d6d9cb86f897a378",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro first open end daily-en-1440x900-nohistory",
+          "reference": "rendered in this run (both sides rendered again on a difference)",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "6a4dcd31df6c6f57"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "6a4dcd31df6c6f57",
+              "actual": "6a4dcd31df6c6f57",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro reload daily-en-1440x900-nohistory",
+          "reference": "rendered in this run (both sides rendered again on a difference)",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "6a4dcd31df6c6f57"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "6a4dcd31df6c6f57",
+              "actual": "6a4dcd31df6c6f57",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro slow fonts ar@600ms end",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "9a1d863c761c5a88"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "9a1d863c761c5a88",
+              "actual": "9a1d863c761c5a88",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro slow fonts ar@50ms end",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "9a1d863c761c5a88"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "9a1d863c761c5a88",
+              "actual": "9a1d863c761c5a88",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro slow fonts en@600ms end",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "2aa6a56a2723025c"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "2aa6a56a2723025c",
+              "actual": "2aa6a56a2723025c",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro slow fonts en@50ms end",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "2aa6a56a2723025c"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "2aa6a56a2723025c",
+              "actual": "2aa6a56a2723025c",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro replay end",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "9a1d863c761c5a88"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "9a1d863c761c5a88",
+              "actual": "9a1d863c761c5a88",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro yields to the rail at 100 ms, settled",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "1de72699e0e7ceb3"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "1de72699e0e7ceb3",
+              "actual": "1de72699e0e7ceb3",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro yields to the rail at 400 ms, settled",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "1de72699e0e7ceb3"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "1de72699e0e7ceb3",
+              "actual": "1de72699e0e7ceb3",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro yields to a resize at 100 ms",
+          "reference": "rendered in this run (both sides rendered again on a difference)",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "a9c172fd43a36f57"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "a9c172fd43a36f57",
+              "actual": "a9c172fd43a36f57",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro yields to a resize at 400 ms",
+          "reference": "rendered in this run (both sides rendered again on a difference)",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "a9c172fd43a36f57"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "a9c172fd43a36f57",
+              "actual": "a9c172fd43a36f57",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro held 2x ar live, played by itself",
+          "reference": "rendered in this run (both sides rendered again on a difference)",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "56ba183334a2627f"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "56ba183334a2627f",
+              "actual": "56ba183334a2627f",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro held 2x ar live, end after the holds",
+          "reference": "rendered in this run (both sides rendered again on a difference)",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "56ba183334a2627f"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "56ba183334a2627f",
+              "actual": "56ba183334a2627f",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro held 2x en live, played by itself",
+          "reference": "rendered in this run (both sides rendered again on a difference)",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "6ba4ed4ac88d66ef"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "6ba4ed4ac88d66ef",
+              "actual": "6ba4ed4ac88d66ef",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro held 2x en live, end after the holds",
+          "reference": "rendered in this run (both sides rendered again on a difference)",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "6ba4ed4ac88d66ef"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "6ba4ed4ac88d66ef",
+              "actual": "6ba4ed4ac88d66ef",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro held 2x ar delayed, played by itself",
+          "reference": "rendered in this run (both sides rendered again on a difference)",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "69dd526ad3f4299f"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "69dd526ad3f4299f",
+              "actual": "69dd526ad3f4299f",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro held 2x ar delayed, end after the holds",
+          "reference": "rendered in this run (both sides rendered again on a difference)",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "69dd526ad3f4299f"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "69dd526ad3f4299f",
+              "actual": "69dd526ad3f4299f",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro held 2x ar nohistory, played by itself",
+          "reference": "rendered in this run (both sides rendered again on a difference)",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "69a4205f9ae96034"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "69a4205f9ae96034",
+              "actual": "69a4205f9ae96034",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro held 2x ar nohistory, end after the holds",
+          "reference": "rendered in this run (both sides rendered again on a difference)",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "69a4205f9ae96034"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "69a4205f9ae96034",
+              "actual": "69a4205f9ae96034",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro held 2x en delayed, played by itself",
+          "reference": "rendered in this run (both sides rendered again on a difference)",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "b7bdaf935a90a412"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "b7bdaf935a90a412",
+              "actual": "b7bdaf935a90a412",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro held 2x en delayed, end after the holds",
+          "reference": "rendered in this run (both sides rendered again on a difference)",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "b7bdaf935a90a412"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "b7bdaf935a90a412",
+              "actual": "b7bdaf935a90a412",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro held 2x en nohistory, played by itself",
+          "reference": "rendered in this run (both sides rendered again on a difference)",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "502019e99938903a"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "502019e99938903a",
+              "actual": "502019e99938903a",
+              "match": true
+            }
           ]
         },
         {
           "label": "intro held 2x en nohistory, end after the holds",
+          "reference": "rendered in this run (both sides rendered again on a difference)",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "502019e99938903a"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "502019e99938903a",
+              "actual": "502019e99938903a",
+              "match": true
+            }
           ]
         },
         {
           "label": "rail AR open, settled",
+          "reference": "committed",
           "attempts": 1,
           "identical": true,
           "noise": false,
           "differedTwice": false,
           "hashes": [
             "1de72699e0e7ceb3"
+          ],
+          "perAttempt": [
+            {
+              "attempt": 1,
+              "expected": "1de72699e0e7ceb3",
+              "actual": "1de72699e0e7ceb3",
+              "match": true
+            }
           ]
         }
       ]
@@ -995,12 +1649,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 868,
+          "measuredMs": 857,
           "expectedMs": 820,
-          "fontWaitMs": 18,
+          "fontWaitMs": 25,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 36
+            "dashes": 29
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1012,12 +1666,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 51,
-          "maxFrameGapMs": 33.3,
+          "framesDuringIntro": 42,
+          "maxFrameGapMs": 50.1,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 60,
+              "t": 62,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1030,7 +1684,7 @@
             "introFirstFrame": {
               "seen": true,
               "t": 113,
-              "sinceStartMs": 21,
+              "sinceStartMs": 24,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1051,12 +1705,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 865,
+          "measuredMs": 860,
           "expectedMs": 820,
-          "fontWaitMs": 23,
+          "fontWaitMs": 20,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 35
+            "dashes": 29
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1068,12 +1722,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 49,
+          "framesDuringIntro": 42,
           "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 65,
+              "t": 60,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1085,8 +1739,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 122,
-              "sinceStartMs": 33,
+              "t": 107,
+              "sinceStartMs": 29,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1107,12 +1761,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 871,
+          "measuredMs": 865,
           "expectedMs": 820,
-          "fontWaitMs": 34,
+          "fontWaitMs": 36,
           "introElementsSeen": {
             "slots": 4,
-            "dashes": 35
+            "dashes": 30
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1122,12 +1776,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 50,
-          "maxFrameGapMs": 33.3,
+          "framesDuringIntro": 42,
+          "maxFrameGapMs": 50,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 70,
+              "t": 79,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1139,8 +1793,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 156,
-              "sinceStartMs": 28,
+              "t": 148,
+              "sinceStartMs": 31,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1161,12 +1815,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 854,
+          "measuredMs": 856,
           "expectedMs": 820,
-          "fontWaitMs": 20,
+          "fontWaitMs": 23,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 37
+            "dashes": 31
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1178,12 +1832,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 51,
-          "maxFrameGapMs": 16.8,
+          "framesDuringIntro": 43,
+          "maxFrameGapMs": 50,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 56,
+              "t": 60,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1195,8 +1849,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 106,
-              "sinceStartMs": 21,
+              "t": 110,
+              "sinceStartMs": 25,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1217,12 +1871,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 852,
+          "measuredMs": 861,
           "expectedMs": 820,
-          "fontWaitMs": 24,
+          "fontWaitMs": 23,
           "introElementsSeen": {
             "slots": 4,
-            "dashes": 37
+            "dashes": 30
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1232,12 +1886,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 51,
-          "maxFrameGapMs": 16.8,
+          "framesDuringIntro": 43,
+          "maxFrameGapMs": 33.5,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 67,
+              "t": 64,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1249,8 +1903,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 124,
-              "sinceStartMs": 21,
+              "t": 121,
+              "sinceStartMs": 26,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1271,12 +1925,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 852,
+          "measuredMs": 847,
           "expectedMs": 820,
-          "fontWaitMs": 20,
+          "fontWaitMs": 23,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 37
+            "dashes": 30
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1288,12 +1942,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 51,
-          "maxFrameGapMs": 16.8,
+          "framesDuringIntro": 42,
+          "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 65,
+              "t": 63,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1305,8 +1959,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 113,
-              "sinceStartMs": 21,
+              "t": 121,
+              "sinceStartMs": 27,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1517,12 +2171,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 868,
+          "measuredMs": 857,
           "expectedMs": 820,
-          "fontWaitMs": 18,
+          "fontWaitMs": 25,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 36
+            "dashes": 29
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1534,12 +2188,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 51,
-          "maxFrameGapMs": 33.3,
+          "framesDuringIntro": 42,
+          "maxFrameGapMs": 50.1,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 60,
+              "t": 62,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1552,7 +2206,7 @@
             "introFirstFrame": {
               "seen": true,
               "t": 113,
-              "sinceStartMs": 21,
+              "sinceStartMs": 24,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1573,12 +2227,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 865,
+          "measuredMs": 860,
           "expectedMs": 820,
-          "fontWaitMs": 23,
+          "fontWaitMs": 20,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 35
+            "dashes": 29
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1590,12 +2244,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 49,
+          "framesDuringIntro": 42,
           "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 65,
+              "t": 60,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1607,8 +2261,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 122,
-              "sinceStartMs": 33,
+              "t": 107,
+              "sinceStartMs": 29,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1629,12 +2283,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 871,
+          "measuredMs": 865,
           "expectedMs": 820,
-          "fontWaitMs": 34,
+          "fontWaitMs": 36,
           "introElementsSeen": {
             "slots": 4,
-            "dashes": 35
+            "dashes": 30
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1644,12 +2298,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 50,
-          "maxFrameGapMs": 33.3,
+          "framesDuringIntro": 42,
+          "maxFrameGapMs": 50,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 70,
+              "t": 79,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1661,8 +2315,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 156,
-              "sinceStartMs": 28,
+              "t": 148,
+              "sinceStartMs": 31,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1683,12 +2337,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 854,
+          "measuredMs": 856,
           "expectedMs": 820,
-          "fontWaitMs": 20,
+          "fontWaitMs": 23,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 37
+            "dashes": 31
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1700,12 +2354,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 51,
-          "maxFrameGapMs": 16.8,
+          "framesDuringIntro": 43,
+          "maxFrameGapMs": 50,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 56,
+              "t": 60,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1717,8 +2371,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 106,
-              "sinceStartMs": 21,
+              "t": 110,
+              "sinceStartMs": 25,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1739,12 +2393,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 852,
+          "measuredMs": 861,
           "expectedMs": 820,
-          "fontWaitMs": 24,
+          "fontWaitMs": 23,
           "introElementsSeen": {
             "slots": 4,
-            "dashes": 37
+            "dashes": 30
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1754,12 +2408,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 51,
-          "maxFrameGapMs": 16.8,
+          "framesDuringIntro": 43,
+          "maxFrameGapMs": 33.5,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 67,
+              "t": 64,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1771,8 +2425,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 124,
-              "sinceStartMs": 21,
+              "t": 121,
+              "sinceStartMs": 26,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1793,12 +2447,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 852,
+          "measuredMs": 847,
           "expectedMs": 820,
-          "fontWaitMs": 20,
+          "fontWaitMs": 23,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 37
+            "dashes": 30
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1810,12 +2464,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 51,
-          "maxFrameGapMs": 16.8,
+          "framesDuringIntro": 42,
+          "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 65,
+              "t": 63,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1827,8 +2481,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 113,
-              "sinceStartMs": 21,
+              "t": 121,
+              "sinceStartMs": 27,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1929,12 +2583,12 @@
       "fontCache": {
         "note": "every intro context serves the Google Fonts files from memory after their first network fetch (same bytes), as a browser cache does for a returning owner",
         "arFirstFetch": {
-          "fontWaitMs": 209,
+          "fontWaitMs": 207,
           "played": false,
           "yieldedBy": "fonts late"
         },
         "enFirstFetch": {
-          "fontWaitMs": 18,
+          "fontWaitMs": 23,
           "played": true,
           "yieldedBy": "complete"
         },
@@ -1946,12 +2600,12 @@
           "state": "done",
           "reason": "first open in this tab",
           "yieldedBy": "fonts late",
-          "fontWaitMs": 202,
-          "firstPaintMs": 76,
-          "answersInViewAtMs": 291,
+          "fontWaitMs": 207,
+          "firstPaintMs": 84,
+          "answersInViewAtMs": 306,
           "introEverRan": false,
           "fontsInAtEnd": true,
-          "answersInViewAfterFirstPaintMs": 215,
+          "answersInViewAfterFirstPaintMs": 222,
           "domEqualsMotionOff": true,
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1964,12 +2618,12 @@
           "state": "done",
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "fontWaitMs": 78,
-          "firstPaintMs": 104,
-          "answersInViewAtMs": 149,
+          "fontWaitMs": 74,
+          "firstPaintMs": 116,
+          "answersInViewAtMs": 150,
           "introEverRan": true,
           "fontsInAtEnd": true,
-          "answersInViewAfterFirstPaintMs": 45,
+          "answersInViewAfterFirstPaintMs": 34,
           "domEqualsMotionOff": true,
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1982,12 +2636,12 @@
           "state": "done",
           "reason": "first open in this tab",
           "yieldedBy": "fonts late",
-          "fontWaitMs": 202,
-          "firstPaintMs": 96,
-          "answersInViewAtMs": 270,
+          "fontWaitMs": 200,
+          "firstPaintMs": 68,
+          "answersInViewAtMs": 271,
           "introEverRan": false,
           "fontsInAtEnd": true,
-          "answersInViewAfterFirstPaintMs": 174,
+          "answersInViewAfterFirstPaintMs": 203,
           "domEqualsMotionOff": true,
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2000,12 +2654,12 @@
           "state": "done",
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "fontWaitMs": 66,
-          "firstPaintMs": 64,
-          "answersInViewAtMs": 139,
+          "fontWaitMs": 79,
+          "firstPaintMs": 108,
+          "answersInViewAtMs": 148,
           "introEverRan": true,
           "fontsInAtEnd": true,
-          "answersInViewAfterFirstPaintMs": 75,
+          "answersInViewAfterFirstPaintMs": 40,
           "domEqualsMotionOff": true,
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2020,7 +2674,7 @@
           "played": true,
           "state": "done",
           "reason": "first open in this tab",
-          "fontWaitMs": 17
+          "fontWaitMs": 23
         },
         "reloadSameTab": {
           "played": false,
@@ -2038,7 +2692,7 @@
           "played": true,
           "state": "done",
           "reason": "first open in this tab",
-          "fontWaitMs": 18
+          "fontWaitMs": 21
         },
         "newTabWithMotionSwitchOff": {
           "played": false,
@@ -2050,7 +2704,7 @@
           "played": true,
           "state": "done",
           "reason": "first open in this tab",
-          "fontWaitMs": 18
+          "fontWaitMs": 26
         },
         "errors": [],
         "reducedMotion": {
@@ -2077,7 +2731,7 @@
             "sawRunning": true,
             "count": 2,
             "yieldedBy": "complete",
-            "measuredMs": 859,
+            "measuredMs": 861,
             "expectedMs": 820,
             "speed": 1
           },
@@ -2088,7 +2742,7 @@
             "sawRunning": true,
             "count": 3,
             "yieldedBy": "complete",
-            "measuredMs": 1656,
+            "measuredMs": 1659,
             "expectedMs": 1640,
             "speed": 0.5
           },
@@ -2097,7 +2751,7 @@
             "sawRunning": true,
             "count": 4,
             "yieldedBy": "complete",
-            "measuredMs": 459,
+            "measuredMs": 433,
             "expectedMs": 410,
             "speed": 2
           },
@@ -2128,7 +2782,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "chart",
-            "settledAtMs": 120
+            "settledAtMs": 111
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2147,7 +2801,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "chart",
-            "settledAtMs": 416
+            "settledAtMs": 417
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2170,7 +2824,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "keydown",
-            "settledAtMs": 109
+            "settledAtMs": 106
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2193,7 +2847,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "keydown",
-            "settledAtMs": 409
+            "settledAtMs": 408
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2212,7 +2866,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "pointerdown",
-            "settledAtMs": 152
+            "settledAtMs": 151
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2228,7 +2882,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "pointerdown",
-            "settledAtMs": 451
+            "settledAtMs": 449
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2244,7 +2898,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "pointerdown",
-            "settledAtMs": 134
+            "settledAtMs": 127
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2263,7 +2917,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "pointerdown",
-            "settledAtMs": 442
+            "settledAtMs": 426
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2291,7 +2945,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "new reading",
-            "settledAtMs": 109
+            "settledAtMs": 108
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2329,7 +2983,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "new reading",
-            "settledAtMs": 406
+            "settledAtMs": 404
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2340,13 +2994,13 @@
           },
           "domEqualsCanonical": true,
           "pixelDiffFromCanonical": {
-            "changedPixels": 1149,
-            "maxChannelDiff": 1,
+            "changedPixels": 1837,
+            "maxChannelDiff": 4,
             "bbox": {
               "x": 330,
               "y": 30,
-              "width": 112,
-              "height": 29
+              "width": 969,
+              "height": 195
             }
           },
           "pass": true,
@@ -2358,7 +3012,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "resize",
-            "settledAtMs": 111
+            "settledAtMs": 118
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2373,7 +3027,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "resize",
-            "settledAtMs": 415
+            "settledAtMs": 409
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -4619,6 +5273,15 @@
           },
           "clipped": [],
           "wrapped": [],
+          "ruleWidth": 127,
+          "measuredByPage": {
+            "widthPx": 127,
+            "widestPx": 124.84375,
+            "widestKey": "latest",
+            "numbered": 39,
+            "measures": 2,
+            "ms": 3.599999999627471
+          },
           "pass": true
         },
         "maxDistancePx": {
@@ -6337,6 +7000,15 @@
           },
           "clipped": [],
           "wrapped": [],
+          "ruleWidth": 127,
+          "measuredByPage": {
+            "widthPx": 127,
+            "widestPx": 124.71875,
+            "widestKey": "latest",
+            "numbered": 39,
+            "measures": 2,
+            "ms": 2.900000000372529
+          },
           "pass": true
         },
         "maxDistancePx": {
@@ -8021,6 +8693,15 @@
           },
           "clipped": [],
           "wrapped": [],
+          "ruleWidth": 127,
+          "measuredByPage": {
+            "widthPx": 127,
+            "widestPx": 124.015625,
+            "widestKey": "latest",
+            "numbered": 38,
+            "measures": 2,
+            "ms": 4.099999999627471
+          },
           "pass": true
         },
         "maxDistancePx": {
@@ -9640,6 +10321,15 @@
           },
           "clipped": [],
           "wrapped": [],
+          "ruleWidth": 127,
+          "measuredByPage": {
+            "widthPx": 127,
+            "widestPx": 124.84375,
+            "widestKey": "latest",
+            "numbered": 28,
+            "measures": 2,
+            "ms": 3
+          },
           "pass": true
         },
         "maxDistancePx": {
@@ -11324,6 +12014,15 @@
           },
           "clipped": [],
           "wrapped": [],
+          "ruleWidth": 127,
+          "measuredByPage": {
+            "widthPx": 127,
+            "widestPx": 124.125,
+            "widestKey": "latest",
+            "numbered": 38,
+            "measures": 2,
+            "ms": 2.600000001490116
+          },
           "pass": true
         },
         "maxDistancePx": {
@@ -12943,6 +13642,15 @@
           },
           "clipped": [],
           "wrapped": [],
+          "ruleWidth": 127,
+          "measuredByPage": {
+            "widthPx": 127,
+            "widestPx": 124.71875,
+            "widestKey": "latest",
+            "numbered": 28,
+            "measures": 2,
+            "ms": 2
+          },
           "pass": true
         },
         "maxDistancePx": {

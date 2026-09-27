@@ -30,24 +30,32 @@
 // every surface is present and unchanged at the first paint and at the intro's first frame, with nothing running but
 // the intro's content transforms and the pulse; the end after the held frames sets the exit code; and with the font
 // files held 600 ms there is no intro and the answers are in view within 250 ms of the first paint (held 50 ms, it plays).
-// The follow-up round after step 3: (1) the chart checks also measure the tooltip at every stop (one fixed width in
-// both languages, the number at the same place against the hairline, no wrap and no clip); (2) every exact-hash
+// The follow-up round after step 3: (1) the chart checks also measure the tooltip at every stop (one width per page,
+// the widest tooltip that shows a number plus 2px, rounded up, the number at the same place against the hairline, no wrap
+// and no clip); (2) every exact-hash
 // comparison recaptures a frame that differs, the same way in a fresh context, and counts it as a difference only if it
 // differs in the next attempt too (Chromium's glyph raster is not always byte-identical between runs; there is still
 // no tolerance). Each comparison's attempts are in the log (motion.recaptures); one that differed once is noise.
+// Repair 1 of the follow-up round: when a comparison's reference was rendered in this run (not a committed hash), a
+// difference re-renders the reference and the compared frame, each in a fresh context, and the pair counts as a
+// difference only if it differs again; each attempt logs its expected and actual hash.
 // Run from PowerShell at the worktree root:
 //   node design-research/owner-composition-exploration-r04/directions/eclipse/capture.mjs [outDir] [--intro-frames=<dir>]
 // --intro-frames=<dir> also writes every full-size held 2x intro frame there (they are large; they are not evidence).
-// --plant=always|once (a negative control, into a scratch outDir only): every page gets a 1px chalk dot at (720, 450);
-// with "once" only the first attempt of a comparison has it, so a recapture is clean (the noise path).
+// --plant=always|once (a negative control, into a scratch outDir only; an outDir that resolves to evidence/ or inside
+// it is refused): a 1px chalk dot is painted into the compared frame of every exact comparison, at (720, 450) or the
+// nearest pixel inside a smaller frame, never into a reference, so a reference rendered in the same run stays clean;
+// with "once" only the first attempt is planted, so a recapture is clean (the noise path).
 // outDir defaults to evidence/. The static guard compares with evidence/pre-motion-hashes.json, which was rendered on
 // the original Windows machine; on another machine (fonts render differently) pass a scratch outDir, and expect that
 // guard to fail, so never let such a run rewrite evidence/.
 // Add --motion-only to record only the motion part (the log is then printed, not written).
 import { createHash } from "node:crypto";
 import { createServer } from "node:http";
+import { realpathSync } from "node:fs";
 import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
-import { dirname, extname, join, normalize, resolve, sep } from "node:path";
+import { basename, dirname, extname, join, normalize, resolve, sep } from "node:path";
+import { crc32, deflateSync, inflateSync } from "node:zlib";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { chromium } from "@playwright/test";
 
@@ -122,8 +130,20 @@ const HIDE_PULSE = ".ping { visibility: hidden !important; }";
 const MOTION_ONLY = process.argv.includes("--motion-only");
 const INTRO_FRAMES = (process.argv.find((a) => a.startsWith("--intro-frames=")) || "").slice("--intro-frames=".length) || null;
 const PLANT = (process.argv.find((a) => a.startsWith("--plant=")) || "").slice("--plant=".length) || null;
-if (PLANT && !OUT_ARG) throw new Error("--plant is a negative control: pass a scratch outDir, never evidence/");
-let planting = Boolean(PLANT); // "once": off while a comparison recaptures
+if (PLANT && !["once", "always"].includes(PLANT)) throw new Error("--plant takes once or always");
+// The plant guard: a planted run never writes into evidence/. The outDir is resolved through any existing links (and
+// compared without case on Windows); it is refused when it is evidence/ itself or anywhere inside it.
+const realish = (p) => {
+  const rest = [];
+  for (let cur = resolve(p); ; ) {
+    try { return join(realpathSync.native(cur), ...rest); } catch { const up = dirname(cur); if (up === cur) return resolve(p); rest.unshift(basename(cur)); cur = up; }
+  }
+};
+const pathKey = (p) => (process.platform === "win32" ? realish(p).toLowerCase() : realish(p));
+if (PLANT) {
+  const ev = pathKey(join(HERE, "evidence")), out = pathKey(OUT);
+  if (!OUT_ARG || out === ev || out.startsWith(ev + sep)) throw new Error(`--plant is a negative control: pass a scratch outDir, never evidence/ or a folder inside it (got ${OUT})`);
+}
 await mkdir(OUT, { recursive: true });
 // v2 file names that v3 replaced with preset-recommended-* crops.
 for (const stale of ["daily-ar-chart-2x.png", "daily-ar-nowcard-2x.png"]) await rm(join(OUT, stale), { force: true });
@@ -157,7 +177,6 @@ async function serveFont(route, delayMs = 0) {
 async function newPage({ width = 1440, height = 900, scale = 1, motion = false, touch = false, fontCache = false, fontDelayMs = 0 } = {}) {
   const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: scale, reducedMotion: motion ? "no-preference" : "reduce", colorScheme: "dark", hasTouch: touch });
   if (fontCache || fontDelayMs) await context.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (route) => serveFont(route, fontDelayMs));
-  if (planting) await context.addInitScript(() => document.addEventListener("DOMContentLoaded", () => { const d = document.createElement("i"); d.setAttribute("aria-hidden", "true"); d.style.cssText = "position:fixed;left:720px;top:450px;width:1px;height:1px;background:#f5f3f2;z-index:2147483647;pointer-events:none"; document.documentElement.appendChild(d); }));
   const page = await context.newPage();
   const errors = [];
   page.on("pageerror", (e) => errors.push(`pageerror: ${e.message}`));
@@ -385,20 +404,63 @@ async function levels(pngPath, outPath) {
 // and it counts as a difference only if it differs in that next attempt too. There is no tolerance: every attempt is
 // compared exactly. Every comparison is logged with its attempts; one that differed once and then matched is noise.
 const recaptures = [];
-async function exact(label, buf, expected, again = null) {
-  const want = [].concat(expected).filter(Boolean);
-  const hashes = [sha(buf)];
-  let final = buf;
-  if (!want.includes(hashes[0]) && again) {
-    const was = planting;
-    if (PLANT === "once") planting = false;
-    try { final = await again(); } finally { planting = was; }
-    hashes.push(sha(final));
+// The negative control (--plant): a 1px chalk dot painted into a PNG (8-bit RGB or RGBA, as Playwright writes them) at
+// (720, 450), or the nearest pixel inside a smaller frame; black where that pixel is chalk already. Only the hash that
+// is compared uses it; the frame written and any reference stay clean.
+function plantDot(png) {
+  const chunks = [];
+  for (let o = 8; o < png.length; ) { const len = png.readUInt32BE(o); chunks.push({ type: png.toString("latin1", o + 4, o + 8), data: png.subarray(o + 8, o + 8 + len) }); o += 12 + len; }
+  const ihdr = chunks[0].data, w = ihdr.readUInt32BE(0), h = ihdr.readUInt32BE(4), ct = ihdr[9];
+  if (ihdr[8] !== 8 || ![2, 6].includes(ct) || ihdr[12] !== 0) throw new Error("plantDot: unexpected PNG format");
+  const bpp = ct === 6 ? 4 : 3, stride = w * bpp;
+  const raw = inflateSync(Buffer.concat(chunks.filter((c) => c.type === "IDAT").map((c) => c.data)));
+  const px = Buffer.alloc(h * stride);
+  for (let y = 0; y < h; y++) {
+    const f = raw[y * (stride + 1)], src = y * (stride + 1) + 1, row = y * stride, prev = row - stride;
+    for (let i = 0; i < stride; i++) {
+      const x = raw[src + i], a = i >= bpp ? px[row + i - bpp] : 0, b = y ? px[prev + i] : 0, c = y && i >= bpp ? px[prev + i - bpp] : 0;
+      let v = x;
+      if (f === 1) v = x + a; else if (f === 2) v = x + b; else if (f === 3) v = x + ((a + b) >> 1);
+      else if (f === 4) { const p = a + b - c, pa = Math.abs(p - a), pb = Math.abs(p - b), pc = Math.abs(p - c); v = x + (pa <= pb && pa <= pc ? a : pb <= pc ? b : c); }
+      px[row + i] = v & 255;
+    }
   }
-  const identical = want.includes(hashes[hashes.length - 1]);
-  const entry = { label, attempts: hashes.length, identical, noise: hashes.length > 1 && identical, differedTwice: hashes.length > 1 && !identical, hashes: hashes.map((h) => h.slice(0, 16)) };
+  const at = Math.min(450, h - 1) * stride + Math.min(720, w - 1) * bpp;
+  const chalk = [0xf5, 0xf3, 0xf2], same = chalk.every((v, i) => px[at + i] === v);
+  chalk.forEach((v, i) => { px[at + i] = same ? 0 : v; });
+  if (bpp === 4) px[at + 3] = 255;
+  const filtered = Buffer.alloc(h * (stride + 1));
+  for (let y = 0; y < h; y++) px.copy(filtered, y * (stride + 1) + 1, y * stride, (y + 1) * stride);
+  const chunk = (type, data) => { const t = Buffer.from(type, "latin1"), len = Buffer.alloc(4), crc = Buffer.alloc(4); len.writeUInt32BE(data.length); crc.writeUInt32BE(crc32(Buffer.concat([t, data]))); return Buffer.concat([len, t, data, crc]); };
+  return Buffer.concat([png.subarray(0, 8), chunk("IHDR", ihdr), chunk("IDAT", deflateSync(filtered)), chunk("IEND", Buffer.alloc(0))]);
+}
+const planted = (attempt) => PLANT === "always" || (PLANT === "once" && attempt === 1);
+// `expected` is a committed hash (or hashes), or the hash of a reference rendered in this run; for the latter pass
+// `reference`, which renders it again in a fresh context. On a difference: with `reference`, the reference and the
+// compared frame (`again`) are both rendered again and the new pair is compared; without it, only the compared frame
+// is rendered again and compared with the committed hash. It counts as a difference only if it differs in that next
+// attempt too. Each attempt logs its expected and actual hash (the actual one with the plant, when planted).
+async function exact(label, buf, expected, again = null, reference = null) {
+  const perAttempt = [];
+  const compare = (want, b) => {
+    const n = perAttempt.length + 1, plant = planted(n), actual = sha(plant ? plantDot(b) : b);
+    const match = want.includes(actual);
+    perAttempt.push({ attempt: n, expected: want.map((h) => h.slice(0, 16)).join(" or "), actual: actual.slice(0, 16), match, ...(plant ? { planted: true } : {}) });
+    return match;
+  };
+  let want = [].concat(expected).filter(Boolean);
+  let final = buf;
+  let identical = compare(want, buf);
+  if (!identical && again) {
+    if (reference) want = [sha(await reference())];
+    final = await again();
+    identical = compare(want, final);
+    if (reference) perAttempt[1].referenceRenderedAgain = true;
+  }
+  const attempts = perAttempt.length;
+  const entry = { label, reference: reference ? "rendered in this run (both sides rendered again on a difference)" : "committed", attempts, identical, noise: attempts > 1 && identical, differedTwice: attempts > 1 && !identical, hashes: perAttempt.map((x) => x.actual), perAttempt };
   recaptures.push(entry);
-  return { identical, attempts: entry.attempts, noise: entry.noise, buf: final };
+  return { identical, attempts, noise: entry.noise, buf: final, perAttempt };
 }
 // A fresh capture of a frame, for `again`: open it as the first attempt did, `prep` the page, then screenshot.
 const recapture = (q, openOpts, prep, shotOpts = {}) => async () => {
@@ -423,8 +485,17 @@ async function shot(page, name, opts = {}, again = null) {
   return buf;
 }
 // The level maps are computed from a 2x crop that `shot` has already compared (and recaptured if it differed).
-async function hashFile(name) {
-  if (PRE[name]) identity.staticFrames[name] = { identical: (await exact(`static ${name} (from its crop)`, await readFile(join(OUT, `${name}.png`)), PRE[name])).identical, attempts: 1 };
+// On a difference the map is computed again from its crop in a fresh context (the compared side only: its hash is committed).
+async function hashFile(name, crop) {
+  if (!PRE[name]) return;
+  const m = await exact(`static ${name} (from its crop)`, await readFile(join(OUT, `${name}.png`)), PRE[name], async () => {
+    const tmp = join(OUT, `${name}.again.png`);
+    await levels(join(OUT, `${crop}.png`), tmp);
+    const b = await readFile(tmp);
+    await rm(tmp, { force: true });
+    return b;
+  });
+  identity.staticFrames[name] = { identical: m.identical, attempts: m.attempts, ...(m.noise ? { noise: true } : {}) };
 }
 
 /* ------------------------------------------------------------------ motion helpers
@@ -604,7 +675,11 @@ async function chartChecks(lang, state = "live", marker = "b") {
     const fixedBoxes = res.perStop.filter((p) => p.tipBox && p.kind !== "gap").map((p) => p.tipBox);
     const grown = res.perStop.filter((p) => p.tipBox && p.kind === "gap").map((p) => p.tipBox);
     res.tooltip = { widths: [...new Set(fixedBoxes.map((b) => b.width))], gapWidths: [...new Set(grown.map((b) => b.width))], widestContent: Math.max(...boxes.filter((b) => b.numbered).map((b) => b.natural)), bySide, clipped: res.perStop.filter((p) => p.tipBox?.clipped).map((p) => p.key), wrapped: res.perStop.filter((p) => p.tipBox?.wrapped).map((p) => p.key) };
-    res.tooltip.pass = boxes.length === res.perStop.length && res.tooltip.widths.length === 1 && res.tooltip.widestContent <= res.tooltip.widths[0] && grown.every((b) => b.width >= res.tooltip.widths[0] && b.width >= b.natural - 0.01) && Object.values(bySide).every((b) => b.leadSpreadPx <= 0.5) && !res.tooltip.clipped.length && !res.tooltip.wrapped.length;
+    // Repair 1 of the follow-up round (the user's decision, 2026-09-27): the width follows the chart, the widest
+    // tooltip that shows a number among the page's current stops, plus 2px, rounded up (as the page measured it).
+    res.tooltip.ruleWidth = Math.ceil(res.tooltip.widestContent + 2);
+    res.tooltip.measuredByPage = await page.evaluate(() => window.__eclipse.chart.tipWidth);
+    res.tooltip.pass = boxes.length === res.perStop.length && res.tooltip.widths.length === 1 && res.tooltip.widths[0] === res.tooltip.ruleWidth && res.tooltip.measuredByPage.widthPx === res.tooltip.ruleWidth && res.tooltip.widestContent <= res.tooltip.widths[0] && grown.every((b) => b.width >= res.tooltip.widths[0] && b.width >= b.natural - 0.01) && Object.values(bySide).every((b) => b.leadSpreadPx <= 0.5) && !res.tooltip.clipped.length && !res.tooltip.wrapped.length;
   }
   const on = (kinds) => res.perStop.filter((p) => kinds.includes(p.kind) && p.distancePx != null).map((p) => p.distancePx);
   res.maxDistancePx = {
@@ -908,25 +983,22 @@ async function introHeld(lang, state, times, crops = null) {
     return { buf, run };
   };
   const stillBuf = await still2x();
-  const nat = [await natural2x()], stills = [sha(stillBuf)];
-  if (sha(nat[0].buf) !== stills[0]) { stills.push(sha(await still2x())); nat.push(await natural2x()); }
-  const natural = { runs: nat.map((x) => ({ ...x.run, sha: sha(x.buf).slice(0, 16) })), stills: stills.map((h) => h.slice(0, 16)), stillsAgree: new Set(stills).size === 1 };
-  const naturalIdentical = nat.every((x) => x.run.played && x.run.yieldedBy === "complete") && nat.some((x) => stills.includes(sha(x.buf)));
+  const nat = [await natural2x()];
+  const natM = await exact(`intro held 2x ${lang} ${state}, played by itself`, nat[0].buf, sha(stillBuf), async () => { const x = await natural2x(); nat.push(x); return x.buf; }, still2x);
+  const naturalIdentical = nat.every((x) => x.run.played && x.run.yieldedBy === "complete") && natM.identical;
+  const natural = { runs: nat.map((x) => ({ ...x.run, sha: sha(x.buf).slice(0, 16) })), stills: natM.perAttempt.map((x) => x.expected), stillsAgree: new Set(natM.perAttempt.map((x) => x.expected)).size === 1 };
   const heldEnds = [{ sha: sha(endBuf), yieldedBy, errors: errors.length }];
-  if (!stills.includes(heldEnds[0].sha)) {
-    if (stills.length === 1) stills.push(sha(await still2x()));
+  const endM = await exact(`intro held 2x ${lang} ${state}, end after the holds`, endBuf, sha(stillBuf), async () => {
     const again = await heldRun(false);
     heldEnds.push({ sha: sha(again.endBuf), yieldedBy: again.yieldedBy, errors: again.errors.length });
     errors.push(...again.errors);
-  }
-  const endIdentical = heldEnds.some((x) => stills.includes(x.sha));
-  // The same rule as `exact` (it predates it, and also renders the still again): logged with its attempts.
-  recaptures.push({ label: `intro held 2x ${lang} ${state}, played by itself`, attempts: nat.length, identical: naturalIdentical, noise: nat.length > 1 && naturalIdentical, differedTwice: nat.length > 1 && !naturalIdentical, hashes: nat.map((x) => sha(x.buf).slice(0, 16)) });
-  recaptures.push({ label: `intro held 2x ${lang} ${state}, end after the holds`, attempts: heldEnds.length, identical: endIdentical, noise: heldEnds.length > 1 && endIdentical, differedTwice: heldEnds.length > 1 && !endIdentical, hashes: heldEnds.map((x) => x.sha.slice(0, 16)) });
+    return again.endBuf;
+  }, still2x);
+  const endIdentical = endM.identical;
   const r = {
     url: `index.html?${q}`, held, fontsLoadedAtStart: fontsIn, yieldedBy,
-    naturalEndIdenticalToStill2x: naturalIdentical, naturalRuns: { ...natural, stills: stills.map((h) => h.slice(0, 16)), stillsAgree: new Set(stills).size === 1 }, naturalPixelDiff: sha(nat[0].buf) === stills[0] ? null : await pixelDiff(nat[0].buf, stillBuf),
-    heldEndIdenticalToStill2x: endIdentical, heldEndRuns: heldEnds.map((x) => ({ ...x, sha: x.sha.slice(0, 16) })), heldEndPixelDiff: sha(endBuf) === stills[0] ? null : await pixelDiff(endBuf, stillBuf),
+    naturalEndIdenticalToStill2x: naturalIdentical, naturalRuns: natural, naturalPixelDiff: sha(nat[0].buf) === sha(stillBuf) ? null : await pixelDiff(nat[0].buf, stillBuf),
+    heldEndIdenticalToStill2x: endIdentical, heldEndRuns: heldEnds.map((x) => ({ ...x, sha: x.sha.slice(0, 16) })), heldEndPixelDiff: sha(endBuf) === sha(stillBuf) ? null : await pixelDiff(endBuf, stillBuf),
     frames: frames.map((fr) => ({ ms: fr.t, line: fr.at.line, answers: fr.at.answers, animations: fr.at.animations.length })),
     boxesNeverMove: frames.every((fr) => fr.at.boxes.join("|") === end.boxes.join("|")),
     boxesThatMoved: frames.flatMap((fr) => fr.at.boxes.map((b, i) => (b === end.boxes[i] ? null : { ms: fr.t, i, during: b, rest: end.boxes[i] })).filter(Boolean)).slice(0, 10),
@@ -960,7 +1032,8 @@ async function captureIntro() {
   // 1. First open, then a reload in the same tab (AR and EN; live, delayed and no history).
   for (const [name, q] of INTRO_PAGES) {
     let stillSha = PRE[name] || null, against = "pre-motion frame";
-    if (!stillSha) { const s = await open(q); stillSha = sha(await s.page.screenshot()); await s.context.close(); against = "this run's reduced-motion frame"; }
+    const stillAgain = PRE[name] ? null : async () => { const s = await open(q); const b = await s.page.screenshot(); await s.context.close(); return b; };
+    if (!stillSha) { stillSha = sha(await stillAgain()); against = "this run's reduced-motion frame"; }
     const { context, page, errors } = await newPage({ motion: true, fontCache: true });
     await context.addInitScript(INTRO_PROBE);
     await page.goto(`${ORIGIN}/index.html?${q}`, { waitUntil: "networkidle" });
@@ -1011,8 +1084,8 @@ async function captureIntro() {
       rerun = { end: ran ? e : Buffer.from("the intro did not play to its end"), reload: noIntro ? r : Buffer.from("the reload played an intro") };
       return rerun;
     };
-    const endM = await exact(`intro first open end ${name}`, endBuf, stillSha, async () => (await again()).end);
-    const reloadM = await exact(`intro reload ${name}`, reloadBuf, stillSha, async () => (await again()).reload);
+    const endM = await exact(`intro first open end ${name}`, endBuf, stillSha, async () => (await again()).end, stillAgain);
+    const reloadM = await exact(`intro reload ${name}`, reloadBuf, stillSha, async () => (await again()).reload, stillAgain);
     const domOff = await motionOffDom(q);
     const live = !q.includes("delayed");
     const pulseOnly = (list) => (live ? list.length === 1 && list[0].kind === "css @keyframes ping" : list.length === 0);
@@ -1202,6 +1275,8 @@ async function captureIntro() {
   {
     const railPre = PRE["daily-ar-1440x900-rail-open"];
     let canonStep = null, canonStepDom = null, canon1280 = null;
+    // The reference for the resize: a fresh 1280x800 page, rendered in this run (so rendered again on a difference).
+    const fresh1280 = async () => { const c = await open("lang=ar&tuner=0", { width: 1280, height: 800 }); const b = await c.page.screenshot(); await c.context.close(); return b; };
     {
       const b = await open("lang=ar&tuner=0");
       await b.page.evaluate(() => window.__eclipse.motion.step());
@@ -1209,9 +1284,7 @@ async function captureIntro() {
       canonStep = await b.page.screenshot();
       canonStepDom = await b.page.evaluate(() => document.querySelector(".page").outerHTML);
       await b.context.close();
-      const c = await open("lang=ar&tuner=0", { width: 1280, height: 800 });
-      canon1280 = await c.page.screenshot();
-      await c.context.close();
+      canon1280 = await fresh1280();
     }
     // A recapture of the rail or resize frame: the same action at the same moment of a fresh first open.
     const yieldAgain = (action, at) => async () => {
@@ -1287,7 +1360,7 @@ async function captureIntro() {
           await page.addStyleTag({ content: HIDE_PULSE });
           await page.waitForTimeout(60);
           const buf = await page.screenshot();
-          const m = await exact(`intro yields to a resize at ${at} ms`, buf, sha(canon1280), yieldAgain("resize", at));
+          const m = await exact(`intro yields to a resize at ${at} ms`, buf, sha(canon1280), yieldAgain("resize", at), fresh1280);
           r.identicalToFresh1280 = m.identical;
           r.attempts = m.attempts;
           if (!r.identicalToFresh1280) r.pixelDiffFromFresh1280 = await pixelDiff(buf, canon1280);
@@ -1372,7 +1445,10 @@ async function captureMotion() {
     let still = stillBuffers[frame.name];
     if (!still) { try { still = await readFile(join(OUT, `${frame.name}.png`)); } catch { still = null; } }
     const against = PRE[frame.name] && !EXPECTED_TO_CHANGE[frame.name] ? "pre-motion frame" : "this run's reduced-motion frame";
-    const m = await exact(`?motion=off ${frame.name}`, buf, against === "pre-motion frame" ? PRE[frame.name] : still && sha(still), recapture(q, { motion: true }, async (p) => { await act(p, frame); await p.waitForTimeout(200); }, { fullPage: Boolean(frame.full) }));
+    const again = recapture(q, { motion: true }, async (p) => { await act(p, frame); await p.waitForTimeout(200); }, { fullPage: Boolean(frame.full) });
+    const m = against === "pre-motion frame"
+      ? await exact(`?motion=off ${frame.name}`, buf, PRE[frame.name], again)
+      : await exact(`?motion=off ${frame.name}`, buf, still && sha(still), again, recapture(frame.q, {}, async (p) => { await act(p, frame); await p.waitForTimeout(200); }, { fullPage: Boolean(frame.full) }));
     const identical = m.identical;
     identity.motionOffFrames[frame.name] = { url: `index.html?${q}`, reducedMotion: "no-preference", against, identical, attempts: m.attempts, ...(m.noise ? { noise: true } : {}), dataMotion: await page.evaluate(() => document.documentElement.dataset.motion), errors };
     await context.close();
@@ -1727,8 +1803,8 @@ try {
       }
       if (id === "recommended") {
         log.push({ frame: "levels", levelsNowcard: await levels(join(OUT, "preset-recommended-nowcard-2x.png"), join(OUT, "levels-nowcard.png")), levelsChart: await levels(join(OUT, "preset-recommended-chart-2x.png"), join(OUT, "levels-chart.png")), errors });
-        await hashFile("levels-nowcard");
-        await hashFile("levels-chart");
+        await hashFile("levels-nowcard", "preset-recommended-nowcard-2x");
+        await hashFile("levels-chart", "preset-recommended-chart-2x");
       }
       await context.close();
     }
@@ -1955,8 +2031,12 @@ const motionSummary = {
   liveUpdateEndsAtCanonical: identity.liveUpdateEndsAtCanonical,
   // The follow-up round after step 3: each exact-hash comparison, with its attempts.
   recaptures: {
-    rule: "a frame whose hash differs from its expected value is captured again, the same way, in a fresh context; it counts as a difference only if it differs in that next attempt too (no tolerance)",
+    rule: "a frame whose hash differs from its expected value is captured again, the same way, in a fresh context; when the expected value is a reference rendered in this run, that reference is rendered again too, in its own fresh context, and the new pair is compared; it counts as a difference only if it differs in that next attempt too (no tolerance); every attempt logs its expected and actual hash",
     plant: PLANT,
+    // The negative control's reach: comparisons whose first attempt was planted and differed.
+    plantReached: PLANT ? recaptures.filter((v) => v.perAttempt[0].planted && !v.perAttempt[0].match).length : null,
+    plantNotReached: PLANT ? recaptures.filter((v) => !(v.perAttempt[0].planted && !v.perAttempt[0].match)).map((v) => v.label) : null,
+    sameRunReferences: recaptures.filter((v) => v.reference !== "committed").map((v) => v.label),
     comparisons: recaptures.length,
     firstAttempt: recaptures.filter((v) => v.attempts === 1 && v.identical).length,
     noise: recaptures.filter((v) => v.noise).map((v) => v.label),

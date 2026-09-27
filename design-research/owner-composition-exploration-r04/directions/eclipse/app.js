@@ -663,6 +663,7 @@
     out.sort((a, b) => a.m - b.m || (a.kind === "peak" ? -1 : b.kind === "peak" ? 1 : 0));
     out.forEach((st, i) => { st.i = i; });
     stops = out;
+    measureTipWidth();
   }
   const stopBy = (key) => stops.find((st) => st.key === key) || null;
 
@@ -699,6 +700,53 @@
     }
     else html += `<div class="tip-main"><span class="tip-v">${bdi(st.value)}</span><span class="tip-l">${L.levels[levelOf(st.value)]}</span></div>${usualRow}`;
     return html;
+  }
+
+  /* ---- the tooltip's width (the user's decision, 2026-09-27): the widest tooltip that shows a number among the
+   * chart's current stops, plus 2px, rounded up to a whole pixel (--tip-w on #tip). A tooltip shows a number when it
+   * has a value or the usual row: every stop but the missing span, and, without history, still ahead and no reading
+   * yet. So within one snapshot every numbered tooltip has one width and its number starts at one place against the
+   * hairline; the width changes only when the stops or their text change (the first render, a new reading, a state
+   * change, a resize, a language switch, which reloads the page), at the moment the content changes anyway, or when a
+   * web font finishes loading, which replaces a fallback-font measurement. It is measured on hidden copies in one
+   * size-contained, aria-hidden, visibility-hidden box (out of the accessibility tree), never on the live tooltip, so
+   * nothing on screen moves. The missing-span stop alone may be wider (min-width: max-content). At the page's own
+   * 7:42 PM snapshot it is 127px in AR and EN, live, delayed and no history (the widest: the Arabic latest reading,
+   * 124.84px in Readex Pro). */
+  const tipMeasure = document.createElement("div");
+  tipMeasure.className = "tip-measure";
+  tipMeasure.setAttribute("aria-hidden", "true");
+  plot.appendChild(tipMeasure);
+  let tipWKey = null, tipW = null, fontGen = 0;
+  const tipMeasured = { widthPx: null, widestPx: null, widestKey: null, numbered: 0, measures: 0, ms: 0 };
+  function measureTipWidth() {
+    const numbered = stops.filter((st) => st.kind !== "gap" && (HAS_HISTORY || (st.kind !== "wait" && st.kind !== "ahead")));
+    const parts = numbered.map((st) => `<div class="tip">${tipHTML(st)}</div>`);
+    const key = `${fontGen}|${parts.join("")}`;
+    if (key === tipWKey) return;
+    tipWKey = key;
+    const t0 = performance.now();
+    tipMeasure.innerHTML = parts.join("");
+    let widest = 0, at = -1;
+    [...tipMeasure.children].forEach((c, i) => { const w = c.getBoundingClientRect().width; if (w > widest) { widest = w; at = i; } });
+    tipMeasure.textContent = "";
+    const w = Math.ceil(widest + 2);
+    Object.assign(tipMeasured, { widthPx: w, widestPx: widest, widestKey: at >= 0 ? numbered[at].key : null, numbered: numbered.length, measures: tipMeasured.measures + 1, ms: performance.now() - t0 });
+    if (w === tipW) return;
+    tipW = w;
+    tip.style.setProperty("--tip-w", `${w}px`);
+    tipSize = null; // placeTip reads the box's real width again
+  }
+  // A web font that finishes loading replaces a measurement made with the fallback font; a shown tooltip is placed
+  // again, at rest, by its new width.
+  if (document.fonts && document.fonts.addEventListener) {
+    document.fonts.addEventListener("loadingdone", () => {
+      if (!geo) return;
+      fontGen++;
+      const before = tipW;
+      measureTipWidth();
+      if (tipW !== before && sel && !tip.hidden) restoreSelection();
+    });
   }
 
   /* ---- track geometry: the marker sits on the SVG paths as drawn, never on a separate formula. Round 7 step 2 (F5):
@@ -1996,6 +2044,10 @@
       select: (key) => { const st = stopBy(key); if (!st) return null; selectStop(st); return hit.getAttribute("aria-valuetext"); },
       clear: () => clearSelection(),
       get selected() { return sel ? sel.key : null; },
+      // The tooltip's width as last measured from the chart's current stops (px), the widest numbered tooltip's own
+      // width and stop, how many numbered stops were measured, how many measurements have run on this page, and how long
+      // the last one took (ms).
+      get tipWidth() { return { ...tipMeasured }; },
       // The marker's form: always "b", the hollow ring (form A was removed in Round 7 step 2).
       get marker() { return "b"; },
       // The smooth follow (Round 7 step 2), for the capture checks.
