@@ -1520,3 +1520,21 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   2. Then write its terminal-record fields and brief.
   3. The intro-speed round, the audit patch and Reports wait behind it, in the order given in the resume point
      above.
+
+## The user authorizes a successor: repair 3 (2026-09-27)
+
+- **Authorization:** the user authorized a third repair of the follow-up round. It is a successor attempt after the
+  `FAILED_VALIDATION` above, on the same rule. The user did not take up a design review of the placement.
+- **The failure mode prior checks did not cover:** the box's continuity through placement changes. It is recorded in
+  the section above.
+- **Changed scope:**
+  - one motion rule: every change of the box's position eases from its displayed position and velocity;
+  - rest geometry measured as rendered (real height, ≥ 11.00 px at four viewports);
+  - a guard that refuses the repository whatever TEMP/TMP say;
+  - README corrections.
+  Everything verified in `3b1c3da` stays as it is.
+- **Why it will not recur:** acceptance now samples the box every frame through every new-reading placement change
+  across the day (M1), and hover transitions near now under a fake clock against `6123863` (M2). The worker runs both
+  before committing, and the fresh verifier runs the same.
+- **Brief:** session `f8e879d9`'s scratchpad, `repair3/BRIEF.md`, based on `3b1c3da`, owned path `eclipse/**`. The
+  executor is not chosen yet.
