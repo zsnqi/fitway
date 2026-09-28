@@ -1681,3 +1681,36 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
 - **State:** the follow-up round is ready for integration. Integration (rebasing the coordinator's docs commits onto
   `8ae88f3`, keeping the verified SHA) and any follow-up on the observations wait for the user. Pushing needs the
   user's word.
+
+## User decisions after repair 4, and the plan (2026-09-28)
+
+- **Speed:** the user agreed two things:
+  - parallel static sweeps (timing-sensitive checks run alone);
+  - one known-bad version per positive control.
+  The user left the shared harness to the coordinator. The coordinator recommends it, built from the independent
+  verifier's own probes and frozen once verified.
+- **Observations:** the user wants them fixed now, in a small round by Codex. Codex may use one reviewer subagent
+  before committing. The independent verifier still follows.
+- **Plan:**
+  1. **Round T** (`tools/BRIEF.md`, session `f8e879d9`'s scratchpad), by Codex. It builds `E/checks/run.mjs` from
+     verify5's 18 probes, saved in `tools/reference/`. The harness:
+     - runs parallel workers;
+     - takes `--rev`/`--base` versions;
+     - has a plant for every check;
+     - adds a new `layout` measure: own ring, axis band, belongs, reversals, Home/End.
+     It must reproduce verify5's reference numbers at `8ae88f3`. The page does not change.
+  2. **A short independent check of the harness.**
+  3. **Round P** (`polish/BRIEF.md`), by Codex with a reviewer subagent, measured with the frozen harness:
+     - R1 never cover now;
+     - R2 never cover its own ring;
+     - R3 stay above the time axis;
+     - candidate (a′), a sideways move away from now;
+     - R4 no back-and-forth, stateless, with 0 reversals at 1440×900;
+     - R5 the box jumps with the ring on long jumps;
+     - R6 the missing-span first-frame edge;
+     - R7 README.
+  4. **The user sees the before and after, then a fresh verifier runs the harness plus independent spot checks.**
+  5. **Local integration;** a push needs the user's word.
+  6. **Then the intro-speed round.**
+- **R2-R4 change placements the user had agreed,** so the user sees the before and after before anything is
+  integrated.
