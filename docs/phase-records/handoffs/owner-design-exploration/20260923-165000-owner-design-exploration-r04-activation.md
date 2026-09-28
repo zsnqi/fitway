@@ -1750,3 +1750,39 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - never launch a Codex round without the user;
   - full-strength verification stays, because the chosen direction is meant to become the Owner design authority. It
     is adopted only when it is ready, by an explicit decision.
+
+## Round T delivered, and its verification started (2026-09-28)
+
+- **Commit:** Codex committed `ee2b399` on `owner-followup-r04-build` and did not push. It changes 27 files:
+  - `E/checks/**`, 26 new files;
+  - an 11-line "Checks" section at the end of `E/README.md`.
+  The worktree is clean.
+- **Codex's report:** all 9 checks pass at `8ae88f3` against `6123863`. Each check fails on its known-bad version
+  and on its own plant.
+  - `rest` with `--workers 4` is byte-identical to `--workers 1` (96 files): 754 s against 1,648 s.
+  - It explains two differences from the reference by definition:
+    - `nohist`: 1,976 checks, not 1,992. The reference's own runs add up to 1,976.
+    - CLS: 0.022-0.032, not 0.009-0.016. The reference summary already records 0.0222-0.0328 under the same
+      aggregation.
+  - The `layout` baseline at `8ae88f3`:
+    - own ring covered in 10,280 of 555,856 boxes;
+    - 840 below the axis;
+    - 28,532 that do not belong;
+    - 607 reversals;
+    - Home/End at most 97.28 px per frame.
+  - Codex saw clipping and stacking at 390×844. It is outside the round's scope.
+- **Time:** about 5 hours, as the user reports.
+  - The work folder shows five full runs (`all` or `rest`) of 12-47 minutes each, for the first build, the clean
+    acceptance, the serial rest, and the final rerun after review.
+  - The skill's self-test took about 2 minutes.
+- **Coordinator inspection:** the scope and `git status` are as above. This is not verification.
+  - `%TEMP%` on C holds four `ecg-*` guard copies from Codex's runs, one per run (16:21-20:13). Each is 43 MB and
+    holds a `node_modules` junction into `owner-followup-r04-s04`. The harness does not seem to remove them.
+  - They are left in place until the verifier reports. Deleting them needs the junction removed first.
+- **Temp moves to D:** drive C has 2.8 GB free, and one `all` run writes about 1.1 GB.
+  - The verifier runs with `TEMP` and `TMP` set to `D:\fitway-temp`.
+  - The closed sessions' scratchpads and `eclipse-verify3/4/5` without junctions are moving to `D:\fitway-scratch\`.
+    A junction stays at each old path, so the paths recorded here still resolve.
+- **Verifier:** a fresh `owner-direction-verifier` (`xhigh`, run `owner_followup_r04_s04_verify_t`) checks
+  `8ae88f3..ee2b399` against `tools/VERIFY-T.md`. Its evidence goes to `D:\fitway-temp\eclipse-verify-t\`, and item 7
+  is read as "only inside `D:\fitway-temp`". It is running.
