@@ -1971,3 +1971,15 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
     - geometry and still frames;
     - quality, accessibility and phone;
     - motion, run alone.
+- **The designer stopped at a usage limit** (2026-09-29 00:3x). Its edits were uncommitted and nothing was listening.
+  After the reset, the coordinator resumed it with its context intact, and asked it to check its files first.
+- **A small verifier eval is agreed, after the lane round** (user, 2026-09-29). It follows the idea of
+  `claude.dev/blog/automating-eval-design-and-hillclimbing`:
+  - **Cases:** 6 to 8 narrow ones, drawn from real defects that earlier verifiers found at known SHAs. Clean,
+    verified SHAs such as `8ae88f3` measure false alarms. The answers stay out of the agent's reach, which means an
+    extracted copy without the handoffs.
+  - **Runs:** Sonnet and Opus once each, so the Sonnet-verifier trial is decided by catch rate, false alarms and cost.
+  - **Afterwards:** only if the result is clear, small edits to the verifier definition and the `COMMON.md` template.
+    An edit is kept only if both the train and the held-out cases improve.
+  - **Out of scope:** design taste stays the user's visual judgment, and Impeccable and ux-araby stay unmodified.
+  - **It must not delay the project.** It is a separate, time-boxed task, and it is dropped if it is not decisive.
