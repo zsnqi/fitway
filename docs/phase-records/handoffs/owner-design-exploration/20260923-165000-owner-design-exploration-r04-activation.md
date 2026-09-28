@@ -2017,3 +2017,73 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
     code, and named acceptance frames always stay at full resolution.
   - **`owner-direction-verifier-high`** was added to `.claude/agents/` and to `CLAUDE.md`'s table, with the user's
     agreement. It is the verifier's text at `effort: high`, for the eval only, and it loads from the next session.
+
+## Lane round delivered, and new-session resume point (2026-09-29)
+
+- **Delivery:** the designer, Sonnet 5.5 at `xhigh`, committed `9404bb1` on `owner-followup-r04-build`, on top of
+  `ee2b399`, and did not push. It took about 55 minutes of agent time, 75 tool calls and about 629k tokens.
+  - **Its report:** `D:\fitway-scratch\lane\work\REPORT.md`. The coordinator saved it from the designer's final
+    message, because a subagent's Write tool refuses report files. Future briefs therefore ask for a concise report in
+    the final message, and the coordinator saves it.
+  - **Its claims, unverified:**
+    - headroom option (a), a shorter scale. The lane is 89 px live, 109 px delayed and 69 px without history;
+    - every row passes except Q's horizontal scroll, which already exists at `8ae88f3`;
+    - L4 and L5 pass with caveats.
+- **Coordinator inspection. This is not verification.**
+  - Scope: 36 files, all under `E/`. `checks/**`, `pre-motion-hashes.json` and `.impeccable/**` are untouched, and
+    nothing is deleted. `git status` is clean, and no listener was left on 3173, 3176 or 3177.
+  - Sheet `02-chart-card-before-after-ar.png`, viewed downscaled: the box sits in the lane with its connector, and the
+    peak tag stays whole. At rest the lane is an empty band above the chart, and the chart is visibly shorter.
+- **Points for the user, who decides each one:**
+  1. **The empty lane costs the chart 16-40% of its height:** −20.7% live and −25.1% delayed at 1440×900, and up to
+     −39.9% at 1024×640 while delayed. Option (b) recovers at most 14-17 px. This is the price of "nothing ever
+     enters the lane". The user judges it from the live page.
+  2. **The accessibility tree changes in 4 of 36 snapshots:** the peak label is now always in it. It was hidden only
+     while the floating box covered it.
+  3. **Stall-then-jump at the plot's side:** 66 literal flags. The clamped box waits at its margin for up to 8 frames,
+     then follows the ring. The designer calls it inherent to the hard clamp.
+  4. **A horizontal page scroll** of 22 px at 1024×640, and 387 px at 390×844, already exists at `8ae88f3`. It
+     belongs to the phone and polish phase.
+- **Resume steps for the next coordinator session:**
+  1. Run `pnpm context:show -- --milestone owner-design-exploration-r04`, and read this section and the section
+     above. Renew the lease, which expires 2026-09-29 23:30.
+  2. **The live page for the user:**
+     - add two configurations to this worktree's untracked `.claude/launch.json`, using Python `http.server` on
+       127.0.0.1:
+       - after: port 3174, serving
+         `D:/Projects/fitway-worktrees/owner-followup-r04-s04/design-research/owner-composition-exploration-r04/directions/eclipse`;
+       - before: port 3175, serving
+         `D:/fitway-scratch/lane/base/design-research/owner-composition-exploration-r04/directions/eclipse`;
+     - give the user both links, with `?lang=en` and `?state=delayed`, and send sheets 01 and 02 in AR;
+     - raise the four points above. The user decides.
+  3. **On approval, verification in three parts:**
+     - Set `<LANE_SHA>` to `9404bb1` in `D:\fitway-scratch\lane\verify\`.
+     - Correct V2's Q row: horizontal scroll must be unchanged against `8ae88f3`, and the existing scroll is recorded
+       separately.
+     - Add to COMMON: open screenshots downscaled, keep named frames at full resolution, and put the report in the
+       final message.
+     - Launch V1 and V2 in parallel, with `owner-direction-verifier` and `model: "sonnet"`. Launch V3 alone after
+       them.
+  4. **The verifier eval,** as agreed above, while the machine is idle:
+     - Sonnet at `xhigh`, Opus at `xhigh`, and Sonnet at `high` through `owner-direction-verifier-high`;
+     - about 7 narrow cases from past defects, and clean SHAs;
+     - the coordinator keeps the answer key.
+  5. **Then, in order:**
+     - delete `E/checks/**` in a small commit;
+     - integrate locally, rebasing the coordinator's docs commits onto the verified SHA. A push needs the user's word;
+     - the intro-speed round: update its base SHA, and replace R1-R6 in its constraints with the lane rules;
+     - the audit patch (ask the user);
+     - Reports.
+  - **The screen plan still stands:**
+    1. desktop first for every screen;
+    2. one early phone feasibility check of the table system at 390 and 320 px, on Reports;
+    3. then the phone at 390 px, 320 px and 200% reflow for every screen, and the polish;
+    4. then the authority record.
+- **Working agreements:**
+  - reply in Arabic, simply and briefly;
+  - before starting any task, tell the user the steps and wait for their go;
+  - the user runs Codex and pastes its report;
+  - temp and scratch never go on C;
+  - split rounds into narrow parts, and name the exact lines to read;
+  - agents open screenshots downscaled;
+  - full-strength verification stays, because the direction is meant to become the Owner design authority.
