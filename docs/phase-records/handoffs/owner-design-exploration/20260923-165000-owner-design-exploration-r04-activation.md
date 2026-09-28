@@ -1556,3 +1556,26 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
 - **Executor chosen:** the user gives repair 3 to Codex, with the skill installed. The worktree is
   `owner-followup-r04-s04`, clean at `3b1c3da`, and the brief is `repair3/BRIEF.md`. When Codex reports, the
   coordinator inspects the result, then briefs a fresh independent verifier with M1 and M2.
+
+## Repair 3 delivered by Codex, committed by the coordinator (2026-09-28)
+
+- **What Codex did:** it implemented repair 3 in `eclipse/` only (7 files), in about 2 h 10 min. Most of the time went
+  on the brief's acceptance sweeps; it re-measured M2 several times.
+- **Codex's report:** every brief check passes.
+  - S and V: 0 cases under 11 px over 224,902 rest placements, minimum 11.0000 px. The largest move is 90.20 px.
+  - M1: 0 of 72 over the allowance, with a worst step of 10.44 px against 12.70. `3b1c3da` has 12-14 violations per
+    web-font language.
+  - M2: stall-then-jump is 0 (`6123863` 0, `3b1c3da` up to 2). Settle median 434-445 ms and p90 496-498 ms, no slower
+    than `6123863`.
+  - E, G, I and J pass.
+- **Why Codex did not commit:** it held back because the repository fast ladder failed, in its "real repository
+  acceptance" frontier test.
+  - The coordinator reproduced the same failure in `owner-design-exploration-r04`, which has none of these changes:
+    `scripts/check-frontier-preservation.test.ts`, 1 failed and 29 passed, with `git status` unchanged.
+  - That test is not a gate for this milestone (unit: `NOT_REQUIRED`).
+  - The coordinator therefore committed the worker's changes unchanged as `a14009f` on `owner-followup-r04-build`. The
+    worktree is clean.
+- **Coordinator inspection:** the scope is `eclipse/` only, and pre-commit Biome passed. In Codex's strip of the 10:52
+  PM reading (AR), `3b1c3da` jumps and `a14009f` stays put. This is not verification.
+- **Verifier:** a fresh `owner-direction-verifier` (`xhigh`, run `owner_followup_r04_s04_verify4`) checks
+  `622cd0b..a14009f` against `repair3/VERIFY-R3.md` in session `f8e879d9`'s scratchpad. It is running.
