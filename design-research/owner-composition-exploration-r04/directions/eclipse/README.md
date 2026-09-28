@@ -1259,3 +1259,14 @@ The log records:
   («شديد الازدحام», "Packed") never reaches the latest stop in this page's data; it was measured on a copy of the latest
   tooltip only. The through-the-day sweep, the font swap and the negative control were scratch checks. No verifier
   has checked repair 1 yet.
+
+## Checks
+
+Run from the worktree root in PowerShell:
+
+```powershell
+node design-research/owner-composition-exploration-r04/directions/eclipse/checks/run.mjs all --rev 8ae88f3 --base 6123863
+```
+
+Replace `all` with check names. Use `--workers N`, `--out <new-temp-folder>`, `--frames`, or `--plant <check>`;
+`run.mjs --help` lists the checks.
