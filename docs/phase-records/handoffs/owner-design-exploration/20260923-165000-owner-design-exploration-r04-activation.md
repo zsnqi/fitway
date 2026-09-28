@@ -1786,3 +1786,26 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
 - **Verifier:** a fresh `owner-direction-verifier` (`xhigh`, run `owner_followup_r04_s04_verify_t`) checks
   `8ae88f3..ee2b399` against `tools/VERIFY-T.md`. Its evidence goes to `D:\fitway-temp\eclipse-verify-t\`, and item 7
   is read as "only inside `D:\fitway-temp`". It is running.
+
+## User decisions while round T is verified (2026-09-28)
+
+- **Phone in round P:** R1-R4 are judged at 1440×900, 1280×800 and 1024×640 only. At 390×844 the numbers are reported,
+  and the page must only not break: no page errors and no horizontal page scroll.
+- **The screen plan still stands.** It is in `directions/NEXT-DIRECTION-BRIEF.md`, "After the Daily page" and "Round 7
+  close-out and the screen plan":
+  1. desktop first for every screen;
+  2. one early phone feasibility check of the table system at 390 and 320 px, on Reports;
+  3. then the phone at 390 px, 320 px and 200% reflow for every screen, and the polish;
+  4. then the authority record.
+  This session first proposed a separate phone round after the intro-speed round, because the resume point above did
+  not name the screen plan. The user caught it. **Every later resume point names that plan.**
+- **Faster rounds:** `polish/BRIEF.md` now makes Codex:
+  - measure its uncommitted page with `git stash create` and targeted checks while it works;
+  - run `all` once, after its last edit;
+  - reuse round T's verified `8ae88f3` run as the "before".
+  Scratch and temp go to `D:\fitway-temp`. The brief's section 0 still needs round T's SHA and the verified run's
+  folder after PASS.
+- **Moves to D are done:** seven folders (97026a10, 309c8922, bb9e9dc7 and 8f6a215f, plus `eclipse-verify3/4/5`) are
+  in `D:\fitway-scratch\`, with a junction at each old path. Drive C went from 2.8 GB to 11.2 GB free.
+  - `f8e879d9` (6.2 GB, three junctions) moves after the verifier.
+  - After the verifier, the user sets the user `TEMP` and `TMP` to `D:\fitway-temp` and restarts Claude and Codex.
