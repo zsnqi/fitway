@@ -753,3 +753,35 @@ A small separate round after the intro, so that the intro's verifier judges the 
   step 3 intro" stay as they are. The new timing is the tuner's 1× (the default), so the tuner still spans 0.5× to
   2× around it. This is done in a separate round after the follow-up round, because both change `eclipse/` and each
   round has one writer.
+
+### The tooltip moves to a top lane (user decision, 2026-09-28)
+
+**Why.** The tooltip floated freely near its point, and every repair fixed one case and broke another. Most failures
+came near "now", which moves with every reading. The coordinator judged that the floating concept, not the code, was
+at fault. The user agreed, and does not want more time spent patching it while the design is still being built.
+
+**The decision.** The same box, with the same content and the start-aligned layout approved at `5b9bae7`, lives in a
+fixed lane at the top of the plot.
+- **Sideways only:** the box moves only sideways, centred on its stop and stopped at the plot's edges.
+- **The connector:** a thin line joins the box to its ring.
+- **The reserved lane:** no line, ring, marker, label or "now" ever enters it.
+
+**Supersedes:**
+- every floating-placement rule above: side, flip, clamp, above and below;
+- the 12 px gap from the hairline;
+- "never cover now" as a placement cascade (the lane satisfies it by construction);
+- "the latest-reading tooltip sits over the last stretch of the line";
+- round P's brief, which is withdrawn.
+
+**Unchanged:**
+- the box's look and content;
+- the width rule measured from the chart;
+- the follow's curve and speed, now horizontal only;
+- text changing at once;
+- the intro, and every truthfulness rule.
+
+**Rejected alternatives:**
+- **A fixed readout beside the chart title:** the user found it too far from the eye.
+- **The user's own variant, a box that rides just above the lines under it:** at 10:00 PM with the 11:00 PM stop it
+  reproduces the placement the user had rejected, over "now". Fixing that needs the sideways-shift rules again. The
+  user chose the lane alone.

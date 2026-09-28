@@ -1828,3 +1828,22 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   worth its own round now, because only the Daily page's rounds use this harness. It is revisited if round P is still
   slow.- **The user agreed the speed plan (2026-09-28):** skip `guard` in round P, iterate without `--base`, and measure 8
   workers after the verifier. No harness change now, only if round P is still slow.
+## The tooltip moves to a top lane, and round T's verification stops (2026-09-28)
+
+- **User decision:** the tooltip keeps its box but lives in a fixed lane at the top of the plot. It moves sideways
+  only, joined to its ring by a thin line. The full record is in `NEXT-DIRECTION-BRIEF.md`, "The tooltip moves to a
+  top lane".
+  - The user rejected a fixed readout beside the title, as too far from the eye.
+  - The user dropped their own variant, a box riding just above the lines, after the coordinator showed that it
+    recreates the 10:00 PM case over "now".
+  - Sketches: `D:\fitway-scratch\sketches\lane-*.png`, composed from verify5's frames. They are not rendered
+    frames.
+- **Round P is withdrawn,** and `polish/BRIEF.md` is superseded.
+- **Round T's verifier was stopped** by the coordinator, because its checks target the old placement rules.
+  - It had not reported. Its partial evidence is in `D:\fitway-temp\eclipse-verify-t\`.
+  - No listener or process was left, and `owner-followup-r04-s04` is clean at `ee2b399`.
+  - The harness at `ee2b399` stays **unverified**, as code to adapt later.
+  - `D:\fitway-temp` still holds two `ecg-*` copies (with `node_modules` junctions) and Playwright profiles from
+    that run.
+- **Next:** a designer round builds the lane on the real page. The coordinator explains the steps to the user and
+  launches nothing until the user agrees.
