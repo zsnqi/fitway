@@ -1579,3 +1579,7 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   PM reading (AR), `3b1c3da` jumps and `a14009f` stays put. This is not verification.
 - **Verifier:** a fresh `owner-direction-verifier` (`xhigh`, run `owner_followup_r04_s04_verify4`) checks
   `622cd0b..a14009f` against `repair3/VERIFY-R3.md` in session `f8e879d9`'s scratchpad. It is running.
+- **Verification level (user decision, 2026-09-28):** keep the current full-strength checks and independent
+  verification. The user intends the chosen direction to become the Owner design authority, so its measured
+  behaviour must hold. That adoption still needs its own explicit decision and visual acceptance of named frames, per
+  `AGENTS.md`.
