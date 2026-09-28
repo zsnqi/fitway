@@ -1628,3 +1628,23 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - The width change is fixed by easing the anchor, not the left edge.
   - The guard also refuses any git working tree.
   - It tells the worker not to run the fast ladder, whose known failure is not a gate here.
+
+## Repair 4 delivered by Codex (2026-09-28)
+
+- **Commit:** Codex committed `8ae88f3` on `owner-followup-r04-build` after 1 h 36 min. It changes 8 files, all in
+  `eclipse/`, and leaves the worktree clean.
+- **Its report:** every row passes.
+  - S is identical to `a14009f`.
+  - GAP: 0 across 720 moves (`a14009f`: 2,578 frames over the allowance, 360 stalls).
+  - NH: 0 across 640 selections (`a14009f`: 88).
+  - R5: 0 across 24,187 cases (`a14009f`: 11,762).
+  - M1: 0 across 16,310.
+  - M2: median and p90 no slower than `6123863`. 144 individual transitions stay 17-100 ms slower, inherited from
+    `a14009f`.
+  - E, G, I and J pass.
+- **Coordinator inspection:** the scope is `eclipse/` only. In Codex's strip `strips/gap-0843-en.png`, the box stays
+  level on its move to the missing-span stop after repair 4; before it, the box dropped and then jumped at 656 ms.
+  This is not verification.
+- **Verifier:** a fresh `owner-direction-verifier` (`xhigh`, run `owner_followup_r04_s04_verify5`) checks
+  `622cd0b..8ae88f3` against `repair4/VERIFY-R4.md`. That checklist is the R3 checklist plus rules 4 and 5b, named
+  checks for the missing-span stop, no history and width changes, and all three states. It is running.
