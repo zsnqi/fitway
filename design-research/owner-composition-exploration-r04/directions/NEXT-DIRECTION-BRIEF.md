@@ -509,6 +509,11 @@ The coordinator's research sources include:
     freshness and sensor health, that opens a detail page. It would then need no primary rail slot, since
     the owner needs it mainly when something is wrong.
   - **Daily and Reports:** keep them separate. They answer different questions: now against patterns.
+- **Style (user, 2026-09-28):**
+  - The remaining screens follow the Daily page's current Eclipse style. Their content may change, as the next point
+    says, but their look does not.
+  - The direction becomes the reference only after the user approves all of it, including its motion, having seen
+    it.
 - **Content freedom:**
   - The remaining screens need not copy the production screens' current content or structure. The
     designer proposes what is most useful to the owner and what should change.

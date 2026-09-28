@@ -1809,3 +1809,21 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   in `D:\fitway-scratch\`, with a junction at each old path. Drive C went from 2.8 GB to 11.2 GB free.
   - `f8e879d9` (6.2 GB, three junctions) moves after the verifier.
   - After the verifier, the user sets the user `TEMP` and `TMP` to `D:\fitway-temp` and restarts Claude and Codex.
+- **Style of the remaining screens (user, 2026-09-28):** they follow the Daily page's current Eclipse style. The
+  direction becomes the reference only after the user approves all of it, motion included, having seen it. This is
+  recorded in `NEXT-DIRECTION-BRIEF.md`, "After the Daily page".
+- **Why a full harness run takes 47 minutes** (round T's `timing.json`, 4 workers):
+  - rest, 10 min;
+  - the motion stage, 18 min;
+  - guard, 16 min;
+  - quality, 3 min.
+  The stages run in sequence. Frame loops already run inside the page, so the time is real layout work. Changes
+  that need no harness change:
+  - skip `guard` when `capture.mjs` is unchanged. Round P may not touch it, so `polish/BRIEF.md` now drops `guard`
+    and checks that the file is unchanged;
+  - iterate without `--base`, which halves rest and hover;
+  - possibly 8 workers (the machine has 8 cores, 16 threads and 31 GB). The coordinator measures `rest` at 8 workers
+    against 4 once the verifier is done, for time and byte identity, and only then names a count in the brief.
+  A harness change could go further, reusing the base's rows and adding a quick profile of one viewport. It is not
+  worth its own round now, because only the Daily page's rounds use this harness. It is revisited if round P is still
+  slow.
