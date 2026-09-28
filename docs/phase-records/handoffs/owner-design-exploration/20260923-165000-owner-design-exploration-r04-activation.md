@@ -1583,3 +1583,39 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   verification. The user intends the chosen direction to become the Owner design authority, so its measured
   behaviour must hold. That adoption still needs its own explicit decision and visual acceptance of named frames, per
   `AGENTS.md`.
+
+## Repair 3 verified: FAIL (2026-09-28)
+
+- **Verifier:** `owner_followup_r04_s04_verify4` (checklist `repair3/VERIFY-R3.md`, evidence in
+  `%TEMP%/eclipse-verify4/`). The worktree stayed clean at `a14009f`.
+- **PASS:**
+  - width, over 15,264 snapshots;
+  - the rest rule at four viewports: 599,104 selections, minimum 11.00000 px, and the positive control finds 55,399
+    at `6123863`;
+  - minimal change: 543,705 placements unchanged;
+  - the guard and the recapture;
+  - nothing else changes;
+  - quality, apart from the console.
+  The original defect is fixed: across 8,691 new-reading placement changes no frame exceeds the allowance (worst
+  0.93×), against 5,215 of 5,663 over it at `3b1c3da`.
+- **FAIL:**
+  1. **Moving onto the missing-span stop:** the box eases toward the time axis (`restPoint(gap).y`, app.js:837 and
+     1518) instead of its rest `ay`. It waits about 640 ms, then jumps 95.9 px, in 30 of 30 transitions.
+  2. **No history with motion on:** moving onto a still-ahead stop throws `Cannot read properties of null (reading
+     'x')` at app.js:1518, because `restPoint` returns null. The text changes while the box stays on the old stop.
+     There are 33 page errors in `errors-states.json`, and none at `6123863`.
+  3. **Rule 5 regressed:** at width-changing readings the box eases instead of keeping its 12 px edge. It drifts in
+     6,026 of 7,284 cases, worst 13 px; for example, the gap goes from 12 to 4 px and back.
+  4. **README claims** contradicted at lines 847, 853, 864, 882 and 890.
+  - Lower findings: clamped boxes have no rule; one still frame at each morph's end; a delayed minute tick; the
+    guard trusts TEMP.
+- **Coordinator check:** the page errors are in `errors-states.json`, the code at app.js:833-840 and 1518 matches, and
+  the strips were viewed: `targets/gap-strip-en.png` shows the ease toward the axis and then the jump, and
+  `frames/rule5-strip-a14009f.png` shows the gap 12 → 4 → 12.
+- **A coordinator brief gap:** `repair3/BRIEF.md` acceptance did not list three things, so the worker's own checks
+  could pass:
+  - a rule-5 recheck;
+  - moves onto the missing-span stop;
+  - the no-history state with motion on.
+  A next brief must list them explicitly.
+- **State:** this is the successor's first attempt, and it failed. The user decides the next step.
