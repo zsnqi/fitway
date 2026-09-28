@@ -2013,3 +2013,7 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - **Future briefs tell agents to open screenshots downscaled.** Full-resolution crops are used only where detail
     matters, such as the box's edges and the connector. Sonnet 5.5 reads images at a high resolution, at about 2.5 times
     the earlier tokens, and screenshots were the largest part of the designer's context.
+  - **The limit of downscaling:** downscaled images can hide a 1-2 px defect. Pixel facts are therefore measured by
+    code, and named acceptance frames always stay at full resolution.
+  - **`owner-direction-verifier-high`** was added to `.claude/agents/` and to `CLAUDE.md`'s table, with the user's
+    agreement. It is the verifier's text at `effort: high`, for the eval only, and it loads from the next session.
