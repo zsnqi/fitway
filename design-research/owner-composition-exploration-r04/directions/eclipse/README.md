@@ -1,5 +1,11 @@
 # Eclipse v3 (Owner r04, full Daily page)
 
+**Repair 3 (2026-09-27):** the selected box now uses the follow curve for a side change, a change among the
+above/below/shifted rest placements, or a new reading. The curve starts at the box's displayed position and
+velocity. Clearance is measured on its rendered rectangle at rest; the route no longer projects the moving box to a
+different point. Planted capture output is refused inside this worktree even if TEMP or TMP names it. Measurements for
+this repair are in "Evidence" below.
+
 This is a concept only, built on synthetic data. Nothing is selected. It is the full Daily page at desktop
 1440×900, in Arabic RTL (the default) and English LTR. It evolves `../light-study/` recipe A, and the data
 logic (seeded simulation, day constants and monotone interpolation) comes from there. v3 applies Round 5 §1-§3
@@ -40,10 +46,10 @@ slow fonts. What moves, its order and its timings are unchanged.
   earlier. With the font files held 600 ms, the still page's answers were in view 153-231 ms after the first paint
   across the recorded runs (see "Measured").
 
-**Repair 2 (last repair, 2026-09-27):** a tooltip near closing could flip across today's end point. The original
+**Repair 2 (2026-09-27):** a tooltip near closing could flip across today's end point. The original
 `622cd0b` did so late at night; the wider chart-following box in `6123863` started doing so earlier. This repair
 keeps every already-clear placement and moves only boxes that breach the 11 px clearance around the end point.
-Its plant guard checks all output folders against the real system temp directory, and a selected box is placed again
+Its plant guard checked output folders against Node's temp path, and a selected box is placed again
 during each frame of a live-reading morph. The full-day sweep and capture evidence are recorded below.
 
 Nothing else changes.
@@ -405,9 +411,11 @@ and `setMarker`. The one part of A that stays is its missing-span variant, the l
   of today's end point by at least 11 px, the 9 px halo radius plus 2 px, even when the halo is hidden. If the usual
   placement would breach that clearance, the box is centred above its stop and clamped 2 px inside the plot. If above
   has no room, it centres below; if that still breaches the clearance, it makes the smallest vertical shift that
-  clears it, preferring upward on a tie. A change of mode eases with the follow. If the box's moving path would
-  cross the end point between two clear rest positions, it bends by the smallest available displacement and stays
-  on that side until clear; neither rest position changes.
+  clears it, preferring upward on a tie. The alternatives use the box's rendered height: when the centred-above
+  position is clear, its bottom is 10 px above the selected point. A side or placement change, including the amount
+  of a vertical shift and a change caused by a reading, follows the box's eased curve from its displayed position and
+  velocity. The 11 px rule applies at rest; a moving box may briefly pass closer to the end point. There is no
+  mid-path projection or side lock.
 - **Tooltip layout (2026-09-26):** one start-aligned arrangement for every tooltip. Every row starts at the same
   inline-start edge (right in Arabic, left in English), and nothing is pushed to the far edge.
   - At the peak and the latest reading (live and delayed), the label chip comes first, then the time. The number then
@@ -465,8 +473,9 @@ and `setMarker`. The one part of A that stays is its missing-span variant, the l
 **6b. The smooth follow (Round 7 step 2).** It replaces the Round 6 glide (120-150 ms, at most 150 ms). It is the
 "follow" part of the motion section in `app.js`.
 
-- **What moves:** the ring, its hairline and the tooltip chase their target along the drawn curve itself, x and y
-  together. They never take a straight hop between two points on the line.
+- **What moves:** the ring and its hairline follow the drawn curve. The tooltip travels toward the selected stop's
+  resting box on the same eased response, starting at its displayed position and velocity. It can take a different
+  route from the ring while both are moving; the box and hairline meet at the selected stop at rest.
   - The route runs along today's line (or the usual line) by arc length. Between the line and the peak ring it runs
     along the line to 6:29 PM, then up the peak's dotted drop onto the ring.
   - The ring's elements are moved in place each frame, not rebuilt. At rest the marker is drawn exactly as without
@@ -500,7 +509,7 @@ and `setMarker`. The one part of A that stays is its missing-span variant, the l
   - **The old 240 px "move at once" limit is replaced by a 6-hour limit, measured along the time axis.**
     - The old limit would now trigger in the middle of fast sweeps on steep parts of the line, where the arc length
       between the ring and the pointer grows.
-    - Beyond 6 hours of the day (about 380 px), the ring and the tooltip both move at once, as on a first appearance.
+    - Beyond 6 hours of the day (about 380 px), the ring moves at once and the tooltip eases from its displayed place.
       That is Home or End from far away. Without the limit, the ring would race across the whole day in 400 ms.
     - A sweep of the pointer never reaches this limit, because the ring trails the pointer by far less. PageUp and
       PageDown (2 hours) follow.
@@ -741,9 +750,10 @@ takes about five minutes. It exits with code 1 if any check below fails.
     a smaller frame, into the compared frame of every exact comparison, never into a reference, so a same-run
     reference stays clean and those comparisons are exercised too. `once` plants only the first attempt, so the
     recapture is clean (the noise path). A planted run requires an explicit local-drive `outDir`; it checks that
-    folder, `--intro-frames`, and every other output folder against the real `os.tmpdir()` path, resolving existing
-    links and short names. Every output must remain inside that temp directory. UNC, device, and relative paths are
-    refused before any output is written. Runs without `--plant` retain their usual output behaviour.
+    folder and `--intro-frames` against the path returned by `os.tmpdir()`, resolving existing links and short names.
+    TEMP or TMP can direct that path, so the guard also rejects every output whose real path is inside this repository
+    worktree, regardless of their values. UNC, device, and relative paths are refused before any output is written.
+    Runs without `--plant` retain their usual output behaviour.
 
 - **Other machines:** the static guard compares with `evidence/pre-motion-hashes.json`, which was rendered on the
   original Windows machine. Fonts render differently elsewhere, so on another machine pass a scratch `outDir`, expect
@@ -825,6 +835,38 @@ The log records:
 
 ## Evidence
 
+- **Repair 3 (2026-09-27), S and V:** the reduced-motion sweep from 7:42 PM to closing selected every stop at
+  all 318 minutes, AR/EN, live/delayed/no-history, web and fallback fonts at 1440×900; the web-font live sweep also
+  covered 1280×800, 1024×640 and 390×844 in both languages. Of 224,902 measured boxes, `6123863` had 15,317
+  below 11 px and this repair has zero. Every placement clear at `6123863` is unchanged within 0.01 px. The changed
+  boxes are 6,267 centred above, 6,930 centred above then shifted, 2,098 centred with a shift across the selected
+  point's height, and 22 centred below then shifted (the sweep probe's `CA`, `CAS`, `CXS`, `CBS` classes). The
+  largest move is 90.2034 px. The minimum rendered clearance is 11.0015 px at 1440×900, 11.0066 at 1280×800,
+  11.0031 at 1024×640 and 11.0000 at 390×844. The centred-above gap from the rendered marker differs from 10 px
+  by at most 0.082 px across these sizes.
+- **Repair 3, M1 and M2:** at 1440×900 with motion on, each language/font combination had 18 new-reading changes of
+  rest placement; all 72 had zero frame-step violations over 1000 ms. The largest measured step was 10.4377 px
+  for a 96.85 px move, below its 12.703 px allowance. The tightest margin was a 2.0791 px step for a 17.05 px
+  move, below its 2.649 px allowance. At `3b1c3da`, the equivalent
+  sweep found 12 of 14 violations per web-font language and 9 of 12 per fallback language, with a largest step of
+  153.479 px; `6123863` had no changes of this rest-placement class. The fake-clock hover set contained 257
+  transitions per language/font combination: stalls were zero in all four combinations here and at `6123863`,
+  versus 2/0/2/1 at `3b1c3da` (AR web/fallback, EN web/fallback). Within 1 px of rest, medians here were
+  434/445/443/444 ms and p90 498/496/497/497 ms; at `6123863` they were 448/448/448/447 and
+  510/500/500/501 ms. The sampling set and direct after-frame fake-clock method are identical across revisions.
+- **Repair 3, E/G/I/J and visual checks:** the two 7:42 PM hover PNGs are byte-identical to `6123863`. The planted
+  guard refused 14 tested path spellings and overrides before writing, including paths in this worktree, relative,
+  UNC and device paths, an invalid `--intro-frames` path, TEMP/TMP set to `E/` or the worktree root, and a temp
+  junction into `E/`; a real temp scratch output ran successfully. `--plant=once` exited 0 and `--plant=always`
+  exited 1. Two unplanted captures into `evidence/` exited 0, each with 70 exact comparisons and no persistent
+  differences. Against `3b1c3da`, only the log, intro-yield AR sheet (timing), motion contact sheet (tooltip
+  translation), and motion-follow AR crop (tooltip movement) changed; both hover stills and every other PNG stayed
+  byte-identical. Normal runs recorded zero console errors, long animation frames, long tasks or rAF gaps over
+  50 ms; a planted 90 ms busy loop was detected. Tooltip-sourced layout shifts fell from 11 to 8 in AR and 11 to
+  9 in EN, with no new source. The AR and EN accessibility trees matched after normalising the ephemeral local
+  port. Timed before/after strips for the 10:52 and 11:47 PM readings and a near-now hover were inspected in both
+  languages at 1440×900. The 390×844 AR/EN frames were also inspected; the existing horizontal overflow remains
+  outside this repair's scope. These checks measure behaviour, not human visual acceptance.
 - **Repair 2 (2026-09-27), exact full-day sweep at 1440×900:** 318 snapshots and every available stop in
   Arabic/English, live/delayed/no-history, Readex Pro and blocked Google Fonts: 149,776 selections. At `622cd0b`,
   422 live selections per language and font covered the end point; the other eight combinations had zero. At

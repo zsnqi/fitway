@@ -547,7 +547,7 @@
     return out.join("");
   }
 
-  function render() {
+  function render(easeSelection = false) {
     const W = Math.round(plot.clientWidth), H = Math.round(plot.clientHeight);
     if (!W || !H) return;
     const { last, nowM, peak, peakM, avg, splines, lineAt } = M;
@@ -614,7 +614,7 @@
     labels.innerHTML = lab.join("");
     peakTagBox = null;
     buildStops();
-    restoreSelection(); // the selection, if any, redrawn at rest on the new chart (no follow)
+    restoreSelection(easeSelection);
     placePing();
     introAfterRender(W, H); // the first-open intro, if it is waiting or playing, on the new chart (motion section)
   }
@@ -957,20 +957,24 @@
   // Beside the hairline, earlier before now and later after it when that side fits, with a fallback that clears
   // the end point by 11px. While the marker follows, the tooltip rides with it; side and placement-mode changes
   // ease on the follow's curve (the offset below, see "follow" in the motion section).
-  let tipSize = null, peakTagBox = null, tipShown = null; // last drawn position, placement mode and avoidance mode
-  function placeTip(x, py, later = false) {
+  let tipSize = null, peakTagBox = null, tipShown = null; // last drawn position and resting placement
+  function tipPlacement(x, py, later = false) {
     const { W, H } = geo;
     // The box's rendered width for the content it shows (the missing-span stop may be wider than --tip-w): measured
     // again whenever the content changes (tipSize is cleared then), unrounded so the 12px gap holds at any width.
-    if (!tipSize) tipSize = { tw: tip.getBoundingClientRect().width, th: tip.offsetHeight };
-    const { tw, th } = tipSize;
+    if (!tipSize) {
+      const box = tip.getBoundingClientRect();
+      tipSize = { tw: box.width, th: box.height, normalH: Math.round(box.height) };
+    }
+    const { tw, th, normalH } = tipSize;
     const right = RTL !== later; // the earlier side is on the right in Arabic
     let left = right ? x + 12 : x - 12 - tw;
     let side = right;
     if (left < 2 || left + tw > W - 2) { left = right ? x - 12 - tw : x + 12; side = !right; }
     left = Math.max(2, Math.min(W - tw - 2, left));
-    let top = py - th - 10, below = false;
-    if (top < 0) { top = Math.min(py + 12, H - th); below = true; }
+    // Keep the original side placement's rounded coordinates; the clearance alternatives below use the actual box.
+    let top = py - normalH - 10, below = false;
+    if (top < 0) { top = Math.min(py + 12, H - normalH); below = true; }
     let mode = `${side}|${below}`;
     // Preserve the usual placement unless its box enters the end point's 9px halo plus 2px clearance.
     // The clearance also applies to delayed and no-history states, where the halo is not drawn.
@@ -978,28 +982,30 @@
     if (end) {
       const ex = Number(end.getAttribute("cx")), ey = Number(end.getAttribute("cy"));
       const distance = (l, t) => Math.hypot(Math.max(l - ex, 0, ex - l - tw), Math.max(t - ey, 0, ey - t - th));
-      // Near the boundary, test the browser's exact rounded rectangle so a placement that already
-      // clears the halo remains pixel-identical. The temporary coordinates cannot paint within this task.
-      let overlaps = distance(left, top) < 11.05;
-      if (overlaps) {
+      // Check the painted rectangle near the boundary. Clear incumbent placements retain their exact coordinates.
+      const rendered = (l, t) => {
         const oldLeft = tip.style.left, oldTop = tip.style.top;
-        tip.style.left = `${f(left)}px`;
-        tip.style.top = `${f(top)}px`;
+        tip.style.left = `${f(l)}px`;
+        tip.style.top = `${f(t)}px`;
         const box = tip.getBoundingClientRect(), dot = end.getBoundingClientRect();
         const dotX = dot.left + dot.width / 2, dotY = dot.top + dot.height / 2;
-        overlaps = Math.hypot(Math.max(box.left - dotX, 0, dotX - box.right), Math.max(box.top - dotY, 0, dotY - box.bottom)) < 11;
+        const dx = Math.max(box.left - dotX, 0, dotX - box.right);
+        const dy = Math.max(box.top - dotY, 0, dotY - box.bottom);
         tip.style.left = oldLeft;
         tip.style.top = oldTop;
-      }
+        return { distance: Math.hypot(dx, dy), dx, box, dotY };
+      };
+      const overlaps = distance(left, top) < 11.25 && rendered(left, top).distance < 11;
       if (overlaps) {
         left = Math.max(2, Math.min(W - tw - 2, x - tw / 2));
         const above = py - th - 10, hasAbove = above >= 2 && above + th <= H - 2;
         top = hasAbove ? above : Math.max(2, Math.min(H - th - 2, py + 12));
         mode = hasAbove ? "center-above" : "center-below";
-        if (distance(left, top) < 11) {
-          const dx = Math.max(left - ex, 0, ex - left - tw);
-          const dy = Math.sqrt(121 - dx * dx) + 0.02; // account for CSS pixel rounding
-          const up = ey - dy - th, down = ey + dy;
+        let measured = rendered(left, top);
+        if (measured.distance < 11) {
+          const dy = Math.sqrt(Math.max(0, 121 - measured.dx * measured.dx)) + 0.04;
+          const up = top + measured.dotY - dy - measured.box.bottom;
+          const down = top + measured.dotY + dy - measured.box.top;
           const choices = [];
           if (up >= 2) choices.push({ top: up, mode: "shift-up" });
           if (down <= H - th - 2) choices.push({ top: down, mode: "shift-down" });
@@ -1008,59 +1014,30 @@
           const chosen = choices[0];
           top = chosen.top;
           mode = chosen.mode;
-        }
-      }
-    }
-    if (tipShown && (tipForce || tipShown.mode !== mode)) tipJump(tipShown.left - left, tipShown.top - top, tipForce);
-    let off = tipOffset();
-    let L0 = left + off.x, T0 = top + off.y;
-    // When a bent path clears the end point, hand its displayed position back to the follow spring
-    // so it eases to the resting box rather than snapping across the last part of the clearance.
-    const endX = end ? Number(end.getAttribute("cx")) : 0, endY = end ? Number(end.getAttribute("cy")) : 0;
-    const endDistance = (l, t) => Math.hypot(Math.max(l - endX, 0, endX - l - tw), Math.max(t - endY, 0, endY - t - th));
-    if (end && (follow.route || follow.tip || tipShown?.avoiding) && tipShown?.avoiding && endDistance(L0, T0) >= 11) {
-      tipJump(tipShown.left - left, tipShown.top - top, null);
-      off = tipOffset();
-      L0 = left + off.x;
-      T0 = top + off.y;
-    }
-    // The follow can pass through the end point even when both resting boxes clear it. Bend that
-    // intermediate path by the smallest available displacement, without moving either rest box.
-    let avoiding = false, avoidMode = null;
-    if (end && (follow.route || follow.tip || tipShown?.avoiding)) {
-      const ex = endX, ey = endY;
-      const dx = Math.max(L0 - ex, 0, ex - L0 - tw);
-      const dy = Math.max(T0 - ey, 0, ey - T0 - th);
-      if (Math.hypot(dx, dy) < 11) {
-        const clearY = Math.sqrt(121 - dx * dx) + 0.06;
-        const clearX = Math.sqrt(121 - dy * dy) + 0.06;
-        const choices = [
-          { x: L0, y: ey - clearY - th, order: 0 },
-          { x: L0, y: ey + clearY, order: 1 },
-          { x: ex - clearX - tw, y: T0, order: 2 },
-          { x: ex + clearX, y: T0, order: 3 },
-        ].filter((p) => p.x >= 2 && p.x + tw <= W - 2 && p.y >= 2 && p.y + th <= H - 2);
-        if (!choices.length) throw new Error(`No clear moving tooltip placement for ${sel?.key ?? "unknown"}`);
-        choices.sort((a, b) => {
-          if (tipShown?.avoiding && choices.some((p) => p.order === tipShown.avoidMode)) {
-            if (a.order === tipShown.avoidMode) return -1;
-            if (b.order === tipShown.avoidMode) return 1;
+          measured = rendered(left, top);
+          if (measured.distance < 11) {
+            const dy2 = Math.sqrt(Math.max(0, 121 - measured.dx * measured.dx)) + 0.04;
+            top += mode === "shift-up" ? measured.dotY - dy2 - measured.box.bottom : measured.dotY + dy2 - measured.box.top;
           }
-          return Math.hypot(a.x - L0, a.y - T0) - Math.hypot(b.x - L0, b.y - T0) || a.order - b.order;
-        });
-        L0 = choices[0].x;
-        T0 = choices[0].y;
-        avoiding = true;
-        avoidMode = choices[0].order;
+        }
+        if (rendered(left, top).distance < 11) throw new Error(`Tooltip clearance below 11px for ${sel?.key ?? "unknown"}`);
       }
     }
+    return { left, top, mode, tw, th };
+  }
+  function placeTip(x, py, later = false) {
+    const { left, top, mode, tw, th } = follow.tipTarget || tipPlacement(x, py, later);
+    if (!follow.tipTarget && tipShown && (tipForce || tipShown.mode !== mode || (mode.startsWith("shift") && Math.abs(top - tipShown.restTop) > 0.01)))
+      tipJump(tipShown.left - left, tipShown.top - top, tipForce);
+    const off = tipOffset();
+    const L0 = left + off.x, T0 = top + off.y;
     tip.style.left = `${f(L0)}px`;
     tip.style.top = `${f(T0)}px`;
     // The tooltip's displayed velocity (px/ms), handed to it when the marker jumps.
     const tn = nowMs(), dtv = tn - tipVel.t;
     if (!tipShown || dtv >= 50) tipVel = { x: 0, y: 0, t: tn };
     else if (dtv > 0) tipVel = { x: (L0 - tipShown.left) / dtv, y: (T0 - tipShown.top) / dtv, t: tn };
-    tipShown = { left: L0, top: T0, mode, avoiding, avoidMode };
+    tipShown = { left: L0, top: T0, restLeft: left, restTop: top, mode };
     if (!peakTagBox) {
       const peakTag = $("#peak-tag");
       if (peakTag) { const pr = plot.getBoundingClientRect(), b = peakTag.getBoundingClientRect(); peakTagBox = { l: b.left - pr.left, r: b.right - pr.left, t: b.top - pr.top, b: b.bottom - pr.top }; }
@@ -1097,15 +1074,29 @@
     const peakTag = $("#peak-tag");
     if (peakTag) peakTag.classList.remove("is-covered");
   }
-  function restoreSelection() {
-    stopFollow();
+  function restoreSelection(ease = false) {
+    const moving = ease && sel && !tip.hidden && motionOn() && tipShown;
+    if (moving) {
+      cancelAnimationFrame(follow.raf);
+      follow.raf = 0;
+      follow.route = null;
+      follow.tipTarget = null;
+      tipForce = displayedTipVelocity();
+    } else stopFollow();
     tipSize = null;
     const latest = stopBy("latest");
     if (latest && !sel) { hit.setAttribute("aria-valuenow", String(latest.m)); hit.setAttribute("aria-valuetext", valueText(latest)); }
     if (!sel) return;
     const st = stopBy(sel.key);
     if (!st) { clearSelection(); return; }
-    selectStop(st, true);
+    if (!moving) { selectStop(st, true); return; }
+    sel = st;
+    tip.innerHTML = tipHTML(st);
+    hit.setAttribute("aria-valuenow", String(Math.round(st.m)));
+    hit.setAttribute("aria-valuetext", valueText(st));
+    paintMarker(restPoint(st), st, true);
+    tipForce = null;
+    if (follow.tip) loopFollow();
   }
 
   // Slider semantics for keyboard inspection. The same readout follows the pointer, a tap, or the arrow keys.
@@ -1409,9 +1400,9 @@
   const liveSay = $("#live-say");
   const announce = () => { if (liveSay) liveSay.textContent = L.say(shownNow(), L.levels[levelOf(shownNow())], M.entries); };
 
-  /* ---- the smooth follow (Round 7 step 2; it replaces the Round 6 glide of 120-150 ms). The marker, its hairline and
-   * the tooltip chase their target along the drawn curve itself, x and y together, with the reference clip's feel: a
-   * fast start and a long, soft landing, time-based and independent of distance.
+  /* ---- the smooth follow (Round 7 step 2; it replaces the Round 6 glide of 120-150 ms). The marker and hairline
+   * follow the drawn route; the tooltip eases independently to the selected stop's resting box. Both use the reference
+   * clip's fast start and long, soft landing, time-based and independent of distance.
    *   Response: two first-order lags in series (an overdamped spring), tau 90 ms and 15 ms at the default hover speed.
    *     From rest it covers 0.19 of a step at 33 ms, 0.43 at 66, 0.60 at 100, 0.73 at 133, 0.87 at 200, 0.94 at 266
    *     and 0.99 at 400 ms: the clip's figures (0.19, 0.43, 0.60, 0.72, 0.87, 0.95, settled) within 0.012.
@@ -1423,16 +1414,17 @@
    *     onto or off the gap stop), the marker moves at once, never off the line and never across the gap, while the
    *     tooltip keeps its place and eases into its new one on the same curve. The same easing takes the tooltip
    *     across when it changes side.
-   *   Far moves (more than 6 hours of the day, such as Home or End from far away): the marker and the tooltip both
-   *     move at once, as on a first appearance, rather than racing across the whole chart in 400 ms. A sweep of the
+   *   Far moves (more than 6 hours of the day, such as Home or End from far away): the marker moves at once and the
+   *     tooltip eases to its target rather than racing across the whole chart in 400 ms. A sweep of the
    *     pointer never reaches this, because the marker trails the pointer by far less.
    *   The hover speed (tuner) divides both time constants. Positions are exact functions of the time since the last
    *   target, so frame rate never changes the path. */
   const FOLLOW = { tau1: 90, tau2: 15, jumpMinutes: 360, ext: 160, settlePx: 0.1, settleV: 0.003 };
-  const follow = { raf: 0, route: null, stop: null, t0: 0, e0: 0, v0: 0, tip: null, hold: null, snap: null, tLast: 0, at: null, settle: false };
-  let tipForce = null; // set just before a jump: the tooltip's displayed velocity, for the next placeTip
-  let tipVel = { x: 0, y: 0, t: 0, left: 0, top: 0 };
+  const follow = { raf: 0, route: null, stop: null, t0: 0, e0: 0, v0: 0, tip: null, tipTarget: null, hold: null, snap: null, tLast: 0, at: null, settle: false };
+  let tipForce = null; // set just before a reading or marker jump: the tooltip's displayed velocity
+  let tipVel = { x: 0, y: 0, t: 0 };
   const nowMs = () => (follow.hold != null ? follow.hold : performance.now());
+  const displayedTipVelocity = () => nowMs() - tipVel.t < 50 ? { x: tipVel.x, y: tipVel.y } : { x: 0, y: 0 };
   const taus = () => { const k = opts.hoverSpeed || 1; return [FOLLOW.tau1 / k, FOLLOW.tau2 / k]; };
   // The follow's response to a step, from error e0 and velocity v0 (px, px/ms), after dt ms: exact, so any frame rate
   // lands on the same path.
@@ -1507,12 +1499,13 @@
     return { x: x.e, y: y.e, vx: x.v, vy: y.v };
   }
   function tipOffset() { return follow.tip ? tipState(nowMs()) : { x: 0, y: 0 }; }
-  // The tooltip keeps where it was drawn (dx, dy from its new place) and eases in. A side flip keeps its own velocity;
-  // a jump of the marker hands it the tooltip's displayed velocity.
+  // Every new resting box starts at its displayed position and velocity. A crossing during the move is allowed;
+  // the 11px end-point rule is a rest-position rule, so there is no discrete mid-path projection.
   function tipJump(dx, dy, vel) {
-    if (!motionOn() || tip.hidden || Math.hypot(dx, dy) < 0.05) return;
-    const now = nowMs(), cur = follow.tip ? tipState(now) : { vx: 0, vy: 0 };
-    follow.tip = { t0: now, ox: dx, oy: dy, vx: vel ? vel.x : cur.vx, vy: vel ? vel.y : cur.vy };
+    if (!motionOn() || tip.hidden) return;
+    if (Math.hypot(dx, dy) < 0.05) { follow.tip = null; return; }
+    const now = nowMs(), shown = vel || displayedTipVelocity();
+    follow.tip = { t0: now, ox: dx, oy: dy, vx: shown.x, vy: shown.y };
     loopFollow();
   }
   function loopFollow() { if (!follow.raf && follow.hold == null) follow.raf = requestAnimationFrame(followFrame); }
@@ -1522,8 +1515,15 @@
     if (r0) { const s = followState(now); cur = pointAtS(r0, s.s); v = s.v; }
     follow.stop = st;
     follow.tLast = now;
+    follow.tipTarget = tipPlacement(to.x, to.y, st.kind === "ahead" || st.kind === "wait");
+    if (tipShown) tipJump(tipShown.left - follow.tipTarget.left, tipShown.top - follow.tipTarget.top, displayedTipVelocity());
     const far = Math.abs((to ? to.x : st.x) - (cur ? cur.x : prev ? prev.x : st.x)) > (FOLLOW.jumpMinutes / DAY) * geo.span;
-    if (far) { follow.route = null; follow.tip = null; tipShown = null; paintMarker(to, st, true); return; }
+    if (far) {
+      follow.route = null;
+      paintMarker(to, st, true);
+      loopFollow();
+      return;
+    }
     const r = buildRoute(cur, to);
     if (r && r.R > 0.05) {
       let v0 = 0;
@@ -1534,9 +1534,7 @@
     }
     // No drawn track joins them, or it is far: the marker moves at once; the tooltip keeps its place and eases in.
     follow.route = null;
-    tipForce = { x: tipVel.x, y: tipVel.y };
     paintMarker(to, st, true);
-    tipForce = null;
     loopFollow();
   }
   function followFrame() {
@@ -1554,6 +1552,7 @@
       if (Math.hypot(o.x, o.y) <= FOLLOW.settlePx && Math.hypot(o.vx, o.vy) <= FOLLOW.settleV) follow.tip = null;
       else moving = true;
     }
+    if (!follow.route && !follow.tip) follow.tipTarget = null;
     // At rest the marker is drawn exactly on its stop, the same as without motion.
     if (!follow.route) { paintMarker(restPoint(sel), sel, follow.settle); follow.settle = false; }
     if (moving) loopFollow();
@@ -1565,19 +1564,42 @@
     follow.raf = 0;
     follow.route = null;
     follow.tip = null;
+    follow.tipTarget = null;
     follow.hold = null;
     follow.snap = null;
-    if (was && sel && !tip.hidden) paintMarker(restPoint(sel), sel, true);
+    if (was && sel && !tip.hidden) {
+      tipShown = null; // settlement is explicit; repaint once at the current stop without starting another follow
+      paintMarker(restPoint(sel), sel, true);
+    }
+    follow.tip = null;
+    cancelAnimationFrame(follow.raf);
+    follow.raf = 0;
+    tipVel = { x: 0, y: 0, t: nowMs() };
+  }
+  function carryFollowIntoReading() {
+    if (!sel || tip.hidden || !motionOn()) { stopFollow(); return; }
+    const now = nowMs(), velocity = displayedTipVelocity();
+    cancelAnimationFrame(follow.raf);
+    follow.raf = 0;
+    follow.route = null;
+    follow.tipTarget = null;
+    follow.hold = null;
+    follow.snap = null;
+    // The last painted box, not the spring's unpainted internal state, is the new starting point.
+    follow.tip = tipShown && follow.tip ? {
+      t0: now, ox: tipShown.left - tipShown.restLeft, oy: tipShown.top - tipShown.restTop,
+      vx: velocity.x, vy: velocity.y,
+    } : null;
   }
   // Holds the follow at `ms` after its latest target (for held frames; it can be held again at another time), or
   // releases it.
   function seekFollow(ms) {
     if (!follow.snap) {
       if (!follow.route && !follow.tip) return false;
-      follow.snap = { route: follow.route, t0: follow.t0, e0: follow.e0, v0: follow.v0, tip: follow.tip && { ...follow.tip }, tipShown };
+      follow.snap = { route: follow.route, t0: follow.t0, e0: follow.e0, v0: follow.v0, tip: follow.tip && { ...follow.tip }, tipTarget: follow.tipTarget, tipShown };
     }
     const k = follow.snap;
-    Object.assign(follow, { route: k.route, t0: k.t0, e0: k.e0, v0: k.v0, tip: k.tip && { ...k.tip } });
+    Object.assign(follow, { route: k.route, t0: k.t0, e0: k.e0, v0: k.v0, tip: k.tip && { ...k.tip }, tipTarget: k.tipTarget });
     tipShown = k.tipShown;
     cancelAnimationFrame(follow.raf);
     follow.raf = 0;
@@ -1588,7 +1610,7 @@
   function releaseFollow() {
     if (follow.hold == null) return;
     follow.hold = null;
-    if (follow.snap) { const k = follow.snap; Object.assign(follow, { route: k.route, t0: k.t0, e0: k.e0, v0: k.v0, tip: k.tip }); follow.snap = null; }
+    if (follow.snap) { const k = follow.snap; Object.assign(follow, { route: k.route, t0: k.t0, e0: k.e0, v0: k.v0, tip: k.tip, tipTarget: k.tipTarget }); follow.snap = null; }
     loopFollow();
   }
   // A new hover speed takes effect from now, from where the marker and tooltip are.
@@ -1624,7 +1646,7 @@
   function stepReading() {
     endIntro("new reading"); // a reading during the intro is never lost: the intro settles at once, then the reading lands
     finishLive();
-    stopFollow();
+    carryFollowIntoReading();
     const from = M;
     if (from.nowM >= DAY - 1) return null;
     const reading = STATE !== "delayed"; // delayed: the minute passes and no reading arrives
@@ -1651,7 +1673,9 @@
     liveRun.body = to.splines[si].path(geo.X, geo.Y, ki);
     liveRun.clock = track(clockAnim({ duration: T.morph, easing: EASE.morph, fill: "both" }));
     const run = liveRun.clock;
+    tipForce = sel && !tip.hidden ? displayedTipVelocity() : null;
     applyMorph();
+    tipForce = null;
     run.finished.then(() => { if (liveRun.clock === run) finishLive(); }).catch(() => {});
     liveRun.raf = requestAnimationFrame(liveLoop);
     return { reading, morph: true, from: from.last, to: to.last, firstChangedMinute: m0, tailFrom: liveRun.K, tailFromTime: fmtTime(liveRun.K) };
@@ -1705,7 +1729,7 @@
     liveRun.raf = 0;
     liveRun.clock.cancel();
     liveRun.clock = null;
-    render(); // the canonical chart for the new reading; identical to the morph's last frame
+    render(true); // the canonical chart for the new reading; the box eases from its displayed place
   }
   function seekLive(fraction) {
     if (!liveRun.clock) return false;

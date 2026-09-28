@@ -143,6 +143,7 @@ const realish = (p) => {
 const pathKey = (p) => (process.platform === "win32" ? realish(p).toLowerCase() : realish(p));
 if (PLANT) {
   const temp = pathKey(tmpdir());
+  const worktree = pathKey(resolve(HERE, "../../../.."));
   const outputs = [["outDir", OUT_ARG], ["--intro-frames", INTRO_FRAMES]].filter(([, p]) => p != null);
   if (!OUT_ARG) throw new Error("--plant requires an explicit scratch outDir inside the system temp directory");
   for (const [name, raw] of outputs) {
@@ -150,6 +151,9 @@ if (PLANT) {
       throw new Error(`--plant ${name} must be a local absolute drive path, not a relative, UNC or device path: ${raw}`);
     }
     const out = pathKey(raw);
+    if (out === worktree || out.startsWith(worktree + sep)) {
+      throw new Error(`--plant ${name} must not resolve inside the repository worktree (${worktree}): ${raw}`);
+    }
     if (!out.startsWith(temp + sep)) {
       throw new Error(`--plant ${name} must resolve inside the system temp directory (${temp}): ${raw}`);
     }
