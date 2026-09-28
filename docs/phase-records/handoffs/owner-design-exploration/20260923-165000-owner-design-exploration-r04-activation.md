@@ -1983,3 +1983,23 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
     An edit is kept only if both the train and the held-out cases improve.
   - **Out of scope:** design taste stays the user's visual judgment, and Impeccable and ux-araby stay unmodified.
   - **It must not delay the project.** It is a separate, time-boxed task, and it is dropped if it is not decisive.
+- **The eval's shape is agreed** (user, 2026-09-29). It runs after the lane round.
+  - **Method:** applied by hand. The upstream `build-eval`/`hillclimb` tooling is neither installed nor updated, because
+    it targets applications that call the API, not browser-driven agents.
+  - **Cases:** about 7, each one narrow check:
+    - `a14009f`: the no-history null error;
+    - `a14009f`: the README claims that contradict the measurements;
+    - `622cd0b`: the box covers "now" near 10:40 PM;
+    - the 9 px number move before the fixed width;
+    - `a14009f`: the missing-span jump. This is the only motion case;
+    - two clean SHAs, `8ae88f3` and one more, for false alarms.
+  - **Runs:**
+    - each verifier gets an extracted copy of the page files only, with no records and no git history;
+    - the coordinator keeps the answer key and grades against checkable questions: is the defect named, is it
+      located, is the verdict FAIL?
+    - Sonnet and Opus run once each, while the machine is otherwise idle.
+  - **Decision:**
+    - Sonnet keeps verification if it catches what Opus catches, with no more false alarms;
+    - if it misses a defect that Opus catches, verification returns to Opus;
+    - if the result is unclear, the eval is dropped.
+    Hillclimbing the verifier definition waits, unless the eval proves useful.
