@@ -1847,3 +1847,81 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
     that run.
 - **Next:** a designer round builds the lane on the real page. The coordinator explains the steps to the user and
   launches nothing until the user agrees.
+
+## Model choices, cleanup, and new-session resume point (2026-09-28)
+
+- **Housekeeping done:**
+  - Session `f8e879d9`'s scratchpad (6.48 GB, 5,085 files; the file and byte totals matched) is now in
+    `D:\fitway-scratch\claude-scratch\`, with a junction at its old path. Every path recorded above still resolves.
+    Its three internal junctions were test fixtures and were not copied.
+  - The six `ecg-*` guard copies were unlinked from `node_modules` first, then deleted. The worktree's
+    `node_modules` is intact.
+  - Drive C has 17.2 GB free, up from 2.8 GB.
+  - Nothing is running. `owner-followup-r04-s04` is clean at `ee2b399`.
+- **Models (the user's proposal; the coordinator agrees, with one condition):**
+
+  | Work | Definition | Model | Effort |
+  |---|---|---|---|
+  | New design: the lane round and the remaining screens | `owner-direction-designer` | Opus 5.5 (default) | xhigh |
+  | Independent verification | `owner-direction-verifier` + `model: "sonnet"` | Sonnet 5.5 | xhigh |
+  | Fixes and precisely specified edits | `owner-direction-builder` + `model: "sonnet"` | Sonnet 5.5 | high |
+
+  - **The condition:** the Sonnet verifier is a trial, starting with the lane round. If it misses something that the
+    coordinator or a later round finds, verification goes back to Opus.
+  - **Tested 2026-09-28:** `model: "sonnet"` runs `claude-sonnet-5-5`, and the definition's effort still applies.
+    Agents report it as an internal number:
+    - verifier on Sonnet, 30;
+    - builder on Sonnet, 10;
+    - verifier on Opus, 40.
+  - No new definition is needed.
+- **Resume steps for the next coordinator session:**
+  1. Run `pnpm context:show -- --milestone owner-design-exploration-r04`. Read this section, then
+     `NEXT-DIRECTION-BRIEF.md`, "After the Daily page" (the screen plan) and "The tooltip moves to a top lane".
+  2. Confirm the model table with the user.
+  3. **Write the lane brief** at `D:\fitway-scratch\lane\BRIEF.md` and show the user its plan before launching.
+     - **Base:** worktree `owner-followup-r04-s04`, branch `owner-followup-r04-build`, at `ee2b399`. The page is
+       identical to verified `8ae88f3`; the unverified harness is untouched.
+     - **Write only in:** `eclipse/**`.
+     - **Never change:**
+       - `checks/**`, `evidence/pre-motion-hashes.json` and `.impeccable/**`;
+       - the `:root` light values;
+       - the intro;
+       - the box's look and content.
+     - **The lane:**
+       - the same box, at a fixed height at the top of the plot;
+       - centred on its stop and stopped at the plot's edges;
+       - a thin line and a small pointer to its ring;
+       - it glides sideways only, on the existing follow curve;
+       - it jumps with the ring when the travel exceeds the box width (Home/End);
+       - the latest-reading and missing-span stops use the same lane.
+     - **Headroom:** no line, ring, marker, label or "now" ever enters the lane, in any snapshot or state. The
+       designer picks the smallest change, either a shorter curve through the scale or a more compact box, and shows
+       it before and after.
+     - **The old code:** delete the floating-placement cascade. Update the `capture.mjs` expectations and the README.
+     - **Viewports:** the lane is judged at 1440×900, 1280×800 and 1024×640. At 390×844 the page must only not break:
+       no errors and no horizontal scroll.
+     - **Named frames**, AR and EN, before (`8ae88f3`) and after:
+       - the 11:00 PM stop at 8:43, 9:30 and 10:00 PM;
+       - the 12:30 AM stop at 10:42 PM;
+       - the 1:00 AM stop at 10:52 PM and 12:05 AM;
+       - the peak, the latest, the missing span and one low stop;
+       - a pointer-sweep strip and a Home/End strip.
+     - **Setup:**
+       - run `pnpm check:design-context` first, then Impeccable;
+       - temp and scratch go on D, with a `TEMP`/`TMP` override in every call;
+       - ports: 3173 for `capture.mjs`; probes on 3176 or 3177; never 3174;
+       - one commit, no push.
+  4. After the user agrees, launch the designer. Inspect its work, then send the user the before and after sheets and
+     the live page. The user decides.
+  5. On approval, run the Sonnet verifier with a checklist derived from the brief's acceptance.
+  6. Then, in order:
+     - adapt the harness to the lane rules in a small tools round;
+     - the intro-speed round (update its base SHA, and replace R1-R6 in its constraints with the lane rules);
+     - the audit patch (ask the user);
+     - Reports.
+- **Working agreements:**
+  - reply in Arabic, simply and briefly;
+  - before starting any task, tell the user the steps and wait for their go;
+  - the user runs Codex and pastes its report;
+  - temp and scratch never go on C;
+  - full-strength verification stays, because the direction is meant to become the Owner design authority.
