@@ -53,7 +53,8 @@
 import { createHash } from "node:crypto";
 import { createServer } from "node:http";
 import { tmpdir } from "node:os";
-import { realpathSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { realpathSync, statSync } from "node:fs";
 import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { basename, dirname, extname, join, normalize, resolve, sep } from "node:path";
 import { crc32, deflateSync, inflateSync } from "node:zlib";
@@ -153,6 +154,26 @@ if (PLANT) {
     const out = pathKey(raw);
     if (out === worktree || out.startsWith(worktree + sep)) {
       throw new Error(`--plant ${name} must not resolve inside the repository worktree (${worktree}): ${raw}`);
+    }
+    // TEMP/TMP can point into a different checkout. Query Git from the nearest existing
+    // ancestor before creating any directory, including through junctions and short names.
+    let ancestor = realish(raw);
+    for (;;) {
+      try { realpathSync.native(ancestor); if (!statSync(ancestor).isDirectory()) ancestor = dirname(ancestor); break; }
+      catch (error) { if (error.code !== "ENOENT") throw error; ancestor = dirname(ancestor); }
+    }
+    let gitRoot = null;
+    for (let cwd = ancestor; ; cwd = dirname(cwd)) {
+      try { gitRoot = execFileSync("git", ["rev-parse", "--show-toplevel"], { cwd, encoding: "utf8", windowsHide: true, stdio: ["ignore", "pipe", "pipe"] }).trim(); break; }
+      catch (error) {
+        // Git cannot show a working-tree root from inside .git; keep checking its parents.
+        if (error.status !== 128 || !/not a git repository|must be run in a work tree/i.test(String(error.stderr))) throw new Error(`Cannot check Git working tree for planted output: ${raw}`);
+      }
+      if (dirname(cwd) === cwd) break;
+    }
+    if (gitRoot) {
+      const tree = pathKey(gitRoot);
+      if (out === tree || out.startsWith(tree + sep)) throw new Error(`--plant ${name} must not resolve inside any Git working tree (${tree}): ${raw}`);
     }
     if (!out.startsWith(temp + sep)) {
       throw new Error(`--plant ${name} must resolve inside the system temp directory (${temp}): ${raw}`);

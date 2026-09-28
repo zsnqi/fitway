@@ -886,6 +886,14 @@
       if (near) el.setAttribute("visibility", "hidden"); else el.removeAttribute("visibility");
     });
   }
+  // Marker geometry and tooltip placement have different anchors at the gap and without history.
+  // Use this same anchor for a follow target and for the reduced-motion rest.
+  function tipAnchor(pt, st) {
+    const y = st.kind === "gap"
+      ? Math.min(geo.Y(M.lineAt(GAP0 - 1)), geo.Y(M.lineAt(GAP1 + 1))) - 12
+      : pt ? pt.y : geo.yt + (geo.yb - geo.yt) * 0.35;
+    return { x: pt ? pt.x : st.x, y };
+  }
   function paintMarker(pt, st, rebuild = false) {
     const g = $("#sel");
     if (!g || !geo || !st) return;
@@ -898,7 +906,7 @@
     const onEnd = form === "line" && lift === 0 && onEndPoint(pt);
     stepAside(form === "line" || form === "usual" ? pt : null);
     const stale = onEnd && STATE === "delayed";
-    let ay, key, html = null;
+    let key, html = null;
     if (form === "line") {
       const ly = pt.ly == null ? pt.y : pt.ly, top = ly + MK.lit, lit = yb - top > 1;
       const dataForm = lift >= 1 ? "peak" : lift > 0 ? "drop" : "line";
@@ -916,7 +924,6 @@
         html = hair + `<filter id="sel-soft" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation="2.4"/></filter>` +
           `<g class="sg-mark" data-form="${dataForm}" data-marker="b" transform="${at}">${glow}<circle class="sg-core" r="${MK.r}" fill="${CARD}" stroke="${hot}" stroke-width="${MK.edge}"/></g>`;
       }
-      ay = pt.y;
     } else if (form === "usual") {
       key = "usual";
       const d = `M${gx},${f(pt.y + MK.aheadR + 3)}V${yb}`, at = `translate(${f(pt.x)} ${f(pt.y)})`;
@@ -927,7 +934,6 @@
         html = `<path class="sg-drop" d="${d}" fill="none" stroke="rgba(245,243,242,0.3)" stroke-width="1" stroke-dasharray="2 3"/>` +
           `<g class="sg-mark" data-form="usual" data-marker="b" transform="${at}"><circle class="sg-core" r="${MK.aheadR}" fill="${CARD}" stroke="rgba(245,243,242,0.85)" stroke-width="1.25"/></g>`;
       }
-      ay = pt.y;
     } else if (form === "gap") {
       key = "gap";
       // The dotted mark as render() draws it: dots every 4px from 2.5px inside the span, lit in chalk.
@@ -937,16 +943,14 @@
       const h = st.w / 2;
       html = `<radialGradient id="sel-chalk"><stop offset="0" stop-color="${CHALK}" stop-opacity="0.2"/><stop offset="1" stop-color="${CHALK}" stop-opacity="0"/></radialGradient>` +
         `<g class="sg-mark" data-form="gap" data-marker="gap" transform="translate(${f(st.x)} ${axis})"><ellipse rx="${f(h + 9)}" ry="7" fill="url(#sel-chalk)"/>${dots.map((dd) => `<circle cx="${f(dd)}" r="1.25" fill="${CHALK}"/>`).join("")}</g>`;
-      // The tooltip sits above both ends of the line at the gap, so it never covers them.
-      ay = Math.min(geo.Y(M.lineAt(GAP0 - 1)), geo.Y(M.lineAt(GAP1 + 1))) - 12;
     } else {
       key = "none";
       // Still ahead without history: no usual line, so no marker; only a short tick on the time axis.
       html = `<path class="sg-tick" d="M${gx},${axis - 3.5}V${axis + 4.5}" stroke="rgba(245,243,242,0.6)" stroke-width="1"/>`;
-      ay = geo.yt + (yb - geo.yt) * 0.35;
     }
     if (html != null) { g.innerHTML = html; painted = { key: form === "line" || form === "usual" ? key : null }; }
-    placeTip(x, ay, st.kind === "ahead" || st.kind === "wait");
+    const anchor = tipAnchor(pt, st);
+    placeTip(anchor.x, anchor.y, st.kind === "ahead" || st.kind === "wait");
   }
   function clearMarker() {
     const g = $("#sel");
@@ -1025,10 +1029,22 @@
     }
     return { left, top, mode, tw, th };
   }
+  // The pinned edge is the right edge of a left-side box, the left edge of a right-side box,
+  // and the centre of a clearance alternative. Width is applied immediately, away from that anchor.
+  const tipPin = (mode, width) => mode.startsWith("false|") ? width : mode.startsWith("true|") ? 0 : width / 2;
   function placeTip(x, py, later = false) {
     const { left, top, mode, tw, th } = follow.tipTarget || tipPlacement(x, py, later);
-    if (!follow.tipTarget && tipShown && (tipForce || tipShown.mode !== mode || (mode.startsWith("shift") && Math.abs(top - tipShown.restTop) > 0.01)))
-      tipJump(tipShown.left - left, tipShown.top - top, tipForce);
+    const sameMode = tipShown && tipShown.mode === mode;
+    const shownLeft = tipShown && tipShown.left + (sameMode ? tipPin(mode, tipShown.tw) - tipPin(mode, tw) : 0);
+    const anchorMoved = tipShown && (Math.abs(left + tipPin(mode, tw) - tipShown.restLeft - tipPin(tipShown.mode, tipShown.tw)) > 0.01 || Math.abs(top - tipShown.restTop) > 0.01);
+    if (!follow.tipTarget && tipShown && ((!sameMode) || (tipForce && anchorMoved) || (mode.startsWith("shift") && Math.abs(top - tipShown.restTop) > 0.01))) {
+      // A moving clearance target advances the existing ease at this instant before retargeting.
+      // Reusing the preceding painted frame here would freeze every retarget, including the morph's end.
+      const current = follow.tip && !tipForce ? tipState(nowMs()) : null;
+      const fromLeft = current ? tipShown.restLeft + current.x + (sameMode ? tipPin(mode, tipShown.tw) - tipPin(mode, tw) : 0) : shownLeft;
+      const fromTop = current ? tipShown.restTop + current.y : tipShown.top;
+      tipJump(fromLeft - left, fromTop - top, current ? { x: current.vx, y: current.vy } : tipForce);
+    }
     const off = tipOffset();
     const L0 = left + off.x, T0 = top + off.y;
     tip.style.left = `${f(L0)}px`;
@@ -1037,7 +1053,7 @@
     const tn = nowMs(), dtv = tn - tipVel.t;
     if (!tipShown || dtv >= 50) tipVel = { x: 0, y: 0, t: tn };
     else if (dtv > 0) tipVel = { x: (L0 - tipShown.left) / dtv, y: (T0 - tipShown.top) / dtv, t: tn };
-    tipShown = { left: L0, top: T0, restLeft: left, restTop: top, mode };
+    tipShown = { left: L0, top: T0, restLeft: left, restTop: top, mode, tw };
     if (!peakTagBox) {
       const peakTag = $("#peak-tag");
       if (peakTag) { const pr = plot.getBoundingClientRect(), b = peakTag.getBoundingClientRect(); peakTagBox = { l: b.left - pr.left, r: b.right - pr.left, t: b.top - pr.top, b: b.bottom - pr.top }; }
@@ -1081,7 +1097,9 @@
       follow.raf = 0;
       follow.route = null;
       follow.tipTarget = null;
-      tipForce = displayedTipVelocity();
+      // Keep an existing offset's clock and velocity through a canonical repaint. Only a new
+      // placement mode needs a new target; the final morph frame has already reached its anchor.
+      tipForce = ease === "reading" ? displayedTipVelocity() : null;
     } else stopFollow();
     tipSize = null;
     const latest = stopBy("latest");
@@ -1515,7 +1533,8 @@
     if (r0) { const s = followState(now); cur = pointAtS(r0, s.s); v = s.v; }
     follow.stop = st;
     follow.tLast = now;
-    follow.tipTarget = tipPlacement(to.x, to.y, st.kind === "ahead" || st.kind === "wait");
+    const anchor = tipAnchor(to, st);
+    follow.tipTarget = tipPlacement(anchor.x, anchor.y, st.kind === "ahead" || st.kind === "wait");
     if (tipShown) tipJump(tipShown.left - follow.tipTarget.left, tipShown.top - follow.tipTarget.top, displayedTipVelocity());
     const far = Math.abs((to ? to.x : st.x) - (cur ? cur.x : prev ? prev.x : st.x)) > (FOLLOW.jumpMinutes / DAY) * geo.span;
     if (far) {
@@ -1554,7 +1573,10 @@
     }
     if (!follow.route && !follow.tip) follow.tipTarget = null;
     // At rest the marker is drawn exactly on its stop, the same as without motion.
-    if (!follow.route) { paintMarker(restPoint(sel), sel, follow.settle); follow.settle = false; }
+    if (!follow.route) {
+      if (liveRun.clock) applyMorph(); else paintMarker(restPoint(sel), sel, follow.settle);
+      follow.settle = false;
+    }
     if (moving) loopFollow();
   }
   // Ends the follow at once, with the marker and the tooltip at rest on the selected stop.
@@ -1659,7 +1681,7 @@
     built = false;
     if (!details.hidden) buildDetails();
     const canMorph = reading && motionOn() && geo && from.segments.length === to.segments.length;
-    if (!canMorph) { render(); return { reading, morph: false }; }
+    if (!canMorph) { render(motionOn() ? "reading" : false); return { reading, morph: false }; }
     // The stops for the new reading (the geometry's scale is unchanged); a selected stop keeps its key.
     buildStops();
     if (sel) { const st = stopBy(sel.key); if (st) { sel = st; tip.innerHTML = tipHTML(st); tipSize = null; hit.setAttribute("aria-valuetext", valueText(st)); } }
@@ -1727,6 +1749,9 @@
     if (!liveRun.clock) return;
     cancelAnimationFrame(liveRun.raf);
     liveRun.raf = 0;
+    // Paint this instant before replacing the sampled tail with its canonical path. Repainting
+    // must not freeze one frame or restart an offset from the preceding frame's position.
+    applyMorph();
     liveRun.clock.cancel();
     liveRun.clock = null;
     render(true); // the canonical chart for the new reading; the box eases from its displayed place

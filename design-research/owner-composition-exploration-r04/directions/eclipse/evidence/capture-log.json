@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-09-27T20:19:55.661Z",
+  "capturedAt": "2026-09-28T09:33:50.324Z",
   "port": 3173,
   "motion": {
     "method": "Pre-motion frames: evidence/pre-motion-hashes.json (SHA-256 of the v3 frames before motion). The capture is byte-deterministic, so equal hashes mean identical pixels.",
@@ -51,8 +51,10 @@
         "intro held 2x en nohistory, end after the holds"
       ],
       "comparisons": 70,
-      "firstAttempt": 68,
-      "noise": [],
+      "firstAttempt": 67,
+      "noise": [
+        "static daily-ar-1440x900-nohistory"
+      ],
       "differedTwice": [],
       "differedWithoutRecapture": [
         "static daily-ar-1440x900-hover",
@@ -176,16 +178,23 @@
         {
           "label": "static daily-ar-1440x900-nohistory",
           "reference": "committed",
-          "attempts": 1,
+          "attempts": 2,
           "identical": true,
-          "noise": false,
+          "noise": true,
           "differedTwice": false,
           "hashes": [
+            "435dd503ee7efa74",
             "ca4b1b4c5e8406fd"
           ],
           "perAttempt": [
             {
               "attempt": 1,
+              "expected": "ca4b1b4c5e8406fd",
+              "actual": "435dd503ee7efa74",
+              "match": false
+            },
+            {
+              "attempt": 2,
               "expected": "ca4b1b4c5e8406fd",
               "actual": "ca4b1b4c5e8406fd",
               "match": true
@@ -1475,7 +1484,8 @@
         },
         "daily-ar-1440x900-nohistory": {
           "identical": true,
-          "attempts": 1
+          "attempts": 2,
+          "noise": true
         },
         "daily-ar-1440x900-details": {
           "identical": true,
@@ -1649,12 +1659,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 852,
+          "measuredMs": 848,
           "expectedMs": 820,
-          "fontWaitMs": 25,
+          "fontWaitMs": 23,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 34
+            "dashes": 30
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1666,12 +1676,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 48,
-          "maxFrameGapMs": 50.1,
+          "framesDuringIntro": 42,
+          "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 62,
+              "t": 60,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1683,8 +1693,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 130,
-              "sinceStartMs": 21,
+              "t": 107,
+              "sinceStartMs": 23,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1705,12 +1715,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 861,
+          "measuredMs": 891,
           "expectedMs": 820,
-          "fontWaitMs": 27,
+          "fontWaitMs": 20,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 33
+            "dashes": 30
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1722,12 +1732,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 47,
-          "maxFrameGapMs": 33.3,
+          "framesDuringIntro": 44,
+          "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 74,
+              "t": 61,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1739,8 +1749,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 146,
-              "sinceStartMs": 30,
+              "t": 123,
+              "sinceStartMs": 28,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1761,12 +1771,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 849,
+          "measuredMs": 884,
           "expectedMs": 820,
-          "fontWaitMs": 32,
+          "fontWaitMs": 23,
           "introElementsSeen": {
             "slots": 4,
-            "dashes": 33
+            "dashes": 29
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1776,12 +1786,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 47,
+          "framesDuringIntro": 43,
           "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 76,
+              "t": 66,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1793,8 +1803,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 162,
-              "sinceStartMs": 28,
+              "t": 122,
+              "sinceStartMs": 27,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1815,12 +1825,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 857,
+          "measuredMs": 862,
           "expectedMs": 820,
-          "fontWaitMs": 25,
+          "fontWaitMs": 22,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 33
+            "dashes": 29
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1832,12 +1842,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 47,
-          "maxFrameGapMs": 33.3,
+          "framesDuringIntro": 42,
+          "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 79,
+              "t": 57,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1849,8 +1859,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 135,
-              "sinceStartMs": 29,
+              "t": 130,
+              "sinceStartMs": 26,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -1871,12 +1881,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 861,
+          "measuredMs": 860,
           "expectedMs": 820,
-          "fontWaitMs": 28,
+          "fontWaitMs": 19,
           "introElementsSeen": {
             "slots": 4,
-            "dashes": 35
+            "dashes": 30
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1886,12 +1896,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 49,
+          "framesDuringIntro": 42,
           "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 73,
+              "t": 62,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1903,7 +1913,7 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 142,
+              "t": 108,
               "sinceStartMs": 29,
               "state": "running",
               "surfaces": 15,
@@ -1925,12 +1935,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 878,
+          "measuredMs": 868,
           "expectedMs": 820,
-          "fontWaitMs": 23,
+          "fontWaitMs": 18,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 35
+            "dashes": 29
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -1942,12 +1952,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 50,
+          "framesDuringIntro": 42,
           "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 70,
+              "t": 58,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -1959,8 +1969,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 128,
-              "sinceStartMs": 28,
+              "t": 94,
+              "sinceStartMs": 20,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -2171,12 +2181,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 852,
+          "measuredMs": 848,
           "expectedMs": 820,
-          "fontWaitMs": 25,
+          "fontWaitMs": 23,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 34
+            "dashes": 30
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2188,12 +2198,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 48,
-          "maxFrameGapMs": 50.1,
+          "framesDuringIntro": 42,
+          "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 62,
+              "t": 60,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -2205,8 +2215,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 130,
-              "sinceStartMs": 21,
+              "t": 107,
+              "sinceStartMs": 23,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -2227,12 +2237,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 861,
+          "measuredMs": 891,
           "expectedMs": 820,
-          "fontWaitMs": 27,
+          "fontWaitMs": 20,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 33
+            "dashes": 30
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2244,12 +2254,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 47,
-          "maxFrameGapMs": 33.3,
+          "framesDuringIntro": 44,
+          "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 74,
+              "t": 61,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -2261,8 +2271,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 146,
-              "sinceStartMs": 30,
+              "t": 123,
+              "sinceStartMs": 28,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -2283,12 +2293,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 849,
+          "measuredMs": 884,
           "expectedMs": 820,
-          "fontWaitMs": 32,
+          "fontWaitMs": 23,
           "introElementsSeen": {
             "slots": 4,
-            "dashes": 33
+            "dashes": 29
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2298,12 +2308,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 47,
+          "framesDuringIntro": 43,
           "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 76,
+              "t": 66,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -2315,8 +2325,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 162,
-              "sinceStartMs": 28,
+              "t": 122,
+              "sinceStartMs": 27,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -2337,12 +2347,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 857,
+          "measuredMs": 862,
           "expectedMs": 820,
-          "fontWaitMs": 25,
+          "fontWaitMs": 22,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 33
+            "dashes": 29
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2354,12 +2364,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 47,
-          "maxFrameGapMs": 33.3,
+          "framesDuringIntro": 42,
+          "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 79,
+              "t": 57,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -2371,8 +2381,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 135,
-              "sinceStartMs": 29,
+              "t": 130,
+              "sinceStartMs": 26,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -2393,12 +2403,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 861,
+          "measuredMs": 860,
           "expectedMs": 820,
-          "fontWaitMs": 28,
+          "fontWaitMs": 19,
           "introElementsSeen": {
             "slots": 4,
-            "dashes": 35
+            "dashes": 30
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2408,12 +2418,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 49,
+          "framesDuringIntro": 42,
           "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 73,
+              "t": 62,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -2425,7 +2435,7 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 142,
+              "t": 108,
               "sinceStartMs": 29,
               "state": "running",
               "surfaces": 15,
@@ -2447,12 +2457,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 878,
+          "measuredMs": 868,
           "expectedMs": 820,
-          "fontWaitMs": 23,
+          "fontWaitMs": 18,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 35
+            "dashes": 29
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2464,12 +2474,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 50,
+          "framesDuringIntro": 42,
           "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 70,
+              "t": 58,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -2481,8 +2491,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 128,
-              "sinceStartMs": 28,
+              "t": 94,
+              "sinceStartMs": 20,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -2583,12 +2593,12 @@
       "fontCache": {
         "note": "every intro context serves the Google Fonts files from memory after their first network fetch (same bytes), as a browser cache does for a returning owner",
         "arFirstFetch": {
-          "fontWaitMs": 211,
+          "fontWaitMs": 212,
           "played": false,
           "yieldedBy": "fonts late"
         },
         "enFirstFetch": {
-          "fontWaitMs": 27,
+          "fontWaitMs": 21,
           "played": true,
           "yieldedBy": "complete"
         },
@@ -2600,12 +2610,12 @@
           "state": "done",
           "reason": "first open in this tab",
           "yieldedBy": "fonts late",
-          "fontWaitMs": 205,
-          "firstPaintMs": 76,
-          "answersInViewAtMs": 294,
+          "fontWaitMs": 211,
+          "firstPaintMs": 64,
+          "answersInViewAtMs": 275,
           "introEverRan": false,
           "fontsInAtEnd": true,
-          "answersInViewAfterFirstPaintMs": 218,
+          "answersInViewAfterFirstPaintMs": 211,
           "domEqualsMotionOff": true,
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2618,12 +2628,12 @@
           "state": "done",
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "fontWaitMs": 67,
-          "firstPaintMs": 68,
-          "answersInViewAtMs": 144,
+          "fontWaitMs": 78,
+          "firstPaintMs": 64,
+          "answersInViewAtMs": 160,
           "introEverRan": true,
           "fontsInAtEnd": true,
-          "answersInViewAfterFirstPaintMs": 76,
+          "answersInViewAfterFirstPaintMs": 96,
           "domEqualsMotionOff": true,
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2636,12 +2646,12 @@
           "state": "done",
           "reason": "first open in this tab",
           "yieldedBy": "fonts late",
-          "fontWaitMs": 203,
-          "firstPaintMs": 76,
+          "fontWaitMs": 200,
+          "firstPaintMs": 64,
           "answersInViewAtMs": 272,
           "introEverRan": false,
           "fontsInAtEnd": true,
-          "answersInViewAfterFirstPaintMs": 196,
+          "answersInViewAfterFirstPaintMs": 208,
           "domEqualsMotionOff": true,
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2654,12 +2664,12 @@
           "state": "done",
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "fontWaitMs": 62,
-          "firstPaintMs": 76,
-          "answersInViewAtMs": 158,
+          "fontWaitMs": 69,
+          "firstPaintMs": 104,
+          "answersInViewAtMs": 132,
           "introEverRan": true,
           "fontsInAtEnd": true,
-          "answersInViewAfterFirstPaintMs": 82,
+          "answersInViewAfterFirstPaintMs": 28,
           "domEqualsMotionOff": true,
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2692,7 +2702,7 @@
           "played": true,
           "state": "done",
           "reason": "first open in this tab",
-          "fontWaitMs": 24
+          "fontWaitMs": 23
         },
         "newTabWithMotionSwitchOff": {
           "played": false,
@@ -2704,7 +2714,7 @@
           "played": true,
           "state": "done",
           "reason": "first open in this tab",
-          "fontWaitMs": 28
+          "fontWaitMs": 25
         },
         "errors": [],
         "reducedMotion": {
@@ -2731,7 +2741,7 @@
             "sawRunning": true,
             "count": 2,
             "yieldedBy": "complete",
-            "measuredMs": 840,
+            "measuredMs": 845,
             "expectedMs": 820,
             "speed": 1
           },
@@ -2742,7 +2752,7 @@
             "sawRunning": true,
             "count": 3,
             "yieldedBy": "complete",
-            "measuredMs": 1664,
+            "measuredMs": 1656,
             "expectedMs": 1640,
             "speed": 0.5
           },
@@ -2751,7 +2761,7 @@
             "sawRunning": true,
             "count": 4,
             "yieldedBy": "complete",
-            "measuredMs": 447,
+            "measuredMs": 433,
             "expectedMs": 410,
             "speed": 2
           },
@@ -2782,7 +2792,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "chart",
-            "settledAtMs": 118
+            "settledAtMs": 111
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2801,7 +2811,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "chart",
-            "settledAtMs": 409
+            "settledAtMs": 425
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2847,7 +2857,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "keydown",
-            "settledAtMs": 404
+            "settledAtMs": 405
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2866,7 +2876,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "pointerdown",
-            "settledAtMs": 153
+            "settledAtMs": 154
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2898,7 +2908,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "pointerdown",
-            "settledAtMs": 134
+            "settledAtMs": 133
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2917,7 +2927,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "pointerdown",
-            "settledAtMs": 420
+            "settledAtMs": 430
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -2945,7 +2955,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "new reading",
-            "settledAtMs": 109
+            "settledAtMs": 103
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -3012,7 +3022,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "resize",
-            "settledAtMs": 120
+            "settledAtMs": 107
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -3027,7 +3037,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "resize",
-            "settledAtMs": 410
+            "settledAtMs": 413
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -5280,7 +5290,7 @@
             "widestKey": "latest",
             "numbered": 39,
             "measures": 2,
-            "ms": 3.1999999955296516
+            "ms": 3.5
           },
           "pass": true
         },
@@ -7007,7 +7017,7 @@
             "widestKey": "latest",
             "numbered": 39,
             "measures": 2,
-            "ms": 3.100000001490116
+            "ms": 3.199999999254942
           },
           "pass": true
         },
@@ -8700,7 +8710,7 @@
             "widestKey": "latest",
             "numbered": 38,
             "measures": 2,
-            "ms": 3.7000000029802322
+            "ms": 3.199999999254942
           },
           "pass": true
         },
@@ -10328,7 +10338,7 @@
             "widestKey": "latest",
             "numbered": 28,
             "measures": 2,
-            "ms": 2.7999999970197678
+            "ms": 2.700000001117587
           },
           "pass": true
         },
@@ -12021,7 +12031,7 @@
             "widestKey": "latest",
             "numbered": 38,
             "measures": 2,
-            "ms": 3.1999999955296516
+            "ms": 2.600000001490116
           },
           "pass": true
         },
@@ -13649,7 +13659,7 @@
             "widestKey": "latest",
             "numbered": 28,
             "measures": 2,
-            "ms": 2.1999999955296516
+            "ms": 2
           },
           "pass": true
         },

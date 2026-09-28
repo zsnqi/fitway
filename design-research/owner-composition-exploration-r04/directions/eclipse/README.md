@@ -1,5 +1,10 @@
 # Eclipse v3 (Owner r04, full Daily page)
 
+**Repair 4 (2026-09-28):** gap and no-history moves now use their actual reduced-motion rest anchors. A width
+change applies immediately away from the pinned edge; a placement-mode change eases. The box's existing ease
+continues through a morph's end, and delayed minute ticks use the reading path. Planted output is also refused inside
+any Git working tree, regardless of TEMP/TMP. The full before/after measurements and limits are in "Evidence" below.
+
 **Repair 3 (2026-09-27):** the selected box now uses the follow curve for a side change, a change among the
 above/below/shifted rest placements, or a new reading. The curve starts at the box's displayed position and
 velocity. Clearance is measured on its rendered rectangle at rest; the route no longer projects the moving box to a
@@ -416,6 +421,15 @@ and `setMarker`. The one part of A that stays is its missing-span variant, the l
   of a vertical shift and a change caused by a reading, follows the box's eased curve from its displayed position and
   velocity. The 11 px rule applies at rest; a moving box may briefly pass closer to the end point. There is no
   mid-path projection or side lock.
+  - **Repair 4:** the gap tooltip's anchor is 12 px above the higher of the two line ends, as at reduced-motion
+    rest; the gap marker stays on the time axis. Without history, a still-ahead stop anchors at its own x and
+    35% of the chart's y range from its top, exactly as reduced motion does. Neither target depends on a missing point.
+  - A same-mode width change pins the hairline-side edge of an ordinary left/right box (right/left respectively).
+    The new width applies immediately and grows away from that edge. Clearance alternatives pin their centre.
+    Only anchor travel eases; a simultaneous placement-mode change eases from the displayed box and velocity.
+  - The current ease advances to the current time before a moving clearance target is retargeted. The canonical
+    repaint at the morph's end retains its clock and velocity. A delayed minute tick uses the same reading path;
+    pure width growth still obeys the immediate-width rule above.
 - **Tooltip layout (2026-09-26):** one start-aligned arrangement for every tooltip. Every row starts at the same
   inline-start edge (right in Arabic, left in English), and nothing is pushed to the far edge.
   - At the peak and the latest reading (live and delayed), the label chip comes first, then the time. The number then
@@ -835,6 +849,94 @@ The log records:
 
 ## Evidence
 
+- **Repair 4 (2026-09-28), scope and method:** before is `a14009f`; the R5 reference is `3b1c3da`, and the
+  ordinary-hover reference is `6123863`. Probes extend the repair-3 scratch probes, served on 3176 with repository
+  Playwright on this Windows host. Readex Pro is loaded for web-font runs; Google Fonts requests are blocked for
+  fallback runs. Every state/language/font combination is covered unless a row explicitly narrows it. Fake-clock
+  frame steps are compared with the largest 16 ms fraction from `chart.response()`, times anchor distance, plus
+  0.5 px. Same-mode immediate width growth is excluded from anchor travel, as required; mode changes use box
+  travel. Rest equality uses the rendered rectangle and a 0.01 px limit. The still-at-end check uses the first
+  rendered frame after the 280 ms morph, not a new target beginning on the last pre-end frame.
+
+  | Row | `a14009f` before | Repair 4 after |
+  | --- | --- | --- |
+  | S | 599,104 boxes; minimum 11.0000 px; 0 below 11 | Same 599,104 boxes; 0 changed rectangles/modes; maximum coordinate/size delta 0 px; 0 below 11 |
+  | GAP | 720 moves; 2,578 over-allowance frames; 360 stall-then-jumps; largest step 95.8907 px | 720 moves; 0 over-allowance frames, stalls, errors or settled-rest failures |
+  | NH | 640 selections; 88 page errors and 88 wrong resting boxes; selected text itself matched | 640 selections; 0 page errors, wrong boxes or text mismatches |
+  | R5 | 11,762 bad cases of 24,187; 67,962 bad frames; edge range -1 to 14.390625 px | 0 bad cases/frames of 24,187/1,547,968; edge range 11.546875-12.390625 px; `3b1c3da` also has 0 violations on the same set |
+  | M1 | 16,310 changed-rest cases; 12,425 over-allowance cases; 40 still frames at morph ends; 0 settled-rest failures | Same 16,310 cases; 0 over-allowance cases, morph-end still frames or settled-rest failures |
+  | M2 | 2,708 ordinary-stop transitions; 0 stalls; median 434 ms in all 12 combinations; p90 live/delayed/no-history 484/517/467 ms | Every per-case result equals before; median/p90 no slower than `6123863`; see the comparison limit below |
+  | E | Both committed 7:42 PM hover PNGs equal `6123863` byte for byte | Both remain byte-identical |
+  | G | 14 of 17 refusals; 3 main-checkout paths accepted with TEMP/TMP=`D:/Projects` | 17/17 refused before any write; real scratch accepted; `--plant=once` exit 0, `--plant=always` exit 1 |
+  | I | Committed baseline; old repair-3 report records two exit-0 captures | Two final captures exit 0; 70 exact comparisons each; 0 persistent differences |
+  | J | Quality sequences: 16 no-history page errors; 0 long frames/tasks, rAF gaps over 50 ms or non-input shifts | 0 errors/long frames/tasks/gaps/non-input shifts; 12/12 initial accessibility trees equal before; 24/24 planted busy-loop controls detected |
+
+  - **S:** all 318 snapshots and every stop, AR/EN, live/delayed/no-history, both fonts, at each of 1440×900,
+    1280×800, 1024×640 and 390×844 with reduced motion: 48 combinations. This is a rendered rest check, not a
+    claim about clearance along a moving path.
+  - **GAP:** five snapshots (8:43 PM, 9:30 PM, 10:00 PM, 10:42 PM and 12:05 AM), one/two/three stops away,
+    both directions, onto and off the gap. The before failure is the positive control for stall/jump detection.
+  - **NH:** every 40-stop no-history snapshot by actual pointer sweep and slider keyboard stepping, motion on/off,
+    AR/EN and both fonts. The before failures occur only with motion on. Selecting a future stop now uses its own
+    no-history fallback anchor and settles at the same box and text as reduced motion.
+  - **R5:** web fonts, all three states, every width-changing reading and selected ordinary side placement that
+    retains its mode throughout the 64 sampled frames. The live-only range after is 11.984985-12.015015 px;
+    the wider all-state range includes the no-history axis tick's rendered centre. Fallback runs also had zero
+    violations on their 294 stable-mode cases. A mode change is measured by M1, not assigned a fixed edge gap.
+  - **M1:** full-day discovery tests every selected stop before/after every minute. Changed-box counts by web/fallback:
+    AR live 1,671/653, delayed 0/0, no-history 1,276/372; EN live 5,663/704, delayed 28/0, no-history 5,515/428.
+    The 28 delayed EN web boxes at the 7:59 PM tick change their corner through immediate width growth; their
+    pinned anchors stay put, as the width rule requires. Actual anchor changes take the reading ease path.
+    An earlier broad end-window diagnostic flagged AR fallback minute 186/h1080 at 272 ms: that is a new mode
+    target before the morph ends. Its next two frames move 1.671875 and 3.0625 px; it is not a stopped end frame.
+  - **M2 comparison limit:** "as in repair 3" uses each combination's median and p90 settle time (within 1 px of
+    rest), plus stall count, on the same ordinary-track transition set. Against `6123863`, live p90 is 484 versus
+    500 ms, delayed median is 434 versus 450 ms (p90 517 in both), and no-history p90 is 467 versus 484 ms;
+    other medians are 434 in both. No combination is slower by those summaries. Per-transition equality with
+    `6123863` is not claimed: 144/2,708 cases take 17-100 ms longer, inherited unchanged from `a14009f`.
+    The ordinary follow's 90/15 ms response and displayed-velocity start are preserved.
+  - **G:** the Git query starts at the output path's nearest existing directory before mkdir. It also checks
+    parents when Git cannot report a work-tree root from inside `.git`; junctions and short names are canonicalised.
+    Tests include all 14 previous refusals plus new/main-existing/`.git` paths in `D:/Projects/fitway` with TEMP/TMP
+    pointed at `D:/Projects`. Refusal tests execute the exact extracted guard without any output write; the two
+    plant controls are real capture runs into scratch.
+  - **I, exact changed-frame justification against `a14009f`:** final run 1 has 68 immediate matches of 70;
+    final run 2 has 67 immediate matches and one single-attempt AR no-history static noise. Neither run has a
+    persistent difference. `intro-yield-ar.png` changes 52,444/54,991 pixels: action-time captions, in-progress rail
+    width, selected tooltip text placement and rolling reading digits (the intro implementation is unchanged).
+    `motion-contact-sheet.png` changes 565/299 pixels inside its follow/rolling-digit thumbnails.
+    `motion-follow-ar-2x.png` changes 11,565 text pixels in run 1 with a 0.5-0.75 physical-pixel subpixel translation,
+    while box/marker geometry is unchanged; run 2 is byte-identical to before. AR/EN `motion-roll-*-2x.png` are
+    identical in run 1 and change 466/529 pixels in run 2, confined to mid-roll digits (0.25/-0.5 px translation).
+    Every other PNG is byte-identical in both final captures. Two live intro-end hash flags remain false because of
+    raster variation, while the canonical DOM flags and the exact same-run recapture gate pass; no tolerance was added.
+  - **J:** observers start after font/intro settlement. Each of 24 before/after contexts covers End, four arrow
+    selections, Home and one minute step at 1440×900. Expected blocked-font resource messages are excluded in
+    fallback runs; other console messages and every page error are captured. A 90 ms `setTimeout` busy loop is
+    recorded by the long-work observer and rAF-gap control in every context. All layout-shift entries have recent
+    input, with no new source and CLS 0 before/after. Tooltip movement produces input-associated entries; the count
+    is not zero: AR live web/fallback 53→53/52→51, delayed 52→54/53→51, no-history 21→52/20→50;
+    EN live 51→54/51→55, delayed 56→54/55→55, no-history 22→52/22→52. The no-history increase accompanies
+    the repaired box movement. Accessibility equality is the initial whole-body tree at the same selected stop,
+    normalised only for ephemeral local ports; it is not a claim that erroneous before interactions had equal trees.
+  - **Personal rendered inspection (Codex):** all six before/after strips were inspected:
+    `gap-0843-{ar,en}.png`, `nohistory-0742-{ar,en}.png`, `width-1000-{ar,en}.png`, at 1440×900, web fonts,
+    with captions pre/0/16/48/96/192/288/400/640/656/800 ms. The width example is h570 at 9:59→10:00 PM.
+    Also inspected all 24 exact `rest-{ar,en}-{live,delayed,nohistory}-{1440x900,1280x800,1024x640,390x844}.png`
+    frames (latest selection, 7:42 PM, web fonts), and every changed capture sheet in both final runs beside before.
+    Existing narrow-screen clipping/overflow remains visible and outside this repair; this is not mobile visual
+    acceptance or a selection of Eclipse for production.
+  - **Reproduction files:** all scripts, raw JSON, final run-1 PNGs, pixel analyses and strips are outside the repo at
+    `C:/Users/PCFORC~1/AppData/Local/Temp/claude/D--Projects-fitway-worktrees-owner-design-exploration-r04/f8e879d9-0fb6-4b39-948b-2404e2518cd5/scratchpad/repair4/work/`.
+    `rest-probe.mjs`, `repair-probe.mjs`, `quality.mjs`, `guards.mjs`, `strips-final.mjs`, `report-numbers.json`,
+    `motion-before.json`, `motion-final.json`, `readings-before-final.json`, `readings-after-fallback-final.json`,
+    `r5-reference.json`, `nh-{before,after}.json`, `m2-{612,before,after}.json`, `guard-results.json`, `quality.json`,
+    `capture-final{1,2}.txt`, `capture-pixel-summary.json` and `strips/manifest.json` record the exact scope.
+    Browser controls: 25/25 ui-forensics selftests; image controls: 37/37 selftests. Impeccable detect returned `[]`
+    for the changed JavaScript. These are corroborating prototype probes, not repository fast/phase/full verification.
+    The brief excludes the known unrelated fast-ladder failure. No intro, light tokens, protected baseline hashes,
+    `.impeccable` files, production files or coordinator-owned ledger files changed.
+
 - **Repair 3 (2026-09-27), S and V:** the reduced-motion sweep from 7:42 PM to closing selected every stop at
   all 318 minutes, AR/EN, live/delayed/no-history, web and fallback fonts at 1440×900; the web-font live sweep also
   covered 1280×800, 1024×640 and 390×844 in both languages. Of 224,902 measured boxes, `6123863` had 15,317
@@ -844,16 +946,15 @@ The log records:
   largest move is 90.2034 px. The minimum rendered clearance is 11.0015 px at 1440×900, 11.0066 at 1280×800,
   11.0031 at 1024×640 and 11.0000 at 390×844. The centred-above gap from the rendered marker differs from 10 px
   by at most 0.082 px across these sizes.
-- **Repair 3, M1 and M2:** at 1440×900 with motion on, each language/font combination had 18 new-reading changes of
-  rest placement; all 72 had zero frame-step violations over 1000 ms. The largest measured step was 10.4377 px
-  for a 96.85 px move, below its 12.703 px allowance. The tightest margin was a 2.0791 px step for a 17.05 px
-  move, below its 2.649 px allowance. At `3b1c3da`, the equivalent
-  sweep found 12 of 14 violations per web-font language and 9 of 12 per fallback language, with a largest step of
-  153.479 px; `6123863` had no changes of this rest-placement class. The fake-clock hover set contained 257
-  transitions per language/font combination: stalls were zero in all four combinations here and at `6123863`,
-  versus 2/0/2/1 at `3b1c3da` (AR web/fallback, EN web/fallback). Within 1 px of rest, medians here were
-  434/445/443/444 ms and p90 498/496/497/497 ms; at `6123863` they were 448/448/448/447 and
-  510/500/500/501 ms. The sampling set and direct after-frame fake-clock method are identical across revisions.
+- **Repair 3, M1 and M2 (historical, narrow probes):** the former "18 new-reading changes per combination"
+  counted only a selected placement-mode class, 72 cases in four live language/font combinations. It was not a
+  full-day count of changed resting boxes. The full repair-4 sweep above finds 16,310 such cases across the 12
+  state/language/font combinations (including 28 delayed width-only changes), with 372-5,663 per live/no-history
+  combination. The old 257-transition live ordinary-stop hover set had zero stalls; that claim did not cover the gap
+  stop or still-ahead stops without history. At `a14009f`, the broader gap set has 360 stalls and the no-history
+  pointer/keyboard set has 88 page errors. The unqualified zero-stall/error claims are withdrawn. The original
+  ordinary-hover summaries were medians 434/445/443/444 ms and p90 498/496/497/497 ms, versus `6123863`
+  medians 448/448/448/447 and p90 510/500/500/501 ms; these were live-only, direct after-frame fake-clock samples.
 - **Repair 3, E/G/I/J and visual checks:** the two 7:42 PM hover PNGs are byte-identical to `6123863`. The planted
   guard refused 14 tested path spellings and overrides before writing, including paths in this worktree, relative,
   UNC and device paths, an invalid `--intro-frames` path, TEMP/TMP set to `E/` or the worktree root, and a temp
@@ -861,9 +962,10 @@ The log records:
   exited 1. Two unplanted captures into `evidence/` exited 0, each with 70 exact comparisons and no persistent
   differences. Against `3b1c3da`, only the log, intro-yield AR sheet (timing), motion contact sheet (tooltip
   translation), and motion-follow AR crop (tooltip movement) changed; both hover stills and every other PNG stayed
-  byte-identical. Normal runs recorded zero console errors, long animation frames, long tasks or rAF gaps over
-  50 ms; a planted 90 ms busy loop was detected. Tooltip-sourced layout shifts fell from 11 to 8 in AR and 11 to
-  9 in EN, with no new source. The AR and EN accessibility trees matched after normalising the ephemeral local
+  byte-identical. Those narrow repair-3 quality runs recorded zero errors, long animation frames, long tasks or rAF
+  gaps over 50 ms and detected a planted 90 ms busy loop. They did not exercise the failing no-history future sweep;
+  the current all-state results and input-associated shift counts are recorded above. In those narrow historical
+  sequences tooltip-sourced shifts fell from 11 to 8 in AR and 11 to 9 in EN, with no new source. The AR and EN accessibility trees matched after normalising the ephemeral local
   port. Timed before/after strips for the 10:52 and 11:47 PM readings and a near-now hover were inspected in both
   languages at 1440×900. The 390×844 AR/EN frames were also inspected; the existing horizontal overflow remains
   outside this repair's scope. These checks measure behaviour, not human visual acceptance.
@@ -876,19 +978,23 @@ The log records:
   The changed choices were 938 centred above, 1,365 shifted upward and 12 shifted downward; none needed centred
   below. The largest vertical shift was 48.53 px. The number's start-edge spread within a snapshot and placement
   mode stayed at most 0.024 px.
-- **Motion checks:** at seven settled snapshots per combination, 3,284 selected stops had no clearance violation.
+- **Repair 2 motion checks (historical at `3b1c3da`):** at seven settled snapshots per combination, 3,284 selected
+  stops had no clearance violation.
   Three real-time placement-mode changes began with 0 px jump; 64 adjacent-stop follow transitions sampled frame by
   frame in both languages never covered the end point (minimum 11.0019 px). A selected box during a width-changing
   live morph (127 to 128 px, AR/EN, a stationary stop and the moving latest stop) kept a 11.987–12.013 px edge gap
-  and at most 0.014 px number-offset spread over the 280 ms morph.
-- **Plant and quality probes:** 14 path forms were refused before writing, including UNC admin shares, device paths,
+  and at most 0.014 px number-offset spread over those four examples of the 280 ms morph. This was not an
+  all-reading claim and did not survive repair 3; the full repair-4 R5 sweep above supersedes it.
+- **Repair 2 plant and quality probes (historical, limited sequences):** 14 path forms were refused before writing,
+  including UNC admin shares, device paths,
   short names and junctions; a scratch temp outDir was accepted. `--plant=once` exited 0 with 68 one-attempt noises
   and no persistent differences; `--plant=always` exited 1 with 68 persistent differences. In a same-run browser
   probe, the normal repair path made no long-animation-frame entries and no rAF gap over 50 ms; the planted 90 ms
   loop registered a 103–120 ms long animation frame and an 83–100 ms rAF gap. A planted 120 px prepend produced a
   0.0833 layout shift. Existing tooltip-sourced shifts were fewer after the repair (AR 28 versus 33; EN 30 versus
   32); no new shift source appeared. The AR and EN accessibility trees matched `6123863`, and no console errors
-  appeared. These checks measure behavior and provenance, not visual acceptance.
+  appeared in those sequences. This does not assert that repair 3 had no errors in every state or interaction.
+  These checks measure behavior and provenance, not visual acceptance.
 - **Repair 2 captures into `evidence/`:** two unplanted runs exited 0. Each made 70 exact comparisons with zero
   persistent differences (68 matched on their first attempt). Both 7:42 PM hover frames are byte-identical to
   `6123863`. Against that commit, run 1 changed `capture-log.json`, `intro-yield-ar.png` (26,468 pixels),
