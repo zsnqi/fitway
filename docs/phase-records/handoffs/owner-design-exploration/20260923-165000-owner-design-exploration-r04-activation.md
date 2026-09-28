@@ -1946,3 +1946,18 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - where the connector crosses the usual line or the peak tag, the designer shows how it passes.
 - **Launched:** the designer runs in the background. The coordinator inspects its work, then sends the user the
   before and after sheets and the live page.
+- **The report format changed after launch** (user, 2026-09-28):
+  - the designer writes a concise full report, results only, to `D:\fitway-scratch\lane\work\REPORT.md`;
+  - its final message is a summary of about 10-15 lines that points to it;
+  - no caveat is dropped to keep it short;
+  - the user does not need to read it. The goal is to keep work details out of the coordinator's context.
+  The brief's section 6 records the change.
+- **The harness round is cancelled** (user, 2026-09-29).
+  - The lane removes the floating-placement failures that `E/checks/` measured. The lane's own checks go into
+    `capture.mjs`.
+  - The intro-speed round is measured by `capture.mjs`, which checks the intro's timing and that the rest of the page
+    is unchanged.
+  - The harness is specific to the Daily chart, so it does not serve the remaining screens.
+  - After the lane is verified, a small commit deletes `E/checks/**`. It stays in history at `ee2b399`. The reason: it
+    is unverified and encodes superseded rules, so it could mislead a later agent.
+  - The later order is therefore: the intro-speed round, the audit patch (ask the user), then Reports.
