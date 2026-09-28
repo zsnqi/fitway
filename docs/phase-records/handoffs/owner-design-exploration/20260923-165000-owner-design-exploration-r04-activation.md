@@ -2003,3 +2003,13 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
     - if it misses a defect that Opus catches, verification returns to Opus;
     - if the result is unclear, the eval is dropped.
     Hillclimbing the verifier definition waits, unless the eval proves useful.
+- **After `claude.dev/blog/building-with-claude-sonnet-5-5`** (user, 2026-09-29):
+  - **The article confirms the model table.** It says Sonnet 5.5 suits tasks with a clear spec and a way to check the
+    result, and Opus suits the hardest long-horizon work.
+  - **The eval adds a Sonnet run at `high`,** beside Sonnet and Opus at `xhigh`. The article advises `xhigh` only when
+    an eval shows a gain.
+    - This needs a verifier definition at `high`, which loads only in a new session.
+    - The eval therefore runs in the next coordinator session.
+  - **Future briefs tell agents to open screenshots downscaled.** Full-resolution crops are used only where detail
+    matters, such as the box's edges and the connector. Sonnet 5.5 reads images at a high resolution, at about 2.5 times
+    the earlier tokens, and screenshots were the largest part of the designer's context.
