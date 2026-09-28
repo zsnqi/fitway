@@ -1826,4 +1826,5 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
     against 4 once the verifier is done, for time and byte identity, and only then names a count in the brief.
   A harness change could go further, reusing the base's rows and adding a quick profile of one viewport. It is not
   worth its own round now, because only the Daily page's rounds use this harness. It is revisited if round P is still
-  slow.
+  slow.- **The user agreed the speed plan (2026-09-28):** skip `guard` in round P, iterate without `--base`, and measure 8
+  workers after the verifier. No harness change now, only if round P is still slow.
