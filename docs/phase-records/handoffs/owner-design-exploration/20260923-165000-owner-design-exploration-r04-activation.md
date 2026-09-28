@@ -1714,3 +1714,39 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   6. **Then the intro-speed round.**
 - **R2-R4 change placements the user had agreed,** so the user sees the before and after before anything is
   integrated.
+
+## Round T sent to Codex, and new-session resume point (2026-09-28)
+
+- **Status:** the user sent `tools/BRIEF.md` to Codex (round T, the harness, based on `8ae88f3`). The user will start a
+  new coordinator session, because this one is large.
+- **All scratch lives in session `f8e879d9`'s scratchpad:**
+  `C:/Users/PCFORC~1/AppData/Local/Temp/claude/D--Projects-fitway-worktrees-owner-design-exploration-r04/f8e879d9-0fb6-4b39-948b-2404e2518cd5/scratchpad/`.
+  It holds:
+  - `tools/BRIEF.md`, `tools/VERIFY-T.md`, `tools/reference/` (verify5's probes and summaries);
+  - `polish/BRIEF.md` (round P);
+  - `introspeed`: not here. Its brief is in session `bb9e9dc7`'s scratchpad, `introspeed/FIX-SPEED.md`.
+- **Resume steps:**
+  1. **When the user pastes Codex's round T report:**
+     - check the commit scope, which must be `E/checks/**` plus a README section;
+     - check that `git status` is clean;
+     - if Codex did not commit, find out why (the fast-ladder failure is known and not a gate);
+     - then launch a fresh `owner-direction-verifier` with `tools/VERIFY-T.md`.
+  2. **On PASS,** the harness is frozen at that SHA.
+     - Update `polish/BRIEF.md` section 0 with the round T SHA.
+     - The user sends round P to Codex.
+     - On Codex's report: inspect it, then show the user the before and after sheets, because R2-R4 change agreed
+       placements. Only then run a fresh verifier.
+     - That verifier runs the frozen harness (`--rev <P> --base 8ae88f3`), checks that `E/checks/**` is unchanged, and
+       adds its own independent spot checks and the named frames. Its checklist is not written yet; derive it from
+       `repair4/VERIFY-R4.md` and `polish/BRIEF.md` section 4.
+  3. **On PASS of round P:**
+     - integrate locally by rebasing the coordinator's docs commits onto round P's SHA, keeping the verified SHAs;
+     - a push needs the user's word.
+     - Then the intro-speed round: update its base SHA and its "Constraints in force" (the width rule, never cover now,
+       R1-R6), and measure it with the harness. Then the audit patch (ask the user). Then Reports.
+- **Working agreements from this session:**
+  - reply in Arabic and keep it short;
+  - the user runs Codex, and pastes its final message;
+  - never launch a Codex round without the user;
+  - full-strength verification stays, because the chosen direction is meant to become the Owner design authority. It
+    is adopted only when it is ready, by an explicit decision.
