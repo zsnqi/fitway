@@ -1925,3 +1925,17 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - the user runs Codex and pastes its report;
   - temp and scratch never go on C;
   - full-strength verification stays, because the direction is meant to become the Owner design authority.
+
+## New coordinator session, and the lane brief (2026-09-28)
+
+- **Session:** the coordinator moved to desktop session `local_47dd1bf2-be3b-442a-8532-a8cfbeba5014`. Its scratchpad
+  is `D:\fitway-temp\claude\D--Projects-fitway-worktrees-owner-design-exploration-r04\46fbc0fe-4cf0-4b88-b53d-17abfa109327\scratchpad\`.
+- **The lease had expired** at 19:00. The coordinator renewed it, with the user's agreement, to 2026-09-29 23:30.
+- **State at resume:** nothing was running. `owner-followup-r04-s04` was clean at `ee2b399`. Drive C had 18.7 GB free.
+- **User decisions:**
+  - the model table and the Sonnet-verifier trial condition above are confirmed;
+  - the lane brief's plan is agreed, as are the later steps and the screen plan;
+  - the user asks whether Sonnet can do the lane round itself, since it only moves the tooltip box. This is pending
+    the user's answer when the brief is shown.
+- **Next:** the coordinator writes `D:\fitway-scratch\lane\BRIEF.md` and shows it to the user. Nothing is launched
+  before the user agrees.
