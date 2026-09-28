@@ -6,8 +6,9 @@
 // card content hidden), renders ../light-study recipe A read-only as a calibration, and checks the tuner from file://
 // (keyboard, presets, drag, copy, reset, ?tuner=0, the Motion group, and a crowd-level change with motion on).
 // Static guard: the still frames (reduced motion) and the ?motion=off frames must equal the pre-motion frames
-// (evidence/pre-motion-hashes.json), except daily-ar-1440x900-tuner-open and daily-ar-1440x900-hover, which change by
-// design; any other difference sets exit code 1.
+// (evidence/pre-motion-hashes.json), except the frames in EXPECTED_TO_CHANGE (since the lane round: every frame that shows
+// the chart's plot, each with its reason), which must instead equal 8ae88f3 everywhere outside the plot element
+// (evidence/lane-outside-plot.json); any other difference sets exit code 1.
 // Round 6 checks (motion part, reducedMotion "no-preference" unless noted): the page with motion on, once at rest
 // (after the first-open intro, or at once on a reload), equals the still frame and only the live pulse runs; the chart's stops (half hours, the peak, the latest
 // reading, the missing span), the marker's distance to what it describes at every stop (AR and EN, against the SVG
@@ -39,6 +40,17 @@
 // Repair 1 of the follow-up round: when a comparison's reference was rendered in this run (not a committed hash), a
 // difference re-renders the reference and the compared frame, each in a fresh context, and the pair counts as a
 // difference only if it differs again; each attempt logs its expected and actual hash.
+// The lane round (2026-09-28; the user's decision, run owner_lane_r04_s04): the tooltip lives in a fixed lane at the top of
+// the plot (its top 2px below the plot's top, its height the tallest tooltip among the chart's stops), centred on its stop and
+// kept 2px inside the plot, with a connector to its mark; the scale starts lower. The chart checks replace the floating-
+// placement checks (the side, the number's start against the hairline) with the lane's rules, at each page's own snapshot:
+// the box's top is the lane's top at every stop; its x is its stop's x less half its width, clamped 2px inside the plot
+// (0.01px); it lies inside the plot, the card and the lane, with no wrap and no clip; its connector meets the box and the mark
+// (0.5px); and nothing else is painted in the lane (the top edge of every painted mark, the lines sampled every 1px, and the
+// selected marker's glow, against the lane's bottom). Every other check is kept. Every frame that shows the plot changes, so
+// EXPECTED_TO_CHANGE lists them (each with its reason), the checks that settle to a still frame compare with this run's
+// reduced-motion frame for them, and each must equal 8ae88f3 outside the plot element. The other snapshots, every viewport,
+// the fonts and the motion are swept by the lane round's probes, outside this file.
 // Run from PowerShell at the worktree root:
 //   node design-research/owner-composition-exploration-r04/directions/eclipse/capture.mjs [outDir] [--intro-frames=<dir>]
 // --intro-frames=<dir> also writes every full-size held 2x intro frame there (they are large; they are not evidence).
@@ -107,12 +119,35 @@ const FRAMES = [
   { name: "daily-ar-1440x900-details", q: "lang=ar&tuner=0", act: "details", full: true },
   { name: "daily-ar-1440x900-tuner-open", q: "lang=ar", act: "tuner-open" },
 ];
-// These change by design: the hover frame (Round 6: the tooltip's value is the line's own; Round 7: marker form B, the
-// hollow ring, replaces the reading sight) and the tuner (Round 6: its Motion group; Round 7 step 2: the hover speed).
-// The English hover frame has no pre-motion frame.
+// These change by design. Since the lane round (2026-09-28) that is every frame that shows the chart's plot: the tooltip
+// lives in a lane at the top of the plot, so the scale starts lower (the lane's height plus a gap, per state), and the
+// chart is redrawn inside the plot element. Nothing outside the plot element changes: evidence/lane-outside-plot.json holds
+// 8ae88f3's frames with the plot's pixel box zeroed (and, with the rail open, the rail's box, whose glass blurs the plot
+// behind it), and each of these frames must equal it (shot(), "outsidePlot"). The level map has no such comparison.
+// Earlier reasons stay: the hover frame (Round 6: the tooltip's value is the line's own; Round 7: marker form B, the hollow
+// ring, replaces the reading sight; the follow-up round: the tooltip's one width) and the tuner (Round 6: its Motion group;
+// Round 7 step 2: the hover speed). The English hover frame has no pre-motion frame. Frames that show no plot (the Inside now
+// crops, the light-only crops of the chart) are unchanged and are not listed.
+const LANE_REST = "the lane round: the plot's scale starts lower (an 89 px tooltip lane is reserved at the top of the plot, 8 px above the \"80\" label); nothing outside the plot element changes";
+const LANE_CROP = "the lane round: the chart card at 2x, with the plot's scale starting lower (89 px lane); the lights and the card outside the plot are unchanged";
 const EXPECTED_TO_CHANGE = {
-  "daily-ar-1440x900-hover": "Round 7: marker form B (the hollow ring) replaces the Round 6 reading sight; the value at the peak stop is unchanged (62); the follow-up round after step 3: the tooltip's one fixed width",
-  "daily-ar-1440x900-tuner-open": "Round 6: the tuner's Motion group; Round 7 step 2: its hover speed (the step-1 Marker group is gone); Round 7 step 3: the intro speed and Replay intro",
+  "daily-ar-1440x900": LANE_REST,
+  "daily-en-1440x900": LANE_REST,
+  "daily-ar-1440x900-hover": "the lane round: the peak's tooltip sits in the lane at the top of the plot, with its connector to the ring, and the scale starts lower (89 px lane); earlier: marker form B (the hollow ring), the tooltip's one width",
+  "daily-en-1440x900-hover": "the lane round: the peak's tooltip sits in the lane at the top of the plot, with its connector to the ring, and the scale starts lower (89 px lane); it has no pre-motion frame",
+  "daily-ar-1440x900-rail-open": LANE_REST,
+  "daily-en-1440x900-rail-open": LANE_REST,
+  "daily-ar-1440x900-delayed": "the lane round: the plot's scale starts lower (a 109 px tooltip lane: the delayed latest tooltip has a fourth row); nothing outside the plot element changes",
+  "daily-ar-1440x900-nohistory": "the lane round: the plot's scale starts lower (a 69 px tooltip lane: without history no tooltip has the usual row); nothing outside the plot element changes",
+  "daily-ar-1440x900-details": LANE_REST,
+  "daily-ar-1440x900-tuner-open": "the lane round: the plot's scale starts lower (89 px lane); earlier: Round 6, the tuner's Motion group; Round 7 step 2, its hover speed (the step-1 Marker group is gone); Round 7 step 3, the intro speed and Replay intro",
+  "preset-v2-ar-1440x900": LANE_REST,
+  "preset-a-like-ar-1440x900": LANE_REST,
+  "preset-recommended-ar-1440x900": LANE_REST,
+  "preset-v2-chart-2x": LANE_CROP,
+  "preset-a-like-chart-2x": LANE_CROP,
+  "preset-recommended-chart-2x": LANE_CROP,
+  "levels-chart": "the lane round: the brightness-level map of preset-recommended-chart-2x, which changes (the plot's scale starts lower)",
 };
 const MARKERS = ["b"];
 const PRESETS = ["v2", "a-like", "recommended"];
@@ -186,6 +221,10 @@ for (const stale of ["daily-ar-chart-2x.png", "daily-ar-nowcard-2x.png"]) await 
 const browser = await chromium.launch();
 const log = [];
 const PRE = JSON.parse(await readFile(join(HERE, "evidence", "pre-motion-hashes.json"), "utf8")).frames;
+const OUTSIDE_PLOT = JSON.parse(await readFile(join(HERE, "evidence", "lane-outside-plot.json"), "utf8")).frames;
+// The frames the lane leaves alone keep their committed hash as the reference. For the ones it changes, the reference is
+// this run's reduced-motion frame (rendered again on a difference), as for the frames that already changed by design.
+const PRE_REF = Object.fromEntries(Object.entries(PRE).filter(([k]) => !EXPECTED_TO_CHANGE[k]));
 const sha = (buf) => createHash("sha256").update(buf).digest("hex");
 const identity = { staticFrames: {}, motionOffFrames: {}, firstOpen: {}, reload: {}, liveUpdateEndsAtCanonical: null };
 const stillBuffers = {}; // this run's still frames, for frames with no pre-motion hash (or one that changes by design)
@@ -443,11 +482,12 @@ const recaptures = [];
 // The negative control (--plant): a 1px chalk dot painted into a PNG (8-bit RGB or RGBA, as Playwright writes them) at
 // (720, 450), or the nearest pixel inside a smaller frame; black where that pixel is chalk already. Only the hash that
 // is compared uses it; the frame written and any reference stay clean.
-function plantDot(png) {
+// Decodes an 8-bit RGB or RGBA PNG (as Playwright writes them) to its pixels.
+function decodePng(png, who) {
   const chunks = [];
   for (let o = 8; o < png.length; ) { const len = png.readUInt32BE(o); chunks.push({ type: png.toString("latin1", o + 4, o + 8), data: png.subarray(o + 8, o + 8 + len) }); o += 12 + len; }
   const ihdr = chunks[0].data, w = ihdr.readUInt32BE(0), h = ihdr.readUInt32BE(4), ct = ihdr[9];
-  if (ihdr[8] !== 8 || ![2, 6].includes(ct) || ihdr[12] !== 0) throw new Error("plantDot: unexpected PNG format");
+  if (ihdr[8] !== 8 || ![2, 6].includes(ct) || ihdr[12] !== 0) throw new Error(`${who}: unexpected PNG format`);
   const bpp = ct === 6 ? 4 : 3, stride = w * bpp;
   const raw = inflateSync(Buffer.concat(chunks.filter((c) => c.type === "IDAT").map((c) => c.data)));
   const px = Buffer.alloc(h * stride);
@@ -461,6 +501,21 @@ function plantDot(png) {
       px[row + i] = v & 255;
     }
   }
+  return { chunks, ihdr, w, h, bpp, stride, px };
+}
+// The lane round (2026-09-28): the frames the lane changes must be identical to 8ae88f3 everywhere outside the plot
+// element. The hash is SHA-256 of the frame's size and pixels with the plot's pixel box (whole pixels, covering the
+// plot's fractional edges) zeroed; evidence/lane-outside-plot.json holds it for 8ae88f3's committed frames. In the frames
+// with the rail open, the rail's own box is zeroed too: its translucent glass blurs the plot behind it, so the changed plot
+// shows through it (measured: at most 1/255, about 2,600 pixels, all inside the rail's box).
+function outsidePlotHash(png, boxes) {
+  const { w, h, bpp, stride, px } = decodePng(png, "outsidePlotHash");
+  const p = Buffer.from(px);
+  for (const box of boxes) for (let y = Math.max(0, box.y0); y < Math.min(h, box.y1); y++) p.fill(0, y * stride + Math.max(0, box.x0) * bpp, y * stride + Math.min(w, box.x1) * bpp);
+  return sha(Buffer.concat([Buffer.from(`${w}x${h}x${bpp}`), p]));
+}
+function plantDot(png) {
+  const { chunks, ihdr, w, h, bpp, stride, px } = decodePng(png, "plantDot");
   const at = Math.min(450, h - 1) * stride + Math.min(720, w - 1) * bpp;
   const chalk = [0xf5, 0xf3, 0xf2], same = chalk.every((v, i) => px[at + i] === v);
   chalk.forEach((v, i) => { px[at + i] = same ? 0 : v; });
@@ -476,10 +531,10 @@ const planted = (attempt) => PLANT === "always" || (PLANT === "once" && attempt 
 // compared frame (`again`) are both rendered again and the new pair is compared; without it, only the compared frame
 // is rendered again and compared with the committed hash. It counts as a difference only if it differs in that next
 // attempt too. Each attempt logs its expected and actual hash (the actual one with the plant, when planted).
-async function exact(label, buf, expected, again = null, reference = null) {
+async function exact(label, buf, expected, again = null, reference = null, hashOf = sha) {
   const perAttempt = [];
   const compare = (want, b) => {
-    const n = perAttempt.length + 1, plant = planted(n), actual = sha(plant ? plantDot(b) : b);
+    const n = perAttempt.length + 1, plant = planted(n), actual = hashOf(plant ? plantDot(b) : b);
     const match = want.includes(actual);
     perAttempt.push({ attempt: n, expected: want.map((h) => h.slice(0, 16)).join(" or "), actual: actual.slice(0, 16), match, ...(plant ? { planted: true } : {}) });
     return match;
@@ -488,7 +543,7 @@ async function exact(label, buf, expected, again = null, reference = null) {
   let final = buf;
   let identical = compare(want, buf);
   if (!identical && again) {
-    if (reference) want = [sha(await reference())];
+    if (reference) want = [hashOf(await reference())];
     final = await again();
     identical = compare(want, final);
     if (reference) perAttempt[1].referenceRenderedAgain = true;
@@ -506,6 +561,23 @@ const recapture = (q, openOpts, prep, shotOpts = {}) => async () => {
   await s.context.close();
   return buf;
 };
+// The reference for "the page settles to its still frame": the committed pre-motion hash, or, for a frame the lane changes,
+// this run's reduced-motion frame, which is rendered again (its own fresh context) on a difference.
+async function stillRef(name, q, prep = null, shotOpts = {}) {
+  if (PRE_REF[name]) return { expected: PRE_REF[name], reference: null };
+  const reference = recapture(q, {}, prep, shotOpts);
+  return { expected: sha(stillBuffers[name] || (await reference())), reference };
+}
+// The pixel boxes to leave out of the comparison with 8ae88f3 in a screenshot of `opts` (whole pixels covering their fractional
+// edges): the plot element, and the open rail.
+const plotBoxes = (page, opts = {}) => page.evaluate((o) => {
+  const d = window.devicePixelRatio, cx = o.clip ? o.clip.x : 0, cy = o.clip ? o.clip.y : 0;
+  const box = (el) => { const b = el.getBoundingClientRect(); return { x0: Math.floor((b.left + scrollX - cx) * d), y0: Math.floor((b.top + scrollY - cy) * d), x1: Math.ceil((b.right + scrollX - cx) * d), y1: Math.ceil((b.bottom + scrollY - cy) * d) }; };
+  const out = [box(document.querySelector("#plot"))];
+  const rail = document.querySelector("#rail");
+  if (rail && rail.dataset.open === "true") out.push(box(rail));
+  return out;
+}, opts);
 // A written evidence frame; if it is one of the pre-motion frames, its bytes are compared with the recorded hash
 // (equal hashes mean identical pixels), with one recapture (`again`) on a difference. The frame written is the last
 // attempt. Frames that change by design are not recaptured.
@@ -516,6 +588,15 @@ async function shot(page, name, opts = {}, again = null) {
     buf = m.buf;
     identity.staticFrames[name] = { identical: m.identical, attempts: m.attempts, ...(m.noise ? { noise: true } : {}), ...(EXPECTED_TO_CHANGE[name] ? { expectedToChange: EXPECTED_TO_CHANGE[name] } : {}) };
   }
+  // A frame the lane changes must still equal 8ae88f3 everywhere outside the plot element (same box, same pixels).
+  if (EXPECTED_TO_CHANGE[name] && OUTSIDE_PLOT[name]) {
+    const want = OUTSIDE_PLOT[name];
+    const boxes = await plotBoxes(page, opts);
+    const sameBox = JSON.stringify(boxes) === JSON.stringify(want.boxes);
+    const hashOf = (b) => outsidePlotHash(b, boxes);
+    const o = await exact(`outside the plot ${name}`, buf, want.sha, again, null, hashOf);
+    identity.staticFrames[name] = { identical: false, attempts: 1, ...(identity.staticFrames[name] || {}), expectedToChange: EXPECTED_TO_CHANGE[name], outsidePlot: { identical: sameBox && o.identical, boxesSameAs8ae88f3: sameBox, attempts: o.attempts, ...(o.noise ? { noise: true } : {}) } };
+  }
   await writeFile(join(OUT, `${name}.png`), buf);
   stillBuffers[name] = buf;
   return buf;
@@ -524,14 +605,14 @@ async function shot(page, name, opts = {}, again = null) {
 // On a difference the map is computed again from its crop in a fresh context (the compared side only: its hash is committed).
 async function hashFile(name, crop) {
   if (!PRE[name]) return;
-  const m = await exact(`static ${name} (from its crop)`, await readFile(join(OUT, `${name}.png`)), PRE[name], async () => {
+  const m = await exact(`static ${name} (from its crop)`, await readFile(join(OUT, `${name}.png`)), PRE[name], EXPECTED_TO_CHANGE[name] ? null : async () => {
     const tmp = join(OUT, `${name}.again.png`);
     await levels(join(OUT, `${crop}.png`), tmp);
     const b = await readFile(tmp);
     await rm(tmp, { force: true });
     return b;
-  });
-  identity.staticFrames[name] = { identical: m.identical, attempts: m.attempts, ...(m.noise ? { noise: true } : {}) };
+  }, null);
+  identity.staticFrames[name] = { identical: m.identical, attempts: m.attempts, ...(m.noise ? { noise: true } : {}), ...(EXPECTED_TO_CHANGE[name] ? { expectedToChange: EXPECTED_TO_CHANGE[name] } : {}) };
 }
 
 /* ------------------------------------------------------------------ motion helpers
@@ -647,23 +728,73 @@ const measureMarker = (page) => page.evaluate(() => {
   return out;
 });
 
-/* The tooltip at a stop (the follow-up round after step 3; the 127 px round): whether it shows a number, its drawn width, its content's own width (the same box with
- * no set width), the start edge of its number (or of its word where there is no number) against the stop's hairline
- * x, the side it sits on, and whether any row wraps (a row taller than one line) or clips. */
+/* The tooltip at a stop, as rendered (the lane round, 2026-09-28): whether it shows a number, its drawn width, its content's own
+ * width (the same box with no set width), its box in plot pixels (left, top, height), the stop's x, whether any row wraps (a
+ * row taller than one line) or clips, whether it lies inside the plot and the chart card, and its connector: where the line
+ * starts and ends, where the pointer's tip is, and where the mark's top edge is (the ring's outer edge, the lit dots, or the
+ * tick), all read from the DOM's own attributes. */
 const measureTip = (page, stopX) => page.evaluate((sx) => {
-  const tip = document.getElementById("tip"), rtl = document.documentElement.dir === "rtl";
+  const tip = document.getElementById("tip"), plot = document.getElementById("plot");
   if (tip.hidden) return null;
-  const r = tip.getBoundingClientRect(), lead = tip.querySelector(".tip-v") || tip.querySelector(".tip-word"), n = lead.getBoundingClientRect();
+  const pr = plot.getBoundingClientRect(), r = tip.getBoundingClientRect(), card = document.querySelector(".chart").getBoundingClientRect();
   const rows = [...tip.children].map((c) => ({ h: c.getBoundingClientRect().height, sw: c.scrollWidth, cw: c.clientWidth, lh: parseFloat(getComputedStyle(c).lineHeight) || 0, fs: parseFloat(getComputedStyle(c).fontSize) }));
   const w0 = tip.style.width, m0 = tip.style.minWidth;
   tip.style.width = "max-content"; tip.style.minWidth = "0px";
   const natural = tip.getBoundingClientRect().width;
   tip.style.width = w0; tip.style.minWidth = m0;
-  const start = rtl ? n.right : n.left;
-  const r2 = (v) => Math.round(v * 100) / 100;
-  return { width: r2(r.width), natural: r2(natural), numbered: !!(tip.querySelector(".tip-v") || tip.querySelector(".tip-u")), leadIsNumber: lead.classList.contains("tip-v"), leadStartMinusHairline: r2(start - sx), side: r.left + r.width / 2 > sx ? "right" : "left",
-    clipped: tip.scrollWidth > tip.clientWidth || rows.some((x) => x.sw > x.cw + 0.5), wrapped: rows.some((x) => x.h > 1.9 * Math.max(x.lh, x.fs * 1.25)) };
+  const r2 = (v) => Math.round(v * 100) / 100, r3 = (v) => Math.round(v * 1000) / 1000;
+  const num = /-?\d+(?:\.\d+)?/g;
+  // The mark's top edge, from its own attributes.
+  let markTop = null;
+  const mk = document.querySelector("#sel .sg-mark"), tk = document.querySelector("#sel .sg-tick");
+  if (mk) {
+    const m = /translate\(([-\d.]+) ([-\d.]+)\)/.exec(mk.getAttribute("transform")), core = mk.querySelector(".sg-core"), dot = mk.querySelector("circle");
+    markTop = core ? Number(m[2]) - (Number(core.getAttribute("r")) + Number(core.getAttribute("stroke-width")) / 2) : Number(m[2]) - Number(dot.getAttribute("r"));
+  } else if (tk) markTop = tk.getAttribute("d").match(num).map(Number)[1];
+  const line = document.querySelector("#conn .cn-line"), head = document.querySelector("#conn .cn-head");
+  let conn = null;
+  if (line && (line.getAttribute("d") || head.getAttribute("d"))) {
+    const ys = [], xs = [];
+    (line.getAttribute("d") || "").replace(/M(-?[\d.]+),(-?[\d.]+)V(-?[\d.]+)/g, (_, x, y1, y2) => { xs.push(Number(x)); ys.push(Number(y1), Number(y2)); return ""; });
+    const hd = head.getAttribute("d").match(num).map(Number);
+    conn = { x: xs.length ? xs[0] : hd[4], lineTop: ys.length ? Math.min(...ys) : null, tipY: hd[5], markTop, style: line.getAttribute("stroke-dasharray") || "solid",
+      gapToBox: r3((ys.length ? Math.min(...ys) : hd[1]) - (r.bottom - pr.top)), gapToMark: r3(markTop - hd[5]) };
+  }
+  return { width: r2(r.width), natural: r2(natural), numbered: !!(tip.querySelector(".tip-v") || tip.querySelector(".tip-u")),
+    left: r3(r.left - pr.left), top: r3(r.top - pr.top), height: r3(r.height), stopX: r3(sx - pr.left), plotW: plot.clientWidth,
+    insidePlot: r.left - pr.left >= 2 - 0.01 && r.right - pr.left <= plot.clientWidth - 2 + 0.01 && r.top >= pr.top,
+    insideCard: r.left >= card.left && r.right <= card.right && r.top >= card.top && r.bottom <= card.bottom,
+    clipped: tip.scrollWidth > tip.clientWidth || rows.some((x) => x.sw > x.cw + 0.5), wrapped: rows.some((x) => x.h > 1.9 * Math.max(x.lh, x.fs * 1.25)), conn };
 }, stopX);
+
+/* The lane is reserved (the lane round): nothing but the tooltip is drawn in the band from the plot's top to the lane's bottom.
+ * With nothing selected, the top edge of every painted mark of the page's current snapshot, in plot pixels: today's line and
+ * the usual line (path boxes, less the stroke's half width, which covers round caps), the peak ring (with its stroke), drop and
+ * tag, the end point with its halo, the pulse, the grid, the axis dots, the fine lines under the line, and the scale's and
+ * axes' label boxes; the selected marker's ring glow is added per stop (three blur sigmas beyond its edge). The lines are also
+ * sampled along their paths every 1px. */
+const laneMarks = (page) => page.evaluate(() => {
+  window.__eclipse.chart.clear();
+  const plot = document.getElementById("plot"), pr = plot.getBoundingClientRect(), marks = [];
+  const add = (name, y) => { if (Number.isFinite(y)) marks.push({ name, top: Math.round(y * 100) / 100 }); };
+  document.querySelectorAll('#plot-svg path[id^="ln-"]').forEach((p) => add(p.id, p.getBBox().y - 1.5));
+  document.querySelectorAll('#plot-svg path[id^="us-"]').forEach((p) => add(p.id, p.getBBox().y - 0.75));
+  const pk = document.getElementById("pk-dot"); if (pk) add("peak ring", Number(pk.getAttribute("cy")) - Number(pk.getAttribute("r")) - Number(pk.getAttribute("stroke-width")) / 2);
+  const dr = document.getElementById("pk-drop"); if (dr) add("peak drop", dr.getBBox().y);
+  const tg = document.getElementById("peak-tag"); if (tg) add("peak tag", tg.getBoundingClientRect().top - pr.top);
+  const eh = document.getElementById("end-halo"), ed = document.getElementById("end-dot");
+  if (eh) add("end halo", Number(eh.getAttribute("cy")) - Number(eh.getAttribute("r")) - 0.5);
+  if (ed) add("end point", Number(ed.getAttribute("cy")) - Number(ed.getAttribute("r")) - 1);
+  const ping = document.querySelector(".ping"); if (ping) add("pulse", Number(ping.style.top.replace("px", "")) - 14);
+  document.querySelectorAll("#plot-svg path[stroke^='rgba(255,255,255']").forEach((p) => { const m = /M[-\d.]+,([-\d.]+)/.exec(p.getAttribute("d")); if (m) add("grid", Number(m[1]) - 0.5); });
+  document.querySelectorAll("#plot-svg circle").forEach((c) => { if (!["pk-dot", "end-halo", "end-dot"].includes(c.id)) add("axis dot", Number(c.getAttribute("cy")) - Number(c.getAttribute("r"))); });
+  let hair = Infinity; document.querySelectorAll('#plot-svg rect[fill="url(#hair)"]').forEach((r) => { hair = Math.min(hair, Number(r.getAttribute("y"))); }); if (hair < Infinity) add("fine lines", hair);
+  document.querySelectorAll(".ax-y, .ax-x").forEach((e) => add(`label ${e.textContent}`, e.getBoundingClientRect().top - pr.top));
+  marks.sort((a, b) => a.top - b.top);
+  let y = Infinity;
+  document.querySelectorAll('#plot-svg path[id^="ln-"], #plot-svg path[id^="us-"]').forEach((p) => { const L = p.getTotalLength(); for (let s = 0; s <= L; s += 1) y = Math.min(y, p.getPointAtLength(s).y); y = Math.min(y, p.getPointAtLength(L).y); });
+  return { lane: window.__eclipse.chart.lane, highest: marks.slice(0, 3), sampledLineTop: Math.round((y - 1.5) * 100) / 100 };
+});
 
 /* ------------------------------------------------------------------ Round 6 checks */
 async function chartChecks(lang, state = "live", marker = "b") {
@@ -695,27 +826,43 @@ async function chartChecks(lang, state = "live", marker = "b") {
     await page.evaluate((k) => window.__eclipse.chart.select(k), s.key);
     res.perStop.push({ key: s.key, kind: s.kind, time: s.time, value: s.value, ...(await measureMarker(page)), tipBox: await measureTip(page, s.clientX) });
   }
-  // The tooltip (the follow-up round after step 3): one width at every stop, the number (or the word) at the same place
-  // against the hairline on each side, and nothing wraps or clips.
+  // The tooltip: one width at every stop (the follow-up round after step 3), and, since the lane round (2026-09-28), the lane
+  // rules: the box's top is the lane's top at every stop; its x is its stop's x less half its width, kept 2px inside the
+  // plot; it lies inside the plot and the card and its lane, with nothing wrapped or clipped; its connector meets the box
+  // and the mark (0.5px); and nothing else is painted in the lane. (The other snapshots are swept by the lane probes.)
   {
     const boxes = res.perStop.map((p) => p.tipBox).filter(Boolean);
-    const spread = (v) => (v.length ? Math.round((Math.max(...v) - Math.min(...v)) * 100) / 100 : null);
-    const bySide = {};
-    for (const side of ["left", "right"]) {
-      const nums = res.perStop.filter((p) => p.tipBox?.side === side && p.tipBox.leadIsNumber).map((p) => p.tipBox.leadStartMinusHairline);
-      // The missing-span stop may be wider than the rest (the 127 px round), so its word may start elsewhere.
-      const all = res.perStop.filter((p) => p.tipBox?.side === side && p.kind !== "gap").map((p) => p.tipBox.leadStartMinusHairline);
-      if (all.length) bySide[side] = { stops: all.length, numberStops: nums.length, numberStartMinusHairline: nums.length ? [Math.min(...nums), Math.max(...nums)] : null, numberSpreadPx: spread(nums), leadSpreadPx: spread(all) };
-    }
     // The width is set by the widest tooltip that shows a number; only the missing-span stop (no number) may grow past it.
     const fixedBoxes = res.perStop.filter((p) => p.tipBox && p.kind !== "gap").map((p) => p.tipBox);
     const grown = res.perStop.filter((p) => p.tipBox && p.kind === "gap").map((p) => p.tipBox);
-    res.tooltip = { widths: [...new Set(fixedBoxes.map((b) => b.width))], gapWidths: [...new Set(grown.map((b) => b.width))], widestContent: Math.max(...boxes.filter((b) => b.numbered).map((b) => b.natural)), bySide, clipped: res.perStop.filter((p) => p.tipBox?.clipped).map((p) => p.key), wrapped: res.perStop.filter((p) => p.tipBox?.wrapped).map((p) => p.key) };
+    res.tooltip = { widths: [...new Set(fixedBoxes.map((b) => b.width))], gapWidths: [...new Set(grown.map((b) => b.width))], widestContent: Math.max(...boxes.filter((b) => b.numbered).map((b) => b.natural)), clipped: res.perStop.filter((p) => p.tipBox?.clipped).map((p) => p.key), wrapped: res.perStop.filter((p) => p.tipBox?.wrapped).map((p) => p.key) };
     // Repair 1 of the follow-up round (the user's decision, 2026-09-27): the width follows the chart, the widest
     // tooltip that shows a number among the page's current stops, plus 2px, rounded up (as the page measured it).
     res.tooltip.ruleWidth = Math.ceil(res.tooltip.widestContent + 2);
     res.tooltip.measuredByPage = await page.evaluate(() => window.__eclipse.chart.tipWidth);
-    res.tooltip.pass = boxes.length === res.perStop.length && res.tooltip.widths.length === 1 && res.tooltip.widths[0] === res.tooltip.ruleWidth && res.tooltip.measuredByPage.widthPx === res.tooltip.ruleWidth && res.tooltip.widestContent <= res.tooltip.widths[0] && grown.every((b) => b.width >= res.tooltip.widths[0] && b.width >= b.natural - 0.01) && Object.values(bySide).every((b) => b.leadSpreadPx <= 0.5) && !res.tooltip.clipped.length && !res.tooltip.wrapped.length;
+    // The lane.
+    const lm = await laneMarks(page);
+    const lane = lm.lane, tops = [...new Set(boxes.map((b) => b.top))];
+    const clampLeft = (b) => Math.max(2, Math.min(b.plotW - b.width - 2, b.stopX - b.width / 2));
+    const xErr = boxes.length ? Math.max(...boxes.map((b) => Math.abs(b.left - clampLeft(b)))) : null;
+    const conns = res.perStop.filter((p) => p.tipBox && p.tipBox.conn).map((p) => ({ key: p.key, ...p.tipBox.conn, boxLeft: p.tipBox.left, boxW: p.tipBox.width }));
+    const ringGlowTop = (p) => (p.marker ? p.marker.y - (p.form === "usual" ? 7.2 : p.form === "gap" ? 7 : 6.5 + 1.75 + 3 * 2.4) : null);
+    const selectedTops = res.perStop.map(ringGlowTop).filter((v) => v != null);
+    res.tooltip.lane = {
+      top: lane.top, bottom: lane.bottom, height: lane.height, gapToScale: lane.gap, scaleStartsAtPx: lane.scaleTop,
+      tallestTooltipPx: Math.max(...boxes.map((b) => b.height)), lowestTooltipBottomPx: Math.max(...boxes.map((b) => b.top + b.height)),
+      distinctTops: tops, topsEqual: tops.length === 1 && Math.abs(tops[0] - lane.top) <= 0.01,
+      maxXErrPx: xErr == null ? null : Math.round(xErr * 1000) / 1000, xOk: xErr != null && xErr <= 0.01,
+      insidePlot: boxes.every((b) => b.insidePlot), insideCard: boxes.every((b) => b.insideCard),
+      highestMarks: lm.highest, sampledLineTopPx: lm.sampledLineTop,
+      smallestGapToHighestMarkPx: Math.round((Math.min(lm.highest[0].top, lm.sampledLineTop, ...selectedTops) - lane.bottom) * 100) / 100,
+      connector: { stops: conns.length, styles: [...new Set(conns.map((c) => c.style))], maxGapToBoxPx: Math.max(...conns.map((c) => c.gapToBox)), maxGapToMarkPx: Math.max(...conns.map((c) => Math.abs(c.gapToMark))), xInsideBox: conns.every((c) => c.x >= c.boxLeft && c.x <= c.boxLeft + c.boxW) },
+    };
+    const L = res.tooltip.lane;
+    L.reserved = L.smallestGapToHighestMarkPx >= 0 && L.lowestTooltipBottomPx <= lane.bottom + 0.01 && L.tallestTooltipPx <= lane.height;
+    L.connectorMeets = conns.length === boxes.length && L.connector.maxGapToBoxPx <= 0.5 && L.connector.maxGapToMarkPx <= 0.5 && L.connector.xInsideBox;
+    L.pass = L.topsEqual && L.xOk && L.insidePlot && L.insideCard && L.reserved && L.connectorMeets;
+    res.tooltip.pass = boxes.length === res.perStop.length && res.tooltip.widths.length === 1 && res.tooltip.widths[0] === res.tooltip.ruleWidth && res.tooltip.measuredByPage.widthPx === res.tooltip.ruleWidth && res.tooltip.widestContent <= res.tooltip.widths[0] && grown.every((b) => b.width >= res.tooltip.widths[0] && b.width >= b.natural - 0.01) && !res.tooltip.clipped.length && !res.tooltip.wrapped.length && L.pass;
   }
   const on = (kinds) => res.perStop.filter((p) => kinds.includes(p.kind) && p.distancePx != null).map((p) => p.distancePx);
   res.maxDistancePx = {
@@ -1067,8 +1214,8 @@ async function captureIntro() {
   out.fontCache.files = FONT_CACHE.size;
   // 1. First open, then a reload in the same tab (AR and EN; live, delayed and no history).
   for (const [name, q] of INTRO_PAGES) {
-    let stillSha = PRE[name] || null, against = "pre-motion frame";
-    const stillAgain = PRE[name] ? null : async () => { const s = await open(q); const b = await s.page.screenshot(); await s.context.close(); return b; };
+    let stillSha = PRE_REF[name] || null, against = "pre-motion frame";
+    const stillAgain = PRE_REF[name] ? null : async () => { const s = await open(q); const b = await s.page.screenshot(); await s.context.close(); return b; };
     if (!stillSha) { stillSha = sha(await stillAgain()); against = "this run's reduced-motion frame"; }
     const { context, page, errors } = await newPage({ motion: true, fontCache: true });
     await context.addInitScript(INTRO_PROBE);
@@ -1165,7 +1312,8 @@ async function captureIntro() {
       s.domEqualsMotionOff = (await restDom(page)) === domOff;
       await page.addStyleTag({ content: HIDE_PULSE });
       await page.waitForTimeout(60);
-      const endM = await exact(`intro slow fonts ${lang}@${delay}ms end`, await page.screenshot(), PRE[name], async () => {
+      const ref = await stillRef(name, q);
+      const endM = await exact(`intro slow fonts ${lang}@${delay}ms end`, await page.screenshot(), ref.expected, async () => {
         const n = await newPage({ motion: true, fontDelayMs: delay });
         await n.page.goto(`${ORIGIN}/index.html?${q}`, { waitUntil: "networkidle" });
         await n.page.waitForFunction(() => window.__eclipse?.ready === true);
@@ -1177,7 +1325,7 @@ async function captureIntro() {
         const b = await n.page.screenshot();
         await n.context.close();
         return b;
-      });
+      }, ref.reference);
       s.endIdenticalToStill = endM.identical;
       s.endAttempts = endM.attempts;
       s.onlyCachedFonts = FONT_CACHE.size === cached;
@@ -1250,7 +1398,8 @@ async function captureIntro() {
     const hideTuner = await page.addStyleTag({ content: `${HIDE_PULSE} .tuner { visibility: hidden !important; }` });
     await page.mouse.move(720, 20);
     await page.waitForTimeout(80);
-    const replayM = await exact("intro replay end", await page.screenshot(), PRE["daily-ar-1440x900"], async () => {
+    const replayRef = await stillRef("daily-ar-1440x900", "lang=ar&tuner=0");
+    const replayM = await exact("intro replay end", await page.screenshot(), replayRef.expected, async () => {
       const n = await newPage({ motion: true, fontCache: true });
       await n.page.goto(`${ORIGIN}/index.html?lang=ar`, { waitUntil: "networkidle" });
       await n.page.waitForFunction(() => window.__eclipse?.ready === true);
@@ -1265,7 +1414,7 @@ async function captureIntro() {
       const b = await n.page.screenshot();
       await n.context.close();
       return b;
-    });
+    }, replayRef.reference);
     r.replayEndIdenticalToStill = replayM.identical;
     r.replayEndAttempts = replayM.attempts;
     await hideTuner.evaluate((n) => n.remove());
@@ -1309,7 +1458,7 @@ async function captureIntro() {
   const yields = {};
   const yieldCells = [];
   {
-    const railPre = PRE["daily-ar-1440x900-rail-open"];
+    const railRef = await stillRef("daily-ar-1440x900-rail-open", "lang=ar&tuner=0", async (p) => { await act(p, { act: "rail-open" }); await p.waitForTimeout(200); });
     let canonStep = null, canonStepDom = null, canon1280 = null;
     // The reference for the resize: a fresh 1280x800 page, rendered in this run (so rendered again on a difference).
     const fresh1280 = async () => { const c = await open("lang=ar&tuner=0", { width: 1280, height: 800 }); const b = await c.page.screenshot(); await c.context.close(); return b; };
@@ -1378,7 +1527,7 @@ async function captureIntro() {
           await page.mouse.move(720, 40);
           await page.waitForTimeout(300);
           r.railOpen = await page.evaluate(() => document.getElementById("brand").getAttribute("aria-expanded"));
-          const m = await exact(`intro yields to the rail at ${at} ms, settled`, await page.screenshot(), railPre, yieldAgain("rail", at));
+          const m = await exact(`intro yields to the rail at ${at} ms, settled`, await page.screenshot(), railRef.expected, yieldAgain("rail", at), railRef.reference);
           r.settledIdenticalToStill = m.identical;
           r.attempts = m.attempts;
           r.pass = r.railOpen === "true" && r.settledIdenticalToStill;
@@ -1516,6 +1665,8 @@ async function captureMotion() {
     const widest = Math.max(...pages.map((v) => v.tooltip.widestContent));
     const at = Object.entries(M.chart).flatMap(([k, v]) => v.perStop.filter((p) => p.tipBox?.numbered && p.tipBox.natural === widest).map((p) => `${k} ${p.key}`));
     M.tooltipWidth = { widths, gapWidths: [...new Set(pages.flatMap((v) => v.tooltip.gapWidths))], widestNumberedContentPx: widest, widestContentPx: widest, widestAt: at, marginPx: widths.length === 1 ? Math.round((widths[0] - widest) * 100) / 100 : null, pass: widths.length === 1 && widest <= widths[0] && pages.every((v) => v.tooltip.pass) };
+    // The lane round: the lane's rules, per page (AR and EN; live, delayed and no history) at the page's own snapshot.
+    M.tooltipLane = { pages: Object.fromEntries(Object.entries(M.chart).map(([k, v]) => [k, v.tooltip.lane])), pass: Object.values(M.chart).every((v) => v.tooltip.lane.pass) };
   }
 
   // 3b. Round 7 step 2: B's variants, form A gone, the hover speed.
@@ -1748,12 +1899,13 @@ async function captureMotion() {
       await page.mouse.move(720, 40);
       await page.waitForTimeout(300);
       if (lang === "ar") {
-        const railM = await exact("rail AR open, settled", await page.screenshot(), PRE["daily-ar-1440x900-rail-open"], recapture("lang=ar&tuner=0", { motion: true }, async (p) => {
+        const railRef = await stillRef("daily-ar-1440x900-rail-open", "lang=ar&tuner=0", async (p) => { await act(p, { act: "rail-open" }); await p.waitForTimeout(200); });
+        const railM = await exact("rail AR open, settled", await page.screenshot(), railRef.expected, recapture("lang=ar&tuner=0", { motion: true }, async (p) => {
           await p.addStyleTag({ content: HIDE_PULSE });
           await p.click("#brand");
           await p.mouse.move(720, 40);
           await p.waitForTimeout(700);
-        }));
+        }), railRef.reference);
         rail.arOpenSettledIdenticalToStatic = railM.identical;
         rail.arOpenSettledAttempts = railM.attempts;
         await page.click("#brand");
@@ -1794,7 +1946,8 @@ async function captureMotion() {
   const fo = Object.values(identity.firstOpen), rl = Object.values(identity.reload);
   console.log(`motion: off-frames identical ${Object.values(identity.motionOffFrames).filter((v) => v.identical).length}/${Object.keys(identity.motionOffFrames).length}; intro end = still frame ${fo.filter((v) => v.endIdenticalToStill).length}/${fo.length}, reload without intro = still frame ${rl.filter((v) => v.pass).length}/${rl.length}; live ends at canonical ${identity.liveUpdateEndsAtCanonical?.identicalWithPulseHidden} (DOM ${identity.liveUpdateEndsAtCanonical?.domEqual})`);
   for (const k of Object.keys(c)) console.log(`chart ${k}: ${c[k].pass ? "pass" : "FAIL"}; stops ${c[k].stops.length}; marker max distance line ${c[k].maxDistancePx.lineStops} px, peak ${c[k].maxDistancePx.peak}, usual ${c[k].maxDistancePx.usualLine}, gap ${c[k].maxDistancePx.gapMark}; pointer ${c[k].pointer.filter((p) => p.pass).length}/${c[k].pointer.length}; keyboard ${c[k].keyboard.pass}`);
-  console.log(`tooltip: ${M.tooltipWidth.pass ? "pass" : "FAIL"}; width ${M.tooltipWidth.widths.join("/")} px on every page (the missing-span stop ${M.tooltipWidth.gapWidths.join("/")} px), widest numbered content ${M.tooltipWidth.widestContentPx} px (${M.tooltipWidth.widestAt.join(", ")}); the number's start against the hairline, spread per side: ${Object.entries(c).map(([k, v]) => `${k} ${Object.entries(v.tooltip.bySide).map(([sd, b]) => `${sd} ${b.numberSpreadPx}`).join("/")}`).join("; ")}`);
+  console.log(`tooltip: ${M.tooltipWidth.pass ? "pass" : "FAIL"}; width ${M.tooltipWidth.widths.join("/")} px on every page (the missing-span stop ${M.tooltipWidth.gapWidths.join("/")} px), widest numbered content ${M.tooltipWidth.widestContentPx} px (${M.tooltipWidth.widestAt.join(", ")})`);
+  console.log(`tooltip lane: ${M.tooltipLane.pass ? "pass" : "FAIL"}; ${Object.entries(M.tooltipLane.pages).map(([k, L]) => `${k} top ${L.top} px, height ${L.height} px, scale starts at ${L.scaleStartsAtPx} px, smallest gap to the highest mark ${L.smallestGapToHighestMarkPx} px, x error ${L.maxXErrPx} px, connector to box ${L.connector.maxGapToBoxPx} px and to mark ${L.connector.maxGapToMarkPx} px`).join("; ")}`);
   console.log(`follow: ${Object.entries(M.follow).map(([k, v]) => `${k} ${v.pass}`).join(", ")}; roll: ar ${M.roll.ar.pass}, en ${M.roll.en.pass}; delayed ${M.delayed.pass}; rail ${M.rail.pass}`);
 }
 
@@ -2055,7 +2208,7 @@ const targets = {
   insideNowReference: "reference light 4 at y=0.98: far corner 0.45, middle 0.19-0.30, lit corner 0.74-0.79; at y=0.95 the middle 0.15 (coordinator's measurement)",
   markerToLine: "<= 0.5 px at every stop (NEXT-DIRECTION-BRIEF Round 6 decision 5, coordinator's target)",
 };
-const allTrue = (o, k) => Object.values(o).every((v) => v[k] === true || v.expectedToChange);
+const allTrue = (o, k) => Object.values(o).every((v) => v[k] === true || (v.expectedToChange && (!v.outsidePlot || v.outsidePlot.identical)));
 const motionSummary = {
   method: "Pre-motion frames: evidence/pre-motion-hashes.json (SHA-256 of the v3 frames before motion). The capture is byte-deterministic, so equal hashes mean identical pixels.",
   staticFramesIdentical: MOTION_ONLY ? "not run (--motion-only)" : allTrue(identity.staticFrames, "identical"),
@@ -2081,6 +2234,7 @@ const motionSummary = {
     entries: recaptures,
   },
   tooltipWidth: motionLog.tooltipWidth ?? null,
+  tooltipLane: motionLog.tooltipLane ?? null,
   markerMaxDistancePx: motionLog.chart ? Object.fromEntries(Object.entries(motionLog.chart).map(([k, v]) => [k, v.maxDistancePx])) : null,
   identity,
   ...motionLog,
@@ -2094,7 +2248,8 @@ if (!tunerCheck?.motionGroup?.pass) console.log("Tuner Motion group check did no
 if (!tunerCheck?.crowdFromFile?.pass) console.log("Tuner crowd change from file:// with motion did not pass; see tunerFileCheck.crowdFromFile.");
 // The static guard: with reduced motion (the still frames) and with ?motion=off, every frame except the ones that change
 // by design must equal its pre-motion frame. A difference fails the run (exit code 1).
-const changed = Object.entries(identity.staticFrames).filter(([, v]) => !v.identical && !v.expectedToChange).map(([k]) => k);
+// The lane round: a frame the lane changes must still equal 8ae88f3 outside the plot element (and must have been compared).
+const changed = Object.entries(identity.staticFrames).filter(([k, v]) => (!v.identical && !v.expectedToChange) || (v.expectedToChange && ((v.outsidePlot && !v.outsidePlot.identical) || (OUTSIDE_PLOT[k] && !v.outsidePlot)))).map(([k]) => k);
 const changedOff = Object.entries(identity.motionOffFrames).filter(([, v]) => !v.identical).map(([k]) => k);
 // Round 7 step 3: the first-paint rule is now the intro's. A first open plays it and ends exactly at the still frame
 // (pixels and DOM, only the pulse running after it); a reload in the same tab has no intro and is the still frame.
@@ -2103,11 +2258,11 @@ const firstPaintBad = [
   ...Object.entries(identity.reload).filter(([, v]) => !v.pass).map(([k]) => `${k} (reload)`),
 ];
 const compared = Object.values(identity.staticFrames);
-if (!MOTION_ONLY) console.log(changed.length ? `STATIC GUARD FAILED (reduced motion): ${changed.join(", ")}` : `Static guard, reduced motion: ${compared.filter((v) => v.identical).length} of ${compared.length} pre-motion frames identical; the other ${compared.filter((v) => !v.identical).length} change by design (${Object.keys(EXPECTED_TO_CHANGE).join(", ")}).`);
+if (!MOTION_ONLY) console.log(changed.length ? `STATIC GUARD FAILED (reduced motion): ${changed.join(", ")}` : `Static guard, reduced motion: ${compared.filter((v) => v.identical).length} of ${compared.length} pre-motion frames identical; the other ${compared.filter((v) => !v.identical).length} change by design (${Object.keys(EXPECTED_TO_CHANGE).join(", ")}); of those, ${compared.filter((v) => v.outsidePlot?.identical).length} of ${compared.filter((v) => v.outsidePlot).length} are identical to 8ae88f3 everywhere outside the plot element.`);
 console.log(changedOff.length ? `STATIC GUARD FAILED (?motion=off): ${changedOff.join(", ")}` : `Static guard, ?motion=off: all ${Object.keys(identity.motionOffFrames).length} frames identical (pre-motion frame, or this run's still frame for the frames that change by design).`);
 console.log(firstPaintBad.length ? `INTRO END STATE OR RELOAD FAILED: ${firstPaintBad.join(", ")}` : `First open with motion on: the intro plays and ends identical to the still frame, only the live pulse runs after it; a same-tab reload has no intro and is the still frame (${Object.keys(identity.firstOpen).length} pages each).`);
 console.log(`Recaptures: ${recaptures.length} exact comparisons; ${recaptures.filter((v) => v.attempts === 1 && v.identical).length} matched at once; noise (differed once, then matched) ${recaptures.filter((v) => v.noise).length}${recaptures.some((v) => v.noise) ? ` (${recaptures.filter((v) => v.noise).map((v) => v.label).join(", ")})` : ""}; differed twice ${recaptures.filter((v) => v.differedTwice).length}${recaptures.some((v) => v.differedTwice) ? ` (${recaptures.filter((v) => v.differedTwice).map((v) => v.label).join(", ")})` : ""}.`);
-const round6 = motionLog.chart ? [motionLog.tooltipWidth?.pass, ...Object.values(motionLog.chart).map((v) => v.pass), ...Object.values(motionLog.follow).map((v) => v.pass), motionLog.marker?.pass, motionLog.roll.ar.pass, motionLog.roll.en.pass, motionLog.delayed.pass, motionLog.rail.pass, identity.liveUpdateEndsAtCanonical?.domEqual] : [false];
+const round6 = motionLog.chart ? [motionLog.tooltipWidth?.pass, motionLog.tooltipLane?.pass, ...Object.values(motionLog.chart).map((v) => v.pass), ...Object.values(motionLog.follow).map((v) => v.pass), motionLog.marker?.pass, motionLog.roll.ar.pass, motionLog.roll.en.pass, motionLog.delayed.pass, motionLog.rail.pass, identity.liveUpdateEndsAtCanonical?.domEqual] : [false];
 if (round6.some((v) => !v)) console.log("A Round 6 or Round 7 check did not pass; see motion.chart, follow, marker, roll, delayed, rail and liveUpdateEndsAtCanonical in the log.");
 const introOk = Boolean(motionLog.intro?.pass);
 if (!introOk) console.log("An intro check did not pass; see motion.intro (slowFonts, whenItPlays, yields, held) and motion.identity.firstOpen / reload in the log.");

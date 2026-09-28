@@ -1,0 +1,194 @@
+{
+  "note": "SHA-256 of the frame's size and pixels with the plot element's pixel box (whole pixels covering its fractional edges; and, in the frames with the rail open, the rail's box, whose glass blurs the plot behind it) zeroed, for the frames the lane round changes, taken from 8ae88f3's committed evidence PNGs. capture.mjs requires each changed frame to have the same box and the same hash: nothing outside the plot element differs from 8ae88f3.",
+  "from": "8ae88f3",
+  "frames": {
+    "daily-ar-1440x900": {
+      "boxes": [
+        {
+          "x0": 43,
+          "y0": 363,
+          "x1": 1293,
+          "y1": 867
+        }
+      ],
+      "sha": "cee4228d5a7569ced1bfc13269738128bbae20ee3f4eafebe5bbfb41e5f0099b"
+    },
+    "daily-en-1440x900": {
+      "boxes": [
+        {
+          "x0": 147,
+          "y0": 363,
+          "x1": 1397,
+          "y1": 867
+        }
+      ],
+      "sha": "cd60655e62dff7fa04b479247bfee7a7ed67a7721cd5401d87e43b72050aba73"
+    },
+    "daily-ar-1440x900-hover": {
+      "boxes": [
+        {
+          "x0": 43,
+          "y0": 363,
+          "x1": 1293,
+          "y1": 867
+        }
+      ],
+      "sha": "cee4228d5a7569ced1bfc13269738128bbae20ee3f4eafebe5bbfb41e5f0099b"
+    },
+    "daily-en-1440x900-hover": {
+      "boxes": [
+        {
+          "x0": 147,
+          "y0": 363,
+          "x1": 1397,
+          "y1": 867
+        }
+      ],
+      "sha": "cd60655e62dff7fa04b479247bfee7a7ed67a7721cd5401d87e43b72050aba73"
+    },
+    "daily-ar-1440x900-rail-open": {
+      "boxes": [
+        {
+          "x0": 43,
+          "y0": 363,
+          "x1": 1293,
+          "y1": 867
+        },
+        {
+          "x0": 1188,
+          "y0": 16,
+          "x1": 1424,
+          "y1": 884
+        }
+      ],
+      "sha": "cc5ed71a6ed9ae6946b3418420c3a3090b1139e1f872321f09e47bfb4f0ed869"
+    },
+    "daily-en-1440x900-rail-open": {
+      "boxes": [
+        {
+          "x0": 147,
+          "y0": 363,
+          "x1": 1397,
+          "y1": 867
+        },
+        {
+          "x0": 16,
+          "y0": 16,
+          "x1": 252,
+          "y1": 884
+        }
+      ],
+      "sha": "5dc2f53ed0c6afd4a11761296aebacc872045beb4288b76e967dd8ff08ce9be1"
+    },
+    "daily-ar-1440x900-delayed": {
+      "boxes": [
+        {
+          "x0": 43,
+          "y0": 363,
+          "x1": 1293,
+          "y1": 867
+        }
+      ],
+      "sha": "e2f780554e7f0bd1c7350ec33caca91b60e365892aacad479b76597f0341db88"
+    },
+    "daily-ar-1440x900-nohistory": {
+      "boxes": [
+        {
+          "x0": 43,
+          "y0": 363,
+          "x1": 1293,
+          "y1": 867
+        }
+      ],
+      "sha": "c6d07c430f2cbe51b2fc28252208b1203e3ad183612399f879dce750087bb448"
+    },
+    "daily-ar-1440x900-details": {
+      "boxes": [
+        {
+          "x0": 43,
+          "y0": 363,
+          "x1": 1293,
+          "y1": 867
+        }
+      ],
+      "sha": "1f0dfc09c0163940b5406d6029e53c4be1ae4aa4319ed467f08bdbc12450b29c"
+    },
+    "daily-ar-1440x900-tuner-open": {
+      "boxes": [
+        {
+          "x0": 43,
+          "y0": 363,
+          "x1": 1293,
+          "y1": 867
+        }
+      ],
+      "sha": "b5a7feb5e9c4fe2a2821d90017b28a7853011f4ac543bc6164a9d8f3daa4522a"
+    },
+    "preset-v2-ar-1440x900": {
+      "boxes": [
+        {
+          "x0": 43,
+          "y0": 363,
+          "x1": 1293,
+          "y1": 867
+        }
+      ],
+      "sha": "e2ec08ab5dd09db88d47d986ee5de92e451c9a89f3982b2a2f06327a8fb6b407"
+    },
+    "preset-a-like-ar-1440x900": {
+      "boxes": [
+        {
+          "x0": 43,
+          "y0": 363,
+          "x1": 1293,
+          "y1": 867
+        }
+      ],
+      "sha": "8c9abe8e801d0030a25d5a46ac3f4482ef2002477db27de782c45b50364536f9"
+    },
+    "preset-recommended-ar-1440x900": {
+      "boxes": [
+        {
+          "x0": 43,
+          "y0": 363,
+          "x1": 1293,
+          "y1": 867
+        }
+      ],
+      "sha": "cee4228d5a7569ced1bfc13269738128bbae20ee3f4eafebe5bbfb41e5f0099b"
+    },
+    "preset-v2-chart-2x": {
+      "boxes": [
+        {
+          "x0": 54,
+          "y0": 146,
+          "x1": 2554,
+          "y1": 1154
+        }
+      ],
+      "sha": "d23361ec8b69963a89aa251b6c8f75374c6ece9f6226e79d6798b87c048f1e82"
+    },
+    "preset-a-like-chart-2x": {
+      "boxes": [
+        {
+          "x0": 54,
+          "y0": 146,
+          "x1": 2554,
+          "y1": 1154
+        }
+      ],
+      "sha": "a063ffb5b505d804e409a9c5c1c1d33147c07afd80cf712cc3612aea46cbcbe6"
+    },
+    "preset-recommended-chart-2x": {
+      "boxes": [
+        {
+          "x0": 54,
+          "y0": 146,
+          "x1": 2554,
+          "y1": 1154
+        }
+      ],
+      "sha": "2afa2d0085bdf5314423a2d5c83f855241d0821a737da4770905c7241ad07ecb"
+    }
+  }
+}

@@ -1,5 +1,16 @@
 # Eclipse v3 (Owner r04, full Daily page)
 
+**Lane round (2026-09-28, run `owner_lane_r04_s04`; the user's decision):** the tooltip no longer floats near its point.
+The same box (content, start-aligned layout, colours and width rule unchanged) lives in a fixed lane at the top of the
+plot. It moves sideways only, is centred on its stop and stopped 2 px inside the plot's sides, and a thin connector joins
+it to the mark it describes. Nothing else is ever drawn in the lane, so the scale starts lower: 94 px lower while live
+(option (a), chosen; see "Tooltip lane" under "Motion", 6). Every frame that shows the plot changes, and nothing outside
+the plot element does. This supersedes every floating-placement rule (side, flip, clamp, above and below, the 12 px
+gap from the hairline, the 11 px end-point clearance with its alternatives, the peak tag's covered state) and round P
+(withdrawn); Repairs 1-4 below, the follow-up round's placement lines and the tooltip-placement numbers under "Evidence"
+describe the floating placement and stay only as history. The follow's curve and speed (now horizontal only), text
+changing at once, the intro and every truthfulness rule are unchanged.
+
 **Repair 4 (2026-09-28):** gap and no-history moves now use their actual reduced-motion rest anchors. A width
 change applies immediately away from the pinned edge; a placement-mode change eases. The box's existing ease
 continues through a morph's end, and delayed minute ticks use the reading path. Planted output is also refused inside
@@ -369,7 +380,8 @@ and `setMarker`. The one part of A that stays is its missing-span variant, the l
 `paintMarker()` in `app.js`.
 
 - **Common to every stop:**
-  - Nothing above the point: no guide line, no level ticks.
+  - Nothing above the point: no guide line, no level ticks. The one exception (the lane round) is the tooltip's
+    connector, which is drawn behind the ring, in `#conn` and not in `#sel` (see "Tooltip lane").
   - Below the point, that moment's own thin red hairline runs down to the time axis. It starts 10px below the point.
   - The marker sits on what its tooltip describes (see "Measured" above).
 - **The ring:** 6.5px radius, a 1.5px `#FF2946` edge and a dark centre (the card's own `#0F0E0F`). The line passes behind
@@ -410,26 +422,90 @@ and `setMarker`. The one part of A that stays is its missing-span variant, the l
   - The screen-reader text never calls it an average: «7:42 م، آخر قراءة، 49 داخل الصالة، الازدحام مزدحم، المعتاد 45».
     While delayed it adds how old it is: «آخر قراءة قبل 13 دقيقة».
   - The tuner's simulated crowd-level change still changes the card only, as before; the latest stop keeps the reading.
-- **Tooltip placement:** before now the box starts on the earlier side of the hairline; after now it starts on the
-  later side. It keeps the 12 px side gap, flips when that side does not fit, and sits above the point (or below when
-  there is no room above). Over the gap it sits above both ends of the line. In every state the box clears the centre
-  of today's end point by at least 11 px, the 9 px halo radius plus 2 px, even when the halo is hidden. If the usual
-  placement would breach that clearance, the box is centred above its stop and clamped 2 px inside the plot. If above
-  has no room, it centres below; if that still breaches the clearance, it makes the smallest vertical shift that
-  clears it, preferring upward on a tie. The alternatives use the box's rendered height: when the centred-above
-  position is clear, its bottom is 10 px above the selected point. A side or placement change, including the amount
-  of a vertical shift and a change caused by a reading, follows the box's eased curve from its displayed position and
-  velocity. The 11 px rule applies at rest; a moving box may briefly pass closer to the end point. There is no
-  mid-path projection or side lock.
-  - **Repair 4:** the gap tooltip's anchor is 12 px above the higher of the two line ends, as at reduced-motion
-    rest; the gap marker stays on the time axis. Without history, a still-ahead stop anchors at its own x and
-    35% of the chart's y range from its top, exactly as reduced motion does. Neither target depends on a missing point.
-  - A same-mode width change pins the hairline-side edge of an ordinary left/right box (right/left respectively).
-    The new width applies immediately and grows away from that edge. Clearance alternatives pin their centre.
-    Only anchor travel eases; a simultaneous placement-mode change eases from the displayed box and velocity.
-  - The current ease advances to the current time before a moving clearance target is retargeted. The canonical
-    repaint at the morph's end retains its clock and velocity. A delayed minute tick uses the same reading path;
-    pure width growth still obeys the immediate-width rule above.
+- **Tooltip lane (the user's decision, 2026-09-28; run `owner_lane_r04_s04`).** The box lives in a fixed band at the top of
+  the plot. It replaces the floating placement (side, flip, clamp, above and below, the 12 px gap, the 11 px end-point
+  clearance, the centred and shifted alternatives, the peak tag's covered state) and round P.
+  - **The lane:** its top is 2 px below the plot's top (`LANE.top`) at every stop, snapshot, state, language and font;
+    its height is the tallest tooltip among the chart's current stops, measured with the width on the same hidden copies
+    and rounded up to a whole pixel: **89 px live** (the peak and the latest reading, which have the label chip), **109 px
+    delayed** (the latest reading also has the age row) and **69 px without history** (no tooltip has the usual row).
+    Heights come from the line height, so they are the same in Arabic and English and in Readex Pro and the fallback font.
+    If a font swap ever changes the height, the chart is drawn again. `window.__eclipse.chart.lane` reports the numbers.
+  - **Reserved:** nothing but the tooltip is drawn in it, in any case: not today's line or its caps, the usual line, the
+    marker ring and its glow, the hairlines, the peak ring, drop and tag, the end point, its halo and the pulse, nor the
+    scale's and axes' labels and grid. The scale starts `LANE.gap` = 8 px below the lane: the "80" label's box (18 px tall)
+    is the highest mark, its top 8 px below the lane's bottom, so the scale's top line is at 108 px (live), 128 px (delayed)
+    or 88 px (no history) from the plot's top, where it was 14 px.
+  - **What it costs (option (a), the smallest change that reserves the lane):** the same scale (0 to 80) is drawn shorter.
+    Live, it loses 94 px of 454 at 1440×900 (20.7%), of 354 at 1280×800 (26.6%) and of 306 at 1024×640 (30.7%); delayed
+    114 px (25.1%, 32.2%, 37.3%; 39.9% in English at 1024×640, where the plot is 20 px shorter); without history 74 px
+    (16.3%, 20.9%, 24.2%). At rest, with nothing selected, the lane is an empty band above the chart.
+  - **Option (b), tighter spacing in the box, was measured and not taken.** It cannot reserve the lane alone: the top mark
+    is 5 px below the plot's top and the box is 89 px tall. It only shortens the lane, and changes the approved box: padding
+    9/10 to 7/8 and row gaps 4/5 to 3/4 saves 6 px live (7 delayed); 6/7 and 2/3 saves 10 (12); 5/6 and 1/2 saves 14 (17).
+    The lane does not need it.
+  - **Sideways:** the box's left is its stop's x less half its width, kept 2 px inside the plot's sides (the closing stop is
+    6 px from the plot's edge, so the box stands at 2 px and the stop is 4 px inside its end, under its rounded corner). The
+    box is placed by \	ransform: translateX\ from a fixed \left: 0\, so moving it never lays anything out (no layout shift).
+    At rest its left is within 0.001 px of that at every stop. Centred on its stop, the box's number starts at one place
+    against the stop's hairline at every stop the plot's sides do not stop (a spread of 0.001 px in AR and EN, live,
+    delayed and without history, in both fonts, at 7:42 PM, 10:00 PM, 12:05 AM and closing).
+  - **The connector:** a thin vertical line from the box's bottom edge to the top of the mark, ending in a small solid
+    pointer (5.4 px wide, 4.2 px tall) whose tip touches the mark's outer edge. It is chalk, never red, and quieter than
+    any data line. It runs behind the usual line and today's line and under the ring, so where it crosses the usual line the
+    data draws over it. Its style says what the mark is:
+    - solid (1 px, 36% chalk) for a reading on today's line: the ring, the peak, the latest reading live and delayed;
+    - dashed (2 on, 3 off, 30% chalk), like the marker's own hairline below it, for the hollow chalk ring on the usual line;
+    - dotted (1.6 px dots every 4 px, 34% chalk), like the axis's dots, for no reading: the missing span's lit dots and the
+      axis tick of a stop still ahead without history. It cannot read as a value or bridge the gap.
+    - **At the peak** it passes behind the peak's tag: the line is cut 3 px above the tag's box and the pointer sits in the
+      few pixels between the tag and the ring. The tag stays whole and always shown.
+    - Where the stop is near a plot side (the closing stop, 4 px from the box's end) the line starts on the box's rounded
+      corner, up to 3 px above the box's bounding rectangle.
+    - It sits on the pixel column that holds the marker's x (up to 0.5 px from its centre).
+  - **Motion:** the box's top never changes. Its x follows the ring: while the ring follows a route, the box is centred on
+    the ring itself, so it moves on the follow's curve with its timing and hover speed. Where the ring moves at once (across
+    the missing span, into the future, onto or off the gap stop) the box eases sideways to its new place on the same curve;
+    if that place is farther than half the box's width (less 4 px), the box moves with the ring, as it does for Home and
+    End, and never trails across the plot. The ring stays under the box, at least 4 px inside its ends, at every frame. The
+    text changes at once. A width change while the box eases (the missing-span stop is wider in English) advances the box's
+    centre by half of it in the direction it is going, so no edge turns back; otherwise a new width centres the box again at
+    once (or pins it at the plot's side). Reduced motion and `?motion=off` show the rest place at once.
+  - **New readings, a resize, a language switch and a state change** place the box by the same rules: a reading eases it
+    from where it is drawn (the ring is on its stop at once), a resize or a page load places it at rest.
+  - **Deleted with the floating placement:** `tipPlacement` (side, flip, clamp, `center-above`/`center-below`,
+    `shift-up`/`shift-down`, the 11 px clearance), `tipPin` and the 12 px gap, the vertical part of the tooltip's ease, `tipAnchor`,
+    `tipForce`, `follow.tipTarget`, the peak tag's `is-covered` toggle and its CSS.
+  - **Measured (Windows machine, headless Chromium, run `owner_lane_r04_s04`; the probes are outside the repository):**
+    - **Rest sweep:** every snapshot from 7:42 PM to closing (318), every stop, AR and EN, live, delayed and without history,
+      web and fallback fonts, at 1440×900, 1280×800, 1024×640 and 390×844: 149,776 tooltips per viewport. The box's top was
+      2.000 px in all of them (at 8ae88f3 it took 976 to 4,632 distinct values per viewport), its left within 0.0006 px of the
+      rule, and it lay inside the plot and the card, with no wrap and no clip. Nothing was painted in the lane: the smallest
+      gap from the lane's bottom to the highest mark (the "80" label's box) was 8.00 px in every one, and the lines sampled
+      every 1 px never came nearer. The tooltip text, `aria-valuetext`, the box's width and `tipWidth` equal 8ae88f3's in
+      every one.
+    - **Motion (virtual 60 fps clock):** 360 runs, 291,624 frames (pointer sweeps at 3, 10 and 30 px per frame both ways, keys
+      including Page keys, Home and End, onto and off the missing span, and 40 new readings with each of seven stops
+      selected), AR and EN, three states, four viewports, both fonts. The box never moved vertically (0.00 px, against up to
+      368 px at 8ae88f3). Its x reversed 0 times in a monotonic sweep (96 times at 8ae88f3). On Home and End the box moves
+      with the ring in the same frame (at 8ae88f3 it took 37-38 frames to arrive, up to 963 px behind the ring; now its
+      centre is at most 26 px from the ring's). Every settled frame equals the reduced-motion rest (0.001 px). The connector
+      met the box (0 px short) and the ring (at most 0.005 px from its edge) in all 291,624 frames, and its x stayed inside
+      the box. The box follows the ring's curve: at 1×, one stop along the line takes 100, 283 and 517 ms to cover 50%, 90% and
+      99% of the step, the same as the ring (0.5×: 183, 550, 1033 ms; 2×: 50, 150, 267 ms).
+    - **Held at the plot's side:** while the ring is between the plot's edge and the point where the box, standing at its 2 px
+      margin, would be centred on it, the box stands still (it is clamped), and then follows the ring at its speed. The literal
+      rule "at least 2 frames under 0.05 px while more than 1 px from rest, then a frame over 3 px" flags this 66 times in 360
+      runs (all at the plot's side, none elsewhere; the longest stand is 8 frames). In each the box's step is at most 0.98 of
+      the ring's step in that frame, so the box is following the ring, not catching up.
+    - **Quality (real time):** 0 console or page errors in the six states; 0 long-animation-frames and 0 long tasks; the
+      largest frame gap was 50.1 ms (8ae88f3: 50.1 ms, twice, in its own run); layout shift went from 0.022-0.033 to 0.00001 or
+      less, because the box is placed by transform. There is no horizontal page scroll at 1440×900 and 1280×800; at 1024×640
+      (22 px) and 390×844 (387 px) the page already scrolls sideways at 8ae88f3, by the same amount.
+    - **Accessibility tree:** identical to 8ae88f3's in 32 of 36 snapshots (six pages, six phases each). It differs in the focus
+      phase for live and delayed, in both languages: the peak's label «الذروة 62» / "Peak 62" is in the tree, as it is in every
+      other phase. At 8ae88f3 the peak tag was hidden (`visibility: hidden`, which also takes it out of the tree) whenever a
+      box lay over it; the box no longer can, so that toggle is deleted.
 - **Tooltip layout (2026-09-26):** one start-aligned arrangement for every tooltip. Every row starts at the same
   inline-start edge (right in Arabic, left in English), and nothing is pushed to the far edge.
   - At the peak and the latest reading (live and delayed), the label chip comes first, then the time. The number then
@@ -453,9 +529,9 @@ and `setMarker`. The one part of A that stays is its missing-span variant, the l
     chart's current stops, the widest tooltip that shows a number, adds 2 px, rounds up to a whole pixel and sets it
     as `--tip-w` on the tooltip. A tooltip shows a number when it has a value or the usual row: every stop but the
     missing span, and, without history, still ahead and no reading yet. So within one snapshot every numbered tooltip
-    has one width, and the number and every row sit at the same place inside the box at every numbered stop: the
-    number keeps one distance from the hairline on each side while the owner moves between stops. The start-aligned
-    layout above is unchanged.
+    has one width, and the number and every row sit at the same place inside the box at every numbered stop: since the lane
+    round the box is centred on its stop, so the number keeps one distance from the stop's hairline at every stop the
+    plot's sides do not stop (before, on each side of the hairline). The start-aligned layout above is unchanged.
   - **When it is measured:** whenever the stops or their text can change: the first render, a new reading, a state
     change, a resize, a language switch (which reloads the page), and when a web font finishes loading, which replaces
     a measurement made with the fallback font. The width changes only then, at the moment the content changes anyway.
@@ -476,20 +552,17 @@ and `setMarker`. The one part of A that stays is its missing-span variant, the l
     in either font.
   - **No wrap and no clip:** the text never wraps (`white-space: nowrap`). `min-width: max-content` lets any content
     wider than the width grow the box rather than clip it. Every row is one line at every stop, in both fonts.
-  - **Placement uses the real width:** `placeTip` measures the box's rendered width (unrounded) whenever its content
-    or width changes, including a new reading that rewrites a selected tooltip, so the box keeps the 12 px gap from its
-    stop (11.98-12.02 px through the day, both languages, both fonts).
-  - **Placement:** the rules are unchanged (the earlier side, the later side after now, the flip at the edges, the
-    follow's easing). Against `622cd0b` the box flips at two more stops, at 138 px and still at 127 px: 7:30 AM now
-    joins 6:00-7:00 AM on the later side, and 11:00 PM now joins 11:30 PM to 1:00 AM on the earlier side.
+  - **The lane uses the real width:** `placeTip` measures the box's rendered width (unrounded) whenever its content or width
+    changes, including a new reading that rewrites a selected tooltip, and centres the box on its stop with it.
   - The capture's `chart` check measures the tooltip at every stop (see "Open and capture").
 
 **6b. The smooth follow (Round 7 step 2).** It replaces the Round 6 glide (120-150 ms, at most 150 ms). It is the
 "follow" part of the motion section in `app.js`.
 
-- **What moves:** the ring and its hairline follow the drawn curve. The tooltip travels toward the selected stop's
-  resting box on the same eased response, starting at its displayed position and velocity. It can take a different
-  route from the ring while both are moving; the box and hairline meet at the selected stop at rest.
+- **What moves:** the ring and its hairline follow the drawn curve. The tooltip (in its lane since 2026-09-28, sideways
+  only) is centred on the ring, so its x follows the same curve; where the ring moves at once, the box eases sideways to
+  its place on the same response, starting at its displayed position and velocity, or moves with the ring if that place is
+  more than half its width away. The box and the ring meet at the selected stop at rest. See "Tooltip lane" in 6.
   - The route runs along today's line (or the usual line) by arc length. Between the line and the peak ring it runs
     along the line to 6:29 PM, then up the peak's dotted drop onto the ring.
   - The ring's elements are moved in place each frame, not rebuilt. At rest the marker is drawn exactly as without
@@ -514,17 +587,17 @@ and `setMarker`. The one part of A that stays is its missing-span variant, the l
     - The only other ways to appear gradually are a clip or a scale. At 100 ms or less they read as a flicker, not as
       softness.
     - The follow already gives the hover its smoothness. The tooltip also leaves at once.
-  - **Where no drawn track joins two stops, the ring moves at once and the tooltip eases.** This covers crossing the
+  - **Where no drawn track joins two stops, the ring moves at once and the tooltip eases sideways.** This covers crossing the
     missing span, going from the latest reading into the future, and going onto or off the gap stop.
     - The ring is never drawn off the line, and the line is never bridged.
-    - The tooltip keeps where it was drawn, with its velocity, and eases into its new place on the same curve.
-    - The same easing takes the tooltip across when it changes side: after now it moves to the later side, and it flips
-      near the chart's edges.
+    - The tooltip keeps where it was drawn, with its velocity, and eases sideways into its new place on the same curve
+      (the connector stays vertical at the ring's x, under the box); farther than half the box's width, it moves with the ring.
   - **The old 240 px "move at once" limit is replaced by a 6-hour limit, measured along the time axis.**
     - The old limit would now trigger in the middle of fast sweeps on steep parts of the line, where the arc length
       between the ring and the pointer grows.
-    - Beyond 6 hours of the day (about 380 px), the ring moves at once and the tooltip eases from its displayed place.
-      That is Home or End from far away. Without the limit, the ring would race across the whole day in 400 ms.
+    - Beyond 6 hours of the day (about 380 px), the ring moves at once, and so does the tooltip, which is then more than
+      half its width from its new place and moves with the ring (before the lane it eased across the plot and trailed the
+      ring). That is Home or End from far away. Without the limit, the ring would race across the whole day in 400 ms.
     - A sweep of the pointer never reaches this limit, because the ring trails the pointer by far less. PageUp and
       PageDown (2 hours) follow.
 - **Measured (in this cloud container, Chromium headless, 1440×900):**
@@ -792,7 +865,11 @@ The log records:
   - a crowd change with motion on: the number rolls, the bars change, no light moves and no glyph fades.
 - **`motion` (Round 6):**
   - **Static guard:** `identity.staticFrames` and `identity.motionOffFrames`. The frames that change by design are
-    compared with this run's reduced-motion frame.
+    compared with this run's reduced-motion frame. Since the lane round these are 17 frames, every one that shows the plot
+    (each with its reason in `EXPECTED_TO_CHANGE`); each is also compared with 8ae88f3's committed frame outside the plot
+    element (`evidence/lane-outside-plot.json`: the frame's pixels with the plot's box zeroed, and, with the rail open, the
+    rail's box too, because its glass blurs the plot behind it), and the run fails if one differs (16 of 16 are identical;
+    the level map has no such comparison).
   - **First paint (Round 7 step 3, the changed rule):** `identity.firstOpen` and `identity.reload`, in AR and EN, live,
     delayed and no history. A first open plays the intro and ends identical to the still frame (the pre-motion frame, or
     this run's reduced-motion frame for EN delayed and no history), with the DOM equal to the `?motion=off` DOM, only
@@ -831,9 +908,15 @@ The log records:
     - (the follow-up round after step 3; repair 1) the tooltip at every stop: one width on the page except the
       missing-span stop, which may only be wider (and never narrower than its content); that width is the widest
       tooltip that shows a number, plus 2 px, rounded up, and the page reports the same (`measuredByPage`); no row
-      wrapped or clipped; and the number's (or word's) start edge at one distance from the stop's hairline on each
-      side, within 0.5 px, the missing-span stop aside (`tooltip` per page, and `tooltipWidth` across pages, where it
-      is 127 px on every page at the 7:42 PM snapshot).
+      wrapped or clipped (`tooltip` per page, and `tooltipWidth` across pages, where it is 127 px on every page at the
+      7:42 PM snapshot);
+    - (the lane round) the lane's rules at each page's own snapshot (`tooltip.lane` per page, and `tooltipLane` across
+      pages): the box's top is the lane's top at every stop (±0.01 px); its left is its stop's x less half its width, kept
+      2 px inside the plot (±0.01 px); it lies inside the plot and the card and its lane; its connector meets the box and the
+      mark (0.5 px, read from the DOM's own attributes); and nothing else is painted in the lane (the smallest gap from the
+      lane's bottom to the top edge of every painted mark, the lines sampled every 1 px and the selected marker's glow is
+      not below 0). They replace the side and the number's start against the hairline of the floating placement. The other
+      snapshots, the other viewports, the fonts and the motion are swept by the lane round's probes, outside this file.
   - **`marker`** (Round 7 step 2): B's variants sheet; that form A is gone (no Marker group, `?marker=a` ignored, no
     `setMarker`); and the hover speed.
   - **`follow`** (Round 7 step 2, AR and EN): the follow's own curve against the clip's figures (within 0.07); the
@@ -1270,3 +1353,6 @@ node design-research/owner-composition-exploration-r04/directions/eclipse/checks
 
 Replace `all` with check names. Use `--workers N`, `--out <new-temp-folder>`, `--frames`, or `--plant <check>`;
 `run.mjs --help` lists the checks.
+
+The `checks/` harness still encodes the superseded floating-placement rules (side, flip, the 12 px gap, the 11 px clearance,
+the peak tag's covered state) and is not a gate for the lane; a later round adapts it.
