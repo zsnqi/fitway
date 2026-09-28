@@ -1648,3 +1648,36 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
 - **Verifier:** a fresh `owner-direction-verifier` (`xhigh`, run `owner_followup_r04_s04_verify5`) checks
   `622cd0b..8ae88f3` against `repair4/VERIFY-R4.md`. That checklist is the R3 checklist plus rules 4 and 5b, named
   checks for the missing-span stop, no history and width changes, and all three states. It is running.
+
+## Repair 4 verified: PASS (2026-09-28)
+
+- **Verifier:** `owner_followup_r04_s04_verify5` (checklist `repair4/VERIFY-R4.md`, evidence in
+  `%TEMP%/eclipse-verify5/`) ran about 71 min. It found `8ae88f3` passes every item: 1-9, 5b, "Also check", capture and
+  quality. `git status` was unchanged.
+  - Rest: 599,104 boxes, minimum 11.000 px, 0 violations. The positive control finds 55,399 at `6123863`.
+  - Minimal change: 543,705 unchanged, and 55,399 match the candidate model with 0 disagreements (`rule3-detail.json`,
+    checked by the coordinator).
+  - Motion:
+    - new readings: 16,310 cases, 0 over the allowance;
+    - hover: 13,416, 0;
+    - missing-span stop: 720, 0.
+    The positive controls fail at `3b1c3da` and `a14009f`.
+  - Width change: 25,376 readings, edge 12 ± 0.02 px.
+  - No history: 0 page errors in 12 runs (`a14009f`: 63 per language).
+- **Notes and observations for the human (not failures):**
+  - A reading can change the placement mid-tail. With the 11:00 PM stop selected, the box moves between beside and
+    centred five times from 8:37 to 9:53 PM, smoothly (app.js 1741-1745, 1002-1003).
+  - Home and End now slide the box about 720 px while the ring jumps.
+  - Inherited: on the gap stop, the edge jumps by the width difference in the first frame; a folded stop's box lingers
+    about 267 ms.
+  - README: the layout-shift claim at 916-917, and the shift wording at 417-418.
+  - Visual:
+    - at 10:52 PM with the web font, the 1:00 AM box covers its ring and the 12 AM and 1 AM labels;
+    - at 10:42 PM and 12:05 AM, clamped boxes sit nearer "now" than their ring;
+    - at 10:00 PM, the 11:00 PM box sits over "now".
+  The coordinator viewed `look/sheet-ar.png` and `strips/sheet-h1020-0837-ar.png` and sent both to the user.
+- **Side effect:** the skill's image self-test writes into `~/.agents/skills/ui-forensics/tests/img/out` (1.1 MB). It
+  should write to temp; this is a skill fix for later.
+- **State:** the follow-up round is ready for integration. Integration (rebasing the coordinator's docs commits onto
+  `8ae88f3`, keeping the verified SHA) and any follow-up on the observations wait for the user. Pushing needs the
+  user's word.
