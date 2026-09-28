@@ -1619,3 +1619,12 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - the no-history state with motion on.
   A next brief must list them explicitly.
 - **State:** this is the successor's first attempt, and it failed. The user decides the next step.
+- **Repair 4 authorized (2026-09-28):** the user authorized repair 4, the successor's second attempt, executed by
+  Codex with the skill.
+  - The brief is `repair4/BRIEF.md` in session `f8e879d9`'s scratchpad, based on `a14009f`.
+  - It names the three failures and gives them their own acceptance rows: GAP, NH and R5, each with a positive
+    control on `a14009f`.
+  - Every check runs in all three states.
+  - The width change is fixed by easing the anchor, not the left edge.
+  - The guard also refuses any git working tree.
+  - It tells the worker not to run the fast ladder, whose known failure is not a gate here.
