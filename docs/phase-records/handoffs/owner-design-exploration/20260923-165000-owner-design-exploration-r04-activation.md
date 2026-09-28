@@ -1935,7 +1935,14 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
 - **User decisions:**
   - the model table and the Sonnet-verifier trial condition above are confirmed;
   - the lane brief's plan is agreed, as are the later steps and the screen plan;
-  - the user asks whether Sonnet can do the lane round itself, since it only moves the tooltip box. This is pending
-    the user's answer when the brief is shown.
-- **Next:** the coordinator writes `D:\fitway-scratch\lane\BRIEF.md` and shows it to the user. Nothing is launched
-  before the user agrees.
+  - the lane round runs on Sonnet 5.5, not Opus, through `owner-direction-designer` with `model: "sonnet"`, at
+    `xhigh`. The user proposed it, because the round only moves the tooltip box. The coordinator agreed, because the
+    design decisions are already the user's. The remaining screens stay on Opus. Because the verifier is also on
+    Sonnet, the coordinator inspects this round more closely.
+- **The lane brief:** `D:\fitway-scratch\lane\BRIEF.md`, run `owner_lane_r04_s04`. The user approved it, including:
+  - the designer measures both headroom options, a shorter curve through the scale and a more compact box, and picks
+    the smaller. Under the first, every still frame with the chart changes by design and is declared in `capture.mjs`;
+  - the connector is the one exception to Round 7's "nothing above the point";
+  - where the connector crosses the usual line or the peak tag, the designer shows how it passes.
+- **Launched:** the designer runs in the background. The coordinator inspects its work, then sends the user the
+  before and after sheets and the live page.
