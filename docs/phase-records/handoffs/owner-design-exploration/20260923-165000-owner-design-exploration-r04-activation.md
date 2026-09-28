@@ -1961,3 +1961,13 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - After the lane is verified, a small commit deletes `E/checks/**`. It stays in history at `ee2b399`. The reason: it
     is unverified and encodes superseded rules, so it could mislead a later agent.
   - The later order is therefore: the intro-speed round, the audit patch (ask the user), then Reports.
+- **Rounds are split into parts from now on** (user, 2026-09-29):
+  - the designer's context grew large, because it read whole files of about 2,000 lines;
+  - writers run in sequence, one at a time on the same files, for example code, then checks and README, then sheets;
+  - verifiers run in parallel and read only. A timing-sensitive verifier runs alone;
+  - each brief names the exact sections or lines to read;
+  - the running lane designer is not interrupted;
+  - the lane round's verification is split into three:
+    - geometry and still frames;
+    - quality, accessibility and phone;
+    - motion, run alone.
