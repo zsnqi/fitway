@@ -2788,3 +2788,26 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - side effects: none retained.
 - **Pending the user:** accept the candidate's bars on EN delayed 1024×640 as the new reference, then resume the same
   run from the preserved candidate with outcome 6 amended.
+## The user accepts the bars' new reference, and new-session resume point (2026-09-30)
+
+- **User decision (2026-09-30):** on EN delayed 1024×640, the candidate's bars are the new reference, because each
+  bar paints exactly inside its layout rect.
+- **Neutral model fact:** the stopped run took 14 minutes, as reported by the user.
+- **The resume brief:** `D:\fitway-scratch\introspeed\fixq4\FIX-FONTS-RESUME.md`. It amends `FIX-FONTS.md` and
+  continues the same run, `owner_fonts_r04_s09`, from the preserved candidate.
+  - **Outcome 6, amended:** a still frame may differ from `a6cfde8` only when three conditions hold, each measured:
+    1. the layout rects in the differing region are unchanged;
+    2. the new paint matches those rects, and `a6cfde8`'s paint does not;
+    3. a 600 ms local font hold reproduces `a6cfde8`'s frame byte for byte.
+  - **New rule:** when an outcome is unmet, Codex finishes measuring the others before it stops.
+  - The user runs it on GPT-6.1 Sol at `high`, in a new Codex session.
+- **Resume steps:**
+  1. Run `pnpm context:show -- --milestone owner-design-exploration-r04`. Read this section and the one before it.
+  2. **When the user pastes Codex's report:**
+     - save it at `D:\fitway-scratch\introspeed\fixq4\CODEX-FONTS-RESUME-REPORT.md`;
+     - check that `owner-followup-r04-s04` is clean at the new SHA, with nothing on 3173-3177;
+     - note the neutral model facts here, including the run time.
+  3. **Verify:** follow step 3 of the self-hosted font resume point. The verifier also re-derives the outcome-6
+     exception class independently, for every frame that differs from `a6cfde8`.
+  4. **On PASS or FAIL:** follow step 4 of that resume point.
+  5. **Then:** follow its step 5.
