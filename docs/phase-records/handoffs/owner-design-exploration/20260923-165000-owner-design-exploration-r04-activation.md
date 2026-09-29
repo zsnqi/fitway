@@ -2497,3 +2497,33 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
      - push both working branches.
   3. On FAIL, write the second repair brief for Codex.
   4. Then the audit patch question (resume step 4), and Reports (resume step 5).
+
+## The first repair verified FAIL, and the second repair brief (2026-09-29)
+
+- **Verifier report,** saved at `D:\fitway-scratch\introspeed\fixq\VERIFY-FIXQ-REPORT.md` (evidence under
+  `D:\fitway-temp\introfix-verify\`). Verdict **FAIL on row W**. S, Q, D, Y, A, R, E, T, V and I pass, and every
+  positive control was caught.
+  - **W:** the extra frame at `app.js` 1967-1969 moves the start shift, it does not remove it. Every first open on
+    both commits (60 of 60) has a visible fallback-to-Readex Pro font swap. It is the same size on both commits, so
+    there is no regression. At `a6cfde8` it lands 6-55 ms before `intro.startedAt`, outside Q's window.
+  - **Medium, outside the checklist:** about half of first opens on both commits have a 0.19-0.21 page shift before
+    the intro. The cards and the chart drop 22.3 px when the header's text arrives, which contradicts the README's
+    "complete at first paint" (303, 308).
+  - Low findings:
+    - a resize just before the start now plays to complete instead of yielding; both outcomes are by design;
+    - the start delay grows by about 1.5 frames at the median;
+    - README line 3 is unwrapped, and the `app.js` 1948 comment is 127 characters long;
+    - the new top entry does not say that the swap still happens.
+  - The motion sheets are capture noise at glyph edges, not a pulse phase.
+  - The coordinator looked at `rt-normal/zoom-swap.png`: the fallback text is visibly narrower before the swap.
+- **The second repair:** `D:\fitway-scratch\introspeed\fixq2\FIX-Q2.md`, run `owner_introfix_r04_s07`, base `a6cfde8`.
+  - Codex proves each cause by reproduction.
+  - **Target:** when the intro plays, nothing visible moves from the first paint to the intro's end; on a reload,
+    nothing moves after the first paint.
+  - **Approach (a) comes first:** preload the fonts and make the first paint complete, with nothing hidden.
+  - **Approach (b) only if (a) fails:** keep the swapping text unpainted during the intro's capped wait. This is the
+    recorded exception. The DOM and the accessibility tree stay unchanged.
+  - Anything else stops the round.
+  - The README entry and the low nits are fixed in the same commit.
+  - **Scope, the coordinator's call:** the page drop is included because it shares the first-load path. The user can
+    remove it.
