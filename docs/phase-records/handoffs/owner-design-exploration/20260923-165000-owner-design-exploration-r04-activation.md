@@ -2097,3 +2097,15 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
 - **Lease:** renewed with the user's agreement to 2026-09-30 23:30.
 - **The live page:** `.claude/launch.json` (untracked) gained `lane-after` on 3174 and `lane-before` on 3175. Both
   load with no console errors. The user has the links and sheets 01 and 02 in AR, and decides the four points above.
+- **User decisions on the lane (2026-09-29):** the user approves the lane design at `9404bb1`.
+  1. **The empty lane's height cost is accepted (option a).** The coordinator explained it with a before/after image at
+     1440×900: the box never covers anything, so nothing enters the lane, and at rest the lane is empty.
+  2. **The peak label always in the accessibility tree** is accepted as an improvement.
+  3. **The hold at the plot's side** is accepted. The clamped box waits at its margin, then follows the ring.
+  4. **The horizontal page scroll** that already exists at `8ae88f3` is deferred to the phone and polish phase.
+- **A box that follows the point's height is rejected** (the user's proposal; the coordinator advised against it):
+  - the headroom above the day's peak is still needed, so the empty space at rest does not go away;
+  - the box spans about two hours of the curve, so it would have to clear everything under its width, not the point;
+  - it brings back vertical motion and the placement cases that the old cascade failed.
+  A middle option was discussed and not pursued: a fixed lane just above the day's peak instead of above the scale's
+  top. The user keeps the box fixed at the top, moving sideways only, because it is simpler.
