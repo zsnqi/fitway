@@ -2592,3 +2592,35 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
     - the first-paint time and the long tasks before the paint.
   - `style.css` and every font and fallback are unchanged.
 - The user runs it in a new Codex session at `high` effort.
+## The successor delivered, and its verification launched (2026-09-29)
+
+- **Codex delivered `77d91e8`** on `owner-followup-r04-build`, on top of `a6cfde8`.
+  - Report saved at `D:\fitway-scratch\introspeed\fixq3\CODEX-FIX3-REPORT.md`.
+  - Coordinator inspection, not verification: 7 files, all in the allowed set (`app.js`, `index.html`, `README.md`, and
+    the evidence). The worktree is clean, and nothing listens on 3173-3177.
+  - Points given to the verifier as rows to measure, not as findings:
+    - the first paint is about 12-16 ms later at the median;
+    - the fix has three long tasks before the paint across 40 opens;
+    - the cap's clock now counts from the first paint;
+    - three frame-sampled completion assertions missed their boundary.
+- **Verification is running:**
+  - `owner-direction-verifier-high` on Opus, run `owner_introfix_r04_s08_verify`;
+  - brief `D:\fitway-scratch\introspeed\fixq3\VERIFY-FIXQ3.md`;
+  - output under `D:\fitway-temp\introfix3-verify\`;
+  - it reuses the probes in `D:\fitway-temp\introfix-verify\probes\`.
+  - Rows:
+    - S and F (a complete first paint, and its time);
+    - W (every shift, on first opens and reloads);
+    - H (40 ms and 150 ms font holds, and a 100 ms script delay);
+    - C (the cap at 50, 180, 230 and 600 ms);
+    - Q, D, Y, A, R, E, T, V and I.
+  - Each row has a positive control.
+- **Next:**
+  1. Save the verifier's report at `D:\fitway-scratch\introspeed\fixq3\VERIFY-FIXQ3-REPORT.md`.
+  2. **On PASS:**
+     - rebase the coordinator's docs commits onto `77d91e8`;
+     - confirm that `E/` equals it;
+     - run `pnpm check:repository`;
+     - push both working branches;
+     - report to the user in a line.
+  3. **On FAIL:** write the successor's repair brief.
