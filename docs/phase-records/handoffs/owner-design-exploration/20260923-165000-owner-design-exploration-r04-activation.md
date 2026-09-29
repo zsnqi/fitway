@@ -2291,3 +2291,60 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - README: current descriptions change, past round entries stay as recorded, and a new top entry supersedes 820 ms;
   - exact lines to read, and the report in the final message.
   It is shown to the user before launch.
+
+## The intro-speed round delivered, Sonnet dropped for cost, and Codex takes the heavy work (2026-09-29)
+
+- **The fixer delivered `1b289f4`** on `owner-followup-r04-build`, on top of `d163223`. It ran as `owner-direction-fixer`
+  on Sonnet at `medium` (14 min, 30 tools, about 109k tokens) and did not push.
+  - Its report, saved by the coordinator:
+    `D:\fitway-scratch\claude-scratch\bb9e9dc7-4378-439c-b9e3-78e13474eba3\scratchpad\introspeed\work\REPORT.md`.
+  - Coordinator inspection, not verification: 11 files, all in the allowed set; `git status` is clean and no listener
+    was left.
+- **Verification started, then paused at the user's request.**
+  - Brief: `D:\fitway-scratch\introspeed\verify\VERIFY-INTRO.md`, candidate `1b289f4`. The verifier was
+    `owner-direction-verifier` on Sonnet at `xhigh` (41 min, 94 tools, about 292k tokens).
+  - Its state: `D:\fitway-temp\introspeed-verify\STATE.md`.
+  - Rows S, K, D, R, P, E and V pass. T is partly done, and Y, A, Q and I are not started. The positive controls for
+    D, R, P and E fail as they should.
+  - Low findings so far: two README lines still state the old hold times (907, 1120); `rail-open.png` differs by
+    78 px of raster noise from that capture run.
+- **Sonnet costs as much as Opus in our agent loops** (the coordinator's research, 2026-09-29):
+  - Every tool call re-reads the context from the cache. Cache reads cost $0.20 per million tokens on both Sonnet 5.5
+    and Opus 5.5, because Opus 5.5's cache reads are 0.05× its input price. In long loops that is the largest cost.
+  - Artificial Analysis, at API prices:
+    - Opus 5.5 at `high` scores 54 for $2,172;
+    - Sonnet 5.5 at `xhigh` scores 52 for $2,738;
+    - at `max`, Sonnet costs more than Opus.
+  - Sonnet 5.5 reads images at a higher resolution, and our verification is screenshot-heavy.
+  - Sources: the Anthropic pricing page, Artificial Analysis's Opus 5.5 vs Sonnet 5.5 comparison, and three
+    comparison articles.
+- **User decisions (2026-09-29):**
+  - **Work distribution:**
+
+    | Work | Who |
+    |---|---|
+    | Coordination, briefs, decisions | the coordinator, Opus, keeping its context small |
+    | New design and taste | `owner-direction-designer`, Opus at `xhigh` |
+    | Implementing agreed changes, `capture.mjs` runs, heavy tests | Codex with GPT-6 Sol, run by the user in the Codex app |
+    | Independent verification | `owner-direction-verifier-high`, Opus at `high` (no `sonnet` override) |
+    | A second opinion before large gates | Codex as an extra verifier |
+    | Sonnet | stopped; at most small mechanical edits at `medium` |
+
+    - Codex may use its own subagents: for example, a Sol `xhigh` reviewer after a task, then a fixer.
+    - When Codex writes and Claude verifies, the two model families strengthen independence.
+    - `CLAUDE.md`'s table and the `-high` definition now say this. The Sonnet trial ends for cost, not for a missed
+      defect.
+  - **Resources:**
+    - the user has a second Claude Pro account;
+    - the user has four or five Codex Plus accounts, each with three banked resets, and new resets arrive about
+      weekly;
+    - Claude usage is therefore not the constraint it looked like.
+  - **Correction:** round T's 5 hours came from the harness it built, not from Codex's speed.
+  - **`codex:rescue` is not used:** it had problems when the user tried it, and Codex performs best in its own app.
+    A simple check is optional later.
+  - **The rest of the intro-speed verification goes to Codex:**
+    - brief `D:\fitway-scratch\introspeed\verify\CODEX-FINISH.md`;
+    - it reuses `STATE.md` and the probes on disk;
+    - it does rows Y, A, Q and I, finishes T, and records the real-time strip;
+    - it gives one verdict over all rows.
+- **Pending:** `d45eb91` and this commit are not pushed. They go with the next push of the two working branches.

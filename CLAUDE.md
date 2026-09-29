@@ -52,9 +52,12 @@ Each Owner-direction definition fixes one effort level, and the coordinator pick
 | --- | --- | --- |
 | `owner-direction-designer` | `xhigh` | new visual design and taste judgment |
 | `owner-direction-builder` | `high` | implementing an agreed, precisely specified decision |
-| `owner-direction-verifier` | `xhigh` | independent verification |
-| `owner-direction-verifier-high` | `high` | a narrow re-check with a frozen target, a known defect and ready probes |
+| `owner-direction-verifier` | `xhigh` | independent verification, only where evidence shows `high` misses something |
+| `owner-direction-verifier-high` | `high` | independent verification (the default) |
 | `owner-direction-fixer` | `medium` | a mechanical edit with a frozen target |
+
+Run them on their own model, Opus. A `model: "sonnet"` override is not cheaper for long agent loops: every tool call
+re-reads the context from the cache, and cache reads cost the same on Sonnet 5.5 and Opus 5.5.
 
 The rest of `.claude/` is untracked and differs between worktrees. Nothing in `.claude/` is normative. Where a
 local skill or an agent definition disagrees with the root policy, the root policy and the files it names win.
