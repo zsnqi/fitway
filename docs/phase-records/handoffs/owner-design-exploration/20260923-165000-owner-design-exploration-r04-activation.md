@@ -2348,3 +2348,48 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
     - it does rows Y, A, Q and I, finishes T, and records the real-time strip;
     - it gives one verdict over all rows.
 - **Pending:** `d45eb91` and this commit are not pushed. They go with the next push of the two working branches.
+
+## New-session resume point after the intro-speed delivery (2026-09-29)
+
+- **Why a new session:** this coordinator session's context reached about 300k tokens, and every turn re-reads it. The
+  user sends Codex's report to a fresh coordinator session.
+- **State at handover:**
+  - `owner-followup-r04-s04` is clean at `1b289f4` (unverified); the remote build branch is at `d163223`;
+  - `codex/owner-redesign-r04` is pushed up to this commit;
+  - no agent of this session is running, and nothing listens on 3173-3177;
+  - the user runs Codex on `D:\fitway-scratch\introspeed\verify\CODEX-FINISH.md`.
+  - The lease runs to 2026-09-30 23:30.
+- **Resume steps:**
+  1. Run `pnpm context:show -- --milestone owner-design-exploration-r04`, and read this section and the one above it.
+  2. **When the user pastes Codex's report:**
+     - save it to `D:\fitway-scratch\introspeed\verify\CODEX-REPORT.md`;
+     - check that `owner-followup-r04-s04` is still clean at `1b289f4` and that nothing listens on 3173-3177;
+     - read the verdict with the earlier verifier's rows in `D:\fitway-temp\introspeed-verify\STATE.md`, then tell the
+       user in short Arabic.
+  3. **On PASS:**
+     - the known low findings are the stale README lines 907 and 1120 (old hold times). Ask the user whether a
+       mechanical fix goes to Codex now or joins the next round;
+     - then integrate locally: rebase the coordinator's docs commits onto the final build SHA, confirm `E/` equals it,
+       and run `pnpm check:repository`;
+     - then push both working branches (never `main`, no force, no pull request).
+     **On FAIL:** show the user the finding and propose a fix brief for Codex, with a Claude verifier after it.
+  4. **The audit patch:** ask the user, as recorded earlier.
+  5. **Then Reports,** under the screen plan in `NEXT-DIRECTION-BRIEF.md`, "After the Daily page":
+     1. desktop first for every screen;
+     2. one early phone feasibility check of the table system at 390 and 320 px, on Reports;
+     3. then the phone at 390 px, 320 px and 200% reflow for every screen, and the polish;
+     4. then the authority record.
+- **Work distribution** (the section above):
+  - Codex (GPT-6 Sol, in the Codex app, run by the user) builds and runs the heavy checks;
+  - Claude verifies on Opus at `high` (`owner-direction-verifier-high`);
+  - new design uses `owner-direction-designer` on Opus;
+  - no `sonnet` override.
+- **Working agreements:**
+  - reply in Arabic, simply and briefly;
+  - before starting any task, tell the user the steps and wait for their go;
+  - the user runs Codex and pastes its report;
+  - temp and scratch never go on C;
+  - split rounds into narrow parts, and name the exact lines to read;
+  - agents open screenshots downscaled, and report in their final message, which the coordinator saves;
+  - keep the coordinator's context small;
+  - full-strength verification stays.
