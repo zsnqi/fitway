@@ -2133,3 +2133,18 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
     authority. It joins any fixes from V2 in one round, through `owner-direction-builder` on Sonnet at `high`;
   - then the coordinator re-checks the connector and runs `capture.mjs` alone;
   - then V3 runs on the fixed SHA.
+- **V2: PASS on all seven rows** (77 min, 138 tools, about 314k tokens). Its report is saved at
+  `D:\fitway-temp\lane-verify\V2\REPORT.md`.
+  - L5: all 12,994 differing accessibility trees differ only by the peak label, exactly where `8ae88f3` hid it.
+  - The horizontal scroll equals `8ae88f3`'s in all 48 configurations.
+  - There is no new long work.
+  - **Low finding:** the peak's dotted drop (`app.js:607`, drawn when the gap exceeds 14 px) is no longer drawn in the
+    delayed state at 1440×900. The shorter scale brings the gap to 13.36 px; live is 14.22 px. The coordinator looked at
+    the 3× crop: the ring floats about 13 px over the line without the drop, as it already does at smaller viewports at
+    `8ae88f3`. The behaviour is kept and will be declared in the README.
+  - **Nits:** a stale `.tip` comment in `style.css`, and the README's layout-shift claim holds at desktop only.
+- **The fix brief:** `D:\fitway-scratch\lane\fix\BRIEF.md`, run `owner_lane_fix_r04_s04`. It covers:
+  - F1: fit the dash pattern to the connector's length, and put the missing-span pointer on its nearest dot;
+  - a painted-extent check in `capture.mjs`, with a positive control on `9404bb1`;
+  - the README declarations from V1 and V2, and the `style.css` comment;
+  - one `capture.mjs` run alone.
