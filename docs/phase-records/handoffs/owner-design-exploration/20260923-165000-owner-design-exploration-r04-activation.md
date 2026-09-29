@@ -2148,3 +2148,18 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - a painted-extent check in `capture.mjs`, with a positive control on `9404bb1`;
   - the README declarations from V1 and V2, and the `style.css` comment;
   - one `capture.mjs` run alone.
+- **The fix round delivered `521fe32`** on `owner-followup-r04-build`, on top of `9404bb1`, and did not push
+  (39 min, 140 tools, about 280k tokens). Its report is saved at `D:\fitway-scratch\lane\fix\work\REPORT.md`.
+  - Scope: 6 files, all expected. The `style.css` change is comment-only.
+  - Its claims, unverified:
+    - painted gaps fall from 2.4 px to 0.01 px or less, at rest and in follows;
+    - `capture.mjs` exits 0;
+    - at 390×844 the missing span draws no lit dot, which is declared;
+    - it restored three timing-dependent evidence frames from `9404bb1`.
+- **V1b** (brief `D:\fitway-scratch\lane\verify\V1B-CONNECTOR.md`) runs alone on Sonnet at `xhigh`. It is a fresh
+  verifier that reuses V1's probes from disk, instead of resuming V1's large context.
+- **Remote work:** the user is away and follows through Remote Control. Clearing this session is refused while Remote
+  Control serves it, and this session cannot start sessions. The user therefore prepared an idle spare session,
+  `local_541082d7-9bcf-4851-b8a5-6f17dae6b228` ("تعليمات من جلسة المنسّق"): same folder, Opus 5.5 at `xhigh`, `auto`
+  permissions and Remote Control on. When the lane round closes, the coordinator writes the resume point here, commits
+  it, and sends the resume prompt to that session with `send_message`.
