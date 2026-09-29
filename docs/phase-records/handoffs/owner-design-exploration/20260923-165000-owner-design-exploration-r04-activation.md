@@ -2393,3 +2393,56 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - agents open screenshots downscaled, and report in their final message, which the coordinator saves;
   - keep the coordinator's context small;
   - full-strength verification stays.
+
+## Intro speed verified FAIL, the Q and T fix brief, and the design-context message (2026-09-29)
+
+- **Session:** a new coordinator session, scratchpad
+  `D:\fitway-temp\claude\D--Projects-fitway-worktrees-owner-design-exploration-r04\ac81af7f-b94f-4997-9346-18d1475679b0\scratchpad\`.
+  Resume steps 1 and 2 ran: `owner-followup-r04-s04` was clean at `1b289f4`, and nothing listened on 3173-3177.
+- **Codex's report,** saved at `D:\fitway-scratch\introspeed\verify\CODEX-REPORT.md`. Verdict **FAIL** over all rows:
+  - pass: S, K, D, R, P, E and V (the earlier verifier's rows, matching `STATE.md`), and Y, A and I (Codex's);
+  - **Q fails:** a small layout shift about 3-4 ms after the intro starts, in 3 of 8 first-opens at `1b289f4` and 2 of
+    8 at `d163223`, so it is older than the speed change. Text boxes change width while their height stays; a late font
+    face is a hypothesis, not a proven cause;
+  - **T fails:** README lines 907 and 1120 keep the old hold times (the known low finding);
+  - low: `daily-ar-1440x900-rail-open.png` differs by 78 px of capture raster noise;
+  - caveats, not defects: Y's hidden tab was simulated with a `visibilitychange` event; D's first-open start lag is the
+    same at BASE;
+  - outside the checklist: `pnpm check:design-context` failed on Codex's host.
+- **User decisions:**
+  - fix Q and T together now in one Codex round, then a Claude verifier (`owner-direction-verifier-high`), rather than
+    fixing T alone and opening Q separately;
+  - replies to the user are in the Saudi dialect.
+- **The fix brief:** `D:\fitway-scratch\introspeed\fixq\FIX-Q.md`, run `owner_introfix_r04_s06`, base `1b289f4`.
+  - Codex proves the cause first with a reproduction (a delayed font file makes the shift happen every time), then
+    fixes it.
+  - Unchanged: every timing and look of the intro, and the 200 ms font cap.
+  - `index.html` and `style.css` may change only for font loading, and only if `app.js` cannot fix the proven cause.
+  - T gets the exact new text.
+  - Checks:
+    - 20 first-opens per language, and runs under the reproduction delay;
+    - `plantQ` must still fail;
+    - the cap is checked with 600 and 50 ms font holds;
+    - the lengths, the live roll and the first-paint values are unchanged;
+    - one `capture.mjs` run is committed as written.
+  - The prompt the user gives Codex points at the brief; the report is Codex's final message.
+- **`check:design-context` on Codex:** Codex's Windows sandbox (`[windows] sandbox = "unelevated"`) blocks the
+  Impeccable engine's subprocess. Codex found this on 2026-09-28 and passed the check outside the sandbox; on
+  2026-09-29 it did not rerun it outside.
+  - The user chose (a): `scripts/check-design-context.mjs` now names the spawn error's code (for example `ENOENT` or
+    `EPERM`) and says to rerun outside the sandbox before reinstalling anything. Its normal run passes, and a copy with a
+    missing engine fails with the new message.
+  - (b), a Codex rule that runs the command unsandboxed without asking, was not chosen; it is the user's security
+    setting.
+  - Every Codex brief tells Codex to run the check outside the sandbox.
+- **Next:**
+  1. When the user pastes Codex's report, save it at `D:\fitway-scratch\introspeed\fixq\CODEX-FIX-REPORT.md`. Check that
+     `owner-followup-r04-s04` is clean at the new SHA and nothing listens on 3173-3177.
+  2. Then write a brief for `owner-direction-verifier-high` on Opus:
+     - Q repeated at scale, with the reproduction delay and `plantQ`;
+     - the cause as stated;
+     - no regression in K, D, P, E and A;
+     - the T lines;
+     - the evidence files changed.
+     Show the brief to the user before launch.
+  3. On PASS, resume step 3's integration and push.
