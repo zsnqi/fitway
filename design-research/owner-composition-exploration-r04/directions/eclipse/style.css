@@ -522,7 +522,9 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
   /* The width follows the chart (the user's decision, 2026-09-27): app.js measures, from the chart's current stops,
    * the widest tooltip that shows a number, adds 2px, rounds up to a whole pixel and sets it as --tip-w on #tip,
    * whenever the stops or their text change and when a web font finishes loading. So within one snapshot the number
-   * and every row sit at the same place inside the box at every numbered stop and never move against the hairline.
+   * and every row sit at the same place inside the box at every numbered stop. Since the lane round (2026-09-28) the box
+   * lives in a lane at the top of the plot, centred on its stop and stopped 2px inside the plot's sides: it moves sideways
+   * only, so it is no longer held to the stop's hairline; where the plot's sides hold it, the stop is off its centre.
    * At the page's own 7:42 PM snapshot it is 127px in AR and EN (the Arabic latest reading, 124.84px in Readex Pro).
    * The missing-span stop shows no number and may grow past it; min-width lets any content grow, never clip or wrap. */
   width: var(--tip-w);

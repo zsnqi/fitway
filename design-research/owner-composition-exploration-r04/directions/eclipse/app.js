@@ -921,7 +921,7 @@
     const onEnd = form === "line" && lift === 0 && onEndPoint(pt);
     stepAside(form === "line" || form === "usual" ? pt : null);
     const stale = onEnd && STATE === "delayed";
-    let key, html = null;
+    let key, html = null, litX = null;
     if (form === "line") {
       const ly = pt.ly == null ? pt.y : pt.ly, top = ly + MK.lit, lit = yb - top > 1;
       const dataForm = lift >= 1 ? "peak" : lift > 0 ? "drop" : "line";
@@ -955,6 +955,10 @@
       const gl = Math.min(geo.X(GAP0 - 0.5), geo.X(GAP1 + 0.5)), gr = Math.max(geo.X(GAP0 - 0.5), geo.X(GAP1 + 0.5));
       const dots = [];
       for (let dx = gl + 2.5; dx <= gr - 1.5; dx += 4) dots.push(dx - st.x);
+      // The connector's column is the lit dot nearest the stop's centre (at most 2px from it), as painted (both numbers
+      // are written to two decimals below), so the pointer's tip touches that dot's top. With no dot (a span narrower than
+      // 4px, at phone width) the column stays on the stop's centre, and there is nothing lit to touch.
+      if (dots.length) litX = Number(f(st.x)) + Number(f(dots.reduce((a, b) => (Math.abs(b) < Math.abs(a) ? b : a))));
       const h = st.w / 2;
       html = `<radialGradient id="sel-chalk"><stop offset="0" stop-color="${CHALK}" stop-opacity="0.2"/><stop offset="1" stop-color="${CHALK}" stop-opacity="0"/></radialGradient>` +
         `<g class="sg-mark" data-form="gap" data-marker="gap" transform="translate(${f(st.x)} ${axis})"><ellipse rx="${f(h + 9)}" ry="7" fill="url(#sel-chalk)"/>${dots.map((dd) => `<circle cx="${f(dd)}" r="1.25" fill="${CHALK}"/>`).join("")}</g>`;
@@ -969,7 +973,7 @@
     // connector runs on the pixel column that holds the marker's x, and on the tick's own column for the tick.
     const box = placeTip(Math.abs(x - st.x) < 0.02 ? st.x : x);
     const markTop = form === "line" ? pt.y - (MK.r + MK.edge / 2) : form === "usual" ? pt.y - (MK.aheadR + 0.625) : form === "gap" ? axis - 1.25 : axis - 3.5;
-    paintConnector(box, x, form === "none" ? gx : cgx, form, markTop);
+    paintConnector(box, x, form === "none" ? gx : form === "gap" && litX != null ? litX : cgx, form, markTop);
   }
   function clearMarker() {
     const g = $("#sel");
@@ -995,7 +999,9 @@
     const line = g.firstElementChild, head = g.lastElementChild;
     if (!box) { line.setAttribute("d", ""); head.setAttribute("d", ""); return; }
     // The box's painted bottom edge at x: straight, or up the rounded corner where the marker is near the plot's edge.
-    const R = 12, inset = Math.min(x - box.left, box.left + box.tw - x);
+    // (The dashed and dotted forms read the corner at the column they are drawn on, which is up to half a pixel from x at
+    // the plot's ends, where the corner is steep; the solid form is kept as it was.)
+    const R = 12, cx = form === "line" ? x : gx, inset = Math.min(cx - box.left, box.left + box.tw - cx);
     const bottom = box.bottom - (inset < R ? R - Math.sqrt(Math.max(0, R * R - (R - Math.max(0, inset)) ** 2)) : 0);
     const solid = form === "line", dash = form === "usual";
     const color = solid ? CONN.line : dash ? CONN.dash : CONN.dots;
@@ -1007,10 +1013,27 @@
       const upper = tag.t - CONN.cut, lower = tag.b + CONN.cut;
       d = `${upper > bottom ? `M${f(gx)},${f(upper)}V${f(bottom)}` : ""}${lower < baseY ? `M${f(gx)},${f(baseY)}V${f(lower)}` : ""}`;
     }
-    line.setAttribute("d", d);
+    // The dash pattern is fitted to the connector's length (the lane fix round), so a dash, or a dot, is painted at both ends:
+    // at the pointer's base and at the box's bottom edge. The count of periods comes from the length; the gap is stretched
+    // evenly. Dashed: 2px dashes, the gap kept within 2.5-3.5px (nominal 3). Dotted: 1.6px round dots whose painted edges
+    // (the caps) reach both ends, the pitch kept within 3.5-4.5px (nominal 4). It runs on every paint, so at every frame
+    // of a follow, whatever the length has become. A length too short for two of either is drawn as a plain line.
+    let fit = null;
+    if (!solid) {
+      const y0 = Number(f(baseY)), y1 = Number(f(bottom));
+      if (dash) {
+        const len = y0 - y1, n = Math.round((len + 3) / 5);
+        if (n >= 2) fit = { d: `M${f(gx)},${f(y0)}V${f(y1)}`, da: `2 ${((len - 2 * n) / (n - 1)).toFixed(4)}` };
+      } else {
+        // The path stops a cap's radius (0.8px) short of each end, and its last 0.01px is the last dot.
+        const s0 = Number(f(baseY - 0.8)), s1 = Number(f(bottom + 0.79)), span = s0 - s1 - 0.01, n = Math.round(span / 4) + 1;
+        if (span > 0 && n >= 2) fit = { d: `M${f(gx)},${f(s0)}V${f(s1)}`, da: `0.01 ${(span / (n - 1) - 0.01).toFixed(4)}` };
+      }
+    }
+    line.setAttribute("d", fit ? fit.d : d);
     line.setAttribute("stroke", color);
     line.setAttribute("stroke-width", solid || dash ? "1" : "1.6");
-    if (dash) line.setAttribute("stroke-dasharray", "2 3"); else if (!solid) line.setAttribute("stroke-dasharray", "0.01 4"); else line.removeAttribute("stroke-dasharray");
+    if (fit) line.setAttribute("stroke-dasharray", fit.da); else if (dash) line.setAttribute("stroke-dasharray", "2 3"); else if (!solid) line.setAttribute("stroke-dasharray", "0.01 4"); else line.removeAttribute("stroke-dasharray");
     if (solid) line.removeAttribute("stroke-linecap"); else line.setAttribute("stroke-linecap", dash ? "butt" : "round");
     head.setAttribute("d", `M${f(gx - CONN.half)},${f(baseY)}L${f(gx + CONN.half)},${f(baseY)}L${f(gx)},${f(tipY)}Z`);
     head.setAttribute("fill", color);

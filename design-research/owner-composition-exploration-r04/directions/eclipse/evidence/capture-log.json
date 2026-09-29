@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-09-28T22:37:53.670Z",
+  "capturedAt": "2026-09-29T05:27:23.483Z",
   "port": 3173,
   "motion": {
     "method": "Pre-motion frames: evidence/pre-motion-hashes.json (SHA-256 of the v3 frames before motion). The capture is byte-deterministic, so equal hashes mean identical pixels.",
@@ -1787,12 +1787,25 @@
             "stops": 40,
             "styles": [
               "solid",
-              "0.01 4",
-              "2 3"
+              "dotted",
+              "dashed"
             ],
-            "maxGapToBoxPx": 0,
-            "maxGapToMarkPx": 0.005,
-            "xInsideBox": true
+            "maxGapToBoxPx": 0.01,
+            "maxGapToPointerBasePx": 0,
+            "maxGapToMarkPx": 0.019,
+            "dashGapPx": {
+              "min": 2.978,
+              "max": 3.067
+            },
+            "dotPitchPx": {
+              "min": 4.019,
+              "max": 4.02
+            },
+            "missingSpanLitDots": [
+              4
+            ],
+            "xInsideBox": true,
+            "patternOk": true
           },
           "reserved": true,
           "connectorMeets": true,
@@ -1834,12 +1847,25 @@
             "stops": 40,
             "styles": [
               "solid",
-              "0.01 4",
-              "2 3"
+              "dotted",
+              "dashed"
             ],
-            "maxGapToBoxPx": 0,
-            "maxGapToMarkPx": 0.005,
-            "xInsideBox": true
+            "maxGapToBoxPx": 0.01,
+            "maxGapToPointerBasePx": 0,
+            "maxGapToMarkPx": 0.019,
+            "dashGapPx": {
+              "min": 2.978,
+              "max": 3.067
+            },
+            "dotPitchPx": {
+              "min": 4.019,
+              "max": 4.02
+            },
+            "missingSpanLitDots": [
+              4
+            ],
+            "xInsideBox": true,
+            "patternOk": true
           },
           "reserved": true,
           "connectorMeets": true,
@@ -1881,12 +1907,25 @@
             "stops": 39,
             "styles": [
               "solid",
-              "0.01 4",
-              "2 3"
+              "dotted",
+              "dashed"
             ],
-            "maxGapToBoxPx": 0,
-            "maxGapToMarkPx": 0.005,
-            "xInsideBox": true
+            "maxGapToBoxPx": 0.01,
+            "maxGapToPointerBasePx": 0,
+            "maxGapToMarkPx": 0.019,
+            "dashGapPx": {
+              "min": 2.956,
+              "max": 3.046
+            },
+            "dotPitchPx": {
+              "min": 4.019,
+              "max": 4.02
+            },
+            "missingSpanLitDots": [
+              4
+            ],
+            "xInsideBox": true,
+            "patternOk": true
           },
           "reserved": true,
           "connectorMeets": true,
@@ -1928,11 +1967,21 @@
             "stops": 40,
             "styles": [
               "solid",
-              "0.01 4"
+              "dotted"
             ],
-            "maxGapToBoxPx": 0,
-            "maxGapToMarkPx": 0,
-            "xInsideBox": true
+            "maxGapToBoxPx": 0.01,
+            "maxGapToPointerBasePx": 0,
+            "maxGapToMarkPx": 0.017,
+            "dashGapPx": null,
+            "dotPitchPx": {
+              "min": 3.997,
+              "max": 4.02
+            },
+            "missingSpanLitDots": [
+              4
+            ],
+            "xInsideBox": true,
+            "patternOk": true
           },
           "reserved": true,
           "connectorMeets": true,
@@ -1974,12 +2023,25 @@
             "stops": 39,
             "styles": [
               "solid",
-              "0.01 4",
-              "2 3"
+              "dotted",
+              "dashed"
             ],
-            "maxGapToBoxPx": 0,
-            "maxGapToMarkPx": 0.005,
-            "xInsideBox": true
+            "maxGapToBoxPx": 0.01,
+            "maxGapToPointerBasePx": 0,
+            "maxGapToMarkPx": 0.019,
+            "dashGapPx": {
+              "min": 2.956,
+              "max": 3.046
+            },
+            "dotPitchPx": {
+              "min": 4.019,
+              "max": 4.02
+            },
+            "missingSpanLitDots": [
+              4
+            ],
+            "xInsideBox": true,
+            "patternOk": true
           },
           "reserved": true,
           "connectorMeets": true,
@@ -2021,11 +2083,21 @@
             "stops": 40,
             "styles": [
               "solid",
-              "0.01 4"
+              "dotted"
             ],
-            "maxGapToBoxPx": 0,
-            "maxGapToMarkPx": 0,
-            "xInsideBox": true
+            "maxGapToBoxPx": 0.01,
+            "maxGapToPointerBasePx": 0,
+            "maxGapToMarkPx": 0.017,
+            "dashGapPx": null,
+            "dotPitchPx": {
+              "min": 3.983,
+              "max": 4.02
+            },
+            "missingSpanLitDots": [
+              4
+            ],
+            "xInsideBox": true,
+            "patternOk": true
           },
           "reserved": true,
           "connectorMeets": true,
@@ -2374,12 +2446,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 849,
+          "measuredMs": 862,
           "expectedMs": 820,
-          "fontWaitMs": 25,
+          "fontWaitMs": 27,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 37
+            "dashes": 31
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2391,12 +2463,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 51,
-          "maxFrameGapMs": 16.8,
+          "framesDuringIntro": 44,
+          "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 62,
+              "t": 63,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -2408,8 +2480,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 109,
-              "sinceStartMs": 20,
+              "t": 136,
+              "sinceStartMs": 26,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -2430,12 +2502,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 852,
+          "measuredMs": 896,
           "expectedMs": 820,
-          "fontWaitMs": 20,
+          "fontWaitMs": 21,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 30
+            "dashes": 31
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2447,12 +2519,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 42,
-          "maxFrameGapMs": 50,
+          "framesDuringIntro": 46,
+          "maxFrameGapMs": 33.5,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 55,
+              "t": 61,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -2464,8 +2536,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 106,
-              "sinceStartMs": 29,
+              "t": 108,
+              "sinceStartMs": 28,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -2486,12 +2558,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 875,
+          "measuredMs": 848,
           "expectedMs": 820,
-          "fontWaitMs": 29,
+          "fontWaitMs": 25,
           "introElementsSeen": {
             "slots": 4,
-            "dashes": 30
+            "dashes": 31
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2506,7 +2578,7 @@
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 69,
+              "t": 61,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -2518,8 +2590,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 122,
-              "sinceStartMs": 22,
+              "t": 110,
+              "sinceStartMs": 23,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -2540,12 +2612,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 852,
+          "measuredMs": 853,
           "expectedMs": 820,
           "fontWaitMs": 24,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 30
+            "dashes": 32
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2557,7 +2629,7 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 43,
+          "framesDuringIntro": 44,
           "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
@@ -2574,8 +2646,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 119,
-              "sinceStartMs": 27,
+              "t": 110,
+              "sinceStartMs": 23,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -2596,12 +2668,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 878,
+          "measuredMs": 874,
           "expectedMs": 820,
-          "fontWaitMs": 30,
+          "fontWaitMs": 21,
           "introElementsSeen": {
             "slots": 4,
-            "dashes": 35
+            "dashes": 31
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2611,12 +2683,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 49,
+          "framesDuringIntro": 45,
           "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 66,
+              "t": 55,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -2628,8 +2700,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 125,
-              "sinceStartMs": 29,
+              "t": 133,
+              "sinceStartMs": 26,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -2650,12 +2722,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 870,
+          "measuredMs": 853,
           "expectedMs": 820,
-          "fontWaitMs": 19,
+          "fontWaitMs": 20,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 36
+            "dashes": 31
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2667,12 +2739,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 51,
-          "maxFrameGapMs": 33.3,
+          "framesDuringIntro": 43,
+          "maxFrameGapMs": 50,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 59,
+              "t": 55,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -2684,8 +2756,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 111,
-              "sinceStartMs": 21,
+              "t": 106,
+              "sinceStartMs": 29,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -2896,12 +2968,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 849,
+          "measuredMs": 862,
           "expectedMs": 820,
-          "fontWaitMs": 25,
+          "fontWaitMs": 27,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 37
+            "dashes": 31
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2913,12 +2985,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 51,
-          "maxFrameGapMs": 16.8,
+          "framesDuringIntro": 44,
+          "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 62,
+              "t": 63,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -2930,8 +3002,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 109,
-              "sinceStartMs": 20,
+              "t": 136,
+              "sinceStartMs": 26,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -2952,12 +3024,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 852,
+          "measuredMs": 896,
           "expectedMs": 820,
-          "fontWaitMs": 20,
+          "fontWaitMs": 21,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 30
+            "dashes": 31
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2969,12 +3041,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 42,
-          "maxFrameGapMs": 50,
+          "framesDuringIntro": 46,
+          "maxFrameGapMs": 33.5,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 55,
+              "t": 61,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -2986,8 +3058,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 106,
-              "sinceStartMs": 29,
+              "t": 108,
+              "sinceStartMs": 28,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -3008,12 +3080,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 875,
+          "measuredMs": 848,
           "expectedMs": 820,
-          "fontWaitMs": 29,
+          "fontWaitMs": 25,
           "introElementsSeen": {
             "slots": 4,
-            "dashes": 30
+            "dashes": 31
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -3028,7 +3100,7 @@
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 69,
+              "t": 61,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -3040,8 +3112,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 122,
-              "sinceStartMs": 22,
+              "t": 110,
+              "sinceStartMs": 23,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -3062,12 +3134,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 852,
+          "measuredMs": 853,
           "expectedMs": 820,
           "fontWaitMs": 24,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 30
+            "dashes": 32
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -3079,7 +3151,7 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 43,
+          "framesDuringIntro": 44,
           "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
@@ -3096,8 +3168,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 119,
-              "sinceStartMs": 27,
+              "t": 110,
+              "sinceStartMs": 23,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -3118,12 +3190,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 878,
+          "measuredMs": 874,
           "expectedMs": 820,
-          "fontWaitMs": 30,
+          "fontWaitMs": 21,
           "introElementsSeen": {
             "slots": 4,
-            "dashes": 35
+            "dashes": 31
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -3133,12 +3205,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 49,
+          "framesDuringIntro": 45,
           "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 66,
+              "t": 55,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -3150,8 +3222,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 125,
-              "sinceStartMs": 29,
+              "t": 133,
+              "sinceStartMs": 26,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -3172,12 +3244,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 870,
+          "measuredMs": 853,
           "expectedMs": 820,
-          "fontWaitMs": 19,
+          "fontWaitMs": 20,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 36
+            "dashes": 31
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -3189,12 +3261,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 51,
-          "maxFrameGapMs": 33.3,
+          "framesDuringIntro": 43,
+          "maxFrameGapMs": 50,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 59,
+              "t": 55,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -3206,8 +3278,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 111,
-              "sinceStartMs": 21,
+              "t": 106,
+              "sinceStartMs": 29,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -3308,12 +3380,12 @@
       "fontCache": {
         "note": "every intro context serves the Google Fonts files from memory after their first network fetch (same bytes), as a browser cache does for a returning owner",
         "arFirstFetch": {
-          "fontWaitMs": 205,
+          "fontWaitMs": 208,
           "played": false,
           "yieldedBy": "fonts late"
         },
         "enFirstFetch": {
-          "fontWaitMs": 22,
+          "fontWaitMs": 21,
           "played": true,
           "yieldedBy": "complete"
         },
@@ -3325,12 +3397,12 @@
           "state": "done",
           "reason": "first open in this tab",
           "yieldedBy": "fonts late",
-          "fontWaitMs": 211,
-          "firstPaintMs": 76,
-          "answersInViewAtMs": 311,
+          "fontWaitMs": 201,
+          "firstPaintMs": 108,
+          "answersInViewAtMs": 277,
           "introEverRan": false,
           "fontsInAtEnd": true,
-          "answersInViewAfterFirstPaintMs": 235,
+          "answersInViewAfterFirstPaintMs": 169,
           "domEqualsMotionOff": true,
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -3343,12 +3415,12 @@
           "state": "done",
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "fontWaitMs": 84,
+          "fontWaitMs": 83,
           "firstPaintMs": 108,
-          "answersInViewAtMs": 177,
+          "answersInViewAtMs": 180,
           "introEverRan": true,
           "fontsInAtEnd": true,
-          "answersInViewAfterFirstPaintMs": 69,
+          "answersInViewAfterFirstPaintMs": 72,
           "domEqualsMotionOff": true,
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -3361,12 +3433,12 @@
           "state": "done",
           "reason": "first open in this tab",
           "yieldedBy": "fonts late",
-          "fontWaitMs": 201,
-          "firstPaintMs": 100,
-          "answersInViewAtMs": 269,
+          "fontWaitMs": 200,
+          "firstPaintMs": 68,
+          "answersInViewAtMs": 274,
           "introEverRan": false,
           "fontsInAtEnd": true,
-          "answersInViewAfterFirstPaintMs": 169,
+          "answersInViewAfterFirstPaintMs": 206,
           "domEqualsMotionOff": true,
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -3379,12 +3451,12 @@
           "state": "done",
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "fontWaitMs": 74,
-          "firstPaintMs": 104,
-          "answersInViewAtMs": 147,
+          "fontWaitMs": 69,
+          "firstPaintMs": 68,
+          "answersInViewAtMs": 158,
           "introEverRan": true,
           "fontsInAtEnd": true,
-          "answersInViewAfterFirstPaintMs": 43,
+          "answersInViewAfterFirstPaintMs": 90,
           "domEqualsMotionOff": true,
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -3417,7 +3489,7 @@
           "played": true,
           "state": "done",
           "reason": "first open in this tab",
-          "fontWaitMs": 24
+          "fontWaitMs": 26
         },
         "newTabWithMotionSwitchOff": {
           "played": false,
@@ -3429,7 +3501,7 @@
           "played": true,
           "state": "done",
           "reason": "first open in this tab",
-          "fontWaitMs": 30
+          "fontWaitMs": 26
         },
         "errors": [],
         "reducedMotion": {
@@ -3456,7 +3528,7 @@
             "sawRunning": true,
             "count": 2,
             "yieldedBy": "complete",
-            "measuredMs": 843,
+            "measuredMs": 850,
             "expectedMs": 820,
             "speed": 1
           },
@@ -3467,7 +3539,7 @@
             "sawRunning": true,
             "count": 3,
             "yieldedBy": "complete",
-            "measuredMs": 1659,
+            "measuredMs": 1665,
             "expectedMs": 1640,
             "speed": 0.5
           },
@@ -3476,7 +3548,7 @@
             "sawRunning": true,
             "count": 4,
             "yieldedBy": "complete",
-            "measuredMs": 429,
+            "measuredMs": 430,
             "expectedMs": 410,
             "speed": 2
           },
@@ -3507,7 +3579,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "chart",
-            "settledAtMs": 115
+            "settledAtMs": 122
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -3526,7 +3598,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "chart",
-            "settledAtMs": 409
+            "settledAtMs": 412
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -3549,7 +3621,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "keydown",
-            "settledAtMs": 107
+            "settledAtMs": 108
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -3572,7 +3644,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "keydown",
-            "settledAtMs": 409
+            "settledAtMs": 403
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -3591,7 +3663,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "pointerdown",
-            "settledAtMs": 152
+            "settledAtMs": 153
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -3607,7 +3679,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "pointerdown",
-            "settledAtMs": 441
+            "settledAtMs": 454
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -3623,7 +3695,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "pointerdown",
-            "settledAtMs": 135
+            "settledAtMs": 150
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -3642,7 +3714,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "pointerdown",
-            "settledAtMs": 439
+            "settledAtMs": 432
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -3670,7 +3742,45 @@
           "settled": {
             "state": "done",
             "yieldedBy": "new reading",
-            "settledAtMs": 108
+            "settledAtMs": 105
+          },
+          "answersAtRest": true,
+          "chartWhole": true,
+          "figures": {
+            "last": 823,
+            "entries": 333,
+            "now": 49
+          },
+          "domEqualsCanonical": true,
+          "pixelDiffFromCanonical": {
+            "changedPixels": 1837,
+            "maxChannelDiff": 4,
+            "bbox": {
+              "x": 330,
+              "y": 30,
+              "width": 969,
+              "height": 195
+            }
+          },
+          "pass": true,
+          "errors": []
+        },
+        "reading@400": {
+          "action": "reading",
+          "at": 400,
+          "step": {
+            "reading": true,
+            "morph": true,
+            "from": 822,
+            "to": 823,
+            "firstChangedMinute": 791,
+            "tailFrom": 790,
+            "tailFromTime": "7:10 م"
+          },
+          "settled": {
+            "state": "done",
+            "yieldedBy": "new reading",
+            "settledAtMs": 404
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -3693,46 +3803,13 @@
           "pass": true,
           "errors": []
         },
-        "reading@400": {
-          "action": "reading",
-          "at": 400,
-          "step": {
-            "reading": true,
-            "morph": true,
-            "from": 822,
-            "to": 823,
-            "firstChangedMinute": 791,
-            "tailFrom": 790,
-            "tailFromTime": "7:10 م"
-          },
-          "settled": {
-            "state": "done",
-            "yieldedBy": "new reading",
-            "settledAtMs": 410
-          },
-          "answersAtRest": true,
-          "chartWhole": true,
-          "figures": {
-            "last": 823,
-            "entries": 333,
-            "now": 49
-          },
-          "domEqualsCanonical": true,
-          "pixelDiffFromCanonical": {
-            "changedPixels": 0,
-            "maxChannelDiff": 0,
-            "bbox": null
-          },
-          "pass": true,
-          "errors": []
-        },
         "resize@100": {
           "action": "resize",
           "at": 100,
           "settled": {
             "state": "done",
             "yieldedBy": "resize",
-            "settledAtMs": 123
+            "settledAtMs": 125
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -3747,7 +3824,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "resize",
-            "settledAtMs": 413
+            "settledAtMs": 416
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -4850,8 +4927,17 @@
                 "tipY": 460.75,
                 "markTop": 460.75,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.017,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -4892,8 +4978,17 @@
                 "tipY": 435.22,
                 "markTop": 435.22,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.002,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -4934,8 +5029,17 @@
                 "tipY": 349.3,
                 "markTop": 349.3,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.001,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -4976,8 +5080,17 @@
                 "tipY": 338.67,
                 "markTop": 338.67,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.014,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -5018,8 +5131,17 @@
                 "tipY": 356.42,
                 "markTop": 356.42,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.004,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -5060,8 +5182,17 @@
                 "tipY": 395.73,
                 "markTop": 395.73,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -5102,8 +5233,17 @@
                 "tipY": 412.45,
                 "markTop": 412.45,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.01,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -5144,8 +5284,17 @@
                 "tipY": 428.2,
                 "markTop": 428.2,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.006,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -5186,8 +5335,17 @@
                 "tipY": 433.56,
                 "markTop": 433.56,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -5228,8 +5386,17 @@
                 "tipY": 418.16,
                 "markTop": 418.16,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.008,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -5270,8 +5437,17 @@
                 "tipY": 417.81,
                 "markTop": 417.81,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.008,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -5312,8 +5488,17 @@
                 "tipY": 417.95,
                 "markTop": 417.95,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -5354,8 +5539,17 @@
                 "tipY": 404.54,
                 "markTop": 404.54,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.006,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -5396,8 +5590,17 @@
                 "tipY": 409.54,
                 "markTop": 409.54,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.01,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -5438,8 +5641,17 @@
                 "tipY": 396.15,
                 "markTop": 396.15,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -5480,8 +5692,17 @@
                 "tipY": 397.8,
                 "markTop": 397.8,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.004,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -5522,8 +5743,17 @@
                 "tipY": 408.07,
                 "markTop": 408.07,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.014,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -5558,13 +5788,25 @@
               "clipped": false,
               "wrapped": false,
               "conn": {
-                "x": 678.5,
-                "lineTop": 59.5,
+                "x": 676.28,
+                "lineTop": 59.49000000000002,
                 "tipY": 467.25,
                 "markTop": 467.25,
-                "style": "0.01 4",
-                "gapToBox": 0,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 4.0095",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 59.5,
+                "gapToBox": -0.01,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": 4,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 4.019,
+                  "max": 4.02
+                }
               }
             }
           },
@@ -5605,8 +5847,17 @@
                 "tipY": 405.98,
                 "markTop": 405.98,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.002,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -5647,8 +5898,17 @@
                 "tipY": 399.88,
                 "markTop": 399.88,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.017,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -5689,8 +5949,17 @@
                 "tipY": 342.93,
                 "markTop": 342.93,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.002,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -5731,8 +6000,17 @@
                 "tipY": 272.61,
                 "markTop": 272.61,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.001,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -5773,8 +6051,17 @@
                 "tipY": 281.54,
                 "markTop": 281.54,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.014,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -5815,8 +6102,17 @@
                 "tipY": 260.61,
                 "markTop": 260.61,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.004,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -5857,8 +6153,17 @@
                 "tipY": 254.01,
                 "markTop": 254.01,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -5898,8 +6203,17 @@
                 "tipY": 181.75,
                 "markTop": 181.75,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 91,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.014,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -5940,8 +6254,17 @@
                 "tipY": 216.01,
                 "markTop": 216.01,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.006,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -5982,8 +6305,17 @@
                 "tipY": 246.24,
                 "markTop": 246.24,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -6024,8 +6356,17 @@
                 "tipY": 247.03,
                 "markTop": 247.03,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 91,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.008,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -6064,9 +6405,21 @@
                 "lineTop": 79.5,
                 "tipY": 263.03,
                 "markTop": 263.035,
-                "style": "2 3",
+                "style": "dashed",
+                "pattern": "2 3.0666",
+                "cap": "butt",
+                "painted": 36,
+                "boxBottom": 79.5,
                 "gapToBox": 0,
-                "gapToMark": 0.005
+                "gapToBase": 0,
+                "gapToMark": 0.013,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.067,
+                  "max": 3.067
+                },
+                "dotPitch": null
               }
             }
           },
@@ -6105,9 +6458,21 @@
                 "lineTop": 79.5,
                 "tipY": 285.82,
                 "markTop": 285.815,
-                "style": "2 3",
+                "style": "dashed",
+                "pattern": "2 3.0030",
+                "cap": "butt",
+                "painted": 41,
+                "boxBottom": 79.5,
                 "gapToBox": 0,
-                "gapToMark": -0.005
+                "gapToBase": 0,
+                "gapToMark": 0.003,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.003,
+                  "max": 3.003
+                },
+                "dotPitch": null
               }
             }
           },
@@ -6146,9 +6511,21 @@
                 "lineTop": 79.5,
                 "tipY": 320.07,
                 "markTop": 320.075,
-                "style": "2 3",
+                "style": "dashed",
+                "pattern": "2 2.9866",
+                "cap": "butt",
+                "painted": 48,
+                "boxBottom": 79.5,
                 "gapToBox": 0,
-                "gapToMark": 0.005
+                "gapToBase": 0,
+                "gapToMark": 0.005,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 2.987,
+                  "max": 2.987
+                },
+                "dotPitch": null
               }
             }
           },
@@ -6187,9 +6564,21 @@
                 "lineTop": 79.5,
                 "tipY": 346.22,
                 "markTop": 346.215,
-                "style": "2 3",
+                "style": "dashed",
+                "pattern": "2 3.0100",
+                "cap": "butt",
+                "painted": 53,
+                "boxBottom": 79.5,
                 "gapToBox": 0,
-                "gapToMark": -0.005
+                "gapToBase": 0,
+                "gapToMark": 0.001,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.01,
+                  "max": 3.01
+                },
+                "dotPitch": null
               }
             }
           },
@@ -6225,12 +6614,24 @@
               "wrapped": false,
               "conn": {
                 "x": 196.5,
-                "lineTop": 79.5,
+                "lineTop": 79.50119999999998,
                 "tipY": 372.89,
                 "markTop": 372.885,
-                "style": "2 3",
-                "gapToBox": 0,
-                "gapToMark": -0.005
+                "style": "dashed",
+                "pattern": "2 3.0384",
+                "cap": "butt",
+                "painted": 58,
+                "boxBottom": 79.5,
+                "gapToBox": 0.001,
+                "gapToBase": 0,
+                "gapToMark": 0.006,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.038,
+                  "max": 3.038
+                },
+                "dotPitch": null
               }
             }
           },
@@ -6269,9 +6670,21 @@
                 "lineTop": 79.5,
                 "tipY": 388.11,
                 "markTop": 388.115,
-                "style": "2 3",
+                "style": "dashed",
+                "pattern": "2 3.0402",
+                "cap": "butt",
+                "painted": 61,
+                "boxBottom": 79.5,
                 "gapToBox": 0,
-                "gapToMark": 0.005
+                "gapToBase": 0,
+                "gapToMark": 0.005,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.04,
+                  "max": 3.04
+                },
+                "dotPitch": null
               }
             }
           },
@@ -6310,9 +6723,21 @@
                 "lineTop": 79.5,
                 "tipY": 404.27,
                 "markTop": 404.265,
-                "style": "2 3",
+                "style": "dashed",
+                "pattern": "2 2.9777",
+                "cap": "butt",
+                "painted": 65,
+                "boxBottom": 79.5,
                 "gapToBox": 0,
-                "gapToMark": -0.005
+                "gapToBase": 0,
+                "gapToMark": -0.001,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 2.978,
+                  "max": 2.978
+                },
+                "dotPitch": null
               }
             }
           },
@@ -6351,9 +6776,21 @@
                 "lineTop": 79.5,
                 "tipY": 421.67,
                 "markTop": 421.675,
-                "style": "2 3",
+                "style": "dashed",
+                "pattern": "2 3.0145",
+                "cap": "butt",
+                "painted": 68,
+                "boxBottom": 79.5,
                 "gapToBox": 0,
-                "gapToMark": 0.005
+                "gapToBase": 0,
+                "gapToMark": 0.019,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.014,
+                  "max": 3.015
+                },
+                "dotPitch": null
               }
             }
           },
@@ -6389,12 +6826,24 @@
               "wrapped": false,
               "conn": {
                 "x": 69.5,
-                "lineTop": 79.5,
+                "lineTop": 79.50099999999998,
                 "tipY": 434.98,
                 "markTop": 434.975,
-                "style": "2 3",
-                "gapToBox": 0,
-                "gapToMark": -0.005
+                "style": "dashed",
+                "pattern": "2 2.9897",
+                "cap": "butt",
+                "painted": 71,
+                "boxBottom": 79.5,
+                "gapToBox": 0.001,
+                "gapToBase": 0,
+                "gapToMark": -0.004,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 2.99,
+                  "max": 2.99
+                },
+                "dotPitch": null
               }
             }
           },
@@ -6430,12 +6879,24 @@
               "wrapped": false,
               "conn": {
                 "x": 37.5,
-                "lineTop": 79.5,
+                "lineTop": 79.50130000000001,
                 "tipY": 442.81,
                 "markTop": 442.815,
-                "style": "2 3",
-                "gapToBox": 0,
-                "gapToMark": 0.005
+                "style": "dashed",
+                "pattern": "2 3.0297",
+                "cap": "butt",
+                "painted": 72,
+                "boxBottom": 79.5,
+                "gapToBox": 0.001,
+                "gapToBase": 0,
+                "gapToMark": 0.007,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.03,
+                  "max": 3.03
+                },
+                "dotPitch": null
               }
             }
           },
@@ -6471,12 +6932,24 @@
               "wrapped": false,
               "conn": {
                 "x": 7.5,
-                "lineTop": 77.29,
+                "lineTop": 77.59000000000003,
                 "tipY": 448.95,
                 "markTop": 448.955,
-                "style": "2 3",
-                "gapToBox": -2.21,
-                "gapToMark": 0.005
+                "style": "dashed",
+                "pattern": "2 3.0022",
+                "cap": "butt",
+                "painted": 74,
+                "boxBottom": 77.587,
+                "gapToBox": 0.003,
+                "gapToBase": 0,
+                "gapToMark": 0.019,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.002,
+                  "max": 3.002
+                },
+                "dotPitch": null
               }
             }
           }
@@ -6498,7 +6971,7 @@
             "widestKey": "latest",
             "numbered": 39,
             "measures": 2,
-            "ms": 3.100000001490116
+            "ms": 3.900000000372529
           },
           "lane": {
             "top": 2,
@@ -6536,12 +7009,25 @@
               "stops": 40,
               "styles": [
                 "solid",
-                "0.01 4",
-                "2 3"
+                "dotted",
+                "dashed"
               ],
-              "maxGapToBoxPx": 0,
-              "maxGapToMarkPx": 0.005,
-              "xInsideBox": true
+              "maxGapToBoxPx": 0.01,
+              "maxGapToPointerBasePx": 0,
+              "maxGapToMarkPx": 0.019,
+              "dashGapPx": {
+                "min": 2.978,
+                "max": 3.067
+              },
+              "dotPitchPx": {
+                "min": 4.019,
+                "max": 4.02
+              },
+              "missingSpanLitDots": [
+                4
+              ],
+              "xInsideBox": true,
+              "patternOk": true
             },
             "reserved": true,
             "connectorMeets": true,
@@ -7122,8 +7608,17 @@
                 "tipY": 460.75,
                 "markTop": 460.75,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.017,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -7164,8 +7659,17 @@
                 "tipY": 435.22,
                 "markTop": 435.22,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.002,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -7206,8 +7710,17 @@
                 "tipY": 349.3,
                 "markTop": 349.3,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.001,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -7248,8 +7761,17 @@
                 "tipY": 338.67,
                 "markTop": 338.67,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.014,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -7290,8 +7812,17 @@
                 "tipY": 356.42,
                 "markTop": 356.42,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.004,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -7332,8 +7863,17 @@
                 "tipY": 395.73,
                 "markTop": 395.73,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -7374,8 +7914,17 @@
                 "tipY": 412.45,
                 "markTop": 412.45,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.01,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -7416,8 +7965,17 @@
                 "tipY": 428.2,
                 "markTop": 428.2,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.006,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -7458,8 +8016,17 @@
                 "tipY": 433.56,
                 "markTop": 433.56,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -7500,8 +8067,17 @@
                 "tipY": 418.16,
                 "markTop": 418.16,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.008,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -7542,8 +8118,17 @@
                 "tipY": 417.81,
                 "markTop": 417.81,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.008,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -7584,8 +8169,17 @@
                 "tipY": 417.95,
                 "markTop": 417.95,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -7626,8 +8220,17 @@
                 "tipY": 404.54,
                 "markTop": 404.54,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.006,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -7668,8 +8271,17 @@
                 "tipY": 409.54,
                 "markTop": 409.54,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.01,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -7710,8 +8322,17 @@
                 "tipY": 396.15,
                 "markTop": 396.15,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -7752,8 +8373,17 @@
                 "tipY": 397.8,
                 "markTop": 397.8,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.004,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -7794,8 +8424,17 @@
                 "tipY": 408.07,
                 "markTop": 408.07,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.014,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -7830,13 +8469,25 @@
               "clipped": false,
               "wrapped": false,
               "conn": {
-                "x": 569.5,
-                "lineTop": 59.5,
+                "x": 567.71,
+                "lineTop": 59.49000000000002,
                 "tipY": 467.25,
                 "markTop": 467.25,
-                "style": "0.01 4",
-                "gapToBox": 0,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 4.0095",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 59.5,
+                "gapToBox": -0.01,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": 4,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 4.019,
+                  "max": 4.02
+                }
               }
             }
           },
@@ -7877,8 +8528,17 @@
                 "tipY": 405.98,
                 "markTop": 405.98,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.002,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -7919,8 +8579,17 @@
                 "tipY": 399.88,
                 "markTop": 399.88,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.017,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -7961,8 +8630,17 @@
                 "tipY": 342.93,
                 "markTop": 342.93,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.002,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -8003,8 +8681,17 @@
                 "tipY": 272.61,
                 "markTop": 272.61,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.001,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -8045,8 +8732,17 @@
                 "tipY": 281.54,
                 "markTop": 281.54,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.014,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -8087,8 +8783,17 @@
                 "tipY": 260.61,
                 "markTop": 260.61,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.004,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -8129,8 +8834,17 @@
                 "tipY": 254.01,
                 "markTop": 254.01,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -8170,8 +8884,17 @@
                 "tipY": 181.75,
                 "markTop": 181.75,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 91,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.014,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -8212,8 +8935,17 @@
                 "tipY": 216.01,
                 "markTop": 216.01,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.006,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -8254,8 +8986,17 @@
                 "tipY": 246.24,
                 "markTop": 246.24,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -8296,8 +9037,17 @@
                 "tipY": 247.03,
                 "markTop": 247.03,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 91,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.008,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -8336,9 +9086,21 @@
                 "lineTop": 79.5,
                 "tipY": 263.03,
                 "markTop": 263.035,
-                "style": "2 3",
+                "style": "dashed",
+                "pattern": "2 3.0666",
+                "cap": "butt",
+                "painted": 36,
+                "boxBottom": 79.5,
                 "gapToBox": 0,
-                "gapToMark": 0.005
+                "gapToBase": 0,
+                "gapToMark": 0.013,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.067,
+                  "max": 3.067
+                },
+                "dotPitch": null
               }
             }
           },
@@ -8377,9 +9139,21 @@
                 "lineTop": 79.5,
                 "tipY": 285.82,
                 "markTop": 285.815,
-                "style": "2 3",
+                "style": "dashed",
+                "pattern": "2 3.0030",
+                "cap": "butt",
+                "painted": 41,
+                "boxBottom": 79.5,
                 "gapToBox": 0,
-                "gapToMark": -0.005
+                "gapToBase": 0,
+                "gapToMark": 0.003,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.003,
+                  "max": 3.003
+                },
+                "dotPitch": null
               }
             }
           },
@@ -8418,9 +9192,21 @@
                 "lineTop": 79.5,
                 "tipY": 320.07,
                 "markTop": 320.075,
-                "style": "2 3",
+                "style": "dashed",
+                "pattern": "2 2.9866",
+                "cap": "butt",
+                "painted": 48,
+                "boxBottom": 79.5,
                 "gapToBox": 0,
-                "gapToMark": 0.005
+                "gapToBase": 0,
+                "gapToMark": 0.005,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 2.987,
+                  "max": 2.987
+                },
+                "dotPitch": null
               }
             }
           },
@@ -8459,9 +9245,21 @@
                 "lineTop": 79.5,
                 "tipY": 346.22,
                 "markTop": 346.215,
-                "style": "2 3",
+                "style": "dashed",
+                "pattern": "2 3.0100",
+                "cap": "butt",
+                "painted": 53,
+                "boxBottom": 79.5,
                 "gapToBox": 0,
-                "gapToMark": -0.005
+                "gapToBase": 0,
+                "gapToMark": 0.001,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.01,
+                  "max": 3.01
+                },
+                "dotPitch": null
               }
             }
           },
@@ -8497,12 +9295,24 @@
               "wrapped": false,
               "conn": {
                 "x": 1053.5,
-                "lineTop": 79.5,
+                "lineTop": 79.50119999999998,
                 "tipY": 372.89,
                 "markTop": 372.885,
-                "style": "2 3",
-                "gapToBox": 0,
-                "gapToMark": -0.005
+                "style": "dashed",
+                "pattern": "2 3.0384",
+                "cap": "butt",
+                "painted": 58,
+                "boxBottom": 79.5,
+                "gapToBox": 0.001,
+                "gapToBase": 0,
+                "gapToMark": 0.006,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.038,
+                  "max": 3.038
+                },
+                "dotPitch": null
               }
             }
           },
@@ -8541,9 +9351,21 @@
                 "lineTop": 79.5,
                 "tipY": 388.11,
                 "markTop": 388.115,
-                "style": "2 3",
+                "style": "dashed",
+                "pattern": "2 3.0402",
+                "cap": "butt",
+                "painted": 61,
+                "boxBottom": 79.5,
                 "gapToBox": 0,
-                "gapToMark": 0.005
+                "gapToBase": 0,
+                "gapToMark": 0.005,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.04,
+                  "max": 3.04
+                },
+                "dotPitch": null
               }
             }
           },
@@ -8582,9 +9404,21 @@
                 "lineTop": 79.5,
                 "tipY": 404.27,
                 "markTop": 404.265,
-                "style": "2 3",
+                "style": "dashed",
+                "pattern": "2 2.9777",
+                "cap": "butt",
+                "painted": 65,
+                "boxBottom": 79.5,
                 "gapToBox": 0,
-                "gapToMark": -0.005
+                "gapToBase": 0,
+                "gapToMark": -0.001,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 2.978,
+                  "max": 2.978
+                },
+                "dotPitch": null
               }
             }
           },
@@ -8623,9 +9457,21 @@
                 "lineTop": 79.5,
                 "tipY": 421.67,
                 "markTop": 421.675,
-                "style": "2 3",
+                "style": "dashed",
+                "pattern": "2 3.0145",
+                "cap": "butt",
+                "painted": 68,
+                "boxBottom": 79.5,
                 "gapToBox": 0,
-                "gapToMark": 0.005
+                "gapToBase": 0,
+                "gapToMark": 0.019,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.014,
+                  "max": 3.015
+                },
+                "dotPitch": null
               }
             }
           },
@@ -8661,12 +9507,24 @@
               "wrapped": false,
               "conn": {
                 "x": 1180.5,
-                "lineTop": 79.5,
+                "lineTop": 79.50099999999998,
                 "tipY": 434.98,
                 "markTop": 434.975,
-                "style": "2 3",
-                "gapToBox": 0,
-                "gapToMark": -0.005
+                "style": "dashed",
+                "pattern": "2 2.9897",
+                "cap": "butt",
+                "painted": 71,
+                "boxBottom": 79.5,
+                "gapToBox": 0.001,
+                "gapToBase": 0,
+                "gapToMark": -0.004,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 2.99,
+                  "max": 2.99
+                },
+                "dotPitch": null
               }
             }
           },
@@ -8702,12 +9560,24 @@
               "wrapped": false,
               "conn": {
                 "x": 1212.5,
-                "lineTop": 79.5,
+                "lineTop": 79.50130000000001,
                 "tipY": 442.81,
                 "markTop": 442.815,
-                "style": "2 3",
-                "gapToBox": 0,
-                "gapToMark": 0.005
+                "style": "dashed",
+                "pattern": "2 3.0297",
+                "cap": "butt",
+                "painted": 72,
+                "boxBottom": 79.5,
+                "gapToBox": 0.001,
+                "gapToBase": 0,
+                "gapToMark": 0.007,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.03,
+                  "max": 3.03
+                },
+                "dotPitch": null
               }
             }
           },
@@ -8743,12 +9613,24 @@
               "wrapped": false,
               "conn": {
                 "x": 1242.5,
-                "lineTop": 77.29,
+                "lineTop": 77.59000000000003,
                 "tipY": 448.95,
                 "markTop": 448.955,
-                "style": "2 3",
-                "gapToBox": -2.21,
-                "gapToMark": 0.005
+                "style": "dashed",
+                "pattern": "2 3.0022",
+                "cap": "butt",
+                "painted": 74,
+                "boxBottom": 77.587,
+                "gapToBox": 0.003,
+                "gapToBase": 0,
+                "gapToMark": 0.019,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.002,
+                  "max": 3.002
+                },
+                "dotPitch": null
               }
             }
           }
@@ -8770,7 +9652,7 @@
             "widestKey": "latest",
             "numbered": 39,
             "measures": 2,
-            "ms": 3.1999999955296516
+            "ms": 2.700000001117587
           },
           "lane": {
             "top": 2,
@@ -8808,12 +9690,25 @@
               "stops": 40,
               "styles": [
                 "solid",
-                "0.01 4",
-                "2 3"
+                "dotted",
+                "dashed"
               ],
-              "maxGapToBoxPx": 0,
-              "maxGapToMarkPx": 0.005,
-              "xInsideBox": true
+              "maxGapToBoxPx": 0.01,
+              "maxGapToPointerBasePx": 0,
+              "maxGapToMarkPx": 0.019,
+              "dashGapPx": {
+                "min": 2.978,
+                "max": 3.067
+              },
+              "dotPitchPx": {
+                "min": 4.019,
+                "max": 4.02
+              },
+              "missingSpanLitDots": [
+                4
+              ],
+              "xInsideBox": true,
+              "patternOk": true
             },
             "reserved": true,
             "connectorMeets": true,
@@ -9389,8 +10284,17 @@
                 "tipY": 460.75,
                 "markTop": 460.75,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.017,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -9431,8 +10335,17 @@
                 "tipY": 436.63,
                 "markTop": 436.63,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.002,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -9473,8 +10386,17 @@
                 "tipY": 355.5,
                 "markTop": 355.5,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.001,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -9515,8 +10437,17 @@
                 "tipY": 345.45,
                 "markTop": 345.45,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.014,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -9557,8 +10488,17 @@
                 "tipY": 362.22,
                 "markTop": 362.22,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.004,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -9599,8 +10539,17 @@
                 "tipY": 399.34,
                 "markTop": 399.34,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -9641,8 +10590,17 @@
                 "tipY": 415.13,
                 "markTop": 415.13,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.01,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -9683,8 +10641,17 @@
                 "tipY": 430,
                 "markTop": 430,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.006,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -9725,8 +10692,17 @@
                 "tipY": 435.07,
                 "markTop": 435.07,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -9767,8 +10743,17 @@
                 "tipY": 420.52,
                 "markTop": 420.52,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.008,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -9809,8 +10794,17 @@
                 "tipY": 420.19,
                 "markTop": 420.19,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.008,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -9851,8 +10845,17 @@
                 "tipY": 420.33,
                 "markTop": 420.33,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -9893,8 +10896,17 @@
                 "tipY": 407.66,
                 "markTop": 407.66,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.006,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -9935,8 +10947,17 @@
                 "tipY": 412.39,
                 "markTop": 412.39,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.01,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -9977,8 +10998,17 @@
                 "tipY": 399.74,
                 "markTop": 399.74,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -10019,8 +11049,17 @@
                 "tipY": 401.3,
                 "markTop": 401.3,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.004,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -10061,8 +11100,17 @@
                 "tipY": 410.99,
                 "markTop": 410.99,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.014,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -10097,13 +11145,25 @@
               "clipped": false,
               "wrapped": false,
               "conn": {
-                "x": 678.5,
-                "lineTop": 59.5,
+                "x": 676.28,
+                "lineTop": 59.49000000000002,
                 "tipY": 467.25,
                 "markTop": 467.25,
-                "style": "0.01 4",
-                "gapToBox": 0,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 4.0095",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 59.5,
+                "gapToBox": -0.01,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": 4,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 4.019,
+                  "max": 4.02
+                }
               }
             }
           },
@@ -10144,8 +11204,17 @@
                 "tipY": 409.02,
                 "markTop": 409.02,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.002,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -10186,8 +11255,17 @@
                 "tipY": 403.26,
                 "markTop": 403.26,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.017,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -10228,8 +11306,17 @@
                 "tipY": 349.48,
                 "markTop": 349.48,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.002,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -10270,8 +11357,17 @@
                 "tipY": 283.06,
                 "markTop": 283.06,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.001,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -10312,8 +11408,17 @@
                 "tipY": 291.5,
                 "markTop": 291.5,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.014,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -10354,8 +11459,17 @@
                 "tipY": 271.72,
                 "markTop": 271.72,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.004,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -10396,8 +11510,17 @@
                 "tipY": 265.5,
                 "markTop": 265.5,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -10437,8 +11560,17 @@
                 "tipY": 197.25,
                 "markTop": 197.25,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 91,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.014,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -10479,8 +11611,17 @@
                 "tipY": 229.61,
                 "markTop": 229.61,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.006,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -10521,8 +11662,17 @@
                 "tipY": 255.5,
                 "markTop": 255.5,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 111,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -10561,9 +11711,21 @@
                 "lineTop": 79.5,
                 "tipY": 274.02,
                 "markTop": 274.025,
-                "style": "2 3",
+                "style": "dashed",
+                "pattern": "2 2.9558",
+                "cap": "butt",
+                "painted": 39,
+                "boxBottom": 79.5,
                 "gapToBox": 0,
-                "gapToMark": 0.005
+                "gapToBase": 0,
+                "gapToMark": 0.013,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 2.956,
+                  "max": 2.956
+                },
+                "dotPitch": null
               }
             }
           },
@@ -10599,12 +11761,24 @@
               "wrapped": false,
               "conn": {
                 "x": 291.5,
-                "lineTop": 79.5,
+                "lineTop": 79.50120000000004,
                 "tipY": 295.55,
                 "markTop": 295.545,
-                "style": "2 3",
-                "gapToBox": 0,
-                "gapToMark": -0.005
+                "style": "dashed",
+                "pattern": "2 2.9964",
+                "cap": "butt",
+                "painted": 43,
+                "boxBottom": 79.5,
+                "gapToBox": 0.001,
+                "gapToBase": 0,
+                "gapToMark": 0.003,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 2.996,
+                  "max": 2.996
+                },
+                "dotPitch": null
               }
             }
           },
@@ -10640,12 +11814,24 @@
               "wrapped": false,
               "conn": {
                 "x": 259.5,
-                "lineTop": 79.5,
+                "lineTop": 79.50119999999998,
                 "tipY": 327.89,
                 "markTop": 327.895,
-                "style": "2 3",
-                "gapToBox": 0,
-                "gapToMark": 0.005
+                "style": "dashed",
+                "pattern": "2 3.0456",
+                "cap": "butt",
+                "painted": 49,
+                "boxBottom": 79.5,
+                "gapToBox": 0.001,
+                "gapToBase": 0,
+                "gapToMark": 0.005,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.046,
+                  "max": 3.046
+                },
+                "dotPitch": null
               }
             }
           },
@@ -10684,9 +11870,21 @@
                 "lineTop": 79.5,
                 "tipY": 352.59,
                 "markTop": 352.585,
-                "style": "2 3",
+                "style": "dashed",
+                "pattern": "2 3.0357",
+                "cap": "butt",
+                "painted": 54,
+                "boxBottom": 79.5,
                 "gapToBox": 0,
-                "gapToMark": -0.005
+                "gapToBase": 0,
+                "gapToMark": 0.001,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.036,
+                  "max": 3.036
+                },
+                "dotPitch": null
               }
             }
           },
@@ -10725,9 +11923,21 @@
                 "lineTop": 79.5,
                 "tipY": 377.78,
                 "markTop": 377.775,
-                "style": "2 3",
+                "style": "dashed",
+                "pattern": "2 3.0359",
+                "cap": "butt",
+                "painted": 59,
+                "boxBottom": 79.5,
                 "gapToBox": 0,
-                "gapToMark": -0.005
+                "gapToBase": 0,
+                "gapToMark": 0.006,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.036,
+                  "max": 3.036
+                },
+                "dotPitch": null
               }
             }
           },
@@ -10763,12 +11973,24 @@
               "wrapped": false,
               "conn": {
                 "x": 164.5,
-                "lineTop": 79.5,
+                "lineTop": 79.50210000000004,
                 "tipY": 392.16,
                 "markTop": 392.165,
-                "style": "2 3",
-                "gapToBox": 0,
-                "gapToMark": 0.005
+                "style": "dashed",
+                "pattern": "2 3.0239",
+                "cap": "butt",
+                "painted": 62,
+                "boxBottom": 79.5,
+                "gapToBox": 0.002,
+                "gapToBase": 0,
+                "gapToMark": 0.005,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.024,
+                  "max": 3.024
+                },
+                "dotPitch": null
               }
             }
           },
@@ -10804,12 +12026,24 @@
               "wrapped": false,
               "conn": {
                 "x": 132.5,
-                "lineTop": 79.5,
+                "lineTop": 79.50119999999998,
                 "tipY": 407.41,
                 "markTop": 407.405,
-                "style": "2 3",
-                "gapToBox": 0,
-                "gapToMark": -0.005
+                "style": "dashed",
+                "pattern": "2 3.0267",
+                "cap": "butt",
+                "painted": 65,
+                "boxBottom": 79.5,
+                "gapToBox": 0.001,
+                "gapToBase": 0,
+                "gapToMark": -0.001,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.027,
+                  "max": 3.027
+                },
+                "dotPitch": null
               }
             }
           },
@@ -10845,12 +12079,24 @@
               "wrapped": false,
               "conn": {
                 "x": 101.5,
-                "lineTop": 79.5,
+                "lineTop": 79.50319999999999,
                 "tipY": 423.84,
                 "markTop": 423.845,
-                "style": "2 3",
-                "gapToBox": 0,
-                "gapToMark": 0.005
+                "style": "dashed",
+                "pattern": "2 2.9726",
+                "cap": "butt",
+                "painted": 69,
+                "boxBottom": 79.5,
+                "gapToBox": 0.003,
+                "gapToBase": 0,
+                "gapToMark": 0.019,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 2.973,
+                  "max": 2.973
+                },
+                "dotPitch": null
               }
             }
           },
@@ -10889,9 +12135,21 @@
                 "lineTop": 79.5,
                 "tipY": 436.42,
                 "markTop": 436.415,
-                "style": "2 3",
+                "style": "dashed",
+                "pattern": "2 3.0103",
+                "cap": "butt",
+                "painted": 71,
+                "boxBottom": 79.5,
                 "gapToBox": 0,
-                "gapToMark": -0.005
+                "gapToBase": 0,
+                "gapToMark": -0.004,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.01,
+                  "max": 3.01
+                },
+                "dotPitch": null
               }
             }
           },
@@ -10930,9 +12188,21 @@
                 "lineTop": 79.5,
                 "tipY": 443.81,
                 "markTop": 443.815,
-                "style": "2 3",
+                "style": "dashed",
+                "pattern": "2 2.9738",
+                "cap": "butt",
+                "painted": 73,
+                "boxBottom": 79.5,
                 "gapToBox": 0,
-                "gapToMark": 0.005
+                "gapToBase": 0,
+                "gapToMark": 0.007,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 2.974,
+                  "max": 2.974
+                },
+                "dotPitch": null
               }
             }
           },
@@ -10968,12 +12238,24 @@
               "wrapped": false,
               "conn": {
                 "x": 7.5,
-                "lineTop": 77.29,
+                "lineTop": 77.58999999999997,
                 "tipY": 449.62,
                 "markTop": 449.615,
-                "style": "2 3",
-                "gapToBox": -2.21,
-                "gapToMark": -0.005
+                "style": "dashed",
+                "pattern": "2 3.0114",
+                "cap": "butt",
+                "painted": 74,
+                "boxBottom": 77.587,
+                "gapToBox": 0.003,
+                "gapToBase": 0,
+                "gapToMark": 0.009,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.011,
+                  "max": 3.011
+                },
+                "dotPitch": null
               }
             }
           }
@@ -10995,7 +12277,7 @@
             "widestKey": "latest",
             "numbered": 38,
             "measures": 2,
-            "ms": 3.7000000029802322
+            "ms": 3.5
           },
           "lane": {
             "top": 2,
@@ -11033,12 +12315,25 @@
               "stops": 39,
               "styles": [
                 "solid",
-                "0.01 4",
-                "2 3"
+                "dotted",
+                "dashed"
               ],
-              "maxGapToBoxPx": 0,
-              "maxGapToMarkPx": 0.005,
-              "xInsideBox": true
+              "maxGapToBoxPx": 0.01,
+              "maxGapToPointerBasePx": 0,
+              "maxGapToMarkPx": 0.019,
+              "dashGapPx": {
+                "min": 2.956,
+                "max": 3.046
+              },
+              "dotPitchPx": {
+                "min": 4.019,
+                "max": 4.02
+              },
+              "missingSpanLitDots": [
+                4
+              ],
+              "xInsideBox": true,
+              "patternOk": true
             },
             "reserved": true,
             "connectorMeets": true,
@@ -11619,8 +12914,17 @@
                 "tipY": 460.75,
                 "markTop": 460.75,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.017,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -11661,8 +12965,17 @@
                 "tipY": 433.8,
                 "markTop": 433.8,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.002,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -11703,8 +13016,17 @@
                 "tipY": 343.11,
                 "markTop": 343.11,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.001,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -11745,8 +13067,17 @@
                 "tipY": 331.89,
                 "markTop": 331.89,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.014,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -11787,8 +13118,17 @@
                 "tipY": 350.63,
                 "markTop": 350.63,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.004,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -11829,8 +13169,17 @@
                 "tipY": 392.12,
                 "markTop": 392.12,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -11871,8 +13220,17 @@
                 "tipY": 409.76,
                 "markTop": 409.76,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.01,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -11913,8 +13271,17 @@
                 "tipY": 426.39,
                 "markTop": 426.39,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.006,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -11955,8 +13322,17 @@
                 "tipY": 432.05,
                 "markTop": 432.05,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -11997,8 +13373,17 @@
                 "tipY": 415.79,
                 "markTop": 415.79,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.008,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -12039,8 +13424,17 @@
                 "tipY": 415.42,
                 "markTop": 415.42,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.008,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -12081,8 +13475,17 @@
                 "tipY": 415.57,
                 "markTop": 415.57,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -12123,8 +13526,17 @@
                 "tipY": 401.41,
                 "markTop": 401.41,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.006,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -12165,8 +13577,17 @@
                 "tipY": 406.7,
                 "markTop": 406.7,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.01,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -12207,8 +13628,17 @@
                 "tipY": 392.56,
                 "markTop": 392.56,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -12249,8 +13679,17 @@
                 "tipY": 394.31,
                 "markTop": 394.31,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.004,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -12291,8 +13730,17 @@
                 "tipY": 405.14,
                 "markTop": 405.14,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.014,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -12327,13 +13775,25 @@
               "clipped": false,
               "wrapped": false,
               "conn": {
-                "x": 678.5,
-                "lineTop": 59.5,
+                "x": 676.28,
+                "lineTop": 59.49000000000002,
                 "tipY": 467.25,
                 "markTop": 467.25,
-                "style": "0.01 4",
-                "gapToBox": 0,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 4.0095",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 59.5,
+                "gapToBox": -0.01,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": 4,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 4.019,
+                  "max": 4.02
+                }
               }
             }
           },
@@ -12374,8 +13834,17 @@
                 "tipY": 402.93,
                 "markTop": 402.93,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.002,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -12416,8 +13885,17 @@
                 "tipY": 396.5,
                 "markTop": 396.5,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.017,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -12458,8 +13936,17 @@
                 "tipY": 336.39,
                 "markTop": 336.39,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.002,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -12500,8 +13987,17 @@
                 "tipY": 262.16,
                 "markTop": 262.16,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.001,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -12542,8 +14038,17 @@
                 "tipY": 271.58,
                 "markTop": 271.58,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.014,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -12584,8 +14089,17 @@
                 "tipY": 249.49,
                 "markTop": 249.49,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.004,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -12626,8 +14140,17 @@
                 "tipY": 242.53,
                 "markTop": 242.53,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -12667,8 +14190,17 @@
                 "tipY": 166.25,
                 "markTop": 166.25,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 71,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.014,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -12709,8 +14241,17 @@
                 "tipY": 202.41,
                 "markTop": 202.41,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.006,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -12751,8 +14292,17 @@
                 "tipY": 234.33,
                 "markTop": 234.33,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -12793,8 +14343,17 @@
                 "tipY": 235.16,
                 "markTop": 235.16,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 71,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.008,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -12821,12 +14380,24 @@
               "wrapped": false,
               "conn": {
                 "x": 323.5,
-                "lineTop": 59.5,
+                "lineTop": 59.49000000000002,
                 "tipY": 465,
                 "markTop": 465,
-                "style": "0.01 4",
-                "gapToBox": 0,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 3.9870",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 59.5,
+                "gapToBox": -0.01,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 3.997,
+                  "max": 3.997
+                }
               }
             }
           },
@@ -12853,12 +14424,24 @@
               "wrapped": false,
               "conn": {
                 "x": 291.5,
-                "lineTop": 59.5,
+                "lineTop": 59.49000000000002,
                 "tipY": 465,
                 "markTop": 465,
-                "style": "0.01 4",
-                "gapToBox": 0,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 3.9870",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 59.5,
+                "gapToBox": -0.01,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 3.997,
+                  "max": 3.997
+                }
               }
             }
           },
@@ -12885,12 +14468,24 @@
               "wrapped": false,
               "conn": {
                 "x": 259.5,
-                "lineTop": 59.5,
+                "lineTop": 59.49000000000002,
                 "tipY": 465,
                 "markTop": 465,
-                "style": "0.01 4",
-                "gapToBox": 0,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 3.9870",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 59.5,
+                "gapToBox": -0.01,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 3.997,
+                  "max": 3.997
+                }
               }
             }
           },
@@ -12917,12 +14512,24 @@
               "wrapped": false,
               "conn": {
                 "x": 228.5,
-                "lineTop": 59.5,
+                "lineTop": 59.49000000000002,
                 "tipY": 465,
                 "markTop": 465,
-                "style": "0.01 4",
-                "gapToBox": 0,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 3.9870",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 59.5,
+                "gapToBox": -0.01,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 3.997,
+                  "max": 3.997
+                }
               }
             }
           },
@@ -12949,12 +14556,24 @@
               "wrapped": false,
               "conn": {
                 "x": 196.5,
-                "lineTop": 59.5,
+                "lineTop": 59.49000000000002,
                 "tipY": 465,
                 "markTop": 465,
-                "style": "0.01 4",
-                "gapToBox": 0,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 3.9870",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 59.5,
+                "gapToBox": -0.01,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 3.997,
+                  "max": 3.997
+                }
               }
             }
           },
@@ -12981,12 +14600,24 @@
               "wrapped": false,
               "conn": {
                 "x": 164.5,
-                "lineTop": 59.5,
+                "lineTop": 59.49000000000002,
                 "tipY": 465,
                 "markTop": 465,
-                "style": "0.01 4",
-                "gapToBox": 0,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 3.9870",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 59.5,
+                "gapToBox": -0.01,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 3.997,
+                  "max": 3.997
+                }
               }
             }
           },
@@ -13013,12 +14644,24 @@
               "wrapped": false,
               "conn": {
                 "x": 133.5,
-                "lineTop": 59.5,
+                "lineTop": 59.49000000000002,
                 "tipY": 465,
                 "markTop": 465,
-                "style": "0.01 4",
-                "gapToBox": 0,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 3.9870",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 59.5,
+                "gapToBox": -0.01,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 3.997,
+                  "max": 3.997
+                }
               }
             }
           },
@@ -13045,12 +14688,24 @@
               "wrapped": false,
               "conn": {
                 "x": 101.5,
-                "lineTop": 59.5,
+                "lineTop": 59.49000000000002,
                 "tipY": 465,
                 "markTop": 465,
-                "style": "0.01 4",
-                "gapToBox": 0,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 3.9870",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 59.5,
+                "gapToBox": -0.01,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 3.997,
+                  "max": 3.997
+                }
               }
             }
           },
@@ -13077,12 +14732,24 @@
               "wrapped": false,
               "conn": {
                 "x": 69.5,
-                "lineTop": 59.5,
+                "lineTop": 59.49000000000002,
                 "tipY": 465,
                 "markTop": 465,
-                "style": "0.01 4",
-                "gapToBox": 0,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 3.9870",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 59.5,
+                "gapToBox": -0.01,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 3.997,
+                  "max": 3.997
+                }
               }
             }
           },
@@ -13109,12 +14776,24 @@
               "wrapped": false,
               "conn": {
                 "x": 38.5,
-                "lineTop": 59.5,
+                "lineTop": 59.49000000000002,
                 "tipY": 465,
                 "markTop": 465,
-                "style": "0.01 4",
-                "gapToBox": 0,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 3.9870",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 59.5,
+                "gapToBox": -0.01,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 3.997,
+                  "max": 3.997
+                }
               }
             }
           },
@@ -13141,12 +14820,24 @@
               "wrapped": false,
               "conn": {
                 "x": 7.5,
-                "lineTop": 57.29,
+                "lineTop": 57.580000000000055,
                 "tipY": 465,
                 "markTop": 465,
-                "style": "0.01 4",
-                "gapToBox": -2.21,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 4.0061",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 57.587,
+                "gapToBox": -0.007,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 4.016,
+                  "max": 4.016
+                }
               }
             }
           }
@@ -13168,7 +14859,7 @@
             "widestKey": "latest",
             "numbered": 28,
             "measures": 2,
-            "ms": 2.4000000059604645
+            "ms": 2.599999999627471
           },
           "lane": {
             "top": 2,
@@ -13206,11 +14897,21 @@
               "stops": 40,
               "styles": [
                 "solid",
-                "0.01 4"
+                "dotted"
               ],
-              "maxGapToBoxPx": 0,
-              "maxGapToMarkPx": 0,
-              "xInsideBox": true
+              "maxGapToBoxPx": 0.01,
+              "maxGapToPointerBasePx": 0,
+              "maxGapToMarkPx": 0.017,
+              "dashGapPx": null,
+              "dotPitchPx": {
+                "min": 3.997,
+                "max": 4.02
+              },
+              "missingSpanLitDots": [
+                4
+              ],
+              "xInsideBox": true,
+              "patternOk": true
             },
             "reserved": true,
             "connectorMeets": true,
@@ -13786,8 +15487,17 @@
                 "tipY": 460.75,
                 "markTop": 460.75,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.017,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -13828,8 +15538,17 @@
                 "tipY": 436.63,
                 "markTop": 436.63,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.002,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -13870,8 +15589,17 @@
                 "tipY": 355.5,
                 "markTop": 355.5,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.001,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -13912,8 +15640,17 @@
                 "tipY": 345.45,
                 "markTop": 345.45,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.014,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -13954,8 +15691,17 @@
                 "tipY": 362.22,
                 "markTop": 362.22,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.004,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -13996,8 +15742,17 @@
                 "tipY": 399.34,
                 "markTop": 399.34,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -14038,8 +15793,17 @@
                 "tipY": 415.13,
                 "markTop": 415.13,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.01,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -14080,8 +15844,17 @@
                 "tipY": 430,
                 "markTop": 430,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.006,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -14122,8 +15895,17 @@
                 "tipY": 435.07,
                 "markTop": 435.07,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -14164,8 +15946,17 @@
                 "tipY": 420.52,
                 "markTop": 420.52,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.008,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -14206,8 +15997,17 @@
                 "tipY": 420.19,
                 "markTop": 420.19,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.008,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -14248,8 +16048,17 @@
                 "tipY": 420.33,
                 "markTop": 420.33,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -14290,8 +16099,17 @@
                 "tipY": 407.66,
                 "markTop": 407.66,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.006,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -14332,8 +16150,17 @@
                 "tipY": 412.39,
                 "markTop": 412.39,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.01,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -14374,8 +16201,17 @@
                 "tipY": 399.74,
                 "markTop": 399.74,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -14416,8 +16252,17 @@
                 "tipY": 401.3,
                 "markTop": 401.3,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.004,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -14458,8 +16303,17 @@
                 "tipY": 410.99,
                 "markTop": 410.99,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.014,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -14494,13 +16348,25 @@
               "clipped": false,
               "wrapped": false,
               "conn": {
-                "x": 569.5,
-                "lineTop": 59.5,
+                "x": 567.71,
+                "lineTop": 59.49000000000002,
                 "tipY": 467.25,
                 "markTop": 467.25,
-                "style": "0.01 4",
-                "gapToBox": 0,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 4.0095",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 59.5,
+                "gapToBox": -0.01,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": 4,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 4.019,
+                  "max": 4.02
+                }
               }
             }
           },
@@ -14541,8 +16407,17 @@
                 "tipY": 409.02,
                 "markTop": 409.02,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.002,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -14583,8 +16458,17 @@
                 "tipY": 403.26,
                 "markTop": 403.26,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.017,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -14625,8 +16509,17 @@
                 "tipY": 349.48,
                 "markTop": 349.48,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.002,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -14667,8 +16560,17 @@
                 "tipY": 283.06,
                 "markTop": 283.06,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.001,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -14709,8 +16611,17 @@
                 "tipY": 291.5,
                 "markTop": 291.5,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.014,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -14751,8 +16662,17 @@
                 "tipY": 271.72,
                 "markTop": 271.72,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.004,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -14793,8 +16713,17 @@
                 "tipY": 265.5,
                 "markTop": 265.5,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -14834,8 +16763,17 @@
                 "tipY": 197.25,
                 "markTop": 197.25,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 91,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.014,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -14876,8 +16814,17 @@
                 "tipY": 229.61,
                 "markTop": 229.61,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 87,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.006,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -14918,8 +16865,17 @@
                 "tipY": 255.5,
                 "markTop": 255.5,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 111,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -14958,9 +16914,21 @@
                 "lineTop": 79.5,
                 "tipY": 274.02,
                 "markTop": 274.025,
-                "style": "2 3",
+                "style": "dashed",
+                "pattern": "2 2.9558",
+                "cap": "butt",
+                "painted": 39,
+                "boxBottom": 79.5,
                 "gapToBox": 0,
-                "gapToMark": 0.005
+                "gapToBase": 0,
+                "gapToMark": 0.013,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 2.956,
+                  "max": 2.956
+                },
+                "dotPitch": null
               }
             }
           },
@@ -14996,12 +16964,24 @@
               "wrapped": false,
               "conn": {
                 "x": 958.5,
-                "lineTop": 79.5,
+                "lineTop": 79.50120000000004,
                 "tipY": 295.55,
                 "markTop": 295.545,
-                "style": "2 3",
-                "gapToBox": 0,
-                "gapToMark": -0.005
+                "style": "dashed",
+                "pattern": "2 2.9964",
+                "cap": "butt",
+                "painted": 43,
+                "boxBottom": 79.5,
+                "gapToBox": 0.001,
+                "gapToBase": 0,
+                "gapToMark": 0.003,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 2.996,
+                  "max": 2.996
+                },
+                "dotPitch": null
               }
             }
           },
@@ -15037,12 +17017,24 @@
               "wrapped": false,
               "conn": {
                 "x": 990.5,
-                "lineTop": 79.5,
+                "lineTop": 79.50119999999998,
                 "tipY": 327.89,
                 "markTop": 327.895,
-                "style": "2 3",
-                "gapToBox": 0,
-                "gapToMark": 0.005
+                "style": "dashed",
+                "pattern": "2 3.0456",
+                "cap": "butt",
+                "painted": 49,
+                "boxBottom": 79.5,
+                "gapToBox": 0.001,
+                "gapToBase": 0,
+                "gapToMark": 0.005,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.046,
+                  "max": 3.046
+                },
+                "dotPitch": null
               }
             }
           },
@@ -15081,9 +17073,21 @@
                 "lineTop": 79.5,
                 "tipY": 352.59,
                 "markTop": 352.585,
-                "style": "2 3",
+                "style": "dashed",
+                "pattern": "2 3.0357",
+                "cap": "butt",
+                "painted": 54,
+                "boxBottom": 79.5,
                 "gapToBox": 0,
-                "gapToMark": -0.005
+                "gapToBase": 0,
+                "gapToMark": 0.001,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.036,
+                  "max": 3.036
+                },
+                "dotPitch": null
               }
             }
           },
@@ -15122,9 +17126,21 @@
                 "lineTop": 79.5,
                 "tipY": 377.78,
                 "markTop": 377.775,
-                "style": "2 3",
+                "style": "dashed",
+                "pattern": "2 3.0359",
+                "cap": "butt",
+                "painted": 59,
+                "boxBottom": 79.5,
                 "gapToBox": 0,
-                "gapToMark": -0.005
+                "gapToBase": 0,
+                "gapToMark": 0.006,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.036,
+                  "max": 3.036
+                },
+                "dotPitch": null
               }
             }
           },
@@ -15160,12 +17176,24 @@
               "wrapped": false,
               "conn": {
                 "x": 1085.5,
-                "lineTop": 79.5,
+                "lineTop": 79.50210000000004,
                 "tipY": 392.16,
                 "markTop": 392.165,
-                "style": "2 3",
-                "gapToBox": 0,
-                "gapToMark": 0.005
+                "style": "dashed",
+                "pattern": "2 3.0239",
+                "cap": "butt",
+                "painted": 62,
+                "boxBottom": 79.5,
+                "gapToBox": 0.002,
+                "gapToBase": 0,
+                "gapToMark": 0.005,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.024,
+                  "max": 3.024
+                },
+                "dotPitch": null
               }
             }
           },
@@ -15201,12 +17229,24 @@
               "wrapped": false,
               "conn": {
                 "x": 1117.5,
-                "lineTop": 79.5,
+                "lineTop": 79.50119999999998,
                 "tipY": 407.41,
                 "markTop": 407.405,
-                "style": "2 3",
-                "gapToBox": 0,
-                "gapToMark": -0.005
+                "style": "dashed",
+                "pattern": "2 3.0267",
+                "cap": "butt",
+                "painted": 65,
+                "boxBottom": 79.5,
+                "gapToBox": 0.001,
+                "gapToBase": 0,
+                "gapToMark": -0.001,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.027,
+                  "max": 3.027
+                },
+                "dotPitch": null
               }
             }
           },
@@ -15242,12 +17282,24 @@
               "wrapped": false,
               "conn": {
                 "x": 1148.5,
-                "lineTop": 79.5,
+                "lineTop": 79.50319999999999,
                 "tipY": 423.84,
                 "markTop": 423.845,
-                "style": "2 3",
-                "gapToBox": 0,
-                "gapToMark": 0.005
+                "style": "dashed",
+                "pattern": "2 2.9726",
+                "cap": "butt",
+                "painted": 69,
+                "boxBottom": 79.5,
+                "gapToBox": 0.003,
+                "gapToBase": 0,
+                "gapToMark": 0.019,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 2.973,
+                  "max": 2.973
+                },
+                "dotPitch": null
               }
             }
           },
@@ -15286,9 +17338,21 @@
                 "lineTop": 79.5,
                 "tipY": 436.42,
                 "markTop": 436.415,
-                "style": "2 3",
+                "style": "dashed",
+                "pattern": "2 3.0103",
+                "cap": "butt",
+                "painted": 71,
+                "boxBottom": 79.5,
                 "gapToBox": 0,
-                "gapToMark": -0.005
+                "gapToBase": 0,
+                "gapToMark": -0.004,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.01,
+                  "max": 3.01
+                },
+                "dotPitch": null
               }
             }
           },
@@ -15327,9 +17391,21 @@
                 "lineTop": 79.5,
                 "tipY": 443.81,
                 "markTop": 443.815,
-                "style": "2 3",
+                "style": "dashed",
+                "pattern": "2 2.9738",
+                "cap": "butt",
+                "painted": 73,
+                "boxBottom": 79.5,
                 "gapToBox": 0,
-                "gapToMark": 0.005
+                "gapToBase": 0,
+                "gapToMark": 0.007,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 2.974,
+                  "max": 2.974
+                },
+                "dotPitch": null
               }
             }
           },
@@ -15365,12 +17441,24 @@
               "wrapped": false,
               "conn": {
                 "x": 1242.5,
-                "lineTop": 77.29,
+                "lineTop": 77.58999999999997,
                 "tipY": 449.62,
                 "markTop": 449.615,
-                "style": "2 3",
-                "gapToBox": -2.21,
-                "gapToMark": -0.005
+                "style": "dashed",
+                "pattern": "2 3.0114",
+                "cap": "butt",
+                "painted": 74,
+                "boxBottom": 77.587,
+                "gapToBox": 0.003,
+                "gapToBase": 0,
+                "gapToMark": 0.009,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": {
+                  "min": 3.011,
+                  "max": 3.011
+                },
+                "dotPitch": null
               }
             }
           }
@@ -15392,7 +17480,7 @@
             "widestKey": "latest",
             "numbered": 38,
             "measures": 2,
-            "ms": 3.100000001490116
+            "ms": 2.800000000745058
           },
           "lane": {
             "top": 2,
@@ -15430,12 +17518,25 @@
               "stops": 39,
               "styles": [
                 "solid",
-                "0.01 4",
-                "2 3"
+                "dotted",
+                "dashed"
               ],
-              "maxGapToBoxPx": 0,
-              "maxGapToMarkPx": 0.005,
-              "xInsideBox": true
+              "maxGapToBoxPx": 0.01,
+              "maxGapToPointerBasePx": 0,
+              "maxGapToMarkPx": 0.019,
+              "dashGapPx": {
+                "min": 2.956,
+                "max": 3.046
+              },
+              "dotPitchPx": {
+                "min": 4.019,
+                "max": 4.02
+              },
+              "missingSpanLitDots": [
+                4
+              ],
+              "xInsideBox": true,
+              "patternOk": true
             },
             "reserved": true,
             "connectorMeets": true,
@@ -16016,8 +18117,17 @@
                 "tipY": 460.75,
                 "markTop": 460.75,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.017,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -16058,8 +18168,17 @@
                 "tipY": 433.8,
                 "markTop": 433.8,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.002,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -16100,8 +18219,17 @@
                 "tipY": 343.11,
                 "markTop": 343.11,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.001,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -16142,8 +18270,17 @@
                 "tipY": 331.89,
                 "markTop": 331.89,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.014,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -16184,8 +18321,17 @@
                 "tipY": 350.63,
                 "markTop": 350.63,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.004,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -16226,8 +18372,17 @@
                 "tipY": 392.12,
                 "markTop": 392.12,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -16268,8 +18423,17 @@
                 "tipY": 409.76,
                 "markTop": 409.76,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.01,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -16310,8 +18474,17 @@
                 "tipY": 426.39,
                 "markTop": 426.39,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.006,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -16352,8 +18525,17 @@
                 "tipY": 432.05,
                 "markTop": 432.05,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -16394,8 +18576,17 @@
                 "tipY": 415.79,
                 "markTop": 415.79,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.008,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -16436,8 +18627,17 @@
                 "tipY": 415.42,
                 "markTop": 415.42,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.008,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -16478,8 +18678,17 @@
                 "tipY": 415.57,
                 "markTop": 415.57,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -16520,8 +18729,17 @@
                 "tipY": 401.41,
                 "markTop": 401.41,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.006,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -16562,8 +18780,17 @@
                 "tipY": 406.7,
                 "markTop": 406.7,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.01,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -16604,8 +18831,17 @@
                 "tipY": 392.56,
                 "markTop": 392.56,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -16646,8 +18882,17 @@
                 "tipY": 394.31,
                 "markTop": 394.31,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.004,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -16688,8 +18933,17 @@
                 "tipY": 405.14,
                 "markTop": 405.14,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.014,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -16724,13 +18978,25 @@
               "clipped": false,
               "wrapped": false,
               "conn": {
-                "x": 569.5,
-                "lineTop": 59.5,
+                "x": 567.71,
+                "lineTop": 59.49000000000002,
                 "tipY": 467.25,
                 "markTop": 467.25,
-                "style": "0.01 4",
-                "gapToBox": 0,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 4.0095",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 59.5,
+                "gapToBox": -0.01,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": 4,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 4.019,
+                  "max": 4.02
+                }
               }
             }
           },
@@ -16771,8 +19037,17 @@
                 "tipY": 402.93,
                 "markTop": 402.93,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.002,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -16813,8 +19088,17 @@
                 "tipY": 396.5,
                 "markTop": 396.5,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.017,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -16855,8 +19139,17 @@
                 "tipY": 336.39,
                 "markTop": 336.39,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.002,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -16897,8 +19190,17 @@
                 "tipY": 262.16,
                 "markTop": 262.16,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.001,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -16939,8 +19241,17 @@
                 "tipY": 271.58,
                 "markTop": 271.58,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.014,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -16981,8 +19292,17 @@
                 "tipY": 249.49,
                 "markTop": 249.49,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.004,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -17023,8 +19343,17 @@
                 "tipY": 242.53,
                 "markTop": 242.53,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -17064,8 +19393,17 @@
                 "tipY": 166.25,
                 "markTop": 166.25,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 71,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.014,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -17106,8 +19444,17 @@
                 "tipY": 202.41,
                 "markTop": 202.41,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.006,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -17148,8 +19495,17 @@
                 "tipY": 234.33,
                 "markTop": 234.33,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 67,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -17190,8 +19546,17 @@
                 "tipY": 235.16,
                 "markTop": 235.16,
                 "style": "solid",
+                "pattern": null,
+                "cap": "butt",
+                "painted": 1,
+                "boxBottom": 71,
                 "gapToBox": 0,
-                "gapToMark": 0
+                "gapToBase": 0,
+                "gapToMark": 0.008,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": null
               }
             }
           },
@@ -17218,12 +19583,24 @@
               "wrapped": false,
               "conn": {
                 "x": 927.5,
-                "lineTop": 59.5,
+                "lineTop": 59.49000000000002,
                 "tipY": 465,
                 "markTop": 465,
-                "style": "0.01 4",
-                "gapToBox": 0,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 3.9870",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 59.5,
+                "gapToBox": -0.01,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 3.997,
+                  "max": 3.997
+                }
               }
             }
           },
@@ -17250,12 +19627,24 @@
               "wrapped": false,
               "conn": {
                 "x": 959.5,
-                "lineTop": 59.5,
+                "lineTop": 59.49000000000002,
                 "tipY": 465,
                 "markTop": 465,
-                "style": "0.01 4",
-                "gapToBox": 0,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 3.9870",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 59.5,
+                "gapToBox": -0.01,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 3.997,
+                  "max": 3.997
+                }
               }
             }
           },
@@ -17282,12 +19671,24 @@
               "wrapped": false,
               "conn": {
                 "x": 991.5,
-                "lineTop": 59.5,
+                "lineTop": 59.49000000000002,
                 "tipY": 465,
                 "markTop": 465,
-                "style": "0.01 4",
-                "gapToBox": 0,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 3.9870",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 59.5,
+                "gapToBox": -0.01,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 3.997,
+                  "max": 3.997
+                }
               }
             }
           },
@@ -17314,12 +19715,24 @@
               "wrapped": false,
               "conn": {
                 "x": 1022.5,
-                "lineTop": 59.5,
+                "lineTop": 59.49000000000002,
                 "tipY": 465,
                 "markTop": 465,
-                "style": "0.01 4",
-                "gapToBox": 0,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 3.9870",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 59.5,
+                "gapToBox": -0.01,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 3.997,
+                  "max": 3.997
+                }
               }
             }
           },
@@ -17346,12 +19759,24 @@
               "wrapped": false,
               "conn": {
                 "x": 1054.5,
-                "lineTop": 59.5,
+                "lineTop": 59.49000000000002,
                 "tipY": 465,
                 "markTop": 465,
-                "style": "0.01 4",
-                "gapToBox": 0,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 3.9870",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 59.5,
+                "gapToBox": -0.01,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 3.997,
+                  "max": 3.997
+                }
               }
             }
           },
@@ -17378,12 +19803,24 @@
               "wrapped": false,
               "conn": {
                 "x": 1086.5,
-                "lineTop": 59.5,
+                "lineTop": 59.49000000000002,
                 "tipY": 465,
                 "markTop": 465,
-                "style": "0.01 4",
-                "gapToBox": 0,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 3.9870",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 59.5,
+                "gapToBox": -0.01,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 3.997,
+                  "max": 3.997
+                }
               }
             }
           },
@@ -17410,12 +19847,24 @@
               "wrapped": false,
               "conn": {
                 "x": 1117.5,
-                "lineTop": 59.5,
+                "lineTop": 59.49000000000002,
                 "tipY": 465,
                 "markTop": 465,
-                "style": "0.01 4",
-                "gapToBox": 0,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 3.9870",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 59.5,
+                "gapToBox": -0.01,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 3.997,
+                  "max": 3.997
+                }
               }
             }
           },
@@ -17442,12 +19891,24 @@
               "wrapped": false,
               "conn": {
                 "x": 1149.5,
-                "lineTop": 59.5,
+                "lineTop": 59.49000000000002,
                 "tipY": 465,
                 "markTop": 465,
-                "style": "0.01 4",
-                "gapToBox": 0,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 3.9870",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 59.5,
+                "gapToBox": -0.01,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 3.997,
+                  "max": 3.997
+                }
               }
             }
           },
@@ -17474,12 +19935,24 @@
               "wrapped": false,
               "conn": {
                 "x": 1181.5,
-                "lineTop": 59.5,
+                "lineTop": 59.49000000000002,
                 "tipY": 465,
                 "markTop": 465,
-                "style": "0.01 4",
-                "gapToBox": 0,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 3.9870",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 59.5,
+                "gapToBox": -0.01,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 3.997,
+                  "max": 3.997
+                }
               }
             }
           },
@@ -17506,12 +19979,24 @@
               "wrapped": false,
               "conn": {
                 "x": 1212.5,
-                "lineTop": 59.5,
+                "lineTop": 59.49000000000002,
                 "tipY": 465,
                 "markTop": 465,
-                "style": "0.01 4",
-                "gapToBox": 0,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 3.9870",
+                "cap": "round",
+                "painted": 101,
+                "boxBottom": 59.5,
+                "gapToBox": -0.01,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 3.997,
+                  "max": 3.997
+                }
               }
             }
           },
@@ -17538,12 +20023,24 @@
               "wrapped": false,
               "conn": {
                 "x": 1243.5,
-                "lineTop": 57.29,
+                "lineTop": 56.85999999999997,
                 "tipY": 465,
                 "markTop": 465,
-                "style": "0.01 4",
-                "gapToBox": -2.21,
-                "gapToMark": 0
+                "style": "dotted",
+                "pattern": "0.01 3.9735",
+                "cap": "round",
+                "painted": 102,
+                "boxBottom": 56.867,
+                "gapToBox": -0.007,
+                "gapToBase": 0,
+                "gapToMark": 0,
+                "litDots": null,
+                "nearestDotDx": 0,
+                "dashGap": null,
+                "dotPitch": {
+                  "min": 3.983,
+                  "max": 3.984
+                }
               }
             }
           }
@@ -17565,7 +20062,7 @@
             "widestKey": "latest",
             "numbered": 28,
             "measures": 2,
-            "ms": 2.7999999970197678
+            "ms": 1.799999998882413
           },
           "lane": {
             "top": 2,
@@ -17603,11 +20100,21 @@
               "stops": 40,
               "styles": [
                 "solid",
-                "0.01 4"
+                "dotted"
               ],
-              "maxGapToBoxPx": 0,
-              "maxGapToMarkPx": 0,
-              "xInsideBox": true
+              "maxGapToBoxPx": 0.01,
+              "maxGapToPointerBasePx": 0,
+              "maxGapToMarkPx": 0.017,
+              "dashGapPx": null,
+              "dotPitchPx": {
+                "min": 3.983,
+                "max": 4.02
+              },
+              "missingSpanLitDots": [
+                4
+              ],
+              "xInsideBox": true,
+              "patternOk": true
             },
             "reserved": true,
             "connectorMeets": true,

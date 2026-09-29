@@ -754,11 +754,52 @@ const measureTip = (page, stopX) => page.evaluate((sx) => {
   const line = document.querySelector("#conn .cn-line"), head = document.querySelector("#conn .cn-head");
   let conn = null;
   if (line && (line.getAttribute("d") || head.getAttribute("d"))) {
-    const ys = [], xs = [];
-    (line.getAttribute("d") || "").replace(/M(-?[\d.]+),(-?[\d.]+)V(-?[\d.]+)/g, (_, x, y1, y2) => { xs.push(Number(x)); ys.push(Number(y1), Number(y2)); return ""; });
-    const hd = head.getAttribute("d").match(num).map(Number);
-    conn = { x: xs.length ? xs[0] : hd[4], lineTop: ys.length ? Math.min(...ys) : null, tipY: hd[5], markTop, style: line.getAttribute("stroke-dasharray") || "solid",
-      gapToBox: r3((ys.length ? Math.min(...ys) : hd[1]) - (r.bottom - pr.top)), gapToMark: r3(markTop - hd[5]) };
+    // The connector as painted (the lane fix round; before it, only the path's endpoints were read, which said 0px while the
+    // last dash or dot stopped up to 3.5px short): each dash or dot from the path, the dash pattern and the cap (a round cap
+    // adds half the stroke width at both ends of every dash), the topmost against the box's painted bottom edge at the
+    // connector's column (straight, or up the rounded corner), the lowest against the pointer's base, and the pointer's tip
+    // against the mark's painted outline (the ring's outer edge, the nearest lit dot, or the tick's top). Signed: a gap
+    // is positive, an overlap negative; the check below takes the absolute value.
+    const segs = [...(line.getAttribute("d") || "").matchAll(/M(-?[\d.]+),(-?[\d.]+)V(-?[\d.]+)/g)].map((m) => ({ x: Number(m[1]), y1: Number(m[2]), y2: Number(m[3]) }));
+    const hd = head.getAttribute("d").match(num).map(Number), tipX = hd[4], tipY = hd[5], baseY = hd[1];
+    const x = segs.length ? segs[0].x : tipX;
+    const sw = Number(line.getAttribute("stroke-width")) || 1, cap = line.getAttribute("stroke-linecap") === "round" ? sw / 2 : 0;
+    const da = (line.getAttribute("stroke-dasharray") || "").match(num)?.map(Number);
+    const dashes = [];
+    segs.forEach((s, si) => {
+      const len = Math.abs(s.y2 - s.y1), dir = Math.sign(s.y2 - s.y1) || 1, list = [];
+      if (!da) list.push([0, len]);
+      else for (let k = 0; k * (da[0] + da[1]) < len - 1e-9; k++) list.push([k * (da[0] + da[1]), Math.min(k * (da[0] + da[1]) + da[0], len)]);
+      list.forEach(([a, b]) => dashes.push({ lo: Math.min(s.y1 + dir * a, s.y1 + dir * b) - cap, hi: Math.max(s.y1 + dir * a, s.y1 + dir * b) + cap, a, b, si }));
+    });
+    const R = parseFloat(getComputedStyle(tip).borderBottomLeftRadius) || 0, bl = r.left - pr.left, br = r.right - pr.left, inset = Math.min(x - bl, br - x);
+    const boxBottom = (r.bottom - pr.top) - (inset < R ? R - Math.sqrt(Math.max(0, R * R - (R - Math.max(0, inset)) ** 2)) : 0);
+    const gaps = [], pitches = [];
+    for (let i = 0; i + 1 < dashes.length; i++) if (dashes[i].si === dashes[i + 1].si) { gaps.push(dashes[i + 1].a - dashes[i].b); pitches.push(dashes[i + 1].a - dashes[i].a); }
+    let toMark = null, nearestDx = null, lit = null;
+    if (mk) {
+      const m = /translate\(([-\d.]+) ([-\d.]+)\)/.exec(mk.getAttribute("transform")), tx = Number(m[1]), ty = Number(m[2]), core = mk.querySelector(".sg-core");
+      if (core) toMark = Math.hypot(tipX - tx, tipY - ty) - (Number(core.getAttribute("r")) + Number(core.getAttribute("stroke-width")) / 2);
+      else {
+        lit = mk.querySelectorAll("circle").length;
+        let best = Infinity;
+        mk.querySelectorAll("circle").forEach((c) => { const cx = tx + Number(c.getAttribute("cx") || 0), cy = ty + Number(c.getAttribute("cy") || 0), dd = Math.hypot(tipX - cx, tipY - cy) - Number(c.getAttribute("r")); if (dd < best) { best = dd; nearestDx = tipX - cx; } });
+        // With no lit dot (the span is narrower than 4px, at phone width) there is nothing to touch: the tip is read against
+        // where the top of a lit dot on the axis would be.
+        toMark = best === Infinity ? ty - 1.25 - tipY : best;
+      }
+    } else if (tk) {
+      const v = tk.getAttribute("d").match(num).map(Number);
+      toMark = Math.hypot(Math.max(0, Math.abs(tipX - v[0]) - 0.5), tipY < v[1] ? v[1] - tipY : tipY > v[2] ? tipY - v[2] : 0);
+    }
+    const top = dashes.length ? Math.min(...dashes.map((z) => z.lo)) : null, bottom = dashes.length ? Math.max(...dashes.map((z) => z.hi)) : null;
+    // (At the peak the line is cut around the tag, and the pointer may stand alone below it: no segment starts at the pointer's base, so there is no base to meet.)
+    const dashedForm = da && !cap;
+    conn = { x, lineTop: top, tipY, markTop, style: da ? (cap ? "dotted" : "dashed") : "solid", pattern: line.getAttribute("stroke-dasharray") || null, cap: cap ? "round" : "butt", painted: dashes.length,
+      boxBottom: r3(boxBottom), gapToBox: r3(top == null ? hd[1] - boxBottom : top - boxBottom), gapToBase: r3(bottom == null || !segs.some((z) => Math.abs(z.y1 - baseY) < 0.006) ? 0 : baseY - bottom), gapToMark: r3(toMark),
+      litDots: lit, nearestDotDx: r3(nearestDx),
+      dashGap: dashedForm && gaps.length ? { min: r3(Math.min(...gaps)), max: r3(Math.max(...gaps)) } : null,
+      dotPitch: da && cap && pitches.length ? { min: r3(Math.min(...pitches)), max: r3(Math.max(...pitches)) } : null };
   }
   return { width: r2(r.width), natural: r2(natural), numbered: !!(tip.querySelector(".tip-v") || tip.querySelector(".tip-u")),
     left: r3(r.left - pr.left), top: r3(r.top - pr.top), height: r3(r.height), stopX: r3(sx - pr.left), plotW: plot.clientWidth,
@@ -856,11 +897,19 @@ async function chartChecks(lang, state = "live", marker = "b") {
       insidePlot: boxes.every((b) => b.insidePlot), insideCard: boxes.every((b) => b.insideCard),
       highestMarks: lm.highest, sampledLineTopPx: lm.sampledLineTop,
       smallestGapToHighestMarkPx: Math.round((Math.min(lm.highest[0].top, lm.sampledLineTop, ...selectedTops) - lane.bottom) * 100) / 100,
-      connector: { stops: conns.length, styles: [...new Set(conns.map((c) => c.style))], maxGapToBoxPx: Math.max(...conns.map((c) => c.gapToBox)), maxGapToMarkPx: Math.max(...conns.map((c) => Math.abs(c.gapToMark))), xInsideBox: conns.every((c) => c.x >= c.boxLeft && c.x <= c.boxLeft + c.boxW) },
+      // Painted extent (the lane fix round): the gaps are between what is painted, the first and last dash or dot with its cap.
+      connector: { stops: conns.length, styles: [...new Set(conns.map((c) => c.style))],
+        maxGapToBoxPx: Math.max(...conns.map((c) => Math.abs(c.gapToBox))), maxGapToPointerBasePx: Math.max(...conns.map((c) => Math.abs(c.gapToBase))), maxGapToMarkPx: Math.max(...conns.map((c) => Math.abs(c.gapToMark))),
+        dashGapPx: conns.some((c) => c.dashGap) ? { min: Math.min(...conns.filter((c) => c.dashGap).map((c) => c.dashGap.min)), max: Math.max(...conns.filter((c) => c.dashGap).map((c) => c.dashGap.max)) } : null,
+        dotPitchPx: conns.some((c) => c.dotPitch) ? { min: Math.min(...conns.filter((c) => c.dotPitch).map((c) => c.dotPitch.min)), max: Math.max(...conns.filter((c) => c.dotPitch).map((c) => c.dotPitch.max)) } : null,
+        missingSpanLitDots: conns.filter((c) => c.litDots != null).map((c) => c.litDots),
+        xInsideBox: conns.every((c) => c.x >= c.boxLeft && c.x <= c.boxLeft + c.boxW) },
     };
     const L = res.tooltip.lane;
     L.reserved = L.smallestGapToHighestMarkPx >= 0 && L.lowestTooltipBottomPx <= lane.bottom + 0.01 && L.tallestTooltipPx <= lane.height;
-    L.connectorMeets = conns.length === boxes.length && L.connector.maxGapToBoxPx <= 0.5 && L.connector.maxGapToMarkPx <= 0.5 && L.connector.xInsideBox;
+    const C = L.connector;
+    C.patternOk = (!C.dashGapPx || (C.dashGapPx.min >= 2.5 && C.dashGapPx.max <= 3.5)) && (!C.dotPitchPx || (C.dotPitchPx.min >= 3.5 && C.dotPitchPx.max <= 4.5));
+    L.connectorMeets = conns.length === boxes.length && C.maxGapToBoxPx <= 0.5 && C.maxGapToPointerBasePx <= 0.5 && C.maxGapToMarkPx <= 0.5 && C.patternOk && C.xInsideBox;
     L.pass = L.topsEqual && L.xOk && L.insidePlot && L.insideCard && L.reserved && L.connectorMeets;
     res.tooltip.pass = boxes.length === res.perStop.length && res.tooltip.widths.length === 1 && res.tooltip.widths[0] === res.tooltip.ruleWidth && res.tooltip.measuredByPage.widthPx === res.tooltip.ruleWidth && res.tooltip.widestContent <= res.tooltip.widths[0] && grown.every((b) => b.width >= res.tooltip.widths[0] && b.width >= b.natural - 0.01) && !res.tooltip.clipped.length && !res.tooltip.wrapped.length && L.pass;
   }

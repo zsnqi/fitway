@@ -455,9 +455,17 @@ and `setMarker`. The one part of A that stays is its missing-span variant, the l
     any data line. It runs behind the usual line and today's line and under the ring, so where it crosses the usual line the
     data draws over it. Its style says what the mark is:
     - solid (1 px, 36% chalk) for a reading on today's line: the ring, the peak, the latest reading live and delayed;
-    - dashed (2 on, 3 off, 30% chalk), like the marker's own hairline below it, for the hollow chalk ring on the usual line;
-    - dotted (1.6 px dots every 4 px, 34% chalk), like the axis's dots, for no reading: the missing span's lit dots and the
-      axis tick of a stop still ahead without history. It cannot read as a value or bridge the gap.
+    - dashed (2 px dashes, 30% chalk, the gap fitted to the length within 2.5-3.5 px, nominally 3), like the marker's own
+      hairline below it, for the hollow chalk ring on the usual line;
+    - dotted (1.6 px round dots, 34% chalk, the pitch fitted to the length within 3.5-4.5 px, nominally 4), like the axis's
+      dots, for no reading: the missing span's lit dots and the axis tick of a stop still ahead without history. It cannot
+      read as a value or bridge the gap.
+    - **The pattern is fitted to the length** (lane fix round, run `owner_lane_fix_r04_s04`): a dash, or a dot with its round
+      cap, is painted at both ends, at the pointer's base and at the box's bottom edge (straight, or up the rounded corner).
+      The count of periods comes from the length and the gap is stretched evenly, each time `paintConnector` runs, so also at
+      every frame of a follow. At the missing-span stop the connector's column is the lit dot nearest the stop's centre (at
+      most 2 px from it) and the pointer's tip touches that dot's top; at 390 px the span is narrower than 4 px, has no lit
+      dot, and the column stays on the stop's centre with the tip where a dot's top would be.
     - **At the peak** it passes behind the peak's tag: the line is cut 3 px above the tag's box and the pointer sits in the
       few pixels between the tag and the ring. The tag stays whole and always shown.
     - Where the stop is near a plot side (the closing stop, 4 px from the box's end) the line starts on the box's rounded
@@ -489,9 +497,11 @@ and `setMarker`. The one part of A that stays is its missing-span variant, the l
       selected), AR and EN, three states, four viewports, both fonts. The box never moved vertically (0.00 px, against up to
       368 px at 8ae88f3). Its x reversed 0 times in a monotonic sweep (96 times at 8ae88f3). On Home and End the box moves
       with the ring in the same frame (at 8ae88f3 it took 37-38 frames to arrive, up to 963 px behind the ring; now its
-      centre is at most 26 px from the ring's). Every settled frame equals the reduced-motion rest (0.001 px). The connector
-      met the box (0 px short) and the ring (at most 0.005 px from its edge) in all 291,624 frames, and its x stayed inside
-      the box. The box follows the ring's curve: at 1×, one stop along the line takes 100, 283 and 517 ms to cover 50%, 90% and
+      centre is at most 26 px from the ring's). Every settled frame equals the reduced-motion rest (0.001 px). The connector's
+      path met the box and the ring in all 291,624 frames, and its x stayed inside the box. **Corrected by the lane fix
+      round:** that read the path's endpoints, not what is painted; the last dash or dot of the dashed and dotted forms
+      stopped short of the box by up to 2.94 px (dashed) and 3.46 px (dotted), and the missing-span pointer's tip was up to
+      1.06 px from the nearest lit dot. See "Lane fix round" below. The box follows the ring's curve: at 1×, one stop along the line takes 100, 283 and 517 ms to cover 50%, 90% and
       99% of the step, the same as the ring (0.5×: 183, 550, 1033 ms; 2×: 50, 150, 267 ms).
     - **Held at the plot's side:** while the ring is between the plot's edge and the point where the box, standing at its 2 px
       margin, would be centred on it, the box stands still (it is clamped), and then follows the ring at its speed. The literal
@@ -500,7 +510,7 @@ and `setMarker`. The one part of A that stays is its missing-span variant, the l
       the ring's step in that frame, so the box is following the ring, not catching up.
     - **Quality (real time):** 0 console or page errors in the six states; 0 long-animation-frames and 0 long tasks; the
       largest frame gap was 50.1 ms (8ae88f3: 50.1 ms, twice, in its own run); layout shift went from 0.022-0.033 to 0.00001 or
-      less, because the box is placed by transform. There is no horizontal page scroll at 1440×900 and 1280×800; at 1024×640
+      less at desktop (1440×900 and 1280×800 only; at 390×844 see "Lane fix round"), because the box is placed by transform. There is no horizontal page scroll at 1440×900 and 1280×800; at 1024×640
       (22 px) and 390×844 (387 px) the page already scrolls sideways at 8ae88f3, by the same amount.
     - **Accessibility tree:** identical to 8ae88f3's in 32 of 36 snapshots (six pages, six phases each). It differs in the focus
       phase for live and delayed, in both languages: the peak's label «الذروة 62» / "Peak 62" is in the tree, as it is in every
@@ -913,7 +923,9 @@ The log records:
     - (the lane round) the lane's rules at each page's own snapshot (`tooltip.lane` per page, and `tooltipLane` across
       pages): the box's top is the lane's top at every stop (±0.01 px); its left is its stop's x less half its width, kept
       2 px inside the plot (±0.01 px); it lies inside the plot and the card and its lane; its connector meets the box and the
-      mark (0.5 px, read from the DOM's own attributes); and nothing else is painted in the lane (the smallest gap from the
+      mark (0.5 px, measured on the painted extent: the first and last dash or dot with its cap against the box's painted
+      bottom edge, and the pointer's tip against the ring's outer edge, the nearest lit dot or the tick; and the dash gap
+      within 2.5-3.5 px, the dot pitch within 3.5-4.5 px); and nothing else is painted in the lane (the smallest gap from the
       lane's bottom to the top edge of every painted mark, the lines sampled every 1 px and the selected marker's glow is
       not below 0). They replace the side and the number's start against the hairline of the floating placement. The other
       snapshots, the other viewports, the fonts and the motion are swept by the lane round's probes, outside this file.
@@ -1342,6 +1354,72 @@ The log records:
   («شديد الازدحام», "Packed") never reaches the latest stop in this page's data; it was measured on a copy of the latest
   tooltip only. The through-the-day sweep, the font swap and the negative control were scratch checks. No verifier
   has checked repair 1 yet.
+
+## Lane fix round (run `owner_lane_fix_r04_s04`)
+
+Base `9404bb1`. The verifier found that the connector's dash pattern was anchored at the mark end, so the last dash or dot
+stopped short of the box, and that the missing-span pointer's tip sat between two lit dots. `capture.mjs` had reported
+"connector to box 0 px" because it read the path's endpoints, not the painted dashes.
+
+- **Change (`app.js`, `paintConnector` and the gap branch of `paintMarker`):** the dash pattern is fitted to the connector's
+  length on every paint, so also at every frame of a follow. Dashed: 2 px dashes, the count of periods from the length, the
+  gap stretched evenly (2.5-3.5 px in every state and viewport measured; nominal 3). Dotted: 1.6 px round dots, the path
+  stopped a cap's radius (0.8 px) short of each end so the painted edge of the first and last dot touches the pointer's base
+  and the box (pitch 3.5-4.5 px; nominal 4). The dashed and dotted forms read the box's rounded corner at the column they are
+  drawn on. At the missing-span stop the column is the lit dot nearest the stop's centre (2 px from it at 1440×900, 1.57-1.94
+  px at 1280×800, 0 at 1024×640) and the tip touches that dot's top; the dots do not move. Solid connectors, the box, the
+  lane, the marks and the geometry are untouched; `style.css` gained a comment only (the `.tip` note now describes the lane).
+- **Check (`capture.mjs`, `measureTip` and the lane block of `chartChecks`):** the connector is measured as painted: every dash
+  or dot from the path, the dash pattern and the cap; the topmost against the box's painted bottom edge at the connector's
+  column (straight, or up the rounded corner); the lowest against the pointer's base; the pointer's tip against the ring's
+  outer edge, the nearest lit dot, or the tick; and the dash gap (2.5-3.5 px) and the dot pitch (3.5-4.5 px). Each is at most
+  0.5 px, and the peak's cut connector, which has no segment at the pointer's base, has no base to meet. **Positive control:**
+  the same check on `9404bb1`'s `app.js` fails in all six pages (connectorMeets false): 1440×900, AR live 2.41 px to the
+  box, EN live 2.41, AR/EN delayed 2.19, AR no history 1.74, EN no history 2.123; the pointer's base 0.8 px (the dots
+  overlapped it); the missing-span tip 0.925 px (AR) and 0.933 px (EN) from the nearest lit dot.
+- **Painted gaps, all stops, AR and EN, live, delayed and without history, at rest** (worst; before at `9404bb1`, after):
+
+  | Form | 1440×900 | 1280×800 | 1024×640 | 390×844 |
+  |---|---|---|---|---|
+  | dashed, to the box | 2.410, 0.003 | 2.910, 0.003 | 2.783, 0.005 | 2.940, 0.004 |
+  | dotted, to the box | 2.123, 0.010 | 2.373, 0.010 | 2.493, 0.010 | 3.459, 0.014 |
+  | missing-span tip to a lit dot | 0.933, 0 | 1.058, 0 | 0.075, 0 | no lit dot (see below) |
+
+  The pointer's base is met by a dash or dot at every stop (before, the dotted form overlapped it by 0.8 px). The dashed gap
+  is 2.898-3.099 px and the dotted pitch 3.963-4.035 px. A follow through every stop and back (5,390-5,530 frames per page
+  under a virtual clock, 1440×900, AR and EN, live, delayed and without history, including onto and off the 11:00 PM stop and
+  the missing-span stop) is at most 0.01 px from the box for the dotted form and 0.007 px for the dashed form, at most 0.023
+  px from the ring, the dashed gap 2.931-3.071 px and the dotted pitch 3.983-4.02 px; at `9404bb1` the same sweep gives up to
+  3.00 px (dashed) and 2.123 px (dotted).
+- **At 390×844 the missing span has no lit dot:** the span is narrower than 4 px, so neither the axis nor the marker draws a
+  dot, only the glow. The connector's column stays on the stop's centre and its tip stays where a dot's top would be. This
+  is declared, not changed.
+- **Frames.** `capture.mjs` ran alone and exited 0 with its summary lines unchanged apart from the connector numbers (11 of 28
+  pre-motion frames identical; 17 change by design, none of them new). Only `marker-variants-ar-3x.png` changed on account of
+  the fit (it shows dashed and dotted connectors; the difference is confined to them). `intro-yield-ar.png`,
+  `motion-contact-sheet.png` and `motion-roll-ar-2x.png` also differed after the run, by real-time timing only (the captions'
+  "settled at N ms", and the reading's digits mid-roll; no connector lies in the differing pixels), so their `9404bb1`
+  versions were kept. `capture-log.json` was rewritten by the run; its connector fields hold the painted measurement. No
+  static frame is dashed or dotted, so `EXPECTED_TO_CHANGE` gained nothing. Fresh-page screenshots of every stop of the plot
+  at 1440×900 and 390×844 (AR and EN, three states) against `9404bb1`: all 332 solid-form frames are identical, and every
+  dashed and dotted frame differs only in the connector's column (and, at the missing-span stop, the two columns).
+- **Facts the second verifier found (declared, no behaviour changed):**
+  - **The peak's dotted drop** (`app.js` about line 607, `if (ly - py > 14)`, the `pk-drop` path): the shorter scale reduces
+    the peak dot's gap to the line at 1440×900 from 17.84 px to 13.36 px delayed, 14.22 px live and 14.98 px without
+    history. The drop is therefore no longer drawn in the delayed state at 1440×900, AR and EN; at 1280×800, 1024×640 and
+    390×844 it was already absent at `8ae88f3`. Live at 1440×900 (where `ly - py` is 14.10 in the page's own numbers, just over the 14 px threshold) it is drawn as a path 3.10 px long (`M x,196.00 V 199.10`,
+    `stroke-dasharray 1.5 3`, round caps, 1 px wide): one 1.5 px dash with its caps, 2.5 px painted, that is one short chalk
+    tick under the ring rather than a dotted line (without history the path is 3.89 px, the same single tick).
+  - **Layout shift:** the claim "0.00001 or less" holds at desktop only. At 390×844 the candidate has 0.02-0.05 in live and
+    without history, all from the stat cards reflowing on new readings (`#now-foot`, `.unit`, `#entries-usual`), which
+    `8ae88f3` also has.
+  - **Unguarded evidence:** the motion and held sheets that change with the shorter scale but are not in
+    `EXPECTED_TO_CHANGE` are changed by design and unguarded: `intro-contact-sheet`, `intro-detail-ar-2x`,
+    `intro-states-2x`, `intro-yield-ar`, `marker-variants-ar-3x`, `motion-contact-sheet`, `motion-follow-ar-2x`,
+    `motion-live-ar-tail-2x`, `motion-roll-ar-2x`, `motion-roll-en-2x` and `motion-rail-*`; so is `levels-chart`, a derived
+    brightness map with differences outside the plot by construction. The real-time ones also differ from run to run by
+    timing.
+- **Not run:** the `checks/` harness, and any repository verification.
 
 ## Checks
 
