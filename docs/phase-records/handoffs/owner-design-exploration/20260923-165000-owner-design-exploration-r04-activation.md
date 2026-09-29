@@ -2624,3 +2624,31 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
      - push both working branches;
      - report to the user in a line.
   3. **On FAIL:** write the successor's repair brief.
+## The successor verified FAIL: preloaded fonts hold the first paint (2026-09-29)
+
+- **Verifier report** (58 min), saved at `D:\fitway-scratch\introspeed\fixq3\VERIFY-FIXQ3-REPORT.md`; evidence under
+  `D:\fitway-temp\introfix3-verify\`. Verdict **FAIL**. `owner-followup-r04-s04` is clean at `77d91e8`, and nothing
+  listens.
+- **The fix works:**
+  - W, H, Q, D, Y, A, R, E (1440×900), V and I pass;
+  - the first paint is complete (60 of 60);
+  - 0 shifts on first opens and reloads, and under the 40 ms and 150 ms font holds and the 100 ms script delay;
+  - the cap counts exactly from the first paint.
+  - C "failed" only because the verifier's 180 ms hold released the font just after the cap. It is not a code defect.
+- **Findings:**
+  1. **Medium-High.** The four font preloads (`index.html` 23-26) trigger Chromium's render-blocking of preloaded fonts.
+     When fonts are slow, the first paint waits up to about 100 ms longer (the first paint at 204-244 ms instead of
+     60-136). The page stays blank for that time, against the rule that content is never hidden and README 310 and
+     742. With `--disable-features=RenderBlockingFonts`, the paint returns to about 110 ms.
+  2. **Low-Medium.** The two `/l/font?kit=` preloads (25-26) are never used: 2 extra downloads and 2 console warnings
+     on every load. Safari and Firefox get other URLs, so all four miss there.
+  3. **Low.** A still frame outside the evidence set, EN delayed at 1024×640, changed by 70 px at the level bars'
+     edges. It is deterministic.
+  4. **Low.** A script delay now blanks the first paint (render-blocking scripts; `blocking="render"` is
+     Chromium-only).
+  - T fails on findings 1 and 2; its wrapping is ragged at README 4, 8 and 742.
+- **The user decides finding 1,** because it is about what the page shows while fonts load:
+  - (a) keep the rule: remove the preloads' render-blocking. When fonts are slow, text shows in the fallback and swaps
+    before the intro, as already accepted;
+  - (b) accept Chromium's hold of up to about 100 ms of blank page when fonts are slow, and correct the README.
+  - Findings 2-4 and T go into the repair either way. This is the successor's first repair.
