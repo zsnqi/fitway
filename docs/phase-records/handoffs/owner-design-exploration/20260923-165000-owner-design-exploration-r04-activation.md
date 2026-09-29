@@ -2527,3 +2527,47 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - The README entry and the low nits are fixed in the same commit.
   - **Scope, the coordinator's call:** the page drop is included because it shares the first-load path. The user can
     remove it.
+
+## The second repair stops: the intro-speed round ends in FAILED_VALIDATION (2026-09-29)
+
+- **Codex's report,** saved at `D:\fitway-scratch\introspeed\fixq2\CODEX-FIX2-REPORT.md`, says FAILED_VALIDATION
+  (repair-budget stop). There is no new commit.
+  - `owner-followup-r04-s04` is clean at `a6cfde8`, and nothing listens on 3173-3177.
+  - The trial code survives only in Codex's work copy, `D:\fitway-scratch\introspeed\fixq2\work\fix\` (`app.js` and
+    `index.html` differ from `work\base\`); it is unverified.
+- **Proven causes** (Codex's reproductions, not yet independently verified):
+  1. the Latin subset arriving after the first paint swaps visible fallback text for Readex Pro (held 40 ms: BASE
+     shifted in 10 of 10 opens per language);
+  2. `app.js` fills initially empty header text after the paint (a script delay of 100 ms: the 22.3 px drop in 10 of
+     10).
+- **Approach (a)** (font preloads, and ordered render-blocking scripts so the first paint is complete) removed both
+  defects in normal conditions:
+  - 0 of 20 first opens and 0 of 10 reloads per language (BASE 20 of 20 and 10 of 10);
+  - 0 of 10 under the 40 ms font hold and under the 100 ms script delay;
+  - every intro played.
+- **What (a) did not cover:** fonts arriving late within the cap. A 150 ms Latin hold still shifted in 3 of 3 opens per
+  language. Approach (b) (unpainting only the text) still registered shifts, because the boxes still resize. Another
+  render-blocking wait did not remove them either.
+- **Unfinished in the trial:**
+  - the timing of the later first-paint gate (two recorder assertions failed);
+  - full first-paint accessibility-tree equality;
+  - the evidence capture;
+  - the late-font pixel behaviour;
+  - 11 long tasks before the paint on the trial, against 8 at BASE (none during an intro).
+- **Terminal record for the lineage** `1b289f4` → `a6cfde8` → the stopped second repair. This is the evidence gate for
+  a successor:
+  - **the failure mode prior checks did not cover:**
+    - Q measured only from `intro.startedAt`, so a shift before the start was invisible to it;
+    - no check held a font between the first paint and the 200 ms cap;
+  - **the changed hypothesis:** both causes above, with approach (a) as the base of the fix. The late-font case is
+    no longer a defect to engineer away blindly: the "content is never hidden" rule makes a swap inevitable there,
+    unless the user changes what the page shows while fonts load;
+  - **why it will not recur:**
+    - the successor's target states the late-font behaviour the user decides;
+    - its checklist records every shift from navigation, and holds fonts at 40, 150 and 600 ms.
+- **The user's decision is needed** before the successor opens, because it is about what the page shows while fonts
+  load. The options put to the user:
+  1. accept a swap before the intro when fonts are late (the intro itself never moves), keeping the rule that content
+     is never hidden; the coordinator recommends this;
+  2. keep the swapping area unpainted until the fonts arrive, at most 200 ms;
+  3. a metric-matched fallback font: a much smaller swap, not zero, and the fallback looks different.
