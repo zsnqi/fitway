@@ -2191,3 +2191,78 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
     timing-dependent frames, which settles the `intro-yield-ar.png` provenance mismatch;
   - it corrects the three README number nits V1b named;
   - the short-connector fallback (`n < 2` in `paintConnector`'s fit) is a note for the phone phase.
+
+## The lane round closes at `521fe32`, and the handover to the spare session (2026-09-29)
+
+- **V3: every row passes except L4b by the letter** (42 min, 114 tools, about 392k tokens). Its report is saved at
+  `D:\fitway-temp\lane-verify\V3\REPORT.md`.
+  - The box's top moves 0.0000 px in all 206,400 sweep frames, and there are 0 reversals.
+  - L3m passes on the painted extent at every frame, so the fix holds in motion.
+  - The follow curve, speed and intro equal `8ae88f3`.
+  - There are 427 accepted clamped holds.
+  - **L4b: 53 two-frame stalls then a 3-5 px step, all when leaving the peak toward later times.** The ring's designed
+    drop leg off the peak (`legAt`, `app.js:1491`) moves in y only for 2 frames, and the box, centred on the ring
+    (`placeTip`, `app.js:1067-1090`), copies it exactly: box centre minus ring x is 0.00, and the box's step never
+    exceeds the ring's.
+  - **Two clamped holds at 1024×640 are not accepted by the letter:** the ring jumps tracks and the box eases after it.
+    They are an ease, not a jump.
+  - V3 also showed that the designer's "no flags anywhere else" was incomplete.
+- **User decision:** both behaviours are accepted as designed. **The stall-then-jump definition is amended for all
+  later checks:** a stall followed by a step is a defect only when the box's step exceeds the ring's step in the same
+  frame by more than 1 px, which is when the box is catching up. There is no fix. **The lane round closes; the verified
+  Eclipse page is `521fe32`** on `owner-followup-r04-build`.
+- **The Sonnet-verifier trial is decided without the eval** (user and coordinator, after reading
+  `claude.dev/blog/automating-eval-design-and-hillclimbing` and `claude.dev/blog/building-with-claude-sonnet-5-5`):
+  - **The eval is cancelled.** By the article's own criteria it could not decide anything: one run per model cannot
+    separate a difference from noise, the cases are past failures (a "failure fingerprint"), and 7 such cases would
+    likely saturate.
+  - **Evidence in hand:** Sonnet verifiers found the painted-dash defect and the peak-leg stalls that the designer's
+    report missed.
+  - **Verification stays on Sonnet, with two safeguards:**
+    1. the trial condition stands: if Sonnet misses a defect that the coordinator or a later round finds,
+       verification returns to Opus;
+    2. before the direction becomes the Owner authority, an Opus verifier runs once over every screen.
+  - **Effort, from the Sonnet 5.5 article** (`high` is the default; use `xhigh` only where evidence shows a gain):
+    - the broad verification of a new design round stays on `owner-direction-verifier`, Sonnet at `xhigh`;
+    - a narrow re-check with a frozen target, a known defect and ready probes uses `owner-direction-verifier-high`,
+      Sonnet at `high`. If it misses something, it goes back to `xhigh`;
+    - the builder stays at `high` and the fixer at `medium`.
+    `CLAUDE.md`'s table and the `-high` definition's description now say this.
+- **Push (the user left it to the coordinator):**
+  - push the two working branches, `codex/owner-redesign-r04` and `owner-followup-r04-build`, after the local
+    integration of `521fe32`;
+  - never `main`, never force, no pull request;
+  - the reason is backup: `codex/owner-redesign-r04` is 42 commits ahead of its remote, and the build branch was never
+    pushed.
+- **State at handover:** `owner-followup-r04-s04` is clean at `521fe32`. No listener is on 3173-3177. An untracked
+  `.codex-remote-attachments/` appeared in this worktree. It is not the coordinator's; leave it and do not commit it.
+- **Resume steps for the next coordinator session** (the spare session `local_541082d7-…`, Opus 5.5 at `xhigh`, `auto`,
+  Remote Control on):
+  1. Run `pnpm context:show -- --milestone owner-design-exploration-r04`, and read this section and the one above it.
+     The lease runs to 2026-09-30 23:30.
+  2. **Housekeeping, in one small commit on `owner-followup-r04-build`:** delete `E/checks/**`. It stays in history at
+     `ee2b399`.
+  3. **Integrate locally.** `codex/owner-redesign-r04` must contain the verified `521fe32` unchanged, as it did before
+     (the earlier pattern: rebase the coordinator's unpushed docs commits, which touch no `eclipse/` file, onto the
+     verified build commit). Then push both working branches, under the rule above.
+  4. **The intro-speed round.** Its brief is
+     `D:\fitway-scratch\claude-scratch\bb9e9dc7-4378-439c-b9e3-78e13474eba3\scratchpad\introspeed\FIX-SPEED.md`.
+     Before launching:
+     - update its base SHA;
+     - replace R1-R6, the width rule and the never-cover-now rule in its "Constraints in force" with the lane rules;
+     - add V1b's three items:
+       - commit the whole `capture.mjs` run's evidence and log as written, with no selective restore;
+       - correct the three README number nits;
+       - note the short-connector fallback for the phone phase.
+     Then verify with a fresh Sonnet verifier; a narrow re-check uses `-high`.
+  5. **The audit patch:** ask the user, as recorded above.
+  6. **Then Reports**, as in the screen plan.
+- **Working agreements:**
+  - reply in Arabic, simply and briefly;
+  - before starting any task, tell the user the steps and wait for their go;
+  - the user runs Codex and pastes its report;
+  - temp and scratch never go on C;
+  - split rounds into narrow parts, and name the exact lines to read;
+  - agents open screenshots downscaled;
+  - agents report in their final message, and the coordinator saves it;
+  - full-strength verification stays.

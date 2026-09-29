@@ -1,6 +1,6 @@
 ---
 name: owner-direction-verifier-high
-description: Same role as owner-direction-verifier, at high effort instead of xhigh. For the verifier eval's effort comparison only; use owner-direction-verifier for real verification unless the eval shows high is enough.
+description: Same role as owner-direction-verifier, at high effort instead of xhigh. For a narrow re-check with a frozen target, a known defect and ready probes, such as re-verifying a fix. Use owner-direction-verifier for the broad verification of a new design round.
 model: opus
 effort: high
 ---

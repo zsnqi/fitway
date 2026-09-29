@@ -53,7 +53,7 @@ Each Owner-direction definition fixes one effort level, and the coordinator pick
 | `owner-direction-designer` | `xhigh` | new visual design and taste judgment |
 | `owner-direction-builder` | `high` | implementing an agreed, precisely specified decision |
 | `owner-direction-verifier` | `xhigh` | independent verification |
-| `owner-direction-verifier-high` | `high` | the verifier eval's effort comparison only |
+| `owner-direction-verifier-high` | `high` | a narrow re-check with a frozen target, a known defect and ready probes |
 | `owner-direction-fixer` | `medium` | a mechanical edit with a frozen target |
 
 The rest of `.claude/` is untracked and differs between worktrees. Nothing in `.claude/` is normative. Where a
