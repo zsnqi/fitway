@@ -2571,3 +2571,24 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
      is never hidden; the coordinator recommends this;
   2. keep the swapping area unpainted until the fonts arrive, at most 200 ms;
   3. a metric-matched fallback font: a much smaller swap, not zero, and the fallback looks different.
+## The user accepts the late-font swap, and the successor opens (2026-09-29)
+
+- **User decision (2026-09-29):** option 1.
+  - When the fonts arrive after the first paint but within the 200 ms cap, the fallback text shows at the first paint
+    and swaps to Readex Pro before the intro starts.
+  - The intro itself never moves.
+  - The rule that content is never hidden while fonts load stays as it was.
+- **The successor:** `D:\fitway-scratch\introspeed\fixq3\FIX-Q3.md`, run `owner_introfix_r04_s08`, base `a6cfde8`, with
+  a fresh repair budget. It meets the evidence gate recorded in the section above.
+  - The first paint is complete: nothing is filled in after it. The first screen's fonts are preloaded in `index.html`.
+  - In normal conditions, and under the 40 ms font hold and the 100 ms script delay, nothing moves from the first paint
+    to the intro's end; on a reload, nothing moves after the first paint.
+  - Under the 150 ms hold, the swap lands before `intro.startedAt`, with no page drop. `a6cfde8`'s extra frame stays,
+    or an equivalent does.
+  - The trial's open items are closed:
+    - the start timing;
+    - full first-paint accessibility-tree equality;
+    - the evidence capture;
+    - the first-paint time and the long tasks before the paint.
+  - `style.css` and every font and fallback are unchanged.
+- The user runs it in a new Codex session at `high` effort.
