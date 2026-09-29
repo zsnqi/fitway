@@ -2185,3 +2185,9 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - `COMMON.md` now names `521fe32` as the candidate;
   - V3's L3m row now measures the painted extent and the pattern at every frame;
   - V3 runs alone on Sonnet at `xhigh`.
+- **User decision on V1b's low findings (2026-09-29):** there is no separate round. When the intro-speed brief is
+  prepared:
+  - its `capture.mjs` run commits the whole run's evidence and log as written. There is no selective restore of
+    timing-dependent frames, which settles the `intro-yield-ar.png` provenance mismatch;
+  - it corrects the three README number nits V1b named;
+  - the short-connector fallback (`n < 2` in `paintConnector`'s fit) is a note for the phone phase.
