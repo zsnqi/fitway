@@ -2761,4 +2761,30 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - approvals follow the revised agreement above;
   - temp and scratch never go on drive C;
   - agents report in their final message;
-  - keep the coordinator's context small.
+  - keep the coordinator's context small.## The self-hosted font round stops on outcome 6, and the cause is found (2026-09-30)
+
+- **Codex stopped `owner_fonts_r04_s09`** without a commit, as the brief allowed.
+  - Report saved at `D:\fitway-scratch\introspeed\fixq4\CODEX-FONTS-REPORT.md`; the candidate is preserved in
+    `...\fixq4\work\candidate\`.
+  - `owner-followup-r04-s04` is clean at `77d91e8`, and nothing listens on 3173-3177.
+  - The candidate self-hosts four Google subsets (93,204 bytes), the eight face rules and the OFL. It matches `77d91e8`
+    on EN delayed 1024×640, and differs from `a6cfde8` there by the same 70 px.
+  - Not done: timings, the paint-hold length, the remaining controls, the capture run, and the README.
+- **Coordinator follow-up (not verification):** the 70 px are a one-row paint offset in `a6cfde8`, not in the fix.
+  - The rects are identical in all three versions, and every box ends at y 266.
+  - The candidate paints each bar exactly inside its rect. `a6cfde8` paints every bar one device pixel lower.
+  - Before the swap, the bars sit at y 241.75 in the fallback font. Codex's control proves the cause: holding the font
+    600 ms gives back `a6cfde8`'s frame exactly.
+  - Reading: the baseline frame carries the swap's leftover. Outcome 6's byte-identity to `a6cfde8` contradicts the
+    round's goal for this frame. That is a brief error, not a work failure, so the repair budget is untouched.
+  - Zoom: `D:\fitway-scratch\introspeed\fixq4\bars-shift-zoom.png`.
+- **Neutral model facts, GPT-6.1 Sol at `high`, this task only:**
+  - time: the work files are dated 23:45-23:56; the total run time was not reported;
+  - cause or measurement: it proved the cause with a hold control, and rejected a static offset that reduced the
+    difference to 10 px;
+  - claims against evidence: 70 px and identical rects reproduced by the coordinator. It did not determine which
+    version paints the rects correctly;
+  - stop rules: it stopped at the outcome the brief named, rolled back, and left no listener;
+  - side effects: none retained.
+- **Pending the user:** accept the candidate's bars on EN delayed 1024×640 as the new reference, then resume the same
+  run from the preserved candidate with outcome 6 amended.
