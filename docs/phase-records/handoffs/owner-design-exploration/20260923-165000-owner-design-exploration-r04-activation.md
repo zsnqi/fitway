@@ -2109,3 +2109,27 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - it brings back vertical motion and the placement cases that the old cascade failed.
   A middle option was discussed and not pursued: a fixed lane just above the day's peak instead of above the scale's
   top. The user keeps the box fixed at the top, moving sideways only, because it is simpler.
+- **Verification started (2026-09-29):** the briefs in `D:\fitway-scratch\lane\verify\` were updated to the user's
+  decisions:
+  - `9404bb1` is the candidate;
+  - the peak label is the only accepted accessibility-tree change;
+  - the horizontal scroll must equal `8ae88f3`'s;
+  - the clamped hold at the plot's side is accepted under measured conditions;
+  - screenshots are opened downscaled;
+  - the report is the final message.
+  V1 and V2 were launched in parallel on Sonnet 5.5 at `xhigh`.
+- **V1: FAIL** (57 min, 149 tools, about 389k tokens). Its report is saved at `D:\fitway-temp\lane-verify\V1\REPORT.md`.
+  - C, L1, L2 and S pass.
+  - **F1, L3r fails:** the dashed and dotted connectors stop 1.7-3.5 px short of the box. The pattern is anchored at
+    the mark end (`app.js:1004`, `:1013`). At the missing span, the pointer sits about 0.9 px off its dots at 1440×900.
+    The designer's "0 px" read the path's endpoints, not the painted dashes. It is invisible at 1×.
+  - **Row I:** `capture.mjs` did not exit 0. One intro replay timing missed by 70 ms under shared load, with the
+    constants unchanged. It needs a solo re-run.
+  - The coordinator measured the machine while V1 and V2 ran: CPU 9-14%, 13 of 31 GB RAM free. Agent time is model
+    turns, not local compute.
+- **User decisions:**
+  - full coverage stays;
+  - **F1 is fixed, not accepted.** It is cheap, V3 would fail the same criterion, and the direction becomes the
+    authority. It joins any fixes from V2 in one round, through `owner-direction-builder` on Sonnet at `high`;
+  - then the coordinator re-checks the connector and runs `capture.mjs` alone;
+  - then V3 runs on the fixed SHA.
