@@ -1945,7 +1945,7 @@
       return { el, html, slots };
     });
   }
-  // Waits for a visible tab and the page's fonts (both weights, both scripts), then starts on the next frame. The wait
+  // Waits for a visible tab and the page's fonts (both weights, both scripts), then starts after their layout paints. The wait
   // for the fonts is capped at INTRO_T.fontCap from the first paint (or from now, if the page has not painted yet, which
   // is earlier); past it, there is no intro and the still page shows at once (endIntro).
   async function introWait() {
@@ -1965,6 +1965,8 @@
     if (intro.state !== "pending") return;
     if (!ok) { endIntro("fonts late"); return; }
     render(); // measured with the final font (the header's text sets the chart's height); the pre-state is kept
+    // Let the final font geometry paint before introStart marks the next frame as part of the intro.
+    await new Promise((res) => requestAnimationFrame(() => res()));
     await new Promise((res) => requestAnimationFrame(() => res()));
     if (intro.state === "pending") introStart();
   }

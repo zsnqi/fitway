@@ -1,5 +1,7 @@
 # Eclipse v3 (Owner r04, full Daily page)
 
+**Intro layout round (2026-09-29, run `owner_introfix_r04_s06`):** both Readex Pro subset files finish before intro start, but final text widths can paint in the frame that marks the intro running and register as a small layout shift. The wait now lets the final font geometry paint while the intro is pending, then starts on the following frame; the 200 ms font cap and motion timings are unchanged.
+
 **Intro speed round (2026-09-29, run `owner_introspeed_r04_s05`; the user's decision of 2026-09-27):** the first-open intro now lasts about 1171 ms at the tuner's 1x (0.70x of the earlier design): the answers roll in 400 ms, the line draws in 914 ms, and the end point and the peak land in 257 ms from 914 ms. This supersedes the 820 ms stated in the earlier entries below, which stay as recorded. The live digit roll on a new reading (`T.roll`, 280 ms) and every non-intro timing are unchanged; the intro has its own `INTRO_T.roll`. The tuner's range (0.5x-2x) and default (1x) are unchanged.
 
 **Lane round (2026-09-28, run `owner_lane_r04_s04`; the user's decision):** the tooltip no longer floats near its point.
@@ -904,7 +906,7 @@ The log records:
       once; the hover, tap and keys select their stop with the marker on the line; the rail settles at the still
       rail-open frame; the reading is not lost (7:43 PM, Entries 333, the canonical DOM); the resize equals a fresh
       1280×800 page.
-    - `held`: held 2x frames (live 0-760 ms, delayed and no history 0 and 320 ms, AR and EN). At every held frame no box
+    - `held`: held 2x frames (live 0-1086 ms, delayed and no history 0 and 457 ms, AR and EN). At every held frame no box
       moves, the answers' text is final, the live region is silent, the chart's text is final, no glyph animates
       opacity, text moves by transform only, and the line has its two parts. Two ends are judged against the 2x
       reduced-motion frame, and both set the exit code: an intro that plays by itself, and (since the intro fix round)
@@ -1117,8 +1119,8 @@ The log records:
     scrolls; its Copy values and Reset row sits at the fold.
 - **The first-open intro (Round 7 step 3;** every `intro-*` sheet is rewritten on each run, and older ones are deleted
   first):
-  - `intro-contact-sheet`: live, AR and EN side by side, 1440×900 at 2x, held at 0, 60, 120, 200, 350, 500 and 700 ms
-    and at the settled end.
+  - `intro-contact-sheet`: live, AR and EN side by side, 1440×900 at 2x, held at 0, 86, 171, 286, 500, 714 and
+    1000 ms and at the settled end.
   - `intro-states-2x`: delayed and no history, AR and EN, 2x, at the start, the middle (457 ms) and the end.
   - `intro-detail-ar-2x`: 2x details in AR: the four answers at 0, 86, 171, 286 and 400 ms, and the line landing at 857,
     914, 943, 1000 and 1086 ms and at the end.
