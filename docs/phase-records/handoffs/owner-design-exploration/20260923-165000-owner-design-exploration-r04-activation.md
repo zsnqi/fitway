@@ -2704,3 +2704,61 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
     - the page works offline;
     - simpler and faster tests.
   - It is proposed as the successor's first repair, on base `77d91e8`, pending the user's go.
+## New-session resume point after the self-hosted font brief (2026-09-29)
+
+- **User decisions (2026-09-29):**
+  - The self-hosted font proposal is approved. The brief states the goal, the cause and the outcomes, and leaves the
+    approach to Codex; it does not lock files beyond the evidence rules.
+  - **Watching the model stays neutral.** Record facts per task, beside the verifier's evidence. Never put these notes
+    in a Codex brief, and draw no conclusion from one task. The GPT-6 Sol notes above are history, not a prior against
+    GPT-6.1 Sol.
+  - A fresh coordinator session takes over, because this one is large.
+- **Working rules taken from "Automating eval design and hillclimbing"**
+  (`https://claude.dev/blog/automating-eval-design-and-hillclimbing/`). Only the general ideas apply; the article's
+  `/claude-api` commands are for API applications.
+  1. **Held-out checks.** Codex's brief states the goal and the required outcomes. The verifier also measures in ways
+     the brief does not spell out: more sizes and states, reloads, network conditions, side effects. This makes
+     "fixing the measurement" visible. It is the article's held-out test set.
+  2. **One change per round,** aimed at a cause, not at a check.
+  3. **Stall rule.** After two failed rounds on one issue, the coordinator stops and redoes the root-cause analysis
+     before writing another brief. That step was missing between `a6cfde8` and `77d91e8`.
+  4. **Noise floor, recorded once and reused.** Known capture noise:
+     - `daily-ar-1440x900-rail-open.png` has raster variants, and the deterministic one is `eed11d01e446065b…`;
+     - `motion-contact-sheet.png` and `motion-roll-*-2x.png` show glyph-edge noise, with the pulse hidden;
+     - `intro-yield-ar.png` holds real-time frames.
+     Verifiers classify against this list instead of re-deriving it.
+  5. **Validate the grader:** every detector fails on its planted defect before its pass counts. This is already the
+     rule.
+- **State at handover:**
+  - `owner-followup-r04-s04` is clean at `77d91e8` (verified FAIL; see the section on the paint hold);
+  - `codex/owner-redesign-r04` has local docs commits, not pushed, including this one;
+  - no agent of this session is running, and nothing listens on 3173-3177.
+  - The brief: `D:\fitway-scratch\introspeed\fixq4\FIX-FONTS.md`, run `owner_fonts_r04_s09`, base `77d91e8`. The user
+    runs it on GPT-6.1 Sol at `high`, in a new Codex session.
+- **Resume steps:**
+  1. Run `pnpm context:show -- --milestone owner-design-exploration-r04`. Read this section and the three before it.
+  2. **When the user pastes Codex's report:**
+     - save it at `D:\fitway-scratch\introspeed\fixq4\CODEX-FONTS-REPORT.md`;
+     - check that `owner-followup-r04-s04` is clean at the new SHA, with nothing on 3173-3177;
+     - note the neutral model facts here.
+  3. **Write the verifier brief and launch it** (`owner-direction-verifier-high`, Opus). Reuse the probes in
+     `D:\fitway-temp\introfix3-verify\` and `D:\fitway-temp\introfix-verify\probes\`, adapted for local font files.
+     Include held-out checks:
+     - every still frame at every size, language and state against `a6cfde8`;
+     - reloads;
+     - holds of the local font files at 40, 150 and 600 ms, measuring the first paint and the swap;
+     - no request leaves the origin;
+     - the length of Chromium's paint hold;
+     - the harness's own font holds;
+     - README truth;
+     - side effects.
+  4. **On PASS:** rebase the docs commits onto the new SHA, confirm that `E/` equals it, run
+     `pnpm check:repository`, and push both working branches. **On FAIL:** a focused repair brief. After a second
+     failure, apply the stall rule.
+  5. **Then:** the audit patch question (resume step 4 of the intro-speed resume point), then Reports (resume step 5).
+- **Working agreements:**
+  - replies are in the Saudi dialect;
+  - approvals follow the revised agreement above;
+  - temp and scratch never go on drive C;
+  - agents report in their final message;
+  - keep the coordinator's context small.
