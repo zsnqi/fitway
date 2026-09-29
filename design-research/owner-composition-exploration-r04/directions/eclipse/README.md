@@ -1423,14 +1423,4 @@ stopped short of the box, and that the missing-span pointer's tip sat between tw
 
 ## Checks
 
-Run from the worktree root in PowerShell:
-
-```powershell
-node design-research/owner-composition-exploration-r04/directions/eclipse/checks/run.mjs all --rev 8ae88f3 --base 6123863
-```
-
-Replace `all` with check names. Use `--workers N`, `--out <new-temp-folder>`, `--frames`, or `--plant <check>`;
-`run.mjs --help` lists the checks.
-
-The `checks/` harness still encodes the superseded floating-placement rules (side, flip, the 12 px gap, the 11 px clearance,
-the peak tag's covered state) and is not a gate for the lane; a later round adapts it.
+The `checks/` harness encoded the superseded floating-placement rules and was removed; it remains in history at `ee2b399`.
