@@ -1488,9 +1488,9 @@ async function captureIntro() {
     r.reducedMotion = await red.page.evaluate(() => ({ replayDisabled: document.getElementById("t-mo-replay").disabled, replayReturns: window.__eclipse.intro.replay(), state: window.__eclipse.intro.state }));
     await red.context.close();
     const near = (a, b) => Math.abs(a - b) <= Math.max(60, b * 0.12);
-    r.pass = /Intro speed/.test(r.row.label || "") && r.row.value === "1" && /1\.00× · 820 ms/.test(r.row.out || "") && /Replay intro/.test(r.row.replay || "") && !r.row.replayDisabled &&
-      r.replay1x.sawRunning && r.replay1x.yieldedBy === "complete" && r.replay1x.count === 2 && near(r.replay1x.measuredMs, 820) && r.replayEndIdenticalToStill &&
-      r.at05.out === "0.50× · 1640 ms" && near(r.at05.measuredMs, 1640) && r.at2.out === "2.00× · 410 ms" && near(r.at2.measuredMs, 410) &&
+    r.pass = /Intro speed/.test(r.row.label || "") && r.row.value === "1" && /1\.00× · 1171 ms/.test(r.row.out || "") && /Replay intro/.test(r.row.replay || "") && !r.row.replayDisabled &&
+      r.replay1x.sawRunning && r.replay1x.yieldedBy === "complete" && r.replay1x.count === 2 && near(r.replay1x.measuredMs, 1171) && r.replayEndIdenticalToStill &&
+      r.at05.out === "0.50× · 2342 ms" && near(r.at05.measuredMs, 2342) && r.at2.out === "2.00× · 586 ms" && near(r.at2.measuredMs, 586) &&
       r.stored.introSpeed === 2 && r.afterReload.introSpeed === 2 && r.afterReload.played === false && r.tunerOffIgnoresStored === 1 &&
       r.reducedMotion.replayDisabled && r.reducedMotion.replayReturns === false && r.reducedMotion.state === "off" && errors.length === 0;
     when.replayAndSpeed = r;
@@ -1611,20 +1611,20 @@ async function captureIntro() {
   out.yields = yields;
   console.log(`intro yields: ${yields.pass ? "pass" : "FAIL"} (${Object.entries(yields).filter(([k]) => k !== "pass").map(([k, v]) => `${k} ${v.pass ? "ok" : "FAIL"} by ${v.settled.yieldedBy} at ${v.settled.settledAtMs} ms`).join("; ")})`);
 
-  // 4. Held 2x frames and the sheets. Live: 0, 60, 120, 200, 350, 500 and 700 ms and the end; delayed and no history:
+  // 4. Held 2x frames and the sheets. Live: 0, 86, 171, 286, 500, 714 and 1000 ms and the end; delayed and no history:
   //    the start, the middle and the end. Extra 2x details: the answers rolling, and the line landing.
   const held = {};
-  const TIMES = [0, 60, 120, 200, 350, 500, 700];
+  const TIMES = [0, 86, 171, 286, 500, 714, 1000];
   const crops = [
-    { name: "answers", times: [0, 60, 120, 200, 280], clip: async (p) => clipOf(await rectOf(p, "#cards")) },
-    { name: "landing", times: [600, 640, 660, 700, 760, "end"], clip: (p) => p.evaluate(() => {
+    { name: "answers", times: [0, 86, 171, 286, 400], clip: async (p) => clipOf(await rectOf(p, "#cards")) },
+    { name: "landing", times: [857, 914, 943, 1000, 1086, "end"], clip: (p) => p.evaluate(() => {
       const s = document.querySelector("#plot-svg svg").getBoundingClientRect(), e = document.getElementById("end-dot"), k = document.getElementById("pk-dot");
       const ex = s.x + Number(e.getAttribute("cx")), ey = s.y + Number(e.getAttribute("cy")), kx = s.x + Number(k.getAttribute("cx")), ky = s.y + Number(k.getAttribute("cy"));
       const x0 = Math.min(ex, kx) - 70, x1 = Math.max(ex, kx) + 70;
       return { x: Math.round(x0), y: Math.round(ky - 46), width: Math.round(x1 - x0), height: Math.round(ey - ky + 80) };
     }) },
   ];
-  const liveAr = await introHeld("ar", "live", [...new Set([...TIMES, 280, 600, 640, 660, 760])].sort((a, b) => a - b), crops);
+  const liveAr = await introHeld("ar", "live", [...new Set([...TIMES, 400, 857, 914, 943, 1086])].sort((a, b) => a - b), crops);
   const liveEn = await introHeld("en", "live", TIMES);
   held.ar = liveAr.r; held.en = liveEn.r;
   const contact = [];
@@ -1633,19 +1633,19 @@ async function captureIntro() {
   }
   contact.push({ buf: liveAr.endBuf, caption: `AR · settled end (after these holds = 2x still frame: ${liveAr.r.heldEndIdenticalToStill2x}; played by itself: ${liveAr.r.naturalEndIdenticalToStill2x})` }, { buf: liveEn.endBuf, caption: `EN · settled end (after these holds = 2x still frame: ${liveEn.r.heldEndIdenticalToStill2x}; played by itself: ${liveEn.r.naturalEndIdenticalToStill2x})` });
   const sheets = [];
-  sheets.push(await introSheet("intro-contact-sheet", "First-open intro (Round 7 step 3), live, AR and EN, 1440×900 at 2x, held at times after its start (concept, synthetic data). The answers roll into place (settled by 280 ms); the line draws from opening to now (640 ms), then the end point and the peak land (to 820 ms). The surfaces, lights, labels, grid, axes and usual line never move.", contact, 2, 720));
+  sheets.push(await introSheet("intro-contact-sheet", "First-open intro (Round 7 step 3), live, AR and EN, 1440×900 at 2x, held at times after its start (concept, synthetic data). The answers roll into place (settled by 400 ms); the line draws from opening to now (914 ms), then the end point and the peak land (to 1171 ms). The surfaces, lights, labels, grid, axes and usual line never move.", contact, 2, 720));
   const states = [];
   for (const lang of ["ar", "en"]) {
     for (const state of ["delayed", "nohistory"]) {
-      const h = await introHeld(lang, state, [0, 320]);
+      const h = await introHeld(lang, state, [0, 457]);
       held[`${lang}-${state}`] = h.r;
-      states.push({ buf: h.frames[0].buf, caption: `${lang.toUpperCase()} ${state} · start (0 ms)` }, { buf: h.frames[1].buf, caption: `${lang.toUpperCase()} ${state} · middle (320 ms)` }, { buf: h.endBuf, caption: `${lang.toUpperCase()} ${state} · end (= 2x still frame, played by itself: ${h.r.naturalEndIdenticalToStill2x}; after these holds: ${h.r.heldEndIdenticalToStill2x})` });
+      states.push({ buf: h.frames[0].buf, caption: `${lang.toUpperCase()} ${state} · start (0 ms)` }, { buf: h.frames[1].buf, caption: `${lang.toUpperCase()} ${state} · middle (457 ms)` }, { buf: h.endBuf, caption: `${lang.toUpperCase()} ${state} · end (= 2x still frame, played by itself: ${h.r.naturalEndIdenticalToStill2x}; after these holds: ${h.r.heldEndIdenticalToStill2x})` });
     }
   }
   sheets.push(await introSheet("intro-states-2x", "First-open intro while delayed and with no history, AR and EN, 2x: the start, the middle and the end. While delayed the stale Inside now number and its age stay still (a stale card never moves) and the grey end point appears at once; with no history there is no usual line.", states, 3, 720));
   const detail = [
     ...liveAr.clips.filter((c) => c.name === "answers").map((c) => ({ buf: c.buf, caption: `The answers at ${c.t} ms (AR, 2x)`, width: 1320 })),
-    ...liveAr.clips.filter((c) => c.name === "landing").map((c) => ({ buf: c.buf, caption: `The landing at ${c.t === "end" ? "the end" : `${c.t} ms`}: the line reaches now at 640 ms, then the end point swells out of its tip and the peak ring swells in (AR, 2x)` })),
+    ...liveAr.clips.filter((c) => c.name === "landing").map((c) => ({ buf: c.buf, caption: `The landing at ${c.t === "end" ? "the end" : `${c.t} ms`}: the line reaches now at 914 ms, then the end point swells out of its tip and the peak ring swells in (AR, 2x)` })),
   ];
   sheets.push(await introSheet("intro-detail-ar-2x", "First-open intro details, AR, 2x: the four answers entering their final place (the digit roll, from below, inside the digits' own box), and the line landing on now.", detail, 1, 660));
   sheets.push(await introSheet("intro-yield-ar", "The intro yields at once (AR, live, 1x): each frame is 50 ms after the owner's action at 100 or 400 ms into the intro. The page is complete and the action's own result has begun.", yieldCells, 4, 480));

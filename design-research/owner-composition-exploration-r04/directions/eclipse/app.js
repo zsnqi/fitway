@@ -1873,15 +1873,15 @@
    *   the first paint and never move.
    * What moves, content only:
    *   1. The four answers (Inside now, Today's peak, Entries, Busiest time) roll into place with the page's own digit
-   *      roll (280 ms, from below, inside the digits' ink box). It is a reveal of the current reading, not a count-up:
+   *      roll (400 ms, from below, inside the digits' ink box). It is a reveal of the current reading, not a count-up:
    *      each value enters its final place, no zero or intermediate value is ever drawn, and the DOM text is the final
    *      value from the first paint. While delayed, the stale Inside now number stays still (a stale card never moves).
-   *   2. Today's line draws once, by minutes since open, from opening to the latest reading (640 ms, a soft landing),
+   *   2. Today's line draws once, by minutes since open, from opening to the latest reading (914 ms, a soft landing),
    *      and its fine vertical lines are uncovered with it. It draws in time order, so right to left in Arabic. The
    *      missing span stays a gap throughout: each part of the line is its own path and is never joined.
    *   3. When the line arrives, the end point swells out of the line's tip (live; while delayed the grey point simply
-   *      appears), and the peak ring swells into place with its dotted drop and its label (180 ms). The pulse starts then.
-   *   About 820 ms in all at 1× (the tuner's intro speed divides every duration). Transform, clip and draw only: no glyph
+   *      appears), and the peak ring swells into place with its dotted drop and its label (257 ms). The pulse starts then.
+   *   About 1171 ms in all at 1× (the tuner's intro speed divides every duration). Transform, clip and draw only: no glyph
    *   changes opacity, no element's box changes, and nothing is announced (the live region is untouched).
    * When it starts: once the page's fonts are loaded (no font swaps mid-intro) and the tab is visible. Until then the
    *   numbers wait out of sight and the line is not drawn; if the fonts are not in within 200 ms of the first paint
@@ -1893,8 +1893,8 @@
    *   A tab opened in the background keeps its intro waiting until the tab is first shown.
    * At the end the page is exactly the still page: every element, attribute and style the intro added is removed. */
   const INTRO_STORE = "fitway.eclipse.v3.intro";
-  // ms at 1×; the numbers use the digit roll's own T.roll. fontCap is not scaled: it counts from the first paint.
-  const INTRO_T = { line: 640, mark: 180, fontCap: 200 };
+  // ms at 1x; the intro has its own roll (the live digit roll on a new reading keeps T.roll). fontCap is not scaled: it counts from the first paint.
+  const INTRO_T = { roll: 400, line: 914, mark: 257, fontCap: 200 };
   // A whole value: 49, 332, or a time with its own AM/PM (6-8 م, 6–8 PM), which is part of the value, unlike a unit.
   const INTRO_NUM = /\d+(?:[-–:.,]\d+)*(?: (?:ص|م|AM|PM)(?![\p{L}]))?/gu;
   // The peak's label waits by an empty clip, like the answers' slots: out of sight, but still in the accessibility tree
@@ -1902,7 +1902,7 @@
   const INTRO_HIDE = ";clip-path:inset(50%)";
   const SVGNS = "http://www.w3.org/2000/svg";
   const intro = { state: "off", firstOpen: false, played: false, count: 0, reason: "", yieldedBy: null, nums: [], run: null, tagStyle: null, fontWaitMs: null, startedAt: null, endedAt: null };
-  const introTotal = (k = opts.introSpeed || 1) => (Math.max(T.roll, INTRO_T.line) + INTRO_T.mark) / k;
+  const introTotal = (k = opts.introSpeed || 1) => (Math.max(INTRO_T.roll, INTRO_T.line) + INTRO_T.mark) / k;
   function introDecide() {
     let first = false;
     try {
@@ -1971,7 +1971,7 @@
   function introStart() {
     if (!geo) { endIntro("no chart"); return; }
     const k = opts.introSpeed || 1;
-    const d = { roll: T.roll / k, line: INTRO_T.line / k, mark: INTRO_T.mark / k };
+    const d = { roll: INTRO_T.roll / k, line: INTRO_T.line / k, mark: INTRO_T.mark / k };
     intro.state = "running";
     intro.played = true;
     intro.count++;
@@ -2224,7 +2224,7 @@
       // Every motion, as built above (for the capture log and the README).
       spec: () => [
         { motion: "Load", animates: "nothing but the first-open intro: the surfaces, lights, labels, grid, axes and usual line are complete at first paint (no stagger, no rise, no light entrance)", note: "a reload or a return in the same tab has no intro; only the live pulse runs at rest, and only while live" },
-        { motion: "First-open intro (Round 7 step 3): the answers", animates: "transform translateY of each answer's numeric expression (Inside now, Today's peak, Entries, Busiest time), from below into the digits' ink box, clipped to it: the digit roll entering the final value; while delayed the stale Inside now number is still", delayMs: 0, durationMs: T.roll / (opts.introSpeed || 1), easing: EASE.roll, note: "only on the first open in a tab; no count-up and no intermediate value; the DOM text is final from the first paint; nothing is announced" },
+        { motion: "First-open intro (Round 7 step 3): the answers", animates: "transform translateY of each answer's numeric expression (Inside now, Today's peak, Entries, Busiest time), from below into the digits' ink box, clipped to it: the digit roll entering the final value; while delayed the stale Inside now number is still", delayMs: 0, durationMs: INTRO_T.roll / (opts.introSpeed || 1), easing: EASE.roll, note: "only on the first open in a tab; no count-up and no intermediate value; the DOM text is final from the first paint; nothing is announced" },
         { motion: "First-open intro: the line", animates: "stroke-dasharray of today's line parts, drawn by minutes since open from opening to the latest reading (right to left in Arabic), and one clip uncovering the fine vertical lines to the same minute", delayMs: 0, durationMs: INTRO_T.line / (opts.introSpeed || 1), easing: EASE.introLine, note: "the missing span stays a gap throughout; the grid, axes and usual line are still from the first paint" },
         { motion: "First-open intro: the end point and the peak", animates: "SVG transform scale: the live end point and halo from the line tip's size (0.34) to 1, the peak ring from the same 0.34 to 1; the stale end point, the peak's drop and its label appear at once when the line arrives", delayMs: INTRO_T.line / (opts.introSpeed || 1), durationMs: INTRO_T.mark / (opts.introSpeed || 1), easing: EASE.roll, note: `about ${Math.round(introTotal())} ms in all; it settles at once on any action, a new reading or a resize; the pulse starts when it ends` },
         { motion: "Lights", animates: "nothing, ever", note: "no entrance, no pointer-follow, no crowd-dependent light" },
@@ -2254,7 +2254,7 @@
       get fontWaitMs() { return intro.fontWaitMs; },
       get startedAt() { return intro.startedAt; },
       get endedAt() { return intro.endedAt; },
-      get timings() { const k = opts.introSpeed || 1; return { speed: k, rollMs: T.roll / k, lineMs: INTRO_T.line / k, markMs: INTRO_T.mark / k, totalMs: introTotal(k), fontCapMs: INTRO_T.fontCap, easings: { roll: EASE.roll, line: EASE.introLine, mark: EASE.roll } }; },
+      get timings() { const k = opts.introSpeed || 1; return { speed: k, rollMs: INTRO_T.roll / k, lineMs: INTRO_T.line / k, markMs: INTRO_T.mark / k, totalMs: introTotal(k), fontCapMs: INTRO_T.fontCap, easings: { roll: EASE.roll, line: EASE.introLine, mark: EASE.roll } }; },
       totalMs: (k) => introTotal(k),
       replay: replayIntro,
       seek: seekIntro,

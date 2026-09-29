@@ -1,5 +1,7 @@
 # Eclipse v3 (Owner r04, full Daily page)
 
+**Intro speed round (2026-09-29, run `owner_introspeed_r04_s05`; the user's decision of 2026-09-27):** the first-open intro now lasts about 1171 ms at the tuner's 1x (0.70x of the earlier design): the answers roll in 400 ms, the line draws in 914 ms, and the end point and the peak land in 257 ms from 914 ms. This supersedes the 820 ms stated in the earlier entries below, which stay as recorded. The live digit roll on a new reading (`T.roll`, 280 ms) and every non-intro timing are unchanged; the intro has its own `INTRO_T.roll`. The tuner's range (0.5x-2x) and default (1x) are unchanged.
+
 **Lane round (2026-09-28, run `owner_lane_r04_s04`; the user's decision):** the tooltip no longer floats near its point.
 The same box (content, start-aligned layout, colours and width rule unchanged) lives in a fixed lane at the top of the
 plot. It moves sideways only, is centred on its stop and stopped 2 px inside the plot's sides, and a thin connector joins
@@ -199,7 +201,7 @@ It is a working tool, not part of the design.
       and ignores with `?tuner=0`. The light values' key and "Copy values" stay about lights only.
   - «سرعة المقدمة» "Intro speed" (Round 7 step 3): a range from 0.5× to 2×, default 1×, with its own «الافتراضي»
     "Default" button. It divides every duration of the first-open intro; the output shows the multiplier and the
-    intro's length, for example "1.00× · 820 ms". It is kept in the same key and ignored with `?tuner=0`. A new speed
+    intro's length, for example "1.00× · 1171 ms". It is kept in the same key and ignored with `?tuner=0`. A new speed
     applies to the next intro, never to one that is playing.
   - «إعادة المقدمة» "Replay intro" (Round 7 step 3): plays the intro again on the page as it is now (the current
     reading). It is disabled with reduced motion, `?motion=off` or the Motion switch off, because there is no intro then.
@@ -287,9 +289,9 @@ and only while live.
 | The line's tail | a new reading | SVG path of the last 15-30 minutes, end point, the tail's fine lines, the now clip | 280 ms | `cubic-bezier(0.4, 0, 0.2, 1)` |
 | Live pulse | while live only; none while delayed | a thin ring, opacity 0.4 to 0 and scale 0.34 to 1, from inside the end point to just past its halo | every 5 s, visible for the first 48% | `cubic-bezier(0.22, 0.61, 0.36, 1)` |
 | Rail | the logo is pressed | transforms: the end cap slides and the middle scales; the darker surface layers and the shadow fade (no text); each name is uncovered by a clip | 240 ms open, 200 ms close | `cubic-bezier(0.22, 1, 0.36, 1)` open, `cubic-bezier(0.4, 0, 0.2, 1)` close |
-| Intro: the answers | a tab's first open only (Round 7 step 3) | transform: each answer's value enters its final place from below, inside the digits' ink box (the digit roll) | 280 ms, from the start | `cubic-bezier(0.25, 1, 0.5, 1)` |
-| Intro: the line | the same | `stroke-dasharray` of today's line parts, by minutes since open; one clip uncovers the fine lines under it | 640 ms, from the start | `cubic-bezier(0.3, 0.2, 0.4, 1)` |
-| Intro: the end point and the peak | the same, when the line arrives | SVG transform: the live end point and its halo, and the peak ring, scale from 0.34 to 1; the peak's drop and label appear at once | 180 ms, from 640 ms | `cubic-bezier(0.25, 1, 0.5, 1)` |
+| Intro: the answers | a tab's first open only (Round 7 step 3) | transform: each answer's value enters its final place from below, inside the digits' ink box (the digit roll) | 400 ms, from the start | `cubic-bezier(0.25, 1, 0.5, 1)` |
+| Intro: the line | the same | `stroke-dasharray` of today's line parts, by minutes since open; one clip uncovers the fine lines under it | 914 ms, from the start | `cubic-bezier(0.3, 0.2, 0.4, 1)` |
+| Intro: the end point and the peak | the same, when the line arrives | SVG transform: the live end point and its halo, and the peak ring, scale from 0.34 to 1; the peak's drop and label appear at once | 257 ms, from 914 ms | `cubic-bezier(0.25, 1, 0.5, 1)` |
 
 The intro's durations are at 1×; the tuner's intro speed divides them. Nothing else animates: the lights, the wash, the
 hover colours of the rail tiles and buttons, the details chevron, and the jump to "View details" are all instant.
@@ -689,12 +691,12 @@ section in `app.js`.
   label, unit, time of day and reference value (the usual entries, the average), the level chips, the header's status,
   and the chart's grid, axes, legend and usual Wednesday line.
 - **What moves, in order (at 1×):**
-  1. **The answers**, 0-280 ms: Inside now, Today's peak, Entries and Busiest time roll into place with the page's own
+  1. **The answers**, 0-400 ms: Inside now, Today's peak, Entries and Busiest time roll into place with the page's own
      digit roll, from below into the digits' ink box, all together. Each value is one slot: «6-8 م» rolls with its own
      «م», which is part of the time, unlike a unit such as «تقريبًا».
-  2. **Today's line**, 0-640 ms: it draws once by minutes since open, from opening to the latest reading, with a firm
+  2. **Today's line**, 0-914 ms: it draws once by minutes since open, from opening to the latest reading, with a firm
      start, an even day and a soft landing into now. The fine vertical lines under it are uncovered with it.
-  3. **The landing**, 640-820 ms: the end point swells out of the line's tip (from the tip's own size, 0.34, to 1) with
+  3. **The landing**, 914-1171 ms: the end point swells out of the line's tip (from the tip's own size, 0.34, to 1) with
      its halo; the peak ring swells in the same way, and its dotted drop and label appear with it. The pulse then starts.
 - **Truthful at every instant:** it is a reveal of the current reading, not a count-up.
   - Each value enters its final place. No zero or intermediate value is ever drawn, so nothing false can be read.
@@ -746,7 +748,7 @@ section in `app.js`.
 - **Choices the brief left open, with the reason:**
   - **Only the four answers roll.** They answer the owner's first question. Times of day, the usual entries, the average
     and the level chips are context, and less motion is the page's default.
-  - **The numbers and the line start together.** The numbers settle by 280 ms, well before the line (640 ms), so they
+  - **The numbers and the line start together.** The numbers settle by 400 ms, well before the line (914 ms), so they
     are read first without a delay that would lengthen the whole.
   - **Grid, axes and the usual line are still.** They are the instrument's frame and the reference that today's line is
     drawn against, not today's data.
@@ -896,7 +898,7 @@ The log records:
       the DOM equals the `?motion=off` DOM and the page is the still frame. Held 50 ms, the intro plays and completes.
     - `whenItPlays`: a new tab plays it; a reload, the language link in the same tab, reduced motion, `?motion=off` and a
       new tab with the Motion switch off do not; a second tab does; `?tuner=0` ignores the stored switch. "Replay intro"
-      plays it at 1×, 0.5× and 2× (measured against 820, 1640 and 410 ms) and ends at the still frame; the speed is
+      plays it at 1×, 0.5× and 2× (measured against 1171, 2342 and 586 ms) and ends at the still frame; the speed is
       stored, kept on a reload and ignored with `?tuner=0`.
     - `yields`: a hover, keys, the rail, a tap, a new reading and a resize, each at 100 and 400 ms into it. It settles at
       once; the hover, tap and keys select their stop with the marker on the line; the rail settles at the still
@@ -1117,9 +1119,9 @@ The log records:
   first):
   - `intro-contact-sheet`: live, AR and EN side by side, 1440×900 at 2x, held at 0, 60, 120, 200, 350, 500 and 700 ms
     and at the settled end.
-  - `intro-states-2x`: delayed and no history, AR and EN, 2x, at the start, the middle (320 ms) and the end.
-  - `intro-detail-ar-2x`: 2x details in AR: the four answers at 0, 60, 120, 200 and 280 ms, and the line landing at 600,
-    640, 660, 700 and 760 ms and at the end.
+  - `intro-states-2x`: delayed and no history, AR and EN, 2x, at the start, the middle (457 ms) and the end.
+  - `intro-detail-ar-2x`: 2x details in AR: the four answers at 0, 86, 171, 286 and 400 ms, and the line landing at 857,
+    914, 943, 1000 and 1086 ms and at the end.
   - `intro-yield-ar`: 1x, the page 50 ms after a hover, keys, the rail, a tap, a new reading and a resize at 100 and
     400 ms into the intro. It is taken in real time, so it depends on timing and can differ between runs (for example,
     the digit roll of a new reading is caught at another point).
@@ -1366,9 +1368,10 @@ stopped short of the box, and that the missing-span pointer's tip sat between tw
   gap stretched evenly (2.5-3.5 px in every state and viewport measured; nominal 3). Dotted: 1.6 px round dots, the path
   stopped a cap's radius (0.8 px) short of each end so the painted edge of the first and last dot touches the pointer's base
   and the box (pitch 3.5-4.5 px; nominal 4). The dashed and dotted forms read the box's rounded corner at the column they are
-  drawn on. At the missing-span stop the column is the lit dot nearest the stop's centre (2 px from it at 1440×900, 1.57-1.94
+  drawn on. At the missing-span stop the column is the lit dot nearest the stop's centre (2 px from it at 1440×900, at most 2.00
   px at 1280×800, 0 at 1024×640) and the tip touches that dot's top; the dots do not move. Solid connectors, the box, the
   lane, the marks and the geometry are untouched; `style.css` gained a comment only (the `.tip` note now describes the lane).
+- **Phone-phase note:** the pattern fit in `paintConnector` (`app.js` about 1021-1032) falls back to the unfitted pattern when `n < 2`, which happens only for a dashed connector under about 27 px or a dotted span under about 14 px. The tested viewports do not reach it (the shortest rest connector is about 100 px); the phone phase checks it.
 - **Check (`capture.mjs`, `measureTip` and the lane block of `chartChecks`):** the connector is measured as painted: every dash
   or dot from the path, the dash pattern and the cap; the topmost against the box's painted bottom edge at the connector's
   column (straight, or up the rounded corner); the lowest against the pointer's base; the pointer's tip against the ring's
@@ -1382,11 +1385,11 @@ stopped short of the box, and that the missing-span pointer's tip sat between tw
   | Form | 1440×900 | 1280×800 | 1024×640 | 390×844 |
   |---|---|---|---|---|
   | dashed, to the box | 2.410, 0.003 | 2.910, 0.003 | 2.783, 0.005 | 2.940, 0.004 |
-  | dotted, to the box | 2.123, 0.010 | 2.373, 0.010 | 2.493, 0.010 | 3.459, 0.014 |
+  | dotted, to the box | 2.123, 0.010 | 2.373, 0.010 | 2.543, 0.010 | 3.459, 0.014 |
   | missing-span tip to a lit dot | 0.933, 0 | 1.058, 0 | 0.075, 0 | no lit dot (see below) |
 
   The pointer's base is met by a dash or dot at every stop (before, the dotted form overlapped it by 0.8 px). The dashed gap
-  is 2.898-3.099 px and the dotted pitch 3.963-4.035 px. A follow through every stop and back (5,390-5,530 frames per page
+  is 2.898-3.099 px and the dotted pitch 3.972-4.035 px. A follow through every stop and back (5,390-5,530 frames per page
   under a virtual clock, 1440×900, AR and EN, live, delayed and without history, including onto and off the 11:00 PM stop and
   the missing-span stop) is at most 0.01 px from the box for the dotted form and 0.007 px for the dashed form, at most 0.023
   px from the ring, the dashed gap 2.931-3.071 px and the dotted pitch 3.983-4.02 px; at `9404bb1` the same sweep gives up to
