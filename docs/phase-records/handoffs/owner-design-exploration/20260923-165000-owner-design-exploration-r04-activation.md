@@ -2266,3 +2266,28 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - agents open screenshots downscaled;
   - agents report in their final message, and the coordinator saves it;
   - full-strength verification stays.
+
+## The spare session takes over: housekeeping, integration and push (2026-09-29)
+
+- **Session:** the spare session. After an app restart its id is `local_93bf0b45-492a-4e1d-b128-d5e1a2d4fbee`, not
+  `local_541082d7-…`. Its scratchpad is
+  `D:\fitway-temp\claude\D--Projects-fitway-worktrees-owner-design-exploration-r04\93bf0b45-492a-4e1d-b128-d5e1a2d4fbee\scratchpad\`.
+  The user agreed each step below before it ran.
+- **Housekeeping:** `d163223` on `owner-followup-r04-build`, on top of `521fe32`, deletes `E/checks/**` (26 files). It
+  stays in history at `ee2b399`. The README's "Checks" section now says only that. Nothing else references `checks/`.
+- **Integration:** the coordinator's 43 docs commits were rebased onto `d163223`. `E/` on `codex/owner-redesign-r04`
+  equals `d163223`, `521fe32` is an ancestor, and every file outside `E/` equals the pre-rebase head `4e5dea2`.
+  `pnpm check:repository` passed.
+- **Push:** `codex/owner-redesign-r04` (`622cd0b..49a63bd`, fast-forward) and `owner-followup-r04-build` (new on the
+  remote). No force, not `main`, no pull request.
+- **The intro-speed brief is updated,** in place at
+  `D:\fitway-scratch\claude-scratch\bb9e9dc7-4378-439c-b9e3-78e13474eba3\scratchpad\introspeed\FIX-SPEED.md`:
+  - base `d163223`, in worktree `owner-followup-r04-s04` on `owner-followup-r04-build`; scratch on D;
+  - the lane rules and the accepted lane behaviours replace the floating-placement constraints;
+  - V1b's three items: the run's evidence and log committed as written, the three README nits frozen, and the
+    short-connector note for the phone phase;
+  - hold times scale by 1/0.70, so each held frame shows the same moment of the intro; the yield probes keep 100 and
+    400 ms;
+  - README: current descriptions change, past round entries stay as recorded, and a new top entry supersedes 820 ms;
+  - exact lines to read, and the report in the final message.
+  It is shown to the user before launch.
