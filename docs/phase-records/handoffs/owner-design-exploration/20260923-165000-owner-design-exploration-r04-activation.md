@@ -2181,3 +2181,7 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   3. Ask the user whether the low findings above need a mechanical follow-up.
   4. Then close the lane round, hand over to the spare session, and continue with the plan: the verifier eval,
      deleting `E/checks/**`, local integration, the intro-speed round, the audit patch and Reports.
+- **V3 launched (2026-09-29):**
+  - `COMMON.md` now names `521fe32` as the candidate;
+  - V3's L3m row now measures the painted extent and the pattern at every frame;
+  - V3 runs alone on Sonnet at `xhigh`.
