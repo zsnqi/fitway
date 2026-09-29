@@ -2163,3 +2163,21 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   `local_541082d7-9bcf-4851-b8a5-6f17dae6b228` ("تعليمات من جلسة المنسّق"): same folder, Opus 5.5 at `xhigh`, `auto`
   permissions and Remote Control on. When the lane round closes, the coordinator writes the resume point here, commits
   it, and sends the resume prompt to that session with `send_message`.
+- **V1b: PASS on L3r, F1c, F1d and I for `521fe32`** (70 min, 142 tools, about 352k tokens). Its report is saved at
+  `D:\fitway-temp\lane-verify\V1b\REPORT.md`.
+  - The positive control on `9404bb1` reproduced every known gap.
+  - After the fix, every painted gap is 0.014 px or less, and the missing-span tip is 0 px from its dot.
+  - Solid forms are unchanged. Fresh-page differences lie only inside the connector's footprint.
+  - `capture.mjs` exited 0 when run alone.
+  - **Low findings:**
+    - the committed `intro-yield-ar.png` comes from `9404bb1`, while `capture-log.json` holds the new run's yield
+      timings, so the two no longer come from one run;
+    - three README number nits;
+    - the fit falls back to the unfitted pattern for very short connectors, which the tested viewports cannot reach.
+- **The session stopped at a usage limit** after V1b. V3 has not been launched.
+- **Resume steps:**
+  1. Point `D:\fitway-scratch\lane\verify\COMMON.md`'s candidate at `521fe32`.
+  2. Launch V3 alone, with `owner-direction-verifier` and `model: "sonnet"`.
+  3. Ask the user whether the low findings above need a mechanical follow-up.
+  4. Then close the lane round, hand over to the spare session, and continue with the plan: the verifier eval,
+     deleting `E/checks/**`, local integration, the intro-speed round, the audit patch and Reports.
