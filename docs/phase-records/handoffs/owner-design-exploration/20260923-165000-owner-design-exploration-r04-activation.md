@@ -2446,3 +2446,54 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
      - the evidence files changed.
      Show the brief to the user before launch.
   3. On PASS, resume step 3's integration and push.
+
+## The fix delivered, its verification launched, and fewer approvals (2026-09-29)
+
+- **Codex delivered `a6cfde8`** on `owner-followup-r04-build`, on top of `1b289f4`. This is the intro-speed round's
+  first focused repair.
+  - Report saved at `D:\fitway-scratch\introspeed\fixq\CODEX-FIX-REPORT.md`.
+  - Coordinator inspection, not verification: 8 files, all in the allowed set. The `app.js` change adds one
+    `requestAnimationFrame` wait before `introStart()`. The worktree is clean and nothing listens on 3173-3177.
+  - Two open questions, handed to the verifier:
+    - the extra frame may move the start shift before `intro.startedAt` rather than remove it;
+    - `motion-contact-sheet.png`, `motion-roll-ar-2x.png` and `motion-roll-en-2x.png` changed without being expected.
+- **Verification is running:**
+  - `owner-direction-verifier-high` on Opus, run `owner_introfix_r04_s06_verify`;
+  - brief: `D:\fitway-scratch\introspeed\fixq\VERIFY-FIXQ.md`;
+  - output folder: `D:\fitway-temp\introfix-verify\`;
+  - rows: S, Q (30 first-opens per language, and a reproduction), W (every shift over the whole load), D, Y, A, R, E,
+    T, V and I, each with its positive control.
+- **Working agreement revised by the user (2026-09-29).** It replaces "before starting any task, tell the user the steps
+  and wait for their go".
+  - **The coordinator still asks about:**
+    - taste and design: anything that changes the page's look or behaviour, a choice between options, visual
+      acceptance;
+    - irreversible actions: permanent deletion, force;
+    - the user's settings and security: Codex or Claude configuration, global skills;
+    - product decisions: plan or scope changes, locked privacy, security or content decisions.
+  - **It acts, then reports in a line:**
+    - saves reports, checks worktrees and ports, records in this handoff, makes local commits;
+    - writes briefs and hands them over ready to run;
+    - launches the Claude verifier after each Codex delivery;
+    - folds low findings into the next round;
+    - after a PASS, integrates locally and runs `pnpm check:repository`;
+    - does safe, reversible cleanup;
+    - makes small tooling fixes that touch neither `AGENTS.md`, `docs/WORKFLOW.md` nor the product.
+  - **Pushes:**
+    - the coordinator pushes both working branches itself after a PASS and a clean integration, never with force;
+    - for `main` and pull requests, it decides by the policy and says so beforehand.
+  - **Successors after `FAILED_VALIDATION`:** the coordinator opens one itself once the terminal record meets
+    `docs/WORKFLOW.md`'s evidence gate. It asks only where another rule needs a human (`docs/WORKFLOW.md`: "Human
+    authorization for a successor is required whenever any existing rule also requires it"), such as a material visual
+    change or a locked decision.
+  - Replies are in the Saudi dialect.
+- **Next:**
+  1. When the verifier reports, save the report at `D:\fitway-scratch\introspeed\fixq\VERIFY-FIXQ-REPORT.md`, and tell
+     the user the verdict.
+  2. On PASS, with no finding that needs the user:
+     - rebase the coordinator's docs commits onto `a6cfde8`;
+     - confirm that `E/` equals it;
+     - run `pnpm check:repository`;
+     - push both working branches.
+  3. On FAIL, write the second repair brief for Codex.
+  4. Then the audit patch question (resume step 4), and Reports (resume step 5).
