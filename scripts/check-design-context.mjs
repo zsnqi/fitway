@@ -113,8 +113,11 @@ async function resolveEngine() {
 				};
 			}
 			problems.push(`${candidate.label} exited with code ${probe.code}`);
-		} catch {
-			problems.push(`${candidate.label} could not run`);
+		} catch (error) {
+			// The spawn error's code (ENOENT, EPERM, ...) tells a missing engine from a
+			// blocked one; it carries no environment value.
+			const reason = typeof error?.code === "string" ? ` (${error.code})` : "";
+			problems.push(`${candidate.label} could not run${reason}`);
 		}
 	}
 	return { problems };
@@ -197,6 +200,9 @@ async function main() {
 				"This is the required design-session entry check (docs/WORKFLOW.md)",
 				"and is deliberately not part of `verify:fast`; install the Impeccable",
 				"skill or point IMPECCABLE_BIN at its engine, then rerun.",
+				"If the engine is installed but could not run, a sandbox may be blocking",
+				"its subprocess (Codex's Windows sandbox does): rerun this check outside",
+				"the sandbox before reinstalling anything.",
 			].join(" "),
 		);
 	}
