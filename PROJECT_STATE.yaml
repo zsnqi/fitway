@@ -55,8 +55,8 @@ milestones:
       - pnpm-lock.yaml, dependencies, and migrations
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: 2026-09-28T23:30:00+03:00
-    leaseExpiresAt: 2026-09-29T23:30:00+03:00
+    lastHeartbeatAt: 2026-09-29T06:10:00+03:00
+    leaseExpiresAt: 2026-09-30T23:30:00+03:00
     handoff: docs/phase-records/handoffs/owner-design-exploration/20260923-165000-owner-design-exploration-r04-activation.md
     stopReason: null
     gates:
