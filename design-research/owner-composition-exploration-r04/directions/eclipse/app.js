@@ -1945,13 +1945,25 @@
       return { el, html, slots };
     });
   }
-  // Waits for a visible tab and the page's fonts (both weights, both scripts), then starts after their layout paints. The wait
-  // for the fonts is capped at INTRO_T.fontCap from the first paint (or from now, if the page has not painted yet, which
-  // is earlier); past it, there is no intro and the still page shows at once (endIntro).
+  // Waits for a visible tab and both font weights and scripts, then starts after their layout paints.
+  // The font wait is capped at INTRO_T.fontCap from first paint; past it,
+  // there is no intro and the still page shows at once (endIntro).
   async function introWait() {
     if (document.visibilityState !== "visible") {
       await new Promise((res) => { const on = () => { if (document.visibilityState === "visible") { document.removeEventListener("visibilitychange", on); res(); } }; document.addEventListener("visibilitychange", on); });
     }
+    if (intro.state !== "pending") return;
+    // A render-blocking script can finish before first paint; wait for it before counting the 200 ms cap.
+    try {
+      if (!performance.getEntriesByType("paint").some((p) => p.name === "first-paint")) {
+        await new Promise((res) => {
+          const observer = new PerformanceObserver((list) => {
+            if (list.getEntries().some((p) => p.name === "first-paint")) { observer.disconnect(); res(); }
+          });
+          observer.observe({ type: "paint", buffered: true });
+        });
+      }
+    } catch (e) { await new Promise((res) => requestAnimationFrame(() => res())); }
     if (intro.state !== "pending") return;
     let tv = performance.now();
     try { const p = performance.getEntriesByType("paint")[0]; if (p && p.startTime < tv) tv = p.startTime; } catch (e) { /* no paint timing */ }

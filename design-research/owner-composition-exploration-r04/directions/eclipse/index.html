@@ -19,8 +19,17 @@
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Readex Pro 400 and 500 share each subset's variable font file. -->
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/readexpro/v27/SLXYc1bJ7HE5YDoGPuzj_dh8uc7wUy8ZQQyX2Iw1ZEzMhQ.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/readexpro/v27/SLXYc1bJ7HE5YDoGPuzj_dh8uc7wUy8ZQQyX2IwwZEw.woff2">
+  <!-- Also cover the alternate URLs the stylesheet serves for these same subsets and weights. -->
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/l/font?kit=SLXyc1bJ7HE5YDoGPuzj_dh8uc7wUy8ZQQyX2KY8TL0kGZN6blTC4UTEiUnQTmRHbBYPN4gTDetnYg&amp;skey=b908a1bc5b6543db&amp;v=v27">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/l/font?kit=SLXyc1bJ7HE5YDoGPuzj_dh8uc7wUy8ZQQyX2KY8TL0kGZN6blTC4UTEiUnQTmRHbBYPN4gTDe5nYg&amp;skey=b908a1bc5b6543db&amp;v=v27">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500&display=swap">
   <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer blocking="render"></script>
+  <!-- Light tuner: a working tool for this concept (not part of the design). ?tuner=0 turns it off. -->
+  <script src="tuner.js" defer blocking="render"></script>
 </head>
 <body>
   <a class="skip" href="#main" data-t="skip"></a>
@@ -179,8 +188,5 @@
       </section>
     </main>
   </div>
-  <script src="app.js"></script>
-  <!-- Light tuner: a working tool for this concept (not part of the design). ?tuner=0 turns it off. -->
-  <script src="tuner.js"></script>
 </body>
 </html>

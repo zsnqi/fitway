@@ -1,6 +1,11 @@
 # Eclipse v3 (Owner r04, full Daily page)
 
-**Intro layout round (2026-09-29, run `owner_introfix_r04_s06`):** both Readex Pro subset files finish before intro start, but final text widths can paint in the frame that marks the intro running and register as a small layout shift. The wait now lets the final font geometry paint while the intro is pending, then starts on the following frame; the 200 ms font cap and motion timings are unchanged.
+**First-paint round (2026-09-29, run `owner_introfix_r04_s08`):** the late Latin font swap
+changed text widths, and app.js filled the empty header after paint, dropping the cards and chart.
+Both Readex Pro subsets (covering both weights and stylesheet URL forms) are preloaded; ordered render-blocking scripts
+complete the text before first paint; the 200 ms cap counts from that paint and the extra frame keeps final geometry still.
+The user accepts fallback text swapping to Readex Pro before the intro starts (decision of 2026-09-29); the
+200 ms font cap, intro timings and still frames are unchanged.
 
 **Intro speed round (2026-09-29, run `owner_introspeed_r04_s05`; the user's decision of 2026-09-27):** the first-open intro now lasts about 1171 ms at the tuner's 1x (0.70x of the earlier design): the answers roll in 400 ms, the line draws in 914 ms, and the end point and the peak land in 257 ms from 914 ms. This supersedes the 820 ms stated in the earlier entries below, which stay as recorded. The live digit roll on a new reading (`T.roll`, 280 ms) and every non-intro timing are unchanged; the intro has its own `INTRO_T.roll`. The tuner's range (0.5x-2x) and default (1x) are unchanged.
 
@@ -300,14 +305,15 @@ hover colours of the rail tiles and buttons, the details chevron, and the jump t
 
 **1. Load: the first-open intro only (the changed first-paint rule).**
 - Round 6 had no load motion. Round 7 (decision 4) amends that with the first-open intro (11 below), and only that:
-  there is still no stagger, rise, light entrance or wash drift, and the surfaces are complete at first paint.
+  there is still no stagger, rise, light entrance or wash drift, and the surfaces and text are complete at first paint.
 - Without an intro (a reload, a return in the same tab, reduced motion, `?motion=off`, the Motion switch off) the page is
   complete at first paint, as before, and nothing is hidden while the fonts load.
 - With an intro, the four answers wait out of sight and today's line is not drawn until the fonts are in (the cap is
-  200 ms, counted from the first paint entry or earlier; with slow fonts the still page's answers were in view 153-231 ms
-  after the first paint across the recorded runs; 11 below). Everything else is complete at first paint.
+  200 ms, counted from the first paint entry; with slow fonts the still page's answers were in view 153-231 ms
+  after the first paint across the recorded runs; 11 below). Every final text value is in the DOM at first paint, and
+  everything outside the intro's clips is complete.
 - The inline script in `index.html` sets only language, direction and state. app.js decides the intro before the first
-  paint.
+  paint through ordered render-blocking scripts; both font subsets are preloaded for both weights.
 - The chart renders at once. It is measured again when the fonts arrive, because the header's text sets its height,
   and again whenever its box changes.
 - **The rule the capture checks now:** on a first open the intro plays and ends identical to the still frame (the live
@@ -728,22 +734,27 @@ section in `app.js`.
 - **Transform, clip and draw only:** no glyph changes opacity, and no element's box changes (the slot holds the final
   value in flow). At the end every element, attribute and style the intro added is removed.
 - **Fonts and performance:** it starts only once both weights of Readex Pro are loaded for both scripts, and the tab is
-  visible, so no font swaps mid-intro.
+  visible, after the first paint and a frame for the final geometry, so no font swaps mid-intro.
+  - Both weights share each subset's variable font file; both observed stylesheet URL forms are preloaded. With a
+    cache or a 40 ms hold, the first
+    screen uses Readex Pro from its first paint. A 100 ms script delay holds paint until the final text is ready.
+  - A later font arrival within the cap may swap visible fallback text to Readex Pro; the user accepts this
+    (2026-09-29), provided the swap paints before the intro starts. Text is never suppressed to avoid the swap.
   - Until then the answers wait out of sight and the line is not drawn.
   - **The cap is 200 ms from the first paint** (user decision, 2026-09-26). It replaces the designer's 1 s cap, because
     Round 6 said content is never hidden while the fonts load. So the answers wait only on a first open, and the cap is
-    200 ms, counted from the first paint entry (or from when app.js runs, if that is earlier). The still page then
+    200 ms, counted from the first paint entry, after the render-blocking scripts complete. The still page then
     needs one more frame or so to paint. With each font file held 600 ms, the answers were in view 153-231 ms after
     the first paint across the recorded runs, inside the capture's 250 ms gate: 153-211 ms in the intro fix round,
     195-231 ms in its verifier's re-check, 179-203 ms in the follow-up round, 157-220 ms in its verifier's check (the
     committed log of `92398dc` has 174 and 215 ms), and 203-222 ms in repair 1's two runs. So it can land either side
     of 200 ms (see "Measured").
-  - **When the fonts are late,** there is no intro. The owner sees the still page at once: the numbers in the fallback
+  - **When the fonts miss the cap,** there is no intro. The owner sees the still page at once: the numbers in the fallback
     font until Readex Pro arrives (as on a page without an intro), and the line whole. The tab's flag is already set,
     so a reload in that tab has no intro either.
-  - The cap counts from the first paint, or from when app.js runs if that is earlier, so it never runs longer. For a
-    tab opened in the background, it counts from when the tab is first shown.
-  - When the fonts are in time, nothing changes.
+  - The cap counts from first paint, so script loading does not consume its budget. A tab opened in the background
+    waits until it is first shown.
+  - When the fonts arrive in time, their final geometry paints before the intro; there is no header-fill page drop.
   - Each frame sets a few attributes; the arc lengths come from the page's own path tables.
 - **Tuner:** the intro speed (0.5× to 2×) divides every duration; "Replay intro" plays it again on the current page. See
   "Light tuner".
