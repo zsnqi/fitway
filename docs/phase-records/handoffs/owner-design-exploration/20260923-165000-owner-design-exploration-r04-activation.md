@@ -2652,3 +2652,55 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
     before the intro, as already accepted;
   - (b) accept Chromium's hold of up to about 100 ms of blank page when fonts are slow, and correct the README.
   - Findings 2-4 and T go into the repair either way. This is the successor's first repair.
+## Codex moves to GPT-6.1 Sol, and the first-load problem is rethought (2026-09-29)
+
+- **User decision (2026-09-29):** Codex now runs **GPT-6.1 Sol**, released that day; GPT-6 Sol is no longer used.
+  - Visual design and taste stay with Claude, because no published evaluation covers design quality yet.
+  - The user expects the plan may shift later, not now.
+  - The coordinator watches the model's performance on each task and notes it here, with no special tooling:
+    - the time;
+    - whether it fixed the cause or only the measurement;
+    - side effects it missed;
+    - claims that did not hold against the verifier;
+    - respect for stop rules.
+  - **Public facts, checked 2026-09-29:**
+    - OpenAI's API page: effort levels low, medium (default), high, xhigh and max, and a context of about 1.05M tokens;
+    - DeepSWE v1.1: 75.2 % at high (GPT-6 Astra 74.8 %, GPT-6 Sol 68.8 % at max);
+    - OSWorld 2.0: 71.4 % (Astra 73.5 %);
+    - about a fifth of Astra's price;
+    - factual errors at low effort: 7.7 % (GPT-6 Sol 11.4 %);
+    - no frontend or design benchmark published.
+    Sources: the OpenAI API model page, TechCrunch and Vellum. Briefs run at `high` unless a task is diagnosis-heavy.
+- **GPT-6 Sol's baseline, from this intro lineage:**
+  - strengths: measurement, positive controls, reproductions that proved both causes, and an honest stop with the worktree
+    restored (the second repair);
+  - weaknesses:
+    - `a6cfde8` moved the shift out of Q's window instead of removing it;
+    - `77d91e8` missed the side effect it introduced (Chromium's paint hold for preloaded fonts), left two unused
+      preloads, changed a still frame outside the evidence set, and wrote README claims that did not hold;
+    - it misexplained one diff ("pulse-ring phases").
+  - The coordinator's briefs contributed: they forbade `style.css` and font changes and measured narrow windows, which
+    pushed the work toward patches.
+- **The first-load problem, rethought** at the user's request ("the solutions feel like patches"):
+  - **Root cause:**
+    - the Eclipse page is the only FITWAY surface that loads its font from Google's CDN: a render-blocking stylesheet
+      from `fonts.googleapis.com`, then font files whose URLs differ by browser and are discovered late;
+    - production already self-hosts its fonts (`packages/ui/src/styles/globals.css`: `@font-face` per subset and
+      weight, `font-display: swap`, `unicode-range`) and preloads them (`apps/web/index.html`).
+  - **Proposal:** load the concept's font the way production does.
+    - Self-host Readex Pro's two variable woff2 subsets (Arabic and Latin), the exact bytes Chromium gets today, with
+      Google's `@font-face` rules copied (same `unicode-range` and `font-display`) and the OFL licence.
+    - Preload both files on both languages; AR digits use the Latin subset.
+    - Remove the Google stylesheet, the preconnects and the four Google preloads.
+    - Keep from `77d91e8`: the render-blocking scripts (a complete first paint), the cap counted from the first paint,
+      and the start after the frame that paints the fonts.
+    - Point `capture.mjs`'s font holds at the local files.
+    - Every still frame, at every size, stays byte-identical.
+  - **Expected:**
+    - the swap is gone at its source, not moved;
+    - Chromium's paint hold for preloaded fonts shrinks to a few ms, because the files come from the same server;
+    - the first paint may be faster, with no third-party stylesheet;
+    - no request to Google on each load;
+    - the page works offline;
+    - simpler and faster tests.
+  - It is proposed as the successor's first repair, on base `77d91e8`, pending the user's go.
