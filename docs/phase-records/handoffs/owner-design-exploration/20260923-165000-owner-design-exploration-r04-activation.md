@@ -3546,3 +3546,11 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - At 390, the bar, badge, details and menu hold in AR and EN.
   - At 768, the rail opens over a scrim.
   - At 1440, the focus labels sit beside their tiles.
+- **User decisions on the phase A proposals (2026-10-01):**
+  1. The phone bar's order applies everywhere: Today, Reports, Activity log, Access, then the rest. The rail follows
+     it.
+  2. Monitoring goes into the phone's "More" menu.
+  3. On the phone, Operations is reached through the status badge's details.
+  4. «النشاط» / "Activity" is a named exception for the bar only. The full name stays the accessible name and the
+     page title.
+- **Waiting:** the user's own notes on the frame, before phase B is resumed.
