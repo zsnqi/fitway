@@ -3343,3 +3343,28 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
 - **Launched:** a fresh `owner-direction-designer`, run `owner_spec_r04_s12`, in the background, with
   `D:\fitway-scratch\spec\BRIEF.md`. It uses ports 3176-3177 and works in `D:\fitway-scratch\spec\work\`.
 - **Next:** step 3 of the resume steps above, on its report.
+## Step 2 delivered: the spec sheet draft at `234b12d` (2026-09-30)
+
+- **The designer delivered `234b12d`** on `owner-followup-r04-build`, on top of `31a40d6`. The coordinator pushed it as
+  a fast-forward.
+  - 5 files, +1774: `E/DESIGN-SPEC.md` (526 lines, 54 KB), `components.html`, `components.css` and `components.js`,
+    and a 5-line pointer at the top of the README. The pages do not change.
+  - The spec has 280 labelled entries: 190 rules, 11 compositions, 51 known issues and 28 proposed rules. Its known
+    issues register runs K-01 to K-32, and its open questions Q1-Q10.
+  - Self-reported, not verified: S1-S6 pass. Probes, logs and frames are in `D:\fitway-scratch\spec\work\`; the sheets
+    are in `D:\fitway-scratch\spec\sheets\`.
+  - The designer reports one stray write: an empty `behave-components.mjs` in the coordinator worktree, deleted at
+    once.
+- **G5 check:** s04 is clean at `234b12d`. The coordinator worktree matches the session-start snapshot, and nothing
+  listened on 3170-3180 before the user's preview was started on 3174.
+- **Coordinator inspection, not verification:**
+  - `cframes\ar-card.png`: the lit card is live, and the delayed and "not enough history" cards carry no light (D1).
+  - `cframes\ar-table.png`: both densities are coherent.
+  - Spec §1.3-§1.6 and §8 were read.
+- **Proposed rules for the user:**
+  - the six-role type scale (TYP-3);
+  - the gutters and paddings (SPC-5, SPC-6);
+  - the radii;
+  - the forms of D1, F5, F6, F10, F12, F13 and F21.
+  The designer also names the phone bar's first item "Today / اليوم" (F15), where the plan says "Daily".
+- **Next:** the user reviews the components page and answers Q3-Q10; Q1 and Q2 wait for step 3. Then step 3.
