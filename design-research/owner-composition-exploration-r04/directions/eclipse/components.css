@@ -1,7 +1,8 @@
 /* Eclipse components: every component of DESIGN-SPEC.md §3 in its rule form (run owner_spec_r04_s12). Concept only,
  * synthetic data. Loaded after style.css, whose :root tokens, base, card and light recipes (the lamp) it uses; every
  * rule here is scoped to this page's own cx- classes, so it never touches Daily or Reports. Type sizes and spacing
- * follow the spec's proposed scale (TYP-3, SPC-5, SPC-6); forms that are only proposed carry a "Proposed" flag. */
+ * follow the spec's scale (TYP-3, SPC-5, SPC-6; accepted 2026-09-30); a form still only proposed carries a "Proposed"
+ * flag. Run owner_spec_r04_s13 set the numeric-column rule (TBL-1, TBL-11, TBL-12) and the table's phone form (TBL-8). */
 
 .cx {
   --t-display: 500 46px/46px var(--font);
@@ -263,21 +264,30 @@ html:has(> body.cx) { color-scheme: dark; scrollbar-color: rgba(245, 243, 242, 0
 .cx-table tbody > tr.wk-edge > * { border-block-end-color: rgba(255, 255, 255, 0.14); }
 .cx-table tbody > tr.is-top > * { background: rgba(229, 25, 53, 0.08); }
 .cx-table tbody > tr.is-none > * { color: var(--ink-3); }
-.cx-table .n { text-align: end; font-variant-numeric: tabular-nums; }
+/* TBL-1 (user 2026-09-30): in a numeric column the numbers and the header share the physical right edge in both
+ * languages (the start in Arabic, the end in English), so units sit under units. Heat-map cells stay centred. */
+.cx-table .n { text-align: right; font-variant-numeric: tabular-nums; }
 .cx-table .n bdi { color: var(--ink); }
 .cx-table .notes { font: var(--t-caption); color: var(--ink-3); }
 .cx-table .dim { color: var(--ink-3); }
 .cx-table.is-compact tbody th, .cx-table.is-compact tbody td { height: 36px; }
-.cx-pk { display: inline-flex; align-items: baseline; justify-content: flex-end; gap: 8px; white-space: nowrap; }
+/* TBL-11: a composite cell leads with its value at that edge; the time, then a flag, follow it leftward. */
+.cx-pk { display: inline-flex; align-items: baseline; gap: 8px; white-space: nowrap; }
+[dir="ltr"] .cx-pk { flex-direction: row-reverse; }
 .cx-pk .pv bdi { font-weight: 500; }
 .cx-pk .pt { font: var(--t-caption); color: var(--ink-3); }
 .cx-pk .pt bdi { color: inherit; }
 .cx-pk .cx-flag { align-self: center; }
+/* TBL-12: a note spanning columns sits at its cell's start: in Arabic the numbers' right edge, in English the first
+ * column's start. The fold row (TBL-8) shows only on a phone. */
 .cx-gapnote { display: inline-flex; align-items: center; gap: 8px; }
 .cx-gapnote .cx-ico { width: 16px; height: 16px; }
+.cx-table .note-row { display: none; }
 .cx-sort { display: inline-flex; align-items: center; gap: 8px; height: 44px; min-width: 44px; margin-inline: -8px; padding-inline: 8px; border-radius: 10px; font: inherit; color: inherit; }
 .cx-sort:hover, .cx-sort.is-hover { color: var(--ink); }
+/* In a numeric column the label holds the right edge and the arrow sits to its left, in both languages. */
 .n .cx-sort { flex-direction: row-reverse; }
+[dir="rtl"] .n .cx-sort { flex-direction: row; }
 .cx-sort:focus-visible, .cx .cx-sort.is-focus { outline: 2px solid var(--ink); outline-offset: -4px; }
 .cx-sort .cx-ico { width: 14px; height: 14px; opacity: 0; }
 .cx-sort:hover .cx-ico, .cx-sort.is-hover .cx-ico, .cx-sort.is-focus .cx-ico, .cx-sort:focus-visible .cx-ico { opacity: 0.5; }
@@ -291,6 +301,34 @@ th.is-asc .cx-sort .cx-ico { transform: rotate(180deg); }
 .cx-empty { display: flex; flex-direction: column; align-items: center; gap: 16px; padding-block: 40px; color: var(--ink-2); text-align: center; font: var(--t-label); }
 .cx-empty .cx-ico { width: 22px; height: 22px; color: var(--ink-3); }
 .cx-table tr.is-empty:hover > * { background: none; }
+/* The two table specimens sit side by side only where the minute table fits its column. */
+.cx-row-tables { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+@media (max-width: 1240px) {
+  .cx-row-tables { grid-template-columns: minmax(0, 1fr); }
+}
+/* TBL-8, the phone form: the table recomposes before it scrolls. The notes fold into a row of their own under their
+ * row, the weekday sits over the date, the time and the flag under the value (still on the right edge), cells pad 8
+ * (6 at 400 px and below), headers may wrap, and only the sorted column shows its arrow. */
+@media (max-width: 720px) {
+  .cx-table th, .cx-table td { padding-inline: 8px; }
+  .cx-table thead th { white-space: normal; line-height: 1.25; }
+  .cx-table .notes { display: none; }
+  .cx-table .note-row { display: table-row; }
+  .cx-table tbody > tr.has-note > * { border-block-end: 0; }
+  .cx-table .note-row > td { height: auto; padding-block: 0 12px; font: var(--t-caption); color: var(--ink-3); }
+  .cx-table tbody > tr.is-hover + .note-row > * { background: rgba(255, 255, 255, 0.04); }
+  .cx-table tbody th .wd, .cx-table tbody th .dt { display: block; }
+  .cx-table tbody th .dt { font: var(--t-caption); color: var(--ink-2); }
+  [dir] .cx-pk { flex-direction: column; align-items: flex-end; gap: 0; }
+  [dir="rtl"] .cx-pk { align-items: flex-start; }
+  .cx-pk .cx-flag { align-self: auto; margin-block-start: 4px; }
+  .cx-sort .cx-ico { display: none; }
+  th.is-sorted .cx-sort .cx-ico { display: block; }
+}
+@media (max-width: 400px) {
+  .cx-table th, .cx-table td { padding-inline: 6px; }
+  .cx-sort { margin-inline: -6px; padding-inline: 6px; }
+}
 
 /* ----------------------------------------------------------------- chart */
 .cx-chart { display: flex; flex-direction: column; padding: 24px 24px 16px; }

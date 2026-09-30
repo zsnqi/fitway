@@ -58,7 +58,7 @@
       sub: `مواصفات تصميم ${b("Eclipse")} · مسودة · مقيسة على ${b("31a40d6")}`,
       concept: "مفهوم استكشافي · بيانات افتراضية",
       langName: "لغة الصفحة",
-      note: `كل مكوّن في صيغة القاعدة وفي كل حالة مصمَّمة. المقاسات والمسافات هنا هي المقترحة في المواصفات: ${b("TYP-3")} و${b("SPC-5")} و${b("SPC-6")}. وما هو مقترح فقط عليه علامة «مقترح». الحالات النشطة (عند المرور والتركيز والتعطيل) نسخ ثابتة؛ والعناصر التفاعلية معلَّمة.`,
+      note: `كل مكوّن في صيغة القاعدة وفي كل حالة مصمَّمة. المقاسات والمسافات هنا هي قواعد المواصفات ${b("TYP-3")} و${b("SPC-5")} و${b("SPC-6")}، وقد اعتمدها المستخدم في ${b(30)} سبتمبر ${b(2026)}. وما يبقى مقترحًا فقط عليه علامة «مقترح». الحالات النشطة (عند المرور والتركيز والتعطيل) نسخ ثابتة؛ والعناصر التفاعلية معلَّمة.`,
       indexName: "أقسام الصفحة",
       proposed: "مقترح",
       live: "تفاعلي",
@@ -68,7 +68,7 @@
         card: ["البطاقة والبطاقة المضاءة", "رأس (أيقونة واسم ووقت)، ثم القيمة، ثم شارة أو ملاحظة في الأسفل. البطاقة المضاءة تفقد ضوءها حين لا تكون قيمتها حالية."],
         chart: ["بطاقة المخطط", "خط اليوم، والخط المعتاد، والعلامة، والتلميح في شريطه العلوي، والمحاور. تتدفق الأوقات من اليمين إلى اليسار."],
         pattern: ["النمط (خريطة الازدحام)", "جدول حقيقي بخانة تبويب واحدة؛ الأسهم تنقل التحديد، والقراءة نفسها عند المرور والتركيز واللمس."],
-        table: ["الجدول", "جدول واحد بكثافتين. الأرقام في نهاية الخانة بأرقام متساوية العرض، والأشخاص أعداد صحيحة."],
+        table: ["الجدول", "جدول واحد بكثافتين. في عمود الأرقام تصطف الأرقام وعنوانها على الحافة اليمنى في اللغتين، فتقع الآحاد تحت الآحاد، بأرقام متساوية العرض؛ والأشخاص أعداد صحيحة."],
         buttons: ["الأزرار", "زر واحد بارتفاع 44: ثانوي وأساسي وزر أيقونة. الأحمر ليس لون زر."],
         seg: ["مجموعة الاختيار", "كل خيار بارتفاع 44، وخانة تبويب لكل خيار."],
         sw: ["المفتاح", "دور switch مع aria-checked، بارتفاع 44."],
@@ -78,7 +78,7 @@
         rail: ["الشريط الجانبي والرأس", "الاسم يظهر عند التركيز بلوحة المفاتيح فقط، ولا تلميح عند مرور الفأرة."],
         empty: ["الحالة الفارغة والتنبيه وإعادة المحاولة", "جملة تقول ما الناقص وتواريخه، وطريق واحد للعودة؛ وتنبيه يقول ما حدث وما بقي كما هو."],
       },
-      f: { colours: "الألوان", type: "الخط: السلّم المقترح", spacing: "المسافات", radii: "الزوايا", focus: "حلقة التركيز", icons: "الأيقونات في السطر، بلا إطار" },
+      f: { colours: "الألوان", type: "الخط: السلّم", spacing: "المسافات", radii: "الزوايا", focus: "حلقة التركيز", icons: "الأيقونات في السطر، بلا إطار" },
       typeSample: "داخل الصالة الآن",
       nowTitle: "داخل الصالة الآن", approx: "تقريبًا", peakTitle: "ذروة اليوم", lastReading: "آخر قراءة",
       ago: (n) => `قبل ${b(n)} دقيقة`,
@@ -94,7 +94,7 @@
       details: "عرض التفاصيل", peakTag: "الذروة", latestFlag: "آخر قراءة", usual: "المعتاد", stillAhead: "لم يحن بعد",
       chartMain: "مباشر، ومحدد عليها آخر قراءة",
       vars: { peak: "الذروة", line: "نقطة على الخط", gap: "فترة بلا قراءات", ahead: "لم يحن بعد", delayed: "آخر قراءة، متأخرة", nohistory: "لم يحن بعد، بلا سجل" },
-      aheadNote: `الخط المعتاد بعد الآن بشفافية ${b(".36")} (${b("Q6")})`,
+      aheadNote: `الخط المعتاد بعد الآن بشفافية ${b(".36")}`,
       patternTitle: "أوقات الازدحام",
       patternSub: `معدّل الموجودين حسب اليوم والساعة · ${b(4)} أسابيع، ${b(28)} يومًا`,
       busiest: (w, h) => `الأكثر ازدحامًا: ${w} ${h}`,
@@ -144,7 +144,7 @@
       sub: "Eclipse design spec · draft · measured at 31a40d6",
       concept: "Exploration concept · synthetic data",
       langName: "Page language",
-      note: "Every component in its rule form and in each designed state. Type sizes and spacing here are the spec's proposed values (TYP-3, SPC-5, SPC-6); a form that is only proposed carries a “Proposed” flag. Hover, focus and disabled specimens are still copies; the live parts are marked.",
+      note: "Every component in its rule form and in each designed state. Type sizes and spacing here are the spec's rules TYP-3, SPC-5 and SPC-6, accepted by the user on 30 Sep 2026; anything still only proposed carries a “Proposed” flag. Hover, focus and disabled specimens are still copies; the live parts are marked.",
       indexName: "Sections of this page",
       proposed: "Proposed",
       live: "Interactive",
@@ -154,7 +154,7 @@
         card: ["Card and lit card", "A head (icon, label, when), the value, then a badge or a note at the foot. A lit card loses its light when its value is not current."],
         chart: ["Chart card", "Today's line, the usual line, the marker, the tooltip in its top lane, and the axes. Time flows left to right."],
         pattern: ["Pattern (heat map)", "A real table with one Tab stop; the arrow keys move the selection, and hover, focus and tap show the same readout."],
-        table: ["Table", "One table in two densities. Numbers end-aligned with tabular figures; people as whole numbers."],
+        table: ["Table", "One table in two densities. In a numeric column the numbers and their header share the right edge in both languages, so units sit under units, with tabular figures; people as whole numbers."],
         buttons: ["Buttons", "One 44 px button: secondary, primary and icon. Red is never a button colour."],
         seg: ["Segmented control", "Every segment 44 px tall, one Tab stop each."],
         sw: ["Switch", "role=switch with aria-checked, 44 px tall."],
@@ -164,7 +164,7 @@
         rail: ["Rail and header", "A rail item shows its name on keyboard focus only; the mouse hover shows no tooltip."],
         empty: ["Empty state, alert and retry", "One sentence that names what is missing and its dates, and one way back; an alert that says what happened and what is kept."],
       },
-      f: { colours: "Colour", type: "Type: the proposed scale", spacing: "Spacing", radii: "Radii", focus: "Focus ring", icons: "Icons in the flow, with no tile" },
+      f: { colours: "Colour", type: "Type: the scale", spacing: "Spacing", radii: "Radii", focus: "Focus ring", icons: "Icons in the flow, with no tile" },
       typeSample: "Inside now",
       nowTitle: "Inside now", approx: "approx.", peakTitle: "Today's peak", lastReading: "Last reading",
       ago: (n) => `${n} min ago`,
@@ -180,7 +180,7 @@
       details: "View details", peakTag: "Peak", latestFlag: "Latest", usual: "Usual", stillAhead: "Still ahead",
       chartMain: "Live, with the latest reading selected",
       vars: { peak: "The peak", line: "A stop on the line", gap: "A span with no readings", ahead: "Still ahead", delayed: "Latest reading, delayed", nohistory: "Still ahead, no history" },
-      aheadNote: "The usual line after now at .36 (Q6)",
+      aheadNote: "The usual line after now at .36",
       patternTitle: "Busy times",
       patternSub: "Average inside by day and hour · 4 weeks, 28 days",
       busiest: (w, h) => `Busiest: ${w} ${h}`,
@@ -302,10 +302,10 @@
     return section("found", "found", "COL · TYP · SPC · RAD · FOC · ICO", `
       <div class="card cx-stage"><p class="cx-stage-title">${L.f.colours}</p><div class="cx-swatches">${sw}</div></div>
       <div class="cx-row cx-row-2">
-        <div class="card cx-stage"><p class="cx-stage-title">${L.f.type} ${prop()}</p><div class="cx-type">${type}</div></div>
+        <div class="card cx-stage"><p class="cx-stage-title">${L.f.type}</p><div class="cx-type">${type}</div></div>
         <div class="card cx-stage">
           <p class="cx-stage-title">${L.f.spacing}</p><div class="cx-scale">${scale}</div>
-          <p class="cx-stage-title" style="margin-block-start:24px">${L.f.radii} ${prop()}</p><div class="cx-radii">${radii}</div>
+          <p class="cx-stage-title" style="margin-block-start:24px">${L.f.radii}</p><div class="cx-radii">${radii}</div>
         </div>
       </div>
       <div class="cx-row cx-row-2">
@@ -313,7 +313,7 @@
           ${fig(`<button class="cx-btn is-focus" type="button">${L.cancel}</button>`, L.focusCaps.ring, "FOC-1")}
           ${fig(`<div class="cx-seg"><button class="cx-seg-b is-focus" type="button" aria-pressed="false">${L.seg["7d"]}</button><button class="cx-seg-b" type="button" aria-pressed="true">${L.seg["28d"]}</button></div>`, L.focusCaps.inset, "FOC-2")}
         </div></div>
-        <div class="card cx-stage"><p class="cx-stage-title">${L.f.icons} ${prop()}</p><div class="cx-icons">${iconsRow}</div>
+        <div class="card cx-stage"><p class="cx-stage-title">${L.f.icons}</p><div class="cx-icons">${iconsRow}</div>
           <p class="cx-cap" style="margin-block-start:16px"><b>${L.iconCaps.mirror}</b><span>${b("ICO-5")}</span></p></div>
       </div>`);
   }
@@ -331,10 +331,10 @@
     const c = [
       [statCard({ lit: true, icon: "person", label: L.nowTitle, meta: `<i class="cx-dot"></i>${b(time(NOW))}`, value: latest, unit: L.approx, foot: badge(latest) }), L.cards.live, "CRD-1 · CRD-6 · LVL-2", false],
       [statCard({ icon: "peak", label: L.peakTitle, meta: b(time(DATA.peakM)), value: DATA.peak, foot: badge(DATA.peak) }), L.cards.plain, "CRD-2 · DAT-5", false],
-      [statCard({ stale: true, icon: "person", label: `${L.lastReading} ${b(time(NOW - LATE))}`, meta: `${ico("clock")}${L.ago(LATE)}`, late: true, value: lateV, unit: L.approx, foot: badge(lateV, true) }), L.cards.late, "LGT-7 · LVL-5", true],
-      [statCard({ icon: "clock", label: L.busiestTitle, meta: L.last7, words: true, value: b(hourRange(18)), foot: `<span class="cx-note">${L.avgN(51)}</span>` }), L.cards.words, "TYP-3 · GLO-12", true],
+      [statCard({ stale: true, icon: "person", label: `${L.lastReading} ${b(time(NOW - LATE))}`, meta: `${ico("clock")}${L.ago(LATE)}`, late: true, value: lateV, unit: L.approx, foot: badge(lateV, true) }), L.cards.late, "LGT-7 · LVL-5", false],
+      [statCard({ icon: "clock", label: L.busiestTitle, meta: L.last7, words: true, value: b(hourRange(18)), foot: `<span class="cx-note">${L.avgN(51)}</span>` }), L.cards.words, "TYP-3 · GLO-12", false],
       [statCard({ icon: "person", label: L.avgTitle, empty: L.noReadings }), L.cards.none, "CRD-3 · GLO-5", false],
-      [statCard({ icon: "wow", label: L.wowTitle, meta: L.wowDates, empty: L.notEnough, emptyNote: L.needs }), L.cards.short, "CRD-3 · LGT-7", true],
+      [statCard({ icon: "wow", label: L.wowTitle, meta: L.wowDates, empty: L.notEnough, emptyNote: L.needs }), L.cards.short, "CRD-3 · LGT-7", false],
     ];
     const figs = c.map(([h, s, ids, p]) => `<figure class="cx-fig" style="align-items:stretch">${h}${cap(s, ids, p)}</figure>`).join("");
     return section("card", "card", "CRD-1…8 · LGT-6…9 · LVL-2…6", `<div class="cx-row cx-row-3">${figs}</div><p class="cx-sec-desc" style="margin:0 8px">${L.undesigned}</p>`);
@@ -361,7 +361,7 @@
     const vars = [["peak", "live"], ["line", "live"], ["gap", "live"], ["ahead", "live"], ["latest", "delayed"], ["ahead", "nohistory"]].map(([sel, st], i) => {
       const title = st === "delayed" ? L.vars.delayed : st === "nohistory" ? L.vars.nohistory : L.vars[sel];
       const p = sel === "ahead" && st === "live";
-      return `<figure class="cx-fig" style="align-items:stretch"><div class="card cx-var"><p class="cx-var-title">${title}</p>${plotHost(`plot-v${i}`, st, sel)}</div>${cap(p ? L.aheadNote : title, sel === "gap" ? "CHT-9 · CHT-14 · GLO-5" : st === "delayed" ? "CHT-8 · CHT-9 · STA-2" : "CHT-9 · CHT-12 · CHT-14", p)}</figure>`;
+      return `<figure class="cx-fig" style="align-items:stretch"><div class="card cx-var"><p class="cx-var-title">${title}</p>${plotHost(`plot-v${i}`, st, sel)}</div>${cap(p ? L.aheadNote : title, sel === "gap" ? "CHT-9 · CHT-14 · GLO-5" : st === "delayed" ? "CHT-8 · CHT-9 · STA-2" : p ? "CHT-4 · CHT-9 · CHT-14" : "CHT-9 · CHT-12 · CHT-14")}</figure>`;
     }).join("");
     return section("chart", "chart", "CHT-1…17", `${main}<div class="cx-row cx-row-3">${vars}</div>`);
   }
@@ -441,7 +441,8 @@
       s.push(`<path d="M${f(mx)},${f(yb - 3.5)}V${f(yb + 4.5)}" stroke="rgba(245,243,242,0.6)" stroke-width="1"/>`);
       top = yb - 3.5;
     } else if (sel === "gap") {
-      mx = gapDots.reduce((a, x) => (Math.abs(x - (g0 + g1) / 2) < Math.abs(a - (g0 + g1) / 2) ? x : a), gapDots[0]); style = "dotted";
+      // The dot nearest the span's middle; a plot too narrow for dots points at the middle itself (no NaN path).
+      mx = gapDots.length ? gapDots.reduce((a, x) => (Math.abs(x - (g0 + g1) / 2) < Math.abs(a - (g0 + g1) / 2) ? x : a), gapDots[0]) : (g0 + g1) / 2; style = "dotted";
       top = by - 1.25;
     }
     // Labels: the scale at the inline start, the hours every two hours (no last tick at closing), the peak's tag.
@@ -520,7 +521,7 @@
     const model = heatModel();
     const topCell = model.rows[model.top.r].find((c) => c.top);
     const sub = `${L.patternSub}<span class="sep" style="margin-inline:8px">·</span>${L.busiest(L.wd[model.top.r], b(hourRange(HOURS[topCell.c0])))}`;
-    const key = `<ul class="cx-legend"><li>${L.fewer}<i class="ramp" aria-hidden="true"></i>${L.more}</li><li><i class="k k0" aria-hidden="true">0</i>${L.emptyWord}</li><li><i class="k kc" aria-hidden="true"></i>${L.closed}</li><li><i class="k kn" aria-hidden="true"></i>${L.noReadings}</li><li><i class="k kt" aria-hidden="true"></i>${L.busiestKey}</li><li><i class="k kf" aria-hidden="true"></i>${L.fewKey} ${prop()}</li></ul>`;
+    const key = `<ul class="cx-legend"><li>${L.fewer}<i class="ramp" aria-hidden="true"></i>${L.more}</li><li><i class="k k0" aria-hidden="true">0</i>${L.emptyWord}</li><li><i class="k kc" aria-hidden="true"></i>${L.closed}</li><li><i class="k kn" aria-hidden="true"></i>${L.noReadings}</li><li><i class="k kt" aria-hidden="true"></i>${L.busiestKey}</li><li><i class="k kf" aria-hidden="true"></i>${L.fewKey}</li></ul>`;
     const main = `<figure class="cx-fig" style="align-items:stretch"><section class="card lit lit-chart cx-pattern" aria-labelledby="pattern-t">${LAMP}
       <header class="cx-pattern-head"><div><h3 id="pattern-t">${L.patternTitle}</h3><p id="pattern-sub">${sub}</p></div>
         <div class="cx-pattern-tools">${key}<button class="cx-switch" id="numbers" type="button" role="switch" aria-checked="false"><span class="cx-track" aria-hidden="true"><span class="cx-thumb"></span></span><span>${L.numbers}</span></button></div></header>
@@ -590,27 +591,36 @@
   /* ------------------------------------------------------------ table */
   function tables() {
     const days = [["الثلاثاء", "Tue", 22, 53, 1123, 25, 352, ""], ["الاثنين", "Mon", 21, 58, 1145, 27, 371, "hover"], ["الأحد", "Sun", 20, 55, 1110, 26, 360, "edge"], ["السبت", "Sat", 19, 41, 680, 18, 244, ""], ["الجمعة", "Fri", 18, 49, 1210, 20, 230, ""], ["الخميس", "Thu", 17, 76, 1138, 24, 318, "top"], ["الأربعاء", "Wed", 16, 57, 1111, 26, 349, ""]];
-    const dayName = (d) => (LANG === "ar" ? `${d[0]} ${b(d[2])} سبتمبر` : `${d[1]} ${d[2]} Sep`);
+    // TBL-8: the weekday and the date are separate spans, so a phone can set the weekday over the date.
+    const dayName = (d) => (LANG === "ar" ? `<span class="wd">${d[0]}</span> <span class="dt">${b(d[2])} سبتمبر</span>` : `<span class="wd">${d[1]}</span> <span class="dt">${d[2]} Sep</span>`);
+    const gapNote = (t) => `<span class="cx-gapnote">${ico("gap")}<span>${t}</span></span>`;
     const hdr = (k, cls) => `<th scope="col" role="columnheader" class="${cls}"${cls.includes("is-sorted") ? ' aria-sort="descending"' : ""}><button class="cx-sort${cls.includes("hover") ? " is-hover" : ""}${cls.includes("focus") ? " is-focus" : ""}" type="button" tabindex="-1"><span>${L.cols[k]}</span>${ico("sort")}</button></th>`;
     const rows = days.map((d) => {
       const top = d[7] === "top";
       const minutes = d[4] - 360;
-      return `<tr role="row" class="${d[7] === "hover" ? "is-hover" : ""}${d[7] === "edge" ? " wk-edge" : ""}${top ? " is-top" : ""}"><th scope="row" role="rowheader">${dayName(d)}</th>
-        <td role="cell" class="n"><span class="cx-pk">${top ? `<span class="cx-flag is-red">${L.highest}</span>` : ""}<span class="pv">${b(d[3])}</span><span class="pt">${b(time(minutes))}</span></span></td>
+      const cls = [d[7] === "hover" ? "is-hover" : "", d[7] === "edge" ? "wk-edge" : "", top ? "is-top has-note" : ""].filter(Boolean).join(" ");
+      // TBL-11: a composite cell leads with the value at the numbers' edge; its time, then its flag, follow it.
+      return `<tr role="row"${cls ? ` class="${cls}"` : ""}><th scope="row" role="rowheader">${dayName(d)}</th>
+        <td role="cell" class="n"><span class="cx-pk"><span class="pv">${b(d[3])}</span><span class="pt">${b(time(minutes))}</span>${top ? `<span class="cx-flag is-red">${L.highest}</span>` : ""}</span></td>
         <td role="cell" class="n">${b(d[5])}</td><td role="cell" class="n">${b(d[6])}</td>
-        <td role="cell" class="notes">${top ? `<span class="cx-gapnote">${ico("gap")}<span>${L.gapNote}</span></span>` : ""}</td></tr>`;
-    }).join("") + `<tr role="row" class="is-none"><th scope="row" role="rowheader">${b(L.beforeRow)}</th><td role="cell" colspan="4"><span class="cx-gapnote">${ico("gap")}<span>${L.noReadingsYet}</span></span></td></tr>`;
+        <td role="cell" class="notes">${top ? gapNote(L.gapNote) : ""}</td></tr>` +
+        // TBL-8: on a phone the notes column folds into a row of its own under its day (only one of the two shows).
+        (top ? `<tr role="row" class="note-row is-top"><td role="cell" colspan="4">${gapNote(L.gapNote)}</td></tr>` : "");
+    }).join("") + `<tr role="row" class="is-none"><th scope="row" role="rowheader">${b(L.beforeRow)}</th><td role="cell" colspan="4">${gapNote(L.noReadingsYet)}</td></tr>`;
     const def = `<table class="cx-table" role="table"><caption>${L.daysCaption}</caption><thead><tr role="row">${hdr("day", "is-sorted")}${hdr("peak", "n hover")}${hdr("avg", "n focus")}${hdr("entries", "n")}<th scope="col" role="columnheader" class="notes">${L.cols.notes}</th></tr></thead><tbody>${rows}</tbody></table>`;
     const line = DATA.line.live;
     const mins = [[490, ""], [491, ""], [492, ""], [493, ""], ["gap", ""], [512, ""], [DATA.peakM, "peak"], [NOW, "latest"]];
     const crow = mins.map(([m, n]) => {
-      if (m === "gap") return `<tr role="row" class="is-none"><th scope="row" role="rowheader">${b(timeRange(GAP0, GAP1))}</th><td role="cell" colspan="3"><span class="cx-gapnote">${ico("gap")}<span>${L.noReadings}</span></span></td></tr>`;
-      return `<tr role="row"${n === "peak" ? ' class="is-top"' : ""}><th scope="row" role="rowheader">${b(time(m))}</th><td role="cell" class="n">${b(DATA.raw[m])}</td><td role="cell" class="n">${b(Math.round(line[m]))}</td><td role="cell" class="notes">${n ? L.cnotes[n] : ""}</td></tr>`;
+      // TBL-12: the gap note spans from the first numeric column and starts at that column's edge.
+      if (m === "gap") return `<tr role="row" class="is-none"><th scope="row" role="rowheader">${b(timeRange(GAP0, GAP1))}</th><td role="cell" colspan="3">${gapNote(L.noReadings)}</td></tr>`;
+      const cls = [n === "peak" ? "is-top" : "", n ? "has-note" : ""].filter(Boolean).join(" ");
+      return `<tr role="row"${cls ? ` class="${cls}"` : ""}><th scope="row" role="rowheader">${b(time(m))}</th><td role="cell" class="n">${b(DATA.raw[m])}</td><td role="cell" class="n">${b(Math.round(line[m]))}</td><td role="cell" class="notes">${n ? L.cnotes[n] : ""}</td></tr>` +
+        (n ? `<tr role="row" class="note-row${n === "peak" ? " is-top" : ""}"><td role="cell" colspan="3">${L.cnotes[n]}</td></tr>` : "");
     }).join("");
     const compact = `<table class="cx-table is-compact" role="table"><caption>${L.compactCaption}</caption><thead><tr role="row"><th scope="col" role="columnheader">${L.ccols.time}</th><th scope="col" role="columnheader" class="n">${L.ccols.inside}</th><th scope="col" role="columnheader" class="n">${L.ccols.avg}</th><th scope="col" role="columnheader" class="notes">${L.ccols.note}</th></tr></thead><tbody>${crow}</tbody></table>`;
-    return section("table", "table", "TBL-1…9", `<div class="cx-row" style="grid-template-columns:minmax(0,3fr) minmax(0,2fr)">
-      <figure class="cx-fig" style="align-items:stretch"><div class="card cx-table-card" inert><div class="cx-table-head"><div><h3>${L.daysTitle}</h3><p>${L.daysSub}</p></div></div>${def}</div>${cap(`${L.dens.def} · ${L.st.hover} · ${L.st.focus} · ${L.sortedBy}`, "TBL-1 · TBL-2 · TBL-4…6", false)}</figure>
-      <figure class="cx-fig" style="align-items:stretch"><div class="card cx-table-card" inert><div class="cx-table-head"><div><h3>${L.compactTitle}</h3></div></div>${compact}</div>${cap(L.dens.compact, "TBL-3 · NUM-5", true)}</figure></div>`);
+    return section("table", "table", "TBL-1…13", `<div class="cx-row cx-row-tables">
+      <figure class="cx-fig" style="align-items:stretch"><div class="card cx-table-card" inert><div class="cx-table-head"><div><h3>${L.daysTitle}</h3><p>${L.daysSub}</p></div></div>${def}</div>${cap(`${L.dens.def} · ${L.st.hover} · ${L.st.focus} · ${L.sortedBy}`, "TBL-1 · TBL-2 · TBL-4…6 · TBL-11 · TBL-12", false)}</figure>
+      <figure class="cx-fig" style="align-items:stretch"><div class="card cx-table-card" inert><div class="cx-table-head"><div><h3>${L.compactTitle}</h3></div></div>${compact}</div>${cap(L.dens.compact, "TBL-3 · TBL-12 · NUM-5", false)}</figure></div>`);
   }
 
   /* ------------------------------------------------------------ controls */
@@ -627,9 +637,9 @@
   const seg = (pressed, extra = {}, cls = "") => `<div class="cx-seg ${cls}" role="group" aria-label="${L.segName}">${["7d", "28d", "custom"].map((k) => `<button class="cx-seg-b${extra[k] ? " " + extra[k] : ""}" type="button" aria-pressed="${k === pressed}"${k === "custom" ? ' aria-haspopup="dialog"' : ""}>${L.seg[k]}</button>`).join("")}</div>`;
   function segs() {
     return section("seg", "seg", "SEG-1…5", `<div class="card cx-stage"><div class="cx-grid" style="--min:320px">
-      ${fig(seg("28d"), `${L.st.def} · ${L.st.pressed}`, "SEG-2 · SEG-3", true)}
-      ${fig(seg("28d", { "7d": "is-hover" }), L.st.hover, "SEG-3", true)}
-      ${fig(seg("28d", { custom: "is-focus" }), `${L.st.focus} · ${L.st.inset}`, "FOC-2", true)}
+      ${fig(seg("28d"), `${L.st.def} · ${L.st.pressed}`, "SEG-2 · SEG-3")}
+      ${fig(seg("28d", { "7d": "is-hover" }), L.st.hover, "SEG-3")}
+      ${fig(seg("28d", { custom: "is-focus" }), `${L.st.focus} · ${L.st.inset}`, "FOC-2")}
       ${fig(`<div class="cx-phone">${seg("7d", {}, "is-full")}</div>`, L.st.phone, "SEG-4", false)}
     </div></div>`);
   }
@@ -716,13 +726,13 @@
     const lv = [10, 30, 55, 72].map((v) => badge(v)).join(" ");
     return section("chips", "chips", "CHP-1…9 · LVL-2…6", `<div class="card cx-stage"><div class="cx-grid" style="--min:280px">
       ${fig(`<div style="display:flex;gap:8px;flex-wrap:wrap">${lv}</div>`, L.chipCaps.levels, "CHP-4 · CHP-5 · LVL-2")}
-      ${fig(badge(46, true), L.chipCaps.stale, "LVL-5 · LVL-6", true)}
+      ${fig(badge(46, true), L.chipCaps.stale, "LVL-5 · LVL-6")}
       ${fig(`<div style="display:flex;gap:8px;flex-wrap:wrap">${cmpBadge("busier")}${cmpBadge("quieter")}${cmpBadge("same")}</div>`, L.chipCaps.cmp, "CHP-6 · ICO-5")}
-      ${fig(`<div style="display:flex;gap:8px;flex-wrap:wrap"><span class="cx-flag">${L.peakTag}</span><span class="cx-flag">${L.latestFlag}</span><span class="cx-flag is-red">${L.highest}</span></div>`, L.chipCaps.flags, "CHP-7 · CHP-8", true)}
-      ${fig(`<div style="display:grid;gap:12px"><span class="cx-status"><i class="cx-dot"></i>${L.statusLive}</span><span class="cx-status is-late">${ico("clock")}${L.statusLate}</span></div>`, L.chipCaps.status, "CHP-2 · STA-1 · STA-2", true)}
-      ${fig(`<button class="cx-btn" type="button"><i class="cx-dot"></i><span class="cx-status">${L.statusLive}</span></button>`, L.chipCaps.statusBtn, "CHP-1 · CHP-2", true)}
-      ${fig(`<span class="cx-concept">${L.concept}</span>`, L.chipCaps.concept, "CHP-2 · GLO-15", true)}
-      ${fig(`<ul class="cx-legend"><li><i class="sw-line"></i>${L.keyLine}</li><li><i class="sw-usual"></i>${L.keyUsual}</li></ul>`, L.chipCaps.legend, "CHP-3", true)}
+      ${fig(`<div style="display:flex;gap:8px;flex-wrap:wrap"><span class="cx-flag">${L.peakTag}</span><span class="cx-flag">${L.latestFlag}</span><span class="cx-flag is-red">${L.highest}</span></div>`, L.chipCaps.flags, "CHP-7 · CHP-8")}
+      ${fig(`<div style="display:grid;gap:12px"><span class="cx-status"><i class="cx-dot"></i>${L.statusLive}</span><span class="cx-status is-late">${ico("clock")}${L.statusLate}</span></div>`, L.chipCaps.status, "CHP-2 · STA-1 · STA-2")}
+      ${fig(`<button class="cx-btn" type="button"><i class="cx-dot"></i><span class="cx-status">${L.statusLive}</span></button>`, L.chipCaps.statusBtn, "CHP-1 · CHP-2")}
+      ${fig(`<span class="cx-concept">${L.concept}</span>`, L.chipCaps.concept, "CHP-2 · GLO-15")}
+      ${fig(`<ul class="cx-legend"><li><i class="sw-line"></i>${L.keyLine}</li><li><i class="sw-usual"></i>${L.keyUsual}</li></ul>`, L.chipCaps.legend, "CHP-3")}
     </div></div>`);
   }
 
@@ -741,11 +751,11 @@
   function rails() {
     const hdr = `<div class="cx-header-spec" style="border:1px solid var(--line);border-radius:24px;background:#070707"><div class="cx-hdr"><div><h3>${L.hdrTitle}</h3><p>${L.hdrSub}</p></div><div class="cx-hdr-end"><span class="cx-concept">${L.concept}</span>${seg("28d")}</div></div></div>`;
     return section("rail", "rail", "RAI-1…5 · HDR-1…2 · FOC-4…5", `<div class="card cx-stage"><div class="cx-rails">
-      <figure class="cx-fig" style="flex:0 0 260px"><div class="cx-spec" inert>${rail({ forced: { reports: "is-hover", access: "is-focus" } })}</div>${cap(L.railCaps.states, "RAI-2 · FOC-4 · FOC-5", true)}</figure>
-      <figure class="cx-fig" style="flex:0 0 260px"><div class="cx-spec">${rail({ live: true })}</div>${cap(L.railCaps.live, "FOC-4", true)}<span class="cx-live-tag">${L.live}</span></figure>
+      <figure class="cx-fig" style="flex:0 0 260px"><div class="cx-spec" inert>${rail({ forced: { reports: "is-hover", access: "is-focus" } })}</div>${cap(L.railCaps.states, "RAI-2 · FOC-4 · FOC-5")}</figure>
+      <figure class="cx-fig" style="flex:0 0 260px"><div class="cx-spec">${rail({ live: true })}</div>${cap(L.railCaps.live, "FOC-4")}<span class="cx-live-tag">${L.live}</span></figure>
       <figure class="cx-fig" style="flex:0 0 260px"><div class="cx-spec" inert>${rail({ open: true })}</div>${cap(L.railCaps.open, "RAI-3 · GLO-14", false)}</figure>
     </div></div>
-    <figure class="cx-fig" style="align-items:stretch"><div class="cx-spec" inert>${hdr}</div>${cap(L.hdrCap, "HDR-1 · HDR-2 · CHP-2", true)}</figure>`);
+    <figure class="cx-fig" style="align-items:stretch"><div class="cx-spec" inert>${hdr}</div>${cap(L.hdrCap, "HDR-1 · HDR-2 · CHP-2")}</figure>`);
   }
 
   /* ------------------------------------------------------------ empty, alert, retry */
@@ -753,7 +763,7 @@
     const table = `<div class="card cx-table-card"><div class="cx-table-head"><div><h3>${L.daysTitle}</h3></div></div><table class="cx-table" role="table"><thead><tr role="row"><th scope="col">${L.cols.day}</th><th scope="col" class="n">${L.cols.peak}</th><th scope="col" class="n">${L.cols.avg}</th><th scope="col" class="n">${L.cols.entries}</th></tr></thead><tbody><tr role="row" class="is-empty"><td role="cell" colspan="4"><div class="cx-empty">${ico("info")}<p>${L.emptyTable}</p><button class="cx-btn" type="button">${L.emptyAction}</button></div></td></tr></tbody></table></div>`;
     const alert = `<div class="card cx-stage" style="width:min(468px,100%)"><div class="cx-alert" role="alert" style="margin:0">${ico("alert")}<span>${L.failed}</span></div><div style="display:flex;justify-content:flex-end;gap:8px;margin-block-start:24px"><button class="cx-btn" type="button">${L.cancel}</button><button class="cx-btn primary is-focus" type="button">${L.retry}</button></div></div>`;
     return section("empty", "empty", "EMP-1…4", `<div class="cx-row" style="grid-template-columns:minmax(0,3fr) minmax(0,2fr)">
-      <figure class="cx-fig" style="align-items:stretch"><div class="cx-spec" inert>${table}</div>${cap(L.emptyCaps.table, "EMP-1 · STA-8 · EMP-4", true)}</figure>${fig(alert, L.emptyCaps.alert, "EMP-2 · EMP-3 · EMP-4", true)}</div>`);
+      <figure class="cx-fig" style="align-items:stretch"><div class="cx-spec" inert>${table}</div>${cap(L.emptyCaps.table, "EMP-1 · STA-8 · EMP-4")}</figure>${fig(alert, L.emptyCaps.alert, "EMP-2 · EMP-3 · EMP-4")}</div>`);
   }
 
   /* ------------------------------------------------------------ render */
