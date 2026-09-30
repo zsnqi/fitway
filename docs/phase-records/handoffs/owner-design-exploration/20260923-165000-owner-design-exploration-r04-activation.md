@@ -3072,3 +3072,15 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
 - **Not for the font problem:** the text is complete at the first paint. A skeleton or a loading screen would add a
   swap of its own on every open. The user asked about a loading screen and a skeleton for fonts on 2026-09-30, and
   took neither.
+- **Update (2026-09-30):** the user approved eight loading rules. They are in `DESIGN_GUIDE.md` section 6, "Loading
+  behaviour", and section 10, and cover the public page and the Owner surface:
+  - a delay and a minimum;
+  - zero shift on arrival;
+  - real text except for pending values;
+  - chart placeholders that cannot read as data;
+  - no skeleton on refresh;
+  - a 10 s ceiling into Error or Unavailable;
+  - one announcement after about 1 s.
+
+  The numbers are starting values, tuned against real data. `pnpm check:repository` and
+  `pnpm check:design-context` pass. Eclipse's future skeleton follows these rules.
