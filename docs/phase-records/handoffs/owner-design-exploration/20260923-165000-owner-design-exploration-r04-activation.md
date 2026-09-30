@@ -3473,3 +3473,20 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   TBL-12 and `components.*`, and removes the dot. It uses ports 3176-3177.
 - **Step 3 does not start until the user says so.** The user asked the coordinator whether one designer or several
   sequential agents is better.
+## Range first delivered at `9074da6` (2026-10-01)
+
+- **The fixer delivered `9074da6`** on top of `5654093`. The coordinator pushed it as a fast-forward.
+  - 3 files, +22/−17. TBL-12, the Q11 answer, §0 sources and the version note change. The labels stay at 224 R, 11 C,
+    53 K and 0 P.
+  - Self-reported, not verified: W1-W4 pass.
+    - The range's first glyph sits 0 px from the first column's text edge, AR and EN, at 1440, 1024, 390 and 320.
+    - No dot is left.
+    - The only wrap is AR at 320, «لا قراءات بعد», where the range stays on line 1.
+  - The fixer reported that the coordinator worktree's HEAD moved during its run. That was the coordinator's own
+    commit `37777b8`.
+- **G5 check:** s04 is clean at `9074da6`. Only the user's previews listen: 3174, and 3175, which is stopped now.
+- **Coordinator inspection:** in `table-ar.png`, each range starts where the times and days start, and the words follow
+  it.
+- **Next:** the user's word on step 3. The coordinator recommends two agents: one designer for the frame and Daily at
+  every size, pausing after the frame for the user and then resumed; then a fresh agent for the states; then a fresh
+  reviewer.
