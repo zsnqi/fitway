@@ -3247,3 +3247,46 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - no rolling digits on a period change.
 - **Next:** the user reviews Reports in the browser, and any changes follow. Then the suite is built, and verification
   runs.
+## The design-phase plan agreed, and step 1 launched (2026-09-30)
+
+- **User review of Reports (`31a40d6`):** beautiful and excellent. The designer understood the direction and built the
+  page whole, almost in one attempt. There is room to improve, above all on the phone and the other sizes. The user
+  has no specific desktop notes yet.
+- **User decisions (2026-09-30).** They are recorded in `NEXT-DIRECTION-BRIEF.md`, "The design-phase plan":
+  - each screen is designed at every size in its own round: 1440, 768 and 390, with 320, 1024 and 200% reflow
+    checked;
+  - the tests and the independent verification come once, after every screen and size;
+  - a spec sheet with four safeguards, written after a design review;
+  - the language carries over and the composition does not: no screen copies the Daily page's arrangement or its lit
+    cards;
+  - on the phone, a glass bottom bar with neat short labels, a compact header, and no hamburger. At 768 the rail stays;
+  - 44 px controls move into the Daily all-sizes round;
+  - **scope:** Staff (with the PIN sign-in) and Public are redesigned too, after the Owner screens, each as its own
+    milestone. The authority record covers all three surfaces;
+  - production starts with a Codex pilot on one bounded part;
+  - every task goes to a fresh agent. The Reports designer does not continue.
+- **Italic notes** mark the brief passages that the plan replaces:
+  - "Scope";
+  - the "Mobile" step;
+  - "Style";
+  - "Authority intent";
+  - "Production";
+  - "Screen plan".
+- **The ledger:** the lease is renewed to 2026-10-02 23:30, with a heartbeat at 19:25.
+- **Step 1 launched:** a fresh `owner-direction-designer` in review-only mode, run `owner_review_r04_s11`.
+  - Brief: `D:\fitway-scratch\review\BRIEF.md`.
+  - It reviews Daily and Reports at `31a40d6` from a `git archive` extract, on ports 3178-3179.
+  - It edits nothing, and does not read the designer's report or `D:\fitway-grader\`.
+  - Its final message is the report. The harness refuses report files from subagents.
+  - `impeccable-finish-reviewer` was not used: its contract expects comps, build state and quality-bar cards that
+    this loop does not produce.
+- **The user's preview:** `.claude/launch.json` has a new `eclipse-build` entry, which serves the s04 `E/` on 3174.
+- **Resume steps:**
+  1. Run `pnpm context:show -- --milestone owner-design-exploration-r04`. Read this section and
+     `NEXT-DIRECTION-BRIEF.md` "The design-phase plan".
+  2. When the review returns:
+     - save it at `D:\fitway-scratch\review\REVIEW.md`;
+     - check the coordinator worktree's status and ports 3178-3179;
+     - inspect the key frames;
+     - show the findings to the user in Arabic, briefly, grouped by class, for the user to pick.
+  3. Then step 2: the spec sheet. Brief a fresh agent with the picked findings as known issues.
