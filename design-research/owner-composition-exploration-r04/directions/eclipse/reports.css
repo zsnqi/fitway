@@ -1,0 +1,392 @@
+/* Eclipse Reports: the second Eclipse page, and the table, form and dialog system that Activity Log, Access and
+ * Settings will reuse. Loaded after style.css, which it never overrides for the Daily page: every rule here is scoped
+ * to the Reports body (.rp) or to a class only Reports uses. The look is the Daily page's: the same glass cards,
+ * lights, type, rail and header. Concept only, synthetic data. */
+
+html:has(> body.rp) {
+  color-scheme: dark;
+  scrollbar-gutter: stable;
+  scrollbar-color: rgba(245, 243, 242, 0.2) #070707;
+}
+.rp {
+  --err: #ff6b7d;        /* error text and borders: 6.9:1 on the cards */
+  --err-line: rgba(255, 107, 125, 0.5);
+  --field: rgba(255, 255, 255, 0.03);
+  --field-line: rgba(255, 255, 255, 0.34); /* a field's edge keeps 3:1 against the panel */
+  --head-bg: #121112;
+  --ease-state: cubic-bezier(0.25, 1, 0.5, 1);
+}
+.rp ::selection { background: rgba(229, 25, 53, 0.55); color: #fff; }
+.rp [hidden] { display: none !important; }
+
+/* ------------------------------------------------------------------ page */
+.rp .main { display: flex; flex-direction: column; gap: 18px; padding-block: 10px 24px; }
+.rp .head-meta { flex-wrap: wrap; justify-content: flex-end; }
+.stat-body { display: contents; }
+.stat-aside { font-size: 12.5px; color: var(--ink-3); white-space: nowrap; }
+.stat-foot .stat-aside { margin-inline-start: 2px; }
+.stat-empty { margin-block-start: 20px; font-size: 19px; line-height: 1.3; color: var(--ink-2); }
+.cmp-quieter svg { color: var(--ink-2); }
+/* Text near the lit corner of the week card is a step brighter, so it keeps 4.5:1 over the light. */
+#card-wow .stat-note, #card-wow .stat-aside { color: var(--ink-2); }
+@media (max-width: 1199px) {
+  .rp-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+/* A narrow four-column card (pages about 1200-1360 px wide) keeps its title and dates on one line. */
+.rp-cards .stat { container-type: inline-size; }
+@container (max-width: 250px) {
+  .rp-cards .stat-head { gap: 9px; }
+  .rp-cards .stat-label { font-size: 13.5px; }
+  .rp-cards .stat-meta { font-size: 12px; }
+}
+
+/* --------------------------------------------------------- the segmented control
+ * A group of toggle buttons (aria-pressed): one Tab stop each, the pressed one lifted in chalk. The last one opens the
+ * date-range dialog. Each button's hit area is the control's full 44 px height. */
+.seg {
+  display: inline-flex;
+  gap: 2px;
+  height: 44px;
+  padding: 3px;
+  border-radius: 13px;
+  border: 1px solid var(--line-2);
+  background: rgba(255, 255, 255, 0.015);
+}
+.seg-b {
+  position: relative;
+  height: 36px;
+  padding-inline: 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.seg-b::before { content: ""; position: absolute; inset: -4px 0; }
+.seg-b:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); }
+.seg-b[aria-pressed="true"] { color: var(--ink); background: rgba(245, 243, 242, 0.12); box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42); }
+.seg-b:focus-visible { outline-offset: 1px; }
+
+/* ---------------------------------------------------------------- buttons
+ * Secondary (outline) and primary (chalk). Red stays the brand's and the data's, never a button's: destructive
+ * actions (later screens) get their own treatment. 44 px tall. */
+.rbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding-inline: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--line-2);
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 13.5px;
+  color: var(--ink);
+  white-space: nowrap;
+  text-decoration: none;
+}
+.rbtn svg { width: 17px; height: 17px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.rbtn:hover { border-color: var(--line-3); background: rgba(255, 255, 255, 0.05); }
+.rbtn-primary { border-color: var(--ink); background: var(--ink); color: #0d0c0d; font-weight: 500; }
+.rbtn-primary:hover { border-color: #fff; background: #fff; }
+.rbtn:disabled { cursor: default; border-color: var(--line); background: transparent; color: var(--ink-3); }
+.rbtn-primary:disabled { border-color: transparent; background: rgba(245, 243, 242, 0.14); color: var(--ink-2); }
+.icon-btn { display: grid; place-items: center; width: 44px; height: 44px; flex: none; border-radius: 12px; color: var(--ink-2); }
+.icon-btn:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); }
+.icon-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
+
+/* ----------------------------------------------------------------- switch */
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding-inline: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line-2);
+  font-size: 13px;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.switch:hover { color: var(--ink); border-color: var(--line-3); }
+.switch-track { position: relative; width: 32px; height: 18px; flex: none; border-radius: 9px; background: rgba(255, 255, 255, 0.07); box-shadow: inset 0 0 0 1px var(--line-3); }
+.switch-thumb { position: absolute; top: 3px; inset-inline-start: 3px; width: 12px; height: 12px; border-radius: 50%; background: var(--ink-2); transition: transform 200ms var(--ease-state); }
+.switch[aria-checked="true"] { color: var(--ink); }
+.switch[aria-checked="true"] .switch-track { background: var(--ink); box-shadow: none; }
+.switch[aria-checked="true"] .switch-thumb { background: #0f0e0f; transform: translateX(14px); }
+[dir="rtl"] .switch[aria-checked="true"] .switch-thumb { transform: translateX(-14px); }
+
+/* ------------------------------------------------------------ the pattern card
+ * The chart card's light (a U around a dark disc), as on the Daily page. The grid sits on an opaque plate of the card's
+ * own base, so the light frames it and never changes a cell's colour: the ramp stays calibrated. */
+.pattern { display: flex; flex-direction: column; gap: 16px; padding: 22px 26px 22px; }
+.pattern-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; }
+.pattern-head h2, .days-head h2 { font-size: 19px; font-weight: 500; }
+.pattern-sub, .days-sub { margin-block-start: 4px; font-size: 13px; color: var(--ink-3); }
+.pattern-tools { display: flex; align-items: center; gap: 10px; margin-inline-start: auto; }
+.heat-key { gap: 16px; }
+.heat-key li { gap: 7px; }
+.heat-key .ramp { width: 56px; height: 8px; border-radius: 4px; background: linear-gradient(to right, #1d0b0e, #3a0a13 12%, #4d0713 25%, #7e0d1f 44%, #b8132b 62%, #e51935 81%, #ff2946); }
+[dir="rtl"] .heat-key .ramp { background: linear-gradient(to left, #1d0b0e, #3a0a13 12%, #4d0713 25%, #7e0d1f 44%, #b8132b 62%, #e51935 81%, #ff2946); }
+.heat-key .k0, .heat-key .kc, .heat-key .kn { display: inline-grid; place-items: center; width: 16px; height: 16px; flex: none; border-radius: 4px; font-size: 10px; line-height: 1; }
+.heat-key .k0 { box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.38); color: var(--ink-2); }
+.heat-key .kc { background: rgba(255, 255, 255, 0.06); }
+.heat-key .kn { border: 1.5px dotted rgba(245, 243, 242, 0.55); }
+
+.heat-scroll { position: relative; }
+.heat-plate { border-radius: 16px; background: var(--card-solid); padding: 2px 4px 4px; }
+.heat { width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 4px; }
+.heat .col-day { width: 104px; }
+.heat th { padding: 0; font-weight: 400; }
+.hh { height: 22px; font-size: 12px; color: var(--ink-3); text-align: center; vertical-align: bottom; white-space: nowrap; }
+.hh .hh-t { display: inline-block; }
+.hd { padding-inline-end: 10px !important; font-size: 13px; color: var(--ink-2); text-align: start; white-space: nowrap; }
+.hc {
+  position: relative;
+  height: 44px;
+  padding: 0;
+  border-radius: 8px;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 13px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  cursor: default;
+}
+.hc.v { background: var(--c); }
+.hc.zero { box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.38); color: var(--ink-2); }
+.hc.closed { background: rgba(255, 255, 255, 0.04); }
+.hc.nodata::before { content: ""; position: absolute; inset: 1px; border: 1.5px dotted rgba(245, 243, 242, 0.45); border-radius: 7px; pointer-events: none; }
+.hc .run { font-size: 12px; font-weight: 400; color: var(--ink-3); white-space: nowrap; }
+.hc.closed .run { color: #8f898b; }
+.hc.is-one .run { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* Numbers are the cells' text; they show when the owner switches them on (and always in the zero cell). */
+.hc.v .hv { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* FITWAY red is a middle luminance where neither chalk nor dark text reaches 4.5:1 at 13 px, so with numbers on every
+ * value cell is the same ramp mixed 80% with the card's base: the order is unchanged and chalk text reads at 4.7:1 or more. */
+.heat.show-n .hc.v { background: color-mix(in srgb, var(--c) 80%, #0f0e0f); }
+.heat.show-n .hc.v .hv { position: static; width: auto; height: auto; overflow: visible; clip-path: none; color: var(--ink); }
+/* The busiest hour: a small chalk point in its inline-end top corner (the subtitle names it). */
+.hc.is-top::after { content: ""; position: absolute; top: 5px; inset-inline-end: 5px; width: 5px; height: 5px; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 1.5px rgba(15, 14, 15, 0.55); }
+.hc.is-sel, .hc:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; z-index: 1; }
+.heat-tip { left: 0; top: 0; width: max-content; z-index: 5; }
+
+/* -------------------------------------------------------------- day by day */
+.days { padding: 22px 26px 10px; }
+.days-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; }
+.table-wrap { margin-block-start: 14px; }
+
+/* ---- the data table: the system's table */
+.table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13.5px; }
+.table th, .table td { height: 48px; padding: 0 14px; text-align: start; vertical-align: middle; font-weight: 400; }
+.table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  height: 44px;
+  background: var(--head-bg);
+  font-size: 12.5px;
+  color: var(--ink-3);
+  white-space: nowrap;
+  border-block-end: 1px solid var(--line-2);
+}
+.table thead th:first-child { border-start-start-radius: 12px; }
+.table thead th:last-child { border-start-end-radius: 12px; }
+.table tbody th { color: var(--ink); }
+.table tbody td { color: var(--ink-2); }
+.table tbody > tr > * { border-block-end: 1px solid rgba(255, 255, 255, 0.055); }
+.table tbody > tr:last-child > * { border-block-end: 0; }
+.table tbody > tr:hover > * { background: rgba(255, 255, 255, 0.04); }
+.table .n { text-align: end; font-variant-numeric: tabular-nums; }
+.table .n bdi { color: var(--ink); }
+.days-table .c-day { width: 16%; }
+.days-table .c-peak { width: 18%; }
+.days-table .c-avg { width: 12%; }
+.days-table .c-entries { width: 13%; }
+/* A week starts: a firmer line between Saturday and Sunday. */
+.days-table tbody > tr.wk-edge > * { border-block-end-color: rgba(255, 255, 255, 0.14); }
+.days-table .c-notes { padding-inline-start: 32px; font-size: 12.5px; color: var(--ink-3); }
+.days-table tr.is-top > * { background: rgba(229, 25, 53, 0.08); }
+.days-table tr.is-top:hover > * { background: rgba(229, 25, 53, 0.12); }
+.days-table tr.is-none > * { color: var(--ink-3); }
+.dd .dt { color: inherit; }
+.pk { display: inline-flex; align-items: baseline; justify-content: flex-end; gap: 8px; white-space: nowrap; }
+.pk .pv bdi { font-weight: 500; }
+.pk .pt { font-size: 12.5px; color: var(--ink-3); }
+.pk .pt bdi { color: inherit; }
+.flag { align-self: center; padding-inline: 6px; border-radius: 5px; border: 1px solid rgba(255, 41, 70, 0.45); font-size: 11px; line-height: 17px; color: var(--ink-2); }
+.dim { color: var(--ink-3); }
+.note { display: inline-flex; align-items: center; gap: 7px; }
+.ico-gap { width: 16px; height: 16px; flex: none; fill: currentColor; stroke: none; opacity: 0.85; }
+.days-table .note-row { display: none; }
+.c-none .note { color: var(--ink-3); }
+/* Sortable headers: the whole header is the button; the arrow shows on the sorted column (and on hover or focus). */
+.sort { display: inline-flex; align-items: center; gap: 6px; height: 44px; min-width: 44px; margin-inline: -8px; padding-inline: 8px; border-radius: 10px; font-size: inherit; color: inherit; }
+.sort:hover { color: var(--ink); }
+.n .sort { flex-direction: row-reverse; }
+.sort:focus-visible { outline-offset: -4px; }
+.sort-ico { width: 14px; height: 14px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+.sort:hover .sort-ico, .sort:focus-visible .sort-ico { opacity: 0.5; }
+th.is-sorted { color: var(--ink); }
+th.is-sorted .sort-ico { opacity: 1; }
+th.is-asc .sort-ico { transform: rotate(180deg); }
+.table-empty { display: flex; flex-direction: column; align-items: center; gap: 14px; padding-block: 40px 44px; color: var(--ink-2); text-align: center; }
+.table-empty .ico { width: 22px; height: 22px; color: var(--ink-3); }
+.table tr.is-empty:hover > * { background: none; }
+
+/* ------------------------------------------------------------------ dialog
+ * The <dialog> covers the viewport: a scrim (the page stays visible, dimmed and softened) and a centred panel of the
+ * card's glass. On a phone the panel is a bottom sheet. */
+.dlg {
+  position: fixed;
+  inset: 0;
+  width: auto;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 16px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+.dlg::backdrop { background: transparent; }
+.dlg[open] { display: grid; place-items: center; }
+.dlg-scrim { position: absolute; inset: 0; background: rgba(4, 4, 5, 0.66); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+.dlg-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(468px, 100%);
+  max-height: 100%;
+  border-radius: 24px;
+  border: 1px solid var(--line-2);
+  background: rgba(17, 16, 17, 0.98);
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.7);
+}
+.dlg-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 24px 0; padding-inline-end: 14px; }
+.dlg-head h2 { font-size: 19px; font-weight: 500; }
+.dlg-body { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 6px 24px 4px; }
+.dlg-desc { font-size: 13.5px; line-height: 1.6; color: var(--ink-2); }
+.dlg-foot { display: flex; justify-content: flex-end; gap: 10px; padding: 20px 24px 24px; }
+
+/* ------------------------------------------------------------------- field */
+.field-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-block-start: 18px; }
+.field { min-width: 0; }
+.field-label { display: block; margin-block-end: 7px; font-size: 13px; color: var(--ink-2); }
+.field-input {
+  display: block;
+  width: 100%;
+  height: 44px;
+  padding-inline: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--field-line);
+  background: var(--field);
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  caret-color: var(--red-hi);
+}
+[dir="rtl"] .field-input { text-align: right; }
+.field-input:hover { border-color: rgba(255, 255, 255, 0.52); }
+.field-input:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; border-color: rgba(255, 255, 255, 0.52); }
+.field.is-invalid .field-input { border-color: var(--err-line); background: rgba(255, 107, 125, 0.05); }
+.field.is-invalid .field-input:focus-visible { outline-color: var(--err); }
+.field.is-disabled .field-input { border-color: var(--line); background: transparent; color: var(--ink-3); cursor: not-allowed; }
+.field.is-disabled .field-label { color: var(--ink-3); }
+.field-err { display: flex; align-items: flex-start; gap: 6px; margin-block-start: 7px; font-size: 12.5px; line-height: 1.45; color: var(--err); }
+.field-err .ico { width: 15px; height: 15px; margin-block-start: 1px; flex: none; }
+.field-hint { margin-block-start: 10px; font-size: 12.5px; color: var(--ink-3); }
+
+/* ------------------------------------------------ the export dialog's states */
+.file-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  margin-block-start: 16px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.025);
+  font-size: 12.5px;
+  color: var(--ink-3);
+}
+.file-line:empty { display: none; }
+.file-line .ico { width: 16px; height: 16px; color: var(--ink-2); }
+.file-name { color: var(--ink); overflow-wrap: anywhere; }
+.file-rows { margin-inline-start: auto; white-space: nowrap; }
+.progress { margin-block-start: 16px; }
+.progress-text { font-size: 13px; color: var(--ink-2); }
+.progress-bar { display: block; height: 4px; margin-block-start: 9px; overflow: hidden; border-radius: 2px; background: rgba(255, 255, 255, 0.08); }
+.progress-bar i { display: block; height: 100%; background: var(--ink); transform: scaleX(0); transform-origin: left; }
+[dir="rtl"] .progress-bar i { transform-origin: right; }
+.alert { display: flex; align-items: flex-start; gap: 10px; margin-block-start: 16px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--err-line); background: rgba(255, 107, 125, 0.06); font-size: 13px; line-height: 1.5; color: var(--ink); }
+.alert .ico { width: 17px; height: 17px; margin-block-start: 1px; color: var(--err); }
+.done { padding-block: 10px 0; text-align: center; }
+.done-mark { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line-3); }
+.done-mark svg { width: 22px; height: 22px; fill: none; stroke: var(--ink); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.done-title { margin-block-start: 12px; font-size: 16px; color: var(--ink); }
+.done .file-line { text-align: start; }
+
+/* ------------------------------------------------------------------- phone
+ * The early phone check (390 and 320 px) covers the table, form and dialog system only. The rest of the page is not
+ * designed for a phone in this round: the rail is set aside below 721 px and the pattern scrolls sideways in its own
+ * labelled region, only so that nothing overflows the document. */
+@media (max-width: 720px) {
+  .rp .page { grid-template-columns: minmax(0, 1fr); gap: 0; padding: 16px; }
+  .rp .rail-slot { display: none; }
+  .rp .skip { inset-inline-start: 16px; }
+  .rp .head { flex-direction: column; gap: 14px; }
+  .rp .head-meta { flex-direction: column; align-items: stretch; width: 100%; padding: 0; }
+  .rp .seg { width: 100%; }
+  .rp .seg-b { flex: 1 1 0; min-width: 0; padding-inline: 6px; }
+  .rp .concept { align-self: flex-start; }
+  .rp-cards { grid-template-columns: minmax(0, 1fr); }
+  .pattern { padding: 18px 16px; }
+  .pattern-tools { flex-wrap: wrap; margin-inline-start: 0; }
+  .heat-scroll { overflow-x: auto; margin-inline: -4px; padding-inline: 4px; }
+  .heat { min-width: 760px; }
+  .days { padding: 18px 16px 6px; }
+  /* The table recomposes instead of scrolling: notes fold under the day, the peak's time under its value, the
+   * weekday over the date, and headers may wrap. */
+  .table th, .table td { height: auto; padding: 11px 8px; }
+  .table thead th { height: 44px; padding-block: 0; white-space: normal; line-height: 1.25; font-size: 12px; }
+  .days-table .c-notes { display: none; }
+  .days-table .note-row { display: table-row; }
+  .days-table tbody > tr.has-note > * { border-block-end: 0; padding-block-end: 4px; }
+  .days-table .note-row > td { padding-block: 0 11px; font-size: 12px; line-height: 1.4; color: var(--ink-3); }
+  .days-table tbody > tr.has-note:hover + .note-row > * { background: rgba(255, 255, 255, 0.04); }
+  .days-table tbody > tr.is-top + .note-row > * { background: rgba(229, 25, 53, 0.08); }
+  .sort-ico { display: none; }
+  th.is-sorted .sort-ico { display: block; }
+  .heat-key { flex-wrap: wrap; height: auto; padding-block: 9px; row-gap: 8px; }
+  .days-table .c-day, .days-table .c-peak, .days-table .c-avg, .days-table .c-entries { width: auto; }
+  .dd .wd, .dd .dt { display: block; }
+  .dd .dt { font-size: 12.5px; white-space: nowrap; }
+  .pk { flex-direction: column; align-items: flex-end; gap: 1px; }
+  .pk .flag { order: 3; margin-block-start: 3px; }
+  .sort { margin-inline: -6px; padding-inline: 6px; text-align: start; }
+  /* The dialog is a bottom sheet; its actions share the width. */
+  .dlg { padding: 0; }
+  .dlg[open] { place-items: end stretch; }
+  .dlg-panel { width: 100%; max-height: calc(100dvh - 12px); border-radius: 24px 24px 0 0; border-block-end: 0; }
+  .dlg-head { padding: 12px 20px 0; padding-inline-end: 10px; }
+  .dlg-body { padding: 4px 20px 4px; }
+  .dlg-foot { padding: 18px 20px max(20px, env(safe-area-inset-bottom)); }
+  .dlg-foot .rbtn { flex: 1 1 0; min-width: 0; }
+}
+@media (max-width: 400px) {
+  .rp .page { padding: 12px; }
+  .days, .pattern { padding-inline: 12px; }
+  .field-row { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .table th, .table td { padding-inline: 6px; }
+  .table tr > :first-child { padding-inline-start: 4px; }
+  .table tr > :nth-child(4) { padding-inline-end: 4px; }
+  .sort { margin-inline: -4px; padding-inline: 4px; }
+  .dlg-body, .dlg-head { padding-inline-start: 16px; }
+  .dlg-body { padding-inline-end: 16px; }
+  .dlg-foot { padding-inline: 16px; }
+}

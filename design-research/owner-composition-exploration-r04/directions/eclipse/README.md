@@ -1,5 +1,10 @@
 # Eclipse v3 (Owner r04, full Daily page)
 
+**Reports round (2026-09-30, run `owner_reports_r04_s10`):** Eclipse gains its second page, `reports.html`, at desktop,
+and the table, form and dialog system that Activity Log, Access and Settings will reuse. The Daily page changes in one
+place only: its rail's Reports item is now a link that keeps the language, and Reports links back. See "Reports" at the
+end of this file.
+
 **Single-fetch repair (2026-09-30, run `owner_fonts_r04_s09_r1`):** the blocking stylesheets are followed by early
 loads of the registered CSS faces, so text shares one fetch per subset on HTTP and file pages, including reloads.
 All 800 cache/header, size, language, motion and delay cases passed; all 56 compared still frames equal 4568bac.
@@ -1588,3 +1593,143 @@ stopped short of the box, and that the missing-span pointer's tip sat between tw
 ## Checks
 
 The `checks/` harness encoded the superseded floating-placement rules and was removed; it remains in history at `ee2b399`.
+
+## Reports (run `owner_reports_r04_s10`)
+
+Files: `reports.html`, `reports.css` (loaded after `style.css`, scoped to the Reports page, so it never touches a Daily
+rule), `reports.js` (a classic script) and `reports-capture.mjs`. The Daily page's `index.html` and `app.js` change only
+for the rail link. Concept only, synthetic data; the "Exploration concept · synthetic data" label stays visible.
+
+### What it answers
+
+Daily asks "how is today going right now?"; Reports asks "how does my gym usually behave, and which way is it going?".
+The page keeps the Daily page's structure and look (the rail, the header, four glass cards and one lit card below):
+- **Header:** the title, the period and its length, and the period control (Last 7 days, Last 4 weeks, Custom…).
+- **Four cards:** week over week (lit with the Inside now light, because it answers "which way"), the average inside
+  with its crowd level, the highest peak with its day and time, and entries with the daily average. Entries are named
+  entries only, with no caption.
+- **Busy times** (lit with the chart light): the weekday × hour pattern, average inside, 7 days × 19 hours (6 AM to the
+  12 AM hour), coloured on one red ramp taken from the light ramp (oxblood, FITWAY red, `#FF2946`). The busiest hour is
+  named in the subtitle and marked with a small chalk point. A "Numbers" switch prints every value in its cell.
+- **Day by day:** a sortable table of each day's peak (with its time), daily average and entries, with exceptions in
+  words (a camera gap, the period's highest peak). "Export CSV" sits here, with the data.
+- Details stay on request: the pattern's readout (hover, keyboard or tap), the numbers switch, and the table below the
+  first screen.
+
+### The data (synthetic, deterministic)
+
+- **The same gym as the Daily page:** capacity 80 (owner-private; only in the CSV's `capacity_snapshot`), the same crowd
+  levels, Riyadh time (UTC+3), business-day boundary 4:00 AM. Hours are 6:00 AM to 1:00 AM, and **Friday 2:00 PM to
+  1:00 AM** (a choice for this concept).
+- **Business days** run from Sunday 2 August to Tuesday 22 September 2026, the last complete day before the Daily page's
+  Wednesday 23 September. Reports shows complete days only, so nothing on it is live.
+- **The simulation** is the Daily page's own minute process (Poisson entries, Binomial(occupancy, 1/64) exits), with
+  a shape per weekday. The four Wednesdays the Daily page averages as "usual" (26 August and 2, 9, 16 September) use
+  the Daily page's seeds and shapes, so they are the same days here.
+- **Closed:** outside the hours (Friday before 2 PM; 1 to 6 AM is outside every day's hours and has no column).
+- **Genuine zero:** every day's first ten minutes are empty, as on the Daily page, and on Saturday nobody comes
+  before 7:00 AM, so the Saturday 6-7 AM hour averages exactly 0.
+- **Missing:** a camera gap on Thursday 17 September, 10:00 AM to 1:59 PM, and a short one on Monday 31 August,
+  10:12 to 10:40 AM.
+- **Week over week** (the reporting domain's rule): the last seven complete days (16-22 Sep) against the seven before
+  (9-15 Sep), compared only when both have readings for at least 80% of their open minutes. Full history gives
+  +9% average inside ("Busier"; the chip needs at least 5%) and +3% entries.
+
+### States and how to open it
+
+Open `reports.html` directly, or from any static server (with `Cache-Control: no-store` or no cache header). From the
+Daily page, the rail's Reports item. Query parameters:
+
+| URL | Shows |
+| --- | --- |
+| `reports.html` (`?state=full`) | Last 4 weeks, 26 Aug - 22 Sep: comparable week over week; the pattern's closed Friday mornings and zero Saturday 6 AM |
+| `?state=short` | Readings since Sunday 13 Sep (the Daily page's no-history state has one past Wednesday, 16 Sep): week over week shows "Not enough history yet" and no value; the pattern shows closed, no data (the only Thursday's camera gap) and zero together; days before 13 Sep are one merged "No readings yet" row |
+| `?range=7d` | Last 7 days, 16 - 22 Sep: Thursday 10 AM - 2 PM reads as no data |
+| `?from=YYYY-MM-DD&to=YYYY-MM-DD` | A custom period (up to 366 days, ending by 22 Sep), for example `from=2026-09-01&to=2026-09-10` |
+| `?from=2026-07-01&to=2026-07-31` | A period before the readings began: every figure says "No readings", the pattern is closed or no data, and the table's empty state offers the last 4 weeks |
+| `?dialog=range` / `?dialog=export` | Opens the date-range or the export dialog at load |
+| `?export=fail` | The first export attempt fails (then "Try again" succeeds) |
+| `?lang=ar|en`, `?motion=off` | As on the Daily page |
+
+The period is kept in the URL, so a reload and the language link keep it. The Daily page's Reports link and Reports'
+Daily link carry `lang` (and `motion=off`).
+
+### The table, form and dialog system
+
+Every part is built here, in `reports.css` and `reports.js`, for Activity Log, Access and Settings to reuse.
+Controls are 44 px tall (the design guide's minimum), focus is a 2 px chalk ring, and hover colours change at once, as
+on the Daily page.
+
+| Part | Built as | States |
+| --- | --- | --- |
+| **Data table** (`.table`) | a real `<table>` with a caption, `th scope`, and explicit ARIA roles, so a narrow-screen recomposition never drops the semantics; sticky header row; numbers aligned at the end with tabular figures | default; hover (the row lifts); focus (the sortable header's button); selected (the sorted column: chalk header, arrow, `aria-sort`, announced); empty (a sentence and the way back); exceptions in words (a camera gap, the highest peak row tinted red with a "Highest" flag); days before the readings began merged into one row; a firmer line closes each week |
+| **Sortable header** (`.sort`) | the whole header is a button; the arrow shows on the sorted column and on hover or focus | default, hover, focus, selected (ascending or descending) |
+| **Segmented control** (`.seg`) | a group of toggle buttons (`aria-pressed`), one Tab stop each; the last one opens a dialog | default, hover, focus, selected (lifted in chalk) |
+| **Switch** (`.switch`) | `role="switch"`, `aria-checked`; the thumb slides 200 ms on the roll easing | off, hover, focus, on |
+| **Buttons** (`.rbtn`, `.rbtn-primary`, `.icon-btn`) | secondary (outline) and primary (chalk). Red stays the brand's and the data's; a destructive action (Access, later) gets its own treatment | default, hover, focus, disabled (working) |
+| **Date field** (`.field`) | a labelled text field (day/month/year, Western digits; Arabic-Indic digits typed on an Arabic keyboard are read as Western), a shared hint, and its own error, tied with `aria-describedby` and `aria-invalid`; a valid date is tidied on leaving the field | default, hover, focus, invalid with its message (no date, wrong form, a date that does not exist, after the last full day, the end before the start, more than 366 days), disabled |
+| **Dialog** (`.dlg`) | `<dialog>` with `showModal` (the page behind is inert), a scrim and a glass panel; a bottom sheet at 720 px and below | focus goes in (the first field, or the primary action when the dates are already set), Tab and Shift+Tab wrap inside, Escape and the scrim close it (Escape also stops a running export), focus returns to the control that opened it |
+| **Export** (in the dialog) | a real CSV built in the page from the synthetic minutes and saved with a download link; nothing leaves the page | ready; invalid; working (the button says "Preparing…" at once, the fields and the button are disabled, focus moves to Cancel, `aria-busy`; the progress line appears only after 300 ms and a shown working state lasts at least 400 ms); done (focus on "Save file", announced); failed (`role="alert"`, focus on "Try again", the dates kept) |
+| **Readout** (`.heat-tip`) | the Daily page's tooltip box; appears, changes and leaves at once | hover, keyboard focus (the grid's one Tab stop, arrow keys, Home and End, Escape) and a tap show the same readout |
+
+**The CSV** follows the reporting domain's shape (`packages/api/src/analytics/reporting/contracts.ts`): a UTF-8 byte
+order mark, CRLF lines, the header `business_day,minute_start_utc,minute_start_local,time_zone,state,count,entries,exits,band,capacity_snapshot,settings_version,source`,
+and 1440 rows per business day from the 4:00 AM boundary, each with UTC and gym-time columns. Closed and missing minutes
+keep their state and leave the value columns empty. Western digits only. The file is named
+`fitway-minutes-<from>-to-<to>.csv`.
+
+**Accessible equivalent of the pattern:** the pattern is itself a table (a grid): weekday row headers, hour column headers,
+and every cell's text is its value with its level ("52, Busy"), "0, Empty", "Closed" or "No data" (closed and no-data
+runs are merged cells). Parity is by construction.
+
+**Contrast:** measured on rendered pixels (each text run against the lightest and darkest background pixel under it,
+with the glyphs made transparent), every visible text run in 14 states is at least 4.79:1. FITWAY red is a middle
+luminance where neither chalk nor dark 13 px text reaches 4.5:1, so with numbers on every value cell is the ramp mixed
+80% with the card's base (the order is unchanged). Field edges and the pressed segment's edge are at least 3:1.
+
+**Motion:** no load motion and no intro. The dialog's panel rises 14 px (a phone sheet slides up) in 240 ms on the rail's
+opening easing and leaves in 200 ms on its closing easing; the scrim fades; no glyph changes opacity. The switch's thumb
+slides 200 ms. The rail is the Daily page's, unchanged. Under reduced motion or `?motion=off` nothing animates.
+
+**Loading (out of scope):** every box has a fixed or data-derived geometry known before the data arrives (the cards'
+height, the 7 × 19 grid, one 48 px row per day of the period), so a later skeleton can hold the exact layout.
+
+### The early phone check (390 and 320 px)
+
+Only the table, the date-range form and the export dialog were checked, at 390×844 and 320×568 (isMobile, 2x), in AR and
+EN. **Verdict: the system holds, with named changes** (all below 721 px; the desktop is unchanged):
+- **Table:** it recomposes instead of scrolling. The notes column folds into a row of its own under its day, the weekday
+  sits over the date, the peak's time under its value, headers may wrap, and only the sorted column shows its arrow.
+  Cell padding is 8 px, or 6 px (4 px at the table's edges) at 400 px and below. Four columns fit in 270 px at 320.
+- **Form:** the segmented control spans the width in equal segments; the two date fields stack at 400 px and below.
+- **Dialog:** a bottom sheet with its actions sharing the width.
+- No horizontal page scroll in any phone frame, every checked control is at least 44 × 44 px, and the table fits its
+  card. The rail is set aside below 721 px and the pattern scrolls sideways in its own box, only so that nothing
+  overflows the document; neither is a phone design.
+- A text-heavy table (Activity Log) was not tried. The rule to carry: fold secondary columns into the row first; only a
+  table that still cannot fit becomes a labelled, keyboard-scrollable region with a sticky first column.
+
+### Capture
+
+```
+node design-research/owner-composition-exploration-r04/directions/eclipse/reports-capture.mjs <outDir> [--port=3176]
+```
+
+It serves this folder on `127.0.0.1:3176` (never 3173, which is `capture.mjs`'s, or 3174), renders the Reports frames in
+fresh contexts with reduced motion, and writes `frames/`, `sheets/` and `reports-log.json` into `outDir`, which must be
+outside the repository. It exits 1 on a console message or page error, a font file fetched twice in one load, an
+off-origin request, a horizontal page scroll, a layout shift after the first paint (input-driven shifts excluded), a
+clipped or spilling element, a day table wider than its card on a phone, or a dialog panel outside the viewport.
+`capture.mjs` is unchanged and still covers the Daily page only.
+
+### Known limits (Reports round)
+
+- The Daily page's stat-card headers already overflow at 1024 px (for example "Busiest time" with its meta, 227 px in
+  168 px), at `8926193` too; unchanged here. Reports' cards go two by two below 1200 px, and their titles tighten
+  slightly in a narrow four-column card (a container query), so nothing clips at 1280 or 1024.
+- The rail's opening has an input-driven layout shift of 0.009 at 1440×900 in Arabic, identical on the Daily page at
+  `8926193`; it is not a shift after the first paint.
+- No screen-reader pass; the accessibility tree and the live region were checked as text. Chromium only.
+- The date fields take typed dates only (no calendar picker), to keep Western digits under any browser locale.
+- The export's "working" state is visible only for long periods or when held (`window.__reports.export.hold`); a
+  4-week file is ready in well under the 300 ms before the progress line would show.

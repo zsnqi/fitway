@@ -1,0 +1,1175 @@
+/* Eclipse Reports: FITWAY Owner Reports concept (the second Eclipse page). Synthetic data only; not production.
+ * Query: lang=ar|en (default ar), state=full|short (default full), range=7d|28d (default 28d) or from=YYYY-MM-DD&to=YYYY-MM-DD,
+ * dialog=range|export (open a dialog at load), export=fail (the first export attempt fails), motion=off.
+ * Reports answers "how does my gym usually behave, and which way is it going?": the weekday x hour pattern, the period's
+ * figures, day by day, week over week and the minute CSV. It is complete at first paint (no intro in this round). The same
+ * gym as the Daily page: 6:00 AM to 1:00 AM (Friday 2:00 PM to 1:00 AM), Riyadh time, the same crowd levels and capacity.
+ * Western digits only: numbers are printed with String(), never Intl or toLocaleString. A classic script (no modules and
+ * no fetch), so the page works from file:// too. */
+(() => {
+  "use strict";
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const root = document.documentElement;
+  const LANG = root.lang === "en" ? "en" : "ar";
+  const RTL = LANG === "ar";
+  const STATE = root.dataset.state === "short" ? "short" : "full";
+  const params = new URLSearchParams(location.search);
+
+  /* ------------------------------------------------------------------ copy */
+  // Arabic counted nouns: 1, 2, 3-10, 11-99 and hundreds (100, 200, ...).
+  const arN = (n, [one, two, few, many, single]) => {
+    if (n === 1) return one;
+    if (n === 2) return two;
+    const r = n % 100;
+    return r >= 3 && r <= 10 ? `${n} ${few}` : r >= 11 ? `${n} ${many}` : `${n} ${single}`;
+  };
+  const bdi = (s) => `<bdi>${s}</bdi>`;
+  const COPY = {
+    ar: {
+      skip: "انتقل إلى المحتوى",
+      concept: "مفهوم استكشافي · بيانات افتراضية",
+      railLabel: "الأقسام",
+      brand: "FITWAY، أسماء الأقسام",
+      nav: { daily: "اليومي", reports: "التقارير", access: "الوصول", activity: "سجل النشاط", operations: "التشغيل", monitoring: "شاشة المراقبة", lang: "English", settings: "الإعدادات", signout: "تسجيل الخروج" },
+      langAria: "التبديل إلى اللغة الإنجليزية",
+      langGlyph: "EN",
+      docTitle: "التقارير · FITWAY (مفهوم)",
+      title: "التقارير",
+      rangeName: "الفترة",
+      seg: { "7d": `آخر ${bdi(7)} أيام`, "28d": `آخر ${bdi(4)} أسابيع`, custom: "فترة أخرى…" },
+      days: (n) => arN(n, ["يوم واحد", "يومان", "أيام", "يومًا", "يوم"]),
+      daysWith: (k, n) => `قراءات في ${bdi(k)} من ${arN(n, ["يوم واحد", "يومين", "أيام", "يومًا", "يوم"])}`,
+      glance: "الفترة باختصار",
+      wowTitle: "مقارنة أسبوعية",
+      wowUnit: "متوسط الموجودين",
+      cmp: { busier: "أكثر ازدحامًا", quieter: "أهدأ", same: "قريب من السابق" },
+      wowEntries: (p) => `مرات الدخول ${p}`,
+      wowEmpty: "لا يكفي السجل بعد",
+      wowEmptyNote: (d) => `يلزم أسبوعان كاملان · القراءات منذ ${d}`,
+      wowSay: (cur, prev) => `الأيام ${cur} مقارنة بالأيام ${prev}`,
+      avgTitle: "متوسط الموجودين",
+      peakTitle: "أعلى ذروة",
+      entriesTitle: "مرات الدخول",
+      entriesNote: (n) => `نحو ${n} في اليوم`,
+      noReadings: "لا قراءات",
+      levels: ["هادئ", "متوسط", "مزدحم", "شديد الازدحام"],
+      patternTitle: "أوقات الازدحام",
+      patternSub: "متوسط الموجودين حسب اليوم والساعة",
+      busiest: (w, h) => `الأكثر ازدحامًا: ${w} ${h}`,
+      numbers: "الأرقام",
+      keyFewer: "أقل",
+      keyMore: "أكثر",
+      empty: "خالية",
+      emptyLong: "الصالة خالية",
+      closed: "مغلق",
+      noData: "لا بيانات",
+      avgOf: (n) => (n === 1 ? "من يوم واحد" : n === 2 ? "متوسط يومين" : `متوسط ${arN(n, ["", "", "أيام", "يومًا", "يوم"])}`),
+      closedTip: "خارج ساعات العمل",
+      noDataTip: "لا قراءات في هذه الفترة",
+      heatKeys: "استخدم مفاتيح الأسهم للتنقل بين الساعات والأيام، وHome وEnd لأول ساعة وآخر ساعة في اليوم.",
+      heatCaption: (r) => `متوسط الموجودين حسب اليوم والساعة، ${r}`,
+      dayHead: "اليوم",
+      daysTitle: "يومًا بيوم",
+      cols: { day: "اليوم", peak: "الذروة", avg: "المتوسط", entries: "مرات الدخول", notes: "ملاحظات" },
+      daysCaption: (r) => `الأيام من ${r}: الذروة والمتوسط ومرات الدخول`,
+      sortSay: (c, dir, isDay) => `مرتب حسب ${c}، ${isDay ? (dir === "desc" ? "الأحدث أولًا" : "الأقدم أولًا") : dir === "desc" ? "الأعلى أولًا" : "الأقل أولًا"}`,
+      highest: "الأعلى",
+      noteMissing: (r) => `لا قراءات ${r}`,
+      beforeHistory: "لا قراءات بعد",
+      emptyTable: (a, b) => `لا قراءات من ${a} إلى ${b}`,
+      emptyAction: `عرض آخر ${bdi(4)} أسابيع`,
+      exportBtn: "تصدير CSV",
+      close: "إغلاق",
+      cancel: "إلغاء",
+      rangeDlgTitle: "اختر الفترة",
+      rangeDlgDesc: (a, b) => `القراءات متاحة من ${a} حتى ${b}.`,
+      rangeApply: "عرض الفترة",
+      from: "من",
+      to: "إلى",
+      dateHint: `يوم/شهر/سنة، مثل ${bdi("16/09/2026")}`,
+      err: {
+        required: "أدخل تاريخًا",
+        format: `اكتب التاريخ هكذا: ${bdi("16/09/2026")}`,
+        invalid: "هذا التاريخ غير موجود",
+        future: (d) => `آخر يوم مكتمل هو ${d}`,
+        order: "تاريخ النهاية قبل البداية",
+        tooLong: `اختر ${bdi(366)} يومًا أو أقل`,
+      },
+      exportTitle: "تصدير بيانات الدقائق",
+      exportDesc: "صف لكل دقيقة بتوقيت الصالة وبتوقيت UTC، مع تمييز الدقائق المغلقة والتي بلا قراءة.",
+      rows: (n) => arN(n, ["صف واحد", "صفان", "صفوف", "صفًا", "صف"]),
+      exportGo: "تصدير CSV",
+      working: "جارٍ التجهيز…",
+      progress: (i, n) => `اليوم ${bdi(i)} من ${bdi(n)}`,
+      doneTitle: "الملف جاهز",
+      save: "حفظ الملف",
+      done: "تم",
+      failed: "تعذّر تجهيز الملف. لم يُحفظ شيء، والتواريخ كما هي.",
+      retry: "إعادة المحاولة",
+      canceledSay: "أُلغي التصدير",
+      readySay: (n) => `الملف جاهز، ${n}`,
+      rangeSay: (r) => `تُعرض الفترة ${r}`,
+    },
+    en: {
+      skip: "Skip to content",
+      concept: "Exploration concept · synthetic data",
+      railLabel: "Sections",
+      brand: "FITWAY, section names",
+      nav: { daily: "Daily", reports: "Reports", access: "Access", activity: "Activity log", operations: "Operations", monitoring: "Monitoring", lang: "العربية", settings: "Settings", signout: "Sign out" },
+      langAria: "Switch to Arabic",
+      langGlyph: "AR",
+      docTitle: "Reports · FITWAY (concept)",
+      title: "Reports",
+      rangeName: "Dates",
+      seg: { "7d": "Last 7 days", "28d": "Last 4 weeks", custom: "Custom…" },
+      days: (n) => `${n} ${n === 1 ? "day" : "days"}`,
+      daysWith: (k, n) => `Readings on ${k} of ${n} days`,
+      glance: "The period at a glance",
+      wowTitle: "Week over week",
+      wowUnit: "avg. inside",
+      cmp: { busier: "Busier", quieter: "Quieter", same: "About the same" },
+      wowEntries: (p) => `Entries ${p}`,
+      wowEmpty: "Not enough history yet",
+      wowEmptyNote: (d) => `Needs two full weeks · readings since ${d}`,
+      wowSay: (cur, prev) => `${cur} compared with ${prev}`,
+      avgTitle: "Average inside",
+      peakTitle: "Highest peak",
+      entriesTitle: "Entries",
+      entriesNote: (n) => `About ${n} a day`,
+      noReadings: "No readings",
+      levels: ["Quiet", "Moderate", "Busy", "Packed"],
+      patternTitle: "Busy times",
+      patternSub: "Average inside by day and hour",
+      busiest: (w, h) => `Busiest: ${w} ${h}`,
+      numbers: "Numbers",
+      keyFewer: "Fewer",
+      keyMore: "More",
+      empty: "Empty",
+      emptyLong: "Empty",
+      closed: "Closed",
+      noData: "No data",
+      avgOf: (n) => `Average of ${n} ${n === 1 ? "day" : "days"}`,
+      closedTip: "Outside opening hours",
+      noDataTip: "No readings in these dates",
+      heatKeys: "Use the arrow keys to move between hours and days. Home and End go to the day's first and last hour.",
+      heatCaption: (r) => `Average inside by day and hour, ${r}`,
+      dayHead: "Day",
+      daysTitle: "Day by day",
+      cols: { day: "Day", peak: "Peak", avg: "Average", entries: "Entries", notes: "Notes" },
+      daysCaption: (r) => `Days from ${r}: peak, average and entries`,
+      sortSay: (c, dir, isDay) => `Sorted by ${c.toLowerCase()}, ${isDay ? (dir === "desc" ? "newest first" : "oldest first") : dir === "desc" ? "highest first" : "lowest first"}`,
+      highest: "Highest",
+      noteMissing: (r) => `No readings ${r}`,
+      beforeHistory: "No readings yet",
+      emptyTable: (a, b) => `No readings from ${a} to ${b}`,
+      emptyAction: "Show the last 4 weeks",
+      exportBtn: "Export CSV",
+      close: "Close",
+      cancel: "Cancel",
+      rangeDlgTitle: "Choose dates",
+      rangeDlgDesc: (a, b) => `Readings are available from ${a} to ${b}.`,
+      rangeApply: "Show these dates",
+      from: "From",
+      to: "To",
+      dateHint: "Day/month/year, like 16/09/2026",
+      err: {
+        required: "Enter a date",
+        format: "Write the date like 16/09/2026",
+        invalid: "This date doesn't exist",
+        future: (d) => `The last full day is ${d}`,
+        order: "The end is before the start",
+        tooLong: "Choose 366 days or fewer",
+      },
+      exportTitle: "Export minute data",
+      exportDesc: "One row per minute, in gym time and UTC. Closed and missing minutes are marked.",
+      rows: (n) => `${fmtInt(n)} ${n === 1 ? "row" : "rows"}`,
+      exportGo: "Export CSV",
+      working: "Preparing…",
+      progress: (i, n) => `Day ${i} of ${n}`,
+      doneTitle: "Your file is ready",
+      save: "Save file",
+      done: "Done",
+      failed: "The file couldn't be prepared. Nothing was saved, and your dates are kept.",
+      retry: "Try again",
+      canceledSay: "Export canceled",
+      readySay: (n) => `Your file is ready, ${n}`,
+      rangeSay: (r) => `Showing ${r}`,
+    },
+  };
+  const L = COPY[LANG];
+
+  /* ------------------------------------------------------------ numbers and time */
+  function fmtInt(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+  const pct = (x) => `${x > 0 ? "+" : x < 0 ? "−" : ""}${Math.abs(Math.round(x))}%`;
+  // Minutes since 6:00 AM of the business day, as on the Daily page.
+  function clock(m) {
+    const abs = (((360 + m) % 1440) + 1440) % 1440;
+    const h = Math.floor(abs / 60);
+    return { h12: ((h + 11) % 12) + 1, mm: abs % 60, pm: h >= 12 };
+  }
+  const suffix = (pm) => (RTL ? (pm ? "م" : "ص") : pm ? "PM" : "AM");
+  const fmtTime = (m) => { const c = clock(m); return `${c.h12}:${String(c.mm).padStart(2, "0")} ${suffix(c.pm)}`; };
+  const fmtHour = (m) => { const c = clock(m); return `${c.h12} ${suffix(c.pm)}`; };
+  // Arabic ranges use a plain ASCII hyphen: an en dash would reverse the range. English uses an en dash.
+  const DASH = RTL ? "-" : "–";
+  const range2 = (a, b) => `${bdi(a)} ${DASH} ${bdi(b)}`;
+  const timeRange = (a, b) => range2(fmtTime(a), fmtTime(b));
+  function hourRange(a, b) {
+    const A = clock(a), B = clock(b);
+    return A.pm === B.pm ? bdi(`${A.h12}${DASH}${B.h12} ${suffix(A.pm)}`) : range2(fmtHour(a), fmtHour(b));
+  }
+
+  /* ------------------------------------------------------------------- dates
+   * Dates are business days, handled as whole-day numbers (UTC day counts), never as the viewer's local time. */
+  const WD_AR = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+  const WD_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const WD_EN_S = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const MO_AR = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+  const MO_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const toDn = (iso) => Date.UTC(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10)) / 864e5;
+  const isoOf = (dn) => new Date(dn * 864e5).toISOString().slice(0, 10);
+  const partsOf = (dn) => { const d = new Date(dn * 864e5); return { y: d.getUTCFullYear(), m: d.getUTCMonth(), d: d.getUTCDate(), wd: d.getUTCDay() }; };
+  const wdOf = (dn) => partsOf(dn).wd;
+  const wdLong = (wd) => (RTL ? WD_AR : WD_EN)[wd];
+  const wdShort = (wd) => (RTL ? WD_AR : WD_EN_S)[wd];
+  const monthOf = (m) => (RTL ? MO_AR : MO_EN)[m];
+  // "22 Sep" / «22 سبتمبر», optionally with the year.
+  const dateText = (dn, year = false) => { const p = partsOf(dn); return `${bdi(p.d)} ${monthOf(p.m)}${year ? ` ${bdi(p.y)}` : ""}`; };
+  // "Tue 22 Sep" / «الثلاثاء 22 سبتمبر».
+  const dayText = (dn) => `${wdShort(wdOf(dn))} ${dateText(dn)}`;
+  const numDate = (dn) => { const p = partsOf(dn); return `${String(p.d).padStart(2, "0")}/${String(p.m + 1).padStart(2, "0")}/${p.y}`; };
+  function rangeText(a, b, year = true) {
+    const A = partsOf(a), B = partsOf(b);
+    if (a === b) return dateText(a, year);
+    if (A.y !== B.y) return `${dateText(a, true)} ${DASH} ${dateText(b, true)}`;
+    if (A.m === B.m) return `${range2(A.d, B.d)} ${monthOf(A.m)}${year ? ` ${bdi(A.y)}` : ""}`;
+    return `${dateText(a)} ${DASH} ${dateText(b)}${year ? ` ${bdi(B.y)}` : ""}`;
+  }
+  const plain = (html) => html.replace(/<[^>]+>/g, "");
+
+  /* ------------------------------------------------------------ the gym and its history */
+  const DAY = 1140;                         // 6:00 AM to 1:00 AM next day, gym time (Riyadh), as on the Daily page
+  const HOURS = 19;                         // the pattern's hour columns: 6 AM ... 12 AM
+  const openAt = (wd) => (wd === 5 ? 480 : 0); // Friday opens at 2:00 PM; every other day at 6:00 AM
+  const LAST_FULL = toDn("2026-09-22");     // the last complete business day (the Daily page is Wednesday 23 September)
+  const FIRST_DAY = toDn("2026-08-02");     // the full history starts on Sunday 2 August 2026
+  const HIST_START = STATE === "short" ? toDn("2026-09-13") : FIRST_DAY; // short: readings since Sunday 13 September
+  const CAPACITY = 80;                      // owner-private, as on the Daily page; used only in the CSV's capacity_snapshot
+  const SETTINGS_VERSION = 1;
+  const TZ = "Asia/Riyadh";                 // UTC+3 all year
+  const MAX_RANGE = 366;
+  const levelOf = (v) => (v <= 24 ? 0 : v <= 48 ? 1 : v <= 68 ? 2 : 3);
+  const BAND = ["quiet", "moderate", "busy", "packed"];
+  // Camera outages: open minutes with no reading (minutes since 6:00 AM, inclusive).
+  const MISSING = { [toDn("2026-09-17")]: [[240, 479]], [toDn("2026-08-31")]: [[252, 280]] };
+
+  // The Daily page's seeded minute simulation, generalised to an opening minute and a quiet start. With open 0 and
+  // quiet 10 it is exactly the Daily page's simulateDay (same random draws), so the four Wednesdays it averages as
+  // "usual" (26 August and 2, 9, 16 September) are the same days here.
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = (a + 0x6d2b79f5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const ss = (x) => (x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x));
+  const bump = (m, mu, sl, sr) => { const z = (m - mu) / (m < mu ? sl : sr); return Math.exp(-0.5 * z * z); };
+  function target(m, p) {
+    const z = m - p.open;
+    if (z < p.quiet) return 0;
+    const ramp = ss((z - (p.quiet - 1)) / 22);
+    const base = 7 * ss((z - p.quiet) / 60) * (1 - ss((m - 1000) / 140));
+    return ramp * (p.am * bump(m, p.amAt, 34, 44) + p.mid * bump(m, p.midAt, 70, 70) + p.pm * bump(m, p.pmAt, 105, 125)) + base;
+  }
+  function simulate(seed, p) {
+    const rnd = mulberry32(seed);
+    const poisson = (l) => { if (l <= 0) return 0; const lim = Math.exp(-l); let k = 0, q = 1; do { k++; q *= rnd(); } while (q > lim); return k - 1; };
+    const occ = new Array(DAY).fill(null), ent = new Array(DAY).fill(0), ext = new Array(DAY).fill(0);
+    let o = 0, prevT = 0;
+    for (let m = p.open; m < DAY; m++) {
+      const z = m - p.open;
+      const T = target(m, p);
+      let lam = z < p.quiet ? 0 : Math.max(0, T - prevT * (63 / 64));
+      if (z === p.quiet) lam = Math.max(lam, 1.2);
+      let x = 0;
+      for (let i = 0; i < o; i++) if (rnd() < 1 / 64) x++;
+      const e = poisson(lam);
+      o = o - x + e;
+      occ[m] = o; ent[m] = e; ext[m] = x; prevT = T;
+    }
+    return { occ, ent, ext };
+  }
+  const DAILY_SEED = 15983;
+  // The Daily page's last four Wednesdays: seed offset and shape (16, 9, 2 September and 26 August).
+  const PAST_WED = {
+    [toDn("2026-09-16")]: { k: 1, f: 0.78, a: 0.95, at: 762 },
+    [toDn("2026-09-09")]: { k: 2, f: 0.74, a: 1.0, at: 747 },
+    [toDn("2026-09-02")]: { k: 3, f: 0.8, a: 0.98, at: 757 },
+    [toDn("2026-08-26")]: { k: 4, f: 0.76, a: 1.03, at: 752 },
+  };
+  // Each weekday's own shape. Thursday evenings are the busiest; Friday opens after midday; on Saturday nobody comes
+  // before 7:00 AM (a genuine zero hour); Wednesday is the Daily page's usual Wednesday.
+  const SHAPE = [
+    { am: 21, amAt: 84, mid: 8, midAt: 420, pm: 43, pmAt: 752 },
+    { am: 22, amAt: 82, mid: 8, midAt: 420, pm: 45, pmAt: 748 },
+    { am: 20, amAt: 84, mid: 8, midAt: 420, pm: 42, pmAt: 758 },
+    { am: 22, amAt: 82, mid: 8, midAt: 420, pm: 41, pmAt: 755 },
+    { am: 19, amAt: 86, mid: 7, midAt: 430, pm: 47, pmAt: 772 },
+    { am: 0, amAt: 0, mid: 11, midAt: 580, pm: 40, pmAt: 812 },
+    { am: 13, amAt: 215, mid: 9, midAt: 440, pm: 35, pmAt: 745 },
+  ];
+  const DAYS = new Map(); // day number -> the simulated day, for every day from FIRST_DAY to LAST_FULL
+  for (let dn = FIRST_DAY; dn <= LAST_FULL; dn++) {
+    const wd = wdOf(dn), open = openAt(wd), w = PAST_WED[dn];
+    let sim;
+    if (w) {
+      sim = simulate(DAILY_SEED + 1000 * w.k, { open: 0, quiet: 10, am: 22 * w.a, amAt: 82, mid: 8, midAt: 420, pm: 53 * w.f, pmAt: w.at });
+    } else {
+      const j = mulberry32(40000 + dn), s = SHAPE[wd], t = dn - FIRST_DAY;
+      // A gentle rise over the summer, and a busier last week (the start of the autumn season).
+      const g = (0.93 + 0.0016 * t + (dn >= toDn("2026-09-16") ? 0.08 : 0)) * (0.95 + 0.1 * j());
+      sim = simulate(90001 + dn, { open, quiet: wd === 6 ? 60 : 10, am: s.am * g, amAt: s.amAt + Math.round(8 * (j() - 0.5)), mid: s.mid, midAt: s.midAt, pm: s.pm * g, pmAt: s.pmAt + Math.round(20 * (j() - 0.5)) });
+    }
+    const miss = MISSING[dn] || [];
+    const obs = (m) => m >= open && m < DAY && !miss.some(([a, b]) => m >= a && m <= b);
+    let observed = 0, total = 0, peak = -1, peakM = -1, entries = 0;
+    for (let m = open; m < DAY; m++) {
+      if (!obs(m)) continue;
+      observed++; total += sim.occ[m]; entries += sim.ent[m];
+      if (sim.occ[m] > peak) { peak = sim.occ[m]; peakM = m; }
+    }
+    DAYS.set(dn, { dn, wd, open, ...sim, miss, obs, observed, total, peak, peakM, entries, expected: DAY - open });
+  }
+  // A day as the reports see it: before the history starts it has no readings (its open minutes are missing).
+  const hasReadings = (dn) => dn >= HIST_START && dn <= LAST_FULL;
+  function dayModel(dn) {
+    const wd = wdOf(dn), open = openAt(wd);
+    if (!hasReadings(dn)) return { dn, wd, open, expected: DAY - open, observed: 0, total: 0, peak: null, peakM: null, entries: 0, avg: null, miss: [], none: true };
+    const d = DAYS.get(dn);
+    return { dn, wd, open, expected: d.expected, observed: d.observed, total: d.total, peak: d.observed ? d.peak : null, peakM: d.observed ? d.peakM : null, entries: d.entries, avg: d.observed ? d.total / d.observed : null, miss: d.miss, none: false };
+  }
+
+  /* ------------------------------------------------------------ the period's model
+   * The same semantics as the reporting domain: a pattern cell is closed when no minute of it is open in the period,
+   * no data when it is open but has no reading (or its weekday is not in the period), and otherwise the mean of the
+   * observed minutes. A genuine zero is a cell whose readings are all 0. */
+  function buildModel(a, b) {
+    const days = [];
+    for (let dn = a; dn <= b; dn++) days.push(dayModel(dn));
+    const heat = [];
+    for (let wd = 0; wd < 7; wd++) {
+      const row = [];
+      const ofDay = days.filter((d) => d.wd === wd);
+      for (let c = 0; c < HOURS; c++) {
+        let expected = 0, observed = 0, total = 0;
+        const samples = new Set();
+        for (const d of ofDay) {
+          for (let m = c * 60; m < c * 60 + 60; m++) {
+            if (m < d.open) continue;
+            expected++;
+            if (d.none) continue;
+            const sim = DAYS.get(d.dn);
+            if (!sim.obs(m)) continue;
+            observed++; total += sim.occ[m]; samples.add(d.dn);
+          }
+        }
+        const state = !ofDay.length ? "missing" : !expected ? "closed" : !observed ? "missing" : "value";
+        row.push({ wd, c, state, avg: state === "value" ? total / observed : null, samples: samples.size, observed, expected });
+      }
+      heat.push(row);
+    }
+    let observed = 0, total = 0, entries = 0, withReadings = 0, top = null;
+    days.forEach((d) => {
+      observed += d.observed; total += d.total; entries += d.entries;
+      if (d.observed) withReadings++;
+      if (d.peak != null && (!top || d.peak >= top.peak)) top = d;
+    });
+    let busiest = null;
+    heat.flat().forEach((cell) => { if (cell.state === "value" && (!busiest || cell.avg > busiest.avg)) busiest = cell; });
+    return { a, b, n: b - a + 1, days, heat, observed, total, entries, withReadings, avg: observed ? total / observed : null, top, busiest };
+  }
+
+  // Week over week (the reporting domain's rule): the last seven complete business days against the seven before,
+  // compared only when both weeks have readings for at least 80% of their open minutes.
+  const WOW = { cur: [LAST_FULL - 6, LAST_FULL], prev: [LAST_FULL - 13, LAST_FULL - 7], minCoverage: 0.8 };
+  function weekMetrics([a, b]) {
+    let observed = 0, expected = 0, total = 0, entries = 0;
+    for (let dn = a; dn <= b; dn++) { const d = dayModel(dn); observed += d.observed; expected += d.expected; total += d.total; entries += d.entries; }
+    return { observed, expected, coverage: expected ? observed / expected : 0, avg: observed ? total / observed : null, entries };
+  }
+  const wow = (() => {
+    const cur = weekMetrics(WOW.cur), prev = weekMetrics(WOW.prev);
+    const comparable = cur.coverage >= WOW.minCoverage && prev.coverage >= WOW.minCoverage;
+    return {
+      cur, prev, comparable,
+      avgChange: comparable ? ((cur.avg - prev.avg) / prev.avg) * 100 : null,
+      entriesChange: comparable ? ((cur.entries - prev.entries) / prev.entries) * 100 : null,
+    };
+  })();
+
+  /* ------------------------------------------------------------ motion settings
+   * Reports has no load motion. Motion is on unless the system asks for reduced motion or the URL says ?motion=off;
+   * then every change (the rail, a dialog, the switch) is instant. */
+  const URL_OFF = params.get("motion") === "off";
+  const mqReduce = matchMedia("(prefers-reduced-motion: reduce)");
+  const motionOn = () => !URL_OFF && !mqReduce.matches;
+  root.dataset.motion = motionOn() ? "on" : "off";
+  const EASE = { rail: "cubic-bezier(0.22, 1, 0.36, 1)", railClose: "cubic-bezier(0.4, 0, 0.2, 1)" };
+  const T = { railOpen: 240, railClose: 200, railDist: 156, railReveal: 12, dlgOpen: 240, dlgClose: 200 };
+  const f2 = (n) => n.toFixed(2);
+
+  /* ---------------------------------------------------------------- the range
+   * The period is in the URL (range=7d|28d, or from and to), so a reload and the language link keep it. */
+  const PRESETS = { "7d": 7, "28d": 28 };
+  const parseIso = (s) => (/^\d{4}-\d{2}-\d{2}$/.test(s || "") && isoOf(toDn(s)) === s ? toDn(s) : null);
+  let range = (() => {
+    const a = parseIso(params.get("from")), b = parseIso(params.get("to"));
+    if (a != null && b != null && a <= b && b <= LAST_FULL && b - a + 1 <= MAX_RANGE) return { kind: "custom", a, b };
+    const k = PRESETS[params.get("range")] ? params.get("range") : "28d";
+    return { kind: k, a: LAST_FULL - PRESETS[k] + 1, b: LAST_FULL };
+  })();
+  let model = buildModel(range.a, range.b);
+  function urlFor(extra = {}) {
+    const p = new URLSearchParams(location.search);
+    ["range", "from", "to", "dialog"].forEach((k) => p.delete(k));
+    if (range.kind === "custom") { p.set("from", isoOf(range.a)); p.set("to", isoOf(range.b)); } else if (range.kind !== "28d") p.set("range", range.kind);
+    Object.entries(extra).forEach(([k, v]) => p.set(k, v));
+    return p;
+  }
+
+  /* ---------------------------------------------------------------- shell */
+  document.title = L.docTitle;
+  document.querySelectorAll("[data-t]").forEach((el) => { const v = L[el.dataset.t]; if (typeof v === "string") el.innerHTML = v; });
+  document.querySelectorAll("[data-t-label]").forEach((el) => el.setAttribute("aria-label", L[el.dataset.tLabel]));
+  const rail = $("#rail"), brand = $("#brand");
+  rail.setAttribute("aria-label", L.railLabel);
+  brand.setAttribute("aria-label", L.brand);
+  $$(".rail-item[data-nav]").forEach((a) => {
+    const key = a.dataset.nav, name = L.nav[key];
+    $(".rail-name", a).textContent = name;
+    a.setAttribute("aria-label", key === "lang" ? L.langAria : name);
+    if (a.hasAttribute("data-inert")) a.addEventListener("click", (e) => e.preventDefault());
+  });
+  $("#lang-glyph").textContent = L.langGlyph;
+  $("#lang-glyph").setAttribute("lang", "en");
+  // The Daily page keeps the language (and ?motion=off); the language link keeps everything, the period included.
+  const dailyLink = $("#daily-link");
+  {
+    const p = new URLSearchParams({ lang: LANG });
+    if (URL_OFF) p.set("motion", "off");
+    dailyLink.setAttribute("href", `index.html?${p}`);
+  }
+  const langLink = $("#lang-link");
+  langLink.setAttribute("hreflang", RTL ? "en" : "ar");
+  $(".rail-name", langLink).setAttribute("lang", RTL ? "en" : "ar");
+  function syncUrl() {
+    const p = urlFor();
+    try { history.replaceState(null, "", `${location.pathname}${p.toString() ? `?${p}` : ""}`); } catch (e) { /* file:// may refuse; links still carry the period */ }
+    const q = urlFor({ lang: RTL ? "en" : "ar" });
+    langLink.setAttribute("href", `?${q}`);
+  }
+
+  /* ---- rail: the Daily page's rail and its motion (app.js "rail"), unchanged. */
+  let railOpen = false;
+  const railRun = { anims: [], surface: null, open: false };
+  function finishRail() {
+    if (!railRun.surface) return;
+    const anims = railRun.anims;
+    railRun.anims = [];
+    anims.forEach((a) => a.cancel());
+    railRun.surface.remove();
+    railRun.surface = null;
+    rail.classList.remove("is-morph");
+    rail.dataset.open = String(railRun.open);
+  }
+  function animateRail(open) {
+    finishRail();
+    if (!motionOn()) { rail.dataset.open = String(open); return; }
+    const s = document.createElement("i");
+    s.className = "rail-surface";
+    s.setAttribute("aria-hidden", "true");
+    s.innerHTML = '<i class="rs-shadow"></i><i class="rs-start"><i></i></i><i class="rs-mid"><i></i></i><i class="rs-end"><i></i></i>';
+    rail.prepend(s);
+    rail.classList.add("is-morph");
+    rail.dataset.open = "true";
+    railRun.surface = s;
+    railRun.open = open;
+    const [shadow, start, mid, end] = s.children;
+    const d = (RTL ? -1 : 1) * T.railDist;
+    const o = open ? { duration: T.railOpen, easing: EASE.rail, fill: "both" } : { duration: T.railClose, easing: EASE.railClose, fill: "both" };
+    const kf = (a, b) => (open ? [a, b] : [b, a]);
+    const an = [];
+    an.push(end.animate(kf({ transform: "translateX(0px)" }, { transform: `translateX(${d}px)` }), o));
+    an.push(mid.animate(kf({ transform: "scaleX(0)" }, { transform: "scaleX(1)" }), o));
+    an.push(shadow.animate(kf({ opacity: 0 }, { opacity: 1 }), o));
+    [start, mid, end].forEach((p) => an.push(p.firstElementChild.animate(kf({ opacity: 0 }, { opacity: 1 }), o)));
+    const rr = rail.getBoundingClientRect(), closedW = rr.width - T.railDist;
+    rail.querySelectorAll(".rail-name").forEach((n) => {
+      const bx = n.getBoundingClientRect();
+      const a = RTL ? rr.right - bx.right : bx.left - rr.left, w = bx.width;
+      const p0 = Math.min(1, Math.max(0, (a + T.railReveal - closedW) / T.railDist));
+      const p1 = Math.min(1, Math.max(p0, (a + w + T.railReveal - closedW) / T.railDist));
+      const clip = (hidden) => { const e = f2(hidden ? w + 8 : -8); return RTL ? `inset(-8px -8px -8px ${e}px)` : `inset(-8px ${e}px -8px -8px)`; };
+      const frames = [{ offset: 0, clipPath: clip(1) }, { offset: p0, clipPath: clip(1) }, { offset: p1, clipPath: clip(0) }, { offset: 1, clipPath: clip(0) }];
+      an.push(n.animate(open ? frames : frames.map((k) => ({ ...k, offset: 1 - k.offset })).reverse(), o));
+    });
+    railRun.anims = an;
+    Promise.all(an.map((x) => x.finished)).then(() => { if (railRun.anims === an) finishRail(); }).catch(() => {});
+  }
+  const setRail = (open) => {
+    if (open === railOpen) return;
+    railOpen = open;
+    brand.setAttribute("aria-expanded", String(open));
+    animateRail(open);
+  };
+  brand.addEventListener("click", () => setRail(!railOpen));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && railOpen && !openDlg) { setRail(false); brand.focus(); } });
+  document.addEventListener("pointerdown", (e) => { if (railOpen && !rail.contains(e.target)) setRail(false); });
+
+  const say = (text) => { const el = $("#say"); el.textContent = ""; requestAnimationFrame(() => { el.textContent = text; }); };
+
+  /* ---------------------------------------------------------------- icons */
+  const ICON = {
+    up: `<svg class="trend" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 16.5l5.2-5.2 3.6 3.6L20 7.7"/><path d="M14.6 7.7H20v5.4"/></svg>`,
+    down: `<svg class="trend" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7.5l5.2 5.2 3.6-3.6L20 16.3"/><path d="M14.6 16.3H20v-5.4"/></svg>`,
+    same: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 9.5h14M5 14.5h14"/></svg>`,
+    info: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"/><path d="M12 11v5.2M12 7.8v.2"/></svg>`,
+    gap: `<svg class="ico ico-gap" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="1.3"/><circle cx="9.7" cy="12" r="1.3"/><circle cx="14.3" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg>`,
+    alert: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"/><path d="M12 7.6v5.4M12 16.2v.2"/></svg>`,
+    sort: `<svg class="sort-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5.5v13M7.5 14l4.5 4.5 4.5-4.5"/></svg>`,
+    file: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 3.8h6.6L18.5 8.7v10.1a1.4 1.4 0 0 1-1.4 1.4H7a1.4 1.4 0 0 1-1.4-1.4V5.2A1.4 1.4 0 0 1 7 3.8Z"/><path d="M13.4 3.8v5h5.1"/></svg>`,
+    check: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6.5 12.4l3.6 3.6 7.4-7.6"/></svg>`,
+    down2: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4.5v10.2M7.8 10.6 12 14.8l4.2-4.2"/><path d="M5 16.5v1.4a1.6 1.6 0 0 0 1.6 1.6h10.8a1.6 1.6 0 0 0 1.6-1.6v-1.4"/></svg>`,
+  };
+  const levelChip = (v) => {
+    const li = levelOf(v);
+    return `<span class="level"><span class="bars" aria-hidden="true">${[0, 1, 2, 3].map((i) => `<i class="${i <= li ? "on" : ""}"></i>`).join("")}</span>${L.levels[li]}</span>`;
+  };
+
+  /* ---------------------------------------------------------------- header */
+  const segButtons = $$("#range-seg .seg-b");
+  segButtons.forEach((btn) => { btn.innerHTML = L.seg[btn.dataset.range]; });
+  function renderHead() {
+    const n = model.n;
+    $("#sub").innerHTML = `${rangeText(model.a, model.b)}<span class="sep" aria-hidden="true">·</span>${model.withReadings === n ? L.days(n) : model.withReadings ? L.daysWith(model.withReadings, n) : `${L.noReadings}<span class="sep" aria-hidden="true">·</span>${L.days(n)}`}`;
+    segButtons.forEach((btn) => btn.setAttribute("aria-pressed", String(btn.dataset.range === range.kind)));
+  }
+
+  /* ---------------------------------------------------------------- cards */
+  function renderCards() {
+    // Week over week: fixed to the last seven complete days, whatever the period.
+    $("#wow-meta").innerHTML = `<span>${rangeText(WOW.cur[0], WOW.cur[1], false)}</span>`;
+    const wb = $("#wow-body");
+    if (wow.comparable) {
+      const c = wow.avgChange, kind = c >= 5 ? "busier" : c <= -5 ? "quieter" : "same";
+      wb.innerHTML = `<p class="stat-value"><bdi class="num">${pct(c)}</bdi><span class="unit">${L.wowUnit}</span></p>
+        <div class="stat-foot"><span class="cmp cmp-${kind}">${kind === "busier" ? ICON.up : kind === "quieter" ? ICON.down : ICON.same}${L.cmp[kind]}</span><span class="stat-aside">${L.wowEntries(bdi(pct(wow.entriesChange)))}</span></div>`;
+      $("#card-wow").classList.remove("is-empty");
+    } else {
+      wb.innerHTML = `<p class="stat-empty">${L.wowEmpty}</p><p class="stat-note">${L.wowEmptyNote(dateText(HIST_START))}</p>`;
+      $("#card-wow").classList.add("is-empty");
+    }
+    $("#card-wow").setAttribute("aria-description", plain(L.wowSay(rangeText(WOW.cur[0], WOW.cur[1]), rangeText(WOW.prev[0], WOW.prev[1]))));
+
+    const none = (id) => { $(id).innerHTML = `<p class="stat-empty">${L.noReadings}</p>`; };
+    if (model.avg == null) { none("#avg-body"); none("#peak-body"); $("#peak-meta").innerHTML = ""; }
+    else {
+      const avg = Math.round(model.avg);
+      $("#avg-body").innerHTML = `<p class="stat-value"><bdi class="num">${avg}</bdi></p><div class="stat-foot">${levelChip(avg)}</div>`;
+      const t = model.top;
+      $("#peak-meta").innerHTML = `<span>${dayText(t.dn)}</span>`;
+      $("#peak-body").innerHTML = `<p class="stat-value"><bdi class="num">${t.peak}</bdi></p><div class="stat-foot">${levelChip(t.peak)}<span class="stat-aside">${bdi(fmtTime(t.peakM))}</span></div>`;
+    }
+    if (!model.withReadings) none("#entries-body");
+    else $("#entries-body").innerHTML = `<p class="stat-value"><bdi class="num">${fmtInt(model.entries)}</bdi></p><p class="stat-note">${L.entriesNote(bdi(fmtInt(model.entries / model.withReadings)))}</p>`;
+  }
+
+  /* ---------------------------------------------------------------- the pattern
+   * A real table: weekdays are row headers, hours are column headers, and every cell's value is its text. Closed and
+   * no-data runs are merged cells that say so. The colour is a single-hue ramp from FITWAY's light ramp (oxblood to
+   * FITWAY red to #FF2946); closed and no data are neutral, and a genuine zero is an outlined cell with "0". It is a
+   * grid (one Tab stop, arrow keys between cells), and hover, keyboard focus and a tap show the same readout. */
+  const RAMP = [[0, [29, 11, 14]], [8, [58, 10, 19]], [16, [77, 7, 19]], [28, [126, 13, 31]], [40, [184, 19, 43]], [52, [229, 25, 53]], [64, [255, 41, 70]]];
+  function rampColor(v) {
+    if (v >= RAMP[RAMP.length - 1][0]) return RAMP[RAMP.length - 1][1];
+    let i = 0;
+    while (i < RAMP.length - 2 && v > RAMP[i + 1][0]) i++;
+    const [a, ca] = RAMP[i], [b, cb] = RAMP[i + 1], k = Math.max(0, Math.min(1, (v - a) / (b - a)));
+    return ca.map((x, j) => Math.round(x + (cb[j] - x) * k));
+  }
+  const heat = $("#heat"), heatScroll = $("#heat-scroll"), heatTip = $("#heat-tip");
+  let heatSlots = [];      // [row][column] -> the cell element covering that hour
+  let heatCur = null;      // { r, c } of the roving cell
+  let heatWant = 0;        // the column a vertical move aims for
+  const valText = (v) => (v > 0 && v < 0.5 ? "<1" : String(Math.round(v)));
+  function renderHeat() {
+    const hours = [];
+    for (let c = 0; c < HOURS; c++) {
+      const show = c % 3 === 0;
+      hours.push(`<th scope="col" class="hh${show ? " is-shown" : ""}" role="columnheader"><span class="${show ? "hh-t" : "sr-only"}">${bdi(fmtHour(c * 60))}</span></th>`);
+    }
+    const rows = [];
+    // Sunday first: the working week, then Friday and Saturday together.
+    for (let wd = 0; wd < 7; wd++) {
+      const cells = [], row = model.heat[wd];
+      for (let c = 0; c < HOURS; ) {
+        const cell = row[c];
+        if (cell.state === "value") {
+          const z = cell.avg === 0;
+          const col = rampColor(cell.avg);
+          const top = model.busiest && model.busiest.wd === wd && model.busiest.c === c ? " is-top" : "";
+          cells.push(`<td class="hc ${z ? "zero" : "v"}${top}" role="gridcell" tabindex="-1" data-r="${wd}" data-c0="${c}" data-c1="${c}"${z ? "" : ` style="--c: rgb(${col.join(" ")})"`}><span class="hv">${z ? "0" : valText(cell.avg)}</span><span class="sr-only">${RTL ? "، " : ", "}${z ? L.emptyLong : L.levels[levelOf(cell.avg)]}</span></td>`);
+          c++;
+        } else {
+          let e = c;
+          while (e + 1 < HOURS && row[e + 1].state === cell.state) e++;
+          const word = cell.state === "closed" ? L.closed : L.noData;
+          cells.push(`<td class="hc ${cell.state === "closed" ? "closed" : "nodata"}${e > c ? "" : " is-one"}" role="gridcell" tabindex="-1" colspan="${e - c + 1}" data-r="${wd}" data-c0="${c}" data-c1="${e}"><span class="run">${word}</span></td>`);
+          c = e + 1;
+        }
+      }
+      rows.push(`<tr role="row"><th scope="row" class="hd" role="rowheader">${wdLong(wd)}</th>${cells.join("")}</tr>`);
+    }
+    heat.innerHTML = `<caption class="sr-only">${L.heatCaption(rangeText(model.a, model.b))}</caption>
+      <colgroup><col class="col-day">${"<col>".repeat(HOURS)}</colgroup>
+      <thead><tr role="row"><th scope="col" class="heat-corner" role="columnheader"><span class="sr-only">${L.dayHead}</span></th>${hours.join("")}</tr></thead>
+      <tbody>${rows.join("")}</tbody>`;
+    heatSlots = [0, 1, 2, 3, 4, 5, 6].map(() => new Array(HOURS));
+    $$(".hc", heat).forEach((td) => { for (let c = +td.dataset.c0; c <= +td.dataset.c1; c++) heatSlots[+td.dataset.r][c] = td; });
+    // The roving cell starts on the busiest hour (or the first cell).
+    const b = model.busiest;
+    heatCur = b ? { r: b.wd, c: b.c } : { r: 0, c: 0 };
+    heatWant = heatCur.c;
+    heatSlots[heatCur.r][heatCur.c].tabIndex = 0;
+    hideTip();
+    $("#pattern-sub").innerHTML = `${L.patternSub}${b ? `<span class="sep" aria-hidden="true">·</span>${L.busiest(wdLong(b.wd), hourRange(b.c * 60, b.c * 60 + 60))}` : ""}`;
+  }
+  $("#heat-keys").textContent = L.heatKeys;
+  $("#heat-key").innerHTML = `<li><span>${L.keyFewer}</span><span class="ramp" aria-hidden="true"></span><span>${L.keyMore}</span></li>
+    <li><span class="k0" aria-hidden="true">0</span><span>${L.empty}</span></li>
+    <li><span class="kc" aria-hidden="true"></span><span>${L.closed}</span></li>
+    <li><span class="kn" aria-hidden="true"></span><span>${L.noData}</span></li>`;
+  $("#heat-key").setAttribute("aria-label", L.patternTitle);
+
+  function tipHTML(td) {
+    const wd = +td.dataset.r, c0 = +td.dataset.c0, c1 = +td.dataset.c1, cell = model.heat[wd][c0];
+    const when = `<div class="tip-t"><span>${wdLong(wd)}</span><span aria-hidden="true">·</span><span>${hourRange(c0 * 60, c1 * 60 + 60)}</span></div>`;
+    if (cell.state === "closed") return `${when}<div class="tip-main"><span class="tip-word">${L.closed}</span></div><div class="tip-u">${L.closedTip}</div>`;
+    if (cell.state === "missing") return `${when}<div class="tip-main"><span class="tip-word">${L.noData}</span></div><div class="tip-u">${L.noDataTip}</div>`;
+    const z = cell.avg === 0;
+    return `${when}<div class="tip-main"><span class="tip-v">${bdi(z ? "0" : valText(cell.avg))}</span><span class="tip-word">${z ? L.emptyLong : L.levels[levelOf(cell.avg)]}</span></div><div class="tip-u">${L.avgOf(cell.samples)}</div>`;
+  }
+  let tipFor = null;
+  function showTip(td) {
+    if (!td) return;
+    $$(".hc.is-sel", heat).forEach((x) => x.classList.remove("is-sel"));
+    td.classList.add("is-sel");
+    tipFor = td;
+    heatTip.innerHTML = tipHTML(td);
+    heatTip.hidden = false;
+    // Centred over the cell, kept inside the scroll box; above the cell, or below it when there is no room above.
+    const box = heatScroll.getBoundingClientRect(), cb = td.getBoundingClientRect();
+    const w = heatTip.offsetWidth, h = heatTip.offsetHeight;
+    const sx = heatScroll.scrollLeft;
+    let x = cb.left - box.left + sx + cb.width / 2 - w / 2;
+    x = Math.max(sx + 2, Math.min(sx + box.width - w - 2, x));
+    let y = cb.top - box.top - h - 8;
+    if (y < 0) y = cb.bottom - box.top + 8;
+    heatTip.style.transform = `translate(${f2(x)}px, ${f2(y)}px)`;
+  }
+  function hideTip() {
+    tipFor = null;
+    heatTip.hidden = true;
+    heatTip.style.transform = "";
+    $$(".hc.is-sel", heat).forEach((x) => x.classList.remove("is-sel"));
+  }
+  function focusCell(r, c, want = c) {
+    const td = heatSlots[r][c];
+    if (!td) return;
+    $$(".hc[tabindex='0']", heat).forEach((x) => { x.tabIndex = -1; });
+    td.tabIndex = 0;
+    heatCur = { r, c };
+    heatWant = want;
+    td.focus();
+    showTip(td);
+  }
+  heat.addEventListener("keydown", (e) => {
+    const td = e.target.closest(".hc");
+    if (!td || !heatCur) return;
+    const r = +td.dataset.r, c0 = +td.dataset.c0, c1 = +td.dataset.c1;
+    const later = RTL ? "ArrowLeft" : "ArrowRight", earlier = RTL ? "ArrowRight" : "ArrowLeft";
+    let nr = r, nc = null;
+    if (e.key === later) nc = c1 + 1;
+    else if (e.key === earlier) nc = c0 - 1;
+    else if (e.key === "ArrowUp") { nr = r - 1; nc = heatWant; }
+    else if (e.key === "ArrowDown") { nr = r + 1; nc = heatWant; }
+    else if (e.key === "Home") { nc = 0; if (e.ctrlKey) nr = 0; }
+    else if (e.key === "End") { nc = HOURS - 1; if (e.ctrlKey) nr = 6; }
+    else if (e.key === "Escape") { if (tipFor) { e.preventDefault(); e.stopPropagation(); hideTip(); } return; }
+    else return;
+    e.preventDefault();
+    if (nr < 0 || nr > 6 || nc < 0 || nc >= HOURS) return;
+    const vertical = e.key === "ArrowUp" || e.key === "ArrowDown";
+    focusCell(nr, nc, vertical ? heatWant : nc);
+  });
+  heat.addEventListener("focusin", (e) => { const td = e.target.closest(".hc"); if (td && tipFor !== td) showTip(td); });
+  heat.addEventListener("focusout", (e) => { if (!heat.contains(e.relatedTarget)) hideTip(); });
+  heat.addEventListener("pointermove", (e) => {
+    if (e.pointerType === "touch") return;
+    const td = e.target.closest(".hc");
+    if (td && td !== tipFor) showTip(td);
+  });
+  heat.addEventListener("pointerleave", () => {
+    const f = document.activeElement && document.activeElement.closest && document.activeElement.closest(".hc");
+    if (f && heat.contains(f)) showTip(f); else hideTip();
+  });
+  heat.addEventListener("click", (e) => {
+    const td = e.target.closest(".hc");
+    if (!td) return;
+    focusCell(+td.dataset.r, +td.dataset.c0);
+  });
+  heatScroll.addEventListener("scroll", () => { if (tipFor) showTip(tipFor); }, { passive: true });
+
+  const numbersBtn = $("#numbers");
+  numbersBtn.addEventListener("click", () => {
+    const on = numbersBtn.getAttribute("aria-checked") !== "true";
+    numbersBtn.setAttribute("aria-checked", String(on));
+    heat.classList.toggle("show-n", on);
+    if (tipFor) showTip(tipFor);
+  });
+
+  /* ---------------------------------------------------------------- day by day
+   * The table system's data table: real table semantics (explicit roles too, so a narrow-screen recomposition never
+   * drops them), sortable columns with aria-sort, numbers aligned at the end, and exceptions (a camera gap, the day
+   * with the period's highest peak) in words. */
+  const daysTable = $("#days-table");
+  let sort = { key: "day", dir: "desc" };
+  const SORTS = { day: (d) => d.dn, peak: (d) => d.peak, avg: (d) => d.avg, entries: (d) => d.entries };
+  function sortedDays() {
+    const dir = sort.dir === "desc" ? -1 : 1;
+    if (sort.key === "day") return [...model.days].sort((x, y) => (x.dn - y.dn) * dir);
+    const key = SORTS[sort.key];
+    const withData = model.days.filter((d) => d.observed).sort((x, y) => (key(x) - key(y)) * dir || y.dn - x.dn);
+    const without = model.days.filter((d) => !d.observed).sort((x, y) => y.dn - x.dn);
+    return [...withData, ...without];
+  }
+  function renderDays() {
+    $("#days-sub").innerHTML = L.days(model.n);
+    const cols = [
+      { key: "day", cls: "c-day", sortable: true },
+      { key: "peak", cls: "c-peak n", sortable: true },
+      { key: "avg", cls: "c-avg n", sortable: true },
+      { key: "entries", cls: "c-entries n", sortable: true },
+      { key: "notes", cls: "c-notes", sortable: false },
+    ];
+    const head = cols.map((c) => {
+      const label = L.cols[c.key];
+      if (!c.sortable) return `<th scope="col" role="columnheader" class="${c.cls}">${label}</th>`;
+      const on = sort.key === c.key;
+      const aria = on ? ` aria-sort="${sort.dir === "desc" ? "descending" : "ascending"}"` : "";
+      return `<th scope="col" role="columnheader" class="${c.cls}${on ? ` is-sorted is-${sort.dir}` : ""}"${aria}><button class="sort" type="button" data-sort="${c.key}"><span>${label}</span>${ICON.sort}</button></th>`;
+    }).join("");
+    let body;
+    if (!model.withReadings) {
+      body = `<tr role="row" class="is-empty"><td role="cell" colspan="5"><div class="table-empty">${ICON.info}<p>${L.emptyTable(dateText(model.a, true), dateText(model.b, true))}</p><button class="rbtn" type="button" data-range-go="28d">${L.emptyAction}</button></div></td></tr>`;
+    } else {
+      const out = [];
+      // Days before the history starts are one merged row ("no readings yet").
+      let pre = [];
+      const flushPre = () => {
+        if (!pre.length) return;
+        const a = Math.min(...pre.map((d) => d.dn)), b = Math.max(...pre.map((d) => d.dn));
+        out.push(`<tr role="row" class="is-none"><th scope="row" role="rowheader" class="c-day"><span class="dd">${rangeText(a, b, false)}</span></th><td role="cell" colspan="4" class="c-none"><span class="note">${ICON.gap}<span>${L.beforeHistory}</span></span></td></tr>`);
+        pre = [];
+      };
+      sortedDays().forEach((d) => {
+        if (d.none) { pre.push(d); return; }
+        flushPre();
+        const top = model.top && model.top.dn === d.dn;
+        const notes = d.miss.map(([a, b]) => `<span class="note">${ICON.gap}<span>${L.noteMissing(timeRange(a, b + 1))}</span></span>`).join("");
+        // In date order, a firmer line closes each week (between Saturday and Sunday).
+        const edge = sort.key === "day" && (sort.dir === "desc" ? d.wd === 0 : d.wd === 6) && d.dn !== (sort.dir === "desc" ? model.a : model.b);
+        const cls = [top ? "is-top" : "", edge ? "wk-edge" : "", notes ? "has-note" : ""].filter(Boolean).join(" ");
+        out.push(`<tr role="row"${cls ? ` class="${cls}"` : ""}><th scope="row" role="rowheader" class="c-day"><span class="dd"><span class="wd">${wdShort(d.wd)}</span> <span class="dt">${dateText(d.dn)}</span></span></th>` +
+          `<td role="cell" class="c-peak n">${d.peak == null ? `<span class="dim">${L.noReadings}</span>` : `<span class="pk">${top ? `<span class="flag">${L.highest}</span>` : ""}<span class="pv">${bdi(d.peak)}</span><span class="pt">${bdi(fmtTime(d.peakM))}</span></span>`}</td>` +
+          `<td role="cell" class="c-avg n">${d.avg == null ? "" : bdi(Math.round(d.avg))}</td>` +
+          `<td role="cell" class="c-entries n">${d.observed ? bdi(fmtInt(d.entries)) : ""}</td>` +
+          `<td role="cell" class="c-notes">${notes}</td></tr>` +
+          // On a narrow screen the notes column folds into a row of its own under the day (only one of the two shows).
+          (notes ? `<tr role="row" class="note-row${top ? " is-top" : ""}"><td role="cell" colspan="4">${notes}</td></tr>` : ""));
+      });
+      flushPre();
+      body = out.join("");
+    }
+    daysTable.innerHTML = `<caption class="sr-only">${L.daysCaption(rangeText(model.a, model.b))}</caption><thead><tr role="row">${head}</tr></thead><tbody>${body}</tbody>`;
+  }
+  daysTable.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-sort]");
+    if (b) {
+      const key = b.dataset.sort;
+      sort = sort.key === key ? { key, dir: sort.dir === "desc" ? "asc" : "desc" } : { key, dir: "desc" };
+      renderDays();
+      $(`[data-sort="${key}"]`, daysTable).focus();
+      say(L.sortSay(L.cols[key], sort.dir, key === "day"));
+      return;
+    }
+    const go = e.target.closest("[data-range-go]");
+    if (go) {
+      const k = go.dataset.rangeGo;
+      setRange({ kind: k, a: LAST_FULL - PRESETS[k] + 1, b: LAST_FULL });
+      segButtons.find((x) => x.dataset.range === k).focus();
+    }
+  });
+
+  function renderAll() {
+    renderHead();
+    renderCards();
+    renderHeat();
+    renderDays();
+    syncUrl();
+  }
+  function setRange(next, announce = true) {
+    range = next;
+    model = buildModel(range.a, range.b);
+    renderAll();
+    if (announce) say(plain(L.rangeSay(rangeText(range.a, range.b))));
+  }
+  segButtons.forEach((btn) => btn.addEventListener("click", () => {
+    const k = btn.dataset.range;
+    if (k === "custom") { openRangeDialog(btn); return; }
+    if (range.kind === k) return;
+    setRange({ kind: k, a: LAST_FULL - PRESETS[k] + 1, b: LAST_FULL });
+  }));
+
+  /* ---------------------------------------------------------------- the form system: a date field
+   * A labelled text field (day/month/year, Western digits; Arabic-Indic digits typed on an Arabic keyboard are read as
+   * Western), with a shared hint and its own error message, tied with aria-describedby and aria-invalid. */
+  const toWestern = (s) => s.replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660)).replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 0x06f0));
+  function parseDate(raw) {
+    const s = toWestern(String(raw || "")).trim();
+    if (!s) return { error: "required" };
+    let m = /^(\d{1,2})[/.\-](\d{1,2})[/.\-](\d{4})$/.exec(s), y, mo, d;
+    if (m) { d = +m[1]; mo = +m[2]; y = +m[3]; }
+    else if ((m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(s))) { y = +m[1]; mo = +m[2]; d = +m[3]; }
+    else return { error: "format" };
+    if (mo < 1 || mo > 12 || d < 1 || d > 31) return { error: "invalid" };
+    const dn = Date.UTC(y, mo - 1, d) / 864e5, p = partsOf(dn);
+    if (p.d !== d || p.m !== mo - 1 || p.y !== y) return { error: "invalid" };
+    if (dn > LAST_FULL) return { error: "future" };
+    return { dn };
+  }
+  function makeField(host, id, label, hintId) {
+    host.innerHTML = `<label class="field-label" for="${id}">${label}</label>
+      <input class="field-input" id="${id}" name="${id}" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" dir="ltr" aria-describedby="${hintId}">
+      <p class="field-err" id="${id}-err" hidden></p>`;
+    const input = $("input", host), err = $(".field-err", host);
+    const field = {
+      input, host,
+      get value() { return input.value; },
+      set value(v) { input.value = v; },
+      setError(msg) {
+        if (msg) {
+          err.innerHTML = `${ICON.alert}<span>${msg}</span>`;
+          err.hidden = false;
+          input.setAttribute("aria-invalid", "true");
+          input.setAttribute("aria-describedby", `${id}-err ${hintId}`);
+          host.classList.add("is-invalid");
+        } else {
+          err.hidden = true;
+          err.innerHTML = "";
+          input.removeAttribute("aria-invalid");
+          input.setAttribute("aria-describedby", hintId);
+          host.classList.remove("is-invalid");
+        }
+      },
+      set disabled(v) { input.disabled = v; host.classList.toggle("is-disabled", v); },
+    };
+    // Tidy a valid date on leaving the field.
+    input.addEventListener("blur", () => { const r = parseDate(input.value); if (r.dn != null) input.value = numDate(r.dn); });
+    return field;
+  }
+  const errText = (code) => (code === "future" ? L.err.future(bdi(numDate(LAST_FULL))) : L.err[code]);
+  // Validates a from/to pair: returns { a, b }, or { focus } with each field's message shown.
+  function validatePair(from, to) {
+    const A = parseDate(from.value), B = parseDate(to.value);
+    const ea = A.error ? errText(A.error) : "";
+    let eb = B.error ? errText(B.error) : "";
+    if (!ea && !eb) {
+      if (B.dn < A.dn) eb = L.err.order;
+      else if (B.dn - A.dn + 1 > MAX_RANGE) eb = L.err.tooLong;
+    }
+    from.setError(ea); to.setError(eb);
+    if (ea) return { focus: from };
+    if (eb) return { focus: to };
+    return { a: A.dn, b: B.dn };
+  }
+
+  /* ---------------------------------------------------------------- the dialog system
+   * One pattern for every dialog: <dialog> opened with showModal (the page behind is inert), a scrim and a panel.
+   * Initial focus is chosen per dialog; Tab and Shift+Tab wrap inside the panel; Escape and the scrim close it (Escape
+   * also stops a running export); focus returns to the control that opened it. Opening, the panel rises 14 px (a
+   * bottom sheet on a phone slides up) and the scrim fades; no glyph changes opacity. Instant without motion. */
+  let openDlg = null;
+  const dlgRun = { anims: [] };
+  const isSheet = () => matchMedia("(max-width: 720px)").matches;
+  const focusables = (el) => $$('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])', el)
+    .filter((x) => !x.disabled && !x.closest("[hidden]") && x.getClientRects().length);
+  function finishDlgAnims() { dlgRun.anims.forEach((a) => a.cancel()); dlgRun.anims = []; }
+  function openDialog(dlg, opener, first) {
+    if (openDlg) closeDialog(openDlg.dlg, true);
+    if (railOpen) setRail(false);
+    openDlg = { dlg, opener, onClose: dlg._onClose };
+    dlg.showModal();
+    dlg.classList.add("is-open");
+    finishDlgAnims();
+    if (motionOn()) {
+      const panel = $(".dlg-panel", dlg), scrim = $(".dlg-scrim", dlg);
+      const o = { duration: T.dlgOpen, easing: EASE.rail };
+      dlgRun.anims = [
+        scrim.animate([{ opacity: 0 }, { opacity: 1 }], o),
+        panel.animate(isSheet() ? [{ transform: "translateY(100%)" }, { transform: "none" }] : [{ transform: "translateY(14px)" }, { transform: "none" }], o),
+      ];
+      const run = dlgRun.anims;
+      Promise.all(run.map((a) => a.finished)).then(() => { if (dlgRun.anims === run) finishDlgAnims(); }).catch(() => {});
+    }
+    (first || focusables($(".dlg-panel", dlg))[0]).focus();
+  }
+  function closeDialog(dlg, instant = false) {
+    if (!openDlg || openDlg.dlg !== dlg) return;
+    const { opener, onClose } = openDlg;
+    openDlg = null;
+    if (onClose) onClose();
+    finishDlgAnims();
+    const done = () => {
+      finishDlgAnims();
+      dlg.classList.remove("is-open");
+      if (dlg.open) dlg.close();
+      const back = opener && opener.isConnected ? opener : $("#main");
+      back.focus();
+    };
+    if (instant || !motionOn()) { done(); return; }
+    const panel = $(".dlg-panel", dlg), scrim = $(".dlg-scrim", dlg);
+    const o = { duration: T.dlgClose, easing: EASE.railClose, fill: "forwards" };
+    dlgRun.anims = [
+      scrim.animate([{ opacity: 1 }, { opacity: 0 }], o),
+      panel.animate(isSheet() ? [{ transform: "none" }, { transform: "translateY(100%)" }] : [{ transform: "none" }, { transform: "translateY(10px)" }], o),
+    ];
+    Promise.all(dlgRun.anims.map((a) => a.finished)).then(done).catch(done);
+  }
+  $$(".dlg").forEach((dlg) => {
+    dlg.addEventListener("cancel", (e) => { e.preventDefault(); closeDialog(dlg); });
+    dlg.addEventListener("click", (e) => { if (e.target.closest("[data-close]")) { e.preventDefault(); closeDialog(dlg); } });
+    dlg.addEventListener("keydown", (e) => {
+      if (e.key !== "Tab") return;
+      const list = focusables($(".dlg-panel", dlg));
+      if (!list.length) return;
+      const first = list[0], last = list[list.length - 1];
+      if (e.shiftKey && (document.activeElement === first || !dlg.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && (document.activeElement === last || !dlg.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
+    });
+  });
+
+  /* ---- the date-range dialog */
+  const dlgRange = $("#dlg-range");
+  const rFrom = makeField($("#rf-from"), "range-from", L.from, "rf-hint");
+  const rTo = makeField($("#rf-to"), "range-to", L.to, "rf-hint");
+  $("#dlg-range-desc").innerHTML = L.rangeDlgDesc(dateText(HIST_START, true), dateText(LAST_FULL, true));
+  function openRangeDialog(opener) {
+    rFrom.value = numDate(range.a); rTo.value = numDate(range.b);
+    rFrom.setError(""); rTo.setError("");
+    openDialog(dlgRange, opener, rFrom.input);
+  }
+  $("#range-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const v = validatePair(rFrom, rTo);
+    if (v.focus) { v.focus.input.focus(); return; }
+    const same = Object.entries(PRESETS).find(([, n]) => v.b === LAST_FULL && v.b - v.a + 1 === n);
+    closeDialog(dlgRange);
+    setRange(same ? { kind: same[0], a: v.a, b: v.b } : { kind: "custom", a: v.a, b: v.b });
+  });
+
+  /* ---- the export dialog: a real CSV built from the synthetic minutes, in the page. Nothing leaves the page.
+   * The file follows the reporting domain's CSV shape: a UTF-8 byte order mark, CRLF lines, and per business day
+   * 1440 rows from the 4:00 AM business-day boundary, each with UTC and gym-time columns; closed and missing minutes
+   * keep their state and leave the value columns empty. */
+  const CSV_HEAD = "business_day,minute_start_utc,minute_start_local,time_zone,state,count,entries,exits,band,capacity_snapshot,settings_version,source";
+  const p2 = (n) => String(n).padStart(2, "0");
+  function csvDay(dn) {
+    const iso = isoOf(dn), open = openAt(wdOf(dn)), d = hasReadings(dn) ? DAYS.get(dn) : null;
+    const out = [];
+    for (let k = 0; k < 1440; k++) {
+      // Minute k of the business day starts at 4:00 AM local; gym time is UTC+3.
+      const local = dn * 1440 + 240 + k, utc = local - 180;
+      const L1 = partsOf(Math.floor(local / 1440)), U1 = partsOf(Math.floor(utc / 1440));
+      const lm = local % 1440, um = ((utc % 1440) + 1440) % 1440;
+      const lt = `${L1.y}-${p2(L1.m + 1)}-${p2(L1.d)}T${p2(Math.floor(lm / 60))}:${p2(lm % 60)}:00`;
+      const ut = `${U1.y}-${p2(U1.m + 1)}-${p2(U1.d)}T${p2(Math.floor(um / 60))}:${p2(um % 60)}:00.000Z`;
+      const m = k - 120; // minutes since 6:00 AM
+      let tail;
+      if (!(m >= open && m < DAY)) tail = "closed,,,,,,,";
+      else if (!d || !d.obs(m)) tail = "missing,,,,,,,";
+      else { const c = d.occ[m]; tail = `value,${c},${d.ent[m]},${d.ext[m]},${BAND[levelOf(c)]},${CAPACITY},${SETTINGS_VERSION},live`; }
+      out.push(`${iso},${ut},${lt},${TZ},${tail}`);
+    }
+    return out.join("\r\n") + "\r\n";
+  }
+  const dlgExport = $("#dlg-export");
+  const eFrom = makeField($("#ef-from"), "export-from", L.from, "ef-hint");
+  const eTo = makeField($("#ef-to"), "export-to", L.to, "ef-hint");
+  const exportBtn = $("#export-btn");
+  const fileName = (a, b) => `fitway-minutes-${isoOf(a)}-to-${isoOf(b)}.csv`;
+  const rowsText = (n) => (RTL ? L.rows(n).replace(/^\d+/, (x) => bdi(fmtInt(+x))) : L.rows(n));
+  const ex = { state: "idle", run: 0, url: null, hold: false, release: null, failNext: params.get("export") === "fail", a: null, b: null, rows: 0, progress: 0, total: 0, showProgress: false };
+  function fileLine() {
+    const A = parseDate(eFrom.value), B = parseDate(eTo.value);
+    const el = $("#export-file");
+    if (A.dn == null || B.dn == null || B.dn < A.dn || B.dn - A.dn + 1 > MAX_RANGE) { el.innerHTML = ""; return; }
+    el.innerHTML = `${ICON.file}<span class="file-name" dir="ltr">${fileName(A.dn, B.dn)}</span><span class="file-rows">${rowsText((B.dn - A.dn + 1) * 1440)}</span>`;
+  }
+  [eFrom, eTo].forEach((fl) => fl.input.addEventListener("input", fileLine));
+  function progressHTML() { return `${L.working} ${L.progress(Math.min(ex.progress + 1, ex.total), ex.total)}`; }
+  function renderExport() {
+    const s = ex.state, foot = $("#export-foot");
+    $("#export-edit").hidden = s === "done";
+    $("#dlg-export-desc").hidden = s === "done";
+    eFrom.disabled = s === "working"; eTo.disabled = s === "working";
+    const prog = $("#export-progress");
+    prog.hidden = s !== "working" || !ex.showProgress;
+    if (!prog.hidden) {
+      $("#export-progress-text").innerHTML = progressHTML();
+      $("#export-progress-bar").style.transform = `scaleX(${f2(ex.progress / Math.max(1, ex.total))})`;
+    }
+    const alert = $("#export-alert");
+    alert.hidden = s !== "failed";
+    alert.innerHTML = s === "failed" ? `${ICON.alert}<p>${L.failed}</p>` : "";
+    const done = $("#export-done");
+    done.hidden = s !== "done";
+    done.innerHTML = s === "done" ? `<span class="done-mark" aria-hidden="true">${ICON.check}</span><p class="done-title">${L.doneTitle}</p>
+        <p class="file-line">${ICON.file}<span class="file-name" dir="ltr">${fileName(ex.a, ex.b)}</span><span class="file-rows">${rowsText(ex.rows)}</span></p>` : "";
+    // The footer's controls persist and change in place, so focus is never dropped with a replaced button.
+    const cancel = $("#export-cancel", foot), go = $("#export-go", foot), save = $("#export-save", foot);
+    cancel.textContent = s === "done" ? L.done : L.cancel;
+    go.hidden = s === "done";
+    go.disabled = s === "working";
+    const goHTML = s === "working" ? `<span>${L.working}</span>` : s === "failed" ? `<span>${L.retry}</span>` : `${ICON.down2}<span>${L.exportGo}</span>`;
+    if (go.innerHTML !== goHTML) go.innerHTML = goHTML;
+    save.hidden = s !== "done";
+    if (s === "done") {
+      save.href = ex.url;
+      save.setAttribute("download", fileName(ex.a, ex.b));
+      if (!save.innerHTML) save.innerHTML = `${ICON.down2}<span>${L.save}</span>`;
+    } else {
+      save.removeAttribute("href");
+      save.removeAttribute("download");
+    }
+    dlgExport.dataset.state = s;
+    $(".dlg-panel", dlgExport).setAttribute("aria-busy", String(s === "working"));
+  }
+  function resetExport() {
+    ex.run++;
+    if (ex.url) { URL.revokeObjectURL(ex.url); ex.url = null; }
+    ex.state = "idle"; ex.showProgress = false; ex.progress = 0;
+    if (ex.release) { const r = ex.release; ex.release = null; r(); }
+  }
+  function openExportDialog(opener) {
+    resetExport();
+    eFrom.value = numDate(range.a); eTo.value = numDate(range.b);
+    eFrom.setError(""); eTo.setError("");
+    fileLine();
+    renderExport();
+    openDialog(dlgExport, opener, $("#export-go"));
+  }
+  dlgExport._onClose = () => { if (ex.state === "working") say(L.canceledSay); resetExport(); };
+  exportBtn.addEventListener("click", () => openExportDialog(exportBtn));
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  async function runExport(a, b) {
+    const run = ++ex.run;
+    Object.assign(ex, { state: "working", a, b, rows: (b - a + 1) * 1440, progress: 0, total: b - a + 1, showProgress: false });
+    renderExport();
+    // Keep focus inside the panel while the primary button is busy.
+    $("#export-foot [data-close]").focus();
+    const t0 = performance.now();
+    // The busy state shows at once on the button; the progress line only after 300 ms (Loading behaviour), and a shown
+    // working state stays at least 400 ms in all, so it never flickers.
+    const reveal = setTimeout(() => { if (ex.run === run && ex.state === "working") { ex.showProgress = true; renderExport(); } }, 300);
+    const parts = ["﻿" + CSV_HEAD + "\r\n"];
+    for (let dn = a; dn <= b; dn++) {
+      if (ex.run !== run) { clearTimeout(reveal); return; }
+      parts.push(csvDay(dn));
+      ex.progress = dn - a + 1;
+      if (ex.showProgress) {
+        $("#export-progress-text").innerHTML = progressHTML();
+        $("#export-progress-bar").style.transform = `scaleX(${f2(ex.progress / ex.total)})`;
+      }
+      if (ex.hold) await new Promise((r) => { ex.release = r; });
+      else if ((dn - a) % 7 === 6) await wait(0);
+    }
+    const spent = performance.now() - t0;
+    if (spent < 400) await wait(400 - spent);
+    clearTimeout(reveal);
+    if (ex.run !== run) return;
+    if (ex.failNext) {
+      ex.failNext = false;
+      ex.state = "failed";
+      renderExport();
+      $("#export-go").focus();
+      return;
+    }
+    ex.url = URL.createObjectURL(new Blob(parts, { type: "text/csv;charset=utf-8" }));
+    ex.state = "done";
+    renderExport();
+    $("#export-save").focus();
+    say(L.readySay(plain(L.rows(ex.rows))));
+  }
+  $("#export-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (ex.state === "working" || ex.state === "done") return;
+    const v = validatePair(eFrom, eTo);
+    if (v.focus) { v.focus.input.focus(); return; }
+    runExport(v.a, v.b).catch(() => { ex.state = "failed"; renderExport(); });
+  });
+
+  /* ---------------------------------------------------------------- start */
+  renderAll();
+  window.__reports = {
+    ready: false,
+    lang: LANG,
+    state: STATE,
+    get range() { return { kind: range.kind, from: isoOf(range.a), to: isoOf(range.b) }; },
+    get model() {
+      return {
+        days: model.days.map((d) => ({ day: isoOf(d.dn), peak: d.peak, peakTime: d.peakM == null ? null : fmtTime(d.peakM), avg: d.avg == null ? null : Math.round(d.avg * 10) / 10, entries: d.entries, observed: d.observed, expected: d.expected, none: d.none })),
+        avg: model.avg == null ? null : Math.round(model.avg * 10) / 10, entries: model.entries, withReadings: model.withReadings,
+        top: model.top ? { day: isoOf(model.top.dn), peak: model.top.peak } : null,
+        busiest: model.busiest ? { wd: model.busiest.wd, c: model.busiest.c, avg: Math.round(model.busiest.avg * 10) / 10 } : null,
+        heat: model.heat.map((row) => row.map((c) => ({ state: c.state, avg: c.avg == null ? null : Math.round(c.avg * 10) / 10, samples: c.samples }))),
+      };
+    },
+    get wow() { return { comparable: wow.comparable, avgChange: wow.avgChange, entriesChange: wow.entriesChange, cur: wow.cur, prev: wow.prev, window: { cur: WOW.cur.map(isoOf), prev: WOW.prev.map(isoOf) } }; },
+    setRange: (kind, from, to) => setRange(kind === "custom" ? { kind, a: toDn(from), b: toDn(to) } : { kind, a: LAST_FULL - PRESETS[kind] + 1, b: LAST_FULL }),
+    openRange: () => openRangeDialog(segButtons[2]),
+    openExport: () => openExportDialog(exportBtn),
+    close: () => { if (openDlg) closeDialog(openDlg.dlg, true); },
+    get dialog() { return openDlg ? openDlg.dlg.id : null; },
+    csv: (from, to) => { const a = toDn(from), b = toDn(to); let s = "﻿" + CSV_HEAD + "\r\n"; for (let dn = a; dn <= b; dn++) s += csvDay(dn); return s; },
+    export: {
+      get state() { return ex.state; },
+      get progress() { return { done: ex.progress, total: ex.total, shown: ex.showProgress }; },
+      set hold(v) { ex.hold = Boolean(v); if (!v && ex.release) { const r = ex.release; ex.release = null; r(); } },
+      step() { if (ex.release) { const r = ex.release; ex.release = null; r(); } },
+      failNext() { ex.failNext = true; },
+    },
+    showCell: (wd, c) => focusCell(wd, c),
+    hideTip,
+    motion: { get on() { return motionOn(); }, timings: T, easings: EASE },
+  };
+  const WANT = params.get("dialog");
+  if (WANT === "range") openRangeDialog(segButtons[2]);
+  else if (WANT === "export") openExportDialog(exportBtn);
+  // The other script's subset is fetched up front too (the rail's language item is written in it), as on the Daily page.
+  if (document.fonts && document.fonts.load) ["400", "500"].forEach((w) => document.fonts.load(`${w} 16px "Readex Pro"`, RTL ? "English FITWAY" : "العربية").catch(() => {}));
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { if (tipFor) showTip(tipFor); window.__reports.ready = true; });
+})();

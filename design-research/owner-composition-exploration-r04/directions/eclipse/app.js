@@ -442,6 +442,13 @@
     link.setAttribute("hreflang", RTL ? "en" : "ar");
     $(".rail-name", link).setAttribute("lang", RTL ? "en" : "ar");
   }
+  {
+    // Reports (reports.html, the second Eclipse page) keeps the chosen language, and ?motion=off. The language always
+    // comes first, so motion=off is only ever appended to it (as on the language link).
+    const p = new URLSearchParams({ lang: LANG });
+    if (URL_OFF) p.set("motion", "off");
+    $("#reports-link").setAttribute("href", `reports.html?${p}`);
+  }
   let railOpen = false;
   const setRail = (open) => {
     if (open === railOpen) return;
