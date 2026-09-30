@@ -3513,3 +3513,36 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
 - **If the session changes before phase B,** a fresh designer takes phase B from the phase A commit, its report and
   the brief.
 - **Next:** on the phase A report, run the G5 check, inspect the frame sheets, and show the user on the preview (3174).
+## Step 3 phase A delivered: the frame at `d76972c` (2026-10-01)
+
+- **The designer delivered `d76972c`** on top of `9074da6` and stopped before phase B. The coordinator pushed it as a
+  fast-forward.
+  - 8 files, +607/−44: `index.html`, `style.css`, `app.js`, `reports.html`, `reports.js`, `components.*` and the spec.
+- **The frame:**
+  - 1024 px and wider keep the rail, with «اليوم» / "Today" and the name on keyboard focus only;
+  - 721-1023 px keep the slim rail, which opens from the logo as a modal layer;
+  - 720 px and below get a floating glass bar and a compact header, with a 44 px status badge and details, and a
+    "More" menu. There is no hamburger;
+  - the header's status and concept label drop their boxes at 721 px and wider;
+  - one amber is used, `#E8B62E`.
+- **Self-reported, not verified:**
+  - A1-A6 pass;
+  - Reports at 1440 changes only inside the rail;
+  - spec lint: 316 rows, 0 problems.
+- **`capture.mjs` exits 1.** Its old comparison with `8ae88f3` fails on the 13 frames that show the rail and header,
+  which changed by design. `evidence/` is unchanged. Phase B rewrites that check.
+- **Caveats:**
+  - the focus label covers about 70 px of content;
+  - short landscape phones are not handled;
+  - Daily's content below 1024 is provisional;
+  - K-26 still scrolls at 1024 (22 px AR, 2 px EN).
+- **The designer's proposals for the user:**
+  1. one order for rail and bar (the rail has Access before Activity log);
+  2. Monitoring has no place on the phone;
+  3. Operations is reached on the phone through the status details;
+  4. the bar's short «النشاط» / "Activity" breaks GLO-14.
+- **G5 check:** s04 is clean at `d76972c`, the coordinator worktree matches the snapshot, and only 3174 listens.
+- **Coordinator inspection, not verification:** `A1`-`A3` read as one coherent frame.
+  - At 390, the bar, badge, details and menu hold in AR and EN.
+  - At 768, the rail opens over a scrim.
+  - At 1440, the focus labels sit beside their tiles.
