@@ -31,11 +31,15 @@
   <!-- Light tuner: a working tool for this concept (not part of the design). ?tuner=0 turns it off. -->
   <script src="tuner.js" defer blocking="render"></script>
 </head>
-<body>
+<!-- data-frame: this page uses the responsive frame of step 3 (style.css "the frame"): the rail at 721 px and wider (it
+     opens over the content, with a scrim from 721 to 1023 px), and at 720 px and below the compact header and the bar. -->
+<body data-frame>
   <a class="skip" href="#main" data-t="skip"></a>
   <div class="page">
     <!-- The page's own top-corner wash: part of the page box, scrolls with it, never fixed to the viewport. -->
     <i class="wash" aria-hidden="true"><i class="wash-light"></i></i>
+    <!-- The tablet's scrim under the open rail (721-1023 px); a tap on it closes the rail. -->
+    <div class="rail-scrim" id="rail-scrim" hidden></div>
 
     <div class="rail-slot">
       <nav class="rail" id="rail" data-open="false">
@@ -50,6 +54,7 @@
               </svg>
             </span>
             <span class="rail-name wordmark" lang="en">FITWAY</span>
+            <span class="rail-tip" data-t="railTip" aria-hidden="true"></span>
           </button>
         </div>
 
@@ -107,6 +112,41 @@
         <div class="head-meta">
           <span class="chip status" id="status"></span>
           <span class="chip concept" data-t="concept"></span>
+        </div>
+        <!-- Phone (720 px and below): the Operations status as a badge that opens its details, and one menu for the
+             language and sign out. Hidden at 721 px and wider, where the rail holds them. -->
+        <div class="head-acts">
+          <button class="hbadge" id="ops-btn" type="button" aria-expanded="false" aria-controls="ops-pop" aria-haspopup="dialog">
+            <span class="hb-state" id="ops-btn-state"></span>
+            <svg class="hb-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5"/></svg>
+          </button>
+          <div class="fw-pop ops-pop" id="ops-pop" role="dialog" aria-labelledby="ops-title" aria-describedby="ops-desc" tabindex="-1" hidden>
+            <div class="ops-body">
+              <h2 class="ops-title" id="ops-title" data-t="opsTitle"></h2>
+              <div id="ops-desc">
+                <p class="ops-state" id="ops-state"></p>
+                <p class="ops-line" id="ops-last"></p>
+                <p class="ops-line" id="ops-hours"></p>
+              </div>
+            </div>
+            <div class="ops-foot">
+              <a class="fw-mi" href="#" id="ops-link" data-inert>
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 7.5h9M17.5 7.5h2M4.5 16.5h2M10.5 16.5h9"/><circle cx="15.5" cy="7.5" r="2"/><circle cx="8.5" cy="16.5" r="2"/></svg>
+                <span id="ops-link-name"></span>
+                <svg class="fw-mi-end mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 7l5 5-5 5"/></svg>
+              </a>
+            </div>
+          </div>
+          <button class="hbtn" id="menu-btn" type="button" aria-expanded="false" aria-controls="menu-pop" aria-haspopup="menu">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle class="fill" cx="5.5" cy="12" r="1.6"/><circle class="fill" cx="12" cy="12" r="1.6"/><circle class="fill" cx="18.5" cy="12" r="1.6"/></svg>
+          </button>
+          <div class="fw-pop menu-pop" id="menu-pop" role="menu" aria-labelledby="menu-btn" hidden>
+            <a class="fw-mi" role="menuitem" tabindex="-1" href="#" id="menu-lang"><span class="fw-glyph" id="menu-lang-glyph" aria-hidden="true"></span><span id="menu-lang-name"></span></a>
+            <a class="fw-mi" role="menuitem" tabindex="-1" href="#" id="menu-signout" data-inert>
+              <svg class="mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13.5 4.5H7.2a2.2 2.2 0 0 0-2.2 2.2v10.6a2.2 2.2 0 0 0 2.2 2.2h6.3"/><path d="M10.5 12h9M16.5 8.8 19.7 12l-3.2 3.2"/></svg>
+              <span id="menu-signout-name"></span>
+            </a>
+          </div>
         </div>
       </header>
 
@@ -187,6 +227,33 @@
         </div>
       </section>
     </main>
+
+    <!-- Phone (720 px and below): the rail becomes this glass bar at the bottom, five sections with a short name under
+         each icon. After the main content, so the reading and Tab order runs top to bottom. -->
+    <nav class="tabbar" id="tabbar">
+      <ul>
+        <li><a class="tb-item" href="#main" aria-current="page" data-tab="daily">
+          <span class="tb-tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 13.5a7.5 7.5 0 0 1 15 0"/><path d="M12 13.5 15.6 9.9"/><path d="M3.5 18h17"/><circle class="fill" cx="12" cy="13.5" r="1.3"/></svg></span>
+          <span class="tb-name"></span>
+        </a></li>
+        <li><a class="tb-item" href="reports.html" id="tab-reports" data-tab="reports">
+          <span class="tb-tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 19.5h16"/><path d="M7 16v-4.5M12 16V6.5M17 16v-7"/></svg></span>
+          <span class="tb-name"></span>
+        </a></li>
+        <li><a class="tb-item" href="#" data-tab="activity" data-inert>
+          <span class="tb-tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="3.8" width="14" height="16.4" rx="3"/><path d="M8.6 8.6h6.8M8.6 12h6.8M8.6 15.4h4"/></svg></span>
+          <span class="tb-name"></span>
+        </a></li>
+        <li><a class="tb-item" href="#" data-tab="access" data-inert>
+          <span class="tb-tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="8.2" cy="12" r="3.6"/><path d="M11.8 12h8.4M17.2 12v2.8M20.2 12v2"/></svg></span>
+          <span class="tb-name"></span>
+        </a></li>
+        <li><a class="tb-item" href="#" data-tab="settings" data-inert>
+          <span class="tb-tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10.02 5.6 10.23 3.28A8.9 8.9 0 0 1 13.77 3.28L13.98 5.6A6.7 6.7 0 0 1 15.13 6.07L16.92 4.58A8.9 8.9 0 0 1 19.42 7.08L17.93 8.87A6.7 6.7 0 0 1 18.4 10.02L20.72 10.23A8.9 8.9 0 0 1 20.72 13.77L18.4 13.98A6.7 6.7 0 0 1 17.93 15.13L19.42 16.92A8.9 8.9 0 0 1 16.92 19.42L15.13 17.93A6.7 6.7 0 0 1 13.98 18.4L13.77 20.72A8.9 8.9 0 0 1 10.23 20.72L10.02 18.4A6.7 6.7 0 0 1 8.87 17.93L7.08 19.42A8.9 8.9 0 0 1 4.58 16.92L6.07 15.13A6.7 6.7 0 0 1 5.6 13.98L3.28 13.77A8.9 8.9 0 0 1 3.28 10.23L5.6 10.02A6.7 6.7 0 0 1 6.07 8.87L4.58 7.08A8.9 8.9 0 0 1 7.08 4.58L8.87 6.07A6.7 6.7 0 0 1 10.02 5.6Z"/><circle cx="12" cy="12" r="2.7"/></svg></span>
+          <span class="tb-name"></span>
+        </a></li>
+      </ul>
+    </nav>
   </div>
 </body>
 </html>

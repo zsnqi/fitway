@@ -75,7 +75,8 @@
         field: ["حقل التاريخ", "اسم ثابت فوق الحقل، وتلميح للصيغة، وخطأ محدد تحته."],
         dialog: ["النافذة والورقة السفلية", "نافذة مشروطة؛ وعلى الهاتف ورقة من الأسفل تتقاسم أزرارها العرض."],
         chips: ["الشارات", "الشارة داخل المحتوى بارتفاع 26؛ وفي صف الأزرار تساوي الشارة ارتفاع الزر أو تتخلى عن إطارها."],
-        rail: ["الشريط الجانبي والرأس", "الاسم يظهر عند التركيز بلوحة المفاتيح فقط، ولا تلميح عند مرور الفأرة."],
+        rail: ["الشريط الجانبي والرأس", "الاسم يظهر عند التركيز بلوحة المفاتيح فقط، ولا تلميح عند مرور الفأرة. على الجهاز اللوحي يُفتح الشريط فوق طبقة معتمة ويبقى التركيز داخله."],
+        frame: ["إطار الهاتف: الشريط السفلي والرأس المضغوط", "عند 720 بكسل وأقل يصير الشريط الجانبي شريطًا زجاجيًا في الأسفل بخمسة أقسام، ويحمل الرأس الحالةَ شارةً تفتح تفاصيلها، وقائمةً واحدة للغة وتسجيل الخروج. كل طبقة تُفتح من لوحة المفاتيح، وتُغلق بـ Escape، ويعود التركيز إلى ما فتحها."],
         empty: ["الحالة الفارغة والتنبيه وإعادة المحاولة", "جملة تقول ما الناقص وتواريخه، وطريق واحد للعودة؛ وتنبيه يقول ما حدث وما بقي كما هو."],
       },
       f: { colours: "الألوان", type: "الخط: السلّم", spacing: "المسافات", radii: "الزوايا", focus: "حلقة التركيز", icons: "الأيقونات في السطر، بلا إطار" },
@@ -126,7 +127,13 @@
       chipCaps: { levels: "شارة الازدحام: على «الآن» والذروات فقط", stale: "متأخرة: تخفت مع قيمتها", cmp: "شارة المقارنة", flags: "وسوم", status: "الحالة في الرأس، بلا إطار", statusBtn: "الحالة حين تفتح تفاصيلها: زر 44", concept: "علامة المفهوم، بلا إطار", legend: "مفتاح المخطط، بلا إطار", heatKey: "مفتاح النمط، بلا إطار" },
       nav: { today: "اليوم", reports: "التقارير", access: "الوصول", activity: "سجل النشاط", operations: "التشغيل", monitoring: "شاشة المراقبة", lang: "English", settings: "الإعدادات", signout: "تسجيل الخروج" },
       brand: "FITWAY، أسماء الأقسام", railLabel: "الأقسام",
-      railCaps: { states: "الحالات: الحالية، وعند المرور، وعند التركيز مع الاسم", live: "اضغط Tab: يظهر الاسم عند التركيز فقط", open: "مفتوح فوق المحتوى" },
+      railCaps: { states: "الحالات: الحالية، وعند المرور، وعند التركيز مع الاسم", live: "اضغط Tab: يظهر الاسم عند التركيز فقط", open: "مفتوح فوق المحتوى", brand: "الشعار عند التركيز: يسمّي ما يفتحه", tablet: "الجهاز اللوحي: مفتوح فوق طبقة معتمة، والتركيز يبقى داخله" },
+      railTip: "أسماء الأقسام",
+      tabs: { today: "اليوم", reports: "التقارير", activity: "النشاط", access: "الوصول", settings: "الإعدادات" },
+      opsTitle: "حالة التشغيل", more: "المزيد", liveWord: "مباشر", delayedWord: "متأخر",
+      date: `الأربعاء ${b(23)} سبتمبر ${b(2026)}`, hours: `ساعات العمل ${b("6:00 ص")} - ${b("1:00 ص")}`,
+      lastAt: (t) => `آخر قراءة ${b(t)}`, pm: (t) => `${t} م`,
+      frameCaps: { head: "الرأس المضغوط: العنوان، والحالة، والقائمة", headLate: "الرأس المضغوط، متأخر", ops: "تفاصيل الحالة مفتوحة", opsLate: "تفاصيل الحالة، متأخر", menu: "القائمة مفتوحة، والتركيز على أول عنصر", bar: "الشريط السفلي عند 390، والقسم الحالي «اليوم»", bar320: "عند 320: المرور على «التقارير»، والتركيز على «الإعدادات»", live: "جرّب: Tab ثم Enter، والأسهم داخل القائمة، وEscape يعيد التركيز" },
       hdrTitle: "التقارير", hdrSub: `${b("26")} أغسطس - ${b("22")} سبتمبر ${b(2026)}<span class="sep">·</span>${b(28)} يومًا`,
       hdrCap: "رأس الصفحة: العنوان، ثم الفترة، وعناصر التحكم بارتفاع 44 في نهاية السطر",
       emptyTable: `لا قراءات من ${b(1)} يوليو ${b(2026)} إلى ${b(31)} يوليو ${b(2026)}`, emptyAction: `عرض آخر ${b(4)} أسابيع`,
@@ -161,7 +168,8 @@
         field: ["Date field", "A persistent label above, a format hint, and a specific error below."],
         dialog: ["Dialog and bottom sheet", "A modal dialog; on a phone, a sheet from the bottom whose actions share the width."],
         chips: ["Chips and badges", "A badge in content is 26 px; in a row of controls a pill matches the control height or drops its box."],
-        rail: ["Rail and header", "A rail item shows its name on keyboard focus only; the mouse hover shows no tooltip."],
+        rail: ["Rail and header", "A rail item shows its name on keyboard focus only; the mouse hover shows no tooltip. On a tablet the rail opens over a scrim and keeps focus inside."],
+        frame: ["The phone's frame: the bar and the compact header", "At 720 px and below the rail becomes a glass bar at the bottom with five sections, and the header carries the status as a badge that opens its details, and one menu for the language and sign out. Every layer opens from the keyboard, closes with Escape, and returns focus to what opened it."],
         empty: ["Empty state, alert and retry", "One sentence that names what is missing and its dates, and one way back; an alert that says what happened and what is kept."],
       },
       f: { colours: "Colour", type: "Type: the scale", spacing: "Spacing", radii: "Radii", focus: "Focus ring", icons: "Icons in the flow, with no tile" },
@@ -212,7 +220,13 @@
       chipCaps: { levels: "Level badge: on “now” and peaks only", stale: "Delayed: dims with its value", cmp: "Comparison badge", flags: "Flags", status: "Header status, boxless", statusBtn: "A status that opens its details: a 44 px control", concept: "Concept label, boxless", legend: "Chart legend, boxless", heatKey: "Pattern key, boxless" },
       nav: { today: "Today", reports: "Reports", access: "Access", activity: "Activity log", operations: "Operations", monitoring: "Monitoring", lang: "العربية", settings: "Settings", signout: "Sign out" },
       brand: "FITWAY, section names", railLabel: "Sections",
-      railCaps: { states: "States: current, hover, and focus with its name", live: "Press Tab: the name shows on focus only", open: "Open, over the content" },
+      railCaps: { states: "States: current, hover, and focus with its name", live: "Press Tab: the name shows on focus only", open: "Open, over the content", brand: "The logo on focus: it names what it opens", tablet: "Tablet: open over a scrim, focus kept inside" },
+      railTip: "Section names",
+      tabs: { today: "Today", reports: "Reports", activity: "Activity", access: "Access", settings: "Settings" },
+      opsTitle: "Operations status", more: "More", liveWord: "Live", delayedWord: "Delayed",
+      date: "Wednesday, 23 September 2026", hours: "Open 6:00 AM – 1:00 AM",
+      lastAt: (t) => `Last reading ${t}`, pm: (t) => `${t} PM`,
+      frameCaps: { head: "The compact header: title, status and menu", headLate: "The compact header, delayed", ops: "The status details, open", opsLate: "The status details, delayed", menu: "The menu, open, focus on its first item", bar: "The bar at 390, Today current", bar320: "At 320: hover on Reports, focus on Settings", live: "Try it: Tab then Enter, the arrows inside the menu, Escape returns focus" },
       hdrTitle: "Reports", hdrSub: `26 Aug – 22 Sep 2026<span class="sep">·</span>28 days`,
       hdrCap: "Page header: the title, then the period; 44 px controls at the inline end",
       emptyTable: "No readings from 1 Jul 2026 to 31 Jul 2026", emptyAction: "Show the last 4 weeks",
@@ -258,6 +272,8 @@
     save: '<path d="M12 4.5v10.2M7.8 10.6 12 14.8l4.2-4.2"/><path d="M5 16.5v1.4a1.6 1.6 0 0 0 1.6 1.6h10.8a1.6 1.6 0 0 0 1.6-1.6v-1.4"/>',
     close: '<path d="M7 7l10 10M17 7 7 17"/>',
     chevron: '<path d="M7 10l5 5 5-5"/>',
+    next: '<path d="M10 7l5 5-5 5"/>',
+    more: '<circle class="fill" cx="5.5" cy="12" r="1.6"/><circle class="fill" cx="12" cy="12" r="1.6"/><circle class="fill" cx="18.5" cy="12" r="1.6"/>',
     today: '<path d="M4.5 13.5a7.5 7.5 0 0 1 15 0"/><path d="M12 13.5 15.6 9.9"/><path d="M3.5 18h17"/><circle class="fill" cx="12" cy="13.5" r="1.3"/>',
     reports: '<path d="M4 19.5h16"/><path d="M7 16v-4.5M12 16V6.5M17 16v-7"/>',
     access: '<circle cx="8.2" cy="12" r="3.6"/><path d="M11.8 12h8.4M17.2 12v2.8M20.2 12v2"/>',
@@ -750,18 +766,75 @@
       const glyph = iconName ? svg(P[iconName], k === "signout" ? "mirror" : "") : `<span class="cx-glyph">${LANG === "ar" ? "EN" : "AR"}</span>`;
       return `<li><button class="cx-ri${f ? " " + f : ""}" type="button"${cur ? ' aria-current="page"' : ""}${open ? "" : ` aria-label="${name}"`}${live ? "" : ' tabindex="-1"'}><span class="cx-tile">${glyph}</span><span class="cx-rn"${k === "lang" ? ` lang="${LANG === "ar" ? "en" : "ar"}"` : ""}>${name}</span>${open ? "" : `<span class="cx-rtip" aria-hidden="true">${name}</span>`}</button></li>`;
     };
-    return `<nav class="cx-rail${open ? " is-open" : ""}" aria-label="${L.railLabel}"><div class="brand"><button class="cx-ri" type="button" aria-label="${L.brand}"${live ? "" : ' tabindex="-1"'}><span class="cx-tile brand">${LOGO}</span><span class="cx-rn wordmark" lang="en">FITWAY</span></button></div>
+    const bf = forced.brand || "";
+    return `<nav class="cx-rail${open ? " is-open" : ""}" aria-label="${L.railLabel}"><div class="brand"><button class="cx-ri${bf ? " " + bf : ""}" type="button" aria-label="${L.brand}"${live ? "" : ' tabindex="-1"'}><span class="cx-tile brand">${LOGO}</span><span class="cx-rn wordmark" lang="en">FITWAY</span>${open ? "" : `<span class="cx-rtip" aria-hidden="true">${L.railTip}</span>`}</button></div>
       <ul>${NAV.map(([k, i]) => item(k, i)).join("")}</ul><ul class="foot">${FOOT.map(([k, i]) => item(k, i)).join("")}</ul></nav>`;
   }
   function rails() {
     const hdr = `<div class="cx-header-spec" style="border:1px solid var(--line);border-radius:24px;background:#070707"><div class="cx-hdr"><div><h3>${L.hdrTitle}</h3><p>${L.hdrSub}</p></div><div class="cx-hdr-end"><span class="cx-concept">${L.concept}</span>${seg("28d")}</div></div></div>`;
-    return section("rail", "rail", "RAI-1…5 · HDR-1…2 · FOC-4…5", `<div class="card cx-stage"><div class="cx-rails">
+    // RAI-6: the tablet's open rail over SRF-4's scrim, with two plain cards standing for the page behind it.
+    const tablet = `<div class="cx-tablet"><div class="cx-tablet-page"><i class="card lit lit-card">${LAMP}</i><i class="card"></i><i class="card is-wide lit lit-chart">${LAMP}</i></div><i class="cx-scrim-spec"></i>${rail({ open: true })}</div>`;
+    return section("rail", "rail", "RAI-1…8 · HDR-1…2 · FOC-4…5", `<div class="card cx-stage"><div class="cx-rails">
       <figure class="cx-fig" style="flex:0 0 260px"><div class="cx-spec" inert>${rail({ forced: { reports: "is-hover", access: "is-focus" } })}</div>${cap(L.railCaps.states, "RAI-2 · FOC-4 · FOC-5")}</figure>
+      <figure class="cx-fig" style="flex:0 0 260px"><div class="cx-spec" inert>${rail({ forced: { brand: "is-focus" } })}</div>${cap(L.railCaps.brand, "RAI-8 · FOC-5")}</figure>
       <figure class="cx-fig" style="flex:0 0 260px"><div class="cx-spec">${rail({ live: true })}</div>${cap(L.railCaps.live, "FOC-4")}<span class="cx-live-tag">${L.live}</span></figure>
-      <figure class="cx-fig" style="flex:0 0 260px"><div class="cx-spec" inert>${rail({ open: true })}</div>${cap(L.railCaps.open, "RAI-3 · GLO-14", false)}</figure>
+      <figure class="cx-fig" style="flex:0 0 260px"><div class="cx-spec" inert>${rail({ open: true })}</div>${cap(L.railCaps.open, "RAI-3 · RAI-7 · GLO-14", false)}</figure>
+      <figure class="cx-fig" style="flex:0 0 420px"><div class="cx-spec" inert>${tablet}</div>${cap(L.railCaps.tablet, "RAI-6 · BRK-3 · SRF-4")}</figure>
     </div></div>
     <figure class="cx-fig" style="align-items:stretch"><div class="cx-spec" inert>${hdr}</div>${cap(L.hdrCap, "HDR-1 · HDR-2 · CHP-2")}</figure>`);
   }
+
+  /* ------------------------------------------------------------ the phone's frame (step 3) */
+  // The page's own classes (style.css "the frame"), so a specimen is the page's form; components.css only places them.
+  const TABS = ["today", "reports", "activity", "access", "settings"];
+  const bar = (forced = {}) => `<nav class="tabbar" aria-label="${L.railLabel}"><ul>${TABS.map((k) => `<li><a class="tb-item${forced[k] ? " " + forced[k] : ""}" href="#frame" tabindex="-1"${k === "today" ? ' aria-current="page"' : ""} aria-label="${L.nav[k]}"><span class="tb-tile">${svg(P[k], "")}</span><span class="tb-name">${L.tabs[k]}</span></a></li>`).join("")}</ul></nav>`;
+  const stateMark = (late) => (late ? svg(P.clock, "ico") : '<span class="dot" aria-hidden="true"></span>');
+  const hbadge = (late, open, live) => `<button class="hbadge${late ? " is-delayed" : ""}" type="button"${live ? ' data-layer="ops"' : ' tabindex="-1"'} aria-expanded="${open}" aria-haspopup="dialog" aria-label="${L.opsTitle}: ${late ? L.delayedWord : L.liveWord}"><span class="hb-state">${stateMark(late)}<span class="hb-word">${late ? L.delayedWord : L.liveWord}</span></span>${svg(P.chevron, "hb-chev")}</button>`;
+  const hmenu = (open, live) => `<button class="hbtn" type="button"${live ? ' data-layer="menu"' : ' tabindex="-1"'} aria-expanded="${open}" aria-haspopup="menu" aria-label="${L.more}">${svg(P.more, "")}</button>`;
+  const opsPop = (late, open) => `<div class="fw-pop ops-pop" role="dialog" aria-label="${L.opsTitle}" tabindex="-1"${open ? "" : " hidden"} data-pop="ops"><div class="ops-body"><h4 class="ops-title">${L.opsTitle}</h4><p class="ops-state${late ? " is-delayed" : ""}">${stateMark(late)}<span>${late ? L.delayedWord : L.liveWord}</span></p><p class="ops-line">${L.lastAt(L.pm(late ? "7:29" : "7:42"))}${late ? `<span class="sep" aria-hidden="true">·</span><span class="ops-ago">${L.ago(13)}</span>` : ""}</p><p class="ops-line">${L.hours}</p></div><div class="ops-foot"><a class="fw-mi" href="#frame" tabindex="-1">${svg(P.operations, "")}<span>${L.nav.operations}</span>${svg(P.next, "fw-mi-end mirror")}</a></div></div>`;
+  const menuPop = (open, focus) => `<div class="fw-pop menu-pop" role="menu" aria-label="${L.more}"${open ? "" : " hidden"} data-pop="menu"><a class="fw-mi${focus ? " is-focus" : ""}" role="menuitem" tabindex="-1" href="#frame"><span class="fw-glyph" lang="en" aria-hidden="true">${LANG === "ar" ? "EN" : "AR"}</span><span lang="${LANG === "ar" ? "en" : "ar"}">${L.nav.lang}</span></a><a class="fw-mi" role="menuitem" tabindex="-1" href="#frame">${svg(P.signout, "mirror")}<span>${L.nav.signout}</span></a></div>`;
+  const phoneHead = ({ late = false, open = "", live = false } = {}) => `<div class="cx-ph-head"><h3>${L.nav.today}</h3><div class="head-acts">${hbadge(late, open === "ops", live)}${opsPop(late, open === "ops")}${hmenu(open === "menu", live)}${menuPop(open === "menu", open === "menu" && !live)}</div><p class="cx-ph-sub">${L.date}</p><span class="cx-concept">${L.concept}</span></div>`;
+  const phone = (inner, cls = "") => `<div class="cx-phone${cls ? " " + cls : ""}">${inner}<i class="card cx-ph-card"></i></div>`;
+  function frame() {
+    const f = (inner, state, ids, live = false, w = 390) => `<figure class="cx-fig" style="flex:0 0 ${w}px">${live ? `<div class="cx-spec cx-live-frame">${inner}</div>` : `<div class="cx-spec" inert>${inner}</div>`}${cap(state, ids)}${live ? `<span class="cx-live-tag">${L.live}</span>` : ""}</figure>`;
+    return section("frame", "frame", "BRK-4 · BRK-10 · HDR-4 · BDG-1…4 · MNU-1…4 · BAR-1…6", `<div class="card cx-stage"><div class="cx-phones">
+      ${f(phone(phoneHead()), L.frameCaps.head, "HDR-4 · BDG-1 · MNU-1")}
+      ${f(phone(phoneHead({ late: true })), L.frameCaps.headLate, "BDG-1 · COL-16")}
+      ${f(phone(phoneHead({ open: "ops" }), "is-tall"), L.frameCaps.ops, "BDG-2…4 · SRF-8")}
+      ${f(phone(phoneHead({ late: true, open: "ops" }), "is-tall"), L.frameCaps.opsLate, "BDG-3 · STA-2")}
+      ${f(phone(phoneHead({ open: "menu" }), "is-tall"), L.frameCaps.menu, "MNU-2…4 · FOC-2")}
+      ${f(phone(phoneHead({ live: true }), "is-tall"), L.frameCaps.live, "BDG-2 · MNU-4", true)}
+      ${f(`<div class="cx-phone cx-bar-spec">${bar()}</div>`, L.frameCaps.bar, "BAR-1…4 · BAR-6 · GLO-18")}
+      ${f(`<div class="cx-phone cx-bar-spec is-320">${bar({ reports: "is-hover", settings: "is-focus" })}</div>`, L.frameCaps.bar320, "BAR-3 · BAR-5 · FOC-1", false, 320)}
+    </div></div>`);
+  }
+  // The interactive phone header: the same behaviour as the page (app.js "the frame"), in one specimen.
+  function wireFrame() {
+    for (const box of $$(".cx-live-frame")) {
+      const btns = { ops: $('[data-layer="ops"]', box), menu: $('[data-layer="menu"]', box) };
+      const pops = { ops: $('[data-pop="ops"]', box), menu: $('[data-pop="menu"]', box) };
+      for (const a of $$("a", box)) a.addEventListener("click", (e) => e.preventDefault());
+      let open = null;
+      const items = () => $$('[role="menuitem"]', pops.menu);
+      const show = (k, where = "first") => { if (open && open !== k) hide(open, false); open = k; pops[k].hidden = false; btns[k].setAttribute("aria-expanded", "true"); if (k === "menu") { const it = items(); (where === "last" ? it[it.length - 1] : it[0]).focus(); } else pops[k].focus(); };
+      const hide = (k, back) => { if (pops[k].hidden) return; pops[k].hidden = true; btns[k].setAttribute("aria-expanded", "false"); if (open === k) open = null; if (back) btns[k].focus(); };
+      for (const k of ["ops", "menu"]) {
+        btns[k].addEventListener("click", () => (pops[k].hidden ? show(k) : hide(k, true)));
+        pops[k].addEventListener("keydown", (e) => { if (e.key === "Escape") { e.stopPropagation(); hide(k, true); } });
+        pops[k].addEventListener("focusout", (e) => { if (!pops[k].hidden && e.relatedTarget && !pops[k].contains(e.relatedTarget) && e.relatedTarget !== btns[k]) hide(k, false); });
+      }
+      for (const a of $$("a", pops.ops)) a.removeAttribute("tabindex");
+      btns.menu.addEventListener("keydown", (e) => { if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); show("menu", e.key === "ArrowUp" ? "last" : "first"); } });
+      pops.menu.addEventListener("keydown", (e) => {
+        const it = items(), i = it.indexOf(document.activeElement), go = (j) => { e.preventDefault(); it[(j + it.length) % it.length].focus(); };
+        if (e.key === "ArrowDown") go(i + 1); else if (e.key === "ArrowUp") go(i - 1); else if (e.key === "Home") go(0); else if (e.key === "End") go(it.length - 1);
+        else if (e.key === "Tab") hide("menu", true);
+      });
+      frameOutside = (t) => { if (open && !pops[open].contains(t) && !btns[open].contains(t)) hide(open, false); };
+    }
+  }
+  let frameOutside = null; // the live specimen's tap-outside close, replaced on each render
+  document.addEventListener("pointerdown", (e) => { if (frameOutside) frameOutside(e.target); });
 
   /* ------------------------------------------------------------ empty, alert, retry */
   function empties() {
@@ -772,7 +845,7 @@
   }
 
   /* ------------------------------------------------------------ render */
-  const ORDER = [["found", "found"], ["card", "card"], ["chart", "chart"], ["pattern", "pattern"], ["table", "table"], ["buttons", "buttons"], ["seg", "seg"], ["sw", "switch"], ["field", "field"], ["dialog", "dialog"], ["chips", "chips"], ["rail", "rail"], ["empty", "empty"]];
+  const ORDER = [["found", "found"], ["card", "card"], ["chart", "chart"], ["pattern", "pattern"], ["table", "table"], ["buttons", "buttons"], ["seg", "seg"], ["sw", "switch"], ["field", "field"], ["dialog", "dialog"], ["chips", "chips"], ["rail", "rail"], ["frame", "frame"], ["empty", "empty"]];
   function drawPlots() { for (const h of $$(".cx-plot")) drawPlot(h); }
   function render() {
     L = COPY[LANG];
@@ -785,10 +858,11 @@
     for (const btn of $$("#lang-seg .cx-seg-b")) btn.setAttribute("aria-pressed", String(btn.dataset.lang === LANG));
     $("#cx-index").innerHTML = `<span class="sr-only" id="index-name">${L.indexName}</span>` + ORDER.map(([k, id]) => `<a href="#${id}">${L.sec[k][0]}</a>`).join("");
     const pat = pattern();
-    $("#cx-root").innerHTML = [foundations(), cards(), chart(), pat.html, tables(), buttons(), segs(), switches(), fields(), dialogs(), chips(), rails(), empties()].join("");
+    $("#cx-root").innerHTML = [foundations(), cards(), chart(), pat.html, tables(), buttons(), segs(), switches(), fields(), dialogs(), chips(), rails(), frame(), empties()].join("");
     drawPlots();
     wireHeat();
     wireDialog();
+    wireFrame();
   }
   function setLang(lang) {
     if (lang === LANG) return;

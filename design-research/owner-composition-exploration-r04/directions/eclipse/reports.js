@@ -31,7 +31,8 @@
       concept: "مفهوم استكشافي · بيانات افتراضية",
       railLabel: "الأقسام",
       brand: "FITWAY، أسماء الأقسام",
-      nav: { daily: "اليومي", reports: "التقارير", access: "الوصول", activity: "سجل النشاط", operations: "التشغيل", monitoring: "شاشة المراقبة", lang: "English", settings: "الإعدادات", signout: "تسجيل الخروج" },
+      railTip: "أسماء الأقسام",
+      nav: { daily: "اليوم", reports: "التقارير", access: "الوصول", activity: "سجل النشاط", operations: "التشغيل", monitoring: "شاشة المراقبة", lang: "English", settings: "الإعدادات", signout: "تسجيل الخروج" },
       langAria: "التبديل إلى اللغة الإنجليزية",
       langGlyph: "EN",
       docTitle: "التقارير · FITWAY (مفهوم)",
@@ -116,7 +117,8 @@
       concept: "Exploration concept · synthetic data",
       railLabel: "Sections",
       brand: "FITWAY, section names",
-      nav: { daily: "Daily", reports: "Reports", access: "Access", activity: "Activity log", operations: "Operations", monitoring: "Monitoring", lang: "العربية", settings: "Settings", signout: "Sign out" },
+      railTip: "Section names",
+      nav: { daily: "Today", reports: "Reports", access: "Access", activity: "Activity log", operations: "Operations", monitoring: "Monitoring", lang: "العربية", settings: "Settings", signout: "Sign out" },
       langAria: "Switch to Arabic",
       langGlyph: "AR",
       docTitle: "Reports · FITWAY (concept)",
@@ -528,6 +530,9 @@
   brand.addEventListener("click", () => setRail(!railOpen));
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && railOpen && !openDlg) { setRail(false); brand.focus(); } });
   document.addEventListener("pointerdown", (e) => { if (railOpen && !rail.contains(e.target)) setRail(false); });
+  // Step 3, as on the Daily page: when keyboard focus leaves the open rail it closes, so focus never lands on content
+  // hidden under it (FOC-3).
+  rail.addEventListener("focusout", (e) => { if (railOpen && e.relatedTarget && !rail.contains(e.relatedTarget)) setRail(false); });
 
   const say = (text) => { const el = $("#say"); el.textContent = ""; requestAnimationFrame(() => { el.textContent = text; }); };
 

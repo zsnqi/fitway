@@ -8,7 +8,8 @@
 > `owner_spec_r04_s14`, 2026-09-30: the user's rule for a row with no readings (TBL-12). Fourth pass: run
 > `owner_spec_r04_s15`, 2026-09-30: the middle dot between the words and the range (Q11, TBL-12). Fifth pass: run
 > `owner_spec_r04_s16`, 2026-10-01: the range first, then the mark and the words, replacing the middle dot (Q11,
-> TBL-12). It grows with every screen.
+> TBL-12). Sixth pass: run `owner_daily_r04_s17`, 2026-10-01, step 3 phase A: the frame (navigation and header at
+> every size, §1.11, §3.11, §3.13), pending the user's review. It grows with every screen.
 > `components.html` renders every component below in its rule form.
 
 ## 0. How to read it
@@ -43,6 +44,7 @@ still applies (responsive, RTL, interaction, accessibility). Where `README.md` a
 | `B` | Probe `D:\fitway-scratch\spec\work3\probe-page-norows.mjs` → `page-norows.json` (run `owner_spec_r04_s14`): every row with no readings in Daily's minute table (`live` and `delayed`, details open) and Reports' day table (default, `short` and last 7 days), AR and EN, at 1440, 1024, 768 and 390: its cells, their spans, the column its words sit under, and its height. |
 | `s:n` `r:n` `a:n` `rj:n` | Line `n` of `style.css`, `reports.css`, `app.js`, `reports.js` at `31a40d6`. |
 | `user 2026-09-30` | The user's decisions on the first draft: every `P` entry accepted (now `R`), Q3-Q10 answered with the sheet's proposal (§8, "Answered 2026-09-30"), the user's note on numeric columns (TBL-1), the user's rule for a row with no readings (TBL-12), and the middle dot between its words and range (Q11, TBL-12), since replaced (`user 2026-10-01`). |
+| `Fr` | Probe `D:\fitway-scratch\daily\work\probe-frame.mjs` → `frame-e.json` (run `owner_daily_r04_s17`, step 3 phase A): the frame at 1440, 1024, 768, 390 and 320, AR and EN (what shows, its boxes, the Tab order and every stop's ring, the bar's labels and ring clearances), the keyboard of each open layer, and loads over HTTP and `file://`. |
 | `user 2026-10-01` | The user's choice of option د, «المدة أولًا», in the four-option mockup `D:itway-scratch\spec\gapmock\index.html`: the range first, then the mark and the words (Q11, TBL-12). |
 | `F1`…`F21`, `D1`…`D4`, `KI1`…`KI4` | The fresh design review (`D:\fitway-scratch\review\REVIEW.md`): its findings, its class-d items and the four known issues it confirmed. The user accepted every F, D1 and D4, and endorsed its "Keep" list as rules (2026-09-30). |
 
@@ -87,7 +89,9 @@ Frames of every probed state are in `D:\fitway-scratch\spec\work\probe\frames\`.
 | SRF-3 | R | Tooltip: `rgba(15,14,15,.92)`, blur 10, 1 px `rgba(255,255,255,.14)`, radius 12. | T.tip |
 | SRF-4 | R | Dialog: panel COL-4, 1 px `--line-2`, radius 24, shadow `0 40px 100px rgba(0,0,0,.7)`; scrim `rgba(4,4,5,.66)`, blur 3. | G.panel, G.scrim |
 | SRF-5 | R | Plate: an opaque `#0F0E0F` layer, radius 16, under any colour that carries data inside a lit card, so the light never changes a data colour. | R.plate, Keep |
-| SRF-6 | R | Shadows only on things that float (the open rail, the dialog). Cards never carry one. No nested cards; separators and alignment before boxes. | `DESIGN_GUIDE` §3 |
+| SRF-6 | R | Shadows only on things that float (the open rail, the phone's bar, the header's panels, the dialog). Cards never carry one. No nested cards; separators and alignment before boxes. | `DESIGN_GUIDE` §3; step 3 |
+| SRF-7 | R | The phone's bar (BAR-1): the rail's glass a little denser, `rgba(12,12,15,.8)`, because content always passes under it; blur 22, 1 px `--line`, radius 24, shadow `0 16px 48px rgba(0,0,0,.55)`. | Fr; step 3 |
+| SRF-8 | R | A panel that opens from the header (the status details, BDG-3; the menu, MNU-1): the open rail's surface, `rgba(12,12,15,.94)`, blur 22, with a firmer 1 px `--line-2` edge (it floats over content), radius 16, the open rail's shadow. | Fr; step 3 |
 
 ### 1.3 Light
 
@@ -153,10 +157,10 @@ TYP-3, accepted (user 2026-09-30):
 
 | Id | L | Entry | Src |
 | --- | --- | --- | --- |
-| RAD-1 | R | Five radii: 24 surfaces (card, rail, dialog, sheet's top); 16 plates and scroll regions; 12 controls, tooltips, keys and alerts (and the rail tile, today 14); 8 badges and pattern cells; 4 flags and swatches (today 5 and 3); full for dots, the switch and round marks. | D.*, R.*; user 2026-09-30 |
+| RAD-1 | R | Five radii: 24 surfaces (card, rail, the phone's bar, dialog, sheet's top); 16 plates, scroll regions, the header's panels and the bar's items (24 less the bar's 8 inset); 12 controls, tooltips, keys and alerts, menu items, the rail tile (14 until step 3) and the bar's tile; 8 badges, pattern cells and the rail's focus label; 4 flags and swatches (today 5 and 3); full for dots, the switch and round marks. | D.*, R.*; user 2026-09-30; Fr |
 | RAD-2 | K | Off the set today: the segmented control 13 (F13); rail tiles and the minute scroller 14; the icon tile, segments, sort headers and the skip link 10; flags 5. | r:51, r:59, r:223, s:223, s:589 (K-09) |
 | BRD-1 | R | One border tint per role: `--line` for surfaces, `--line-2` for controls, `--line-3` on hover; a table row line is `.055`, a week edge `.14`. Borders are 1 px. | Keep, r:196, r:206 |
-| BRD-2 | R | Elevation is the glass order: page, wash, cards, the open rail, a tooltip, the dialog. Only the open rail and the dialog carry a shadow (SRF-6). | s:182-186, r:266 |
+| BRD-2 | R | Elevation is the glass order: page, wash, cards and the tooltips inside them, the rail's scrim (721-1023 px), the open rail, the header's panels, the phone's bar, the dialog. Only the open rail, the bar, the header's panels and the dialog carry a shadow (SRF-6). | s:182-186, r:266; Fr |
 
 ### 1.8 Icons
 
@@ -173,11 +177,11 @@ TYP-3, accepted (user 2026-09-30):
 | Id | L | Entry | Src |
 | --- | --- | --- | --- |
 | FOC-1 | R | **F18: one ring.** 2 px chalk `#F5F3F2` at a 3 px offset on every interactive element (17.47:1 on a card, 4.20:1 over FITWAY red). | s:86, F, X |
-| FOC-2 | R | The inset variant, for controls packed edge to edge (segments, sortable headers, pattern cells): 2 px chalk at −4 px. | r:226, F18 |
+| FOC-2 | R | The inset variant, for controls packed edge to edge (segments, sortable headers, pattern cells, the items of a header panel, MNU-3): 2 px chalk at −4 px. The phone bar's items keep FOC-1: 8 px apart, their rings stay at least 4.6 px from a neighbour's name at 320 (BAR-5). | r:226, F18; Fr |
 | FOC-3 | R | At least 4 px between the ring and any other content. Focus is never hidden behind sticky elements. | F18, `DESIGN_GUIDE` §13 |
 | FOC-4 | R | **D4:** a collapsed rail item shows its name on keyboard focus only; the mouse hover keeps its tile state and shows no tooltip. | D4 (accepted) |
 | FOC-5 | R | D4's form: the name in a tooltip-look label (SRF-3, radius 8, 32 px, label type), 12 px beyond the tile on its inline end, centred on it. | components.html; user 2026-09-30 |
-| FOC-6 | K | Offsets 3, 2, 1 and −4 today, and a red ring on the skip link; the chart's ring is 2 px from its "80" label. | F (K-22) |
+| FOC-6 | K | Offsets 3, 2, 1 and −4 today, and a red ring on the skip link; the chart's ring is 2 px from its "80" label. Daily's skip link has the one ring since step 3 phase A (HDR-5); Reports' keeps the red one until step 4. | F (K-22); Fr |
 
 ### 1.10 Motion
 
@@ -194,20 +198,24 @@ TYP-3, accepted (user 2026-09-30):
 | MOT-9 | R | Dialog panel rises 14 px (a sheet slides up); scrim fades | 240 / 200 ms | as the rail | README Reports |
 | MOT-10 | C | Daily's first-open intro: the answers roll, the line draws, then the end point and the peak land; once per tab; none on Reports (pending the user's final view in step 4) | 400, 914 and 257 ms from 914; 1171 ms in all | state; the line `cubic-bezier(.3,.2,.4,1)` | README 11 |
 | MOT-11 | R | Reduced motion, `?motion=off`: every change is instant, no intro, the page at rest is identical. | | | s:773-776 |
+| MOT-12 | R | The frame (step 3): at 721-1023 px the rail opens as MOT-8 and its scrim (no text) fades in and out with it; the header's panels (status details, menu) and the bar change at once, like a tooltip | 240 / 200 ms (scrim); 0 (panels) | as MOT-8 | Fr |
 
 ### 1.11 Breakpoints and navigation
 
 | Id | L | Entry | Src |
 | --- | --- | --- | --- |
 | BRK-1 | R | Designed: 1440×900, 768×1024, 390×844. Checked so nothing breaks: 320, 1024 and 200% zoom. No document-level horizontal scroll at any width. | plan §2, `DESIGN_GUIDE` §8 |
-| BRK-2 | R | Desktop: the slim icon rail, unchanged. | plan §3 |
-| BRK-3 | R | Tablet (768): the same slim rail; the logo opens it over the content; content reflows to two columns. | plan §3 |
-| BRK-4 | R | Phone: a glass bar at the bottom with five items (Today, Reports, Activity log, Access, Settings), each with a short label under its icon; a compact header (title, the Operations status as a small badge that opens its details, a menu for language and sign out); page controls under the title at full width; no hamburger. Its visual form is designed in step 3. | plan §3 |
+| BRK-2 | R | Desktop (1024 px and wider, 1024 included): the slim icon rail, unchanged but for step 3's fixes (RAI-5, FOC-4, FOC-5, GLO-14): the logo opens it over the content without a scrim, and it closes when keyboard focus leaves it (RAI-7). | plan §3; Fr |
+| BRK-3 | R | Tablet (721-1023 px, 768 designed): the same slim rail, sticky, the full height; the logo opens it over the content as a modal layer (RAI-6); content reflows to two columns. | plan §3; Fr |
+| BRK-4 | R | Phone (720 px and below): the glass bar at the bottom (BAR-1…6) with five items in this order: Today, Reports, Activity log, Access, Settings, each with a short name under its icon; the compact header (HDR-4) with the Operations status as a badge that opens its details (BDG-1…4) and one menu for the language and sign out (MNU-1…4); page controls under the title at full width; no hamburger. The rail is not rendered. | plan §3; Fr |
 | BRK-5 | R | Four summary cards go two by two below 1200 px. | Keep, r:32-34, W |
 | BRK-6 | R | At 720 px and below a dialog becomes a bottom sheet and a table recomposes before it scrolls (fold secondary columns into the row; only then a labelled, keyboard-scrollable region with a sticky first column). | r:338-380, README Reports |
 | BRK-7 | K | Reports sets the rail aside below 721 px and scrolls its pattern sideways only to avoid overflow: a placeholder, not a phone design. | r:334-351 (K-29) |
 | BRK-8 | K | Daily's header overflows at 1024 (KI2) and its busy note jumps below 1024 (KI3). | W (K-26, K-27) |
-| BRK-9 | R | Below 1024 nothing on the current pages is a rule except BRK-3…6; the rest of 768, 390 and 320 is designed in step 3. | plan §5 |
+| BRK-9 | R | Below 1024 the frame is a rule (BRK-3, BRK-4, BRK-10…12). Each page's content at 768, 390 and 320 is composed in its own round: Daily's in step 3 phase B (provisional until then), Reports' in step 4. | plan §5; Fr |
+| BRK-10 | R | **The frame's breakpoints:** 1024 px and wider, the desktop frame; 721-1023 px, the tablet frame; 720 px and below, the phone frame. 720 is where `DESIGN_GUIDE` §8's mobile band ends and where a dialog becomes a bottom sheet (BRK-6), so 200% zoom at 1440 (720 CSS px) gets the phone frame. Crossing a breakpoint closes whatever the frame has open. | `DESIGN_GUIDE` §8; Fr |
+| BRK-11 | R | A page takes the frame by opting in (`body[data-frame]` in the concept), so the frame's phone and tablet rules never reach a page still being composed: Daily since step 3; Reports in step 4, when its placeholder (BRK-7) goes. | Fr |
+| BRK-12 | R | The frame never causes a document-level sideways scroll: measured 0 px at 390 and 320 and at 768, AR and EN; the bar and the header's panels stay inside the viewport at 320. | Fr |
 
 ## 2. Content rules
 
@@ -232,6 +240,8 @@ TYP-3, accepted (user 2026-09-30):
 | GLO-15 | R | the concept label, visible on every concept page | مفهوم استكشافي · بيانات افتراضية | Exploration concept · synthetic data | |
 | GLO-16 | R | jargon stays out of the copy (F11): "UTC" lives in the file, not in a sentence | | | «UTC», "UTC" in copy |
 | GLO-17 | R | each language written naturally for itself (`DESIGN_GUIDE` §4) | فصحى مبسطة، بلا ترجمة حرفية | plain English, not a mirror of the Arabic | transliteration, word-for-word copy |
+| GLO-18 | R | the phone bar's short names (BAR-3): the page's name, or the word of it that fits under an icon at 320; the full name stays the accessible name, which contains the short one | اليوم · التقارير · النشاط · الوصول · الإعدادات | Today · Reports · Activity · Access · Settings | a short name that is not a word of the page's name |
+| GLO-19 | R | the frame's own words: the logo's focus name, the status details' title, the phone menu's name | أسماء الأقسام · حالة التشغيل · المزيد | Section names · Operations status · More | «القائمة» / "Menu" for a menu that holds no sections |
 
 ### 2.2 Dates, times and ranges
 
@@ -431,9 +441,15 @@ TYP-3, accepted (user 2026-09-30):
 | RAI-2 | R | Items are 48 × 48 tiles: 1 px `--line-2`, 1.8% white, icon 21 in `--ink-2`; hover `--line-3`, 6% white, chalk icon; the current page: FITWAY red with a white icon (4.64:1), `aria-current`. Every item has a localized name. | D.tile, s:217-232, X |
 | RAI-3 | R | Open: 236 px over the content, names in label type beside the tiles, the current one chalk. | D railOpen |
 | RAI-4 | R | Focus: FOC-1 on the tile; D4 (FOC-4). | F |
-| RAI-5 | R | Tile radius 12, 8 between items, 24 between the logo and the sections. | RAD-1, SPC-6; user 2026-09-30 |
-| HDR-1 | R | Header: the title (title type), a subtitle in label type `--ink-3` with " · " separators; controls and the status at the inline end; 24 between the two sides. | D.h1, D.sub |
+| RAI-5 | R | Tile radius 12, 8 between items, 24 between the logo and the sections (16 under the logo and the rail's 8); names in label type, 16 from the tile. On both pages since step 3 phase A. | RAD-1, SPC-6; user 2026-09-30; Fr |
+| RAI-6 | R | **Tablet (721-1023 px).** Open, the rail is a modal layer: the same 236 px surface and motion (SRF-2, MOT-8) over SRF-4's scrim, which fades with it (MOT-12); the content and the skip link are inert; Tab and Shift+Tab cycle through the rail's items in visual order (logo, sections, foot); Escape or a tap on the scrim closes it and focus returns to the logo; the logo's `aria-expanded` announces it. | Fr; step 3 |
+| RAI-7 | R | **Desktop (1024 px and wider).** Open, the rail is not modal: Escape or a tap outside closes it (focus returns to the logo on Escape), and when keyboard focus leaves it, it closes, so focus never lands on content hidden under it (FOC-3). | Fr; step 3 |
+| RAI-8 | R | The logo's focus label (FOC-5) names what it opens: «أسماء الأقسام» / "Section names", which is part of its accessible name «FITWAY، أسماء الأقسام» / "FITWAY, section names". | Fr; step 3 |
+| HDR-1 | R | Header: the title (title type), a subtitle in label type `--ink-3` with " · " separators, whose parts never break inside (DAT-4); controls and the status at the inline end; 24 between the two sides. | D.h1, D.sub |
 | HDR-2 | R | The title names the page and matches its nav name (GLO-14). | F15 |
+| HDR-3 | R | **Desktop and tablet status (CHP-2).** Where the status opens nothing, it and the concept label are boxless: the status in label type `--ink-2`, its dot (7 px `--live`) or clock (15 px `--delayed`), the state word chalk 500 (delayed: `#E8B62E`, COL-16), " · Last reading" and the time; the concept label in caption `--ink-3`. The status's line is centred on the title's (8 px down); 16 between them in a row. At 721-1023 px they stack at the inline end, the status first, 4 apart. | Fr; step 3 |
+| HDR-4 | R | **Phone (720 px and below): the compact header.** One line holds the title and, at the inline end, the status badge (BDG-1) and the menu button (MNU-1), 8 apart, the menu outermost; under it the subtitle's first part only (the date; the hours move into the status details, BDG-3), 4 below; then the concept label, 4 below. Rows are 44, 20 and 18 tall with no other gap. Page controls, where a page has them, follow at full width. | Fr; step 3 |
+| HDR-5 | R | The skip link is part of the frame: a 44 px chalk control (label type, padding 16, radius 12) with FOC-1, 12 px from the top and past the rail (112 px from the inline start; 16 on a phone). | Fr; step 3 |
 
 ### 3.12 Empty state, alert and retry
 
@@ -443,6 +459,27 @@ TYP-3, accepted (user 2026-09-30):
 | EMP-2 | R | Alert: `role="alert"`, radius 12, 1 px `--err` `.5`, 6% error fill, an error icon (17) and text in chalk that says what happened, that nothing was lost, and what is kept. | G alert |
 | EMP-3 | R | Retry: one primary action ("Try again", «إعادة المحاولة»); focus moves to it; the inputs are kept. | README Reports |
 | EMP-4 | R | Empty state padding 40 with a 16 gap; alert padding 12 / 16 with an 8 gap (measured 40 / 44 and 14; 12 / 14 and 10). | SPC-6; user 2026-09-30 |
+
+### 3.13 The phone's bar, status badge and menu
+
+Step 3 phase A (run `owner_daily_r04_s17`). `components.html` shows each in its states, AR and EN.
+
+| Id | L | Entry | Src |
+| --- | --- | --- | --- |
+| BAR-1 | R | **The bar.** The rail turned to lie along the bottom: SRF-7's glass, fixed 16 px from both sides (8 px below 360 px, so every name keeps its line at 320) and 12 px above the bottom, or the safe-area inset where larger (physical left and right, `DESIGN_GUIDE` §8); 8 px inside and between its five items. 74 px tall. The page keeps 16 px of space below its content clear of it. | Fr |
+| BAR-2 | R | **An item.** A link at least 44 × 44 (61.6 × 56 at 390, 50.8 × 56 at 320), radius 16: a 40 × 28 tile (radius 12) with the section's 21 px rail icon, 4 px, and its short name in caption type (12 / 18), centred. At rest the tile has no fill and the icon and name are `--ink-2`. | Fr |
+| BAR-3 | R | **Names.** Short names (GLO-18), one line each, never cut: the widest, "Settings", is 47.6 px in a 50.8 px item at 320. Each item's accessible name is the section's full name, which contains the short one. | Fr |
+| BAR-4 | R | **States.** Hover: chalk icon and name, tile 6% white, at once. Current page: the rail's red tile (FITWAY red, white icon, `aria-current="page"`), name chalk at 500; hover `#F0223E`. Items that do not exist yet in the concept do nothing. | Fr |
+| BAR-5 | R | **Focus.** FOC-1 around the whole item. With 8 px between items the ring stays inside the bar and at least 4.58 px from a neighbour's name at 320 (FOC-3). | Fr |
+| BAR-6 | R | **Order.** Today, Reports, Activity log, Access, Settings, from the inline start (the right in Arabic). The bar follows the main content in the source, so reading and Tab order run top to bottom. | plan §3; Fr |
+| BDG-1 | R | **The status badge.** The header's status compacted to its word: a 44 px control (CHP-2), radius 12, BTN-2's secondary surface, padding 16, 8 between parts: the dot (7 px `--live`) or the clock (15 px `--delayed`), the word in label type at 500 (chalk; delayed `#E8B62E` with a `--delayed` 36% edge), and a 16 px chevron (`--ink-2`) that turns while open. Accessible name «حالة التشغيل: مباشر» / "Operations status: Live"; `aria-haspopup="dialog"`, `aria-expanded`. | Fr |
+| BDG-2 | R | **Opening.** Click, Enter or Space opens the details and moves focus to them; Escape closes them and returns focus to the badge; a tap outside, or focus leaving them, closes them. One header panel is open at a time. | Fr |
+| BDG-3 | R | **The details.** A non-modal dialog (SRF-8) under the header, 8 px below the controls, aligned to the page's inline end, `min(288px, 100vw − 32px)` wide. Inside, 16 from its edge: the title «حالة التشغيل» / "Operations status" (caption `--ink-3`), the state in heading type at 500 with its dot (8 px) or clock (17 px), "Last reading 7:42 PM" (label `--ink-2`; delayed adds " · 13 min ago" in `#E8B62E`), and the day's hours; then, over a `--line` rule, a 44 px row to the Operations page (its rail icon, its name, a chevron along the reading line, ICO-5). | Fr |
+| BDG-4 | R | The details carry what the phone header leaves out: the last reading's time and how old it is, the hours, and the way to Operations, which has no place in the bar. They take a new reading at once. | Fr |
+| MNU-1 | R | **The menu button.** A 44 × 44 icon button (BTN-5) with a three-dot icon (18 px, `--ink-2`; hover and open: chalk on 5% white); name «المزيد» / "More"; `aria-haspopup="menu"`, `aria-expanded`. | Fr |
+| MNU-2 | R | **The menu.** A `role="menu"` panel (SRF-8), 4 px inside, at least 200 px wide, under the button at the page's inline end: the language (its glyph, «EN» / «AR», in caption at 500, then the other language's name in that language) and sign out (its mirrored icon, ICO-5). Nothing else. | Fr |
+| MNU-3 | R | **Items.** 44 px tall, radius 12, label type chalk, icon 16 `--ink-2`, 8 between, text 16 from the panel's edge; hover 6% white; focus FOC-2. | Fr |
+| MNU-4 | R | **Keyboard.** Enter, Space or Down Arrow opens it on the first item, Up Arrow on the last; Down and Up move and wrap, Home and End jump; Escape closes it and returns focus to the button; Tab closes it and moves on from the button. | Fr; `DESIGN_GUIDE` §11 |
 
 ## 4. Owner surface
 
@@ -490,29 +527,29 @@ Every entry is **K**. None is ever copied. "Step 3" is Daily at every size; "ste
 | K-05 | K | A single day's "Busiest" and cells read as certain; the busiest point has no key entry (F5) | Reports, short and 7-day periods | TRU-2 | step 4: cells from fewer than 3 days hatched, "Busiest" hidden below 3 days, so none on a 7-day period; the busiest dot in the key (PAT-10, GLO-12, Q5) |
 | K-06 | K | The delayed level badge keeps chalk and red bars (F6) | Daily, delayed | LVL-5, LVL-6 | step 3: the badge dims with its value (LVL-6, Q9) |
 | K-07 | K | Axis labels over the lit corners at 3.85-4.88:1 in `--ink-3` (F7) | Daily chart | LGT-9 | step 3 |
-| K-08 | K | Spacing off the 4 px scale (SPC-7) (F8) | Daily, Reports | SPC-1, SPC-5, SPC-6 | steps 3, 4 |
-| K-09 | K | Fifteen text sizes (TYP-6) and radii off the set (RAD-2) (F9) | Daily, Reports | TYP-3, RAD-1 | steps 3, 4 |
-| K-10 | K | Controls and pills under 44: `#details-btn` 124.8 × 38; the header's status and concept chips 36; the legend box 38 (KI1, F13) | Daily; Reports' concept chip | BTN-1, CHP-1, `DESIGN_GUIDE` §11 | step 3 (Daily), step 4 (Reports' chip) |
+| K-08 | K | Spacing off the 4 px scale (SPC-7) (F8) | Daily, Reports | SPC-1, SPC-5, SPC-6 | steps 3, 4. **Partly fixed in step 3 phase A** (run `owner_daily_r04_s17`, Fr) on both rails: gaps 8 and 24 (were 10 and 26), names 16 from the tile (were 14) (RAI-5) |
+| K-09 | K | Fifteen text sizes (TYP-6) and radii off the set (RAD-2) (F9) | Daily, Reports | TYP-3, RAD-1 | steps 3, 4. **Partly fixed in step 3 phase A** (run `owner_daily_r04_s17`, Fr) on both rails: tiles radius 12 (were 14), names 13.5 px (were 14); Daily's header: status 13.5 px and concept 12 px (were 13) |
+| K-10 | K | Controls and pills under 44: `#details-btn` 124.8 × 38; the header's status and concept chips 36; the legend box 38 (KI1, F13) | Daily; Reports' concept chip | BTN-1, CHP-1, `DESIGN_GUIDE` §11 | step 3 (Daily), step 4 (Reports' chip). **Partly fixed in step 3 phase A** (run `owner_daily_r04_s17`, Fr): Daily's header status and concept label lose their 36 px boxes (HDR-3; CHP-2); on a phone the status is a 44 px badge (BDG-1). The button and the legend stay for phase B |
 | K-11 | K | Segments 36 px in a 44 px frame with radius 13 (F10, KI1) | Reports | SEG-2 | step 4 |
 | K-12 | K | The Inside now light is unchanged while delayed (D1) | Daily, delayed | LGT-7, LGT-8 | step 3: the card loses its light while delayed (LGT-8, Q10) |
 | K-13 | K | The lit week card says "Not enough history yet" (short state) and shows +9% in an empty period (D1) | Reports | LGT-7, LGT-8 | step 4: the card loses its light while it has no complete value (LGT-8, Q10) |
 | K-14 | K | "Export CSV" on the day table exports 40,320 minute rows, and its copy says "UTC" (F11) | Reports | GLO-16, TBL-10, truthful labels | step 4: the day table exports its rows; "Export minute data" moves by the period control (TBL-10, Q4) |
 | K-15 | K | The scale changes by state and the last tick breaks the rhythm (F14) | Daily chart | CHT-11's intent | step 3, with Q2 |
-| K-16 | K | The nav says «اليومي» / "Daily" on a page titled «اليوم» / "Today" (F15) | both rails | GLO-14 | step 3 |
-| K-17 | K | Dates and times break across lines: "…1:00 / AM" at 1000 px, «22 سبتمبر / 2026» at 320 (F16) | Daily header, Reports | DAT-4 | steps 3, 4 |
+| K-16 | K | The nav says «اليومي» / "Daily" on a page titled «اليوم» / "Today" (F15) | both rails | GLO-14 | step 3. **Fixed in step 3 phase A** (run `owner_daily_r04_s17`, Fr): «اليوم» / "Today" on both rails and the bar |
+| K-17 | K | Dates and times break across lines: "…1:00 / AM" at 1000 px, «22 سبتمبر / 2026» at 320 (F16) | Daily header, Reports | DAT-4 | steps 3, 4. **Partly fixed in step 3 phase A** (run `owner_daily_r04_s17`, Fr) for Daily's header: the date and the hours never break inside (HDR-1) |
 | K-18 | K | A level badge on an all-hours average ("Average inside 21 · Quiet") (F17) | Reports | LVL-2 | step 4 |
 | K-19 | K | Trend glyphs mirror inconsistently: the week card's head icon and Daily's peak icon do not (F19) | Daily, Reports | ICO-5 | steps 3, 4 |
 | K-20 | K | The minute table: 13 px, 32.5 px rows, no tabular figures, "0.0" and "1.7" people (F12). Its start-aligned numbers meet TBL-1 in Arabic; in English they break it (K-33). Its gap (2:14-2:31 PM) is 18 rows of values, one per minute, not one full-width row: each has its time as the row's first cell, a "-" under «داخل الصالة» / "Inside", an empty average cell and «لا قراءة» / "No reading" under the note column (B) | Daily details; the gap: AR and EN, `live` and `delayed`, 1440, 1024, 768, 390 | TBL-1, NUM-2, NUM-5, TBL-12 | step 3 |
 | K-21 | K | "Busiest" is a 2-hour window on Daily and a 1-hour cell on Reports; the peak's time sits in Reports' card foot (F20) | Daily, Reports | GLO-12, DAT-5 | steps 3, 4: one-hour slots on both pages (GLO-12, Q7); the peak's time in the meta slot |
-| K-22 | K | Focus rings at offsets 3, 2, 1 and −4; a red ring on the skip link; the plot's ring 2 px from "80" (F18) | Daily, Reports | FOC-1…3 | steps 3, 4 |
-| K-23 | K | Keyboard focus on a rail item shows no name (D4) | both rails | FOC-4 | step 3 |
+| K-22 | K | Focus rings at offsets 3, 2, 1 and −4; a red ring on the skip link; the plot's ring 2 px from "80" (F18) | Daily, Reports | FOC-1…3 | steps 3, 4. **Partly fixed in step 3 phase A** (run `owner_daily_r04_s17`, Fr): Daily's skip link has the one ring (HDR-5); the frame's new controls use FOC-1 or FOC-2 only |
+| K-23 | K | Keyboard focus on a rail item shows no name (D4) | both rails | FOC-4 | step 3. **Fixed in step 3 phase A** (run `owner_daily_r04_s17`, Fr): the name shows on keyboard focus only, 12 px beyond the tile, 32 px tall, centred (0 px), on both rails; hover shows none (FOC-5, RAI-8) |
 | K-24 | K | A bordered 34 px icon tile on every card (F21) | both pages, 8 cards | ICO-3 | steps 3, 4 |
 | K-25 | K | 13 px text on red cells would be about 3.3:1 undimmed: held by the 80% dim (5.26:1 lowest) (KI4) | Reports pattern | PAT-8 guards it | none; re-measure each round |
 | K-26 | K | The card headers overflow at 1024: worst 59 px (AR, "Busiest time"), a document scroll of 1046 px (AR) and 1026 px (EN); still at 1100, gone at 1280 (KI2, corrected). Below 1024 the page is not designed yet and scrolls sideways (EN: 834 px at 768, 709 px at 390) | Daily | BRK-1, BRK-5, DESIGN_GUIDE §8 | step 3 |
 | K-27 | K | `#busy-note` jumps when the intro ends: 71.5 px at 600 (EN) and 390 (EN, AR); 14.7-14.8 px at 768-820 (EN); none in AR at 820, none at 900-1024 (KI3, corrected) | Daily, below 1024 | MOT-1, CRD-4 | step 3 |
 | K-28 | K | Stat cards fixed at 166 px (the root of K-27) | Daily, Reports | CRD-4, `DESIGN_GUIDE` §7 | steps 3, 4 |
 | K-29 | K | The rail set aside and the pattern scrolled sideways below 721 px as a placeholder | Reports | BRK-4 | step 4 |
-| K-30 | K | Two amber text tones (`#F0C23C` in the header, `#E8B62E` elsewhere) | Daily, delayed | COL-16 | step 3 |
+| K-30 | K | Two amber text tones (`#F0C23C` in the header, `#E8B62E` elsewhere) | Daily, delayed | COL-16 | step 3. **Fixed in step 3 phase A** (run `owner_daily_r04_s17`, Fr) for the header and the badge: `#E8B62E` (HDR-3, BDG-1) |
 | K-31 | K | The usual line after now at `.24` chalk, 2.01:1 | Daily chart | CHT-4, non-text contrast 3:1 | step 3: `.36` (CHT-4, Q6) |
 | K-32 | K | A single closed cell hides its word (`.is-one`); only a 1.1:1 fill would tell it from a low value. Latent: no single closed hour occurs in the data | Reports pattern | PAT-5, `DESIGN_GUIDE` §13 (grayscale) | step 4 |
 | K-33 | K | Daily's minute table, **English**: numbers and headers start-aligned, so on the left edge. The units are out of line (right edges spread 11 px under "Inside", 11.5 px under "30-min average") and each header's right edge sits 34.5 px ("Inside") and 81 px ("30-min average"; 34 px at 768 and 390) from its numbers'. Arabic meets TBL-1 (0 px) (A) | Daily details, EN, 1440, 1024, 768, 390 | TBL-1 | step 3 |

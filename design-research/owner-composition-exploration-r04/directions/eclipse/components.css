@@ -425,7 +425,7 @@ th.is-asc .cx-sort .cx-ico { transform: rotate(180deg); }
 .cx-rail.is-open .cx-rn { display: block; }
 .cx-rail.is-open [aria-current="page"] .cx-rn, .cx-rail.is-open .cx-rn.wordmark { color: var(--ink); }
 .cx-rn.wordmark { font: var(--t-body); font-weight: 500; letter-spacing: 0.12em; }
-/* D4 (FOC-4, FOC-5 proposed): the name shows on keyboard focus only, never on hover. */
+/* D4 (FOC-4, FOC-5): the name shows on keyboard focus only, never on hover; the logo's names what it opens (RAI-8). */
 .cx-rtip { position: absolute; inset-inline-start: calc(100% + 12px); top: 50%; z-index: 5; display: none; align-items: center; height: 32px; padding-inline: 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(15, 14, 15, 0.92); backdrop-filter: blur(10px); font: var(--t-label); color: var(--ink); white-space: nowrap; transform: translateY(-50%); pointer-events: none; }
 .cx-rail:not(.is-open) .cx-ri:focus-visible .cx-rtip, .cx-rail:not(.is-open) .cx-ri.is-focus .cx-rtip { display: inline-flex; }
 .cx-rail-demo { display: flex; flex-direction: column; gap: 8px; }
@@ -435,3 +435,32 @@ th.is-asc .cx-sort .cx-ico { transform: rotate(180deg); }
 .cx-hdr p { margin-block-start: 4px; font: var(--t-label); color: var(--ink-3); }
 .cx-hdr .sep { margin-inline: 8px; }
 .cx-hdr-end { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: flex-end; }
+/* RAI-6: the tablet's open rail over SRF-4's scrim; plain cards stand for the page behind it. */
+.cx-tablet { position: relative; width: 420px; height: 652px; max-width: 100%; overflow: hidden; border-radius: 24px; border: 1px solid var(--line); background: #070707; }
+.cx-tablet-page { position: absolute; inset: 16px 16px 16px 120px; display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: 120px; gap: 16px; }
+[dir="rtl"] .cx-tablet-page { inset: 16px 120px 16px 16px; }
+.cx-tablet-page .card { display: block; }
+.cx-tablet-page .is-wide { grid-column: 1 / -1; grid-row: span 3; }
+.cx-scrim-spec { position: absolute; inset: 0; background: rgba(4, 4, 5, 0.66); backdrop-filter: blur(3px); }
+.cx-tablet .cx-rail { position: absolute; top: 16px; inset-inline-start: 16px; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6); }
+
+/* ------------------------------------------------ the phone's frame (step 3)
+ * Specimens use the page's own classes (style.css "the frame"): .hbadge, .hbtn, .fw-pop, .fw-mi, .tabbar, .tb-item. These
+ * rules only place them in a phone-width box, and draw the forced hover and focus states. */
+.cx-phones { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 24px; }
+.cx-phone { position: relative; width: 390px; max-width: 100%; height: 190px; padding: 16px; overflow: hidden; border-radius: 24px; border: 1px solid var(--line); background: #070707; }
+.cx-phone.is-tall { height: 360px; }
+.cx-ph-head { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title acts" "sub sub" "concept concept"; align-items: center; gap: 0 16px; }
+.cx-ph-head h3 { grid-area: title; font: var(--t-title); }
+.cx-ph-sub { grid-area: sub; margin-block-start: 4px; font: var(--t-label); color: var(--ink-3); }
+.cx-ph-head .cx-concept { grid-area: concept; justify-self: start; margin-block-start: 4px; }
+.cx .head-acts { grid-area: acts; position: relative; z-index: 30; display: flex; align-items: center; gap: 8px; }
+.cx-ph-card { position: absolute; inset: 172px 16px auto; height: 160px; }
+.cx .cx-bar-spec { height: auto; padding: 24px 16px 12px; }
+.cx .cx-bar-spec.is-320 { width: 320px; padding-inline: 8px; }
+.cx .cx-bar-spec .tabbar { position: relative; inset: auto; display: block; }
+.cx .tb-item.is-hover { color: var(--ink); }
+.cx .tb-item.is-hover .tb-tile { background: rgba(255, 255, 255, 0.06); }
+.cx .tb-item.is-focus { outline: 2px solid var(--ink); outline-offset: 3px; }
+.cx .fw-mi.is-focus { outline: 2px solid var(--ink); outline-offset: -4px; }
+.cx .ops-title { margin: 0; }

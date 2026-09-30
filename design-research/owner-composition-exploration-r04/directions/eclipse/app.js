@@ -25,7 +25,13 @@
       concept: "مفهوم استكشافي · بيانات افتراضية",
       railLabel: "الأقسام",
       brand: "FITWAY، أسماء الأقسام",
-      nav: { daily: "اليومي", reports: "التقارير", access: "الوصول", activity: "سجل النشاط", operations: "التشغيل", monitoring: "شاشة المراقبة", lang: "English", settings: "الإعدادات", signout: "تسجيل الخروج" },
+      nav: { daily: "اليوم", reports: "التقارير", access: "الوصول", activity: "سجل النشاط", operations: "التشغيل", monitoring: "شاشة المراقبة", lang: "English", settings: "الإعدادات", signout: "تسجيل الخروج" },
+      // The frame (step 3): the logo's name on keyboard focus, the bar's short names (each inside its section's full
+      // name, which stays the accessible name), the Operations status, and the phone's menu.
+      railTip: "أسماء الأقسام",
+      tabs: { daily: "اليوم", reports: "التقارير", activity: "النشاط", access: "الوصول", settings: "الإعدادات" },
+      opsTitle: "حالة التشغيل",
+      more: "المزيد",
       langAria: "التبديل إلى اللغة الإنجليزية",
       langGlyph: "EN",
       docTitle: "اليوم · FITWAY (مفهوم)",
@@ -79,7 +85,11 @@
       concept: "Exploration concept · synthetic data",
       railLabel: "Sections",
       brand: "FITWAY, section names",
-      nav: { daily: "Daily", reports: "Reports", access: "Access", activity: "Activity log", operations: "Operations", monitoring: "Monitoring", lang: "العربية", settings: "Settings", signout: "Sign out" },
+      nav: { daily: "Today", reports: "Reports", access: "Access", activity: "Activity log", operations: "Operations", monitoring: "Monitoring", lang: "العربية", settings: "Settings", signout: "Sign out" },
+      railTip: "Section names",
+      tabs: { daily: "Today", reports: "Reports", activity: "Activity", access: "Access", settings: "Settings" },
+      opsTitle: "Operations status",
+      more: "More",
       langAria: "Switch to Arabic",
       langGlyph: "AR",
       docTitle: "Today · FITWAY (concept)",
@@ -448,20 +458,142 @@
     const p = new URLSearchParams({ lang: LANG });
     if (URL_OFF) p.set("motion", "off");
     $("#reports-link").setAttribute("href", `reports.html?${p}`);
+    $("#tab-reports").setAttribute("href", `reports.html?${p}`);
   }
+
+  /* ---- the frame (step 3). Breakpoints: the desktop rail at 1024 px and wider (it opens over the content, as it
+   * always has); the same rail from 721 to 1023 px, where it opens over the content as a modal layer (a scrim, the
+   * content inert, focus kept inside); at 720 px and below the bar at the bottom and the compact header, whose status
+   * badge opens its details and whose menu holds the language and sign out. Every layer opens from the keyboard,
+   * closes with Escape and returns focus to the control that opened it. */
+  const mqTablet = matchMedia("(min-width: 721px) and (max-width: 1023px)");
+  const mqPhone = matchMedia("(max-width: 720px)");
+  const scrim = $("#rail-scrim");
+  const railFocusables = () => [...rail.querySelectorAll("button, a[href]")];
+  let railModal = false, scrimFade = null;
+  // At 721-1023 px the open rail is a modal layer: the rest of the page is inert and dimmed. The scrim (it holds no
+  // text) fades with the rail's own timing; the page is interactive again the moment the rail starts to close.
+  const setRailModal = (on) => {
+    if (on === railModal) return;
+    railModal = on;
+    for (const el of [$("#main"), $(".skip")]) el.inert = on;
+    if (scrimFade) { scrimFade.cancel(); scrimFade = null; }
+    scrim.style.pointerEvents = on ? "" : "none";
+    if (on) scrim.hidden = false;
+    if (!motionOn() || scrim.hidden) { scrim.hidden = !on; return; }
+    const run = scrim.animate(on ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: 0 }],
+      on ? { duration: T.railOpen, easing: EASE.rail } : { duration: T.railClose, easing: EASE.railClose, fill: "forwards" });
+    scrimFade = run;
+    run.finished.then(() => { if (scrimFade !== run) return; scrimFade = null; if (!on) { scrim.hidden = true; run.cancel(); } }).catch(() => {});
+  };
   let railOpen = false;
   const setRail = (open) => {
     if (open === railOpen) return;
     endIntro("rail"); // the intro yields to the owner: it settles at once (motion section)
     railOpen = open;
     brand.setAttribute("aria-expanded", String(open));
+    setRailModal(open && mqTablet.matches);
     animateRail(open); // motion section; without motion it only switches data-open
   };
   brand.addEventListener("click", () => setRail(!railOpen));
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && railOpen) { setRail(false); brand.focus(); } });
   document.addEventListener("pointerdown", (e) => { if (railOpen && !rail.contains(e.target)) setRail(false); });
+  // On the desktop the open rail is not modal: when keyboard focus leaves it, it closes, so focus never lands on
+  // content hidden under it (FOC-3).
+  rail.addEventListener("focusout", (e) => { if (railOpen && !railModal && e.relatedTarget && !rail.contains(e.relatedTarget)) setRail(false); });
+  // The modal rail keeps Tab and Shift+Tab inside it, in its visual order.
+  rail.addEventListener("keydown", (e) => {
+    if (e.key !== "Tab" || !railModal) return;
+    const f = railFocusables(), i = f.indexOf(document.activeElement);
+    const next = e.shiftKey ? (i <= 0 ? f[f.length - 1] : null) : (i === f.length - 1 ? f[0] : null);
+    if (next) { e.preventDefault(); next.focus(); }
+  });
 
-  $("#sub").innerHTML = `${L.date}<span class="sep" aria-hidden="true">·</span>${L.hours} ${timeRange(0, DAY)}`;
+  // Phone: the status badge's details and the menu. One is open at a time; each closes with Escape (focus returns to
+  // its button), a tap outside, or focus leaving it. The details are a non-modal dialog that takes focus; the menu is a
+  // menu (arrow keys, Home and End; Tab closes it and moves on).
+  const layers = {
+    ops: { btn: $("#ops-btn"), pop: $("#ops-pop") },
+    menu: { btn: $("#menu-btn"), pop: $("#menu-pop") },
+  };
+  let openLayer = null;
+  const menuItems = () => [...layers.menu.pop.querySelectorAll('[role="menuitem"]')];
+  function showLayer(name, focus = "first") {
+    if (openLayer && openLayer !== name) hideLayer(openLayer, false);
+    const { btn, pop } = layers[name];
+    openLayer = name;
+    pop.hidden = false;
+    btn.setAttribute("aria-expanded", "true");
+    if (name === "menu") { const it = menuItems(); (focus === "last" ? it[it.length - 1] : it[0]).focus(); }
+    else pop.focus();
+  }
+  function hideLayer(name, returnFocus) {
+    const { btn, pop } = layers[name];
+    if (pop.hidden) return;
+    pop.hidden = true;
+    btn.setAttribute("aria-expanded", "false");
+    if (openLayer === name) openLayer = null;
+    if (returnFocus) btn.focus();
+  }
+  for (const [name, { btn, pop }] of Object.entries(layers)) {
+    btn.addEventListener("click", () => (pop.hidden ? showLayer(name) : hideLayer(name, true)));
+    pop.addEventListener("keydown", (e) => { if (e.key === "Escape") { e.stopPropagation(); hideLayer(name, true); } });
+    pop.addEventListener("focusout", (e) => { if (!pop.hidden && !pop.contains(e.relatedTarget) && e.relatedTarget !== btn && e.relatedTarget) hideLayer(name, false); });
+  }
+  layers.menu.btn.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); showLayer("menu", e.key === "ArrowUp" ? "last" : "first"); }
+  });
+  layers.menu.pop.addEventListener("keydown", (e) => {
+    const it = menuItems(), i = it.indexOf(document.activeElement);
+    const go = (j) => { e.preventDefault(); it[(j + it.length) % it.length].focus(); };
+    if (e.key === "ArrowDown") go(i + 1);
+    else if (e.key === "ArrowUp") go(i - 1);
+    else if (e.key === "Home") go(0);
+    else if (e.key === "End") go(it.length - 1);
+    else if (e.key === "Tab") hideLayer("menu", true); // focus returns to the button, then Tab moves on from it
+    else if (e.key === " ") { e.preventDefault(); document.activeElement.click(); }
+  });
+  // A menu item that does something closes the menu; the concept's sign out does nothing, like the rail's.
+  $("#menu-signout").addEventListener("click", (e) => e.preventDefault());
+  $("#ops-link").addEventListener("click", (e) => e.preventDefault());
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && openLayer) hideLayer(openLayer, true); });
+  document.addEventListener("pointerdown", (e) => {
+    if (!openLayer) return;
+    const { btn, pop } = layers[openLayer];
+    if (!pop.contains(e.target) && !btn.contains(e.target)) hideLayer(openLayer, false);
+  });
+  // Crossing a breakpoint closes whatever is open, so no layer outlives the frame it belongs to.
+  const onFrameChange = () => {
+    if (railOpen) setRail(false);
+    setRailModal(false);
+    if (openLayer) hideLayer(openLayer, false);
+  };
+  mqTablet.addEventListener("change", onFrameChange);
+  mqPhone.addEventListener("change", onFrameChange);
+
+  layers.menu.btn.setAttribute("aria-label", L.more);
+  {
+    const lang = $("#menu-lang"), p = new URLSearchParams(location.search);
+    p.set("lang", RTL ? "en" : "ar");
+    lang.setAttribute("href", `?${p.toString()}`);
+    lang.setAttribute("hreflang", RTL ? "en" : "ar");
+    $("#menu-lang-glyph").textContent = L.langGlyph;
+    $("#menu-lang-glyph").setAttribute("lang", "en");
+    $("#menu-lang-name").textContent = L.nav.lang;
+    $("#menu-lang-name").setAttribute("lang", RTL ? "en" : "ar");
+    $("#menu-signout-name").textContent = L.nav.signout;
+    $("#ops-link-name").textContent = L.nav.operations;
+  }
+  $("#tabbar").setAttribute("aria-label", L.railLabel);
+  document.querySelectorAll(".tb-item[data-tab]").forEach((a) => {
+    const key = a.dataset.tab;
+    $(".tb-name", a).textContent = L.tabs[key];
+    a.setAttribute("aria-label", L.nav[key]); // the full section name; the short name under the icon is part of it
+    if (a.hasAttribute("data-inert")) a.addEventListener("click", (e) => e.preventDefault());
+  });
+
+  // The subtitle's two parts never break inside; on a phone the hours move into the status details.
+  $("#sub").innerHTML = `<span class="sub-part">${L.date}</span><span class="sep sub-hours" aria-hidden="true">·</span><span class="sub-part sub-hours">${L.hours} ${timeRange(0, DAY)}</span>`;
 
   const status = $("#status");
   if (STATE === "delayed") {
@@ -470,6 +602,20 @@
   } else {
     status.innerHTML = `<span class="dot" aria-hidden="true"></span><span class="strong">${L.live}</span><span>· ${L.lastReading} ${tb(M.last)}</span>`;
   }
+  // The phone's status badge and its details: the same status, compacted to its word, and the rest on request.
+  function renderOps() {
+    const late = STATE === "delayed", word = late ? L.delayed : L.live;
+    const mark = late ? ICON.clock : `<span class="dot" aria-hidden="true"></span>`;
+    const btn = layers.ops.btn;
+    btn.classList.toggle("is-delayed", late);
+    btn.setAttribute("aria-label", `${L.opsTitle}: ${word}`);
+    $("#ops-btn-state").innerHTML = `${mark}<span class="hb-word">${word}</span>`;
+    $("#ops-state").className = `ops-state${late ? " is-delayed" : ""}`;
+    $("#ops-state").innerHTML = `${mark}<span>${word}</span>`;
+    $("#ops-last").innerHTML = `${L.lastReading} ${tb(M.last)}` + (late ? `<span class="sep" aria-hidden="true">·</span><span class="ops-ago">${L.ago(M.nowM - M.last)}</span>` : "");
+    $("#ops-hours").innerHTML = `${L.hours} ${timeRange(0, DAY)}`;
+  }
+  renderOps();
 
   /* ---------------------------------------------------------------- cards */
   const levelChip = (v) => {
@@ -511,6 +657,7 @@
   function updateCards(prev) {
     const dt = Math.sign(M.last - prev.last);
     rollTo($("#status bdi"), fmtTime(M.last), dt);
+    renderOps(); // the phone's status details (closed or open) take the new time at once
     rollTo($("#now-v"), String(shownNow()));
     if (STATE === "delayed") rollTo($("#now-meta span"), L.ago(M.nowM - M.last));
     else rollTo($("#now-meta bdi"), fmtTime(M.last), dt);

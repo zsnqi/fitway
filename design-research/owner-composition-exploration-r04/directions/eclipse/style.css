@@ -167,7 +167,7 @@ bdi, .num { font-variant-numeric: tabular-nums; }
   z-index: 20;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   width: 80px;
   height: calc(100vh - 32px);
   min-height: 620px;
@@ -198,17 +198,19 @@ bdi, .num { font-variant-numeric: tabular-nums; }
   pointer-events: none;
 }
 [dir="ltr"] .rail { --rail-lit: 0%; }
-.rail-group { display: flex; flex-direction: column; gap: 10px; }
-.rail-brand { margin-block-end: 26px; }
+/* RAI-5 (step 3): 8 between items, 24 between the logo and the sections (16 here and the rail's 8), tiles radius 12. */
+.rail-group { display: flex; flex-direction: column; gap: 8px; }
+.rail-brand { margin-block-end: 16px; }
 .rail-foot { margin-block-start: auto; }
 
 .rail-item {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   width: 100%;
   min-height: 48px;
-  border-radius: 14px;
+  border-radius: 12px;
   color: var(--ink-2);
   text-align: start;
 }
@@ -220,7 +222,7 @@ bdi, .num { font-variant-numeric: tabular-nums; }
   place-items: center;
   width: 48px;
   height: 48px;
-  border-radius: 14px;
+  border-radius: 12px;
   border: 1px solid var(--line-2);
   background: var(--tile);
   color: var(--ink-2);
@@ -235,10 +237,35 @@ bdi, .num { font-variant-numeric: tabular-nums; }
 .brand .mk { fill: none; stroke: var(--ink); stroke-linecap: butt; }
 .brand .mk-dot { fill: var(--ink); stroke: none; }
 
-.rail-name { display: none; font-size: 14px; white-space: nowrap; color: var(--ink-2); }
+.rail-name { display: none; font-size: 13.5px; line-height: 20px; white-space: nowrap; color: var(--ink-2); }
 .rail-item.is-active .rail-name, .wordmark { color: var(--ink); }
-.wordmark { font-size: 15px; font-weight: 500; letter-spacing: 0.12em; }
+.wordmark { font-size: 15px; line-height: 22.5px; font-weight: 500; letter-spacing: 0.12em; }
 .rail[data-open="true"] .rail-name { display: block; }
+/* D4 (FOC-4, FOC-5; K-23): a collapsed item shows its name on keyboard focus only, never on hover, in a tooltip-look
+ * label 12 px beyond the tile, centred on it. The logo's label names what it opens. */
+.rail-tip { display: none; }
+.rail:not([data-open="true"]) .rail-item:focus-visible .rail-name:not(.wordmark),
+.rail:not([data-open="true"]) .rail-item:focus-visible .rail-tip {
+  position: absolute;
+  inset-inline-start: calc(100% + 12px);
+  top: 50%;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding-inline: 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(15, 14, 15, 0.92);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  font-size: 13.5px;
+  line-height: 20px;
+  color: var(--ink);
+  white-space: nowrap;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
 
 /* ------------------------------------------------------------------ header */
 .head { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
@@ -594,6 +621,182 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
 .minutes-table td.n { color: var(--ink); }
 .minutes-table tr.miss td { color: var(--ink-3); }
 .minutes-table tr.peak td { color: var(--ink); background: rgba(229, 25, 53, 0.1); }
+
+/* --------------------------------------------------------------- the frame
+ * Step 3 (run owner_daily_r04_s17): navigation and header at every size, for a page that opts in with
+ * body[data-frame] (Daily now; Reports in step 4). Breakpoints:
+ *   1024 px and wider  the desktop rail, unchanged: the logo opens it over the content;
+ *   721-1023 px        the same slim rail; open, it is a modal layer over a scrim (app.js keeps focus inside);
+ *   720 px and below   the glass bar at the bottom and the compact header (the status badge and one menu).
+ * Header forms (CHP-2): where the status does not open anything (721 px and wider) it and the concept label are
+ * boxless text; on a phone the status is a 44 px badge that opens its details. */
+[data-frame] .head-meta { flex-wrap: wrap; justify-content: flex-end; gap: 4px 16px; padding-block-start: 8px; }
+[data-frame] .head-meta .chip { height: auto; padding: 0; border: 0; border-radius: 0; background: none; }
+[data-frame] .status { font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
+[data-frame] .status.is-delayed .strong { color: #e8b62e; }
+[data-frame] .concept { font-size: 12px; line-height: 18px; color: var(--ink-3); }
+[data-frame] .sub-part { white-space: nowrap; }
+/* The skip link, part of the frame: a 44 px control with the one ring (FOC-1; K-22's red ring), past the rail. */
+[data-frame] .skip { display: inline-flex; align-items: center; height: 44px; padding: 0 16px; border-radius: 12px; font-size: 13.5px; line-height: 20px; color: #0d0c0d; }
+[data-frame] .skip:focus-visible { outline-color: var(--ink); }
+.head-acts, .tabbar, .rail-scrim { display: none; }
+
+/* 721-1023 px: the open rail's scrim (SRF-4's), under the rail and over the content. */
+.rail-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 15;
+  background: rgba(4, 4, 5, 0.66);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+@media (min-width: 721px) and (max-width: 1023px) {
+  [data-frame] .rail-scrim:not([hidden]) { display: block; }
+  /* The status and the concept label stack at the inline end, the status level with the title. */
+  [data-frame] .head-meta { flex-direction: column; align-items: flex-end; flex-wrap: nowrap; }
+  /* Provisional content (phase A): the cards two by two (BRK-3, BRK-5). */
+  [data-frame] .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* 720 px and below: the phone frame. */
+.hbadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding-inline: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--line-2);
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 13.5px;
+  line-height: 20px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.hbadge:hover, .hbadge[aria-expanded="true"] { border-color: var(--line-3); background: rgba(255, 255, 255, 0.05); }
+.hb-state { display: inline-flex; align-items: center; gap: 8px; }
+.hb-word { font-weight: 500; }
+.hbadge .dot, .ops-state .dot { width: 7px; height: 7px; flex: none; border-radius: 50%; background: var(--live); }
+.hbadge .ico, .ops-state .ico { color: var(--delayed); }
+.hbadge.is-delayed { border-color: rgba(217, 164, 0, 0.36); }
+.hbadge.is-delayed .hb-word, .ops-state.is-delayed, .ops-ago { color: #e8b62e; }
+.hb-chev { width: 16px; height: 16px; flex: none; fill: none; stroke: var(--ink-2); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.hbadge[aria-expanded="true"] .hb-chev { transform: rotate(180deg); }
+.hbtn { display: grid; place-items: center; width: 44px; height: 44px; flex: none; border-radius: 12px; color: var(--ink-2); }
+.hbtn:hover, .hbtn[aria-expanded="true"] { color: var(--ink); background: rgba(255, 255, 255, 0.05); }
+.hbtn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+.hbtn svg .fill { fill: currentColor; stroke: none; }
+
+/* The status details and the menu: floating glass (the open rail's surface and shadow, SRF-2, BRD-2), radius 16. */
+.fw-pop {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 8px);
+  inset-inline-end: 0;
+  padding: 4px;
+  border-radius: 16px;
+  border: 1px solid var(--line-2);
+  background: rgba(12, 12, 15, 0.94);
+  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(22px);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  outline: none;
+}
+.fw-pop[hidden] { display: none; }
+.ops-pop { width: min(288px, calc(100vw - 32px)); }
+.menu-pop { min-width: 200px; }
+.ops-body { padding: 12px 12px 16px; }
+.ops-title { font-size: 12px; line-height: 18px; font-weight: 400; color: var(--ink-3); }
+.ops-state { display: flex; align-items: center; gap: 8px; margin-block-start: 8px; font-size: 19px; line-height: 28.5px; font-weight: 500; color: var(--ink); }
+.ops-state .dot { width: 8px; height: 8px; }
+.ops-state .ico { width: 17px; height: 17px; }
+.ops-line { font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
+.ops-line .sep { margin-inline: 8px; }
+.ops-foot { padding-block-start: 4px; border-block-start: 1px solid var(--line); }
+.fw-mi {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding-inline: 12px;
+  border-radius: 12px;
+  font-size: 13.5px;
+  line-height: 20px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.fw-mi:hover { background: rgba(255, 255, 255, 0.06); }
+.fw-mi:focus-visible { outline: 2px solid var(--ink); outline-offset: -4px; }
+.fw-mi svg { width: 16px; height: 16px; flex: none; fill: none; stroke: var(--ink-2); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.fw-mi .fw-mi-end { margin-inline-start: auto; }
+.fw-glyph { display: inline-grid; place-items: center; width: 16px; flex: none; font-size: 12px; line-height: 18px; font-weight: 500; color: var(--ink-2); }
+
+/* The bar: the rail turned to lie along the bottom. Glass (the rail's, a little denser because content always passes
+ * under it), radius 24, 8 around and between the items; each item at least 44 x 44 with the one focus ring (FOC-1)
+ * around it; the current section keeps the rail's red tile. */
+.tabbar {
+  position: fixed;
+  z-index: 40;
+  left: max(16px, env(safe-area-inset-left));
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(12px, env(safe-area-inset-bottom));
+  padding: 8px;
+  border-radius: 24px;
+  border: 1px solid var(--line);
+  background: rgba(12, 12, 15, 0.8);
+  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(22px);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
+}
+.tabbar ul { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.tb-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 56px; border-radius: 16px; color: var(--ink-2); }
+.tb-tile { display: grid; place-items: center; width: 40px; height: 28px; border-radius: 12px; }
+.tb-tile svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.tb-tile svg .fill { fill: currentColor; stroke: none; }
+.tb-name { font-size: 12px; line-height: 18px; white-space: nowrap; }
+.tb-item:hover { color: var(--ink); }
+.tb-item:hover .tb-tile { background: rgba(255, 255, 255, 0.06); }
+.tb-item[aria-current="page"] { color: var(--ink); }
+.tb-item[aria-current="page"] .tb-tile { background: var(--red); color: #fff; }
+.tb-item[aria-current="page"] .tb-name { font-weight: 500; }
+.tb-item[aria-current="page"]:hover .tb-tile { background: #f0223e; }
+
+@media (max-width: 720px) {
+  [data-frame] .page {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    /* The bar (74 px) and its 12 px inset stay clear of the content, with the page's 16 px below it. */
+    padding-block-end: calc(74px + max(12px, env(safe-area-inset-bottom)) + 16px);
+  }
+  [data-frame] .rail-slot { display: none; }
+  [data-frame] .skip { inset-inline-start: 16px; }
+  [data-frame] .tabbar { display: block; }
+  /* The compact header: the title with the badge and the menu on one line, the date under it, then the label. */
+  [data-frame] .head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "title acts" "sub sub" "concept concept";
+    align-items: center;
+    gap: 0 16px;
+  }
+  [data-frame] .head-titles, [data-frame] .head-meta { display: contents; }
+  [data-frame] .head h1 { grid-area: title; }
+  [data-frame] .sub { grid-area: sub; margin-block-start: 4px; }
+  [data-frame] .sub-hours, [data-frame] #status { display: none; }
+  [data-frame] .concept { grid-area: concept; justify-self: start; margin-block-start: 4px; }
+  [data-frame] .head-acts { grid-area: acts; position: relative; z-index: 30; display: flex; align-items: center; gap: 8px; }
+  /* Provisional content (phase A): one column, the chart at a fixed height, its head wrapping. */
+  [data-frame] .fold { height: auto; min-height: 0; }
+  [data-frame] .cards { grid-template-columns: minmax(0, 1fr); }
+  [data-frame] .chart { flex: none; height: 440px; }
+  [data-frame] .chart-head, [data-frame] .chart-tools { flex-wrap: wrap; row-gap: 12px; }
+  [data-frame] .key { flex-wrap: wrap; height: auto; padding-block: 8px; row-gap: 4px; white-space: normal; }
+  [data-frame] .details-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 359px) {
+  /* 320: the bar's inset drops to 8 so every short name keeps its line and the rings keep 4 px from their neighbours. */
+  [data-frame] .tabbar { left: max(8px, env(safe-area-inset-left)); right: max(8px, env(safe-area-inset-right)); }
+}
 
 /* ------------------------------------------------------------- light tuner
  * A working tool, not part of the design: neutral greys, a dashed toggle, no red. By default it sits above the
