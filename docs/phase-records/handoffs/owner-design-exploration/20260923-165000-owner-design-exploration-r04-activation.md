@@ -2949,3 +2949,48 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - The verifier agent then covers only the new checks and judgment.
 - **Model or effort comparisons:** only when a decision depends on one. Replay a closed round (for example this font
   task from `77d91e8`) on two configurations, twice each, graded by the same fixed suite.
+## `4568bac` verified FAIL: fonts fetched twice under `no-store`, and repair 1 (2026-09-30)
+
+- **Verifier report** (62.5 min), saved at `D:\fitway-scratch\introspeed\fixq4\VERIFY-FONTS-REPORT.md`; evidence under
+  `D:\fitway-temp\fonts-verify\`. Verdict **FAIL**. `owner-followup-r04-s04` is clean at `4568bac`, and nothing
+  listens.
+- **What holds:** S, B, P, Q, M, D, Y, A, R, X, K and Z pass.
+  - No request leaves the origin.
+  - `file://` is clean.
+  - 0 shifts on first opens at 1440, 1024 and 390.
+  - The bars exception is re-derived independently, at 1× and 2×.
+  - The paint hold is 104-112 ms, and happens only with slow fonts.
+- **Finding 1 (medium), coordinator-confirmed in `results\Hsd100.json` and `cc-*.json`:**
+  - Under `Cache-Control: no-store`, Chromium does not reuse the script-inserted preload when `@font-face` asks late,
+    so the file is fetched twice.
+  - With `app.js` delayed 100 ms, the fallback paints first and the font swaps before the intro, in 10 of 10 runs per
+    language. One AR reload in 10 shifts.
+  - With no header or `no-cache`: 0 double fetches and 0 shifts.
+  - `capture.mjs`'s own server sends `no-store`. The user's preview (Python `http.server`) sends no header.
+  - The README's reload and script-delay claims are false under `no-store`.
+- **Findings 2-4 (low):**
+  - C's 180 ms case sits at the cap's margin: grader;
+  - a 404 is logged twice: the same cause as finding 1;
+  - H's 150 ms hold is blind to a removed pre-intro frame. Holding the fonts to first paint + 50/100 ms catches it:
+    grader.
+- **Ledger, s09 run 3 (`4568bac`):**
+  - 12 of 17 rows pass.
+  - Under the verifier's `no-store` server, the brief's reload and script-delay rows fail (N, W, H, T). Codex's own
+    probes passed them: the train-test gap.
+  - Causes:
+    - work: the font load depends on cache headers, and `capture.mjs`'s server already showed it;
+    - brief: the server's headers were not named. B1 covers this for new briefs;
+    - grader: C's margin and H's blind detector.
+- **Grader rules** (for the next verifier and the fixed suite):
+  - G1. Keep cap checks at least 30 ms from the cap: 50, 150, 250 and 600 ms.
+  - G2. Detect a removed pre-intro frame by holding the fonts until first paint + 50 and + 100 ms.
+  - G3. Run the load checks under `no-store` and under no cache header.
+- **Repair 1:** `D:\fitway-scratch\introspeed\fixq4\FIX-FONTS-R1.md`, run `owner_fonts_r04_s09_r1`, base `4568bac`.
+  - Written to rules B1-B6.
+  - The goal: each font file fetched once per load, whatever the headers.
+  - The approach is open, and no server's headers may change.
+  - The user runs it on GPT-6.1 Sol at `high`, in a new Codex session.
+- **Next:**
+  1. Save Codex's report at `...\fixq4\CODEX-FONTS-R1-REPORT.md`, and check the tree and ports.
+  2. Verify with the S-Z rows, G1-G3, and new held-out checks. Record the ledger row.
+  3. On PASS, finish as the self-hosted font resume point says. On FAIL, repair 2; after it, the stall rule.
