@@ -3415,3 +3415,18 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
 - **Open point for step 4:** in English, the peak cell reads its time before its value ("6:43 PM 53"). The value holds
   the right edge (TBL-11), so the visual order runs opposite to the reading order of assistive technology.
 - **Next:** the user looks at the table on the preview, then step 3.
+## The no-readings row becomes one full-width row (2026-09-30)
+
+- **User decisions (2026-09-30):**
+  - the table alignment at `ffc4029` is right;
+  - the English peak-cell order waits for step 4;
+  - the minute table's gap words sat under a numeric column, and the placement was bad. The user picked a full-width
+    separator row from two options.
+- **The rule:**
+  - a row with no readings, whether a gap or the span before readings began, is one cell spanning every column;
+  - it starts at the table's start edge in both languages, with the dotted mark, the words, then the range;
+  - a gap inside a row that has values stays a note in the notes column.
+- **Third pass launched:** a fresh `owner-direction-builder`, run `owner_spec_r04_s14`, in the background, with
+  `D:\fitway-scratch\spec\BRIEF-3.md`. It edits `DESIGN-SPEC.md` and `components.*` only, and registers the page
+  tables as known issues for steps 3 and 4.
+- **Next:** on its report, the G5 check, the table sheets, and the user. Then step 3.
