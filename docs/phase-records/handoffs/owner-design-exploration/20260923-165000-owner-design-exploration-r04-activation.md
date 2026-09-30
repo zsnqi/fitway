@@ -3336,3 +3336,10 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - fresh agents for every task;
   - the user sees each screen in the browser: start the preview for them rather than giving commands;
   - do not change effort mid-session.
+## Step 2 launched: the spec sheet (2026-09-30)
+
+- A new coordinator session resumed from the section above.
+- G5 check before launch: s04 is clean at `31a40d6` on `owner-followup-r04-build`, and nothing listens on 3170-3180.
+- **Launched:** a fresh `owner-direction-designer`, run `owner_spec_r04_s12`, in the background, with
+  `D:\fitway-scratch\spec\BRIEF.md`. It uses ports 3176-3177 and works in `D:\fitway-scratch\spec\work\`.
+- **Next:** step 3 of the resume steps above, on its report.
