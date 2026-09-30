@@ -3190,3 +3190,29 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - "Decisions on the step 3 intro" §1 still holds, so it gets no note.
 - `pnpm check:repository` passes.
 - **Next:** Reports, step 3 of the resume point above.
+## Reports round launched, with its fixed held-out suite (2026-09-30)
+
+- **Designer:** a fresh `owner-direction-designer` (Opus, `xhigh`), run `owner_reports_r04_s10`.
+  - Brief: `D:\fitway-scratch\reports\BRIEF.md`; work and sheets under `D:\fitway-scratch\reports\`.
+  - Worktree `owner-followup-r04-s04`, branch `owner-followup-r04-build`, base `8926193`. Ports 3173, 3176 and 3177.
+  - Scope: the Reports page at desktop (1440×900 target; 1280 and 1024 must work), AR and EN, in the unchanged
+    Eclipse look with free content. It includes the table, form and dialog system, and the early phone feasibility
+    check of that system at 390 and 320 px only.
+  - Brief choices by the coordinator:
+    - no first-open intro on Reports this round (the designer may propose one);
+    - the loading state is out of scope, but the geometry stays fixed for a later skeleton;
+    - the Daily page's stills stay byte-identical to `8926193`. The only Daily change is the rail's Reports link.
+  - It applies B1 (HTTP with `no-store` and with no header, `file://`, sizes, reduced motion), B3, B4, B5 and B7 (the
+    `#busy-note` limit below 1024 px is named as pre-existing).
+- **Fixed held-out suite:** a fresh `owner-direction-verifier-high` (Opus, `high`), run `owner_reports_suite_r04`.
+  - Brief `D:\fitway-grader\reports\SUITE-BRIEF.md`; the suite lives in `D:\fitway-grader\reports\`. It is outside
+    every worktree and outside `D:\fitway-scratch`, and no builder brief names it.
+  - Built from Product, Spec and `DESIGN_GUIDE.md`, not from the designer's work. It has planted-defect controls, runs
+    in about 10 minutes, applies G1-G5, and uses ports 3178-3179.
+  - Calibration rule: after a delivery, locators and config may change, never thresholds. Every change is logged
+    first.
+- **Next:**
+  1. On the designer's report: check the s04 tree and ports (G5), then inspect the key sheets.
+  2. Verify with a fresh `owner-direction-verifier-high`: the suite after calibration, plus the brief's R1-R11 and
+     judgment. Record the ledger row.
+  3. Then the user reviews Reports in the browser.
