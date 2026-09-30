@@ -3430,3 +3430,19 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   `D:\fitway-scratch\spec\BRIEF-3.md`. It edits `DESIGN-SPEC.md` and `components.*` only, and registers the page
   tables as known issues for steps 3 and 4.
 - **Next:** on its report, the G5 check, the table sheets, and the user. Then step 3.
+## The spec's third pass delivered at `4f77aff` (2026-09-30)
+
+- **The builder delivered `4f77aff`** on `owner-followup-r04-build`, on top of `ffc4029`. The coordinator pushed it as a
+  fast-forward.
+  - 3 files, +40/−22: `DESIGN-SPEC.md`, `components.css` and `components.js`.
+  - TBL-12, STA-4 and TBL-6 are amended. The labels stay at 224 R, 11 C, 53 K and 0 P.
+  - Self-reported, not verified: U1-U4 pass. The widest deviation of the first glyph is 0.03 px, AR and EN, at 1440,
+    1024, 390 and 320.
+- **Known issues extended:**
+  - K-20: Daily draws the gap as 18 minute rows with "-" and «لا قراءة» (step 3);
+  - K-34 and K-35: Reports' "No readings yet" row is two cells (step 4). A latent case is noted at `reports.js:797`.
+- **New question Q11 for the user:** «لا قراءات بعد 2 أغسطس - 12 سبتمبر» can read as "no readings after 2 August". The
+  proposal is a middle dot between the words and the range.
+- **G5 check:** s04 is clean at `4f77aff`, the coordinator worktree matches the snapshot, and only 3174 listens.
+- **Coordinator inspection, not verification:** in `table-ar.png` and `table-ar-390.png`, both no-readings rows start at
+  the table's start edge as one line, and the tables fit at 390.
