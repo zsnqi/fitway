@@ -3290,3 +3290,49 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
      - inspect the key frames;
      - show the findings to the user in Arabic, briefly, grouped by class, for the user to pick.
   3. Then step 2: the spec sheet. Brief a fresh agent with the picked findings as known issues.
+## Step 1 done: the design review and the user's picks, and new-session resume point (2026-09-30)
+
+- **The review** (`owner_review_r04_s11`, a fresh `owner-direction-designer` in review-only mode) returned 21 findings,
+  4 class-d items, a "Keep" list, known-issue corrections and README errors.
+  - Saved at `D:\fitway-scratch\review\REVIEW.md`, by the coordinator; frames and sheets are under
+    `D:\fitway-scratch\review\`.
+  - G5 check: the coordinator and s04 worktrees are clean, and 3173-3179 are free, except 3174, the user's preview.
+  - Coordinator check of F1 in `frames\r-empty-en-1440-full.png`: for 1-31 Jul, three cards say "No readings" while
+    the lit week-over-week card shows +9% for 16-22 Sep. Confirmed.
+- **The user's picks (2026-09-30):**
+  - every finding F1-F21 is accepted, with the review's directions;
+  - D1 is accepted: the brightest thing on a page is never stale, unavailable or empty;
+  - D4 is accepted: a rail name shows on keyboard focus only;
+  - D2 and D3 are left for the Daily all-sizes round;
+  - the "Keep" list is endorsed as rules.
+  - Daily fixes go to step 3 and Reports fixes to step 4. Every finding enters the spec as a rule, a known issue or an
+    open question.
+- **Known issues, corrected by the review:**
+  - the 1024 px Daily overflow also causes a document-level scroll, and persists at 1100;
+  - the `#busy-note` jump is 71.5 px at 390-600, and about 15 px at 768-820 EN;
+  - Reports' segments are 36 px, not 44.
+- **Step 2 is briefed, not launched:** `D:\fitway-scratch\spec\BRIEF.md`, run `owner_spec_r04_s12`.
+  - Base: s04 at `31a40d6`. Ports: 3176-3177.
+  - The brief is for a fresh `owner-direction-designer`, because the spec's rule, composition and known-issue calls
+    need judgment and it becomes the reference.
+  - It adds `E/DESIGN-SPEC.md` and `E/components.html` only, plus a README pointer. The pages do not change.
+  - Fallback: if the harness refuses to create the `.md`, the agent returns its text and the coordinator writes it.
+- **The user starts a new coordinator session here,** because this one has grown large.
+- **Resume steps:**
+  1. Run `pnpm context:show -- --milestone owner-design-exploration-r04`. Read this section and
+     `NEXT-DIRECTION-BRIEF.md` "The design-phase plan".
+  2. Launch step 2: one fresh `owner-direction-designer` with `D:\fitway-scratch\spec\BRIEF.md`, in the background.
+  3. On its report:
+     - check the s04 tree and ports (G5);
+     - look at `E/components.html` on the user's preview (`.claude/launch.json` entry `eclipse-build`, port 3174),
+       and at a few spec sections;
+     - present the proposed rules and open questions to the user in Arabic, briefly.
+  4. Then step 3, Daily at every size: a fresh designer, then a fresh design reviewer, then the user.
+- **Working agreements:**
+  - replies in the Saudi dialect, simple and brief;
+  - temp and scratch never on drive C;
+  - agents report in their final message, because the harness refuses subagent report files;
+  - keep the coordinator's context small;
+  - fresh agents for every task;
+  - the user sees each screen in the browser: start the preview for them rather than giving commands;
+  - do not change effort mid-session.
