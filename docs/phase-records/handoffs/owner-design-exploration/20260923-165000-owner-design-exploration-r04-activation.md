@@ -2811,3 +2811,34 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
      exception class independently, for every frame that differs from `a6cfde8`.
   4. **On PASS or FAIL:** follow step 4 of that resume point.
   5. **Then:** follow its step 5.
+## The first resume stops on `file://` preloads, and the second resume brief (2026-09-30)
+
+- **Codex stopped again** without a commit. Report saved at
+  `D:\fitway-scratch\introspeed\fixq4\CODEX-FONTS-RESUME-REPORT.md`; candidate in `...\fixq4\work\resume-candidate\`.
+  `owner-followup-r04-s04` is clean at `77d91e8`, and nothing listens on 3173-3177.
+- **The stop:** the capture exited 1.
+  - Under `file://`, Chromium blocks the two `crossorigin` font preloads, with origin `null`.
+  - The capture's tuner, crowd and marker gates record 24, 4 and 12 console errors; BASE records none.
+  - `file://` is a supported way to open the concept (README 822 and 157, and the capture's `file://` checks).
+- **Everything else was measured and reported as meeting the outcomes:**
+  - 0 of 40 first opens shifted, and 0 of 20 reloads; BASE shifted 40 of 40 and 20 of 20;
+  - no external request;
+  - 57 of 59 still frames are byte-identical. EN delayed 1024×640 differs at 1× and 2×, and both frames meet the
+    outcome-6 exception;
+  - the cap counts from the first paint.
+- **Open points:**
+  - Chromium still holds the first paint for preloaded fonts by 98-100 ms when the fonts are slow (150 and 600 ms
+    holds). The proposal expected a few ms; that holds only when the fonts are fast.
+  - The first paint in normal conditions is 120/112 ms (AR/EN) against BASE's 102/100, with no swap.
+  - The removed-frame control caught 9 of 12.
+- **Neutral model facts, second run:**
+  - it followed the new rule, measuring every outcome before it stopped;
+  - it relaxed no gate;
+  - it reported the hold that contradicted the proposal's expectation;
+  - the run time is not yet known.
+- **Second resume brief:** `D:\fitway-scratch\introspeed\fixq4\FIX-FONTS-FILE.md`.
+  - The goal: no console error from `file://`, with the fonts still preloaded over HTTP.
+  - Outcome 5 records the user's decision on slow fonts.
+  - The removed-frame control reaches 12 of 12, or the misses are explained.
+  - **Pending the user:** whether to accept Chromium's hold of up to about 100 ms when the fonts are slow. This is
+    finding 1's option (b). The brief assumes yes and is not sent before the answer.
