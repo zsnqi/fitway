@@ -3490,3 +3490,26 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
 - **Next:** the user's word on step 3. The coordinator recommends two agents: one designer for the frame and Daily at
   every size, pausing after the frame for the user and then resumed; then a fresh agent for the states; then a fresh
   reviewer.
+## Step 3 launched: the frame, then Daily at every size (2026-10-01)
+
+- **User decisions (2026-10-01):**
+  - small fixes stay with the Claude fixer (`medium`);
+  - Codex takes step 9's repairs, production, and batches of non-urgent small fixes;
+  - if Claude usage tightens, the coordinator raises it and the fixes move to Codex in batches.
+- **Step 3 is split in two, as the user agreed:**
+  1. One designer does the frame and Daily at every size, in two phases.
+     - Phase A: the frame, which is the navigation and header at 1440, 768 and 390. The designer commits it, reports,
+       and stops for the user's review.
+     - Phase B: the same agent is resumed with the user's notes, so it keeps its reasoning. It does Daily at 768 and
+       390, and fixes every step-3 known issue.
+  2. A fresh designer does the states Daily does not have yet, such as loading, unavailable and error.
+  3. A fresh design reviewer critiques the round, and then the user decides.
+  - Every agent runs `owner-direction-designer` (Opus, `xhigh`).
+- **Launched:** run `owner_daily_r04_s17`, phase A, in the background.
+  - Brief: `D:\fitway-scratch\daily\BRIEF.md`.
+  - Base: s04 at `9074da6`.
+  - Ports: 3173, 3176 and 3177.
+  - It writes in `E/` and `D:\fitway-scratch\daily\`.
+- **If the session changes before phase B,** a fresh designer takes phase B from the phase A commit, its report and
+  the brief.
+- **Next:** on the phase A report, run the G5 check, inspect the frame sheets, and show the user on the preview (3174).
