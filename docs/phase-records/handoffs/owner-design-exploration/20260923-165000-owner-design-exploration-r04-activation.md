@@ -3368,3 +3368,24 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - the forms of D1, F5, F6, F10, F12, F13 and F21.
   The designer also names the phone bar's first item "Today / اليوم" (F15), where the plan says "Daily".
 - **Next:** the user reviews the components page and answers Q3-Q10; Q1 and Q2 wait for step 3. Then step 3.
+## The user's decisions on the spec draft, and the second pass (2026-09-30)
+
+- **User decisions (2026-09-30):**
+  - every proposed rule in `234b12d` is accepted, with the type scale, spacing, radii, compact density, the forms,
+    and "Today / اليوم" for the phone bar's first item;
+  - Q3-Q10 are answered with the spec's own proposals;
+  - Q1 (D2) and Q2 (D3) stay open, for step 3.
+- **Independent verification of the spec now:** not needed. The plan puts it in step 9, and before step 10 the tests
+  compare the spec with the final pages. The spec stays a draft.
+- **The user's note on tables:** the numbers sit on the left edge of their column, and the gap note floats.
+  - Coordinator measurement on `components.html`, AR: numeric cells use `text-align: end`, which is the left edge in
+    RTL. So "3" sits under the "6" of "60", and the gap note (`start`) shares no edge with them.
+  - **New rule:** numbers and their header align on the physical right in both languages, which is the start edge in
+    Arabic and the end edge in English. Western digits run left to right, so only the right edge lines units up. A
+    spanning note starts at the edge of the first column it spans. Heat-map cells stay centred.
+- **Second pass launched:** a fresh `owner-direction-builder`, run `owner_spec_r04_s13`, in the background, with
+  `D:\fitway-scratch\spec\BRIEF-2.md`.
+  - It records the decisions and applies the rule in `DESIGN-SPEC.md` and `components.*` only.
+  - It registers the Daily and Reports tables that break the rule as known issues, for steps 3 and 4.
+  - It uses ports 3176-3177.
+- **Next:** on its report, run the G5 check, inspect the table sheets, and show the user. Then step 3.
