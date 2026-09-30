@@ -213,7 +213,7 @@
     speedReset.addEventListener("click", () => { MO.set({ hoverSpeed: MO.defaults.hoverSpeed }); showSpeed(MO.options.hoverSpeed); });
     speedRow.append(speedLabel, speedOut, speedReset, speed);
     // The first-open intro (Round 7 step 3): its speed (a multiplier on every intro duration; 1 is the designed
-    // length, about 820 ms) and a button that replays it on the page as it is now. The speed is kept in the same
+    // length, about 1171 ms) and a button that replays it on the page as it is now. The speed is kept in the same
     // motion key and ignored with ?tuner=0.
     const IN = window.__eclipse.intro;
     const introRow = el("div", { class: "t-row t-speed t-intro-speed" });

@@ -17,10 +17,19 @@
       // Nothing is hidden before first paint: the page is complete at once (Round 6). Motion is decided in app.js.
     })();
   </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500&display=swap">
+  <link rel="stylesheet" href="fonts/readex-pro.css">
   <link rel="stylesheet" href="style.css">
+  <script>
+    // Start the CSS faces themselves; their load is shared with text rendering.
+    // Both weights use the same subset bytes; Arabic digits need Latin too.
+    for (var weight of ["400", "500"]) {
+      document.fonts.load(weight + ' 16px "Readex Pro"', "العربية FITWAY 0123456789")
+        .catch(function () { /* Failed faces keep the existing fallback. */ });
+    }
+  </script>
+  <script src="app.js" defer blocking="render"></script>
+  <!-- Light tuner: a working tool for this concept (not part of the design). ?tuner=0 turns it off. -->
+  <script src="tuner.js" defer blocking="render"></script>
 </head>
 <body>
   <a class="skip" href="#main" data-t="skip"></a>
@@ -179,8 +188,5 @@
       </section>
     </main>
   </div>
-  <script src="app.js"></script>
-  <!-- Light tuner: a working tool for this concept (not part of the design). ?tuner=0 turns it off. -->
-  <script src="tuner.js"></script>
 </body>
 </html>
