@@ -3462,3 +3462,14 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
 - **Step 2 is done.** The spec draft is `E/DESIGN-SPEC.md` at `5654093`, with its components page.
 - **Next:** step 3, Daily at every size and in every state, including loading, and the navigation and header for every
   screen. It runs a fresh designer, then a fresh design reviewer, then the user.
+## The middle dot replaced by range first, and step 3 waits for the user (2026-10-01)
+
+- **User decision (2026-10-01):** the user did not like the middle dot of `5654093`.
+  - The coordinator built a four-option mockup: `D:\fitway-scratch\spec\gapmock\index.html`, served by the `gap-mock`
+    entry in `.claude/launch.json` on 3175.
+  - The user picked **range first**: «2:14 م - 2:31 م ···· لا قراءات». The range starts on the first column's text edge,
+    at 13.5 px in `--ink-2`, then the mark and the words in the note style.
+- **Launched:** a fresh `owner-direction-fixer`, run `owner_spec_r04_s16`, in the background. It applies range first in
+  TBL-12 and `components.*`, and removes the dot. It uses ports 3176-3177.
+- **Step 3 does not start until the user says so.** The user asked the coordinator whether one designer or several
+  sequential agents is better.
