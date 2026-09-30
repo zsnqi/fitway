@@ -86,6 +86,7 @@ const TYPES = {
   ".js": "text/javascript; charset=utf-8",
   ".png": "image/png",
   ".json": "application/json",
+  ".woff2": "font/woff2",
 };
 
 const server = createServer(async (req, res) => {
@@ -229,34 +230,25 @@ const sha = (buf) => createHash("sha256").update(buf).digest("hex");
 const identity = { staticFrames: {}, motionOffFrames: {}, firstOpen: {}, reload: {}, liveUpdateEndsAtCanonical: null };
 const stillBuffers = {}; // this run's still frames, for frames with no pre-motion hash (or one that changes by design)
 
-// Round 7 step 3: the intro waits for the fonts (at most 200 ms from the first paint, then there is no intro and the
-// still page shows at once; user decision, 2026-09-26, replacing a 1 s cap). A fresh context has an empty HTTP cache,
-// so its fonts come over the network (390-1010 ms in the step 3 runs here), which would miss that cap. The intro part
-// therefore serves the Google Fonts files from this process's memory after their first fetch, the same bytes, as a
-// browser's own cache does for an owner who has opened the page before (a warm second tab took 29 ms). With
-// `fontDelayMs`, each font file (fonts.gstatic.com, not the render-blocking stylesheet) is held that long first: the
-// slow-font check.
-const FONT_CACHE = new Map();
-async function serveFont(route, delayMs = 0) {
-  const url = route.request().url();
-  if (delayMs > 0 && /^https:\/\/fonts\.gstatic\.com\//.test(url)) await new Promise((res) => setTimeout(res, delayMs));
-  let hit = FONT_CACHE.get(url);
-  if (!hit) {
-    const resp = await route.fetch();
-    const headers = Object.fromEntries(Object.entries(resp.headers()).filter(([k]) => !["content-encoding", "content-length", "transfer-encoding"].includes(k.toLowerCase())));
-    hit = { status: resp.status(), headers, body: await resp.body() };
-    if (resp.ok()) FONT_CACHE.set(url, hit);
-  }
-  await route.fulfill(hit);
+// Local fonts use the same files in every browser. Holds apply to each woff2
+// response, including preloads, so the 50/600 ms checks still exercise the cap.
+async function serveFont(route, delayMs, held) {
+  const at = performance.now();
+  if (delayMs > 0) await new Promise((res) => setTimeout(res, delayMs));
+  held.push({ url: route.request().url(), heldMs: Math.round(performance.now() - at) });
+  await route.continue();
 }
-async function newPage({ width = 1440, height = 900, scale = 1, motion = false, touch = false, fontCache = false, fontDelayMs = 0 } = {}) {
+async function newPage({ width = 1440, height = 900, scale = 1, motion = false, touch = false, fontDelayMs = 0 } = {}) {
   const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: scale, reducedMotion: motion ? "no-preference" : "reduce", colorScheme: "dark", hasTouch: touch });
-  if (fontCache || fontDelayMs) await context.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (route) => serveFont(route, fontDelayMs));
+  const heldFonts = [];
+  if (fontDelayMs) await context.route(/\/fonts\/[^/?]+\.woff2(?:\?|$)/, (route) => serveFont(route, fontDelayMs, heldFonts));
   const page = await context.newPage();
+  const requests = [];
+  page.on("request", (r) => requests.push(r.url()));
   const errors = [];
   page.on("pageerror", (e) => errors.push(`pageerror: ${e.message}`));
   page.on("console", (m) => { if (m.type() === "error") errors.push(`console: ${m.text()}`); });
-  return { context, page, errors };
+  return { context, page, errors, heldFonts, requests };
 }
 // Round 7 step 3: a fresh context is a tab's first open, so with motion on the intro plays; wait for it to end (it ends
 // at the still page), so every check below starts from the page at rest.
@@ -1169,7 +1161,7 @@ async function introHeld(lang, state, times, crops = null) {
   const q = `lang=${lang}&state=${state}&tuner=0`;
   // One held sequence: each part held at every time in `times`, then released to its end. `keep` writes the frames.
   const heldRun = async (keep) => {
-    const { context, page, errors } = await newPage({ motion: true, scale: 2, fontCache: true });
+    const { context, page, errors } = await newPage({ motion: true, scale: 2 });
     await page.goto(`${ORIGIN}/index.html?${q}`);
     await page.waitForFunction(() => ["running", "done", "off"].includes(window.__eclipse?.intro?.state), null, { timeout: 15000 });
     const held = await page.evaluate(() => window.__eclipse.intro.seek(0));
@@ -1204,7 +1196,7 @@ async function introHeld(lang, state, times, crops = null) {
   // one of its renderings equals a still rendering of the page. Both ends set the exit code.
   const still2x = async () => { const s = await open(q, { scale: 2 }); const buf = await s.page.screenshot(); await s.context.close(); return buf; };
   const natural2x = async () => {
-    const n = await newPage({ motion: true, scale: 2, fontCache: true });
+    const n = await newPage({ motion: true, scale: 2 });
     await n.page.goto(`${ORIGIN}/index.html?${q}`);
     await n.page.waitForFunction(() => window.__eclipse?.intro?.state === "done" || window.__eclipse?.intro?.state === "off", null, { timeout: 15000 });
     await n.page.addStyleTag({ content: HIDE_PULSE });
@@ -1248,25 +1240,12 @@ async function introHeld(lang, state, times, crops = null) {
 }
 async function captureIntro() {
   const out = { firstOpen: identity.firstOpen, reload: identity.reload };
-  // 0. Fill the font cache (see serveFont) over the network once per language; the first page's font wait is a cold
-  //    network fetch, recorded here with whether its intro still played (the cap is 200 ms from the first paint, so a
-  //    cold fetch usually misses it and the page shows the still page at once, as designed).
-  out.fontCache = { note: "every intro context serves the Google Fonts files from memory after their first network fetch (same bytes), as a browser cache does for a returning owner" };
-  for (const lang of ["ar", "en"]) {
-    const { context, page } = await newPage({ motion: true, fontCache: true });
-    await page.goto(`${ORIGIN}/index.html?lang=${lang}&tuner=0`, { waitUntil: "networkidle" });
-    await page.waitForFunction(() => window.__eclipse?.ready === true);
-    await introSettled(page);
-    out.fontCache[`${lang}FirstFetch`] = await page.evaluate(() => ({ fontWaitMs: window.__eclipse.intro.fontWaitMs, played: window.__eclipse.intro.played, yieldedBy: window.__eclipse.intro.yieldedBy }));
-    await context.close();
-  }
-  out.fontCache.files = FONT_CACHE.size;
   // 1. First open, then a reload in the same tab (AR and EN; live, delayed and no history).
   for (const [name, q] of INTRO_PAGES) {
     let stillSha = PRE_REF[name] || null, against = "pre-motion frame";
     const stillAgain = PRE_REF[name] ? null : async () => { const s = await open(q); const b = await s.page.screenshot(); await s.context.close(); return b; };
     if (!stillSha) { stillSha = sha(await stillAgain()); against = "this run's reduced-motion frame"; }
-    const { context, page, errors } = await newPage({ motion: true, fontCache: true });
+    const { context, page, errors } = await newPage({ motion: true });
     await context.addInitScript(INTRO_PROBE);
     await page.goto(`${ORIGIN}/index.html?${q}`, { waitUntil: "networkidle" });
     await page.waitForFunction(() => window.__eclipse?.ready === true);
@@ -1295,7 +1274,7 @@ async function captureIntro() {
     let rerun = null;
     const again = async () => {
       if (rerun) return rerun;
-      const n = await newPage({ motion: true, fontCache: true });
+      const n = await newPage({ motion: true });
       await n.page.goto(`${ORIGIN}/index.html?${q}`, { waitUntil: "networkidle" });
       await n.page.waitForFunction(() => window.__eclipse?.ready === true);
       await introSettled(n.page);
@@ -1339,14 +1318,13 @@ async function captureIntro() {
   // 1b. Slow fonts (user decision, 2026-09-26: the wait for the fonts is capped at 200 ms from the first paint). Each
   //     font file held 600 ms: no intro, the answers in view within 250 ms of the first paint, and the page, once its
   //     fonts are in, has the ?motion=off DOM and is the still frame. Held 50 ms: the intro plays. (AR and EN, live; the
-  //     files come from the font cache, so the delay is the only wait.)
+  //     local files are held at their response, including their preloads.)
   const slowFonts = {};
   for (const [lang, name] of [["ar", "daily-ar-1440x900"], ["en", "daily-en-1440x900"]]) {
     const q = `lang=${lang}&tuner=0`;
     const domOff = await motionOffDom(q);
     for (const delay of [600, 50]) {
-      const cached = FONT_CACHE.size;
-      const { context, page, errors } = await newPage({ motion: true, fontDelayMs: delay });
+      const { context, page, errors, heldFonts, requests } = await newPage({ motion: true, fontDelayMs: delay });
       await context.addInitScript(INTRO_PROBE);
       await page.goto(`${ORIGIN}/index.html?${q}`, { waitUntil: "networkidle" });
       await page.waitForFunction(() => window.__eclipse?.ready === true);
@@ -1377,12 +1355,19 @@ async function captureIntro() {
       }, ref.reference);
       s.endIdenticalToStill = endM.identical;
       s.endAttempts = endM.attempts;
-      s.onlyCachedFonts = FONT_CACHE.size === cached;
+      s.onlyLocalFonts = await page.evaluate((origin) => performance.getEntriesByType("resource")
+        .filter((e) => /\.woff2(?:\?|$)/.test(e.name))
+        .every((e) => new URL(e.name).origin === origin), ORIGIN);
+      s.onlyLocalFonts = s.onlyLocalFonts && requests.every((url) => new URL(url).origin === ORIGIN)
+        && ["arabic", "latin"].every((subset) => requests.includes(`${ORIGIN}/fonts/readex-pro-${subset}.woff2`));
+      s.requests = requests;
+      s.heldFonts = heldFonts;
+      s.localHoldsExercised = heldFonts.length >= 2 && heldFonts.every((f) => f.heldMs >= delay - 1);
       s.errors = errors;
       await context.close();
       s.pass = delay === 600
-        ? !s.played && !s.introEverRan && s.reason === "first open in this tab" && s.yieldedBy === "fonts late" && s.answersInViewAfterFirstPaintMs != null && s.answersInViewAfterFirstPaintMs <= 250 && s.domEqualsMotionOff && s.endIdenticalToStill && s.fontsInAtEnd && s.onlyCachedFonts && errors.length === 0
-        : s.played && s.yieldedBy === "complete" && s.domEqualsMotionOff && s.endIdenticalToStill && s.onlyCachedFonts && errors.length === 0;
+        ? !s.played && !s.introEverRan && s.reason === "first open in this tab" && s.yieldedBy === "fonts late" && s.answersInViewAfterFirstPaintMs != null && s.answersInViewAfterFirstPaintMs <= 250 && s.domEqualsMotionOff && s.endIdenticalToStill && s.fontsInAtEnd && s.onlyLocalFonts && s.localHoldsExercised && errors.length === 0
+        : s.played && s.yieldedBy === "complete" && s.domEqualsMotionOff && s.endIdenticalToStill && s.onlyLocalFonts && s.localHoldsExercised && errors.length === 0;
       slowFonts[`${lang}@${delay}ms`] = s;
     }
   }
@@ -1393,7 +1378,7 @@ async function captureIntro() {
   // 2. When it plays.
   const when = {};
   {
-    const { context, page, errors } = await newPage({ motion: true, fontCache: true });
+    const { context, page, errors } = await newPage({ motion: true });
     const state = (p) => p.evaluate(() => { const I = window.__eclipse.intro; return { played: I.played, state: I.state, reason: I.reason, fontWaitMs: I.fontWaitMs }; });
     const go = async (p, q) => { await p.goto(`${ORIGIN}/index.html?${q}`, { waitUntil: "networkidle" }); await p.waitForFunction(() => window.__eclipse?.ready === true); await introSettled(p); return state(p); };
     when.newTab = await go(page, "lang=ar&tuner=0");
@@ -1429,7 +1414,7 @@ async function captureIntro() {
   }
   // Replay intro and the intro speed, from the tuner (motion on). Each replay ends at the still page.
   {
-    const { context, page, errors } = await newPage({ motion: true, fontCache: true });
+    const { context, page, errors } = await newPage({ motion: true });
     await page.goto(`${ORIGIN}/index.html?lang=ar`, { waitUntil: "networkidle" });
     await page.waitForFunction(() => window.__eclipse?.ready === true);
     await introSettled(page);
@@ -1449,7 +1434,7 @@ async function captureIntro() {
     await page.waitForTimeout(80);
     const replayRef = await stillRef("daily-ar-1440x900", "lang=ar&tuner=0");
     const replayM = await exact("intro replay end", await page.screenshot(), replayRef.expected, async () => {
-      const n = await newPage({ motion: true, fontCache: true });
+      const n = await newPage({ motion: true });
       await n.page.goto(`${ORIGIN}/index.html?lang=ar`, { waitUntil: "networkidle" });
       await n.page.waitForFunction(() => window.__eclipse?.ready === true);
       await introSettled(n.page);
@@ -1522,7 +1507,7 @@ async function captureIntro() {
     }
     // A recapture of the rail or resize frame: the same action at the same moment of a fresh first open.
     const yieldAgain = (action, at) => async () => {
-      const n = await newPage({ motion: true, fontCache: true });
+      const n = await newPage({ motion: true });
       await n.page.goto(`${ORIGIN}/index.html?lang=ar&tuner=0`);
       await n.page.waitForFunction(() => window.__eclipse?.intro?.state === "running", null, { timeout: 15000 });
       await n.page.waitForFunction((t) => performance.now() - window.__eclipse.intro.startedAt >= t, at, { polling: 5 });
@@ -1537,7 +1522,7 @@ async function captureIntro() {
     };
     for (const action of ["hover", "keys", "rail", "tap", "reading", "resize"]) {
       for (const at of [100, 400]) {
-        const { context, page, errors } = await newPage({ motion: true, touch: action === "tap", fontCache: true });
+        const { context, page, errors } = await newPage({ motion: true, touch: action === "tap" });
         await page.goto(`${ORIGIN}/index.html?lang=ar&tuner=0`);
         await page.waitForFunction(() => window.__eclipse?.intro?.state === "running", null, { timeout: 15000 });
         await page.waitForFunction((t) => performance.now() - window.__eclipse.intro.startedAt >= t, at, { polling: 5 });

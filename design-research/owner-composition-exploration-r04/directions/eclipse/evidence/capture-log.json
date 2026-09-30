@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-09-29T16:11:46.345Z",
+  "capturedAt": "2026-09-30T04:20:39.990Z",
   "port": 3173,
   "motion": {
     "method": "Pre-motion frames: evidence/pre-motion-hashes.json (SHA-256 of the v3 frames before motion). The capture is byte-deterministic, so equal hashes mean identical pixels.",
@@ -2448,10 +2448,10 @@
           "yieldedBy": "complete",
           "measuredMs": 1200,
           "expectedMs": 1171,
-          "fontWaitMs": 0,
+          "fontWaitMs": 1,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 54
+            "dashes": 53
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2463,12 +2463,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 72,
-          "maxFrameGapMs": 16.8,
+          "framesDuringIntro": 71,
+          "maxFrameGapMs": 33.3,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 74,
+              "t": 67,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -2480,8 +2480,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 161,
-              "sinceStartMs": 23,
+              "t": 157,
+              "sinceStartMs": 21,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -2502,12 +2502,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 1199,
+          "measuredMs": 1200,
           "expectedMs": 1171,
           "fontWaitMs": 2,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 53
+            "dashes": 50
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2519,12 +2519,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 71,
-          "maxFrameGapMs": 33.3,
+          "framesDuringIntro": 68,
+          "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 81,
+              "t": 73,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -2536,8 +2536,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 183,
-              "sinceStartMs": 24,
+              "t": 166,
+              "sinceStartMs": 27,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -2558,12 +2558,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 1184,
+          "measuredMs": 1189,
           "expectedMs": 1171,
           "fontWaitMs": 2,
           "introElementsSeen": {
             "slots": 4,
-            "dashes": 48
+            "dashes": 51
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2573,12 +2573,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 66,
+          "framesDuringIntro": 70,
           "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 70,
+              "t": 83,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -2590,8 +2590,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 200,
-              "sinceStartMs": 40,
+              "t": 177,
+              "sinceStartMs": 5,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -2614,10 +2614,10 @@
           "yieldedBy": "complete",
           "measuredMs": 1201,
           "expectedMs": 1171,
-          "fontWaitMs": 1,
+          "fontWaitMs": 2,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 52
+            "dashes": 50
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2629,12 +2629,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 70,
+          "framesDuringIntro": 68,
           "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 91,
+              "t": 78,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -2646,8 +2646,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 194,
-              "sinceStartMs": 17,
+              "t": 170,
+              "sinceStartMs": 26,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -2673,7 +2673,7 @@
           "fontWaitMs": 1,
           "introElementsSeen": {
             "slots": 4,
-            "dashes": 51
+            "dashes": 49
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2683,12 +2683,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 69,
-          "maxFrameGapMs": 33.3,
+          "framesDuringIntro": 68,
+          "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 85,
+              "t": 61,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -2700,8 +2700,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 203,
-              "sinceStartMs": 20,
+              "t": 154,
+              "sinceStartMs": 28,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -2722,12 +2722,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 1201,
+          "measuredMs": 1188,
           "expectedMs": 1171,
-          "fontWaitMs": 2,
+          "fontWaitMs": 1,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 54
+            "dashes": 52
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2739,12 +2739,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 72,
-          "maxFrameGapMs": 16.8,
+          "framesDuringIntro": 70,
+          "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 80,
+              "t": 69,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -2756,8 +2756,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 179,
-              "sinceStartMs": 22,
+              "t": 165,
+              "sinceStartMs": 4,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -2970,10 +2970,10 @@
           "yieldedBy": "complete",
           "measuredMs": 1200,
           "expectedMs": 1171,
-          "fontWaitMs": 0,
+          "fontWaitMs": 1,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 54
+            "dashes": 53
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -2985,12 +2985,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 72,
-          "maxFrameGapMs": 16.8,
+          "framesDuringIntro": 71,
+          "maxFrameGapMs": 33.3,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 74,
+              "t": 67,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -3002,8 +3002,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 161,
-              "sinceStartMs": 23,
+              "t": 157,
+              "sinceStartMs": 21,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -3024,12 +3024,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 1199,
+          "measuredMs": 1200,
           "expectedMs": 1171,
           "fontWaitMs": 2,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 53
+            "dashes": 50
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -3041,12 +3041,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 71,
-          "maxFrameGapMs": 33.3,
+          "framesDuringIntro": 68,
+          "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 81,
+              "t": 73,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -3058,8 +3058,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 183,
-              "sinceStartMs": 24,
+              "t": 166,
+              "sinceStartMs": 27,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -3080,12 +3080,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 1184,
+          "measuredMs": 1189,
           "expectedMs": 1171,
           "fontWaitMs": 2,
           "introElementsSeen": {
             "slots": 4,
-            "dashes": 48
+            "dashes": 51
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -3095,12 +3095,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 66,
+          "framesDuringIntro": 70,
           "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 70,
+              "t": 83,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -3112,8 +3112,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 200,
-              "sinceStartMs": 40,
+              "t": 177,
+              "sinceStartMs": 5,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -3136,10 +3136,10 @@
           "yieldedBy": "complete",
           "measuredMs": 1201,
           "expectedMs": 1171,
-          "fontWaitMs": 1,
+          "fontWaitMs": 2,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 52
+            "dashes": 50
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -3151,12 +3151,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 70,
+          "framesDuringIntro": 68,
           "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 91,
+              "t": 78,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -3168,8 +3168,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 194,
-              "sinceStartMs": 17,
+              "t": 170,
+              "sinceStartMs": 26,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -3195,7 +3195,7 @@
           "fontWaitMs": 1,
           "introElementsSeen": {
             "slots": 4,
-            "dashes": 51
+            "dashes": 49
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -3205,12 +3205,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 69,
-          "maxFrameGapMs": 33.3,
+          "framesDuringIntro": 68,
+          "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 85,
+              "t": 61,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -3222,8 +3222,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 203,
-              "sinceStartMs": 20,
+              "t": 154,
+              "sinceStartMs": 28,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -3244,12 +3244,12 @@
           "played": true,
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "measuredMs": 1201,
+          "measuredMs": 1188,
           "expectedMs": 1171,
-          "fontWaitMs": 2,
+          "fontWaitMs": 1,
           "introElementsSeen": {
             "slots": 5,
-            "dashes": 54
+            "dashes": 52
           },
           "endIdenticalToStill": true,
           "endAttempts": 1,
@@ -3261,12 +3261,12 @@
           "longTasksDuringIntro": [],
           "longTaskObserver": true,
           "fontLoadsDuringIntro": [],
-          "framesDuringIntro": 72,
-          "maxFrameGapMs": 16.8,
+          "framesDuringIntro": 70,
+          "maxFrameGapMs": 33.4,
           "surfacesAtFirstFrames": {
             "firstPaint": {
               "seen": true,
-              "t": 80,
+              "t": 69,
               "sinceStartMs": null,
               "state": "pending",
               "surfaces": 15,
@@ -3278,8 +3278,8 @@
             },
             "introFirstFrame": {
               "seen": true,
-              "t": 179,
-              "sinceStartMs": 22,
+              "t": 165,
+              "sinceStartMs": 4,
               "state": "running",
               "surfaces": 15,
               "restSurfaces": 15,
@@ -3377,36 +3377,42 @@
           "pass": true
         }
       },
-      "fontCache": {
-        "note": "every intro context serves the Google Fonts files from memory after their first network fetch (same bytes), as a browser cache does for a returning owner",
-        "arFirstFetch": {
-          "fontWaitMs": 1,
-          "played": true,
-          "yieldedBy": "complete"
-        },
-        "enFirstFetch": {
-          "fontWaitMs": 1,
-          "played": true,
-          "yieldedBy": "complete"
-        },
-        "files": 5
-      },
       "slowFonts": {
         "ar@600ms": {
           "played": false,
           "state": "done",
           "reason": "first open in this tab",
           "yieldedBy": "fonts late",
-          "fontWaitMs": 200,
-          "firstPaintMs": 228,
-          "answersInViewAtMs": 444,
+          "fontWaitMs": 208,
+          "firstPaintMs": 240,
+          "answersInViewAtMs": 465,
           "introEverRan": false,
           "fontsInAtEnd": true,
-          "answersInViewAfterFirstPaintMs": 216,
+          "answersInViewAfterFirstPaintMs": 225,
           "domEqualsMotionOff": true,
           "endIdenticalToStill": true,
           "endAttempts": 1,
-          "onlyCachedFonts": true,
+          "onlyLocalFonts": true,
+          "requests": [
+            "http://127.0.0.1:3173/index.html?lang=ar&tuner=0",
+            "http://127.0.0.1:3173/fonts/readex-pro.css",
+            "http://127.0.0.1:3173/style.css",
+            "http://127.0.0.1:3173/app.js",
+            "http://127.0.0.1:3173/tuner.js",
+            "http://127.0.0.1:3173/fonts/readex-pro-arabic.woff2",
+            "http://127.0.0.1:3173/fonts/readex-pro-latin.woff2"
+          ],
+          "heldFonts": [
+            {
+              "url": "http://127.0.0.1:3173/fonts/readex-pro-arabic.woff2",
+              "heldMs": 615
+            },
+            {
+              "url": "http://127.0.0.1:3173/fonts/readex-pro-latin.woff2",
+              "heldMs": 615
+            }
+          ],
+          "localHoldsExercised": true,
           "errors": [],
           "pass": true
         },
@@ -3416,15 +3422,35 @@
           "reason": "first open in this tab",
           "yieldedBy": "complete",
           "fontWaitMs": 1,
-          "firstPaintMs": 152,
-          "answersInViewAtMs": 204,
+          "firstPaintMs": 140,
+          "answersInViewAtMs": 188,
           "introEverRan": true,
           "fontsInAtEnd": true,
-          "answersInViewAfterFirstPaintMs": 52,
+          "answersInViewAfterFirstPaintMs": 48,
           "domEqualsMotionOff": true,
           "endIdenticalToStill": true,
           "endAttempts": 1,
-          "onlyCachedFonts": true,
+          "onlyLocalFonts": true,
+          "requests": [
+            "http://127.0.0.1:3173/index.html?lang=ar&tuner=0",
+            "http://127.0.0.1:3173/fonts/readex-pro.css",
+            "http://127.0.0.1:3173/style.css",
+            "http://127.0.0.1:3173/app.js",
+            "http://127.0.0.1:3173/tuner.js",
+            "http://127.0.0.1:3173/fonts/readex-pro-arabic.woff2",
+            "http://127.0.0.1:3173/fonts/readex-pro-latin.woff2"
+          ],
+          "heldFonts": [
+            {
+              "url": "http://127.0.0.1:3173/fonts/readex-pro-arabic.woff2",
+              "heldMs": 61
+            },
+            {
+              "url": "http://127.0.0.1:3173/fonts/readex-pro-latin.woff2",
+              "heldMs": 61
+            }
+          ],
+          "localHoldsExercised": true,
           "errors": [],
           "pass": true
         },
@@ -3433,16 +3459,36 @@
           "state": "done",
           "reason": "first open in this tab",
           "yieldedBy": "fonts late",
-          "fontWaitMs": 214,
-          "firstPaintMs": 228,
-          "answersInViewAtMs": 443,
+          "fontWaitMs": 206,
+          "firstPaintMs": 208,
+          "answersInViewAtMs": 431,
           "introEverRan": false,
           "fontsInAtEnd": true,
-          "answersInViewAfterFirstPaintMs": 215,
+          "answersInViewAfterFirstPaintMs": 223,
           "domEqualsMotionOff": true,
           "endIdenticalToStill": true,
           "endAttempts": 1,
-          "onlyCachedFonts": true,
+          "onlyLocalFonts": true,
+          "requests": [
+            "http://127.0.0.1:3173/index.html?lang=en&tuner=0",
+            "http://127.0.0.1:3173/fonts/readex-pro.css",
+            "http://127.0.0.1:3173/style.css",
+            "http://127.0.0.1:3173/app.js",
+            "http://127.0.0.1:3173/tuner.js",
+            "http://127.0.0.1:3173/fonts/readex-pro-arabic.woff2",
+            "http://127.0.0.1:3173/fonts/readex-pro-latin.woff2"
+          ],
+          "heldFonts": [
+            {
+              "url": "http://127.0.0.1:3173/fonts/readex-pro-arabic.woff2",
+              "heldMs": 613
+            },
+            {
+              "url": "http://127.0.0.1:3173/fonts/readex-pro-latin.woff2",
+              "heldMs": 613
+            }
+          ],
+          "localHoldsExercised": true,
           "errors": [],
           "pass": true
         },
@@ -3451,16 +3497,36 @@
           "state": "done",
           "reason": "first open in this tab",
           "yieldedBy": "complete",
-          "fontWaitMs": 1,
-          "firstPaintMs": 128,
-          "answersInViewAtMs": 176,
+          "fontWaitMs": 2,
+          "firstPaintMs": 136,
+          "answersInViewAtMs": 186,
           "introEverRan": true,
           "fontsInAtEnd": true,
-          "answersInViewAfterFirstPaintMs": 48,
+          "answersInViewAfterFirstPaintMs": 50,
           "domEqualsMotionOff": true,
           "endIdenticalToStill": true,
           "endAttempts": 1,
-          "onlyCachedFonts": true,
+          "onlyLocalFonts": true,
+          "requests": [
+            "http://127.0.0.1:3173/index.html?lang=en&tuner=0",
+            "http://127.0.0.1:3173/fonts/readex-pro.css",
+            "http://127.0.0.1:3173/style.css",
+            "http://127.0.0.1:3173/app.js",
+            "http://127.0.0.1:3173/tuner.js",
+            "http://127.0.0.1:3173/fonts/readex-pro-arabic.woff2",
+            "http://127.0.0.1:3173/fonts/readex-pro-latin.woff2"
+          ],
+          "heldFonts": [
+            {
+              "url": "http://127.0.0.1:3173/fonts/readex-pro-arabic.woff2",
+              "heldMs": 51
+            },
+            {
+              "url": "http://127.0.0.1:3173/fonts/readex-pro-latin.woff2",
+              "heldMs": 52
+            }
+          ],
+          "localHoldsExercised": true,
           "errors": [],
           "pass": true
         },
@@ -3489,7 +3555,7 @@
           "played": true,
           "state": "done",
           "reason": "first open in this tab",
-          "fontWaitMs": 1
+          "fontWaitMs": 0
         },
         "newTabWithMotionSwitchOff": {
           "played": false,
@@ -3501,7 +3567,7 @@
           "played": true,
           "state": "done",
           "reason": "first open in this tab",
-          "fontWaitMs": 1
+          "fontWaitMs": 0
         },
         "errors": [],
         "reducedMotion": {
@@ -3528,7 +3594,7 @@
             "sawRunning": true,
             "count": 2,
             "yieldedBy": "complete",
-            "measuredMs": 1194,
+            "measuredMs": 1186,
             "expectedMs": 1171,
             "speed": 1
           },
@@ -3539,7 +3605,7 @@
             "sawRunning": true,
             "count": 3,
             "yieldedBy": "complete",
-            "measuredMs": 2364,
+            "measuredMs": 2359,
             "expectedMs": 2342,
             "speed": 0.5
           },
@@ -3548,7 +3614,7 @@
             "sawRunning": true,
             "count": 4,
             "yieldedBy": "complete",
-            "measuredMs": 629,
+            "measuredMs": 613,
             "expectedMs": 585.5,
             "speed": 2
           },
@@ -3579,7 +3645,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "chart",
-            "settledAtMs": 126
+            "settledAtMs": 109
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -3598,7 +3664,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "chart",
-            "settledAtMs": 419
+            "settledAtMs": 407
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -3644,7 +3710,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "keydown",
-            "settledAtMs": 407
+            "settledAtMs": 408
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -3663,7 +3729,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "pointerdown",
-            "settledAtMs": 149
+            "settledAtMs": 147
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -3679,7 +3745,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "pointerdown",
-            "settledAtMs": 454
+            "settledAtMs": 446
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -3695,7 +3761,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "pointerdown",
-            "settledAtMs": 134
+            "settledAtMs": 136
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -3714,7 +3780,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "pointerdown",
-            "settledAtMs": 446
+            "settledAtMs": 426
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -3742,7 +3808,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "new reading",
-            "settledAtMs": 105
+            "settledAtMs": 110
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -3780,7 +3846,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "new reading",
-            "settledAtMs": 408
+            "settledAtMs": 407
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -3809,7 +3875,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "resize",
-            "settledAtMs": 111
+            "settledAtMs": 115
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -3824,7 +3890,7 @@
           "settled": {
             "state": "done",
             "yieldedBy": "resize",
-            "settledAtMs": 422
+            "settledAtMs": 410
           },
           "answersAtRest": true,
           "chartWhole": true,
@@ -6971,7 +7037,7 @@
             "widestKey": "latest",
             "numbered": 39,
             "measures": 2,
-            "ms": 2.5
+            "ms": 2.899999998509884
           },
           "lane": {
             "top": 2,
@@ -9652,7 +9718,7 @@
             "widestKey": "latest",
             "numbered": 39,
             "measures": 2,
-            "ms": 2.2999999970197678
+            "ms": 2.5
           },
           "lane": {
             "top": 2,
@@ -12277,7 +12343,7 @@
             "widestKey": "latest",
             "numbered": 38,
             "measures": 2,
-            "ms": 3.2000000029802322
+            "ms": 3
           },
           "lane": {
             "top": 2,
@@ -14859,7 +14925,7 @@
             "widestKey": "latest",
             "numbered": 28,
             "measures": 2,
-            "ms": 2.4000000059604645
+            "ms": 2.3000000044703484
           },
           "lane": {
             "top": 2,
@@ -17480,7 +17546,7 @@
             "widestKey": "latest",
             "numbered": 38,
             "measures": 2,
-            "ms": 2.5
+            "ms": 2.4000000059604645
           },
           "lane": {
             "top": 2,
@@ -20062,7 +20128,7 @@
             "widestKey": "latest",
             "numbered": 28,
             "measures": 2,
-            "ms": 1.8000000044703484
+            "ms": 2.2000000029802322
           },
           "lane": {
             "top": 2,
