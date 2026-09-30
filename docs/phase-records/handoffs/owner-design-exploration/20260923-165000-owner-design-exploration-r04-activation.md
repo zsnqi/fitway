@@ -3389,3 +3389,29 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - It registers the Daily and Reports tables that break the rule as known issues, for steps 3 and 4.
   - It uses ports 3176-3177.
 - **Next:** on its report, run the G5 check, inspect the table sheets, and show the user. Then step 3.
+## The spec's second pass delivered at `ffc4029` (2026-09-30)
+
+- **The builder delivered `ffc4029`** on `owner-followup-r04-build`, on top of `234b12d`. The coordinator pushed it as a
+  fast-forward.
+  - 3 files, +176/−108: `DESIGN-SPEC.md`, `components.css` and `components.js`.
+  - Labels went from 190 R, 11 C, 51 K and 28 P (280 rows) to 224 R, 11 C, 53 K and 0 P (288 rows).
+  - §8 holds only Q1 and Q2, then an "Answered 2026-09-30" list.
+  - Self-reported, not verified: T1-T5 pass. The widest deviation for numeric columns and spanning notes is 0.00 px, AR
+    and EN, at 1440, 1024 and 390; it was up to 73.4 and 87.9 px at `234b12d`.
+  - New rules TBL-10 to TBL-13. New known issues:
+    - K-33, Daily's minute table in English, for step 3;
+    - K-34, Reports' day table in Arabic, for step 4;
+    - K-35, Reports' day table in English, for step 4.
+  - Beyond the brief, on the components page only:
+    - the table section gets its phone form at 720 px and below;
+    - the tables stack below 1240 px;
+    - NaN chart paths that caused 4 console errors at 1024 and 390 are fixed.
+  - Caveat: at 390 the other sections of the components page still scroll sideways (124 px AR, 146 px EN). The page
+    is judged at 1440, and step 3 designs the phone.
+- **G5 check:** s04 is clean at `ffc4029`, the coordinator worktree matches the session-start snapshot, and only the
+  user's preview listens (3174).
+- **Coordinator inspection, not verification:** in `table-ar.png` and `table-en.png`, numbers and headers share the
+  right edge, units line up, and the gap notes start at their column's edge.
+- **Open point for step 4:** in English, the peak cell reads its time before its value ("6:43 PM 53"). The value holds
+  the right edge (TBL-11), so the visual order runs opposite to the reading order of assistive technology.
+- **Next:** the user looks at the table on the preview, then step 3.
