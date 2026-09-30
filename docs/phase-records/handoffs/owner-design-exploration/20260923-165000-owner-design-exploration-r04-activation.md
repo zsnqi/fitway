@@ -3227,3 +3227,23 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   1. On the designer's report: check the s04 tree and ports (G5), then inspect the key sheets.
   2. The user reviews Reports in the browser, and any changes follow.
   3. Build the suite, then verify with a fresh `owner-direction-verifier-high`, and record the ledger row.
+## Reports delivered at `31a40d6`, for the user's review (2026-09-30)
+
+- **The designer delivered `31a40d6`** on `owner-followup-r04-build`, on top of `8926193`. It is not pushed.
+  - The report is saved at `D:\fitway-scratch\reports\work\REPORT.md`, by the coordinator: the harness refused the
+    designer's own write of that file.
+  - G5 check: the s04 tree is clean, nothing listens on 3170-3180, and the coordinator worktree is unchanged.
+  - 7 files. Added: `reports.html`, `reports.css`, `reports.js` and `reports-capture.mjs`. Edited: one line of
+    `index.html`, 7 lines of `app.js`, and the README. `style.css`, `capture.mjs` and `evidence/` are unchanged.
+  - Self-reported, not verified: R1-R11 pass. The phone check says the system holds, with named changes below 721 px.
+- **Coordinator inspection, not verification:** `page-full-ar-full.png` and `dialog-range-en.png` are coherent with
+  the Eclipse look: rail, four cards with the lit week-over-week card, the busy-times pattern with closed and zero
+  cells, the day-by-day table, and the dialog.
+- **New pre-existing finding, reported by the designer:** at `8926193` the Daily card headers overflow at 1024 px, by up
+  to 59 px. It is deferred to the phone or polish round.
+- **Designer proposals, for the user:**
+  - raise the Daily 38 px buttons and 36 px chips to the system's 44 px in the polish round;
+  - no intro on Reports;
+  - no rolling digits on a period change.
+- **Next:** the user reviews Reports in the browser, and any changes follow. Then the suite is built, and verification
+  runs.
