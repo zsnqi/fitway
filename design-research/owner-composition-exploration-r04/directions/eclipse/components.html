@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FITWAY Eclipse Components</title>
+  <meta name="description" content="FITWAY Eclipse components: every component of the draft design spec in its rule form, AR and EN. Exploration concept with synthetic data. Not production.">
+  <script>
+    // Language before first paint: ?lang=ar|en (default ar). ?motion=off turns motion off, as on the pages.
+    (function () {
+      var p = new URLSearchParams(location.search), r = document.documentElement;
+      var en = p.get("lang") === "en";
+      r.lang = en ? "en" : "ar";
+      r.dir = en ? "ltr" : "rtl";
+      r.dataset.motion = p.get("motion") === "off" ? "off" : "on";
+    })();
+  </script>
+  <link rel="stylesheet" href="fonts/readex-pro.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="components.css">
+  <script>
+    // As on the pages: start the CSS faces themselves, so text shares their one fetch per subset.
+    for (var weight of ["400", "500"]) {
+      document.fonts.load(weight + ' 16px "Readex Pro"', "العربية FITWAY 0123456789")
+        .catch(function () { /* Failed faces keep the existing fallback. */ });
+    }
+  </script>
+  <script src="components.js" defer blocking="render"></script>
+</head>
+<body class="cx">
+  <a class="cx-skip" href="#main" data-t="skip"></a>
+  <div class="cx-page">
+    <i class="wash" aria-hidden="true"><i class="wash-light"></i></i>
+    <header class="cx-head">
+      <div>
+        <h1 data-t="title"></h1>
+        <p class="cx-sub" data-t="sub"></p>
+      </div>
+      <div class="cx-head-end">
+        <span class="cx-concept" data-t="concept"></span>
+        <div class="cx-seg" role="group" aria-labelledby="lang-name" id="lang-seg">
+          <span class="sr-only" id="lang-name" data-t="langName"></span>
+          <button class="cx-seg-b" type="button" data-lang="ar" lang="ar" aria-pressed="false">العربية</button>
+          <button class="cx-seg-b" type="button" data-lang="en" lang="en" aria-pressed="false">English</button>
+        </div>
+      </div>
+    </header>
+    <p class="cx-note-top" data-t="note"></p>
+    <nav class="cx-index" id="cx-index" aria-labelledby="index-name"><span class="sr-only" id="index-name" data-t="indexName"></span></nav>
+    <main class="cx-main" id="main" tabindex="-1">
+      <div id="cx-root"></div>
+    </main>
+  </div>
+
+  <!-- The live dialog: opened with showModal from the dialog section; Escape and the scrim close it and focus returns. -->
+  <dialog class="cx-dlg" id="cx-dlg" aria-labelledby="cx-dlg-title" aria-describedby="cx-dlg-desc">
+    <div class="cx-scrim" data-close></div>
+    <form class="cx-panel" id="cx-dlg-form" novalidate></form>
+  </dialog>
+</body>
+</html>

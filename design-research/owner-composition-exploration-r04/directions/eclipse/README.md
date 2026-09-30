@@ -1,5 +1,10 @@
 # Eclipse v3 (Owner r04, full Daily page)
 
+**Design spec, first draft (2026-09-30, run `owner_spec_r04_s12`):** read `DESIGN-SPEC.md` instead of this file for the
+rules, compositions, known issues and open questions, measured from Daily and Reports at `31a40d6`; it stays a draft
+until the authority record. `components.html` renders every component in its rule form, AR and EN (not linked from the
+rail). This file stays the build history.
+
 **Reports round (2026-09-30, run `owner_reports_r04_s10`):** Eclipse gains its second page, `reports.html`, at desktop,
 and the table, form and dialog system that Activity Log, Access and Settings will reuse. The Daily page changes in one
 place only: its rail's Reports item is now a link that keeps the language, and Reports links back. See "Reports" at the
