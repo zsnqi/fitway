@@ -221,6 +221,7 @@ await mkdir(OUT, { recursive: true });
 for (const stale of ["daily-ar-chart-2x.png", "daily-ar-nowcard-2x.png"]) await rm(join(OUT, stale), { force: true });
 const browser = await chromium.launch();
 const log = [];
+const duplicateFontRequests = [];
 const PRE = JSON.parse(await readFile(join(HERE, "evidence", "pre-motion-hashes.json"), "utf8")).frames;
 const OUTSIDE_PLOT = JSON.parse(await readFile(join(HERE, "evidence", "lane-outside-plot.json"), "utf8")).frames;
 // The frames the lane leaves alone keep their committed hash as the reference. For the ones it changes, the reference is
@@ -238,16 +239,37 @@ async function serveFont(route, delayMs, held) {
   held.push({ url: route.request().url(), heldMs: Math.round(performance.now() - at) });
   await route.continue();
 }
+// Counts per main-document navigation, including reloads; catches a completed
+// preload fetched again by a CSS face, even when both loads succeed.
+function trackFontRequests(page, errors) {
+  let counts = new Map();
+  page.on("request", (request) => {
+    if (request.isNavigationRequest() && request.frame() === page.mainFrame()) counts = new Map();
+    const url = request.url();
+    if (!/\/fonts\/[^/?]+\.woff2(?:\?|$)/.test(url)) return;
+    const count = (counts.get(url) || 0) + 1;
+    counts.set(url, count);
+    if (count > 1) {
+      const error = "font requested " + count + " times in one load: " + url;
+      errors.push(error);
+      duplicateFontRequests.push(error);
+    }
+  });
+}
 async function newPage({ width = 1440, height = 900, scale = 1, motion = false, touch = false, fontDelayMs = 0 } = {}) {
   const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: scale, reducedMotion: motion ? "no-preference" : "reduce", colorScheme: "dark", hasTouch: touch });
   const heldFonts = [];
   if (fontDelayMs) await context.route(/\/fonts\/[^/?]+\.woff2(?:\?|$)/, (route) => serveFont(route, fontDelayMs, heldFonts));
+  const errors = [];
+  // Secondary tabs in the when-it-plays checks share these guards too.
+  context.on("page", (page) => {
+    trackFontRequests(page, errors);
+    page.on("pageerror", (e) => errors.push("pageerror: " + e.message));
+    page.on("console", (m) => errors.push("console " + m.type() + ": " + m.text()));
+  });
   const page = await context.newPage();
   const requests = [];
   page.on("request", (r) => requests.push(r.url()));
-  const errors = [];
-  page.on("pageerror", (e) => errors.push(`pageerror: ${e.message}`));
-  page.on("console", (m) => { if (m.type() === "error") errors.push(`console: ${m.text()}`); });
   return { context, page, errors, heldFonts, requests };
 }
 // Round 7 step 3: a fresh context is a tab's first open, so with motion on the intro plays; wait for it to end (it ends
@@ -2274,7 +2296,7 @@ const motionSummary = {
   ...motionLog,
 };
 if (MOTION_ONLY) console.log(JSON.stringify({ ...motionSummary, identity: undefined, spec: undefined, chart: undefined }, null, 1));
-else await writeFile(join(OUT, "capture-log.json"), `${JSON.stringify({ capturedAt: new Date().toISOString(), port: PORT, motion: motionSummary, lightMeasurement: { method: "OKLab L relative to the card's own base on light-only 1x captures (content hidden); see capture.mjs measure()", targets, presets: lights, calibration }, tunerFileCheck: tunerCheck, frames: log }, null, 2)}\n`);
+else await writeFile(join(OUT, "capture-log.json"), `${JSON.stringify({ capturedAt: new Date().toISOString(), port: PORT, duplicateFontRequests, motion: motionSummary, lightMeasurement: { method: "OKLab L relative to the card's own base on light-only 1x captures (content hidden); see capture.mjs measure()", targets, presets: lights, calibration }, tunerFileCheck: tunerCheck, frames: log }, null, 2)}\n`);
 const bad = log.filter((e) => e.fontsOk === false || e.overflowX > 0 || (e.overflowY > 0 && !e.fullPage) || (e.spill && e.spill.length) || (e.errors && e.errors.length) || e.easternDigits || e.enDashInArabic || (e.checks && (e.checks.overshoot || !e.checks.withinAverage || !e.checks.zeroKept || !e.checks.lineStopsAtGap || !e.checks.lineEndsAtLast || Math.abs(e.checks.crestMinusPeakMinutes) > 5)));
 console.log(bad.length ? `\n${bad.length} frame(s) need attention: ${bad.map((e) => e.frame).join(", ")}` : "\nAll frames: no overflow or spill, fonts loaded, no errors, Western digits only, line checks pass.");
 if (!tunerCheck?.pass) console.log("Tuner file:// check did not pass; see tunerFileCheck in the log.");
@@ -2300,4 +2322,4 @@ const round6 = motionLog.chart ? [motionLog.tooltipWidth?.pass, motionLog.toolti
 if (round6.some((v) => !v)) console.log("A Round 6 or Round 7 check did not pass; see motion.chart, follow, marker, roll, delayed, rail and liveUpdateEndsAtCanonical in the log.");
 const introOk = Boolean(motionLog.intro?.pass);
 if (!introOk) console.log("An intro check did not pass; see motion.intro (slowFonts, whenItPlays, yields, held) and motion.identity.firstOpen / reload in the log.");
-if (changed.length || changedOff.length || firstPaintBad.length || round6.some((v) => !v) || !introOk || !tunerCheck?.pass || !tunerCheck?.motionGroup?.pass || !tunerCheck?.crowdFromFile?.pass || bad.length) process.exitCode = 1;
+if (duplicateFontRequests.length || changed.length || changedOff.length || firstPaintBad.length || round6.some((v) => !v) || !introOk || !tunerCheck?.pass || !tunerCheck?.motionGroup?.pass || !tunerCheck?.crowdFromFile?.pass || bad.length) process.exitCode = 1;

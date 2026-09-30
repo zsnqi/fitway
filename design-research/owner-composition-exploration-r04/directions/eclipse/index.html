@@ -17,23 +17,16 @@
       // Nothing is hidden before first paint: the page is complete at once (Round 6). Motion is decided in app.js.
     })();
   </script>
-  <script>
-    // Both weights share each subset's file; Arabic digits need Latin too.
-    // File pages load via CSS: Chromium rejects crossorigin file preloads.
-    if (location.protocol === "http:" || location.protocol === "https:") {
-      for (var subset of ["arabic", "latin"]) {
-        var preload = document.createElement("link");
-        preload.rel = "preload";
-        preload.as = "font";
-        preload.type = "font/woff2";
-        preload.crossOrigin = "anonymous";
-        preload.href = "fonts/readex-pro-" + subset + ".woff2";
-        document.head.appendChild(preload);
-      }
-    }
-  </script>
   <link rel="stylesheet" href="fonts/readex-pro.css">
   <link rel="stylesheet" href="style.css">
+  <script>
+    // Start the CSS faces themselves; their load is shared with text rendering.
+    // Both weights use the same subset bytes; Arabic digits need Latin too.
+    for (var weight of ["400", "500"]) {
+      document.fonts.load(weight + ' 16px "Readex Pro"', "العربية FITWAY 0123456789")
+        .catch(function () { /* Failed faces keep the existing fallback. */ });
+    }
+  </script>
   <script src="app.js" defer blocking="render"></script>
   <!-- Light tuner: a working tool for this concept (not part of the design). ?tuner=0 turns it off. -->
   <script src="tuner.js" defer blocking="render"></script>
