@@ -159,7 +159,7 @@ The Public Live signal is one continuous **28-bar cumulative instrument**.
 
 | State | Required truth | Data visibility |
 | --- | --- | --- |
-| Loading | Stable structural skeleton, `aria-busy`, concise announcement | No fabricated values |
+| Loading | Structural skeleton after a short delay, `aria-busy`, one announcement when slow; see Loading behaviour | No fabricated values |
 | Live | Verified live status, band, approximate count, signal, freshness | Current values |
 | Delayed | Explicit last-known language and timestamp; never claim live | Last-known count/band/signal may remain visibly qualified |
 | Unavailable | Explain that old data is not presented as current | Remove count, band, signal, and timestamp |
@@ -168,6 +168,27 @@ The Public Live signal is one continuous **28-bar cumulative instrument**.
 
 Status is always text plus a non-color cue. Keep live announcements short and announce
 only meaningful state/current-reading changes, not the full page on every poll.
+
+### Loading behaviour
+
+These rules apply to the public page and to the Owner surface. The numbers are starting
+values, to be tuned against real data.
+
+- **Delay and minimum.** Show no skeleton before about 300 ms. Until then the value areas
+  keep their space, empty, and a payload that arrives in time fills them directly. Once
+  shown, a skeleton stays at least about 400 ms, so it never flickers.
+- **No movement on arrival.** Placeholders have the exact geometry of the content they stand
+  for. The arrival of data causes zero layout shift, measured rather than assumed.
+- **Only the pending values.** Headings, card names, labels, and navigation are real text
+  from the first paint. Placeholders stand only where a value is awaited.
+- **Charts do not imitate data.** A chart or crowd-signal placeholder is a flat baseline or
+  an empty frame, never bars or lines of varying height that could read as a reading.
+- **First payload only.** A refresh never returns to the skeleton. The last value stays,
+  qualified as updating, and follows the Delayed rules if it ages.
+- **A ceiling.** A load that lasts about 10 s becomes Error or Unavailable, with one focused
+  retry. A skeleton never stays indefinitely.
+- **Announcements.** Mark the loading region `aria-busy` until its content arrives.
+  Announce loading once, and only when it lasts beyond about 1 s.
 
 The exact stale-signal colors and pattern treatment remain a phase-owned semantic-polish
 item in `docs/POLISH_BACKLOG.md`; implementations must preserve the truth rules above while
@@ -243,8 +264,8 @@ focus, press, drawer, and dialog feedback. Avoid `transition: all`.
 - Do not animate a number through intermediate values; update it atomically.
 - Charts may use a short first-draw reveal only when it improves comprehension. Under
   reduced motion they render the complete final line, fill, points, and labels immediately.
-- Loading skeletons are static under reduced motion. A frozen spinner must retain visible
-  or assistive loading text.
+- Loading skeletons follow Loading behaviour (section 6) and are static under reduced
+  motion. A frozen spinner must retain visible or assistive loading text.
 - Hover is never the only path to information. Chart points support keyboard focus and
   mobile tap selection.
 
