@@ -2883,7 +2883,8 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - it delivered one commit inside the allowed files;
   - it relaxed no gate;
   - it reported its own caveats: the long tasks, the untested browsers, and the canonical difference;
-  - the run time is not yet known.
+  - the run took 1 h 17 min, as reported by the user. The three runs of `owner_fonts_r04_s09` took 14 min, 55 min
+    and 1 h 17 min.
 - **Verification is running:**
   - `owner-direction-verifier-high` on Opus, run `owner_fonts_r04_s09_verify`;
   - brief `D:\fitway-scratch\introspeed\fixq4\VERIFY-FONTS.md`;
