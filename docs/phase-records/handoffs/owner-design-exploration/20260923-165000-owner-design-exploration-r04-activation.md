@@ -3446,3 +3446,19 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
 - **G5 check:** s04 is clean at `4f77aff`, the coordinator worktree matches the snapshot, and only 3174 listens.
 - **Coordinator inspection, not verification:** in `table-ar.png` and `table-ar-390.png`, both no-readings rows start at
   the table's start edge as one line, and the tables fit at 390.
+## Q11 answered, and step 2 closes at `5654093` (2026-09-30)
+
+- **User decision (2026-09-30), Q11:** a middle dot separates the words from the range in every "no readings + range"
+  phrase, for example «لا قراءات بعد · 2 أغسطس - 12 سبتمبر».
+- **A fresh `owner-direction-fixer`, run `owner_spec_r04_s15`, delivered `5654093`** on top of `4f77aff`. The coordinator
+  pushed it as a fast-forward.
+  - 3 files, +14/−11. TBL-12 is amended, and Q11 moves to the "Answered 2026-09-30" list, so §8 holds only Q1 and Q2.
+  - The labels stay at 224 R, 11 C, 53 K and 0 P.
+  - Self-reported, not verified: V1-V4 pass. The dot never starts a line, the edge sits within 0.03 px, and no range
+    breaks.
+  - Left without a dot: the empty-table sentence (a from/to sentence) and the chart tooltip (range on its own line).
+- **G5 check:** s04 is clean at `5654093`, the coordinator worktree matches the snapshot, and only 3174 listens.
+- **Coordinator inspection:** in `table-ar.png`, the dot reads as a separator in all three phrases.
+- **Step 2 is done.** The spec draft is `E/DESIGN-SPEC.md` at `5654093`, with its components page.
+- **Next:** step 3, Daily at every size and in every state, including loading, and the navigation and header for every
+  screen. It runs a fresh designer, then a fresh design reviewer, then the user.
