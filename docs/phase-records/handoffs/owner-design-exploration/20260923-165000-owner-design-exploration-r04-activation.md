@@ -3124,3 +3124,56 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
     fast-forward.
   - The build commits touch only `E/`, and the docs commits touch no `E/` file.
 - **Next:** the audit patch question, then Reports. See steps 4 and 5 of the intro-speed resume point.
+## New-session resume point after the first-load fix (2026-09-30)
+
+- **State at handover:**
+  - The first-load problem is closed at `8926193`, verified PASS.
+  - Pushed as fast-forwards: `codex/owner-redesign-r04` at the commit that adds this section, and
+    `owner-followup-r04-build` at `8926193`.
+  - `owner-followup-r04-s04` is clean at `8926193`. No agent runs, and nothing listens on 3173-3177.
+  - This session grew large, so the user starts a fresh coordinator session.
+- **Rules in force.** They are written in the sections above:
+  - the eval framing and the per-round ledger;
+  - brief rules B1-B7 (B7 is in the section on repair 1's stop);
+  - grader rules G1-G5.
+- **Resume steps:**
+  1. Run `pnpm context:show -- --milestone owner-design-exploration-r04`. Read this section, "The Codex loop is
+     measured as an eval", "Repair 1 stops on a pre-existing mobile shift, and resumes", and "Repair 1 verified
+     PASS".
+  2. **The audit patch.** It waits for the user's answer, which was not given in the old session because the question
+     was unclear.
+     - The file is
+       `C:/Users/PCFORC~1/AppData/Local/Temp/claude/D--Projects-fitway-worktrees-owner-design-exploration-r04/6482348a-04f9-4b87-8e5b-460107b7a201/scratchpad/audit/brief-audit.patch`.
+       Another session wrote it on 2026-09-27. `git apply --check` passes (1 file, +30/−12).
+     - It adds italic notes to `directions/NEXT-DIRECTION-BRIEF.md`. Each note says which later round replaced an old
+       passage, so nobody follows an outdated one. It changes no decision.
+     - One note is stale: the "Content is never hidden while fonts load" amendment predates the user's decisions of
+       2026-09-29 and 2026-09-30. If the user agrees, apply the patch and update that note to say:
+       - a late font shows the fallback and swaps before the intro;
+       - Chromium's paint hold of about 100 ms (measured 108-124) is accepted when the fonts are slow.
+
+       Then run `pnpm check:repository`, commit, and push.
+  3. **Then Reports.** Follow the screen plan in `NEXT-DIRECTION-BRIEF.md`, "After the Daily page":
+     - desktop first;
+     - an early phone feasibility check of the table system at 390 and 320 px;
+     - then the phone and the polish;
+     - then the authority record.
+
+     The work is split this way:
+     - new design goes to `owner-direction-designer` (Opus);
+     - heavy builds go to Codex, GPT-6.1 Sol at `high`, with briefs that follow B1-B7;
+     - verification goes to `owner-direction-verifier-high`, following G1-G5.
+
+     Build the first fixed held-out suite for Reports.
+- **Deferred:**
+  - the README findings of the last verification (the paint hold figures, and line 327's width), for the next
+    Eclipse round;
+  - a Firefox and Safari check of the first paint, for the phone or production phase;
+  - the #busy-note intro-end jump at narrow widths, for the phone phase;
+  - Eclipse's loading skeleton, which follows `DESIGN_GUIDE.md` "Loading behaviour", before promotion.
+- **Working agreements:**
+  - replies in the Saudi dialect;
+  - temp and scratch never on drive C;
+  - agents report in their final message;
+  - keep the coordinator's context small;
+  - do not change effort mid-session, because the app warns that it re-reads the whole conversation.
