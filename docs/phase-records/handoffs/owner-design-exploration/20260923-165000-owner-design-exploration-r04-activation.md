@@ -3056,3 +3056,19 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
      - run `pnpm check:repository`;
      - push both working branches.
   3. **On FAIL:** repair 2. After it, the stall rule.
+## Note for the data-wiring phase: the loading state (2026-09-30)
+
+- **User request (2026-09-30):** record the loading state for when the Owner surface is connected to real data.
+- **Already locked:**
+  - `FITWAY_PRODUCT.md` "Operational states": "a lightweight skeleton and accessible loading announcement while the
+    first payload resolves";
+  - `DESIGN_GUIDE.md` 162: a stable structural skeleton, `aria-busy` and a concise announcement, with no fabricated
+    values;
+  - `DESIGN_GUIDE.md` 246-247: skeletons are static under reduced motion.
+- **The gap:** Eclipse has three states, `?state=live|delayed|nohistory`. It has no loading state.
+  - Before any promotion, design Eclipse's skeleton in its own visual language, under those rules.
+  - At the same time, check the concept against the product's other operational states: closed, unavailable and
+    error.
+- **Not for the font problem:** the text is complete at the first paint. A skeleton or a loading screen would add a
+  swap of its own on every open. The user asked about a loading screen and a skeleton for fonts on 2026-09-30, and
+  took neither.
