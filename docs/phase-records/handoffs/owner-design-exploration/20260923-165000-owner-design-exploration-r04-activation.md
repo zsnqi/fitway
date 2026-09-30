@@ -2864,3 +2864,45 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
      - the hold, measured independently at 150 and 600 ms;
      - the removed-frame control.
   4. **Then:** steps 4 and 5 of the self-hosted font resume point.
+## The self-hosted font commit delivered, and its verification launched (2026-09-30)
+
+- **Codex delivered `4568bac`** on `owner-followup-r04-build`, on top of `77d91e8`.
+  - Report saved at `D:\fitway-scratch\introspeed\fixq4\CODEX-FONTS-FILE-REPORT.md`.
+  - Coordinator inspection, not verification:
+    - 13 files: `index.html`, `capture.mjs`, `README.md`, six in `fonts/`, and four in `evidence/`;
+    - `app.js`, `style.css` and `tuner.js` are untouched;
+    - the tree is clean, and nothing listens on 3173-3177.
+  - Claims to measure:
+    - the preloads are inserted only over HTTP;
+    - 57 of 59 still frames are identical, and the two that differ are the accepted bars frame at 1× and 2×;
+    - Chromium's hold is 96/98 ms (AR/EN) under slow fonts;
+    - the normal first paint is 20/14 ms later than `a6cfde8`, with no swap;
+    - 19 long tasks of 54-62 ms before the paint under slow fonts;
+    - the removed-frame control catches 12 of 12.
+- **Neutral model facts, third run:**
+  - it delivered one commit inside the allowed files;
+  - it relaxed no gate;
+  - it reported its own caveats: the long tasks, the untested browsers, and the canonical difference;
+  - the run time is not yet known.
+- **Verification is running:**
+  - `owner-direction-verifier-high` on Opus, run `owner_fonts_r04_s09_verify`;
+  - brief `D:\fitway-scratch\introspeed\fixq4\VERIFY-FONTS.md`;
+  - output under `D:\fitway-temp\fonts-verify\`.
+  - Held-out rows beyond Codex's brief:
+    - B: font bytes against `a6cfde8`'s Google files;
+    - N: the network and the console, at 390×844 too;
+    - W at 390×844 and 1024×640;
+    - M: a missing or hung font file;
+    - P: the hold, with two controls;
+    - X: still frames in more states and in reduced motion;
+    - K: the harness's holds, planted;
+    - Z: the canonical difference.
+- **Next:**
+  1. Save the verifier's report at `D:\fitway-scratch\introspeed\fixq4\VERIFY-FONTS-REPORT.md`.
+  2. **On PASS:**
+     - rebase the docs commits onto `4568bac`;
+     - confirm that `E/` equals it;
+     - run `pnpm check:repository`;
+     - push both working branches;
+     - report to the user.
+  3. **On FAIL:** a focused repair brief. After a second failure, apply the stall rule.
