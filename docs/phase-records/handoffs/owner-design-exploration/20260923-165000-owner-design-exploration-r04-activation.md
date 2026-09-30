@@ -3084,3 +3084,43 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
 
   The numbers are starting values, tuned against real data. `pnpm check:repository` and
   `pnpm check:design-context` pass. Eclipse's future skeleton follows these rules.
+## Repair 1 verified PASS: the first-load problem closes at `8926193` (2026-09-30)
+
+- **Verifier report** (about 2 h), saved at `D:\fitway-scratch\introspeed\fixq4\VERIFY-FONTS-R1-REPORT.md`; evidence
+  under `D:\fitway-temp\fonts-r1-verify\`. Verdict **PASS**; no row fails.
+  - Each font file is requested at most once per load: four cache modes and `file://`, AR and EN, 1440 and 390, first
+    opens and reloads.
+  - One error for a missing file.
+  - 0 shifts at 1440, 1280 and 1024, and under the `app.js` delay. The #busy-note shift below 1024 px equals
+    `4568bac`'s.
+  - The swap lands before the intro in every held run.
+  - 52 of 52 stills are identical to `4568bac`, and the capture exits 0.
+  - Held-out L (network emulation and 4× CPU), V (304, disabled cache, back and forward) and Z (device scale 2) pass.
+    `4568bac` double-fetches in L on every run.
+  - Coordinator check: `strips\rt-sd100-first3.png` shows `4568bac`'s first frame in the fallback, with a shift, in AR
+    and EN, and `8926193`'s in the final font with none.
+- **Low findings, deferred, with no new round:**
+  1. The slow-font paint hold measures 108-124 ms. The README says 104/96. It is accepted behaviour, and identical to
+     `4568bac`.
+  2. With `RenderBlockingFonts` disabled, AR shows the fallback on the first frame more often (4 of 5 against 2 of 5).
+     This is a risk for browsers without Chromium's render blocking. Firefox and Safari are not installed here: check
+     them in the phone or production phase.
+  3. `E/README.md:327` is 122 characters wide.
+  4. The N control reproduced the double fetch only 1 time in 5. The detector itself is proven on `4568bac`.
+
+  Findings 1 and 3 go into the next Eclipse round's README edits.
+- **Ledger, s09 r1 resumed (`8926193`):**
+  - brief rows 15 of 15 pass, and held-out rows 3 of 3 pass, so there is no gap;
+  - cause of failure: none;
+  - grader note: the N control (finding 4).
+- **New grader rule:**
+  - **G5.** A verifier writes only inside its own temp folder. After each verification, the coordinator checks
+    `git status` in every worktree involved.
+  - The first font verifier left an empty `wl.mjs` in this worktree at 08:12. The coordinator removed it.
+- **Integration: a merge, not a rebase.**
+  - 23 docs commits are unpushed, but the remote docs tip `46f7db4` is itself behind the build branch's base, so a
+    rebase would rewrite pushed commits and need a force push.
+  - A merge of `owner-followup-r04-build` into `codex/owner-redesign-r04` keeps every verified SHA and pushes as a
+    fast-forward.
+  - The build commits touch only `E/`, and the docs commits touch no `E/` file.
+- **Next:** the audit patch question, then Reports. See steps 4 and 5 of the intro-speed resume point.
