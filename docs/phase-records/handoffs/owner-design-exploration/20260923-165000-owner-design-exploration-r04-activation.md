@@ -3554,3 +3554,20 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   4. «النشاط» / "Activity" is a named exception for the bar only. The full name stays the accessible name and the
      page title.
 - **Waiting:** the user's own notes on the frame, before phase B is resumed.
+## Phase B resumed, and an unattended close (2026-10-01)
+
+- **User review of the frame (2026-10-01):** excellent, with no further notes.
+- **Phase B resumed:** the same designer (`owner_daily_r04_s17`) is resumed with the user's four decisions and its own
+  phase A caveats (`capture.mjs`, K-26, the focus label, short landscape phones). It commits once, at the end of
+  phase B.
+- **The user's usage limit is about to be reached.** It resets about 2 h 15 min later. The PC stays on, with the app's
+  auto-continue enabled.
+- **The coordinator's instruction from the user:**
+  - after the reset, continue. If the designer was interrupted, resume it;
+  - when phase B is done, run the G5 check, push, and record here;
+  - then shut the PC down, with a delay that `shutdown /a` can cancel.
+- **If this session is lost,** a new coordinator does the following:
+  - reads this section;
+  - checks s04's log and status for a phase B commit on top of `d76972c`;
+  - if the commit is missing, gives phase B to a fresh designer, with `D:\fitway-scratch\daily\BRIEF.md`, the phase A
+    report above and the four decisions.
