@@ -3177,3 +3177,16 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - agents report in their final message;
   - keep the coordinator's context small;
   - do not change effort mid-session, because the app warns that it re-reads the whole conversation.
+## The audit patch applied (2026-09-30)
+
+- **User decision (2026-09-30):** apply the audit patch and correct its font note.
+- **Applied** to `directions/NEXT-DIRECTION-BRIEF.md` (+30/−12). It adds italic notes that name the later round
+  replacing each old passage. It changes no decision.
+- **The font note under Round 6 §1:**
+  - its 200 ms part stays, because it still holds. On a first open, the four answers stay out of sight until the
+    fonts arrive, capped at 200 ms from the first paint (Eclipse README, section 11);
+  - it now adds the decisions of 2026-09-29 and 2026-09-30. A late font shows the fallback and swaps before the
+    intro. When the fonts are slow, Chromium's paint hold of about 100 ms (measured 108-124 ms) is accepted.
+  - "Decisions on the step 3 intro" §1 still holds, so it gets no note.
+- `pnpm check:repository` passes.
+- **Next:** Reports, step 3 of the resume point above.

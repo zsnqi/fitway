@@ -1,15 +1,17 @@
 # Next Owner direction — agreed brief
 
 Agreed with the user on 2026-09-24 in discussion. Concept-only, with synthetic data. No direction
-is selected. The first attempt from this brief is `backlight/`, and the lighting test is
-`light-study/`. The user's decisions after each are in "Round 2" and "Round 3" at the end. Where a
-later round differs from an earlier section, the later round wins.
+is selected. The attempts from this brief are `backlight/`, `light-study/`, and `eclipse/`, the
+current one. The user's decisions after each are in "Round 2" to "Round 7", in order. Where a later
+round differs from an earlier section, the later round wins, and each passage a later round
+replaced carries an italic note naming its replacement. Follow the replacement, not the passage.
 
 ## Scope
 
 - One direction, **Daily page only**, **desktop 1440×900**. Arabic RTL and English LTR frames.
-- One designer subagent. Preferred: `owner-direction-designer` (Opus, `xhigh`); it loads in a new
-  session. The coordinator personally inspects the frames before showing the user.
+- One writer subagent at a time, each followed by a fresh independent verifier (Round 7, "Work
+  plan"). `CLAUDE.md` lists the Owner-direction agent definitions and their effort levels. The
+  coordinator personally inspects the frames before showing the user.
 - Folder: `design-research/owner-composition-exploration-r04/directions/<name>/`.
 
 ## What the user wants
@@ -163,7 +165,8 @@ What the flat screens show:
    and one small tooltip. Remove the band ruler, the capacity line, the dotted "still ahead"
    texture, and the heavy legend row.
 6. **Line points.** Plot the reading every 30 minutes, plus the true peak as its own point. The
-   full minute detail stays available on hover and in "View details".
+   full minute detail stays available on hover and in "View details". *Superseded by Round 3 §4
+   and Round 4 §1: the line is a centered 30-minute average, with the true peak as its own marker.*
 7. **Missing span.** The line ends with a round cap and resumes after the gap. There are no
    vertical lines inside the gap, only a short dotted mark on the time axis, with the explanation
    on hover. There is no full-height hatched column, and the line never bridges the gap.
@@ -179,7 +182,7 @@ What the flat screens show:
 12. **Deferred to polish:** keyboard focus names on rail icons, and fine precision in the details
     panel (such as the weekly heatmap's current-hour mark).
 
-### Lighting test (next step)
+### Lighting test (done: `light-study/`, see Round 3)
 
 The test settles the red light before a whole page is built.
 
@@ -232,6 +235,7 @@ vertical lines, and the missing-span treatment (round caps and a short dotted ma
 4. **Line = a 30-minute moving average, plus the true peak.**
    - **The line:** it shows the 30-minute moving average and is drawn smooth and
      shape-preserving. Say what it is in plain words, for example «متوسط كل 30 دقيقة».
+     *Refined by Round 4 §1: the average is centered.*
    - **The peak:** a separate marker shows the true highest reading (62 at 6:29 PM), with its
      label. The line itself does not need to touch it.
    - **Truth rules still hold:** the line still stops at both edges of the missing span and at
@@ -251,7 +255,7 @@ vertical lines, and the missing-span treatment (round caps and a short dotted ma
    either. The user had `SPEC.md` amended on 2026-09-24 so that the figure is named as entries
    («مرات الدخول» / "Entries"), never as members or unique visitors.
 
-### Next step: the full Daily page
+### Next step: the full Daily page (done: `eclipse/`, see Round 4)
 
 Build the full Daily page at desktop 1440×900, in Arabic RTL and English LTR, from all rounds of
 this brief:
@@ -373,7 +377,13 @@ changes them live:
 
 It works from `file://`. The user tunes the lights, and the chosen values become the defaults.
 
+*The lights are now tuned: the user's values in `:root` do not change (Round 6 §10). Round 6 §9
+and Round 7 changed the tuner's controls.*
+
 ### 4. Motion (after the lights are settled)
+
+*Superseded by Round 6 (the motion reset) and Round 7 §4 (the first-open intro). The user judged
+this motion cliché; it stays here only as the record of what was tried.*
 
 The user has only seen still frames so far, and wants the motion to be excellent too. Motion
 must stay truthful:
@@ -438,6 +448,11 @@ The coordinator's research sources include:
    - The page appears complete: no card stagger or rise, no line draw, no light entrance, no wash drift, no
      end-point or peak entrance.
    - Content is never hidden while fonts load.
+   - *Amended by Round 7 §4 (a first-open intro) and by "Decisions on the step 3 intro" §1 (on a
+     first open, the numbers are hidden for at most 200 ms while fonts load). Further amended by the user's decisions
+     of 2026-09-29 and 2026-09-30, recorded in the r04 activation handoff: a font that arrives late shows the fallback
+     at the first paint and swaps to Readex Pro before the intro starts, and the intro never moves. When the font files
+     are slow, Chromium's first-paint hold of about 100 ms (measured 108-124 ms) is accepted.*
 2. **Lights are static, always.**
    - Remove the lights' entrance, the pointer-follow light, and the crowd-dependent light option.
    - The user sees no value in the crowd-dependent light, and it is not visible anyway.
@@ -455,7 +470,8 @@ The coordinator's research sources include:
 5. **Chart hover snaps to half-hour stops.**
    - The stops are aligned with the drawn line, from opening to 1:00 AM.
    - The tooltip shows the time, the line's own value at that stop (the centred average, never the raw
-     minute), the crowd level, and the usual value.
+     minute), the crowd level, and the usual value. *Except at the latest-reading stop, which shows the
+     latest reading (Round 7 §1).*
    - **Extra stops:** the true peak (62 at 6:29 PM) and now (the latest reading).
    - **The marker always sits on what it describes:** on the line, or on the peak marker.
    - **Missing span:** it has no normal stop. It is either skipped or shown as one clearly labelled
@@ -464,6 +480,8 @@ The coordinator's research sources include:
    - **Keyboard:** the arrow keys step one stop.
    - **Detail:** minute-level detail stays in "View details".
 6. **A new hover marker.**
+   - *Superseded by Round 7 §2–§3 and "Decisions after step 1": the marker is form B, the hollow ring,
+     and it follows with the clip-derived easing, settling in about 400 ms.*
    - The user wants a better marker than the current ring in the chart, with pleasing motion as it moves.
    - The designer proposes its form. It must feel precise and premium in FITWAY red and chalk, not a
      generic ring.
@@ -476,7 +494,8 @@ The coordinator's research sources include:
    - The live pulse stays, because it carries "live", but it becomes calmer and subtler. There is none when
      delayed.
 8. **Other motion.**
-   - Tooltip and guide motion stays short (≤ 150 ms).
+   - Tooltip and guide motion stays short (≤ 150 ms). *Replaced by Round 7 §3 for the marker, the
+     guide, and the tooltip.*
    - The rail keeps its transform-only open and may be quicker.
    - Nothing else animates.
 9. **Tuner.**
@@ -502,7 +521,7 @@ The coordinator's research sources include:
 
   The table, form, and dialog system is designed early, on the first screen that needs it, because it
   shapes the rest. The user welcomes proposals to merge screens.
-- **Merge proposals from the coordinator, pending the user's decision:**
+- **Merge proposals from the coordinator** (*agreed in Round 7 §6 and confirmed on 2026-09-27*):
   - **Contextual history:** keep the full Activity Log page, but also show each screen's own recent
     history in place. For example, Access shows its latest PIN changes and Settings its latest changes.
   - **Operations as a header status:** make Operations a persistent status in the header, for data
@@ -565,6 +584,7 @@ The user reviewed Round 6 in the browser.
      - the peak and missing-span stops get a fitting variant of each form.
    - **Choosing:** a tuner switch changes between A and B on the real page, and an enlarged side-by-side
      comparison is rendered. A third form (a lit segment of the line) was dropped by the user.
+   - *Settled in "Decisions after step 1" §1: form B, with A's missing-span variant. Form A is removed.*
 3. **Marker motion: a smooth follow.** This replaces the Round 6 glide of 120–150 ms, and the ≤ 150 ms limit in
    Round 6 §8 for the marker, guide, and tooltip.
    - The marker chases its target along the curve itself, with a fast start and a soft landing, settling in
@@ -582,7 +602,8 @@ The user reviewed Round 6 in the browser.
      - The numbers roll into place with the same digit roll.
      - The line draws once, from opening to now, and then the end point and the peak appear.
    - **Length:** short, about 1 s or less in total. The numbers settle first and quickly, because they answer
-     the owner's first question. The line takes longer, because it tells the day's story.
+     the owner's first question. The line takes longer, because it tells the day's story. *The user later
+     approved a slower intro, about 1.17 s in total ("Decisions after the step 3 report").*
    - **The end state** is the still page, pixel for pixel. There is no intro with reduced motion or
      `?motion=off`.
    - **Tuner:** an "intro speed" control and a "replay intro" button. The tuner is a tool, not part of the
