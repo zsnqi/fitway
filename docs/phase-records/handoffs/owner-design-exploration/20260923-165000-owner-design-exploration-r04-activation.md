@@ -2907,3 +2907,45 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
      - push both working branches;
      - report to the user.
   3. **On FAIL:** a focused repair brief. After a second failure, apply the stall rule.
+## The Codex loop is measured as an eval (2026-09-30)
+
+- **User decision (2026-09-30):** the per-task model notes (time, impressions) are dropped as unhelpful. They are
+  replaced by the mapping in "Automating eval design and hillclimbing", confirmed by the user:
+  - the brief is the prompt we improve;
+  - the verifier is the grader;
+  - the brief's outcomes are the train set, and the verifier's held-out checks are the test set;
+  - repair rounds are hillclimbing.
+
+  The neutral-model facts recorded in the sections above are history. Run times are no longer recorded.
+- **Per round, from the verifier's report only:**
+  - brief rows passed;
+  - held-out rows passed. A gap between the two means the measurement was fixed, not the cause;
+  - the cause of each failure or stop: the work, the brief, or the harness.
+- **Brief rules.** Every stop caused by a brief becomes a rule here. Every new Codex brief applies them all.
+  - B1. Name every supported way to open and run the artifact (HTTP, `file://`, sizes, reduced motion), and which of
+    them the harness checks. *(s09 run 2)*
+  - B2. Before requiring equality to a baseline, check that the baseline does not carry the defect being removed. If
+    it may, state the exception class and how it is proved. *(s09 run 1)*
+  - B3. When an outcome is unmet, do not work around it. Measure every other outcome, then stop and report.
+    *(s09 run 1)*
+  - B4. State the goal, the cause and the outcomes, and leave the approach open. Lock no file beyond the evidence
+    rules. Locked files pushed `a6cfde8` and `77d91e8` toward patches. *(user decision 2026-09-29)*
+  - B5. Never put the verifier's probes, thresholds or held-out checks in a brief. Describe the cause and the
+    required outcome. *(the article: isolate the answers)*
+  - B6. One change per round, aimed at a cause.
+- **Round ledger (first-load lineage):**
+
+  | Round | Commit | Brief rows | Held-out | Cause of failure or stop |
+  |---|---|---|---|---|
+  | s08 | `77d91e8` | most passed; T failed | failed: the paint hold, unused preloads, one still frame outside the evidence set | work: missed side effects; brief: locked files; harness: the verifier's C hold |
+  | s09 run 1 | none | stopped on outcome 6 | not run | brief: outcome 6 contradicted the goal (B2) |
+  | s09 run 2 | none | stopped on the capture | not run | brief: `file://` support unstated (B1); the harness caught it |
+  | s09 run 3 | `4568bac` | pending the verifier | pending: B, N, M, P, K, Z, X breadth, W extra sizes | pending |
+
+- **Fixed held-out suites (planned):** for the next surface we iterate on, the verifier's probes become a fixed suite.
+  - It lives outside the worktree, and no Codex brief names it.
+  - Planted-defect controls are built in.
+  - It runs in minutes and grades the same way every round.
+  - The verifier agent then covers only the new checks and judgment.
+- **Model or effort comparisons:** only when a decision depends on one. Replay a closed round (for example this font
+  task from `77d91e8`) on two configurations, twice each, graded by the same fixed suite.
