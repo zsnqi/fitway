@@ -280,14 +280,16 @@ html:has(> body.cx) { color-scheme: dark; scrollbar-color: rgba(245, 243, 242, 0
 .cx-pk .cx-flag { align-self: center; }
 /* TBL-12: a note spanning columns sits at its cell's start. The fold row (TBL-8) shows only on a phone. A row with no
  * readings (user 2026-09-30) is one cell across every column, in the camera-gap note's caption type and ink, and keeps
- * its density's height; its mark starts on the first column's text edge. A middle dot, held to the words by a no-break
- * space, separates the words from the range (user 2026-09-30). */
-.cx-gapnote { display: inline-flex; align-items: center; gap: 8px; }
-/* The mark's first dot is inked 2.5 px inside its 16 px box; the box steps out by that much so the dot, not the box,
- * sits on the text edge. */
-.cx-gapnote .cx-ico { width: 16px; height: 16px; margin-inline-start: -2.5px; }
-.cx-gapnote .w, .cx-gapnote .sep, .cx-gapnote .rg { white-space: nowrap; }
+ * its density's height. The range comes first, on the first column's text edge, then the mark and the words (user
+ * 2026-10-01, option د). A line breaks only between the range and the mark; the mark stays with the words. */
+.cx-gapnote { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0 8px; }
+.cx-gapnote .mw { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.cx-gapnote .cx-ico { width: 16px; height: 16px; }
+.cx-gapnote .w, .cx-gapnote .rg { white-space: nowrap; }
 .cx-table tbody td.none { font: var(--t-caption); color: var(--ink-3); }
+/* In the full-width row the range is in label type, --ink-2, tabular figures, 16 px from the mark. */
+.cx-table tbody td.none .cx-gapnote { column-gap: 16px; }
+.cx-table tbody td.none .rg { font: var(--t-label); color: var(--ink-2); font-variant-numeric: tabular-nums; }
 .cx-table .note-row { display: none; }
 .cx-sort { display: inline-flex; align-items: center; gap: 8px; height: 44px; min-width: 44px; margin-inline: -8px; padding-inline: 8px; border-radius: 10px; font: inherit; color: inherit; }
 .cx-sort:hover, .cx-sort.is-hover { color: var(--ink); }
