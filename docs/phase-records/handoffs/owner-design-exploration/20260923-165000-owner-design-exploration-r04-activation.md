@@ -2842,3 +2842,25 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - The removed-frame control reaches 12 of 12, or the misses are explained.
   - **Pending the user:** whether to accept Chromium's hold of up to about 100 ms when the fonts are slow. This is
     finding 1's option (b). The brief assumes yes and is not sent before the answer.
+## The user accepts the paint hold, and the second resume goes to Codex (2026-09-30)
+
+- **User decision (2026-09-30):** Chromium's hold of the first paint for preloaded fonts is accepted. This is finding
+  1's option (b).
+  - The rule "content is never hidden while fonts load" now reads: content may stay unpainted for up to about 100 ms,
+    and only when the font files are slow.
+  - The README states the hold as measured.
+- **Neutral model fact:** the first resume took 55 minutes, as reported by the user. It included the full measurement
+  set and the capture run.
+- **Sent:** `FIX-FONTS-FILE.md` as written. The user runs it on GPT-6.1 Sol at `high`, in a new Codex session.
+- **Resume steps:**
+  1. Run `pnpm context:show -- --milestone owner-design-exploration-r04`. Read this section and the three before it.
+  2. **When the user pastes Codex's report:**
+     - save it at `D:\fitway-scratch\introspeed\fixq4\CODEX-FONTS-FILE-REPORT.md`;
+     - check that `owner-followup-r04-s04` is clean at the new SHA, with nothing on 3173-3177;
+     - note the neutral model facts here, and ask the user for the run time.
+  3. **Verify:** as step 3 of the self-hosted font resume point says. Add these checks:
+     - the outcome-6 exception, re-derived independently;
+     - zero console messages from `file://` in AR and EN, with a planted-error control;
+     - the hold, measured independently at 150 and 600 ms;
+     - the removed-frame control.
+  4. **Then:** steps 4 and 5 of the self-hosted font resume point.
