@@ -3024,3 +3024,35 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - The repair budget is untouched: the stop came from the brief.
 - **For the phone phase:** on narrow screens, the intro's end drops `#busy-note` by 71.5 px. It is a visible jump,
   and it predates this lineage.
+## Repair 1 delivered, and its verification launched (2026-09-30)
+
+- **Codex delivered `8926193`** on `owner-followup-r04-build`, on top of `4568bac`.
+  - Report saved at `D:\fitway-scratch\introspeed\fixq4\CODEX-FONTS-R1-RESUME-REPORT.md`.
+  - Coordinator inspection, not verification:
+    - 5 files: `index.html`, `capture.mjs`, `README.md`, `capture-log.json` and `intro-yield-ar.png`;
+    - the tree is clean, and nothing listens.
+  - **The change:** the script-inserted preloads are gone. The two stylesheets now come first, followed by an inline
+    `document.fonts.load()` for weights 400 and 500. The `@font-face` fetch itself starts early, so no second request
+    exists to miss.
+  - **Claims to measure:**
+    - 800 of 800 matrix cases pass, across four cache modes and `file://`;
+    - one 404 error per missing file;
+    - 56 of 56 stills are identical;
+    - the paint hold stays at 104/96 ms;
+    - the `#busy-note` limit is preserved;
+    - the removed-frame control catches only 3 of 10.
+- **Verification is running:**
+  - `owner-direction-verifier-high` on Opus, run `owner_fonts_r04_s09_r1_verify`;
+  - brief `D:\fitway-scratch\introspeed\fixq4\VERIFY-FONTS-R1.md`;
+  - output under `D:\fitway-temp\fonts-r1-verify\`.
+  - It applies G1-G4, and reports each row as brief or held-out for the ledger.
+  - Held-out rows: L (network emulation and 4× CPU), V (304 revalidation, disabled cache, back and forward), Z
+    (device scale 2), and the subset-before-paint check in N.
+- **Next:**
+  1. Save the report at `...\fixq4\VERIFY-FONTS-R1-REPORT.md`, and record the ledger row.
+  2. **On PASS:**
+     - rebase the docs commits onto `8926193`;
+     - confirm that `E/` equals it;
+     - run `pnpm check:repository`;
+     - push both working branches.
+  3. **On FAIL:** repair 2. After it, the stall rule.
