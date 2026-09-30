@@ -593,9 +593,9 @@
     const days = [["الثلاثاء", "Tue", 22, 53, 1123, 25, 352, ""], ["الاثنين", "Mon", 21, 58, 1145, 27, 371, "hover"], ["الأحد", "Sun", 20, 55, 1110, 26, 360, "edge"], ["السبت", "Sat", 19, 41, 680, 18, 244, ""], ["الجمعة", "Fri", 18, 49, 1210, 20, 230, ""], ["الخميس", "Thu", 17, 76, 1138, 24, 318, "top"], ["الأربعاء", "Wed", 16, 57, 1111, 26, 349, ""]];
     // TBL-8: the weekday and the date are separate spans, so a phone can set the weekday over the date.
     const dayName = (d) => (LANG === "ar" ? `<span class="wd">${d[0]}</span> <span class="dt">${b(d[2])} سبتمبر</span>` : `<span class="wd">${d[1]}</span> <span class="dt">${d[2]} Sep</span>`);
-    // The no-readings note: the dotted mark, the words, then the range (DAT-3). A line may break after the words, never
-    // inside them or inside the range.
-    const gapNote = (w, r) => `<span class="cx-gapnote">${ico("gap")}<span><span class="w">${w}</span> <bdi class="rg">${r}</bdi></span></span>`;
+    // The no-readings note: the dotted mark, the words, a middle dot, then the range (DAT-3; the dot: user 2026-09-30).
+    // A line may break after the dot, never before it, inside the words or inside the range.
+    const gapNote = (w, r) => `<span class="cx-gapnote">${ico("gap")}<span><span class="w">${w}</span><span class="sep">&nbsp;·</span> <bdi class="rg">${r}</bdi></span></span>`;
     // TBL-12 (user 2026-09-30): a row with no readings is one cell across every column, a break in the sequence rather
     // than a row of values: no row header, no empty value cells, no words under a numeric column.
     const noneRow = (w, r, cols) => `<tr role="row" class="is-none"><td role="cell" class="none" colspan="${cols}">${gapNote(w, r)}</td></tr>`;

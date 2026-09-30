@@ -5,7 +5,9 @@
 > final pages. First version: run `owner_spec_r04_s12`, 2026-09-30, measured on Daily (`index.html`) and Reports
 > (`reports.html`) at `31a40d6`. Second pass: run `owner_spec_r04_s13`, 2026-09-30: the user's decisions on the first
 > draft (every proposed rule accepted, Q3-Q10 answered) and the numeric-column rule (TBL-1, TBL-11…13). Third pass: run
-> `owner_spec_r04_s14`, 2026-09-30: the user's rule for a row with no readings (TBL-12). It grows with every screen.
+> `owner_spec_r04_s14`, 2026-09-30: the user's rule for a row with no readings (TBL-12). Fourth pass: run
+> `owner_spec_r04_s15`, 2026-09-30: the middle dot between the words and the range (Q11, TBL-12). It grows with every
+> screen.
 > `components.html` renders every component below in its rule form.
 
 ## 0. How to read it
@@ -39,7 +41,7 @@ still applies (responsive, RTL, interaction, accessibility). Where `README.md` a
 | `A` | Probe `D:\fitway-scratch\spec\work2\probe-page-tables.mjs` → `page-tables.json` (run `owner_spec_r04_s13`): the text boxes of each numeric column's header and numbers, and of each note that spans columns, in Daily's minute table (`live`, details open) and Reports' day table (default and `short`), AR and EN, at 1440, 1024, 768 and 390. |
 | `B` | Probe `D:\fitway-scratch\spec\work3\probe-page-norows.mjs` → `page-norows.json` (run `owner_spec_r04_s14`): every row with no readings in Daily's minute table (`live` and `delayed`, details open) and Reports' day table (default, `short` and last 7 days), AR and EN, at 1440, 1024, 768 and 390: its cells, their spans, the column its words sit under, and its height. |
 | `s:n` `r:n` `a:n` `rj:n` | Line `n` of `style.css`, `reports.css`, `app.js`, `reports.js` at `31a40d6`. |
-| `user 2026-09-30` | The user's decisions on the first draft: every `P` entry accepted (now `R`), Q3-Q10 answered with the sheet's proposal (§8, "Answered 2026-09-30"), the user's note on numeric columns (TBL-1), and the user's rule for a row with no readings (TBL-12). |
+| `user 2026-09-30` | The user's decisions on the first draft: every `P` entry accepted (now `R`), Q3-Q10 answered with the sheet's proposal (§8, "Answered 2026-09-30"), the user's note on numeric columns (TBL-1), the user's rule for a row with no readings (TBL-12), and the middle dot between its words and range (Q11, TBL-12). |
 | `F1`…`F21`, `D1`…`D4`, `KI1`…`KI4` | The fresh design review (`D:\fitway-scratch\review\REVIEW.md`): its findings, its class-d items and the four known issues it confirmed. The user accepted every F, D1 and D4, and endorsed its "Keep" list as rules (2026-09-30). |
 
 Frames of every probed state are in `D:\fitway-scratch\spec\work\probe\frames\`.
@@ -347,7 +349,7 @@ TYP-3, accepted (user 2026-09-30):
 | TBL-9 | K | Daily's minute table: 13 px, 32.5 px rows, no tabular figures, people as "0.0" and "1.7". Its numbers and headers are start-aligned: under TBL-1 that is right in Arabic (0 px) and wrong in English (K-33). | D details, A (K-20, K-33) |
 | TBL-10 | R | **Q4 (F11):** an export beside a table exports that table's rows. The minute file is its own action, named for what it holds ("Export minute data" / «تصدير بيانات الدقائق»), and sits by the period control. | Q4, F11; user 2026-09-30 |
 | TBL-11 | R | **A composite cell** (a value with its time, a value with a flag) leads with the value at the numbers' right edge; its time, then its flag, follow it toward the left. In Arabic they read after the value («76 · 6:58 م · الأعلى»); in English before it ("Highest · 6:58 PM · 76"). The value comes first in the source order, so assistive technology reads it first. On a phone they stack under the value on the same edge (TBL-8). | user 2026-09-30; components.html |
-| TBL-12 | R | **A note that spans columns** (a phone's fold row, TBL-8) starts at the first column it spans, at every width: in Arabic on that column's right edge, which its numbers and header share; in English at that column's start, where a line of text starts. **A row with no readings** (a gap in the sequence, or the span before readings began, «لا قراءات بعد» / "No readings yet") is one full-width row: a single cell across every column, starting where the first column's text starts (in Arabic the right edge that «الوقت» / «اليوم» starts on, in English the left edge; the mark's first dot, not its box, on that edge). In it the dotted mark, the words, then the range, in the camera-gap note's mark, caption type, `--ink-3` and range format (DAT-3): «···· لا قراءات 2:14 م - 2:31 م», "···· No readings 2:14 PM – 2:31 PM". It reads as a break in the sequence, not a row of values: no row header, no empty value cells, no words under a numeric column. It keeps its density's row height (TBL-2, TBL-3), its muted treatment and its own stop (STA-4); the mark is hidden from assistive technology, so the words and range are one phrase. On a phone (TBL-8) it stays one row and may wrap after the words, never inside the words or the range, with no sideways scroll at 390 and 320. A gap inside a row that has values stays a note in its notes column (TBL-6); an empty period keeps its single row (TBL-7). | user 2026-09-30 (the numeric-column note; the no-readings row); components.html |
+| TBL-12 | R | **A note that spans columns** (a phone's fold row, TBL-8) starts at the first column it spans, at every width: in Arabic on that column's right edge, which its numbers and header share; in English at that column's start, where a line of text starts. **A row with no readings** (a gap in the sequence, or the span before readings began, «لا قراءات بعد» / "No readings yet") is one full-width row: a single cell across every column, starting where the first column's text starts (in Arabic the right edge that «الوقت» / «اليوم» starts on, in English the left edge; the mark's first dot, not its box, on that edge). In it the dotted mark, the words, a space, a middle dot `·` (U+00B7), a space, then the range, in the camera-gap note's mark, caption type, `--ink-3` and range format (DAT-3): «···· لا قراءات · 2:14 م - 2:31 م», «···· لا قراءات بعد · 2 أغسطس - 12 سبتمبر», "···· No readings · 2:14 PM – 2:31 PM", "···· No readings yet · 2 Aug – 12 Sep". Every "no readings" phrase directly followed by a range takes this one form, the camera-gap note in a notes column (TBL-6) included: «لا قراءات · 10:00 ص - 2:00 م». It reads as a break in the sequence, not a row of values: no row header, no empty value cells, no words under a numeric column. It keeps its density's row height (TBL-2, TBL-3), its muted treatment and its own stop (STA-4); the mark is hidden from assistive technology, so the words and range are one phrase. On a phone (TBL-8) it stays one row and may wrap after the dot, never before it, inside the words or inside the range (the dot may end a line, never start one), with no sideways scroll at 390 and 320. A gap inside a row that has values stays a note in its notes column (TBL-6); an empty period keeps its single row (TBL-7). | user 2026-09-30 (the numeric-column note; the no-readings row; the middle dot, Q11); components.html |
 | TBL-13 | R | Heat-map cells stay centred: the pattern is a grid, not a column (PAT-2). | user 2026-09-30 |
 
 ### 3.5 Buttons
@@ -527,14 +529,12 @@ columns (2026-09-30): TBL-1, TBL-5, TBL-8, TBL-11…13, K-20, K-33…35. The use
 
 ## 8. Open questions for the user
 
-Q1 and Q2 stay open for step 3. Q11 is new (run `owner_spec_r04_s14`). Q3-Q10 were answered on 2026-09-30, each with
-the sheet's proposal (below).
+Q1 and Q2 stay open for step 3. Q3-Q11 were answered on 2026-09-30, each with the sheet's proposal (below).
 
 | # | Question | What it decides | The proposal |
 | --- | --- | --- | --- |
 | Q1 | **D2:** the peak ring sits at the true peak (62), about 12 px above the averaged crest, while the latest dot sits on the line (47.4) with a readout of 49. One placement rule, or a one-line key? | CHT-7, CHT-8 | none; the Daily all-sizes round (step 3) |
 | Q2 | **D3 with F14:** the lane leaves an empty band at rest (about 120 px at 1440). Sizing the lane once for the tallest state (F14) makes it 109 px in every state, so the band grows while live. Keep the band, shrink it, or let the scale move by state? | CHT-11, K-15 | none; step 3 |
-| Q11 | **The words run into the range.** With the words, then the range, and only a space between them (TBL-12), «لا قراءات بعد 2 أغسطس - 12 سبتمبر» can be read as "no readings after 2 August". Keep it, or set a separator between the words and the range in every no-readings note, in both languages? | TBL-12's copy | a middle dot, as the meta lines use: «···· لا قراءات بعد · 2 أغسطس - 12 سبتمبر», "···· No readings yet · 2 Aug – 12 Sep"; `components.html` shows the rule as decided until then |
 
 ### Answered 2026-09-30
 
@@ -549,3 +549,5 @@ Each answer is the proposal the first draft made; the entries now carry it.
 - **Q8** (dialog initial focus): keep the two cases, choose → field, confirm → action → DLG-3.
 - **Q9** (F6, a delayed badge): dim it → LVL-6; K-06.
 - **Q10** (D1's form): the card loses its light → LGT-8; K-12, K-13.
+- **Q11** (the words run into the range): a middle dot between the words and the range, in every "no readings" phrase
+  followed by a range, in both languages (user 2026-09-30) → TBL-12.
