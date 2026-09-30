@@ -3216,3 +3216,14 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   2. Verify with a fresh `owner-direction-verifier-high`: the suite after calibration, plus the brief's R1-R11 and
      judgment. Record the ledger row.
   3. Then the user reviews Reports in the browser.
+## The user reorders the Reports round: review first, suite later (2026-09-30)
+
+- **User decision (2026-09-30):** the user sees the Reports page first, because they may change it.
+  - The held-out suite agent was stopped while it read the contracts. It left only an extract of `8926193` in
+    `D:\fitway-grader\reports\versions\`. The coordinator worktree is unchanged, and nothing listens on 3178-3179.
+  - The suite is built after the user settles the design, before the first Codex build round, from
+    `D:\fitway-grader\reports\SUITE-BRIEF.md`. Its Reports checks then start from the agreed design.
+- **Next** (replaces the Next of the section above):
+  1. On the designer's report: check the s04 tree and ports (G5), then inspect the key sheets.
+  2. The user reviews Reports in the browser, and any changes follow.
+  3. Build the suite, then verify with a fresh `owner-direction-verifier-high`, and record the ledger row.
