@@ -4,8 +4,9 @@
 > "The design-phase plan" (`../NEXT-DIRECTION-BRIEF.md`), after the user reviews it and the tests compare it with the
 > final pages. First version: run `owner_spec_r04_s12`, 2026-09-30, measured on Daily (`index.html`) and Reports
 > (`reports.html`) at `31a40d6`. Second pass: run `owner_spec_r04_s13`, 2026-09-30: the user's decisions on the first
-> draft (every proposed rule accepted, Q3-Q10 answered) and the numeric-column rule (TBL-1, TBL-11…13). It grows with
-> every screen. `components.html` renders every component below in its rule form.
+> draft (every proposed rule accepted, Q3-Q10 answered) and the numeric-column rule (TBL-1, TBL-11…13). Third pass: run
+> `owner_spec_r04_s14`, 2026-09-30: the user's rule for a row with no readings (TBL-12). It grows with every screen.
+> `components.html` renders every component below in its rule form.
 
 ## 0. How to read it
 
@@ -36,8 +37,9 @@ still applies (responsive, RTL, interaction, accessibility). Where `README.md` a
 | `W` | The same probe at 1024, 768 and 390 px. |
 | `X` | `D:\fitway-scratch\spec\work\contrast.log`: WCAG 2.x ratios of token pairs on the composited surface. |
 | `A` | Probe `D:\fitway-scratch\spec\work2\probe-page-tables.mjs` → `page-tables.json` (run `owner_spec_r04_s13`): the text boxes of each numeric column's header and numbers, and of each note that spans columns, in Daily's minute table (`live`, details open) and Reports' day table (default and `short`), AR and EN, at 1440, 1024, 768 and 390. |
+| `B` | Probe `D:\fitway-scratch\spec\work3\probe-page-norows.mjs` → `page-norows.json` (run `owner_spec_r04_s14`): every row with no readings in Daily's minute table (`live` and `delayed`, details open) and Reports' day table (default, `short` and last 7 days), AR and EN, at 1440, 1024, 768 and 390: its cells, their spans, the column its words sit under, and its height. |
 | `s:n` `r:n` `a:n` `rj:n` | Line `n` of `style.css`, `reports.css`, `app.js`, `reports.js` at `31a40d6`. |
-| `user 2026-09-30` | The user's decisions on the first draft: every `P` entry accepted (now `R`), Q3-Q10 answered with the sheet's proposal (§8, "Answered 2026-09-30"), and the user's note on numeric columns (TBL-1). |
+| `user 2026-09-30` | The user's decisions on the first draft: every `P` entry accepted (now `R`), Q3-Q10 answered with the sheet's proposal (§8, "Answered 2026-09-30"), the user's note on numeric columns (TBL-1), and the user's rule for a row with no readings (TBL-12). |
 | `F1`…`F21`, `D1`…`D4`, `KI1`…`KI4` | The fresh design review (`D:\fitway-scratch\review\REVIEW.md`): its findings, its class-d items and the four known issues it confirmed. The user accepted every F, D1 and D4, and endorsed its "Keep" list as rules (2026-09-30). |
 
 Frames of every probed state are in `D:\fitway-scratch\spec\work\probe\frames\`.
@@ -255,7 +257,7 @@ TYP-3, accepted (user 2026-09-30):
 | STA-1 | R | Live | green dot and "Live · Last reading 7:42 PM"; values in chalk; the live pulse | Daily; D.status |
 | STA-2 | R | Delayed | amber clock and "Delayed · Last reading 7:29 PM"; the card titled "Last reading" with "13 min ago" in amber; value `--ink-2`; the end point grey, no halo, no pulse; the badge qualified (LVL-5); the light out (LGT-7) | Daily; Dd (the light and the badge: K-12, K-06) |
 | STA-3 | R | No history | the comparison is left out and an honest note takes its place ("Not enough history to compare yet"); no usual line | Daily, Reports; Dn.key, Rs.statEmpty |
-| STA-4 | R | Missing | the dotted mark (a dashed box only as its area form in the pattern); "No readings" with its range; its own keyboard stop; never bridged or filled | Daily, Reports; T gap, R.hcNoData (the words: K-04) |
+| STA-4 | R | Missing | the dotted mark (a dashed box only as its area form in the pattern); "No readings" with its range; in a table, one full-width row (TBL-12); its own keyboard stop; never bridged or filled | Daily, Reports; T gap, R.hcNoData (the words: K-04); the table row: user 2026-09-30 |
 | STA-5 | R | Genuine zero | an outlined "0" and "Empty"; distinct from missing and closed in pixels and in text | Daily, Reports; R.hcZero |
 | STA-6 | R | Closed slot | a neutral flat fill with "Closed" written in it, even in a single cell; runs merged | Reports; R.hcClosed (a single cell: K-32) |
 | STA-7 | R | Still ahead | the usual line fainter and dashed; a hollow chalk ring; "Still ahead" | Daily; T ahead |
@@ -339,13 +341,13 @@ TYP-3, accepted (user 2026-09-30):
 | TBL-3 | R | Compact density (logs): rows 36 with the same type, alignment and numerals; the header stays 44 so its sort buttons keep a 44 px target. | F12; user 2026-09-30 |
 | TBL-4 | R | Header: caption type `--ink-3` on `#121112`, sticky, a `--line-2` rule below, outer corners radius 12. | R.th |
 | TBL-5 | R | Sortable header: the whole header is a button, at least 44 × 44; its arrow (14 px) shows on the sorted column, and at half strength on hover or focus; `aria-sort`; the sort is announced. In a numeric column the label holds the right edge (TBL-1) and the arrow sits to its left, in both languages. | R.sort, r:223-231; user 2026-09-30 |
-| TBL-6 | R | Exceptions in words: a highlighted row in red 8% (12% on hover) with a "Highest" flag; a camera gap as a note; days before the readings began merged into one row. | r:207-221 |
+| TBL-6 | R | Exceptions in words: a highlighted row in red 8% (12% on hover) with a "Highest" flag; a camera gap inside a day that has values as a note in its notes column; days before the readings began merged into one full-width row (TBL-12). | r:207-221; user 2026-09-30 |
 | TBL-7 | R | Empty: EMP-1 inside the table. | Re.tableEmpty |
 | TBL-8 | R | Phone (BRK-6): notes fold into their own row, the weekday over the date, the time and then a flag under the value, on the value's right edge (TBL-11); headers may wrap; cell padding 8 (6 at 400 px and below); only the sorted column shows its arrow. | r:352-371; components.html; user 2026-09-30 |
 | TBL-9 | K | Daily's minute table: 13 px, 32.5 px rows, no tabular figures, people as "0.0" and "1.7". Its numbers and headers are start-aligned: under TBL-1 that is right in Arabic (0 px) and wrong in English (K-33). | D details, A (K-20, K-33) |
 | TBL-10 | R | **Q4 (F11):** an export beside a table exports that table's rows. The minute file is its own action, named for what it holds ("Export minute data" / «تصدير بيانات الدقائق»), and sits by the period control. | Q4, F11; user 2026-09-30 |
 | TBL-11 | R | **A composite cell** (a value with its time, a value with a flag) leads with the value at the numbers' right edge; its time, then its flag, follow it toward the left. In Arabic they read after the value («76 · 6:58 م · الأعلى»); in English before it ("Highest · 6:58 PM · 76"). The value comes first in the source order, so assistive technology reads it first. On a phone they stack under the value on the same edge (TBL-8). | user 2026-09-30; components.html |
-| TBL-12 | R | **A note that spans columns** (a camera gap, "No readings yet", a phone's fold row) starts at the first column it spans, at every width: in Arabic on that column's right edge, which its numbers and header share; in English at that column's start, where a line of text starts. | user 2026-09-30; components.html |
+| TBL-12 | R | **A note that spans columns** (a phone's fold row, TBL-8) starts at the first column it spans, at every width: in Arabic on that column's right edge, which its numbers and header share; in English at that column's start, where a line of text starts. **A row with no readings** (a gap in the sequence, or the span before readings began, «لا قراءات بعد» / "No readings yet") is one full-width row: a single cell across every column, starting where the first column's text starts (in Arabic the right edge that «الوقت» / «اليوم» starts on, in English the left edge; the mark's first dot, not its box, on that edge). In it the dotted mark, the words, then the range, in the camera-gap note's mark, caption type, `--ink-3` and range format (DAT-3): «···· لا قراءات 2:14 م - 2:31 م», "···· No readings 2:14 PM – 2:31 PM". It reads as a break in the sequence, not a row of values: no row header, no empty value cells, no words under a numeric column. It keeps its density's row height (TBL-2, TBL-3), its muted treatment and its own stop (STA-4); the mark is hidden from assistive technology, so the words and range are one phrase. On a phone (TBL-8) it stays one row and may wrap after the words, never inside the words or the range, with no sideways scroll at 390 and 320. A gap inside a row that has values stays a note in its notes column (TBL-6); an empty period keeps its single row (TBL-7). | user 2026-09-30 (the numeric-column note; the no-readings row); components.html |
 | TBL-13 | R | Heat-map cells stay centred: the pattern is a grid, not a column (PAT-2). | user 2026-09-30 |
 
 ### 3.5 Buttons
@@ -496,7 +498,7 @@ Every entry is **K**. None is ever copied. "Step 3" is Daily at every size; "ste
 | K-17 | K | Dates and times break across lines: "…1:00 / AM" at 1000 px, «22 سبتمبر / 2026» at 320 (F16) | Daily header, Reports | DAT-4 | steps 3, 4 |
 | K-18 | K | A level badge on an all-hours average ("Average inside 21 · Quiet") (F17) | Reports | LVL-2 | step 4 |
 | K-19 | K | Trend glyphs mirror inconsistently: the week card's head icon and Daily's peak icon do not (F19) | Daily, Reports | ICO-5 | steps 3, 4 |
-| K-20 | K | The minute table: 13 px, 32.5 px rows, no tabular figures, "0.0" and "1.7" people (F12). Its start-aligned numbers meet TBL-1 in Arabic; in English they break it (K-33) | Daily details | TBL-1, NUM-2, NUM-5 | step 3 |
+| K-20 | K | The minute table: 13 px, 32.5 px rows, no tabular figures, "0.0" and "1.7" people (F12). Its start-aligned numbers meet TBL-1 in Arabic; in English they break it (K-33). Its gap (2:14-2:31 PM) is 18 rows of values, one per minute, not one full-width row: each has its time as the row's first cell, a "-" under «داخل الصالة» / "Inside", an empty average cell and «لا قراءة» / "No reading" under the note column (B) | Daily details; the gap: AR and EN, `live` and `delayed`, 1440, 1024, 768, 390 | TBL-1, NUM-2, NUM-5, TBL-12 | step 3 |
 | K-21 | K | "Busiest" is a 2-hour window on Daily and a 1-hour cell on Reports; the peak's time sits in Reports' card foot (F20) | Daily, Reports | GLO-12, DAT-5 | steps 3, 4: one-hour slots on both pages (GLO-12, Q7); the peak's time in the meta slot |
 | K-22 | K | Focus rings at offsets 3, 2, 1 and −4; a red ring on the skip link; the plot's ring 2 px from "80" (F18) | Daily, Reports | FOC-1…3 | steps 3, 4 |
 | K-23 | K | Keyboard focus on a rail item shows no name (D4) | both rails | FOC-4 | step 3 |
@@ -510,8 +512,8 @@ Every entry is **K**. None is ever copied. "Step 3" is Daily at every size; "ste
 | K-31 | K | The usual line after now at `.24` chalk, 2.01:1 | Daily chart | CHT-4, non-text contrast 3:1 | step 3: `.36` (CHT-4, Q6) |
 | K-32 | K | A single closed cell hides its word (`.is-one`); only a 1.1:1 fill would tell it from a low value. Latent: no single closed hour occurs in the data | Reports pattern | PAT-5, `DESIGN_GUIDE` §13 (grayscale) | step 4 |
 | K-33 | K | Daily's minute table, **English**: numbers and headers start-aligned, so on the left edge. The units are out of line (right edges spread 11 px under "Inside", 11.5 px under "30-min average") and each header's right edge sits 34.5 px ("Inside") and 81 px ("30-min average"; 34 px at 768 and 390) from its numbers'. Arabic meets TBL-1 (0 px) (A) | Daily details, EN, 1440, 1024, 768, 390 | TBL-1 | step 3 |
-| K-34 | K | Reports' day table, **Arabic**: numeric cells end-aligned, so on the left edge. Right edges spread 3.1 px (Entries) and 1.5 px (Average); the headers' text ends 26.5 px (Peak), 35 px (Average) and 50 px (Entries) from their numbers' right edge at 1440 (17, 33 and 47 px at 390); the peak value floats with its time (spread 3.6 px); the "No readings yet" note starts at the Peak column's right edge, 162 px from its header's text at 1440 (87 at 1024, 73 at 768, 9.5 at 390) (A) | Reports, AR, 1440, 1024, 768, 390 | TBL-1, TBL-11, TBL-12 | step 4 |
-| K-35 | K | Reports' day table, **English**: the peak cell ends with its time, so the value sits 54-55 px inside the column's right edge and its right edges spread 2.7 px. Average and Entries meet TBL-1 (0 px), the "No readings yet" note meets TBL-12 (0 px), and at 390 the phone form stacks the time under the value and meets both (A) | Reports, EN, 1440, 1024, 768 | TBL-11 | step 4 |
+| K-34 | K | Reports' day table, **Arabic**: numeric cells end-aligned, so on the left edge. Right edges spread 3.1 px (Entries) and 1.5 px (Average); the headers' text ends 26.5 px (Peak), 35 px (Average) and 50 px (Entries) from their numbers' right edge at 1440 (17, 33 and 47 px at 390); the peak value floats with its time (spread 3.6 px). The "No readings yet" row (`short`) is two cells, not one full-width row: its range «26 أغسطس - 12 سبتمبر» as the row header under «اليوم», and «لا قراءات بعد» in a cell spanning «الذروة» to «ملاحظات», starting at the Peak column's right edge, 162 px from its header's text at 1440 (87 at 1024, 73 at 768, 9.5 at 390) (A); 48 px tall, 81 at 768 and 62.5 at 390 (B). Latent in both languages: a day inside the readings with none would put «لا قراءات» / "No readings" under Peak beside empty Average and Entries cells (rj:797); no such day occurs in the default, `short` or 7-day data (B) | Reports, AR, 1440, 1024, 768, 390 | TBL-1, TBL-11, TBL-12 | step 4 |
+| K-35 | K | Reports' day table, **English**: the peak cell ends with its time, so the value sits 54-55 px inside the column's right edge and its right edges spread 2.7 px. Average and Entries meet TBL-1 (0 px), and at 390 the phone form stacks the time under the value and meets both (A). The "No readings yet" row (`short`) is two cells, not one full-width row: its range "26 Aug – 12 Sep" as the row header under "Day", and "No readings yet" in a cell spanning Peak to Notes from the Peak column's start (0 px, which met TBL-12 before the no-readings row was decided) (A); 48 px tall, 45.4 at 390 (B). The latent peak cell of K-34 applies here too | Reports, EN, 1440, 1024, 768; the no-readings row also 390 | TBL-11, TBL-12 | step 4 |
 
 **Findings coverage.** F1 TRU-7, GLO-13, K-01; F2 K-02, STA-10; F3 GLO-4, K-03; F4 GLO-5, K-04; F5 TRU-2, PAT-10,
 K-05; F6 LVL-5, LVL-6, K-06; F7 LGT-9, K-07; F8 SPC-5, K-08; F9 TYP-3, K-09; F10 SEG-2, K-11; F11 GLO-16, TBL-10, K-14;
@@ -520,16 +522,19 @@ K-22; F19 ICO-5, K-19; F20 GLO-12, DAT-5, K-21; F21 ICO-3, K-24; D1 LGT-7, LGT-8
 K-23; KI1 K-10, K-11; KI2 K-26; KI3 K-27; KI4 K-25; Keep: SRF-1, SRF-5, LGT-6, CRD-1, PAT-1, TBL-5, DLG-1, BRK-5, BRD-1,
 COL-21, STA-4…8. Review §5 (README accuracy): the segments K-11; the week-over-week empty July K-01; dialog focus DLG-3;
 the overflow note K-26; Daily's axis contrast K-07; the delayed scope is restated in STA-2. The user's note on numeric
-columns (2026-09-30): TBL-1, TBL-5, TBL-8, TBL-11…13, K-20, K-33…35.
+columns (2026-09-30): TBL-1, TBL-5, TBL-8, TBL-11…13, K-20, K-33…35. The user's rule for a row with no readings
+(2026-09-30): TBL-12, STA-4, TBL-6, K-20, K-34, K-35, Q11.
 
 ## 8. Open questions for the user
 
-Q1 and Q2 stay open for step 3. Q3-Q10 were answered on 2026-09-30, each with the sheet's proposal (below).
+Q1 and Q2 stay open for step 3. Q11 is new (run `owner_spec_r04_s14`). Q3-Q10 were answered on 2026-09-30, each with
+the sheet's proposal (below).
 
 | # | Question | What it decides | The proposal |
 | --- | --- | --- | --- |
 | Q1 | **D2:** the peak ring sits at the true peak (62), about 12 px above the averaged crest, while the latest dot sits on the line (47.4) with a readout of 49. One placement rule, or a one-line key? | CHT-7, CHT-8 | none; the Daily all-sizes round (step 3) |
 | Q2 | **D3 with F14:** the lane leaves an empty band at rest (about 120 px at 1440). Sizing the lane once for the tallest state (F14) makes it 109 px in every state, so the band grows while live. Keep the band, shrink it, or let the scale move by state? | CHT-11, K-15 | none; step 3 |
+| Q11 | **The words run into the range.** With the words, then the range, and only a space between them (TBL-12), «لا قراءات بعد 2 أغسطس - 12 سبتمبر» can be read as "no readings after 2 August". Keep it, or set a separator between the words and the range in every no-readings note, in both languages? | TBL-12's copy | a middle dot, as the meta lines use: «···· لا قراءات بعد · 2 أغسطس - 12 سبتمبر», "···· No readings yet · 2 Aug – 12 Sep"; `components.html` shows the rule as decided until then |
 
 ### Answered 2026-09-30
 

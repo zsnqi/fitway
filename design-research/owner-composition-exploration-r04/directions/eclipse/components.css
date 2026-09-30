@@ -278,15 +278,23 @@ html:has(> body.cx) { color-scheme: dark; scrollbar-color: rgba(245, 243, 242, 0
 .cx-pk .pt { font: var(--t-caption); color: var(--ink-3); }
 .cx-pk .pt bdi { color: inherit; }
 .cx-pk .cx-flag { align-self: center; }
-/* TBL-12: a note spanning columns sits at its cell's start: in Arabic the numbers' right edge, in English the first
- * column's start. The fold row (TBL-8) shows only on a phone. */
+/* TBL-12: a note spanning columns sits at its cell's start. The fold row (TBL-8) shows only on a phone. A row with no
+ * readings (user 2026-09-30) is one cell across every column, in the camera-gap note's caption type and ink, and keeps
+ * its density's height; its mark starts on the first column's text edge. */
 .cx-gapnote { display: inline-flex; align-items: center; gap: 8px; }
-.cx-gapnote .cx-ico { width: 16px; height: 16px; }
+/* The mark's first dot is inked 2.5 px inside its 16 px box; the box steps out by that much so the dot, not the box,
+ * sits on the text edge. */
+.cx-gapnote .cx-ico { width: 16px; height: 16px; margin-inline-start: -2.5px; }
+.cx-gapnote .w, .cx-gapnote .rg { white-space: nowrap; }
+.cx-table tbody td.none { font: var(--t-caption); color: var(--ink-3); }
 .cx-table .note-row { display: none; }
 .cx-sort { display: inline-flex; align-items: center; gap: 8px; height: 44px; min-width: 44px; margin-inline: -8px; padding-inline: 8px; border-radius: 10px; font: inherit; color: inherit; }
 .cx-sort:hover, .cx-sort.is-hover { color: var(--ink); }
 /* In a numeric column the label holds the right edge and the arrow sits to its left, in both languages. */
 .n .cx-sort { flex-direction: row-reverse; }
+/* A header that wraps on a phone (TBL-8) keeps each line on its edge, not centred as a button would set it. */
+.cx-sort { text-align: start; }
+.n .cx-sort { text-align: right; }
 [dir="rtl"] .n .cx-sort { flex-direction: row; }
 .cx-sort:focus-visible, .cx .cx-sort.is-focus { outline: 2px solid var(--ink); outline-offset: -4px; }
 .cx-sort .cx-ico { width: 14px; height: 14px; opacity: 0; }

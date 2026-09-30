@@ -107,7 +107,7 @@
       daysTitle: "يومًا بيوم", daysSub: `${b(7)} أيام`,
       cols: { day: "اليوم", peak: "الذروة", avg: "المعدّل", entries: "مرات الدخول", notes: "ملاحظات" },
       daysCaption: `الأيام من ${b(16)} إلى ${b(22)} سبتمبر ${b(2026)}: الذروة والمعدّل ومرات الدخول`,
-      highest: "الأعلى", gapNote: `لا قراءات ${b("10:00 ص - 2:00 م")}`, beforeRow: `${b(2)} أغسطس - ${b(12)} سبتمبر`,
+      highest: "الأعلى", gapRange: "10:00 ص - 2:00 م", beforeRow: `${b(2)} أغسطس - ${b(12)} سبتمبر`,
       sortedBy: "مرتب حسب اليوم، الأحدث أولًا",
       compactTitle: "دقيقة بدقيقة", compactCaption: "قراءات اليوم دقيقة بدقيقة",
       ccols: { time: "الوقت", inside: "داخل الصالة", avg: `معدّل ${b(30)} دقيقة`, note: "ملاحظة" },
@@ -193,7 +193,7 @@
       daysTitle: "Day by day", daysSub: "7 days",
       cols: { day: "Day", peak: "Peak", avg: "Average", entries: "Entries", notes: "Notes" },
       daysCaption: "Days from 16 to 22 Sep 2026: peak, average and entries",
-      highest: "Highest", gapNote: "No readings 10:00 AM – 2:00 PM", beforeRow: "2 Aug – 12 Sep",
+      highest: "Highest", gapRange: "10:00 AM – 2:00 PM", beforeRow: "2 Aug – 12 Sep",
       sortedBy: "Sorted by day, newest first",
       compactTitle: "Minute by minute", compactCaption: "Today's readings, minute by minute",
       ccols: { time: "Time", inside: "Inside", avg: "30-min average", note: "Note" },
@@ -593,7 +593,12 @@
     const days = [["الثلاثاء", "Tue", 22, 53, 1123, 25, 352, ""], ["الاثنين", "Mon", 21, 58, 1145, 27, 371, "hover"], ["الأحد", "Sun", 20, 55, 1110, 26, 360, "edge"], ["السبت", "Sat", 19, 41, 680, 18, 244, ""], ["الجمعة", "Fri", 18, 49, 1210, 20, 230, ""], ["الخميس", "Thu", 17, 76, 1138, 24, 318, "top"], ["الأربعاء", "Wed", 16, 57, 1111, 26, 349, ""]];
     // TBL-8: the weekday and the date are separate spans, so a phone can set the weekday over the date.
     const dayName = (d) => (LANG === "ar" ? `<span class="wd">${d[0]}</span> <span class="dt">${b(d[2])} سبتمبر</span>` : `<span class="wd">${d[1]}</span> <span class="dt">${d[2]} Sep</span>`);
-    const gapNote = (t) => `<span class="cx-gapnote">${ico("gap")}<span>${t}</span></span>`;
+    // The no-readings note: the dotted mark, the words, then the range (DAT-3). A line may break after the words, never
+    // inside them or inside the range.
+    const gapNote = (w, r) => `<span class="cx-gapnote">${ico("gap")}<span><span class="w">${w}</span> <bdi class="rg">${r}</bdi></span></span>`;
+    // TBL-12 (user 2026-09-30): a row with no readings is one cell across every column, a break in the sequence rather
+    // than a row of values: no row header, no empty value cells, no words under a numeric column.
+    const noneRow = (w, r, cols) => `<tr role="row" class="is-none"><td role="cell" class="none" colspan="${cols}">${gapNote(w, r)}</td></tr>`;
     const hdr = (k, cls) => `<th scope="col" role="columnheader" class="${cls}"${cls.includes("is-sorted") ? ' aria-sort="descending"' : ""}><button class="cx-sort${cls.includes("hover") ? " is-hover" : ""}${cls.includes("focus") ? " is-focus" : ""}" type="button" tabindex="-1"><span>${L.cols[k]}</span>${ico("sort")}</button></th>`;
     const rows = days.map((d) => {
       const top = d[7] === "top";
@@ -603,16 +608,16 @@
       return `<tr role="row"${cls ? ` class="${cls}"` : ""}><th scope="row" role="rowheader">${dayName(d)}</th>
         <td role="cell" class="n"><span class="cx-pk"><span class="pv">${b(d[3])}</span><span class="pt">${b(time(minutes))}</span>${top ? `<span class="cx-flag is-red">${L.highest}</span>` : ""}</span></td>
         <td role="cell" class="n">${b(d[5])}</td><td role="cell" class="n">${b(d[6])}</td>
-        <td role="cell" class="notes">${top ? gapNote(L.gapNote) : ""}</td></tr>` +
+        <td role="cell" class="notes">${top ? gapNote(L.noReadings, L.gapRange) : ""}</td></tr>` +
         // TBL-8: on a phone the notes column folds into a row of its own under its day (only one of the two shows).
-        (top ? `<tr role="row" class="note-row is-top"><td role="cell" colspan="4">${gapNote(L.gapNote)}</td></tr>` : "");
-    }).join("") + `<tr role="row" class="is-none"><th scope="row" role="rowheader">${b(L.beforeRow)}</th><td role="cell" colspan="4">${gapNote(L.noReadingsYet)}</td></tr>`;
+        (top ? `<tr role="row" class="note-row is-top"><td role="cell" colspan="4">${gapNote(L.noReadings, L.gapRange)}</td></tr>` : "");
+    }).join("") + noneRow(L.noReadingsYet, L.beforeRow, 5);
     const def = `<table class="cx-table" role="table"><caption>${L.daysCaption}</caption><thead><tr role="row">${hdr("day", "is-sorted")}${hdr("peak", "n hover")}${hdr("avg", "n focus")}${hdr("entries", "n")}<th scope="col" role="columnheader" class="notes">${L.cols.notes}</th></tr></thead><tbody>${rows}</tbody></table>`;
     const line = DATA.line.live;
     const mins = [[490, ""], [491, ""], [492, ""], [493, ""], ["gap", ""], [512, ""], [DATA.peakM, "peak"], [NOW, "latest"]];
     const crow = mins.map(([m, n]) => {
-      // TBL-12: the gap note spans from the first numeric column and starts at that column's edge.
-      if (m === "gap") return `<tr role="row" class="is-none"><th scope="row" role="rowheader">${b(timeRange(GAP0, GAP1))}</th><td role="cell" colspan="3">${gapNote(L.noReadings)}</td></tr>`;
+      // TBL-12: the gap is one row across the table, from the time column's text edge.
+      if (m === "gap") return noneRow(L.noReadings, timeRange(GAP0, GAP1), 4);
       const cls = [n === "peak" ? "is-top" : "", n ? "has-note" : ""].filter(Boolean).join(" ");
       return `<tr role="row"${cls ? ` class="${cls}"` : ""}><th scope="row" role="rowheader">${b(time(m))}</th><td role="cell" class="n">${b(DATA.raw[m])}</td><td role="cell" class="n">${b(Math.round(line[m]))}</td><td role="cell" class="notes">${n ? L.cnotes[n] : ""}</td></tr>` +
         (n ? `<tr role="row" class="note-row${n === "peak" ? " is-top" : ""}"><td role="cell" colspan="3">${L.cnotes[n]}</td></tr>` : "");
