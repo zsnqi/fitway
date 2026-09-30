@@ -2994,3 +2994,33 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   1. Save Codex's report at `...\fixq4\CODEX-FONTS-R1-REPORT.md`, and check the tree and ports.
   2. Verify with the S-Z rows, G1-G3, and new held-out checks. Record the ledger row.
   3. On PASS, finish as the self-hosted font resume point says. On FAIL, repair 2; after it, the stall rule.
+## Repair 1 stops on a pre-existing mobile shift, and resumes (2026-09-30)
+
+- **Codex stopped `owner_fonts_r04_s09_r1`** on outcome 2, without a commit.
+  - Report at `D:\fitway-scratch\introspeed\fixq4\CODEX-FONTS-R1-REPORT.md`; trial at `...\fixq4\r1\candidate\`.
+  - `owner-followup-r04-s04` is clean at `4568bac`, and nothing listens.
+  - The trial starts the CSS font faces after the blocking stylesheets and drops the separate preloads. Reported:
+    - each font fetched once in 284 loads, across four headers, four sizes and `file://`;
+    - one 404 error per missing file;
+    - stills 56 of 56 identical;
+    - capture exit 0;
+    - no swap under `no-store` with a delayed `app.js`;
+    - the paint hold stays at 104/100 ms.
+- **The stop:** at 390×844 the intro's end moves `#busy-note` 71.5 px.
+  - Coordinator probe: one layout shift, 1 ms after `endedAt`, in AR and EN, at `4568bac`, `77d91e8`, `a6cfde8` and
+    `521fe32`. It is pre-existing, and part of the narrow layout (phone phase).
+  - 768×1024 EN has a tiny one. 1440, 1280 and 1024 have none.
+  - The last verifier's W at 390 ended its window at `endedAt`, and missed it.
+- **Ledger, s09 r1 run 1:** no commit, and not verified. Cause: brief (an outcome required at a size where the
+  baseline already fails) and grader (the window ended at `endedAt`).
+- **New rules:**
+  - **B7.** Before a brief requires any outcome under any condition, check that the baseline meets it there. Name a
+    condition where it fails as pre-existing and out of scope, with the requirement "unchanged from the baseline".
+  - **G4.** Every movement check runs until at least 500 ms after `endedAt`.
+- **Resume brief:** `D:\fitway-scratch\introspeed\fixq4\FIX-FONTS-R1-RESUME.md`.
+  - Below 1024 px, the `#busy-note` intro-end movement stays exactly as at `4568bac`.
+  - Any other movement fails.
+  - The README lists the jump as a known limit for the phone phase.
+  - The repair budget is untouched: the stop came from the brief.
+- **For the phone phase:** on narrow screens, the intro's end drops `#busy-note` by 71.5 px. It is a visible jump,
+  and it predates this lineage.
