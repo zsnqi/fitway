@@ -3787,3 +3787,26 @@ The local usage limit is close, so the user continues this coordinator role in a
      Chromium renders `E/index.html`.
   2. Fix the setup script if needed, and record the working version here.
   3. Then continue from **Next**.
+## Proposals 2-3 accepted, proposal 4 refined (2026-10-01)
+
+- **User decisions (2026-10-01):**
+  - **Proposal 2:** «غير متصل» / "Offline" is adopted as the visible word for Unavailable.
+  - **Proposal 3:** HDR-6, the fixed status box, is accepted.
+  - **In the cloud, Codex is not used.** Small fixes there go to a Claude `owner-direction-fixer`. Codex resumes for
+    small fixes when work returns to this machine.
+- **Proposal 4, refined by the coordinator and awaiting the user's word.** The example: the edge went offline at
+  3:00 PM, and it is now 4:00 PM.
+  - **Header:** «⊘ غير متصل · لا عدّ حاليًا», with no time.
+  - **Inside now:** «لا عدّ حاليًا», with no badge and no light.
+  - **Today's peak and Entries:** still no number. Both are whole-day answers, and the true peak or the missing
+    entries may fall in the gap.
+  - **Busiest time:** stays, because it is history.
+  - **Chart:**
+    - the real red line runs from opening to 3:00 PM, drawn plain, with no end point, halo or pulse;
+    - after it, the dotted mark runs from 3:00 PM to now, and its stop names the range;
+    - the usual line is drawn throughout.
+  - **Why this is truthful:** `FITWAY_PRODUCT.md` forbids a count, a band or a *fabricated* last-updated time, and
+    3:00 PM is real history. `SPEC.md` says the edge buffers 24-48 h offline and backfills history, so the gap
+    is "not received yet" rather than "no readings".
+    - Its wording may need its own words, for example «بانتظار القراءات».
+    - On reconnect, the gap fills with backfilled readings, and the page returns to live.
