@@ -3930,3 +3930,27 @@ The local usage limit is close, so the user continues this coordinator role in a
   which finding 3 contradicts.
 - **Next:** the user decides each finding. Agreed fixes go to one Sonnet fixer, with targets the coordinator freezes
   after measuring. Then the "do not" list and step 4's brief.
+## The user's decisions on the step-3 review, and the review fixes launched (2026-10-01)
+
+- **User decisions (2026-10-01):**
+  - **The verdict:** the user agrees with the reviewer that step 3 is strong.
+  - **Findings 1-3 are fixed:**
+    - F1, the legend's rows;
+    - F2, Delayed turns the chart card's light off as well, and the red line stays;
+    - F3, the dates in the details.
+  - **F4:** the error advice stays as it is and is revisited in production.
+  - **F5:** the 7- or 6-day basis of Busiest time goes to the data-wiring phase.
+  - **F6:** the legend's keys stay (CHT-21).
+- **F1's fix, frozen by the coordinator after measuring.** In no history, the legend's order becomes line key, ring key,
+  then the note. Its wording, size and CSS do not change.
+  - At 320 the key is 238 px. Line plus ring is 225 EN and 221 AR, and the note goes on the second row (226 EN,
+    167 AR). So the legend keeps live's 2 rows at 390 and 320.
+- **Launched:** one `owner-direction-fixer` on Sonnet at `medium`, on `50a5690`, in `/tmp/fitway-scratch/fix-r1/`.
+  - F2 reuses Unavailable's way of turning off the chart card's light.
+  - F3 joins day and month with U+00A0.
+  - The spec takes STA-2, OWN-D9, K-17 and the legend's row, each with `user 2026-10-01 (review Fn)`.
+  - It commits without pushing.
+- **Explained to the user, answer pending:** what the review left uncounted.
+  - `components.html` scrolls sideways at 390 and 768 EN, as it did before step 3.
+  - The empty tooltip lane (CHT-18) and the rail's focus label over Inside now (FOC-5) are user decisions.
+- **Next:** check the fixer's frames and push. Then the "do not" list and step 4's brief.
