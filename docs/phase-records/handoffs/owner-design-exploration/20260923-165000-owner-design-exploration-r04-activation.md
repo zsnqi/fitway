@@ -3669,3 +3669,30 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   designer takes the same brief.
 - **Next:** on its report, run the G5 check and push, inspect the sheets, and show the user the states on 3174. Then a
   fresh design reviewer critiques the whole of step 3, and the user decides.
+## Cloud sessions and direct Codex delegation (2026-10-01)
+
+- **User decisions (2026-10-01):**
+  - **Cloud sessions** on this account are a normal extension of the work.
+    - They draw on the plan's usage first and then on the cloud credit. The user has more credit on a second account.
+    - After step 3, the coordinator prepares a cloud kit:
+      - the scratch probes and the spec lint move into the repository;
+      - a setup script is committed to the repository.
+    - The first cloud session runs a short setup task. It redoes the proxy certificate for Chromium and the
+      Impeccable engine (SHA-256 checked, kept outside the repository), then commits the script.
+    - The exact commands from the earlier cloud session on another account are lost.
+  - **`ui-forensics`** is the user's own skill. It is not added to the repository: no subagent has used it.
+  - **Small fixes go to Codex (GPT-6.1 Sol, `high` or `xhigh`)** instead of a Claude fixer, to save Opus usage.
+    This replaces the earlier rule that small fixes stay with the Claude fixer.
+    - The coordinator delegates directly through the installed Codex plugin (1.0.4):
+      `codex-companion.mjs task --write --cwd <worktree> --prompt-file <brief> --effort <level>`, run as a background
+      shell job.
+    - The first such task is a trial. It checks whether Codex's `workspace-write` sandbox on Windows allows a commit in
+      a linked worktree and a Playwright launch. If it does not, Codex leaves the change uncommitted and the
+      coordinator commits it after review.
+  - **Sonnet** stays below `xhigh` if it is used at all.
+  - A consolidated **"do not" list** of the user's past rejections is wanted for designer briefs.
+    - Today the bans live in Impeccable's craft floor and in the spec's K entries, and the user's taste lives in "What
+      the user wants".
+    - No single list holds the user's own rejections, such as the middle dot, the en dash in Arabic ranges, and hover
+      names on the rail.
+    - The coordinator writes it before step 4's brief.
