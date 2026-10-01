@@ -4130,3 +4130,21 @@ The local usage limit is close, so the user continues this coordinator role in a
   - The spec marks Q12-Q16 decided.
   - It makes a with-and-without-light comparison sheet against `bde1cde`.
 - **Next:** show the user the comparison. Then either phase B with a fresh designer, or first the card's move.
+## One light on Reports at `9b6ae63`, shown to the user (2026-10-01)
+
+- **Delivered at `9b6ae63`** on `bde1cde`: `DESIGN-SPEC.md`, `README.md`, `components.js` and `reports.js`, +37/−40.
+  - The week card is plain in every period, and only the pattern is lit, and it is plain in July.
+  - «آخر 28 يومًا» / "Last 28 days" fits one line from 1440 to 320, with 44 px targets.
+  - The no-readings tooltip has one line, including the components twin `noneTip`.
+  - The spec changes:
+    - OWN-R6 takes `user 2026-10-01 (Q13)`;
+    - MOT-10 and OWN-R5 take `user 2026-10-01 (Q12)`;
+    - K-37 is fixed, and OWN-R2 is renamed;
+    - K-13 gets a note;
+    - §8 Q12-Q16 are decided.
+  - Self-reported: Daily is byte-identical to `bde1cde` in 12 frames, and the lint finds 0 problems.
+- **Coordinator inspection, not verification:** the comparison sheet
+  (`/tmp/fitway-scratch/fix-q13/light-compare.png`) shows the same order, the week card plain, and the pattern as
+  the one lit element, in AR and EN.
+- **Pushed** `owner-followup-r04-build` to `9b6ae63`.
+- **Waiting:** the user's look. Either the order stays, or the week card moves to the row's start.
