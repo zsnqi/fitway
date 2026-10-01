@@ -4442,3 +4442,47 @@ The user ends this local session here and continues in a new cloud session. No a
   line 27, chosen 2026-10-01). The user finds dots before the words odd. Shown: (1) the dots, (2) the range, a gap,
   then the words, (3) one sentence, «لا قراءات من 10:00 ص إلى 2:00 م». The coordinator recommends 2. Waiting for the
   user's pick.
+- **Decision 8, the no-readings span: one sentence, the words first:** «لا قراءات من 10:00 ص إلى 2:00 م» / "No
+  readings from 10:00 AM to 2:00 PM". It applies everywhere in E/, Daily included. *User 2026-10-01:* the sentence
+  reads clear and well ordered, and the range-first order with a mark is badly built. The coordinator had recommended
+  option 2 (the range, a gap, then the words).
+  - DO-NOT.md's no-readings entry is rewritten to match.
+  - The coordinator extends the same order to closed spans («مغلق من … إلى …»). Other range-then-words phrases go to
+    the user as proposals.
+
+## New cloud-session resume point after the build review (2026-10-01)
+
+The user ends this cloud session here and continues in a new cloud session. No agent is running.
+
+- **State at the end of this session:**
+  - **Build branch** `owner-followup-r04-build` at `ff0e922`, pushed. It holds the phone build (option B below 1024).
+  - **Coordinator branch** `codex/owner-redesign-r04`, pushed. It holds:
+    - this handoff and `directions/DO-NOT.md`, whose no-readings entry was rewritten today;
+    - the new brief `briefs/step4-reports-phone-fixes.md`, ready and not launched. It carries the eight decisions
+      above and the small fixes.
+  - The build's sheets and the review crops were in this session's scratchpad and are lost. The brief asks for new
+    crops.
+  - **Codex batch, still for the local machine:**
+    - `components.html` scrolls sideways at 390 and 768 EN;
+    - its header date range breaks at 390 and 320;
+    - the details' «Open, nobody inside» range breaks at 320 EN.
+- **Working agreements (2026-10-01).** "The user's phone critique of phase B" still binds, with three additions:
+  - **The user reviews one decision at a time.** Each decision gets one small, cropped, numbered image (1, 2 …), a
+    plain question and the coordinator's recommendation. Never send a batch of large contact sheets.
+  - **Before starting work, tell the user briefly what will be done,** and wait for the go.
+  - **Keep the coordinator's context small:** a fresh agent for each task, and crops rather than whole sheets.
+- **New session, first steps:**
+  1. Check the environment as in "The user's phone critique of phase B, and the new-session resume point", step 1.
+  2. `git fetch origin owner-followup-r04-build && git worktree add ../s04 owner-followup-r04-build`, then
+     `pnpm install --frozen-lockfile` in `../s04`. Confirm `../s04` is at `ff0e922`.
+  3. Run `pnpm context:show --milestone owner-design-exploration-r04` (no `--`) and `pnpm check:design-context`.
+  4. Read this section, "The user's review of the phone build, one decision at a time", and
+     `briefs/step4-reports-phone-fixes.md`. Do not read the whole handoff.
+- **Next work, in order:**
+  1. **Launch the fixes:** a fresh `owner-direction-builder` (Opus, `high`) on `briefs/step4-reports-phone-fixes.md`.
+     The user approved this plan. Name the session's scratchpad as the scratch folder, and check the brief's paths
+     first.
+  2. Inspect its images, push, and show the user the crops one decision at a time.
+  3. **Reports' states** (K-02, with K-38), with a fresh designer, only after the user approves.
+  4. **A fresh reviewer for step 4.** It also looks at Daily at 390 through the "compressed, not designed" lens,
+     because the user suspects it. Any change to Daily is the user's call.

@@ -24,9 +24,14 @@ reviewer views the user did not take up are left out.
 
 - **Do not use Cairo in the concept.** The user does not want it for this exploration, and Readex Pro is approved.
   *H "Human scope clarification (2026-09-23)"; B "What the user wants", "Round 3" §6; S TYP-1.*
-- **Do not separate the words of a no-readings phrase from its range with a middle dot.** The user did not like it.
-  The range comes first, then the dotted mark and the words: «2:14 م - 2:31 م ···· لا قراءات». (The dot was chosen on
-  2026-09-30 and reversed on 2026-10-01.) *H "The middle dot replaced by range first, and step 3 waits for the user
+- **Do not write a no-readings span as a range followed by a mark and the words.** Neither a middle dot
+  («لا قراءات · 2:14 م - 2:31 م») nor the dotted mark («2:14 م - 2:31 م ···· لا قراءات») is wanted. The span is one
+  plain sentence in natural order, the words first: «لا قراءات من 2:14 م إلى 2:31 م» / "No readings from 2:14 PM to
+  2:31 PM". The user called the range-first order badly built and the sentence clear. (The dot was chosen on
+  2026-09-30 and reversed on 2026-10-01; the dotted mark was chosen on 2026-10-01 and reversed the same day.) The
+  rule covers rows with a time range. The header's period line keeps its middle dot, «لا قراءات · 31 يومًا», and the
+  dotted mark on a chart's time axis is a data mark, not this phrase. *H "The middle dot replaced by range first, and
+  step 3 waits for the user (2026-10-01)", "The user's review of the phone build, one decision at a time
   (2026-10-01)"; S TBL-12, §8 Q11.*
 
 ## Numbers, dates, times and ranges
