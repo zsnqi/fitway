@@ -3571,3 +3571,49 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - checks s04's log and status for a phase B commit on top of `d76972c`;
   - if the commit is missing, gives phase B to a fresh designer, with `D:\fitway-scratch\daily\BRIEF.md`, the phase A
     report above and the four decisions.
+## Step 3 phase B delivered at `637b285`, and new-session resume point (2026-10-01)
+
+- **The usage limit stopped the designer** before its first edit. After the reset the coordinator found s04 clean at
+  `d76972c` and resumed the same agent.
+- **The designer delivered `637b285`** on top of `d76972c`. The coordinator pushed it as a fast-forward.
+  - 52 files, +6456/−5889. Most of the change is `E/evidence/`: `capture-log.json` and 47 Daily PNGs re-captured
+    because the page changed. `pre-motion-hashes.json` is untouched.
+  - The user's four phase A decisions are applied. Daily takes the spec's rules on its own components only
+    (`body.dl`), so Reports keeps the base rules until step 4.
+  - Compositions:
+    - 1024-1199: cards two by two;
+    - 768: two columns, with the chart filling the rest of the screen;
+    - 390 and 200% zoom: Inside now and Busiest time span the width; Peak and Entries sit side by side;
+    - below 360: one card per row.
+  - Self-reported, not verified:
+    - B1-B7 pass, and `capture.mjs` exits 0;
+    - every step-3 known issue is fixed on Daily, with before and after numbers;
+    - 98 page states show no sideways scroll, clipping or layout shift;
+    - the intro's end moves nothing;
+    - spec lint: 326 rows, 0 problems;
+    - Reports at 1440 changes inside the rail only.
+  - New rules CRD-9 (a card keeps its height in every state) and FOC-7 (on a phone, focus stops clear of the bar). New
+    K-36: short landscape phones, for step 8.
+  - **The spec says "the commit after `d76972c`" for phase B. Substitute `637b285`** in the next edit that touches the
+    spec.
+- **G5 check:** s04 is clean at `637b285`, the coordinator worktree matches the snapshot, and only 3174 listens.
+- **Coordinator inspection, not verification:** `B01-1440` and `B03-390` are coherent with the approved look. At 1440
+  the empty band above the plot is visibly larger (Q2).
+- **Open for the user, with frames in `D:\fitway-scratch\daily\sheets\B\`:**
+  - **Q1:** a ring key «قراءة الذروة» / "Peak reading" in the legend (`B12-Q1.png`);
+  - **Q2:** one fixed tooltip lane, 107 px in every state (`B13-Q2.png`). It enlarges the empty band, by 18 px while
+    live and about 130 px at 768, and it drops the "1 AM" label;
+  - **the tooltip width** is now 130-131 px, not the approved 127, because of the type scale;
+  - **OWN-D2:** the first screen stays fixed to the viewport only at 1200 px and wider.
+- **Resume steps:**
+  1. Run `pnpm context:show -- --milestone owner-design-exploration-r04`. Read this section and
+     `NEXT-DIRECTION-BRIEF.md` "The design-phase plan".
+  2. Start the `eclipse-build` preview (3174). Show the user Daily at 1440, 768 and 390, and the four open points
+     above, in Arabic, briefly.
+  3. Apply the user's decisions with a fresh fixer, or a fresh designer if taste is involved. Then step 3's second
+     part: a fresh `owner-direction-designer` for Daily's missing states, which are loading, closed, unavailable and
+     error (K-02), at every size. Then a fresh design reviewer, then the user.
+- **Working agreements:** unchanged from the sections above. Replies are in the Saudi dialect; temp never goes on C;
+  fresh agents for each task; agents report in their final message; the coordinator's context stays small.
+- **Close:** at the user's instruction, the coordinator shuts the PC down after this record, with a 5-minute delay that
+  `shutdown /a` can cancel.
