@@ -4466,11 +4466,13 @@ The user ends this cloud session here and continues in a new cloud session. No a
     - `components.html` scrolls sideways at 390 and 768 EN;
     - its header date range breaks at 390 and 320;
     - the details' «Open, nobody inside» range breaks at 320 EN.
-- **Working agreements (2026-10-01).** "The user's phone critique of phase B" still binds, with three additions:
-  - **The user reviews one decision at a time.** Each decision gets one small, cropped, numbered image (1, 2 …), a
-    plain question and the coordinator's recommendation. Never send a batch of large contact sheets.
-  - **Before starting work, tell the user briefly what will be done,** and wait for the go.
-  - **Keep the coordinator's context small:** a fresh agent for each task, and crops rather than whole sheets.
+- **Working agreements (2026-10-01).** "The user's phone critique of phase B" still binds. The user corrected two
+  habits from this session, and neither is a standing rule:
+  - The one-decision-at-a-time review fitted this review only, because the build sent many large sheets that were hard
+    to read. The standing need is that what the user is shown is clear and well ordered. Use judgment on the format.
+  - The user asked for the plan before the work only to judge its cost, because this account was near its limits.
+    Do not announce each step before starting it.
+  - Keep the coordinator's context small, as before.
 - **New session, first steps:**
   1. Check the environment as in "The user's phone critique of phase B, and the new-session resume point", step 1.
   2. `git fetch origin owner-followup-r04-build && git worktree add ../s04 owner-followup-r04-build`, then
@@ -4482,7 +4484,7 @@ The user ends this cloud session here and continues in a new cloud session. No a
   1. **Launch the fixes:** a fresh `owner-direction-builder` (Opus, `high`) on `briefs/step4-reports-phone-fixes.md`.
      The user approved this plan. Name the session's scratchpad as the scratch folder, and check the brief's paths
      first.
-  2. Inspect its images, push, and show the user the crops one decision at a time.
+  2. Inspect its images, push, and show the user the result, clear and well ordered.
   3. **Reports' states** (K-02, with K-38), with a fresh designer, only after the user approves.
   4. **A fresh reviewer for step 4.** It also looks at Daily at 390 through the "compressed, not designed" lens,
      because the user suspects it. Any change to Daily is the user's call.

@@ -75,9 +75,9 @@ and go on.
 
 ## Evidence (in the scratch folder)
 
-The user reviews **one decision at a time**. Give each decision one small, cropped, numbered image: before
-(`ff0e922`) as 1 and after as 2, at 2x, about 800 px wide, with no labels inside the image except the numbers. The
-coordinator shows them to the user one by one.
+Make the evidence easy for the user to read. Large sheets with many small frames were hard to read last round. Give
+each decision one cropped before-and-after image: `ff0e922` as 1 and the result as 2, at 2x, about 800 px wide, with
+only the numbers drawn on the image.
 
 - the week strip, 390 AR;
 - the hour bars, 390 AR;
