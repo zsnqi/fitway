@@ -3810,3 +3810,15 @@ The local usage limit is close, so the user continues this coordinator role in a
     is "not received yet" rather than "no readings".
     - Its wording may need its own words, for example «بانتظار القراءات».
     - On reconnect, the gap fills with backfilled readings, and the page returns to live.
+## Proposal 4 accepted, and small fixes on Sonnet in the cloud (2026-10-01)
+
+- **User decisions (2026-10-01):**
+  - **Proposal 4 is accepted in its refined form** (see "Proposals 2-3 accepted, proposal 4 refined"):
+    - the real line runs to the last reading, drawn plain;
+    - the dotted mark runs from there to now and reads «بانتظار القراءات» / "Waiting for readings";
+    - the cards show no current number.
+
+    It is applied with K-02's `ad63268` in the next fix.
+  - **Small fixes in the cloud** go to `owner-direction-fixer` with `model: "sonnet"` (Sonnet 5.5), at `medium` (the
+    definition's level) or `high`, never `xhigh` or `max`. On this machine Codex takes them.
+  - The cloud environment `fitway` is saved with `CLAUDE_CODE_PROMPT_CACHE_TTL=1h` and the draft setup script.
