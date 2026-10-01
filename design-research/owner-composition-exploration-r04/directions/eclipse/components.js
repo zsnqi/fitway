@@ -139,8 +139,8 @@
       date: `الأربعاء ${b(23)} سبتمبر ${b(2026)}`, hours: `ساعات العمل ${b("6:00 ص")} – ${b("1:00 ص")}`,
       lastAt: (t) => `آخر قراءة ${b(t)}`, pm: (t) => `${t} م`,
       frameCaps: { head: "الرأس المضغوط: العنوان، والحالة، والقائمة", headLate: "الرأس المضغوط، متأخر", ops: "تفاصيل الحالة مفتوحة", opsLate: "تفاصيل الحالة، متأخر", menu: "القائمة مفتوحة، والتركيز على أول عنصر", bar: "الشريط السفلي عند 390، والقسم الحالي «اليوم»", bar320: "عند 320: المرور على «التقارير»، والتركيز على «الإعدادات»", live: "جرّب: Tab ثم Enter، والأسهم داخل القائمة، وEscape يعيد التركيز" },
-      hdrTitle: "التقارير", hdrSub: `${b("26")} أغسطس – ${b("22")} سبتمبر ${b(2026)}<span class="sep">·</span>${b(28)} يومًا`,
-      hdrCap: "رأس الصفحة: العنوان والفترة، وحالة التشغيل في نهاية السطر؛ ثم عناصر تحكم الصفحة تحته",
+      hdrTitle: "التقارير", hdrSub: `${b("26")} أغسطس – ${b("22")} سبتمبر ${b(2026)}`,
+      hdrCap: "رأس الصفحة: العنوان والفترة، وحالة التشغيل في نهاية السطر؛ ثم عناصر تحكم الصفحة تحته: الفترة في أوله، وتصدير البيانات في آخره",
       exportMinutes: "تصدير بيانات الدقائق",
       emptyTable: `لا قراءات من ${b(1)} يوليو ${b(2026)} إلى ${b(31)} يوليو ${b(2026)}`, emptyAction: `عرض آخر ${b(28)} يومًا`,
       emptyCaps: { table: "جدول بلا قراءات، وطريق واحد للعودة", alert: "تنبيه وإعادة محاولة واحدة" },
@@ -238,8 +238,8 @@
       date: "Wednesday, 23 September 2026", hours: "Open 6:00 AM – 1:00 AM",
       lastAt: (t) => `Last reading ${t}`, pm: (t) => `${t} PM`,
       frameCaps: { head: "The compact header: title, status and menu", headLate: "The compact header, delayed", ops: "The status details, open", opsLate: "The status details, delayed", menu: "The menu, open, focus on its first item", bar: "The bar at 390, Today current", bar320: "At 320: hover on Reports, focus on Settings", live: "Try it: Tab then Enter, the arrows inside the menu, Escape returns focus" },
-      hdrTitle: "Reports", hdrSub: `26 Aug – 22 Sep 2026<span class="sep">·</span>28 days`,
-      hdrCap: "Page header: the title and the period, the Operations status at the inline end; the page's controls under it",
+      hdrTitle: "Reports", hdrSub: "26 Aug – 22 Sep 2026",
+      hdrCap: "Page header: the title and the period, the Operations status at the inline end; the page's controls under it: the period at the row's start, the export at its far end",
       exportMinutes: "Export minute data",
       emptyTable: "No readings from 1 Jul 2026 to 31 Jul 2026", emptyAction: "Show the last 28 days",
       emptyCaps: { table: "A table with no readings, and one way back", alert: "An alert and one retry" },
@@ -792,7 +792,7 @@
       <ul>${NAV.map(([k, i]) => item(k, i)).join("")}</ul><ul class="foot">${FOOT.map(([k, i]) => item(k, i)).join("")}</ul></nav>`;
   }
   function rails() {
-    const hdr = `<div class="cx-header-spec" style="border:1px solid var(--line);border-radius:24px;background:#070707"><div class="cx-hdr"><div><h3>${L.hdrTitle}</h3><p>${L.hdrSub}</p></div><div class="cx-hdr-end">${hstatus()}<span class="cx-concept">${L.concept}</span></div></div><div class="cx-hdr-tools">${seg("28d")}<button class="cx-btn" type="button" tabindex="-1">${ico("save")}<span>${L.exportMinutes}</span></button></div></div>`;
+    const hdr = `<div class="cx-header-spec" style="border:1px solid var(--line);border-radius:24px;background:#070707"><div class="cx-hdr"><div><h3>${L.hdrTitle}</h3><p>${L.hdrSub}</p></div><div class="cx-hdr-end">${hstatus()}<span class="cx-concept">${L.concept}</span></div></div><div class="cx-hdr-tools">${seg("28d")}<button class="cx-btn" type="button" tabindex="-1" style="margin-inline-start:auto">${ico("save")}<span>${L.exportMinutes}</span></button></div></div>`;
     // RAI-6: the tablet's open rail over SRF-4's scrim, with two plain cards standing for the page behind it.
     const tablet = `<div class="cx-tablet"><div class="cx-tablet-page"><i class="card lit lit-card">${LAMP}</i><i class="card"></i><i class="card is-wide lit lit-chart">${LAMP}</i></div><i class="cx-scrim-spec"></i>${rail({ open: true })}</div>`;
     return section("rail", "rail", "RAI-1…8 · HDR-1…3 · FOC-4…5", `<div class="card cx-stage"><div class="cx-rails">

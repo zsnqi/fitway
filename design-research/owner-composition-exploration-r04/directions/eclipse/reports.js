@@ -3,9 +3,12 @@
  * dialog=range|export (open a dialog at load), export=fail (the first export attempt fails), motion=off.
  * Reports answers "how does my gym usually behave, and which way is it going?": the weekday x hour pattern, the period's
  * figures, day by day, the last 7 days against the 7 before, and the minute CSV. It is complete at first paint (no intro;
- * pending the user's view in step 4). The same gym as the Daily page: 6:00 AM to 1:00 AM (Friday 2:00 PM to 1:00 AM),
+ * user 2026-10-01, Q12). The same gym as the Daily page: 6:00 AM to 1:00 AM (Friday 2:00 PM to 1:00 AM),
  * Riyadh time, the same crowd levels and capacity. Step 4 (run owner_reports_r04_s20): the frame (body[data-frame], the
  * header's status at every size, Operations out of the rail) and the page recomposed at 1440 with the review's fixes.
+ * Step 4 phase B: the user's three refinements at 1440 (the minute export at the controls' far end, the week card's
+ * baseline, a preset's subtitle without its length), and the page composed at 768 and 390: the pattern is drawn
+ * transposed, a column per weekday and a row per hour, at 720 px and below.
  * Western digits only: numbers are printed with String(), never Intl or toLocaleString. A classic script (no modules and
  * no fetch), so the page works from file:// too. */
 (() => {
@@ -53,6 +56,8 @@
       glance: "باختصار",
       trendTitle: `آخر ${bdi(7)} أيام`,
       wowUnit: "معدّل الموجودين",
+      // Step 4 phase B (user 2026-10-01): the week card names the span it compares with, as a date range (DAT-3, DAT-4).
+      vsPrev: (r) => `مقابل ${r}`,
       cmp: { busier: "أكثر ازدحامًا", quieter: "أهدأ", same: "قريب من السابق" },
       wowEntries: (p) => `مرات الدخول ${p}`,
       wowEmpty: "لا يكفي السجل بعد",
@@ -80,6 +85,7 @@
       heatKeys: "استخدم مفاتيح الأسهم للتنقل بين الساعات والأيام، وHome وEnd لأول ساعة وآخر ساعة في اليوم.",
       heatCaption: (r) => `معدّل الموجودين حسب اليوم والساعة، ${r}`,
       dayHead: "اليوم",
+      hourHead: "الساعة",
       daysTitle: "يومًا بيوم",
       cols: { day: "اليوم", peak: "الذروة", avg: "المعدّل", entries: "مرات الدخول", notes: "ملاحظات" },
       daysCaption: (r) => `الأيام من ${r}: الذروة والمعدّل ومرات الدخول`,
@@ -145,6 +151,7 @@
       glance: "At a glance",
       trendTitle: "Last 7 days",
       wowUnit: "avg. inside",
+      vsPrev: (r) => `vs ${r}`,
       cmp: { busier: "Busier", quieter: "Quieter", same: "About the same" },
       wowEntries: (p) => `Entries ${p}`,
       wowEmpty: "Not enough history yet",
@@ -172,6 +179,7 @@
       heatKeys: "Use the arrow keys to move between hours and days. Home and End go to the day's first and last hour.",
       heatCaption: (r) => `Average inside by day and hour, ${r}`,
       dayHead: "Day",
+      hourHead: "Hour",
       daysTitle: "Day by day",
       cols: { day: "Day", peak: "Peak", avg: "Average", entries: "Entries", notes: "Notes" },
       daysCaption: (r) => `Days from ${r}: peak, average and entries`,
@@ -247,6 +255,10 @@
   const WD_AR = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
   const WD_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const WD_EN_S = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  // The phone's pattern heads its narrow weekday columns as a phone's calendar does: the one-letter Arabic names (CLDR's
+  // narrow form), and "Sun" ... "Sat" in English. «خميس» and «جمعة» touch at a 36 px column pitch. The full name stays
+  // each heading's accessible name.
+  const WD_AR_S = ["ح", "ن", "ث", "ر", "خ", "ج", "س"];
   const MO_AR = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
   const MO_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const toDn = (iso) => Date.UTC(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10)) / 864e5;
@@ -255,6 +267,8 @@
   const wdOf = (dn) => partsOf(dn).wd;
   const wdLong = (wd) => (RTL ? WD_AR : WD_EN)[wd];
   const wdShort = (wd) => (RTL ? WD_AR : WD_EN_S)[wd];
+  const wdCol = (wd) => (RTL ? WD_AR_S : WD_EN_S)[wd];
+  const wdNarrow = (wd) => (RTL ? WD_AR_S : ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"])[wd];
   const monthOf = (m) => (RTL ? MO_AR : MO_EN)[m];
   // "22 Sep" / «22 سبتمبر», optionally with the year; never broken inside (DAT-4).
   const dateBare = (dn, year = false) => { const p = partsOf(dn); return `${bdi(p.d)} ${monthOf(p.m)}${year ? ` ${bdi(p.y)}` : ""}`; };
@@ -700,9 +714,16 @@
   /* ---------------------------------------------------------------- header */
   const segButtons = $$("#range-seg .seg-b");
   segButtons.forEach((btn) => { btn.innerHTML = L.seg[btn.dataset.range]; });
+  // The subtitle (step 4 phase B, user 2026-10-01): a preset's length is already its pressed segment's name ("Last 28
+  // days"), so a preset's subtitle is its dates alone; a custom period keeps its length. Readings on fewer days than the
+  // period has are a fact about the figures, not its length, so that part stays with a preset too.
   function renderHead() {
-    const n = model.n;
-    $("#sub").innerHTML = `<span class="sub-part">${rangeText(model.a, model.b)}</span><span class="sep" aria-hidden="true">·</span><span class="sub-part">${model.withReadings === n ? L.days(n) : model.withReadings ? L.daysWith(model.withReadings, n) : `${L.noReadings}<span class="sep" aria-hidden="true">·</span>${L.days(n)}`}</span>`;
+    const n = model.n, custom = range.kind === "custom";
+    const sep = `<span class="sep" aria-hidden="true">·</span>`;
+    const tail = model.withReadings === n ? (custom ? L.days(n) : "")
+      : model.withReadings ? L.daysWith(model.withReadings, n)
+      : custom ? `${L.noReadings}${sep}${L.days(n)}` : L.noReadings;
+    $("#sub").innerHTML = `<span class="sub-part">${rangeText(model.a, model.b)}</span>${tail ? `${sep}<span class="sub-part">${tail}</span>` : ""}`;
     segButtons.forEach((btn) => btn.setAttribute("aria-pressed", String(btn.dataset.range === range.kind)));
     $("#period-name").innerHTML = rangeText(model.a, model.b);
   }
@@ -720,7 +741,9 @@
     const tb = $("#trend-body");
     if (wow.comparable) {
       const c = wow.avgChange, kind = c >= 5 ? "busier" : c <= -5 ? "quieter" : "same";
-      tb.innerHTML = `<p class="stat-value"><bdi class="num">${pct(c)}</bdi><span class="unit">${L.wowUnit}</span></p>
+      // The value names its baseline (step 4 phase B, user 2026-10-01): the measure, then the span it compares with, a date
+      // range that never breaks (DAT-3, DAT-4), stacked beside the number, its last line on the number's baseline.
+      tb.innerHTML = `<p class="stat-value"><bdi class="num">${pct(c)}</bdi><span class="unit-stack"><span class="unit">${L.wowUnit}</span><span class="unit vs">${nw(L.vsPrev(rangeText(WOW.prev[0], WOW.prev[1], false)))}</span></span></p>
         <div class="stat-foot"><span class="cmp cmp-${kind}">${kind === "busier" ? ICON.up : kind === "quieter" ? ICON.down : ICON.same}${L.cmp[kind]}</span><span class="stat-aside">${L.wowEntries(bdi(pct(wow.entriesChange)))}</span></div>`;
     } else {
       tb.innerHTML = `<p class="stat-value"><span class="stat-say">${L.wowEmpty}</span></p><div class="stat-foot"><span class="stat-aside">${L.wowEmptyNote(dateText(HIST_START))}</span></div>`;
@@ -754,45 +777,74 @@
     return ca.map((x, j) => Math.round(x + (cb[j] - x) * k));
   }
   const heat = $("#heat"), heatScroll = $("#heat-scroll"), heatTip = $("#heat-tip");
-  let heatSlots = [];      // [row][column] -> the cell element covering that hour
+  let heatSlots = [];      // [weekday][hour] -> the cell element covering that slot, in either form
   let heatCur = null;      // { r, c } of the roving cell
-  let heatWant = 0;        // the column a vertical move aims for
+  let heatWant = 0;        // the hour a move between weekdays aims for
   const valText = (v) => (v > 0 && v < 0.5 ? "<1" : String(Math.round(v)));
+  // The pattern's two forms (step 4 phase B). From 721 px a row per weekday and a column per hour, as at 1440. On a phone
+  // (720 px and below) the same grid is transposed, like a week calendar: a column per weekday and a row per hour, so 19
+  // hours run down the page instead of across it and every slot stays a cell you can read and tap, with no sideways
+  // scroll (BRK-1, BRK-6). The slots, their runs, their order and their words are the same in both forms; a run of
+  // closed or no-reading hours merges along the hours: colspan across, rowspan down.
+  let heatT = false;       // the transposed (phone) form is drawn
+  function heatCell(wd, c, run) {
+    const cell = model.heat[wd][c];
+    const span = run[1] - run[0] + 1, spanAttr = span > 1 ? ` ${heatT ? "rowspan" : "colspan"}="${span}"` : "";
+    if (cell.state === "value") {
+      const z = cell.avg === 0;
+      const col = rampColor(cell.avg);
+      const top = model.busiest && model.busiest.wd === wd && model.busiest.c === c ? " is-top" : "";
+      // PAT-10: a slot drawn from fewer than 3 days keeps its colour under a fine hatch of the card's base.
+      const few = !z && cell.samples < MIN_DAYS ? " few" : "";
+      return `<td class="hc ${z ? "zero" : "v"}${few}${top}" role="gridcell" tabindex="-1" data-r="${wd}" data-c0="${c}" data-c1="${c}"${z ? "" : ` style="--c: rgb(${col.join(" ")})"`}><span class="hv">${z ? "0" : valText(cell.avg)}</span><span class="sr-only">${RTL ? "، " : ", "}${z ? L.emptyLong : L.levels[levelOf(cell.avg)]}</span></td>`;
+    }
+    // PAT-5 (K-32): a closed run says so in words, a single cell included; so does a run with no readings (PAT-6).
+    const word = cell.state === "closed" ? L.closed : L.noReadings;
+    return `<td class="hc ${cell.state === "closed" ? "closed" : "nodata"}" role="gridcell" tabindex="-1"${spanAttr} data-r="${wd}" data-c0="${run[0]}" data-c1="${run[1]}"><span class="run">${word}</span></td>`;
+  }
+  // Each weekday's slots as runs: [first hour, last hour], a value slot alone, closed or no-reading slots merged.
+  function heatRuns(wd) {
+    const row = model.heat[wd], out = [];
+    for (let c = 0; c < HOURS; ) {
+      let e = c;
+      if (row[c].state !== "value") while (e + 1 < HOURS && row[e + 1].state === row[c].state) e++;
+      out.push([c, e]);
+      c = e + 1;
+    }
+    return out;
+  }
   function renderHeat() {
-    const hours = [];
-    for (let c = 0; c < HOURS; c++) {
-      const show = c % 3 === 0;
-      hours.push(`<th scope="col" class="hh${show ? " is-shown" : ""}" role="columnheader"><span class="${show ? "hh-t" : "sr-only"}">${bdi(fmtHour(c * 60))}</span></th>`);
-    }
-    const rows = [];
-    // Sunday first: the working week, then Friday and Saturday together.
-    for (let wd = 0; wd < 7; wd++) {
-      const cells = [], row = model.heat[wd];
-      for (let c = 0; c < HOURS; ) {
-        const cell = row[c];
-        if (cell.state === "value") {
-          const z = cell.avg === 0;
-          const col = rampColor(cell.avg);
-          const top = model.busiest && model.busiest.wd === wd && model.busiest.c === c ? " is-top" : "";
-          // PAT-10: a slot drawn from fewer than 3 days keeps its colour under a fine hatch of the card's base.
-          const few = !z && cell.samples < MIN_DAYS ? " few" : "";
-          cells.push(`<td class="hc ${z ? "zero" : "v"}${few}${top}" role="gridcell" tabindex="-1" data-r="${wd}" data-c0="${c}" data-c1="${c}"${z ? "" : ` style="--c: rgb(${col.join(" ")})"`}><span class="hv">${z ? "0" : valText(cell.avg)}</span><span class="sr-only">${RTL ? "، " : ", "}${z ? L.emptyLong : L.levels[levelOf(cell.avg)]}</span></td>`);
-          c++;
-        } else {
-          let e = c;
-          while (e + 1 < HOURS && row[e + 1].state === cell.state) e++;
-          // PAT-5 (K-32): a closed run says so in words, a single cell included; so does a run with no readings (PAT-6).
-          const word = cell.state === "closed" ? L.closed : L.noReadings;
-          cells.push(`<td class="hc ${cell.state === "closed" ? "closed" : "nodata"}" role="gridcell" tabindex="-1" colspan="${e - c + 1}" data-r="${wd}" data-c0="${c}" data-c1="${e}"><span class="run">${word}</span></td>`);
-          c = e + 1;
+    heatT = mqPhone.matches;
+    $("#pattern").classList.toggle("is-t", heatT);
+    const runs = [0, 1, 2, 3, 4, 5, 6].map(heatRuns);
+    const caption = `<caption class="sr-only">${L.heatCaption(rangeText(model.a, model.b))}</caption>`;
+    if (heatT) {
+      // Weekday columns, Sunday first from the inline start; hour rows, each with its own visible label.
+      const head = [0, 1, 2, 3, 4, 5, 6].map((wd) => `<th scope="col" class="hw" role="columnheader"><span aria-hidden="true"><span class="wd-m">${wdCol(wd)}</span><span class="wd-n">${wdNarrow(wd)}</span></span><span class="sr-only">${wdLong(wd)}</span></th>`).join("");
+      const rows = [];
+      for (let c = 0; c < HOURS; c++) {
+        const cells = [];
+        for (let wd = 0; wd < 7; wd++) {
+          const run = runs[wd].find((x) => x[0] === c);
+          if (run) cells.push(heatCell(wd, c, run));   // a run that started on an earlier hour covers this row already
         }
+        rows.push(`<tr role="row"><th scope="row" class="hr" role="rowheader">${bdi(fmtHour(c * 60))}</th>${cells.join("")}</tr>`);
       }
-      rows.push(`<tr role="row"><th scope="row" class="hd" role="rowheader">${wdLong(wd)}</th>${cells.join("")}</tr>`);
-    }
-    heat.innerHTML = `<caption class="sr-only">${L.heatCaption(rangeText(model.a, model.b))}</caption>
-      <colgroup><col class="col-day">${"<col>".repeat(HOURS)}</colgroup>
+      heat.innerHTML = `${caption}<colgroup><col class="col-hour">${"<col>".repeat(7)}</colgroup>
+      <thead><tr role="row"><th scope="col" class="heat-corner" role="columnheader"><span class="sr-only">${L.hourHead}</span></th>${head}</tr></thead>
+      <tbody>${rows.join("")}</tbody>`;
+    } else {
+      const hours = [];
+      for (let c = 0; c < HOURS; c++) {
+        const show = c % 3 === 0;
+        hours.push(`<th scope="col" class="hh${show ? " is-shown" : ""}" role="columnheader"><span class="${show ? "hh-t" : "sr-only"}">${bdi(fmtHour(c * 60))}</span></th>`);
+      }
+      // Sunday first: the working week, then Friday and Saturday together.
+      const rows = [0, 1, 2, 3, 4, 5, 6].map((wd) => `<tr role="row"><th scope="row" class="hd" role="rowheader">${wdLong(wd)}</th>${runs[wd].map((run) => heatCell(wd, run[0], run)).join("")}</tr>`);
+      heat.innerHTML = `${caption}<colgroup><col class="col-day">${"<col>".repeat(HOURS)}</colgroup>
       <thead><tr role="row"><th scope="col" class="heat-corner" role="columnheader"><span class="sr-only">${L.dayHead}</span></th>${hours.join("")}</tr></thead>
       <tbody>${rows.join("")}</tbody>`;
+    }
     // The data light stays only while the pattern holds a value: an empty period is drawn as a plain card (LGT-7, LGT-8).
     const lit = model.heat.some((r) => r.some((x) => x.state === "value"));
     $("#pattern").classList.toggle("lit", lit);
@@ -805,7 +857,7 @@
     heatWant = heatCur.c;
     heatSlots[heatCur.r][heatCur.c].tabIndex = 0;
     hideTip();
-    $("#pattern-sub").innerHTML = `${L.patternSub}${b ? `<span class="sep" aria-hidden="true">·</span>${L.busiest(wdLong(b.wd), hourRange(b.c * 60, b.c * 60 + 60))}` : ""}`;
+    $("#pattern-sub").innerHTML = `<span class="ps-part">${L.patternSub}</span>${b ? `<span class="sep" aria-hidden="true">·</span><span class="ps-part">${L.busiest(wdLong(b.wd), hourRange(b.c * 60, b.c * 60 + 60))}</span>` : ""}`;
     // The key names every mark the pattern shows (TRU-2): the busiest point while there is one, the hatch while any slot
     // is drawn from fewer than 3 days.
     const anyFew = model.heat.flat().some((x) => x.state === "value" && x.avg > 0 && x.samples < MIN_DAYS);
@@ -865,20 +917,23 @@
     const td = e.target.closest(".hc");
     if (!td || !heatCur) return;
     const r = +td.dataset.r, c0 = +td.dataset.c0, c1 = +td.dataset.c1;
-    const later = RTL ? "ArrowLeft" : "ArrowRight", earlier = RTL ? "ArrowRight" : "ArrowLeft";
+    // Hours run along the inline axis from 721 px and down the page on a phone; weekdays along the other axis.
+    const fwd = RTL ? "ArrowLeft" : "ArrowRight", back = RTL ? "ArrowRight" : "ArrowLeft";
+    const later = heatT ? "ArrowDown" : fwd, earlier = heatT ? "ArrowUp" : back;
+    const nextDay = heatT ? fwd : "ArrowDown", prevDay = heatT ? back : "ArrowUp";
     let nr = r, nc = null;
     if (e.key === later) nc = c1 + 1;
     else if (e.key === earlier) nc = c0 - 1;
-    else if (e.key === "ArrowUp") { nr = r - 1; nc = heatWant; }
-    else if (e.key === "ArrowDown") { nr = r + 1; nc = heatWant; }
+    else if (e.key === prevDay) { nr = r - 1; nc = heatWant; }
+    else if (e.key === nextDay) { nr = r + 1; nc = heatWant; }
     else if (e.key === "Home") { nc = 0; if (e.ctrlKey) nr = 0; }
     else if (e.key === "End") { nc = HOURS - 1; if (e.ctrlKey) nr = 6; }
     else if (e.key === "Escape") { if (tipFor) { e.preventDefault(); e.stopPropagation(); hideTip(); } return; }
     else return;
     e.preventDefault();
     if (nr < 0 || nr > 6 || nc < 0 || nc >= HOURS) return;
-    const vertical = e.key === "ArrowUp" || e.key === "ArrowDown";
-    focusCell(nr, nc, vertical ? heatWant : nc);
+    const dayMove = e.key === prevDay || e.key === nextDay;
+    focusCell(nr, nc, dayMove ? heatWant : nc);
   });
   heat.addEventListener("focusin", (e) => { const td = e.target.closest(".hc"); if (td && tipFor !== td) showTip(td); });
   heat.addEventListener("focusout", (e) => { if (!heat.contains(e.relatedTarget)) hideTip(); });
@@ -897,6 +952,8 @@
     focusCell(+td.dataset.r, +td.dataset.c0);
   });
   heatScroll.addEventListener("scroll", () => { if (tipFor) showTip(tipFor); }, { passive: true });
+  // Crossing the phone breakpoint redraws the pattern in that size's form; its readout closes (BRK-10).
+  mqPhone.addEventListener("change", () => renderHeat());
 
   const numbersBtn = $("#numbers");
   numbersBtn.addEventListener("click", () => {
@@ -1216,13 +1273,15 @@
   const eTo = makeField($("#ef-to"), "export-to", L.to, "ef-hint");
   const exportBtn = $("#export-btn");
   const fileName = (a, b) => `fitway-minutes-${isoOf(a)}-to-${isoOf(b)}.csv`;
+  // The name as shown: it may break only between its parts, never inside a date (DAT-4; the dialog at 320 px).
+  const fileNameHTML = (a, b) => `fitway-minutes-<wbr>${nw(isoOf(a))}-to-<wbr>${nw(isoOf(b) + ".csv")}`;
   const rowsText = (n) => (RTL ? L.rows(n).replace(/^\d+/, (x) => bdi(fmtInt(+x))) : L.rows(n));
   const ex = { state: "idle", run: 0, url: null, hold: false, release: null, failNext: params.get("export") === "fail", a: null, b: null, rows: 0, progress: 0, total: 0, showProgress: false };
   function fileLine() {
     const A = parseDate(eFrom.value), B = parseDate(eTo.value);
     const el = $("#export-file");
     if (A.dn == null || B.dn == null || B.dn < A.dn || B.dn - A.dn + 1 > MAX_RANGE) { el.innerHTML = ""; return; }
-    el.innerHTML = `${ICON.file}<span class="file-name" dir="ltr">${fileName(A.dn, B.dn)}</span><span class="file-rows">${rowsText((B.dn - A.dn + 1) * 1440)}</span>`;
+    el.innerHTML = `${ICON.file}<span class="file-name" dir="ltr">${fileNameHTML(A.dn, B.dn)}</span><span class="file-rows">${rowsText((B.dn - A.dn + 1) * 1440)}</span>`;
   }
   [eFrom, eTo].forEach((fl) => fl.input.addEventListener("input", fileLine));
   function progressHTML() { return `${L.working} ${L.progress(Math.min(ex.progress + 1, ex.total), ex.total)}`; }
@@ -1243,7 +1302,7 @@
     const done = $("#export-done");
     done.hidden = s !== "done";
     done.innerHTML = s === "done" ? `<span class="done-mark" aria-hidden="true">${ICON.check}</span><p class="done-title">${L.doneTitle}</p>
-        <p class="file-line">${ICON.file}<span class="file-name" dir="ltr">${fileName(ex.a, ex.b)}</span><span class="file-rows">${rowsText(ex.rows)}</span></p>` : "";
+        <p class="file-line">${ICON.file}<span class="file-name" dir="ltr">${fileNameHTML(ex.a, ex.b)}</span><span class="file-rows">${rowsText(ex.rows)}</span></p>` : "";
     // The footer's controls persist and change in place, so focus is never dropped with a replaced button.
     const cancel = $("#export-cancel", foot), go = $("#export-go", foot), save = $("#export-save", foot);
     cancel.textContent = s === "done" ? L.done : L.cancel;

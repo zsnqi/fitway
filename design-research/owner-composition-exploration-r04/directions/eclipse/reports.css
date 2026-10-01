@@ -21,6 +21,9 @@ html:has(> body.rp) {
   --ease-state: cubic-bezier(0.25, 1, 0.5, 1);
 }
 .rp ::selection { background: rgba(229, 25, 53, 0.55); color: #fff; }
+/* Focus and in-page jumps stop 16 px clear of the viewport's edges, so a ring is never cut by the edge it was scrolled to
+ * (from 721 px; on a phone the frame keeps the bar's own clearance). */
+@media (min-width: 721px) { html:has(> body.rp) { scroll-padding-block: 16px; } }
 .rp [hidden] { display: none !important; }
 /* DAT-4 (K-17): a date, a time or a range is one unbreakable span. */
 .rp .nw { white-space: nowrap; }
@@ -32,6 +35,9 @@ html:has(> body.rp) {
 .rp .main { display: flex; flex-direction: column; gap: 16px; padding-block: 8px 24px; }
 .rp .sub { margin-block-start: 4px; }
 .rp-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+/* Step 4 phase B (user 2026-10-01): the period control stands alone at the row's start, the one control that changes what
+ * the page shows; "Export minute data", something the owner takes away, sits at the row's far end (the left in Arabic). */
+.rp-tools #export-btn { margin-inline-start: auto; }
 .rp-glance { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 1fr); gap: 16px; }
 
 /* ---- a figure: CRD-1's anatomy (head, value, foot) and CRD-7's spacing; the slots keep their heights (CRD-10). */
@@ -44,6 +50,10 @@ html:has(> body.rp) {
 .rp .stat-value { display: flex; align-items: baseline; gap: 8px; align-self: stretch; min-height: 46px; margin-block-start: 16px; line-height: 1; }
 .rp .stat-value .num { font-size: 46px; line-height: 46px; font-weight: 500; }
 .rp .stat-value .unit { font-size: 12px; line-height: 18px; color: var(--ink-3); }
+/* The week card's value names its baseline (step 4 phase B): the measure, then "vs 9 – 15 Sep", caption type, stacked
+ * beside the number, the last line on the number's baseline. */
+.rp-trend .stat-value { align-items: last baseline; }
+.rp .unit-stack { display: flex; flex-direction: column; min-width: 0; }
 /* CRD-3: a figure with no value says so in one sentence, heading type at 400, on the value's line. */
 .rp .stat-say { align-self: center; font-size: 19px; line-height: 28.5px; font-weight: 400; color: var(--ink-2); white-space: nowrap; }
 .rp .stat-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; align-self: stretch; min-height: 42px; margin-block-start: auto; padding-block-start: 16px; }
@@ -394,28 +404,60 @@ th.is-asc .sort-ico { transform: rotate(180deg); }
 .done-title { margin-block-start: 12px; font-size: 15px; line-height: 22.5px; color: var(--ink); }
 .done .file-line { text-align: start; }
 
-/* ------------------------------------------------------- below 1200 px (provisional)
- * Reports' content at 768, 390 and 320 is composed in step 4's phase B (BRK-9). Until then it only reflows so that
- * nothing leaves the page: the frame (style.css) carries the rail, the bar and the compact header. */
+/* ------------------------------------------------------- below 1200 px
+ * Step 4 phase B (BRK-9): Reports composed for each size, in the frame's three bands (BRK-10). The order is 1440's at
+ * every size: the page's controls, at a glance, the pattern, day by day. The frame (style.css) carries the rail, the
+ * tablet's modal rail, and the phone's bar, compact header and menu.
+ *   1024-1199 px (checked): the glance row stacks; the period's three figures share the width.
+ *   721-1023 px (768 designed): the same stack; the peak's figure is the widest, so its day and time keep one line
+ *     under its name; the pattern keeps 1440's form, a row per weekday, so the whole week is seen at once.
+ *   720 px and below (390 designed): the period control across the width, the minute file at the row's far end on a
+ *     line of its own; average inside and the highest peak side by side, entries across the width under them; the
+ *     pattern transposed into a week calendar (a column per weekday, a row per hour); the table in TBL-8's form. */
 @media (max-width: 1199px) {
   .rp-glance { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 1023px) {
+  /* The pattern card's head: the title with the numbers switch at its end, the subtitle under it, then the key on a line
+   * of its own, so the switch never drops to a row by itself. */
+  .pattern-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title switch" "sub sub" "key key"; align-items: center; gap: 0 16px; }
+  .pattern-titles, .pattern-tools { display: contents; }
+  .pattern-head h2 { grid-area: title; }
+  .pattern-sub { grid-area: sub; }
+  .heat-key { grid-area: key; margin-block-start: 16px; }
+  #numbers { grid-area: switch; }
   /* The peak cell stacks its time and flag under the value, on the same edge (TBL-8's form), so the table fits. */
   .pk, [dir="ltr"] .pk { flex-direction: column; align-items: flex-end; gap: 0; }
   .pk .flag { margin-block-start: 4px; }
   .days-table .c-day, .days-table .c-peak, .days-table .c-avg, .days-table .c-entries { width: auto; }
   .table th, .table td { padding-inline: 12px; }
 }
+@media (min-width: 721px) and (max-width: 1023px) {
+  /* The peak's figure carries a day and a time beside its name, so its column is the widest: at 768 they keep one line
+   * under its name in both languages (Arabic needs 167 px), and the three values stay level (two-line heads). */
+  .rp-period { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 1fr); }
+  /* The pattern: 1440's form with a day column fitted to the longest weekday name ("Wednesday"). An hour label is wider
+   * than its 20 px column, so it starts at its hour (an overflowing line is start-aligned); the last one, "12 AM", ends
+   * on the grid's edge instead of passing it. */
+  .heat .col-day { width: 88px; }
+  .heat thead .hh:last-child { position: relative; }
+  .heat thead .hh:last-child .hh-t { position: absolute; inset-inline-end: 0; bottom: 0; }
+}
 @media (max-width: 720px) {
-  .rp-tools { flex-direction: column; align-items: stretch; }
-  .rp .seg { display: flex; width: 100%; }
+  /* The subtitle's parts each on a line of their own (the dates; then the length of a custom period, or the days with
+   * readings), so the second part never pushes the page sideways (320 px). */
+  .rp .sub .sep { display: none; }
+  .rp .sub .sub-part { display: block; }
+  /* The page's controls: the period across the width in equal segments (SEG-4); the minute file keeps the row's far end,
+   * on a line of its own. */
+  .rp .seg { display: flex; flex: 1 1 100%; }
   .rp .seg-b { flex: 1 1 0; min-width: 0; padding-inline: 8px; }
-  .rp-period { grid-template-columns: minmax(0, 1fr); }
-  .rp-period .fig + .fig::before { inset-block: 0 auto; inset-inline: 20px; border-inline-start: 0; border-block-start: 1px solid var(--line); }
+  /* At a glance: a container, so the figures choose their form by the width they have. */
+  .rp-glance { container: glance / inline-size; }
+  /* The pattern card: the subtitle's two parts on lines of their own. */
   .pattern { padding: 16px; }
-  .pattern-tools { margin-inline-start: 0; }
-  .heat .col-day { width: 72px; }
+  .pattern-sub .sep { display: none; }
+  .pattern-sub .ps-part { display: block; }
   .days { padding: 16px 16px 4px; }
   /* The table and dialog system's phone forms (the early phone check, run owner_reports_r04_s10; TBL-8, DLG-5): the
    * table recomposes instead of scrolling: notes fold under the day, the peak's time under its value, the weekday over
@@ -458,4 +500,52 @@ th.is-asc .sort-ico { transform: rotate(180deg); }
   [dir="rtl"] .dlg-head { padding-inline-start: 16px; }
   .dlg-body { padding-inline-end: 16px; }
   .dlg-foot { padding-inline: 16px; }
+}
+
+/* ------------------------------------------------------- the phone's figures
+ * The glance is a container only on a phone (720 px and below), so these never reach a wider page. With room for two
+ * figures side by side (330 px, where "Average inside" and its icon still fit half the card), average inside and the
+ * highest peak share the first row and entries spans the second: the two figures counted in people sit together. The
+ * peak's day and time go under its name on two lines of their own, and the row's two heads share that height (64: the
+ * name 20, then 4, 18, 4, 18), so the values and feet stay level. Narrower (320 checked), the three stack, each across
+ * the card. */
+@container glance (min-width: 330px) {
+  .rp-period { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rp-period #fig-entries { grid-column: 1 / -1; }
+  .rp-period #fig-entries::before { inset-block: 0 auto; inset-inline: 20px; border-inline-start: 0; border-block-start: 1px solid var(--line); }
+}
+/* Where half the card is narrow (a glance under 600 px: a phone held upright), the peak's day and time take two lines of
+ * their own under its name; wider (the 200% zoom of 1440, 720 px), they keep one line beside it. */
+@container glance (min-width: 330px) and (max-width: 599.98px) {
+  .rp-period #fig-avg .stat-head, .rp-period #fig-peak .stat-head { min-height: 64px; }
+  .rp-period #fig-peak .stat-meta { flex-direction: column; align-items: flex-start; row-gap: 4px; }
+  .rp-period #fig-peak .stat-meta .sep { display: none; }
+}
+@container glance (max-width: 329.98px) {
+  .rp-period { grid-template-columns: minmax(0, 1fr); }
+  .rp-period .fig + .fig::before { inset-block: 0 auto; inset-inline: 20px; border-inline-start: 0; border-block-start: 1px solid var(--line); }
+}
+
+/* ------------------------------------------------------- the phone's pattern
+ * The grid transposed (reports.js draws it at 720 px and below): a column per weekday, Sunday first from the inline
+ * start, under the calendar's short names; a row per hour, each with its label (caption type, --ink-2) in a 44 px column.
+ * The cells keep PAT-2's 44 px height, radius 8 and 4 px spacing on the plate, and every mark (PAT-3…10). A run of
+ * closed or no-reading hours merges down its column and keeps its words: across in Arabic, where they fit the column
+ * («لا قراءات» on two lines), and set along the run in English, top to bottom, where "Closed" is wider than a column. */
+.pattern.is-t .heat .col-hour { width: 44px; }
+.pattern.is-t .hw { height: 22px; padding: 0; font-size: 12px; line-height: 18px; font-weight: 400; color: var(--ink-2); text-align: center; vertical-align: bottom; white-space: nowrap; }
+/* Each hour's row is 44 px tall through its header, so a row keeps its height even where every column's run spans it
+ * (an empty period). */
+.pattern.is-t .hr { height: 44px; padding: 0 4px 0 0; font-size: 12px; line-height: 18px; color: var(--ink-2); text-align: start; white-space: nowrap; }
+[dir="rtl"] .pattern.is-t .hr { padding: 0 0 0 4px; }
+.pattern.is-t .hc .run { display: inline-block; max-width: 100%; white-space: normal; line-height: 18px; }
+[dir="ltr"] .pattern.is-t .hc .run { writing-mode: vertical-rl; max-width: none; max-height: 100%; white-space: nowrap; }
+.pattern.is-t .wd-n { display: none; }
+/* Below 360 px (320 checked): English heads its columns "Su" ... "Sa", as a date picker does ("Wed" is wider than a 26 px
+ * column); the card's title keeps its line, and the switch follows the key on a line of its own. */
+@media (max-width: 359px) {
+  .pattern.is-t .wd-m { display: none; }
+  .pattern.is-t .wd-n { display: inline; }
+  .pattern-head { grid-template-columns: minmax(0, 1fr); grid-template-areas: "title" "sub" "key" "switch"; justify-items: start; }
+  #numbers { margin-block-start: 16px; }
 }

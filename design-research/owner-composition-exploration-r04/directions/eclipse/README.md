@@ -1780,3 +1780,23 @@ The reference is `DESIGN-SPEC.md` (RAI-1, HDR-3…7, BDG-1…4, STW-1…2, CRD-1
 - **Open and capture.** `reports.html` takes `lang`, `state` (`full`, `short`), `range` (`7d`, `28d`) or `from`/`to`,
   `dialog`, `export` and `motion`, as before. `capture.mjs` and `reports-capture.mjs` follow the renamed elements
   (`#ops-btn`, `#card-trend`, `#table-export`). The round's probes and frames are in `/tmp/fitway-scratch/reports/`.
+
+## Step 4, phase B: three refinements at 1440, and Reports at 768 and 390
+
+The reference is `DESIGN-SPEC.md` (HDR-4, HDR-7, TBL-10, TRU-7, PAT-12, OWN-R2, OWN-R3, OWN-R8…R11, K-29, K-38 and §8
+Q17-Q22), not this file. Brief: `step4-reports-phase-b.md`.
+
+- **1440, the user's three refinements (2026-10-01).** The period control stands alone at the start of the controls row,
+  and "Export minute data" moves to its far end (the left in Arabic). "Last 7 days" names its baseline beside its value:
+  the measure, then «مقابل 9 – 15 سبتمبر» / "vs 9 – 15 Sep", stacked, the card still 166 px. A preset's subtitle is its
+  dates alone; a custom period keeps its length, and fewer days with readings keep that fact. Nothing else moved.
+- **768 (721-1023 px).** The glance stacks; the period's figures are 1 : 1.25 : 1 so the peak's day and time keep one
+  line under its name. The pattern keeps 1440's form, the switch at the end of its title's row.
+- **390 (720 px and below).** The period across the width, the minute export at the row's far end on its own line.
+  Average inside and the highest peak side by side, entries under them. The pattern transposed into a week calendar
+  (`reports.js` draws `.pattern.is-t` at 720 px and below and redraws it when the breakpoint is crossed): a column per
+  weekday, a row per hour, the same slots, marks, words and keyboard, its axes turned. Day by day in TBL-8's form.
+- **Checked.** 320 (the figures stack; "Su" … "Sa"), 1024 and 720 × 450 (the 200% zoom). The export dialog's file name
+  breaks only between its parts. Daily is unchanged: its files are as at `9b6ae63`, and its seven states at 1440, 768
+  and 390 render byte for byte the same but for antialiasing noise that also appears between two renders of `9b6ae63`.
+- **Probes and frames** are in `/tmp/fitway-scratch/reports-b/` (`R4b`).

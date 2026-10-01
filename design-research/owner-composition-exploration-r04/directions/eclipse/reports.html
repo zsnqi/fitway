@@ -29,7 +29,7 @@
 </head>
 <!-- data-frame (step 4): Reports takes the frame Daily took in step 3 (style.css "the frame"): the rail at 721 px and
      wider (it opens over the content, with a scrim from 721 to 1023 px), and at 720 px and below the compact header and
-     the bar. Reports' own content below 1024 px is composed in step 4's phase B. -->
+     the bar. Reports' own content below 1200 px is composed since step 4 phase B (reports.css, "below 1200 px"). -->
 <body class="rp" data-frame>
   <a class="skip" href="#main" data-t="skip"></a>
   <div class="page">
@@ -144,8 +144,9 @@
         </div>
       </header>
 
-      <!-- The page's controls (step 4): the period, and the minute file by it (TBL-10). Everything below answers for the
-           period, except "Last 7 days", which names its own span. -->
+      <!-- The page's controls (step 4): the period alone at the row's start, and the minute file at its far end (HDR-7,
+           TBL-10; user 2026-10-01). Everything below answers for the period, except "Last 7 days", which names its own
+           span. -->
       <div class="rp-tools">
         <div class="seg" id="range-seg" role="group" aria-labelledby="range-seg-name">
           <span class="sr-only" id="range-seg-name" data-t="rangeName"></span>
