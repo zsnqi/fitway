@@ -3895,3 +3895,38 @@ The local usage limit is close, so the user continues this coordinator role in a
   - It writes contact sheets and `FINDINGS.md` to `/tmp/fitway-scratch/review-s3/`.
 - **Next:** on its report, show the user the sheets and findings, and the user decides. Then write the consolidated
   "do not" list before step 4's brief.
+## The step-3 review returned: no blocker or major finding (2026-10-01)
+
+- **The reviewer** (`owner-direction-verifier-high`, fresh) covered `9074da6..50a5690`. It left the worktree
+  untouched, and the spec lint gave 343 rows and 0 problems.
+  - Its `FINDINGS.md` was not written, because the harness refused the file. The findings are recorded here from its
+    final message.
+  - Its sheets, frames, video strips and measurements are in `/tmp/fitway-scratch/review-s3/`, which is session-local.
+- **Verdict:** strong, coherent, distinctive work, worth keeping. Measured:
+  - loading to live arrives with zero shift at every size, with and without motion;
+  - none of 56 page states (1440, 768, 390 and 320, AR and EN, seven states) scrolls sideways, clips, or has a
+    target under 44 px;
+  - reduced motion arrives complete.
+- **Findings, as hypotheses** (`E/` is the direction folder):
+  1. **Minor, STA-14.** No history makes the chart taller on the phone. The legend's note wraps to a third line, so the
+     chart card is 524 px against 498 at 390 EN, and 568.5 against 542.5 at 320 in both languages. The causes are
+     `E/style.css:679` and `E/app.js:876`. STA-14's "same heights in all seven states" is wrong. The coordinator
+     confirmed the third line on the frame.
+  2. **Minor, LGT-7 and TRU-3 against STA-2 and OWN-D9.** Delayed keeps the chart card's light, and only Inside now's
+     goes out (`E/app.js:734-741`), while Unavailable's chart is unlit. The user chooses.
+  3. **Minor, DAT-4 and K-17.** A date still breaks inside the details' "Usual Wednesday" fact: «16 / سبتمبر» at
+     390 AR, and "26 / Aug" at 320 EN (`E/app.js:88`, `:165`). K-17 records this as fixed.
+  4. **Minor, EMP-5.** The error's "Check the connection, then try again." exists only in the phone's badge details.
+     At 721 px and wider it is never visible (`E/app.js:668`, `:688`).
+  5. **Nit, TRU-2.** "Busiest time · Last 7 days" averages 7 days in live ("Average 51") but 6 in Closed and
+     Unavailable ("Average 50") (`E/app.js:372-384`).
+  6. **Nit, CHT-21.** The legend keeps keys for marks that Loading, Closed and Error do not draw. This is the spec's
+     own rule.
+- **Not counted:**
+  - `components.html` scrolls sideways at 390 and at 768 EN, as it already did at `9074da6`.
+  - The empty top of the tooltip lane (CHT-18) and the focus label over Inside now (FOC-5) are user decisions.
+  - A late rail close at 768 did not reproduce in 80 more trials.
+- **README:** it claims equal heights in every state, which finding 1 contradicts, and it implies K-17 is fixed,
+  which finding 3 contradicts.
+- **Next:** the user decides each finding. Agreed fixes go to one Sonnet fixer, with targets the coordinator freezes
+  after measuring. Then the "do not" list and step 4's brief.
