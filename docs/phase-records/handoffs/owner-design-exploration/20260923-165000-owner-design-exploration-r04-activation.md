@@ -4424,3 +4424,5 @@ The user ends this local session here and continues in a new cloud session. No a
   the coordinator's recommendation (the headers).
 - **Coordinator note for the fix round:** «عرض آخر 28 يومًا» on the empty period's button shows wide gaps around «28»
   at 390 AR. Check the spacing of the number inside the label.
+- **Decision 4, an empty period below 1024: the sentence once,** in the busy-times card with the way back; day by day
+  hides until the period has readings (the build's form). *User 2026-10-01,* on the coordinator's recommendation.
