@@ -4428,3 +4428,7 @@ The user ends this local session here and continues in a new cloud session. No a
   hides until the period has readings (the build's form). *User 2026-10-01,* on the coordinator's recommendation.
 - **Decision 5, the day list's button: "Show all days" stays,** one tap for the whole period (not one more week per
   tap). *User 2026-10-01,* on the coordinator's recommendation.
+- **Decision 6, K-39: one day at a time up to 1279 px,** so 1024-1279 follows `DESIGN_GUIDE.md`'s 44 × 44 px target
+  minimum; 1440's week grid stays from 1280 up. *User 2026-10-01,* on the coordinator's recommendation.
+- **Q18 and Q19 are not open:** the user accepted both on 2026-10-01 ("The user's phone critique of phase B"). The
+  spec still lists them as open, so the fix round records them as answered. The coordinator did not ask again.
