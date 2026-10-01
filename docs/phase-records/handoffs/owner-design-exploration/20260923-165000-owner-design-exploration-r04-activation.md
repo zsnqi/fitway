@@ -4045,3 +4045,18 @@ The local usage limit is close, so the user continues this coordinator role in a
 - **Waiting:** the user's word to launch. Launching runs Opus at `xhigh`, so it is a big call under the working
   agreement.
 - **Next:** on the user's word, launch `owner-direction-designer` with the brief, in the background.
+## Step 4 phase A launched (2026-10-01)
+
+- **User decisions (2026-10-01):**
+  - the user approved the phase A brief and the step-4 agent plan;
+  - the coordinator continues in this cloud session until step 4 closes, because phase B resumes the same designer,
+    and only this session can resume it;
+  - a new session follows after step 4. Before it, the user pastes the working setup script into the `fitway`
+    environment.
+- **Launched:** `owner-direction-designer` (Opus, `xhigh`), in the background, with
+  `directions/briefs/step4-reports-phase-a.md`.
+  - It works in s04 on `d2cf1a3` and writes to `/tmp/fitway-scratch/reports/`.
+  - It commits without pushing.
+- **If this session ends before phase B,** a fresh designer takes phase B from the phase A commit, its report and the
+  brief, as step 3 allowed.
+- **Next:** on its report, inspect the contact sheet and frames, push, and show the user.
