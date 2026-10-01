@@ -3822,3 +3822,45 @@ The local usage limit is close, so the user continues this coordinator role in a
   - **Small fixes in the cloud** go to `owner-direction-fixer` with `model: "sonnet"` (Sonnet 5.5), at `medium` (the
     definition's level) or `high`, never `xhigh` or `max`. On this machine Codex takes them.
   - The cloud environment `fitway` is saved with `CLAUDE_CODE_PROMPT_CACHE_TTL=1h` and the draft setup script.
+## First cloud task done, and the proposal-4 fix launched (2026-10-01)
+
+- **The checks:**
+  - `pnpm context:show --milestone owner-design-exploration-r04` resolves the packet (READY, sha `93dca6a2…`). Under
+    pnpm 11 the `--` form fails ("Unknown argument: --"), so drop the `--`.
+  - `pnpm check:design-context` passes, with Impeccable on the PATH.
+  - Chromium renders `E/index.html` and `?state=unavailable` with the self-hosted fonts, and nothing fails to load.
+- **Why the draft setup script did nothing:** the environment runs it from `/home/user`, not the clone. With `set -u`
+  and no `-e`, every repository step failed silently, and it still exited 0 in 1.6 s. Also, the pinned Playwright
+  1.61.1 wants Chromium revision 1228, but the image ships 1194, and the environment says not to run
+  `playwright install`.
+- **The working setup script, tested from `/home/user`.** The user pastes it into the `fitway` environment's settings:
+
+  ```bash
+  #!/bin/bash
+  # The environment runs this from /home/user, not the clone.
+  set -u
+  cd /home/user/fitway || exit 1
+  corepack enable
+  pnpm install --frozen-lockfile
+  # Do not run `playwright install`: point the pinned revision at the preinstalled Chromium.
+  rev=$(node -p "const d = (m, from) => require('path').dirname(require.resolve(m, { paths: [from] })); require(d('playwright-core', d('playwright', d('@playwright/test', process.cwd()))) + '/browsers.json').browsers.find(b => b.name === 'chromium').revision")
+  [ -n "$rev" ] && mkdir -p "/opt/pw-browsers/chromium_headless_shell-$rev/chrome-headless-shell-linux64" "/opt/pw-browsers/chromium-$rev/chrome-linux64"
+  ln -sf /opt/pw-browsers/chromium "/opt/pw-browsers/chromium_headless_shell-$rev/chrome-headless-shell-linux64/chrome-headless-shell"
+  ln -sf /opt/pw-browsers/chromium "/opt/pw-browsers/chromium-$rev/chrome-linux64/chrome"
+  sh .claude/skills/impeccable/scripts/impeccable --help >/dev/null 2>&1 || true
+  ln -sf "$HOME/.impeccable/bin/0.1.5/impeccable" /usr/local/bin/impeccable
+  ```
+
+  - With it, repository Playwright launches unmodified. The preinstalled Chromium is 141, under Playwright 1.61's
+    149; Eclipse renders correctly on it.
+  - The build worktree is `/home/user/s04`; it needs its own `pnpm install --frozen-lockfile`.
+- **The fix launched:** an `owner-direction-fixer` on Sonnet at `medium`, in s04 on `fd28be4`. It applies
+  proposal 4 and writes `ad63268` into K-02. Its frozen choices:
+  - the concept's last reading is 3:00 PM, and now stays 7:42 PM;
+  - the line is drawn plain, with no peak ring;
+  - Today's peak and Entries say «بانتظار القراءات» / "Waiting for readings". "No readings" would contradict the
+    drawn line. This is the coordinator's choice from the accepted gap words, and the user can revert it;
+  - View details stays disabled.
+  - It commits without pushing.
+- **Next:** check its report and frames, then a fresh design reviewer for all of step 3. Pushing the build branch
+  needs the user's word in this cloud session.
