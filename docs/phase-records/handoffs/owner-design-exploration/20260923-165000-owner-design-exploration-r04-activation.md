@@ -4321,3 +4321,14 @@ from this section.
 - **Coordinator checks:** the comparison sheet and A and B's patterns at 390 AR, downscaled; the `reports.js` hooks are
   gated on `?opt`. Seen: B's weekday strip bars are of nearly equal height, so the strip compares days weakly.
 - **Next:** the user picks (mixing is possible, for example A's pattern with B's list); a fresh designer builds it.
+
+## The user picks option B, and its build launched (2026-10-01)
+
+- **User decision (2026-10-01): option B, one day at a time,** on the coordinator's and the designer's
+  recommendation. A and C are not picked.
+- **Launched:** a fresh `owner-direction-designer` (Opus, `xhigh`) on `briefs/step4-reports-phone-build.md`, base
+  `aa509b9`, evidence in `D:\fitway-temp\reports-phone\build\`.
+  - B becomes the page below 1024, and the `?opt` switch leaves.
+  - It finishes B's weak points: the week strip that barely compares days, faint quiet hours, the empty sentence said
+    twice, and the long full list.
+  - It looks at 768 under the same lens, removes the Q17 baseline at every size, and closes Q20-Q22 and K-29.
