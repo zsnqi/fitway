@@ -85,8 +85,8 @@
       covReadVal: (a, b) => `${a} من ${b} دقيقة`,
       covLineVal: `معدّل <bdi>30</bdi> دقيقة حول كل نقطة: <bdi>15</bdi> قبلها و<bdi>15</bdi> بعدها، والأقرب أثقل وزنًا`,
       usualEntries: (n) => `المعتاد ${n}`,
-      covUsualVal: `معدّل <bdi>26</bdi> أغسطس و<bdi>2</bdi> و<bdi>9</bdi> و<bdi>16</bdi> سبتمبر`,
-      covUsualNone: `المسجّل يوم أربعاء واحد (<bdi>16</bdi> سبتمبر)`,
+      covUsualVal: `معدّل <bdi>26</bdi> أغسطس و<bdi>2</bdi> و<bdi>9</bdi> و<bdi>16</bdi> سبتمبر`,
+      covUsualNone: `المسجّل يوم أربعاء واحد (<bdi>16</bdi> سبتمبر)`,
       minutesTitle: "دقيقة بدقيقة",
       noReadingsYet: "لا قراءات بعد",
       minutesAria: "قراءات اليوم دقيقة بدقيقة",
@@ -162,8 +162,8 @@
       covReadVal: (a, b) => `${a} of ${b} minutes`,
       covLineVal: "Average of the 30 minutes around each point: 15 before and 15 after, weighted toward the middle",
       usualEntries: (n) => `Usual ${n}`,
-      covUsualVal: "Average of 26 Aug and 2, 9 and 16 Sep",
-      covUsualNone: "Only 1 past Wednesday recorded (16 Sep)",
+      covUsualVal: "Average of 26 Aug and 2, 9 and 16 Sep",
+      covUsualNone: "Only 1 past Wednesday recorded (16 Sep)",
       minutesTitle: "Minute by minute",
       noReadingsYet: "No readings yet",
       minutesAria: "Today's readings, minute by minute",
@@ -735,8 +735,7 @@
       // D1 (LGT-7, LGT-8; K-12, step 3): a card whose value is not current is drawn plain; the light returns with a live
       // value. Its level badge dims with the value (LVL-6; K-06).
       cardNow.classList.add("is-stale");
-      cardNow.classList.remove("lit", "lit-card");
-      $(".lamp", cardNow).remove();
+      setLights(false); // both lights out, as Unavailable draws them (LGT-7, LGT-8): Inside now's and the chart card's
       $("#now-label").innerHTML = `${L.staleTitle} ${tb(M.last)}`;
       $("#now-meta").classList.add("warn");
       $("#now-meta").innerHTML = `${ICON.clock}<span>${L.ago(M.nowM - M.last)}</span>`;
@@ -870,11 +869,11 @@
   /* --------------------------------------------------------------- legend */
   // The legend drops its box (CHP-3; K-10). Q1 (proposal, step 3; D2): a third entry names the ring, which marks a
   // single reading, so the peak's ring above the averaged line reads as what it is.
+  // With no history the note comes last, after the ring's key, so the phone's legend keeps live's rows (user 2026-10-01, review F1).
   $("#key").innerHTML = `<li><span class="sw sw-line" aria-hidden="true"></span><span>${L.keyLine}</span></li>` +
-    (HAS_HISTORY
-      ? `<li><span class="sw sw-usual" aria-hidden="true"></span><span>${L.keyUsual}</span></li>`
-      : `<li class="key-note">${ICON.info}<span>${L.noHistory}</span></li>`) +
-    `<li><span class="sw-ring" aria-hidden="true"></span><span>${L.keyPeak}</span></li>`;
+    (HAS_HISTORY ? `<li><span class="sw sw-usual" aria-hidden="true"></span><span>${L.keyUsual}</span></li>` : "") +
+    `<li><span class="sw-ring" aria-hidden="true"></span><span>${L.keyPeak}</span></li>` +
+    (HAS_HISTORY ? "" : `<li class="key-note">${ICON.info}<span>${L.noHistory}</span></li>`);
   $("#key").setAttribute("aria-label", L.chartTitle);
 
   /* ---------------------------------------------------------------- chart */
@@ -2677,7 +2676,7 @@
     clearState();
     retryBtn = errSay = null;
     fillCards();
-    setLights(true);
+    setLights(STATE !== "delayed");
     statusLoading(false);
     renderStatus();
     renderOps();
