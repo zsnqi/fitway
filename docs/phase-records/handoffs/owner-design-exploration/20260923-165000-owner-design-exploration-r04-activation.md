@@ -4411,3 +4411,10 @@ The user ends this local session here and continues in a new cloud session. No a
   - K-39 (B up to 1279, or the grid at 1024-1240);
   - Q18 and Q19, still open.
 - **Next:** the user's review. Then Reports' states (K-02, with K-38), with a fresh designer.
+
+## The user's review of the phone build, one decision at a time (2026-10-01)
+
+- **The review format changes.** The seven sheets at once were too many and too small to read, so the user could not
+  tell what to look at. Each decision now gets one cropped, numbered comparison image and one question, in order.
+- **Decision 1, the week strip: one bar per day** (the options round's form), not the mini outlines of each day's
+  hours. *User 2026-10-01.* Against the coordinator's recommendation (the outlines).
