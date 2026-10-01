@@ -3729,3 +3729,61 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
 - **Coordinator inspection, not verification:** `states-1440-ar` and `states-390-ar` are coherent with the frame, and
   every state keeps the live layout.
 - **Next:** show the user; then a fresh design reviewer for all of step 3.
+## Cloud resume point (2026-10-01)
+
+The local usage limit is close, so the user continues this coordinator role in a cloud session on the same account.
+
+- **User decision (2026-10-01):** proposal 1 is accepted. On the loading path, MOT-10's lights and usual line appear
+  at arrival.
+- **Explained to the user, answers pending:**
+  - **Proposal 2:** the header and the phone badge say «غير متصل» / "Offline" for the state Product calls
+    Unavailable. The coordinator recommends keeping it.
+  - **Proposal 3 (HDR-6):** the header's status line, «مباشر · آخر قراءة 7:42 م», now has a fixed box, so a
+    status change moves nothing. Nothing visible changes. The coordinator recommends keeping it.
+  - **Proposal 4:** in Unavailable, the designer hides today's earlier real readings.
+    - The dotted «لا قراءات» mark and the usual line stay either way.
+    - The user leans to showing the earlier readings.
+    - The coordinator recommends this: show them drawn plain, with no end point, halo or pulse, then the dotted mark
+      from the last reading to now. The cards still show no current count.
+- **Branches, all pushed:**
+  - the coordinator branch is `codex/owner-redesign-r04`, which holds this handoff;
+  - the build branch is `owner-followup-r04-build` at `fd28be4`. That is `ad63268` plus the spec lint moved to
+    `E/tools/lint-spec.mjs`.
+- **Next:**
+  1. Get the user's answers on proposals 2-4 and apply them.
+     - Small fixes go to Codex (GPT-6.1 Sol), not a Claude fixer. In the cloud, check that the Codex CLI exists
+       first; if it does not, use a Claude `owner-direction-fixer`.
+     - The same edit writes `ad63268` into K-02.
+  2. Run a fresh design reviewer (`owner-direction-verifier-high`, or an Impeccable critique) on the whole of step 3,
+     from `637b285` to the fix, at 1440, 768 and 390, AR and EN. Then the user decides.
+  3. Before step 4's brief, write the consolidated "do not" list (see "Cloud sessions and direct Codex delegation").
+- **Cloud differences:**
+  - There is no `D:\` and no `.claude/launch.json`. Use a scratch folder outside the repository, such as
+    `/tmp/fitway-scratch`, and rewrite each brief's Windows paths and PowerShell lines for bash.
+  - Make the build branch a worktree beside the clone with `git worktree add ../s04 owner-followup-r04-build`.
+  - The user reviews by pulling the branch locally (preview `eclipse-build` on 3174), or from sheets you send.
+  - Auto memory does not exist in the cloud. Replies stay in the Saudi dialect; fresh agents for each task; agents
+    report in their final message.
+  - Eclipse's fonts are self-hosted and no request leaves the origin. The proxy-certificate step that an earlier cloud
+    session needed for Google Fonts should not be needed here; if it is, add it to the setup script.
+  - **The Impeccable engine:** `.claude/skills/impeccable/scripts/impeccable` downloads engine 0.1.5 from its public
+    release channel, with a checksum, into `~/.impeccable/bin/0.1.5/`. `scripts/check-design-context.mjs` finds it
+    through `IMPECCABLE_BIN` or `impeccable` on the PATH.
+- **The environment's setup script (draft; the first cloud task confirms it and reports any fix):**
+
+  ```bash
+  #!/bin/bash
+  set -u
+  corepack enable
+  pnpm install --frozen-lockfile
+  pnpm exec playwright install --with-deps chromium
+  sh .claude/skills/impeccable/scripts/impeccable --help >/dev/null 2>&1 || true
+  ln -sf "$HOME/.impeccable/bin/0.1.5/impeccable" /usr/local/bin/impeccable 2>/dev/null \
+    || { mkdir -p "$HOME/.local/bin"; ln -sf "$HOME/.impeccable/bin/0.1.5/impeccable" "$HOME/.local/bin/impeccable"; }
+  ```
+
+- **First cloud task:**
+  1. Run `pnpm context:show -- --milestone owner-design-exploration-r04` and `pnpm check:design-context`, and confirm
+     Chromium renders `E/index.html`.
+  2. Fix the setup script if needed, and record the working version here.
+  3. Then continue from **Next**.
