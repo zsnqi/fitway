@@ -4103,3 +4103,30 @@ The local usage limit is close, so the user continues this coordinator role in a
 - **Coordinator inspection, not verification:** Reports AR at 1440, and Daily AR at 1440 with the details open,
   are coherent.
 - **Next:** the user's notes, then resume the same designer for phase B (768 and 390, BRK-9) with them.
+## The user's notes on phase A, and the one-light fix launched (2026-10-01)
+
+- **User decisions (2026-10-01):**
+  - **Reports' new composition is approved.** That covers the period control and export under the title, the one
+    card of the three figures, the pattern across the page, and the table's own export.
+  - **Q12-Q16 and the tooltip line are all accepted.** For Q13 the user wants to see the page without the week
+    card's light first.
+  - **The week card's place.** What bothered the user was not the order but the light on "Last 7 days" at the row's
+    far left.
+    - In RTL the eye starts at the top right, where the title, the period and the page's light are. A lit card at
+      the far left pulls the eye away.
+    - So the light comes off first, and the user judges the page. Only if it still reads wrong does the card move to
+      the row's start, on the right.
+    - If it moves, the brief must keep it from reading as part of the period under the control (TRU-7).
+  - **Why the card is separate,** confirmed from the spec: it is not about the light. The three figures follow the
+    chosen period, while "Last 7 days" always compares the last 7 complete days with the 7 before (TRU-7,
+    Q3 2026-09-30; K-01).
+  - **Fresh agents, not a resumed designer.** The phase A designer's context is very large, and resuming it would
+    re-read that context on every call. This follows the user's rule in DO-NOT.md, a fresh agent for each task.
+    - Phase B goes to a fresh designer, briefed from the phase A brief, its report and these decisions.
+- **Launched:** a Sonnet `owner-direction-fixer` at `medium`, on `bde1cde`, in `/tmp/fitway-scratch/fix-q13/`.
+  - The week card is plain in every period, and only the pattern is lit.
+  - «آخر 28 يومًا» / "Last 28 days" (K-37).
+  - The no-readings tooltip loses its repeated line.
+  - The spec marks Q12-Q16 decided.
+  - It makes a with-and-without-light comparison sheet against `bde1cde`.
+- **Next:** show the user the comparison. Then either phase B with a fresh designer, or first the card's move.
