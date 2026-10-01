@@ -3982,3 +3982,29 @@ The local usage limit is close, so the user continues this coordinator role in a
   - 390 and the Arabic are clean.
   - The "· 18 min" line breaks after the range, not inside it.
 - **Next:** the consolidated "do not" list (see "Cloud sessions and direct Codex delegation"), then step 4's brief.
+## The do-not list drafted, and the user's answers (2026-10-01)
+
+- **Drafted** by a fresh agent from this handoff, `NEXT-DIRECTION-BRIEF.md` and the spec. It is
+  `design-research/owner-composition-exploration-r04/directions/DO-NOT.md`, on this branch beside the brief.
+  - It holds 58 "Do not" entries in eight groups, each with its source pointer.
+  - Product and Spec are referenced, not repeated.
+- **User decisions (2026-10-01):**
+  - **Working agreement:** small calls follow the coordinator's recommendation without asking. The coordinator acts
+    and tells the user. Only big calls go to the user. This applies to every coordinator session from now on.
+  - **Operations has no rail section.** This confirms the 2026-09-27 agreement. It is a header status that opens its
+    details at every size, as the phone's badge does. So on desktop and tablet the header's status becomes a control.
+    - This is done in step 4's frame work, which also corrects RAI-1. RAI-1 lists Operations under
+      `user 2026-10-01`, but that decision set only the order of the sections.
+  - **"The delay is shown once" is dropped.** The approved designs also show the delay's age in the tooltip, the badge
+    and its details.
+  - **Arabic ranges take the en dash.** The handoff's earlier "en dash rejected" had no dated user decision, and
+    DAT-3 cited memory. The user thinks the rejection they remember was about Busiest time being one hour, not about
+    the dash, and prefers the en dash.
+  - **Reports' intro and digit roll:** the user decides these in step 4's review.
+  - **The review findings F1-F21 and Q3-Q10** stay in the spec, not in the list.
+- **The en dash fix launched:** a Sonnet `owner-direction-fixer` at `medium`, on `9a98164`, in
+  `/tmp/fitway-scratch/fix-dash/`.
+  - Only the glyph changes. Each range keeps its visual order and its line: an unspaced range is isolated LTR and
+    joined after the dash.
+  - DAT-3 is rewritten, and English is untouched.
+- **Next:** check the fixer's frames and push. Then step 4's brief, using DO-NOT.md and the Operations change.

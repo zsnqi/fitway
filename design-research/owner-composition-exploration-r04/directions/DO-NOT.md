@@ -1,7 +1,7 @@
 # Eclipse: the user's "do not" list
 
 The user's own rejections, bans and reversals for the concept-only Owner direction Eclipse, collected for designer
-briefs from step 4 (Reports) on. Draft, 2026-10-01.
+briefs from step 4 (Reports) on. 2026-10-01; the user answered its open items the same day.
 
 **Sources.** Each entry ends with its pointers:
 
@@ -31,9 +31,6 @@ reviewer views the user did not take up are left out.
 
 ## Numbers, dates, times and ranges
 
-- **Do not use an en dash in an Arabic range.** Use a plain hyphen: «6-8 م», «16 - 22 سبتمبر». English keeps its en
-  dash. The handoff names this as one of the user's own rejections. *H "Cloud sessions and direct Codex delegation
-  (2026-10-01)"; S DAT-3.*
 - **Do not set the numbers of a numeric column on the left edge in Arabic** (`text-align: end` in RTL). The user saw
   the units out of line. Numbers and their header share the physical right edge in both languages. *H "The user's
   decisions on the spec draft, and the second pass (2026-09-30)"; S TBL-1.*
@@ -167,6 +164,10 @@ reviewer views the user did not take up are left out.
   S BRK-4.*
 - **Do not put Operations in the phone's bottom bar.** On the phone it is reached through the status badge's details.
   *H "Step 3 phase A delivered: the frame at `d76972c` (2026-10-01)"; S BDG-4.*
+- **Do not give Operations a section in the rail.** It is a header status, about data freshness and sensor health,
+  that opens its details at every size, as the phone's badge does. The user agreed this on 2026-09-27 and confirmed it
+  on 2026-10-01; the step-3 rail, which still lists it (RAI-1), changes in step 4's frame work. *B "Decisions after the
+  step 3 report"; H "The do-not list drafted, and the user's answers (2026-10-01)".*
 
 ## Copy and wording
 
@@ -212,23 +213,15 @@ stay in H and are not repeated here.
 
 ## To confirm
 
-These may not be the user's own call, or their current scope is unclear.
+Settled on 2026-10-01:
+
+- Operations has no rail section, which is now in the main list.
+- "The delay is shown once" is dropped, because the approved designs show its age in the tooltip and the badge too.
+- The en dash is not rejected. The user prefers it in Arabic ranges too (DAT-3).
+- The review findings F1-F21 and the answers Q3-Q10 stay in the spec as rules the user endorsed.
+
+Still open:
 
 - **No intro on Reports, and no rolling digits when the period changes.** This was the Reports designer's proposal
-  and is pending the user's final view in step 4. *H "Reports delivered at `31a40d6`, for the user's review
+  and the user decides it in step 4's review. *H "Reports delivered at `31a40d6`, for the user's review
   (2026-09-30)"; B "The design-phase plan" §6; S MOT-10, OWN-R5.*
-- **Operations has "no primary rail slot".** The user confirmed this on 2026-09-27, but RAI-1 (user 2026-10-01) lists
-  Operations among the desktop rail's sections. Check whether the desktop rail slot is now intended. *B "Decisions
-  after the step 3 report"; H "Step 3 phase A delivered: the frame at `d76972c` (2026-10-01)"; S RAI-1.*
-- **The delay is shown once**, in the header status and the Inside now card only. The user agreed this on
-  2026-09-24, but later approved designs also show the delay's age in the latest-reading tooltip, the phone badge and
-  its details. Check its current scope. *B "Round 2" §9; S STA-2, BDG-3, CHT-13.*
-- **The en dash in Arabic ranges.** The handoff names it as a user rejection, but none of the three sources records a
-  dated decision, and DAT-3's source cell cites "memory". `CLAUDE.md` says auto memory is never a source of truth.
-  *H "Cloud sessions and direct Codex delegation (2026-10-01)"; S DAT-3.*
-- **The review findings F1-F21 and the answers to Q3-Q10.** The user accepted these on 2026-09-30, all at once and
-  with the reviewer's or the spec's own proposals. They are rules the user endorsed rather than the user's own
-  rejections, so they are not listed one by one above. Examples are «متوسط» only for the crowd band (GLO-3, GLO-4),
-  "week" never for a rolling 7 days (GLO-13), no bordered icon tiles (ICO-3), and nav names matching page titles
-  (GLO-14). *H "Step 1 done: the design review and the user's picks, and new-session resume point (2026-09-30)";
-  S §7 "Findings coverage", §8.*
