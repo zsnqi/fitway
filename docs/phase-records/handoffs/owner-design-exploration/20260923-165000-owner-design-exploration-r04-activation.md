@@ -4060,3 +4060,46 @@ The local usage limit is close, so the user continues this coordinator role in a
 - **If this session ends before phase B,** a fresh designer takes phase B from the phase A commit, its report and the
   brief, as step 3 allowed.
 - **Next:** on its report, inspect the contact sheet and frames, push, and show the user.
+## Step 4 phase A delivered at `bde1cde` (2026-10-01)
+
+- **Delivered** on `d2cf1a3`: 12 files, about +861/−443. The tree is clean, and the commit is pushed.
+  - **Frame:**
+    - Operations has left both rails.
+    - From 721 px, the header status is one 44 px control with a chevron and no box at rest, and it opens Operations'
+      details. On a phone it stays the badge.
+    - Reports takes the frame: the rail, the modal rail on tablet, and the phone's bar, header and menu. Its phone
+      placeholder is gone.
+  - **Reports at 1440, recomposed:**
+    - the period control and "Export minute data" sit under the header;
+    - one card holds the three figures, and "Last 7 days" has its own card with the summary light;
+    - the pattern spans the page with the data light;
+    - the day table has "Export table".
+  - **K entries:**
+    - the 21 step-4 K entries are marked fixed, with their measurements;
+    - K-25 is re-measured: every cell is at least 4.5:1 (lowest 4.78);
+    - K-02 and K-36 are untouched;
+    - K-37 is new: "Last 4 weeks" against GLO-13.
+  - **Self-reported:**
+    - 147 targets on Reports, none under 44;
+    - no sideways scroll at 1440 through 320, AR and EN;
+    - 0 breaks inside dates or ranges;
+    - HDR-6 moves 0.00 px;
+    - Daily unchanged apart from the status and the removed tile, with 3-4 px raster noise at 390;
+    - the spec lint finds 350 rows and 0 problems.
+  - **Caveats:**
+    - at 721-1023 px, Daily's hours move into the status details, and the concept label sits 8 px lower;
+    - Reports' layout below 1200 px is provisional until phase B;
+    - Reports' status always reads live until K-02;
+    - `reports-capture.mjs` shows 22 failures that also occur at the base: late-font shifts and a 404.
+  - Its `check:repository` failure was the build branch's stale `PROJECT_STATE.yaml` lease. The coordinator branch
+    passes, with the lease running until 2026-10-02.
+- **Proposals Q12-Q16, plus the duplicate line in the pattern's "No readings" tooltip.** The coordinator recommends
+  accepting all of them:
+  - Q12: Reports keeps no intro and no digit roll;
+  - Q13: only the pattern is lit;
+  - Q14: «آخر 28 يومًا» / "Last 28 days";
+  - Q15: no box at rest from 721 px;
+  - Q16: the hours move into the details at tablet width.
+- **Coordinator inspection, not verification:** Reports AR at 1440, and Daily AR at 1440 with the details open,
+  are coherent.
+- **Next:** the user's notes, then resume the same designer for phase B (768 and 390, BRK-9) with them.
