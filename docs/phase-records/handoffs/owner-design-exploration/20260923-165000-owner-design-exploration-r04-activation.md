@@ -4159,3 +4159,17 @@ The local usage limit is close, so the user continues this coordinator role in a
      «مقابل 9 – 15 سبتمبر» / "vs 9 – 15 Sep". This is a date in the meta slot, not an explanatory caption.
   3. **The subtitle:** "· 28 days" repeats the selected "Last 28 days". Show the length only for a custom period.
   - Whatever the user accepts goes into phase B's brief, so the fresh designer applies it at 1440 too.
+## Step 4 phase B launched with a fresh designer (2026-10-01)
+
+- **User decisions (2026-10-01):** all three layout notes are accepted.
+  - Export moves to the row's far end.
+  - The week card names its baseline, «مقابل 9 – 15 سبتمبر». The user wants to judge whether the card becomes too
+    full.
+  - The subtitle shows the length only for a custom period.
+- **Launched:** a fresh `owner-direction-designer` (Opus, `xhigh`), in the background, with
+  `directions/briefs/step4-reports-phase-b.md`.
+  - It works on `9b6ae63` and writes to `/tmp/fitway-scratch/reports-b/`.
+  - It does the three refinements at 1440, then Reports at 768 and 390 in every period and dialog.
+  - It gives the week card before and after crops.
+  - It stops for the user. The states (K-02) go to the next designer.
+- **Next:** on its report, inspect the sheets and the week card's crops, push, and show the user.
