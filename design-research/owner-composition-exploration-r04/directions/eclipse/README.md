@@ -1754,7 +1754,7 @@ step 3 changes (`STEP3_FRAMES`), holds the tooltip's width per page, and adds ov
 Loading, closed, unavailable and error on the Daily page, at every size, AR and EN: `index.html?state=loading` (the
 skeleton, held for review), `?state=loading&arrive=1800` (its arrival into live, with the intro on a tab's first open),
 `?state=loading&arrive=never` (the 10 s ceiling into error), `?state=closed`, `?state=unavailable` and `?state=error`
-(its retry arrives into live). The reference is `DESIGN-SPEC.md` (STA-10…14, §3.14 and the entries they name), not this
+(its retry arrives into live). Unavailable keeps today's earlier real readings (user 2026-10-01, proposal 4): the live line from opening to 3:00 PM, plain, then the dotted missing span to now, «بانتظار القراءات» / "Waiting for readings"; Today's peak and Entries say «قيد الانتظار» / "Pending". The reference is `DESIGN-SPEC.md` (STA-10…14, §3.14 and the entries they name), not this
 file. One skeleton, five truths: every state keeps the page's slots and heights, so the arrival moves nothing; no state
 shows a green dot, a pulse or a light. Live, delayed, no history and Reports keep their pixels. `components.html` gains
 the section "Daily's states".

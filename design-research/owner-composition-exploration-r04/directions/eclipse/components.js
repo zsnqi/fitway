@@ -85,7 +85,7 @@
       nowTitle: "داخل الصالة الآن", approx: "تقريبًا", peakTitle: "ذروة اليوم", lastReading: "آخر قراءة",
       ago: (n) => `قبل ${b(n)} دقيقة`,
       entries: "مرات الدخول", usualN: (n) => `المعتاد ${b(n)}`, busiestTitle: "أكثر الأوقات ازدحامًا", last7: `آخر ${b(7)} أيام`,
-      avgN: (n) => `المعدّل ${b(n)}`, avgTitle: "معدّل الموجودين", noReadings: "لا قراءات", noReadingsYet: "لا قراءات بعد",
+      avgN: (n) => `المعدّل ${b(n)}`, avgTitle: "معدّل الموجودين", noReadings: "لا قراءات", waiting: "بانتظار القراءات", pending: "قيد الانتظار", noReadingsYet: "لا قراءات بعد",
       wowTitle: "مقارنة أسبوعية", notEnough: "لا يكفي السجل بعد", needs: `يلزم أسبوعان كاملان · القراءات منذ ${b(13)} سبتمبر`,
       wowDates: `${b("16 - 22")} سبتمبر`,
       levels: ["هادئ", "متوسط", "مزدحم", "شديد الازدحام"],
@@ -94,7 +94,7 @@
       undesigned: `التحميل، والإغلاق كحالة للصفحة، وعدم التوفر، والخطأ مصمَّمة على صفحة اليوم (قسم «حالات صفحة اليوم» أدناه)، وتصمّمها كل شاشة أخرى في جولتها (${b("K-02")}).`,
       loadingWord: "جارٍ التحميل…", closed: "مغلق", opens: (t) => `يفتح ${t}`, offline: "غير متصل", noCount: "لا عدّ حاليًا", checkOps: "تحقّق من حالة التشغيل",
       errorWord: "خطأ", errorLine: "تعذّر التحميل", errorFull: "تعذّر تحميل قراءات اليوم", errorHint: "تحقّق من الاتصال، ثم أعد المحاولة.", errorSay: "تعذّر تحميل القراءات", retrying: "جارٍ المحاولة…",
-      stCaps: { loadNow: "التحميل: عنصر نائب في خانة كل قيمة منتظرة فقط", loadBusy: "التحميل: الأسماء و«آخر 7 أيام» نص حقيقي", closedNow: "مغلق: «مغلق» قيمةً بالكلمات، وموعد الفتح في الأسفل", closedPeak: "مغلق: ذروة اليوم ومرات الدخول «لم يحن بعد»", offNow: "غير متصل: لا عدد ولا مستوى ولا وقت", offEntries: "غير متصل: «لا قراءات» لليوم", errNow: "خطأ: التنبيه وإعادة محاولة واحدة، والتركيز عليها", errWork: "إعادة المحاولة جارية: الزر يحتفظ بالتركيز", errPeak: "خطأ: الاسم وحده، ولا قراءة محفوظة", heads: "الحالة في الرأس، بلا إطار", headsNote: "كلمة الحالة نفسها في الرأس والشارة وتفاصيلها، مع علامتها", anatomy: "العناصر النائبة", anatomyNote: "على خط أساس القيمة، بارتفاع حبر أرقامها، وتعبئة واحدة بلا حركة", phLoad: "الرأس المضغوط أثناء التحميل: كلمات، لا زر", phClosed: "مغلق: الشارة وتفاصيلها", phOff: "غير متصل: الشارة وتفاصيلها، والطريق إلى التشغيل", phErr: "خطأ: الشارة وتفاصيلها", plotFrame: "إطار فارغ: التحميل والخطأ", plotClosed: "مغلق: الخط المعتاد وحده، كله لم يحن بعد", plotOff: "غير متصل: لا قراءات من الفتح حتى الآن" },
+      stCaps: { loadNow: "التحميل: عنصر نائب في خانة كل قيمة منتظرة فقط", loadBusy: "التحميل: الأسماء و«آخر 7 أيام» نص حقيقي", closedNow: "مغلق: «مغلق» قيمةً بالكلمات، وموعد الفتح في الأسفل", closedPeak: "مغلق: ذروة اليوم ومرات الدخول «لم يحن بعد»", offNow: "غير متصل: لا عدد ولا مستوى ولا وقت", offEntries: "غير متصل: «قيد الانتظار» لليوم", errNow: "خطأ: التنبيه وإعادة محاولة واحدة، والتركيز عليها", errWork: "إعادة المحاولة جارية: الزر يحتفظ بالتركيز", errPeak: "خطأ: الاسم وحده، ولا قراءة محفوظة", heads: "الحالة في الرأس، بلا إطار", headsNote: "كلمة الحالة نفسها في الرأس والشارة وتفاصيلها، مع علامتها", anatomy: "العناصر النائبة", anatomyNote: "على خط أساس القيمة، بارتفاع حبر أرقامها، وتعبئة واحدة بلا حركة", phLoad: "الرأس المضغوط أثناء التحميل: كلمات، لا زر", phClosed: "مغلق: الشارة وتفاصيلها", phOff: "غير متصل: الشارة وتفاصيلها، والطريق إلى التشغيل", phErr: "خطأ: الشارة وتفاصيلها", plotFrame: "إطار فارغ: التحميل والخطأ", plotClosed: "مغلق: الخط المعتاد وحده، كله لم يحن بعد", plotOff: "غير متصل: قراءات الفتح حتى 3:00 م، ثم «بانتظار القراءات» حتى الآن" },
       phCaps: { display: "قيمة بالأرقام", title: "قيمة بالكلمات", caption: "وقت أو ملاحظة", badge: "شارة المستوى" },
       chartTitle: "ازدحام اليوم", keyLine: `معدّل كل ${b(30)} دقيقة`, keyUsual: "الأربعاء المعتاد", keyPeak: "قراءة الذروة", noHistory: "لا يكفي السجل للمقارنة بعد",
       details: "عرض التفاصيل", peakTag: "الذروة", latestFlag: "آخر قراءة", usual: "المعتاد", stillAhead: "لم يحن بعد",
@@ -183,7 +183,7 @@
       nowTitle: "Inside now", approx: "approx.", peakTitle: "Today's peak", lastReading: "Last reading",
       ago: (n) => `${n} min ago`,
       entries: "Entries", usualN: (n) => `Usual ${n}`, busiestTitle: "Busiest time", last7: "Last 7 days",
-      avgN: (n) => `Average ${n}`, avgTitle: "Average inside", noReadings: "No readings", noReadingsYet: "No readings yet",
+      avgN: (n) => `Average ${n}`, avgTitle: "Average inside", noReadings: "No readings", waiting: "Waiting for readings", pending: "Pending", noReadingsYet: "No readings yet",
       wowTitle: "Week over week", notEnough: "Not enough history yet", needs: "Needs two full weeks · readings since 13 Sep",
       wowDates: "16 – 22 Sep",
       levels: ["Quiet", "Moderate", "Busy", "Packed"],
@@ -192,7 +192,7 @@
       undesigned: "Loading, closed as a page state, unavailable and error are designed on Daily (“Daily's states” below); each other screen designs them in its own round (K-02).",
       loadingWord: "Loading…", closed: "Closed", opens: (t) => `Opens ${t}`, offline: "Offline", noCount: "No current count", checkOps: "Check the Operations status",
       errorWord: "Error", errorLine: "Couldn't load", errorFull: "Couldn't load today's readings", errorHint: "Check the connection, then try again.", errorSay: "Couldn't load readings", retrying: "Trying again…",
-      stCaps: { loadNow: "Loading: a placeholder in each awaited value's own slot", loadBusy: "Loading: names and “Last 7 days” are real text", closedNow: "Closed: “Closed” as a value in words, the next opening at the foot", closedPeak: "Closed: today's peak and entries are “Still ahead”", offNow: "Offline: no count, level or time", offEntries: "Offline: “No readings” for today", errNow: "Error: the alert and one retry, which takes focus", errWork: "Retrying: the button keeps focus", errPeak: "Error: the name alone; no reading is kept", heads: "The header's status, boxless", headsNote: "One status word in the header, the badge and its details, with its mark", anatomy: "Placeholders", anatomyNote: "On the value's baseline, as tall as its digits' ink; one flat fill, no motion", phLoad: "The compact header while loading: words, not a control", phClosed: "Closed: the badge and its details", phOff: "Offline: the badge, its details and the way to Operations", phErr: "Error: the badge and its details", plotFrame: "An empty frame: loading and error", plotClosed: "Closed: the usual line alone, all still ahead", plotOff: "Offline: no readings from opening to now" },
+      stCaps: { loadNow: "Loading: a placeholder in each awaited value's own slot", loadBusy: "Loading: names and “Last 7 days” are real text", closedNow: "Closed: “Closed” as a value in words, the next opening at the foot", closedPeak: "Closed: today's peak and entries are “Still ahead”", offNow: "Offline: no count, level or time", offEntries: "Offline: “Pending” for today", errNow: "Error: the alert and one retry, which takes focus", errWork: "Retrying: the button keeps focus", errPeak: "Error: the name alone; no reading is kept", heads: "The header's status, boxless", headsNote: "One status word in the header, the badge and its details, with its mark", anatomy: "Placeholders", anatomyNote: "On the value's baseline, as tall as its digits' ink; one flat fill, no motion", phLoad: "The compact header while loading: words, not a control", phClosed: "Closed: the badge and its details", phOff: "Offline: the badge, its details and the way to Operations", phErr: "Error: the badge and its details", plotFrame: "An empty frame: loading and error", plotClosed: "Closed: the usual line alone, all still ahead", plotOff: "Offline: readings from opening to 3:00 PM, then “Waiting for readings” to now" },
       phCaps: { display: "a value in figures", title: "a value in words", caption: "a time or a note", badge: "the level badge" },
       chartTitle: "Today's crowd", keyLine: "30-min average", keyUsual: "Usual Wednesday", keyPeak: "Peak reading", noHistory: "Not enough history to compare yet",
       details: "View details", peakTag: "Peak", latestFlag: "Latest", usual: "Usual", stillAhead: "Still ahead",
@@ -890,7 +890,7 @@
       [stateCard({ icon: "person", label: L.nowTitle, word: true, value: `<span class="cx-words">${L.closed}</span>`, foot: `<span class="cx-st-foot-note">${L.opens(b(time(0)))}</span>` }), L.stCaps.closedNow, "STA-11 · CRD-10"],
       [stateCard({ icon: "peak", label: L.peakTitle, value: `<span class="cx-st-say">${L.stillAhead}</span>` }), L.stCaps.closedPeak, "STA-11 · CRD-3 · GLO-8"],
       [stateCard({ icon: "person", label: L.nowTitle, value: `<span class="cx-st-say">${L.noCount}</span>`, foot: `<span class="cx-st-foot-note">${L.checkOps}</span>` }), L.stCaps.offNow, "STA-12 · CRD-10"],
-      [stateCard({ icon: "entries", label: L.entries, value: `<span class="cx-st-say">${L.noReadings}</span>`, note: "" }), L.stCaps.offEntries, "STA-12 · GLO-5"],
+      [stateCard({ icon: "entries", label: L.entries, value: `<span class="cx-st-say">${L.pending}</span>`, note: "" }), L.stCaps.offEntries, "STA-12 · CRD-10"],
       [stateCard({ icon: "person", label: L.nowTitle, alert: true }), L.stCaps.errNow, "STA-13 · EMP-5 · FOC-1"],
       [stateCard({ icon: "person", label: L.nowTitle, alert: true, working: true }), L.stCaps.errWork, "STA-13 · EMP-5 · STA-9"],
       [stateCard({ icon: "peak", label: L.peakTitle }), L.stCaps.errPeak, "STA-13 · CRD-9"],
@@ -912,7 +912,7 @@
       <div class="cx-row cx-row-3">${plots}</div>`);
   }
   // The chart in the states (CHT-21): the empty frame (loading, error), closed (the usual line alone, still ahead, the
-  // first stop selected) and unavailable (no readings from opening to now, its one stop selected).
+  // first stop selected) and unavailable (the readings from opening to 3:00 PM, then no readings to now, the missing span's stop selected).
   function drawStatePlot(host) {
     const mode = host.dataset.mode, id = host.id, W = host.clientWidth, H = host.clientHeight;
     if (!W || !H) return;
@@ -932,16 +932,21 @@
     const by = Math.round(yb) + 0.5;
     let tip = "", mx = 0, top = 0, style = "dashed";
     if (mode === "unavailable") {
-      const g0 = Math.min(X(0), X(NOW)), g1 = Math.max(X(0), X(NOW));
-      s.push(`<path d="${RTL ? `M${f(xL)},${by}H${f(g0)}` : `M${f(g1)},${by}H${f(xR)}`}" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>`);
+      // The last reading is 3:00 PM (540): the live demo's line up to it, then the missing span to now (user 2026-10-01, proposal 4).
+      const g0 = Math.min(X(540), X(NOW)), g1 = Math.max(X(540), X(NOW)), e0 = Math.min(X(GAP0), X(GAP1)), e1 = Math.max(X(GAP0), X(GAP1));
+      const lo = Math.min(xL, xR), hi = Math.max(xL, xR);
+      s.push(`<path d="M${f(lo)},${by}H${f(e0)}M${f(e1)},${by}H${f(g0)}M${f(g1)},${by}H${f(hi)}" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>`);
+      for (let x = e0 + 2.5; x <= e1 - 1.5; x += 4) s.push(`<circle cx="${f(x)}" cy="${by}" r="1" fill="rgba(245,243,242,0.62)"/>`);
       const dots = []; for (let x = g0 + 2.5; x <= g1 - 1.5; x += 4) dots.push(x);
       dots.forEach((x) => s.push(`<circle cx="${f(x)}" cy="${by}" r="1.25" fill="#f5f3f2"/>`));
       s.push(`<ellipse cx="${f((g0 + g1) / 2)}" cy="${by}" rx="${f((g1 - g0) / 2 + 9)}" ry="7" fill="url(#${id}-chalk)"/>`);
       mx = dots.reduce((a, x) => (Math.abs(x - (g0 + g1) / 2) < Math.abs(a - (g0 + g1) / 2) ? x : a), dots[0]); top = by - 1.25; style = "dotted";
-      tip = `<div class="cx-tip-t">${b(timeRange(0, NOW))}</div><div class="cx-tip-main"><span class="cx-tip-word">${L.noReadings}</span></div>`;
+      tip = `<div class="cx-tip-t">${b(timeRange(540, NOW))}</div><div class="cx-tip-main"><span class="cx-tip-word">${L.waiting}</span></div>`;
     } else s.push(`<path d="M${f(xL)},${by}H${f(xR)}" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>`);
     if (mode === "closed") s.push(`<path d="${path(0, DAY - 1, usual)}" fill="none" stroke="rgba(245,243,242,0.36)" stroke-width="1.5" stroke-dasharray="3.5 4.5" stroke-linecap="round"/>`);
     if (mode === "unavailable") {
+      const ln = DATA.line.live, red = (a, z) => `<path d="${path(a, z, (m) => ln[m])}" fill="none" stroke="#ff2946" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
+      s.push(red(0, GAP0 - 1), red(GAP1 + 1, 540));
       s.push(`<path d="${path(0, NOW, usual)}" fill="none" stroke="rgba(245,243,242,0.55)" stroke-width="1.5" stroke-dasharray="3.5 4.5" stroke-linecap="round"/>`);
       s.push(`<path d="${path(NOW, DAY - 1, usual)}" fill="none" stroke="rgba(245,243,242,0.36)" stroke-width="1.5" stroke-dasharray="3.5 4.5" stroke-linecap="round"/>`);
     }

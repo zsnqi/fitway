@@ -73,7 +73,7 @@
       hideDetails: "إخفاء التفاصيل",
       peakTag: "الذروة",
       levels: ["هادئ", "متوسط", "مزدحم", "شديد الازدحام"],
-      ro: { usual: "المعتاد", peak: "الذروة", latest: "آخر قراءة", empty: "الصالة خالية", noReading: "لا قراءات", noReadingYet: "لا قراءات بعد", ahead: "لم يحن بعد", inside: "داخل الصالة" },
+      ro: { usual: "المعتاد", peak: "الذروة", latest: "آخر قراءة", empty: "الصالة خالية", noReading: "لا قراءات", waiting: "بانتظار القراءات", pending: "قيد الانتظار", noReadingYet: "لا قراءات بعد", ahead: "لم يحن بعد", inside: "داخل الصالة" },
       chartAria: "ازدحام اليوم حسب الوقت",
       keys: "استخدم مفتاحي السهمين للتنقل بين نقاط كل نصف ساعة، ومنها الذروة وآخر قراءة. Home لوقت الفتح، وEnd لآخر قراءة.",
       avgInside: (v) => `معدّل الموجودين ${v}`,
@@ -150,7 +150,7 @@
       hideDetails: "Hide details",
       peakTag: "Peak",
       levels: ["Quiet", "Moderate", "Busy", "Packed"],
-      ro: { usual: "Usual", peak: "Peak", latest: "Latest", empty: "Empty", noReading: "No readings", noReadingYet: "No readings yet", ahead: "Still ahead", inside: "inside" },
+      ro: { usual: "Usual", peak: "Peak", latest: "Latest", empty: "Empty", noReading: "No readings", waiting: "Waiting for readings", pending: "Pending", noReadingYet: "No readings yet", ahead: "Still ahead", inside: "inside" },
       chartAria: "Today's crowd by time",
       keys: "Use the arrow keys to move between the half-hour points, including the peak and the latest reading. Home goes to opening time and End to the latest reading.",
       avgInside: (v) => `Average inside ${v}`,
@@ -441,6 +441,10 @@
   // Closed (before today's opening) and unavailable have no reading today: the latest reading is "none" (-1).
   const START = { last: STATE === "delayed" ? STALE_LAST : CLOSED || UNAV ? -1 : NOW, nowM: CLOSED ? CLOSED_NOW : NOW };
   let M = compute(START.last, START.nowM);
+  // Unavailable (user 2026-10-01, proposal 4): the edge went offline after its reading at 3:00 PM. The chart draws the
+  // live demo's own line from opening to that reading, and nothing after it; M (the cards' truth) stays "no reading".
+  const UNAV_LAST = 540;                                   // 3:00 PM
+  const LIVE = UNAV ? compute(NOW, NOW) : null;
 
   /* ---------------------------------------------------------------- icons */
   const ICON = {
@@ -762,7 +766,7 @@
    *                Names, the busiest time's "Last 7 days" and the unit-less heads are real text from the first paint.
    *   closed       Inside now says "Closed" as a value in words and the next opening at its foot; today's peak and
    *                entries are "Still ahead"; the busiest time over the last 7 days stays (history, not a reading).
-   *   unavailable  Inside now says "No current count" and where to look; today's peak and entries "No readings"; the
+   *   unavailable  Inside now says "No current count" and where to look; today's peak and entries "Pending"; the
    *                busiest time stays.
    *   error        Inside now carries the alert and the one retry; the other cards keep their names and nothing else. */
   const added = [], setAside = [];
@@ -812,8 +816,8 @@
     } else {
       sayInValue(SLOTS.now, sentence(L.noCount));
       SLOTS.now.foot.innerHTML = `<span class="stat-foot-note">${L.checkOps}</span>`;
-      sayInValue(SLOTS.peak, sentence(L.ro.noReading));
-      sayInValue(SLOTS.entries, sentence(L.ro.noReading));
+      sayInValue(SLOTS.peak, sentence(L.ro.pending));
+      sayInValue(SLOTS.entries, sentence(L.ro.pending));
     }
     // The busiest time over the last 7 days is history, not a reading: it stays (GLO-12; its basis is 6 full days).
     $("#busy-meta").innerHTML = `<span>${L.busiestMeta}</span>`;
@@ -937,17 +941,18 @@
       s.push(`<path d="M${f(xL)},${by}H${f(gl)}M${f(gr)},${by}H${f(xR)}" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>`);
       for (let x = gl + 2.5; x <= gr - 1.5; x += 4) s.push(`<circle cx="${f(x)}" cy="${by}" r="1" fill="rgba(245,243,242,0.62)"/>`);
     } else if (UNAV) {
-      // Unavailable: no readings from opening to now, the missing span's own mark (STA-4) along the axis; the rest of
-      // the day is still ahead.
+      // Unavailable: the earlier missing span as live draws it, then the missing span from the last reading (3:00 PM) to
+      // now (STA-4) along the axis; the rest of the day is still ahead.
       const [ul, ur] = unavSpan();
-      if (ul > xL) s.push(`<path d="M${f(xL)},${by}H${f(ul)}" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>`);
+      s.push(`<path d="M${f(xL)},${by}H${f(gl)}M${f(gr)},${by}H${f(ul)}" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>`);
       if (ur < xR) s.push(`<path d="M${f(ur)},${by}H${f(xR)}" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>`);
+      for (let x = gl + 2.5; x <= gr - 1.5; x += 4) s.push(`<circle cx="${f(x)}" cy="${by}" r="1" fill="rgba(245,243,242,0.62)"/>`);
       for (let x = ul + 2.5; x <= ur - 1.5; x += 4) s.push(`<circle cx="${f(x)}" cy="${by}" r="1" fill="rgba(245,243,242,0.62)"/>`);
     } else {
       s.push(`<path d="M${f(xL)},${by}H${f(xR)}" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>`);
     }
 
-    if (!frameOnly) s.push(hairlines(-Infinity, last, lineAt));
+    if (!frameOnly) s.push(hairlines(-Infinity, UNAV ? UNAV_LAST - 0.5 : last, UNAV ? LIVE.lineAt : lineAt)); // unavailable: none at or after 3:00 PM
 
     // The tooltip's connector (the lane, 2026-09-28): under the usual line and today's line, so where it crosses the usual
     // line the data draws over it. Filled by paintMarker; the marker group ends the SVG.
@@ -962,6 +967,15 @@
 
     // Today: the 30-minute average, thick and bright, with round caps where it stops.
     const drawn = !frameOnly && last >= 0;
+    if (UNAV && !frameOnly) {
+      // The live demo's line up to the 3:00 PM reading, the same curves cut at that knot, drawn as live draws them: no end
+      // point, halo, peak ring or peak tag.
+      LIVE.splines.forEach((sp, i) => {
+        const seg = LIVE.segments[i], k = seg.indexOf(UNAV_LAST);
+        if (seg[0] > UNAV_LAST) return;
+        s.push(`<path id="ln-${i}" d="${sp.path(X, Y, k >= 0 ? k : seg.length - 1)}" fill="none" stroke="#ff2946" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`);
+      });
+    }
     if (drawn) splines.forEach((sp, i) => s.push(`<path id="ln-${i}" d="${sp.path(X, Y)}" fill="none" stroke="#ff2946" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`));
 
     // The true peak: its own marker, joined to the line by a faint dotted drop.
@@ -1008,9 +1022,10 @@
   const MAGNET = 10;  // px: the pointer takes the peak or the latest reading when this close to it
   let stops = [];
   let sel = null;     // the selected stop, or null
-  // The unavailable state's missing span, opening to now, in plot pixels as the axis mark draws it (inside the plot).
+  // The unavailable state's missing span, the last reading (3:00 PM) to now, in plot pixels as the axis mark draws it
+  // (inside the plot).
   function unavSpan() {
-    const { X } = geo, a = X(-0.5), b = X(M.nowM + 0.5);
+    const { X } = geo, a = X(UNAV_LAST + 0.5), b = X(M.nowM + 0.5);
     const xL = Math.min(X(0), X(DAY)), xR = Math.max(X(0), X(DAY));
     return [Math.max(xL, Math.min(a, b)), Math.min(xR, Math.max(a, b))];
   }
@@ -1021,15 +1036,17 @@
     return { key: "gap", kind: "gap", m: (a + b) / 2, a, b, gl, gr, x: (first + lastDot) / 2, w: lastDot - first + 2, value: null, track: null, lift: 0 };
   }
   function buildStops() {
-    const { last, nowM, peakM, segments, lineAt } = M;
+    const { nowM } = M;
+    // Unavailable reads the live demo's readings up to 3:00 PM: no peak stop, no latest stop (nothing marks 3:00 PM).
+    const { last, peakM, segments, lineAt } = UNAV ? { last: UNAV_LAST, peakM: -1, segments: LIVE.segments, lineAt: LIVE.lineAt } : M;
     const { X } = geo;
     // Loading, an error and its retry: an empty frame has no stops (the plot's keyboard stop is set aside too).
     if (phase !== "ready") { stops = []; measureTipWidth(); return; }
     const segOf = (m) => segments.findIndex((sg) => m >= sg[0] && m <= sg[sg.length - 1]);
-    const specials = last < 0 ? [] : peakM >= 0 ? [peakM, last] : [last];
+    const specials = UNAV || last < 0 ? [] : peakM >= 0 ? [peakM, last] : [last];
     const out = [];
     for (let m = 0; m <= DAY; m += 30) {
-      if (UNAV && m <= nowM) continue;                                    // unavailable: one stop for opening to now
+      if (UNAV && m > UNAV_LAST && m <= nowM) continue;                   // unavailable: one stop for 3:00 PM to now
       if (m <= last && m >= GAP0 && m <= GAP1) continue;                 // inside the missing span
       if (specials.some((sp) => Math.abs(sp - m) < FOLD)) continue;      // folded into the peak or the latest reading
       if (m <= last) {
@@ -1041,14 +1058,18 @@
         out.push({ key: `h${m}`, kind: m <= nowM ? "wait" : "ahead", m, x: X(Math.min(m, DAY - 1)), value: HAS_HISTORY ? usualAt(m) : null, track: HAS_HISTORY ? "U" : null, lift: 0 });
       }
     }
-    if (last > GAP1) out.push(gapStop(Math.min(X(GAP0 - 0.5), X(GAP1 + 0.5)), Math.max(X(GAP0 - 0.5), X(GAP1 + 0.5)), GAP0, GAP1));
-    // Unavailable: opening to now is one span with no readings, with one stop (STA-4); it is where focus starts.
-    if (UNAV) out.push(gapStop(...unavSpan(), 0, nowM));
+    if (last > GAP1) {
+      const early = gapStop(Math.min(X(GAP0 - 0.5), X(GAP1 + 0.5)), Math.max(X(GAP0 - 0.5), X(GAP1 + 0.5)), GAP0, GAP1);
+      if (UNAV) early.key = "gap-early";                                 // "gap" is the span to now
+      out.push(early);
+    }
+    // Unavailable: 3:00 PM to now is one span waiting for readings, with one stop (STA-4); it is where focus starts.
+    if (UNAV) out.push({ ...gapStop(...unavSpan(), UNAV_LAST, nowM), waiting: true });
     if (peakM >= 0) out.push({ key: "peak", kind: "peak", m: peakM, x: X(peakM), value: M.peak, track: `L${segOf(peakM)}`, lift: 1 });
     // Round 7 decision 1: the latest stop shows the latest reading itself, the same number as the Inside now card
     // (live 49, Busy at 7:42 PM; while delayed, the stale reading the delayed card shows), not the line's value there.
     // The marker still sits on the line's end point. Closed and unavailable have no reading today, so no latest stop.
-    if (last >= 0) out.push({ key: "latest", kind: "latest", m: last, x: X(last), value: occ[last], track: `L${segOf(last)}`, lift: 0 });
+    if (last >= 0 && !UNAV) out.push({ key: "latest", kind: "latest", m: last, x: X(last), value: occ[last], track: `L${segOf(last)}`, lift: 0 });
     out.sort((a, b) => a.m - b.m || (a.kind === "peak" ? -1 : b.kind === "peak" ? 1 : 0));
     out.forEach((st, i) => { st.i = i; });
     stops = out;
@@ -1062,7 +1083,7 @@
     const u = HAS_HISTORY ? `${sepc}${L.ro.usual} ${usualAt(st.m)}` : "";
     const lvl = (v) => L.crowdIs(L.levels[levelOf(v)]);
     switch (st.kind) {
-      case "gap": return `${plainRange(fmtTime(st.a), fmtTime(st.b))}${sepc}${L.ro.noReading}`;
+      case "gap": return `${plainRange(fmtTime(st.a), fmtTime(st.b))}${sepc}${st.waiting ? L.ro.waiting : L.ro.noReading}`;
       case "wait": return `${t}${sepc}${L.ro.noReadingYet}${u}`;
       case "ahead": return `${t}${sepc}${L.ro.ahead}${u}`;
       case "zero": return `${t}${sepc}0${sepc}${L.ro.empty}`;
@@ -1073,7 +1094,7 @@
     }
   }
   function tipHTML(st) {
-    if (st.kind === "gap") return `<div class="tip-t">${timeRange(st.a, st.b)}</div><div class="tip-main"><span class="tip-word">${L.ro.noReading}</span></div>`;
+    if (st.kind === "gap") return `<div class="tip-t">${timeRange(st.a, st.b)}</div><div class="tip-main"><span class="tip-word">${st.waiting ? L.ro.waiting : L.ro.noReading}</span></div>`;
     const usualRow = HAS_HISTORY && st.kind !== "zero" ? `<div class="tip-u"><span class="sw sw-usual" aria-hidden="true"></span><span>${L.ro.usual} ${bdi(usualAt(st.m))}</span></div>` : "";
     const flag = st.kind === "peak" ? L.ro.peak : st.kind === "latest" ? L.ro.latest : "";
     // One start-aligned arrangement for every tooltip: at the peak and the latest the label chip comes first, then
@@ -1580,7 +1601,7 @@
     else if (e.key === "PageUp") j = i + 4;
     else if (e.key === "PageDown") j = i - 4;
     else if (e.key === "Home") j = 0;
-    else if (e.key === "End") j = stopBy("latest") ? latest : stops.length - 1; // no reading today: the day's last stop
+    else if (e.key === "End") j = stopBy("latest") || UNAV ? latest : stops.length - 1; // no reading today: the day's last stop
     else if (e.key === "Escape") { clearSelection(); return; }
     else return;
     e.preventDefault();
@@ -1599,9 +1620,14 @@
         : `${L.sayClosed(fmtTime(0))} There are no readings today yet. A dashed line shows the usual Wednesday, the average of the last 4 Wednesdays, through the whole day, ${plainRange(fmtTime(0), fmtTime(DAY))}.`;
     }
     if (UNAV) {
+      const gapSay = `${plainRange(fmtTime(UNAV_LAST), fmtTime(nowM))}${sepc}${L.ro.waiting}`;
       return RTL
-        ? `${L.sayOffline} لا قراءات من ${plainRange(fmtTime(0), fmtTime(nowM))}. يظهر خط متقطع للأربعاء المعتاد، معدّل آخر 4 أيام أربعاء، حتى وقت الإغلاق. بقية اليوم من ${plainRange(fmtTime(nowM + 1), fmtTime(DAY))} لم يحن بعد.`
-        : `${L.sayOffline} No readings ${plainRange(fmtTime(0), fmtTime(nowM))}. A dashed line shows the usual Wednesday, the average of the last 4 Wednesdays, through to closing time. The rest of the day, ${plainRange(fmtTime(nowM + 1), fmtTime(DAY))}, is still ahead.`;
+        ? `${L.sayOffline} مخطط خطي لمعدّل كل 30 دقيقة لعدد الموجودين تقريبًا اليوم، من الفتح الساعة ${fmtTime(0)} حتى الساعة ${fmtTime(UNAV_LAST)}. ` +
+          `الصالة مفتوحة وخالية من ${plainRange(fmtTime(0), fmtTime(ZERO_END))}. لا قراءات من ${plainRange(fmtTime(GAP0), fmtTime(GAP1))}. ` +
+          `${gapSay}. يظهر خط متقطع للأربعاء المعتاد، معدّل آخر 4 أيام أربعاء، حتى وقت الإغلاق. بقية اليوم من ${plainRange(fmtTime(nowM + 1), fmtTime(DAY))} لم يحن بعد.`
+        : `${L.sayOffline} Line chart of the 30-minute average of the approximate number of people inside today, from opening at ${fmtTime(0)} to ${fmtTime(UNAV_LAST)}. ` +
+          `Open with nobody inside ${plainRange(fmtTime(0), fmtTime(ZERO_END))}. No readings ${plainRange(fmtTime(GAP0), fmtTime(GAP1))}. ` +
+          `${gapSay}. A dashed line shows the usual Wednesday, the average of the last 4 Wednesdays, through to closing time. The rest of the day, ${plainRange(fmtTime(nowM + 1), fmtTime(DAY))}, is still ahead.`;
     }
     return RTL
       ? `مخطط خطي لمعدّل كل 30 دقيقة لعدد الموجودين تقريبًا اليوم، من الفتح الساعة ${fmtTime(0)} حتى آخر قراءة الساعة ${fmtTime(last)}. ` +
