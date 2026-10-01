@@ -76,10 +76,6 @@
             <span class="tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="8.2" cy="12" r="3.6"/><path d="M11.8 12h8.4M17.2 12v2.8M20.2 12v2"/></svg></span>
             <span class="rail-name"></span>
           </a></li>
-          <li><a class="rail-item" href="#" data-nav="operations" data-inert>
-            <span class="tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 7.5h9M17.5 7.5h2M4.5 16.5h2M10.5 16.5h9"/><circle cx="15.5" cy="7.5" r="2"/><circle cx="8.5" cy="16.5" r="2"/></svg></span>
-            <span class="rail-name"></span>
-          </a></li>
         </ul>
 
         <ul class="rail-group rail-foot">
@@ -110,48 +106,49 @@
           <h1 data-t="title"></h1>
           <p class="sub" id="sub"></p>
         </div>
+        <!-- The status column (HDR-6): the frame's Operations status, one control at every size that opens its details
+             (step 4: Operations has no section in the rail), then the concept label. At 721 px and wider the status reads
+             in full and the concept label sits outermost; at 720 px and below the status is the compact badge, and the
+             menu (the language, Monitoring and sign out) joins it. -->
         <div class="head-meta">
-          <span class="chip status" id="status"></span>
-          <span class="chip concept" data-t="concept"></span>
-        </div>
-        <!-- Phone (720 px and below): the Operations status as a badge that opens its details, and one menu for the
-             language and sign out. Hidden at 721 px and wider, where the rail holds them. -->
-        <div class="head-acts">
-          <button class="hbadge" id="ops-btn" type="button" aria-expanded="false" aria-controls="ops-pop" aria-haspopup="dialog">
-            <span class="hb-state" id="ops-btn-state"></span>
-            <svg class="hb-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5"/></svg>
-          </button>
-          <div class="fw-pop ops-pop" id="ops-pop" role="dialog" aria-labelledby="ops-title" aria-describedby="ops-desc" tabindex="-1" hidden>
-            <div class="ops-body">
-              <h2 class="ops-title" id="ops-title" data-t="opsTitle"></h2>
-              <div id="ops-desc">
-                <p class="ops-state" id="ops-state"></p>
-                <p class="ops-line" id="ops-last"></p>
-                <p class="ops-line" id="ops-hours"></p>
+          <div class="head-acts">
+            <button class="hbadge" id="ops-btn" type="button" aria-expanded="false" aria-controls="ops-pop" aria-haspopup="dialog">
+              <span class="hb-state" id="ops-btn-state"></span>
+              <svg class="hb-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5"/></svg>
+            </button>
+            <div class="fw-pop ops-pop" id="ops-pop" role="dialog" aria-labelledby="ops-title" aria-describedby="ops-desc" tabindex="-1" hidden>
+              <div class="ops-body">
+                <h2 class="ops-title" id="ops-title" data-t="opsTitle"></h2>
+                <div id="ops-desc">
+                  <p class="ops-state" id="ops-state"></p>
+                  <p class="ops-line" id="ops-last"></p>
+                  <p class="ops-line" id="ops-hours"></p>
+                </div>
+              </div>
+              <div class="ops-foot">
+                <a class="fw-mi" href="#" id="ops-link" data-inert>
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 7.5h9M17.5 7.5h2M4.5 16.5h2M10.5 16.5h9"/><circle cx="15.5" cy="7.5" r="2"/><circle cx="8.5" cy="16.5" r="2"/></svg>
+                  <span id="ops-link-name"></span>
+                  <svg class="fw-mi-end mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 7l5 5-5 5"/></svg>
+                </a>
               </div>
             </div>
-            <div class="ops-foot">
-              <a class="fw-mi" href="#" id="ops-link" data-inert>
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 7.5h9M17.5 7.5h2M4.5 16.5h2M10.5 16.5h9"/><circle cx="15.5" cy="7.5" r="2"/><circle cx="8.5" cy="16.5" r="2"/></svg>
-                <span id="ops-link-name"></span>
-                <svg class="fw-mi-end mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 7l5 5-5 5"/></svg>
+            <button class="hbtn" id="menu-btn" type="button" aria-expanded="false" aria-controls="menu-pop" aria-haspopup="menu">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle class="fill" cx="5.5" cy="12" r="1.6"/><circle class="fill" cx="12" cy="12" r="1.6"/><circle class="fill" cx="18.5" cy="12" r="1.6"/></svg>
+            </button>
+            <div class="fw-pop menu-pop" id="menu-pop" role="menu" aria-labelledby="menu-btn" hidden>
+              <a class="fw-mi" role="menuitem" tabindex="-1" href="#" id="menu-monitoring" data-inert>
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3.6" y="4.6" width="16.8" height="11.4" rx="2.4"/><path d="M9 20h6M12 16v4"/></svg>
+                <span id="menu-monitoring-name"></span>
+              </a>
+              <a class="fw-mi" role="menuitem" tabindex="-1" href="#" id="menu-lang"><span class="fw-glyph" id="menu-lang-glyph" aria-hidden="true"></span><span id="menu-lang-name"></span></a>
+              <a class="fw-mi" role="menuitem" tabindex="-1" href="#" id="menu-signout" data-inert>
+                <svg class="mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13.5 4.5H7.2a2.2 2.2 0 0 0-2.2 2.2v10.6a2.2 2.2 0 0 0 2.2 2.2h6.3"/><path d="M10.5 12h9M16.5 8.8 19.7 12l-3.2 3.2"/></svg>
+                <span id="menu-signout-name"></span>
               </a>
             </div>
           </div>
-          <button class="hbtn" id="menu-btn" type="button" aria-expanded="false" aria-controls="menu-pop" aria-haspopup="menu">
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle class="fill" cx="5.5" cy="12" r="1.6"/><circle class="fill" cx="12" cy="12" r="1.6"/><circle class="fill" cx="18.5" cy="12" r="1.6"/></svg>
-          </button>
-          <div class="fw-pop menu-pop" id="menu-pop" role="menu" aria-labelledby="menu-btn" hidden>
-            <a class="fw-mi" role="menuitem" tabindex="-1" href="#" id="menu-monitoring" data-inert>
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3.6" y="4.6" width="16.8" height="11.4" rx="2.4"/><path d="M9 20h6M12 16v4"/></svg>
-              <span id="menu-monitoring-name"></span>
-            </a>
-            <a class="fw-mi" role="menuitem" tabindex="-1" href="#" id="menu-lang"><span class="fw-glyph" id="menu-lang-glyph" aria-hidden="true"></span><span id="menu-lang-name"></span></a>
-            <a class="fw-mi" role="menuitem" tabindex="-1" href="#" id="menu-signout" data-inert>
-              <svg class="mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13.5 4.5H7.2a2.2 2.2 0 0 0-2.2 2.2v10.6a2.2 2.2 0 0 0 2.2 2.2h6.3"/><path d="M10.5 12h9M16.5 8.8 19.7 12l-3.2 3.2"/></svg>
-              <span id="menu-signout-name"></span>
-            </a>
-          </div>
+          <span class="chip concept" data-t="concept"></span>
         </div>
       </header>
 

@@ -745,22 +745,38 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
 
 /* --------------------------------------------------------------- the frame
  * Step 3 (run owner_daily_r04_s17): navigation and header at every size, for a page that opts in with
- * body[data-frame] (Daily now; Reports in step 4). Breakpoints:
+ * body[data-frame] (Daily since step 3; Reports since step 4). Breakpoints:
  *   1024 px and wider  the desktop rail, unchanged: the logo opens it over the content;
  *   721-1023 px        the same slim rail; open, it is a modal layer over a scrim (app.js keeps focus inside);
  *   720 px and below   the glass bar at the bottom and the compact header (the status badge and one menu).
- * Header forms (CHP-2): where the status does not open anything (721 px and wider) it and the concept label are
- * boxless text; on a phone the status is a 44 px badge that opens its details. */
-[data-frame] .head-meta { flex-wrap: wrap; justify-content: flex-end; gap: 4px 16px; padding-block-start: 8px; }
+ * Step 4 (user 2026-10-01): Operations has no section in the rail. At every size the header's status is a 44 px
+ * control that opens Operations' details (CHP-2): from 721 px it reads in full, boxless at rest, with a chevron (BTN-5's
+ * form: 5% white on hover and while open); on a phone it is the badge (BDG-1). The concept label is boxless text. */
+[data-frame] .head-meta { flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 4px 12px; padding-block-start: 0; margin-block-start: -4px; }
 [data-frame] .head-meta .chip { height: auto; padding: 0; border: 0; border-radius: 0; background: none; }
-[data-frame] .status { font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
-[data-frame] .status.is-delayed .strong { color: #e8b62e; }
 [data-frame] .concept { font-size: 12px; line-height: 18px; color: var(--ink-3); }
 [data-frame] .sub-part { white-space: nowrap; }
 /* The skip link, part of the frame: a 44 px control with the one ring (FOC-1; K-22's red ring), past the rail. */
 [data-frame] .skip { display: inline-flex; align-items: center; height: 44px; padding: 0 16px; border-radius: 12px; font-size: 13.5px; line-height: 20px; color: #0d0c0d; }
 [data-frame] .skip:focus-visible { outline-color: var(--ink); }
 .head-acts, .tabbar, .rail-scrim { display: none; }
+/* The status control: the details float under it from its inline end (BDG-3). */
+[data-frame] .head-acts { position: relative; z-index: 30; display: flex; align-items: center; gap: 8px; }
+.hb-line { display: none; }
+@media (min-width: 721px) {
+  /* The menu is the phone's: the rail holds Monitoring, the language and sign out from 721 px. */
+  [data-frame] #menu-btn, [data-frame] #menu-pop { display: none; }
+  /* HDR-3: the status in label type --ink-2, its mark, the word chalk at 500 and the line; centred on the title's line
+   * (its 44 px box starts 4 px above the header). Boxless at rest; the chevron says it opens. */
+  [data-frame] .head-acts .hbadge { padding-inline: 12px; border-color: transparent; background: none; color: var(--ink-2); }
+  [data-frame] .head-acts .hbadge:hover, [data-frame] .head-acts .hbadge[aria-expanded="true"] { border-color: transparent; background: rgba(255, 255, 255, 0.05); }
+  [data-frame] .head-acts .hbadge .hb-word { color: var(--ink); }
+  /* Its ring is FOC-2's, inside the box, so it keeps clear of the concept label stacked under it at 721-1023 px. */
+  [data-frame] .head-acts .hbadge:focus-visible { outline-offset: -4px; }
+  [data-frame] .head-acts .hbadge.is-delayed .hb-word { color: #e8b62e; }
+  [data-frame] .hb-line { display: inline; }
+  [data-frame] .hb-load { padding-inline: 12px; }
+}
 
 /* 721-1023 px: the open rail's scrim (SRF-4's), under the rail and over the content. */
 .rail-scrim {
@@ -773,8 +789,10 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
 }
 @media (min-width: 721px) and (max-width: 1023px) {
   [data-frame] .rail-scrim:not([hidden]) { display: block; }
-  /* The status and the concept label stack at the inline end, the status level with the title. */
-  [data-frame] .head-meta { flex-direction: column; align-items: flex-end; flex-wrap: nowrap; }
+  /* The status and the concept label stack at the inline end, the status level with the title. The status reads in
+   * full; to make room for its control the hours leave the subtitle for the status details, as on a phone (BDG-3). */
+  [data-frame] .head-meta { flex-direction: column; align-items: flex-end; flex-wrap: nowrap; row-gap: 0; }
+  [data-frame] .sub-hours { display: none; }
 }
 
 /* 720 px and below: the phone frame. */
@@ -903,9 +921,9 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
   [data-frame] .head-titles, [data-frame] .head-meta { display: contents; }
   [data-frame] .head h1 { grid-area: title; }
   [data-frame] .sub { grid-area: sub; margin-block-start: 4px; }
-  [data-frame] .sub-hours, [data-frame] #status { display: none; }
+  [data-frame] .sub-hours { display: none; }
   [data-frame] .concept { grid-area: concept; justify-self: start; margin-block-start: 4px; }
-  [data-frame] .head-acts { grid-area: acts; position: relative; z-index: 30; display: flex; align-items: center; gap: 8px; }
+  [data-frame] .head-acts { grid-area: acts; }
 }
 @media (max-width: 359px) {
   /* 320: the bar's inset drops to 8 so every short name keeps its line and the rings keep 4 px from their neighbours. */
@@ -943,13 +961,11 @@ body.dl [hidden] { display: none !important; }
 .dl .word > .ph-bar { height: 22px; }
 .dl .stat-meta > .ph-bar, .dl .stat-note > .ph-bar { height: 9px; border-radius: 4px; }
 .ph-box { display: block; width: 76px; height: 26px; border-radius: 8px; background: var(--ph); }
-[data-load="wait"] .ph-bar, [data-load="wait"] .ph-box, [data-load="wait"] .status-load, [data-load="wait"] .hb-load { visibility: hidden; }
-/* The status while loading: words, not a control, in the status's own type (the header's label, --ink-2). */
+[data-load="wait"] .ph-bar, [data-load="wait"] .ph-box, [data-load="wait"] .hb-load { visibility: hidden; }
+/* The status while loading: words, not a control, in the status's own type (the header's label, --ink-2), where the
+ * control's words will stand. */
 .hb-load { display: none; }
-@media (max-width: 720px) {
-  [data-frame] .hb-load { display: inline-flex; align-items: center; height: 44px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); white-space: nowrap; }
-  [data-frame] .status-load { display: none; }
-}
+[data-frame] .hb-load { display: inline-flex; align-items: center; height: 44px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); white-space: nowrap; }
 
 /* The states' words in a card (CRD-3's form): a sentence in heading type at 400, --ink-2, on the value's line; a value
  * written in words ("Closed") in title type at 500, chalk, like the busiest time; a note in caption type --ink-3 at the
@@ -977,9 +993,9 @@ body.dl [hidden] { display: none !important; }
  * ring the live dot's size (1.5 px, --ink-3); offline, a struck circle (15 px, --ink-2); an error, the alert mark
  * (--err) with its word in --err (COL-18), and the badge's edge in --err at 50%. Closed and offline words are chalk. */
 .dot.ring { background: none; box-shadow: inset 0 0 0 1.5px var(--ink-3); }
-[data-frame] .status .ico-off, .hbadge .ico-off, .ops-state .ico-off { color: var(--ink-2); }
-[data-frame] .status .ico-err, .hbadge .ico-err, .ops-state .ico-err { color: var(--err); }
-[data-frame] .status.is-err .strong, .hbadge.is-err .hb-word, .ops-state.is-err { color: var(--err); }
+.hbadge .ico-off, .ops-state .ico-off { color: var(--ink-2); }
+.hbadge .ico-err, .ops-state .ico-err { color: var(--err); }
+.hbadge.is-err .hb-word, [data-frame] .hbadge.is-err .hb-word, .ops-state.is-err { color: var(--err); }
 .hbadge.is-err { border-color: rgba(255, 107, 125, 0.5); }
 /* The figures region takes focus after a retry, quietly: a region never shows the ring (FOC-1 is for controls). */
 .dl #cards:focus { outline: none; }

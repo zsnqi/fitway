@@ -523,11 +523,12 @@
     $("#tab-reports").setAttribute("href", `reports.html?${p}`);
   }
 
-  /* ---- the frame (step 3). Breakpoints: the desktop rail at 1024 px and wider (it opens over the content, as it
-   * always has); the same rail from 721 to 1023 px, where it opens over the content as a modal layer (a scrim, the
-   * content inert, focus kept inside); at 720 px and below the bar at the bottom and the compact header, whose status
-   * badge opens its details and whose menu holds the language and sign out. Every layer opens from the keyboard,
-   * closes with Escape and returns focus to the control that opened it. */
+  /* ---- the frame (step 3; step 4 moved Operations out of the rail). Breakpoints: the desktop rail at 1024 px and wider
+   * (it opens over the content, as it always has); the same rail from 721 to 1023 px, where it opens over the content as
+   * a modal layer (a scrim, the content inert, focus kept inside); at 720 px and below the bar at the bottom and the
+   * compact header, whose menu holds Monitoring, the language and sign out. At every size the header's status opens
+   * Operations' details: the one way to Operations. Every layer opens from the keyboard, closes with Escape and returns
+   * focus to the control that opened it. */
   const mqTablet = matchMedia("(min-width: 721px) and (max-width: 1023px)");
   const mqPhone = matchMedia("(max-width: 720px)");
   const scrim = $("#rail-scrim");
@@ -571,8 +572,8 @@
     if (next) { e.preventDefault(); next.focus(); }
   });
 
-  // Phone: the status badge's details and the menu. One is open at a time; each closes with Escape (focus returns to
-  // its button), a tap outside, or focus leaving it. The details are a non-modal dialog that takes focus; the menu is a
+  // The status's details (every size) and the phone's menu. One is open at a time; each closes with Escape (focus
+  // returns to its button), a tap outside, or focus leaving it. The details are a non-modal dialog that takes focus; the menu is a
   // menu (arrow keys, Home and End; Tab closes it and moves on).
   const layers = {
     ops: { btn: $("#ops-btn"), pop: $("#ops-pop") },
@@ -659,9 +660,10 @@
   // The subtitle's two parts never break inside; on a phone the hours move into the status details.
   $("#sub").innerHTML = `<span class="sub-part">${L.date}</span><span class="sep sub-hours" aria-hidden="true">·</span><span class="sub-part sub-hours">${L.hours} ${timeRange(0, DAY)}</span>`;
 
-  const status = $("#status");
-  // The header's status (HDR-3), the phone's badge (BDG-1) and its details (BDG-3) say the same state: one word, its
-  // mark (never colour alone) and one line. Live and delayed keep their step-3 markup exactly. Step 3, second part:
+  // The frame's status (step 4: Operations has no section in the rail, user 2026-10-01): one control at every size,
+  // which opens Operations' details (BDG-2, BDG-3). From 721 px it reads in full, its word and its line (HDR-3); on a
+  // phone it is the compact badge, its word alone (BDG-1). The control and its details say the same state: one word,
+  // its mark (never colour alone) and one line. Live and delayed keep their step-3 words. Step 3, second part:
   //   closed     a hollow ring the live dot's size, "Closed", and the next opening;
   //   offline    (the unavailable state) a struck circle, "Offline", "No current count": no count, band or time;
   //   error      the alert mark in the error colour, "Error", what happened (and, in the details, what to do);
@@ -673,37 +675,35 @@
     if (STATE === "delayed") return { cls: "is-delayed", mark: ICON.clock, word: L.delayed, line: `${L.lastReading} ${tb(M.last)}`, ago: true };
     return { cls: "", mark: `<span class="dot" aria-hidden="true"></span>`, word: L.live, line: `${L.lastReading} ${tb(M.last)}` };
   }
+  // The control's name is its own text after the details' title, so it holds every word it shows (WCAG 2.5.3): the
+  // line is part of it from 721 px, and set aside with its box on a phone.
   function renderStatus() {
-    const s = statusOf();
-    status.className = `chip status${s.cls ? ` ${s.cls}` : ""}`;
-    status.innerHTML = `${s.mark}<span class="strong">${s.word}</span><span>· ${s.line}</span>`;
-  }
-  renderStatus();
-  // The phone's status badge and its details: the same status, compacted to its word, and the rest on request.
-  function renderOps() {
     const s = statusOf(), btn = layers.ops.btn;
     btn.className = `hbadge${s.cls ? ` ${s.cls}` : ""}`;
-    btn.setAttribute("aria-label", `${L.opsTitle}: ${s.word}`);
-    $("#ops-btn-state").innerHTML = `${s.mark}<span class="hb-word">${s.word}</span>`;
+    btn.removeAttribute("aria-label");
+    $("#ops-btn-state").innerHTML = `<span class="sr-only">${L.opsTitle}: </span>${s.mark}<span class="hb-word">${s.word}</span>` +
+      `<span class="hb-line"><span class="sr-only">${RTL ? "، " : ", "}</span><span aria-hidden="true">· </span>${s.line}</span>`;
+  }
+  renderStatus();
+  // The details: the same status, and the rest on request.
+  function renderOps() {
+    const s = statusOf();
     $("#ops-state").className = `ops-state${s.cls ? ` ${s.cls}` : ""}`;
     $("#ops-state").innerHTML = `${s.mark}<span>${s.word}</span>`;
     $("#ops-last").innerHTML = s.detail || s.line + (s.ago ? `<span class="sep" aria-hidden="true">·</span><span class="ops-ago">${L.ago(M.nowM - M.last)}</span>` : "");
     $("#ops-hours").innerHTML = `${L.hours} ${timeRange(0, DAY)}`;
   }
   renderOps();
-  // While the first payload resolves the state is not known: the status and the badge are set aside (hidden, so their
-  // boxes are new when the state arrives and nothing moves, DESIGN_GUIDE §6) and the words "Loading…" stand in their
-  // place, boxless (the phone's are not a control: there are no details to open yet). Hidden for the first 300 ms.
-  let statusLoad = null, badgeLoad = null;
+  // While the first payload resolves the state is not known: the control is set aside (hidden, so its box is new when
+  // the state arrives and nothing moves, DESIGN_GUIDE §6) and the words "Loading…" stand in its place, boxless and not a
+  // control (there are no details to open yet). Hidden for the first 300 ms.
+  let statusLoad = null;
   function statusLoading(on) {
     if (on && !statusLoad) {
-      statusLoad = Object.assign(document.createElement("span"), { className: "chip status status-load", textContent: L.loadingWord });
-      badgeLoad = Object.assign(document.createElement("span"), { className: "hb-load", textContent: L.loadingWord });
-      status.before(statusLoad);
-      layers.ops.btn.before(badgeLoad);
+      statusLoad = Object.assign(document.createElement("span"), { className: "hb-load", textContent: L.loadingWord });
+      layers.ops.btn.before(statusLoad);
     }
-    if (!on && statusLoad) { statusLoad.remove(); badgeLoad.remove(); statusLoad = badgeLoad = null; }
-    status.hidden = on;
+    if (!on && statusLoad) { statusLoad.remove(); statusLoad = null; }
     layers.ops.btn.hidden = on;
   }
 
@@ -853,8 +853,8 @@
   // at once (motion section). Everything ends on exactly the markup the page renders at load.
   function updateCards(prev) {
     const dt = Math.sign(M.last - prev.last);
-    rollTo($("#status bdi"), fmtTime(M.last), dt);
-    renderOps(); // the phone's status details (closed or open) take the new time at once
+    rollTo($("#ops-btn .hb-line bdi"), fmtTime(M.last), dt);
+    renderOps(); // the status details (closed or open) take the new time at once
     rollTo($("#now-v"), String(shownNow()));
     if (STATE === "delayed") rollTo($("#now-meta span"), L.ago(M.nowM - M.last));
     else rollTo($("#now-meta bdi"), fmtTime(M.last), dt);

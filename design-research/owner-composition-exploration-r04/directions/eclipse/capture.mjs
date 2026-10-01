@@ -1181,7 +1181,7 @@ const introPerf = (page) => page.evaluate(() => {
 // screen-reader text, how the line is drawn, and every animation with its properties.
 const introProbeNow = (page) => page.evaluate(() => {
   const R = (n) => { const r = n.getBoundingClientRect(); return [r.x, r.y, r.width, r.height].map((v) => Math.round(v * 100) / 100).join(","); };
-  const boxes = [...document.querySelectorAll(".head, #status, .card, .stat-head, .stat-value, .stat-value > *, .stat-foot, .stat-note, .chart-head, #plot, #plot-labels > *, .rail")].map(R);
+  const boxes = [...document.querySelectorAll(".head, #ops-btn, .card, .stat-head, .stat-value, .stat-value > *, .stat-foot, .stat-note, .chart-head, #plot, #plot-labels > *, .rail")].map(R);
   const props = (a) => [...new Set((a.effect?.getKeyframes?.() || []).flatMap((k) => Object.keys(k).filter((x) => !["offset", "easing", "composite", "computedOffset"].includes(x))))];
   return {
     state: window.__eclipse.intro.state, boxes,
@@ -1831,7 +1831,7 @@ async function captureMotion() {
       const nowClip = { x: card.x + 8, y: card.y + 52, width: card.width - 16, height: card.height - 56 };
       const ent = clipOf(await rectOf(page, "#card-entries"));
       const entClip = { x: ent.x + 8, y: ent.y + 52, width: ent.width - 16, height: 64 };
-      const st = clipOf(await rectOf(page, "#status"));
+      const st = clipOf(await rectOf(page, "#ops-btn"));
       const stClip = { x: st.x - 4, y: st.y - 4, width: st.width + 8, height: st.height + 8 };
       const cells = [], barCells = [];
       const r = { errors };
@@ -1875,7 +1875,7 @@ async function captureMotion() {
       cells.push({ buf: await page.screenshot({ clip: stClip }), caption: "Last reading 7:42 to 7:43, 70 ms" });
       await releaseAll(page);
       r.stepSay = await page.evaluate(() => document.getElementById("live-say").textContent);
-      r.restAfterStep = await page.evaluate(() => ({ nowV: document.getElementById("now-v").innerHTML, entries: document.getElementById("entries-v").innerHTML, status: document.querySelector("#status bdi").innerHTML, rollLeft: document.querySelectorAll(".roll-slot, .roll-run, .lv-fill").length }));
+      r.restAfterStep = await page.evaluate(() => ({ nowV: document.getElementById("now-v").innerHTML, entries: document.getElementById("entries-v").innerHTML, status: document.querySelector("#ops-btn .hb-line bdi").innerHTML, rollLeft: document.querySelectorAll(".roll-slot, .roll-run, .lv-fill").length }));
       const all = [...r.downAnimations, ...r.upAnimations, ...r.stepAnimations];
       const digits = all.filter((a) => /roll-(new|old)/.test(a.target));
       const firstY = (a) => { const m = /translateY\((-?[\d.]+)px\)/.exec(a.keyframes[0].transform || ""); return m ? Number(m[1]) : 0; };
@@ -2222,7 +2222,7 @@ try {
       await page.click("text=قراءة جديدة");
       await page.waitForTimeout(80);
       const after = await page.evaluate(() => window.__eclipse.figures);
-      m.newReading = { lastBefore: before.last, lastAfter: after.last, entriesBefore: before.entries, entriesAfter: after.entries, statusTime: await page.evaluate(() => document.querySelector("#status bdi").textContent), latestAfter: await page.evaluate(() => window.__eclipse.motion.latest), tunerStatus: await page.textContent(".t-latest") };
+      m.newReading = { lastBefore: before.last, lastAfter: after.last, entriesBefore: before.entries, entriesAfter: after.entries, statusTime: await page.evaluate(() => document.querySelector("#ops-btn .hb-line bdi").textContent), latestAfter: await page.evaluate(() => window.__eclipse.motion.latest), tunerStatus: await page.textContent(".t-latest") };
       await page.click("text=مستوى أدنى");
       await page.waitForTimeout(60);
       m.levelDown = { value: await page.textContent("#now-v"), level: await page.evaluate(() => document.querySelector("#now-foot .level").textContent), tunerStatus: await page.textContent(".t-latest"), say: await page.textContent("#live-say") };

@@ -86,7 +86,7 @@
       ago: (n) => `قبل ${b(n)} دقيقة`,
       entries: "مرات الدخول", usualN: (n) => `المعتاد ${b(n)}`, busiestTitle: "أكثر الأوقات ازدحامًا", last7: `آخر ${b(7)} أيام`,
       avgN: (n) => `المعدّل ${b(n)}`, avgTitle: "معدّل الموجودين", noReadings: "لا قراءات", waiting: "بانتظار القراءات", pending: "قيد الانتظار", noReadingsYet: "لا قراءات بعد",
-      wowTitle: "مقارنة أسبوعية", notEnough: "لا يكفي السجل بعد", needs: `يلزم أسبوعان كاملان · القراءات منذ ${b(13)} سبتمبر`,
+      wowTitle: `آخر ${b(7)} أيام`, notEnough: "لا يكفي السجل بعد", needs: `يلزم ${b(14)} يومًا · القراءات منذ ${b(13)} سبتمبر`,
       wowDates: `${b("16 – 22")} سبتمبر`,
       levels: ["هادئ", "متوسط", "مزدحم", "شديد الازدحام"],
       cmp: { busier: "أعلى من المعتاد", quieter: "أهدأ من المعتاد", same: "قريب من المعتاد" },
@@ -129,7 +129,7 @@
       dlgStates: { ready: "جاهزة، والتركيز على الحقل الأول", working: "قيد العمل", failed: "تعذّر، والتركيز على إعادة المحاولة", done: "تم", sheet: "ورقة سفلية على الهاتف" },
       openDlg: "افتح النافذة",
       statusLive: `${"<strong>مباشر</strong>"} · آخر قراءة ${b("7:42 م")}`, statusLate: `${"<strong>متأخر</strong>"} · آخر قراءة ${b("7:29 م")}`,
-      chipCaps: { levels: "شارة الازدحام: على «الآن» والذروات فقط", stale: "متأخرة: تخفت مع قيمتها", cmp: "شارة المقارنة", flags: "وسوم", status: "الحالة في الرأس، بلا إطار", statusBtn: "الحالة حين تفتح تفاصيلها: زر 44", concept: "علامة المفهوم، بلا إطار", legend: "مفتاح المخطط، بلا إطار", heatKey: "مفتاح النمط، بلا إطار" },
+      chipCaps: { levels: "شارة الازدحام: على «الآن» والذروات فقط", stale: "متأخرة: تخفت مع قيمتها", cmp: "شارة المقارنة", flags: "وسوم", status: "حالة التشغيل في الرأس من 721: زر 44 بلا إطار يفتح تفاصيلها", statusBtn: "عند المرور أو الفتح، وعند التركيز (حلقة داخلية)", concept: "علامة المفهوم، بلا إطار", legend: "مفتاح المخطط، بلا إطار", heatKey: "مفتاح النمط، بلا إطار" },
       nav: { today: "اليوم", reports: "التقارير", access: "الوصول", activity: "سجل النشاط", operations: "التشغيل", monitoring: "شاشة المراقبة", lang: "English", settings: "الإعدادات", signout: "تسجيل الخروج" },
       brand: "FITWAY، أسماء الأقسام", railLabel: "الأقسام",
       railCaps: { states: "الحالات: الحالية، وعند المرور، وعند التركيز مع الاسم", live: "اضغط Tab: يظهر الاسم عند التركيز فقط", open: "مفتوح فوق المحتوى", brand: "الشعار عند التركيز: يسمّي ما يفتحه", tablet: "الجهاز اللوحي: مفتوح فوق طبقة معتمة، والتركيز يبقى داخله" },
@@ -140,7 +140,8 @@
       lastAt: (t) => `آخر قراءة ${b(t)}`, pm: (t) => `${t} م`,
       frameCaps: { head: "الرأس المضغوط: العنوان، والحالة، والقائمة", headLate: "الرأس المضغوط، متأخر", ops: "تفاصيل الحالة مفتوحة", opsLate: "تفاصيل الحالة، متأخر", menu: "القائمة مفتوحة، والتركيز على أول عنصر", bar: "الشريط السفلي عند 390، والقسم الحالي «اليوم»", bar320: "عند 320: المرور على «التقارير»، والتركيز على «الإعدادات»", live: "جرّب: Tab ثم Enter، والأسهم داخل القائمة، وEscape يعيد التركيز" },
       hdrTitle: "التقارير", hdrSub: `${b("26")} أغسطس – ${b("22")} سبتمبر ${b(2026)}<span class="sep">·</span>${b(28)} يومًا`,
-      hdrCap: "رأس الصفحة: العنوان، ثم الفترة، وعناصر التحكم بارتفاع 44 في نهاية السطر",
+      hdrCap: "رأس الصفحة: العنوان والفترة، وحالة التشغيل في نهاية السطر؛ ثم عناصر تحكم الصفحة تحته",
+      exportMinutes: "تصدير بيانات الدقائق",
       emptyTable: `لا قراءات من ${b(1)} يوليو ${b(2026)} إلى ${b(31)} يوليو ${b(2026)}`, emptyAction: `عرض آخر ${b(4)} أسابيع`,
       emptyCaps: { table: "جدول بلا قراءات، وطريق واحد للعودة", alert: "تنبيه وإعادة محاولة واحدة" },
       colourNames: { page: "الصفحة", card: "البطاقة", panel: "النافذة", head: "رأس الجدول", line: "خط السطح", line2: "خط العنصر", line3: "عند المرور", ink: "الطباشير", ink2: "ثانوي", ink3: "توضيحي", red: "أحمر FITWAY", redhi: "الأحمر الساطع", ox: "العنابي", obs: "الأسود", live: "مباشر", delayed: "متأخر", amber: "نص المتأخر", stale: "رمادي قديم", err: "خطأ", field: "حافة الحقل" },
@@ -184,7 +185,7 @@
       ago: (n) => `${n} min ago`,
       entries: "Entries", usualN: (n) => `Usual ${n}`, busiestTitle: "Busiest time", last7: "Last 7 days",
       avgN: (n) => `Average ${n}`, avgTitle: "Average inside", noReadings: "No readings", waiting: "Waiting for readings", pending: "Pending", noReadingsYet: "No readings yet",
-      wowTitle: "Week over week", notEnough: "Not enough history yet", needs: "Needs two full weeks · readings since 13 Sep",
+      wowTitle: "Last 7 days", notEnough: "Not enough history yet", needs: "Needs 14 days · readings since 13 Sep",
       wowDates: "16 – 22 Sep",
       levels: ["Quiet", "Moderate", "Busy", "Packed"],
       cmp: { busier: "Busier than usual", quieter: "Quieter than usual", same: "About usual" },
@@ -227,7 +228,7 @@
       dlgStates: { ready: "Ready, focus on the first field", working: "Working", failed: "Failed, focus on Try again", done: "Done", sheet: "Bottom sheet on a phone" },
       openDlg: "Open the dialog",
       statusLive: "<strong>Live</strong> · Last reading 7:42 PM", statusLate: "<strong>Delayed</strong> · Last reading 7:29 PM",
-      chipCaps: { levels: "Level badge: on “now” and peaks only", stale: "Delayed: dims with its value", cmp: "Comparison badge", flags: "Flags", status: "Header status, boxless", statusBtn: "A status that opens its details: a 44 px control", concept: "Concept label, boxless", legend: "Chart legend, boxless", heatKey: "Pattern key, boxless" },
+      chipCaps: { levels: "Level badge: on “now” and peaks only", stale: "Delayed: dims with its value", cmp: "Comparison badge", flags: "Flags", status: "The header's status from 721 px: a boxless 44 px control that opens its details", statusBtn: "Hover or open, and keyboard focus (the inset ring)", concept: "Concept label, boxless", legend: "Chart legend, boxless", heatKey: "Pattern key, boxless" },
       nav: { today: "Today", reports: "Reports", access: "Access", activity: "Activity log", operations: "Operations", monitoring: "Monitoring", lang: "العربية", settings: "Settings", signout: "Sign out" },
       brand: "FITWAY, section names", railLabel: "Sections",
       railCaps: { states: "States: current, hover, and focus with its name", live: "Press Tab: the name shows on focus only", open: "Open, over the content", brand: "The logo on focus: it names what it opens", tablet: "Tablet: open over a scrim, focus kept inside" },
@@ -238,7 +239,8 @@
       lastAt: (t) => `Last reading ${t}`, pm: (t) => `${t} PM`,
       frameCaps: { head: "The compact header: title, status and menu", headLate: "The compact header, delayed", ops: "The status details, open", opsLate: "The status details, delayed", menu: "The menu, open, focus on its first item", bar: "The bar at 390, Today current", bar320: "At 320: hover on Reports, focus on Settings", live: "Try it: Tab then Enter, the arrows inside the menu, Escape returns focus" },
       hdrTitle: "Reports", hdrSub: `26 Aug – 22 Sep 2026<span class="sep">·</span>28 days`,
-      hdrCap: "Page header: the title, then the period; 44 px controls at the inline end",
+      hdrCap: "Page header: the title and the period, the Operations status at the inline end; the page's controls under it",
+      exportMinutes: "Export minute data",
       emptyTable: "No readings from 1 Jul 2026 to 31 Jul 2026", emptyAction: "Show the last 4 weeks",
       emptyCaps: { table: "A table with no readings, and one way back", alert: "An alert and one retry" },
       colourNames: { page: "Page", card: "Card", panel: "Dialog", head: "Table head", line: "Surface line", line2: "Control line", line3: "Hover line", ink: "Chalk", ink2: "Secondary", ink3: "Caption", red: "FITWAY red", redhi: "Bright red", ox: "Oxblood", obs: "Obsidian", live: "Live", delayed: "Delayed", amber: "Delayed text", stale: "Stale grey", err: "Error", field: "Field edge" },
@@ -271,7 +273,7 @@
     peak: '<path d="M4 17.5 9.2 11l3.4 3.2L20 6.5"/><path d="M15.4 6.5H20v4.6"/>',
     entries: '<path d="M10 4.5H6.8a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2H10"/><path d="M20 12h-9M14.2 8.8 11 12l3.2 3.2"/>',
     clock: '<circle cx="12" cy="12" r="8.2"/><path d="M12 7.6V12l3 2"/>',
-    wow: '<path d="M4 16.5l5.2-5.2 3.6 3.6L20 7.7"/><path d="M14.6 7.7H20v5.4"/>',
+    wow: '<rect x="4.6" y="5.6" width="14.8" height="14" rx="2.6"/><path d="M4.6 10.2h14.8M8.6 3.8v3.6M15.4 3.8v3.6"/>',
     up: '<path d="M4 16.5l5.2-5.2 3.6 3.6L20 7.7"/><path d="M14.6 7.7H20v5.4"/>',
     down: '<path d="M4 7.5l5.2 5.2 3.6-3.6L20 16.3"/><path d="M14.6 16.3H20v-5.4"/>',
     same: '<path d="M5 9.5h14M5 14.5h14"/>',
@@ -298,7 +300,7 @@
   };
   const ico = (name, extra = "") => svg(P[name], `cx-ico${extra ? " " + extra : ""}`);
   // ICO-5: glyphs that show time or direction mirror in Arabic.
-  const MIRROR = new Set(["peak", "entries", "wow", "up", "down", "signout"]);
+  const MIRROR = new Set(["peak", "entries", "up", "down", "signout"]);
   const icon = (name) => ico(name, MIRROR.has(name) ? "mirror" : "");
   const LOGO = `<svg viewBox="0 0 64 64" class="cx-brand-mk" aria-hidden="true" focusable="false"><path class="mk" d="M20.6 50.4A23 23 0 1 0 13.6 43.4" stroke-width="4.4"/><path class="mk" d="M24.2 20.8A13.6 13.6 0 1 1 26.4 44.2" stroke-width="4"/><path class="mk" d="M19.4 21.4 30.2 32.2 14.6 47.8" stroke-width="4.2" stroke-linejoin="miter" stroke-linecap="butt"/><circle class="mk-dot" cx="36" cy="28.2" r="4.2"/></svg>`;
   const LAMP = '<i class="lamp" aria-hidden="true"><i class="lamp-in"><i class="lamp-rim"></i></i></i>';
@@ -757,6 +759,9 @@
   }
 
   /* ------------------------------------------------------------ chips */
+  // The header's status from 721 px (step 4, HDR-3): a 44 px control that opens Operations' details, boxless at rest,
+  // with its chevron; BTN-5's 5% white on hover and while open; FOC-2's inset ring.
+  const hstatus = ({ late = false, cls = "" } = {}) => `<button class="hbadge cx-hstatus${late ? " is-delayed" : ""}${cls ? " " + cls : ""}" type="button" tabindex="-1" aria-haspopup="dialog" aria-expanded="${cls === "is-hover"}"><span class="hb-state">${late ? ico("clock") : '<i class="cx-dot"></i>'}<span class="cx-status${late ? " is-late" : ""}">${late ? L.statusLate : L.statusLive}</span></span>${svg(P.chevron, "hb-chev")}</button>`;
   function chips() {
     const lv = [10, 30, 55, 72].map((v) => badge(v)).join(" ");
     return section("chips", "chips", "CHP-1…9 · LVL-2…6", `<div class="card cx-stage"><div class="cx-grid" style="--min:280px">
@@ -764,16 +769,17 @@
       ${fig(badge(46, true), L.chipCaps.stale, "LVL-5 · LVL-6")}
       ${fig(`<div style="display:flex;gap:8px;flex-wrap:wrap">${cmpBadge("busier")}${cmpBadge("quieter")}${cmpBadge("same")}</div>`, L.chipCaps.cmp, "CHP-6 · ICO-5")}
       ${fig(`<div style="display:flex;gap:8px;flex-wrap:wrap"><span class="cx-flag">${L.peakTag}</span><span class="cx-flag">${L.latestFlag}</span><span class="cx-flag is-red">${L.highest}</span></div>`, L.chipCaps.flags, "CHP-7 · CHP-8")}
-      ${fig(`<div style="display:grid;gap:12px"><span class="cx-status"><i class="cx-dot"></i>${L.statusLive}</span><span class="cx-status is-late">${ico("clock")}${L.statusLate}</span></div>`, L.chipCaps.status, "CHP-2 · STA-1 · STA-2")}
-      ${fig(`<button class="cx-btn" type="button"><i class="cx-dot"></i><span class="cx-status">${L.statusLive}</span></button>`, L.chipCaps.statusBtn, "CHP-1 · CHP-2")}
+      ${fig(`<div style="display:grid;gap:12px;justify-items:start">${hstatus()}${hstatus({ late: true })}</div>`, L.chipCaps.status, "HDR-3 · CHP-2 · STA-1 · STA-2")}
+      ${fig(`<div style="display:grid;gap:12px;justify-items:start">${hstatus({ cls: "is-hover" })}${hstatus({ cls: "is-focus" })}</div>`, L.chipCaps.statusBtn, "CHP-2 · BTN-5 · FOC-2")}
       ${fig(`<span class="cx-concept">${L.concept}</span>`, L.chipCaps.concept, "CHP-2 · GLO-15")}
       ${fig(`<ul class="cx-legend"><li><i class="sw-line"></i>${L.keyLine}</li><li><i class="sw-usual"></i>${L.keyUsual}</li><li><i class="sw-ring"></i>${L.keyPeak}</li></ul>`, L.chipCaps.legend, "CHP-3 · CHT-20", false)}
     </div></div>`);
   }
 
   /* ------------------------------------------------------------ rail and header */
-  // The order everywhere (user 2026-10-01): Today, Reports, Activity log, Access, then the rest.
-  const NAV = [["today", "today"], ["reports", "reports"], ["activity", "activity"], ["access", "access"], ["operations", "operations"]];
+  // The order everywhere (user 2026-10-01): Today, Reports, Activity log, Access, then the rest. Operations has no
+  // section in the rail (user 2026-10-01, step 4): the header's status opens its details at every size.
+  const NAV = [["today", "today"], ["reports", "reports"], ["activity", "activity"], ["access", "access"]];
   const FOOT = [["monitoring", "monitoring"], ["lang", null], ["settings", "settings"], ["signout", "signout"]];
   function rail({ open = false, forced = {}, live = false }) {
     const item = (k, iconName) => {
@@ -786,17 +792,17 @@
       <ul>${NAV.map(([k, i]) => item(k, i)).join("")}</ul><ul class="foot">${FOOT.map(([k, i]) => item(k, i)).join("")}</ul></nav>`;
   }
   function rails() {
-    const hdr = `<div class="cx-header-spec" style="border:1px solid var(--line);border-radius:24px;background:#070707"><div class="cx-hdr"><div><h3>${L.hdrTitle}</h3><p>${L.hdrSub}</p></div><div class="cx-hdr-end"><span class="cx-concept">${L.concept}</span>${seg("28d")}</div></div></div>`;
+    const hdr = `<div class="cx-header-spec" style="border:1px solid var(--line);border-radius:24px;background:#070707"><div class="cx-hdr"><div><h3>${L.hdrTitle}</h3><p>${L.hdrSub}</p></div><div class="cx-hdr-end">${hstatus()}<span class="cx-concept">${L.concept}</span></div></div><div class="cx-hdr-tools">${seg("28d")}<button class="cx-btn" type="button" tabindex="-1">${ico("save")}<span>${L.exportMinutes}</span></button></div></div>`;
     // RAI-6: the tablet's open rail over SRF-4's scrim, with two plain cards standing for the page behind it.
     const tablet = `<div class="cx-tablet"><div class="cx-tablet-page"><i class="card lit lit-card">${LAMP}</i><i class="card"></i><i class="card is-wide lit lit-chart">${LAMP}</i></div><i class="cx-scrim-spec"></i>${rail({ open: true })}</div>`;
-    return section("rail", "rail", "RAI-1…8 · HDR-1…2 · FOC-4…5", `<div class="card cx-stage"><div class="cx-rails">
+    return section("rail", "rail", "RAI-1…8 · HDR-1…3 · FOC-4…5", `<div class="card cx-stage"><div class="cx-rails">
       <figure class="cx-fig" style="flex:0 0 260px"><div class="cx-spec" inert>${rail({ forced: { reports: "is-hover", access: "is-focus" } })}</div>${cap(L.railCaps.states, "RAI-2 · FOC-4 · FOC-5")}</figure>
       <figure class="cx-fig" style="flex:0 0 260px"><div class="cx-spec" inert>${rail({ forced: { brand: "is-focus" } })}</div>${cap(L.railCaps.brand, "RAI-8 · FOC-5")}</figure>
       <figure class="cx-fig" style="flex:0 0 260px"><div class="cx-spec">${rail({ live: true })}</div>${cap(L.railCaps.live, "FOC-4")}<span class="cx-live-tag">${L.live}</span></figure>
       <figure class="cx-fig" style="flex:0 0 260px"><div class="cx-spec" inert>${rail({ open: true })}</div>${cap(L.railCaps.open, "RAI-3 · RAI-7 · GLO-14", false)}</figure>
       <figure class="cx-fig" style="flex:0 0 420px"><div class="cx-spec" inert>${tablet}</div>${cap(L.railCaps.tablet, "RAI-6 · BRK-3 · SRF-4")}</figure>
     </div></div>
-    <figure class="cx-fig" style="align-items:stretch"><div class="cx-spec" inert>${hdr}</div>${cap(L.hdrCap, "HDR-1 · HDR-2 · CHP-2")}</figure>`);
+    <figure class="cx-fig" style="align-items:stretch"><div class="cx-spec" inert>${hdr}</div>${cap(L.hdrCap, "HDR-1…3 · HDR-6 · CHP-2 · TBL-10")}</figure>`);
   }
 
   /* ------------------------------------------------------------ the phone's frame (step 3) */

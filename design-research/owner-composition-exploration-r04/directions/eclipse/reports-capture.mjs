@@ -145,7 +145,7 @@ try {
     await shot(`pattern-numbers-${lang}-2x`, `lang=${lang}&state=short`, { scale: 2, el: "#pattern", act: (p) => p.click("#numbers") });
   }
   /* ---- week over week in both history states */
-  for (const lang of LANGS) for (const st of ["full", "short"]) await shot(`wow-${st}-${lang}-2x`, `lang=${lang}${st === "short" ? "&state=short" : ""}`, { scale: 2, el: "#card-wow" });
+  for (const lang of LANGS) for (const st of ["full", "short"]) await shot(`wow-${st}-${lang}-2x`, `lang=${lang}${st === "short" ? "&state=short" : ""}`, { scale: 2, el: "#card-trend" });
   /* ---- the table's states */
   const tableClip = async (p, rows = 7) => p.evaluate((n) => { const t = document.querySelector("#days"); t.scrollIntoView({ block: "start" }); const b = t.getBoundingClientRect(); const r = document.querySelectorAll("#days-table tbody tr:not(.note-row)")[n - 1]; return { x: b.left, y: b.top, width: b.width, height: (r ? r.getBoundingClientRect().bottom : b.bottom) - b.top + 10 }; }, rows);
   for (const lang of LANGS) {
@@ -180,11 +180,11 @@ try {
     await S("switch-hover", (p) => p.hover("#numbers"));
     await S("switch-focus", (p) => kbFocus(p, "#numbers"));
     await S("switch-on", async (p) => { await p.click("#numbers"); await p.mouse.move(5, 5); });
-    const btnClip = async (p) => p.evaluate(() => { document.querySelector("#days").scrollIntoView({ block: "start" }); const c = document.querySelector("#export-btn").getBoundingClientRect(); return { x: c.left - 16, y: c.top - 16, width: c.width + 32, height: c.height + 32 }; });
+    const btnClip = async (p) => p.evaluate(() => { document.querySelector("#days").scrollIntoView({ block: "start" }); const c = document.querySelector("#table-export").getBoundingClientRect(); return { x: c.left - 16, y: c.top - 16, width: c.width + 32, height: c.height + 32 }; });
     const B = async (name, act) => { const o = await open(`lang=${lang}`, { scale: 2 }); if (act) await act(o.page); await o.page.waitForTimeout(80); const clip = await btnClip(o.page); await o.page.screenshot({ path: join(FR, `${name}-${lang}-2x.png`), clip }); await finish(`${name}-${lang}-2x`, o, { cssW: Math.round(clip.width) }); await o.context.close(); };
     await B("button-default");
-    await B("button-hover", async (p) => { await p.evaluate(() => document.querySelector("#days").scrollIntoView({ block: "start" })); await p.hover("#export-btn"); });
-    await B("button-focus", (p) => kbFocus(p, "#export-btn"));
+    await B("button-hover", async (p) => { await p.evaluate(() => document.querySelector("#days").scrollIntoView({ block: "start" })); await p.hover("#table-export"); });
+    await B("button-focus", (p) => kbFocus(p, "#table-export"));
     // Fields, inside the range dialog: default, hover, focus, invalid with its message; disabled is in the export's working state.
     const F = async (name, act) => { const o = await open(`lang=${lang}&dialog=range`, { scale: 2 }); if (act) await act(o.page); await o.page.waitForTimeout(120); const loc = o.page.locator("#range-form"); const bx = await loc.boundingBox(); await loc.screenshot({ path: join(FR, `${name}-${lang}-2x.png`) }); await finish(`${name}-${lang}-2x`, o, { cssW: Math.round(bx.width) }); await o.context.close(); };
     await F("field-focus");

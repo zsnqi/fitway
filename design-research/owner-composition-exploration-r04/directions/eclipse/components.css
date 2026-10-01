@@ -130,6 +130,14 @@ html:has(> body.cx) { color-scheme: dark; scrollbar-color: rgba(245, 243, 242, 0
 .cx-status.is-late strong { color: var(--amber); }
 .cx-status.is-late .cx-ico { width: 15px; height: 15px; color: var(--delayed); }
 .cx-concept { font: var(--t-caption); color: var(--ink-3); white-space: nowrap; }
+/* HDR-3 (step 4): the header's status from 721 px, a 44 px control boxless at rest (BTN-5's form) with its chevron;
+ * 5% white on hover and while open; FOC-2's inset ring. The phone's badge is .hbadge as it is (BDG-1). */
+.cx .hbadge.cx-hstatus { padding-inline: 12px; border-color: transparent; background: none; color: var(--ink-2); }
+.cx .hbadge.cx-hstatus:hover, .cx .hbadge.cx-hstatus.is-hover { background: rgba(255, 255, 255, 0.05); }
+.cx .hbadge.cx-hstatus.is-hover .hb-chev { transform: rotate(180deg); }
+.cx .hbadge.cx-hstatus:focus-visible, .cx .hbadge.cx-hstatus.is-focus { outline: 2px solid var(--ink); outline-offset: -4px; }
+.cx-hdr-end .hbadge.cx-hstatus { margin-block-start: -4px; }
+.cx-hdr-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-block-start: 16px; }
 .cx-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; font: var(--t-caption); color: var(--ink-2); }
 .cx-legend li { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
 .cx-legend .sw-line { display: inline-block; width: 18px; border-top: 3px solid var(--red-hi); border-radius: 2px; }

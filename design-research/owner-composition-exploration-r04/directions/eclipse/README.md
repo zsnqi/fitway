@@ -1758,3 +1758,25 @@ skeleton, held for review), `?state=loading&arrive=1800` (its arrival into live,
 file. One skeleton, five truths: every state keeps the page's slots and heights, so the arrival moves nothing; no state
 shows a green dot, a pulse or a light. Live, delayed, no history and Reports keep their pixels. `components.html` gains
 the section "Daily's states".
+
+## Step 4, phase A: the frame's Operations change, and Reports at 1440 (run `owner_reports_r04_s20`)
+
+The reference is `DESIGN-SPEC.md` (RAI-1, HDR-3…7, BDG-1…4, STW-1…2, CRD-11, §4.2, §7 and §8 Q12-Q16), not this file.
+
+- **The frame (both pages).** Operations has no section in the rail (user 2026-10-01). At every size the header's status
+  is one control, `#ops-btn`, that opens Operations' details: from 721 px it reads in full ("● Live · Last reading
+  7:42 PM ⌄"), boxless at rest; on a phone it is the badge it was. The details hang under it at its inline end. The
+  header keeps its height (60.25 px; 90.25 on a phone) and a status change moves nothing else. At 721-1023 px the hours
+  leave Daily's subtitle for the details. Apart from that, Daily is unchanged: its seven states at 390 match `d2cf1a3`
+  pixel for pixel but for 8 antialiased pixels (error and loading, English, at most 6 levels), and at 1440 they differ
+  only in the header's status and the rail's removed tile.
+- **Reports takes the frame** (`body[data-frame]`): the rail, the tablet's modal rail, the phone's bar, compact header
+  and menu, ported from `app.js` into `reports.js`. Its old phone placeholder is gone; its content below 1024 px only
+  reflows until phase B.
+- **Reports at 1440, recomposed.** Under the header the page's controls: the period and "Export minute data". At a
+  glance, one card of the period's three figures under the period control, and "Last 7 days" in its own card at the
+  row's end, lit while it has a complete value. The pattern lit across the page, hatched where a slot has fewer than 3
+  days. Day by day with "Export table", which exports its own rows. Every review fix assigned to step 4 is in (§7).
+- **Open and capture.** `reports.html` takes `lang`, `state` (`full`, `short`), `range` (`7d`, `28d`) or `from`/`to`,
+  `dialog`, `export` and `motion`, as before. `capture.mjs` and `reports-capture.mjs` follow the renamed elements
+  (`#ops-btn`, `#card-trend`, `#table-export`). The round's probes and frames are in `/tmp/fitway-scratch/reports/`.

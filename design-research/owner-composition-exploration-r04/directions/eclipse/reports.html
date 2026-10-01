@@ -27,10 +27,15 @@
   </script>
   <script src="reports.js" defer blocking="render"></script>
 </head>
-<body class="rp">
+<!-- data-frame (step 4): Reports takes the frame Daily took in step 3 (style.css "the frame"): the rail at 721 px and
+     wider (it opens over the content, with a scrim from 721 to 1023 px), and at 720 px and below the compact header and
+     the bar. Reports' own content below 1024 px is composed in step 4's phase B. -->
+<body class="rp" data-frame>
   <a class="skip" href="#main" data-t="skip"></a>
   <div class="page">
     <i class="wash" aria-hidden="true"><i class="wash-light"></i></i>
+    <!-- The tablet's scrim under the open rail (721-1023 px); a tap on it closes the rail. -->
+    <div class="rail-scrim" id="rail-scrim" hidden></div>
 
     <div class="rail-slot">
       <nav class="rail" id="rail" data-open="false">
@@ -66,10 +71,6 @@
             <span class="tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="8.2" cy="12" r="3.6"/><path d="M11.8 12h8.4M17.2 12v2.8M20.2 12v2"/></svg></span>
             <span class="rail-name"></span>
           </a></li>
-          <li><a class="rail-item" href="#" data-nav="operations" data-inert>
-            <span class="tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 7.5h9M17.5 7.5h2M4.5 16.5h2M10.5 16.5h9"/><circle cx="15.5" cy="7.5" r="2"/><circle cx="8.5" cy="16.5" r="2"/></svg></span>
-            <span class="rail-name"></span>
-          </a></li>
         </ul>
 
         <ul class="rail-group rail-foot">
@@ -99,53 +100,104 @@
           <h1 data-t="title"></h1>
           <p class="sub" id="sub"></p>
         </div>
+        <!-- The status column (HDR-6), the frame's: the Operations status, one control at every size that opens its
+             details, then the concept label; at 720 px and below the menu joins the status (as on Daily). -->
         <div class="head-meta">
-          <div class="seg" id="range-seg" role="group" aria-labelledby="range-seg-name">
-            <span class="sr-only" id="range-seg-name" data-t="rangeName"></span>
-            <button class="seg-b" type="button" data-range="7d" aria-pressed="false"></button>
-            <button class="seg-b" type="button" data-range="28d" aria-pressed="false"></button>
-            <button class="seg-b" type="button" data-range="custom" aria-pressed="false" aria-haspopup="dialog"></button>
+          <div class="head-acts">
+            <button class="hbadge" id="ops-btn" type="button" aria-expanded="false" aria-controls="ops-pop" aria-haspopup="dialog">
+              <span class="hb-state" id="ops-btn-state"></span>
+              <svg class="hb-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5"/></svg>
+            </button>
+            <div class="fw-pop ops-pop" id="ops-pop" role="dialog" aria-labelledby="ops-title" aria-describedby="ops-desc" tabindex="-1" hidden>
+              <div class="ops-body">
+                <h2 class="ops-title" id="ops-title" data-t="opsTitle"></h2>
+                <div id="ops-desc">
+                  <p class="ops-state" id="ops-state"></p>
+                  <p class="ops-line" id="ops-last"></p>
+                  <p class="ops-line" id="ops-hours"></p>
+                </div>
+              </div>
+              <div class="ops-foot">
+                <a class="fw-mi" href="#" id="ops-link" data-inert>
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 7.5h9M17.5 7.5h2M4.5 16.5h2M10.5 16.5h9"/><circle cx="15.5" cy="7.5" r="2"/><circle cx="8.5" cy="16.5" r="2"/></svg>
+                  <span id="ops-link-name"></span>
+                  <svg class="fw-mi-end mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 7l5 5-5 5"/></svg>
+                </a>
+              </div>
+            </div>
+            <button class="hbtn" id="menu-btn" type="button" aria-expanded="false" aria-controls="menu-pop" aria-haspopup="menu">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle class="fill" cx="5.5" cy="12" r="1.6"/><circle class="fill" cx="12" cy="12" r="1.6"/><circle class="fill" cx="18.5" cy="12" r="1.6"/></svg>
+            </button>
+            <div class="fw-pop menu-pop" id="menu-pop" role="menu" aria-labelledby="menu-btn" hidden>
+              <a class="fw-mi" role="menuitem" tabindex="-1" href="#" id="menu-monitoring" data-inert>
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3.6" y="4.6" width="16.8" height="11.4" rx="2.4"/><path d="M9 20h6M12 16v4"/></svg>
+                <span id="menu-monitoring-name"></span>
+              </a>
+              <a class="fw-mi" role="menuitem" tabindex="-1" href="#" id="menu-lang"><span class="fw-glyph" id="menu-lang-glyph" aria-hidden="true"></span><span id="menu-lang-name"></span></a>
+              <a class="fw-mi" role="menuitem" tabindex="-1" href="#" id="menu-signout" data-inert>
+                <svg class="mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13.5 4.5H7.2a2.2 2.2 0 0 0-2.2 2.2v10.6a2.2 2.2 0 0 0 2.2 2.2h6.3"/><path d="M10.5 12h9M16.5 8.8 19.7 12l-3.2 3.2"/></svg>
+                <span id="menu-signout-name"></span>
+              </a>
+            </div>
           </div>
           <span class="chip concept" data-t="concept"></span>
         </div>
       </header>
 
-      <section class="cards rp-cards" id="cards" aria-labelledby="cards-title">
-        <h2 class="sr-only" id="cards-title" data-t="glance"></h2>
+      <!-- The page's controls (step 4): the period, and the minute file by it (TBL-10). Everything below answers for the
+           period, except "Last 7 days", which names its own span. -->
+      <div class="rp-tools">
+        <div class="seg" id="range-seg" role="group" aria-labelledby="range-seg-name">
+          <span class="sr-only" id="range-seg-name" data-t="rangeName"></span>
+          <button class="seg-b" type="button" data-range="7d" aria-pressed="false"></button>
+          <button class="seg-b" type="button" data-range="28d" aria-pressed="false"></button>
+          <button class="seg-b" type="button" data-range="custom" aria-pressed="false" aria-haspopup="dialog"></button>
+        </div>
+        <button class="rbtn" id="export-btn" type="button" aria-haspopup="dialog">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4.5v10.2M7.8 10.6 12 14.8l4.2-4.2"/><path d="M5 16.5v1.4a1.6 1.6 0 0 0 1.6 1.6h10.8a1.6 1.6 0 0 0 1.6-1.6v-1.4"/></svg>
+          <span data-t="exportMinutes"></span>
+        </button>
+      </div>
 
-        <article class="card stat lit lit-card" id="card-wow">
+      <!-- At a glance: the period's three figures share one card, under the period control; "Last 7 days" leaves their
+           row and names its own span (TRU-1, TRU-7). -->
+      <section class="rp-glance" id="cards" aria-labelledby="cards-title">
+        <h2 class="sr-only" id="cards-title" data-t="glance"></h2>
+        <article class="card rp-period" id="card-period" aria-labelledby="period-name">
+          <h3 class="sr-only" id="period-name"></h3>
+          <div class="fig" id="fig-avg">
+            <div class="stat-head">
+              <svg class="stat-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8.2" r="3.4"/><path d="M5.6 19.4a6.4 6.4 0 0 1 12.8 0"/></svg>
+              <h4 class="stat-label" data-t="avgTitle"></h4>
+            </div>
+            <div class="fig-body" id="avg-body"></div>
+          </div>
+          <div class="fig" id="fig-peak">
+            <div class="stat-head">
+              <svg class="stat-ico mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 17.5 9.2 11l3.4 3.2L20 6.5"/><path d="M15.4 6.5H20v4.6"/></svg>
+              <h4 class="stat-label" data-t="peakTitle"></h4>
+              <span class="stat-meta" id="peak-meta"></span>
+            </div>
+            <div class="fig-body" id="peak-body"></div>
+          </div>
+          <div class="fig" id="fig-entries">
+            <div class="stat-head">
+              <svg class="stat-ico mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 4.5H6.8a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2H10"/><path d="M20 12h-9M14.2 8.8 11 12l3.2 3.2"/></svg>
+              <h4 class="stat-label" data-t="entriesTitle"></h4>
+            </div>
+            <div class="fig-body" id="entries-body"></div>
+          </div>
+        </article>
+
+        <article class="card fig rp-trend" id="card-trend" aria-labelledby="trend-title">
           <i class="lamp" aria-hidden="true"><i class="lamp-in"><i class="lamp-rim"></i></i></i>
           <div class="stat-head">
-            <span class="itile" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 16.5l5.2-5.2 3.6 3.6L20 7.7"/><path d="M14.6 7.7H20v5.4"/></svg></span>
-            <h3 class="stat-label" data-t="wowTitle"></h3>
-            <span class="stat-meta" id="wow-meta"></span>
+            <!-- A span of days: a calendar, which has no direction and never mirrors (ICO-5); the direction is the badge's. -->
+            <svg class="stat-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4.6" y="5.6" width="14.8" height="14" rx="2.6"/><path d="M4.6 10.2h14.8M8.6 3.8v3.6M15.4 3.8v3.6"/></svg>
+            <h3 class="stat-label" id="trend-title" data-t="trendTitle"></h3>
+            <span class="stat-meta" id="trend-meta"></span>
           </div>
-          <div class="stat-body" id="wow-body"></div>
-        </article>
-
-        <article class="card stat" id="card-avg">
-          <div class="stat-head">
-            <span class="itile" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8.2" r="3.4"/><path d="M5.6 19.4a6.4 6.4 0 0 1 12.8 0"/></svg></span>
-            <h3 class="stat-label" data-t="avgTitle"></h3>
-          </div>
-          <div class="stat-body" id="avg-body"></div>
-        </article>
-
-        <article class="card stat" id="card-peak">
-          <div class="stat-head">
-            <span class="itile" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 17.5 9.2 11l3.4 3.2L20 6.5"/><path d="M15.4 6.5H20v4.6"/></svg></span>
-            <h3 class="stat-label" data-t="peakTitle"></h3>
-            <span class="stat-meta" id="peak-meta"></span>
-          </div>
-          <div class="stat-body" id="peak-body"></div>
-        </article>
-
-        <article class="card stat" id="card-entries">
-          <div class="stat-head">
-            <span class="itile" aria-hidden="true"><svg class="mirror" viewBox="0 0 24 24"><path d="M10 4.5H6.8a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2H10"/><path d="M20 12h-9M14.2 8.8 11 12l3.2 3.2"/></svg></span>
-            <h3 class="stat-label" data-t="entriesTitle"></h3>
-          </div>
-          <div class="stat-body" id="entries-body"></div>
+          <div class="fig-body" id="trend-body"></div>
         </article>
       </section>
 
@@ -157,7 +209,7 @@
             <p class="pattern-sub" id="pattern-sub"></p>
           </div>
           <div class="pattern-tools">
-            <ul class="key heat-key" id="heat-key"></ul>
+            <ul class="heat-key" id="heat-key"></ul>
             <button class="switch" id="numbers" type="button" role="switch" aria-checked="false">
               <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
               <span class="switch-label" data-t="numbers"></span>
@@ -179,10 +231,11 @@
             <h2 id="days-title" data-t="daysTitle"></h2>
             <p class="days-sub" id="days-sub"></p>
           </div>
-          <button class="rbtn" id="export-btn" type="button" aria-haspopup="dialog">
+          <!-- TBL-10: the table's export exports the table's rows (K-14). -->
+          <a class="rbtn" id="table-export" href="#" download>
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4.5v10.2M7.8 10.6 12 14.8l4.2-4.2"/><path d="M5 16.5v1.4a1.6 1.6 0 0 0 1.6 1.6h10.8a1.6 1.6 0 0 0 1.6-1.6v-1.4"/></svg>
-            <span data-t="exportBtn"></span>
-          </button>
+            <span data-t="exportTable"></span>
+          </a>
         </header>
         <div class="table-wrap" id="days-wrap">
           <table class="table days-table" id="days-table" role="table"></table>
@@ -191,6 +244,33 @@
 
       <p class="sr-only" id="say" aria-live="polite" aria-atomic="true"></p>
     </main>
+
+    <!-- Phone (720 px and below): the rail becomes this glass bar at the bottom, five sections with a short name under
+         each icon (as on Daily). After the main content, so the reading and Tab order runs top to bottom. -->
+    <nav class="tabbar" id="tabbar">
+      <ul>
+        <li><a class="tb-item" href="index.html" id="tab-daily" data-tab="daily">
+          <span class="tb-tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 13.5a7.5 7.5 0 0 1 15 0"/><path d="M12 13.5 15.6 9.9"/><path d="M3.5 18h17"/><circle class="fill" cx="12" cy="13.5" r="1.3"/></svg></span>
+          <span class="tb-name"></span>
+        </a></li>
+        <li><a class="tb-item" href="#main" aria-current="page" data-tab="reports">
+          <span class="tb-tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 19.5h16"/><path d="M7 16v-4.5M12 16V6.5M17 16v-7"/></svg></span>
+          <span class="tb-name"></span>
+        </a></li>
+        <li><a class="tb-item" href="#" data-tab="activity" data-inert>
+          <span class="tb-tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="3.8" width="14" height="16.4" rx="3"/><path d="M8.6 8.6h6.8M8.6 12h6.8M8.6 15.4h4"/></svg></span>
+          <span class="tb-name"></span>
+        </a></li>
+        <li><a class="tb-item" href="#" data-tab="access" data-inert>
+          <span class="tb-tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="8.2" cy="12" r="3.6"/><path d="M11.8 12h8.4M17.2 12v2.8M20.2 12v2"/></svg></span>
+          <span class="tb-name"></span>
+        </a></li>
+        <li><a class="tb-item" href="#" data-tab="settings" data-inert>
+          <span class="tb-tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10.02 5.6 10.23 3.28A8.9 8.9 0 0 1 13.77 3.28L13.98 5.6A6.7 6.7 0 0 1 15.13 6.07L16.92 4.58A8.9 8.9 0 0 1 19.42 7.08L17.93 8.87A6.7 6.7 0 0 1 18.4 10.02L20.72 10.23A8.9 8.9 0 0 1 20.72 13.77L18.4 13.98A6.7 6.7 0 0 1 17.93 15.13L19.42 16.92A8.9 8.9 0 0 1 16.92 19.42L15.13 17.93A6.7 6.7 0 0 1 13.98 18.4L13.77 20.72A8.9 8.9 0 0 1 10.23 20.72L10.02 18.4A6.7 6.7 0 0 1 8.87 17.93L7.08 19.42A8.9 8.9 0 0 1 4.58 16.92L6.07 15.13A6.7 6.7 0 0 1 5.6 13.98L3.28 13.77A8.9 8.9 0 0 1 3.28 10.23L5.6 10.02A6.7 6.7 0 0 1 6.07 8.87L4.58 7.08A8.9 8.9 0 0 1 7.08 4.58L8.87 6.07A6.7 6.7 0 0 1 10.02 5.6Z"/><circle cx="12" cy="12" r="2.7"/></svg></span>
+          <span class="tb-name"></span>
+        </a></li>
+      </ul>
+    </nav>
   </div>
 
   <!-- The dialog system: one element per dialog, a scrim and a panel. Opened with showModal (the rest of the page is

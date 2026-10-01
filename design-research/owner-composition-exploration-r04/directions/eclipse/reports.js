@@ -2,8 +2,10 @@
  * Query: lang=ar|en (default ar), state=full|short (default full), range=7d|28d (default 28d) or from=YYYY-MM-DD&to=YYYY-MM-DD,
  * dialog=range|export (open a dialog at load), export=fail (the first export attempt fails), motion=off.
  * Reports answers "how does my gym usually behave, and which way is it going?": the weekday x hour pattern, the period's
- * figures, day by day, week over week and the minute CSV. It is complete at first paint (no intro in this round). The same
- * gym as the Daily page: 6:00 AM to 1:00 AM (Friday 2:00 PM to 1:00 AM), Riyadh time, the same crowd levels and capacity.
+ * figures, day by day, the last 7 days against the 7 before, and the minute CSV. It is complete at first paint (no intro;
+ * pending the user's view in step 4). The same gym as the Daily page: 6:00 AM to 1:00 AM (Friday 2:00 PM to 1:00 AM),
+ * Riyadh time, the same crowd levels and capacity. Step 4 (run owner_reports_r04_s20): the frame (body[data-frame], the
+ * header's status at every size, Operations out of the rail) and the page recomposed at 1440 with the review's fixes.
  * Western digits only: numbers are printed with String(), never Intl or toLocaleString. A classic script (no modules and
  * no fetch), so the page works from file:// too. */
 (() => {
@@ -33,6 +35,13 @@
       brand: "FITWAY، أسماء الأقسام",
       railTip: "أسماء الأقسام",
       nav: { daily: "اليوم", reports: "التقارير", access: "الوصول", activity: "سجل النشاط", operations: "التشغيل", monitoring: "شاشة المراقبة", lang: "English", settings: "الإعدادات", signout: "تسجيل الخروج" },
+      // The frame (as on Daily): the bar's short names, the Operations status and its details, the phone's menu.
+      tabs: { daily: "اليوم", reports: "التقارير", activity: "النشاط", access: "الوصول", settings: "الإعدادات" },
+      opsTitle: "حالة التشغيل",
+      more: "المزيد",
+      live: "مباشر",
+      lastReading: "آخر قراءة",
+      hours: "ساعات العمل",
       langAria: "التبديل إلى اللغة الإنجليزية",
       langGlyph: "EN",
       docTitle: "التقارير · FITWAY (مفهوم)",
@@ -41,22 +50,22 @@
       seg: { "7d": `آخر ${bdi(7)} أيام`, "28d": `آخر ${bdi(4)} أسابيع`, custom: "فترة أخرى…" },
       days: (n) => arN(n, ["يوم واحد", "يومان", "أيام", "يومًا", "يوم"]),
       daysWith: (k, n) => `قراءات في ${bdi(k)} من ${arN(n, ["يوم واحد", "يومين", "أيام", "يومًا", "يوم"])}`,
-      glance: "الفترة باختصار",
-      wowTitle: "مقارنة أسبوعية",
-      wowUnit: "متوسط الموجودين",
+      glance: "باختصار",
+      trendTitle: `آخر ${bdi(7)} أيام`,
+      wowUnit: "معدّل الموجودين",
       cmp: { busier: "أكثر ازدحامًا", quieter: "أهدأ", same: "قريب من السابق" },
       wowEntries: (p) => `مرات الدخول ${p}`,
       wowEmpty: "لا يكفي السجل بعد",
-      wowEmptyNote: (d) => `يلزم أسبوعان كاملان · القراءات منذ ${d}`,
+      wowEmptyNote: (d) => `يلزم ${bdi(14)} يومًا · القراءات منذ ${d}`,
       wowSay: (cur, prev) => `الأيام ${cur} مقارنة بالأيام ${prev}`,
-      avgTitle: "متوسط الموجودين",
+      avgTitle: "معدّل الموجودين",
       peakTitle: "أعلى ذروة",
       entriesTitle: "مرات الدخول",
       entriesNote: (n) => `نحو ${n} في اليوم`,
       noReadings: "لا قراءات",
       levels: ["هادئ", "متوسط", "مزدحم", "شديد الازدحام"],
       patternTitle: "أوقات الازدحام",
-      patternSub: "متوسط الموجودين حسب اليوم والساعة",
+      patternSub: "معدّل الموجودين حسب اليوم والساعة",
       busiest: (w, h) => `الأكثر ازدحامًا: ${w} ${h}`,
       numbers: "الأرقام",
       keyFewer: "أقل",
@@ -64,23 +73,24 @@
       empty: "خالية",
       emptyLong: "الصالة خالية",
       closed: "مغلق",
-      noData: "لا بيانات",
-      avgOf: (n) => (n === 1 ? "من يوم واحد" : n === 2 ? "متوسط يومين" : `متوسط ${arN(n, ["", "", "أيام", "يومًا", "يوم"])}`),
+      busiestKey: "الأكثر ازدحامًا",
+      fewKey: `أقل من ${bdi(3)} أيام`,
+      avgOf: (n) => (n === 1 ? "من يوم واحد" : n === 2 ? "معدّل يومين" : `معدّل ${arN(n, ["", "", "أيام", "يومًا", "يوم"])}`),
       closedTip: "خارج ساعات العمل",
-      noDataTip: "لا قراءات في هذه الفترة",
+      noDataTip: "لا قراءات في هذه التواريخ",
       heatKeys: "استخدم مفاتيح الأسهم للتنقل بين الساعات والأيام، وHome وEnd لأول ساعة وآخر ساعة في اليوم.",
-      heatCaption: (r) => `متوسط الموجودين حسب اليوم والساعة، ${r}`,
+      heatCaption: (r) => `معدّل الموجودين حسب اليوم والساعة، ${r}`,
       dayHead: "اليوم",
       daysTitle: "يومًا بيوم",
-      cols: { day: "اليوم", peak: "الذروة", avg: "المتوسط", entries: "مرات الدخول", notes: "ملاحظات" },
-      daysCaption: (r) => `الأيام من ${r}: الذروة والمتوسط ومرات الدخول`,
+      cols: { day: "اليوم", peak: "الذروة", avg: "المعدّل", entries: "مرات الدخول", notes: "ملاحظات" },
+      daysCaption: (r) => `الأيام من ${r}: الذروة والمعدّل ومرات الدخول`,
       sortSay: (c, dir, isDay) => `مرتب حسب ${c}، ${isDay ? (dir === "desc" ? "الأحدث أولًا" : "الأقدم أولًا") : dir === "desc" ? "الأعلى أولًا" : "الأقل أولًا"}`,
       highest: "الأعلى",
-      noteMissing: (r) => `لا قراءات ${r}`,
       beforeHistory: "لا قراءات بعد",
       emptyTable: (a, b) => `لا قراءات من ${a} إلى ${b}`,
       emptyAction: `عرض آخر ${bdi(4)} أسابيع`,
-      exportBtn: "تصدير CSV",
+      exportMinutes: "تصدير بيانات الدقائق",
+      exportTable: "تصدير الجدول",
       close: "إغلاق",
       cancel: "إلغاء",
       rangeDlgTitle: "اختر الفترة",
@@ -98,7 +108,7 @@
         tooLong: `اختر ${bdi(366)} يومًا أو أقل`,
       },
       exportTitle: "تصدير بيانات الدقائق",
-      exportDesc: "صف لكل دقيقة بتوقيت الصالة وبتوقيت UTC، مع تمييز الدقائق المغلقة والتي بلا قراءة.",
+      exportDesc: "صف لكل دقيقة، مع تمييز الدقائق المغلقة والدقائق التي بلا قراءات.",
       rows: (n) => arN(n, ["صف واحد", "صفان", "صفوف", "صفًا", "صف"]),
       exportGo: "تصدير CSV",
       working: "جارٍ التجهيز…",
@@ -119,6 +129,12 @@
       brand: "FITWAY, section names",
       railTip: "Section names",
       nav: { daily: "Today", reports: "Reports", access: "Access", activity: "Activity log", operations: "Operations", monitoring: "Monitoring", lang: "العربية", settings: "Settings", signout: "Sign out" },
+      tabs: { daily: "Today", reports: "Reports", activity: "Activity", access: "Access", settings: "Settings" },
+      opsTitle: "Operations status",
+      more: "More",
+      live: "Live",
+      lastReading: "Last reading",
+      hours: "Open",
       langAria: "Switch to Arabic",
       langGlyph: "AR",
       docTitle: "Reports · FITWAY (concept)",
@@ -127,13 +143,13 @@
       seg: { "7d": "Last 7 days", "28d": "Last 4 weeks", custom: "Custom…" },
       days: (n) => `${n} ${n === 1 ? "day" : "days"}`,
       daysWith: (k, n) => `Readings on ${k} of ${n} days`,
-      glance: "The period at a glance",
-      wowTitle: "Week over week",
+      glance: "At a glance",
+      trendTitle: "Last 7 days",
       wowUnit: "avg. inside",
       cmp: { busier: "Busier", quieter: "Quieter", same: "About the same" },
       wowEntries: (p) => `Entries ${p}`,
       wowEmpty: "Not enough history yet",
-      wowEmptyNote: (d) => `Needs two full weeks · readings since ${d}`,
+      wowEmptyNote: (d) => `Needs 14 days · readings since ${d}`,
       wowSay: (cur, prev) => `${cur} compared with ${prev}`,
       avgTitle: "Average inside",
       peakTitle: "Highest peak",
@@ -150,7 +166,8 @@
       empty: "Empty",
       emptyLong: "Empty",
       closed: "Closed",
-      noData: "No data",
+      busiestKey: "Busiest",
+      fewKey: "Fewer than 3 days",
       avgOf: (n) => `Average of ${n} ${n === 1 ? "day" : "days"}`,
       closedTip: "Outside opening hours",
       noDataTip: "No readings in these dates",
@@ -162,11 +179,11 @@
       daysCaption: (r) => `Days from ${r}: peak, average and entries`,
       sortSay: (c, dir, isDay) => `Sorted by ${c.toLowerCase()}, ${isDay ? (dir === "desc" ? "newest first" : "oldest first") : dir === "desc" ? "highest first" : "lowest first"}`,
       highest: "Highest",
-      noteMissing: (r) => `No readings ${r}`,
       beforeHistory: "No readings yet",
       emptyTable: (a, b) => `No readings from ${a} to ${b}`,
       emptyAction: "Show the last 4 weeks",
-      exportBtn: "Export CSV",
+      exportMinutes: "Export minute data",
+      exportTable: "Export table",
       close: "Close",
       cancel: "Cancel",
       rangeDlgTitle: "Choose dates",
@@ -184,7 +201,7 @@
         tooLong: "Choose 366 days or fewer",
       },
       exportTitle: "Export minute data",
-      exportDesc: "One row per minute, in gym time and UTC. Closed and missing minutes are marked.",
+      exportDesc: "One row for every minute, with closed and missing minutes marked.",
       rows: (n) => `${fmtInt(n)} ${n === 1 ? "row" : "rows"}`,
       exportGo: "Export CSV",
       working: "Preparing…",
@@ -217,11 +234,14 @@
   // after the dash (U+2060), so the en dash does not reverse them or open a line break; the suffix stays outside, as before.
   const DASH = "–";
   const NUMS = (a, b) => (RTL ? `<bdi dir="ltr">${a}${DASH}\u2060${b}</bdi>` : `${a}${DASH}${b}`);
+  // DAT-4 (K-17): a date, a time or a range never breaks inside; each is one unbreakable span (.nw).
+  const nw = (html) => `<span class="nw">${html}</span>`;
   const range2 = (a, b) => `${bdi(a)} ${DASH} ${bdi(b)}`;
-  const timeRange = (a, b) => range2(fmtTime(a), fmtTime(b));
+  const timeRange = (a, b) => nw(range2(fmtTime(a), fmtTime(b)));
+  const timeText = (m) => nw(bdi(fmtTime(m)));
   function hourRange(a, b) {
     const A = clock(a), B = clock(b);
-    return A.pm === B.pm ? bdi(`${NUMS(A.h12, B.h12)} ${suffix(A.pm)}`) : range2(fmtHour(a), fmtHour(b));
+    return nw(A.pm === B.pm ? bdi(`${NUMS(A.h12, B.h12)} ${suffix(A.pm)}`) : range2(fmtHour(a), fmtHour(b)));
   }
 
   /* ------------------------------------------------------------------- dates
@@ -238,17 +258,18 @@
   const wdLong = (wd) => (RTL ? WD_AR : WD_EN)[wd];
   const wdShort = (wd) => (RTL ? WD_AR : WD_EN_S)[wd];
   const monthOf = (m) => (RTL ? MO_AR : MO_EN)[m];
-  // "22 Sep" / «22 سبتمبر», optionally with the year.
-  const dateText = (dn, year = false) => { const p = partsOf(dn); return `${bdi(p.d)} ${monthOf(p.m)}${year ? ` ${bdi(p.y)}` : ""}`; };
+  // "22 Sep" / «22 سبتمبر», optionally with the year; never broken inside (DAT-4).
+  const dateBare = (dn, year = false) => { const p = partsOf(dn); return `${bdi(p.d)} ${monthOf(p.m)}${year ? ` ${bdi(p.y)}` : ""}`; };
+  const dateText = (dn, year = false) => nw(dateBare(dn, year));
   // "Tue 22 Sep" / «الثلاثاء 22 سبتمبر».
-  const dayText = (dn) => `${wdShort(wdOf(dn))} ${dateText(dn)}`;
+  const dayText = (dn) => nw(`${wdShort(wdOf(dn))} ${dateBare(dn)}`);
   const numDate = (dn) => { const p = partsOf(dn); return `${String(p.d).padStart(2, "0")}/${String(p.m + 1).padStart(2, "0")}/${p.y}`; };
   function rangeText(a, b, year = true) {
     const A = partsOf(a), B = partsOf(b);
     if (a === b) return dateText(a, year);
-    if (A.y !== B.y) return `${dateText(a, true)} ${DASH} ${dateText(b, true)}`;
-    if (A.m === B.m) return `${range2(A.d, B.d)} ${monthOf(A.m)}${year ? ` ${bdi(A.y)}` : ""}`;
-    return `${dateText(a)} ${DASH} ${dateText(b)}${year ? ` ${bdi(B.y)}` : ""}`;
+    if (A.y !== B.y) return nw(`${dateBare(a, true)} ${DASH} ${dateBare(b, true)}`);
+    if (A.m === B.m) return nw(`${range2(A.d, B.d)} ${monthOf(A.m)}${year ? ` ${bdi(A.y)}` : ""}`);
+    return nw(`${dateBare(a)} ${DASH} ${dateBare(b)}${year ? ` ${bdi(B.y)}` : ""}`);
   }
   const plain = (html) => html.replace(/<[^>]+>/g, "");
 
@@ -263,6 +284,7 @@
   const SETTINGS_VERSION = 1;
   const TZ = "Asia/Riyadh";                 // UTC+3 all year
   const MAX_RANGE = 366;
+  const MIN_DAYS = 3;                       // a pattern slot needs 3 days to be certain (PAT-10, GLO-12; Q5)
   const levelOf = (v) => (v <= 24 ? 0 : v <= 48 ? 1 : v <= 68 ? 2 : 3);
   const BAND = ["quiet", "moderate", "busy", "packed"];
   // Camera outages: open minutes with no reading (minutes since 6:00 AM, inclusive).
@@ -391,8 +413,10 @@
       if (d.observed) withReadings++;
       if (d.peak != null && (!top || d.peak >= top.peak)) top = d;
     });
+    // "Busiest" is the one-hour slot with the highest average across 3 days or more (GLO-12, Q5); a slot drawn from fewer
+    // days is qualified on the pattern (PAT-10) and never named busiest, so a 7-day period has none (TRU-2).
     let busiest = null;
-    heat.flat().forEach((cell) => { if (cell.state === "value" && (!busiest || cell.avg > busiest.avg)) busiest = cell; });
+    heat.flat().forEach((cell) => { if (cell.state === "value" && cell.samples >= MIN_DAYS && (!busiest || cell.avg > busiest.avg)) busiest = cell; });
     return { a, b, n: b - a + 1, days, heat, observed, total, entries, withReadings, avg: observed ? total / observed : null, top, busiest };
   }
 
@@ -459,21 +483,22 @@
   });
   $("#lang-glyph").textContent = L.langGlyph;
   $("#lang-glyph").setAttribute("lang", "en");
-  // The Daily page keeps the language (and ?motion=off); the language link keeps everything, the period included.
-  const dailyLink = $("#daily-link");
+  // The Daily page keeps the language (and ?motion=off); the language links keep everything, the period included.
   {
     const p = new URLSearchParams({ lang: LANG });
     if (URL_OFF) p.set("motion", "off");
-    dailyLink.setAttribute("href", `index.html?${p}`);
+    $("#daily-link").setAttribute("href", `index.html?${p}`);
+    $("#tab-daily").setAttribute("href", `index.html?${p}`);
   }
-  const langLink = $("#lang-link");
-  langLink.setAttribute("hreflang", RTL ? "en" : "ar");
+  const langLink = $("#lang-link"), menuLang = $("#menu-lang");
+  for (const el of [langLink, menuLang]) el.setAttribute("hreflang", RTL ? "en" : "ar");
   $(".rail-name", langLink).setAttribute("lang", RTL ? "en" : "ar");
   function syncUrl() {
     const p = urlFor();
     try { history.replaceState(null, "", `${location.pathname}${p.toString() ? `?${p}` : ""}`); } catch (e) { /* file:// may refuse; links still carry the period */ }
     const q = urlFor({ lang: RTL ? "en" : "ar" });
     langLink.setAttribute("href", `?${q}`);
+    menuLang.setAttribute("href", `?${q}`);
   }
 
   /* ---- rail: the Daily page's rail and its motion (app.js "rail"), unchanged. */
@@ -523,18 +548,136 @@
     railRun.anims = an;
     Promise.all(an.map((x) => x.finished)).then(() => { if (railRun.anims === an) finishRail(); }).catch(() => {});
   }
+
+  /* ---- the frame (step 4: Reports takes Daily's frame, app.js "the frame"). Breakpoints: the desktop rail at 1024 px
+   * and wider (it opens over the content); the same rail from 721 to 1023 px, where it opens as a modal layer (a scrim,
+   * the content inert, focus kept inside); at 720 px and below the bar at the bottom and the compact header, whose menu
+   * holds Monitoring, the language and sign out. At every size the header's status opens Operations' details: the one
+   * way to Operations, which has no section in the rail (user 2026-10-01). Every layer opens from the keyboard, closes
+   * with Escape and returns focus to the control that opened it. */
+  const mqTablet = matchMedia("(min-width: 721px) and (max-width: 1023px)");
+  const mqPhone = matchMedia("(max-width: 720px)");
+  const scrim = $("#rail-scrim");
+  const railFocusables = () => [...rail.querySelectorAll("button, a[href]")];
+  let railModal = false, scrimFade = null;
+  const setRailModal = (on) => {
+    if (on === railModal) return;
+    railModal = on;
+    for (const el of [$("#main"), $(".skip")]) el.inert = on;
+    if (scrimFade) { scrimFade.cancel(); scrimFade = null; }
+    scrim.style.pointerEvents = on ? "" : "none";
+    if (on) scrim.hidden = false;
+    if (!motionOn() || scrim.hidden) { scrim.hidden = !on; return; }
+    const run = scrim.animate(on ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: 0 }],
+      on ? { duration: T.railOpen, easing: EASE.rail } : { duration: T.railClose, easing: EASE.railClose, fill: "forwards" });
+    scrimFade = run;
+    run.finished.then(() => { if (scrimFade !== run) return; scrimFade = null; if (!on) { scrim.hidden = true; run.cancel(); } }).catch(() => {});
+  };
   const setRail = (open) => {
     if (open === railOpen) return;
     railOpen = open;
     brand.setAttribute("aria-expanded", String(open));
+    setRailModal(open && mqTablet.matches);
     animateRail(open);
   };
   brand.addEventListener("click", () => setRail(!railOpen));
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && railOpen && !openDlg) { setRail(false); brand.focus(); } });
   document.addEventListener("pointerdown", (e) => { if (railOpen && !rail.contains(e.target)) setRail(false); });
-  // Step 3, as on the Daily page: when keyboard focus leaves the open rail it closes, so focus never lands on content
-  // hidden under it (FOC-3).
-  rail.addEventListener("focusout", (e) => { if (railOpen && e.relatedTarget && !rail.contains(e.relatedTarget)) setRail(false); });
+  // On the desktop the open rail is not modal: when keyboard focus leaves it, it closes (FOC-3).
+  rail.addEventListener("focusout", (e) => { if (railOpen && !railModal && e.relatedTarget && !rail.contains(e.relatedTarget)) setRail(false); });
+  rail.addEventListener("keydown", (e) => {
+    if (e.key !== "Tab" || !railModal) return;
+    const f = railFocusables(), i = f.indexOf(document.activeElement);
+    const next = e.shiftKey ? (i <= 0 ? f[f.length - 1] : null) : (i === f.length - 1 ? f[0] : null);
+    if (next) { e.preventDefault(); next.focus(); }
+  });
+
+  // The status's details (every size) and the phone's menu. One is open at a time; each closes with Escape (focus
+  // returns to its button), a tap outside, or focus leaving it.
+  const layers = { ops: { btn: $("#ops-btn"), pop: $("#ops-pop") }, menu: { btn: $("#menu-btn"), pop: $("#menu-pop") } };
+  let openLayer = null;
+  const menuItems = () => [...layers.menu.pop.querySelectorAll('[role="menuitem"]')];
+  function showLayer(name, focus = "first") {
+    if (openLayer && openLayer !== name) hideLayer(openLayer, false);
+    const { btn, pop } = layers[name];
+    openLayer = name;
+    pop.hidden = false;
+    btn.setAttribute("aria-expanded", "true");
+    if (name === "menu") { const it = menuItems(); (focus === "last" ? it[it.length - 1] : it[0]).focus(); }
+    else pop.focus();
+  }
+  function hideLayer(name, returnFocus) {
+    const { btn, pop } = layers[name];
+    if (pop.hidden) return;
+    pop.hidden = true;
+    btn.setAttribute("aria-expanded", "false");
+    if (openLayer === name) openLayer = null;
+    if (returnFocus) btn.focus();
+  }
+  for (const [name, { btn, pop }] of Object.entries(layers)) {
+    btn.addEventListener("click", () => (pop.hidden ? showLayer(name) : hideLayer(name, true)));
+    pop.addEventListener("keydown", (e) => { if (e.key === "Escape") { e.stopPropagation(); hideLayer(name, true); } });
+    pop.addEventListener("focusout", (e) => { if (!pop.hidden && !pop.contains(e.relatedTarget) && e.relatedTarget !== btn && e.relatedTarget) hideLayer(name, false); });
+  }
+  layers.menu.btn.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); showLayer("menu", e.key === "ArrowUp" ? "last" : "first"); }
+  });
+  layers.menu.pop.addEventListener("keydown", (e) => {
+    const it = menuItems(), i = it.indexOf(document.activeElement);
+    const go = (j) => { e.preventDefault(); it[(j + it.length) % it.length].focus(); };
+    if (e.key === "ArrowDown") go(i + 1);
+    else if (e.key === "ArrowUp") go(i - 1);
+    else if (e.key === "Home") go(0);
+    else if (e.key === "End") go(it.length - 1);
+    else if (e.key === "Tab") hideLayer("menu", true);
+    else if (e.key === " ") { e.preventDefault(); document.activeElement.click(); }
+  });
+  for (const id of ["#menu-signout", "#menu-monitoring", "#ops-link"]) $(id).addEventListener("click", (e) => e.preventDefault());
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && openLayer && !openDlg) hideLayer(openLayer, true); });
+  document.addEventListener("pointerdown", (e) => {
+    if (!openLayer) return;
+    const { btn, pop } = layers[openLayer];
+    if (!pop.contains(e.target) && !btn.contains(e.target)) hideLayer(openLayer, false);
+  });
+  // Crossing a breakpoint closes whatever the frame has open.
+  const onFrameChange = () => { if (railOpen) setRail(false); setRailModal(false); if (openLayer) hideLayer(openLayer, false); };
+  mqTablet.addEventListener("change", onFrameChange);
+  mqPhone.addEventListener("change", onFrameChange);
+  layers.menu.btn.setAttribute("aria-label", L.more);
+  $("#menu-lang-glyph").textContent = L.langGlyph;
+  $("#menu-lang-glyph").setAttribute("lang", "en");
+  $("#menu-lang-name").textContent = L.nav.lang;
+  $("#menu-lang-name").setAttribute("lang", RTL ? "en" : "ar");
+  $("#menu-signout-name").textContent = L.nav.signout;
+  $("#menu-monitoring-name").textContent = L.nav.monitoring;
+  $("#ops-link-name").textContent = L.nav.operations;
+  $("#tabbar").setAttribute("aria-label", L.railLabel);
+  $$(".tb-item[data-tab]").forEach((a) => {
+    const key = a.dataset.tab;
+    $(".tb-name", a).textContent = L.tabs[key];
+    a.setAttribute("aria-label", L.nav[key]);
+    if (a.hasAttribute("data-inert")) a.addEventListener("click", (e) => e.preventDefault());
+  });
+
+  // The frame's status, the same as on every screen (STW-1): the gym's Operations status, not this page's. In the concept
+  // it is Daily's moment, live with its last reading at 7:42 PM on Wednesday 23 September; its page states (loading,
+  // closed, unavailable, error) come with Reports' own states in a later round (K-02).
+  const NOW = { last: 822 };   // 7:42 PM, in minutes since 6:00 AM, as on the Daily page
+  const OPS_STATES = {
+    live: () => ({ cls: "", mark: `<span class="dot" aria-hidden="true"></span>`, word: L.live, line: `${L.lastReading} ${timeText(NOW.last)}` }),
+  };
+  let opsState = "live";
+  function renderStatus() {
+    const s = OPS_STATES[opsState](), btn = layers.ops.btn;
+    btn.className = `hbadge${s.cls ? ` ${s.cls}` : ""}`;
+    $("#ops-btn-state").innerHTML = `<span class="sr-only">${L.opsTitle}: </span>${s.mark}<span class="hb-word">${s.word}</span>` +
+      `<span class="hb-line"><span class="sr-only">${RTL ? "، " : ", "}</span><span aria-hidden="true">· </span>${s.line}</span>`;
+    $("#ops-state").className = `ops-state${s.cls ? ` ${s.cls}` : ""}`;
+    $("#ops-state").innerHTML = `${s.mark}<span>${s.word}</span>`;
+    $("#ops-last").innerHTML = s.line;
+    $("#ops-hours").innerHTML = `${L.hours} ${timeRange(0, DAY)}`;
+  }
+  renderStatus();
 
   const say = (text) => { const el = $("#say"); el.textContent = ""; requestAnimationFrame(() => { el.textContent = text; }); };
 
@@ -561,37 +704,43 @@
   segButtons.forEach((btn) => { btn.innerHTML = L.seg[btn.dataset.range]; });
   function renderHead() {
     const n = model.n;
-    $("#sub").innerHTML = `${rangeText(model.a, model.b)}<span class="sep" aria-hidden="true">·</span>${model.withReadings === n ? L.days(n) : model.withReadings ? L.daysWith(model.withReadings, n) : `${L.noReadings}<span class="sep" aria-hidden="true">·</span>${L.days(n)}`}`;
+    $("#sub").innerHTML = `<span class="sub-part">${rangeText(model.a, model.b)}</span><span class="sep" aria-hidden="true">·</span><span class="sub-part">${model.withReadings === n ? L.days(n) : model.withReadings ? L.daysWith(model.withReadings, n) : `${L.noReadings}<span class="sep" aria-hidden="true">·</span>${L.days(n)}`}</span>`;
     segButtons.forEach((btn) => btn.setAttribute("aria-pressed", String(btn.dataset.range === range.kind)));
+    $("#period-name").innerHTML = rangeText(model.a, model.b);
   }
 
-  /* ---------------------------------------------------------------- cards */
+  /* ---------------------------------------------------------------- at a glance
+   * The period's three figures share one card (the period's), under the period control: its average inside (no level
+   * badge on an average over many hours, LVL-2), its highest peak with the day and time in the meta slot (DAT-5) and
+   * its level, and its entries with the daily rate. "Last 7 days" is its own card beside them, outside the period's row
+   * (TRU-1, TRU-7): the last 7 complete days against the 7 before, whatever the period. It carries the page's summary
+   * light while it has a complete value, and is a plain card while it has none (LGT-7, LGT-8). Every figure keeps its
+   * slots' heights in every state: the value's line 46, the foot 42 (CRD-9, CRD-10). */
+  const trendCard = $("#card-trend");
   function renderCards() {
-    // Week over week: fixed to the last seven complete days, whatever the period.
-    $("#wow-meta").innerHTML = `<span>${rangeText(WOW.cur[0], WOW.cur[1], false)}</span>`;
-    const wb = $("#wow-body");
+    $("#trend-meta").innerHTML = rangeText(WOW.cur[0], WOW.cur[1], false);
+    const tb = $("#trend-body");
     if (wow.comparable) {
       const c = wow.avgChange, kind = c >= 5 ? "busier" : c <= -5 ? "quieter" : "same";
-      wb.innerHTML = `<p class="stat-value"><bdi class="num">${pct(c)}</bdi><span class="unit">${L.wowUnit}</span></p>
+      tb.innerHTML = `<p class="stat-value"><bdi class="num">${pct(c)}</bdi><span class="unit">${L.wowUnit}</span></p>
         <div class="stat-foot"><span class="cmp cmp-${kind}">${kind === "busier" ? ICON.up : kind === "quieter" ? ICON.down : ICON.same}${L.cmp[kind]}</span><span class="stat-aside">${L.wowEntries(bdi(pct(wow.entriesChange)))}</span></div>`;
-      $("#card-wow").classList.remove("is-empty");
     } else {
-      wb.innerHTML = `<p class="stat-empty">${L.wowEmpty}</p><p class="stat-note">${L.wowEmptyNote(dateText(HIST_START))}</p>`;
-      $("#card-wow").classList.add("is-empty");
+      tb.innerHTML = `<p class="stat-value"><span class="stat-say">${L.wowEmpty}</span></p><div class="stat-foot"><span class="stat-aside">${L.wowEmptyNote(dateText(HIST_START))}</span></div>`;
     }
-    $("#card-wow").setAttribute("aria-description", plain(L.wowSay(rangeText(WOW.cur[0], WOW.cur[1]), rangeText(WOW.prev[0], WOW.prev[1]))));
+    trendCard.classList.toggle("lit", wow.comparable);
+    trendCard.classList.toggle("lit-card", wow.comparable);
+    trendCard.setAttribute("aria-description", plain(L.wowSay(rangeText(WOW.cur[0], WOW.cur[1]), rangeText(WOW.prev[0], WOW.prev[1]))));
 
-    const none = (id) => { $(id).innerHTML = `<p class="stat-empty">${L.noReadings}</p>`; };
+    const none = (id) => { $(id).innerHTML = `<p class="stat-value"><span class="stat-say">${L.noReadings}</span></p><div class="stat-foot"></div>`; };
     if (model.avg == null) { none("#avg-body"); none("#peak-body"); $("#peak-meta").innerHTML = ""; }
     else {
-      const avg = Math.round(model.avg);
-      $("#avg-body").innerHTML = `<p class="stat-value"><bdi class="num">${avg}</bdi></p><div class="stat-foot">${levelChip(avg)}</div>`;
+      $("#avg-body").innerHTML = `<p class="stat-value"><bdi class="num">${Math.round(model.avg)}</bdi></p><div class="stat-foot"></div>`;
       const t = model.top;
-      $("#peak-meta").innerHTML = `<span>${dayText(t.dn)}</span>`;
-      $("#peak-body").innerHTML = `<p class="stat-value"><bdi class="num">${t.peak}</bdi></p><div class="stat-foot">${levelChip(t.peak)}<span class="stat-aside">${bdi(fmtTime(t.peakM))}</span></div>`;
+      $("#peak-meta").innerHTML = `${dayText(t.dn)}<span class="sep" aria-hidden="true">·</span>${timeText(t.peakM)}`;
+      $("#peak-body").innerHTML = `<p class="stat-value"><bdi class="num">${t.peak}</bdi></p><div class="stat-foot">${levelChip(t.peak)}</div>`;
     }
     if (!model.withReadings) none("#entries-body");
-    else $("#entries-body").innerHTML = `<p class="stat-value"><bdi class="num">${fmtInt(model.entries)}</bdi></p><p class="stat-note">${L.entriesNote(bdi(fmtInt(model.entries / model.withReadings)))}</p>`;
+    else $("#entries-body").innerHTML = `<p class="stat-value"><bdi class="num">${fmtInt(model.entries)}</bdi></p><div class="stat-foot"><span class="stat-aside">${L.entriesNote(bdi(fmtInt(model.entries / model.withReadings)))}</span></div>`;
   }
 
   /* ---------------------------------------------------------------- the pattern
@@ -628,13 +777,16 @@
           const z = cell.avg === 0;
           const col = rampColor(cell.avg);
           const top = model.busiest && model.busiest.wd === wd && model.busiest.c === c ? " is-top" : "";
-          cells.push(`<td class="hc ${z ? "zero" : "v"}${top}" role="gridcell" tabindex="-1" data-r="${wd}" data-c0="${c}" data-c1="${c}"${z ? "" : ` style="--c: rgb(${col.join(" ")})"`}><span class="hv">${z ? "0" : valText(cell.avg)}</span><span class="sr-only">${RTL ? "، " : ", "}${z ? L.emptyLong : L.levels[levelOf(cell.avg)]}</span></td>`);
+          // PAT-10: a slot drawn from fewer than 3 days keeps its colour under a fine hatch of the card's base.
+          const few = !z && cell.samples < MIN_DAYS ? " few" : "";
+          cells.push(`<td class="hc ${z ? "zero" : "v"}${few}${top}" role="gridcell" tabindex="-1" data-r="${wd}" data-c0="${c}" data-c1="${c}"${z ? "" : ` style="--c: rgb(${col.join(" ")})"`}><span class="hv">${z ? "0" : valText(cell.avg)}</span><span class="sr-only">${RTL ? "، " : ", "}${z ? L.emptyLong : L.levels[levelOf(cell.avg)]}</span></td>`);
           c++;
         } else {
           let e = c;
           while (e + 1 < HOURS && row[e + 1].state === cell.state) e++;
-          const word = cell.state === "closed" ? L.closed : L.noData;
-          cells.push(`<td class="hc ${cell.state === "closed" ? "closed" : "nodata"}${e > c ? "" : " is-one"}" role="gridcell" tabindex="-1" colspan="${e - c + 1}" data-r="${wd}" data-c0="${c}" data-c1="${e}"><span class="run">${word}</span></td>`);
+          // PAT-5 (K-32): a closed run says so in words, a single cell included; so does a run with no readings (PAT-6).
+          const word = cell.state === "closed" ? L.closed : L.noReadings;
+          cells.push(`<td class="hc ${cell.state === "closed" ? "closed" : "nodata"}" role="gridcell" tabindex="-1" colspan="${e - c + 1}" data-r="${wd}" data-c0="${c}" data-c1="${e}"><span class="run">${word}</span></td>`);
           c = e + 1;
         }
       }
@@ -644,6 +796,10 @@
       <colgroup><col class="col-day">${"<col>".repeat(HOURS)}</colgroup>
       <thead><tr role="row"><th scope="col" class="heat-corner" role="columnheader"><span class="sr-only">${L.dayHead}</span></th>${hours.join("")}</tr></thead>
       <tbody>${rows.join("")}</tbody>`;
+    // The data light stays only while the pattern holds a value: an empty period is drawn as a plain card (LGT-7, LGT-8).
+    const lit = model.heat.some((r) => r.some((x) => x.state === "value"));
+    $("#pattern").classList.toggle("lit", lit);
+    $("#pattern").classList.toggle("lit-chart", lit);
     heatSlots = [0, 1, 2, 3, 4, 5, 6].map(() => new Array(HOURS));
     $$(".hc", heat).forEach((td) => { for (let c = +td.dataset.c0; c <= +td.dataset.c1; c++) heatSlots[+td.dataset.r][c] = td; });
     // The roving cell starts on the busiest hour (or the first cell).
@@ -653,21 +809,26 @@
     heatSlots[heatCur.r][heatCur.c].tabIndex = 0;
     hideTip();
     $("#pattern-sub").innerHTML = `${L.patternSub}${b ? `<span class="sep" aria-hidden="true">·</span>${L.busiest(wdLong(b.wd), hourRange(b.c * 60, b.c * 60 + 60))}` : ""}`;
+    // The key names every mark the pattern shows (TRU-2): the busiest point while there is one, the hatch while any slot
+    // is drawn from fewer than 3 days.
+    const anyFew = model.heat.flat().some((x) => x.state === "value" && x.avg > 0 && x.samples < MIN_DAYS);
+    $("#heat-key").innerHTML = `<li><span>${L.keyFewer}</span><span class="ramp" aria-hidden="true"></span><span>${L.keyMore}</span></li>
+    <li><span class="k k0" aria-hidden="true">0</span><span>${L.empty}</span></li>
+    <li><span class="k kc" aria-hidden="true"></span><span>${L.closed}</span></li>
+    <li><span class="k kn" aria-hidden="true"></span><span>${L.noReadings}</span></li>` +
+      (b ? `<li><span class="k kt" aria-hidden="true"></span><span>${L.busiestKey}</span></li>` : "") +
+      (anyFew ? `<li><span class="k kf" aria-hidden="true"></span><span>${L.fewKey}</span></li>` : "");
   }
   $("#heat-keys").textContent = L.heatKeys;
-  $("#heat-key").innerHTML = `<li><span>${L.keyFewer}</span><span class="ramp" aria-hidden="true"></span><span>${L.keyMore}</span></li>
-    <li><span class="k0" aria-hidden="true">0</span><span>${L.empty}</span></li>
-    <li><span class="kc" aria-hidden="true"></span><span>${L.closed}</span></li>
-    <li><span class="kn" aria-hidden="true"></span><span>${L.noData}</span></li>`;
   $("#heat-key").setAttribute("aria-label", L.patternTitle);
 
   function tipHTML(td) {
     const wd = +td.dataset.r, c0 = +td.dataset.c0, c1 = +td.dataset.c1, cell = model.heat[wd][c0];
     const when = `<div class="tip-t"><span>${wdLong(wd)}</span><span aria-hidden="true">·</span><span>${hourRange(c0 * 60, c1 * 60 + 60)}</span></div>`;
     if (cell.state === "closed") return `${when}<div class="tip-main"><span class="tip-word">${L.closed}</span></div><div class="tip-u">${L.closedTip}</div>`;
-    if (cell.state === "missing") return `${when}<div class="tip-main"><span class="tip-word">${L.noData}</span></div><div class="tip-u">${L.noDataTip}</div>`;
+    if (cell.state === "missing") return `${when}<div class="tip-main"><span class="tip-word">${L.noReadings}</span></div><div class="tip-u">${L.noDataTip}</div>`;
     const z = cell.avg === 0;
-    return `${when}<div class="tip-main"><span class="tip-v">${bdi(z ? "0" : valText(cell.avg))}</span><span class="tip-word">${z ? L.emptyLong : L.levels[levelOf(cell.avg)]}</span></div><div class="tip-u">${L.avgOf(cell.samples)}</div>`;
+    return `${when}<div class="tip-main"><span class="tip-v">${bdi(z ? "0" : valText(cell.avg))}</span><span class="tip-l">${z ? L.emptyLong : L.levels[levelOf(cell.avg)]}</span></div><div class="tip-u">${L.avgOf(cell.samples)}</div>`;
   }
   let tipFor = null;
   function showTip(td) {
@@ -749,9 +910,12 @@
   });
 
   /* ---------------------------------------------------------------- day by day
-   * The table system's data table: real table semantics (explicit roles too, so a narrow-screen recomposition never
-   * drops them), sortable columns with aria-sort, numbers aligned at the end, and exceptions (a camera gap, the day
-   * with the period's highest peak) in words. */
+   * The table system's data table (TBL-1…12): real table semantics (explicit roles too, so a narrow-screen recomposition
+   * never drops them), sortable columns with aria-sort, and exceptions (a camera gap, the day with the period's highest
+   * peak) in words. Numeric columns (Peak, Average, Entries) put their numbers and their header on the physical right
+   * edge in both languages, so units sit under units (TBL-1); the peak cell leads with its value on that edge, then its
+   * time, then its flag (TBL-11). A span with no readings (the days before the readings began, or a day inside them with
+   * none) is one full-width row, the range first, then the dotted mark and the words (TBL-12). */
   const daysTable = $("#days-table");
   let sort = { key: "day", dir: "desc" };
   const SORTS = { day: (d) => d.dn, peak: (d) => d.peak, avg: (d) => d.avg, entries: (d) => d.entries };
@@ -763,6 +927,9 @@
     const without = model.days.filter((d) => !d.observed).sort((x, y) => y.dn - x.dn);
     return [...withData, ...without];
   }
+  const DOTS = `<svg class="gap-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="1.3"/><circle cx="9.7" cy="12" r="1.3"/><circle cx="14.3" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg>`;
+  // The gap's words after its range: the range, then the dotted mark (hidden from assistive technology) and the words.
+  const gapNote = (rangeHTML, words) => `<span class="gapnote"><span class="rg">${rangeHTML}</span><span class="mw">${DOTS}<span class="w">${words}</span></span></span>`;
   function renderDays() {
     $("#days-sub").innerHTML = L.days(model.n);
     const cols = [
@@ -784,26 +951,29 @@
       body = `<tr role="row" class="is-empty"><td role="cell" colspan="5"><div class="table-empty">${ICON.info}<p>${L.emptyTable(dateText(model.a, true), dateText(model.b, true))}</p><button class="rbtn" type="button" data-range-go="28d">${L.emptyAction}</button></div></td></tr>`;
     } else {
       const out = [];
-      // Days before the history starts are one merged row ("no readings yet").
+      const noneRow = (rangeHTML, words) => `<tr role="row" class="is-none"><td role="cell" colspan="5" class="c-none">${gapNote(rangeHTML, words)}</td></tr>`;
+      // Days before the history starts are one merged row ("No readings yet").
       let pre = [];
       const flushPre = () => {
         if (!pre.length) return;
         const a = Math.min(...pre.map((d) => d.dn)), b = Math.max(...pre.map((d) => d.dn));
-        out.push(`<tr role="row" class="is-none"><th scope="row" role="rowheader" class="c-day"><span class="dd">${rangeText(a, b, false)}</span></th><td role="cell" colspan="4" class="c-none"><span class="note">${ICON.gap}<span>${L.beforeHistory}</span></span></td></tr>`);
+        out.push(noneRow(rangeText(a, b, false), L.beforeHistory));
         pre = [];
       };
       sortedDays().forEach((d) => {
         if (d.none) { pre.push(d); return; }
         flushPre();
+        // A day inside the readings with none at all is a break in the sequence too, not a row of empty values.
+        if (!d.observed) { out.push(noneRow(dayText(d.dn), L.noReadings)); return; }
         const top = model.top && model.top.dn === d.dn;
-        const notes = d.miss.map(([a, b]) => `<span class="note">${ICON.gap}<span>${L.noteMissing(timeRange(a, b + 1))}</span></span>`).join("");
+        const notes = d.miss.map(([a, b]) => gapNote(timeRange(a, b + 1), L.noReadings)).join("");
         // In date order, a firmer line closes each week (between Saturday and Sunday).
         const edge = sort.key === "day" && (sort.dir === "desc" ? d.wd === 0 : d.wd === 6) && d.dn !== (sort.dir === "desc" ? model.a : model.b);
         const cls = [top ? "is-top" : "", edge ? "wk-edge" : "", notes ? "has-note" : ""].filter(Boolean).join(" ");
         out.push(`<tr role="row"${cls ? ` class="${cls}"` : ""}><th scope="row" role="rowheader" class="c-day"><span class="dd"><span class="wd">${wdShort(d.wd)}</span> <span class="dt">${dateText(d.dn)}</span></span></th>` +
-          `<td role="cell" class="c-peak n">${d.peak == null ? `<span class="dim">${L.noReadings}</span>` : `<span class="pk">${top ? `<span class="flag">${L.highest}</span>` : ""}<span class="pv">${bdi(d.peak)}</span><span class="pt">${bdi(fmtTime(d.peakM))}</span></span>`}</td>` +
-          `<td role="cell" class="c-avg n">${d.avg == null ? "" : bdi(Math.round(d.avg))}</td>` +
-          `<td role="cell" class="c-entries n">${d.observed ? bdi(fmtInt(d.entries)) : ""}</td>` +
+          `<td role="cell" class="c-peak n"><span class="pk"><span class="pv">${bdi(d.peak)}</span><span class="pt">${timeText(d.peakM)}</span>${top ? `<span class="flag">${L.highest}</span>` : ""}</span></td>` +
+          `<td role="cell" class="c-avg n">${bdi(Math.round(d.avg))}</td>` +
+          `<td role="cell" class="c-entries n">${bdi(fmtInt(d.entries))}</td>` +
           `<td role="cell" class="c-notes">${notes}</td></tr>` +
           // On a narrow screen the notes column folds into a row of its own under the day (only one of the two shows).
           (notes ? `<tr role="row" class="note-row${top ? " is-top" : ""}"><td role="cell" colspan="4">${notes}</td></tr>` : ""));
@@ -812,7 +982,28 @@
       body = out.join("");
     }
     daysTable.innerHTML = `<caption class="sr-only">${L.daysCaption(rangeText(model.a, model.b))}</caption><thead><tr role="row">${head}</tr></thead><tbody>${body}</tbody>`;
+    tableFile();
   }
+  // TBL-10 (K-14): the table's export exports the table's rows, in the order shown: one row per day, the gym's own
+  // time, whole people. A link with the file ready behind it, rebuilt when the rows change.
+  const tableExport = $("#table-export");
+  let tableUrl = null;
+  function tableFile() {
+    const q = (v) => (/[",\r\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v);
+    const hhmm = (m) => { const c = clock(m); const h = (c.h12 % 12) + (c.pm ? 12 : 0); return `${String(h).padStart(2, "0")}:${String(c.mm).padStart(2, "0")}`; };
+    const lines = ["day,weekday,peak,peak_time,average_inside,entries,note"];
+    sortedDays().forEach((d) => {
+      const note = d.none ? "no readings yet" : !d.observed ? "no readings" : d.miss.map(([a, b]) => `no readings ${hhmm(a)}-${hhmm(b + 1)}`).join("; ");
+      lines.push([isoOf(d.dn), WD_EN[d.wd], d.observed ? d.peak : "", d.observed ? hhmm(d.peakM) : "", d.observed ? Math.round(d.avg) : "", d.observed ? d.entries : "", q(note)].join(","));
+    });
+    if (tableUrl) URL.revokeObjectURL(tableUrl);
+    tableUrl = URL.createObjectURL(new Blob(["\ufeff" + lines.join("\r\n") + "\r\n"], { type: "text/csv;charset=utf-8" }));
+    tableExport.href = tableUrl;
+    tableExport.setAttribute("download", `fitway-days-${isoOf(model.a)}-to-${isoOf(model.b)}.csv`);
+    tableExport.toggleAttribute("aria-disabled", !model.withReadings);
+    tableExport.classList.toggle("is-disabled", !model.withReadings);
+  }
+  tableExport.addEventListener("click", (e) => { if (!model.withReadings) e.preventDefault(); });
   daysTable.addEventListener("click", (e) => {
     const b = e.target.closest("[data-sort]");
     if (b) {
