@@ -213,13 +213,15 @@
   const suffix = (pm) => (RTL ? (pm ? "م" : "ص") : pm ? "PM" : "AM");
   const fmtTime = (m) => { const c = clock(m); return `${c.h12}:${String(c.mm).padStart(2, "0")} ${suffix(c.pm)}`; };
   const fmtHour = (m) => { const c = clock(m); return `${c.h12} ${suffix(c.pm)}`; };
-  // Arabic ranges use a plain ASCII hyphen: an en dash would reverse the range. English uses an en dash.
-  const DASH = RTL ? "-" : "–";
+  // Both languages use the en dash (DAT-3, user 2026-10-01). An unspaced Arabic hour range isolates its numbers LTR and joins
+  // after the dash (U+2060), so the en dash does not reverse them or open a line break; the suffix stays outside, as before.
+  const DASH = "–";
+  const NUMS = (a, b) => (RTL ? `<bdi dir="ltr">${a}${DASH}\u2060${b}</bdi>` : `${a}${DASH}${b}`);
   const range2 = (a, b) => `${bdi(a)} ${DASH} ${bdi(b)}`;
   const timeRange = (a, b) => range2(fmtTime(a), fmtTime(b));
   function hourRange(a, b) {
     const A = clock(a), B = clock(b);
-    return A.pm === B.pm ? bdi(`${A.h12}${DASH}${B.h12} ${suffix(A.pm)}`) : range2(fmtHour(a), fmtHour(b));
+    return A.pm === B.pm ? bdi(`${NUMS(A.h12, B.h12)} ${suffix(A.pm)}`) : range2(fmtHour(a), fmtHour(b));
   }
 
   /* ------------------------------------------------------------------- dates

@@ -87,7 +87,7 @@
       entries: "مرات الدخول", usualN: (n) => `المعتاد ${b(n)}`, busiestTitle: "أكثر الأوقات ازدحامًا", last7: `آخر ${b(7)} أيام`,
       avgN: (n) => `المعدّل ${b(n)}`, avgTitle: "معدّل الموجودين", noReadings: "لا قراءات", waiting: "بانتظار القراءات", pending: "قيد الانتظار", noReadingsYet: "لا قراءات بعد",
       wowTitle: "مقارنة أسبوعية", notEnough: "لا يكفي السجل بعد", needs: `يلزم أسبوعان كاملان · القراءات منذ ${b(13)} سبتمبر`,
-      wowDates: `${b("16 - 22")} سبتمبر`,
+      wowDates: `${b("16 – 22")} سبتمبر`,
       levels: ["هادئ", "متوسط", "مزدحم", "شديد الازدحام"],
       cmp: { busier: "أعلى من المعتاد", quieter: "أهدأ من المعتاد", same: "قريب من المعتاد" },
       cards: { live: "مباشر، مضاءة", plain: "قيمة ووقتها", late: "متأخرة، بلا ضوء", words: "قيمة بالكلمات", none: "لا قراءات", short: "لا يكفي السجل، بلا ضوء" },
@@ -113,7 +113,7 @@
       daysTitle: "يومًا بيوم", daysSub: `${b(7)} أيام`,
       cols: { day: "اليوم", peak: "الذروة", avg: "المعدّل", entries: "مرات الدخول", notes: "ملاحظات" },
       daysCaption: `الأيام من ${b(16)} إلى ${b(22)} سبتمبر ${b(2026)}: الذروة والمعدّل ومرات الدخول`,
-      highest: "الأعلى", gapRange: "10:00 ص - 2:00 م", beforeRow: `${b(2)} أغسطس - ${b(12)} سبتمبر`,
+      highest: "الأعلى", gapRange: "10:00 ص – 2:00 م", beforeRow: `${b(2)} أغسطس – ${b(12)} سبتمبر`,
       sortedBy: "مرتب حسب اليوم، الأحدث أولًا",
       compactTitle: "دقيقة بدقيقة", compactCaption: "قراءات اليوم دقيقة بدقيقة",
       ccols: { time: "الوقت", inside: "داخل الصالة", avg: `معدّل ${b(30)} دقيقة`, note: "ملاحظة" },
@@ -136,10 +136,10 @@
       railTip: "أسماء الأقسام",
       tabs: { today: "اليوم", reports: "التقارير", activity: "النشاط", access: "الوصول", settings: "الإعدادات" },
       opsTitle: "حالة التشغيل", more: "المزيد", liveWord: "مباشر", delayedWord: "متأخر",
-      date: `الأربعاء ${b(23)} سبتمبر ${b(2026)}`, hours: `ساعات العمل ${b("6:00 ص")} - ${b("1:00 ص")}`,
+      date: `الأربعاء ${b(23)} سبتمبر ${b(2026)}`, hours: `ساعات العمل ${b("6:00 ص")} – ${b("1:00 ص")}`,
       lastAt: (t) => `آخر قراءة ${b(t)}`, pm: (t) => `${t} م`,
       frameCaps: { head: "الرأس المضغوط: العنوان، والحالة، والقائمة", headLate: "الرأس المضغوط، متأخر", ops: "تفاصيل الحالة مفتوحة", opsLate: "تفاصيل الحالة، متأخر", menu: "القائمة مفتوحة، والتركيز على أول عنصر", bar: "الشريط السفلي عند 390، والقسم الحالي «اليوم»", bar320: "عند 320: المرور على «التقارير»، والتركيز على «الإعدادات»", live: "جرّب: Tab ثم Enter، والأسهم داخل القائمة، وEscape يعيد التركيز" },
-      hdrTitle: "التقارير", hdrSub: `${b("26")} أغسطس - ${b("22")} سبتمبر ${b(2026)}<span class="sep">·</span>${b(28)} يومًا`,
+      hdrTitle: "التقارير", hdrSub: `${b("26")} أغسطس – ${b("22")} سبتمبر ${b(2026)}<span class="sep">·</span>${b(28)} يومًا`,
       hdrCap: "رأس الصفحة: العنوان، ثم الفترة، وعناصر التحكم بارتفاع 44 في نهاية السطر",
       emptyTable: `لا قراءات من ${b(1)} يوليو ${b(2026)} إلى ${b(31)} يوليو ${b(2026)}`, emptyAction: `عرض آخر ${b(4)} أسابيع`,
       emptyCaps: { table: "جدول بلا قراءات، وطريق واحد للعودة", alert: "تنبيه وإعادة محاولة واحدة" },
@@ -255,11 +255,13 @@
   const suf = (pm) => (LANG === "ar" ? (pm ? "م" : "ص") : pm ? "PM" : "AM");
   const time = (m) => { const c = clock(m); return `${c.h12}:${String(c.mm).padStart(2, "0")} ${suf(c.pm)}`; };
   const hourLabel = (m) => { const c = clock(m); return `${c.h12} ${suf(c.pm)}`; };
-  // Ranges: a plain hyphen in Arabic, an en dash in English (DAT-3); times with a suffix are spaced.
-  const timeRange = (a, z) => (LANG === "ar" ? `${time(a)} - ${time(z)}` : `${time(a)} – ${time(z)}`);
+  // Ranges: an en dash in both languages (DAT-3, user 2026-10-01); times with a suffix are spaced. An unspaced Arabic hour
+  // range isolates its numbers LTR and joins after the dash (U+2060), so its order and its line stay as before.
+  const timeRange = (a, z) => `${time(a)} – ${time(z)}`;
   const hourRange = (h) => {
-    const a = clock((h - 6) * 60), z = clock((h - 5) * 60), dash = LANG === "ar" ? "-" : "–";
-    return a.pm === z.pm ? `${a.h12}${dash}${z.h12} ${suf(z.pm)}` : `${a.h12} ${suf(a.pm)}${dash}${z.h12} ${suf(z.pm)}`;
+    const a = clock((h - 6) * 60), z = clock((h - 5) * 60), dash = "–";
+    const nums = LANG === "ar" ? `<bdi dir="ltr">${a.h12}${dash}\u2060${z.h12}</bdi>` : `${a.h12}${dash}${z.h12}`;
+    return a.pm === z.pm ? `${nums} ${suf(z.pm)}` : `${a.h12} ${suf(a.pm)}${dash}\u2060${z.h12} ${suf(z.pm)}`;
   };
 
   /* ------------------------------------------------------------------ icons */

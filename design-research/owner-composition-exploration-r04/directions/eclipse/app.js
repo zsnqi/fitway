@@ -211,14 +211,16 @@
   const fmtHour = (m) => { const c = clock(m); return `${c.h12} ${suffix(c.pm)}`; };
   const bdi = (s) => `<bdi>${s}</bdi>`;
   const tb = (m) => bdi(fmtTime(m));
-  // Arabic ranges use a plain ASCII hyphen: an en dash would reverse the range. English uses an en dash.
-  const DASH = RTL ? "-" : "–";
+  // Both languages use the en dash (DAT-3, user 2026-10-01). An unspaced Arabic hour range isolates its numbers LTR and joins
+  // after the dash (U+2060), so the en dash does not reverse them or open a line break; the suffix stays outside, as before.
+  const DASH = "–";
+  const NUMS = (a, b) => (RTL ? `<bdi dir="ltr">${a}${DASH}\u2060${b}</bdi>` : `${a}${DASH}${b}`);
   const range = (a, b) => `${bdi(a)} ${DASH} ${bdi(b)}`;
   const timeRange = (a, b) => range(fmtTime(a), fmtTime(b));
   const plainRange = (a, b) => `${a} ${DASH} ${b}`;
   function hourRange(a, b) {
     const A = clock(a), B = clock(b);
-    return A.pm === B.pm ? bdi(`${A.h12}${DASH}${B.h12} ${suffix(A.pm)}`) : range(fmtHour(a), fmtHour(b));
+    return A.pm === B.pm ? bdi(`${NUMS(A.h12, B.h12)} ${suffix(A.pm)}`) : range(fmtHour(a), fmtHour(b));
   }
 
   /* -------------------------------------------------------------- simulation */
@@ -2335,8 +2337,8 @@
   const INTRO_STORE = "fitway.eclipse.v3.intro";
   // ms at 1x; the intro has its own roll (the live digit roll on a new reading keeps T.roll). fontCap is not scaled: it counts from the first paint.
   const INTRO_T = { roll: 400, line: 914, mark: 257, fontCap: 200 };
-  // A whole value: 49, 332, or a time with its own AM/PM (6-8 م, 6–8 PM), which is part of the value, unlike a unit.
-  const INTRO_NUM = /\d+(?:[-–:.,]\d+)*(?: (?:ص|م|AM|PM)(?![\p{L}]))?/gu;
+  // A whole value: 49, 332, or a time with its own AM/PM (6–8 م, 6–8 PM), which is part of the value, unlike a unit.
+  const INTRO_NUM = /\d+(?:(?:[-–]\u2060?|[:.,])\d+)*(?: (?:ص|م|AM|PM)(?![\p{L}]))?/gu;
   // The peak's label waits by an empty clip, like the answers' slots: out of sight, but still in the accessibility tree
   // (visibility or display would remove it), and never by opacity.
   const INTRO_HIDE = ";clip-path:inset(50%)";
@@ -2357,7 +2359,7 @@
     introPark();
   }
   // Each answer's value becomes one rolling slot (the digit roll's own slot: the value in flow, so its box is final),
-  // clipped out of sight. It inherits the text's own direction, so «6-8 م» keeps its order. Its text is the final value
+  // clipped out of sight. It inherits the text's own direction, so «6–8 م» keeps its order. Its text is the final value
   // throughout, so assistive technology reads the final value from the first paint.
   function introPark() {
     intro.state = "pending";
