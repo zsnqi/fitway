@@ -18,6 +18,8 @@
   <link rel="stylesheet" href="fonts/readex-pro.css">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="reports.css">
+  <!-- The phone options round (step 4): three answers for the phone, drawn only with ?opt=a|b|c (reports.js). -->
+  <link rel="stylesheet" href="reports-phone-options.css">
   <script>
     // As on the Daily page: start the CSS faces themselves, so text shares their one fetch per subset.
     for (var weight of ["400", "500"]) {
@@ -25,6 +27,7 @@
         .catch(function () { /* Failed faces keep the existing fallback. */ });
     }
   </script>
+  <script src="reports-phone-options.js" defer blocking="render"></script>
   <script src="reports.js" defer blocking="render"></script>
 </head>
 <!-- data-frame (step 4): Reports takes the frame Daily took in step 3 (style.css "the frame"): the rail at 721 px and

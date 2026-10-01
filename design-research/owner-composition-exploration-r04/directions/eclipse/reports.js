@@ -787,6 +787,15 @@
   // scroll (BRK-1, BRK-6). The slots, their runs, their order and their words are the same in both forms; a run of
   // closed or no-reading hours merges along the hours: colspan across, rowspan down.
   let heatT = false;       // the transposed (phone) form is drawn
+  /* The phone options round (step 4, after the user's phone critique of phase B): ?opt=a|b|c draws one of three answers
+   * for the pattern (721-1023 px and 720 px and below), the day table and the empty period (720 px and below), from
+   * reports-phone-options.js. Without ?opt nothing here runs and the page is phase B's (9309382). */
+  const OPT_KEY = params.get("opt");
+  const OPT = OPT_KEY && window.__rpOptions && window.__rpOptions[OPT_KEY] ? window.__rpOptions[OPT_KEY] : null;
+  if (OPT) document.body.dataset.opt = OPT_KEY;
+  const optPattern = () => (OPT && OPT.pattern && (mqPhone.matches || mqTablet.matches) ? OPT.pattern : null);
+  const optDays = () => (OPT && OPT.days && mqPhone.matches ? OPT.days : null);
+  let X = null;            // the options' view of this page (set at the start, below)
   function heatCell(wd, c, run) {
     const cell = model.heat[wd][c];
     const span = run[1] - run[0] + 1, spanAttr = span > 1 ? ` ${heatT ? "rowspan" : "colspan"}="${span}"` : "";
@@ -814,11 +823,19 @@
     return out;
   }
   function renderHeat() {
-    heatT = mqPhone.matches;
+    const op = optPattern();
+    heatT = mqPhone.matches && !OPT;
     $("#pattern").classList.toggle("is-t", heatT);
+    $("#pattern").toggleAttribute("data-opt-on", Boolean(op));
+    $("#heat-scroll").hidden = Boolean(op && op.own);
     const runs = [0, 1, 2, 3, 4, 5, 6].map(heatRuns);
     const caption = `<caption class="sr-only">${L.heatCaption(rangeText(model.a, model.b))}</caption>`;
-    if (heatT) {
+    if (op && op.own) {
+      heat.innerHTML = "";
+      op.render(X);
+    } else if (op && op.heatHTML) {
+      heat.innerHTML = `${caption}${op.heatHTML(X)}`;
+    } else if (heatT) {
       // Weekday columns, Sunday first from the inline start; hour rows, each with its own visible label.
       const head = [0, 1, 2, 3, 4, 5, 6].map((wd) => `<th scope="col" class="hw" role="columnheader"><span aria-hidden="true"><span class="wd-m">${wdCol(wd)}</span><span class="wd-n">${wdNarrow(wd)}</span></span><span class="sr-only">${wdLong(wd)}</span></th>`).join("");
       const rows = [];
@@ -855,7 +872,9 @@
     const b = model.busiest;
     heatCur = b ? { r: b.wd, c: b.c } : { r: 0, c: 0 };
     heatWant = heatCur.c;
-    heatSlots[heatCur.r][heatCur.c].tabIndex = 0;
+    // An option may draw no cells (an empty period's one message, or a form of its own).
+    const first = heatSlots[heatCur.r][heatCur.c] || $(".hc", heat);
+    if (first) first.tabIndex = 0;
     hideTip();
     $("#pattern-sub").innerHTML = `<span class="ps-part">${L.patternSub}</span>${b ? `<span class="sep" aria-hidden="true">·</span><span class="ps-part">${L.busiest(wdLong(b.wd), hourRange(b.c * 60, b.c * 60 + 60))}</span>` : ""}`;
     // The key names every mark the pattern shows (TRU-2): the busiest point while there is one, the hatch while any slot
@@ -867,11 +886,14 @@
     <li><span class="k kn" aria-hidden="true"></span><span>${L.noReadings}</span></li>` +
       (b ? `<li><span class="k kt" aria-hidden="true"></span><span>${L.busiestKey}</span></li>` : "") +
       (anyFew ? `<li><span class="k kf" aria-hidden="true"></span><span>${L.fewKey}</span></li>` : "");
+    if (op && op.after) op.after(X, { anyFew });
   }
   $("#heat-keys").textContent = L.heatKeys;
   $("#heat-key").setAttribute("aria-label", L.patternTitle);
 
   function tipHTML(td) {
+    const op = optPattern();
+    if (op && op.tip) return op.tip(td, X);
     const wd = +td.dataset.r, c0 = +td.dataset.c0, c1 = +td.dataset.c1, cell = model.heat[wd][c0];
     const when = `<div class="tip-t"><span>${wdLong(wd)}</span><span aria-hidden="true">·</span><span>${hourRange(c0 * 60, c1 * 60 + 60)}</span></div>`;
     if (cell.state === "closed") return `${when}<div class="tip-main"><span class="tip-word">${L.closed}</span></div><div class="tip-u">${L.closedTip}</div>`;
@@ -954,6 +976,10 @@
   heatScroll.addEventListener("scroll", () => { if (tipFor) showTip(tipFor); }, { passive: true });
   // Crossing the phone breakpoint redraws the pattern in that size's form; its readout closes (BRK-10).
   mqPhone.addEventListener("change", () => renderHeat());
+  if (OPT) {
+    mqTablet.addEventListener("change", () => renderHeat());
+    mqPhone.addEventListener("change", () => renderDays());
+  }
 
   const numbersBtn = $("#numbers");
   numbersBtn.addEventListener("click", () => {
@@ -986,6 +1012,9 @@
   const gapNote = (rangeHTML, words) => `<span class="gapnote"><span class="rg">${rangeHTML}</span><span class="mw">${DOTS}<span class="w">${words}</span></span></span>`;
   function renderDays() {
     $("#days-sub").innerHTML = L.days(model.n);
+    const od = optDays();
+    $("#days").toggleAttribute("data-opt-on", Boolean(od));
+    if (od) { od.render(X); tableFile(); return; }
     const cols = [
       { key: "day", cls: "c-day", sortable: true },
       { key: "peak", cls: "c-peak n", sortable: true },
@@ -1387,6 +1416,16 @@
   });
 
   /* ---------------------------------------------------------------- start */
+  // The options' view of the page (?opt only): the model and the page's own helpers, so every option speaks its language.
+  if (OPT) X = {
+    get model() { return model; }, L, LANG, RTL, MIN_DAYS, HOURS, DAY, LAST_FULL, ICON, DOTS,
+    get sort() { return sort; }, set sort(v) { sort = v; },
+    get tipFor() { return tipFor; },
+    $, $$, bdi, nw, DASH, fmtInt, fmtHour, fmtTime, hourRange, timeRange, timeText, dateText, dayText, rangeText, plain,
+    wdOf, wdLong, wdShort, partsOf, monthOf, openAt, rampColor, valText, levelOf, levelChip, gapNote, heatCell, heatRuns,
+    sortedDays, renderDays, renderHeat, showTip, hideTip, focusCell, say, mqPhone, mqTablet,
+    goPreset: (k) => { setRange({ kind: k, a: LAST_FULL - PRESETS[k] + 1, b: LAST_FULL }); segButtons.find((x) => x.dataset.range === k).focus(); },
+  };
   renderAll();
   window.__reports = {
     ready: false,
