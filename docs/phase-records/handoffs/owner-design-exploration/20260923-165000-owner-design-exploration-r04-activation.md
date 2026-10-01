@@ -4420,3 +4420,7 @@ The user ends this local session here and continues in a new cloud session. No a
   hours. *User 2026-10-01.* Against the coordinator's recommendation (the outlines).
 - **Decision 2, the hour bars: no edge** (the options round's form). The 1 px FITWAY-red edge on every bar goes; the
   printed number carries a quiet hour's value. *User 2026-10-01,* on the coordinator's recommendation.
+- **Decision 3, the full day list: no dated 7-day headers** (the options round's form). *User 2026-10-01,* against
+  the coordinator's recommendation (the headers).
+- **Coordinator note for the fix round:** «عرض آخر 28 يومًا» on the empty period's button shows wide gaps around «28»
+  at 390 AR. Check the spacing of the number inside the label.
