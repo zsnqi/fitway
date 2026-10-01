@@ -4418,3 +4418,5 @@ The user ends this local session here and continues in a new cloud session. No a
   tell what to look at. Each decision now gets one cropped, numbered comparison image and one question, in order.
 - **Decision 1, the week strip: one bar per day** (the options round's form), not the mini outlines of each day's
   hours. *User 2026-10-01.* Against the coordinator's recommendation (the outlines).
+- **Decision 2, the hour bars: no edge** (the options round's form). The 1 px FITWAY-red edge on every bar goes; the
+  printed number carries a quiet hour's value. *User 2026-10-01,* on the coordinator's recommendation.
