@@ -4173,3 +4173,43 @@ The local usage limit is close, so the user continues this coordinator role in a
   - It gives the week card before and after crops.
   - It stops for the user. The states (K-02) go to the next designer.
 - **Next:** on its report, inspect the sheets and the week card's crops, push, and show the user.
+## Step 4 phase B delivered at `9309382` (2026-10-01)
+
+- **Delivered** on `9b6ae63`, by a fresh designer: `DESIGN-SPEC.md` +51/−19, `README.md` +20, `components.js` +5/−5,
+  `reports.css` +99/−9, `reports.html` +4/−3 and `reports.js` +103/−44. The tree is clean, and the commit is pushed.
+  - **The 1440 refinements:**
+    - the period control stands alone, and "Export minute data" sits at the row's far end;
+    - the week card shows «مقابل 9 – 15 سبتمبر» / "vs 9 – 15 Sep" under "avg. inside", beside the value. The card
+      stays 166 px with no new line. The head and the foot were tried and rejected, and the sheet shows both;
+    - a preset's subtitle shows its dates alone, and a custom period keeps its length.
+  - **768:** the glance row stacks. The figures split 1 : 1.25 : 1, and the pattern keeps its 1440 orientation, with
+    cells 20.4 × 44.
+  - **390:**
+    - the period control is full width, and the export sits on its own line at the row's end;
+    - two figures sit side by side, with Entries full width below them;
+    - the pattern is transposed into a week calendar, a column per day and a row per hour, cells 31.6 × 44. The card
+      is 1152 px;
+    - the day table uses TBL-8's phone form.
+  - **Self-reported:**
+    - 0 targets under 44, and no sideways scroll at 1440, 1024, 768, 720, 390 and 320;
+    - 0 breaks inside dates or ranges;
+    - HDR-6 moves 0.00 px everywhere except K-38;
+    - the focus order follows the visual order;
+    - Daily's files are byte-identical to `9b6ae63`;
+    - the lint finds 355 rows and 0 problems.
+  - **Spec:**
+    - new rows OWN-R8…R11 (C) and PAT-12 (R);
+    - K-29 is closed for Reports;
+    - K-38 is new: at 320 AR, «التقارير» touches the "Offline" badge. It is deferred to the states round.
+  - **Proposals Q17-Q22:**
+    - Q17: the baseline beside the value;
+    - Q18: the phone export placement;
+    - Q19: the coverage line with a preset, and the two-line phone subtitle;
+    - Q20: the one-letter Arabic day heads «ح ن ث ر خ ج س»;
+    - Q21: pattern cells under 44 px wide below 1024, with WCAG 2.5.8 met;
+    - Q22: the 768 fold falls 68 px inside Saturday.
+- **Coordinator inspection, not verification:** sheet 1 (1440 before and after, with the week card's placements) and
+  sheet 3 (390 in 28d) are coherent, and the week card is not crowded.
+- **Coordinator recommendation:** accept Q17-Q22 as built.
+- **Next:** the user's notes. Then a fresh designer takes Reports' states (K-02, with K-38), and a fresh reviewer
+  takes step 4.
