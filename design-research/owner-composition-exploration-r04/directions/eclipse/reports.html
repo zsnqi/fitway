@@ -18,8 +18,6 @@
   <link rel="stylesheet" href="fonts/readex-pro.css">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="reports.css">
-  <!-- The phone options round (step 4): three answers for the phone, drawn only with ?opt=a|b|c (reports.js). -->
-  <link rel="stylesheet" href="reports-phone-options.css">
   <script>
     // As on the Daily page: start the CSS faces themselves, so text shares their one fetch per subset.
     for (var weight of ["400", "500"]) {
@@ -27,12 +25,12 @@
         .catch(function () { /* Failed faces keep the existing fallback. */ });
     }
   </script>
-  <script src="reports-phone-options.js" defer blocking="render"></script>
   <script src="reports.js" defer blocking="render"></script>
 </head>
 <!-- data-frame (step 4): Reports takes the frame Daily took in step 3 (style.css "the frame"): the rail at 721 px and
      wider (it opens over the content, with a scrim from 721 to 1023 px), and at 720 px and below the compact header and
-     the bar. Reports' own content below 1200 px is composed since step 4 phase B (reports.css, "below 1200 px"). -->
+     the bar. Reports' own content below 1200 px is composed since step 4 phase B (reports.css, "below 1200 px"); below
+     1024 px the pattern shows one day at a time and, at 720 px and below, day by day is a list (step 4's build). -->
 <body class="rp" data-frame>
   <a class="skip" href="#main" data-t="skip"></a>
   <div class="page">
@@ -220,6 +218,8 @@
             </button>
           </div>
         </header>
+        <!-- Below 1024 px: one day at a time, the week strip and the chosen day's hours (reports.js, renderDay). -->
+        <div class="pday" id="pday" hidden></div>
         <div class="heat-scroll" id="heat-scroll">
           <div class="heat-plate" id="heat-plate">
             <table class="heat" id="heat" role="grid" aria-labelledby="pattern-title" aria-describedby="pattern-sub heat-keys"></table>
@@ -242,6 +242,8 @@
           </a>
         </header>
         <div class="table-wrap" id="days-wrap">
+          <!-- At 720 px and below: the day list (reports.js, renderList); the table from 721 px. -->
+          <div class="dlist" id="dlist" hidden></div>
           <table class="table days-table" id="days-table" role="table"></table>
         </div>
       </section>

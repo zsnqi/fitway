@@ -1793,10 +1793,40 @@ Q17-Q22), not this file. Brief: `step4-reports-phase-b.md`.
 - **768 (721-1023 px).** The glance stacks; the period's figures are 1 : 1.25 : 1 so the peak's day and time keep one
   line under its name. The pattern keeps 1440's form, the switch at the end of its title's row.
 - **390 (720 px and below).** The period across the width, the minute export at the row's far end on its own line.
-  Average inside and the highest peak side by side, entries under them. The pattern transposed into a week calendar
+  Average inside and the highest peak side by side, entries under them. (Superseded by step 4's build, below: the user
+  rejected this phone as compressed.) The pattern transposed into a week calendar
   (`reports.js` draws `.pattern.is-t` at 720 px and below and redraws it when the breakpoint is crossed): a column per
   weekday, a row per hour, the same slots, marks, words and keyboard, its axes turned. Day by day in TBL-8's form.
 - **Checked.** 320 (the figures stack; "Su" … "Sa"), 1024 and 720 × 450 (the 200% zoom). The export dialog's file name
   breaks only between its parts. Daily is unchanged: its files are as at `9b6ae63`, and its seven states at 1440, 768
   and 390 render byte for byte the same but for antialiasing noise that also appears between two renders of `9b6ae63`.
 - **Probes and frames** are in `/tmp/fitway-scratch/reports-b/` (`R4b`).
+
+## Step 4, the build: one day at a time below 1024 px (the user's pick of 2026-10-01, option B)
+
+The reference is `DESIGN-SPEC.md` (PAT-12…14, OWN-R3…R5, OWN-R9…R13, TRU-7, TBL-10, DAT-4, K-29, K-39 and §8 Q17, Q20-Q22),
+not this file. Brief: `step4-reports-phone-build.md`. The user rejected phase B's phone (`9309382`) as compressed; the
+options round (`aa509b9`) drew three answers behind `?opt=a|b|c`, and the user picked B. A, C and the `?opt` switch are
+gone (`reports-phone-options.js`, `reports-phone-options.css` and `reports-options-capture.mjs` removed); B is the page.
+
+- **The pattern below 1024 px** (`#pattern[data-form="day"]`, `reports.js` `renderDay`): a week strip of 7 radio buttons
+  (one Tab stop, the arrow keys between days, mirrored in Arabic) chooses the weekday; the chosen day's 19 hours are bars
+  on one scale for the whole week, each printing its number, closed and no-reading hours one worded row each, the range
+  first. It opens on the busiest weekday (in 7 days, on the day of the highest peak). Each day in the strip carries its
+  own hours in miniature on the bars' scale, so the strip compares the days where they differ (when they fill, Friday's
+  late opening, Saturday's lower evening); every bar keeps a 1 px FITWAY-red edge so a quiet hour still shows its length.
+  On the tablet the hours stand as columns, every third hour labelled, and the card ends inside the 768 × 1024 first
+  screen. From 1024 px the grid is 1440's, unchanged.
+- **Day by day at 720 px and below** (`#days[data-form="list"]`, `renderList`): a two-line list, 7 days and then "Show all
+  days", sorted with a native select; in date order every 7 days from the period's last day open with their dates. From
+  721 px the table keeps phase B's form (cells pad 8 where its card is under 540 px, so it fits at 721).
+- **An empty period below 1024 px** says its sentence once, in the busy-times card with the way back (EMP-1); day by day
+  steps aside until the period has readings.
+- **"Last 7 days" at every size** loses «مقابل 9 – 15 سبتمبر» / "vs 9 – 15 Sep" (Q17, rejected by the user): the value and
+  its measure, as before phase B. Reports at 1440 differs from `aa509b9` only inside that card.
+- **Also fixed:** a custom empty period's subtitle on a phone ran "No readings31 days" together (its inner separator was
+  hidden with the parts' one); the options round's list carried the list element's default 40 px indent.
+- **Open and capture.** `reports.html` takes the same parameters as before (`lang`, `state`, `range` or `from`/`to`,
+  `dialog`, `export`, `motion`); `?opt` no longer exists. `window.__reports` gains `day`, `pickDay(wd)` and
+  `showAllDays()`. `reports-build-capture.mjs <outDir> --phaseb=<9309382 copy> --before=<aa509b9 copy>` renders,
+  measures and compares the round and composes its sheets (`R4c`).

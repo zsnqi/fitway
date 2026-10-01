@@ -50,10 +50,6 @@ html:has(> body.rp) {
 .rp .stat-value { display: flex; align-items: baseline; gap: 8px; align-self: stretch; min-height: 46px; margin-block-start: 16px; line-height: 1; }
 .rp .stat-value .num { font-size: 46px; line-height: 46px; font-weight: 500; }
 .rp .stat-value .unit { font-size: 12px; line-height: 18px; color: var(--ink-3); }
-/* The week card's value names its baseline (step 4 phase B): the measure, then "vs 9 – 15 Sep", caption type, stacked
- * beside the number, the last line on the number's baseline. */
-.rp-trend .stat-value { align-items: last baseline; }
-.rp .unit-stack { display: flex; flex-direction: column; min-width: 0; }
 /* CRD-3: a figure with no value says so in one sentence, heading type at 400, on the value's line. */
 .rp .stat-say { align-self: center; font-size: 19px; line-height: 28.5px; font-weight: 400; color: var(--ink-2); white-space: nowrap; }
 .rp .stat-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; align-self: stretch; min-height: 42px; margin-block-start: auto; padding-block-start: 16px; }
@@ -410,10 +406,10 @@ th.is-asc .sort-ico { transform: rotate(180deg); }
  * tablet's modal rail, and the phone's bar, compact header and menu.
  *   1024-1199 px (checked): the glance row stacks; the period's three figures share the width.
  *   721-1023 px (768 designed): the same stack; the peak's figure is the widest, so its day and time keep one line
- *     under its name; the pattern keeps 1440's form, a row per weekday, so the whole week is seen at once.
+ *     under its name; the pattern shows one day at a time (step 4's build), its hours standing as columns.
  *   720 px and below (390 designed): the period control across the width, the minute file at the row's far end on a
  *     line of its own; average inside and the highest peak side by side, entries across the width under them; the
- *     pattern transposed into a week calendar (a column per weekday, a row per hour); the table in TBL-8's form. */
+ *     pattern one day at a time, its hours as rows; day by day a list (step 4's build). */
 @media (max-width: 1199px) {
   .rp-glance { grid-template-columns: minmax(0, 1fr); }
 }
@@ -436,17 +432,16 @@ th.is-asc .sort-ico { transform: rotate(180deg); }
   /* The peak's figure carries a day and a time beside its name, so its column is the widest: at 768 they keep one line
    * under its name in both languages (Arabic needs 167 px), and the three values stay level (two-line heads). */
   .rp-period { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 1fr); }
-  /* The pattern: 1440's form with a day column fitted to the longest weekday name ("Wednesday"). An hour label is wider
-   * than its 20 px column, so it starts at its hour (an overflowing line is start-aligned); the last one, "12 AM", ends
-   * on the grid's edge instead of passing it. */
-  .heat .col-day { width: 88px; }
-  .heat thead .hh:last-child { position: relative; }
-  .heat thead .hh:last-child .hh-t { position: absolute; inset-inline-end: 0; bottom: 0; }
+  /* Day by day keeps the table (phase B's form) on the tablet. Its narrowest content is 534 px in Arabic with cells padded
+   * 12 (a camera gap's range, which never breaks, sets the notes column), so where the card's content is narrower (721 px
+   * to about 735 px), cells pad 8 and the table keeps inside its card. */
+  .days { container: days / inline-size; }
 }
+@container days (max-width: 539.98px) { .table th, .table td { padding-inline: 8px; } }
 @media (max-width: 720px) {
   /* The subtitle's parts each on a line of their own (the dates; then the length of a custom period, or the days with
    * readings), so the second part never pushes the page sideways (320 px). */
-  .rp .sub .sep { display: none; }
+  .rp .sub > .sep { display: none; }
   .rp .sub .sub-part { display: block; }
   /* The page's controls: the period across the width in equal segments (SEG-4); the minute file keeps the row's far end,
    * on a line of its own. */
@@ -526,26 +521,113 @@ th.is-asc .sort-ico { transform: rotate(180deg); }
   .rp-period .fig + .fig::before { inset-block: 0 auto; inset-inline: 20px; border-inline-start: 0; border-block-start: 1px solid var(--line); }
 }
 
-/* ------------------------------------------------------- the phone's pattern
- * The grid transposed (reports.js draws it at 720 px and below): a column per weekday, Sunday first from the inline
- * start, under the calendar's short names; a row per hour, each with its label (caption type, --ink-2) in a 44 px column.
- * The cells keep PAT-2's 44 px height, radius 8 and 4 px spacing on the plate, and every mark (PAT-3…10). A run of
- * closed or no-reading hours merges down its column and keeps its words: across in Arabic, where they fit the column
- * («لا قراءات» on two lines), and set along the run in English, top to bottom, where "Closed" is wider than a column. */
-.pattern.is-t .heat .col-hour { width: 44px; }
-.pattern.is-t .hw { height: 22px; padding: 0; font-size: 12px; line-height: 18px; font-weight: 400; color: var(--ink-2); text-align: center; vertical-align: bottom; white-space: nowrap; }
-/* Each hour's row is 44 px tall through its header, so a row keeps its height even where every column's run spans it
- * (an empty period). */
-.pattern.is-t .hr { height: 44px; padding: 0 4px 0 0; font-size: 12px; line-height: 18px; color: var(--ink-2); text-align: start; white-space: nowrap; }
-[dir="rtl"] .pattern.is-t .hr { padding: 0 0 0 4px; }
-.pattern.is-t .hc .run { display: inline-block; max-width: 100%; white-space: normal; line-height: 18px; }
-[dir="ltr"] .pattern.is-t .hc .run { writing-mode: vertical-rl; max-width: none; max-height: 100%; white-space: nowrap; }
-.pattern.is-t .wd-n { display: none; }
-/* Below 360 px (320 checked): English heads its columns "Su" ... "Sa", as a date picker does ("Wed" is wider than a 26 px
- * column); the card's title keeps its line, and the switch follows the key on a line of its own. */
-@media (max-width: 359px) {
-  .pattern.is-t .wd-m { display: none; }
-  .pattern.is-t .wd-n { display: inline; }
-  .pattern-head { grid-template-columns: minmax(0, 1fr); grid-template-areas: "title" "sub" "key" "switch"; justify-items: start; }
-  #numbers { margin-block-start: 16px; }
+/* ------------------------------------------------- below 1024 px: one day at a time
+ * The user's pick of 2026-10-01 (option B). A week strip chooses the weekday; the chosen day's 19 hours are bars on one
+ * scale for the whole week, each with its number, so nothing needs a tap to be read and the numbers switch steps aside.
+ * The plate, the ramp and the marks are the pattern's own (PAT-3, PAT-6, PAT-7, PAT-10). */
+.pattern[data-form="day"] #numbers { display: none; }
+.pday { display: flex; flex-direction: column; gap: 20px; container: pday / inline-size; }
+.md-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+/* The week strip: SEG-1's frame, a radio per weekday, the chosen one with the pressed segment's fill and ring. Each day
+ * carries its hours in miniature on the bars' scale: a hairline under the open hours (dotted where there are no
+ * readings), the ramp beneath a FITWAY-red outline; time runs with the language. */
+.wk-strip { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border-radius: 12px; box-shadow: inset 0 0 0 1px var(--line-2); background: rgba(255, 255, 255, 0.015); }
+.wk-b { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 8px; min-width: 0; height: 76px; padding: 12px 6px 9px; border-radius: 12px; color: var(--ink-2); }
+.wk-b:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); }
+.wk-b[aria-checked="true"] { color: var(--ink); background: rgba(245, 243, 242, 0.12); box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42); }
+.wk-b:focus-visible { outline-offset: -4px; }
+.md { display: block; flex: none; width: 100%; max-width: 38px; height: 26px; overflow: visible; }
+[dir="rtl"] .md { transform: scaleX(-1); }
+.md path { fill: none; vector-effect: non-scaling-stroke; }
+.md .md-base { stroke: rgba(245, 243, 242, 0.3); stroke-width: 1; }
+.md .md-none { stroke: rgba(245, 243, 242, 0.5); stroke-width: 1.5; stroke-dasharray: 1.5 2.5; }
+.md .md-area { fill: url(#md-ramp); }
+.md .md-edge { stroke: #e51935; stroke-width: 1.25; stroke-linejoin: round; }
+.wk-n { font-size: 12px; line-height: 18px; white-space: nowrap; }
+/* Seven days need 44 px each (308 px): below that (320 checked) the strip takes two rows of four. */
+@container pday (max-width: 307.98px) { .wk-strip { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+/* The key: only the marks the bars carry, drawn as bars. */
+.pattern[data-form="day"] .heat-key .k { width: 20px; height: 10px; border-radius: 3px; box-shadow: inset 0 0 0 1px #e51935; }
+.pattern[data-form="day"] .heat-key .kt::after { top: 2.5px; inset-inline-end: 3px; width: 5px; height: 5px; }
+/* The day's hours: a row each, its label, its bar on the week's scale and its number at the bar's end. Every bar keeps
+ * a 1 px edge in FITWAY red (from 52 its own colour), so a quiet hour's length still reads where its ramp tone is close
+ * to the plate's; the printed number carries the value. */
+.hb { width: 100%; border-collapse: separate; border-spacing: 0 4px; margin-block: -4px; }
+.hb th, .hb td { padding: 0; font-weight: 400; }
+.hb-h { width: 52px; height: 24px; padding-inline-end: 8px !important; font-size: 12px; line-height: 18px; color: var(--ink-2); text-align: start; white-space: nowrap; vertical-align: middle; }
+.hb-c { display: flex; align-items: center; gap: 8px; height: 24px; }
+.hb-bar { position: relative; flex: none; width: max(4px, calc(var(--w) * (100% - 44px))); height: 18px; border-radius: 5px; background: var(--c); box-shadow: inset 0 0 0 1px var(--e); }
+.hb-bar.few { background: var(--c) repeating-linear-gradient(135deg, transparent 0 4px, rgba(15, 14, 15, 0.55) 4px 6px); }
+.hb-bar.is-top::after { content: ""; position: absolute; top: 50%; inset-inline-end: 6px; width: 5px; height: 5px; margin-block-start: -2.5px; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 1.5px rgba(15, 14, 15, 0.55); }
+.hb-v { font-size: 12px; line-height: 18px; font-weight: 500; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.hb-v.is-max { color: var(--ink); }
+.hb-zero { display: inline-grid; place-items: center; width: 26px; height: 18px; border-radius: 5px; box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.38); font-size: 12px; line-height: 1; font-weight: 500; color: var(--ink-2); }
+.hb-x td { height: 30px; }
+.hb-run { position: relative; display: flex; align-items: center; gap: 16px; height: 30px; padding-inline: 12px; border-radius: 6px; font-size: 12px; line-height: 18px; color: var(--ink-3); white-space: nowrap; }
+.hb-run.is-closed { background: rgba(255, 255, 255, 0.04); }
+.hb-run.is-closed .rg { color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.hb-run.is-closed .w { color: var(--stale); }
+.hb-run.is-none::before { content: ""; position: absolute; inset: 1px; border: 1.5px dotted rgba(245, 243, 242, 0.45); border-radius: 5px; pointer-events: none; }
+.hb-run .gapnote { column-gap: 8px; }
+.hb-run .gapnote .rg { font-size: 12px; line-height: 18px; color: var(--ink-2); }
+/* An empty period: one message for the whole card (EMP-1, EMP-4: the icon, the sentence with its dates, the way back). */
+.pday-empty { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 40px 16px; text-align: center; font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
+.pday-empty .ico { width: 22px; height: 22px; color: var(--ink-3); fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
+.pday-empty p { max-width: 30ch; }
+/* The tablet (721-1023 px): the strip's days taller, and the day's hours standing as columns across the card, time
+ * running with the language, every third hour labelled as on 1440's axis; closed and no-reading hours one column each,
+ * as wide as their hours, in words. The card ends inside the 768 x 1024 first screen with the page's 16 px gutter under
+ * it (Q22): the columns 200 tall (a 150 px bar, its number and its label), the strip's days 88. */
+@media (min-width: 721px) {
+  .wk-b { height: 88px; padding-block-start: 14px; }
+  .md { max-width: 64px; height: 34px; }
+  .hb, .hb tbody { display: block; }
+  .hb { margin: 0; }
+  .hb tbody { display: flex; align-items: stretch; gap: 4px; height: 200px; }
+  .hb tr { display: flex; flex-direction: column-reverse; flex: var(--span, 1) 1 0; min-width: 0; }
+  .hb-h { display: block; width: auto; height: 18px; margin-block-start: 8px; padding: 0 !important; text-align: center; overflow: visible; }
+  .hb tr:not(.is-tick):not(.hb-x) .hb-h { color: transparent; }
+  .hb-c { flex: 1 1 auto; flex-direction: column-reverse; align-items: stretch; justify-content: flex-start; gap: 4px; height: auto; text-align: center; }
+  .hb-bar { width: auto; height: max(4px, calc(var(--w) * 150px)); }
+  .hb-bar.is-top::after { top: 6px; inset-inline: auto; left: calc(50% - 2.5px); margin: 0; }
+  .hb-zero { align-self: center; }
+  .hb-x td { display: flex; flex-direction: column; justify-content: flex-end; height: 100%; padding-block-end: 26px; }
+  .hb-run { flex-direction: column; justify-content: center; gap: 4px; height: 150px; padding: 8px; white-space: normal; text-align: center; }
+  .hb-run .gapnote { flex-direction: column; row-gap: 4px; }
 }
+
+/* ------------------------------------------------------- the phone's day list
+ * The user's pick of 2026-10-01 (option B), 720 px and below: a day per item on two lines, the newest 7 and then all,
+ * sorted with the phone's own picker. */
+.dl-sortrow { display: flex; margin-block-end: 8px; }
+/* The sort: a native select behind a button of the system (BTN-1: 44 tall, radius 12, a 1 px line drawn inside). */
+.dl-sort { position: relative; display: inline-flex; align-items: center; border-radius: 12px; box-shadow: inset 0 0 0 1px var(--line-2); background: rgba(255, 255, 255, 0.02); color: var(--ink-2); }
+.dl-sort:hover { box-shadow: inset 0 0 0 1px var(--line-3); background: rgba(255, 255, 255, 0.05); }
+.dl-sort:has(select:focus-visible) { outline: 2px solid var(--ink); outline-offset: 3px; }
+.rp .dl-sort .sort-ico { position: absolute; inset-inline-start: 14px; display: block; opacity: 1; pointer-events: none; }
+.dl-sort::after { content: ""; position: absolute; top: 17px; inset-inline-end: 17px; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); pointer-events: none; }
+.dl-sort select { height: 44px; padding-inline: 38px 38px; border: 0; border-radius: 12px; background: transparent; color: var(--ink); font: inherit; font-size: 13.5px; line-height: 20px; appearance: none; -webkit-appearance: none; outline: none; cursor: pointer; }
+.dl-sort select option { background: #121112; color: var(--ink); }
+.day-list { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
+.dli { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "day pk" "more pt" "note note"; align-items: baseline; column-gap: 16px; row-gap: 2px; padding: 12px 8px; border-block-end: 1px solid rgba(255, 255, 255, 0.055); }
+.dli:last-child { border-block-end: 0; }
+.dli.is-top { border-radius: 10px; background: rgba(229, 25, 53, 0.08); }
+/* In date order, every 7 days from the period's last day open with their dates, on a firmer line (TBL-2's week line). */
+.dl-chunk { display: block; padding: 20px 8px 4px; border-block-start: 1px solid rgba(255, 255, 255, 0.14); margin-block-start: -1px; font-size: 12px; line-height: 18px; color: var(--ink-3); }
+.dl-day { grid-area: day; min-width: 0; font-size: 13.5px; line-height: 24px; color: var(--ink); }
+/* The peak and its time share the physical right edge in both languages (TBL-1); its flag reads after it (TBL-11). */
+.dl-pk { grid-area: pk; display: inline-flex; flex-direction: row-reverse; align-items: center; gap: 8px; direction: ltr; justify-self: stretch; justify-content: flex-start; }
+.dl-pv { font-size: 19px; line-height: 24px; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
+/* The average and the entries: each label names its number, so a gap separates them, never a dot that a narrow screen
+ * could leave dangling at a line's end. */
+.dl-more { grid-area: more; display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 14px; min-width: 0; font-size: 12px; line-height: 18px; color: var(--ink-3); }
+.dl-more bdi { color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.dl-pt { grid-area: pt; font-size: 12px; line-height: 18px; color: var(--ink-3); text-align: right; }
+.dl-note { grid-area: note; margin-block-start: 6px; }
+.dl-note .gapnote { column-gap: 8px; }
+.dl-note .rg { font-size: 12px; line-height: 18px; color: var(--ink-3); }
+.dl-note .w { font-size: 12px; color: var(--ink-3); }
+.dli.is-none { display: block; padding-block: 14px; font-size: 12px; line-height: 18px; color: var(--ink-3); }
+.dli.is-none .gapnote { column-gap: 16px; }
+@media (max-width: 359px) { .dli { column-gap: 8px; padding-inline: 4px; } }
+.dl-more-btn { width: 100%; margin-block: 8px 12px; }
