@@ -4297,3 +4297,27 @@ from this section.
   `9309382`, evidence in `D:\fitway-temp\reports-phone\options\`.
 - **The Codex batch** (`components.html`'s sideways scroll and header range; the details' range at 320 EN) waits until
   the phone round is integrated, because both would write in E/ on the same branch.
+
+## Reports' phone options delivered at `aa509b9`, for the user's choice (2026-10-01)
+
+- **Delivered at `aa509b9`** on `9309382`, pushed. New `reports-phone-options.js` (+434), `.css` (+220) and
+  `reports-options-capture.mjs` (+267); `reports.js` +42/−3 and `reports.html` +3 add `?opt=a|b|c` hooks.
+  - Self-reported: without `?opt` the page is byte-identical to `9309382` in 60 of 60 whole-page frames.
+  - The options answer the pattern from 1023 px down and the day table from 720 px down; at 768 all three keep phase
+    B's day table.
+- **The options** (page height at 390 AR, 28d; phase B 4087):
+  - **A, the week in blocks** (3493): 7 weekdays × 6 three-hour blocks, the full weekday name over each row, the day
+    table grouped by week. It gives up the single hour (Thursday 6-9 PM reads 53 against 59 at 7-8 PM). Blocks are
+    37.7 px wide at 320, the only target under 44. At 768 the pattern ends 56 px past the fold.
+  - **B, one day at a time** (2511, the designer's recommendation): a week strip of 7 radio buttons, the chosen day's
+    19 hours as labelled bars on one scale, the day table as a two-line list with "Show all days". It gives up the
+    weekdays side by side. Every target is at least 44 px; at 768 the card ends inside the fold (Q22).
+  - **C, the week as a timetable** (3128): 1440's grid at 44 × 44, swiped sideways inside the card. The designer notes
+    it is close to the placeholder K-29 rejected, and the 7d camera gap opens off-screen.
+  - In an empty period, all three show one message for the whole pattern; the colour key and the numbers switch hide.
+    The sentence appears twice, in the pattern and in the table.
+- **Not checked by the designer:** real-device touch, 200% zoom, 1024, screen-reader output beyond names. The spec and
+  README are not updated until the pick.
+- **Coordinator checks:** the comparison sheet and A and B's patterns at 390 AR, downscaled; the `reports.js` hooks are
+  gated on `?opt`. Seen: B's weekday strip bars are of nearly equal height, so the strip compares days weakly.
+- **Next:** the user picks (mixing is possible, for example A's pattern with B's list); a fresh designer builds it.
