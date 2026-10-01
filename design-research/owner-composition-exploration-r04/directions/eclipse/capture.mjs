@@ -51,6 +51,15 @@
 // EXPECTED_TO_CHANGE lists them (each with its reason), the checks that settle to a still frame compare with this run's
 // reduced-motion frame for them, and each must equal 8ae88f3 outside the plot element. The other snapshots, every viewport,
 // the fonts and the motion are swept by the lane round's probes, outside this file.
+// Step 3 (run owner_daily_r04_s17, 2026-10-01): the frame (the rail's fixes, the header's boxless status) and the spec's
+// rules on the Daily page (cards with the icon in the flow, the type scale, spacing and radii, the boxless legend, the
+// 44 px button, the axes in --ink-2, the fixed lane and the one-rhythm time axis of Q2, the ring key of Q1) change every
+// frame outside the plot too, so the comparison with 8ae88f3 outside the plot element is retired for the frames in
+// STEP3_FRAMES (each with its reason): they are held, like every frame that changes by design, to this run's own
+// reduced-motion frame (the ?motion=off frames, the intro's end, the reload, the settled rail). Frames step 3 leaves
+// alone keep their committed hash. The tablet and phone compositions get overflow-only frames (768, 390, 320 and 1024 px),
+// where the page may scroll down but never sideways; their geometry, keyboard and contrast are swept by the step's
+// probes, outside this file.
 // Run from PowerShell at the worktree root:
 //   node design-research/owner-composition-exploration-r04/directions/eclipse/capture.mjs [outDir] [--intro-frames=<dir>]
 // --intro-frames=<dir> also writes every full-size held 2x intro frame there (they are large; they are not evidence).
@@ -150,11 +159,31 @@ const EXPECTED_TO_CHANGE = {
   "preset-recommended-chart-2x": LANE_CROP,
   "levels-chart": "the lane round: the brightness-level map of preset-recommended-chart-2x, which changes (the plot's scale starts lower)",
 };
+// Step 3: the frames that change outside the plot too. Each keeps its earlier reason after this one.
+const STEP3 = "step 3 (run owner_daily_r04_s17): the frame (rail order and fixes, the header's boxless status) and the spec's rules on Daily (cards with the icon in the flow and content-sized, the type scale, spacing and radii, the boxless legend with Q1's ring key, the 44 px button, axes in --ink-2, Q2's fixed 107 px lane and 2-hour axis without the 1 AM label)";
+const STEP3_FRAMES = {};
+for (const name of ["daily-ar-1440x900", "daily-en-1440x900", "daily-ar-1440x900-hover", "daily-en-1440x900-hover", "daily-ar-1440x900-rail-open", "daily-en-1440x900-rail-open", "daily-ar-1440x900-delayed", "daily-ar-1440x900-nohistory", "daily-ar-1440x900-details", "daily-ar-1440x900-tuner-open", "preset-v2-ar-1440x900", "preset-a-like-ar-1440x900", "preset-recommended-ar-1440x900", "preset-v2-chart-2x", "preset-a-like-chart-2x", "preset-recommended-chart-2x", "levels-chart", "daily-en-nowcard-2x", "preset-v2-nowcard-2x", "preset-a-like-nowcard-2x", "preset-recommended-nowcard-2x", "levels-nowcard", "preset-v2-chart-light", "preset-a-like-chart-light", "preset-recommended-chart-light", "preset-v2-nowcard-light", "preset-a-like-nowcard-light", "preset-recommended-nowcard-light"]) {
+  const why = /-light$/.test(name)
+    ? "step 3 (run owner_daily_r04_s17): the light-only crop; the light is unchanged, but the card sits 4 px higher (the first screen's top 10 to 8 px, the subtitle's gap 6 to 4) and the chart card 6 px taller, so the page wash behind the glass and the light's box differ"
+    : STEP3;
+  STEP3_FRAMES[name] = EXPECTED_TO_CHANGE[name] ? `${why}; earlier: ${EXPECTED_TO_CHANGE[name]}` : why;
+}
+Object.assign(EXPECTED_TO_CHANGE, STEP3_FRAMES);
 const MARKERS = ["b"];
 const PRESETS = ["v2", "a-like", "recommended"];
 const OVERFLOW_ONLY = [
   { name: "daily-ar-1280x800", q: "lang=ar&tuner=0" },
   { name: "daily-en-1280x800", q: "lang=en&tuner=0" },
+  // Step 3: the desktop frame at 1024 and the tablet and phone compositions. Below 1200 px the first screen may grow
+  // past the viewport (the chart keeps 440 px), so these may scroll down; never sideways.
+  { name: "daily-ar-1024x768", q: "lang=ar&tuner=0", w: 1024, h: 768, scrolls: true },
+  { name: "daily-en-1024x768", q: "lang=en&tuner=0", w: 1024, h: 768, scrolls: true },
+  { name: "daily-ar-768x1024", q: "lang=ar&tuner=0", w: 768, h: 1024, scrolls: true },
+  { name: "daily-en-768x1024-delayed", q: "lang=en&state=delayed&tuner=0", w: 768, h: 1024, scrolls: true },
+  { name: "daily-ar-390x844", q: "lang=ar&tuner=0", w: 390, h: 844, scrolls: true },
+  { name: "daily-en-390x844-nohistory", q: "lang=en&state=nohistory&tuner=0", w: 390, h: 844, scrolls: true },
+  { name: "daily-ar-320x640-delayed", q: "lang=ar&state=delayed&tuner=0", w: 320, h: 640, scrolls: true },
+  { name: "daily-en-320x640", q: "lang=en&tuner=0", w: 320, h: 640, scrolls: true },
 ];
 const FACES = [
   ['400 16px "Readex Pro"', "مرحبا"],
@@ -602,8 +631,9 @@ async function shot(page, name, opts = {}, again = null) {
     buf = m.buf;
     identity.staticFrames[name] = { identical: m.identical, attempts: m.attempts, ...(m.noise ? { noise: true } : {}), ...(EXPECTED_TO_CHANGE[name] ? { expectedToChange: EXPECTED_TO_CHANGE[name] } : {}) };
   }
-  // A frame the lane changes must still equal 8ae88f3 everywhere outside the plot element (same box, same pixels).
-  if (EXPECTED_TO_CHANGE[name] && OUTSIDE_PLOT[name]) {
+  // A frame the lane changes must still equal 8ae88f3 everywhere outside the plot element (same box, same pixels), unless
+  // step 3 changed it outside the plot too (STEP3_FRAMES).
+  if (EXPECTED_TO_CHANGE[name] && OUTSIDE_PLOT[name] && !STEP3_FRAMES[name]) {
     const want = OUTSIDE_PLOT[name];
     const boxes = await plotBoxes(page, opts);
     const sameBox = JSON.stringify(boxes) === JSON.stringify(want.boxes);
@@ -1713,14 +1743,19 @@ async function captureMotion() {
     M.chart[`enDelayed${s}`] = await chartChecks("en", "delayed", mk);
     M.chart[`enNoHistory${s}`] = await chartChecks("en", "nohistory", mk);
   }
-  // The follow-up round after step 3 (the 127 px round): the tooltip has one width on every page, in both languages and
-  // every state, except the missing-span stop, which may grow; the widest tooltip that shows a number fits in it.
+  // The follow-up round after step 3 (the 127 px round): the tooltip has one width on every page, in every state, except
+  // the missing-span stop, which may grow; the widest tooltip that shows a number fits in it. Step 3 (run
+  // owner_daily_r04_s17): the width is measured per page from its own stops (CHT-12), and the tooltip's type roles
+  // (TYP-3: the flag at 12 px, the value at 19, 8 px gaps) make it 131 px (Arabic live and no history), 130 px (Arabic
+  // delayed, English): the 127 px coincidence of every page is gone, so the rule is held per page, as CHT-12 states it:
+  // one width at every stop of a page, and that page's widest numbered tooltip fits in it.
   {
     const pages = Object.values(M.chart);
     const widths = [...new Set(pages.flatMap((v) => v.tooltip.widths))];
     const widest = Math.max(...pages.map((v) => v.tooltip.widestContent));
     const at = Object.entries(M.chart).flatMap(([k, v]) => v.perStop.filter((p) => p.tipBox?.numbered && p.tipBox.natural === widest).map((p) => `${k} ${p.key}`));
-    M.tooltipWidth = { widths, gapWidths: [...new Set(pages.flatMap((v) => v.tooltip.gapWidths))], widestNumberedContentPx: widest, widestContentPx: widest, widestAt: at, marginPx: widths.length === 1 ? Math.round((widths[0] - widest) * 100) / 100 : null, pass: widths.length === 1 && widest <= widths[0] && pages.every((v) => v.tooltip.pass) };
+    const perPage = Object.fromEntries(Object.entries(M.chart).map(([k, v]) => [k, { widths: v.tooltip.widths, widestNumberedContentPx: v.tooltip.widestContent, pass: v.tooltip.widths.length === 1 && v.tooltip.widestContent <= v.tooltip.widths[0] }]));
+    M.tooltipWidth = { widths, perPage, gapWidths: [...new Set(pages.flatMap((v) => v.tooltip.gapWidths))], widestNumberedContentPx: widest, widestContentPx: widest, widestAt: at, marginPx: widths.length === 1 ? Math.round((widths[0] - widest) * 100) / 100 : null, pass: Object.values(perPage).every((l) => l.pass) && pages.every((v) => v.tooltip.pass) };
     // The lane round: the lane's rules, per page (AR and EN; live, delayed and no history) at the page's own snapshot.
     M.tooltipLane = { pages: Object.fromEntries(Object.entries(M.chart).map(([k, v]) => [k, v.tooltip.lane])), pass: Object.values(M.chart).every((v) => v.tooltip.lane.pass) };
   }
@@ -2002,7 +2037,7 @@ async function captureMotion() {
   const fo = Object.values(identity.firstOpen), rl = Object.values(identity.reload);
   console.log(`motion: off-frames identical ${Object.values(identity.motionOffFrames).filter((v) => v.identical).length}/${Object.keys(identity.motionOffFrames).length}; intro end = still frame ${fo.filter((v) => v.endIdenticalToStill).length}/${fo.length}, reload without intro = still frame ${rl.filter((v) => v.pass).length}/${rl.length}; live ends at canonical ${identity.liveUpdateEndsAtCanonical?.identicalWithPulseHidden} (DOM ${identity.liveUpdateEndsAtCanonical?.domEqual})`);
   for (const k of Object.keys(c)) console.log(`chart ${k}: ${c[k].pass ? "pass" : "FAIL"}; stops ${c[k].stops.length}; marker max distance line ${c[k].maxDistancePx.lineStops} px, peak ${c[k].maxDistancePx.peak}, usual ${c[k].maxDistancePx.usualLine}, gap ${c[k].maxDistancePx.gapMark}; pointer ${c[k].pointer.filter((p) => p.pass).length}/${c[k].pointer.length}; keyboard ${c[k].keyboard.pass}`);
-  console.log(`tooltip: ${M.tooltipWidth.pass ? "pass" : "FAIL"}; width ${M.tooltipWidth.widths.join("/")} px on every page (the missing-span stop ${M.tooltipWidth.gapWidths.join("/")} px), widest numbered content ${M.tooltipWidth.widestContentPx} px (${M.tooltipWidth.widestAt.join(", ")})`);
+  console.log(`tooltip: ${M.tooltipWidth.pass ? "pass" : "FAIL"}; one width per page: ${Object.entries(M.tooltipWidth.perPage).map(([k, l]) => `${k} ${l.widths.join("/")}`).join(", ")} px (the missing-span stop ${M.tooltipWidth.gapWidths.join("/")} px), widest numbered content ${M.tooltipWidth.widestContentPx} px (${M.tooltipWidth.widestAt.join(", ")})`);
   console.log(`tooltip lane: ${M.tooltipLane.pass ? "pass" : "FAIL"}; ${Object.entries(M.tooltipLane.pages).map(([k, L]) => `${k} top ${L.top} px, height ${L.height} px, scale starts at ${L.scaleStartsAtPx} px, smallest gap to the highest mark ${L.smallestGapToHighestMarkPx} px, x error ${L.maxXErrPx} px, connector to box ${L.connector.maxGapToBoxPx} px and to mark ${L.connector.maxGapToMarkPx} px`).join("; ")}`);
   console.log(`follow: ${Object.entries(M.follow).map(([k, v]) => `${k} ${v.pass}`).join(", ")}; roll: ar ${M.roll.ar.pass}, en ${M.roll.en.pass}; delayed ${M.delayed.pass}; rail ${M.rail.pass}`);
 }
@@ -2246,9 +2281,10 @@ try {
 
   if (!MOTION_ONLY) {
     for (const frame of OVERFLOW_ONLY) {
-      const { context, page, errors } = await open(frame.q, { width: 1280, height: 800 });
+      const w = frame.w || 1280, h = frame.h || 800;
+      const { context, page, errors } = await open(frame.q, { width: w, height: h });
       const result = await inspect(page);
-      record(frame.name, { url: `index.html?${frame.q}`, viewport: "1280x800", screenshot: false }, result, errors);
+      record(frame.name, { url: `index.html?${frame.q}`, viewport: `${w}x${h}`, screenshot: false, ...(frame.scrolls ? { scrollsDown: true } : {}) }, result, errors);
       await context.close();
     }
   }
@@ -2297,7 +2333,7 @@ const motionSummary = {
 };
 if (MOTION_ONLY) console.log(JSON.stringify({ ...motionSummary, identity: undefined, spec: undefined, chart: undefined }, null, 1));
 else await writeFile(join(OUT, "capture-log.json"), `${JSON.stringify({ capturedAt: new Date().toISOString(), port: PORT, duplicateFontRequests, motion: motionSummary, lightMeasurement: { method: "OKLab L relative to the card's own base on light-only 1x captures (content hidden); see capture.mjs measure()", targets, presets: lights, calibration }, tunerFileCheck: tunerCheck, frames: log }, null, 2)}\n`);
-const bad = log.filter((e) => e.fontsOk === false || e.overflowX > 0 || (e.overflowY > 0 && !e.fullPage) || (e.spill && e.spill.length) || (e.errors && e.errors.length) || e.easternDigits || e.enDashInArabic || (e.checks && (e.checks.overshoot || !e.checks.withinAverage || !e.checks.zeroKept || !e.checks.lineStopsAtGap || !e.checks.lineEndsAtLast || Math.abs(e.checks.crestMinusPeakMinutes) > 5)));
+const bad = log.filter((e) => e.fontsOk === false || e.overflowX > 0 || (e.overflowY > 0 && !e.fullPage && !e.scrollsDown) || (e.spill && e.spill.length) || (e.errors && e.errors.length) || e.easternDigits || e.enDashInArabic || (e.checks && (e.checks.overshoot || !e.checks.withinAverage || !e.checks.zeroKept || !e.checks.lineStopsAtGap || !e.checks.lineEndsAtLast || Math.abs(e.checks.crestMinusPeakMinutes) > 5)));
 console.log(bad.length ? `\n${bad.length} frame(s) need attention: ${bad.map((e) => e.frame).join(", ")}` : "\nAll frames: no overflow or spill, fonts loaded, no errors, Western digits only, line checks pass.");
 if (!tunerCheck?.pass) console.log("Tuner file:// check did not pass; see tunerFileCheck in the log.");
 if (!tunerCheck?.motionGroup?.pass) console.log("Tuner Motion group check did not pass; see tunerFileCheck.motionGroup.");
@@ -2305,7 +2341,8 @@ if (!tunerCheck?.crowdFromFile?.pass) console.log("Tuner crowd change from file:
 // The static guard: with reduced motion (the still frames) and with ?motion=off, every frame except the ones that change
 // by design must equal its pre-motion frame. A difference fails the run (exit code 1).
 // The lane round: a frame the lane changes must still equal 8ae88f3 outside the plot element (and must have been compared).
-const changed = Object.entries(identity.staticFrames).filter(([k, v]) => (!v.identical && !v.expectedToChange) || (v.expectedToChange && ((v.outsidePlot && !v.outsidePlot.identical) || (OUTSIDE_PLOT[k] && !v.outsidePlot)))).map(([k]) => k);
+// Step 3: the frames in STEP3_FRAMES are no longer compared with 8ae88f3 outside the plot (see the header).
+const changed = Object.entries(identity.staticFrames).filter(([k, v]) => (!v.identical && !v.expectedToChange) || (v.expectedToChange && !STEP3_FRAMES[k] && ((v.outsidePlot && !v.outsidePlot.identical) || (OUTSIDE_PLOT[k] && !v.outsidePlot)))).map(([k]) => k);
 const changedOff = Object.entries(identity.motionOffFrames).filter(([, v]) => !v.identical).map(([k]) => k);
 // Round 7 step 3: the first-paint rule is now the intro's. A first open plays it and ends exactly at the still frame
 // (pixels and DOM, only the pulse running after it); a reload in the same tab has no intro and is the still frame.

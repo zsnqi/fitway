@@ -1738,3 +1738,14 @@ clipped or spilling element, a day table wider than its card on a phone, or a di
 - The date fields take typed dates only (no calendar picker), to keep Western digits under any browser locale.
 - The export's "working" state is visible only for long periods or when held (`window.__reports.export.hold`); a
   4-week file is ready in well under the 300 ms before the progress line would show.
+
+## Step 3: the frame and the Daily page at every size (run `owner_daily_r04_s17`)
+
+The frame (phase A, `d76972c`) and the Daily page at 1440, 1024, 768, 390 and 320 and the 200% zoom (phase B). The
+reference is `DESIGN-SPEC.md` (§1.11, §3.11, §3.13, §4.1, §7, §8), not this file. Breakpoints: the desktop rail at
+1024 px and wider, the same rail as a modal layer from 721 to 1023 px, and the bar and the compact header at 720 px and
+below. Daily takes the spec's rules on its own components (`body.dl`; Reports keeps the base rules until step 4), fixes
+every step-3 known issue, and builds the proposals for Q1 (a ring key) and Q2 (one lane for every state, one rhythm on
+the time axis) for the user's decision. `capture.mjs` retires the 8ae88f3 outside-the-plot comparison for the frames
+step 3 changes (`STEP3_FRAMES`), holds the tooltip's width per page, and adds overflow-only frames at 1024, 768, 390 and
+320.

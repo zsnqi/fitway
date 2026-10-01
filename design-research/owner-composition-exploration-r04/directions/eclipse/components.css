@@ -448,8 +448,8 @@ th.is-asc .cx-sort .cx-ico { transform: rotate(180deg); }
  * Specimens use the page's own classes (style.css "the frame"): .hbadge, .hbtn, .fw-pop, .fw-mi, .tabbar, .tb-item. These
  * rules only place them in a phone-width box, and draw the forced hover and focus states. */
 .cx-phones { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 24px; }
-.cx-phone { position: relative; width: 390px; max-width: 100%; height: 190px; padding: 16px; overflow: hidden; border-radius: 24px; border: 1px solid var(--line); background: #070707; }
-.cx-phone.is-tall { height: 360px; }
+.cx-phbox { position: relative; width: 390px; max-width: 100%; height: 190px; padding: 16px; overflow: hidden; border-radius: 24px; border: 1px solid var(--line); background: #070707; }
+.cx-phbox.is-tall { height: 360px; }
 .cx-ph-head { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title acts" "sub sub" "concept concept"; align-items: center; gap: 0 16px; }
 .cx-ph-head h3 { grid-area: title; font: var(--t-title); }
 .cx-ph-sub { grid-area: sub; margin-block-start: 4px; font: var(--t-label); color: var(--ink-3); }

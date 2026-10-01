@@ -232,7 +232,8 @@ bdi, .num { font-variant-numeric: tabular-nums; }
 .rail-item:hover .tile { border-color: var(--line-3); background: rgba(255, 255, 255, 0.06); color: var(--ink); }
 .rail-item.is-active .tile { background: var(--red); border-color: var(--red); color: #fff; }
 .rail-item.is-active:hover .tile { background: #f0223e; border-color: #f0223e; }
-.glyph { font-size: 13px; font-weight: 500; letter-spacing: 0.04em; }
+/* The language glyph in its tile: label type at 500, untracked (TYP-3, TYP-5; step 3). */
+.glyph { font-size: 13.5px; line-height: 20px; font-weight: 500; }
 .brand .tile svg { width: 28px; height: 28px; }
 .brand .mk { fill: none; stroke: var(--ink); stroke-linecap: butt; }
 .brand .mk-dot { fill: var(--ink); stroke: none; }
@@ -584,43 +585,163 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
 .tip-measure > .tip { width: max-content; min-width: 0; -webkit-backdrop-filter: none; backdrop-filter: none; }
 
 /* ----------------------------------------------------------------- details
- * Deliberately plain: a truthful minute table and the day's data coverage. */
-.details { margin-block-start: 18px; padding: 22px 26px 24px; }
-.details h2 { font-size: 19px; font-weight: 500; }
+ * Deliberately plain: a truthful minute table and the day's data coverage. Step 3 (run owner_daily_r04_s17): the
+ * spec's type, spacing and radii (TYP-3, SPC-5, SPC-6, RAD-1; K-08, K-09) and the table rules (TBL-1…4, TBL-8, TBL-12;
+ * K-20, K-33). These classes are the Daily page's own. */
+.details { margin-block-start: 16px; padding: 24px; }
+.details h2 { font-size: 19px; line-height: 28.5px; font-weight: 500; }
 .details-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 32px; margin-block-start: 16px; }
-.details h3 { font-size: 14px; font-weight: 500; color: var(--ink-2); }
-.strip { position: relative; height: 10px; margin-block: 14px 6px; border-radius: 5px; overflow: hidden; background: rgba(255, 255, 255, 0.04); }
+.details h3 { font-size: 13.5px; line-height: 20px; font-weight: 500; color: var(--ink-2); }
+.strip { position: relative; height: 10px; margin-block: 16px 8px; border-radius: 5px; overflow: hidden; background: rgba(255, 255, 255, 0.04); }
 .strip span { position: absolute; inset-block: 0; }
 .s-read { background: rgba(229, 25, 53, 0.72); }
 .s-zero { background: rgba(245, 243, 242, 0.6); }
 .s-miss { background: repeating-linear-gradient(90deg, rgba(245, 243, 242, 0.55) 0 1px, transparent 1px 3px); }
 .s-wait { background: rgba(217, 164, 0, 0.45); }
 .s-ahead { background: rgba(255, 255, 255, 0.07); }
-.strip-axis { position: relative; height: 18px; font-size: 11.5px; color: var(--ink-3); }
+.strip-axis { position: relative; height: 18px; font-size: 12px; line-height: 18px; color: var(--ink-3); }
 .strip-axis span { position: absolute; top: 0; white-space: nowrap; transform: translateX(-50%); }
 [dir="rtl"] .strip-axis span { transform: translateX(50%); }
 .strip-axis span.first { transform: none; }
 .strip-axis span.last { transform: translateX(-100%); }
 [dir="rtl"] .strip-axis span.last { transform: translateX(100%); }
-.facts { margin-block-start: 14px; }
-.facts > div { display: flex; justify-content: space-between; gap: 16px; padding-block: 10px; border-block-start: 1px solid var(--line); font-size: 13px; }
-.facts dt { display: inline-flex; align-items: center; gap: 9px; color: var(--ink-2); white-space: nowrap; }
+.facts { margin-block-start: 16px; }
+.facts > div { display: flex; justify-content: space-between; gap: 16px; padding-block: 12px; border-block-start: 1px solid var(--line); font-size: 13.5px; line-height: 20px; }
+.facts dt { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-2); white-space: nowrap; }
 .facts dd { color: var(--ink); text-align: end; }
-.k { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+.k { width: 10px; height: 10px; border-radius: 4px; flex: none; }
 .k-read { background: rgba(229, 25, 53, 0.72); }
 .k-zero { background: rgba(245, 243, 242, 0.6); }
 .k-miss { background: repeating-linear-gradient(90deg, rgba(245, 243, 242, 0.6) 0 1px, transparent 1px 3px); border: 1px solid var(--line-2); }
 .k-wait { background: rgba(217, 164, 0, 0.45); }
 .k-ahead { background: rgba(255, 255, 255, 0.07); border: 1px solid var(--line-2); }
 .k-none { background: none; }
-.scroller { max-height: 420px; margin-block-start: 12px; overflow: auto; border: 1px solid var(--line-2); border-radius: 14px; }
-.scroller:focus-visible { outline-offset: 2px; }
-.minutes-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.minutes-table th { position: sticky; top: 0; padding: 10px 14px; background: #131213; text-align: start; font-weight: 400; color: var(--ink-3); }
-.minutes-table td { padding: 6px 14px; border-block-start: 1px solid rgba(255, 255, 255, 0.05); color: var(--ink-2); }
-.minutes-table td.n { color: var(--ink); }
-.minutes-table tr.miss td { color: var(--ink-3); }
-.minutes-table tr.peak td { color: var(--ink); background: rgba(229, 25, 53, 0.1); }
+.scroller { max-height: 420px; margin-block-start: 12px; overflow: auto; border: 1px solid var(--line-2); border-radius: 16px; }
+.scroller:focus-visible { outline-offset: 3px; }
+/* The minute table: compact density (TBL-3), the time as the row header in chalk, label type, the numbers whole and
+ * in tabular figures on the physical right edge with their headers in both languages (TBL-1), notes in caption type. */
+.minutes-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13.5px; line-height: 20px; }
+.minutes-table th, .minutes-table td { height: 36px; padding: 0 16px; text-align: start; vertical-align: middle; font-weight: 400; }
+.minutes-table thead th { position: sticky; top: 0; z-index: 1; height: 44px; background: #121112; font-size: 12px; line-height: 18px; color: var(--ink-3); white-space: nowrap; border-block-end: 1px solid var(--line-2); }
+.minutes-table tbody th { color: var(--ink); white-space: nowrap; }
+.minutes-table tbody td { color: var(--ink-2); }
+.minutes-table tbody > tr > * { border-block-end: 1px solid rgba(255, 255, 255, 0.055); }
+.minutes-table tbody > tr:last-child > * { border-block-end: 0; }
+.minutes-table tbody > tr:hover > * { background: rgba(255, 255, 255, 0.04); }
+.minutes-table .n { text-align: right; font-variant-numeric: tabular-nums; }
+.minutes-table td.n bdi { color: var(--ink); }
+.minutes-table .notes { font-size: 12px; line-height: 18px; color: var(--ink-3); }
+.minutes-table tr.peak > * { background: rgba(229, 25, 53, 0.08); }
+.minutes-table tr.peak:hover > * { background: rgba(229, 25, 53, 0.12); }
+.minutes-table .note-row { display: none; }
+/* TBL-12: a span with no readings is one full-width row: the range first (label type, --ink-2, tabular figures),
+ * 16 px, then the dotted mark and the words (caption type, --ink-3). A line breaks only between the range and the mark. */
+.minutes-table td.none { font-size: 12px; line-height: 18px; color: var(--ink-3); }
+.gapnote { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0 16px; }
+.gapnote .rg { font-size: 13.5px; line-height: 20px; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.gapnote .mw { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.gap-ico { width: 16px; height: 16px; flex: none; fill: currentColor; }
+
+/* ------------------------------------------------------------ Daily, step 3
+ * Run owner_daily_r04_s17, phase B: the spec's rules on the Daily page's shared components (body.dl), at every size.
+ * Reports keeps the base rules above until step 4. Type is TYP-3's six roles, spacing SPC-5 and SPC-6, radii RAD-1,
+ * focus FOC-1 and FOC-2. */
+.dl .fold { gap: 16px; padding-block-start: 8px; }
+.dl .sub { margin-block-start: 4px; }
+/* Cards (CRD-1, CRD-4, CRD-7; K-24, K-28): the icon in the flow, 16 px in the label's colour, 8 px before it; sized to
+ * the content and stretched in a row; 20 inside; 16 between the head and the value, at least 16 above the foot. An empty
+ * note keeps its line, so no state changes a card's height (a later loading skeleton can match it). */
+.dl .stat { height: auto; padding: 20px; }
+.dl .stat-head { gap: 8px; min-height: 20px; color: var(--ink-2); }
+.stat-ico { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.dl .stat-label { font-size: 13.5px; line-height: 20px; }
+.dl .stat-meta { gap: 8px; font-size: 12px; line-height: 18px; }
+.dl .stat-meta.warn .ico { width: 15px; height: 15px; }
+.dl .stat-value { gap: 8px; margin-block-start: 16px; }
+.dl .stat-value .num { line-height: 46px; }
+.dl .stat-value .word { font-size: 30px; line-height: 36px; white-space: nowrap; }
+.dl .stat-value .unit { font-size: 12px; line-height: 18px; }
+.dl .stat-foot { flex-wrap: wrap; padding-block-start: 16px; }
+.dl .stat-note { min-height: 34px; padding-block-start: 16px; font-size: 12px; line-height: 18px; }
+/* LGT-9: every caption inside the lit card is --ink-2. */
+.dl .lit-card .stat-meta:not(.warn), .dl .lit-card .unit, .dl .lit-card .stat-note { color: var(--ink-2); }
+/* Badges (CHP-4, CHP-8): 26 tall, caption type, 8 inside and between. While delayed the level dims with its value
+ * (LVL-6; K-06): the word --ink-2, the lit bars stale grey, no red. */
+.dl .level, .dl .cmp { gap: 8px; padding-inline: 8px; font-size: 12px; line-height: 18px; }
+.dl .is-stale .level { color: var(--ink-2); }
+.dl .is-stale .level .bars i.on { background: #8f898b; }
+/* The chart card (CHT-1; SPC-5): 24 inside, 16 at the bottom (the axis's own line brings its space). */
+.dl .chart { padding: 24px 24px 16px; }
+.dl .chart-head { flex-wrap: wrap; gap: 16px 24px; }
+.dl .chart-head h2 { line-height: 28.5px; }
+.dl .chart-tools { gap: 16px; }
+/* The legend drops its box (CHP-3; K-10): swatches and words in a row, 16 apart. Q1's ring names a single reading. */
+.dl .key { flex-wrap: wrap; gap: 8px 16px; height: auto; padding: 0; border: 0; border-radius: 0; font-size: 12px; line-height: 18px; }
+.dl .key li { gap: 8px; }
+.sw-ring { display: inline-block; width: 10px; height: 10px; flex: none; border-radius: 50%; border: 2px solid var(--ink); background: var(--card-solid); }
+/* One button (BTN-1, BTN-7; K-10): 44 tall, label type, padding 16, icon 17. */
+.dl .btn { height: 44px; padding-inline: 16px; font-size: 13.5px; line-height: 20px; }
+.dl .btn svg { width: 17px; height: 17px; }
+/* The plot's ring is FOC-1's, 4 px clear of the scale's labels (FOC-3; K-22). The axes are --ink-2 in the lit card
+ * (LGT-9; K-07). */
+.dl .plot-hit:focus-visible { outline-offset: 3px; }
+.dl .ax-y, .dl .ax-x { font-size: 12px; line-height: 18px; color: var(--ink-2); }
+.dl .peak-tag { gap: 4px; font-size: 12px; line-height: 18px; }
+.dl .peak-tag b { font-size: 13.5px; line-height: 20px; }
+/* The tooltip's text by role (CHT-13, TYP-3); its box and row gaps stay SPC-4's. */
+.dl .tip-flag { padding-inline: 6px; border-radius: 4px; font-size: 12px; line-height: 16px; }
+.dl .tip-v { font-size: 19px; }
+.dl .tip-l { font-size: 12px; }
+.dl .tip-word { font-size: 15px; }
+.dl .tip-u, .dl .tip-ago { gap: 8px; }
+
+/* Below 1200 px the four cards go two by two (BRK-5), and the first screen grows past the viewport rather than squeeze
+ * the chart: the chart keeps at least 440 px. */
+@media (max-width: 1199px) {
+  .dl .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dl .fold { height: auto; min-height: calc(100vh - 32px); }
+  .dl .chart { min-height: 440px; }
+}
+/* 1023 px and below: the chart's head on two lines, the title and its button, then the legend (C); the details in one
+ * column. */
+@media (max-width: 1023px) {
+  .dl .chart-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title btn" "key key"; align-items: center; }
+  .dl .chart-head h2 { grid-area: title; }
+  .dl .chart-tools { display: contents; }
+  .dl .key { grid-area: key; }
+  .dl #details-btn { grid-area: btn; }
+  .dl .details-grid { grid-template-columns: minmax(0, 1fr); }
+}
+/* 720 px and below: the phone's composition (C, OWN-D6). Inside now and Busiest time span the width; Today's peak and
+ * Entries share a row, their heads two lines tall so their values line up; the chart's plot is 340 px; the minute
+ * table takes TBL-8's phone form. */
+@media (max-width: 720px) {
+  .dl .fold { min-height: 0; }
+  .dl #card-now, .dl #card-busiest { grid-column: 1 / -1; }
+  .dl #card-peak .stat-head, .dl #card-entries .stat-head { flex-wrap: wrap; align-content: flex-start; row-gap: 4px; min-height: 42px; }
+  .dl #card-peak .stat-meta { flex-basis: 100%; margin-inline-start: 24px; }
+  .dl .chart { flex: none; min-height: 0; }
+  .dl .plot { flex: none; height: 340px; }
+  /* The minute table's region stays shorter than the screen above the bar, so its ring is always seen whole. */
+  .scroller { max-height: min(420px, calc(100vh - 160px)); }
+  .minutes-table th, .minutes-table td { padding-inline: 8px; }
+  .minutes-table thead th { white-space: normal; line-height: 1.25; }
+  .minutes-table .notes { display: none; }
+  .minutes-table .note-row { display: table-row; }
+  .minutes-table tbody > tr[data-note] > * { border-block-end: 0; }
+  .minutes-table .note-row > td { height: auto; padding-block: 0 8px; font-size: 12px; line-height: 18px; color: var(--ink-3); }
+}
+@media (max-width: 400px) {
+  .minutes-table th, .minutes-table td { padding-inline: 6px; }
+}
+/* Below 360 px every card spans the width; Today's peak keeps its time beside its name. */
+@media (max-width: 359px) {
+  .dl .cards { grid-template-columns: minmax(0, 1fr); }
+  .dl #card-peak .stat-head, .dl #card-entries .stat-head { flex-wrap: nowrap; min-height: 20px; }
+  .dl #card-peak .stat-meta { flex-basis: auto; margin-inline-start: auto; }
+  /* The chart's title keeps one line: the legend, then the button, go under it. */
+  .dl .chart-head { grid-template-columns: minmax(0, 1fr); grid-template-areas: "title" "key" "btn"; justify-items: start; }
+}
 
 /* --------------------------------------------------------------- the frame
  * Step 3 (run owner_daily_r04_s17): navigation and header at every size, for a page that opts in with
@@ -654,8 +775,6 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
   [data-frame] .rail-scrim:not([hidden]) { display: block; }
   /* The status and the concept label stack at the inline end, the status level with the title. */
   [data-frame] .head-meta { flex-direction: column; align-items: flex-end; flex-wrap: nowrap; }
-  /* Provisional content (phase A): the cards two by two (BRK-3, BRK-5). */
-  [data-frame] .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* 720 px and below: the phone frame. */
@@ -768,6 +887,8 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
     /* The bar (74 px) and its 12 px inset stay clear of the content, with the page's 16 px below it. */
     padding-block-end: calc(74px + max(12px, env(safe-area-inset-bottom)) + 16px);
   }
+  /* Focus and in-page jumps stop clear of the bar (FOC-3): the bar, its inset and the page's 16 px. */
+  html:has(> body[data-frame]) { scroll-padding-bottom: calc(74px + max(12px, env(safe-area-inset-bottom)) + 16px); }
   [data-frame] .rail-slot { display: none; }
   [data-frame] .skip { inset-inline-start: 16px; }
   [data-frame] .tabbar { display: block; }
@@ -785,13 +906,6 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
   [data-frame] .sub-hours, [data-frame] #status { display: none; }
   [data-frame] .concept { grid-area: concept; justify-self: start; margin-block-start: 4px; }
   [data-frame] .head-acts { grid-area: acts; position: relative; z-index: 30; display: flex; align-items: center; gap: 8px; }
-  /* Provisional content (phase A): one column, the chart at a fixed height, its head wrapping. */
-  [data-frame] .fold { height: auto; min-height: 0; }
-  [data-frame] .cards { grid-template-columns: minmax(0, 1fr); }
-  [data-frame] .chart { flex: none; height: 440px; }
-  [data-frame] .chart-head, [data-frame] .chart-tools { flex-wrap: wrap; row-gap: 12px; }
-  [data-frame] .key { flex-wrap: wrap; height: auto; padding-block: 8px; row-gap: 4px; white-space: normal; }
-  [data-frame] .details-grid { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 359px) {
   /* 320: the bar's inset drops to 8 so every short name keeps its line and the rings keep 4 px from their neighbours. */

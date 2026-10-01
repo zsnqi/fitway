@@ -51,34 +51,36 @@
       entriesTitle: "مرات الدخول",
       busiestTitle: "أكثر الأوقات ازدحامًا",
       busiestMeta: `آخر <bdi>7</bdi> أيام`,
-      busiestNote: (n) => `المتوسط ${n}`,
+      busiestNote: (n) => `المعدّل ${n}`,
       cmp: { busier: "أعلى من المعتاد", quieter: "أهدأ من المعتاد", same: "قريب من المعتاد" },
       chartTitle: "ازدحام اليوم",
-      keyLine: `متوسط كل <bdi>30</bdi> دقيقة`,
+      keyLine: `معدّل كل <bdi>30</bdi> دقيقة`,
       keyUsual: "الأربعاء المعتاد",
+      keyPeak: "قراءة الذروة",
       noHistory: "لا يكفي السجل للمقارنة بعد",
       details: "عرض التفاصيل",
       hideDetails: "إخفاء التفاصيل",
       peakTag: "الذروة",
       levels: ["هادئ", "متوسط", "مزدحم", "شديد الازدحام"],
-      ro: { usual: "المعتاد", peak: "الذروة", latest: "آخر قراءة", empty: "الصالة خالية", noReading: "لا قراءة", noReadingYet: "لا قراءة بعد", ahead: "لم يحن بعد", inside: "داخل الصالة" },
+      ro: { usual: "المعتاد", peak: "الذروة", latest: "آخر قراءة", empty: "الصالة خالية", noReading: "لا قراءات", noReadingYet: "لا قراءات بعد", ahead: "لم يحن بعد", inside: "داخل الصالة" },
       chartAria: "ازدحام اليوم حسب الوقت",
       keys: "استخدم مفتاحي السهمين للتنقل بين نقاط كل نصف ساعة، ومنها الذروة وآخر قراءة. Home لوقت الفتح، وEnd لآخر قراءة.",
-      avgInside: (v) => `${v} داخل الصالة في المتوسط`,
+      avgInside: (v) => `معدّل الموجودين ${v}`,
       crowdIs: (l) => `الازدحام ${l}`,
       say: (v, l, e) => `داخل الصالة الآن ${v} تقريبًا، ${l}. مرات الدخول ${e}.`,
       detailsTitle: "التفاصيل",
       coverageTitle: "تغطية البيانات",
-      cov: { read: "فيها قراءة", zero: "مفتوحة وخالية", miss: "لا قراءة", wait: "لا قراءة بعد", ahead: "لم يحن بعد", line: "الخط", usual: "الأربعاء المعتاد" },
+      cov: { read: "فيها قراءة", zero: "مفتوحة وخالية", miss: "لا قراءات", wait: "لا قراءات بعد", ahead: "لم يحن بعد", line: "الخط", usual: "الأربعاء المعتاد" },
       covReadVal: (a, b) => `${a} من ${b} دقيقة`,
-      covLineVal: `متوسط <bdi>30</bdi> دقيقة حول كل نقطة: <bdi>15</bdi> قبلها و<bdi>15</bdi> بعدها، والأقرب أثقل وزنًا`,
+      covLineVal: `معدّل <bdi>30</bdi> دقيقة حول كل نقطة: <bdi>15</bdi> قبلها و<bdi>15</bdi> بعدها، والأقرب أثقل وزنًا`,
       usualEntries: (n) => `المعتاد ${n}`,
-      covUsualVal: `متوسط <bdi>26</bdi> أغسطس و<bdi>2</bdi> و<bdi>9</bdi> و<bdi>16</bdi> سبتمبر`,
+      covUsualVal: `معدّل <bdi>26</bdi> أغسطس و<bdi>2</bdi> و<bdi>9</bdi> و<bdi>16</bdi> سبتمبر`,
       covUsualNone: `المسجّل يوم أربعاء واحد (<bdi>16</bdi> سبتمبر)`,
       minutesTitle: "دقيقة بدقيقة",
+      noReadingsYet: "لا قراءات بعد",
       minutesAria: "قراءات اليوم دقيقة بدقيقة",
-      cols: ["الوقت", "داخل الصالة", `متوسط <bdi>30</bdi> دقيقة`, "ملاحظة"],
-      notes: { miss: "لا قراءة", zero: "خالية", peak: "الذروة", latest: "آخر قراءة" },
+      cols: ["الوقت", "داخل الصالة", `معدّل <bdi>30</bdi> دقيقة`, "ملاحظة"],
+      notes: { miss: "لا قراءات", zero: "خالية", peak: "الذروة", latest: "آخر قراءة" },
     },
     en: {
       skip: "Skip to content",
@@ -113,29 +115,31 @@
       chartTitle: "Today's crowd",
       keyLine: "30-min average",
       keyUsual: "Usual Wednesday",
+      keyPeak: "Peak reading",
       noHistory: "Not enough history to compare yet",
       details: "View details",
       hideDetails: "Hide details",
       peakTag: "Peak",
       levels: ["Quiet", "Moderate", "Busy", "Packed"],
-      ro: { usual: "Usual", peak: "Peak", latest: "Latest", empty: "Empty", noReading: "No reading", noReadingYet: "No reading yet", ahead: "Still ahead", inside: "inside" },
+      ro: { usual: "Usual", peak: "Peak", latest: "Latest", empty: "Empty", noReading: "No readings", noReadingYet: "No readings yet", ahead: "Still ahead", inside: "inside" },
       chartAria: "Today's crowd by time",
       keys: "Use the arrow keys to move between the half-hour points, including the peak and the latest reading. Home goes to opening time and End to the latest reading.",
-      avgInside: (v) => `${v} inside on average`,
+      avgInside: (v) => `Average inside ${v}`,
       crowdIs: (l) => l,
       say: (v, l, e) => `Inside now about ${v}, ${l}. Entries ${e}.`,
       detailsTitle: "Details",
       coverageTitle: "Data coverage",
-      cov: { read: "With a reading", zero: "Open, nobody inside", miss: "No reading", wait: "No reading yet", ahead: "Still ahead", line: "The line", usual: "Usual Wednesday" },
+      cov: { read: "With a reading", zero: "Open, nobody inside", miss: "No readings", wait: "No readings yet", ahead: "Still ahead", line: "The line", usual: "Usual Wednesday" },
       covReadVal: (a, b) => `${a} of ${b} minutes`,
       covLineVal: "Average of the 30 minutes around each point: 15 before and 15 after, weighted toward the middle",
       usualEntries: (n) => `Usual ${n}`,
       covUsualVal: "Average of 26 Aug and 2, 9 and 16 Sep",
       covUsualNone: "Only 1 past Wednesday recorded (16 Sep)",
       minutesTitle: "Minute by minute",
+      noReadingsYet: "No readings yet",
       minutesAria: "Today's readings, minute by minute",
       cols: ["Time", "Inside", "30-min average", "Note"],
-      notes: { miss: "No reading", zero: "Empty", peak: "Peak", latest: "Latest reading" },
+      notes: { miss: "No readings", zero: "Empty", peak: "Peak", latest: "Latest reading" },
     },
   };
   const L = COPY[LANG];
@@ -318,7 +322,8 @@
     // Usual entries by the latest reading: the last 4 Wednesdays' entries up to the same minute, averaged.
     const usualEntries = Math.round(PAST_WED.reduce((a, d) => a + d.ent.slice(0, last + 1).reduce((x, y) => x + y, 0), 0) / PAST_WED.length);
 
-    // Busiest time: the busiest 2-hour window over the last 7 days (six full days plus today so far).
+    // Busiest time (GLO-12, Q7; K-21, step 3): the one-hour slot, on the hour, with the highest average inside over the
+    // last 7 days (six full days plus today so far). Every slot averages 7 days, above Q5's minimum of 3.
     const busiest = (() => {
       const hourMean = [];
       for (let h = 0; h < 19; h++) {
@@ -329,8 +334,8 @@
         hourMean.push(vals.reduce((a, b) => a + b, 0) / vals.length);
       }
       let best = -1, bh = 0;
-      for (let h = 0; h < 18; h++) { const v = (hourMean[h] + hourMean[h + 1]) / 2; if (v > best) { best = v; bh = h; } }
-      return { from: bh * 60, to: bh * 60 + 120, avg: Math.round(best) };
+      for (let h = 0; h < 19; h++) if (hourMean[h] > best) { best = hourMean[h]; bh = h; }
+      return { from: bh * 60, to: bh * 60 + 60, avg: Math.round(best) };
     })();
 
     const knotSet = new Set();
@@ -555,6 +560,7 @@
   });
   // A menu item that does something closes the menu; the concept's sign out does nothing, like the rail's.
   $("#menu-signout").addEventListener("click", (e) => e.preventDefault());
+  $("#menu-monitoring").addEventListener("click", (e) => e.preventDefault());
   $("#ops-link").addEventListener("click", (e) => e.preventDefault());
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && openLayer) hideLayer(openLayer, true); });
   document.addEventListener("pointerdown", (e) => {
@@ -582,6 +588,7 @@
     $("#menu-lang-name").textContent = L.nav.lang;
     $("#menu-lang-name").setAttribute("lang", RTL ? "en" : "ar");
     $("#menu-signout-name").textContent = L.nav.signout;
+    $("#menu-monitoring-name").textContent = L.nav.monitoring; // user 2026-10-01: Monitoring joins the phone's menu
     $("#ops-link-name").textContent = L.nav.operations;
   }
   $("#tabbar").setAttribute("aria-label", L.railLabel);
@@ -633,7 +640,11 @@
   const cardNow = $("#card-now");
   $("#now-v").textContent = String(occ[M.last]);
   if (STATE === "delayed") {
+    // D1 (LGT-7, LGT-8; K-12, step 3): a card whose value is not current is drawn plain; the light returns with a live
+    // value. Its level badge dims with the value (LVL-6; K-06).
     cardNow.classList.add("is-stale");
+    cardNow.classList.remove("lit", "lit-card");
+    $(".lamp", cardNow).remove();
     $("#now-label").innerHTML = `${L.staleTitle} ${tb(M.last)}`;
     $("#now-meta").classList.add("warn");
     $("#now-meta").innerHTML = `${ICON.clock}<span>${L.ago(M.nowM - M.last)}</span>`;
@@ -672,10 +683,13 @@
   }
 
   /* --------------------------------------------------------------- legend */
+  // The legend drops its box (CHP-3; K-10). Q1 (proposal, step 3; D2): a third entry names the ring, which marks a
+  // single reading, so the peak's ring above the averaged line reads as what it is.
   $("#key").innerHTML = `<li><span class="sw sw-line" aria-hidden="true"></span><span>${L.keyLine}</span></li>` +
     (HAS_HISTORY
       ? `<li><span class="sw sw-usual" aria-hidden="true"></span><span>${L.keyUsual}</span></li>`
-      : `<li class="key-note">${ICON.info}<span>${L.noHistory}</span></li>`);
+      : `<li class="key-note">${ICON.info}<span>${L.noHistory}</span></li>`) +
+    `<li><span class="sw-ring" aria-hidden="true"></span><span>${L.keyPeak}</span></li>`;
   $("#key").setAttribute("aria-label", L.chartTitle);
 
   /* ---------------------------------------------------------------- chart */
@@ -750,7 +764,7 @@
     if (HAS_HISTORY) {
       const d = usual.path(X, Y);
       s.push(`<path id="us-past" d="${d}" fill="none" stroke="rgba(245,243,242,0.55)" stroke-width="1.5" stroke-dasharray="3.5 4.5" stroke-linecap="round" clip-path="url(#c-past)"/>`);
-      s.push(`<path id="us-ahead" d="${d}" fill="none" stroke="rgba(245,243,242,0.24)" stroke-width="1.5" stroke-dasharray="3.5 4.5" stroke-linecap="round" clip-path="url(#c-ahead)"/>`);
+      s.push(`<path id="us-ahead" d="${d}" fill="none" stroke="rgba(245,243,242,0.36)" stroke-width="1.5" stroke-dasharray="3.5 4.5" stroke-linecap="round" clip-path="url(#c-ahead)"/>`);
     }
 
     // Today: the 30-minute average, thick and bright, with round caps where it stops.
@@ -771,9 +785,13 @@
 
     // HTML labels (so bidi and fonts behave), placed on the same geometry.
     const lab = [];
-    [0, 20, 40, 60, 80].forEach((v) => lab.push(`<span class="ax-y" style="inset-inline-start:0;top:${f(Y(v))}px;transform:translateY(-50%)">${bdi(String(v))}</span>`));
-    for (let h = 0; h <= 18; h += 2) lab.push(`<span class="ax-x" style="left:${f(X(h * 60))}px;top:${f(yb + 13)}px;transform:translateX(-50%)">${bdi(fmtHour(h * 60))}</span>`);
-    lab.push(`<span class="ax-x" style="left:${f(X(DAY))}px;top:${f(yb + 13)}px;transform:translateX(${RTL ? "0" : "-100%"})">${bdi(fmtHour(DAY))}</span>`);
+    [0, 20, 40, 60, 80].forEach((v) => lab.push(`<span class="ax-y" style="inset-inline-start:1px;top:${f(Y(v))}px;transform:translateY(-50%)">${bdi(String(v))}</span>`));
+    // Q2 (proposal, step 3; K-15): one rhythm along the time axis. The step is the shortest of 2, 3, 4 and 6 hours that
+    // keeps 64 px between labels (2 at 1024 px and wider, 3 at 768, 6 on a phone); labels run from opening to midnight,
+    // and closing is the axis's end, with no label of its own one hour after midnight.
+    const stepH = [2, 3, 4, 6].find((k) => (span / DAY) * 60 * k >= 64) || 6;
+    for (let h = 0; h <= 18; h += stepH) lab.push(`<span class="ax-x" style="left:${f(X(h * 60))}px;top:${f(yb + 13)}px;transform:translateX(-50%)">${bdi(fmtHour(h * 60))}</span>`);
+    geo.stepH = stepH;
     lab.push(`<span class="peak-tag" id="peak-tag" style="left:${f(px)}px;top:${f(py - 12)}px;transform:translate(-50%,-100%)">${L.peakTag}<b>${bdi(String(peak))}</b></span>`);
     labels.innerHTML = lab.join("");
     peakTagBox = null;
@@ -887,7 +905,11 @@
    * tooltip among the chart's current stops (measured with the width, on the same hidden copies), so it is as tall as the
    * box needs and no taller. The scale starts LANE.gap below it (render: yt), which is what the lane costs the chart. */
   const LANE = { top: 2, gap: 8 };
-  let laneTall = 0;        // the tallest tooltip among the current stops (px, rounded up to a whole pixel)
+  const laneProbe = () => `<div class="tip-t"><span class="tip-flag">${L.ro.latest}</span>${tb(NOW)}</div>` +
+    `<div class="tip-main is-stale"><span class="tip-v">${bdi(88)}</span><span class="tip-l">${L.levels[3]}</span></div>` +
+    `<div class="tip-ago">${ICON.clock}<span>${L.ago(13)}</span></div>` +
+    `<div class="tip-u"><span class="sw sw-usual" aria-hidden="true"></span><span>${L.ro.usual} ${bdi(88)}</span></div>`;
+  let laneTall = 0;       // the tallest tooltip among the current stops (px, rounded up to a whole pixel)
   const laneMeasured = { tallestKey: null, tallestPx: null };
   function measureTipWidth() {
     const numbered = stops.filter((st) => st.kind !== "gap" && (HAS_HISTORY || (st.kind !== "wait" && st.kind !== "ahead")));
@@ -896,18 +918,21 @@
     if (key === tipWKey) return;
     tipWKey = key;
     const t0 = performance.now();
-    tipMeasure.innerHTML = parts.join("");
+    // Q2 (proposal, step 3; K-15): the lane is sized once for the tallest tooltip any state can show (the delayed latest
+    // reading, with its age and the usual row), so the scale never moves between live, delayed and no history. The
+    // probe counts for the lane's height only, never for the width.
+    tipMeasure.innerHTML = parts.join("") + `<div class="tip">${laneProbe()}</div>`;
     let widest = 0, at = -1, tall = 0, tallAt = -1;
     [...tipMeasure.children].forEach((c, i) => {
       const b = c.getBoundingClientRect();
       if (b.height > tall) { tall = b.height; tallAt = i; }
-      if (numbered.includes(stops[i]) && b.width > widest) { widest = b.width; at = i; }
+      if (i < stops.length && numbered.includes(stops[i]) && b.width > widest) { widest = b.width; at = i; }
     });
     tipMeasure.textContent = "";
     const w = Math.ceil(widest + 2);
     Object.assign(tipMeasured, { widthPx: w, widestPx: widest, widestKey: at >= 0 ? stops[at].key : null, numbered: numbered.length, measures: tipMeasured.measures + 1, ms: performance.now() - t0 });
     laneTall = Math.ceil(tall);
-    Object.assign(laneMeasured, { tallestKey: tallAt >= 0 ? stops[tallAt].key : null, tallestPx: tall });
+    Object.assign(laneMeasured, { tallestKey: tallAt >= stops.length ? "probe" : tallAt >= 0 ? stops[tallAt].key : null, tallestPx: tall });
     if (w === tipW) return;
     tipW = w;
     tip.style.setProperty("--tip-w", `${w}px`);
@@ -1355,14 +1380,14 @@
   function summary() {
     const { last, nowM, peak, peakM } = M;
     return RTL
-      ? `مخطط خطي لمتوسط كل 30 دقيقة لعدد الموجودين تقريبًا اليوم، من الفتح الساعة ${fmtTime(0)} حتى آخر قراءة الساعة ${fmtTime(last)}. ` +
-        `الصالة مفتوحة وخالية من ${plainRange(fmtTime(0), fmtTime(ZERO_END))}. لا قراءة من ${plainRange(fmtTime(GAP0), fmtTime(GAP1))}. ` +
+      ? `مخطط خطي لمعدّل كل 30 دقيقة لعدد الموجودين تقريبًا اليوم، من الفتح الساعة ${fmtTime(0)} حتى آخر قراءة الساعة ${fmtTime(last)}. ` +
+        `الصالة مفتوحة وخالية من ${plainRange(fmtTime(0), fmtTime(ZERO_END))}. لا قراءات من ${plainRange(fmtTime(GAP0), fmtTime(GAP1))}. ` +
         `أعلى قراءة ${peak} الساعة ${fmtTime(peakM)} (${L.levels[levelOf(peak)]}). آخر قراءة ${occ[last]} الساعة ${fmtTime(last)} (${L.levels[levelOf(occ[last])]}).` +
-        (STATE === "delayed" ? ` البيانات متأخرة، لا قراءة جديدة منذ ${arMin(nowM - last)}.` : "") +
-        (HAS_HISTORY ? ` يظهر خط متقطع للأربعاء المعتاد، متوسط آخر 4 أيام أربعاء، حتى وقت الإغلاق.` : ` ${L.noHistory}.`) +
+        (STATE === "delayed" ? ` البيانات متأخرة، لم تصل قراءة جديدة منذ ${arMin(nowM - last)}.` : "") +
+        (HAS_HISTORY ? ` يظهر خط متقطع للأربعاء المعتاد، معدّل آخر 4 أيام أربعاء، حتى وقت الإغلاق.` : ` ${L.noHistory}.`) +
         ` بقية اليوم من ${plainRange(fmtTime(nowM + 1), fmtTime(DAY))} لم يحن بعد. كل الدقائق في عرض التفاصيل.`
       : `Line chart of the 30-minute average of the approximate number of people inside today, from opening at ${fmtTime(0)} to the latest reading at ${fmtTime(last)}. ` +
-        `Open with nobody inside ${plainRange(fmtTime(0), fmtTime(ZERO_END))}. No reading ${plainRange(fmtTime(GAP0), fmtTime(GAP1))}. ` +
+        `Open with nobody inside ${plainRange(fmtTime(0), fmtTime(ZERO_END))}. No readings ${plainRange(fmtTime(GAP0), fmtTime(GAP1))}. ` +
         `Highest reading ${peak} at ${fmtTime(peakM)} (${L.levels[levelOf(peak)]}). Latest reading ${occ[last]} at ${fmtTime(last)} (${L.levels[levelOf(occ[last])]}).` +
         (STATE === "delayed" ? ` Data is delayed: no new reading for ${nowM - last} minutes.` : "") +
         (HAS_HISTORY ? " A dashed line shows the usual Wednesday, the average of the last 4 Wednesdays, through to closing time." : ` ${L.noHistory}.`) +
@@ -1395,16 +1420,24 @@
     fact("k-none", L.cov.usual, HAS_HISTORY ? L.covUsualVal : L.covUsualNone);
     $("#coverage").innerHTML = `<h3>${L.coverageTitle}</h3><div class="strip" aria-hidden="true">${strip.join("")}</div><div class="strip-axis" aria-hidden="true">${axis}</div><dl class="facts">${facts.join("")}</dl>`;
 
+    // The minute table (step 3: TBL-1, TBL-3, TBL-12, NUM-2, NUM-5; K-20, K-33). Compact density; the time is the row
+    // header; the numbers whole, in tabular figures, on the physical right edge with their headers in both languages;
+    // a span with no readings is one full-width row, the range first, then the dotted mark and the words; notes in a
+    // column of their own, folded into a row under theirs on a phone (TBL-8).
+    const DOTS = `<svg class="gap-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="1.3"/><circle cx="9.7" cy="12" r="1.3"/><circle cx="14.3" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg>`;
+    const noneRow = (a, b, words) => `<tr class="none"><td colspan="4"><span class="gapnote"><span class="rg">${timeRange(a, b)}</span><span class="mw">${DOTS}<span class="w">${words}</span></span></span></td></tr>`;
     const rows = [];
     for (let m = 0; m <= last; m++) {
-      const miss = !obs(m);
-      const note = miss ? L.notes.miss : m <= ZERO_END ? L.notes.zero : m === peakM ? L.notes.peak : m === last ? L.notes.latest : "";
-      rows.push(`<tr class="${miss ? "miss" : m === peakM ? "peak" : ""}"><td>${tb(m)}</td><td class="n">${miss ? '<span aria-hidden="true">-</span>' : bdi(occ[m])}</td><td>${miss ? "" : bdi(avg[m].toFixed(1))}</td><td>${note}</td></tr>`);
+      if (m === GAP0) { rows.push(noneRow(GAP0, GAP1, L.notes.miss)); m = GAP1; continue; }
+      const note = m <= ZERO_END ? L.notes.zero : m === peakM ? L.notes.peak : m === last ? L.notes.latest : "";
+      rows.push(`<tr${m === peakM ? ' class="peak"' : ""}${note ? ' data-note' : ""}><th scope="row">${tb(m)}</th><td class="n">${bdi(occ[m])}</td><td class="n">${bdi(Math.round(avg[m]))}</td><td class="notes">${note}</td></tr>`);
+      if (note) rows.push(`<tr class="note-row${m === peakM ? " peak" : ""}"><td colspan="4">${note}</td></tr>`);
     }
+    if (STATE === "delayed") rows.push(noneRow(last + 1, nowM, L.noReadingsYet));
     $("#minutes").innerHTML = `<h3 id="minutes-title">${L.minutesTitle}</h3>
       <div class="scroller" tabindex="0" role="region" aria-labelledby="minutes-title">
         <table class="minutes-table"><caption class="sr-only">${L.minutesAria}</caption>
-        <thead><tr>${L.cols.map((c) => `<th scope="col">${c}</th>`).join("")}</tr></thead>
+        <thead><tr>${L.cols.map((c, i) => `<th scope="col"${i === 1 || i === 2 ? ' class="n"' : i === 3 ? ' class="notes"' : ""}>${c}</th>`).join("")}</tr></thead>
         <tbody>${rows.join("")}</tbody></table>
       </div>`;
   }

@@ -33,7 +33,7 @@
 </head>
 <!-- data-frame: this page uses the responsive frame of step 3 (style.css "the frame"): the rail at 721 px and wider (it
      opens over the content, with a scrim from 721 to 1023 px), and at 720 px and below the compact header and the bar. -->
-<body data-frame>
+<body class="dl" data-frame>
   <a class="skip" href="#main" data-t="skip"></a>
   <div class="page">
     <!-- The page's own top-corner wash: part of the page box, scrolls with it, never fixed to the viewport. -->
@@ -67,12 +67,12 @@
             <span class="tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 19.5h16"/><path d="M7 16v-4.5M12 16V6.5M17 16v-7"/></svg></span>
             <span class="rail-name"></span>
           </a></li>
-          <li><a class="rail-item" href="#" data-nav="access" data-inert>
-            <span class="tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="8.2" cy="12" r="3.6"/><path d="M11.8 12h8.4M17.2 12v2.8M20.2 12v2"/></svg></span>
-            <span class="rail-name"></span>
-          </a></li>
           <li><a class="rail-item" href="#" data-nav="activity" data-inert>
             <span class="tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="3.8" width="14" height="16.4" rx="3"/><path d="M8.6 8.6h6.8M8.6 12h6.8M8.6 15.4h4"/></svg></span>
+            <span class="rail-name"></span>
+          </a></li>
+          <li><a class="rail-item" href="#" data-nav="access" data-inert>
+            <span class="tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="8.2" cy="12" r="3.6"/><path d="M11.8 12h8.4M17.2 12v2.8M20.2 12v2"/></svg></span>
             <span class="rail-name"></span>
           </a></li>
           <li><a class="rail-item" href="#" data-nav="operations" data-inert>
@@ -141,6 +141,10 @@
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle class="fill" cx="5.5" cy="12" r="1.6"/><circle class="fill" cx="12" cy="12" r="1.6"/><circle class="fill" cx="18.5" cy="12" r="1.6"/></svg>
           </button>
           <div class="fw-pop menu-pop" id="menu-pop" role="menu" aria-labelledby="menu-btn" hidden>
+            <a class="fw-mi" role="menuitem" tabindex="-1" href="#" id="menu-monitoring" data-inert>
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3.6" y="4.6" width="16.8" height="11.4" rx="2.4"/><path d="M9 20h6M12 16v4"/></svg>
+              <span id="menu-monitoring-name"></span>
+            </a>
             <a class="fw-mi" role="menuitem" tabindex="-1" href="#" id="menu-lang"><span class="fw-glyph" id="menu-lang-glyph" aria-hidden="true"></span><span id="menu-lang-name"></span></a>
             <a class="fw-mi" role="menuitem" tabindex="-1" href="#" id="menu-signout" data-inert>
               <svg class="mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13.5 4.5H7.2a2.2 2.2 0 0 0-2.2 2.2v10.6a2.2 2.2 0 0 0 2.2 2.2h6.3"/><path d="M10.5 12h9M16.5 8.8 19.7 12l-3.2 3.2"/></svg>
@@ -158,7 +162,7 @@
         <article class="card stat lit lit-card" id="card-now">
           <i class="lamp" aria-hidden="true"><i class="lamp-in"><i class="lamp-rim"></i></i></i>
           <div class="stat-head">
-            <span class="itile" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8.2" r="3.4"/><path d="M5.6 19.4a6.4 6.4 0 0 1 12.8 0"/></svg></span>
+            <svg class="stat-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8.2" r="3.4"/><path d="M5.6 19.4a6.4 6.4 0 0 1 12.8 0"/></svg>
             <h3 class="stat-label" id="now-label"></h3>
             <span class="stat-meta" id="now-meta"></span>
           </div>
@@ -168,7 +172,7 @@
 
         <article class="card stat" id="card-peak">
           <div class="stat-head">
-            <span class="itile" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 17.5 9.2 11l3.4 3.2L20 6.5"/><path d="M15.4 6.5H20v4.6"/></svg></span>
+            <svg class="stat-ico mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 17.5 9.2 11l3.4 3.2L20 6.5"/><path d="M15.4 6.5H20v4.6"/></svg>
             <h3 class="stat-label" data-t="peakTitle"></h3>
             <span class="stat-meta" id="peak-meta"></span>
           </div>
@@ -178,7 +182,7 @@
 
         <article class="card stat" id="card-entries">
           <div class="stat-head">
-            <span class="itile" aria-hidden="true"><svg class="mirror" viewBox="0 0 24 24"><path d="M10 4.5H6.8a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2H10"/><path d="M20 12h-9M14.2 8.8 11 12l3.2 3.2"/></svg></span>
+            <svg class="stat-ico mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 4.5H6.8a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2H10"/><path d="M20 12h-9M14.2 8.8 11 12l3.2 3.2"/></svg>
             <h3 class="stat-label" data-t="entriesTitle"></h3>
           </div>
           <p class="stat-value"><bdi class="num" id="entries-v"></bdi></p>
@@ -187,7 +191,7 @@
 
         <article class="card stat" id="card-busiest">
           <div class="stat-head">
-            <span class="itile" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.6"/><path d="M12 7.8V12l2.8 1.8"/></svg></span>
+            <svg class="stat-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="7.6"/><path d="M12 7.8V12l2.8 1.8"/></svg>
             <h3 class="stat-label" data-t="busiestTitle"></h3>
             <span class="stat-meta" id="busy-meta"></span>
           </div>

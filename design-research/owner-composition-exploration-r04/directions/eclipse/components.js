@@ -76,7 +76,7 @@
         dialog: ["النافذة والورقة السفلية", "نافذة مشروطة؛ وعلى الهاتف ورقة من الأسفل تتقاسم أزرارها العرض."],
         chips: ["الشارات", "الشارة داخل المحتوى بارتفاع 26؛ وفي صف الأزرار تساوي الشارة ارتفاع الزر أو تتخلى عن إطارها."],
         rail: ["الشريط الجانبي والرأس", "الاسم يظهر عند التركيز بلوحة المفاتيح فقط، ولا تلميح عند مرور الفأرة. على الجهاز اللوحي يُفتح الشريط فوق طبقة معتمة ويبقى التركيز داخله."],
-        frame: ["إطار الهاتف: الشريط السفلي والرأس المضغوط", "عند 720 بكسل وأقل يصير الشريط الجانبي شريطًا زجاجيًا في الأسفل بخمسة أقسام، ويحمل الرأس الحالةَ شارةً تفتح تفاصيلها، وقائمةً واحدة للغة وتسجيل الخروج. كل طبقة تُفتح من لوحة المفاتيح، وتُغلق بـ Escape، ويعود التركيز إلى ما فتحها."],
+        frame: ["إطار الهاتف: الشريط السفلي والرأس المضغوط", "عند 720 بكسل وأقل يصير الشريط الجانبي شريطًا زجاجيًا في الأسفل بخمسة أقسام، ويحمل الرأس الحالةَ شارةً تفتح تفاصيلها، وقائمةً واحدة لشاشة المراقبة واللغة وتسجيل الخروج. كل طبقة تُفتح من لوحة المفاتيح، وتُغلق بـ Escape، ويعود التركيز إلى ما فتحها."],
         empty: ["الحالة الفارغة والتنبيه وإعادة المحاولة", "جملة تقول ما الناقص وتواريخه، وطريق واحد للعودة؛ وتنبيه يقول ما حدث وما بقي كما هو."],
       },
       f: { colours: "الألوان", type: "الخط: السلّم", spacing: "المسافات", radii: "الزوايا", focus: "حلقة التركيز", icons: "الأيقونات في السطر، بلا إطار" },
@@ -91,7 +91,7 @@
       cmp: { busier: "أعلى من المعتاد", quieter: "أهدأ من المعتاد", same: "قريب من المعتاد" },
       cards: { live: "مباشر، مضاءة", plain: "قيمة ووقتها", late: "متأخرة، بلا ضوء", words: "قيمة بالكلمات", none: "لا قراءات", short: "لا يكفي السجل، بلا ضوء" },
       undesigned: `لم تُصمَّم بعد: التحميل، والإغلاق كحالة للصفحة، وعدم التوفر، والخطأ. تُصمَّم كلٌّ منها في جولة شاشتها (${b("K-02")}).`,
-      chartTitle: "ازدحام اليوم", keyLine: `معدّل كل ${b(30)} دقيقة`, keyUsual: "الأربعاء المعتاد", noHistory: "لا يكفي السجل للمقارنة بعد",
+      chartTitle: "ازدحام اليوم", keyLine: `معدّل كل ${b(30)} دقيقة`, keyUsual: "الأربعاء المعتاد", keyPeak: "قراءة الذروة", noHistory: "لا يكفي السجل للمقارنة بعد",
       details: "عرض التفاصيل", peakTag: "الذروة", latestFlag: "آخر قراءة", usual: "المعتاد", stillAhead: "لم يحن بعد",
       chartMain: "مباشر، ومحدد عليها آخر قراءة",
       vars: { peak: "الذروة", line: "نقطة على الخط", gap: "فترة بلا قراءات", ahead: "لم يحن بعد", delayed: "آخر قراءة، متأخرة", nohistory: "لم يحن بعد، بلا سجل" },
@@ -169,7 +169,7 @@
         dialog: ["Dialog and bottom sheet", "A modal dialog; on a phone, a sheet from the bottom whose actions share the width."],
         chips: ["Chips and badges", "A badge in content is 26 px; in a row of controls a pill matches the control height or drops its box."],
         rail: ["Rail and header", "A rail item shows its name on keyboard focus only; the mouse hover shows no tooltip. On a tablet the rail opens over a scrim and keeps focus inside."],
-        frame: ["The phone's frame: the bar and the compact header", "At 720 px and below the rail becomes a glass bar at the bottom with five sections, and the header carries the status as a badge that opens its details, and one menu for the language and sign out. Every layer opens from the keyboard, closes with Escape, and returns focus to what opened it."],
+        frame: ["The phone's frame: the bar and the compact header", "At 720 px and below the rail becomes a glass bar at the bottom with five sections, and the header carries the status as a badge that opens its details, and one menu for Monitoring, the language and sign out. Every layer opens from the keyboard, closes with Escape, and returns focus to what opened it."],
         empty: ["Empty state, alert and retry", "One sentence that names what is missing and its dates, and one way back; an alert that says what happened and what is kept."],
       },
       f: { colours: "Colour", type: "Type: the scale", spacing: "Spacing", radii: "Radii", focus: "Focus ring", icons: "Icons in the flow, with no tile" },
@@ -184,7 +184,7 @@
       cmp: { busier: "Busier than usual", quieter: "Quieter than usual", same: "About usual" },
       cards: { live: "Live, lit", plain: "A value and its time", late: "Delayed, unlit", words: "A value in words", none: "No readings", short: "Not enough history, unlit" },
       undesigned: "Not designed yet: loading, closed as a page state, unavailable and error. Each is designed in its screen's round (K-02).",
-      chartTitle: "Today's crowd", keyLine: "30-min average", keyUsual: "Usual Wednesday", noHistory: "Not enough history to compare yet",
+      chartTitle: "Today's crowd", keyLine: "30-min average", keyUsual: "Usual Wednesday", keyPeak: "Peak reading", noHistory: "Not enough history to compare yet",
       details: "View details", peakTag: "Peak", latestFlag: "Latest", usual: "Usual", stillAhead: "Still ahead",
       chartMain: "Live, with the latest reading selected",
       vars: { peak: "The peak", line: "A stop on the line", gap: "A span with no readings", ahead: "Still ahead", delayed: "Latest reading, delayed", nohistory: "Still ahead, no history" },
@@ -370,7 +370,8 @@
   }
   const plotHost = (id, state, sel, h) => `<div class="cx-plot" id="${id}" data-state="${state}" data-sel="${sel}"${h ? ` style="--plot-h:${h}px"` : ""} aria-hidden="true"></div>`;
   function chart() {
-    const legend = (hist) => `<ul class="cx-legend">${`<li><i class="sw-line"></i>${L.keyLine}</li>`}${hist ? `<li><i class="sw-usual"></i>${L.keyUsual}</li>` : `<li>${ico("info")}${L.noHistory}</li>`}</ul>`;
+    // Q1 (proposed, step 3): a third entry names the ring, which marks a single reading.
+    const legend = (hist) => `<ul class="cx-legend">${`<li><i class="sw-line"></i>${L.keyLine}</li>`}${hist ? `<li><i class="sw-usual"></i>${L.keyUsual}</li>` : `<li>${ico("info")}${L.noHistory}</li>`}<li><i class="sw-ring"></i>${L.keyPeak}</li></ul>`;
     const main = `<figure class="cx-fig" style="align-items:stretch"><section class="card lit lit-chart cx-chart" aria-label="${L.chartTitle}">${LAMP}
       <header class="cx-chart-head"><h3>${L.chartTitle}</h3><div class="cx-chart-tools">${legend(true)}<button class="cx-btn" type="button" tabindex="-1">${L.details}${ico("chevron")}</button></div></header>
       ${plotHost("plot-main", "live", "latest", 440)}</section>${cap(L.chartMain, "CHT-1…15 · LGT-9", false)}</figure>`;
@@ -753,12 +754,13 @@
       ${fig(`<div style="display:grid;gap:12px"><span class="cx-status"><i class="cx-dot"></i>${L.statusLive}</span><span class="cx-status is-late">${ico("clock")}${L.statusLate}</span></div>`, L.chipCaps.status, "CHP-2 · STA-1 · STA-2")}
       ${fig(`<button class="cx-btn" type="button"><i class="cx-dot"></i><span class="cx-status">${L.statusLive}</span></button>`, L.chipCaps.statusBtn, "CHP-1 · CHP-2")}
       ${fig(`<span class="cx-concept">${L.concept}</span>`, L.chipCaps.concept, "CHP-2 · GLO-15")}
-      ${fig(`<ul class="cx-legend"><li><i class="sw-line"></i>${L.keyLine}</li><li><i class="sw-usual"></i>${L.keyUsual}</li></ul>`, L.chipCaps.legend, "CHP-3")}
+      ${fig(`<ul class="cx-legend"><li><i class="sw-line"></i>${L.keyLine}</li><li><i class="sw-usual"></i>${L.keyUsual}</li><li><i class="sw-ring"></i>${L.keyPeak}</li></ul>`, L.chipCaps.legend, "CHP-3 · Q1", true)}
     </div></div>`);
   }
 
   /* ------------------------------------------------------------ rail and header */
-  const NAV = [["today", "today"], ["reports", "reports"], ["access", "access"], ["activity", "activity"], ["operations", "operations"]];
+  // The order everywhere (user 2026-10-01): Today, Reports, Activity log, Access, then the rest.
+  const NAV = [["today", "today"], ["reports", "reports"], ["activity", "activity"], ["access", "access"], ["operations", "operations"]];
   const FOOT = [["monitoring", "monitoring"], ["lang", null], ["settings", "settings"], ["signout", "signout"]];
   function rail({ open = false, forced = {}, live = false }) {
     const item = (k, iconName) => {
@@ -792,9 +794,10 @@
   const hbadge = (late, open, live) => `<button class="hbadge${late ? " is-delayed" : ""}" type="button"${live ? ' data-layer="ops"' : ' tabindex="-1"'} aria-expanded="${open}" aria-haspopup="dialog" aria-label="${L.opsTitle}: ${late ? L.delayedWord : L.liveWord}"><span class="hb-state">${stateMark(late)}<span class="hb-word">${late ? L.delayedWord : L.liveWord}</span></span>${svg(P.chevron, "hb-chev")}</button>`;
   const hmenu = (open, live) => `<button class="hbtn" type="button"${live ? ' data-layer="menu"' : ' tabindex="-1"'} aria-expanded="${open}" aria-haspopup="menu" aria-label="${L.more}">${svg(P.more, "")}</button>`;
   const opsPop = (late, open) => `<div class="fw-pop ops-pop" role="dialog" aria-label="${L.opsTitle}" tabindex="-1"${open ? "" : " hidden"} data-pop="ops"><div class="ops-body"><h4 class="ops-title">${L.opsTitle}</h4><p class="ops-state${late ? " is-delayed" : ""}">${stateMark(late)}<span>${late ? L.delayedWord : L.liveWord}</span></p><p class="ops-line">${L.lastAt(L.pm(late ? "7:29" : "7:42"))}${late ? `<span class="sep" aria-hidden="true">·</span><span class="ops-ago">${L.ago(13)}</span>` : ""}</p><p class="ops-line">${L.hours}</p></div><div class="ops-foot"><a class="fw-mi" href="#frame" tabindex="-1">${svg(P.operations, "")}<span>${L.nav.operations}</span>${svg(P.next, "fw-mi-end mirror")}</a></div></div>`;
-  const menuPop = (open, focus) => `<div class="fw-pop menu-pop" role="menu" aria-label="${L.more}"${open ? "" : " hidden"} data-pop="menu"><a class="fw-mi${focus ? " is-focus" : ""}" role="menuitem" tabindex="-1" href="#frame"><span class="fw-glyph" lang="en" aria-hidden="true">${LANG === "ar" ? "EN" : "AR"}</span><span lang="${LANG === "ar" ? "en" : "ar"}">${L.nav.lang}</span></a><a class="fw-mi" role="menuitem" tabindex="-1" href="#frame">${svg(P.signout, "mirror")}<span>${L.nav.signout}</span></a></div>`;
+  // The menu (user 2026-10-01): Monitoring, then the language, then sign out.
+  const menuPop = (open, focus) => `<div class="fw-pop menu-pop" role="menu" aria-label="${L.more}"${open ? "" : " hidden"} data-pop="menu"><a class="fw-mi${focus ? " is-focus" : ""}" role="menuitem" tabindex="-1" href="#frame">${svg(P.monitoring, "")}<span>${L.nav.monitoring}</span></a><a class="fw-mi" role="menuitem" tabindex="-1" href="#frame"><span class="fw-glyph" lang="en" aria-hidden="true">${LANG === "ar" ? "EN" : "AR"}</span><span lang="${LANG === "ar" ? "en" : "ar"}">${L.nav.lang}</span></a><a class="fw-mi" role="menuitem" tabindex="-1" href="#frame">${svg(P.signout, "mirror")}<span>${L.nav.signout}</span></a></div>`;
   const phoneHead = ({ late = false, open = "", live = false } = {}) => `<div class="cx-ph-head"><h3>${L.nav.today}</h3><div class="head-acts">${hbadge(late, open === "ops", live)}${opsPop(late, open === "ops")}${hmenu(open === "menu", live)}${menuPop(open === "menu", open === "menu" && !live)}</div><p class="cx-ph-sub">${L.date}</p><span class="cx-concept">${L.concept}</span></div>`;
-  const phone = (inner, cls = "") => `<div class="cx-phone${cls ? " " + cls : ""}">${inner}<i class="card cx-ph-card"></i></div>`;
+  const phone = (inner, cls = "") => `<div class="cx-phbox${cls ? " " + cls : ""}">${inner}<i class="card cx-ph-card"></i></div>`;
   function frame() {
     const f = (inner, state, ids, live = false, w = 390) => `<figure class="cx-fig" style="flex:0 0 ${w}px">${live ? `<div class="cx-spec cx-live-frame">${inner}</div>` : `<div class="cx-spec" inert>${inner}</div>`}${cap(state, ids)}${live ? `<span class="cx-live-tag">${L.live}</span>` : ""}</figure>`;
     return section("frame", "frame", "BRK-4 · BRK-10 · HDR-4 · BDG-1…4 · MNU-1…4 · BAR-1…6", `<div class="card cx-stage"><div class="cx-phones">
@@ -804,8 +807,8 @@
       ${f(phone(phoneHead({ late: true, open: "ops" }), "is-tall"), L.frameCaps.opsLate, "BDG-3 · STA-2")}
       ${f(phone(phoneHead({ open: "menu" }), "is-tall"), L.frameCaps.menu, "MNU-2…4 · FOC-2")}
       ${f(phone(phoneHead({ live: true }), "is-tall"), L.frameCaps.live, "BDG-2 · MNU-4", true)}
-      ${f(`<div class="cx-phone cx-bar-spec">${bar()}</div>`, L.frameCaps.bar, "BAR-1…4 · BAR-6 · GLO-18")}
-      ${f(`<div class="cx-phone cx-bar-spec is-320">${bar({ reports: "is-hover", settings: "is-focus" })}</div>`, L.frameCaps.bar320, "BAR-3 · BAR-5 · FOC-1", false, 320)}
+      ${f(`<div class="cx-phbox cx-bar-spec">${bar()}</div>`, L.frameCaps.bar, "BAR-1…4 · BAR-6 · GLO-18")}
+      ${f(`<div class="cx-phbox cx-bar-spec is-320">${bar({ reports: "is-hover", settings: "is-focus" })}</div>`, L.frameCaps.bar320, "BAR-3 · BAR-5 · FOC-1", false, 320)}
     </div></div>`);
   }
   // The interactive phone header: the same behaviour as the page (app.js "the frame"), in one specimen.
