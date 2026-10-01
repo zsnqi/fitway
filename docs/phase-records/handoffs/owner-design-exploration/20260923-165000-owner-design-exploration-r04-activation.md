@@ -4148,3 +4148,14 @@ The local usage limit is close, so the user continues this coordinator role in a
   the one lit element, in AR and EN.
 - **Pushed** `owner-followup-r04-build` to `9b6ae63`.
 - **Waiting:** the user's look. Either the order stays, or the week card moves to the row's start.
+## Reports keeps its order without the week light, and the coordinator's layout notes (2026-10-01)
+
+- **User decision (2026-10-01):** the order stays, "Last 7 days" stays plain at the row's end, and the card does
+  not move. `9b6ae63` stands.
+- **Asked for:** the coordinator's second look at the layout. Proposed to the user, awaiting the user's word:
+  1. **Export:** take "Export minute data" away from the period control, to the row's far end. Today it sits beside
+     the control, so a take-away action reads as part of choosing what you see.
+  2. **The week card's baseline:** "+9%" names no comparison on its face. Add the span it compares with, such as
+     «مقابل 9 – 15 سبتمبر» / "vs 9 – 15 Sep". This is a date in the meta slot, not an explanatory caption.
+  3. **The subtitle:** "· 28 days" repeats the selected "Last 28 days". Show the length only for a custom period.
+  - Whatever the user accepts goes into phase B's brief, so the fresh designer applies it at 1440 too.
