@@ -3864,3 +3864,34 @@ The local usage limit is close, so the user continues this coordinator role in a
   - It commits without pushing.
 - **Next:** check its report and frames, then a fresh design reviewer for all of step 3. Pushing the build branch
   needs the user's word in this cloud session.
+## The proposal-4 fix at `50a5690`, and the step-3 review launched (2026-10-01)
+
+- **The fixer stopped once.** "Waiting for readings" clipped the Today's peak and Entries cards at 390 EN, and the
+  page scrolled sideways (410 against 390).
+  - The coordinator measured the 390 card slot at 129 px. «بانتظار القراءات» needs 128 px and "Waiting for
+    readings" 186 px.
+  - It froze «قيد الانتظار» / "Pending" for the two cards (93 and 75 px), with no restyle. The gap's stop and the text
+    equivalent keep «… بانتظار القراءات» / "… Waiting for readings".
+  - This card wording is the coordinator's choice, reported to the user, who can change it.
+- **Delivered at `50a5690`** on `fd28be4`: 4 files, +68/−37 (`app.js`, `DESIGN-SPEC.md`, `README.md`,
+  `components.js`).
+  - In Unavailable, live's own line runs to 3:00 PM and ends plain, with no end point, peak ring or hairline. Live's
+    2:14-2:31 PM gap mark stays.
+  - The dotted mark runs from 3:00 PM to now, and its stop reads «3:00 م - 7:42 م، بانتظار القراءات».
+  - There are 31 stops. Focus starts at the gap, Home goes to opening, and End goes to the gap.
+  - The spec changes STA-12 (with `user 2026-10-01 (proposal 4)`), CHT-21, CRD-10 and K-02 (now `ad63268`).
+  - The legend still lists "Peak reading", following CHT-21's "a key, not a claim".
+  - Self-reported:
+    - the spec lint finds 0 problems;
+    - Unavailable's heights equal live's at 8 size and language pairs, and nothing scrolls sideways;
+    - the keyboard checks pass;
+    - the other six states and Reports are byte-identical to `fd28be4`.
+  - Coordinator inspection, not verification: the lint and the K-02 row checked; the frames `unavailable-ar-1440` and
+    `unavailable-en-390` opened and coherent.
+- **Pushed** `owner-followup-r04-build` to `50a5690`, with the user's word in this session.
+- **The step-3 review launched:** a fresh `owner-direction-verifier-high` on `9074da6..50a5690`.
+  - It covers 1440, 768 and 390, AR and EN, in all seven states, plus the frame and the motion.
+  - It does not read the handoffs or reports, and it applies ADR-009.
+  - It writes contact sheets and `FINDINGS.md` to `/tmp/fitway-scratch/review-s3/`.
+- **Next:** on its report, show the user the sheets and findings, and the user decides. Then write the consolidated
+  "do not" list before step 4's brief.
