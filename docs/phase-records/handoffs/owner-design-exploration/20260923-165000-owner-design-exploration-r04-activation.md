@@ -3617,3 +3617,26 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   fresh agents for each task; agents report in their final message; the coordinator's context stays small.
 - **Close:** at the user's instruction, the coordinator shuts the PC down after this record, with a 5-minute delay that
   `shutdown /a` can cancel.
+## The user's decisions on phase B, and the spec record launched (2026-10-01)
+
+- **Resumed** in a new session from the section above.
+  - The packet is `READY`. s04 is clean at `637b285`.
+  - The `eclipse-build` preview is up on 3174.
+  - The user saw Daily at 1440, 768 and 390 (`B01`-`B03`), and the Q1 and Q2 sheets.
+- **User decisions (2026-10-01)** accept everything phase B built:
+  1. **Q1:** keep the ring key «قراءة الذروة» / "Peak reading" (CHT-20).
+  2. **Q2:** keep the one 107 px lane for every state (CHT-18), with the time axis's one rhythm (CHT-19).
+     - The user first asked for an explanation. The coordinator explained the tooltip, the lane, the scale's jump by
+       state and the alternative of no lane, and the user then chose the fixed lane.
+  3. **The tooltip width:** 130-131 px is accepted. CHT-12's formula is the rule, not 127 px.
+  4. **OWN-D2:** accepted. The first screen is fixed to the viewport only at 1200 px and wider.
+- **No page changes.** The decisions only need recording in the spec.
+- **Launched:** a fresh `owner-direction-fixer` (`medium`), run `owner_spec_r04_s18`, in the background.
+  - Brief: `D:\fitway-scratch\daily\s18\BRIEF.md`.
+  - Base: s04 at `637b285`. Ports: 3176-3177.
+  - It writes only `E/DESIGN-SPEC.md` and `E/components.js`:
+    - CHT-18…20 become `R`;
+    - Q1 and Q2 move to "Answered 2026-10-01";
+    - `637b285` replaces "the commit after `d76972c`".
+- **Next:** on its report, run the G5 check and push. Then launch step 3's second part, a fresh
+  `owner-direction-designer` for Daily's missing states (STA-10, K-02), at every size.
