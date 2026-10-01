@@ -1,5 +1,8 @@
 /* Eclipse: FITWAY Owner Daily concept. Synthetic data only; not production.
- * Query: lang=ar|en (default ar), state=live|delayed|nohistory (default live), motion=off (every change instant).
+ * Query: lang=ar|en (default ar), state=live|delayed|nohistory|loading|closed|unavailable|error (default live),
+ * motion=off (every change instant). With state=loading, arrive=<ms> lets the first payload arrive that many ms after
+ * the page opened (into live) and arrive=never lets the 10 s ceiling turn it into Error; without arrive the skeleton is
+ * held, for review (step 3, second part: Daily's states).
  * The data logic (seeded minute simulation, day constants, monotone interpolation) is reused from
  * ../light-study/app.js, which took it from ../backlight/app.js. Western digits only: numbers are printed with
  * String(), never Intl or toLocaleString.
@@ -14,8 +17,16 @@
   const root = document.documentElement;
   const LANG = root.lang === "en" ? "en" : "ar";
   const RTL = LANG === "ar";
-  const STATE = root.dataset.state || "live";
+  // The URL's state. Loading and error are phases of the first payload: both arrive into live (loading on its own,
+  // error after its one retry), so STATE, the data the page shows or will show, is live for them.
+  const PAGE = root.dataset.state || "live";
+  const STATE = PAGE === "loading" || PAGE === "error" ? "live" : PAGE;
   const HAS_HISTORY = STATE !== "nohistory";
+  const CLOSED = STATE === "closed", UNAV = STATE === "unavailable";
+  // "ready": the payload is here (live, delayed, no history, closed, unavailable); "loading": the first payload is
+  // resolving; "error": it could not be loaded; "retrying": its one retry is running.
+  let phase = PAGE === "loading" ? "loading" : PAGE === "error" ? "error" : "ready";
+  if (phase !== "ready") root.dataset.phase = phase;
 
   /* ------------------------------------------------------------------ copy */
   const arMin = (n) => (n === 1 ? "دقيقة" : n === 2 ? "دقيقتين" : n % 100 >= 3 && n % 100 <= 10 ? `${n} دقائق` : `${n} دقيقة`);
@@ -81,6 +92,24 @@
       minutesAria: "قراءات اليوم دقيقة بدقيقة",
       cols: ["الوقت", "داخل الصالة", `معدّل <bdi>30</bdi> دقيقة`, "ملاحظة"],
       notes: { miss: "لا قراءات", zero: "خالية", peak: "الذروة", latest: "آخر قراءة" },
+      // Daily's states (step 3, second part). The status word is the same in the header, the phone's badge and its
+      // details; the rest says what the owner can know or do.
+      loadingWord: "جارٍ التحميل…",
+      loadingSay: "جارٍ تحميل قراءات اليوم",
+      closed: "مغلق",
+      opens: (t) => `يفتح ${t}`,
+      offline: "غير متصل",
+      noCount: "لا عدّ حاليًا",
+      checkOps: "تحقّق من حالة التشغيل",
+      errorWord: "خطأ",
+      errorLine: "تعذّر التحميل",
+      errorFull: "تعذّر تحميل قراءات اليوم",
+      errorSay: "تعذّر تحميل القراءات",
+      errorHint: "تحقّق من الاتصال، ثم أعد المحاولة.",
+      retry: "إعادة المحاولة",
+      retrying: "جارٍ المحاولة…",
+      sayClosed: (t) => `الصالة مغلقة، وتفتح الساعة ${t}.`,
+      sayOffline: "غير متصل: لا عدّ حاليًا.",
     },
     en: {
       skip: "Skip to content",
@@ -140,6 +169,22 @@
       minutesAria: "Today's readings, minute by minute",
       cols: ["Time", "Inside", "30-min average", "Note"],
       notes: { miss: "No readings", zero: "Empty", peak: "Peak", latest: "Latest reading" },
+      loadingWord: "Loading…",
+      loadingSay: "Loading today's readings",
+      closed: "Closed",
+      opens: (t) => `Opens ${t}`,
+      offline: "Offline",
+      noCount: "No current count",
+      checkOps: "Check the Operations status",
+      errorWord: "Error",
+      errorLine: "Couldn't load",
+      errorFull: "Couldn't load today's readings",
+      errorSay: "Couldn't load readings",
+      errorHint: "Check the connection, then try again.",
+      retry: "Try again",
+      retrying: "Trying again…",
+      sayClosed: (t) => `The gym is closed and opens at ${t}.`,
+      sayOffline: "Offline: no current count.",
     },
   };
   const L = COPY[LANG];
@@ -151,6 +196,7 @@
   const ZERO_END = 9;             // open, nobody inside 6:00 AM - 6:09 AM
   const NOW = 822;                // 7:42 PM
   const STALE_LAST = 809;         // delayed state: last reading 7:29 PM
+  const CLOSED_NOW = -48;         // closed state: 5:12 AM, 48 minutes before today's opening
   const WIN = 30;                 // the line: centred 30-minute average (15 before, 15 after)
   const SEED = 15983;
 
@@ -392,7 +438,8 @@
 
     return { last, nowM, obs, peak, peakM, entries, observed, avg, crestM, usualEntries, busiest, knots, segments, splines, lineAt, compare, usualLatest, checks };
   }
-  const START = { last: STATE === "delayed" ? STALE_LAST : NOW, nowM: NOW };
+  // Closed (before today's opening) and unavailable have no reading today: the latest reading is "none" (-1).
+  const START = { last: STATE === "delayed" ? STALE_LAST : CLOSED || UNAV ? -1 : NOW, nowM: CLOSED ? CLOSED_NOW : NOW };
   let M = compute(START.last, START.nowM);
 
   /* ---------------------------------------------------------------- icons */
@@ -402,6 +449,10 @@
     down: `<svg class="trend" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7.5l5.2 5.2 3.6-3.6L20 16.3"/><path d="M14.6 16.3H20v-5.4"/></svg>`,
     same: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 9.5h14M5 14.5h14"/></svg>`,
     info: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"/><path d="M12 11v5.2M12 7.8v.2"/></svg>`,
+    // The states' marks (step 3, second part): offline is a circle struck through; an error is the alert mark. Neither
+    // mirrors (ICO-5). Closed is a hollow ring the live dot's size (.dot.ring, CSS).
+    offline: `<svg class="ico ico-off" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.2"/><path d="M6.3 17.7 17.7 6.3"/></svg>`,
+    alert: `<svg class="ico ico-err" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"/><path d="M12 7.6v5.4M12 16.2v.2"/></svg>`,
   };
 
   /* ------------------------------------------------------------ motion settings
@@ -603,26 +654,52 @@
   $("#sub").innerHTML = `<span class="sub-part">${L.date}</span><span class="sep sub-hours" aria-hidden="true">·</span><span class="sub-part sub-hours">${L.hours} ${timeRange(0, DAY)}</span>`;
 
   const status = $("#status");
-  if (STATE === "delayed") {
-    status.classList.add("is-delayed");
-    status.innerHTML = `${ICON.clock}<span class="strong">${L.delayed}</span><span>· ${L.lastReading} ${tb(M.last)}</span>`;
-  } else {
-    status.innerHTML = `<span class="dot" aria-hidden="true"></span><span class="strong">${L.live}</span><span>· ${L.lastReading} ${tb(M.last)}</span>`;
+  // The header's status (HDR-3), the phone's badge (BDG-1) and its details (BDG-3) say the same state: one word, its
+  // mark (never colour alone) and one line. Live and delayed keep their step-3 markup exactly. Step 3, second part:
+  //   closed     a hollow ring the live dot's size, "Closed", and the next opening;
+  //   offline    (the unavailable state) a struck circle, "Offline", "No current count": no count, band or time;
+  //   error      the alert mark in the error colour, "Error", what happened (and, in the details, what to do);
+  //   loading    the status is not known yet: the words "Loading…", boxless and not a control (statusLoading below).
+  function statusOf() {
+    if (phase === "error" || phase === "retrying") return { cls: "is-err", mark: ICON.alert, word: L.errorWord, line: L.errorLine, detail: `${L.errorFull}. ${L.errorHint}` };
+    if (CLOSED) return { cls: "is-closed", mark: `<span class="dot ring" aria-hidden="true"></span>`, word: L.closed, line: L.opens(tb(0)) };
+    if (UNAV) return { cls: "is-off", mark: ICON.offline, word: L.offline, line: L.noCount };
+    if (STATE === "delayed") return { cls: "is-delayed", mark: ICON.clock, word: L.delayed, line: `${L.lastReading} ${tb(M.last)}`, ago: true };
+    return { cls: "", mark: `<span class="dot" aria-hidden="true"></span>`, word: L.live, line: `${L.lastReading} ${tb(M.last)}` };
   }
+  function renderStatus() {
+    const s = statusOf();
+    status.className = `chip status${s.cls ? ` ${s.cls}` : ""}`;
+    status.innerHTML = `${s.mark}<span class="strong">${s.word}</span><span>· ${s.line}</span>`;
+  }
+  renderStatus();
   // The phone's status badge and its details: the same status, compacted to its word, and the rest on request.
   function renderOps() {
-    const late = STATE === "delayed", word = late ? L.delayed : L.live;
-    const mark = late ? ICON.clock : `<span class="dot" aria-hidden="true"></span>`;
-    const btn = layers.ops.btn;
-    btn.classList.toggle("is-delayed", late);
-    btn.setAttribute("aria-label", `${L.opsTitle}: ${word}`);
-    $("#ops-btn-state").innerHTML = `${mark}<span class="hb-word">${word}</span>`;
-    $("#ops-state").className = `ops-state${late ? " is-delayed" : ""}`;
-    $("#ops-state").innerHTML = `${mark}<span>${word}</span>`;
-    $("#ops-last").innerHTML = `${L.lastReading} ${tb(M.last)}` + (late ? `<span class="sep" aria-hidden="true">·</span><span class="ops-ago">${L.ago(M.nowM - M.last)}</span>` : "");
+    const s = statusOf(), btn = layers.ops.btn;
+    btn.className = `hbadge${s.cls ? ` ${s.cls}` : ""}`;
+    btn.setAttribute("aria-label", `${L.opsTitle}: ${s.word}`);
+    $("#ops-btn-state").innerHTML = `${s.mark}<span class="hb-word">${s.word}</span>`;
+    $("#ops-state").className = `ops-state${s.cls ? ` ${s.cls}` : ""}`;
+    $("#ops-state").innerHTML = `${s.mark}<span>${s.word}</span>`;
+    $("#ops-last").innerHTML = s.detail || s.line + (s.ago ? `<span class="sep" aria-hidden="true">·</span><span class="ops-ago">${L.ago(M.nowM - M.last)}</span>` : "");
     $("#ops-hours").innerHTML = `${L.hours} ${timeRange(0, DAY)}`;
   }
   renderOps();
+  // While the first payload resolves the state is not known: the status and the badge are set aside (hidden, so their
+  // boxes are new when the state arrives and nothing moves, DESIGN_GUIDE §6) and the words "Loading…" stand in their
+  // place, boxless (the phone's are not a control: there are no details to open yet). Hidden for the first 300 ms.
+  let statusLoad = null, badgeLoad = null;
+  function statusLoading(on) {
+    if (on && !statusLoad) {
+      statusLoad = Object.assign(document.createElement("span"), { className: "chip status status-load", textContent: L.loadingWord });
+      badgeLoad = Object.assign(document.createElement("span"), { className: "hb-load", textContent: L.loadingWord });
+      status.before(statusLoad);
+      layers.ops.btn.before(badgeLoad);
+    }
+    if (!on && statusLoad) { statusLoad.remove(); badgeLoad.remove(); statusLoad = badgeLoad = null; }
+    status.hidden = on;
+    layers.ops.btn.hidden = on;
+  }
 
   /* ---------------------------------------------------------------- cards */
   const levelChip = (v) => {
@@ -637,31 +714,135 @@
   // null means the card shows the latest reading. A new reading or "Reset readings" clears it.
   let crowdShown = null;
   const shownNow = () => (crowdShown == null ? occ[M.last] : crowdShown);
-  const cardNow = $("#card-now");
-  $("#now-v").textContent = String(occ[M.last]);
-  if (STATE === "delayed") {
-    // D1 (LGT-7, LGT-8; K-12, step 3): a card whose value is not current is drawn plain; the light returns with a live
-    // value. Its level badge dims with the value (LVL-6; K-06).
-    cardNow.classList.add("is-stale");
-    cardNow.classList.remove("lit", "lit-card");
-    $(".lamp", cardNow).remove();
-    $("#now-label").innerHTML = `${L.staleTitle} ${tb(M.last)}`;
-    $("#now-meta").classList.add("warn");
-    $("#now-meta").innerHTML = `${ICON.clock}<span>${L.ago(M.nowM - M.last)}</span>`;
-  } else {
-    $("#now-label").textContent = L.nowTitle;
-    $("#now-meta").innerHTML = `<span class="live-dot" aria-hidden="true"></span>${tb(M.last)}`;
+  const cardNow = $("#card-now"), chartCard = $("section.chart");
+  // The two lights (LGT-6). A card whose content is not current is drawn plain (D1, LGT-7, LGT-8): in the four states
+  // of step 3's second part both lights are out, and they come back, at once (LGT-1), with a live value.
+  const LIGHTS = [[cardNow, "lit-card"], [chartCard, "lit-chart"]].map(([el, kind]) => ({ el, kind, lamp: $(".lamp", el) }));
+  function setLights(on) {
+    LIGHTS.forEach(({ el, kind, lamp }) => {
+      if (on && !el.contains(lamp)) { el.prepend(lamp); el.classList.add("lit", kind); }
+      if (!on && el.contains(lamp)) { lamp.remove(); el.classList.remove("lit", kind); }
+    });
   }
-  $("#now-foot").innerHTML = levelChip(occ[M.last]) + cmpChip(M.compare);
-  $("#peak-meta").innerHTML = tb(M.peakM);
-  $("#peak-v").textContent = String(M.peak);
-  $("#peak-foot").innerHTML = levelChip(M.peak);
-  $("#entries-v").textContent = String(M.entries);
-  $("#entries-usual").innerHTML = HAS_HISTORY ? L.usualEntries(bdi(M.usualEntries)) : "";
-  $("#busy-meta").innerHTML = `<span>${L.busiestMeta}</span>`;
-  $("#busy-v").innerHTML = hourRange(M.busiest.from, M.busiest.to);
-  $("#busy-note").innerHTML = L.busiestNote(bdi(M.busiest.avg));
+  // The live, delayed and no-history cards (step 3 phase B), unchanged; called at once, or when a payload arrives.
+  function fillCards() {
+    $("#now-v").textContent = String(occ[M.last]);
+    if (STATE === "delayed") {
+      // D1 (LGT-7, LGT-8; K-12, step 3): a card whose value is not current is drawn plain; the light returns with a live
+      // value. Its level badge dims with the value (LVL-6; K-06).
+      cardNow.classList.add("is-stale");
+      cardNow.classList.remove("lit", "lit-card");
+      $(".lamp", cardNow).remove();
+      $("#now-label").innerHTML = `${L.staleTitle} ${tb(M.last)}`;
+      $("#now-meta").classList.add("warn");
+      $("#now-meta").innerHTML = `${ICON.clock}<span>${L.ago(M.nowM - M.last)}</span>`;
+    } else {
+      $("#now-label").textContent = L.nowTitle;
+      $("#now-meta").innerHTML = `<span class="live-dot" aria-hidden="true"></span>${tb(M.last)}`;
+    }
+    $("#now-foot").innerHTML = levelChip(occ[M.last]) + cmpChip(M.compare);
+    $("#peak-meta").innerHTML = tb(M.peakM);
+    $("#peak-v").textContent = String(M.peak);
+    $("#peak-foot").innerHTML = levelChip(M.peak);
+    $("#entries-v").textContent = String(M.entries);
+    $("#entries-usual").innerHTML = HAS_HISTORY ? L.usualEntries(bdi(M.usualEntries)) : "";
+    $("#busy-meta").innerHTML = `<span>${L.busiestMeta}</span>`;
+    $("#busy-v").innerHTML = hourRange(M.busiest.from, M.busiest.to);
+    $("#busy-note").innerHTML = L.busiestNote(bdi(M.busiest.avg));
+  }
   $("#cards").setAttribute("aria-labelledby", "cards-title");
+
+  /* ---- Daily's states (step 3, second part; STA-10, K-02). Every card keeps its slots and its height in every state
+   * (CRD-9): the head with its name, the value's line (46 px; the busiest time's 36) and the foot (42) or note (34). A
+   * state writes into those slots and never adds a line, so no card changes height, and the arrival of the payload
+   * fills the same slots with nothing moving (DESIGN_GUIDE §6). What a state adds is kept in `added`, and what it sets
+   * aside in `setAside`, so clearState() returns every card to its bare slots.
+   *   loading      a placeholder stands where a value is awaited, and only there: the value (the digits' ink band, 33 px;
+   *                the time range's 22), the "when" in the meta slot and the note (9 px), the level badge (its 26 px box).
+   *                Names, the busiest time's "Last 7 days" and the unit-less heads are real text from the first paint.
+   *   closed       Inside now says "Closed" as a value in words and the next opening at its foot; today's peak and
+   *                entries are "Still ahead"; the busiest time over the last 7 days stays (history, not a reading).
+   *   unavailable  Inside now says "No current count" and where to look; today's peak and entries "No readings"; the
+   *                busiest time stays.
+   *   error        Inside now carries the alert and the one retry; the other cards keep their names and nothing else. */
+  const added = [], setAside = [];
+  const keep = (node) => { added.push(node); return node; };
+  const aside = (el) => { if (!el.hidden) { el.hidden = true; setAside.push(el); } };
+  const make = (html) => { const t = document.createElement("template"); t.innerHTML = html.trim(); return t.content.firstChild; };
+  const SLOTS = {
+    now: { meta: $("#now-meta"), v: $("#now-v"), unit: $("#card-now .unit"), foot: $("#now-foot"), w: 56 },
+    peak: { meta: $("#peak-meta"), v: $("#peak-v"), foot: $("#peak-foot"), w: 56 },
+    entries: { v: $("#entries-v"), note: $("#entries-usual"), w: 80 },
+    busiest: { v: $("#busy-v"), note: $("#busy-note"), w: 88 },
+  };
+  const bar = (w) => `<i class="ph-bar" style="--w:${w}px"></i>`;
+  function clearState() {
+    added.splice(0).forEach((n) => n.remove());
+    setAside.splice(0).forEach((el) => { el.hidden = false; });
+    for (const s of Object.values(SLOTS)) { if (s.foot) s.foot.innerHTML = ""; if (s.note) s.note.innerHTML = ""; if (s.meta) s.meta.innerHTML = ""; }
+  }
+  // A value's slot holds `node` in place of the value (the value and its unit are set aside).
+  function sayInValue(s, node) {
+    aside(s.v);
+    if (s.unit) aside(s.unit);
+    if (node) s.v.after(keep(node));
+  }
+  function pendCards() {
+    clearState();
+    $("#now-label").textContent = L.nowTitle;
+    $("#busy-meta").innerHTML = `<span>${L.busiestMeta}</span>`;
+    for (const s of Object.values(SLOTS)) {
+      if (s.meta) { aside(s.meta); s.meta.after(keep(make(`<span class="stat-meta ph-slot" aria-hidden="true">${bar(40)}</span>`))); }
+      sayInValue(s, make(`<span class="num${s === SLOTS.busiest ? " word" : ""} ph-slot" aria-hidden="true">${bar(s.w)}</span>`));
+      if (s.foot) s.foot.innerHTML = `<i class="ph-box" aria-hidden="true"></i>`;
+      if (s.note) s.note.innerHTML = bar(56);
+    }
+  }
+  const sentence = (text) => make(`<span class="stat-say">${text}</span>`);
+  function stateCards() {
+    clearState();
+    $("#now-label").textContent = L.nowTitle;
+    aside(SLOTS.now.meta);
+    aside(SLOTS.peak.meta);
+    if (CLOSED) {
+      sayInValue(SLOTS.now, make(`<span class="stat-word">${L.closed}</span>`));
+      SLOTS.now.foot.innerHTML = `<span class="stat-foot-note">${L.opens(tb(0))}</span>`;
+      sayInValue(SLOTS.peak, sentence(L.ro.ahead));
+      sayInValue(SLOTS.entries, sentence(L.ro.ahead));
+    } else {
+      sayInValue(SLOTS.now, sentence(L.noCount));
+      SLOTS.now.foot.innerHTML = `<span class="stat-foot-note">${L.checkOps}</span>`;
+      sayInValue(SLOTS.peak, sentence(L.ro.noReading));
+      sayInValue(SLOTS.entries, sentence(L.ro.noReading));
+    }
+    // The busiest time over the last 7 days is history, not a reading: it stays (GLO-12; its basis is 6 full days).
+    $("#busy-meta").innerHTML = `<span>${L.busiestMeta}</span>`;
+    $("#busy-v").innerHTML = hourRange(M.busiest.from, M.busiest.to);
+    $("#busy-note").innerHTML = L.busiestNote(bdi(M.busiest.avg));
+  }
+  // Error (EMP-2, EMP-3): no reading is kept. Inside now, the page's first answer, holds the alert and its one retry, in
+  // the value's line and the foot together (46 + 42 px), so the card keeps its height; the other cards keep only their
+  // names (and the busiest time's "Last 7 days"). The retry takes focus.
+  let retryBtn = null, errSay = null;
+  function errorCards() {
+    clearState();
+    $("#now-label").textContent = L.nowTitle;
+    $("#busy-meta").innerHTML = `<span>${L.busiestMeta}</span>`;
+    for (const s of Object.values(SLOTS)) { if (s.meta) aside(s.meta); sayInValue(s, null); }
+    const value = $("#card-now .stat-value");
+    aside(value);
+    aside(SLOTS.now.foot);
+    const box = keep(make(`<div class="stat-alert"><p class="stat-say is-err" id="err-say" role="alert"></p><button class="btn btn-primary" id="retry" type="button"></button></div>`));
+    value.after(box);
+    errSay = $("#err-say", box);
+    retryBtn = $("#retry", box);
+    retryBtn.textContent = L.retry;
+    retryBtn.addEventListener("click", retry);
+  }
+  // The page's cards as it opens: the payload's values, a closed or unavailable page, or (loading, error) the states'
+  // slots, which the lifecycle section sets up with the chart.
+  if (phase === "ready" && !CLOSED && !UNAV) fillCards();
+  else if (CLOSED || UNAV) { stateCards(); setLights(false); }
 
   // After a live change only the values that changed move: digits roll, level bars fill or empty, and words swap
   // at once (motion section). Everything ends on exactly the markup the page renders at load.
@@ -719,6 +900,11 @@
     const W = Math.round(plot.clientWidth), H = Math.round(plot.clientHeight);
     if (!W || !H) return;
     const { last, nowM, peak, peakM, avg, splines, lineAt } = M;
+    // Step 3, second part: while the first payload is loading, after an error and during its retry the plot is an empty
+    // frame, the grid and both axes in the live geometry and nothing else (DESIGN_GUIDE §6: a chart placeholder never
+    // imitates data), so a line that arrives draws into a frame that does not move. Closed and unavailable have no
+    // reading today: no line, no peak and no end point; their usual line stays (history).
+    const frameOnly = phase !== "ready";
     const gut = 40;                           // y labels sit on the inline-start side
     const span = W - gut - 6;
     const x0 = RTL ? W - gut : gut;           // opening time
@@ -747,39 +933,50 @@
     [20, 40, 60, 80].forEach((v) => s.push(`<path d="M${f(xL)},${Math.round(Y(v)) + 0.5}H${f(xR)}" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>`));
     const by = Math.round(Y(0)) + 0.5;
     const ga = X(GAP0 - 0.5), gb = X(GAP1 + 0.5), gl = Math.min(ga, gb), gr = Math.max(ga, gb);
-    if (last >= GAP0) {
+    if (last >= GAP0 && !frameOnly) {
       s.push(`<path d="M${f(xL)},${by}H${f(gl)}M${f(gr)},${by}H${f(xR)}" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>`);
       for (let x = gl + 2.5; x <= gr - 1.5; x += 4) s.push(`<circle cx="${f(x)}" cy="${by}" r="1" fill="rgba(245,243,242,0.62)"/>`);
+    } else if (UNAV) {
+      // Unavailable: no readings from opening to now, the missing span's own mark (STA-4) along the axis; the rest of
+      // the day is still ahead.
+      const [ul, ur] = unavSpan();
+      if (ul > xL) s.push(`<path d="M${f(xL)},${by}H${f(ul)}" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>`);
+      if (ur < xR) s.push(`<path d="M${f(ur)},${by}H${f(xR)}" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>`);
+      for (let x = ul + 2.5; x <= ur - 1.5; x += 4) s.push(`<circle cx="${f(x)}" cy="${by}" r="1" fill="rgba(245,243,242,0.62)"/>`);
     } else {
       s.push(`<path d="M${f(xL)},${by}H${f(xR)}" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>`);
     }
 
-    s.push(hairlines(-Infinity, last, lineAt));
+    if (!frameOnly) s.push(hairlines(-Infinity, last, lineAt));
 
     // The tooltip's connector (the lane, 2026-09-28): under the usual line and today's line, so where it crosses the usual
     // line the data draws over it. Filled by paintMarker; the marker group ends the SVG.
     s.push(`<g id="conn" aria-hidden="true"><path class="cn-line" d="" fill="none"/><path class="cn-head" d=""/></g>`);
 
     // Usual Wednesday (dashed): up to now, then fainter to closing time.
-    if (HAS_HISTORY) {
+    if (HAS_HISTORY && !frameOnly) {
       const d = usual.path(X, Y);
       s.push(`<path id="us-past" d="${d}" fill="none" stroke="rgba(245,243,242,0.55)" stroke-width="1.5" stroke-dasharray="3.5 4.5" stroke-linecap="round" clip-path="url(#c-past)"/>`);
       s.push(`<path id="us-ahead" d="${d}" fill="none" stroke="rgba(245,243,242,0.36)" stroke-width="1.5" stroke-dasharray="3.5 4.5" stroke-linecap="round" clip-path="url(#c-ahead)"/>`);
     }
 
     // Today: the 30-minute average, thick and bright, with round caps where it stops.
-    splines.forEach((sp, i) => s.push(`<path id="ln-${i}" d="${sp.path(X, Y)}" fill="none" stroke="#ff2946" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`));
+    const drawn = !frameOnly && last >= 0;
+    if (drawn) splines.forEach((sp, i) => s.push(`<path id="ln-${i}" d="${sp.path(X, Y)}" fill="none" stroke="#ff2946" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`));
 
     // The true peak: its own marker, joined to the line by a faint dotted drop.
-    const px = X(peakM), py = Y(peak), ly = Y(lineAt(peakM));
-    if (ly - py > 14) s.push(`<path id="pk-drop" d="M${f(px)},${f(py + 7)}V${f(ly - 4)}" stroke="rgba(245,243,242,0.4)" stroke-width="1" stroke-dasharray="1.5 3" stroke-linecap="round"/>`);
-    s.push(`<circle class="peak-dot" id="pk-dot" cx="${f(px)}" cy="${f(py)}" r="4.6" fill="#0f0e0f" stroke="#f5f3f2" stroke-width="2"/>`);
+    const px = X(peakM), py = Y(peak);
+    if (drawn) {
+      const ly = Y(lineAt(peakM));
+      if (ly - py > 14) s.push(`<path id="pk-drop" d="M${f(px)},${f(py + 7)}V${f(ly - 4)}" stroke="rgba(245,243,242,0.4)" stroke-width="1" stroke-dasharray="1.5 3" stroke-linecap="round"/>`);
+      s.push(`<circle class="peak-dot" id="pk-dot" cx="${f(px)}" cy="${f(py)}" r="4.6" fill="#0f0e0f" stroke="#f5f3f2" stroke-width="2"/>`);
 
-    // The end of the line: live has a red end point with a thin halo; delayed ends on a neutral point.
-    const ex = X(last), ey = Y(avg[last]);
-    s.push(STATE === "delayed"
-      ? `<circle id="end-dot" cx="${f(ex)}" cy="${f(ey)}" r="4.4" fill="#8f898b" stroke="#0f0e0f" stroke-width="2"/>`
-      : `<circle id="end-halo" cx="${f(ex)}" cy="${f(ey)}" r="9" fill="none" stroke="rgba(255,41,70,0.32)" stroke-width="1"/><circle id="end-dot" cx="${f(ex)}" cy="${f(ey)}" r="4.4" fill="#ff2946" stroke="#0f0e0f" stroke-width="2"/>`);
+      // The end of the line: live has a red end point with a thin halo; delayed ends on a neutral point.
+      const ex = X(last), ey = Y(avg[last]);
+      s.push(STATE === "delayed"
+        ? `<circle id="end-dot" cx="${f(ex)}" cy="${f(ey)}" r="4.4" fill="#8f898b" stroke="#0f0e0f" stroke-width="2"/>`
+        : `<circle id="end-halo" cx="${f(ex)}" cy="${f(ey)}" r="9" fill="none" stroke="rgba(255,41,70,0.32)" stroke-width="1"/><circle id="end-dot" cx="${f(ex)}" cy="${f(ey)}" r="4.4" fill="#ff2946" stroke="#0f0e0f" stroke-width="2"/>`);
+    }
     s.push(`<g id="sel"></g></svg>`);
     svgHost.innerHTML = s.join("");
 
@@ -792,7 +989,7 @@
     const stepH = [2, 3, 4, 6].find((k) => (span / DAY) * 60 * k >= 64) || 6;
     for (let h = 0; h <= 18; h += stepH) lab.push(`<span class="ax-x" style="left:${f(X(h * 60))}px;top:${f(yb + 13)}px;transform:translateX(-50%)">${bdi(fmtHour(h * 60))}</span>`);
     geo.stepH = stepH;
-    lab.push(`<span class="peak-tag" id="peak-tag" style="left:${f(px)}px;top:${f(py - 12)}px;transform:translate(-50%,-100%)">${L.peakTag}<b>${bdi(String(peak))}</b></span>`);
+    if (drawn) lab.push(`<span class="peak-tag" id="peak-tag" style="left:${f(px)}px;top:${f(py - 12)}px;transform:translate(-50%,-100%)">${L.peakTag}<b>${bdi(String(peak))}</b></span>`);
     labels.innerHTML = lab.join("");
     peakTagBox = null;
     restoreSelection(easeSelection);
@@ -811,13 +1008,28 @@
   const MAGNET = 10;  // px: the pointer takes the peak or the latest reading when this close to it
   let stops = [];
   let sel = null;     // the selected stop, or null
+  // The unavailable state's missing span, opening to now, in plot pixels as the axis mark draws it (inside the plot).
+  function unavSpan() {
+    const { X } = geo, a = X(-0.5), b = X(M.nowM + 0.5);
+    const xL = Math.min(X(0), X(DAY)), xR = Math.max(X(0), X(DAY));
+    return [Math.max(xL, Math.min(a, b)), Math.min(xR, Math.max(a, b))];
+  }
+  // A gap stop centred on the dotted mark as render() draws it (dots every 4px from 2.5px inside the span), so the
+  // brackets frame what the eye sees. a and b are the span's minutes.
+  function gapStop(gl, gr, a, b) {
+    const first = gl + 2.5, lastDot = first + 4 * Math.floor((gr - 1.5 - first) / 4);
+    return { key: "gap", kind: "gap", m: (a + b) / 2, a, b, gl, gr, x: (first + lastDot) / 2, w: lastDot - first + 2, value: null, track: null, lift: 0 };
+  }
   function buildStops() {
     const { last, nowM, peakM, segments, lineAt } = M;
     const { X } = geo;
+    // Loading, an error and its retry: an empty frame has no stops (the plot's keyboard stop is set aside too).
+    if (phase !== "ready") { stops = []; measureTipWidth(); return; }
     const segOf = (m) => segments.findIndex((sg) => m >= sg[0] && m <= sg[sg.length - 1]);
-    const specials = peakM >= 0 ? [peakM, last] : [last];
+    const specials = last < 0 ? [] : peakM >= 0 ? [peakM, last] : [last];
     const out = [];
     for (let m = 0; m <= DAY; m += 30) {
+      if (UNAV && m <= nowM) continue;                                    // unavailable: one stop for opening to now
       if (m <= last && m >= GAP0 && m <= GAP1) continue;                 // inside the missing span
       if (specials.some((sp) => Math.abs(sp - m) < FOLD)) continue;      // folded into the peak or the latest reading
       if (m <= last) {
@@ -829,18 +1041,14 @@
         out.push({ key: `h${m}`, kind: m <= nowM ? "wait" : "ahead", m, x: X(Math.min(m, DAY - 1)), value: HAS_HISTORY ? usualAt(m) : null, track: HAS_HISTORY ? "U" : null, lift: 0 });
       }
     }
-    if (last > GAP1) {
-      // Centred on the dotted mark as render() draws it (dots every 4px from 2.5px inside the span), so the brackets
-      // frame what the eye sees.
-      const gl = Math.min(X(GAP0 - 0.5), X(GAP1 + 0.5)), gr = Math.max(X(GAP0 - 0.5), X(GAP1 + 0.5));
-      const first = gl + 2.5, lastDot = first + 4 * Math.floor((gr - 1.5 - first) / 4);
-      out.push({ key: "gap", kind: "gap", m: (GAP0 + GAP1) / 2, x: (first + lastDot) / 2, w: lastDot - first + 2, value: null, track: null, lift: 0 });
-    }
+    if (last > GAP1) out.push(gapStop(Math.min(X(GAP0 - 0.5), X(GAP1 + 0.5)), Math.max(X(GAP0 - 0.5), X(GAP1 + 0.5)), GAP0, GAP1));
+    // Unavailable: opening to now is one span with no readings, with one stop (STA-4); it is where focus starts.
+    if (UNAV) out.push(gapStop(...unavSpan(), 0, nowM));
     if (peakM >= 0) out.push({ key: "peak", kind: "peak", m: peakM, x: X(peakM), value: M.peak, track: `L${segOf(peakM)}`, lift: 1 });
     // Round 7 decision 1: the latest stop shows the latest reading itself, the same number as the Inside now card
     // (live 49, Busy at 7:42 PM; while delayed, the stale reading the delayed card shows), not the line's value there.
-    // The marker still sits on the line's end point.
-    out.push({ key: "latest", kind: "latest", m: last, x: X(last), value: occ[last], track: `L${segOf(last)}`, lift: 0 });
+    // The marker still sits on the line's end point. Closed and unavailable have no reading today, so no latest stop.
+    if (last >= 0) out.push({ key: "latest", kind: "latest", m: last, x: X(last), value: occ[last], track: `L${segOf(last)}`, lift: 0 });
     out.sort((a, b) => a.m - b.m || (a.kind === "peak" ? -1 : b.kind === "peak" ? 1 : 0));
     out.forEach((st, i) => { st.i = i; });
     stops = out;
@@ -854,7 +1062,7 @@
     const u = HAS_HISTORY ? `${sepc}${L.ro.usual} ${usualAt(st.m)}` : "";
     const lvl = (v) => L.crowdIs(L.levels[levelOf(v)]);
     switch (st.kind) {
-      case "gap": return `${plainRange(fmtTime(GAP0), fmtTime(GAP1))}${sepc}${L.ro.noReading}`;
+      case "gap": return `${plainRange(fmtTime(st.a), fmtTime(st.b))}${sepc}${L.ro.noReading}`;
       case "wait": return `${t}${sepc}${L.ro.noReadingYet}${u}`;
       case "ahead": return `${t}${sepc}${L.ro.ahead}${u}`;
       case "zero": return `${t}${sepc}0${sepc}${L.ro.empty}`;
@@ -865,7 +1073,7 @@
     }
   }
   function tipHTML(st) {
-    if (st.kind === "gap") return `<div class="tip-t">${timeRange(GAP0, GAP1)}</div><div class="tip-main"><span class="tip-word">${L.ro.noReading}</span></div>`;
+    if (st.kind === "gap") return `<div class="tip-t">${timeRange(st.a, st.b)}</div><div class="tip-main"><span class="tip-word">${L.ro.noReading}</span></div>`;
     const usualRow = HAS_HISTORY && st.kind !== "zero" ? `<div class="tip-u"><span class="sw sw-usual" aria-hidden="true"></span><span>${L.ro.usual} ${bdi(usualAt(st.m))}</span></div>` : "";
     const flag = st.kind === "peak" ? L.ro.peak : st.kind === "latest" ? L.ro.latest : "";
     // One start-aligned arrangement for every tooltip: at the peak and the latest the label chip comes first, then
@@ -1131,7 +1339,7 @@
     } else if (form === "gap") {
       key = "gap";
       // The dotted mark as render() draws it: dots every 4px from 2.5px inside the span, lit in chalk.
-      const gl = Math.min(geo.X(GAP0 - 0.5), geo.X(GAP1 + 0.5)), gr = Math.max(geo.X(GAP0 - 0.5), geo.X(GAP1 + 0.5));
+      const { gl, gr } = st;
       const dots = [];
       for (let dx = gl + 2.5; dx <= gr - 1.5; dx += 4) dots.push(dx - st.x);
       // The connector's column is the lit dot nearest the stop's centre (at most 2px from it), as painted (both numbers
@@ -1356,11 +1564,14 @@
   hit.addEventListener("pointermove", (e) => { if (e.pointerType === "mouse" && !pinned) selectStop(stopAt(e.clientX)); });
   hit.addEventListener("pointerleave", (e) => { if (e.pointerType === "mouse" && !pinned && document.activeElement !== hit) clearSelection(); });
   hit.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse") { pinned = true; selectStop(stopAt(e.clientX)); } });
-  hit.addEventListener("focus", () => { if (!sel) selectStop(stopBy("latest"), true); });
+  // Focus starts at the latest reading; with none today, at the present: the stop for opening to now (unavailable) or
+  // the first stop still ahead (closed). End goes to the latest reading, or with none today to the day's last stop.
+  const homeStop = () => stopBy("latest") || stopBy("gap") || stops[0] || null;
+  hit.addEventListener("focus", () => { if (!sel && stops.length) selectStop(homeStop(), true); });
   hit.addEventListener("blur", () => { pinned = false; clearSelection(); });
   hit.addEventListener("keydown", (e) => {
     if (!stops.length) return;
-    const latest = stopBy("latest").i;
+    const latest = homeStop().i;
     const i = sel ? sel.i : latest;
     const later = RTL ? "ArrowLeft" : "ArrowRight", earlier = RTL ? "ArrowRight" : "ArrowLeft";
     let j;
@@ -1369,7 +1580,7 @@
     else if (e.key === "PageUp") j = i + 4;
     else if (e.key === "PageDown") j = i - 4;
     else if (e.key === "Home") j = 0;
-    else if (e.key === "End") j = latest;
+    else if (e.key === "End") j = stopBy("latest") ? latest : stops.length - 1; // no reading today: the day's last stop
     else if (e.key === "Escape") { clearSelection(); return; }
     else return;
     e.preventDefault();
@@ -1379,6 +1590,19 @@
   // Text equivalent of the chart.
   function summary() {
     const { last, nowM, peak, peakM } = M;
+    // The chart's text equivalent in every state (step 3, second part): what the plot shows, and nothing it does not.
+    if (phase === "loading") return `${L.loadingSay}.`;
+    if (phase === "error" || phase === "retrying") return `${L.errorFull}.`;
+    if (CLOSED) {
+      return RTL
+        ? `${L.sayClosed(fmtTime(0))} لا قراءات اليوم بعد. يظهر خط متقطع للأربعاء المعتاد، معدّل آخر 4 أيام أربعاء، طوال اليوم من ${plainRange(fmtTime(0), fmtTime(DAY))}.`
+        : `${L.sayClosed(fmtTime(0))} There are no readings today yet. A dashed line shows the usual Wednesday, the average of the last 4 Wednesdays, through the whole day, ${plainRange(fmtTime(0), fmtTime(DAY))}.`;
+    }
+    if (UNAV) {
+      return RTL
+        ? `${L.sayOffline} لا قراءات من ${plainRange(fmtTime(0), fmtTime(nowM))}. يظهر خط متقطع للأربعاء المعتاد، معدّل آخر 4 أيام أربعاء، حتى وقت الإغلاق. بقية اليوم من ${plainRange(fmtTime(nowM + 1), fmtTime(DAY))} لم يحن بعد.`
+        : `${L.sayOffline} No readings ${plainRange(fmtTime(0), fmtTime(nowM))}. A dashed line shows the usual Wednesday, the average of the last 4 Wednesdays, through to closing time. The rest of the day, ${plainRange(fmtTime(nowM + 1), fmtTime(DAY))}, is still ahead.`;
+    }
     return RTL
       ? `مخطط خطي لمعدّل كل 30 دقيقة لعدد الموجودين تقريبًا اليوم، من الفتح الساعة ${fmtTime(0)} حتى آخر قراءة الساعة ${fmtTime(last)}. ` +
         `الصالة مفتوحة وخالية من ${plainRange(fmtTime(0), fmtTime(ZERO_END))}. لا قراءات من ${plainRange(fmtTime(GAP0), fmtTime(GAP1))}. ` +
@@ -1441,6 +1665,9 @@
         <tbody>${rows.join("")}</tbody></table>
       </div>`;
   }
+  // View details opens on a day with readings only. While the first payload loads, after an error, closed and unavailable
+  // the button stays in its place, disabled (BTN-4), so nothing moves when readings arrive.
+  const setDetails = (on) => { detailsBtn.disabled = !on; };
   const detailsLabel = $("span", detailsBtn);
   detailsBtn.addEventListener("click", () => {
     const open = details.hidden;
@@ -1850,7 +2077,7 @@
    * thin ring every 5 s, from inside the end point to just past its halo, at 40% at most. */
   let ping = null;
   function startPulse() {
-    if (!motionOn() || STATE === "delayed") return;
+    if (!motionOn() || STATE === "delayed" || phase !== "ready" || M.last < 0) return; // live readings only
     if (!ping) { ping = document.createElement("span"); ping.className = "ping"; ping.setAttribute("aria-hidden", "true"); plot.insertBefore(ping, tip); }
     placePing();
     ping.classList.add("is-on");
@@ -1874,7 +2101,7 @@
     finishLive();
     carryFollowIntoReading();
     const from = M;
-    if (from.nowM >= DAY - 1) return null;
+    if (from.nowM >= DAY - 1 || phase !== "ready" || from.last < 0) return null; // the tuner's reading: a day with readings only
     const reading = STATE !== "delayed"; // delayed: the minute passes and no reading arrives
     const to = compute(reading ? from.last + 1 : from.last, from.nowM + 1);
     M = to;
@@ -1968,6 +2195,7 @@
     return true;
   }
   function resetReadings() {
+    if (phase !== "ready" || M.last < 0) return;
     endIntro("reset readings");
     finishLive();
     const from = M;
@@ -1983,7 +2211,7 @@
   // Tuner: a crowd-level change on the Inside now card, across the nearest level boundary by the smallest step
   // (Busy 49 goes down to Moderate 48, or up to Packed 69). Live only: a delayed card never moves.
   function crowdStep(dir) {
-    if (STATE === "delayed") return null;
+    if (STATE === "delayed" || phase !== "ready" || M.last < 0) return null;
     endIntro("crowd change");
     const v = shownNow(), li = levelOf(v);
     const next = dir > 0 ? (li >= 3 ? null : [25, 49, 69][li]) : (li <= 0 ? null : [24, 48, 68][li - 1]);
@@ -2303,7 +2531,7 @@
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") endIntro("hidden"); });
   // Tuner: replay the intro on the page as it is now (the current reading). Not while motion is off.
   function replayIntro() {
-    if (!motionOn()) return false;
+    if (!motionOn() || phase !== "ready" || M.last < 0) return false; // nothing to reveal without a reading
     settleAll();
     clearSelection();
     stopPulse();
@@ -2363,14 +2591,161 @@
    * fonts are not in within 200 ms of the first paint there is no intro and the still page shows at once. Every other
    * part of the page is complete at first paint. The chart is measured again when the fonts arrive
    * (the header's text sets the chart's height) and whenever its box changes. */
+  /* ---- the first payload (step 3, second part; DESIGN_GUIDE §6 "Loading behaviour", approved 2026-09-30). The concept
+   * has no network: a timeline stands for the request, counted from the page's opening (performance.now()).
+   *   0-300 ms      the value slots keep their space, empty (data-load="wait"); a payload in time fills them directly.
+   *   300 ms        the skeleton shows (data-load="shown"), static in every motion setting (MOT-1, LGT-1), and the
+   *                 header says "Loading…". Once shown it stays at least 400 ms.
+   *   1000 ms       if still loading, one polite announcement, "Loading today's readings".
+   *   arrival       zero shift: every placeholder stands in its value's own slot; the values, the status and the
+   *                 badge come in as new boxes, the lights come on at once, the line draws into the same frame. On a
+   *                 tab's first open the intro (MOT-10) is the arrival: it never plays over the skeleton.
+   *   10 s          the ceiling: the load becomes Error, with its one retry (a request that fails sooner does too).
+   * The cards and the chart are aria-busy until their content arrives. A retry runs as an action (STA-9): the button
+   * says "Trying again…", keeps focus and is aria-disabled; it arrives into live, or fails back to Error. */
+  const LOAD = { delay: 300, min: 400, say: 1000, ceiling: 10000, retry: 1200 };
+  const ARRIVE = (() => { const a = params.get("arrive"); if (a === "never") return "never"; const n = Number(a); return a != null && a !== "" && Number.isFinite(n) && n >= 0 ? n : null; })();
+  const load = { shownAt: null, arrivedAt: null, failedAt: null, failReason: null, retryAt: null, timers: [], announcements: [] };
+  const later = (ms, fn) => load.timers.push(setTimeout(fn, Math.max(0, ms)));
+  const clearTimers = () => { load.timers.splice(0).forEach(clearTimeout); };
+  const setPhase = (p) => { phase = p; root.dataset.phase = p; };
+  const busy = (on) => [$("#cards"), chartCard].forEach((el) => (on ? el.setAttribute("aria-busy", "true") : el.removeAttribute("aria-busy")));
+  // One polite region in the header (never inside a busy region) says each change of state once: loading when it is
+  // slow, then the figures when they arrive. An error says itself (role=alert).
+  let stateSay = null;
+  function sayRegion() {
+    if (stateSay) return;
+    stateSay = Object.assign(document.createElement("p"), { className: "sr-only", id: "state-say" });
+    stateSay.setAttribute("aria-live", "polite");
+    stateSay.setAttribute("aria-atomic", "true");
+    $(".head-titles").append(stateSay);
+  }
+  function say(text) { sayRegion(); stateSay.textContent = text; load.announcements.push({ t: Math.round(performance.now()), text }); }
+  function startLoading() {
+    setPhase("loading");
+    root.dataset.load = "wait";
+    sayRegion();
+    pendCards();
+    setLights(false);
+    statusLoading(true);
+    setDetails(false);
+    hit.hidden = true;
+    busy(true);
+    $("#chart-summary").textContent = summary();
+    const t = performance.now();
+    later(LOAD.delay - t, () => { if (phase === "loading") { root.dataset.load = "shown"; load.shownAt = performance.now(); } });
+    later(LOAD.say - t, () => { if (phase === "loading") say(L.loadingSay); });
+    if (typeof ARRIVE === "number") later(ARRIVE - t, arrive);
+    else if (ARRIVE === "never") later(LOAD.ceiling - t, () => fail("ceiling"));
+  }
+  function arrive() {
+    if (phase !== "loading" && phase !== "retrying") return false;
+    const now = performance.now();
+    // Once shown, a skeleton stays at least 400 ms, so it never flickers.
+    if (phase === "loading" && load.shownAt != null && now - load.shownAt < LOAD.min) { later(load.shownAt + LOAD.min - now, arrive); return false; }
+    clearTimers();
+    const hadFocus = Boolean(retryBtn && document.activeElement === retryBtn);
+    setPhase("ready");
+    delete root.dataset.load;
+    root.dataset.state = STATE;
+    clearState();
+    retryBtn = errSay = null;
+    fillCards();
+    setLights(true);
+    statusLoading(false);
+    renderStatus();
+    renderOps();
+    setDetails(true);
+    hit.hidden = false;
+    busy(false);
+    $("#chart-summary").textContent = summary();
+    load.arrivedAt = now;
+    // The retry is gone with the alert: focus goes to the figures that replaced it, quietly (no ring on a region).
+    if (hadFocus) { const c = $("#cards"); c.tabIndex = -1; c.focus({ preventScroll: true }); }
+    // The intro (MOT-10) is the arrival on a tab's first open, with motion on and the fonts in: the answers roll into
+    // their slots and the line draws into the frame. Otherwise everything is there at once.
+    introDecide();
+    render();
+    if (intro.state === "pending") {
+      const fontsIn = !document.fonts || ["400", "500"].every((w) => document.fonts.check(`${w} 16px "Readex Pro"`, "العربية FITWAY 0123456789"));
+      if (!fontsIn) endIntro("fonts late");
+      else requestAnimationFrame(() => requestAnimationFrame(() => { if (intro.state === "pending") introStart(); }));
+    } else startPulse();
+    say(L.say(occ[M.last], L.levels[levelOf(occ[M.last])], M.entries));
+    return true;
+  }
+  // Error: the alert is written a moment after its region is in place, so it is announced once; the retry takes focus.
+  function showError(focus) {
+    if (!retryBtn) errorCards();
+    setLights(false);
+    statusLoading(false);
+    renderStatus();
+    renderOps();
+    setDetails(false);
+    hit.hidden = true;
+    busy(false);
+    retryBtn.textContent = L.retry;
+    retryBtn.removeAttribute("aria-disabled");
+    retryBtn.removeAttribute("aria-busy");
+    $("#chart-summary").textContent = summary();
+    const el = errSay;
+    el.textContent = "";
+    setTimeout(() => { if (errSay === el) { el.innerHTML = `${ICON.alert}<span>${L.errorSay}</span>`; load.announcements.push({ t: Math.round(performance.now()), text: L.errorSay, alert: true }); } }, 50);
+    if (focus) retryBtn.focus();
+  }
+  function fail(reason) {
+    if (phase !== "loading" && phase !== "retrying") return false;
+    clearTimers();
+    setPhase("error");
+    delete root.dataset.load;
+    load.failedAt = performance.now();
+    load.failReason = reason;
+    showError(true);
+    render();
+    return true;
+  }
+  function retry() {
+    if (phase !== "error") return false;
+    setPhase("retrying");
+    load.retryAt = performance.now();
+    retryBtn.textContent = L.retrying;
+    retryBtn.setAttribute("aria-disabled", "true");
+    retryBtn.setAttribute("aria-busy", "true");
+    busy(true);
+    // The concept's retry succeeds after 1.2 s (STA-9 shows its working state at least 400 ms); the ceiling still holds.
+    later(LOAD.retry, arrive);
+    later(LOAD.ceiling, () => fail("ceiling"));
+    return true;
+  }
+
   new ResizeObserver(() => render()).observe(plot);
-  introDecide();
+  if (phase === "loading") startLoading();
+  else if (phase === "error") { sayRegion(); load.failReason = "first payload"; showError(true); }
+  else if (CLOSED || UNAV) { setDetails(false); intro.reason = "no reading to reveal"; }
+  else introDecide();
   render();
   if (intro.state !== "pending") startPulse(); // with an intro, the pulse starts when the end point has landed
   window.__eclipse = {
     ready: false,
     lang: LANG,
     state: STATE,
+    page: PAGE, // the URL's state: loading and error arrive into live
+    get phase() { return phase; },
+    // The first payload (step 3, second part), for the probes: its timeline, what happened when, and what was announced.
+    load: {
+      timeline: LOAD,
+      get arrive() { return ARRIVE; },
+      get shownAt() { return load.shownAt; },
+      get arrivedAt() { return load.arrivedAt; },
+      get failedAt() { return load.failedAt; },
+      get failReason() { return load.failReason; },
+      get retryAt() { return load.retryAt; },
+      get announcements() { return load.announcements.slice(); },
+      show: () => { if (phase !== "loading") return false; root.dataset.load = "shown"; if (load.shownAt == null) load.shownAt = performance.now(); return true; },
+      arrive: () => { load.shownAt = null; return arrive(); },
+      fail: () => fail("script"),
+      retry: () => retry(),
+    },
     get figures() {
       const { last, nowM, peak, peakM, entries, observed, busiest, compare, avg, usualLatest, usualEntries, crestM } = M;
       return { now: occ[last], shownNow: shownNow(), last, nowM, peak, peakM, entries, observed, busiest, compare, avgNow: Math.round(avg[last] * 10) / 10, usualLatest: usualLatest == null ? null : Math.round(usualLatest * 10) / 10, usualEntries, crestM };
@@ -2386,7 +2761,7 @@
     chart: {
       get stops() {
         const pr = plot.getBoundingClientRect();
-        return stops.map((st) => ({ key: st.key, kind: st.kind, m: st.m, time: st.kind === "gap" ? plainRange(fmtTime(GAP0), fmtTime(GAP1)) : fmtTime(Math.round(st.m)), value: st.value, track: st.track, clientX: pr.left + st.x }));
+        return stops.map((st) => ({ key: st.key, kind: st.kind, m: st.m, time: st.kind === "gap" ? plainRange(fmtTime(st.a), fmtTime(st.b)) : fmtTime(Math.round(st.m)), value: st.value, track: st.track, clientX: pr.left + st.x }));
       },
       select: (key) => { const st = stopBy(key); if (!st) return null; selectStop(st); return hit.getAttribute("aria-valuetext"); },
       clear: () => clearSelection(),
@@ -2417,9 +2792,11 @@
       get systemReduced() { return mqReduce.matches; },
       get liveActive() { return Boolean(liveRun.clock); },
       get rolling() { return rolls.size + feet.size; },
-      get latest() { return fmtTime(M.last); },
+      get latest() { return M.last >= 0 ? fmtTime(M.last) : ""; },
       get atStart() { return M.last === START.last && M.nowM === START.nowM && crowdShown == null; },
-      get canCrowd() { return STATE !== "delayed"; },
+      get canCrowd() { return STATE !== "delayed" && phase === "ready" && M.last >= 0; },
+      // The tuner's "New reading" and "Reset readings": only on a day with readings (step 3, second part).
+      get canStep() { return phase === "ready" && M.last >= 0; },
       timings: T,
       easings: EASE,
       // Every motion, as built above (for the capture log and the README).

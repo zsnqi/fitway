@@ -247,14 +247,15 @@
       box.checked = !blocked && Boolean(MO.options.motion);
       box.disabled = blocked;
       upBtn.disabled = downBtn.disabled = !MO.canCrowd;
+      stepBtn.disabled = MO.canStep === false; // step 3, second part: no reading to add while loading, closed, offline or after an error
       showSpeed(MO.options.hoverSpeed);
       showIntro(MO.options.introSpeed);
       replayBtn.disabled = !MO.on; // no intro with reduced motion, ?motion=off or the Motion switch off
-      backBtn.disabled = MO.atStart;
+      backBtn.disabled = MO.atStart || MO.canStep === false;
       note.innerHTML = MO.urlOff ? "الحركة متوقفة بالرابط (motion=off)" : MO.systemReduced ? "النظام يطلب حركة أقل، فالحركة متوقفة"
         : !MO.canCrowd ? `بطاقة «آخر قراءة» ثابتة ما دامت البيانات متأخرة <span class="t-en" lang="en" dir="ltr">Fixed while delayed</span>` : "";
       note.hidden = !note.textContent;
-      if (!latest.textContent) say(`آخر قراءة ${MO.latest}`);
+      if (!latest.textContent && MO.latest) say(`آخر قراءة ${MO.latest}`);
     };
     syncMotion();
   }

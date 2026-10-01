@@ -1749,3 +1749,12 @@ every step-3 known issue, and builds the proposals for Q1 (a ring key) and Q2 (o
 the time axis) for the user's decision. `capture.mjs` retires the 8ae88f3 outside-the-plot comparison for the frames
 step 3 changes (`STEP3_FRAMES`), holds the tooltip's width per page, and adds overflow-only frames at 1024, 768, 390 and
 320.
+## Step 3, second part: Daily's states (run `owner_states_r04_s19`)
+
+Loading, closed, unavailable and error on the Daily page, at every size, AR and EN: `index.html?state=loading` (the
+skeleton, held for review), `?state=loading&arrive=1800` (its arrival into live, with the intro on a tab's first open),
+`?state=loading&arrive=never` (the 10 s ceiling into error), `?state=closed`, `?state=unavailable` and `?state=error`
+(its retry arrives into live). The reference is `DESIGN-SPEC.md` (STA-10…14, §3.14 and the entries they name), not this
+file. One skeleton, five truths: every state keeps the page's slots and heights, so the arrival moves nothing; no state
+shows a green dot, a pulse or a light. Live, delayed, no history and Reports keep their pixels. `components.html` gains
+the section "Daily's states".

@@ -6,14 +6,15 @@
   <title>FITWAY Eclipse</title>
   <meta name="description" content="FITWAY Owner Daily page concept, Eclipse direction. Exploration concept with synthetic data. Not production.">
   <script>
-    // Language and state before first paint: ?lang=ar|en (default ar), ?state=live|delayed|nohistory (default live).
+    // Language and state before first paint: ?lang=ar|en (default ar),
+    // ?state=live|delayed|nohistory|loading|closed|unavailable|error (default live; step 3 adds the last four).
     (function () {
       var p = new URLSearchParams(location.search), r = document.documentElement;
       var en = p.get("lang") === "en";
       r.lang = en ? "en" : "ar";
       r.dir = en ? "ltr" : "rtl";
       var s = p.get("state");
-      r.dataset.state = s === "delayed" || s === "nohistory" ? s : "live";
+      r.dataset.state = ["delayed", "nohistory", "loading", "closed", "unavailable", "error"].indexOf(s) >= 0 ? s : "live";
       // Nothing is hidden before first paint: the page is complete at once (Round 6). Motion is decided in app.js.
     })();
   </script>

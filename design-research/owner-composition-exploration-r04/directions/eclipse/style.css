@@ -912,6 +912,78 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
   [data-frame] .tabbar { left: max(8px, env(safe-area-inset-left)); right: max(8px, env(safe-area-inset-right)); }
 }
 
+/* ------------------------------------------------------------ Daily's states
+ * Step 3, second part (run owner_states_r04_s19): loading, closed, unavailable and error (STA-10, K-02), on the Daily
+ * page (body.dl, the frame), at every size. Live, delayed and no history keep their pixels: every rule below either
+ * holds a box at the size it already has, or applies only in one of the four states.
+ *   One skeleton, five truths: the header, the four cards and the chart keep their places and heights in every state
+ *   (CRD-9); only what fills their slots changes, so the payload's arrival moves nothing (DESIGN_GUIDE §6). */
+body.dl [hidden] { display: none !important; }
+/* The slots hold their live heights in every state: the value's line 46 (the busiest time's 36), the foot 42; and the
+ * card's full width, so a slot's own box never moves when what fills it changes (its contents stay at the start). */
+.dl .stat-value, .dl .stat-foot, .dl .stat-note { align-self: stretch; }
+.dl .stat-value { min-height: 46px; }
+.dl #card-busiest .stat-value { min-height: 36px; }
+.dl .stat-foot { min-height: 42px; }
+/* The header's status sits in a box the frame sizes, not its words, so a status that arrives, or changes, moves nothing
+ * else: from 721 px the status column fills the header's free width (its words end-aligned, as before); on a phone the
+ * actions take the title row's free width and keep the badge and the menu at its end. */
+[data-frame] .head-meta { flex: 1 1 auto; }
+@media (max-width: 720px) {
+  [data-frame] .head { grid-template-columns: minmax(0, max-content) minmax(max-content, 1fr); }
+  [data-frame] .head-acts { justify-content: flex-end; }
+}
+
+/* Loading. A placeholder stands only where a value is awaited (DESIGN_GUIDE §6), in that value's own slot and line box:
+ * a bar on the value's baseline as tall as its digits' ink (display 33 px, a time range in words 22 px, a caption 9 px),
+ * the level badge's own 26 px box. One flat fill, 6% chalk on the card, with no border, sheen or motion: it cannot read
+ * as data, and nothing moves while it waits (MOT-1, LGT-1). Hidden for the first 300 ms, while the slots wait empty. */
+.dl { --ph: rgba(255, 255, 255, 0.06); }
+.ph-bar { display: inline-block; vertical-align: baseline; width: var(--w); height: 33px; border-radius: 8px; background: var(--ph); }
+.dl .word > .ph-bar { height: 22px; }
+.dl .stat-meta > .ph-bar, .dl .stat-note > .ph-bar { height: 9px; border-radius: 4px; }
+.ph-box { display: block; width: 76px; height: 26px; border-radius: 8px; background: var(--ph); }
+[data-load="wait"] .ph-bar, [data-load="wait"] .ph-box, [data-load="wait"] .status-load, [data-load="wait"] .hb-load { visibility: hidden; }
+/* The status while loading: words, not a control, in the status's own type (the header's label, --ink-2). */
+.hb-load { display: none; }
+@media (max-width: 720px) {
+  [data-frame] .hb-load { display: inline-flex; align-items: center; height: 44px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); white-space: nowrap; }
+  [data-frame] .status-load { display: none; }
+}
+
+/* The states' words in a card (CRD-3's form): a sentence in heading type at 400, --ink-2, on the value's line; a value
+ * written in words ("Closed") in title type at 500, chalk, like the busiest time; a note in caption type --ink-3 at the
+ * foot, on the same last line as the other cards' notes. */
+.dl .stat-say { display: inline-flex; align-items: center; gap: 8px; font-size: 19px; line-height: 28.5px; font-weight: 400; color: var(--ink-2); white-space: nowrap; }
+.dl .stat-word { font-size: 30px; line-height: 36px; font-weight: 500; color: var(--ink); white-space: nowrap; }
+.dl .stat-foot-note { align-self: flex-end; font-size: 12px; line-height: 18px; color: var(--ink-3); white-space: nowrap; }
+
+/* Error (EMP-2, EMP-3): Inside now holds the alert and its one retry in the value's line and the foot together
+ * (46 + 42 px): the sentence in chalk with the error mark (17 px, --err), and the primary "Try again" pinned to the foot. */
+.dl { --err: #ff6b7d; }
+.dl .stat-alert { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; min-height: 88px; margin-block-start: 16px; }
+.dl .stat-say.is-err { color: var(--ink); }
+.dl .stat-say .ico-err { width: 17px; height: 17px; color: var(--err); }
+/* BTN-3, the primary button: chalk fill, #0D0C0D text at 500; hover white. Working (STA-9): BTN-4's primary form, chalk
+ * 14% with --ink-2 text; aria-disabled rather than disabled, so the button keeps focus while the retry runs. */
+.dl .btn-primary { border-color: var(--ink); background: var(--ink); color: #0d0c0d; font-weight: 500; }
+.dl .btn-primary:hover { border-color: #fff; background: #fff; }
+.dl .btn-primary[aria-disabled="true"], .dl .btn-primary[aria-disabled="true"]:hover { border-color: transparent; background: rgba(245, 243, 242, 0.14); color: var(--ink-2); cursor: default; }
+/* BTN-4, a disabled secondary button (View details on a day with no readings): no fill, a --line border, --ink-3 text. */
+.dl .btn:disabled, .dl .btn:disabled:hover { border-color: var(--line); background: none; color: var(--ink-3); cursor: default; }
+.dl .btn:disabled svg { stroke: var(--ink-3); }
+
+/* The status's marks, in the header, the badge and its details (never colour alone, DESIGN_GUIDE §6): closed, a hollow
+ * ring the live dot's size (1.5 px, --ink-3); offline, a struck circle (15 px, --ink-2); an error, the alert mark
+ * (--err) with its word in --err (COL-18), and the badge's edge in --err at 50%. Closed and offline words are chalk. */
+.dot.ring { background: none; box-shadow: inset 0 0 0 1.5px var(--ink-3); }
+[data-frame] .status .ico-off, .hbadge .ico-off, .ops-state .ico-off { color: var(--ink-2); }
+[data-frame] .status .ico-err, .hbadge .ico-err, .ops-state .ico-err { color: var(--err); }
+[data-frame] .status.is-err .strong, .hbadge.is-err .hb-word, .ops-state.is-err { color: var(--err); }
+.hbadge.is-err { border-color: rgba(255, 107, 125, 0.5); }
+/* The figures region takes focus after a retry, quietly: a region never shows the ring (FOC-1 is for controls). */
+.dl #cards:focus { outline: none; }
+
 /* ------------------------------------------------------------- light tuner
  * A working tool, not part of the design: neutral greys, a dashed toggle, no red. By default it sits above the
  * middle cards (452px in from the inline-start edge). The toggle and the panel move together as one unit: drag

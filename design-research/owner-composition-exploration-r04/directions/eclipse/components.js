@@ -78,6 +78,7 @@
         rail: ["الشريط الجانبي والرأس", "الاسم يظهر عند التركيز بلوحة المفاتيح فقط، ولا تلميح عند مرور الفأرة. على الجهاز اللوحي يُفتح الشريط فوق طبقة معتمة ويبقى التركيز داخله."],
         frame: ["إطار الهاتف: الشريط السفلي والرأس المضغوط", "عند 720 بكسل وأقل يصير الشريط الجانبي شريطًا زجاجيًا في الأسفل بخمسة أقسام، ويحمل الرأس الحالةَ شارةً تفتح تفاصيلها، وقائمةً واحدة لشاشة المراقبة واللغة وتسجيل الخروج. كل طبقة تُفتح من لوحة المفاتيح، وتُغلق بـ Escape، ويعود التركيز إلى ما فتحها."],
         empty: ["الحالة الفارغة والتنبيه وإعادة المحاولة", "جملة تقول ما الناقص وتواريخه، وطريق واحد للعودة؛ وتنبيه يقول ما حدث وما بقي كما هو."],
+        states: ["حالات صفحة اليوم", "التحميل، والإغلاق، وعدم التوفر، والخطأ. تبقى البطاقات في أماكنها وبارتفاعاتها في كل حالة، ويتغيّر ما يملأ خاناتها فقط، فلا يتحرّك شيء حين تصل القراءات. لا نقطة خضراء ولا نبض ولا ضوء في أيٍّ منها."],
       },
       f: { colours: "الألوان", type: "الخط: السلّم", spacing: "المسافات", radii: "الزوايا", focus: "حلقة التركيز", icons: "الأيقونات في السطر، بلا إطار" },
       typeSample: "داخل الصالة الآن",
@@ -90,7 +91,11 @@
       levels: ["هادئ", "متوسط", "مزدحم", "شديد الازدحام"],
       cmp: { busier: "أعلى من المعتاد", quieter: "أهدأ من المعتاد", same: "قريب من المعتاد" },
       cards: { live: "مباشر، مضاءة", plain: "قيمة ووقتها", late: "متأخرة، بلا ضوء", words: "قيمة بالكلمات", none: "لا قراءات", short: "لا يكفي السجل، بلا ضوء" },
-      undesigned: `لم تُصمَّم بعد: التحميل، والإغلاق كحالة للصفحة، وعدم التوفر، والخطأ. تُصمَّم كلٌّ منها في جولة شاشتها (${b("K-02")}).`,
+      undesigned: `التحميل، والإغلاق كحالة للصفحة، وعدم التوفر، والخطأ مصمَّمة على صفحة اليوم (قسم «حالات صفحة اليوم» أدناه)، وتصمّمها كل شاشة أخرى في جولتها (${b("K-02")}).`,
+      loadingWord: "جارٍ التحميل…", closed: "مغلق", opens: (t) => `يفتح ${t}`, offline: "غير متصل", noCount: "لا عدّ حاليًا", checkOps: "تحقّق من حالة التشغيل",
+      errorWord: "خطأ", errorLine: "تعذّر التحميل", errorFull: "تعذّر تحميل قراءات اليوم", errorHint: "تحقّق من الاتصال، ثم أعد المحاولة.", errorSay: "تعذّر تحميل القراءات", retrying: "جارٍ المحاولة…",
+      stCaps: { loadNow: "التحميل: عنصر نائب في خانة كل قيمة منتظرة فقط", loadBusy: "التحميل: الأسماء و«آخر 7 أيام» نص حقيقي", closedNow: "مغلق: «مغلق» قيمةً بالكلمات، وموعد الفتح في الأسفل", closedPeak: "مغلق: ذروة اليوم ومرات الدخول «لم يحن بعد»", offNow: "غير متصل: لا عدد ولا مستوى ولا وقت", offEntries: "غير متصل: «لا قراءات» لليوم", errNow: "خطأ: التنبيه وإعادة محاولة واحدة، والتركيز عليها", errWork: "إعادة المحاولة جارية: الزر يحتفظ بالتركيز", errPeak: "خطأ: الاسم وحده، ولا قراءة محفوظة", heads: "الحالة في الرأس، بلا إطار", headsNote: "كلمة الحالة نفسها في الرأس والشارة وتفاصيلها، مع علامتها", anatomy: "العناصر النائبة", anatomyNote: "على خط أساس القيمة، بارتفاع حبر أرقامها، وتعبئة واحدة بلا حركة", phLoad: "الرأس المضغوط أثناء التحميل: كلمات، لا زر", phClosed: "مغلق: الشارة وتفاصيلها", phOff: "غير متصل: الشارة وتفاصيلها، والطريق إلى التشغيل", phErr: "خطأ: الشارة وتفاصيلها", plotFrame: "إطار فارغ: التحميل والخطأ", plotClosed: "مغلق: الخط المعتاد وحده، كله لم يحن بعد", plotOff: "غير متصل: لا قراءات من الفتح حتى الآن" },
+      phCaps: { display: "قيمة بالأرقام", title: "قيمة بالكلمات", caption: "وقت أو ملاحظة", badge: "شارة المستوى" },
       chartTitle: "ازدحام اليوم", keyLine: `معدّل كل ${b(30)} دقيقة`, keyUsual: "الأربعاء المعتاد", keyPeak: "قراءة الذروة", noHistory: "لا يكفي السجل للمقارنة بعد",
       details: "عرض التفاصيل", peakTag: "الذروة", latestFlag: "آخر قراءة", usual: "المعتاد", stillAhead: "لم يحن بعد",
       chartMain: "مباشر، ومحدد عليها آخر قراءة",
@@ -171,6 +176,7 @@
         rail: ["Rail and header", "A rail item shows its name on keyboard focus only; the mouse hover shows no tooltip. On a tablet the rail opens over a scrim and keeps focus inside."],
         frame: ["The phone's frame: the bar and the compact header", "At 720 px and below the rail becomes a glass bar at the bottom with five sections, and the header carries the status as a badge that opens its details, and one menu for Monitoring, the language and sign out. Every layer opens from the keyboard, closes with Escape, and returns focus to what opened it."],
         empty: ["Empty state, alert and retry", "One sentence that names what is missing and its dates, and one way back; an alert that says what happened and what is kept."],
+        states: ["Daily's states", "Loading, closed, unavailable and error. The cards keep their places and heights in every state and only what fills their slots changes, so nothing moves when the readings arrive. None has a green dot, a pulse or a light."],
       },
       f: { colours: "Colour", type: "Type: the scale", spacing: "Spacing", radii: "Radii", focus: "Focus ring", icons: "Icons in the flow, with no tile" },
       typeSample: "Inside now",
@@ -183,7 +189,11 @@
       levels: ["Quiet", "Moderate", "Busy", "Packed"],
       cmp: { busier: "Busier than usual", quieter: "Quieter than usual", same: "About usual" },
       cards: { live: "Live, lit", plain: "A value and its time", late: "Delayed, unlit", words: "A value in words", none: "No readings", short: "Not enough history, unlit" },
-      undesigned: "Not designed yet: loading, closed as a page state, unavailable and error. Each is designed in its screen's round (K-02).",
+      undesigned: "Loading, closed as a page state, unavailable and error are designed on Daily (“Daily's states” below); each other screen designs them in its own round (K-02).",
+      loadingWord: "Loading…", closed: "Closed", opens: (t) => `Opens ${t}`, offline: "Offline", noCount: "No current count", checkOps: "Check the Operations status",
+      errorWord: "Error", errorLine: "Couldn't load", errorFull: "Couldn't load today's readings", errorHint: "Check the connection, then try again.", errorSay: "Couldn't load readings", retrying: "Trying again…",
+      stCaps: { loadNow: "Loading: a placeholder in each awaited value's own slot", loadBusy: "Loading: names and “Last 7 days” are real text", closedNow: "Closed: “Closed” as a value in words, the next opening at the foot", closedPeak: "Closed: today's peak and entries are “Still ahead”", offNow: "Offline: no count, level or time", offEntries: "Offline: “No readings” for today", errNow: "Error: the alert and one retry, which takes focus", errWork: "Retrying: the button keeps focus", errPeak: "Error: the name alone; no reading is kept", heads: "The header's status, boxless", headsNote: "One status word in the header, the badge and its details, with its mark", anatomy: "Placeholders", anatomyNote: "On the value's baseline, as tall as its digits' ink; one flat fill, no motion", phLoad: "The compact header while loading: words, not a control", phClosed: "Closed: the badge and its details", phOff: "Offline: the badge, its details and the way to Operations", phErr: "Error: the badge and its details", plotFrame: "An empty frame: loading and error", plotClosed: "Closed: the usual line alone, all still ahead", plotOff: "Offline: no readings from opening to now" },
+      phCaps: { display: "a value in figures", title: "a value in words", caption: "a time or a note", badge: "the level badge" },
       chartTitle: "Today's crowd", keyLine: "30-min average", keyUsual: "Usual Wednesday", keyPeak: "Peak reading", noHistory: "Not enough history to compare yet",
       details: "View details", peakTag: "Peak", latestFlag: "Latest", usual: "Usual", stillAhead: "Still ahead",
       chartMain: "Live, with the latest reading selected",
@@ -265,6 +275,7 @@
     same: '<path d="M5 9.5h14M5 14.5h14"/>',
     info: '<circle cx="12" cy="12" r="8.4"/><path d="M12 11v5.2M12 7.8v.2"/>',
     alert: '<circle cx="12" cy="12" r="8.4"/><path d="M12 7.6v5.4M12 16.2v.2"/>',
+    offline: '<circle cx="12" cy="12" r="8.2"/><path d="M6.3 17.7 17.7 6.3"/>',
     gap: '<circle class="fill" cx="5" cy="12" r="1.3"/><circle class="fill" cx="9.7" cy="12" r="1.3"/><circle class="fill" cx="14.3" cy="12" r="1.3"/><circle class="fill" cx="19" cy="12" r="1.3"/>',
     sort: '<path d="M12 5.5v13M7.5 14l4.5 4.5 4.5-4.5"/>',
     file: '<path d="M7 3.8h6.6L18.5 8.7v10.1a1.4 1.4 0 0 1-1.4 1.4H7a1.4 1.4 0 0 1-1.4-1.4V5.2A1.4 1.4 0 0 1 7 3.8Z"/><path d="M13.4 3.8v5h5.1"/>',
@@ -754,7 +765,7 @@
       ${fig(`<div style="display:grid;gap:12px"><span class="cx-status"><i class="cx-dot"></i>${L.statusLive}</span><span class="cx-status is-late">${ico("clock")}${L.statusLate}</span></div>`, L.chipCaps.status, "CHP-2 · STA-1 · STA-2")}
       ${fig(`<button class="cx-btn" type="button"><i class="cx-dot"></i><span class="cx-status">${L.statusLive}</span></button>`, L.chipCaps.statusBtn, "CHP-1 · CHP-2")}
       ${fig(`<span class="cx-concept">${L.concept}</span>`, L.chipCaps.concept, "CHP-2 · GLO-15")}
-      ${fig(`<ul class="cx-legend"><li><i class="sw-line"></i>${L.keyLine}</li><li><i class="sw-usual"></i>${L.keyUsual}</li><li><i class="sw-ring"></i>${L.keyPeak}</li></ul>`, L.chipCaps.legend, "CHP-3 · Q1", false)}
+      ${fig(`<ul class="cx-legend"><li><i class="sw-line"></i>${L.keyLine}</li><li><i class="sw-usual"></i>${L.keyUsual}</li><li><i class="sw-ring"></i>${L.keyPeak}</li></ul>`, L.chipCaps.legend, "CHP-3 · CHT-20", false)}
     </div></div>`);
   }
 
@@ -847,9 +858,119 @@
       <figure class="cx-fig" style="align-items:stretch"><div class="cx-spec" inert>${table}</div>${cap(L.emptyCaps.table, "EMP-1 · STA-8 · EMP-4")}</figure>${fig(alert, L.emptyCaps.alert, "EMP-2 · EMP-3 · EMP-4")}</div>`);
   }
 
+  /* ------------------------------------------------------------ Daily's states (step 3, second part) */
+  // Run owner_states_r04_s19: loading, closed, unavailable and error on Daily (STA-10…14, PH-1…3, STW-1…2, CRD-10, EMP-5,
+  // CHT-21). Every card keeps its slots and its height in every state; only what fills them changes.
+  const phBar = (w, h) => `<i class="cx-ph-bar" style="--w:${w}px;--h:${h}px"></i>`;
+  function stateCard(o) {
+    const head = `<div class="cx-stat-head">${icon(o.icon)}<h3 class="cx-stat-label">${o.label}</h3>${o.meta ? `<span class="cx-stat-meta">${o.meta}</span>` : ""}</div>`;
+    let body;
+    if (o.alert) {
+      body = `<div class="cx-st-alert"><p class="cx-st-say is-err">${ico("alert")}<span>${L.errorSay}</span></p><button class="cx-btn primary${o.working ? " is-working" : " is-focus"}" type="button"${o.working ? ' aria-disabled="true" aria-busy="true"' : ""}>${o.working ? L.retrying : L.retry}</button></div>`;
+    } else {
+      const value = o.value || "";
+      body = `<div class="cx-st-value${o.word ? " is-word" : ""}">${value}</div>` + (o.note != null ? `<p class="cx-st-note">${o.note}</p>` : `<div class="cx-st-foot">${o.foot || ""}</div>`);
+    }
+    return `<article class="card cx-stat cx-st-card">${head}${body}</article>`;
+  }
+  const stMark = (st) => (st === "closed" ? '<span class="cx-st-ring" aria-hidden="true"></span>' : st === "offline" ? ico("offline", "cx-st-off") : st === "error" ? ico("alert", "cx-st-err") : "");
+  const stWord = (st) => (st === "closed" ? L.closed : st === "offline" ? L.offline : st === "error" ? L.errorWord : L.loadingWord);
+  const stLine = (st) => (st === "closed" ? L.opens(b(time(0))) : st === "offline" ? L.noCount : st === "error" ? L.errorLine : "");
+  const stDetail = (st) => (st === "closed" ? L.opens(b(time(0))) : st === "offline" ? L.noCount : `${L.errorFull}. ${L.errorHint}`);
+  const headStatus = (st) => (st === "loading"
+    ? `<span class="cx-status">${L.loadingWord}</span>`
+    : `<span class="cx-status is-${st}">${stMark(st)}<strong>${stWord(st)}</strong> · ${stLine(st)}</span>`);
+  const stBadge = (st, open) => `<button class="hbadge is-${st === "offline" ? "off" : st === "error" ? "err" : "closed"}" type="button" tabindex="-1" aria-expanded="${open}" aria-haspopup="dialog" aria-label="${L.opsTitle}: ${stWord(st)}"><span class="hb-state">${stMark(st)}<span class="hb-word">${stWord(st)}</span></span>${svg(P.chevron, "hb-chev")}</button>`;
+  const stOps = (st) => `<div class="fw-pop ops-pop" role="dialog" aria-label="${L.opsTitle}" tabindex="-1"><div class="ops-body"><h4 class="ops-title">${L.opsTitle}</h4><p class="ops-state is-${st === "offline" ? "off" : st === "error" ? "err" : "closed"}">${stMark(st)}<span>${stWord(st)}</span></p><p class="ops-line">${stDetail(st)}</p><p class="ops-line">${L.hours}</p></div><div class="ops-foot"><a class="fw-mi" href="#states" tabindex="-1">${svg(P.operations, "")}<span>${L.nav.operations}</span>${svg(P.next, "fw-mi-end mirror")}</a></div></div>`;
+  const stPhoneHead = (st, open = false) => `<div class="cx-ph-head cx-st-ph"><h3>${L.nav.today}</h3><div class="head-acts">${st === "loading" ? `<span class="cx-st-load">${L.loadingWord}</span>` : stBadge(st, open) + (open ? stOps(st) : "")}${hmenu(false, false)}</div><p class="cx-ph-sub">${L.date}</p><span class="cx-concept">${L.concept}</span></div>`;
+  function states() {
+    const cards = [
+      [stateCard({ icon: "person", label: L.nowTitle, meta: phBar(40, 9), value: `<span class="num">${phBar(56, 33)}</span>`, foot: '<i class="cx-ph-box"></i>' }), L.stCaps.loadNow, "STA-10 · PH-1…3"],
+      [stateCard({ icon: "clock", label: L.busiestTitle, meta: L.last7, word: true, value: `<span class="cx-words">${phBar(88, 22)}</span>`, note: phBar(56, 9) }), L.stCaps.loadBusy, "STA-10 · PH-1"],
+      [stateCard({ icon: "person", label: L.nowTitle, word: true, value: `<span class="cx-words">${L.closed}</span>`, foot: `<span class="cx-st-foot-note">${L.opens(b(time(0)))}</span>` }), L.stCaps.closedNow, "STA-11 · CRD-10"],
+      [stateCard({ icon: "peak", label: L.peakTitle, value: `<span class="cx-st-say">${L.stillAhead}</span>` }), L.stCaps.closedPeak, "STA-11 · CRD-3 · GLO-8"],
+      [stateCard({ icon: "person", label: L.nowTitle, value: `<span class="cx-st-say">${L.noCount}</span>`, foot: `<span class="cx-st-foot-note">${L.checkOps}</span>` }), L.stCaps.offNow, "STA-12 · CRD-10"],
+      [stateCard({ icon: "entries", label: L.entries, value: `<span class="cx-st-say">${L.noReadings}</span>`, note: "" }), L.stCaps.offEntries, "STA-12 · GLO-5"],
+      [stateCard({ icon: "person", label: L.nowTitle, alert: true }), L.stCaps.errNow, "STA-13 · EMP-5 · FOC-1"],
+      [stateCard({ icon: "person", label: L.nowTitle, alert: true, working: true }), L.stCaps.errWork, "STA-13 · EMP-5 · STA-9"],
+      [stateCard({ icon: "peak", label: L.peakTitle }), L.stCaps.errPeak, "STA-13 · CRD-9"],
+    ];
+    const cardFigs = cards.map(([h, s, ids]) => `<figure class="cx-fig" style="align-items:stretch"><div class="cx-spec" inert>${h}</div>${cap(s, ids)}</figure>`).join("");
+    const heads = ["loading", "closed", "offline", "error"].map((st) => `<div>${headStatus(st)}</div>`).join("");
+    const anatomy = `<div class="cx-ph-anatomy">${[[56, 33, L.phCaps.display], [88, 22, L.phCaps.title], [56, 9, L.phCaps.caption]].map(([w, h, t]) => `<div><span class="cx-ph-line">${phBar(w, h)}</span><span>${b(`${h} px`)} · ${t}</span></div>`).join("")}<div><i class="cx-ph-box"></i><span>${b("26 px")} · ${L.phCaps.badge}</span></div></div>`;
+    const phones = [["loading", false, L.stCaps.phLoad, "STW-2 · HDR-4"], ["closed", true, L.stCaps.phClosed, "STW-1 · BDG-3"], ["offline", true, L.stCaps.phOff, "STW-1 · BDG-4"], ["error", true, L.stCaps.phErr, "STW-1 · COL-18"]]
+      .map(([st, open, c, ids]) => `<figure class="cx-fig" style="flex:0 0 390px"><div class="cx-spec" inert><div class="cx-phbox${open ? " is-tall" : ""}">${stPhoneHead(st, open)}<i class="card cx-ph-card"></i></div></div>${cap(c, ids)}</figure>`).join("");
+    const plots = [["frame", L.stCaps.plotFrame, "CHT-21 · STA-10 · STA-13"], ["closed", L.stCaps.plotClosed, "CHT-21 · STA-11 · CHT-4"], ["unavailable", L.stCaps.plotOff, "CHT-21 · STA-12 · STA-4"]]
+      .map(([mode, c, ids]) => `<figure class="cx-fig" style="align-items:stretch"><div class="card cx-var"><p class="cx-var-title">${c}</p><div class="cx-plot" id="plot-st-${mode}" data-mode="${mode}" aria-hidden="true"></div></div>${cap(c, ids)}</figure>`).join("");
+    return section("states", "states", "STA-10…14 · PH-1…3 · STW-1…2 · CRD-10 · EMP-5 · CHT-21", `
+      <div class="cx-row cx-row-3 cx-states">${cardFigs}</div>
+      <div class="cx-row cx-row-2">
+        <div class="card cx-stage"><p class="cx-stage-title">${L.stCaps.heads}</p><div class="cx-st-heads">${heads}</div><p class="cx-cap" style="margin-block-start:16px"><b>${L.stCaps.headsNote}</b><span>${b("STW-1 · STW-2 · HDR-3 · HDR-6")}</span></p></div>
+        <div class="card cx-stage"><p class="cx-stage-title">${L.stCaps.anatomy}</p>${anatomy}<p class="cx-cap" style="margin-block-start:16px"><b>${L.stCaps.anatomyNote}</b><span>${b("PH-1 · PH-2")}</span></p></div>
+      </div>
+      <div class="card cx-stage"><div class="cx-phones">${phones}</div></div>
+      <div class="cx-row cx-row-3">${plots}</div>`);
+  }
+  // The chart in the states (CHT-21): the empty frame (loading, error), closed (the usual line alone, still ahead, the
+  // first stop selected) and unavailable (no readings from opening to now, its one stop selected).
+  function drawStatePlot(host) {
+    const mode = host.dataset.mode, id = host.id, W = host.clientWidth, H = host.clientHeight;
+    if (!W || !H) return;
+    const yLab = 30, xL = RTL ? 8 : yLab + 8, xR = RTL ? W - yLab - 8 : W - 8;
+    const X = (m) => (RTL ? xR - (m / DAY) * (xR - xL) : xL + (m / DAY) * (xR - xL));
+    // The lane keeps the live height (the tallest tooltip any state can show), so the scale is where it is in live.
+    const measure = document.createElement("div");
+    measure.className = "cx-measure";
+    measure.innerHTML = `<div class="cx-tip">${tipHTML("latest", "delayed")}</div>`;
+    host.appendChild(measure);
+    const laneH = Math.ceil(measure.firstChild.getBoundingClientRect().height);
+    measure.remove();
+    const y80 = 2 + laneH + 8 + 9, yb = H - 28, Y = (v) => yb - (v / 80) * (yb - y80), f = (n) => n.toFixed(1);
+    const path = (a, z, fn, step = 4) => { let d = ""; for (let m = a; m <= z; m += step) d += `${d ? "L" : "M"}${f(X(m))},${f(Y(fn(m)))}`; return d + `L${f(X(z))},${f(Y(fn(z)))}`; };
+    const s = [`<defs><radialGradient id="${id}-chalk"><stop offset="0" stop-color="#f5f3f2" stop-opacity="0.2"/><stop offset="1" stop-color="#f5f3f2" stop-opacity="0"/></radialGradient></defs>`];
+    [20, 40, 60, 80].forEach((v) => s.push(`<path d="M${f(xL)},${Math.round(Y(v)) + 0.5}H${f(xR)}" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>`));
+    const by = Math.round(yb) + 0.5;
+    let tip = "", mx = 0, top = 0, style = "dashed";
+    if (mode === "unavailable") {
+      const g0 = Math.min(X(0), X(NOW)), g1 = Math.max(X(0), X(NOW));
+      s.push(`<path d="${RTL ? `M${f(xL)},${by}H${f(g0)}` : `M${f(g1)},${by}H${f(xR)}`}" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>`);
+      const dots = []; for (let x = g0 + 2.5; x <= g1 - 1.5; x += 4) dots.push(x);
+      dots.forEach((x) => s.push(`<circle cx="${f(x)}" cy="${by}" r="1.25" fill="#f5f3f2"/>`));
+      s.push(`<ellipse cx="${f((g0 + g1) / 2)}" cy="${by}" rx="${f((g1 - g0) / 2 + 9)}" ry="7" fill="url(#${id}-chalk)"/>`);
+      mx = dots.reduce((a, x) => (Math.abs(x - (g0 + g1) / 2) < Math.abs(a - (g0 + g1) / 2) ? x : a), dots[0]); top = by - 1.25; style = "dotted";
+      tip = `<div class="cx-tip-t">${b(timeRange(0, NOW))}</div><div class="cx-tip-main"><span class="cx-tip-word">${L.noReadings}</span></div>`;
+    } else s.push(`<path d="M${f(xL)},${by}H${f(xR)}" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>`);
+    if (mode === "closed") s.push(`<path d="${path(0, DAY - 1, usual)}" fill="none" stroke="rgba(245,243,242,0.36)" stroke-width="1.5" stroke-dasharray="3.5 4.5" stroke-linecap="round"/>`);
+    if (mode === "unavailable") {
+      s.push(`<path d="${path(0, NOW, usual)}" fill="none" stroke="rgba(245,243,242,0.55)" stroke-width="1.5" stroke-dasharray="3.5 4.5" stroke-linecap="round"/>`);
+      s.push(`<path d="${path(NOW, DAY - 1, usual)}" fill="none" stroke="rgba(245,243,242,0.36)" stroke-width="1.5" stroke-dasharray="3.5 4.5" stroke-linecap="round"/>`);
+    }
+    if (mode === "closed") {
+      const m = 0, my = Y(usual(m)); mx = X(m); top = my - 7.1;
+      s.push(`<path d="M${f(mx)},${f(my + 10)}V${f(yb)}" stroke="rgba(245,243,242,0.3)" stroke-width="1" stroke-dasharray="2 3"/><circle cx="${f(mx)}" cy="${f(my)}" r="6.5" fill="#0f0e0f" stroke="rgba(245,243,242,0.85)" stroke-width="1.25"/>`);
+      tip = `<div class="cx-tip-t">${b(time(m))}</div><div class="cx-tip-main"><span class="cx-tip-word">${L.stillAhead}</span></div><div class="cx-tip-u"><i class="sw-usual" aria-hidden="true"></i><span>${L.usual} ${b(Math.round(usual(m)))}</span></div>`;
+    }
+    const lab = [];
+    [0, 20, 40, 60, 80].forEach((v) => lab.push(`<span class="cx-ax" style="${RTL ? "right" : "left"}:0;top:${f(Y(v) - 9)}px;width:${yLab}px;text-align:${RTL ? "right" : "left"}">${b(v)}</span>`));
+    for (let m = 0; m <= 1080; m += W < 700 ? 240 : 120) lab.push(`<span class="cx-ax" data-x="${f(X(m))}" style="left:${f(X(m))}px;top:${f(yb + 8)}px">${b(hourLabel(m))}</span>`);
+    host.innerHTML = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${s.join("")}<g class="cx-conn"></g></svg><div class="cx-plot-labels">${lab.join("")}</div>${tip ? `<div class="cx-tip">${tip}</div>` : ""}`;
+    for (const el of host.querySelectorAll("[data-x]")) { const w = el.getBoundingClientRect().width; el.style.left = `${Math.max(0, Math.min(W - w, +el.dataset.x - w / 2))}px`; }
+    const t = host.querySelector(".cx-tip");
+    if (!t) return;
+    const tw = t.getBoundingClientRect().width, th = t.getBoundingClientRect().height, left = Math.max(2, Math.min(W - 2 - tw, mx - tw / 2));
+    t.style.transform = `translateX(${f(left)}px)`;
+    const x = Math.round(mx) + 0.5, y0 = 2 + th, baseY = top - 4.2;
+    const col = style === "dotted" ? "rgba(245,243,242,0.34)" : "rgba(245,243,242,0.3)";
+    const dash = style === "dotted" ? ' stroke-dasharray="0.01 4" stroke-linecap="round"' : ' stroke-dasharray="2 3"';
+    const conn = host.querySelector(".cx-conn");
+    conn.innerHTML = (baseY > y0 + 1 ? `<path d="M${x},${f(y0)}V${f(baseY)}" stroke="${col}" stroke-width="${style === "dotted" ? 1.6 : 1}"${dash} fill="none"/>` : "") + `<path d="M${f(x - 2.7)},${f(baseY)}L${f(x + 2.7)},${f(baseY)}L${x},${f(top)}Z" fill="${col}"/>`;
+    const svgEl = host.querySelector("svg");
+    svgEl.insertBefore(conn, svgEl.children[1]);
+  }
+
   /* ------------------------------------------------------------ render */
-  const ORDER = [["found", "found"], ["card", "card"], ["chart", "chart"], ["pattern", "pattern"], ["table", "table"], ["buttons", "buttons"], ["seg", "seg"], ["sw", "switch"], ["field", "field"], ["dialog", "dialog"], ["chips", "chips"], ["rail", "rail"], ["frame", "frame"], ["empty", "empty"]];
-  function drawPlots() { for (const h of $$(".cx-plot")) drawPlot(h); }
+  const ORDER = [["found", "found"], ["card", "card"], ["chart", "chart"], ["pattern", "pattern"], ["table", "table"], ["buttons", "buttons"], ["seg", "seg"], ["sw", "switch"], ["field", "field"], ["dialog", "dialog"], ["chips", "chips"], ["rail", "rail"], ["frame", "frame"], ["empty", "empty"], ["states", "states"]];
+  function drawPlots() { for (const h of $$(".cx-plot")) (h.dataset.mode ? drawStatePlot : drawPlot)(h); }
   function render() {
     L = COPY[LANG];
     RTL = LANG === "ar";
@@ -861,7 +982,7 @@
     for (const btn of $$("#lang-seg .cx-seg-b")) btn.setAttribute("aria-pressed", String(btn.dataset.lang === LANG));
     $("#cx-index").innerHTML = `<span class="sr-only" id="index-name">${L.indexName}</span>` + ORDER.map(([k, id]) => `<a href="#${id}">${L.sec[k][0]}</a>`).join("");
     const pat = pattern();
-    $("#cx-root").innerHTML = [foundations(), cards(), chart(), pat.html, tables(), buttons(), segs(), switches(), fields(), dialogs(), chips(), rails(), frame(), empties()].join("");
+    $("#cx-root").innerHTML = [foundations(), cards(), chart(), pat.html, tables(), buttons(), segs(), switches(), fields(), dialogs(), chips(), rails(), frame(), empties(), states()].join("");
     drawPlots();
     wireHeat();
     wireDialog();
