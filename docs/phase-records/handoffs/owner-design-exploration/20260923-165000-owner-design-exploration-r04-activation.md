@@ -4025,3 +4025,23 @@ The local usage limit is close, so the user continues this coordinator role in a
 - **Added to the next Codex batch:** in `components.html`, the header's date range «26 أغسطس – 22 سبتمبر» breaks over
   two lines at 390 and 320. This predates the change.
 - **Next:** step 4's brief.
+## Step 3 closes, and step 4's phase A brief is ready (2026-10-01)
+
+- **Step 3 is closed on `owner-followup-r04-build` at `d2cf1a3`:**
+  - the frame and Daily at every size;
+  - Daily's states, with proposal 4;
+  - the review fixes F1-F3;
+  - the en dash in Arabic ranges.
+- **Step 4's scope was gathered** by a fresh read-only agent, which listed the spec rows, K entries, code sites and
+  open items. The brief carries its pointers.
+- **Brief:** `design-research/owner-composition-exploration-r04/directions/briefs/step4-reports-phase-a.md` on this
+  branch, copied to `/tmp/fitway-scratch/reports/BRIEF.md`.
+  - **Part A, the frame:** Operations leaves the rail, and the header status becomes a 44 px control that opens
+    Operations' details at every size. Reports adopts the frame (BRK-11) and the status.
+  - **Part B, Reports at 1440:** the 21 step-4 K entries, re-measuring K-25. The intro and digit roll stay as they
+    are for the user's review.
+  - Phase A stops for the user's review. The same agent is resumed for phase B, Reports at 768 and 390 (BRK-9).
+  - A fresh designer takes Reports' states (K-02), and a fresh reviewer follows.
+- **Waiting:** the user's word to launch. Launching runs Opus at `xhigh`, so it is a big call under the working
+  agreement.
+- **Next:** on the user's word, launch `owner-direction-designer` with the brief, in the background.
