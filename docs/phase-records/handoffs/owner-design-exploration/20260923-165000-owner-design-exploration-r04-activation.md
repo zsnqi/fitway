@@ -4426,3 +4426,5 @@ The user ends this local session here and continues in a new cloud session. No a
   at 390 AR. Check the spacing of the number inside the label.
 - **Decision 4, an empty period below 1024: the sentence once,** in the busy-times card with the way back; day by day
   hides until the period has readings (the build's form). *User 2026-10-01,* on the coordinator's recommendation.
+- **Decision 5, the day list's button: "Show all days" stays,** one tap for the whole period (not one more week per
+  tap). *User 2026-10-01,* on the coordinator's recommendation.
