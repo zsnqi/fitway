@@ -3696,3 +3696,36 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
     - No single list holds the user's own rejections, such as the middle dot, the en dash in Arabic ranges, and hover
       names on the rail.
     - The coordinator writes it before step 4's brief.
+## Daily's states delivered at `ad63268` (2026-10-01)
+
+- **The run was interrupted** by the session usage limit, with 10 files uncommitted. After the reset the coordinator
+  resumed the same agent.
+- **The designer delivered `ad63268`** on top of `527c159`. The coordinator pushed it as a fast-forward.
+  - 10 files, +867/−226.
+  - **Shared rule (STA-14):** every state keeps the live layout, and no card is lit in any of the four states (LGT-11).
+  - **Loading:** a static skeleton after 300 ms, held at least 400 ms, announced at 1 s, and Error at 10 s. The first
+    open's intro is the arrival.
+  - **Closed:** before opening, "Opens 6:00 AM", and "Still ahead" in place of zeros. It keeps Busiest time and the
+    usual line.
+  - **Unavailable:** shown as «غير متصل» / "Offline", with no count, band or time, and no today readings.
+  - **Error:** an alert in the Inside now card with one focused "Try again"; the retry arrives in place.
+  - **URLs:** `?state=loading`, `&arrive=1800`, `&arrive=never`, `?state=closed`, `?state=unavailable` and
+    `?state=error`.
+  - Self-reported, not verified:
+    - S1-S7 pass, with 132 page states probed;
+    - loading to live moves 0.00 px with CLS 0;
+    - 56 frames of the existing states and Reports are pixel-identical to `527c159`;
+    - spec lint: 343 rows, 0 problems.
+  - **Caveats:**
+    - K-02 needs `ad63268` written into the spec;
+    - `capture.mjs` has no frames for the new states;
+    - `components.html` scrolls sideways at 390, as it already did at `527c159`.
+- **Proposals for the user:**
+  1. on the loading path, MOT-10's lights and usual line appear at arrival;
+  2. the visible word "Offline" for Product's Unavailable;
+  3. HDR-6 changes the shared header's box sizing (Reports takes it in step 4);
+  4. Unavailable hides earlier readings from the same day.
+- **G5 check:** s04 is clean at `ad63268`, the coordinator worktree matches the snapshot, and only 3174 listens.
+- **Coordinator inspection, not verification:** `states-1440-ar` and `states-390-ar` are coherent with the frame, and
+  every state keeps the live layout.
+- **Next:** show the user; then a fresh design reviewer for all of step 3.
