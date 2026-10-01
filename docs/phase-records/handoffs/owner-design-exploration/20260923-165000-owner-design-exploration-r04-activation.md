@@ -4213,3 +4213,72 @@ The local usage limit is close, so the user continues this coordinator role in a
 - **Coordinator recommendation:** accept Q17-Q22 as built.
 - **Next:** the user's notes. Then a fresh designer takes Reports' states (K-02, with K-38), and a fresh reviewer
   takes step 4.
+## The user's phone critique of phase B, and the new-session resume point (2026-10-01)
+
+This session's context grew large, so the user ends it here. No new work starts in it. A new cloud session continues
+from this section.
+
+- **User decisions on phase B's proposals (2026-10-01):**
+  - **Q17 is rejected.** Remove «مقابل 9 – 15 سبتمبر» / "vs 9 – 15 Sep" from the "Last 7 days" card at every size.
+    The owner understands the comparison, and the card became too full. It is now in DO-NOT.md.
+  - **Q18 is accepted:** the phone's export sits on its own line at the row's end.
+  - **Q19 is accepted:** the coverage line stays with a preset, and the phone subtitle takes two lines.
+  - **Q20, the one-letter Arabic day heads:** the user called it "good, but", with notes that are the phone critique
+    below. It is open until the phone is redesigned.
+  - **Q21 and Q22** (cells under 44 px wide below 1024; the 768 fold) got no explicit answer. Treat them as part of
+    the phone and tablet rethink.
+- **The user's critique: Reports on the phone is compressed, not designed.** It is now in DO-NOT.md.
+  - The page reads squeezed, thin and very long.
+  - The pattern became 7 narrow columns (cells 31.6 px wide, a 1152 px card), with one-letter day heads.
+  - In an empty period, each column draws «لا قراءات». It breaks over two lines and collides with its neighbours.
+    The user circled it on `390 · AR · empty July · pattern`.
+  - The day table is cramped too.
+  - The user suspects Daily's phone may share the problem. Nobody has checked yet.
+  - **The coordinator agrees.** The designer kept every slot of 1440 (7 × 19 cells, the five-column table) and made
+    them fit by narrowing. The measured checks all passed (44 px targets, no sideways scroll, no broken dates), but
+    those are lint, not design quality (AGENTS.md). The coordinator had called sheet 3 coherent and missed it; the
+    user caught it.
+- **State at the end of this session:**
+  - **Build branch** `owner-followup-r04-build` at `9309382`, pushed. It holds:
+    - step 3 closed at `d2cf1a3`;
+    - phase A at `bde1cde`;
+    - one light at `9b6ae63`;
+    - phase B at `9309382`.
+  - **Coordinator branch** `codex/owner-redesign-r04`, pushed. It holds this handoff, `directions/DO-NOT.md`
+    (60 entries), and the briefs in `directions/briefs/` (step4-reports-phase-a.md and step4-reports-phase-b.md).
+  - `/tmp/fitway-scratch/` was session-local and is lost. The briefs and records are in the repository.
+  - **Codex batch, for the local machine:**
+    - `components.html` scrolls sideways at 390 and 768 EN;
+    - the details' «Open, nobody inside» range breaks at 320 EN;
+    - `components.html`'s header date range breaks at 390 and 320.
+- **Working agreements (2026-10-01), binding on every coordinator session:**
+  - Small calls follow the coordinator's recommendation; the coordinator acts and tells the user. Big calls (launching
+    an Opus designer, visual acceptance) go to the user.
+  - Every task gets a fresh agent. Do not resume a long-context designer.
+  - Small fixes in the cloud go to `owner-direction-fixer` on Sonnet at `medium`.
+  - Replies are in the Saudi dialect.
+  - Push to the build branch after inspecting each commit.
+- **New session, first steps:**
+  1. Check the environment. If the user pasted the working setup script (see "First cloud task done"),
+     `node_modules`, Impeccable and the Chromium shim exist. If they do not, run that script by hand from
+     `/home/user/fitway`.
+  2. `git fetch origin owner-followup-r04-build && git worktree add ../s04 owner-followup-r04-build`, then
+     `pnpm install --frozen-lockfile` in `../s04`.
+  3. Run `pnpm context:show --milestone owner-design-exploration-r04` (no `--`) and `pnpm check:design-context`.
+  4. Read this section, DO-NOT.md and the phase B brief. Do not read the whole handoff.
+- **Next work, in order:**
+  1. **Reports' phone redesign, with a fresh designer.**
+     - It removes the Q17 baseline at every size.
+     - It designs Reports at 390 for the phone: the pattern, the day table and the empty periods. It does not
+       compress 1440, and it rechecks 768 under the same lens (Q21, Q22).
+     - Recommended: the designer first shows the user two or three rendered options for the pattern and the table
+       on the phone, where the trade-off is real (for example one day at a time, coarser time blocks, or a different
+       form), and builds only the one the user picks.
+     - Hypotheses only, for the designer to test, not decisions:
+       - an empty period shows one message for the whole pattern, as the table's empty state does, not one label
+         per column;
+       - the day table on the phone may need a list form rather than five squeezed columns.
+     - The proposed sequence (options first, then a build) is a big call, so it goes to the user.
+  2. **Reports' states** (K-02, with K-38), with a fresh designer.
+  3. **A fresh reviewer for step 4.** It also looks at Daily at 390 through the "compressed, not designed" lens,
+     because the user suspects it. Any change to Daily is the user's call.

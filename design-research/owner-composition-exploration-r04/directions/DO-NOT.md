@@ -169,6 +169,12 @@ reviewer views the user did not take up are left out.
   on 2026-10-01; the step-3 rail, which still lists it (RAI-1), changes in step 4's frame work. *B "Decisions after the
   step 3 report"; H "The do-not list drafted, and the user's answers (2026-10-01)".*
 
+- **Do not fit the phone by compressing the desktop composition.** The user rejected Reports at 390 in phase B
+  (`9309382`) as squeezed and very long: the pattern turned into 7 narrow columns (cells 31.6 px, a 1152 px card),
+  one-letter day heads, «لا قراءات» breaking and colliding in every column of an empty period, and a cramped day
+  table. Design what the phone needs, and show options where the trade-off is real. *H "The user's phone critique of
+  phase B, and the new-session resume point (2026-10-01)".*
+
 ## Copy and wording
 
 - **Do not use technical language or dense analytics.** The owner is not technical. Keep the text minimal and let the
@@ -176,6 +182,9 @@ reviewer views the user did not take up are left out.
 - **Do not add explanatory captions.** This includes the entries figure and the usual line, which has no "not a
   forecast" note. The owner explains the page to the gym, so the page carries names and values. *H "Full Daily page
   start and Spec amendment (2026-09-24)"; B "Round 3" §7-8.*
+- **Do not add the comparison's baseline dates to the "Last 7 days" card** («مقابل 9 – 15 سبتمبر»). The owner
+  understands the comparison without it, and it made the card too full (Q17, rejected 2026-10-01). *H "The user's
+  phone critique of phase B, and the new-session resume point (2026-10-01)".*
 - **Do not show the comparison chip when today is about usual.** Only a clear difference earns it. *B "Round 4" §5;
   S GLO-10.*
 
