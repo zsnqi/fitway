@@ -4364,3 +4364,16 @@ The user ends this local session here and continues in a new cloud session. No a
   3. **Reports' states** (K-02, with K-38), with a fresh designer.
   4. **A fresh reviewer for step 4.** It also looks at Daily at 390 through the "compressed, not designed" lens,
      because the user suspects it. Any change to Daily is the user's call.
+
+## Cloud resume, and the phone build launched (2026-10-01)
+
+- **Resumed in a cloud session.** `node_modules`, Impeccable and the Chromium shim (revision 1228) were present.
+  - `../s04` (`/home/user/s04`) is a new worktree of `owner-followup-r04-build` at `aa509b9`, and
+    `pnpm install --frozen-lockfile` ran clean.
+  - `context:show` resolves the packet, and `pnpm check:design-context` passes.
+- **Launched:** a fresh `owner-direction-designer` (Opus, `xhigh`) on `briefs/step4-reports-phone-build.md`, base
+  `aa509b9`. The user approved this launch earlier. The brief's paths held in this session, with one change: the
+  evidence goes to the session scratchpad
+  (`/tmp/claude-0/-home-user-fitway/8ed4aeba-4dc1-53d8-8306-ebc8acdbae0c/scratchpad/reports-phone/build/`), not
+  `/tmp/fitway-scratch/`, so the user can open the contact sheets. That folder is session-local and is lost when the
+  session ends.
