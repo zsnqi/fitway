@@ -4282,3 +4282,18 @@ from this section.
   2. **Reports' states** (K-02, with K-38), with a fresh designer.
   3. **A fresh reviewer for step 4.** It also looks at Daily at 390 through the "compressed, not designed" lens,
      because the user suspects it. Any change to Daily is the user's call.
+
+## Local resume, and Reports' phone options launched (2026-10-01)
+
+- **Resumed on the local machine,** not in the cloud.
+  - The s04 worktree is `D:\Projects\fitway-worktrees\owner-followup-r04-s04`, fast-forwarded from `fd28be4` to
+    `9309382`, with `pnpm install --frozen-lockfile` clean.
+  - `pnpm check:design-context` passes, and `context:show` resolves the packet.
+- **User decision (2026-10-01): options first, then a build.**
+  - A fresh designer shows two or three rendered options for the pattern, the day table and the empty periods on the
+    phone, says how each carries to 768, and stops.
+  - The user picks, and another fresh designer builds the pick at 390 and 768 and removes the Q17 baseline.
+- **Launched:** a fresh `owner-direction-designer` (Opus, `xhigh`) on `briefs/step4-reports-phone-options.md`, base
+  `9309382`, evidence in `D:\fitway-temp\reports-phone\options\`.
+- **The Codex batch** (`components.html`'s sideways scroll and header range; the details' range at 320 EN) waits until
+  the phone round is integrated, because both would write in E/ on the same branch.
