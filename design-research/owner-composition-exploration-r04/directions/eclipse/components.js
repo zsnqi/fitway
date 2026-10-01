@@ -370,11 +370,11 @@
   }
   const plotHost = (id, state, sel, h) => `<div class="cx-plot" id="${id}" data-state="${state}" data-sel="${sel}"${h ? ` style="--plot-h:${h}px"` : ""} aria-hidden="true"></div>`;
   function chart() {
-    // Q1 (proposed, step 3): a third entry names the ring, which marks a single reading.
+    // Q1 (user 2026-10-01): a third entry names the ring, which marks a single reading.
     const legend = (hist) => `<ul class="cx-legend">${`<li><i class="sw-line"></i>${L.keyLine}</li>`}${hist ? `<li><i class="sw-usual"></i>${L.keyUsual}</li>` : `<li>${ico("info")}${L.noHistory}</li>`}<li><i class="sw-ring"></i>${L.keyPeak}</li></ul>`;
     const main = `<figure class="cx-fig" style="align-items:stretch"><section class="card lit lit-chart cx-chart" aria-label="${L.chartTitle}">${LAMP}
       <header class="cx-chart-head"><h3>${L.chartTitle}</h3><div class="cx-chart-tools">${legend(true)}<button class="cx-btn" type="button" tabindex="-1">${L.details}${ico("chevron")}</button></div></header>
-      ${plotHost("plot-main", "live", "latest", 440)}</section>${cap(L.chartMain, "CHT-1…15 · LGT-9", false)}</figure>`;
+      ${plotHost("plot-main", "live", "latest", 440)}</section>${cap(L.chartMain, "CHT-1…15 · CHT-18…20 · LGT-9", false)}</figure>`;
     const vars = [["peak", "live"], ["line", "live"], ["gap", "live"], ["ahead", "live"], ["latest", "delayed"], ["ahead", "nohistory"]].map(([sel, st], i) => {
       const title = st === "delayed" ? L.vars.delayed : st === "nohistory" ? L.vars.nohistory : L.vars[sel];
       const p = sel === "ahead" && st === "live";
@@ -754,7 +754,7 @@
       ${fig(`<div style="display:grid;gap:12px"><span class="cx-status"><i class="cx-dot"></i>${L.statusLive}</span><span class="cx-status is-late">${ico("clock")}${L.statusLate}</span></div>`, L.chipCaps.status, "CHP-2 · STA-1 · STA-2")}
       ${fig(`<button class="cx-btn" type="button"><i class="cx-dot"></i><span class="cx-status">${L.statusLive}</span></button>`, L.chipCaps.statusBtn, "CHP-1 · CHP-2")}
       ${fig(`<span class="cx-concept">${L.concept}</span>`, L.chipCaps.concept, "CHP-2 · GLO-15")}
-      ${fig(`<ul class="cx-legend"><li><i class="sw-line"></i>${L.keyLine}</li><li><i class="sw-usual"></i>${L.keyUsual}</li><li><i class="sw-ring"></i>${L.keyPeak}</li></ul>`, L.chipCaps.legend, "CHP-3 · Q1", true)}
+      ${fig(`<ul class="cx-legend"><li><i class="sw-line"></i>${L.keyLine}</li><li><i class="sw-usual"></i>${L.keyUsual}</li><li><i class="sw-ring"></i>${L.keyPeak}</li></ul>`, L.chipCaps.legend, "CHP-3 · Q1", false)}
     </div></div>`);
   }
 
