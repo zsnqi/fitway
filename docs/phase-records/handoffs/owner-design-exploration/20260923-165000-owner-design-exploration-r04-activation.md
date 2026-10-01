@@ -3954,3 +3954,31 @@ The local usage limit is close, so the user continues this coordinator role in a
   - `components.html` scrolls sideways at 390 and 768 EN, as it did before step 3.
   - The empty tooltip lane (CHT-18) and the rail's focus label over Inside now (FOC-5) are user decisions.
 - **Next:** check the fixer's frames and push. Then the "do not" list and step 4's brief.
+## The review fixes at `9a98164`, and two items deferred to a Codex batch (2026-10-01)
+
+- **Delivered at `9a98164`** on `50a5690`: `app.js` +10/−11 and `DESIGN-SPEC.md` +4/−4.
+  - **F1:** the no-history legend is ordered line key, ring key, then the note. Its rows and the chart card's height
+    equal live's at 1440, 768, 390 and 320, AR and EN.
+  - **F2:** Delayed calls Unavailable's `setLights(false)`.
+    - The arrival path is now `setLights(STATE !== "delayed")`. Without it, the lights would come back on after a
+      delayed arrival.
+  - **F3:** U+00A0 joins day and month in `covUsualVal` and `covUsualNone`, in AR and EN.
+  - **Spec:** CHT-20, STA-2, OWN-D9 (inline, as it has no source cell) and K-17, each with
+    `user 2026-10-01 (review Fn)`. The spec lint finds 0 problems.
+  - Self-reported: the other states and Reports are byte-identical to `50a5690`, and nothing scrolls sideways in the
+    seven states at 390 and 320.
+- **Coordinator checks:**
+  - The fixer said error at 390 EN was raster noise. Rendered three times on each of `50a5690` and `9a98164`, it is
+    pixel-identical.
+  - Delayed at 1440 AR has both cards plain, and the red line stays.
+  - The details' dates hold at 320 EN.
+- **Pushed** `owner-followup-r04-build` to `9a98164`.
+- **User decision (2026-10-01): deferred to the next Codex batch on the local machine, and recorded here.**
+  - **`components.html` scrolls sideways** at 390 (514 px AR, 536 px EN) and at 768 EN (788 px). This predates step 3,
+    and its cause is not yet diagnosed.
+- **Coordinator finding, pre-existing, same batch (the user is told):** at 320 EN the details' «Open, nobody inside»
+  range breaks inside itself, as "6:00 AM –" over "6:09 AM". This is DAT-4 and the rest of K-17.
+  - It is identical at `50a5690`.
+  - 390 and the Arabic are clean.
+  - The "· 18 min" line breaks after the range, not inside it.
+- **Next:** the consolidated "do not" list (see "Cloud sessions and direct Codex delegation"), then step 4's brief.
