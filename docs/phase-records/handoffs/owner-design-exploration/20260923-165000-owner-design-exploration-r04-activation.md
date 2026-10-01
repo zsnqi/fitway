@@ -4377,3 +4377,37 @@ The user ends this local session here and continues in a new cloud session. No a
   (`/tmp/claude-0/-home-user-fitway/8ed4aeba-4dc1-53d8-8306-ebc8acdbae0c/scratchpad/reports-phone/build/`), not
   `/tmp/fitway-scratch/`, so the user can open the contact sheets. That folder is session-local and is lost when the
   session ends.
+
+## Reports' phone build delivered at `ff0e922`, for the user's review (2026-10-01)
+
+- **Delivered at `ff0e922`** on `aa509b9`, pushed to `owner-followup-r04-build`. Nine files, +930/−1089: `reports.js`,
+  `.css` and `.html`, `DESIGN-SPEC.md`, `README.md`, and a new `reports-build-capture.mjs`. The options files and the
+  `?opt` switch are removed.
+- **Self-reported:**
+  - B is the page below 1024; 768 keeps the hours as columns, and the card ends 17.2 px inside the fold (Q22).
+  - The day table at 768 keeps phase B's form.
+  - Q17 is removed at every size; Q20-Q22 are answered, and K-29 is closed.
+  - K-39 is new: 1440's grid keeps cells under 44 px wide at 1024-1240.
+  - Measured over 86 page states: 0 px sideways, no target under 44, 0 broken phrases, and HDR-6 holds.
+  - Page height at 390 AR, 28d: 4087 → 2493.
+  - Daily is byte-identical in 42 of 42 frames. Lint finds 0 problems.
+- **The weak points:**
+  - Each strip day now draws its own 19 hours as a small outline.
+  - Every bar has a 1 px FITWAY-red edge.
+  - An empty period says its sentence once, and day by day hides.
+  - "Show all days" stays: the whole list is 2225 px, longer than phase B's table.
+- **Coordinator checks:**
+  - Opened sheets 01, 02 and 06 and the empty-July frame at 390 AR. The build is coherent, the empty period has one
+    sentence, and the commit is clean. Lint re-run: 0 problems.
+  - Seen: the red edge makes the quietest bars read as hollow pills (12 AM, 3).
+  - Seen: the empty custom period's header now shows «لا قراءات · 31 يومًا», with a middle dot next to a
+    no-readings phrase. It is close to DO-NOT.md line 27 (that rule is about a range), so the user decides.
+- **For the user:**
+  - the strip's mini outlines;
+  - the red edge;
+  - the dated 7-day headers;
+  - hiding day by day when the period is empty;
+  - "Show all days" against one more week per tap;
+  - K-39 (B up to 1279, or the grid at 1024-1240);
+  - Q18 and Q19, still open.
+- **Next:** the user's review. Then Reports' states (K-02, with K-38), with a fresh designer.
