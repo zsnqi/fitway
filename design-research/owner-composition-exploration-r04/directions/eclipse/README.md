@@ -1609,8 +1609,8 @@ for the rail link. Concept only, synthetic data; the "Exploration concept · syn
 
 Daily asks "how is today going right now?"; Reports asks "how does my gym usually behave, and which way is it going?".
 The page keeps the Daily page's structure and look (the rail, the header, four glass cards and one lit card below):
-- **Header:** the title, the period and its length, and the period control (Last 7 days, Last 4 weeks, Custom…).
-- **Four cards:** week over week (lit with the Inside now light, because it answers "which way"), the average inside
+- **Header:** the title, the period and its length, and the period control (Last 7 days, Last 28 days, Custom…).
+- **Four cards:** week over week (plain in every period: Reports' only light is the pattern's), the average inside
   with its crowd level, the highest peak with its day and time, and entries with the daily average. Entries are named
   entries only, with no caption.
 - **Busy times** (lit with the chart light): the weekday × hour pattern, average inside, 7 days × 19 hours (6 AM to the
@@ -1647,11 +1647,11 @@ Daily page, the rail's Reports item. Query parameters:
 
 | URL | Shows |
 | --- | --- |
-| `reports.html` (`?state=full`) | Last 4 weeks, 26 Aug - 22 Sep: comparable week over week; the pattern's closed Friday mornings and zero Saturday 6 AM |
+| `reports.html` (`?state=full`) | Last 28 days, 26 Aug - 22 Sep: comparable week over week; the pattern's closed Friday mornings and zero Saturday 6 AM |
 | `?state=short` | Readings since Sunday 13 Sep (the Daily page's no-history state has one past Wednesday, 16 Sep): week over week shows "Not enough history yet" and no value; the pattern shows closed, no data (the only Thursday's camera gap) and zero together; days before 13 Sep are one merged "No readings yet" row |
 | `?range=7d` | Last 7 days, 16 - 22 Sep: Thursday 10 AM - 2 PM reads as no data |
 | `?from=YYYY-MM-DD&to=YYYY-MM-DD` | A custom period (up to 366 days, ending by 22 Sep), for example `from=2026-09-01&to=2026-09-10` |
-| `?from=2026-07-01&to=2026-07-31` | A period before the readings began: every figure says "No readings", the pattern is closed or no data, and the table's empty state offers the last 4 weeks |
+| `?from=2026-07-01&to=2026-07-31` | A period before the readings began: every figure says "No readings", the pattern is closed or no data, and the table's empty state offers the last 28 days |
 | `?dialog=range` / `?dialog=export` | Opens the date-range or the export dialog at load |
 | `?export=fail` | The first export attempt fails (then "Try again" succeeds) |
 | `?lang=ar|en`, `?motion=off` | As on the Daily page |
@@ -1775,7 +1775,7 @@ The reference is `DESIGN-SPEC.md` (RAI-1, HDR-3…7, BDG-1…4, STW-1…2, CRD-1
   reflows until phase B.
 - **Reports at 1440, recomposed.** Under the header the page's controls: the period and "Export minute data". At a
   glance, one card of the period's three figures under the period control, and "Last 7 days" in its own card at the
-  row's end, lit while it has a complete value. The pattern lit across the page, hatched where a slot has fewer than 3
+  row's end, plain. The pattern lit across the page, hatched where a slot has fewer than 3
   days. Day by day with "Export table", which exports its own rows. Every review fix assigned to step 4 is in (§7).
 - **Open and capture.** `reports.html` takes `lang`, `state` (`full`, `short`), `range` (`7d`, `28d`) or `from`/`to`,
   `dialog`, `export` and `motion`, as before. `capture.mjs` and `reports-capture.mjs` follow the renamed elements

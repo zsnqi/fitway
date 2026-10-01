@@ -47,7 +47,7 @@
       docTitle: "التقارير · FITWAY (مفهوم)",
       title: "التقارير",
       rangeName: "الفترة",
-      seg: { "7d": `آخر ${bdi(7)} أيام`, "28d": `آخر ${bdi(4)} أسابيع`, custom: "فترة أخرى…" },
+      seg: { "7d": `آخر ${bdi(7)} أيام`, "28d": `آخر ${bdi(28)} يومًا`, custom: "فترة أخرى…" },
       days: (n) => arN(n, ["يوم واحد", "يومان", "أيام", "يومًا", "يوم"]),
       daysWith: (k, n) => `قراءات في ${bdi(k)} من ${arN(n, ["يوم واحد", "يومين", "أيام", "يومًا", "يوم"])}`,
       glance: "باختصار",
@@ -77,7 +77,6 @@
       fewKey: `أقل من ${bdi(3)} أيام`,
       avgOf: (n) => (n === 1 ? "من يوم واحد" : n === 2 ? "معدّل يومين" : `معدّل ${arN(n, ["", "", "أيام", "يومًا", "يوم"])}`),
       closedTip: "خارج ساعات العمل",
-      noDataTip: "لا قراءات في هذه التواريخ",
       heatKeys: "استخدم مفاتيح الأسهم للتنقل بين الساعات والأيام، وHome وEnd لأول ساعة وآخر ساعة في اليوم.",
       heatCaption: (r) => `معدّل الموجودين حسب اليوم والساعة، ${r}`,
       dayHead: "اليوم",
@@ -88,7 +87,7 @@
       highest: "الأعلى",
       beforeHistory: "لا قراءات بعد",
       emptyTable: (a, b) => `لا قراءات من ${a} إلى ${b}`,
-      emptyAction: `عرض آخر ${bdi(4)} أسابيع`,
+      emptyAction: `عرض آخر ${bdi(28)} يومًا`,
       exportMinutes: "تصدير بيانات الدقائق",
       exportTable: "تصدير الجدول",
       close: "إغلاق",
@@ -140,7 +139,7 @@
       docTitle: "Reports · FITWAY (concept)",
       title: "Reports",
       rangeName: "Dates",
-      seg: { "7d": "Last 7 days", "28d": "Last 4 weeks", custom: "Custom…" },
+      seg: { "7d": "Last 7 days", "28d": "Last 28 days", custom: "Custom…" },
       days: (n) => `${n} ${n === 1 ? "day" : "days"}`,
       daysWith: (k, n) => `Readings on ${k} of ${n} days`,
       glance: "At a glance",
@@ -170,7 +169,6 @@
       fewKey: "Fewer than 3 days",
       avgOf: (n) => `Average of ${n} ${n === 1 ? "day" : "days"}`,
       closedTip: "Outside opening hours",
-      noDataTip: "No readings in these dates",
       heatKeys: "Use the arrow keys to move between hours and days. Home and End go to the day's first and last hour.",
       heatCaption: (r) => `Average inside by day and hour, ${r}`,
       dayHead: "Day",
@@ -181,7 +179,7 @@
       highest: "Highest",
       beforeHistory: "No readings yet",
       emptyTable: (a, b) => `No readings from ${a} to ${b}`,
-      emptyAction: "Show the last 4 weeks",
+      emptyAction: "Show the last 28 days",
       exportMinutes: "Export minute data",
       exportTable: "Export table",
       close: "Close",
@@ -727,8 +725,7 @@
     } else {
       tb.innerHTML = `<p class="stat-value"><span class="stat-say">${L.wowEmpty}</span></p><div class="stat-foot"><span class="stat-aside">${L.wowEmptyNote(dateText(HIST_START))}</span></div>`;
     }
-    trendCard.classList.toggle("lit", wow.comparable);
-    trendCard.classList.toggle("lit-card", wow.comparable);
+    // "Last 7 days" is plain in every period: Reports keeps only the pattern's data light (OWN-R6, user 2026-10-01, Q13).
     trendCard.setAttribute("aria-description", plain(L.wowSay(rangeText(WOW.cur[0], WOW.cur[1]), rangeText(WOW.prev[0], WOW.prev[1]))));
 
     const none = (id) => { $(id).innerHTML = `<p class="stat-value"><span class="stat-say">${L.noReadings}</span></p><div class="stat-foot"></div>`; };
@@ -826,7 +823,7 @@
     const wd = +td.dataset.r, c0 = +td.dataset.c0, c1 = +td.dataset.c1, cell = model.heat[wd][c0];
     const when = `<div class="tip-t"><span>${wdLong(wd)}</span><span aria-hidden="true">·</span><span>${hourRange(c0 * 60, c1 * 60 + 60)}</span></div>`;
     if (cell.state === "closed") return `${when}<div class="tip-main"><span class="tip-word">${L.closed}</span></div><div class="tip-u">${L.closedTip}</div>`;
-    if (cell.state === "missing") return `${when}<div class="tip-main"><span class="tip-word">${L.noReadings}</span></div><div class="tip-u">${L.noDataTip}</div>`;
+    if (cell.state === "missing") return `${when}<div class="tip-main"><span class="tip-word">${L.noReadings}</span></div>`;
     const z = cell.avg === 0;
     return `${when}<div class="tip-main"><span class="tip-v">${bdi(z ? "0" : valText(cell.avg))}</span><span class="tip-l">${z ? L.emptyLong : L.levels[levelOf(cell.avg)]}</span></div><div class="tip-u">${L.avgOf(cell.samples)}</div>`;
   }

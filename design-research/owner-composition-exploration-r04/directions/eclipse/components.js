@@ -102,10 +102,10 @@
       vars: { peak: "الذروة", line: "نقطة على الخط", gap: "فترة بلا قراءات", ahead: "لم يحن بعد", delayed: "آخر قراءة، متأخرة", nohistory: "لم يحن بعد، بلا سجل" },
       aheadNote: `الخط المعتاد بعد الآن بشفافية ${b(".36")}`,
       patternTitle: "أوقات الازدحام",
-      patternSub: `معدّل الموجودين حسب اليوم والساعة · ${b(4)} أسابيع، ${b(28)} يومًا`,
+      patternSub: `معدّل الموجودين حسب اليوم والساعة · ${b(28)} يومًا`,
       busiest: (w, h) => `الأكثر ازدحامًا: ${w} ${h}`,
       fewer: "أقل", more: "أكثر", emptyWord: "خالية", emptyLong: "الصالة خالية", closed: "مغلق", busiestKey: "الأكثر ازدحامًا", fewKey: `أقل من ${b(3)} أيام`,
-      numbers: "الأرقام", closedTip: "خارج ساعات العمل", noneTip: "لا قراءات في هذه الفترة",
+      numbers: "الأرقام", closedTip: "خارج ساعات العمل",
       avgOf: (n) => `معدّل ${arDays(n)}`,
       wd: ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"],
       heatKeys: "استخدم مفاتيح الأسهم للتنقل بين الساعات والأيام، وHome وEnd لأول ساعة وآخرها.",
@@ -120,7 +120,7 @@
       cnotes: { empty: "خالية", peak: "الذروة", latest: "آخر قراءة" },
       dens: { def: "الكثافة الافتراضية: صفوف 48", compact: "الكثافة المضغوطة: صفوف 36" },
       cancel: "إلغاء", apply: "عرض الفترة", save: "حفظ الملف", working: "جارٍ التجهيز…", close: "إغلاق", retry: "إعادة المحاولة", done: "تم",
-      seg: { "7d": `آخر ${b(7)} أيام`, "28d": `آخر ${b(4)} أسابيع`, custom: "فترة أخرى…" }, segName: "الفترة",
+      seg: { "7d": `آخر ${b(7)} أيام`, "28d": `آخر ${b(28)} يومًا`, custom: "فترة أخرى…" }, segName: "الفترة",
       from: "من", to: "إلى", hint: `يوم/شهر/سنة، مثل ${b("16/09/2026")}`, errOrder: "تاريخ النهاية قبل البداية", errRequired: "أدخل تاريخًا", errFormat: `اكتب التاريخ هكذا: ${b("16/09/2026")}`,
       rangeTitle: "اختر الفترة", rangeDesc: `القراءات متاحة من ${b(2)} أغسطس ${b(2026)} حتى ${b(22)} سبتمبر ${b(2026)}.`,
       exportTitle: "تصدير بيانات الدقائق", exportDesc: "صف لكل دقيقة بتوقيت الصالة، مع تمييز الدقائق المغلقة والتي بلا قراءات.",
@@ -142,7 +142,7 @@
       hdrTitle: "التقارير", hdrSub: `${b("26")} أغسطس – ${b("22")} سبتمبر ${b(2026)}<span class="sep">·</span>${b(28)} يومًا`,
       hdrCap: "رأس الصفحة: العنوان والفترة، وحالة التشغيل في نهاية السطر؛ ثم عناصر تحكم الصفحة تحته",
       exportMinutes: "تصدير بيانات الدقائق",
-      emptyTable: `لا قراءات من ${b(1)} يوليو ${b(2026)} إلى ${b(31)} يوليو ${b(2026)}`, emptyAction: `عرض آخر ${b(4)} أسابيع`,
+      emptyTable: `لا قراءات من ${b(1)} يوليو ${b(2026)} إلى ${b(31)} يوليو ${b(2026)}`, emptyAction: `عرض آخر ${b(28)} يومًا`,
       emptyCaps: { table: "جدول بلا قراءات، وطريق واحد للعودة", alert: "تنبيه وإعادة محاولة واحدة" },
       colourNames: { page: "الصفحة", card: "البطاقة", panel: "النافذة", head: "رأس الجدول", line: "خط السطح", line2: "خط العنصر", line3: "عند المرور", ink: "الطباشير", ink2: "ثانوي", ink3: "توضيحي", red: "أحمر FITWAY", redhi: "الأحمر الساطع", ox: "العنابي", obs: "الأسود", live: "مباشر", delayed: "متأخر", amber: "نص المتأخر", stale: "رمادي قديم", err: "خطأ", field: "حافة الحقل" },
       ratioOn: (r) => `${b(r)}:1 على البطاقة`,
@@ -201,10 +201,10 @@
       vars: { peak: "The peak", line: "A stop on the line", gap: "A span with no readings", ahead: "Still ahead", delayed: "Latest reading, delayed", nohistory: "Still ahead, no history" },
       aheadNote: "The usual line after now at .36",
       patternTitle: "Busy times",
-      patternSub: "Average inside by day and hour · 4 weeks, 28 days",
+      patternSub: "Average inside by day and hour · 28 days",
       busiest: (w, h) => `Busiest: ${w} ${h}`,
       fewer: "Fewer", more: "More", emptyWord: "Empty", emptyLong: "Empty", closed: "Closed", busiestKey: "Busiest", fewKey: "Fewer than 3 days",
-      numbers: "Numbers", closedTip: "Outside opening hours", noneTip: "No readings in these dates",
+      numbers: "Numbers", closedTip: "Outside opening hours",
       avgOf: (n) => `Average of ${n} ${n === 1 ? "day" : "days"}`,
       wd: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
       heatKeys: "Use the arrow keys to move between hours and days. Home and End go to the day's first and last hour.",
@@ -219,7 +219,7 @@
       cnotes: { empty: "Empty", peak: "Peak", latest: "Latest reading" },
       dens: { def: "Default density: 48 px rows", compact: "Compact density: 36 px rows" },
       cancel: "Cancel", apply: "Show these dates", save: "Save file", working: "Preparing…", close: "Close", retry: "Try again", done: "Done",
-      seg: { "7d": "Last 7 days", "28d": "Last 4 weeks", custom: "Custom…" }, segName: "Dates",
+      seg: { "7d": "Last 7 days", "28d": "Last 28 days", custom: "Custom…" }, segName: "Dates",
       from: "From", to: "To", hint: "Day/month/year, like 16/09/2026", errOrder: "The end is before the start", errRequired: "Enter a date", errFormat: "Write the date like 16/09/2026",
       rangeTitle: "Choose dates", rangeDesc: "Readings are available from 2 Aug 2026 to 22 Sep 2026.",
       exportTitle: "Export minute data", exportDesc: "One row per minute, in gym time. Closed minutes and minutes with no readings are marked.",
@@ -241,7 +241,7 @@
       hdrTitle: "Reports", hdrSub: `26 Aug – 22 Sep 2026<span class="sep">·</span>28 days`,
       hdrCap: "Page header: the title and the period, the Operations status at the inline end; the page's controls under it",
       exportMinutes: "Export minute data",
-      emptyTable: "No readings from 1 Jul 2026 to 31 Jul 2026", emptyAction: "Show the last 4 weeks",
+      emptyTable: "No readings from 1 Jul 2026 to 31 Jul 2026", emptyAction: "Show the last 28 days",
       emptyCaps: { table: "A table with no readings, and one way back", alert: "An alert and one retry" },
       colourNames: { page: "Page", card: "Card", panel: "Dialog", head: "Table head", line: "Surface line", line2: "Control line", line3: "Hover line", ink: "Chalk", ink2: "Secondary", ink3: "Caption", red: "FITWAY red", redhi: "Bright red", ox: "Oxblood", obs: "Obsidian", live: "Live", delayed: "Delayed", amber: "Delayed text", stale: "Stale grey", err: "Error", field: "Field edge" },
       ratioOn: (r) => `${r}:1 on a card`,
@@ -567,7 +567,7 @@
     const when = c0 === c1 ? hourRange(h0) : LANG === "ar" ? `${clock((h0 - 6) * 60).h12} ${suf(clock((h0 - 6) * 60).pm)} - ${clock((h1 - 5) * 60).h12} ${suf(clock((h1 - 5) * 60).pm)}` : `${hourLabel((h0 - 6) * 60)} – ${hourLabel((h1 - 5) * 60)}`;
     const t = `<div class="cx-tip-t">${L.wd[r]} · ${b(when)}</div>`;
     if (td.classList.contains("closed")) return `${t}<div class="cx-tip-main"><span class="cx-tip-word">${L.closed}</span></div><div class="cx-tip-u">${L.closedTip}</div>`;
-    if (td.classList.contains("none")) return `${t}<div class="cx-tip-main"><span class="cx-tip-word">${L.noReadings}</span></div><div class="cx-tip-u">${L.noneTip}</div>`;
+    if (td.classList.contains("none")) return `${t}<div class="cx-tip-main"><span class="cx-tip-word">${L.noReadings}</span></div>`;
     if (td.classList.contains("zero")) return `${t}<div class="cx-tip-main"><bdi class="cx-tip-v">0</bdi><span class="cx-tip-l">${L.emptyLong}</span></div><div class="cx-tip-u">${L.avgOf(4)}</div>`;
     const v = +td.querySelector(".hv").textContent, few = td.classList.contains("few");
     return `${t}<div class="cx-tip-main"><bdi class="cx-tip-v">${v}</bdi><span class="cx-tip-l">${L.levels[levelOf(v)]}</span></div><div class="cx-tip-u">${L.avgOf(few ? 2 : 4)}</div>`;
