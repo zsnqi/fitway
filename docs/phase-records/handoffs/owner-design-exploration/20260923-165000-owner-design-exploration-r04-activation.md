@@ -3640,3 +3640,32 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
     - `637b285` replaces "the commit after `d76972c`".
 - **Next:** on its report, run the G5 check and push. Then launch step 3's second part, a fresh
   `owner-direction-designer` for Daily's missing states (STA-10, K-02), at every size.
+## The decisions recorded at `527c159`, and the states round launched (2026-10-01)
+
+- **The fixer delivered `527c159`** on top of `637b285`. The coordinator pushed it as a fast-forward.
+  - 2 files, +56/−50: `DESIGN-SPEC.md` and `components.js`.
+  - Self-reported, not verified: F1-F5 pass.
+    - Spec lint: 326 rows. R 257, C 15, K 54, P 0, with 0 problems.
+    - 33 instances of "the commit after `d76972c`" now read `637b285`.
+    - `components.html` shows the ring key, with no "Proposed" label, AR and EN.
+  - **Caveats:**
+    - the legend specimen's caption still cites "Q1" rather than CHT-20;
+    - a path in §0's `user 2026-10-01` row has `\f` turned into a control character (`D:itway-scratch`). This
+      predates the run.
+    - Both are passed on to the next designer.
+- **G5 check:** s04 is clean at `527c159`, the coordinator worktree matches the snapshot, and only 3174 listens.
+- **Coordinator spot check:** CHT-18…20 read `R`, §8 has "Answered 2026-10-01", and no "commit after `d76972c`" is
+  left.
+- **Launched:** step 3's second part, a fresh `owner-direction-designer` (`xhigh`), run `owner_states_r04_s19`, in the
+  background.
+  - Brief: `D:\fitway-scratch\daily\states\BRIEF.md`.
+  - Base: s04 at `527c159`. Ports: 3173, 3176 and 3177.
+  - It writes in `E/` and `D:\fitway-scratch\daily\states\`.
+  - It designs Daily's loading, closed, unavailable and error states (STA-10, K-02) at 1440, 768 and 390, and checks
+    them at 1024, 320 and 200% zoom, AR and EN. Each state gets a `?state=` URL. Loading must arrive into live with zero
+    shift.
+  - Live, delayed, no history and Reports must stay pixel-identical.
+- **If this session is lost,** a new coordinator checks s04 for a commit on top of `527c159`. If it is missing, a fresh
+  designer takes the same brief.
+- **Next:** on its report, run the G5 check and push, inspect the sheets, and show the user the states on 3174. Then a
+  fresh design reviewer critiques the whole of step 3, and the user decides.
