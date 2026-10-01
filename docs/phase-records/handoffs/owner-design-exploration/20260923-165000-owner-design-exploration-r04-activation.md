@@ -4432,3 +4432,13 @@ The user ends this local session here and continues in a new cloud session. No a
   minimum; 1440's week grid stays from 1280 up. *User 2026-10-01,* on the coordinator's recommendation.
 - **Q18 and Q19 are not open:** the user accepted both on 2026-10-01 ("The user's phone critique of phase B"). The
   spec still lists them as open, so the fix round records them as answered. The coordinator did not ask again.
+- **Decision 7, the empty custom period's header line keeps its middle dot:** «لا قراءات · 31 يومًا». The user finds it
+  cleaner. DO-NOT.md line 27 covers rows with a time range, not this header line. *User 2026-10-01,* against the
+  coordinator's recommendation (duration first, then the dotted mark).
+- **The desktop keeps the week grid.** The user proposed unifying 1280+ with B (one day at a time). The coordinator
+  recommended keeping the grid, where the width allows the whole week at once. The user agreed: no change at 1280+.
+  *User 2026-10-01.*
+- **Reopened by the user: the dotted mark in no-readings rows** («10:00 ص – 2:00 م ···· لا قراءات», DO-NOT.md
+  line 27, chosen 2026-10-01). The user finds dots before the words odd. Shown: (1) the dots, (2) the range, a gap,
+  then the words, (3) one sentence, «لا قراءات من 10:00 ص إلى 2:00 م». The coordinator recommends 2. Waiting for the
+  user's pick.
