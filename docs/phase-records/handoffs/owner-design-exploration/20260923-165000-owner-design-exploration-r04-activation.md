@@ -4488,3 +4488,15 @@ The user ends this cloud session here and continues in a new cloud session. No a
   3. **Reports' states** (K-02, with K-38), with a fresh designer, only after the user approves.
   4. **A fresh reviewer for step 4.** It also looks at Daily at 390 through the "compressed, not designed" lens,
      because the user suspects it. Any change to Daily is the user's call.
+
+## Cloud resume, and the phone fixes launched (2026-10-01)
+
+- **Environment checked:** `node_modules`, Impeccable on the PATH and the Chromium shim were in place.
+  `/home/user/s04` was added on `owner-followup-r04-build` at `ff0e922` and installed with
+  `pnpm install --frozen-lockfile`. `pnpm context:show --milestone owner-design-exploration-r04` and
+  `pnpm check:design-context` passed.
+- **The brief's paths checked:** E/, `reports.js:2-3`, `reports-build-capture.mjs`, `DESIGN-SPEC.md`,
+  `tools/lint-spec.mjs`, `README.md`, `components.html`, `DESIGN_GUIDE.md`, `DO-NOT.md` and `aa509b9` all resolve.
+- **Launched:** a fresh `owner-direction-builder` (Opus, `high`) on `briefs/step4-reports-phone-fixes.md`, in
+  `/home/user/s04`, with this session's scratchpad (`…/scratchpad/phone-fixes/`) as the scratch folder. It commits
+  once, does not push, and stops for the user's review.
