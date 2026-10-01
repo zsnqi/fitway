@@ -6,14 +6,13 @@ differing from them. Another designer drew three options. The user picked one, a
 
 ## Where
 
-- **Worktree:** `D:\Projects\fitway-worktrees\owner-followup-r04-s04`, branch `owner-followup-r04-build`, base
-  `aa509b9`. You are its only writer.
+- **Worktree:** `/home/user/s04` (a cloud session), branch `owner-followup-r04-build`, base `aa509b9`. You are its
+  only writer. The coordinator names the paths if the session runs elsewhere.
   - Write only in `design-research/owner-composition-exploration-r04/directions/eclipse/` (E/) and in
-    `D:\fitway-temp\reports-phone\build\`.
+    `/tmp/fitway-scratch/reports-phone/build/` (the scratch folder).
   - Commit, do not push.
-- **Machine:** local Windows. Drive C is full: keep every temp and scratch file on D:, and point `TEMP`/`TMP` at
-  `D:\fitway-temp` for any command that writes large temp output. Run Playwright from PowerShell, not Git Bash.
-- **Rendering:** the repository's `@playwright/test` from the worktree. Open pages as `file://` URLs. Reports'
+- **Rendering:** the repository's `@playwright/test` from the worktree works unmodified, with Chromium shimmed. Do not
+  run `playwright install`. Open pages as `file://` URLs. Reports'
   parameters are listed in `reports.js:2-3`. `E/reports-capture.mjs` (phase B) and `E/reports-options-capture.mjs`
   (the options round) are there to reuse or not.
 - **Entry checks:** in the worktree, run `pnpm check:design-context` and
@@ -22,7 +21,8 @@ differing from them. Another designer drew three options. The user picked one, a
 
 ## Read first, only these
 
-1. `D:\Projects\fitway-worktrees\owner-design-exploration-r04\design-research\owner-composition-exploration-r04\directions\DO-NOT.md`:
+1. `/home/user/fitway/design-research/owner-composition-exploration-r04/directions/DO-NOT.md` (the coordinator
+   branch):
    the user's own rejections. They bind you.
 2. `NEXT-DIRECTION-BRIEF.md` in the same folder: lines 18-35, "What the user wants", and lines 821-918, "The
    design-phase plan".
@@ -70,7 +70,7 @@ The user did not pick A (the week in three-hour blocks) or C (the week swiped si
    (complete days only, honest empty and closed spans, Western digits, Arabic RTL and English LTR), and Daily.
 7. **Not in this round:** Reports' page states (K-02), K-36, the held-out suite and the full test run.
 
-## Evidence (in `D:\fitway-temp\reports-phone\build\`)
+## Evidence (in the scratch folder)
 
 - **Contact sheets for the user, first:**
   1. 390: phase B (`9309382`) and the build, AR and EN, first screen and full page, in `28d`;

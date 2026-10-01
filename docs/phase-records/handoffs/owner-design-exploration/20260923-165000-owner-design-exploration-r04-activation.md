@@ -4322,13 +4322,45 @@ from this section.
   gated on `?opt`. Seen: B's weekday strip bars are of nearly equal height, so the strip compares days weakly.
 - **Next:** the user picks (mixing is possible, for example A's pattern with B's list); a fresh designer builds it.
 
-## The user picks option B, and its build launched (2026-10-01)
+## The user picks option B, and its build brief is ready (2026-10-01)
 
 - **User decision (2026-10-01): option B, one day at a time,** on the coordinator's and the designer's
   recommendation. A and C are not picked.
-- **Launched:** a fresh `owner-direction-designer` (Opus, `xhigh`) on `briefs/step4-reports-phone-build.md`, base
-  `aa509b9`, evidence in `D:\fitway-temp\reports-phone\build\`.
+- **Ready, not launched:** the brief `briefs/step4-reports-phone-build.md` (base `aa509b9`), for a fresh
+  `owner-direction-designer` (Opus, `xhigh`). The user ended the session before the launch. Its paths are the cloud's
+  (`/home/user/s04`, `/tmp/fitway-scratch/reports-phone/build/`).
   - B becomes the page below 1024, and the `?opt` switch leaves.
   - It finishes B's weak points: the week strip that barely compares days, faint quiet hours, the empty sentence said
     twice, and the long full list.
   - It looks at 768 under the same lens, removes the Q17 baseline at every size, and closes Q20-Q22 and K-29.
+
+## New cloud-session resume point after the phone pick (2026-10-01)
+
+The user ends this local session here and continues in a new cloud session. No agent is running.
+
+- **State at the end of this session:**
+  - **Build branch** `owner-followup-r04-build` at `aa509b9`, pushed: phase B at `9309382`, then the options round
+    behind `?opt=a|b|c`.
+  - **Coordinator branch** `codex/owner-redesign-r04`, pushed. It holds this handoff, `directions/DO-NOT.md` and the
+    briefs, including `step4-reports-phone-options.md` and `step4-reports-phone-build.md`.
+  - The options round's sheets and frames are on the local machine only, in `D:\fitway-temp\reports-phone\options\`.
+    The cloud can re-render any option from `aa509b9` with `E/reports-options-capture.mjs`.
+  - **Codex batch, still for the local machine:** `components.html` scrolls sideways at 390 and 768 EN; its header date
+    range breaks at 390 and 320; the details' «Open, nobody inside» range breaks at 320 EN. It runs after the phone
+    build is integrated, since both write in E/.
+- **The working agreements** in "The user's phone critique of phase B, and the new-session resume point" still bind.
+- **New session, first steps:**
+  1. Check the environment as in "The user's phone critique of phase B, and the new-session resume point", step 1.
+  2. `git fetch origin owner-followup-r04-build && git worktree add ../s04 owner-followup-r04-build`, then
+     `pnpm install --frozen-lockfile` in `../s04`. Confirm `../s04` is at `aa509b9`.
+  3. Run `pnpm context:show --milestone owner-design-exploration-r04` (no `--`) and `pnpm check:design-context`.
+  4. Read this section and the two sections before it, then `briefs/step4-reports-phone-build.md`. Do not read the
+     whole handoff.
+- **Next work, in order:**
+  1. **Launch the phone build:** a fresh `owner-direction-designer` on `briefs/step4-reports-phone-build.md`. The user
+     already approved this launch (options first, then a build with a fresh designer). Check the brief's paths against
+     the session's real paths first.
+  2. Inspect its frames, push, and show the user the contact sheets for review.
+  3. **Reports' states** (K-02, with K-38), with a fresh designer.
+  4. **A fresh reviewer for step 4.** It also looks at Daily at 390 through the "compressed, not designed" lens,
+     because the user suspects it. Any change to Daily is the user's call.
