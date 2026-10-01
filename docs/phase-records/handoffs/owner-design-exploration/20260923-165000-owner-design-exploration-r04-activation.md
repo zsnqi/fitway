@@ -4008,3 +4008,20 @@ The local usage limit is close, so the user continues this coordinator role in a
     joined after the dash.
   - DAT-3 is rewritten, and English is untouched.
 - **Next:** check the fixer's frames and push. Then step 4's brief, using DO-NOT.md and the Operations change.
+## The en dash at `d2cf1a3` (2026-10-01)
+
+- **Delivered at `d2cf1a3`** on `9a98164`: `DESIGN-SPEC.md`, `app.js`, `components.js` and `reports.js`, +29/−23.
+  - The `DASH` constants and the range helpers now give the en dash in Arabic.
+  - A same-meridiem hour range is now `<bdi dir="ltr">6–⁠7</bdi> م`, with U+2060 after the dash. The pair is isolated,
+    not the suffix, so «م» stays where it was.
+  - DAT-3 is rewritten without "memory", and 8 Arabic examples in other rows changed.
+  - Self-reported:
+    - 216 range sites across 30 page and size pairs keep their order, line count and visibility;
+    - no hyphen-minus is left in an Arabic range;
+    - the English `outerHTML` is byte-identical.
+- **Coordinator inspection, not verification:** the lint is clean. AR Daily at 1440 reads «6–7 م» and
+  «6:00 ص – 1:00 ص». AR Reports at 1440 reads «26 أغسطس – 22 سبتمبر» and «16 – 22 سبتمبر».
+- **Pushed** `owner-followup-r04-build` to `d2cf1a3`.
+- **Added to the next Codex batch:** in `components.html`, the header's date range «26 أغسطس – 22 سبتمبر» breaks over
+  two lines at 390 and 320. This predates the change.
+- **Next:** step 4's brief.
