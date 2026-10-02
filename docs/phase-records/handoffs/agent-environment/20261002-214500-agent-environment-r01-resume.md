@@ -60,8 +60,10 @@ Nothing.
   resume point, and its `pnpm context:show -- --milestone` form fails on pnpm 11 (drop the `--`).
 - Two milestones are active; a coordinator resuming without a named one reads both resume points.
 - One writer per worktree: do not commit in a worktree while Codex works there.
-- `codex-companion.mjs status <job>` finds a job only when run from the job's `--cwd` worktree; a watcher must `cd`
-  there first.
+- Waiting on Codex: launch `codex-companion.mjs task` without `--background` inside a harness background shell, so
+  the harness reports the exit. Polling `status <job>` is unreliable: it found the job only from PowerShell in the
+  job's `--cwd` worktree, and a Git Bash watcher that treated "no job found" as "still running" reported Codex's
+  20:56 finish 36 minutes late.
 
 ## Pointers
 
