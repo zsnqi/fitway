@@ -81,3 +81,13 @@ held-out checks live outside the repository and never appear here or in a brief.
   folder.
 - **Side finding:** CI on `a7c9ecc` (run 37063118711) fails nine `check-brief` tests on the GitHub runner, whose TEMP
   is an 8.3 short path (`RUNNER~1`): the named worktree is compared with the long path Git returns. Moved to round 7.
+
+## Round 7: `briefs/codex-r7-path-identity.md`, result `4d5d2f3`
+
+- **Brief rows:** 2 of 2 (Q1, Q2). 666 script tests pass and one POSIX-only test is skipped, with TEMP both long and
+  short; both checkers and Biome pass. Codex made a real 8.3 name with `fsutil file setshortname` and showed the
+  suite failing with it first (56 failures).
+- **Held-out rows:** 3 of 3. GitHub CI run 37069750244 on `4d5d2f3` passes every step, where run 37063118711 failed.
+  The two live resume points pass. Existing folders pass as references (relative and absolute, with or without a
+  trailing `/`) and missing ones fail.
+- **Failure cause:** none.
