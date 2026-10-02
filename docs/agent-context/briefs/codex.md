@@ -48,6 +48,9 @@ SHA; anything you could not do.
 - [ ] Every way to open and run the artifact is named, with the ones the checks cover (B1).
 - [ ] The baseline meets each required outcome under each condition, or the condition is marked "unchanged from the
       baseline" (B2, B7).
+- [ ] Every command an outcome requires was run on the baseline in that scope first: `pnpm biome check .` has 21
+      older errors in `design-research/**`, which Biome's config excludes anyway, and `git ls-files -ci` lists the
+      local `.claude/` exclude (agent-environment rounds 3, 4; nav-2).
 - [ ] No verifier probe, threshold or held-out check, and no `fitway-grader` path (B5).
 - [ ] A test suite that needs a clean tree is run after the commit (agent-environment round 2).
 - [ ] Every field is a pointer (path and §heading, row IDs, decision numbers); nothing is pasted from a source.
