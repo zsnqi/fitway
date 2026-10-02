@@ -4588,3 +4588,10 @@ The user ends this cloud session here and continues in a new cloud session. No a
 - **The user marked the peak time under the peak value** («6:25 م» under «55») in the 768 Arabic table, before and
   after, and says it shows in roughly the first three crops. A fresh agent diagnoses it, read-only, into
   `…/scratchpad/peak/`. The fix waits for the diagnosis.
+- **Diagnosed:** in the Arabic day table at 721-1023 px, the peak number hangs 15.75-28.67 px in from the column's
+  right edge, while its time and the header reach it. `reports.css:425` stacks the cell with `align-items:
+  flex-end`, which is the left in RTL; it dates from `bde1cde`. English, ≥1024 and the 390 list are not affected
+  (in the list the number stands over the label «الذروة» by design). Frozen fix: `[dir="rtl"] .pk { align-items:
+  flex-start; }` in the same media block.
+- **Launched:** a fresh `owner-direction-fixer` (Opus) on `3e5b997` with the peak fix and decision 14, scratch
+  folder `…/scratchpad/final-fixes/`. It commits once and does not push.
