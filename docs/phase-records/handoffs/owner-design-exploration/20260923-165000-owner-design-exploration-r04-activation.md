@@ -1328,3 +1328,3432 @@ level with `origin`). The packet SHA-256 matched and `context:show` reported `RE
   - Next, after the user's review: the follow-up round in the brief (tooltip width pending review, recapture on
     mismatch, the README wording). Then the "After the Daily page" screen plan, starting with Reports.
   - Nothing is selected, accepted or promoted.
+
+## User answers and the follow-up round (2026-09-27)
+
+- **User answers:** the coordinator keeps the 200 ms font cap (the user left it to the coordinator); the follow-up round
+  and the desktop-first screen plan are agreed. The merge proposals are read as agreed in principle and are confirmed
+  explicitly before the first screen that depends on them. Recorded in the brief, "Decisions after the step 3 report".
+- **Review route:** `.claude/launch.json` entry `eclipse` serves `eclipse/` at `http://localhost:3174` for the user's
+  own look at the intro. The intro plays only on a tab's first open with the fonts cached, so a new tab shows it.
+- **Launched:** a fresh `owner-direction-builder` (`high`), run `owner_followup_r04_s04`, in the coordinator-allocated
+  worktree `D:/Projects/fitway-worktrees/owner-followup-r04-s04`, branch `owner-followup-r04-build` from `622cd0b`.
+  Owned path: `eclipse/**` only. Its brief is in this session's scratchpad `followup/BRIEF.md` (outside the
+  repository): one fixed tooltip width with a before/after comparison for the user, recapture on a hash mismatch
+  (counted only if it differs twice in a row, with a planted-change negative control), and the README wording.
+- **Next:** inspect the builder's result, show the user the tooltip before/after, then a fresh independent verifier;
+  integrate only after the user keeps the width. Then Reports.
+- **Later on 2026-09-27:** the user confirmed both merge proposals explicitly, and after viewing the intro found it too
+  fast. The user tried the tuner's intro speed at 0.70× and approved it: the intro becomes about 1171 ms instead of
+  820 ms, as the new 1× default. It is a separate round after the follow-up round (one writer per round on
+  `eclipse/`). Both are recorded in the brief, "Decisions after the step 3 report".
+- **Follow-up round, builder result (`645bd70` on `owner-followup-r04-build`):** fixed tooltip width 138 px, recapture
+  on a hash difference (70 comparisons, no noise; a planted 1 px dot fails twice and exits 1), and the README wording.
+  The coordinator inspected both before/after contact sheets and showed them to the user. The user chose the
+  narrower width (the widest numbered tooltip, about 127 px; only the missing-span stop may grow), recorded in the
+  brief. A fresh `owner-direction-fixer` (`medium`, run `owner_followup_r04_s04_fix127`) applies it on the same
+  branch, from the scratchpad brief `followup/FIX-127.md`. That brief lists the constraints in force explicitly,
+  because the brief keeps older sentences that later rounds superseded (Round 6 §1, §5, §8 and Round 7 §4).
+- **127 px kept, then verified:** the fixer's `92398dc` (127 px, placement by the real width) was shown to the user,
+  who kept it. A fresh `owner-direction-verifier` (`xhigh`, read-only, checklist `followup/VERIFY.md` in the
+  scratchpad, no implementer reports) verified `622cd0b..92398dc`: width, stability, gap, placement, interaction and
+  "nothing else changes" PASS; the recapture FAIL (partial). Findings:
+  - a recapture never re-renders a reference rendered in the same run, so one of its two runs exited 1 on noise;
+  - 127 px fits only the 7:42 PM snapshot (later readings reach about 131 px in English and 141 px in Arabic);
+  - the plant guard accepts an explicit `evidence/` path; `liveUpdateEndsAtCanonical` is always false (pre-existing,
+    not in the exit code); three README wording points.
+  The coordinator checked the width finding against the verifier's step data before showing it to the user.
+- **Repair 1 of 2:** the user chose a width measured from the chart's current stops (recorded in the brief). A fresh
+  `owner-direction-builder` (`high`, run `owner_followup_r04_s04_repair1`, brief `followup/FIX-R1.md`) applies it with
+  a two-sided recapture, a negative control that reaches every exact comparison, a stricter plant guard and the
+  README corrections. A fresh verifier follows. The intro-speed round (brief `introspeed/FIX-SPEED.md`, ready) waits
+  until this round is integrated.
+- **Repair 1 verified (`6123863`):** a second fresh verifier (checklist `followup/VERIFY-R1.md`, resumed once after a
+  usage-limit stop with its scratch intact). Width, number stability, invisibility and "nothing else changes" PASS.
+  Findings:
+  - the box covers "now" from about 8:40 PM (pre-existing in `622cd0b` from about 10:40 PM);
+  - the plant guard can be bypassed by a UNC admin-share path and by `--intro-frames`;
+  - the box stays in its old place during a width-changing morph;
+  - README wording.
+  The coordinator inspected the coverage frames and the verifier's coverage data before showing them to the user.
+- **Repair 2 of 2 (the last), executed by Codex at the user's request:** the user takes the coordinator's brief to
+  Codex and reports back when it is done. The brief is in this session's scratchpad `repair2/CODEX-BRIEF.md`
+  (session `92a4c1f1`), outside the repository. It covers:
+  - the agreed never-cover-now rule, with minimal change;
+  - an allow-list plant guard (temp directory only);
+  - placing the box again during the morph;
+  - README corrections;
+  - a full-day acceptance sweep identical to the next verifier's.
+  Worktree `owner-followup-r04-s04`, branch `owner-followup-r04-build` from `6123863`, owned path `eclipse/**` only.
+  After Codex reports, the coordinator inspects the result and briefs a fresh independent verifier. A third failure
+  is `FAILED_VALIDATION` for this round.
+
+## Repair 2 delivered by Codex, and new-session resume point (2026-09-27)
+
+- **Codex delivered repair 2 as `3b1c3da`** on `owner-followup-r04-build`, on top of `6123863`. It changes `eclipse/`
+  only and leaves the worktree clean. Its report:
+  - violations: at `622cd0b`, 422 per live language/font; at `6123863`, about 570-590; after the repair, 0 across
+    149,776 selections, with a minimum clearance of 11.0019 px;
+  - exactly the 2,315 previously failing boxes changed: 938 centred above, 1,365 shifted up, 12 shifted down, largest
+    shift 48.53 px;
+  - both 7:42 PM hover frames are byte-identical;
+  - the guard refused 14 forms; `--plant` once gives exit 0 and always gives exit 1;
+  - both captures exited 0;
+  - LoAF and rAF gaps were proven with an in-page busy loop.
+- **Coordinator inspection:** the commit scope, and Codex's before/after sheets for AR and EN (five cases each):
+  - "now" is clear in every case;
+  - a shifted box sits just above "now", 2 px outside its halo;
+  - the sheets are in session `92a4c1f1`'s scratchpad, `repair2/work/compare/`.
+  This is not verification.
+- **Resume in a new session (the user asked for a lean context):**
+  1. Brief a fresh `owner-direction-verifier` with the checklist
+     `C:/Users/PCFORC~1/AppData/Local/Temp/claude/D--Projects-fitway-worktrees-owner-design-exploration-r04/92a4c1f1-9e99-491a-86f0-7ac6a992d689/scratchpad/repair2/VERIFY-R2.md`
+     (`622cd0b..3b1c3da`). This was the last allowed repair: a FAIL is `FAILED_VALIDATION` for the round, and needs a
+     terminal record before any successor.
+  2. **On PASS:**
+     - show the user the before/after sheets and the verifier's crowding observation;
+     - integrate while keeping the verified SHAs: rebase the coordinator's unpushed docs commits on
+       `codex/owner-redesign-r04` (`5f2cf96..` onwards, which touch no `eclipse/` file) onto `3b1c3da`, then
+       confirm the branch contains `3b1c3da` unchanged;
+     - pushing needs the user's word.
+  3. **The intro-speed round:**
+     - its fixer brief is in session `bb9e9dc7`'s scratchpad, `introspeed/FIX-SPEED.md`;
+     - before launching, update its base SHA, and add the width rule and the never-cover-now rule to its
+       "Constraints in force";
+     - then a fresh verifier.
+  4. **After the intro-speed round:** run `git apply --check` on the audit patch
+     `C:/Users/PCFORC~1/AppData/Local/Temp/claude/D--Projects-fitway-worktrees-owner-design-exploration-r04/6482348a-04f9-4b87-8e5b-460107b7a201/scratchpad/audit/brief-audit.patch`
+     (brief annotations only). Ask the user before applying it, because it comes from another session.
+  5. **Then the Reports screen**, as in the brief's screen plan.
+- **A side project the user asked for: the `ui-forensics` Agent Skill.**
+  - It is general UI-analysis tooling, with no FITWAY content.
+  - The staging copy is `D:/Projects/ui-forensics-skill-staging/ui-forensics/`: 26 files, image self-test 37/37, web
+    self-test 25/25, both run by the coordinator.
+  - Plan: the user runs Codex in a trial folder, `D:/Projects/ui-forensics-trial/`, without the skill and then with
+    it, on three questions with known answers:
+    - planted differences between two images;
+    - whether the box covers "now" at 9:30 PM in Arabic at `6123863` (yes);
+    - text contrast over glass.
+  - The new session prepares the folder:
+    - the questions and a private answer key kept outside the folder;
+    - a `git archive` of `6123863`'s `eclipse/`;
+    - Playwright access, for example a `node_modules` junction.
+  - After the without-skill run, install the skill into `~/.agents/skills/ui-forensics`, with junctions from
+    `~/.claude/skills` and `~/.codex/skills`, then run with the skill.
+
+## Repair 2 verified: the follow-up round ends in FAILED_VALIDATION (2026-09-27)
+
+- **Verifier:** a fresh `owner-direction-verifier` (`xhigh`, read-only, run `owner_followup_r04_s04_verify3`, checklist
+  `repair2/VERIFY-R2.md`) verified `622cd0b..3b1c3da`. The follow-up worktree stayed clean at `3b1c3da`, with no
+  listeners or junctions left. Its evidence is outside the repository, in `%TEMP%/eclipse-verify3/`.
+- **PASS:** items 1-3, 5-7 and 9, the full-day sweep, and quality.
+  - Width: `--tip-w` matched the verifier's own measure with 0 mismatches over 149,776 selections.
+  - Never cover now: the minimum distance is 11.0019 px. The positive control finds 2,315 violations at `6123863`.
+  - Minimal change: 147,461 clear placements are unchanged, and all 2,315 changed ones match the candidate model.
+  - Morph edge gap: 11.985-12.014 px.
+  - Guard: 31 bad spellings were refused before anything was written.
+  - Recapture: one run exited 1 on a machine network error (`ERR_NO_BUFFER_SPACE`), the other exited 0.
+  - Byte-identical 7:42 PM frames; the accessibility tree is unchanged.
+- **FAIL: item 4, placement changes ease.**
+  - A new reading that changes the selected stop's placement snaps the box in 15 of 36 such readings, by up to
+    97.5 px in one frame. The cause: `restoreSelection` → `selectStop(st, true)` places the box at once, and the
+    path-bend code projects straight to the clear point.
+  - During hover following near "now", the box stalls and then jumps in 41-49 of 248 transitions, against 8-12 at
+    `6123863`.
+  - The coordinator checked the first finding in the verifier's per-frame data, `motion-head-morphs.json`:
+    - 97.5 px in one 18 ms frame at `m-ar-1012-h1140` while the marker is still;
+    - 62-78.5 px single-frame moves from side to centred placement.
+    - The strip `frames/strip-ar-1046-h1110-morph.png` shows the box jumping up about 48 px between #23 and #24.
+    The second finding is the verifier's and was not re-measured by the coordinator.
+- **FAIL: item 8, the README.** Its easing claims are contradicted, and "real system temp directory" overstates a guard
+  that trusts TEMP/TMP. The counts all reproduce.
+- **Lower findings:**
+  - the guard follows TEMP/TMP;
+  - app.js:999 accepts a candidate with no rounding margin: 10.987-10.998 px at 1024×640 and 390×844;
+  - app.js:965 uses the integer `offsetHeight` (78 against 77.5), which causes a 0.5 px overshoot.
+- **Observations for the human (key frames checked by the coordinator):**
+  - At 8:43 PM and 9:30 PM, the 11:00 PM stop's box sits above its own ring and reads as its own.
+  - At 10:00 PM, a shifted 11:00 PM box floats about 50 px above its ring with a corner on the halo. It reads almost
+    as the latest reading's tooltip.
+  - At 10:42 PM and 12:05 AM, the boxes are clamped at the plot edge beside or above "now", with their ring at the
+    far corner.
+  - At 10:52 PM, the 1:00 AM stop with the web font shifts down over the 12 AM and 1 AM axis labels and its own
+    ring; with the fallback font it shifts up.
+- **Terminal state: `FAILED_VALIDATION` for the follow-up round lineage** (`645bd70`, `92398dc`, `6123863`,
+  `3b1c3da`). This was the last allowed repair, and the fresh verifier rejected it.
+  - Nothing from the round is integrated. `owner-followup-r04-build` stays unmerged as evidence, and `eclipse/` on
+    `codex/owner-redesign-r04` stays at `622cd0b`.
+  - The milestone itself stays `IN_PROGRESS`.
+  - The intro-speed round waits, because its base was to be the integrated follow-up round.
+- **The failure mode prior checks did not cover:** the box's continuity through placement changes.
+  - Every acceptance sweep so far measured where the box rests, plus the morph edge gap.
+  - None sampled the box every frame through a new reading that changes its placement.
+  - None compared hover-follow continuity near "now" against the base.
+- **Successor:** it needs the user's direction first, because the key frames raise a design question as well as the
+  mechanical one. The successor's record must name the changed hypothesis or scope, and why this failure mode will not
+  recur. At minimum, its acceptance includes per-frame box sampling through every new-reading placement change, and a
+  hover stall-and-jump count no worse than the base.
+
+## The ui-forensics trial folder is ready (2026-09-27)
+
+- **Folder:** `D:/Projects/ui-forensics-trial/`. It is outside the repository and holds no FITWAY answer. Contents:
+  - `eclipse/`: a `git archive` of `6123863`;
+  - `q1/a.png` and `q1/b.png`;
+  - `QUESTIONS.md`;
+  - `@playwright/test` 1.61.1, installed offline with pnpm (0 downloads), so there is no junction into the
+    repository.
+  Chromium launches from the folder.
+- **Answer key, run procedure, pristine manifest (56 files) and the measuring scripts:** in session `f8e879d9`'s
+  scratchpad, `trial/` (`KEY.md`, `pristine.sha256`). They are outside the trial folder.
+  - Q1 has six planted differences, from a removed element down to a 0.3 px move and a single pixel.
+  - Q2: at 9:30 PM, the 11:00 PM and 11:30 PM stops cover "now" (0 and 1.46 px), in AR, EN and both fonts.
+  - Q3: the CSS colours say 7.89:1. As rendered, 1 AM is 3.9-4.0 and 6 AM is 4.1-4.2 in the worst case.
+- **Next for the trial:**
+  1. The user runs Codex without the skill.
+  2. Move `out/` aside and check the manifest.
+  3. Install the skill into `~/.agents/skills/ui-forensics`, with junctions from `~/.claude/skills` and
+     `~/.codex/skills`.
+  4. The user runs Codex again with the same prompt.
+  5. Score both runs against the key.
+- **Next for the milestone:**
+  1. The user decides the follow-up round's successor: the scope, and the design question the key frames raise.
+  2. Then write its terminal-record fields and brief.
+  3. The intro-speed round, the audit patch and Reports wait behind it, in the order given in the resume point
+     above.
+
+## The user authorizes a successor: repair 3 (2026-09-27)
+
+- **Authorization:** the user authorized a third repair of the follow-up round. It is a successor attempt after the
+  `FAILED_VALIDATION` above, on the same rule. The user did not take up a design review of the placement.
+- **The failure mode prior checks did not cover:** the box's continuity through placement changes. It is recorded in
+  the section above.
+- **Changed scope:**
+  - one motion rule: every change of the box's position eases from its displayed position and velocity;
+  - rest geometry measured as rendered (real height, ≥ 11.00 px at four viewports);
+  - a guard that refuses the repository whatever TEMP/TMP say;
+  - README corrections.
+  Everything verified in `3b1c3da` stays as it is.
+- **Why it will not recur:** acceptance now samples the box every frame through every new-reading placement change
+  across the day (M1), and hover transitions near now under a fake clock against `6123863` (M2). The worker runs both
+  before committing, and the fresh verifier runs the same.
+- **Brief:** session `f8e879d9`'s scratchpad, `repair3/BRIEF.md`, based on `3b1c3da`, owned path `eclipse/**`. The
+  executor is not chosen yet.
+
+## ui-forensics trial results, and the skill installed (2026-09-27)
+
+- **Run 1, Codex without the skill:** Q1 5 of 6 (it called the planted 1 px dot "noise" without proof), Q2 and Q3
+  full. About 16 min.
+- **Run 2, Codex with the skill:**
+  - Q1 6 of 6: it proved the dot by a fresh-render repeat. Q2 and Q3 full.
+  - It picked up the skill without being told: the self-test, `diff_map` and its own controls.
+  - About 9.5 min.
+- **Scores and both runs' outputs:** session `f8e879d9`'s scratchpad, `trial/runs/`. The inputs were unchanged after
+  both runs.
+- **The skill is installed** at `~/.agents/skills/ui-forensics`, a copy of the staging folder, with junctions from
+  `~/.claude/skills` and `~/.codex/skills`.
+- **Next:** the user decides whether Codex runs repair 3 (`repair3/BRIEF.md`, which now points to the skill's
+  tools). The coordinator runs nothing until the user says so.
+- **Executor chosen:** the user gives repair 3 to Codex, with the skill installed. The worktree is
+  `owner-followup-r04-s04`, clean at `3b1c3da`, and the brief is `repair3/BRIEF.md`. When Codex reports, the
+  coordinator inspects the result, then briefs a fresh independent verifier with M1 and M2.
+
+## Repair 3 delivered by Codex, committed by the coordinator (2026-09-28)
+
+- **What Codex did:** it implemented repair 3 in `eclipse/` only (7 files), in about 2 h 10 min. Most of the time went
+  on the brief's acceptance sweeps; it re-measured M2 several times.
+- **Codex's report:** every brief check passes.
+  - S and V: 0 cases under 11 px over 224,902 rest placements, minimum 11.0000 px. The largest move is 90.20 px.
+  - M1: 0 of 72 over the allowance, with a worst step of 10.44 px against 12.70. `3b1c3da` has 12-14 violations per
+    web-font language.
+  - M2: stall-then-jump is 0 (`6123863` 0, `3b1c3da` up to 2). Settle median 434-445 ms and p90 496-498 ms, no slower
+    than `6123863`.
+  - E, G, I and J pass.
+- **Why Codex did not commit:** it held back because the repository fast ladder failed, in its "real repository
+  acceptance" frontier test.
+  - The coordinator reproduced the same failure in `owner-design-exploration-r04`, which has none of these changes:
+    `scripts/check-frontier-preservation.test.ts`, 1 failed and 29 passed, with `git status` unchanged.
+  - That test is not a gate for this milestone (unit: `NOT_REQUIRED`).
+  - The coordinator therefore committed the worker's changes unchanged as `a14009f` on `owner-followup-r04-build`. The
+    worktree is clean.
+- **Coordinator inspection:** the scope is `eclipse/` only, and pre-commit Biome passed. In Codex's strip of the 10:52
+  PM reading (AR), `3b1c3da` jumps and `a14009f` stays put. This is not verification.
+- **Verifier:** a fresh `owner-direction-verifier` (`xhigh`, run `owner_followup_r04_s04_verify4`) checks
+  `622cd0b..a14009f` against `repair3/VERIFY-R3.md` in session `f8e879d9`'s scratchpad. It is running.
+- **Verification level (user decision, 2026-09-28):** keep the current full-strength checks and independent
+  verification. The user intends the chosen direction to become the Owner design authority, so its measured
+  behaviour must hold. That adoption still needs its own explicit decision and visual acceptance of named frames, per
+  `AGENTS.md`.
+
+## Repair 3 verified: FAIL (2026-09-28)
+
+- **Verifier:** `owner_followup_r04_s04_verify4` (checklist `repair3/VERIFY-R3.md`, evidence in
+  `%TEMP%/eclipse-verify4/`). The worktree stayed clean at `a14009f`.
+- **PASS:**
+  - width, over 15,264 snapshots;
+  - the rest rule at four viewports: 599,104 selections, minimum 11.00000 px, and the positive control finds 55,399
+    at `6123863`;
+  - minimal change: 543,705 placements unchanged;
+  - the guard and the recapture;
+  - nothing else changes;
+  - quality, apart from the console.
+  The original defect is fixed: across 8,691 new-reading placement changes no frame exceeds the allowance (worst
+  0.93×), against 5,215 of 5,663 over it at `3b1c3da`.
+- **FAIL:**
+  1. **Moving onto the missing-span stop:** the box eases toward the time axis (`restPoint(gap).y`, app.js:837 and
+     1518) instead of its rest `ay`. It waits about 640 ms, then jumps 95.9 px, in 30 of 30 transitions.
+  2. **No history with motion on:** moving onto a still-ahead stop throws `Cannot read properties of null (reading
+     'x')` at app.js:1518, because `restPoint` returns null. The text changes while the box stays on the old stop.
+     There are 33 page errors in `errors-states.json`, and none at `6123863`.
+  3. **Rule 5 regressed:** at width-changing readings the box eases instead of keeping its 12 px edge. It drifts in
+     6,026 of 7,284 cases, worst 13 px; for example, the gap goes from 12 to 4 px and back.
+  4. **README claims** contradicted at lines 847, 853, 864, 882 and 890.
+  - Lower findings: clamped boxes have no rule; one still frame at each morph's end; a delayed minute tick; the
+    guard trusts TEMP.
+- **Coordinator check:** the page errors are in `errors-states.json`, the code at app.js:833-840 and 1518 matches, and
+  the strips were viewed: `targets/gap-strip-en.png` shows the ease toward the axis and then the jump, and
+  `frames/rule5-strip-a14009f.png` shows the gap 12 → 4 → 12.
+- **A coordinator brief gap:** `repair3/BRIEF.md` acceptance did not list three things, so the worker's own checks
+  could pass:
+  - a rule-5 recheck;
+  - moves onto the missing-span stop;
+  - the no-history state with motion on.
+  A next brief must list them explicitly.
+- **State:** this is the successor's first attempt, and it failed. The user decides the next step.
+- **Repair 4 authorized (2026-09-28):** the user authorized repair 4, the successor's second attempt, executed by
+  Codex with the skill.
+  - The brief is `repair4/BRIEF.md` in session `f8e879d9`'s scratchpad, based on `a14009f`.
+  - It names the three failures and gives them their own acceptance rows: GAP, NH and R5, each with a positive
+    control on `a14009f`.
+  - Every check runs in all three states.
+  - The width change is fixed by easing the anchor, not the left edge.
+  - The guard also refuses any git working tree.
+  - It tells the worker not to run the fast ladder, whose known failure is not a gate here.
+
+## Repair 4 delivered by Codex (2026-09-28)
+
+- **Commit:** Codex committed `8ae88f3` on `owner-followup-r04-build` after 1 h 36 min. It changes 8 files, all in
+  `eclipse/`, and leaves the worktree clean.
+- **Its report:** every row passes.
+  - S is identical to `a14009f`.
+  - GAP: 0 across 720 moves (`a14009f`: 2,578 frames over the allowance, 360 stalls).
+  - NH: 0 across 640 selections (`a14009f`: 88).
+  - R5: 0 across 24,187 cases (`a14009f`: 11,762).
+  - M1: 0 across 16,310.
+  - M2: median and p90 no slower than `6123863`. 144 individual transitions stay 17-100 ms slower, inherited from
+    `a14009f`.
+  - E, G, I and J pass.
+- **Coordinator inspection:** the scope is `eclipse/` only. In Codex's strip `strips/gap-0843-en.png`, the box stays
+  level on its move to the missing-span stop after repair 4; before it, the box dropped and then jumped at 656 ms.
+  This is not verification.
+- **Verifier:** a fresh `owner-direction-verifier` (`xhigh`, run `owner_followup_r04_s04_verify5`) checks
+  `622cd0b..8ae88f3` against `repair4/VERIFY-R4.md`. That checklist is the R3 checklist plus rules 4 and 5b, named
+  checks for the missing-span stop, no history and width changes, and all three states. It is running.
+
+## Repair 4 verified: PASS (2026-09-28)
+
+- **Verifier:** `owner_followup_r04_s04_verify5` (checklist `repair4/VERIFY-R4.md`, evidence in
+  `%TEMP%/eclipse-verify5/`) ran about 71 min. It found `8ae88f3` passes every item: 1-9, 5b, "Also check", capture and
+  quality. `git status` was unchanged.
+  - Rest: 599,104 boxes, minimum 11.000 px, 0 violations. The positive control finds 55,399 at `6123863`.
+  - Minimal change: 543,705 unchanged, and 55,399 match the candidate model with 0 disagreements (`rule3-detail.json`,
+    checked by the coordinator).
+  - Motion:
+    - new readings: 16,310 cases, 0 over the allowance;
+    - hover: 13,416, 0;
+    - missing-span stop: 720, 0.
+    The positive controls fail at `3b1c3da` and `a14009f`.
+  - Width change: 25,376 readings, edge 12 ± 0.02 px.
+  - No history: 0 page errors in 12 runs (`a14009f`: 63 per language).
+- **Notes and observations for the human (not failures):**
+  - A reading can change the placement mid-tail. With the 11:00 PM stop selected, the box moves between beside and
+    centred five times from 8:37 to 9:53 PM, smoothly (app.js 1741-1745, 1002-1003).
+  - Home and End now slide the box about 720 px while the ring jumps.
+  - Inherited: on the gap stop, the edge jumps by the width difference in the first frame; a folded stop's box lingers
+    about 267 ms.
+  - README: the layout-shift claim at 916-917, and the shift wording at 417-418.
+  - Visual:
+    - at 10:52 PM with the web font, the 1:00 AM box covers its ring and the 12 AM and 1 AM labels;
+    - at 10:42 PM and 12:05 AM, clamped boxes sit nearer "now" than their ring;
+    - at 10:00 PM, the 11:00 PM box sits over "now".
+  The coordinator viewed `look/sheet-ar.png` and `strips/sheet-h1020-0837-ar.png` and sent both to the user.
+- **Side effect:** the skill's image self-test writes into `~/.agents/skills/ui-forensics/tests/img/out` (1.1 MB). It
+  should write to temp; this is a skill fix for later.
+- **State:** the follow-up round is ready for integration. Integration (rebasing the coordinator's docs commits onto
+  `8ae88f3`, keeping the verified SHA) and any follow-up on the observations wait for the user. Pushing needs the
+  user's word.
+
+## User decisions after repair 4, and the plan (2026-09-28)
+
+- **Speed:** the user agreed two things:
+  - parallel static sweeps (timing-sensitive checks run alone);
+  - one known-bad version per positive control.
+  The user left the shared harness to the coordinator. The coordinator recommends it, built from the independent
+  verifier's own probes and frozen once verified.
+- **Observations:** the user wants them fixed now, in a small round by Codex. Codex may use one reviewer subagent
+  before committing. The independent verifier still follows.
+- **Plan:**
+  1. **Round T** (`tools/BRIEF.md`, session `f8e879d9`'s scratchpad), by Codex. It builds `E/checks/run.mjs` from
+     verify5's 18 probes, saved in `tools/reference/`. The harness:
+     - runs parallel workers;
+     - takes `--rev`/`--base` versions;
+     - has a plant for every check;
+     - adds a new `layout` measure: own ring, axis band, belongs, reversals, Home/End.
+     It must reproduce verify5's reference numbers at `8ae88f3`. The page does not change.
+  2. **A short independent check of the harness.**
+  3. **Round P** (`polish/BRIEF.md`), by Codex with a reviewer subagent, measured with the frozen harness:
+     - R1 never cover now;
+     - R2 never cover its own ring;
+     - R3 stay above the time axis;
+     - candidate (a′), a sideways move away from now;
+     - R4 no back-and-forth, stateless, with 0 reversals at 1440×900;
+     - R5 the box jumps with the ring on long jumps;
+     - R6 the missing-span first-frame edge;
+     - R7 README.
+  4. **The user sees the before and after, then a fresh verifier runs the harness plus independent spot checks.**
+  5. **Local integration;** a push needs the user's word.
+  6. **Then the intro-speed round.**
+- **R2-R4 change placements the user had agreed,** so the user sees the before and after before anything is
+  integrated.
+
+## Round T sent to Codex, and new-session resume point (2026-09-28)
+
+- **Status:** the user sent `tools/BRIEF.md` to Codex (round T, the harness, based on `8ae88f3`). The user will start a
+  new coordinator session, because this one is large.
+- **All scratch lives in session `f8e879d9`'s scratchpad:**
+  `C:/Users/PCFORC~1/AppData/Local/Temp/claude/D--Projects-fitway-worktrees-owner-design-exploration-r04/f8e879d9-0fb6-4b39-948b-2404e2518cd5/scratchpad/`.
+  It holds:
+  - `tools/BRIEF.md`, `tools/VERIFY-T.md`, `tools/reference/` (verify5's probes and summaries);
+  - `polish/BRIEF.md` (round P);
+  - `introspeed`: not here. Its brief is in session `bb9e9dc7`'s scratchpad, `introspeed/FIX-SPEED.md`.
+- **Resume steps:**
+  1. **When the user pastes Codex's round T report:**
+     - check the commit scope, which must be `E/checks/**` plus a README section;
+     - check that `git status` is clean;
+     - if Codex did not commit, find out why (the fast-ladder failure is known and not a gate);
+     - then launch a fresh `owner-direction-verifier` with `tools/VERIFY-T.md`.
+  2. **On PASS,** the harness is frozen at that SHA.
+     - Update `polish/BRIEF.md` section 0 with the round T SHA.
+     - The user sends round P to Codex.
+     - On Codex's report: inspect it, then show the user the before and after sheets, because R2-R4 change agreed
+       placements. Only then run a fresh verifier.
+     - That verifier runs the frozen harness (`--rev <P> --base 8ae88f3`), checks that `E/checks/**` is unchanged, and
+       adds its own independent spot checks and the named frames. Its checklist is not written yet; derive it from
+       `repair4/VERIFY-R4.md` and `polish/BRIEF.md` section 4.
+  3. **On PASS of round P:**
+     - integrate locally by rebasing the coordinator's docs commits onto round P's SHA, keeping the verified SHAs;
+     - a push needs the user's word.
+     - Then the intro-speed round: update its base SHA and its "Constraints in force" (the width rule, never cover now,
+       R1-R6), and measure it with the harness. Then the audit patch (ask the user). Then Reports.
+- **Working agreements from this session:**
+  - reply in Arabic and keep it short;
+  - the user runs Codex, and pastes its final message;
+  - never launch a Codex round without the user;
+  - full-strength verification stays, because the chosen direction is meant to become the Owner design authority. It
+    is adopted only when it is ready, by an explicit decision.
+
+## Round T delivered, and its verification started (2026-09-28)
+
+- **Commit:** Codex committed `ee2b399` on `owner-followup-r04-build` and did not push. It changes 27 files:
+  - `E/checks/**`, 26 new files;
+  - an 11-line "Checks" section at the end of `E/README.md`.
+  The worktree is clean.
+- **Codex's report:** all 9 checks pass at `8ae88f3` against `6123863`. Each check fails on its known-bad version
+  and on its own plant.
+  - `rest` with `--workers 4` is byte-identical to `--workers 1` (96 files): 754 s against 1,648 s.
+  - It explains two differences from the reference by definition:
+    - `nohist`: 1,976 checks, not 1,992. The reference's own runs add up to 1,976.
+    - CLS: 0.022-0.032, not 0.009-0.016. The reference summary already records 0.0222-0.0328 under the same
+      aggregation.
+  - The `layout` baseline at `8ae88f3`:
+    - own ring covered in 10,280 of 555,856 boxes;
+    - 840 below the axis;
+    - 28,532 that do not belong;
+    - 607 reversals;
+    - Home/End at most 97.28 px per frame.
+  - Codex saw clipping and stacking at 390×844. It is outside the round's scope.
+- **Time:** about 5 hours, as the user reports.
+  - The work folder shows five full runs (`all` or `rest`) of 12-47 minutes each, for the first build, the clean
+    acceptance, the serial rest, and the final rerun after review.
+  - The skill's self-test took about 2 minutes.
+- **Coordinator inspection:** the scope and `git status` are as above. This is not verification.
+  - `%TEMP%` on C holds four `ecg-*` guard copies from Codex's runs, one per run (16:21-20:13). Each is 43 MB and
+    holds a `node_modules` junction into `owner-followup-r04-s04`. The harness does not seem to remove them.
+  - They are left in place until the verifier reports. Deleting them needs the junction removed first.
+- **Temp moves to D:** drive C has 2.8 GB free, and one `all` run writes about 1.1 GB.
+  - The verifier runs with `TEMP` and `TMP` set to `D:\fitway-temp`.
+  - The closed sessions' scratchpads and `eclipse-verify3/4/5` without junctions are moving to `D:\fitway-scratch\`.
+    A junction stays at each old path, so the paths recorded here still resolve.
+- **Verifier:** a fresh `owner-direction-verifier` (`xhigh`, run `owner_followup_r04_s04_verify_t`) checks
+  `8ae88f3..ee2b399` against `tools/VERIFY-T.md`. Its evidence goes to `D:\fitway-temp\eclipse-verify-t\`, and item 7
+  is read as "only inside `D:\fitway-temp`". It is running.
+
+## User decisions while round T is verified (2026-09-28)
+
+- **Phone in round P:** R1-R4 are judged at 1440×900, 1280×800 and 1024×640 only. At 390×844 the numbers are reported,
+  and the page must only not break: no page errors and no horizontal page scroll.
+- **The screen plan still stands.** It is in `directions/NEXT-DIRECTION-BRIEF.md`, "After the Daily page" and "Round 7
+  close-out and the screen plan":
+  1. desktop first for every screen;
+  2. one early phone feasibility check of the table system at 390 and 320 px, on Reports;
+  3. then the phone at 390 px, 320 px and 200% reflow for every screen, and the polish;
+  4. then the authority record.
+  This session first proposed a separate phone round after the intro-speed round, because the resume point above did
+  not name the screen plan. The user caught it. **Every later resume point names that plan.**
+- **Faster rounds:** `polish/BRIEF.md` now makes Codex:
+  - measure its uncommitted page with `git stash create` and targeted checks while it works;
+  - run `all` once, after its last edit;
+  - reuse round T's verified `8ae88f3` run as the "before".
+  Scratch and temp go to `D:\fitway-temp`. The brief's section 0 still needs round T's SHA and the verified run's
+  folder after PASS.
+- **Moves to D are done:** seven folders (97026a10, 309c8922, bb9e9dc7 and 8f6a215f, plus `eclipse-verify3/4/5`) are
+  in `D:\fitway-scratch\`, with a junction at each old path. Drive C went from 2.8 GB to 11.2 GB free.
+  - `f8e879d9` (6.2 GB, three junctions) moves after the verifier.
+  - After the verifier, the user sets the user `TEMP` and `TMP` to `D:\fitway-temp` and restarts Claude and Codex.
+- **Style of the remaining screens (user, 2026-09-28):** they follow the Daily page's current Eclipse style. The
+  direction becomes the reference only after the user approves all of it, motion included, having seen it. This is
+  recorded in `NEXT-DIRECTION-BRIEF.md`, "After the Daily page".
+- **Why a full harness run takes 47 minutes** (round T's `timing.json`, 4 workers):
+  - rest, 10 min;
+  - the motion stage, 18 min;
+  - guard, 16 min;
+  - quality, 3 min.
+  The stages run in sequence. Frame loops already run inside the page, so the time is real layout work. Changes
+  that need no harness change:
+  - skip `guard` when `capture.mjs` is unchanged. Round P may not touch it, so `polish/BRIEF.md` now drops `guard`
+    and checks that the file is unchanged;
+  - iterate without `--base`, which halves rest and hover;
+  - possibly 8 workers (the machine has 8 cores, 16 threads and 31 GB). The coordinator measures `rest` at 8 workers
+    against 4 once the verifier is done, for time and byte identity, and only then names a count in the brief.
+  A harness change could go further, reusing the base's rows and adding a quick profile of one viewport. It is not
+  worth its own round now, because only the Daily page's rounds use this harness. It is revisited if round P is still
+  slow.- **The user agreed the speed plan (2026-09-28):** skip `guard` in round P, iterate without `--base`, and measure 8
+  workers after the verifier. No harness change now, only if round P is still slow.
+## The tooltip moves to a top lane, and round T's verification stops (2026-09-28)
+
+- **User decision:** the tooltip keeps its box but lives in a fixed lane at the top of the plot. It moves sideways
+  only, joined to its ring by a thin line. The full record is in `NEXT-DIRECTION-BRIEF.md`, "The tooltip moves to a
+  top lane".
+  - The user rejected a fixed readout beside the title, as too far from the eye.
+  - The user dropped their own variant, a box riding just above the lines, after the coordinator showed that it
+    recreates the 10:00 PM case over "now".
+  - Sketches: `D:\fitway-scratch\sketches\lane-*.png`, composed from verify5's frames. They are not rendered
+    frames.
+- **Round P is withdrawn,** and `polish/BRIEF.md` is superseded.
+- **Round T's verifier was stopped** by the coordinator, because its checks target the old placement rules.
+  - It had not reported. Its partial evidence is in `D:\fitway-temp\eclipse-verify-t\`.
+  - No listener or process was left, and `owner-followup-r04-s04` is clean at `ee2b399`.
+  - The harness at `ee2b399` stays **unverified**, as code to adapt later.
+  - `D:\fitway-temp` still holds two `ecg-*` copies (with `node_modules` junctions) and Playwright profiles from
+    that run.
+- **Next:** a designer round builds the lane on the real page. The coordinator explains the steps to the user and
+  launches nothing until the user agrees.
+
+## Model choices, cleanup, and new-session resume point (2026-09-28)
+
+- **Housekeeping done:**
+  - Session `f8e879d9`'s scratchpad (6.48 GB, 5,085 files; the file and byte totals matched) is now in
+    `D:\fitway-scratch\claude-scratch\`, with a junction at its old path. Every path recorded above still resolves.
+    Its three internal junctions were test fixtures and were not copied.
+  - The six `ecg-*` guard copies were unlinked from `node_modules` first, then deleted. The worktree's
+    `node_modules` is intact.
+  - Drive C has 17.2 GB free, up from 2.8 GB.
+  - Nothing is running. `owner-followup-r04-s04` is clean at `ee2b399`.
+- **Models (the user's proposal; the coordinator agrees, with one condition):**
+
+  | Work | Definition | Model | Effort |
+  |---|---|---|---|
+  | New design: the lane round and the remaining screens | `owner-direction-designer` | Opus 5.5 (default) | xhigh |
+  | Independent verification | `owner-direction-verifier` + `model: "sonnet"` | Sonnet 5.5 | xhigh |
+  | Fixes and precisely specified edits | `owner-direction-builder` + `model: "sonnet"` | Sonnet 5.5 | high |
+
+  - **The condition:** the Sonnet verifier is a trial, starting with the lane round. If it misses something that the
+    coordinator or a later round finds, verification goes back to Opus.
+  - **Tested 2026-09-28:** `model: "sonnet"` runs `claude-sonnet-5-5`, and the definition's effort still applies.
+    Agents report it as an internal number:
+    - verifier on Sonnet, 30;
+    - builder on Sonnet, 10;
+    - verifier on Opus, 40.
+  - No new definition is needed.
+- **Resume steps for the next coordinator session:**
+  1. Run `pnpm context:show -- --milestone owner-design-exploration-r04`. Read this section, then
+     `NEXT-DIRECTION-BRIEF.md`, "After the Daily page" (the screen plan) and "The tooltip moves to a top lane".
+  2. Confirm the model table with the user.
+  3. **Write the lane brief** at `D:\fitway-scratch\lane\BRIEF.md` and show the user its plan before launching.
+     - **Base:** worktree `owner-followup-r04-s04`, branch `owner-followup-r04-build`, at `ee2b399`. The page is
+       identical to verified `8ae88f3`; the unverified harness is untouched.
+     - **Write only in:** `eclipse/**`.
+     - **Never change:**
+       - `checks/**`, `evidence/pre-motion-hashes.json` and `.impeccable/**`;
+       - the `:root` light values;
+       - the intro;
+       - the box's look and content.
+     - **The lane:**
+       - the same box, at a fixed height at the top of the plot;
+       - centred on its stop and stopped at the plot's edges;
+       - a thin line and a small pointer to its ring;
+       - it glides sideways only, on the existing follow curve;
+       - it jumps with the ring when the travel exceeds the box width (Home/End);
+       - the latest-reading and missing-span stops use the same lane.
+     - **Headroom:** no line, ring, marker, label or "now" ever enters the lane, in any snapshot or state. The
+       designer picks the smallest change, either a shorter curve through the scale or a more compact box, and shows
+       it before and after.
+     - **The old code:** delete the floating-placement cascade. Update the `capture.mjs` expectations and the README.
+     - **Viewports:** the lane is judged at 1440×900, 1280×800 and 1024×640. At 390×844 the page must only not break:
+       no errors and no horizontal scroll.
+     - **Named frames**, AR and EN, before (`8ae88f3`) and after:
+       - the 11:00 PM stop at 8:43, 9:30 and 10:00 PM;
+       - the 12:30 AM stop at 10:42 PM;
+       - the 1:00 AM stop at 10:52 PM and 12:05 AM;
+       - the peak, the latest, the missing span and one low stop;
+       - a pointer-sweep strip and a Home/End strip.
+     - **Setup:**
+       - run `pnpm check:design-context` first, then Impeccable;
+       - temp and scratch go on D, with a `TEMP`/`TMP` override in every call;
+       - ports: 3173 for `capture.mjs`; probes on 3176 or 3177; never 3174;
+       - one commit, no push.
+  4. After the user agrees, launch the designer. Inspect its work, then send the user the before and after sheets and
+     the live page. The user decides.
+  5. On approval, run the Sonnet verifier with a checklist derived from the brief's acceptance.
+  6. Then, in order:
+     - adapt the harness to the lane rules in a small tools round;
+     - the intro-speed round (update its base SHA, and replace R1-R6 in its constraints with the lane rules);
+     - the audit patch (ask the user);
+     - Reports.
+- **Working agreements:**
+  - reply in Arabic, simply and briefly;
+  - before starting any task, tell the user the steps and wait for their go;
+  - the user runs Codex and pastes its report;
+  - temp and scratch never go on C;
+  - full-strength verification stays, because the direction is meant to become the Owner design authority.
+
+## New coordinator session, and the lane brief (2026-09-28)
+
+- **Session:** the coordinator moved to desktop session `local_47dd1bf2-be3b-442a-8532-a8cfbeba5014`. Its scratchpad
+  is `D:\fitway-temp\claude\D--Projects-fitway-worktrees-owner-design-exploration-r04\46fbc0fe-4cf0-4b88-b53d-17abfa109327\scratchpad\`.
+- **The lease had expired** at 19:00. The coordinator renewed it, with the user's agreement, to 2026-09-29 23:30.
+- **State at resume:** nothing was running. `owner-followup-r04-s04` was clean at `ee2b399`. Drive C had 18.7 GB free.
+- **User decisions:**
+  - the model table and the Sonnet-verifier trial condition above are confirmed;
+  - the lane brief's plan is agreed, as are the later steps and the screen plan;
+  - the lane round runs on Sonnet 5.5, not Opus, through `owner-direction-designer` with `model: "sonnet"`, at
+    `xhigh`. The user proposed it, because the round only moves the tooltip box. The coordinator agreed, because the
+    design decisions are already the user's. The remaining screens stay on Opus. Because the verifier is also on
+    Sonnet, the coordinator inspects this round more closely.
+- **The lane brief:** `D:\fitway-scratch\lane\BRIEF.md`, run `owner_lane_r04_s04`. The user approved it, including:
+  - the designer measures both headroom options, a shorter curve through the scale and a more compact box, and picks
+    the smaller. Under the first, every still frame with the chart changes by design and is declared in `capture.mjs`;
+  - the connector is the one exception to Round 7's "nothing above the point";
+  - where the connector crosses the usual line or the peak tag, the designer shows how it passes.
+- **Launched:** the designer runs in the background. The coordinator inspects its work, then sends the user the
+  before and after sheets and the live page.
+- **The report format changed after launch** (user, 2026-09-28):
+  - the designer writes a concise full report, results only, to `D:\fitway-scratch\lane\work\REPORT.md`;
+  - its final message is a summary of about 10-15 lines that points to it;
+  - no caveat is dropped to keep it short;
+  - the user does not need to read it. The goal is to keep work details out of the coordinator's context.
+  The brief's section 6 records the change.
+- **The harness round is cancelled** (user, 2026-09-29).
+  - The lane removes the floating-placement failures that `E/checks/` measured. The lane's own checks go into
+    `capture.mjs`.
+  - The intro-speed round is measured by `capture.mjs`, which checks the intro's timing and that the rest of the page
+    is unchanged.
+  - The harness is specific to the Daily chart, so it does not serve the remaining screens.
+  - After the lane is verified, a small commit deletes `E/checks/**`. It stays in history at `ee2b399`. The reason: it
+    is unverified and encodes superseded rules, so it could mislead a later agent.
+  - The later order is therefore: the intro-speed round, the audit patch (ask the user), then Reports.
+- **Rounds are split into parts from now on** (user, 2026-09-29):
+  - the designer's context grew large, because it read whole files of about 2,000 lines;
+  - writers run in sequence, one at a time on the same files, for example code, then checks and README, then sheets;
+  - verifiers run in parallel and read only. A timing-sensitive verifier runs alone;
+  - each brief names the exact sections or lines to read;
+  - the running lane designer is not interrupted;
+  - the lane round's verification is split into three:
+    - geometry and still frames;
+    - quality, accessibility and phone;
+    - motion, run alone.
+- **The designer stopped at a usage limit** (2026-09-29 00:3x). Its edits were uncommitted and nothing was listening.
+  After the reset, the coordinator resumed it with its context intact, and asked it to check its files first.
+- **A small verifier eval is agreed, after the lane round** (user, 2026-09-29). It follows the idea of
+  `claude.dev/blog/automating-eval-design-and-hillclimbing`:
+  - **Cases:** 6 to 8 narrow ones, drawn from real defects that earlier verifiers found at known SHAs. Clean,
+    verified SHAs such as `8ae88f3` measure false alarms. The answers stay out of the agent's reach, which means an
+    extracted copy without the handoffs.
+  - **Runs:** Sonnet and Opus once each, so the Sonnet-verifier trial is decided by catch rate, false alarms and cost.
+  - **Afterwards:** only if the result is clear, small edits to the verifier definition and the `COMMON.md` template.
+    An edit is kept only if both the train and the held-out cases improve.
+  - **Out of scope:** design taste stays the user's visual judgment, and Impeccable and ux-araby stay unmodified.
+  - **It must not delay the project.** It is a separate, time-boxed task, and it is dropped if it is not decisive.
+- **The eval's shape is agreed** (user, 2026-09-29). It runs after the lane round.
+  - **Method:** applied by hand. The upstream `build-eval`/`hillclimb` tooling is neither installed nor updated, because
+    it targets applications that call the API, not browser-driven agents.
+  - **Cases:** about 7, each one narrow check:
+    - `a14009f`: the no-history null error;
+    - `a14009f`: the README claims that contradict the measurements;
+    - `622cd0b`: the box covers "now" near 10:40 PM;
+    - the 9 px number move before the fixed width;
+    - `a14009f`: the missing-span jump. This is the only motion case;
+    - two clean SHAs, `8ae88f3` and one more, for false alarms.
+  - **Runs:**
+    - each verifier gets an extracted copy of the page files only, with no records and no git history;
+    - the coordinator keeps the answer key and grades against checkable questions: is the defect named, is it
+      located, is the verdict FAIL?
+    - Sonnet and Opus run once each, while the machine is otherwise idle.
+  - **Decision:**
+    - Sonnet keeps verification if it catches what Opus catches, with no more false alarms;
+    - if it misses a defect that Opus catches, verification returns to Opus;
+    - if the result is unclear, the eval is dropped.
+    Hillclimbing the verifier definition waits, unless the eval proves useful.
+- **After `claude.dev/blog/building-with-claude-sonnet-5-5`** (user, 2026-09-29):
+  - **The article confirms the model table.** It says Sonnet 5.5 suits tasks with a clear spec and a way to check the
+    result, and Opus suits the hardest long-horizon work.
+  - **The eval adds a Sonnet run at `high`,** beside Sonnet and Opus at `xhigh`. The article advises `xhigh` only when
+    an eval shows a gain.
+    - This needs a verifier definition at `high`, which loads only in a new session.
+    - The eval therefore runs in the next coordinator session.
+  - **Future briefs tell agents to open screenshots downscaled.** Full-resolution crops are used only where detail
+    matters, such as the box's edges and the connector. Sonnet 5.5 reads images at a high resolution, at about 2.5 times
+    the earlier tokens, and screenshots were the largest part of the designer's context.
+  - **The limit of downscaling:** downscaled images can hide a 1-2 px defect. Pixel facts are therefore measured by
+    code, and named acceptance frames always stay at full resolution.
+  - **`owner-direction-verifier-high`** was added to `.claude/agents/` and to `CLAUDE.md`'s table, with the user's
+    agreement. It is the verifier's text at `effort: high`, for the eval only, and it loads from the next session.
+
+## Lane round delivered, and new-session resume point (2026-09-29)
+
+- **Delivery:** the designer, Sonnet 5.5 at `xhigh`, committed `9404bb1` on `owner-followup-r04-build`, on top of
+  `ee2b399`, and did not push. It took about 55 minutes of agent time, 75 tool calls and about 629k tokens.
+  - **Its report:** `D:\fitway-scratch\lane\work\REPORT.md`. The coordinator saved it from the designer's final
+    message, because a subagent's Write tool refuses report files. Future briefs therefore ask for a concise report in
+    the final message, and the coordinator saves it.
+  - **Its claims, unverified:**
+    - headroom option (a), a shorter scale. The lane is 89 px live, 109 px delayed and 69 px without history;
+    - every row passes except Q's horizontal scroll, which already exists at `8ae88f3`;
+    - L4 and L5 pass with caveats.
+- **Coordinator inspection. This is not verification.**
+  - Scope: 36 files, all under `E/`. `checks/**`, `pre-motion-hashes.json` and `.impeccable/**` are untouched, and
+    nothing is deleted. `git status` is clean, and no listener was left on 3173, 3176 or 3177.
+  - Sheet `02-chart-card-before-after-ar.png`, viewed downscaled: the box sits in the lane with its connector, and the
+    peak tag stays whole. At rest the lane is an empty band above the chart, and the chart is visibly shorter.
+- **Points for the user, who decides each one:**
+  1. **The empty lane costs the chart 16-40% of its height:** −20.7% live and −25.1% delayed at 1440×900, and up to
+     −39.9% at 1024×640 while delayed. Option (b) recovers at most 14-17 px. This is the price of "nothing ever
+     enters the lane". The user judges it from the live page.
+  2. **The accessibility tree changes in 4 of 36 snapshots:** the peak label is now always in it. It was hidden only
+     while the floating box covered it.
+  3. **Stall-then-jump at the plot's side:** 66 literal flags. The clamped box waits at its margin for up to 8 frames,
+     then follows the ring. The designer calls it inherent to the hard clamp.
+  4. **A horizontal page scroll** of 22 px at 1024×640, and 387 px at 390×844, already exists at `8ae88f3`. It
+     belongs to the phone and polish phase.
+- **Resume steps for the next coordinator session:**
+  1. Run `pnpm context:show -- --milestone owner-design-exploration-r04`, and read this section and the section
+     above. Renew the lease, which expires 2026-09-29 23:30.
+  2. **The live page for the user:**
+     - add two configurations to this worktree's untracked `.claude/launch.json`, using Python `http.server` on
+       127.0.0.1:
+       - after: port 3174, serving
+         `D:/Projects/fitway-worktrees/owner-followup-r04-s04/design-research/owner-composition-exploration-r04/directions/eclipse`;
+       - before: port 3175, serving
+         `D:/fitway-scratch/lane/base/design-research/owner-composition-exploration-r04/directions/eclipse`;
+     - give the user both links, with `?lang=en` and `?state=delayed`, and send sheets 01 and 02 in AR;
+     - raise the four points above. The user decides.
+  3. **On approval, verification in three parts:**
+     - Set `<LANE_SHA>` to `9404bb1` in `D:\fitway-scratch\lane\verify\`.
+     - Correct V2's Q row: horizontal scroll must be unchanged against `8ae88f3`, and the existing scroll is recorded
+       separately.
+     - Add to COMMON: open screenshots downscaled, keep named frames at full resolution, and put the report in the
+       final message.
+     - Launch V1 and V2 in parallel, with `owner-direction-verifier` and `model: "sonnet"`. Launch V3 alone after
+       them.
+  4. **The verifier eval,** as agreed above, while the machine is idle:
+     - Sonnet at `xhigh`, Opus at `xhigh`, and Sonnet at `high` through `owner-direction-verifier-high`;
+     - about 7 narrow cases from past defects, and clean SHAs;
+     - the coordinator keeps the answer key.
+  5. **Then, in order:**
+     - delete `E/checks/**` in a small commit;
+     - integrate locally, rebasing the coordinator's docs commits onto the verified SHA. A push needs the user's word;
+     - the intro-speed round: update its base SHA, and replace R1-R6 in its constraints with the lane rules;
+     - the audit patch (ask the user);
+     - Reports.
+  - **The screen plan still stands:**
+    1. desktop first for every screen;
+    2. one early phone feasibility check of the table system at 390 and 320 px, on Reports;
+    3. then the phone at 390 px, 320 px and 200% reflow for every screen, and the polish;
+    4. then the authority record.
+- **Working agreements:**
+  - reply in Arabic, simply and briefly;
+  - before starting any task, tell the user the steps and wait for their go;
+  - the user runs Codex and pastes its report;
+  - temp and scratch never go on C;
+  - split rounds into narrow parts, and name the exact lines to read;
+  - agents open screenshots downscaled;
+  - full-strength verification stays, because the direction is meant to become the Owner design authority.
+
+## New coordinator session, and the lane shown to the user (2026-09-29)
+
+- **Session:** desktop session scratchpad
+  `D:\fitway-temp\claude\D--Projects-fitway-worktrees-owner-design-exploration-r04\4932d292-248c-4bcd-85dc-497dc154d8b7\scratchpad\`.
+- **State at resume:** the packet is `READY`. `owner-followup-r04-s04` is clean at `9404bb1`. No listener was on
+  3173-3177. Drive C had 17.4 GB free.
+- **Lease:** renewed with the user's agreement to 2026-09-30 23:30.
+- **The live page:** `.claude/launch.json` (untracked) gained `lane-after` on 3174 and `lane-before` on 3175. Both
+  load with no console errors. The user has the links and sheets 01 and 02 in AR, and decides the four points above.
+- **User decisions on the lane (2026-09-29):** the user approves the lane design at `9404bb1`.
+  1. **The empty lane's height cost is accepted (option a).** The coordinator explained it with a before/after image at
+     1440×900: the box never covers anything, so nothing enters the lane, and at rest the lane is empty.
+  2. **The peak label always in the accessibility tree** is accepted as an improvement.
+  3. **The hold at the plot's side** is accepted. The clamped box waits at its margin, then follows the ring.
+  4. **The horizontal page scroll** that already exists at `8ae88f3` is deferred to the phone and polish phase.
+- **A box that follows the point's height is rejected** (the user's proposal; the coordinator advised against it):
+  - the headroom above the day's peak is still needed, so the empty space at rest does not go away;
+  - the box spans about two hours of the curve, so it would have to clear everything under its width, not the point;
+  - it brings back vertical motion and the placement cases that the old cascade failed.
+  A middle option was discussed and not pursued: a fixed lane just above the day's peak instead of above the scale's
+  top. The user keeps the box fixed at the top, moving sideways only, because it is simpler.
+- **Verification started (2026-09-29):** the briefs in `D:\fitway-scratch\lane\verify\` were updated to the user's
+  decisions:
+  - `9404bb1` is the candidate;
+  - the peak label is the only accepted accessibility-tree change;
+  - the horizontal scroll must equal `8ae88f3`'s;
+  - the clamped hold at the plot's side is accepted under measured conditions;
+  - screenshots are opened downscaled;
+  - the report is the final message.
+  V1 and V2 were launched in parallel on Sonnet 5.5 at `xhigh`.
+- **V1: FAIL** (57 min, 149 tools, about 389k tokens). Its report is saved at `D:\fitway-temp\lane-verify\V1\REPORT.md`.
+  - C, L1, L2 and S pass.
+  - **F1, L3r fails:** the dashed and dotted connectors stop 1.7-3.5 px short of the box. The pattern is anchored at
+    the mark end (`app.js:1004`, `:1013`). At the missing span, the pointer sits about 0.9 px off its dots at 1440×900.
+    The designer's "0 px" read the path's endpoints, not the painted dashes. It is invisible at 1×.
+  - **Row I:** `capture.mjs` did not exit 0. One intro replay timing missed by 70 ms under shared load, with the
+    constants unchanged. It needs a solo re-run.
+  - The coordinator measured the machine while V1 and V2 ran: CPU 9-14%, 13 of 31 GB RAM free. Agent time is model
+    turns, not local compute.
+- **User decisions:**
+  - full coverage stays;
+  - **F1 is fixed, not accepted.** It is cheap, V3 would fail the same criterion, and the direction becomes the
+    authority. It joins any fixes from V2 in one round, through `owner-direction-builder` on Sonnet at `high`;
+  - then the coordinator re-checks the connector and runs `capture.mjs` alone;
+  - then V3 runs on the fixed SHA.
+- **V2: PASS on all seven rows** (77 min, 138 tools, about 314k tokens). Its report is saved at
+  `D:\fitway-temp\lane-verify\V2\REPORT.md`.
+  - L5: all 12,994 differing accessibility trees differ only by the peak label, exactly where `8ae88f3` hid it.
+  - The horizontal scroll equals `8ae88f3`'s in all 48 configurations.
+  - There is no new long work.
+  - **Low finding:** the peak's dotted drop (`app.js:607`, drawn when the gap exceeds 14 px) is no longer drawn in the
+    delayed state at 1440×900. The shorter scale brings the gap to 13.36 px; live is 14.22 px. The coordinator looked at
+    the 3× crop: the ring floats about 13 px over the line without the drop, as it already does at smaller viewports at
+    `8ae88f3`. The behaviour is kept and will be declared in the README.
+  - **Nits:** a stale `.tip` comment in `style.css`, and the README's layout-shift claim holds at desktop only.
+- **The fix brief:** `D:\fitway-scratch\lane\fix\BRIEF.md`, run `owner_lane_fix_r04_s04`. It covers:
+  - F1: fit the dash pattern to the connector's length, and put the missing-span pointer on its nearest dot;
+  - a painted-extent check in `capture.mjs`, with a positive control on `9404bb1`;
+  - the README declarations from V1 and V2, and the `style.css` comment;
+  - one `capture.mjs` run alone.
+- **The fix round delivered `521fe32`** on `owner-followup-r04-build`, on top of `9404bb1`, and did not push
+  (39 min, 140 tools, about 280k tokens). Its report is saved at `D:\fitway-scratch\lane\fix\work\REPORT.md`.
+  - Scope: 6 files, all expected. The `style.css` change is comment-only.
+  - Its claims, unverified:
+    - painted gaps fall from 2.4 px to 0.01 px or less, at rest and in follows;
+    - `capture.mjs` exits 0;
+    - at 390×844 the missing span draws no lit dot, which is declared;
+    - it restored three timing-dependent evidence frames from `9404bb1`.
+- **V1b** (brief `D:\fitway-scratch\lane\verify\V1B-CONNECTOR.md`) runs alone on Sonnet at `xhigh`. It is a fresh
+  verifier that reuses V1's probes from disk, instead of resuming V1's large context.
+- **Remote work:** the user is away and follows through Remote Control. Clearing this session is refused while Remote
+  Control serves it, and this session cannot start sessions. The user therefore prepared an idle spare session,
+  `local_541082d7-9bcf-4851-b8a5-6f17dae6b228` ("تعليمات من جلسة المنسّق"): same folder, Opus 5.5 at `xhigh`, `auto`
+  permissions and Remote Control on. When the lane round closes, the coordinator writes the resume point here, commits
+  it, and sends the resume prompt to that session with `send_message`.
+- **V1b: PASS on L3r, F1c, F1d and I for `521fe32`** (70 min, 142 tools, about 352k tokens). Its report is saved at
+  `D:\fitway-temp\lane-verify\V1b\REPORT.md`.
+  - The positive control on `9404bb1` reproduced every known gap.
+  - After the fix, every painted gap is 0.014 px or less, and the missing-span tip is 0 px from its dot.
+  - Solid forms are unchanged. Fresh-page differences lie only inside the connector's footprint.
+  - `capture.mjs` exited 0 when run alone.
+  - **Low findings:**
+    - the committed `intro-yield-ar.png` comes from `9404bb1`, while `capture-log.json` holds the new run's yield
+      timings, so the two no longer come from one run;
+    - three README number nits;
+    - the fit falls back to the unfitted pattern for very short connectors, which the tested viewports cannot reach.
+- **The session stopped at a usage limit** after V1b. V3 has not been launched.
+- **Resume steps:**
+  1. Point `D:\fitway-scratch\lane\verify\COMMON.md`'s candidate at `521fe32`.
+  2. Launch V3 alone, with `owner-direction-verifier` and `model: "sonnet"`.
+  3. Ask the user whether the low findings above need a mechanical follow-up.
+  4. Then close the lane round, hand over to the spare session, and continue with the plan: the verifier eval,
+     deleting `E/checks/**`, local integration, the intro-speed round, the audit patch and Reports.
+- **V3 launched (2026-09-29):**
+  - `COMMON.md` now names `521fe32` as the candidate;
+  - V3's L3m row now measures the painted extent and the pattern at every frame;
+  - V3 runs alone on Sonnet at `xhigh`.
+- **User decision on V1b's low findings (2026-09-29):** there is no separate round. When the intro-speed brief is
+  prepared:
+  - its `capture.mjs` run commits the whole run's evidence and log as written. There is no selective restore of
+    timing-dependent frames, which settles the `intro-yield-ar.png` provenance mismatch;
+  - it corrects the three README number nits V1b named;
+  - the short-connector fallback (`n < 2` in `paintConnector`'s fit) is a note for the phone phase.
+
+## The lane round closes at `521fe32`, and the handover to the spare session (2026-09-29)
+
+- **V3: every row passes except L4b by the letter** (42 min, 114 tools, about 392k tokens). Its report is saved at
+  `D:\fitway-temp\lane-verify\V3\REPORT.md`.
+  - The box's top moves 0.0000 px in all 206,400 sweep frames, and there are 0 reversals.
+  - L3m passes on the painted extent at every frame, so the fix holds in motion.
+  - The follow curve, speed and intro equal `8ae88f3`.
+  - There are 427 accepted clamped holds.
+  - **L4b: 53 two-frame stalls then a 3-5 px step, all when leaving the peak toward later times.** The ring's designed
+    drop leg off the peak (`legAt`, `app.js:1491`) moves in y only for 2 frames, and the box, centred on the ring
+    (`placeTip`, `app.js:1067-1090`), copies it exactly: box centre minus ring x is 0.00, and the box's step never
+    exceeds the ring's.
+  - **Two clamped holds at 1024×640 are not accepted by the letter:** the ring jumps tracks and the box eases after it.
+    They are an ease, not a jump.
+  - V3 also showed that the designer's "no flags anywhere else" was incomplete.
+- **User decision:** both behaviours are accepted as designed. **The stall-then-jump definition is amended for all
+  later checks:** a stall followed by a step is a defect only when the box's step exceeds the ring's step in the same
+  frame by more than 1 px, which is when the box is catching up. There is no fix. **The lane round closes; the verified
+  Eclipse page is `521fe32`** on `owner-followup-r04-build`.
+- **The Sonnet-verifier trial is decided without the eval** (user and coordinator, after reading
+  `claude.dev/blog/automating-eval-design-and-hillclimbing` and `claude.dev/blog/building-with-claude-sonnet-5-5`):
+  - **The eval is cancelled.** By the article's own criteria it could not decide anything: one run per model cannot
+    separate a difference from noise, the cases are past failures (a "failure fingerprint"), and 7 such cases would
+    likely saturate.
+  - **Evidence in hand:** Sonnet verifiers found the painted-dash defect and the peak-leg stalls that the designer's
+    report missed.
+  - **Verification stays on Sonnet, with two safeguards:**
+    1. the trial condition stands: if Sonnet misses a defect that the coordinator or a later round finds,
+       verification returns to Opus;
+    2. before the direction becomes the Owner authority, an Opus verifier runs once over every screen.
+  - **Effort, from the Sonnet 5.5 article** (`high` is the default; use `xhigh` only where evidence shows a gain):
+    - the broad verification of a new design round stays on `owner-direction-verifier`, Sonnet at `xhigh`;
+    - a narrow re-check with a frozen target, a known defect and ready probes uses `owner-direction-verifier-high`,
+      Sonnet at `high`. If it misses something, it goes back to `xhigh`;
+    - the builder stays at `high` and the fixer at `medium`.
+    `CLAUDE.md`'s table and the `-high` definition's description now say this.
+- **Push (the user left it to the coordinator):**
+  - push the two working branches, `codex/owner-redesign-r04` and `owner-followup-r04-build`, after the local
+    integration of `521fe32`;
+  - never `main`, never force, no pull request;
+  - the reason is backup: `codex/owner-redesign-r04` is 42 commits ahead of its remote, and the build branch was never
+    pushed.
+- **State at handover:** `owner-followup-r04-s04` is clean at `521fe32`. No listener is on 3173-3177. An untracked
+  `.codex-remote-attachments/` appeared in this worktree. It is not the coordinator's; leave it and do not commit it.
+- **Resume steps for the next coordinator session** (the spare session `local_541082d7-…`, Opus 5.5 at `xhigh`, `auto`,
+  Remote Control on):
+  1. Run `pnpm context:show -- --milestone owner-design-exploration-r04`, and read this section and the one above it.
+     The lease runs to 2026-09-30 23:30.
+  2. **Housekeeping, in one small commit on `owner-followup-r04-build`:** delete `E/checks/**`. It stays in history at
+     `ee2b399`.
+  3. **Integrate locally.** `codex/owner-redesign-r04` must contain the verified `521fe32` unchanged, as it did before
+     (the earlier pattern: rebase the coordinator's unpushed docs commits, which touch no `eclipse/` file, onto the
+     verified build commit). Then push both working branches, under the rule above.
+  4. **The intro-speed round.** Its brief is
+     `D:\fitway-scratch\claude-scratch\bb9e9dc7-4378-439c-b9e3-78e13474eba3\scratchpad\introspeed\FIX-SPEED.md`.
+     Before launching:
+     - update its base SHA;
+     - replace R1-R6, the width rule and the never-cover-now rule in its "Constraints in force" with the lane rules;
+     - add V1b's three items:
+       - commit the whole `capture.mjs` run's evidence and log as written, with no selective restore;
+       - correct the three README number nits;
+       - note the short-connector fallback for the phone phase.
+     Then verify with a fresh Sonnet verifier; a narrow re-check uses `-high`.
+  5. **The audit patch:** ask the user, as recorded above.
+  6. **Then Reports**, as in the screen plan.
+- **Working agreements:**
+  - reply in Arabic, simply and briefly;
+  - before starting any task, tell the user the steps and wait for their go;
+  - the user runs Codex and pastes its report;
+  - temp and scratch never go on C;
+  - split rounds into narrow parts, and name the exact lines to read;
+  - agents open screenshots downscaled;
+  - agents report in their final message, and the coordinator saves it;
+  - full-strength verification stays.
+
+## The spare session takes over: housekeeping, integration and push (2026-09-29)
+
+- **Session:** the spare session. After an app restart its id is `local_93bf0b45-492a-4e1d-b128-d5e1a2d4fbee`, not
+  `local_541082d7-…`. Its scratchpad is
+  `D:\fitway-temp\claude\D--Projects-fitway-worktrees-owner-design-exploration-r04\93bf0b45-492a-4e1d-b128-d5e1a2d4fbee\scratchpad\`.
+  The user agreed each step below before it ran.
+- **Housekeeping:** `d163223` on `owner-followup-r04-build`, on top of `521fe32`, deletes `E/checks/**` (26 files). It
+  stays in history at `ee2b399`. The README's "Checks" section now says only that. Nothing else references `checks/`.
+- **Integration:** the coordinator's 43 docs commits were rebased onto `d163223`. `E/` on `codex/owner-redesign-r04`
+  equals `d163223`, `521fe32` is an ancestor, and every file outside `E/` equals the pre-rebase head `4e5dea2`.
+  `pnpm check:repository` passed.
+- **Push:** `codex/owner-redesign-r04` (`622cd0b..49a63bd`, fast-forward) and `owner-followup-r04-build` (new on the
+  remote). No force, not `main`, no pull request.
+- **The intro-speed brief is updated,** in place at
+  `D:\fitway-scratch\claude-scratch\bb9e9dc7-4378-439c-b9e3-78e13474eba3\scratchpad\introspeed\FIX-SPEED.md`:
+  - base `d163223`, in worktree `owner-followup-r04-s04` on `owner-followup-r04-build`; scratch on D;
+  - the lane rules and the accepted lane behaviours replace the floating-placement constraints;
+  - V1b's three items: the run's evidence and log committed as written, the three README nits frozen, and the
+    short-connector note for the phone phase;
+  - hold times scale by 1/0.70, so each held frame shows the same moment of the intro; the yield probes keep 100 and
+    400 ms;
+  - README: current descriptions change, past round entries stay as recorded, and a new top entry supersedes 820 ms;
+  - exact lines to read, and the report in the final message.
+  It is shown to the user before launch.
+
+## The intro-speed round delivered, Sonnet dropped for cost, and Codex takes the heavy work (2026-09-29)
+
+- **The fixer delivered `1b289f4`** on `owner-followup-r04-build`, on top of `d163223`. It ran as `owner-direction-fixer`
+  on Sonnet at `medium` (14 min, 30 tools, about 109k tokens) and did not push.
+  - Its report, saved by the coordinator:
+    `D:\fitway-scratch\claude-scratch\bb9e9dc7-4378-439c-b9e3-78e13474eba3\scratchpad\introspeed\work\REPORT.md`.
+  - Coordinator inspection, not verification: 11 files, all in the allowed set; `git status` is clean and no listener
+    was left.
+- **Verification started, then paused at the user's request.**
+  - Brief: `D:\fitway-scratch\introspeed\verify\VERIFY-INTRO.md`, candidate `1b289f4`. The verifier was
+    `owner-direction-verifier` on Sonnet at `xhigh` (41 min, 94 tools, about 292k tokens).
+  - Its state: `D:\fitway-temp\introspeed-verify\STATE.md`.
+  - Rows S, K, D, R, P, E and V pass. T is partly done, and Y, A, Q and I are not started. The positive controls for
+    D, R, P and E fail as they should.
+  - Low findings so far: two README lines still state the old hold times (907, 1120); `rail-open.png` differs by
+    78 px of raster noise from that capture run.
+- **Sonnet costs as much as Opus in our agent loops** (the coordinator's research, 2026-09-29):
+  - Every tool call re-reads the context from the cache. Cache reads cost $0.20 per million tokens on both Sonnet 5.5
+    and Opus 5.5, because Opus 5.5's cache reads are 0.05× its input price. In long loops that is the largest cost.
+  - Artificial Analysis, at API prices:
+    - Opus 5.5 at `high` scores 54 for $2,172;
+    - Sonnet 5.5 at `xhigh` scores 52 for $2,738;
+    - at `max`, Sonnet costs more than Opus.
+  - Sonnet 5.5 reads images at a higher resolution, and our verification is screenshot-heavy.
+  - Sources: the Anthropic pricing page, Artificial Analysis's Opus 5.5 vs Sonnet 5.5 comparison, and three
+    comparison articles.
+- **User decisions (2026-09-29):**
+  - **Work distribution:**
+
+    | Work | Who |
+    |---|---|
+    | Coordination, briefs, decisions | the coordinator, Opus, keeping its context small |
+    | New design and taste | `owner-direction-designer`, Opus at `xhigh` |
+    | Implementing agreed changes, `capture.mjs` runs, heavy tests | Codex with GPT-6 Sol, run by the user in the Codex app |
+    | Independent verification | `owner-direction-verifier-high`, Opus at `high` (no `sonnet` override) |
+    | A second opinion before large gates | Codex as an extra verifier |
+    | Sonnet | stopped; at most small mechanical edits at `medium` |
+
+    - Codex may use its own subagents: for example, a Sol `xhigh` reviewer after a task, then a fixer.
+    - When Codex writes and Claude verifies, the two model families strengthen independence.
+    - `CLAUDE.md`'s table and the `-high` definition now say this. The Sonnet trial ends for cost, not for a missed
+      defect.
+  - **Resources:**
+    - the user has a second Claude Pro account;
+    - the user has four or five Codex Plus accounts, each with three banked resets, and new resets arrive about
+      weekly;
+    - Claude usage is therefore not the constraint it looked like.
+  - **Correction:** round T's 5 hours came from the harness it built, not from Codex's speed.
+  - **`codex:rescue` is not used:** it had problems when the user tried it, and Codex performs best in its own app.
+    A simple check is optional later.
+  - **The rest of the intro-speed verification goes to Codex:**
+    - brief `D:\fitway-scratch\introspeed\verify\CODEX-FINISH.md`;
+    - it reuses `STATE.md` and the probes on disk;
+    - it does rows Y, A, Q and I, finishes T, and records the real-time strip;
+    - it gives one verdict over all rows.
+- **Pending:** `d45eb91` and this commit are not pushed. They go with the next push of the two working branches.
+
+## New-session resume point after the intro-speed delivery (2026-09-29)
+
+- **Why a new session:** this coordinator session's context reached about 300k tokens, and every turn re-reads it. The
+  user sends Codex's report to a fresh coordinator session.
+- **State at handover:**
+  - `owner-followup-r04-s04` is clean at `1b289f4` (unverified); the remote build branch is at `d163223`;
+  - `codex/owner-redesign-r04` is pushed up to this commit;
+  - no agent of this session is running, and nothing listens on 3173-3177;
+  - the user runs Codex on `D:\fitway-scratch\introspeed\verify\CODEX-FINISH.md`.
+  - The lease runs to 2026-09-30 23:30.
+- **Resume steps:**
+  1. Run `pnpm context:show -- --milestone owner-design-exploration-r04`, and read this section and the one above it.
+  2. **When the user pastes Codex's report:**
+     - save it to `D:\fitway-scratch\introspeed\verify\CODEX-REPORT.md`;
+     - check that `owner-followup-r04-s04` is still clean at `1b289f4` and that nothing listens on 3173-3177;
+     - read the verdict with the earlier verifier's rows in `D:\fitway-temp\introspeed-verify\STATE.md`, then tell the
+       user in short Arabic.
+  3. **On PASS:**
+     - the known low findings are the stale README lines 907 and 1120 (old hold times). Ask the user whether a
+       mechanical fix goes to Codex now or joins the next round;
+     - then integrate locally: rebase the coordinator's docs commits onto the final build SHA, confirm `E/` equals it,
+       and run `pnpm check:repository`;
+     - then push both working branches (never `main`, no force, no pull request).
+     **On FAIL:** show the user the finding and propose a fix brief for Codex, with a Claude verifier after it.
+  4. **The audit patch:** ask the user, as recorded earlier.
+  5. **Then Reports,** under the screen plan in `NEXT-DIRECTION-BRIEF.md`, "After the Daily page":
+     1. desktop first for every screen;
+     2. one early phone feasibility check of the table system at 390 and 320 px, on Reports;
+     3. then the phone at 390 px, 320 px and 200% reflow for every screen, and the polish;
+     4. then the authority record.
+- **Work distribution** (the section above):
+  - Codex (GPT-6 Sol, in the Codex app, run by the user) builds and runs the heavy checks;
+  - Claude verifies on Opus at `high` (`owner-direction-verifier-high`);
+  - new design uses `owner-direction-designer` on Opus;
+  - no `sonnet` override.
+- **Working agreements:**
+  - reply in Arabic, simply and briefly;
+  - before starting any task, tell the user the steps and wait for their go;
+  - the user runs Codex and pastes its report;
+  - temp and scratch never go on C;
+  - split rounds into narrow parts, and name the exact lines to read;
+  - agents open screenshots downscaled, and report in their final message, which the coordinator saves;
+  - keep the coordinator's context small;
+  - full-strength verification stays.
+
+## Intro speed verified FAIL, the Q and T fix brief, and the design-context message (2026-09-29)
+
+- **Session:** a new coordinator session, scratchpad
+  `D:\fitway-temp\claude\D--Projects-fitway-worktrees-owner-design-exploration-r04\ac81af7f-b94f-4997-9346-18d1475679b0\scratchpad\`.
+  Resume steps 1 and 2 ran: `owner-followup-r04-s04` was clean at `1b289f4`, and nothing listened on 3173-3177.
+- **Codex's report,** saved at `D:\fitway-scratch\introspeed\verify\CODEX-REPORT.md`. Verdict **FAIL** over all rows:
+  - pass: S, K, D, R, P, E and V (the earlier verifier's rows, matching `STATE.md`), and Y, A and I (Codex's);
+  - **Q fails:** a small layout shift about 3-4 ms after the intro starts, in 3 of 8 first-opens at `1b289f4` and 2 of
+    8 at `d163223`, so it is older than the speed change. Text boxes change width while their height stays; a late font
+    face is a hypothesis, not a proven cause;
+  - **T fails:** README lines 907 and 1120 keep the old hold times (the known low finding);
+  - low: `daily-ar-1440x900-rail-open.png` differs by 78 px of capture raster noise;
+  - caveats, not defects: Y's hidden tab was simulated with a `visibilitychange` event; D's first-open start lag is the
+    same at BASE;
+  - outside the checklist: `pnpm check:design-context` failed on Codex's host.
+- **User decisions:**
+  - fix Q and T together now in one Codex round, then a Claude verifier (`owner-direction-verifier-high`), rather than
+    fixing T alone and opening Q separately;
+  - replies to the user are in the Saudi dialect.
+- **The fix brief:** `D:\fitway-scratch\introspeed\fixq\FIX-Q.md`, run `owner_introfix_r04_s06`, base `1b289f4`.
+  - Codex proves the cause first with a reproduction (a delayed font file makes the shift happen every time), then
+    fixes it.
+  - Unchanged: every timing and look of the intro, and the 200 ms font cap.
+  - `index.html` and `style.css` may change only for font loading, and only if `app.js` cannot fix the proven cause.
+  - T gets the exact new text.
+  - Checks:
+    - 20 first-opens per language, and runs under the reproduction delay;
+    - `plantQ` must still fail;
+    - the cap is checked with 600 and 50 ms font holds;
+    - the lengths, the live roll and the first-paint values are unchanged;
+    - one `capture.mjs` run is committed as written.
+  - The prompt the user gives Codex points at the brief; the report is Codex's final message.
+- **`check:design-context` on Codex:** Codex's Windows sandbox (`[windows] sandbox = "unelevated"`) blocks the
+  Impeccable engine's subprocess. Codex found this on 2026-09-28 and passed the check outside the sandbox; on
+  2026-09-29 it did not rerun it outside.
+  - The user chose (a): `scripts/check-design-context.mjs` now names the spawn error's code (for example `ENOENT` or
+    `EPERM`) and says to rerun outside the sandbox before reinstalling anything. Its normal run passes, and a copy with a
+    missing engine fails with the new message.
+  - (b), a Codex rule that runs the command unsandboxed without asking, was not chosen; it is the user's security
+    setting.
+  - Every Codex brief tells Codex to run the check outside the sandbox.
+- **Next:**
+  1. When the user pastes Codex's report, save it at `D:\fitway-scratch\introspeed\fixq\CODEX-FIX-REPORT.md`. Check that
+     `owner-followup-r04-s04` is clean at the new SHA and nothing listens on 3173-3177.
+  2. Then write a brief for `owner-direction-verifier-high` on Opus:
+     - Q repeated at scale, with the reproduction delay and `plantQ`;
+     - the cause as stated;
+     - no regression in K, D, P, E and A;
+     - the T lines;
+     - the evidence files changed.
+     Show the brief to the user before launch.
+  3. On PASS, resume step 3's integration and push.
+
+## The fix delivered, its verification launched, and fewer approvals (2026-09-29)
+
+- **Codex delivered `a6cfde8`** on `owner-followup-r04-build`, on top of `1b289f4`. This is the intro-speed round's
+  first focused repair.
+  - Report saved at `D:\fitway-scratch\introspeed\fixq\CODEX-FIX-REPORT.md`.
+  - Coordinator inspection, not verification: 8 files, all in the allowed set. The `app.js` change adds one
+    `requestAnimationFrame` wait before `introStart()`. The worktree is clean and nothing listens on 3173-3177.
+  - Two open questions, handed to the verifier:
+    - the extra frame may move the start shift before `intro.startedAt` rather than remove it;
+    - `motion-contact-sheet.png`, `motion-roll-ar-2x.png` and `motion-roll-en-2x.png` changed without being expected.
+- **Verification is running:**
+  - `owner-direction-verifier-high` on Opus, run `owner_introfix_r04_s06_verify`;
+  - brief: `D:\fitway-scratch\introspeed\fixq\VERIFY-FIXQ.md`;
+  - output folder: `D:\fitway-temp\introfix-verify\`;
+  - rows: S, Q (30 first-opens per language, and a reproduction), W (every shift over the whole load), D, Y, A, R, E,
+    T, V and I, each with its positive control.
+- **Working agreement revised by the user (2026-09-29).** It replaces "before starting any task, tell the user the steps
+  and wait for their go".
+  - **The coordinator still asks about:**
+    - taste and design: anything that changes the page's look or behaviour, a choice between options, visual
+      acceptance;
+    - irreversible actions: permanent deletion, force;
+    - the user's settings and security: Codex or Claude configuration, global skills;
+    - product decisions: plan or scope changes, locked privacy, security or content decisions.
+  - **It acts, then reports in a line:**
+    - saves reports, checks worktrees and ports, records in this handoff, makes local commits;
+    - writes briefs and hands them over ready to run;
+    - launches the Claude verifier after each Codex delivery;
+    - folds low findings into the next round;
+    - after a PASS, integrates locally and runs `pnpm check:repository`;
+    - does safe, reversible cleanup;
+    - makes small tooling fixes that touch neither `AGENTS.md`, `docs/WORKFLOW.md` nor the product.
+  - **Pushes:**
+    - the coordinator pushes both working branches itself after a PASS and a clean integration, never with force;
+    - for `main` and pull requests, it decides by the policy and says so beforehand.
+  - **Successors after `FAILED_VALIDATION`:** the coordinator opens one itself once the terminal record meets
+    `docs/WORKFLOW.md`'s evidence gate. It asks only where another rule needs a human (`docs/WORKFLOW.md`: "Human
+    authorization for a successor is required whenever any existing rule also requires it"), such as a material visual
+    change or a locked decision.
+  - Replies are in the Saudi dialect.
+- **Next:**
+  1. When the verifier reports, save the report at `D:\fitway-scratch\introspeed\fixq\VERIFY-FIXQ-REPORT.md`, and tell
+     the user the verdict.
+  2. On PASS, with no finding that needs the user:
+     - rebase the coordinator's docs commits onto `a6cfde8`;
+     - confirm that `E/` equals it;
+     - run `pnpm check:repository`;
+     - push both working branches.
+  3. On FAIL, write the second repair brief for Codex.
+  4. Then the audit patch question (resume step 4), and Reports (resume step 5).
+
+## The first repair verified FAIL, and the second repair brief (2026-09-29)
+
+- **Verifier report,** saved at `D:\fitway-scratch\introspeed\fixq\VERIFY-FIXQ-REPORT.md` (evidence under
+  `D:\fitway-temp\introfix-verify\`). Verdict **FAIL on row W**. S, Q, D, Y, A, R, E, T, V and I pass, and every
+  positive control was caught.
+  - **W:** the extra frame at `app.js` 1967-1969 moves the start shift, it does not remove it. Every first open on
+    both commits (60 of 60) has a visible fallback-to-Readex Pro font swap. It is the same size on both commits, so
+    there is no regression. At `a6cfde8` it lands 6-55 ms before `intro.startedAt`, outside Q's window.
+  - **Medium, outside the checklist:** about half of first opens on both commits have a 0.19-0.21 page shift before
+    the intro. The cards and the chart drop 22.3 px when the header's text arrives, which contradicts the README's
+    "complete at first paint" (303, 308).
+  - Low findings:
+    - a resize just before the start now plays to complete instead of yielding; both outcomes are by design;
+    - the start delay grows by about 1.5 frames at the median;
+    - README line 3 is unwrapped, and the `app.js` 1948 comment is 127 characters long;
+    - the new top entry does not say that the swap still happens.
+  - The motion sheets are capture noise at glyph edges, not a pulse phase.
+  - The coordinator looked at `rt-normal/zoom-swap.png`: the fallback text is visibly narrower before the swap.
+- **The second repair:** `D:\fitway-scratch\introspeed\fixq2\FIX-Q2.md`, run `owner_introfix_r04_s07`, base `a6cfde8`.
+  - Codex proves each cause by reproduction.
+  - **Target:** when the intro plays, nothing visible moves from the first paint to the intro's end; on a reload,
+    nothing moves after the first paint.
+  - **Approach (a) comes first:** preload the fonts and make the first paint complete, with nothing hidden.
+  - **Approach (b) only if (a) fails:** keep the swapping text unpainted during the intro's capped wait. This is the
+    recorded exception. The DOM and the accessibility tree stay unchanged.
+  - Anything else stops the round.
+  - The README entry and the low nits are fixed in the same commit.
+  - **Scope, the coordinator's call:** the page drop is included because it shares the first-load path. The user can
+    remove it.
+
+## The second repair stops: the intro-speed round ends in FAILED_VALIDATION (2026-09-29)
+
+- **Codex's report,** saved at `D:\fitway-scratch\introspeed\fixq2\CODEX-FIX2-REPORT.md`, says FAILED_VALIDATION
+  (repair-budget stop). There is no new commit.
+  - `owner-followup-r04-s04` is clean at `a6cfde8`, and nothing listens on 3173-3177.
+  - The trial code survives only in Codex's work copy, `D:\fitway-scratch\introspeed\fixq2\work\fix\` (`app.js` and
+    `index.html` differ from `work\base\`); it is unverified.
+- **Proven causes** (Codex's reproductions, not yet independently verified):
+  1. the Latin subset arriving after the first paint swaps visible fallback text for Readex Pro (held 40 ms: BASE
+     shifted in 10 of 10 opens per language);
+  2. `app.js` fills initially empty header text after the paint (a script delay of 100 ms: the 22.3 px drop in 10 of
+     10).
+- **Approach (a)** (font preloads, and ordered render-blocking scripts so the first paint is complete) removed both
+  defects in normal conditions:
+  - 0 of 20 first opens and 0 of 10 reloads per language (BASE 20 of 20 and 10 of 10);
+  - 0 of 10 under the 40 ms font hold and under the 100 ms script delay;
+  - every intro played.
+- **What (a) did not cover:** fonts arriving late within the cap. A 150 ms Latin hold still shifted in 3 of 3 opens per
+  language. Approach (b) (unpainting only the text) still registered shifts, because the boxes still resize. Another
+  render-blocking wait did not remove them either.
+- **Unfinished in the trial:**
+  - the timing of the later first-paint gate (two recorder assertions failed);
+  - full first-paint accessibility-tree equality;
+  - the evidence capture;
+  - the late-font pixel behaviour;
+  - 11 long tasks before the paint on the trial, against 8 at BASE (none during an intro).
+- **Terminal record for the lineage** `1b289f4` → `a6cfde8` → the stopped second repair. This is the evidence gate for
+  a successor:
+  - **the failure mode prior checks did not cover:**
+    - Q measured only from `intro.startedAt`, so a shift before the start was invisible to it;
+    - no check held a font between the first paint and the 200 ms cap;
+  - **the changed hypothesis:** both causes above, with approach (a) as the base of the fix. The late-font case is
+    no longer a defect to engineer away blindly: the "content is never hidden" rule makes a swap inevitable there,
+    unless the user changes what the page shows while fonts load;
+  - **why it will not recur:**
+    - the successor's target states the late-font behaviour the user decides;
+    - its checklist records every shift from navigation, and holds fonts at 40, 150 and 600 ms.
+- **The user's decision is needed** before the successor opens, because it is about what the page shows while fonts
+  load. The options put to the user:
+  1. accept a swap before the intro when fonts are late (the intro itself never moves), keeping the rule that content
+     is never hidden; the coordinator recommends this;
+  2. keep the swapping area unpainted until the fonts arrive, at most 200 ms;
+  3. a metric-matched fallback font: a much smaller swap, not zero, and the fallback looks different.
+## The user accepts the late-font swap, and the successor opens (2026-09-29)
+
+- **User decision (2026-09-29):** option 1.
+  - When the fonts arrive after the first paint but within the 200 ms cap, the fallback text shows at the first paint
+    and swaps to Readex Pro before the intro starts.
+  - The intro itself never moves.
+  - The rule that content is never hidden while fonts load stays as it was.
+- **The successor:** `D:\fitway-scratch\introspeed\fixq3\FIX-Q3.md`, run `owner_introfix_r04_s08`, base `a6cfde8`, with
+  a fresh repair budget. It meets the evidence gate recorded in the section above.
+  - The first paint is complete: nothing is filled in after it. The first screen's fonts are preloaded in `index.html`.
+  - In normal conditions, and under the 40 ms font hold and the 100 ms script delay, nothing moves from the first paint
+    to the intro's end; on a reload, nothing moves after the first paint.
+  - Under the 150 ms hold, the swap lands before `intro.startedAt`, with no page drop. `a6cfde8`'s extra frame stays,
+    or an equivalent does.
+  - The trial's open items are closed:
+    - the start timing;
+    - full first-paint accessibility-tree equality;
+    - the evidence capture;
+    - the first-paint time and the long tasks before the paint.
+  - `style.css` and every font and fallback are unchanged.
+- The user runs it in a new Codex session at `high` effort.
+## The successor delivered, and its verification launched (2026-09-29)
+
+- **Codex delivered `77d91e8`** on `owner-followup-r04-build`, on top of `a6cfde8`.
+  - Report saved at `D:\fitway-scratch\introspeed\fixq3\CODEX-FIX3-REPORT.md`.
+  - Coordinator inspection, not verification: 7 files, all in the allowed set (`app.js`, `index.html`, `README.md`, and
+    the evidence). The worktree is clean, and nothing listens on 3173-3177.
+  - Points given to the verifier as rows to measure, not as findings:
+    - the first paint is about 12-16 ms later at the median;
+    - the fix has three long tasks before the paint across 40 opens;
+    - the cap's clock now counts from the first paint;
+    - three frame-sampled completion assertions missed their boundary.
+- **Verification is running:**
+  - `owner-direction-verifier-high` on Opus, run `owner_introfix_r04_s08_verify`;
+  - brief `D:\fitway-scratch\introspeed\fixq3\VERIFY-FIXQ3.md`;
+  - output under `D:\fitway-temp\introfix3-verify\`;
+  - it reuses the probes in `D:\fitway-temp\introfix-verify\probes\`.
+  - Rows:
+    - S and F (a complete first paint, and its time);
+    - W (every shift, on first opens and reloads);
+    - H (40 ms and 150 ms font holds, and a 100 ms script delay);
+    - C (the cap at 50, 180, 230 and 600 ms);
+    - Q, D, Y, A, R, E, T, V and I.
+  - Each row has a positive control.
+- **Next:**
+  1. Save the verifier's report at `D:\fitway-scratch\introspeed\fixq3\VERIFY-FIXQ3-REPORT.md`.
+  2. **On PASS:**
+     - rebase the coordinator's docs commits onto `77d91e8`;
+     - confirm that `E/` equals it;
+     - run `pnpm check:repository`;
+     - push both working branches;
+     - report to the user in a line.
+  3. **On FAIL:** write the successor's repair brief.
+## The successor verified FAIL: preloaded fonts hold the first paint (2026-09-29)
+
+- **Verifier report** (58 min), saved at `D:\fitway-scratch\introspeed\fixq3\VERIFY-FIXQ3-REPORT.md`; evidence under
+  `D:\fitway-temp\introfix3-verify\`. Verdict **FAIL**. `owner-followup-r04-s04` is clean at `77d91e8`, and nothing
+  listens.
+- **The fix works:**
+  - W, H, Q, D, Y, A, R, E (1440×900), V and I pass;
+  - the first paint is complete (60 of 60);
+  - 0 shifts on first opens and reloads, and under the 40 ms and 150 ms font holds and the 100 ms script delay;
+  - the cap counts exactly from the first paint.
+  - C "failed" only because the verifier's 180 ms hold released the font just after the cap. It is not a code defect.
+- **Findings:**
+  1. **Medium-High.** The four font preloads (`index.html` 23-26) trigger Chromium's render-blocking of preloaded fonts.
+     When fonts are slow, the first paint waits up to about 100 ms longer (the first paint at 204-244 ms instead of
+     60-136). The page stays blank for that time, against the rule that content is never hidden and README 310 and
+     742. With `--disable-features=RenderBlockingFonts`, the paint returns to about 110 ms.
+  2. **Low-Medium.** The two `/l/font?kit=` preloads (25-26) are never used: 2 extra downloads and 2 console warnings
+     on every load. Safari and Firefox get other URLs, so all four miss there.
+  3. **Low.** A still frame outside the evidence set, EN delayed at 1024×640, changed by 70 px at the level bars'
+     edges. It is deterministic.
+  4. **Low.** A script delay now blanks the first paint (render-blocking scripts; `blocking="render"` is
+     Chromium-only).
+  - T fails on findings 1 and 2; its wrapping is ragged at README 4, 8 and 742.
+- **The user decides finding 1,** because it is about what the page shows while fonts load:
+  - (a) keep the rule: remove the preloads' render-blocking. When fonts are slow, text shows in the fallback and swaps
+    before the intro, as already accepted;
+  - (b) accept Chromium's hold of up to about 100 ms of blank page when fonts are slow, and correct the README.
+  - Findings 2-4 and T go into the repair either way. This is the successor's first repair.
+## Codex moves to GPT-6.1 Sol, and the first-load problem is rethought (2026-09-29)
+
+- **User decision (2026-09-29):** Codex now runs **GPT-6.1 Sol**, released that day; GPT-6 Sol is no longer used.
+  - Visual design and taste stay with Claude, because no published evaluation covers design quality yet.
+  - The user expects the plan may shift later, not now.
+  - The coordinator watches the model's performance on each task and notes it here, with no special tooling:
+    - the time;
+    - whether it fixed the cause or only the measurement;
+    - side effects it missed;
+    - claims that did not hold against the verifier;
+    - respect for stop rules.
+  - **Public facts, checked 2026-09-29:**
+    - OpenAI's API page: effort levels low, medium (default), high, xhigh and max, and a context of about 1.05M tokens;
+    - DeepSWE v1.1: 75.2 % at high (GPT-6 Astra 74.8 %, GPT-6 Sol 68.8 % at max);
+    - OSWorld 2.0: 71.4 % (Astra 73.5 %);
+    - about a fifth of Astra's price;
+    - factual errors at low effort: 7.7 % (GPT-6 Sol 11.4 %);
+    - no frontend or design benchmark published.
+    Sources: the OpenAI API model page, TechCrunch and Vellum. Briefs run at `high` unless a task is diagnosis-heavy.
+- **GPT-6 Sol's baseline, from this intro lineage:**
+  - strengths: measurement, positive controls, reproductions that proved both causes, and an honest stop with the worktree
+    restored (the second repair);
+  - weaknesses:
+    - `a6cfde8` moved the shift out of Q's window instead of removing it;
+    - `77d91e8` missed the side effect it introduced (Chromium's paint hold for preloaded fonts), left two unused
+      preloads, changed a still frame outside the evidence set, and wrote README claims that did not hold;
+    - it misexplained one diff ("pulse-ring phases").
+  - The coordinator's briefs contributed: they forbade `style.css` and font changes and measured narrow windows, which
+    pushed the work toward patches.
+- **The first-load problem, rethought** at the user's request ("the solutions feel like patches"):
+  - **Root cause:**
+    - the Eclipse page is the only FITWAY surface that loads its font from Google's CDN: a render-blocking stylesheet
+      from `fonts.googleapis.com`, then font files whose URLs differ by browser and are discovered late;
+    - production already self-hosts its fonts (`packages/ui/src/styles/globals.css`: `@font-face` per subset and
+      weight, `font-display: swap`, `unicode-range`) and preloads them (`apps/web/index.html`).
+  - **Proposal:** load the concept's font the way production does.
+    - Self-host Readex Pro's two variable woff2 subsets (Arabic and Latin), the exact bytes Chromium gets today, with
+      Google's `@font-face` rules copied (same `unicode-range` and `font-display`) and the OFL licence.
+    - Preload both files on both languages; AR digits use the Latin subset.
+    - Remove the Google stylesheet, the preconnects and the four Google preloads.
+    - Keep from `77d91e8`: the render-blocking scripts (a complete first paint), the cap counted from the first paint,
+      and the start after the frame that paints the fonts.
+    - Point `capture.mjs`'s font holds at the local files.
+    - Every still frame, at every size, stays byte-identical.
+  - **Expected:**
+    - the swap is gone at its source, not moved;
+    - Chromium's paint hold for preloaded fonts shrinks to a few ms, because the files come from the same server;
+    - the first paint may be faster, with no third-party stylesheet;
+    - no request to Google on each load;
+    - the page works offline;
+    - simpler and faster tests.
+  - It is proposed as the successor's first repair, on base `77d91e8`, pending the user's go.
+## New-session resume point after the self-hosted font brief (2026-09-29)
+
+- **User decisions (2026-09-29):**
+  - The self-hosted font proposal is approved. The brief states the goal, the cause and the outcomes, and leaves the
+    approach to Codex; it does not lock files beyond the evidence rules.
+  - **Watching the model stays neutral.** Record facts per task, beside the verifier's evidence. Never put these notes
+    in a Codex brief, and draw no conclusion from one task. The GPT-6 Sol notes above are history, not a prior against
+    GPT-6.1 Sol.
+  - A fresh coordinator session takes over, because this one is large.
+- **Working rules taken from "Automating eval design and hillclimbing"**
+  (`https://claude.dev/blog/automating-eval-design-and-hillclimbing/`). Only the general ideas apply; the article's
+  `/claude-api` commands are for API applications.
+  1. **Held-out checks.** Codex's brief states the goal and the required outcomes. The verifier also measures in ways
+     the brief does not spell out: more sizes and states, reloads, network conditions, side effects. This makes
+     "fixing the measurement" visible. It is the article's held-out test set.
+  2. **One change per round,** aimed at a cause, not at a check.
+  3. **Stall rule.** After two failed rounds on one issue, the coordinator stops and redoes the root-cause analysis
+     before writing another brief. That step was missing between `a6cfde8` and `77d91e8`.
+  4. **Noise floor, recorded once and reused.** Known capture noise:
+     - `daily-ar-1440x900-rail-open.png` has raster variants, and the deterministic one is `eed11d01e446065b…`;
+     - `motion-contact-sheet.png` and `motion-roll-*-2x.png` show glyph-edge noise, with the pulse hidden;
+     - `intro-yield-ar.png` holds real-time frames.
+     Verifiers classify against this list instead of re-deriving it.
+  5. **Validate the grader:** every detector fails on its planted defect before its pass counts. This is already the
+     rule.
+- **State at handover:**
+  - `owner-followup-r04-s04` is clean at `77d91e8` (verified FAIL; see the section on the paint hold);
+  - `codex/owner-redesign-r04` has local docs commits, not pushed, including this one;
+  - no agent of this session is running, and nothing listens on 3173-3177.
+  - The brief: `D:\fitway-scratch\introspeed\fixq4\FIX-FONTS.md`, run `owner_fonts_r04_s09`, base `77d91e8`. The user
+    runs it on GPT-6.1 Sol at `high`, in a new Codex session.
+- **Resume steps:**
+  1. Run `pnpm context:show -- --milestone owner-design-exploration-r04`. Read this section and the three before it.
+  2. **When the user pastes Codex's report:**
+     - save it at `D:\fitway-scratch\introspeed\fixq4\CODEX-FONTS-REPORT.md`;
+     - check that `owner-followup-r04-s04` is clean at the new SHA, with nothing on 3173-3177;
+     - note the neutral model facts here.
+  3. **Write the verifier brief and launch it** (`owner-direction-verifier-high`, Opus). Reuse the probes in
+     `D:\fitway-temp\introfix3-verify\` and `D:\fitway-temp\introfix-verify\probes\`, adapted for local font files.
+     Include held-out checks:
+     - every still frame at every size, language and state against `a6cfde8`;
+     - reloads;
+     - holds of the local font files at 40, 150 and 600 ms, measuring the first paint and the swap;
+     - no request leaves the origin;
+     - the length of Chromium's paint hold;
+     - the harness's own font holds;
+     - README truth;
+     - side effects.
+  4. **On PASS:** rebase the docs commits onto the new SHA, confirm that `E/` equals it, run
+     `pnpm check:repository`, and push both working branches. **On FAIL:** a focused repair brief. After a second
+     failure, apply the stall rule.
+  5. **Then:** the audit patch question (resume step 4 of the intro-speed resume point), then Reports (resume step 5).
+- **Working agreements:**
+  - replies are in the Saudi dialect;
+  - approvals follow the revised agreement above;
+  - temp and scratch never go on drive C;
+  - agents report in their final message;
+  - keep the coordinator's context small.## The self-hosted font round stops on outcome 6, and the cause is found (2026-09-30)
+
+- **Codex stopped `owner_fonts_r04_s09`** without a commit, as the brief allowed.
+  - Report saved at `D:\fitway-scratch\introspeed\fixq4\CODEX-FONTS-REPORT.md`; the candidate is preserved in
+    `...\fixq4\work\candidate\`.
+  - `owner-followup-r04-s04` is clean at `77d91e8`, and nothing listens on 3173-3177.
+  - The candidate self-hosts four Google subsets (93,204 bytes), the eight face rules and the OFL. It matches `77d91e8`
+    on EN delayed 1024×640, and differs from `a6cfde8` there by the same 70 px.
+  - Not done: timings, the paint-hold length, the remaining controls, the capture run, and the README.
+- **Coordinator follow-up (not verification):** the 70 px are a one-row paint offset in `a6cfde8`, not in the fix.
+  - The rects are identical in all three versions, and every box ends at y 266.
+  - The candidate paints each bar exactly inside its rect. `a6cfde8` paints every bar one device pixel lower.
+  - Before the swap, the bars sit at y 241.75 in the fallback font. Codex's control proves the cause: holding the font
+    600 ms gives back `a6cfde8`'s frame exactly.
+  - Reading: the baseline frame carries the swap's leftover. Outcome 6's byte-identity to `a6cfde8` contradicts the
+    round's goal for this frame. That is a brief error, not a work failure, so the repair budget is untouched.
+  - Zoom: `D:\fitway-scratch\introspeed\fixq4\bars-shift-zoom.png`.
+- **Neutral model facts, GPT-6.1 Sol at `high`, this task only:**
+  - time: the work files are dated 23:45-23:56; the total run time was not reported;
+  - cause or measurement: it proved the cause with a hold control, and rejected a static offset that reduced the
+    difference to 10 px;
+  - claims against evidence: 70 px and identical rects reproduced by the coordinator. It did not determine which
+    version paints the rects correctly;
+  - stop rules: it stopped at the outcome the brief named, rolled back, and left no listener;
+  - side effects: none retained.
+- **Pending the user:** accept the candidate's bars on EN delayed 1024×640 as the new reference, then resume the same
+  run from the preserved candidate with outcome 6 amended.
+## The user accepts the bars' new reference, and new-session resume point (2026-09-30)
+
+- **User decision (2026-09-30):** on EN delayed 1024×640, the candidate's bars are the new reference, because each
+  bar paints exactly inside its layout rect.
+- **Neutral model fact:** the stopped run took 14 minutes, as reported by the user.
+- **The resume brief:** `D:\fitway-scratch\introspeed\fixq4\FIX-FONTS-RESUME.md`. It amends `FIX-FONTS.md` and
+  continues the same run, `owner_fonts_r04_s09`, from the preserved candidate.
+  - **Outcome 6, amended:** a still frame may differ from `a6cfde8` only when three conditions hold, each measured:
+    1. the layout rects in the differing region are unchanged;
+    2. the new paint matches those rects, and `a6cfde8`'s paint does not;
+    3. a 600 ms local font hold reproduces `a6cfde8`'s frame byte for byte.
+  - **New rule:** when an outcome is unmet, Codex finishes measuring the others before it stops.
+  - The user runs it on GPT-6.1 Sol at `high`, in a new Codex session.
+- **Resume steps:**
+  1. Run `pnpm context:show -- --milestone owner-design-exploration-r04`. Read this section and the one before it.
+  2. **When the user pastes Codex's report:**
+     - save it at `D:\fitway-scratch\introspeed\fixq4\CODEX-FONTS-RESUME-REPORT.md`;
+     - check that `owner-followup-r04-s04` is clean at the new SHA, with nothing on 3173-3177;
+     - note the neutral model facts here, including the run time.
+  3. **Verify:** follow step 3 of the self-hosted font resume point. The verifier also re-derives the outcome-6
+     exception class independently, for every frame that differs from `a6cfde8`.
+  4. **On PASS or FAIL:** follow step 4 of that resume point.
+  5. **Then:** follow its step 5.
+## The first resume stops on `file://` preloads, and the second resume brief (2026-09-30)
+
+- **Codex stopped again** without a commit. Report saved at
+  `D:\fitway-scratch\introspeed\fixq4\CODEX-FONTS-RESUME-REPORT.md`; candidate in `...\fixq4\work\resume-candidate\`.
+  `owner-followup-r04-s04` is clean at `77d91e8`, and nothing listens on 3173-3177.
+- **The stop:** the capture exited 1.
+  - Under `file://`, Chromium blocks the two `crossorigin` font preloads, with origin `null`.
+  - The capture's tuner, crowd and marker gates record 24, 4 and 12 console errors; BASE records none.
+  - `file://` is a supported way to open the concept (README 822 and 157, and the capture's `file://` checks).
+- **Everything else was measured and reported as meeting the outcomes:**
+  - 0 of 40 first opens shifted, and 0 of 20 reloads; BASE shifted 40 of 40 and 20 of 20;
+  - no external request;
+  - 57 of 59 still frames are byte-identical. EN delayed 1024×640 differs at 1× and 2×, and both frames meet the
+    outcome-6 exception;
+  - the cap counts from the first paint.
+- **Open points:**
+  - Chromium still holds the first paint for preloaded fonts by 98-100 ms when the fonts are slow (150 and 600 ms
+    holds). The proposal expected a few ms; that holds only when the fonts are fast.
+  - The first paint in normal conditions is 120/112 ms (AR/EN) against BASE's 102/100, with no swap.
+  - The removed-frame control caught 9 of 12.
+- **Neutral model facts, second run:**
+  - it followed the new rule, measuring every outcome before it stopped;
+  - it relaxed no gate;
+  - it reported the hold that contradicted the proposal's expectation;
+  - the run time is not yet known.
+- **Second resume brief:** `D:\fitway-scratch\introspeed\fixq4\FIX-FONTS-FILE.md`.
+  - The goal: no console error from `file://`, with the fonts still preloaded over HTTP.
+  - Outcome 5 records the user's decision on slow fonts.
+  - The removed-frame control reaches 12 of 12, or the misses are explained.
+  - **Pending the user:** whether to accept Chromium's hold of up to about 100 ms when the fonts are slow. This is
+    finding 1's option (b). The brief assumes yes and is not sent before the answer.
+## The user accepts the paint hold, and the second resume goes to Codex (2026-09-30)
+
+- **User decision (2026-09-30):** Chromium's hold of the first paint for preloaded fonts is accepted. This is finding
+  1's option (b).
+  - The rule "content is never hidden while fonts load" now reads: content may stay unpainted for up to about 100 ms,
+    and only when the font files are slow.
+  - The README states the hold as measured.
+- **Neutral model fact:** the first resume took 55 minutes, as reported by the user. It included the full measurement
+  set and the capture run.
+- **Sent:** `FIX-FONTS-FILE.md` as written. The user runs it on GPT-6.1 Sol at `high`, in a new Codex session.
+- **Resume steps:**
+  1. Run `pnpm context:show -- --milestone owner-design-exploration-r04`. Read this section and the three before it.
+  2. **When the user pastes Codex's report:**
+     - save it at `D:\fitway-scratch\introspeed\fixq4\CODEX-FONTS-FILE-REPORT.md`;
+     - check that `owner-followup-r04-s04` is clean at the new SHA, with nothing on 3173-3177;
+     - note the neutral model facts here, and ask the user for the run time.
+  3. **Verify:** as step 3 of the self-hosted font resume point says. Add these checks:
+     - the outcome-6 exception, re-derived independently;
+     - zero console messages from `file://` in AR and EN, with a planted-error control;
+     - the hold, measured independently at 150 and 600 ms;
+     - the removed-frame control.
+  4. **Then:** steps 4 and 5 of the self-hosted font resume point.
+## The self-hosted font commit delivered, and its verification launched (2026-09-30)
+
+- **Codex delivered `4568bac`** on `owner-followup-r04-build`, on top of `77d91e8`.
+  - Report saved at `D:\fitway-scratch\introspeed\fixq4\CODEX-FONTS-FILE-REPORT.md`.
+  - Coordinator inspection, not verification:
+    - 13 files: `index.html`, `capture.mjs`, `README.md`, six in `fonts/`, and four in `evidence/`;
+    - `app.js`, `style.css` and `tuner.js` are untouched;
+    - the tree is clean, and nothing listens on 3173-3177.
+  - Claims to measure:
+    - the preloads are inserted only over HTTP;
+    - 57 of 59 still frames are identical, and the two that differ are the accepted bars frame at 1× and 2×;
+    - Chromium's hold is 96/98 ms (AR/EN) under slow fonts;
+    - the normal first paint is 20/14 ms later than `a6cfde8`, with no swap;
+    - 19 long tasks of 54-62 ms before the paint under slow fonts;
+    - the removed-frame control catches 12 of 12.
+- **Neutral model facts, third run:**
+  - it delivered one commit inside the allowed files;
+  - it relaxed no gate;
+  - it reported its own caveats: the long tasks, the untested browsers, and the canonical difference;
+  - the run took 1 h 17 min, as reported by the user. The three runs of `owner_fonts_r04_s09` took 14 min, 55 min
+    and 1 h 17 min.
+- **Verification is running:**
+  - `owner-direction-verifier-high` on Opus, run `owner_fonts_r04_s09_verify`;
+  - brief `D:\fitway-scratch\introspeed\fixq4\VERIFY-FONTS.md`;
+  - output under `D:\fitway-temp\fonts-verify\`.
+  - Held-out rows beyond Codex's brief:
+    - B: font bytes against `a6cfde8`'s Google files;
+    - N: the network and the console, at 390×844 too;
+    - W at 390×844 and 1024×640;
+    - M: a missing or hung font file;
+    - P: the hold, with two controls;
+    - X: still frames in more states and in reduced motion;
+    - K: the harness's holds, planted;
+    - Z: the canonical difference.
+- **Next:**
+  1. Save the verifier's report at `D:\fitway-scratch\introspeed\fixq4\VERIFY-FONTS-REPORT.md`.
+  2. **On PASS:**
+     - rebase the docs commits onto `4568bac`;
+     - confirm that `E/` equals it;
+     - run `pnpm check:repository`;
+     - push both working branches;
+     - report to the user.
+  3. **On FAIL:** a focused repair brief. After a second failure, apply the stall rule.
+## The Codex loop is measured as an eval (2026-09-30)
+
+- **User decision (2026-09-30):** the per-task model notes (time, impressions) are dropped as unhelpful. They are
+  replaced by the mapping in "Automating eval design and hillclimbing", confirmed by the user:
+  - the brief is the prompt we improve;
+  - the verifier is the grader;
+  - the brief's outcomes are the train set, and the verifier's held-out checks are the test set;
+  - repair rounds are hillclimbing.
+
+  The neutral-model facts recorded in the sections above are history. Run times are no longer recorded.
+- **Per round, from the verifier's report only:**
+  - brief rows passed;
+  - held-out rows passed. A gap between the two means the measurement was fixed, not the cause;
+  - the cause of each failure or stop: the work, the brief, or the harness.
+- **Brief rules.** Every stop caused by a brief becomes a rule here. Every new Codex brief applies them all.
+  - B1. Name every supported way to open and run the artifact (HTTP, `file://`, sizes, reduced motion), and which of
+    them the harness checks. *(s09 run 2)*
+  - B2. Before requiring equality to a baseline, check that the baseline does not carry the defect being removed. If
+    it may, state the exception class and how it is proved. *(s09 run 1)*
+  - B3. When an outcome is unmet, do not work around it. Measure every other outcome, then stop and report.
+    *(s09 run 1)*
+  - B4. State the goal, the cause and the outcomes, and leave the approach open. Lock no file beyond the evidence
+    rules. Locked files pushed `a6cfde8` and `77d91e8` toward patches. *(user decision 2026-09-29)*
+  - B5. Never put the verifier's probes, thresholds or held-out checks in a brief. Describe the cause and the
+    required outcome. *(the article: isolate the answers)*
+  - B6. One change per round, aimed at a cause.
+- **Round ledger (first-load lineage):**
+
+  | Round | Commit | Brief rows | Held-out | Cause of failure or stop |
+  |---|---|---|---|---|
+  | s08 | `77d91e8` | most passed; T failed | failed: the paint hold, unused preloads, one still frame outside the evidence set | work: missed side effects; brief: locked files; harness: the verifier's C hold |
+  | s09 run 1 | none | stopped on outcome 6 | not run | brief: outcome 6 contradicted the goal (B2) |
+  | s09 run 2 | none | stopped on the capture | not run | brief: `file://` support unstated (B1); the harness caught it |
+  | s09 run 3 | `4568bac` | pending the verifier | pending: B, N, M, P, K, Z, X breadth, W extra sizes | pending |
+
+- **Fixed held-out suites (planned):** for the next surface we iterate on, the verifier's probes become a fixed suite.
+  - It lives outside the worktree, and no Codex brief names it.
+  - Planted-defect controls are built in.
+  - It runs in minutes and grades the same way every round.
+  - The verifier agent then covers only the new checks and judgment.
+- **Model or effort comparisons:** only when a decision depends on one. Replay a closed round (for example this font
+  task from `77d91e8`) on two configurations, twice each, graded by the same fixed suite.
+## `4568bac` verified FAIL: fonts fetched twice under `no-store`, and repair 1 (2026-09-30)
+
+- **Verifier report** (62.5 min), saved at `D:\fitway-scratch\introspeed\fixq4\VERIFY-FONTS-REPORT.md`; evidence under
+  `D:\fitway-temp\fonts-verify\`. Verdict **FAIL**. `owner-followup-r04-s04` is clean at `4568bac`, and nothing
+  listens.
+- **What holds:** S, B, P, Q, M, D, Y, A, R, X, K and Z pass.
+  - No request leaves the origin.
+  - `file://` is clean.
+  - 0 shifts on first opens at 1440, 1024 and 390.
+  - The bars exception is re-derived independently, at 1× and 2×.
+  - The paint hold is 104-112 ms, and happens only with slow fonts.
+- **Finding 1 (medium), coordinator-confirmed in `results\Hsd100.json` and `cc-*.json`:**
+  - Under `Cache-Control: no-store`, Chromium does not reuse the script-inserted preload when `@font-face` asks late,
+    so the file is fetched twice.
+  - With `app.js` delayed 100 ms, the fallback paints first and the font swaps before the intro, in 10 of 10 runs per
+    language. One AR reload in 10 shifts.
+  - With no header or `no-cache`: 0 double fetches and 0 shifts.
+  - `capture.mjs`'s own server sends `no-store`. The user's preview (Python `http.server`) sends no header.
+  - The README's reload and script-delay claims are false under `no-store`.
+- **Findings 2-4 (low):**
+  - C's 180 ms case sits at the cap's margin: grader;
+  - a 404 is logged twice: the same cause as finding 1;
+  - H's 150 ms hold is blind to a removed pre-intro frame. Holding the fonts to first paint + 50/100 ms catches it:
+    grader.
+- **Ledger, s09 run 3 (`4568bac`):**
+  - 12 of 17 rows pass.
+  - Under the verifier's `no-store` server, the brief's reload and script-delay rows fail (N, W, H, T). Codex's own
+    probes passed them: the train-test gap.
+  - Causes:
+    - work: the font load depends on cache headers, and `capture.mjs`'s server already showed it;
+    - brief: the server's headers were not named. B1 covers this for new briefs;
+    - grader: C's margin and H's blind detector.
+- **Grader rules** (for the next verifier and the fixed suite):
+  - G1. Keep cap checks at least 30 ms from the cap: 50, 150, 250 and 600 ms.
+  - G2. Detect a removed pre-intro frame by holding the fonts until first paint + 50 and + 100 ms.
+  - G3. Run the load checks under `no-store` and under no cache header.
+- **Repair 1:** `D:\fitway-scratch\introspeed\fixq4\FIX-FONTS-R1.md`, run `owner_fonts_r04_s09_r1`, base `4568bac`.
+  - Written to rules B1-B6.
+  - The goal: each font file fetched once per load, whatever the headers.
+  - The approach is open, and no server's headers may change.
+  - The user runs it on GPT-6.1 Sol at `high`, in a new Codex session.
+- **Next:**
+  1. Save Codex's report at `...\fixq4\CODEX-FONTS-R1-REPORT.md`, and check the tree and ports.
+  2. Verify with the S-Z rows, G1-G3, and new held-out checks. Record the ledger row.
+  3. On PASS, finish as the self-hosted font resume point says. On FAIL, repair 2; after it, the stall rule.
+## Repair 1 stops on a pre-existing mobile shift, and resumes (2026-09-30)
+
+- **Codex stopped `owner_fonts_r04_s09_r1`** on outcome 2, without a commit.
+  - Report at `D:\fitway-scratch\introspeed\fixq4\CODEX-FONTS-R1-REPORT.md`; trial at `...\fixq4\r1\candidate\`.
+  - `owner-followup-r04-s04` is clean at `4568bac`, and nothing listens.
+  - The trial starts the CSS font faces after the blocking stylesheets and drops the separate preloads. Reported:
+    - each font fetched once in 284 loads, across four headers, four sizes and `file://`;
+    - one 404 error per missing file;
+    - stills 56 of 56 identical;
+    - capture exit 0;
+    - no swap under `no-store` with a delayed `app.js`;
+    - the paint hold stays at 104/100 ms.
+- **The stop:** at 390×844 the intro's end moves `#busy-note` 71.5 px.
+  - Coordinator probe: one layout shift, 1 ms after `endedAt`, in AR and EN, at `4568bac`, `77d91e8`, `a6cfde8` and
+    `521fe32`. It is pre-existing, and part of the narrow layout (phone phase).
+  - 768×1024 EN has a tiny one. 1440, 1280 and 1024 have none.
+  - The last verifier's W at 390 ended its window at `endedAt`, and missed it.
+- **Ledger, s09 r1 run 1:** no commit, and not verified. Cause: brief (an outcome required at a size where the
+  baseline already fails) and grader (the window ended at `endedAt`).
+- **New rules:**
+  - **B7.** Before a brief requires any outcome under any condition, check that the baseline meets it there. Name a
+    condition where it fails as pre-existing and out of scope, with the requirement "unchanged from the baseline".
+  - **G4.** Every movement check runs until at least 500 ms after `endedAt`.
+- **Resume brief:** `D:\fitway-scratch\introspeed\fixq4\FIX-FONTS-R1-RESUME.md`.
+  - Below 1024 px, the `#busy-note` intro-end movement stays exactly as at `4568bac`.
+  - Any other movement fails.
+  - The README lists the jump as a known limit for the phone phase.
+  - The repair budget is untouched: the stop came from the brief.
+- **For the phone phase:** on narrow screens, the intro's end drops `#busy-note` by 71.5 px. It is a visible jump,
+  and it predates this lineage.
+## Repair 1 delivered, and its verification launched (2026-09-30)
+
+- **Codex delivered `8926193`** on `owner-followup-r04-build`, on top of `4568bac`.
+  - Report saved at `D:\fitway-scratch\introspeed\fixq4\CODEX-FONTS-R1-RESUME-REPORT.md`.
+  - Coordinator inspection, not verification:
+    - 5 files: `index.html`, `capture.mjs`, `README.md`, `capture-log.json` and `intro-yield-ar.png`;
+    - the tree is clean, and nothing listens.
+  - **The change:** the script-inserted preloads are gone. The two stylesheets now come first, followed by an inline
+    `document.fonts.load()` for weights 400 and 500. The `@font-face` fetch itself starts early, so no second request
+    exists to miss.
+  - **Claims to measure:**
+    - 800 of 800 matrix cases pass, across four cache modes and `file://`;
+    - one 404 error per missing file;
+    - 56 of 56 stills are identical;
+    - the paint hold stays at 104/96 ms;
+    - the `#busy-note` limit is preserved;
+    - the removed-frame control catches only 3 of 10.
+- **Verification is running:**
+  - `owner-direction-verifier-high` on Opus, run `owner_fonts_r04_s09_r1_verify`;
+  - brief `D:\fitway-scratch\introspeed\fixq4\VERIFY-FONTS-R1.md`;
+  - output under `D:\fitway-temp\fonts-r1-verify\`.
+  - It applies G1-G4, and reports each row as brief or held-out for the ledger.
+  - Held-out rows: L (network emulation and 4× CPU), V (304 revalidation, disabled cache, back and forward), Z
+    (device scale 2), and the subset-before-paint check in N.
+- **Next:**
+  1. Save the report at `...\fixq4\VERIFY-FONTS-R1-REPORT.md`, and record the ledger row.
+  2. **On PASS:**
+     - rebase the docs commits onto `8926193`;
+     - confirm that `E/` equals it;
+     - run `pnpm check:repository`;
+     - push both working branches.
+  3. **On FAIL:** repair 2. After it, the stall rule.
+## Note for the data-wiring phase: the loading state (2026-09-30)
+
+- **User request (2026-09-30):** record the loading state for when the Owner surface is connected to real data.
+- **Already locked:**
+  - `FITWAY_PRODUCT.md` "Operational states": "a lightweight skeleton and accessible loading announcement while the
+    first payload resolves";
+  - `DESIGN_GUIDE.md` 162: a stable structural skeleton, `aria-busy` and a concise announcement, with no fabricated
+    values;
+  - `DESIGN_GUIDE.md` 246-247: skeletons are static under reduced motion.
+- **The gap:** Eclipse has three states, `?state=live|delayed|nohistory`. It has no loading state.
+  - Before any promotion, design Eclipse's skeleton in its own visual language, under those rules.
+  - At the same time, check the concept against the product's other operational states: closed, unavailable and
+    error.
+- **Not for the font problem:** the text is complete at the first paint. A skeleton or a loading screen would add a
+  swap of its own on every open. The user asked about a loading screen and a skeleton for fonts on 2026-09-30, and
+  took neither.
+- **Update (2026-09-30):** the user approved eight loading rules. They are in `DESIGN_GUIDE.md` section 6, "Loading
+  behaviour", and section 10, and cover the public page and the Owner surface:
+  - a delay and a minimum;
+  - zero shift on arrival;
+  - real text except for pending values;
+  - chart placeholders that cannot read as data;
+  - no skeleton on refresh;
+  - a 10 s ceiling into Error or Unavailable;
+  - one announcement after about 1 s.
+
+  The numbers are starting values, tuned against real data. `pnpm check:repository` and
+  `pnpm check:design-context` pass. Eclipse's future skeleton follows these rules.
+## Repair 1 verified PASS: the first-load problem closes at `8926193` (2026-09-30)
+
+- **Verifier report** (about 2 h), saved at `D:\fitway-scratch\introspeed\fixq4\VERIFY-FONTS-R1-REPORT.md`; evidence
+  under `D:\fitway-temp\fonts-r1-verify\`. Verdict **PASS**; no row fails.
+  - Each font file is requested at most once per load: four cache modes and `file://`, AR and EN, 1440 and 390, first
+    opens and reloads.
+  - One error for a missing file.
+  - 0 shifts at 1440, 1280 and 1024, and under the `app.js` delay. The #busy-note shift below 1024 px equals
+    `4568bac`'s.
+  - The swap lands before the intro in every held run.
+  - 52 of 52 stills are identical to `4568bac`, and the capture exits 0.
+  - Held-out L (network emulation and 4× CPU), V (304, disabled cache, back and forward) and Z (device scale 2) pass.
+    `4568bac` double-fetches in L on every run.
+  - Coordinator check: `strips\rt-sd100-first3.png` shows `4568bac`'s first frame in the fallback, with a shift, in AR
+    and EN, and `8926193`'s in the final font with none.
+- **Low findings, deferred, with no new round:**
+  1. The slow-font paint hold measures 108-124 ms. The README says 104/96. It is accepted behaviour, and identical to
+     `4568bac`.
+  2. With `RenderBlockingFonts` disabled, AR shows the fallback on the first frame more often (4 of 5 against 2 of 5).
+     This is a risk for browsers without Chromium's render blocking. Firefox and Safari are not installed here: check
+     them in the phone or production phase.
+  3. `E/README.md:327` is 122 characters wide.
+  4. The N control reproduced the double fetch only 1 time in 5. The detector itself is proven on `4568bac`.
+
+  Findings 1 and 3 go into the next Eclipse round's README edits.
+- **Ledger, s09 r1 resumed (`8926193`):**
+  - brief rows 15 of 15 pass, and held-out rows 3 of 3 pass, so there is no gap;
+  - cause of failure: none;
+  - grader note: the N control (finding 4).
+- **New grader rule:**
+  - **G5.** A verifier writes only inside its own temp folder. After each verification, the coordinator checks
+    `git status` in every worktree involved.
+  - The first font verifier left an empty `wl.mjs` in this worktree at 08:12. The coordinator removed it.
+- **Integration: a merge, not a rebase.**
+  - 23 docs commits are unpushed, but the remote docs tip `46f7db4` is itself behind the build branch's base, so a
+    rebase would rewrite pushed commits and need a force push.
+  - A merge of `owner-followup-r04-build` into `codex/owner-redesign-r04` keeps every verified SHA and pushes as a
+    fast-forward.
+  - The build commits touch only `E/`, and the docs commits touch no `E/` file.
+- **Next:** the audit patch question, then Reports. See steps 4 and 5 of the intro-speed resume point.
+## New-session resume point after the first-load fix (2026-09-30)
+
+- **State at handover:**
+  - The first-load problem is closed at `8926193`, verified PASS.
+  - Pushed as fast-forwards: `codex/owner-redesign-r04` at the commit that adds this section, and
+    `owner-followup-r04-build` at `8926193`.
+  - `owner-followup-r04-s04` is clean at `8926193`. No agent runs, and nothing listens on 3173-3177.
+  - This session grew large, so the user starts a fresh coordinator session.
+- **Rules in force.** They are written in the sections above:
+  - the eval framing and the per-round ledger;
+  - brief rules B1-B7 (B7 is in the section on repair 1's stop);
+  - grader rules G1-G5.
+- **Resume steps:**
+  1. Run `pnpm context:show -- --milestone owner-design-exploration-r04`. Read this section, "The Codex loop is
+     measured as an eval", "Repair 1 stops on a pre-existing mobile shift, and resumes", and "Repair 1 verified
+     PASS".
+  2. **The audit patch.** It waits for the user's answer, which was not given in the old session because the question
+     was unclear.
+     - The file is
+       `C:/Users/PCFORC~1/AppData/Local/Temp/claude/D--Projects-fitway-worktrees-owner-design-exploration-r04/6482348a-04f9-4b87-8e5b-460107b7a201/scratchpad/audit/brief-audit.patch`.
+       Another session wrote it on 2026-09-27. `git apply --check` passes (1 file, +30/−12).
+     - It adds italic notes to `directions/NEXT-DIRECTION-BRIEF.md`. Each note says which later round replaced an old
+       passage, so nobody follows an outdated one. It changes no decision.
+     - One note is stale: the "Content is never hidden while fonts load" amendment predates the user's decisions of
+       2026-09-29 and 2026-09-30. If the user agrees, apply the patch and update that note to say:
+       - a late font shows the fallback and swaps before the intro;
+       - Chromium's paint hold of about 100 ms (measured 108-124) is accepted when the fonts are slow.
+
+       Then run `pnpm check:repository`, commit, and push.
+  3. **Then Reports.** Follow the screen plan in `NEXT-DIRECTION-BRIEF.md`, "After the Daily page":
+     - desktop first;
+     - an early phone feasibility check of the table system at 390 and 320 px;
+     - then the phone and the polish;
+     - then the authority record.
+
+     The work is split this way:
+     - new design goes to `owner-direction-designer` (Opus);
+     - heavy builds go to Codex, GPT-6.1 Sol at `high`, with briefs that follow B1-B7;
+     - verification goes to `owner-direction-verifier-high`, following G1-G5.
+
+     Build the first fixed held-out suite for Reports.
+- **Deferred:**
+  - the README findings of the last verification (the paint hold figures, and line 327's width), for the next
+    Eclipse round;
+  - a Firefox and Safari check of the first paint, for the phone or production phase;
+  - the #busy-note intro-end jump at narrow widths, for the phone phase;
+  - Eclipse's loading skeleton, which follows `DESIGN_GUIDE.md` "Loading behaviour", before promotion.
+- **Working agreements:**
+  - replies in the Saudi dialect;
+  - temp and scratch never on drive C;
+  - agents report in their final message;
+  - keep the coordinator's context small;
+  - do not change effort mid-session, because the app warns that it re-reads the whole conversation.
+## The audit patch applied (2026-09-30)
+
+- **User decision (2026-09-30):** apply the audit patch and correct its font note.
+- **Applied** to `directions/NEXT-DIRECTION-BRIEF.md` (+30/−12). It adds italic notes that name the later round
+  replacing each old passage. It changes no decision.
+- **The font note under Round 6 §1:**
+  - its 200 ms part stays, because it still holds. On a first open, the four answers stay out of sight until the
+    fonts arrive, capped at 200 ms from the first paint (Eclipse README, section 11);
+  - it now adds the decisions of 2026-09-29 and 2026-09-30. A late font shows the fallback and swaps before the
+    intro. When the fonts are slow, Chromium's paint hold of about 100 ms (measured 108-124 ms) is accepted.
+  - "Decisions on the step 3 intro" §1 still holds, so it gets no note.
+- `pnpm check:repository` passes.
+- **Next:** Reports, step 3 of the resume point above.
+## Reports round launched, with its fixed held-out suite (2026-09-30)
+
+- **Designer:** a fresh `owner-direction-designer` (Opus, `xhigh`), run `owner_reports_r04_s10`.
+  - Brief: `D:\fitway-scratch\reports\BRIEF.md`; work and sheets under `D:\fitway-scratch\reports\`.
+  - Worktree `owner-followup-r04-s04`, branch `owner-followup-r04-build`, base `8926193`. Ports 3173, 3176 and 3177.
+  - Scope: the Reports page at desktop (1440×900 target; 1280 and 1024 must work), AR and EN, in the unchanged
+    Eclipse look with free content. It includes the table, form and dialog system, and the early phone feasibility
+    check of that system at 390 and 320 px only.
+  - Brief choices by the coordinator:
+    - no first-open intro on Reports this round (the designer may propose one);
+    - the loading state is out of scope, but the geometry stays fixed for a later skeleton;
+    - the Daily page's stills stay byte-identical to `8926193`. The only Daily change is the rail's Reports link.
+  - It applies B1 (HTTP with `no-store` and with no header, `file://`, sizes, reduced motion), B3, B4, B5 and B7 (the
+    `#busy-note` limit below 1024 px is named as pre-existing).
+- **Fixed held-out suite:** a fresh `owner-direction-verifier-high` (Opus, `high`), run `owner_reports_suite_r04`.
+  - Brief `D:\fitway-grader\reports\SUITE-BRIEF.md`; the suite lives in `D:\fitway-grader\reports\`. It is outside
+    every worktree and outside `D:\fitway-scratch`, and no builder brief names it.
+  - Built from Product, Spec and `DESIGN_GUIDE.md`, not from the designer's work. It has planted-defect controls, runs
+    in about 10 minutes, applies G1-G5, and uses ports 3178-3179.
+  - Calibration rule: after a delivery, locators and config may change, never thresholds. Every change is logged
+    first.
+- **Next:**
+  1. On the designer's report: check the s04 tree and ports (G5), then inspect the key sheets.
+  2. Verify with a fresh `owner-direction-verifier-high`: the suite after calibration, plus the brief's R1-R11 and
+     judgment. Record the ledger row.
+  3. Then the user reviews Reports in the browser.
+## The user reorders the Reports round: review first, suite later (2026-09-30)
+
+- **User decision (2026-09-30):** the user sees the Reports page first, because they may change it.
+  - The held-out suite agent was stopped while it read the contracts. It left only an extract of `8926193` in
+    `D:\fitway-grader\reports\versions\`. The coordinator worktree is unchanged, and nothing listens on 3178-3179.
+  - The suite is built after the user settles the design, before the first Codex build round, from
+    `D:\fitway-grader\reports\SUITE-BRIEF.md`. Its Reports checks then start from the agreed design.
+- **Next** (replaces the Next of the section above):
+  1. On the designer's report: check the s04 tree and ports (G5), then inspect the key sheets.
+  2. The user reviews Reports in the browser, and any changes follow.
+  3. Build the suite, then verify with a fresh `owner-direction-verifier-high`, and record the ledger row.
+## Reports delivered at `31a40d6`, for the user's review (2026-09-30)
+
+- **The designer delivered `31a40d6`** on `owner-followup-r04-build`, on top of `8926193`. It is not pushed.
+  - The report is saved at `D:\fitway-scratch\reports\work\REPORT.md`, by the coordinator: the harness refused the
+    designer's own write of that file.
+  - G5 check: the s04 tree is clean, nothing listens on 3170-3180, and the coordinator worktree is unchanged.
+  - 7 files. Added: `reports.html`, `reports.css`, `reports.js` and `reports-capture.mjs`. Edited: one line of
+    `index.html`, 7 lines of `app.js`, and the README. `style.css`, `capture.mjs` and `evidence/` are unchanged.
+  - Self-reported, not verified: R1-R11 pass. The phone check says the system holds, with named changes below 721 px.
+- **Coordinator inspection, not verification:** `page-full-ar-full.png` and `dialog-range-en.png` are coherent with
+  the Eclipse look: rail, four cards with the lit week-over-week card, the busy-times pattern with closed and zero
+  cells, the day-by-day table, and the dialog.
+- **New pre-existing finding, reported by the designer:** at `8926193` the Daily card headers overflow at 1024 px, by up
+  to 59 px. It is deferred to the phone or polish round.
+- **Designer proposals, for the user:**
+  - raise the Daily 38 px buttons and 36 px chips to the system's 44 px in the polish round;
+  - no intro on Reports;
+  - no rolling digits on a period change.
+- **Next:** the user reviews Reports in the browser, and any changes follow. Then the suite is built, and verification
+  runs.
+## The design-phase plan agreed, and step 1 launched (2026-09-30)
+
+- **User review of Reports (`31a40d6`):** beautiful and excellent. The designer understood the direction and built the
+  page whole, almost in one attempt. There is room to improve, above all on the phone and the other sizes. The user
+  has no specific desktop notes yet.
+- **User decisions (2026-09-30).** They are recorded in `NEXT-DIRECTION-BRIEF.md`, "The design-phase plan":
+  - each screen is designed at every size in its own round: 1440, 768 and 390, with 320, 1024 and 200% reflow
+    checked;
+  - the tests and the independent verification come once, after every screen and size;
+  - a spec sheet with four safeguards, written after a design review;
+  - the language carries over and the composition does not: no screen copies the Daily page's arrangement or its lit
+    cards;
+  - on the phone, a glass bottom bar with neat short labels, a compact header, and no hamburger. At 768 the rail stays;
+  - 44 px controls move into the Daily all-sizes round;
+  - **scope:** Staff (with the PIN sign-in) and Public are redesigned too, after the Owner screens, each as its own
+    milestone. The authority record covers all three surfaces;
+  - production starts with a Codex pilot on one bounded part;
+  - every task goes to a fresh agent. The Reports designer does not continue.
+- **Italic notes** mark the brief passages that the plan replaces:
+  - "Scope";
+  - the "Mobile" step;
+  - "Style";
+  - "Authority intent";
+  - "Production";
+  - "Screen plan".
+- **The ledger:** the lease is renewed to 2026-10-02 23:30, with a heartbeat at 19:25.
+- **Step 1 launched:** a fresh `owner-direction-designer` in review-only mode, run `owner_review_r04_s11`.
+  - Brief: `D:\fitway-scratch\review\BRIEF.md`.
+  - It reviews Daily and Reports at `31a40d6` from a `git archive` extract, on ports 3178-3179.
+  - It edits nothing, and does not read the designer's report or `D:\fitway-grader\`.
+  - Its final message is the report. The harness refuses report files from subagents.
+  - `impeccable-finish-reviewer` was not used: its contract expects comps, build state and quality-bar cards that
+    this loop does not produce.
+- **The user's preview:** `.claude/launch.json` has a new `eclipse-build` entry, which serves the s04 `E/` on 3174.
+- **Resume steps:**
+  1. Run `pnpm context:show -- --milestone owner-design-exploration-r04`. Read this section and
+     `NEXT-DIRECTION-BRIEF.md` "The design-phase plan".
+  2. When the review returns:
+     - save it at `D:\fitway-scratch\review\REVIEW.md`;
+     - check the coordinator worktree's status and ports 3178-3179;
+     - inspect the key frames;
+     - show the findings to the user in Arabic, briefly, grouped by class, for the user to pick.
+  3. Then step 2: the spec sheet. Brief a fresh agent with the picked findings as known issues.
+## Step 1 done: the design review and the user's picks, and new-session resume point (2026-09-30)
+
+- **The review** (`owner_review_r04_s11`, a fresh `owner-direction-designer` in review-only mode) returned 21 findings,
+  4 class-d items, a "Keep" list, known-issue corrections and README errors.
+  - Saved at `D:\fitway-scratch\review\REVIEW.md`, by the coordinator; frames and sheets are under
+    `D:\fitway-scratch\review\`.
+  - G5 check: the coordinator and s04 worktrees are clean, and 3173-3179 are free, except 3174, the user's preview.
+  - Coordinator check of F1 in `frames\r-empty-en-1440-full.png`: for 1-31 Jul, three cards say "No readings" while
+    the lit week-over-week card shows +9% for 16-22 Sep. Confirmed.
+- **The user's picks (2026-09-30):**
+  - every finding F1-F21 is accepted, with the review's directions;
+  - D1 is accepted: the brightest thing on a page is never stale, unavailable or empty;
+  - D4 is accepted: a rail name shows on keyboard focus only;
+  - D2 and D3 are left for the Daily all-sizes round;
+  - the "Keep" list is endorsed as rules.
+  - Daily fixes go to step 3 and Reports fixes to step 4. Every finding enters the spec as a rule, a known issue or an
+    open question.
+- **Known issues, corrected by the review:**
+  - the 1024 px Daily overflow also causes a document-level scroll, and persists at 1100;
+  - the `#busy-note` jump is 71.5 px at 390-600, and about 15 px at 768-820 EN;
+  - Reports' segments are 36 px, not 44.
+- **Step 2 is briefed, not launched:** `D:\fitway-scratch\spec\BRIEF.md`, run `owner_spec_r04_s12`.
+  - Base: s04 at `31a40d6`. Ports: 3176-3177.
+  - The brief is for a fresh `owner-direction-designer`, because the spec's rule, composition and known-issue calls
+    need judgment and it becomes the reference.
+  - It adds `E/DESIGN-SPEC.md` and `E/components.html` only, plus a README pointer. The pages do not change.
+  - Fallback: if the harness refuses to create the `.md`, the agent returns its text and the coordinator writes it.
+- **The user starts a new coordinator session here,** because this one has grown large.
+- **Resume steps:**
+  1. Run `pnpm context:show -- --milestone owner-design-exploration-r04`. Read this section and
+     `NEXT-DIRECTION-BRIEF.md` "The design-phase plan".
+  2. Launch step 2: one fresh `owner-direction-designer` with `D:\fitway-scratch\spec\BRIEF.md`, in the background.
+  3. On its report:
+     - check the s04 tree and ports (G5);
+     - look at `E/components.html` on the user's preview (`.claude/launch.json` entry `eclipse-build`, port 3174),
+       and at a few spec sections;
+     - present the proposed rules and open questions to the user in Arabic, briefly.
+  4. Then step 3, Daily at every size: a fresh designer, then a fresh design reviewer, then the user.
+- **Working agreements:**
+  - replies in the Saudi dialect, simple and brief;
+  - temp and scratch never on drive C;
+  - agents report in their final message, because the harness refuses subagent report files;
+  - keep the coordinator's context small;
+  - fresh agents for every task;
+  - the user sees each screen in the browser: start the preview for them rather than giving commands;
+  - do not change effort mid-session.
+## Step 2 launched: the spec sheet (2026-09-30)
+
+- A new coordinator session resumed from the section above.
+- G5 check before launch: s04 is clean at `31a40d6` on `owner-followup-r04-build`, and nothing listens on 3170-3180.
+- **Launched:** a fresh `owner-direction-designer`, run `owner_spec_r04_s12`, in the background, with
+  `D:\fitway-scratch\spec\BRIEF.md`. It uses ports 3176-3177 and works in `D:\fitway-scratch\spec\work\`.
+- **Next:** step 3 of the resume steps above, on its report.
+## Step 2 delivered: the spec sheet draft at `234b12d` (2026-09-30)
+
+- **The designer delivered `234b12d`** on `owner-followup-r04-build`, on top of `31a40d6`. The coordinator pushed it as
+  a fast-forward.
+  - 5 files, +1774: `E/DESIGN-SPEC.md` (526 lines, 54 KB), `components.html`, `components.css` and `components.js`,
+    and a 5-line pointer at the top of the README. The pages do not change.
+  - The spec has 280 labelled entries: 190 rules, 11 compositions, 51 known issues and 28 proposed rules. Its known
+    issues register runs K-01 to K-32, and its open questions Q1-Q10.
+  - Self-reported, not verified: S1-S6 pass. Probes, logs and frames are in `D:\fitway-scratch\spec\work\`; the sheets
+    are in `D:\fitway-scratch\spec\sheets\`.
+  - The designer reports one stray write: an empty `behave-components.mjs` in the coordinator worktree, deleted at
+    once.
+- **G5 check:** s04 is clean at `234b12d`. The coordinator worktree matches the session-start snapshot, and nothing
+  listened on 3170-3180 before the user's preview was started on 3174.
+- **Coordinator inspection, not verification:**
+  - `cframes\ar-card.png`: the lit card is live, and the delayed and "not enough history" cards carry no light (D1).
+  - `cframes\ar-table.png`: both densities are coherent.
+  - Spec §1.3-§1.6 and §8 were read.
+- **Proposed rules for the user:**
+  - the six-role type scale (TYP-3);
+  - the gutters and paddings (SPC-5, SPC-6);
+  - the radii;
+  - the forms of D1, F5, F6, F10, F12, F13 and F21.
+  The designer also names the phone bar's first item "Today / اليوم" (F15), where the plan says "Daily".
+- **Next:** the user reviews the components page and answers Q3-Q10; Q1 and Q2 wait for step 3. Then step 3.
+## The user's decisions on the spec draft, and the second pass (2026-09-30)
+
+- **User decisions (2026-09-30):**
+  - every proposed rule in `234b12d` is accepted, with the type scale, spacing, radii, compact density, the forms,
+    and "Today / اليوم" for the phone bar's first item;
+  - Q3-Q10 are answered with the spec's own proposals;
+  - Q1 (D2) and Q2 (D3) stay open, for step 3.
+- **Independent verification of the spec now:** not needed. The plan puts it in step 9, and before step 10 the tests
+  compare the spec with the final pages. The spec stays a draft.
+- **The user's note on tables:** the numbers sit on the left edge of their column, and the gap note floats.
+  - Coordinator measurement on `components.html`, AR: numeric cells use `text-align: end`, which is the left edge in
+    RTL. So "3" sits under the "6" of "60", and the gap note (`start`) shares no edge with them.
+  - **New rule:** numbers and their header align on the physical right in both languages, which is the start edge in
+    Arabic and the end edge in English. Western digits run left to right, so only the right edge lines units up. A
+    spanning note starts at the edge of the first column it spans. Heat-map cells stay centred.
+- **Second pass launched:** a fresh `owner-direction-builder`, run `owner_spec_r04_s13`, in the background, with
+  `D:\fitway-scratch\spec\BRIEF-2.md`.
+  - It records the decisions and applies the rule in `DESIGN-SPEC.md` and `components.*` only.
+  - It registers the Daily and Reports tables that break the rule as known issues, for steps 3 and 4.
+  - It uses ports 3176-3177.
+- **Next:** on its report, run the G5 check, inspect the table sheets, and show the user. Then step 3.
+## The spec's second pass delivered at `ffc4029` (2026-09-30)
+
+- **The builder delivered `ffc4029`** on `owner-followup-r04-build`, on top of `234b12d`. The coordinator pushed it as a
+  fast-forward.
+  - 3 files, +176/−108: `DESIGN-SPEC.md`, `components.css` and `components.js`.
+  - Labels went from 190 R, 11 C, 51 K and 28 P (280 rows) to 224 R, 11 C, 53 K and 0 P (288 rows).
+  - §8 holds only Q1 and Q2, then an "Answered 2026-09-30" list.
+  - Self-reported, not verified: T1-T5 pass. The widest deviation for numeric columns and spanning notes is 0.00 px, AR
+    and EN, at 1440, 1024 and 390; it was up to 73.4 and 87.9 px at `234b12d`.
+  - New rules TBL-10 to TBL-13. New known issues:
+    - K-33, Daily's minute table in English, for step 3;
+    - K-34, Reports' day table in Arabic, for step 4;
+    - K-35, Reports' day table in English, for step 4.
+  - Beyond the brief, on the components page only:
+    - the table section gets its phone form at 720 px and below;
+    - the tables stack below 1240 px;
+    - NaN chart paths that caused 4 console errors at 1024 and 390 are fixed.
+  - Caveat: at 390 the other sections of the components page still scroll sideways (124 px AR, 146 px EN). The page
+    is judged at 1440, and step 3 designs the phone.
+- **G5 check:** s04 is clean at `ffc4029`, the coordinator worktree matches the session-start snapshot, and only the
+  user's preview listens (3174).
+- **Coordinator inspection, not verification:** in `table-ar.png` and `table-en.png`, numbers and headers share the
+  right edge, units line up, and the gap notes start at their column's edge.
+- **Open point for step 4:** in English, the peak cell reads its time before its value ("6:43 PM 53"). The value holds
+  the right edge (TBL-11), so the visual order runs opposite to the reading order of assistive technology.
+- **Next:** the user looks at the table on the preview, then step 3.
+## The no-readings row becomes one full-width row (2026-09-30)
+
+- **User decisions (2026-09-30):**
+  - the table alignment at `ffc4029` is right;
+  - the English peak-cell order waits for step 4;
+  - the minute table's gap words sat under a numeric column, and the placement was bad. The user picked a full-width
+    separator row from two options.
+- **The rule:**
+  - a row with no readings, whether a gap or the span before readings began, is one cell spanning every column;
+  - it starts at the table's start edge in both languages, with the dotted mark, the words, then the range;
+  - a gap inside a row that has values stays a note in the notes column.
+- **Third pass launched:** a fresh `owner-direction-builder`, run `owner_spec_r04_s14`, in the background, with
+  `D:\fitway-scratch\spec\BRIEF-3.md`. It edits `DESIGN-SPEC.md` and `components.*` only, and registers the page
+  tables as known issues for steps 3 and 4.
+- **Next:** on its report, the G5 check, the table sheets, and the user. Then step 3.
+## The spec's third pass delivered at `4f77aff` (2026-09-30)
+
+- **The builder delivered `4f77aff`** on `owner-followup-r04-build`, on top of `ffc4029`. The coordinator pushed it as a
+  fast-forward.
+  - 3 files, +40/−22: `DESIGN-SPEC.md`, `components.css` and `components.js`.
+  - TBL-12, STA-4 and TBL-6 are amended. The labels stay at 224 R, 11 C, 53 K and 0 P.
+  - Self-reported, not verified: U1-U4 pass. The widest deviation of the first glyph is 0.03 px, AR and EN, at 1440,
+    1024, 390 and 320.
+- **Known issues extended:**
+  - K-20: Daily draws the gap as 18 minute rows with "-" and «لا قراءة» (step 3);
+  - K-34 and K-35: Reports' "No readings yet" row is two cells (step 4). A latent case is noted at `reports.js:797`.
+- **New question Q11 for the user:** «لا قراءات بعد 2 أغسطس - 12 سبتمبر» can read as "no readings after 2 August". The
+  proposal is a middle dot between the words and the range.
+- **G5 check:** s04 is clean at `4f77aff`, the coordinator worktree matches the snapshot, and only 3174 listens.
+- **Coordinator inspection, not verification:** in `table-ar.png` and `table-ar-390.png`, both no-readings rows start at
+  the table's start edge as one line, and the tables fit at 390.
+## Q11 answered, and step 2 closes at `5654093` (2026-09-30)
+
+- **User decision (2026-09-30), Q11:** a middle dot separates the words from the range in every "no readings + range"
+  phrase, for example «لا قراءات بعد · 2 أغسطس - 12 سبتمبر».
+- **A fresh `owner-direction-fixer`, run `owner_spec_r04_s15`, delivered `5654093`** on top of `4f77aff`. The coordinator
+  pushed it as a fast-forward.
+  - 3 files, +14/−11. TBL-12 is amended, and Q11 moves to the "Answered 2026-09-30" list, so §8 holds only Q1 and Q2.
+  - The labels stay at 224 R, 11 C, 53 K and 0 P.
+  - Self-reported, not verified: V1-V4 pass. The dot never starts a line, the edge sits within 0.03 px, and no range
+    breaks.
+  - Left without a dot: the empty-table sentence (a from/to sentence) and the chart tooltip (range on its own line).
+- **G5 check:** s04 is clean at `5654093`, the coordinator worktree matches the snapshot, and only 3174 listens.
+- **Coordinator inspection:** in `table-ar.png`, the dot reads as a separator in all three phrases.
+- **Step 2 is done.** The spec draft is `E/DESIGN-SPEC.md` at `5654093`, with its components page.
+- **Next:** step 3, Daily at every size and in every state, including loading, and the navigation and header for every
+  screen. It runs a fresh designer, then a fresh design reviewer, then the user.
+## The middle dot replaced by range first, and step 3 waits for the user (2026-10-01)
+
+- **User decision (2026-10-01):** the user did not like the middle dot of `5654093`.
+  - The coordinator built a four-option mockup: `D:\fitway-scratch\spec\gapmock\index.html`, served by the `gap-mock`
+    entry in `.claude/launch.json` on 3175.
+  - The user picked **range first**: «2:14 م - 2:31 م ···· لا قراءات». The range starts on the first column's text edge,
+    at 13.5 px in `--ink-2`, then the mark and the words in the note style.
+- **Launched:** a fresh `owner-direction-fixer`, run `owner_spec_r04_s16`, in the background. It applies range first in
+  TBL-12 and `components.*`, and removes the dot. It uses ports 3176-3177.
+- **Step 3 does not start until the user says so.** The user asked the coordinator whether one designer or several
+  sequential agents is better.
+## Range first delivered at `9074da6` (2026-10-01)
+
+- **The fixer delivered `9074da6`** on top of `5654093`. The coordinator pushed it as a fast-forward.
+  - 3 files, +22/−17. TBL-12, the Q11 answer, §0 sources and the version note change. The labels stay at 224 R, 11 C,
+    53 K and 0 P.
+  - Self-reported, not verified: W1-W4 pass.
+    - The range's first glyph sits 0 px from the first column's text edge, AR and EN, at 1440, 1024, 390 and 320.
+    - No dot is left.
+    - The only wrap is AR at 320, «لا قراءات بعد», where the range stays on line 1.
+  - The fixer reported that the coordinator worktree's HEAD moved during its run. That was the coordinator's own
+    commit `37777b8`.
+- **G5 check:** s04 is clean at `9074da6`. Only the user's previews listen: 3174, and 3175, which is stopped now.
+- **Coordinator inspection:** in `table-ar.png`, each range starts where the times and days start, and the words follow
+  it.
+- **Next:** the user's word on step 3. The coordinator recommends two agents: one designer for the frame and Daily at
+  every size, pausing after the frame for the user and then resumed; then a fresh agent for the states; then a fresh
+  reviewer.
+## Step 3 launched: the frame, then Daily at every size (2026-10-01)
+
+- **User decisions (2026-10-01):**
+  - small fixes stay with the Claude fixer (`medium`);
+  - Codex takes step 9's repairs, production, and batches of non-urgent small fixes;
+  - if Claude usage tightens, the coordinator raises it and the fixes move to Codex in batches.
+- **Step 3 is split in two, as the user agreed:**
+  1. One designer does the frame and Daily at every size, in two phases.
+     - Phase A: the frame, which is the navigation and header at 1440, 768 and 390. The designer commits it, reports,
+       and stops for the user's review.
+     - Phase B: the same agent is resumed with the user's notes, so it keeps its reasoning. It does Daily at 768 and
+       390, and fixes every step-3 known issue.
+  2. A fresh designer does the states Daily does not have yet, such as loading, unavailable and error.
+  3. A fresh design reviewer critiques the round, and then the user decides.
+  - Every agent runs `owner-direction-designer` (Opus, `xhigh`).
+- **Launched:** run `owner_daily_r04_s17`, phase A, in the background.
+  - Brief: `D:\fitway-scratch\daily\BRIEF.md`.
+  - Base: s04 at `9074da6`.
+  - Ports: 3173, 3176 and 3177.
+  - It writes in `E/` and `D:\fitway-scratch\daily\`.
+- **If the session changes before phase B,** a fresh designer takes phase B from the phase A commit, its report and
+  the brief.
+- **Next:** on the phase A report, run the G5 check, inspect the frame sheets, and show the user on the preview (3174).
+## Step 3 phase A delivered: the frame at `d76972c` (2026-10-01)
+
+- **The designer delivered `d76972c`** on top of `9074da6` and stopped before phase B. The coordinator pushed it as a
+  fast-forward.
+  - 8 files, +607/−44: `index.html`, `style.css`, `app.js`, `reports.html`, `reports.js`, `components.*` and the spec.
+- **The frame:**
+  - 1024 px and wider keep the rail, with «اليوم» / "Today" and the name on keyboard focus only;
+  - 721-1023 px keep the slim rail, which opens from the logo as a modal layer;
+  - 720 px and below get a floating glass bar and a compact header, with a 44 px status badge and details, and a
+    "More" menu. There is no hamburger;
+  - the header's status and concept label drop their boxes at 721 px and wider;
+  - one amber is used, `#E8B62E`.
+- **Self-reported, not verified:**
+  - A1-A6 pass;
+  - Reports at 1440 changes only inside the rail;
+  - spec lint: 316 rows, 0 problems.
+- **`capture.mjs` exits 1.** Its old comparison with `8ae88f3` fails on the 13 frames that show the rail and header,
+  which changed by design. `evidence/` is unchanged. Phase B rewrites that check.
+- **Caveats:**
+  - the focus label covers about 70 px of content;
+  - short landscape phones are not handled;
+  - Daily's content below 1024 is provisional;
+  - K-26 still scrolls at 1024 (22 px AR, 2 px EN).
+- **The designer's proposals for the user:**
+  1. one order for rail and bar (the rail has Access before Activity log);
+  2. Monitoring has no place on the phone;
+  3. Operations is reached on the phone through the status details;
+  4. the bar's short «النشاط» / "Activity" breaks GLO-14.
+- **G5 check:** s04 is clean at `d76972c`, the coordinator worktree matches the snapshot, and only 3174 listens.
+- **Coordinator inspection, not verification:** `A1`-`A3` read as one coherent frame.
+  - At 390, the bar, badge, details and menu hold in AR and EN.
+  - At 768, the rail opens over a scrim.
+  - At 1440, the focus labels sit beside their tiles.
+- **User decisions on the phase A proposals (2026-10-01):**
+  1. The phone bar's order applies everywhere: Today, Reports, Activity log, Access, then the rest. The rail follows
+     it.
+  2. Monitoring goes into the phone's "More" menu.
+  3. On the phone, Operations is reached through the status badge's details.
+  4. «النشاط» / "Activity" is a named exception for the bar only. The full name stays the accessible name and the
+     page title.
+- **Waiting:** the user's own notes on the frame, before phase B is resumed.
+## Phase B resumed, and an unattended close (2026-10-01)
+
+- **User review of the frame (2026-10-01):** excellent, with no further notes.
+- **Phase B resumed:** the same designer (`owner_daily_r04_s17`) is resumed with the user's four decisions and its own
+  phase A caveats (`capture.mjs`, K-26, the focus label, short landscape phones). It commits once, at the end of
+  phase B.
+- **The user's usage limit is about to be reached.** It resets about 2 h 15 min later. The PC stays on, with the app's
+  auto-continue enabled.
+- **The coordinator's instruction from the user:**
+  - after the reset, continue. If the designer was interrupted, resume it;
+  - when phase B is done, run the G5 check, push, and record here;
+  - then shut the PC down, with a delay that `shutdown /a` can cancel.
+- **If this session is lost,** a new coordinator does the following:
+  - reads this section;
+  - checks s04's log and status for a phase B commit on top of `d76972c`;
+  - if the commit is missing, gives phase B to a fresh designer, with `D:\fitway-scratch\daily\BRIEF.md`, the phase A
+    report above and the four decisions.
+## Step 3 phase B delivered at `637b285`, and new-session resume point (2026-10-01)
+
+- **The usage limit stopped the designer** before its first edit. After the reset the coordinator found s04 clean at
+  `d76972c` and resumed the same agent.
+- **The designer delivered `637b285`** on top of `d76972c`. The coordinator pushed it as a fast-forward.
+  - 52 files, +6456/−5889. Most of the change is `E/evidence/`: `capture-log.json` and 47 Daily PNGs re-captured
+    because the page changed. `pre-motion-hashes.json` is untouched.
+  - The user's four phase A decisions are applied. Daily takes the spec's rules on its own components only
+    (`body.dl`), so Reports keeps the base rules until step 4.
+  - Compositions:
+    - 1024-1199: cards two by two;
+    - 768: two columns, with the chart filling the rest of the screen;
+    - 390 and 200% zoom: Inside now and Busiest time span the width; Peak and Entries sit side by side;
+    - below 360: one card per row.
+  - Self-reported, not verified:
+    - B1-B7 pass, and `capture.mjs` exits 0;
+    - every step-3 known issue is fixed on Daily, with before and after numbers;
+    - 98 page states show no sideways scroll, clipping or layout shift;
+    - the intro's end moves nothing;
+    - spec lint: 326 rows, 0 problems;
+    - Reports at 1440 changes inside the rail only.
+  - New rules CRD-9 (a card keeps its height in every state) and FOC-7 (on a phone, focus stops clear of the bar). New
+    K-36: short landscape phones, for step 8.
+  - **The spec says "the commit after `d76972c`" for phase B. Substitute `637b285`** in the next edit that touches the
+    spec.
+- **G5 check:** s04 is clean at `637b285`, the coordinator worktree matches the snapshot, and only 3174 listens.
+- **Coordinator inspection, not verification:** `B01-1440` and `B03-390` are coherent with the approved look. At 1440
+  the empty band above the plot is visibly larger (Q2).
+- **Open for the user, with frames in `D:\fitway-scratch\daily\sheets\B\`:**
+  - **Q1:** a ring key «قراءة الذروة» / "Peak reading" in the legend (`B12-Q1.png`);
+  - **Q2:** one fixed tooltip lane, 107 px in every state (`B13-Q2.png`). It enlarges the empty band, by 18 px while
+    live and about 130 px at 768, and it drops the "1 AM" label;
+  - **the tooltip width** is now 130-131 px, not the approved 127, because of the type scale;
+  - **OWN-D2:** the first screen stays fixed to the viewport only at 1200 px and wider.
+- **Resume steps:**
+  1. Run `pnpm context:show -- --milestone owner-design-exploration-r04`. Read this section and
+     `NEXT-DIRECTION-BRIEF.md` "The design-phase plan".
+  2. Start the `eclipse-build` preview (3174). Show the user Daily at 1440, 768 and 390, and the four open points
+     above, in Arabic, briefly.
+  3. Apply the user's decisions with a fresh fixer, or a fresh designer if taste is involved. Then step 3's second
+     part: a fresh `owner-direction-designer` for Daily's missing states, which are loading, closed, unavailable and
+     error (K-02), at every size. Then a fresh design reviewer, then the user.
+- **Working agreements:** unchanged from the sections above. Replies are in the Saudi dialect; temp never goes on C;
+  fresh agents for each task; agents report in their final message; the coordinator's context stays small.
+- **Close:** at the user's instruction, the coordinator shuts the PC down after this record, with a 5-minute delay that
+  `shutdown /a` can cancel.
+## The user's decisions on phase B, and the spec record launched (2026-10-01)
+
+- **Resumed** in a new session from the section above.
+  - The packet is `READY`. s04 is clean at `637b285`.
+  - The `eclipse-build` preview is up on 3174.
+  - The user saw Daily at 1440, 768 and 390 (`B01`-`B03`), and the Q1 and Q2 sheets.
+- **User decisions (2026-10-01)** accept everything phase B built:
+  1. **Q1:** keep the ring key «قراءة الذروة» / "Peak reading" (CHT-20).
+  2. **Q2:** keep the one 107 px lane for every state (CHT-18), with the time axis's one rhythm (CHT-19).
+     - The user first asked for an explanation. The coordinator explained the tooltip, the lane, the scale's jump by
+       state and the alternative of no lane, and the user then chose the fixed lane.
+  3. **The tooltip width:** 130-131 px is accepted. CHT-12's formula is the rule, not 127 px.
+  4. **OWN-D2:** accepted. The first screen is fixed to the viewport only at 1200 px and wider.
+- **No page changes.** The decisions only need recording in the spec.
+- **Launched:** a fresh `owner-direction-fixer` (`medium`), run `owner_spec_r04_s18`, in the background.
+  - Brief: `D:\fitway-scratch\daily\s18\BRIEF.md`.
+  - Base: s04 at `637b285`. Ports: 3176-3177.
+  - It writes only `E/DESIGN-SPEC.md` and `E/components.js`:
+    - CHT-18…20 become `R`;
+    - Q1 and Q2 move to "Answered 2026-10-01";
+    - `637b285` replaces "the commit after `d76972c`".
+- **Next:** on its report, run the G5 check and push. Then launch step 3's second part, a fresh
+  `owner-direction-designer` for Daily's missing states (STA-10, K-02), at every size.
+## The decisions recorded at `527c159`, and the states round launched (2026-10-01)
+
+- **The fixer delivered `527c159`** on top of `637b285`. The coordinator pushed it as a fast-forward.
+  - 2 files, +56/−50: `DESIGN-SPEC.md` and `components.js`.
+  - Self-reported, not verified: F1-F5 pass.
+    - Spec lint: 326 rows. R 257, C 15, K 54, P 0, with 0 problems.
+    - 33 instances of "the commit after `d76972c`" now read `637b285`.
+    - `components.html` shows the ring key, with no "Proposed" label, AR and EN.
+  - **Caveats:**
+    - the legend specimen's caption still cites "Q1" rather than CHT-20;
+    - a path in §0's `user 2026-10-01` row has `\f` turned into a control character (`D:itway-scratch`). This
+      predates the run.
+    - Both are passed on to the next designer.
+- **G5 check:** s04 is clean at `527c159`, the coordinator worktree matches the snapshot, and only 3174 listens.
+- **Coordinator spot check:** CHT-18…20 read `R`, §8 has "Answered 2026-10-01", and no "commit after `d76972c`" is
+  left.
+- **Launched:** step 3's second part, a fresh `owner-direction-designer` (`xhigh`), run `owner_states_r04_s19`, in the
+  background.
+  - Brief: `D:\fitway-scratch\daily\states\BRIEF.md`.
+  - Base: s04 at `527c159`. Ports: 3173, 3176 and 3177.
+  - It writes in `E/` and `D:\fitway-scratch\daily\states\`.
+  - It designs Daily's loading, closed, unavailable and error states (STA-10, K-02) at 1440, 768 and 390, and checks
+    them at 1024, 320 and 200% zoom, AR and EN. Each state gets a `?state=` URL. Loading must arrive into live with zero
+    shift.
+  - Live, delayed, no history and Reports must stay pixel-identical.
+- **If this session is lost,** a new coordinator checks s04 for a commit on top of `527c159`. If it is missing, a fresh
+  designer takes the same brief.
+- **Next:** on its report, run the G5 check and push, inspect the sheets, and show the user the states on 3174. Then a
+  fresh design reviewer critiques the whole of step 3, and the user decides.
+## Cloud sessions and direct Codex delegation (2026-10-01)
+
+- **User decisions (2026-10-01):**
+  - **Cloud sessions** on this account are a normal extension of the work.
+    - They draw on the plan's usage first and then on the cloud credit. The user has more credit on a second account.
+    - After step 3, the coordinator prepares a cloud kit:
+      - the scratch probes and the spec lint move into the repository;
+      - a setup script is committed to the repository.
+    - The first cloud session runs a short setup task. It redoes the proxy certificate for Chromium and the
+      Impeccable engine (SHA-256 checked, kept outside the repository), then commits the script.
+    - The exact commands from the earlier cloud session on another account are lost.
+  - **`ui-forensics`** is the user's own skill. It is not added to the repository: no subagent has used it.
+  - **Small fixes go to Codex (GPT-6.1 Sol, `high` or `xhigh`)** instead of a Claude fixer, to save Opus usage.
+    This replaces the earlier rule that small fixes stay with the Claude fixer.
+    - The coordinator delegates directly through the installed Codex plugin (1.0.4):
+      `codex-companion.mjs task --write --cwd <worktree> --prompt-file <brief> --effort <level>`, run as a background
+      shell job.
+    - The first such task is a trial. It checks whether Codex's `workspace-write` sandbox on Windows allows a commit in
+      a linked worktree and a Playwright launch. If it does not, Codex leaves the change uncommitted and the
+      coordinator commits it after review.
+  - **Sonnet** stays below `xhigh` if it is used at all.
+  - A consolidated **"do not" list** of the user's past rejections is wanted for designer briefs.
+    - Today the bans live in Impeccable's craft floor and in the spec's K entries, and the user's taste lives in "What
+      the user wants".
+    - No single list holds the user's own rejections, such as the middle dot, the en dash in Arabic ranges, and hover
+      names on the rail.
+    - The coordinator writes it before step 4's brief.
+## Daily's states delivered at `ad63268` (2026-10-01)
+
+- **The run was interrupted** by the session usage limit, with 10 files uncommitted. After the reset the coordinator
+  resumed the same agent.
+- **The designer delivered `ad63268`** on top of `527c159`. The coordinator pushed it as a fast-forward.
+  - 10 files, +867/−226.
+  - **Shared rule (STA-14):** every state keeps the live layout, and no card is lit in any of the four states (LGT-11).
+  - **Loading:** a static skeleton after 300 ms, held at least 400 ms, announced at 1 s, and Error at 10 s. The first
+    open's intro is the arrival.
+  - **Closed:** before opening, "Opens 6:00 AM", and "Still ahead" in place of zeros. It keeps Busiest time and the
+    usual line.
+  - **Unavailable:** shown as «غير متصل» / "Offline", with no count, band or time, and no today readings.
+  - **Error:** an alert in the Inside now card with one focused "Try again"; the retry arrives in place.
+  - **URLs:** `?state=loading`, `&arrive=1800`, `&arrive=never`, `?state=closed`, `?state=unavailable` and
+    `?state=error`.
+  - Self-reported, not verified:
+    - S1-S7 pass, with 132 page states probed;
+    - loading to live moves 0.00 px with CLS 0;
+    - 56 frames of the existing states and Reports are pixel-identical to `527c159`;
+    - spec lint: 343 rows, 0 problems.
+  - **Caveats:**
+    - K-02 needs `ad63268` written into the spec;
+    - `capture.mjs` has no frames for the new states;
+    - `components.html` scrolls sideways at 390, as it already did at `527c159`.
+- **Proposals for the user:**
+  1. on the loading path, MOT-10's lights and usual line appear at arrival;
+  2. the visible word "Offline" for Product's Unavailable;
+  3. HDR-6 changes the shared header's box sizing (Reports takes it in step 4);
+  4. Unavailable hides earlier readings from the same day.
+- **G5 check:** s04 is clean at `ad63268`, the coordinator worktree matches the snapshot, and only 3174 listens.
+- **Coordinator inspection, not verification:** `states-1440-ar` and `states-390-ar` are coherent with the frame, and
+  every state keeps the live layout.
+- **Next:** show the user; then a fresh design reviewer for all of step 3.
+## Cloud resume point (2026-10-01)
+
+The local usage limit is close, so the user continues this coordinator role in a cloud session on the same account.
+
+- **User decision (2026-10-01):** proposal 1 is accepted. On the loading path, MOT-10's lights and usual line appear
+  at arrival.
+- **Explained to the user, answers pending:**
+  - **Proposal 2:** the header and the phone badge say «غير متصل» / "Offline" for the state Product calls
+    Unavailable. The coordinator recommends keeping it.
+  - **Proposal 3 (HDR-6):** the header's status line, «مباشر · آخر قراءة 7:42 م», now has a fixed box, so a
+    status change moves nothing. Nothing visible changes. The coordinator recommends keeping it.
+  - **Proposal 4:** in Unavailable, the designer hides today's earlier real readings.
+    - The dotted «لا قراءات» mark and the usual line stay either way.
+    - The user leans to showing the earlier readings.
+    - The coordinator recommends this: show them drawn plain, with no end point, halo or pulse, then the dotted mark
+      from the last reading to now. The cards still show no current count.
+- **Branches, all pushed:**
+  - the coordinator branch is `codex/owner-redesign-r04`, which holds this handoff;
+  - the build branch is `owner-followup-r04-build` at `fd28be4`. That is `ad63268` plus the spec lint moved to
+    `E/tools/lint-spec.mjs`.
+- **Next:**
+  1. Get the user's answers on proposals 2-4 and apply them.
+     - Small fixes go to Codex (GPT-6.1 Sol), not a Claude fixer. In the cloud, check that the Codex CLI exists
+       first; if it does not, use a Claude `owner-direction-fixer`.
+     - The same edit writes `ad63268` into K-02.
+  2. Run a fresh design reviewer (`owner-direction-verifier-high`, or an Impeccable critique) on the whole of step 3,
+     from `637b285` to the fix, at 1440, 768 and 390, AR and EN. Then the user decides.
+  3. Before step 4's brief, write the consolidated "do not" list (see "Cloud sessions and direct Codex delegation").
+- **Cloud differences:**
+  - There is no `D:\` and no `.claude/launch.json`. Use a scratch folder outside the repository, such as
+    `/tmp/fitway-scratch`, and rewrite each brief's Windows paths and PowerShell lines for bash.
+  - Make the build branch a worktree beside the clone with `git worktree add ../s04 owner-followup-r04-build`.
+  - The user reviews by pulling the branch locally (preview `eclipse-build` on 3174), or from sheets you send.
+  - Auto memory does not exist in the cloud. Replies stay in the Saudi dialect; fresh agents for each task; agents
+    report in their final message.
+  - Eclipse's fonts are self-hosted and no request leaves the origin. The proxy-certificate step that an earlier cloud
+    session needed for Google Fonts should not be needed here; if it is, add it to the setup script.
+  - **The Impeccable engine:** `.claude/skills/impeccable/scripts/impeccable` downloads engine 0.1.5 from its public
+    release channel, with a checksum, into `~/.impeccable/bin/0.1.5/`. `scripts/check-design-context.mjs` finds it
+    through `IMPECCABLE_BIN` or `impeccable` on the PATH.
+- **The environment's setup script (draft; the first cloud task confirms it and reports any fix):**
+
+  ```bash
+  #!/bin/bash
+  set -u
+  corepack enable
+  pnpm install --frozen-lockfile
+  pnpm exec playwright install --with-deps chromium
+  sh .claude/skills/impeccable/scripts/impeccable --help >/dev/null 2>&1 || true
+  ln -sf "$HOME/.impeccable/bin/0.1.5/impeccable" /usr/local/bin/impeccable 2>/dev/null \
+    || { mkdir -p "$HOME/.local/bin"; ln -sf "$HOME/.impeccable/bin/0.1.5/impeccable" "$HOME/.local/bin/impeccable"; }
+  ```
+
+- **First cloud task:**
+  1. Run `pnpm context:show -- --milestone owner-design-exploration-r04` and `pnpm check:design-context`, and confirm
+     Chromium renders `E/index.html`.
+  2. Fix the setup script if needed, and record the working version here.
+  3. Then continue from **Next**.
+## Proposals 2-3 accepted, proposal 4 refined (2026-10-01)
+
+- **User decisions (2026-10-01):**
+  - **Proposal 2:** «غير متصل» / "Offline" is adopted as the visible word for Unavailable.
+  - **Proposal 3:** HDR-6, the fixed status box, is accepted.
+  - **In the cloud, Codex is not used.** Small fixes there go to a Claude `owner-direction-fixer`. Codex resumes for
+    small fixes when work returns to this machine.
+- **Proposal 4, refined by the coordinator and awaiting the user's word.** The example: the edge went offline at
+  3:00 PM, and it is now 4:00 PM.
+  - **Header:** «⊘ غير متصل · لا عدّ حاليًا», with no time.
+  - **Inside now:** «لا عدّ حاليًا», with no badge and no light.
+  - **Today's peak and Entries:** still no number. Both are whole-day answers, and the true peak or the missing
+    entries may fall in the gap.
+  - **Busiest time:** stays, because it is history.
+  - **Chart:**
+    - the real red line runs from opening to 3:00 PM, drawn plain, with no end point, halo or pulse;
+    - after it, the dotted mark runs from 3:00 PM to now, and its stop names the range;
+    - the usual line is drawn throughout.
+  - **Why this is truthful:** `FITWAY_PRODUCT.md` forbids a count, a band or a *fabricated* last-updated time, and
+    3:00 PM is real history. `SPEC.md` says the edge buffers 24-48 h offline and backfills history, so the gap
+    is "not received yet" rather than "no readings".
+    - Its wording may need its own words, for example «بانتظار القراءات».
+    - On reconnect, the gap fills with backfilled readings, and the page returns to live.
+## Proposal 4 accepted, and small fixes on Sonnet in the cloud (2026-10-01)
+
+- **User decisions (2026-10-01):**
+  - **Proposal 4 is accepted in its refined form** (see "Proposals 2-3 accepted, proposal 4 refined"):
+    - the real line runs to the last reading, drawn plain;
+    - the dotted mark runs from there to now and reads «بانتظار القراءات» / "Waiting for readings";
+    - the cards show no current number.
+
+    It is applied with K-02's `ad63268` in the next fix.
+  - **Small fixes in the cloud** go to `owner-direction-fixer` with `model: "sonnet"` (Sonnet 5.5), at `medium` (the
+    definition's level) or `high`, never `xhigh` or `max`. On this machine Codex takes them.
+  - The cloud environment `fitway` is saved with `CLAUDE_CODE_PROMPT_CACHE_TTL=1h` and the draft setup script.
+## First cloud task done, and the proposal-4 fix launched (2026-10-01)
+
+- **The checks:**
+  - `pnpm context:show --milestone owner-design-exploration-r04` resolves the packet (READY, sha `93dca6a2…`). Under
+    pnpm 11 the `--` form fails ("Unknown argument: --"), so drop the `--`.
+  - `pnpm check:design-context` passes, with Impeccable on the PATH.
+  - Chromium renders `E/index.html` and `?state=unavailable` with the self-hosted fonts, and nothing fails to load.
+- **Why the draft setup script did nothing:** the environment runs it from `/home/user`, not the clone. With `set -u`
+  and no `-e`, every repository step failed silently, and it still exited 0 in 1.6 s. Also, the pinned Playwright
+  1.61.1 wants Chromium revision 1228, but the image ships 1194, and the environment says not to run
+  `playwright install`.
+- **The working setup script, tested from `/home/user`.** The user pastes it into the `fitway` environment's settings:
+
+  ```bash
+  #!/bin/bash
+  # The environment runs this from /home/user, not the clone.
+  set -u
+  cd /home/user/fitway || exit 1
+  corepack enable
+  pnpm install --frozen-lockfile
+  # Do not run `playwright install`: point the pinned revision at the preinstalled Chromium.
+  rev=$(node -p "const d = (m, from) => require('path').dirname(require.resolve(m, { paths: [from] })); require(d('playwright-core', d('playwright', d('@playwright/test', process.cwd()))) + '/browsers.json').browsers.find(b => b.name === 'chromium').revision")
+  [ -n "$rev" ] && mkdir -p "/opt/pw-browsers/chromium_headless_shell-$rev/chrome-headless-shell-linux64" "/opt/pw-browsers/chromium-$rev/chrome-linux64"
+  ln -sf /opt/pw-browsers/chromium "/opt/pw-browsers/chromium_headless_shell-$rev/chrome-headless-shell-linux64/chrome-headless-shell"
+  ln -sf /opt/pw-browsers/chromium "/opt/pw-browsers/chromium-$rev/chrome-linux64/chrome"
+  sh .claude/skills/impeccable/scripts/impeccable --help >/dev/null 2>&1 || true
+  ln -sf "$HOME/.impeccable/bin/0.1.5/impeccable" /usr/local/bin/impeccable
+  ```
+
+  - With it, repository Playwright launches unmodified. The preinstalled Chromium is 141, under Playwright 1.61's
+    149; Eclipse renders correctly on it.
+  - The build worktree is `/home/user/s04`; it needs its own `pnpm install --frozen-lockfile`.
+- **The fix launched:** an `owner-direction-fixer` on Sonnet at `medium`, in s04 on `fd28be4`. It applies
+  proposal 4 and writes `ad63268` into K-02. Its frozen choices:
+  - the concept's last reading is 3:00 PM, and now stays 7:42 PM;
+  - the line is drawn plain, with no peak ring;
+  - Today's peak and Entries say «بانتظار القراءات» / "Waiting for readings". "No readings" would contradict the
+    drawn line. This is the coordinator's choice from the accepted gap words, and the user can revert it;
+  - View details stays disabled.
+  - It commits without pushing.
+- **Next:** check its report and frames, then a fresh design reviewer for all of step 3. Pushing the build branch
+  needs the user's word in this cloud session.
+## The proposal-4 fix at `50a5690`, and the step-3 review launched (2026-10-01)
+
+- **The fixer stopped once.** "Waiting for readings" clipped the Today's peak and Entries cards at 390 EN, and the
+  page scrolled sideways (410 against 390).
+  - The coordinator measured the 390 card slot at 129 px. «بانتظار القراءات» needs 128 px and "Waiting for
+    readings" 186 px.
+  - It froze «قيد الانتظار» / "Pending" for the two cards (93 and 75 px), with no restyle. The gap's stop and the text
+    equivalent keep «… بانتظار القراءات» / "… Waiting for readings".
+  - This card wording is the coordinator's choice, reported to the user, who can change it.
+- **Delivered at `50a5690`** on `fd28be4`: 4 files, +68/−37 (`app.js`, `DESIGN-SPEC.md`, `README.md`,
+  `components.js`).
+  - In Unavailable, live's own line runs to 3:00 PM and ends plain, with no end point, peak ring or hairline. Live's
+    2:14-2:31 PM gap mark stays.
+  - The dotted mark runs from 3:00 PM to now, and its stop reads «3:00 م - 7:42 م، بانتظار القراءات».
+  - There are 31 stops. Focus starts at the gap, Home goes to opening, and End goes to the gap.
+  - The spec changes STA-12 (with `user 2026-10-01 (proposal 4)`), CHT-21, CRD-10 and K-02 (now `ad63268`).
+  - The legend still lists "Peak reading", following CHT-21's "a key, not a claim".
+  - Self-reported:
+    - the spec lint finds 0 problems;
+    - Unavailable's heights equal live's at 8 size and language pairs, and nothing scrolls sideways;
+    - the keyboard checks pass;
+    - the other six states and Reports are byte-identical to `fd28be4`.
+  - Coordinator inspection, not verification: the lint and the K-02 row checked; the frames `unavailable-ar-1440` and
+    `unavailable-en-390` opened and coherent.
+- **Pushed** `owner-followup-r04-build` to `50a5690`, with the user's word in this session.
+- **The step-3 review launched:** a fresh `owner-direction-verifier-high` on `9074da6..50a5690`.
+  - It covers 1440, 768 and 390, AR and EN, in all seven states, plus the frame and the motion.
+  - It does not read the handoffs or reports, and it applies ADR-009.
+  - It writes contact sheets and `FINDINGS.md` to `/tmp/fitway-scratch/review-s3/`.
+- **Next:** on its report, show the user the sheets and findings, and the user decides. Then write the consolidated
+  "do not" list before step 4's brief.
+## The step-3 review returned: no blocker or major finding (2026-10-01)
+
+- **The reviewer** (`owner-direction-verifier-high`, fresh) covered `9074da6..50a5690`. It left the worktree
+  untouched, and the spec lint gave 343 rows and 0 problems.
+  - Its `FINDINGS.md` was not written, because the harness refused the file. The findings are recorded here from its
+    final message.
+  - Its sheets, frames, video strips and measurements are in `/tmp/fitway-scratch/review-s3/`, which is session-local.
+- **Verdict:** strong, coherent, distinctive work, worth keeping. Measured:
+  - loading to live arrives with zero shift at every size, with and without motion;
+  - none of 56 page states (1440, 768, 390 and 320, AR and EN, seven states) scrolls sideways, clips, or has a
+    target under 44 px;
+  - reduced motion arrives complete.
+- **Findings, as hypotheses** (`E/` is the direction folder):
+  1. **Minor, STA-14.** No history makes the chart taller on the phone. The legend's note wraps to a third line, so the
+     chart card is 524 px against 498 at 390 EN, and 568.5 against 542.5 at 320 in both languages. The causes are
+     `E/style.css:679` and `E/app.js:876`. STA-14's "same heights in all seven states" is wrong. The coordinator
+     confirmed the third line on the frame.
+  2. **Minor, LGT-7 and TRU-3 against STA-2 and OWN-D9.** Delayed keeps the chart card's light, and only Inside now's
+     goes out (`E/app.js:734-741`), while Unavailable's chart is unlit. The user chooses.
+  3. **Minor, DAT-4 and K-17.** A date still breaks inside the details' "Usual Wednesday" fact: «16 / سبتمبر» at
+     390 AR, and "26 / Aug" at 320 EN (`E/app.js:88`, `:165`). K-17 records this as fixed.
+  4. **Minor, EMP-5.** The error's "Check the connection, then try again." exists only in the phone's badge details.
+     At 721 px and wider it is never visible (`E/app.js:668`, `:688`).
+  5. **Nit, TRU-2.** "Busiest time · Last 7 days" averages 7 days in live ("Average 51") but 6 in Closed and
+     Unavailable ("Average 50") (`E/app.js:372-384`).
+  6. **Nit, CHT-21.** The legend keeps keys for marks that Loading, Closed and Error do not draw. This is the spec's
+     own rule.
+- **Not counted:**
+  - `components.html` scrolls sideways at 390 and at 768 EN, as it already did at `9074da6`.
+  - The empty top of the tooltip lane (CHT-18) and the focus label over Inside now (FOC-5) are user decisions.
+  - A late rail close at 768 did not reproduce in 80 more trials.
+- **README:** it claims equal heights in every state, which finding 1 contradicts, and it implies K-17 is fixed,
+  which finding 3 contradicts.
+- **Next:** the user decides each finding. Agreed fixes go to one Sonnet fixer, with targets the coordinator freezes
+  after measuring. Then the "do not" list and step 4's brief.
+## The user's decisions on the step-3 review, and the review fixes launched (2026-10-01)
+
+- **User decisions (2026-10-01):**
+  - **The verdict:** the user agrees with the reviewer that step 3 is strong.
+  - **Findings 1-3 are fixed:**
+    - F1, the legend's rows;
+    - F2, Delayed turns the chart card's light off as well, and the red line stays;
+    - F3, the dates in the details.
+  - **F4:** the error advice stays as it is and is revisited in production.
+  - **F5:** the 7- or 6-day basis of Busiest time goes to the data-wiring phase.
+  - **F6:** the legend's keys stay (CHT-21).
+- **F1's fix, frozen by the coordinator after measuring.** In no history, the legend's order becomes line key, ring key,
+  then the note. Its wording, size and CSS do not change.
+  - At 320 the key is 238 px. Line plus ring is 225 EN and 221 AR, and the note goes on the second row (226 EN,
+    167 AR). So the legend keeps live's 2 rows at 390 and 320.
+- **Launched:** one `owner-direction-fixer` on Sonnet at `medium`, on `50a5690`, in `/tmp/fitway-scratch/fix-r1/`.
+  - F2 reuses Unavailable's way of turning off the chart card's light.
+  - F3 joins day and month with U+00A0.
+  - The spec takes STA-2, OWN-D9, K-17 and the legend's row, each with `user 2026-10-01 (review Fn)`.
+  - It commits without pushing.
+- **Explained to the user, answer pending:** what the review left uncounted.
+  - `components.html` scrolls sideways at 390 and 768 EN, as it did before step 3.
+  - The empty tooltip lane (CHT-18) and the rail's focus label over Inside now (FOC-5) are user decisions.
+- **Next:** check the fixer's frames and push. Then the "do not" list and step 4's brief.
+## The review fixes at `9a98164`, and two items deferred to a Codex batch (2026-10-01)
+
+- **Delivered at `9a98164`** on `50a5690`: `app.js` +10/−11 and `DESIGN-SPEC.md` +4/−4.
+  - **F1:** the no-history legend is ordered line key, ring key, then the note. Its rows and the chart card's height
+    equal live's at 1440, 768, 390 and 320, AR and EN.
+  - **F2:** Delayed calls Unavailable's `setLights(false)`.
+    - The arrival path is now `setLights(STATE !== "delayed")`. Without it, the lights would come back on after a
+      delayed arrival.
+  - **F3:** U+00A0 joins day and month in `covUsualVal` and `covUsualNone`, in AR and EN.
+  - **Spec:** CHT-20, STA-2, OWN-D9 (inline, as it has no source cell) and K-17, each with
+    `user 2026-10-01 (review Fn)`. The spec lint finds 0 problems.
+  - Self-reported: the other states and Reports are byte-identical to `50a5690`, and nothing scrolls sideways in the
+    seven states at 390 and 320.
+- **Coordinator checks:**
+  - The fixer said error at 390 EN was raster noise. Rendered three times on each of `50a5690` and `9a98164`, it is
+    pixel-identical.
+  - Delayed at 1440 AR has both cards plain, and the red line stays.
+  - The details' dates hold at 320 EN.
+- **Pushed** `owner-followup-r04-build` to `9a98164`.
+- **User decision (2026-10-01): deferred to the next Codex batch on the local machine, and recorded here.**
+  - **`components.html` scrolls sideways** at 390 (514 px AR, 536 px EN) and at 768 EN (788 px). This predates step 3,
+    and its cause is not yet diagnosed.
+- **Coordinator finding, pre-existing, same batch (the user is told):** at 320 EN the details' «Open, nobody inside»
+  range breaks inside itself, as "6:00 AM –" over "6:09 AM". This is DAT-4 and the rest of K-17.
+  - It is identical at `50a5690`.
+  - 390 and the Arabic are clean.
+  - The "· 18 min" line breaks after the range, not inside it.
+- **Next:** the consolidated "do not" list (see "Cloud sessions and direct Codex delegation"), then step 4's brief.
+## The do-not list drafted, and the user's answers (2026-10-01)
+
+- **Drafted** by a fresh agent from this handoff, `NEXT-DIRECTION-BRIEF.md` and the spec. It is
+  `design-research/owner-composition-exploration-r04/directions/DO-NOT.md`, on this branch beside the brief.
+  - It holds 58 "Do not" entries in eight groups, each with its source pointer.
+  - Product and Spec are referenced, not repeated.
+- **User decisions (2026-10-01):**
+  - **Working agreement:** small calls follow the coordinator's recommendation without asking. The coordinator acts
+    and tells the user. Only big calls go to the user. This applies to every coordinator session from now on.
+  - **Operations has no rail section.** This confirms the 2026-09-27 agreement. It is a header status that opens its
+    details at every size, as the phone's badge does. So on desktop and tablet the header's status becomes a control.
+    - This is done in step 4's frame work, which also corrects RAI-1. RAI-1 lists Operations under
+      `user 2026-10-01`, but that decision set only the order of the sections.
+  - **"The delay is shown once" is dropped.** The approved designs also show the delay's age in the tooltip, the badge
+    and its details.
+  - **Arabic ranges take the en dash.** The handoff's earlier "en dash rejected" had no dated user decision, and
+    DAT-3 cited memory. The user thinks the rejection they remember was about Busiest time being one hour, not about
+    the dash, and prefers the en dash.
+  - **Reports' intro and digit roll:** the user decides these in step 4's review.
+  - **The review findings F1-F21 and Q3-Q10** stay in the spec, not in the list.
+- **The en dash fix launched:** a Sonnet `owner-direction-fixer` at `medium`, on `9a98164`, in
+  `/tmp/fitway-scratch/fix-dash/`.
+  - Only the glyph changes. Each range keeps its visual order and its line: an unspaced range is isolated LTR and
+    joined after the dash.
+  - DAT-3 is rewritten, and English is untouched.
+- **Next:** check the fixer's frames and push. Then step 4's brief, using DO-NOT.md and the Operations change.
+## The en dash at `d2cf1a3` (2026-10-01)
+
+- **Delivered at `d2cf1a3`** on `9a98164`: `DESIGN-SPEC.md`, `app.js`, `components.js` and `reports.js`, +29/−23.
+  - The `DASH` constants and the range helpers now give the en dash in Arabic.
+  - A same-meridiem hour range is now `<bdi dir="ltr">6–⁠7</bdi> م`, with U+2060 after the dash. The pair is isolated,
+    not the suffix, so «م» stays where it was.
+  - DAT-3 is rewritten without "memory", and 8 Arabic examples in other rows changed.
+  - Self-reported:
+    - 216 range sites across 30 page and size pairs keep their order, line count and visibility;
+    - no hyphen-minus is left in an Arabic range;
+    - the English `outerHTML` is byte-identical.
+- **Coordinator inspection, not verification:** the lint is clean. AR Daily at 1440 reads «6–7 م» and
+  «6:00 ص – 1:00 ص». AR Reports at 1440 reads «26 أغسطس – 22 سبتمبر» and «16 – 22 سبتمبر».
+- **Pushed** `owner-followup-r04-build` to `d2cf1a3`.
+- **Added to the next Codex batch:** in `components.html`, the header's date range «26 أغسطس – 22 سبتمبر» breaks over
+  two lines at 390 and 320. This predates the change.
+- **Next:** step 4's brief.
+## Step 3 closes, and step 4's phase A brief is ready (2026-10-01)
+
+- **Step 3 is closed on `owner-followup-r04-build` at `d2cf1a3`:**
+  - the frame and Daily at every size;
+  - Daily's states, with proposal 4;
+  - the review fixes F1-F3;
+  - the en dash in Arabic ranges.
+- **Step 4's scope was gathered** by a fresh read-only agent, which listed the spec rows, K entries, code sites and
+  open items. The brief carries its pointers.
+- **Brief:** `design-research/owner-composition-exploration-r04/directions/briefs/step4-reports-phase-a.md` on this
+  branch, copied to `/tmp/fitway-scratch/reports/BRIEF.md`.
+  - **Part A, the frame:** Operations leaves the rail, and the header status becomes a 44 px control that opens
+    Operations' details at every size. Reports adopts the frame (BRK-11) and the status.
+  - **Part B, Reports at 1440:** the 21 step-4 K entries, re-measuring K-25. The intro and digit roll stay as they
+    are for the user's review.
+  - Phase A stops for the user's review. The same agent is resumed for phase B, Reports at 768 and 390 (BRK-9).
+  - A fresh designer takes Reports' states (K-02), and a fresh reviewer follows.
+- **Waiting:** the user's word to launch. Launching runs Opus at `xhigh`, so it is a big call under the working
+  agreement.
+- **Next:** on the user's word, launch `owner-direction-designer` with the brief, in the background.
+## Step 4 phase A launched (2026-10-01)
+
+- **User decisions (2026-10-01):**
+  - the user approved the phase A brief and the step-4 agent plan;
+  - the coordinator continues in this cloud session until step 4 closes, because phase B resumes the same designer,
+    and only this session can resume it;
+  - a new session follows after step 4. Before it, the user pastes the working setup script into the `fitway`
+    environment.
+- **Launched:** `owner-direction-designer` (Opus, `xhigh`), in the background, with
+  `directions/briefs/step4-reports-phase-a.md`.
+  - It works in s04 on `d2cf1a3` and writes to `/tmp/fitway-scratch/reports/`.
+  - It commits without pushing.
+- **If this session ends before phase B,** a fresh designer takes phase B from the phase A commit, its report and the
+  brief, as step 3 allowed.
+- **Next:** on its report, inspect the contact sheet and frames, push, and show the user.
+## Step 4 phase A delivered at `bde1cde` (2026-10-01)
+
+- **Delivered** on `d2cf1a3`: 12 files, about +861/−443. The tree is clean, and the commit is pushed.
+  - **Frame:**
+    - Operations has left both rails.
+    - From 721 px, the header status is one 44 px control with a chevron and no box at rest, and it opens Operations'
+      details. On a phone it stays the badge.
+    - Reports takes the frame: the rail, the modal rail on tablet, and the phone's bar, header and menu. Its phone
+      placeholder is gone.
+  - **Reports at 1440, recomposed:**
+    - the period control and "Export minute data" sit under the header;
+    - one card holds the three figures, and "Last 7 days" has its own card with the summary light;
+    - the pattern spans the page with the data light;
+    - the day table has "Export table".
+  - **K entries:**
+    - the 21 step-4 K entries are marked fixed, with their measurements;
+    - K-25 is re-measured: every cell is at least 4.5:1 (lowest 4.78);
+    - K-02 and K-36 are untouched;
+    - K-37 is new: "Last 4 weeks" against GLO-13.
+  - **Self-reported:**
+    - 147 targets on Reports, none under 44;
+    - no sideways scroll at 1440 through 320, AR and EN;
+    - 0 breaks inside dates or ranges;
+    - HDR-6 moves 0.00 px;
+    - Daily unchanged apart from the status and the removed tile, with 3-4 px raster noise at 390;
+    - the spec lint finds 350 rows and 0 problems.
+  - **Caveats:**
+    - at 721-1023 px, Daily's hours move into the status details, and the concept label sits 8 px lower;
+    - Reports' layout below 1200 px is provisional until phase B;
+    - Reports' status always reads live until K-02;
+    - `reports-capture.mjs` shows 22 failures that also occur at the base: late-font shifts and a 404.
+  - Its `check:repository` failure was the build branch's stale `PROJECT_STATE.yaml` lease. The coordinator branch
+    passes, with the lease running until 2026-10-02.
+- **Proposals Q12-Q16, plus the duplicate line in the pattern's "No readings" tooltip.** The coordinator recommends
+  accepting all of them:
+  - Q12: Reports keeps no intro and no digit roll;
+  - Q13: only the pattern is lit;
+  - Q14: «آخر 28 يومًا» / "Last 28 days";
+  - Q15: no box at rest from 721 px;
+  - Q16: the hours move into the details at tablet width.
+- **Coordinator inspection, not verification:** Reports AR at 1440, and Daily AR at 1440 with the details open,
+  are coherent.
+- **Next:** the user's notes, then resume the same designer for phase B (768 and 390, BRK-9) with them.
+## The user's notes on phase A, and the one-light fix launched (2026-10-01)
+
+- **User decisions (2026-10-01):**
+  - **Reports' new composition is approved.** That covers the period control and export under the title, the one
+    card of the three figures, the pattern across the page, and the table's own export.
+  - **Q12-Q16 and the tooltip line are all accepted.** For Q13 the user wants to see the page without the week
+    card's light first.
+  - **The week card's place.** What bothered the user was not the order but the light on "Last 7 days" at the row's
+    far left.
+    - In RTL the eye starts at the top right, where the title, the period and the page's light are. A lit card at
+      the far left pulls the eye away.
+    - So the light comes off first, and the user judges the page. Only if it still reads wrong does the card move to
+      the row's start, on the right.
+    - If it moves, the brief must keep it from reading as part of the period under the control (TRU-7).
+  - **Why the card is separate,** confirmed from the spec: it is not about the light. The three figures follow the
+    chosen period, while "Last 7 days" always compares the last 7 complete days with the 7 before (TRU-7,
+    Q3 2026-09-30; K-01).
+  - **Fresh agents, not a resumed designer.** The phase A designer's context is very large, and resuming it would
+    re-read that context on every call. This follows the user's rule in DO-NOT.md, a fresh agent for each task.
+    - Phase B goes to a fresh designer, briefed from the phase A brief, its report and these decisions.
+- **Launched:** a Sonnet `owner-direction-fixer` at `medium`, on `bde1cde`, in `/tmp/fitway-scratch/fix-q13/`.
+  - The week card is plain in every period, and only the pattern is lit.
+  - «آخر 28 يومًا» / "Last 28 days" (K-37).
+  - The no-readings tooltip loses its repeated line.
+  - The spec marks Q12-Q16 decided.
+  - It makes a with-and-without-light comparison sheet against `bde1cde`.
+- **Next:** show the user the comparison. Then either phase B with a fresh designer, or first the card's move.
+## One light on Reports at `9b6ae63`, shown to the user (2026-10-01)
+
+- **Delivered at `9b6ae63`** on `bde1cde`: `DESIGN-SPEC.md`, `README.md`, `components.js` and `reports.js`, +37/−40.
+  - The week card is plain in every period, and only the pattern is lit, and it is plain in July.
+  - «آخر 28 يومًا» / "Last 28 days" fits one line from 1440 to 320, with 44 px targets.
+  - The no-readings tooltip has one line, including the components twin `noneTip`.
+  - The spec changes:
+    - OWN-R6 takes `user 2026-10-01 (Q13)`;
+    - MOT-10 and OWN-R5 take `user 2026-10-01 (Q12)`;
+    - K-37 is fixed, and OWN-R2 is renamed;
+    - K-13 gets a note;
+    - §8 Q12-Q16 are decided.
+  - Self-reported: Daily is byte-identical to `bde1cde` in 12 frames, and the lint finds 0 problems.
+- **Coordinator inspection, not verification:** the comparison sheet
+  (`/tmp/fitway-scratch/fix-q13/light-compare.png`) shows the same order, the week card plain, and the pattern as
+  the one lit element, in AR and EN.
+- **Pushed** `owner-followup-r04-build` to `9b6ae63`.
+- **Waiting:** the user's look. Either the order stays, or the week card moves to the row's start.
+## Reports keeps its order without the week light, and the coordinator's layout notes (2026-10-01)
+
+- **User decision (2026-10-01):** the order stays, "Last 7 days" stays plain at the row's end, and the card does
+  not move. `9b6ae63` stands.
+- **Asked for:** the coordinator's second look at the layout. Proposed to the user, awaiting the user's word:
+  1. **Export:** take "Export minute data" away from the period control, to the row's far end. Today it sits beside
+     the control, so a take-away action reads as part of choosing what you see.
+  2. **The week card's baseline:** "+9%" names no comparison on its face. Add the span it compares with, such as
+     «مقابل 9 – 15 سبتمبر» / "vs 9 – 15 Sep". This is a date in the meta slot, not an explanatory caption.
+  3. **The subtitle:** "· 28 days" repeats the selected "Last 28 days". Show the length only for a custom period.
+  - Whatever the user accepts goes into phase B's brief, so the fresh designer applies it at 1440 too.
+## Step 4 phase B launched with a fresh designer (2026-10-01)
+
+- **User decisions (2026-10-01):** all three layout notes are accepted.
+  - Export moves to the row's far end.
+  - The week card names its baseline, «مقابل 9 – 15 سبتمبر». The user wants to judge whether the card becomes too
+    full.
+  - The subtitle shows the length only for a custom period.
+- **Launched:** a fresh `owner-direction-designer` (Opus, `xhigh`), in the background, with
+  `directions/briefs/step4-reports-phase-b.md`.
+  - It works on `9b6ae63` and writes to `/tmp/fitway-scratch/reports-b/`.
+  - It does the three refinements at 1440, then Reports at 768 and 390 in every period and dialog.
+  - It gives the week card before and after crops.
+  - It stops for the user. The states (K-02) go to the next designer.
+- **Next:** on its report, inspect the sheets and the week card's crops, push, and show the user.
+## Step 4 phase B delivered at `9309382` (2026-10-01)
+
+- **Delivered** on `9b6ae63`, by a fresh designer: `DESIGN-SPEC.md` +51/−19, `README.md` +20, `components.js` +5/−5,
+  `reports.css` +99/−9, `reports.html` +4/−3 and `reports.js` +103/−44. The tree is clean, and the commit is pushed.
+  - **The 1440 refinements:**
+    - the period control stands alone, and "Export minute data" sits at the row's far end;
+    - the week card shows «مقابل 9 – 15 سبتمبر» / "vs 9 – 15 Sep" under "avg. inside", beside the value. The card
+      stays 166 px with no new line. The head and the foot were tried and rejected, and the sheet shows both;
+    - a preset's subtitle shows its dates alone, and a custom period keeps its length.
+  - **768:** the glance row stacks. The figures split 1 : 1.25 : 1, and the pattern keeps its 1440 orientation, with
+    cells 20.4 × 44.
+  - **390:**
+    - the period control is full width, and the export sits on its own line at the row's end;
+    - two figures sit side by side, with Entries full width below them;
+    - the pattern is transposed into a week calendar, a column per day and a row per hour, cells 31.6 × 44. The card
+      is 1152 px;
+    - the day table uses TBL-8's phone form.
+  - **Self-reported:**
+    - 0 targets under 44, and no sideways scroll at 1440, 1024, 768, 720, 390 and 320;
+    - 0 breaks inside dates or ranges;
+    - HDR-6 moves 0.00 px everywhere except K-38;
+    - the focus order follows the visual order;
+    - Daily's files are byte-identical to `9b6ae63`;
+    - the lint finds 355 rows and 0 problems.
+  - **Spec:**
+    - new rows OWN-R8…R11 (C) and PAT-12 (R);
+    - K-29 is closed for Reports;
+    - K-38 is new: at 320 AR, «التقارير» touches the "Offline" badge. It is deferred to the states round.
+  - **Proposals Q17-Q22:**
+    - Q17: the baseline beside the value;
+    - Q18: the phone export placement;
+    - Q19: the coverage line with a preset, and the two-line phone subtitle;
+    - Q20: the one-letter Arabic day heads «ح ن ث ر خ ج س»;
+    - Q21: pattern cells under 44 px wide below 1024, with WCAG 2.5.8 met;
+    - Q22: the 768 fold falls 68 px inside Saturday.
+- **Coordinator inspection, not verification:** sheet 1 (1440 before and after, with the week card's placements) and
+  sheet 3 (390 in 28d) are coherent, and the week card is not crowded.
+- **Coordinator recommendation:** accept Q17-Q22 as built.
+- **Next:** the user's notes. Then a fresh designer takes Reports' states (K-02, with K-38), and a fresh reviewer
+  takes step 4.
+## The user's phone critique of phase B, and the new-session resume point (2026-10-01)
+
+This session's context grew large, so the user ends it here. No new work starts in it. A new cloud session continues
+from this section.
+
+- **User decisions on phase B's proposals (2026-10-01):**
+  - **Q17 is rejected.** Remove «مقابل 9 – 15 سبتمبر» / "vs 9 – 15 Sep" from the "Last 7 days" card at every size.
+    The owner understands the comparison, and the card became too full. It is now in DO-NOT.md.
+  - **Q18 is accepted:** the phone's export sits on its own line at the row's end.
+  - **Q19 is accepted:** the coverage line stays with a preset, and the phone subtitle takes two lines.
+  - **Q20, the one-letter Arabic day heads:** the user called it "good, but", with notes that are the phone critique
+    below. It is open until the phone is redesigned.
+  - **Q21 and Q22** (cells under 44 px wide below 1024; the 768 fold) got no explicit answer. Treat them as part of
+    the phone and tablet rethink.
+- **The user's critique: Reports on the phone is compressed, not designed.** It is now in DO-NOT.md.
+  - The page reads squeezed, thin and very long.
+  - The pattern became 7 narrow columns (cells 31.6 px wide, a 1152 px card), with one-letter day heads.
+  - In an empty period, each column draws «لا قراءات». It breaks over two lines and collides with its neighbours.
+    The user circled it on `390 · AR · empty July · pattern`.
+  - The day table is cramped too.
+  - The user suspects Daily's phone may share the problem. Nobody has checked yet.
+  - **The coordinator agrees.** The designer kept every slot of 1440 (7 × 19 cells, the five-column table) and made
+    them fit by narrowing. The measured checks all passed (44 px targets, no sideways scroll, no broken dates), but
+    those are lint, not design quality (AGENTS.md). The coordinator had called sheet 3 coherent and missed it; the
+    user caught it.
+- **State at the end of this session:**
+  - **Build branch** `owner-followup-r04-build` at `9309382`, pushed. It holds:
+    - step 3 closed at `d2cf1a3`;
+    - phase A at `bde1cde`;
+    - one light at `9b6ae63`;
+    - phase B at `9309382`.
+  - **Coordinator branch** `codex/owner-redesign-r04`, pushed. It holds this handoff, `directions/DO-NOT.md`
+    (60 entries), and the briefs in `directions/briefs/` (step4-reports-phase-a.md and step4-reports-phase-b.md).
+  - `/tmp/fitway-scratch/` was session-local and is lost. The briefs and records are in the repository.
+  - **Codex batch, for the local machine:**
+    - `components.html` scrolls sideways at 390 and 768 EN;
+    - the details' «Open, nobody inside» range breaks at 320 EN;
+    - `components.html`'s header date range breaks at 390 and 320.
+- **Working agreements (2026-10-01), binding on every coordinator session:**
+  - Small calls follow the coordinator's recommendation; the coordinator acts and tells the user. Big calls (launching
+    an Opus designer, visual acceptance) go to the user.
+  - Every task gets a fresh agent. Do not resume a long-context designer.
+  - Small fixes in the cloud go to `owner-direction-fixer` on Sonnet at `medium`.
+  - Replies are in the Saudi dialect.
+  - Push to the build branch after inspecting each commit.
+- **New session, first steps:**
+  1. Check the environment. If the user pasted the working setup script (see "First cloud task done"),
+     `node_modules`, Impeccable and the Chromium shim exist. If they do not, run that script by hand from
+     `/home/user/fitway`.
+  2. `git fetch origin owner-followup-r04-build && git worktree add ../s04 owner-followup-r04-build`, then
+     `pnpm install --frozen-lockfile` in `../s04`.
+  3. Run `pnpm context:show --milestone owner-design-exploration-r04` (no `--`) and `pnpm check:design-context`.
+  4. Read this section, DO-NOT.md and the phase B brief. Do not read the whole handoff.
+- **Next work, in order:**
+  1. **Reports' phone redesign, with a fresh designer.**
+     - It removes the Q17 baseline at every size.
+     - It designs Reports at 390 for the phone: the pattern, the day table and the empty periods. It does not
+       compress 1440, and it rechecks 768 under the same lens (Q21, Q22).
+     - Recommended: the designer first shows the user two or three rendered options for the pattern and the table
+       on the phone, where the trade-off is real (for example one day at a time, coarser time blocks, or a different
+       form), and builds only the one the user picks.
+     - Hypotheses only, for the designer to test, not decisions:
+       - an empty period shows one message for the whole pattern, as the table's empty state does, not one label
+         per column;
+       - the day table on the phone may need a list form rather than five squeezed columns.
+     - The proposed sequence (options first, then a build) is a big call, so it goes to the user.
+  2. **Reports' states** (K-02, with K-38), with a fresh designer.
+  3. **A fresh reviewer for step 4.** It also looks at Daily at 390 through the "compressed, not designed" lens,
+     because the user suspects it. Any change to Daily is the user's call.
+
+## Local resume, and Reports' phone options launched (2026-10-01)
+
+- **Resumed on the local machine,** not in the cloud.
+  - The s04 worktree is `D:\Projects\fitway-worktrees\owner-followup-r04-s04`, fast-forwarded from `fd28be4` to
+    `9309382`, with `pnpm install --frozen-lockfile` clean.
+  - `pnpm check:design-context` passes, and `context:show` resolves the packet.
+- **User decision (2026-10-01): options first, then a build.**
+  - A fresh designer shows two or three rendered options for the pattern, the day table and the empty periods on the
+    phone, says how each carries to 768, and stops.
+  - The user picks, and another fresh designer builds the pick at 390 and 768 and removes the Q17 baseline.
+- **Launched:** a fresh `owner-direction-designer` (Opus, `xhigh`) on `briefs/step4-reports-phone-options.md`, base
+  `9309382`, evidence in `D:\fitway-temp\reports-phone\options\`.
+- **The Codex batch** (`components.html`'s sideways scroll and header range; the details' range at 320 EN) waits until
+  the phone round is integrated, because both would write in E/ on the same branch.
+
+## Reports' phone options delivered at `aa509b9`, for the user's choice (2026-10-01)
+
+- **Delivered at `aa509b9`** on `9309382`, pushed. New `reports-phone-options.js` (+434), `.css` (+220) and
+  `reports-options-capture.mjs` (+267); `reports.js` +42/−3 and `reports.html` +3 add `?opt=a|b|c` hooks.
+  - Self-reported: without `?opt` the page is byte-identical to `9309382` in 60 of 60 whole-page frames.
+  - The options answer the pattern from 1023 px down and the day table from 720 px down; at 768 all three keep phase
+    B's day table.
+- **The options** (page height at 390 AR, 28d; phase B 4087):
+  - **A, the week in blocks** (3493): 7 weekdays × 6 three-hour blocks, the full weekday name over each row, the day
+    table grouped by week. It gives up the single hour (Thursday 6-9 PM reads 53 against 59 at 7-8 PM). Blocks are
+    37.7 px wide at 320, the only target under 44. At 768 the pattern ends 56 px past the fold.
+  - **B, one day at a time** (2511, the designer's recommendation): a week strip of 7 radio buttons, the chosen day's
+    19 hours as labelled bars on one scale, the day table as a two-line list with "Show all days". It gives up the
+    weekdays side by side. Every target is at least 44 px; at 768 the card ends inside the fold (Q22).
+  - **C, the week as a timetable** (3128): 1440's grid at 44 × 44, swiped sideways inside the card. The designer notes
+    it is close to the placeholder K-29 rejected, and the 7d camera gap opens off-screen.
+  - In an empty period, all three show one message for the whole pattern; the colour key and the numbers switch hide.
+    The sentence appears twice, in the pattern and in the table.
+- **Not checked by the designer:** real-device touch, 200% zoom, 1024, screen-reader output beyond names. The spec and
+  README are not updated until the pick.
+- **Coordinator checks:** the comparison sheet and A and B's patterns at 390 AR, downscaled; the `reports.js` hooks are
+  gated on `?opt`. Seen: B's weekday strip bars are of nearly equal height, so the strip compares days weakly.
+- **Next:** the user picks (mixing is possible, for example A's pattern with B's list); a fresh designer builds it.
+
+## The user picks option B, and its build brief is ready (2026-10-01)
+
+- **User decision (2026-10-01): option B, one day at a time,** on the coordinator's and the designer's
+  recommendation. A and C are not picked.
+- **Ready, not launched:** the brief `briefs/step4-reports-phone-build.md` (base `aa509b9`), for a fresh
+  `owner-direction-designer` (Opus, `xhigh`). The user ended the session before the launch. Its paths are the cloud's
+  (`/home/user/s04`, `/tmp/fitway-scratch/reports-phone/build/`).
+  - B becomes the page below 1024, and the `?opt` switch leaves.
+  - It finishes B's weak points: the week strip that barely compares days, faint quiet hours, the empty sentence said
+    twice, and the long full list.
+  - It looks at 768 under the same lens, removes the Q17 baseline at every size, and closes Q20-Q22 and K-29.
+
+## New cloud-session resume point after the phone pick (2026-10-01)
+
+The user ends this local session here and continues in a new cloud session. No agent is running.
+
+- **State at the end of this session:**
+  - **Build branch** `owner-followup-r04-build` at `aa509b9`, pushed: phase B at `9309382`, then the options round
+    behind `?opt=a|b|c`.
+  - **Coordinator branch** `codex/owner-redesign-r04`, pushed. It holds this handoff, `directions/DO-NOT.md` and the
+    briefs, including `step4-reports-phone-options.md` and `step4-reports-phone-build.md`.
+  - The options round's sheets and frames are on the local machine only, in `D:\fitway-temp\reports-phone\options\`.
+    The cloud can re-render any option from `aa509b9` with `E/reports-options-capture.mjs`.
+  - **Codex batch, still for the local machine:** `components.html` scrolls sideways at 390 and 768 EN; its header date
+    range breaks at 390 and 320; the details' «Open, nobody inside» range breaks at 320 EN. It runs after the phone
+    build is integrated, since both write in E/.
+- **The working agreements** in "The user's phone critique of phase B, and the new-session resume point" still bind.
+- **New session, first steps:**
+  1. Check the environment as in "The user's phone critique of phase B, and the new-session resume point", step 1.
+  2. `git fetch origin owner-followup-r04-build && git worktree add ../s04 owner-followup-r04-build`, then
+     `pnpm install --frozen-lockfile` in `../s04`. Confirm `../s04` is at `aa509b9`.
+  3. Run `pnpm context:show --milestone owner-design-exploration-r04` (no `--`) and `pnpm check:design-context`.
+  4. Read this section and the two sections before it, then `briefs/step4-reports-phone-build.md`. Do not read the
+     whole handoff.
+- **Next work, in order:**
+  1. **Launch the phone build:** a fresh `owner-direction-designer` on `briefs/step4-reports-phone-build.md`. The user
+     already approved this launch (options first, then a build with a fresh designer). Check the brief's paths against
+     the session's real paths first.
+  2. Inspect its frames, push, and show the user the contact sheets for review.
+  3. **Reports' states** (K-02, with K-38), with a fresh designer.
+  4. **A fresh reviewer for step 4.** It also looks at Daily at 390 through the "compressed, not designed" lens,
+     because the user suspects it. Any change to Daily is the user's call.
+
+## Cloud resume, and the phone build launched (2026-10-01)
+
+- **Resumed in a cloud session.** `node_modules`, Impeccable and the Chromium shim (revision 1228) were present.
+  - `../s04` (`/home/user/s04`) is a new worktree of `owner-followup-r04-build` at `aa509b9`, and
+    `pnpm install --frozen-lockfile` ran clean.
+  - `context:show` resolves the packet, and `pnpm check:design-context` passes.
+- **Launched:** a fresh `owner-direction-designer` (Opus, `xhigh`) on `briefs/step4-reports-phone-build.md`, base
+  `aa509b9`. The user approved this launch earlier. The brief's paths held in this session, with one change: the
+  evidence goes to the session scratchpad
+  (`/tmp/claude-0/-home-user-fitway/8ed4aeba-4dc1-53d8-8306-ebc8acdbae0c/scratchpad/reports-phone/build/`), not
+  `/tmp/fitway-scratch/`, so the user can open the contact sheets. That folder is session-local and is lost when the
+  session ends.
+
+## Reports' phone build delivered at `ff0e922`, for the user's review (2026-10-01)
+
+- **Delivered at `ff0e922`** on `aa509b9`, pushed to `owner-followup-r04-build`. Nine files, +930/−1089: `reports.js`,
+  `.css` and `.html`, `DESIGN-SPEC.md`, `README.md`, and a new `reports-build-capture.mjs`. The options files and the
+  `?opt` switch are removed.
+- **Self-reported:**
+  - B is the page below 1024; 768 keeps the hours as columns, and the card ends 17.2 px inside the fold (Q22).
+  - The day table at 768 keeps phase B's form.
+  - Q17 is removed at every size; Q20-Q22 are answered, and K-29 is closed.
+  - K-39 is new: 1440's grid keeps cells under 44 px wide at 1024-1240.
+  - Measured over 86 page states: 0 px sideways, no target under 44, 0 broken phrases, and HDR-6 holds.
+  - Page height at 390 AR, 28d: 4087 → 2493.
+  - Daily is byte-identical in 42 of 42 frames. Lint finds 0 problems.
+- **The weak points:**
+  - Each strip day now draws its own 19 hours as a small outline.
+  - Every bar has a 1 px FITWAY-red edge.
+  - An empty period says its sentence once, and day by day hides.
+  - "Show all days" stays: the whole list is 2225 px, longer than phase B's table.
+- **Coordinator checks:**
+  - Opened sheets 01, 02 and 06 and the empty-July frame at 390 AR. The build is coherent, the empty period has one
+    sentence, and the commit is clean. Lint re-run: 0 problems.
+  - Seen: the red edge makes the quietest bars read as hollow pills (12 AM, 3).
+  - Seen: the empty custom period's header now shows «لا قراءات · 31 يومًا», with a middle dot next to a
+    no-readings phrase. It is close to DO-NOT.md line 27 (that rule is about a range), so the user decides.
+- **For the user:**
+  - the strip's mini outlines;
+  - the red edge;
+  - the dated 7-day headers;
+  - hiding day by day when the period is empty;
+  - "Show all days" against one more week per tap;
+  - K-39 (B up to 1279, or the grid at 1024-1240);
+  - Q18 and Q19, still open.
+- **Next:** the user's review. Then Reports' states (K-02, with K-38), with a fresh designer.
+
+## The user's review of the phone build, one decision at a time (2026-10-01)
+
+- **The review format changes.** The seven sheets at once were too many and too small to read, so the user could not
+  tell what to look at. Each decision now gets one cropped, numbered comparison image and one question, in order.
+- **Decision 1, the week strip: one bar per day** (the options round's form), not the mini outlines of each day's
+  hours. *User 2026-10-01.* Against the coordinator's recommendation (the outlines).
+- **Decision 2, the hour bars: no edge** (the options round's form). The 1 px FITWAY-red edge on every bar goes; the
+  printed number carries a quiet hour's value. *User 2026-10-01,* on the coordinator's recommendation.
+- **Decision 3, the full day list: no dated 7-day headers** (the options round's form). *User 2026-10-01,* against
+  the coordinator's recommendation (the headers).
+- **Coordinator note for the fix round:** «عرض آخر 28 يومًا» on the empty period's button shows wide gaps around «28»
+  at 390 AR. Check the spacing of the number inside the label.
+- **Decision 4, an empty period below 1024: the sentence once,** in the busy-times card with the way back; day by day
+  hides until the period has readings (the build's form). *User 2026-10-01,* on the coordinator's recommendation.
+- **Decision 5, the day list's button: "Show all days" stays,** one tap for the whole period (not one more week per
+  tap). *User 2026-10-01,* on the coordinator's recommendation.
+- **Decision 6, K-39: one day at a time up to 1279 px,** so 1024-1279 follows `DESIGN_GUIDE.md`'s 44 × 44 px target
+  minimum; 1440's week grid stays from 1280 up. *User 2026-10-01,* on the coordinator's recommendation.
+- **Q18 and Q19 are not open:** the user accepted both on 2026-10-01 ("The user's phone critique of phase B"). The
+  spec still lists them as open, so the fix round records them as answered. The coordinator did not ask again.
+- **Decision 7, the empty custom period's header line keeps its middle dot:** «لا قراءات · 31 يومًا». The user finds it
+  cleaner. DO-NOT.md line 27 covers rows with a time range, not this header line. *User 2026-10-01,* against the
+  coordinator's recommendation (duration first, then the dotted mark).
+- **The desktop keeps the week grid.** The user proposed unifying 1280+ with B (one day at a time). The coordinator
+  recommended keeping the grid, where the width allows the whole week at once. The user agreed: no change at 1280+.
+  *User 2026-10-01.*
+- **Reopened by the user: the dotted mark in no-readings rows** («10:00 ص – 2:00 م ···· لا قراءات», DO-NOT.md
+  line 27, chosen 2026-10-01). The user finds dots before the words odd. Shown: (1) the dots, (2) the range, a gap,
+  then the words, (3) one sentence, «لا قراءات من 10:00 ص إلى 2:00 م». The coordinator recommends 2. Waiting for the
+  user's pick.
+- **Decision 8, the no-readings span: one sentence, the words first:** «لا قراءات من 10:00 ص إلى 2:00 م» / "No
+  readings from 10:00 AM to 2:00 PM". It applies everywhere in E/, Daily included. *User 2026-10-01:* the sentence
+  reads clear and well ordered, and the range-first order with a mark is badly built. The coordinator had recommended
+  option 2 (the range, a gap, then the words).
+  - DO-NOT.md's no-readings entry is rewritten to match.
+  - The coordinator extends the same order to closed spans («مغلق من … إلى …»). Other range-then-words phrases go to
+    the user as proposals.
+
+## New cloud-session resume point after the build review (2026-10-01)
+
+The user ends this cloud session here and continues in a new cloud session. No agent is running.
+
+- **State at the end of this session:**
+  - **Build branch** `owner-followup-r04-build` at `ff0e922`, pushed. It holds the phone build (option B below 1024).
+  - **Coordinator branch** `codex/owner-redesign-r04`, pushed. It holds:
+    - this handoff and `directions/DO-NOT.md`, whose no-readings entry was rewritten today;
+    - the new brief `briefs/step4-reports-phone-fixes.md`, ready and not launched. It carries the eight decisions
+      above and the small fixes.
+  - The build's sheets and the review crops were in this session's scratchpad and are lost. The brief asks for new
+    crops.
+  - **Codex batch, still for the local machine:**
+    - `components.html` scrolls sideways at 390 and 768 EN;
+    - its header date range breaks at 390 and 320;
+    - the details' «Open, nobody inside» range breaks at 320 EN.
+- **Working agreements (2026-10-01).** "The user's phone critique of phase B" still binds. The user corrected two
+  habits from this session, and neither is a standing rule:
+  - The one-decision-at-a-time review fitted this review only, because the build sent many large sheets that were hard
+    to read. The standing need is that what the user is shown is clear and well ordered. Use judgment on the format.
+  - The user asked for the plan before the work only to judge its cost, because this account was near its limits.
+    Do not announce each step before starting it.
+  - Keep the coordinator's context small, as before.
+- **New session, first steps:**
+  1. Check the environment as in "The user's phone critique of phase B, and the new-session resume point", step 1.
+  2. `git fetch origin owner-followup-r04-build && git worktree add ../s04 owner-followup-r04-build`, then
+     `pnpm install --frozen-lockfile` in `../s04`. Confirm `../s04` is at `ff0e922`.
+  3. Run `pnpm context:show --milestone owner-design-exploration-r04` (no `--`) and `pnpm check:design-context`.
+  4. Read this section, "The user's review of the phone build, one decision at a time", and
+     `briefs/step4-reports-phone-fixes.md`. Do not read the whole handoff.
+- **Next work, in order:**
+  1. **Launch the fixes:** a fresh `owner-direction-builder` (Opus, `high`) on `briefs/step4-reports-phone-fixes.md`.
+     The user approved this plan. Name the session's scratchpad as the scratch folder, and check the brief's paths
+     first.
+  2. Inspect its images, push, and show the user the result, clear and well ordered.
+  3. **Reports' states** (K-02, with K-38), with a fresh designer, only after the user approves.
+  4. **A fresh reviewer for step 4.** It also looks at Daily at 390 through the "compressed, not designed" lens,
+     because the user suspects it. Any change to Daily is the user's call.
+
+## Cloud resume, and the phone fixes launched (2026-10-01)
+
+- **Environment checked:** `node_modules`, Impeccable on the PATH and the Chromium shim were in place.
+  `/home/user/s04` was added on `owner-followup-r04-build` at `ff0e922` and installed with
+  `pnpm install --frozen-lockfile`. `pnpm context:show --milestone owner-design-exploration-r04` and
+  `pnpm check:design-context` passed.
+- **The brief's paths checked:** E/, `reports.js:2-3`, `reports-build-capture.mjs`, `DESIGN-SPEC.md`,
+  `tools/lint-spec.mjs`, `README.md`, `components.html`, `DESIGN_GUIDE.md`, `DO-NOT.md` and `aa509b9` all resolve.
+- **Launched:** a fresh `owner-direction-builder` (Opus, `high`) on `briefs/step4-reports-phone-fixes.md`, in
+  `/home/user/s04`, with this session's scratchpad (`…/scratchpad/phone-fixes/`) as the scratch folder. It commits
+  once, does not push, and stops for the user's review.
+
+## Reports' phone fixes delivered at `e8461a5`, for the user's review (2026-10-02)
+
+- **Pushed:** `owner-followup-r04-build` at `e8461a5`, one commit on `ff0e922`, all inside E/. The builder reports
+  decisions 1-3, 6 and 8 done, 4, 5 and 7 unchanged as decided, K-39 closed, Q18 and Q19 recorded as accepted, and
+  the «28» spacing fixed.
+- **Builder's measurements (corroboration, not verified independently):** 1440-320, AR and EN, 122 page states:
+  no sideways scroll, no target under 44 px, 0 broken phrases in 7,906, HDR-6 0 px, the strip one Tab stop with
+  arrows. Daily differs from `ff0e922` in 48 of 180 frames, all inside the no-readings phrases. Lint 0.
+- **The coordinator inspected all twelve crops.** They match the decisions. Points for the user:
+  - In Daily's minute table and the full-width rows, the sentence's times keep the old range style (13.5 px
+    `--ink-2`) while the words are caption `--ink-3`: two sizes in one sentence. The brief's "keeps the phrase's
+    current size and colour" allowed it. The coordinator recommends one size and one colour for the whole sentence.
+  - Without the edge, the quietest hour bars are very faint; the "3" bar at 12 AM is barely visible. This follows
+    decision 2 (the number carries the value).
+  - K-39's fold: the card ends inside y = 1024 at 1024, 1200 and 1279, and inside the 800 px viewport at 1200 and
+    1279, but 204.8 px below a 1024 × 768 viewport.
+  - Wording the builder chose: «لا قراءات بعد من 26 أغسطس إلى 12 سبتمبر» / "No readings yet from 26 Aug to 12 Sep",
+    and «لا قراءات يوم الخميس 17 سبتمبر» / "No readings on Thu 17 Sep".
+  - Proposals, not changed: Daily's «بانتظار القراءات» tooltip still puts the range first; Daily's coverage list
+    keeps a label, then the range, a middle dot and the duration («لا قراءات» / «2:14 م – 2:31 م · 18 دقيقة»).
+  - `reports-build-capture.mjs` now fails if run; `reports-fixes-capture.mjs` replaces it.
+- **The crops** are in this session's scratchpad, `…/scratchpad/phone-fixes/run/evidence/`, and are lost when the
+  session ends.
+
+## The user's answers on the phone fixes (2026-10-02)
+
+- **Decision 9, one size and one colour for the whole no-readings sentence** (Daily's minute table and the
+  full-width rows included). *User 2026-10-02,* on the coordinator's recommendation. Not built yet; it rides the next
+  fix round with the wording decisions below.
+- **The quiet hour bars stay as built.** The user still reads them clearly. The coordinator may propose something
+  better; the user did not ask for a change.
+- **The days before readings began:** «لا قراءات بعد من 26 أغسطس إلى 12 سبتمبر» is accepted. *User 2026-10-02.*
+- **The single day, «لا قراءات يوم الخميس 17 سبتمبر», is rejected:** its construction reads badly. Better wordings
+  are being rendered for the user's pick.
+- **The two Daily proposals** (the «بانتظار القراءات» tooltip, the coverage list) were unclear in words. A fresh
+  agent renders them, with the single-day options, into this session's scratchpad (`…/scratchpad/wording/`).
+- **No large phase now.** The user does not stop the work, but opens no big round in this session. Reports' states
+  (K-02, K-38) and the step-4 reviewer wait for the local machine.
+
+## The user's wording picks, and the wording brief (2026-10-02)
+
+- **Single day without readings: option 4,** the date in its place and the words under it. *User 2026-10-02.* The
+  user proposed «بلا قراءات» for the line under the date instead of «لا قراءات طوال اليوم». The coordinator
+  recommends «لا قراءات»: it is the term used everywhere, and it pairs with «لا قراءات بعد» below. Waiting for the
+  user's confirmation; the brief carries «لا قراءات».
+- **Single day before readings began:** the same form, the date and «لا قراءات بعد». It removes «لا قراءات بعد يوم
+  12 سبتمبر», which reads as "after 12 September". *User 2026-10-02,* on the coordinator's recommendation.
+- **Daily's waiting tooltip:** «بانتظار القراءات» / «منذ 3:00 م». *User 2026-10-02,* on the coordinator's
+  recommendation (the rendering agent had recommended «لا قراءات منذ 3:00 م»).
+- **Daily's coverage list:** «من 2:14 م إلى 2:31 م (18 دقيقة)». *User 2026-10-02,* on the coordinator's
+  recommendation.
+- **The quiet bars:** the user did not take up the floor proposal; they stay as built.
+- **The user approved running the small round in this cloud session** after the picks. Its brief is
+  `briefs/step4-reports-wording-fixes.md` (decisions 9-13), not launched yet.
+- **Confirmed:** «لا قراءات» / "No readings" under the date. *User 2026-10-02,* on the coordinator's recommendation.
+  The wording round is launched: a fresh `owner-direction-builder` (Opus, `high`) on
+  `briefs/step4-reports-wording-fixes.md`, in `/home/user/s04` on `e8461a5`, scratch folder
+  `…/scratchpad/wording-fixes/`.
+
+## The wording round delivered at `3e5b997`, for the user's review (2026-10-02)
+
+- **Pushed:** `owner-followup-r04-build` at `3e5b997`, one commit on `e8461a5`, all inside E/. Decisions 9-13 done;
+  TBL-12, CHT-12, CHT-21, STA-12, OWN-R12 and DAT-4 rewritten, OWN-D11 added, source row `R4e`, lint 0.
+- **Builder's measurements (corroboration, not verified independently):** 314 page states, 1440-320, AR and EN:
+  no target under 44 px, no sideways scroll, 0 broken phrases in 21,688, HDR-6 0 px, no console errors. Decision
+  9's contrast is 5.26:1 or higher everywhere (caption `--ink-3` 7.92:1, closed run `--stale` 5.26:1).
+- **The coordinator inspected the crops** (9b, 10a, 10c, 11, 12a, 13a, 13b). They match the decisions.
+- **Correction:** Daily's minute table was already one style at `e8461a5` (13.5 px `--ink-2`); the rule meant to
+  make it caption never matched. The coordinator's "two sizes in Daily" (2026-10-02) was a misreading; the two sizes
+  were in Reports' full-width rows and day list, now one style. Daily's minute table is pixel-identical.
+- **Open, small:**
+  - `components.html`'s copy of Daily's no-readings row is caption `--ink-3`, Daily itself 13.5 px `--ink-2`.
+  - In an English table (721 px and up), a single day's «No readings» starts at the peak column's left edge while
+    the peak figures sit on its right edge (TBL-12's spanning-note rule).
+  - English coverage rows take two lines at 390 (the page grows 40-60 px); at 320 EN, "from 6:00 AM" drops under
+    its label.
+  - `components.html` has no single-day specimen; `wording-capture.mjs` supersedes `reports-fixes-capture.mjs`.
+
+## The user's review of the wording round (2026-10-02)
+
+- **Decision 14, Daily's coverage list drops «من … إلى …»:** the range with its dash is understood on its own, so
+  the value reads «2:14 م – 2:31 م (18 دقيقة)» and «6:00 ص – 6:09 ص». The duration keeps its brackets, and the
+  middle dot stays gone. *User 2026-10-02.* The coordinator reads it as the coverage list only: there the label sits
+  in its own column. The one-sentence spans elsewhere keep decision 8's «لا قراءات من … إلى …».
+- **The user marked the peak time under the peak value** («6:25 م» under «55») in the 768 Arabic table, before and
+  after, and says it shows in roughly the first three crops. A fresh agent diagnoses it, read-only, into
+  `…/scratchpad/peak/`. The fix waits for the diagnosis.
+- **Diagnosed:** in the Arabic day table at 721-1023 px, the peak number hangs 15.75-28.67 px in from the column's
+  right edge, while its time and the header reach it. `reports.css:425` stacks the cell with `align-items:
+  flex-end`, which is the left in RTL; it dates from `bde1cde`. English, ≥1024 and the 390 list are not affected
+  (in the list the number stands over the label «الذروة» by design). Frozen fix: `[dir="rtl"] .pk { align-items:
+  flex-start; }` in the same media block.
+- **Launched:** a fresh `owner-direction-fixer` (Opus) on `3e5b997` with the peak fix and decision 14, scratch
+  folder `…/scratchpad/final-fixes/`. It commits once and does not push.
+- **The user clarified the marked issue:** not the alignment, but the time under the peak number. It lifts the
+  peak above the row's other numbers; every number in a row should share one line. The running fixer's alignment
+  line becomes a stepping stone.
+- **Preview rendered for the user** (`…/scratchpad/peak-inline/out/evidence/`, CSS injection on a static copy of
+  `3e5b997`): at 721-1023 the time sits beside the number as at ≥1024 (8 px gap, number on the start edge). Every
+  number in a row shares one baseline (0 px) at 721, 768, 900 and 1023, AR and EN, with no overflow. The «الأعلى»
+  flag cannot sit beside the time there (the Arabic table overruns its card by up to 12.5 px at 721 in the 28-day
+  view), so it takes its own line under the number and time, on the start edge. The top row grows from 61 to 65 px.
+  Waiting for the user's verdict.
+- **Proposed to the user:** record the من/إلى rule in DO-NOT.md (a range inside a sentence, tooltips included,
+  takes «من … إلى …»; a range standing alone as a value beside its label takes the dash). Waiting.
+
+## The peak alignment and decision 14 at `ca70f44` (2026-10-02)
+
+- **Pushed:** `owner-followup-r04-build` at `ca70f44`, one commit on `3e5b997`, inside E/. The Arabic peak cell at
+  721-1023 now ends on its column's edge (0 px, from up to 28.67 px); decision 14 is built in Daily's coverage list
+  («2:14 م – 2:31 م (18 دقيقة)», the range unbreakable, the bracketed duration wraps as one unit at 320). OWN-D11 and
+  OWN-R9 updated, decision 14 recorded, source row `F14`, lint 0.
+- **Builder's measurements (corroboration):** 1440-320 incl. 1023 and 721, AR and EN: no target under 44 px, no
+  sideways scroll, no break inside a time, date or range. Non-regression: 108 of 420 frames differ, all in the peak
+  cell (AR, 721-1023) or the coverage list.
+- **Pre-existing, found here:** at 721 EN the status box's anchor moves 6.5 px (HDR-6). `3e5b997` gives the same; 721
+  was never a measured size. For the step-4 reviewer.
+- **The coordinator inspected the coverage crops** (390 AR, 320 AR). They match decision 14.
+- **Next, waiting on the user:** the peak time beside the number (the inline preview), and the من/إلى rule in
+  DO-NOT.md.
+
+## The user's answers on `ca70f44` and the inline preview (2026-10-02)
+
+- **Decision 15, the peak time beside the number at 721-1023:** the inline preview is accepted ("excellent").
+  *User 2026-10-02,* on the coordinator's recommendation. Not built yet.
+- **The «الأعلى» flag:** with the time inline, the user finds the flag, on its own line, out of keeping, and thinks
+  it may not be needed. Options are being rendered for the user's pick before anything is built.
+- **Decision 16, the coverage list's duration:** no brackets (they take width), and the middle dot comes back:
+  «2:14 م – 2:31 م · 18 دقيقة». *User 2026-10-02,* against the build of decision 14's brackets. The dash rule of
+  decision 14 stands.
+- **DO-NOT.md updated** (approved by the user): the new rule "no dash inside a sentence, no «من … إلى …» in a range
+  that stands alone as a value"; the coverage list's dot noted as outside the no-readings phrase rule; the single-day
+  exception to the full-width no-readings row (decision 10).
+- **The flag options, rendered** (`…/scratchpad/flag/out/`, CSS/DOM injection on a static copy of `ca70f44`):
+  1 the preview (flag on its own line), 2 the flag beside the date, 3 no flag with the row tint kept, 4 no flag and
+  no tint, at 768, 390 and 1440. Findings: the top «أعلى ذروة» card already names the day, time and value in words
+  at every width; the row tint is hue only (1.04:1), so option 3 leaves a colour-only cue in the table; option 2 runs
+  1-2 px past its card at 721 AR and shifts the peak column 51 px at 768. Also found: in the preview, the Arabic time
+  sits 2 px above the number's baseline (fix `[dir="rtl"] .pk { align-items: baseline; }`); on the phone today the
+  flag pushes the top item's number 4-5 px off the others' edge and 3 px off the date's baseline. The rendering agent
+  and the coordinator recommend option 4. Waiting for the user's pick.
+
+## The user leans to option 3, Claude Design proposed, and the local resume point (2026-10-02)
+
+- **The flag:** the user finds option 3 (no flag, the row tint kept) excellent and clear without words. If the flag
+  only repeats the top «أعلى ذروة» card, the user agrees to drop it; the card was shown to them
+  (`…/scratchpad/flag/out/top-card-768-ar.png`). The coordinator now recommends option 3: the card names the day,
+  time and value in words at every width, so the tint is not the page's only cue. To confirm in the next session.
+- **Deferred defects, collected and not fixed now** (*user 2026-10-02*):
+  1. In the inline preview, the Arabic time sits 2 px above the number's baseline; fix
+     `[dir="rtl"] .pk { align-items: baseline; }` with the decision-15 build.
+  2. On the phone, the flag pushes the top item's number 4-5 px off the others' edge and 3 px off the date's baseline
+     (moot if the flag goes).
+  3. At 721 EN the status box's anchor moves 6.5 px (HDR-6), present at `3e5b997`.
+  4. `components.html`'s copy of Daily's no-readings row is caption `--ink-3`; Daily is 13.5 px `--ink-2`.
+  5. In an English table at 721 px and up, a single day's «No readings» starts at the peak column's left edge.
+  6. English coverage rows take two lines at 390.
+  7. `components.html` has no single-day specimen.
+  8. The Codex batch: `components.html` scrolls sideways at 390 and 768 EN; its header date range breaks at 390 and
+     320; the details' «Open, nobody inside» range breaks at 320 EN.
+- **Claude Design, proposed by the user.** The user asks to continue the visual work through Claude Design. Facts
+  checked 2026-10-02: Claude Design runs standalone (claude.ai/design) and as artifacts inside Claude chats and Claude
+  Code; it imports a design system from a codebase with `/design-sync` in Claude Code; its canvas allows dragging and
+  resizing by hand; Export offers "Handoff to Claude Code" ("Send to local coding agent"). The artifact promotion
+  (1-15 October) halves the five-hour limit for designs made in a Claude chat or Cowork task, not in the standalone app
+  or Claude Code. By `AGENTS.md`, Claude Design output is reference until built in E/, rendered and inspected. The
+  coordinator's view: use it for the visual back-and-forth with the user; keep the build, measurement and spec work in
+  Claude Code. To plan in the local session: Eclipse's design system in Claude Design (via `/design-sync`), what to
+  give it (DO-NOT.md, the spec rows, crops), and which entry to choose.
+- **State at the end of this session:**
+  - `owner-followup-r04-build` at `ca70f44`, pushed.
+  - `codex/owner-redesign-r04` pushed, with this handoff, `DO-NOT.md` (the range rule) and
+    `briefs/step4-reports-wording-fixes.md` (done).
+  - The scratchpad crops are lost when the session ends.
+- **Next work, in order:**
+  1. The user confirms the flag (option 3 recommended, 4 the alternative).
+  2. One build round on `ca70f44`: decision 15 (the time beside the number at 721-1023, with defect 1's fix), the
+     flag decision, and decision 16 (the coverage dot, «2:14 م – 2:31 م · 18 دقيقة», no brackets; the range and
+     «· 18 دقيقة» never break inside). The preview CSS is in "The flag options" above and the inline preview entry.
+  3. The Claude Design plan with the user.
+  4. Reports' states (K-02, K-38) and the step-4 reviewer, as before.
+
+## The flag confirmed and the decisions 15-17 build launched (2026-10-02)
+
+- **Decision 17, the «الأعلى» flag: option 3,** no flag at any width, the peak row's tint kept. *User 2026-10-02,* on
+  the coordinator's recommendation. The top «أعلى ذروة» card names the day, time and value in words at every width.
+- **Branches synced:** `codex/owner-redesign-r04` at `a10b383` before this entry; `owner-followup-r04-build` at
+  `ca70f44`; the local build worktree `owner-followup-r04-s04` fast-forwarded to it.
+- **Build launched:** `briefs/step4-reports-decisions-15-16.md` (decisions 15, 16, 17 and defect 1) to a fresh
+  `owner-direction-builder` in `owner-followup-r04-s04`.
+
+## Decisions 15-17 delivered at `06e0c41`, for the user's review (2026-10-02)
+
+- **Built** by a fresh `owner-direction-builder` on `ca70f44`, pushed. E/ files: `reports.css`, `reports.js`,
+  `app.js`, `components.css`, `components.js`, `DESIGN-SPEC.md` (TBL-6, TBL-8, TBL-11, CHP-7, OWN-D11, OWN-R9,
+  OWN-R12, source row B15, §8 decisions 15-17), `README.md`. Spec lint 0.
+- **Builder's measurements:** at 721-1023 AR and EN the peak value, its time, average and entries share one baseline
+  (0.00 px); defect 1's cause was ca70f44's RTL `align-items: flex-start` active at 721-1023, now limited to ≤720.
+  Defect 2 is gone with the flag. The coverage range and «· 18 دقيقة» are unbreakable units; at 320 AR «· 13 دقيقة»
+  takes the second line. The red "Highest" sample left `components.html`'s flags specimen (builder's call).
+- **Coordinator inspected** 768 AR, 390 AR and coverage 320 AR crops: flag gone, tint kept, peak cells on one
+  baseline, coverage reads in order with the dot.
+- **For the user:** at 721 and 768 AR the peak row's note «لا قراءات من 10:00 ص إلى 2:00 م» now wraps to three
+  lines (the peak column is wider); at 1024 EN the peak column is 18 px narrower than at `ca70f44` (from the flag's
+  removal). Defect 8 and the NaN SVG path errors at 320 in `components.html` are unchanged.
+- The crops are in `D:\fitway-temp\owner-r04\build15\` (local, untracked).
+
+## The user's review of `06e0c41`, and the artifact promotion corrected (2026-10-02)
+
+- **Accepted** (*user 2026-10-02*): «· 13 دقيقة» on the second line at 320 AR; the peak column 18 px narrower at
+  1024 EN. **Open:** the peak row's note wrapping to three lines at 721 and 768 AR.
+- **Promotion, corrected** (support article 17274727, read 2026-10-02): 1-15 October, Pro/Max/Team, work after an
+  artifact is created or edited uses 50% less of the five-hour limit. It applies to Claude chats (web, desktop,
+  mobile) and Cowork cloud tasks; not to Claude Code, the standalone Claude Design app, or local Cowork tasks. A chat
+  started from the Output menu's Design is discounted from its first message: 10 messages, up to 15 steps each, then
+  standard until Claude creates or edits an artifact in that chat again. Cowork: about the first 45 minutes, or 80
+  steps after an artifact is created mid-task. The earlier line in this handoff ("halves the five-hour limit") meant
+  this discount, and the standalone app is the excluded entry, not the preferred one.
+- **Entry chosen with the user:** the desktop app, a chat started from Design in the Output menu, with an Eclipse
+  design system made "Using Claude Code" (`/design-sync`). The user's existing design systems ("Design System",
+  "Samtah…") and the September FITWAY Claude Design projects are not Eclipse and are not used.
+
+## The Claude Design kit (2026-10-02)
+
+- **Peak-row note:** the three-line wrap at 721 and 768 AR is accepted for now (*user 2026-10-02*).
+- **Design-system route:** `/design-sync` targets a built React package (`dist/`); Eclipse is plain HTML/CSS/JS, so a
+  Claude Code sync would mean re-implementing it in React. The user chose "New design system → Using Claude" (upload
+  files and describe it) in the desktop app.
+- **Kit:** `D:\fitway-temp\owner-r04\claude-design-kit\` (local, untracked), assembled by a fresh agent from
+  `06e0c41`: `style.css`, `components.css`, `reports.css`, `DO-NOT.md` (byte-identical copies), Readex Pro woff2 + OFL,
+  eight full-page screenshots (Daily and Reports AR 390/768/1440, Reports EN 1440, components AR 1440) and
+  `DESCRIPTION.md` (2,503 characters, every value checked against the copied CSS; the coordinator reworded two lines).
+- **Next:** the user creates the design system and opens a chat from Output → Design with it; Claude Design output
+  stays reference until built in E/. Then Reports' states (K-02, K-38) and the step-4 reviewer.
+
+## Claude Design paused, and the resume point for a new session (2026-10-02)
+
+- **Claude Design:** the design system "FITWAY Eclipse" exists in the user's Claude Design
+  (`https://claude.ai/artifact/NKC9SHykzthuxQuHWg4YPn`): its colour, light, spacing, radius and shadow tokens match the
+  CSS exactly (checked by script); it has four components (Button, StatCard, Badge, DayTable). Unverified suspicions,
+  left open: its generated `tokens.css` declares four per-file families at 400 instead of one "Readex Pro"; DayTable's
+  no-readings row and gap sentence copy `components.html`'s wrong caption `--ink-3` style (defect 4); its README says
+  rows are 36 px, the component 48 px. **The user paused it** (*user 2026-10-02*): for precise, rule-bound state work
+  it doubles the work (design there, build and measure here) and its output needs checking each time. It stays
+  available for open visual questions. The verifier launched on it was stopped before reporting.
+- **Working method from here** (*user 2026-10-02*): as before (fresh agent per task, the coordinator's context small,
+  exact renders for the user's picks), and Codex takes many of the fixes and edits, at `xhigh` reasoning, judged per
+  round as an eval (brief rows, held-out rows, failure cause).
+- **State:** `owner-followup-r04-build` at `06e0c41` (decisions 15-17), pushed; nothing running.
+- **Next work, in order:**
+  1. Reports' states (K-02): loading, page-level closed, unavailable, error and the not-current statuses, at 1440, 768
+     and 390 (320 for K-38), AR and EN; K-38 (the 320 AR phone title row, «التقارير» overflows its box and moves
+     25.9 px when the status badge changes) closes with it. Fresh designer, the user picks, then a builder (or Codex
+     for frozen edits).
+  2. The deferred defects 3-8 (defects 1 and 2 closed at `06e0c41`): good Codex candidates with frozen targets.
+  3. The step-4 reviewer, then the user.

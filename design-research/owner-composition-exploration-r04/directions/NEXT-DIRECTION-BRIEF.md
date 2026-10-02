@@ -1,15 +1,18 @@
 # Next Owner direction — agreed brief
 
 Agreed with the user on 2026-09-24 in discussion. Concept-only, with synthetic data. No direction
-is selected. The first attempt from this brief is `backlight/`, and the lighting test is
-`light-study/`. The user's decisions after each are in "Round 2" and "Round 3" at the end. Where a
-later round differs from an earlier section, the later round wins.
+is selected. The attempts from this brief are `backlight/`, `light-study/`, and `eclipse/`, the
+current one. The user's decisions after each are in "Round 2" to "Round 7", in order. Where a later
+round differs from an earlier section, the later round wins, and each passage a later round
+replaced carries an italic note naming its replacement. Follow the replacement, not the passage.
 
 ## Scope
 
 - One direction, **Daily page only**, **desktop 1440×900**. Arabic RTL and English LTR frames.
-- One designer subagent. Preferred: `owner-direction-designer` (Opus, `xhigh`); it loads in a new
-  session. The coordinator personally inspects the frames before showing the user.
+  *Widened by "The design-phase plan" (2026-09-30): every Owner screen at 1440, 768 and 390, then Staff and Public.*
+- One writer subagent at a time, each followed by a fresh independent verifier (Round 7, "Work
+  plan"). `CLAUDE.md` lists the Owner-direction agent definitions and their effort levels. The
+  coordinator personally inspects the frames before showing the user.
 - Folder: `design-research/owner-composition-exploration-r04/directions/<name>/`.
 
 ## What the user wants
@@ -163,7 +166,8 @@ What the flat screens show:
    and one small tooltip. Remove the band ruler, the capacity line, the dotted "still ahead"
    texture, and the heavy legend row.
 6. **Line points.** Plot the reading every 30 minutes, plus the true peak as its own point. The
-   full minute detail stays available on hover and in "View details".
+   full minute detail stays available on hover and in "View details". *Superseded by Round 3 §4
+   and Round 4 §1: the line is a centered 30-minute average, with the true peak as its own marker.*
 7. **Missing span.** The line ends with a round cap and resumes after the gap. There are no
    vertical lines inside the gap, only a short dotted mark on the time axis, with the explanation
    on hover. There is no full-height hatched column, and the line never bridges the gap.
@@ -179,7 +183,7 @@ What the flat screens show:
 12. **Deferred to polish:** keyboard focus names on rail icons, and fine precision in the details
     panel (such as the weekly heatmap's current-hour mark).
 
-### Lighting test (next step)
+### Lighting test (done: `light-study/`, see Round 3)
 
 The test settles the red light before a whole page is built.
 
@@ -232,6 +236,7 @@ vertical lines, and the missing-span treatment (round caps and a short dotted ma
 4. **Line = a 30-minute moving average, plus the true peak.**
    - **The line:** it shows the 30-minute moving average and is drawn smooth and
      shape-preserving. Say what it is in plain words, for example «متوسط كل 30 دقيقة».
+     *Refined by Round 4 §1: the average is centered.*
    - **The peak:** a separate marker shows the true highest reading (62 at 6:29 PM), with its
      label. The line itself does not need to touch it.
    - **Truth rules still hold:** the line still stops at both edges of the missing span and at
@@ -251,7 +256,7 @@ vertical lines, and the missing-span treatment (round caps and a short dotted ma
    either. The user had `SPEC.md` amended on 2026-09-24 so that the figure is named as entries
    («مرات الدخول» / "Entries"), never as members or unique visitors.
 
-### Next step: the full Daily page
+### Next step: the full Daily page (done: `eclipse/`, see Round 4)
 
 Build the full Daily page at desktop 1440×900, in Arabic RTL and English LTR, from all rounds of
 this brief:
@@ -373,7 +378,13 @@ changes them live:
 
 It works from `file://`. The user tunes the lights, and the chosen values become the defaults.
 
+*The lights are now tuned: the user's values in `:root` do not change (Round 6 §10). Round 6 §9
+and Round 7 changed the tuner's controls.*
+
 ### 4. Motion (after the lights are settled)
+
+*Superseded by Round 6 (the motion reset) and Round 7 §4 (the first-open intro). The user judged
+this motion cliché; it stays here only as the record of what was tried.*
 
 The user has only seen still frames so far, and wants the motion to be excellent too. Motion
 must stay truthful:
@@ -438,6 +449,11 @@ The coordinator's research sources include:
    - The page appears complete: no card stagger or rise, no line draw, no light entrance, no wash drift, no
      end-point or peak entrance.
    - Content is never hidden while fonts load.
+   - *Amended by Round 7 §4 (a first-open intro) and by "Decisions on the step 3 intro" §1 (on a
+     first open, the numbers are hidden for at most 200 ms while fonts load). Further amended by the user's decisions
+     of 2026-09-29 and 2026-09-30, recorded in the r04 activation handoff: a font that arrives late shows the fallback
+     at the first paint and swaps to Readex Pro before the intro starts, and the intro never moves. When the font files
+     are slow, Chromium's first-paint hold of about 100 ms (measured 108-124 ms) is accepted.*
 2. **Lights are static, always.**
    - Remove the lights' entrance, the pointer-follow light, and the crowd-dependent light option.
    - The user sees no value in the crowd-dependent light, and it is not visible anyway.
@@ -455,7 +471,8 @@ The coordinator's research sources include:
 5. **Chart hover snaps to half-hour stops.**
    - The stops are aligned with the drawn line, from opening to 1:00 AM.
    - The tooltip shows the time, the line's own value at that stop (the centred average, never the raw
-     minute), the crowd level, and the usual value.
+     minute), the crowd level, and the usual value. *Except at the latest-reading stop, which shows the
+     latest reading (Round 7 §1).*
    - **Extra stops:** the true peak (62 at 6:29 PM) and now (the latest reading).
    - **The marker always sits on what it describes:** on the line, or on the peak marker.
    - **Missing span:** it has no normal stop. It is either skipped or shown as one clearly labelled
@@ -464,6 +481,8 @@ The coordinator's research sources include:
    - **Keyboard:** the arrow keys step one stop.
    - **Detail:** minute-level detail stays in "View details".
 6. **A new hover marker.**
+   - *Superseded by Round 7 §2–§3 and "Decisions after step 1": the marker is form B, the hollow ring,
+     and it follows with the clip-derived easing, settling in about 400 ms.*
    - The user wants a better marker than the current ring in the chart, with pleasing motion as it moves.
    - The designer proposes its form. It must feel precise and premium in FITWAY red and chalk, not a
      generic ring.
@@ -476,7 +495,8 @@ The coordinator's research sources include:
    - The live pulse stays, because it carries "live", but it becomes calmer and subtler. There is none when
      delayed.
 8. **Other motion.**
-   - Tooltip and guide motion stays short (≤ 150 ms).
+   - Tooltip and guide motion stays short (≤ 150 ms). *Replaced by Round 7 §3 for the marker, the
+     guide, and the tooltip.*
    - The rail keeps its transform-only open and may be quicker.
    - Nothing else animates.
 9. **Tuner.**
@@ -498,17 +518,25 @@ The coordinator's research sources include:
   3. Access: staff PINs, with provision, rotate, and deactivate.
   4. Settings: capacity, thresholds, hours, time zone, feed geometry, and transparency wording.
   5. Operations: sensor and feed health.
-  6. Mobile: 390 px, 320 px, and 200% reflow.
+  6. Mobile: 390 px, 320 px, and 200% reflow. *Replaced by "The design-phase plan" (2026-09-30): each screen is
+     designed at every size in its own round, and Staff and Public follow the Owner screens.*
 
   The table, form, and dialog system is designed early, on the first screen that needs it, because it
   shapes the rest. The user welcomes proposals to merge screens.
-- **Merge proposals from the coordinator, pending the user's decision:**
+- **Merge proposals from the coordinator** (*agreed in Round 7 §6 and confirmed on 2026-09-27*):
   - **Contextual history:** keep the full Activity Log page, but also show each screen's own recent
     history in place. For example, Access shows its latest PIN changes and Settings its latest changes.
   - **Operations as a header status:** make Operations a persistent status in the header, for data
     freshness and sensor health, that opens a detail page. It would then need no primary rail slot, since
     the owner needs it mainly when something is wrong.
   - **Daily and Reports:** keep them separate. They answer different questions: now against patterns.
+- **Style (user, 2026-09-28):**
+  - The remaining screens follow the Daily page's current Eclipse style. Their content may change, as the next point
+    says, but their look does not.
+  - The direction becomes the reference only after the user approves all of it, including its motion, having seen
+    it.
+  - *Clarified on 2026-09-30 ("The design-phase plan", §2): the visual language carries over, not the Daily page's
+    composition. Each screen decides its own arrangement and where the red light goes, if anywhere.*
 - **Content freedom:**
   - The remaining screens need not copy the production screens' current content or structure. The
     designer proposes what is most useful to the owner and what should change.
@@ -522,11 +550,15 @@ The coordinator's research sources include:
   - This needs a formal, human-approved authority record later. That record also confirms the exact
     scope: Owner only, or Staff and Public too. It supersedes ADR-007 and ADR-009 where it applies, and
     updates the register and the manifest.
+    *Scope decided on 2026-09-30: Staff and Public are redesigned too, and the record covers all three surfaces
+    ("The design-phase plan").*
   - Nothing is withdrawn yet.
 - **Production:**
   - The user will use Codex to implement production.
   - The coordinator will later prepare the plan and the environment for Codex: the authority record,
     task packets, reference frames and specifications, and verification routes.
+  - *Refined on 2026-09-30: Codex starts with one bounded part as a pilot, which measures how faithfully it carries
+    the reference into production, before the rest ("The design-phase plan", step 11).*
 
 ## Round 7 — after the Round 6 review (agreed 2026-09-25)
 
@@ -560,6 +592,7 @@ The user reviewed Round 6 in the browser.
      - the peak and missing-span stops get a fitting variant of each form.
    - **Choosing:** a tuner switch changes between A and B on the real page, and an enlarged side-by-side
      comparison is rendered. A third form (a lit segment of the line) was dropped by the user.
+   - *Settled in "Decisions after step 1" §1: form B, with A's missing-span variant. Form A is removed.*
 3. **Marker motion: a smooth follow.** This replaces the Round 6 glide of 120–150 ms, and the ≤ 150 ms limit in
    Round 6 §8 for the marker, guide, and tooltip.
    - The marker chases its target along the curve itself, with a fast start and a soft landing, settling in
@@ -577,7 +610,8 @@ The user reviewed Round 6 in the browser.
      - The numbers roll into place with the same digit roll.
      - The line draws once, from opening to now, and then the end point and the peak appear.
    - **Length:** short, about 1 s or less in total. The numbers settle first and quickly, because they answer
-     the owner's first question. The line takes longer, because it tells the day's story.
+     the owner's first question. The line takes longer, because it tells the day's story. *The user later
+     approved a slower intro, about 1.17 s in total ("Decisions after the step 3 report").*
    - **The end state** is the still page, pixel for pixel. There is no intro with reduced motion or
      `?motion=off`.
    - **Tuner:** an "intro speed" control and a "replay intro" button. The tuner is a tool, not part of the
@@ -664,6 +698,9 @@ tried both.
 
 ### Screen plan (user-agreed)
 
+*Superseded by "The design-phase plan" (2026-09-30): each screen is designed at every size in its own round, and the
+tests come once, after every screen and size. The early mobile check below was done in the Reports round (`31a40d6`).*
+
 - **Desktop first:** finish every screen in "After the Daily page" at desktop, and review them together.
 - **One early mobile check:** when the table, form and dialog system is designed, on the first screen that needs it
   (Reports), check quickly that the system works at 390 px and 320 px. This is a feasibility check of that system
@@ -678,7 +715,8 @@ tried both.
 A small separate round after the intro, so that the intro's verifier judges the intro alone and no two writers share
 `capture.mjs`:
 
-1. **Tooltip width (pending the user's before/after review):** in English the number still moves about 9 px on screen
+1. **Tooltip width (reviewed 2026-09-27; the user chose the narrower width, see "Decisions after the step 3 report"):**
+   in English the number still moves about 9 px on screen
    between the peak and 7:00 PM. The tooltip widens (108 to 117.4 px) and is anchored at the hairline. The proposal is
    one fixed tooltip width, the widest content in either language, so the number never moves. The user will judge it
    from a before/after comparison before it is kept.
@@ -698,7 +736,183 @@ A small separate round after the intro, so that the intro's verifier judges the 
 2. **Session restore is a known limit.** When Chrome's "continue where you left off" restores a tab's session storage
    after a restart, the intro probably does not replay. The browser treats that as the same session. This is accepted
    and no workaround is added.
-3. **Pending the user's answer (asked 2026-09-26):** with the 200 ms cap, a cold first visit fetches the Google
-   fonts in about 0.4-1 s, so the intro plays only once the browser has the fonts cached, which means later new tabs.
-   The coordinator recommends keeping 200 ms for the concept. Production will host its own fonts, and the cap can be
-   revisited then. The alternative is a higher cap, such as 500 ms, which hides the numbers longer on slow networks.
+3. **The 200 ms cap stays (user decision, 2026-09-27; asked 2026-09-26).** With the cap, a cold first visit fetches
+   the Google fonts in about 0.4-1 s, so the intro plays only once the browser has the fonts cached, which means later
+   new tabs. The user left the choice to the coordinator, who keeps 200 ms for the concept. Production will host its
+   own fonts, and the cap can be revisited then. The rejected alternative was a higher cap, such as 500 ms, which
+   hides the numbers longer on slow networks.
+
+### Decisions after the step 3 report (user-agreed 2026-09-27)
+
+- **The follow-up round goes ahead** with all three items of "Follow-up after step 3". The fixed tooltip width is
+  still kept only after the user's before/after review.
+- **Tooltip width (user review, 2026-09-27):** the first fixed width, 138 px, was set by the missing-span stop, which
+  shows no number. It made ordinary tooltips 20-30 px wider, with empty space at their end, and moved 7:30 AM and
+  11:00 PM to the other side. The user chose the coordinator's proposal instead: the widest tooltip that shows a
+  number sets the width (about 127 px, set by the latest reading), and only the missing-span stop may grow beyond it.
+  Placement uses each box's real width, so the grown box keeps its 12 px gap from the hairline. The number still
+  never moves. The user sees the same before/after comparison before it is kept.
+- **Kept, then made to follow the chart (user decisions, 2026-09-27):** the user kept 127 px from the before/after.
+  Independent verification then found that 127 px fits only the page's 7:42 PM snapshot: later readings lengthen the
+  latest-reading time ("10:42 PM", "12:12 AM"), about 131 px in English after 10 PM and about 141 px in Arabic after
+  midnight, and the Arabic «شديد الازدحام» needs about 132 px, so the number moved again. The user chose the
+  coordinator's proposal over a fixed 144 px and over keeping 127 px: the same rule is measured from the chart's
+  current stops whenever they change (first render, a new reading, a state change, a resize, a language switch, the
+  fonts loading). Within one snapshot the width never changes, so the number never moves between stops at any hour;
+  it is 127 px for most of the day and wider only late at night.
+- **The box never covers "now" (user-agreed 2026-09-27).** A second independent verification found that a stop after
+  now near the end of the day flips toward now and covers today's end point: from about 8:40 PM with the wider boxes,
+  and already in `622cd0b` from about 10:40 PM. The coordinator's first idea, lifting the box over the end point, was
+  dropped after inspection, because in Arabic it would cover the recent line instead and float far from its own point.
+  The agreed rule:
+  - The box keeps a distance of at least 11 px from the end point's centre (its 9 px halo plus 2 px).
+  - Every placement that already satisfies this stays exactly as it is.
+  - Only where the current placement covers the end point does the box sit centred above its own point (below if
+    there is no room), and, only if still needed, shift vertically by the smallest amount that clears it.
+  - Changes of placement ease on the follow's curve.
+  - The latest-reading tooltip, which sits over the last stretch of the line by approved design, is unaffected.
+- **The screen plan is confirmed:** desktop first, in the order of "After the Daily page", with the one early mobile
+  check at 390 px and 320 px on Reports.
+- **Merge proposals:** the user answered "excellent" to a summary that listed the two merge proposals (contextual
+  history, and Operations as a header status) as pending. Asked again, the user confirmed both explicitly on
+  2026-09-27: each screen shows its own recent history in place, beside the full Activity Log page, and Operations
+  becomes a persistent header status that opens a detail page, with no primary rail slot.
+- **The intro is too fast (user review, 2026-09-27).** The user opened the page and finds the intro "very fast"; it
+  should be a little slower. The user tried the tuner's «سرعة المقدمة» "Intro speed" at the coordinator's suggested
+  **0.70×** and approved it. The designed intro becomes 0.70× of today's timing: every intro duration and delay is
+  divided by 0.70, so the whole intro lasts about 1171 ms instead of 820 ms (the answers about 400 ms instead of
+  280 ms, the line about 914 ms instead of 640 ms). The easing curves, the order and every rule of "Decisions on the
+  step 3 intro" stay as they are. The new timing is the tuner's 1× (the default), so the tuner still spans 0.5× to
+  2× around it. This is done in a separate round after the follow-up round, because both change `eclipse/` and each
+  round has one writer.
+
+### The tooltip moves to a top lane (user decision, 2026-09-28)
+
+**Why.** The tooltip floated freely near its point, and every repair fixed one case and broke another. Most failures
+came near "now", which moves with every reading. The coordinator judged that the floating concept, not the code, was
+at fault. The user agreed, and does not want more time spent patching it while the design is still being built.
+
+**The decision.** The same box, with the same content and the start-aligned layout approved at `5b9bae7`, lives in a
+fixed lane at the top of the plot.
+- **Sideways only:** the box moves only sideways, centred on its stop and stopped at the plot's edges.
+- **The connector:** a thin line joins the box to its ring.
+- **The reserved lane:** no line, ring, marker, label or "now" ever enters it.
+
+**Supersedes:**
+- every floating-placement rule above: side, flip, clamp, above and below;
+- the 12 px gap from the hairline;
+- "never cover now" as a placement cascade (the lane satisfies it by construction);
+- "the latest-reading tooltip sits over the last stretch of the line";
+- round P's brief, which is withdrawn.
+
+**Unchanged:**
+- the box's look and content;
+- the width rule measured from the chart;
+- the follow's curve and speed, now horizontal only;
+- text changing at once;
+- the intro, and every truthfulness rule.
+
+**Rejected alternatives:**
+- **A fixed readout beside the chart title:** the user found it too far from the eye.
+- **The user's own variant, a box that rides just above the lines under it:** at 10:00 PM with the 11:00 PM stop it
+  reproduces the placement the user had rejected, over "now". Fixing that needs the sideways-shift rules again. The
+  user chose the lane alone.
+
+## The design-phase plan (user-agreed 2026-09-30)
+
+The user reviewed Reports at `31a40d6` and found it beautiful and excellent: the designer understood the direction and
+built the page whole, almost in one attempt. There is room to improve, above all on the phone and the other sizes.
+This plan replaces "Screen plan (user-agreed)" and the "Mobile" step of "After the Daily page".
+
+### 1. The goal, as the user confirmed it
+
+- Eclipse becomes the single design reference for FITWAY's interfaces, replacing Paper and the older designs. Whoever
+  builds from it later, Codex in production included, builds from one clear reference and never guesses.
+- To be that reference, it is complete: every screen, at every size, in every state. An incomplete reference leaves
+  the builder to improvise, and that is what went wrong before.
+- The phone is designed with each screen from the start, so the designer places the content well once instead of
+  patching it later.
+- **The language carries over; the composition does not.** Dark, glass, the FITWAY red light, Readex Pro, the calm
+  premium feel and the finish stay. Each screen composes its own page and decides where the light goes, if anywhere;
+  the Daily page's arrangement, such as which card is lit, is not a template.
+- A written spec sheet turns the design from pictures into exact rules and numbers.
+- The tests come at the end, once every screen and size is settled, so nothing that will still change gets tested.
+- Every task goes to a fresh agent with a small context.
+- The user sees and discusses each screen before the next one starts.
+
+### 2. Sizes
+
+- **Designed:** desktop 1440×900, tablet 768×1024 and phone 390×844, the Product anchors.
+- **Checked only, so nothing breaks:** 320 px, 1024 px and 200% zoom reflow.
+
+### 3. Navigation and header across sizes (user-agreed)
+
+- **Desktop:** unchanged: the slim icon rail.
+- **Tablet (768):** the same slim rail. Pressing the logo opens it over the content, and the content reflows to two
+  columns.
+- **Phone:** the rail becomes a glass bar at the bottom with five items: Daily, Reports, Activity Log, Access and
+  Settings. Each item has a short label under its icon, arranged neatly.
+  - The header becomes compact: the title, the Operations status as a small badge that opens its details, and a
+    menu holding the language and sign out.
+  - Page controls, such as Reports' period, sit under the title at full width.
+  - No hamburger menu: it hides the navigation and adds a tap, and five sections fit at the bottom even at 320 px.
+- The designer builds it in step 3, and the user sees it before it is adopted.
+
+### 4. The spec sheet
+
+- It is written from the pages as built, and grows with every screen.
+- **Four safeguards,** so that nothing weak becomes a rule:
+  1. before it is written, a fresh design reviewer critiques the built pages, and the user picks which findings are
+     right;
+  2. every entry is one of three kinds: a **rule** to follow, a **page composition** that stays free, or a **known
+     issue** that is never copied and has a round that fixes it (for example, the Daily page's 38 px buttons are an
+     issue; the rule is 44 px);
+  3. every number is measured from the rendered page and checked against `DESIGN_GUIDE.md`, Product and the
+     accessibility rules. What fails is recorded as a known issue, not as a rule;
+  4. the user reviews it. It stays a draft until the end, and before the authority record the tests compare it with
+     the final pages.
+- **Structure:** shared foundations for all three surfaces, then a section for each surface.
+- A page that renders every component in each of its states goes with it.
+- It becomes a reference only through the authority record in step 10.
+
+### 5. The steps
+
+1. A design review of Daily and Reports. The user picks from its findings.
+2. The spec sheet, first version, with its components page.
+3. Daily at every size and in every state, including loading. This round settles the navigation and header for every
+   screen. It also takes in the 1024 px card-header overflow, the `#busy-note` jump on narrow screens, and 44 px
+   controls (moved here from the polish, user decision 2026-09-30, because the phone needs 44 px targets anyway).
+4. Reports at every size, with the review findings the user picked.
+5. The other Owner screens, one at a time, each at every size and in every state: Activity Log, then Access, then
+   Settings, then Operations.
+6. Staff, with the PIN sign-in screen. It reuses much of the Owner surface.
+7. Public. Product keeps it mobile-first, light, and free of any control or personal data, so its design starts from
+   the phone.
+8. The final polish across all screens: consistency, details and motion, which show only when every screen sits side
+   by side.
+9. The tests and the independent verification: a fixed suite across every screen, size and language, with other
+   browsers checked. Codex makes the repairs.
+10. The authority record: an ADR that makes Eclipse the reference for all three surfaces and withdraws Paper, with the
+    final spec sheet and named reference frames for every screen and size. The user approves it.
+11. Production: Codex starts with one bounded part as a pilot, measuring how faithfully it carries the reference into
+    production, before the rest.
+
+**Every design round:**
+- a fresh designer;
+- then a fresh design reviewer who proposes improvements;
+- the coordinator inspects the frames;
+- the user decides;
+- whatever is new is added to the spec sheet.
+
+Each round ends in a state the user is happy with, so the final polish refines and does not repair.
+
+### 6. Process notes
+
+- Staff and Public lie outside this milestone's scope, which is the Owner surface. Each opens as its own milestone
+  when the plan reaches it.
+- Between rounds, light checks stay:
+  - each designer proves that the earlier pages did not change;
+  - the coordinator inspects the frames before the user sees them.
+- The user's decisions on the Reports proposals:
+  - 44 px controls, as in step 3;
+  - no intro on Reports, and no rolling digits on a period change, both pending the user's final view in step 4.
