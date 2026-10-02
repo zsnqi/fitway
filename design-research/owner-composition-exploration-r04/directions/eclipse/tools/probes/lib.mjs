@@ -177,8 +177,14 @@ export async function startServer({ dir = E, port = PORT, variants = {}, behavio
     return close(cb);
   };
   await new Promise((done, reject) => {
-    server.once("error", reject);
-    server.listen(port, "127.0.0.1", () => { server.removeListener("error", reject); done(); });
+    const failed = (error) => {
+      if (error.code === "EADDRINUSE") {
+        error = Object.assign(new Error(`Port ${port} is busy; set PROBE_PORT=${port === 3178 ? 3179 : 3178} to choose another port.`), { code: error.code });
+      }
+      reject(error);
+    };
+    server.once("error", failed);
+    server.listen(port, "127.0.0.1", () => { server.removeListener("error", failed); done(); });
   });
   return server;
 }
@@ -272,7 +278,53 @@ export const overflowProbe = () => {
     if (el.closest("[hidden], dialog:not([open])")) continue;
     if (el.scrollWidth > el.clientWidth + 1) clipped.push({ el: el.className, overflow: el.scrollWidth - el.clientWidth });
   }
-  out.problems = clipped.slice(0, 20);
+  // Ranges measure actual text, including leftward RTL overflow that scrollWidth
+  // can miss. Accumulate visible text into every ancestor's own border box;
+  // element rectangles alone would also include unrelated non-text children.
+  const bounds = new Map();
+  const walker = document.createTreeWalker(document.body || de, NodeFilter.SHOW_TEXT);
+  const range = document.createRange();
+  while (walker.nextNode()) {
+    const node = walker.currentNode, parent = node.parentElement;
+    if (!node.textContent.trim() || !parent || parent.closest("script, style, template, [hidden], .sr-only, dialog:not([open])")) continue;
+    const cs = getComputedStyle(parent);
+    if (cs.visibility !== "visible" || cs.display === "none") continue;
+    range.selectNodeContents(node);
+    for (const r of range.getClientRects()) {
+      if (!r.width || !r.height) continue;
+      for (let el = parent; el; el = el.parentElement) {
+        const b = bounds.get(el);
+        if (b) {
+          b.left = Math.min(b.left, r.left); b.right = Math.max(b.right, r.right);
+          b.top = Math.min(b.top, r.top); b.bottom = Math.max(b.bottom, r.bottom);
+        } else bounds.set(el, { left: r.left, right: r.right, top: r.top, bottom: r.bottom });
+      }
+    }
+  }
+  const nameOf = (el) => {
+    const parts = [];
+    for (let current = el; current; current = current.parentElement) {
+      let part = current.localName;
+      if (current.id) { parts.unshift(`${part}#${CSS.escape(current.id)}`); break; }
+      const siblings = current.parentElement && [...current.parentElement.children].filter((sibling) => sibling.localName === current.localName);
+      if (siblings?.length > 1) part += `:nth-of-type(${siblings.indexOf(current) + 1})`;
+      parts.unshift(part);
+    }
+    return parts.join(" > ");
+  };
+  for (const [el, text] of bounds) {
+    const r = el.getBoundingClientRect();
+    if (!r.width || !r.height) continue;
+    // Glyph ascent/descent can exceed a deliberately tight line-height without
+    // overflowing the line. Measure the inline axis of the writing mode.
+    const vertical = /^(vertical|sideways)/.test(getComputedStyle(el).writingMode);
+    const spill = vertical
+      ? { left: 0, right: 0, top: r.top - text.top, bottom: text.bottom - r.bottom }
+      : { left: r.left - text.left, right: text.right - r.right, top: 0, bottom: 0 };
+    const textOverflow = Object.fromEntries(Object.entries(spill).map(([edge, amount]) => [edge, amount > 1 ? Math.round(amount * 100) / 100 : 0]));
+    if (Object.values(textOverflow).some((amount) => amount > 0)) clipped.push({ el: nameOf(el), overflow: Math.max(...Object.values(textOverflow)), textOverflow });
+  }
+  out.problems = clipped;
   return out;
 };
 export { geometryProbe } from "./geom.mjs";

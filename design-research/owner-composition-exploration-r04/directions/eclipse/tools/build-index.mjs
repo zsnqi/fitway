@@ -164,12 +164,11 @@ function scriptEntries(source) {
 						cursor = (tokens[cursor].end ?? cursor) + 1;
 					}
 					if (
-						token.value === "const" &&
 						identifier.test(name.value) &&
 						tokens[initializer - 1]?.value === "=" &&
 						isFunction(tokens, initializer, cursor)
 					) {
-						entries.push({ line: name.line, name: name.value, title: "function constant" });
+						entries.push({ line: name.line, name: name.value, title: token.value === "const" ? "function constant" : `function binding (${token.value})` });
 					}
 					if (tokens[cursor]?.value !== ",") break;
 					cursor++;
@@ -234,7 +233,7 @@ async function main() {
 		groups.push({ file, entries });
 	}
 	const lines = [
-		"Generated Eclipse navigation index: spec headings and row IDs, plus script functions, classes and function constants.",
+		"Generated Eclipse navigation index: spec headings and row IDs, plus script functions, classes and named function bindings (const, let, var).",
 		`From the repository root, regenerate: \`${command}\`; check: \`${command} --check\`.`,
 		"",
 		"Script top level includes each outer IIFE's body; nested helpers are excluded. Entries use source line numbers.",

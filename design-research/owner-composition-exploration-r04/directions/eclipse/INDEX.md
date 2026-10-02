@@ -1,4 +1,4 @@
-Generated Eclipse navigation index: spec headings and row IDs, plus script functions, classes and function constants.
+Generated Eclipse navigation index: spec headings and row IDs, plus script functions, classes and named function bindings (const, let, var).
 From the repository root, regenerate: `node design-research/owner-composition-exploration-r04/directions/eclipse/tools/build-index.mjs`; check: `node design-research/owner-composition-exploration-r04/directions/eclipse/tools/build-index.mjs --check`.
 
 Script top level includes each outer IIFE's body; nested helpers are excluded. Entries use source line numbers.
@@ -810,6 +810,7 @@ Script top level includes each outer IIFE's body; nested helpers are excluded. E
 - tuner.js:127 — load — function
 - tuner.js:128 — snapshot — function
 - tuner.js:139 — el — function constant
+- tuner.js:186 — syncMotion — function binding (let)
 - tuner.js:273 — syncRow — function
 - tuner.js:279 — syncPresets — function
 - tuner.js:283 — sync — function

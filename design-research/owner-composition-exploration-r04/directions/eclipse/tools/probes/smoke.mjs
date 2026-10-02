@@ -35,7 +35,7 @@ try {
   }
   await writeJson("smoke.json", result);
   console.log("PASS Eclipse probe kit: 4 Arabic 1440x900 frames (file + HTTP); overflow, geometry, accessibility each ran once");
-} catch (error) { console.error(`FAIL Eclipse probe kit: ${error.stack}`); process.exitCode = 1; }
+} catch (error) { console.error(`FAIL Eclipse probe kit: ${error.code === "EADDRINUSE" ? error.message : error.stack}`); process.exitCode = 1; }
 finally {
   if (browser) await browser.close();
   if (server) await new Promise((done, reject) => server.close((error) => error ? reject(error) : done()));

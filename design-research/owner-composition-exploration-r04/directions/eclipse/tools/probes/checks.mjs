@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { mkdtemp, mkdir, writeFile, readFile, readdir, symlink, unlink } from "node:fs/promises";
 import { resolve, relative } from "node:path";
 import { execFileSync, spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import { E, OUT, WORKTREE, ORIGIN, SRV, SERVER_LOG, startServer, outputPath, assertOutsideGit, armFp, holdProof, launch, newPage, holdBySubset, introSettled } from "./lib.mjs";
 
 const exports = Object.keys(await import("./lib.mjs")).sort();
@@ -42,6 +43,12 @@ const saved = { ...SRV };
 let server, browser;
 try {
   server = await startServer({ variants });
+  await assert.rejects(startServer(), (error) => error.code === "EADDRINUSE" && error.message.includes("PROBE_PORT") && error.message.includes(String(server.address().port)));
+  const busy = spawnSync(process.execPath, [fileURLToPath(new URL("./smoke.mjs", import.meta.url))], { cwd: WORKTREE, env: process.env, windowsHide: true, encoding: "utf8", timeout: 10000 });
+  assert.equal(busy.status, 1, busy.stderr);
+  assert.equal(busy.stderr.trim().split(/\r?\n/).length, 1, busy.stderr);
+  assert.match(busy.stderr, new RegExp(`^FAIL Eclipse probe kit: Port ${server.address().port} is busy; set PROBE_PORT=`));
+  console.log(`PASS busy-port exit=1: ${busy.stderr.trim()}`);
   for (const name of Object.keys(variants)) assert.equal(await (await fetch(`${ORIGIN}/${name}/`)).text(), `<title>${name}</title>`);
   let response = await fetch(`${ORIGIN}/index.html`);
   assert.equal(response.status, 200);

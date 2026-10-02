@@ -5,10 +5,11 @@ screenshots, HTTP variants, font/cache experiments and reusable measurements.
 No dependencies are added. Playwright comes from `@playwright/test` through
 `createRequire` on the enclosing worktree's `package.json`.
 
-Run from PowerShell (the absolute path works regardless of the current directory):
+Run from PowerShell anywhere inside any worktree of this repository (Git resolves
+that worktree's root; no worktree name is hard-coded):
 
 ```powershell
-$env:TEMP='D:/fitway-temp'; $env:TMP='D:/fitway-temp'; & 'C:/Program Files/nodejs/node.exe' 'D:/Projects/fitway-worktrees/owner-r04-nav/design-research/owner-composition-exploration-r04/directions/eclipse/tools/probes/smoke.mjs'
+$env:TEMP='D:/fitway-temp'; $env:TMP='D:/fitway-temp'; & 'C:/Program Files/nodejs/node.exe' (Join-Path (& git rev-parse --show-toplevel) 'design-research/owner-composition-exploration-r04/directions/eclipse/tools/probes/smoke.mjs')
 ```
 
 This opens Daily and Reports in Arabic at 1440×900, DPR 1, with reduced motion,
@@ -43,7 +44,19 @@ serves explicit variant folders at `/base/` and `/new/`. `/` and `/current/`
 serve `PROBE_ECLIPSE`. `urlOf(variant, query, page)` selects a variant, and
 `open(browser, { transport: 'file' | 'http', ... })` selects a transport.
 All servers use one implementation; `serve(dir, port, { cache })` is the
-Reports-compatible entry point. Bind failures reject instead of hanging.
+Reports-compatible entry point. Bind failures reject instead of hanging. A busy
+port exits the smoke run non-zero with one error line naming the port and a
+`PROBE_PORT` alternative.
+
+`overflowProbe()` retains the original clipping, class-specific and viewport
+checks, and also measures rendered text against every containing element's own
+border box. Text spills greater than 1 CSS pixel are named by a unique selector,
+with `textOverflow` amounts in CSS pixels for left/right (horizontal writing) or
+top/bottom (vertical writing) and `overflow` as the largest amount. RTL text is
+measured by its rendered bounds. Results are not capped. Intentional `.sr-only`
+text and hidden content are excluded; glyph ascent/descent beyond a tight
+line-height is not an inline text spill. Generated pseudo-element text and native
+input values do not have DOM text ranges.
 
 `SRV` retains `cond` (`false`, `true`, `lm`, `etag`), `fontHold` (milliseconds,
 subset-to-milliseconds map, or `{ afterFp: milliseconds }`), `scriptDelay`,
@@ -56,7 +69,8 @@ The `sleep()` export is a font/script simulation delay, not a job monitor.
 Harness contract checks (fixtures remain in the output folder):
 
 ```powershell
-& 'C:/Program Files/nodejs/node.exe' 'D:/Projects/fitway-worktrees/owner-r04-nav/design-research/owner-composition-exploration-r04/directions/eclipse/tools/probes/checks.mjs'
+& 'C:/Program Files/nodejs/node.exe' (Join-Path (& git rev-parse --show-toplevel) 'design-research/owner-composition-exploration-r04/directions/eclipse/tools/probes/checks.mjs')
+& 'C:/Program Files/nodejs/node.exe' (Join-Path (& git rev-parse --show-toplevel) 'design-research/owner-composition-exploration-r04/directions/eclipse/tools/probes/overflow-checks.mjs')
 ```
 
 ## Exports (one line each)
@@ -98,7 +112,7 @@ Harness contract checks (fixtures remain in the output folder):
 - `holdProof(log, spec)`: require an observed adequately held font for every named subset; font library corrected.
 - `med(values)`: upper median of non-null/non-NaN numbers; font library.
 - `rng(values)`: median and min–max display string; font library.
-- `overflowProbe()`: browser-side Reports/Daily spill/clipping measurement; Reports library.
+- `overflowProbe()`: browser-side page-wide text spill plus Reports/Daily clipping/viewport measurement; Reports library extended.
 - `geometryProbe()`: browser-side Daily plot, tooltip and top-mark geometry; lane `geom.mjs` extracted.
 - `accessibilityProbe(page, options)`: Daily ARIA snapshots, keyboard/readings and label-change control; lane `a11y.mjs` extracted.
 
