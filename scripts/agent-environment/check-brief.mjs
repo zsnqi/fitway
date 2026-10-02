@@ -1,8 +1,9 @@
-import { readFile, stat, writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { readGit } from "./git-context.mjs";
+import { createPathReferenceResolver, exists } from "./path-reference.mjs";
 
 const ENVIRONMENT_PATH = "docs/agent-context/briefs/ENVIRONMENT.md";
 const START = "<!-- environment:start v1 -->";
@@ -61,32 +62,6 @@ export function parseBriefArgs(inputArgs) {
 	}
 	if (!options.briefPath) throw new Error("A brief path is required");
 	return options;
-}
-
-function pathReference(value) {
-	const normalized = value.trim().replaceAll("\\", "/");
-	if (
-		/<[^>]*>/.test(normalized) ||
-		/^v?\d+\.\d+(?:\.\d+)?(?:[-+][\w.-]+)?$/.test(normalized) ||
-		/^D:\/fitway-temp(?:\/|$)/i.test(normalized) ||
-		/^(?:pnpm|npm|node|git|npx|powershell|pwsh)\s/i.test(normalized) ||
-		/^[a-z][a-z\d+.-]*:\/\//i.test(normalized)
-	)
-		return null;
-	const match = normalized.match(/^(.*?)(?::(\d+))?(?:\s+§"([^"]+)")?$/);
-	const file = match[1];
-	// Inline commands, hashes, roles and API routes such as `/api` are not file references.
-	if (!file.includes("/", file.startsWith("/") ? 1 : 0)) return null;
-	return { file, line: match[2] ? Number(match[2]) : null, heading: match[3] };
-}
-
-async function exists(absolute) {
-	try {
-		return await stat(absolute);
-	} catch (error) {
-		if (error.code === "ENOENT" || error.code === "ENOTDIR") return null;
-		throw error;
-	}
 }
 
 function headings(text) {
@@ -220,15 +195,13 @@ async function validateWorktree(text, report, git) {
 
 async function validateReferences(text, worktree, repositoryRoot, report, git) {
 	const source = withoutComments(text);
+	const resolver = createPathReferenceResolver(worktree, git);
 	const references = [];
 	for (const span of codeSpans(source)) {
 		const line = lineAt(text, span.index);
-		const lineStart = source.lastIndexOf("\n", span.index) + 1;
-		if (source.slice(lineStart, span.index).startsWith("- **Worktree:**"))
-			continue;
 		const tail = source.slice(span.index + span[0].length);
 		const after = tail.match(/^\s*§"([^"]+)"/);
-		const reference = pathReference(span[2]);
+		const reference = await resolver.reference(span[2]);
 		if (!reference) continue;
 		references.push({
 			...reference,
@@ -242,7 +215,6 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 			.filter((reference) => reference.isNew)
 			.map((reference) => path.resolve(worktree, reference.file)),
 	);
-	let trackedFiles;
 	for (const reference of references) {
 		const { lineNumber: line, heading } = reference;
 		const wildcard = /[*?]/.test(reference.file);
@@ -266,16 +238,7 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 		}
 		if (!details) {
 			const inCommandRepository = path.resolve(repositoryRoot, reference.file);
-			let suggestion = "";
-			if (!wildcard && !path.isAbsolute(reference.file)) {
-				trackedFiles ??= git(worktree, ["ls-files", "-z"])
-					.split("\0")
-					.filter(Boolean);
-				const suffix = `/${path.posix.normalize(reference.file)}`;
-				const matches = trackedFiles.filter((file) => file.endsWith(suffix));
-				if (matches.length === 1)
-					suggestion = `; tracked suffix match: ${path.resolve(worktree, matches[0])}`;
-			}
+			const hint = resolver.missingPathHint(reference.file);
 			if (
 				!path.isAbsolute(reference.file) &&
 				(await exists(inCommandRepository))
@@ -283,14 +246,10 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 				report(
 					"B1",
 					line,
-					`drift: missing ${absolute} in worktree ${worktree}; present at ${inCommandRepository} in command repository ${repositoryRoot}${suggestion}`,
+					`drift: missing ${absolute} in worktree ${worktree}; present at ${inCommandRepository} in command repository ${repositoryRoot}${hint}`,
 				);
 			else
-				report(
-					"B1",
-					line,
-					`missing path in ${worktree}: ${absolute}${suggestion}`,
-				);
+				report("B1", line, `missing path in ${worktree}: ${absolute}${hint}`);
 			continue;
 		}
 		if (wildcard && !details.isDirectory()) {

@@ -1,5 +1,7 @@
 import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { inspectPath } from "../check-agent-context.mjs";
+import { createPathReferenceResolver, exists } from "./path-reference.mjs";
 
 export const RESUME_POINT_MARKER = "<!-- handoff-format: resume-point-v1 -->";
 export const MAX_RESUME_POINT_BYTES = 12_288;
@@ -32,35 +34,14 @@ export async function repositoryPath(
 	return details;
 }
 
-function referencedFilePaths(text) {
+async function referencedFilePaths(text, resolver) {
 	const paths = new Set();
 	for (const line of text.split(/\r?\n/)) {
-		// This header's backticks hold a Git branch and HEAD, not file paths.
-		if (line.startsWith("- **As of:**")) continue;
+		const allowBare =
+			/^- \*\*(?:Previous resume point|Standing decisions):\*\*/.test(line);
 		for (const match of line.matchAll(/`([^`\r\n]+)`/g)) {
-			const value = match[1].replaceAll("\\", "/");
-			if (
-				/<[^>]*>/.test(value) ||
-				value.startsWith("/") ||
-				/^[A-Za-z]:/.test(value)
-			)
-				continue;
-			if (/\bbranch\s*$/i.test(line.slice(0, match.index))) continue;
-			// Backticks also hold commands, hashes and titles. File paths can contain spaces.
-			if (
-				/^(?:pnpm|npm|node|git|npx)\s/.test(value) ||
-				/^[a-z][a-z\d+.-]*:\/\//i.test(value)
-			)
-				continue;
-			if (
-				value.includes("/") ||
-				/(?:^\.|\.)[A-Za-z\d_-]+$/.test(value) ||
-				/^(?:LICENSE|NOTICE|COPYING|Dockerfile|Makefile|Justfile|Procfile)$/.test(
-					value,
-				) ||
-				/^- \*\*(?:Previous resume point|Standing decisions):\*\*/.test(line)
-			)
-				paths.add(value);
+			const reference = await resolver.reference(match[1], { allowBare });
+			if (reference) paths.add(reference.file);
 		}
 	}
 	return paths;
@@ -105,13 +86,19 @@ export async function validateResumePoint({
 		fail(
 			`resume point requires six sections in order: ${RESUME_POINT_SECTIONS.join(", ")}`,
 		);
-	for (const relativePath of referencedFilePaths(text)) {
+	const resolver = createPathReferenceResolver(repositoryRoot);
+	for (const relativePath of await referencedFilePaths(text, resolver)) {
 		try {
-			const details = await repositoryPath(repositoryRoot, relativePath);
-			if (details.isDirectory) throw new Error("not a file");
+			if (path.isAbsolute(relativePath)) {
+				const details = await exists(relativePath);
+				if (!details?.isFile()) throw new Error("not a file");
+			} else {
+				const details = await repositoryPath(repositoryRoot, relativePath);
+				if (details.isDirectory) throw new Error("not a file");
+			}
 		} catch {
 			fail(
-				`resume point references a missing or unsafe repository file: ${relativePath}`,
+				`resume point references a missing or unsafe repository file: ${relativePath}${resolver.missingPathHint(relativePath)}`,
 			);
 		}
 	}

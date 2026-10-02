@@ -9,6 +9,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
+import { gitFixture } from "./fixtures";
 import {
 	MAX_RESUME_POINT_BYTES,
 	RESUME_POINT_MARKER,
@@ -143,14 +144,10 @@ describe("O5: marked active resume point validation", () => {
 		);
 	});
 	it.each([
-		"missing.md",
 		"docs/missing.md",
 		"docs/missing file.md",
 		"../outside.md",
 		"docs/agent-context",
-		".missing",
-		"LICENSE",
-		"Makefile",
 	])("rejects missing, escaping or non-file path %s", async (file) => {
 		await expect(
 			validate(fixture(), `${valid}\n- Input: \`${file}\`\n`),
@@ -164,11 +161,12 @@ describe("O5: marked active resume point validation", () => {
 			validate(root, `${valid}\n\`docs/input file.md\` \`LICENSE\`\n`),
 		).resolves.toBe(true);
 	});
-	it("skips absolute paths, placeholders, commands, branch names and hashes", async () => {
+	it("skips bare mentions, temp paths, placeholders, commands and hashes", async () => {
 		const root = fixture();
+		gitFixture(root);
 		const text =
 			valid.replace("`<branch>`", "`feature/resume`") +
-			"\n`C:/absent/file.md` `/absent/file.md` `\\\\server\\share\\absent.md` `docs/<run>/file.md` `pnpm check:repository` `a1b2c3d`\n- branch `feature/next`\n";
+			"\n`missing.md` `.missing` `LICENSE` `Makefile` `D:/fitway-temp/absent.md` `/api` `docs/<run>/file.md` `pnpm check:repository` `a1b2c3d`\n";
 		await expect(validate(root, text)).resolves.toBe(true);
 	});
 	it("rejects stale local_ session ids anywhere, including outside backticks", async () => {
