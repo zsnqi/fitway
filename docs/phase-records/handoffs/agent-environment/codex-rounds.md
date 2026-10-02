@@ -52,3 +52,17 @@ held-out checks live outside the repository and never appear here or in a brief.
 - **Failure cause:** the brief did not define what counts as a path, and did not mark files to be created.
 - **Side findings:** a lowercase `## coordinator checklist` passes; a brief that quotes the forbidden words to
   describe the rule fails.
+
+## Round 5: `briefs/codex-r5-repair.md`, result `a7c9ecc`
+
+- **Brief rows:** 5 of 5 (F1-F5). 601 of 601 script tests, also with two suites running at once; CI's five commands
+  pass in a fresh clone with `core.longpaths`; the action tags `checkout@v6.1.0`, `setup-node@v7.0.0` and
+  `action-setup@v6.1.0` exist.
+- **Held-out rows:** 7 of 8; S6 partial. Of the day's real briefs, round 5's passes and nav-2's fails truly (written
+  before the ` (new)` marker existed). nav-3's and the K-02 designer's fail falsely: the npm name `@playwright/test`,
+  and `tools/` meant relative to the eclipse folder, are read as repository paths
+  (`scripts/agent-environment/check-brief.mjs:79`).
+- **Failure cause:** the brief's. F2 defined a path as any backticked token containing `/`, and Codex built exactly
+  that; the definition did not foresee npm scope names or folder-relative paths.
+- **Environment:** Codex hit its usage limit after committing and wrote no final report. The coordinator's Sonnet
+  grader graded the round from the commit and the held-out checks.
