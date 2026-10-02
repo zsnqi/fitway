@@ -91,3 +91,15 @@ held-out checks live outside the repository and never appear here or in a brief.
   The two live resume points pass. Existing folders pass as references (relative and absolute, with or without a
   trailing `/`) and missing ones fail.
 - **Failure cause:** none.
+
+## Round 8 and 8b: `briefs/codex-r8-acceptance-repairs.md` and `briefs/codex-r8b-resume-name.md`, results `c071d87` and `c99d07c`
+
+- **Brief rows:** round 8, 4 of 5 (S2-S5); Codex stopped on S1 because the brief's rule could not tell a resume point
+  from older `...-resume-activation.md` and `...-coordinator-resume.md` handoffs without guessing. Round 8b settled S1
+  with the coordinator's rule (one name, `<YYYYMMDD-HHMMSS>-<milestone-id>-resume.md`): 1 of 1. 708 tests pass.
+- **Held-out rows:** 6 of 7, J6 partial by the grader's literal reading: the two earlier briefs now report the round's
+  commits as drift after their named HEAD, which is by design. CI run 37074516125 on `c99d07c` passes.
+- **Failure cause:** round 8's S1 was the brief's (an ambiguous rule; Codex was right to stop). Both rounds' first
+  launches stopped on the brief's own commit sitting on the named HEAD, before the launch note existed.
+- **Side finding:** a file-name pattern that contains an exact template token, such as `<branch>-resume.md`, is
+  rejected as a placeholder (`scripts/agent-environment/resume-point.mjs:25`).
