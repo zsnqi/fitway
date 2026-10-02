@@ -1854,7 +1854,8 @@ decision at a time.
   from 10:00 AM to 2:00 PM", and a closed span «مغلق من 6 ص إلى 2 م» / "Closed from 6 AM to 2 PM", in Reports (the
   hour rows and columns, the day table's notes and full-width rows, the day list), in Daily (the minute table, the
   gap's tooltip and its readout) and on the components page. `spanNote` builds it in each script: the words (`.w`),
-  then each end with its preposition (`.nw`, never broken), each part keeping the size and colour it had. The dotted
+  then each end with its preposition (`.nw`, never broken), each part keeping the size and colour it had (since the
+  wording round, decision 9, one size and one colour for the whole sentence; below). The dotted
   mark before the words is gone; the chart's dotted axis mark stays. In a tooltip the sentence keeps the box's two lines
   and its height: the words, then «من … إلى …» in the caption line. The header's «لا قراءات · 31 يومًا» keeps its middle
   dot (decision 7).
@@ -1863,3 +1864,36 @@ decision at a time.
 - **Capture.** `reports-fixes-capture.mjs <outDir> --before=<ff0e922 copy>` measures the round at 1440, 1279, 1200,
   1024, 768, 720, 390 and 320 (AR and EN), compares Daily and Reports at 1440 with `ff0e922` pixel by pixel, each
   difference located inside a span's phrase, and composes one numbered before-and-after image per decision (`R4d`).
+
+## Step 4, the wording round: the user's picks on the phone fixes (2026-10-02)
+
+The reference is `DESIGN-SPEC.md` (TBL-12, CHT-12, CHT-21, STA-12, OWN-D11, OWN-R12, DAT-4 and §8 "Decided 2026-10-02"),
+not this file. Brief: `step4-reports-wording-fixes.md`. The user picked from rendered options (decisions 9-13).
+
+- **One size and one colour for the whole sentence** (decision 9). A span's ends (`.rg`) no longer carry their own type
+  and colour (`style.css` `.gapnote .rg` keeps only tabular figures and `nowrap`): they take the style the words have
+  where the sentence stands. Reports' full-width rows, the day list's run of days before the readings and the hour
+  rows' runs are caption type `--ink-3` throughout (a closed run `--stale`, `.hb-run.is-closed .gapnote`); the
+  components page's full-width rows the same. Daily's minute table was already one style at `e8461a5`, the cell's
+  13.5 px `--ink-2`: the caption rule written for that row (`.minutes-table td.none`) never matched, because the class
+  is on the row; the dead rule is removed and the row is unchanged. In every tooltip the second line («من … إلى …»,
+  «منذ …») is a second `.tip-main.tip-span` line in the word's type and colour (`tipLines` in `app.js` and
+  `components.js`; `reports.js` `tipHTML`).
+- **A single day without readings keeps its date in its place** (decisions 10 and 11). `reports.js` `dayNoneRow` (from
+  721 px: the date as the row header, the words in one cell across the other four columns) and `dayNoneItem` (720 px
+  and below: the date in `.dl-day`, the words in `.dl-more`), with «لا قراءات» / "No readings" inside the readings and
+  «لا قراءات بعد» / "No readings yet" for the one day before they began. `spanOn` («يوم» / "on") is gone. A run of days
+  before the readings keeps its sentence. The concept's data has no whole day without readings; the capture serves
+  `reports.js` with 17 September's gap set to the whole day, in memory.
+- **Daily's waiting tooltip** (decision 12): «بانتظار القراءات» then «منذ 3:00 م» / "Waiting for readings", "since
+  3:00 PM" (`waitTip`), and «بانتظار القراءات منذ 3:00 م» in the plot's `aria-valuetext` and the chart summary
+  (`waitText`); the current time is not printed. The components page's offline plot the same.
+- **Daily's coverage list** (decision 13): each span's value is «من 2:14 م إلى 2:31 م (18 دقيقة)» / "from 2:14 PM to
+  2:31 PM (18 min)" (`covSpan`), without a duration «من 6:00 ص إلى 6:09 ص», in the label's `--ink-2` (`dd.is-span`);
+  «792 من 810 دقيقة» and the two description rows are unchanged. The value wraps only between its groups; where its
+  widest group does not fit beside the label (320 px in English, "Open, nobody inside"), it takes the line under the
+  label.
+- **Capture.** `wording-capture.mjs <outDir> --before=<e8461a5 copy>` measures the round at 1440, 1279, 1200, 1024,
+  768, 720, 390 and 320 (AR and EN), measures each changed sentence's contrast from rendered pixels, compares Daily and
+  Reports with `e8461a5` frame by frame, each difference located inside a changed sentence, row or list, and composes
+  one numbered before-and-after image per decision (`R4e`).

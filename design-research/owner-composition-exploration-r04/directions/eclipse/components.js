@@ -113,7 +113,7 @@
       daysTitle: "يومًا بيوم", daysSub: `${b(7)} أيام`,
       cols: { day: "اليوم", peak: "الذروة", avg: "المعدّل", entries: "مرات الدخول", notes: "ملاحظات" },
       daysCaption: `الأيام من ${b(16)} إلى ${b(22)} سبتمبر ${b(2026)}: الذروة والمعدّل ومرات الدخول`,
-      highest: "الأعلى", gapEnds: ["10:00 ص", "2:00 م"], beforeEnds: [`${b(2)} أغسطس`, `${b(12)} سبتمبر`], spanFrom: "من", spanTo: "إلى",
+      highest: "الأعلى", gapEnds: ["10:00 ص", "2:00 م"], beforeEnds: [`${b(2)} أغسطس`, `${b(12)} سبتمبر`], spanFrom: "من", spanTo: "إلى", spanSince: "منذ",
       sortedBy: "مرتب حسب اليوم، الأحدث أولًا",
       compactTitle: "دقيقة بدقيقة", compactCaption: "قراءات اليوم دقيقة بدقيقة",
       ccols: { time: "الوقت", inside: "داخل الصالة", avg: `معدّل ${b(30)} دقيقة`, note: "ملاحظة" },
@@ -212,7 +212,7 @@
       daysTitle: "Day by day", daysSub: "7 days",
       cols: { day: "Day", peak: "Peak", avg: "Average", entries: "Entries", notes: "Notes" },
       daysCaption: "Days from 16 to 22 Sep 2026: peak, average and entries",
-      highest: "Highest", gapEnds: ["10:00 AM", "2:00 PM"], beforeEnds: ["2 Aug", "12 Sep"], spanFrom: "from", spanTo: "to",
+      highest: "Highest", gapEnds: ["10:00 AM", "2:00 PM"], beforeEnds: ["2 Aug", "12 Sep"], spanFrom: "from", spanTo: "to", spanSince: "since",
       sortedBy: "Sorted by day, newest first",
       compactTitle: "Minute by minute", compactCaption: "Today's readings, minute by minute",
       ccols: { time: "Time", inside: "Inside", avg: "30-min average", note: "Note" },
@@ -262,8 +262,10 @@
   const timeRange = (a, z) => `${time(a)} – ${time(z)}`;
   // A span in words (decision 8, user 2026-10-01): one sentence, the words first; the ends never break inside.
   const spanNote = (w, a, z) => `<span class="cx-gapnote"><span class="w">${w}</span> <span class="nw"><span class="w">${L.spanFrom}</span> <bdi class="rg">${a}</bdi></span> <span class="nw"><span class="w">${L.spanTo}</span> <bdi class="rg">${z}</bdi></span></span>`;
-  // In a tooltip the sentence keeps two lines, the words first: the words, then "from … to …" in the times' caption line.
-  const spanTip = (w, a, z) => `<div class="cx-tip-main"><span class="cx-tip-word">${w}</span></div><div class="cx-tip-t cx-tip-span"><span><span class="nw">${L.spanFrom} <bdi>${a}</bdi></span> <span class="nw">${L.spanTo} <bdi>${z}</bdi></span></span></div>`;
+  // In a tooltip the sentence keeps two lines, the words first: the words, then "from … to …" (or "since …" while waiting),
+  // both in the word's type and colour (one size and one colour, decision 9, user 2026-10-02).
+  const tipLines = (w, second) => `<div class="cx-tip-main"><span class="cx-tip-word">${w}</span></div><div class="cx-tip-main cx-tip-span"><span class="cx-tip-word">${second}</span></div>`;
+  const spanTip = (w, a, z) => tipLines(w, `<span class="nw">${L.spanFrom} <bdi>${a}</bdi></span> <span class="nw">${L.spanTo} <bdi>${z}</bdi></span>`);
   const hourRange = (h) => {
     const a = clock((h - 6) * 60), z = clock((h - 5) * 60), dash = "–";
     const nums = LANG === "ar" ? `<bdi dir="ltr">${a.h12}${dash}\u2060${z.h12}</bdi>` : `${a.h12}${dash}${z.h12}`;
@@ -955,7 +957,8 @@
       dots.forEach((x) => s.push(`<circle cx="${f(x)}" cy="${by}" r="1.25" fill="#f5f3f2"/>`));
       s.push(`<ellipse cx="${f((g0 + g1) / 2)}" cy="${by}" rx="${f((g1 - g0) / 2 + 9)}" ry="7" fill="url(#${id}-chalk)"/>`);
       mx = dots.reduce((a, x) => (Math.abs(x - (g0 + g1) / 2) < Math.abs(a - (g0 + g1) / 2) ? x : a), dots[0]); top = by - 1.25; style = "dotted";
-      tip = `<div class="cx-tip-t">${b(timeRange(540, NOW))}</div><div class="cx-tip-main"><span class="cx-tip-word">${L.waiting}</span></div>`;
+      // Waiting for readings, on two lines: the words, then since when; the current time is not printed (decision 12).
+      tip = tipLines(L.waiting, `<span class="nw">${L.spanSince} <bdi>${time(540)}</bdi></span>`);
     } else s.push(`<path d="M${f(xL)},${by}H${f(xR)}" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>`);
     if (mode === "closed") s.push(`<path d="${path(0, DAY - 1, usual)}" fill="none" stroke="rgba(245,243,242,0.36)" stroke-width="1.5" stroke-dasharray="3.5 4.5" stroke-linecap="round"/>`);
     if (mode === "unavailable") {

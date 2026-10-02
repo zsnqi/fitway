@@ -104,7 +104,6 @@
       // A span in words, the words first (decision 8, user 2026-10-01): «لا قراءات من 10:00 ص إلى 2:00 م».
       spanFrom: "من",
       spanTo: "إلى",
-      spanOn: "يوم",
       emptyTable: (a, b) => `لا قراءات من ${a} إلى ${b}`,
       // One span inside the button: a flex button would make each run of text and the number an item of its own and set
       // its 8 px gap around «28» (the fix round, 2026-10-01).
@@ -208,7 +207,6 @@
       beforeHistory: "No readings yet",
       spanFrom: "from",
       spanTo: "to",
-      spanOn: "on",
       emptyTable: (a, b) => `No readings from ${a} to ${b}`,
       emptyAction: "Show the last 28 days",
       exportMinutes: "Export minute data",
@@ -274,13 +272,13 @@
   }
   const hourText = (m) => nw(bdi(fmtHour(m)));
   /* A span in words (decision 8, user 2026-10-01): one sentence, the words first, «لا قراءات من 10:00 ص إلى 2:00 م» /
-   * "No readings from 10:00 AM to 2:00 PM"; a closed span the same way, «مغلق من 6 ص إلى 2 م»; a single day «لا قراءات
-   * يوم الخميس 17 سبتمبر» / "No readings on Thu 17 Sep". It replaces the range first and the dotted mark. The sentence
-   * wraps only between its words: the words stay together, each end keeps its preposition, and a time or a date never
-   * breaks inside (DAT-4). The words (.w) and the ends (.rg) keep the size and colour each had in the phrase it replaces. */
-  const spanNote = (words, a, b = null) => `<span class="gapnote"><span class="w">${words}</span> ` +
-    (b == null ? `<span class="nw"><span class="w">${L.spanOn}</span> <span class="rg">${a}</span></span>`
-      : `<span class="nw"><span class="w">${L.spanFrom}</span> <span class="rg">${a}</span></span> <span class="nw"><span class="w">${L.spanTo}</span> <span class="rg">${b}</span></span>`) + `</span>`;
+   * "No readings from 10:00 AM to 2:00 PM"; a closed span the same way, «مغلق من 6 ص إلى 2 م». It replaces the range
+   * first and the dotted mark. The sentence wraps only between its words: the words stay together, each end keeps its
+   * preposition, and a time or a date never breaks inside (DAT-4). One size and one colour for the whole sentence, the
+   * ends included: the style its words have where it stands (decision 9, user 2026-10-02). A single day is not a span:
+   * it keeps its date in its place (decisions 10 and 11, renderDays and renderList). */
+  const spanNote = (words, a, b) => `<span class="gapnote"><span class="w">${words}</span> ` +
+    `<span class="nw"><span class="w">${L.spanFrom}</span> <span class="rg">${a}</span></span> <span class="nw"><span class="w">${L.spanTo}</span> <span class="rg">${b}</span></span></span>`;
 
   /* ------------------------------------------------------------------- dates
    * Dates are business days, handled as whole-day numbers (UTC day counts), never as the viewer's local time. */
@@ -984,8 +982,8 @@
   function tipHTML(td) {
     const wd = +td.dataset.r, c0 = +td.dataset.c0, c1 = +td.dataset.c1, cell = model.heat[wd][c0];
     // A closed or no-reading run names its weekday, then its sentence on two lines, the words first (decision 8): the
-    // words in the main line, then "from … to …" in the caption line the tooltip's times use.
-    const sentence = (w) => `<div class="tip-t"><span>${wdLong(wd)}</span></div><div class="tip-main"><span class="tip-word">${w}</span></div><div class="tip-t tip-span"><span><span class="nw">${L.spanFrom} ${hourText(c0 * 60)}</span> <span class="nw">${L.spanTo} ${hourText(c1 * 60 + 60)}</span></span></div>`;
+    // words, then "from … to …", both in the word's type and colour (one size and one colour, decision 9).
+    const sentence = (w) => `<div class="tip-t"><span>${wdLong(wd)}</span></div><div class="tip-main"><span class="tip-word">${w}</span></div><div class="tip-main tip-span"><span class="tip-word"><span class="nw">${L.spanFrom} ${hourText(c0 * 60)}</span> <span class="nw">${L.spanTo} ${hourText(c1 * 60 + 60)}</span></span></div>`;
     if (cell.state === "closed") return `${sentence(L.closed)}<div class="tip-u">${L.closedTip}</div>`;
     if (cell.state === "missing") return sentence(L.noReadings);
     const when = `<div class="tip-t"><span>${wdLong(wd)}</span><span aria-hidden="true">·</span><span>${hourRange(c0 * 60, c1 * 60 + 60)}</span></div>`;
@@ -1095,9 +1093,8 @@
     const without = model.days.filter((d) => !d.observed).sort((x, y) => y.dn - x.dn);
     return [...withData, ...without];
   }
-  // A span of days with no readings, as one sentence (decision 8): «لا قراءات بعد من 2 أغسطس إلى 12 سبتمبر», or one day.
-  // A day inside the readings names its weekday too, as its row would.
-  const daysNote = (words, a, b) => (a !== b ? spanNote(words, dateText(a), dateText(b)) : spanNote(words, words === L.noReadings ? dayText(a) : dateText(a)));
+  // A span of days with no readings, as one sentence (decision 8): «لا قراءات بعد من 2 أغسطس إلى 12 سبتمبر».
+  const daysNote = (words, a, b) => spanNote(words, dateText(a), dateText(b));
   // A camera gap inside a day (minutes since 6:00 AM, the last one inclusive).
   const gapNote = ([a, b]) => spanNote(L.noReadings, timeText(a), timeText(b + 1));
   function renderDays() {
@@ -1131,25 +1128,30 @@
     } else {
       const out = [];
       const noneRow = (note) => `<tr role="row" class="is-none"><td role="cell" colspan="5" class="c-none">${note}</td></tr>`;
-      // Days before the history starts are one merged row ("No readings yet").
+      // In date order, a firmer line closes each week (between Saturday and Sunday).
+      const edgeOf = (d) => sort.key === "day" && (sort.dir === "desc" ? d.wd === 0 : d.wd === 6) && d.dn !== (sort.dir === "desc" ? model.a : model.b);
+      const dayHead = (d) => `<th scope="row" role="rowheader" class="c-day"><span class="dd"><span class="wd">${wdShort(d.wd)}</span> <span class="dt">${dateText(d.dn)}</span></span></th>`;
+      // A single day without readings keeps its date in the day column, as every day does, and its words take the rest of
+      // the row: «لا قراءات», or «لا قراءات بعد» before the readings began; no figures (decisions 10 and 11, user
+      // 2026-10-02; TBL-12).
+      const dayNoneRow = (d, words) => `<tr role="row" class="is-none-day${edgeOf(d) ? " wk-edge" : ""}">${dayHead(d)}<td role="cell" colspan="4" class="c-none">${words}</td></tr>`;
+      // Days before the history starts are one merged row ("No readings yet"), or a day row when there is only one.
       let pre = [];
       const flushPre = () => {
         if (!pre.length) return;
         const a = Math.min(...pre.map((d) => d.dn)), b = Math.max(...pre.map((d) => d.dn));
-        out.push(noneRow(daysNote(L.beforeHistory, a, b)));
+        out.push(a === b ? dayNoneRow(pre[0], L.beforeHistory) : noneRow(daysNote(L.beforeHistory, a, b)));
         pre = [];
       };
       sortedDays().forEach((d) => {
         if (d.none) { pre.push(d); return; }
         flushPre();
-        // A day inside the readings with none at all is a break in the sequence too, not a row of empty values.
-        if (!d.observed) { out.push(noneRow(daysNote(L.noReadings, d.dn, d.dn))); return; }
+        if (!d.observed) { out.push(dayNoneRow(d, L.noReadings)); return; }
         const top = model.top && model.top.dn === d.dn;
         const notes = d.miss.map(gapNote).join("");
-        // In date order, a firmer line closes each week (between Saturday and Sunday).
-        const edge = sort.key === "day" && (sort.dir === "desc" ? d.wd === 0 : d.wd === 6) && d.dn !== (sort.dir === "desc" ? model.a : model.b);
+        const edge = edgeOf(d);
         const cls = [top ? "is-top" : "", edge ? "wk-edge" : "", notes ? "has-note" : ""].filter(Boolean).join(" ");
-        out.push(`<tr role="row"${cls ? ` class="${cls}"` : ""}><th scope="row" role="rowheader" class="c-day"><span class="dd"><span class="wd">${wdShort(d.wd)}</span> <span class="dt">${dateText(d.dn)}</span></span></th>` +
+        out.push(`<tr role="row"${cls ? ` class="${cls}"` : ""}>${dayHead(d)}` +
           `<td role="cell" class="c-peak n"><span class="pk"><span class="pv">${bdi(d.peak)}</span><span class="pt">${timeText(d.peakM)}</span>${top ? `<span class="flag">${L.highest}</span>` : ""}</span></td>` +
           `<td role="cell" class="c-avg n">${bdi(Math.round(d.avg))}</td>` +
           `<td role="cell" class="c-entries n">${bdi(fmtInt(d.entries))}</td>` +
@@ -1168,7 +1170,8 @@
    * under the peak, on the peak's edge (TBL-1, TBL-11); a camera gap folds under them, one sentence with the words first
    * (TBL-12, decision 8). The newest 7 days first, the rest one tap away ("Show all days"); shown whole, the list is one
    * plain run of days, with no dated 7-day heads (the user's decision 3 of 2026-10-01). The phone's own picker sorts it
-   * (a native select). Days before the readings began are one item, as in the table. */
+   * (a native select). Days before the readings began are one item, as in the table; a single day without readings is a
+   * day item with its date (decisions 10 and 11). */
   const dlist = $("#dlist");
   const LIST_N = 7;
   let listOpen = false, listKey = "";
@@ -1178,11 +1181,14 @@
     const items = [];
     let pre = [];
     const noneItem = (note) => `<li class="dli is-none">${note}</li>`;
-    const flushPre = () => { if (!pre.length) return; const a = Math.min(...pre.map((d) => d.dn)), b = Math.max(...pre.map((d) => d.dn)); items.push(noneItem(daysNote(L.beforeHistory, a, b))); pre = []; };
+    // A single day without readings is a day item: its date where every day has it, and under it, where the average and
+    // the entries sit, «لا قراءات» or «لا قراءات بعد»; no figures (decisions 10 and 11, user 2026-10-02).
+    const dayNoneItem = (d, words) => `<li class="dli is-none-day"><span class="dl-day">${dayText(d.dn)}</span><span class="dl-more">${words}</span></li>`;
+    const flushPre = () => { if (!pre.length) return; const a = Math.min(...pre.map((d) => d.dn)), b = Math.max(...pre.map((d) => d.dn)); items.push(a === b ? dayNoneItem(pre[0], L.beforeHistory) : noneItem(daysNote(L.beforeHistory, a, b))); pre = []; };
     sortedDays().forEach((d) => {
       if (d.none) { pre.push(d); return; }
       flushPre();
-      if (!d.observed) { items.push(noneItem(daysNote(L.noReadings, d.dn, d.dn))); return; }
+      if (!d.observed) { items.push(dayNoneItem(d, L.noReadings)); return; }
       const top = model.top && model.top.dn === d.dn;
       const notes = d.miss.map(gapNote).join("");
       items.push(`<li class="dli${top ? " is-top" : ""}">` +

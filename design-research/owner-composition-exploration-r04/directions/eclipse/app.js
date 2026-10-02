@@ -92,6 +92,7 @@
       // A span in words, the words first (decision 8, user 2026-10-01): «لا قراءات من 2:14 م إلى 2:31 م».
       spanFrom: "من",
       spanTo: "إلى",
+      spanSince: "منذ",
       minutesAria: "قراءات اليوم دقيقة بدقيقة",
       cols: ["الوقت", "داخل الصالة", `معدّل <bdi>30</bdi> دقيقة`, "ملاحظة"],
       notes: { miss: "لا قراءات", zero: "خالية", peak: "الذروة", latest: "آخر قراءة" },
@@ -171,6 +172,7 @@
       noReadingsYet: "No readings yet",
       spanFrom: "from",
       spanTo: "to",
+      spanSince: "since",
       minutesAria: "Today's readings, minute by minute",
       cols: ["Time", "Inside", "30-min average", "Note"],
       notes: { miss: "No readings", zero: "Empty", peak: "Peak", latest: "Latest reading" },
@@ -232,9 +234,14 @@
    * words: the words stay together, each time keeps its preposition and never breaks inside (DAT-4). */
   const spanNote = (words, a, b) => `<span class="gapnote"><span class="w">${words}</span> <span class="nw"><span class="w">${L.spanFrom}</span> <span class="rg">${tb(a)}</span></span> <span class="nw"><span class="w">${L.spanTo}</span> <span class="rg">${tb(b)}</span></span></span>`;
   const spanText = (words, a, b) => `${words} ${L.spanFrom} ${fmtTime(a)} ${L.spanTo} ${fmtTime(b)}`;
-  // In a tooltip the sentence keeps the tooltip's two lines, the words first: the words in the main line, then "from …
-  // to …" in the caption line the tooltip's times use, so every part keeps its size and colour.
-  const spanTip = (words, a, b) => `<div class="tip-main"><span class="tip-word">${words}</span></div><div class="tip-t tip-span"><span><span class="nw">${L.spanFrom} ${tb(a)}</span> <span class="nw">${L.spanTo} ${tb(b)}</span></span></div>`;
+  // In a tooltip the sentence keeps the tooltip's two lines, the words first: the words, then "from … to …", both in the
+  // word's type and colour (one size and one colour for the whole sentence, decision 9, user 2026-10-02).
+  const tipLines = (words, second) => `<div class="tip-main"><span class="tip-word">${words}</span></div><div class="tip-main tip-span"><span class="tip-word">${second}</span></div>`;
+  const spanTip = (words, a, b) => tipLines(words, `<span class="nw">${L.spanFrom} ${tb(a)}</span> <span class="nw">${L.spanTo} ${tb(b)}</span>`);
+  // Waiting for readings (unavailable): «بانتظار القراءات» then «منذ 3:00 م», and the same sentence for assistive
+  // technology, «بانتظار القراءات منذ 3:00 م»; the current time is not printed (decision 12, user 2026-10-02).
+  const waitTip = (a) => tipLines(L.ro.waiting, `<span class="nw">${L.spanSince} ${tb(a)}</span>`);
+  const waitText = (a) => `${L.ro.waiting} ${L.spanSince} ${fmtTime(a)}`;
 
   /* -------------------------------------------------------------- simulation */
   function mulberry32(a) {
@@ -1097,7 +1104,7 @@
     const u = HAS_HISTORY ? `${sepc}${L.ro.usual} ${usualAt(st.m)}` : "";
     const lvl = (v) => L.crowdIs(L.levels[levelOf(v)]);
     switch (st.kind) {
-      case "gap": return st.waiting ? `${plainRange(fmtTime(st.a), fmtTime(st.b))}${sepc}${L.ro.waiting}` : spanText(L.ro.noReading, st.a, st.b);
+      case "gap": return st.waiting ? waitText(st.a) : spanText(L.ro.noReading, st.a, st.b);
       case "wait": return `${t}${sepc}${L.ro.noReadingYet}${u}`;
       case "ahead": return `${t}${sepc}${L.ro.ahead}${u}`;
       case "zero": return `${t}${sepc}0${sepc}${L.ro.empty}`;
@@ -1108,9 +1115,8 @@
     }
   }
   function tipHTML(st) {
-    // A span with no readings is one sentence, the words first (decision 8); "waiting for readings" keeps its range first.
-    if (st.kind === "gap") return st.waiting ? `<div class="tip-t">${timeRange(st.a, st.b)}</div><div class="tip-main"><span class="tip-word">${L.ro.waiting}</span></div>`
-      : spanTip(L.ro.noReading, st.a, st.b);
+    // A span with no readings is one sentence, the words first (decision 8); waiting for readings too (decision 12).
+    if (st.kind === "gap") return st.waiting ? waitTip(st.a) : spanTip(L.ro.noReading, st.a, st.b);
     const usualRow = HAS_HISTORY && st.kind !== "zero" ? `<div class="tip-u"><span class="sw sw-usual" aria-hidden="true"></span><span>${L.ro.usual} ${bdi(usualAt(st.m))}</span></div>` : "";
     const flag = st.kind === "peak" ? L.ro.peak : st.kind === "latest" ? L.ro.latest : "";
     // One start-aligned arrangement for every tooltip: at the peak and the latest the label chip comes first, then
@@ -1636,7 +1642,7 @@
         : `${L.sayClosed(fmtTime(0))} There are no readings today yet. A dashed line shows the usual Wednesday, the average of the last 4 Wednesdays, through the whole day, ${plainRange(fmtTime(0), fmtTime(DAY))}.`;
     }
     if (UNAV) {
-      const gapSay = `${plainRange(fmtTime(UNAV_LAST), fmtTime(nowM))}${sepc}${L.ro.waiting}`;
+      const gapSay = waitText(UNAV_LAST);
       return RTL
         ? `${L.sayOffline} مخطط خطي لمعدّل كل 30 دقيقة لعدد الموجودين تقريبًا اليوم، من الفتح الساعة ${fmtTime(0)} حتى الساعة ${fmtTime(UNAV_LAST)}. ` +
           `الصالة مفتوحة وخالية من ${plainRange(fmtTime(0), fmtTime(ZERO_END))}. لا قراءات من ${plainRange(fmtTime(GAP0), fmtTime(GAP1))}. ` +
@@ -1676,12 +1682,16 @@
     strip.push(seg("s-ahead", nowM + 1, DAY));
     const axis = [0, 360, 720, DAY].map((m, i, a) => `<span class="${i === 0 ? "first" : i === a.length - 1 ? "last" : ""}" style="inset-inline-start:${pct(m)}">${bdi(fmtHour(m))}</span>`).join("");
     const facts = [];
-    const fact = (k, dt, dd) => facts.push(`<div><dt><span class="k ${k}" aria-hidden="true"></span>${dt}</dt><dd>${dd}</dd></div>`);
+    const fact = (k, dt, dd, span = false) => facts.push(`<div><dt><span class="k ${k}" aria-hidden="true"></span>${dt}</dt><dd${span ? ' class="is-span"' : ""}>${dd}</dd></div>`);
+    // A span's value reads «من 2:14 م إلى 2:31 م (18 دقيقة)»: the range in words, then its duration in brackets, with no
+    // middle dot; in the label's colour, so the row reads as one sentence (decision 13, user 2026-10-02). It wraps only
+    // between its groups: each end with its preposition, and the duration.
+    const covSpan = (a, b, n = 0) => `<span class="nw">${L.spanFrom} ${tb(a)}</span> <span class="nw">${L.spanTo} ${tb(b)}</span>${n ? ` <span class="nw">(${bdi(minText(n))})</span>` : ""}`;
     fact("k-read", L.cov.read, L.covReadVal(bdi(observed), bdi(last + 1)));
-    fact("k-zero", L.cov.zero, `${timeRange(0, ZERO_END)}`);
-    fact("k-miss", L.cov.miss, `${timeRange(GAP0, GAP1)} · ${bdi(minText(GAP1 - GAP0 + 1))}`);
-    if (STATE === "delayed") fact("k-wait", L.cov.wait, `${timeRange(last + 1, nowM)} · ${bdi(minText(nowM - last))}`);
-    fact("k-ahead", L.cov.ahead, timeRange(nowM + 1, DAY));
+    fact("k-zero", L.cov.zero, covSpan(0, ZERO_END), true);
+    fact("k-miss", L.cov.miss, covSpan(GAP0, GAP1, GAP1 - GAP0 + 1), true);
+    if (STATE === "delayed") fact("k-wait", L.cov.wait, covSpan(last + 1, nowM, nowM - last), true);
+    fact("k-ahead", L.cov.ahead, covSpan(nowM + 1, DAY), true);
     fact("k-none", L.cov.line, L.covLineVal);
     fact("k-none", L.cov.usual, HAS_HISTORY ? L.covUsualVal : L.covUsualNone);
     $("#coverage").innerHTML = `<h3>${L.coverageTitle}</h3><div class="strip" aria-hidden="true">${strip.join("")}</div><div class="strip-axis" aria-hidden="true">${axis}</div><dl class="facts">${facts.join("")}</dl>`;

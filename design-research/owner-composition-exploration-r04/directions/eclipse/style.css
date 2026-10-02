@@ -572,9 +572,9 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
 .tip-v { font-size: 20px; font-weight: 500; color: var(--ink); }
 .tip-l { font-size: 12.5px; color: var(--ink-2); }
 .tip-word { font-size: 14px; color: var(--ink); }
-/* A span with no readings in a tooltip is one sentence on two lines, the words first (decision 8): the words in the main
- * line, then "from … to …" in the caption line the tooltip's times use. */
-.tip-t.tip-span { display: block; margin-block-start: 4px; }
+/* A span with no readings in a tooltip is one sentence on two lines, the words first (decision 8): the words, then "from
+ * … to …" (or "since …" while waiting), both in the word's type and colour (one size and one colour, decision 9). */
+.tip-main.tip-span { display: block; }
 .tip > .tip-main:first-child { margin-block-start: 0; }
 .tip-u { display: flex; align-items: center; gap: 7px; margin-block-start: 5px; font-size: 12px; color: var(--ink-3); }
 .tip-u .sw { width: 12px; }
@@ -613,6 +613,12 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
 .facts > div { display: flex; justify-content: space-between; gap: 16px; padding-block: 12px; border-block-start: 1px solid var(--line); font-size: 13.5px; line-height: 20px; }
 .facts dt { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-2); white-space: nowrap; }
 .facts dd { color: var(--ink); text-align: end; }
+/* A span's value takes its label's colour, so the row reads as one sentence (decision 13, user 2026-10-02). It wraps only
+ * between its groups; where even its widest group does not fit beside the label (320 px in English: "Open, nobody
+ * inside" and "from 6:00 AM"), the value takes the line under the label, at the same end, instead of spilling. */
+.facts > div:has(> dd.is-span) { flex-wrap: wrap; row-gap: 4px; }
+.facts dd.is-span { flex: 1 1 0; min-width: min-content; color: var(--ink-2); }
+.facts dd .nw { white-space: nowrap; }
 .k { width: 10px; height: 10px; border-radius: 4px; flex: none; }
 .k-read { background: rgba(229, 25, 53, 0.72); }
 .k-zero { background: rgba(245, 243, 242, 0.6); }
@@ -639,14 +645,16 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
 .minutes-table tr.peak:hover > * { background: rgba(229, 25, 53, 0.12); }
 .minutes-table .note-row { display: none; }
 /* TBL-12: a span with no readings is one full-width row, one sentence with the words first (decision 8, user
- * 2026-10-01): «لا قراءات من 2:14 م إلى 2:31 م». The words in caption type, --ink-3; each end in label type, --ink-2,
- * tabular figures, the sizes and colours the range-first phrase had. A line breaks only between its words: the words
- * stay together, each end keeps its preposition, and a time never breaks inside. */
-.minutes-table td.none { font-size: 12px; line-height: 18px; color: var(--ink-3); }
+ * 2026-10-01): «لا قراءات من 2:14 م إلى 2:31 م». One size and one colour for the whole sentence, its times and dates
+ * included (decision 9, user 2026-10-02): every part takes the type and colour its words have where it stands; the ends
+ * keep tabular figures. In the minute table that is the cell's own 13.5 px --ink-2, as its words rendered at e8461a5
+ * (the caption rule written for this row, `.minutes-table td.none`, never matched: the class is on the row). A line
+ * breaks only between its words: the words stay together, each end keeps its preposition, and a time never breaks
+ * inside. */
 .gapnote { display: inline; }
 .gapnote .w { white-space: nowrap; }
 .gapnote .nw { white-space: nowrap; }
-.gapnote .rg { font-size: 13.5px; line-height: 20px; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.gapnote .rg { font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 /* ------------------------------------------------------------ Daily, step 3
  * Run owner_daily_r04_s17, phase B: the spec's rules on the Daily page's shared components (body.dl), at every size.

@@ -294,8 +294,9 @@ html:has(> body.cx) { color-scheme: dark; scrollbar-color: rgba(245, 243, 242, 0
 .cx-gapnote { display: inline; }
 .cx-gapnote .w, .cx-gapnote .rg, .cx-gapnote .nw { white-space: nowrap; }
 .cx-table tbody td.none { font: var(--t-caption); color: var(--ink-3); }
-/* In the full-width row the ends are in label type, --ink-2, tabular figures, as the range-first phrase had them. */
-.cx-table tbody td.none .rg { font: var(--t-label); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+/* One size and one colour for the whole sentence, its ends included (decision 9, user 2026-10-02): the row's caption type
+ * and --ink-3; the ends keep tabular figures. */
+.cx-table tbody td.none .rg { font-variant-numeric: tabular-nums; }
 .cx-table .note-row { display: none; }
 .cx-sort { display: inline-flex; align-items: center; gap: 8px; height: 44px; min-width: 44px; margin-inline: -8px; padding-inline: 8px; border-radius: 10px; font: inherit; color: inherit; }
 .cx-sort:hover, .cx-sort.is-hover { color: var(--ink); }
@@ -370,8 +371,8 @@ th.is-asc .cx-sort .cx-ico { transform: rotate(180deg); }
 .cx-tip-l { font: var(--t-caption); line-height: 1.25; color: var(--ink-2); }
 .cx-tip-word { font: var(--t-body); line-height: 1.25; color: var(--ink); }
 /* A span with no readings in a tooltip: one sentence on two lines, the words first (decision 8): the words, then "from …
- * to …" in the caption line the tooltip's times use. */
-.cx-tip-t.cx-tip-span { display: block; margin-block-start: 4px; }
+ * to …" (or "since …" while waiting), both in the word's type and colour (one size and one colour, decision 9). */
+.cx-tip-main.cx-tip-span { display: block; }
 .cx-tip > .cx-tip-main:first-child { margin-block-start: 0; }
 .cx-tip-span .nw { white-space: nowrap; }
 .cx-tip-u, .cx-tip-ago { display: flex; align-items: center; gap: 8px; margin-block-start: 5px; font: var(--t-caption); line-height: 1.25; color: var(--ink-3); }

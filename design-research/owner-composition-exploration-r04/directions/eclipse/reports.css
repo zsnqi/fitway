@@ -275,9 +275,9 @@ html:has(> body.rp) {
 .pk .pt bdi { color: inherit; }
 /* CHP-7, CHP-8: a flag, caption type, 18 tall, radius 4; red .45 for "Highest". */
 .flag { display: inline-flex; align-items: center; align-self: center; height: 18px; padding-inline: 6px; border-radius: 4px; border: 1px solid rgba(255, 41, 70, 0.45); font-size: 12px; line-height: 16px; color: var(--ink-2); }
-/* TBL-12: a span with no readings, one sentence with the words first (decision 8). In the notes column (and its phone
- * fold row) all caption --ink-3; in a full-width row the words in caption --ink-3 and the ends in label type --ink-2,
- * the sizes and colours the range-first phrase had. */
+/* TBL-12: a span with no readings, one sentence with the words first (decision 8), all in caption type and --ink-3, its
+ * dates and times included (one size and one colour, decision 9), in the notes column, its phone fold row and a
+ * full-width row alike; a single day's words beside its date take the same style (decision 10). */
 .days-table .c-notes .rg, .days-table .note-row .rg { font-size: 12px; line-height: 18px; color: var(--ink-3); }
 .days-table td.c-none { font-size: 12px; line-height: 18px; color: var(--ink-3); }
 .days-table .note-row { display: none; }
@@ -560,9 +560,8 @@ th.is-asc .sort-ico { transform: rotate(180deg); }
 /* A closed or no-reading run: one sentence, the words first (decision 8); the words and the times keep their colours. */
 .hb-run { position: relative; display: flex; align-items: center; height: 30px; padding-inline: 12px; border-radius: 6px; font-size: 12px; line-height: 18px; color: var(--ink-3); white-space: nowrap; }
 .hb-run.is-closed { background: rgba(255, 255, 255, 0.04); }
-.hb-run.is-closed .w { color: var(--stale); }
+.hb-run.is-closed .gapnote { color: var(--stale); }
 .hb-run.is-none::before { content: ""; position: absolute; inset: 1px; border: 1.5px dotted rgba(245, 243, 242, 0.45); border-radius: 5px; pointer-events: none; }
-.hb-run .gapnote .rg { font-size: 12px; line-height: 18px; color: var(--ink-2); }
 /* An empty period: one message for the whole card (EMP-1, EMP-4: the icon, the sentence with its dates, the way back). */
 .pday-empty { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 40px 16px; text-align: center; font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
 .pday-empty .ico { width: 22px; height: 22px; color: var(--ink-3); fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
