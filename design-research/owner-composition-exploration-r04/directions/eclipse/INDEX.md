@@ -678,115 +678,139 @@ Script top level includes each outer IIFE's body; nested helpers are excluded. E
 
 - reports.js:19 — $ — function constant
 - reports.js:20 — $$ — function constant
-- reports.js:29 — arN — function constant
-- reports.js:35 — bdi — function constant
-- reports.js:247 — fmtInt — function
-- reports.js:248 — pct — function constant
-- reports.js:250 — clock — function
-- reports.js:255 — suffix — function constant
-- reports.js:256 — fmtTime — function constant
-- reports.js:257 — fmtHour — function constant
-- reports.js:261 — NUMS — function constant
-- reports.js:263 — nw — function constant
-- reports.js:264 — range2 — function constant
-- reports.js:265 — timeRange — function constant
-- reports.js:266 — timeText — function constant
-- reports.js:267 — hourRange — function
-- reports.js:271 — hourText — function constant
-- reports.js:278 — spanNote — function constant
-- reports.js:292 — toDn — function constant
-- reports.js:293 — isoOf — function constant
-- reports.js:294 — partsOf — function constant
-- reports.js:295 — wdOf — function constant
-- reports.js:296 — wdLong — function constant
-- reports.js:297 — wdShort — function constant
-- reports.js:298 — wdStrip — function constant
-- reports.js:299 — monthOf — function constant
-- reports.js:301 — dateBare — function constant
-- reports.js:302 — dateText — function constant
-- reports.js:304 — dayText — function constant
-- reports.js:305 — numDate — function constant
-- reports.js:306 — rangeText — function
-- reports.js:313 — plain — function constant
-- reports.js:318 — openAt — function constant
-- reports.js:327 — levelOf — function constant
-- reports.js:335 — mulberry32 — function
-- reports.js:343 — ss — function constant
-- reports.js:344 — bump — function constant
-- reports.js:345 — target — function
-- reports.js:352 — simulate — function
-- reports.js:412 — hasReadings — function constant
-- reports.js:413 — dayModel — function
-- reports.js:424 — buildModel — function
-- reports.js:465 — weekMetrics — function
-- reports.js:485 — motionOn — function constant
-- reports.js:489 — f2 — function constant
-- reports.js:494 — parseIso — function constant
-- reports.js:502 — urlFor — function
-- reports.js:535 — syncUrl — function
-- reports.js:546 — finishRail — function
-- reports.js:556 — animateRail — function
-- reports.js:600 — railFocusables — function constant
-- reports.js:602 — setRailModal — function constant
-- reports.js:615 — setRail — function constant
-- reports.js:638 — menuItems — function constant
-- reports.js:639 — showLayer — function
-- reports.js:648 — hideLayer — function
-- reports.js:682 — onFrameChange — function constant
-- reports.js:709 — renderStatus — function
-- reports.js:721 — say — function constant
-- reports.js:736 — levelChip — function constant
-- reports.js:747 — renderHead — function
-- reports.js:766 — renderCards — function
-- reports.js:800 — rampColor — function
-- reports.js:811 — valText — function constant
-- reports.js:820 — dayForm — function constant
-- reports.js:821 — heatCell — function
-- reports.js:838 — heatRuns — function
-- reports.js:848 — renderHeat — function
-- reports.js:906 — hasValues — function constant
-- reports.js:907 — weekMax — function constant
-- reports.js:908 — dayMax — function constant
-- reports.js:911 — dayBar — function
-- reports.js:917 — renderDay — function
-- reports.js:932 — renderHours — function
-- reports.js:954 — pickDay — function
-- reports.js:980 — tipHTML — function
-- reports.js:992 — showTip — function
-- reports.js:1009 — hideTip — function
-- reports.js:1015 — focusCell — function
-- reports.js:1087 — sortedDays — function
-- reports.js:1096 — daysNote — function constant
-- reports.js:1098 — gapNote — function constant
-- reports.js:1099 — renderDays — function
-- reports.js:1177 — renderList — function
-- reports.js:1227 — tableFile — function
-- reports.js:1258 — goPreset — function
-- reports.js:1262 — renderAll — function
-- reports.js:1269 — setRange — function
-- reports.js:1285 — toWestern — function constant
-- reports.js:1286 — parseDate — function
-- reports.js:1299 — makeField — function
-- reports.js:1329 — errText — function constant
-- reports.js:1331 — validatePair — function
-- reports.js:1352 — isSheet — function constant
-- reports.js:1353 — focusables — function constant
-- reports.js:1355 — finishDlgAnims — function
-- reports.js:1356 — openDialog — function
-- reports.js:1375 — closeDialog — function
-- reports.js:1415 — openRangeDialog — function
-- reports.js:1434 — p2 — function constant
-- reports.js:1435 — csvDay — function
-- reports.js:1458 — fileName — function constant
-- reports.js:1460 — fileNameHTML — function constant
-- reports.js:1461 — rowsText — function constant
-- reports.js:1463 — fileLine — function
-- reports.js:1470 — progressHTML — function
-- reports.js:1471 — renderExport — function
-- reports.js:1508 — resetExport — function
-- reports.js:1514 — openExportDialog — function
-- reports.js:1524 — wait — function constant
-- reports.js:1525 — runExport — function
+- reports.js:44 — arN — function constant
+- reports.js:51 — arMin — function constant
+- reports.js:52 — bdi — function constant
+- reports.js:303 — fmtInt — function
+- reports.js:304 — pct — function constant
+- reports.js:306 — clock — function
+- reports.js:311 — suffix — function constant
+- reports.js:312 — fmtTime — function constant
+- reports.js:313 — fmtHour — function constant
+- reports.js:317 — NUMS — function constant
+- reports.js:319 — nw — function constant
+- reports.js:320 — range2 — function constant
+- reports.js:321 — timeRange — function constant
+- reports.js:322 — timeText — function constant
+- reports.js:323 — hourRange — function
+- reports.js:327 — hourText — function constant
+- reports.js:334 — spanNote — function constant
+- reports.js:348 — toDn — function constant
+- reports.js:349 — isoOf — function constant
+- reports.js:350 — partsOf — function constant
+- reports.js:351 — wdOf — function constant
+- reports.js:352 — wdLong — function constant
+- reports.js:353 — wdShort — function constant
+- reports.js:354 — wdStrip — function constant
+- reports.js:355 — monthOf — function constant
+- reports.js:357 — dateBare — function constant
+- reports.js:358 — dateText — function constant
+- reports.js:360 — dayText — function constant
+- reports.js:361 — numDate — function constant
+- reports.js:362 — rangeText — function
+- reports.js:369 — plain — function constant
+- reports.js:374 — openAt — function constant
+- reports.js:383 — levelOf — function constant
+- reports.js:395 — mulberry32 — function
+- reports.js:403 — ss — function constant
+- reports.js:404 — bump — function constant
+- reports.js:405 — target — function
+- reports.js:412 — simulate — function
+- reports.js:472 — hasReadings — function constant
+- reports.js:473 — dayModel — function
+- reports.js:486 — buildModel — function
+- reports.js:527 — weekMetrics — function
+- reports.js:549 — motionOn — function constant
+- reports.js:553 — f2 — function constant
+- reports.js:558 — parseIso — function constant
+- reports.js:566 — urlFor — function
+- reports.js:599 — syncUrl — function
+- reports.js:610 — finishRail — function
+- reports.js:620 — animateRail — function
+- reports.js:664 — railFocusables — function constant
+- reports.js:666 — setRailModal — function constant
+- reports.js:679 — setRail — function constant
+- reports.js:702 — menuItems — function constant
+- reports.js:703 — showLayer — function
+- reports.js:712 — hideLayer — function
+- reports.js:746 — onFrameChange — function constant
+- reports.js:783 — opsState — function constant
+- reports.js:786 — renderStatus — function
+- reports.js:811 — say — function constant
+- reports.js:826 — levelChip — function constant
+- reports.js:837 — renderHead — function
+- reports.js:862 — renderCards — function
+- reports.js:898 — rampColor — function
+- reports.js:909 — valText — function constant
+- reports.js:918 — dayForm — function constant
+- reports.js:919 — heatCell — function
+- reports.js:936 — heatRuns — function
+- reports.js:946 — renderHeat — function
+- reports.js:1005 — hasValues — function constant
+- reports.js:1006 — weekMax — function constant
+- reports.js:1007 — dayMax — function constant
+- reports.js:1010 — dayBar — function
+- reports.js:1016 — renderDay — function
+- reports.js:1031 — renderHours — function
+- reports.js:1053 — pickDay — function
+- reports.js:1079 — tipHTML — function
+- reports.js:1091 — showTip — function
+- reports.js:1108 — hideTip — function
+- reports.js:1114 — focusCell — function
+- reports.js:1186 — sortedDays — function
+- reports.js:1195 — daysNote — function constant
+- reports.js:1197 — gapNote — function constant
+- reports.js:1200 — waitNote — function constant
+- reports.js:1201 — dayNotes — function constant
+- reports.js:1202 — renderDays — function
+- reports.js:1281 — renderList — function
+- reports.js:1332 — tableFile — function
+- reports.js:1364 — goPreset — function
+- reports.js:1368 — renderAll — function
+- reports.js:1376 — setRange — function
+- reports.js:1416 — later — function constant
+- reports.js:1417 — clearTimers — function constant
+- reports.js:1418 — ph — function constant
+- reports.js:1419 — phBox — function constant
+- reports.js:1420 — valueSlot — function constant
+- reports.js:1421 — busyEls — function constant
+- reports.js:1426 — pendGlance — function
+- reports.js:1441 — pendPattern — function
+- reports.js:1469 — pendDays — function
+- reports.js:1496 — retryLabels — function constant
+- reports.js:1497 — alertHTML — function
+- reports.js:1502 — wireAlert — function
+- reports.js:1509 — paintLoading — function
+- reports.js:1514 — paintError — function
+- reports.js:1538 — clearPhase — function
+- reports.js:1548 — applyPhase — function
+- reports.js:1563 — startLoading — function
+- reports.js:1576 — arrive — function
+- reports.js:1593 — fail — function
+- reports.js:1602 — retry — function
+- reports.js:1626 — toWestern — function constant
+- reports.js:1627 — parseDate — function
+- reports.js:1640 — makeField — function
+- reports.js:1670 — errText — function constant
+- reports.js:1672 — validatePair — function
+- reports.js:1693 — isSheet — function constant
+- reports.js:1694 — focusables — function constant
+- reports.js:1696 — finishDlgAnims — function
+- reports.js:1697 — openDialog — function
+- reports.js:1716 — closeDialog — function
+- reports.js:1756 — openRangeDialog — function
+- reports.js:1775 — p2 — function constant
+- reports.js:1776 — csvDay — function
+- reports.js:1799 — fileName — function constant
+- reports.js:1801 — fileNameHTML — function constant
+- reports.js:1802 — rowsText — function constant
+- reports.js:1804 — fileLine — function
+- reports.js:1811 — progressHTML — function
+- reports.js:1812 — renderExport — function
+- reports.js:1849 — resetExport — function
+- reports.js:1855 — openExportDialog — function
+- reports.js:1865 — wait — function constant
+- reports.js:1866 — runExport — function
 
 ## tuner.js
 
