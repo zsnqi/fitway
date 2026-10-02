@@ -24,7 +24,17 @@ Nothing for this milestone. Codex works on `agent-environment-r01` in its own wo
    `DESIGN-SPEC.md` row IDs and from `app.js`, `components.js` and `reports.js` functions to line numbers; the
    verifier probe kit moved into `eclipse/tools/` with its root, output folder and port taken from environment
    variables and a tested run line; `eclipse/README.md` split into a short contract and a history log (the
-   coordinator decides the cut first).
+   coordinator decides the cut first). Mapped on 2026-10-02:
+   - 26 copies of the probe `lib.mjs` exist under `D:/fitway-temp/` and `D:/fitway-scratch/`. The fullest base is
+     `D:/fitway-temp/fonts-r1-verify/probes/` (per-variant server, cache switches, font holds, `PROBE_PORT`); add
+     `overflowProbe()` and `openReports()` from `D:/fitway-scratch/reports/work/probes/lib.mjs`, `open()` and
+     `shot()` from `D:/fitway-scratch/review/tools/lib.mjs`, and `geom.mjs` and `a11y.mjs` from
+     `D:/fitway-scratch/lane/work/`. Every copy reaches Playwright through `createRequire(<worktree>/package.json)`
+     with `@playwright/test`.
+   - The README has 1,932 lines. Contract sections: Thesis, Colours, Light model, Light tuner, Measurements, Line
+     cards and states, Open and capture (line 855), and Reports' files, states, table system and capture. History:
+     Evidence (line 1002, 453 lines), Lane fix round, Checks, and every "Step 3" and "Step 4" section. Mixed: the
+     preamble (lines 1-103) and Motion (lines 293-854), whose current rules 1-11 are interleaved with round history.
 2. **Reports' states (K-02)** in `design-research/owner-composition-exploration-r04/directions/eclipse/DESIGN-SPEC.md`:
    loading, page-level closed, unavailable, error and the not-current statuses, at 1440, 768 and 390 (320 for K-38),
    AR and EN. K-38 closes with it: at 320 AR «التقارير» overflows its box and moves 25.9 px when the status badge

@@ -74,7 +74,7 @@ authorities:
       actionIfTriggered: READ
 continuity:
   predecessorMilestones: []
-  currentHandoff: docs/phase-records/handoffs/agent-environment/20261002-204000-agent-environment-r01-activation.md
+  currentHandoff: docs/phase-records/handoffs/agent-environment/20261002-214500-agent-environment-r01-resume.md
   unresolvedDecisions: []
 verification:
   profile: focused repository-infrastructure profile; script unit tests for touched scripts, check:repository, check:agent-context, Biome

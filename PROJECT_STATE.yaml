@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-10-02T20:40:00+03:00
+updatedAt: 2026-10-02T21:45:00+03:00
 coordinator:
   owner: Primary coordinator and integrator for FITWAY; Owner r04 (concept-only Eclipse work) and agent-environment-r01 (resume, startup and brief tooling) are IN_PROGRESS.
   stateFilePolicy: coordinator-only
@@ -76,7 +76,7 @@ milestones:
       the agent's worktree, and quieter, guarded tooling.
     taskClass: repository-infrastructure
     taskPacket: docs/phase-records/task-packets/agent-environment-r01.yaml
-    taskPacketSha256: 6e00e853f1c9ef43c7f30c4a520ed06a6108eefc56ad6a78c1ef4c7756cdeb68
+    taskPacketSha256: 0f88a5071d888d182d2c721878cb8c19f30f7fb13480c8f2809e74355d7ba292
     dependencies: []
     ownerSession: claude-code-desktop:coordinator-16da798e
     branch: agent-environment-r01
@@ -109,9 +109,9 @@ milestones:
       - docs/archive/** and other milestones' handoffs and packets
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: 2026-10-02T20:40:00+03:00
+    lastHeartbeatAt: 2026-10-02T21:45:00+03:00
     leaseExpiresAt: 2026-10-05T23:30:00+03:00
-    handoff: docs/phase-records/handoffs/agent-environment/20261002-204000-agent-environment-r01-activation.md
+    handoff: docs/phase-records/handoffs/agent-environment/20261002-214500-agent-environment-r01-resume.md
     stopReason: null
     gates:
       unit: PENDING
