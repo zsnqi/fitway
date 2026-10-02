@@ -7,12 +7,18 @@
   <meta name="description" content="FITWAY Owner Reports page concept, Eclipse direction. Exploration concept with synthetic data. Not production.">
   <script>
     // Language and state before first paint: ?lang=ar|en (default ar), ?state=full|short (default full).
+    // K-02 (step 4's states round): ?state=loading|closed|delayed|unavailable|pending|error draws a page state over the
+    // full history, in the option ?option=a|b|c names (a when none is given). Without a page state or an option the page
+    // is the live page, unchanged.
     (function () {
       var p = new URLSearchParams(location.search), r = document.documentElement;
-      var en = p.get("lang") === "en";
+      var en = p.get("lang") === "en", st = p.get("state"), opt = p.get("option");
       r.lang = en ? "en" : "ar";
       r.dir = en ? "ltr" : "rtl";
-      r.dataset.state = p.get("state") === "short" ? "short" : "full";
+      r.dataset.state = st === "short" ? "short" : "full";
+      if (["loading", "closed", "delayed", "unavailable", "pending", "error"].indexOf(st) >= 0) r.dataset.page = st;
+      if (opt === "a" || opt === "b" || opt === "c") r.dataset.option = opt;
+      else if (r.dataset.page) r.dataset.option = "a";
     })();
   </script>
   <link rel="stylesheet" href="fonts/readex-pro.css">

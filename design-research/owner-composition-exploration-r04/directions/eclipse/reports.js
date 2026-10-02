@@ -23,6 +23,21 @@
   const RTL = LANG === "ar";
   const STATE = root.dataset.state === "short" ? "short" : "full";
   const params = new URLSearchParams(location.search);
+  /* K-02, step 4's states round: Reports' own page states, drawn three ways for the user to choose (options a, b, c;
+   * reports.html sets data-page and data-option before first paint). The concept's moment is the Daily page's: Wednesday
+   * 23 September, 7:42 PM; Closed is 5:12 AM the same day, before opening. Reports shows complete days only, so a status
+   * about now leaves its history whole, except in `pending`, where the edge has been offline since 9:10 PM on Tuesday
+   * 22 September and that evening's readings, buffered on the edge, have not arrived yet.
+   *   a  Daily's grammar: one skeleton with a placeholder in every awaited value, the alert in the period's card, the
+   *      pattern's light out under every status but Live, a waiting span noted where it falls.
+   *   b  History first: the light follows the data (the pattern keeps it while every day it shows is in), loading draws
+   *      what the schedule knows, a day still waiting is held back until it is whole.
+   *   c  Quiet: loading draws the page's frame and names only, an error is one message for the page; otherwise as a. */
+  const PAGE = root.dataset.page || "live";
+  const OPT = root.dataset.option || null;
+  let pageNow = PAGE; // the state shown: loading and error arrive into live
+  // The first payload: "ready" (every state but two), "loading", "error", or "retrying" (the error's one retry running).
+  let phase = PAGE === "loading" ? "loading" : PAGE === "error" ? "error" : "ready";
 
   /* ------------------------------------------------------------------ copy */
   // Arabic counted nouns: 1, 2, 3-10, 11-99 and hundreds (100, 200, ...).
@@ -139,6 +154,26 @@
       canceledSay: "أُلغي التصدير",
       readySay: (n) => `الملف جاهز، ${n}`,
       rangeSay: (r) => `تُعرض الفترة ${r}`,
+      // The page's states (K-02): the status words are the Daily page's (STW-1, STW-2).
+      delayed: "متأخر",
+      ago: (n) => `قبل ${n} دقيقة`,
+      closedWord: "مغلق",
+      opens: (t) => `يفتح ${t}`,
+      offline: "غير متصل",
+      noCount: "لا عدّ حاليًا",
+      errorWord: "خطأ",
+      errorLine: "تعذّر التحميل",
+      errorFull: "تعذّر تحميل قراءات الفترة",
+      errorHint: "تحقّق من الاتصال، ثم أعد المحاولة.",
+      errorSay: "تعذّر تحميل القراءات",
+      errorDates: (a, b) => `تعذّر تحميل القراءات من ${a} إلى ${b}`,
+      retrying: "جارٍ المحاولة…",
+      loadingWord: "جارٍ التحميل…",
+      loadingSay: "جارٍ تحميل قراءات الفترة",
+      pending: "قيد الانتظار",
+      waiting: "بانتظار القراءات",
+      since: "منذ",
+      waitDay: (d) => `${d} بانتظار القراءات`,
     },
     en: {
       skip: "Skip to content",
@@ -239,6 +274,25 @@
       canceledSay: "Export canceled",
       readySay: (n) => `Your file is ready, ${n}`,
       rangeSay: (r) => `Showing ${r}`,
+      delayed: "Delayed",
+      ago: (n) => `${n} min ago`,
+      closedWord: "Closed",
+      opens: (t) => `Opens ${t}`,
+      offline: "Offline",
+      noCount: "No current count",
+      errorWord: "Error",
+      errorLine: "Couldn't load",
+      errorFull: "Couldn't load the period's readings",
+      errorHint: "Check the connection, then try again.",
+      errorSay: "Couldn't load readings",
+      errorDates: (a, b) => `Couldn't load readings from ${a} to ${b}`,
+      retrying: "Trying again…",
+      loadingWord: "Loading…",
+      loadingSay: "Loading the period's readings",
+      pending: "Pending",
+      waiting: "Waiting for readings",
+      since: "since",
+      waitDay: (d) => `${d} waiting for readings`,
     },
   };
   const L = COPY[LANG];
@@ -328,6 +382,10 @@
   const BAND = ["quiet", "moderate", "busy", "packed"];
   // Camera outages: open minutes with no reading (minutes since 6:00 AM, inclusive).
   const MISSING = { [toDn("2026-09-17")]: [[240, 479]], [toDn("2026-08-31")]: [[252, 280]] };
+  // K-02, `pending`: the edge went offline at 9:10 PM on Tuesday 22 September and buffers since; the rest of that day is
+  // not received yet (not missing: it backfills on reconnect). Option b holds that day back (HOLD).
+  const PEND = PAGE === "pending" ? { [LAST_FULL]: [[910, DAY - 1]] } : {};
+  const HOLD = PAGE === "pending" && OPT === "b";
 
   // The Daily page's seeded minute simulation, generalised to an opening minute and a quiet start. With open 0 and
   // quiet 10 it is exactly the Daily page's simulateDay (same random draws), so the four Wednesdays it averages as
@@ -398,23 +456,25 @@
       const g = (0.93 + 0.0016 * t + (dn >= toDn("2026-09-16") ? 0.08 : 0)) * (0.95 + 0.1 * j());
       sim = simulate(90001 + dn, { open, quiet: wd === 6 ? 60 : 10, am: s.am * g, amAt: s.amAt + Math.round(8 * (j() - 0.5)), mid: s.mid, midAt: s.midAt, pm: s.pm * g, pmAt: s.pmAt + Math.round(20 * (j() - 0.5)) });
     }
-    const miss = MISSING[dn] || [];
-    const obs = (m) => m >= open && m < DAY && !miss.some(([a, b]) => m >= a && m <= b);
+    const miss = MISSING[dn] || [], pend = PEND[dn] || [];
+    const obs = (m) => m >= open && m < DAY && !miss.some(([a, b]) => m >= a && m <= b) && !pend.some(([a, b]) => m >= a && m <= b);
     let observed = 0, total = 0, peak = -1, peakM = -1, entries = 0;
     for (let m = open; m < DAY; m++) {
       if (!obs(m)) continue;
       observed++; total += sim.occ[m]; entries += sim.ent[m];
       if (sim.occ[m] > peak) { peak = sim.occ[m]; peakM = m; }
     }
-    DAYS.set(dn, { dn, wd, open, ...sim, miss, obs, observed, total, peak, peakM, entries, expected: DAY - open });
+    DAYS.set(dn, { dn, wd, open, ...sim, miss, pend, obs, observed, total, peak, peakM, entries, expected: DAY - open });
   }
   // A day as the reports see it: before the history starts it has no readings (its open minutes are missing).
   const hasReadings = (dn) => dn >= HIST_START && dn <= LAST_FULL;
   function dayModel(dn) {
     const wd = wdOf(dn), open = openAt(wd);
-    if (!hasReadings(dn)) return { dn, wd, open, expected: DAY - open, observed: 0, total: 0, peak: null, peakM: null, entries: 0, avg: null, miss: [], none: true };
+    if (!hasReadings(dn)) return { dn, wd, open, expected: DAY - open, observed: 0, total: 0, peak: null, peakM: null, entries: 0, avg: null, miss: [], pend: [], none: true };
     const d = DAYS.get(dn);
-    return { dn, wd, open, expected: d.expected, observed: d.observed, total: d.total, peak: d.observed ? d.peak : null, peakM: d.observed ? d.peakM : null, entries: d.entries, avg: d.observed ? d.total / d.observed : null, miss: d.miss, none: false };
+    // Option b holds a day still waiting for readings back: it counts nowhere until it is whole, and says so in its place.
+    if (HOLD && d.pend.length) return { dn, wd, open, expected: d.expected, observed: 0, total: 0, peak: null, peakM: null, entries: 0, avg: null, miss: [], pend: d.pend, none: false, held: true };
+    return { dn, wd, open, expected: d.expected, observed: d.observed, total: d.total, peak: d.observed ? d.peak : null, peakM: d.observed ? d.peakM : null, entries: d.entries, avg: d.observed ? d.total / d.observed : null, miss: d.miss, pend: d.pend, none: false };
   }
 
   /* ------------------------------------------------------------ the period's model
@@ -435,7 +495,7 @@
           for (let m = c * 60; m < c * 60 + 60; m++) {
             if (m < d.open) continue;
             expected++;
-            if (d.none) continue;
+            if (d.none || d.held) continue;
             const sim = DAYS.get(d.dn);
             if (!sim.obs(m)) continue;
             observed++; total += sim.occ[m]; samples.add(d.dn);
@@ -470,8 +530,10 @@
   const wow = (() => {
     const cur = weekMetrics(WOW.cur), prev = weekMetrics(WOW.prev);
     const comparable = cur.coverage >= WOW.minCoverage && prev.coverage >= WOW.minCoverage;
+    // K-02, `pending`: the last 7 days are not whole until the buffered evening arrives, so the comparison waits («قيد
+    // الانتظار», CRD-10's sentence), in every option.
     return {
-      cur, prev, comparable,
+      cur, prev, comparable, pending: PAGE === "pending",
       avgChange: comparable ? ((cur.avg - prev.avg) / prev.avg) * 100 : null,
       entriesChange: comparable ? ((cur.entries - prev.entries) / prev.entries) * 100 : null,
     };
@@ -702,21 +764,39 @@
   // it is Daily's moment, live with its last reading at 7:42 PM on Wednesday 23 September; its page states (loading,
   // closed, unavailable, error) come with Reports' own states in a later round (K-02).
   const NOW = { last: 822 };   // 7:42 PM, in minutes since 6:00 AM, as on the Daily page
+  // K-02: the Daily page's status words and marks (STW-1), for Reports' own states. Delayed is Daily's moment (the last
+  // reading 7:29 PM, 13 minutes ago); Closed is 5:12 AM, before the 6:00 AM opening; Offline (`unavailable`, and
+  // `pending`, whose edge has been offline since the evening before) has no count and no time; Error is the page's
+  // payload failing. While the page loads the status is not known (STW-2): the control is set aside for the words.
+  const SVG_CLOCK = `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.2"/><path d="M12 7.6V12l3 2"/></svg>`;
+  const SVG_OFF = `<svg class="ico ico-off" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.2"/><path d="M6.3 17.7 17.7 6.3"/></svg>`;
+  const SVG_ERR = `<svg class="ico ico-err" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"/><path d="M12 7.6v5.4M12 16.2v.2"/></svg>`;
   const OPS_STATES = {
     live: () => ({ cls: "", mark: `<span class="dot" aria-hidden="true"></span>`, word: L.live, line: `${L.lastReading} ${timeText(NOW.last)}` }),
+    delayed: () => ({ cls: "is-delayed", mark: SVG_CLOCK, word: L.delayed, line: `${L.lastReading} ${timeText(NOW.last - 13)}`, ago: L.ago(13) }),
+    closed: () => ({ cls: "is-closed", mark: `<span class="dot ring" aria-hidden="true"></span>`, word: L.closedWord, line: L.opens(timeText(0)) }),
+    offline: () => ({ cls: "is-off", mark: SVG_OFF, word: L.offline, line: L.noCount }),
+    error: () => ({ cls: "is-err", mark: SVG_ERR, word: L.errorWord, line: L.errorLine, detail: `${L.errorFull}. ${L.errorHint}` }),
   };
-  let opsState = "live";
+  const opsState = () => (phase === "error" || phase === "retrying" ? "error" : pageNow === "unavailable" || pageNow === "pending" ? "offline"
+    : pageNow === "closed" || pageNow === "delayed" ? pageNow : "live");
+  let statusLoad = null;
   function renderStatus() {
-    const s = OPS_STATES[opsState](), btn = layers.ops.btn;
+    const btn = layers.ops.btn;
+    // STW-2: while the page loads, the words «جارٍ التحميل…» stand where the control will be, boxless and not a control.
+    const loading = phase === "loading";
+    if (loading && !statusLoad) { statusLoad = Object.assign(document.createElement("span"), { className: "hb-load", textContent: L.loadingWord }); btn.before(statusLoad); }
+    if (!loading && statusLoad) { statusLoad.remove(); statusLoad = null; }
+    btn.hidden = loading;
+    const s = OPS_STATES[opsState()]();
     btn.className = `hbadge${s.cls ? ` ${s.cls}` : ""}`;
     $("#ops-btn-state").innerHTML = `<span class="sr-only">${L.opsTitle}: </span>${s.mark}<span class="hb-word">${s.word}</span>` +
       `<span class="hb-line"><span class="sr-only">${RTL ? "، " : ", "}</span><span aria-hidden="true">· </span>${s.line}</span>`;
     $("#ops-state").className = `ops-state${s.cls ? ` ${s.cls}` : ""}`;
     $("#ops-state").innerHTML = `${s.mark}<span>${s.word}</span>`;
-    $("#ops-last").innerHTML = s.line;
+    $("#ops-last").innerHTML = s.detail || s.line + (s.ago ? `<span class="sep" aria-hidden="true">·</span><span class="ops-ago">${s.ago}</span>` : "");
     $("#ops-hours").innerHTML = `${L.hours} ${timeRange(0, DAY)}`;
   }
-  renderStatus();
 
   const say = (text) => { const el = $("#say"); el.textContent = ""; requestAnimationFrame(() => { el.textContent = text; }); };
 
@@ -747,7 +827,13 @@
   function renderHead() {
     const n = model.n, custom = range.kind === "custom";
     const sep = `<span class="sep" aria-hidden="true">·</span>`;
-    const tail = model.withReadings === n ? (custom ? L.days(n) : "")
+    // K-02: while the page loads or could not load, the period's dates and a custom period's length are the request,
+    // real text from the first paint; how many days have readings comes with the payload. Option b names a day it holds
+    // back (`pending`): «22 سبتمبر بانتظار القراءات».
+    const held = model.days.find((d) => d.held);
+    const tail = phase !== "ready" ? (custom ? L.days(n) : "")
+      : held ? `${custom ? `${L.days(n)}${sep}` : ""}${L.waitDay(dateText(held.dn))}`
+      : model.withReadings === n ? (custom ? L.days(n) : "")
       : model.withReadings ? L.daysWith(model.withReadings, n)
       : custom ? `${L.noReadings}${sep}${L.days(n)}` : L.noReadings;
     $("#sub").innerHTML = `<span class="sub-part">${rangeText(model.a, model.b)}</span>${tail ? `${sep}<span class="sub-part">${tail}</span>` : ""}`;
@@ -766,7 +852,9 @@
   function renderCards() {
     $("#trend-meta").innerHTML = rangeText(WOW.cur[0], WOW.cur[1], false);
     const tb = $("#trend-body");
-    if (wow.comparable) {
+    if (wow.pending) {
+      tb.innerHTML = `<p class="stat-value"><span class="stat-say">${L.pending}</span></p><div class="stat-foot"></div>`;
+    } else if (wow.comparable) {
       const c = wow.avgChange, kind = c >= 5 ? "busier" : c <= -5 ? "quieter" : "same";
       // The value and its measure. The span it compares with is not written beside it: the owner reads the comparison
       // without it, and it made the card too full (Q17, rejected by the user on 2026-10-01); the card's description keeps
@@ -886,8 +974,9 @@
     // is drawn from fewer than 3 days. The day form writes closed and no-reading hours in words and prints every number,
     // so its key holds only the marks its bars carry, and none in an empty period, where there is nothing to explain.
     const anyFew = model.heat.flat().some((x) => x.state === "value" && x.avg > 0 && x.samples < MIN_DAYS);
-    const marks = (b ? `<li><span class="k kt" aria-hidden="true"></span><span>${L.busiestKey}</span></li>` : "") +
-      (anyFew ? `<li><span class="k kf" aria-hidden="true"></span><span>${L.fewKey}</span></li>` : "");
+    // (data-mark: a mark the data brings; while the page loads or could not load it keeps its place, unseen.)
+    const marks = (b ? `<li data-mark><span class="k kt" aria-hidden="true"></span><span>${L.busiestKey}</span></li>` : "") +
+      (anyFew ? `<li data-mark><span class="k kf" aria-hidden="true"></span><span>${L.fewKey}</span></li>` : "");
     $("#heat-key").innerHTML = day ? (lit ? marks : "") : `<li><span>${L.keyFewer}</span><span class="ramp" aria-hidden="true"></span><span>${L.keyMore}</span></li>
     <li><span class="k k0" aria-hidden="true">0</span><span>${L.empty}</span></li>
     <li><span class="k kc" aria-hidden="true"></span><span>${L.closed}</span></li>
@@ -1062,8 +1151,8 @@
   heatScroll.addEventListener("scroll", () => { if (tipFor) showTip(tipFor); }, { passive: true });
   // Crossing 1280 px redraws the pattern in that size's form, and its readout closes; crossing 720 px redraws day by day
   // as a list or a table (BRK-10).
-  mqWide.addEventListener("change", () => { renderHeat(); renderDays(); });
-  mqPhone.addEventListener("change", () => renderDays());
+  mqWide.addEventListener("change", () => { renderHeat(); renderDays(); applyPhase(); });
+  mqPhone.addEventListener("change", () => { renderDays(); applyPhase(); });
 
   const numbersBtn = $("#numbers");
   numbersBtn.addEventListener("click", () => {
@@ -1096,6 +1185,10 @@
   const daysNote = (words, a, b) => spanNote(words, dateText(a), dateText(b));
   // A camera gap inside a day (minutes since 6:00 AM, the last one inclusive).
   const gapNote = ([a, b]) => spanNote(L.noReadings, timeText(a), timeText(b + 1));
+  // K-02, `pending` in options a and c: the part of a day not received yet, one sentence with the words first, in the
+  // place a camera gap's note takes: «بانتظار القراءات منذ 9:10 م» (the Daily page's waiting sentence, decision 12).
+  const waitNote = ([a]) => `<span class="gapnote is-wait"><span class="w">${L.waiting}</span> <span class="nw"><span class="w">${L.since}</span> <span class="rg">${timeText(a)}</span></span></span>`;
+  const dayNotes = (d) => d.miss.map(gapNote).join("") + (d.pend || []).map(waitNote).join("");
   function renderDays() {
     $("#days-sub").innerHTML = L.days(model.n);
     // Below 1280 px an empty period says its sentence once, in the pattern's card with the way back (EMP-1); the day card
@@ -1145,9 +1238,10 @@
       sortedDays().forEach((d) => {
         if (d.none) { pre.push(d); return; }
         flushPre();
+        if (d.held) { out.push(dayNoneRow(d, L.waiting)); return; }
         if (!d.observed) { out.push(dayNoneRow(d, L.noReadings)); return; }
         const top = model.top && model.top.dn === d.dn;
-        const notes = d.miss.map(gapNote).join("");
+        const notes = dayNotes(d);
         const edge = edgeOf(d);
         const cls = [top ? "is-top" : "", edge ? "wk-edge" : "", notes ? "has-note" : ""].filter(Boolean).join(" ");
         out.push(`<tr role="row"${cls ? ` class="${cls}"` : ""}>${dayHead(d)}` +
@@ -1187,9 +1281,10 @@
     sortedDays().forEach((d) => {
       if (d.none) { pre.push(d); return; }
       flushPre();
+      if (d.held) { items.push(dayNoneItem(d, L.waiting)); return; }
       if (!d.observed) { items.push(dayNoneItem(d, L.noReadings)); return; }
       const top = model.top && model.top.dn === d.dn;
-      const notes = d.miss.map(gapNote).join("");
+      const notes = dayNotes(d);
       items.push(`<li class="dli${top ? " is-top" : ""}">` +
         `<span class="dl-day">${dayText(d.dn)}</span>` +
         `<span class="dl-pk"><span class="dl-pv">${bdi(d.peak)}</span></span>` +
@@ -1229,7 +1324,8 @@
     const hhmm = (m) => { const c = clock(m); const h = (c.h12 % 12) + (c.pm ? 12 : 0); return `${String(h).padStart(2, "0")}:${String(c.mm).padStart(2, "0")}`; };
     const lines = ["day,weekday,peak,peak_time,average_inside,entries,note"];
     sortedDays().forEach((d) => {
-      const note = d.none ? "no readings yet" : !d.observed ? "no readings" : d.miss.map(([a, b]) => `no readings ${hhmm(a)}-${hhmm(b + 1)}`).join("; ");
+      const note = d.none ? "no readings yet" : d.held ? "waiting for readings" : !d.observed ? "no readings"
+        : [...d.miss.map(([a, b]) => `no readings ${hhmm(a)}-${hhmm(b + 1)}`), ...(d.pend || []).map(([a]) => `waiting for readings since ${hhmm(a)}`)].join("; ");
       lines.push([isoOf(d.dn), WD_EN[d.wd], d.observed ? d.peak : "", d.observed ? hhmm(d.peakM) : "", d.observed ? Math.round(d.avg) : "", d.observed ? d.entries : "", q(note)].join(","));
     });
     if (tableUrl) URL.revokeObjectURL(tableUrl);
@@ -1265,12 +1361,239 @@
     renderHeat();
     renderDays();
     syncUrl();
+    applyPhase();
   }
   function setRange(next, announce = true) {
     range = next;
     model = buildModel(range.a, range.b);
+    // A new period is a new request: while the page could not load, asking for another period is its retry.
+    if (phase === "error" || phase === "retrying") { startLoading(LOAD.retry); return; }
     renderAll();
-    if (announce) say(plain(L.rangeSay(rangeText(range.a, range.b))));
+    if (announce && phase === "ready") say(plain(L.rangeSay(rangeText(range.a, range.b))));
+  }
+
+  /* ---------------------------------------------------------------- the page's states (K-02)
+   * Step 4's states round: Reports' loading, page-level closed, unavailable and error, and the statuses that say its
+   * data is not current, in three options for the user (data-option a, b, c). Each draws over the live page's own
+   * render: renderAll() renders the period, then applyPhase() writes the state into the same places, so the arrival of
+   * the payload is the live page's render, whose boxes the placeholders already hold (DESIGN_GUIDE §6).
+   *   loading  0-300 ms the value slots wait empty (data-load="wait"); from 300 ms the skeleton, at least 400 ms; one
+   *            announcement at 1 s; the 10 s ceiling turns it into Error. ?arrive=<ms> lets the payload arrive into
+   *            live that many ms after the page opened; ?arrive=never lets the ceiling run; without it the skeleton is
+   *            held, for review. The header says «جارٍ التحميل…» (STW-2). Names, the period's dates (the request),
+   *            the pattern's axes and the period's days are real text from the first paint; the pattern never draws a
+   *            bar or a cell it does not have (DESIGN_GUIDE §6: charts do not imitate data).
+   *              a  a placeholder in every awaited value: the glance, the pattern's subtitle, day by day's rows;
+   *              b  placeholders in the glance only; the pattern draws what the schedule knows (its closed runs, in
+   *                 words); day by day steps aside until the payload (it adds below, moving nothing);
+   *              c  no placeholders: the page's frame and its names; day by day steps aside.
+   *   error    the payload could not be loaded (or the ceiling was reached): the header's Error; the one retry, which
+   *            takes focus and runs as an action (STA-9), then arrives into live.
+   *              a, b  the period's card holds the alert and the retry in its own box (EMP-5's place: the page's first
+   *                    answer); the other cards keep their names, the pattern its frame; day by day steps aside;
+   *              c     one message for the page under its controls, in the empty period's form (EMP-1: the mark, one
+   *                    sentence naming what is missing and its dates, one action); the cards step aside.
+   *   closed, delayed, unavailable  the header's status (STW-1); the history is whole, so the page is unchanged but
+   *            for its light: a and c turn the pattern's light off under every status but Live (DECISIONS 8, Daily's
+   *            rule); b keeps it while every day the pattern shows is in (LGT-8: "the light returns with a complete
+   *            value").
+   *   pending  Offline since 9:10 PM on 22 September: a and c keep the received part of that day and note the rest,
+   *            «بانتظار القراءات منذ 9:10 م»; b holds the day back («بانتظار القراءات» in its place, the subtitle naming
+   *            it) so every figure is of whole days; "Last 7 days" waits («قيد الانتظار») in all three. */
+  const LOAD = { delay: 300, min: 400, say: 1000, ceiling: 10000, retry: 1200 };
+  const ARRIVE = (() => { const a = params.get("arrive"); if (a === "never") return "never"; const n = Number(a); return a != null && a !== "" && Number.isFinite(n) && n >= 0 ? n : null; })();
+  const load = { shownAt: null, timers: [], announcements: [] };
+  const later = (ms, fn) => load.timers.push(setTimeout(fn, Math.max(0, ms)));
+  const clearTimers = () => { load.timers.splice(0).forEach(clearTimeout); };
+  const ph = (w, cls = "") => `<i class="ph-bar${cls ? ` ${cls}` : ""}" style="--w:${w}px" aria-hidden="true"></i>`;
+  const phBox = (w = 76) => `<i class="ph-box" style="width:${w}px" aria-hidden="true"></i>`;
+  const valueSlot = (w) => `<p class="stat-value"><span class="num ph-slot" aria-hidden="true">${w ? ph(w) : ""}</span></p>`;
+  const busyEls = () => [$("#cards"), $("#pattern"), $("#days")];
+  let retryBtn = null;
+
+  // The glance in waiting: every value's own slot holds its placeholder (shown in a and b; c keeps them unseen, so its
+  // slots wait empty in the same boxes). The "Last 7 days" span is a date range, known before the payload.
+  function pendGlance(withPh) {
+    const w = (n) => (withPh ? n : 0);
+    $("#avg-body").innerHTML = `${valueSlot(w(56))}<div class="stat-foot"></div>`;
+    // The peak's "when" as the live meta draws it: the day, then the time (on two lines on a phone).
+    $("#peak-meta").innerHTML = withPh ? `${ph(104)}<span class="sep ph-sep" aria-hidden="true">·</span>${ph(40)}` : "";
+    $("#peak-body").innerHTML = `${valueSlot(w(56))}<div class="stat-foot">${withPh ? phBox() : ""}</div>`;
+    $("#entries-body").innerHTML = `${valueSlot(w(112))}<div class="stat-foot">${withPh ? `<span class="stat-aside">${ph(88)}</span>` : ""}</div>`;
+    $("#trend-body").innerHTML = `${valueSlot(w(88))}<div class="stat-foot">${withPh ? `${phBox(104)}<span class="stat-aside">${ph(88)}</span>` : ""}</div>`;
+  }
+  // The pattern in waiting: its title, the first part of its subtitle, its axes and its key's fixed words are real;
+  // the busiest hour (a placeholder in a, held unseen otherwise) and the key's data marks keep their places, unseen.
+  // From 1280 px the week's grid draws its axes on the empty plate (b adds the closed runs the schedule knows); below,
+  // the week strip names its days (none chosen, nothing to choose yet) over the hours' empty frame.
+  function pendPattern(withPh) {
+    const sub = $("#pattern-sub");
+    sub.innerHTML = `<span class="ps-part">${L.patternSub}</span><span class="sep ph-sep" aria-hidden="true">·</span><span class="ps-part">${ph(168, `ph-lab${withPh ? "" : " ph-unseen"}`)}</span>`;
+    numbersBtn.disabled = true;
+    if (dayForm()) {
+      const strip = [0, 1, 2, 3, 4, 5, 6].map((wd) => `<button type="button" class="wk-b" role="radio" aria-checked="false" disabled><span class="wk-col" aria-hidden="true"></span><span class="wk-n" aria-hidden="true">${wdStrip(wd)}</span><span class="sr-only">${wdLong(wd)}</span></button>`).join("");
+      const rows = Array.from({ length: HOURS }, (_, c) => `<tr role="row"${c % 3 === 0 ? ` class="is-tick"` : ""}><th scope="row" role="rowheader" class="hb-h">${bdi(fmtHour(c * 60))}</th><td role="cell" class="hb-c"></td></tr>`).join("");
+      // (The caption, as the day's own table has one: its box is part of the table's height.)
+      dayHost.innerHTML = `<div class="wk-strip" role="radiogroup" aria-label="${L.weekStrip}" aria-disabled="true">${strip}</div><table class="hb is-frame" id="hb" role="table"><caption class="sr-only">${L.heatCaption(plain(rangeText(model.a, model.b)))}</caption><tbody>${rows}</tbody></table>`;
+      return;
+    }
+    const hours = [];
+    for (let c = 0; c < HOURS; c++) {
+      const show = c % 3 === 0;
+      hours.push(`<th scope="col" class="hh${show ? " is-shown" : ""}" role="columnheader"><span class="${show ? "hh-t" : "sr-only"}">${bdi(fmtHour(c * 60))}</span></th>`);
+    }
+    const cells = (wd) => (OPT === "b"
+      ? heatRuns(wd).map(([c0, c1]) => (model.heat[wd][c0].state === "closed"
+        ? `<td class="hc closed" role="gridcell"${c1 > c0 ? ` colspan="${c1 - c0 + 1}"` : ""}><span class="run">${L.closed}</span></td>`
+        : Array.from({ length: c1 - c0 + 1 }, () => `<td class="hc ph-cell" role="gridcell"></td>`).join(""))).join("")
+      : `<td class="hc ph-cell" role="gridcell"></td>`.repeat(HOURS));
+    const rows = [0, 1, 2, 3, 4, 5, 6].map((wd) => `<tr role="row"><th scope="row" class="hd" role="rowheader">${wdLong(wd)}</th>${cells(wd)}</tr>`);
+    heat.innerHTML = `<caption class="sr-only">${L.heatCaption(rangeText(model.a, model.b))}</caption><colgroup><col class="col-day">${"<col>".repeat(HOURS)}</colgroup>
+      <thead><tr role="row"><th scope="col" class="heat-corner" role="columnheader"><span class="sr-only">${L.dayHead}</span></th>${hours.join("")}</tr></thead>
+      <tbody>${rows.join("")}</tbody>`;
+  }
+  // Day by day in waiting (option a): the period's days are the request, so each keeps its date; its figures wait in
+  // placeholders, its notes column empty. On a phone, the newest 7 as the list draws them. Sorting waits.
+  function pendDays() {
+    if (OPT !== "a") { $("#days").hidden = true; return; }
+    $("#days").hidden = false;
+    tableExport.classList.add("is-disabled");
+    tableExport.setAttribute("aria-disabled", "true");
+    const days = [...model.days].sort((x, y) => y.dn - x.dn);
+    if (mqPhone.matches) {
+      const n = days.length;
+      const items = days.slice(0, LIST_N).map((d) => `<li class="dli"><span class="dl-day">${dayText(d.dn)}</span><span class="dl-pk"><span class="dl-pv">${ph(24, "ph-pv")}</span></span><span class="dl-more">${ph(56)}${ph(72)}</span><span class="dl-pt">${ph(64)}</span></li>`).join("");
+      dlist.innerHTML = `<div class="dl-sortrow"><label class="dl-sort is-disabled"><span class="sr-only">${L.sortName}</span>${ICON.sort}<select id="dl-sort" disabled><option>${L.sorts["day-desc"]}</option></select></label></div>
+        <ol class="day-list" id="day-list" aria-label="${plain(L.daysCaption(rangeText(model.a, model.b)))}">${items}</ol>` +
+        (n > LIST_N ? `<button class="rbtn dl-more-btn" id="dl-all" type="button" disabled>${L.showAll}</button>` : "");
+      return;
+    }
+    const cols = [["day", "c-day"], ["peak", "c-peak n"], ["avg", "c-avg n"], ["entries", "c-entries n"], ["notes", "c-notes"]];
+    const head = cols.map(([k, cls]) => `<th scope="col" role="columnheader" class="${cls}"><span class="sort is-still"><span>${L.cols[k]}</span></span></th>`).join("");
+    const edge = (d) => d.wd === 0 && d.dn !== model.a;
+    const rows = days.map((d) => `<tr role="row"${edge(d) ? ` class="wk-edge"` : ""}><th scope="row" role="rowheader" class="c-day"><span class="dd"><span class="wd">${wdShort(d.wd)}</span> <span class="dt">${dateText(d.dn)}</span></span></th>` +
+      `<td role="cell" class="c-peak n"><span class="pk"><span class="pv">${ph(20, "ph-lab")}</span><span class="pt">${ph(44)}</span></span></td>` +
+      `<td role="cell" class="c-avg n">${ph(18, "ph-lab")}</td><td role="cell" class="c-entries n">${ph(36, "ph-lab")}</td><td role="cell" class="c-notes"></td></tr>`).join("");
+    daysTable.innerHTML = `<caption class="sr-only">${L.daysCaption(rangeText(model.a, model.b))}</caption><thead><tr role="row">${head}</tr></thead><tbody>${rows}</tbody>`;
+  }
+  // The alert (EMP-2's sentence form, EMP-5's role): written a moment after its region is in place, so it is announced
+  // once; the retry takes focus. While the retry runs (STA-9) it says «جارٍ المحاولة…», keeps focus and is aria-disabled.
+  function alertHTML(sentence) {
+    const trying = phase === "retrying";
+    return `<p class="stat-say is-err" id="err-say" role="alert"></p><button class="rbtn rbtn-primary" id="retry" type="button"${trying ? ' aria-disabled="true" aria-busy="true"' : ""}>${trying ? L.retrying : L.retry}</button>` +
+      `<template id="err-text">${SVG_ERR}<span>${sentence}</span></template>`;
+  }
+  function wireAlert(host, focus) {
+    retryBtn = $("#retry", host);
+    retryBtn.addEventListener("click", retry);
+    const say1 = $("#err-say", host), text = $("#err-text", host).innerHTML;
+    setTimeout(() => { if (say1.isConnected) { say1.innerHTML = text; load.announcements.push({ t: Math.round(performance.now()), text: plain(text), alert: true }); } }, 50);
+    if (focus) retryBtn.focus();
+  }
+  function paintLoading() {
+    pendGlance(OPT !== "c");
+    pendPattern(OPT === "a");
+    pendDays();
+  }
+  function paintError(focus) {
+    $("#days").hidden = true;
+    if (OPT === "c") {
+      $("#cards").hidden = true;
+      $("#pattern").hidden = true;
+      let msg = $("#page-msg");
+      if (!msg) {
+        msg = Object.assign(document.createElement("section"), { className: "card rp-msg", id: "page-msg" });
+        $(".rp-tools").after(msg);
+      }
+      msg.innerHTML = alertHTML(L.errorDates(dateText(model.a, true), dateText(model.b, true)));
+      wireAlert(msg, focus);
+      return;
+    }
+    pendGlance(false);
+    pendPattern(false);
+    const card = $("#card-period");
+    card.classList.add("is-alert");
+    const box = Object.assign(document.createElement("div"), { className: "rp-alert", id: "rp-alert" });
+    box.innerHTML = alertHTML(L.errorSay);
+    card.append(box);
+    wireAlert(box, focus);
+  }
+  // Every state's marks come off before the live render is written again (the arrival, or a period while ready).
+  function clearPhase() {
+    $("#rp-alert")?.remove();
+    $("#page-msg")?.remove();
+    $("#card-period").classList.remove("is-alert");
+    $("#cards").hidden = false;
+    $("#pattern").hidden = false;
+    numbersBtn.disabled = false;
+    retryBtn = null;
+  }
+  let focusAlert = phase === "error";
+  function applyPhase() {
+    clearPhase();
+    root.dataset.phase = phase;
+    const waiting = phase !== "ready";
+    busyEls().forEach((el) => (phase === "loading" || phase === "retrying" ? el.setAttribute("aria-busy", "true") : el.removeAttribute("aria-busy")));
+    exportBtn.disabled = waiting;
+    if (phase === "loading") paintLoading();
+    else if (waiting) { paintError(focusAlert); focusAlert = false; }
+    // The light (OWN-R6): the pattern's, while it holds a value. a and c: only under Live (Daily's rule, DECISIONS 8);
+    // b: in every status while the page has its payload, since what the pattern shows is whole (LGT-8).
+    const lit = !waiting && hasValues() && (pageNow === "live" || OPT === "b");
+    $("#pattern").classList.toggle("lit", lit);
+    $("#pattern").classList.toggle("lit-chart", lit);
+    renderStatus();
+  }
+  function startLoading(arriveAfter) {
+    clearTimers();
+    phase = "loading";
+    root.dataset.load = "wait";
+    load.shownAt = null;
+    const t0 = performance.now();
+    renderAll();
+    later(LOAD.delay, () => { if (phase === "loading") { root.dataset.load = "shown"; load.shownAt = performance.now(); } });
+    later(LOAD.say, () => { if (phase === "loading") say(L.loadingSay); });
+    if (typeof arriveAfter === "number") later(arriveAfter, arrive);
+    else if (arriveAfter === "never") later(LOAD.ceiling, () => fail());
+    return t0;
+  }
+  function arrive() {
+    if (phase !== "loading" && phase !== "retrying") return false;
+    const now = performance.now();
+    // Once shown, a skeleton stays at least 400 ms, so it never flickers.
+    if (phase === "loading" && load.shownAt != null && now - load.shownAt < LOAD.min) { later(load.shownAt + LOAD.min - now, arrive); return false; }
+    clearTimers();
+    const hadFocus = Boolean(retryBtn && document.activeElement === retryBtn);
+    phase = "ready";
+    pageNow = "live";
+    delete root.dataset.load;
+    renderAll();
+    // The retry is gone with the alert: focus goes to the figures that replaced it, quietly (no ring on a region).
+    if (hadFocus) { const c = $("#cards"); c.tabIndex = -1; c.focus({ preventScroll: true }); }
+    load.arrivedAt = now;
+    say(plain(L.rangeSay(rangeText(range.a, range.b))));
+    return true;
+  }
+  function fail() {
+    if (phase !== "loading" && phase !== "retrying") return false;
+    clearTimers();
+    phase = "error";
+    delete root.dataset.load;
+    focusAlert = true;
+    renderAll();
+    return true;
+  }
+  function retry() {
+    if (phase !== "error") return false;
+    phase = "retrying";
+    retryBtn.textContent = L.retrying;
+    retryBtn.setAttribute("aria-disabled", "true");
+    retryBtn.setAttribute("aria-busy", "true");
+    busyEls().forEach((el) => el.setAttribute("aria-busy", "true"));
+    // The concept's retry succeeds after 1.2 s (STA-9 shows its working state at least 400 ms).
+    later(LOAD.retry, arrive);
+    later(LOAD.ceiling, fail);
+    return true;
   }
   segButtons.forEach((btn) => btn.addEventListener("click", () => {
     const k = btn.dataset.range;
@@ -1570,11 +1893,24 @@
   });
 
   /* ---------------------------------------------------------------- start */
-  renderAll();
+  if (phase === "loading") startLoading(ARRIVE);
+  else renderAll();
   window.__reports = {
     ready: false,
     lang: LANG,
     state: STATE,
+    // K-02: the page's state, its option, and the first payload's lifecycle (as the Daily page's __eclipse.load).
+    page: PAGE,
+    option: OPT,
+    get phase() { return phase; },
+    get shown() { return pageNow; },
+    load: {
+      arrive: () => arrive(),
+      fail: () => fail(),
+      retry: () => retry(),
+      show: () => { if (phase !== "loading") return false; root.dataset.load = "shown"; if (load.shownAt == null) load.shownAt = performance.now(); return true; },
+      get announcements() { return load.announcements.slice(); },
+    },
     get range() { return { kind: range.kind, from: isoOf(range.a), to: isoOf(range.b) }; },
     get model() {
       return {

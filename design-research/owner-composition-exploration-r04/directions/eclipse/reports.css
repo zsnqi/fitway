@@ -616,3 +616,72 @@ th.is-asc .sort-ico { transform: rotate(180deg); }
 .dli.is-none { display: block; padding-block: 14px; font-size: 12px; line-height: 18px; color: var(--ink-3); }
 @media (max-width: 359px) { .dli { column-gap: 8px; padding-inline: 4px; } }
 .dl-more-btn { width: 100%; margin-block: 8px 12px; }
+
+/* ------------------------------------------------------- the page's states (K-02)
+ * Step 4's states round: loading, closed, delayed, unavailable, pending and error, drawn three ways (html[data-option]
+ * a, b, c; reports.js "the page's states"). Every rule below applies only in a state or with an option, so the live
+ * page is unchanged. The language is the Daily page's (STA-10…14, PH-1…3, STW-1…2, EMP-5): one flat 6% fill for a
+ * placeholder, no sheen or motion; the status words and marks of the frame. */
+.rp { --ph: rgba(255, 255, 255, 0.06); }
+/* PH-1 in Reports' slots: the digits' ink band of the value's 46 px line (33 px, style.css), a caption's 9 px (the meta,
+ * an aside, a list's small lines, the table's peak time), a label's 10 px (the pattern's subtitle, the table's
+ * figures), the list's peak 14 px. */
+.rp .stat-meta > .ph-bar, .rp .stat-aside > .ph-bar, .rp .dl-more > .ph-bar, .rp .dl-pt > .ph-bar, .rp .pk .pt > .ph-bar { height: 9px; border-radius: 4px; }
+.rp .ph-lab { height: 10px; border-radius: 4px; }
+.rp .ph-pv { height: 14px; border-radius: 5px; }
+.rp .ph-unseen, .rp .ph-sep { visibility: hidden; }
+/* The key's data marks (the busiest point, the hatch) keep their places, unseen, until the payload brings them. */
+html:not([data-phase="ready"]) .rp .heat-key li[data-mark] { visibility: hidden; }
+/* The pattern's empty frame: the plate and its axes, no cell (charts do not imitate data, DESIGN_GUIDE §6). */
+.rp .hc.ph-cell { background: none; }
+/* Controls with nothing to act on yet are set aside in BTN-4's form: no fill, the quiet line, --ink-3. */
+.rp .switch:disabled, .rp .switch:disabled:hover { border-color: var(--line); color: var(--ink-3); cursor: default; }
+.rp .switch:disabled .switch-thumb { background: var(--ink-3); }
+.rp .wk-b:disabled { cursor: default; }
+.rp .wk-b:disabled:hover { color: var(--ink-2); background: none; }
+.rp .dl-sort.is-disabled, .rp .dl-sort.is-disabled:hover { box-shadow: inset 0 0 0 1px var(--line); background: none; color: var(--ink-3); }
+.rp .dl-sort.is-disabled select { color: var(--ink-3); cursor: default; }
+.rp .sort.is-still, .rp .sort.is-still:hover { color: inherit; cursor: default; }
+
+/* The error's alert (EMP-2's sentence, EMP-5's place): the sentence in heading type at 400, chalk, after the alert mark
+ * (17 px, --err), then the one primary "Try again", 15.5 px below it. */
+.rp .stat-say.is-err { display: inline-flex; align-items: center; gap: 8px; color: var(--ink); }
+.rp .stat-say .ico-err { width: 17px; height: 17px; color: var(--err); }
+.rp .rbtn-primary[aria-disabled="true"], .rp .rbtn-primary[aria-disabled="true"]:hover { border-color: transparent; background: rgba(245, 243, 242, 0.14); color: var(--ink-2); cursor: default; }
+/* a, b: the period's card holds the alert in its own box, which keeps its live height at every size (its figures keep
+ * their places, unseen), so nothing under it moves when the retry arrives. */
+.rp-period.is-alert { position: relative; }
+.rp-period.is-alert > .fig { visibility: hidden; }
+.rp-alert { position: absolute; inset: 0; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 15.5px; padding: 20px; }
+.rp-alert .stat-say { align-self: auto; }
+/* On a phone the period's card is a tall stack (two figures over one, or three at 320): the alert stands centred at its
+ * head, 40 in (EMP-1's inset), so it and its retry stay on the first screen above the bar (EMP-5). */
+@media (max-width: 720px) { .rp-alert { align-items: center; justify-content: flex-start; padding-block-start: 40px; text-align: center; } }
+/* c: one message for the page, in the empty period's form (EMP-1, OWN-R13): the mark, one sentence naming what is
+ * missing and its dates, one action; centred, padding 40 / 16, gap 16. The sentence in body type, chalk. */
+.rp-msg { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 40px 16px; text-align: center; }
+.rp-msg .stat-say { flex-direction: column; gap: 16px; align-self: auto; max-width: 52ch; font-size: 15px; line-height: 22.5px; white-space: normal; }
+.rp-msg .stat-say .ico-err { width: 22px; height: 22px; }
+/* After the retry arrives, focus goes to the figures that replaced the alert, quietly: a region never shows the ring. */
+.rp #cards:focus { outline: none; }
+
+/* K-38: the phone's title row at 320 px. «التقارير» needs 96 px, and Daily's widest Arabic badge (Offline, 142.1 px)
+ * left it 62.9, so the title moved 25.9 px when the status changed. In every option the title keeps its own width at
+ * 720 px and below, so a status that arrives or changes never moves it; the options make the room differently.
+ *   a, c  under 360 px the badge sets its chevron aside (its box and edge still say it opens) and pads 12 (HDR-3's
+ *         inset), and the widest status (Delayed in English, 102.3 px) fits beside the title and the menu;
+ *   b     under 360 px the status leaves the title row for a row of its own under it, at the inline start: the title
+ *         row holds the title and the menu, and any status fits. */
+@media (max-width: 720px) {
+  html[data-option] [data-frame] .head { grid-template-columns: max-content minmax(0, 1fr); }
+}
+@media (max-width: 359px) {
+  html[data-option="a"] [data-frame] .head-acts .hb-chev, html[data-option="c"] [data-frame] .head-acts .hb-chev { display: none; }
+  html[data-option="a"] [data-frame] .head-acts .hbadge, html[data-option="c"] [data-frame] .head-acts .hbadge { padding-inline: 12px; }
+  html[data-option="b"] [data-frame] .head { position: relative; grid-template-areas: "title menu" "status status" "sub sub" "concept concept"; }
+  html[data-option="b"] [data-frame] .head-acts { display: contents; }
+  html[data-option="b"] [data-frame] #ops-btn, html[data-option="b"] [data-frame] .hb-load { grid-area: status; justify-self: start; margin-block-start: 4px; }
+  html[data-option="b"] [data-frame] #menu-btn { grid-area: menu; justify-self: end; }
+  html[data-option="b"] [data-frame] #ops-pop { grid-area: status; inset-inline: 0 auto; }
+  html[data-option="b"] [data-frame] #menu-pop { grid-area: menu; }
+}

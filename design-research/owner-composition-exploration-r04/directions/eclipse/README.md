@@ -764,6 +764,7 @@ Daily page, the rail's Reports item. Query parameters:
 | `?dialog=range` / `?dialog=export` | Opens the date-range or the export dialog at load |
 | `?export=fail` | The first export attempt fails (then "Try again" succeeds) |
 | `?lang=ar|en`, `?motion=off` | As on the Daily page |
+| `?option=a|b|c&state=loading|closed|delayed|unavailable|pending|error` | Options for Reports' own states (K-02) and the 320 px title row (K-38), for the user to choose; not decided. `pending`: Offline since 9:10 PM on 22 Sep, that evening not received. With `state=loading`, `arrive=<ms>` lets the payload arrive into live and `arrive=never` lets the 10 s ceiling turn it into Error. An option without a state draws the live page with that option's title row; without an option, a state takes `a`. The live page without `option` is unchanged. Frames: `states-capture.mjs` |
 
 The period is kept in the URL, so a reload and the language link keep it. The Daily page's Reports link and Reports'
 Daily link carry `lang` (and `motion=off`).
