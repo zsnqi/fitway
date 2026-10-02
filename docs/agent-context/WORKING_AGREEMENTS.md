@@ -32,9 +32,11 @@ latest wording; never copy an entry into a resume point.
 - Visual design and taste judgments stay with Claude on the Opus definitions. Exact renders of
   every option go to the user for picks. (user, 2026-10-02)
 - Codex takes frozen fixes and edits, at the reasoning level the user set (xhigh as of
-  2026-10-02). The coordinator runs it directly through the installed Codex plugin
-  (`codex-companion.mjs task --write --cwd <worktree> --prompt-file <brief> --effort <level>`,
-  as a background job) from a tracked brief file. Each Codex round is judged as an evaluation:
+  2026-10-02). The coordinator runs it from a tracked brief file, without Codex's sandbox
+  (`docs/phase-records/handoffs/agent-environment/DECISIONS.md` item 7), in a harness
+  background shell (Git Bash, which has `<`):
+  `codex exec -s danger-full-access -C <worktree> -m gpt-6.1-sol -c model_reasoning_effort="xhigh" -c approval_policy="never" --json -o <run>/last-message.md - < <brief> > <run>/events.jsonl`.
+  The harness reports the exit; nothing polls. Each Codex round is judged as an evaluation:
   brief rows, held-out rows kept out of Codex's reach, and the failure cause; the brief rules
   live with the milestone's standing decisions. (user, 2026-10-02)
 - Every subagent is launched from a definition with a fixed effort; `CLAUDE.md` gives the choice
