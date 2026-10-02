@@ -4559,3 +4559,22 @@ The user ends this cloud session here and continues in a new cloud session. No a
   The wording round is launched: a fresh `owner-direction-builder` (Opus, `high`) on
   `briefs/step4-reports-wording-fixes.md`, in `/home/user/s04` on `e8461a5`, scratch folder
   `…/scratchpad/wording-fixes/`.
+
+## The wording round delivered at `3e5b997`, for the user's review (2026-10-02)
+
+- **Pushed:** `owner-followup-r04-build` at `3e5b997`, one commit on `e8461a5`, all inside E/. Decisions 9-13 done;
+  TBL-12, CHT-12, CHT-21, STA-12, OWN-R12 and DAT-4 rewritten, OWN-D11 added, source row `R4e`, lint 0.
+- **Builder's measurements (corroboration, not verified independently):** 314 page states, 1440-320, AR and EN:
+  no target under 44 px, no sideways scroll, 0 broken phrases in 21,688, HDR-6 0 px, no console errors. Decision
+  9's contrast is 5.26:1 or higher everywhere (caption `--ink-3` 7.92:1, closed run `--stale` 5.26:1).
+- **The coordinator inspected the crops** (9b, 10a, 10c, 11, 12a, 13a, 13b). They match the decisions.
+- **Correction:** Daily's minute table was already one style at `e8461a5` (13.5 px `--ink-2`); the rule meant to
+  make it caption never matched. The coordinator's "two sizes in Daily" (2026-10-02) was a misreading; the two sizes
+  were in Reports' full-width rows and day list, now one style. Daily's minute table is pixel-identical.
+- **Open, small:**
+  - `components.html`'s copy of Daily's no-readings row is caption `--ink-3`, Daily itself 13.5 px `--ink-2`.
+  - In an English table (721 px and up), a single day's «No readings» starts at the peak column's left edge while
+    the peak figures sit on its right edge (TBL-12's spanning-note rule).
+  - English coverage rows take two lines at 390 (the page grows 40-60 px); at 320 EN, "from 6:00 AM" drops under
+    its label.
+  - `components.html` has no single-day specimen; `wording-capture.mjs` supersedes `reports-fixes-capture.mjs`.
