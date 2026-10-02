@@ -4682,3 +4682,12 @@ The user ends this cloud session here and continues in a new cloud session. No a
      «· 18 دقيقة» never break inside). The preview CSS is in "The flag options" above and the inline preview entry.
   3. The Claude Design plan with the user.
   4. Reports' states (K-02, K-38) and the step-4 reviewer, as before.
+
+## The flag confirmed and the decisions 15-17 build launched (2026-10-02)
+
+- **Decision 17, the «الأعلى» flag: option 3,** no flag at any width, the peak row's tint kept. *User 2026-10-02,* on
+  the coordinator's recommendation. The top «أعلى ذروة» card names the day, time and value in words at every width.
+- **Branches synced:** `codex/owner-redesign-r04` at `a10b383` before this entry; `owner-followup-r04-build` at
+  `ca70f44`; the local build worktree `owner-followup-r04-s04` fast-forwarded to it.
+- **Build launched:** `briefs/step4-reports-decisions-15-16.md` (decisions 15, 16, 17 and defect 1) to a fresh
+  `owner-direction-builder` in `owner-followup-r04-s04`.
