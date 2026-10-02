@@ -41,3 +41,8 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
 9. **Evaluation loop (2026-10-02).** The method of Anthropic's "Automating eval design and hillclimbing" applies to
    Codex's brief template, the verifier (planted defects) and Sonnet `medium` against `high`; taste and design
    quality stay with the user.
+10. **Resume-point name (2026-10-03, coordinator).** `handoff:new` writes `<YYYYMMDD-HHMMSS>-<milestone-id>-resume.md`
+    and nothing else; an active handoff with exactly that name must carry the marker; older handoffs keep their
+    names and pass as before.
+11. **Sonnet definitions (2026-10-03).** The user keeps both copies: the global ones in `~/.claude/agents/` serve
+    every project, and the tracked ones in `.claude/agents/` serve cloud sessions, which see only committed files.

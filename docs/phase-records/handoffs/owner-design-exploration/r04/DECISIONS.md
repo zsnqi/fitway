@@ -51,6 +51,13 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     note. `DO-NOT.md` adds: no dash inside a sentence, and no «من … إلى …» in a range that stands alone as a value.
 13. **Accepted as built** (2026-10-02): «· 13 دقيقة» on a second line at 320 AR; the peak column 18 px narrower at
     1024 EN; the three-line wrap of the peak row's note at 721 and 768 AR, for now; the quiet hour bars.
+14. **Reports' states, K-02** (2026-10-03), from the options at `1a4b497` and the comparison page
+    https://claude.ai/artifact/BswYQ6ad1D7B6m6RMAyPoy: option A, with option C's error state (one page-level
+    sentence in place of the cards). Pending counts the partly received day in the period figures, as A does
+    (coordinator: the readings are real, and the day row says it is still waiting, as a camera gap is treated). The
+    header status control keeps one width from loading to arrival (built in `1a4b497`); Daily gets the same fix.
+    Still open for the user: C's error sentence with the year once («من 26 أغسطس إلى 22 سبتمبر 2026», the header's
+    form), and whether the status control's extra width on hover and focus is acceptable.
 
 ## How this milestone's rounds run
 

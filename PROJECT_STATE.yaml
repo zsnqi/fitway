@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-10-02T23:50:32+03:00
+updatedAt: 2026-10-03T02:19:56+03:00
 coordinator:
   owner: Primary coordinator and integrator for FITWAY; Owner r04 (concept-only Eclipse work) and agent-environment-r01 (resume, startup and brief tooling) are IN_PROGRESS.
   stateFilePolicy: coordinator-only
@@ -27,7 +27,7 @@ milestones:
       production, canonical, Paper, and visual-authority state unchanged.
     taskClass: visual-authority-change
     taskPacket: docs/phase-records/task-packets/owner-design-exploration-r04.yaml
-    taskPacketSha256: f89b718a493380f6318701d5059de73355b814e42cd7162a691127a81e2496de
+    taskPacketSha256: b38a696a7bd26aaf164d236047b20415f5d14e9f6486f07f0714872265893922
     dependencies: []
     ownerSession: claude-code-desktop:local_47dd1bf2-be3b-442a-8532-a8cfbeba5014
     branch: codex/owner-redesign-r04
@@ -56,9 +56,9 @@ milestones:
       - pnpm-lock.yaml, dependencies, and migrations
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: 2026-10-02T23:50:32+03:00
-    leaseExpiresAt: 2026-10-05T23:50:32+03:00
-    handoff: docs/phase-records/handoffs/owner-design-exploration/r04/20261002-235032-owner-design-exploration-r04-resume.md
+    lastHeartbeatAt: 2026-10-03T02:19:56+03:00
+    leaseExpiresAt: 2026-10-06T02:19:56+03:00
+    handoff: docs/phase-records/handoffs/owner-design-exploration/r04/20261003-021956-owner-design-exploration-r04-resume.md
     stopReason: null
     gates:
       unit: NOT_REQUIRED
@@ -76,7 +76,7 @@ milestones:
       the agent's worktree, and quieter, guarded tooling.
     taskClass: repository-infrastructure
     taskPacket: docs/phase-records/task-packets/agent-environment-r01.yaml
-    taskPacketSha256: e7c93dd4b14c8b3b7a2e38698ccd264390bfe725299270353bded6436d73873e
+    taskPacketSha256: 8f616134769c51f3f8552a4b398dcbe58772462ef950e9ec58121a87483a9b09
     dependencies: []
     ownerSession: claude-code-desktop:coordinator-16da798e
     branch: agent-environment-r01
@@ -109,9 +109,9 @@ milestones:
       - docs/archive/** and other milestones' handoffs and packets
     sharedLeases: []
     validationRepairAttempts: 0
-    lastHeartbeatAt: 2026-10-02T23:50:31+03:00
-    leaseExpiresAt: 2026-10-05T23:50:31+03:00
-    handoff: docs/phase-records/handoffs/agent-environment/20261002-235031-agent-environment-r01-resume.md
+    lastHeartbeatAt: 2026-10-03T02:19:56+03:00
+    leaseExpiresAt: 2026-10-06T02:19:56+03:00
+    handoff: docs/phase-records/handoffs/agent-environment/20261003-021956-agent-environment-r01-resume.md
     stopReason: null
     gates:
       unit: PENDING
