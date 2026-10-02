@@ -4500,3 +4500,27 @@ The user ends this cloud session here and continues in a new cloud session. No a
 - **Launched:** a fresh `owner-direction-builder` (Opus, `high`) on `briefs/step4-reports-phone-fixes.md`, in
   `/home/user/s04`, with this session's scratchpad (`…/scratchpad/phone-fixes/`) as the scratch folder. It commits
   once, does not push, and stops for the user's review.
+
+## Reports' phone fixes delivered at `e8461a5`, for the user's review (2026-10-02)
+
+- **Pushed:** `owner-followup-r04-build` at `e8461a5`, one commit on `ff0e922`, all inside E/. The builder reports
+  decisions 1-3, 6 and 8 done, 4, 5 and 7 unchanged as decided, K-39 closed, Q18 and Q19 recorded as accepted, and
+  the «28» spacing fixed.
+- **Builder's measurements (corroboration, not verified independently):** 1440-320, AR and EN, 122 page states:
+  no sideways scroll, no target under 44 px, 0 broken phrases in 7,906, HDR-6 0 px, the strip one Tab stop with
+  arrows. Daily differs from `ff0e922` in 48 of 180 frames, all inside the no-readings phrases. Lint 0.
+- **The coordinator inspected all twelve crops.** They match the decisions. Points for the user:
+  - In Daily's minute table and the full-width rows, the sentence's times keep the old range style (13.5 px
+    `--ink-2`) while the words are caption `--ink-3`: two sizes in one sentence. The brief's "keeps the phrase's
+    current size and colour" allowed it. The coordinator recommends one size and one colour for the whole sentence.
+  - Without the edge, the quietest hour bars are very faint; the "3" bar at 12 AM is barely visible. This follows
+    decision 2 (the number carries the value).
+  - K-39's fold: the card ends inside y = 1024 at 1024, 1200 and 1279, and inside the 800 px viewport at 1200 and
+    1279, but 204.8 px below a 1024 × 768 viewport.
+  - Wording the builder chose: «لا قراءات بعد من 26 أغسطس إلى 12 سبتمبر» / "No readings yet from 26 Aug to 12 Sep",
+    and «لا قراءات يوم الخميس 17 سبتمبر» / "No readings on Thu 17 Sep".
+  - Proposals, not changed: Daily's «بانتظار القراءات» tooltip still puts the range first; Daily's coverage list
+    keeps a label, then the range, a middle dot and the duration («لا قراءات» / «2:14 م – 2:31 م · 18 دقيقة»).
+  - `reports-build-capture.mjs` now fails if run; `reports-fixes-capture.mjs` replaces it.
+- **The crops** are in this session's scratchpad, `…/scratchpad/phone-fixes/run/evidence/`, and are lost when the
+  session ends.
