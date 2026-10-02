@@ -4555,3 +4555,7 @@ The user ends this cloud session here and continues in a new cloud session. No a
 - **The quiet bars:** the user did not take up the floor proposal; they stay as built.
 - **The user approved running the small round in this cloud session** after the picks. Its brief is
   `briefs/step4-reports-wording-fixes.md` (decisions 9-13), not launched yet.
+- **Confirmed:** «لا قراءات» / "No readings" under the date. *User 2026-10-02,* on the coordinator's recommendation.
+  The wording round is launched: a fresh `owner-direction-builder` (Opus, `high`) on
+  `briefs/step4-reports-wording-fixes.md`, in `/home/user/s04` on `e8461a5`, scratch folder
+  `…/scratchpad/wording-fixes/`.
