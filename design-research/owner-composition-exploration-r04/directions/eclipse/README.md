@@ -1913,3 +1913,20 @@ The reference is `DESIGN-SPEC.md` (OWN-D11, OWN-R9 and §8 decision 14), not thi
 - **Capture.** `final-capture.mjs` in the scratch folder named by `F14` (a copy of `wording-capture.mjs` with a peak-cell
   probe) measures both at 1440, 1279, 1200, 1024, 1023, 768, 721, 720, 390 and 320 and compares every frame with
   `3e5b997`.
+
+## Step 4, decisions 15-17 (2026-10-02)
+
+The reference is `DESIGN-SPEC.md` (OWN-R9, OWN-D11, TBL-6, TBL-8, TBL-11, CHP-7, OWN-R12 and §8 decisions 15-17), not
+this file.
+
+- **The peak time beside its value at 721-1023 px** (decision 15): `reports.css` no longer stacks `.pk` in the
+  `max-width: 1023px` block, so the cell takes its 1024 form (one line, `align-items: baseline`, gap 8). The stacked
+  form and its RTL `align-items: flex-start` now live in the `max-width: 720px` block only, so nothing below 721
+  changes. Removing the RTL `flex-start` from 721-1023 is the fix for the preview's Arabic time sitting 2 px high:
+  every number in a row shares one baseline (0 px).
+- **Daily's coverage list** (decision 16): `covSpan` writes the range, then «· 18 دقيقة» as a second `nowrap` group;
+  the dot is `aria-hidden`, a screen reader hears a comma. The components page does not show this list.
+- **No «الأعلى» / "Highest" flag** (decision 17): gone from Reports' table and day list, the components page's table
+  and its flags specimen, with its CSS (`.flag`, `.cx-flag.is-red`) and its strings. The row tint stays.
+- **Capture.** `cap.mjs`, `crops.mjs` and `cov.mjs` in the scratch folder named by `B15` measure Reports, Daily's
+  coverage list and the components page against `ca70f44`.

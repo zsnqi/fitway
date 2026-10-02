@@ -267,14 +267,13 @@ html:has(> body.rp) {
 .days-table tr.is-top > * { background: rgba(229, 25, 53, 0.08); }
 .days-table tr.is-top:hover > * { background: rgba(229, 25, 53, 0.12); }
 .dd .dt { color: inherit; }
-/* TBL-11: the composite peak cell leads with its value on the numbers' edge, then its time, then its flag, leftward. */
+/* TBL-11: the composite peak cell leads with its value on the numbers' edge, then its time, leftward, on one baseline
+ * from 721 px (decision 15). The period's highest row carries its tint only, no flag (decision 17). */
 .pk { display: inline-flex; align-items: baseline; gap: 8px; white-space: nowrap; }
 [dir="ltr"] .pk { flex-direction: row-reverse; }
 .pk .pv bdi { font-weight: 500; }
 .pk .pt { font-size: 12px; line-height: 18px; color: var(--ink-3); }
 .pk .pt bdi { color: inherit; }
-/* CHP-7, CHP-8: a flag, caption type, 18 tall, radius 4; red .45 for "Highest". */
-.flag { display: inline-flex; align-items: center; align-self: center; height: 18px; padding-inline: 6px; border-radius: 4px; border: 1px solid rgba(255, 41, 70, 0.45); font-size: 12px; line-height: 16px; color: var(--ink-2); }
 /* TBL-12: a span with no readings, one sentence with the words first (decision 8), all in caption type and --ink-3, its
  * dates and times included (one size and one colour, decision 9), in the notes column, its phone fold row and a
  * full-width row alike; a single day's words beside its date take the same style (decision 10). */
@@ -421,10 +420,6 @@ th.is-asc .sort-ico { transform: rotate(180deg); }
   .pattern-sub { grid-area: sub; }
   .heat-key { grid-area: key; margin-block-start: 16px; }
   #numbers { grid-area: switch; }
-  /* The peak cell stacks its time and flag under the value, on the same edge (TBL-8's form), so the table fits. */
-  .pk, [dir="ltr"] .pk { flex-direction: column; align-items: flex-end; gap: 0; }
-  [dir="rtl"] .pk { align-items: flex-start; }
-  .pk .flag { margin-block-start: 4px; }
   .days-table .c-day, .days-table .c-peak, .days-table .c-avg, .days-table .c-entries { width: auto; }
   .table th, .table td { padding-inline: 12px; }
 }
@@ -472,7 +467,7 @@ th.is-asc .sort-ico { transform: rotate(180deg); }
   .dd .dt { font-size: 12px; line-height: 18px; white-space: nowrap; }
   .pk { flex-direction: column; align-items: flex-end; gap: 0; }
   [dir="ltr"] .pk { flex-direction: column; }
-  .pk .flag { margin-block-start: 4px; }
+  [dir="rtl"] .pk { align-items: flex-start; }
   .sort { margin-inline: -8px; padding-inline: 8px; text-align: start; }
   .n .sort { text-align: right; }
   /* The dialog is a bottom sheet; its actions share the width. */
@@ -607,7 +602,7 @@ th.is-asc .sort-ico { transform: rotate(180deg); }
 .dli:last-child { border-block-end: 0; }
 .dli.is-top { border-radius: 10px; background: rgba(229, 25, 53, 0.08); }
 .dl-day { grid-area: day; min-width: 0; font-size: 13.5px; line-height: 24px; color: var(--ink); }
-/* The peak and its time share the physical right edge in both languages (TBL-1); its flag reads after it (TBL-11). */
+/* The peak and its time share the physical right edge in both languages (TBL-1); the highest day has its tint only. */
 .dl-pk { grid-area: pk; display: inline-flex; flex-direction: row-reverse; align-items: center; gap: 8px; direction: ltr; justify-self: stretch; justify-content: flex-start; }
 .dl-pv { font-size: 19px; line-height: 24px; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
 /* The average and the entries: each label names its number, so a gap separates them, never a dot that a narrow screen

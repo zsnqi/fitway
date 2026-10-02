@@ -124,7 +124,6 @@ html:has(> body.cx) { color-scheme: dark; scrollbar-color: rgba(245, 243, 242, 0
 .cx-badge.cmp .cx-ico { width: 15px; height: 15px; }
 .cx-badge.busier .cx-ico { color: var(--red-hi); }
 .cx-flag { display: inline-flex; align-items: center; height: 18px; padding-inline: 6px; border-radius: 4px; border: 1px solid var(--line-2); font: var(--t-caption); line-height: 16px; color: var(--ink-2); white-space: nowrap; }
-.cx-flag.is-red { border-color: rgba(255, 41, 70, 0.45); }
 .cx-status { display: inline-flex; align-items: center; gap: 8px; font: var(--t-label); color: var(--ink-2); white-space: nowrap; }
 .cx-status strong { font-weight: 500; color: var(--ink); }
 .cx-status.is-late strong { color: var(--amber); }
@@ -279,13 +278,12 @@ html:has(> body.cx) { color-scheme: dark; scrollbar-color: rgba(245, 243, 242, 0
 .cx-table .notes { font: var(--t-caption); color: var(--ink-3); }
 .cx-table .dim { color: var(--ink-3); }
 .cx-table.is-compact tbody th, .cx-table.is-compact tbody td { height: 36px; }
-/* TBL-11: a composite cell leads with its value at that edge; the time, then a flag, follow it leftward. */
+/* TBL-11: a composite cell leads with its value at that edge; the time follows it leftward (no flag, decision 17). */
 .cx-pk { display: inline-flex; align-items: baseline; gap: 8px; white-space: nowrap; }
 [dir="ltr"] .cx-pk { flex-direction: row-reverse; }
 .cx-pk .pv bdi { font-weight: 500; }
 .cx-pk .pt { font: var(--t-caption); color: var(--ink-3); }
 .cx-pk .pt bdi { color: inherit; }
-.cx-pk .cx-flag { align-self: center; }
 /* TBL-12: a note spanning columns sits at its cell's start. The fold row (TBL-8) shows only on a phone. A row with no
  * readings (user 2026-09-30) is one cell across every column, in the camera-gap note's caption type and ink, and keeps
  * its density's height. It is one sentence, the words first (decision 8, user 2026-10-01): «لا قراءات من 10:00 ص إلى
@@ -325,7 +323,7 @@ th.is-asc .cx-sort .cx-ico { transform: rotate(180deg); }
   .cx-row-tables { grid-template-columns: minmax(0, 1fr); }
 }
 /* TBL-8, the phone form: the table recomposes before it scrolls. The notes fold into a row of their own under their
- * row, the weekday sits over the date, the time and the flag under the value (still on the right edge), cells pad 8
+ * row, the weekday sits over the date, the time under the value (still on the right edge), cells pad 8
  * (6 at 400 px and below), headers may wrap, and only the sorted column shows its arrow. */
 @media (max-width: 720px) {
   .cx-table th, .cx-table td { padding-inline: 8px; }
@@ -339,7 +337,6 @@ th.is-asc .cx-sort .cx-ico { transform: rotate(180deg); }
   .cx-table tbody th .dt { font: var(--t-caption); color: var(--ink-2); }
   [dir] .cx-pk { flex-direction: column; align-items: flex-end; gap: 0; }
   [dir="rtl"] .cx-pk { align-items: flex-start; }
-  .cx-pk .cx-flag { align-self: auto; margin-block-start: 4px; }
   .cx-sort .cx-ico { display: none; }
   th.is-sorted .cx-sort .cx-ico { display: block; }
 }

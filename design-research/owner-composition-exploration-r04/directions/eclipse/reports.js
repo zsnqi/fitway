@@ -93,7 +93,6 @@
       cols: { day: "اليوم", peak: "الذروة", avg: "المعدّل", entries: "مرات الدخول", notes: "ملاحظات" },
       daysCaption: (r) => `الأيام من ${r}: الذروة والمعدّل ومرات الدخول`,
       sortSay: (c, dir, isDay) => `مرتب حسب ${c}، ${isDay ? (dir === "desc" ? "الأحدث أولًا" : "الأقدم أولًا") : dir === "desc" ? "الأعلى أولًا" : "الأقل أولًا"}`,
-      highest: "الأعلى",
       // The day list on a phone (step 4's build): sorted with the phone's own picker; 7 days, then all.
       sortName: "الترتيب",
       sorts: { "day-desc": "الأحدث أولًا", "day-asc": "الأقدم أولًا", "peak-desc": "الذروة الأعلى", "avg-desc": "المعدّل الأعلى", "entries-desc": "مرات الدخول الأكثر" },
@@ -198,7 +197,6 @@
       cols: { day: "Day", peak: "Peak", avg: "Average", entries: "Entries", notes: "Notes" },
       daysCaption: (r) => `Days from ${r}: peak, average and entries`,
       sortSay: (c, dir, isDay) => `Sorted by ${c.toLowerCase()}, ${isDay ? (dir === "desc" ? "newest first" : "oldest first") : dir === "desc" ? "highest first" : "lowest first"}`,
-      highest: "Highest",
       sortName: "Sort",
       sorts: { "day-desc": "Newest first", "day-asc": "Oldest first", "peak-desc": "Highest peak", "avg-desc": "Highest average", "entries-desc": "Most entries" },
       showAll: "Show all days",
@@ -1077,11 +1075,12 @@
 
   /* ---------------------------------------------------------------- day by day
    * The table system's data table (TBL-1…12): real table semantics (explicit roles too, so a narrow-screen recomposition
-   * never drops them), sortable columns with aria-sort, and exceptions (a camera gap, the day with the period's highest
-   * peak) in words. Numeric columns (Peak, Average, Entries) put their numbers and their header on the physical right
-   * edge in both languages, so units sit under units (TBL-1); the peak cell leads with its value on that edge, then its
-   * time, then its flag (TBL-11). A span with no readings (the days before the readings began, or a day inside them with
-   * none) is one full-width row, one sentence with the words first (TBL-12, decision 8). */
+   * never drops them), sortable columns with aria-sort, and a camera gap in words; the day with the period's highest
+   * peak is tinted, with no flag (decision 17): the glance's «أعلى ذروة» names its day, time and value. Numeric columns
+   * (Peak, Average, Entries) put their numbers and their header on the physical right edge in both languages, so units
+   * sit under units (TBL-1); the peak cell leads with its value on that edge, then its time (TBL-11), beside it from
+   * 721 px (decision 15). A span with no readings (the days before the readings began, or a day inside them with none)
+   * is one full-width row, one sentence with the words first (TBL-12, decision 8). */
   const daysTable = $("#days-table");
   let sort = { key: "day", dir: "desc" };
   const SORTS = { day: (d) => d.dn, peak: (d) => d.peak, avg: (d) => d.avg, entries: (d) => d.entries };
@@ -1152,7 +1151,7 @@
         const edge = edgeOf(d);
         const cls = [top ? "is-top" : "", edge ? "wk-edge" : "", notes ? "has-note" : ""].filter(Boolean).join(" ");
         out.push(`<tr role="row"${cls ? ` class="${cls}"` : ""}>${dayHead(d)}` +
-          `<td role="cell" class="c-peak n"><span class="pk"><span class="pv">${bdi(d.peak)}</span><span class="pt">${timeText(d.peakM)}</span>${top ? `<span class="flag">${L.highest}</span>` : ""}</span></td>` +
+          `<td role="cell" class="c-peak n"><span class="pk"><span class="pv">${bdi(d.peak)}</span><span class="pt">${timeText(d.peakM)}</span></span></td>` +
           `<td role="cell" class="c-avg n">${bdi(Math.round(d.avg))}</td>` +
           `<td role="cell" class="c-entries n">${bdi(fmtInt(d.entries))}</td>` +
           `<td role="cell" class="c-notes">${notes}</td></tr>` +
@@ -1193,7 +1192,7 @@
       const notes = d.miss.map(gapNote).join("");
       items.push(`<li class="dli${top ? " is-top" : ""}">` +
         `<span class="dl-day">${dayText(d.dn)}</span>` +
-        `<span class="dl-pk"><span class="dl-pv">${bdi(d.peak)}</span>${top ? `<span class="flag">${L.highest}</span>` : ""}</span>` +
+        `<span class="dl-pk"><span class="dl-pv">${bdi(d.peak)}</span></span>` +
         `<span class="dl-more"><span class="nw">${L.cols.avg} ${bdi(Math.round(d.avg))}</span><span class="nw">${L.cols.entries} ${bdi(fmtInt(d.entries))}</span></span>` +
         `<span class="dl-pt nw">${L.peakAt(timeText(d.peakM))}</span>` +
         (notes ? `<span class="dl-note">${notes}</span>` : "") + `</li>`);

@@ -113,7 +113,7 @@
       daysTitle: "يومًا بيوم", daysSub: `${b(7)} أيام`,
       cols: { day: "اليوم", peak: "الذروة", avg: "المعدّل", entries: "مرات الدخول", notes: "ملاحظات" },
       daysCaption: `الأيام من ${b(16)} إلى ${b(22)} سبتمبر ${b(2026)}: الذروة والمعدّل ومرات الدخول`,
-      highest: "الأعلى", gapEnds: ["10:00 ص", "2:00 م"], beforeEnds: [`${b(2)} أغسطس`, `${b(12)} سبتمبر`], spanFrom: "من", spanTo: "إلى", spanSince: "منذ",
+      gapEnds: ["10:00 ص", "2:00 م"], beforeEnds: [`${b(2)} أغسطس`, `${b(12)} سبتمبر`], spanFrom: "من", spanTo: "إلى", spanSince: "منذ",
       sortedBy: "مرتب حسب اليوم، الأحدث أولًا",
       compactTitle: "دقيقة بدقيقة", compactCaption: "قراءات اليوم دقيقة بدقيقة",
       ccols: { time: "الوقت", inside: "داخل الصالة", avg: `معدّل ${b(30)} دقيقة`, note: "ملاحظة" },
@@ -212,7 +212,7 @@
       daysTitle: "Day by day", daysSub: "7 days",
       cols: { day: "Day", peak: "Peak", avg: "Average", entries: "Entries", notes: "Notes" },
       daysCaption: "Days from 16 to 22 Sep 2026: peak, average and entries",
-      highest: "Highest", gapEnds: ["10:00 AM", "2:00 PM"], beforeEnds: ["2 Aug", "12 Sep"], spanFrom: "from", spanTo: "to", spanSince: "since",
+      gapEnds: ["10:00 AM", "2:00 PM"], beforeEnds: ["2 Aug", "12 Sep"], spanFrom: "from", spanTo: "to", spanSince: "since",
       sortedBy: "Sorted by day, newest first",
       compactTitle: "Minute by minute", compactCaption: "Today's readings, minute by minute",
       ccols: { time: "Time", inside: "Inside", avg: "30-min average", note: "Note" },
@@ -644,9 +644,10 @@
       const top = d[7] === "top";
       const minutes = d[4] - 360;
       const cls = [d[7] === "hover" ? "is-hover" : "", d[7] === "edge" ? "wk-edge" : "", top ? "is-top has-note" : ""].filter(Boolean).join(" ");
-      // TBL-11: a composite cell leads with the value at the numbers' edge; its time, then its flag, follow it.
+      // TBL-11: a composite cell leads with the value at the numbers' edge; its time follows it. The period's highest
+      // row is tinted, with no flag (decision 17).
       return `<tr role="row"${cls ? ` class="${cls}"` : ""}><th scope="row" role="rowheader">${dayName(d)}</th>
-        <td role="cell" class="n"><span class="cx-pk"><span class="pv">${b(d[3])}</span><span class="pt">${b(time(minutes))}</span>${top ? `<span class="cx-flag is-red">${L.highest}</span>` : ""}</span></td>
+        <td role="cell" class="n"><span class="cx-pk"><span class="pv">${b(d[3])}</span><span class="pt">${b(time(minutes))}</span></span></td>
         <td role="cell" class="n">${b(d[5])}</td><td role="cell" class="n">${b(d[6])}</td>
         <td role="cell" class="notes">${top ? gapNote(L.noReadings, L.gapEnds) : ""}</td></tr>` +
         // TBL-8: on a phone the notes column folds into a row of its own under its day (only one of the two shows).
@@ -776,7 +777,7 @@
       ${fig(`<div style="display:flex;gap:8px;flex-wrap:wrap">${lv}</div>`, L.chipCaps.levels, "CHP-4 · CHP-5 · LVL-2")}
       ${fig(badge(46, true), L.chipCaps.stale, "LVL-5 · LVL-6")}
       ${fig(`<div style="display:flex;gap:8px;flex-wrap:wrap">${cmpBadge("busier")}${cmpBadge("quieter")}${cmpBadge("same")}</div>`, L.chipCaps.cmp, "CHP-6 · ICO-5")}
-      ${fig(`<div style="display:flex;gap:8px;flex-wrap:wrap"><span class="cx-flag">${L.peakTag}</span><span class="cx-flag">${L.latestFlag}</span><span class="cx-flag is-red">${L.highest}</span></div>`, L.chipCaps.flags, "CHP-7 · CHP-8")}
+      ${fig(`<div style="display:flex;gap:8px;flex-wrap:wrap"><span class="cx-flag">${L.peakTag}</span><span class="cx-flag">${L.latestFlag}</span></div>`, L.chipCaps.flags, "CHP-7 · CHP-8")}
       ${fig(`<div style="display:grid;gap:12px;justify-items:start">${hstatus()}${hstatus({ late: true })}</div>`, L.chipCaps.status, "HDR-3 · CHP-2 · STA-1 · STA-2")}
       ${fig(`<div style="display:grid;gap:12px;justify-items:start">${hstatus({ cls: "is-hover" })}${hstatus({ cls: "is-focus" })}</div>`, L.chipCaps.statusBtn, "CHP-2 · BTN-5 · FOC-2")}
       ${fig(`<span class="cx-concept">${L.concept}</span>`, L.chipCaps.concept, "CHP-2 · GLO-15")}

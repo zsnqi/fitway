@@ -1683,10 +1683,11 @@
     const axis = [0, 360, 720, DAY].map((m, i, a) => `<span class="${i === 0 ? "first" : i === a.length - 1 ? "last" : ""}" style="inset-inline-start:${pct(m)}">${bdi(fmtHour(m))}</span>`).join("");
     const facts = [];
     const fact = (k, dt, dd, span = false) => facts.push(`<div><dt><span class="k ${k}" aria-hidden="true"></span>${dt}</dt><dd${span ? ' class="is-span"' : ""}>${dd}</dd></div>`);
-    // A span's value reads «2:14 م – 2:31 م (18 دقيقة)»: the range with its en dash, then its duration in brackets, with
-    // no «من … إلى …» and no middle dot (decision 14, user 2026-10-02); in the label's colour (decision 13). The range
-    // never breaks inside; the bracketed duration may drop to the next line as one unit.
-    const covSpan = (a, b, n = 0) => `<span class="nw">${timeRange(a, b)}</span>${n ? ` <span class="nw">(${bdi(minText(n))})</span>` : ""}`;
+    // A span's value reads «2:14 م – 2:31 م · 18 دقيقة»: the range with its en dash (decision 14), then a middle dot and
+    // its duration, no brackets (decision 16, user 2026-10-02); in the label's colour (decision 13). The range and
+    // «· 18 دقيقة» are each one unbreakable unit; the line may wrap only between them. The dot is silent; a screen reader
+    // hears a comma.
+    const covSpan = (a, b, n = 0) => `<span class="nw">${timeRange(a, b)}</span>${n ? ` <span class="nw"><span class="sr-only">${RTL ? "، " : ", "}</span><span aria-hidden="true">·</span> ${bdi(minText(n))}</span>` : ""}`;
     fact("k-read", L.cov.read, L.covReadVal(bdi(observed), bdi(last + 1)));
     fact("k-zero", L.cov.zero, covSpan(0, ZERO_END), true);
     fact("k-miss", L.cov.miss, covSpan(GAP0, GAP1, GAP1 - GAP0 + 1), true);
