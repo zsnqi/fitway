@@ -7,7 +7,11 @@ import { isScalar, parseDocument } from "yaml";
 import { buildAgentContextPlan } from "../show-agent-context.mjs";
 import { behindUpstreamWarning, readGit } from "./git-context.mjs";
 import { samePath } from "./path-identity.mjs";
-import { RESUME_POINT_MARKER, repositoryPath } from "./resume-point.mjs";
+import {
+	hasResumePointMarker,
+	RESUME_POINT_MARKER,
+	repositoryPath,
+} from "./resume-point.mjs";
 
 const STATE_PATH = "PROJECT_STATE.yaml";
 const TEMPLATE_PATH = "docs/agent-context/HANDOFF_TEMPLATE.md";
@@ -175,7 +179,7 @@ export async function createResumePoint({
 	const oldHandoff = handoffDetails.normalized;
 	const current = await readFile(handoffDetails.absolute, "utf8");
 	let content = current;
-	if (!current.includes(RESUME_POINT_MARKER)) {
+	if (!hasResumePointMarker(current)) {
 		const templateDetails = await repositoryPath(repositoryRoot, TEMPLATE_PATH);
 		const template = await readFile(templateDetails.absolute, "utf8");
 		const blocks = [
@@ -205,12 +209,21 @@ export async function createResumePoint({
 	});
 	if (newDetails.exists)
 		throw new Error(`Refusing to overwrite resume point: ${newPath}`);
-	const branch = git(repositoryRoot, [
-		"symbolic-ref",
-		"--quiet",
-		"--short",
-		"HEAD",
-	]);
+	let branch;
+	try {
+		branch = git(repositoryRoot, [
+			"symbolic-ref",
+			"--quiet",
+			"--short",
+			"HEAD",
+		]);
+	} catch (error) {
+		if (error.status !== 1) throw error;
+	}
+	if (!branch)
+		throw new Error(
+			"A branch must be checked out before creating a resume point.",
+		);
 	const head = git(repositoryRoot, ["rev-parse", "--short", "HEAD"]);
 	content = content.replaceAll("<milestone-id>", milestoneId);
 	content = replaceHeader(

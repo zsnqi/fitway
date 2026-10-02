@@ -129,8 +129,9 @@ The baseline's `integratedCommit` remains the immutable BRG hash; `SELF` in an a
 conflict rules. Startup then follows the bounded route in this order:
 
 1. **Root policy.** Read `AGENTS.md`. It is the only automatic instruction file.
-2. **Active state.** Run `git fetch`, then read `PROJECT_STATE.yaml` for the active frontier. If
-   no milestone is open, no task is assigned; do not infer one.
+2. **Active state.** A session starting from this startup route runs `git fetch`, then reads
+   `PROJECT_STATE.yaml` for the active frontier. A delegated agent follows its brief's startup
+   and environment instructions. If no milestone is open, no task is assigned; do not infer one.
 3. **Assigned packet.** Run the bounded continuity check
    `pnpm context:show --milestone <milestone-id>` (authoritative form:
    `<absolute-node> scripts/show-agent-context.mjs --milestone <milestone-id>`). It validates the

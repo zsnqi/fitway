@@ -23,6 +23,53 @@ export const RESUME_POINT_SECTIONS = [
 	"Pointers",
 ];
 
+// Exact filler from HANDOFF_TEMPLATE.md; angle-bracket filename patterns are valid.
+const TEMPLATE_PLACEHOLDERS = [
+	"<milestone-id>",
+	"<branch>",
+	"<short sha>",
+	"<YYYY-MM-DD HH:MM>",
+	"<repo path>",
+	"<repo path to the milestone's DECISIONS.md>",
+	"<absolute path>",
+	"What exists now and what was last delivered, with commit hashes.",
+	'Agents, Codex rounds or jobs in flight, and where their output will land. "Nothing." if none.',
+	"Decided steps only, in order; each names its inputs by path and section.",
+	'Questions or picks the user owes, each answerable in one line. "Nothing." if none.',
+	"Traps the next session would otherwise rediscover: environment quirks, defects already in the baseline, assumptions not yet measured.",
+].map(
+	(placeholder) =>
+		new RegExp(
+			placeholder
+				.split(/\s+/)
+				.map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+				.join("\\s+"),
+		),
+);
+
+export function hasResumePointMarker(text) {
+	return text.includes(RESUME_POINT_MARKER);
+}
+
+async function hasStandingDecisionsFile(line, repositoryRoot, resolver) {
+	for (const match of line.matchAll(/`([^`\r\n]+)`/g)) {
+		const reference = await resolver.reference(match[1], { allowBare: true });
+		if (!reference || path.posix.basename(reference.file) !== "DECISIONS.md")
+			continue;
+		try {
+			if (path.isAbsolute(reference.file)) {
+				if ((await exists(reference.file))?.isFile()) return true;
+			} else {
+				const details = await repositoryPath(repositoryRoot, reference.file);
+				if (!details.isDirectory) return true;
+			}
+		} catch {
+			// A missing or unsafe candidate cannot satisfy the standing-decisions header.
+		}
+	}
+	return false;
+}
+
 export async function repositoryPath(
 	repositoryRoot,
 	relativePath,
@@ -57,7 +104,7 @@ export async function validateResumePoint({
 	bytes,
 }) {
 	const text = bytes.toString("utf8");
-	if (!text.includes(RESUME_POINT_MARKER)) return false;
+	if (!hasResumePointMarker(text)) return false;
 	const fail = (message) => {
 		throw new Error(`${handoffPath}: ${message}`);
 	};
@@ -67,6 +114,15 @@ export async function validateResumePoint({
 		);
 	if (/local_[A-Za-z\d_-]+/.test(text))
 		fail("resume point contains a stale local_ session id");
+	const placeholder = TEMPLATE_PLACEHOLDERS.map((pattern) => pattern.exec(text))
+		.filter(Boolean)
+		.sort((left, right) => left.index - right.index)[0];
+	if (placeholder) {
+		const line = text.slice(0, placeholder.index).split(/\r?\n/).length;
+		fail(
+			`line ${line}: resume point contains template placeholder: ${placeholder[0].replace(/\s+/g, " ")}`,
+		);
+	}
 	const headers = [
 		...text.matchAll(
 			/^- \*\*(As of|Previous resume point|Standing decisions):\*\*[^\r\n]*$/gm,
@@ -91,6 +147,14 @@ export async function validateResumePoint({
 			`resume point requires six sections in order: ${RESUME_POINT_SECTIONS.join(", ")}`,
 		);
 	const resolver = createPathReferenceResolver(repositoryRoot);
+	if (
+		!(await hasStandingDecisionsFile(headers[2][0], repositoryRoot, resolver))
+	) {
+		const line = text.slice(0, headers[2].index).split(/\r?\n/).length;
+		fail(
+			`line ${line}: Standing decisions must name an existing DECISIONS.md file; found ${headers[2][0].slice("- **Standing decisions:**".length).trim() || "(empty)"}`,
+		);
+	}
 	for (const relativePath of await referencedFilePaths(text, resolver)) {
 		try {
 			const { wildcard, file } = referenceTarget(relativePath);

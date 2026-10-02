@@ -29,8 +29,40 @@ const block = template.match(
 )?.[1];
 if (!block) throw new Error("Missing template block");
 const valid = block
+	.replaceAll("<milestone-id>", "fixture-r01")
+	.replaceAll("<branch>", "main")
+	.replaceAll("<short sha>", "a1b2c3d")
+	.replaceAll("<YYYY-MM-DD HH:MM>", "2026-10-02 20:40")
+	.replaceAll("<absolute path>", "D:/fitway-temp/fixture")
 	.replaceAll("<repo path>", "DECISIONS.md")
-	.replaceAll("<repo path to the milestone's DECISIONS.md>", "DECISIONS.md");
+	.replaceAll("<repo path to the milestone's DECISIONS.md>", "DECISIONS.md")
+	.replace(
+		"What exists now and what was last delivered, with commit hashes.",
+		"Delivered a1b2c3d.",
+	)
+	.replace(
+		'Agents, Codex rounds or jobs in flight, and where their output will land. "Nothing." if none.',
+		"Nothing.",
+	)
+	.replace(
+		"Decided steps only, in order; each names its inputs by path and section.",
+		"Read `DECISIONS.md`.",
+	)
+	.replace(
+		'Questions or picks the user owes, each answerable in one line. "Nothing." if none.',
+		"Nothing.",
+	)
+	.replace(
+		/Traps the next session would otherwise rediscover: environment quirks, defects already in\s+the\s+baseline, assumptions not yet measured\./,
+		"Nothing.",
+	);
+const placeholders = [
+	...new Set([...block.matchAll(/<(?!!)[^>\r\n]+>/g)].map((match) => match[0])),
+	...block
+		.split(/^## [^\r\n]+\r?$/m)
+		.slice(1, 6)
+		.map((section) => section.trim().replace(/^1\. /, "")),
+];
 
 afterEach(() => {
 	for (const root of roots.splice(0))
@@ -58,6 +90,44 @@ function validate(root: string, text: string | Buffer = valid) {
 }
 
 describe("O5: marked active resume point validation", () => {
+	it.each(
+		placeholders,
+	)("S2: rejects the template placeholder %s and names its line", async (placeholder) => {
+		const text = `${valid}\n${placeholder}\n`;
+		const line = text.slice(0, text.indexOf(placeholder)).split(/\r?\n/).length;
+		await expect(validate(fixture(), text)).rejects.toThrow(
+			new RegExp(`line ${line}:.*template placeholder`),
+		);
+	});
+	it("S2: rejects the unedited template", async () => {
+		await expect(validate(fixture(), block)).rejects.toThrow(
+			/line 2:.*template placeholder/,
+		);
+	});
+	it.each([
+		"",
+		"`docs/agent-context/WORKING_AGREEMENTS.md`",
+		"`missing/DECISIONS.md`",
+		"`DECISIONS.md/*`",
+		"`docs/agent-context/DECISIONS.md`",
+	])("S2: requires an existing DECISIONS.md file on the standing-decisions line: %s", async (value) => {
+		const root = fixture();
+		mkdirSync(path.join(root, "docs/agent-context/DECISIONS.md"));
+		await expect(
+			validate(
+				root,
+				valid.replace(
+					/^- \*\*Standing decisions:\*\*[^\r\n]*/m,
+					`- **Standing decisions:** ${value}`,
+				),
+			),
+		).rejects.toThrow(/Standing decisions.*existing DECISIONS\.md file/);
+	});
+	it("S2: accepts filename patterns in angle brackets that are not template placeholders", async () => {
+		await expect(
+			validate(fixture(), `${valid}\nPattern: \`docs/<run>/file.md\`\n`),
+		).resolves.toBe(true);
+	});
 	it("accepts the real template sections and existing file paths in LF and CRLF", async () => {
 		const root = fixture();
 		await expect(validate(root)).resolves.toBe(true);
@@ -100,8 +170,9 @@ describe("O5: marked active resume point validation", () => {
 			validate(
 				root,
 				valid
-					.replace("- **As of:**", "- **Standing decisions:**")
-					.replace("- **Standing decisions:** `<repo", "- **As of:** `<repo"),
+					.replace("- **As of:**", "- **Temporary:**")
+					.replace("- **Standing decisions:**", "- **As of:**")
+					.replace("- **Temporary:**", "- **Standing decisions:**"),
 			),
 		).rejects.toThrow(/header lines in order/);
 		const lines = valid.split(/\r?\n/);
@@ -136,7 +207,7 @@ describe("O5: marked active resume point validation", () => {
 				root,
 				valid
 					.replace("## State", "## Running now")
-					.replace("## Running now\n\nAgents", "## State\n\nAgents"),
+					.replace("## Running now\n\nNothing", "## State\n\nNothing"),
 			),
 		).rejects.toThrow(/six sections in order/);
 		await expect(validate(root, `${valid}\n## Extra\n`)).rejects.toThrow(
@@ -164,7 +235,7 @@ describe("O5: marked active resume point validation", () => {
 		const root = fixture();
 		gitFixture(root);
 		const text =
-			valid.replace("`<branch>`", "`feature/resume`") +
+			valid.replace("`main`", "`feature/resume`") +
 			"\n`missing.md` `.missing` `LICENSE` `Makefile` `D:/fitway-temp/absent.md` `/api` `docs/<run>/file.md` `pnpm check:repository` `a1b2c3d`\n";
 		await expect(validate(root, text)).resolves.toBe(true);
 	});

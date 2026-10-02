@@ -5,7 +5,7 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { parse as parseYaml } from "yaml";
 import { behindUpstreamWarning } from "./agent-environment/git-context.mjs";
-import { RESUME_POINT_MARKER } from "./agent-environment/resume-point.mjs";
+import { hasResumePointMarker } from "./agent-environment/resume-point.mjs";
 import { inspectPath } from "./check-agent-context.mjs";
 
 const root = process.cwd();
@@ -376,7 +376,7 @@ export async function agentContextEnding({
 			inspectPath,
 		);
 		const text = await readFileImpl(details.absolute, "utf8");
-		if (text.startsWith(RESUME_POINT_MARKER))
+		if (hasResumePointMarker(text))
 			lines.push(
 				`Resume point: read ${handoff.replaceAll("\\", "/")} in full, then the standing-decisions files it names.`,
 			);

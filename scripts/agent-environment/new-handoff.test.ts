@@ -23,6 +23,7 @@ import {
 	parseHandoffArgs,
 	replaceYamlScalars,
 } from "./new-handoff.mjs";
+import { validateResumePoint } from "./resume-point.mjs";
 
 const roots: string[] = [];
 const script = fileURLToPath(new URL("./new-handoff.mjs", import.meta.url));
@@ -59,6 +60,56 @@ function snapshot(root: string) {
 }
 
 describe("O4: coordinator handoff creation without unrelated byte changes", () => {
+	it("S2: a newly generated template must be completed before validation", async () => {
+		const { root } = fixture(roots);
+		const result = await createResumePoint(options(root));
+		await expect(
+			validateResumePoint({
+				repositoryRoot: root,
+				handoffPath: result.newPath,
+				bytes: bytes(root, result.newPath),
+			}),
+		).rejects.toThrow(/line 6:.*template placeholder/);
+	});
+	it("S4: preserves Git failures unrelated to detached HEAD without writes", async () => {
+		const { root } = fixture(roots);
+		const before = snapshot(root);
+		const failure = Object.assign(new Error("Git unavailable"), {
+			status: 128,
+		});
+		await expect(
+			createResumePoint({
+				...options(root),
+				git: () => {
+					throw failure;
+				},
+			}),
+		).rejects.toBe(failure);
+		expect(snapshot(root)).toEqual(before);
+		expect(readdirSync(path.join(root, path.dirname(HANDOFF)))).toEqual([
+			"old.md",
+		]);
+	});
+	it("S4: detached HEAD exits non-zero with one branch-checkout instruction and no writes", () => {
+		const { root } = fixture(roots);
+		gitFixture(root);
+		git(root, "checkout", "--detach");
+		const before = snapshot(root);
+		const result = spawnSync(
+			process.execPath,
+			[script, "--milestone", MILESTONE, "--slug", "detached", "--now", NOW],
+			{ cwd: root, encoding: "utf8", windowsHide: true },
+		);
+		expect(result.status).toBe(1);
+		expect(result.stdout).toBe("");
+		expect(result.stderr.trim().split(/\r?\n/)).toEqual([
+			"handoff:new FAILED: A branch must be checked out before creating a resume point.",
+		]);
+		expect(snapshot(root)).toEqual(before);
+		expect(readdirSync(path.join(root, path.dirname(HANDOFF)))).toEqual([
+			"old.md",
+		]);
+	});
 	it.each([
 		"#round",
 		"docs/run #1",
