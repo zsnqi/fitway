@@ -11,6 +11,7 @@ import {
 	hasResumePointMarker,
 	RESUME_POINT_MARKER,
 	repositoryPath,
+	resumePointFilename,
 } from "./resume-point.mjs";
 
 const STATE_PATH = "PROJECT_STATE.yaml";
@@ -22,7 +23,6 @@ export function parseHandoffArgs(inputArgs) {
 	const options = {};
 	const names = new Map([
 		["--milestone", "milestoneId"],
-		["--slug", "slug"],
 		["--dir", "directory"],
 		["--lease-hours", "leaseHours"],
 		["--now", "now"],
@@ -136,7 +136,6 @@ function replaceHeader(text, name, value) {
 export async function createResumePoint({
 	repositoryRoot = readGit(process.cwd(), ["rev-parse", "--show-toplevel"]),
 	milestoneId,
-	slug,
 	directory,
 	leaseHours = 72,
 	now: nowValue,
@@ -145,10 +144,6 @@ export async function createResumePoint({
 }) {
 	if (!ID_PATTERN.test(milestoneId ?? ""))
 		throw new Error("--milestone requires a lowercase milestone id");
-	if (!ID_PATTERN.test(slug ?? ""))
-		throw new Error(
-			"--slug requires a lowercase run id (letters, digits, hyphens or underscores)",
-		);
 	const now = parseNow(nowValue);
 	const hours = Number(leaseHours);
 	const expiry = new Date(now.getTime() + hours * 3_600_000);
@@ -202,7 +197,7 @@ export async function createResumePoint({
 	const timestamp = localTimestamp(now);
 	const newPath = path.posix.join(
 		directoryDetails.normalized,
-		`${timestamp.filename}-${milestoneId}-${slug}.md`,
+		resumePointFilename(timestamp.filename, milestoneId),
 	);
 	const newDetails = await repositoryPath(repositoryRoot, newPath, {
 		allowMissing: true,
@@ -314,7 +309,7 @@ if (
 		const options = parseHandoffArgs(process.argv.slice(2));
 		if (options.help)
 			console.log(
-				"Usage: pnpm handoff:new [--] --milestone <id> --slug <run-id> [--dir <repo-relative dir>] [--lease-hours <n>] [--now <ISO-8601>]",
+				"Usage: pnpm handoff:new [--] --milestone <milestone-id> [--dir <repo-relative dir>] [--lease-hours <n>] [--now <ISO-8601>] (writes <YYYYMMDD-HHMMSS>-<milestone-id>-resume.md)",
 			);
 		else console.log((await createResumePoint(options)).output);
 	} catch (error) {

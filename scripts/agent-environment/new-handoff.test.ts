@@ -36,7 +36,6 @@ function options(root: string) {
 	return {
 		repositoryRoot: root,
 		milestoneId: MILESTONE,
-		slug: "round_1",
 		now: NOW,
 		git: (_root: string, args: string[]) =>
 			args[0] === "symbolic-ref"
@@ -60,6 +59,40 @@ function snapshot(root: string) {
 }
 
 describe("O4: coordinator handoff creation without unrelated byte changes", () => {
+	it("S1: CLI usage documents the canonical resume-point filename", () => {
+		const result = spawnSync(process.execPath, [script, "--help"], {
+			encoding: "utf8",
+			windowsHide: true,
+		});
+		expect(result.status, result.stderr).toBe(0);
+		expect(result.stdout.trim().split(/\r?\n/)).toHaveLength(1);
+		expect(result.stdout).toContain(
+			"writes <YYYYMMDD-HHMMSS>-<milestone-id>-resume.md",
+		);
+		expect(result.stdout).not.toContain("--slug");
+	});
+	it.each([
+		"resume",
+		"coordinator-resume",
+		"resume-activation",
+	])("S1: CLI rejects the former --slug option %s without writes", (slug) => {
+		const { root } = fixture(roots);
+		const before = snapshot(root);
+		const result = spawnSync(
+			process.execPath,
+			[script, "--milestone", MILESTONE, "--slug", slug, "--now", NOW],
+			{ cwd: root, encoding: "utf8", windowsHide: true },
+		);
+		expect(result.status).toBe(1);
+		expect(result.stdout).toBe("");
+		expect(result.stderr.trim()).toBe(
+			"handoff:new FAILED: Unknown argument: --slug",
+		);
+		expect(snapshot(root)).toEqual(before);
+		expect(readdirSync(path.join(root, path.dirname(HANDOFF)))).toEqual([
+			"old.md",
+		]);
+	});
 	it("S2: a newly generated template must be completed before validation", async () => {
 		const { root } = fixture(roots);
 		const result = await createResumePoint(options(root));
@@ -97,7 +130,7 @@ describe("O4: coordinator handoff creation without unrelated byte changes", () =
 		const before = snapshot(root);
 		const result = spawnSync(
 			process.execPath,
-			[script, "--milestone", MILESTONE, "--slug", "detached", "--now", NOW],
+			[script, "--milestone", MILESTONE, "--now", NOW],
 			{ cwd: root, encoding: "utf8", windowsHide: true },
 		);
 		expect(result.status).toBe(1);
@@ -198,7 +231,7 @@ describe("O4: coordinator handoff creation without unrelated byte changes", () =
 			new Date(new Date(NOW).getTime() + 72 * 3_600_000),
 		);
 		expect(result.newPath).toBe(
-			`docs/phase-records/handoffs/fixture/${timestamp.filename}-${MILESTONE}-round_1.md`,
+			`docs/phase-records/handoffs/fixture/${timestamp.filename}-${MILESTONE}-resume.md`,
 		);
 		const content = bytes(root, result.newPath).toString("utf8");
 		expect(content).toContain(`# ${MILESTONE}: resume point`);
@@ -262,7 +295,7 @@ describe("O4: coordinator handoff creation without unrelated byte changes", () =
 	});
 	it("refuses an existing filename without changing it, the old handoff, ledger or packet", async () => {
 		const { root } = fixture(roots);
-		const target = `docs/phase-records/handoffs/fixture/${localTimestamp(new Date(NOW)).filename}-${MILESTONE}-round_1.md`;
+		const target = `docs/phase-records/handoffs/fixture/${localTimestamp(new Date(NOW)).filename}-${MILESTONE}-resume.md`;
 		put(root, target, "Do not overwrite.");
 		const before = snapshot(root);
 		await expect(createResumePoint(options(root))).rejects.toThrow(
@@ -272,8 +305,8 @@ describe("O4: coordinator handoff creation without unrelated byte changes", () =
 		expect(bytes(root, target).toString("utf8")).toBe("Do not overwrite.");
 	});
 	it.each([
-		[{ slug: "../escape" }, /--slug/],
-		[{ slug: "" }, /--slug/],
+		[{ milestoneId: "../escape" }, /--milestone/],
+		[{ milestoneId: "" }, /--milestone/],
 		[{ milestoneId: "absent" }, /Unknown active milestone/],
 		[{ directory: "../outside" }, /Unsafe/],
 		[{ directory: "C:/outside" }, /Unsafe/],
@@ -379,8 +412,6 @@ describe("O4: coordinator handoff creation without unrelated byte changes", () =
 					...(separator ? ["--"] : []),
 					"--milestone",
 					MILESTONE,
-					"--slug",
-					"cli",
 					"--now",
 					NOW,
 					"--lease-hours",
@@ -399,7 +430,7 @@ describe("O4: coordinator handoff creation without unrelated byte changes", () =
 				.match(/Created resume point: (.+)/)?.[1]
 				.trim();
 			expect(newPath).toBe(
-				`docs/phase-records/handoffs/fixture/20261002-204012-${MILESTONE}-cli.md`,
+				`docs/phase-records/handoffs/fixture/20261002-204012-${MILESTONE}-resume.md`,
 			);
 			expect(bytes(root, newPath ?? "").toString("utf8")).toContain(
 				"2026-10-02 20:40 +03:00",
@@ -458,7 +489,7 @@ describe("O4: coordinator handoff creation without unrelated byte changes", () =
 		gitFixture(root);
 		const result = spawnSync(
 			process.execPath,
-			[script, "--milestone", MILESTONE, "--slug", "clock", "--now", now],
+			[script, "--milestone", MILESTONE, "--now", now],
 			{
 				cwd: root,
 				encoding: "utf8",
@@ -467,7 +498,7 @@ describe("O4: coordinator handoff creation without unrelated byte changes", () =
 			},
 		);
 		expect(result.status, result.stderr).toBe(0);
-		const newPath = `docs/phase-records/handoffs/fixture/${filename}-${MILESTONE}-clock.md`;
+		const newPath = `docs/phase-records/handoffs/fixture/${filename}-${MILESTONE}-resume.md`;
 		expect(bytes(root, newPath).toString("utf8")).toContain(`, ${label}`);
 		const state = parseYaml(bytes(root, "PROJECT_STATE.yaml").toString("utf8"));
 		expect(state.updatedAt).toBe(iso);
@@ -493,15 +524,16 @@ describe("O4: coordinator handoff creation without unrelated byte changes", () =
 	it("argument validation rejects unknown flags, missing values, duplicate flags and non-leading separators", () => {
 		for (const args of [
 			["--unknown"],
-			["--slug"],
-			["--milestone", "--slug"],
-			["--slug", "a", "--slug", "b"],
-			["--slug", "a", "--"],
+			["--milestone"],
+			["--milestone", "--dir"],
+			["--milestone", "a", "--milestone", "b"],
+			["--milestone", "a", "--"],
+			["--milestone", MILESTONE, "--slug", "run"],
 		])
 			expect(() => parseHandoffArgs(args)).toThrow();
-		expect(
-			parseHandoffArgs(["--", "--milestone", MILESTONE, "--slug", "run"]),
-		).toEqual(parseHandoffArgs(["--milestone", MILESTONE, "--slug", "run"]));
+		expect(parseHandoffArgs(["--", "--milestone", MILESTONE])).toEqual(
+			parseHandoffArgs(["--milestone", MILESTONE]),
+		);
 	});
 	it("scalar patching preserves plain, double and single quotes, comments, Unicode and CRLF", () => {
 		const text = "# كمّل\r\na: plain # keep\r\nb: \"double\"\r\nc: 'single'\r\n";

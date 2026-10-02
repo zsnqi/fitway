@@ -51,6 +51,10 @@ export function hasResumePointMarker(text) {
 	return text.includes(RESUME_POINT_MARKER);
 }
 
+export function resumePointFilename(timestamp, milestoneId) {
+	return `${timestamp}-${milestoneId}-resume.md`;
+}
+
 async function hasStandingDecisionsFile(line, repositoryRoot, resolver) {
 	for (const match of line.matchAll(/`([^`\r\n]+)`/g)) {
 		const reference = await resolver.reference(match[1], { allowBare: true });
@@ -102,12 +106,23 @@ export async function validateResumePoint({
 	repositoryRoot,
 	handoffPath,
 	bytes,
+	milestoneId,
 }) {
 	const text = bytes.toString("utf8");
-	if (!hasResumePointMarker(text)) return false;
 	const fail = (message) => {
 		throw new Error(`${handoffPath}: ${message}`);
 	};
+	if (!hasResumePointMarker(text)) {
+		const filename = path.posix.basename(handoffPath.replaceAll("\\", "/"));
+		const timestamp = filename.match(/^\d{8}-\d{6}/)?.[0];
+		if (
+			milestoneId !== undefined &&
+			timestamp &&
+			filename === resumePointFilename(timestamp, milestoneId)
+		)
+			fail(`resume point is missing required marker: ${RESUME_POINT_MARKER}`);
+		return false;
+	}
 	if (bytes.byteLength > MAX_RESUME_POINT_BYTES)
 		fail(
 			`resume point exceeds ${MAX_RESUME_POINT_BYTES} bytes (${bytes.byteLength})`,
@@ -182,7 +197,9 @@ export async function validateResumePoint({
 
 export async function validateActiveResumePoints({ repositoryRoot, state }) {
 	let checked = 0;
-	for (const milestone of Object.values(state.milestones ?? {})) {
+	for (const [milestoneId, milestone] of Object.entries(
+		state.milestones ?? {},
+	)) {
 		if (!milestone.handoff) continue;
 		const details = await repositoryPath(repositoryRoot, milestone.handoff);
 		const bytes = await readFile(details.absolute);
@@ -191,6 +208,7 @@ export async function validateActiveResumePoints({ repositoryRoot, state }) {
 				repositoryRoot,
 				handoffPath: milestone.handoff,
 				bytes,
+				milestoneId,
 			})
 		)
 			checked += 1;

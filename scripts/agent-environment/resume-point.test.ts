@@ -90,6 +90,60 @@ function validate(root: string, text: string | Buffer = valid) {
 }
 
 describe("O5: marked active resume point validation", () => {
+	it.each([
+		{ milestoneId: "fixture-r01", status: "IN_PROGRESS" },
+		{ milestoneId: "fixture_with-underscores-r01", status: "PLANNED" },
+		{ milestoneId: "resume", status: "IN_PROGRESS" },
+	])("S1: the canonical active handoff for $milestoneId requires its marker", async ({
+		milestoneId,
+		status,
+	}) => {
+		const root = fixture();
+		const handoff = `docs/agent-context/20261002-204012-${milestoneId}-resume.md`;
+		writeFileSync(
+			path.join(root, handoff),
+			valid.replace(RESUME_POINT_MARKER, ""),
+		);
+		const state = { milestones: { [milestoneId]: { handoff, status } } };
+		await expect(
+			validateActiveResumePoints({ repositoryRoot: root, state }),
+		).rejects.toThrow(
+			`${handoff}: resume point is missing required marker: ${RESUME_POINT_MARKER}`,
+		);
+		writeFileSync(
+			path.join(root, handoff),
+			"## State\n## Running now\n## Next steps\n## Pointers\n",
+		);
+		await expect(
+			validateActiveResumePoints({ repositoryRoot: root, state }),
+		).rejects.toThrow(/missing required marker/);
+		writeFileSync(path.join(root, handoff), valid);
+		await expect(
+			validateActiveResumePoints({ repositoryRoot: root, state }),
+		).resolves.toBe(1);
+	});
+	it.each([
+		"20261002-204012-fixture-r01-coordinator-resume.md",
+		"20261002-204012-fixture-r01-resume-activation.md",
+		"20261002-204012-fixture-r01-round_1.md",
+		"20261002-204012-another-r01-resume.md",
+		"2026102-204012-fixture-r01-resume.md",
+		"20261002-20401-fixture-r01-resume.md",
+		"prefix-20261002-204012-fixture-r01-resume.md",
+		"20261002-204012-fixture-r01-resume.md.backup",
+		"20261002-204012-fixture-r01-resume.MD",
+		"resume.md",
+	])("S1: leaves other unmarked active handoff names unchanged: %s", async (filename) => {
+		const root = fixture();
+		const handoff = `docs/agent-context/${filename}`;
+		writeFileSync(path.join(root, handoff), `local_old ${"a".repeat(20_000)}`);
+		await expect(
+			validateActiveResumePoints({
+				repositoryRoot: root,
+				state: { milestones: { "fixture-r01": { handoff } } },
+			}),
+		).resolves.toBe(0);
+	});
 	it.each(
 		placeholders,
 	)("S2: rejects the template placeholder %s and names its line", async (placeholder) => {
