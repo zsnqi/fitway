@@ -4707,3 +4707,18 @@ The user ends this cloud session here and continues in a new cloud session. No a
   lines (the peak column is wider); at 1024 EN the peak column is 18 px narrower than at `ca70f44` (from the flag's
   removal). Defect 8 and the NaN SVG path errors at 320 in `components.html` are unchanged.
 - The crops are in `D:\fitway-temp\owner-r04\build15\` (local, untracked).
+
+## The user's review of `06e0c41`, and the artifact promotion corrected (2026-10-02)
+
+- **Accepted** (*user 2026-10-02*): «· 13 دقيقة» on the second line at 320 AR; the peak column 18 px narrower at
+  1024 EN. **Open:** the peak row's note wrapping to three lines at 721 and 768 AR.
+- **Promotion, corrected** (support article 17274727, read 2026-10-02): 1-15 October, Pro/Max/Team, work after an
+  artifact is created or edited uses 50% less of the five-hour limit. It applies to Claude chats (web, desktop,
+  mobile) and Cowork cloud tasks; not to Claude Code, the standalone Claude Design app, or local Cowork tasks. A chat
+  started from the Output menu's Design is discounted from its first message: 10 messages, up to 15 steps each, then
+  standard until Claude creates or edits an artifact in that chat again. Cowork: about the first 45 minutes, or 80
+  steps after an artifact is created mid-task. The earlier line in this handoff ("halves the five-hour limit") meant
+  this discount, and the standalone app is the excluded entry, not the preferred one.
+- **Entry chosen with the user:** the desktop app, a chat started from Design in the Output menu, with an Eclipse
+  design system made "Using Claude Code" (`/design-sync`). The user's existing design systems ("Design System",
+  "Samtah…") and the September FITWAY Claude Design projects are not Eclipse and are not used.
