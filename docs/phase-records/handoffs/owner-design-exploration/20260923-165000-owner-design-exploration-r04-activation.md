@@ -4722,3 +4722,16 @@ The user ends this cloud session here and continues in a new cloud session. No a
 - **Entry chosen with the user:** the desktop app, a chat started from Design in the Output menu, with an Eclipse
   design system made "Using Claude Code" (`/design-sync`). The user's existing design systems ("Design System",
   "Samtah…") and the September FITWAY Claude Design projects are not Eclipse and are not used.
+
+## The Claude Design kit (2026-10-02)
+
+- **Peak-row note:** the three-line wrap at 721 and 768 AR is accepted for now (*user 2026-10-02*).
+- **Design-system route:** `/design-sync` targets a built React package (`dist/`); Eclipse is plain HTML/CSS/JS, so a
+  Claude Code sync would mean re-implementing it in React. The user chose "New design system → Using Claude" (upload
+  files and describe it) in the desktop app.
+- **Kit:** `D:\fitway-temp\owner-r04\claude-design-kit\` (local, untracked), assembled by a fresh agent from
+  `06e0c41`: `style.css`, `components.css`, `reports.css`, `DO-NOT.md` (byte-identical copies), Readex Pro woff2 + OFL,
+  eight full-page screenshots (Daily and Reports AR 390/768/1440, Reports EN 1440, components AR 1440) and
+  `DESCRIPTION.md` (2,503 characters, every value checked against the copied CSS; the coordinator reworded two lines).
+- **Next:** the user creates the design system and opens a chat from Output → Design with it; Claude Design output
+  stays reference until built in E/. Then Reports' states (K-02, K-38) and the step-4 reviewer.
