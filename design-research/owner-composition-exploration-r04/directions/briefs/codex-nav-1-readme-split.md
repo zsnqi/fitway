@@ -5,8 +5,11 @@ given to you. Folder: `design-research/owner-composition-exploration-r04/directi
 
 ## Environment
 
-- You run without a sandbox. Write only inside this worktree and the system temp folder. Do not push, fetch, switch
-  branches, or touch other worktrees, `D:/Projects/fitway` or any global configuration.
+- You run in the workspace-write sandbox with automatic approval review. `git add`, `git commit` and anything that
+  starts child processes with piped output (pnpm, Vitest, Playwright, Node scripts that run git) fail inside it:
+  request escalation for them from the first attempt, with a one-line justification.
+- Write only inside this worktree and the system temp folder. Do not push, fetch, switch branches, or touch other
+  worktrees, `D:/Projects/fitway` or any global configuration.
 - Use absolute paths. Write files as UTF-8 without a BOM; keep each file's existing line endings.
 - If anything this brief names is missing or contradicts the files, stop and report it instead of guessing.
 
