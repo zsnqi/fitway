@@ -1,4 +1,4 @@
-import { glob, readFile, stat, writeFile } from "node:fs/promises";
+import { readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
@@ -63,7 +63,7 @@ export function parseBriefArgs(inputArgs) {
 	return options;
 }
 
-function pathReference(value, headingAfter) {
+function pathReference(value) {
 	const normalized = value.trim().replaceAll("\\", "/");
 	if (
 		/<[^>]*>/.test(normalized) ||
@@ -76,17 +76,7 @@ function pathReference(value, headingAfter) {
 	const match = normalized.match(/^(.*?)(?::(\d+))?(?:\s+§"([^"]+)")?$/);
 	const file = match[1];
 	// Inline commands, hashes, roles and API routes such as `/api` are not file references.
-	if (
-		!headingAfter &&
-		!match[2] &&
-		!match[3] &&
-		!file.includes("/", file.startsWith("/") ? 1 : 0) &&
-		!/(?:^\.|\.)[A-Za-z\d_-]+$/.test(file) &&
-		!/^(?:LICENSE|NOTICE|COPYING|Dockerfile|Makefile|Justfile|Procfile)$/.test(
-			file,
-		)
-	)
-		return null;
+	if (!file.includes("/", file.startsWith("/") ? 1 : 0)) return null;
 	return { file, line: match[2] ? Number(match[2]) : null, heading: match[3] };
 }
 
@@ -228,30 +218,64 @@ async function validateWorktree(text, report, git) {
 	}
 }
 
-async function validateReferences(text, worktree, repositoryRoot, report) {
+async function validateReferences(text, worktree, repositoryRoot, report, git) {
 	const source = withoutComments(text);
+	const references = [];
 	for (const span of codeSpans(source)) {
 		const line = lineAt(text, span.index);
 		const lineStart = source.lastIndexOf("\n", span.index) + 1;
 		if (source.slice(lineStart, span.index).startsWith("- **Worktree:**"))
 			continue;
-		const after = source
-			.slice(span.index + span[0].length)
-			.match(/^\s*§"([^"]+)"/);
-		const reference = pathReference(span[2], after?.[1]);
+		const tail = source.slice(span.index + span[0].length);
+		const after = tail.match(/^\s*§"([^"]+)"/);
+		const reference = pathReference(span[2]);
 		if (!reference) continue;
-		const heading = reference.heading ?? after?.[1];
-		const absolute = path.resolve(worktree, reference.file);
+		references.push({
+			...reference,
+			lineNumber: line,
+			heading: reference.heading ?? after?.[1],
+			isNew: /^[ \t]+\(new\)(?=\s|[.,;:]|$)/.test(tail),
+		});
+	}
+	const newPaths = new Set(
+		references
+			.filter((reference) => reference.isNew)
+			.map((reference) => path.resolve(worktree, reference.file)),
+	);
+	let trackedFiles;
+	for (const reference of references) {
+		const { lineNumber: line, heading } = reference;
 		const wildcard = /[*?]/.test(reference.file);
-		let details = null;
-		if (wildcard) {
-			for await (const _ of glob(reference.file, { cwd: worktree })) {
-				details = { isFile: () => false };
-				break;
-			}
-		} else details = await exists(absolute);
+		const prefix = reference.file.split(/[*?]/, 1)[0];
+		const checkedPath = wildcard
+			? prefix.slice(0, prefix.lastIndexOf("/") + 1) || "."
+			: reference.file;
+		const absolute = path.resolve(worktree, checkedPath);
+		const details = await exists(absolute);
+		if (reference.isNew) {
+			if (details) report("B1", line, `new path already exists: ${absolute}`);
+			const parent = path.dirname(absolute);
+			const parentDetails = await exists(parent);
+			if (parentDetails ? !parentDetails.isDirectory() : !newPaths.has(parent))
+				report(
+					"B1",
+					line,
+					`parent folder must exist or be declared (new): ${parent}`,
+				);
+			continue;
+		}
 		if (!details) {
 			const inCommandRepository = path.resolve(repositoryRoot, reference.file);
+			let suggestion = "";
+			if (!wildcard && !path.isAbsolute(reference.file)) {
+				trackedFiles ??= git(worktree, ["ls-files", "-z"])
+					.split("\0")
+					.filter(Boolean);
+				const suffix = `/${path.posix.normalize(reference.file)}`;
+				const matches = trackedFiles.filter((file) => file.endsWith(suffix));
+				if (matches.length === 1)
+					suggestion = `; tracked suffix match: ${path.resolve(worktree, matches[0])}`;
+			}
 			if (
 				!path.isAbsolute(reference.file) &&
 				(await exists(inCommandRepository))
@@ -259,9 +283,18 @@ async function validateReferences(text, worktree, repositoryRoot, report) {
 				report(
 					"B1",
 					line,
-					`drift: missing ${absolute} in worktree ${worktree}; present at ${inCommandRepository} in command repository ${repositoryRoot}`,
+					`drift: missing ${absolute} in worktree ${worktree}; present at ${inCommandRepository} in command repository ${repositoryRoot}${suggestion}`,
 				);
-			else report("B1", line, `missing path in ${worktree}: ${absolute}`);
+			else
+				report(
+					"B1",
+					line,
+					`missing path in ${worktree}: ${absolute}${suggestion}`,
+				);
+			continue;
+		}
+		if (wildcard && !details.isDirectory()) {
+			report("B1", line, `glob folder is not a directory: ${absolute}`);
 			continue;
 		}
 		if (!heading && reference.line === null) continue;
@@ -363,7 +396,7 @@ export async function checkBrief({
 			mask(span[0]) +
 			prose.slice(span.index + span[0].length);
 	for (const checklist of prose.matchAll(
-		/^## Coordinator checklist(?:\s.*)?\r?$/gm,
+		/^## Coordinator checklist(?:\s.*)?\r?$/gim,
 	))
 		report(
 			"B3",
@@ -388,7 +421,7 @@ export async function checkBrief({
 		report("B4", 81, `${lineCount} lines exceeds 80; warning only`, "WARNING");
 	const worktree = await validateWorktree(text, report, git);
 	if (worktree)
-		await validateReferences(text, worktree, repositoryRoot, report);
+		await validateReferences(text, worktree, repositoryRoot, report, git);
 	problems.sort((a, b) => a.line - b.line || a.rule.localeCompare(b.rule));
 	return {
 		briefPath: absoluteBrief,

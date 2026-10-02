@@ -434,6 +434,7 @@ describe("project-state schemas", () => {
 describe("checker CLI diagnostic output", () => {
 	const root = fileURLToPath(new URL("../", import.meta.url));
 	for (const script of ["check-agent-context.mjs", "verify-repository.mjs"]) {
+		// Two real checker processes exceed the 20s unit default under shared load.
 		it(`${script} summarizes admitted exceptions by default and lists them with --verbose`, () => {
 			const invoke = (args: string[]) => {
 				const result = spawnSync(
@@ -468,6 +469,6 @@ describe("checker CLI diagnostic output", () => {
 			expect(verbose).toContain(
 				`Historical pointer exceptions admitted: ${count}.`,
 			);
-		});
+		}, 120_000);
 	}
 });

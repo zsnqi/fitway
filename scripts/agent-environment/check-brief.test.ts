@@ -189,13 +189,106 @@ describe("B1: resolve a brief against its named Git worktree", () => {
 		const f = fixture();
 		put(f.worktree, "docs/fenced.md", "~~~md\n## Pretend\n~~~\n# Real ###\n");
 		const result = await f.check(
-			`${f.valid}\n\`docs/guide.md:5\`\n\`docs/guide.md:0\`\n\`docs/guide.md\` §"Missing"\n\`docs/fenced.md\` §"Pretend"\n\`docs/fenced.md\` §"Real"\n\`docs\` §"Not a file"\n`,
+			`${f.valid}\n\`docs/guide.md:5\`\n\`docs/guide.md:0\`\n\`docs/guide.md\` §"Missing"\n\`docs/fenced.md\` §"Pretend"\n\`docs/fenced.md\` §"Real"\n\`docs/\` §"Not a file"\n`,
 		);
 		expect(result.problems).toHaveLength(5);
 		expect(formatBriefResult(result)).toContain(
 			"exceeds file length (4 lines)",
 		);
 		expect(formatBriefResult(result)).toContain('missing heading §"Pretend"');
+	});
+
+	it("skips bare mentions even with extensions, line selectors or headings", async () => {
+		const f = fixture();
+		const result = await f.check(
+			`${f.valid}\n\`guide.md\` \`check-brief.mjs\` \`core.longpaths\` \`LICENSE\` \`missing.md:999\` §"Missing"\n`,
+		);
+		expect(result.problems).toEqual([]);
+	});
+
+	it("suggests exactly one tracked suffix match without accepting the missing path", async () => {
+		const f = fixture();
+		put(f.worktree, "docs/nested/unique.md", "# Tracked\n");
+		put(f.worktree, "docs/nested/untracked.md", "# Untracked\n");
+		git(f.worktree, "add", "docs/nested/unique.md");
+		const result = await f.check(
+			`${f.valid}\n\`nested/unique.md\`\n\`nested/untracked.md\`\n`,
+		);
+		expect(result.ok).toBe(false);
+		expect(result.problems).toHaveLength(2);
+		expect(result.problems[0].message).toContain(
+			`tracked suffix match: ${path.join(f.worktree, "docs/nested/unique.md")}`,
+		);
+		expect(result.problems[1].message).not.toContain("tracked suffix match:");
+		put(f.worktree, "other/nested/unique.md", "# Another tracked match\n");
+		git(f.worktree, "add", "other/nested/unique.md");
+		const ambiguous = await f.check(`${f.valid}\n\`nested/unique.md\`\n`);
+		expect(ambiguous.ok).toBe(false);
+		expect(ambiguous.problems[0].message).not.toContain(
+			"tracked suffix match:",
+		);
+	});
+
+	it("accepts new files and folders with existing or declared new parents without drift", async () => {
+		const f = fixture();
+		put(
+			f.commandRepository,
+			"docs/command-only.md",
+			"# Already in command repository\n",
+		);
+		const result = await f.check(
+			`${f.valid}\n\`docs/command-only.md\` (new)\n\`docs/new/deeper/file.md\` (new)\n\`docs/new/deeper/\` (new)\n\`docs/new/\` (new)\n`,
+		);
+		expect(result.problems).toEqual([]);
+		expect(result.ok).toBe(true);
+	});
+
+	it("rejects existing new paths and absent or nondirectory parents without drift", async () => {
+		const f = fixture();
+		put(f.commandRepository, "absent/file.md", "# Command repository only\n");
+		const result = await f.check(
+			`${f.valid}\n\`docs/guide.md\` (new)\n\`docs/\` (new)\n\`absent/file.md\` (new)\n\`docs/guide.md/child.md\` (new)\n`,
+		);
+		expect(result.ok).toBe(false);
+		expect(result.problems).toHaveLength(4);
+		expect(
+			result.problems
+				.slice(0, 2)
+				.every((problem: { message: string }) =>
+					problem.message.startsWith("new path already exists:"),
+				),
+		).toBe(true);
+		expect(
+			result.problems
+				.slice(2)
+				.every((problem: { message: string }) =>
+					problem.message.startsWith(
+						"parent folder must exist or be declared (new):",
+					),
+				),
+		).toBe(true);
+		expect(formatBriefResult(result)).not.toContain("drift:");
+	});
+
+	it("checks glob folders even when empty and rejects missing or nondirectory folders", async () => {
+		const f = fixture();
+		mkdirSync(path.join(f.worktree, ".github/workflows"), { recursive: true });
+		expect(
+			(
+				await f.check(
+					`${f.valid}\n\`.github/workflows/**\`\n\`docs/no-match*.md\`\n`,
+				)
+			).problems,
+		).toEqual([]);
+		const result = await f.check(
+			`${f.valid}\n\`.github/missing/**\`\n\`docs/guide.md/**\`\n`,
+		);
+		expect(result.ok).toBe(false);
+		expect(result.problems).toHaveLength(2);
+		expect(formatBriefResult(result)).toContain("missing path");
+		expect(formatBriefResult(result)).toContain(
+			"glob folder is not a directory:",
+		);
 	});
 
 	it("skips placeholder paths, temp paths, commands, branch names, hashes and HTML comments", async () => {
@@ -300,6 +393,22 @@ describe("B2: shared environment and brief role", () => {
 });
 
 describe("B3 and B4: launch readiness and diagnostics", () => {
+	it.each([
+		"coordinator checklist",
+		"COORDINATOR CHECKLIST",
+		"CoOrDiNaToR ChEcKlIsT",
+	])("rejects the %s heading in any case", async (heading) => {
+		const f = fixture();
+		const text = `${f.valid}\n## ${heading} (delete before launch)\n`;
+		const result = await f.check(text);
+		expect(result.ok).toBe(false);
+		expect(result.problems).toHaveLength(1);
+		expect(result.problems[0].rule).toBe("B3");
+		expect(text.split("\n")[result.problems[0].line - 1]).toBe(
+			`## ${heading} (delete before launch)`,
+		);
+	});
+
 	it("reports placeholders and Coordinator checklist on their exact lines", async () => {
 		const f = fixture();
 		const text = `${f.valid}\n<Fill goal>\n## Coordinator checklist (delete before launch)\n`;
