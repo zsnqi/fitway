@@ -30,9 +30,11 @@ reviewer views the user did not take up are left out.
   2:31 PM". The user called the range-first order badly built and the sentence clear. (The dot was chosen on
   2026-09-30 and reversed on 2026-10-01; the dotted mark was chosen on 2026-10-01 and reversed the same day.) The
   rule covers rows with a time range. The header's period line keeps its middle dot, «لا قراءات · 31 يومًا», and the
-  dotted mark on a chart's time axis is a data mark, not this phrase. *H "The middle dot replaced by range first, and
-  step 3 waits for the user (2026-10-01)", "The user's review of the phone build, one decision at a time
-  (2026-10-01)"; S TBL-12, §8 Q11.*
+  dotted mark on a chart's time axis is a data mark, not this phrase. Daily's coverage list is not this phrase
+  either: its label stands in its own column, and its value is the range, a middle dot and the duration, «2:14 م –
+  2:31 م · 18 دقيقة» (the user found brackets wider and the dot better, 2026-10-02). *H "The middle dot replaced by
+  range first, and step 3 waits for the user (2026-10-01)", "The user's review of the phone build, one decision at a
+  time (2026-10-01)", "The user's review of the wording round (2026-10-02)"; S TBL-12, §8 Q11, OWN-D11.*
 
 ## Numbers, dates, times and ranges
 
@@ -40,8 +42,15 @@ reviewer views the user did not take up are left out.
   the units out of line. Numbers and their header share the physical right edge in both languages. *H "The user's
   decisions on the spec draft, and the second pass (2026-09-30)"; S TBL-1.*
 - **Do not split a row with no readings into cells, or put its words under a numeric column.** The user called that
-  placement bad. The row is one full-width cell. *H "The no-readings row becomes one full-width row (2026-09-30)";
-  S TBL-12.*
+  placement bad. The row is one full-width cell. One exception: a single whole day without readings keeps its date
+  where every day shows it, with «لا قراءات» (or «لا قراءات بعد» before readings began) beside or under it (user
+  2026-10-02). *H "The no-readings row becomes one full-width row (2026-09-30)", "The user's wording picks, and the
+  wording brief (2026-10-02)"; S TBL-12.*
+- **Do not put a dash inside a sentence, or «من … إلى …» in a range that stands alone as a value.** When a range is
+  part of a sentence, the sentence spells it out: «لا قراءات من 10:00 ص إلى 2:00 م», and a two-line tooltip reads as
+  one sentence too. When the range stands alone as a value, with its label in its own column (Daily's coverage list),
+  the dash says it: «2:14 م – 2:31 م», and «من … إلى …» only repeats it and takes width. *User 2026-10-02; H "The
+  user's review of the wording round (2026-10-02)"; S OWN-D11.*
 - **Do not cross-fade a changing number, a crowd-level bar or the level word.** The user disliked the cross-fade,
   including on the small bars. Digits roll, and bars fill or empty. *H "Motion review, Round 6, and new-session resume
   point (2026-09-25)"; B "Round 6" §3-4; S MOT-2, MOT-3.*

@@ -4621,3 +4621,16 @@ The user ends this cloud session here and continues in a new cloud session. No a
 - **The coordinator inspected the coverage crops** (390 AR, 320 AR). They match decision 14.
 - **Next, waiting on the user:** the peak time beside the number (the inline preview), and the من/إلى rule in
   DO-NOT.md.
+
+## The user's answers on `ca70f44` and the inline preview (2026-10-02)
+
+- **Decision 15, the peak time beside the number at 721-1023:** the inline preview is accepted ("excellent").
+  *User 2026-10-02,* on the coordinator's recommendation. Not built yet.
+- **The «الأعلى» flag:** with the time inline, the user finds the flag, on its own line, out of keeping, and thinks
+  it may not be needed. Options are being rendered for the user's pick before anything is built.
+- **Decision 16, the coverage list's duration:** no brackets (they take width), and the middle dot comes back:
+  «2:14 م – 2:31 م · 18 دقيقة». *User 2026-10-02,* against the build of decision 14's brackets. The dash rule of
+  decision 14 stands.
+- **DO-NOT.md updated** (approved by the user): the new rule "no dash inside a sentence, no «من … إلى …» in a range
+  that stands alone as a value"; the coverage list's dot noted as outside the no-readings phrase rule; the single-day
+  exception to the full-width no-readings row (decision 10).
