@@ -4606,3 +4606,18 @@ The user ends this cloud session here and continues in a new cloud session. No a
   Waiting for the user's verdict.
 - **Proposed to the user:** record the من/إلى rule in DO-NOT.md (a range inside a sentence, tooltips included,
   takes «من … إلى …»; a range standing alone as a value beside its label takes the dash). Waiting.
+
+## The peak alignment and decision 14 at `ca70f44` (2026-10-02)
+
+- **Pushed:** `owner-followup-r04-build` at `ca70f44`, one commit on `3e5b997`, inside E/. The Arabic peak cell at
+  721-1023 now ends on its column's edge (0 px, from up to 28.67 px); decision 14 is built in Daily's coverage list
+  («2:14 م – 2:31 م (18 دقيقة)», the range unbreakable, the bracketed duration wraps as one unit at 320). OWN-D11 and
+  OWN-R9 updated, decision 14 recorded, source row `F14`, lint 0.
+- **Builder's measurements (corroboration):** 1440-320 incl. 1023 and 721, AR and EN: no target under 44 px, no
+  sideways scroll, no break inside a time, date or range. Non-regression: 108 of 420 frames differ, all in the peak
+  cell (AR, 721-1023) or the coverage list.
+- **Pre-existing, found here:** at 721 EN the status box's anchor moves 6.5 px (HDR-6). `3e5b997` gives the same; 721
+  was never a measured size. For the step-4 reviewer.
+- **The coordinator inspected the coverage crops** (390 AR, 320 AR). They match decision 14.
+- **Next, waiting on the user:** the peak time beside the number (the inline preview), and the من/إلى rule in
+  DO-NOT.md.
