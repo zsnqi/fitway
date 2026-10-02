@@ -4691,3 +4691,19 @@ The user ends this cloud session here and continues in a new cloud session. No a
   `ca70f44`; the local build worktree `owner-followup-r04-s04` fast-forwarded to it.
 - **Build launched:** `briefs/step4-reports-decisions-15-16.md` (decisions 15, 16, 17 and defect 1) to a fresh
   `owner-direction-builder` in `owner-followup-r04-s04`.
+
+## Decisions 15-17 delivered at `06e0c41`, for the user's review (2026-10-02)
+
+- **Built** by a fresh `owner-direction-builder` on `ca70f44`, pushed. E/ files: `reports.css`, `reports.js`,
+  `app.js`, `components.css`, `components.js`, `DESIGN-SPEC.md` (TBL-6, TBL-8, TBL-11, CHP-7, OWN-D11, OWN-R9,
+  OWN-R12, source row B15, §8 decisions 15-17), `README.md`. Spec lint 0.
+- **Builder's measurements:** at 721-1023 AR and EN the peak value, its time, average and entries share one baseline
+  (0.00 px); defect 1's cause was ca70f44's RTL `align-items: flex-start` active at 721-1023, now limited to ≤720.
+  Defect 2 is gone with the flag. The coverage range and «· 18 دقيقة» are unbreakable units; at 320 AR «· 13 دقيقة»
+  takes the second line. The red "Highest" sample left `components.html`'s flags specimen (builder's call).
+- **Coordinator inspected** 768 AR, 390 AR and coverage 320 AR crops: flag gone, tint kept, peak cells on one
+  baseline, coverage reads in order with the dot.
+- **For the user:** at 721 and 768 AR the peak row's note «لا قراءات من 10:00 ص إلى 2:00 م» now wraps to three
+  lines (the peak column is wider); at 1024 EN the peak column is 18 px narrower than at `ca70f44` (from the flag's
+  removal). Defect 8 and the NaN SVG path errors at 320 in `components.html` are unchanged.
+- The crops are in `D:\fitway-temp\owner-r04\build15\` (local, untracked).
