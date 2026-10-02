@@ -4578,3 +4578,13 @@ The user ends this cloud session here and continues in a new cloud session. No a
   - English coverage rows take two lines at 390 (the page grows 40-60 px); at 320 EN, "from 6:00 AM" drops under
     its label.
   - `components.html` has no single-day specimen; `wording-capture.mjs` supersedes `reports-fixes-capture.mjs`.
+
+## The user's review of the wording round (2026-10-02)
+
+- **Decision 14, Daily's coverage list drops «من … إلى …»:** the range with its dash is understood on its own, so
+  the value reads «2:14 م – 2:31 م (18 دقيقة)» and «6:00 ص – 6:09 ص». The duration keeps its brackets, and the
+  middle dot stays gone. *User 2026-10-02.* The coordinator reads it as the coverage list only: there the label sits
+  in its own column. The one-sentence spans elsewhere keep decision 8's «لا قراءات من … إلى …».
+- **The user marked the peak time under the peak value** («6:25 م» under «55») in the 768 Arabic table, before and
+  after, and says it shows in roughly the first three crops. A fresh agent diagnoses it, read-only, into
+  `…/scratchpad/peak/`. The fix waits for the diagnosis.
