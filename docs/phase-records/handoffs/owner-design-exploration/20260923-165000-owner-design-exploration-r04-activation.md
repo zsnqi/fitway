@@ -4595,3 +4595,14 @@ The user ends this cloud session here and continues in a new cloud session. No a
   flex-start; }` in the same media block.
 - **Launched:** a fresh `owner-direction-fixer` (Opus) on `3e5b997` with the peak fix and decision 14, scratch
   folder `…/scratchpad/final-fixes/`. It commits once and does not push.
+- **The user clarified the marked issue:** not the alignment, but the time under the peak number. It lifts the
+  peak above the row's other numbers; every number in a row should share one line. The running fixer's alignment
+  line becomes a stepping stone.
+- **Preview rendered for the user** (`…/scratchpad/peak-inline/out/evidence/`, CSS injection on a static copy of
+  `3e5b997`): at 721-1023 the time sits beside the number as at ≥1024 (8 px gap, number on the start edge). Every
+  number in a row shares one baseline (0 px) at 721, 768, 900 and 1023, AR and EN, with no overflow. The «الأعلى»
+  flag cannot sit beside the time there (the Arabic table overruns its card by up to 12.5 px at 721 in the 28-day
+  view), so it takes its own line under the number and time, on the start edge. The top row grows from 61 to 65 px.
+  Waiting for the user's verdict.
+- **Proposed to the user:** record the من/إلى rule in DO-NOT.md (a range inside a sentence, tooltips included,
+  takes «من … إلى …»; a range standing alone as a value beside its label takes the dash). Waiting.
