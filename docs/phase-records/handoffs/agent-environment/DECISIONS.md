@@ -22,14 +22,18 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
    role part (goal, cause and outcomes for builder and Codex; the open question and constraints only for the
    designer; the checklist for the verifier). Each rule carries its origin; a rule unused for a while is reviewed
    and removed. `pnpm brief:check` runs before every launch. Template changes go through the evaluation loop.
-7. **Codex runs without its sandbox on FITWAY (2026-10-02).** Codex has to run the unit tests and commit in linked
-   worktrees. Its Windows sandbox cannot do either, whatever the settings: it puts persistent DENY entries on
-   `D:/Projects/fitway/.git`, which every linked worktree's git dir inherits and `writable_roots` does not lift; and
-   a Node child process with piped stdio fails with `spawn EPERM` (openai/codex#47868, #45697), which breaks git
-   inside Node and Vitest. The user chose full access per FITWAY round: the coordinator launches
-   `codex exec -s danger-full-access` from a tracked brief (command in `WORKING_AGREEMENTS.md`); `config.toml` stays
-   unchanged. Each brief forbids pushing and writing outside its worktree, and after the round the coordinator checks
-   the diff, `git status` in every worktree involved, and the remote branch.
+7. **Codex runs in its sandbox with automatic approval review (2026-10-02).** Codex has to run the unit tests and
+   commit in linked worktrees. Its Windows sandbox alone cannot do either, whatever the settings: it puts persistent
+   DENY entries on `D:/Projects/fitway/.git`, which every linked worktree's git dir inherits and `writable_roots`
+   does not lift; and a Node child process with piped stdio fails with `spawn EPERM` (openai/codex#47868, #45697),
+   which breaks git inside Node and Vitest. The user first chose full access per round, then asked for
+   `--approve-for-me`. In a test that day Codex asked to escalate the commit and the piped child processes, the
+   reviewer approved both, and both succeeded outside the sandbox. FITWAY rounds therefore run
+   `codex exec --approve-for-me` (command in `WORKING_AGREEMENTS.md`): everything else stays in the workspace-write
+   sandbox, and each escalation is reviewed for exfiltration, credential probing, security weakening and destructive
+   actions. `-s danger-full-access` is the fallback for a round the reviewer blocks. `config.toml` stays unchanged.
+   Each brief forbids pushing and writing outside its worktree, and after the round the coordinator checks the
+   diff, `git status` in every worktree involved, and the remote branch.
 8. **Usage panel (2026-10-02).** A Claude Code mod shows the subscription limits as its main element: the five-hour
    window with its reset time, and the weekly limit. The context window is a separate element with a different
    look from Anthropic's `token-weather` sample; its appearance changes at thresholds. Be inventive. The user
