@@ -129,10 +129,10 @@ The baseline's `integratedCommit` remains the immutable BRG hash; `SELF` in an a
 conflict rules. Startup then follows the bounded route in this order:
 
 1. **Root policy.** Read `AGENTS.md`. It is the only automatic instruction file.
-2. **Active state.** Read `PROJECT_STATE.yaml` for the active frontier. If no milestone is open,
-   no task is assigned; do not infer one.
+2. **Active state.** Run `git fetch`, then read `PROJECT_STATE.yaml` for the active frontier. If
+   no milestone is open, no task is assigned; do not infer one.
 3. **Assigned packet.** Run the bounded continuity check
-   `pnpm context:show -- --milestone <milestone-id>` (authoritative form:
+   `pnpm context:show --milestone <milestone-id>` (authoritative form:
    `<absolute-node> scripts/show-agent-context.mjs --milestone <milestone-id>`). It validates the
    stable packet path, state hash, packet identity, task class, base commit, scope, handoff, and
    lifecycle, then prints the ordered required sources/selectors and conditional triggers. A
@@ -399,11 +399,19 @@ changes Owner, Staff, or Public presentation, in addition to the gates above.
 
 ## Handoff format
 
-Store handoffs under `docs/phase-records/handoffs/<phase>/<timestamp>-<run-id>.md` and reference
-the latest file from `PROJECT_STATE.yaml` through the active packet's `continuity.currentHandoff`.
-Use `docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md`, which carries the canonical field contract,
-the required evidence sections, and the current-repository-relative resume-command rule. Keep
-handoffs concise and evidence-based.
+Two records carry work between sessions.
+
+- **Resume point.** The coordinator's current state for the next session, written whole each time
+  from `docs/agent-context/HANDOFF_TEMPLATE.md` with `pnpm handoff:new`. The script stores it as
+  `docs/phase-records/handoffs/<phase>/<timestamp>-<run-id>.md` and points `PROJECT_STATE.yaml`
+  and the active packet's `continuity.currentHandoff` at it. Earlier resume points are history.
+  Decisions that outlive a round live in the milestone's `DECISIONS.md`, edited in place, and
+  agreements about how the user and agents work live in `docs/agent-context/WORKING_AGREEMENTS.md`.
+- **Evidence receipt.** A worker's or verifier's handback, using
+  `docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md`, which carries the canonical field contract,
+  the required evidence sections, and the current-repository-relative resume-command rule.
+
+Keep both concise and evidence-based.
 
 Do not paste secrets, raw PINs/tokens, unbounded logs, screenshots containing sensitive data, or
 claims that were not independently observed.

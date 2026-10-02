@@ -12,8 +12,8 @@
 
 `AGENTS.md` is automatic; every other source is an explicit read.
 
-1. Read `PROJECT_STATE.yaml` for the active frontier. No open milestone means no assigned task; do not infer one.
-2. Run `pnpm context:show -- --milestone <milestone-id>` to resolve the assigned task packet and its ordered required sources, selectors, and conditional triggers.
+1. Run `git fetch`, then read `PROJECT_STATE.yaml` for the active frontier. No open milestone means no assigned task; do not infer one.
+2. Run `pnpm context:show --milestone <milestone-id>` to resolve the assigned task packet and its ordered required sources, selectors, and conditional triggers. The `handoff` it prints is the milestone's current resume point: read it in full, then the standing-decisions files it names. A coordinator resuming without a named milestone does this for every active milestone; an independent verifier reads it only after recording its own assessment.
 3. Read the packet's required sources in order. Expand a conditional source only when its recorded trigger is observed, and perform its recorded `READ` or `NEEDS_HUMAN` action.
 4. Never load `PROJECT_STATE_HISTORY.yaml`, `docs/archive/**`, or unrelated handoffs by default. Expand history only through a named decision, predecessor, incident, or audit pointer.
 5. A missing, untracked, case-mismatched, stale, hash-mismatched, or conflicting packet, route, or required source is a stop condition. Repair it through the coordinator; never guess or infer authority.
