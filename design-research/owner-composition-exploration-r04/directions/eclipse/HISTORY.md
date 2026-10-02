@@ -1327,3 +1327,218 @@ this file.
   and its flags specimen, with its CSS (`.flag`, `.cx-flag.is-red`) and its strings. The row tint stays.
 - **Capture.** `cap.mjs`, `crops.mjs` and `cov.mjs` in the scratch folder named by `B15` measure Reports, Daily's
   coverage list and the components page against `ca70f44`.
+
+## Contract label provenance
+
+These are the original contract excerpts whose titles were made independent of rounds, plus the earlier
+font-wait wording. They preserve the labels and decision references; current behavior is in `README.md`.
+The preceding history remains unchanged.
+
+### Light ramp
+
+```md
+- **Light ramp (Round 4, unchanged):**
+```
+
+### Light model
+
+```md
+## Light model (v3)
+```
+
+### User-tuned defaults
+
+```md
+**The user's tuning is now the default (2026-09-25).**
+```
+
+### Moving the tuner
+
+```md
+- **Moving it (added by the coordinator on 2026-09-25, at the user's request):**
+```
+
+### Lit-corner glow controls
+
+```md
+  - The coordinator added the lit-corner glow controls on 2026-09-25, at the user's request:
+```
+
+### Motion group
+
+```md
+- **Motion group** (Round 6):
+```
+
+### Hover speed
+
+```md
+  - «سرعة انتقال العلامة» "Hover speed" (Round 7 step 2): a range from 0.5× to 2×, default 1× (the reference clip's feel),
+    with a small «الافتراضي» "Default" button. It divides the follow's time constants; the output shows the multiplier
+    and the settle time, for example "1.00× · 400 ms".
+```
+
+### Intro speed
+
+```md
+  - «سرعة المقدمة» "Intro speed" (Round 7 step 3): a range from 0.5× to 2×, default 1×, with its own «الافتراضي»
+    "Default" button. It divides every duration of the first-open intro; the output shows the multiplier and the
+    intro's length, for example "1.00× · 1171 ms". It is kept in the same key and ignored with `?tuner=0`. A new speed
+    applies to the next intro, never to one that is playing.
+```
+
+### Load rule
+
+```md
+**1. Load: the first-open intro only (the changed first-paint rule).**
+```
+
+### Latest reading value
+
+```md
+  - The latest stop shows the latest reading itself (Round 7 step 2): 49 · Busy, the Inside now card's number; see 6.
+```
+
+### Marker choice
+
+```md
+**6. The marker: form B, the hollow ring (Round 7 step 2).**
+```
+
+### Latest reading
+
+```md
+- **The latest stop shows the latest reading (Round 7, decision 1):**
+```
+
+### Connector pattern
+
+```md
+    - **The pattern is fitted to the length** (lane fix round, run `owner_lane_fix_r04_s04`): a dash, or a dot with its round
+      cap, is painted at both ends, at the pointer's base and at the box's bottom edge (straight, or up the rounded corner).
+      The count of periods comes from the length and the gap is stretched evenly, each time `paintConnector` runs, so also at
+      every frame of a follow. At the missing-span stop the connector's column is the lit dot nearest the stop's centre (at
+      most 2 px from it) and the pointer's tip touches that dot's top; at 390 px the span is narrower than 4 px, has no lit
+      dot, and the column stays on the stop's centre with the tip where a dot's top would be.
+```
+
+### Tooltip layout
+
+```md
+- **Tooltip layout (2026-09-26):** one start-aligned arrangement for every tooltip. Every row starts at the same
+  inline-start edge (right in Arabic, left in English), and nothing is pushed to the far edge.
+```
+
+### Tooltip width
+
+```md
+- **One tooltip width that follows the chart (follow-up round after step 3, 2026-09-27; the user's decisions):**
+```
+
+### First-open intro
+
+```md
+**11. The first-open intro (Round 7 step 3).** Round 7, decision 4. It is "the first-open intro" part of the motion
+section in `app.js`.
+```
+
+### Font-wait wording
+
+```md
+  - **On an initially ready page the font cap is 200 ms from first paint**, after render-blocking scripts
+    complete. When it expires the still page needs a frame to paint; this is a font-wait budget, not a guarantee
+    of a painted answer by 200 ms. Measurements are in `HISTORY.md`, "Motion", 11.
+```
+
+### Intro capture
+
+```md
+- **The intro (Round 7 step 3):** every fresh context is a new tab, so with motion on its first open plays the intro.
+  `open()` waits for the intro to end, so every older check starts from the still page, as before.
+```
+
+### Recapture on a difference
+
+```md
+- **Recapture on a difference (the follow-up round after step 3, user-agreed):** Chromium's glyph raster is not always
+  byte-identical between runs, so a single exact-hash difference can be noise.
+```
+
+### Recapture both sides
+
+```md
+  - **Both sides (repair 1):** when a comparison's reference was rendered in the same run (the `?motion=off` frames
+    compared with this run's still frame, the intro's end and reload where there is no pre-motion frame, the resize
+    yields against a fresh 1280×800 page, and the held 2x intro ends against the 2x still), a difference renders the
+    reference and the compared frame again, each in a fresh context, and the new pair is compared. Comparisons with a
+    committed hash render only the compared frame again. Before, a reference rendered once could itself be the noisy
+    side and fail a run with nothing wrong.
+```
+
+### Motion capture
+
+```md
+- **`motion` (Round 6):**
+```
+
+### First-paint capture
+
+```md
+  - **First paint (Round 7 step 3, the changed rule):** `identity.firstOpen` and `identity.reload`, in AR and EN, live,
+    delayed and no history. A first open plays the intro and ends identical to the still frame (the pre-motion frame, or
+    this run's reduced-motion frame for EN delayed and no history), with the DOM equal to the `?motion=off` DOM, only
+    the pulse running after it, no long task and no font load during it. A reload in the same tab has no intro (no
+    rolling slot or line dash appears at any time), is the still frame, and runs only the pulse on load.
+```
+
+### Surface capture
+
+```md
+  - **Surfaces at the first frames (intro fix round):** at the first frame after app.js runs (the first paint) and at
+    the intro's first frame, every surface (`.card`, `.lamp` and its layers, `.wash` and its light, `.rail`) has its
+    rest display, visibility, opacity, transform, clip and filter. Nothing runs but the intro's content transforms (a
+    transform on an answer's rolling digits, or the intro's clocks, which have no target and no keyframes) and the
+    pulse. It replaces the base's `hiddenCards` probe and is part of each first open's pass.
+```
+
+### Intro check
+
+```md
+  - **`intro`** (Round 7 step 3):
+```
+
+### Slow-font check
+
+```md
+    - `slowFonts` (intro fix round; AR and EN, live): with each font file held 600 ms there is no intro
+      (`yieldedBy: "fonts late"`), the answers are in view within 250 ms of the first paint, and once the fonts are in
+      the DOM equals the `?motion=off` DOM and the page is the still frame. Held 50 ms, the intro plays and completes.
+```
+
+### Chart check
+
+```md
+  - **`chart`** (Round 7 step 2: form B, in AR and EN, each live, delayed and without history):
+```
+
+### Lane check
+
+```md
+    - (the lane round) the lane's rules at each page's own snapshot (`tooltip.lane` per page, and `tooltipLane` across
+```
+
+### Marker check
+
+```md
+  - **`marker`** (Round 7 step 2): B's variants sheet; that form A is gone (no Marker group, `?marker=a` ignored, no
+    `setMarker`); and the hover speed.
+```
+
+### Follow check
+
+```md
+  - **`follow`** (Round 7 step 2, AR and EN): the follow's own curve against the clip's figures (within 0.07); the
+    marker held at 33, 66, 100, 200 and 400 ms after a new target stays on the line, the usual line or straight above
+    the peak on the drop, with nothing above the point, and it is not a straight hop. Across the gap and into the
+    future the marker is on its new stop at once and only the tooltip eases.
+```

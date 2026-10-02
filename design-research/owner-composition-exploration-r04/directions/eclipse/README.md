@@ -20,7 +20,7 @@ only around the disc's edge. Everything else is a near-black card with a thin bo
 - **Text:** chalk `#F5F3F2`, `#C9C3C4` and `#AAA4A6`. Status colours are live `#4BE29B` and delayed
   `#D9A400`.
 - **Line:** `#FF2946`.
-- **Light ramp (Round 4, unchanged):**
+- **Light ramp:**
 
 | Colour | Step |
 | --- | --- |
@@ -29,13 +29,13 @@ only around the disc's edge. Everything else is a near-black card with a thin bo
 | FITWAY red `#E51935` | the core |
 | `#FF2946` | only the hottest point, just inside the lit card's corner |
 
-## Light model (v3)
+## Light model
 
 Every setting is a plain number on `:root` in `style.css` (`--now-*`, `--chart-*`, `--wash-int`, `--grain-o`).
 These are the Recommended values. The lighting section turns them into geometry, and the tuner overrides them
 live on `<html>`.
 
-**The user's tuning is now the default (2026-09-25).**
+**The user's tuning is the default.** Decision: `HISTORY.md`, "Contract label provenance" → "User-tuned defaults".
 - **Source:** the user tuned the lights in the tuner and sent the "Copy values" JSON. The coordinator made
   those values the `:root` defaults, so Recommended is now the user's tuning.
 - **Values:**
@@ -44,7 +44,6 @@ live on `<html>`.
   - **Chart:** intensity 0.95, fade 11.5, sides 48.5, balance 0, softness 260px.
   - **Page:** wash 1, grain 0.15.
 - **Measurements:** the tables below record the first Recommended values; see `HISTORY.md`, "Light model (v3)", for those defaults.
-
 - **Structure:** each lit card owns a `.lamp`. It covers the border box, is clipped to the card's outer
   radius, and is a size container, so the geometry is in `cqw`/`cqh` of the card.
   - `.lamp-in` is masked by the disc: a radial gradient, transparent inside and opaque outside. Where the
@@ -61,15 +60,12 @@ live on `<html>`.
     card height above the bottom edge, which is the continuous rim.
   - **Edge:** the feather is 34px along the card (23.8px across) and eased (0, .16, .5, .84, 1), centred on
     the nominal edge. It reads as one clean arc.
-
   - **Ring ends:** up the lit side, a fade mask anchored where the disc meets the side (computed in CSS
     with `sqrt()`/`pow()`) takes the ring to transparent over 19% of the card height. Toward the far end,
     the band dims on its own before the far-corner glow, which fades up the far side.
-
 - **Chart card: a U around a dark disc.**
   - The disc is 54cqw wide (just past both sides). Its lowest point is `--chart-fade` (11.5%) above the
     bottom, its edge meets the sides at `--chart-side` (48.5%), and its feather is 260px.
-
   - The light is an oxblood band along the bottom, with a steep fall-off, plus two wide corner glows, red
     only near the corners. `--chart-balance` weights the two corners (0 = equal).
 - **Page wash:** unchanged geometry. `--wash-int` scales its alpha.
@@ -83,7 +79,7 @@ It is a working tool, not part of the design.
 - **Look and place:** a small dashed "الإضاءة · Lights" button at the top, 452px in from the inline-start
   edge, with the panel opening directly below it. It is Arabic-first and right-to-left, with short English
   secondary labels.
-- **Moving it (added by the coordinator on 2026-09-25, at the user's request):**
+- **Moving the tuner:** decision: `HISTORY.md`, "Contract label provenance" → "Moving the tuner".
   - The button and the panel move together as one unit.
   - Drag the button, or drag the panel's header by its title or its ⠿ grip.
   - Dragging never presses the button. Opening the panel near an edge pulls the unit back inside the
@@ -97,7 +93,7 @@ It is a working tool, not part of the design.
 - **Controls:**
   - Inside now: intensity, core colour, disc size, disc position, edge softness, rim thickness, lit-corner
     glow and its size, far-corner glow, and ring-end fade.
-  - The coordinator added the lit-corner glow controls on 2026-09-25, at the user's request:
+  - Lit-corner glow controls (decision: `HISTORY.md`, "Contract label provenance" → "Lit-corner glow controls"):
     - `--now-hot` sets the strength and `--now-hot-size` the size of the `#FF2946` hot spot just inside
       the lit corner.
     - It is the bottom-left in Arabic and the bottom-right in English.
@@ -115,8 +111,7 @@ It is a working tool, not part of the design.
   textarea shows the JSON. "Reset to Recommended" removes every override.
 - **Storage:** tuning is kept in `localStorage` (`fitway.eclipse.v3.lights`). Every access is wrapped in
   try/catch.
-
-- **Motion group** (Round 6):
+- **Motion group:**
   - «قراءة جديدة» "New reading": the next minute of the same simulated day. «إعادة القراءات» "Reset readings".
   - «مستوى الازدحام» "Crowd level": «مستوى أعلى» "Level up" and «مستوى أدنى» "Level down" simulate a crowd-level change
     on the Inside now card. Each crosses the nearest level boundary by the smallest step, so Busy 49 goes down to
@@ -124,19 +119,18 @@ It is a working tool, not part of the design.
     off while delayed, because a stale card never moves, and a short note says so in both languages.
   - «الحركة» "Motion": one switch, kept in its own `localStorage` key (`fitway.eclipse.v3.motion`), separate from the
     light values, and ignored with `?tuner=0`.
-  - «سرعة انتقال العلامة» "Hover speed" (Round 7 step 2): a range from 0.5× to 2×, default 1× (the reference clip's feel),
+  - «سرعة انتقال العلامة» "Hover speed": a range from 0.5× to 2×, default 1× (the reference clip's feel),
     with a small «الافتراضي» "Default" button. It divides the follow's time constants; the output shows the multiplier
     and the settle time, for example "1.00× · 400 ms".
     - It is kept in the same key as the Motion switch (`{ motion, hoverSpeed, introSpeed }`), which app.js already owns
       and ignores with `?tuner=0`. The light values' key and "Copy values" stay about lights only.
-  - «سرعة المقدمة» "Intro speed" (Round 7 step 3): a range from 0.5× to 2×, default 1×, with its own «الافتراضي»
+  - «سرعة المقدمة» "Intro speed": a range from 0.5× to 2×, default 1×, with its own «الافتراضي»
     "Default" button. It divides every duration of the first-open intro; the output shows the multiplier and the
     intro's length, for example "1.00× · 1171 ms". It is kept in the same key and ignored with `?tuner=0`. A new speed
     applies to the next intro, never to one that is playing.
   - «إعادة المقدمة» "Replay intro" plays the current reading again only when the page is ready and has a reading.
     It is disabled with reduced motion, `?motion=off` or the Motion switch off. In loading, error, closed or
     unavailable states it does nothing, even if the button remains enabled.
-
   - Scripts reach the same actions on `window.__eclipse.motion`: `step()`, `reset()`, `crowd(1 | -1)`,
     `set({ motion, hoverSpeed, introSpeed })` and `settle()`. The intro has its own `window.__eclipse.intro`: `state`,
     `played`, `reason`, `yieldedBy`, `timings`, `replay()`, `seek(ms)`, `release()` and `settle()`.
@@ -193,7 +187,6 @@ the areas). Recommended's middle, 14.3, is above A's 13.0 on the same method.
   Loading holds the value slots, then a static skeleton from 300 ms for at least 400 ms; a load reaching 10 s
   becomes Error. Closed, unavailable and error have no current count, level or card light.
   See `DESIGN-SPEC.md`, "2.4 State grammar", for each state's content and arrival.
-
 - **Hover:** Round 6 changed the chart's hover. It snaps to stops and shows the line's own value; see "Motion".
 
 ## Motion
@@ -229,12 +222,11 @@ and only while live.
 The intro's durations are at 1×; the tuner's intro speed divides them. Nothing else animates: the lights, the wash, the
 hover colours of the rail tiles and buttons, the details chevron, and the jump to "View details" are all instant.
 
-**1. Load: the first-open intro only (the changed first-paint rule).**
+**1. Load: the first-open intro only.**
 
 - Without an intro (reduced motion, `?motion=off`, the Motion switch off, or a return after the tab's intro flag)
   values arrive at once. The frame is complete at first paint; loading holds its slots. No font-loading hide is
   added; Chromium can hold paint for pending early-loaded fonts.
-
 - The first inline script sets language, direction and state; the second starts both weights of the CSS font faces. app.js
   decides the intro through ordered render-blocking scripts; the local Arabic and Latin files cover both weights.
 - The chart renders at once. It is measured again when the fonts arrive, because the header's text sets its height,
@@ -283,12 +275,11 @@ hover colours of the rail tiles and buttons, the details chevron, and the jump t
 - **Missing span (2:14-2:31 PM):** one stop, "No readings" («لا قراءات»), then "from 2:14 PM to 2:31 PM"
   («من 2:14 م إلى 2:31 م»), one sentence on two lines in the same type and colour. There is no normal stop
   inside it, and the line is never bridged.
-
 - **Values:**
   - Each stop on the line shows the line's own value, the centred average rounded to a whole person, with its level
     and the usual value. The raw minute stays in "View details".
   - The peak stop shows the true peak, because its marker is the true reading.
-  - The latest stop shows the latest reading itself (Round 7 step 2): 49 · Busy, the Inside now card's number; see 6.
+  - The latest stop shows the latest reading itself: 49 · Busy, the Inside now card's number; see 6.
   - The zero stop at 6:00 AM shows 0 and «الصالة خالية» "Empty".
   - After now, a stop shows «لم يحن بعد» "Still ahead" and the usual value.
 - **Pointer:** it takes the nearest stop, but the peak or the latest reading wins whenever the pointer is within
@@ -300,7 +291,9 @@ hover colours of the rail tiles and buttons, the details chevron, and the jump t
   - The screen-reader text names the average, for example «6:00 م، معدّل الموجودين 46، الازدحام متوسط، المعتاد 46».
     The latest stop is the exception: it is the reading, never called an average.
 
-**6. The marker: form B, the hollow ring (Round 7 step 2).**
+**6. The marker: form B, the hollow ring.**
+
+Marker choice: `HISTORY.md`, "Motion", rule 6.
 
 - **Common to every stop:**
   - Nothing above the point: no guide line, no level ticks. The one exception (the lane round) is the tooltip's
@@ -336,7 +329,7 @@ hover colours of the rail tiles and buttons, the details chevron, and the jump t
 - **Tags:** the ring's group is `data-marker="b"`; the missing span's lit dots are `data-marker="gap"`.
 - **Scripts:** `window.__eclipse.chart.marker` reports `"b"`. The chart API (`stops`, `select`, `clear`, `selected`) is
   unchanged.
-- **The latest stop shows the latest reading (Round 7, decision 1):**
+- **The latest stop shows the latest reading:** decision: `HISTORY.md`, "Contract label provenance" → "Latest reading".
   - Live, it shows 7:42 PM, 49 · Busy, the same as the Inside now card, not the line's 47 · Moderate. The ring still sits
     on the line's end point.
   - While delayed, it shows the delayed card's reading (7:29 PM, 46 · Moderate), treated as the card treats it: a muted
@@ -353,11 +346,9 @@ hover colours of the rail tiles and buttons, the details chevron, and the jump t
   - **Reserved:** nothing but the tooltip is drawn in it: not the data, markers, hairlines, peak tag,
     end point, pulse, grid or labels. The highest scale label starts `LANE.gap` = 8 px below the lane;
     the scale's top line is at 126 px from the plot's top.
-
   - **Sideways:** the box's left is its stop's x less half its width, kept 2 px inside the plot's sides (the closing stop is
     6 px from the plot's edge, so the box stands at 2 px and the stop is 4 px inside its end, under its rounded corner). The
     box is placed by \	ransform: translateX\ from a fixed \left: 0\, so moving it never lays anything out (no layout shift).
-
   - **The connector:** a thin vertical line from the box's bottom edge to the top of the mark, ending in a small solid
     pointer (5.4 px wide, 4.2 px tall) whose tip touches the mark's outer edge. It is chalk, never red, and quieter than
     any data line. It runs behind the usual line and today's line and under the ring, so where it crosses the usual line the
@@ -368,7 +359,7 @@ hover colours of the rail tiles and buttons, the details chevron, and the jump t
     - dotted (1.6 px round dots, 34% chalk, the pitch fitted to the length within 3.5-4.5 px, nominally 4), like the axis's
       dots, for no reading: the missing span's lit dots and the axis tick of a stop still ahead without history. It cannot
       read as a value or bridge the gap.
-    - **The pattern is fitted to the length** (lane fix round, run `owner_lane_fix_r04_s04`): a dash, or a dot with its round
+    - **The pattern is fitted to the length:** a dash, or a dot with its round
       cap, is painted at both ends, at the pointer's base and at the box's bottom edge (straight, or up the rounded corner).
       The count of periods comes from the length and the gap is stretched evenly, each time `paintConnector` runs, so also at
       every frame of a follow. At the missing-span stop the connector's column is the lit dot nearest the stop's centre (at
@@ -389,30 +380,24 @@ hover colours of the rail tiles and buttons, the details chevron, and the jump t
     once (or pins it at the plot's side). Reduced motion and `?motion=off` show the rest place at once.
   - **New readings, a resize, a language switch and a state change** place the box by the same rules: a reading eases it
     from where it is drawn (the ring is on its stop at once), a resize or a page load places it at rest.
-
-- **Tooltip layout (2026-09-26):** one start-aligned arrangement for every tooltip. Every row starts at the same
+- **Tooltip layout:** one start-aligned arrangement for every tooltip. Every row starts at the same
   inline-start edge (right in Arabic, left in English), and nothing is pushed to the far edge.
+  Decision: `HISTORY.md`, "Motion", rule 6 (layout approved on 2026-09-26).
   - At the peak and the latest reading (live and delayed), the label chip comes first, then the time. The number then
     comes first and its crowd-level word after it, as at every other stop («62 مزدحم», "62 Busy").
   - The usual comparison and the delayed age stay below, start-aligned, as before.
-
-- **One tooltip width that follows the chart (follow-up round after step 3, 2026-09-27; the user's decisions):**
-
+- **One tooltip width that follows the chart:** decision: `HISTORY.md`, "Contract label provenance" → "Tooltip width".
   - **Width formula:** `app.js` measures the widest numbered tooltip among the chart's current stops, adds 2 px,
     rounds up and sets `--tip-w`. A numbered tooltip has a value or a usual row; the missing span and, without
     history, still-ahead and no-reading-yet stops are excluded. Within one snapshot these tooltips have one width,
     and their start-aligned rows keep one distance from the stop's hairline wherever the plot's sides allow centring.
-
   - **When it is measured:** whenever the stops or their text can change: the first render, a new reading, a state
     change, a resize, a language switch (which reloads the page), and when a web font finishes loading, which replaces
     a measurement made with the fallback font. The width changes only then, at the moment the content changes anyway.
-
   - **At the page's own 7:42 PM snapshot:** 131 px in Arabic live and no history; 130 px in Arabic delayed
     and English. The formula above sets the width; these snapshot widths are not fixed defaults.
-
   - **The missing-span stop may grow:** it has no numbered value or usual row, so it may be wider for its
     sentence: 159.9 px in Arabic and 197.1 px in English at Daily's type, 62.5 px tall (CHT-12).
-
   - **No wrap and no clip:** the text never wraps (`white-space: nowrap`). `min-width: max-content` lets any content
     wider than the width grow the box rather than clip it. Every row is one line at every stop, in both fonts.
   - **The lane uses the real width:** `placeTip` measures the box's rendered width (unrounded) whenever its content or width
@@ -442,7 +427,6 @@ hover colours of the rail tiles and buttons, the details chevron, and the jump t
 - **Reduced motion, `?motion=off` or the Motion switch:** it jumps, as before.
 - **Hover speed:** the tuner's «سرعة انتقال العلامة» "Hover speed" divides both time constants (0.5× to 2×; 1× is the
   clip's feel). See "Light tuner".
-
 - **Track changes and long jumps:**
   - **Where no drawn track joins two stops, the ring moves at once and the tooltip eases sideways.** This covers crossing the
     missing span, going from the latest reading into the future, and going onto or off the gap stop.
@@ -451,10 +435,8 @@ hover colours of the rail tiles and buttons, the details chevron, and the jump t
       (the connector stays vertical at the ring's x, under the box); farther than half the box's width, it moves with the ring.
   - **Long jumps:** beyond 6 hours along the time axis the ring moves at once. The tooltip moves with it
     when its new place is more than half its width away; smaller sideways jumps ease on the follow curve.
-
     - A sweep of the pointer never reaches this limit, because the ring trails the pointer by far less. PageUp and
       PageDown (2 hours) follow.
-
 - **Held frames:** `window.__eclipse.chart.seekFollow(ms)` holds the follow at a time after its latest target, and
   `releaseFollow()` lets it go on. `followActive`, `follow` and `response()` report its state and its curve.
 
@@ -464,9 +446,7 @@ hover colours of the rail tiles and buttons, the details chevron, and the jump t
   the level bars change at the same moment.
 - **With the marker on the tail:** a marker selected on the moving tail, or on the latest reading, rides the line
   during the morph.
-
 - **The pulse:** a 1px ring every 5 s, at 40% at most, reaching 28px. There is no pulse while delayed.
-
 - **Delayed:** a minute passes with no reading. The line does not move, and only "minutes ago" rolls.
 
 **8. Rail.** It uses transforms and clips, with surface and shadow opacity, at 240 ms open and 200 ms close.
@@ -480,8 +460,11 @@ the Motion switch, (Round 7 step 2) the hover speed and (Round 7 step 3) the int
 **10. Motion off.** Motion is off with `prefers-reduced-motion: reduce`, with `?motion=off`, or with the tuner's
 Motion switch; every change is then instant, and there is no intro. See `HISTORY.md`, "Evidence", for the static guard.
 
-**11. The first-open intro (Round 7 step 3).** Round 7, decision 4. It is "the first-open intro" part of the motion
-section in `app.js`.
+**11. The first-open intro.** It is "the first-open intro" part of the motion section in `app.js`.
+Decision: `HISTORY.md`, "Motion", rule 11.
+
+At 1× the intro runs for 1171 ms in total, with a separate, unscaled font-wait cap of 200 ms from first paint
+on an initially ready page.
 
 - **When it plays:** once per browser tab at the first eligible Daily reading reveal.
   - A flag in `sessionStorage` (`fitway.eclipse.v3.intro`) marks that reveal. It is interface state, never visitor data.
@@ -491,7 +474,6 @@ section in `app.js`.
     successful retry eligible. Closed and unavailable opens do not consume the flag.
   - A tab opened by `window.open`, duplicated, or restored by Chrome may inherit storage and skip the intro;
     this remains the accepted session-storage limit.
-
   - If session storage is unavailable, there is no intro (fail safe).
   - There is none with reduced motion, `?motion=off` or the tuner's Motion switch off (`?tuner=0` ignores the stored
     switch, as before).
@@ -499,12 +481,10 @@ section in `app.js`.
 - **What is still:** every surface (the glass cards and their lights when shown, the wash, the rail), labels,
   units, times, reference values, level chips and the chart's frame. When readings are already available they are
   complete at first paint; during loading the frame holds its slots, and the lights and usual line appear at arrival.
-
 - **What moves, in order (at 1×):**
   1. **The answers**, 0-400 ms: Inside now, Today's peak, Entries and Busiest time roll into place with the page's own
      digit roll, from below into the digits' ink box, all together. Each value is one slot: «6-7 م» rolls with its own
      «م», which is part of the time, unlike a unit such as «تقريبًا».
-
   2. **Today's line**, 0-914 ms: it draws once by minutes since open, from opening to the latest reading, with a firm
      start, an even day and a soft landing into now. The fine vertical lines under it are uncovered with it.
   3. **The landing**, 914-1171 ms: the end point swells out of the line's tip (from the tip's own size, 0.34, to 1) with
@@ -532,30 +512,25 @@ section in `app.js`.
 - **Screen readers:** nothing leaves the accessibility tree during the intro. The answers' text is final before
   the intro starts. The peak's label («الذروة 62», "Peak 62") waits out of sight by an empty clip until the line
   arrives, never by `visibility` or opacity. The intro itself adds no announcement; payload arrival announces the figures once.
-
 - **Transform, clip and draw only:** no glyph changes opacity, and no element's box changes (the slot holds the final
   value in flow). At the end every element, attribute and style the intro added is removed.
 - **Fonts and performance:** the readings must have arrived, both weights of Readex Pro must be loaded for both
   scripts, and the tab must be visible. It starts after first paint and a frame for final geometry, so no font swaps mid-intro.
-
   - Both weights share each subset's local variable font file. All four Google subsets retain their unchanged
     face rules and font bytes. After the blocking stylesheets, an inline script loads the Arabic and Latin CSS
     faces at both weights (Arabic digits need Latin); subsequent text and app loads reuse those faces. There is
     no separate preload fetch, including from file pages, and no Google request. Missing faces keep the fallback.
-
   - A later font arrival within the cap may swap visible fallback text to Readex Pro; the user accepts this
     (2026-09-29), provided the swap paints before the intro starts. The app adds no suppression to avoid the swap;
     Chromium may hold the first paint, and the existing intro clips still apply to its answers.
   - Until then the answers wait out of sight and the line is not drawn.
-  - **On an initially ready page the font cap is 200 ms from first paint**, after render-blocking scripts
+  - **On an initially ready page the font wait uses that cap**, after render-blocking scripts
     complete. When it expires the still page needs a frame to paint; this is a font-wait budget, not a guarantee
-    of a painted answer by 200 ms. Measurements are in `HISTORY.md`, "Motion", 11.
+    of a painted answer by the deadline. Measurements are in `HISTORY.md`, "Motion", 11.
   - **On loading or retry arrival**, fonts are checked immediately: if they are not ready there is no intro;
     if ready, the final geometry paints before it starts. There is no additional 200 ms wait at that arrival.
-
   - **When fonts miss the ready-page cap**, there is no intro. The owner sees the whole line and final
     numbers in the fallback font until Readex Pro arrives. The tab's flag is set, so a reload in that tab has no intro.
-
   - The cap counts from first paint, so script loading does not consume its budget. A tab opened in the background
     waits until it is first shown.
   - When the fonts arrive in time, their final geometry paints before the intro; there is no header-fill page drop.
@@ -578,7 +553,7 @@ deviceScaleFactor 1, and 2 for the crops. The still frames use reducedMotion "re
 "no-preference". It writes the frames described in `HISTORY.md`, "Evidence", and `capture-log.json` into `outDir`
 (default `evidence/`), and takes about five minutes. It exits with code 1 if any check below fails.
 
-- **The intro (Round 7 step 3):** every fresh context is a new tab, so with motion on its first open plays the intro.
+- **The intro:** every fresh context is a new tab, so with motion on its first open plays the intro.
   `open()` waits for the intro to end, so every older check starts from the still page, as before.
   - Every context reads the local font files from this page's origin. No Google URL cache or warm-up is needed.
     Each main-document navigation resets a per-file counter; a second font request fails the run, even in a
@@ -592,13 +567,14 @@ deviceScaleFactor 1, and 2 for the crops. The still frames use reducedMotion "re
     actual holds of the requested duration, so the font-wait gates cannot pass on an unused route.
   - `--intro-frames=<dir>` also writes every full-size held 2x intro frame to that folder. They are large and are not
     evidence.
-- **Recapture on a difference (the follow-up round after step 3, user-agreed):** Chromium's glyph raster is not always
+- **Recapture on a difference:** Chromium's glyph raster is not always
   byte-identical between runs, so a single exact-hash difference can be noise.
+  Decision: `HISTORY.md`, "Contract label provenance" → "Recapture on a difference".
   - Every exact-hash comparison now captures a frame that differs once more, the same way, in a fresh context. It counts
     as a difference only if the next attempt differs too. The comparison stays exact; there is no tolerance.
   - This covers the static guard (reduced motion and `?motion=off`), the intro's end and the reload, the slow-font end,
     the replay's end, the rail and resize yields, the settled open rail, the held 2x intro ends and the level maps.
-  - **Both sides (repair 1):** when a comparison's reference was rendered in the same run (the `?motion=off` frames
+  - **Both sides:** when a comparison's reference was rendered in the same run (the `?motion=off` frames
     compared with this run's still frame, the intro's end and reload where there is no pre-motion frame, the resize
     yields against a fresh 1280×800 page, and the held 2x intro ends against the 2x still), a difference renders the
     reference and the compared frame again, each in a fresh context, and the new pair is compared. Comparisons with a
@@ -618,7 +594,6 @@ deviceScaleFactor 1, and 2 for the crops. The still frames use reducedMotion "re
     TEMP or TMP can direct that path, so the guard also rejects every output whose real path is inside this repository
     worktree, regardless of their values. UNC, device, and relative paths are refused before any output is written.
     Runs without `--plant` retain their usual output behaviour.
-
 - **Other machines:** the static guard compares with `evidence/pre-motion-hashes.json`, which was rendered on the
   original Windows machine. Fonts render differently elsewhere, so on another machine pass a scratch `outDir`, expect
   that guard (and the checks built on the same hashes: the intro's end state, the reload and the settled rail) to fail,
@@ -638,25 +613,25 @@ The log records:
     (Round 7 step 3) the intro speed and "Replay intro", disabled with reduced motion;
   - (in `marker`) the hover speed: its row, its storage with the switch, a reload, and `?tuner=0`;
   - a crowd change with motion on: the number rolls, the bars change, no light moves and no glyph fades.
-- **`motion` (Round 6):**
+- **`motion`:**
   - **Static guard:** `identity.staticFrames` and `identity.motionOffFrames`. The frames that change by design are
     compared with this run's reduced-motion frame. Since the lane round these are 17 frames, every one that shows the plot
     (each with its reason in `EXPECTED_TO_CHANGE`); each is also compared with 8ae88f3's committed frame outside the plot
     element (`evidence/lane-outside-plot.json`: the frame's pixels with the plot's box zeroed, and, with the rail open, the
     rail's box too, because its glass blurs the plot behind it), and the run fails if one differs (16 of 16 are identical;
     the level map has no such comparison).
-  - **First paint (Round 7 step 3, the changed rule):** `identity.firstOpen` and `identity.reload`, in AR and EN, live,
+  - **First paint:** `identity.firstOpen` and `identity.reload`, in AR and EN, live,
     delayed and no history. A first open plays the intro and ends identical to the still frame (the pre-motion frame, or
     this run's reduced-motion frame for EN delayed and no history), with the DOM equal to the `?motion=off` DOM, only
     the pulse running after it, no long task and no font load during it. A reload in the same tab has no intro (no
     rolling slot or line dash appears at any time), is the still frame, and runs only the pulse on load.
-  - **Surfaces at the first frames (intro fix round):** at the first frame after app.js runs (the first paint) and at
+  - **Surfaces at the first frames:** at the first frame after app.js runs (the first paint) and at
     the intro's first frame, every surface (`.card`, `.lamp` and its layers, `.wash` and its light, `.rail`) has its
     rest display, visibility, opacity, transform, clip and filter. Nothing runs but the intro's content transforms (a
     transform on an answer's rolling digits, or the intro's clocks, which have no target and no keyframes) and the
     pulse. It replaces the base's `hiddenCards` probe and is part of each first open's pass.
-  - **`intro`** (Round 7 step 3):
-    - `slowFonts` (intro fix round; AR and EN, live): with each font file held 600 ms there is no intro
+  - **`intro`:**
+    - `slowFonts` (AR and EN, live): with each font file held 600 ms there is no intro
       (`yieldedBy: "fonts late"`), the answers are in view within 250 ms of the first paint, and once the fonts are in
       the DOM equals the `?motion=off` DOM and the page is the still frame. Held 50 ms, the intro plays and completes.
     - `whenItPlays`: a new tab plays it; a reload, the language link in the same tab, reduced motion, `?motion=off` and a
@@ -671,8 +646,7 @@ The log records:
       moves, the answers' text is final, the live region is silent, the chart's text is final, no glyph animates
       opacity, text moves by transform only, and the line has its two parts. Two ends are judged against the 2x
       reduced-motion frame, and both set the exit code: an intro that plays by itself, and (since the intro fix round)
-
-  - **`chart`** (Round 7 step 2: form B, in AR and EN, each live, delayed and without history):
+  - **`chart`** (form B, in AR and EN, each live, delayed and without history):
     - every stop, with the half-hour coverage, the gap stop and the two line segments (no bridge);
     - at every stop, the marker's distance to its target, its form, that nothing is drawn above the point, the tooltip,
       and the screen-reader text;
@@ -683,8 +657,7 @@ The log records:
       tooltip that shows a number, plus 2 px, rounded up, and the page reports the same (`measuredByPage`); no row
       wrapped or clipped (`tooltip` per page, and `tooltipWidth` across pages, where widths are 131 px in Arabic
       live and no history and 130 px in Arabic delayed and English at the 7:42 PM snapshot);
-
-    - (the lane round) the lane's rules at each page's own snapshot (`tooltip.lane` per page, and `tooltipLane` across
+    - the lane's rules at each page's own snapshot (`tooltip.lane` per page, and `tooltipLane` across
       pages): the box's top is the lane's top at every stop (±0.01 px); its left is its stop's x less half its width, kept
       2 px inside the plot (±0.01 px); it lies inside the plot and the card and its lane; its connector meets the box and the
       mark (0.5 px, measured on the painted extent: the first and last dash or dot with its cap against the box's painted
@@ -693,9 +666,9 @@ The log records:
       lane's bottom to the top edge of every painted mark, the lines sampled every 1 px and the selected marker's glow is
       not below 0). They replace the side and the number's start against the hairline of the floating placement. The other
       snapshots, the other viewports, the fonts and the motion are swept by the lane round's probes, outside this file.
-  - **`marker`** (Round 7 step 2): B's variants sheet; that form A is gone (no Marker group, `?marker=a` ignored, no
+  - **`marker`:** B's variants sheet; that form A is gone (no Marker group, `?marker=a` ignored, no
     `setMarker`); and the hover speed.
-  - **`follow`** (Round 7 step 2, AR and EN): the follow's own curve against the clip's figures (within 0.07); the
+  - **`follow`** (AR and EN): the follow's own curve against the clip's figures (within 0.07); the
     marker held at 33, 66, 100, 200 and 400 ms after a new target stays on the line, the usual line or straight above
     the peak on the drop, with nothing above the point, and it is not a straight hop. Across the gap and into the
     future the marker is on its new stop at once and only the tooltip eases.
@@ -718,7 +691,6 @@ The page keeps the Daily page's frame and material:
 - **At a glance:** one plain card holds Average inside, Highest peak with its day and time, and Entries with
   the daily average; a separate plain "Last 7 days" card compares the last seven complete days with the seven
   before, whatever the chosen period. Entries are named entries only, with no caption.
-
 - **Busy times** (lit with the chart light while it has readings): from 1280 px, the weekday × hour pattern,
   average inside, 7 days × 19 hours (6 AM to the 12 AM hour), on the red light ramp, with a "Numbers" switch.
   Below 1280 px it shows one day at a time: seven weekday radio buttons, one bar per day's busiest hour, then

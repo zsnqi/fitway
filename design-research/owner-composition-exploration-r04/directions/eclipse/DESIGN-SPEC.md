@@ -388,7 +388,7 @@ TYP-3, accepted (user 2026-09-30):
 
 | Id | L | Part | Values | Src |
 | --- | --- | --- | --- | --- |
-| PAT-1 | R | Structure | a real table (`role=grid`), drawn from 1280 px (below, one day at a time, PAT-12; K-39): weekday row headers, hour column headers, one Tab stop, arrow keys, Home and End, Escape; each cell's text is its value and level, "0, Empty", "Closed" or "No readings" | Keep, `README.md`, "Reports" → "What it answers" |
+| PAT-1 | R | Structure | a real table (`role=grid`), drawn from 1280 px (below, one day at a time, PAT-12; K-39): weekday row headers, hour column headers, one Tab stop, arrow keys, Home and End, Escape; each cell's text is its value and level, "0, Empty", "Closed" or "No readings" | Keep, `README.md`, "Reports" → "The table, form and dialog system" |
 | PAT-2 | R | Plate and cells | on the plate (SRF-5); cells 44 px tall, radius 8, 4 px apart; the day column 104 px (the grid is drawn from 1280 px, its cells 46.5 px wide at 1280; below, PAT-12) | R.plate, R.hc; R4b; R4c |
 | PAT-3 | R | Ramp | one hue, linear in sRGB between anchors (average inside): 0 `#1D0B0E`, 8 `#3A0A13`, 16 `#4D0713`, 28 `#7E0D1F`, 40 `#B8132B`, 52 `#E51935`, 64+ `#FF2946` | rj:595 |
 | PAT-4 | R | Zero | an inset 1 px chalk `.38` outline and "0" in `--ink-2` | R.hcZero |
