@@ -4524,3 +4524,18 @@ The user ends this cloud session here and continues in a new cloud session. No a
   - `reports-build-capture.mjs` now fails if run; `reports-fixes-capture.mjs` replaces it.
 - **The crops** are in this session's scratchpad, `…/scratchpad/phone-fixes/run/evidence/`, and are lost when the
   session ends.
+
+## The user's answers on the phone fixes (2026-10-02)
+
+- **Decision 9, one size and one colour for the whole no-readings sentence** (Daily's minute table and the
+  full-width rows included). *User 2026-10-02,* on the coordinator's recommendation. Not built yet; it rides the next
+  fix round with the wording decisions below.
+- **The quiet hour bars stay as built.** The user still reads them clearly. The coordinator may propose something
+  better; the user did not ask for a change.
+- **The days before readings began:** «لا قراءات بعد من 26 أغسطس إلى 12 سبتمبر» is accepted. *User 2026-10-02.*
+- **The single day, «لا قراءات يوم الخميس 17 سبتمبر», is rejected:** its construction reads badly. Better wordings
+  are being rendered for the user's pick.
+- **The two Daily proposals** (the «بانتظار القراءات» tooltip, the coverage list) were unclear in words. A fresh
+  agent renders them, with the single-day options, into this session's scratchpad (`…/scratchpad/wording/`).
+- **No large phase now.** The user does not stop the work, but opens no big round in this session. Reports' states
+  (K-02, K-38) and the step-4 reviewer wait for the local machine.
