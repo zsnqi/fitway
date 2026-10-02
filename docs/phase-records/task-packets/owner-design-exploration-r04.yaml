@@ -25,6 +25,7 @@ scope:
   ownedPaths:
     - design-research/owner-composition-exploration-r04/directions/**
     - docs/phase-records/handoffs/owner-design-exploration/20260923-165000-owner-design-exploration-r04-activation.md
+    - docs/phase-records/handoffs/owner-design-exploration/r04/**
     - docs/phase-records/task-packets/owner-design-exploration-r04.yaml
     - SPEC.md
     - biome.json
@@ -115,7 +116,7 @@ authorities:
 continuity:
   predecessorMilestones:
     - owner-design-exploration-r03
-  currentHandoff: docs/phase-records/handoffs/owner-design-exploration/20260923-165000-owner-design-exploration-r04-activation.md
+  currentHandoff: docs/phase-records/handoffs/owner-design-exploration/r04/20261002-213000-owner-design-exploration-r04-resume.md
   unresolvedDecisions:
     - The user has requested fresh visual directions and plans to use Opus 5.5, but has not chosen a direction, style, or attempt count.
     - Owner composition authority remains vacant until the user selects a concept and it passes the explicit perceptual and authority-promotion gates.
@@ -148,6 +149,10 @@ limitations:
   - On 2026-09-25 the user authorized one biome.json change. It excludes `design-research/owner-composition-exploration-r04/directions` from Biome, both formatter and linter, mirroring the existing r01 `_quarantine` exclusion. The reason is that the concept scripts are exploration code, not production, and can then be committed exactly as captured. Rewriting them would touch protected directions and invalidate their evidence. No other biome.json change is made in this packet.
   - On 2026-09-25 the user authorized continuing this milestone in Claude Code cloud sessions, which see only committed files. They therefore authorized tracking `.claude/agents/` and `.claude/skills/`. `.claude/agents/` holds the four Owner-direction agent definitions with fixed effort levels, and Impeccable's four shipped agents. `.claude/skills/` holds copies of the skills this work uses, namely Impeccable 4.3.1 (Apache-2.0) and ux-araby (MIT), with their licences and `.claude/skills/SOURCES.md`. They also authorized one CLAUDE.md change, in its "Repository-local Claude configuration" section. That section now states what is tracked and gives the rule for choosing a definition by effort; the rest of `.claude/` stays untracked and nothing in it is normative. The Impeccable engine binary is not vendored. No other CLAUDE.md or `.claude/` change is made in this packet.
   - On 2026-09-25 the user authorized a second biome.json change, which adds `!**/.claude/skills` to the Biome includes. Before it, the pre-commit Biome hook linted the vendored skill code as project code and failed. It also rewrote seven vendored files, which were restored to their exact originals. Vendored skills stay copies of their upstream sources. The only exception is trailing whitespace removed from four Markdown files (27 lines), so that the repository's `git diff --check` invariant passes; this is recorded in `.claude/skills/SOURCES.md`. No other biome.json change is made in this packet.
+  - On 2026-10-02 the user authorized replacing CLAUDE.md's model guidance with an effort-first rule and adding the
+    `sonnet-researcher` (Sonnet, high) and `sonnet-scout` (Sonnet, medium) definitions to `.claude/agents/`. The same
+    day the milestone moved to short resume points under `docs/phase-records/handoffs/owner-design-exploration/r04/`,
+    with its standing decisions in `DECISIONS.md` there; the activation log is frozen history.
 visual:
   surfaceKey: owner-composition-family
   authorityStatus: VACANT

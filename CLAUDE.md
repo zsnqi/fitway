@@ -44,20 +44,25 @@ Report findings as hypotheses with file and line evidence, and never repair what
 - **`.claude/skills/`** holds copies of Impeccable (FITWAY's single design skill, Apache-2.0) and `ux-araby`
   (Arabic interface copy, MIT). They are unchanged apart from trailing whitespace; see
   `.claude/skills/SOURCES.md`.
-- **`.claude/agents/`** holds Impeccable's shipped agents and the Owner-direction definitions.
+- **`.claude/agents/`** holds Impeccable's shipped agents, the Owner-direction definitions, and two Sonnet research
+  definitions.
 
-Each Owner-direction definition fixes one effort level, and the coordinator picks by task:
+Each definition fixes one model and one effort level, and the coordinator picks by task:
 
-| Definition | Effort | Use |
-| --- | --- | --- |
-| `owner-direction-designer` | `xhigh` | new visual design and taste judgment |
-| `owner-direction-builder` | `high` | implementing an agreed, precisely specified decision |
-| `owner-direction-verifier` | `xhigh` | independent verification, only where evidence shows `high` misses something |
-| `owner-direction-verifier-high` | `high` | independent verification (the default) |
-| `owner-direction-fixer` | `medium` | a mechanical edit with a frozen target |
+| Definition | Model | Effort | Use |
+| --- | --- | --- | --- |
+| `owner-direction-designer` | Opus | `xhigh` | new visual design and taste judgment |
+| `owner-direction-builder` | Opus | `high` | implementing an agreed, precisely specified decision |
+| `owner-direction-verifier` | Opus | `xhigh` | independent verification, only where evidence shows `high` misses something |
+| `owner-direction-verifier-high` | Opus | `high` | independent verification (the default) |
+| `owner-direction-fixer` | Opus | `medium` | a mechanical edit with a frozen target |
+| `sonnet-researcher` | Sonnet | `high` | read-only research across several sources, returning a cited digest |
+| `sonnet-scout` | Sonnet | `medium` | one quick read-only lookup |
 
-Run them on their own model, Opus. A `model: "sonnet"` override is not cheaper for long agent loops: every tool call
-re-reads the context from the cache, and cache reads cost the same on Sonnet 5.5 and Opus 5.5.
+Effort decides cost more than the model does. A subagent whose definition sets no `effort:` (the built-in
+`general-purpose`, `Explore` and `Plan`) inherits this session's effort, xhigh, so launch a definition instead.
+Sonnet 5.5 at `medium` or `high` uses far less than Opus; at `xhigh` or `max` it thinks longer and uses as much or
+more. Cache reads cost the same on both models, so keep agent loops short. Run each definition on its own model.
 
 The rest of `.claude/` is untracked and differs between worktrees. Nothing in `.claude/` is normative. Where a
 local skill or an agent definition disagrees with the root policy, the root policy and the files it names win.
