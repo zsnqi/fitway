@@ -24,3 +24,14 @@ checks live outside the repository and never appear here or in a brief.
 - **Held-out rows:** 7 of 7.
 - **Failure cause:** none in the code.
 - **Side finding:** `let` function bindings (`tuner.js:186`) are not indexed; the brief said "named function constant".
+## nav-3: `design-research/owner-composition-exploration-r04/directions/briefs/codex-nav-3-probe-kit.md`, result `0c51f7c` on `owner-r04-nav`
+
+- **Brief rows:** 3 of 3 (40 exports, each documented; output refused inside any git tree; smoke run passes over
+  `file://` and HTTP).
+- **Held-out rows:** 6 of 7.
+- **Failure cause:** Q4. `overflowProbe` (`eclipse/tools/probes/lib.mjs:267-272`, copied unchanged from its source)
+  checks a fixed list of classes, clipped elements and the viewport edges, so a word that runs past its own box
+  inside the viewport (K-38's «التقارير», 7 px at 320 AR) goes unseen. The brief asked to merge the sources, not to
+  fix them; a repair round makes the probe general.
+- **Also for the repair:** the README's run line is an absolute path into this worktree; a port in use fails with
+  Node's raw `EADDRINUSE` and no hint to set `PROBE_PORT`.
