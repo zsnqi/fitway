@@ -1,11 +1,13 @@
 // Eclipse, step 4's states round (K-02 for Reports, K-38): renders Reports' page states in the three options from
-// file:// URLs with Playwright chromium (a fresh context per page, reduced motion, a touch phone at 720 px and below),
-// writes numbered frames, checks the phone's title row at 320 px, and measures what moves when the payload arrives
-// (loading) and when the retry arrives (error). It never writes into this repository.
-//   node design-research/owner-composition-exploration-r04/directions/eclipse/states-capture.mjs <outDir> [--only=frames,k38,shift,sheets]
+// file:// URLs (or over HTTP with --base=<url of this folder>) with Playwright chromium (a fresh context per page, device
+// scale 2, reduced motion, a touch phone at 720 px and below), writes numbered frames, checks the phone's title row at
+// 320 px, measures what moves when the payload arrives (loading) and when the retry arrives (error), and follows the
+// error's alert and retry from the state's first painted frame. It never writes into this repository.
+//   node design-research/owner-composition-exploration-r04/directions/eclipse/states-capture.mjs <outDir> [--base=http://localhost:3176/] [--only=frames,k38,shift,alert,sheets]
 // Writes, under <outDir>:
-//   frames/<option>/<NN>-<state>-<width>-<lang>.png        the first screen (1440 x 900, 768 x 1024, 390 x 844)
-//   frames/<option>/<NN>-<state>-<width>-<lang>-page.png   the whole page (loading, pending, error)
+//   frames/<option>/<NN>-<state>-<width>-<lang>.png        the first screen (1440 x 900, 1024 x 768, 768 x 1024,
+//                                                          390 x 844, 320 x 640)
+//   frames/<option>/<NN>-<state>-390-<lang>-page.png       the whole page at 390
 //   frames/live/00-live-<width>-<lang>.png                 the live page without an option, for reference
 //   k38/<option>/<NN>-<state>-320-<lang>.png               the header at 320 x 640 (and k38/live/ for the page now)
 //   sheets/<NN>-<state>-<lang>.png                         the three options side by side, every width, scaled
@@ -20,28 +22,28 @@ import { chromium } from "@playwright/test";
 const HERE = dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
 const OUT_ARG = args.find((a) => !a.startsWith("--"));
-if (!OUT_ARG) throw new Error("usage: states-capture.mjs <outDir> [--only=frames,k38,shift,sheets]");
+if (!OUT_ARG) throw new Error("usage: states-capture.mjs <outDir> [--base=<url>] [--only=frames,k38,shift,alert,sheets]");
 const OUT = resolve(OUT_ARG);
 const REPO = resolve(HERE, "../../../..");
 if ((OUT + sep).toLowerCase().startsWith(REPO.toLowerCase() + sep)) throw new Error(`${OUT} must be outside the repository worktree`);
 const ONLY = (args.find((x) => x.startsWith("--only=")) || "").slice(7);
 const part = (k) => !ONLY || ONLY.split(",").includes(k);
+const BASE = (args.find((x) => x.startsWith("--base=")) || "").slice(7);
 
 const OPTS = ["a", "b", "c"];
 const LANGS = ["ar", "en"];
-const SIZES = { 1440: 900, 768: 1024, 390: 844 };
+const SIZES = { 1440: 900, 1024: 768, 768: 1024, 390: 844, 320: 640 };
 // [number, name in the file, ?state=]
 const STATES = [["01", "live", ""], ["02", "loading", "loading"], ["03", "closed", "closed"], ["04", "delayed", "delayed"], ["05", "offline", "unavailable"], ["06", "pending", "pending"], ["07", "error", "error"]];
-const PAGE_TOO = new Set(["loading", "pending", "error"]);
-const log = { frames: {}, k38: {}, shift: {}, failures: [] };
+const log = { base: BASE || "file://", frames: {}, k38: {}, shift: {}, alert: {}, failures: [] };
 const fail = (m) => { log.failures.push(m); console.log("FAIL", m); };
 const browser = await chromium.launch();
 
-const url = (q) => `${pathToFileURL(join(HERE, "reports.html")).href}?${q}`;
+const url = (q) => `${BASE ? new URL("reports.html", BASE).href : pathToFileURL(join(HERE, "reports.html")).href}?${q}`;
 const query = (lang, opt, state, extra = "") => [`lang=${lang}`, opt ? `option=${opt}` : "", state ? `state=${state}` : "", extra].filter(Boolean).join("&");
 async function open(q, width, height, { init } = {}) {
   const phone = width <= 720;
-  const context = await browser.newContext({ viewport: { width, height }, isMobile: phone, hasTouch: phone, reducedMotion: "reduce", colorScheme: "dark" });
+  const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: 2, isMobile: phone, hasTouch: phone, reducedMotion: "reduce", colorScheme: "dark" });
   if (init) await context.addInitScript(init);
   const page = await context.newPage();
   const errors = [];
@@ -71,7 +73,7 @@ if (part("frames")) {
   const jobs = [];
   for (const lang of LANGS) for (const w of Object.keys(SIZES).map(Number)) jobs.push({ dir: "live", file: `00-live-${w}-${lang}`, q: query(lang), w });
   for (const opt of OPTS) for (const [nn, name, st] of STATES) for (const lang of LANGS) for (const w of Object.keys(SIZES).map(Number)) {
-    jobs.push({ dir: opt, file: `${nn}-${name}-${w}-${lang}`, q: query(lang, opt, st), w, full: PAGE_TOO.has(name) });
+    jobs.push({ dir: opt, file: `${nn}-${name}-${w}-${lang}`, q: query(lang, opt, st), w, full: w === 390 });
   }
   for (const j of jobs) {
     const dir = join(OUT, "frames", j.dir);
@@ -146,10 +148,11 @@ const LS_INIT = () => {
   try { new PerformanceObserver((l) => l.getEntries().forEach((e) => window.__ls.push({ t: e.startTime, v: e.value, input: e.hadRecentInput }))).observe({ type: "layout-shift", buffered: true }); } catch (e) { /* no observer */ }
 };
 const BOXES = () => {
-  const sel = { title: ".head h1", sub: "#sub", tools: ".rp-tools", period: "#card-period", trend: "#card-trend", pattern: "#pattern", patternHead: ".pattern-head", plate: "#heat-plate", day: "#pday", days: "#days", daysHead: ".days-head" };
+  // The header's status: the loading words while they stand in for the control, else the control.
+  const sel = { status: ".hb-load", title: ".head h1", sub: "#sub", tools: ".rp-tools", period: "#card-period", trend: "#card-trend", pattern: "#pattern", patternHead: ".pattern-head", plate: "#heat-plate", day: "#pday", days: "#days", daysHead: ".days-head" };
   const out = {};
   for (const [k, s] of Object.entries(sel)) {
-    const el = document.querySelector(s);
+    const el = k === "status" ? document.querySelector(".hb-load") || document.querySelector("#ops-btn") : document.querySelector(s);
     if (!el || el.closest("[hidden]") || !el.getClientRects().length) continue;
     const b = el.getBoundingClientRect();
     out[k] = { x: b.left, y: b.top + scrollY, w: b.width, h: b.height, inView: b.top < innerHeight };
@@ -169,7 +172,7 @@ const diff = (a, b) => {
   return { max: +max.toFixed(2), maxInFirstScreen: +inView.toFixed(2), moved, appeared: Object.keys(b).filter((k) => !a[k]), left: Object.keys(a).filter((k) => !b[k]) };
 };
 if (part("shift")) {
-  for (const opt of OPTS) for (const lang of LANGS) for (const w of [1440, 768, 390]) {
+  for (const opt of OPTS) for (const lang of LANGS) for (const w of Object.keys(SIZES).map(Number)) {
     // Loading: the payload arrives 1.6 s after the page opened (the skeleton shown from 300 ms).
     {
       const { context, page, errors } = await open(query(lang, opt, "loading", "arrive=1600"), w, SIZES[w], { init: LS_INIT });
@@ -199,6 +202,46 @@ if (part("shift")) {
     }
   }
   console.log("shift done");
+}
+
+/* ------------------------------------------------------------------ the error's alert, from its first painted frame */
+// Every frame from the first records the alert's sentence and the retry: the first must already hold the sentence, and
+// nothing may move after it. The retry then runs (Enter, as focus is on it) and must keep its box; the alert region is
+// written once, and the retry's name follows its label.
+const ALERT_INIT = () => {
+  window.__fr = [];
+  const box = (el) => { if (!el) return null; const r = el.getBoundingClientRect(); return [r.left, r.top, r.width, r.height].map((x) => +x.toFixed(2)); };
+  const tick = () => {
+    const b = document.querySelector("#retry"), s = document.querySelector(".rp-alert .stat-say, .rp-msg .stat-say");
+    if (b) window.__fr.push({ t: Math.round(performance.now()), retry: box(b), say: box(s), text: (s?.textContent || "").trim().length });
+    if (performance.now() < 3000) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+};
+if (part("alert")) {
+  for (const opt of OPTS) for (const lang of LANGS) for (const w of Object.keys(SIZES).map(Number)) {
+    const { context, page, errors } = await open(query(lang, opt, "error"), w, SIZES[w], { init: ALERT_INIT });
+    const fr = await page.evaluate(() => window.__fr);
+    const last = fr[fr.length - 1], same = (x, y) => JSON.stringify(x) === JSON.stringify(y);
+    const moved = fr.filter((f) => !same(f.retry, last.retry) || !same(f.say, last.say)).length;
+    const name0 = (await page.locator("#retry").ariaSnapshot()).trim();
+    const alert = await page.evaluate(() => [...document.querySelectorAll(".rp-alert [role=alert], .rp-msg [role=alert]")].map((e) => e.textContent));
+    const focus = await page.evaluate(() => document.activeElement?.id || null);
+    await page.keyboard.press("Enter");
+    await page.waitForTimeout(150);
+    const during = await page.evaluate(() => { const r = document.querySelector("#retry").getBoundingClientRect(); return [r.left, r.top, r.width, r.height].map((x) => +x.toFixed(2)); });
+    const name1 = (await page.locator("#retry").ariaSnapshot()).trim();
+    const k = `${opt}-${lang}-${w}`;
+    log.alert[k] = { frames: fr.length, firstFrameText: fr[0].text, framesThatDiffer: moved, retry: last.retry, retrying: during, focus, alert, name: [name0, name1] };
+    if (!fr[0].text) fail(`alert ${k}: the first frame has no sentence`);
+    if (moved) fail(`alert ${k}: the sentence or the retry moved after the first frame`);
+    if (!same(during, last.retry)) fail(`alert ${k}: the retry changed its box while it runs ${JSON.stringify(last.retry)} -> ${JSON.stringify(during)}`);
+    if (focus !== "retry") fail(`alert ${k}: focus is ${focus}, not the retry`);
+    if (alert.length !== 1 || !alert[0]) fail(`alert ${k}: alert regions ${JSON.stringify(alert)}`);
+    errors.forEach((e) => fail(`alert ${k}: ${e}`));
+    await context.close();
+  }
+  console.log("alert done");
 }
 
 /* ------------------------------------------------------------------ comparison sheets */

@@ -664,6 +664,33 @@ html:not([data-phase="ready"]) .rp .heat-key li[data-mark] { visibility: hidden;
 .rp-msg .stat-say .ico-err { width: 22px; height: 22px; }
 /* After the retry arrives, focus goes to the figures that replaced the alert, quietly: a region never shows the ring. */
 .rp #cards:focus { outline: none; }
+/* The retry's two labels share one cell, so the button is as wide as the wider of "Try again" and "Trying again…" and
+ * keeps its width while it runs (STA-9); only the current label is seen. */
+.rp .rb-stack { display: inline-grid; }
+.rp .rb-l { grid-area: 1 / 1; justify-self: center; }
+.rp .rb-l[aria-hidden="true"] { visibility: hidden; }
+
+/* K-02, the header's status in the options. From 721 px the control's box holds the widest status (reports.js
+ * renderStatus: every status's words in one cell, unseen but the current one, whose ink keeps its place at the box's
+ * inline end), so it keeps its place and size whichever status arrives. While the page loads the control stays in the
+ * row unseen (not a control: no focus, no name), and the loading words lie over its box, at its inline end as before
+ * (STW-2). On a phone the status is drawn alone, as before. */
+@media (max-width: 720px) {
+  html[data-option] [data-frame] .hb-sv.is-cur { display: contents; }
+  html[data-option] [data-frame] .hb-sv:not(.is-cur) { display: none; }
+}
+@media (min-width: 721px) {
+  html[data-option] [data-frame] .hb-state { display: inline-grid; }
+  html[data-option] [data-frame] .hb-sv { grid-area: 1 / 1; display: inline-flex; align-items: center; gap: 8px; justify-self: end; }
+  /* The unseen statuses reserve their width only where the header has it: they may wrap (so they never raise the
+   * control's least width above the current status's), and take no height. Where the free width is narrower than the
+   * widest status (option b's pending subtitle at 721-780 px in English), the box takes what there is and the current
+   * status still reads in full. */
+  html[data-option] [data-frame] .hb-sv:not(.is-cur) { visibility: hidden; flex-wrap: wrap; height: 0; overflow: hidden; white-space: normal; }
+  /* (Over the page's `.rp [hidden]`, which is !important: the held control keeps its box, unseen.) */
+  html[data-option] [data-frame] #ops-btn[hidden] { display: inline-flex !important; visibility: hidden; }
+  html[data-option] [data-frame] .hb-load { position: absolute; inset: 0; justify-content: flex-end; }
+}
 
 /* K-38: the phone's title row at 320 px. «التقارير» needs 96 px, and Daily's widest Arabic badge (Offline, 142.1 px)
  * left it 62.9, so the title moved 25.9 px when the status changed. In every option the title keeps its own width at

@@ -47,6 +47,8 @@
     const r = n % 100;
     return r >= 3 && r <= 10 ? `${n} ${few}` : r >= 11 ? `${n} ${many}` : `${n} ${single}`;
   };
+  // Minutes, by the Daily page's own rule (app.js `arMin`), so «قبل … دقيقة» reads the same on both pages for any count.
+  const arMin = (n) => (n === 1 ? "دقيقة" : n === 2 ? "دقيقتين" : n % 100 >= 3 && n % 100 <= 10 ? `${n} دقائق` : `${n} دقيقة`);
   const bdi = (s) => `<bdi>${s}</bdi>`;
   const COPY = {
     ar: {
@@ -156,7 +158,7 @@
       rangeSay: (r) => `تُعرض الفترة ${r}`,
       // The page's states (K-02): the status words are the Daily page's (STW-1, STW-2).
       delayed: "متأخر",
-      ago: (n) => `قبل ${n} دقيقة`,
+      ago: (n) => `قبل ${arMin(n)}`,
       closedWord: "مغلق",
       opens: (t) => `يفتح ${t}`,
       offline: "غير متصل",
@@ -790,8 +792,16 @@
     btn.hidden = loading;
     const s = OPS_STATES[opsState()]();
     btn.className = `hbadge${s.cls ? ` ${s.cls}` : ""}`;
-    $("#ops-btn-state").innerHTML = `<span class="sr-only">${L.opsTitle}: </span>${s.mark}<span class="hb-word">${s.word}</span>` +
-      `<span class="hb-line"><span class="sr-only">${RTL ? "، " : ", "}</span><span aria-hidden="true">· </span>${s.line}</span>`;
+    const words = (x) => `${x.mark}<span class="hb-word">${x.word}</span>` +
+      `<span class="hb-line"><span class="sr-only">${RTL ? "، " : ", "}</span><span aria-hidden="true">· </span>${x.line}</span>`;
+    // K-02 (the options): from 721 px the control's box holds the widest status, whichever arrives, so loading, its
+    // arrival, a retry and any status change keep its place and size. Every status's words share one cell, unseen but
+    // the current one, which keeps its ink where it stood (at the box's inline end, by the chevron); the loading words
+    // lie over the same box (reports.css). On a phone only the current status is drawn, as before.
+    $("#ops-btn-state").innerHTML = OPT
+      ? `<span class="hb-sv is-cur"><span class="sr-only">${L.opsTitle}: </span>${words(s)}</span>` +
+        Object.keys(OPS_STATES).map((k) => `<span class="hb-sv" aria-hidden="true">${words(OPS_STATES[k]())}</span>`).join("")
+      : `<span class="sr-only">${L.opsTitle}: </span>${words(s)}`;
     $("#ops-state").className = `ops-state${s.cls ? ` ${s.cls}` : ""}`;
     $("#ops-state").innerHTML = `${s.mark}<span>${s.word}</span>`;
     $("#ops-last").innerHTML = s.detail || s.line + (s.ago ? `<span class="sep" aria-hidden="true">·</span><span class="ops-ago">${s.ago}</span>` : "");
@@ -1416,8 +1426,10 @@
   function pendGlance(withPh) {
     const w = (n) => (withPh ? n : 0);
     $("#avg-body").innerHTML = `${valueSlot(w(56))}<div class="stat-foot"></div>`;
-    // The peak's "when" as the live meta draws it: the day, then the time (on two lines on a phone).
-    $("#peak-meta").innerHTML = withPh ? `${ph(104)}<span class="sep ph-sep" aria-hidden="true">·</span>${ph(40)}` : "";
+    // The peak's "when" as the live meta draws it: the day, then the time (on two lines on a phone). Each bar is as wide
+    // as its words in this language («الخميس 17 سبتمبر» and «6:58 م»; "Thu 17 Sep" and "6:58 PM"), so the bars sit inside
+    // the card where the words arrive and the arrival moves nothing.
+    $("#peak-meta").innerHTML = withPh ? `${ph(RTL ? 101 : 62)}<span class="sep ph-sep" aria-hidden="true">·</span>${ph(RTL ? 33 : 44)}` : "";
     $("#peak-body").innerHTML = `${valueSlot(w(56))}<div class="stat-foot">${withPh ? phBox() : ""}</div>`;
     $("#entries-body").innerHTML = `${valueSlot(w(112))}<div class="stat-foot">${withPh ? `<span class="stat-aside">${ph(88)}</span>` : ""}</div>`;
     $("#trend-body").innerHTML = `${valueSlot(w(88))}<div class="stat-foot">${withPh ? `${phBox(104)}<span class="stat-aside">${ph(88)}</span>` : ""}</div>`;
@@ -1476,17 +1488,21 @@
       `<td role="cell" class="c-avg n">${ph(18, "ph-lab")}</td><td role="cell" class="c-entries n">${ph(36, "ph-lab")}</td><td role="cell" class="c-notes"></td></tr>`).join("");
     daysTable.innerHTML = `<caption class="sr-only">${L.daysCaption(rangeText(model.a, model.b))}</caption><thead><tr role="row">${head}</tr></thead><tbody>${rows}</tbody>`;
   }
-  // The alert (EMP-2's sentence form, EMP-5's role): written a moment after its region is in place, so it is announced
-  // once; the retry takes focus. While the retry runs (STA-9) it says «جارٍ المحاولة…», keeps focus and is aria-disabled.
+  // The alert (EMP-2's sentence form, EMP-5's role). The sentence is drawn with the state's first paint, in its place,
+  // so nothing moves after it; its announcement is a separate unseen alert region, written a moment after the region
+  // is in place, so it is announced once (the drawn sentence is not read twice). The retry takes focus. While the retry
+  // runs (STA-9) it says «جارٍ المحاولة…», keeps focus, width and place, and is aria-disabled: its two labels share
+  // one cell (reports.css .rb-stack), only the current one seen and named.
+  const retryLabels = (trying) => `<span class="rb-stack"><span class="rb-l"${trying ? ' aria-hidden="true"' : ""}>${L.retry}</span><span class="rb-l"${trying ? "" : ' aria-hidden="true"'}>${L.retrying}</span></span>`;
   function alertHTML(sentence) {
     const trying = phase === "retrying";
-    return `<p class="stat-say is-err" id="err-say" role="alert"></p><button class="rbtn rbtn-primary" id="retry" type="button"${trying ? ' aria-disabled="true" aria-busy="true"' : ""}>${trying ? L.retrying : L.retry}</button>` +
-      `<template id="err-text">${SVG_ERR}<span>${sentence}</span></template>`;
+    return `<p class="stat-say is-err" aria-hidden="true">${SVG_ERR}<span>${sentence}</span></p><span class="sr-only" id="err-say" role="alert"></span>` +
+      `<button class="rbtn rbtn-primary" id="retry" type="button"${trying ? ' aria-disabled="true" aria-busy="true"' : ""}>${retryLabels(trying)}</button>`;
   }
   function wireAlert(host, focus) {
     retryBtn = $("#retry", host);
     retryBtn.addEventListener("click", retry);
-    const say1 = $("#err-say", host), text = $("#err-text", host).innerHTML;
+    const say1 = $("#err-say", host), text = $(".stat-say > span", host).innerHTML;
     setTimeout(() => { if (say1.isConnected) { say1.innerHTML = text; load.announcements.push({ t: Math.round(performance.now()), text: plain(text), alert: true }); } }, 50);
     if (focus) retryBtn.focus();
   }
@@ -1586,7 +1602,9 @@
   function retry() {
     if (phase !== "error") return false;
     phase = "retrying";
-    retryBtn.textContent = L.retrying;
+    const [idle, busy] = retryBtn.querySelectorAll(".rb-l");
+    idle.setAttribute("aria-hidden", "true");
+    busy.removeAttribute("aria-hidden");
     retryBtn.setAttribute("aria-disabled", "true");
     retryBtn.setAttribute("aria-busy", "true");
     busyEls().forEach((el) => el.setAttribute("aria-busy", "true"));
