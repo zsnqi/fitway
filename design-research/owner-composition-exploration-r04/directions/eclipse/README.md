@@ -524,9 +524,9 @@ on an initially ready page.
     (2026-09-29), provided the swap paints before the intro starts. The app adds no suppression to avoid the swap;
     Chromium may hold the first paint, and the existing intro clips still apply to its answers.
   - Until then the answers wait out of sight and the line is not drawn.
-  - **On an initially ready page the font wait uses that cap**, after render-blocking scripts
+  - **On an initially ready page the font cap is 200 ms from first paint**, after render-blocking scripts
     complete. When it expires the still page needs a frame to paint; this is a font-wait budget, not a guarantee
-    of a painted answer by the deadline. Measurements are in `HISTORY.md`, "Motion", 11.
+    of a painted answer by 200 ms. Measurements are in `HISTORY.md`, "Motion", 11.
   - **On loading or retry arrival**, fonts are checked immediately: if they are not ready there is no intro;
     if ready, the final geometry paints before it starts. There is no additional 200 ms wait at that arrival.
   - **When fonts miss the ready-page cap**, there is no intro. The owner sees the whole line and final
