@@ -423,6 +423,7 @@ th.is-asc .sort-ico { transform: rotate(180deg); }
   #numbers { grid-area: switch; }
   /* The peak cell stacks its time and flag under the value, on the same edge (TBL-8's form), so the table fits. */
   .pk, [dir="ltr"] .pk { flex-direction: column; align-items: flex-end; gap: 0; }
+  [dir="rtl"] .pk { align-items: flex-start; }
   .pk .flag { margin-block-start: 4px; }
   .days-table .c-day, .days-table .c-peak, .days-table .c-avg, .days-table .c-entries { width: auto; }
   .table th, .table td { padding-inline: 12px; }

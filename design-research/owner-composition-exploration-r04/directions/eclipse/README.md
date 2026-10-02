@@ -1897,3 +1897,19 @@ not this file. Brief: `step4-reports-wording-fixes.md`. The user picked from ren
   768, 720, 390 and 320 (AR and EN), measures each changed sentence's contrast from rendered pixels, compares Daily and
   Reports with `e8461a5` frame by frame, each difference located inside a changed sentence, row or list, and composes
   one numbered before-and-after image per decision (`R4e`).
+
+## Step 4, two final fixes (2026-10-02)
+
+The reference is `DESIGN-SPEC.md` (OWN-D11, OWN-R9 and §8 decision 14), not this file.
+
+- **Daily's coverage list** (decision 14): a span's value is the range with its en dash and the duration in brackets,
+  «2:14 م – 2:31 م (18 دقيقة)» / "2:14 PM – 2:31 PM (18 min)", without «من … إلى …» (`covSpan` uses `timeRange`). The
+  range is one `nowrap` group; the duration may drop to the next line as one unit. The colour, the label column and
+  «792 من 810 دقيقة» are unchanged; the no-readings sentences elsewhere keep «لا قراءات من … إلى …». The components
+  page does not show this list, so it is unchanged.
+- **The Arabic tablet peak cell** (721-1023 px): the stacked value, time and flag sat on the column's left in RTL
+  (`align-items: flex-end`); `reports.css` adds `[dir="rtl"] .pk { align-items: flex-start; }` in the same block, so
+  they end on the column's right edge with «الذروة» (0 px; `3e5b997` left the value 28.67 px inside it).
+- **Capture.** `final-capture.mjs` in the scratch folder named by `F14` (a copy of `wording-capture.mjs` with a peak-cell
+  probe) measures both at 1440, 1279, 1200, 1024, 1023, 768, 721, 720, 390 and 320 and compares every frame with
+  `3e5b997`.

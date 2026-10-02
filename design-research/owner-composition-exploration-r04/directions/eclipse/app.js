@@ -1683,10 +1683,10 @@
     const axis = [0, 360, 720, DAY].map((m, i, a) => `<span class="${i === 0 ? "first" : i === a.length - 1 ? "last" : ""}" style="inset-inline-start:${pct(m)}">${bdi(fmtHour(m))}</span>`).join("");
     const facts = [];
     const fact = (k, dt, dd, span = false) => facts.push(`<div><dt><span class="k ${k}" aria-hidden="true"></span>${dt}</dt><dd${span ? ' class="is-span"' : ""}>${dd}</dd></div>`);
-    // A span's value reads «من 2:14 م إلى 2:31 م (18 دقيقة)»: the range in words, then its duration in brackets, with no
-    // middle dot; in the label's colour, so the row reads as one sentence (decision 13, user 2026-10-02). It wraps only
-    // between its groups: each end with its preposition, and the duration.
-    const covSpan = (a, b, n = 0) => `<span class="nw">${L.spanFrom} ${tb(a)}</span> <span class="nw">${L.spanTo} ${tb(b)}</span>${n ? ` <span class="nw">(${bdi(minText(n))})</span>` : ""}`;
+    // A span's value reads «2:14 م – 2:31 م (18 دقيقة)»: the range with its en dash, then its duration in brackets, with
+    // no «من … إلى …» and no middle dot (decision 14, user 2026-10-02); in the label's colour (decision 13). The range
+    // never breaks inside; the bracketed duration may drop to the next line as one unit.
+    const covSpan = (a, b, n = 0) => `<span class="nw">${timeRange(a, b)}</span>${n ? ` <span class="nw">(${bdi(minText(n))})</span>` : ""}`;
     fact("k-read", L.cov.read, L.covReadVal(bdi(observed), bdi(last + 1)));
     fact("k-zero", L.cov.zero, covSpan(0, ZERO_END), true);
     fact("k-miss", L.cov.miss, covSpan(GAP0, GAP1, GAP1 - GAP0 + 1), true);
