@@ -4634,3 +4634,11 @@ The user ends this cloud session here and continues in a new cloud session. No a
 - **DO-NOT.md updated** (approved by the user): the new rule "no dash inside a sentence, no «من … إلى …» in a range
   that stands alone as a value"; the coverage list's dot noted as outside the no-readings phrase rule; the single-day
   exception to the full-width no-readings row (decision 10).
+- **The flag options, rendered** (`…/scratchpad/flag/out/`, CSS/DOM injection on a static copy of `ca70f44`):
+  1 the preview (flag on its own line), 2 the flag beside the date, 3 no flag with the row tint kept, 4 no flag and
+  no tint, at 768, 390 and 1440. Findings: the top «أعلى ذروة» card already names the day, time and value in words
+  at every width; the row tint is hue only (1.04:1), so option 3 leaves a colour-only cue in the table; option 2 runs
+  1-2 px past its card at 721 AR and shifts the peak column 51 px at 768. Also found: in the preview, the Arabic time
+  sits 2 px above the number's baseline (fix `[dir="rtl"] .pk { align-items: baseline; }`); on the phone today the
+  flag pushes the top item's number 4-5 px off the others' edge and 3 px off the date's baseline. The rendering agent
+  and the coordinator recommend option 4. Waiting for the user's pick.
