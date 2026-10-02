@@ -35,7 +35,7 @@
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n' x='0' y='0' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.34 .33 .33 0 0 .34 .33 .33 0 0 .34 .33 .33 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncG type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncB type='linear' slope='2.2' intercept='-.6'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
 
   /* ---- Light settings (v3). These are the Recommended values: since 2026-09-25 they are the user's own tuning,
-   * copied from the tuner's "Copy values" (the designer's first Recommended values are in README.md). The
+   * copied from the tuner's "Copy values" (the designer's first Recommended values are in HISTORY.md, "Light model (v3)"). The
    * light tuner (tuner.js) reads them from here as its Recommended preset and overrides them live on <html>.
    * Plain numbers, so they tune and copy cleanly; the lighting section turns them into geometry.
    * Inside now: a light behind the card, brightest at the inline-end bottom corner, and a large dark disc

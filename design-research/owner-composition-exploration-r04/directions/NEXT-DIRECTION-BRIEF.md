@@ -415,7 +415,7 @@ must stay truthful:
 
 ## Round 6 — motion reset and chart hover (agreed 2026-09-25)
 
-The user reviewed the Round 5 §4 motion (see `eclipse/README.md`, "Motion") and judged it cliché and
+The user reviewed the Round 5 §4 motion (see `eclipse/HISTORY.md`, "Motion") and judged it cliché and
 below the visual quality of the page. They disliked the number cross-fade (including on the small
 crowd-level bars) and the lights' entrance. The coordinator's diagnosis, which the user agreed with:
 
@@ -723,7 +723,7 @@ A small separate round after the intro, so that the intro's verifier judges the 
 2. **Capture noise (user-agreed):** Chromium's glyph raster is not always byte-identical between runs, so the static
    guard can fail spuriously. The guard stays exact: a frame that differs is captured again, and it counts as a
    difference only if it differs in two consecutive attempts. No tolerance threshold is added.
-3. **README wording (low):** `eclipse/README.md` says the answers are hidden "for at most 200 ms". The re-check saw
+3. **README wording (low):** `eclipse/HISTORY.md`, "Motion", rule 11 ("The first-open intro"), records the font-wait wording: the answers are hidden "for at most 200 ms". The re-check saw
    the still page at 195-231 ms after first paint, which is inside the 250 ms gate. Correct the wording to the
    measured range.
 

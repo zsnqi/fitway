@@ -2851,7 +2851,7 @@
       get canStep() { return phase === "ready" && M.last >= 0; },
       timings: T,
       easings: EASE,
-      // Every motion, as built above (for the capture log and the README).
+      // Every motion, as built above (for the capture log and README.md, "Motion" / "What moves, and when").
       spec: () => [
         { motion: "Load", animates: "nothing but the first-open intro: the surfaces, lights, labels, grid, axes and usual line are complete at first paint (no stagger, no rise, no light entrance)", note: "a reload or a return in the same tab has no intro; only the live pulse runs at rest, and only while live" },
         { motion: "First-open intro (Round 7 step 3): the answers", animates: "transform translateY of each answer's numeric expression (Inside now, Today's peak, Entries, Busiest time), from below into the digits' ink box, clipped to it: the digit roll entering the final value; while delayed the stale Inside now number is still", delayMs: 0, durationMs: INTRO_T.roll / (opts.introSpeed || 1), easing: EASE.roll, note: "only on the first open in a tab; no count-up and no intermediate value; the DOM text is final from the first paint; nothing is announced" },
