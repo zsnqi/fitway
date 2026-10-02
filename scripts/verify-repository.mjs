@@ -6,6 +6,7 @@ import process from "node:process";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { parse as parseYaml } from "yaml";
+import { validateActiveResumePoints } from "./agent-environment/resume-point.mjs";
 import { checkAgentContext } from "./check-agent-context.mjs";
 import {
 	assertHistoryMutationOwnership,
@@ -347,6 +348,13 @@ async function main() {
 		}
 		await readBytes(milestone.handoff);
 	}
+	const resumePointCount = await validateActiveResumePoints({
+		repositoryRoot: root,
+		state,
+	});
+	console.log(
+		`Resume point validation passed: ${resumePointCount} marked active handoff(s).`,
+	);
 	assertHistoryMutationOwnership(state);
 	const historyTransition = await verifyHistoryTransition({
 		root,

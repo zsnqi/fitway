@@ -4,6 +4,8 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { parse as parseYaml } from "yaml";
+import { behindUpstreamWarning } from "./agent-environment/git-context.mjs";
+import { RESUME_POINT_MARKER } from "./agent-environment/resume-point.mjs";
 import { inspectPath } from "./check-agent-context.mjs";
 
 const root = process.cwd();
@@ -164,7 +166,8 @@ function selectorText(selector) {
 	return `${selector?.kind ?? "unknown"}=${JSON.stringify(selector?.value ?? "")}`;
 }
 
-function parseArgs(args) {
+function parseArgs(inputArgs) {
+	const args = inputArgs[0] === "--" ? inputArgs.slice(1) : inputArgs;
 	let milestoneId = null;
 	for (let index = 0; index < args.length; index += 1) {
 		const argument = args[index];
@@ -356,12 +359,39 @@ export async function buildAgentContextPlan({
 	return lines.join("\n");
 }
 
+export async function agentContextEnding({
+	repositoryRoot = root,
+	plan,
+	readFileImpl = readFileFromFs,
+	warningImpl = behindUpstreamWarning,
+}) {
+	const lines = [];
+	const warning = warningImpl(repositoryRoot);
+	if (warning) lines.push(warning);
+	const handoff = plan.match(/^handoff: (.+)$/m)?.[1];
+	if (handoff && handoff !== "(none)") {
+		const details = await inspectRepositoryPath(
+			repositoryRoot,
+			normalizePath(handoff),
+			inspectPath,
+		);
+		const text = await readFileImpl(details.absolute, "utf8");
+		if (text.startsWith(RESUME_POINT_MARKER))
+			lines.push(
+				`Resume point: read ${handoff.replaceAll("\\", "/")} in full, then the standing-decisions files it names.`,
+			);
+	}
+	return lines.join("\n");
+}
+
 async function main() {
 	const plan = await buildAgentContextPlan({
 		repositoryRoot: root,
 		milestoneId: parseArgs(process.argv.slice(2)),
 	});
 	console.log(plan);
+	const ending = await agentContextEnding({ repositoryRoot: root, plan });
+	if (ending) console.log(ending);
 }
 
 const isMain =

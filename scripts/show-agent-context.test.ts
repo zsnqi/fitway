@@ -169,6 +169,7 @@ function createFixture(options: FixtureOptions = {}) {
 		stringifyYaml({ milestones: { [MILESTONE_ID]: milestone } }),
 	);
 	if (!options.omitPacket) writeFixtureFile(root, PACKET_PATH, packetBytes);
+	writeFixtureFile(root, HANDOFF_PATH, "# Legacy handoff\n");
 	return { root, milestone, packet };
 }
 
@@ -182,11 +183,16 @@ function writeFixtureFile(
 	writeFileSync(absolutePath, content);
 }
 
-function runShow(root: string) {
+function runShow(root: string, leadingSeparator = false) {
 	return spawnSync(
 		process.execPath,
-		[SHOW_SCRIPT_PATH, "--milestone", MILESTONE_ID],
-		{ cwd: root, encoding: "utf8" },
+		[
+			SHOW_SCRIPT_PATH,
+			...(leadingSeparator ? ["--"] : []),
+			"--milestone",
+			MILESTONE_ID,
+		],
+		{ cwd: root, encoding: "utf8", windowsHide: true },
 	);
 }
 
@@ -197,6 +203,14 @@ async function expectBuildToFail(root: string, message: RegExp) {
 }
 
 describe("context:show bounded packet discovery", () => {
+	it("O1: both argument forms produce exactly the same plan", () => {
+		const { root } = createFixture();
+		const direct = runShow(root);
+		const separated = runShow(root, true);
+		expect(direct.status, direct.stderr).toBe(0);
+		expect(separated.status, separated.stderr).toBe(0);
+		expect(separated.stdout).toBe(direct.stdout);
+	});
 	it("discovers a valid DRAFT pilot packet from the selected active milestone", async () => {
 		const { root } = createFixture();
 
