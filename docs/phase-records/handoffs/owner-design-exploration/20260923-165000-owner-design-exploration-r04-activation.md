@@ -4539,3 +4539,19 @@ The user ends this cloud session here and continues in a new cloud session. No a
   agent renders them, with the single-day options, into this session's scratchpad (`…/scratchpad/wording/`).
 - **No large phase now.** The user does not stop the work, but opens no big round in this session. Reports' states
   (K-02, K-38) and the step-4 reviewer wait for the local machine.
+
+## The user's wording picks, and the wording brief (2026-10-02)
+
+- **Single day without readings: option 4,** the date in its place and the words under it. *User 2026-10-02.* The
+  user proposed «بلا قراءات» for the line under the date instead of «لا قراءات طوال اليوم». The coordinator
+  recommends «لا قراءات»: it is the term used everywhere, and it pairs with «لا قراءات بعد» below. Waiting for the
+  user's confirmation; the brief carries «لا قراءات».
+- **Single day before readings began:** the same form, the date and «لا قراءات بعد». It removes «لا قراءات بعد يوم
+  12 سبتمبر», which reads as "after 12 September". *User 2026-10-02,* on the coordinator's recommendation.
+- **Daily's waiting tooltip:** «بانتظار القراءات» / «منذ 3:00 م». *User 2026-10-02,* on the coordinator's
+  recommendation (the rendering agent had recommended «لا قراءات منذ 3:00 م»).
+- **Daily's coverage list:** «من 2:14 م إلى 2:31 م (18 دقيقة)». *User 2026-10-02,* on the coordinator's
+  recommendation.
+- **The quiet bars:** the user did not take up the floor proposal; they stay as built.
+- **The user approved running the small round in this cloud session** after the picks. Its brief is
+  `briefs/step4-reports-wording-fixes.md` (decisions 9-13), not launched yet.
