@@ -4642,3 +4642,43 @@ The user ends this cloud session here and continues in a new cloud session. No a
   sits 2 px above the number's baseline (fix `[dir="rtl"] .pk { align-items: baseline; }`); on the phone today the
   flag pushes the top item's number 4-5 px off the others' edge and 3 px off the date's baseline. The rendering agent
   and the coordinator recommend option 4. Waiting for the user's pick.
+
+## The user leans to option 3, Claude Design proposed, and the local resume point (2026-10-02)
+
+- **The flag:** the user finds option 3 (no flag, the row tint kept) excellent and clear without words. If the flag
+  only repeats the top «أعلى ذروة» card, the user agrees to drop it; the card was shown to them
+  (`…/scratchpad/flag/out/top-card-768-ar.png`). The coordinator now recommends option 3: the card names the day,
+  time and value in words at every width, so the tint is not the page's only cue. To confirm in the next session.
+- **Deferred defects, collected and not fixed now** (*user 2026-10-02*):
+  1. In the inline preview, the Arabic time sits 2 px above the number's baseline; fix
+     `[dir="rtl"] .pk { align-items: baseline; }` with the decision-15 build.
+  2. On the phone, the flag pushes the top item's number 4-5 px off the others' edge and 3 px off the date's baseline
+     (moot if the flag goes).
+  3. At 721 EN the status box's anchor moves 6.5 px (HDR-6), present at `3e5b997`.
+  4. `components.html`'s copy of Daily's no-readings row is caption `--ink-3`; Daily is 13.5 px `--ink-2`.
+  5. In an English table at 721 px and up, a single day's «No readings» starts at the peak column's left edge.
+  6. English coverage rows take two lines at 390.
+  7. `components.html` has no single-day specimen.
+  8. The Codex batch: `components.html` scrolls sideways at 390 and 768 EN; its header date range breaks at 390 and
+     320; the details' «Open, nobody inside» range breaks at 320 EN.
+- **Claude Design, proposed by the user.** The user asks to continue the visual work through Claude Design. Facts
+  checked 2026-10-02: Claude Design runs standalone (claude.ai/design) and as artifacts inside Claude chats and Claude
+  Code; it imports a design system from a codebase with `/design-sync` in Claude Code; its canvas allows dragging and
+  resizing by hand; Export offers "Handoff to Claude Code" ("Send to local coding agent"). The artifact promotion
+  (1-15 October) halves the five-hour limit for designs made in a Claude chat or Cowork task, not in the standalone app
+  or Claude Code. By `AGENTS.md`, Claude Design output is reference until built in E/, rendered and inspected. The
+  coordinator's view: use it for the visual back-and-forth with the user; keep the build, measurement and spec work in
+  Claude Code. To plan in the local session: Eclipse's design system in Claude Design (via `/design-sync`), what to
+  give it (DO-NOT.md, the spec rows, crops), and which entry to choose.
+- **State at the end of this session:**
+  - `owner-followup-r04-build` at `ca70f44`, pushed.
+  - `codex/owner-redesign-r04` pushed, with this handoff, `DO-NOT.md` (the range rule) and
+    `briefs/step4-reports-wording-fixes.md` (done).
+  - The scratchpad crops are lost when the session ends.
+- **Next work, in order:**
+  1. The user confirms the flag (option 3 recommended, 4 the alternative).
+  2. One build round on `ca70f44`: decision 15 (the time beside the number at 721-1023, with defect 1's fix), the
+     flag decision, and decision 16 (the coverage dot, «2:14 م – 2:31 م · 18 دقيقة», no brackets; the range and
+     «· 18 دقيقة» never break inside). The preview CSS is in "The flag options" above and the inline preview entry.
+  3. The Claude Design plan with the user.
+  4. Reports' states (K-02, K-38) and the step-4 reviewer, as before.
