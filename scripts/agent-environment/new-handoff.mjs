@@ -117,6 +117,7 @@ export function localTimestamp(now) {
 	return {
 		filename: `${date}-${time}`,
 		label: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())} ${zone}`,
+		iso: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}${zone}`,
 	};
 }
 
@@ -128,7 +129,7 @@ function replaceHeader(text, name, value) {
 }
 
 export async function createResumePoint({
-	repositoryRoot = process.cwd(),
+	repositoryRoot = readGit(process.cwd(), ["rev-parse", "--show-toplevel"]),
 	milestoneId,
 	slug,
 	directory,
@@ -232,9 +233,12 @@ export async function createResumePoint({
 		[
 			[["milestones", milestoneId, "handoff"], newPath],
 			[["milestones", milestoneId, "taskPacketSha256"], packetHash],
-			[["milestones", milestoneId, "lastHeartbeatAt"], now.toISOString()],
-			[["milestones", milestoneId, "leaseExpiresAt"], expiry.toISOString()],
-			[["updatedAt"], now.toISOString()],
+			[["milestones", milestoneId, "lastHeartbeatAt"], timestamp.iso],
+			[
+				["milestones", milestoneId, "leaseExpiresAt"],
+				localTimestamp(expiry).iso,
+			],
+			[["updatedAt"], timestamp.iso],
 		],
 		STATE_PATH,
 	);
@@ -281,7 +285,7 @@ export async function createResumePoint({
 	}
 	const lines = [
 		`Created resume point: ${newPath}`,
-		"Next actions: fill every section; run pnpm check:repository; commit; push.",
+		`Next actions: fill every section; git add "${newPath}"; run pnpm check:repository; commit; push.`,
 	];
 	const warning = behindUpstreamWarning(repositoryRoot, git);
 	if (warning) lines.push(warning);

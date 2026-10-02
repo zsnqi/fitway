@@ -143,6 +143,9 @@ describe("O4: coordinator handoff creation without unrelated byte changes", () =
 		const before = snapshot(root);
 		const result = await createResumePoint(options(root));
 		const timestamp = localTimestamp(new Date(NOW));
+		const expiry = localTimestamp(
+			new Date(new Date(NOW).getTime() + 72 * 3_600_000),
+		);
 		expect(result.newPath).toBe(
 			`docs/phase-records/handoffs/fixture/${timestamp.filename}-${MILESTONE}-round_1.md`,
 		);
@@ -165,23 +168,23 @@ describe("O4: coordinator handoff creation without unrelated byte changes", () =
 		const expectedState = state
 			.replace(
 				"updatedAt: '2026-10-01T10:00:00+03:00'",
-				"updatedAt: '2026-10-02T17:40:12.000Z'",
+				`updatedAt: '${timestamp.iso}'`,
 			)
 			.replace(`taskPacketSha256: '${hash}'`, `taskPacketSha256: '${nextHash}'`)
 			.replace(`handoff: '${HANDOFF}'`, `handoff: '${result.newPath}'`)
 			.replace(
 				"lastHeartbeatAt: 2026-10-01T10:00:00+03:00",
-				"lastHeartbeatAt: 2026-10-02T17:40:12.000Z",
+				`lastHeartbeatAt: ${timestamp.iso}`,
 			)
 			.replace(
 				'leaseExpiresAt: "2026-10-04T10:00:00+03:00"',
-				'leaseExpiresAt: "2026-10-05T17:40:12.000Z"',
+				`leaseExpiresAt: "${expiry.iso}"`,
 			);
 		expect(bytes(root, "PROJECT_STATE.yaml")).toEqual(
 			Buffer.from(expectedState),
 		);
 		expect(result.output).toBe(
-			`Created resume point: ${result.newPath}\nNext actions: fill every section; run pnpm check:repository; commit; push.`,
+			`Created resume point: ${result.newPath}\nNext actions: fill every section; git add "${result.newPath}"; run pnpm check:repository; commit; push.`,
 		);
 		expect(existsSync(path.join(root, ".git"))).toBe(false);
 	});
@@ -202,7 +205,9 @@ describe("O4: coordinator handoff creation without unrelated byte changes", () =
 			parseYaml(bytes(root, "PROJECT_STATE.yaml").toString("utf8")).milestones[
 				MILESTONE
 			].leaseExpiresAt,
-		).toBe("2026-10-02T19:10:12.000Z");
+		).toBe(
+			localTimestamp(new Date(new Date(NOW).getTime() + 1.5 * 3_600_000)).iso,
+		);
 	});
 	it("refuses an existing filename without changing it, the old handoff, ledger or packet", async () => {
 		const { root } = fixture(roots);
@@ -308,7 +313,10 @@ describe("O4: coordinator handoff creation without unrelated byte changes", () =
 			"behind origin/main by 3 commit(s)",
 		);
 	});
-	it("CLI accepts both argument forms, honors --now in local time, and never commits", () => {
+	it.each([
+		".",
+		"docs/phase-records",
+	])("R1/O4: CLI accepts both argument forms from %s, honors --now in local time, and never commits", (workingDirectory) => {
 		const outputs: string[] = [];
 		for (const separator of [false, true]) {
 			const { root } = fixture(roots);
@@ -328,7 +336,7 @@ describe("O4: coordinator handoff creation without unrelated byte changes", () =
 					"12",
 				],
 				{
-					cwd: root,
+					cwd: path.join(root, workingDirectory),
 					encoding: "utf8",
 					windowsHide: true,
 					env: { ...process.env, TZ: "Asia/Riyadh" },
@@ -348,11 +356,88 @@ describe("O4: coordinator handoff creation without unrelated byte changes", () =
 			expect(
 				parseYaml(bytes(root, "PROJECT_STATE.yaml").toString("utf8"))
 					.milestones[MILESTONE].leaseExpiresAt,
-			).toBe("2026-10-03T05:40:12.000Z");
+			).toBe("2026-10-03T08:40:12+03:00");
 			expect(git(root, "rev-list", "--count", "HEAD")).toBe("1");
 		}
 		// Fixture commits have different HEADs; the command output contains paths only.
 		expect(outputs[1]).toBe(outputs[0]);
+	});
+	it.each([
+		{
+			zone: "UTC",
+			now: "2026-10-02T20:40:12.987+03:00",
+			filename: "20261002-174012",
+			label: "2026-10-02 17:40 +00:00",
+			iso: "2026-10-02T17:40:12+00:00",
+			expiry: "2026-10-05T17:40:12+00:00",
+		},
+		{
+			zone: "Asia/Riyadh",
+			now: "2026-10-02T20:40:12.987+03:00",
+			filename: "20261002-204012",
+			label: "2026-10-02 20:40 +03:00",
+			iso: "2026-10-02T20:40:12+03:00",
+			expiry: "2026-10-05T20:40:12+03:00",
+		},
+		{
+			zone: "Asia/Kathmandu",
+			now: "2026-10-02T20:40:12.987+03:00",
+			filename: "20261002-232512",
+			label: "2026-10-02 23:25 +05:45",
+			iso: "2026-10-02T23:25:12+05:45",
+			expiry: "2026-10-05T23:25:12+05:45",
+		},
+		{
+			zone: "America/New_York",
+			now: "2026-10-31T23:40:12.987-04:00",
+			filename: "20261031-234012",
+			label: "2026-10-31 23:40 -04:00",
+			iso: "2026-10-31T23:40:12-04:00",
+			expiry: "2026-11-03T22:40:12-05:00",
+		},
+	])("R2/R3: CLI writes consistent local timestamps and ordered next actions in $zone", ({
+		zone,
+		now,
+		filename,
+		label,
+		iso,
+		expiry,
+	}) => {
+		const { root } = fixture(roots);
+		gitFixture(root);
+		const result = spawnSync(
+			process.execPath,
+			[script, "--milestone", MILESTONE, "--slug", "clock", "--now", now],
+			{
+				cwd: root,
+				encoding: "utf8",
+				windowsHide: true,
+				env: { ...process.env, TZ: zone },
+			},
+		);
+		expect(result.status, result.stderr).toBe(0);
+		const newPath = `docs/phase-records/handoffs/fixture/${filename}-${MILESTONE}-clock.md`;
+		expect(bytes(root, newPath).toString("utf8")).toContain(`, ${label}`);
+		const state = parseYaml(bytes(root, "PROJECT_STATE.yaml").toString("utf8"));
+		expect(state.updatedAt).toBe(iso);
+		expect(state.milestones[MILESTONE].lastHeartbeatAt).toBe(iso);
+		expect(state.milestones[MILESTONE].leaseExpiresAt).toBe(expiry);
+		expect(new Date(expiry).getTime() - new Date(iso).getTime()).toBe(
+			72 * 3_600_000,
+		);
+		expect(result.stdout.trim()).toBe(
+			`Created resume point: ${newPath}\nNext actions: fill every section; git add "${newPath}"; run pnpm check:repository; commit; push.`,
+		);
+	});
+	it("R3: next actions stage the quoted new path before checking, committing and pushing", async () => {
+		const { root } = fixture(roots);
+		const result = await createResumePoint({
+			...options(root),
+			directory: "docs/run #1",
+		});
+		expect(result.output.split("\n")[1]).toBe(
+			`Next actions: fill every section; git add "${result.newPath}"; run pnpm check:repository; commit; push.`,
+		);
 	});
 	it("argument validation rejects unknown flags, missing values, duplicate flags and non-leading separators", () => {
 		for (const args of [

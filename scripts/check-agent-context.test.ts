@@ -612,15 +612,16 @@ describe("check-agent-context", () => {
 		expect(Object.keys(state.milestones)).toEqual([...FIXTURE_MILESTONES]);
 	});
 
-	it("passes the current active-mode registry with its open exploration frontier and closed archived packets", async () => {
+	it("passes the current active-mode registry with its live frontier and closed archived packets", async () => {
 		const result = await checkAgentContext({
 			root: REAL_ROOT,
 			checkTracked: false,
 		});
 		expect(result.registry?.mode).toBe("active");
-		expect(Object.keys(result.state?.milestones ?? {})).toContain(
-			"owner-design-exploration-r01",
+		const liveState = parseYaml(
+			readFileSync(path.resolve(REAL_ROOT, "PROJECT_STATE.yaml"), "utf8"),
 		);
+		expect(result.state?.milestones).toEqual(liveState.milestones);
 		expect(
 			result.history?.milestones?.[
 				"owner-design-exploration-envelope-repair-r01"
