@@ -66,3 +66,18 @@ held-out checks live outside the repository and never appear here or in a brief.
   that; the definition did not foresee npm scope names or folder-relative paths.
 - **Environment:** Codex hit its usage limit after committing and wrote no final report. The coordinator's Sonnet
   grader graded the round from the commit and the held-out checks.
+
+## Round 6: `briefs/codex-r6-path-tokens.md`, result `dc8d2e0`
+
+- **Brief rows:** 5 of 5 (P1-P5); 645 of 645 script tests, both checkers and Biome pass. A shared
+  `scripts/agent-environment/path-reference.mjs` now classifies tokens for both tools. `brief:check` on the round's
+  own brief fails after the commit by design: the commit changes non-Markdown files after the named HEAD.
+- **Held-out rows:** 8 of 10; H4 partial, H7 failed. H7: both live resume points now fail, because each names an
+  existing folder by absolute path with a trailing `/`, and `scripts/agent-environment/resume-point.mjs:94` requires an absolute path to
+  be a file where the base code skipped absolute paths. H4: bare names on the two header lines are still checked as
+  paths, which the brief asked for ("as they are now").
+- **Failure cause:** the brief's (rule B7 broken by the coordinator). P4 told the tools that absolute paths are valid
+  references, but no outcome required the live resume points to keep passing, and nothing said a reference may be a
+  folder.
+- **Side finding:** CI on `a7c9ecc` (run 37063118711) fails nine `check-brief` tests on the GitHub runner, whose TEMP
+  is an 8.3 short path (`RUNNER~1`): the named worktree is compared with the long path Git returns. Moved to round 7.
