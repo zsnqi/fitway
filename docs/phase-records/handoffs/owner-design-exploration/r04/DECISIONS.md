@@ -58,8 +58,9 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
    user decides. The user sees exact rendered crops, numbered for comparison; the coordinator starts any preview
    itself.
 2. **Agents** follow the table in `CLAUDE.md`; a long-context designer is never resumed.
-3. **Codex** is GPT-6.1 Sol at `xhigh`, run by the coordinator through the Codex plugin, and is not used in cloud
-   sessions. Its briefs follow these rules:
+3. **Codex** is GPT-6.1 Sol at `xhigh`, run by the coordinator with `codex exec` at full access
+   (`docs/phase-records/handoffs/agent-environment/DECISIONS.md` item 7), and is not used in cloud sessions. Its
+   briefs follow these rules:
    - B1. Name every supported way to open and run the artifact (HTTP, `file://`, sizes, reduced motion) and which
      ones the harness checks.
    - B2. Before requiring equality to a baseline, check the baseline does not carry the defect being removed.
