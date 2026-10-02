@@ -6,14 +6,16 @@ latest wording; never copy an entry into a resume point.
 
 ## Starting a task
 
-- Before a new task that spends real usage (designer, builder or verifier agents, a Codex round)
-  or changes what the user will see, the coordinator states in two or three lines what it will do
-  and why, then starts at once. The user interrupts when it is not what they want. (user,
-  2026-10-02)
-- The coordinator waits for an answer only for a taste or direction choice, or when the request
-  itself is unclear. It asks all open questions together in one message. (user, 2026-10-02)
-- Inside a task the user has seen announced, process, tooling and ordering are the coordinator's
-  decisions; it reports them at the end. (user, 2026-10-02)
+- Before a big task or a new phase, the coordinator states in two or three lines what it will do
+  and why, then starts at once; the user interrupts when it is not what they want. Small tasks
+  and edits get no announcement. (user, 2026-10-02)
+- The coordinator waits for an answer only on taste or direction (anything that changes how a page
+  looks or behaves, a choice between options, visual acceptance), irreversible actions, the user's
+  settings and security, product decisions, or a request that is itself unclear. It asks all open
+  questions together in one message. Everything else it decides, does, and reports in a line.
+  (user, 2026-09-29, 2026-10-01 and 2026-10-02)
+- Inside an announced task, process, tooling and ordering are the coordinator's decisions; it
+  reports them at the end. (user, 2026-10-02)
 
 ## Sessions and resuming
 
