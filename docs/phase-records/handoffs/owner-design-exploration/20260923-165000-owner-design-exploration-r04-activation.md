@@ -4735,3 +4735,25 @@ The user ends this cloud session here and continues in a new cloud session. No a
   `DESCRIPTION.md` (2,503 characters, every value checked against the copied CSS; the coordinator reworded two lines).
 - **Next:** the user creates the design system and opens a chat from Output → Design with it; Claude Design output
   stays reference until built in E/. Then Reports' states (K-02, K-38) and the step-4 reviewer.
+
+## Claude Design paused, and the resume point for a new session (2026-10-02)
+
+- **Claude Design:** the design system "FITWAY Eclipse" exists in the user's Claude Design
+  (`https://claude.ai/artifact/NKC9SHykzthuxQuHWg4YPn`): its colour, light, spacing, radius and shadow tokens match the
+  CSS exactly (checked by script); it has four components (Button, StatCard, Badge, DayTable). Unverified suspicions,
+  left open: its generated `tokens.css` declares four per-file families at 400 instead of one "Readex Pro"; DayTable's
+  no-readings row and gap sentence copy `components.html`'s wrong caption `--ink-3` style (defect 4); its README says
+  rows are 36 px, the component 48 px. **The user paused it** (*user 2026-10-02*): for precise, rule-bound state work
+  it doubles the work (design there, build and measure here) and its output needs checking each time. It stays
+  available for open visual questions. The verifier launched on it was stopped before reporting.
+- **Working method from here** (*user 2026-10-02*): as before (fresh agent per task, the coordinator's context small,
+  exact renders for the user's picks), and Codex takes many of the fixes and edits, at `xhigh` reasoning, judged per
+  round as an eval (brief rows, held-out rows, failure cause).
+- **State:** `owner-followup-r04-build` at `06e0c41` (decisions 15-17), pushed; nothing running.
+- **Next work, in order:**
+  1. Reports' states (K-02): loading, page-level closed, unavailable, error and the not-current statuses, at 1440, 768
+     and 390 (320 for K-38), AR and EN; K-38 (the 320 AR phone title row, «التقارير» overflows its box and moves
+     25.9 px when the status badge changes) closes with it. Fresh designer, the user picks, then a builder (or Codex
+     for frozen edits).
+  2. The deferred defects 3-8 (defects 1 and 2 closed at `06e0c41`): good Codex candidates with frozen targets.
+  3. The step-4 reviewer, then the user.
