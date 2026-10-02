@@ -35,7 +35,9 @@ latest wording; never copy an entry into a resume point.
   2026-10-02). The coordinator runs it from a tracked brief file, in Codex's sandbox with
   automatic approval review (`docs/phase-records/handoffs/agent-environment/DECISIONS.md`
   item 7), in a harness background shell (Git Bash, which has `<`):
-  `codex exec --approve-for-me -C <worktree> -m gpt-6.1-sol -c model_reasoning_effort="xhigh" --json -o <run>/last-message.md - < <brief> > <run>/events.jsonl`.
+  `{ printf 'Launch note: HEAD <sha> only adds this brief over the named HEAD.\n\n'; cat <brief>; } | codex exec --approve-for-me -C <worktree> -m gpt-6.1-sol -c model_reasoning_effort="xhigh" --json -o <run>/last-message.md - > <run>/events.jsonl`.
+  The note is needed because the brief's own commit sits on the HEAD it names, and Codex rightly stops on a HEAD
+  it was not told about (2026-10-03, nav-5 and round 8).
   The harness reports the exit; nothing polls. Each Codex round is judged as an evaluation:
   brief rows, held-out rows kept out of Codex's reach, and the failure cause; the brief rules
   live with the milestone's standing decisions. (user, 2026-10-02)
