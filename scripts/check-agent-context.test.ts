@@ -18,6 +18,8 @@ import {
 	AGENTS_INSTRUCTION_CAP_BYTES,
 	AGENTS_INSTRUCTION_WARN_BYTES,
 	checkAgentContext,
+	formatAgentContextResult,
+	formatAgentContextWarnings,
 	validateReceiptChain,
 } from "./check-agent-context.mjs";
 import {
@@ -2330,6 +2332,70 @@ describe("check-agent-context", () => {
 				error.includes("must begin with a genesis receipt"),
 			),
 		).toBe(true);
+	});
+});
+
+describe("agent-context diagnostic output", () => {
+	const admitted = [
+		"historical pointer exception admitted: record -> missing.md",
+		"historical pointer exception admitted for untracked target: record -> untracked.md",
+		"historical pointer exception admitted without tracking classification: record -> unknown.md",
+	];
+	const otherWarnings = [
+		"Git tracking checks are unavailable outside a Git worktree",
+		"historical pointer exception admission problem",
+	];
+	const result = {
+		ok: true,
+		warnings: [
+			admitted[0],
+			otherWarnings[0],
+			...admitted.slice(1),
+			otherWarnings[1],
+		],
+		errors: [],
+	};
+
+	it("summarizes admitted exceptions while retaining every other warning", () => {
+		expect(formatAgentContextWarnings(result)).toEqual([
+			...otherWarnings.map((warning) => `WARNING: ${warning}`),
+			"Historical pointer exceptions admitted: 3 (use --verbose to list).",
+		]);
+	});
+
+	it("lists all admitted exceptions in their original order with --verbose", () => {
+		expect(formatAgentContextWarnings(result, { verbose: true })).toEqual([
+			...result.warnings.map((warning) => `WARNING: ${warning}`),
+			"Historical pointer exceptions admitted: 3.",
+		]);
+	});
+
+	it("keeps every warning and error on failure", () => {
+		expect(
+			formatAgentContextResult({
+				...result,
+				ok: false,
+				errors: ["missing packet", "invalid selector"],
+			}),
+		).toBe(
+			[
+				...result.warnings.map((warning) => `WARNING: ${warning}`),
+				"check-agent-context FAILED:",
+				"- missing packet",
+				"- invalid selector",
+			].join("\n"),
+		);
+	});
+
+	it("preserves the repository warning prefix and avoids an empty summary", () => {
+		expect(
+			formatAgentContextWarnings(
+				{ ok: true, warnings: otherWarnings },
+				{ warningPrefix: "Agent context warning: " },
+			),
+		).toEqual(
+			otherWarnings.map((warning) => `Agent context warning: ${warning}`),
+		);
 	});
 });
 

@@ -1,4 +1,6 @@
+import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { describe, expect, it } from "vitest";
@@ -427,4 +429,45 @@ describe("project-state schemas", () => {
 			}),
 		).toBe(true);
 	});
+});
+
+describe("checker CLI diagnostic output", () => {
+	const root = fileURLToPath(new URL("../", import.meta.url));
+	for (const script of ["check-agent-context.mjs", "verify-repository.mjs"]) {
+		it(`${script} summarizes admitted exceptions by default and lists them with --verbose`, () => {
+			const invoke = (args: string[]) => {
+				const result = spawnSync(
+					process.execPath,
+					[fileURLToPath(new URL(script, import.meta.url)), ...args],
+					{
+						cwd: root,
+						encoding: "utf8",
+						windowsHide: true,
+					},
+				);
+				expect(result.status, result.stdout + result.stderr).toBe(0);
+				return result.stdout + result.stderr;
+			};
+			const quiet = invoke([]);
+			const verbose = invoke(["--verbose"]);
+			const count =
+				verbose.match(
+					/historical pointer exception admitted(?::| for untracked target:| without tracking classification:)/g,
+				)?.length ?? 0;
+			expect(count).toBeGreaterThan(0);
+			expect(
+				quiet.match(/Historical pointer exceptions admitted:/g),
+			).toHaveLength(1);
+			expect(quiet).toContain(
+				`Historical pointer exceptions admitted: ${count} (use --verbose to list).`,
+			);
+			expect(quiet).not.toContain("historical pointer exception admitted:");
+			expect(quiet).not.toContain(
+				"historical pointer exception admitted for untracked target:",
+			);
+			expect(verbose).toContain(
+				`Historical pointer exceptions admitted: ${count}.`,
+			);
+		});
+	}
 });
