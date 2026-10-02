@@ -572,6 +572,10 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
 .tip-v { font-size: 20px; font-weight: 500; color: var(--ink); }
 .tip-l { font-size: 12.5px; color: var(--ink-2); }
 .tip-word { font-size: 14px; color: var(--ink); }
+/* A span with no readings in a tooltip is one sentence on two lines, the words first (decision 8): the words in the main
+ * line, then "from … to …" in the caption line the tooltip's times use. */
+.tip-t.tip-span { display: block; margin-block-start: 4px; }
+.tip > .tip-main:first-child { margin-block-start: 0; }
 .tip-u { display: flex; align-items: center; gap: 7px; margin-block-start: 5px; font-size: 12px; color: var(--ink-3); }
 .tip-u .sw { width: 12px; }
 /* Round 7 step 2: the latest stop while delayed shows the stale reading as the delayed card does: a muted number,
@@ -634,13 +638,15 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
 .minutes-table tr.peak > * { background: rgba(229, 25, 53, 0.08); }
 .minutes-table tr.peak:hover > * { background: rgba(229, 25, 53, 0.12); }
 .minutes-table .note-row { display: none; }
-/* TBL-12: a span with no readings is one full-width row: the range first (label type, --ink-2, tabular figures),
- * 16 px, then the dotted mark and the words (caption type, --ink-3). A line breaks only between the range and the mark. */
+/* TBL-12: a span with no readings is one full-width row, one sentence with the words first (decision 8, user
+ * 2026-10-01): «لا قراءات من 2:14 م إلى 2:31 م». The words in caption type, --ink-3; each end in label type, --ink-2,
+ * tabular figures, the sizes and colours the range-first phrase had. A line breaks only between its words: the words
+ * stay together, each end keeps its preposition, and a time never breaks inside. */
 .minutes-table td.none { font-size: 12px; line-height: 18px; color: var(--ink-3); }
-.gapnote { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0 16px; }
+.gapnote { display: inline; }
+.gapnote .w { white-space: nowrap; }
+.gapnote .nw { white-space: nowrap; }
 .gapnote .rg { font-size: 13.5px; line-height: 20px; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.gapnote .mw { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
-.gap-ico { width: 16px; height: 16px; flex: none; fill: currentColor; }
 
 /* ------------------------------------------------------------ Daily, step 3
  * Run owner_daily_r04_s17, phase B: the spec's rules on the Daily page's shared components (body.dl), at every size.

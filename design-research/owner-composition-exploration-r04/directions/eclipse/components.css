@@ -288,15 +288,13 @@ html:has(> body.cx) { color-scheme: dark; scrollbar-color: rgba(245, 243, 242, 0
 .cx-pk .cx-flag { align-self: center; }
 /* TBL-12: a note spanning columns sits at its cell's start. The fold row (TBL-8) shows only on a phone. A row with no
  * readings (user 2026-09-30) is one cell across every column, in the camera-gap note's caption type and ink, and keeps
- * its density's height. The range comes first, on the first column's text edge, then the mark and the words (user
- * 2026-10-01, option د). A line breaks only between the range and the mark; the mark stays with the words. */
-.cx-gapnote { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0 8px; }
-.cx-gapnote .mw { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
-.cx-gapnote .cx-ico { width: 16px; height: 16px; }
-.cx-gapnote .w, .cx-gapnote .rg { white-space: nowrap; }
+ * its density's height. It is one sentence, the words first (decision 8, user 2026-10-01): «لا قراءات من 10:00 ص إلى
+ * 2:00 م», starting on the first column's text edge. A line breaks only between its words: the words stay together,
+ * each end keeps its preposition, and an end never breaks inside. */
+.cx-gapnote { display: inline; }
+.cx-gapnote .w, .cx-gapnote .rg, .cx-gapnote .nw { white-space: nowrap; }
 .cx-table tbody td.none { font: var(--t-caption); color: var(--ink-3); }
-/* In the full-width row the range is in label type, --ink-2, tabular figures, 16 px from the mark. */
-.cx-table tbody td.none .cx-gapnote { column-gap: 16px; }
+/* In the full-width row the ends are in label type, --ink-2, tabular figures, as the range-first phrase had them. */
 .cx-table tbody td.none .rg { font: var(--t-label); color: var(--ink-2); font-variant-numeric: tabular-nums; }
 .cx-table .note-row { display: none; }
 .cx-sort { display: inline-flex; align-items: center; gap: 8px; height: 44px; min-width: 44px; margin-inline: -8px; padding-inline: 8px; border-radius: 10px; font: inherit; color: inherit; }
@@ -371,6 +369,11 @@ th.is-asc .cx-sort .cx-ico { transform: rotate(180deg); }
 .cx-tip-main.is-stale .cx-tip-v { color: var(--ink-2); }
 .cx-tip-l { font: var(--t-caption); line-height: 1.25; color: var(--ink-2); }
 .cx-tip-word { font: var(--t-body); line-height: 1.25; color: var(--ink); }
+/* A span with no readings in a tooltip: one sentence on two lines, the words first (decision 8): the words, then "from …
+ * to …" in the caption line the tooltip's times use. */
+.cx-tip-t.cx-tip-span { display: block; margin-block-start: 4px; }
+.cx-tip > .cx-tip-main:first-child { margin-block-start: 0; }
+.cx-tip-span .nw { white-space: nowrap; }
 .cx-tip-u, .cx-tip-ago { display: flex; align-items: center; gap: 8px; margin-block-start: 5px; font: var(--t-caption); line-height: 1.25; color: var(--ink-3); }
 .cx-tip-u .sw-usual { display: inline-block; width: 12px; border-top: 1.5px dashed rgba(245, 243, 242, 0.7); }
 .cx-tip-ago { color: var(--amber); }

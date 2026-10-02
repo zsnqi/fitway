@@ -113,7 +113,7 @@
       daysTitle: "يومًا بيوم", daysSub: `${b(7)} أيام`,
       cols: { day: "اليوم", peak: "الذروة", avg: "المعدّل", entries: "مرات الدخول", notes: "ملاحظات" },
       daysCaption: `الأيام من ${b(16)} إلى ${b(22)} سبتمبر ${b(2026)}: الذروة والمعدّل ومرات الدخول`,
-      highest: "الأعلى", gapRange: "10:00 ص – 2:00 م", beforeRow: `${b(2)} أغسطس – ${b(12)} سبتمبر`,
+      highest: "الأعلى", gapEnds: ["10:00 ص", "2:00 م"], beforeEnds: [`${b(2)} أغسطس`, `${b(12)} سبتمبر`], spanFrom: "من", spanTo: "إلى",
       sortedBy: "مرتب حسب اليوم، الأحدث أولًا",
       compactTitle: "دقيقة بدقيقة", compactCaption: "قراءات اليوم دقيقة بدقيقة",
       ccols: { time: "الوقت", inside: "داخل الصالة", avg: `معدّل ${b(30)} دقيقة`, note: "ملاحظة" },
@@ -212,7 +212,7 @@
       daysTitle: "Day by day", daysSub: "7 days",
       cols: { day: "Day", peak: "Peak", avg: "Average", entries: "Entries", notes: "Notes" },
       daysCaption: "Days from 16 to 22 Sep 2026: peak, average and entries",
-      highest: "Highest", gapRange: "10:00 AM – 2:00 PM", beforeRow: "2 Aug – 12 Sep",
+      highest: "Highest", gapEnds: ["10:00 AM", "2:00 PM"], beforeEnds: ["2 Aug", "12 Sep"], spanFrom: "from", spanTo: "to",
       sortedBy: "Sorted by day, newest first",
       compactTitle: "Minute by minute", compactCaption: "Today's readings, minute by minute",
       ccols: { time: "Time", inside: "Inside", avg: "30-min average", note: "Note" },
@@ -260,6 +260,10 @@
   // Ranges: an en dash in both languages (DAT-3, user 2026-10-01); times with a suffix are spaced. An unspaced Arabic hour
   // range isolates its numbers LTR and joins after the dash (U+2060), so its order and its line stay as before.
   const timeRange = (a, z) => `${time(a)} – ${time(z)}`;
+  // A span in words (decision 8, user 2026-10-01): one sentence, the words first; the ends never break inside.
+  const spanNote = (w, a, z) => `<span class="cx-gapnote"><span class="w">${w}</span> <span class="nw"><span class="w">${L.spanFrom}</span> <bdi class="rg">${a}</bdi></span> <span class="nw"><span class="w">${L.spanTo}</span> <bdi class="rg">${z}</bdi></span></span>`;
+  // In a tooltip the sentence keeps two lines, the words first: the words, then "from … to …" in the times' caption line.
+  const spanTip = (w, a, z) => `<div class="cx-tip-main"><span class="cx-tip-word">${w}</span></div><div class="cx-tip-t cx-tip-span"><span><span class="nw">${L.spanFrom} <bdi>${a}</bdi></span> <span class="nw">${L.spanTo} <bdi>${z}</bdi></span></span></div>`;
   const hourRange = (h) => {
     const a = clock((h - 6) * 60), z = clock((h - 5) * 60), dash = "–";
     const nums = LANG === "ar" ? `<bdi dir="ltr">${a.h12}${dash}\u2060${z.h12}</bdi>` : `${a.h12}${dash}${z.h12}`;
@@ -380,7 +384,7 @@
     if (kind === "latest") return `<div class="cx-tip-t">${flag(L.latestFlag)}${b(time(last))}</div>${main(DATA.raw[last], state === "delayed")}${state === "delayed" ? `<div class="cx-tip-ago">${ico("clock")}<span>${L.ago(LATE)}</span></div>` : ""}${usualRow(last)}`;
     if (kind === "peak") return `<div class="cx-tip-t">${flag(L.peakTag)}${b(time(DATA.peakM))}</div>${main(DATA.peak)}${usualRow(DATA.peakM)}`;
     if (kind === "line") return `<div class="cx-tip-t">${b(time(LINE_STOP))}</div>${main(Math.round(line[LINE_STOP]))}${usualRow(LINE_STOP)}`;
-    if (kind === "gap") return `<div class="cx-tip-t">${b(timeRange(GAP0, GAP1))}</div><div class="cx-tip-main"><span class="cx-tip-word">${L.noReadings}</span></div>`;
+    if (kind === "gap") return spanTip(L.noReadings, time(GAP0), time(GAP1));
     return `<div class="cx-tip-t">${b(time(AHEAD_STOP))}</div><div class="cx-tip-main"><span class="cx-tip-word">${L.stillAhead}</span></div>${usualRow(AHEAD_STOP)}`;
   }
   const plotHost = (id, state, sel, h) => `<div class="cx-plot" id="${id}" data-state="${state}" data-sel="${sel}"${h ? ` style="--plot-h:${h}px"` : ""} aria-hidden="true"></div>`;
@@ -566,8 +570,10 @@
     const r = +td.dataset.r, c0 = +td.dataset.c0, c1 = +td.dataset.c1, h0 = HOURS[c0], h1 = HOURS[c1];
     const when = c0 === c1 ? hourRange(h0) : LANG === "ar" ? `${clock((h0 - 6) * 60).h12} ${suf(clock((h0 - 6) * 60).pm)} - ${clock((h1 - 5) * 60).h12} ${suf(clock((h1 - 5) * 60).pm)}` : `${hourLabel((h0 - 6) * 60)} – ${hourLabel((h1 - 5) * 60)}`;
     const t = `<div class="cx-tip-t">${L.wd[r]} · ${b(when)}</div>`;
-    if (td.classList.contains("closed")) return `${t}<div class="cx-tip-main"><span class="cx-tip-word">${L.closed}</span></div><div class="cx-tip-u">${L.closedTip}</div>`;
-    if (td.classList.contains("none")) return `${t}<div class="cx-tip-main"><span class="cx-tip-word">${L.noReadings}</span></div>`;
+    // A closed or no-reading run names its weekday, then its sentence, the words first (decision 8).
+    const sentence = (w) => `<div class="cx-tip-t">${L.wd[r]}</div>${spanTip(w, hourLabel((h0 - 6) * 60), hourLabel((h1 - 5) * 60))}`;
+    if (td.classList.contains("closed")) return `${sentence(L.closed)}<div class="cx-tip-u">${L.closedTip}</div>`;
+    if (td.classList.contains("none")) return sentence(L.noReadings);
     if (td.classList.contains("zero")) return `${t}<div class="cx-tip-main"><bdi class="cx-tip-v">0</bdi><span class="cx-tip-l">${L.emptyLong}</span></div><div class="cx-tip-u">${L.avgOf(4)}</div>`;
     const v = +td.querySelector(".hv").textContent, few = td.classList.contains("few");
     return `${t}<div class="cx-tip-main"><bdi class="cx-tip-v">${v}</bdi><span class="cx-tip-l">${L.levels[levelOf(v)]}</span></div><div class="cx-tip-u">${L.avgOf(few ? 2 : 4)}</div>`;
@@ -625,9 +631,9 @@
     const days = [["الثلاثاء", "Tue", 22, 53, 1123, 25, 352, ""], ["الاثنين", "Mon", 21, 58, 1145, 27, 371, "hover"], ["الأحد", "Sun", 20, 55, 1110, 26, 360, "edge"], ["السبت", "Sat", 19, 41, 680, 18, 244, ""], ["الجمعة", "Fri", 18, 49, 1210, 20, 230, ""], ["الخميس", "Thu", 17, 76, 1138, 24, 318, "top"], ["الأربعاء", "Wed", 16, 57, 1111, 26, 349, ""]];
     // TBL-8: the weekday and the date are separate spans, so a phone can set the weekday over the date.
     const dayName = (d) => (LANG === "ar" ? `<span class="wd">${d[0]}</span> <span class="dt">${b(d[2])} سبتمبر</span>` : `<span class="wd">${d[1]}</span> <span class="dt">${d[2]} Sep</span>`);
-    // The no-readings note: the range first (DAT-3), then the dotted mark and the words (user 2026-10-01, option د).
-    // A line may break only between the range and the mark; the mark stays with the words; neither part breaks inside.
-    const gapNote = (w, r) => `<span class="cx-gapnote"><bdi class="rg">${r}</bdi> <span class="mw">${ico("gap")}<span class="w">${w}</span></span></span>`;
+    // The no-readings note: one sentence, the words first (decision 8, user 2026-10-01), «لا قراءات من 10:00 ص إلى 2:00 م».
+    // It wraps only between its words: the words stay together, each end keeps its preposition and never breaks inside.
+    const gapNote = (w, [a, z]) => spanNote(w, a, z);
     // TBL-12 (user 2026-09-30): a row with no readings is one cell across every column, a break in the sequence rather
     // than a row of values: no row header, no empty value cells, no words under a numeric column.
     const noneRow = (w, r, cols) => `<tr role="row" class="is-none"><td role="cell" class="none" colspan="${cols}">${gapNote(w, r)}</td></tr>`;
@@ -640,16 +646,16 @@
       return `<tr role="row"${cls ? ` class="${cls}"` : ""}><th scope="row" role="rowheader">${dayName(d)}</th>
         <td role="cell" class="n"><span class="cx-pk"><span class="pv">${b(d[3])}</span><span class="pt">${b(time(minutes))}</span>${top ? `<span class="cx-flag is-red">${L.highest}</span>` : ""}</span></td>
         <td role="cell" class="n">${b(d[5])}</td><td role="cell" class="n">${b(d[6])}</td>
-        <td role="cell" class="notes">${top ? gapNote(L.noReadings, L.gapRange) : ""}</td></tr>` +
+        <td role="cell" class="notes">${top ? gapNote(L.noReadings, L.gapEnds) : ""}</td></tr>` +
         // TBL-8: on a phone the notes column folds into a row of its own under its day (only one of the two shows).
-        (top ? `<tr role="row" class="note-row is-top"><td role="cell" colspan="4">${gapNote(L.noReadings, L.gapRange)}</td></tr>` : "");
-    }).join("") + noneRow(L.noReadingsYet, L.beforeRow, 5);
+        (top ? `<tr role="row" class="note-row is-top"><td role="cell" colspan="4">${gapNote(L.noReadings, L.gapEnds)}</td></tr>` : "");
+    }).join("") + noneRow(L.noReadingsYet, L.beforeEnds, 5);
     const def = `<table class="cx-table" role="table"><caption>${L.daysCaption}</caption><thead><tr role="row">${hdr("day", "is-sorted")}${hdr("peak", "n hover")}${hdr("avg", "n focus")}${hdr("entries", "n")}<th scope="col" role="columnheader" class="notes">${L.cols.notes}</th></tr></thead><tbody>${rows}</tbody></table>`;
     const line = DATA.line.live;
     const mins = [[490, ""], [491, ""], [492, ""], [493, ""], ["gap", ""], [512, ""], [DATA.peakM, "peak"], [NOW, "latest"]];
     const crow = mins.map(([m, n]) => {
       // TBL-12: the gap is one row across the table, from the time column's text edge.
-      if (m === "gap") return noneRow(L.noReadings, timeRange(GAP0, GAP1), 4);
+      if (m === "gap") return noneRow(L.noReadings, [time(GAP0), time(GAP1)], 4);
       const cls = [n === "peak" ? "is-top" : "", n ? "has-note" : ""].filter(Boolean).join(" ");
       return `<tr role="row"${cls ? ` class="${cls}"` : ""}><th scope="row" role="rowheader">${b(time(m))}</th><td role="cell" class="n">${b(DATA.raw[m])}</td><td role="cell" class="n">${b(Math.round(line[m]))}</td><td role="cell" class="notes">${n ? L.cnotes[n] : ""}</td></tr>` +
         (n ? `<tr role="row" class="note-row${n === "peak" ? " is-top" : ""}"><td role="cell" colspan="3">${L.cnotes[n]}</td></tr>` : "");

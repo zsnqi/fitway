@@ -1815,10 +1815,12 @@ gone (`reports-phone-options.js`, `reports-phone-options.css` and `reports-optio
   first. It opens on the busiest weekday (in 7 days, on the day of the highest peak). Each day in the strip carries its
   own hours in miniature on the bars' scale, so the strip compares the days where they differ (when they fill, Friday's
   late opening, Saturday's lower evening); every bar keeps a 1 px FITWAY-red edge so a quiet hour still shows its length.
+  (Changed in the fix round, below: one bar a day in the strip, no edge, one day at a time up to 1279 px.)
   On the tablet the hours stand as columns, every third hour labelled, and the card ends inside the 768 × 1024 first
   screen. From 1024 px the grid is 1440's, unchanged.
 - **Day by day at 720 px and below** (`#days[data-form="list"]`, `renderList`): a two-line list, 7 days and then "Show all
-  days", sorted with a native select; in date order every 7 days from the period's last day open with their dates. From
+  days", sorted with a native select; in date order every 7 days from the period's last day open with their dates (gone
+  in the fix round, below: one plain run of days). From
   721 px the table keeps phase B's form (cells pad 8 where its card is under 540 px, so it fits at 721).
 - **An empty period below 1024 px** says its sentence once, in the busy-times card with the way back (EMP-1); day by day
   steps aside until the period has readings.
@@ -1830,3 +1832,34 @@ gone (`reports-phone-options.js`, `reports-phone-options.css` and `reports-optio
   `dialog`, `export`, `motion`); `?opt` no longer exists. `window.__reports` gains `day`, `pickDay(wd)` and
   `showAllDays()`. `reports-build-capture.mjs <outDir> --phaseb=<9309382 copy> --before=<aa509b9 copy>` renders,
   measures and compares the round and composes its sheets (`R4c`).
+
+## Step 4, the fix round: the user's decisions on the phone build (2026-10-01)
+
+The reference is `DESIGN-SPEC.md` (PAT-1, PAT-2, PAT-12…14, OWN-R8, OWN-R12, OWN-R13, TBL-12, CHT-12, DAT-4, K-39 and §8
+Q11, Q18, Q19), not this file. Brief: `step4-reports-phone-fixes.md`. The user reviewed the build (`ff0e922`) one
+decision at a time.
+
+- **The week strip: one bar a day** (decision 1, the options round's form). Each weekday is one bar, its busiest hour on
+  the bars' scale in its ramp colour (`reports.js` `dayBar`, `.wk-col`, `.wk-bar`); the miniature of each day's hours
+  (`miniDay`, `.md`, the `md-ramp` gradient) is gone.
+- **The hour bars: no edge** (decision 2). The 1 px FITWAY-red edge leaves every bar and the key's swatches; the number
+  printed at a bar's end carries a quiet hour's value.
+- **The day list: one plain run of days** (decision 3). The dated 7-day heads (`.dl-chunk`) and their firmer line are
+  gone; "Show all days" stays one tap for the whole period (decision 5).
+- **One day at a time up to 1279 px** (decision 6, K-39 closed). The pattern's form switches at 1280 px
+  (`matchMedia("(min-width: 1280px)")`), so from 1024 to 1279 px the busy-times card is the tablet's form, the hours as
+  columns (the CSS from 721 px already drew it); the day table keeps its form there, and an empty period is said once
+  in the busy-times card (decision 4). From 1280 px the week grid is unchanged.
+- **A span in words is one sentence, the words first** (decision 8): «لا قراءات من 10:00 ص إلى 2:00 م» / "No readings
+  from 10:00 AM to 2:00 PM", and a closed span «مغلق من 6 ص إلى 2 م» / "Closed from 6 AM to 2 PM", in Reports (the
+  hour rows and columns, the day table's notes and full-width rows, the day list), in Daily (the minute table, the
+  gap's tooltip and its readout) and on the components page. `spanNote` builds it in each script: the words (`.w`),
+  then each end with its preposition (`.nw`, never broken), each part keeping the size and colour it had. The dotted
+  mark before the words is gone; the chart's dotted axis mark stays. In a tooltip the sentence keeps the box's two lines
+  and its height: the words, then «من … إلى …» in the caption line. The header's «لا قراءات · 31 يومًا» keeps its middle
+  dot (decision 7).
+- **Also fixed:** «عرض آخر 28 يومًا» on the empty period's button had 8 px gaps around «28» (each run of text in the
+  flex button was its own item); the label is one span now.
+- **Capture.** `reports-fixes-capture.mjs <outDir> --before=<ff0e922 copy>` measures the round at 1440, 1279, 1200,
+  1024, 768, 720, 390 and 320 (AR and EN), compares Daily and Reports at 1440 with `ff0e922` pixel by pixel, each
+  difference located inside a span's phrase, and composes one numbered before-and-after image per decision (`R4d`).

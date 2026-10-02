@@ -7,10 +7,11 @@
  * Riyadh time, the same crowd levels and capacity. Step 4 (run owner_reports_r04_s20): the frame (body[data-frame], the
  * header's status at every size, Operations out of the rail) and the page recomposed at 1440 with the review's fixes.
  * Step 4 phase B: the user's refinements at 1440 (the minute export at the controls' far end, a preset's subtitle
- * without its length). Step 4's build (the user's pick of 2026-10-01, option B, "one day at a time"): below 1024 px the
- * pattern shows one weekday at a time, chosen from a week strip whose days carry their own hours in miniature; below
- * 721 px the day table is a list, 7 days and then all. The week card's baseline («مقابل …» / "vs …") is gone (Q17,
- * rejected by the user on 2026-10-01).
+ * without its length). Step 4's build (the user's pick of 2026-10-01, option B, "one day at a time"): below 1280 px the
+ * pattern shows one weekday at a time (1024-1279 since the user's K-39 decision), chosen from a week strip of one bar a
+ * day; below 721 px the day table is a list, 7 days and then all, one plain run of days. The week card's baseline
+ * («مقابل …» / "vs …") is gone (Q17, rejected by the user on 2026-10-01). A span with no readings, or closed, is one
+ * sentence with the words first: «لا قراءات من 10:00 ص إلى 2:00 م» (decision 8, user 2026-10-01).
  * Western digits only: numbers are printed with String(), never Intl or toLocaleString. A classic script (no modules and
  * no fetch), so the page works from file:// too. */
 (() => {
@@ -85,7 +86,7 @@
       heatKeys: "استخدم مفاتيح الأسهم للتنقل بين الساعات والأيام، وHome وEnd لأول ساعة وآخر ساعة في اليوم.",
       heatCaption: (r) => `معدّل الموجودين حسب اليوم والساعة، ${r}`,
       dayHead: "اليوم",
-      // Below 1024 px, one day at a time (step 4's build): the week strip and the chosen day's hours.
+      // Below 1280 px, one day at a time (step 4's build; K-39): the week strip and the chosen day's hours.
       weekStrip: "أيام الأسبوع",
       dayHours: (d, r) => `${d}: معدّل الموجودين حسب الساعة، ${r}`,
       daysTitle: "يومًا بيوم",
@@ -100,7 +101,13 @@
       showFewer: "عرض أقل",
       peakAt: (t) => `الذروة ${t}`,
       beforeHistory: "لا قراءات بعد",
+      // A span in words, the words first (decision 8, user 2026-10-01): «لا قراءات من 10:00 ص إلى 2:00 م».
+      spanFrom: "من",
+      spanTo: "إلى",
+      spanOn: "يوم",
       emptyTable: (a, b) => `لا قراءات من ${a} إلى ${b}`,
+      // One span inside the button: a flex button would make each run of text and the number an item of its own and set
+      // its 8 px gap around «28» (the fix round, 2026-10-01).
       emptyAction: `عرض آخر ${bdi(28)} يومًا`,
       exportMinutes: "تصدير بيانات الدقائق",
       exportTable: "تصدير الجدول",
@@ -199,6 +206,9 @@
       showFewer: "Show fewer",
       peakAt: (t) => `Peak ${t}`,
       beforeHistory: "No readings yet",
+      spanFrom: "from",
+      spanTo: "to",
+      spanOn: "on",
       emptyTable: (a, b) => `No readings from ${a} to ${b}`,
       emptyAction: "Show the last 28 days",
       exportMinutes: "Export minute data",
@@ -262,13 +272,22 @@
     const A = clock(a), B = clock(b);
     return nw(A.pm === B.pm ? bdi(`${NUMS(A.h12, B.h12)} ${suffix(A.pm)}`) : range2(fmtHour(a), fmtHour(b)));
   }
+  const hourText = (m) => nw(bdi(fmtHour(m)));
+  /* A span in words (decision 8, user 2026-10-01): one sentence, the words first, «لا قراءات من 10:00 ص إلى 2:00 م» /
+   * "No readings from 10:00 AM to 2:00 PM"; a closed span the same way, «مغلق من 6 ص إلى 2 م»; a single day «لا قراءات
+   * يوم الخميس 17 سبتمبر» / "No readings on Thu 17 Sep". It replaces the range first and the dotted mark. The sentence
+   * wraps only between its words: the words stay together, each end keeps its preposition, and a time or a date never
+   * breaks inside (DAT-4). The words (.w) and the ends (.rg) keep the size and colour each had in the phrase it replaces. */
+  const spanNote = (words, a, b = null) => `<span class="gapnote"><span class="w">${words}</span> ` +
+    (b == null ? `<span class="nw"><span class="w">${L.spanOn}</span> <span class="rg">${a}</span></span>`
+      : `<span class="nw"><span class="w">${L.spanFrom}</span> <span class="rg">${a}</span></span> <span class="nw"><span class="w">${L.spanTo}</span> <span class="rg">${b}</span></span>`) + `</span>`;
 
   /* ------------------------------------------------------------------- dates
    * Dates are business days, handled as whole-day numbers (UTC day counts), never as the viewer's local time. */
   const WD_AR = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
   const WD_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const WD_EN_S = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  // The week strip's names (below 1024 px): the weekday without its article, as a week strip or a date picker writes it
+  // The week strip's names (below 1280 px): the weekday without its article, as a week strip or a date picker writes it
   // in Arabic («أحد … سبت»), and "Sun" ... "Sat" in English. They replace phase B's one-letter heads (Q20, answered by the
   // user's pick of 2026-10-01). The full name stays each day's accessible name.
   const WD_AR_S = ["أحد", "اثنين", "ثلاثاء", "أربعاء", "خميس", "جمعة", "سبت"];
@@ -794,13 +813,14 @@
   let heatCur = null;      // { r, c } of the roving cell
   let heatWant = 0;        // the hour a move between weekdays aims for
   const valText = (v) => (v > 0 && v < 0.5 ? "<1" : String(Math.round(v)));
-  /* The pattern's two forms. From 1024 px, the week at once: a row per weekday and a column per hour (1440's grid).
-   * Below 1024 px (the tablet frame and the phone frame), one day at a time (the user's pick of 2026-10-01, option B):
-   * a week strip chooses the weekday, and that day's 19 hours are drawn as labelled bars on one scale for the whole
-   * week, so a quieter day looks quieter; closed and no-reading hours are one worded row each, the range first. It opens
-   * on the busiest weekday (with no busiest hour, as in 7 days, on the day of the highest peak). Nothing in it needs a
-   * tap to be read: every bar prints its number. Crossing 1024 px redraws the pattern in that size's form (BRK-10). */
-  const mqWide = matchMedia("(min-width: 1024px)");
+  /* The pattern's two forms. From 1280 px, the week at once: a row per weekday and a column per hour (1440's grid).
+   * Below 1280 px, one day at a time (the user's pick of 2026-10-01, option B, carried up to 1279 px by the user's
+   * decision on K-39 the same day, so every target keeps 44 px): a week strip chooses the weekday, and that day's 19
+   * hours are drawn as labelled bars on one scale for the whole week, so a quieter day looks quieter; closed and
+   * no-reading hours are one worded row each, one sentence with the words first. It opens on the busiest weekday (with no
+   * busiest hour, as in 7 days, on the day of the highest peak). Nothing in it needs a tap to be read: every bar prints
+   * its number. Crossing 1280 px redraws the pattern in that size's form. */
+  const mqWide = matchMedia("(min-width: 1280px)");
   const dayForm = () => !mqWide.matches;
   function heatCell(wd, c, run) {
     const cell = model.heat[wd][c];
@@ -813,7 +833,8 @@
       const few = !z && cell.samples < MIN_DAYS ? " few" : "";
       return `<td class="hc ${z ? "zero" : "v"}${few}${top}" role="gridcell" tabindex="-1" data-r="${wd}" data-c0="${c}" data-c1="${c}"${z ? "" : ` style="--c: rgb(${col.join(" ")})"`}><span class="hv">${z ? "0" : valText(cell.avg)}</span><span class="sr-only">${RTL ? "، " : ", "}${z ? L.emptyLong : L.levels[levelOf(cell.avg)]}</span></td>`;
     }
-    // PAT-5 (K-32): a closed run says so in words, a single cell included; so does a run with no readings (PAT-6).
+    // PAT-5 (K-32): a closed run says so in words, a single cell included; so does a run with no readings (PAT-6). The
+    // cell's word stands alone (the grid's axis gives the hours); its tooltip says the whole sentence.
     const word = cell.state === "closed" ? L.closed : L.noReadings;
     return `<td class="hc ${cell.state === "closed" ? "closed" : "nodata"}" role="gridcell" tabindex="-1"${spanAttr} data-r="${wd}" data-c0="${run[0]}" data-c1="${run[1]}"><span class="run">${word}</span></td>`;
   }
@@ -878,69 +899,38 @@
     $("#heat-key").hidden = !$("#heat-key").innerHTML;
   }
 
-  /* ---- below 1024 px: one day at a time (the user's pick of 2026-10-01, option B).
+  /* ---- below 1280 px: one day at a time (the user's pick of 2026-10-01, option B; up to 1279 px since K-39).
    * The week strip is a radio group, one Tab stop, the arrow keys moving between days (mirrored in Arabic), Home and End
-   * to Sunday and Saturday. Each day carries its own hours in miniature, on the same scale as the bars, so the strip
-   * compares the days where they differ: when they fill, how high they climb, and when the gym is open (Friday from 2 PM)
-   * — the busiest hours alone are about the same every day. The chosen day's 19 hours are a table of rows: the hour, its
-   * bar on the week's scale and its number at the bar's end; closed and no-reading hours one row each, the range first.
+   * to Sunday and Saturday. Each day is one bar, its busiest hour on the bars' scale in its ramp colour (the user's
+   * decision 1 of 2026-10-01, the options round's form). The chosen day's 19 hours are a table of rows: the hour, its
+   * bar on the week's scale and its number at the bar's end; closed and no-reading hours one row each, in one sentence.
    * An empty period is one message for the whole card (EMP-1: the icon, the sentence and the way back). */
   const dayHost = $("#pday");
   let dayWd = 0, dayKey = "";
   const hasValues = () => model.heat.some((r) => r.some((x) => x.state === "value"));
   const weekMax = () => Math.max(1, ...model.heat.flat().filter((x) => x.state === "value").map((x) => x.avg));
-  // A day in miniature: the same 19 hours on the week's scale, drawn in a 190 x 40 box (10 a hour; mirrored in Arabic by
-  // CSS, so time runs with the language). A hairline under the hours the gym is open (dotted where there are no
-  // readings); a line in FITWAY red through each hour's middle, unsmoothed, and the ramp beneath it; nothing where it is
-  // closed.
-  const MD_W = 190, MD_H = 40, MD_TOP = 3;
-  const mdY = (v, max) => +(MD_H - (v / max) * (MD_H - MD_TOP)).toFixed(2);
-  function miniDay(wd, max) {
-    const row = model.heat[wd];
-    let base = "", dots = "", area = "", edge = "";
-    for (let c = 0; c < HOURS; ) {
-      const st = row[c].state;
-      let e = c;
-      while (e + 1 < HOURS && (row[e + 1].state === st || (st === "value" && row[e + 1].state === "value"))) e++;
-      const x0 = c * 10, x1 = (e + 1) * 10;
-      if (st === "missing") dots += `M${x0 + 1} ${MD_H - 0.5}H${x1 - 1}`;
-      else if (st === "value") {
-        base += `M${x0} ${MD_H - 0.5}H${x1}`;
-        // The outline runs over each stretch of hours above zero; a genuine zero keeps only the hairline.
-        for (let i = c; i <= e; ) {
-          if (!(row[i].avg > 0)) { i++; continue; }
-          let j = i; while (j + 1 <= e && row[j + 1].avg > 0) j++;
-          // Through each hour's middle, from the stretch's first hour's start to its last hour's end.
-          let pts = `M${i * 10} ${MD_H}`;
-          for (let k = i; k <= j; k++) pts += `L${k * 10 + 5} ${mdY(row[k].avg, max)}`;
-          pts += `L${(j + 1) * 10} ${MD_H}`;
-          area += `${pts}Z`;
-          edge += pts;
-          i = j + 1;
-        }
-      }
-      c = e + 1;
-    }
-    return `<svg class="md" viewBox="0 0 ${MD_W} ${MD_H}" preserveAspectRatio="none" aria-hidden="true" focusable="false">` +
-      (base ? `<path class="md-base" d="${base}"/>` : "") + (dots ? `<path class="md-none" d="${dots}"/>` : "") +
-      (area ? `<path class="md-area" d="${area}"/><path class="md-edge" d="${edge}"/>` : "") + `</svg>`;
+  const dayMax = (wd) => { const v = model.heat[wd].filter((x) => x.state === "value").map((x) => x.avg); return v.length ? Math.max(...v) : null; };
+  // A weekday's bar: its busiest hour on the week's scale; a weekday whose hours are all zero a short chalk line, and
+  // one with no readings at all a short dotted outline (PAT-4, PAT-6).
+  function dayBar(wd, max) {
+    const v = dayMax(wd);
+    if (v == null) return `<span class="wk-bar is-none"></span>`;
+    if (v === 0) return `<span class="wk-bar is-zero"></span>`;
+    return `<span class="wk-bar" style="--h: ${(v / max).toFixed(4)}; --c: rgb(${rampColor(v).join(" ")})"></span>`;
   }
   function renderDay() {
     if (!hasValues()) {
-      dayHost.innerHTML = `<div class="pday-empty">${ICON.info}<p>${L.emptyTable(dateText(model.a, true), dateText(model.b, true))}</p><button class="rbtn" type="button" data-range-go="28d">${L.emptyAction}</button></div>`;
+      dayHost.innerHTML = `<div class="pday-empty">${ICON.info}<p>${L.emptyTable(dateText(model.a, true), dateText(model.b, true))}</p><button class="rbtn" type="button" data-range-go="28d"><span>${L.emptyAction}</span></button></div>`;
       return;
     }
     const key = `${model.a}-${model.b}`;
     if (key !== dayKey) { dayKey = key; dayWd = model.busiest ? model.busiest.wd : model.top ? model.top.wd : wdOf(LAST_FULL); }
     const max = weekMax();
-    // The ramp under every day's outline, in the boxes' own units: value 0 at the box's foot, 64 (the ramp's top) at
-    // mdY(64), so a day's colour at any height is the ramp's at that value (PAT-3), on the bars' scale.
-    const g = `<svg class="md-defs" aria-hidden="true" focusable="false"><linearGradient id="md-ramp" gradientUnits="userSpaceOnUse" x1="0" y1="${MD_H}" x2="0" y2="${mdY(64, max)}">${RAMP.map(([v, c]) => `<stop offset="${(v / 64).toFixed(4)}" stop-color="rgb(${c.join(" ")})"/>`).join("")}</linearGradient></svg>`;
     const strip = [0, 1, 2, 3, 4, 5, 6].map((wd) => {
       const on = wd === dayWd;
-      return `<button type="button" class="wk-b" role="radio" aria-checked="${on}" tabindex="${on ? 0 : -1}" data-wd="${wd}">${miniDay(wd, max)}<span class="wk-n" aria-hidden="true">${wdStrip(wd)}</span><span class="sr-only">${wdLong(wd)}</span></button>`;
+      return `<button type="button" class="wk-b" role="radio" aria-checked="${on}" tabindex="${on ? 0 : -1}" data-wd="${wd}"><span class="wk-col" aria-hidden="true">${dayBar(wd, max)}</span><span class="wk-n" aria-hidden="true">${wdStrip(wd)}</span><span class="sr-only">${wdLong(wd)}</span></button>`;
     }).join("");
-    dayHost.innerHTML = `${g}<div class="wk-strip" role="radiogroup" aria-label="${L.weekStrip}">${strip}</div><table class="hb" id="hb" role="table"></table>`;
+    dayHost.innerHTML = `<div class="wk-strip" role="radiogroup" aria-label="${L.weekStrip}">${strip}</div><table class="hb" id="hb" role="table"></table>`;
     renderHours();
   }
   function renderHours() {
@@ -953,18 +943,15 @@
         const z = cell.avg === 0;
         const few = !z && cell.samples < MIN_DAYS ? " few" : "";
         const top = b && b.wd === wd && b.c === c0 ? " is-top" : "";
-        const col = rampColor(cell.avg);
-        // Every bar keeps a 1 px edge in FITWAY red, so a quiet hour, whose ramp tone is nearly the plate's, still shows
-        // its length; from 52, where the ramp reaches FITWAY red, the edge is the bar's own colour.
-        const edge = cell.avg >= 52 ? col : RAMP[5][1];
-        const bar = z ? `<span class="hb-zero">0</span>` : `<span class="hb-bar${few}${top}" style="--w: ${(cell.avg / max).toFixed(4)}; --c: rgb(${col.join(" ")}); --e: rgb(${edge.join(" ")})"></span><span class="hb-v${cell.avg === dm ? " is-max" : ""}">${bdi(valText(cell.avg))}</span>`;
+        // A bar is its ramp colour alone, with no edge (the user's decision 2 of 2026-10-01): a quiet hour's tone is close
+        // to the plate's, and the number printed at its end carries its value.
+        const bar = z ? `<span class="hb-zero">0</span>` : `<span class="hb-bar${few}${top}" style="--w: ${(cell.avg / max).toFixed(4)}; --c: rgb(${rampColor(cell.avg).join(" ")})"></span><span class="hb-v${cell.avg === dm ? " is-max" : ""}">${bdi(valText(cell.avg))}</span>`;
         // On the tablet the hours stand as columns and every third hour keeps its label, as 1440's axis does.
         return `<tr role="row"${c0 % 3 === 0 ? ` class="is-tick"` : ""}><th scope="row" role="rowheader" class="hb-h">${bdi(fmtHour(c0 * 60))}</th><td role="cell" class="hb-c">${bar}<span class="sr-only">${RTL ? "، " : ", "}${z ? L.emptyLong : L.levels[levelOf(cell.avg)]}</span></td></tr>`;
       }
-      const range = hourRange(c0 * 60, c1 * 60 + 60);
-      const span = `style="--span: ${c1 - c0 + 1}"`;
-      if (cell.state === "closed") return `<tr role="row" class="hb-x" ${span}><td role="cell" colspan="2"><span class="hb-run is-closed"><span class="rg">${range}</span><span class="w">${L.closed}</span></span></td></tr>`;
-      return `<tr role="row" class="hb-x" ${span}><td role="cell" colspan="2"><span class="hb-run is-none">${gapNote(range, L.noReadings)}</span></td></tr>`;
+      // A closed or no-reading run: one sentence, the words first (decision 8): «مغلق من 6 ص إلى 2 م».
+      const words = spanNote(cell.state === "closed" ? L.closed : L.noReadings, hourText(c0 * 60), hourText(c1 * 60 + 60));
+      return `<tr role="row" class="hb-x" style="--span: ${c1 - c0 + 1}"><td role="cell" colspan="2"><span class="hb-run is-${cell.state === "closed" ? "closed" : "none"}">${words}</span></td></tr>`;
     }).join("");
     $("#hb").innerHTML = `<caption class="sr-only">${L.dayHours(wdLong(wd), plain(rangeText(model.a, model.b)))}</caption><tbody>${rows}</tbody>`;
   }
@@ -996,9 +983,12 @@
 
   function tipHTML(td) {
     const wd = +td.dataset.r, c0 = +td.dataset.c0, c1 = +td.dataset.c1, cell = model.heat[wd][c0];
+    // A closed or no-reading run names its weekday, then its sentence on two lines, the words first (decision 8): the
+    // words in the main line, then "from … to …" in the caption line the tooltip's times use.
+    const sentence = (w) => `<div class="tip-t"><span>${wdLong(wd)}</span></div><div class="tip-main"><span class="tip-word">${w}</span></div><div class="tip-t tip-span"><span><span class="nw">${L.spanFrom} ${hourText(c0 * 60)}</span> <span class="nw">${L.spanTo} ${hourText(c1 * 60 + 60)}</span></span></div>`;
+    if (cell.state === "closed") return `${sentence(L.closed)}<div class="tip-u">${L.closedTip}</div>`;
+    if (cell.state === "missing") return sentence(L.noReadings);
     const when = `<div class="tip-t"><span>${wdLong(wd)}</span><span aria-hidden="true">·</span><span>${hourRange(c0 * 60, c1 * 60 + 60)}</span></div>`;
-    if (cell.state === "closed") return `${when}<div class="tip-main"><span class="tip-word">${L.closed}</span></div><div class="tip-u">${L.closedTip}</div>`;
-    if (cell.state === "missing") return `${when}<div class="tip-main"><span class="tip-word">${L.noReadings}</span></div>`;
     const z = cell.avg === 0;
     return `${when}<div class="tip-main"><span class="tip-v">${bdi(z ? "0" : valText(cell.avg))}</span><span class="tip-l">${z ? L.emptyLong : L.levels[levelOf(cell.avg)]}</span></div><div class="tip-u">${L.avgOf(cell.samples)}</div>`;
   }
@@ -1074,7 +1064,7 @@
     focusCell(+td.dataset.r, +td.dataset.c0);
   });
   heatScroll.addEventListener("scroll", () => { if (tipFor) showTip(tipFor); }, { passive: true });
-  // Crossing 1024 px redraws the pattern in that size's form, and its readout closes; crossing 720 px redraws day by day
+  // Crossing 1280 px redraws the pattern in that size's form, and its readout closes; crossing 720 px redraws day by day
   // as a list or a table (BRK-10).
   mqWide.addEventListener("change", () => { renderHeat(); renderDays(); });
   mqPhone.addEventListener("change", () => renderDays());
@@ -1093,7 +1083,7 @@
    * peak) in words. Numeric columns (Peak, Average, Entries) put their numbers and their header on the physical right
    * edge in both languages, so units sit under units (TBL-1); the peak cell leads with its value on that edge, then its
    * time, then its flag (TBL-11). A span with no readings (the days before the readings began, or a day inside them with
-   * none) is one full-width row, the range first, then the dotted mark and the words (TBL-12). */
+   * none) is one full-width row, one sentence with the words first (TBL-12, decision 8). */
   const daysTable = $("#days-table");
   let sort = { key: "day", dir: "desc" };
   const SORTS = { day: (d) => d.dn, peak: (d) => d.peak, avg: (d) => d.avg, entries: (d) => d.entries };
@@ -1105,12 +1095,14 @@
     const without = model.days.filter((d) => !d.observed).sort((x, y) => y.dn - x.dn);
     return [...withData, ...without];
   }
-  const DOTS = `<svg class="gap-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="1.3"/><circle cx="9.7" cy="12" r="1.3"/><circle cx="14.3" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg>`;
-  // The gap's words after its range: the range, then the dotted mark (hidden from assistive technology) and the words.
-  const gapNote = (rangeHTML, words) => `<span class="gapnote"><span class="rg">${rangeHTML}</span><span class="mw">${DOTS}<span class="w">${words}</span></span></span>`;
+  // A span of days with no readings, as one sentence (decision 8): «لا قراءات بعد من 2 أغسطس إلى 12 سبتمبر», or one day.
+  // A day inside the readings names its weekday too, as its row would.
+  const daysNote = (words, a, b) => (a !== b ? spanNote(words, dateText(a), dateText(b)) : spanNote(words, words === L.noReadings ? dayText(a) : dateText(a)));
+  // A camera gap inside a day (minutes since 6:00 AM, the last one inclusive).
+  const gapNote = ([a, b]) => spanNote(L.noReadings, timeText(a), timeText(b + 1));
   function renderDays() {
     $("#days-sub").innerHTML = L.days(model.n);
-    // Below 1024 px an empty period says its sentence once, in the pattern's card with the way back (EMP-1); the day card
+    // Below 1280 px an empty period says its sentence once, in the pattern's card with the way back (EMP-1); the day card
     // would only say it again, so it steps aside until the period has readings.
     $("#days").hidden = dayForm() && !model.withReadings;
     const list = mqPhone.matches;
@@ -1135,25 +1127,25 @@
     }).join("");
     let body;
     if (!model.withReadings) {
-      body = `<tr role="row" class="is-empty"><td role="cell" colspan="5"><div class="table-empty">${ICON.info}<p>${L.emptyTable(dateText(model.a, true), dateText(model.b, true))}</p><button class="rbtn" type="button" data-range-go="28d">${L.emptyAction}</button></div></td></tr>`;
+      body = `<tr role="row" class="is-empty"><td role="cell" colspan="5"><div class="table-empty">${ICON.info}<p>${L.emptyTable(dateText(model.a, true), dateText(model.b, true))}</p><button class="rbtn" type="button" data-range-go="28d"><span>${L.emptyAction}</span></button></div></td></tr>`;
     } else {
       const out = [];
-      const noneRow = (rangeHTML, words) => `<tr role="row" class="is-none"><td role="cell" colspan="5" class="c-none">${gapNote(rangeHTML, words)}</td></tr>`;
+      const noneRow = (note) => `<tr role="row" class="is-none"><td role="cell" colspan="5" class="c-none">${note}</td></tr>`;
       // Days before the history starts are one merged row ("No readings yet").
       let pre = [];
       const flushPre = () => {
         if (!pre.length) return;
         const a = Math.min(...pre.map((d) => d.dn)), b = Math.max(...pre.map((d) => d.dn));
-        out.push(noneRow(rangeText(a, b, false), L.beforeHistory));
+        out.push(noneRow(daysNote(L.beforeHistory, a, b)));
         pre = [];
       };
       sortedDays().forEach((d) => {
         if (d.none) { pre.push(d); return; }
         flushPre();
         // A day inside the readings with none at all is a break in the sequence too, not a row of empty values.
-        if (!d.observed) { out.push(noneRow(dayText(d.dn), L.noReadings)); return; }
+        if (!d.observed) { out.push(noneRow(daysNote(L.noReadings, d.dn, d.dn))); return; }
         const top = model.top && model.top.dn === d.dn;
-        const notes = d.miss.map(([a, b]) => gapNote(timeRange(a, b + 1), L.noReadings)).join("");
+        const notes = d.miss.map(gapNote).join("");
         // In date order, a firmer line closes each week (between Saturday and Sunday).
         const edge = sort.key === "day" && (sort.dir === "desc" ? d.wd === 0 : d.wd === 6) && d.dn !== (sort.dir === "desc" ? model.a : model.b);
         const cls = [top ? "is-top" : "", edge ? "wk-edge" : "", notes ? "has-note" : ""].filter(Boolean).join(" ");
@@ -1173,35 +1165,27 @@
   }
   /* ---- the day list (720 px and below; the user's pick of 2026-10-01, option B).
    * A day per item: its date and its peak on the first line, its average and entries under the date and the peak's time
-   * under the peak, on the peak's edge (TBL-1, TBL-11); a camera gap folds under them, the range first (TBL-12). The
-   * newest 7 days first, the rest one tap away ("Show all days"); in date order every 7 days from the period's last day
-   * open with their dates, so a list shown whole reads in weeks, the first of them the same span as "Last 7 days". The
-   * phone's own picker sorts it (a native select). Days before the readings began are one item, as in the table. */
+   * under the peak, on the peak's edge (TBL-1, TBL-11); a camera gap folds under them, one sentence with the words first
+   * (TBL-12, decision 8). The newest 7 days first, the rest one tap away ("Show all days"); shown whole, the list is one
+   * plain run of days, with no dated 7-day heads (the user's decision 3 of 2026-10-01). The phone's own picker sorts it
+   * (a native select). Days before the readings began are one item, as in the table. */
   const dlist = $("#dlist");
   const LIST_N = 7;
   let listOpen = false, listKey = "";
   function renderList() {
     const lk = `${model.a}-${model.b}`;
     if (lk !== listKey) { listKey = lk; listOpen = false; }
-    const byDay = sort.key === "day";
-    const chunkOf = (dn) => Math.floor((model.b - dn) / 7);
-    const chunkHead = (k) => { const z = model.b - 7 * k; return `<li class="dl-chunk" aria-hidden="true">${rangeText(Math.max(model.a, z - 6), z, false)}</li>`; };
     const items = [];
-    let pre = [], lastChunk = null;
-    // A span's dates are an item of their own, hidden from assistive technology (every day names its date), and travel
-    // with the day that follows them, so "Show all days" counts days only.
-    const noneItem = (rangeHTML, words, head = "") => `${head}<li class="dli is-none">${gapNote(rangeHTML, words)}</li>`;
-    const flushPre = () => { if (!pre.length) return; const a = Math.min(...pre.map((d) => d.dn)), b = Math.max(...pre.map((d) => d.dn)); items.push(noneItem(rangeText(a, b, false), L.beforeHistory)); pre = []; };
-    // A new 7-day span opens with its dates (in date order, never before the first item shown).
-    const headFor = (dn) => { if (!byDay) return ""; const k = chunkOf(dn), h = lastChunk !== null && k !== lastChunk ? chunkHead(k) : ""; lastChunk = k; return h; };
+    let pre = [];
+    const noneItem = (note) => `<li class="dli is-none">${note}</li>`;
+    const flushPre = () => { if (!pre.length) return; const a = Math.min(...pre.map((d) => d.dn)), b = Math.max(...pre.map((d) => d.dn)); items.push(noneItem(daysNote(L.beforeHistory, a, b))); pre = []; };
     sortedDays().forEach((d) => {
       if (d.none) { pre.push(d); return; }
       flushPre();
-      const head = headFor(d.dn);
-      if (!d.observed) { items.push(noneItem(dayText(d.dn), L.noReadings, head)); return; }
+      if (!d.observed) { items.push(noneItem(daysNote(L.noReadings, d.dn, d.dn))); return; }
       const top = model.top && model.top.dn === d.dn;
-      const notes = d.miss.map(([a, b]) => gapNote(timeRange(a, b + 1), L.noReadings)).join("");
-      items.push(`${head}<li class="dli${top ? " is-top" : ""}">` +
+      const notes = d.miss.map(gapNote).join("");
+      items.push(`<li class="dli${top ? " is-top" : ""}">` +
         `<span class="dl-day">${dayText(d.dn)}</span>` +
         `<span class="dl-pk"><span class="dl-pv">${bdi(d.peak)}</span>${top ? `<span class="flag">${L.highest}</span>` : ""}</span>` +
         `<span class="dl-more"><span class="nw">${L.cols.avg} ${bdi(Math.round(d.avg))}</span><span class="nw">${L.cols.entries} ${bdi(fmtInt(d.entries))}</span></span>` +
@@ -1611,7 +1595,7 @@
       failNext() { ex.failNext = true; },
     },
     showCell: (wd, c) => focusCell(wd, c),
-    // Below 1024 px: the weekday the pattern shows, and the day list shown whole.
+    // Below 1280 px: the weekday the pattern shows, and the day list shown whole.
     get day() { return dayForm() && hasValues() ? dayWd : null; },
     pickDay: (wd) => pickDay(wd, false),
     showAllDays: () => { if (!listOpen) { listOpen = true; renderDays(); } },

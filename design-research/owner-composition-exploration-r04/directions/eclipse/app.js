@@ -89,6 +89,9 @@
       covUsualNone: `المسجّل يوم أربعاء واحد (<bdi>16</bdi> سبتمبر)`,
       minutesTitle: "دقيقة بدقيقة",
       noReadingsYet: "لا قراءات بعد",
+      // A span in words, the words first (decision 8, user 2026-10-01): «لا قراءات من 2:14 م إلى 2:31 م».
+      spanFrom: "من",
+      spanTo: "إلى",
       minutesAria: "قراءات اليوم دقيقة بدقيقة",
       cols: ["الوقت", "داخل الصالة", `معدّل <bdi>30</bdi> دقيقة`, "ملاحظة"],
       notes: { miss: "لا قراءات", zero: "خالية", peak: "الذروة", latest: "آخر قراءة" },
@@ -166,6 +169,8 @@
       covUsualNone: "Only 1 past Wednesday recorded (16 Sep)",
       minutesTitle: "Minute by minute",
       noReadingsYet: "No readings yet",
+      spanFrom: "from",
+      spanTo: "to",
       minutesAria: "Today's readings, minute by minute",
       cols: ["Time", "Inside", "30-min average", "Note"],
       notes: { miss: "No readings", zero: "Empty", peak: "Peak", latest: "Latest reading" },
@@ -222,6 +227,14 @@
     const A = clock(a), B = clock(b);
     return A.pm === B.pm ? bdi(`${NUMS(A.h12, B.h12)} ${suffix(A.pm)}`) : range(fmtHour(a), fmtHour(b));
   }
+  /* A span in words (decision 8, user 2026-10-01): one sentence, the words first, «لا قراءات من 2:14 م إلى 2:31 م» /
+   * "No readings from 2:14 PM to 2:31 PM". It replaces the range first and the dotted mark. It wraps only between its
+   * words: the words stay together, each time keeps its preposition and never breaks inside (DAT-4). */
+  const spanNote = (words, a, b) => `<span class="gapnote"><span class="w">${words}</span> <span class="nw"><span class="w">${L.spanFrom}</span> <span class="rg">${tb(a)}</span></span> <span class="nw"><span class="w">${L.spanTo}</span> <span class="rg">${tb(b)}</span></span></span>`;
+  const spanText = (words, a, b) => `${words} ${L.spanFrom} ${fmtTime(a)} ${L.spanTo} ${fmtTime(b)}`;
+  // In a tooltip the sentence keeps the tooltip's two lines, the words first: the words in the main line, then "from …
+  // to …" in the caption line the tooltip's times use, so every part keeps its size and colour.
+  const spanTip = (words, a, b) => `<div class="tip-main"><span class="tip-word">${words}</span></div><div class="tip-t tip-span"><span><span class="nw">${L.spanFrom} ${tb(a)}</span> <span class="nw">${L.spanTo} ${tb(b)}</span></span></div>`;
 
   /* -------------------------------------------------------------- simulation */
   function mulberry32(a) {
@@ -1084,7 +1097,7 @@
     const u = HAS_HISTORY ? `${sepc}${L.ro.usual} ${usualAt(st.m)}` : "";
     const lvl = (v) => L.crowdIs(L.levels[levelOf(v)]);
     switch (st.kind) {
-      case "gap": return `${plainRange(fmtTime(st.a), fmtTime(st.b))}${sepc}${st.waiting ? L.ro.waiting : L.ro.noReading}`;
+      case "gap": return st.waiting ? `${plainRange(fmtTime(st.a), fmtTime(st.b))}${sepc}${L.ro.waiting}` : spanText(L.ro.noReading, st.a, st.b);
       case "wait": return `${t}${sepc}${L.ro.noReadingYet}${u}`;
       case "ahead": return `${t}${sepc}${L.ro.ahead}${u}`;
       case "zero": return `${t}${sepc}0${sepc}${L.ro.empty}`;
@@ -1095,7 +1108,9 @@
     }
   }
   function tipHTML(st) {
-    if (st.kind === "gap") return `<div class="tip-t">${timeRange(st.a, st.b)}</div><div class="tip-main"><span class="tip-word">${st.waiting ? L.ro.waiting : L.ro.noReading}</span></div>`;
+    // A span with no readings is one sentence, the words first (decision 8); "waiting for readings" keeps its range first.
+    if (st.kind === "gap") return st.waiting ? `<div class="tip-t">${timeRange(st.a, st.b)}</div><div class="tip-main"><span class="tip-word">${L.ro.waiting}</span></div>`
+      : spanTip(L.ro.noReading, st.a, st.b);
     const usualRow = HAS_HISTORY && st.kind !== "zero" ? `<div class="tip-u"><span class="sw sw-usual" aria-hidden="true"></span><span>${L.ro.usual} ${bdi(usualAt(st.m))}</span></div>` : "";
     const flag = st.kind === "peak" ? L.ro.peak : st.kind === "latest" ? L.ro.latest : "";
     // One start-aligned arrangement for every tooltip: at the peak and the latest the label chip comes first, then
@@ -1673,10 +1688,9 @@
 
     // The minute table (step 3: TBL-1, TBL-3, TBL-12, NUM-2, NUM-5; K-20, K-33). Compact density; the time is the row
     // header; the numbers whole, in tabular figures, on the physical right edge with their headers in both languages;
-    // a span with no readings is one full-width row, the range first, then the dotted mark and the words; notes in a
-    // column of their own, folded into a row under theirs on a phone (TBL-8).
-    const DOTS = `<svg class="gap-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="1.3"/><circle cx="9.7" cy="12" r="1.3"/><circle cx="14.3" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg>`;
-    const noneRow = (a, b, words) => `<tr class="none"><td colspan="4"><span class="gapnote"><span class="rg">${timeRange(a, b)}</span><span class="mw">${DOTS}<span class="w">${words}</span></span></span></td></tr>`;
+    // a span with no readings is one full-width row, one sentence with the words first (decision 8); notes in a column
+    // of their own, folded into a row under theirs on a phone (TBL-8).
+    const noneRow = (a, b, words) => `<tr class="none"><td colspan="4">${spanNote(words, a, b)}</td></tr>`;
     const rows = [];
     for (let m = 0; m <= last; m++) {
       if (m === GAP0) { rows.push(noneRow(GAP0, GAP1, L.notes.miss)); m = GAP1; continue; }
