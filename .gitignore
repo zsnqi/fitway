@@ -53,8 +53,9 @@ playwright-report/
 .playwright-mcp/
 
 # Impeccable skill state (the project bridge config is tracked convention)
-.impeccable/*
-!.impeccable/config.json
+**/.impeccable/*
+!**/.impeccable/config.json
+.codex-remote-attachments/
 
 # Misc
 *.tgz
