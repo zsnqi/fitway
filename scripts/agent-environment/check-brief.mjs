@@ -3,7 +3,12 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { readGit } from "./git-context.mjs";
-import { createPathReferenceResolver, exists } from "./path-reference.mjs";
+import { pathKey, samePath } from "./path-identity.mjs";
+import {
+	createPathReferenceResolver,
+	exists,
+	referenceTarget,
+} from "./path-reference.mjs";
 
 const ENVIRONMENT_PATH = "docs/agent-context/briefs/ENVIRONMENT.md";
 const START = "<!-- environment:start v1 -->";
@@ -120,7 +125,7 @@ async function validateWorktree(text, report, git) {
 	}
 	try {
 		const root = git(worktree, ["rev-parse", "--show-toplevel"]);
-		if (path.resolve(root) !== path.resolve(worktree)) {
+		if (!(await samePath(root, worktree))) {
 			report(
 				"B1",
 				line,
@@ -211,24 +216,26 @@ async function validateReferences(text, worktree, repositoryRoot, report, git) {
 		});
 	}
 	const newPaths = new Set(
-		references
-			.filter((reference) => reference.isNew)
-			.map((reference) => path.resolve(worktree, reference.file)),
+		await Promise.all(
+			references
+				.filter((reference) => reference.isNew)
+				.map((reference) => pathKey(path.resolve(worktree, reference.file))),
+		),
 	);
 	for (const reference of references) {
 		const { lineNumber: line, heading } = reference;
-		const wildcard = /[*?]/.test(reference.file);
-		const prefix = reference.file.split(/[*?]/, 1)[0];
-		const checkedPath = wildcard
-			? prefix.slice(0, prefix.lastIndexOf("/") + 1) || "."
-			: reference.file;
+		const { wildcard, file: checkedPath } = referenceTarget(reference.file);
 		const absolute = path.resolve(worktree, checkedPath);
 		const details = await exists(absolute);
 		if (reference.isNew) {
 			if (details) report("B1", line, `new path already exists: ${absolute}`);
 			const parent = path.dirname(absolute);
 			const parentDetails = await exists(parent);
-			if (parentDetails ? !parentDetails.isDirectory() : !newPaths.has(parent))
+			if (
+				parentDetails
+					? !parentDetails.isDirectory()
+					: !newPaths.has(await pathKey(parent))
+			)
 				report(
 					"B1",
 					line,
@@ -409,7 +416,7 @@ export function formatBriefResult(result) {
 
 if (
 	process.argv[1] &&
-	fileURLToPath(import.meta.url) === path.resolve(process.argv[1])
+	(await samePath(fileURLToPath(import.meta.url), process.argv[1]))
 ) {
 	try {
 		const options = parseBriefArgs(process.argv.slice(2));

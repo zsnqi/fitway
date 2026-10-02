@@ -11,6 +11,15 @@ export async function exists(absolute) {
 	}
 }
 
+export function referenceTarget(file) {
+	const wildcard = /[*?]/.test(file);
+	const prefix = file.split(/[*?]/, 1)[0];
+	return {
+		wildcard,
+		file: wildcard ? prefix.slice(0, prefix.lastIndexOf("/") + 1) || "." : file,
+	};
+}
+
 function pathReference(value, { allowBare = false } = {}) {
 	const normalized = value.trim().replaceAll("\\", "/");
 	if (

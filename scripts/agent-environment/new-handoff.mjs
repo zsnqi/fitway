@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { isScalar, parseDocument } from "yaml";
 import { buildAgentContextPlan } from "../show-agent-context.mjs";
 import { behindUpstreamWarning, readGit } from "./git-context.mjs";
+import { samePath } from "./path-identity.mjs";
 import { RESUME_POINT_MARKER, repositoryPath } from "./resume-point.mjs";
 
 const STATE_PATH = "PROJECT_STATE.yaml";
@@ -294,7 +295,7 @@ export async function createResumePoint({
 
 if (
 	process.argv[1] &&
-	fileURLToPath(import.meta.url) === path.resolve(process.argv[1])
+	(await samePath(fileURLToPath(import.meta.url), process.argv[1]))
 ) {
 	try {
 		const options = parseHandoffArgs(process.argv.slice(2));

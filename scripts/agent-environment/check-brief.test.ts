@@ -3,6 +3,7 @@ import {
 	mkdirSync,
 	mkdtempSync,
 	readFileSync,
+	realpathSync,
 	rmSync,
 	writeFileSync,
 } from "node:fs";
@@ -31,8 +32,8 @@ const roots: string[] = [];
 
 afterEach(() => {
 	for (const root of roots.splice(0)) {
-		const absolute = path.resolve(root);
-		const relative = path.relative(path.resolve(tmpdir()), absolute);
+		const absolute = realpathSync.native(root);
+		const relative = path.relative(realpathSync.native(tmpdir()), absolute);
 		if (
 			relative.startsWith("..") ||
 			path.isAbsolute(relative) ||
@@ -85,6 +86,64 @@ function fixture() {
 }
 
 describe("B1: resolve a brief against its named Git worktree", () => {
+	it("Q2: accepts short and long named roots and Windows letter case", async () => {
+		const f = fixture();
+		const long = realpathSync.native(f.worktree);
+		const variants = [f.worktree, long];
+		if (process.platform === "win32") variants.push(long.toUpperCase());
+		for (const variant of variants) {
+			const result = await f.check(
+				f.valid.replace(
+					f.worktree.replaceAll("\\", "/"),
+					variant.replaceAll("\\", "/"),
+				),
+			);
+			expect(result.problems).toEqual([]);
+		}
+		const nested = await f.check(
+			f.valid.replace(
+				f.worktree.replaceAll("\\", "/"),
+				path.join(long, "docs").replaceAll("\\", "/"),
+			),
+		);
+		expect(formatBriefResult(nested)).toContain(
+			"named worktree is not a Git worktree root",
+		);
+	});
+	it.skipIf(process.platform !== "win32")(
+		"Q2: matches declared new parents across Windows case forms",
+		async () => {
+			const f = fixture();
+			const result = await f.check(
+				`${f.valid}\n\`docs/New/\` (new)\n\`DOCS/new/deeper/\` (new)\n\`docs/NEW/DEEPER/file.md\` (new)\n`,
+			);
+			expect(result.problems).toEqual([]);
+		},
+	);
+	it.skipIf(process.platform !== "win32")(
+		"Q2: both CLI entry checks accept Windows letter case",
+		() => {
+			for (const entry of [
+				script,
+				path.join(repository, "scripts/agent-environment/new-handoff.mjs"),
+			]) {
+				const result = spawnSync(
+					process.execPath,
+					[
+						path.join(path.dirname(entry).toUpperCase(), path.basename(entry)),
+						"--help",
+					],
+					{
+						cwd: repository,
+						encoding: "utf8",
+						windowsHide: true,
+					},
+				);
+				expect(result.status, result.stdout + result.stderr).toBe(0);
+				expect(result.stdout).toContain("Usage: pnpm");
+			}
+		},
+	);
 	it("accepts exact HEAD, relative and absolute files, selectors, scope globs and spaced paths", async () => {
 		const f = fixture();
 		const absolute = process.execPath.replaceAll("\\", "/");

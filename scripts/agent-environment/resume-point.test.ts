@@ -147,11 +147,10 @@ describe("O5: marked active resume point validation", () => {
 		"docs/missing.md",
 		"docs/missing file.md",
 		"../outside.md",
-		"docs/agent-context",
-	])("rejects missing, escaping or non-file path %s", async (file) => {
+	])("rejects missing or escaping path %s", async (file) => {
 		await expect(
 			validate(fixture(), `${valid}\n- Input: \`${file}\`\n`),
-		).rejects.toThrow(/missing or unsafe repository file/);
+		).rejects.toThrow(/missing or unsafe repository path/);
 	});
 	it("accepts existing paths with spaces and extensionless root files", async () => {
 		const root = fixture();

@@ -1,7 +1,11 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { inspectPath } from "../check-agent-context.mjs";
-import { createPathReferenceResolver, exists } from "./path-reference.mjs";
+import {
+	createPathReferenceResolver,
+	exists,
+	referenceTarget,
+} from "./path-reference.mjs";
 
 export const RESUME_POINT_MARKER = "<!-- handoff-format: resume-point-v1 -->";
 export const MAX_RESUME_POINT_BYTES = 12_288;
@@ -89,16 +93,23 @@ export async function validateResumePoint({
 	const resolver = createPathReferenceResolver(repositoryRoot);
 	for (const relativePath of await referencedFilePaths(text, resolver)) {
 		try {
-			if (path.isAbsolute(relativePath)) {
-				const details = await exists(relativePath);
-				if (!details?.isFile()) throw new Error("not a file");
+			const { wildcard, file } = referenceTarget(relativePath);
+			if (path.isAbsolute(file)) {
+				const details = await exists(file);
+				if (!details) throw new Error("path does not exist");
+				if (wildcard && !details.isDirectory()) throw new Error("not a folder");
 			} else {
-				const details = await repositoryPath(repositoryRoot, relativePath);
-				if (details.isDirectory) throw new Error("not a file");
+				// inspectPath rejects empty segments; a final slash denotes a folder.
+				const folder = wildcard || file.endsWith("/");
+				const details = await repositoryPath(
+					repositoryRoot,
+					file.endsWith("/") ? file.slice(0, -1) : file,
+				);
+				if (folder && !details.isDirectory) throw new Error("not a folder");
 			}
 		} catch {
 			fail(
-				`resume point references a missing or unsafe repository file: ${relativePath}${resolver.missingPathHint(relativePath)}`,
+				`resume point references a missing or unsafe repository path: ${relativePath}${resolver.missingPathHint(relativePath)}`,
 			);
 		}
 	}

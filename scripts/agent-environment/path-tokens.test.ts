@@ -1,5 +1,11 @@
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import {
+	mkdirSync,
+	mkdtempSync,
+	readFileSync,
+	realpathSync,
+	rmSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -71,6 +77,7 @@ beforeAll(() => {
 	git(worktree, "update-ref", "refs/remotes/origin/feature/remote", "HEAD");
 	put(worktree, "docs/untracked/file.md", "# Untracked\n");
 	put(worktree, "feature/build", "# Existing branch-named file\n");
+	mkdirSync(path.join(worktree, "docs/empty"));
 	initialize(foreignRepository);
 	put(
 		foreignRepository,
@@ -90,7 +97,10 @@ ${environment}
 
 afterAll(() => {
 	if (!root) return;
-	const relative = path.relative(path.resolve(tmpdir()), path.resolve(root));
+	const relative = path.relative(
+		realpathSync.native(tmpdir()),
+		realpathSync.native(root),
+	);
 	if (
 		relative.startsWith("..") ||
 		path.isAbsolute(relative) ||
@@ -154,6 +164,31 @@ const tokens = [
 ] as const;
 
 describe("P5: shared token decisions through both validators", () => {
+	it.each([
+		"docs/nested",
+		"docs/nested/",
+		"docs/empty",
+		"docs/empty/",
+		"docs/nested/**/rollout-*.jsonl",
+		"docs/empty/*.md",
+		path.join(repository, "scripts/agent-environment").replaceAll("\\", "/"),
+		`${path.join(repository, "scripts/agent-environment").replaceAll("\\", "/")}/`,
+		`${path.join(repository, "scripts/agent-environment").replaceAll("\\", "/")}/**/rollout-*.jsonl`,
+	])("Q1: both validators accept existing folder %s", async (token) => {
+		expect((await check(token)).problems).toEqual([]);
+		await expect(validate(token)).resolves.toBe(true);
+	});
+	it.each([
+		"docs/missing-folder",
+		"docs/missing-folder/",
+		"docs/missing-folder/**/*.md",
+		path.join(repository, "scripts/missing-folder").replaceAll("\\", "/"),
+		`${path.join(repository, "scripts/missing-folder").replaceAll("\\", "/")}/`,
+		`${path.join(repository, "scripts/missing-folder").replaceAll("\\", "/")}/**/*.md`,
+	])("Q1: both validators reject missing folder %s", async (token) => {
+		expect((await check(token)).ok).toBe(false);
+		await expect(validate(token)).rejects.toThrow("missing-folder");
+	});
 	it.each(
 		tokens,
 	)("%s: token %s is a path: %s", async (_outcome, token, isPath) => {
