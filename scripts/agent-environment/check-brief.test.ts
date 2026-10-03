@@ -257,6 +257,20 @@ describe("B1: resolve a brief against its named Git worktree", () => {
 		expect(formatBriefResult(result)).toContain('missing heading §"Pretend"');
 	});
 
+	it("reads a code span that breaks across lines and reports a split path on its opening line", async () => {
+		const f = fixture();
+		const text = `${f.valid}\n- Served under \`Cache-Control:\n  no-store\` and with no cache header.\n- Read \`docs/guide.md\n  §"Selected heading"\` and \`docs/\n  guide.md\`.\n`;
+		const result = await f.check(text);
+		expect(result.problems).toHaveLength(1);
+		const [problem] = result.problems;
+		expect(text.split("\n")[problem.line - 1]).toMatch(/and `docs\/$/);
+		expect(formatBriefResult(result)).toMatch(
+			new RegExp(
+				`:${problem.line}: FAIL B1: missing path .*breaks across lines`,
+			),
+		);
+	});
+
 	it("skips bare mentions even with extensions, line selectors or headings", async () => {
 		const f = fixture();
 		const result = await f.check(
