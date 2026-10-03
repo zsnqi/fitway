@@ -515,92 +515,91 @@ Script top level includes each outer IIFE's body; nested helpers are excluded. E
 - app.js:1728 — syncBand — function
 - app.js:1750 — stepBand — function
 - app.js:1759 — closeBand — function
-- app.js:1801 — fingerZone — function constant
-- app.js:1804 — scrollMax — function constant
-- app.js:1805 — scrollToY — function constant
-- app.js:1806 — stopPageMove — function
-- app.js:1808 — runPageMove — function
-- app.js:1816 — slideClear — function
-- app.js:1840 — fling — function
-- app.js:1853 — fingerTouch — function constant
-- app.js:1854 — endFinger — function
-- app.js:1939 — summary — function
-- app.js:1978 — minText — function constant
-- app.js:1979 — buildDetails — function
-- app.js:2026 — setDetails — function constant
-- app.js:2064 — track — function
-- app.js:2066 — clockAnim — function constant
-- app.js:2077 — numValue — function constant
-- app.js:2078 — finishRoll — function
-- app.js:2086 — shapeOf — function constant
-- app.js:2093 — textNodes — function constant
-- app.js:2094 — rollTo — function
-- app.js:2130 — digitWindow — function
-- app.js:2147 — rollFragment — function
-- app.js:2185 — finishFoot — function
-- app.js:2192 — setFoot — function
-- app.js:2224 — announce — function constant
-- app.js:2249 — nowMs — function constant
-- app.js:2250 — displayedTipVelocity — function constant
-- app.js:2251 — taus — function constant
-- app.js:2254 — spring — function
-- app.js:2259 — lineLeg — function constant
-- app.js:2260 — dropLeg — function constant
-- app.js:2261 — legAt — function
-- app.js:2269 — buildRoute — function
-- app.js:2298 — pointAtS — function
-- app.js:2306 — dirAt — function
-- app.js:2313 — followState — function
-- app.js:2321 — tipState — function
-- app.js:2325 — loopFollow — function
-- app.js:2326 — followTo — function
-- app.js:2351 — followFrame — function
-- app.js:2374 — stopFollow — function
-- app.js:2391 — carryFollowIntoReading — function
-- app.js:2405 — seekFollow — function
-- app.js:2419 — releaseFollow — function
-- app.js:2426 — rebaseFollow — function
-- app.js:2435 — startPulse — function
-- app.js:2441 — stopPulse — function
-- app.js:2442 — placePing — function
-- app.js:2455 — stepReading — function
-- app.js:2490 — morphValue — function
-- app.js:2498 — applyMorph — function
-- app.js:2532 — liveLoop — function
-- app.js:2533 — finishLive — function
-- app.js:2544 — seekLive — function
-- app.js:2553 — resetReadings — function
-- app.js:2569 — crowdStep — function
-- app.js:2587 — animateRail — function
-- app.js:2625 — finishRail — function
-- app.js:2676 — introTotal — function constant
-- app.js:2677 — introDecide — function
-- app.js:2696 — introPark — function
-- app.js:2725 — introWait — function
-- app.js:2759 — introStart — function
-- app.js:2786 — introLoop — function
-- app.js:2794 — introChartSetup — function
-- app.js:2809 — introProgress — function constant
-- app.js:2810 — introChartFrame — function
-- app.js:2850 — introChartClear — function
-- app.js:2865 — introAfterRender — function
-- app.js:2873 — endIntro — function
-- app.js:2895 — replayIntro — function
-- app.js:2907 — seekIntro — function
-- app.js:2917 — releaseIntro — function
-- app.js:2927 — settleAll — function
-- app.js:2933 — setOptions — function
-- app.js:2972 — later — function constant
-- app.js:2973 — clearTimers — function constant
-- app.js:2974 — setPhase — function constant
-- app.js:2975 — busy — function constant
-- app.js:2979 — sayRegion — function
-- app.js:2986 — say — function
-- app.js:2987 — startLoading — function
-- app.js:3004 — arrive — function
-- app.js:3041 — showError — function
-- app.js:3059 — fail — function
-- app.js:3070 — retry — function
+- app.js:1798 — fingerZone — function constant
+- app.js:1801 — scrollMax — function constant
+- app.js:1802 — scrollToY — function constant
+- app.js:1803 — stopPageMove — function
+- app.js:1805 — runPageMove — function
+- app.js:1813 — slideClear — function
+- app.js:1833 — fingerTouch — function constant
+- app.js:1834 — endFinger — function
+- app.js:1906 — summary — function
+- app.js:1945 — minText — function constant
+- app.js:1946 — buildDetails — function
+- app.js:1993 — setDetails — function constant
+- app.js:2031 — track — function
+- app.js:2033 — clockAnim — function constant
+- app.js:2044 — numValue — function constant
+- app.js:2045 — finishRoll — function
+- app.js:2053 — shapeOf — function constant
+- app.js:2060 — textNodes — function constant
+- app.js:2061 — rollTo — function
+- app.js:2097 — digitWindow — function
+- app.js:2114 — rollFragment — function
+- app.js:2152 — finishFoot — function
+- app.js:2159 — setFoot — function
+- app.js:2191 — announce — function constant
+- app.js:2216 — nowMs — function constant
+- app.js:2217 — displayedTipVelocity — function constant
+- app.js:2218 — taus — function constant
+- app.js:2221 — spring — function
+- app.js:2226 — lineLeg — function constant
+- app.js:2227 — dropLeg — function constant
+- app.js:2228 — legAt — function
+- app.js:2236 — buildRoute — function
+- app.js:2265 — pointAtS — function
+- app.js:2273 — dirAt — function
+- app.js:2280 — followState — function
+- app.js:2288 — tipState — function
+- app.js:2292 — loopFollow — function
+- app.js:2293 — followTo — function
+- app.js:2318 — followFrame — function
+- app.js:2341 — stopFollow — function
+- app.js:2358 — carryFollowIntoReading — function
+- app.js:2372 — seekFollow — function
+- app.js:2386 — releaseFollow — function
+- app.js:2393 — rebaseFollow — function
+- app.js:2402 — startPulse — function
+- app.js:2408 — stopPulse — function
+- app.js:2409 — placePing — function
+- app.js:2422 — stepReading — function
+- app.js:2457 — morphValue — function
+- app.js:2465 — applyMorph — function
+- app.js:2499 — liveLoop — function
+- app.js:2500 — finishLive — function
+- app.js:2511 — seekLive — function
+- app.js:2520 — resetReadings — function
+- app.js:2536 — crowdStep — function
+- app.js:2554 — animateRail — function
+- app.js:2592 — finishRail — function
+- app.js:2643 — introTotal — function constant
+- app.js:2644 — introDecide — function
+- app.js:2663 — introPark — function
+- app.js:2692 — introWait — function
+- app.js:2726 — introStart — function
+- app.js:2753 — introLoop — function
+- app.js:2761 — introChartSetup — function
+- app.js:2776 — introProgress — function constant
+- app.js:2777 — introChartFrame — function
+- app.js:2817 — introChartClear — function
+- app.js:2832 — introAfterRender — function
+- app.js:2840 — endIntro — function
+- app.js:2862 — replayIntro — function
+- app.js:2874 — seekIntro — function
+- app.js:2884 — releaseIntro — function
+- app.js:2894 — settleAll — function
+- app.js:2900 — setOptions — function
+- app.js:2939 — later — function constant
+- app.js:2940 — clearTimers — function constant
+- app.js:2941 — setPhase — function constant
+- app.js:2942 — busy — function constant
+- app.js:2946 — sayRegion — function
+- app.js:2953 — say — function
+- app.js:2954 — startLoading — function
+- app.js:2971 — arrive — function
+- app.js:3008 — showError — function
+- app.js:3026 — fail — function
+- app.js:3037 — retry — function
 
 ## components.js
 
