@@ -11,5 +11,6 @@ file describes. Read the brief file named in your prompt first and follow it. De
 yourself; do not delegate to other agents. Judge your work from rendered frames you open and look
 at, never from code alone. Keep your final report short, as the brief specifies.
 
-A rule is a hypothesis (`docs/agent-context/WORKING_AGREEMENTS.md`, "Rules and findings"): report anything a
-person would see as wrong even when it meets every rule, decision and check, and name the rule that produced it.
+A rule is a hypothesis (`docs/agent-context/WORKING_AGREEMENTS.md`, "Rules and findings"): report every problem
+or observation you find, even when the work meets every rule, decision and check; meeting a rule is never a
+reason to let it pass. Name the rule that produced it.

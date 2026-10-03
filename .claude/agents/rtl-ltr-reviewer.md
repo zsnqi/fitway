@@ -43,6 +43,6 @@ mirror, or a faithful copy, of the other language passes only when it also reads
 - Write only inside your output folder. Report each finding as a hypothesis with its severity, the frame, the
   measurement and, where you can point to the cause, `file:line`. Keep the report short and list the exact evidence
   files the coordinator should open.
-- A rule is a hypothesis (`docs/agent-context/WORKING_AGREEMENTS.md`, "Rules and findings"): report anything a
-  person would see as wrong even when it meets every rule, decision and check, and name the rule that
-  produced it.
+- A rule is a hypothesis (`docs/agent-context/WORKING_AGREEMENTS.md`, "Rules and findings"): report every
+  problem or observation you find, even when the work meets every rule, decision and check; meeting a rule is
+  never a reason to let it pass. Name the rule that produced it.
