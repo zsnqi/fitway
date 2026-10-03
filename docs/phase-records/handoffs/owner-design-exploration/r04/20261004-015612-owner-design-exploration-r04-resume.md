@@ -31,6 +31,9 @@ Two Codex rounds (GPT-6.1 Sol, `high`), started 01:55 in harness background shel
 
 ## Next steps
 
+0. **Before any work, discuss with the user** (asked 2026-10-04): trimming what loads into context (memory, MCP tools,
+   skills) so Opus 5.5 works with a clean context. Research first with `sonnet-researcher`: Anthropic's current guidance
+   and playbooks on context, memory writing and tool loading for Opus 5.5; bring a short list of options.
 1. **When both rounds end:** read each `last-message.md`; record both in
    `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md` (brief rows, held-out rows, failure
    cause). Merge `owner-r04-touch-fix` into `owner-followup-r04-build`; expect conflicts only in the generated
