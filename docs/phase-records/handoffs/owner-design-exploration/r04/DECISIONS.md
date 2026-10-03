@@ -107,7 +107,14 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     the chart: it need not copy the mouse, and a way that suits the phone better is welcome. Keep it light: show the
     ideas simply, not full pages, and the user picks. The band above the plot may be used or dropped by the chosen
     way. The busiest-time card is not a big problem; a simple suggestion is welcome. The three layout options are set
-    aside, kept on `owner-r04-daily-phone` as provenance.21. **The empty period's sentence takes item 14's forms** (2026-10-03, the user: "ممتاز"). Reports' empty-period
+    aside, kept on `owner-r04-daily-phone` as provenance.
+    **The user's picks for a trial** (2026-10-03, page https://claude.ai/artifact/Hg4FjvgySLQr4xWBp8bWiX), built as
+    one version to try, not as options: idea 2, press and hold, then drag, with the reading shown large in the band
+    above the plot (number, time, level, usual) and the band back as it was when the finger lifts; "Inside now" never
+    changes. Idea 4 with it: previous and next buttons beside the reading, half an hour at a time. The busiest-time
+    card on the phone with its hours beside its title, in the same place. Dragging straight on the plot was the
+    problem the user meant: the page moves by mistake.
+21. **The empty period's sentence takes item 14's forms** (2026-10-03, the user: "ممتاز"). Reports' empty-period
     sentence writes the year once and, inside one month, the month once, as the header and the error sentence do:
     «لا قراءات من 1 إلى 7 سبتمبر 2026», not «لا قراءات من 1 سبتمبر 2026 إلى 7 سبتمبر 2026»; across months of one year,
     «لا قراءات من 26 أغسطس إلى 22 سبتمبر 2026». English the same way. Found by the reading-direction review of
