@@ -1,8 +1,8 @@
 <!-- brief-format: v1 role: codex -->
 # Codex brief: deferred defects D3-D8 (owner-design-exploration-r04)
 
-- **Worktree:** `D:/Projects/fitway-worktrees/owner-followup-r04-s04`, branch `owner-followup-r04-build`, HEAD `b65e2b7`
-- **Milestone:** `owner-design-exploration-r04`. Decisions: `D:/Projects/fitway-worktrees/owner-design-exploration-r04/docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` items 7, 9, 10, 11 and 12.
+- **Worktree:** `D:/Projects/fitway-worktrees/owner-followup-r04-s04`, branch `owner-followup-r04-build`, HEAD `cbd7bbc`
+- **Milestone:** `owner-design-exploration-r04`. Decisions: `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md` items 7, 9, 10, 11, 12 and 14.
 - **Read first, only these:** `design-research/owner-composition-exploration-r04/directions/DO-NOT.md`;
   `design-research/owner-composition-exploration-r04/directions/eclipse/DESIGN-SPEC.md` row HDR-6 and the TBL rows
   by ID; `design-research/owner-composition-exploration-r04/directions/eclipse/README.md` §"The table, form and dialog system".
@@ -38,7 +38,8 @@ Reproduce each defect first and record its before measurement; if one does not r
 
 - **D3.** The header's status box moves its anchored edge by about 6.5 px at 721 px wide in English (row HDR-6), on
   the page or pages where it happens. Outcome: at 721, 768 and 1023 EN the anchored edge does not move across the
-  statuses and the arrival of data.
+  statuses and the arrival of data. Since `cbd7bbc` the control keeps one width on both pages from 721 up (decision 14),
+  so D3 may no longer reproduce.
 - **D4.** `components.html`'s no-readings row uses the caption style (`--ink-3`) where Daily's table uses 13.5 px
   `--ink-2`. Outcome: the specimen renders with Daily's style in both languages.
 - **D5.** In an English table at 721 and up, a single day's «No readings» starts at the peak column's left edge.
@@ -53,7 +54,7 @@ Reproduce each defect first and record its before measurement; if one does not r
   console error or NaN at any width.
 
 Required unchanged: every frame of Daily (`index.html`) and Reports (`reports.html`, with and without
-`?option=a|b|c&state=...`) except where D3, D5 or D6 change it, at 320, 390, 721, 768, 1024 and 1440, AR and EN. The
+`?state=...`) except where D3, D5 or D6 change it, at 320, 390, 721, 768, 1024 and 1440, AR and EN. The
 pages open over `file://` and HTTP, with motion on and with reduced motion; check both ways.
 
 ## Scope
