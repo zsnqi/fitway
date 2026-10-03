@@ -117,3 +117,15 @@ held-out checks live outside the repository and never appear here or in a brief.
   the files the round would act on; the boundary cases lived in the real briefs the checker would later read, which
   neither writer sampled. **C2 is not adopted.** Next hypothesis (C2b): test a rule against a sample of the real
   inputs it will judge (for a brief checker, the last real briefs) and list each one it would misclassify.
+
+## Evaluation C2b (agent-environment-r02): the brief only, no Codex run
+
+- **Set-up:** line C2b ("each rule an outcome states is tried on a sample of the real inputs it will judge, and the
+  brief lists every sampled input the rule as written would misjudge, with where the boundary falls"), one blind
+  Sonnet writer on round 5's draft at `d333762` (`D:/fitway-temp/evals/c2b/`).
+- **Result:** the writer sampled 17 real briefs and templates and listed the misjudged inputs, `@playwright/test` from
+  the builder template among them, with the boundary at the `/`. It then kept the draft's rule and wrote that such
+  tokens "keep failing". Codex was not run: the brief itself requires the false S6 failure, so the held-out result
+  is fixed by its text. The writer also dropped outcome F5 (a writer error, not the line's).
+- **Failure cause:** the line finds the boundary but asks for no decision on it. Next hypothesis (C2c): every input
+  the rule would misjudge gets a decision in the brief, the rule changed to cover it or a stated reason it stays.
