@@ -56,7 +56,6 @@
       docTitle: "المكوّنات · FITWAY Eclipse (مفهوم)",
       title: "المكوّنات",
       sub: `مواصفات تصميم ${b("Eclipse")} · مسودة · مقيسة على ${b("31a40d6")}`,
-      concept: "مفهوم استكشافي · بيانات افتراضية",
       langName: "لغة الصفحة",
       note: `كل مكوّن في صيغة القاعدة وفي كل حالة مصمَّمة. المقاسات والمسافات هنا هي قواعد المواصفات ${b("TYP-3")} و${b("SPC-5")} و${b("SPC-6")}، وقد اعتمدها المستخدم في ${b(30)} سبتمبر ${b(2026)}. وما يبقى مقترحًا فقط عليه علامة «مقترح». الحالات النشطة (عند المرور والتركيز والتعطيل) نسخ ثابتة؛ والعناصر التفاعلية معلَّمة.`,
       indexName: "أقسام الصفحة",
@@ -129,7 +128,7 @@
       dlgStates: { ready: "جاهزة، والتركيز على الحقل الأول", working: "قيد العمل", failed: "تعذّر، والتركيز على إعادة المحاولة", done: "تم", sheet: "ورقة سفلية على الهاتف" },
       openDlg: "افتح النافذة",
       statusLive: `${"<strong>مباشر</strong>"} · آخر قراءة ${b("7:42 م")}`, statusLate: `${"<strong>متأخر</strong>"} · آخر قراءة ${b("7:29 م")}`,
-      chipCaps: { levels: "شارة الازدحام: على «الآن» والذروات فقط", stale: "متأخرة: تخفت مع قيمتها", cmp: "شارة المقارنة", flags: "وسوم", status: "حالة التشغيل في الرأس من 721: زر 44 بلا إطار يفتح تفاصيلها", statusBtn: "عند المرور أو الفتح، وعند التركيز (حلقة داخلية)", concept: "علامة المفهوم، بلا إطار", legend: "مفتاح المخطط، بلا إطار", heatKey: "مفتاح النمط، بلا إطار" },
+      chipCaps: { levels: "شارة الازدحام: على «الآن» والذروات فقط", stale: "متأخرة: تخفت مع قيمتها", cmp: "شارة المقارنة", flags: "وسوم", status: "حالة التشغيل في الرأس من 721: زر 44 بلا إطار يفتح تفاصيلها", statusBtn: "عند المرور أو الفتح، وعند التركيز (حلقة داخلية)", legend: "مفتاح المخطط، بلا إطار", heatKey: "مفتاح النمط، بلا إطار" },
       nav: { today: "اليوم", reports: "التقارير", access: "الوصول", activity: "سجل النشاط", operations: "التشغيل", monitoring: "شاشة المراقبة", lang: "English", settings: "الإعدادات", signout: "تسجيل الخروج" },
       brand: "FITWAY، أسماء الأقسام", railLabel: "الأقسام",
       railCaps: { states: "الحالات: الحالية، وعند المرور، وعند التركيز مع الاسم", live: "اضغط Tab: يظهر الاسم عند التركيز فقط", open: "مفتوح فوق المحتوى", brand: "الشعار عند التركيز: يسمّي ما يفتحه", tablet: "الجهاز اللوحي: مفتوح فوق طبقة معتمة، والتركيز يبقى داخله" },
@@ -155,7 +154,6 @@
       docTitle: "Components · FITWAY Eclipse (concept)",
       title: "Components",
       sub: "Eclipse design spec · draft · measured at 31a40d6",
-      concept: "Exploration concept · synthetic data",
       langName: "Page language",
       note: "Every component in its rule form and in each designed state. Type sizes and spacing here are the spec's rules TYP-3, SPC-5 and SPC-6, accepted by the user on 30 Sep 2026; anything still only proposed carries a “Proposed” flag. Hover, focus and disabled specimens are still copies; the live parts are marked.",
       indexName: "Sections of this page",
@@ -228,7 +226,7 @@
       dlgStates: { ready: "Ready, focus on the first field", working: "Working", failed: "Failed, focus on Try again", done: "Done", sheet: "Bottom sheet on a phone" },
       openDlg: "Open the dialog",
       statusLive: "<strong>Live</strong> · Last reading 7:42 PM", statusLate: "<strong>Delayed</strong> · Last reading 7:29 PM",
-      chipCaps: { levels: "Level badge: on “now” and peaks only", stale: "Delayed: dims with its value", cmp: "Comparison badge", flags: "Flags", status: "The header's status from 721 px: a boxless 44 px control that opens its details", statusBtn: "Hover or open, and keyboard focus (the inset ring)", concept: "Concept label, boxless", legend: "Chart legend, boxless", heatKey: "Pattern key, boxless" },
+      chipCaps: { levels: "Level badge: on “now” and peaks only", stale: "Delayed: dims with its value", cmp: "Comparison badge", flags: "Flags", status: "The header's status from 721 px: a boxless 44 px control that opens its details", statusBtn: "Hover or open, and keyboard focus (the inset ring)", legend: "Chart legend, boxless", heatKey: "Pattern key, boxless" },
       nav: { today: "Today", reports: "Reports", access: "Access", activity: "Activity log", operations: "Operations", monitoring: "Monitoring", lang: "العربية", settings: "Settings", signout: "Sign out" },
       brand: "FITWAY, section names", railLabel: "Sections",
       railCaps: { states: "States: current, hover, and focus with its name", live: "Press Tab: the name shows on focus only", open: "Open, over the content", brand: "The logo on focus: it names what it opens", tablet: "Tablet: open over a scrim, focus kept inside" },
@@ -789,7 +787,6 @@
       ${fig(`<div style="display:flex;gap:8px;flex-wrap:wrap"><span class="cx-flag">${L.peakTag}</span><span class="cx-flag">${L.latestFlag}</span></div>`, L.chipCaps.flags, "CHP-7 · CHP-8")}
       ${fig(`<div style="display:grid;gap:12px;justify-items:start">${hstatus()}${hstatus({ late: true })}</div>`, L.chipCaps.status, "HDR-3 · CHP-2 · STA-1 · STA-2")}
       ${fig(`<div style="display:grid;gap:12px;justify-items:start">${hstatus({ cls: "is-hover" })}${hstatus({ cls: "is-focus" })}</div>`, L.chipCaps.statusBtn, "CHP-2 · BTN-5 · FOC-2")}
-      ${fig(`<span class="cx-concept">${L.concept}</span>`, L.chipCaps.concept, "CHP-2 · GLO-15")}
       ${fig(`<ul class="cx-legend"><li><i class="sw-line"></i>${L.keyLine}</li><li><i class="sw-usual"></i>${L.keyUsual}</li><li><i class="sw-ring"></i>${L.keyPeak}</li></ul>`, L.chipCaps.legend, "CHP-3 · CHT-20", false)}
     </div></div>`);
   }
@@ -810,7 +807,7 @@
       <ul>${NAV.map(([k, i]) => item(k, i)).join("")}</ul><ul class="foot">${FOOT.map(([k, i]) => item(k, i)).join("")}</ul></nav>`;
   }
   function rails() {
-    const hdr = `<div class="cx-header-spec" style="border:1px solid var(--line);border-radius:24px;background:#070707"><div class="cx-hdr"><div><h3>${L.hdrTitle}</h3><p>${L.hdrSub}</p></div><div class="cx-hdr-end">${hstatus()}<span class="cx-concept">${L.concept}</span></div></div><div class="cx-hdr-tools">${seg("28d")}<button class="cx-btn" type="button" tabindex="-1" style="margin-inline-start:auto">${ico("save")}<span>${L.exportMinutes}</span></button></div></div>`;
+    const hdr = `<div class="cx-header-spec" style="border:1px solid var(--line);border-radius:24px;background:#070707"><div class="cx-hdr"><div><h3>${L.hdrTitle}</h3><p>${L.hdrSub}</p></div><div class="cx-hdr-end">${hstatus()}</div></div><div class="cx-hdr-tools">${seg("28d")}<button class="cx-btn" type="button" tabindex="-1" style="margin-inline-start:auto">${ico("save")}<span>${L.exportMinutes}</span></button></div></div>`;
     // RAI-6: the tablet's open rail over SRF-4's scrim, with two plain cards standing for the page behind it.
     const tablet = `<div class="cx-tablet"><div class="cx-tablet-page"><i class="card lit lit-card">${LAMP}</i><i class="card"></i><i class="card is-wide lit lit-chart">${LAMP}</i></div><i class="cx-scrim-spec"></i>${rail({ open: true })}</div>`;
     return section("rail", "rail", "RAI-1…8 · HDR-1…3 · FOC-4…5", `<div class="card cx-stage"><div class="cx-rails">
@@ -833,7 +830,7 @@
   const opsPop = (late, open) => `<div class="fw-pop ops-pop" role="dialog" aria-label="${L.opsTitle}" tabindex="-1"${open ? "" : " hidden"} data-pop="ops"><div class="ops-body"><h4 class="ops-title">${L.opsTitle}</h4><p class="ops-state${late ? " is-delayed" : ""}">${stateMark(late)}<span>${late ? L.delayedWord : L.liveWord}</span></p><p class="ops-line">${L.lastAt(L.pm(late ? "7:29" : "7:42"))}${late ? `<span class="sep" aria-hidden="true">·</span><span class="ops-ago">${L.ago(13)}</span>` : ""}</p><p class="ops-line">${L.hours}</p></div><div class="ops-foot"><a class="fw-mi" href="#frame" tabindex="-1">${svg(P.operations, "")}<span>${L.nav.operations}</span>${svg(P.next, "fw-mi-end mirror")}</a></div></div>`;
   // The menu (user 2026-10-01): Monitoring, then the language, then sign out.
   const menuPop = (open, focus) => `<div class="fw-pop menu-pop" role="menu" aria-label="${L.more}"${open ? "" : " hidden"} data-pop="menu"><a class="fw-mi${focus ? " is-focus" : ""}" role="menuitem" tabindex="-1" href="#frame">${svg(P.monitoring, "")}<span>${L.nav.monitoring}</span></a><a class="fw-mi" role="menuitem" tabindex="-1" href="#frame"><span class="fw-glyph" lang="en" aria-hidden="true">${LANG === "ar" ? "EN" : "AR"}</span><span lang="${LANG === "ar" ? "en" : "ar"}">${L.nav.lang}</span></a><a class="fw-mi" role="menuitem" tabindex="-1" href="#frame">${svg(P.signout, "mirror")}<span>${L.nav.signout}</span></a></div>`;
-  const phoneHead = ({ late = false, open = "", live = false } = {}) => `<div class="cx-ph-head"><h3>${L.nav.today}</h3><div class="head-acts">${hbadge(late, open === "ops", live)}${opsPop(late, open === "ops")}${hmenu(open === "menu", live)}${menuPop(open === "menu", open === "menu" && !live)}</div><p class="cx-ph-sub">${L.date}</p><span class="cx-concept">${L.concept}</span></div>`;
+  const phoneHead = ({ late = false, open = "", live = false } = {}) => `<div class="cx-ph-head"><h3>${L.nav.today}</h3><div class="head-acts">${hbadge(late, open === "ops", live)}${opsPop(late, open === "ops")}${hmenu(open === "menu", live)}${menuPop(open === "menu", open === "menu" && !live)}</div><p class="cx-ph-sub">${L.date}</p></div>`;
   const phone = (inner, cls = "") => `<div class="cx-phbox${cls ? " " + cls : ""}">${inner}<i class="card cx-ph-card"></i></div>`;
   function frame() {
     const f = (inner, state, ids, live = false, w = 390) => `<figure class="cx-fig" style="flex:0 0 ${w}px">${live ? `<div class="cx-spec cx-live-frame">${inner}</div>` : `<div class="cx-spec" inert>${inner}</div>`}${cap(state, ids)}${live ? `<span class="cx-live-tag">${L.live}</span>` : ""}</figure>`;
@@ -908,7 +905,7 @@
     : `<span class="cx-status is-${st}">${stMark(st)}<strong>${stWord(st)}</strong> · ${stLine(st)}</span>`);
   const stBadge = (st, open) => `<button class="hbadge is-${st === "offline" ? "off" : st === "error" ? "err" : "closed"}" type="button" tabindex="-1" aria-expanded="${open}" aria-haspopup="dialog" aria-label="${L.opsTitle}: ${stWord(st)}"><span class="hb-state">${stMark(st)}<span class="hb-word">${stWord(st)}</span></span>${svg(P.chevron, "hb-chev")}</button>`;
   const stOps = (st) => `<div class="fw-pop ops-pop" role="dialog" aria-label="${L.opsTitle}" tabindex="-1"><div class="ops-body"><h4 class="ops-title">${L.opsTitle}</h4><p class="ops-state is-${st === "offline" ? "off" : st === "error" ? "err" : "closed"}">${stMark(st)}<span>${stWord(st)}</span></p><p class="ops-line">${stDetail(st)}</p><p class="ops-line">${L.hours}</p></div><div class="ops-foot"><a class="fw-mi" href="#states" tabindex="-1">${svg(P.operations, "")}<span>${L.nav.operations}</span>${svg(P.next, "fw-mi-end mirror")}</a></div></div>`;
-  const stPhoneHead = (st, open = false) => `<div class="cx-ph-head cx-st-ph"><h3>${L.nav.today}</h3><div class="head-acts">${st === "loading" ? `<span class="cx-st-load">${L.loadingWord}</span>` : stBadge(st, open) + (open ? stOps(st) : "")}${hmenu(false, false)}</div><p class="cx-ph-sub">${L.date}</p><span class="cx-concept">${L.concept}</span></div>`;
+  const stPhoneHead = (st, open = false) => `<div class="cx-ph-head cx-st-ph"><h3>${L.nav.today}</h3><div class="head-acts">${st === "loading" ? `<span class="cx-st-load">${L.loadingWord}</span>` : stBadge(st, open) + (open ? stOps(st) : "")}${hmenu(false, false)}</div><p class="cx-ph-sub">${L.date}</p></div>`;
   function states() {
     const cards = [
       [stateCard({ icon: "person", label: L.nowTitle, meta: phBar(40, 9), value: `<span class="num">${phBar(56, 33)}</span>`, foot: '<i class="cx-ph-box"></i>' }), L.stCaps.loadNow, "STA-10 · PH-1…3"],

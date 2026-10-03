@@ -99,7 +99,7 @@ const STATUS = () => {
   const rect = (el) => { if (!el || !el.getClientRects().length) return null; const b = el.getBoundingClientRect(); return { l: +b.left.toFixed(2), r: +b.right.toFixed(2), t: +b.top.toFixed(2), b: +b.bottom.toFixed(2), w: +b.width.toFixed(2), h: +b.height.toFixed(2) }; };
   const slot = document.querySelector("#ops-slot"), btn = document.querySelector("#ops-btn"), load = document.querySelector(".hb-load");
   const rtl = document.dir === "rtl";
-  const out = { reserve: document.querySelector("#ops-res").textContent, slot: rect(slot), btn: btn.hidden ? null : rect(btn), load: rect(load), title: rect(document.querySelector(".head h1")), sub: rect(document.querySelector("#sub")), concept: rect(document.querySelector(".concept")) };
+  const out = { reserve: document.querySelector("#ops-res").textContent, slot: rect(slot), btn: btn.hidden ? null : rect(btn), load: rect(load), title: rect(document.querySelector(".head h1")), sub: rect(document.querySelector("#sub")), head: rect(document.querySelector(".head")) };
   if (out.btn) {
     // The status's ink: from the mark's start to the chevron's end.
     const st = btn.querySelector(".hb-state"), ch = btn.querySelector(".hb-chev");
@@ -137,7 +137,7 @@ if (part("status")) {
     // The slot's own box is compared among states of one moment (the same unseen copies: on Daily, closed and
     // unavailable are other moments of the day, with another last reading); what stands beside it, in every state.
     const moments = Object.values(Object.groupBy(vals, (v) => v.reserve));
-    const s = { slotX: Math.max(...moments.map((g) => spreadOf(g, (v) => v.slot.l))), slotW: Math.max(...moments.map((g) => spreadOf(g, (v) => v.slot.w))), slotEnd: spread((v) => (lang === "ar" ? v.slot.l : v.slot.r)), title: spread((v) => v.title.l) + spread((v) => v.title.w), sub: spread((v) => v.sub.l) + spread((v) => v.sub.w) + spread((v) => v.sub.t), concept: spread((v) => v.concept.l) + spread((v) => v.concept.t) };
+    const s = { slotX: Math.max(...moments.map((g) => spreadOf(g, (v) => v.slot.l))), slotW: Math.max(...moments.map((g) => spreadOf(g, (v) => v.slot.w))), slotEnd: spread((v) => (lang === "ar" ? v.slot.l : v.slot.r)), title: spread((v) => v.title.l) + spread((v) => v.title.w), sub: spread((v) => v.sub.l) + spread((v) => v.sub.w) + spread((v) => v.sub.t), head: spread((v) => v.head.t) + spread((v) => v.head.h) };
     log.status[key] = { spreads: s, moments: moments.length, states: per };
     for (const [k, v] of Object.entries(s)) if (v > 0.01) fail(`status ${key}: ${k} moves ${v}px across the states`);
     for (const [name, v] of Object.entries(per)) {
@@ -167,9 +167,10 @@ if (part("crops")) {
       }
       await page.waitForTimeout(100);
       const box = await page.evaluate(() => {
-        const s = document.querySelector("#ops-slot").getBoundingClientRect(), c = document.querySelector(".concept").getBoundingClientRect(), h = document.querySelector(".head").getBoundingClientRect();
-        const l = Math.min(s.left, c.left) - 24, r = Math.max(s.right, c.right) + 24;
-        return { x: Math.max(0, l), y: Math.max(0, h.top - 12), width: Math.min(innerWidth, r) - Math.max(0, l), height: Math.max(s.bottom, c.bottom) - h.top + 36, fv: document.querySelector("#ops-btn").matches(":focus-visible") };
+        // The header has no concept label since DECISIONS item 15: the crop is the slot and the header's own height.
+        const s = document.querySelector("#ops-slot").getBoundingClientRect(), h = document.querySelector(".head").getBoundingClientRect();
+        const l = s.left - 24, r = s.right + 24;
+        return { x: Math.max(0, l), y: Math.max(0, h.top - 12), width: Math.min(innerWidth, r) - Math.max(0, l), height: Math.max(s.bottom, h.bottom) - h.top + 36, fv: document.querySelector("#ops-btn").matches(":focus-visible") };
       });
       if (mode === "focus" && !box.fv) fail(`crops ${pg}/${name}/${w}/${lang}: the control is not :focus-visible`);
       const file = `${pg}-${name}-${w}-${lang}-${mode}.png`;
@@ -188,7 +189,7 @@ const LS_INIT = () => {
   try { new PerformanceObserver((l) => l.getEntries().forEach((e) => window.__ls.push({ t: e.startTime, v: e.value, input: e.hadRecentInput }))).observe({ type: "layout-shift", buffered: true }); } catch (e) { /* no observer */ }
 };
 const BOXES = () => {
-  const sel = { slot: "#ops-slot", title: ".head h1", sub: "#sub", concept: ".concept", head: ".head", cards: "#cards", tools: ".rp-tools" };
+  const sel = { slot: "#ops-slot", title: ".head h1", sub: "#sub", head: ".head", cards: "#cards", tools: ".rp-tools" };
   const out = {};
   for (const [k, s] of Object.entries(sel)) {
     const el = document.querySelector(s);
@@ -227,7 +228,7 @@ if (part("shift")) {
       const cls = await page.evaluate((t) => window.__ls.filter((e) => e.t > t).reduce((s, e) => s + e.v, 0), t0);
       const d = diff(before, after);
       // The status's own place (from 721 px; a phone draws the badge alone, unchanged by this round).
-      const statusMoved = w > 720 ? Math.max(d.moved.slot || 0, d.moved.statusEnd || 0, d.moved.title || 0, d.moved.sub || 0, d.moved.concept || 0, d.moved.head || 0) : null;
+      const statusMoved = w > 720 ? Math.max(d.moved.slot || 0, d.moved.statusEnd || 0, d.moved.title || 0, d.moved.sub || 0, d.moved.head || 0) : null;
       log.shift[`${pg}-${kind}-${w}-${lang}`] = { ...d, cls: +cls.toFixed(4), statusMoved };
       if (statusMoved > 0.01) fail(`shift ${pg}/${kind}/${w}/${lang}: the header's status moved ${statusMoved}px`);
       errors.forEach((e) => fail(`shift ${pg}/${kind}/${w}/${lang}: ${e}`));

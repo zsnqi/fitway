@@ -128,7 +128,6 @@ html:has(> body.cx) { color-scheme: dark; scrollbar-color: rgba(245, 243, 242, 0
 .cx-status strong { font-weight: 500; color: var(--ink); }
 .cx-status.is-late strong { color: var(--amber); }
 .cx-status.is-late .cx-ico { width: 15px; height: 15px; color: var(--delayed); }
-.cx-concept { font: var(--t-caption); color: var(--ink-3); white-space: nowrap; }
 /* HDR-3 (step 4): the header's status from 721 px, a 44 px control boxless at rest (BTN-5's form) with its chevron;
  * 5% white on hover and while open; FOC-2's inset ring. The phone's badge is .hbadge as it is (BDG-1). */
 .cx .hbadge.cx-hstatus { padding-inline: 12px; border-color: transparent; background: none; color: var(--ink-2); }
@@ -459,14 +458,13 @@ th.is-asc .cx-sort .cx-ico { transform: rotate(180deg); }
  * Specimens use the page's own classes (style.css "the frame"): .hbadge, .hbtn, .fw-pop, .fw-mi, .tabbar, .tb-item. These
  * rules only place them in a phone-width box, and draw the forced hover and focus states. */
 .cx-phones { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 24px; }
-.cx-phbox { position: relative; width: 390px; max-width: 100%; height: 190px; padding: 16px; overflow: hidden; border-radius: 24px; border: 1px solid var(--line); background: #070707; }
+.cx-phbox { position: relative; width: 390px; max-width: 100%; height: 168px; padding: 16px; overflow: hidden; border-radius: 24px; border: 1px solid var(--line); background: #070707; }
 .cx-phbox.is-tall { height: 360px; }
-.cx-ph-head { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title acts" "sub sub" "concept concept"; align-items: center; gap: 0 16px; }
+.cx-ph-head { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title acts" "sub sub"; align-items: center; gap: 0 16px; }
 .cx-ph-head h3 { grid-area: title; font: var(--t-title); }
 .cx-ph-sub { grid-area: sub; margin-block-start: 4px; font: var(--t-label); color: var(--ink-3); }
-.cx-ph-head .cx-concept { grid-area: concept; justify-self: start; margin-block-start: 4px; }
 .cx .head-acts { grid-area: acts; position: relative; z-index: 30; display: flex; align-items: center; gap: 8px; }
-.cx-ph-card { position: absolute; inset: 172px 16px auto; height: 160px; }
+.cx-ph-card { position: absolute; inset: 150px 16px auto; height: 160px; }
 .cx .cx-bar-spec { height: auto; padding: 24px 16px 12px; }
 .cx .cx-bar-spec.is-320 { width: 320px; padding-inline: 8px; }
 .cx .cx-bar-spec .tabbar { position: relative; inset: auto; display: block; }

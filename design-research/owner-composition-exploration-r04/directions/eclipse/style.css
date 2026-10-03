@@ -293,7 +293,6 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
 .status.is-delayed .strong { color: #f0c23c; }
 .ico { width: 15px; height: 15px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .status .ico { color: var(--delayed); }
-.concept { color: var(--ink-3); }
 
 /* ------------------------------------------------------------------- cards */
 .card {
@@ -765,10 +764,9 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
  *   720 px and below   the glass bar at the bottom and the compact header (the status badge and one menu).
  * Step 4 (user 2026-10-01): Operations has no section in the rail. At every size the header's status is a 44 px
  * control that opens Operations' details (CHP-2): from 721 px it reads in full, boxless at rest, with a chevron (BTN-5's
- * form: 5% white on hover and while open); on a phone it is the badge (BDG-1). The concept label is boxless text. */
+ * form: 5% white on hover and while open); on a phone it is the badge (BDG-1). The header has no concept label
+ * (DECISIONS item 15, 2026-10-03). */
 [data-frame] .head-meta { flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 4px 12px; padding-block-start: 0; margin-block-start: -4px; }
-[data-frame] .head-meta .chip { height: auto; padding: 0; border: 0; border-radius: 0; background: none; }
-[data-frame] .concept { font-size: 12px; line-height: 18px; color: var(--ink-3); }
 [data-frame] .sub-part { white-space: nowrap; }
 /* The skip link, part of the frame: a 44 px control with the one ring (FOC-1; K-22's red ring), past the rail. */
 [data-frame] .skip { display: inline-flex; align-items: center; height: 44px; padding: 0 16px; border-radius: 12px; font-size: 13.5px; line-height: 20px; color: #0d0c0d; }
@@ -785,7 +783,7 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
   [data-frame] .head-acts .hbadge { padding-inline: 12px; border-color: transparent; background: none; color: var(--ink-2); }
   [data-frame] .head-acts .hbadge:hover, [data-frame] .head-acts .hbadge[aria-expanded="true"] { border-color: transparent; background: rgba(255, 255, 255, 0.05); }
   [data-frame] .head-acts .hbadge .hb-word { color: var(--ink); }
-  /* Its ring is FOC-2's, inside the box, so it keeps clear of the concept label stacked under it at 721-1023 px. */
+  /* Its ring is FOC-2's, inside the box. */
   [data-frame] .head-acts .hbadge:focus-visible { outline-offset: -4px; }
   [data-frame] .head-acts .hbadge.is-delayed .hb-word { color: #e8b62e; }
   [data-frame] .hb-line { display: inline; }
@@ -803,8 +801,8 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
 }
 @media (min-width: 721px) and (max-width: 1023px) {
   [data-frame] .rail-scrim:not([hidden]) { display: block; }
-  /* The status and the concept label stack at the inline end, the status level with the title. The status reads in
-   * full; to make room for its control the hours leave the subtitle for the status details, as on a phone (BDG-3). */
+  /* The status stands at the inline end, level with the title, and reads in full; to make room for its control the
+   * hours leave the subtitle for the status details, as on a phone (BDG-3). */
   [data-frame] .head-meta { flex-direction: column; align-items: flex-end; flex-wrap: nowrap; row-gap: 0; }
   [data-frame] .sub-hours { display: none; }
 }
@@ -924,11 +922,11 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
   [data-frame] .rail-slot { display: none; }
   [data-frame] .skip { inset-inline-start: 16px; }
   [data-frame] .tabbar { display: block; }
-  /* The compact header: the title with the badge and the menu on one line, the date under it, then the label. */
+  /* The compact header: the title with the badge and the menu on one line, the date under it. */
   [data-frame] .head {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-areas: "title acts" "sub sub" "concept concept";
+    grid-template-areas: "title acts" "sub sub";
     align-items: center;
     gap: 0 16px;
   }
@@ -936,7 +934,6 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
   [data-frame] .head h1 { grid-area: title; }
   [data-frame] .sub { grid-area: sub; margin-block-start: 4px; }
   [data-frame] .sub-hours { display: none; }
-  [data-frame] .concept { grid-area: concept; justify-self: start; margin-block-start: 4px; }
   [data-frame] .head-acts { grid-area: acts; }
 }
 @media (max-width: 359px) {

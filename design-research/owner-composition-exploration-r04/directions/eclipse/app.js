@@ -33,7 +33,6 @@
   const COPY = {
     ar: {
       skip: "انتقل إلى المحتوى",
-      concept: "مفهوم استكشافي · بيانات افتراضية",
       railLabel: "الأقسام",
       brand: "FITWAY، أسماء الأقسام",
       nav: { daily: "اليوم", reports: "التقارير", access: "الوصول", activity: "سجل النشاط", operations: "التشغيل", monitoring: "شاشة المراقبة", lang: "English", settings: "الإعدادات", signout: "تسجيل الخروج" },
@@ -117,7 +116,6 @@
     },
     en: {
       skip: "Skip to content",
-      concept: "Exploration concept · synthetic data",
       railLabel: "Sections",
       brand: "FITWAY, section names",
       nav: { daily: "Today", reports: "Reports", access: "Access", activity: "Activity log", operations: "Operations", monitoring: "Monitoring", lang: "العربية", settings: "Settings", signout: "Sign out" },
@@ -704,7 +702,9 @@
   // copies of every status hold (style.css .hb-res), so loading, the arrival, a retry and any status change keep the
   // control's place and the slot's size; the control itself is as wide as its own status (HDR-3), at the slot's inline
   // end. The copies with a time carry the last reading's, as the control does, and take a new reading's at once. (Held
-  // at the day's widest time, 10:00 PM, the slot would push the concept label to a second line at 1024 px in English.)
+  // at the day's widest time, 10:00 PM, the slot would be 283.2 px in English; that reason, the concept label it pushed
+  // to a second line at 1024 px, left with the label in DECISIONS item 15, and the slot now fits there with 197.8 px to
+  // spare. The slot keeps the last reading's time until that choice is made again.)
   function renderReserve() {
     $("#ops-res").innerHTML = Object.values(STATUSES).map((f) => `<span class="hb-r">${statusWords(f())}<svg class="hb-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5"/></svg></span>`).join("");
   }

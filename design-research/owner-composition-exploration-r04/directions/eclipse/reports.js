@@ -65,7 +65,6 @@
   const COPY = {
     ar: {
       skip: "انتقل إلى المحتوى",
-      concept: "مفهوم استكشافي · بيانات افتراضية",
       railLabel: "الأقسام",
       brand: "FITWAY، أسماء الأقسام",
       railTip: "أسماء الأقسام",
@@ -180,6 +179,7 @@
       errorFull: "تعذّر تحميل قراءات الفترة",
       errorHint: "تحقّق من الاتصال، ثم أعد المحاولة.",
       errorDates: (a, b) => `تعذّر تحميل القراءات من ${a} إلى ${b}`,
+      errorDay: (a) => `تعذّر تحميل قراءات ${a}`,
       retrying: "جارٍ المحاولة…",
       loadingWord: "جارٍ التحميل…",
       loadingSay: "جارٍ تحميل قراءات الفترة",
@@ -189,7 +189,6 @@
     },
     en: {
       skip: "Skip to content",
-      concept: "Exploration concept · synthetic data",
       railLabel: "Sections",
       brand: "FITWAY, section names",
       railTip: "Section names",
@@ -297,6 +296,7 @@
       errorFull: "Couldn't load the period's readings",
       errorHint: "Check the connection, then try again.",
       errorDates: (a, b) => `Couldn't load readings from ${a} to ${b}`,
+      errorDay: (a) => `Couldn't load readings for ${a}`,
       retrying: "Trying again…",
       loadingWord: "Loading…",
       loadingSay: "Loading the period's readings",
@@ -1507,10 +1507,15 @@
       msg = Object.assign(document.createElement("section"), { className: "card rp-msg", id: "page-msg" });
       $(".rp-tools").after(msg);
     }
-    // The period's two dates as the header writes the period (rangeText): the year once, at the end, when both share
-    // it; each date's year when the period spans two years (DECISIONS item 14).
-    const sameYear = partsOf(model.a).y === partsOf(model.b).y;
-    msg.innerHTML = alertHTML(L.errorDates(dateText(model.a, !sameYear), dateText(model.b, true)));
+    // The period as one plain sentence, words first, with no dash (DECISIONS items 11 and 14), saying each part once:
+    // one day names its date alone; inside one month the first date is its day alone, the month and year once at the
+    // end; across months the year once, at the end; across two years each date with its own year.
+    const A = partsOf(model.a), B = partsOf(model.b);
+    const sentence = model.a === model.b ? L.errorDay(dateText(model.b, true))
+      : A.y !== B.y ? L.errorDates(dateText(model.a, true), dateText(model.b, true))
+      : A.m === B.m ? L.errorDates(nw(bdi(A.d)), dateText(model.b, true))
+      : L.errorDates(dateText(model.a), dateText(model.b, true));
+    msg.innerHTML = alertHTML(sentence);
     wireAlert(msg, focus);
   }
   // Every state's marks come off before the live render is written again (the arrival, or a period while ready).
