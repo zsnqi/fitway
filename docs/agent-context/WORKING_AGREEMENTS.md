@@ -57,6 +57,11 @@ latest wording; never copy an entry into a resume point.
   live with the milestone's standing decisions. (user, 2026-10-02)
 - Every subagent is launched from a definition with a fixed effort; `CLAUDE.md` gives the choice
   between the Opus and Sonnet definitions. (user, 2026-10-02)
+- The Claude subscription is the scarce budget; Codex capacity is not (user, 2026-10-04). A round
+  of small fixes gets one Claude review, the verifier at `high`, which also reads the changed
+  elements in both directions; the separate reading-direction review is kept for a whole screen or
+  a wide copy or table round. A build whose target is already drawn, and the fixes a review
+  returns, go to Codex; design and taste stay with Claude.
 
 ## Rules and findings
 
