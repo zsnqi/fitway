@@ -688,12 +688,25 @@
   //   offline    (the unavailable state) a struck circle, "Offline", "No current count": no count, band or time;
   //   error      the alert mark in the error colour, "Error", what happened (and, in the details, what to do);
   //   loading    the status is not known yet: the words "Loading…", boxless and not a control (statusLoading below).
+  const STATUSES = {
+    error: () => ({ cls: "is-err", mark: ICON.alert, word: L.errorWord, line: L.errorLine, detail: `${L.errorFull}. ${L.errorHint}` }),
+    closed: () => ({ cls: "is-closed", mark: `<span class="dot ring" aria-hidden="true"></span>`, word: L.closed, line: L.opens(tb(0)) }),
+    offline: () => ({ cls: "is-off", mark: ICON.offline, word: L.offline, line: L.noCount }),
+    delayed: () => ({ cls: "is-delayed", mark: ICON.clock, word: L.delayed, line: `${L.lastReading} ${tb(M.last)}`, ago: true }),
+    live: () => ({ cls: "", mark: `<span class="dot" aria-hidden="true"></span>`, word: L.live, line: `${L.lastReading} ${tb(M.last)}` }),
+  };
   function statusOf() {
-    if (phase === "error" || phase === "retrying") return { cls: "is-err", mark: ICON.alert, word: L.errorWord, line: L.errorLine, detail: `${L.errorFull}. ${L.errorHint}` };
-    if (CLOSED) return { cls: "is-closed", mark: `<span class="dot ring" aria-hidden="true"></span>`, word: L.closed, line: L.opens(tb(0)) };
-    if (UNAV) return { cls: "is-off", mark: ICON.offline, word: L.offline, line: L.noCount };
-    if (STATE === "delayed") return { cls: "is-delayed", mark: ICON.clock, word: L.delayed, line: `${L.lastReading} ${tb(M.last)}`, ago: true };
-    return { cls: "", mark: `<span class="dot" aria-hidden="true"></span>`, word: L.live, line: `${L.lastReading} ${tb(M.last)}` };
+    return STATUSES[phase === "error" || phase === "retrying" ? "error" : CLOSED ? "closed" : UNAV ? "offline" : STATE === "delayed" ? "delayed" : "live"]();
+  }
+  const statusWords = (s) => `${s.mark}<span class="hb-word">${s.word}</span>` +
+    `<span class="hb-line"><span class="sr-only">${RTL ? "، " : ", "}</span><span aria-hidden="true">· </span>${s.line}</span>`;
+  // K-02 (DECISIONS item 14, as Reports): from 721 px the status's slot is as wide as the widest status, which unseen
+  // copies of every status hold (style.css .hb-res), so loading, the arrival, a retry and any status change keep the
+  // control's place and the slot's size; the control itself is as wide as its own status (HDR-3), at the slot's inline
+  // end. The copies with a time carry the last reading's, as the control does, and take a new reading's at once. (Held
+  // at the day's widest time, 10:00 PM, the slot would push the concept label to a second line at 1024 px in English.)
+  function renderReserve() {
+    $("#ops-res").innerHTML = Object.values(STATUSES).map((f) => `<span class="hb-r">${statusWords(f())}<svg class="hb-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5"/></svg></span>`).join("");
   }
   // The control's name is its own text after the details' title, so it holds every word it shows (WCAG 2.5.3): the
   // line is part of it from 721 px, and set aside with its box on a phone.
@@ -701,8 +714,8 @@
     const s = statusOf(), btn = layers.ops.btn;
     btn.className = `hbadge${s.cls ? ` ${s.cls}` : ""}`;
     btn.removeAttribute("aria-label");
-    $("#ops-btn-state").innerHTML = `<span class="sr-only">${L.opsTitle}: </span>${s.mark}<span class="hb-word">${s.word}</span>` +
-      `<span class="hb-line"><span class="sr-only">${RTL ? "، " : ", "}</span><span aria-hidden="true">· </span>${s.line}</span>`;
+    $("#ops-btn-state").innerHTML = `<span class="sr-only">${L.opsTitle}: </span>${statusWords(s)}`;
+    renderReserve();
   }
   renderStatus();
   // The details: the same status, and the rest on request.
@@ -874,6 +887,7 @@
   function updateCards(prev) {
     const dt = Math.sign(M.last - prev.last);
     rollTo($("#ops-btn .hb-line bdi"), fmtTime(M.last), dt);
+    renderReserve(); // the slot's unseen copies take the new time at once
     renderOps(); // the status details (closed or open) take the new time at once
     rollTo($("#now-v"), String(shownNow()));
     if (STATE === "delayed") rollTo($("#now-meta span"), L.ago(M.nowM - M.last));

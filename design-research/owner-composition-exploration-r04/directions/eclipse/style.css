@@ -980,6 +980,22 @@ body.dl [hidden] { display: none !important; }
  * control's words will stand. */
 .hb-load { display: none; }
 [data-frame] .hb-load { display: inline-flex; align-items: center; height: 44px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); white-space: nowrap; }
+/* K-02 (DECISIONS item 14): the status's slot. From 721 px it is as wide as the widest status, so loading, the arrival,
+ * a retry and any status change move nothing beside it; unseen copies of every status (.hb-r: the control's padding,
+ * mark, words, gap and chevron) hold that width. They may wrap, so they never raise the slot's least width above the
+ * current status's, and take no height: where the header has less room than the widest status, the slot takes what
+ * there is. The control is as wide as its own status, so its fill and its ring fit it (HDR-3), and it stands at the
+ * slot's inline end, where the loading words stand too (STW-2). On a phone the slot steps aside and the badge alone is
+ * drawn. */
+.hb-res, .hb-r { display: none; }
+@media (max-width: 720px) { [data-frame] .hb-slot { display: contents; } }
+@media (min-width: 721px) {
+  [data-frame] .hb-slot { display: inline-grid; align-items: center; }
+  [data-frame] .hb-res { display: contents; }
+  [data-frame] .hb-slot > *, [data-frame] .hb-r { grid-area: 1 / 1; justify-self: end; }
+  [data-frame] .hb-r { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; align-self: start; height: 0; overflow: hidden; visibility: hidden; padding-inline: 13px; font-size: 13.5px; line-height: 20px; white-space: normal; }
+  [data-frame] .hb-r .dot { width: 7px; height: 7px; flex: none; }
+}
 
 /* The states' words in a card (CRD-3's form): a sentence in heading type at 400, --ink-2, on the value's line; a value
  * written in words ("Closed") in title type at 500, chalk, like the busiest time; a note in caption type --ink-3 at the

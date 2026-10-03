@@ -23,18 +23,14 @@
   const RTL = LANG === "ar";
   const STATE = root.dataset.state === "short" ? "short" : "full";
   const params = new URLSearchParams(location.search);
-  /* K-02, step 4's states round: Reports' own page states, drawn three ways for the user to choose (options a, b, c;
-   * reports.html sets data-page and data-option before first paint). The concept's moment is the Daily page's: Wednesday
+  /* K-02: Reports' own page states (reports.html sets data-page before first paint), as the user decided on 2026-10-03
+   * (DECISIONS item 14): the options round's option A, Daily's grammar (one skeleton with a placeholder in every awaited
+   * value, the pattern's light out under every status but Live, a waiting span noted where it falls), with option C's
+   * error (one message for the page in place of the cards). The concept's moment is the Daily page's: Wednesday
    * 23 September, 7:42 PM; Closed is 5:12 AM the same day, before opening. Reports shows complete days only, so a status
    * about now leaves its history whole, except in `pending`, where the edge has been offline since 9:10 PM on Tuesday
-   * 22 September and that evening's readings, buffered on the edge, have not arrived yet.
-   *   a  Daily's grammar: one skeleton with a placeholder in every awaited value, the alert in the period's card, the
-   *      pattern's light out under every status but Live, a waiting span noted where it falls.
-   *   b  History first: the light follows the data (the pattern keeps it while every day it shows is in), loading draws
-   *      what the schedule knows, a day still waiting is held back until it is whole.
-   *   c  Quiet: loading draws the page's frame and names only, an error is one message for the page; otherwise as a. */
+   * 22 September and that evening's readings, buffered on the edge, have not arrived yet. */
   const PAGE = root.dataset.page || "live";
-  const OPT = root.dataset.option || null;
   let pageNow = PAGE; // the state shown: loading and error arrive into live
   // The first payload: "ready" (every state but two), "loading", "error", or "retrying" (the error's one retry running).
   let phase = PAGE === "loading" ? "loading" : PAGE === "error" ? "error" : "ready";
@@ -167,7 +163,6 @@
       errorLine: "تعذّر التحميل",
       errorFull: "تعذّر تحميل قراءات الفترة",
       errorHint: "تحقّق من الاتصال، ثم أعد المحاولة.",
-      errorSay: "تعذّر تحميل القراءات",
       errorDates: (a, b) => `تعذّر تحميل القراءات من ${a} إلى ${b}`,
       retrying: "جارٍ المحاولة…",
       loadingWord: "جارٍ التحميل…",
@@ -175,7 +170,6 @@
       pending: "قيد الانتظار",
       waiting: "بانتظار القراءات",
       since: "منذ",
-      waitDay: (d) => `${d} بانتظار القراءات`,
     },
     en: {
       skip: "Skip to content",
@@ -286,7 +280,6 @@
       errorLine: "Couldn't load",
       errorFull: "Couldn't load the period's readings",
       errorHint: "Check the connection, then try again.",
-      errorSay: "Couldn't load readings",
       errorDates: (a, b) => `Couldn't load readings from ${a} to ${b}`,
       retrying: "Trying again…",
       loadingWord: "Loading…",
@@ -294,7 +287,6 @@
       pending: "Pending",
       waiting: "Waiting for readings",
       since: "since",
-      waitDay: (d) => `${d} waiting for readings`,
     },
   };
   const L = COPY[LANG];
@@ -385,9 +377,9 @@
   // Camera outages: open minutes with no reading (minutes since 6:00 AM, inclusive).
   const MISSING = { [toDn("2026-09-17")]: [[240, 479]], [toDn("2026-08-31")]: [[252, 280]] };
   // K-02, `pending`: the edge went offline at 9:10 PM on Tuesday 22 September and buffers since; the rest of that day is
-  // not received yet (not missing: it backfills on reconnect). Option b holds that day back (HOLD).
+  // not received yet (not missing: it backfills on reconnect). The received part counts in the period's figures, and
+  // the day notes what it still waits for (DECISIONS item 14).
   const PEND = PAGE === "pending" ? { [LAST_FULL]: [[910, DAY - 1]] } : {};
-  const HOLD = PAGE === "pending" && OPT === "b";
 
   // The Daily page's seeded minute simulation, generalised to an opening minute and a quiet start. With open 0 and
   // quiet 10 it is exactly the Daily page's simulateDay (same random draws), so the four Wednesdays it averages as
@@ -474,8 +466,6 @@
     const wd = wdOf(dn), open = openAt(wd);
     if (!hasReadings(dn)) return { dn, wd, open, expected: DAY - open, observed: 0, total: 0, peak: null, peakM: null, entries: 0, avg: null, miss: [], pend: [], none: true };
     const d = DAYS.get(dn);
-    // Option b holds a day still waiting for readings back: it counts nowhere until it is whole, and says so in its place.
-    if (HOLD && d.pend.length) return { dn, wd, open, expected: d.expected, observed: 0, total: 0, peak: null, peakM: null, entries: 0, avg: null, miss: [], pend: d.pend, none: false, held: true };
     return { dn, wd, open, expected: d.expected, observed: d.observed, total: d.total, peak: d.observed ? d.peak : null, peakM: d.observed ? d.peakM : null, entries: d.entries, avg: d.observed ? d.total / d.observed : null, miss: d.miss, pend: d.pend, none: false };
   }
 
@@ -497,7 +487,7 @@
           for (let m = c * 60; m < c * 60 + 60; m++) {
             if (m < d.open) continue;
             expected++;
-            if (d.none || d.held) continue;
+            if (d.none) continue;
             const sim = DAYS.get(d.dn);
             if (!sim.obs(m)) continue;
             observed++; total += sim.occ[m]; samples.add(d.dn);
@@ -533,7 +523,7 @@
     const cur = weekMetrics(WOW.cur), prev = weekMetrics(WOW.prev);
     const comparable = cur.coverage >= WOW.minCoverage && prev.coverage >= WOW.minCoverage;
     // K-02, `pending`: the last 7 days are not whole until the buffered evening arrives, so the comparison waits («قيد
-    // الانتظار», CRD-10's sentence), in every option.
+    // الانتظار», CRD-10's sentence).
     return {
       cur, prev, comparable, pending: PAGE === "pending",
       avgChange: comparable ? ((cur.avg - prev.avg) / prev.avg) * 100 : null,
@@ -794,14 +784,12 @@
     btn.className = `hbadge${s.cls ? ` ${s.cls}` : ""}`;
     const words = (x) => `${x.mark}<span class="hb-word">${x.word}</span>` +
       `<span class="hb-line"><span class="sr-only">${RTL ? "، " : ", "}</span><span aria-hidden="true">· </span>${x.line}</span>`;
-    // K-02 (the options): from 721 px the control's box holds the widest status, whichever arrives, so loading, its
-    // arrival, a retry and any status change keep its place and size. Every status's words share one cell, unseen but
-    // the current one, which keeps its ink where it stood (at the box's inline end, by the chevron); the loading words
-    // lie over the same box (reports.css). On a phone only the current status is drawn, as before.
-    $("#ops-btn-state").innerHTML = OPT
-      ? `<span class="hb-sv is-cur"><span class="sr-only">${L.opsTitle}: </span>${words(s)}</span>` +
-        Object.keys(OPS_STATES).map((k) => `<span class="hb-sv" aria-hidden="true">${words(OPS_STATES[k]())}</span>`).join("")
-      : `<span class="sr-only">${L.opsTitle}: </span>${words(s)}`;
+    // K-02 (DECISIONS item 14): from 721 px the status's slot is as wide as the widest status, which unseen copies of
+    // every status hold (style.css .hb-res), so loading, its arrival, a retry and any status change keep the control's
+    // place and the slot's size; the control itself is as wide as its own status (HDR-3), so its fill and its ring fit
+    // the status, at the slot's inline end, where the loading words stand too. On a phone only the control is drawn.
+    $("#ops-btn-state").innerHTML = `<span class="sr-only">${L.opsTitle}: </span>${words(s)}`;
+    $("#ops-res").innerHTML = Object.values(OPS_STATES).map((f) => `<span class="hb-r">${words(f())}<svg class="hb-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5"/></svg></span>`).join("");
     $("#ops-state").className = `ops-state${s.cls ? ` ${s.cls}` : ""}`;
     $("#ops-state").innerHTML = `${s.mark}<span>${s.word}</span>`;
     $("#ops-last").innerHTML = s.detail || s.line + (s.ago ? `<span class="sep" aria-hidden="true">·</span><span class="ops-ago">${s.ago}</span>` : "");
@@ -838,11 +826,8 @@
     const n = model.n, custom = range.kind === "custom";
     const sep = `<span class="sep" aria-hidden="true">·</span>`;
     // K-02: while the page loads or could not load, the period's dates and a custom period's length are the request,
-    // real text from the first paint; how many days have readings comes with the payload. Option b names a day it holds
-    // back (`pending`): «22 سبتمبر بانتظار القراءات».
-    const held = model.days.find((d) => d.held);
+    // real text from the first paint; how many days have readings comes with the payload.
     const tail = phase !== "ready" ? (custom ? L.days(n) : "")
-      : held ? `${custom ? `${L.days(n)}${sep}` : ""}${L.waitDay(dateText(held.dn))}`
       : model.withReadings === n ? (custom ? L.days(n) : "")
       : model.withReadings ? L.daysWith(model.withReadings, n)
       : custom ? `${L.noReadings}${sep}${L.days(n)}` : L.noReadings;
@@ -1195,7 +1180,7 @@
   const daysNote = (words, a, b) => spanNote(words, dateText(a), dateText(b));
   // A camera gap inside a day (minutes since 6:00 AM, the last one inclusive).
   const gapNote = ([a, b]) => spanNote(L.noReadings, timeText(a), timeText(b + 1));
-  // K-02, `pending` in options a and c: the part of a day not received yet, one sentence with the words first, in the
+  // K-02, `pending`: the part of a day not received yet, one sentence with the words first, in the
   // place a camera gap's note takes: «بانتظار القراءات منذ 9:10 م» (the Daily page's waiting sentence, decision 12).
   const waitNote = ([a]) => `<span class="gapnote is-wait"><span class="w">${L.waiting}</span> <span class="nw"><span class="w">${L.since}</span> <span class="rg">${timeText(a)}</span></span></span>`;
   const dayNotes = (d) => d.miss.map(gapNote).join("") + (d.pend || []).map(waitNote).join("");
@@ -1248,7 +1233,6 @@
       sortedDays().forEach((d) => {
         if (d.none) { pre.push(d); return; }
         flushPre();
-        if (d.held) { out.push(dayNoneRow(d, L.waiting)); return; }
         if (!d.observed) { out.push(dayNoneRow(d, L.noReadings)); return; }
         const top = model.top && model.top.dn === d.dn;
         const notes = dayNotes(d);
@@ -1291,7 +1275,6 @@
     sortedDays().forEach((d) => {
       if (d.none) { pre.push(d); return; }
       flushPre();
-      if (d.held) { items.push(dayNoneItem(d, L.waiting)); return; }
       if (!d.observed) { items.push(dayNoneItem(d, L.noReadings)); return; }
       const top = model.top && model.top.dn === d.dn;
       const notes = dayNotes(d);
@@ -1334,7 +1317,7 @@
     const hhmm = (m) => { const c = clock(m); const h = (c.h12 % 12) + (c.pm ? 12 : 0); return `${String(h).padStart(2, "0")}:${String(c.mm).padStart(2, "0")}`; };
     const lines = ["day,weekday,peak,peak_time,average_inside,entries,note"];
     sortedDays().forEach((d) => {
-      const note = d.none ? "no readings yet" : d.held ? "waiting for readings" : !d.observed ? "no readings"
+      const note = d.none ? "no readings yet" : !d.observed ? "no readings"
         : [...d.miss.map(([a, b]) => `no readings ${hhmm(a)}-${hhmm(b + 1)}`), ...(d.pend || []).map(([a]) => `waiting for readings since ${hhmm(a)}`)].join("; ");
       lines.push([isoOf(d.dn), WD_EN[d.wd], d.observed ? d.peak : "", d.observed ? hhmm(d.peakM) : "", d.observed ? Math.round(d.avg) : "", d.observed ? d.entries : "", q(note)].join(","));
     });
@@ -1383,33 +1366,25 @@
   }
 
   /* ---------------------------------------------------------------- the page's states (K-02)
-   * Step 4's states round: Reports' loading, page-level closed, unavailable and error, and the statuses that say its
-   * data is not current, in three options for the user (data-option a, b, c). Each draws over the live page's own
-   * render: renderAll() renders the period, then applyPhase() writes the state into the same places, so the arrival of
-   * the payload is the live page's render, whose boxes the placeholders already hold (DESIGN_GUIDE §6).
+   * Reports' loading, page-level closed, unavailable and error, and the statuses that say its data is not current, as
+   * the user decided on 2026-10-03 (DECISIONS item 14: the options round's A, with C's error). Each draws over the live
+   * page's own render: renderAll() renders the period, then applyPhase() writes the state into the same places, so the
+   * arrival of the payload is the live page's render, whose boxes the placeholders already hold (DESIGN_GUIDE §6).
    *   loading  0-300 ms the value slots wait empty (data-load="wait"); from 300 ms the skeleton, at least 400 ms; one
    *            announcement at 1 s; the 10 s ceiling turns it into Error. ?arrive=<ms> lets the payload arrive into
    *            live that many ms after the page opened; ?arrive=never lets the ceiling run; without it the skeleton is
    *            held, for review. The header says «جارٍ التحميل…» (STW-2). Names, the period's dates (the request),
    *            the pattern's axes and the period's days are real text from the first paint; the pattern never draws a
-   *            bar or a cell it does not have (DESIGN_GUIDE §6: charts do not imitate data).
-   *              a  a placeholder in every awaited value: the glance, the pattern's subtitle, day by day's rows;
-   *              b  placeholders in the glance only; the pattern draws what the schedule knows (its closed runs, in
-   *                 words); day by day steps aside until the payload (it adds below, moving nothing);
-   *              c  no placeholders: the page's frame and its names; day by day steps aside.
-   *   error    the payload could not be loaded (or the ceiling was reached): the header's Error; the one retry, which
+   *            bar or a cell it does not have (DESIGN_GUIDE §6: charts do not imitate data). A placeholder stands in
+   *            every awaited value: the glance, the pattern's subtitle, day by day's rows.
+   *   error    the payload could not be loaded (or the ceiling was reached): the header's Error; one message for the
+   *            page under its controls, in the empty period's form (EMP-1: the mark, one sentence naming what is
+   *            missing and its dates, one action); the cards, the pattern and day by day step aside. The one retry
    *            takes focus and runs as an action (STA-9), then arrives into live.
-   *              a, b  the period's card holds the alert and the retry in its own box (EMP-5's place: the page's first
-   *                    answer); the other cards keep their names, the pattern its frame; day by day steps aside;
-   *              c     one message for the page under its controls, in the empty period's form (EMP-1: the mark, one
-   *                    sentence naming what is missing and its dates, one action); the cards step aside.
    *   closed, delayed, unavailable  the header's status (STW-1); the history is whole, so the page is unchanged but
-   *            for its light: a and c turn the pattern's light off under every status but Live (DECISIONS 8, Daily's
-   *            rule); b keeps it while every day the pattern shows is in (LGT-8: "the light returns with a complete
-   *            value").
-   *   pending  Offline since 9:10 PM on 22 September: a and c keep the received part of that day and note the rest,
-   *            «بانتظار القراءات منذ 9:10 م»; b holds the day back («بانتظار القراءات» in its place, the subtitle naming
-   *            it) so every figure is of whole days; "Last 7 days" waits («قيد الانتظار») in all three. */
+   *            for its light: the pattern's light is off under every status but Live (DECISIONS 8, Daily's rule).
+   *   pending  Offline since 9:10 PM on 22 September: the received part of that day counts and the rest is noted,
+   *            «بانتظار القراءات منذ 9:10 م»; "Last 7 days" waits («قيد الانتظار»). */
   const LOAD = { delay: 300, min: 400, say: 1000, ceiling: 10000, retry: 1200 };
   const ARRIVE = (() => { const a = params.get("arrive"); if (a === "never") return "never"; const n = Number(a); return a != null && a !== "" && Number.isFinite(n) && n >= 0 ? n : null; })();
   const load = { shownAt: null, timers: [], announcements: [] };
@@ -1421,26 +1396,25 @@
   const busyEls = () => [$("#cards"), $("#pattern"), $("#days")];
   let retryBtn = null;
 
-  // The glance in waiting: every value's own slot holds its placeholder (shown in a and b; c keeps them unseen, so its
-  // slots wait empty in the same boxes). The "Last 7 days" span is a date range, known before the payload.
-  function pendGlance(withPh) {
-    const w = (n) => (withPh ? n : 0);
-    $("#avg-body").innerHTML = `${valueSlot(w(56))}<div class="stat-foot"></div>`;
+  // The glance in waiting: every value's own slot holds its placeholder. The "Last 7 days" span is a date range, known
+  // before the payload.
+  function pendGlance() {
+    $("#avg-body").innerHTML = `${valueSlot(56)}<div class="stat-foot"></div>`;
     // The peak's "when" as the live meta draws it: the day, then the time (on two lines on a phone). Each bar is as wide
     // as its words in this language («الخميس 17 سبتمبر» and «6:58 م»; "Thu 17 Sep" and "6:58 PM"), so the bars sit inside
     // the card where the words arrive and the arrival moves nothing.
-    $("#peak-meta").innerHTML = withPh ? `${ph(RTL ? 101 : 62)}<span class="sep ph-sep" aria-hidden="true">·</span>${ph(RTL ? 33 : 44)}` : "";
-    $("#peak-body").innerHTML = `${valueSlot(w(56))}<div class="stat-foot">${withPh ? phBox() : ""}</div>`;
-    $("#entries-body").innerHTML = `${valueSlot(w(112))}<div class="stat-foot">${withPh ? `<span class="stat-aside">${ph(88)}</span>` : ""}</div>`;
-    $("#trend-body").innerHTML = `${valueSlot(w(88))}<div class="stat-foot">${withPh ? `${phBox(104)}<span class="stat-aside">${ph(88)}</span>` : ""}</div>`;
+    $("#peak-meta").innerHTML = `${ph(RTL ? 101 : 62)}<span class="sep ph-sep" aria-hidden="true">·</span>${ph(RTL ? 33 : 44)}`;
+    $("#peak-body").innerHTML = `${valueSlot(56)}<div class="stat-foot">${phBox()}</div>`;
+    $("#entries-body").innerHTML = `${valueSlot(112)}<div class="stat-foot"><span class="stat-aside">${ph(88)}</span></div>`;
+    $("#trend-body").innerHTML = `${valueSlot(88)}<div class="stat-foot">${phBox(104)}<span class="stat-aside">${ph(88)}</span></div>`;
   }
   // The pattern in waiting: its title, the first part of its subtitle, its axes and its key's fixed words are real;
-  // the busiest hour (a placeholder in a, held unseen otherwise) and the key's data marks keep their places, unseen.
-  // From 1280 px the week's grid draws its axes on the empty plate (b adds the closed runs the schedule knows); below,
+  // the busiest hour (a placeholder) and the key's data marks keep their places, unseen.
+  // From 1280 px the week's grid draws its axes on the empty plate; below,
   // the week strip names its days (none chosen, nothing to choose yet) over the hours' empty frame.
-  function pendPattern(withPh) {
+  function pendPattern() {
     const sub = $("#pattern-sub");
-    sub.innerHTML = `<span class="ps-part">${L.patternSub}</span><span class="sep ph-sep" aria-hidden="true">·</span><span class="ps-part">${ph(168, `ph-lab${withPh ? "" : " ph-unseen"}`)}</span>`;
+    sub.innerHTML = `<span class="ps-part">${L.patternSub}</span><span class="sep ph-sep" aria-hidden="true">·</span><span class="ps-part">${ph(168, "ph-lab")}</span>`;
     numbersBtn.disabled = true;
     if (dayForm()) {
       const strip = [0, 1, 2, 3, 4, 5, 6].map((wd) => `<button type="button" class="wk-b" role="radio" aria-checked="false" disabled><span class="wk-col" aria-hidden="true"></span><span class="wk-n" aria-hidden="true">${wdStrip(wd)}</span><span class="sr-only">${wdLong(wd)}</span></button>`).join("");
@@ -1454,20 +1428,15 @@
       const show = c % 3 === 0;
       hours.push(`<th scope="col" class="hh${show ? " is-shown" : ""}" role="columnheader"><span class="${show ? "hh-t" : "sr-only"}">${bdi(fmtHour(c * 60))}</span></th>`);
     }
-    const cells = (wd) => (OPT === "b"
-      ? heatRuns(wd).map(([c0, c1]) => (model.heat[wd][c0].state === "closed"
-        ? `<td class="hc closed" role="gridcell"${c1 > c0 ? ` colspan="${c1 - c0 + 1}"` : ""}><span class="run">${L.closed}</span></td>`
-        : Array.from({ length: c1 - c0 + 1 }, () => `<td class="hc ph-cell" role="gridcell"></td>`).join(""))).join("")
-      : `<td class="hc ph-cell" role="gridcell"></td>`.repeat(HOURS));
+    const cells = () => `<td class="hc ph-cell" role="gridcell"></td>`.repeat(HOURS);
     const rows = [0, 1, 2, 3, 4, 5, 6].map((wd) => `<tr role="row"><th scope="row" class="hd" role="rowheader">${wdLong(wd)}</th>${cells(wd)}</tr>`);
     heat.innerHTML = `<caption class="sr-only">${L.heatCaption(rangeText(model.a, model.b))}</caption><colgroup><col class="col-day">${"<col>".repeat(HOURS)}</colgroup>
       <thead><tr role="row"><th scope="col" class="heat-corner" role="columnheader"><span class="sr-only">${L.dayHead}</span></th>${hours.join("")}</tr></thead>
       <tbody>${rows.join("")}</tbody>`;
   }
-  // Day by day in waiting (option a): the period's days are the request, so each keeps its date; its figures wait in
+  // Day by day in waiting: the period's days are the request, so each keeps its date; its figures wait in
   // placeholders, its notes column empty. On a phone, the newest 7 as the list draws them. Sorting waits.
   function pendDays() {
-    if (OPT !== "a") { $("#days").hidden = true; return; }
     $("#days").hidden = false;
     tableExport.classList.add("is-disabled");
     tableExport.setAttribute("aria-disabled", "true");
@@ -1507,38 +1476,28 @@
     if (focus) retryBtn.focus();
   }
   function paintLoading() {
-    pendGlance(OPT !== "c");
-    pendPattern(OPT === "a");
+    pendGlance();
+    pendPattern();
     pendDays();
   }
   function paintError(focus) {
     $("#days").hidden = true;
-    if (OPT === "c") {
-      $("#cards").hidden = true;
-      $("#pattern").hidden = true;
-      let msg = $("#page-msg");
-      if (!msg) {
-        msg = Object.assign(document.createElement("section"), { className: "card rp-msg", id: "page-msg" });
-        $(".rp-tools").after(msg);
-      }
-      msg.innerHTML = alertHTML(L.errorDates(dateText(model.a, true), dateText(model.b, true)));
-      wireAlert(msg, focus);
-      return;
+    $("#cards").hidden = true;
+    $("#pattern").hidden = true;
+    let msg = $("#page-msg");
+    if (!msg) {
+      msg = Object.assign(document.createElement("section"), { className: "card rp-msg", id: "page-msg" });
+      $(".rp-tools").after(msg);
     }
-    pendGlance(false);
-    pendPattern(false);
-    const card = $("#card-period");
-    card.classList.add("is-alert");
-    const box = Object.assign(document.createElement("div"), { className: "rp-alert", id: "rp-alert" });
-    box.innerHTML = alertHTML(L.errorSay);
-    card.append(box);
-    wireAlert(box, focus);
+    // The period's two dates as the header writes the period (rangeText): the year once, at the end, when both share
+    // it; each date's year when the period spans two years (DECISIONS item 14).
+    const sameYear = partsOf(model.a).y === partsOf(model.b).y;
+    msg.innerHTML = alertHTML(L.errorDates(dateText(model.a, !sameYear), dateText(model.b, true)));
+    wireAlert(msg, focus);
   }
   // Every state's marks come off before the live render is written again (the arrival, or a period while ready).
   function clearPhase() {
-    $("#rp-alert")?.remove();
     $("#page-msg")?.remove();
-    $("#card-period").classList.remove("is-alert");
     $("#cards").hidden = false;
     $("#pattern").hidden = false;
     numbersBtn.disabled = false;
@@ -1553,9 +1512,8 @@
     exportBtn.disabled = waiting;
     if (phase === "loading") paintLoading();
     else if (waiting) { paintError(focusAlert); focusAlert = false; }
-    // The light (OWN-R6): the pattern's, while it holds a value. a and c: only under Live (Daily's rule, DECISIONS 8);
-    // b: in every status while the page has its payload, since what the pattern shows is whole (LGT-8).
-    const lit = !waiting && hasValues() && (pageNow === "live" || OPT === "b");
+    // The light (OWN-R6): the pattern's, while it holds a value, and only under Live (Daily's rule, DECISIONS 8).
+    const lit = !waiting && hasValues() && pageNow === "live";
     $("#pattern").classList.toggle("lit", lit);
     $("#pattern").classList.toggle("lit-chart", lit);
     renderStatus();
@@ -1917,9 +1875,8 @@
     ready: false,
     lang: LANG,
     state: STATE,
-    // K-02: the page's state, its option, and the first payload's lifecycle (as the Daily page's __eclipse.load).
+    // K-02: the page's state and the first payload's lifecycle (as the Daily page's __eclipse.load).
     page: PAGE,
-    option: OPT,
     get phase() { return phase; },
     get shown() { return pageNow; },
     load: {

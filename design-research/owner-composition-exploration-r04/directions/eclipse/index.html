@@ -112,10 +112,15 @@
              menu (the language, Monitoring and sign out) joins it. -->
         <div class="head-meta">
           <div class="head-acts">
-            <button class="hbadge" id="ops-btn" type="button" aria-expanded="false" aria-controls="ops-pop" aria-haspopup="dialog">
-              <span class="hb-state" id="ops-btn-state"></span>
-              <svg class="hb-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5"/></svg>
-            </button>
+            <!-- The status's slot (HDR-6, STW-2): from 721 px it is as wide as the widest status, which the unseen copies in
+                 .hb-res hold, and the control, as wide as its own status, stands at its inline end (HDR-3). -->
+            <span class="hb-slot" id="ops-slot">
+              <span class="hb-res" id="ops-res" aria-hidden="true"></span>
+              <button class="hbadge" id="ops-btn" type="button" aria-expanded="false" aria-controls="ops-pop" aria-haspopup="dialog">
+                <span class="hb-state" id="ops-btn-state"></span>
+                <svg class="hb-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5"/></svg>
+              </button>
+            </span>
             <div class="fw-pop ops-pop" id="ops-pop" role="dialog" aria-labelledby="ops-title" aria-describedby="ops-desc" tabindex="-1" hidden>
               <div class="ops-body">
                 <h2 class="ops-title" id="ops-title" data-t="opsTitle"></h2>

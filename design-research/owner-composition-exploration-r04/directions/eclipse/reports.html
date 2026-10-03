@@ -7,18 +7,15 @@
   <meta name="description" content="FITWAY Owner Reports page concept, Eclipse direction. Exploration concept with synthetic data. Not production.">
   <script>
     // Language and state before first paint: ?lang=ar|en (default ar), ?state=full|short (default full).
-    // K-02 (step 4's states round): ?state=loading|closed|delayed|unavailable|pending|error draws a page state over the
-    // full history, in the option ?option=a|b|c names (a when none is given). Without a page state or an option the page
-    // is the live page, unchanged.
+    // K-02 (decided 2026-10-03, DECISIONS item 14): ?state=loading|closed|delayed|unavailable|pending|error draws a page
+    // state over the full history. Without a page state the page is the live page.
     (function () {
       var p = new URLSearchParams(location.search), r = document.documentElement;
-      var en = p.get("lang") === "en", st = p.get("state"), opt = p.get("option");
+      var en = p.get("lang") === "en", st = p.get("state");
       r.lang = en ? "en" : "ar";
       r.dir = en ? "ltr" : "rtl";
       r.dataset.state = st === "short" ? "short" : "full";
       if (["loading", "closed", "delayed", "unavailable", "pending", "error"].indexOf(st) >= 0) r.dataset.page = st;
-      if (opt === "a" || opt === "b" || opt === "c") r.dataset.option = opt;
-      else if (r.dataset.page) r.dataset.option = "a";
     })();
   </script>
   <link rel="stylesheet" href="fonts/readex-pro.css">
@@ -111,10 +108,15 @@
              details, then the concept label; at 720 px and below the menu joins the status (as on Daily). -->
         <div class="head-meta">
           <div class="head-acts">
-            <button class="hbadge" id="ops-btn" type="button" aria-expanded="false" aria-controls="ops-pop" aria-haspopup="dialog">
-              <span class="hb-state" id="ops-btn-state"></span>
-              <svg class="hb-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5"/></svg>
-            </button>
+            <!-- The status's slot (HDR-6, STW-2): from 721 px it is as wide as the widest status, which the unseen copies in
+                 .hb-res hold, and the control, as wide as its own status, stands at its inline end (HDR-3). -->
+            <span class="hb-slot" id="ops-slot">
+              <span class="hb-res" id="ops-res" aria-hidden="true"></span>
+              <button class="hbadge" id="ops-btn" type="button" aria-expanded="false" aria-controls="ops-pop" aria-haspopup="dialog">
+                <span class="hb-state" id="ops-btn-state"></span>
+                <svg class="hb-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5"/></svg>
+              </button>
+            </span>
             <div class="fw-pop ops-pop" id="ops-pop" role="dialog" aria-labelledby="ops-title" aria-describedby="ops-desc" tabindex="-1" hidden>
               <div class="ops-body">
                 <h2 class="ops-title" id="ops-title" data-t="opsTitle"></h2>
