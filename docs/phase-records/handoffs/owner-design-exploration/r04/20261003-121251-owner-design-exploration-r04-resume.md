@@ -8,7 +8,7 @@
 ## State
 
 - **K-02 is built** as decision 14 says (the user's two answers of 2026-10-03 included): `cbd7bbc` on the build branch,
-  by an Opus builder from `design-research/owner-composition-exploration-r04/directions/briefs/builder-k02-build-a.md`.
+  by an Opus builder from `D:/Projects/fitway-worktrees/owner-followup-r04-s04/design-research/owner-composition-exploration-r04/directions/briefs/builder-k02-build-a.md`.
   Reports has option A's behaviour only, with C's page-level error sentence (year once); the status control keeps one
   width from 721 up on Reports and Daily, and its hover, open and focus outline fits the text. The coordinator looked
   at the error frames, the outline crops and Daily's 1024 EN header. No independent review yet.
@@ -21,7 +21,7 @@
 ## Running now
 
 - **Codex D3-D8, run 4,** on the build worktree from
-  `design-research/owner-composition-exploration-r04/directions/briefs/codex-d3-d8-defects.md` (HEAD `8b6c30f` over
+  `D:/Projects/fitway-worktrees/owner-followup-r04-s04/design-research/owner-composition-exploration-r04/directions/briefs/codex-d3-d8-defects.md` (HEAD `8b6c30f` over
   `cbd7bbc`), launched 12:10. Output: `D:/fitway-temp/codex-runs/owner-d3-d8/run4/` (`last-message.md` when done).
   Grade it on `D:/fitway-grader/owner-r04/d3-d8-heldout.md` (K1 and K7 updated for the removed options).
 
