@@ -1,0 +1,98 @@
+schemaVersion: 1
+milestoneId: agent-environment-r01
+taskClass: repository-infrastructure
+packetStatus: READY
+stateRef: PROJECT_STATE.yaml#/milestones/agent-environment-r01
+baseCommit: ad49c8afe85d7acc86dd909eff7a3e33de93dabe
+task:
+  objective: >-
+    Make the agent environment resumable, navigable and cheap to start: a short current resume
+    point any fresh session reaches from the startup route, standing decisions in one place,
+    briefs checked against the worktree an agent will run in, and quieter, guarded tooling.
+  acceptanceCriteria:
+    - A fresh session given only "كمّل" (continue) reaches the correct next step through PROJECT_STATE.yaml, context:show and the current handoff, without a pasted message.
+    - Each resume point is a new handoff file of at most 12 KB with fixed headings; earlier ones stay as history and are not read by default. Standing decisions and working agreements live in one file edited in place.
+    - The pnpm handoff:new script creates the next resume point from the template and updates the state pointer, packet hash and lease; check:repository rejects an oversized or incomplete resume point, a missing absolute path, or a local_ session id.
+    - context:show accepts the documented "pnpm context:show -- --milestone <id>" form and warns when the branch is behind its upstream.
+    - The pnpm brief:check script fails when a brief cites a path or a section that is missing from the worktree the agent will run in; brief templates for designer, builder, verifier and Codex rounds exist.
+    - lefthook prints only failures, .impeccable/ is ignored, and a CI workflow runs Biome, check:repository, check:agent-context and the script unit tests.
+  explicitExclusions:
+    - Product code, copy, behavior, data semantics, dependencies and migrations.
+    - Any change to locked product, security, privacy, accessibility, visual-authority or design decisions; policy files change only by adding pointers, procedures and checks.
+    - Owner concept work, CLAUDE.md and .claude/**, which stay with owner-design-exploration-r04.
+scope:
+  ownedPaths:
+    - AGENTS.md
+    - docs/WORKFLOW.md
+    - docs/agent-context/**
+    - docs/phase-records/handoffs/agent-environment/**
+    - docs/phase-records/task-packets/agent-environment-r01.yaml
+    - scripts/show-agent-context.mjs
+    - scripts/show-agent-context.test.ts
+    - scripts/verify-repository.mjs
+    - scripts/verify-repository.schema.test.ts
+    - scripts/check-agent-context.mjs
+    - scripts/check-agent-context.test.ts
+    - scripts/agent-environment/**
+    - package.json
+    - lefthook.yml
+    - .gitignore
+    - .github/workflows/**
+  forbiddenPaths:
+    - apps/**, packages/**, tests/browser/** and migrations
+    - design-research/**, visual-direction-gate/**, docs/design/**, docs/adr/** and approval manifests
+    - FITWAY_PRODUCT.md, SPEC.md, DESIGN_GUIDE.md, DESIGN.md and PHASES.md
+    - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
+    - CLAUDE.md and .claude/** (owned by owner-design-exploration-r04)
+    - pnpm-lock.yaml and dependencies
+    - docs/archive/** and other milestones' handoffs and packets
+  sharedLeases: []
+authorities:
+  required:
+    - role: workflow
+      path: docs/WORKFLOW.md
+      selector: { kind: markdown-heading, value: "Roles" }
+      reason: Preserve coordinator, worker, and verifier ownership.
+    - role: contract
+      path: docs/schemas/project-state.schema.json
+      selector: { kind: json-pointer, value: "/properties/milestones" }
+      reason: Inspect current state invariants before additive infrastructure work.
+    - role: test
+      path: scripts/verify-repository.mjs
+      selector: { kind: whole-file, value: "" }
+      reason: Keep the repository ladder and mutation guards intact.
+  conditional:
+    - trigger: the infrastructure can affect a Product or Spec guarantee
+      role: product
+      path: FITWAY_PRODUCT.md
+      selector: { kind: markdown-heading, value: "Canonical detail" }
+      actionIfTriggered: READ
+    - trigger: the infrastructure changes a design-context bridge
+      role: design
+      path: DESIGN.md
+      selector: { kind: markdown-heading, value: "Design" }
+      actionIfTriggered: READ
+continuity:
+  predecessorMilestones: []
+  currentHandoff: docs/phase-records/handoffs/agent-environment/20261003-021956-agent-environment-r01-resume.md
+  unresolvedDecisions: []
+verification:
+  profile: focused repository-infrastructure profile; script unit tests for touched scripts, check:repository, check:agent-context, Biome
+  orderedGates:
+    - Validate the READY packet and ledger with context:show and check:agent-context.
+    - Add or update unit tests for every touched script and run them with scripts/run-vitest.mjs.
+    - Run check:repository, check:agent-context and Biome on the changed files; git status must be unchanged by the runs.
+    - Prove the resume route in a fresh session that receives only "كمّل".
+    - Independent verification against this packet's acceptance criteria before integration.
+  independentReviewRequired: true
+evidence:
+  receiptTemplate: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
+  requiredArtifacts:
+    - Exact unit-test, check:repository and check:agent-context results with the packet SHA-256.
+    - The fresh-session resume transcript excerpt showing the route it took and the step it reached.
+    - The independent verifier's report.
+limitations:
+  - Authorized by the user on 2026-10-02, who approved every proposal of the 2026-10-02 retrospective and delegated the environment decisions to the coordinator.
+  - Owner-specific navigation aids (indexes for the Eclipse files, the probe kit, README split) belong to owner-design-exploration-r04's owned paths and are done there.
+  - Evaluation loops for briefs and agents, and any Claude Code mod, are later work and not claimed here.
+  - package.json changes are limited to its "scripts" entries.

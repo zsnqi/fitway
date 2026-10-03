@@ -1,10 +1,14 @@
 # Lefthook configuration
 # https://github.com/evilmartians/lefthook
 
+output:
+  - failure
+no_tty: true
+
 pre-commit:
   parallel: true
   jobs:
     - name: biome
       glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
-      run: pnpm biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
+      run: pnpm biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files} 2>&1
       stage_fixed: true

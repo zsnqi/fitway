@@ -43,7 +43,7 @@ metadata fails closed in both modes.
 At startup, use the bounded route and continuity check:
 
 ```text
-pnpm context:show -- --milestone <milestone-id>
+pnpm context:show --milestone <milestone-id>
 ```
 
 `context:show` reads `ROUTES.yaml` and `PROJECT_STATE.yaml`, then inspects and reads only the

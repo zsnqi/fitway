@@ -1510,10 +1510,31 @@ export async function checkAgentContext({
 	};
 }
 
-export function formatAgentContextResult(result) {
+export function formatAgentContextWarnings(
+	result,
+	{ verbose = false, warningPrefix = "WARNING: " } = {},
+) {
 	const lines = [];
-	for (const warning of result.warnings ?? [])
-		lines.push(`WARNING: ${warning}`);
+	let admittedCount = 0;
+	for (const warning of result.warnings ?? []) {
+		const admitted =
+			/^historical pointer exception admitted(?::| for untracked target:| without tracking classification:)/.test(
+				warning,
+			);
+		if (admitted) admittedCount += 1;
+		if (!admitted || verbose || !result.ok)
+			lines.push(`${warningPrefix}${warning}`);
+	}
+	if (result.ok && admittedCount > 0) {
+		lines.push(
+			`Historical pointer exceptions admitted: ${admittedCount}${verbose ? "." : " (use --verbose to list)."}`,
+		);
+	}
+	return lines;
+}
+
+export function formatAgentContextResult(result, options = {}) {
+	const lines = formatAgentContextWarnings(result, options);
 	if (result.ok) {
 		lines.push(
 			`check-agent-context passed: ${Object.keys(result.registry?.routes ?? {}).length} task classes; startup routing mode: ${result.registry?.mode ?? "unknown"}.`,
@@ -1528,6 +1549,7 @@ export function formatAgentContextResult(result) {
 function parseArgs(args) {
 	let milestoneId = null;
 	let checkTracked = true;
+	let verbose = false;
 	for (let index = 0; index < args.length; index += 1) {
 		const argument = args[index];
 		if (argument === "--milestone") {
@@ -1535,16 +1557,18 @@ function parseArgs(args) {
 			if (!milestoneId) throw new Error("--milestone requires a value");
 		} else if (argument === "--no-tracked") {
 			checkTracked = false;
+		} else if (argument === "--verbose") {
+			verbose = true;
 		} else if (argument === "--help" || argument === "-h") {
 			console.log(
-				"Usage: node scripts/check-agent-context.mjs [--milestone <id>] [--no-tracked]",
+				"Usage: node scripts/check-agent-context.mjs [--milestone <id>] [--no-tracked] [--verbose]",
 			);
 			process.exit(0);
 		} else {
 			throw new Error(`Unknown argument: ${argument}`);
 		}
 	}
-	return { milestoneId, checkTracked };
+	return { milestoneId, checkTracked, verbose };
 }
 
 const isMain =
@@ -1552,8 +1576,9 @@ const isMain =
 	fileURLToPath(import.meta.url) === path.resolve(process.argv[1]);
 if (isMain) {
 	try {
-		const result = await checkAgentContext(parseArgs(process.argv.slice(2)));
-		console.log(formatAgentContextResult(result));
+		const options = parseArgs(process.argv.slice(2));
+		const result = await checkAgentContext(options);
+		console.log(formatAgentContextResult(result, options));
 		if (!result.ok) process.exitCode = 1;
 	} catch (error) {
 		console.error(`check-agent-context FAILED: ${asError(error)}`);
