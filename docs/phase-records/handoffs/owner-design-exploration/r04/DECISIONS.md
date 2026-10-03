@@ -126,6 +126,8 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     accepting it.
 23. **Arabic peak times line up whenever the figures differ in width** (2026-10-03, option 3-1): a one-digit peak
     among two-digit ones lines up as a three-digit one does. This widens item 16's Arabic rule.
+    Readex Pro's two-digit figures differ slightly in width, so all-two-digit Arabic tables align too (coordinator,
+    2026-10-04: kept, as item 23 says).
 24. **Coordinator picks on the review's notes** (2026-10-03, delegated by the user):
     - Arabic bare hour ranges («6–7 م») stay isolated left to right, while ranges of times or dates with words
       («2:14 م – 2:31 م», «16 – 22 سبتمبر») start on the right. The bare range reads as one number; this was settled

@@ -91,8 +91,11 @@ checks live outside the repository and never appear here or in a brief.
   named cause; all 560 Daily frames identical). F4 and F5 FAIL on strict first-paint parity only: Daily's medians are
   back at `41a6f7c`'s (from about 20 ms later at `e675f1e`), the slot widths are unchanged, and Arabic loads keep
   occasional 50-53 ms tasks (5 of 60 against 1 of 60). No workaround was added (B3 held).
-- **Held-out rows:** `D:/fitway-grader/owner-r04/fix-1-heldout.md` (H1-H9), written before any verification; graded
-  with the touch-trial build's verification.
+- **Held-out rows:** `D:/fitway-grader/owner-r04/fix-1-heldout.md` (H1-H9), written before any verification. 7 of 9
+  pass (H1, H2, H4-H7, H9); H8 observed, pre-existing; H3 fails its second half on the coordinator's held-out
+  expectation, not on the brief: decision 23 aligns any Arabic column whose figures differ in width, and Readex Pro's
+  two-digit figures do.
+- **Failure cause:** none in the code.
 - **Environment:** the Claude app exited mid-run and killed the run with it; the same thread was resumed with
   `codex exec --approve-for-me ... resume <thread_id>` and finished from the uncommitted tree. After the commit an
   Impeccable hook flagged a legend swatch in `components.css`; Codex judged it a false positive and added a
