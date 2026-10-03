@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-10-03T11:40:53+03:00
+updatedAt: 2026-10-03T11:45:00+03:00
 coordinator:
-  owner: Primary coordinator and integrator for FITWAY; Owner r04 (concept-only Eclipse work) is IN_PROGRESS; agent-environment-r01 is DONE and archived.
+  owner: Primary coordinator and integrator for FITWAY; Owner r04 (concept-only Eclipse work) and agent-environment-r02 (brief evaluation loop and usage panel) are IN_PROGRESS; agent-environment-r01 is DONE and archived.
   stateFilePolicy: coordinator-only
 baseline:
   status: DONE
@@ -66,5 +66,49 @@ milestones:
       browser: PENDING
       accessibility: PENDING
       visual: PENDING
+      independentReview: PENDING
+    integratedCommit: null
+  agent-environment-r02:
+    status: IN_PROGRESS
+    objective: >-
+      Improve the briefs and the coordinator's view of its own limits: find which brief faults cause Codex
+      rounds to fail, test template lines that remove them through the evaluation loop before they enter the
+      templates, and give the user a Claude Code panel for the subscription limits.
+    taskClass: repository-infrastructure
+    taskPacket: docs/phase-records/task-packets/agent-environment-r02.yaml
+    taskPacketSha256: bcc81f5507e353c4ec9b7f8af35b381dac4cc58d92059c7d621d3a1105560839
+    dependencies:
+      - agent-environment-r01
+    ownerSession: claude-code-desktop:coordinator-28297a9c
+    branch: agent-environment-r02
+    worktree: D:/Projects/fitway-worktrees/agent-environment-r02
+    baseCommit: 81ffd55fa6fe0c73061edc31f5e170b619a6ca93
+    ownedPaths:
+      - docs/agent-context/briefs/**
+      - docs/agent-context/HANDOFF_TEMPLATE.md
+      - docs/agent-context/WORKING_AGREEMENTS.md
+      - docs/phase-records/handoffs/agent-environment/**
+      - docs/phase-records/task-packets/agent-environment-r02.yaml
+      - scripts/agent-environment/**
+    forbiddenPaths:
+      - apps/**, packages/**, tests/browser/** and migrations
+      - design-research/**, visual-direction-gate/**, docs/design/**, docs/adr/** and approval manifests
+      - FITWAY_PRODUCT.md, SPEC.md, DESIGN_GUIDE.md, DESIGN.md and PHASES.md
+      - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
+      - CLAUDE.md and .claude/** (owned by owner-design-exploration-r04)
+      - pnpm-lock.yaml and dependencies
+      - docs/archive/** and other milestones' handoffs and packets
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: 2026-10-03T11:45:00+03:00
+    leaseExpiresAt: 2026-10-06T11:45:00+03:00
+    handoff: docs/phase-records/handoffs/agent-environment/20261003-114500-agent-environment-r02-resume.md
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: NOT_REQUIRED
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
       independentReview: PENDING
     integratedCommit: null

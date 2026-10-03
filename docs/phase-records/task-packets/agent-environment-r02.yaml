@@ -1,0 +1,87 @@
+schemaVersion: 1
+milestoneId: agent-environment-r02
+taskClass: repository-infrastructure
+packetStatus: READY
+stateRef: PROJECT_STATE.yaml#/milestones/agent-environment-r02
+baseCommit: 81ffd55fa6fe0c73061edc31f5e170b619a6ca93
+task:
+  objective: >-
+    Improve the briefs and the coordinator's view of its own limits: find which brief faults cause Codex rounds to
+    fail, test template lines that remove them through the evaluation loop before they enter the templates, and give
+    the user a Claude Code panel for the subscription limits.
+  acceptanceCriteria:
+    - Every Codex round recorded in both codex-rounds.md files is classified brief-caused, code-caused or unclear, per failed row, with the recurring brief causes named and cited.
+    - Each template line proposed for a recurring cause is tested through the evaluation loop (a Codex round graded on held-out rows kept outside the brief) before it enters docs/agent-context/briefs/, and the loop's result is recorded with the line.
+    - HANDOFF_TEMPLATE.md and the brief templates agree with the tools they describe (no option or step the tool does not have).
+    - The usage panel of agent-environment DECISIONS item 8 exists as a Claude Code mod and is installed only with the user's approval, once the desktop app runs Claude Code 2.1.287 or later.
+  explicitExclusions:
+    - Product code, copy, behavior, data semantics, dependencies and migrations.
+    - Any change to locked product, security, privacy, accessibility, visual-authority or design decisions.
+    - Owner concept work, CLAUDE.md and .claude/**, which stay with owner-design-exploration-r04; the Owner milestone's brief rules (its DECISIONS.md B1-B7) change only through that milestone.
+    - Taste and design quality, which stay with the user (agent-environment DECISIONS item 9).
+scope:
+  ownedPaths:
+    - docs/agent-context/briefs/**
+    - docs/agent-context/HANDOFF_TEMPLATE.md
+    - docs/agent-context/WORKING_AGREEMENTS.md
+    - docs/phase-records/handoffs/agent-environment/**
+    - docs/phase-records/task-packets/agent-environment-r02.yaml
+    - scripts/agent-environment/**
+  forbiddenPaths:
+    - apps/**, packages/**, tests/browser/** and migrations
+    - design-research/**, visual-direction-gate/**, docs/design/**, docs/adr/** and approval manifests
+    - FITWAY_PRODUCT.md, SPEC.md, DESIGN_GUIDE.md, DESIGN.md and PHASES.md
+    - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
+    - CLAUDE.md and .claude/** (owned by owner-design-exploration-r04)
+    - pnpm-lock.yaml and dependencies
+    - docs/archive/** and other milestones' handoffs and packets
+  sharedLeases: []
+authorities:
+  required:
+    - role: workflow
+      path: docs/WORKFLOW.md
+      selector: { kind: markdown-heading, value: "Roles" }
+      reason: Preserve coordinator, worker, and verifier ownership.
+    - role: contract
+      path: docs/schemas/project-state.schema.json
+      selector: { kind: json-pointer, value: "/properties/milestones" }
+      reason: Inspect current state invariants before additive infrastructure work.
+    - role: test
+      path: scripts/verify-repository.mjs
+      selector: { kind: whole-file, value: "" }
+      reason: Keep the repository ladder and mutation guards intact.
+  conditional:
+    - trigger: the infrastructure can affect a Product or Spec guarantee
+      role: product
+      path: FITWAY_PRODUCT.md
+      selector: { kind: markdown-heading, value: "Canonical detail" }
+      actionIfTriggered: READ
+    - trigger: the infrastructure changes a design-context bridge
+      role: design
+      path: DESIGN.md
+      selector: { kind: markdown-heading, value: "Design" }
+      actionIfTriggered: READ
+continuity:
+  predecessorMilestones:
+    - agent-environment-r01
+  currentHandoff: docs/phase-records/handoffs/agent-environment/20261003-114500-agent-environment-r02-resume.md
+  unresolvedDecisions: []
+verification:
+  profile: focused repository-infrastructure profile; script unit tests for touched scripts, check:repository, check:agent-context, Biome; held-out grading of each evaluation round
+  orderedGates:
+    - Validate the READY packet and ledger with context:show and check:agent-context.
+    - Grade every evaluation round on held-out rows kept outside the brief, and record brief rows, held-out rows and the failure cause.
+    - Add or update unit tests for every touched script and run them with scripts/run-vitest.mjs.
+    - Run check:repository, check:agent-context and Biome on the changed files; git status must be unchanged by the runs.
+    - Independent verification against this packet's acceptance criteria before integration.
+  independentReviewRequired: true
+evidence:
+  receiptTemplate: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
+  requiredArtifacts:
+    - The per-round failure classification with citations.
+    - For each adopted template line, the evaluation round that tested it, with brief and held-out results.
+    - Exact unit-test, check:repository and check:agent-context results with the packet SHA-256.
+    - The independent verifier's report.
+limitations:
+  - Opened by the coordinator on 2026-10-03 as the successor that agent-environment-r01's packet named ("later work"), under agent-environment DECISIONS items 1, 6, 8 and 9.
+  - The usage panel waits on the user's desktop-app update; installing a mod changes the user's Claude Code configuration and needs the user's approval.
