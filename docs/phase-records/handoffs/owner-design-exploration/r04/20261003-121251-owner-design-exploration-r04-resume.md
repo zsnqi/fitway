@@ -20,6 +20,11 @@
 
 ## Running now
 
+Nothing. **Codex D3-D8 run 4 stopped at the usage limit** (13:4x) before committing: its changes to six Eclipse
+files are uncommitted in the build worktree, saved also as `D:/fitway-temp/codex-runs/owner-d3-d8/run4/partial-unverified.patch`.
+Resume that Codex session (thread `01a10109-91d9-70a3-9232-9e121daabb1a`) after the user switches the Codex account,
+at `high`, to finish its checks, commit and report. The run was:
+
 - **Codex D3-D8, run 4,** on the build worktree from
   `D:/Projects/fitway-worktrees/owner-followup-r04-s04/design-research/owner-composition-exploration-r04/directions/briefs/codex-d3-d8-defects.md` (HEAD `8b6c30f` over
   `cbd7bbc`), launched 12:10. Output: `D:/fitway-temp/codex-runs/owner-d3-d8/run4/` (`last-message.md` when done).
