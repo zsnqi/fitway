@@ -17,6 +17,13 @@ latest wording; never copy an entry into a resume point.
 - Inside an announced task, process, tooling and ordering are the coordinator's decisions; it
   reports them at the end. (user, 2026-10-02)
 
+## Talking with the user
+
+- Questions and reports for the user are in plain words: what the user will see on the page, and what each answer
+  changes. A question names the thing itself ("Should Daily get its own layout for the phone?"), never the process
+  ("Does the design round stay?"). Leave out pixel values and other measurements unless the user asks for them;
+  name a screen by the device (on the phone, on a tablet, on a computer). The measurements stay in the records and in
+  the agents' reports. (user, 2026-10-03, after a decision page that was hard to read)
 ## Sessions and resuming
 
 - The coordinator's own context stays small: fresh agents do the reading and building, and the
