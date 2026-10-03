@@ -65,3 +65,6 @@ latest wording; never copy an entry into a resume point.
   pass, because a rule can be fragile or wrong. It names the rule that produced the finding as the suspect; when
   that rule is the user's decision, it goes back to the user. (user, 2026-10-03, after English tables built to
   decision 9 passed every check while reading wrong)
+- A review looks at every element the round changed as a whole on the page (its order, alignment, sizes and
+  spacing), not only at whether the requested change happened: a change can be done and still read badly. (user,
+  2026-10-03, after the busiest-time card on the phone passed every check while reading badly)
