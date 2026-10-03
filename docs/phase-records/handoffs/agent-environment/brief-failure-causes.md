@@ -36,3 +36,20 @@ OW = `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md`.
 
 Causes 2 and 3 are the candidates for new template lines, each to be tested in an evaluation round before it is
 adopted.
+
+## Candidate lines (coordinator drafts, 2026-10-03; not adopted)
+
+For the coordinator checklist of `docs/agent-context/briefs/codex.md`, since both causes lie in how the coordinator
+writes the brief:
+
+- **C2.** Every term a rule depends on (a path, a name, a "meaning") is defined by what it includes and what it
+  excludes, with at least one real example of each drawn from the files the round will meet. (cause 2)
+- **C3.** Every limit the result must keep is an outcome of its own: where the tool may run from, length or size caps,
+  no text kept twice, and every live artifact the change can reach still passing. (cause 3)
+
+Test: the coordinator knows each failure, so it cannot write the test brief itself. A fresh writer that has not seen
+the round logs or the held-out rows rewrites a past round's brief from the template twice, with the line and without
+it; Codex runs each brief on that round's baseline commit in its own worktree; both runs are graded on the round's
+held-out rows. C2 is tested on AE round 5 (S6 failed on the path rule); C3 on OW nav-1 (K6 and K2 failed on unstated
+limits). Adopt a line only if the arm with it clears the targeted rows, the arm without it does not, and the arm with
+it adds no new failure.
