@@ -100,6 +100,8 @@
       chartMain: "مباشر، ومحدد عليها آخر قراءة",
       vars: { peak: "الذروة", line: "نقطة على الخط", gap: "فترة بلا قراءات", ahead: "لم يحن بعد", delayed: "آخر قراءة، متأخرة", nohistory: "لم يحن بعد، بلا سجل" },
       aheadNote: `الخط المعتاد بعد الآن بشفافية ${b(".36")}`,
+      // Daily on the phone (DECISIONS item 20, the trial): the reading in the band above the plot, and the busiest time's row.
+      band: { held: "على الجوال، ضغط وتثبيت: القراءة ما دام الإصبع على الرسم", kept: "على الجوال، ضغطة سريعة: القراءة تبقى، مع الإغلاق والوقت السابق والتالي", gap: "على الجوال: فترة بلا قراءات، باقية", busy: "على الجوال: الساعات بجانب العنوان", close: "إغلاق القراءة", prev: "الوقت السابق", next: "الوقت التالي" },
       patternTitle: "أوقات الازدحام",
       patternSub: `معدّل الموجودين حسب اليوم والساعة · ${b(28)} يومًا`,
       busiest: (w, h) => `الأكثر ازدحامًا: ${w} ${h}`,
@@ -198,6 +200,7 @@
       chartMain: "Live, with the latest reading selected",
       vars: { peak: "The peak", line: "A stop on the line", gap: "A span with no readings", ahead: "Still ahead", delayed: "Latest reading, delayed", nohistory: "Still ahead, no history" },
       aheadNote: "The usual line after now at .36",
+      band: { held: "On a phone, press and hold: the reading lasts while the finger is on the chart", kept: "On a phone, a quick tap: the reading stays, with close, previous and next", gap: "On a phone: a span with no readings, kept", busy: "On a phone: the hours beside the title", close: "Close reading", prev: "Previous time", next: "Next time" },
       patternTitle: "Busy times",
       patternSub: "Average inside by day and hour · 28 days",
       busiest: (w, h) => `Busiest: ${w} ${h}`,
@@ -359,7 +362,7 @@
     const body = o.empty
       ? `<p class="cx-stat-empty">${o.empty}</p>${o.emptyNote ? `<div class="cx-stat-foot"><span class="cx-note">${o.emptyNote}</span></div>` : ""}`
       : `<p class="cx-stat-value">${o.words ? `<span class="cx-words">${o.value}</span>` : `<bdi class="num">${o.value}</bdi>`}${o.unit ? `<span class="cx-unit">${o.unit}</span>` : ""}</p><div class="cx-stat-foot">${o.foot || ""}</div>`;
-    return `<article class="card cx-stat${o.lit ? " lit lit-card" : ""}${o.stale ? " is-stale" : ""}">${o.lit ? LAMP : ""}${head}${body}</article>`;
+    return `<article class="card cx-stat${o.row ? " is-row" : ""}${o.lit ? " lit lit-card" : ""}${o.stale ? " is-stale" : ""}">${o.lit ? LAMP : ""}${head}${body}</article>`;
   }
   function cards() {
     const latest = DATA.raw[NOW], lateV = DATA.raw[NOW - LATE];
@@ -368,6 +371,7 @@
       [statCard({ icon: "peak", label: L.peakTitle, meta: b(time(DATA.peakM)), value: DATA.peak, foot: badge(DATA.peak) }), L.cards.plain, "CRD-2 · DAT-5", false],
       [statCard({ stale: true, icon: "person", label: `${L.lastReading} ${b(time(NOW - LATE))}`, meta: `${ico("clock")}${L.ago(LATE)}`, late: true, value: lateV, unit: L.approx, foot: badge(lateV, true) }), L.cards.late, "LGT-7 · LVL-5", false],
       [statCard({ icon: "clock", label: L.busiestTitle, meta: L.last7, words: true, value: b(hourRange(18)), foot: `<span class="cx-note">${L.avgN(51)}</span>` }), L.cards.words, "TYP-3 · GLO-12", false],
+      [statCard({ row: true, icon: "clock", label: L.busiestTitle, meta: L.last7, words: true, value: b(hourRange(18)), foot: `<span class="cx-note">${L.avgN(51)}</span>` }), L.band.busy, "OWN-D7 · OWN-D8", false],
       [statCard({ icon: "person", label: L.avgTitle, empty: L.noReadings }), L.cards.none, "CRD-3 · GLO-5", false],
       [statCard({ icon: "wow", label: L.wowTitle, meta: L.wowDates, empty: L.notEnough, emptyNote: L.needs }), L.cards.short, "CRD-3 · LGT-7", false],
     ];
@@ -399,7 +403,19 @@
       const p = sel === "ahead" && st === "live";
       return `<figure class="cx-fig" style="align-items:stretch"><div class="card cx-var"><p class="cx-var-title">${title}</p>${plotHost(`plot-v${i}`, st, sel)}</div>${cap(p ? L.aheadNote : title, sel === "gap" ? "CHT-9 · CHT-14 · GLO-5" : st === "delayed" ? "CHT-8 · CHT-9 · STA-2" : p ? "CHT-4 · CHT-9 · CHT-14" : "CHT-9 · CHT-12 · CHT-14")}</figure>`;
     }).join("");
-    return section("chart", "chart", "CHT-1…17", `${main}<div class="cx-row cx-row-3">${vars}</div>`);
+    // Daily on the phone (DECISIONS item 20, the trial): the band above the plot holds the reading, large; a kept reading
+    // has its three buttons. The page's own classes (style.css), drawn here at any width.
+    const usualFoot = (m) => `<div class="bd-foot"><span class="bd-u"><span class="sw sw-usual" aria-hidden="true"></span><span>${L.usual} ${b(Math.round(usual(m)))}</span></span></div>`;
+    const reading = (m, v, flag) => `<div class="bd-t">${flag ? `<span class="cx-flag">${flag}</span>` : ""}<span class="bd-time">${b(time(m))}</span></div><div class="bd-main"><bdi class="bd-v">${v}</bdi><span class="bd-l">${L.levels[levelOf(v)]}</span></div>${usualFoot(m)}`;
+    const acts = `<div class="band-acts"><span class="band-btn band-close" role="img" aria-label="${L.band.close}">${svg('<path d="M7 7l10 10M17 7 7 17"/>', "")}</span><span class="band-btn band-prev" role="img" aria-label="${L.band.prev}">${svg('<path d="M14.5 6.5 9 12l5.5 5.5"/>', "mirror")}</span><span class="band-btn band-next" role="img" aria-label="${L.band.next}">${svg('<path d="M9.5 6.5 15 12l-5.5 5.5"/>', "mirror")}</span></div>`;
+    const bandSpec = (inner, kept, title, ids) => `<figure class="cx-fig" style="align-items:stretch"><div class="card cx-var cx-band-card"><div class="cx-band"><div class="band-read">${inner}</div>${kept ? acts : ""}</div></div>${cap(title, ids)}</figure>`;
+    const KEPT = 660;
+    const bands = [
+      bandSpec(reading(DATA.peakM, DATA.peak, L.peakTag), false, L.band.held, "CHT-12 · CHT-15 · CHT-18"),
+      bandSpec(reading(KEPT, Math.round(DATA.line.live[KEPT])), true, L.band.kept, "CHT-15 · BTN-4 · BTN-5"),
+      bandSpec(`<div class="bd-span"><span class="nw">${L.noReadings}</span> <span><span class="nw">${L.spanFrom} ${b(time(GAP0))}</span> <span class="nw">${L.spanTo} ${b(time(GAP1))}</span></span></div>`, true, L.band.gap, "CHT-12 · GLO-5"),
+    ].join("");
+    return section("chart", "chart", "CHT-1…17", `${main}<div class="cx-row cx-row-3">${vars}</div><div class="cx-row cx-row-3">${bands}</div>`);
   }
   // Draws one plot into its host: the lane, the scale, the line, the usual line, the marks, the tooltip and its connector.
   function drawPlot(host) {

@@ -802,3 +802,14 @@ clipped or spilling element, a day table wider than its card on a phone, or a di
 - Both pages reserve the verified widest status time, 10:44 AM / «10:44 ص», using a fixed exemplar of the pinned Readex Pro face. No minute scan delays first paint; recheck the exemplar after a font or time-format change.
 - The sheet uses the approved table alignment and reading wording, isolates date-range endpoints as Reports does, follows Daily’s chart-header rows, and gives its full-text English status specimens 8 px badge padding when a classic scrollbar leaves their stage under 250 px wide.
 - Screen-reader sentences spell ranges out with “from … to …” / «من … إلى …». Standalone values keep the en dash.
+
+## Decision 20's trial: the chart by touch on a phone
+
+Built for the user to try (DECISIONS item 20, the user's picks of 2026-10-03), at 720 px and below only; 721 px and up and the phone's arrangement are unchanged. Rules: DESIGN-SPEC CHT-11, CHT-12, CHT-14, CHT-15, CHT-18, OWN-D7 and OWN-D8; code: `app.js`, "the finger", and `style.css`, "Daily on the phone: the finger".
+
+- A swipe that starts on the plot scrolls the page and reads nothing. A press held still for 300 ms starts the reading; a drag then moves it stop by stop while the page stays put; lifting the finger empties the band.
+- A quick tap keeps the reading, with close, previous and next (44 px each). A tap outside the chart card, Escape or close ends it. The keyboard keeps the reading with its buttons and reaches them after the plot.
+- The reading stands large in the band above the plot (the tooltip's lane, empty at rest); the tooltip box and its connector are set aside on a phone. Inside now never changes.
+- Under a finger every stop has an equal share of the plot, so every half hour, the peak and the latest reading can be reached at 390 and 320.
+- Busiest time keeps its place, with its hours beside its title: 100 px tall instead of 148.
+- The component sheet shows the held and kept readings, a kept span with no readings, and the busiest time's phone row.

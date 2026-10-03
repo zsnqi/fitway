@@ -75,6 +75,8 @@
       ro: { usual: "المعتاد", peak: "الذروة", latest: "آخر قراءة", empty: "الصالة خالية", noReading: "لا قراءات", waiting: "بانتظار القراءات", pending: "قيد الانتظار", noReadingYet: "لا قراءات بعد", ahead: "لم يحن بعد", inside: "داخل الصالة" },
       chartAria: "ازدحام اليوم حسب الوقت",
       keys: "استخدم مفتاحي السهمين للتنقل بين نقاط كل نصف ساعة، ومنها الذروة وآخر قراءة. Home لوقت الفتح، وEnd لآخر قراءة.",
+      // The phone's kept reading (decision 20's trial): its buttons, named for what they do.
+      band: { prev: "الوقت السابق", next: "الوقت التالي", close: "إغلاق القراءة" },
       avgInside: (v) => `معدّل الموجودين ${v}`,
       crowdIs: (l) => `الازدحام ${l}`,
       say: (v, l, e) => `داخل الصالة الآن ${v} تقريبًا، ${l}. مرات الدخول ${e}.`,
@@ -154,6 +156,7 @@
       ro: { usual: "Usual", peak: "Peak", latest: "Latest", empty: "Empty", noReading: "No readings", waiting: "Waiting for readings", pending: "Pending", noReadingYet: "No readings yet", ahead: "Still ahead", inside: "inside" },
       chartAria: "Today's crowd by time",
       keys: "Use the arrow keys to move between the half-hour points, including the peak and the latest reading. Home goes to opening time and End to the latest reading.",
+      band: { prev: "Previous time", next: "Next time", close: "Close reading" },
       avgInside: (v) => `Average inside ${v}`,
       crowdIs: (l) => l,
       say: (v, l, e) => `Inside now about ${v}, ${l}. Entries ${e}.`,
@@ -915,6 +918,9 @@
 
   /* ---------------------------------------------------------------- chart */
   const plot = $("#plot"), svgHost = $("#plot-svg"), labels = $("#plot-labels"), tip = $("#tip"), hit = $("#plot-hit");
+  // The phone's reading in the band above the plot (720 px and below; "the finger" below).
+  const band = $("#band"), bandRead = $("#band-read"), bandActs = $("#band-acts");
+  const bandBtn = { close: $("#band-close"), prev: $("#band-prev"), next: $("#band-next") };
   const f = (n) => n.toFixed(2);
   let geo = null;
   const endPoint = () => (geo ? { x: geo.X(M.last), y: geo.Y(M.avg[M.last]) } : null);
@@ -1564,6 +1570,7 @@
     const to = restPoint(st);
     if (moving) followTo(to, st, prev);
     else { tipShown = null; paintMarker(to, st, true); }
+    syncBand();
   }
   function clearSelection() {
     stopFollow();
@@ -1571,6 +1578,7 @@
     clearMarker();
     tip.hidden = true;
     tipShown = null;
+    syncBand();
   }
   function restoreSelection(ease = false) {
     const moving = ease && sel && !tip.hidden && motionOn() && tipShown;
@@ -1595,6 +1603,7 @@
     const to = restPoint(st);
     tipEaseFrom(to ? to.x : st.x, vx);
     paintMarker(to, st, true);
+    syncBand();
   }
 
   // Slider semantics for keyboard inspection. The same readout follows the pointer, a tap, or the arrow keys.
@@ -1618,15 +1627,31 @@
     });
     return pull || best;
   }
+  // pinned: a reading that stays after the pointer leaves (a tap from 721 px; on a phone, a kept reading, with its buttons).
   let pinned = false;
-  hit.addEventListener("pointermove", (e) => { if (e.pointerType === "mouse" && !pinned) selectStop(stopAt(e.clientX)); });
+  hit.addEventListener("pointermove", (e) => { if (e.pointerType === "mouse" && !pinned) selectStop(mqPhone.matches ? stopForFinger(e.clientX) : stopAt(e.clientX)); });
   hit.addEventListener("pointerleave", (e) => { if (e.pointerType === "mouse" && !pinned && document.activeElement !== hit) clearSelection(); });
-  hit.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse") { pinned = true; selectStop(stopAt(e.clientX)); } });
+  hit.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse" && !mqPhone.matches) { pinned = true; selectStop(stopAt(e.clientX)); } });
   // Focus starts at the latest reading; with none today, at the present: the stop for opening to now (unavailable) or
   // the first stop still ahead (closed). End goes to the latest reading, or with none today to the day's last stop.
   const homeStop = () => stopBy("latest") || stopBy("gap") || stops[0] || null;
-  hit.addEventListener("focus", () => { if (!sel && stops.length) selectStop(homeStop(), true); });
-  hit.addEventListener("blur", () => { pinned = false; clearSelection(); });
+  let quietFocus = false; // focus returned to the plot when a kept reading closes: no reading comes back with it
+  hit.addEventListener("focus", () => {
+    if (quietFocus || !stops.length) return;
+    if (!sel) selectStop(homeStop(), true);
+    // On a phone, keyboard focus keeps the reading with its buttons, so Tab reaches them next.
+    if (mqPhone.matches) { pinned = true; syncBand(); }
+  });
+  hit.addEventListener("blur", (e) => {
+    if (mqPhone.matches) {
+      // On a phone the reading stays while focus moves to its buttons, or to nothing (a tap outside the chart closes it,
+      // below); focus moving to anything else closes it.
+      const to = e.relatedTarget;
+      if (!to || band.contains(to)) return;
+    }
+    pinned = false;
+    clearSelection();
+  });
   hit.addEventListener("keydown", (e) => {
     if (!stops.length) return;
     const latest = homeStop().i;
@@ -1639,11 +1664,173 @@
     else if (e.key === "PageDown") j = i - 4;
     else if (e.key === "Home") j = 0;
     else if (e.key === "End") j = stopBy("latest") || UNAV ? latest : stops.length - 1; // no reading today: the day's last stop
-    else if (e.key === "Escape") { clearSelection(); return; }
+    else if (e.key === "Escape") { if (mqPhone.matches) pinned = false; clearSelection(); return; }
     else return;
     e.preventDefault();
+    if (mqPhone.matches) pinned = true; // on a phone the keys keep the reading, with its buttons, as focus does
     selectStop(stops[Math.max(0, Math.min(stops.length - 1, j))]);
+    syncBand();
   });
+
+  /* ---- the finger (720 px and below; DECISIONS item 20, the user's picks for a trial, 2026-10-03). The page keeps its
+   * arrangement; only how a finger moves through the chart changes, and 721 px and up are untouched.
+   *   A swipe that starts on the plot, in any direction, is the page's: it scrolls and reads nothing (a finger that moves
+   *   more than FINGER.slop px before the hold is let go; the browser pans as it would anywhere else).
+   *   A press held still for FINGER.hold ms starts the reading; from then on the page does not scroll (the touch's moves
+   *   are cancelled) and a drag moves the reading stop by stop. Lifting the finger ends it: the band is empty again.
+   *   A quick tap reads that time and keeps it, with its buttons: the previous and the next time, and close. A tap outside
+   *   the chart, Escape, or close ends it.
+   *   The reading stands in the band above the plot (the tooltip's lane), large, at the band's inline start; the tooltip
+   *   box and its connector are set aside on a phone (CSS). Inside now never changes.
+   *   Every stop has an equal share of the plot's width under a finger (stopForFinger), so the peak and the latest reading
+   *   no longer take the half hours beside them (MAGNET is for the mouse from 721 px).
+   * The hold is 300 ms: longer than a tap (about 100-200 ms), so a quick tap never starts it, and shorter than the system's
+   * own long press (about 400-500 ms, the text and link menus), so the reading always comes first. */
+  const FINGER = { hold: 300, slop: 10 };
+  // The stop for a finger at clientX: the stops share the span from the first to the last in equal slots, in their order;
+  // beyond either end, the end stop.
+  function stopForFinger(clientX) {
+    if (!geo || !stops.length) return null;
+    const n = stops.length, x0 = stops[0].x, x1 = stops[n - 1].x;
+    if (n === 1 || x1 === x0) return stops[0];
+    const t = (clientX - plot.getBoundingClientRect().left - x0) / (x1 - x0);
+    return stops[Math.round(Math.max(0, Math.min(1, t)) * (n - 1))];
+  }
+  // The band: the selected stop, large. The time first (with the peak's or the latest's flag), then the value with its
+  // level word (LVL-3: a moment's level, never a badge), then the usual value; while delayed the latest reading is muted
+  // and its age stands before the usual value, in the delayed colour. A span with no readings, and waiting for readings,
+  // is its one sentence on two lines, the words first (decisions 8, 9 and 12).
+  function bandHTML(st, tight = false) {
+    if (st.kind === "gap") {
+      const second = st.waiting ? `<span class="nw">${L.spanSince} ${tb(st.a)}</span>` : `<span class="nw">${L.spanFrom} ${tb(st.a)}</span> <span class="nw">${L.spanTo} ${tb(st.b)}</span>`;
+      return `<div class="bd-span"><span class="nw">${st.waiting ? L.ro.waiting : L.ro.noReading}</span> <span>${second}</span></div>`;
+    }
+    const flag = st.kind === "peak" ? L.ro.peak : st.kind === "latest" ? L.ro.latest : "";
+    const stale = st.kind === "latest" && STATE === "delayed";
+    const head = `<div class="bd-t">${flag ? `<span class="tip-flag">${flag}</span>` : ""}<span class="bd-time">${tb(st.m)}</span></div>`;
+    let main, level = "";
+    if (st.kind === "zero") level = L.ro.empty;
+    else if (st.kind !== "wait" && st.kind !== "ahead") level = L.levels[levelOf(st.value)];
+    if (st.kind === "wait" || st.kind === "ahead") main = `<span class="bd-word">${st.kind === "wait" ? L.ro.noReadingYet : L.ro.ahead}</span>`;
+    else main = `<bdi class="bd-v">${st.kind === "zero" ? 0 : st.value}</bdi>${tight ? "" : `<span class="bd-l">${level}</span>`}`;
+    const foot = [];
+    if (tight && level) foot.push(`<span class="bd-l">${level}</span>`);
+    if (stale) foot.push(`<span class="bd-ago">${ICON.clock}<span>${L.ago(M.nowM - M.last)}</span></span>`);
+    if (HAS_HISTORY && st.kind !== "zero") foot.push(`<span class="bd-u"><span class="sw sw-usual" aria-hidden="true"></span><span>${L.ro.usual} ${bdi(usualAt(st.m))}</span></span>`);
+    return `${head}<div class="bd-main${stale ? " is-stale" : ""}">${main}</div>${foot.length ? `<div class="bd-foot">${foot.join("")}</div>` : ""}`;
+  }
+  let finger = null; // { id, x0, y0, x, on, timer }: a touch on the plot, before its hold (on: false) and during it
+  function syncBand() {
+    const on = mqPhone.matches && Boolean(sel) && !tip.hidden;
+    // At rest, and at every size from 721 px, the band is hidden and empty: nothing in it is written again.
+    if (!on && band.hidden && !bandRead.firstChild) return;
+    const kept = on && pinned && !(finger && finger.on);
+    if (band.hidden !== !on) band.hidden = !on;
+    if (bandActs.hidden !== !kept) bandActs.hidden = !kept;
+    if (on) {
+      bandRead.innerHTML = bandHTML(sel);
+      // The value and its level word on one line, unless they would pass the buttons: then the word leads the next line.
+      const main = $(".bd-main", bandRead);
+      if (main && main.scrollWidth > main.clientWidth + 0.5) bandRead.innerHTML = bandHTML(sel, true);
+    } else bandRead.textContent = "";
+    if (kept) {
+      bandBtn.prev.setAttribute("aria-disabled", String(sel.i <= 0));
+      bandBtn.next.setAttribute("aria-disabled", String(sel.i >= stops.length - 1));
+    }
+  }
+  bandBtn.prev.setAttribute("aria-label", L.band.prev);
+  bandBtn.next.setAttribute("aria-label", L.band.next);
+  bandBtn.close.setAttribute("aria-label", L.band.close);
+  const bandSay = $("#band-say");
+  function stepBand(d) {
+    if (!stops.length) return;
+    const i = sel ? sel.i : homeStop().i, j = i + d;
+    if (j < 0 || j > stops.length - 1) return; // the first or the last stop: the button says so (aria-disabled)
+    pinned = true;
+    selectStop(stops[j]);
+    // The reading is announced as the plot's own value is when it has focus.
+    bandSay.textContent = valueText(stops[j]);
+  }
+  function closeBand() {
+    const refocus = band.contains(document.activeElement);
+    pinned = false;
+    clearSelection();
+    bandSay.textContent = "";
+    // Focus that was on a button returns to the plot, without bringing a reading back.
+    if (refocus) { quietFocus = true; hit.focus(); quietFocus = false; }
+  }
+  bandBtn.prev.addEventListener("click", () => stepBand(-1));
+  bandBtn.next.addEventListener("click", () => stepBand(1));
+  bandBtn.close.addEventListener("click", closeBand);
+  band.addEventListener("keydown", (e) => { if (e.key === "Escape") { e.stopPropagation(); closeBand(); } });
+  band.addEventListener("focusout", (e) => {
+    const to = e.relatedTarget;
+    if (mqPhone.matches && to && to !== hit && !band.contains(to)) { pinned = false; clearSelection(); }
+  });
+  // A tap outside the chart closes a kept reading (a scroll is no tap: it fires no click).
+  document.addEventListener("click", (e) => {
+    if (mqPhone.matches && pinned && sel && !chartCard.contains(e.target)) { pinned = false; clearSelection(); }
+  });
+  // A mouse on a phone-sized window (the 200% zoom of 1440): a click keeps the reading, as a tap does.
+  hit.addEventListener("click", (e) => {
+    if (!mqPhone.matches || finger) return;
+    pinned = true;
+    selectStop(stopForFinger(e.clientX));
+    syncBand();
+  });
+  const fingerTouch = (e) => (finger ? [...e.changedTouches].find((t) => t.identifier === finger.id) : null);
+  function endFinger() {
+    if (!finger) return;
+    clearTimeout(finger.timer);
+    const was = finger.on;
+    finger = null;
+    if (was) { pinned = false; clearSelection(); }
+  }
+  hit.addEventListener("touchstart", (e) => {
+    if (!mqPhone.matches || !stops.length) return;
+    // A second finger (a pinch) is the browser's.
+    if (e.touches.length !== 1) { endFinger(); return; }
+    const t = e.changedTouches[0];
+    finger = { id: t.identifier, x0: t.clientX, y0: t.clientY, x: t.clientX, on: false, timer: 0 };
+    finger.timer = setTimeout(() => {
+      if (!finger) return;
+      finger.on = true;
+      pinned = false;
+      selectStop(stopForFinger(finger.x));
+      syncBand();
+    }, FINGER.hold);
+  }, { passive: true });
+  hit.addEventListener("touchmove", (e) => {
+    const t = fingerTouch(e);
+    if (!t) return;
+    if (finger.on) {
+      if (e.cancelable) e.preventDefault(); // held: the page does not scroll
+      finger.x = t.clientX;
+      selectStop(stopForFinger(t.clientX));
+      return;
+    }
+    // Moved before the hold: a swipe, the page's.
+    if (Math.hypot(t.clientX - finger.x0, t.clientY - finger.y0) > FINGER.slop) { clearTimeout(finger.timer); finger = null; }
+    else finger.x = t.clientX;
+  }, { passive: false });
+  hit.addEventListener("touchend", (e) => {
+    const t = fingerTouch(e);
+    if (!t) return;
+    // No click, no focus and no mouse events follow the finger's own gestures.
+    if (e.cancelable) e.preventDefault();
+    if (finger.on) { endFinger(); return; }
+    // A tap: that time, kept.
+    clearTimeout(finger.timer);
+    const x = finger.x;
+    finger = null;
+    pinned = true;
+    selectStop(stopForFinger(x));
+    syncBand();
+  }, { passive: false });
+  hit.addEventListener("touchcancel", (e) => { if (fingerTouch(e)) endFinger(); });
+  // The system's long-press menu never opens over the plot on a phone.
+  hit.addEventListener("contextmenu", (e) => { if (mqPhone.matches) e.preventDefault(); });
+  mqPhone.addEventListener("change", () => { if (finger) { clearTimeout(finger.timer); finger = null; } if (!mqPhone.matches && pinned) { pinned = false; clearSelection(); } syncBand(); });
 
   // Text equivalent of the chart.
   function summary() {

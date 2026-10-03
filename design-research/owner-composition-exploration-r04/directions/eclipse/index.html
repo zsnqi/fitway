@@ -218,9 +218,21 @@
           <div class="plot-labels" id="plot-labels"></div>
           <div class="tip" id="tip" hidden></div>
           <div class="plot-hit" id="plot-hit" role="slider" tabindex="0" aria-describedby="chart-summary chart-keys"></div>
+          <!-- The phone's reading (720 px and below; decision 20's trial): the stop a finger holds, taps or the keys reach,
+               large in the band above the plot, in place of the tooltip. A kept reading adds its buttons: close, then the
+               previous and next time. After the plot, so Tab reaches the plot, then the buttons. -->
+          <div class="band" id="band" hidden>
+            <div class="band-read" id="band-read" aria-hidden="true"></div>
+            <div class="band-acts" id="band-acts" hidden>
+              <button class="band-btn band-close" id="band-close" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 7l10 10M17 7 7 17"/></svg></button>
+              <button class="band-btn band-prev" id="band-prev" type="button"><svg class="mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.5 6.5 9 12l5.5 5.5"/></svg></button>
+              <button class="band-btn band-next" id="band-next" type="button"><svg class="mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.5 6.5 15 12l-5.5 5.5"/></svg></button>
+            </div>
+          </div>
         </figure>
         <p class="sr-only" id="chart-summary"></p>
         <p class="sr-only" id="chart-keys"></p>
+        <p class="sr-only" id="band-say" aria-live="polite" aria-atomic="true"></p>
       </section>
       </div>
 

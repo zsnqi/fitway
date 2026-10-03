@@ -395,6 +395,17 @@ th.is-asc .cx-sort .cx-ico { transform: rotate(180deg); }
 .cx-tip-ago { color: var(--amber); }
 .cx-tip-ago .cx-ico { width: 13px; height: 13px; }
 .cx-tip .cx-flag { height: 19px; line-height: 17px; }
+/* Daily on the phone (DECISIONS item 20, the trial): the band above the plot as the page draws it at 390 (its 107 px lane,
+ * 304 px wide), with the page's own reading and buttons (style.css, "the finger"). */
+.cx-band-card { width: 358px; max-width: 100%; padding: 22px 25px; }
+.cx-band { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; column-gap: 8px; min-height: 107px; }
+.cx-band .cx-flag { height: 18px; line-height: 16px; }
+/* The busiest time on a phone: its hours and their average at the inline end, beside its title and period. */
+.cx-stat.is-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 16px; align-items: start; }
+.cx-stat.is-row > .cx-stat-head { grid-column: 1; grid-row: 1 / span 2; flex-wrap: wrap; align-content: flex-start; row-gap: 4px; }
+.cx-stat.is-row .cx-stat-meta { flex-basis: 100%; margin-inline-start: 24px; }
+.cx-stat.is-row > .cx-stat-value { grid-column: 2; grid-row: 1; margin: 0; justify-content: flex-end; }
+.cx-stat.is-row > .cx-stat-foot { grid-column: 2; grid-row: 2; justify-content: flex-end; margin: 0; padding-block-start: 4px; }
 .cx-measure { position: absolute; top: 0; left: 0; width: 0; height: 0; overflow: hidden; visibility: hidden; contain: strict; }
 .cx-measure .cx-tip { position: static; backdrop-filter: none; }
 

@@ -759,6 +759,87 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
   .dl .chart-head { grid-template-columns: minmax(0, 1fr); grid-template-areas: "title" "key" "btn"; justify-items: start; }
 }
 
+/* -------------------------------------------- Daily on the phone: the finger
+ * DECISIONS item 20, the user's picks for a trial (2026-10-03): press and hold, then drag; previous and next; the busiest
+ * time's hours beside its title. 720 px and below only; 721 px and up are unchanged, and so is the page's arrangement.
+ *   The band   the tooltip's lane above the plot holds the reading, large, at its inline start: the time (with the
+ *              peak's or the latest's flag), the value in display type with its level word, then the usual value (and a
+ *              stale reading's age). The tooltip box and its connector are set aside on a phone. Nothing is drawn in
+ *              the band at rest.
+ *   Kept       a tap keeps the reading and adds three 44 px buttons at the band's inline end: close, then the previous
+ *              and the next time. A button at the first or the last stop says so (aria-disabled, BTN-4's look).
+ *   The plot   a long press opens no system menu and selects no text; the browser keeps every pan (app.js decides).
+ *   Busiest    its hours and their average at the card's inline end, beside its title and period. */
+.band { display: none; }
+@media (max-width: 720px) {
+  .dl .tip, .dl #conn { visibility: hidden; }
+  .dl .plot { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  .dl .plot-hit { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .dl .band {
+    position: absolute;
+    z-index: 4;
+    inset-block-start: 2px;
+    inset-inline: 2px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    column-gap: 8px;
+    pointer-events: none; /* a tap on the reading is a tap on the plot under it; only the buttons take taps */
+  }
+
+  /* The busiest time: its hours and their average at the inline end, beside its title and period (the same card, in the
+   * same place). */
+  .dl #card-busiest { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 16px; align-items: start; }
+  .dl #card-busiest > .stat-head { grid-column: 1; grid-row: 1 / span 2; flex-wrap: wrap; align-content: flex-start; row-gap: 4px; }
+  .dl #card-busiest .stat-meta { flex-basis: 100%; margin-inline-start: 24px; }
+  .dl #card-busiest > .stat-value { grid-column: 2; grid-row: 1; margin: 0; justify-content: flex-end; }
+  .dl #card-busiest > .stat-note { grid-column: 2; grid-row: 2; min-height: 22px; margin: 0; padding-block-start: 4px; text-align: end; }
+}
+/* The reading's own parts (the page draws them only on a phone; the component sheet draws them at any width). */
+.band-read { min-width: 0; }
+.bd-t { display: flex; align-items: center; gap: 8px; height: 20px; font-size: 13.5px; line-height: 20px; color: var(--ink); white-space: nowrap; }
+.bd-main { display: flex; align-items: baseline; gap: 8px; height: 46px; margin-block-start: 4px; white-space: nowrap; }
+.bd-main:has(.bd-word) { align-items: center; }
+.bd-v { font-size: 46px; line-height: 46px; font-weight: 500; color: var(--ink); }
+.bd-main.is-stale .bd-v { color: var(--ink-2); }
+.bd-l { font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
+/* Where the value and its level word do not fit beside the buttons (a long level word at 320 px), app.js draws the word
+ * first on the line under the value instead. */
+.bd-foot .bd-l { font-size: 12px; line-height: 16px; }
+.bd-word { font-size: 19px; line-height: 28.5px; color: var(--ink); }
+.bd-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 0 12px; margin-block-start: 4px; font-size: 12px; line-height: 16px; color: var(--ink-2); white-space: nowrap; }
+.bd-u, .bd-ago { display: inline-flex; align-items: center; gap: 8px; }
+.bd-u .sw { width: 12px; }
+.bd-ago { color: #e8b62e; }
+.bd-ago .ico { width: 13px; height: 13px; }
+/* A span with no readings, and waiting for readings: one sentence, the words first, on two lines (three where the buttons
+ * leave less room), one size and one colour (decisions 8, 9 and 12). */
+.bd-span { display: flex; flex-direction: column; font-size: 19px; line-height: 28.5px; color: var(--ink); }
+.bd-span > span:last-child { display: flex; flex-wrap: wrap; column-gap: 0.28em; }
+.bd-span .nw { white-space: nowrap; }
+.band-acts { display: grid; grid-template-columns: 44px 44px; grid-auto-rows: 44px; grid-template-areas: ". close" "prev next"; gap: 8px; pointer-events: auto; }
+.band-close { grid-area: close; }
+.band-prev { grid-area: prev; }
+.band-next { grid-area: next; }
+/* BTN-2's secondary look at BTN-5's 44 x 44; disabled as BTN-4. */
+.band-btn {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 12px;
+  border: 1px solid var(--line-2);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--ink);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+/* Hover only where a pointer hovers: a tap leaves no hover behind on a touch screen. */
+@media (hover: hover) { .band-btn:hover { border-color: var(--line-3); background: rgba(255, 255, 255, 0.05); } }
+.band-btn svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.band-btn[aria-disabled="true"], .band-btn[aria-disabled="true"]:hover { border-color: var(--line); background: none; color: var(--ink-3); cursor: default; }
+
 /* --------------------------------------------------------------- the frame
  * Step 3 (run owner_daily_r04_s17): navigation and header at every size, for a page that opts in with
  * body[data-frame] (Daily since step 3; Reports since step 4). Breakpoints:
