@@ -53,8 +53,8 @@ latest wording; never copy an entry into a resume point.
 
 ## Rules and findings
 
-- A rule is a hypothesis, not a verdict. A problem that a person would see stands even when the work meets every
-  rule, decision and check: report it, and name the rule that produced it as the suspect. A rule can be fragile or
-  wrong; when it is the user's decision, it goes back to the user to change, and the problem is not closed by
-  pointing at the rule. (user, 2026-10-03, after English tables built to decision 9 passed every check while
-  reading wrong)
+- A rule is a hypothesis, not a verdict. When a reviewer, designer or builder finds a problem or an observation, it
+  reports it even when the work meets every rule, decision and check: meeting a rule is never a reason to let it
+  pass, because a rule can be fragile or wrong. It names the rule that produced the finding as the suspect; when
+  that rule is the user's decision, it goes back to the user. (user, 2026-10-03, after English tables built to
+  decision 9 passed every check while reading wrong)
