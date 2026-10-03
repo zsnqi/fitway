@@ -31,11 +31,18 @@ latest wording; never copy an entry into a resume point.
 
 - Visual design and taste judgments stay with Claude on the Opus definitions. Exact renders of
   every option go to the user for picks. (user, 2026-10-02)
-- Codex takes frozen fixes and edits, at the reasoning level the user set (xhigh as of
-  2026-10-02). The coordinator runs it from a tracked brief file, in Codex's sandbox with
+- Codex takes frozen fixes and edits. Its reasoning level follows the task (user, 2026-10-03):
+  `xhigh` when the cause is unknown or the change spans many files with tests and Windows or CI
+  behaviour (the brief checker, path rules, CI); `high` for a known defect in a known place with
+  a measurable outcome (Eclipse defects such as D3-D8); `medium` for mechanical edits from an
+  exact list (documents, a regenerated index, text replacements). The first round of each kind
+  at its lower level is graded like any other; a failure traced to the code moves that kind up a
+  level. Each round's record names its level. Before a launch, read `rate_limits` and avoid
+  running rounds side by side that the five-hour window cannot carry.
+  The coordinator runs it from a tracked brief file, in Codex's sandbox with
   automatic approval review (`docs/phase-records/handoffs/agent-environment/DECISIONS.md`
   item 7), in a harness background shell (Git Bash, which has `<`):
-  `{ printf 'Launch note: HEAD <sha> only adds this brief over the named HEAD.\n\n'; cat <brief>; } | codex exec --approve-for-me -C <worktree> -m gpt-6.1-sol -c model_reasoning_effort="xhigh" --json -o <run>/last-message.md - > <run>/events.jsonl`.
+  `{ printf 'Launch note: HEAD <sha> only adds this brief over the named HEAD.\n\n'; cat <brief>; } | codex exec --approve-for-me -C <worktree> -m gpt-6.1-sol -c model_reasoning_effort="<level>" --json -o <run>/last-message.md - > <run>/events.jsonl`.
   The note is needed because the brief's own commit sits on the HEAD it names, and Codex rightly stops on a HEAD
   it was not told about (2026-10-03, nav-5 and round 8).
   The harness reports the exit; nothing polls. Each Codex round is judged as an evaluation:

@@ -7,8 +7,8 @@ it from the startup route: `PROJECT_STATE.yaml` names the milestone's `handoff`,
 
 ## Writing one
 
-1. Run `pnpm handoff:new --milestone <id> --slug <run-id>`. It creates the next file from the
-   current one (or from the block below), moves the state pointer and the packet's
+1. Run `pnpm handoff:new --milestone <id>`. It creates the next file,
+   `<YYYYMMDD-HHMMSS>-<id>-resume.md`, from the current one (or from the block below), moves the state pointer and the packet's
    `continuity.currentHandoff` to it, refreshes the packet hash, and renews the lease.
 2. Rewrite every section from the current truth. Carry forward only what is still true; a step
    that a later decision replaced is deleted, not annotated.
