@@ -1,0 +1,21 @@
+{
+	"schemaVersion": 2,
+	"kind": "history-transition-receipt",
+	"recordedAt": "2026-10-03T08:40:53.123Z",
+	"previousReceiptSha256": "71aa8fa9318d0355994da6fec1a05b5767c6a56191126bd8f3e6be7a5a46dbab",
+	"beforeHistorySha256": "7a3cf31a92f3e9ed7e71680f949992d9ffdf66ac29d5a1b3ebb654e832c6075c",
+	"afterHistorySha256": "68e80821a22b95c845133b9f2849d420003bf3cce8ebb9da45497dbc567bcb37",
+	"beforeHistoryBytes": 347153,
+	"afterHistoryBytes": 349525,
+	"beforeMilestoneCount": 110,
+	"afterMilestoneCount": 111,
+	"addedTerminal": {
+		"milestoneId": "agent-environment-r01",
+		"status": "DONE",
+		"digest": "bf6555a2f8a1d8b333443f59573797b1723a8c481f22d5848bd2767c5361d3ea"
+	},
+	"closedPacketSha256": "79107a80bc27897caa6eb8f1efd989443e3abec1da8e224f12fc20539c840264",
+	"removedActiveMilestoneId": "agent-environment-r01",
+	"removedActiveMilestoneDigest": "bf6555a2f8a1d8b333443f59573797b1723a8c481f22d5848bd2767c5361d3ea",
+	"coordinatorRun": "agent-environment-r01-done"
+}

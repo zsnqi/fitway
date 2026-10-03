@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-10-03T02:19:56+03:00
+updatedAt: 2026-10-03T11:40:53+03:00
 coordinator:
-  owner: Primary coordinator and integrator for FITWAY; Owner r04 (concept-only Eclipse work) and agent-environment-r01 (resume, startup and brief tooling) are IN_PROGRESS.
+  owner: Primary coordinator and integrator for FITWAY; Owner r04 (concept-only Eclipse work) is IN_PROGRESS; agent-environment-r01 is DONE and archived.
   stateFilePolicy: coordinator-only
 baseline:
   status: DONE
@@ -66,58 +66,5 @@ milestones:
       browser: PENDING
       accessibility: PENDING
       visual: PENDING
-      independentReview: PENDING
-    integratedCommit: null
-  agent-environment-r01:
-    status: IN_PROGRESS
-    objective: >-
-      Make the agent environment resumable, navigable and cheap to start: a short current resume
-      point reached from the startup route, standing decisions in one place, briefs checked against
-      the agent's worktree, and quieter, guarded tooling.
-    taskClass: repository-infrastructure
-    taskPacket: docs/phase-records/task-packets/agent-environment-r01.yaml
-    taskPacketSha256: 8f616134769c51f3f8552a4b398dcbe58772462ef950e9ec58121a87483a9b09
-    dependencies: []
-    ownerSession: claude-code-desktop:coordinator-16da798e
-    branch: agent-environment-r01
-    worktree: D:/Projects/fitway-worktrees/agent-environment-r01
-    baseCommit: ad49c8afe85d7acc86dd909eff7a3e33de93dabe
-    ownedPaths:
-      - AGENTS.md
-      - docs/WORKFLOW.md
-      - docs/agent-context/**
-      - docs/phase-records/handoffs/agent-environment/**
-      - docs/phase-records/task-packets/agent-environment-r01.yaml
-      - scripts/show-agent-context.mjs
-      - scripts/show-agent-context.test.ts
-      - scripts/verify-repository.mjs
-      - scripts/verify-repository.schema.test.ts
-      - scripts/check-agent-context.mjs
-      - scripts/check-agent-context.test.ts
-      - scripts/agent-environment/**
-      - package.json
-      - lefthook.yml
-      - .gitignore
-      - .github/workflows/**
-    forbiddenPaths:
-      - apps/**, packages/**, tests/browser/** and migrations
-      - design-research/**, visual-direction-gate/**, docs/design/**, docs/adr/** and approval manifests
-      - FITWAY_PRODUCT.md, SPEC.md, DESIGN_GUIDE.md, DESIGN.md and PHASES.md
-      - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
-      - CLAUDE.md and .claude/** (owned by owner-design-exploration-r04)
-      - pnpm-lock.yaml and dependencies
-      - docs/archive/** and other milestones' handoffs and packets
-    sharedLeases: []
-    validationRepairAttempts: 0
-    lastHeartbeatAt: 2026-10-03T02:19:56+03:00
-    leaseExpiresAt: 2026-10-06T02:19:56+03:00
-    handoff: docs/phase-records/handoffs/agent-environment/20261003-021956-agent-environment-r01-resume.md
-    stopReason: null
-    gates:
-      unit: PENDING
-      integration: NOT_REQUIRED
-      browser: NOT_REQUIRED
-      accessibility: NOT_REQUIRED
-      visual: NOT_REQUIRED
       independentReview: PENDING
     integratedCommit: null
