@@ -160,3 +160,7 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
      worktree involved.
 5. **Claude Design** is paused (2026-10-02). It stays available for open visual questions; its output is reference
    until built in Eclipse's files.
+6. **The remaining Owner screens, one pass each** (the user, 2026-10-03): Activity log, Access, Settings and
+   Operations are each aimed to be finished in one round, now that the look, the components, the states and the
+   references are settled. Before a screen starts, the coordinator asks all its open questions at once, in plain
+   words; then one design-and-build round and one review, not a series of option rounds.
