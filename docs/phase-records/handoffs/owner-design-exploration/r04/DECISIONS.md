@@ -76,6 +76,10 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     does not need how the line is smoothed, and the page carries names and values, not explanations (brief item 8).
     The user's view, with the coordinator's agreement. The legend's name for the line («معدّل كل 30 دقيقة») is in copy
     round 2, with Reports' heavy explanations (the user, "now").
+18. **The usual day** (2026-10-03), option 1 of copy round 1: the legend reads «المعتاد أيام الأربعاء» / "Usual on
+    Wednesdays"; the coverage card's row is «المعتاد» / "Usual" with «معدّل آخر 4 أيام أربعاء» / "Average of the last 4
+    Wednesdays" (with fewer recorded, «يوم أربعاء واحد فقط في السجل (16 سبتمبر)»). The tooltip, the entries figure and
+    the busier/quieter chip keep «المعتاد». Exact texts: `D:/fitway-temp/owner-r04-copy-round/work/options.mjs`.
 
 ## How this milestone's rounds run
 
