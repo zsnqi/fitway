@@ -61,11 +61,11 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     fits the text, with no empty space inside it (both 2026-10-03). The sentence follows the header's other forms
     too (2026-10-03): one day reads «تعذّر تحميل قراءات 22 سبتمبر 2026» / "Couldn't load readings for 22 Sep 2026";
     a period inside one month names the month once, «تعذّر تحميل القراءات من 16 إلى 22 سبتمبر 2026» / "from 16 to
-    22 Sep 2026". Built at `cbd7bbc` apart from these two forms.
+    22 Sep 2026". Built at `cbd7bbc`; the two forms at `41a6f7c`.
 15. **No concept label** (2026-10-03). «مفهوم استكشافي · بيانات افتراضية» / "Exploration concept · synthetic data"
     leaves every Eclipse screen: it takes room for nothing. This overrides NEXT-DIRECTION-BRIEF.md line 97. It also
     settles Daily's header at 1024 EN, which went to two lines only because the label no longer fitted beside the
-    status control's reserved width.
+    status control's reserved width. Built at `41a6f7c`.
 
 ## How this milestone's rounds run
 
