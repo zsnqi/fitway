@@ -132,6 +132,23 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       with item 12, and changing it is not worth a round.
     - English coverage rows at 320 px wrapping two ways go to Daily's phone round (item 20), which rearranges that card.
     - Reports' status control holds its width the way Daily's does, so a live status cannot change it.
+25. **After the phone touch trial** (`a223c82`, 2026-10-03). The user saw the 390 AR sheet and the video and raised
+    nothing against the hold, the reading or the previous and next buttons (not a visual acceptance), and asks for:
+    - **The bar.** When a hold or a tap starts and part of the reading area or the plot is under the bottom bar, the
+      page slides up once, smoothly, until both are above the bar; it never moves while the finger moves.
+    - **No first-open intro on the phone** (720 px and below): the page appears complete at once; the computer keeps
+      item 4's intro. The user's reason: on the phone the chart is below the first screen, so only the numbers moved
+      while everything else stood still.
+    - **The busiest-time card is still open.** The trial's card (hours beside the title, "Average 51" hanging under
+      the hours) reads badly, and the coordinator's next proposal (title and «آخر 7 أيام · المعدّل 51» on one side,
+      the hours alone on the other) did not convince the user either. Draw it again with a designer's eye.
+    - The reading-direction review's small fixes, accepted: «إلى» or "to" kept with its date in the empty-period
+      sentence; English "Waiting for readings" clear of the close button at 320 px; a straight Tab order across the
+      three buttons; the one-pixel seam in Reports' Arabic header.
+    - **Lesson for the one-pass screens** (the user): the card passed every check because each check asked whether the
+      requested change happened, not whether the changed element reads well as a whole. Every review looks at each
+      changed element as a composition (WORKING_AGREEMENTS "Rules and findings").
+
 ## How this milestone's rounds run
 
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the

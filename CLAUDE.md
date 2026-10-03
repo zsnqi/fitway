@@ -52,6 +52,7 @@ Each definition fixes one model and one effort level, and the coordinator picks 
 | Definition | Model | Effort | Use |
 | --- | --- | --- | --- |
 | `owner-direction-designer` | Opus | `xhigh` | new visual design and taste judgment |
+| `owner-direction-designer-max` | Opus | `max` | the user's trial (2026-10-03): a whole Owner screen in one pass |
 | `owner-direction-builder` | Opus | `high` | implementing an agreed, precisely specified decision |
 | `owner-direction-verifier` | Opus | `xhigh` | independent verification, only where evidence shows `high` misses something |
 | `owner-direction-verifier-high` | Opus | `high` | independent verification (the default) |
