@@ -150,6 +150,21 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - **Lesson for the one-pass screens** (the user): the card passed every check because each check asked whether the
       requested change happened, not whether the changed element reads well as a whole. Every review looks at each
       changed element as a composition (WORKING_AGREEMENTS "Rules and findings").
+26. **After the decision-25 build** (`bd8bada`, 2026-10-04; the user: "ممتاز" on what it built).
+    - **The busiest-time card on the phone:** the designer's variant 2 (copy
+      `D:/fitway-temp/owner-r04-busiest-card/`, `?busy=2`; report `D:/fitway-temp/owner-r04-busiest-card/REPORT.md`):
+      the desktop card's head (the name, «آخر 7 أيام» at the line's end), then the hours at the start and the average
+      at the far end, on the hours' baseline. The hours write the period in full, «6–7 مساءً» («صباحًا» for a
+      morning hour), and the average reads «بمعدّل 51». The user's reason: the card's value is the answer to "when is
+      it busiest", so the word is said in full; every other time stays short («ص / م»). English is unchanged
+      ("6–7 PM", "Average 51"). Coordinator: this is a deliberate exception to DESIGN_GUIDE §9's «ص/م», for the later
+      ADR.
+    - **Touch on the plot:** the page's own pan and flick leave; the page scrolls and pinches as the phone does, and the
+      held reading moves from the first movement the phone reports, stop by stop, a little behind the finger (agreed
+      with the coordinator's proposal).
+    - **The slide works both ways:** when a hold or tap starts with the reading or the plot cut off at the top of the
+      screen, the page slides once until both show, as it does above the bar.
+    - Accepted as built: Tab goes previous, next, then close (a straight row would break the reading at 320 px).
 
 ## How this milestone's rounds run
 
