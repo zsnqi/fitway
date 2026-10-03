@@ -66,7 +66,12 @@
       // other three widths prevents the auto table algorithm from paying for that room by shrinking them on resize.
       const group = document.createElement("colgroup");
       group.dataset.peakRoom = "";
-      group.innerHTML = widths.map((w, i) => `<col style="width:${w + (i === 1 ? extra : i === 4 ? -extra : 0)}px">`).join("");
+      // Whole pixels for every column but Notes, which takes the rest, so the total is unchanged: fractional column edges
+      // left a 1 px seam between the Arabic headers (decision 25).
+      const want = widths.map((w, i) => w + (i === 1 ? extra : i === 4 ? -extra : 0));
+      const whole = want.map((w, i) => (i === want.length - 1 ? 0 : Math.round(w)));
+      whole[whole.length - 1] = want.reduce((s, w) => s + w, 0) - whole.reduce((s, w) => s + w, 0);
+      group.innerHTML = whole.map((w) => `<col style="width:${w}px">`).join("");
       table.prepend(group);
       table.style.tableLayout = "fixed";
     }
@@ -76,6 +81,9 @@
   if (!document.body.classList.contains("rp")) return;
   const LANG = root.lang === "en" ? "en" : "ar";
   const RTL = LANG === "ar";
+  // A middle dot between two parts of a line is silent (aria-hidden); a screen reader hears this comma instead, so the parts
+  // are two phrases, not one run of words (decision 25). It is invisible and takes no room.
+  const SR_SEP = `<span class="sr-only">${RTL ? "، " : ", "}</span>`;
   const STATE = root.dataset.state === "short" ? "short" : "full";
   const params = new URLSearchParams(location.search);
   /* K-02: Reports' own page states (reports.html sets data-page before first paint), as the user decided on 2026-10-03
@@ -170,8 +178,8 @@
       // A span in words, the words first (decision 8, user 2026-10-01): «لا قراءات من 10:00 ص إلى 2:00 م».
       spanFrom: "من",
       spanTo: "إلى",
-      emptyTable: (a, b) => `لا قراءات من ${a} إلى ${b}`,
-      emptyDay: (d) => `لا قراءات في ${d}`,
+      emptyTable: (a, b) => `${nw("لا قراءات")} ${nw(`من ${a}`)} ${nw(`إلى ${b}`)}`,
+      emptyDay: (d) => `${nw("لا قراءات")} ${nw(`في ${d}`)}`,
       // One span inside the button: a flex button would make each run of text and the number an item of its own and set
       // its 8 px gap around «28» (the fix round, 2026-10-01).
       emptyAction: `عرض آخر ${bdi(28)} يومًا`,
@@ -253,7 +261,7 @@
       wowEntries: (p) => `Entries ${p}`,
       wowEmpty: "Not enough readings yet",
       wowEmptyNote: () => `Needs two weeks of steady readings`,
-      wowSay: (cur, prev) => `${cur} compared with ${prev}`,
+      wowSay: (cur, prev) => `The days ${cur} compared with the days ${prev}`,
       avgTitle: "Average inside",
       peakTitle: "Highest peak",
       entriesTitle: "Entries",
@@ -290,8 +298,8 @@
       beforeHistory: "No readings yet",
       spanFrom: "from",
       spanTo: "to",
-      emptyTable: (a, b) => `No readings from ${a} to ${b}`,
-      emptyDay: (d) => `No readings on ${d}`,
+      emptyTable: (a, b) => `${nw("No readings")} ${nw(`from ${a}`)} ${nw(`to ${b}`)}`,
+      emptyDay: (d) => `${nw("No readings")} ${nw(`on ${d}`)}`,
       emptyAction: "Show the last 28 days",
       exportMinutes: "Export minute data",
       exportTable: "Export table",
@@ -859,7 +867,7 @@
     $("#ops-res").innerHTML = Object.values(OPS_STATES).map((f) => `<span class="hb-r">${words(f(284))}<svg class="hb-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5"/></svg></span>`).join("");
     $("#ops-state").className = `ops-state${s.cls ? ` ${s.cls}` : ""}`;
     $("#ops-state").innerHTML = `${s.mark}<span>${s.word}</span>`;
-    $("#ops-last").innerHTML = s.detail || s.line + (s.ago ? `<span class="sep" aria-hidden="true">·</span><span class="ops-ago">${s.ago}</span>` : "");
+    $("#ops-last").innerHTML = s.detail || s.line + (s.ago ? `<span class="sep" aria-hidden="true">·</span><span class="ops-ago">${SR_SEP}${s.ago}</span>` : "");
     $("#ops-hours").innerHTML = `${L.hours} ${timeRange(0, DAY)}`;
   }
 
@@ -891,7 +899,7 @@
   // period has are a fact about the figures, not its length, so that part stays with a preset too.
   function renderHead() {
     const n = model.n, custom = range.kind === "custom";
-    const sep = `<span class="sep" aria-hidden="true">·</span>`;
+    const sep = `<span class="sep" aria-hidden="true">·</span>${SR_SEP}`;
     // K-02: while the page loads or could not load, the period's dates and a custom period's length are the request,
     // real text from the first paint; how many days have readings comes with the payload.
     const tail = phase !== "ready" ? (custom ? L.days(n) : "")
@@ -934,7 +942,7 @@
     else {
       $("#avg-body").innerHTML = `<p class="stat-value"><bdi class="num">${Math.round(model.avg)}</bdi></p><div class="stat-foot"></div>`;
       const t = model.top;
-      $("#peak-meta").innerHTML = `${dayText(t.dn)}<span class="sep" aria-hidden="true">·</span>${timeText(t.peakM)}`;
+      $("#peak-meta").innerHTML = `${dayText(t.dn)}<span class="sep" aria-hidden="true">·</span>${SR_SEP}${timeText(t.peakM)}`;
       $("#peak-body").innerHTML = `<p class="stat-value"><bdi class="num">${t.peak}</bdi></p><div class="stat-foot">${levelChip(t.peak)}</div>`;
     }
     if (!model.withReadings) none("#entries-body");
@@ -1031,7 +1039,7 @@
     const first = heatSlots[heatCur.r][heatCur.c] || $(".hc", heat);
     if (first) first.tabIndex = 0;
     hideTip();
-    $("#pattern-sub").innerHTML = `<span class="ps-part">${L.patternSub}</span>${b ? `<span class="sep" aria-hidden="true">·</span><span class="ps-part">${L.busiest(wdLong(b.wd), hourRange(b.c * 60, b.c * 60 + 60))}</span>` : ""}`;
+    $("#pattern-sub").innerHTML = `<span class="ps-part">${L.patternSub}</span>${b ? `<span class="sep" aria-hidden="true">·</span><span class="ps-part">${SR_SEP}${L.busiest(wdLong(b.wd), hourRange(b.c * 60, b.c * 60 + 60))}</span>` : ""}`;
     // The key names every mark the pattern shows (TRU-2): the busiest point while there is one, the hatch while any slot
     // is drawn from fewer than 3 days. The day form writes closed and no-reading hours in words and prints every number,
     // so its key holds only the marks its bars carry, and none in an empty period, where there is nothing to explain.

@@ -321,6 +321,15 @@ th.is-asc .cx-sort .cx-ico { transform: rotate(180deg); }
 .cx-table-head p { margin-block-start: 4px; font: var(--t-label); color: var(--ink-3); }
 .cx-empty { display: flex; flex-direction: column; align-items: center; gap: 16px; padding-block: 40px; color: var(--ink-2); text-align: center; font: var(--t-label); }
 .cx-empty .cx-ico { width: 22px; height: 22px; color: var(--ink-3); }
+/* The sentence wraps only between its words, each end with its preposition (TBL-12; decision 25: «إلى» / "to" with its
+ * date). */
+.cx-empty .nw { white-space: nowrap; }
+/* The empty table and the alert side by side from 721 px; one under the other on a phone, where side by side the alert's
+ * Cancel ran into the table's card and the button ran past its own (decision 25). */
+.cx-row-empty { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+@media (max-width: 720px) {
+  .cx-row-empty { grid-template-columns: minmax(0, 1fr); }
+}
 .cx-table tr.is-empty:hover > * { background: none; }
 /* The two table specimens sit side by side only where the minute table fits its column. */
 .cx-row-tables { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }

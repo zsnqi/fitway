@@ -226,7 +226,7 @@ hover colours of the rail tiles and buttons, the details chevron, and the jump t
 
 **1. Load: the first-open intro only.**
 
-- Without an intro (reduced motion, `?motion=off`, the Motion switch off, or a return after the tab's intro flag)
+- Without an intro (720 px and below since DECISIONS item 25, reduced motion, `?motion=off`, the Motion switch off, or a return after the tab's intro flag)
   values arrive at once. The frame is complete at first paint; loading holds its slots. No font-loading hide is
   added; Chromium can hold paint for pending early-loaded fonts.
 - The first inline script sets language, direction and state; the second starts both weights of the CSS font faces. app.js
@@ -813,3 +813,14 @@ Built for the user to try (DECISIONS item 20, the user's picks of 2026-10-03), a
 - Under a finger every stop has an equal share of the plot, so every half hour, the peak and the latest reading can be reached at 390 and 320.
 - Busiest time keeps its place, with its hours beside its title: 100 px tall instead of 148.
 - The component sheet shows the held and kept readings, a kept span with no readings, and the busiest time's phone row.
+
+### After the trial (DECISIONS item 25, 2026-10-03)
+
+- **The bar.** When a hold or a tap starts while any part of the plot (the band is its top) is under the bottom bar, the page slides up once, 420 ms with the live tail's ease, until the plot stands 16 px above the bar (FOC-7's clearance), never past the top of the screen. The finger does not move it, and the reading keeps to the finger's place across the slide. Reduced motion: instant. Nothing slides when the plot is clear.
+- **No intro on the phone.** At 720 px and below the page is complete at first paint; the tab's first open is spent all the same. A window brought across 720 px settles a waiting or playing intro at once and never starts one; the tuner's replay does nothing there. From 721 px the intro is unchanged; a live change still rolls.
+- **The first movement.** A touch that starts in the plot's data is the page's own gesture from its first point (its touchstart is cancelled), because Chromium holds back every touchmove inside its touch slop (about 15 px) after an uncancelled touchstart, so a drag after the hold lost its first two or three stops. The page now pans a swipe itself, one to one, and a flick carries on and slows (325 ms decay) as the browser's own does; a new touch, the wheel or a key stops it. A pinch that starts with a finger on the plot no longer zooms the page.
+- **Where a finger reads.** From the scale's highest mark down (the plot's data). A touch in the band's lane above it is the page's: it scrolls natively, and a tap there reads nothing, so the finger always starts at least 28 px under the band's lowest line and never covers the reading.
+- **The buttons.** Tab goes from the plot to previous, next, then close: along the lower row in reading order, then up to close, which stands above next (the look is unchanged; the order was close, previous, next, a diagonal jump back).
+- **"Waiting for readings"** (English, 320 px) wraps between its words where it would pass the buttons, so it keeps the reading's distance from them.
+- **Reports and the sheet.** The empty-period sentence keeps «لا قراءات» / "No readings" whole and each preposition with its date («من 20 يوليو» / «إلى 1 أغسطس 2026»), in every form of item 21; the tablet day table's frozen columns are whole pixels (Notes takes the rest), which removes the 1 px seam in the Arabic header; the "Last 7 days" description reads "The days from … compared with the days from …", as the Arabic does; the sheet's "Last 7 days" range is one unbreakable run, as on Reports, and its empty table and alert stack at 720 px and below.
+- **Spoken separators.** Every silent middle dot between two parts of a line (both headers, Highest peak's day and time, Busy times' subtitle, the status details' last reading) has an unseen comma after it, so a screen reader hears two phrases.

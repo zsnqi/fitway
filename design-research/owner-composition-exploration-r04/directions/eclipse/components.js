@@ -86,7 +86,7 @@
       entries: "مرات الدخول", usualN: (n) => `المعتاد ${b(n)}`, busiestTitle: "أكثر الأوقات ازدحامًا", last7: `آخر ${b(7)} أيام`,
       avgN: (n) => `المعدّل ${b(n)}`, avgTitle: "معدّل الموجودين", noReadings: "لا قراءات", waiting: "بانتظار القراءات", pending: "قيد الانتظار", noReadingsYet: "لا قراءات بعد",
       wowTitle: `آخر ${b(7)} أيام`, notEnough: "لا تكفي القراءات بعد", needs: "يلزم أسبوعان من القراءات المنتظمة",
-      wowDates: `${b(16)} – ${b(22)} سبتمبر`,
+      wowDates: `<span class="nw">${b(16)} – ${b(22)} سبتمبر</span>`,
       levels: ["هادئ", "متوسط", "مزدحم", "شديد الازدحام"],
       cmp: { busier: "أعلى من المعتاد", quieter: "أهدأ من المعتاد", same: "قريب من المعتاد" },
       cards: { live: "مباشر، مضاءة", plain: "قيمة ووقتها", late: "متأخرة، بلا ضوء", words: "قيمة بالكلمات", none: "لا قراءات", short: "لا تكفي القراءات بعد، بلا ضوء" },
@@ -143,7 +143,7 @@
       hdrTitle: "التقارير", hdrSub: `${b("26")} أغسطس – ${b("22")} سبتمبر ${b(2026)}`,
       hdrCap: "رأس الصفحة: العنوان والفترة، وحالة التشغيل في نهاية السطر؛ ثم عناصر تحكم الصفحة تحته: الفترة في أوله، وتصدير البيانات في آخره",
       exportMinutes: "تصدير بيانات الدقائق",
-      emptyTable: `لا قراءات من ${b(1)} إلى ${b(31)} يوليو ${b(2026)}`, emptyAction: `عرض آخر ${b(28)} يومًا`,
+      emptyTable: `<span class="nw">لا قراءات</span> <span class="nw">من ${b(1)}</span> <span class="nw">إلى ${b(31)} يوليو ${b(2026)}</span>`, emptyAction: `عرض آخر ${b(28)} يومًا`,
       emptyCaps: { table: "جدول بلا قراءات، وطريق واحد للعودة", alert: "تنبيه وإعادة محاولة واحدة" },
       colourNames: { page: "الصفحة", card: "البطاقة", panel: "النافذة", head: "رأس الجدول", line: "خط السطح", line2: "خط العنصر", line3: "عند المرور", ink: "الطباشير", ink2: "ثانوي", ink3: "توضيحي", red: "أحمر FITWAY", redhi: "الأحمر الساطع", ox: "العنابي", obs: "الأسود", live: "مباشر", delayed: "متأخر", amber: "نص المتأخر", stale: "رمادي قديم", err: "خطأ", field: "حافة الحقل" },
       ratioOn: (r) => `${b(r)}:1 على البطاقة`,
@@ -186,7 +186,7 @@
       entries: "Entries", usualN: (n) => `Usual ${n}`, busiestTitle: "Busiest time", last7: "Last 7 days",
       avgN: (n) => `Average ${n}`, avgTitle: "Average inside", noReadings: "No readings", waiting: "Waiting for readings", pending: "Pending", noReadingsYet: "No readings yet",
       wowTitle: "Last 7 days", notEnough: "Not enough readings yet", needs: "Needs two weeks of steady readings",
-      wowDates: "16 – 22 Sep",
+      wowDates: `<span class="nw">16 – 22 Sep</span>`,
       levels: ["Quiet", "Moderate", "Busy", "Packed"],
       cmp: { busier: "Busier than usual", quieter: "Quieter than usual", same: "About usual" },
       cards: { live: "Live, lit", plain: "A value and its time", late: "Delayed, unlit", words: "A value in words", none: "No readings", short: "Not enough readings yet, unlit" },
@@ -242,7 +242,7 @@
       hdrTitle: "Reports", hdrSub: "26 Aug – 22 Sep 2026",
       hdrCap: "Page header: the title and the period, the Operations status at the inline end; the page's controls under it: the period at the row's start, the export at its far end",
       exportMinutes: "Export minute data",
-      emptyTable: "No readings from 1 to 31 Jul 2026", emptyAction: "Show the last 28 days",
+      emptyTable: `<span class="nw">No readings</span> <span class="nw">from 1</span> <span class="nw">to 31 Jul 2026</span>`, emptyAction: "Show the last 28 days",
       emptyCaps: { table: "A table with no readings, and one way back", alert: "An alert and one retry" },
       colourNames: { page: "Page", card: "Card", panel: "Dialog", head: "Table head", line: "Surface line", line2: "Control line", line3: "Hover line", ink: "Chalk", ink2: "Secondary", ink3: "Caption", red: "FITWAY red", redhi: "Bright red", ox: "Oxblood", obs: "Obsidian", live: "Live", delayed: "Delayed", amber: "Delayed text", stale: "Stale grey", err: "Error", field: "Field edge" },
       ratioOn: (r) => `${r}:1 on a card`,
@@ -407,7 +407,7 @@
     // has its three buttons. The page's own classes (style.css), drawn here at any width.
     const usualFoot = (m) => `<div class="bd-foot"><span class="bd-u"><span class="sw sw-usual" aria-hidden="true"></span><span>${L.usual} ${b(Math.round(usual(m)))}</span></span></div>`;
     const reading = (m, v, flag) => `<div class="bd-t">${flag ? `<span class="cx-flag">${flag}</span>` : ""}<span class="bd-time">${b(time(m))}</span></div><div class="bd-main"><bdi class="bd-v">${v}</bdi><span class="bd-l">${L.levels[levelOf(v)]}</span></div>${usualFoot(m)}`;
-    const acts = `<div class="band-acts"><span class="band-btn band-close" role="img" aria-label="${L.band.close}">${svg('<path d="M7 7l10 10M17 7 7 17"/>', "")}</span><span class="band-btn band-prev" role="img" aria-label="${L.band.prev}">${svg('<path d="M14.5 6.5 9 12l5.5 5.5"/>', "mirror")}</span><span class="band-btn band-next" role="img" aria-label="${L.band.next}">${svg('<path d="M9.5 6.5 15 12l-5.5 5.5"/>', "mirror")}</span></div>`;
+    const acts = `<div class="band-acts"><span class="band-btn band-prev" role="img" aria-label="${L.band.prev}">${svg('<path d="M14.5 6.5 9 12l5.5 5.5"/>', "mirror")}</span><span class="band-btn band-next" role="img" aria-label="${L.band.next}">${svg('<path d="M9.5 6.5 15 12l-5.5 5.5"/>', "mirror")}</span><span class="band-btn band-close" role="img" aria-label="${L.band.close}">${svg('<path d="M7 7l10 10M17 7 7 17"/>', "")}</span></div>`;
     const bandSpec = (inner, kept, title, ids) => `<figure class="cx-fig" style="align-items:stretch"><div class="card cx-var cx-band-card"><div class="cx-band"><div class="band-read">${inner}</div>${kept ? acts : ""}</div></div>${cap(title, ids)}</figure>`;
     const KEPT = 660;
     const bands = [
@@ -896,7 +896,7 @@
   function empties() {
     const table = `<div class="card cx-table-card"><div class="cx-table-head"><div><h3>${L.daysTitle}</h3></div></div><table class="cx-table" role="table"><thead><tr role="row"><th scope="col">${L.cols.day}</th><th scope="col" class="n">${L.cols.peak}</th><th scope="col" class="n">${L.cols.avg}</th><th scope="col" class="n">${L.cols.entries}</th></tr></thead><tbody><tr role="row" class="is-empty"><td role="cell" colspan="4"><div class="cx-empty">${ico("info")}<p>${L.emptyTable}</p><button class="cx-btn" type="button">${L.emptyAction}</button></div></td></tr></tbody></table></div>`;
     const alert = `<div class="card cx-stage" style="width:min(468px,100%)"><div class="cx-alert" role="alert" style="margin:0">${ico("alert")}<span>${L.failed}</span></div><div style="display:flex;justify-content:flex-end;gap:8px;margin-block-start:24px"><button class="cx-btn" type="button">${L.cancel}</button><button class="cx-btn primary is-focus" type="button">${L.retry}</button></div></div>`;
-    return section("empty", "empty", "EMP-1…4", `<div class="cx-row" style="grid-template-columns:minmax(0,3fr) minmax(0,2fr)">
+    return section("empty", "empty", "EMP-1…4", `<div class="cx-row cx-row-empty">
       <figure class="cx-fig" style="align-items:stretch"><div class="cx-spec" inert>${table}</div>${cap(L.emptyCaps.table, "EMP-1 · STA-8 · EMP-4")}</figure>${fig(alert, L.emptyCaps.alert, "EMP-2 · EMP-3 · EMP-4")}</div>`);
   }
 

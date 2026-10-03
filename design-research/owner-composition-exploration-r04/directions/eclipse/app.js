@@ -17,6 +17,9 @@
   const root = document.documentElement;
   const LANG = root.lang === "en" ? "en" : "ar";
   const RTL = LANG === "ar";
+  // A middle dot between two parts of a line is silent (aria-hidden); a screen reader hears this comma instead, so the parts
+  // are two phrases, not one run of words (decision 25). It is invisible and takes no room.
+  const SR_SEP = `<span class="sr-only">${RTL ? "، " : ", "}</span>`;
   // The URL's state. Loading and error are phases of the first payload: both arrive into live (loading on its own,
   // error after its one retry), so STATE, the data the page shows or will show, is live for them.
   const PAGE = root.dataset.state || "live";
@@ -678,7 +681,7 @@
   });
 
   // The subtitle's two parts never break inside; on a phone the hours move into the status details.
-  $("#sub").innerHTML = `<span class="sub-part">${L.date}</span><span class="sep sub-hours" aria-hidden="true">·</span><span class="sub-part sub-hours">${L.hours} ${timeRange(0, DAY)}</span>`;
+  $("#sub").innerHTML = `<span class="sub-part">${L.date}</span><span class="sep sub-hours" aria-hidden="true">·</span><span class="sub-part sub-hours">${SR_SEP}${L.hours} ${timeRange(0, DAY)}</span>`;
 
   // The frame's status (step 4: Operations has no section in the rail, user 2026-10-01): one control at every size,
   // which opens Operations' details (BDG-2, BDG-3). From 721 px it reads in full, its word and its line (HDR-3); on a
@@ -728,7 +731,7 @@
     const s = statusOf();
     $("#ops-state").className = `ops-state${s.cls ? ` ${s.cls}` : ""}`;
     $("#ops-state").innerHTML = `${s.mark}<span>${s.word}</span>`;
-    $("#ops-last").innerHTML = s.detail || s.line + (s.ago ? `<span class="sep" aria-hidden="true">·</span><span class="ops-ago">${L.ago(M.nowM - M.last)}</span>` : "");
+    $("#ops-last").innerHTML = s.detail || s.line + (s.ago ? `<span class="sep" aria-hidden="true">·</span><span class="ops-ago">${SR_SEP}${L.ago(M.nowM - M.last)}</span>` : "");
     $("#ops-hours").innerHTML = `${L.hours} ${timeRange(0, DAY)}`;
   }
   renderOps();
@@ -1675,11 +1678,11 @@
   /* ---- the finger (720 px and below; DECISIONS item 20, the user's picks for a trial, 2026-10-03). The page keeps its
    * arrangement; only how a finger moves through the chart changes, and 721 px and up are untouched.
    *   A swipe that starts on the plot, in any direction, is the page's: it scrolls and reads nothing (a finger that moves
-   *   more than FINGER.slop px before the hold is let go; the browser pans as it would anywhere else).
+   *   more than FINGER.slop px before the hold is let go; since decision 25 the page pans and flicks it itself, below).
    *   A press held still for FINGER.hold ms starts the reading; from then on the page does not scroll (the touch's moves
    *   are cancelled) and a drag moves the reading stop by stop. Lifting the finger ends it: the band is empty again.
-   *   A quick tap reads that time and keeps it, with its buttons: the previous and the next time, and close. A tap outside
-   *   the chart, Escape, or close ends it.
+   *   A quick tap reads that time and keeps it, with its buttons: the previous and the next time, and close (in that Tab
+   *   order since decision 25: along the lower row, then up to close). A tap outside the chart, Escape, or close ends it.
    *   The reading stands in the band above the plot (the tooltip's lane), large, at the band's inline start; the tooltip
    *   box and its connector are set aside on a phone (CSS). Inside now never changes.
    *   Every stop has an equal share of the plot's width under a finger (stopForFinger), so the peak and the latest reading
@@ -1703,7 +1706,9 @@
   function bandHTML(st, tight = false) {
     if (st.kind === "gap") {
       const second = st.waiting ? `<span class="nw">${L.spanSince} ${tb(st.a)}</span>` : `<span class="nw">${L.spanFrom} ${tb(st.a)}</span> <span class="nw">${L.spanTo} ${tb(st.b)}</span>`;
-      return `<div class="bd-span"><span class="nw">${st.waiting ? L.ro.waiting : L.ro.noReading}</span> <span>${second}</span></div>`;
+      // Where the words would pass the buttons (English "Waiting for readings" at 320 px, decision 25), they wrap between
+      // words instead, so the sentence keeps the reading's 8 px from the buttons.
+      return `<div class="bd-span"><span${tight ? "" : ' class="nw"'}>${st.waiting ? L.ro.waiting : L.ro.noReading}</span> <span>${second}</span></div>`;
     }
     const flag = st.kind === "peak" ? L.ro.peak : st.kind === "latest" ? L.ro.latest : "";
     const stale = st.kind === "latest" && STATE === "delayed";
@@ -1730,8 +1735,8 @@
     if (on) {
       bandRead.innerHTML = bandHTML(sel);
       // The value and its level word on one line, unless they would pass the buttons: then the word leads the next line.
-      const main = $(".bd-main", bandRead);
-      if (main && main.scrollWidth > main.clientWidth + 0.5) bandRead.innerHTML = bandHTML(sel, true);
+      const main = $(".bd-main", bandRead), span = $(".bd-span", bandRead);
+      if ((main && main.scrollWidth > main.clientWidth + 0.5) || (span && span.scrollWidth > span.clientWidth + 0.5)) bandRead.innerHTML = bandHTML(sel, true);
     } else bandRead.textContent = "";
     if (kept) {
       bandBtn.prev.setAttribute("aria-disabled", String(sel.i <= 0));
@@ -1771,13 +1776,80 @@
   document.addEventListener("click", (e) => {
     if (mqPhone.matches && pinned && sel && !chartCard.contains(e.target)) { pinned = false; clearSelection(); }
   });
-  // A mouse on a phone-sized window (the 200% zoom of 1440): a click keeps the reading, as a tap does.
+  // A mouse on a phone-sized window (the 200% zoom of 1440): a click keeps the reading, as a tap does. A finger's own taps
+  // fire no click here (their touchend is cancelled), and a tap in the band's lane is the page's (fingerZone).
   hit.addEventListener("click", (e) => {
-    if (!mqPhone.matches || finger) return;
+    if (!mqPhone.matches || finger || e.pointerType === "touch") return;
     pinned = true;
     selectStop(stopForFinger(e.clientX));
     syncBand();
+    slideClear();
   });
+
+  /* ---- decision 25 (2026-10-03), after the trial.
+   *   Where a finger reads (A4): from the scale's highest mark down (geo.yt), the plot's data. The band's lane above it
+   *   holds the reading, so a finger that starts there would cover what it reads: a touch in the lane is the page's (it
+   *   scrolls; a tap there does nothing), and the finger always starts at least 28 px under the band's lowest line.
+   *   The first movement (A3): a touch that starts in the data is the page's own gesture from its first point (its
+   *   touchstart is cancelled), so the browser holds back no movement (Chromium sends no touchmove inside its touch slop,
+   *   about 15 px, after an uncancelled touchstart) and a drag after the hold moves the reading stop by stop from the
+   *   finger's first movement. The page's own scroll then belongs to the page too: a swipe moves the page with the
+   *   finger, one to one, and a flick carries on and slows as the browser's own does (pan, fling).
+   *   The bar (A1): when a hold or a tap starts while any part of the plot (the band is its top) is under the bottom bar,
+   *   the page slides up once until the plot stands 16 px above the bar, as focus does (FOC-7); it is not moved by the
+   *   finger, and the reading keeps to the finger's place across the slide. With reduced motion it is instant. */
+  const fingerZone = (y) => !geo || y >= plot.getBoundingClientRect().top + geo.yt;
+  const PAGE_MOVE = { slide: 420, gap: 16, tau: 325, flick: 0.1 }; // ms; px; ms (a flick's decay); px/ms (the least flick)
+  let pageMove = null; // { raf, kind: "slide" | "fling" }: the page moving on its own, one at a time
+  const scrollMax = () => Math.max(0, document.documentElement.scrollHeight - innerHeight);
+  const scrollToY = (y) => window.scrollTo({ top: Math.max(0, Math.min(scrollMax(), y)), behavior: "instant" });
+  function stopPageMove() { if (pageMove) { cancelAnimationFrame(pageMove.raf); pageMove = null; } }
+  // Runs fn(elapsed) each frame until it returns false.
+  function runPageMove(kind, fn) {
+    stopPageMove();
+    const t0 = performance.now(), mv = { kind, raf: 0 };
+    const step = (now) => { if (pageMove !== mv) return; if (fn(Math.max(0, now - t0)) === false) { pageMove = null; return; } mv.raf = requestAnimationFrame(step); };
+    pageMove = mv;
+    mv.raf = requestAnimationFrame(step);
+  }
+  // The slide (A1): how far the plot must rise to stand PAGE_MOVE.gap above the bar, never past the top of the screen.
+  function slideClear() {
+    if (!mqPhone.matches) return;
+    const bar = $("#tabbar");
+    const barTop = bar && getComputedStyle(bar).display !== "none" ? bar.getBoundingClientRect().top : innerHeight;
+    const pr = plot.getBoundingClientRect();
+    const over = pr.bottom - (barTop - PAGE_MOVE.gap);
+    if (over <= 0.5) return; // both clear already: nothing slides
+    const by = Math.min(over, Math.max(0, pr.top - PAGE_MOVE.gap)); // the band stays on screen whatever the height
+    const from = scrollY, to = Math.min(scrollMax(), from + by);
+    if (to - from < 0.5) return;
+    if (!motionOn()) { stopPageMove(); scrollToY(to); return; }
+    // A gentle start and a soft landing (the live tail's ease, read from a clock as the intro's line is): the rail's
+    // sharper ease-out read as a jump on a slide this long.
+    const clock = clockAnim({ duration: PAGE_MOVE.slide, easing: EASE.morph, fill: "both" });
+    runPageMove("slide", (ms) => {
+      const p = ms >= PAGE_MOVE.slide ? 1 : clock.effect.getComputedTiming().progress ?? 0;
+      scrollToY(from + (to - from) * p);
+      // The reading keeps to the finger's place on the plot as the page moves under it.
+      if (finger && finger.on) selectStop(stopForFinger(finger.x));
+      if (p >= 1) clock.cancel();
+      return p < 1;
+    });
+  }
+  // A flick (the page's own pan, let go while moving): it carries on and slows to rest, as the browser's fling does.
+  function fling(v) {
+    if (Math.abs(v) < PAGE_MOVE.flick) return;
+    if (!motionOn()) return; // reduced motion: the page stops where the finger let go
+    const from = scrollY, amp = -v * PAGE_MOVE.tau;
+    runPageMove("fling", (ms) => {
+      const left = amp * Math.exp(-ms / PAGE_MOVE.tau), y = from + amp - left;
+      scrollToY(y);
+      return Math.abs(left) > 0.5 && y > 0 && y < scrollMax();
+    });
+  }
+  // A new touch, the wheel or a key stops the page's own movement, as it stops the browser's.
+  ["touchstart", "wheel", "keydown"].forEach((type) => addEventListener(type, () => { if (pageMove && pageMove.kind === "fling") stopPageMove(); }, { capture: true, passive: true }));
+
   const fingerTouch = (e) => (finger ? [...e.changedTouches].find((t) => t.identifier === finger.id) : null);
   function endFinger() {
     if (!finger) return;
@@ -1786,39 +1858,69 @@
     finger = null;
     if (was) { pinned = false; clearSelection(); }
   }
+  let laneTouch = null; // a touch that started in the band's lane: the page's, and a tap there does nothing
   hit.addEventListener("touchstart", (e) => {
     if (!mqPhone.matches || !stops.length) return;
-    // A second finger (a pinch) is the browser's.
-    if (e.touches.length !== 1) { endFinger(); return; }
+    if (e.touches.length !== 1) { endFinger(); laneTouch = null; return; }
     const t = e.changedTouches[0];
-    finger = { id: t.identifier, x0: t.clientX, y0: t.clientY, x: t.clientX, on: false, timer: 0 };
+    if (!fingerZone(t.clientY)) { laneTouch = { id: t.identifier, x0: t.clientX, y0: t.clientY, moved: false }; return; }
+    laneTouch = null;
+    if (e.cancelable) e.preventDefault(); // the finger's gesture from its first point (A3)
+    finger = { id: t.identifier, x0: t.clientX, y0: t.clientY, x: t.clientX, on: false, pan: null, timer: 0 };
     finger.timer = setTimeout(() => {
-      if (!finger) return;
+      if (!finger || finger.pan) return;
       finger.on = true;
       pinned = false;
       selectStop(stopForFinger(finger.x));
       syncBand();
+      slideClear();
     }, FINGER.hold);
-  }, { passive: true });
+  }, { passive: false });
   hit.addEventListener("touchmove", (e) => {
+    if (laneTouch) { const t = [...e.changedTouches].find((c) => c.identifier === laneTouch.id); if (t && Math.hypot(t.clientX - laneTouch.x0, t.clientY - laneTouch.y0) > FINGER.slop) laneTouch.moved = true; return; }
     const t = fingerTouch(e);
     if (!t) return;
+    if (e.cancelable) e.preventDefault();
     if (finger.on) {
-      if (e.cancelable) e.preventDefault(); // held: the page does not scroll
       finger.x = t.clientX;
       selectStop(stopForFinger(t.clientX));
       return;
     }
-    // Moved before the hold: a swipe, the page's.
-    if (Math.hypot(t.clientX - finger.x0, t.clientY - finger.y0) > FINGER.slop) { clearTimeout(finger.timer); finger = null; }
-    else finger.x = t.clientX;
+    const now = performance.now();
+    if (finger.pan) {
+      // The page's pan: it follows the finger one to one, from where the swipe was recognised.
+      const p = finger.pan;
+      scrollToY(p.top + (p.y - t.clientY));
+      p.samples.push([now, t.clientY]);
+      while (p.samples.length > 2 && now - p.samples[0][0] > 100) p.samples.shift();
+      return;
+    }
+    // Moved before the hold: a swipe, the page's. It reads nothing.
+    if (Math.hypot(t.clientX - finger.x0, t.clientY - finger.y0) > FINGER.slop) {
+      clearTimeout(finger.timer);
+      stopPageMove();
+      finger.pan = { y: t.clientY, top: scrollY, samples: [[now, t.clientY]] };
+    } else finger.x = t.clientX;
   }, { passive: false });
   hit.addEventListener("touchend", (e) => {
+    if (laneTouch) {
+      const t = [...e.changedTouches].find((c) => c.identifier === laneTouch.id);
+      // A tap in the lane: no click, no focus, nothing read.
+      if (t) { if (!laneTouch.moved && e.cancelable) e.preventDefault(); laneTouch = null; }
+      return;
+    }
     const t = fingerTouch(e);
     if (!t) return;
     // No click, no focus and no mouse events follow the finger's own gestures.
     if (e.cancelable) e.preventDefault();
     if (finger.on) { endFinger(); return; }
+    if (finger.pan) {
+      const s = finger.pan.samples, a = s[0], z = s[s.length - 1];
+      finger = null;
+      const dt = z[0] - a[0];
+      if (dt > 0 && performance.now() - z[0] < 100) fling((z[1] - a[1]) / dt);
+      return;
+    }
     // A tap: that time, kept.
     clearTimeout(finger.timer);
     const x = finger.x;
@@ -1826,11 +1928,12 @@
     pinned = true;
     selectStop(stopForFinger(x));
     syncBand();
+    slideClear();
   }, { passive: false });
-  hit.addEventListener("touchcancel", (e) => { if (fingerTouch(e)) endFinger(); });
+  hit.addEventListener("touchcancel", (e) => { laneTouch = null; if (fingerTouch(e)) endFinger(); });
   // The system's long-press menu never opens over the plot on a phone.
   hit.addEventListener("contextmenu", (e) => { if (mqPhone.matches) e.preventDefault(); });
-  mqPhone.addEventListener("change", () => { if (finger) { clearTimeout(finger.timer); finger = null; } if (!mqPhone.matches && pinned) { pinned = false; clearSelection(); } syncBand(); });
+  mqPhone.addEventListener("change", () => { laneTouch = null; stopPageMove(); if (finger) { clearTimeout(finger.timer); finger = null; } if (!mqPhone.matches && pinned) { pinned = false; clearSelection(); } syncBand(); });
 
   // Text equivalent of the chart.
   function summary() {
@@ -2580,6 +2683,9 @@
     } catch (e) { intro.reason = "session storage unavailable"; return; }
     intro.firstOpen = first;
     if (!first) { intro.reason = "already opened in this tab"; return; }
+    // Decision 25 (2026-10-03): no intro at 720 px and below. The chart is below the phone's first screen, so only the
+    // numbers moved while everything else stood still. The tab's first open is spent all the same (once per tab).
+    if (mqPhone.matches) { intro.reason = "phone"; return; }
     if (!motionOn()) { intro.reason = URL_OFF ? "motion=off" : mqReduce.matches ? "reduced motion" : "motion switch off"; return; }
     intro.reason = "first open in this tab";
     introPark();
@@ -2652,6 +2758,7 @@
   }
   function introStart() {
     if (!geo) { endIntro("no chart"); return; }
+    if (mqPhone.matches) { endIntro("phone"); return; } // a window brought to 720 px or below before the intro began
     const k = opts.introSpeed || 1;
     const d = { roll: INTRO_T.roll / k, line: INTRO_T.line / k, mark: INTRO_T.mark / k };
     intro.state = "running";
@@ -2782,9 +2889,12 @@
   // Leaving the tab mid-intro settles it too, so coming back never finds a half-drawn page. (A tab opened in the
   // background keeps its intro waiting until it is first shown; see introWait.)
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") endIntro("hidden"); });
+  // A window resized across 720 px never starts an intro, and one that plays or waits settles at once (decision 25).
+  mqPhone.addEventListener("change", () => { if (mqPhone.matches) endIntro("phone"); });
   // Tuner: replay the intro on the page as it is now (the current reading). Not while motion is off.
   function replayIntro() {
     if (!motionOn() || phase !== "ready" || M.last < 0) return false; // nothing to reveal without a reading
+    if (mqPhone.matches) return false; // no intro at 720 px and below (decision 25)
     settleAll();
     clearSelection();
     stopPulse();
