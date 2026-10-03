@@ -1,0 +1,1341 @@
+/* Eclipse: FITWAY Owner Daily concept. Concept only, synthetic data, desktop 1440x900, ar (RTL) and en (LTR).
+ * Evolved from ../light-study (recipe A). Every light is owned by one element, clipped by it, and never fixed
+ * to the viewport. v3: the card lights are a light behind the glass (--light) with a large dark disc in front of
+ * it (--disc-mask, transparent inside, opaque outside), so the light shows only around the disc's edge. Every
+ * light setting is a custom property on :root that the light tuner (tuner.js) can override live. */
+
+:root {
+  --page: #070707;
+  --card: rgba(15, 14, 15, 0.94);
+  --card-solid: #0f0e0f;
+  --tile: rgba(255, 255, 255, 0.018);
+  --line: rgba(255, 255, 255, 0.075);
+  --line-2: rgba(255, 255, 255, 0.1);
+  --line-3: rgba(255, 255, 255, 0.24);
+  --ink: #f5f3f2;
+  --ink-2: #c9c3c4;
+  --ink-3: #aaa4a6;
+  --red: #e51935;
+  --red-hi: #ff2946;
+  --live: #4be29b;
+  --delayed: #d9a400;
+  --font: "Readex Pro", "Segoe UI", system-ui, sans-serif;
+
+  /* The light ramp: four steps from FITWAY's own palette (Round 4), mirroring the reference's four steps.
+   *   obsidian #08090A  the base every light fades into
+   *   oxblood  #4D0713  broad and outer areas
+   *   red      #E51935  the core
+   *   bright   #FF2946  only at the single hottest point */
+  --obsidian-0: rgba(8, 9, 10, 0);
+  --ox: #4d0713;
+  --r1: rgba(229, 25, 53, 0.3);
+
+  /* Film grain: finer (1.4 base frequency, 2 octaves, 120px tile) and fainter than the lighting test.
+   * Grey noise centred on 50% so the overlay blend leaves the average untouched; it only shows where lit. */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n' x='0' y='0' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.34 .33 .33 0 0 .34 .33 .33 0 0 .34 .33 .33 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncG type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncB type='linear' slope='2.2' intercept='-.6'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  /* ---- Light settings (v3). These are the Recommended values: since 2026-09-25 they are the user's own tuning,
+   * copied from the tuner's "Copy values" (the designer's first Recommended values are in HISTORY.md, "Light model (v3)"). The
+   * light tuner (tuner.js) reads them from here as its Recommended preset and overrides them live on <html>.
+   * Plain numbers, so they tune and copy cleanly; the lighting section turns them into geometry.
+   * Inside now: a light behind the card, brightest at the inline-end bottom corner, and a large dark disc
+   * in front of it. */
+  --now-int: 0.7;          /* light intensity (alpha multiplier) */
+  --now-core: 229 25 53;   /* core colour, sRGB; the tuner only offers FITWAY reds (OKLCH hue 21-29) */
+  --now-disc-size: 77;     /* disc radius along the card, % of card width */
+  --now-disc-aspect: 0.7;  /* disc height / width, in pixels */
+  --now-disc-x: 67;        /* disc centre, % of card width from the lit side */
+  --now-soft: 34;          /* disc edge feather, px (along the card; x0.7 across) */
+  --now-rim: 8;            /* gap between the disc and the bottom edge, % of card height */
+  --now-hot: 0.05;         /* lit-corner glow: strength of the #FF2946 hot spot just inside the lit corner */
+  --now-hot-size: 110;     /* lit-corner glow size, % of its default ellipse (22cqw x 34cqh) */
+  --now-far: 0.9;          /* far bottom corner glow */
+  --now-end: 19;           /* how long the ring takes to fade out up the lit side, % of card height */
+  /* Chart card: a U of light around a dark disc; oxblood broad areas, red only near the lower corners. */
+  --chart-int: 0.95;
+  --chart-fade: 11.5;      /* thickness of the U at the middle of the bottom, % of card height */
+  --chart-side: 48.5;      /* height of the U's arms at the sides, % of card height */
+  --chart-balance: 0;      /* -1..1; above 0 the inline-end corner is stronger */
+  --chart-soft: 260;       /* disc edge feather, px */
+  /* Page */
+  --wash-int: 1;           /* top-corner wash (alpha multiplier) */
+  --grain-o: 0.15;         /* film grain, inside lit areas only */
+}
+/* Positions measured from the lit (inline-end) side mirror with the page. cq units resolve inside each lamp. */
+[dir="rtl"] { --lit-o: 0cqw; --lit-s: 1; --far-o: 100cqw; }
+[dir="ltr"] { --lit-o: 100cqw; --lit-s: -1; --far-o: 0cqw; }
+
+/* ------------------------------------------------------------------- base */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, p, ul, dl, dd, figure { margin: 0; padding: 0; }
+ul { list-style: none; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+bdi, .num { font-variant-numeric: tabular-nums; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+[dir="rtl"] .mirror { transform: scaleX(-1); }
+
+.skip {
+  position: absolute;
+  inset-inline-start: 112px;
+  top: 12px;
+  z-index: 50;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: var(--ink);
+  color: #0b0b0b;
+  font-size: 14px;
+  transform: translateY(-160%);
+}
+.skip:focus-visible { transform: none; outline-color: var(--red-hi); }
+
+/* -------------------------------------------------------------- page shell */
+.page {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 80px minmax(0, 1fr);
+  gap: 24px;
+  padding: 16px;
+}
+.main { min-width: 0; outline: none; }
+/* The first screen: header, cards and the chart. Its height is fixed to the viewport so the chart keeps its
+ * geometry whether or not the details panel is open below it. */
+.fold {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  height: calc(100vh - 32px);
+  min-height: 720px;
+  padding-block-start: 10px;
+}
+
+/* ------------------------------------------------------------- page wash
+ * Owned by .page (absolute, scrolls with it). An arc along the top edge from the inline-start corner: the
+ * light is anchored at the corner and hugs the top edge; a large dark ellipse rising from below pushes it up
+ * against the edge, so the band is thick at the corner and thins to nothing along the top. */
+.wash { position: absolute; inset: 0 0 auto 0; height: 400px; z-index: -1; pointer-events: none; overflow: hidden; }
+.wash-light {
+  position: absolute;
+  inset: 0;
+  background: var(--wash-light);
+  -webkit-mask-image: var(--wash-eclipse);
+  mask-image: var(--wash-eclipse);
+}
+.wash-light::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grain);
+  background-size: 120px 120px;
+  mix-blend-mode: overlay;
+  opacity: var(--grain-o);
+  -webkit-mask-image: var(--wash-light);
+  mask-image: var(--wash-light);
+}
+/* Red only near the corner; the body of the arc is oxblood, fading into obsidian. --wash-int scales it. */
+.wash {
+  --wi: var(--wash-int);
+  --wash-ramp: rgb(229 25 53 / calc(0.74 * var(--wi))) 0%, rgb(229 25 53 / calc(0.46 * var(--wi))) 7%, rgb(77 7 19 / calc(0.92 * var(--wi))) 24%, rgb(77 7 19 / calc(0.56 * var(--wi))) 52%, var(--obsidian-0) 100%;
+}
+[dir="rtl"] .wash {
+  --wash-light: radial-gradient(ellipse 1120px 250px at 100% 0%, var(--wash-ramp));
+  --wash-eclipse: radial-gradient(ellipse 1060px 420px at calc(100% - 740px) 404px, transparent 0%, transparent 86%, #000 100%);
+}
+[dir="ltr"] .wash {
+  --wash-light: radial-gradient(ellipse 1120px 250px at 0% 0%, var(--wash-ramp));
+  --wash-eclipse: radial-gradient(ellipse 1060px 420px at 740px 404px, transparent 0%, transparent 86%, #000 100%);
+}
+
+/* -------------------------------------------------------------------- rail */
+.rail-slot { position: relative; min-width: 0; }
+.rail {
+  position: sticky;
+  top: 16px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 80px;
+  height: calc(100vh - 32px);
+  min-height: 620px;
+  padding: 15px;
+  border-radius: 24px;
+  background: rgba(12, 12, 15, 0.7);
+  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(22px);
+  border: 1px solid var(--line);
+}
+/* Expanded: the rail overlays the page. Width switches without animation; only the names fade in. */
+.rail[data-open="true"] {
+  width: 236px;
+  background: rgba(12, 12, 15, 0.94);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+/* The rail's rim catches the page wash where it sits in it. */
+.rail::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(ellipse 130px 240px at var(--rail-lit, 100%) 0%, var(--r1), transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+[dir="ltr"] .rail { --rail-lit: 0%; }
+/* RAI-5 (step 3): 8 between items, 24 between the logo and the sections (16 here and the rail's 8), tiles radius 12. */
+.rail-group { display: flex; flex-direction: column; gap: 8px; }
+.rail-brand { margin-block-end: 16px; }
+.rail-foot { margin-block-start: auto; }
+
+.rail-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 48px;
+  border-radius: 12px;
+  color: var(--ink-2);
+  text-align: start;
+}
+.rail-item:focus-visible { outline: none; }
+.rail-item:focus-visible .tile { outline: 2px solid var(--ink); outline-offset: 3px; }
+.tile {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  border: 1px solid var(--line-2);
+  background: var(--tile);
+  color: var(--ink-2);
+}
+.tile svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.tile svg .fill { fill: currentColor; stroke: none; }
+.rail-item:hover .tile { border-color: var(--line-3); background: rgba(255, 255, 255, 0.06); color: var(--ink); }
+.rail-item.is-active .tile { background: var(--red); border-color: var(--red); color: #fff; }
+.rail-item.is-active:hover .tile { background: #f0223e; border-color: #f0223e; }
+/* The language glyph in its tile: label type at 500, untracked (TYP-3, TYP-5; step 3). */
+.glyph { font-size: 13.5px; line-height: 20px; font-weight: 500; }
+.brand .tile svg { width: 28px; height: 28px; }
+.brand .mk { fill: none; stroke: var(--ink); stroke-linecap: butt; }
+.brand .mk-dot { fill: var(--ink); stroke: none; }
+
+.rail-name { display: none; font-size: 13.5px; line-height: 20px; white-space: nowrap; color: var(--ink-2); }
+.rail-item.is-active .rail-name, .wordmark { color: var(--ink); }
+.wordmark { font-size: 15px; line-height: 22.5px; font-weight: 500; letter-spacing: 0.12em; }
+.rail[data-open="true"] .rail-name { display: block; }
+/* D4 (FOC-4, FOC-5; K-23): a collapsed item shows its name on keyboard focus only, never on hover, in a tooltip-look
+ * label 12 px beyond the tile, centred on it. The logo's label names what it opens. */
+.rail-tip { display: none; }
+.rail:not([data-open="true"]) .rail-item:focus-visible .rail-name:not(.wordmark),
+.rail:not([data-open="true"]) .rail-item:focus-visible .rail-tip {
+  position: absolute;
+  inset-inline-start: calc(100% + 12px);
+  top: 50%;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding-inline: 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(15, 14, 15, 0.92);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  font-size: 13.5px;
+  line-height: 20px;
+  color: var(--ink);
+  white-space: nowrap;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------------ header */
+.head { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
+.sub { margin-block-start: 6px; font-size: 13.5px; color: var(--ink-3); }
+.sep { margin-inline: 8px; opacity: 0.7; }
+.head-meta { display: flex; gap: 10px; align-items: center; padding-block-start: 4px; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding-inline: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line-2);
+  background: rgba(255, 255, 255, 0.015);
+  font-size: 13px;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--live); }
+.chip .strong { color: var(--ink); font-weight: 500; }
+.status.is-delayed { border-color: rgba(217, 164, 0, 0.36); }
+.status.is-delayed .strong { color: #f0c23c; }
+.ico { width: 15px; height: 15px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.status .ico { color: var(--delayed); }
+
+/* ------------------------------------------------------------------- cards */
+.card {
+  --rad: 24px;
+  position: relative;
+  border-radius: var(--rad);
+  background: var(--card);
+  border: 1px solid var(--line);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+.cards { position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; flex: none; }
+.stat {
+  height: 166px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+.stat-head { display: flex; align-items: center; gap: 12px; width: 100%; min-width: 0; }
+.itile {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 10px;
+  border: 1px solid var(--line-2);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--ink-2);
+}
+.itile svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.stat-label { font-size: 14px; font-weight: 400; color: var(--ink-2); white-space: nowrap; }
+.stat-meta { margin-inline-start: auto; display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--ink-3); white-space: nowrap; }
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--live); flex: none; }
+.stat-meta.warn { color: #e8b62e; }
+.stat-meta.warn .ico { width: 14px; height: 14px; }
+.stat-value { display: flex; align-items: baseline; gap: 10px; margin-block-start: 14px; line-height: 1; }
+.stat-value .num { font-size: 46px; font-weight: 500; letter-spacing: 0; }
+.stat-value .word { font-size: 38px; }
+.stat-value .unit { font-size: 13px; color: var(--ink-3); }
+.is-stale .stat-value .num { color: var(--ink-2); }
+.stat-foot { display: flex; align-items: center; gap: 8px; margin-block-start: auto; }
+.stat-note { font-size: 12.5px; color: var(--ink-3); margin-block-start: auto; }
+
+.level, .cmp {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 26px;
+  padding-inline: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--line-2);
+  background: rgba(15, 14, 15, 0.55);
+  font-size: 12.5px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.level .bars { display: inline-flex; align-items: flex-end; gap: 2px; height: 11px; }
+.level .bars i { width: 3px; border-radius: 1px; background: rgba(255, 255, 255, 0.16); }
+.level .bars i:nth-child(1) { height: 4px; }
+.level .bars i:nth-child(2) { height: 6.5px; }
+.level .bars i:nth-child(3) { height: 9px; }
+.level .bars i:nth-child(4) { height: 11px; }
+.level .bars i.on { background: var(--red-hi); }
+.cmp { color: var(--ink-2); gap: 6px; padding-inline: 8px 10px; }
+.cmp svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.cmp-busier svg { color: var(--red-hi); }
+[dir="rtl"] .cmp svg.trend { transform: scaleX(-1); }
+
+/* ---------------------------------------------------------------- lighting (v3)
+ * Every light is two layers: a light behind the glass, and a large dark disc in front of it. The disc is a
+ * mask (transparent inside), so where it sits you see the card's own dark base, never a painted patch.
+ *   .lit        the element that owns a light: it clips it
+ *   .lamp       the border box, clipped to the card's outer radius; a size container, so the geometry below is
+ *               in cqw/cqh of the card
+ *   .lamp-in    masked by the disc (and, on Inside now, by the fade at the ring's upper end)
+ *     ::before  the light;  ::after  the grain, masked by the light, so it only shows where lit
+ *   .lamp-rim   the 1px border, brightened where the light touches it (it sits under the same disc) */
+.lit { isolation: isolate; }
+.lit > :not(.lamp, .sr-only) { position: relative; z-index: 1; }
+.lamp {
+  position: absolute;
+  inset: -1px;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: var(--rad);
+  pointer-events: none;
+  container-type: size;
+}
+.lamp-in {
+  position: absolute;
+  inset: 0;
+  -webkit-mask-image: var(--disc-mask), var(--end-mask);
+  mask-image: var(--disc-mask), var(--end-mask);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+.lamp-in::before { content: ""; position: absolute; inset: 0; background: var(--light); }
+.lamp-in::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grain);
+  background-size: 120px 120px;
+  mix-blend-mode: overlay;
+  opacity: var(--grain-o);
+  -webkit-mask-image: var(--light);
+  mask-image: var(--light);
+}
+.lamp-rim {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--rad);
+  padding: 1px;
+  background: var(--rim-light);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+
+/* Inside now: a dark disc in front of a light.
+ * Light: brightest just inside the inline-end bottom corner (#FF2946 only there), FITWAY red for the core,
+ * oxblood outward, fading to obsidian. A flat band along the whole bottom edge feeds the thin rim, and a small
+ * glow sits in the far bottom corner.
+ * Disc: an ellipse (0.7 as tall as wide, in pixels) whose lowest point sits --now-rim above the bottom edge.
+ * Its feather is eased and centred on the nominal edge, so the edge reads as one clean arc.
+ * Ring ends: up the lit side the ring fades out over --now-end before the disc meets the side (--yc); toward
+ * the far end the band thins out on its own before the far-corner glow. */
+.lit-card {
+  --ni: var(--now-int);
+  --rx: calc(var(--now-disc-size) * 1cqw);
+  --ry: calc(var(--now-disc-size) * var(--now-disc-aspect) * 1cqw);
+  --cx: calc(var(--lit-o) + var(--lit-s) * var(--now-disc-x) * 1cqw);
+  --cy: calc(100cqh - var(--now-rim) * 1cqh - var(--ry));
+  --fe: calc(var(--now-soft) * 1px);
+  --disc-mask: radial-gradient(ellipse var(--rx) var(--ry) at var(--cx) var(--cy),
+    transparent calc(100% - var(--fe) / 2), rgb(0 0 0 / 0.16) calc(100% - var(--fe) / 4), rgb(0 0 0 / 0.5) 100%,
+    rgb(0 0 0 / 0.84) calc(100% + var(--fe) / 4), #000 calc(100% + var(--fe) / 2));
+  /* Where the disc meets the lit side, measured from the top. */
+  --yc: calc(100cqh - var(--now-rim) * 1cqh - var(--ry) * (1 - sqrt(max(0, 1 - pow(min(1, var(--now-disc-x) / var(--now-disc-size)), 2)))));
+  --en: calc(var(--now-end) * 1cqh);
+  --end-mask: linear-gradient(to bottom, transparent var(--yc), rgb(0 0 0 / 0.16) calc(var(--yc) + var(--en) * 0.25),
+    rgb(0 0 0 / 0.5) calc(var(--yc) + var(--en) * 0.5), rgb(0 0 0 / 0.84) calc(var(--yc) + var(--en) * 0.75), #000 calc(var(--yc) + var(--en)));
+  --light:
+    radial-gradient(ellipse calc(0.22cqw * var(--now-hot-size)) calc(0.34cqh * var(--now-hot-size)) at calc(var(--lit-o) + var(--lit-s) * 4cqw) 97cqh,
+      rgb(255 41 70 / calc(0.9 * var(--now-hot) * var(--ni))) 0%, rgb(255 41 70 / calc(0.4 * var(--now-hot) * var(--ni))) 45%, rgb(255 41 70 / 0) 100%),
+    radial-gradient(ellipse 52cqw 96cqh at var(--lit-o) 100cqh,
+      rgb(var(--now-core) / var(--ni)) 0%, rgb(var(--now-core) / calc(0.84 * var(--ni))) 20%, rgb(var(--now-core) / calc(0.45 * var(--ni))) 42%,
+      rgb(77 7 19 / calc(0.75 * var(--ni))) 62%, rgb(77 7 19 / calc(0.3 * var(--ni))) 82%, rgb(77 7 19 / 0) 100%),
+    radial-gradient(ellipse 110cqw 12cqh at var(--lit-o) 100cqh,
+      rgb(var(--now-core) / calc(0.55 * var(--ni))) 0%, rgb(77 7 19 / calc(0.7 * var(--ni))) 50%, rgb(77 7 19 / 0) 100%),
+    radial-gradient(ellipse 30cqw 26cqh at var(--far-o) 100cqh,
+      rgb(var(--now-core) / calc(0.8 * var(--now-far) * var(--ni))) 0%, rgb(77 7 19 / calc(0.7 * var(--now-far) * var(--ni))) 45%, rgb(77 7 19 / 0) 100%);
+  --rim-light:
+    radial-gradient(ellipse 70cqw 100cqh at var(--lit-o) 100cqh,
+      rgb(255 41 70 / var(--ni)) 0%, rgb(var(--now-core) / calc(0.85 * var(--ni))) 35%, rgb(120 14 28 / calc(0.6 * var(--ni))) 70%, rgb(120 14 28 / 0) 100%),
+    radial-gradient(ellipse 130cqw 20cqh at var(--lit-o) 100cqh,
+      rgb(var(--now-core) / calc(0.8 * var(--ni))) 0%, rgb(120 14 28 / calc(0.7 * var(--ni))) 60%, rgb(120 14 28 / 0) 100%),
+    radial-gradient(ellipse 40cqw 30cqh at var(--far-o) 100cqh,
+      rgb(var(--now-core) / calc(0.9 * var(--now-far) * var(--ni))) 0%, rgb(120 14 28 / 0) 100%);
+}
+
+/* The chart card: a U along the bottom and up both sides around a dark disc. The broad areas are oxblood; red
+ * lives only near the two lower corners. The disc is 54cqw wide (just past the sides), its lowest point
+ * --chart-fade above the bottom and its edge meeting the sides at --chart-side; 0.6223 = 1 - sqrt(1 - 1/1.08^2).
+ * It lies under the data. */
+.lit-chart {
+  --ci: var(--chart-int);
+  --ce: clamp(0, 1 + var(--chart-balance) * 0.8, 2);
+  --cs: clamp(0, 1 - var(--chart-balance) * 0.8, 2);
+  --ry: calc(max(2, (var(--chart-side) - var(--chart-fade)) / 0.6223) * 1cqh);
+  --cy: calc(100cqh - var(--chart-fade) * 1cqh - var(--ry));
+  --fe: calc(var(--chart-soft) * 1px);
+  --disc-mask: radial-gradient(ellipse 54cqw var(--ry) at 50% var(--cy),
+    transparent calc(100% - var(--fe) / 2), rgb(0 0 0 / 0.16) calc(100% - var(--fe) / 4), rgb(0 0 0 / 0.5) 100%,
+    rgb(0 0 0 / 0.84) calc(100% + var(--fe) / 4), #000 calc(100% + var(--fe) / 2));
+  --end-mask: linear-gradient(#000 0 0);
+  --corner-h: calc(var(--chart-side) * 1.3cqh);
+  --light:
+    radial-gradient(ellipse 36cqw var(--corner-h) at var(--lit-o) 100cqh,
+      rgb(229 25 53 / calc(0.6 * var(--ce) * var(--ci))) 0%, rgb(229 25 53 / calc(0.3 * var(--ce) * var(--ci))) 24%,
+      rgb(77 7 19 / calc(0.5 * var(--ce) * var(--ci))) 52%, rgb(77 7 19 / calc(0.14 * var(--ce) * var(--ci))) 78%, rgb(77 7 19 / 0) 100%),
+    radial-gradient(ellipse 36cqw var(--corner-h) at var(--far-o) 100cqh,
+      rgb(229 25 53 / calc(0.6 * var(--cs) * var(--ci))) 0%, rgb(229 25 53 / calc(0.3 * var(--cs) * var(--ci))) 24%,
+      rgb(77 7 19 / calc(0.5 * var(--cs) * var(--ci))) 52%, rgb(77 7 19 / calc(0.14 * var(--cs) * var(--ci))) 78%, rgb(77 7 19 / 0) 100%),
+    linear-gradient(to top, rgb(77 7 19 / calc(0.9 * var(--ci))) 0px, rgb(77 7 19 / calc(0.42 * var(--ci))) calc(var(--chart-fade) * 0.45cqh),
+      rgb(77 7 19 / calc(0.12 * var(--ci))) calc(var(--chart-fade) * 0.85cqh), rgb(77 7 19 / 0) calc(var(--chart-fade) * 1.15cqh));
+  --rim-light:
+    radial-gradient(ellipse 24cqw calc(var(--chart-side) * 1.4cqh) at var(--lit-o) 100cqh,
+      rgb(255 41 70 / calc(0.8 * var(--ce) * var(--ci))) 0%, rgb(229 25 53 / calc(0.34 * var(--ce) * var(--ci))) 50%, rgb(229 25 53 / 0) 100%),
+    radial-gradient(ellipse 24cqw calc(var(--chart-side) * 1.4cqh) at var(--far-o) 100cqh,
+      rgb(255 41 70 / calc(0.8 * var(--cs) * var(--ci))) 0%, rgb(229 25 53 / calc(0.34 * var(--cs) * var(--ci))) 50%, rgb(229 25 53 / 0) 100%),
+    linear-gradient(to top, rgb(120 14 28 / calc(0.6 * var(--ci))) 0%, rgb(120 14 28 / 0) calc(var(--chart-fade) * 2cqh));
+}
+
+/* ------------------------------------------------------------------- chart */
+.chart { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; padding: 22px 26px 16px; }
+.chart-head { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.chart-head h2 { font-size: 19px; font-weight: 500; }
+.chart-tools { display: flex; align-items: center; gap: 10px; }
+.key {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  height: 38px;
+  padding-inline: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line-2);
+  font-size: 12.5px;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.key li { display: inline-flex; align-items: center; gap: 8px; }
+.key .key-note { color: var(--ink-3); }
+.key .key-note svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
+.sw { display: inline-block; width: 18px; height: 0; flex: none; }
+.sw-line { border-top: 3px solid var(--red-hi); border-radius: 2px; }
+.sw-usual { border-top: 1.5px dashed rgba(245, 243, 242, 0.7); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding-inline: 14px 11px;
+  border-radius: 12px;
+  border: 1px solid var(--line-2);
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 13px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.btn:hover { border-color: var(--line-3); background: rgba(255, 255, 255, 0.05); }
+.btn svg { width: 16px; height: 16px; fill: none; stroke: var(--ink-2); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.btn[aria-expanded="true"] svg { transform: rotate(180deg); }
+
+.plot { position: relative; flex: 1; min-height: 0; margin-block-start: 12px; }
+.plot-svg, .plot-labels, .plot-hit { position: absolute; inset: 0; }
+.plot-svg svg { display: block; }
+.plot-labels { pointer-events: none; }
+.plot-labels > * { position: absolute; white-space: nowrap; }
+.plot-hit { z-index: 3; cursor: crosshair; border-radius: 12px; }
+.plot-hit:focus-visible { outline-offset: 2px; }
+.ax-y, .ax-x { font-size: 12px; color: var(--ink-3); }
+.peak-tag { display: inline-flex; align-items: baseline; gap: 6px; font-size: 12px; color: var(--ink-2); }
+.peak-tag b { font-size: 14px; font-weight: 500; color: var(--ink); }
+
+.tip {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  /* The width follows the chart (the user's decision, 2026-09-27): app.js measures, from the chart's current stops,
+   * the widest tooltip that shows a number, adds 2px, rounds up to a whole pixel and sets it as --tip-w on #tip,
+   * whenever the stops or their text change and when a web font finishes loading. So within one snapshot the number
+   * and every row sit at the same place inside the box at every numbered stop. Since the lane round (2026-09-28) the box
+   * lives in a lane at the top of the plot, centred on its stop and stopped 2px inside the plot's sides: it moves sideways
+   * only, so it is no longer held to the stop's hairline; where the plot's sides hold it, the stop is off its centre.
+   * At the page's own 7:42 PM snapshot it is 127px in AR and EN (the Arabic latest reading, 124.84px in Readex Pro).
+   * The missing-span stop shows no number and may grow past it; min-width lets any content grow, never clip or wrap. */
+  width: var(--tip-w);
+  min-width: max-content;
+  padding: 9px 12px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(15, 14, 15, 0.92);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  line-height: 1.25;
+  white-space: nowrap;
+}
+.tip-t { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-3); }
+.tip-flag { padding-inline: 6px; border-radius: 5px; border: 1px solid var(--line-2); font-size: 11px; color: var(--ink-2); line-height: 17px; }
+.tip-main { display: flex; align-items: baseline; gap: 8px; margin-block-start: 4px; }
+.tip-v { font-size: 20px; font-weight: 500; color: var(--ink); }
+.tip-l { font-size: 12.5px; color: var(--ink-2); }
+.tip-word { font-size: 14px; color: var(--ink); }
+/* A span with no readings in a tooltip is one sentence on two lines, the words first (decision 8): the words, then "from
+ * … to …" (or "since …" while waiting), both in the word's type and colour (one size and one colour, decision 9). */
+.tip-main.tip-span { display: block; }
+.tip > .tip-main:first-child { margin-block-start: 0; }
+.tip-u { display: flex; align-items: center; gap: 7px; margin-block-start: 5px; font-size: 12px; color: var(--ink-3); }
+.tip-u .sw { width: 12px; }
+/* Round 7 step 2: the latest stop while delayed shows the stale reading as the delayed card does: a muted number,
+ * and how old it is in the delayed colour. */
+.tip-main.is-stale .tip-v { color: var(--ink-2); }
+.tip-ago { display: flex; align-items: center; gap: 6px; margin-block-start: 5px; font-size: 12px; color: #e8b62e; }
+.tip-ago .ico { width: 13px; height: 13px; }
+/* The hidden copies the width is measured on (app.js): never painted, out of the accessibility tree, size-contained
+ * so they never move or resize anything. */
+.tip-measure { position: absolute; inset-block-start: 0; inset-inline-start: 0; width: 0; height: 0; overflow: hidden; visibility: hidden; contain: strict; pointer-events: none; }
+.tip-measure > .tip { width: max-content; min-width: 0; -webkit-backdrop-filter: none; backdrop-filter: none; }
+
+/* ----------------------------------------------------------------- details
+ * Deliberately plain: a truthful minute table and the day's data coverage. Step 3 (run owner_daily_r04_s17): the
+ * spec's type, spacing and radii (TYP-3, SPC-5, SPC-6, RAD-1; K-08, K-09) and the table rules (TBL-1…4, TBL-8, TBL-12;
+ * K-20, K-33). These classes are the Daily page's own. */
+.details { margin-block-start: 16px; padding: 24px; }
+.details h2 { font-size: 19px; line-height: 28.5px; font-weight: 500; }
+.details-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 32px; margin-block-start: 16px; }
+.details h3 { font-size: 13.5px; line-height: 20px; font-weight: 500; color: var(--ink-2); }
+.strip { position: relative; height: 10px; margin-block: 16px 8px; border-radius: 5px; overflow: hidden; background: rgba(255, 255, 255, 0.04); }
+.strip span { position: absolute; inset-block: 0; }
+.s-read { background: rgba(229, 25, 53, 0.72); }
+.s-zero { background: rgba(245, 243, 242, 0.6); }
+.s-miss { background: repeating-linear-gradient(90deg, rgba(245, 243, 242, 0.55) 0 1px, transparent 1px 3px); }
+.s-wait { background: rgba(217, 164, 0, 0.45); }
+.s-ahead { background: rgba(255, 255, 255, 0.07); }
+.strip-axis { position: relative; height: 18px; font-size: 12px; line-height: 18px; color: var(--ink-3); }
+.strip-axis span { position: absolute; top: 0; white-space: nowrap; transform: translateX(-50%); }
+[dir="rtl"] .strip-axis span { transform: translateX(50%); }
+.strip-axis span.first { transform: none; }
+.strip-axis span.last { transform: translateX(-100%); }
+[dir="rtl"] .strip-axis span.last { transform: translateX(100%); }
+.facts { margin-block-start: 16px; }
+.facts > div { display: flex; justify-content: space-between; gap: 16px; padding-block: 12px; border-block-start: 1px solid var(--line); font-size: 13.5px; line-height: 20px; }
+.facts dt { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-2); white-space: nowrap; }
+.facts dd { color: var(--ink); text-align: end; }
+/* A span's value takes its label's colour, so the row reads as one sentence (decision 13, user 2026-10-02). It wraps only
+ * between its groups; where even its widest group does not fit beside the label (320 px in English: "Open, nobody
+ * inside" and "from 6:00 AM"), the value takes the line under the label, at the same end, instead of spilling. */
+.facts > div:has(> dd.is-span) { flex-wrap: wrap; row-gap: 4px; }
+.facts dd.is-span { flex: 1 1 0; min-width: min-content; color: var(--ink-2); }
+.facts dd .nw { white-space: nowrap; }
+.k { width: 10px; height: 10px; border-radius: 4px; flex: none; }
+.k-read { background: rgba(229, 25, 53, 0.72); }
+.k-zero { background: rgba(245, 243, 242, 0.6); }
+.k-miss { background: repeating-linear-gradient(90deg, rgba(245, 243, 242, 0.6) 0 1px, transparent 1px 3px); border: 1px solid var(--line-2); }
+.k-wait { background: rgba(217, 164, 0, 0.45); }
+.k-ahead { background: rgba(255, 255, 255, 0.07); border: 1px solid var(--line-2); }
+.k-none { background: none; }
+.scroller { max-height: 420px; margin-block-start: 12px; overflow: auto; border: 1px solid var(--line-2); border-radius: 16px; }
+.scroller:focus-visible { outline-offset: 3px; }
+/* The minute table: compact density (TBL-3), the time as the row header in chalk, label type, the numbers whole and
+ * in tabular figures on the physical right edge with their headers in both languages (TBL-1), notes in caption type. */
+.minutes-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13.5px; line-height: 20px; }
+.minutes-table th, .minutes-table td { height: 36px; padding: 0 16px; text-align: start; vertical-align: middle; font-weight: 400; }
+.minutes-table thead th { position: sticky; top: 0; z-index: 1; height: 44px; background: #121112; font-size: 12px; line-height: 18px; color: var(--ink-3); white-space: nowrap; border-block-end: 1px solid var(--line-2); }
+.minutes-table tbody th { color: var(--ink); white-space: nowrap; }
+.minutes-table tbody td { color: var(--ink-2); }
+.minutes-table tbody > tr > * { border-block-end: 1px solid rgba(255, 255, 255, 0.055); }
+.minutes-table tbody > tr:last-child > * { border-block-end: 0; }
+.minutes-table tbody > tr:hover > * { background: rgba(255, 255, 255, 0.04); }
+.minutes-table .n { text-align: right; font-variant-numeric: tabular-nums; }
+.minutes-table td.n bdi { color: var(--ink); }
+/* Option B (decision 16, user 2026-10-03): in English every column starts at its left edge, headings and figures alike,
+ * as its text does. Arabic is unchanged (TBL-1). */
+[dir="ltr"] .minutes-table .n { text-align: left; }
+.minutes-table .notes { font-size: 12px; line-height: 18px; color: var(--ink-3); }
+.minutes-table tr.peak > * { background: rgba(229, 25, 53, 0.08); }
+.minutes-table tr.peak:hover > * { background: rgba(229, 25, 53, 0.12); }
+.minutes-table .note-row { display: none; }
+/* TBL-12: a span with no readings is one full-width row, one sentence with the words first (decision 8, user
+ * 2026-10-01): «لا قراءات من 2:14 م إلى 2:31 م». One size and one colour for the whole sentence, its times and dates
+ * included (decision 9, user 2026-10-02): every part takes the type and colour its words have where it stands; the ends
+ * keep tabular figures. In the minute table that is the cell's own 13.5 px --ink-2, as its words rendered at e8461a5
+ * (the caption rule written for this row, `.minutes-table td.none`, never matched: the class is on the row). A line
+ * breaks only between its words: the words stay together, each end keeps its preposition, and a time never breaks
+ * inside. */
+.gapnote { display: inline; }
+.gapnote .w { white-space: nowrap; }
+.gapnote .nw { white-space: nowrap; }
+.gapnote .rg { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* ------------------------------------------------------------ Daily, step 3
+ * Run owner_daily_r04_s17, phase B: the spec's rules on the Daily page's shared components (body.dl), at every size.
+ * Reports keeps the base rules above until step 4. Type is TYP-3's six roles, spacing SPC-5 and SPC-6, radii RAD-1,
+ * focus FOC-1 and FOC-2. */
+.dl .fold { gap: 16px; padding-block-start: 8px; }
+.dl .sub { margin-block-start: 4px; }
+/* Cards (CRD-1, CRD-4, CRD-7; K-24, K-28): the icon in the flow, 16 px in the label's colour, 8 px before it; sized to
+ * the content and stretched in a row; 20 inside; 16 between the head and the value, at least 16 above the foot. An empty
+ * note keeps its line, so no state changes a card's height (a later loading skeleton can match it). */
+.dl .stat { height: auto; padding: 20px; }
+.dl .stat-head { gap: 8px; min-height: 20px; color: var(--ink-2); }
+.stat-ico { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.dl .stat-label { font-size: 13.5px; line-height: 20px; }
+.dl .stat-meta { gap: 8px; font-size: 12px; line-height: 18px; }
+.dl .stat-meta.warn .ico { width: 15px; height: 15px; }
+.dl .stat-value { gap: 8px; margin-block-start: 16px; }
+.dl .stat-value .num { line-height: 46px; }
+.dl .stat-value .word { font-size: 30px; line-height: 36px; white-space: nowrap; }
+.dl .stat-value .unit { font-size: 12px; line-height: 18px; }
+.dl .stat-foot { flex-wrap: wrap; padding-block-start: 16px; }
+.dl .stat-note { min-height: 34px; padding-block-start: 16px; font-size: 12px; line-height: 18px; }
+/* LGT-9: every caption inside the lit card is --ink-2. */
+.dl .lit-card .stat-meta:not(.warn), .dl .lit-card .unit, .dl .lit-card .stat-note { color: var(--ink-2); }
+/* Badges (CHP-4, CHP-8): 26 tall, caption type, 8 inside and between. While delayed the level dims with its value
+ * (LVL-6; K-06): the word --ink-2, the lit bars stale grey, no red. */
+.dl .level, .dl .cmp { gap: 8px; padding-inline: 8px; font-size: 12px; line-height: 18px; }
+.dl .is-stale .level { color: var(--ink-2); }
+.dl .is-stale .level .bars i.on { background: #8f898b; }
+/* The chart card (CHT-1; SPC-5): 24 inside, 16 at the bottom (the axis's own line brings its space). */
+.dl .chart { padding: 24px 24px 16px; }
+.dl .chart-head { flex-wrap: wrap; gap: 16px 24px; }
+.dl .chart-head h2 { line-height: 28.5px; }
+.dl .chart-tools { gap: 16px; }
+/* The legend drops its box (CHP-3; K-10): swatches and words in a row, 16 apart. Q1's ring names a single reading. */
+.dl .key { flex-wrap: wrap; gap: 8px 16px; height: auto; padding: 0; border: 0; border-radius: 0; font-size: 12px; line-height: 18px; }
+.dl .key li { gap: 8px; }
+.sw-ring { display: inline-block; width: 10px; height: 10px; flex: none; border-radius: 50%; border: 2px solid var(--ink); background: var(--card-solid); }
+/* One button (BTN-1, BTN-7; K-10): 44 tall, label type, padding 16, icon 17. */
+.dl .btn { height: 44px; padding-inline: 16px; font-size: 13.5px; line-height: 20px; }
+.dl .btn svg { width: 17px; height: 17px; }
+/* The plot's ring is FOC-1's, 4 px clear of the scale's labels (FOC-3; K-22). The axes are --ink-2 in the lit card
+ * (LGT-9; K-07). */
+.dl .plot-hit:focus-visible { outline-offset: 3px; }
+.dl .ax-y, .dl .ax-x { font-size: 12px; line-height: 18px; color: var(--ink-2); }
+.dl .peak-tag { gap: 4px; font-size: 12px; line-height: 18px; }
+.dl .peak-tag b { font-size: 13.5px; line-height: 20px; }
+/* The tooltip's text by role (CHT-13, TYP-3); its box and row gaps stay SPC-4's. */
+.dl .tip-flag { padding-inline: 6px; border-radius: 4px; font-size: 12px; line-height: 16px; }
+.dl .tip-v { font-size: 19px; }
+.dl .tip-l { font-size: 12px; }
+.dl .tip-word { font-size: 15px; }
+.dl .tip-u, .dl .tip-ago { gap: 8px; }
+
+/* Below 1200 px the four cards go two by two (BRK-5), and the first screen grows past the viewport rather than squeeze
+ * the chart: the chart keeps at least 440 px. */
+@media (max-width: 1199px) {
+  .dl .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dl .fold { height: auto; min-height: calc(100vh - 32px); }
+  .dl .chart { min-height: 440px; }
+}
+/* 1023 px and below: the chart's head on two lines, the title and its button, then the legend (C); the details in one
+ * column. */
+@media (max-width: 1023px) {
+  .dl .chart-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title btn" "key key"; align-items: center; }
+  .dl .chart-head h2 { grid-area: title; }
+  .dl .chart-tools { display: contents; }
+  .dl .key { grid-area: key; }
+  .dl #details-btn { grid-area: btn; }
+  .dl .details-grid { grid-template-columns: minmax(0, 1fr); }
+}
+/* 720 px and below: the phone's composition (C, OWN-D6). Inside now and Busiest time span the width; Today's peak and
+ * Entries share a row, their heads two lines tall so their values line up; the chart's plot is 340 px; the minute
+ * table takes TBL-8's phone form. */
+@media (max-width: 720px) {
+  .dl .fold { min-height: 0; }
+  .dl #card-now, .dl #card-busiest { grid-column: 1 / -1; }
+  .dl #card-peak .stat-head, .dl #card-entries .stat-head { flex-wrap: wrap; align-content: flex-start; row-gap: 4px; min-height: 42px; }
+  .dl #card-peak .stat-meta { flex-basis: 100%; margin-inline-start: 24px; }
+  .dl .chart { flex: none; min-height: 0; }
+  .dl .plot { flex: none; height: 340px; }
+  /* The minute table's region stays shorter than the screen above the bar, so its ring is always seen whole. */
+  .scroller { max-height: min(420px, calc(100vh - 160px)); }
+  .minutes-table th, .minutes-table td { padding-inline: 8px; }
+  .minutes-table thead th { white-space: normal; line-height: 1.25; }
+  .minutes-table .notes { display: none; }
+  .minutes-table .note-row { display: table-row; }
+  .minutes-table tbody > tr[data-note] > * { border-block-end: 0; }
+  .minutes-table .note-row > td { height: auto; padding-block: 0 8px; font-size: 12px; line-height: 18px; color: var(--ink-3); }
+}
+@media (max-width: 400px) {
+  .minutes-table th, .minutes-table td { padding-inline: 6px; }
+}
+/* Below 360 px every card spans the width; Today's peak keeps its time beside its name. */
+@media (max-width: 359px) {
+  .dl .cards { grid-template-columns: minmax(0, 1fr); }
+  .dl #card-peak .stat-head, .dl #card-entries .stat-head { flex-wrap: nowrap; min-height: 20px; }
+  .dl #card-peak .stat-meta { flex-basis: auto; margin-inline-start: auto; }
+  /* The chart's title keeps one line: the legend, then the button, go under it. */
+  .dl .chart-head { grid-template-columns: minmax(0, 1fr); grid-template-areas: "title" "key" "btn"; justify-items: start; }
+}
+
+/* --------------------------------------------------------------- the frame
+ * Step 3 (run owner_daily_r04_s17): navigation and header at every size, for a page that opts in with
+ * body[data-frame] (Daily since step 3; Reports since step 4). Breakpoints:
+ *   1024 px and wider  the desktop rail, unchanged: the logo opens it over the content;
+ *   721-1023 px        the same slim rail; open, it is a modal layer over a scrim (app.js keeps focus inside);
+ *   720 px and below   the glass bar at the bottom and the compact header (the status badge and one menu).
+ * Step 4 (user 2026-10-01): Operations has no section in the rail. At every size the header's status is a 44 px
+ * control that opens Operations' details (CHP-2): from 721 px it reads in full, boxless at rest, with a chevron (BTN-5's
+ * form: 5% white on hover and while open); on a phone it is the badge (BDG-1). The header has no concept label
+ * (DECISIONS item 15, 2026-10-03). */
+[data-frame] .head-meta { flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 4px 12px; padding-block-start: 0; margin-block-start: -4px; }
+[data-frame] .sub-part { white-space: nowrap; }
+/* The skip link, part of the frame: a 44 px control with the one ring (FOC-1; K-22's red ring), past the rail. */
+[data-frame] .skip { display: inline-flex; align-items: center; height: 44px; padding: 0 16px; border-radius: 12px; font-size: 13.5px; line-height: 20px; color: #0d0c0d; }
+[data-frame] .skip:focus-visible { outline-color: var(--ink); }
+.head-acts, .tabbar, .rail-scrim { display: none; }
+/* The status control: the details float under it from its inline end (BDG-3). */
+[data-frame] .head-acts { position: relative; z-index: 30; display: flex; align-items: center; gap: 8px; }
+.hb-line { display: none; }
+@media (min-width: 721px) {
+  /* The menu is the phone's: the rail holds Monitoring, the language and sign out from 721 px. */
+  [data-frame] #menu-btn, [data-frame] #menu-pop { display: none; }
+  /* HDR-3: the status in label type --ink-2, its mark, the word chalk at 500 and the line; centred on the title's line
+   * (its 44 px box starts 4 px above the header). Boxless at rest; the chevron says it opens. */
+  [data-frame] .head-acts .hbadge { padding-inline: 12px; border-color: transparent; background: none; color: var(--ink-2); }
+  [data-frame] .head-acts .hbadge:hover, [data-frame] .head-acts .hbadge[aria-expanded="true"] { border-color: transparent; background: rgba(255, 255, 255, 0.05); }
+  [data-frame] .head-acts .hbadge .hb-word { color: var(--ink); }
+  /* Its ring is FOC-2's, inside the box. */
+  [data-frame] .head-acts .hbadge:focus-visible { outline-offset: -4px; }
+  [data-frame] .head-acts .hbadge.is-delayed .hb-word { color: #e8b62e; }
+  [data-frame] .hb-line { display: inline; }
+  [data-frame] .hb-load { padding-inline: 12px; }
+}
+
+/* 721-1023 px: the open rail's scrim (SRF-4's), under the rail and over the content. */
+.rail-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 15;
+  background: rgba(4, 4, 5, 0.66);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+@media (min-width: 721px) and (max-width: 1023px) {
+  [data-frame] .rail-scrim:not([hidden]) { display: block; }
+  /* The status stands at the inline end, level with the title, and reads in full; to make room for its control the
+   * hours leave the subtitle for the status details, as on a phone (BDG-3). */
+  [data-frame] .head-meta { flex-direction: column; align-items: flex-end; flex-wrap: nowrap; row-gap: 0; }
+  [data-frame] .sub-hours { display: none; }
+}
+
+/* 720 px and below: the phone frame. */
+.hbadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding-inline: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--line-2);
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 13.5px;
+  line-height: 20px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.hbadge:hover, .hbadge[aria-expanded="true"] { border-color: var(--line-3); background: rgba(255, 255, 255, 0.05); }
+.hb-state { display: inline-flex; align-items: center; gap: 8px; }
+.hb-word { font-weight: 500; }
+.hbadge .dot, .ops-state .dot { width: 7px; height: 7px; flex: none; border-radius: 50%; background: var(--live); }
+.hbadge .ico, .ops-state .ico { color: var(--delayed); }
+.hbadge.is-delayed { border-color: rgba(217, 164, 0, 0.36); }
+.hbadge.is-delayed .hb-word, .ops-state.is-delayed, .ops-ago { color: #e8b62e; }
+.hb-chev { width: 16px; height: 16px; flex: none; fill: none; stroke: var(--ink-2); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.hbadge[aria-expanded="true"] .hb-chev { transform: rotate(180deg); }
+.hbtn { display: grid; place-items: center; width: 44px; height: 44px; flex: none; border-radius: 12px; color: var(--ink-2); }
+.hbtn:hover, .hbtn[aria-expanded="true"] { color: var(--ink); background: rgba(255, 255, 255, 0.05); }
+.hbtn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+.hbtn svg .fill { fill: currentColor; stroke: none; }
+
+/* The status details and the menu: floating glass (the open rail's surface and shadow, SRF-2, BRD-2), radius 16. */
+.fw-pop {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 8px);
+  inset-inline-end: 0;
+  padding: 4px;
+  border-radius: 16px;
+  border: 1px solid var(--line-2);
+  background: rgba(12, 12, 15, 0.94);
+  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(22px);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  outline: none;
+}
+.fw-pop[hidden] { display: none; }
+.ops-pop { width: min(288px, calc(100vw - 32px)); }
+.menu-pop { min-width: 200px; }
+.ops-body { padding: 12px 12px 16px; }
+.ops-title { font-size: 12px; line-height: 18px; font-weight: 400; color: var(--ink-3); }
+.ops-state { display: flex; align-items: center; gap: 8px; margin-block-start: 8px; font-size: 19px; line-height: 28.5px; font-weight: 500; color: var(--ink); }
+.ops-state .dot { width: 8px; height: 8px; }
+.ops-state .ico { width: 17px; height: 17px; }
+.ops-line { font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
+.ops-line .sep { margin-inline: 8px; }
+.ops-foot { padding-block-start: 4px; border-block-start: 1px solid var(--line); }
+.fw-mi {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding-inline: 12px;
+  border-radius: 12px;
+  font-size: 13.5px;
+  line-height: 20px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.fw-mi:hover { background: rgba(255, 255, 255, 0.06); }
+.fw-mi:focus-visible { outline: 2px solid var(--ink); outline-offset: -4px; }
+.fw-mi svg { width: 16px; height: 16px; flex: none; fill: none; stroke: var(--ink-2); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.fw-mi .fw-mi-end { margin-inline-start: auto; }
+.fw-glyph { display: inline-grid; place-items: center; width: 16px; flex: none; font-size: 12px; line-height: 18px; font-weight: 500; color: var(--ink-2); }
+
+/* The bar: the rail turned to lie along the bottom. Glass (the rail's, a little denser because content always passes
+ * under it), radius 24, 8 around and between the items; each item at least 44 x 44 with the one focus ring (FOC-1)
+ * around it; the current section keeps the rail's red tile. */
+.tabbar {
+  position: fixed;
+  z-index: 40;
+  left: max(16px, env(safe-area-inset-left));
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(12px, env(safe-area-inset-bottom));
+  padding: 8px;
+  border-radius: 24px;
+  border: 1px solid var(--line);
+  background: rgba(12, 12, 15, 0.8);
+  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(22px);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
+}
+.tabbar ul { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.tb-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 56px; border-radius: 16px; color: var(--ink-2); }
+.tb-tile { display: grid; place-items: center; width: 40px; height: 28px; border-radius: 12px; }
+.tb-tile svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.tb-tile svg .fill { fill: currentColor; stroke: none; }
+.tb-name { font-size: 12px; line-height: 18px; white-space: nowrap; }
+.tb-item:hover { color: var(--ink); }
+.tb-item:hover .tb-tile { background: rgba(255, 255, 255, 0.06); }
+.tb-item[aria-current="page"] { color: var(--ink); }
+.tb-item[aria-current="page"] .tb-tile { background: var(--red); color: #fff; }
+.tb-item[aria-current="page"] .tb-name { font-weight: 500; }
+.tb-item[aria-current="page"]:hover .tb-tile { background: #f0223e; }
+
+@media (max-width: 720px) {
+  [data-frame] .page {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    /* The bar (74 px) and its 12 px inset stay clear of the content, with the page's 16 px below it. */
+    padding-block-end: calc(74px + max(12px, env(safe-area-inset-bottom)) + 16px);
+  }
+  /* Focus and in-page jumps stop clear of the bar (FOC-3): the bar, its inset and the page's 16 px. */
+  html:has(> body[data-frame]) { scroll-padding-bottom: calc(74px + max(12px, env(safe-area-inset-bottom)) + 16px); }
+  [data-frame] .rail-slot { display: none; }
+  [data-frame] .skip { inset-inline-start: 16px; }
+  [data-frame] .tabbar { display: block; }
+  /* The compact header: the title with the badge and the menu on one line, the date under it. */
+  [data-frame] .head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "title acts" "sub sub";
+    align-items: center;
+    gap: 0 16px;
+  }
+  [data-frame] .head-titles, [data-frame] .head-meta { display: contents; }
+  [data-frame] .head h1 { grid-area: title; }
+  [data-frame] .sub { grid-area: sub; margin-block-start: 4px; }
+  [data-frame] .sub-hours { display: none; }
+  [data-frame] .head-acts { grid-area: acts; }
+}
+@media (max-width: 359px) {
+  /* 320: the bar's inset drops to 8 so every short name keeps its line and the rings keep 4 px from their neighbours. */
+  [data-frame] .tabbar { left: max(8px, env(safe-area-inset-left)); right: max(8px, env(safe-area-inset-right)); }
+}
+
+/* ------------------------------------------------------------ Daily's states
+ * Step 3, second part (run owner_states_r04_s19): loading, closed, unavailable and error (STA-10, K-02), on the Daily
+ * page (body.dl, the frame), at every size. Live, delayed and no history keep their pixels: every rule below either
+ * holds a box at the size it already has, or applies only in one of the four states.
+ *   One skeleton, five truths: the header, the four cards and the chart keep their places and heights in every state
+ *   (CRD-9); only what fills their slots changes, so the payload's arrival moves nothing (DESIGN_GUIDE §6). */
+body.dl [hidden] { display: none !important; }
+/* The slots hold their live heights in every state: the value's line 46 (the busiest time's 36), the foot 42; and the
+ * card's full width, so a slot's own box never moves when what fills it changes (its contents stay at the start). */
+.dl .stat-value, .dl .stat-foot, .dl .stat-note { align-self: stretch; }
+.dl .stat-value { min-height: 46px; }
+.dl #card-busiest .stat-value { min-height: 36px; }
+.dl .stat-foot { min-height: 42px; }
+/* The header's status sits in a box the frame sizes, not its words, so a status that arrives, or changes, moves nothing
+ * else: from 721 px the status column fills the header's free width (its words end-aligned, as before); on a phone the
+ * actions take the title row's free width and keep the badge and the menu at its end. */
+[data-frame] .head-meta { flex: 1 1 auto; }
+@media (max-width: 720px) {
+  [data-frame] .head { grid-template-columns: minmax(0, max-content) minmax(max-content, 1fr); }
+  [data-frame] .head-acts { justify-content: flex-end; }
+}
+
+/* Loading. A placeholder stands only where a value is awaited (DESIGN_GUIDE §6), in that value's own slot and line box:
+ * a bar on the value's baseline as tall as its digits' ink (display 33 px, a time range in words 22 px, a caption 9 px),
+ * the level badge's own 26 px box. One flat fill, 6% chalk on the card, with no border, sheen or motion: it cannot read
+ * as data, and nothing moves while it waits (MOT-1, LGT-1). Hidden for the first 300 ms, while the slots wait empty. */
+.dl { --ph: rgba(255, 255, 255, 0.06); }
+.ph-bar { display: inline-block; vertical-align: baseline; width: var(--w); height: 33px; border-radius: 8px; background: var(--ph); }
+.dl .word > .ph-bar { height: 22px; }
+.dl .stat-meta > .ph-bar, .dl .stat-note > .ph-bar { height: 9px; border-radius: 4px; }
+.ph-box { display: block; width: 76px; height: 26px; border-radius: 8px; background: var(--ph); }
+[data-load="wait"] .ph-bar, [data-load="wait"] .ph-box, [data-load="wait"] .hb-load { visibility: hidden; }
+/* The status while loading: words, not a control, in the status's own type (the header's label, --ink-2), where the
+ * control's words will stand. */
+.hb-load { display: none; }
+[data-frame] .hb-load { display: inline-flex; align-items: center; height: 44px; font-size: 13.5px; line-height: 20px; color: var(--ink-2); white-space: nowrap; }
+/* K-02 (DECISIONS item 14): the status's slot. From 721 px it is as wide as the widest status, so loading, the arrival,
+ * a retry and any status change move nothing beside it; unseen copies of every status (.hb-r: the control's padding,
+ * mark, words, gap and chevron) hold that width. They may wrap, so they never raise the slot's least width above the
+ * current status's, and take no height: where the header has less room than the widest status, the slot takes what
+ * there is. The control is as wide as its own status, so its fill and its ring fit it (HDR-3), and it stands at the
+ * slot's inline end, where the loading words stand too (STW-2). On a phone the slot steps aside and the badge alone is
+ * drawn. */
+.hb-res, .hb-r { display: none; }
+@media (max-width: 720px) { [data-frame] .hb-slot { display: contents; } }
+@media (min-width: 721px) {
+  [data-frame] .hb-slot { display: inline-grid; align-items: center; }
+  [data-frame] .hb-res { display: contents; }
+  [data-frame] .hb-slot > *, [data-frame] .hb-r { grid-area: 1 / 1; justify-self: end; }
+  [data-frame] .hb-r { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; align-self: start; height: 0; overflow: hidden; visibility: hidden; padding-inline: 13px; font-size: 13.5px; line-height: 20px; white-space: normal; }
+  [data-frame] .hb-r .dot { width: 7px; height: 7px; flex: none; }
+}
+
+/* The states' words in a card (CRD-3's form): a sentence in heading type at 400, --ink-2, on the value's line; a value
+ * written in words ("Closed") in title type at 500, chalk, like the busiest time; a note in caption type --ink-3 at the
+ * foot, on the same last line as the other cards' notes. */
+.dl .stat-say { display: inline-flex; align-items: center; gap: 8px; font-size: 19px; line-height: 28.5px; font-weight: 400; color: var(--ink-2); white-space: nowrap; }
+.dl .stat-word { font-size: 30px; line-height: 36px; font-weight: 500; color: var(--ink); white-space: nowrap; }
+.dl .stat-foot-note { align-self: flex-end; font-size: 12px; line-height: 18px; color: var(--ink-3); white-space: nowrap; }
+
+/* Error (EMP-2, EMP-3): Inside now holds the alert and its one retry in the value's line and the foot together
+ * (46 + 42 px): the sentence in chalk with the error mark (17 px, --err), and the primary "Try again" pinned to the foot. */
+.dl { --err: #ff6b7d; }
+.dl .stat-alert { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; min-height: 88px; margin-block-start: 16px; }
+.dl .stat-say.is-err { color: var(--ink); }
+.dl .stat-say .ico-err { width: 17px; height: 17px; color: var(--err); }
+/* BTN-3, the primary button: chalk fill, #0D0C0D text at 500; hover white. Working (STA-9): BTN-4's primary form, chalk
+ * 14% with --ink-2 text; aria-disabled rather than disabled, so the button keeps focus while the retry runs. */
+.dl .btn-primary { border-color: var(--ink); background: var(--ink); color: #0d0c0d; font-weight: 500; }
+.dl .btn-primary:hover { border-color: #fff; background: #fff; }
+.dl .btn-primary[aria-disabled="true"], .dl .btn-primary[aria-disabled="true"]:hover { border-color: transparent; background: rgba(245, 243, 242, 0.14); color: var(--ink-2); cursor: default; }
+/* BTN-4, a disabled secondary button (View details on a day with no readings): no fill, a --line border, --ink-3 text. */
+.dl .btn:disabled, .dl .btn:disabled:hover { border-color: var(--line); background: none; color: var(--ink-3); cursor: default; }
+.dl .btn:disabled svg { stroke: var(--ink-3); }
+
+/* The status's marks, in the header, the badge and its details (never colour alone, DESIGN_GUIDE §6): closed, a hollow
+ * ring the live dot's size (1.5 px, --ink-3); offline, a struck circle (15 px, --ink-2); an error, the alert mark
+ * (--err) with its word in --err (COL-18), and the badge's edge in --err at 50%. Closed and offline words are chalk. */
+.dot.ring { background: none; box-shadow: inset 0 0 0 1.5px var(--ink-3); }
+.hbadge .ico-off, .ops-state .ico-off { color: var(--ink-2); }
+.hbadge .ico-err, .ops-state .ico-err { color: var(--err); }
+.hbadge.is-err .hb-word, [data-frame] .hbadge.is-err .hb-word, .ops-state.is-err { color: var(--err); }
+.hbadge.is-err { border-color: rgba(255, 107, 125, 0.5); }
+/* The figures region takes focus after a retry, quietly: a region never shows the ring (FOC-1 is for controls). */
+.dl #cards:focus { outline: none; }
+
+/* ------------------------------------------------------------- light tuner
+ * A working tool, not part of the design: neutral greys, a dashed toggle, no red. By default it sits above the
+ * middle cards (452px in from the inline-start edge). The toggle and the panel move together as one unit: drag
+ * the toggle or the panel's header anywhere (tuner.js keeps it inside the viewport and remembers the spot).
+ * Always Arabic-first and right-to-left; the toggle stays on the page's inline-start side of the unit. */
+.tuner {
+  --t-line: rgba(255, 255, 255, 0.14);
+  position: fixed;
+  z-index: 60;
+  top: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  font-family: var(--font);
+  color: var(--ink-2);
+}
+html[dir="rtl"] .tuner { right: 452px; }
+html[dir="ltr"] .tuner { left: 452px; align-items: flex-end; }
+.tuner.is-dragging, .tuner.is-dragging * { cursor: grabbing !important; user-select: none; }
+.tuner.is-dragging .tuner-panel { box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7); }
+.tuner-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 28px;
+  padding-inline: 9px 11px;
+  border-radius: 8px;
+  border: 1px dashed rgba(255, 255, 255, 0.24);
+  background: rgba(14, 14, 16, 0.86);
+  font-size: 12px;
+  color: var(--ink-3);
+}
+.tuner-toggle:hover, .tuner.is-open .tuner-toggle { color: var(--ink); border-color: rgba(255, 255, 255, 0.4); }
+.tuner-toggle svg, .tuner-x svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
+.tuner .t-en { font-size: 10.5px; color: #8d8789; letter-spacing: 0.01em; }
+.tuner-panel {
+  width: 544px;
+  max-height: calc(100vh - 50px);
+  overflow: auto;
+  padding: 14px 16px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--t-line);
+  background: rgba(17, 17, 19, 0.97);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+  font-size: 12px;
+}
+.tuner-panel[hidden] { display: none; }
+.tuner-head { display: flex; align-items: flex-start; gap: 10px; cursor: grab; touch-action: none; user-select: none; }
+.tuner-grip { display: grid; place-items: center; width: 24px; height: 24px; margin-block-start: -3px; border-radius: 6px; color: var(--ink-3); cursor: grab; }
+.tuner-grip:hover { color: var(--ink); background: rgba(255, 255, 255, 0.06); }
+.tuner-grip svg { width: 14px; height: 14px; fill: currentColor; }
+.tuner-toggle { touch-action: none; }
+.tuner-head h2 { font-size: 13.5px; font-weight: 500; color: var(--ink); }
+.tuner-sub { margin-inline-start: auto; padding-block-start: 2px; font-size: 11px; color: #8d8789; }
+.tuner-x { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 6px; color: var(--ink-3); }
+.tuner-x:hover { color: var(--ink); background: rgba(255, 255, 255, 0.06); }
+.tuner-presets { display: flex; gap: 6px; margin-block: 10px 4px; }
+.tuner-presets button, .t-btn {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  height: 28px;
+  padding-inline: 10px;
+  border-radius: 7px;
+  border: 1px solid var(--t-line);
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 12px;
+  color: var(--ink-2);
+  line-height: 26px;
+}
+.tuner-presets button:hover, .t-btn:hover { border-color: rgba(255, 255, 255, 0.3); color: var(--ink); }
+.tuner-presets button[aria-pressed="true"] { background: rgba(245, 243, 242, 0.12); border-color: rgba(245, 243, 242, 0.5); color: var(--ink); }
+.tuner-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.tuner-group { margin: 0; padding: 0; border: 0; min-width: 0; }
+.tuner-group + .tuner-group { margin-block-start: 8px; }
+.tuner-group legend { padding: 8px 0 4px; font-size: 12px; font-weight: 500; color: var(--ink); }
+.t-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "label out" "input input"; align-items: baseline; column-gap: 8px; padding-block: 3px 4px; }
+.t-row label { grid-area: label; display: flex; align-items: baseline; gap: 6px; min-width: 0; line-height: 1.3; color: var(--ink-2); white-space: nowrap; }
+.t-row output { grid-area: out; }
+.t-row input[type="range"] { grid-area: input; width: 100%; height: 16px; margin: 2px 0 0; accent-color: #cfc9ca; }
+.t-row output { font-size: 11px; color: var(--ink-3); font-variant-numeric: tabular-nums; text-align: end; white-space: nowrap; }
+.t-row output.t-hue::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-inline-end: 4px; border-radius: 2px; background: var(--sw, #e51935); vertical-align: 0; }
+/* Motion group (Round 6): a simulated reading, a simulated crowd-level change, and the Motion switch; Round 7 step 2
+ * adds the hover speed, a range row with a small "Default" button. */
+.t-speed { grid-template-columns: minmax(0, 1fr) auto auto; grid-template-areas: "label out reset" "input input input"; }
+.t-speed .t-mini { grid-area: reset; padding: 0 6px; border: 1px solid var(--line-2, rgba(255, 255, 255, 0.14)); border-radius: 5px; background: none; color: var(--ink-3); font: inherit; font-size: 10.5px; line-height: 17px; cursor: pointer; }
+.t-speed .t-mini { display: inline-flex; align-items: baseline; gap: 4px; }
+.t-speed .t-mini:hover { color: var(--ink); }
+.t-speed .t-mini:disabled { opacity: 0.45; cursor: default; }
+.tuner-motion { margin-block-start: 10px; padding-block-start: 2px; border-block-start: 1px solid rgba(255, 255, 255, 0.08); }
+.t-motion-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-block: 2px 8px; }
+.t-btn:disabled { opacity: 0.45; cursor: default; }
+.t-latest { margin-inline-start: auto; font-size: 11px; color: var(--ink-3); white-space: nowrap; }
+.t-label { display: inline-flex; align-items: baseline; gap: 6px; margin-inline-end: 4px; color: var(--ink-2); white-space: nowrap; }
+.t-check { display: flex; align-items: baseline; gap: 7px; padding-block: 4px; color: var(--ink-2); line-height: 1.3; white-space: nowrap; cursor: pointer; }
+.t-check input { margin: 0; accent-color: #cfc9ca; translate: 0 2px; cursor: pointer; }
+.t-check:has(input:disabled) { opacity: 0.5; cursor: default; }
+.t-note { margin-block-start: 6px; font-size: 11px; color: var(--ink-3); }
+.t-note[hidden] { display: none; }
+.tuner-actions { display: flex; align-items: center; gap: 8px; margin-block-start: 12px; padding-block-start: 12px; border-block-start: 1px solid rgba(255, 255, 255, 0.08); }
+.tuner-status { margin-inline-start: auto; font-size: 11px; color: var(--ink-3); }
+.tuner-json {
+  display: block;
+  width: 100%;
+  margin-block-start: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--t-line);
+  background: #0c0c0d;
+  color: var(--ink-2);
+  font: 11px/1.45 ui-monospace, "Cascadia Mono", Consolas, monospace;
+  resize: vertical;
+}
+.tuner-json[hidden] { display: none; }
+.tuner :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* ------------------------------------------------------------------ motion
+ * Round 6. The page is complete at first paint and the lights never move. app.js moves only what the data changes
+ * (digits, level bars, the line's tail) or what the owner acts on (the chart's marker, the rail), with the
+ * Web Animations API; this section holds the few pieces those use. No glyph ever changes opacity. With ?motion=off
+ * (html[data-motion="off"]) or prefers-reduced-motion every change is instant. */
+
+/* Numbers roll by digit, and only while a digit changes: at rest a number is plain text. The numeric run is an LTR
+ * isolate (so bidi order holds inside Arabic text); each changed digit is a slot holding the new digit (in flow) and
+ * the old one (on top, hidden from assistive technology). app.js clips each slot to the digits' own ink box (cap line
+ * to baseline, measured in place); the clip below is only its starting point. */
+.roll-run { direction: ltr; unicode-bidi: isolate; }
+.roll-slot { display: inline-block; position: relative; vertical-align: baseline; clip-path: inset(0 -0.3em); }
+.roll-new { display: block; text-align: center; white-space: nowrap; }
+.roll-old { position: absolute; top: 0; left: 50%; width: max-content; translate: -50% 0; }
+
+/* A crowd-level bar that changes fills (or empties) with its own red fill, from the bottom. */
+.level .bars i.lv-anim { position: relative; }
+.lv-fill { position: absolute; inset: 0; border-radius: inherit; background: var(--red-hi); transform-origin: 50% 100%; }
+
+/* While the rail opens or closes, its own surface steps aside for three pieces that move with transforms only: a
+ * fixed start cap, a middle that scales from the inline-start, and an end cap that slides. Each piece is the
+ * collapsed surface (0.7, with the rail's own blur) plus a darker layer that fades in to make the open surface
+ * (0.94); these layers hold no text. The blur stays on the pieces, so the page under the moving rail never shows
+ * through as sharp text and the first frame matches the collapsed rail. The names are uncovered by a clip (app.js). */
+.rail.is-morph { background: transparent; border-color: transparent; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.rail-surface { position: absolute; inset: -1px; z-index: -1; pointer-events: none; }
+.rail-surface > i { position: absolute; top: 0; bottom: 0; overflow: hidden; background: rgba(12, 12, 15, 0.7); border: 1px solid var(--line); }
+.rail-surface > i:not(.rs-shadow) { -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px); }
+.rail-surface > i > i { position: absolute; inset: 0; background: rgba(12, 12, 15, 0.8); opacity: 0; }
+.rail-surface > .rs-start { inset-inline-start: 0; width: 40px; border-inline-end-width: 0; border-start-start-radius: 24px; border-end-start-radius: 24px; }
+.rail-surface > .rs-mid { inset-inline-start: 40px; width: 156px; border-inline-width: 0; transform: scaleX(0); transform-origin: var(--rs-o) 50%; }
+.rail-surface > .rs-end { inset-inline-start: 40px; width: 40px; border-inline-start-width: 0; border-start-end-radius: 24px; border-end-end-radius: 24px; }
+.rail-surface > .rs-shadow { inset: 0; overflow: visible; border: 0; border-radius: 24px; background: none; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6); opacity: 0; }
+[dir="rtl"] .rail-surface { --rs-o: right; }
+[dir="ltr"] .rail-surface { --rs-o: left; }
+
+/* Live: a calm ping from the line's end point, only while live (never while delayed). One thin ring every 5 s, from
+ * inside the end point to just past its halo, at 40% at most. An HTML layer above the chart, so it is composited and
+ * never repaints the chart. */
+.ping {
+  position: absolute;
+  z-index: 1;
+  width: 28px;
+  height: 28px;
+  margin: -14px 0 0 -14px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 41, 70, 0.9);
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.34);
+}
+html[data-motion="on"] .ping.is-on { animation: ping 5s cubic-bezier(0.22, 0.61, 0.36, 1) 1s infinite; }
+@keyframes ping {
+  0% { opacity: 0.4; transform: scale(0.34); }
+  48% { opacity: 0; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1); }
+}
+
+html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="off"] *::after { animation: none !important; transition: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* ------------------------------------------- Daily on the phone: option 2
+ * Owner design exploration r04, DECISIONS item 20 (concept options for the user; nothing here is decided). Option 2,
+ * "pairs around the chart, and a ruler for the finger". 720 px and below only; 721 px and up are unchanged.
+ *   Order       the header; Inside now beside Today's peak (now against the day's top); the chart; Entries beside the
+ *               busiest time. Every card is half the width, so the busiest time's value fills its card.
+ *   Cards       every head is two lines tall, so the four values line up in pairs; the busiest time's name may take both
+ *               lines, and its period moves under its average.
+ *   The chart   its title and button share one row; the legend stands in the tooltip lane while nothing is selected
+ *               (one entry per line), and the tooltip covers it while a stop is read: a departure from CHT-11 ("nothing
+ *               enters the lane") on the phone only. The tooltip is the computer's (item 5): in the lane, sideways only.
+ *               The plot is 304 px (340 in Eclipse's phone form), so the ruler fits on the first screen at 390 x 844.
+ *   The ruler   under the plot, a glass well holding one notch per stop of the chart, 20 px apart (the plot gives a
+ *               stop about 7 px): the finger scrolls it, it settles on a notch, and the stop under the pointer at its top
+ *               is read on the chart. At rest it stands on the latest reading and reads nothing. A tap on the plot
+ *               reads one stop and moves the ruler there; a tap outside the chart clears the reading. This adds a
+ *               control CHT-15 does not have, on the phone only.
+ *   Below 360   the cards go back across the width (OWN-D8): a half card is too narrow for "49 approx." at 320; the
+ *               details button moves to the chart card's foot; every coverage row puts its value on the line under
+ *               its label, at the row's end, so the rows wrap one way (DECISIONS item 24). */
+.ruler { display: none; }
+@media (max-width: 720px) {
+  .dl .fold {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas: "head head" "now peak" "chart chart" "entries busy";
+  }
+  .dl .head { grid-area: head; }
+  .dl .cards { display: contents; }
+  .dl #card-now { grid-area: now; }
+  .dl #card-peak { grid-area: peak; }
+  .dl #card-entries { grid-area: entries; }
+  .dl #card-busiest { grid-area: busy; }
+  .dl .fold > .chart { grid-area: chart; }
+
+  /* Every head two lines tall: the name, then its time or period under it (after the icon). */
+  .dl .stat-head { flex-wrap: wrap; align-content: flex-start; row-gap: 4px; min-height: 42px; }
+  .dl #card-now .stat-meta { flex-basis: 100%; margin-inline-start: 24px; }
+  .dl #card-peak .stat-meta { flex-basis: 100%; margin-inline-start: 24px; }
+  /* The busiest time: its name may wrap onto the head's second line; the period stands under the average. */
+  .dl #card-busiest { position: relative; padding-block-end: 42px; }
+  .dl #card-busiest .stat-head { flex-wrap: nowrap; align-items: flex-start; }
+  .dl #card-busiest .stat-ico { margin-block-start: 2px; }
+  .dl #card-busiest .stat-label { min-width: 0; white-space: normal; }
+  .dl #card-busiest .stat-meta { position: absolute; inset-inline-start: 20px; bottom: 20px; margin: 0; }
+  /* A state's words in an English half card (offline's "No current count", "Pending"): the tooltip word's 15 px,
+   * wrapping rather than spilling past the card; the note under them may take two lines. Arabic fits at 19 px. */
+  [lang="en"] .dl .stat-say { font-size: 15px; line-height: 22px; white-space: normal; }
+  .dl .stat-foot-note { white-space: normal; }
+
+  /* The chart: the title and its button on one row; the legend in the lane at rest; the ruler under the plot. */
+  .dl .fold > .chart { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title btn" "plot plot" "ruler ruler"; column-gap: 16px; }
+  .dl .chart-head { display: contents; }
+  .dl .chart-head h2 { grid-area: title; align-self: center; }
+  .dl .chart-head h2, .dl #details-btn, .dl .key { position: relative; z-index: 1; }
+  .dl #details-btn { grid-area: btn; }
+  .dl .plot { grid-area: plot; height: 304px; }
+  .dl .key {
+    grid-area: plot;
+    align-self: start;
+    justify-self: start;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    margin-block-start: 23px; /* the plot's 12 px, the lane's 2 and the tooltip's own 9: where its first line would stand */
+    margin-inline-start: 1px;
+    pointer-events: none;
+  }
+  .dl .chart:has(#tip:not([hidden])) .key { visibility: hidden; }
+
+  /* The ruler: BTN's well (a --line-2 edge, 2% chalk), 44 px tall, its notches scrolled by the finger. */
+  .dl .ruler {
+    --rp: 20px;
+    grid-area: ruler;
+    display: block;
+    position: relative;
+    height: 44px;
+    margin-block-start: 8px;
+    border-radius: 12px;
+    border: 1px solid var(--line-2);
+    background: rgba(255, 255, 255, 0.02);
+    overflow: hidden;
+  }
+  .ruler-scroll {
+    height: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 22%, #000 78%, transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0, #000 22%, #000 78%, transparent 100%);
+  }
+  .ruler-scroll::-webkit-scrollbar { display: none; }
+  .ruler-track { display: flex; width: max-content; height: 100%; padding-inline: calc(50% - var(--rp) / 2); }
+  .rn { position: relative; flex: none; width: var(--rp); height: 100%; scroll-snap-align: center; }
+  /* A notch: a tick for each half hour, a longer one on the hour with the hour under it; still ahead, fainter. */
+  .rn::before { content: ""; position: absolute; top: 9px; left: calc(50% - 0.5px); width: 1px; height: 6px; background: rgba(245, 243, 242, 0.42); }
+  .rn.hr::before { height: 10px; background: rgba(245, 243, 242, 0.62); }
+  .rn > b { position: absolute; top: 21px; left: 50%; transform: translateX(-50%); font-size: 12px; line-height: 18px; font-weight: 400; color: var(--ink-3); white-space: nowrap; }
+  .rn.rn-ahead::before, .rn.rn-wait::before { background: rgba(245, 243, 242, 0.22); }
+  .rn.rn-ahead.hr::before, .rn.rn-wait.hr::before { background: rgba(245, 243, 242, 0.34); }
+  /* The peak: the chart's ring in small; the latest reading: the line's end point; no readings: the axis's dots. */
+  .rn.rn-peak::before { top: 8px; left: calc(50% - 4px); width: 8px; height: 8px; border-radius: 50%; background: var(--card-solid); box-shadow: inset 0 0 0 1.5px var(--ink); }
+  .rn.rn-latest::before { top: 9px; left: calc(50% - 3.5px); width: 7px; height: 7px; border-radius: 50%; background: #ff2946; }
+  [data-state="delayed"] .rn.rn-latest::before { background: #8f898b; }
+  .rn.rn-gap::before { top: 12px; left: calc(50% - 5.5px); width: 11px; height: 2px; background: radial-gradient(circle, rgba(245, 243, 242, 0.62) 0 1px, transparent 1.2px) 0 0 / 4px 2px repeat-x; }
+  /* The pointer: a small chalk wedge at the well's top, over the notch being read (the connector's own head, turned
+   * down). */
+  .ruler-mark { position: absolute; top: 0; left: calc(50% - 4.5px); width: 9px; height: 6px; background: var(--ink); clip-path: polygon(0 0, 100% 0, 50% 100%); pointer-events: none; }
+  .ruler.is-empty .ruler-track { visibility: hidden; }
+}
+@media (max-width: 359px) {
+  .dl .fold { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "now" "peak" "chart" "entries" "busy"; }
+  /* Across the width each head is one line again, the time or period at its end (OWN-D8). */
+  .dl .stat-head { flex-wrap: nowrap; min-height: 20px; }
+  .dl #card-now .stat-meta, .dl #card-peak .stat-meta { flex-basis: auto; margin-inline-start: auto; }
+  .dl #card-busiest { padding-block-end: 20px; }
+  .dl .stat-say { font-size: 19px; line-height: 28.5px; white-space: nowrap; }
+  .dl .stat-foot-note { white-space: nowrap; }
+  .dl #card-busiest .stat-head { align-items: center; }
+  .dl #card-busiest .stat-ico { margin-block-start: 0; }
+  .dl #card-busiest .stat-label { white-space: nowrap; }
+  .dl #card-busiest .stat-meta { position: static; margin-inline-start: auto; }
+  /* The title keeps its line; the button moves to the card's foot, across it, so the plot starts higher. */
+  .dl .fold > .chart { grid-template-columns: minmax(0, 1fr); grid-template-areas: "title" "plot" "ruler" "btn"; }
+  .dl #details-btn { justify-self: stretch; justify-content: center; margin-block-start: 16px; }
+  .dl .facts > div { flex-wrap: wrap; row-gap: 4px; }
+  .dl .facts dd, .dl .facts dd.is-span { flex: 1 0 100%; min-width: 0; }
+}
