@@ -66,6 +66,12 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     leaves every Eclipse screen: it takes room for nothing. This overrides NEXT-DIRECTION-BRIEF.md line 97. It also
     settles Daily's header at 1024 EN, which went to two lines only because the label no longer fitted beside the
     status control's reserved width. Built at `41a6f7c`.
+16. **English does not copy Arabic's geometry** (2026-10-03). In an English table the Peak column aligns to its left
+    edge, and the time sits to the right of its figure, "55 6:25 PM"; a day's no-readings words start on the same edge.
+    This overrides item 9 for English; Arabic is unchanged. Whether English's other numeric columns also start at the
+    left is open: options A (Peak only) and B (every column) are being drawn
+    (`design-research/owner-composition-exploration-r04/directions/briefs/designer-en-tables-direction.md`). It
+    settles D5. For D6 the user delegated the pick of shorter English labels to the coordinator, to review later.
 
 ## How this milestone's rounds run
 
