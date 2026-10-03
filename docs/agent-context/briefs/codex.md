@@ -51,6 +51,8 @@ SHA; anything you could not do.
 - [ ] Every command an outcome requires was run on the baseline in that scope first: `pnpm biome check .` has 21
       older errors in `design-research/**`, which Biome's config excludes anyway, and `git ls-files -ci` lists the
       local `.claude/` exclude (agent-environment rounds 3, 4; nav-2).
+- [ ] Every limit the result must keep is an outcome of its own: where the tool may run from, length or size caps,
+      no text kept twice, and every live artifact the change can reach still passing (agent-environment C3).
 - [ ] No verifier probe, threshold or held-out check, and no `fitway-grader` path (B5).
 - [ ] A test suite that needs a clean tree is run after the commit (agent-environment round 2).
 - [ ] Every field is a pointer (path and §heading, row IDs, decision numbers); nothing is pasted from a source.
