@@ -279,6 +279,9 @@ html:has(> body.rp) {
  * full-width row alike; a single day's words beside its date take the same style (decision 10). */
 .days-table .c-notes .rg, .days-table .note-row .rg { font-size: 12px; line-height: 18px; color: var(--ink-3); }
 .days-table td.c-none { font-size: 12px; line-height: 18px; color: var(--ink-3); }
+/* A single day starts at the peak label text edge, mirrored in English. Its spanning cell
+ * keeps its intrinsic size, so this correction cannot resize its neighbours or the table. */
+.days-table .day-none-word { display: inline-block; transform: translateX(var(--none-day-offset, 0px)); }
 .days-table .note-row { display: none; }
 /* Sortable headers (TBL-5): the whole header is the button, at least 44 x 44; in a numeric column the label holds the
  * right edge and the arrow sits to its left, in both languages; the inset ring (FOC-2). */

@@ -654,6 +654,15 @@
         (top ? `<tr role="row" class="note-row is-top"><td role="cell" colspan="4">${gapNote(L.noReadings, L.gapEnds)}</td></tr>` : "");
     }).join("") + noneRow(L.noReadingsYet, L.beforeEnds, 5);
     const def = `<table class="cx-table" role="table"><caption>${L.daysCaption}</caption><thead><tr role="row">${hdr("day", "is-sorted")}${hdr("peak", "n hover")}${hdr("avg", "n focus")}${hdr("entries", "n")}<th scope="col" role="columnheader" class="notes">${L.cols.notes}</th></tr></thead><tbody>${rows}</tbody></table>`;
+    // TBL-12 uses Reports row renderer and table styles, rather than a copy.
+    const singleHead = (d) => `<th scope="row" role="rowheader" class="c-day"><span class="dd">${dayName(d)}</span></th>`;
+    const singleHdr = (k, cls) => `<th scope="col" role="columnheader" class="${cls}"><button class="sort" type="button" tabindex="-1"><span>${L.cols[k]}</span>${ico("sort")}</button></th>`;
+    const singleTitle = LANG === "ar" ? "يوم واحد بلا قراءات" : "A single day without readings";
+    const single = `<table class="table days-table cx-single-days" role="table"><caption class="sr-only">${singleTitle}</caption><thead><tr role="row">${singleHdr("day", "c-day")}${singleHdr("peak", "c-peak n")}${singleHdr("avg", "c-avg n")}${singleHdr("entries", "c-entries n")}<th scope="col" role="columnheader" class="c-notes">${L.cols.notes}</th></tr></thead><tbody>
+      ${window.EclipseTables.dayNoneRow(singleHead(["الخميس", "Thu", 17]), L.noReadings)}
+      ${window.EclipseTables.dayNoneRow(singleHead(["السبت", "Sat", 12]), L.noReadingsYet)}
+    </tbody></table>`;
+    const singleSpec = `<figure class="cx-fig" style="align-items:stretch"><div class="card cx-table-card" inert><div class="cx-table-head"><h3>${singleTitle}</h3></div>${single}</div>${cap(singleTitle, "TBL-2 · TBL-12")}</figure>`;
     const line = DATA.line.live;
     const mins = [[490, ""], [491, ""], [492, ""], [493, ""], ["gap", ""], [512, ""], [DATA.peakM, "peak"], [NOW, "latest"]];
     const crow = mins.map(([m, n]) => {
@@ -666,7 +675,7 @@
     const compact = `<table class="cx-table is-compact" role="table"><caption>${L.compactCaption}</caption><thead><tr role="row"><th scope="col" role="columnheader">${L.ccols.time}</th><th scope="col" role="columnheader" class="n">${L.ccols.inside}</th><th scope="col" role="columnheader" class="n">${L.ccols.avg}</th><th scope="col" role="columnheader" class="notes">${L.ccols.note}</th></tr></thead><tbody>${crow}</tbody></table>`;
     return section("table", "table", "TBL-1…13", `<div class="cx-row cx-row-tables">
       <figure class="cx-fig" style="align-items:stretch"><div class="card cx-table-card" inert><div class="cx-table-head"><div><h3>${L.daysTitle}</h3><p>${L.daysSub}</p></div></div>${def}</div>${cap(`${L.dens.def} · ${L.st.hover} · ${L.st.focus} · ${L.sortedBy}`, "TBL-1 · TBL-2 · TBL-4…6 · TBL-11 · TBL-12", false)}</figure>
-      <figure class="cx-fig" style="align-items:stretch"><div class="card cx-table-card" inert><div class="cx-table-head"><div><h3>${L.compactTitle}</h3></div></div>${compact}</div>${cap(L.dens.compact, "TBL-3 · TBL-12 · NUM-5", false)}</figure></div>`);
+      <figure class="cx-fig" style="align-items:stretch"><div class="card cx-table-card" inert><div class="cx-table-head"><div><h3>${L.compactTitle}</h3></div></div>${compact}</div>${cap(L.dens.compact, "TBL-3 · TBL-12 · NUM-5", false)}</figure></div>${singleSpec}`);
   }
 
   /* ------------------------------------------------------------ controls */
@@ -720,7 +729,7 @@
     const failed = `<div class="cx-panel">${panelHead(L.exportTitle)}<div class="cx-panel-body"><p class="cx-panel-desc">${L.exportDesc}</p>${fileLine()}<div class="cx-alert" role="alert">${ico("alert")}<span>${L.failed}</span></div></div><footer class="cx-panel-foot"><button class="cx-btn" type="button">${L.cancel}</button><button class="cx-btn primary is-focus" type="button">${L.retry}</button></footer></div>`;
     const done = `<div class="cx-panel">${panelHead(L.exportTitle)}<div class="cx-panel-body"><div class="cx-done"><span class="cx-done-mark" aria-hidden="true">${ico("check")}</span><p class="cx-done-title">${L.ready}</p>${fileLine()}</div></div><footer class="cx-panel-foot"><button class="cx-btn" type="button">${L.done}</button><button class="cx-btn primary is-focus" type="button">${ico("save")}${L.save}</button></footer></div>`;
     const sheet = `<div class="cx-frame"><div class="cx-frame-page" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="cx-scrim"></div><div class="cx-panel">${panelHead(L.rangeTitle)}<div class="cx-panel-body"><p class="cx-panel-desc">${L.rangeDesc}</p><div class="cx-field-row">${field({ label: L.from, value: "26/08/2026", hint: false })}${field({ label: L.to, value: "22/09/2026", hint: false })}</div><p class="cx-hint">${L.hint}</p></div><footer class="cx-panel-foot"><button class="cx-btn" type="button">${L.cancel}</button><button class="cx-btn primary" type="button">${L.apply}</button></footer></div></div>`;
-    return section("dialog", "dialog", "DLG-1…6 · EMP-2 · EMP-3", `<div class="cx-row" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto">
+    return section("dialog", "dialog", "DLG-1…6 · EMP-2 · EMP-3", `<div class="cx-row cx-dialogs">
       <div class="cx-row" style="gap:24px">${fig(ready, L.dlgStates.ready, "DLG-2 · DLG-3")}${fig(failed, L.dlgStates.failed, "DLG-4 · EMP-2 · EMP-3")}</div>
       <div class="cx-row" style="gap:24px">${fig(working, L.dlgStates.working, "DLG-4 · STA-9")}${fig(done, L.dlgStates.done, "DLG-4")}</div>
       <div class="cx-row" style="gap:24px;align-content:start">${fig(sheet, L.dlgStates.sheet, "DLG-5")}
@@ -957,7 +966,7 @@
       const dots = []; for (let x = g0 + 2.5; x <= g1 - 1.5; x += 4) dots.push(x);
       dots.forEach((x) => s.push(`<circle cx="${f(x)}" cy="${by}" r="1.25" fill="#f5f3f2"/>`));
       s.push(`<ellipse cx="${f((g0 + g1) / 2)}" cy="${by}" rx="${f((g1 - g0) / 2 + 9)}" ry="7" fill="url(#${id}-chalk)"/>`);
-      mx = dots.reduce((a, x) => (Math.abs(x - (g0 + g1) / 2) < Math.abs(a - (g0 + g1) / 2) ? x : a), dots[0]); top = by - 1.25; style = "dotted";
+      mx = dots.length ? dots.reduce((a, x) => (Math.abs(x - (g0 + g1) / 2) < Math.abs(a - (g0 + g1) / 2) ? x : a), dots[0]) : (g0 + g1) / 2; top = by - 1.25; style = "dotted";
       // Waiting for readings, on two lines: the words, then since when; the current time is not printed (decision 12).
       tip = tipLines(L.waiting, `<span class="nw">${L.spanSince} <bdi>${time(540)}</bdi></span>`);
     } else s.push(`<path d="M${f(xL)},${by}H${f(xR)}" stroke="rgba(255,255,255,0.13)" stroke-width="1"/>`);
@@ -1006,6 +1015,7 @@
     $("#cx-index").innerHTML = `<span class="sr-only" id="index-name">${L.indexName}</span>` + ORDER.map(([k, id]) => `<a href="#${id}">${L.sec[k][0]}</a>`).join("");
     const pat = pattern();
     $("#cx-root").innerHTML = [foundations(), cards(), chart(), pat.html, tables(), buttons(), segs(), switches(), fields(), dialogs(), chips(), rails(), frame(), empties(), states()].join("");
+    for (const table of $$(".cx-single-days")) window.EclipseTables.alignDayNoneRows(table);
     drawPlots();
     wireHeat();
     wireDialog();
@@ -1023,8 +1033,8 @@
   wireDialogOnce();
   render();
   // Redraw the plots when the fonts arrive (the tooltip's size sets the lane) and when the page's width changes.
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { drawPlots(); const s = $("#heat .is-sel"); if (s) heatSelect(s, false); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { for (const table of $$(".cx-single-days")) window.EclipseTables.alignDayNoneRows(table); drawPlots(); const s = $("#heat .is-sel"); if (s) heatSelect(s, false); });
   let rz = 0, lastW = innerWidth;
-  addEventListener("resize", () => { if (innerWidth === lastW) return; lastW = innerWidth; cancelAnimationFrame(rz); rz = requestAnimationFrame(() => { drawPlots(); const s = $("#heat .is-sel"); if (s) heatSelect(s, false); }); });
+  addEventListener("resize", () => { if (innerWidth === lastW) return; lastW = innerWidth; cancelAnimationFrame(rz); rz = requestAnimationFrame(() => { for (const table of $$(".cx-single-days")) window.EclipseTables.alignDayNoneRows(table); drawPlots(); const s = $("#heat .is-sel"); if (s) heatSelect(s, false); }); });
   window.__components = { ready: true, setLang, get lang() { return LANG; }, data: { peak: DATA.peak, peakM: DATA.peakM, latest: DATA.raw[NOW] } };
 })();

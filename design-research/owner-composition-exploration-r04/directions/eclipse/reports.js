@@ -19,6 +19,22 @@
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const root = document.documentElement;
+  // The single-day exception is shared with the component sheet, including its text anchor.
+  const dayNoneRow = (head, words, edge = false) => `<tr role="row" class="is-none-day${edge ? " wk-edge" : ""}">${head}<td role="cell" colspan="4" class="c-none"><span class="day-none-word">${words}</span></td></tr>`;
+  const alignDayNoneRows = (table) => {
+    const label = table.querySelector("thead .c-peak .sort > span");
+    if (!label) return;
+    const rtl = table.closest('[dir="rtl"]') != null;
+    const start = label.getBoundingClientRect().left;
+    for (const word of table.querySelectorAll(".day-none-word")) {
+      const cell = word.parentElement;
+      const offset = rtl ? 0 : start - cell.getBoundingClientRect().left - parseFloat(getComputedStyle(cell).paddingLeft);
+      word.style.setProperty("--none-day-offset", `${offset}px`);
+    }
+  };
+  window.EclipseTables = Object.freeze({ dayNoneRow, alignDayNoneRows });
+  // On the sheet only the table primitives run; Reports data and controls stay on Reports.
+  if (!document.body.classList.contains("rp")) return;
   const LANG = root.lang === "en" ? "en" : "ar";
   const RTL = LANG === "ar";
   const STATE = root.dataset.state === "short" ? "short" : "full";
@@ -1221,19 +1237,19 @@
       // A single day without readings keeps its date in the day column, as every day does, and its words take the rest of
       // the row: «لا قراءات», or «لا قراءات بعد» before the readings began; no figures (decisions 10 and 11, user
       // 2026-10-02; TBL-12).
-      const dayNoneRow = (d, words) => `<tr role="row" class="is-none-day${edgeOf(d) ? " wk-edge" : ""}">${dayHead(d)}<td role="cell" colspan="4" class="c-none">${words}</td></tr>`;
+      const noneDay = (d, words) => dayNoneRow(dayHead(d), words, edgeOf(d));
       // Days before the history starts are one merged row ("No readings yet"), or a day row when there is only one.
       let pre = [];
       const flushPre = () => {
         if (!pre.length) return;
         const a = Math.min(...pre.map((d) => d.dn)), b = Math.max(...pre.map((d) => d.dn));
-        out.push(a === b ? dayNoneRow(pre[0], L.beforeHistory) : noneRow(daysNote(L.beforeHistory, a, b)));
+        out.push(a === b ? noneDay(pre[0], L.beforeHistory) : noneRow(daysNote(L.beforeHistory, a, b)));
         pre = [];
       };
       sortedDays().forEach((d) => {
         if (d.none) { pre.push(d); return; }
         flushPre();
-        if (!d.observed) { out.push(dayNoneRow(d, L.noReadings)); return; }
+        if (!d.observed) { out.push(noneDay(d, L.noReadings)); return; }
         const top = model.top && model.top.dn === d.dn;
         const notes = dayNotes(d);
         const edge = edgeOf(d);
@@ -1250,8 +1266,10 @@
       body = out.join("");
     }
     daysTable.innerHTML = `<caption class="sr-only">${L.daysCaption(rangeText(model.a, model.b))}</caption><thead><tr role="row">${head}</tr></thead><tbody>${body}</tbody>`;
+    alignDayNoneRows(daysTable);
     tableFile();
   }
+  addEventListener("resize", () => alignDayNoneRows(daysTable));
   /* ---- the day list (720 px and below; the user's pick of 2026-10-01, option B).
    * A day per item: its date and its peak on the first line, its average and entries under the date and the peak's time
    * under the peak, on the peak's edge (TBL-1, TBL-11); a camera gap folds under them, one sentence with the words first
@@ -1923,5 +1941,5 @@
   else if (WANT === "export") openExportDialog(exportBtn);
   // The other script's subset is fetched up front too (the rail's language item is written in it), as on the Daily page.
   if (document.fonts && document.fonts.load) ["400", "500"].forEach((w) => document.fonts.load(`${w} 16px "Readex Pro"`, RTL ? "English FITWAY" : "العربية").catch(() => {}));
-  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { if (tipFor) showTip(tipFor); window.__reports.ready = true; });
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { alignDayNoneRows(daysTable); if (tipFor) showTip(tipFor); window.__reports.ready = true; });
 })();

@@ -61,7 +61,7 @@ html:has(> body.cx) { color-scheme: dark; scrollbar-color: rgba(245, 243, 242, 0
  * the live demos are marked. */
 .cx-stage { padding: 24px; }
 .cx-stage-title { font: var(--t-label); font-weight: 500; color: var(--ink-2); }
-.cx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--min, 200px), 1fr)); gap: 24px; margin-block-start: 16px; }
+.cx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--min, 200px)), 1fr)); gap: 24px; margin-block-start: 16px; }
 .cx-fig { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; min-width: 0; margin: 0; }
 .cx-fig > .cx-spec { max-width: 100%; }
 .cx-cap { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font: var(--t-caption); color: var(--ink-3); }
@@ -226,7 +226,7 @@ html:has(> body.cx) { color-scheme: dark; scrollbar-color: rgba(245, 243, 242, 0
 .cx-done-title { margin-block-start: 12px; font: var(--t-body); color: var(--ink); }
 .cx-done .cx-file { text-align: start; }
 /* The bottom sheet, drawn inside a 390 px phone frame over a dimmed page. */
-.cx-frame { position: relative; width: 390px; height: 560px; overflow: hidden; border-radius: 24px; border: 1px solid var(--line-2); background: #070707; }
+.cx-frame { position: relative; width: 390px; max-width: 100%; height: 560px; overflow: hidden; border-radius: 24px; border: 1px solid var(--line-2); background: #070707; }
 .cx-frame-page { position: absolute; inset: 0; padding: 16px; display: grid; align-content: start; gap: 12px; }
 .cx-frame-page i { display: block; height: 96px; border-radius: 24px; background: rgba(15, 14, 15, 0.94); border: 1px solid var(--line); }
 .cx-frame-page i:first-child { height: 36px; width: 55%; border-radius: 8px; }
@@ -295,6 +295,8 @@ html:has(> body.cx) { color-scheme: dark; scrollbar-color: rgba(245, 243, 242, 0
 /* One size and one colour for the whole sentence, its ends included (decision 9, user 2026-10-02): the row's caption type
  * and --ink-3; the ends keep tabular figures. */
 .cx-table tbody td.none .rg { font-variant-numeric: tabular-nums; }
+/* Daily minute-table gaps use label type and secondary ink, including their times. */
+.cx-table.is-compact tbody td.none { font: var(--t-label); color: var(--ink-2); }
 .cx-table .note-row { display: none; }
 .cx-sort { display: inline-flex; align-items: center; gap: 8px; height: 44px; min-width: 44px; margin-inline: -8px; padding-inline: 8px; border-radius: 10px; font: inherit; color: inherit; }
 .cx-sort:hover, .cx-sort.is-hover { color: var(--ink); }
@@ -505,3 +507,41 @@ th.is-asc .cx-sort .cx-ico { transform: rotate(180deg); }
 .cx-st-ph .ops-state .cx-st-ring { width: 8px; height: 8px; }
 .cx-st-ph .ops-state .cx-ico { width: 17px; height: 17px; }
 .cx-st-load { display: inline-flex; align-items: center; height: 44px; font: var(--t-label); color: var(--ink-2); white-space: nowrap; }
+
+/* The sheet specimens reflow inside their available width. These rules are sheet-only. */
+.cx-dialogs { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; }
+.cx-phones > .cx-fig, .cx-rails > .cx-fig { max-width: 100%; }
+.cx-cap bdi { white-space: normal; }
+.cx-single-days .sort .cx-ico { width: 14px; height: 14px; opacity: 0; }
+@media (max-width: 900px) {
+  .cx-row-3, .cx-row-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cx-dialogs { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 720px) {
+  .cx-head, .cx-sec-head, .cx-hdr { flex-wrap: wrap; }
+  .cx-head-end { justify-content: flex-start; }
+  .cx-ids, .cx-ids bdi { white-space: normal; }
+  .cx-row-2, .cx-row-3, .cx-row-4 { grid-template-columns: minmax(0, 1fr); }
+  .cx-stage, .cx-table-card, .cx-header-spec, .cx-pattern { padding: 16px; }
+  .cx-hdr > div:first-child { flex: none; }
+  .cx-hdr p { white-space: nowrap; }
+  .cx-hdr-end { max-width: 100%; justify-content: flex-start; }
+  .cx-hdr-end .hb-state { flex-wrap: wrap; }
+  .cx-stat-head { flex-wrap: wrap; }
+  /* A phone preview uses the viewport width, without a second outer inset. */
+  .cx-stage:has(> .cx-phones) { margin-inline: -16px; padding: 0; border: 0; background: transparent; }
+  .cx-panel-foot { flex-wrap: wrap; }
+  .cx-field-row { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 400px) {
+  .cx-type > div { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cx-type .sample { grid-column: 1 / -1; }
+}
+
+/* Keep the three-choice control and open phone layers inside their specimen. */
+.cx-phbox { container-type: inline-size; }
+.cx-phbox .ops-pop, .cx-phbox .menu-pop { max-width: 100cqw; }
+@media (max-width: 400px) {
+  .cx-seg { max-width: 100%; }
+  .cx-seg-b { flex: 1 1 auto; padding-inline: 8px; min-width: 44px; }
+}
