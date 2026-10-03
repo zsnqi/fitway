@@ -44,7 +44,8 @@ Write options only under `<path>`; commit when done.
 
 ## Report
 
-Per option: one line on the idea, its frame paths, and where it breaks. The files you changed; the commit SHA. At
+Per option: one line on the idea, its frame paths, and where it breaks. Any rule or decision that makes an option
+read wrong, named (WORKING_AGREEMENTS "Rules and findings"). The files you changed; the commit SHA. At
 most 40 lines.
 
 ## Coordinator checklist (delete before launch)
