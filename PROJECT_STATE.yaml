@@ -76,7 +76,7 @@ milestones:
       templates, and give the user a Claude Code panel for the subscription limits.
     taskClass: repository-infrastructure
     taskPacket: docs/phase-records/task-packets/agent-environment-r02.yaml
-    taskPacketSha256: bcc81f5507e353c4ec9b7f8af35b381dac4cc58d92059c7d621d3a1105560839
+    taskPacketSha256: 3f8634600211b1bf536436be75937d0f6e325e5886e6313afd182b3f143c9647
     dependencies:
       - agent-environment-r01
     ownerSession: claude-code-desktop:coordinator-28297a9c
