@@ -34,11 +34,13 @@ For a fresh `owner-direction-builder` (Opus, high). The decision is made; build 
 
 DECISIONS item 20, last paragraph: the user picked, from the page https://claude.ai/artifact/Hg4FjvgySLQr4xWBp8bWiX,
 idea 2 (press and hold, then drag) with idea 4 (previous and next) and the shorter busiest-time card, to try as one
-version on the phone. The arrangement of the page does not change. Earlier prototypes to reuse where they fit, read
-with `git -C D:/Projects/fitway-worktrees/owner-followup-r04-s04 show owner-r04-daily-phone:<path>`: the hold and the
-large reading in `design-research/owner-composition-exploration-r04/directions/options/daily-phone/3/app.js` and
-`3/style.css`; the busiest-time row in `options/daily-phone/1/style.css`. They were built on another arrangement:
-take the behaviour, not their layout.
+version on the phone. The arrangement of the page does not change. Earlier prototypes to reuse where they fit, read only,
+in another worktree: the hold and the large reading in
+`D:/Projects/fitway-worktrees/owner-r04-daily-phone/design-research/owner-composition-exploration-r04/directions/options/daily-phone/3/app.js`
+and `D:/Projects/fitway-worktrees/owner-r04-daily-phone/design-research/owner-composition-exploration-r04/directions/options/daily-phone/3/style.css`;
+the busiest-time row in
+`D:/Projects/fitway-worktrees/owner-r04-daily-phone/design-research/owner-composition-exploration-r04/directions/options/daily-phone/1/style.css`.
+They were built on another arrangement: take the behaviour, not their layout.
 
 ## Causes and required outcomes
 
