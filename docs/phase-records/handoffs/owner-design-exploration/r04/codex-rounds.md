@@ -58,3 +58,29 @@ checks live outside the repository and never appear here or in a brief.
   the Codex command in `WORKING_AGREEMENTS.md` now adds the note.
 - **Integration:** `owner-r04-nav` merged into `owner-followup-r04-build` (`0723f3b`) and INDEX.md regenerated
   (`b65e2b7`, `--check` passes).
+
+## D3-D8 run 4: `design-research/owner-composition-exploration-r04/directions/briefs/codex-d3-d8-defects.md`, result `e6db2e4` on `owner-followup-r04-build`, level `high`
+
+- **Brief rows, as Codex graded them:** D4, D5 and D7 PASS; D8 PASS where it reproduced (the «Open, nobody inside»
+  part is not on the sheet); D3 not reproduced; D6 FAIL, stopped and reported as B3 asks.
+- **Held-out rows:** 5 of 8 (K1, K2, K6, K7, K8 pass; K3 and K4 fail on the brief; K5 fails on the code).
+- **Failure causes:**
+  - K3 (D5), brief. The outcome "where the Arabic table puts it, mirrored" lands on the peak column's left edge, the
+    very place the brief called the defect, and no anchor was named. Codex anchored the English words to the Peak
+    label's edge, further from the mirror than before at 1024 and 1440 (721/1024/1440: 52.6/29.3/15.0 px before,
+    12.0/59.1/148.3 px after). Where the words belong is a visual question for the user.
+  - K4 (D6), brief. At 320 EN a coverage row needs 286 px (label 152, gap 16, unbreakable range 118) in 238 px, so
+    the outcome cannot be met without changing the copy or the rule; the brief also quoted «from 6:00 AM», which the
+    page no longer shows (B2 and B7 were not applied). Codex called the 390 wrap not reproduced, but "The line" takes 3
+    lines in English against 2 in Arabic.
+  - K5 (D7), code, minor. The specimen's row and cell come from the shared `EclipseTables.dayNoneRow`, but its day cell
+    is a hand-built copy (no `span.nw`; header icon `cx-ico`), and at 320 the specimen table runs 14-15 px into the
+    card's padding.
+- **Level:** a failure traced to the code moves Eclipse defects from `high` to `xhigh` for the next round
+  (`docs/agent-context/WORKING_AGREEMENTS.md`, "Delegation").
+- **Side changes:** `components.html` now loads `reports.css` and `reports.js`; at 390 the whole sheet reflows (D8,
+  in scope).
+- **Environment:** the usage limit stopped the round after its edits and before the commit; it was resumed on another
+  account with `codex exec --approve-for-me -C <worktree> resume -m gpt-6.1-sol -c model_reasoning_effort="high" --json -o <run>/last-message.md <thread> -`
+  (`resume` has no `--approve-for-me` of its own; it goes on `exec`). The resumed turn only checked and committed: the
+  commit equals the patch saved at the stop. Graded on snapshots of both commits by a fresh verifier (high).
