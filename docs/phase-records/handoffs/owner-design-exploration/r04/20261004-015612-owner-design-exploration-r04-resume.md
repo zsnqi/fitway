@@ -39,7 +39,8 @@ Two Codex rounds (GPT-6.1 Sol, `high`), started 01:55 in harness background shel
 2. **One review** of `bd8bada` plus both rounds: a fresh `owner-direction-verifier-high`, scoped to the changed
    elements, with reading direction included, grading the held-out rows `D:/fitway-grader/owner-r04/card-1-heldout.md`
    and `D:/fitway-grader/owner-r04/touch-1-heldout.md` (never in a brief). Save its report as `REPORT.md` in its folder.
-3. **Fixes from that review go to Codex.** Add the pre-existing sheet defect: the Arabic button «عرض آخر 28 يومًا» in
+3. **Fixes from that review go to Codex.** Add the computer's busiest-time card: «مساءً» and «بمعدّل» from 721 px up
+   too (DECISIONS item 26; card-1 kept them to the phone). Add the pre-existing sheet defect: the Arabic button «عرض آخر 28 يومًا» in
    `components.js` has wide gaps around «28» (Reports fixed it; the sheet did not).
 4. Publish Daily and Reports as one private multi-file artifact for the user's phone and computer (real touch was
    never tested).
@@ -48,8 +49,8 @@ Two Codex rounds (GPT-6.1 Sol, `high`), started 01:55 in harness background shel
 
 ## Waiting on the user
 
-- Lower this session's effort from `xhigh` to `high` for coordination? (asked 2026-10-04, to save usage)
-- Should the busiest-time card also write «مساءً» and «بمعدّل» on the computer? Decision 26 covers the phone only.
+Nothing. (2026-10-04: the user agreed to `high` for coordinating sessions; set it in the app when a session starts.)
+
 
 ## Known risks
 
