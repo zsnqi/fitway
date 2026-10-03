@@ -42,7 +42,8 @@ You may change `<paths>`; commit when done. Do not redesign beyond the decision;
 ## Report
 
 Each outcome PASS or FAIL with its evidence; the frame paths, numbered; the files you changed; the commit SHA;
-anything you could not do. At most 40 lines.
+anything you could not do; anything the brief's rules produce that reads wrong, with the rule named
+(WORKING_AGREEMENTS "Rules and findings"). At most 40 lines.
 
 ## Coordinator checklist (delete before launch)
 

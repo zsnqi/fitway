@@ -50,3 +50,11 @@ latest wording; never copy an entry into a resume point.
   live with the milestone's standing decisions. (user, 2026-10-02)
 - Every subagent is launched from a definition with a fixed effort; `CLAUDE.md` gives the choice
   between the Opus and Sonnet definitions. (user, 2026-10-02)
+
+## Rules and findings
+
+- A rule is a hypothesis, not a verdict. A problem that a person would see stands even when the work meets every
+  rule, decision and check: report it, and name the rule that produced it as the suspect. A rule can be fragile or
+  wrong; when it is the user's decision, it goes back to the user to change, and the problem is not closed by
+  pointing at the rule. (user, 2026-10-03, after English tables built to decision 9 passed every check while
+  reading wrong)
