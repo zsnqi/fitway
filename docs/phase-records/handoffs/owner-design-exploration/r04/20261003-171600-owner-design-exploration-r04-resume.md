@@ -40,13 +40,16 @@ Nothing.
    - Daily's reserved status width held at the day's widest time (`renderReserve`; coordinator decision);
    - the step-4 minor: Reports' badge clearance from the title at 320 EN, Delayed, with a classic scrollbar.
 2. **After the build:** a fresh `owner-direction-verifier-high` and `rtl-ltr-reviewer` side by side, then the user.
-3. **Daily's phone design round** (DECISIONS.md item 20): a fresh `owner-direction-designer` draws numbered options
-   for Daily at 390 (and 320 checked), AR and EN, from a snapshot of the build so it can run beside step 1; its
-   observations are in item 20. Then the decision page, then a builder for the pick.
+3. **Before Daily's phone design round, show the user Daily on the phone as it is now** (the user asked, 2026-10-03,
+   to review decision 20 against it): a fresh render of the build at 390, first and second screen, AR and EN, laid
+   out like the decision page (`D:/fitway-temp/owner-r04-step4-review/grid-daily390.png` is the frame from `41a6f7c`).
+   Only if the user keeps decision 20: a fresh `owner-direction-designer` draws numbered options for Daily at 390
+   (320 checked), AR and EN, from a snapshot of the build; then the decision page, then a builder for the pick.
 
 ## Waiting on the user
 
-Nothing.
+- Whether decision 20 (a phone design round for Daily) stands, once the user has seen the current phone frames
+  (next step 3).
 
 ## Known risks
 
