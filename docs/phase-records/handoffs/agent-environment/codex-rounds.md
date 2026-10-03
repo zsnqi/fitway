@@ -103,3 +103,17 @@ held-out checks live outside the repository and never appear here or in a brief.
   launches stopped on the brief's own commit sitting on the named HEAD, before the launch note existed.
 - **Side finding:** a file-name pattern that contains an exact template token, such as `<branch>-resume.md`, is
   rejected as a placeholder (`scripts/agent-environment/resume-point.mjs:25`).
+
+## Evaluation C2 (agent-environment-r02): round 5 rerun with and without line C2, results `ece0794` and `ad51e1a`
+
+- **Set-up:** line C2 of `brief-failure-causes.md`. Two blind Sonnet writers rewrote round 5's brief from the Codex
+  template, one with C2 in the checklist and one without (`D:/fitway-temp/evals/c2/`); Codex ran each on `d333762`
+  in its own worktree; one Sonnet grader graded both commits as X and Y without knowing which had the line.
+- **Brief rows:** both arms report F1-F5 pass.
+- **Held-out rows:** identical, 12 of 13 each; S6 partial in both, with the same two false failures as round 5 had:
+  the npm name `@playwright/test` in nav-3's brief and the folder-relative `tools/` in the K-02 designer's brief are
+  read as repository paths.
+- **Failure cause:** the line, not the code. With C2 the writer defined "path" with real examples, but drew them from
+  the files the round would act on; the boundary cases lived in the real briefs the checker would later read, which
+  neither writer sampled. **C2 is not adopted.** Next hypothesis (C2b): test a rule against a sample of the real
+  inputs it will judge (for a brief checker, the last real briefs) and list each one it would misclassify.

@@ -37,7 +37,7 @@ OW = `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md`.
 Causes 2 and 3 are the candidates for new template lines, each to be tested in an evaluation round before it is
 adopted.
 
-## Candidate lines (coordinator drafts, 2026-10-03; not adopted)
+## Candidate lines (coordinator drafts, 2026-10-03; C2 tested and not adopted, see codex-rounds.md "Evaluation C2")
 
 For the coordinator checklist of `docs/agent-context/briefs/codex.md`, since both causes lie in how the coordinator
 writes the brief:
