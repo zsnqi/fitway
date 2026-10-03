@@ -101,7 +101,13 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     design. Two problems the user named: on the phone the owner cannot move through the chart easily, as the mouse
     does on a large screen (each half hour, 7 PM, and so on); and the busiest-time card takes the full width for
     little content.
-21. **The empty period's sentence takes item 14's forms** (2026-10-03, the user: "ممتاز"). Reports' empty-period
+    **Narrowed the same day** after the three layout options at `b80083a` (page
+    https://claude.ai/artifact/2oP51ViJ2F5qUrnwqtBUuo): the phone's arrangement stays as it is; the cards come first
+    because they answer directly, and the chart below them is natural. The round is only how a finger moves through
+    the chart: it need not copy the mouse, and a way that suits the phone better is welcome. Keep it light: show the
+    ideas simply, not full pages, and the user picks. The band above the plot may be used or dropped by the chosen
+    way. The busiest-time card is not a big problem; a simple suggestion is welcome. The three layout options are set
+    aside, kept on `owner-r04-daily-phone` as provenance.21. **The empty period's sentence takes item 14's forms** (2026-10-03, the user: "ممتاز"). Reports' empty-period
     sentence writes the year once and, inside one month, the month once, as the header and the error sentence do:
     «لا قراءات من 1 إلى 7 سبتمبر 2026», not «لا قراءات من 1 سبتمبر 2026 إلى 7 سبتمبر 2026»; across months of one year,
     «لا قراءات من 26 أغسطس إلى 22 سبتمبر 2026». English the same way. Found by the reading-direction review of
