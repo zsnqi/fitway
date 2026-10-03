@@ -19,7 +19,11 @@ it from the startup route: `PROJECT_STATE.yaml` names the milestone's `handoff`,
 
 The file is done when a reader with no other context could take the first next step without
 searching: every input is named by path and section, every worktree by absolute path, branch and
-expected HEAD.
+expected HEAD. An agent's report reaches only the session that launched it, so when its findings
+feed a next step, the coordinator saves the report verbatim in that run's evidence folder as it
+arrives (`D:/fitway-temp/<run>/REPORT.md`, outside the repository), and the resume point names that
+file instead of summarising the findings. (coordinator, 2026-10-04, after the user asked why a
+session searched an old transcript: the resume point had cut the findings to one line each)
 
 Rules the checker enforces: at most 12 KB; the three header lines and six sections below, in
 order; every repository path in backticks exists; no session ids (`local_…`), because they change
