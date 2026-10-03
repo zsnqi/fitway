@@ -35,18 +35,14 @@ at `high`, to finish its checks, commit and report. The run was:
 1. **Grade run 4** (brief rows, held-out rows, failure cause) and record it in
    `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md`; check `git status` in the build
    worktree and that nothing was pushed.
-2. **The user's three answers** (below) go into DECISIONS.md item 14; then a builder makes the changes they ask for,
-   after run 4 has committed (one writer per worktree).
+2. **A builder for DECISIONS.md items 14 (the one-day and same-month sentences) and 15 (no concept label on any
+   Eclipse screen; Daily's 1024 EN header back to one line)**, after run 4 has committed (one writer per worktree).
 3. **The step-4 reviewer** on the build: a fresh verifier on K-02 and D3-D8, which also looks at Daily at 390 under
    the "compressed, not designed" lens (any Daily change is the user's call); then the user.
 
 ## Waiting on the user
 
-All three are on the comparison page, each with the coordinator's recommendation (a):
-- Daily at 1024 EN: the concept label now drops under the status in every state (it did only in Delayed before).
-  (a) accept; (b) one line, the slot shrinks there and the header moves when Delayed arrives.
-- A one-day period's error sentence: (a) «تعذّر تحميل قراءات 22 سبتمبر 2026»; (b) keep «من 22 سبتمبر إلى 22 سبتمبر 2026».
-- A same-month period: (a) «من 16 إلى 22 سبتمبر 2026», the header's form; (b) keep both months.
+- The user switches the Codex account; then D3-D8 run 4 is resumed (Running now).
 
 ## Known risks
 
