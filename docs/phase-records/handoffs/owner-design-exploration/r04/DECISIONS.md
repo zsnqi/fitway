@@ -69,9 +69,12 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
 16. **English does not copy Arabic's geometry** (2026-10-03). In an English table the Peak column aligns to its left
     edge, and the time sits to the right of its figure, "55 6:25 PM"; a day's no-readings words start on the same edge.
     This overrides item 9 for English; Arabic is unchanged. Whether English's other numeric columns also start at the
-    left is open: options A (Peak only) and B (every column) are being drawn
-    (`design-research/owner-composition-exploration-r04/directions/briefs/designer-en-tables-direction.md`). It
-    settles D5. For D6 the user delegated the pick of shorter English labels to the coordinator, to review later.
+    left: option B (2026-10-03), every English numeric column starts at its left edge, figures flush on the edge as
+    in the frame the user sent (not B's variant that indents shorter figures), Daily's minute table included. In the
+    Peak column the times line up whatever the figure's width. Arabic gets the same time alignment when a peak has
+    three digits (the user, "yes"); nothing else in Arabic changes. Options in `D:/fitway-temp/owner-r04-en-tables/`
+    (`optB/`). It settles D5. For D6 the user delegated the pick of shorter English labels to the coordinator: R2,
+    "805 of 823 min" and "Open, empty" (copy round 1).
 17. **No explanation of the line** (2026-10-03). The "The line" row («الخط») leaves Daily's coverage card: the owner
     does not need how the line is smoothed, and the page carries names and values, not explanations (brief item 8).
     The user's view, with the coordinator's agreement. The legend's name for the line («معدّل كل 30 دقيقة») is in copy
@@ -80,6 +83,19 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     Wednesdays"; the coverage card's row is «المعتاد» / "Usual" with «معدّل آخر 4 أيام أربعاء» / "Average of the last 4
     Wednesdays" (with fewer recorded, «يوم أربعاء واحد فقط في السجل (16 سبتمبر)»). The tooltip, the entries figure and
     the busier/quieter chip keep «المعتاد». Exact texts: `D:/fitway-temp/owner-r04-copy-round/work/options.mjs`.
+19. **Copy round 2** (2026-10-03, the user's picks; options in `D:/fitway-temp/owner-r04-copy-round-2/opt/`):
+    - The export dialog has no description: its title and the file line carry it (item 1, option 3).
+    - "Last 7 days" without enough readings: the line reads «لا تكفي القراءات بعد» / "Not enough readings yet", with
+      the note «يلزم أسبوعان من القراءات المنتظمة» / "Needs two weeks of steady readings" (item 2, option 4). The old
+      line, «لا يكفي السجل بعد», was untrue with a long history and a recent outage.
+    - The export failure reads «تعذّر التصدير، ولم يُحفظ شيء.» / "Couldn't export. Nothing was saved." (item 3,
+      option 2).
+    - The line's name is «معدّل الموجودين» / "Average inside" in the legend, the minute table's column, the chart's
+      screen-reader text, the component sheet and GLO-4 (item 4, option 1).
+20. **Daily on the phone gets its own design round** (2026-10-03). At 390 Daily reads as the desktop page stacked in
+    one column (step-4 review): the chart, the page's core, is below the first screen; about 127 px sits empty above
+    the plot at rest (the tooltip lane); the busiest-time card spans the width with its value in half of it. A fresh
+    designer draws numbered options for the phone, and the user picks. Nothing is broken; this is a design question.
 
 ## How this milestone's rounds run
 
