@@ -270,8 +270,8 @@ html:has(> body.rp) {
 .dd .dt { color: inherit; }
 /* TBL-11: the composite peak cell leads with its value on the numbers' edge, then its time, on one baseline from 721 px
  * (decision 15): leftward in Arabic, rightward in English. The period's highest row carries its tint only, no flag
- * (decision 17). Where the figure stands in a slot (EclipseTables.fitSlots: English always, Arabic when a peak has three
- * digits; decision 16), the slot's min-width lines every time up. */
+ * (decision 17). Where the figure stands in a slot (EclipseTables.fitSlots: English always, Arabic whenever figures
+ * differ in width; decisions 16 and 23), the slot's min-width lines every time up. */
 .pk { display: inline-flex; align-items: baseline; gap: 8px; white-space: nowrap; }
 .pk .pv bdi { font-weight: 500; }
 .pk .pt { font-size: 12px; line-height: 18px; color: var(--ink-3); }

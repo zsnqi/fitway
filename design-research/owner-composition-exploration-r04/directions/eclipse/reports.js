@@ -31,11 +31,14 @@
   const dayNoneRow = (head, words, edge = false) => `<tr role="row" class="is-none-day${edge ? " wk-edge" : ""}">${head}<td role="cell" colspan="4" class="c-none"><span class="day-none-word">${words}</span></td></tr>`;
   // Decision 16 (user 2026-10-03): the peak's figure stands in a slot as wide as the column's widest figure, so the time
   // beside it starts on one line in every row, whatever the figure's width (9, 55, 120): in English, where the figure
-  // starts on the column's left edge, always; in Arabic, where figures share the right edge (TBL-1), only when a peak has
-  // three digits ("yes", the user), so nothing else in Arabic changes. Readex Pro's digits differ in width
+  // starts on the column's left edge, always; in Arabic, where figures share the right edge (TBL-1), whenever the figures
+  // differ in width (decision 23). A column with equal-width figures is unchanged. Readex Pro's digits differ in width
   // (tabular-nums changes nothing in this font), so the slot is measured, and again once the fonts are in.
   const fitSlots = (table) => {
     if (!table) return;
+    // Restore natural columns before measuring them; only the tablet's day table transfers room from Notes (decision 22).
+    table.querySelector("colgroup[data-peak-room]")?.remove();
+    table.style.tableLayout = "";
     const rtl = table.closest('[dir="rtl"]') != null;
     const cols = new Map();
     for (const tr of table.rows) {
@@ -46,10 +49,26 @@
         i += cell.colSpan || 1;
       }
     }
+    for (const figs of cols.values()) for (const f of figs) f.style.minWidth = "";
+    const tablet = table.classList.contains("days-table") && innerWidth >= 721 && innerWidth <= 1023;
+    const heads = tablet && table.tHead ? [...table.tHead.rows[0].cells] : [];
+    const widths = heads.map((c) => c.getBoundingClientRect().width);
+    let extra = 16;
     for (const figs of cols.values()) {
-      const slot = !rtl || figs.some((f) => f.firstElementChild.textContent.replace(/\D/g, "").length >= 3);
-      const width = slot ? Math.max(...figs.map((f) => f.firstElementChild.getBoundingClientRect().width)) : 0;
+      const measured = figs.map((f) => f.firstElementChild.getBoundingClientRect().width);
+      const width = Math.max(...measured), spread = width - Math.min(...measured);
+      const slot = !rtl || spread > 0.01;
       for (const f of figs) f.style.minWidth = slot ? `${width}px` : "";
+      extra = Math.max(extra, spread);
+    }
+    if (tablet && cols.size && heads.length === 5) {
+      // Freeze every natural column at its measured width, then give Peak at least 16 px from Notes alone. Keeping the
+      // other three widths prevents the auto table algorithm from paying for that room by shrinking them on resize.
+      const group = document.createElement("colgroup");
+      group.dataset.peakRoom = "";
+      group.innerHTML = widths.map((w, i) => `<col style="width:${w + (i === 1 ? extra : i === 4 ? -extra : 0)}px">`).join("");
+      table.prepend(group);
+      table.style.tableLayout = "fixed";
     }
   };
   window.EclipseTables = Object.freeze({ sortHead, dayHead, dayNoneRow, fitSlots });
@@ -139,7 +158,7 @@
       dayHours: (d, r) => `${d}: معدّل الموجودين حسب الساعة، ${r}`,
       daysTitle: "يومًا بيوم",
       cols: { day: "اليوم", peak: "الذروة", avg: "المعدّل", entries: "مرات الدخول", notes: "ملاحظات" },
-      daysCaption: (r) => `الأيام من ${r}: الذروة والمعدّل ومرات الدخول`,
+      daysCaption: (r) => `الأيام ${r}: الذروة والمعدّل ومرات الدخول`,
       sortSay: (c, dir, isDay) => `مرتب حسب ${c}، ${isDay ? (dir === "desc" ? "الأحدث أولًا" : "الأقدم أولًا") : dir === "desc" ? "الأعلى أولًا" : "الأقل أولًا"}`,
       // The day list on a phone (step 4's build): sorted with the phone's own picker; 7 days, then all.
       sortName: "الترتيب",
@@ -152,6 +171,7 @@
       spanFrom: "من",
       spanTo: "إلى",
       emptyTable: (a, b) => `لا قراءات من ${a} إلى ${b}`,
+      emptyDay: (d) => `لا قراءات في ${d}`,
       // One span inside the button: a flex button would make each run of text and the number an item of its own and set
       // its 8 px gap around «28» (the fix round, 2026-10-01).
       emptyAction: `عرض آخر ${bdi(28)} يومًا`,
@@ -260,7 +280,7 @@
       dayHours: (d, r) => `${d}: average inside by hour, ${r}`,
       daysTitle: "Day by day",
       cols: { day: "Day", peak: "Peak", avg: "Average", entries: "Entries", notes: "Notes" },
-      daysCaption: (r) => `Days from ${r}: peak, average and entries`,
+      daysCaption: (r) => `Days ${r}: peak, average and entries`,
       sortSay: (c, dir, isDay) => `Sorted by ${c.toLowerCase()}, ${isDay ? (dir === "desc" ? "newest first" : "oldest first") : dir === "desc" ? "highest first" : "lowest first"}`,
       sortName: "Sort",
       sorts: { "day-desc": "Newest first", "day-asc": "Oldest first", "peak-desc": "Highest peak", "avg-desc": "Highest average", "entries-desc": "Most entries" },
@@ -271,6 +291,7 @@
       spanFrom: "from",
       spanTo: "to",
       emptyTable: (a, b) => `No readings from ${a} to ${b}`,
+      emptyDay: (d) => `No readings on ${d}`,
       emptyAction: "Show the last 28 days",
       exportMinutes: "Export minute data",
       exportTable: "Export table",
@@ -392,6 +413,17 @@
     if (A.m === B.m) return nw(`${range2(A.d, B.d)} ${monthOf(A.m)}${year ? ` ${bdi(A.y)}` : ""}`);
     return nw(`${dateBare(a)} ${DASH} ${dateBare(b)}${year ? ` ${bdi(B.y)}` : ""}`);
   }
+  // A period in a sentence names each month/year once (decisions 14 and 21), with words instead of a dash (decision 12).
+  function periodSentence(a, b, span, single) {
+    const A = partsOf(a), B = partsOf(b);
+    return a === b ? single(dateText(b, true))
+      : A.y !== B.y ? span(dateText(a, true), dateText(b, true))
+      : A.m === B.m ? span(nw(bdi(A.d)), dateText(b, true))
+      : span(dateText(a), dateText(b, true));
+  }
+  const emptyPeriod = () => periodSentence(model.a, model.b, L.emptyTable, L.emptyDay);
+  const periodWords = (a, b) => periodSentence(a, b,
+    (start, end) => `${L.spanFrom} ${start} ${L.spanTo} ${end}`, (date) => date);
   const plain = (html) => html.replace(/<[^>]+>/g, "");
 
   /* ------------------------------------------------------------ the gym and its history */
@@ -798,8 +830,8 @@
   const SVG_OFF = `<svg class="ico ico-off" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.2"/><path d="M6.3 17.7 17.7 6.3"/></svg>`;
   const SVG_ERR = `<svg class="ico ico-err" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"/><path d="M12 7.6v5.4M12 16.2v.2"/></svg>`;
   const OPS_STATES = {
-    live: () => ({ cls: "", mark: `<span class="dot" aria-hidden="true"></span>`, word: L.live, line: `${L.lastReading} ${timeText(NOW.last)}` }),
-    delayed: () => ({ cls: "is-delayed", mark: SVG_CLOCK, word: L.delayed, line: `${L.lastReading} ${timeText(NOW.last - 13)}`, ago: L.ago(13) }),
+    live: (m = NOW.last) => ({ cls: "", mark: `<span class="dot" aria-hidden="true"></span>`, word: L.live, line: `${L.lastReading} ${timeText(m)}` }),
+    delayed: (m = NOW.last - 13) => ({ cls: "is-delayed", mark: SVG_CLOCK, word: L.delayed, line: `${L.lastReading} ${timeText(m)}`, ago: L.ago(13) }),
     closed: () => ({ cls: "is-closed", mark: `<span class="dot ring" aria-hidden="true"></span>`, word: L.closedWord, line: L.opens(timeText(0)) }),
     offline: () => ({ cls: "is-off", mark: SVG_OFF, word: L.offline, line: L.noCount }),
     error: () => ({ cls: "is-err", mark: SVG_ERR, word: L.errorWord, line: L.errorLine, detail: `${L.errorFull}. ${L.errorHint}` }),
@@ -823,7 +855,8 @@
     // place and the slot's size; the control itself is as wide as its own status (HDR-3), so its fill and its ring fit
     // the status, at the slot's inline end, where the loading words stand too. On a phone only the control is drawn.
     $("#ops-btn-state").innerHTML = `<span class="sr-only">${L.opsTitle}: </span>${words(s)}`;
-    $("#ops-res").innerHTML = Object.values(OPS_STATES).map((f) => `<span class="hb-r">${words(f())}<svg class="hb-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5"/></svg></span>`).join("");
+    // Decision 24: the same verified 10:44 AM / «10:44 ص» exemplar as Daily, with no synchronous minute scan.
+    $("#ops-res").innerHTML = Object.values(OPS_STATES).map((f) => `<span class="hb-r">${words(f(284))}<svg class="hb-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5"/></svg></span>`).join("");
     $("#ops-state").className = `ops-state${s.cls ? ` ${s.cls}` : ""}`;
     $("#ops-state").innerHTML = `${s.mark}<span>${s.word}</span>`;
     $("#ops-last").innerHTML = s.detail || s.line + (s.ago ? `<span class="sep" aria-hidden="true">·</span><span class="ops-ago">${s.ago}</span>` : "");
@@ -894,7 +927,7 @@
       tb.innerHTML = `<p class="stat-value"><span class="stat-say">${L.wowEmpty}</span></p><div class="stat-foot"><span class="stat-aside">${L.wowEmptyNote()}</span></div>`;
     }
     // "Last 7 days" is plain in every period: Reports keeps only the pattern's data light (OWN-R6, user 2026-10-01, Q13).
-    trendCard.setAttribute("aria-description", plain(L.wowSay(rangeText(WOW.cur[0], WOW.cur[1]), rangeText(WOW.prev[0], WOW.prev[1]))));
+    trendCard.setAttribute("aria-description", plain(L.wowSay(periodWords(WOW.cur[0], WOW.cur[1]), periodWords(WOW.prev[0], WOW.prev[1]))));
 
     const none = (id) => { $(id).innerHTML = `<p class="stat-value"><span class="stat-say">${L.noReadings}</span></p><div class="stat-foot"></div>`; };
     if (model.avg == null) { none("#avg-body"); none("#peak-body"); $("#peak-meta").innerHTML = ""; }
@@ -968,7 +1001,7 @@
     heatScroll.hidden = day;
     dayHost.hidden = !day;
     const runs = [0, 1, 2, 3, 4, 5, 6].map(heatRuns);
-    const caption = `<caption class="sr-only">${L.heatCaption(rangeText(model.a, model.b))}</caption>`;
+    const caption = `<caption class="sr-only">${L.heatCaption(periodWords(model.a, model.b))}</caption>`;
     if (day) {
       heat.innerHTML = "";
       renderDay();
@@ -1034,7 +1067,7 @@
   }
   function renderDay() {
     if (!hasValues()) {
-      dayHost.innerHTML = `<div class="pday-empty">${ICON.info}<p>${L.emptyTable(dateText(model.a, true), dateText(model.b, true))}</p><button class="rbtn" type="button" data-range-go="28d"><span>${L.emptyAction}</span></button></div>`;
+      dayHost.innerHTML = `<div class="pday-empty">${ICON.info}<p>${emptyPeriod()}</p><button class="rbtn" type="button" data-range-go="28d"><span>${L.emptyAction}</span></button></div>`;
       return;
     }
     const key = `${model.a}-${model.b}`;
@@ -1067,7 +1100,7 @@
       const words = spanNote(cell.state === "closed" ? L.closed : L.noReadings, hourText(c0 * 60), hourText(c1 * 60 + 60));
       return `<tr role="row" class="hb-x" style="--span: ${c1 - c0 + 1}"><td role="cell" colspan="2"><span class="hb-run is-${cell.state === "closed" ? "closed" : "none"}">${words}</span></td></tr>`;
     }).join("");
-    $("#hb").innerHTML = `<caption class="sr-only">${L.dayHours(wdLong(wd), plain(rangeText(model.a, model.b)))}</caption><tbody>${rows}</tbody>`;
+    $("#hb").innerHTML = `<caption class="sr-only">${L.dayHours(wdLong(wd), plain(periodWords(model.a, model.b)))}</caption><tbody>${rows}</tbody>`;
   }
   function pickDay(wd, focus) {
     if (wd === dayWd || !$("#hb")) return;
@@ -1245,7 +1278,7 @@
     }).join("");
     let body;
     if (!model.withReadings) {
-      body = `<tr role="row" class="is-empty"><td role="cell" colspan="5"><div class="table-empty">${ICON.info}<p>${L.emptyTable(dateText(model.a, true), dateText(model.b, true))}</p><button class="rbtn" type="button" data-range-go="28d"><span>${L.emptyAction}</span></button></div></td></tr>`;
+      body = `<tr role="row" class="is-empty"><td role="cell" colspan="5"><div class="table-empty">${ICON.info}<p>${emptyPeriod()}</p><button class="rbtn" type="button" data-range-go="28d"><span>${L.emptyAction}</span></button></div></td></tr>`;
     } else {
       const out = [];
       const noneRow = (note) => `<tr role="row" class="is-none"><td role="cell" colspan="5" class="c-none">${note}</td></tr>`;
@@ -1283,7 +1316,7 @@
       flushPre();
       body = out.join("");
     }
-    daysTable.innerHTML = `<caption class="sr-only">${L.daysCaption(rangeText(model.a, model.b))}</caption><thead><tr role="row">${head}</tr></thead><tbody>${body}</tbody>`;
+    daysTable.innerHTML = `<caption class="sr-only">${L.daysCaption(periodWords(model.a, model.b))}</caption><thead><tr role="row">${head}</tr></thead><tbody>${body}</tbody>`;
     fitSlots(daysTable);
     tableFile();
   }
@@ -1326,7 +1359,7 @@
     const val = `${sort.key}-${sort.dir}`;
     const opts = Object.entries(L.sorts).map(([k, v]) => `<option value="${k}"${k === val ? " selected" : ""}>${v}</option>`).join("");
     dlist.innerHTML = `<div class="dl-sortrow"><label class="dl-sort"><span class="sr-only">${L.sortName}</span>${ICON.sort}<select id="dl-sort">${opts}</select></label></div>
-      <ol class="day-list" id="day-list" aria-label="${plain(L.daysCaption(rangeText(model.a, model.b)))}">${(cut ? items.slice(0, LIST_N) : items).join("")}</ol>` +
+      <ol class="day-list" id="day-list" aria-label="${plain(L.daysCaption(periodWords(model.a, model.b)))}">${(cut ? items.slice(0, LIST_N) : items).join("")}</ol>` +
       (n > LIST_N ? `<button class="rbtn dl-more-btn" id="dl-all" type="button" aria-expanded="${!cut}" aria-controls="day-list">${cut ? L.showAll : L.showFewer}</button>` : "");
   }
   dlist.addEventListener("change", (e) => {
@@ -1398,7 +1431,7 @@
     // A new period is a new request: while the page could not load, asking for another period is its retry.
     if (phase === "error" || phase === "retrying") { startLoading(LOAD.retry); return; }
     renderAll();
-    if (announce && phase === "ready") say(plain(L.rangeSay(rangeText(range.a, range.b))));
+    if (announce && phase === "ready") say(plain(L.rangeSay(periodWords(range.a, range.b))));
   }
 
   /* ---------------------------------------------------------------- the page's states (K-02)
@@ -1456,7 +1489,7 @@
       const strip = [0, 1, 2, 3, 4, 5, 6].map((wd) => `<button type="button" class="wk-b" role="radio" aria-checked="false" disabled><span class="wk-col" aria-hidden="true"></span><span class="wk-n" aria-hidden="true">${wdStrip(wd)}</span><span class="sr-only">${wdLong(wd)}</span></button>`).join("");
       const rows = Array.from({ length: HOURS }, (_, c) => `<tr role="row"${c % 3 === 0 ? ` class="is-tick"` : ""}><th scope="row" role="rowheader" class="hb-h">${bdi(fmtHour(c * 60))}</th><td role="cell" class="hb-c"></td></tr>`).join("");
       // (The caption, as the day's own table has one: its box is part of the table's height.)
-      dayHost.innerHTML = `<div class="wk-strip" role="radiogroup" aria-label="${L.weekStrip}" aria-disabled="true">${strip}</div><table class="hb is-frame" id="hb" role="table"><caption class="sr-only">${L.heatCaption(plain(rangeText(model.a, model.b)))}</caption><tbody>${rows}</tbody></table>`;
+      dayHost.innerHTML = `<div class="wk-strip" role="radiogroup" aria-label="${L.weekStrip}" aria-disabled="true">${strip}</div><table class="hb is-frame" id="hb" role="table"><caption class="sr-only">${L.heatCaption(plain(periodWords(model.a, model.b)))}</caption><tbody>${rows}</tbody></table>`;
       return;
     }
     const hours = [];
@@ -1466,7 +1499,7 @@
     }
     const cells = () => `<td class="hc ph-cell" role="gridcell"></td>`.repeat(HOURS);
     const rows = [0, 1, 2, 3, 4, 5, 6].map((wd) => `<tr role="row"><th scope="row" class="hd" role="rowheader">${wdLong(wd)}</th>${cells(wd)}</tr>`);
-    heat.innerHTML = `<caption class="sr-only">${L.heatCaption(rangeText(model.a, model.b))}</caption><colgroup><col class="col-day">${"<col>".repeat(HOURS)}</colgroup>
+    heat.innerHTML = `<caption class="sr-only">${L.heatCaption(periodWords(model.a, model.b))}</caption><colgroup><col class="col-day">${"<col>".repeat(HOURS)}</colgroup>
       <thead><tr role="row"><th scope="col" class="heat-corner" role="columnheader"><span class="sr-only">${L.dayHead}</span></th>${hours.join("")}</tr></thead>
       <tbody>${rows.join("")}</tbody>`;
   }
@@ -1481,7 +1514,7 @@
       const n = days.length;
       const items = days.slice(0, LIST_N).map((d) => `<li class="dli"><span class="dl-day">${dayText(d.dn)}</span><span class="dl-pk"><span class="dl-pv">${ph(24, "ph-pv")}</span></span><span class="dl-more">${ph(56)}${ph(72)}</span><span class="dl-pt">${ph(64)}</span></li>`).join("");
       dlist.innerHTML = `<div class="dl-sortrow"><label class="dl-sort is-disabled"><span class="sr-only">${L.sortName}</span>${ICON.sort}<select id="dl-sort" disabled><option>${L.sorts["day-desc"]}</option></select></label></div>
-        <ol class="day-list" id="day-list" aria-label="${plain(L.daysCaption(rangeText(model.a, model.b)))}">${items}</ol>` +
+        <ol class="day-list" id="day-list" aria-label="${plain(L.daysCaption(periodWords(model.a, model.b)))}">${items}</ol>` +
         (n > LIST_N ? `<button class="rbtn dl-more-btn" id="dl-all" type="button" disabled>${L.showAll}</button>` : "");
       return;
     }
@@ -1491,7 +1524,7 @@
     const rows = days.map((d) => `<tr role="row"${edge(d) ? ` class="wk-edge"` : ""}><th scope="row" role="rowheader" class="c-day"><span class="dd"><span class="wd">${wdShort(d.wd)}</span> <span class="dt">${dateText(d.dn)}</span></span></th>` +
       `<td role="cell" class="c-peak n"><span class="pk"><span class="pv">${ph(20, "ph-lab")}</span><span class="pt">${ph(44)}</span></span></td>` +
       `<td role="cell" class="c-avg n">${ph(18, "ph-lab")}</td><td role="cell" class="c-entries n">${ph(36, "ph-lab")}</td><td role="cell" class="c-notes"></td></tr>`).join("");
-    daysTable.innerHTML = `<caption class="sr-only">${L.daysCaption(rangeText(model.a, model.b))}</caption><thead><tr role="row">${head}</tr></thead><tbody>${rows}</tbody>`;
+    daysTable.innerHTML = `<caption class="sr-only">${L.daysCaption(periodWords(model.a, model.b))}</caption><thead><tr role="row">${head}</tr></thead><tbody>${rows}</tbody>`;
   }
   // The alert (EMP-2's sentence form, EMP-5's role). The sentence is drawn with the state's first paint, in its place,
   // so nothing moves after it; its announcement is a separate unseen alert region, written a moment after the region
@@ -1528,11 +1561,7 @@
     // The period as one plain sentence, words first, with no dash (DECISIONS items 11 and 14), saying each part once:
     // one day names its date alone; inside one month the first date is its day alone, the month and year once at the
     // end; across months the year once, at the end; across two years each date with its own year.
-    const A = partsOf(model.a), B = partsOf(model.b);
-    const sentence = model.a === model.b ? L.errorDay(dateText(model.b, true))
-      : A.y !== B.y ? L.errorDates(dateText(model.a, true), dateText(model.b, true))
-      : A.m === B.m ? L.errorDates(nw(bdi(A.d)), dateText(model.b, true))
-      : L.errorDates(dateText(model.a), dateText(model.b, true));
+    const sentence = periodSentence(model.a, model.b, L.errorDates, L.errorDay);
     msg.innerHTML = alertHTML(sentence);
     wireAlert(msg, focus);
   }
@@ -1586,7 +1615,7 @@
     // The retry is gone with the alert: focus goes to the figures that replaced it, quietly (no ring on a region).
     if (hadFocus) { const c = $("#cards"); c.tabIndex = -1; c.focus({ preventScroll: true }); }
     load.arrivedAt = now;
-    say(plain(L.rangeSay(rangeText(range.a, range.b))));
+    say(plain(L.rangeSay(periodWords(range.a, range.b))));
     return true;
   }
   function fail() {

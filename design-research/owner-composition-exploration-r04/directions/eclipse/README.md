@@ -751,7 +751,7 @@ on the Daily page.
 
 | Part | Built as | States |
 | --- | --- | --- |
-| **Data table** (`.table`) | a real `<table>` with a caption, `th scope`, and explicit ARIA roles; sticky header row; numeric columns and their headers share the physical right edge in Arabic and start at the left edge in English (DECISIONS item 16), with tabular figures; the peak's figure stands in a measured slot so the times line up (English always, Arabic when a peak has three digits) | default; hover (the row lifts); focus (the sortable header); selected (`aria-sort`, announced); empty (a sentence and the way back); gaps in words; highest-peak row tinted with no flag; days before the readings began merged into one row; a firmer line closes each week; Reports uses a list below 721 px |
+| **Data table** (`.table`) | a real `<table>` with a caption, `th scope`, and explicit ARIA roles; sticky header row; numeric columns and their headers share the physical right edge in Arabic and start at the left edge in English (DECISIONS item 16), requesting tabular figures for fallback faces (Readex Pro remains proportional); the peak's figure stands in a measured slot so the times line up (English always, Arabic whenever its figures differ in width; an equal-width Arabic column is unchanged) | default; hover (the row lifts); focus (the sortable header); selected (`aria-sort`, announced); empty (a sentence and the way back); gaps in words; highest-peak row tinted with no flag; days before the readings began merged into one row; a firmer line closes each week; Reports uses a list below 721 px |
 | **Sortable header** (`.sort`) | the whole header is a button; the arrow shows on the sorted column and on hover or focus, except on a phone where only the sorted column shows its arrow | default, hover, focus, selected (ascending or descending) |
 | **Segmented control** (`.seg`) | a group of toggle buttons (`aria-pressed`), one Tab stop each; the last one opens a dialog | default, hover, focus, selected (lifted in chalk) |
 | **Switch** (`.switch`) | `role="switch"`, `aria-checked`; the thumb slides 200 ms on the roll easing | off, hover, focus, on |
@@ -794,3 +794,11 @@ outside the repository. It exits 1 on a console message or page error, a font fi
 off-origin request, a horizontal page scroll, a layout shift after the first paint (input-driven shifts excluded), a
 clipped or spilling element, a day table wider than its card on a phone, or a dialog panel outside the viewport.
 `capture.mjs` is unchanged and still covers the Daily page only.
+
+## Decisions 21–24 and fix-1
+
+- Empty-period sentences name a shared month and year once, and a one-day period uses “No readings on …” / «لا قراءات في …». The component sheet carries the same form.
+- At 721–1023 px the day table transfers at least 16 px from Notes to Peak while preserving the other columns’ natural widths. Peak times stay closer to their own figures; Notes can wrap onto more lines.
+- Both pages reserve the verified widest status time, 10:44 AM / «10:44 ص», using a fixed exemplar of the pinned Readex Pro face. No minute scan delays first paint; recheck the exemplar after a font or time-format change.
+- The sheet uses the approved table alignment and reading wording, isolates date-range endpoints as Reports does, follows Daily’s chart-header rows, and gives its full-text English status specimens 8 px badge padding when a classic scrollbar leaves their stage under 250 px wide.
+- Screen-reader sentences spell ranges out with “from … to …” / «من … إلى …». Standalone values keep the en dash.

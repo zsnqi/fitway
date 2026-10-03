@@ -356,6 +356,18 @@ th.is-asc .cx-sort .cx-ico { transform: rotate(180deg); }
 .cx-chart-head { display: flex; align-items: center; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; }
 .cx-chart-head h3 { font: var(--t-heading); }
 .cx-chart-tools { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+/* The main chart specimen follows Daily's header at the same viewport widths: title and action, then the key on tablet;
+ * title, key and action on separate rows below 360 px. */
+@media (max-width: 1023px) {
+  .cx-chart-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title btn" "key key"; }
+  .cx-chart-head h3 { grid-area: title; }
+  .cx-chart-tools { display: contents; }
+  .cx-chart-head .cx-legend { grid-area: key; }
+  .cx-chart-head .cx-btn { grid-area: btn; }
+}
+@media (max-width: 359px) {
+  .cx-chart-head { grid-template-columns: minmax(0, 1fr); grid-template-areas: "title" "key" "btn"; justify-items: start; }
+}
 .cx-plot { position: relative; height: var(--plot-h, 420px); margin-block-start: 12px; }
 .cx-plot > svg { position: absolute; inset: 0; display: block; overflow: visible; }
 .cx-plot-labels { position: absolute; inset: 0; pointer-events: none; }
@@ -469,6 +481,14 @@ th.is-asc .cx-sort .cx-ico { transform: rotate(180deg); }
 .cx-ph-head h3 { grid-area: title; font: var(--t-title); }
 .cx-ph-sub { grid-area: sub; margin-block-start: 4px; font: var(--t-label); color: var(--ink-3); }
 .cx .head-acts { grid-area: acts; position: relative; z-index: 30; display: flex; align-items: center; gap: 8px; }
+/* The full-text status specimen keeps its wording. A classic scrollbar leaves its English stage under 250 px at 320;
+ * use Reports' narrow badge padding (8 px) there. An overlay scrollbar leaves 254 px, so its original 12 px stays. */
+@media (max-width: 359px) {
+  [dir="ltr"] #chips .cx-stage { container: cx-chip-stage / inline-size; }
+}
+@container cx-chip-stage (max-width: 249.98px) {
+  .cx .hbadge.cx-hstatus { padding-inline: 8px; }
+}
 .cx-ph-card { position: absolute; inset: 150px 16px auto; height: 160px; }
 .cx .cx-bar-spec { height: auto; padding: 24px 16px 12px; }
 .cx .cx-bar-spec.is-320 { width: 320px; padding-inline: 8px; }

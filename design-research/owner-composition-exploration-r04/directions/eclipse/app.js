@@ -221,6 +221,7 @@
   const range = (a, b) => `${bdi(a)} ${DASH} ${bdi(b)}`;
   const timeRange = (a, b) => range(fmtTime(a), fmtTime(b));
   const plainRange = (a, b) => `${a} ${DASH} ${b}`;
+  const plainSpan = (a, b) => `${a} ${L.spanTo} ${b}`;
   function hourRange(a, b) {
     const A = clock(a), B = clock(b);
     return A.pm === B.pm ? bdi(`${NUMS(A.h12, B.h12)} ${suffix(A.pm)}`) : range(fmtHour(a), fmtHour(b));
@@ -700,26 +701,13 @@
   // copies of every status hold (style.css .hb-res), so loading, the arrival, a retry and any status change keep the
   // control's place and the slot's size; the control itself is as wide as its own status (HDR-3), at the slot's inline
   // end. The copies with a time carry the widest time the day can show (coordinator decision, 2026-10-03), so the slot
-  // keeps one width all day, as a new reading's time changes: Readex Pro's digits differ in width, so that time is
-  // measured among every minute the gym is open, in the status's type, and again once the fonts are in. With no concept
-  // label beside it (DECISIONS item 15), the header keeps one line at 1024 px in English.
-  let widest = null;
-  function widestMinute() {
-    const key = `${LANG} ${document.fonts ? document.fonts.status : ""}`;
-    if (widest && widest.key === key) return widest.m;
-    const probe = document.createElement("span");
-    probe.setAttribute("aria-hidden", "true");
-    probe.style.cssText = "position:absolute;top:0;left:0;visibility:hidden;white-space:nowrap;font-size:13.5px;line-height:20px;";
-    probe.innerHTML = Array.from({ length: DAY }, (_, m) => `<bdi style="display:inline-block">${fmtTime(m)}</bdi>`).join("");
-    document.body.append(probe);
-    let m = 0, w = -1;
-    [...probe.children].forEach((el, i) => { const x = el.getBoundingClientRect().width; if (x > w) { w = x; m = i; } });
-    probe.remove();
-    widest = { key, m };
-    return m;
-  }
+  // keeps one width all day, as a new reading's time changes. Readex Pro's digits differ in width:
+  // 10:44 AM / «10:44 ص» is the widest time in the pinned Readex Pro status face (13.5 px, 400). Keep the verified
+  // exemplar, rather than laying out 1,140 samples before paint and again at fonts.ready. The fallback's digits are
+  // equal-width, so this two-digit hour reserves its maximum too. Recheck the exemplar if the font or time format changes.
+  const WIDEST_STATUS_MINUTE = 284;
   function renderReserve() {
-    const m = widestMinute();
+    const m = WIDEST_STATUS_MINUTE;
     $("#ops-res").innerHTML = Object.values(STATUSES).map((f) => `<span class="hb-r">${statusWords(f(m))}<svg class="hb-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5"/></svg></span>`).join("");
   }
   // The control's name is its own text after the details' title, so it holds every word it shows (WCAG 2.5.3): the
@@ -1665,32 +1653,32 @@
     if (phase === "error" || phase === "retrying") return `${L.errorFull}.`;
     if (CLOSED) {
       return RTL
-        ? `${L.sayClosed(fmtTime(0))} لا قراءات اليوم بعد. يظهر خط متقطع للمعتاد أيام الأربعاء، معدّل آخر 4 أيام أربعاء، طوال اليوم من ${plainRange(fmtTime(0), fmtTime(DAY))}.`
-        : `${L.sayClosed(fmtTime(0))} There are no readings today yet. A dashed line shows what is usual on Wednesdays, the average of the last 4 Wednesdays, through the whole day, ${plainRange(fmtTime(0), fmtTime(DAY))}.`;
+        ? `${L.sayClosed(fmtTime(0))} لا قراءات اليوم بعد. يظهر خط متقطع للمعتاد أيام الأربعاء، معدّل آخر 4 أيام أربعاء، طوال اليوم من ${plainSpan(fmtTime(0), fmtTime(DAY))}.`
+        : `${L.sayClosed(fmtTime(0))} There are no readings today yet. A dashed line shows what is usual on Wednesdays, the average of the last 4 Wednesdays, through the whole day, from ${plainSpan(fmtTime(0), fmtTime(DAY))}.`;
     }
     if (UNAV) {
       const gapSay = waitText(UNAV_LAST);
       return RTL
         ? `${L.sayOffline} مخطط خطي لمعدّل الموجودين تقريبًا اليوم، من الفتح الساعة ${fmtTime(0)} حتى الساعة ${fmtTime(UNAV_LAST)}. ` +
-          `الصالة مفتوحة وخالية من ${plainRange(fmtTime(0), fmtTime(ZERO_END))}. لا قراءات من ${plainRange(fmtTime(GAP0), fmtTime(GAP1))}. ` +
-          `${gapSay}. يظهر خط متقطع للمعتاد أيام الأربعاء، معدّل آخر 4 أيام أربعاء، حتى وقت الإغلاق. بقية اليوم من ${plainRange(fmtTime(nowM + 1), fmtTime(DAY))} لم يحن بعد.`
+          `الصالة مفتوحة وخالية من ${plainSpan(fmtTime(0), fmtTime(ZERO_END))}. لا قراءات من ${plainSpan(fmtTime(GAP0), fmtTime(GAP1))}. ` +
+          `${gapSay}. يظهر خط متقطع للمعتاد أيام الأربعاء، معدّل آخر 4 أيام أربعاء، حتى وقت الإغلاق. بقية اليوم من ${plainSpan(fmtTime(nowM + 1), fmtTime(DAY))} لم يحن بعد.`
         : `${L.sayOffline} Line chart of the average number of people inside today, from opening at ${fmtTime(0)} to ${fmtTime(UNAV_LAST)}. ` +
-          `Open with nobody inside ${plainRange(fmtTime(0), fmtTime(ZERO_END))}. No readings ${plainRange(fmtTime(GAP0), fmtTime(GAP1))}. ` +
-          `${gapSay}. A dashed line shows what is usual on Wednesdays, the average of the last 4 Wednesdays, through to closing time. The rest of the day, ${plainRange(fmtTime(nowM + 1), fmtTime(DAY))}, is still ahead.`;
+          `Open with nobody inside from ${plainSpan(fmtTime(0), fmtTime(ZERO_END))}. No readings from ${plainSpan(fmtTime(GAP0), fmtTime(GAP1))}. ` +
+          `${gapSay}. A dashed line shows what is usual on Wednesdays, the average of the last 4 Wednesdays, through to closing time. The rest of the day, from ${plainSpan(fmtTime(nowM + 1), fmtTime(DAY))}, is still ahead.`;
     }
     return RTL
       ? `مخطط خطي لمعدّل الموجودين تقريبًا اليوم، من الفتح الساعة ${fmtTime(0)} حتى آخر قراءة الساعة ${fmtTime(last)}. ` +
-        `الصالة مفتوحة وخالية من ${plainRange(fmtTime(0), fmtTime(ZERO_END))}. لا قراءات من ${plainRange(fmtTime(GAP0), fmtTime(GAP1))}. ` +
+        `الصالة مفتوحة وخالية من ${plainSpan(fmtTime(0), fmtTime(ZERO_END))}. لا قراءات من ${plainSpan(fmtTime(GAP0), fmtTime(GAP1))}. ` +
         `أعلى قراءة ${peak} الساعة ${fmtTime(peakM)} (${L.levels[levelOf(peak)]}). آخر قراءة ${occ[last]} الساعة ${fmtTime(last)} (${L.levels[levelOf(occ[last])]}).` +
         (STATE === "delayed" ? ` البيانات متأخرة، لم تصل قراءة جديدة منذ ${arMin(nowM - last)}.` : "") +
         (HAS_HISTORY ? ` يظهر خط متقطع للمعتاد أيام الأربعاء، معدّل آخر 4 أيام أربعاء، حتى وقت الإغلاق.` : ` ${L.noHistory}.`) +
-        ` بقية اليوم من ${plainRange(fmtTime(nowM + 1), fmtTime(DAY))} لم يحن بعد. كل الدقائق في عرض التفاصيل.`
+        ` بقية اليوم من ${plainSpan(fmtTime(nowM + 1), fmtTime(DAY))} لم يحن بعد. كل الدقائق في عرض التفاصيل.`
       : `Line chart of the average number of people inside today, from opening at ${fmtTime(0)} to the latest reading at ${fmtTime(last)}. ` +
-        `Open with nobody inside ${plainRange(fmtTime(0), fmtTime(ZERO_END))}. No readings ${plainRange(fmtTime(GAP0), fmtTime(GAP1))}. ` +
+        `Open with nobody inside from ${plainSpan(fmtTime(0), fmtTime(ZERO_END))}. No readings from ${plainSpan(fmtTime(GAP0), fmtTime(GAP1))}. ` +
         `Highest reading ${peak} at ${fmtTime(peakM)} (${L.levels[levelOf(peak)]}). Latest reading ${occ[last]} at ${fmtTime(last)} (${L.levels[levelOf(occ[last])]}).` +
         (STATE === "delayed" ? ` Data is delayed: no new reading for ${nowM - last} minutes.` : "") +
         (HAS_HISTORY ? " A dashed line shows what is usual on Wednesdays, the average of the last 4 Wednesdays, through to closing time." : ` ${L.noHistory}.`) +
-        ` The rest of the day, ${plainRange(fmtTime(nowM + 1), fmtTime(DAY))}, is still ahead. Every minute is listed under View details.`;
+        ` The rest of the day, from ${plainSpan(fmtTime(nowM + 1), fmtTime(DAY))}, is still ahead. Every minute is listed under View details.`;
   }
   $("#chart-summary").textContent = summary();
 
@@ -2922,5 +2910,5 @@
   // The other script's subset of Readex Pro is fetched up front too (the rail's language item is written in it), so
   // opening the rail never swaps a font mid-way; this changes no pixel.
   if (document.fonts && document.fonts.load) ["400", "500"].forEach((w) => document.fonts.load(`${w} 16px "Readex Pro"`, RTL ? "English FITWAY" : "العربية").catch(() => {}));
-  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { render(); renderReserve(); window.__eclipse.ready = true; });
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { render(); window.__eclipse.ready = true; });
 })();
