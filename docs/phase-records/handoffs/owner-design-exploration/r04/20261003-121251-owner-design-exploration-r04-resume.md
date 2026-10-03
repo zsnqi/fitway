@@ -14,8 +14,9 @@
   at the error frames, the outline crops and Daily's 1024 EN header. No independent review yet.
 - **Comparison page for the user:** https://claude.ai/artifact/DXZsMNXgyS27BghFVaz1sW (source
   `D:/fitway-temp/claude/D--Projects-fitway-worktrees-owner-design-exploration-r04/28297a9c-b991-4be6-9a34-8c810756c1eb/scratchpad/k02-build/`;
-  frames, crops and the builder's baselines in `D:/fitway-temp/owner-r04-k02-build/`). The user will look after
-  finishing other work.
+  frames, crops and the builder's baselines in `D:/fitway-temp/owner-r04-k02-build/`). Its three questions are
+  answered: DECISIONS.md items 14 (one-day and same-month sentences) and 15 (no concept label, which also settles
+  Daily's 1024 EN header).
 - The build branch carries this branch's tools and ledger (merges `6790412`, `7eb4006`).
 
 ## Running now
@@ -32,7 +33,10 @@ at `high`, to finish its checks, commit and report. The run was:
 
 ## Next steps
 
-1. **Grade run 4** (brief rows, held-out rows, failure cause) and record it in
+1. **Resume run 4** once the user says the Codex account is switched: from the build worktree, in Git Bash,
+   `codex exec resume 01a10109-91d9-70a3-9232-9e121daabb1a` with `--approve-for-me`, `-c model_reasoning_effort="high"`,
+   `--json -o <run>/last-message.md` and a prompt to finish the remaining checks, commit once and report (check the
+   options with `codex exec resume --help` first). Then **grade it** (brief rows, held-out rows, failure cause, level) and record it in
    `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md`; check `git status` in the build
    worktree and that nothing was pushed.
 2. **A builder for DECISIONS.md items 14 (the one-day and same-month sentences) and 15 (no concept label on any

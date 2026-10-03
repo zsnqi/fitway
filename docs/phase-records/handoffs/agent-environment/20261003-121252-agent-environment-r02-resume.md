@@ -10,7 +10,8 @@
 - Criterion 1 done: `docs/phase-records/handoffs/agent-environment/brief-failure-causes.md` (16 brief-caused, 0
   code-caused, 4 unclear), with candidate lines C2 and C3 and how they are tested.
 - Criterion 3 done on `agent-environment-r02` (`f2a9445`): `docs/agent-context/HANDOFF_TEMPLATE.md` no longer names
-  the `--slug` option; the brief templates name no option their tools lack. Not yet merged into this branch.
+  the `--slug` option; the brief templates name no option their tools lack. Merged here (`1a35d2f`) with the
+  user's agreement that Codex's reasoning level follows the task (`docs/agent-context/WORKING_AGREEMENTS.md`, "Delegation").
 - Criterion 4 built: the usage panel mod (DECISIONS item 8) in `C:/Users/Pc Force/.claude/mods/usage-panel`, valid
   under `claude plugin validate`; the user's `settings.json` loads it through `CLAUDE_CODE_PLUGIN_DIRS` from the next
   app start. Not yet seen running: the user has to restart the app, then confirm it shows and reads right.
