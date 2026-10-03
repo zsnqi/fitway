@@ -129,3 +129,18 @@ held-out checks live outside the repository and never appear here or in a brief.
   is fixed by its text. The writer also dropped outcome F5 (a writer error, not the line's).
 - **Failure cause:** the line finds the boundary but asks for no decision on it. Next hypothesis (C2c): every input
   the rule would misjudge gets a decision in the brief, the rule changed to cover it or a stated reason it stays.
+
+## Evaluation C2c (agent-environment-r02): round 5 rerun with line C2c, result `66052a6` (level xhigh)
+
+- **Set-up:** line C2c (C2b plus "every sampled input the rule as written would misjudge gets a decision in the
+  brief: the rule changes to judge it right, or the brief says why it stays"), one blind Sonnet writer at `d333762`
+  (`D:/fitway-temp/evals/c2c/`), Codex on its brief, one Sonnet grader. Control: C2's arm without a line (`ad51e1a`).
+- **Brief rows:** 5 of 5 by Codex's report.
+- **Held-out rows:** 12 of 13; S6 partial with one false failure where the control had two. The writer had decided
+  that a token starting with `@` is a package name, so nav-3's `@playwright/test` now passes; the K-02 designer's
+  folder-relative `tools/` still fails: that brief was not in the writer's sample. S4 passes with a caveat: the
+  workflow sets `core.longpaths` through job-level `GIT_CONFIG_*` variables, unverified on a hosted runner.
+- **Failure cause:** the line's reach, not the code: it decided what it sampled, and the sample missed a kind of
+  input (folder-relative paths). By the rule set before the test (`brief-failure-causes.md`), C2c is **not adopted**;
+  it is the best candidate so far. Next (C2d, lower priority): the sample spans every folder where that kind of input
+  lives, not the ones nearest the task.
