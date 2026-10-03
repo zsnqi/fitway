@@ -96,12 +96,29 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     one column (step-4 review): the chart, the page's core, is below the first screen; about 127 px sits empty above
     the plot at rest (the tooltip lane); the busiest-time card spans the width with its value in half of it. A fresh
     designer draws numbered options for the phone, and the user picks. Nothing is broken; this is a design question.
+    The user confirmed it after seeing `f193046` at 390 (2026-10-03): the page works, but it is the desktop design
+    moved to the phone and squeezed; it should be arranged for the phone, in the same visual language, not a new
+    design. Two problems the user named: on the phone the owner cannot move through the chart easily, as the mouse
+    does on a large screen (each half hour, 7 PM, and so on); and the busiest-time card takes the full width for
+    little content.
 21. **The empty period's sentence takes item 14's forms** (2026-10-03, the user: "ممتاز"). Reports' empty-period
     sentence writes the year once and, inside one month, the month once, as the header and the error sentence do:
     «لا قراءات من 1 إلى 7 سبتمبر 2026», not «لا قراءات من 1 سبتمبر 2026 إلى 7 سبتمبر 2026»; across months of one year,
     «لا قراءات من 26 أغسطس إلى 22 سبتمبر 2026». English the same way. Found by the reading-direction review of
     `f193046` at 390 AR.
-
+22. **The peak time keeps to its own figure** (2026-10-03, option 2-1 on the page
+    https://claude.ai/artifact/NxAZnPDf2L57kPvQ4RcmjG). At 721-1023 px the peak's time sat nearer the next column's
+    figure than its own (English since decision 16; Arabic before it). In both languages the time is further from the
+    next column than from its own figure, with the room taken from the Notes column. The user sees the render before
+    accepting it.
+23. **Arabic peak times line up whenever the figures differ in width** (2026-10-03, option 3-1): a one-digit peak
+    among two-digit ones lines up as a three-digit one does. This widens item 16's Arabic rule.
+24. **Coordinator picks on the review's notes** (2026-10-03, delegated by the user):
+    - Arabic bare hour ranges («6–7 م») stay isolated left to right, while ranges of times or dates with words
+      («2:14 م – 2:31 م», «16 – 22 سبتمبر») start on the right. The bare range reads as one number; this was settled
+      with item 12, and changing it is not worth a round.
+    - English coverage rows at 320 px wrapping two ways go to Daily's phone round (item 20), which rearranges that card.
+    - Reports' status control holds its width the way Daily's does, so a live status cannot change it.
 ## How this milestone's rounds run
 
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the
