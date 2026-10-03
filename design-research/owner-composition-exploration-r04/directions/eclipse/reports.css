@@ -254,7 +254,8 @@ html:has(> body.rp) {
 .table tbody > tr > * { border-block-end: 1px solid rgba(255, 255, 255, 0.055); }
 .table tbody > tr:last-child > * { border-block-end: 0; }
 .table tbody > tr:hover > * { background: rgba(255, 255, 255, 0.04); }
-/* TBL-1 (K-34, K-35): a numeric column's numbers and its header share the physical right edge in both languages. */
+/* TBL-1 (K-34, K-35): in Arabic a numeric column's numbers and its header share the physical right edge; in English
+ * they start on its left edge (decision 16, below). */
 .table .n { text-align: right; font-variant-numeric: tabular-nums; }
 .table .n bdi { color: var(--ink); }
 .days-table .c-day { width: 16%; }
@@ -267,27 +268,32 @@ html:has(> body.rp) {
 .days-table tr.is-top > * { background: rgba(229, 25, 53, 0.08); }
 .days-table tr.is-top:hover > * { background: rgba(229, 25, 53, 0.12); }
 .dd .dt { color: inherit; }
-/* TBL-11: the composite peak cell leads with its value on the numbers' edge, then its time, leftward, on one baseline
- * from 721 px (decision 15). The period's highest row carries its tint only, no flag (decision 17). */
+/* TBL-11: the composite peak cell leads with its value on the numbers' edge, then its time, on one baseline from 721 px
+ * (decision 15): leftward in Arabic, rightward in English. The period's highest row carries its tint only, no flag
+ * (decision 17). Where the figure stands in a slot (EclipseTables.fitSlots: English always, Arabic when a peak has three
+ * digits; decision 16), the slot's min-width lines every time up. */
 .pk { display: inline-flex; align-items: baseline; gap: 8px; white-space: nowrap; }
-[dir="ltr"] .pk { flex-direction: row-reverse; }
 .pk .pv bdi { font-weight: 500; }
 .pk .pt { font-size: 12px; line-height: 18px; color: var(--ink-3); }
 .pk .pt bdi { color: inherit; }
+/* Decision 16 (user 2026-10-03, option B): English does not copy Arabic's geometry; it mirrors it in full. In an English
+ * table every column starts at its left edge, as its text does: each heading (the sort arrow after it), each column's
+ * figures, flush on that edge, the peak's figure then its time, "55 6:25 PM", and a single day's words under the Peak
+ * heading. Arabic is unchanged (TBL-1, TBL-11). */
+[dir="ltr"] .table .n { text-align: left; }
 /* TBL-12: a span with no readings, one sentence with the words first (decision 8), all in caption type and --ink-3, its
  * dates and times included (one size and one colour, decision 9), in the notes column, its phone fold row and a
  * full-width row alike; a single day's words beside its date take the same style (decision 10). */
 .days-table .c-notes .rg, .days-table .note-row .rg { font-size: 12px; line-height: 18px; color: var(--ink-3); }
 .days-table td.c-none { font-size: 12px; line-height: 18px; color: var(--ink-3); }
-/* A single day starts at the peak label text edge, mirrored in English. Its spanning cell
- * keeps its intrinsic size, so this correction cannot resize its neighbours or the table. */
-.days-table .day-none-word { display: inline-block; transform: translateX(var(--none-day-offset, 0px)); }
+/* A single day's words start where the peak's header starts, in both languages, with no correction: every column's text
+ * starts on the column's left edge in English (decision 16) and on its right edge in Arabic (TBL-1). */
+.days-table .day-none-word { display: inline-block; }
 .days-table .note-row { display: none; }
-/* Sortable headers (TBL-5): the whole header is the button, at least 44 x 44; in a numeric column the label holds the
- * right edge and the arrow sits to its left, in both languages; the inset ring (FOC-2). */
+/* Sortable headers (TBL-5): the whole header is the button, at least 44 x 44; the label holds the column's edge (the
+ * right in Arabic, the left in English, decision 16) and the arrow follows it; the inset ring (FOC-2). */
 .sort { display: inline-flex; align-items: center; gap: 8px; height: 44px; min-width: 44px; margin-inline: -8px; padding-inline: 8px; border-radius: 12px; font-size: inherit; line-height: inherit; color: inherit; }
 .sort:hover { color: var(--ink); }
-[dir="ltr"] .n .sort { flex-direction: row-reverse; }
 .sort:focus-visible { outline-offset: -4px; }
 .sort-ico { width: 14px; height: 14px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
 .sort:hover .sort-ico, .sort:focus-visible .sort-ico { opacity: 0.5; }
@@ -469,10 +475,11 @@ th.is-asc .sort-ico { transform: rotate(180deg); }
   .dd .wd, .dd .dt { display: block; }
   .dd .dt { font-size: 12px; line-height: 18px; white-space: nowrap; }
   .pk { flex-direction: column; align-items: flex-end; gap: 0; }
-  [dir="ltr"] .pk { flex-direction: column; }
+  [dir="ltr"] .pk { align-items: flex-start; }
   [dir="rtl"] .pk { align-items: flex-start; }
   .sort { margin-inline: -8px; padding-inline: 8px; text-align: start; }
   .n .sort { text-align: right; }
+  [dir="ltr"] .n .sort { text-align: left; }
   /* The dialog is a bottom sheet; its actions share the width. */
   .dlg { padding: 0; }
   .dlg[open] { place-items: end stretch; }
@@ -676,4 +683,13 @@ html:not([data-phase="ready"]) .rp .heat-key li[data-mark] { visibility: hidden;
 @media (max-width: 359px) {
   .rp[data-frame] .head-acts .hb-chev { display: none; }
   .rp[data-frame] .head-acts .hbadge { padding-inline: 12px; }
+  .rp[data-frame] .head-acts { container: rp-acts / inline-size; }
+}
+/* S2 (2026-10-03): a classic scrollbar takes 15 px of a 320 px window, so the status's room beside the title drops from
+ * 156.2 px to 141.2 px in English, and Delayed, the widest status (102.3 px), came 2.89 px from the title. Where the room
+ * is under 150 px the badge pads 8, SPC-6's badge padding, and keeps at least 8 px from the title in every state; with an
+ * overlay scrollbar (156.2 px in English, 176.2 px in Arabic), and in Arabic under a classic one (161.2 px), nothing
+ * changes. */
+@container rp-acts (max-width: 149.98px) {
+  .rp[data-frame] .head-acts .hbadge { padding-inline: 8px; }
 }

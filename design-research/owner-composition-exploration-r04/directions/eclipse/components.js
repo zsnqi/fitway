@@ -85,7 +85,7 @@
       ago: (n) => `قبل ${b(n)} دقيقة`,
       entries: "مرات الدخول", usualN: (n) => `المعتاد ${b(n)}`, busiestTitle: "أكثر الأوقات ازدحامًا", last7: `آخر ${b(7)} أيام`,
       avgN: (n) => `المعدّل ${b(n)}`, avgTitle: "معدّل الموجودين", noReadings: "لا قراءات", waiting: "بانتظار القراءات", pending: "قيد الانتظار", noReadingsYet: "لا قراءات بعد",
-      wowTitle: `آخر ${b(7)} أيام`, notEnough: "لا يكفي السجل بعد", needs: `يلزم ${b(14)} يومًا · القراءات منذ ${b(13)} سبتمبر`,
+      wowTitle: `آخر ${b(7)} أيام`, notEnough: "لا تكفي القراءات بعد", needs: "يلزم أسبوعان من القراءات المنتظمة",
       wowDates: `${b("16 – 22")} سبتمبر`,
       levels: ["هادئ", "متوسط", "مزدحم", "شديد الازدحام"],
       cmp: { busier: "أعلى من المعتاد", quieter: "أهدأ من المعتاد", same: "قريب من المعتاد" },
@@ -95,7 +95,7 @@
       errorWord: "خطأ", errorLine: "تعذّر التحميل", errorFull: "تعذّر تحميل قراءات اليوم", errorHint: "تحقّق من الاتصال، ثم أعد المحاولة.", errorSay: "تعذّر تحميل القراءات", retrying: "جارٍ المحاولة…",
       stCaps: { loadNow: "التحميل: عنصر نائب في خانة كل قيمة منتظرة فقط", loadBusy: "التحميل: الأسماء و«آخر 7 أيام» نص حقيقي", closedNow: "مغلق: «مغلق» قيمةً بالكلمات، وموعد الفتح في الأسفل", closedPeak: "مغلق: ذروة اليوم ومرات الدخول «لم يحن بعد»", offNow: "غير متصل: لا عدد ولا مستوى ولا وقت", offEntries: "غير متصل: «قيد الانتظار» لليوم", errNow: "خطأ: التنبيه وإعادة محاولة واحدة، والتركيز عليها", errWork: "إعادة المحاولة جارية: الزر يحتفظ بالتركيز", errPeak: "خطأ: الاسم وحده، ولا قراءة محفوظة", heads: "الحالة في الرأس، بلا إطار", headsNote: "كلمة الحالة نفسها في الرأس والشارة وتفاصيلها، مع علامتها", anatomy: "العناصر النائبة", anatomyNote: "على خط أساس القيمة، بارتفاع حبر أرقامها، وتعبئة واحدة بلا حركة", phLoad: "الرأس المضغوط أثناء التحميل: كلمات، لا زر", phClosed: "مغلق: الشارة وتفاصيلها", phOff: "غير متصل: الشارة وتفاصيلها، والطريق إلى التشغيل", phErr: "خطأ: الشارة وتفاصيلها", plotFrame: "إطار فارغ: التحميل والخطأ", plotClosed: "مغلق: الخط المعتاد وحده، كله لم يحن بعد", plotOff: "غير متصل: قراءات الفتح حتى 3:00 م، ثم «بانتظار القراءات» حتى الآن" },
       phCaps: { display: "قيمة بالأرقام", title: "قيمة بالكلمات", caption: "وقت أو ملاحظة", badge: "شارة المستوى" },
-      chartTitle: "ازدحام اليوم", keyLine: `معدّل كل ${b(30)} دقيقة`, keyUsual: "الأربعاء المعتاد", keyPeak: "قراءة الذروة", noHistory: "لا يكفي السجل للمقارنة بعد",
+      chartTitle: "ازدحام اليوم", keyLine: "معدّل الموجودين", keyUsual: "المعتاد أيام الأربعاء", keyPeak: "قراءة الذروة", noHistory: "لا يكفي السجل للمقارنة بعد",
       details: "عرض التفاصيل", peakTag: "الذروة", latestFlag: "آخر قراءة", usual: "المعتاد", stillAhead: "لم يحن بعد",
       chartMain: "مباشر، ومحدد عليها آخر قراءة",
       vars: { peak: "الذروة", line: "نقطة على الخط", gap: "فترة بلا قراءات", ahead: "لم يحن بعد", delayed: "آخر قراءة، متأخرة", nohistory: "لم يحن بعد، بلا سجل" },
@@ -115,15 +115,15 @@
       gapEnds: ["10:00 ص", "2:00 م"], beforeEnds: [`${b(2)} أغسطس`, `${b(12)} سبتمبر`], spanFrom: "من", spanTo: "إلى", spanSince: "منذ",
       sortedBy: "مرتب حسب اليوم، الأحدث أولًا",
       compactTitle: "دقيقة بدقيقة", compactCaption: "قراءات اليوم دقيقة بدقيقة",
-      ccols: { time: "الوقت", inside: "داخل الصالة", avg: `معدّل ${b(30)} دقيقة`, note: "ملاحظة" },
+      ccols: { time: "الوقت", inside: "داخل الصالة", avg: "معدّل الموجودين", note: "ملاحظة" },
       cnotes: { empty: "خالية", peak: "الذروة", latest: "آخر قراءة" },
       dens: { def: "الكثافة الافتراضية: صفوف 48", compact: "الكثافة المضغوطة: صفوف 36" },
       cancel: "إلغاء", apply: "عرض الفترة", save: "حفظ الملف", working: "جارٍ التجهيز…", close: "إغلاق", retry: "إعادة المحاولة", done: "تم",
       seg: { "7d": `آخر ${b(7)} أيام`, "28d": `آخر ${b(28)} يومًا`, custom: "فترة أخرى…" }, segName: "الفترة",
       from: "من", to: "إلى", hint: `يوم/شهر/سنة، مثل ${b("16/09/2026")}`, errOrder: "تاريخ النهاية قبل البداية", errRequired: "أدخل تاريخًا", errFormat: `اكتب التاريخ هكذا: ${b("16/09/2026")}`,
       rangeTitle: "اختر الفترة", rangeDesc: `القراءات متاحة من ${b(2)} أغسطس ${b(2026)} حتى ${b(22)} سبتمبر ${b(2026)}.`,
-      exportTitle: "تصدير بيانات الدقائق", exportDesc: "صف لكل دقيقة بتوقيت الصالة، مع تمييز الدقائق المغلقة والتي بلا قراءات.",
-      progress: `اليوم ${b(12)} من ${b(28)}`, failed: "تعذّر تجهيز الملف. لم يُحفظ شيء، والتواريخ كما هي.", ready: "الملف جاهز",
+      exportTitle: "تصدير بيانات الدقائق",
+      progress: `اليوم ${b(12)} من ${b(28)}`, failed: "تعذّر التصدير، ولم يُحفظ شيء.", ready: "الملف جاهز",
       rows: `${b("40,320")} صفًا`,
       dlgStates: { ready: "جاهزة، والتركيز على الحقل الأول", working: "قيد العمل", failed: "تعذّر، والتركيز على إعادة المحاولة", done: "تم", sheet: "ورقة سفلية على الهاتف" },
       openDlg: "افتح النافذة",
@@ -183,7 +183,7 @@
       ago: (n) => `${n} min ago`,
       entries: "Entries", usualN: (n) => `Usual ${n}`, busiestTitle: "Busiest time", last7: "Last 7 days",
       avgN: (n) => `Average ${n}`, avgTitle: "Average inside", noReadings: "No readings", waiting: "Waiting for readings", pending: "Pending", noReadingsYet: "No readings yet",
-      wowTitle: "Last 7 days", notEnough: "Not enough history yet", needs: "Needs 14 days · readings since 13 Sep",
+      wowTitle: "Last 7 days", notEnough: "Not enough readings yet", needs: "Needs two weeks of steady readings",
       wowDates: "16 – 22 Sep",
       levels: ["Quiet", "Moderate", "Busy", "Packed"],
       cmp: { busier: "Busier than usual", quieter: "Quieter than usual", same: "About usual" },
@@ -193,7 +193,7 @@
       errorWord: "Error", errorLine: "Couldn't load", errorFull: "Couldn't load today's readings", errorHint: "Check the connection, then try again.", errorSay: "Couldn't load readings", retrying: "Trying again…",
       stCaps: { loadNow: "Loading: a placeholder in each awaited value's own slot", loadBusy: "Loading: names and “Last 7 days” are real text", closedNow: "Closed: “Closed” as a value in words, the next opening at the foot", closedPeak: "Closed: today's peak and entries are “Still ahead”", offNow: "Offline: no count, level or time", offEntries: "Offline: “Pending” for today", errNow: "Error: the alert and one retry, which takes focus", errWork: "Retrying: the button keeps focus", errPeak: "Error: the name alone; no reading is kept", heads: "The header's status, boxless", headsNote: "One status word in the header, the badge and its details, with its mark", anatomy: "Placeholders", anatomyNote: "On the value's baseline, as tall as its digits' ink; one flat fill, no motion", phLoad: "The compact header while loading: words, not a control", phClosed: "Closed: the badge and its details", phOff: "Offline: the badge, its details and the way to Operations", phErr: "Error: the badge and its details", plotFrame: "An empty frame: loading and error", plotClosed: "Closed: the usual line alone, all still ahead", plotOff: "Offline: readings from opening to 3:00 PM, then “Waiting for readings” to now" },
       phCaps: { display: "a value in figures", title: "a value in words", caption: "a time or a note", badge: "the level badge" },
-      chartTitle: "Today's crowd", keyLine: "30-min average", keyUsual: "Usual Wednesday", keyPeak: "Peak reading", noHistory: "Not enough history to compare yet",
+      chartTitle: "Today's crowd", keyLine: "Average inside", keyUsual: "Usual on Wednesdays", keyPeak: "Peak reading", noHistory: "Not enough history to compare yet",
       details: "View details", peakTag: "Peak", latestFlag: "Latest", usual: "Usual", stillAhead: "Still ahead",
       chartMain: "Live, with the latest reading selected",
       vars: { peak: "The peak", line: "A stop on the line", gap: "A span with no readings", ahead: "Still ahead", delayed: "Latest reading, delayed", nohistory: "Still ahead, no history" },
@@ -213,15 +213,15 @@
       gapEnds: ["10:00 AM", "2:00 PM"], beforeEnds: ["2 Aug", "12 Sep"], spanFrom: "from", spanTo: "to", spanSince: "since",
       sortedBy: "Sorted by day, newest first",
       compactTitle: "Minute by minute", compactCaption: "Today's readings, minute by minute",
-      ccols: { time: "Time", inside: "Inside", avg: "30-min average", note: "Note" },
+      ccols: { time: "Time", inside: "Inside", avg: "Average inside", note: "Note" },
       cnotes: { empty: "Empty", peak: "Peak", latest: "Latest reading" },
       dens: { def: "Default density: 48 px rows", compact: "Compact density: 36 px rows" },
       cancel: "Cancel", apply: "Show these dates", save: "Save file", working: "Preparing…", close: "Close", retry: "Try again", done: "Done",
       seg: { "7d": "Last 7 days", "28d": "Last 28 days", custom: "Custom…" }, segName: "Dates",
       from: "From", to: "To", hint: "Day/month/year, like 16/09/2026", errOrder: "The end is before the start", errRequired: "Enter a date", errFormat: "Write the date like 16/09/2026",
       rangeTitle: "Choose dates", rangeDesc: "Readings are available from 2 Aug 2026 to 22 Sep 2026.",
-      exportTitle: "Export minute data", exportDesc: "One row per minute, in gym time. Closed minutes and minutes with no readings are marked.",
-      progress: "Day 12 of 28", failed: "The file couldn't be prepared. Nothing was saved, and your dates are kept.", ready: "Your file is ready",
+      exportTitle: "Export minute data",
+      progress: "Day 12 of 28", failed: "Couldn't export. Nothing was saved.", ready: "Your file is ready",
       rows: "40,320 rows",
       dlgStates: { ready: "Ready, focus on the first field", working: "Working", failed: "Failed, focus on Try again", done: "Done", sheet: "Bottom sheet on a phone" },
       openDlg: "Open the dialog",
@@ -643,22 +643,25 @@
       const minutes = d[4] - 360;
       const cls = [d[7] === "hover" ? "is-hover" : "", d[7] === "edge" ? "wk-edge" : "", top ? "is-top has-note" : ""].filter(Boolean).join(" ");
       // TBL-11: a composite cell leads with the value at the numbers' edge; its time follows it. The period's highest
-      // row is tinted, with no flag (decision 17).
+      // row is tinted, with no flag (decision 17). In English every column starts at its left edge (decision 16).
       return `<tr role="row"${cls ? ` class="${cls}"` : ""}><th scope="row" role="rowheader">${dayName(d)}</th>
-        <td role="cell" class="n"><span class="cx-pk"><span class="pv">${b(d[3])}</span><span class="pt">${b(time(minutes))}</span></span></td>
+        <td role="cell" class="c-peak n"><span class="cx-pk"><span class="pv">${b(d[3])}</span><span class="pt">${b(time(minutes))}</span></span></td>
         <td role="cell" class="n">${b(d[5])}</td><td role="cell" class="n">${b(d[6])}</td>
         <td role="cell" class="notes">${top ? gapNote(L.noReadings, L.gapEnds) : ""}</td></tr>` +
         // TBL-8: on a phone the notes column folds into a row of its own under its day (only one of the two shows).
         (top ? `<tr role="row" class="note-row is-top"><td role="cell" colspan="4">${gapNote(L.noReadings, L.gapEnds)}</td></tr>` : "");
     }).join("") + noneRow(L.noReadingsYet, L.beforeEnds, 5);
-    const def = `<table class="cx-table" role="table"><caption>${L.daysCaption}</caption><thead><tr role="row">${hdr("day", "is-sorted")}${hdr("peak", "n hover")}${hdr("avg", "n focus")}${hdr("entries", "n")}<th scope="col" role="columnheader" class="notes">${L.cols.notes}</th></tr></thead><tbody>${rows}</tbody></table>`;
-    // TBL-12 uses Reports row renderer and table styles, rather than a copy.
-    const singleHead = (d) => `<th scope="row" role="rowheader" class="c-day"><span class="dd">${dayName(d)}</span></th>`;
-    const singleHdr = (k, cls) => `<th scope="col" role="columnheader" class="${cls}"><button class="sort" type="button" tabindex="-1"><span>${L.cols[k]}</span>${ico("sort")}</button></th>`;
+    const def = `<table class="cx-table" role="table"><caption>${L.daysCaption}</caption><thead><tr role="row">${hdr("day", "is-sorted")}${hdr("peak", "c-peak n hover")}${hdr("avg", "n focus")}${hdr("entries", "n")}<th scope="col" role="columnheader" class="notes">${L.cols.notes}</th></tr></thead><tbody>${rows}</tbody></table>`;
+    // TBL-12 and K5: the specimen is built by Reports' own components (EclipseTables: the sortable header, the day's row
+    // header and the single-day row) in Reports' table styles, rather than a copy.
+    const T = window.EclipseTables;
+    const singleDate = (d) => (LANG === "ar" ? `${b(d[2])} سبتمبر` : `${b(d[2])} Sep`);
+    const singleHead = (d) => T.dayHead(LANG === "ar" ? d[0] : d[1], singleDate(d));
+    const singleHdr = (k, cls) => T.sortHead(L.cols[k], cls, "", ' tabindex="-1"');
     const singleTitle = LANG === "ar" ? "يوم واحد بلا قراءات" : "A single day without readings";
     const single = `<table class="table days-table cx-single-days" role="table"><caption class="sr-only">${singleTitle}</caption><thead><tr role="row">${singleHdr("day", "c-day")}${singleHdr("peak", "c-peak n")}${singleHdr("avg", "c-avg n")}${singleHdr("entries", "c-entries n")}<th scope="col" role="columnheader" class="c-notes">${L.cols.notes}</th></tr></thead><tbody>
-      ${window.EclipseTables.dayNoneRow(singleHead(["الخميس", "Thu", 17]), L.noReadings)}
-      ${window.EclipseTables.dayNoneRow(singleHead(["السبت", "Sat", 12]), L.noReadingsYet)}
+      ${T.dayNoneRow(singleHead(["الخميس", "Thu", 17]), L.noReadings)}
+      ${T.dayNoneRow(singleHead(["السبت", "Sat", 12]), L.noReadingsYet)}
     </tbody></table>`;
     const singleSpec = `<figure class="cx-fig" style="align-items:stretch"><div class="card cx-table-card" inert><div class="cx-table-head"><h3>${singleTitle}</h3></div>${single}</div>${cap(singleTitle, "TBL-2 · TBL-12")}</figure>`;
     const line = DATA.line.live;
@@ -723,8 +726,8 @@
   const panelHead = (title, id) => `<header class="cx-panel-head"><h3${id ? ` id="${id}"` : ""}>${title}</h3><button class="cx-icon-btn" type="button" aria-label="${L.close}">${ico("close")}</button></header>`;
   function dialogs() {
     const ready = `<div class="cx-panel">${panelHead(L.rangeTitle)}<div class="cx-panel-body"><p class="cx-panel-desc">${L.rangeDesc}</p><div class="cx-field-row">${field({ label: L.from, value: "26/08/2026", inputCls: "is-focus", hint: false })}${field({ label: L.to, value: "22/09/2026", hint: false })}</div><p class="cx-hint">${L.hint}</p></div><footer class="cx-panel-foot"><button class="cx-btn" type="button">${L.cancel}</button><button class="cx-btn primary" type="button">${L.apply}</button></footer></div>`;
-    const working = `<div class="cx-panel" aria-busy="true">${panelHead(L.exportTitle)}<div class="cx-panel-body"><p class="cx-panel-desc">${L.exportDesc}</p><div class="cx-field-row">${field({ label: L.from, value: "26/08/2026", cls: "is-disabled", disabled: true, hint: false })}${field({ label: L.to, value: "22/09/2026", cls: "is-disabled", disabled: true, hint: false })}</div><div class="cx-progress" role="status"><p>${L.progress}</p><span aria-hidden="true"><i></i></span></div></div><footer class="cx-panel-foot"><button class="cx-btn is-focus" type="button">${L.cancel}</button><button class="cx-btn primary" type="button" disabled aria-busy="true">${L.working}</button></footer></div>`;
-    const failed = `<div class="cx-panel">${panelHead(L.exportTitle)}<div class="cx-panel-body"><p class="cx-panel-desc">${L.exportDesc}</p>${fileLine()}<div class="cx-alert" role="alert">${ico("alert")}<span>${L.failed}</span></div></div><footer class="cx-panel-foot"><button class="cx-btn" type="button">${L.cancel}</button><button class="cx-btn primary is-focus" type="button">${L.retry}</button></footer></div>`;
+    const working = `<div class="cx-panel" aria-busy="true">${panelHead(L.exportTitle)}<div class="cx-panel-body"><div class="cx-field-row">${field({ label: L.from, value: "26/08/2026", cls: "is-disabled", disabled: true, hint: false })}${field({ label: L.to, value: "22/09/2026", cls: "is-disabled", disabled: true, hint: false })}</div><div class="cx-progress" role="status"><p>${L.progress}</p><span aria-hidden="true"><i></i></span></div></div><footer class="cx-panel-foot"><button class="cx-btn is-focus" type="button">${L.cancel}</button><button class="cx-btn primary" type="button" disabled aria-busy="true">${L.working}</button></footer></div>`;
+    const failed = `<div class="cx-panel">${panelHead(L.exportTitle)}<div class="cx-panel-body">${fileLine()}<div class="cx-alert" role="alert">${ico("alert")}<span>${L.failed}</span></div></div><footer class="cx-panel-foot"><button class="cx-btn" type="button">${L.cancel}</button><button class="cx-btn primary is-focus" type="button">${L.retry}</button></footer></div>`;
     const done = `<div class="cx-panel">${panelHead(L.exportTitle)}<div class="cx-panel-body"><div class="cx-done"><span class="cx-done-mark" aria-hidden="true">${ico("check")}</span><p class="cx-done-title">${L.ready}</p>${fileLine()}</div></div><footer class="cx-panel-foot"><button class="cx-btn" type="button">${L.done}</button><button class="cx-btn primary is-focus" type="button">${ico("save")}${L.save}</button></footer></div>`;
     const sheet = `<div class="cx-frame"><div class="cx-frame-page" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="cx-scrim"></div><div class="cx-panel">${panelHead(L.rangeTitle)}<div class="cx-panel-body"><p class="cx-panel-desc">${L.rangeDesc}</p><div class="cx-field-row">${field({ label: L.from, value: "26/08/2026", hint: false })}${field({ label: L.to, value: "22/09/2026", hint: false })}</div><p class="cx-hint">${L.hint}</p></div><footer class="cx-panel-foot"><button class="cx-btn" type="button">${L.cancel}</button><button class="cx-btn primary" type="button">${L.apply}</button></footer></div></div>`;
     return section("dialog", "dialog", "DLG-1…6 · EMP-2 · EMP-3", `<div class="cx-row cx-dialogs">
@@ -1012,7 +1015,7 @@
     $("#cx-index").innerHTML = `<span class="sr-only" id="index-name">${L.indexName}</span>` + ORDER.map(([k, id]) => `<a href="#${id}">${L.sec[k][0]}</a>`).join("");
     const pat = pattern();
     $("#cx-root").innerHTML = [foundations(), cards(), chart(), pat.html, tables(), buttons(), segs(), switches(), fields(), dialogs(), chips(), rails(), frame(), empties(), states()].join("");
-    for (const table of $$(".cx-single-days")) window.EclipseTables.alignDayNoneRows(table);
+    for (const table of $$("#table table")) window.EclipseTables.fitSlots(table);
     drawPlots();
     wireHeat();
     wireDialog();
@@ -1030,8 +1033,8 @@
   wireDialogOnce();
   render();
   // Redraw the plots when the fonts arrive (the tooltip's size sets the lane) and when the page's width changes.
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { for (const table of $$(".cx-single-days")) window.EclipseTables.alignDayNoneRows(table); drawPlots(); const s = $("#heat .is-sel"); if (s) heatSelect(s, false); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { for (const table of $$("#table table")) window.EclipseTables.fitSlots(table); drawPlots(); const s = $("#heat .is-sel"); if (s) heatSelect(s, false); });
   let rz = 0, lastW = innerWidth;
-  addEventListener("resize", () => { if (innerWidth === lastW) return; lastW = innerWidth; cancelAnimationFrame(rz); rz = requestAnimationFrame(() => { for (const table of $$(".cx-single-days")) window.EclipseTables.alignDayNoneRows(table); drawPlots(); const s = $("#heat .is-sel"); if (s) heatSelect(s, false); }); });
+  addEventListener("resize", () => { if (innerWidth === lastW) return; lastW = innerWidth; cancelAnimationFrame(rz); rz = requestAnimationFrame(() => { for (const table of $$("#table table")) window.EclipseTables.fitSlots(table); drawPlots(); const s = $("#heat .is-sel"); if (s) heatSelect(s, false); }); });
   window.__components = { ready: true, setLang, get lang() { return LANG; }, data: { peak: DATA.peak, peakM: DATA.peakM, latest: DATA.raw[NOW] } };
 })();

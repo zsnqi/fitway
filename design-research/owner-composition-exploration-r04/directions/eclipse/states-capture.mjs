@@ -134,8 +134,8 @@ if (part("status")) {
     const vals = Object.values(per);
     const spreadOf = (xs, f) => +(Math.max(...xs.map(f)) - Math.min(...xs.map(f))).toFixed(2);
     const spread = (f) => spreadOf(vals, f);
-    // The slot's own box is compared among states of one moment (the same unseen copies: on Daily, closed and
-    // unavailable are other moments of the day, with another last reading); what stands beside it, in every state.
+    // The slot's own box is compared among states of one moment (the same unseen copies; Daily's copies hold the day's
+    // widest time since 2026-10-03, so all its states are one moment); what stands beside it, in every state.
     const moments = Object.values(Object.groupBy(vals, (v) => v.reserve));
     const s = { slotX: Math.max(...moments.map((g) => spreadOf(g, (v) => v.slot.l))), slotW: Math.max(...moments.map((g) => spreadOf(g, (v) => v.slot.w))), slotEnd: spread((v) => (lang === "ar" ? v.slot.l : v.slot.r)), title: spread((v) => v.title.l) + spread((v) => v.title.w), sub: spread((v) => v.sub.l) + spread((v) => v.sub.w) + spread((v) => v.sub.t), head: spread((v) => v.head.t) + spread((v) => v.head.h) };
     log.status[key] = { spreads: s, moments: moments.length, states: per };

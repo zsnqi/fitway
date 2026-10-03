@@ -639,6 +639,9 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
 .minutes-table tbody > tr:hover > * { background: rgba(255, 255, 255, 0.04); }
 .minutes-table .n { text-align: right; font-variant-numeric: tabular-nums; }
 .minutes-table td.n bdi { color: var(--ink); }
+/* Option B (decision 16, user 2026-10-03): in English every column starts at its left edge, headings and figures alike,
+ * as its text does. Arabic is unchanged (TBL-1). */
+[dir="ltr"] .minutes-table .n { text-align: left; }
 .minutes-table .notes { font-size: 12px; line-height: 18px; color: var(--ink-3); }
 .minutes-table tr.peak > * { background: rgba(229, 25, 53, 0.08); }
 .minutes-table tr.peak:hover > * { background: rgba(229, 25, 53, 0.12); }

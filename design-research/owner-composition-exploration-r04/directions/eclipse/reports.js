@@ -19,20 +19,40 @@
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const root = document.documentElement;
-  // The single-day exception is shared with the component sheet, including its text anchor.
+  // The day table's parts shared with the component sheet (K5): a sortable column's header, a day's row header and the
+  // single-day exception, so the sheet's specimen is built by the page's own components.
+  const SORT_ICO = `<svg class="sort-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5.5v13M7.5 14l4.5 4.5 4.5-4.5"/></svg>`;
+  const sortHead = (label, cls, attrs = "", btnAttrs = "") => `<th scope="col" role="columnheader" class="${cls}"${attrs}><button class="sort" type="button"${btnAttrs}><span>${label}</span>${SORT_ICO}</button></th>`;
+  // A day's row header: its weekday, then its date («22 سبتمبر» / "22 Sep", HTML), which never breaks inside (DAT-4).
+  const dayHead = (wd, date) => `<th scope="row" role="rowheader" class="c-day"><span class="dd"><span class="wd">${wd}</span> <span class="dt"><span class="nw">${date}</span></span></span></th>`;
+  // A single day without readings: its date, then its words in one cell across the other columns. Every column's text
+  // starts at its start edge in English (decision 16) and on the physical right in Arabic (TBL-1), so the words start
+  // where the peak's header starts in both languages with no correction.
   const dayNoneRow = (head, words, edge = false) => `<tr role="row" class="is-none-day${edge ? " wk-edge" : ""}">${head}<td role="cell" colspan="4" class="c-none"><span class="day-none-word">${words}</span></td></tr>`;
-  const alignDayNoneRows = (table) => {
-    const label = table.querySelector("thead .c-peak .sort > span");
-    if (!label) return;
+  // Decision 16 (user 2026-10-03): the peak's figure stands in a slot as wide as the column's widest figure, so the time
+  // beside it starts on one line in every row, whatever the figure's width (9, 55, 120): in English, where the figure
+  // starts on the column's left edge, always; in Arabic, where figures share the right edge (TBL-1), only when a peak has
+  // three digits ("yes", the user), so nothing else in Arabic changes. Readex Pro's digits differ in width
+  // (tabular-nums changes nothing in this font), so the slot is measured, and again once the fonts are in.
+  const fitSlots = (table) => {
+    if (!table) return;
     const rtl = table.closest('[dir="rtl"]') != null;
-    const start = label.getBoundingClientRect().left;
-    for (const word of table.querySelectorAll(".day-none-word")) {
-      const cell = word.parentElement;
-      const offset = rtl ? 0 : start - cell.getBoundingClientRect().left - parseFloat(getComputedStyle(cell).paddingLeft);
-      word.style.setProperty("--none-day-offset", `${offset}px`);
+    const cols = new Map();
+    for (const tr of table.rows) {
+      let i = 0;
+      for (const cell of tr.cells) {
+        const fig = cell.querySelector(".pv");
+        if (fig && fig.firstElementChild) { if (!cols.has(i)) cols.set(i, []); cols.get(i).push(fig); }
+        i += cell.colSpan || 1;
+      }
+    }
+    for (const figs of cols.values()) {
+      const slot = !rtl || figs.some((f) => f.firstElementChild.textContent.replace(/\D/g, "").length >= 3);
+      const width = slot ? Math.max(...figs.map((f) => f.firstElementChild.getBoundingClientRect().width)) : 0;
+      for (const f of figs) f.style.minWidth = slot ? `${width}px` : "";
     }
   };
-  window.EclipseTables = Object.freeze({ dayNoneRow, alignDayNoneRows });
+  window.EclipseTables = Object.freeze({ sortHead, dayHead, dayNoneRow, fitSlots });
   // On the sheet only the table primitives run; Reports data and controls stay on Reports.
   if (!document.body.classList.contains("rp")) return;
   const LANG = root.lang === "en" ? "en" : "ar";
@@ -89,8 +109,8 @@
       wowUnit: "معدّل الموجودين",
       cmp: { busier: "أكثر ازدحامًا", quieter: "أهدأ", same: "قريب من السابق" },
       wowEntries: (p) => `مرات الدخول ${p}`,
-      wowEmpty: "لا يكفي السجل بعد",
-      wowEmptyNote: (d) => `يلزم ${bdi(14)} يومًا · القراءات منذ ${d}`,
+      wowEmpty: "لا تكفي القراءات بعد",
+      wowEmptyNote: () => `يلزم أسبوعان من القراءات المنتظمة`,
       wowSay: (cur, prev) => `الأيام ${cur} مقارنة بالأيام ${prev}`,
       avgTitle: "معدّل الموجودين",
       peakTitle: "أعلى ذروة",
@@ -154,7 +174,6 @@
         tooLong: `اختر ${bdi(366)} يومًا أو أقل`,
       },
       exportTitle: "تصدير بيانات الدقائق",
-      exportDesc: "صف لكل دقيقة، مع تمييز الدقائق المغلقة والدقائق التي بلا قراءات.",
       rows: (n) => arN(n, ["صف واحد", "صفان", "صفوف", "صفًا", "صف"]),
       exportGo: "تصدير CSV",
       working: "جارٍ التجهيز…",
@@ -162,7 +181,7 @@
       doneTitle: "الملف جاهز",
       save: "حفظ الملف",
       done: "تم",
-      failed: "تعذّر تجهيز الملف. لم يُحفظ شيء، والتواريخ كما هي.",
+      failed: "تعذّر التصدير، ولم يُحفظ شيء.",
       retry: "إعادة المحاولة",
       canceledSay: "أُلغي التصدير",
       readySay: (n) => `الملف جاهز، ${n}`,
@@ -212,8 +231,8 @@
       wowUnit: "avg. inside",
       cmp: { busier: "Busier", quieter: "Quieter", same: "About the same" },
       wowEntries: (p) => `Entries ${p}`,
-      wowEmpty: "Not enough history yet",
-      wowEmptyNote: (d) => `Needs 14 days · readings since ${d}`,
+      wowEmpty: "Not enough readings yet",
+      wowEmptyNote: () => `Needs two weeks of steady readings`,
       wowSay: (cur, prev) => `${cur} compared with ${prev}`,
       avgTitle: "Average inside",
       peakTitle: "Highest peak",
@@ -272,7 +291,6 @@
         tooLong: "Choose 366 days or fewer",
       },
       exportTitle: "Export minute data",
-      exportDesc: "One row for every minute, with closed and missing minutes marked.",
       rows: (n) => `${fmtInt(n)} ${n === 1 ? "row" : "rows"}`,
       exportGo: "Export CSV",
       working: "Preparing…",
@@ -280,7 +298,7 @@
       doneTitle: "Your file is ready",
       save: "Save file",
       done: "Done",
-      failed: "The file couldn't be prepared. Nothing was saved, and your dates are kept.",
+      failed: "Couldn't export. Nothing was saved.",
       retry: "Try again",
       canceledSay: "Export canceled",
       readySay: (n) => `Your file is ready, ${n}`,
@@ -822,7 +840,7 @@
     info: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"/><path d="M12 11v5.2M12 7.8v.2"/></svg>`,
     gap: `<svg class="ico ico-gap" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="1.3"/><circle cx="9.7" cy="12" r="1.3"/><circle cx="14.3" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg>`,
     alert: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.4"/><path d="M12 7.6v5.4M12 16.2v.2"/></svg>`,
-    sort: `<svg class="sort-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5.5v13M7.5 14l4.5 4.5 4.5-4.5"/></svg>`,
+    sort: SORT_ICO,
     file: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 3.8h6.6L18.5 8.7v10.1a1.4 1.4 0 0 1-1.4 1.4H7a1.4 1.4 0 0 1-1.4-1.4V5.2A1.4 1.4 0 0 1 7 3.8Z"/><path d="M13.4 3.8v5h5.1"/></svg>`,
     check: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6.5 12.4l3.6 3.6 7.4-7.6"/></svg>`,
     down2: `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4.5v10.2M7.8 10.6 12 14.8l4.2-4.2"/><path d="M5 16.5v1.4a1.6 1.6 0 0 0 1.6 1.6h10.8a1.6 1.6 0 0 0 1.6-1.6v-1.4"/></svg>`,
@@ -873,7 +891,7 @@
       tb.innerHTML = `<p class="stat-value"><bdi class="num">${pct(c)}</bdi><span class="unit">${L.wowUnit}</span></p>
         <div class="stat-foot"><span class="cmp cmp-${kind}">${kind === "busier" ? ICON.up : kind === "quieter" ? ICON.down : ICON.same}${L.cmp[kind]}</span><span class="stat-aside">${L.wowEntries(bdi(pct(wow.entriesChange)))}</span></div>`;
     } else {
-      tb.innerHTML = `<p class="stat-value"><span class="stat-say">${L.wowEmpty}</span></p><div class="stat-foot"><span class="stat-aside">${L.wowEmptyNote(dateText(HIST_START))}</span></div>`;
+      tb.innerHTML = `<p class="stat-value"><span class="stat-say">${L.wowEmpty}</span></p><div class="stat-foot"><span class="stat-aside">${L.wowEmptyNote()}</span></div>`;
     }
     // "Last 7 days" is plain in every period: Reports keeps only the pattern's data light (OWN-R6, user 2026-10-01, Q13).
     trendCard.setAttribute("aria-description", plain(L.wowSay(rangeText(WOW.cur[0], WOW.cur[1]), rangeText(WOW.prev[0], WOW.prev[1]))));
@@ -1223,7 +1241,7 @@
       if (!c.sortable) return `<th scope="col" role="columnheader" class="${c.cls}">${label}</th>`;
       const on = sort.key === c.key;
       const aria = on ? ` aria-sort="${sort.dir === "desc" ? "descending" : "ascending"}"` : "";
-      return `<th scope="col" role="columnheader" class="${c.cls}${on ? ` is-sorted is-${sort.dir}` : ""}"${aria}><button class="sort" type="button" data-sort="${c.key}"><span>${label}</span>${ICON.sort}</button></th>`;
+      return sortHead(label, `${c.cls}${on ? ` is-sorted is-${sort.dir}` : ""}`, aria, ` data-sort="${c.key}"`);
     }).join("");
     let body;
     if (!model.withReadings) {
@@ -1233,11 +1251,11 @@
       const noneRow = (note) => `<tr role="row" class="is-none"><td role="cell" colspan="5" class="c-none">${note}</td></tr>`;
       // In date order, a firmer line closes each week (between Saturday and Sunday).
       const edgeOf = (d) => sort.key === "day" && (sort.dir === "desc" ? d.wd === 0 : d.wd === 6) && d.dn !== (sort.dir === "desc" ? model.a : model.b);
-      const dayHead = (d) => `<th scope="row" role="rowheader" class="c-day"><span class="dd"><span class="wd">${wdShort(d.wd)}</span> <span class="dt">${dateText(d.dn)}</span></span></th>`;
+      const dayRowHead = (d) => dayHead(wdShort(d.wd), dateBare(d.dn));
       // A single day without readings keeps its date in the day column, as every day does, and its words take the rest of
       // the row: «لا قراءات», or «لا قراءات بعد» before the readings began; no figures (decisions 10 and 11, user
       // 2026-10-02; TBL-12).
-      const noneDay = (d, words) => dayNoneRow(dayHead(d), words, edgeOf(d));
+      const noneDay = (d, words) => dayNoneRow(dayRowHead(d), words, edgeOf(d));
       // Days before the history starts are one merged row ("No readings yet"), or a day row when there is only one.
       let pre = [];
       const flushPre = () => {
@@ -1254,7 +1272,7 @@
         const notes = dayNotes(d);
         const edge = edgeOf(d);
         const cls = [top ? "is-top" : "", edge ? "wk-edge" : "", notes ? "has-note" : ""].filter(Boolean).join(" ");
-        out.push(`<tr role="row"${cls ? ` class="${cls}"` : ""}>${dayHead(d)}` +
+        out.push(`<tr role="row"${cls ? ` class="${cls}"` : ""}>${dayRowHead(d)}` +
           `<td role="cell" class="c-peak n"><span class="pk"><span class="pv">${bdi(d.peak)}</span><span class="pt">${timeText(d.peakM)}</span></span></td>` +
           `<td role="cell" class="c-avg n">${bdi(Math.round(d.avg))}</td>` +
           `<td role="cell" class="c-entries n">${bdi(fmtInt(d.entries))}</td>` +
@@ -1266,10 +1284,10 @@
       body = out.join("");
     }
     daysTable.innerHTML = `<caption class="sr-only">${L.daysCaption(rangeText(model.a, model.b))}</caption><thead><tr role="row">${head}</tr></thead><tbody>${body}</tbody>`;
-    alignDayNoneRows(daysTable);
+    fitSlots(daysTable);
     tableFile();
   }
-  addEventListener("resize", () => alignDayNoneRows(daysTable));
+  addEventListener("resize", () => fitSlots(daysTable));
   /* ---- the day list (720 px and below; the user's pick of 2026-10-01, option B).
    * A day per item: its date and its peak on the first line, its average and entries under the date and the peak's time
    * under the peak, on the peak's edge (TBL-1, TBL-11); a camera gap folds under them, one sentence with the words first
@@ -1793,7 +1811,6 @@
   function renderExport() {
     const s = ex.state, foot = $("#export-foot");
     $("#export-edit").hidden = s === "done";
-    $("#dlg-export-desc").hidden = s === "done";
     eFrom.disabled = s === "working"; eTo.disabled = s === "working";
     const prog = $("#export-progress");
     prog.hidden = s !== "working" || !ex.showProgress;
@@ -1946,5 +1963,5 @@
   else if (WANT === "export") openExportDialog(exportBtn);
   // The other script's subset is fetched up front too (the rail's language item is written in it), as on the Daily page.
   if (document.fonts && document.fonts.load) ["400", "500"].forEach((w) => document.fonts.load(`${w} 16px "Readex Pro"`, RTL ? "English FITWAY" : "العربية").catch(() => {}));
-  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { alignDayNoneRows(daysTable); if (tipFor) showTip(tipFor); window.__reports.ready = true; });
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { fitSlots(daysTable); if (tipFor) showTip(tipFor); window.__reports.ready = true; });
 })();

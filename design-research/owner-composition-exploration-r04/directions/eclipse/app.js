@@ -64,8 +64,8 @@
       busiestNote: (n) => `المعدّل ${n}`,
       cmp: { busier: "أعلى من المعتاد", quieter: "أهدأ من المعتاد", same: "قريب من المعتاد" },
       chartTitle: "ازدحام اليوم",
-      keyLine: `معدّل كل <bdi>30</bdi> دقيقة`,
-      keyUsual: "الأربعاء المعتاد",
+      keyLine: `معدّل الموجودين`,
+      keyUsual: "المعتاد أيام الأربعاء",
       keyPeak: "قراءة الذروة",
       noHistory: "لا يكفي السجل للمقارنة بعد",
       details: "عرض التفاصيل",
@@ -80,12 +80,11 @@
       say: (v, l, e) => `داخل الصالة الآن ${v} تقريبًا، ${l}. مرات الدخول ${e}.`,
       detailsTitle: "التفاصيل",
       coverageTitle: "تغطية البيانات",
-      cov: { read: "فيها قراءة", zero: "مفتوحة وخالية", miss: "لا قراءات", wait: "لا قراءات بعد", ahead: "لم يحن بعد", line: "الخط", usual: "الأربعاء المعتاد" },
+      cov: { read: "فيها قراءة", zero: "مفتوحة وخالية", miss: "لا قراءات", wait: "لا قراءات بعد", ahead: "لم يحن بعد", usual: "المعتاد" },
       covReadVal: (a, b) => `${a} من ${b} دقيقة`,
-      covLineVal: `معدّل <bdi>30</bdi> دقيقة حول كل نقطة: <bdi>15</bdi> قبلها و<bdi>15</bdi> بعدها، والأقرب أثقل وزنًا`,
       usualEntries: (n) => `المعتاد ${n}`,
-      covUsualVal: `معدّل <bdi>26</bdi> أغسطس و<bdi>2</bdi> و<bdi>9</bdi> و<bdi>16</bdi> سبتمبر`,
-      covUsualNone: `المسجّل يوم أربعاء واحد (<bdi>16</bdi> سبتمبر)`,
+      covUsualVal: `معدّل آخر <bdi>4</bdi> أيام أربعاء`,
+      covUsualNone: `يوم أربعاء واحد فقط في السجل (<bdi>16</bdi> سبتمبر)`,
       minutesTitle: "دقيقة بدقيقة",
       noReadingsYet: "لا قراءات بعد",
       // A span in words, the words first (decision 8, user 2026-10-01): «لا قراءات من 2:14 م إلى 2:31 م».
@@ -93,7 +92,7 @@
       spanTo: "إلى",
       spanSince: "منذ",
       minutesAria: "قراءات اليوم دقيقة بدقيقة",
-      cols: ["الوقت", "داخل الصالة", `معدّل <bdi>30</bdi> دقيقة`, "ملاحظة"],
+      cols: ["الوقت", "داخل الصالة", "معدّل الموجودين", "ملاحظة"],
       notes: { miss: "لا قراءات", zero: "خالية", peak: "الذروة", latest: "آخر قراءة" },
       // Daily's states (step 3, second part). The status word is the same in the header, the phone's badge and its
       // details; the rest says what the owner can know or do.
@@ -144,8 +143,8 @@
       busiestNote: (n) => `Average ${n}`,
       cmp: { busier: "Busier than usual", quieter: "Quieter than usual", same: "About usual" },
       chartTitle: "Today's crowd",
-      keyLine: "30-min average",
-      keyUsual: "Usual Wednesday",
+      keyLine: "Average inside",
+      keyUsual: "Usual on Wednesdays",
       keyPeak: "Peak reading",
       noHistory: "Not enough history to compare yet",
       details: "View details",
@@ -160,11 +159,10 @@
       say: (v, l, e) => `Inside now about ${v}, ${l}. Entries ${e}.`,
       detailsTitle: "Details",
       coverageTitle: "Data coverage",
-      cov: { read: "With a reading", zero: "Open, nobody inside", miss: "No readings", wait: "No readings yet", ahead: "Still ahead", line: "The line", usual: "Usual Wednesday" },
-      covReadVal: (a, b) => `${a} of ${b} minutes`,
-      covLineVal: "Average of the 30 minutes around each point: 15 before and 15 after, weighted toward the middle",
+      cov: { read: "With a reading", zero: "Open, empty", miss: "No readings", wait: "No readings yet", ahead: "Still ahead", usual: "Usual" },
+      covReadVal: (a, b) => `${a} of ${b} min`,
       usualEntries: (n) => `Usual ${n}`,
-      covUsualVal: "Average of 26 Aug and 2, 9 and 16 Sep",
+      covUsualVal: "Average of the last 4 Wednesdays",
       covUsualNone: "Only 1 past Wednesday recorded (16 Sep)",
       minutesTitle: "Minute by minute",
       noReadingsYet: "No readings yet",
@@ -172,7 +170,7 @@
       spanTo: "to",
       spanSince: "since",
       minutesAria: "Today's readings, minute by minute",
-      cols: ["Time", "Inside", "30-min average", "Note"],
+      cols: ["Time", "Inside", "Average inside", "Note"],
       notes: { miss: "No readings", zero: "Empty", peak: "Peak", latest: "Latest reading" },
       loadingWord: "Loading…",
       loadingSay: "Loading today's readings",
@@ -690,8 +688,8 @@
     error: () => ({ cls: "is-err", mark: ICON.alert, word: L.errorWord, line: L.errorLine, detail: `${L.errorFull}. ${L.errorHint}` }),
     closed: () => ({ cls: "is-closed", mark: `<span class="dot ring" aria-hidden="true"></span>`, word: L.closed, line: L.opens(tb(0)) }),
     offline: () => ({ cls: "is-off", mark: ICON.offline, word: L.offline, line: L.noCount }),
-    delayed: () => ({ cls: "is-delayed", mark: ICON.clock, word: L.delayed, line: `${L.lastReading} ${tb(M.last)}`, ago: true }),
-    live: () => ({ cls: "", mark: `<span class="dot" aria-hidden="true"></span>`, word: L.live, line: `${L.lastReading} ${tb(M.last)}` }),
+    delayed: (m = M.last) => ({ cls: "is-delayed", mark: ICON.clock, word: L.delayed, line: `${L.lastReading} ${tb(m)}`, ago: true }),
+    live: (m = M.last) => ({ cls: "", mark: `<span class="dot" aria-hidden="true"></span>`, word: L.live, line: `${L.lastReading} ${tb(m)}` }),
   };
   function statusOf() {
     return STATUSES[phase === "error" || phase === "retrying" ? "error" : CLOSED ? "closed" : UNAV ? "offline" : STATE === "delayed" ? "delayed" : "live"]();
@@ -701,12 +699,28 @@
   // K-02 (DECISIONS item 14, as Reports): from 721 px the status's slot is as wide as the widest status, which unseen
   // copies of every status hold (style.css .hb-res), so loading, the arrival, a retry and any status change keep the
   // control's place and the slot's size; the control itself is as wide as its own status (HDR-3), at the slot's inline
-  // end. The copies with a time carry the last reading's, as the control does, and take a new reading's at once. (Held
-  // at the day's widest time, 10:00 PM, the slot would be 283.2 px in English; that reason, the concept label it pushed
-  // to a second line at 1024 px, left with the label in DECISIONS item 15, and the slot now fits there with 197.8 px to
-  // spare. The slot keeps the last reading's time until that choice is made again.)
+  // end. The copies with a time carry the widest time the day can show (coordinator decision, 2026-10-03), so the slot
+  // keeps one width all day, as a new reading's time changes: Readex Pro's digits differ in width, so that time is
+  // measured among every minute the gym is open, in the status's type, and again once the fonts are in. With no concept
+  // label beside it (DECISIONS item 15), the header keeps one line at 1024 px in English.
+  let widest = null;
+  function widestMinute() {
+    const key = `${LANG} ${document.fonts ? document.fonts.status : ""}`;
+    if (widest && widest.key === key) return widest.m;
+    const probe = document.createElement("span");
+    probe.setAttribute("aria-hidden", "true");
+    probe.style.cssText = "position:absolute;top:0;left:0;visibility:hidden;white-space:nowrap;font-size:13.5px;line-height:20px;";
+    probe.innerHTML = Array.from({ length: DAY }, (_, m) => `<bdi style="display:inline-block">${fmtTime(m)}</bdi>`).join("");
+    document.body.append(probe);
+    let m = 0, w = -1;
+    [...probe.children].forEach((el, i) => { const x = el.getBoundingClientRect().width; if (x > w) { w = x; m = i; } });
+    probe.remove();
+    widest = { key, m };
+    return m;
+  }
   function renderReserve() {
-    $("#ops-res").innerHTML = Object.values(STATUSES).map((f) => `<span class="hb-r">${statusWords(f())}<svg class="hb-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5"/></svg></span>`).join("");
+    const m = widestMinute();
+    $("#ops-res").innerHTML = Object.values(STATUSES).map((f) => `<span class="hb-r">${statusWords(f(m))}<svg class="hb-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5"/></svg></span>`).join("");
   }
   // The control's name is its own text after the details' title, so it holds every word it shows (WCAG 2.5.3): the
   // line is part of it from 721 px, and set aside with its box on a phone.
@@ -887,7 +901,6 @@
   function updateCards(prev) {
     const dt = Math.sign(M.last - prev.last);
     rollTo($("#ops-btn .hb-line bdi"), fmtTime(M.last), dt);
-    renderReserve(); // the slot's unseen copies take the new time at once
     renderOps(); // the status details (closed or open) take the new time at once
     rollTo($("#now-v"), String(shownNow()));
     if (STATE === "delayed") rollTo($("#now-meta span"), L.ago(M.nowM - M.last));
@@ -1652,31 +1665,31 @@
     if (phase === "error" || phase === "retrying") return `${L.errorFull}.`;
     if (CLOSED) {
       return RTL
-        ? `${L.sayClosed(fmtTime(0))} لا قراءات اليوم بعد. يظهر خط متقطع للأربعاء المعتاد، معدّل آخر 4 أيام أربعاء، طوال اليوم من ${plainRange(fmtTime(0), fmtTime(DAY))}.`
-        : `${L.sayClosed(fmtTime(0))} There are no readings today yet. A dashed line shows the usual Wednesday, the average of the last 4 Wednesdays, through the whole day, ${plainRange(fmtTime(0), fmtTime(DAY))}.`;
+        ? `${L.sayClosed(fmtTime(0))} لا قراءات اليوم بعد. يظهر خط متقطع للمعتاد أيام الأربعاء، معدّل آخر 4 أيام أربعاء، طوال اليوم من ${plainRange(fmtTime(0), fmtTime(DAY))}.`
+        : `${L.sayClosed(fmtTime(0))} There are no readings today yet. A dashed line shows what is usual on Wednesdays, the average of the last 4 Wednesdays, through the whole day, ${plainRange(fmtTime(0), fmtTime(DAY))}.`;
     }
     if (UNAV) {
       const gapSay = waitText(UNAV_LAST);
       return RTL
-        ? `${L.sayOffline} مخطط خطي لمعدّل كل 30 دقيقة لعدد الموجودين تقريبًا اليوم، من الفتح الساعة ${fmtTime(0)} حتى الساعة ${fmtTime(UNAV_LAST)}. ` +
+        ? `${L.sayOffline} مخطط خطي لمعدّل الموجودين تقريبًا اليوم، من الفتح الساعة ${fmtTime(0)} حتى الساعة ${fmtTime(UNAV_LAST)}. ` +
           `الصالة مفتوحة وخالية من ${plainRange(fmtTime(0), fmtTime(ZERO_END))}. لا قراءات من ${plainRange(fmtTime(GAP0), fmtTime(GAP1))}. ` +
-          `${gapSay}. يظهر خط متقطع للأربعاء المعتاد، معدّل آخر 4 أيام أربعاء، حتى وقت الإغلاق. بقية اليوم من ${plainRange(fmtTime(nowM + 1), fmtTime(DAY))} لم يحن بعد.`
-        : `${L.sayOffline} Line chart of the 30-minute average of the approximate number of people inside today, from opening at ${fmtTime(0)} to ${fmtTime(UNAV_LAST)}. ` +
+          `${gapSay}. يظهر خط متقطع للمعتاد أيام الأربعاء، معدّل آخر 4 أيام أربعاء، حتى وقت الإغلاق. بقية اليوم من ${plainRange(fmtTime(nowM + 1), fmtTime(DAY))} لم يحن بعد.`
+        : `${L.sayOffline} Line chart of the average number of people inside today, from opening at ${fmtTime(0)} to ${fmtTime(UNAV_LAST)}. ` +
           `Open with nobody inside ${plainRange(fmtTime(0), fmtTime(ZERO_END))}. No readings ${plainRange(fmtTime(GAP0), fmtTime(GAP1))}. ` +
-          `${gapSay}. A dashed line shows the usual Wednesday, the average of the last 4 Wednesdays, through to closing time. The rest of the day, ${plainRange(fmtTime(nowM + 1), fmtTime(DAY))}, is still ahead.`;
+          `${gapSay}. A dashed line shows what is usual on Wednesdays, the average of the last 4 Wednesdays, through to closing time. The rest of the day, ${plainRange(fmtTime(nowM + 1), fmtTime(DAY))}, is still ahead.`;
     }
     return RTL
-      ? `مخطط خطي لمعدّل كل 30 دقيقة لعدد الموجودين تقريبًا اليوم، من الفتح الساعة ${fmtTime(0)} حتى آخر قراءة الساعة ${fmtTime(last)}. ` +
+      ? `مخطط خطي لمعدّل الموجودين تقريبًا اليوم، من الفتح الساعة ${fmtTime(0)} حتى آخر قراءة الساعة ${fmtTime(last)}. ` +
         `الصالة مفتوحة وخالية من ${plainRange(fmtTime(0), fmtTime(ZERO_END))}. لا قراءات من ${plainRange(fmtTime(GAP0), fmtTime(GAP1))}. ` +
         `أعلى قراءة ${peak} الساعة ${fmtTime(peakM)} (${L.levels[levelOf(peak)]}). آخر قراءة ${occ[last]} الساعة ${fmtTime(last)} (${L.levels[levelOf(occ[last])]}).` +
         (STATE === "delayed" ? ` البيانات متأخرة، لم تصل قراءة جديدة منذ ${arMin(nowM - last)}.` : "") +
-        (HAS_HISTORY ? ` يظهر خط متقطع للأربعاء المعتاد، معدّل آخر 4 أيام أربعاء، حتى وقت الإغلاق.` : ` ${L.noHistory}.`) +
+        (HAS_HISTORY ? ` يظهر خط متقطع للمعتاد أيام الأربعاء، معدّل آخر 4 أيام أربعاء، حتى وقت الإغلاق.` : ` ${L.noHistory}.`) +
         ` بقية اليوم من ${plainRange(fmtTime(nowM + 1), fmtTime(DAY))} لم يحن بعد. كل الدقائق في عرض التفاصيل.`
-      : `Line chart of the 30-minute average of the approximate number of people inside today, from opening at ${fmtTime(0)} to the latest reading at ${fmtTime(last)}. ` +
+      : `Line chart of the average number of people inside today, from opening at ${fmtTime(0)} to the latest reading at ${fmtTime(last)}. ` +
         `Open with nobody inside ${plainRange(fmtTime(0), fmtTime(ZERO_END))}. No readings ${plainRange(fmtTime(GAP0), fmtTime(GAP1))}. ` +
         `Highest reading ${peak} at ${fmtTime(peakM)} (${L.levels[levelOf(peak)]}). Latest reading ${occ[last]} at ${fmtTime(last)} (${L.levels[levelOf(occ[last])]}).` +
         (STATE === "delayed" ? ` Data is delayed: no new reading for ${nowM - last} minutes.` : "") +
-        (HAS_HISTORY ? " A dashed line shows the usual Wednesday, the average of the last 4 Wednesdays, through to closing time." : ` ${L.noHistory}.`) +
+        (HAS_HISTORY ? " A dashed line shows what is usual on Wednesdays, the average of the last 4 Wednesdays, through to closing time." : ` ${L.noHistory}.`) +
         ` The rest of the day, ${plainRange(fmtTime(nowM + 1), fmtTime(DAY))}, is still ahead. Every minute is listed under View details.`;
   }
   $("#chart-summary").textContent = summary();
@@ -1707,7 +1720,6 @@
     fact("k-miss", L.cov.miss, covSpan(GAP0, GAP1, GAP1 - GAP0 + 1), true);
     if (STATE === "delayed") fact("k-wait", L.cov.wait, covSpan(last + 1, nowM, nowM - last), true);
     fact("k-ahead", L.cov.ahead, covSpan(nowM + 1, DAY), true);
-    fact("k-none", L.cov.line, L.covLineVal);
     fact("k-none", L.cov.usual, HAS_HISTORY ? L.covUsualVal : L.covUsualNone);
     $("#coverage").innerHTML = `<h3>${L.coverageTitle}</h3><div class="strip" aria-hidden="true">${strip.join("")}</div><div class="strip-axis" aria-hidden="true">${axis}</div><dl class="facts">${facts.join("")}</dl>`;
 
@@ -2910,5 +2922,5 @@
   // The other script's subset of Readex Pro is fetched up front too (the rail's language item is written in it), so
   // opening the rail never swaps a font mid-way; this changes no pixel.
   if (document.fonts && document.fonts.load) ["400", "500"].forEach((w) => document.fonts.load(`${w} 16px "Readex Pro"`, RTL ? "English FITWAY" : "العربية").catch(() => {}));
-  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { render(); window.__eclipse.ready = true; });
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { render(); renderReserve(); window.__eclipse.ready = true; });
 })();

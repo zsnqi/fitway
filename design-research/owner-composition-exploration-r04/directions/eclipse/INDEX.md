@@ -7,585 +7,586 @@ Script top level includes each outer IIFE's body; nested helpers are excluded. E
 
 - DESIGN-SPEC.md:1 — # — Eclipse design spec
 - DESIGN-SPEC.md:44 — ## — 0. How to read it
-- DESIGN-SPEC.md:93 — ## — 1. Shared foundations (Owner, Staff and Public)
-- DESIGN-SPEC.md:95 — ### — 1.1 Colour tokens
-- DESIGN-SPEC.md:99 — COL-1 — --page
-- DESIGN-SPEC.md:100 — COL-2 — --card
-- DESIGN-SPEC.md:101 — COL-3 — --card-solid
-- DESIGN-SPEC.md:102 — COL-4 — panel
-- DESIGN-SPEC.md:103 — COL-5 — --head-bg
-- DESIGN-SPEC.md:104 — COL-6 — --line
-- DESIGN-SPEC.md:105 — COL-7 — --line-2
-- DESIGN-SPEC.md:106 — COL-8 — --line-3
-- DESIGN-SPEC.md:107 — COL-9 — --ink chalk
-- DESIGN-SPEC.md:108 — COL-10 — --ink-2
-- DESIGN-SPEC.md:109 — COL-11 — --ink-3
-- DESIGN-SPEC.md:110 — COL-12 — --red FITWAY red
-- DESIGN-SPEC.md:111 — COL-13 — --red-hi
-- DESIGN-SPEC.md:112 — COL-14 — oxblood / obsidian
-- DESIGN-SPEC.md:113 — COL-15 — --live
-- DESIGN-SPEC.md:114 — COL-16 — --delayed
-- DESIGN-SPEC.md:115 — COL-17 — stale grey
-- DESIGN-SPEC.md:116 — COL-18 — --err
-- DESIGN-SPEC.md:117 — COL-19 — field edge
-- DESIGN-SPEC.md:118 — COL-20 — selection, scrollbar
-- DESIGN-SPEC.md:119 — COL-21 — red is structural
-- DESIGN-SPEC.md:120 — COL-22 — amber text
-- DESIGN-SPEC.md:121 — COL-23 — production mapping
-- DESIGN-SPEC.md:123 — ### — 1.2 Surfaces and glass
-- DESIGN-SPEC.md:127 — SRF-1 — Card: --card, 1 px --line, radius 24, backdrop-filter: blur(18px), no shadow.
-- DESIGN-SPEC.md:128 — SRF-2 — Rail: rgba(12,12,15,.7), blur 22, 1 px --line; open: .94 and shadow 0 30px 80px…
-- DESIGN-SPEC.md:129 — SRF-3 — Tooltip: rgba(15,14,15,.92), blur 10, 1 px rgba(255,255,255,.14), radius 12.
-- DESIGN-SPEC.md:130 — SRF-4 — Dialog: panel COL-4, 1 px --line-2, radius 24, shadow 0 40px 100px rgba(0,0,0,.7);…
-- DESIGN-SPEC.md:131 — SRF-5 — Plate: an opaque #0F0E0F layer, radius 16, under any colour that carries data inside a…
-- DESIGN-SPEC.md:132 — SRF-6 — Shadows only on things that float (the open rail, the phone's bar, the header's…
-- DESIGN-SPEC.md:133 — SRF-7 — The phone's bar (BAR-1): the rail's glass a little denser, rgba(12,12,15,.8), because…
-- DESIGN-SPEC.md:134 — SRF-8 — A panel that opens from the header (the status's details at every size, BDG-3; the…
-- DESIGN-SPEC.md:136 — ### — 1.3 Light
-- DESIGN-SPEC.md:140 — LGT-1 — Lights are static. They never move, pulse, follow the pointer or react to data.
-- DESIGN-SPEC.md:141 — LGT-2 — A light is a light behind the glass with a large dark disc in front of it (a mask,…
-- DESIGN-SPEC.md:142 — LGT-3 — Three recipes only: the page wash (an arc along the top from the inline-start corner),…
-- DESIGN-SPEC.md:143 — LGT-4 — The user-tuned :root values are the defaults and stay: summary intensity .7, core 229…
-- DESIGN-SPEC.md:144 — LGT-5 — Light ramp: obsidian → oxblood → FITWAY red → #FF2946 only at the single hottest…
-- DESIGN-SPEC.md:145 — LGT-6 — Where light may go. The language carries over, the composition does not: a page lights…
-- DESIGN-SPEC.md:146 — LGT-7 — D1. The brightest thing on a page is never stale, unavailable or empty. A lit card…
-- DESIGN-SPEC.md:147 — LGT-8 — D1's form: the card is drawn as a plain card while its content is not current; the…
-- DESIGN-SPEC.md:148 — LGT-9 — F7. Text in a lit zone uses --ink-2 or brighter, never --ink-3 (measured --ink-3 over…
-- DESIGN-SPEC.md:149 — LGT-10 — The rail's rim catches the page wash where it sits in it.
-- DESIGN-SPEC.md:150 — LGT-11 — The states (step 3's second part). Loading, closed, unavailable and error light no…
-- DESIGN-SPEC.md:152 — ### — 1.4 Type
-- DESIGN-SPEC.md:156 — TYP-1 — Readex Pro, self-hosted from fonts/, weights 400 and 500 only (one variable file per…
-- DESIGN-SPEC.md:157 — TYP-2 — Loading: the blocking font stylesheet, then document.fonts.load for both weights; each…
-- DESIGN-SPEC.md:158 — TYP-3 — The scale (F9): six sizes with named roles.
-- DESIGN-SPEC.md:159 — TYP-4 — Line height 1.5 for text, 1.6 for dialog text, 1.2 for the page title, 1 for a display…
-- DESIGN-SPEC.md:160 — TYP-7 — Every text is set by role (display, title, heading, body, label, caption). Entries…
-- DESIGN-SPEC.md:161 — TYP-5 — Letter spacing 0; never negative, never on Arabic. Only the Latin wordmark is tracked…
-- DESIGN-SPEC.md:162 — TYP-6 — Rendered today: 10, 11, 11.5, 12, 12.5, 13, 13.5, 14, 15, 16, 19, 20, 30, 38 and 46 px…
-- DESIGN-SPEC.md:175 — ### — 1.5 Numerals
-- DESIGN-SPEC.md:179 — NUM-1 — Western digits 0-9 in both languages, printed without a locale that could change them…
-- DESIGN-SPEC.md:180 — NUM-2 — font-variant-numeric: tabular-nums on everything that updates or aligns: values,…
-- DESIGN-SPEC.md:181 — NUM-3 — Numbers, times, dates, ranges and Latin fragments inside Arabic are isolated with .
-- DESIGN-SPEC.md:182 — NUM-4 — Thousands with a comma in both languages (9,615, 40,320); a sign before a percentage,…
-- DESIGN-SPEC.md:183 — NUM-5 — People are whole numbers (F12).
-- DESIGN-SPEC.md:185 — ### — 1.6 Spacing
-- DESIGN-SPEC.md:189 — SPC-1 — The scale is 4 px based: 4, 8, 12, 16, 24, 32, 48, 72. Mobile removes or recomposes…
-- DESIGN-SPEC.md:190 — SPC-2 — Page padding 16; rail to content 24.
-- DESIGN-SPEC.md:191 — SPC-3 — Optical exception: the rail's tiles sit 16 px from its outer edge (1 px border + 15 px…
-- DESIGN-SPEC.md:192 — SPC-4 — Optical exception: the tooltip keeps its user-approved box, padding 9 / 12 / 10 and…
-- DESIGN-SPEC.md:193 — SPC-5 — Gutters and paddings (F8): one 16 px gutter between cards and sections in both…
-- DESIGN-SPEC.md:194 — SPC-6 — Small gaps: 8 between an icon and its text, between buttons, between rail items, and…
-- DESIGN-SPEC.md:195 — SPC-7 — Daily is on the scale since step 3 phase B (637b285) (gutter 16, card padding 20,…
-- DESIGN-SPEC.md:197 — ### — 1.7 Radii, borders, elevation
-- DESIGN-SPEC.md:201 — RAD-1 — Five radii: 24 surfaces (card, rail, the phone's bar, dialog, sheet's top); 16 plates,…
-- DESIGN-SPEC.md:202 — RAD-2 — Off the set today: the segmented control 13 (F13); rail tiles and the minute scroller…
-- DESIGN-SPEC.md:203 — BRD-1 — One border tint per role: --line for surfaces, --line-2 for controls, --line-3 on…
-- DESIGN-SPEC.md:204 — BRD-2 — Elevation is the glass order: page, wash, cards and the tooltips inside them, the…
-- DESIGN-SPEC.md:206 — ### — 1.8 Icons
-- DESIGN-SPEC.md:210 — ICO-1 — Drawn SVG on a 24 grid, stroke 1.6-1.8, round caps and joins, currentColor, no fill…
-- DESIGN-SPEC.md:211 — ICO-2 — An icon is sized by the text beside it: 13-15 with caption text (meta, badges, tooltip…
-- DESIGN-SPEC.md:212 — ICO-3 — F21: an icon beside a label sits in the flow, 16 px in the label's colour, 8 px before…
-- DESIGN-SPEC.md:213 — ICO-4 — Every card draws its icon in a bordered 34 px tile (8 cards; icon-tile-stack). Daily's…
-- DESIGN-SPEC.md:214 — ICO-5 — F19: glyphs that show time or direction mirror in Arabic (trend arrows, entry and exit…
-- DESIGN-SPEC.md:216 — ### — 1.9 Focus
-- DESIGN-SPEC.md:220 — FOC-1 — F18: one ring. 2 px chalk #F5F3F2 at a 3 px offset on every interactive element…
-- DESIGN-SPEC.md:221 — FOC-2 — The inset variant, for controls packed edge to edge (segments, sortable headers,…
-- DESIGN-SPEC.md:222 — FOC-3 — At least 4 px between the ring and any other content. Focus is never hidden behind…
-- DESIGN-SPEC.md:223 — FOC-4 — D4: a collapsed rail item shows its name on keyboard focus only; the mouse hover keeps…
-- DESIGN-SPEC.md:224 — FOC-5 — D4's form: the name in a tooltip-look label (SRF-3, radius 8, 32 px, label type), 12…
-- DESIGN-SPEC.md:225 — FOC-6 — Offsets 3, 2, 1 and −4 today, and a red ring on the skip link; the chart's ring is 2…
-- DESIGN-SPEC.md:226 — FOC-7 — On a phone, focus and in-page jumps stop clear of the bar (scroll-padding-bottom: the…
-- DESIGN-SPEC.md:228 — ### — 1.10 Motion
-- DESIGN-SPEC.md:232 — MOT-1 — Principle: motion carries information; decoration never moves; the page is complete at…
-- DESIGN-SPEC.md:233 — MOT-2 — Digits that change roll inside their ink box
-- DESIGN-SPEC.md:234 — MOT-3 — A crowd-level bar fills or empties
-- DESIGN-SPEC.md:235 — MOT-4 — Switch thumb
-- DESIGN-SPEC.md:236 — MOT-5 — The chart marker follows between stops (the tooltip rides with it, sideways only)
-- DESIGN-SPEC.md:237 — MOT-6 — The line's tail on a new reading
-- DESIGN-SPEC.md:238 — MOT-7 — Live pulse from the end point, live only
-- DESIGN-SPEC.md:239 — MOT-8 — Rail opens / closes (transforms and a clip; the width switches at once)
-- DESIGN-SPEC.md:240 — MOT-9 — Dialog panel rises 14 px (a sheet slides up); scrim fades
-- DESIGN-SPEC.md:241 — MOT-10 — Daily's first-open intro: the answers roll, the line draws, then the end point and the…
-- DESIGN-SPEC.md:242 — MOT-11 — Reduced motion, ?motion=off: every change is instant, no intro, the page at rest is…
-- DESIGN-SPEC.md:243 — MOT-12 — The frame (steps 3 and 4): at 721-1023 px the rail opens as MOT-8 and its scrim (no…
-- DESIGN-SPEC.md:244 — MOT-13 — Loading and the intro. The skeleton never moves, in every motion setting (MOT-1,…
-- DESIGN-SPEC.md:246 — ### — 1.11 Breakpoints and navigation
-- DESIGN-SPEC.md:250 — BRK-1 — Designed: 1440×900, 768×1024, 390×844. Checked so nothing breaks: 320, 1024 and 200%…
-- DESIGN-SPEC.md:251 — BRK-2 — Desktop (1024 px and wider, 1024 included): the slim icon rail (RAI-1), unchanged but…
-- DESIGN-SPEC.md:252 — BRK-3 — Tablet (721-1023 px, 768 designed): the same slim rail, sticky, the full height; the…
-- DESIGN-SPEC.md:253 — BRK-4 — Phone (720 px and below): the glass bar at the bottom (BAR-1…6) with five items in…
-- DESIGN-SPEC.md:254 — BRK-5 — Daily's four summary cards go two by two below 1200 px (since step 3 phase B…
-- DESIGN-SPEC.md:255 — BRK-6 — At 720 px and below a dialog becomes a bottom sheet and a table recomposes before it…
-- DESIGN-SPEC.md:256 — BRK-7 — Reports sets the rail aside below 721 px and scrolls its pattern sideways only to…
-- DESIGN-SPEC.md:257 — BRK-8 — Daily's header overflows at 1024 (KI2) and its busy note jumps below 1024 (KI3). Fixed…
-- DESIGN-SPEC.md:258 — BRK-9 — Below 1024 the frame is a rule (BRK-3, BRK-4, BRK-10…12). Each page's content at 768,…
-- DESIGN-SPEC.md:259 — BRK-10 — The frame's breakpoints: 1024 px and wider, the desktop frame; 721-1023 px, the tablet…
-- DESIGN-SPEC.md:260 — BRK-11 — A page takes the frame by opting in (body[data-frame] in the concept), so the frame's…
-- DESIGN-SPEC.md:261 — BRK-12 — The frame never causes a document-level sideways scroll: measured 0 px at 390 and 320…
-- DESIGN-SPEC.md:263 — ## — 2. Content rules
-- DESIGN-SPEC.md:265 — ### — 2.1 Glossary
-- DESIGN-SPEC.md:269 — GLO-1 — estimated entrance crossings
-- DESIGN-SPEC.md:270 — GLO-2 — occupancy now
-- DESIGN-SPEC.md:271 — GLO-3 — crowd levels (the band words only)
-- DESIGN-SPEC.md:272 — GLO-4 — an average (F3)
-- DESIGN-SPEC.md:273 — GLO-5 — missing data (F4)
-- DESIGN-SPEC.md:274 — GLO-6 — genuine zero
-- DESIGN-SPEC.md:275 — GLO-7 — closed
-- DESIGN-SPEC.md:276 — GLO-8 — after now
-- DESIGN-SPEC.md:277 — GLO-9 — freshness
-- DESIGN-SPEC.md:278 — GLO-10 — comparison: against the usual day, and against the previous span
-- DESIGN-SPEC.md:279 — GLO-11 — peak
-- DESIGN-SPEC.md:280 — GLO-12 — busiest (F20; Daily since step 3, K-21): the one-hour slot (Q7), on the hour, with the…
-- DESIGN-SPEC.md:281 — GLO-13 — week (F1): a calendar week, Sunday to Saturday (as the table and the pattern already…
-- DESIGN-SPEC.md:282 — GLO-14 — nav names equal page titles (F15)
-- DESIGN-SPEC.md:283 — GLO-15 — no concept label: no Eclipse screen, at any width, in either language or any state,…
-- DESIGN-SPEC.md:284 — GLO-16 — jargon stays out of the copy (F11): "UTC" lives in the file, not in a sentence
-- DESIGN-SPEC.md:285 — GLO-17 — each language written naturally for itself (DESIGN_GUIDE §4)
-- DESIGN-SPEC.md:286 — GLO-18 — the phone bar's short names (BAR-3): the page's name, or the word of it that fits…
-- DESIGN-SPEC.md:287 — GLO-20 — exports, each named for what it holds (TBL-10; Reports since step 4)
-- DESIGN-SPEC.md:288 — GLO-19 — the frame's own words: the logo's focus name, the status's name and its details'…
-- DESIGN-SPEC.md:290 — ### — 2.2 Dates, times and ranges
-- DESIGN-SPEC.md:294 — DAT-1 — Gym time (Riyadh), 12-hour clock: Arabic «ص/م», English AM/PM.
-- DESIGN-SPEC.md:295 — DAT-2 — Day before month: «الأربعاء 23 سبتمبر 2026» / "Wednesday, 23 September 2026"; short…
-- DESIGN-SPEC.md:296 — DAT-3 — Arabic ranges use the en dash, like English: «16 – 22 سبتمبر», «6–8 م». An unspaced…
-- DESIGN-SPEC.md:297 — DAT-4 — F16: no line break inside a date, a time or a range. A file name that holds dates…
-- DESIGN-SPEC.md:298 — DAT-5 — A figure's "when" sits in the card's meta slot, as date · time (F20).
-- DESIGN-SPEC.md:300 — ### — 2.3 Crowd level
-- DESIGN-SPEC.md:304 — LVL-1 — Levels (synthetic thresholds): Quiet ≤ 24, Moderate ≤ 48, Busy ≤ 68, Packed above.…
-- DESIGN-SPEC.md:305 — LVL-2 — F17: the level badge appears only on "now" and on peaks, never on an average over many…
-- DESIGN-SPEC.md:306 — LVL-3 — A readout (a chart stop, a pattern cell) may name the level of that moment or slot,…
-- DESIGN-SPEC.md:307 — LVL-4 — The level word is always written; the bars are a redundant cue (an unlit bar is…
-- DESIGN-SPEC.md:308 — LVL-5 — F6: while delayed, the badge is qualified with the value it belongs to.
-- DESIGN-SPEC.md:309 — LVL-6 — F6's form: the badge dims with the value: word --ink-2, lit bars in stale grey…
-- DESIGN-SPEC.md:311 — ### — 2.4 State grammar
-- DESIGN-SPEC.md:315 — STA-1 — Live
-- DESIGN-SPEC.md:316 — STA-2 — Delayed
-- DESIGN-SPEC.md:317 — STA-3 — No history
-- DESIGN-SPEC.md:318 — STA-4 — Missing
-- DESIGN-SPEC.md:319 — STA-5 — Genuine zero
-- DESIGN-SPEC.md:320 — STA-6 — Closed slot
-- DESIGN-SPEC.md:321 — STA-7 — Still ahead
-- DESIGN-SPEC.md:322 — STA-8 — Empty period
-- DESIGN-SPEC.md:323 — STA-9 — Working (an action)
-- DESIGN-SPEC.md:324 — STA-10 — Loading
-- DESIGN-SPEC.md:325 — STA-11 — Closed (page)
-- DESIGN-SPEC.md:326 — STA-12 — Unavailable
-- DESIGN-SPEC.md:327 — STA-13 — Error
-- DESIGN-SPEC.md:328 — STA-14 — One skeleton, five truths
-- DESIGN-SPEC.md:330 — ### — 2.5 Truthfulness
-- DESIGN-SPEC.md:334 — TRU-1 — F1: every figure in a period-bound row answers for the chosen period, or leaves the…
-- DESIGN-SPEC.md:335 — TRU-2 — F5: a figure states its basis (the subtitle says how many days); a cell drawn from too…
-- DESIGN-SPEC.md:336 — TRU-3 — F6 and D1: nothing stale looks live; stale values and their level read as last-known;…
-- DESIGN-SPEC.md:337 — TRU-4 — The line is shape-preserving: a centred 30-minute average cut at opening, at a gap and…
-- DESIGN-SPEC.md:338 — TRU-5 — A comparison shows only for a clear difference (the week chip at 5% or more), and only…
-- DESIGN-SPEC.md:339 — TRU-6 — Capacity is never shown, and nothing is a percentage of it.
-- DESIGN-SPEC.md:340 — TRU-7 — Q3 (b): the week comparison leaves the period row. It keeps the domain's rolling 7…
-- DESIGN-SPEC.md:342 — ## — 3. Components
-- DESIGN-SPEC.md:346 — ### — 3.1 Card and lit card
-- DESIGN-SPEC.md:350 — CRD-1 — Surface SRF-1. Anatomy: head (icon, label, meta at the inline end), value, then a…
-- DESIGN-SPEC.md:351 — CRD-2 — Label --ink-2; meta caption --ink-3 holding the "when" (DAT-5); value display type,…
-- DESIGN-SPEC.md:352 — CRD-3 — Empty content: one sentence ("No readings", "Not enough history yet") in heading type…
-- DESIGN-SPEC.md:353 — CRD-4 — Cards size to their content; cards in one row stretch to the tallest.
-- DESIGN-SPEC.md:354 — CRD-5 — Stat cards are fixed at 166 px, which is why Daily's busy note pushes out of its card…
-- DESIGN-SPEC.md:355 — CRD-6 — Lit card: a card plus the summary or data light (LGT-3), with its text under LGT-9.
-- DESIGN-SPEC.md:356 — CRD-7 — Stat padding 20 (SPC-5); head 20 px (the icon in the flow, ICO-3), 16 to the value, at…
-- DESIGN-SPEC.md:357 — CRD-8 — Designed states: live (lit or plain), delayed (plain, qualified), no readings, not…
-- DESIGN-SPEC.md:358 — CRD-9 — A card keeps its height in every state: an empty note keeps its line (34 px with its…
-- DESIGN-SPEC.md:359 — CRD-11 — A card of figures. Figures that answer for one thing (Reports' period) share one card:…
-- DESIGN-SPEC.md:360 — CRD-10 — A card's slots in the states. The value's line keeps 46 px (a value in words 36), the…
-- DESIGN-SPEC.md:362 — ### — 3.2 Chart card
-- DESIGN-SPEC.md:366 — CHT-1 — Card
-- DESIGN-SPEC.md:367 — CHT-2 — Today's line
-- DESIGN-SPEC.md:368 — CHT-3 — Usual line
-- DESIGN-SPEC.md:369 — CHT-4 — Usual line after now
-- DESIGN-SPEC.md:370 — CHT-5 — Fine lines
-- DESIGN-SPEC.md:371 — CHT-6 — Grid and axes
-- DESIGN-SPEC.md:372 — CHT-7 — Peak
-- DESIGN-SPEC.md:373 — CHT-8 — End point
-- DESIGN-SPEC.md:374 — CHT-9 — Marker
-- DESIGN-SPEC.md:375 — CHT-10 — Hairline
-- DESIGN-SPEC.md:376 — CHT-11 — Tooltip lane
-- DESIGN-SPEC.md:377 — CHT-12 — Tooltip box
-- DESIGN-SPEC.md:378 — CHT-13 — Tooltip text
-- DESIGN-SPEC.md:379 — CHT-14 — Connector
-- DESIGN-SPEC.md:380 — CHT-15 — Input
-- DESIGN-SPEC.md:381 — CHT-16 — Scale by state
-- DESIGN-SPEC.md:382 — CHT-17 — Plot focus ring
-- DESIGN-SPEC.md:383 — CHT-18 — Lane
-- DESIGN-SPEC.md:384 — CHT-19 — Time axis
-- DESIGN-SPEC.md:385 — CHT-20 — Key
-- DESIGN-SPEC.md:386 — CHT-21 — States
-- DESIGN-SPEC.md:388 — ### — 3.3 Pattern (heat map)
-- DESIGN-SPEC.md:392 — PAT-1 — Structure
-- DESIGN-SPEC.md:393 — PAT-2 — Plate and cells
-- DESIGN-SPEC.md:394 — PAT-3 — Ramp
-- DESIGN-SPEC.md:395 — PAT-4 — Zero
-- DESIGN-SPEC.md:396 — PAT-5 — Closed
-- DESIGN-SPEC.md:397 — PAT-6 — No readings
-- DESIGN-SPEC.md:398 — PAT-7 — Busiest
-- DESIGN-SPEC.md:399 — PAT-8 — Numbers
-- DESIGN-SPEC.md:400 — PAT-9 — Readout
-- DESIGN-SPEC.md:401 — PAT-10 — Too few days (F5, Q5)
-- DESIGN-SPEC.md:402 — PAT-11 — Selected cell
-- DESIGN-SPEC.md:403 — PAT-12 — Below 1280 px: one day at a time (the user's pick of 2026-10-01, option B, which…
-- DESIGN-SPEC.md:404 — PAT-13 — The week strip
-- DESIGN-SPEC.md:405 — PAT-14 — The day's hours
-- DESIGN-SPEC.md:407 — ### — 3.4 Table
-- DESIGN-SPEC.md:411 — TBL-1 — F12: one table. A real with a caption, th scope and explicit roles; label-type cells;…
-- DESIGN-SPEC.md:412 — TBL-2 — Default density: rows 48, header 44; row lines .055, a firmer .14 line closes each…
-- DESIGN-SPEC.md:413 — TBL-3 — Compact density (logs): rows 36 with the same type, alignment and numerals; the header…
-- DESIGN-SPEC.md:414 — TBL-4 — Header: caption type --ink-3 on #121112, sticky, a --line-2 rule below, outer corners…
-- DESIGN-SPEC.md:415 — TBL-5 — Sortable header: the whole header is a button, at least 44 × 44; its arrow (14 px)…
-- DESIGN-SPEC.md:416 — TBL-6 — Exceptions: the period's highest day a row tinted red 8% (12% on hover), with no flag…
-- DESIGN-SPEC.md:417 — TBL-7 — Empty: EMP-1 inside the table.
-- DESIGN-SPEC.md:418 — TBL-8 — Phone (BRK-6): notes fold into their own row, the weekday over the date, the time…
-- DESIGN-SPEC.md:419 — TBL-9 — Daily's minute table: 13 px, 32.5 px rows, no tabular figures, people as "0.0" and…
-- DESIGN-SPEC.md:420 — TBL-10 — Q4 (F11): an export beside a table exports that table's rows. The minute file is its…
-- DESIGN-SPEC.md:421 — TBL-11 — A composite cell (a value with its time) leads with the value at the numbers' right…
-- DESIGN-SPEC.md:422 — TBL-12 — A note that spans columns (a phone's fold row, TBL-8) starts at the first column it…
-- DESIGN-SPEC.md:423 — TBL-13 — Heat-map cells stay centred: the pattern is a grid, not a column (PAT-2).
-- DESIGN-SPEC.md:425 — ### — 3.5 Buttons
-- DESIGN-SPEC.md:429 — BTN-1 — F13: one button, 44 tall, radius 12, label type, icon 17 with an 8 gap, text never wraps.
-- DESIGN-SPEC.md:430 — BTN-2 — Secondary: 1 px --line-2, 2% white; hover --line-3 and 5% white.
-- DESIGN-SPEC.md:431 — BTN-3 — Primary: chalk fill, #0D0C0D text at 500 (17.65:1); hover white. One primary per group.
-- DESIGN-SPEC.md:432 — BTN-4 — Disabled: secondary loses its fill and border to --line, text --ink-3; primary becomes…
-- DESIGN-SPEC.md:433 — BTN-5 — Icon button: 44 × 44, no border, --ink-2, hover chalk and 5% white; it always has a…
-- DESIGN-SPEC.md:434 — BTN-6 — Red is never a button colour; a destructive action gets its own treatment when one exists.
-- DESIGN-SPEC.md:435 — BTN-7 — Inline padding 16 (Daily's 14 / 11 is part of K-10).
-- DESIGN-SPEC.md:436 — BTN-8 — Daily's "View details" is a 38 px button in 13 px text. Fixed in step 3 phase B…
-- DESIGN-SPEC.md:437 — BTN-9 — A primary action that works in place (the error's retry, STA-9): its words change at…
-- DESIGN-SPEC.md:439 — ### — 3.6 Segmented control
-- DESIGN-SPEC.md:443 — SEG-1 — A group of toggle buttons (aria-pressed), one Tab stop each; the last may open a…
-- DESIGN-SPEC.md:444 — SEG-2 — F10: each segment is 44 px tall.
-- DESIGN-SPEC.md:445 — SEG-3 — Form: a 44 px row in a 1 px --line-2 frame (drawn inside, so it adds no height),…
-- DESIGN-SPEC.md:446 — SEG-4 — On a phone it spans the width in equal segments.
-- DESIGN-SPEC.md:447 — SEG-5 — Segments are 36 px inside a 44 px frame (the hit area is widened by a pseudo-element);…
-- DESIGN-SPEC.md:449 — ### — 3.7 Switch
-- DESIGN-SPEC.md:453 — SWI-1 — role="switch", aria-checked; a 44 px box, 1 px --line-2, radius 12, label type.
-- DESIGN-SPEC.md:454 — SWI-2 — Track 32 × 18, radius 9: off 7% white with a 1 px --line-3 inset edge, thumb 12…
-- DESIGN-SPEC.md:455 — SWI-3 — Hover: chalk text, --line-3 border. Checked: chalk text.
-- DESIGN-SPEC.md:456 — SWI-4 — Padding 12 / 16, gap 8 (measured 12 / 14 and 10).
-- DESIGN-SPEC.md:458 — ### — 3.8 Date field
-- DESIGN-SPEC.md:462 — FLD-1 — A persistent label above; a 44 px input, radius 12, edge COL-19, 3% white fill, body…
-- DESIGN-SPEC.md:463 — FLD-2 — Typed as day/month/year with a hint below it ("Day/month/year, like 16/09/2026");…
-- DESIGN-SPEC.md:464 — FLD-3 — Hover and focus raise the edge to .52; focus adds FOC-1.
-- DESIGN-SPEC.md:465 — FLD-4 — Invalid: the edge in --err .5 and a 5% error fill; a specific message under the field…
-- DESIGN-SPEC.md:466 — FLD-5 — Disabled: --line edge, no fill, --ink-3 text and label.
-- DESIGN-SPEC.md:467 — FLD-6 — Label to field 8, field to message 8, padding 16 (measured 7, 7 and 14).
-- DESIGN-SPEC.md:468 — FLD-7 — The input's focus ring sits at a 2 px offset (FOC-1). Fixed in step 4 phase A (R4): 3 px.
-- DESIGN-SPEC.md:470 — ### — 3.9 Dialog and bottom sheet
-- DESIGN-SPEC.md:474 — DLG-1 — with showModal: the page behind is inert; Tab and Shift+Tab stay inside; Escape and…
-- DESIGN-SPEC.md:475 — DLG-2 — Panel SRF-4, at most 468 wide; head: title in heading type and a 44 px close button;…
-- DESIGN-SPEC.md:476 — DLG-3 — Intentional initial focus (DESIGN_GUIDE §11), by the dialog's job (Q8): a dialog that…
-- DESIGN-SPEC.md:477 — DLG-4 — States: ready, invalid, working (STA-9, focus to Cancel), done (focus to the result's…
-- DESIGN-SPEC.md:478 — DLG-5 — At 720 px and below: a bottom sheet, full width, radius 24 at the top only, no bottom…
-- DESIGN-SPEC.md:479 — DLG-6 — Inset 24, close button side 12, foot gap 8 (measured 16 / 24 / 0 with a 14 side, body…
-- DESIGN-SPEC.md:481 — ### — 3.10 Chips and badges
-- DESIGN-SPEC.md:485 — CHP-1 — F13: a pill in a control row matches the control height (44) or drops its box.
-- DESIGN-SPEC.md:486 — CHP-2 — Header forms: a status that opens its details is a 44 px control; a status that does…
-- DESIGN-SPEC.md:487 — CHP-3 — A legend drops its box: swatches and words in a row, 16 apart.
-- DESIGN-SPEC.md:488 — CHP-4 — Badge (in content, not interactive): 26 tall, radius 8, 1 px --line-2,…
-- DESIGN-SPEC.md:489 — CHP-5 — Level badge: four 3 px bars (4, 6.5, 9, 11 tall, 2 apart, radius 1): lit #FF2946,…
-- DESIGN-SPEC.md:490 — CHP-6 — Comparison badge: a trend glyph (15 px; #FF2946 for busier, --ink-2 for quieter, two…
-- DESIGN-SPEC.md:491 — CHP-7 — Flag: a small outlined word (caption type, 1 px --line-2), in the chart's tooltip.…
-- DESIGN-SPEC.md:492 — CHP-8 — Badge padding 8 with an 8 gap; flag radius 4 and height 18.
-- DESIGN-SPEC.md:493 — CHP-9 — Header chips are 36 px beside a 44 px control; the legend box is 38 px beside a 44 px…
-- DESIGN-SPEC.md:495 — ### — 3.11 Rail and header
-- DESIGN-SPEC.md:499 — RAI-1 — Rail: 80 px, the full height less the page padding, sticky, SRF-2, radius 24; the logo…
-- DESIGN-SPEC.md:500 — RAI-2 — Items are 48 × 48 tiles: 1 px --line-2, 1.8% white, icon 21 in --ink-2; hover…
-- DESIGN-SPEC.md:501 — RAI-3 — Open: 236 px over the content, names in label type beside the tiles, the current one…
-- DESIGN-SPEC.md:502 — RAI-4 — Focus: FOC-1 on the tile; D4 (FOC-4).
-- DESIGN-SPEC.md:503 — RAI-5 — Tile radius 12, 8 between items, 24 between the logo and the sections (16 under the…
-- DESIGN-SPEC.md:504 — RAI-6 — Tablet (721-1023 px). Open, the rail is a modal layer: the same 236 px surface and…
-- DESIGN-SPEC.md:505 — RAI-7 — Desktop (1024 px and wider). Open, the rail is not modal: Escape or a tap outside…
-- DESIGN-SPEC.md:506 — RAI-8 — The logo's focus label (FOC-5) names what it opens: «أسماء الأقسام» / "Section names",…
-- DESIGN-SPEC.md:507 — HDR-1 — Header: the title (title type), a subtitle in label type --ink-3 with " · "…
-- DESIGN-SPEC.md:508 — HDR-2 — The title names the page and matches its nav name (GLO-14).
-- DESIGN-SPEC.md:509 — HDR-3 — The status from 721 px (CHP-2). The frame's Operations status is a 44 px control that…
-- DESIGN-SPEC.md:510 — HDR-4 — Phone (720 px and below): the compact header. One line holds the title and, at the…
-- DESIGN-SPEC.md:511 — HDR-5 — The skip link is part of the frame: a 44 px chalk control (label type, padding 16,…
-- DESIGN-SPEC.md:512 — HDR-7 — Page controls. A page's own controls (a period, filters, a page's actions) sit in a…
-- DESIGN-SPEC.md:513 — HDR-6 — The status's box is the frame's. From 721 px the status column fills the header's free…
-- DESIGN-SPEC.md:515 — ### — 3.12 Empty state, alert and retry
-- DESIGN-SPEC.md:519 — EMP-1 — Empty state: an info icon (22, --ink-3), one sentence that names what is missing and…
-- DESIGN-SPEC.md:520 — EMP-2 — Alert: role="alert", radius 12, 1 px --err .5, 6% error fill, an error icon (17) and…
-- DESIGN-SPEC.md:521 — EMP-3 — Retry: one primary action ("Try again", «إعادة المحاولة»); focus moves to it; the…
-- DESIGN-SPEC.md:522 — EMP-4 — Empty state padding 40 with a 16 gap; alert padding 12 / 16 with an 8 gap (measured 40…
-- DESIGN-SPEC.md:523 — EMP-5 — A page that could not load (STA-13). The alert sits in the page's first answer, Inside…
-- DESIGN-SPEC.md:525 — ### — 3.13 The status's details, and the phone's bar, badge and menu
-- DESIGN-SPEC.md:532 — BAR-1 — The bar. The rail turned to lie along the bottom: SRF-7's glass, fixed 16 px from both…
-- DESIGN-SPEC.md:533 — BAR-2 — An item. A link at least 44 × 44 (61.6 × 56 at 390, 50.8 × 56 at 320), radius 16: a 40…
-- DESIGN-SPEC.md:534 — BAR-3 — Names. Short names (GLO-18), one line each, never cut: the widest, "Settings", is 47.6…
-- DESIGN-SPEC.md:535 — BAR-4 — States. Hover: chalk icon and name, tile 6% white, at once. Current page: the rail's…
-- DESIGN-SPEC.md:536 — BAR-5 — Focus. FOC-1 around the whole item. With 8 px between items the ring stays inside the…
-- DESIGN-SPEC.md:537 — BAR-6 — Order. Today, Reports, Activity log, Access, Settings, from the inline start (the…
-- DESIGN-SPEC.md:538 — BDG-1 — The status badge. On a phone the header's status (HDR-3) compacted to its word: a 44…
-- DESIGN-SPEC.md:539 — BDG-2 — Opening, at every size. Click, Enter or Space opens the details and moves focus to…
-- DESIGN-SPEC.md:540 — BDG-3 — The details. A non-modal dialog (SRF-8) 8 px below the control, min(288px, 100vw −…
-- DESIGN-SPEC.md:541 — BDG-4 — The one way to Operations. Operations has no section in the rail or the bar (user…
-- DESIGN-SPEC.md:542 — MNU-1 — The menu button. A 44 × 44 icon button (BTN-5) with a three-dot icon (18 px, --ink-2;…
-- DESIGN-SPEC.md:543 — MNU-2 — The menu. A role="menu" panel (SRF-8), 4 px inside, at least 200 px wide, under the…
-- DESIGN-SPEC.md:544 — MNU-3 — Items. 44 px tall, radius 12, label type chalk, icon 16 --ink-2, 8 between, text 16…
-- DESIGN-SPEC.md:545 — MNU-4 — Keyboard. Enter, Space or Down Arrow opens it on the first item, Up Arrow on the last;…
-- DESIGN-SPEC.md:547 — ### — 3.14 States: placeholders and the status words
-- DESIGN-SPEC.md:553 — PH-1 — A placeholder bar stands where a value is awaited, in that value's own slot: an inline…
-- DESIGN-SPEC.md:554 — PH-2 — A placeholder box stands for the level badge: its own 76 × 26 box, radius 8, the same…
-- DESIGN-SPEC.md:555 — PH-3 — Where, and when. Only awaited values wait: the values (and the unit «تقريبًا» /…
-- DESIGN-SPEC.md:556 — STW-1 — One status word, one control. The header's status (HDR-3), its phone form (BDG-1) and…
-- DESIGN-SPEC.md:557 — STW-2 — While the status is not known (loading), the control is set aside and the words «جارٍ…
-- DESIGN-SPEC.md:559 — ## — 4. Owner surface
-- DESIGN-SPEC.md:564 — ### — 4.1 Today (Daily)
-- DESIGN-SPEC.md:568 — OWN-D1 — Answers "how is today going right now; busier or quieter than usual; when are the peaks".
-- DESIGN-SPEC.md:569 — OWN-D2 — The first screen is fixed to the viewport (at least 720 px) at 1200 px and wider:…
-- DESIGN-SPEC.md:570 — OWN-D6 — 1024-1199 px (the desktop frame) and 721-1023 px (the tablet, 768 designed): the cards…
-- DESIGN-SPEC.md:571 — OWN-D7 — 720 px and below (390 designed; the 200% zoom of 1440 lands here): the compact header…
-- DESIGN-SPEC.md:572 — OWN-D8 — Below 360 px (320 checked): every card across the width, Today's peak keeping its time…
-- DESIGN-SPEC.md:573 — OWN-D9 — The lights at every size: the summary light on Inside now and the data light on the…
-- DESIGN-SPEC.md:574 — OWN-D3 — Cards: Inside now (lit, summary light), Today's peak, Entries with its usual value,…
-- DESIGN-SPEC.md:575 — OWN-D4 — The chart card carries the data light: today's line against the usual Wednesday, with…
-- DESIGN-SPEC.md:576 — OWN-D5 — The first-open intro (MOT-10), at every size; nothing moves at its end (K-27).
-- DESIGN-SPEC.md:577 — OWN-D10 — The states at every size keep OWN-D2 and OWN-D6…D9: the same cards, places and heights…
-- DESIGN-SPEC.md:578 — OWN-D11 — The data coverage list (in "View details"; decisions 13 and 14, user 2026-10-02): a…
-- DESIGN-SPEC.md:580 — ### — 4.2 Reports
-- DESIGN-SPEC.md:584 — OWN-R1 — Answers "how does my gym usually behave, and which way is it going". Complete days…
-- DESIGN-SPEC.md:585 — OWN-R2 — Header: the title, the period in the subtitle and the frame's status (HDR-3); no…
-- DESIGN-SPEC.md:586 — OWN-R3 — At a glance (step 4). One card of the period's figures (CRD-11) under the period…
-- DESIGN-SPEC.md:587 — OWN-R4 — Busy times: the weekday × hour pattern (7 × 19, Sunday first) across the page, with…
-- DESIGN-SPEC.md:588 — OWN-R6 — Where the light goes (step 4). Reports has no summary light. The pattern carries the…
-- DESIGN-SPEC.md:589 — OWN-R7 — 1440 × 900: the header 60.25 px, then 16 to the controls (44), 16 to the glance row…
-- DESIGN-SPEC.md:590 — OWN-R8 — 1024-1279 px (the desktop frame; 1024, 1200 and 1279 checked; the fix round, the…
-- DESIGN-SPEC.md:591 — OWN-R9 — 721-1023 px (the tablet frame, 768 designed; step 4's build, the user's pick of option…
-- DESIGN-SPEC.md:592 — OWN-R10 — 720 px and below (the phone frame, 390 designed; step 4's build, the user's pick of…
-- DESIGN-SPEC.md:593 — OWN-R11 — Below 360 px (320 checked) and the 200% zoom (720 × 450, checked): under a 330 px…
-- DESIGN-SPEC.md:594 — OWN-R12 — Day by day at 720 px and below (step 4's build, the user's pick of option B; the fix…
-- DESIGN-SPEC.md:595 — OWN-R13 — An empty period below 1280 px (step 4's build; unchanged by the user's decision 4,…
-- DESIGN-SPEC.md:596 — OWN-R5 — Day by day: the sortable table below the first screen, with "Export table"; at 720 px…
-- DESIGN-SPEC.md:598 — ## — 5. Staff
-- DESIGN-SPEC.md:602 — ## — 6. Public
-- DESIGN-SPEC.md:606 — ## — 7. Known issues register
-- DESIGN-SPEC.md:612 — K-01 — Week over week ignores the chosen period and uses a rolling Wed-Tue week while the…
-- DESIGN-SPEC.md:613 — K-02 — Loading, page-level closed, unavailable and error are not designed (F2)
-- DESIGN-SPEC.md:614 — K-03 — «متوسط» used for averages («المتوسط 48», «متوسط الموجودين», «متوسط كل 30 دقيقة»,…
-- DESIGN-SPEC.md:615 — K-04 — Missing data named three ways: «لا قراءة» / "No reading", «لا بيانات» / "No data", «لا…
-- DESIGN-SPEC.md:616 — K-05 — A single day's "Busiest" and cells read as certain; the busiest point has no key entry…
-- DESIGN-SPEC.md:617 — K-06 — The delayed level badge keeps chalk and red bars (F6)
-- DESIGN-SPEC.md:618 — K-07 — Axis labels over the lit corners at 3.85-4.88:1 in --ink-3 (F7)
-- DESIGN-SPEC.md:619 — K-08 — Spacing off the 4 px scale (SPC-7) (F8)
-- DESIGN-SPEC.md:620 — K-09 — Fifteen text sizes (TYP-6) and radii off the set (RAD-2) (F9)
-- DESIGN-SPEC.md:621 — K-10 — Controls and pills under 44: #details-btn 124.8 × 38; the header's status and concept…
-- DESIGN-SPEC.md:622 — K-11 — Segments 36 px in a 44 px frame with radius 13 (F10, KI1)
-- DESIGN-SPEC.md:623 — K-12 — The Inside now light is unchanged while delayed (D1)
-- DESIGN-SPEC.md:624 — K-13 — The lit week card says "Not enough history yet" (short state) and shows +9% in an…
-- DESIGN-SPEC.md:625 — K-14 — "Export CSV" on the day table exports 40,320 minute rows, and its copy says "UTC" (F11)
-- DESIGN-SPEC.md:626 — K-15 — The scale changes by state and the last tick breaks the rhythm (F14)
-- DESIGN-SPEC.md:627 — K-16 — The nav says «اليومي» / "Daily" on a page titled «اليوم» / "Today" (F15)
-- DESIGN-SPEC.md:628 — K-17 — Dates and times break across lines: "…1:00 / AM" at 1000 px, «22 سبتمبر / 2026» at 320…
-- DESIGN-SPEC.md:629 — K-18 — A level badge on an all-hours average ("Average inside 21 · Quiet") (F17)
-- DESIGN-SPEC.md:630 — K-19 — Trend glyphs mirror inconsistently: the week card's head icon and Daily's peak icon do…
-- DESIGN-SPEC.md:631 — K-20 — The minute table: 13 px, 32.5 px rows, no tabular figures, "0.0" and "1.7" people…
-- DESIGN-SPEC.md:632 — K-21 — "Busiest" is a 2-hour window on Daily and a 1-hour cell on Reports; the peak's time…
-- DESIGN-SPEC.md:633 — K-22 — Focus rings at offsets 3, 2, 1 and −4; a red ring on the skip link; the plot's ring 2…
-- DESIGN-SPEC.md:634 — K-23 — Keyboard focus on a rail item shows no name (D4)
-- DESIGN-SPEC.md:635 — K-24 — A bordered 34 px icon tile on every card (F21)
-- DESIGN-SPEC.md:636 — K-25 — 13 px text on red cells would be about 3.3:1 undimmed: held by the 80% dim (5.26:1…
-- DESIGN-SPEC.md:637 — K-26 — The card headers overflow at 1024: worst 59 px (AR, "Busiest time"), a document scroll…
-- DESIGN-SPEC.md:638 — K-27 — #busy-note jumps when the intro ends: 71.5 px at 600 (EN) and 390 (EN, AR); 14.7-14.8…
-- DESIGN-SPEC.md:639 — K-28 — Stat cards fixed at 166 px (the root of K-27)
-- DESIGN-SPEC.md:640 — K-29 — The rail set aside and the pattern scrolled sideways below 721 px as a placeholder
-- DESIGN-SPEC.md:641 — K-30 — Two amber text tones (#F0C23C in the header, #E8B62E elsewhere)
-- DESIGN-SPEC.md:642 — K-31 — The usual line after now at .24 chalk, 2.01:1
-- DESIGN-SPEC.md:643 — K-32 — A single closed cell hides its word (.is-one); only a 1.1:1 fill would tell it from a…
-- DESIGN-SPEC.md:644 — K-33 — Daily's minute table, English: numbers and headers start-aligned, so on the left edge.…
-- DESIGN-SPEC.md:645 — K-34 — Reports' day table, Arabic: numeric cells end-aligned, so on the left edge. Right…
-- DESIGN-SPEC.md:646 — K-36 — Short landscape screens (721 px and wider but under about 650 px tall, such as a phone…
-- DESIGN-SPEC.md:647 — K-35 — Reports' day table, English: the peak cell ends with its time, so the value sits 54-55…
-- DESIGN-SPEC.md:648 — K-37 — The period control's "Last 4 weeks" / «آخر 4 أسابيع» (before) named the rolling 28…
-- DESIGN-SPEC.md:649 — K-38 — Closed 2026-10-03 (K-02, option A's title row): Reports' title keeps its own width at…
-- DESIGN-SPEC.md:650 — K-39 — The week grid's cells are under 44 px wide from 1024 px to about 1240 px: 33 × 44 at…
-- DESIGN-SPEC.md:662 — ## — 8. Open questions for the user
-- DESIGN-SPEC.md:666 — ### — Decided 2026-10-02 (decisions 15-17)
-- DESIGN-SPEC.md:682 — ### — Decided 2026-10-02 (step 4's wording round)
-- DESIGN-SPEC.md:707 — ### — Decided 2026-10-01 (step 4's fix round)
-- DESIGN-SPEC.md:720 — ### — Decided 2026-10-01 (step 4's build, the user's pick of option B)
-- DESIGN-SPEC.md:740 — ### — Decided 2026-10-01 (step 4 phase A)
-- DESIGN-SPEC.md:756 — ### — Answered 2026-10-01
-- DESIGN-SPEC.md:765 — ### — Answered 2026-09-30
+- DESIGN-SPEC.md:94 — ## — 1. Shared foundations (Owner, Staff and Public)
+- DESIGN-SPEC.md:96 — ### — 1.1 Colour tokens
+- DESIGN-SPEC.md:100 — COL-1 — --page
+- DESIGN-SPEC.md:101 — COL-2 — --card
+- DESIGN-SPEC.md:102 — COL-3 — --card-solid
+- DESIGN-SPEC.md:103 — COL-4 — panel
+- DESIGN-SPEC.md:104 — COL-5 — --head-bg
+- DESIGN-SPEC.md:105 — COL-6 — --line
+- DESIGN-SPEC.md:106 — COL-7 — --line-2
+- DESIGN-SPEC.md:107 — COL-8 — --line-3
+- DESIGN-SPEC.md:108 — COL-9 — --ink chalk
+- DESIGN-SPEC.md:109 — COL-10 — --ink-2
+- DESIGN-SPEC.md:110 — COL-11 — --ink-3
+- DESIGN-SPEC.md:111 — COL-12 — --red FITWAY red
+- DESIGN-SPEC.md:112 — COL-13 — --red-hi
+- DESIGN-SPEC.md:113 — COL-14 — oxblood / obsidian
+- DESIGN-SPEC.md:114 — COL-15 — --live
+- DESIGN-SPEC.md:115 — COL-16 — --delayed
+- DESIGN-SPEC.md:116 — COL-17 — stale grey
+- DESIGN-SPEC.md:117 — COL-18 — --err
+- DESIGN-SPEC.md:118 — COL-19 — field edge
+- DESIGN-SPEC.md:119 — COL-20 — selection, scrollbar
+- DESIGN-SPEC.md:120 — COL-21 — red is structural
+- DESIGN-SPEC.md:121 — COL-22 — amber text
+- DESIGN-SPEC.md:122 — COL-23 — production mapping
+- DESIGN-SPEC.md:124 — ### — 1.2 Surfaces and glass
+- DESIGN-SPEC.md:128 — SRF-1 — Card: --card, 1 px --line, radius 24, backdrop-filter: blur(18px), no shadow.
+- DESIGN-SPEC.md:129 — SRF-2 — Rail: rgba(12,12,15,.7), blur 22, 1 px --line; open: .94 and shadow 0 30px 80px…
+- DESIGN-SPEC.md:130 — SRF-3 — Tooltip: rgba(15,14,15,.92), blur 10, 1 px rgba(255,255,255,.14), radius 12.
+- DESIGN-SPEC.md:131 — SRF-4 — Dialog: panel COL-4, 1 px --line-2, radius 24, shadow 0 40px 100px rgba(0,0,0,.7);…
+- DESIGN-SPEC.md:132 — SRF-5 — Plate: an opaque #0F0E0F layer, radius 16, under any colour that carries data inside a…
+- DESIGN-SPEC.md:133 — SRF-6 — Shadows only on things that float (the open rail, the phone's bar, the header's…
+- DESIGN-SPEC.md:134 — SRF-7 — The phone's bar (BAR-1): the rail's glass a little denser, rgba(12,12,15,.8), because…
+- DESIGN-SPEC.md:135 — SRF-8 — A panel that opens from the header (the status's details at every size, BDG-3; the…
+- DESIGN-SPEC.md:137 — ### — 1.3 Light
+- DESIGN-SPEC.md:141 — LGT-1 — Lights are static. They never move, pulse, follow the pointer or react to data.
+- DESIGN-SPEC.md:142 — LGT-2 — A light is a light behind the glass with a large dark disc in front of it (a mask,…
+- DESIGN-SPEC.md:143 — LGT-3 — Three recipes only: the page wash (an arc along the top from the inline-start corner),…
+- DESIGN-SPEC.md:144 — LGT-4 — The user-tuned :root values are the defaults and stay: summary intensity .7, core 229…
+- DESIGN-SPEC.md:145 — LGT-5 — Light ramp: obsidian → oxblood → FITWAY red → #FF2946 only at the single hottest…
+- DESIGN-SPEC.md:146 — LGT-6 — Where light may go. The language carries over, the composition does not: a page lights…
+- DESIGN-SPEC.md:147 — LGT-7 — D1. The brightest thing on a page is never stale, unavailable or empty. A lit card…
+- DESIGN-SPEC.md:148 — LGT-8 — D1's form: the card is drawn as a plain card while its content is not current; the…
+- DESIGN-SPEC.md:149 — LGT-9 — F7. Text in a lit zone uses --ink-2 or brighter, never --ink-3 (measured --ink-3 over…
+- DESIGN-SPEC.md:150 — LGT-10 — The rail's rim catches the page wash where it sits in it.
+- DESIGN-SPEC.md:151 — LGT-11 — The states (step 3's second part). Loading, closed, unavailable and error light no…
+- DESIGN-SPEC.md:153 — ### — 1.4 Type
+- DESIGN-SPEC.md:157 — TYP-1 — Readex Pro, self-hosted from fonts/, weights 400 and 500 only (one variable file per…
+- DESIGN-SPEC.md:158 — TYP-2 — Loading: the blocking font stylesheet, then document.fonts.load for both weights; each…
+- DESIGN-SPEC.md:159 — TYP-3 — The scale (F9): six sizes with named roles.
+- DESIGN-SPEC.md:160 — TYP-4 — Line height 1.5 for text, 1.6 for dialog text, 1.2 for the page title, 1 for a display…
+- DESIGN-SPEC.md:161 — TYP-7 — Every text is set by role (display, title, heading, body, label, caption). Entries…
+- DESIGN-SPEC.md:162 — TYP-5 — Letter spacing 0; never negative, never on Arabic. Only the Latin wordmark is tracked…
+- DESIGN-SPEC.md:163 — TYP-6 — Rendered today: 10, 11, 11.5, 12, 12.5, 13, 13.5, 14, 15, 16, 19, 20, 30, 38 and 46 px…
+- DESIGN-SPEC.md:176 — ### — 1.5 Numerals
+- DESIGN-SPEC.md:180 — NUM-1 — Western digits 0-9 in both languages, printed without a locale that could change them…
+- DESIGN-SPEC.md:181 — NUM-2 — font-variant-numeric: tabular-nums on everything that updates or aligns: values,…
+- DESIGN-SPEC.md:182 — NUM-3 — Numbers, times, dates, ranges and Latin fragments inside Arabic are isolated with .
+- DESIGN-SPEC.md:183 — NUM-4 — Thousands with a comma in both languages (9,615, 40,320); a sign before a percentage,…
+- DESIGN-SPEC.md:184 — NUM-5 — People are whole numbers (F12).
+- DESIGN-SPEC.md:186 — ### — 1.6 Spacing
+- DESIGN-SPEC.md:190 — SPC-1 — The scale is 4 px based: 4, 8, 12, 16, 24, 32, 48, 72. Mobile removes or recomposes…
+- DESIGN-SPEC.md:191 — SPC-2 — Page padding 16; rail to content 24.
+- DESIGN-SPEC.md:192 — SPC-3 — Optical exception: the rail's tiles sit 16 px from its outer edge (1 px border + 15 px…
+- DESIGN-SPEC.md:193 — SPC-4 — Optical exception: the tooltip keeps its user-approved box, padding 9 / 12 / 10 and…
+- DESIGN-SPEC.md:194 — SPC-5 — Gutters and paddings (F8): one 16 px gutter between cards and sections in both…
+- DESIGN-SPEC.md:195 — SPC-6 — Small gaps: 8 between an icon and its text, between buttons, between rail items, and…
+- DESIGN-SPEC.md:196 — SPC-7 — Daily is on the scale since step 3 phase B (637b285) (gutter 16, card padding 20,…
+- DESIGN-SPEC.md:198 — ### — 1.7 Radii, borders, elevation
+- DESIGN-SPEC.md:202 — RAD-1 — Five radii: 24 surfaces (card, rail, the phone's bar, dialog, sheet's top); 16 plates,…
+- DESIGN-SPEC.md:203 — RAD-2 — Off the set today: the segmented control 13 (F13); rail tiles and the minute scroller…
+- DESIGN-SPEC.md:204 — BRD-1 — One border tint per role: --line for surfaces, --line-2 for controls, --line-3 on…
+- DESIGN-SPEC.md:205 — BRD-2 — Elevation is the glass order: page, wash, cards and the tooltips inside them, the…
+- DESIGN-SPEC.md:207 — ### — 1.8 Icons
+- DESIGN-SPEC.md:211 — ICO-1 — Drawn SVG on a 24 grid, stroke 1.6-1.8, round caps and joins, currentColor, no fill…
+- DESIGN-SPEC.md:212 — ICO-2 — An icon is sized by the text beside it: 13-15 with caption text (meta, badges, tooltip…
+- DESIGN-SPEC.md:213 — ICO-3 — F21: an icon beside a label sits in the flow, 16 px in the label's colour, 8 px before…
+- DESIGN-SPEC.md:214 — ICO-4 — Every card draws its icon in a bordered 34 px tile (8 cards; icon-tile-stack). Daily's…
+- DESIGN-SPEC.md:215 — ICO-5 — F19: glyphs that show time or direction mirror in Arabic (trend arrows, entry and exit…
+- DESIGN-SPEC.md:217 — ### — 1.9 Focus
+- DESIGN-SPEC.md:221 — FOC-1 — F18: one ring. 2 px chalk #F5F3F2 at a 3 px offset on every interactive element…
+- DESIGN-SPEC.md:222 — FOC-2 — The inset variant, for controls packed edge to edge (segments, sortable headers,…
+- DESIGN-SPEC.md:223 — FOC-3 — At least 4 px between the ring and any other content. Focus is never hidden behind…
+- DESIGN-SPEC.md:224 — FOC-4 — D4: a collapsed rail item shows its name on keyboard focus only; the mouse hover keeps…
+- DESIGN-SPEC.md:225 — FOC-5 — D4's form: the name in a tooltip-look label (SRF-3, radius 8, 32 px, label type), 12…
+- DESIGN-SPEC.md:226 — FOC-6 — Offsets 3, 2, 1 and −4 today, and a red ring on the skip link; the chart's ring is 2…
+- DESIGN-SPEC.md:227 — FOC-7 — On a phone, focus and in-page jumps stop clear of the bar (scroll-padding-bottom: the…
+- DESIGN-SPEC.md:229 — ### — 1.10 Motion
+- DESIGN-SPEC.md:233 — MOT-1 — Principle: motion carries information; decoration never moves; the page is complete at…
+- DESIGN-SPEC.md:234 — MOT-2 — Digits that change roll inside their ink box
+- DESIGN-SPEC.md:235 — MOT-3 — A crowd-level bar fills or empties
+- DESIGN-SPEC.md:236 — MOT-4 — Switch thumb
+- DESIGN-SPEC.md:237 — MOT-5 — The chart marker follows between stops (the tooltip rides with it, sideways only)
+- DESIGN-SPEC.md:238 — MOT-6 — The line's tail on a new reading
+- DESIGN-SPEC.md:239 — MOT-7 — Live pulse from the end point, live only
+- DESIGN-SPEC.md:240 — MOT-8 — Rail opens / closes (transforms and a clip; the width switches at once)
+- DESIGN-SPEC.md:241 — MOT-9 — Dialog panel rises 14 px (a sheet slides up); scrim fades
+- DESIGN-SPEC.md:242 — MOT-10 — Daily's first-open intro: the answers roll, the line draws, then the end point and the…
+- DESIGN-SPEC.md:243 — MOT-11 — Reduced motion, ?motion=off: every change is instant, no intro, the page at rest is…
+- DESIGN-SPEC.md:244 — MOT-12 — The frame (steps 3 and 4): at 721-1023 px the rail opens as MOT-8 and its scrim (no…
+- DESIGN-SPEC.md:245 — MOT-13 — Loading and the intro. The skeleton never moves, in every motion setting (MOT-1,…
+- DESIGN-SPEC.md:247 — ### — 1.11 Breakpoints and navigation
+- DESIGN-SPEC.md:251 — BRK-1 — Designed: 1440×900, 768×1024, 390×844. Checked so nothing breaks: 320, 1024 and 200%…
+- DESIGN-SPEC.md:252 — BRK-2 — Desktop (1024 px and wider, 1024 included): the slim icon rail (RAI-1), unchanged but…
+- DESIGN-SPEC.md:253 — BRK-3 — Tablet (721-1023 px, 768 designed): the same slim rail, sticky, the full height; the…
+- DESIGN-SPEC.md:254 — BRK-4 — Phone (720 px and below): the glass bar at the bottom (BAR-1…6) with five items in…
+- DESIGN-SPEC.md:255 — BRK-5 — Daily's four summary cards go two by two below 1200 px (since step 3 phase B…
+- DESIGN-SPEC.md:256 — BRK-6 — At 720 px and below a dialog becomes a bottom sheet and a table recomposes before it…
+- DESIGN-SPEC.md:257 — BRK-7 — Reports sets the rail aside below 721 px and scrolls its pattern sideways only to…
+- DESIGN-SPEC.md:258 — BRK-8 — Daily's header overflows at 1024 (KI2) and its busy note jumps below 1024 (KI3). Fixed…
+- DESIGN-SPEC.md:259 — BRK-9 — Below 1024 the frame is a rule (BRK-3, BRK-4, BRK-10…12). Each page's content at 768,…
+- DESIGN-SPEC.md:260 — BRK-10 — The frame's breakpoints: 1024 px and wider, the desktop frame; 721-1023 px, the tablet…
+- DESIGN-SPEC.md:261 — BRK-11 — A page takes the frame by opting in (body[data-frame] in the concept), so the frame's…
+- DESIGN-SPEC.md:262 — BRK-12 — The frame never causes a document-level sideways scroll: measured 0 px at 390 and 320…
+- DESIGN-SPEC.md:264 — ## — 2. Content rules
+- DESIGN-SPEC.md:266 — ### — 2.1 Glossary
+- DESIGN-SPEC.md:270 — GLO-1 — estimated entrance crossings
+- DESIGN-SPEC.md:271 — GLO-2 — occupancy now
+- DESIGN-SPEC.md:272 — GLO-3 — crowd levels (the band words only)
+- DESIGN-SPEC.md:273 — GLO-4 — an average (F3); «معدّل الموجودين» / "Average inside" names Reports' period figure and…
+- DESIGN-SPEC.md:274 — GLO-5 — missing data (F4)
+- DESIGN-SPEC.md:275 — GLO-6 — genuine zero
+- DESIGN-SPEC.md:276 — GLO-7 — closed
+- DESIGN-SPEC.md:277 — GLO-8 — after now
+- DESIGN-SPEC.md:278 — GLO-9 — freshness
+- DESIGN-SPEC.md:279 — GLO-10 — comparison: against the usual day, and against the previous span
+- DESIGN-SPEC.md:280 — GLO-11 — peak
+- DESIGN-SPEC.md:281 — GLO-12 — busiest (F20; Daily since step 3, K-21): the one-hour slot (Q7), on the hour, with the…
+- DESIGN-SPEC.md:282 — GLO-13 — week (F1): a calendar week, Sunday to Saturday (as the table and the pattern already…
+- DESIGN-SPEC.md:283 — GLO-14 — nav names equal page titles (F15)
+- DESIGN-SPEC.md:284 — GLO-15 — no concept label: no Eclipse screen, at any width, in either language or any state,…
+- DESIGN-SPEC.md:285 — GLO-16 — jargon stays out of the copy (F11): "UTC" lives in the file, not in a sentence
+- DESIGN-SPEC.md:286 — GLO-17 — each language written naturally for itself (DESIGN_GUIDE §4)
+- DESIGN-SPEC.md:287 — GLO-18 — the phone bar's short names (BAR-3): the page's name, or the word of it that fits…
+- DESIGN-SPEC.md:288 — GLO-20 — exports, each named for what it holds (TBL-10; Reports since step 4)
+- DESIGN-SPEC.md:289 — GLO-19 — the frame's own words: the logo's focus name, the status's name and its details'…
+- DESIGN-SPEC.md:291 — ### — 2.2 Dates, times and ranges
+- DESIGN-SPEC.md:295 — DAT-1 — Gym time (Riyadh), 12-hour clock: Arabic «ص/م», English AM/PM.
+- DESIGN-SPEC.md:296 — DAT-2 — Day before month: «الأربعاء 23 سبتمبر 2026» / "Wednesday, 23 September 2026"; short…
+- DESIGN-SPEC.md:297 — DAT-3 — Arabic ranges use the en dash, like English: «16 – 22 سبتمبر», «6–8 م». An unspaced…
+- DESIGN-SPEC.md:298 — DAT-4 — F16: no line break inside a date, a time or a range. A file name that holds dates…
+- DESIGN-SPEC.md:299 — DAT-5 — A figure's "when" sits in the card's meta slot, as date · time (F20).
+- DESIGN-SPEC.md:301 — ### — 2.3 Crowd level
+- DESIGN-SPEC.md:305 — LVL-1 — Levels (synthetic thresholds): Quiet ≤ 24, Moderate ≤ 48, Busy ≤ 68, Packed above.…
+- DESIGN-SPEC.md:306 — LVL-2 — F17: the level badge appears only on "now" and on peaks, never on an average over many…
+- DESIGN-SPEC.md:307 — LVL-3 — A readout (a chart stop, a pattern cell) may name the level of that moment or slot,…
+- DESIGN-SPEC.md:308 — LVL-4 — The level word is always written; the bars are a redundant cue (an unlit bar is…
+- DESIGN-SPEC.md:309 — LVL-5 — F6: while delayed, the badge is qualified with the value it belongs to.
+- DESIGN-SPEC.md:310 — LVL-6 — F6's form: the badge dims with the value: word --ink-2, lit bars in stale grey…
+- DESIGN-SPEC.md:312 — ### — 2.4 State grammar
+- DESIGN-SPEC.md:316 — STA-1 — Live
+- DESIGN-SPEC.md:317 — STA-2 — Delayed
+- DESIGN-SPEC.md:318 — STA-3 — No history
+- DESIGN-SPEC.md:319 — STA-4 — Missing
+- DESIGN-SPEC.md:320 — STA-5 — Genuine zero
+- DESIGN-SPEC.md:321 — STA-6 — Closed slot
+- DESIGN-SPEC.md:322 — STA-7 — Still ahead
+- DESIGN-SPEC.md:323 — STA-8 — Empty period
+- DESIGN-SPEC.md:324 — STA-9 — Working (an action)
+- DESIGN-SPEC.md:325 — STA-10 — Loading
+- DESIGN-SPEC.md:326 — STA-11 — Closed (page)
+- DESIGN-SPEC.md:327 — STA-12 — Unavailable
+- DESIGN-SPEC.md:328 — STA-13 — Error
+- DESIGN-SPEC.md:329 — STA-14 — One skeleton, five truths
+- DESIGN-SPEC.md:331 — ### — 2.5 Truthfulness
+- DESIGN-SPEC.md:335 — TRU-1 — F1: every figure in a period-bound row answers for the chosen period, or leaves the…
+- DESIGN-SPEC.md:336 — TRU-2 — F5: a figure states its basis (the subtitle says how many days); a cell drawn from too…
+- DESIGN-SPEC.md:337 — TRU-3 — F6 and D1: nothing stale looks live; stale values and their level read as last-known;…
+- DESIGN-SPEC.md:338 — TRU-4 — The line is shape-preserving: a centred 30-minute average cut at opening, at a gap and…
+- DESIGN-SPEC.md:339 — TRU-5 — A comparison shows only for a clear difference (the week chip at 5% or more), and only…
+- DESIGN-SPEC.md:340 — TRU-6 — Capacity is never shown, and nothing is a percentage of it.
+- DESIGN-SPEC.md:341 — TRU-7 — Q3 (b): the week comparison leaves the period row. It keeps the domain's rolling 7…
+- DESIGN-SPEC.md:343 — ## — 3. Components
+- DESIGN-SPEC.md:347 — ### — 3.1 Card and lit card
+- DESIGN-SPEC.md:351 — CRD-1 — Surface SRF-1. Anatomy: head (icon, label, meta at the inline end), value, then a…
+- DESIGN-SPEC.md:352 — CRD-2 — Label --ink-2; meta caption --ink-3 holding the "when" (DAT-5); value display type,…
+- DESIGN-SPEC.md:353 — CRD-3 — Empty content: one sentence ("No readings", "Not enough readings yet") in heading type…
+- DESIGN-SPEC.md:354 — CRD-4 — Cards size to their content; cards in one row stretch to the tallest.
+- DESIGN-SPEC.md:355 — CRD-5 — Stat cards are fixed at 166 px, which is why Daily's busy note pushes out of its card…
+- DESIGN-SPEC.md:356 — CRD-6 — Lit card: a card plus the summary or data light (LGT-3), with its text under LGT-9.
+- DESIGN-SPEC.md:357 — CRD-7 — Stat padding 20 (SPC-5); head 20 px (the icon in the flow, ICO-3), 16 to the value, at…
+- DESIGN-SPEC.md:358 — CRD-8 — Designed states: live (lit or plain), delayed (plain, qualified), no readings, not…
+- DESIGN-SPEC.md:359 — CRD-9 — A card keeps its height in every state: an empty note keeps its line (34 px with its…
+- DESIGN-SPEC.md:360 — CRD-11 — A card of figures. Figures that answer for one thing (Reports' period) share one card:…
+- DESIGN-SPEC.md:361 — CRD-10 — A card's slots in the states. The value's line keeps 46 px (a value in words 36), the…
+- DESIGN-SPEC.md:363 — ### — 3.2 Chart card
+- DESIGN-SPEC.md:367 — CHT-1 — Card
+- DESIGN-SPEC.md:368 — CHT-2 — Today's line
+- DESIGN-SPEC.md:369 — CHT-3 — Usual line
+- DESIGN-SPEC.md:370 — CHT-4 — Usual line after now
+- DESIGN-SPEC.md:371 — CHT-5 — Fine lines
+- DESIGN-SPEC.md:372 — CHT-6 — Grid and axes
+- DESIGN-SPEC.md:373 — CHT-7 — Peak
+- DESIGN-SPEC.md:374 — CHT-8 — End point
+- DESIGN-SPEC.md:375 — CHT-9 — Marker
+- DESIGN-SPEC.md:376 — CHT-10 — Hairline
+- DESIGN-SPEC.md:377 — CHT-11 — Tooltip lane
+- DESIGN-SPEC.md:378 — CHT-12 — Tooltip box
+- DESIGN-SPEC.md:379 — CHT-13 — Tooltip text
+- DESIGN-SPEC.md:380 — CHT-14 — Connector
+- DESIGN-SPEC.md:381 — CHT-15 — Input
+- DESIGN-SPEC.md:382 — CHT-16 — Scale by state
+- DESIGN-SPEC.md:383 — CHT-17 — Plot focus ring
+- DESIGN-SPEC.md:384 — CHT-18 — Lane
+- DESIGN-SPEC.md:385 — CHT-19 — Time axis
+- DESIGN-SPEC.md:386 — CHT-20 — Key
+- DESIGN-SPEC.md:387 — CHT-21 — States
+- DESIGN-SPEC.md:389 — ### — 3.3 Pattern (heat map)
+- DESIGN-SPEC.md:393 — PAT-1 — Structure
+- DESIGN-SPEC.md:394 — PAT-2 — Plate and cells
+- DESIGN-SPEC.md:395 — PAT-3 — Ramp
+- DESIGN-SPEC.md:396 — PAT-4 — Zero
+- DESIGN-SPEC.md:397 — PAT-5 — Closed
+- DESIGN-SPEC.md:398 — PAT-6 — No readings
+- DESIGN-SPEC.md:399 — PAT-7 — Busiest
+- DESIGN-SPEC.md:400 — PAT-8 — Numbers
+- DESIGN-SPEC.md:401 — PAT-9 — Readout
+- DESIGN-SPEC.md:402 — PAT-10 — Too few days (F5, Q5)
+- DESIGN-SPEC.md:403 — PAT-11 — Selected cell
+- DESIGN-SPEC.md:404 — PAT-12 — Below 1280 px: one day at a time (the user's pick of 2026-10-01, option B, which…
+- DESIGN-SPEC.md:405 — PAT-13 — The week strip
+- DESIGN-SPEC.md:406 — PAT-14 — The day's hours
+- DESIGN-SPEC.md:408 — ### — 3.4 Table
+- DESIGN-SPEC.md:412 — TBL-1 — F12: one table. A real with a caption, th scope and explicit roles; label-type cells;…
+- DESIGN-SPEC.md:413 — TBL-2 — Default density: rows 48, header 44; row lines .055, a firmer .14 line closes each…
+- DESIGN-SPEC.md:414 — TBL-3 — Compact density (logs): rows 36 with the same type, alignment and numerals; the header…
+- DESIGN-SPEC.md:415 — TBL-4 — Header: caption type --ink-3 on #121112, sticky, a --line-2 rule below, outer corners…
+- DESIGN-SPEC.md:416 — TBL-5 — Sortable header: the whole header is a button, at least 44 × 44; its arrow (14 px)…
+- DESIGN-SPEC.md:417 — TBL-6 — Exceptions: the period's highest day a row tinted red 8% (12% on hover), with no flag…
+- DESIGN-SPEC.md:418 — TBL-7 — Empty: EMP-1 inside the table.
+- DESIGN-SPEC.md:419 — TBL-8 — Phone (BRK-6): notes fold into their own row, the weekday over the date, the time…
+- DESIGN-SPEC.md:420 — TBL-9 — Daily's minute table: 13 px, 32.5 px rows, no tabular figures, people as "0.0" and…
+- DESIGN-SPEC.md:421 — TBL-10 — Q4 (F11): an export beside a table exports that table's rows. The minute file is its…
+- DESIGN-SPEC.md:422 — TBL-11 — A composite cell (a value with its time) leads with the value at the numbers' edge…
+- DESIGN-SPEC.md:423 — TBL-12 — A note that spans columns (a phone's fold row, TBL-8) starts at the first column it…
+- DESIGN-SPEC.md:424 — TBL-13 — Heat-map cells stay centred: the pattern is a grid, not a column (PAT-2).
+- DESIGN-SPEC.md:426 — ### — 3.5 Buttons
+- DESIGN-SPEC.md:430 — BTN-1 — F13: one button, 44 tall, radius 12, label type, icon 17 with an 8 gap, text never wraps.
+- DESIGN-SPEC.md:431 — BTN-2 — Secondary: 1 px --line-2, 2% white; hover --line-3 and 5% white.
+- DESIGN-SPEC.md:432 — BTN-3 — Primary: chalk fill, #0D0C0D text at 500 (17.65:1); hover white. One primary per group.
+- DESIGN-SPEC.md:433 — BTN-4 — Disabled: secondary loses its fill and border to --line, text --ink-3; primary becomes…
+- DESIGN-SPEC.md:434 — BTN-5 — Icon button: 44 × 44, no border, --ink-2, hover chalk and 5% white; it always has a…
+- DESIGN-SPEC.md:435 — BTN-6 — Red is never a button colour; a destructive action gets its own treatment when one exists.
+- DESIGN-SPEC.md:436 — BTN-7 — Inline padding 16 (Daily's 14 / 11 is part of K-10).
+- DESIGN-SPEC.md:437 — BTN-8 — Daily's "View details" is a 38 px button in 13 px text. Fixed in step 3 phase B…
+- DESIGN-SPEC.md:438 — BTN-9 — A primary action that works in place (the error's retry, STA-9): its words change at…
+- DESIGN-SPEC.md:440 — ### — 3.6 Segmented control
+- DESIGN-SPEC.md:444 — SEG-1 — A group of toggle buttons (aria-pressed), one Tab stop each; the last may open a…
+- DESIGN-SPEC.md:445 — SEG-2 — F10: each segment is 44 px tall.
+- DESIGN-SPEC.md:446 — SEG-3 — Form: a 44 px row in a 1 px --line-2 frame (drawn inside, so it adds no height),…
+- DESIGN-SPEC.md:447 — SEG-4 — On a phone it spans the width in equal segments.
+- DESIGN-SPEC.md:448 — SEG-5 — Segments are 36 px inside a 44 px frame (the hit area is widened by a pseudo-element);…
+- DESIGN-SPEC.md:450 — ### — 3.7 Switch
+- DESIGN-SPEC.md:454 — SWI-1 — role="switch", aria-checked; a 44 px box, 1 px --line-2, radius 12, label type.
+- DESIGN-SPEC.md:455 — SWI-2 — Track 32 × 18, radius 9: off 7% white with a 1 px --line-3 inset edge, thumb 12…
+- DESIGN-SPEC.md:456 — SWI-3 — Hover: chalk text, --line-3 border. Checked: chalk text.
+- DESIGN-SPEC.md:457 — SWI-4 — Padding 12 / 16, gap 8 (measured 12 / 14 and 10).
+- DESIGN-SPEC.md:459 — ### — 3.8 Date field
+- DESIGN-SPEC.md:463 — FLD-1 — A persistent label above; a 44 px input, radius 12, edge COL-19, 3% white fill, body…
+- DESIGN-SPEC.md:464 — FLD-2 — Typed as day/month/year with a hint below it ("Day/month/year, like 16/09/2026");…
+- DESIGN-SPEC.md:465 — FLD-3 — Hover and focus raise the edge to .52; focus adds FOC-1.
+- DESIGN-SPEC.md:466 — FLD-4 — Invalid: the edge in --err .5 and a 5% error fill; a specific message under the field…
+- DESIGN-SPEC.md:467 — FLD-5 — Disabled: --line edge, no fill, --ink-3 text and label.
+- DESIGN-SPEC.md:468 — FLD-6 — Label to field 8, field to message 8, padding 16 (measured 7, 7 and 14).
+- DESIGN-SPEC.md:469 — FLD-7 — The input's focus ring sits at a 2 px offset (FOC-1). Fixed in step 4 phase A (R4): 3 px.
+- DESIGN-SPEC.md:471 — ### — 3.9 Dialog and bottom sheet
+- DESIGN-SPEC.md:475 — DLG-1 — with showModal: the page behind is inert; Tab and Shift+Tab stay inside; Escape and…
+- DESIGN-SPEC.md:476 — DLG-2 — Panel SRF-4, at most 468 wide; head: title in heading type and a 44 px close button;…
+- DESIGN-SPEC.md:477 — DLG-3 — Intentional initial focus (DESIGN_GUIDE §11), by the dialog's job (Q8): a dialog that…
+- DESIGN-SPEC.md:478 — DLG-4 — States: ready, invalid, working (STA-9, focus to Cancel), done (focus to the result's…
+- DESIGN-SPEC.md:479 — DLG-5 — At 720 px and below: a bottom sheet, full width, radius 24 at the top only, no bottom…
+- DESIGN-SPEC.md:480 — DLG-6 — Inset 24, close button side 12, foot gap 8 (measured 16 / 24 / 0 with a 14 side, body…
+- DESIGN-SPEC.md:482 — ### — 3.10 Chips and badges
+- DESIGN-SPEC.md:486 — CHP-1 — F13: a pill in a control row matches the control height (44) or drops its box.
+- DESIGN-SPEC.md:487 — CHP-2 — Header forms: a status that opens its details is a 44 px control; a status that does…
+- DESIGN-SPEC.md:488 — CHP-3 — A legend drops its box: swatches and words in a row, 16 apart.
+- DESIGN-SPEC.md:489 — CHP-4 — Badge (in content, not interactive): 26 tall, radius 8, 1 px --line-2,…
+- DESIGN-SPEC.md:490 — CHP-5 — Level badge: four 3 px bars (4, 6.5, 9, 11 tall, 2 apart, radius 1): lit #FF2946,…
+- DESIGN-SPEC.md:491 — CHP-6 — Comparison badge: a trend glyph (15 px; #FF2946 for busier, --ink-2 for quieter, two…
+- DESIGN-SPEC.md:492 — CHP-7 — Flag: a small outlined word (caption type, 1 px --line-2), in the chart's tooltip.…
+- DESIGN-SPEC.md:493 — CHP-8 — Badge padding 8 with an 8 gap; flag radius 4 and height 18.
+- DESIGN-SPEC.md:494 — CHP-9 — Header chips are 36 px beside a 44 px control; the legend box is 38 px beside a 44 px…
+- DESIGN-SPEC.md:496 — ### — 3.11 Rail and header
+- DESIGN-SPEC.md:500 — RAI-1 — Rail: 80 px, the full height less the page padding, sticky, SRF-2, radius 24; the logo…
+- DESIGN-SPEC.md:501 — RAI-2 — Items are 48 × 48 tiles: 1 px --line-2, 1.8% white, icon 21 in --ink-2; hover…
+- DESIGN-SPEC.md:502 — RAI-3 — Open: 236 px over the content, names in label type beside the tiles, the current one…
+- DESIGN-SPEC.md:503 — RAI-4 — Focus: FOC-1 on the tile; D4 (FOC-4).
+- DESIGN-SPEC.md:504 — RAI-5 — Tile radius 12, 8 between items, 24 between the logo and the sections (16 under the…
+- DESIGN-SPEC.md:505 — RAI-6 — Tablet (721-1023 px). Open, the rail is a modal layer: the same 236 px surface and…
+- DESIGN-SPEC.md:506 — RAI-7 — Desktop (1024 px and wider). Open, the rail is not modal: Escape or a tap outside…
+- DESIGN-SPEC.md:507 — RAI-8 — The logo's focus label (FOC-5) names what it opens: «أسماء الأقسام» / "Section names",…
+- DESIGN-SPEC.md:508 — HDR-1 — Header: the title (title type), a subtitle in label type --ink-3 with " · "…
+- DESIGN-SPEC.md:509 — HDR-2 — The title names the page and matches its nav name (GLO-14).
+- DESIGN-SPEC.md:510 — HDR-3 — The status from 721 px (CHP-2). The frame's Operations status is a 44 px control that…
+- DESIGN-SPEC.md:511 — HDR-4 — Phone (720 px and below): the compact header. One line holds the title and, at the…
+- DESIGN-SPEC.md:512 — HDR-5 — The skip link is part of the frame: a 44 px chalk control (label type, padding 16,…
+- DESIGN-SPEC.md:513 — HDR-7 — Page controls. A page's own controls (a period, filters, a page's actions) sit in a…
+- DESIGN-SPEC.md:514 — HDR-6 — The status's box is the frame's. From 721 px the status column fills the header's free…
+- DESIGN-SPEC.md:516 — ### — 3.12 Empty state, alert and retry
+- DESIGN-SPEC.md:520 — EMP-1 — Empty state: an info icon (22, --ink-3), one sentence that names what is missing and…
+- DESIGN-SPEC.md:521 — EMP-2 — Alert: role="alert", radius 12, 1 px --err .5, 6% error fill, an error icon (17) and…
+- DESIGN-SPEC.md:522 — EMP-3 — Retry: one primary action ("Try again", «إعادة المحاولة»); focus moves to it; the…
+- DESIGN-SPEC.md:523 — EMP-4 — Empty state padding 40 with a 16 gap; alert padding 12 / 16 with an 8 gap (measured 40…
+- DESIGN-SPEC.md:524 — EMP-5 — A page that could not load (STA-13). The alert sits in the page's first answer, Inside…
+- DESIGN-SPEC.md:526 — ### — 3.13 The status's details, and the phone's bar, badge and menu
+- DESIGN-SPEC.md:533 — BAR-1 — The bar. The rail turned to lie along the bottom: SRF-7's glass, fixed 16 px from both…
+- DESIGN-SPEC.md:534 — BAR-2 — An item. A link at least 44 × 44 (61.6 × 56 at 390, 50.8 × 56 at 320), radius 16: a 40…
+- DESIGN-SPEC.md:535 — BAR-3 — Names. Short names (GLO-18), one line each, never cut: the widest, "Settings", is 47.6…
+- DESIGN-SPEC.md:536 — BAR-4 — States. Hover: chalk icon and name, tile 6% white, at once. Current page: the rail's…
+- DESIGN-SPEC.md:537 — BAR-5 — Focus. FOC-1 around the whole item. With 8 px between items the ring stays inside the…
+- DESIGN-SPEC.md:538 — BAR-6 — Order. Today, Reports, Activity log, Access, Settings, from the inline start (the…
+- DESIGN-SPEC.md:539 — BDG-1 — The status badge. On a phone the header's status (HDR-3) compacted to its word: a 44…
+- DESIGN-SPEC.md:540 — BDG-2 — Opening, at every size. Click, Enter or Space opens the details and moves focus to…
+- DESIGN-SPEC.md:541 — BDG-3 — The details. A non-modal dialog (SRF-8) 8 px below the control, min(288px, 100vw −…
+- DESIGN-SPEC.md:542 — BDG-4 — The one way to Operations. Operations has no section in the rail or the bar (user…
+- DESIGN-SPEC.md:543 — MNU-1 — The menu button. A 44 × 44 icon button (BTN-5) with a three-dot icon (18 px, --ink-2;…
+- DESIGN-SPEC.md:544 — MNU-2 — The menu. A role="menu" panel (SRF-8), 4 px inside, at least 200 px wide, under the…
+- DESIGN-SPEC.md:545 — MNU-3 — Items. 44 px tall, radius 12, label type chalk, icon 16 --ink-2, 8 between, text 16…
+- DESIGN-SPEC.md:546 — MNU-4 — Keyboard. Enter, Space or Down Arrow opens it on the first item, Up Arrow on the last;…
+- DESIGN-SPEC.md:548 — ### — 3.14 States: placeholders and the status words
+- DESIGN-SPEC.md:554 — PH-1 — A placeholder bar stands where a value is awaited, in that value's own slot: an inline…
+- DESIGN-SPEC.md:555 — PH-2 — A placeholder box stands for the level badge: its own 76 × 26 box, radius 8, the same…
+- DESIGN-SPEC.md:556 — PH-3 — Where, and when. Only awaited values wait: the values (and the unit «تقريبًا» /…
+- DESIGN-SPEC.md:557 — STW-1 — One status word, one control. The header's status (HDR-3), its phone form (BDG-1) and…
+- DESIGN-SPEC.md:558 — STW-2 — While the status is not known (loading), the control is set aside and the words «جارٍ…
+- DESIGN-SPEC.md:560 — ## — 4. Owner surface
+- DESIGN-SPEC.md:565 — ### — 4.1 Today (Daily)
+- DESIGN-SPEC.md:569 — OWN-D1 — Answers "how is today going right now; busier or quieter than usual; when are the peaks".
+- DESIGN-SPEC.md:570 — OWN-D2 — The first screen is fixed to the viewport (at least 720 px) at 1200 px and wider:…
+- DESIGN-SPEC.md:571 — OWN-D6 — 1024-1199 px (the desktop frame) and 721-1023 px (the tablet, 768 designed): the cards…
+- DESIGN-SPEC.md:572 — OWN-D7 — 720 px and below (390 designed; the 200% zoom of 1440 lands here): the compact header…
+- DESIGN-SPEC.md:573 — OWN-D8 — Below 360 px (320 checked): every card across the width, Today's peak keeping its time…
+- DESIGN-SPEC.md:574 — OWN-D9 — The lights at every size: the summary light on Inside now and the data light on the…
+- DESIGN-SPEC.md:575 — OWN-D3 — Cards: Inside now (lit, summary light), Today's peak, Entries with its usual value,…
+- DESIGN-SPEC.md:576 — OWN-D4 — The chart card carries the data light: today's line against the usual Wednesday, with…
+- DESIGN-SPEC.md:577 — OWN-D5 — The first-open intro (MOT-10), at every size; nothing moves at its end (K-27).
+- DESIGN-SPEC.md:578 — OWN-D10 — The states at every size keep OWN-D2 and OWN-D6…D9: the same cards, places and heights…
+- DESIGN-SPEC.md:579 — OWN-D11 — The data coverage list (in "View details"; decisions 13 and 14, user 2026-10-02): a…
+- DESIGN-SPEC.md:581 — ### — 4.2 Reports
+- DESIGN-SPEC.md:585 — OWN-R1 — Answers "how does my gym usually behave, and which way is it going". Complete days…
+- DESIGN-SPEC.md:586 — OWN-R2 — Header: the title, the period in the subtitle and the frame's status (HDR-3); no…
+- DESIGN-SPEC.md:587 — OWN-R3 — At a glance (step 4). One card of the period's figures (CRD-11) under the period…
+- DESIGN-SPEC.md:588 — OWN-R4 — Busy times: the weekday × hour pattern (7 × 19, Sunday first) across the page, with…
+- DESIGN-SPEC.md:589 — OWN-R6 — Where the light goes (step 4). Reports has no summary light. The pattern carries the…
+- DESIGN-SPEC.md:590 — OWN-R7 — 1440 × 900: the header 60.25 px, then 16 to the controls (44), 16 to the glance row…
+- DESIGN-SPEC.md:591 — OWN-R8 — 1024-1279 px (the desktop frame; 1024, 1200 and 1279 checked; the fix round, the…
+- DESIGN-SPEC.md:592 — OWN-R9 — 721-1023 px (the tablet frame, 768 designed; step 4's build, the user's pick of option…
+- DESIGN-SPEC.md:593 — OWN-R10 — 720 px and below (the phone frame, 390 designed; step 4's build, the user's pick of…
+- DESIGN-SPEC.md:594 — OWN-R11 — Below 360 px (320 checked) and the 200% zoom (720 × 450, checked): under a 330 px…
+- DESIGN-SPEC.md:595 — OWN-R12 — Day by day at 720 px and below (step 4's build, the user's pick of option B; the fix…
+- DESIGN-SPEC.md:596 — OWN-R13 — An empty period below 1280 px (step 4's build; unchanged by the user's decision 4,…
+- DESIGN-SPEC.md:597 — OWN-R5 — Day by day: the sortable table below the first screen, with "Export table"; at 720 px…
+- DESIGN-SPEC.md:599 — ## — 5. Staff
+- DESIGN-SPEC.md:603 — ## — 6. Public
+- DESIGN-SPEC.md:607 — ## — 7. Known issues register
+- DESIGN-SPEC.md:613 — K-01 — Week over week ignores the chosen period and uses a rolling Wed-Tue week while the…
+- DESIGN-SPEC.md:614 — K-02 — Loading, page-level closed, unavailable and error are not designed (F2)
+- DESIGN-SPEC.md:615 — K-03 — «متوسط» used for averages («المتوسط 48», «متوسط الموجودين», «متوسط كل 30 دقيقة»,…
+- DESIGN-SPEC.md:616 — K-04 — Missing data named three ways: «لا قراءة» / "No reading", «لا بيانات» / "No data", «لا…
+- DESIGN-SPEC.md:617 — K-05 — A single day's "Busiest" and cells read as certain; the busiest point has no key entry…
+- DESIGN-SPEC.md:618 — K-06 — The delayed level badge keeps chalk and red bars (F6)
+- DESIGN-SPEC.md:619 — K-07 — Axis labels over the lit corners at 3.85-4.88:1 in --ink-3 (F7)
+- DESIGN-SPEC.md:620 — K-08 — Spacing off the 4 px scale (SPC-7) (F8)
+- DESIGN-SPEC.md:621 — K-09 — Fifteen text sizes (TYP-6) and radii off the set (RAD-2) (F9)
+- DESIGN-SPEC.md:622 — K-10 — Controls and pills under 44: #details-btn 124.8 × 38; the header's status and concept…
+- DESIGN-SPEC.md:623 — K-11 — Segments 36 px in a 44 px frame with radius 13 (F10, KI1)
+- DESIGN-SPEC.md:624 — K-12 — The Inside now light is unchanged while delayed (D1)
+- DESIGN-SPEC.md:625 — K-13 — The lit week card says "Not enough history yet" (short state) and shows +9% in an…
+- DESIGN-SPEC.md:626 — K-14 — "Export CSV" on the day table exports 40,320 minute rows, and its copy says "UTC" (F11)
+- DESIGN-SPEC.md:627 — K-15 — The scale changes by state and the last tick breaks the rhythm (F14)
+- DESIGN-SPEC.md:628 — K-16 — The nav says «اليومي» / "Daily" on a page titled «اليوم» / "Today" (F15)
+- DESIGN-SPEC.md:629 — K-17 — Dates and times break across lines: "…1:00 / AM" at 1000 px, «22 سبتمبر / 2026» at 320…
+- DESIGN-SPEC.md:630 — K-18 — A level badge on an all-hours average ("Average inside 21 · Quiet") (F17)
+- DESIGN-SPEC.md:631 — K-19 — Trend glyphs mirror inconsistently: the week card's head icon and Daily's peak icon do…
+- DESIGN-SPEC.md:632 — K-20 — The minute table: 13 px, 32.5 px rows, no tabular figures, "0.0" and "1.7" people…
+- DESIGN-SPEC.md:633 — K-21 — "Busiest" is a 2-hour window on Daily and a 1-hour cell on Reports; the peak's time…
+- DESIGN-SPEC.md:634 — K-22 — Focus rings at offsets 3, 2, 1 and −4; a red ring on the skip link; the plot's ring 2…
+- DESIGN-SPEC.md:635 — K-23 — Keyboard focus on a rail item shows no name (D4)
+- DESIGN-SPEC.md:636 — K-24 — A bordered 34 px icon tile on every card (F21)
+- DESIGN-SPEC.md:637 — K-25 — 13 px text on red cells would be about 3.3:1 undimmed: held by the 80% dim (5.26:1…
+- DESIGN-SPEC.md:638 — K-26 — The card headers overflow at 1024: worst 59 px (AR, "Busiest time"), a document scroll…
+- DESIGN-SPEC.md:639 — K-27 — #busy-note jumps when the intro ends: 71.5 px at 600 (EN) and 390 (EN, AR); 14.7-14.8…
+- DESIGN-SPEC.md:640 — K-28 — Stat cards fixed at 166 px (the root of K-27)
+- DESIGN-SPEC.md:641 — K-29 — The rail set aside and the pattern scrolled sideways below 721 px as a placeholder
+- DESIGN-SPEC.md:642 — K-30 — Two amber text tones (#F0C23C in the header, #E8B62E elsewhere)
+- DESIGN-SPEC.md:643 — K-31 — The usual line after now at .24 chalk, 2.01:1
+- DESIGN-SPEC.md:644 — K-32 — A single closed cell hides its word (.is-one); only a 1.1:1 fill would tell it from a…
+- DESIGN-SPEC.md:645 — K-33 — Daily's minute table, English: numbers and headers start-aligned, so on the left edge.…
+- DESIGN-SPEC.md:646 — K-34 — Reports' day table, Arabic: numeric cells end-aligned, so on the left edge. Right…
+- DESIGN-SPEC.md:647 — K-36 — Short landscape screens (721 px and wider but under about 650 px tall, such as a phone…
+- DESIGN-SPEC.md:648 — K-35 — Reports' day table, English: the peak cell ends with its time, so the value sits 54-55…
+- DESIGN-SPEC.md:649 — K-37 — The period control's "Last 4 weeks" / «آخر 4 أسابيع» (before) named the rolling 28…
+- DESIGN-SPEC.md:650 — K-38 — Closed 2026-10-03 (K-02, option A's title row): Reports' title keeps its own width at…
+- DESIGN-SPEC.md:651 — K-39 — The week grid's cells are under 44 px wide from 1024 px to about 1240 px: 33 × 44 at…
+- DESIGN-SPEC.md:663 — ## — 8. Open questions for the user
+- DESIGN-SPEC.md:667 — ### — Decided 2026-10-02 (decisions 15-17)
+- DESIGN-SPEC.md:683 — ### — Decided 2026-10-02 (step 4's wording round)
+- DESIGN-SPEC.md:708 — ### — Decided 2026-10-01 (step 4's fix round)
+- DESIGN-SPEC.md:721 — ### — Decided 2026-10-01 (step 4's build, the user's pick of option B)
+- DESIGN-SPEC.md:741 — ### — Decided 2026-10-01 (step 4 phase A)
+- DESIGN-SPEC.md:757 — ### — Answered 2026-10-01
+- DESIGN-SPEC.md:766 — ### — Answered 2026-09-30
 
 ## app.js
 
 - app.js:16 — $ — function constant
 - app.js:32 — arMin — function constant
-- app.js:209 — clock — function
-- app.js:214 — suffix — function constant
-- app.js:215 — fmtTime — function constant
-- app.js:216 — fmtHour — function constant
-- app.js:217 — bdi — function constant
-- app.js:218 — tb — function constant
-- app.js:222 — NUMS — function constant
-- app.js:223 — range — function constant
-- app.js:224 — timeRange — function constant
-- app.js:225 — plainRange — function constant
-- app.js:226 — hourRange — function
-- app.js:233 — spanNote — function constant
-- app.js:234 — spanText — function constant
-- app.js:237 — tipLines — function constant
-- app.js:238 — spanTip — function constant
-- app.js:241 — waitTip — function constant
-- app.js:242 — waitText — function constant
-- app.js:245 — mulberry32 — function
-- app.js:253 — ss — function constant
-- app.js:254 — bump — function constant
-- app.js:255 — target — function
-- app.js:262 — simulateDay — function
-- app.js:299 — levelOf — function constant
-- app.js:309 — centred — function constant
-- app.js:320 — monotone — function
-- app.js:361 — usualAt — function constant
-- app.js:366 — compute — function
-- app.js:495 — clampSpeed — function constant
-- app.js:497 — clampIntroSpeed — function constant
-- app.js:510 — motionOn — function constant
-- app.js:553 — railFocusables — function constant
-- app.js:557 — setRailModal — function constant
-- app.js:571 — setRail — function constant
-- app.js:601 — menuItems — function constant
-- app.js:602 — showLayer — function
-- app.js:611 — hideLayer — function
-- app.js:648 — onFrameChange — function constant
-- app.js:696 — statusOf — function
-- app.js:699 — statusWords — function constant
-- app.js:708 — renderReserve — function
-- app.js:713 — renderStatus — function
-- app.js:722 — renderOps — function
-- app.js:734 — statusLoading — function
-- app.js:744 — levelChip — function constant
-- app.js:749 — cmpChip — function constant
-- app.js:755 — shownNow — function constant
-- app.js:760 — setLights — function
-- app.js:767 — fillCards — function
-- app.js:807 — keep — function constant
-- app.js:808 — aside — function constant
-- app.js:809 — make — function constant
-- app.js:816 — bar — function constant
-- app.js:817 — clearState — function
-- app.js:823 — sayInValue — function
-- app.js:828 — pendCards — function
-- app.js:839 — sentence — function constant
-- app.js:840 — stateCards — function
-- app.js:865 — errorCards — function
-- app.js:887 — updateCards — function
-- app.js:917 — f — function constant
-- app.js:919 — endPoint — function constant
-- app.js:922 — hairlines — function
-- app.js:938 — render — function
-- app.js:1062 — unavSpan — function
-- app.js:1069 — gapStop — function
-- app.js:1073 — buildStops — function
-- app.js:1113 — stopBy — function constant
-- app.js:1116 — valueText — function
-- app.js:1131 — tipHTML — function
-- app.js:1173 — laneProbe — function constant
-- app.js:1179 — measureTipWidth — function
-- app.js:1225 — trackPath — function constant
-- app.js:1226 — parsePath — function
-- app.js:1245 — evalAt — function
-- app.js:1251 — table — function
-- app.js:1273 — uAtX — function
-- app.js:1283 — lengthOfU — function
-- app.js:1291 — uOfLength — function
-- app.js:1299 — peakPoint — function constant
-- app.js:1302 — restPoint — function
-- app.js:1333 — onEndPoint — function
-- app.js:1345 — stepAside — function
-- app.js:1356 — paintMarker — function
-- app.js:1422 — clearMarker — function
-- app.js:1440 — paintConnector — function
-- app.js:1485 — tagBox — function
-- app.js:1505 — tipBox — function
-- app.js:1510 — tipRest — function constant
-- app.js:1511 — placeTip — function
-- app.js:1542 — tipEaseFrom — function
-- app.js:1550 — selectStop — function
-- app.js:1567 — clearSelection — function
-- app.js:1574 — restoreSelection — function
-- app.js:1607 — stopAt — function
-- app.js:1626 — homeStop — function constant
-- app.js:1648 — summary — function
-- app.js:1687 — minText — function constant
-- app.js:1688 — buildDetails — function
-- app.js:1736 — setDetails — function constant
-- app.js:1774 — track — function
-- app.js:1776 — clockAnim — function constant
-- app.js:1787 — numValue — function constant
-- app.js:1788 — finishRoll — function
-- app.js:1796 — shapeOf — function constant
-- app.js:1803 — textNodes — function constant
-- app.js:1804 — rollTo — function
-- app.js:1840 — digitWindow — function
-- app.js:1857 — rollFragment — function
-- app.js:1895 — finishFoot — function
-- app.js:1902 — setFoot — function
-- app.js:1934 — announce — function constant
-- app.js:1959 — nowMs — function constant
-- app.js:1960 — displayedTipVelocity — function constant
-- app.js:1961 — taus — function constant
-- app.js:1964 — spring — function
-- app.js:1969 — lineLeg — function constant
-- app.js:1970 — dropLeg — function constant
-- app.js:1971 — legAt — function
-- app.js:1979 — buildRoute — function
-- app.js:2008 — pointAtS — function
-- app.js:2016 — dirAt — function
-- app.js:2023 — followState — function
-- app.js:2031 — tipState — function
-- app.js:2035 — loopFollow — function
-- app.js:2036 — followTo — function
-- app.js:2061 — followFrame — function
-- app.js:2084 — stopFollow — function
-- app.js:2101 — carryFollowIntoReading — function
-- app.js:2115 — seekFollow — function
-- app.js:2129 — releaseFollow — function
-- app.js:2136 — rebaseFollow — function
-- app.js:2145 — startPulse — function
-- app.js:2151 — stopPulse — function
-- app.js:2152 — placePing — function
-- app.js:2165 — stepReading — function
-- app.js:2200 — morphValue — function
-- app.js:2208 — applyMorph — function
-- app.js:2242 — liveLoop — function
-- app.js:2243 — finishLive — function
-- app.js:2254 — seekLive — function
-- app.js:2263 — resetReadings — function
-- app.js:2279 — crowdStep — function
-- app.js:2297 — animateRail — function
-- app.js:2335 — finishRail — function
-- app.js:2386 — introTotal — function constant
-- app.js:2387 — introDecide — function
-- app.js:2403 — introPark — function
-- app.js:2432 — introWait — function
-- app.js:2466 — introStart — function
-- app.js:2492 — introLoop — function
-- app.js:2500 — introChartSetup — function
-- app.js:2515 — introProgress — function constant
-- app.js:2516 — introChartFrame — function
-- app.js:2556 — introChartClear — function
-- app.js:2571 — introAfterRender — function
-- app.js:2579 — endIntro — function
-- app.js:2599 — replayIntro — function
-- app.js:2610 — seekIntro — function
-- app.js:2620 — releaseIntro — function
-- app.js:2630 — settleAll — function
-- app.js:2636 — setOptions — function
-- app.js:2675 — later — function constant
-- app.js:2676 — clearTimers — function constant
-- app.js:2677 — setPhase — function constant
-- app.js:2678 — busy — function constant
-- app.js:2682 — sayRegion — function
-- app.js:2689 — say — function
-- app.js:2690 — startLoading — function
-- app.js:2707 — arrive — function
-- app.js:2744 — showError — function
-- app.js:2762 — fail — function
-- app.js:2773 — retry — function
+- app.js:207 — clock — function
+- app.js:212 — suffix — function constant
+- app.js:213 — fmtTime — function constant
+- app.js:214 — fmtHour — function constant
+- app.js:215 — bdi — function constant
+- app.js:216 — tb — function constant
+- app.js:220 — NUMS — function constant
+- app.js:221 — range — function constant
+- app.js:222 — timeRange — function constant
+- app.js:223 — plainRange — function constant
+- app.js:224 — hourRange — function
+- app.js:231 — spanNote — function constant
+- app.js:232 — spanText — function constant
+- app.js:235 — tipLines — function constant
+- app.js:236 — spanTip — function constant
+- app.js:239 — waitTip — function constant
+- app.js:240 — waitText — function constant
+- app.js:243 — mulberry32 — function
+- app.js:251 — ss — function constant
+- app.js:252 — bump — function constant
+- app.js:253 — target — function
+- app.js:260 — simulateDay — function
+- app.js:297 — levelOf — function constant
+- app.js:307 — centred — function constant
+- app.js:318 — monotone — function
+- app.js:359 — usualAt — function constant
+- app.js:364 — compute — function
+- app.js:493 — clampSpeed — function constant
+- app.js:495 — clampIntroSpeed — function constant
+- app.js:508 — motionOn — function constant
+- app.js:551 — railFocusables — function constant
+- app.js:555 — setRailModal — function constant
+- app.js:569 — setRail — function constant
+- app.js:599 — menuItems — function constant
+- app.js:600 — showLayer — function
+- app.js:609 — hideLayer — function
+- app.js:646 — onFrameChange — function constant
+- app.js:694 — statusOf — function
+- app.js:697 — statusWords — function constant
+- app.js:707 — widestMinute — function
+- app.js:721 — renderReserve — function
+- app.js:727 — renderStatus — function
+- app.js:736 — renderOps — function
+- app.js:748 — statusLoading — function
+- app.js:758 — levelChip — function constant
+- app.js:763 — cmpChip — function constant
+- app.js:769 — shownNow — function constant
+- app.js:774 — setLights — function
+- app.js:781 — fillCards — function
+- app.js:821 — keep — function constant
+- app.js:822 — aside — function constant
+- app.js:823 — make — function constant
+- app.js:830 — bar — function constant
+- app.js:831 — clearState — function
+- app.js:837 — sayInValue — function
+- app.js:842 — pendCards — function
+- app.js:853 — sentence — function constant
+- app.js:854 — stateCards — function
+- app.js:879 — errorCards — function
+- app.js:901 — updateCards — function
+- app.js:930 — f — function constant
+- app.js:932 — endPoint — function constant
+- app.js:935 — hairlines — function
+- app.js:951 — render — function
+- app.js:1075 — unavSpan — function
+- app.js:1082 — gapStop — function
+- app.js:1086 — buildStops — function
+- app.js:1126 — stopBy — function constant
+- app.js:1129 — valueText — function
+- app.js:1144 — tipHTML — function
+- app.js:1186 — laneProbe — function constant
+- app.js:1192 — measureTipWidth — function
+- app.js:1238 — trackPath — function constant
+- app.js:1239 — parsePath — function
+- app.js:1258 — evalAt — function
+- app.js:1264 — table — function
+- app.js:1286 — uAtX — function
+- app.js:1296 — lengthOfU — function
+- app.js:1304 — uOfLength — function
+- app.js:1312 — peakPoint — function constant
+- app.js:1315 — restPoint — function
+- app.js:1346 — onEndPoint — function
+- app.js:1358 — stepAside — function
+- app.js:1369 — paintMarker — function
+- app.js:1435 — clearMarker — function
+- app.js:1453 — paintConnector — function
+- app.js:1498 — tagBox — function
+- app.js:1518 — tipBox — function
+- app.js:1523 — tipRest — function constant
+- app.js:1524 — placeTip — function
+- app.js:1555 — tipEaseFrom — function
+- app.js:1563 — selectStop — function
+- app.js:1580 — clearSelection — function
+- app.js:1587 — restoreSelection — function
+- app.js:1620 — stopAt — function
+- app.js:1639 — homeStop — function constant
+- app.js:1661 — summary — function
+- app.js:1700 — minText — function constant
+- app.js:1701 — buildDetails — function
+- app.js:1748 — setDetails — function constant
+- app.js:1786 — track — function
+- app.js:1788 — clockAnim — function constant
+- app.js:1799 — numValue — function constant
+- app.js:1800 — finishRoll — function
+- app.js:1808 — shapeOf — function constant
+- app.js:1815 — textNodes — function constant
+- app.js:1816 — rollTo — function
+- app.js:1852 — digitWindow — function
+- app.js:1869 — rollFragment — function
+- app.js:1907 — finishFoot — function
+- app.js:1914 — setFoot — function
+- app.js:1946 — announce — function constant
+- app.js:1971 — nowMs — function constant
+- app.js:1972 — displayedTipVelocity — function constant
+- app.js:1973 — taus — function constant
+- app.js:1976 — spring — function
+- app.js:1981 — lineLeg — function constant
+- app.js:1982 — dropLeg — function constant
+- app.js:1983 — legAt — function
+- app.js:1991 — buildRoute — function
+- app.js:2020 — pointAtS — function
+- app.js:2028 — dirAt — function
+- app.js:2035 — followState — function
+- app.js:2043 — tipState — function
+- app.js:2047 — loopFollow — function
+- app.js:2048 — followTo — function
+- app.js:2073 — followFrame — function
+- app.js:2096 — stopFollow — function
+- app.js:2113 — carryFollowIntoReading — function
+- app.js:2127 — seekFollow — function
+- app.js:2141 — releaseFollow — function
+- app.js:2148 — rebaseFollow — function
+- app.js:2157 — startPulse — function
+- app.js:2163 — stopPulse — function
+- app.js:2164 — placePing — function
+- app.js:2177 — stepReading — function
+- app.js:2212 — morphValue — function
+- app.js:2220 — applyMorph — function
+- app.js:2254 — liveLoop — function
+- app.js:2255 — finishLive — function
+- app.js:2266 — seekLive — function
+- app.js:2275 — resetReadings — function
+- app.js:2291 — crowdStep — function
+- app.js:2309 — animateRail — function
+- app.js:2347 — finishRail — function
+- app.js:2398 — introTotal — function constant
+- app.js:2399 — introDecide — function
+- app.js:2415 — introPark — function
+- app.js:2444 — introWait — function
+- app.js:2478 — introStart — function
+- app.js:2504 — introLoop — function
+- app.js:2512 — introChartSetup — function
+- app.js:2527 — introProgress — function constant
+- app.js:2528 — introChartFrame — function
+- app.js:2568 — introChartClear — function
+- app.js:2583 — introAfterRender — function
+- app.js:2591 — endIntro — function
+- app.js:2611 — replayIntro — function
+- app.js:2622 — seekIntro — function
+- app.js:2632 — releaseIntro — function
+- app.js:2642 — settleAll — function
+- app.js:2648 — setOptions — function
+- app.js:2687 — later — function constant
+- app.js:2688 — clearTimers — function constant
+- app.js:2689 — setPhase — function constant
+- app.js:2690 — busy — function constant
+- app.js:2694 — sayRegion — function
+- app.js:2701 — say — function
+- app.js:2702 — startLoading — function
+- app.js:2719 — arrive — function
+- app.js:2756 — showError — function
+- app.js:2774 — fail — function
+- app.js:2785 — retry — function
 
 ## components.js
 
@@ -632,189 +633,191 @@ Script top level includes each outer IIFE's body; nested helpers are excluded. E
 - components.js:581 — heatSelect — function
 - components.js:595 — wireHeat — function
 - components.js:630 — tables — function
-- components.js:680 — buttons — function
-- components.js:690 — seg — function constant
-- components.js:691 — segs — function
-- components.js:699 — switchEl — function constant
-- components.js:700 — switches — function
-- components.js:706 — field — function constant
-- components.js:710 — fields — function
-- components.js:722 — fileLine — function constant
-- components.js:723 — panelHead — function constant
-- components.js:724 — dialogs — function
-- components.js:737 — liveDialogForm — function
-- components.js:741 — wireDialog — function
-- components.js:752 — wireDialogOnce — function
-- components.js:780 — hstatus — function constant
-- components.js:781 — chips — function
-- components.js:799 — rail — function
-- components.js:809 — rails — function
-- components.js:826 — bar — function constant
-- components.js:827 — stateMark — function constant
-- components.js:828 — hbadge — function constant
-- components.js:829 — hmenu — function constant
-- components.js:830 — opsPop — function constant
-- components.js:832 — menuPop — function constant
-- components.js:833 — phoneHead — function constant
-- components.js:834 — phone — function constant
-- components.js:835 — frame — function
-- components.js:849 — wireFrame — function
-- components.js:877 — empties — function
-- components.js:887 — phBar — function constant
-- components.js:888 — stateCard — function
-- components.js:899 — stMark — function constant
-- components.js:900 — stWord — function constant
-- components.js:901 — stLine — function constant
-- components.js:902 — stDetail — function constant
-- components.js:903 — headStatus — function constant
-- components.js:906 — stBadge — function constant
-- components.js:907 — stOps — function constant
-- components.js:908 — stPhoneHead — function constant
-- components.js:909 — states — function
-- components.js:939 — drawStatePlot — function
-- components.js:1002 — drawPlots — function
-- components.js:1003 — render — function
-- components.js:1021 — setLang — function
+- components.js:683 — buttons — function
+- components.js:693 — seg — function constant
+- components.js:694 — segs — function
+- components.js:702 — switchEl — function constant
+- components.js:703 — switches — function
+- components.js:709 — field — function constant
+- components.js:713 — fields — function
+- components.js:725 — fileLine — function constant
+- components.js:726 — panelHead — function constant
+- components.js:727 — dialogs — function
+- components.js:740 — liveDialogForm — function
+- components.js:744 — wireDialog — function
+- components.js:755 — wireDialogOnce — function
+- components.js:783 — hstatus — function constant
+- components.js:784 — chips — function
+- components.js:802 — rail — function
+- components.js:812 — rails — function
+- components.js:829 — bar — function constant
+- components.js:830 — stateMark — function constant
+- components.js:831 — hbadge — function constant
+- components.js:832 — hmenu — function constant
+- components.js:833 — opsPop — function constant
+- components.js:835 — menuPop — function constant
+- components.js:836 — phoneHead — function constant
+- components.js:837 — phone — function constant
+- components.js:838 — frame — function
+- components.js:852 — wireFrame — function
+- components.js:880 — empties — function
+- components.js:890 — phBar — function constant
+- components.js:891 — stateCard — function
+- components.js:902 — stMark — function constant
+- components.js:903 — stWord — function constant
+- components.js:904 — stLine — function constant
+- components.js:905 — stDetail — function constant
+- components.js:906 — headStatus — function constant
+- components.js:909 — stBadge — function constant
+- components.js:910 — stOps — function constant
+- components.js:911 — stPhoneHead — function constant
+- components.js:912 — states — function
+- components.js:942 — drawStatePlot — function
+- components.js:1005 — drawPlots — function
+- components.js:1006 — render — function
+- components.js:1024 — setLang — function
 
 ## reports.js
 
 - reports.js:19 — $ — function constant
 - reports.js:20 — $$ — function constant
-- reports.js:23 — dayNoneRow — function constant
-- reports.js:24 — alignDayNoneRows — function constant
-- reports.js:56 — arN — function constant
-- reports.js:63 — arMin — function constant
-- reports.js:64 — bdi — function constant
-- reports.js:311 — fmtInt — function
-- reports.js:312 — pct — function constant
-- reports.js:314 — clock — function
-- reports.js:319 — suffix — function constant
-- reports.js:320 — fmtTime — function constant
-- reports.js:321 — fmtHour — function constant
-- reports.js:325 — NUMS — function constant
-- reports.js:327 — nw — function constant
-- reports.js:328 — range2 — function constant
-- reports.js:329 — timeRange — function constant
-- reports.js:330 — timeText — function constant
-- reports.js:331 — hourRange — function
-- reports.js:335 — hourText — function constant
-- reports.js:342 — spanNote — function constant
-- reports.js:356 — toDn — function constant
-- reports.js:357 — isoOf — function constant
-- reports.js:358 — partsOf — function constant
-- reports.js:359 — wdOf — function constant
-- reports.js:360 — wdLong — function constant
-- reports.js:361 — wdShort — function constant
-- reports.js:362 — wdStrip — function constant
-- reports.js:363 — monthOf — function constant
-- reports.js:365 — dateBare — function constant
-- reports.js:366 — dateText — function constant
-- reports.js:368 — dayText — function constant
-- reports.js:369 — numDate — function constant
-- reports.js:370 — rangeText — function
-- reports.js:377 — plain — function constant
-- reports.js:382 — openAt — function constant
-- reports.js:391 — levelOf — function constant
-- reports.js:403 — mulberry32 — function
-- reports.js:411 — ss — function constant
-- reports.js:412 — bump — function constant
-- reports.js:413 — target — function
-- reports.js:420 — simulate — function
-- reports.js:480 — hasReadings — function constant
-- reports.js:481 — dayModel — function
-- reports.js:492 — buildModel — function
-- reports.js:533 — weekMetrics — function
-- reports.js:555 — motionOn — function constant
-- reports.js:559 — f2 — function constant
-- reports.js:564 — parseIso — function constant
-- reports.js:572 — urlFor — function
-- reports.js:605 — syncUrl — function
-- reports.js:616 — finishRail — function
-- reports.js:626 — animateRail — function
-- reports.js:670 — railFocusables — function constant
-- reports.js:672 — setRailModal — function constant
-- reports.js:685 — setRail — function constant
-- reports.js:708 — menuItems — function constant
-- reports.js:709 — showLayer — function
-- reports.js:718 — hideLayer — function
-- reports.js:752 — onFrameChange — function constant
-- reports.js:789 — opsState — function constant
-- reports.js:792 — renderStatus — function
-- reports.js:815 — say — function constant
-- reports.js:830 — levelChip — function constant
-- reports.js:841 — renderHead — function
-- reports.js:863 — renderCards — function
-- reports.js:899 — rampColor — function
-- reports.js:910 — valText — function constant
-- reports.js:919 — dayForm — function constant
-- reports.js:920 — heatCell — function
-- reports.js:937 — heatRuns — function
-- reports.js:947 — renderHeat — function
-- reports.js:1006 — hasValues — function constant
-- reports.js:1007 — weekMax — function constant
-- reports.js:1008 — dayMax — function constant
-- reports.js:1011 — dayBar — function
-- reports.js:1017 — renderDay — function
-- reports.js:1032 — renderHours — function
-- reports.js:1054 — pickDay — function
-- reports.js:1080 — tipHTML — function
-- reports.js:1092 — showTip — function
-- reports.js:1109 — hideTip — function
-- reports.js:1115 — focusCell — function
-- reports.js:1187 — sortedDays — function
-- reports.js:1196 — daysNote — function constant
-- reports.js:1198 — gapNote — function constant
-- reports.js:1201 — waitNote — function constant
-- reports.js:1202 — dayNotes — function constant
-- reports.js:1203 — renderDays — function
-- reports.js:1283 — renderList — function
-- reports.js:1333 — tableFile — function
-- reports.js:1365 — goPreset — function
-- reports.js:1369 — renderAll — function
-- reports.js:1377 — setRange — function
-- reports.js:1409 — later — function constant
-- reports.js:1410 — clearTimers — function constant
-- reports.js:1411 — ph — function constant
-- reports.js:1412 — phBox — function constant
-- reports.js:1413 — valueSlot — function constant
-- reports.js:1414 — busyEls — function constant
-- reports.js:1419 — pendGlance — function
-- reports.js:1433 — pendPattern — function
-- reports.js:1457 — pendDays — function
-- reports.js:1483 — retryLabels — function constant
-- reports.js:1484 — alertHTML — function
-- reports.js:1489 — wireAlert — function
-- reports.js:1496 — paintLoading — function
-- reports.js:1501 — paintError — function
-- reports.js:1522 — clearPhase — function
-- reports.js:1530 — applyPhase — function
-- reports.js:1544 — startLoading — function
-- reports.js:1557 — arrive — function
-- reports.js:1574 — fail — function
-- reports.js:1583 — retry — function
-- reports.js:1607 — toWestern — function constant
-- reports.js:1608 — parseDate — function
-- reports.js:1621 — makeField — function
-- reports.js:1651 — errText — function constant
-- reports.js:1653 — validatePair — function
-- reports.js:1674 — isSheet — function constant
-- reports.js:1675 — focusables — function constant
-- reports.js:1677 — finishDlgAnims — function
-- reports.js:1678 — openDialog — function
-- reports.js:1697 — closeDialog — function
-- reports.js:1737 — openRangeDialog — function
-- reports.js:1756 — p2 — function constant
-- reports.js:1757 — csvDay — function
-- reports.js:1780 — fileName — function constant
-- reports.js:1782 — fileNameHTML — function constant
-- reports.js:1783 — rowsText — function constant
-- reports.js:1785 — fileLine — function
-- reports.js:1792 — progressHTML — function
-- reports.js:1793 — renderExport — function
-- reports.js:1830 — resetExport — function
-- reports.js:1836 — openExportDialog — function
-- reports.js:1846 — wait — function constant
-- reports.js:1847 — runExport — function
+- reports.js:25 — sortHead — function constant
+- reports.js:27 — dayHead — function constant
+- reports.js:31 — dayNoneRow — function constant
+- reports.js:37 — fitSlots — function constant
+- reports.js:76 — arN — function constant
+- reports.js:83 — arMin — function constant
+- reports.js:84 — bdi — function constant
+- reports.js:329 — fmtInt — function
+- reports.js:330 — pct — function constant
+- reports.js:332 — clock — function
+- reports.js:337 — suffix — function constant
+- reports.js:338 — fmtTime — function constant
+- reports.js:339 — fmtHour — function constant
+- reports.js:343 — NUMS — function constant
+- reports.js:345 — nw — function constant
+- reports.js:346 — range2 — function constant
+- reports.js:347 — timeRange — function constant
+- reports.js:348 — timeText — function constant
+- reports.js:349 — hourRange — function
+- reports.js:353 — hourText — function constant
+- reports.js:360 — spanNote — function constant
+- reports.js:374 — toDn — function constant
+- reports.js:375 — isoOf — function constant
+- reports.js:376 — partsOf — function constant
+- reports.js:377 — wdOf — function constant
+- reports.js:378 — wdLong — function constant
+- reports.js:379 — wdShort — function constant
+- reports.js:380 — wdStrip — function constant
+- reports.js:381 — monthOf — function constant
+- reports.js:383 — dateBare — function constant
+- reports.js:384 — dateText — function constant
+- reports.js:386 — dayText — function constant
+- reports.js:387 — numDate — function constant
+- reports.js:388 — rangeText — function
+- reports.js:395 — plain — function constant
+- reports.js:400 — openAt — function constant
+- reports.js:409 — levelOf — function constant
+- reports.js:421 — mulberry32 — function
+- reports.js:429 — ss — function constant
+- reports.js:430 — bump — function constant
+- reports.js:431 — target — function
+- reports.js:438 — simulate — function
+- reports.js:498 — hasReadings — function constant
+- reports.js:499 — dayModel — function
+- reports.js:510 — buildModel — function
+- reports.js:551 — weekMetrics — function
+- reports.js:573 — motionOn — function constant
+- reports.js:577 — f2 — function constant
+- reports.js:582 — parseIso — function constant
+- reports.js:590 — urlFor — function
+- reports.js:623 — syncUrl — function
+- reports.js:634 — finishRail — function
+- reports.js:644 — animateRail — function
+- reports.js:688 — railFocusables — function constant
+- reports.js:690 — setRailModal — function constant
+- reports.js:703 — setRail — function constant
+- reports.js:726 — menuItems — function constant
+- reports.js:727 — showLayer — function
+- reports.js:736 — hideLayer — function
+- reports.js:770 — onFrameChange — function constant
+- reports.js:807 — opsState — function constant
+- reports.js:810 — renderStatus — function
+- reports.js:833 — say — function constant
+- reports.js:848 — levelChip — function constant
+- reports.js:859 — renderHead — function
+- reports.js:881 — renderCards — function
+- reports.js:917 — rampColor — function
+- reports.js:928 — valText — function constant
+- reports.js:937 — dayForm — function constant
+- reports.js:938 — heatCell — function
+- reports.js:955 — heatRuns — function
+- reports.js:965 — renderHeat — function
+- reports.js:1024 — hasValues — function constant
+- reports.js:1025 — weekMax — function constant
+- reports.js:1026 — dayMax — function constant
+- reports.js:1029 — dayBar — function
+- reports.js:1035 — renderDay — function
+- reports.js:1050 — renderHours — function
+- reports.js:1072 — pickDay — function
+- reports.js:1098 — tipHTML — function
+- reports.js:1110 — showTip — function
+- reports.js:1127 — hideTip — function
+- reports.js:1133 — focusCell — function
+- reports.js:1205 — sortedDays — function
+- reports.js:1214 — daysNote — function constant
+- reports.js:1216 — gapNote — function constant
+- reports.js:1219 — waitNote — function constant
+- reports.js:1220 — dayNotes — function constant
+- reports.js:1221 — renderDays — function
+- reports.js:1301 — renderList — function
+- reports.js:1351 — tableFile — function
+- reports.js:1383 — goPreset — function
+- reports.js:1387 — renderAll — function
+- reports.js:1395 — setRange — function
+- reports.js:1427 — later — function constant
+- reports.js:1428 — clearTimers — function constant
+- reports.js:1429 — ph — function constant
+- reports.js:1430 — phBox — function constant
+- reports.js:1431 — valueSlot — function constant
+- reports.js:1432 — busyEls — function constant
+- reports.js:1437 — pendGlance — function
+- reports.js:1451 — pendPattern — function
+- reports.js:1475 — pendDays — function
+- reports.js:1501 — retryLabels — function constant
+- reports.js:1502 — alertHTML — function
+- reports.js:1507 — wireAlert — function
+- reports.js:1514 — paintLoading — function
+- reports.js:1519 — paintError — function
+- reports.js:1540 — clearPhase — function
+- reports.js:1548 — applyPhase — function
+- reports.js:1562 — startLoading — function
+- reports.js:1575 — arrive — function
+- reports.js:1592 — fail — function
+- reports.js:1601 — retry — function
+- reports.js:1625 — toWestern — function constant
+- reports.js:1626 — parseDate — function
+- reports.js:1639 — makeField — function
+- reports.js:1669 — errText — function constant
+- reports.js:1671 — validatePair — function
+- reports.js:1692 — isSheet — function constant
+- reports.js:1693 — focusables — function constant
+- reports.js:1695 — finishDlgAnims — function
+- reports.js:1696 — openDialog — function
+- reports.js:1715 — closeDialog — function
+- reports.js:1755 — openRangeDialog — function
+- reports.js:1774 — p2 — function constant
+- reports.js:1775 — csvDay — function
+- reports.js:1798 — fileName — function constant
+- reports.js:1800 — fileNameHTML — function constant
+- reports.js:1801 — rowsText — function constant
+- reports.js:1803 — fileLine — function
+- reports.js:1810 — progressHTML — function
+- reports.js:1811 — renderExport — function
+- reports.js:1847 — resetExport — function
+- reports.js:1853 — openExportDialog — function
+- reports.js:1863 — wait — function constant
+- reports.js:1864 — runExport — function
 
 ## tuner.js
 

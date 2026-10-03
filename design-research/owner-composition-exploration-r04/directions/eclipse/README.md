@@ -178,7 +178,9 @@ the areas). Recommended's middle, 14.3, is above A's 13.0 on the same method.
 - **The line:** a centred 30-minute average (15 minutes before and after, triangular weights). The window
   is cut at opening, at the missing span and at the latest reading, and the zero span stays 0. The crest is
   at 6:31 PM, 2 minutes after the 6:29 PM peak. The true-peak ring «الذروة 62» sits above it.
-- **Usual Wednesday:** dashed, and fainter after now.
+- **The usual day:** dashed, and fainter after now. The legend names it «المعتاد أيام الأربعاء» / "Usual on Wednesdays"
+  and the line «معدّل الموجودين» / "Average inside"; the details' coverage list has no row for the line (DECISIONS
+  items 17-19).
 - **Comparison chip:** it shows only for a clear difference, so today (about usual) shows nothing.
 - **Entries:** «مرات الدخول», with «المعتاد 318» below it.
 - **States:** `?state=live|delayed|nohistory|loading|closed|unavailable|error`, `?lang=ar|en`.
@@ -729,7 +731,7 @@ Daily page, the rail's Reports item. Query parameters:
 | URL | Shows |
 | --- | --- |
 | `reports.html` (`?state=full`) | Last 28 days, 26 Aug - 22 Sep: comparable week over week; the pattern's closed Friday mornings and zero Saturday 6 AM |
-| `?state=short` | Readings since Sunday 13 Sep (the Daily page's no-history state has one past Wednesday, 16 Sep): week over week shows "Not enough history yet" and no value; the pattern distinguishes closed, no readings and zero; days before 13 Sep form one "No readings yet" row or list sentence |
+| `?state=short` | Readings since Sunday 13 Sep (the Daily page's no-history state has one past Wednesday, 16 Sep): week over week shows "Not enough readings yet" ("Needs two weeks of steady readings") and no value; the pattern distinguishes closed, no readings and zero; days before 13 Sep form one "No readings yet" row or list sentence |
 | `?range=7d` | Last 7 days, 16 - 22 Sep: Thursday 10 AM - 2 PM reads as no data |
 | `?from=YYYY-MM-DD&to=YYYY-MM-DD` | A custom period (up to 366 days, ending by 22 Sep), for example `from=2026-09-01&to=2026-09-10` |
 | `?from=2026-07-01&to=2026-07-31` | A period before the readings began: the period's figures say "No readings"; "Last 7 days" keeps its own span and comparison; below 1280 px the busy-times card says the empty sentence once with the way back and day by day steps aside; from 1280 px the pattern and the day table are plain |
@@ -749,7 +751,7 @@ on the Daily page.
 
 | Part | Built as | States |
 | --- | --- | --- |
-| **Data table** (`.table`) | a real `<table>` with a caption, `th scope`, and explicit ARIA roles; sticky header row; numeric columns and their headers share the physical right edge in both languages, with tabular figures | default; hover (the row lifts); focus (the sortable header); selected (`aria-sort`, announced); empty (a sentence and the way back); gaps in words; highest-peak row tinted with no flag; days before the readings began merged into one row; a firmer line closes each week; Reports uses a list below 721 px |
+| **Data table** (`.table`) | a real `<table>` with a caption, `th scope`, and explicit ARIA roles; sticky header row; numeric columns and their headers share the physical right edge in Arabic and start at the left edge in English (DECISIONS item 16), with tabular figures; the peak's figure stands in a measured slot so the times line up (English always, Arabic when a peak has three digits) | default; hover (the row lifts); focus (the sortable header); selected (`aria-sort`, announced); empty (a sentence and the way back); gaps in words; highest-peak row tinted with no flag; days before the readings began merged into one row; a firmer line closes each week; Reports uses a list below 721 px |
 | **Sortable header** (`.sort`) | the whole header is a button; the arrow shows on the sorted column and on hover or focus, except on a phone where only the sorted column shows its arrow | default, hover, focus, selected (ascending or descending) |
 | **Segmented control** (`.seg`) | a group of toggle buttons (`aria-pressed`), one Tab stop each; the last one opens a dialog | default, hover, focus, selected (lifted in chalk) |
 | **Switch** (`.switch`) | `role="switch"`, `aria-checked`; the thumb slides 200 ms on the roll easing | off, hover, focus, on |
