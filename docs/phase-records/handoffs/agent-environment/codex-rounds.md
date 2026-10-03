@@ -144,3 +144,22 @@ held-out checks live outside the repository and never appear here or in a brief.
   input (folder-relative paths). By the rule set before the test (`brief-failure-causes.md`), C2c is **not adopted**;
   it is the best candidate so far. Next (C2d, lower priority): the sample spans every folder where that kind of input
   lives, not the ones nearest the task.
+
+## Evaluation C3 (agent-environment-r02): OW nav-1 rerun with and without line C3, results `0f669f0` and `9accd86` (level xhigh)
+
+- **Set-up:** line C3 of `brief-failure-causes.md` in the Codex template's checklist (`D:/fitway-temp/evals/c3/`,
+  templates named A and B so the writers could not tell them apart). Two blind Sonnet writers rewrote nav-1's brief
+  from the read-only base `4b8a5ff`; Codex ran each in its own worktree (`eval-c3-with`, `eval-c3-without`); one
+  Sonnet grader graded X (without) and Y (with) on nav-1's held-out rows K1-K7. The writers' own briefs fail
+  `brief:check` on relative and to-be-created paths (the checker's known S6 kind); they ran as written.
+- **What the line changed in the brief:** the writer with C3 added "no text kept twice" (no 40+ character line in both
+  files), "what reads the folder still passes" (`node --check`, the spec lint's exact baseline) and "one commit, clean
+  tree". Neither writer set a README length, and both kept `Open and capture` in the contract, as nav-1's brief did.
+- **Brief rows:** all pass by Codex's report in both arms (N1-N6 without, N1-N8 with).
+- **Held-out rows:** Y 7 of 7; X 6 of 7, K2 partial (one 40+ character line in both files; no whole paragraph). K6
+  passes in both (README 655 and 639 lines against nav-1's 821), with no length in either brief: Codex cut deeper this
+  time, so K6 does not discriminate.
+- **Failure cause:** none in the code. By the rule set before the test, C3 is **adopted**: the arm with it clears K2
+  and K6, the arm without it misses K2, and it adds no held-out failure. The margin is one line and one sample, and
+  the line's "length or size caps" clause was not exercised. The grader also found Y's README keeps more round
+  labels in headings ("(Round 7 step 2/3)"), which K3's sample does not catch.

@@ -96,6 +96,11 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     one column (step-4 review): the chart, the page's core, is below the first screen; about 127 px sits empty above
     the plot at rest (the tooltip lane); the busiest-time card spans the width with its value in half of it. A fresh
     designer draws numbered options for the phone, and the user picks. Nothing is broken; this is a design question.
+21. **The empty period's sentence takes item 14's forms** (2026-10-03, the user: "ممتاز"). Reports' empty-period
+    sentence writes the year once and, inside one month, the month once, as the header and the error sentence do:
+    «لا قراءات من 1 إلى 7 سبتمبر 2026», not «لا قراءات من 1 سبتمبر 2026 إلى 7 سبتمبر 2026»; across months of one year,
+    «لا قراءات من 26 أغسطس إلى 22 سبتمبر 2026». English the same way. Found by the reading-direction review of
+    `f193046` at 390 AR.
 
 ## How this milestone's rounds run
 
