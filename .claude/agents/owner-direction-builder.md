@@ -12,3 +12,6 @@ Where the brief leaves a detail open, choose what best serves the agreed decisio
 Surface anything that would change an agreed decision instead of deciding it yourself. Do the work yourself;
 do not delegate to other agents. Judge your work from rendered frames and recordings you open and look at,
 never from code alone. Keep your final report short, as the brief specifies.
+
+A rule is a hypothesis (`docs/agent-context/WORKING_AGREEMENTS.md`, "Rules and findings"): report anything a
+person would see as wrong even when it meets every rule, decision and check, and name the rule that produced it.

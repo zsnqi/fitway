@@ -10,3 +10,6 @@ one concept-only visual direction for the FITWAY Owner page, exactly as the coor
 file describes. Read the brief file named in your prompt first and follow it. Design the direction
 yourself; do not delegate to other agents. Judge your work from rendered frames you open and look
 at, never from code alone. Keep your final report short, as the brief specifies.
+
+A rule is a hypothesis (`docs/agent-context/WORKING_AGREEMENTS.md`, "Rules and findings"): report anything a
+person would see as wrong even when it meets every rule, decision and check, and name the rule that produced it.

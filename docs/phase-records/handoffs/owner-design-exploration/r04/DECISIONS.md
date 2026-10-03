@@ -72,6 +72,10 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     left is open: options A (Peak only) and B (every column) are being drawn
     (`design-research/owner-composition-exploration-r04/directions/briefs/designer-en-tables-direction.md`). It
     settles D5. For D6 the user delegated the pick of shorter English labels to the coordinator, to review later.
+17. **No explanation of the line** (2026-10-03). The "The line" row («الخط») leaves Daily's coverage card: the owner
+    does not need how the line is smoothed, and the page carries names and values, not explanations (brief item 8).
+    The user's view, with the coordinator's agreement. The legend's name for the line («معدّل كل 30 دقيقة») is in copy
+    round 2, with Reports' heavy explanations (the user, "now").
 
 ## How this milestone's rounds run
 

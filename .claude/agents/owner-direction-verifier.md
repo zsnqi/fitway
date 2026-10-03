@@ -18,3 +18,6 @@ names the brief, the checklist, the baseline, and your output folder. Read them 
   trust it.
 - Report findings as hypotheses, each with file and line or frame evidence and a severity. Keep the final
   report short, and list the exact evidence files the coordinator should open.
+- A rule is a hypothesis (`docs/agent-context/WORKING_AGREEMENTS.md`, "Rules and findings"): report anything a
+  person would see as wrong even when it meets every rule, decision and check, and name the rule that
+  produced it.
