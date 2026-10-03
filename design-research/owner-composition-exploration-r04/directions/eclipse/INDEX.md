@@ -144,9 +144,9 @@ Script top level includes each outer IIFE's body; nested helpers are excluded. E
 - DESIGN-SPEC.md:288 — GLO-20 — exports, each named for what it holds (TBL-10; Reports since step 4)
 - DESIGN-SPEC.md:289 — GLO-19 — the frame's own words: the logo's focus name, the status's name and its details'…
 - DESIGN-SPEC.md:291 — ### — 2.2 Dates, times and ranges
-- DESIGN-SPEC.md:295 — DAT-1 — Gym time (Riyadh), 12-hour clock: Arabic «ص/م», English AM/PM.
+- DESIGN-SPEC.md:295 — DAT-1 — Gym time (Riyadh), 12-hour clock: Arabic «ص/م», English AM/PM. Decision 26…
 - DESIGN-SPEC.md:296 — DAT-2 — Day before month: «الأربعاء 23 سبتمبر 2026» / "Wednesday, 23 September 2026"; short…
-- DESIGN-SPEC.md:297 — DAT-3 — Arabic ranges use the en dash, like English: «16 – 22 سبتمبر», «6–8 م». An unspaced…
+- DESIGN-SPEC.md:297 — DAT-3 — Arabic ranges use the en dash, like English: «16 – 22 سبتمبر», «6–8 م» (Daily’s phone…
 - DESIGN-SPEC.md:298 — DAT-4 — F16: no line break inside a date, a time or a range. A file name that holds dates…
 - DESIGN-SPEC.md:299 — DAT-5 — A figure's "when" sits in the card's meta slot, as date · time (F20).
 - DESIGN-SPEC.md:301 — ### — 2.3 Crowd level
@@ -426,181 +426,183 @@ Script top level includes each outer IIFE's body; nested helpers are excluded. E
 - app.js:229 — plainRange — function constant
 - app.js:230 — plainSpan — function constant
 - app.js:231 — hourRange — function
-- app.js:238 — spanNote — function constant
-- app.js:239 — spanText — function constant
-- app.js:242 — tipLines — function constant
-- app.js:243 — spanTip — function constant
-- app.js:246 — waitTip — function constant
-- app.js:247 — waitText — function constant
-- app.js:250 — mulberry32 — function
-- app.js:258 — ss — function constant
-- app.js:259 — bump — function constant
-- app.js:260 — target — function
-- app.js:267 — simulateDay — function
-- app.js:304 — levelOf — function constant
-- app.js:314 — centred — function constant
-- app.js:325 — monotone — function
-- app.js:366 — usualAt — function constant
-- app.js:371 — compute — function
-- app.js:500 — clampSpeed — function constant
-- app.js:502 — clampIntroSpeed — function constant
-- app.js:515 — motionOn — function constant
-- app.js:558 — railFocusables — function constant
-- app.js:562 — setRailModal — function constant
-- app.js:576 — setRail — function constant
-- app.js:606 — menuItems — function constant
-- app.js:607 — showLayer — function
-- app.js:616 — hideLayer — function
-- app.js:653 — onFrameChange — function constant
-- app.js:701 — statusOf — function
-- app.js:704 — statusWords — function constant
-- app.js:715 — renderReserve — function
-- app.js:721 — renderStatus — function
-- app.js:730 — renderOps — function
-- app.js:742 — statusLoading — function
-- app.js:752 — levelChip — function constant
-- app.js:757 — cmpChip — function constant
-- app.js:763 — shownNow — function constant
-- app.js:768 — setLights — function
-- app.js:775 — fillCards — function
-- app.js:815 — keep — function constant
-- app.js:816 — aside — function constant
-- app.js:817 — make — function constant
-- app.js:824 — bar — function constant
-- app.js:825 — clearState — function
-- app.js:831 — sayInValue — function
-- app.js:836 — pendCards — function
-- app.js:847 — sentence — function constant
-- app.js:848 — stateCards — function
-- app.js:873 — errorCards — function
-- app.js:895 — updateCards — function
-- app.js:927 — f — function constant
-- app.js:929 — endPoint — function constant
-- app.js:932 — hairlines — function
-- app.js:948 — render — function
-- app.js:1072 — unavSpan — function
-- app.js:1079 — gapStop — function
-- app.js:1083 — buildStops — function
-- app.js:1123 — stopBy — function constant
-- app.js:1126 — valueText — function
-- app.js:1141 — tipHTML — function
-- app.js:1183 — laneProbe — function constant
-- app.js:1189 — measureTipWidth — function
-- app.js:1235 — trackPath — function constant
-- app.js:1236 — parsePath — function
-- app.js:1255 — evalAt — function
-- app.js:1261 — table — function
-- app.js:1283 — uAtX — function
-- app.js:1293 — lengthOfU — function
-- app.js:1301 — uOfLength — function
-- app.js:1309 — peakPoint — function constant
-- app.js:1312 — restPoint — function
-- app.js:1343 — onEndPoint — function
-- app.js:1355 — stepAside — function
-- app.js:1366 — paintMarker — function
-- app.js:1432 — clearMarker — function
-- app.js:1450 — paintConnector — function
-- app.js:1495 — tagBox — function
-- app.js:1515 — tipBox — function
-- app.js:1520 — tipRest — function constant
-- app.js:1521 — placeTip — function
-- app.js:1552 — tipEaseFrom — function
-- app.js:1560 — selectStop — function
-- app.js:1578 — clearSelection — function
-- app.js:1586 — restoreSelection — function
-- app.js:1620 — stopAt — function
-- app.js:1640 — homeStop — function constant
-- app.js:1695 — stopForFinger — function
-- app.js:1706 — bandHTML — function
-- app.js:1728 — syncBand — function
-- app.js:1750 — stepBand — function
-- app.js:1759 — closeBand — function
-- app.js:1801 — fingerZone — function constant
-- app.js:1804 — scrollMax — function constant
-- app.js:1805 — scrollToY — function constant
-- app.js:1806 — stopPageMove — function
-- app.js:1808 — runPageMove — function
-- app.js:1816 — slideClear — function
-- app.js:1840 — fling — function
-- app.js:1853 — fingerTouch — function constant
-- app.js:1854 — endFinger — function
-- app.js:1939 — summary — function
-- app.js:1978 — minText — function constant
-- app.js:1979 — buildDetails — function
-- app.js:2026 — setDetails — function constant
-- app.js:2064 — track — function
-- app.js:2066 — clockAnim — function constant
-- app.js:2077 — numValue — function constant
-- app.js:2078 — finishRoll — function
-- app.js:2086 — shapeOf — function constant
-- app.js:2093 — textNodes — function constant
-- app.js:2094 — rollTo — function
-- app.js:2130 — digitWindow — function
-- app.js:2147 — rollFragment — function
-- app.js:2185 — finishFoot — function
-- app.js:2192 — setFoot — function
-- app.js:2224 — announce — function constant
-- app.js:2249 — nowMs — function constant
-- app.js:2250 — displayedTipVelocity — function constant
-- app.js:2251 — taus — function constant
-- app.js:2254 — spring — function
-- app.js:2259 — lineLeg — function constant
-- app.js:2260 — dropLeg — function constant
-- app.js:2261 — legAt — function
-- app.js:2269 — buildRoute — function
-- app.js:2298 — pointAtS — function
-- app.js:2306 — dirAt — function
-- app.js:2313 — followState — function
-- app.js:2321 — tipState — function
-- app.js:2325 — loopFollow — function
-- app.js:2326 — followTo — function
-- app.js:2351 — followFrame — function
-- app.js:2374 — stopFollow — function
-- app.js:2391 — carryFollowIntoReading — function
-- app.js:2405 — seekFollow — function
-- app.js:2419 — releaseFollow — function
-- app.js:2426 — rebaseFollow — function
-- app.js:2435 — startPulse — function
-- app.js:2441 — stopPulse — function
-- app.js:2442 — placePing — function
-- app.js:2455 — stepReading — function
-- app.js:2490 — morphValue — function
-- app.js:2498 — applyMorph — function
-- app.js:2532 — liveLoop — function
-- app.js:2533 — finishLive — function
-- app.js:2544 — seekLive — function
-- app.js:2553 — resetReadings — function
-- app.js:2569 — crowdStep — function
-- app.js:2587 — animateRail — function
-- app.js:2625 — finishRail — function
-- app.js:2676 — introTotal — function constant
-- app.js:2677 — introDecide — function
-- app.js:2696 — introPark — function
-- app.js:2725 — introWait — function
-- app.js:2759 — introStart — function
-- app.js:2786 — introLoop — function
-- app.js:2794 — introChartSetup — function
-- app.js:2809 — introProgress — function constant
-- app.js:2810 — introChartFrame — function
-- app.js:2850 — introChartClear — function
-- app.js:2865 — introAfterRender — function
-- app.js:2873 — endIntro — function
-- app.js:2895 — replayIntro — function
-- app.js:2907 — seekIntro — function
-- app.js:2917 — releaseIntro — function
-- app.js:2927 — settleAll — function
-- app.js:2933 — setOptions — function
-- app.js:2972 — later — function constant
-- app.js:2973 — clearTimers — function constant
-- app.js:2974 — setPhase — function constant
-- app.js:2975 — busy — function constant
-- app.js:2979 — sayRegion — function
-- app.js:2986 — say — function
-- app.js:2987 — startLoading — function
-- app.js:3004 — arrive — function
-- app.js:3041 — showError — function
-- app.js:3059 — fail — function
-- app.js:3070 — retry — function
+- app.js:239 — spanNote — function constant
+- app.js:240 — spanText — function constant
+- app.js:243 — tipLines — function constant
+- app.js:244 — spanTip — function constant
+- app.js:247 — waitTip — function constant
+- app.js:248 — waitText — function constant
+- app.js:251 — mulberry32 — function
+- app.js:259 — ss — function constant
+- app.js:260 — bump — function constant
+- app.js:261 — target — function
+- app.js:268 — simulateDay — function
+- app.js:305 — levelOf — function constant
+- app.js:315 — centred — function constant
+- app.js:326 — monotone — function
+- app.js:367 — usualAt — function constant
+- app.js:372 — compute — function
+- app.js:501 — clampSpeed — function constant
+- app.js:503 — clampIntroSpeed — function constant
+- app.js:516 — motionOn — function constant
+- app.js:559 — railFocusables — function constant
+- app.js:563 — setRailModal — function constant
+- app.js:577 — setRail — function constant
+- app.js:607 — menuItems — function constant
+- app.js:608 — showLayer — function
+- app.js:617 — hideLayer — function
+- app.js:654 — onFrameChange — function constant
+- app.js:702 — statusOf — function
+- app.js:705 — statusWords — function constant
+- app.js:716 — renderReserve — function
+- app.js:722 — renderStatus — function
+- app.js:731 — renderOps — function
+- app.js:743 — statusLoading — function
+- app.js:753 — levelChip — function constant
+- app.js:758 — cmpChip — function constant
+- app.js:764 — shownNow — function constant
+- app.js:769 — setLights — function
+- app.js:776 — fillCards — function
+- app.js:801 — busiestRange — function constant
+- app.js:802 — fillBusiest — function
+- app.js:821 — keep — function constant
+- app.js:822 — aside — function constant
+- app.js:823 — make — function constant
+- app.js:830 — bar — function constant
+- app.js:831 — clearState — function
+- app.js:837 — sayInValue — function
+- app.js:842 — pendCards — function
+- app.js:853 — sentence — function constant
+- app.js:854 — stateCards — function
+- app.js:878 — errorCards — function
+- app.js:901 — updateCards — function
+- app.js:933 — f — function constant
+- app.js:935 — endPoint — function constant
+- app.js:938 — hairlines — function
+- app.js:954 — render — function
+- app.js:1078 — unavSpan — function
+- app.js:1085 — gapStop — function
+- app.js:1089 — buildStops — function
+- app.js:1129 — stopBy — function constant
+- app.js:1132 — valueText — function
+- app.js:1147 — tipHTML — function
+- app.js:1189 — laneProbe — function constant
+- app.js:1195 — measureTipWidth — function
+- app.js:1241 — trackPath — function constant
+- app.js:1242 — parsePath — function
+- app.js:1261 — evalAt — function
+- app.js:1267 — table — function
+- app.js:1289 — uAtX — function
+- app.js:1299 — lengthOfU — function
+- app.js:1307 — uOfLength — function
+- app.js:1315 — peakPoint — function constant
+- app.js:1318 — restPoint — function
+- app.js:1349 — onEndPoint — function
+- app.js:1361 — stepAside — function
+- app.js:1372 — paintMarker — function
+- app.js:1438 — clearMarker — function
+- app.js:1456 — paintConnector — function
+- app.js:1501 — tagBox — function
+- app.js:1521 — tipBox — function
+- app.js:1526 — tipRest — function constant
+- app.js:1527 — placeTip — function
+- app.js:1558 — tipEaseFrom — function
+- app.js:1566 — selectStop — function
+- app.js:1584 — clearSelection — function
+- app.js:1592 — restoreSelection — function
+- app.js:1626 — stopAt — function
+- app.js:1646 — homeStop — function constant
+- app.js:1701 — stopForFinger — function
+- app.js:1712 — bandHTML — function
+- app.js:1734 — syncBand — function
+- app.js:1756 — stepBand — function
+- app.js:1765 — closeBand — function
+- app.js:1807 — fingerZone — function constant
+- app.js:1810 — scrollMax — function constant
+- app.js:1811 — scrollToY — function constant
+- app.js:1812 — stopPageMove — function
+- app.js:1814 — runPageMove — function
+- app.js:1822 — slideClear — function
+- app.js:1846 — fling — function
+- app.js:1859 — fingerTouch — function constant
+- app.js:1860 — endFinger — function
+- app.js:1945 — summary — function
+- app.js:1984 — minText — function constant
+- app.js:1985 — buildDetails — function
+- app.js:2032 — setDetails — function constant
+- app.js:2070 — track — function
+- app.js:2072 — clockAnim — function constant
+- app.js:2083 — numValue — function constant
+- app.js:2084 — finishRoll — function
+- app.js:2092 — shapeOf — function constant
+- app.js:2099 — textNodes — function constant
+- app.js:2100 — rollTo — function
+- app.js:2136 — digitWindow — function
+- app.js:2153 — rollFragment — function
+- app.js:2191 — finishFoot — function
+- app.js:2198 — setFoot — function
+- app.js:2230 — announce — function constant
+- app.js:2255 — nowMs — function constant
+- app.js:2256 — displayedTipVelocity — function constant
+- app.js:2257 — taus — function constant
+- app.js:2260 — spring — function
+- app.js:2265 — lineLeg — function constant
+- app.js:2266 — dropLeg — function constant
+- app.js:2267 — legAt — function
+- app.js:2275 — buildRoute — function
+- app.js:2304 — pointAtS — function
+- app.js:2312 — dirAt — function
+- app.js:2319 — followState — function
+- app.js:2327 — tipState — function
+- app.js:2331 — loopFollow — function
+- app.js:2332 — followTo — function
+- app.js:2357 — followFrame — function
+- app.js:2380 — stopFollow — function
+- app.js:2397 — carryFollowIntoReading — function
+- app.js:2411 — seekFollow — function
+- app.js:2425 — releaseFollow — function
+- app.js:2432 — rebaseFollow — function
+- app.js:2441 — startPulse — function
+- app.js:2447 — stopPulse — function
+- app.js:2448 — placePing — function
+- app.js:2461 — stepReading — function
+- app.js:2496 — morphValue — function
+- app.js:2504 — applyMorph — function
+- app.js:2538 — liveLoop — function
+- app.js:2539 — finishLive — function
+- app.js:2550 — seekLive — function
+- app.js:2559 — resetReadings — function
+- app.js:2575 — crowdStep — function
+- app.js:2593 — animateRail — function
+- app.js:2631 — finishRail — function
+- app.js:2682 — introTotal — function constant
+- app.js:2683 — introDecide — function
+- app.js:2702 — introPark — function
+- app.js:2731 — introWait — function
+- app.js:2765 — introStart — function
+- app.js:2792 — introLoop — function
+- app.js:2800 — introChartSetup — function
+- app.js:2815 — introProgress — function constant
+- app.js:2816 — introChartFrame — function
+- app.js:2856 — introChartClear — function
+- app.js:2871 — introAfterRender — function
+- app.js:2879 — endIntro — function
+- app.js:2901 — replayIntro — function
+- app.js:2913 — seekIntro — function
+- app.js:2923 — releaseIntro — function
+- app.js:2933 — settleAll — function
+- app.js:2939 — setOptions — function
+- app.js:2978 — later — function constant
+- app.js:2979 — clearTimers — function constant
+- app.js:2980 — setPhase — function constant
+- app.js:2981 — busy — function constant
+- app.js:2985 — sayRegion — function
+- app.js:2992 — say — function
+- app.js:2993 — startLoading — function
+- app.js:3010 — arrive — function
+- app.js:3047 — showError — function
+- app.js:3065 — fail — function
+- app.js:3076 — retry — function
 
 ## components.js
 
@@ -622,74 +624,77 @@ Script top level includes each outer IIFE's body; nested helpers are excluded. E
 - components.js:268 — tipLines — function constant
 - components.js:269 — spanTip — function constant
 - components.js:270 — hourRange — function constant
-- components.js:277 — svg — function constant
-- components.js:308 — ico — function constant
-- components.js:311 — icon — function constant
-- components.js:316 — prop — function constant
-- components.js:317 — cap — function constant
-- components.js:318 — fig — function constant
-- components.js:319 — section — function constant
-- components.js:323 — badge — function constant
-- components.js:324 — cmpBadge — function constant
-- components.js:327 — foundations — function
-- components.js:360 — statCard — function
-- components.js:367 — cards — function
-- components.js:383 — tipHTML — function
-- components.js:394 — plotHost — function constant
-- components.js:395 — chart — function
-- components.js:421 — drawPlot — function
-- components.js:529 — rampColor — function
-- components.js:537 — heatVal — function constant
-- components.js:538 — heatModel — function
-- components.js:560 — heatTable — function
-- components.js:572 — pattern — function
-- components.js:585 — heatReadout — function
-- components.js:597 — heatSelect — function
-- components.js:611 — wireHeat — function
-- components.js:646 — tables — function
-- components.js:699 — buttons — function
-- components.js:709 — seg — function constant
-- components.js:710 — segs — function
-- components.js:718 — switchEl — function constant
-- components.js:719 — switches — function
-- components.js:725 — field — function constant
-- components.js:729 — fields — function
-- components.js:741 — fileLine — function constant
-- components.js:742 — panelHead — function constant
-- components.js:743 — dialogs — function
-- components.js:756 — liveDialogForm — function
-- components.js:760 — wireDialog — function
-- components.js:771 — wireDialogOnce — function
-- components.js:799 — hstatus — function constant
-- components.js:800 — chips — function
-- components.js:818 — rail — function
-- components.js:828 — rails — function
-- components.js:845 — bar — function constant
-- components.js:846 — stateMark — function constant
-- components.js:847 — hbadge — function constant
-- components.js:848 — hmenu — function constant
-- components.js:849 — opsPop — function constant
-- components.js:851 — menuPop — function constant
-- components.js:852 — phoneHead — function constant
-- components.js:853 — phone — function constant
-- components.js:854 — frame — function
-- components.js:868 — wireFrame — function
-- components.js:896 — empties — function
-- components.js:906 — phBar — function constant
-- components.js:907 — stateCard — function
-- components.js:918 — stMark — function constant
-- components.js:919 — stWord — function constant
-- components.js:920 — stLine — function constant
-- components.js:921 — stDetail — function constant
-- components.js:922 — headStatus — function constant
-- components.js:925 — stBadge — function constant
-- components.js:926 — stOps — function constant
-- components.js:927 — stPhoneHead — function constant
-- components.js:928 — states — function
-- components.js:958 — drawStatePlot — function
-- components.js:1021 — drawPlots — function
-- components.js:1022 — render — function
-- components.js:1040 — setLang — function
+- components.js:277 — busyCopy — function constant
+- components.js:278 — busyHours — function constant
+- components.js:279 — busyAverage — function constant
+- components.js:282 — svg — function constant
+- components.js:313 — ico — function constant
+- components.js:316 — icon — function constant
+- components.js:321 — prop — function constant
+- components.js:322 — cap — function constant
+- components.js:323 — fig — function constant
+- components.js:324 — section — function constant
+- components.js:328 — badge — function constant
+- components.js:329 — cmpBadge — function constant
+- components.js:332 — foundations — function
+- components.js:365 — statCard — function
+- components.js:372 — cards — function
+- components.js:388 — tipHTML — function
+- components.js:399 — plotHost — function constant
+- components.js:400 — chart — function
+- components.js:426 — drawPlot — function
+- components.js:534 — rampColor — function
+- components.js:542 — heatVal — function constant
+- components.js:543 — heatModel — function
+- components.js:565 — heatTable — function
+- components.js:577 — pattern — function
+- components.js:590 — heatReadout — function
+- components.js:602 — heatSelect — function
+- components.js:616 — wireHeat — function
+- components.js:651 — tables — function
+- components.js:704 — buttons — function
+- components.js:714 — seg — function constant
+- components.js:715 — segs — function
+- components.js:723 — switchEl — function constant
+- components.js:724 — switches — function
+- components.js:730 — field — function constant
+- components.js:734 — fields — function
+- components.js:746 — fileLine — function constant
+- components.js:747 — panelHead — function constant
+- components.js:748 — dialogs — function
+- components.js:761 — liveDialogForm — function
+- components.js:765 — wireDialog — function
+- components.js:776 — wireDialogOnce — function
+- components.js:804 — hstatus — function constant
+- components.js:805 — chips — function
+- components.js:823 — rail — function
+- components.js:833 — rails — function
+- components.js:850 — bar — function constant
+- components.js:851 — stateMark — function constant
+- components.js:852 — hbadge — function constant
+- components.js:853 — hmenu — function constant
+- components.js:854 — opsPop — function constant
+- components.js:856 — menuPop — function constant
+- components.js:857 — phoneHead — function constant
+- components.js:858 — phone — function constant
+- components.js:859 — frame — function
+- components.js:873 — wireFrame — function
+- components.js:901 — empties — function
+- components.js:911 — phBar — function constant
+- components.js:912 — stateCard — function
+- components.js:923 — stMark — function constant
+- components.js:924 — stWord — function constant
+- components.js:925 — stLine — function constant
+- components.js:926 — stDetail — function constant
+- components.js:927 — headStatus — function constant
+- components.js:930 — stBadge — function constant
+- components.js:931 — stOps — function constant
+- components.js:932 — stPhoneHead — function constant
+- components.js:933 — states — function
+- components.js:963 — drawStatePlot — function
+- components.js:1026 — drawPlots — function
+- components.js:1027 — render — function
+- components.js:1045 — setLang — function
 
 ## reports.js
 

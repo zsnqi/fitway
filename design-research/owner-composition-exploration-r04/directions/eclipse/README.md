@@ -811,7 +811,7 @@ Built for the user to try (DECISIONS item 20, the user's picks of 2026-10-03), a
 - A quick tap keeps the reading, with close, previous and next (44 px each). A tap outside the chart card, Escape or close ends it. The keyboard keeps the reading with its buttons and reaches them after the plot.
 - The reading stands large in the band above the plot (the tooltip's lane, empty at rest); the tooltip box and its connector are set aside on a phone. Inside now never changes.
 - Under a finger every stop has an equal share of the plot, so every half hour, the peak and the latest reading can be reached at 390 and 320.
-- Busiest time keeps its place, with its hours beside its title: 100 px tall instead of 148.
+- The trial’s busiest-time card was 100 px tall, with its hours beside its title; decision 26 below supersedes that form.
 - The component sheet shows the held and kept readings, a kept span with no readings, and the busiest time's phone row.
 
 ### After the trial (DECISIONS item 25, 2026-10-03)
@@ -824,3 +824,8 @@ Built for the user to try (DECISIONS item 20, the user's picks of 2026-10-03), a
 - **"Waiting for readings"** (English, 320 px) wraps between its words where it would pass the buttons, so it keeps the reading's distance from them.
 - **Reports and the sheet.** The empty-period sentence keeps «لا قراءات» / "No readings" whole and each preposition with its date («من 20 يوليو» / «إلى 1 أغسطس 2026»), in every form of item 21; the tablet day table's frozen columns are whole pixels (Notes takes the rest), which removes the 1 px seam in the Arabic header; the "Last 7 days" description reads "The days from … compared with the days from …", as the Arabic does; the sheet's "Last 7 days" range is one unbreakable run, as on Reports, and its empty table and alert stack at 720 px and below.
 - **Spoken separators.** Every silent middle dot between two parts of a line (both headers, Highest peak's day and time, Busy times' subtitle, the status details' last reading) has an unseen comma after it, so a screen reader hears two phrases.
+### The busiest-time card (DECISIONS item 26, 2026-10-04)
+
+At 720 px and below, Daily and the sheet’s busiest-time specimens use the designer’s variant 2 as their only form: the name and "Last 7 days" on the head line, then the hours at the start and the average at the far end on the same baseline. The card is 114 px tall in every Daily state, 14 px taller than the trial; loading keeps its two bars in the corresponding value slots. No `busy` URL switch is implemented.
+
+Arabic hours on this card alone spell out «صباحًا / مساءً», for example «6–7 مساءً», and its average reads «بمعدّل 51», visibly and to assistive technology. English remains "6–7 PM" / "Average 51". Every other time, every Reports frame, and this card from 721 px keep their existing form. Crossing the phone breakpoint refreshes only this card’s ready values; loading and error retain their awaited or empty slots.

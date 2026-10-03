@@ -761,7 +761,7 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
 
 /* -------------------------------------------- Daily on the phone: the finger
  * DECISIONS item 20, the user's picks for a trial (2026-10-03): press and hold, then drag; previous and next; the busiest
- * time's hours beside its title. 720 px and below only; 721 px and up are unchanged, and so is the page's arrangement.
+ * time's phone form (superseded by decision 26 below). 720 px and below only; 721 px and up are unchanged.
  *   The band   the tooltip's lane above the plot holds the reading, large, at its inline start: the time (with the
  *              peak's or the latest's flag), the value in display type with its level word, then the usual value (and a
  *              stale reading's age). The tooltip box and its connector are set aside on a phone. Nothing is drawn in
@@ -769,7 +769,7 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
  *   Kept       a tap keeps the reading and adds three 44 px buttons at the band's inline end: close, then the previous
  *              and the next time. A button at the first or the last stop says so (aria-disabled, BTN-4's look).
  *   The plot   a long press opens no system menu and selects no text; the browser keeps every pan (app.js decides).
- *   Busiest    its hours and their average at the card's inline end, beside its title and period. */
+ *   Busiest    decision 26's two rows, two edges: the designer's variant 2, with no URL switch. */
 .band { display: none; }
 @media (max-width: 720px) {
   .dl .tip, .dl #conn { visibility: hidden; }
@@ -787,13 +787,12 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
     pointer-events: none; /* a tap on the reading is a tap on the plot under it; only the buttons take taps */
   }
 
-  /* The busiest time: its hours and their average at the inline end, beside its title and period (the same card, in the
-   * same place). */
-  .dl #card-busiest { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 16px; align-items: start; }
-  .dl #card-busiest > .stat-head { grid-column: 1; grid-row: 1 / span 2; flex-wrap: wrap; align-content: flex-start; row-gap: 4px; }
-  .dl #card-busiest .stat-meta { flex-basis: 100%; margin-inline-start: 24px; }
-  .dl #card-busiest > .stat-value { grid-column: 2; grid-row: 1; margin: 0; justify-content: flex-end; }
-  .dl #card-busiest > .stat-note { grid-column: 2; grid-row: 2; min-height: 22px; margin: 0; padding-block-start: 4px; text-align: end; }
+  /* The head keeps one line; the hours and average share the next baseline and opposite edges (114 px in every state). */
+  .dl #card-busiest { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 16px; row-gap: 16px; align-items: start; }
+  .dl #card-busiest > .stat-head { grid-column: 1 / -1; grid-row: 1; flex-wrap: nowrap; row-gap: 0; align-self: start; }
+  .dl #card-busiest .stat-meta { flex-basis: auto; margin-inline-start: auto; }
+  .dl #card-busiest > .stat-value { grid-column: 1; grid-row: 2; margin: 0; justify-content: flex-start; align-self: baseline; }
+  .dl #card-busiest > .stat-note { grid-column: 2; grid-row: 2; min-height: 18px; margin: 0; padding: 0; align-self: baseline; text-align: end; white-space: nowrap; }
 }
 /* The reading's own parts (the page draws them only on a phone; the component sheet draws them at any width). */
 .band-read { min-width: 0; }

@@ -267,11 +267,16 @@
   // both in the word's type and colour (one size and one colour, decision 9, user 2026-10-02).
   const tipLines = (w, second) => `<div class="cx-tip-main"><span class="cx-tip-word">${w}</span></div><div class="cx-tip-main cx-tip-span"><span class="cx-tip-word">${second}</span></div>`;
   const spanTip = (w, a, z) => tipLines(w, `<span class="nw">${L.spanFrom} <bdi>${a}</bdi></span> <span class="nw">${L.spanTo} <bdi>${z}</bdi></span>`);
-  const hourRange = (h) => {
+  const hourRange = (h, fullPeriod = false) => {
     const a = clock((h - 6) * 60), z = clock((h - 5) * 60), dash = "–";
+    const period = (pm) => fullPeriod && LANG === "ar" ? (pm ? "مساءً" : "صباحًا") : suf(pm);
     const nums = LANG === "ar" ? `<bdi dir="ltr">${a.h12}${dash}\u2060${z.h12}</bdi>` : `${a.h12}${dash}${z.h12}`;
-    return a.pm === z.pm ? `${nums} ${suf(z.pm)}` : `${a.h12} ${suf(a.pm)}${dash}\u2060${z.h12} ${suf(z.pm)}`;
+    return a.pm === z.pm ? `${nums} ${period(z.pm)}` : `${a.h12} ${period(a.pm)}${dash}\u2060${z.h12} ${period(z.pm)}`;
   };
+  // CSS exposes only the matching width's copy, including to assistive technology (decision 26).
+  const busyCopy = (wide, phone) => `<span class="cx-busy-wide">${wide}</span><span class="cx-busy-phone">${phone}</span>`;
+  const busyHours = (h) => busyCopy(b(hourRange(h)), b(hourRange(h, true)));
+  const busyAverage = (n) => busyCopy(L.avgN(n), LANG === "ar" ? `بمعدّل ${b(n)}` : L.avgN(n));
 
   /* ------------------------------------------------------------------ icons */
   const svg = (inner, cls = "cx-ico") => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${inner}</svg>`;
@@ -362,7 +367,7 @@
     const body = o.empty
       ? `<p class="cx-stat-empty">${o.empty}</p>${o.emptyNote ? `<div class="cx-stat-foot"><span class="cx-note">${o.emptyNote}</span></div>` : ""}`
       : `<p class="cx-stat-value">${o.words ? `<span class="cx-words">${o.value}</span>` : `<bdi class="num">${o.value}</bdi>`}${o.unit ? `<span class="cx-unit">${o.unit}</span>` : ""}</p><div class="cx-stat-foot">${o.foot || ""}</div>`;
-    return `<article class="card cx-stat${o.row ? " is-row" : ""}${o.lit ? " lit lit-card" : ""}${o.stale ? " is-stale" : ""}">${o.lit ? LAMP : ""}${head}${body}</article>`;
+    return `<article class="card cx-stat${o.busy ? " cx-busiest" : ""}${o.row ? " is-row" : ""}${o.lit ? " lit lit-card" : ""}${o.stale ? " is-stale" : ""}">${o.lit ? LAMP : ""}${head}${body}</article>`;
   }
   function cards() {
     const latest = DATA.raw[NOW], lateV = DATA.raw[NOW - LATE];
@@ -370,8 +375,8 @@
       [statCard({ lit: true, icon: "person", label: L.nowTitle, meta: `<i class="cx-dot"></i>${b(time(NOW))}`, value: latest, unit: L.approx, foot: badge(latest) }), L.cards.live, "CRD-1 · CRD-6 · LVL-2", false],
       [statCard({ icon: "peak", label: L.peakTitle, meta: b(time(DATA.peakM)), value: DATA.peak, foot: badge(DATA.peak) }), L.cards.plain, "CRD-2 · DAT-5", false],
       [statCard({ stale: true, icon: "person", label: `${L.lastReading} ${b(time(NOW - LATE))}`, meta: `${ico("clock")}${L.ago(LATE)}`, late: true, value: lateV, unit: L.approx, foot: badge(lateV, true) }), L.cards.late, "LGT-7 · LVL-5", false],
-      [statCard({ icon: "clock", label: L.busiestTitle, meta: L.last7, words: true, value: b(hourRange(18)), foot: `<span class="cx-note">${L.avgN(51)}</span>` }), L.cards.words, "TYP-3 · GLO-12", false],
-      [statCard({ row: true, icon: "clock", label: L.busiestTitle, meta: L.last7, words: true, value: b(hourRange(18)), foot: `<span class="cx-note">${L.avgN(51)}</span>` }), L.band.busy, "OWN-D7 · OWN-D8", false],
+      [statCard({ busy: true, icon: "clock", label: L.busiestTitle, meta: L.last7, words: true, value: busyHours(18), foot: `<span class="cx-note">${busyAverage(51)}</span>` }), L.cards.words, "TYP-3 · GLO-12", false],
+      [statCard({ busy: true, row: true, icon: "clock", label: L.busiestTitle, meta: L.last7, words: true, value: busyHours(18), foot: `<span class="cx-note">${busyAverage(51)}</span>` }), L.band.busy, "OWN-D7 · OWN-D8", false],
       [statCard({ icon: "person", label: L.avgTitle, empty: L.noReadings }), L.cards.none, "CRD-3 · GLO-5", false],
       [statCard({ icon: "wow", label: L.wowTitle, meta: L.wowDates, empty: L.notEnough, emptyNote: L.needs }), L.cards.short, "CRD-3 · LGT-7", false],
     ];
@@ -913,7 +918,7 @@
       const value = o.value || "";
       body = `<div class="cx-st-value${o.word ? " is-word" : ""}">${value}</div>` + (o.note != null ? `<p class="cx-st-note">${o.note}</p>` : `<div class="cx-st-foot">${o.foot || ""}</div>`);
     }
-    return `<article class="card cx-stat cx-st-card">${head}${body}</article>`;
+    return `<article class="card cx-stat cx-st-card${o.busy ? " cx-busiest" : ""}">${head}${body}</article>`;
   }
   const stMark = (st) => (st === "closed" ? '<span class="cx-st-ring" aria-hidden="true"></span>' : st === "offline" ? ico("offline", "cx-st-off") : st === "error" ? ico("alert", "cx-st-err") : "");
   const stWord = (st) => (st === "closed" ? L.closed : st === "offline" ? L.offline : st === "error" ? L.errorWord : L.loadingWord);
@@ -928,7 +933,7 @@
   function states() {
     const cards = [
       [stateCard({ icon: "person", label: L.nowTitle, meta: phBar(40, 9), value: `<span class="num">${phBar(56, 33)}</span>`, foot: '<i class="cx-ph-box"></i>' }), L.stCaps.loadNow, "STA-10 · PH-1…3"],
-      [stateCard({ icon: "clock", label: L.busiestTitle, meta: L.last7, word: true, value: `<span class="cx-words">${phBar(88, 22)}</span>`, note: phBar(56, 9) }), L.stCaps.loadBusy, "STA-10 · PH-1"],
+      [stateCard({ busy: true, icon: "clock", label: L.busiestTitle, meta: L.last7, word: true, value: `<span class="cx-words">${phBar(88, 22)}</span>`, note: phBar(56, 9) }), L.stCaps.loadBusy, "STA-10 · PH-1"],
       [stateCard({ icon: "person", label: L.nowTitle, word: true, value: `<span class="cx-words">${L.closed}</span>`, foot: `<span class="cx-st-foot-note">${L.opens(b(time(0)))}</span>` }), L.stCaps.closedNow, "STA-11 · CRD-10"],
       [stateCard({ icon: "peak", label: L.peakTitle, value: `<span class="cx-st-say">${L.stillAhead}</span>` }), L.stCaps.closedPeak, "STA-11 · CRD-3 · GLO-8"],
       [stateCard({ icon: "person", label: L.nowTitle, value: `<span class="cx-st-say">${L.noCount}</span>`, foot: `<span class="cx-st-foot-note">${L.checkOps}</span>` }), L.stCaps.offNow, "STA-12 · CRD-10"],

@@ -228,9 +228,10 @@
   const timeRange = (a, b) => range(fmtTime(a), fmtTime(b));
   const plainRange = (a, b) => `${a} ${DASH} ${b}`;
   const plainSpan = (a, b) => `${a} ${L.spanTo} ${b}`;
-  function hourRange(a, b) {
+  function hourRange(a, b, fullPeriod = false) {
     const A = clock(a), B = clock(b);
-    return A.pm === B.pm ? bdi(`${NUMS(A.h12, B.h12)} ${suffix(A.pm)}`) : range(fmtHour(a), fmtHour(b));
+    const period = (pm) => fullPeriod && RTL ? (pm ? "مساءً" : "صباحًا") : suffix(pm);
+    return A.pm === B.pm ? bdi(`${NUMS(A.h12, B.h12)} ${period(A.pm)}`) : range(`${A.h12} ${period(A.pm)}`, `${B.h12} ${period(B.pm)}`);
   }
   /* A span in words (decision 8, user 2026-10-01): one sentence, the words first, «لا قراءات من 2:14 م إلى 2:31 م» /
    * "No readings from 2:14 PM to 2:31 PM". It replaces the range first and the dotted mark. It wraps only between its
@@ -793,10 +794,15 @@
     $("#entries-v").textContent = String(M.entries);
     $("#entries-usual").innerHTML = HAS_HISTORY ? L.usualEntries(bdi(M.usualEntries)) : "";
     $("#busy-meta").innerHTML = `<span>${L.busiestMeta}</span>`;
-    $("#busy-v").innerHTML = hourRange(M.busiest.from, M.busiest.to);
-    $("#busy-note").innerHTML = L.busiestNote(bdi(M.busiest.avg));
+    fillBusiest();
   }
   $("#cards").setAttribute("aria-labelledby", "cards-title");
+  // Decision 26: only this card spells out the Arabic period and uses «بمعدّل» on a phone.
+  const busiestRange = () => hourRange(M.busiest.from, M.busiest.to, mqPhone.matches);
+  function fillBusiest() {
+    $("#busy-v").innerHTML = busiestRange();
+    $("#busy-note").innerHTML = RTL && mqPhone.matches ? `بمعدّل ${bdi(M.busiest.avg)}` : L.busiestNote(bdi(M.busiest.avg));
+  }
 
   /* ---- Daily's states (step 3, second part; STA-10, K-02). Every card keeps its slots and its height in every state
    * (CRD-9): the head with its name, the value's line (46 px; the busiest time's 36) and the foot (42) or note (34). A
@@ -863,8 +869,7 @@
     }
     // The busiest time over the last 7 days is history, not a reading: it stays (GLO-12; its basis is 6 full days).
     $("#busy-meta").innerHTML = `<span>${L.busiestMeta}</span>`;
-    $("#busy-v").innerHTML = hourRange(M.busiest.from, M.busiest.to);
-    $("#busy-note").innerHTML = L.busiestNote(bdi(M.busiest.avg));
+    fillBusiest();
   }
   // Error (EMP-2, EMP-3): no reading is kept. Inside now, the page's first answer, holds the alert and its one retry, in
   // the value's line and the foot together (46 + 42 px), so the card keeps its height; the other cards keep only their
@@ -889,6 +894,7 @@
   // slots, which the lifecycle section sets up with the chart.
   if (phase === "ready" && !CLOSED && !UNAV) fillCards();
   else if (CLOSED || UNAV) { stateCards(); setLights(false); }
+  mqPhone.addEventListener("change", () => { if (phase === "ready") fillBusiest(); });
 
   // After a live change only the values that changed move: digits roll, level bars fill or empty, and words swap
   // at once (motion section). Everything ends on exactly the markup the page renders at load.
@@ -905,7 +911,7 @@
     setFoot($("#peak-foot"), M.peak, "");
     rollTo($("#entries-v"), String(M.entries));
     if (HAS_HISTORY) rollTo($("#entries-usual bdi"), String(M.usualEntries));
-    rollTo($("#busy-v"), hourRange(M.busiest.from, M.busiest.to));
+    rollTo($("#busy-v"), busiestRange());
     rollTo($("#busy-note bdi"), String(M.busiest.avg));
   }
 

@@ -415,6 +415,17 @@ th.is-asc .cx-sort .cx-ico { transform: rotate(180deg); }
 .cx-stat.is-row .cx-stat-meta { flex-basis: 100%; margin-inline-start: 24px; }
 .cx-stat.is-row > .cx-stat-value { grid-column: 2; grid-row: 1; margin: 0; justify-content: flex-end; }
 .cx-stat.is-row > .cx-stat-foot { grid-column: 2; grid-row: 2; justify-content: flex-end; margin: 0; padding-block-start: 4px; }
+.cx-busy-phone { display: none; }
+/* Decision 26: both busiest-time specimens and the awaited values use Daily's only phone form. */
+@media (max-width: 720px) {
+  .cx-busy-wide { display: none; }
+  .cx-busy-phone { display: inline; }
+  .cx .cx-stat.cx-busiest { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 16px; row-gap: 16px; align-items: start; height: 114px; }
+  .cx-stat.cx-busiest > .cx-stat-head { grid-column: 1 / -1; grid-row: 1; flex-wrap: nowrap; row-gap: 0; align-self: start; }
+  .cx-stat.cx-busiest .cx-stat-meta { flex-basis: auto; margin-inline-start: auto; }
+  .cx-stat.cx-busiest > .cx-stat-value, .cx-stat.cx-busiest > .cx-st-value { grid-column: 1; grid-row: 2; min-height: 36px; margin: 0; justify-content: flex-start; align-self: baseline; }
+  .cx-stat.cx-busiest > .cx-stat-foot, .cx-stat.cx-busiest > .cx-st-note { grid-column: 2; grid-row: 2; min-height: 18px; margin: 0; padding: 0; justify-content: flex-end; align-self: baseline; text-align: end; white-space: nowrap; }
+}
 .cx-measure { position: absolute; top: 0; left: 0; width: 0; height: 0; overflow: hidden; visibility: hidden; contain: strict; }
 .cx-measure .cx-tip { position: static; backdrop-filter: none; }
 
