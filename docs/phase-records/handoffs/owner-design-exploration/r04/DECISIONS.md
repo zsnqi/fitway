@@ -56,8 +56,9 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     sentence in place of the cards). Pending counts the partly received day in the period figures, as A does
     (coordinator: the readings are real, and the day row says it is still waiting, as a camera gap is treated). The
     header status control keeps one width from loading to arrival (built in `1a4b497`); Daily gets the same fix.
-    Still open for the user: C's error sentence with the year once («من 26 أغسطس إلى 22 سبتمبر 2026», the header's
-    form), and whether the status control's extra width on hover and focus is acceptable.
+    The error sentence writes the year once, as the header does: «تعذّر تحميل القراءات من 26 أغسطس إلى 22 سبتمبر
+    2026», and English the same way. The control's reserved width stays, but the outline drawn on hover and focus
+    fits the text, with no empty space inside it (both 2026-10-03).
 
 ## How this milestone's rounds run
 
