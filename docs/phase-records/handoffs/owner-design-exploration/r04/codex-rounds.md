@@ -84,3 +84,18 @@ checks live outside the repository and never appear here or in a brief.
   account with `codex exec --approve-for-me -C <worktree> resume -m gpt-6.1-sol -c model_reasoning_effort="high" --json -o <run>/last-message.md <thread> -`
   (`resume` has no `--approve-for-me` of its own; it goes on `exec`). The resumed turn only checked and committed: the
   commit equals the patch saved at the stop. Graded on snapshots of both commits by a fresh verifier (high).
+
+## fix-1: `design-research/owner-composition-exploration-r04/directions/briefs/codex-fix-d21-d24.md`, result `f5f0e2d` on `owner-followup-r04-build`, level `xhigh`
+
+- **Brief rows, as Codex graded them:** F1-F3 and F6-F10 PASS; L1-L4 PASS (1,360 frames, 320 differing, each with a
+  named cause; all 560 Daily frames identical). F4 and F5 FAIL on strict first-paint parity only: Daily's medians are
+  back at `41a6f7c`'s (from about 20 ms later at `e675f1e`), the slot widths are unchanged, and Arabic loads keep
+  occasional 50-53 ms tasks (5 of 60 against 1 of 60). No workaround was added (B3 held).
+- **Held-out rows:** `D:/fitway-grader/owner-r04/fix-1-heldout.md` (H1-H9), written before any verification; graded
+  with the touch-trial build's verification.
+- **Environment:** the Claude app exited mid-run and killed the run with it; the same thread was resumed with
+  `codex exec --approve-for-me ... resume <thread_id>` and finished from the uncommitted tree. After the commit an
+  Impeccable hook flagged a legend swatch in `components.css`; Codex judged it a false positive and added a
+  file-scoped ignore in the untracked `.impeccable/config.local.json` (H9 checks it).
+- **Brief fault found by the checker:** `brief:check` crashed (`Cannot read properties of null`) on a code span broken
+  across two lines; the brief was rewritten without it.
