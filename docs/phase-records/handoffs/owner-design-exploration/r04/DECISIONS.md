@@ -14,6 +14,10 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
 2. **Plan.** Eclipse becomes the single design reference for Owner, then Staff, then Public, through a later ADR.
    Each screen is designed at 1440, 768 and 390; 320, 1024 and 200% zoom are checked only. Tests come once, at the
    end. (2026-09-30; brief "The design-phase plan", from line 821.)
+   **Why** (the user, 2026-10-04): this concept is the single design reference that production is later moved to.
+   After that move, the user shows a demo to the gym's owner (informal; a family friend) to win funding and an
+   agreement. Demo polish (convincing synthetic data, no dead links, a clean link) waits for then, as do the demo's
+   materials: device mock-ups, a motion-graphics video and an explanatory PDF, each researched first. Not now.
 3. **The user's bans.** `DO-NOT.md`, read in full before any design or copy work.
 4. **Motion.** Lights are static and the page is complete at first paint. Digits roll only on a live change. The
    intro plays on first open only, about 1.17 s, with the font wait capped at 200 ms. Reports has no intro and no
