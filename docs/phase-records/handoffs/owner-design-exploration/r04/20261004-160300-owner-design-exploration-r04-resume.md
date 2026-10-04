@@ -20,18 +20,16 @@
 
 ## Running now
 
-- **`owner-direction-verifier-high` on Activity log's first build**, background, from the tracked brief
-  `D:/Projects/fitway-worktrees/owner-r04-daily-phone/design-research/owner-composition-exploration-r04/directions/briefs/verifier-activity-log.md`
-  (branch `owner-r04-activity` at `6899470`, which adds the brief over `a8aa8ad`). Evidence
-  `D:/fitway-temp/owner-r04-activity-review/`; save its report there as `REPORT.md`. Designer report:
-  `D:/fitway-temp/owner-r04-activity/REPORT.md`.
+- **`owner-direction-designer` (xhigh) on Activity log's fix round**, background, from the tracked brief
+  `D:/Projects/fitway-worktrees/owner-r04-daily-phone/design-research/owner-composition-exploration-r04/directions/briefs/designer-activity-log-fix-1.md`
+  (branch `owner-r04-activity` at `8451f71`). Crops `D:/fitway-temp/owner-r04-activity-fix-1/crops/`; save its report
+  there as `REPORT.md`. Inputs: DECISIONS 32 and the review `D:/fitway-temp/owner-r04-activity-review/REPORT.md`
+  (F1, F2, O1 medium). The owner's name needs no Spec change: `auditActorSchema.displayName` exists.
 
 ## Next steps
 
-1. **Activity log's fix round:** one `owner-direction-designer` (Opus, xhigh) round with DECISIONS 32 (no human
-   corrections, «التصفير» name, no manual-count reason, a date picker on Activity log and Reports, the smaller phone
-   title with the components sheet's type scale, the magnifier, calendar-date grouping, the owner's name) and the
-   review's high and medium findings. Then the user, then merge `owner-r04-activity` into `owner-followup-r04-build`.
+1. **Activity log:** inspect the fix round's frames, publish for the user, then merge `owner-r04-activity` into
+   `owner-followup-r04-build`.
 2. **Daily and Reports' last round,** after Activity log or beside it: the «معدّل الموجودين» card redrawn by a
    designer and shown to the user before Codex builds it; fix-3's open findings in `D:/fitway-temp/owner-r04-fix-3-verify/REPORT.md`.
    The old artifact Fu3qDtwnRUNd9zMj5NiMZp (with the `#fig-avg` thread) no longer lists; the note stands as DECISIONS 30.
