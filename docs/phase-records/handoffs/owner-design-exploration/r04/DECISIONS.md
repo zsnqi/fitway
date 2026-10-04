@@ -261,6 +261,12 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - **Review:** `owner-direction-verifier-high` (Opus, high), reading direction included, after the user switches
       accounts (the user: "كويس"). The components sheet waits for the end of the remaining screens, by an xhigh
       designer or a builder; max only if that result disappoints (the user agrees).
+    - **The fix round** (`e72e5fe`, designer report `D:/fitway-temp/owner-r04-activity-fix-1/REPORT.md`) built all six
+      and every review finding; published https://claude.ai/artifact/RKEfwzfwZ7oD5r5fZLnqPS (the user's earlier links
+      do not open under the current account). Coordinator answers to its questions, each applying a rule already
+      decided: Reports' export dialog takes the picker too (this item: every page with dates); the front desk leaves
+      "Who" (ADR-008: it writes no record); the components sheet's date specimens show the picker; an owner's name is
+      one stored string, shown the same in both languages (truthful data). These go to one small follow-up.
 
 ## How this milestone's rounds run
 

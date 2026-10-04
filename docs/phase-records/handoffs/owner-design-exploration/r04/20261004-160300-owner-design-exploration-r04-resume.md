@@ -20,16 +20,15 @@
 
 ## Running now
 
-- **`owner-direction-designer` (xhigh) on Activity log's fix round**, background, from the tracked brief
-  `D:/Projects/fitway-worktrees/owner-r04-daily-phone/design-research/owner-composition-exploration-r04/directions/briefs/designer-activity-log-fix-1.md`
-  (branch `owner-r04-activity` at `8451f71`). Crops `D:/fitway-temp/owner-r04-activity-fix-1/crops/`; save its report
-  there as `REPORT.md`. Inputs: DECISIONS 32 and the review `D:/fitway-temp/owner-r04-activity-review/REPORT.md`
-  (F1, F2, O1 medium). The owner's name needs no Spec change: `auditActorSchema.displayName` exists.
+Nothing. The fix round returned `e72e5fe` on `owner-r04-activity` (report
+`D:/fitway-temp/owner-r04-activity-fix-1/REPORT.md`); published https://claude.ai/artifact/RKEfwzfwZ7oD5r5fZLnqPS from
+the scratchpad staging (no `tuner.js`).
 
 ## Next steps
 
-1. **Activity log:** inspect the fix round's frames, publish for the user, then merge `owner-r04-activity` into
-   `owner-followup-r04-build`.
+1. **Activity log:** the user tries the published build. Then one small follow-up (DECISIONS 32, last bullet: the
+   export dialog's picker, components sheet date specimens, one-string owner names), then merge `owner-r04-activity`
+   into `owner-followup-r04-build`.
 2. **Daily and Reports' last round,** after Activity log or beside it: the «معدّل الموجودين» card redrawn by a
    designer and shown to the user before Codex builds it; fix-3's open findings in `D:/fitway-temp/owner-r04-fix-3-verify/REPORT.md`.
    The old artifact Fu3qDtwnRUNd9zMj5NiMZp (with the `#fig-avg` thread) no longer lists; the note stands as DECISIONS 30.
@@ -56,5 +55,5 @@ without `tuner.js`, staging `D:/fitway-temp/owner-r04-artifact-2/`) and answers 
 - Reviews: `D:/fitway-temp/owner-r04-review-436fe40/REPORT.md`, `D:/fitway-temp/owner-r04-fix-2-verify/REPORT.md`;
   designer `D:/fitway-temp/owner-r04-busiest-average/REPORT.md`.
 - Codex runs: `D:/fitway-temp/codex-runs/owner-fix-2/` and `D:/fitway-temp/codex-runs/owner-fix-3/` (`last-message.md`).
-- Artifact: https://claude.ai/artifact/4rrdgUHUuX8hyiQeGTSMdC (Daily, Reports, Activity log; staging `D:/fitway-temp/owner-r04-artifact-2/`). The older Fu3qDtwnRUNd9zMj5NiMZp no longer lists.
+- Artifact: https://claude.ai/artifact/RKEfwzfwZ7oD5r5fZLnqPS (Daily, Reports, Activity log at `e72e5fe`). Artifacts are per account; older links belong to the previous account.
 - Codex evaluations: `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md`.
