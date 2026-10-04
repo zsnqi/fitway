@@ -185,12 +185,11 @@ try {
     await B("button-default");
     await B("button-hover", async (p) => { await p.evaluate(() => document.querySelector("#days").scrollIntoView({ block: "start" })); await p.hover("#table-export"); });
     await B("button-focus", (p) => kbFocus(p, "#table-export"));
-    // Fields, inside the range dialog: default, hover, focus, invalid with its message; disabled is in the export's working state.
+    // The shared picker: keyboard focus, hover and a start alone (PCK-2, PCK-7).
     const F = async (name, act) => { const o = await open(`lang=${lang}&dialog=range`, { scale: 2 }); if (act) await act(o.page); await o.page.waitForTimeout(120); const loc = o.page.locator("#range-form"); const bx = await loc.boundingBox(); await loc.screenshot({ path: join(FR, `${name}-${lang}-2x.png`) }); await finish(`${name}-${lang}-2x`, o, { cssW: Math.round(bx.width) }); await o.context.close(); };
-    await F("field-focus");
-    await F("field-hover", async (p) => { await p.evaluate(() => document.activeElement.blur()); await p.hover("#range-to"); });
-    await F("field-invalid", async (p) => { await p.fill("#range-from", "31/02/2026"); await p.fill("#range-to", "22/10/2026"); await p.click("#range-form [type=submit]"); });
-    await F("field-invalid-order", async (p) => { await p.fill("#range-from", "16/09/2026"); await p.fill("#range-to", "10/09/2026"); await p.click("#range-form [type=submit]"); });
+    await F("picker-focus");
+    await F("picker-hover", async (p) => { await p.evaluate(() => document.activeElement.blur()); await p.hover('#range-picker [data-dn="20708"]'); });
+    await F("picker-start", async (p) => { await p.click('#range-picker [data-dn="20708"]'); });
   }
   /* ---- the dialog's states */
   for (const lang of LANGS) {
@@ -201,7 +200,7 @@ try {
     await D("export-working", "", async (p) => { await p.evaluate(() => { window.__reports.export.hold = true; }); await p.click("#export-go"); await p.waitForTimeout(500); });
     await D("export-done", "", async (p) => { await p.click("#export-go"); await p.waitForFunction(() => window.__reports.export.state === "done"); await p.waitForTimeout(60); });
     await D("export-failed", "&export=fail", async (p) => { await p.click("#export-go"); await p.waitForFunction(() => window.__reports.export.state === "failed"); await p.waitForTimeout(60); });
-    await D("export-invalid", "", async (p) => { await p.fill("#export-from", "01/01/2025"); await p.fill("#export-to", "22/09/2026"); await p.click("#export-go"); });
+    await D("export-one-day", "", async (p) => { await p.click('#export-picker [data-dn="20708"]'); });
   }
   /* ---- the early phone check: the table, the date-range form and the export dialog at 390x844 and 320x568 */
   for (const [w, h] of [[390, 844], [320, 568]]) {
@@ -229,10 +228,10 @@ try {
         await o.context.close();
       };
       await P("table", "", (p) => p.evaluate(() => document.querySelector("#days").scrollIntoView({ block: "start" })));
-      await P("table-sorted", "", async (p) => { await p.evaluate(() => document.querySelector("#days").scrollIntoView({ block: "start" })); await p.click('[data-sort="entries"]'); });
+      await P("table-sorted", "", async (p) => { await p.evaluate(() => document.querySelector("#days").scrollIntoView({ block: "start" })); await p.selectOption("#dl-sort", "entries-desc"); });
       await P("range-form", "", null);
       await P("range-dialog", "&dialog=range", null);
-      await P("range-dialog-invalid", "&dialog=range", async (p) => { await p.fill("#range-from", "31/02/2026"); await p.fill("#range-to", "22/10/2026"); await p.click("#range-form [type=submit]"); });
+      await P("range-dialog-start", "&dialog=range", async (p) => { await p.locator('#range-picker [data-dn="20708"]').tap(); });
       await P("export-dialog", "&dialog=export", null);
       await P("export-done", "&dialog=export", async (p) => { await p.click("#export-go"); await p.waitForFunction(() => window.__reports.export.state === "done"); });
     }
@@ -286,14 +285,14 @@ await sheet("04-week-over-week", "Week over week in both history states", "Last 
 const TABLE = [["table-default", "default (newest first)"], ["table-hover", "hover on a row"], ["table-focus", "keyboard focus on a sortable header"], ["table-sorted", "selected: sorted by peak (aria-sort)"], ["table-gap-highest", "a camera gap and the period's highest peak, in words"], ["table-before-history", "days before the readings began: one merged row"], ["table-empty", "empty: a period with no readings, and the way back"]];
 await sheet("05-table-states", "The table: states", "The system's data table, in Arabic (left) and English (right).", `<div class="g" style="grid-template-columns:repeat(2,880px)">${TABLE.map(([f, cap]) => L2((l) => fig(`${f}-${l}-2x`, 880, `<b>${cap}</b> · ${l.toUpperCase()}`))).join("")}</div>`);
 const FORM = [["seg-default", "segmented: default, the selected period lifted"], ["seg-hover", "segmented: hover"], ["seg-focus", "segmented: keyboard focus"], ["seg-selected-7d", "segmented: another selection"], ["switch-off", "switch: off"], ["switch-hover", "switch: hover"], ["switch-focus", "switch: keyboard focus"], ["switch-on", "switch: on"], ["button-default", "button: default"], ["button-hover", "button: hover"], ["button-focus", "button: keyboard focus"]];
-const FIELDS = [["field-focus", "fields: focus (the first field on opening)"], ["field-hover", "fields: hover"], ["field-invalid", "fields: invalid, each with its message"], ["field-invalid-order", "fields: invalid order"], ["export-working", "fields and primary button: disabled while working"]];
-await sheet("06-form-states", "The form: states", "Controls are 44 px tall. Focus is a 2 px chalk ring. Errors sit under their field, are tied to it (aria-describedby, aria-invalid), and the first invalid field takes focus.",
+const FIELDS = [["picker-focus", "picker: focus on the chosen end"], ["picker-hover", "picker: hover"], ["picker-start", "picker: start alone"], ["export-working", "picker and primary button: disabled while working"]];
+await sheet("06-form-states", "The form: states", "Controls are 44 px tall. Focus is a 2 px chalk ring; the date grid uses a 2 px offset. Dates are picked with the shared picker, never typed.",
   `<h2>Controls</h2><div class="g" style="grid-template-columns:repeat(2,860px)">${FORM.map(([f, cap]) => L2((l) => fig(`${f}-${l}-2x`, 860, `<b>${cap}</b> · ${l.toUpperCase()}`))).join("")}</div><h2>Fields</h2><div class="g" style="grid-template-columns:repeat(2,560px)">${FIELDS.map(([f, cap]) => L2((l) => fig(`${f}-${l}-2x`, 560, `<b>${cap}</b> · ${l.toUpperCase()}`))).join("")}</div>`, 1800);
-const DLG = [["export-idle", "export: ready (focus on the primary action)"], ["export-invalid", "export: invalid (more than 366 days)"], ["export-working", "export: working (busy, fields disabled, focus on Cancel)"], ["export-done", "export: done (a real CSV, saved from the page)"], ["export-failed", "export: failed (role=alert, focus on Try again)"]];
+const DLG = [["export-idle", "export: ready (focus on the primary action)"], ["export-one-day", "export: a start alone is a one-day file"], ["export-working", "export: working (busy, picker disabled, focus on Cancel)"], ["export-done", "export: done (a real CSV, saved from the page)"], ["export-failed", "export: failed (role=alert, focus on Try again)"]];
 await sheet("07-dialog-states", "The dialog: states", "One pattern: showModal, a scrim and a glass panel; focus goes in, stays in (Tab wraps), Escape and the scrim close it, and focus returns to the control that opened it.",
   `<div class="g" style="grid-template-columns:repeat(2,860px)">${L2((l) => fig(`dialog-range-${l}`, 860, `<b>date range, over the page</b> · ${l.toUpperCase()}`))}${L2((l) => fig(`dialog-export-${l}`, 860, `<b>export, over the page</b> · ${l.toUpperCase()}`))}</div><div class="g" style="grid-template-columns:repeat(2,560px);margin-top:22px">${DLG.map(([f, cap]) => L2((l) => fig(`${f}-${l}-2x`, 560, `<b>${cap}</b> · ${l.toUpperCase()}`))).join("")}</div>`);
 for (const [w, h] of [[390, 844], [320, 568]]) {
-  const P = [["table", "table (recomposed: notes fold into their own row)"], ["table-sorted", "table sorted by entries"], ["range-form", "date range: the segmented control"], ["range-dialog", "date range: bottom sheet"], ["range-dialog-invalid", "date range: invalid"], ["export-dialog", "export: bottom sheet"], ["export-done", "export: done"]];
+  const P = [["table", "table (recomposed: notes fold into their own row)"], ["table-sorted", "table sorted by entries"], ["range-form", "date range: the segmented control"], ["range-dialog", "date range: bottom sheet"], ["range-dialog-start", "date range: start alone"], ["export-dialog", "export: bottom sheet"], ["export-done", "export: done"]];
   await sheet(`08-phone-${w}`, `Phone feasibility check, ${w}x${h}`, "The table, form and dialog system only (not a phone design of Reports). The rail is set aside below 721 px for this check. isMobile, 2x.",
     `<div class="g" style="grid-template-columns:repeat(4,${w}px)">${P.map(([f, cap]) => L2((l) => fig(`phone-${w}-${f}-${l}`, w, `<b>${cap}</b> · ${l.toUpperCase()}`))).join("")}</div>`, w * 4 + 26 * 3 + 64);
 }

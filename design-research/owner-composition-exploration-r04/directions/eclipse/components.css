@@ -243,10 +243,10 @@ html:has(> body.cx) { color-scheme: dark; scrollbar-color: rgba(245, 243, 242, 0
 .cx-dlg { position: fixed; inset: 0; width: auto; height: auto; max-width: none; max-height: none; margin: 0; padding: 16px; border: 0; background: transparent; color: var(--ink); overflow: hidden; }
 .cx-dlg::backdrop { background: transparent; }
 .cx-dlg[open] { display: grid; place-items: center; }
-.cx-dlg .cx-scrim { position: absolute; inset: 0; background: rgba(4, 4, 5, 0.66); backdrop-filter: blur(3px); }
+.cx-dlg .dlg-scrim { position: absolute; inset: 0; background: rgba(4, 4, 5, 0.66); backdrop-filter: blur(3px); }
 @media (prefers-reduced-motion: no-preference) {
-  html:not([data-motion="off"]) .cx-dlg[open] .cx-panel { animation: cx-rise 240ms var(--ease-open); }
-  html:not([data-motion="off"]) .cx-dlg[open] .cx-scrim { animation: cx-fade 240ms var(--ease-open); }
+  html:not([data-motion="off"]) .cx-dlg[open] .dlg-panel { animation: cx-rise 240ms var(--ease-open); }
+  html:not([data-motion="off"]) .cx-dlg[open] .dlg-scrim { animation: cx-fade 240ms var(--ease-open); }
   html:not([data-motion="off"]) .cx-thumb { transition: transform 200ms var(--ease-state); }
 }
 @keyframes cx-rise { from { transform: translateY(14px); } to { transform: none; } }
@@ -254,8 +254,8 @@ html:has(> body.cx) { color-scheme: dark; scrollbar-color: rgba(245, 243, 242, 0
 @media (max-width: 720px) {
   .cx-dlg { padding: 0; }
   .cx-dlg[open] { place-items: end stretch; }
-  .cx-dlg .cx-panel { width: 100%; border-radius: 24px 24px 0 0; border-block-end: 0; }
-  .cx-dlg .cx-panel-foot .cx-btn { flex: 1 1 0; min-width: 0; }
+  .cx-dlg .dlg-panel { width: 100%; border-radius: 24px 24px 0 0; border-block-end: 0; }
+  .cx-dlg .dlg-panel-foot .cx-btn { flex: 1 1 0; min-width: 0; }
 }
 
 /* ------------------------------------------------------------------ table */
@@ -523,6 +523,24 @@ th.is-asc .cx-sort .cx-ico { transform: rotate(180deg); }
 .cx .tb-item.is-hover .tb-tile { background: rgba(255, 255, 255, 0.06); }
 .cx .tb-item.is-focus { outline: 2px solid var(--ink); outline-offset: 3px; }
 .cx .fw-mi.is-focus { outline: 2px solid var(--ink); outline-offset: -4px; }
+.cx .field-input.is-hover, .cx .field-input.is-focus { border-color: rgba(255, 255, 255, 0.52); }
+.cx .ac-search { position: relative; }
+.cx .ac-search .field-input { padding-inline-end: 44px; }
+.cx .ac-search .field-input::-webkit-search-cancel-button { -webkit-appearance: none; display: none; }
+.cx .ac-search .field-input::-webkit-search-decoration { -webkit-appearance: none; }
+.cx .ac-clear { position: absolute; top: 0; inset-inline-end: 0; }
+.cx .field-input.is-focus, .cx .rbtn.is-focus { outline: 2px solid var(--ink); outline-offset: 3px; }
+.cx .dp-day.is-spec-focus .dp-n { outline: 2px solid var(--ink); outline-offset: 2px; }
+.cx-picker-specimens .dlg-body { padding-block-end: 24px; }
+.cx-dialogs .dlg-panel, .cx-picker-specimens .dlg-panel { max-width: 100%; }
+.cx-frame > .dlg-panel { position: absolute; inset: auto 0 0; width: 100%; max-height: 100%; border-radius: 24px 24px 0 0; border-block-end: 0; }
+.cx-frame > .dlg-panel .dlg-foot .rbtn { flex: 1 1 0; min-width: 0; }
+html:has(#cx-dlg[open]) { overflow: hidden; }
+.cx-dlg .dlg-body { overscroll-behavior: contain; }
+@media (max-width: 400px) {
+  .cx-dialogs, .cx-picker-specimens { margin-inline: -16px; }
+  .cx-dialogs .cx-cap, .cx-picker-specimens .cx-cap { padding-inline: 16px; }
+}
 .cx .ops-title { margin: 0; }
 
 /* ------------------------------------------------ Daily's states (step 3, second part)
@@ -558,7 +576,7 @@ th.is-asc .cx-sort .cx-ico { transform: rotate(180deg); }
 .cx-st-load { display: inline-flex; align-items: center; height: 44px; font: var(--t-label); color: var(--ink-2); white-space: nowrap; }
 
 /* The sheet specimens reflow inside their available width. These rules are sheet-only. */
-.cx-dialogs { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; }
+.cx-dialogs { grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr)); }
 .cx-phones > .cx-fig, .cx-rails > .cx-fig { max-width: 100%; }
 .cx-cap bdi { white-space: normal; }
 @media (max-width: 900px) {

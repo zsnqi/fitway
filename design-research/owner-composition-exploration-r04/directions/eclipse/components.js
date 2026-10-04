@@ -73,7 +73,8 @@
         buttons: ["الأزرار", "زر واحد بارتفاع 44: ثانوي وأساسي وزر أيقونة. الأحمر ليس لون زر."],
         seg: ["مجموعة الاختيار", "كل خيار بارتفاع 44، وخانة تبويب لكل خيار."],
         sw: ["المفتاح", "دور switch مع aria-checked، بارتفاع 44."],
-        field: ["حقل التاريخ", "اسم ثابت فوق الحقل، وتلميح للصيغة، وخطأ محدد تحته."],
+        field: ["البحث في السبب", "الحقل النصي في سجل النشاط، في حالات الحقل المصمَّمة."],
+        picker: ["منتقي التواريخ", "المنتقي المشترك: البداية والنهاية والأيام غير المتاحة ورسالة الفترة الطويلة."],
         dialog: ["النافذة والورقة السفلية", "نافذة مشروطة؛ وعلى الهاتف ورقة من الأسفل تتقاسم أزرارها العرض."],
         chips: ["الشارات", "الشارة داخل المحتوى بارتفاع 26؛ وفي صف الأزرار تساوي الشارة ارتفاع الزر أو تتخلى عن إطارها."],
         rail: ["الشريط الجانبي والرأس", "الاسم يظهر عند التركيز بلوحة المفاتيح فقط، ولا تلميح عند مرور الفأرة. على الجهاز اللوحي يُفتح الشريط فوق طبقة معتمة ويبقى التركيز داخله."],
@@ -124,12 +125,13 @@
       dens: { def: "الكثافة الافتراضية: صفوف 48", compact: "الكثافة المضغوطة: صفوف 36" },
       cancel: "إلغاء", apply: "عرض الفترة", save: "حفظ الملف", working: "جارٍ التجهيز…", close: "إغلاق", retry: "إعادة المحاولة", done: "تم",
       seg: { "7d": `آخر ${b(7)} أيام`, "28d": `آخر ${b(28)} يومًا`, custom: "فترة أخرى…" }, segName: "الفترة",
-      from: "من", to: "إلى", hint: `يوم/شهر/سنة، مثل ${b("16/09/2026")}`, errOrder: "تاريخ النهاية قبل البداية", errRequired: "أدخل تاريخًا", errFormat: `اكتب التاريخ هكذا: ${b("16/09/2026")}`,
+      reasonLabel: "السبب يحتوي على", reasonValue: "رمز جديد", reasonError: "اكتب 240 حرفًا أو أقل", reasonClear: "مسح نص السبب",
       rangeTitle: "اختر الفترة", rangeDesc: `القراءات متاحة من ${b(2)} أغسطس ${b(2026)} حتى ${b(22)} سبتمبر ${b(2026)}.`,
       exportTitle: "تصدير بيانات الدقائق",
       progress: `اليوم ${b(12)} من ${b(28)}`, failed: "تعذّر التصدير، ولم يُحفظ شيء.", ready: "الملف جاهز",
       rows: `${b("40,320")} صفًا`,
-      dlgStates: { ready: "جاهزة، والتركيز على الحقل الأول", working: "قيد العمل", failed: "تعذّر، والتركيز على إعادة المحاولة", done: "تم", sheet: "ورقة سفلية على الهاتف" },
+      dlgStates: { ready: "الفترة، والتركيز على النهاية المحددة", working: "قيد العمل", failed: "تعذّر، والتركيز على إعادة المحاولة", done: "تم", sheet: "ورقة سفلية على الهاتف" },
+      exportGo: "تصدير CSV", exportIdle: "جاهزة، والتركيز على التصدير", pickerCaps: { empty: "لا شيء محدد", start: "بداية فقط", range: "فترة محددة", today: "اليوم", off: "يوم غير متاح", long: "الفترة أطول من 366 يومًا" },
       openDlg: "افتح النافذة",
       statusLive: `${"<strong>مباشر</strong>"} · آخر قراءة ${b("7:42 م")}`, statusLate: `${"<strong>متأخر</strong>"} · آخر قراءة ${b("7:29 م")}`,
       chipCaps: { levels: "شارة الازدحام: على «الآن» والذروات فقط", stale: "متأخرة: تخفت مع قيمتها", cmp: "شارة المقارنة", flags: "وسوم", status: "حالة التشغيل في الرأس من 721: زر 44 بلا إطار يفتح تفاصيلها", statusBtn: "عند المرور أو الفتح، وعند التركيز (حلقة داخلية)", legend: "مفتاح المخطط، بلا إطار", heatKey: "مفتاح النمط، بلا إطار" },
@@ -174,7 +176,8 @@
         buttons: ["Buttons", "One 44 px button: secondary, primary and icon. Red is never a button colour."],
         seg: ["Segmented control", "Every segment 44 px tall, one Tab stop each."],
         sw: ["Switch", "role=switch with aria-checked, 44 px tall."],
-        field: ["Date field", "A persistent label above, a format hint, and a specific error below."],
+        field: ["Reason search", "Activity log’s text field, in the designed field states."],
+        picker: ["Date picker", "The shared picker: start, end, unavailable days and the range-limit message."],
         dialog: ["Dialog and bottom sheet", "A modal dialog; on a phone, a sheet from the bottom whose actions share the width."],
         chips: ["Chips and badges", "A badge in content is 26 px; in a row of controls a pill matches the control height or drops its box."],
         rail: ["Rail and header", "A rail item shows its name on keyboard focus only; the mouse hover shows no tooltip. On a tablet the rail opens over a scrim and keeps focus inside."],
@@ -224,12 +227,13 @@
       dens: { def: "Default density: 48 px rows", compact: "Compact density: 36 px rows" },
       cancel: "Cancel", apply: "Show these dates", save: "Save file", working: "Preparing…", close: "Close", retry: "Try again", done: "Done",
       seg: { "7d": "Last 7 days", "28d": "Last 28 days", custom: "Custom…" }, segName: "Dates",
-      from: "From", to: "To", hint: "Day/month/year, like 16/09/2026", errOrder: "The end is before the start", errRequired: "Enter a date", errFormat: "Write the date like 16/09/2026",
+      reasonLabel: "Reason contains", reasonValue: "new PIN", reasonError: "Use 240 characters or fewer", reasonClear: "Clear reason text",
       rangeTitle: "Choose dates", rangeDesc: "Readings are available from 2 Aug 2026 to 22 Sep 2026.",
       exportTitle: "Export minute data",
       progress: "Day 12 of 28", failed: "Couldn't export. Nothing was saved.", ready: "Your file is ready",
       rows: "40,320 rows",
-      dlgStates: { ready: "Ready, focus on the first field", working: "Working", failed: "Failed, focus on Try again", done: "Done", sheet: "Bottom sheet on a phone" },
+      dlgStates: { ready: "Period, focus on the chosen end", working: "Working", failed: "Failed, focus on Try again", done: "Done", sheet: "Bottom sheet on a phone" },
+      exportGo: "Export CSV", exportIdle: "Ready, focus on export", pickerCaps: { empty: "Nothing picked", start: "Start only", range: "A range", today: "Today", off: "Unavailable day", long: "More than 366 days" },
       openDlg: "Open the dialog",
       statusLive: "<strong>Live</strong> · Last reading 7:42 PM", statusLate: "<strong>Delayed</strong> · Last reading 7:29 PM",
       chipCaps: { levels: "Level badge: on “now” and peaks only", stale: "Delayed: dims with its value", cmp: "Comparison badge", flags: "Flags", status: "The header's status from 721 px: a boxless 44 px control that opens its details", statusBtn: "Hover or open, and keyboard focus (the inset ring)", legend: "Chart legend, boxless", heatKey: "Pattern key, boxless" },
@@ -735,50 +739,75 @@
     </div></div>`);
   }
   let fieldN = 0;
-  const field = ({ label, value = "", cls = "", inputCls = "", err = "", hint = true, disabled = false }) => {
+  const field = ({ value = "", cls = "", inputCls = "", err = "", disabled = false }) => {
     const id = `fld-${++fieldN}`;
-    return `<div class="cx-field ${cls}"><label class="cx-field-label" for="${id}">${label}</label><input class="cx-input ${inputCls}" id="${id}" type="text" inputmode="numeric" autocomplete="off" dir="ltr" value="${value}"${disabled ? " disabled" : ""}${err ? ` aria-invalid="true" aria-describedby="${id}-e"` : hint ? ` aria-describedby="${id}-h"` : ""}>${err ? `<p class="cx-err" id="${id}-e">${ico("alert")}<span>${err}</span></p>` : hint ? `<p class="cx-hint" id="${id}-h">${L.hint}</p>` : ""}</div>`;
+    return `<div class="field cx-field ${cls}" inert><label class="field-label" for="${id}">${L.reasonLabel}</label><div class="ac-search"><input class="field-input ${inputCls}" id="${id}" type="search" enterkeyhint="search" autocomplete="off" spellcheck="false" dir="auto" maxlength="240" value="${value}"${disabled ? " disabled" : ""}${err ? ` aria-invalid="true" aria-describedby="${id}-e"` : ""}><button class="icon-btn ac-clear" type="button" aria-label="${L.reasonClear}"${value ? "" : " hidden"}${disabled ? " disabled" : ""}>${ico("close")}</button></div>${err ? `<p class="field-err" id="${id}-e">${ico("alert")}<span>${err}</span></p>` : ""}</div>`;
   };
   function fields() {
-    return section("field", "field", "FLD-1…7", `<div class="card cx-stage"><div class="cx-grid" style="--min:220px">
-      ${fig(field({ label: L.from }), L.st.def, "FLD-1 · FLD-2")}
-      ${fig(field({ label: L.from, value: "26/08/2026" }), L.st.filled, "FLD-1")}
-      ${fig(field({ label: L.from, value: "26/08/2026", inputCls: "is-hover" }), L.st.hover, "FLD-3")}
-      ${fig(field({ label: L.from, value: "26/08/2026", inputCls: "is-focus" }), L.st.focus, "FLD-3 · FOC-1")}
-      ${fig(field({ label: L.to, value: "10/08/2026", cls: "is-invalid", err: L.errOrder }), L.st.invalid, "FLD-4")}
-      ${fig(field({ label: L.from, value: "26/08/2026", cls: "is-disabled", disabled: true, hint: false }), L.st.disabled, "FLD-5")}
+    return section("field", "field", "FLD-1…7 · OWN-A2", `<div class="card cx-stage"><div class="cx-grid" style="--min:220px">
+      ${fig(field({}), L.st.def, "FLD-1 · FLD-2 · OWN-A2")}
+      ${fig(field({ value: L.reasonValue }), L.st.filled, "FLD-1")}
+      ${fig(field({ value: L.reasonValue, inputCls: "is-hover" }), L.st.hover, "FLD-3")}
+      ${fig(field({ value: L.reasonValue, inputCls: "is-focus" }), L.st.focus, "FLD-3 · FOC-1")}
+      ${fig(field({ value: L.reasonValue, cls: "is-invalid", err: L.reasonError }), L.st.invalid, "FLD-4")}
+      ${fig(field({ value: L.reasonValue, cls: "is-disabled", disabled: true }), L.st.disabled, "FLD-5")}
     </div></div>`);
   }
 
-  /* ------------------------------------------------------------ dialogs */
-  const fileLine = () => `<p class="cx-file">${ico("file")}<span class="cx-file-name" dir="ltr">fitway-minutes-2026-08-26-to-2026-09-22.csv</span><span class="cx-file-rows">${L.rows}</span></p>`;
-  const panelHead = (title, id) => `<header class="cx-panel-head"><h3${id ? ` id="${id}"` : ""}>${title}</h3><button class="cx-icon-btn" type="button" aria-label="${L.close}">${ico("close")}</button></header>`;
+  /* The pages' picker constructor and styles; inert specimens keep their pictured state. */
+  const pickerHost = (state = "range", working = false) => `<fieldset class="export-picker" data-picker-spec="${state}"${working ? " disabled" : ""}></fieldset>`;
+  const dn = (iso) => Date.parse(iso + "T00:00:00Z") / 864e5;
+  const specimenRange = { a: dn("2026-08-26"), b: dn("2026-09-22") };
+  function mountPickers() {
+    for (const host of $$("[data-picker-spec]")) {
+      const state = host.dataset.pickerSpec;
+      const opts = { lang: LANG, min: dn("2026-08-02"), max: dn("2026-09-22"), today: dn("2026-09-23"), maxSpan: 366, value: specimenRange };
+      if (state === "empty") opts.value = null;
+      if (state === "start") opts.value = { a: dn("2026-09-16"), b: dn("2026-09-16") };
+      if (state === "today") { opts.max = opts.today; opts.value = { a: opts.today, b: opts.today }; }
+      if (state === "long") { opts.min = dn("2025-08-01"); opts.value = { a: opts.min, b: opts.max }; }
+      const picker = window.EclipsePicker.create(host, opts);
+      if (state === "start") host.querySelector(`[data-dn="${opts.value.a}"]`).click();
+      if (state === "range-focus") host.querySelector(`[data-dn="${opts.value.b}"]`).classList.add("is-spec-focus");
+      if (state === "long") picker.validate();
+      host.inert = true;
+    }
+  }
+  function pickers() {
+    return section("picker", "picker", "PCK-1…10", `<div class="cx-grid cx-picker-specimens" style="--min:360px">${["empty", "start", "range", "today", "off", "long"].map((st) => fig(`<div class="dlg-panel is-dates"><div class="dlg-body">${pickerHost(st)}</div></div>`, L.pickerCaps[st], st === "long" ? "PCK-8" : "PCK-2 · PCK-6")).join("")}</div>`);
+  }
+
+  /* Dialog specimens use Reports' actual panel, picker, file line and action classes. */
+  const fileLine = () => `<p class="file-line">${ico("file")}<span class="file-name" dir="ltr">fitway-minutes-<wbr><span class="nw">2026-08-26</span>-to-<wbr><span class="nw">2026-09-22.csv</span></span><span class="file-rows">${L.rows}</span></p>`;
+  const panelHead = (title, id) => `<header class="dlg-head"><h2${id ? ` id="${id}"` : ""}>${title}</h2><button class="icon-btn" type="button" data-close aria-label="${L.close}">${ico("close")}</button></header>`;
+  const panelFoot = (primary, focus = "primary", busy = false, done = false) => `<footer class="dlg-foot"><button class="rbtn${focus === "cancel" ? " is-focus" : ""}" type="button" data-close>${done ? L.done : L.cancel}</button><button class="rbtn rbtn-primary${focus === "primary" ? " is-focus" : ""}" type="${busy || done ? "button" : "submit"}"${busy ? ' disabled aria-busy="true"' : ""}>${primary}</button></footer>`;
   function dialogs() {
-    const ready = `<div class="cx-panel">${panelHead(L.rangeTitle)}<div class="cx-panel-body"><p class="cx-panel-desc">${L.rangeDesc}</p><div class="cx-field-row">${field({ label: L.from, value: "26/08/2026", inputCls: "is-focus", hint: false })}${field({ label: L.to, value: "22/09/2026", hint: false })}</div><p class="cx-hint">${L.hint}</p></div><footer class="cx-panel-foot"><button class="cx-btn" type="button">${L.cancel}</button><button class="cx-btn primary" type="button">${L.apply}</button></footer></div>`;
-    const working = `<div class="cx-panel" aria-busy="true">${panelHead(L.exportTitle)}<div class="cx-panel-body"><div class="cx-field-row">${field({ label: L.from, value: "26/08/2026", cls: "is-disabled", disabled: true, hint: false })}${field({ label: L.to, value: "22/09/2026", cls: "is-disabled", disabled: true, hint: false })}</div><div class="cx-progress" role="status"><p>${L.progress}</p><span aria-hidden="true"><i></i></span></div></div><footer class="cx-panel-foot"><button class="cx-btn is-focus" type="button">${L.cancel}</button><button class="cx-btn primary" type="button" disabled aria-busy="true">${L.working}</button></footer></div>`;
-    const failed = `<div class="cx-panel">${panelHead(L.exportTitle)}<div class="cx-panel-body">${fileLine()}<div class="cx-alert" role="alert">${ico("alert")}<span>${L.failed}</span></div></div><footer class="cx-panel-foot"><button class="cx-btn" type="button">${L.cancel}</button><button class="cx-btn primary is-focus" type="button">${L.retry}</button></footer></div>`;
-    const done = `<div class="cx-panel">${panelHead(L.exportTitle)}<div class="cx-panel-body"><div class="cx-done"><span class="cx-done-mark" aria-hidden="true">${ico("check")}</span><p class="cx-done-title">${L.ready}</p>${fileLine()}</div></div><footer class="cx-panel-foot"><button class="cx-btn" type="button">${L.done}</button><button class="cx-btn primary is-focus" type="button">${ico("save")}${L.save}</button></footer></div>`;
-    const sheet = `<div class="cx-frame"><div class="cx-frame-page" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="cx-scrim"></div><div class="cx-panel">${panelHead(L.rangeTitle)}<div class="cx-panel-body"><p class="cx-panel-desc">${L.rangeDesc}</p><div class="cx-field-row">${field({ label: L.from, value: "26/08/2026", hint: false })}${field({ label: L.to, value: "22/09/2026", hint: false })}</div><p class="cx-hint">${L.hint}</p></div><footer class="cx-panel-foot"><button class="cx-btn" type="button">${L.cancel}</button><button class="cx-btn primary" type="button">${L.apply}</button></footer></div></div>`;
-    return section("dialog", "dialog", "DLG-1…6 · EMP-2 · EMP-3", `<div class="cx-row cx-dialogs">
-      <div class="cx-row" style="gap:24px">${fig(ready, L.dlgStates.ready, "DLG-2 · DLG-3")}${fig(failed, L.dlgStates.failed, "DLG-4 · EMP-2 · EMP-3")}</div>
-      <div class="cx-row" style="gap:24px">${fig(working, L.dlgStates.working, "DLG-4 · STA-9")}${fig(done, L.dlgStates.done, "DLG-4")}</div>
-      <div class="cx-row" style="gap:24px;align-content:start">${fig(sheet, L.dlgStates.sheet, "DLG-5")}
-        <figure class="cx-fig"><button class="cx-btn" type="button" id="open-dlg" aria-haspopup="dialog">${L.openDlg}</button><span class="cx-live-tag">${L.live}</span></figure></div>
+    const ready = `<div class="dlg-panel is-dates">${panelHead(L.rangeTitle)}<div class="dlg-body"><p class="dlg-desc">${L.rangeDesc}</p>${pickerHost("range-focus")}</div>${panelFoot(L.apply, "grid")}</div>`;
+    const idle = `<div class="dlg-panel is-dates">${panelHead(L.exportTitle)}<div class="dlg-body">${pickerHost()}${fileLine()}</div>${panelFoot(`${ico("save")}${L.exportGo}`)}</div>`;
+    const working = `<div class="dlg-panel is-dates" aria-busy="true">${panelHead(L.exportTitle)}<div class="dlg-body">${pickerHost("range", true)}${fileLine()}<div class="progress" role="status"><p class="progress-text">${L.working} ${L.progress}</p><span class="progress-bar" aria-hidden="true"><i style="transform:scaleX(.43)"></i></span></div></div>${panelFoot(L.working, "cancel", true)}</div>`;
+    const failed = `<div class="dlg-panel is-dates">${panelHead(L.exportTitle)}<div class="dlg-body">${pickerHost()}${fileLine()}<div class="alert" role="alert">${ico("alert")}<p>${L.failed}</p></div></div>${panelFoot(L.retry)}</div>`;
+    const done = `<div class="dlg-panel is-dates">${panelHead(L.exportTitle)}<div class="dlg-body"><div class="done"><span class="done-mark" aria-hidden="true">${ico("check")}</span><p class="done-title">${L.ready}</p>${fileLine()}</div></div>${panelFoot(`${ico("save")}${L.save}`, "primary", false, true)}</div>`;
+    const sheet = `<div class="cx-frame"><div class="cx-frame-page" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="cx-scrim"></div>${ready}</div>`;
+    return section("dialog", "dialog", "DLG-1…6 · EMP-2 · STA-9 · PCK-1…10", `<div class="cx-grid cx-dialogs" style="--min:360px">
+      ${fig(ready, L.dlgStates.ready, "DLG-2 · DLG-3 · PCK-7")}${fig(idle, L.exportIdle, "DLG-3 · PCK-1")}
+      ${fig(working, L.dlgStates.working, "DLG-4 · STA-9")}${fig(failed, L.dlgStates.failed, "DLG-4 · EMP-2")}
+      ${fig(done, L.dlgStates.done, "DLG-4")}${fig(sheet, L.dlgStates.sheet, "DLG-5")}
+      <figure class="cx-fig"><button class="cx-btn" type="button" id="open-dlg" aria-haspopup="dialog">${L.openDlg}</button><span class="cx-live-tag">${L.live}</span></figure>
     </div>`);
   }
   function liveDialogForm() {
-    return `${panelHead(L.rangeTitle, "cx-dlg-title").replace('type="button"', 'type="button" data-close')}<div class="cx-panel-body"><p class="cx-panel-desc" id="cx-dlg-desc">${L.rangeDesc}</p><div class="cx-field-row" id="cx-dlg-fields">${field({ label: L.from, value: "26/08/2026", hint: false })}${field({ label: L.to, value: "22/09/2026", hint: false })}</div><p class="cx-hint">${L.hint}</p></div><footer class="cx-panel-foot"><button class="cx-btn" type="button" data-close>${L.cancel}</button><button class="cx-btn primary" type="submit">${L.apply}</button></footer>`;
+    return `${panelHead(L.rangeTitle, "cx-dlg-title")}<div class="dlg-body"><p class="dlg-desc" id="cx-dlg-desc">${L.rangeDesc}</p><div id="cx-dlg-picker"></div></div>${panelFoot(L.apply, "grid")}`;
   }
-  let opener = null;
+  let opener = null, livePicker = null;
   function wireDialog() {
     const dlg = $("#cx-dlg"), form = $("#cx-dlg-form"), btn = $("#open-dlg");
     if (!dlg || !btn) return;
     btn.addEventListener("click", () => {
       opener = btn;
       form.innerHTML = liveDialogForm();
+      livePicker = window.EclipsePicker.create($("#cx-dlg-picker"), { lang: LANG, min: dn("2026-08-02"), max: dn("2026-09-22"), today: dn("2026-09-23"), maxSpan: 366, value: specimenRange });
       dlg.showModal();
-      const first = form.querySelector(".cx-input");
-      if (first) first.focus();
+      livePicker.focus();
     });
   }
   function wireDialogOnce() {
@@ -787,22 +816,8 @@
     dlg.addEventListener("close", () => { if (opener && opener.isConnected) opener.focus(); });
     form.addEventListener("submit", (e) => {
       e.preventDefault();
-      const re = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
-      let firstBad = null;
-      for (const wrap of form.querySelectorAll(".cx-field")) {
-        const input = wrap.querySelector(".cx-input"), v = input.value.trim();
-        const msg = !v ? L.errRequired : re.test(v) ? "" : L.errFormat;
-        wrap.classList.toggle("is-invalid", Boolean(msg));
-        wrap.querySelector(".cx-err")?.remove();
-        if (msg) {
-          const p = document.createElement("p");
-          p.className = "cx-err"; p.id = input.id + "-e"; p.innerHTML = `${ico("alert")}<span>${msg}</span>`;
-          wrap.appendChild(p);
-          input.setAttribute("aria-invalid", "true"); input.setAttribute("aria-describedby", p.id);
-          firstBad = firstBad || input;
-        } else { input.removeAttribute("aria-invalid"); input.removeAttribute("aria-describedby"); }
-      }
-      if (firstBad) firstBad.focus(); else dlg.close();
+      const v = livePicker.validate();
+      if (v.error || v.empty) livePicker.focus(); else dlg.close();
     });
   }
 
@@ -1030,7 +1045,7 @@
   }
 
   /* ------------------------------------------------------------ render */
-  const ORDER = [["found", "found"], ["card", "card"], ["chart", "chart"], ["pattern", "pattern"], ["table", "table"], ["buttons", "buttons"], ["seg", "seg"], ["sw", "switch"], ["field", "field"], ["dialog", "dialog"], ["chips", "chips"], ["rail", "rail"], ["frame", "frame"], ["empty", "empty"], ["states", "states"]];
+  const ORDER = [["found", "found"], ["card", "card"], ["chart", "chart"], ["pattern", "pattern"], ["table", "table"], ["buttons", "buttons"], ["seg", "seg"], ["sw", "switch"], ["field", "field"], ["picker", "picker"], ["dialog", "dialog"], ["chips", "chips"], ["rail", "rail"], ["frame", "frame"], ["empty", "empty"], ["states", "states"]];
   function drawPlots() { for (const h of $$(".cx-plot")) (h.dataset.mode ? drawStatePlot : drawPlot)(h); }
   function render() {
     L = COPY[LANG];
@@ -1043,10 +1058,11 @@
     for (const btn of $$("#lang-seg .cx-seg-b")) btn.setAttribute("aria-pressed", String(btn.dataset.lang === LANG));
     $("#cx-index").innerHTML = `<span class="sr-only" id="index-name">${L.indexName}</span>` + ORDER.map(([k, id]) => `<a href="#${id}">${L.sec[k][0]}</a>`).join("");
     const pat = pattern();
-    $("#cx-root").innerHTML = [foundations(), cards(), chart(), pat.html, tables(), buttons(), segs(), switches(), fields(), dialogs(), chips(), rails(), frame(), empties(), states()].join("");
+    $("#cx-root").innerHTML = [foundations(), cards(), chart(), pat.html, tables(), buttons(), segs(), switches(), fields(), pickers(), dialogs(), chips(), rails(), frame(), empties(), states()].join("");
     for (const table of $$("#table table")) window.EclipseTables.fitSlots(table);
     drawPlots();
     wireHeat();
+    mountPickers();
     wireDialog();
     wireFrame();
   }

@@ -245,8 +245,8 @@
   /* Who: the two owner accounts (principals, named by the actor's displayName; DECISIONS item 32) and the automatic
    * system. An access or settings record is always written by an owner (the contract), and no one changes the count by
    * hand (ADR-008), so the shared front desk writes no record: it is the target of the PIN records only. The concept
-   * writes each name in the page's language, as it does the reasons; a stored name is one string. */
-  const OWNERS = { o1: { ar: "فهد", en: "Fahad" }, o2: { ar: "نورة", en: "Noura" } };
+   * shows each stored name unchanged in either language. */
+  const OWNERS = { o1: "فهد", o2: "نورة" };
   const PERSONS = ["o1", "o2", "system"];
   const R = (ar, en) => ({ ar, en });
   // The longest reason the contract allows: exactly 240 characters (AUDIT_REASON_MAX_LENGTH), on a deactivation, one of
@@ -607,9 +607,9 @@
   /* ---------------------------------------------------------------- a record
    * Story 26's five facts: when, who, what, from → to, why. From 960 px of log they stand in five columns; narrower,
    * who and what share a line and the reason goes under them; on a phone the record stacks (activity.css). */
-  const nameOf = (key) => (key === "desk" ? L.actors.staff : OWNERS[key][LANG]);
+  const nameOf = (key) => (key === "desk" ? L.actors.staff : OWNERS[key]);
   // Who wrote it: an owner by name (the actor's displayName), or the automatic system by the contract's label.
-  const whoOf = (r) => (r.actor === "owner" ? bdi(OWNERS[r.principal][LANG]) : L.actors[r.actor]);
+  const whoOf = (r) => (r.actor === "owner" ? bdi(OWNERS[r.principal]) : L.actors[r.actor]);
   function actText(r) {
     switch (r.action) {
       case "correction_delta": return L.adjBy(signed(r.delta));
@@ -697,8 +697,8 @@
     if (L.kindsName[k]) b.setAttribute("aria-label", L.kindsName[k]);
   });
   const personSel = $("#person");
-  personSel.innerHTML = [["all", L.everyone], ["o1", OWNERS.o1[LANG]], ["o2", OWNERS.o2[LANG]], ["system", L.actors.system]]
-    .map(([k, t]) => `<option value="${k}">${t}</option>`).join("");
+  personSel.innerHTML = [["all", L.everyone], ["o1", OWNERS.o1], ["o2", OWNERS.o2], ["system", L.actors.system]]
+    .map(([k, t]) => `<option value="${k}">${k === "o1" || k === "o2" ? `\u2068${t}\u2069` : t}</option>`).join("");
   const datesBtn = $("#dates-btn"), findBtn = $("#find-btn"), findPanel = $("#find");
   const reasonInput = $("#reason"), reasonClear = $("#reason-clear");
   reasonInput.setAttribute("dir", "auto");

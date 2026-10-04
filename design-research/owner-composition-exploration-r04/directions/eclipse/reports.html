@@ -314,7 +314,7 @@
 
   <dialog class="dlg" id="dlg-export" aria-labelledby="dlg-export-title">
     <div class="dlg-scrim" data-close></div>
-    <form class="dlg-panel" id="export-form" novalidate>
+    <form class="dlg-panel is-dates" id="export-form" novalidate>
       <header class="dlg-head">
         <h2 id="dlg-export-title" data-t="exportTitle"></h2>
         <button class="icon-btn" type="button" data-close data-t-label="close">
@@ -323,11 +323,7 @@
       </header>
       <div class="dlg-body" id="export-body">
         <div class="export-edit" id="export-edit">
-          <div class="field-row">
-            <div class="field" id="ef-from"></div>
-            <div class="field" id="ef-to"></div>
-          </div>
-          <p class="field-hint" id="ef-hint" data-t="dateHint"></p>
+          <fieldset class="export-picker" id="export-picker" aria-labelledby="dlg-export-title"></fieldset>
           <p class="file-line" id="export-file"></p>
         </div>
         <div class="progress" id="export-progress" role="status" hidden>

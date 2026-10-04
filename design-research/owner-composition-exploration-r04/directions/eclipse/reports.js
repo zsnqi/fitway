@@ -192,7 +192,6 @@
       rangeApply: "عرض الفترة",
       from: "من",
       to: "إلى",
-      dateHint: `يوم/شهر/سنة، مثل ${bdi("16/09/2026")}`,
       err: {
         required: "أدخل تاريخًا",
         format: `اكتب التاريخ هكذا: ${bdi("16/09/2026")}`,
@@ -310,7 +309,6 @@
       rangeApply: "Show these dates",
       from: "From",
       to: "To",
-      dateHint: "Day/month/year, like 16/09/2026",
       err: {
         required: "Enter a date",
         format: "Write the date like 16/09/2026",
@@ -413,7 +411,6 @@
   const dateText = (dn, year = false) => nw(dateBare(dn, year));
   // "Tue 22 Sep" / «الثلاثاء 22 سبتمبر».
   const dayText = (dn) => nw(`${wdShort(wdOf(dn))} ${dateBare(dn)}`);
-  const numDate = (dn) => { const p = partsOf(dn); return `${String(p.d).padStart(2, "0")}/${String(p.m + 1).padStart(2, "0")}/${p.y}`; };
   function rangeText(a, b, year = true) {
     const A = partsOf(a), B = partsOf(b);
     if (a === b) return dateText(a, year);
@@ -1659,69 +1656,6 @@
     setRange({ kind: k, a: LAST_FULL - PRESETS[k] + 1, b: LAST_FULL });
   }));
 
-  /* ---------------------------------------------------------------- the form system: a date field
-   * A labelled text field (day/month/year, Western digits; Arabic-Indic digits typed on an Arabic keyboard are read as
-   * Western), with a shared hint and its own error message, tied with aria-describedby and aria-invalid. */
-  const toWestern = (s) => s.replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660)).replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 0x06f0));
-  function parseDate(raw) {
-    const s = toWestern(String(raw || "")).trim();
-    if (!s) return { error: "required" };
-    let m = /^(\d{1,2})[/.\-](\d{1,2})[/.\-](\d{4})$/.exec(s), y, mo, d;
-    if (m) { d = +m[1]; mo = +m[2]; y = +m[3]; }
-    else if ((m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(s))) { y = +m[1]; mo = +m[2]; d = +m[3]; }
-    else return { error: "format" };
-    if (mo < 1 || mo > 12 || d < 1 || d > 31) return { error: "invalid" };
-    const dn = Date.UTC(y, mo - 1, d) / 864e5, p = partsOf(dn);
-    if (p.d !== d || p.m !== mo - 1 || p.y !== y) return { error: "invalid" };
-    if (dn > LAST_FULL) return { error: "future" };
-    return { dn };
-  }
-  function makeField(host, id, label, hintId) {
-    host.innerHTML = `<label class="field-label" for="${id}">${label}</label>
-      <input class="field-input" id="${id}" name="${id}" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" dir="ltr" aria-describedby="${hintId}">
-      <p class="field-err" id="${id}-err" hidden></p>`;
-    const input = $("input", host), err = $(".field-err", host);
-    const field = {
-      input, host,
-      get value() { return input.value; },
-      set value(v) { input.value = v; },
-      setError(msg) {
-        if (msg) {
-          err.innerHTML = `${ICON.alert}<span>${msg}</span>`;
-          err.hidden = false;
-          input.setAttribute("aria-invalid", "true");
-          input.setAttribute("aria-describedby", `${id}-err ${hintId}`);
-          host.classList.add("is-invalid");
-        } else {
-          err.hidden = true;
-          err.innerHTML = "";
-          input.removeAttribute("aria-invalid");
-          input.setAttribute("aria-describedby", hintId);
-          host.classList.remove("is-invalid");
-        }
-      },
-      set disabled(v) { input.disabled = v; host.classList.toggle("is-disabled", v); },
-    };
-    // Tidy a valid date on leaving the field.
-    input.addEventListener("blur", () => { const r = parseDate(input.value); if (r.dn != null) input.value = numDate(r.dn); });
-    return field;
-  }
-  const errText = (code) => (code === "future" ? L.err.future(bdi(numDate(LAST_FULL))) : L.err[code]);
-  // Validates a from/to pair: returns { a, b }, or { focus } with each field's message shown.
-  function validatePair(from, to) {
-    const A = parseDate(from.value), B = parseDate(to.value);
-    const ea = A.error ? errText(A.error) : "";
-    let eb = B.error ? errText(B.error) : "";
-    if (!ea && !eb) {
-      if (B.dn < A.dn) eb = L.err.order;
-      else if (B.dn - A.dn + 1 > MAX_RANGE) eb = L.err.tooLong;
-    }
-    from.setError(ea); to.setError(eb);
-    if (ea) return { focus: from };
-    if (eb) return { focus: to };
-    return { a: A.dn, b: B.dn };
-  }
-
   /* ---------------------------------------------------------------- the dialog system
    * One pattern for every dialog: <dialog> opened with showModal (the page behind is inert), a scrim and a panel.
    * Initial focus is chosen per dialog; Tab and Shift+Tab wrap inside the panel; Escape and the scrim close it (Escape
@@ -1833,8 +1767,8 @@
     return out.join("\r\n") + "\r\n";
   }
   const dlgExport = $("#dlg-export");
-  const eFrom = makeField($("#ef-from"), "export-from", L.from, "ef-hint");
-  const eTo = makeField($("#ef-to"), "export-to", L.to, "ef-hint");
+  const exportPicker = window.EclipsePicker.create($("#export-picker"), { lang: LANG, min: HIST_START, max: LAST_FULL,
+    today: LAST_FULL + 1, maxSpan: MAX_RANGE, value: null, onChange: fileLine });
   const exportBtn = $("#export-btn");
   const fileName = (a, b) => `fitway-minutes-${isoOf(a)}-to-${isoOf(b)}.csv`;
   // The name as shown: it may break only between its parts, never inside a date (DAT-4; the dialog at 320 px).
@@ -1842,17 +1776,18 @@
   const rowsText = (n) => (RTL ? L.rows(n).replace(/^\d+/, (x) => bdi(fmtInt(+x))) : L.rows(n));
   const ex = { state: "idle", run: 0, url: null, hold: false, release: null, failNext: params.get("export") === "fail", a: null, b: null, rows: 0, progress: 0, total: 0, showProgress: false };
   function fileLine() {
-    const A = parseDate(eFrom.value), B = parseDate(eTo.value);
+    const v = exportPicker.get();
     const el = $("#export-file");
-    if (A.dn == null || B.dn == null || B.dn < A.dn || B.dn - A.dn + 1 > MAX_RANGE) { el.innerHTML = ""; return; }
-    el.innerHTML = `${ICON.file}<span class="file-name" dir="ltr">${fileNameHTML(A.dn, B.dn)}</span><span class="file-rows">${rowsText((B.dn - A.dn + 1) * 1440)}</span>`;
+    if (!v) { el.innerHTML = ""; return; }
+    el.innerHTML = `${ICON.file}<span class="file-name" dir="ltr">${fileNameHTML(v.a, v.b)}</span><span class="file-rows">${rowsText((v.b - v.a + 1) * 1440)}</span>`;
   }
-  [eFrom, eTo].forEach((fl) => fl.input.addEventListener("input", fileLine));
   function progressHTML() { return `${L.working} ${L.progress(Math.min(ex.progress + 1, ex.total), ex.total)}`; }
   function renderExport() {
     const s = ex.state, foot = $("#export-foot");
     $("#export-edit").hidden = s === "done";
-    eFrom.disabled = s === "working"; eTo.disabled = s === "working";
+    // Native disabled controls and inert prevent mouse, touch, preview and keyboard changes during preparation.
+    exportPicker.host.disabled = s === "working";
+    exportPicker.host.inert = s === "working";
     const prog = $("#export-progress");
     prog.hidden = s !== "working" || !ex.showProgress;
     if (!prog.hidden) {
@@ -1871,6 +1806,7 @@
     cancel.textContent = s === "done" ? L.done : L.cancel;
     go.hidden = s === "done";
     go.disabled = s === "working";
+    go.setAttribute("aria-busy", String(s === "working"));
     const goHTML = s === "working" ? `<span>${L.working}</span>` : s === "failed" ? `<span>${L.retry}</span>` : `${ICON.down2}<span>${L.exportGo}</span>`;
     if (go.innerHTML !== goHTML) go.innerHTML = goHTML;
     save.hidden = s !== "done";
@@ -1893,8 +1829,7 @@
   }
   function openExportDialog(opener) {
     resetExport();
-    eFrom.value = numDate(range.a); eTo.value = numDate(range.b);
-    eFrom.setError(""); eTo.setError("");
+    exportPicker.set({ a: Math.max(HIST_START, range.a), b: Math.min(LAST_FULL, range.b) });
     fileLine();
     renderExport();
     openDialog(dlgExport, opener, $("#export-go"));
@@ -1944,8 +1879,8 @@
   $("#export-form").addEventListener("submit", (e) => {
     e.preventDefault();
     if (ex.state === "working" || ex.state === "done") return;
-    const v = validatePair(eFrom, eTo);
-    if (v.focus) { v.focus.input.focus(); return; }
+    const v = exportPicker.validate();
+    if (v.error || v.empty) { exportPicker.focus(); return; }
     runExport(v.a, v.b).catch(() => { ex.state = "failed"; renderExport(); });
   });
 
@@ -1981,6 +1916,7 @@
     setRange: (kind, from, to) => setRange(kind === "custom" ? { kind, a: toDn(from), b: toDn(to) } : { kind, a: LAST_FULL - PRESETS[kind] + 1, b: LAST_FULL }),
     openRange: () => openRangeDialog(segButtons[2]),
     picker,
+    exportPicker,
     openExport: () => openExportDialog(exportBtn),
     close: () => { if (openDlg) closeDialog(openDlg.dlg, true); },
     get dialog() { return openDlg ? openDlg.dlg.id : null; },
