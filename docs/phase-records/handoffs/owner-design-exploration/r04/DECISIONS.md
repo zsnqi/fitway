@@ -273,6 +273,9 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       coordinator inspects its frames. Brief `codex-activity-followup.md` (`7f8d2dd` on `owner-r04-activity`), level
       `high`; an owner's one stored name is «فهد» / «نورة» on both pages (coordinator). Built at `31e9dd9`, merged into
       `owner-followup-r04-build`; published https://claude.ai/artifact/C6yiDVgdAnFN5wzwuzHdoD (Daily, Reports, Activity log).
+      Two notes on it, delegated by the user to the screen's last round (designer or reviewer decides): the English page
+      shows the stored Arabic name beside an English reason that names "Noura"; at 320 px the export's file line sits
+      below the sheet's first view.
 
 33. **Access, the answers before its one pass** (2026-10-04; research digest
     `D:/fitway-temp/owner-r04-access-questions/REPORT.md`). Access holds the one shared front-desk PIN and the owner
