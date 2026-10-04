@@ -93,5 +93,5 @@ evidence:
     - The independent verifier's report.
 limitations:
   - Opened by the coordinator on 2026-10-04 at the user's request ("fix it", r04 DECISIONS item 33), from the r04 Access research digest D:/fitway-temp/owner-r04-access-questions/REPORT.md section 5.
-  - 2026-10-04: check:frontier protects three granted access files as part of the pre-repair dirty frontier (pinned snapshot 20260915-183000). The live main checkout no longer holds them dirty and history keeps their protected content; the user authorized a narrow recorded transition for exactly those three paths (2026-10-04, "لك الصلاحية"), and the independent review checks it.
+  - "2026-10-04: check:frontier protects three granted access files as part of the pre-repair dirty frontier (pinned snapshot 20260915-183000). The live main checkout no longer holds them dirty and history keeps their protected content; the user authorized a narrow recorded transition for exactly those three paths (2026-10-04, \"لك الصلاحية\"), and the independent review checks it."
   - Based on the codex/owner-redesign-r04 lineage, which carries the baseline's production code; integration follows that lineage.

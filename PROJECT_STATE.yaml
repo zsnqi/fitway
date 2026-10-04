@@ -119,7 +119,7 @@ milestones:
       log stores, so a longer reason is refused with its own message instead of failing on the audit write.
     taskClass: backend-api-data
     taskPacket: docs/phase-records/task-packets/access-reason-cap-r01.yaml
-    taskPacketSha256: c9688acee2b70b114d94236ae5368f2ec3603063ce92a16a699b9ef3e491922b
+    taskPacketSha256: c2f018f15382f5eb048f17021e790bfefbf55f90f51ef8cbc8b3564654ec06cc
     dependencies: []
     ownerSession: claude-code-desktop:task_fdc69808
     branch: claude/busy-bartik-858366
