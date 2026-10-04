@@ -29,9 +29,10 @@
 
 ## Next steps
 
-1. **Activity log:** when the designer returns, inspect its frames, then one review (`owner-direction-verifier-high`,
-   reading direction included), then exact crops to the user and a publish for the user's phone (rounds item 7).
-   Then merge `owner-r04-activity` into `owner-followup-r04-build`.
+1. **Activity log:** when the designer returns, inspect its frames, then exact crops to the user and a publish for
+   the user's phone (rounds item 7). No independent review first: the user sees the result before any review
+   (the user, 2026-10-04); a review runs only if the user asks for one after seeing it. Then merge
+   `owner-r04-activity` into `owner-followup-r04-build`.
 2. **Daily and Reports' last round,** after Activity log or beside it: the «معدّل الموجودين» card redrawn by a
    designer and shown to the user before Codex builds it; fix-3's open findings in `D:/fitway-temp/owner-r04-fix-3-verify/REPORT.md` (M4: the
    no-history chart card is taller at some phone widths because its legend takes two rows; observation 1: the sheet's
