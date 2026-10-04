@@ -230,8 +230,13 @@
   const plainSpan = (a, b) => `${a} ${L.spanTo} ${b}`;
   function hourRange(a, b, fullPeriod = false) {
     const A = clock(a), B = clock(b);
-    const period = (pm) => fullPeriod && RTL ? (pm ? "مساءً" : "صباحًا") : suffix(pm);
-    return A.pm === B.pm ? bdi(`${NUMS(A.h12, B.h12)} ${period(A.pm)}`) : range(`${A.h12} ${period(A.pm)}`, `${B.h12} ${period(B.pm)}`);
+    // Decision 28: this card's one period word belongs to the ending hour, even across noon or midnight.
+    if (fullPeriod && RTL) {
+      const h = ((360 + b) % 1440 + 1440) % 1440 / 60;
+      const period = h < 2 ? "ليلًا" : h < 12 ? "صباحًا" : h < 14 ? "ظهرًا" : "مساءً";
+      return bdi(`${NUMS(A.h12, B.h12)} ${period}`);
+    }
+    return A.pm === B.pm ? bdi(`${NUMS(A.h12, B.h12)} ${suffix(A.pm)}`) : range(`${A.h12} ${suffix(A.pm)}`, `${B.h12} ${suffix(B.pm)}`);
   }
   /* A span in words (decision 8, user 2026-10-01): one sentence, the words first, «لا قراءات من 2:14 م إلى 2:31 م» /
    * "No readings from 2:14 PM to 2:31 PM". It replaces the range first and the dotted mark. It wraps only between its
@@ -797,11 +802,11 @@
     fillBusiest();
   }
   $("#cards").setAttribute("aria-labelledby", "cards-title");
-  // Decision 26: only this card spells out the Arabic period and uses «بمعدّل» on a phone.
-  const busiestRange = () => hourRange(M.busiest.from, M.busiest.to, mqPhone.matches);
+  // Decisions 26 and 28: only this card spells out the Arabic period and uses «بمعدّل», at every width.
+  const busiestRange = () => hourRange(M.busiest.from, M.busiest.to, true);
   function fillBusiest() {
     $("#busy-v").innerHTML = busiestRange();
-    $("#busy-note").innerHTML = RTL && mqPhone.matches ? `بمعدّل ${bdi(M.busiest.avg)}` : L.busiestNote(bdi(M.busiest.avg));
+    $("#busy-note").innerHTML = RTL ? `بمعدّل ${bdi(M.busiest.avg)}` : L.busiestNote(bdi(M.busiest.avg));
   }
 
   /* ---- Daily's states (step 3, second part; STA-10, K-02). Every card keeps its slots and its height in every state
@@ -1705,6 +1710,16 @@
     const t = (clientX - plot.getBoundingClientRect().left - x0) / (x1 - x0);
     return stops[Math.round(Math.max(0, Math.min(1, t)) * (n - 1))];
   }
+  // Decision 27: a point on the drawn peak ring reads the peak. Other taps keep the equal-share mapping.
+  function stopForTap(clientX, clientY) {
+    const ring = $("#pk-dot");
+    if (ring && geo) {
+      const p = ring.getBoundingClientRect(), x = (p.left + p.right) / 2, y = (p.top + p.bottom) / 2;
+      const radius = p.width / 2 + parseFloat(getComputedStyle(ring).strokeWidth) / 2;
+      if (Math.hypot(clientX - x, clientY - y) <= radius) return stops.find((st) => st.kind === "peak") || stopForFinger(clientX);
+    }
+    return stopForFinger(clientX);
+  }
   // The band: the selected stop, large. The time first (with the peak's or the latest's flag), then the value with its
   // level word (LVL-3: a moment's level, never a badge), then the usual value; while delayed the latest reading is muted
   // and its age stands before the usual value, in the delayed colour. A span with no readings, and waiting for readings,
@@ -1787,7 +1802,7 @@
   hit.addEventListener("click", (e) => {
     if (!mqPhone.matches || finger || e.pointerType === "touch") return;
     pinned = true;
-    selectStop(stopForFinger(e.clientX));
+    selectStop(stopForTap(e.clientX, e.clientY));
     syncBand();
     slideClear();
   });
@@ -1796,8 +1811,8 @@
    *   Where a finger reads (A4): from the scale's highest mark down (geo.yt), the plot's data. The band's lane above it
    *   holds the reading, so a finger that starts there would cover what it reads: a touch in the lane is the page's (it
    *   scrolls; a tap there does nothing), and the finger always starts at least 28 px under the band's lowest line.
-   *   Decision 26: touchstart stays native. Only moves after a still hold are cancelled; each reported move advances
-   *   at most one stop toward the finger, so Chromium's first reported movement cannot skip stops. It may trail.
+   *   Decisions 26 and 27: touchstart stays native. Only moves after a still hold are cancelled; each rendered frame
+   *   advances at most one stop toward the latest finger position, continuing after reported movement stops.
    *   The edges: when a hold or a tap starts while any part of the plot (the band is its top) is outside the screen,
    *   the page slides once until the plot stands clear of the top and 16 px above the bar (FOC-7); it is not moved by the
    *   finger, and the reading keeps to the finger's place across the slide. With reduced motion it is instant. */
@@ -1837,9 +1852,23 @@
     });
   }
   const fingerTouch = (e) => (finger ? [...e.changedTouches].find((t) => t.identifier === finger.id) : null);
+  function followFinger() {
+    if (!finger || !finger.on || finger.raf) return;
+    const held = finger;
+    held.raf = requestAnimationFrame(() => {
+      held.raf = 0;
+      if (finger !== held || !held.on) return;
+      const target = stopForFinger(held.x);
+      if (!target || !sel || target.i === sel.i) return;
+      selectStop(stops[sel.i + Math.sign(target.i - sel.i)]);
+      // One reading per painted frame; do not wait for another touch event to finish the follow.
+      followFinger();
+    });
+  }
   function endFinger() {
     if (!finger) return;
     clearTimeout(finger.timer);
+    cancelAnimationFrame(finger.raf);
     const was = finger.on;
     finger = null;
     if (was) { pinned = false; clearSelection(); }
@@ -1855,7 +1884,7 @@
     const t = e.changedTouches[0];
     if (!fingerZone(t.clientY)) { laneTouch = { id: t.identifier, x0: t.clientX, y0: t.clientY, moved: false }; return; }
     laneTouch = null;
-    finger = { id: t.identifier, x0: t.clientX, y0: t.clientY, x: t.clientX, on: false, timer: 0 };
+    finger = { id: t.identifier, x0: t.clientX, y0: t.clientY, x: t.clientX, on: false, timer: 0, raf: 0 };
     finger.timer = setTimeout(() => {
       if (!finger) return;
       finger.on = true;
@@ -1873,8 +1902,7 @@
     if (finger.on) {
       if (e.cancelable) e.preventDefault();
       finger.x = t.clientX;
-      const target = stopForFinger(t.clientX);
-      if (target && sel) selectStop(stops[sel.i + Math.sign(target.i - sel.i)]);
+      followFinger();
       return;
     }
     // Moved before the hold: a swipe, the page's. It reads nothing.
@@ -1899,14 +1927,14 @@
     const x = finger.x;
     finger = null;
     pinned = true;
-    selectStop(stopForFinger(x));
+    selectStop(stopForTap(x, t.clientY));
     syncBand();
     slideClear();
   }, { passive: false });
   hit.addEventListener("touchcancel", (e) => { laneTouch = null; if (fingerTouch(e)) endFinger(); });
   // The system's long-press menu never opens over the plot on a phone.
   hit.addEventListener("contextmenu", (e) => { if (mqPhone.matches) e.preventDefault(); });
-  mqPhone.addEventListener("change", () => { laneTouch = null; stopPageMove(); if (finger) { clearTimeout(finger.timer); finger = null; } if (!mqPhone.matches && pinned) { pinned = false; clearSelection(); } syncBand(); });
+  mqPhone.addEventListener("change", () => { laneTouch = null; stopPageMove(); endFinger(); if (!mqPhone.matches && pinned) { pinned = false; clearSelection(); } syncBand(); });
 
   // Text equivalent of the chart.
   function summary() {
@@ -2849,6 +2877,8 @@
     intro.run = null;
     if (run) { cancelAnimationFrame(run.raf); run.anims.forEach((a) => a.cancel()); }
     intro.nums.forEach(({ el, html }) => { el.innerHTML = html; });
+    // Saved intro markup must not undo a breakpoint's card form.
+    if (phase === "ready") fillBusiest();
     intro.nums = [];
     introChartClear();
     intro.state = "done";

@@ -787,12 +787,12 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
     pointer-events: none; /* a tap on the reading is a tap on the plot under it; only the buttons take taps */
   }
 
-  /* The head keeps one line; the hours and average share the next baseline and opposite edges (114 px in every state). */
-  .dl #card-busiest { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 16px; row-gap: 16px; align-items: start; }
+  /* Decision 28: the average belongs directly under the hours, on their start edge (136 px in every state). */
+  .dl #card-busiest { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 0; align-items: start; }
   .dl #card-busiest > .stat-head { grid-column: 1 / -1; grid-row: 1; flex-wrap: nowrap; row-gap: 0; align-self: start; }
   .dl #card-busiest .stat-meta { flex-basis: auto; margin-inline-start: auto; }
-  .dl #card-busiest > .stat-value { grid-column: 1; grid-row: 2; margin: 0; justify-content: flex-start; align-self: baseline; }
-  .dl #card-busiest > .stat-note { grid-column: 2; grid-row: 2; min-height: 18px; margin: 0; padding: 0; align-self: baseline; text-align: end; white-space: nowrap; }
+  .dl #card-busiest > .stat-value { grid-column: 1; grid-row: 2; margin: 16px 0 0; justify-content: flex-start; align-self: start; white-space: nowrap; }
+  .dl #card-busiest > .stat-note { grid-column: 1; grid-row: 3; min-height: 18px; margin: 4px 0 0; padding: 0; align-self: start; justify-self: stretch; text-align: start; white-space: nowrap; }
 }
 /* The reading's own parts (the page draws them only on a phone; the component sheet draws them at any width). */
 .band-read { min-width: 0; }

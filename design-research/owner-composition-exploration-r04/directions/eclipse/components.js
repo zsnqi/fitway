@@ -83,7 +83,7 @@
       typeSample: "داخل الصالة الآن",
       nowTitle: "داخل الصالة الآن", approx: "تقريبًا", peakTitle: "ذروة اليوم", lastReading: "آخر قراءة",
       ago: (n) => `قبل ${b(n)} دقيقة`,
-      entries: "مرات الدخول", usualN: (n) => `المعتاد ${b(n)}`, busiestTitle: "أكثر الأوقات ازدحامًا", last7: `آخر ${b(7)} أيام`,
+      entries: "مرات الدخول", usualN: (n) => `المعتاد ${b(n)}`, busiestTitle: "أكثر الأوقات ازدحامًا", last7: `<span>آخر ${b(7)} أيام</span>`,
       avgN: (n) => `المعدّل ${b(n)}`, avgTitle: "معدّل الموجودين", noReadings: "لا قراءات", waiting: "بانتظار القراءات", pending: "قيد الانتظار", noReadingsYet: "لا قراءات بعد",
       wowTitle: `آخر ${b(7)} أيام`, notEnough: "لا تكفي القراءات بعد", needs: "يلزم أسبوعان من القراءات المنتظمة",
       wowDates: `<span class="nw">${b(16)} – ${b(22)} سبتمبر</span>`,
@@ -101,7 +101,7 @@
       vars: { peak: "الذروة", line: "نقطة على الخط", gap: "فترة بلا قراءات", ahead: "لم يحن بعد", delayed: "آخر قراءة، متأخرة", nohistory: "لم يحن بعد، بلا سجل" },
       aheadNote: `الخط المعتاد بعد الآن بشفافية ${b(".36")}`,
       // Daily on the phone (DECISIONS item 20, the trial): the reading in the band above the plot, and the busiest time's row.
-      band: { held: "على الجوال، ضغط وتثبيت: القراءة ما دام الإصبع على الرسم", kept: "على الجوال، ضغطة سريعة: القراءة تبقى، مع الإغلاق والوقت السابق والتالي", gap: "على الجوال: فترة بلا قراءات، باقية", busy: "على الجوال: الساعات بجانب العنوان", close: "إغلاق القراءة", prev: "الوقت السابق", next: "الوقت التالي" },
+      band: { held: "على الجوال، ضغط وتثبيت: القراءة ما دام الإصبع على الرسم", kept: "على الجوال، ضغطة سريعة: القراءة تبقى، مع الإغلاق والوقت السابق والتالي", gap: "على الجوال: فترة بلا قراءات، باقية", busy: "على الجوال: المعدّل تحت الساعات، على حافتها الأولى", close: "إغلاق القراءة", prev: "الوقت السابق", next: "الوقت التالي" },
       patternTitle: "أوقات الازدحام",
       patternSub: `معدّل الموجودين حسب اليوم والساعة · ${b(28)} يومًا`,
       busiest: (w, h) => `الأكثر ازدحامًا: ${w} ${h}`,
@@ -143,7 +143,7 @@
       hdrTitle: "التقارير", hdrSub: `${b("26")} أغسطس – ${b("22")} سبتمبر ${b(2026)}`,
       hdrCap: "رأس الصفحة: العنوان والفترة، وحالة التشغيل في نهاية السطر؛ ثم عناصر تحكم الصفحة تحته: الفترة في أوله، وتصدير البيانات في آخره",
       exportMinutes: "تصدير بيانات الدقائق",
-      emptyTable: `<span class="nw">لا قراءات</span> <span class="nw">من ${b(1)}</span> <span class="nw">إلى ${b(31)} يوليو ${b(2026)}</span>`, emptyAction: `عرض آخر ${b(28)} يومًا`,
+      emptyTable: `<span class="nw">لا قراءات</span> <span class="nw">من ${b(1)}</span> <span class="nw">إلى ${b(31)} يوليو ${b(2026)}</span>`, emptyAction: `<span>عرض آخر ${b(28)} يومًا</span>`,
       emptyCaps: { table: "جدول بلا قراءات، وطريق واحد للعودة", alert: "تنبيه وإعادة محاولة واحدة" },
       colourNames: { page: "الصفحة", card: "البطاقة", panel: "النافذة", head: "رأس الجدول", line: "خط السطح", line2: "خط العنصر", line3: "عند المرور", ink: "الطباشير", ink2: "ثانوي", ink3: "توضيحي", red: "أحمر FITWAY", redhi: "الأحمر الساطع", ox: "العنابي", obs: "الأسود", live: "مباشر", delayed: "متأخر", amber: "نص المتأخر", stale: "رمادي قديم", err: "خطأ", field: "حافة الحقل" },
       ratioOn: (r) => `${b(r)}:1 على البطاقة`,
@@ -200,7 +200,7 @@
       chartMain: "Live, with the latest reading selected",
       vars: { peak: "The peak", line: "A stop on the line", gap: "A span with no readings", ahead: "Still ahead", delayed: "Latest reading, delayed", nohistory: "Still ahead, no history" },
       aheadNote: "The usual line after now at .36",
-      band: { held: "On a phone, press and hold: the reading lasts while the finger is on the chart", kept: "On a phone, a quick tap: the reading stays, with close, previous and next", gap: "On a phone: a span with no readings, kept", busy: "On a phone: the hours beside the title", close: "Close reading", prev: "Previous time", next: "Next time" },
+      band: { held: "On a phone, press and hold: the reading lasts while the finger is on the chart", kept: "On a phone, a quick tap: the reading stays, with close, previous and next", gap: "On a phone: a span with no readings, kept", busy: "On a phone: the average directly under the hours, on their start edge", close: "Close reading", prev: "Previous time", next: "Next time" },
       patternTitle: "Busy times",
       patternSub: "Average inside by day and hour · 28 days",
       busiest: (w, h) => `Busiest: ${w} ${h}`,
@@ -269,14 +269,16 @@
   const spanTip = (w, a, z) => tipLines(w, `<span class="nw">${L.spanFrom} <bdi>${a}</bdi></span> <span class="nw">${L.spanTo} <bdi>${z}</bdi></span>`);
   const hourRange = (h, fullPeriod = false) => {
     const a = clock((h - 6) * 60), z = clock((h - 5) * 60), dash = "–";
-    const period = (pm) => fullPeriod && LANG === "ar" ? (pm ? "مساءً" : "صباحًا") : suf(pm);
     const nums = LANG === "ar" ? `<bdi dir="ltr">${a.h12}${dash}\u2060${z.h12}</bdi>` : `${a.h12}${dash}${z.h12}`;
-    return a.pm === z.pm ? `${nums} ${period(z.pm)}` : `${a.h12} ${period(a.pm)}${dash}\u2060${z.h12} ${period(z.pm)}`;
+    if (fullPeriod && LANG === "ar") {
+      const end = (h + 1) % 24;
+      return `${nums} ${end < 2 ? "ليلًا" : end < 12 ? "صباحًا" : end < 14 ? "ظهرًا" : "مساءً"}`;
+    }
+    return a.pm === z.pm ? `${nums} ${suf(z.pm)}` : `${a.h12} ${suf(a.pm)}${dash}\u2060${z.h12} ${suf(z.pm)}`;
   };
-  // CSS exposes only the matching width's copy, including to assistive technology (decision 26).
-  const busyCopy = (wide, phone) => `<span class="cx-busy-wide">${wide}</span><span class="cx-busy-phone">${phone}</span>`;
-  const busyHours = (h) => busyCopy(b(hourRange(h)), b(hourRange(h, true)));
-  const busyAverage = (n) => busyCopy(L.avgN(n), LANG === "ar" ? `بمعدّل ${b(n)}` : L.avgN(n));
+  // Decisions 26 and 28: the card's Arabic wording is the same at every width.
+  const busyHours = (h) => b(hourRange(h, true));
+  const busyAverage = (n) => LANG === "ar" ? `بمعدّل ${b(n)}` : L.avgN(n);
 
   /* ------------------------------------------------------------------ icons */
   const svg = (inner, cls = "cx-ico") => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${inner}</svg>`;
