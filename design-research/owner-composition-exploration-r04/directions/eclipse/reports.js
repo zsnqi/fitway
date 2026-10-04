@@ -1731,7 +1731,7 @@
   const dlgRun = { anims: [] };
   const isSheet = () => matchMedia("(max-width: 720px)").matches;
   const focusables = (el) => $$('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])', el)
-    .filter((x) => !x.disabled && !x.closest("[hidden]") && x.getClientRects().length);
+    .filter((x) => !x.disabled && x.tabIndex >= 0 && !x.closest("[hidden]") && x.getClientRects().length);
   function finishDlgAnims() { dlgRun.anims.forEach((a) => a.cancel()); dlgRun.anims = []; }
   function openDialog(dlg, opener, first) {
     if (openDlg) closeDialog(openDlg.dlg, true);
@@ -1787,20 +1787,21 @@
     });
   });
 
-  /* ---- the date-range dialog */
+  /* ---- the date-range dialog: the date picker (picker.js, PCK; DECISIONS item 32, dates are picked, not typed), from
+   * the first day with readings to the last full day; today is not a full day yet, so it stays dimmed, wearing today's
+   * line. The picker opens on the period shown. */
   const dlgRange = $("#dlg-range");
-  const rFrom = makeField($("#rf-from"), "range-from", L.from, "rf-hint");
-  const rTo = makeField($("#rf-to"), "range-to", L.to, "rf-hint");
+  const picker = window.EclipsePicker.create($("#range-picker"), { lang: LANG, min: HIST_START, max: LAST_FULL, today: LAST_FULL + 1, maxSpan: MAX_RANGE, value: null });
   $("#dlg-range-desc").innerHTML = L.rangeDlgDesc(dateText(HIST_START, true), dateText(LAST_FULL, true));
   function openRangeDialog(opener) {
-    rFrom.value = numDate(range.a); rTo.value = numDate(range.b);
-    rFrom.setError(""); rTo.setError("");
-    openDialog(dlgRange, opener, rFrom.input);
+    picker.set({ a: Math.max(HIST_START, range.a), b: Math.min(LAST_FULL, range.b) });
+    openDialog(dlgRange, opener, null);
+    picker.focus();
   }
   $("#range-form").addEventListener("submit", (e) => {
     e.preventDefault();
-    const v = validatePair(rFrom, rTo);
-    if (v.focus) { v.focus.input.focus(); return; }
+    const v = picker.validate();
+    if (v.error || v.empty) { picker.focus(); return; }
     const same = Object.entries(PRESETS).find(([, n]) => v.b === LAST_FULL && v.b - v.a + 1 === n);
     closeDialog(dlgRange);
     setRange(same ? { kind: same[0], a: v.a, b: v.b } : { kind: "custom", a: v.a, b: v.b });
@@ -1979,6 +1980,7 @@
     get wow() { return { comparable: wow.comparable, avgChange: wow.avgChange, entriesChange: wow.entriesChange, cur: wow.cur, prev: wow.prev, window: { cur: WOW.cur.map(isoOf), prev: WOW.prev.map(isoOf) } }; },
     setRange: (kind, from, to) => setRange(kind === "custom" ? { kind, a: toDn(from), b: toDn(to) } : { kind, a: LAST_FULL - PRESETS[kind] + 1, b: LAST_FULL }),
     openRange: () => openRangeDialog(segButtons[2]),
+    picker,
     openExport: () => openExportDialog(exportBtn),
     close: () => { if (openDlg) closeDialog(openDlg.dlg, true); },
     get dialog() { return openDlg ? openDlg.dlg.id : null; },

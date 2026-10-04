@@ -21,6 +21,7 @@
   <!-- reports.css carries the table, form and dialog system the Owner pages share (the segmented control, buttons,
        fields, the dialog and its phone sheet, the alert); everything Reports-only in it is scoped to its own classes. -->
   <link rel="stylesheet" href="reports.css">
+  <link rel="stylesheet" href="picker.css">
   <link rel="stylesheet" href="activity.css">
   <script>
     // As on Daily and Reports: start the CSS faces themselves, so text shares their one fetch per subset.
@@ -29,6 +30,8 @@
         .catch(function () { /* Failed faces keep the existing fallback. */ });
     }
   </script>
+  <!-- picker.js: the one date picker every Owner page shares (Reports' custom period too). -->
+  <script src="picker.js" defer blocking="render"></script>
   <script src="activity.js" defer blocking="render"></script>
 </head>
 <!-- data-frame: the frame Daily and Reports take (style.css "the frame"): the rail at 721 px and wider (over the content,
@@ -147,9 +150,8 @@
         </div>
       </header>
 
-      <!-- The page's controls (HDR-7): the filters from the row's start (the kind shortcuts, who, the dates, and the
-           rest under "More filters"); the time of the last load and its refresh at the row's far end. The log never
-           refreshes by itself. -->
+      <!-- The page's controls (HDR-7): the filters from the row's start: the kind shortcuts, who, the dates (the date
+           picker), and the magnifier that opens the search in the reasons. -->
       <div class="ac-tools" id="tools">
         <div class="seg ac-kinds" id="kind-seg" role="group" aria-labelledby="kind-name">
           <span class="sr-only" id="kind-name" data-t="kindName"></span>
@@ -163,24 +165,19 @@
           <span class="sr-only" data-t="personName"></span>
           <select id="person"></select>
         </label>
-        <button class="rbtn ac-dates" id="dates-btn" type="button" aria-haspopup="dialog">
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4.6" y="5.6" width="14.8" height="14" rx="2.6"/><path d="M4.6 10.2h14.8M8.6 3.8v3.6M15.4 3.8v3.6"/></svg>
-          <span id="dates-label"></span>
-        </button>
-        <button class="rbtn ac-more-btn" id="more-btn" type="button" aria-expanded="false" aria-controls="more">
-          <span id="more-label"></span>
-          <svg class="ac-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5"/></svg>
-        </button>
-        <div class="ac-loaded" id="loaded">
-          <p class="ac-loaded-text" id="loaded-text"></p>
-          <span class="sr-only" id="refresh-alert" role="alert"></span>
-          <button class="icon-btn ac-refresh" id="refresh" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19.2 12a7.2 7.2 0 1 1-2.1-5.1"/><path d="M19.6 4.6v4.2h-4.2"/></svg>
+        <!-- The dates and the magnifier keep together, so where the row wraps the magnifier never stands alone. -->
+        <span class="ac-tools-end">
+          <button class="rbtn ac-dates" id="dates-btn" type="button" aria-haspopup="dialog">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4.6" y="5.6" width="14.8" height="14" rx="2.6"/><path d="M4.6 10.2h14.8M8.6 3.8v3.6M15.4 3.8v3.6"/></svg>
+            <span id="dates-label"></span>
           </button>
-        </div>
+          <button class="rbtn ac-find" id="find-btn" type="button" aria-expanded="false" aria-controls="find">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10.8" cy="10.8" r="5.8"/><path d="m15.2 15.2 4.4 4.4"/></svg>
+          </button>
+        </span>
       </div>
-      <!-- "More filters": the one filter the owner rarely needs, the reason's words. -->
-      <div class="ac-more" id="more" hidden>
+      <!-- The search in the reasons, opened by the magnifier: the words the owner looks for in the reasons the log shows. -->
+      <div class="ac-find-panel" id="find" hidden>
         <label class="field-label" for="reason" data-t="reasonLabel"></label>
         <div class="ac-search">
           <input class="field-input" id="reason" type="search" enterkeyhint="search" autocomplete="off" spellcheck="false" maxlength="240">
@@ -190,10 +187,18 @@
         </div>
       </div>
 
-      <!-- The log: one stream, newest first, a day at a time. Older records come 25 at a time; the stream ends with
-           the line that says there are none older. -->
+      <!-- The log: one stream, newest first, a calendar day at a time. Its first line holds the time it was loaded and
+           its refresh (it never refreshes by itself). Older records come 25 at a time; the stream ends with the line
+           that says there are none older. -->
       <section class="card ac-log" id="log" aria-labelledby="log-title">
         <h2 class="sr-only" id="log-title" data-t="logTitle"></h2>
+        <div class="ac-loaded" id="loaded">
+          <p class="ac-loaded-text" id="loaded-text"></p>
+          <span class="sr-only" id="refresh-alert" role="alert"></span>
+          <button class="icon-btn ac-refresh" id="refresh" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19.2 12a7.2 7.2 0 1 1-2.1-5.1"/><path d="M19.6 4.6v4.2h-4.2"/></svg>
+          </button>
+        </div>
         <div class="ac-body" id="log-body"></div>
       </section>
 
@@ -227,23 +232,22 @@
     </nav>
   </div>
 
-  <!-- The dates: the system's date-range dialog (DLG-1…6, FLD-1…6); a bottom sheet at 720 px and below. -->
+  <!-- The dates: the date picker (picker.js, PCK) in the system's dialog (DLG-1…6); a bottom sheet at 720 px and below.
+       "Clear" in its head, while days are picked: nothing picked shows every date. -->
   <dialog class="dlg" id="dlg-dates" aria-labelledby="dlg-dates-title">
     <div class="dlg-scrim" data-close></div>
-    <form class="dlg-panel" id="dates-form" novalidate>
+    <form class="dlg-panel is-dates" id="dates-form" novalidate>
       <header class="dlg-head">
         <h2 id="dlg-dates-title" data-t="datesTitle"></h2>
-        <button class="icon-btn" type="button" data-close data-t-label="close">
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 7l10 10M17 7 7 17"/></svg>
-        </button>
+        <span class="dlg-head-end">
+          <button class="rbtn dlg-text-btn" id="dates-clear" type="button" hidden data-t="datesClearShort"></button>
+          <button class="icon-btn" type="button" data-close data-t-label="close">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 7l10 10M17 7 7 17"/></svg>
+          </button>
+        </span>
       </header>
       <div class="dlg-body">
-        <div class="field-row">
-          <div class="field" id="df-from"></div>
-          <div class="field" id="df-to"></div>
-        </div>
-        <p class="field-hint" id="df-hint" data-t="dateHint"></p>
-        <button class="rbtn ac-dates-clear" id="dates-clear" type="button" hidden data-t="datesClear"></button>
+        <div id="dates-picker"></div>
       </div>
       <footer class="dlg-foot">
         <button class="rbtn" type="button" data-close data-t="cancel"></button>

@@ -1020,7 +1020,10 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
     gap: 0 16px;
   }
   [data-frame] .head-titles, [data-frame] .head-meta { display: contents; }
-  [data-frame] .head h1 { grid-area: title; }
+  /* TYP-3 and HDR-4 (DECISIONS item 32, every page alike): the phone's title takes the heading's size, 19 / 28.5 at 500,
+   * so the longest title, «سجل النشاط» (111.2 px), keeps one line beside the widest status in every state from 320 px,
+   * and the header never changes height when the status changes. */
+  [data-frame] .head h1 { grid-area: title; font-size: 19px; line-height: 28.5px; }
   [data-frame] .sub { grid-area: sub; margin-block-start: 4px; }
   [data-frame] .sub-hours { display: none; }
   [data-frame] .head-acts { grid-area: acts; }

@@ -1,18 +1,20 @@
 /* Eclipse Activity log: FITWAY Owner Activity log concept (the third Eclipse page). Synthetic data only; not production.
- * It answers "who changed what, when, and why": one stream of every record, newest first, a day at a time, with the
- * kind shortcuts (all, the count, access, settings), who did it, the dates, and the reason's words under "More filters".
- * Older records come 25 at a time; the stream ends with «لا توجد سجلات أقدم» / "No older records". The log never
- * refreshes by itself: the time of the last load and a refresh button stand at the controls' far end (DECISIONS
- * item 31). Complete at first paint: no intro, no rolling digits (item 4). Nothing on it is lit: every record is a
- * past fact, and no figure on the page is the answer a light would point at (LGT-6 allows none).
- * The data follows the owner-only audit read contract (packages/api/src/audit/list.ts): eleven actions in three
- * classes, three actors (the shared front desk, the owner, the automatic system), an optional reason of at most 240
- * characters (required for the two deactivations), a prior count that may be "not recorded" (never 0), gym-local
+ * It answers "who changed what, when, and why": one stream of every record, newest first, a calendar day at a time
+ * (DECISIONS item 32: the 1:05 AM reset sits under the day it happened; Daily and Reports keep the business day), with
+ * the kind shortcuts (all, the nightly resets, access, settings), who did it, the dates (the date picker, picker.js),
+ * and the magnifier that opens the search in the reasons. Older records come 25 at a time; the stream ends with
+ * «لا توجد سجلات أقدم» / "No older records". The log never refreshes by itself: the time of the last load and a refresh
+ * button stand on the log's first line (DECISIONS item 31; the review's O1). Complete at first paint: no intro, no
+ * rolling digits (item 4). Nothing on it is lit: every record is a past fact (LGT-6 allows none).
+ * The data follows the owner-only audit read contract (packages/api/src/audit/list.ts) and ADR-008: no one changes the
+ * count by hand, so the count's only records are the automatic reset after each closing; access and settings records
+ * are written by an owner, named by the actor's displayName (two owner accounts); an optional reason of at most 240
+ * characters (required for the two deactivations); a prior count that may be "not recorded" (never 0); gym-local
  * times, newest first, keyset pages of 25 with no total.
- * Query: lang=ar|en; kind=count|access|settings; person=staff|owner|system; from, to=YYYY-MM-DD; reason=<words>;
- * more=1 (the "More filters" row open); state=loading|error|empty; arrive=<ms>|never (with state=loading);
- * older=fail|hold (the first "Show older" fails, or keeps working); refresh=fail|hold; case=wide (two records with
- * the widest counts the contract allows); ops=delayed|closed|offline (the frame's status, for review); motion=off.
+ * Query: lang=ar|en; kind=count|access|settings; person=o1|o2|system (an owner principal, or the automatic system);
+ * from, to=YYYY-MM-DD; reason=<words>; find=1 (the search open); state=loading|error|empty; arrive=<ms>|never (with
+ * state=loading); older=fail|hold (the first "Show older" fails, or keeps working); refresh=fail|hold; case=wide (the
+ * widest counts the contract allows); ops=delayed|closed|offline (the frame's status, for review); motion=off.
  * Western digits only: numbers are printed with String(), never Intl or toLocaleString. A classic script (no modules
  * and no fetch), so the page works from file:// too. */
 (() => {
@@ -52,14 +54,15 @@
       title: "سجل النشاط",
       // The controls.
       kindName: "نوع السجل",
-      kinds: { all: "الكل", count: "العدد", access: "الوصول", settings: "الإعدادات" },
-      kindsName: { count: "تغييرات العدد" },
+      // The count's kind holds only the automatic reset after each closing (ADR-008; DECISIONS item 32).
+      kinds: { all: "الكل", count: "التصفير", access: "الوصول", settings: "الإعدادات" },
+      kindsName: { count: "التصفير بعد الإغلاق" },
       personName: "المنفِّذ",
-      person: { all: "الجميع", staff: "مكتب الاستقبال", owner: "المالك", system: "النظام التلقائي" },
+      everyone: "الجميع",
       datesName: "التواريخ",
       allDates: "كل التواريخ",
-      moreFilters: "المزيد من التصفية",
-      moreCount: (n) => `المزيد من التصفية (${bdi(n)})`,
+      find: "البحث في الأسباب",
+      findSet: (t) => `البحث في الأسباب: ${t}`,
       reasonLabel: "السبب يحتوي على",
       reasonClear: "مسح نص السبب",
       loaded: (t) => `آخر تحميل ${t}`,
@@ -69,7 +72,7 @@
       // The records.
       today: "اليوم",
       yesterday: "أمس",
-      actors: { staff: "مكتب الاستقبال", owner: "المالك", system: "النظام التلقائي" },
+      actors: { staff: "مكتب الاستقبال", system: "النظام التلقائي" },
       adjBy: (d) => `تعديل العدد بمقدار ${d}`,
       setTo: (n) => `ضبط العدد على ${n}`,
       reset: "تصفير العدد",
@@ -90,7 +93,8 @@
       reasonSay: "السبب: ",
       showOlder: "عرض الأقدم",
       loadingOlder: "جارٍ التحميل…",
-      olderFailed: "تعذّر تحميل السجلات الأقدم.",
+      // EMP-2: what happened, and that the records shown are kept (the review's O4).
+      olderFailed: "تعذّر تحميل السجلات الأقدم، والسجلات المعروضة باقية كما هي.",
       retry: "إعادة المحاولة",
       retrying: "جارٍ المحاولة…",
       endLine: "لا توجد سجلات أقدم",
@@ -110,22 +114,13 @@
       errorDay: (a) => `تعذّر تحميل سجلات ${a}`,
       loadingWord: "جارٍ التحميل…",
       loadingSay: "جارٍ تحميل سجل النشاط",
-      // The dates sheet.
+      // The dates: the date picker's dialog (picker.js has the picker's own words).
       datesTitle: "اختر التواريخ",
-      from: "من",
-      to: "إلى",
-      dateHint: `يوم/شهر/سنة، مثل ${bdi("16/09/2026")}`,
       datesApply: "عرض السجلات",
       datesClear: "مسح التواريخ",
+      datesClearShort: "مسح",
       cancel: "إلغاء",
       close: "إغلاق",
-      err: {
-        required: "أدخل تاريخًا",
-        format: `اكتب التاريخ هكذا: ${bdi("16/09/2026")}`,
-        invalid: "هذا التاريخ غير موجود",
-        future: "هذا التاريخ بعد اليوم",
-        order: "تاريخ النهاية قبل البداية",
-      },
     },
     en: {
       skip: "Skip to content",
@@ -144,14 +139,14 @@
       docTitle: "Activity log · FITWAY (concept)",
       title: "Activity log",
       kindName: "Kind of record",
-      kinds: { all: "All", count: "Count", access: "Access", settings: "Settings" },
-      kindsName: { count: "Count changes" },
+      kinds: { all: "All", count: "Resets", access: "Access", settings: "Settings" },
+      kindsName: { count: "Resets after closing" },
       personName: "Done by",
-      person: { all: "Everyone", staff: "Front desk", owner: "Owner", system: "Automatic system" },
+      everyone: "Everyone",
       datesName: "Dates",
       allDates: "All dates",
-      moreFilters: "More filters",
-      moreCount: (n) => `More filters (${n})`,
+      find: "Search reasons",
+      findSet: (t) => `Search reasons: ${t}`,
       reasonLabel: "Reason contains",
       reasonClear: "Clear reason text",
       loaded: (t) => `Last loaded ${t}`,
@@ -160,7 +155,7 @@
       logTitle: "Records",
       today: "Today",
       yesterday: "Yesterday",
-      actors: { staff: "Front desk", owner: "Owner", system: "Automatic system" },
+      actors: { staff: "Front desk", system: "Automatic system" },
       adjBy: (d) => `Count adjusted by ${d}`,
       setTo: (n) => `Count set to ${n}`,
       reset: "Count reset to 0",
@@ -181,7 +176,7 @@
       reasonSay: "Reason: ",
       showOlder: "Show older",
       loadingOlder: "Loading…",
-      olderFailed: "Couldn't load older records.",
+      olderFailed: "Couldn't load older records. The records shown are kept.",
       retry: "Try again",
       retrying: "Trying again…",
       endLine: "No older records",
@@ -201,20 +196,11 @@
       loadingWord: "Loading…",
       loadingSay: "Loading the activity log",
       datesTitle: "Choose dates",
-      from: "From",
-      to: "To",
-      dateHint: "Day/month/year, like 16/09/2026",
       datesApply: "Show records",
       datesClear: "Clear dates",
+      datesClearShort: "Clear",
       cancel: "Cancel",
       close: "Close",
-      err: {
-        required: "Enter a date",
-        format: "Write the date like 16/09/2026",
-        invalid: "This date doesn't exist",
-        future: "This date is after today",
-        order: "The end is before the start",
-      },
     },
   };
   const L = COPY[LANG];
@@ -243,7 +229,6 @@
   const monthOf = (m) => (RTL ? MO_AR : MO_EN)[m];
   const dateBare = (dn, year = false) => { const p = partsOf(dn); return `${bdi(p.d)} ${monthOf(p.m)}${year ? ` ${bdi(p.y)}` : ""}`; };
   const dateText = (dn, year = false) => nw(dateBare(dn, year));
-  const numDate = (dn) => { const p = partsOf(dn); return `${String(p.d).padStart(2, "0")}/${String(p.m + 1).padStart(2, "0")}/${p.y}`; };
   const plain = (html) => html.replace(/<[^>]+>/g, "");
 
   /* ------------------------------------------------------------ the gym's log (synthetic, from the contract) */
@@ -252,64 +237,57 @@
   const NOW_MIN = 19 * 60 + 42;
   const UTC_OFFSET = 3 * 60;                  // Asia/Riyadh, UTC+3 all year
   const PAGE_N = 25;                          // AUDIT_PAGE_LIMIT_DEFAULT
-  const DAY_START = 6 * 60;                   // the business day starts at 6:00 AM (Daily, Reports)
+  // The log keeps about 12 months (SPEC retention): the date picker reaches back a year from today.
+  const FIRST_PICK = toDn("2025-09-24");
   const COMMAND = ["correction_delta", "correction_absolute", "reset"];
   const ACCESS = ["staff_pin_provisioned", "staff_pin_rotated", "staff_pin_deactivated", "owner_provisioned", "owner_deactivated", "owner_reactivated", "credential_reset"];
   const KIND_ACTIONS = { count: COMMAND, access: ACCESS, settings: ["settings_updated"] };
-  const ACTOR_KIND = { staff: "shared_staff", owner: "owner", system: "system" };
-  // The second owner account the owner provisions, turns off and back on: a target of access records only. The only
-  // actors are the front desk, the owner and the automatic system (DECISIONS item 31).
-  const NAMES = { noura: { ar: "نورة", en: "Noura" } };
+  /* Who: the two owner accounts (principals, named by the actor's displayName; DECISIONS item 32) and the automatic
+   * system. An access or settings record is always written by an owner (the contract), and no one changes the count by
+   * hand (ADR-008), so the shared front desk writes no record: it is the target of the PIN records only. The concept
+   * writes each name in the page's language, as it does the reasons; a stored name is one string. */
+  const OWNERS = { o1: { ar: "فهد", en: "Fahad" }, o2: { ar: "نورة", en: "Noura" } };
+  const PERSONS = ["o1", "o2", "system"];
   const R = (ar, en) => ({ ar, en });
-  // The longest reasons the contract allows: exactly 240 characters each (AUDIT_REASON_MAX_LENGTH).
+  // The longest reason the contract allows: exactly 240 characters (AUDIT_REASON_MAX_LENGTH), on a deactivation, one of
+  // the two actions whose reason is required.
   const LONG = R(
-    "انقطعت الكاميرا نحو عشر دقائق في وقت ذروة المساء، ودخلت مجموعة الحصة الجماعية مع المدرب في الوقت نفسه، فعددنا الداخلين يدويًا عند الباب ووجدنا أربعة لم تلتقطهم الكاميرا، وأضفناهم حتى يطابق العدد ما في الصالة فعلًا قبل أن تبدأ الحصة التالية.",
-    "The camera dropped out for about ten minutes at the evening peak, right as the group class arrived with the coach. We counted people at the door by hand, found four the camera had missed, and added them so the count matches the floor again.",
+    "انتهى عقد موظف الفترة المسائية اليوم، وكان يعرف رمز مكتب الاستقبال الحالي، فعطّلته على الفور حتى لا يُستخدم بعد أن يغادر. سأنشئ رمزًا جديدًا صباح الغد وأسلّمه بنفسي لموظفي الاستقبال، وحتى ذلك الحين لا يدخل أحد إلى شاشة المكتب إلا عبر حسابي.",
+    "The evening employee's contract ended today and he knew the current front desk PIN, so I turned it off right away so it can't be used after he leaves. I will create a new PIN tomorrow morning and give it to the desk staff myself, in person.",
   );
-  /* The people's records. A reason is stored as it was typed; the concept writes most of them in the page's language
-   * so each page reads naturally, and keeps two as typed in the other language (25 August, the owner's English; 17
-   * September, the front desk's Arabic), which is what a real log looks like. Each row: the gym-local date and time,
-   * the actor, the action, its values, the reason. */
+  /* The owners' records. A reason is stored as it was typed; the concept writes most of them in the page's language so
+   * each page reads naturally, and keeps two as typed in the other language (22 March, Noura's Arabic; 14 September, her
+   * English), which is what a real log looks like. No reason says the gym counts people: it never does. Each row: the
+   * gym-local date and time, the owner, the action, its values, the reason. */
   const HUMAN = [
-    ["2025-12-28", "16:12:31", "owner", "staff_pin_provisioned", {}, null],
-    ["2025-12-28", "16:20:05", "owner", "settings_updated", { ver: 2 }, R("ساعات العمل الشتوية", "Winter opening hours")],
-    ["2025-12-30", "21:05:47", "owner", "owner_provisioned", { target: "noura" }, R("حساب لنورة تتابع منه التقارير وقت سفري", "An account for Noura to follow the reports while I'm away")],
-    ["2026-08-16", "11:20:12", "owner", "settings_updated", { ver: 3 }, R("التصفير بعد الإغلاق بخمس دقائق", "Reset five minutes after closing")],
-    ["2026-08-17", "10:14:40", "owner", "staff_pin_rotated", { cv: [1, 2] }, R("موظف جديد في الفترة الصباحية", "New employee on the morning shift")],
-    ["2026-08-20", "20:47:09", "staff", "correction_delta", { prior: 52, delta: 3 }, R("دخلت مجموعة من ثلاثة أشخاص من الباب الجانبي", "A group of three came in through the side door")],
-    ["2026-08-22", "18:30:55", "staff", "correction_delta", { prior: 31, delta: -2 }, R("خرج شخصان من باب الطوارئ", "Two people left through the emergency exit")],
-    ["2026-08-25", "09:12:20", "owner", "correction_absolute", { prior: 17, value: 12 }, { raw: "Counted everyone on the floor myself", lang: "en" }],
-    ["2026-08-27", "14:03:33", "owner", "owner_deactivated", { target: "noura" }, R("عدتُ من السفر", "I'm back from my trip")],
-    ["2026-08-30", "19:55:02", "staff", "correction_delta", { prior: 44, delta: 1 }, null],
-    ["2026-08-31", "10:41:18", "staff", "correction_absolute", { prior: null, value: 6 }, R("الكاميرا كانت متوقفة، والعدد من دفتر الاستقبال", "The camera was off; the count is from the front desk sheet")],
-    ["2026-09-02", "23:58:41", "owner", "reset", { prior: 9 }, R("الصالة خالية والعدد يظهر 9", "The gym was empty but the count showed 9")],
-    ["2026-09-04", "15:15:26", "owner", "settings_updated", { ver: 4 }, null],
-    ["2026-09-07", "09:28:03", "owner", "owner_reactivated", { target: "noura" }, null],
-    ["2026-09-07", "09:31:44", "owner", "credential_reset", { target: "noura", cv: [1, 2] }, R("طلبت نورة كلمة مرور جديدة", "Noura asked for a new password")],
-    ["2026-09-08", "19:10:37", "staff", "correction_delta", { prior: 2, delta: -5 }, R("بقي العدد مرتفعًا بعد خروج المجموعة", "The count stayed high after the group left")],
-    ["2026-09-10", "20:02:15", "staff", "correction_delta", { prior: 61, delta: 4 }, LONG],
-    ["2026-09-12", "06:02:50", "staff", "reset", { prior: 3 }, R("فتحنا والعدد لم يتصفّر", "We opened and the count wasn't at zero")],
-    ["2026-09-14", "13:20:08", "owner", "staff_pin_rotated", { cv: [2, 3] }, null],
-    ["2026-09-16", "10:05:59", "owner", "settings_updated", { ver: 5 }, R("ساعات الجمعة الجديدة: من 2 م", "New Friday hours: from 2 PM")],
-    ["2026-09-17", "14:06:22", "staff", "correction_absolute", { prior: null, value: 24 }, { raw: "انقطعت الكاميرا من 10 صباحًا، وعددنا يدويًا", lang: "ar" }],
-    ["2026-09-19", "21:40:11", "owner", "correction_delta", { prior: 38, delta: -1 }, R("سهو", "Typo")],
-    ["2026-09-21", "18:02:46", "owner", "staff_pin_deactivated", {}, R("انتهى عقد موظف المساء، والرمز الجديد غدًا", "The evening employee's contract ended; new PIN tomorrow")],
-    ["2026-09-22", "09:15:30", "owner", "staff_pin_provisioned", {}, R("رمز جديد بعد إيقاف القديم", "A new PIN after turning off the old one")],
-    ["2026-09-22", "20:20:04", "staff", "correction_delta", { prior: 49, delta: 2 }, R("دخل شخصان من الباب الجانبي قبل الحصة", "Two people came in through the side door before class")],
-    ["2026-09-23", "11:32:17", "owner", "settings_updated", { ver: 6 }, R("الإغلاق يوم الخميس الساعة 2 ص", "Thursday closing moved to 2 AM")],
-    ["2026-09-23", "18:47:39", "staff", "correction_delta", { prior: 58, delta: -3 }, R("خرجت مجموعة من باب الطوارئ بعد التمرين", "A group left through the emergency exit after training")],
-    ["2026-09-23", "19:31:52", "owner", "correction_absolute", { prior: 51, value: 47 }, null],
+    ["2025-12-28", "16:12:31", "o1", "staff_pin_provisioned", {}, null],
+    ["2025-12-28", "16:20:05", "o1", "settings_updated", { ver: 2 }, R("ساعات العمل الشتوية", "Winter opening hours")],
+    ["2025-12-30", "21:05:47", "o1", "owner_provisioned", { target: "o2" }, R("حساب لنورة تتابع منه التقارير وقت سفري", "An account for Noura to follow the reports while I'm away")],
+    ["2026-02-15", "22:40:18", "o2", "settings_updated", { ver: 3 }, R("ساعات رمضان", "Ramadan hours")],
+    ["2026-03-22", "13:05:51", "o2", "settings_updated", { ver: 4 }, { raw: "رجعنا لساعات العمل المعتادة بعد العيد", lang: "ar" }],
+    ["2026-06-01", "09:48:26", "o1", "staff_pin_rotated", { cv: [1, 2] }, R("دوري", "Routine")],
+    ["2026-08-16", "11:20:12", "o1", "settings_updated", { ver: 5 }, R("التصفير بعد الإغلاق بخمس دقائق", "Reset five minutes after closing")],
+    ["2026-08-17", "10:14:40", "o1", "staff_pin_rotated", { cv: [2, 3] }, R("موظف جديد في الفترة الصباحية", "New employee on the morning shift")],
+    ["2026-08-27", "14:03:33", "o1", "owner_deactivated", { target: "o2" }, R("عدتُ من السفر", "I'm back from my trip")],
+    ["2026-09-04", "15:15:26", "o1", "settings_updated", { ver: 6 }, null],
+    ["2026-09-07", "09:28:03", "o1", "owner_reactivated", { target: "o2" }, null],
+    ["2026-09-07", "09:31:44", "o1", "credential_reset", { target: "o2", cv: [1, 2] }, R("طلبت نورة كلمة مرور جديدة", "Noura asked for a new password")],
+    ["2026-09-14", "13:20:08", "o2", "staff_pin_rotated", { cv: [3, 4] }, { raw: "Shift change", lang: "en" }],
+    ["2026-09-16", "10:05:59", "o2", "settings_updated", { ver: 7 }, R("ساعات الجمعة الجديدة: من 2 م", "New Friday hours: from 2 PM")],
+    // After midnight: a calendar day's record, under Saturday (the business day would have put it under Friday).
+    ["2026-09-19", "00:22:10", "o2", "settings_updated", { ver: 8 }, R("ساعات نهاية الأسبوع", "Weekend hours")],
+    ["2026-09-21", "18:02:46", "o1", "staff_pin_deactivated", {}, LONG],
+    ["2026-09-22", "09:15:30", "o1", "staff_pin_provisioned", {}, R("رمز جديد بعد إيقاف القديم", "A new PIN after turning off the old one")],
+    ["2026-09-23", "11:32:17", "o1", "settings_updated", { ver: 9 }, R("الإغلاق يوم الخميس الساعة 2 ص", "Thursday closing moved to 2 AM")],
   ];
-  // ?case=wide: the widest counts the read contract allows (Number.MAX_SAFE_INTEGER; the write path and the database
-  // column stop at 2,147,483,647), a set and an adjustment, today.
-  if (params.get("case") === "wide") {
-    HUMAN.push(["2026-09-23", "19:35:10", "owner", "correction_absolute", { prior: 9007199254740990, value: 9007199254740991 }, null]);
-    HUMAN.push(["2026-09-23", "19:33:40", "staff", "correction_delta", { prior: 9007199254740991, delta: -9007199254740991 }, null]);
-  }
   function mulberry32(a) { return () => { a |= 0; a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
   /* The scheduled reset (SPEC, ADR-008): the automatic system zeroes the count five minutes after each closing, from
-   * the setting of 16 August on. Its prior is the count the edge held at closing; on 5 September it held none, so the
-   * prior is not recorded. Its stored reason is the contract's machine string, which the page says in plain words. */
+   * the setting of 16 August on: at 1:05 AM, so on the calendar it falls on the next day. Its prior is the count the
+   * edge held at closing; on 5 September it held none, so the prior is not recorded. Its stored reason is the contract's
+   * machine string, which the page says in plain words and never searches.
+   * ?case=wide: the widest priors, today's the read contract's (Number.MAX_SAFE_INTEGER) and yesterday's the database
+   * column's (2,147,483,647). */
+  const WIDE = params.get("case") === "wide";
   function buildLog() {
     if (PAGE === "empty") return [];
     const rows = [];
@@ -317,41 +295,39 @@
     for (const [date, time, actor, action, v, reason] of HUMAN) {
       const t = at(date, time);
       const cls = COMMAND.includes(action) ? "command" : ACCESS.includes(action) ? "access" : "settings";
-      const r = { ...t, actor, actorKind: ACTOR_KIND[actor], action, cls, reason, prior: null, eff: null, delta: null };
-      if (action === "correction_delta") { r.prior = v.prior; r.delta = v.delta; r.eff = Math.max(0, v.prior + v.delta); }
-      else if (action === "correction_absolute") { r.prior = v.prior; r.eff = v.value; }
-      else if (action === "reset") { r.prior = v.prior; r.eff = 0; }
+      const r = { ...t, actor: "owner", principal: actor, actorKind: "owner", action, cls, reason, prior: null, eff: null, delta: null };
       if (v.target) r.target = v.target;
       if (action.startsWith("staff_pin")) r.target = "desk";
       rows.push(r);
     }
     const rnd = mulberry32(23);
     for (let dn = toDn("2026-08-17"); dn <= TODAY; dn++) {
-      const prior = isoOf(dn) === "2026-09-05" ? null : [0, 1, 1, 2, 2, 2, 3, 3, 4, 5, 6][Math.floor(rnd() * 11)];
+      let prior = isoOf(dn) === "2026-09-05" ? null : [0, 1, 1, 2, 2, 2, 3, 3, 4, 5, 6][Math.floor(rnd() * 11)];
+      if (WIDE && dn === TODAY) prior = 9007199254740991;
+      if (WIDE && dn === TODAY - 1) prior = 2147483647;
       const business = dn - 1;
-      rows.push({ dn, mins: 65, sec: 2 + Math.floor(rnd() * 7), actor: "system", actorKind: "system", action: "reset", cls: "command", prior, eff: 0, delta: null, business, machine: `scheduled reset for business day ${isoOf(business)}` });
+      rows.push({ dn, mins: 65, sec: 2 + Math.floor(rnd() * 7), actor: "system", principal: "system", actorKind: "system", action: "reset", cls: "command", prior, eff: 0, delta: null, business, machine: `scheduled reset for business day ${isoOf(business)}` });
     }
-    // The server instant (createdAtUtc) and the keyset order: newest first, a tie broken by the id. The business day
-    // (bd) is the gym's day, 6:00 AM to the next opening, as on Daily and Reports: a record after midnight and before
-    // 6:00 AM belongs to the day that closed, as the night's reset says of itself ("business day …").
-    for (const r of rows) { r.ms = (r.dn * 1440 + r.mins - UTC_OFFSET) * 60000 + r.sec * 1000; r.bd = r.mins < DAY_START ? r.dn - 1 : r.dn; }
+    // The server instant (createdAtUtc) and the keyset order: newest first, a tie broken by the id.
+    for (const r of rows) r.ms = (r.dn * 1440 + r.mins - UTC_OFFSET) * 60000 + r.sec * 1000;
     rows.sort((a, b) => a.ms - b.ms);
     rows.forEach((r, i) => { r.id = i + 1; r.utc = new Date(r.ms).toISOString(); });
-    // What the reason filter searches is the stored reason (a case-insensitive substring), the machine string included.
-    for (const r of rows) r.stored = r.machine || (r.reason ? (r.reason.raw ?? r.reason[LANG]) : null);
+    // The search looks in what the page shows (the review's O5): a person's reason as it reads; never the reset's
+    // machine string, which the page never shows.
+    for (const r of rows) r.shown = r.machine ? null : (r.reason ? (r.reason.raw ?? r.reason[LANG]) : null);
     return rows.reverse();
   }
   const LOG = buildLog();
 
-  /* The read contract's list: the filters (actor kind, actions, the occurred range, the reason), newest first, a keyset
-   * page of 25, and the next cursor only while more rows exist. There is no total. */
+  /* The read contract's list: the filters (an owner principal or the system's actor kind, actions, the occurred range,
+   * the reason), newest first, a keyset page of 25, and the next cursor only while more rows exist. There is no total.
+   * The occurred range is whole calendar days, gym-local (DECISIONS item 32). */
   function query(f, cursor = null, limit = PAGE_N) {
     const acts = f.kind === "all" ? null : KIND_ACTIONS[f.kind];
-    const who = f.person === "all" ? null : ACTOR_KIND[f.person];
     const needle = f.reason ? f.reason.toLowerCase() : null;
-    const rows = LOG.filter((r) => (!acts || acts.includes(r.action)) && (!who || r.actorKind === who)
-      && (f.a == null || r.bd >= f.a) && (f.b == null || r.bd <= f.b)
-      && (!needle || (r.stored != null && r.stored.toLowerCase().includes(needle))));
+    const rows = LOG.filter((r) => (!acts || acts.includes(r.action)) && (f.person === "all" || r.principal === f.person)
+      && (f.a == null || r.dn >= f.a) && (f.b == null || r.dn <= f.b)
+      && (!needle || (r.shown != null && r.shown.toLowerCase().includes(needle))));
     let s = 0;
     if (cursor) { s = rows.findIndex((r) => r.ms < cursor.ms || (r.ms === cursor.ms && r.id < cursor.id)); if (s < 0) s = rows.length; }
     const entries = rows.slice(s, s + limit), last = entries[entries.length - 1];
@@ -360,14 +336,16 @@
 
   /* ---------------------------------------------------------------- the filters, from the URL
    * The filters live in the URL, so a reload, the language link and a link from Access or Settings carry them: Access
-   * links to activity.html?kind=access, its front desk card to ?person=staff, Settings to ?kind=settings. */
+   * links to activity.html?kind=access, an owner account's card to ?person=<its principal> ("What Noura changed"),
+   * Settings to ?kind=settings. A range that is reversed, outside the days the log can ask for, or half given is
+   * dropped: the log shows every date. */
   const parseIso = (s) => (/^\d{4}-\d{2}-\d{2}$/.test(s || "") && isoOf(toDn(s)) === s ? toDn(s) : null);
   const F = (() => {
     const k = params.get("kind"), p = params.get("person");
     let a = parseIso(params.get("from")), b = parseIso(params.get("to"));
-    if (a == null || b == null || a > b || b > TODAY) { a = null; b = null; }
+    if (a == null || b == null || a > b || b > TODAY || a < FIRST_PICK) { a = null; b = null; }
     const reason = (params.get("reason") || "").trim().slice(0, 240);
-    return { kind: KIND_ACTIONS[k] ? k : "all", person: ACTOR_KIND[p] ? p : "all", a, b, reason };
+    return { kind: KIND_ACTIONS[k] ? k : "all", person: PERSONS.includes(p) ? p : "all", a, b, reason };
   })();
   const filtered = () => F.kind !== "all" || F.person !== "all" || F.a != null || Boolean(F.reason);
   function urlFor(extra = {}) {
@@ -629,7 +607,9 @@
   /* ---------------------------------------------------------------- a record
    * Story 26's five facts: when, who, what, from → to, why. From 960 px of log they stand in five columns; narrower,
    * who and what share a line and the reason goes under them; on a phone the record stacks (activity.css). */
-  const nameOf = (key) => (key === "desk" ? L.actors.staff : NAMES[key][LANG]);
+  const nameOf = (key) => (key === "desk" ? L.actors.staff : OWNERS[key][LANG]);
+  // Who wrote it: an owner by name (the actor's displayName), or the automatic system by the contract's label.
+  const whoOf = (r) => (r.actor === "owner" ? bdi(OWNERS[r.principal][LANG]) : L.actors[r.actor]);
   function actText(r) {
     switch (r.action) {
       case "correction_delta": return L.adjBy(signed(r.delta));
@@ -663,16 +643,16 @@
   }
   function recHTML(r) {
     const t = `<time class="rec-t" datetime="${isoOf(r.dn)}T${String(Math.floor(r.mins / 60)).padStart(2, "0")}:${String(r.mins % 60).padStart(2, "0")}+03:00">${bdi(fmtClock(r.mins))}</time>`;
-    const who = `<span class="rec-who">${L.actors[r.actor]}</span>`;
+    const who = `<span class="rec-who">${whoOf(r)}</span>`;
     const what = `<span class="rec-what">${ICON[r.cls]}<span class="rec-act">${actText(r)}</span></span>`;
     // The night's reset: its stored reason is the contract's machine string ("scheduled reset for business day …"),
     // said in plain words as part of what happened, so it has no reason of a person's beside it.
-    if (r.actor === "system") {
-      const act = `<span class="rec-what">${ICON.command}<span class="rec-act">${L.resetAfter}</span></span>`;
-      return `<li class="rec is-auto" data-id="${r.id}">${t}<div class="rec-main">${who}${act}</div>${figHTML(r)}</li>`;
-    }
     // Counts of seven digits or more (the contract allows up to 9,007,199,254,740,991) take their own line on a phone.
     const long = r.cls === "command" && Math.max(r.prior ?? 0, r.eff ?? 0) >= 1e6;
+    if (r.actor === "system") {
+      const act = `<span class="rec-what">${ICON.command}<span class="rec-act">${L.resetAfter}</span></span>`;
+      return `<li class="rec is-auto${long ? " is-long" : ""}" data-id="${r.id}">${t}<div class="rec-main">${who}${act}</div>${figHTML(r)}</li>`;
+    }
     return `<li class="rec${long ? " is-long" : ""}" data-id="${r.id}">${t}<div class="rec-main">${who}${what}</div>${figHTML(r)}${whyHTML(r)}</li>`;
   }
   function dayHeading(dn) {
@@ -681,15 +661,15 @@
     const rel = dn === TODAY ? L.today : dn === TODAY - 1 ? L.yesterday : "";
     return (rel ? `<span class="day-rel">${rel}</span><span class="sep" aria-hidden="true">·</span>${SR_SEP}` : "") + `<span class="day-date">${nw(date)}</span>`;
   }
-  // A business day's records, newest first, so the night's reset after its closing stands at its top; a day split
-  // across two pages stays one day.
+  // A calendar day's records, newest first (gym-local; DECISIONS item 32), so the night's reset at 1:05 AM is the day's
+  // last record, under the day it happened; a day split across two pages stays one day.
   function daysHTML(entries) {
     let html = "", cur = null;
     for (const r of entries) {
-      if (r.bd !== cur) {
+      if (r.dn !== cur) {
         if (cur !== null) html += "</ol></section>";
-        cur = r.bd;
-        html += `<section class="day" aria-labelledby="day-${r.bd}"><h3 class="day-h" id="day-${r.bd}">${dayHeading(r.bd)}</h3><ol class="recs">`;
+        cur = r.dn;
+        html += `<section class="day" aria-labelledby="day-${r.dn}"><h3 class="day-h" id="day-${r.dn}">${dayHeading(r.dn)}</h3><ol class="recs">`;
       }
       html += recHTML(r);
     }
@@ -717,14 +697,16 @@
     if (L.kindsName[k]) b.setAttribute("aria-label", L.kindsName[k]);
   });
   const personSel = $("#person");
-  personSel.innerHTML = ["all", "staff", "owner", "system"].map((k) => `<option value="${k}">${L.person[k]}</option>`).join("");
-  const datesBtn = $("#dates-btn"), moreBtn = $("#more-btn"), morePanel = $("#more");
+  personSel.innerHTML = [["all", L.everyone], ["o1", OWNERS.o1[LANG]], ["o2", OWNERS.o2[LANG]], ["system", L.actors.system]]
+    .map(([k, t]) => `<option value="${k}">${t}</option>`).join("");
+  const datesBtn = $("#dates-btn"), findBtn = $("#find-btn"), findPanel = $("#find");
   const reasonInput = $("#reason"), reasonClear = $("#reason-clear");
   reasonInput.setAttribute("dir", "auto");
   reasonClear.setAttribute("aria-label", L.reasonClear);
   const refreshBtn = $("#refresh");
   refreshBtn.setAttribute("aria-label", L.refresh);
-  let moreOpen = params.get("more") === "1" || Boolean(F.reason);
+  // The search in the reasons opens from the magnifier (DECISIONS item 32); open at load when the URL carries words.
+  let findOpen = params.get("find") === "1" || Boolean(F.reason);
   function rangeLabel(a, b) {
     const A = partsOf(a), B = partsOf(b), yr = A.y !== YEAR || B.y !== YEAR;
     if (a === b) return dateText(a, yr);
@@ -732,17 +714,20 @@
     if (A.m === B.m) return nw(`${range2(A.d, B.d)} ${monthOf(A.m)}${yr ? ` ${bdi(A.y)}` : ""}`);
     return nw(`${dateBare(a)} ${DASH} ${dateBare(b)}${yr ? ` ${bdi(B.y)}` : ""}`);
   }
-  // Who is as wide as its own choice (with the select's 81 px of padding), not as its widest name, as a native select is;
-  // on a phone that is its least width, so beside a long range the dates take the next line instead.
+  // Who is as wide as its own choice (with the select's padding: 81 px, or 56 under 360 px where its icon steps aside),
+  // not as its widest name, as a native select is; on a phone that is its least width, so beside a long range the
+  // dates take the next line instead.
   const personWrap = $("#person-wrap");
   function fitSelect() {
     const m = document.createElement("span");
     m.style.cssText = "position:absolute;visibility:hidden;white-space:nowrap;font-size:13.5px;line-height:20px";
     m.textContent = personSel.options[personSel.selectedIndex].text;
     personWrap.append(m);
-    personWrap.style.setProperty("--sel-w", `${Math.ceil(m.getBoundingClientRect().width) + 82}px`);
+    const cs = getComputedStyle(personSel), pad = parseFloat(cs.paddingInlineStart) + parseFloat(cs.paddingInlineEnd);
+    personWrap.style.setProperty("--sel-w", `${Math.ceil(m.getBoundingClientRect().width + pad) + 1}px`);
     m.remove();
   }
+  matchMedia("(max-width: 359px)").addEventListener("change", fitSelect);
   function renderControls() {
     kindButtons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.kind === F.kind)));
     personSel.value = F.person;
@@ -752,16 +737,18 @@
     $("#dates-label").innerHTML = dl;
     datesBtn.setAttribute("aria-label", `${L.datesName}: ${plain(dl)}`);
     datesBtn.classList.toggle("is-set", F.a != null);
-    morePanel.hidden = !moreOpen;
-    moreBtn.setAttribute("aria-expanded", String(moreOpen));
-    $("#more-label").innerHTML = !moreOpen && F.reason ? L.moreCount(1) : L.moreFilters;
-    moreBtn.classList.toggle("is-set", !moreOpen && Boolean(F.reason));
+    // The magnifier: open, its panel shows under the row; words in force take the pressed form of a filter in force,
+    // open or not, and its name says them.
+    findPanel.hidden = !findOpen;
+    findBtn.setAttribute("aria-expanded", String(findOpen));
+    findBtn.classList.toggle("is-set", Boolean(F.reason));
+    findBtn.setAttribute("aria-label", F.reason ? L.findSet(F.reason) : L.find);
     if (document.activeElement !== reasonInput) reasonInput.value = F.reason;
     reasonClear.hidden = !reasonInput.value;
   }
-  // The time of the last load and its refresh (DECISIONS item 31): the log never refreshes by itself. Its three forms
-  // (the time, "refreshing", and a refresh that failed) share one cell, so the caption keeps one width and nothing beside
-  // it moves when the form changes; only the current one is seen and read.
+  // The time of the last load and its refresh (DECISIONS item 31), on the log's first line: the log never refreshes by
+  // itself. Its three forms (the time, "refreshing", and a refresh that failed) share one cell, so nothing beside it moves
+  // when the form changes; only the current one is seen and read.
   function renderLoaded() {
     const txt = $("#loaded-text");
     const working = view.refresh === "working", failed = view.refresh === "failed";
@@ -769,11 +756,13 @@
     else if (phase !== "ready") txt.innerHTML = "";
     else {
       const form = (html, on) => `<span class="ld"${on ? "" : ' aria-hidden="true"'}>${html}</span>`;
-      // A refresh that failed says so where the time stands, with the time of the records still shown beside it
-      // (hidden on a phone, where the row has no room; its alert says it in full): DESIGN_GUIDE §6, the last value stays.
+      // A refresh that failed says so where the time stands, with the time of the records still shown beside it, at
+      // every width (the review's O4): DESIGN_GUIDE §6, the last value stays.
       txt.innerHTML = form(L.loaded(timeText(view.loadedAt)), !working && !failed) + form(L.refreshing, working) +
-        form(`<span class="ac-fail">${ICON.alert}${L.refreshFail}</span><span class="ac-fail-time"><span class="sep" aria-hidden="true">·</span>${L.loaded(timeText(view.loadedAt))}</span>`, failed);
+        form(`<span class="ac-fail">${ICON.alert}${L.refreshFail}</span><span class="ac-fail-time"><span class="sep" aria-hidden="true">·</span>${nw(L.loaded(timeText(view.loadedAt)))}</span>`, failed);
     }
+    // The first day's heading leaves the load line its room (activity.css, from 520 px of log).
+    logEl.style.setProperty("--ld-w", `${Math.ceil($("#loaded").getBoundingClientRect().width)}px`);
     const off = phase !== "ready" || working;
     refreshBtn.setAttribute("aria-disabled", String(off));
     refreshBtn.toggleAttribute("aria-busy", working);
@@ -795,8 +784,8 @@
   }
   function emptyHTML() {
     return filtered()
-      ? `<div class="ac-empty">${ICON.info}<p>${L.noMatch}</p><button class="rbtn" id="clear-filters" type="button">${L.clearFilters}</button></div>`
-      : `<div class="ac-empty">${ICON.info}<p>${L.noRecords}</p></div>`;
+      ? `<div class="ac-empty">${ICON.info}<p tabindex="-1">${L.noMatch}</p><button class="rbtn" id="clear-filters" type="button">${L.clearFilters}</button></div>`
+      : `<div class="ac-empty">${ICON.info}<p tabindex="-1">${L.noRecords}</p></div>`;
   }
   // The skeleton (STA-10, PH-1…3): a day's heading and six records, each awaited value a flat bar in its own slot.
   const ph = (w) => `<i class="ph-bar ph-lab" style="--w:${w}px" aria-hidden="true"></i>`;
@@ -824,7 +813,7 @@
     $("#older-retry")?.addEventListener("click", older);
     $("#clear-filters")?.addEventListener("click", () => {
       Object.assign(F, { kind: "all", person: "all", a: null, b: null, reason: "" });
-      moreOpen = false;
+      findOpen = false;
       apply();
       kindButtons[0].focus();
     });
@@ -860,11 +849,17 @@
   }
   kindButtons.forEach((b) => b.addEventListener("click", () => { if (F.kind === b.dataset.kind) return; F.kind = b.dataset.kind; apply(); }));
   personSel.addEventListener("change", () => { F.person = personSel.value; apply(); });
-  moreBtn.addEventListener("click", () => {
-    moreOpen = !moreOpen;
+  // The magnifier opens the search and puts the caret in it; pressed again, or Escape in the search (the review's O6),
+  // it closes and focus is back on the magnifier. Words in force stay in force when it closes: the pressed magnifier
+  // says so.
+  const closeFind = () => { findOpen = false; renderControls(); findBtn.focus(); };
+  findBtn.addEventListener("click", () => {
+    if (findOpen) { closeFind(); return; }
+    findOpen = true;
     renderControls();
-    if (moreOpen) reasonInput.focus();
+    reasonInput.focus();
   });
+  findPanel.addEventListener("keydown", (e) => { if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); commitReason(); closeFind(); } });
   let reasonTimer = 0;
   const commitReason = () => {
     clearTimeout(reasonTimer);
@@ -1004,8 +999,10 @@
     renderAll();
     later(LOAD.delay, () => { if (phase === "loading") { root.dataset.load = "shown"; load.shownAt = performance.now(); } });
     later(LOAD.say, () => { if (phase === "loading") say(L.loadingSay); });
-    if (typeof arriveAfter === "number") later(arriveAfter, arrive);
-    else if (arriveAfter === "never") later(LOAD.ceiling, fail);
+    // The 10 s ceiling runs whenever a payload is awaited (STA-10; the review's F3): one that would come later never
+    // arrives into the log, it turns into Error. Without ?arrive the skeleton is held, for review, as on Daily.
+    if (typeof arriveAfter === "number" && arriveAfter < LOAD.ceiling) later(arriveAfter, arrive);
+    if (arriveAfter === "never" || typeof arriveAfter === "number") later(LOAD.ceiling, fail);
   }
   function arrive() {
     if (phase !== "loading" && phase !== "retrying") return false;
@@ -1018,7 +1015,12 @@
     delete root.dataset.load;
     loadFirst();
     renderAll();
-    if (hadFocus) { logEl.tabIndex = -1; logEl.focus({ preventScroll: true }); }
+    // Focus goes on where the log begins, with its ring (the review's F2), as after "Show older": the first record, or
+    // the sentence that says nothing matched.
+    if (hadFocus) {
+      const first = $(".rec", bodyEl) || $(".ac-empty p", bodyEl);
+      if (first) { first.tabIndex = -1; first.focus({ preventScroll: true }); }
+    }
     say(view.entries.length ? L.listSay : filtered() ? L.noMatch : L.noRecords);
     return true;
   }
@@ -1045,65 +1047,6 @@
     return true;
   }
 
-  /* ---------------------------------------------------------------- the form system: a date field
-   * Reports' field: day/month/year, Western digits; Arabic-Indic digits typed on an Arabic keyboard are read as
-   * Western; and here eight digits with no separator too (16092026), which is all a phone's number pad can type. */
-  const toWestern = (s) => s.replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660)).replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 0x06f0));
-  function parseDate(raw) {
-    const s = toWestern(String(raw || "")).trim();
-    if (!s) return { error: "required" };
-    let m = /^(\d{1,2})[/.\-](\d{1,2})[/.\-](\d{4})$/.exec(s) || /^(\d{2})(\d{2})(\d{4})$/.exec(s), y, mo, d;
-    if (m) { d = +m[1]; mo = +m[2]; y = +m[3]; }
-    else if ((m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(s))) { y = +m[1]; mo = +m[2]; d = +m[3]; }
-    else return { error: "format" };
-    if (mo < 1 || mo > 12 || d < 1 || d > 31) return { error: "invalid" };
-    const dn = Date.UTC(y, mo - 1, d) / 864e5, p = partsOf(dn);
-    if (p.d !== d || p.m !== mo - 1 || p.y !== y) return { error: "invalid" };
-    if (dn > TODAY) return { error: "future" };
-    return { dn };
-  }
-  function makeField(host, id, label, hintId) {
-    host.innerHTML = `<label class="field-label" for="${id}">${label}</label>
-      <input class="field-input" id="${id}" name="${id}" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" dir="ltr" aria-describedby="${hintId}">
-      <p class="field-err" id="${id}-err" hidden></p>`;
-    const input = $("input", host), err = $(".field-err", host);
-    const field = {
-      input,
-      get value() { return input.value; },
-      set value(v) { input.value = v; },
-      setError(msg) {
-        if (msg) {
-          err.innerHTML = `${ICON.alert}<span>${msg}</span>`;
-          err.hidden = false;
-          input.setAttribute("aria-invalid", "true");
-          input.setAttribute("aria-describedby", `${id}-err ${hintId}`);
-          host.classList.add("is-invalid");
-        } else {
-          err.hidden = true;
-          err.innerHTML = "";
-          input.removeAttribute("aria-invalid");
-          input.setAttribute("aria-describedby", hintId);
-          host.classList.remove("is-invalid");
-        }
-      },
-    };
-    input.addEventListener("blur", () => { const r = parseDate(input.value); if (r.dn != null) input.value = numDate(r.dn); });
-    // A field's message leaves as soon as the owner edits it, so a corrected date never sits over an old error (Reports'
-    // field keeps its message until the next submit).
-    input.addEventListener("input", () => { if (host.classList.contains("is-invalid")) field.setError(""); });
-    return field;
-  }
-  function validatePair(from, to) {
-    const A = parseDate(from.value), B = parseDate(to.value);
-    const ea = A.error ? L.err[A.error] : "";
-    let eb = B.error ? L.err[B.error] : "";
-    if (!ea && !eb && B.dn < A.dn) eb = L.err.order;
-    from.setError(ea); to.setError(eb);
-    if (ea) return { focus: from };
-    if (eb) return { focus: to };
-    return { a: A.dn, b: B.dn };
-  }
-
   /* ---------------------------------------------------------------- the dialog system (Reports')
    * showModal (the page behind is inert), a scrim and a panel; a bottom sheet at 720 px and below (DLG-5). Initial
    * focus on the first field (DLG-3: a dialog that asks the owner to choose). Tab wraps; Escape and the scrim close it;
@@ -1111,7 +1054,7 @@
   const dlgRun = { anims: [] };
   const isSheet = () => matchMedia("(max-width: 720px)").matches;
   const focusables = (el) => $$('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])', el)
-    .filter((x) => !x.disabled && !x.closest("[hidden]") && x.getClientRects().length);
+    .filter((x) => !x.disabled && x.tabIndex >= 0 && !x.closest("[hidden]") && x.getClientRects().length);
   function finishDlgAnims() { dlgRun.anims.forEach((a) => a.cancel()); dlgRun.anims = []; }
   function openDialog(dlg, opener, first) {
     if (openDlg) closeDialog(openDlg.dlg, true);
@@ -1166,33 +1109,35 @@
     });
   });
 
-  /* ---- the dates: both days, gym-local, inclusive; "Clear dates" when dates are chosen. */
+  /* ---- the dates: the date picker (picker.js, PCK), calendar days, gym-local, inclusive, from a year back to today.
+   * "Clear" in the dialog's head while days are picked: nothing picked shows every date. */
   const dlgDates = $("#dlg-dates");
-  const dFrom = makeField($("#df-from"), "dates-from", L.from, "df-hint");
-  const dTo = makeField($("#df-to"), "dates-to", L.to, "df-hint");
   const datesClear = $("#dates-clear");
+  datesClear.setAttribute("aria-label", L.datesClear);
+  const picker = window.EclipsePicker.create($("#dates-picker"), {
+    lang: LANG, min: FIRST_PICK, max: TODAY, today: TODAY, value: null,
+    onChange: (v) => { datesClear.hidden = !v; },
+  });
   function openDatesDialog() {
-    dFrom.value = F.a == null ? "" : numDate(F.a);
-    dTo.value = F.b == null ? "" : numDate(F.b);
-    dFrom.setError(""); dTo.setError("");
+    picker.set(F.a == null ? null : { a: F.a, b: F.b });
     datesClear.hidden = F.a == null;
-    openDialog(dlgDates, datesBtn, dFrom.input);
+    openDialog(dlgDates, datesBtn, null);
+    picker.focus();
   }
   datesBtn.addEventListener("click", openDatesDialog);
   $("#dates-form").addEventListener("submit", (e) => {
     e.preventDefault();
-    const v = validatePair(dFrom, dTo);
-    if (v.focus) { v.focus.input.focus(); return; }
+    const v = picker.validate();
+    if (v.error) { picker.focus(); return; }
+    const a = v.empty ? null : v.a, b = v.empty ? null : v.b;
     closeDialog(dlgDates);
-    if (F.a === v.a && F.b === v.b) return;
-    F.a = v.a; F.b = v.b;
+    if (F.a === a && F.b === b) return;
+    F.a = a; F.b = b;
     apply();
   });
-  datesClear.addEventListener("click", () => {
-    closeDialog(dlgDates);
-    F.a = null; F.b = null;
-    apply();
-  });
+  // Clearing keeps the dialog open: the owner sees the days let go, and "Show records" then shows every date. Focus
+  // goes to the grid, since "Clear" leaves with the days.
+  datesClear.addEventListener("click", () => { picker.clear(); datesClear.hidden = true; picker.focus(); });
 
   /* ---------------------------------------------------------------- start */
   if (phase === "ready") loadFirst();
@@ -1200,7 +1145,7 @@
   renderAll();
   if (phase === "loading") startLoading(ARRIVE);
   // Font metrics change the figures' widths: measure again once the faces are in.
-  document.fonts.ready.then(() => { fitSelect(); if (phase === "ready") fitFigs(); });
+  document.fonts.ready.then(() => { fitSelect(); renderLoaded(); if (phase === "ready") fitFigs(); });
   // Hooks for the capture script.
   window.__activity = {
     ready: true,
@@ -1209,10 +1154,11 @@
     filters: F,
     arrive, fail, older, refresh,
     openDates: () => openDatesDialog(),
+    picker,
     setKind: (k) => { F.kind = k; apply(); },
     setPerson: (p) => { F.person = p; apply(); },
     setDates: (a, b) => { F.a = a == null ? null : toDn(a); F.b = b == null ? null : toDn(b); apply(); },
-    setReason: (s) => { F.reason = s; moreOpen = true; apply(); },
+    setReason: (s) => { F.reason = s; findOpen = true; apply(); },
     loadAll: () => { while (view.next) { const p = query(F, view.next); view.entries = view.entries.concat(p.entries); view.next = p.next; } renderList(); },
     count: () => LOG.length,
   };

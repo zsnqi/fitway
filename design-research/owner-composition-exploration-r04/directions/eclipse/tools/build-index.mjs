@@ -1,7 +1,7 @@
 import { readFile, writeFile } from "node:fs/promises";
 
 const eclipse = new URL("../", import.meta.url);
-const files = ["DESIGN-SPEC.md", "app.js", "components.js", "reports.js", "activity.js", "tuner.js"];
+const files = ["DESIGN-SPEC.md", "app.js", "components.js", "reports.js", "activity.js", "picker.js", "tuner.js"];
 const command =
 	"node design-research/owner-composition-exploration-r04/directions/eclipse/tools/build-index.mjs";
 const identifier = /^[A-Za-z_$][\w$]*$/;

@@ -1,0 +1,77 @@
+/* Eclipse date picker (picker.js): the one way an Owner page asks for days, inside the page's dialog (DLG-1…6) and a
+ * bottom sheet at 720 px and below. Loaded after reports.css (the dialog, the buttons and the field's message).
+ * PCK (DESIGN-SPEC §3.8): the two ends above the month, the month and its arrows, then the month's grid, six rows always.
+ *   A day is a 44 px target; its tile is 36 × 36, radius 12, so the one ring (2 px chalk, here at 2 px) fits the row and
+ *   keeps 4 px from a neighbour's tile (FOC-3). The chosen ends are chalk tiles (BTN-2's primary chalk); the days between
+ *   stand on a band of chalk 12% (SEG-3's pressed fill), rounded where a row or the month ends; while the end is still to
+ *   pick, the range the pointer or the focus would make is a fainter band (6%) with its end outlined (SEG-3's chalk .42
+ *   edge). Today's line (COL-13, --red-hi) sits under today's number. A day that cannot be picked is dimmed in place. */
+
+/* The date dialog is narrower than the system's 468: seven 52 px columns and the 24 px insets. */
+.dlg-panel.is-dates { width: min(412px, 100%); }
+.dlg-panel.is-dates .dlg-desc { margin-block-end: 4px; }
+/* The head's end: "Clear" (a text button, boxless at rest as BTN-5 is, 5% white on hover) before the close button,
+ * while days are picked on a page whose dates may be left open (Activity log). */
+.dlg-head-end { display: flex; align-items: center; gap: 4px; }
+.dlg-text-btn { border-color: transparent; background: none; color: var(--ink-2); }
+.dlg-text-btn:hover { border-color: transparent; background: rgba(255, 255, 255, 0.05); color: var(--ink); }
+
+.dp { --dp-band: rgba(245, 243, 242, 0.12); --dp-soft: rgba(245, 243, 242, 0.06); padding-block-start: 8px; }
+.dp bdi { white-space: nowrap; }
+
+/* The two ends: a plate each (3% chalk, radius 12), the label in caption --ink-3 over the date in body type at 500;
+ * the end still to pick takes SEG-3's chalk .42 edge, and its words stand in --ink-3 at 400. They are not controls: a
+ * day is picked in the grid. */
+.dp-ends { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.dp-end { display: flex; flex-direction: column; justify-content: center; min-width: 0; height: 52px; padding-inline: 14px; border-radius: 12px; background: rgba(255, 255, 255, 0.03); }
+.dp-end.is-wait { box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42); }
+.dp-end-l { font-size: 12px; line-height: 18px; color: var(--ink-3); }
+.dp-end-v { font-size: 15px; line-height: 22px; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+.dp-end.is-empty .dp-end-v { font-weight: 400; color: var(--ink-3); }
+.dp-err { margin-block-start: 8px; }
+.dp-err:not([hidden]) { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; line-height: 18px; color: var(--err); }
+.dp-err .ico { width: 15px; height: 15px; flex: none; margin-block-start: 1.5px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
+
+/* The month: its name in body type at 500 on the content's start edge, the arrows (BTN-5, 44 px) at the end; an arrow
+ * at the first or the last month that can be picked is dimmed and does nothing. */
+.dp-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-block-start: 12px; margin-inline-end: -12px; }
+.dp-month { font-size: 15px; line-height: 22.5px; font-weight: 500; color: var(--ink); }
+/* The arrows reach 12 into the inset, as the dialog's close button does (DLG-6), so the last glyph meets the content's
+ * end edge. */
+.dp-arrows { display: flex; gap: 4px; }
+.dp-step svg { width: 18px; height: 18px; stroke-linejoin: round; }
+.dp-step[aria-disabled="true"], .dp-step[aria-disabled="true"]:hover { background: none; color: var(--ink-3); opacity: 0.4; cursor: default; }
+/* A touch screen keeps no hover on an arrow after a tap. */
+@media (hover: none) { .dp-step:hover { background: none; color: var(--ink-2); } }
+
+/* The grid: seven equal columns across the content, never under 44 px each; where the sheet's insets leave less (under
+ * 340 px), it reaches into them, 6 px from the sheet's edge at 320. */
+.dp-grid { width: max(100%, 308px); margin-inline: min(0px, calc((100% - 308px) / 2)); margin-block-start: 2px; border-collapse: separate; border-spacing: 0; table-layout: fixed; }
+.dp-grid th { height: 22px; padding: 0 0 4px; font-size: 12px; line-height: 18px; font-weight: 400; color: var(--ink-3); text-align: center; white-space: nowrap; }
+.dp-grid td { height: 44px; padding: 0; text-align: center; }
+.dp-day { position: relative; display: grid; place-items: center; width: 100%; height: 44px; border-radius: 0; color: var(--ink); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.dp-day:focus-visible { outline: none; }
+.dp-n { position: relative; z-index: 1; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; font-size: 15px; line-height: 22.5px; font-variant-numeric: tabular-nums; }
+.dp-day:focus-visible .dp-n { outline: 2px solid var(--ink); outline-offset: 2px; }
+@media (hover: hover) { .dp-day:not(.is-off):not(.is-end):hover .dp-n { background: rgba(255, 255, 255, 0.06); } }
+/* The band: behind the tiles, as tall as a tile; the start's half and the end's half run toward the days between. */
+.dp-day.band::before, .dp-day.band-soft::before { content: ""; position: absolute; inset-block: 4px; inset-inline: 0; background: var(--dp-band); }
+.dp-day.band-soft::before { background: var(--dp-soft); }
+.dp-day.band-from::before { inset-inline-start: 50%; }
+.dp-day.band-to::before { inset-inline-end: 50%; }
+.dp-day.r-s::before { border-start-start-radius: 12px; border-end-start-radius: 12px; }
+.dp-day.r-e::before { border-start-end-radius: 12px; border-end-end-radius: 12px; }
+/* The chosen ends: a chalk tile, dark figures at 500 (BTN-2's primary). The outlined end the next pick would make. */
+.dp-day.is-end .dp-n { background: var(--ink); color: #0d0c0d; font-weight: 500; }
+@media (hover: hover) { .dp-day.is-end:hover .dp-n { background: #fff; } }
+.dp-day.is-ghost .dp-n { box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42); background: var(--dp-soft); }
+/* Today: today's line (COL-13), 12 × 2 under the number, on a chosen tile too. */
+.dp-day.is-today .dp-n::after { content: ""; position: absolute; inset-block-end: 5px; inset-inline-start: calc(50% - 6px); width: 12px; height: 2px; border-radius: 1px; background: var(--red-hi); }
+/* A day that cannot be picked: --ink-3 at 45%, in place, no hover; today keeps its line, dimmed with it. */
+.dp-day.is-off { color: var(--ink-3); cursor: default; }
+.dp-day.is-off .dp-n { opacity: 0.45; }
+
+/* The sheet (720 px and below): the grid takes the sheet's width; at 400 px and below the system's insets are 16. */
+@media (max-width: 720px) {
+  .dlg-panel.is-dates { width: 100%; }
+}

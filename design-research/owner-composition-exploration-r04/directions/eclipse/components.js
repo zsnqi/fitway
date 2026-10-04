@@ -56,6 +56,7 @@
       skip: "انتقل إلى المحتوى",
       docTitle: "المكوّنات · FITWAY Eclipse (مفهوم)",
       title: "المكوّنات",
+      titleMeta: `<bdi dir="ltr">30 / 36 · 500</bdi><br>الهاتف <bdi dir="ltr">19 / 28.5</bdi>`,
       sub: `مواصفات تصميم ${b("Eclipse")} · مسودة · مقيسة على ${b("31a40d6")}`,
       langName: "لغة الصفحة",
       note: `كل مكوّن في صيغة القاعدة وفي كل حالة مصمَّمة. المقاسات والمسافات هنا هي قواعد المواصفات ${b("TYP-3")} و${b("SPC-5")} و${b("SPC-6")}، وقد اعتمدها المستخدم في ${b(30)} سبتمبر ${b(2026)}. وما يبقى مقترحًا فقط عليه علامة «مقترح». الحالات النشطة (عند المرور والتركيز والتعطيل) نسخ ثابتة؛ والعناصر التفاعلية معلَّمة.`,
@@ -156,6 +157,7 @@
       skip: "Skip to content",
       docTitle: "Components · FITWAY Eclipse (concept)",
       title: "Components",
+      titleMeta: "30 / 36 · 500<br>phone 19 / 28.5",
       sub: "Eclipse design spec · draft · measured at 31a40d6",
       langName: "Page language",
       note: "Every component in its rule form and in each designed state. Type sizes and spacing here are the spec's rules TYP-3, SPC-5 and SPC-6, accepted by the user on 30 Sep 2026; anything still only proposed carries a “Proposed” flag. Hover, focus and disabled specimens are still copies; the live parts are marked.",
@@ -343,7 +345,7 @@
       ["red", "#E51935", "#E51935", ""], ["redhi", "#FF2946", "#FF2946", "5.21"], ["ox", "#4D0713", "#4D0713", ""], ["obs", "#08090A", "#08090A", ""],
       ["live", "#4BE29B", "#4BE29B", "11.64"], ["delayed", "#D9A400", "#D9A400", "8.52"], ["amber", "#E8B62E", "#E8B62E", "10.27"], ["err", "#FF6B7D", "#FF6B7D", "6.93"],
     ].map(([k, hex, css, r]) => `<div class="cx-sw"><i style="background:${css}"></i><b>${L.colourNames[k]}</b><span>${b(hex)}</span><span>${r ? L.ratioOn(r) : "&nbsp;"}</span></div>`).join("");
-    const roles = [["display", "46 / 46 · 500", "var(--t-display)", "49"], ["title", "30 / 36 · 500", "var(--t-title)", L.title], ["heading", "19 / 28.5 · 500", "var(--t-heading)", L.chartTitle], ["body", "15 / 22.5 · 400", "var(--t-body)", L.typeSample], ["label", "13.5 / 20 · 400", "var(--t-label)", L.nowTitle], ["caption", "12 / 18 · 400", "var(--t-caption)", L.last7]];
+    const roles = [["display", "46 / 46 · 500", "var(--t-display)", "49"], ["title", L.titleMeta, "var(--t-title)", L.title], ["heading", "19 / 28.5 · 500", "var(--t-heading)", L.chartTitle], ["body", "15 / 22.5 · 400", "var(--t-body)", L.typeSample], ["label", "13.5 / 20 · 400", "var(--t-label)", L.nowTitle], ["caption", "12 / 18 · 400", "var(--t-caption)", L.last7]];
     const type = roles.map(([r, m, f, s]) => `<div><span class="role">${b(r)}</span><span class="meta">${b(m)}</span><span class="sample" style="font:${f}">${s}</span></div>`).join("");
     const scale = [4, 8, 12, 16, 24, 32, 48, 72].map((s) => `<div><i style="--s:${s}px"></i>${b(s)}</div>`).join("");
     const radii = [24, 16, 12, 8, 4].map((r, i) => `<div><i style="border-radius:${r}px"></i><span>${b(r)} · ${L.radiiNames[i]}</span></div>`).join("");

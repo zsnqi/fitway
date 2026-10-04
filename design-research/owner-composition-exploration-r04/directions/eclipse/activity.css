@@ -1,9 +1,10 @@
-/* Eclipse Activity log: the third Eclipse page. Loaded after style.css (the language and the frame) and reports.css (the
- * table, form and dialog system the Owner pages share); every rule here is scoped to the Activity log body (.ac) or to
- * a class only this page uses. Concept only, synthetic data.
- * C (§4.3): the header (the title and the frame's status), the page's controls under it, and one card, the log: one
- * stream of records, newest first, a day at a time, ending in "Show older" or the line that says there are none.
- * Nothing on the page is lit: the page wash only (LGT-6 allows none). */
+/* Eclipse Activity log: the third Eclipse page. Loaded after style.css (the language and the frame), reports.css (the
+ * table, form and dialog system the Owner pages share) and picker.css (the date picker); every rule here is scoped to
+ * the Activity log body (.ac) or to a class only this page uses. Concept only, synthetic data.
+ * C (§4.3): the header (the title and the frame's status), the page's controls under it, and one card, the log: its
+ * first line the time it was loaded and its refresh, then one stream of records, newest first, a calendar day at a
+ * time, ending in "Show older" or the line that says there are none. Nothing on the page is lit: the page wash only
+ * (LGT-6 allows none). */
 
 html:has(> body.ac) {
   color-scheme: dark;
@@ -34,26 +35,37 @@ html:has(> body.ac) {
 
 /* ------------------------------------------------------------------ page
  * The header, then the controls, then the log; one 16 px gutter (SPC-5). The header holds the title and the frame's
- * status only (HDR-7): the log has no period to name, and the time of its last load stands beside its refresh. */
+ * status only (HDR-7): the log has no period to name, and the time of its last load stands on the log's own first
+ * line, so the frame's live status and its reading time never sit beside the log's load time (the review's O1). */
 .ac .main { display: flex; flex-direction: column; gap: 16px; padding-block: 8px 24px; }
 
 /* ------------------------------------------------------------- the controls
  * HDR-7: a row of their own under the header, from the inline start, 16 apart: the kind shortcuts (SEG-1…3), who, the
- * dates and "More filters"; the time of the last load and its refresh at the row's far end, as Reports' minute file is.
- * A filter in force looks pressed (SEG-3's pressed form), so the row says what the log shows. */
+ * dates (the date picker) and the magnifier that opens the search in the reasons. A filter in force looks pressed
+ * (SEG-3's pressed form), so the row says what the log shows. */
 .ac-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
-.ac-loaded { display: flex; align-items: center; gap: 4px; margin-inline-start: auto; }
-.ac-loaded-text { display: inline-grid; font-size: 13.5px; line-height: 20px; color: var(--ink-3); white-space: nowrap; }
-.ac-loaded-text .ld { grid-area: 1 / 1; justify-self: end; }
+.ac-tools-end { display: flex; align-items: center; gap: 16px; }
+/* 1023 px and below the kinds pad 12 (8 on a phone, SEG-4), so at 768 the kinds, who, the dates and the magnifier keep
+ * one row (the review's O2: the row's end wrapped to a line of its own). */
+@media (max-width: 1023px) { .ac .ac-kinds .seg-b { min-width: 44px; padding-inline: 12px; } }
+/* The time of the last load and its refresh: the log's first line, at its inline end, level with the first day's
+ * heading (from 520 px of log; a line of its own above the days under it). Label type --ink-3. */
+.ac-loaded { display: flex; align-items: center; justify-content: flex-end; gap: 4px; min-width: 0; }
+.ac-loaded-text { display: inline-grid; min-width: 0; font-size: 13.5px; line-height: 20px; color: var(--ink-3); }
+.ac-loaded-text .ld { grid-area: 1 / 1; justify-self: end; text-align: end; }
 .ac-loaded-text .ld[aria-hidden="true"] { visibility: hidden; }
 .ac-refresh svg { stroke-linejoin: round; }
 .ac-refresh[aria-disabled="true"] { cursor: default; }
 .ac-refresh[aria-disabled="true"]:hover { background: none; color: var(--ink-2); }
 .ac-refresh.is-off, .ac-refresh.is-off:hover { color: var(--ink-3); }
 /* A refresh that failed: the words in --err after the alert mark (15 px), then the time of the records still shown. */
-.ac-fail { display: inline-flex; align-items: center; gap: 8px; color: var(--err); vertical-align: top; }
+.ac-fail { display: inline-flex; align-items: center; gap: 8px; color: var(--err); vertical-align: top; white-space: nowrap; }
 .ac-fail .ico { width: 15px; height: 15px; }
-.ac-loaded-text .sep { margin-inline: 8px; color: var(--ink-3); opacity: 1; }
+/* The failed form is two lines inside the line's 44 px: the failure, and under it the time of the records still shown,
+ * so it is no wider than the time and the first day's heading keeps its line beside it. */
+.ac-loaded-text { align-items: center; }
+.ac-fail-time { display: block; white-space: nowrap; }
+.ac-fail-time .sep { display: none; }
 
 /* Who: a native select (the phone's own picker) behind a button of the system (BTN-1: 44 tall, radius 12, a 1 px line
  * drawn inside), a person at its start and a chevron at its end, as Reports' sort on a phone; as wide as its choice
@@ -65,14 +77,18 @@ html:has(> body.ac) {
 .ac-sel::after { content: ""; position: absolute; top: 17px; inset-inline-end: 18px; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); pointer-events: none; }
 .ac-sel select { width: var(--sel-w, auto); height: 44px; padding-inline: 41px 40px; border: 0; border-radius: 12px; background: transparent; color: var(--ink); font: inherit; font-size: 13.5px; line-height: 20px; appearance: none; -webkit-appearance: none; outline: none; cursor: pointer; }
 .ac-sel select option { background: #121112; color: var(--ink); }
-.ac-sel.is-set, .ac-dates.is-set, .ac-more-btn.is-set { box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42); background: rgba(245, 243, 242, 0.12); }
-.ac-dates.is-set, .ac-more-btn.is-set { border-color: transparent; }
-.ac-sel.is-set:hover, .ac-dates.is-set:hover, .ac-more-btn.is-set:hover { background: rgba(245, 243, 242, 0.16); }
-.rbtn .ac-chev { width: 16px; height: 16px; stroke: var(--ink-2); }
-.ac-more-btn[aria-expanded="true"] .ac-chev { transform: rotate(180deg); }
+.ac-sel.is-set, .ac-dates.is-set, .ac-find.is-set { box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42); background: rgba(245, 243, 242, 0.12); }
+.ac-dates.is-set, .ac-find.is-set { border-color: transparent; }
+.ac-sel.is-set:hover, .ac-dates.is-set:hover, .ac-find.is-set:hover { background: rgba(245, 243, 242, 0.16); }
+/* The magnifier (DECISIONS item 32): BTN-1's frame, square, its 17 px glyph; open, it keeps the hover's 5% fill and
+ * --line-3 edge (as the header's status keeps its fill while its details are open); words in force press it. */
+.ac-find { width: 44px; padding: 0; color: var(--ink-2); }
+.ac-find:hover { color: var(--ink); }
+.ac-find[aria-expanded="true"]:not(.is-set) { border-color: var(--line-3); background: rgba(255, 255, 255, 0.05); color: var(--ink); }
+.ac-find.is-set { color: var(--ink); }
 
-/* "More filters": the reason's words, FLD-1's field (a label above, 44 px), with its own clear button inside its end. */
-.ac-more { max-width: 360px; }
+/* The search: the reasons' words, FLD-1's field (a label above, 44 px), with its own clear button inside its end. */
+.ac-find-panel { max-width: 360px; }
 .ac-search { position: relative; }
 .ac-search .field-input { padding-inline-end: 44px; }
 .ac-search .field-input::-webkit-search-cancel-button { -webkit-appearance: none; display: none; }
@@ -83,9 +99,28 @@ html:has(> body.ac) {
  * One card (SRF-1). Its text stands 24 from the card's edge, as a section's does (SPC-5): 12 of card and 12 inside each
  * heading and record, so a record's lift (TBL-2: 4% white, at once, on hover) and the quiet tint of a record given focus
  * never sit flush on its words; its top 8 and the first heading's 16 make the 24 above. */
-.ac-log { padding: 8px 12px; }
+.ac-log { padding: 8px 12px; container: logcard / inline-size; }
 .ac-log:focus, .ac-msg:focus { outline: none; }
 .ac-body { container: log / inline-size; }
+/* From 520 px of log the load line stands on the first day's line, at its end: its 44 px centred on the heading's
+ * 20 px line (the card's 8, the heading's 16, then 20). Below 520 px it is a line of its own above the days. */
+@container logcard (min-width: 520px) {
+  .ac-loaded { position: absolute; z-index: 1; inset-block-start: 12px; inset-inline-end: 12px; max-width: calc(100% - 24px); }
+  .ac-body .day:first-child .day-h { padding-inline-end: calc(var(--ld-w, 200px) + 24px); }
+}
+@container logcard (min-width: 520px) {
+  /* Nothing to show: the sentence starts under the load line's 44 px. */
+  .ac-body > .ac-empty { padding-block-start: 64px; }
+}
+@container logcard (max-width: 519.98px) {
+  .ac-loaded { min-height: 44px; padding-inline: 8px 0; }
+  .ac-loaded + .ac-body .day:first-child .day-h { padding-block-start: 4px; }
+}
+/* Focus that the page moves (the first record that "Show older" brought, or after a retry the first record or the empty
+ * sentence) always shows its ring (the review's F2): FOC-2's inset ring, 2 px chalk, 4 px inside the row, so it keeps
+ * 8 px from the row's words. */
+.ac .rec:focus, .ac .ac-empty p:focus { outline: 2px solid var(--ink); outline-offset: -4px; border-radius: 12px; }
+.ac .ac-empty p:focus { outline-offset: 4px; border-radius: 8px; }
 .ac-body ol { margin: 0; padding: 0; list-style: none; }
 /* A day: its heading in label type at 500, the relative word chalk and the date --ink-2; more space above it than
  * below (24 / 10), and the day's first record ruled off under it. */
@@ -98,7 +133,7 @@ html:has(> body.ac) {
  * 500, its figures in chalk, the other cells --ink-2), each cell's first line 20 px, so every line of a row shares
  * one baseline. */
 .rec { display: grid; padding: 14px 12px; border-block-start: 1px solid rgba(255, 255, 255, 0.055); font-size: 13.5px; line-height: 20px; align-items: start; }
-.rec:focus { outline: none; background: rgba(255, 255, 255, 0.04); }
+.rec:focus { background: rgba(255, 255, 255, 0.04); }
 @media (hover: hover) { .rec:not(.is-ph):hover { background: rgba(255, 255, 255, 0.04); } }
 .rec-t { color: var(--ink-2); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .rec-who { color: var(--ink-2); min-width: 0; }
@@ -144,29 +179,34 @@ html[lang="en"] .rec-why q { quotes: "\201C" "\201D"; }
   .rec-fig { grid-area: 1 / 4; }
   .rec-why { grid-area: 1 / 5; max-width: 72ch; }
 }
-/* 520-959 px of log (1024 and the tablet): who and what share a line, its icon between them; the reason under it, as
- * wide as the line and its figures. */
+/* 520-959 px of log (1024 and the tablet): who and what share a line, its icon between them, and the figures follow
+ * the action 16 after it, as the figures' column follows the action's from 960 px (the review's O2: at 1024 they stood
+ * some 400 px from the words); the reason under the line. */
 @container log (min-width: 520px) and (max-width: 959.98px) {
-  .rec { grid-template-columns: var(--tw) minmax(0, 1fr) var(--fw); grid-template-areas: "t main fig" ". why why"; column-gap: 16px; row-gap: 4px; }
+  .rec { grid-template-columns: var(--tw) minmax(0, max-content) auto minmax(0, 1fr); grid-template-areas: "t main fig ." ". why why why"; column-gap: 16px; row-gap: 4px; }
   .rec-t { grid-area: t; }
   .rec-main { grid-area: main; display: flex; flex-wrap: wrap; align-items: flex-start; column-gap: 12px; row-gap: 2px; min-width: 0; }
   .rec-fig { grid-area: fig; }
   .rec > .rec-why { grid-area: why; max-width: 72ch; }
 }
-/* Under 520 px of log (a phone): the record stacks: what and its time, then who and the figures, then the reason across
- * the width. */
+/* Under 520 px of log (a phone): what, its figures after it and its time at the end; who under them; then the reason
+ * across the width. The figures start where the action ends, as they do at every width (the review's O3). */
 @container log (max-width: 519.98px) {
-  .rec { grid-template-columns: minmax(0, 1fr) fit-content(50%); grid-template-areas: "main t" "main fig" "why why"; column-gap: 12px; row-gap: 4px; padding-block: 12px; }
-  .rec-main { grid-area: main; display: flex; flex-wrap: wrap; align-items: flex-start; column-gap: 8px; row-gap: 4px; min-width: 0; }
-  .rec-what { order: -1; flex-basis: 100%; }
+  .rec { grid-template-columns: minmax(0, max-content) auto minmax(0, 1fr) auto; grid-template-areas: "what fig . t" "who who who who" "why why why why"; column-gap: 12px; row-gap: 4px; padding-block: 12px; }
+  .rec-main { display: contents; }
+  .rec-what { grid-area: what; }
+  .rec-who { grid-area: who; }
   .rec-t { grid-area: t; justify-self: end; }
-  .rec-fig { grid-area: fig; justify-self: end; align-self: end; align-items: flex-end; }
+  .rec-fig { grid-area: fig; }
   .rec > .rec-why { grid-area: why; }
-  .fig { justify-content: flex-end; }
   /* Counts of seven digits or more: the figures take a line of their own across the width, from its start edge. */
-  .rec.is-long { grid-template-areas: "main t" "fig fig" "why why"; }
-  .rec.is-long .rec-fig { justify-self: start; align-self: start; align-items: flex-start; }
-  .rec.is-long .fig { justify-content: flex-start; }
+  .rec.is-long { grid-template-areas: "what what what t" "fig fig fig fig" "who who who who" "why why why why"; }
+}
+/* Under 330 px of log (a phone under 360 px): the action keeps its line with its time, and the figures follow who,
+ * 12 after it, on the second line; the night's reset reads "Automatic system  5 → 0", its figures on one edge down the
+ * stream, since who is always the same there. */
+@container log (max-width: 329.98px) {
+  .rec { grid-template-areas: "what what what t" "who fig . ." "why why why why"; }
 }
 
 /* ---------------------------------------------------------------- the end of the stream
@@ -196,34 +236,42 @@ html[lang="en"] .rec-why q { quotes: "\201C" "\201D"; }
 .ac-say { display: flex; flex-direction: column; align-items: center; gap: 16px; max-width: 52ch; margin: 0; font-size: 15px; line-height: 22.5px; color: var(--ink); }
 .ac-say .ico-err { width: 22px; height: 22px; color: var(--err); }
 
-/* Loading (STA-10, PH-1…3): a flat bar in each awaited value's slot, as tall as a label's digits (10 px), no motion. */
-.ac .ph-lab { height: 10px; border-radius: 4px; vertical-align: middle; }
+/* Loading (STA-10, PH-1…3): a flat bar in each awaited value's slot, as tall as a label's digits (10 px), no motion; never
+ * wider than its slot (the review's F4: the reason's bar ran past the card at 320 in English). */
+.ac .ph-lab { height: 10px; max-width: 100%; border-radius: 4px; vertical-align: middle; }
 .rec.is-ph .rec-ico { display: none; }
 
 /* --------------------------------------------------------------- the phone (720 px and below)
- * The kinds across the width in equal segments (SEG-4); who and the dates share the next line; "More filters" and the
- * last load with its refresh the third (the refresh keeps the row's far end, as Reports' minute file does). */
+ * Up to 560 px the kinds span the width in equal segments (SEG-4) and who, the dates and the magnifier share the next
+ * line; from 561 to 720 px (the 200% zoom of 1440 is 720) the row flows as it does on a computer, so no segment
+ * stretches to 172 px (the review's O2). */
 @media (max-width: 720px) {
-  .ac .seg { display: flex; flex: 1 1 100%; }
-  .ac .seg-b { flex: 1 1 0; min-width: 0; padding-inline: 8px; }
-  .ac-tools { gap: 8px 16px; }
-  /* Who and the dates share a line (a 120 px basis each, so "More filters" takes the next line with the refresh). */
-  .ac-sel, .ac-dates { flex: 1 1 120px; }
-  .ac-sel { min-width: var(--sel-w, 0px); }
-  .ac-sel select { width: 100%; min-width: 0; }
-  .ac-more { max-width: none; }
+  .ac-tools, .ac-tools-end { gap: 8px; }
+  .ac-find-panel { max-width: none; }
   .ac-log { padding: 4px; }
   .day:first-child .day-h { padding-block-start: 12px; }
   .ac-older { width: 100%; }
   .ac-tail .alert { max-width: none; }
-  .ac-fail-time { display: none; }
-  /* The title row: «سجل النشاط» is 175.5 px and "Activity log" 167.6 (Reports' «التقارير» 96), so the title column
-   * takes the room the badge and the menu leave and never less than its longest word; where that room is short the
-   * title takes two lines: under 360 px always, and at 390 beside the wider statuses (Delayed and Offline; Live and
-   * Closed keep one line). Its words start on its own edge in every status. */
-  .ac[data-frame] .head { grid-template-columns: minmax(min-content, 1fr) auto; }
 }
+@media (max-width: 560px) {
+  .ac .seg { display: flex; flex: 1 1 100%; }
+  .ac .ac-kinds .seg-b { flex: 1 1 0; min-width: 0; padding-inline: 8px; }
+  /* Who, then the dates with the magnifier, share the line, each at least as wide as its choice (a native select's own
+   * width is its widest name, so it starts from nothing and grows). A long range takes the dates and the magnifier to
+   * the next line together, and who takes the whole line above them. */
+  .ac-sel, .ac-tools-end { flex: 1 1 0; }
+  .ac-sel { min-width: var(--sel-w, 0px); }
+  .ac-tools-end { min-width: max-content; }
+  .ac-dates { flex: 1 1 auto; }
+  .ac-sel select { width: 100%; min-width: 0; }
+}
+/* The title row (TYP-3, HDR-4): the phone's title is 19 px on every page (style.css), so «سجل النشاط» (111.2 px) keeps
+ * one line beside the widest status at every width from 320 px (the review's F1). Under 360 px the badge sets its
+ * chevron aside and pads 8 (SPC-6's badge padding): Offline in Arabic is then 102.1 px and leaves the title room to
+ * spare beside the menu and the gaps. Who and the dates set their icons aside, so they and the magnifier keep one line. */
 @media (max-width: 359px) {
   .ac[data-frame] .head-acts .hb-chev { display: none; }
-  .ac[data-frame] .head-acts .hbadge { padding-inline: 12px; }
+  .ac[data-frame] .head-acts .hbadge { padding-inline: 8px; }
+  .ac-sel-ico, .ac-dates > svg { display: none; }
+  .ac-sel select { padding-inline-start: 16px; }
 }

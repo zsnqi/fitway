@@ -503,7 +503,8 @@ th.is-asc .cx-sort .cx-ico { transform: rotate(180deg); }
 .cx-phbox { position: relative; width: 390px; max-width: 100%; height: 168px; padding: 16px; overflow: hidden; border-radius: 24px; border: 1px solid var(--line); background: #070707; }
 .cx-phbox.is-tall { height: 360px; }
 .cx-ph-head { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title acts" "sub sub"; align-items: center; gap: 0 16px; }
-.cx-ph-head h3 { grid-area: title; font: var(--t-title); }
+/* HDR-4, TYP-3: the phone's title at 19 / 28.5 (DECISIONS item 32). */
+.cx-ph-head h3 { grid-area: title; font: var(--t-heading); }
 .cx-ph-sub { grid-area: sub; margin-block-start: 4px; font: var(--t-label); color: var(--ink-3); }
 .cx .head-acts { grid-area: acts; position: relative; z-index: 30; display: flex; align-items: center; gap: 8px; }
 /* The full-text status specimen keeps its wording. A classic scrollbar leaves its English stage under 250 px at 320;

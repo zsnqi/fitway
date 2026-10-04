@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="fonts/readex-pro.css">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="reports.css">
+  <link rel="stylesheet" href="picker.css">
   <script>
     // As on the Daily page: start the CSS faces themselves, so text shares their one fetch per subset.
     for (var weight of ["400", "500"]) {
@@ -28,6 +29,8 @@
         .catch(function () { /* Failed faces keep the existing fallback. */ });
     }
   </script>
+  <!-- picker.js: the one date picker every Owner page shares (the custom period's dates). -->
+  <script src="picker.js" defer blocking="render"></script>
   <script src="reports.js" defer blocking="render"></script>
 </head>
 <!-- data-frame (step 4): Reports takes the frame Daily took in step 3 (style.css "the frame"): the rail at 721 px and
@@ -290,7 +293,7 @@
        inert); reports.js keeps Tab inside, closes on Escape and returns focus to the control that opened it. -->
   <dialog class="dlg" id="dlg-range" aria-labelledby="dlg-range-title" aria-describedby="dlg-range-desc">
     <div class="dlg-scrim" data-close></div>
-    <form class="dlg-panel" id="range-form" novalidate>
+    <form class="dlg-panel is-dates" id="range-form" novalidate>
       <header class="dlg-head">
         <h2 id="dlg-range-title" data-t="rangeDlgTitle"></h2>
         <button class="icon-btn" type="button" data-close data-t-label="close">
@@ -299,11 +302,8 @@
       </header>
       <div class="dlg-body">
         <p class="dlg-desc" id="dlg-range-desc"></p>
-        <div class="field-row">
-          <div class="field" id="rf-from"></div>
-          <div class="field" id="rf-to"></div>
-        </div>
-        <p class="field-hint" id="rf-hint" data-t="dateHint"></p>
+        <!-- The date picker (picker.js, PCK): the custom period's first and last day, picked, not typed. -->
+        <div id="range-picker"></div>
       </div>
       <footer class="dlg-foot">
         <button class="rbtn" type="button" data-close data-t="cancel"></button>
