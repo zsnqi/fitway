@@ -550,6 +550,9 @@
     if (URL_OFF) p.set("motion", "off");
     $("#reports-link").setAttribute("href", `reports.html?${p}`);
     $("#tab-reports").setAttribute("href", `reports.html?${p}`);
+    // Activity log (activity.html, the third Eclipse page) the same way.
+    $("#activity-link").setAttribute("href", `activity.html?${p}`);
+    $("#tab-activity").setAttribute("href", `activity.html?${p}`);
   }
 
   /* ---- the frame (step 3; step 4 moved Operations out of the rail). Breakpoints: the desktop rail at 1024 px and wider

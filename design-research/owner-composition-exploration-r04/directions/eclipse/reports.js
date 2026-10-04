@@ -656,6 +656,9 @@
     if (URL_OFF) p.set("motion", "off");
     $("#daily-link").setAttribute("href", `index.html?${p}`);
     $("#tab-daily").setAttribute("href", `index.html?${p}`);
+    // Activity log (activity.html) the same way.
+    $("#activity-link").setAttribute("href", `activity.html?${p}`);
+    $("#tab-activity").setAttribute("href", `activity.html?${p}`);
   }
   const langLink = $("#lang-link"), menuLang = $("#menu-lang");
   for (const el of [langLink, menuLang]) el.setAttribute("hreflang", RTL ? "en" : "ar");

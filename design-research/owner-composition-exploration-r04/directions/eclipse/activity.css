@@ -1,0 +1,229 @@
+/* Eclipse Activity log: the third Eclipse page. Loaded after style.css (the language and the frame) and reports.css (the
+ * table, form and dialog system the Owner pages share); every rule here is scoped to the Activity log body (.ac) or to
+ * a class only this page uses. Concept only, synthetic data.
+ * C (§4.3): the header (the title and the frame's status), the page's controls under it, and one card, the log: one
+ * stream of records, newest first, a day at a time, ending in "Show older" or the line that says there are none.
+ * Nothing on the page is lit: the page wash only (LGT-6 allows none). */
+
+html:has(> body.ac) {
+  color-scheme: dark;
+  scrollbar-gutter: stable;
+  scrollbar-color: rgba(245, 243, 242, 0.2) #070707;
+}
+.ac {
+  --err: #ff6b7d;        /* error text and borders: 6.9:1 on the cards */
+  --err-line: rgba(255, 107, 125, 0.5);
+  --field: rgba(255, 255, 255, 0.03);
+  --field-line: rgba(255, 255, 255, 0.34);
+  --ph: rgba(255, 255, 255, 0.06);
+  /* The record's fixed columns, by language, measured in Readex Pro: the widest time («1:05 ص» 48.8 px, "12:59 PM"
+   * 56.4 px), the widest actor («مكتب الاستقبال» 92.7 px, "Automatic system" 116.6 px) and the action with its icon,
+   * wide enough for every action with a short account name («إعادة تعيين بيانات دخول نورة», "Account turned back on for
+   * Noura"); a longer name wraps between its words. The figures' column (--fw) is measured (activity.js fitFigs). */
+  --tw: 52px;
+  --ww: 96px;
+  --aw: 200px;
+  --fw: 72px;
+}
+[dir="ltr"] .ac { --tw: 60px; --ww: 120px; --aw: 264px; }
+.ac ::selection { background: rgba(229, 25, 53, 0.55); color: #fff; }
+@media (min-width: 721px) { html:has(> body.ac) { scroll-padding-block: 16px; } }
+.ac [hidden] { display: none !important; }
+/* DAT-4: a date, a time or a range is one unbreakable span. */
+.ac .nw { white-space: nowrap; }
+
+/* ------------------------------------------------------------------ page
+ * The header, then the controls, then the log; one 16 px gutter (SPC-5). The header holds the title and the frame's
+ * status only (HDR-7): the log has no period to name, and the time of its last load stands beside its refresh. */
+.ac .main { display: flex; flex-direction: column; gap: 16px; padding-block: 8px 24px; }
+
+/* ------------------------------------------------------------- the controls
+ * HDR-7: a row of their own under the header, from the inline start, 16 apart: the kind shortcuts (SEG-1…3), who, the
+ * dates and "More filters"; the time of the last load and its refresh at the row's far end, as Reports' minute file is.
+ * A filter in force looks pressed (SEG-3's pressed form), so the row says what the log shows. */
+.ac-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.ac-loaded { display: flex; align-items: center; gap: 4px; margin-inline-start: auto; }
+.ac-loaded-text { display: inline-grid; font-size: 13.5px; line-height: 20px; color: var(--ink-3); white-space: nowrap; }
+.ac-loaded-text .ld { grid-area: 1 / 1; justify-self: end; }
+.ac-loaded-text .ld[aria-hidden="true"] { visibility: hidden; }
+.ac-refresh svg { stroke-linejoin: round; }
+.ac-refresh[aria-disabled="true"] { cursor: default; }
+.ac-refresh[aria-disabled="true"]:hover { background: none; color: var(--ink-2); }
+.ac-refresh.is-off, .ac-refresh.is-off:hover { color: var(--ink-3); }
+/* A refresh that failed: the words in --err after the alert mark (15 px), then the time of the records still shown. */
+.ac-fail { display: inline-flex; align-items: center; gap: 8px; color: var(--err); vertical-align: top; }
+.ac-fail .ico { width: 15px; height: 15px; }
+.ac-loaded-text .sep { margin-inline: 8px; color: var(--ink-3); opacity: 1; }
+
+/* Who: a native select (the phone's own picker) behind a button of the system (BTN-1: 44 tall, radius 12, a 1 px line
+ * drawn inside), a person at its start and a chevron at its end, as Reports' sort on a phone; as wide as its choice
+ * (activity.js fitSelect), not as its widest name. */
+.ac-sel { position: relative; display: inline-flex; align-items: center; height: 44px; border-radius: 12px; box-shadow: inset 0 0 0 1px var(--line-2); background: rgba(255, 255, 255, 0.02); color: var(--ink-2); }
+.ac-sel:hover { box-shadow: inset 0 0 0 1px var(--line-3); background: rgba(255, 255, 255, 0.05); }
+.ac-sel:has(select:focus-visible) { outline: 2px solid var(--ink); outline-offset: 3px; }
+.ac-sel-ico { position: absolute; inset-inline-start: 16px; width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+.ac-sel::after { content: ""; position: absolute; top: 17px; inset-inline-end: 18px; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); pointer-events: none; }
+.ac-sel select { width: var(--sel-w, auto); height: 44px; padding-inline: 41px 40px; border: 0; border-radius: 12px; background: transparent; color: var(--ink); font: inherit; font-size: 13.5px; line-height: 20px; appearance: none; -webkit-appearance: none; outline: none; cursor: pointer; }
+.ac-sel select option { background: #121112; color: var(--ink); }
+.ac-sel.is-set, .ac-dates.is-set, .ac-more-btn.is-set { box-shadow: inset 0 0 0 1px rgba(245, 243, 242, 0.42); background: rgba(245, 243, 242, 0.12); }
+.ac-dates.is-set, .ac-more-btn.is-set { border-color: transparent; }
+.ac-sel.is-set:hover, .ac-dates.is-set:hover, .ac-more-btn.is-set:hover { background: rgba(245, 243, 242, 0.16); }
+.rbtn .ac-chev { width: 16px; height: 16px; stroke: var(--ink-2); }
+.ac-more-btn[aria-expanded="true"] .ac-chev { transform: rotate(180deg); }
+
+/* "More filters": the reason's words, FLD-1's field (a label above, 44 px), with its own clear button inside its end. */
+.ac-more { max-width: 360px; }
+.ac-search { position: relative; }
+.ac-search .field-input { padding-inline-end: 44px; }
+.ac-search .field-input::-webkit-search-cancel-button { -webkit-appearance: none; display: none; }
+.ac-search .field-input::-webkit-search-decoration { -webkit-appearance: none; }
+.ac-clear { position: absolute; top: 0; inset-inline-end: 0; }
+
+/* ------------------------------------------------------------------- the log
+ * One card (SRF-1). Its text stands 24 from the card's edge, as a section's does (SPC-5): 12 of card and 12 inside each
+ * heading and record, so a record's lift (TBL-2: 4% white, at once, on hover) and the quiet tint of a record given focus
+ * never sit flush on its words; its top 8 and the first heading's 16 make the 24 above. */
+.ac-log { padding: 8px 12px; }
+.ac-log:focus, .ac-msg:focus { outline: none; }
+.ac-body { container: log / inline-size; }
+.ac-body ol { margin: 0; padding: 0; list-style: none; }
+/* A day: its heading in label type at 500, the relative word chalk and the date --ink-2; more space above it than
+ * below (24 / 10), and the day's first record ruled off under it. */
+.day-h { display: flex; flex-wrap: wrap; align-items: baseline; padding: 24px 12px 10px; font-size: 13.5px; line-height: 20px; font-weight: 500; color: var(--ink-2); }
+.day:first-child .day-h { padding-block-start: 16px; }
+.day-rel { color: var(--ink); }
+.day-h .sep { margin-inline: 8px; color: var(--ink-3); opacity: 1; }
+
+/* A record: when, who, what, from → to, why (story 26). Label type throughout (TBL-1's grammar: the event in chalk at
+ * 500, its figures in chalk, the other cells --ink-2), each cell's first line 20 px, so every line of a row shares
+ * one baseline. */
+.rec { display: grid; padding: 14px 12px; border-block-start: 1px solid rgba(255, 255, 255, 0.055); font-size: 13.5px; line-height: 20px; align-items: start; }
+.rec:focus { outline: none; background: rgba(255, 255, 255, 0.04); }
+@media (hover: hover) { .rec:not(.is-ph):hover { background: rgba(255, 255, 255, 0.04); } }
+.rec-t { color: var(--ink-2); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.rec-who { color: var(--ink-2); min-width: 0; }
+.rec-what { display: flex; align-items: flex-start; gap: 8px; min-width: 0; color: var(--ink); font-weight: 500; }
+.rec-act { min-width: 0; }
+.rec-target { font-weight: 500; }
+/* ICO-3: the kind's icon in the flow, 16 px, 8 before the words: the count wears Today's icon, access Access's, settings
+ * Settings' gear, so the kinds read apart down the stream. */
+.rec-ico { width: 16px; height: 16px; flex: none; margin-block: 2px; fill: none; stroke: var(--ink-2); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.rec-ico .fill { fill: var(--ink-2); stroke: none; }
+/* From → to: the prior, the arrow along the reading line (mirrored in Arabic, ICO-5), the count after; "not recorded"
+ * in words, never a 0. The figures start on their column's start edge in both languages (the right in Arabic, where
+ * Western digits put units under units; the left in English, decision 16). A figure never breaks inside; the widest
+ * the contract allows wraps at its arrow. */
+.rec-fig { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
+.fig { display: inline-flex; flex-wrap: wrap; align-items: center; column-gap: 6px; max-width: 100%; }
+.fig-n { color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.fig-nr { color: var(--ink-3); white-space: nowrap; }
+.fig-arw { width: 14px; height: 14px; flex: none; fill: none; stroke: var(--ink-3); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.fig-note { font-size: 12px; line-height: 18px; color: var(--ink-3); white-space: nowrap; }
+/* Why: the person's own words in the page's quotation marks; no reason is said so, quietly. A reason typed in the other
+ * language keeps its own direction inside the line (bdi). Any reason wraps, even one with no space in 240 characters. */
+.rec-why { min-width: 0; color: var(--ink-2); overflow-wrap: anywhere; }
+html[lang="ar"] .rec-why q { quotes: "«" "»"; }
+html[lang="en"] .rec-why q { quotes: "\201C" "\201D"; }
+.rec-why.is-none { font-size: 12px; color: var(--ink-3); }
+/* The automatic reset after each closing: the same record, quieter and one line shorter, so the people's changes stand
+ * out while the night's routine stays in the stream (compact density, TBL-3). Every quiet colour keeps 7.9:1. */
+.rec.is-auto { padding-block: 8px; }
+.rec.is-auto .rec-t, .rec.is-auto .rec-who { color: var(--ink-3); }
+.rec.is-auto .rec-what { color: var(--ink-2); font-weight: 400; }
+.rec.is-auto .rec-ico { stroke: var(--ink-3); }
+.rec.is-auto .rec-ico .fill { fill: var(--ink-3); }
+.rec.is-auto .fig-n { color: var(--ink-2); font-weight: 400; }
+
+/* From 960 px of log (1440 and 1280): five columns, one line a record but for a long reason. */
+@container log (min-width: 960px) {
+  .rec { grid-template-columns: var(--tw) var(--ww) var(--aw) var(--fw) minmax(0, 1fr); column-gap: 24px; }
+  .rec-main { display: contents; }
+  .rec-t { grid-area: 1 / 1; }
+  .rec-who { grid-area: 1 / 2; }
+  .rec-what { grid-area: 1 / 3; }
+  .rec-fig { grid-area: 1 / 4; }
+  .rec-why { grid-area: 1 / 5; max-width: 72ch; }
+}
+/* 520-959 px of log (1024 and the tablet): who and what share a line, its icon between them; the reason under it, as
+ * wide as the line and its figures. */
+@container log (min-width: 520px) and (max-width: 959.98px) {
+  .rec { grid-template-columns: var(--tw) minmax(0, 1fr) var(--fw); grid-template-areas: "t main fig" ". why why"; column-gap: 16px; row-gap: 4px; }
+  .rec-t { grid-area: t; }
+  .rec-main { grid-area: main; display: flex; flex-wrap: wrap; align-items: flex-start; column-gap: 12px; row-gap: 2px; min-width: 0; }
+  .rec-fig { grid-area: fig; }
+  .rec > .rec-why { grid-area: why; max-width: 72ch; }
+}
+/* Under 520 px of log (a phone): the record stacks: what and its time, then who and the figures, then the reason across
+ * the width. */
+@container log (max-width: 519.98px) {
+  .rec { grid-template-columns: minmax(0, 1fr) fit-content(50%); grid-template-areas: "main t" "main fig" "why why"; column-gap: 12px; row-gap: 4px; padding-block: 12px; }
+  .rec-main { grid-area: main; display: flex; flex-wrap: wrap; align-items: flex-start; column-gap: 8px; row-gap: 4px; min-width: 0; }
+  .rec-what { order: -1; flex-basis: 100%; }
+  .rec-t { grid-area: t; justify-self: end; }
+  .rec-fig { grid-area: fig; justify-self: end; align-self: end; align-items: flex-end; }
+  .rec > .rec-why { grid-area: why; }
+  .fig { justify-content: flex-end; }
+  /* Counts of seven digits or more: the figures take a line of their own across the width, from its start edge. */
+  .rec.is-long { grid-template-areas: "main t" "fig fig" "why why"; }
+  .rec.is-long .rec-fig { justify-self: start; align-self: start; align-items: flex-start; }
+  .rec.is-long .fig { justify-content: flex-start; }
+}
+
+/* ---------------------------------------------------------------- the end of the stream
+ * "Show older" (BTN-1, centred; across the width on a phone), 25 at a time; while it works its words change at once and
+ * it keeps its width and focus (STA-9); if it fails, the alert (EMP-2) and the one retry, the records shown kept. The
+ * end: «لا توجد سجلات أقدم» / "No older records" between two rules: the records kept are complete, and the log keeps
+ * about 12 months, so it never says the log began there. */
+.ac-tail { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 16px 12px; border-block-start: 1px solid rgba(255, 255, 255, 0.055); }
+.ac-tail .alert { align-self: center; width: 100%; max-width: 480px; margin: 0; }
+.ac-older { min-width: 160px; }
+.ac-end { display: flex; align-items: center; gap: 16px; margin: 0; padding: 20px 12px 16px; font-size: 12px; line-height: 18px; color: var(--ink-3); white-space: nowrap; }
+.ac-end::before, .ac-end::after { content: ""; flex: 1 1 0; height: 1px; background: var(--line); }
+.ac .rb-stack { display: inline-grid; }
+.ac .rb-l { grid-area: 1 / 1; justify-self: center; }
+.ac .rb-l[aria-hidden="true"] { visibility: hidden; }
+.ac .rbtn[aria-disabled="true"] { cursor: default; }
+.ac .rbtn:not(.rbtn-primary)[aria-disabled="true"], .ac .rbtn:not(.rbtn-primary)[aria-disabled="true"]:hover { border-color: var(--line-2); background: rgba(255, 255, 255, 0.02); color: var(--ink-2); }
+.ac .rbtn-primary[aria-disabled="true"], .ac .rbtn-primary[aria-disabled="true"]:hover { border-color: transparent; background: rgba(245, 243, 242, 0.14); color: var(--ink-2); }
+
+/* EMP-1, EMP-4: nothing to show, said once in the card: the info mark, one sentence, and the way back when a filter is in
+ * force; padding 40, gap 16. */
+.ac-empty { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 40px 16px; text-align: center; font-size: 13.5px; line-height: 20px; color: var(--ink-2); }
+.ac-empty .ico { width: 22px; height: 22px; color: var(--ink-3); }
+/* The first load failed (Reports' option C, EMP-5): one message for the page in place of the log, the mark, one sentence
+ * in body type, chalk, and the one primary "Try again", focused. */
+.ac-msg { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 40px 16px; text-align: center; }
+.ac-say { display: flex; flex-direction: column; align-items: center; gap: 16px; max-width: 52ch; margin: 0; font-size: 15px; line-height: 22.5px; color: var(--ink); }
+.ac-say .ico-err { width: 22px; height: 22px; color: var(--err); }
+
+/* Loading (STA-10, PH-1…3): a flat bar in each awaited value's slot, as tall as a label's digits (10 px), no motion. */
+.ac .ph-lab { height: 10px; border-radius: 4px; vertical-align: middle; }
+.rec.is-ph .rec-ico { display: none; }
+
+/* --------------------------------------------------------------- the phone (720 px and below)
+ * The kinds across the width in equal segments (SEG-4); who and the dates share the next line; "More filters" and the
+ * last load with its refresh the third (the refresh keeps the row's far end, as Reports' minute file does). */
+@media (max-width: 720px) {
+  .ac .seg { display: flex; flex: 1 1 100%; }
+  .ac .seg-b { flex: 1 1 0; min-width: 0; padding-inline: 8px; }
+  .ac-tools { gap: 8px 16px; }
+  /* Who and the dates share a line (a 120 px basis each, so "More filters" takes the next line with the refresh). */
+  .ac-sel, .ac-dates { flex: 1 1 120px; }
+  .ac-sel { min-width: var(--sel-w, 0px); }
+  .ac-sel select { width: 100%; min-width: 0; }
+  .ac-more { max-width: none; }
+  .ac-log { padding: 4px; }
+  .day:first-child .day-h { padding-block-start: 12px; }
+  .ac-older { width: 100%; }
+  .ac-tail .alert { max-width: none; }
+  .ac-fail-time { display: none; }
+  /* The title row: «سجل النشاط» is 175.5 px and "Activity log" 167.6 (Reports' «التقارير» 96), so the title column
+   * takes the room the badge and the menu leave and never less than its longest word; where that room is short the
+   * title takes two lines: under 360 px always, and at 390 beside the wider statuses (Delayed and Offline; Live and
+   * Closed keep one line). Its words start on its own edge in every status. */
+  .ac[data-frame] .head { grid-template-columns: minmax(min-content, 1fr) auto; }
+}
+@media (max-width: 359px) {
+  .ac[data-frame] .head-acts .hb-chev { display: none; }
+  .ac[data-frame] .head-acts .hbadge { padding-inline: 12px; }
+}

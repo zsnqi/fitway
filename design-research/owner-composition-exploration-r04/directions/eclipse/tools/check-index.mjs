@@ -32,7 +32,7 @@ const root = await mkdtemp(await outputPath("index-fixture-"));
 const runner = resolve(root, "tools/build-index.mjs");
 await mkdir(resolve(root, "tools"), { recursive: true });
 await writeFile(runner, source, "utf8");
-for (const name of ["app.js", "components.js", "reports.js", "tuner.js"]) await writeFile(resolve(root, name), fixture, "utf8");
+for (const name of ["app.js", "components.js", "reports.js", "activity.js", "tuner.js"]) await writeFile(resolve(root, name), fixture, "utf8");
 await writeFile(resolve(root, "DESIGN-SPEC.md"), "# Spec\n| STA-10 | K | Short title |\n```\n# Ignored\n```\n", "utf8");
 const run = (...args) => spawnSync(process.execPath, [runner, ...args], { cwd: root, windowsHide: true, encoding: "utf8", timeout: 10000 });
 let result = run("--check");
