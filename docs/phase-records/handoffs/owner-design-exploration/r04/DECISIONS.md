@@ -338,6 +338,17 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       user declined a weak-code rule ("معليك"); the coordinator keeps only a minimum length.
     - **The computer's arrangement is shown first as a simple skeleton** (the user): the designer proposes the
       arrangement in plain blocks before building it, and the user agrees before the full fix round.
+    **The skeleton, agreed** (2026-10-05; `D:/fitway-temp/owner-r04-access-skeleton/`, report `REPORT.md` there,
+    https://claude.ai/artifact/Gog3geQcM3pruLW59DfmXM; the user: "اعجبتني … واضحة ومرتبه"):
+    - Two halves on the computer: the front desk and the owners, each person's buttons under the name; and a new
+      «سجل الوصول» card with the latest access records and «عرض الكل». The user accepts the new content (the
+      requirements still improve during development; anything bad is changed later).
+    - **The removal buttons get their quiet box on the phone too** (the user), revising the earlier note.
+    - **The owner always types the front-desk code**; the system no longer generates one (the user), revising the
+      generate-or-type choice above. Letters and digits, a minimum length, a copy control in its one-time view.
+    - **«إلغاء التغيير»** in the one-time view (the user: "ممتاز"): safe with the two-step change, since the old code
+      works until «حفظتُ الرمز». This revises item 33's "closes only by «حفظتُ الرمز»".
+    - «السبب (اختياري)» confirmed.
 
 ## How this milestone's rounds run
 
@@ -402,3 +413,8 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
    - **Every review opened a new round.** Each review's small findings became the next round. From now on only high
      and medium findings, or what the user sees, open a round; low findings wait for the screen's last round.
    - **Questions the rules already answer** go to no one: the coordinator decides and reports in a line.
+8. **A skeleton before every new screen** (the user, 2026-10-05, after Access's skeleton): after the questions and
+   before the one-pass build, a designer (xhigh) shows the screen's arrangement in plain blocks (no colour, no
+   finished components) at the computer and the phone, with the new dialogs; the user agrees, then the build starts.
+   Coordinator: it settles the arrangement for a fraction of a build (Access's skeleton took about a quarter of its
+   max-effort build's tokens) and would have caught Access's empty computer page before it was built.
