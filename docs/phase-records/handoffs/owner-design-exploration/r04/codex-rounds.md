@@ -170,6 +170,15 @@ checks live outside the repository and never appear here or in a brief.
   the sheet's gaps and caption. First brief written under B8 and B9.
 - **Level:** `xhigh`, because card-1's C2 and L3 failures traced partly to the code.
 - **Held-out rows:** `D:/fitway-grader/owner-r04/fix-2-heldout.md` (H1-H11), written before the run.
-- **Result, failure cause and repeat fault:** pending the run and its review.
+- **Brief rows, as Codex graded them:** K1-K3, K5-K8 and L1-L6 PASS; K4 FAIL. Result `ac3ae02`. Report:
+  `D:/fitway-temp/codex-runs/owner-fix-2/last-message.md`; evidence `D:/fitway-temp/owner-r04-fix-2/`.
+- **K4 as Codex reported it:** every drag visits all 40 stops in order with no skip or overshoot, but the reading
+  reaches the finger's stop in 93-143 ms at 500 px/s and 360-477 ms at 1000 px/s (390 and 320). The brief's two
+  requirements conflict at 60 Hz: 39 transitions with each stop shown for a frame need about 650 ms, more than a
+  1000 px/s sweep plus 250 ms allows. Codex reported the conflict and relaxed nothing (B3). The coordinator wrote
+  both requirements and did not check them together against the frame rate (B8's reachability check, not applied).
+- **Held-out rows, failure cause and repeat fault:** pending the review.
+- **Environment:** the first account's five-hour limit stopped the run before any commit; the coordinator stopped it,
+  saved the tree as `stopped-at-usage.patch`, and resumed the same thread on another account (`events-resume.jsonl`).
 - **Outside the round:** the coordinator added `style.css` to the untracked `.impeccable/config.local.json` ignore for
   `border-accent-on-rounded`, after the review confirmed `.sw-line` a false positive.
