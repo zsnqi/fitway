@@ -292,6 +292,13 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - **"Change my password"** is added, though no contract has it (the user: an excellent feature or change missing
       from the specification may be added). The design names each such addition as a Product/Spec amendment for the
       move to production; privacy and security limits still bind.
+    - **The PIN changes in two steps** (the user, 2026-10-04, after the first build; coordinator's proposal): the new
+      PIN is shown while the old one keeps working; only «حفظتُ الرمز» makes the new one take effect and signs the
+      front desk out. An accident before it (a closed browser, a lost connection) changes nothing. A Product/Spec
+      amendment (the contract rotates in one step today); built in Access's fix round.
+    - **The specification may change where a change is better** (the user, 2026-10-04), not only gain missing
+      features; each change is still named as a Product/Spec amendment for the move to production, and privacy and
+      security limits bind.
     - **Deactivated owners** stay in the same list, quieter, with "Reactivate".
     - **After an action:** one quiet sentence that it is done, with a link to the record in Activity log; a failure
       shows its specific refusal and keeps the form as typed.
