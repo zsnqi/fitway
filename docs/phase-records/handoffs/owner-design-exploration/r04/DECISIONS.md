@@ -273,6 +273,30 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       coordinator inspects its frames. Brief `codex-activity-followup.md` (`7f8d2dd` on `owner-r04-activity`), level
       `high`; an owner's one stored name is «فهد» / «نورة» on both pages (coordinator).
 
+33. **Access, the answers before its one pass** (2026-10-04; research digest
+    `D:/fitway-temp/owner-r04-access-questions/REPORT.md`). Access holds the one shared front-desk PIN and the owner
+    accounts only.
+    - **The new PIN** is shown once, with no copy control, and the view closes only by an explicit "I have saved it"
+      action, never by Escape or a tap outside: closing by accident forces a new PIN and signs the desk out again.
+    - **Changing the PIN** asks for a confirmation that says it signs the front desk out at once.
+    - **Deactivating** the PIN or an owner asks for a confirmation with the required reason (at most 240 characters,
+      what the log stores). Its look is the designer's (the user: the coordinator proposes no forms or colours).
+    - **Creating an owner and resetting a sign-in:** email, name and a password the owner types (12-200 characters)
+      with show and hide; no strength meter, no generator, and no line about handing the password over.
+    - **The owner's own row** is marked as theirs, with no deactivate and no reset; the last active owner's
+      deactivate is unavailable with its reason in words.
+    - **"Change my password"** is added, though no contract has it (the user: an excellent feature or change missing
+      from the specification may be added). The design names each such addition as a Product/Spec amendment for the
+      move to production; privacy and security limits still bind.
+    - **Deactivated owners** stay in the same list, quieter, with "Reactivate".
+    - **After an action:** one quiet sentence that it is done, with a link to the record in Activity log; a failure
+      shows its specific refusal and keeps the form as typed.
+    - **The page's composition** (order, grouping, where each row's actions sit, what each person shows, the link to
+      the log) is the designer's alone; the coordinator recommends none of it (the user, 2026-10-04).
+    - **The reason's length** (the user: "fix it"): production's form accepts 500 characters while the log stores 240, so
+      a long reason fails on saving. The concept caps the field at 240; production's contract is fixed outside this
+      concept milestone (production paths are forbidden here).
+
 ## How this milestone's rounds run
 
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the
