@@ -188,3 +188,11 @@ checks live outside the repository and never appear here or in a brief.
   saved the tree as `stopped-at-usage.patch`, and resumed the same thread on another account (`events-resume.jsonl`).
 - **Outside the round:** the coordinator added `style.css` to the untracked `.impeccable/config.local.json` ignore for
   `border-accent-on-rounded`, after the review confirmed `.sw-line` a false positive.
+
+## fix-3: `design-research/owner-composition-exploration-r04/directions/briefs/codex-fix-3.md`, from `41de51d` on `owner-followup-r04-build`, level `xhigh`
+
+- **Scope:** decision 29 (the computer card's «المعدّل 51», the peak's tap area) and the fix-2 review's remaining
+  findings: the page moving during a hold (cause unknown), one chart-card height in every state, the sheet's computer
+  specimen and wording. The last fixes before the user tries Daily and Reports on a device.
+- **Held-out rows:** `D:/fitway-grader/owner-r04/fix-3-heldout.md` (H1-H8), written before the run.
+- **Result, failure cause and repeat fault:** pending the run and its review.
