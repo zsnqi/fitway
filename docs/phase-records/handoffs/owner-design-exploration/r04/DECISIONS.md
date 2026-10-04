@@ -14,6 +14,10 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
 2. **Plan.** Eclipse becomes the single design reference for Owner, then Staff, then Public, through a later ADR.
    Each screen is designed at 1440, 768 and 390; 320, 1024 and 200% zoom are checked only. Tests come once, at the
    end. (2026-09-30; brief "The design-phase plan", from line 821.)
+   **Why** (the user, 2026-10-04): this concept is the single design reference that production is later moved to.
+   After that move, the user shows a demo to the gym's owner (informal; a family friend) to win funding and an
+   agreement. Demo polish (convincing synthetic data, no dead links, a clean link) waits for then, as do the demo's
+   materials: device mock-ups, a motion-graphics video and an explanatory PDF, each researched first. Not now.
 3. **The user's bans.** `DO-NOT.md`, read in full before any design or copy work.
 4. **Motion.** Lights are static and the page is complete at first paint. Digits roll only on a live change. The
    intro plays on first open only, about 1.17 s, with the font wait capped at 200 ms. Reports has no intro and no
@@ -220,6 +224,37 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - Privacy: no visitor appears anywhere; only staff, owner and the automatic system as actors.
     - The designer also decides what sits above the list, the record's form at each size, and how Access and
       Settings link into the log, within DO-NOT and the rounds' lessons (item 7 below).
+
+32. **Activity log, after the max-effort build** (`a8aa8ad` on `owner-r04-activity`, 2026-10-04; report
+    `D:/fitway-temp/owner-r04-activity/REPORT.md`; published https://claude.ai/artifact/4rrdgUHUuX8hyiQeGTSMdC).
+    - The user: "ممتاز" on the composition, the day grouping, the quieter nightly reset, nothing lit, and the record's
+      form at each size; no notes so far. This judges the max-effort trial (rounds item 6) a success.
+    - The kind shortcut reads «العدد» / "Count"; the full name stays the accessible name (designer finding 2). The
+      next bullet may rename it, since it would hold only the nightly resets.
+    - **No one changes the count by hand** (the user's artifact comment, 2026-10-04; already ADR-008: no staff or
+      owner correction or reset). The synthetic log drops every human correction and reset; the count kind holds the
+      automatic nightly reset only. No reason may say the gym counted people by hand: it never does (artifact comment
+      on the camera-outage reason).
+    - **Dates are picked, not typed** (the user's artifact comment, 2026-10-04): the date field becomes a picker, on
+      Activity log and on every earlier page with dates (Reports). This revises FLD-2; its design goes to the next
+      round.
+    - With two owner accounts, a record names the owner, not «المالك» (check the read contract carries a name; if not,
+      it is a Product/Spec amendment).
+    - The nightly reset's machine-string reason is shown as «تصفير بعد الإغلاق»; production translates it (known).
+    - **The phone title** (finding 1): smaller on the phone, on every page alike, so «سجل النشاط» fits one line beside
+      the longest status; the status keeps its word (a dot alone would carry meaning by colour only). The components
+      sheet's type scale, TYP-3 and HDR-4 change with it in the same round.
+    - **"More filters"** (finding 3): «البحث في السبب» rejected by the user. Options put to the user: keep
+      «المزيد من التصفية», a magnifier icon button that opens the reason field, or drop the reason search. The user
+      took the coordinator's picks ("ممتاز اجل يلا"): the magnifier, with a localized accessible name.
+    - **The after-midnight record** (finding 4): «1:05 ص · فجر الأربعاء» rejected by the user. Options put to the
+      user: group the log by calendar date, or make the nightly reset the day's closing line. Picked with the above:
+      calendar date; Daily and Reports keep the business day.
+    - **Who designs the next round:** visual design stays on the Opus designer (WORKING_AGREEMENTS "Delegation"); the
+      Sonnet definitions are read-only research.
+    - **Review:** `owner-direction-verifier-high` (Opus, high), reading direction included, after the user switches
+      accounts (the user: "كويس"). The components sheet waits for the end of the remaining screens, by an xhigh
+      designer or a builder; max only if that result disappoints (the user agrees).
 
 ## How this milestone's rounds run
 
