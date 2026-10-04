@@ -171,12 +171,21 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     user: "موافق على كل اقتراحاتك").
     - **The held reading catches up** (F1): when a drag outruns it, the reading moves quickly through each stop to
       the finger, and reaches the finger's stop as soon as the finger stops. This bounds item 26's "a little behind".
-    - **The noon hour says «ظهرًا»** (F6): «12–1 ظهرًا», and a range across noon «11 صباحًا – 12 ظهرًا»; «صباحًا»
-      and «مساءً» stay as item 26 says. This widens item 26's exception to DESIGN_GUIDE §9.
+    - **The noon hour says «ظهرًا»** (F6); item 28 sets the full rule.
     - **A tap on the peak's ring reads the peak** (F8), not the half hour nearest it.
-    - **«بمعدّل 51» on the phone card** (F4: it reads as part of «آخر 7 أيام», not of the hours): the user wants
-      it to belong to the hours and asked for `owner-direction-designer-max` to propose the right form; the user
-      picks from its render. The same answer must hold the longest hour form (F3).
+    - **«بمعدّل 51» on the phone card** (F4): it should belong to the hours; settled by item 28.
+28. **The busiest-time card's form and period word** (2026-10-04, after `owner-direction-designer-max`'s one variant,
+    `D:/fitway-temp/owner-r04-busiest-average/`, `?avg=1`, report `REPORT.md` there; the user: "ممتاز جدا").
+    - **On the phone** (720 px and below) the average stands directly under the hours, on their start edge, in caption
+      type; the name and «آخر 7 أيام» keep their line. The taller card is accepted ("شكلها مرتب").
+    - **One period word per hour range, never two**, chosen by the hour the range ends at: ending 6-11 AM «صباحًا»
+      («9–10 صباحًا»); ending at 12 noon or 1 PM «ظهرًا» («11–12 ظهرًا», «12–1 ظهرًا»); ending 2-11 PM «مساءً»
+      («6–7 مساءً»); ending at midnight or 1 AM «ليلًا» («11–12 ليلًا», «12–1 ليلًا»). The coordinator's rule, the
+      user's pick ("نمشي على ترشيحك"). It holds on the card at every width, so the computer's card says it too, with
+      «بمعدّل» (item 26). Every other time keeps «ص / م»; English is unchanged ("11 AM – 12 PM").
+    - With one word every hour fits at the card's normal size, so the designer's smaller size at 320 px is not
+      built.
+    - The fixes go to Codex (the user); no further max-effort design for this card.
 
 ## How this milestone's rounds run
 
