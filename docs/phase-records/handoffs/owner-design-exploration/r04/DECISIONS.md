@@ -187,6 +187,17 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       built.
     - The fixes go to Codex (the user); no further max-effort design for this card.
 
+29. **After the review of Codex fix-2** (`ac3ae02`, 2026-10-04; report
+    `D:/fitway-temp/owner-r04-fix-2-verify/REPORT.md`).
+    - **The catch-up stays as built** (the user: not a big difference): the reading passes every stop and, after a
+      very fast full-width swipe, keeps moving for about 0.4 s. This settles item 27's first bullet.
+    - **The computer's card reads «المعدّل 51»** at its foot, as a label beside «المعتاد 318»; the phone keeps
+      «بمعدّل 51» directly under the hours (coordinator, delegated by the user: the two places differ, so the words
+      may; «بمعدّل» needs the hours right above it). The period words of item 28 stay at every width. This revises
+      item 26 for the computer.
+    - **A tap near the peak's ring reads the peak:** its tap area is at least fingertip-sized (44 px), not the drawn
+      ring only. The user: such a fix follows the 44 px rule and needs no question.
+
 ## How this milestone's rounds run
 
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the
