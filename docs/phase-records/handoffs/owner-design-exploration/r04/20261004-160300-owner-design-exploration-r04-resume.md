@@ -30,7 +30,7 @@ The user agreed to run 1 and 2 in parallel as soon as the new session starts (20
 
 1. **Activity log follow-up, by Codex:** a tracked brief on `owner-r04-activity` (worktree
    `D:/Projects/fitway-worktrees/owner-r04-daily-phone`, HEAD `e72e5fe`) for DECISIONS 32's last two bullets: the
-   built picker (`eclipse/picker.js`) in Reports' export dialog and Daily's minute-data export; the components
+   built picker (`D:/Projects/fitway-worktrees/owner-r04-daily-phone/design-research/owner-composition-exploration-r04/directions/eclipse/picker.js`) in Reports' export dialog and Daily's minute-data export; the components
    sheet's date specimens; an owner's name as one string in both languages; the front desk gone from "Who". Brief
    rules B1-B9. Then inspect its frames yourself (no Claude review unless something is wrong), republish the artifact
    from the scratchpad staging pattern (`index.html` without the `tuner.js` tag), and merge `owner-r04-activity` into
