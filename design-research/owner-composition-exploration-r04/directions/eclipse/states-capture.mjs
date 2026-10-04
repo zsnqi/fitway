@@ -6,7 +6,7 @@
 //   node design-research/owner-composition-exploration-r04/directions/eclipse/states-capture.mjs <outDir> [--base=http://localhost:3176/] [--only=frames,crops,status,shift,alert]
 // Writes, under <outDir>:
 //   frames/<reports|daily>/<NN>-<state>-<width>-<lang>.png     the first screen (1440 x 900, 1024 x 768, 768 x 1024,
-//                                                              390 x 844, 320 x 640)
+//                                                              721 x 1024, 720 x 1024, 390 x 844, 320 x 568)
 //   frames/<reports|daily>/<NN>-<state>-390-<lang>-page.png    the whole page at 390
 //   crops/<page>-<state>-<width>-<lang>-<rest|hover|focus>.png the header's status at 1024 and 768, scale 2
 //   states-log.json                                            measurements, lights, overflow, console errors
@@ -30,8 +30,8 @@ const part = (k) => !ONLY || ONLY.split(",").includes(k);
 const BASE = (args.find((x) => x.startsWith("--base=")) || "").slice(7);
 
 const LANGS = ["ar", "en"];
-const SIZES = { 1440: 900, 1024: 768, 768: 1024, 390: 844, 320: 640 };
-const WIDE = [1440, 1024, 768];
+const SIZES = { 1440: 900, 1024: 768, 768: 1024, 721: 1024, 720: 1024, 390: 844, 320: 568 };
+const WIDE = [1440, 1024, 768, 721];
 // [number, name in the file, ?state=]
 const PAGES = {
   reports: { file: "reports.html", extra: "", ready: () => window.__reports?.ready === true,
@@ -68,6 +68,8 @@ const facts = () => {
     lit: pat ? pat.classList.contains("lit") && !pat.hidden : null,
     overflowX: de.scrollWidth - de.clientWidth,
     pageHeight: de.scrollHeight,
+    chartHeight: document.querySelector("section.chart")?.getBoundingClientRect().height ?? null,
+    cardHeights: [...document.querySelectorAll("#cards .stat")].map((el) => el.getBoundingClientRect().height),
     focus: document.activeElement ? (document.activeElement.id || document.activeElement.className || document.activeElement.tagName) : null,
   };
 };
@@ -89,6 +91,16 @@ if (part("frames")) {
     n++;
   }
   console.log("frames", n);
+  // STA-14 at every registered capture width: a state must not resize Daily’s chart or cards.
+  const beforeHeights = log.failures.length;
+  for (const w of Object.keys(SIZES)) for (const lang of LANGS) {
+    const rows = PAGES.daily.states.map(([nn, name]) => log.frames[`daily/${nn}-${name}-${w}-${lang}`]);
+    for (const [slot, heights] of [["chart", rows.map((r) => r.chartHeight)], ...[0, 1, 2, 3].map((i) => [`card ${i + 1}`, rows.map((r) => r.cardHeights[i])])]) {
+      const spread = Math.max(...heights) - Math.min(...heights);
+      if (spread > 0.01) fail(`height daily/${w}/${lang}: ${slot} changes ${spread}px across states`);
+    }
+  }
+  console.log(log.failures.length === beforeHeights ? "Daily heights: seven states agree at every registered width" : "Daily heights: mismatches found");
 }
 
 /* ------------------------------------------------------------------ the status: slot, control, fill, ring, target */

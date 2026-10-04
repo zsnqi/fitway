@@ -8,6 +8,7 @@
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const root = document.documentElement;
+  const mqPhone = matchMedia("(max-width: 720px)");
   let LANG = root.lang === "en" ? "en" : "ar";
   let RTL = LANG === "ar";
   const b = (s) => `<bdi>${s}</bdi>`;
@@ -101,7 +102,7 @@
       vars: { peak: "الذروة", line: "نقطة على الخط", gap: "فترة بلا قراءات", ahead: "لم يحن بعد", delayed: "آخر قراءة، متأخرة", nohistory: "لم يحن بعد، بلا سجل" },
       aheadNote: `الخط المعتاد بعد الآن بشفافية ${b(".36")}`,
       // Daily on the phone (DECISIONS item 20, the trial): the reading in the band above the plot, and the busiest time's row.
-      band: { held: "على الجوال، ضغط وتثبيت: القراءة ما دام الإصبع على الرسم", kept: "على الجوال، ضغطة سريعة: القراءة تبقى، مع الإغلاق والوقت السابق والتالي", gap: "على الجوال: فترة بلا قراءات، باقية", busy: "على الجوال: المعدّل تحت الساعات، على حافتها الأولى", close: "إغلاق القراءة", prev: "الوقت السابق", next: "الوقت التالي" },
+      band: { held: "على الجوال، ضغط وتثبيت: القراءة ما دام الإصبع على الرسم", kept: "على الجوال، ضغطة سريعة: القراءة تبقى، مع الإغلاق والوقت السابق والتالي", gap: "على الجوال: فترة بلا قراءات، باقية", busy: "على الجوال: المعدّل تحت الساعات مباشرة", close: "إغلاق القراءة", prev: "الوقت السابق", next: "الوقت التالي" },
       patternTitle: "أوقات الازدحام",
       patternSub: `معدّل الموجودين حسب اليوم والساعة · ${b(28)} يومًا`,
       busiest: (w, h) => `الأكثر ازدحامًا: ${w} ${h}`,
@@ -200,7 +201,7 @@
       chartMain: "Live, with the latest reading selected",
       vars: { peak: "The peak", line: "A stop on the line", gap: "A span with no readings", ahead: "Still ahead", delayed: "Latest reading, delayed", nohistory: "Still ahead, no history" },
       aheadNote: "The usual line after now at .36",
-      band: { held: "On a phone, press and hold: the reading lasts while the finger is on the chart", kept: "On a phone, a quick tap: the reading stays, with close, previous and next", gap: "On a phone: a span with no readings, kept", busy: "On a phone: the average directly under the hours, on their start edge", close: "Close reading", prev: "Previous time", next: "Next time" },
+      band: { held: "On a phone, press and hold: the reading lasts while the finger is on the chart", kept: "On a phone, a quick tap: the reading stays, with close, previous and next", gap: "On a phone: a span with no readings, kept", busy: "On a phone: the average directly under the hours", close: "Close reading", prev: "Previous time", next: "Next time" },
       patternTitle: "Busy times",
       patternSub: "Average inside by day and hour · 28 days",
       busiest: (w, h) => `Busiest: ${w} ${h}`,
@@ -274,11 +275,14 @@
       const end = (h + 1) % 24;
       return `${nums} ${end < 2 ? "ليلًا" : end < 12 ? "صباحًا" : end < 14 ? "ظهرًا" : "مساءً"}`;
     }
-    return a.pm === z.pm ? `${nums} ${suf(z.pm)}` : `${a.h12} ${suf(a.pm)}${dash}\u2060${z.h12} ${suf(z.pm)}`;
+    return a.pm === z.pm ? `${nums} ${suf(z.pm)}` : LANG === "ar" ? `${a.h12} ${suf(a.pm)}${dash}\u2060${z.h12} ${suf(z.pm)}` : `${a.h12} ${suf(a.pm)} ${dash} ${z.h12} ${suf(z.pm)}`;
   };
-  // Decisions 26 and 28: the card's Arabic wording is the same at every width.
+  // Decisions 28 and 29: the hours are shared, and the average follows Daily’s wording at this width.
   const busyHours = (h) => b(hourRange(h, true));
-  const busyAverage = (n) => LANG === "ar" ? `بمعدّل ${b(n)}` : L.avgN(n);
+  const busyAverage = (n) => LANG === "ar" ? `${mqPhone.matches ? "بمعدّل" : "المعدّل"} ${b(n)}` : L.avgN(n);
+  mqPhone.addEventListener("change", () => {
+    for (const note of $$("[data-busy-average]")) note.innerHTML = busyAverage(note.dataset.busyAverage);
+  });
 
   /* ------------------------------------------------------------------ icons */
   const svg = (inner, cls = "cx-ico") => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${inner}</svg>`;
@@ -369,7 +373,7 @@
     const body = o.empty
       ? `<p class="cx-stat-empty">${o.empty}</p>${o.emptyNote ? `<div class="cx-stat-foot"><span class="cx-note">${o.emptyNote}</span></div>` : ""}`
       : `<p class="cx-stat-value">${o.words ? `<span class="cx-words">${o.value}</span>` : `<bdi class="num">${o.value}</bdi>`}${o.unit ? `<span class="cx-unit">${o.unit}</span>` : ""}</p><div class="cx-stat-foot">${o.foot || ""}</div>`;
-    return `<article class="card cx-stat${o.busy ? " cx-busiest" : ""}${o.row ? " is-row" : ""}${o.lit ? " lit lit-card" : ""}${o.stale ? " is-stale" : ""}">${o.lit ? LAMP : ""}${head}${body}</article>`;
+    return `<article class="card cx-stat${o.busy ? " cx-busiest" : ""}${o.lit ? " lit lit-card" : ""}${o.stale ? " is-stale" : ""}">${o.lit ? LAMP : ""}${head}${body}</article>`;
   }
   function cards() {
     const latest = DATA.raw[NOW], lateV = DATA.raw[NOW - LATE];
@@ -377,8 +381,8 @@
       [statCard({ lit: true, icon: "person", label: L.nowTitle, meta: `<i class="cx-dot"></i>${b(time(NOW))}`, value: latest, unit: L.approx, foot: badge(latest) }), L.cards.live, "CRD-1 · CRD-6 · LVL-2", false],
       [statCard({ icon: "peak", label: L.peakTitle, meta: b(time(DATA.peakM)), value: DATA.peak, foot: badge(DATA.peak) }), L.cards.plain, "CRD-2 · DAT-5", false],
       [statCard({ stale: true, icon: "person", label: `${L.lastReading} ${b(time(NOW - LATE))}`, meta: `${ico("clock")}${L.ago(LATE)}`, late: true, value: lateV, unit: L.approx, foot: badge(lateV, true) }), L.cards.late, "LGT-7 · LVL-5", false],
-      [statCard({ busy: true, icon: "clock", label: L.busiestTitle, meta: L.last7, words: true, value: busyHours(18), foot: `<span class="cx-note">${busyAverage(51)}</span>` }), L.cards.words, "TYP-3 · GLO-12", false],
-      [statCard({ busy: true, row: true, icon: "clock", label: L.busiestTitle, meta: L.last7, words: true, value: busyHours(18), foot: `<span class="cx-note">${busyAverage(51)}</span>` }), L.band.busy, "OWN-D7 · OWN-D8", false],
+      [statCard({ busy: true, icon: "clock", label: L.busiestTitle, meta: L.last7, words: true, value: busyHours(18), foot: `<span class="cx-note" data-busy-average="51">${busyAverage(51)}</span>` }), L.cards.words, "TYP-3 · GLO-12", false],
+      [statCard({ busy: true, icon: "clock", label: L.busiestTitle, meta: L.last7, words: true, value: busyHours(18), foot: `<span class="cx-note" data-busy-average="51">${busyAverage(51)}</span>` }), L.band.busy, "OWN-D7 · OWN-D8", false],
       [statCard({ icon: "person", label: L.avgTitle, empty: L.noReadings }), L.cards.none, "CRD-3 · GLO-5", false],
       [statCard({ icon: "wow", label: L.wowTitle, meta: L.wowDates, empty: L.notEnough, emptyNote: L.needs }), L.cards.short, "CRD-3 · LGT-7", false],
     ];

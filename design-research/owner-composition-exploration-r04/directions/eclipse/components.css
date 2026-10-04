@@ -105,6 +105,9 @@ html:has(> body.cx) { color-scheme: dark; scrollbar-color: rgba(245, 243, 242, 0
 .cx-unit { font: var(--t-caption); color: var(--ink-3); }
 .cx-stat-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-block-start: auto; padding-block-start: 16px; }
 .cx-note { font: var(--t-caption); color: var(--ink-3); }
+/* The two busiest-time specimens use Daily’s card height at the viewport’s current composition. */
+.cx-stat.cx-busiest { height: 166px; }
+@media (min-width: 721px) and (max-width: 1199px) { .cx-stat.cx-busiest { height: 158px; } }
 .cx-stat-empty { margin-block-start: 16px; font: var(--t-heading); font-weight: 400; color: var(--ink-2); }
 /* LGT-9: in a lit card every caption is --ink-2. */
 .lit .cx-stat-meta:not(.is-late), .lit .cx-unit, .lit .cx-note, .lit .cx-ax { color: var(--ink-2); }
@@ -409,12 +412,6 @@ th.is-asc .cx-sort .cx-ico { transform: rotate(180deg); }
 .cx-band-card { width: 358px; max-width: 100%; padding: 22px 25px; }
 .cx-band { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; column-gap: 8px; min-height: 107px; }
 .cx-band .cx-flag { height: 18px; line-height: 16px; }
-/* The busiest time on a phone: its hours and their average at the inline end, beside its title and period. */
-.cx-stat.is-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 16px; align-items: start; }
-.cx-stat.is-row > .cx-stat-head { grid-column: 1; grid-row: 1 / span 2; flex-wrap: wrap; align-content: flex-start; row-gap: 4px; }
-.cx-stat.is-row .cx-stat-meta { flex-basis: 100%; margin-inline-start: 24px; }
-.cx-stat.is-row > .cx-stat-value { grid-column: 2; grid-row: 1; margin: 0; justify-content: flex-end; }
-.cx-stat.is-row > .cx-stat-foot { grid-column: 2; grid-row: 2; justify-content: flex-end; margin: 0; padding-block-start: 4px; }
 /* Decision 28: both busiest-time specimens and awaited values use Daily's only phone form. */
 @media (max-width: 720px) {
   .cx .cx-stat.cx-busiest { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 0; align-items: start; height: 136px; }

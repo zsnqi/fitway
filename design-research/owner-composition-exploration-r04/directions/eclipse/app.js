@@ -802,11 +802,11 @@
     fillBusiest();
   }
   $("#cards").setAttribute("aria-labelledby", "cards-title");
-  // Decisions 26 and 28: only this card spells out the Arabic period and uses «بمعدّل», at every width.
+  // Decisions 28 and 29: the period is shared; the phone average follows its hours, the desktop foot is a label.
   const busiestRange = () => hourRange(M.busiest.from, M.busiest.to, true);
   function fillBusiest() {
     $("#busy-v").innerHTML = busiestRange();
-    $("#busy-note").innerHTML = RTL ? `بمعدّل ${bdi(M.busiest.avg)}` : L.busiestNote(bdi(M.busiest.avg));
+    $("#busy-note").innerHTML = RTL && mqPhone.matches ? `بمعدّل ${bdi(M.busiest.avg)}` : L.busiestNote(bdi(M.busiest.avg));
   }
 
   /* ---- Daily's states (step 3, second part; STA-10, K-02). Every card keeps its slots and its height in every state
@@ -929,6 +929,10 @@
     `<li><span class="sw-ring" aria-hidden="true"></span><span>${L.keyPeak}</span></li>` +
     (HAS_HISTORY ? "" : `<li class="key-note">${ICON.info}<span>${L.noHistory}</span></li>`);
   $("#key").setAttribute("aria-label", L.chartTitle);
+  // STA-14: reserve the live legend’s rows on a phone even when the no-history key is shorter.
+  if (!HAS_HISTORY) {
+    $("#key").after(make(`<ul class="key key-reserve" aria-hidden="true"><li><span class="sw sw-line"></span><span>${L.keyLine}</span></li><li><span class="sw sw-usual"></span><span>${L.keyUsual}</span></li><li><span class="sw-ring"></span><span>${L.keyPeak}</span></li></ul>`));
+  }
 
   /* ---------------------------------------------------------------- chart */
   const plot = $("#plot"), svgHost = $("#plot-svg"), labels = $("#plot-labels"), tip = $("#tip"), hit = $("#plot-hit");
@@ -1710,12 +1714,12 @@
     const t = (clientX - plot.getBoundingClientRect().left - x0) / (x1 - x0);
     return stops[Math.round(Math.max(0, Math.min(1, t)) * (n - 1))];
   }
-  // Decision 27: a point on the drawn peak ring reads the peak. Other taps keep the equal-share mapping.
+  // Decision 29: a 44 px circle centred on the peak ring reads the peak. Holds keep the equal-share mapping.
   function stopForTap(clientX, clientY) {
     const ring = $("#pk-dot");
     if (ring && geo) {
       const p = ring.getBoundingClientRect(), x = (p.left + p.right) / 2, y = (p.top + p.bottom) / 2;
-      const radius = p.width / 2 + parseFloat(getComputedStyle(ring).strokeWidth) / 2;
+      const radius = Math.max(22, p.width / 2 + parseFloat(getComputedStyle(ring).strokeWidth) / 2);
       if (Math.hypot(clientX - x, clientY - y) <= radius) return stops.find((st) => st.kind === "peak") || stopForFinger(clientX);
     }
     return stopForFinger(clientX);

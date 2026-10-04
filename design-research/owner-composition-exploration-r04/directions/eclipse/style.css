@@ -694,6 +694,7 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
 /* The legend drops its box (CHP-3; K-10): swatches and words in a row, 16 apart. Q1's ring names a single reading. */
 .dl .key { flex-wrap: wrap; gap: 8px 16px; height: auto; padding: 0; border: 0; border-radius: 0; font-size: 12px; line-height: 18px; }
 .dl .key li { gap: 8px; }
+.dl .key-reserve { display: none; }
 .sw-ring { display: inline-block; width: 10px; height: 10px; flex: none; border-radius: 50%; border: 2px solid var(--ink); background: var(--card-solid); }
 /* One button (BTN-1, BTN-7; K-10): 44 tall, label type, padding 16, icon 17. */
 .dl .btn { height: 44px; padding-inline: 16px; font-size: 13.5px; line-height: 20px; }
@@ -738,6 +739,8 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
   .dl #card-peak .stat-meta { flex-basis: 100%; margin-inline-start: 24px; }
   .dl .chart { flex: none; min-height: 0; }
   .dl .plot { flex: none; height: 340px; }
+  .dl .key-reserve { display: flex; visibility: hidden; pointer-events: none; }
+  .dl #key:has(+ .key-reserve) { align-self: start; }
   /* The minute table's region stays shorter than the screen above the bar, so its ring is always seen whole. */
   .scroller { max-height: min(420px, calc(100vh - 160px)); }
   .minutes-table th, .minutes-table td { padding-inline: 8px; }
@@ -773,6 +776,9 @@ h1 { font-size: 30px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
 .band { display: none; }
 @media (max-width: 720px) {
   .dl .tip, .dl #conn { visibility: hidden; }
+  /* The hidden desktop tooltip is still measured for the marker. Keep its transient width outside document overflow,
+   * so a new span’s words cannot expand the mobile viewport and clamp scrollY during a held drag. */
+  .dl .tip { position: fixed; }
   .dl .plot { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
   .dl .plot-hit { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
   .dl .band {
