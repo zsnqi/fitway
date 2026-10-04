@@ -325,7 +325,21 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     (item 33), the computer's composition (designer and review: at 1440 a row's actions sit about 1000 px from its
     name, half the screen empty), the sign-out wording («دخول» means visitors' entries here, review F4), and the
     review's lows (F1, F2, F5, the 700 ms silence, the row that jumps groups); plus the rail and bar links, the spec
-    fragment merged as §4.4, and INDEX.
+    fragment merged as §4.4, and INDEX. Access merged into `owner-followup-r04-build` at `6ec9591`.
+    **The user's notes on the published page** (artifact comments and answers, 2026-10-04), which revise item 33:
+    - **The sign-out wording** «ينتهي دخول …» is wrong (the user agrees): «دخول» is visitors' entries here.
+    - **The quiet removal buttons** («تعطيل الرمز», «تعطيل الحساب») read oddly without a box on the computer; on the
+      phone they read well and stay.
+    - **The reason is optional** for both deactivations: the field stays, at most 240 characters, never required. A
+      Product/Spec and contract amendment (the contract requires it today).
+    - **The front-desk code:** the owner either lets the system generate it or types one; it may hold letters as well
+      as digits (the user: a mixed code lowers the risk), with a copy control in its one-time view. This reverses
+      item 33's "no copy control" and the generated-only, digits-only PIN; a Product/Spec and contract amendment. The
+      user declined a weak-code rule ("معليك"); the coordinator keeps only a minimum length.
+    - **The computer's arrangement is shown first as a simple skeleton** (the user): the designer proposes the
+      arrangement in plain blocks before building it, and the user agrees before the full fix round.
+
+## How this milestone's rounds run
 
 ## How this milestone's rounds run
 
