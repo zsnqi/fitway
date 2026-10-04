@@ -1,12 +1,13 @@
 // @vitest-environment happy-dom
 
-import type {
-	OwnerCredentialResetInput,
-	OwnerDeactivateInput,
-	OwnerProvisionInput,
-	OwnerReactivateInput,
-	PrincipalGovernance,
-	StaffPinDeactivateInput,
+import {
+	ACCESS_REASON_MAX_LENGTH,
+	type OwnerCredentialResetInput,
+	type OwnerDeactivateInput,
+	type OwnerProvisionInput,
+	type OwnerReactivateInput,
+	type PrincipalGovernance,
+	type StaffPinDeactivateInput,
 } from "@fitway/api/access/contracts";
 import { act, useRef, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
@@ -652,6 +653,75 @@ describe("owner access live", () => {
 		expect(text).toContain("Samir");
 		expect(text).toContain(ownerAccessMessages.en.ownerInactive);
 		expect(text).toContain(ownerAccessMessages.en.reactivateOwner);
+	});
+
+	it("refuses a deactivation reason past what the audit log stores, with its own message", async () => {
+		expect(ACCESS_REASON_MAX_LENGTH).toBe(240);
+		for (const locale of ["en", "ar"] as const) {
+			const messages = ownerAccessMessages[locale];
+			expect(messages.reasonTooLong).toContain(
+				String(ACCESS_REASON_MAX_LENGTH),
+			);
+			const deactivateStaffPin = mutationSpy<StaffPinDeactivateInput>();
+			const deactivateOwner = mutationSpy<OwnerDeactivateInput>();
+			await render(
+				<OwnerAccessLive
+					{...liveProps([staffPrincipal(), ownerPrincipal()])}
+					deactivateStaffPin={deactivateStaffPin}
+					deactivateOwner={deactivateOwner}
+				/>,
+				locale,
+			);
+			const openButton = (label: string) =>
+				[...container.querySelectorAll<HTMLButtonElement>("button")].find(
+					(button) => button.textContent?.trim() === label,
+				);
+
+			await act(async () => openButton(messages.deactivateStaffPin)?.click());
+			await act(async () => openButton(messages.deactivateOwner)?.click());
+
+			for (const [selector, spy] of [
+				['input[id$="staff-pin-reason"]', deactivateStaffPin.submitSpy],
+				[`input[id$="reason-${ownerAId}"]`, deactivateOwner.submitSpy],
+			] as const) {
+				const input = container.querySelector(selector) as HTMLInputElement;
+				expect(input, selector).not.toBeNull();
+				const form = input.form as HTMLFormElement;
+				// The browser must not cut the reason off without a word.
+				expect(input.hasAttribute("maxlength")).toBe(false);
+
+				await act(async () => {
+					setControlledValue(input, "r".repeat(241));
+					form.dispatchEvent(
+						new Event("submit", { bubbles: true, cancelable: true }),
+					);
+				});
+				expect(spy).not.toHaveBeenCalled();
+				expect(input.getAttribute("aria-invalid")).toBe("true");
+				const errorId = (input.getAttribute("aria-describedby") ?? "")
+					.split(" ")
+					.find((id) => id.includes("error"));
+				const error = errorId ? document.getElementById(errorId) : null;
+				expect(error?.textContent).toBe(messages.reasonTooLong);
+				expect(error?.getAttribute("role")).toBe("alert");
+
+				// Editing clears the message; 240 after trimming is sent as typed.
+				await act(async () => {
+					setControlledValue(input, `  ${"r".repeat(240)}  `);
+				});
+				expect(input.getAttribute("aria-invalid")).toBe("false");
+				expect(form.textContent).not.toContain(messages.reasonTooLong);
+				await act(async () => {
+					form.dispatchEvent(
+						new Event("submit", { bubbles: true, cancelable: true }),
+					);
+				});
+				expect(spy).toHaveBeenCalledTimes(1);
+				expect(spy.mock.calls[0]?.[0]).toMatchObject({
+					reason: "r".repeat(240),
+				});
+			}
+		}
 	});
 
 	it("offers deactivate and reset for an active owner, only reactivate for an inactive one", async () => {

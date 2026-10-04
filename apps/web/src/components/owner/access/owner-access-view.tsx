@@ -1,10 +1,11 @@
-import type {
-	OwnerCredentialResetInput,
-	OwnerDeactivateInput,
-	OwnerProvisionInput,
-	OwnerReactivateInput,
-	PrincipalGovernance,
-	StaffPinDeactivateInput,
+import {
+	ACCESS_REASON_MAX_LENGTH,
+	type OwnerCredentialResetInput,
+	type OwnerDeactivateInput,
+	type OwnerProvisionInput,
+	type OwnerReactivateInput,
+	type PrincipalGovernance,
+	type StaffPinDeactivateInput,
 } from "@fitway/api/access/contracts";
 import { Button } from "@fitway/ui/components/button";
 import {
@@ -247,6 +248,15 @@ function ownerPasswordError(password: string): OwnerPasswordError {
 	return null;
 }
 
+/**
+ * Whether a reason is longer than the audit log stores. Counted after trimming,
+ * as it is sent; the field has no `maxLength`, so a longer reason is refused
+ * with its own message rather than cut off without a word.
+ */
+function reasonTooLong(reason: string): boolean {
+	return reason.trim().length > ACCESS_REASON_MAX_LENGTH;
+}
+
 /** A settled success closes the form that produced it; a refusal stays open. */
 function closeOnSuccess(
 	phase: OwnerAccessMutationOutcome["phase"],
@@ -329,11 +339,13 @@ export function OwnerAccessLive({
 
 	const [staffPinDeactivating, setStaffPinDeactivating] = useState(false);
 	const [staffPinReason, setStaffPinReason] = useState("");
+	const [staffPinReasonTooLong, setStaffPinReasonTooLong] = useState(false);
 
 	const [deactivatingOwnerId, setDeactivatingOwnerId] = useState<string | null>(
 		null,
 	);
 	const [ownerReason, setOwnerReason] = useState("");
+	const [ownerReasonTooLong, setOwnerReasonTooLong] = useState(false);
 	const [resettingOwnerId, setResettingOwnerId] = useState<string | null>(null);
 	const [ownerPassword, setOwnerPassword] = useState("");
 	const [resetPasswordError, setResetPasswordError] =
@@ -434,12 +446,20 @@ export function OwnerAccessLive({
 
 	function handleDeactivateStaffPin(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
+		if (reasonTooLong(staffPinReason)) {
+			setStaffPinReasonTooLong(true);
+			return;
+		}
 		deactivateStaffPin.submit({ reason: staffPinReason.trim() });
 	}
 
 	function handleDeactivateOwner(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 		if (deactivatingOwnerId === null) return;
+		if (reasonTooLong(ownerReason)) {
+			setOwnerReasonTooLong(true);
+			return;
+		}
 		deactivateOwner.submit({
 			targetPrincipalId: deactivatingOwnerId,
 			reason: ownerReason.trim(),
@@ -524,11 +544,18 @@ export function OwnerAccessLive({
 								<input
 									id={fieldId("staff-pin-reason")}
 									type="text"
-									maxLength={500}
 									autoComplete="off"
-									aria-describedby={fieldId("staff-pin-reason-hint")}
+									aria-invalid={staffPinReasonTooLong}
+									aria-describedby={
+										staffPinReasonTooLong
+											? `${fieldId("staff-pin-reason-hint")} ${fieldId("staff-pin-reason-error")}`
+											: fieldId("staff-pin-reason-hint")
+									}
 									value={staffPinReason}
-									onChange={(event) => setStaffPinReason(event.target.value)}
+									onChange={(event) => {
+										setStaffPinReason(event.target.value);
+										setStaffPinReasonTooLong(false);
+									}}
 								/>
 								<p
 									id={fieldId("staff-pin-reason-hint")}
@@ -536,6 +563,15 @@ export function OwnerAccessLive({
 								>
 									{messages.staffPinReasonHint} {messages.reasonHint}
 								</p>
+								{staffPinReasonTooLong ? (
+									<p
+										id={fieldId("staff-pin-reason-error")}
+										className="owner-access-inline__error"
+										role="alert"
+									>
+										{messages.reasonTooLong}
+									</p>
+								) : null}
 								<OwnerAccessRefusal outcome={deactivateStaffPin.outcome} />
 								<div className="owner-access-inline__actions">
 									<Button
@@ -788,15 +824,18 @@ export function OwnerAccessLive({
 														<input
 															id={fieldId(`reason-${owner.principalId}`)}
 															type="text"
-															maxLength={500}
 															autoComplete="off"
-															aria-describedby={fieldId(
-																`reason-hint-${owner.principalId}`,
-															)}
-															value={ownerReason}
-															onChange={(event) =>
-																setOwnerReason(event.target.value)
+															aria-invalid={ownerReasonTooLong}
+															aria-describedby={
+																ownerReasonTooLong
+																	? `${fieldId(`reason-hint-${owner.principalId}`)} ${fieldId(`reason-error-${owner.principalId}`)}`
+																	: fieldId(`reason-hint-${owner.principalId}`)
 															}
+															value={ownerReason}
+															onChange={(event) => {
+																setOwnerReason(event.target.value);
+																setOwnerReasonTooLong(false);
+															}}
 														/>
 														<p
 															id={fieldId(`reason-hint-${owner.principalId}`)}
@@ -804,6 +843,17 @@ export function OwnerAccessLive({
 														>
 															{messages.reasonHint}
 														</p>
+														{ownerReasonTooLong ? (
+															<p
+																id={fieldId(
+																	`reason-error-${owner.principalId}`,
+																)}
+																className="owner-access-inline__error"
+																role="alert"
+															>
+																{messages.reasonTooLong}
+															</p>
+														) : null}
 														<OwnerAccessRefusal
 															outcome={deactivateOwner.outcome}
 														/>

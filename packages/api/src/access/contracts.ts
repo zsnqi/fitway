@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { AUDIT_REASON_MAX_LENGTH } from "../audit/list";
+
 /**
  * The owner access-management contract.
  *
@@ -15,12 +17,19 @@ import { z } from "zod";
  *   field at all, so none can be attached to a non-destructive row.
  */
 
+/**
+ * The longest reason, after trimming. The reason is written to the audit log in
+ * the same transaction as the deactivation, and the log stores no more than
+ * this, so a longer one is refused here rather than failing that write.
+ */
+export const ACCESS_REASON_MAX_LENGTH = AUDIT_REASON_MAX_LENGTH;
+
 /** Trimmed, and non-empty after trimming: whitespace is not a reason. */
 const requiredReason = z
 	.string()
 	.trim()
 	.min(1)
-	.max(500)
+	.max(ACCESS_REASON_MAX_LENGTH)
 	.describe("Why this destructive action was taken");
 
 const principalId = z.uuid();

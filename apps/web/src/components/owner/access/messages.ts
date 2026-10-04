@@ -86,6 +86,7 @@ export const ownerAccessMessages = {
 
 		reasonLabel: "Reason",
 		reasonHint: "Required — this action is recorded in Activity Log.",
+		reasonTooLong: "Use no more than 240 characters.",
 		confirm: "Confirm",
 		cancel: "Cancel",
 
@@ -175,6 +176,7 @@ export const ownerAccessMessages = {
 
 		reasonLabel: "السبب",
 		reasonHint: "مطلوب — يُسجَّل هذا الإجراء في سجل النشاط.",
+		reasonTooLong: "استخدم 240 حرفاً كحد أقصى.",
 		confirm: "تأكيد",
 		cancel: "إلغاء",
 
