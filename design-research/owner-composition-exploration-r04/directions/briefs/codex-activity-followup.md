@@ -7,7 +7,7 @@
   `git -C D:/Projects/fitway-worktrees/owner-r04-daily-phone show codex/owner-redesign-r04:docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md`.
 - **Read first, only these:** `design-research/owner-composition-exploration-r04/directions/DO-NOT.md` in full (the
   user's bans); `design-research/owner-composition-exploration-r04/directions/eclipse/DESIGN-SPEC.md` rows FLD-1 to
-  FLD-7, PCK-1 to PCK-10, DLG-1 to DLG-6, STA-9, EMP-2, TBL-10, OWN-A1 to OWN-A10 and §8 Q-PCK, by row ID. Navigate
+  FLD-7, PCK-1 to PCK-10, DLG-1 to DLG-6, STA-9, EMP-2, TBL-10, and OWN-A1 to OWN-A10, by row ID. Navigate
   code with `design-research/owner-composition-exploration-r04/directions/eclipse/INDEX.md`; "the folder" below is
   `design-research/owner-composition-exploration-r04/directions/eclipse/`.
 
@@ -48,7 +48,7 @@ choosing. Where a cause names a file and line, it is the coordinator's reading: 
 
 - **P1. The minute-data export still asks for typed dates.** Cause: Reports' "Export minute data" dialog
   (`reports.html:315-343`, `reports.js:1835-1900`, `makeField` for `#ef-from` and `#ef-to`) keeps two typed
-  day/month/year fields and their hint (FLD-2, §8 Q-PCK). This dialog is the minute-data export DECISIONS 32 names;
+  day/month/year fields and their hint (FLD-2). This dialog is the minute-data export DECISIONS 32 names;
   Daily has no export of its own (TBL-10). Intent: the owner picks the export's days exactly as they pick Reports'
   custom period, with the same picker, and nothing else about exporting changes. Outcome, AR and EN, at every size
   above:
@@ -78,9 +78,9 @@ choosing. Where a cause names a file and line, it is the coordinator's reading: 
   the English page wherever a name appears (Who, a record's target, the Who filter, screen-reader text), isolated so
   it never reorders the English text around it; the English page's layout at 320 px holds them without a new break.
   The reasons' free text is out of scope: leave it as it is and note in the report anything it now reads against.
-- **P4. The specification follows.** Outcome: FLD-2, PCK-1, DLG-3, EMP-2 and OWN-A rows that name owners, and §8
-  Q-PCK describe what is built (Q-PCK closed: no typed date field remains); INDEX.md is regenerated with the command
-  written at its top.
+- **P4. The specification follows.** Outcome: FLD-2, PCK-1, DLG-3, EMP-2 and the OWN-A rows that name owners describe
+  what is built. FLD-2 points to a "§8 Q-PCK" that DESIGN-SPEC.md never had: drop that pointer and say no typed date
+  field remains. INDEX.md is regenerated with the command written at its top.
 
 ## Limits the result keeps
 
