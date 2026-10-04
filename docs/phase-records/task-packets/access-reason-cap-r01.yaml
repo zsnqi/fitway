@@ -1,0 +1,93 @@
+schemaVersion: 1
+milestoneId: access-reason-cap-r01
+taskClass: backend-api-data
+packetStatus: READY
+stateRef: PROJECT_STATE.yaml#/milestones/access-reason-cap-r01
+baseCommit: 312bd861edb2ac642c1a5f27cc358015af3f3267
+task:
+  objective: >-
+    Cap the reason an owner gives when deactivating the front-desk PIN or an owner at the 240 characters the audit log
+    stores, so a longer reason is refused with its own message instead of failing when the audit row is written.
+  acceptanceCriteria:
+    - A focused test first reproduces the defect (a 241-500 character reason passes the access contract, then fails on the audit write) and passes after the fix.
+    - The access contract's required reason accepts at most 240 characters for both deactivations, matching AUDIT_REASON_MAX_LENGTH and the database check.
+    - The owner Access form refuses a reason past 240 with its own message in Arabic and English, tied to the field, instead of silently truncating.
+    - SPEC.md records the 240-character limit in one line where it describes the audit reason (r04 DECISIONS item 33).
+    - The repository's authoritative test commands for the touched packages pass, and git status is unchanged by the runs.
+  explicitExclusions:
+    - Migrations (the database already enforces 240) and tests/browser/** canonicals and screenshots.
+    - Any other access, audit or Owner behavior, copy or visual change.
+    - Owner concept work under design-research/**.
+scope:
+  ownedPaths:
+    - packages/api/src/access/** and its tests
+    - apps/web/src/components/owner/access/** and its message files and tests
+    - "SPEC.md: one line recording the 240-character audit reason limit only"
+    - docs/phase-records/handoffs/access-reason-cap/**
+    - docs/phase-records/task-packets/access-reason-cap-r01.yaml
+  forbiddenPaths:
+    - migrations, packages/db/** schema, pnpm-lock.yaml and dependencies
+    - tests/browser/** including canonicals and screenshots
+    - design-research/**, visual-direction-gate/**, docs/design/**, docs/adr/** and approval manifests
+    - FITWAY_PRODUCT.md, DESIGN_GUIDE.md, DESIGN.md, PHASES.md, and all of SPEC.md except the one line above
+    - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
+    - CLAUDE.md, .claude/** and other milestones' handoffs and packets
+  sharedLeases: []
+authorities:
+  required:
+    - role: product
+      path: FITWAY_PRODUCT.md
+      selector: { kind: markdown-heading, value: "Surface boundaries" }
+      reason: Preserve the user and surface boundary.
+    - role: spec
+      path: SPEC.md
+      selector: { kind: markdown-heading, value: "Architecture & Schema" }
+      reason: Use the canonical backend and schema semantics.
+    - role: contract
+      path: docs/schemas/project-state.schema.json
+      selector: { kind: json-pointer, value: "/properties/milestones" }
+      reason: Check the affected structured contract.
+    - role: adr
+      path: docs/adr/ADR-003-edge-authority-and-reconciliation.md
+      selector: { kind: markdown-heading, value: "Decision" }
+      reason: Expand the edge-authority decision when the data path touches it.
+    - role: workflow
+      path: docs/WORKFLOW.md
+      selector: { kind: markdown-heading, value: "Verification ladder" }
+      reason: Run the required execution and verification gates.
+    - role: test
+      path: scripts/verify-repository.mjs
+      selector: { kind: whole-file, value: "" }
+      reason: Confirm repository invariants remain executable.
+  conditional:
+    - trigger: the change handles credentials, roles, or personal data
+      role: adr
+      path: docs/adr/ADR-002-auth-principals-sessions.md
+      selector: { kind: markdown-heading, value: "Decision" }
+      actionIfTriggered: READ
+    - trigger: the change alters a reviewed migration or DTO
+      role: spec
+      path: SPEC.md
+      selector: { kind: markdown-heading, value: "Interfaces & Contracts" }
+      actionIfTriggered: READ
+continuity:
+  predecessorMilestones: []
+  currentHandoff: docs/phase-records/handoffs/access-reason-cap/20261004-213600-access-reason-cap-r01-activation.md
+  unresolvedDecisions: []
+verification:
+  profile: focused backend-api-data profile; unit and component tests for the touched packages through scripts/run-vitest.mjs; the integration reproduction only against the explicitly named disposable database
+  orderedGates:
+    - Validate the READY packet with context:show.
+    - Write the failing reproduction test, then the fix.
+    - Run the touched packages' tests through the absolute-Node authoritative commands of docs/WORKFLOW.md; git status unchanged by the runs.
+    - Independent verification against this packet's acceptance criteria before integration.
+  independentReviewRequired: true
+evidence:
+  receiptTemplate: docs/agent-context/EVIDENCE_RECEIPT_TEMPLATE.md
+  requiredArtifacts:
+    - The reproduction test's failing and passing runs.
+    - Exact test results with the packet SHA-256.
+    - The independent verifier's report.
+limitations:
+  - Opened by the coordinator on 2026-10-04 at the user's request ("fix it", r04 DECISIONS item 33), from the r04 Access research digest D:/fitway-temp/owner-r04-access-questions/REPORT.md section 5.
+  - Based on the codex/owner-redesign-r04 lineage, which carries the baseline's production code; integration follows that lineage.

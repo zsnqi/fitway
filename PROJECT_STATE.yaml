@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./docs/schemas/project-state.schema.json
 schemaVersion: 2
-updatedAt: 2026-10-04T16:03:00+03:00
+updatedAt: 2026-10-04T21:36:00+03:00
 coordinator:
   owner: Primary coordinator and integrator for FITWAY; Owner r04 (concept-only Eclipse work) and agent-environment-r02 (brief evaluation loop and usage panel) are IN_PROGRESS; agent-environment-r01 is DONE and archived.
   stateFilePolicy: coordinator-only
@@ -107,6 +107,46 @@ milestones:
     gates:
       unit: PENDING
       integration: NOT_REQUIRED
+      browser: NOT_REQUIRED
+      accessibility: NOT_REQUIRED
+      visual: NOT_REQUIRED
+      independentReview: PENDING
+    integratedCommit: null
+  access-reason-cap-r01:
+    status: IN_PROGRESS
+    objective: >-
+      Cap the reason an owner gives when deactivating the front-desk PIN or an owner at the 240 characters the audit
+      log stores, so a longer reason is refused with its own message instead of failing on the audit write.
+    taskClass: backend-api-data
+    taskPacket: docs/phase-records/task-packets/access-reason-cap-r01.yaml
+    taskPacketSha256: 5ccb2797bdbbd35be1f3426c00af7400ca6dd6feccf4e57da31cb1a1b61ee378
+    dependencies: []
+    ownerSession: claude-code-desktop:task_fdc69808
+    branch: claude/busy-bartik-858366
+    worktree: D:/Projects/fitway/.claude/worktrees/busy-bartik-858366
+    baseCommit: 312bd861edb2ac642c1a5f27cc358015af3f3267
+    ownedPaths:
+      - packages/api/src/access/** and its tests
+      - apps/web/src/components/owner/access/** and its message files and tests
+      - "SPEC.md: one line recording the 240-character audit reason limit only"
+      - docs/phase-records/handoffs/access-reason-cap/**
+      - docs/phase-records/task-packets/access-reason-cap-r01.yaml
+    forbiddenPaths:
+      - migrations, packages/db/** schema, pnpm-lock.yaml and dependencies
+      - tests/browser/** including canonicals and screenshots
+      - design-research/**, visual-direction-gate/**, docs/design/**, docs/adr/** and approval manifests
+      - FITWAY_PRODUCT.md, DESIGN_GUIDE.md, DESIGN.md, PHASES.md, and all of SPEC.md except the one line above
+      - PROJECT_STATE.yaml and PROJECT_STATE_HISTORY.yaml (coordinator only)
+      - CLAUDE.md, .claude/** and other milestones' handoffs and packets
+    sharedLeases: []
+    validationRepairAttempts: 0
+    lastHeartbeatAt: 2026-10-04T21:36:00+03:00
+    leaseExpiresAt: 2026-10-07T21:36:00+03:00
+    handoff: docs/phase-records/handoffs/access-reason-cap/20261004-213600-access-reason-cap-r01-activation.md
+    stopReason: null
+    gates:
+      unit: PENDING
+      integration: PENDING
       browser: NOT_REQUIRED
       accessibility: NOT_REQUIRED
       visual: NOT_REQUIRED
