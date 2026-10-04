@@ -1684,7 +1684,7 @@
   /* ---- the finger (720 px and below; DECISIONS item 20, the user's picks for a trial, 2026-10-03). The page keeps its
    * arrangement; only how a finger moves through the chart changes, and 721 px and up are untouched.
    *   A swipe that starts on the plot, in any direction, is the page's: it scrolls and reads nothing (a finger that moves
-   *   more than FINGER.slop px before the hold is let go; since decision 25 the page pans and flicks it itself, below).
+   *   more than FINGER.slop px before the hold is let go; the browser owns its scroll and pinch).
    *   A press held still for FINGER.hold ms starts the reading; from then on the page does not scroll (the touch's moves
    *   are cancelled) and a drag moves the reading stop by stop. Lifting the finger ends it: the band is empty again.
    *   A quick tap reads that time and keeps it, with its buttons: the previous and the next time, and close (in that Tab
@@ -1796,66 +1796,46 @@
    *   Where a finger reads (A4): from the scale's highest mark down (geo.yt), the plot's data. The band's lane above it
    *   holds the reading, so a finger that starts there would cover what it reads: a touch in the lane is the page's (it
    *   scrolls; a tap there does nothing), and the finger always starts at least 28 px under the band's lowest line.
-   *   The first movement (A3): a touch that starts in the data is the page's own gesture from its first point (its
-   *   touchstart is cancelled), so the browser holds back no movement (Chromium sends no touchmove inside its touch slop,
-   *   about 15 px, after an uncancelled touchstart) and a drag after the hold moves the reading stop by stop from the
-   *   finger's first movement. The page's own scroll then belongs to the page too: a swipe moves the page with the
-   *   finger, one to one, and a flick carries on and slows as the browser's own does (pan, fling).
-   *   The bar (A1): when a hold or a tap starts while any part of the plot (the band is its top) is under the bottom bar,
-   *   the page slides up once until the plot stands 16 px above the bar, as focus does (FOC-7); it is not moved by the
+   *   Decision 26: touchstart stays native. Only moves after a still hold are cancelled; each reported move advances
+   *   at most one stop toward the finger, so Chromium's first reported movement cannot skip stops. It may trail.
+   *   The edges: when a hold or a tap starts while any part of the plot (the band is its top) is outside the screen,
+   *   the page slides once until the plot stands clear of the top and 16 px above the bar (FOC-7); it is not moved by the
    *   finger, and the reading keeps to the finger's place across the slide. With reduced motion it is instant. */
   const fingerZone = (y) => !geo || y >= plot.getBoundingClientRect().top + geo.yt;
-  const PAGE_MOVE = { slide: 420, gap: 16, tau: 325, flick: 0.1 }; // ms; px; ms (a flick's decay); px/ms (the least flick)
-  let pageMove = null; // { raf, kind: "slide" | "fling" }: the page moving on its own, one at a time
+  const PAGE_MOVE = { slide: 420, gap: 16 }; // the one visibility slide only; no page pan or fling
+  let pageMove = null;
   const scrollMax = () => Math.max(0, document.documentElement.scrollHeight - innerHeight);
   const scrollToY = (y) => window.scrollTo({ top: Math.max(0, Math.min(scrollMax(), y)), behavior: "instant" });
   function stopPageMove() { if (pageMove) { cancelAnimationFrame(pageMove.raf); pageMove = null; } }
   // Runs fn(elapsed) each frame until it returns false.
-  function runPageMove(kind, fn) {
+  function runPageMove(fn) {
     stopPageMove();
-    const t0 = performance.now(), mv = { kind, raf: 0 };
+    const t0 = performance.now(), mv = { raf: 0 };
     const step = (now) => { if (pageMove !== mv) return; if (fn(Math.max(0, now - t0)) === false) { pageMove = null; return; } mv.raf = requestAnimationFrame(step); };
     pageMove = mv;
     mv.raf = requestAnimationFrame(step);
   }
-  // The slide (A1): how far the plot must rise to stand PAGE_MOVE.gap above the bar, never past the top of the screen.
+  // A signed slide: lower a clipped top, or raise a clipped bottom; the band and data fit between both edges.
   function slideClear() {
     if (!mqPhone.matches) return;
     const bar = $("#tabbar");
     const barTop = bar && getComputedStyle(bar).display !== "none" ? bar.getBoundingClientRect().top : innerHeight;
     const pr = plot.getBoundingClientRect();
     const over = pr.bottom - (barTop - PAGE_MOVE.gap);
-    if (over <= 0.5) return; // both clear already: nothing slides
-    const by = Math.min(over, Math.max(0, pr.top - PAGE_MOVE.gap)); // the band stays on screen whatever the height
-    const from = scrollY, to = Math.min(scrollMax(), from + by);
-    if (to - from < 0.5) return;
+    const by = pr.top < 0 ? pr.top - PAGE_MOVE.gap : Math.min(Math.max(0, over), Math.max(0, pr.top - PAGE_MOVE.gap));
+    const from = scrollY, to = Math.max(0, Math.min(scrollMax(), from + by));
+    if (Math.abs(to - from) < 0.5) return; // both clear already: nothing slides
     if (!motionOn()) { stopPageMove(); scrollToY(to); return; }
     // A gentle start and a soft landing (the live tail's ease, read from a clock as the intro's line is): the rail's
     // sharper ease-out read as a jump on a slide this long.
     const clock = clockAnim({ duration: PAGE_MOVE.slide, easing: EASE.morph, fill: "both" });
-    runPageMove("slide", (ms) => {
+    runPageMove((ms) => {
       const p = ms >= PAGE_MOVE.slide ? 1 : clock.effect.getComputedTiming().progress ?? 0;
       scrollToY(from + (to - from) * p);
-      // The reading keeps to the finger's place on the plot as the page moves under it.
-      if (finger && finger.on) selectStop(stopForFinger(finger.x));
       if (p >= 1) clock.cancel();
       return p < 1;
     });
   }
-  // A flick (the page's own pan, let go while moving): it carries on and slows to rest, as the browser's fling does.
-  function fling(v) {
-    if (Math.abs(v) < PAGE_MOVE.flick) return;
-    if (!motionOn()) return; // reduced motion: the page stops where the finger let go
-    const from = scrollY, amp = -v * PAGE_MOVE.tau;
-    runPageMove("fling", (ms) => {
-      const left = amp * Math.exp(-ms / PAGE_MOVE.tau), y = from + amp - left;
-      scrollToY(y);
-      return Math.abs(left) > 0.5 && y > 0 && y < scrollMax();
-    });
-  }
-  // A new touch, the wheel or a key stops the page's own movement, as it stops the browser's.
-  ["touchstart", "wheel", "keydown"].forEach((type) => addEventListener(type, () => { if (pageMove && pageMove.kind === "fling") stopPageMove(); }, { capture: true, passive: true }));
-
   const fingerTouch = (e) => (finger ? [...e.changedTouches].find((t) => t.identifier === finger.id) : null);
   function endFinger() {
     if (!finger) return;
@@ -1865,47 +1845,41 @@
     if (was) { pinned = false; clearSelection(); }
   }
   let laneTouch = null; // a touch that started in the band's lane: the page's, and a tap there does nothing
+  // A pinch may put its second finger outside the plot. Release the hold there too, before either finger moves.
+  document.addEventListener("touchstart", (e) => {
+    if (e.touches.length > 1) { endFinger(); laneTouch = null; }
+  }, { capture: true, passive: true });
   hit.addEventListener("touchstart", (e) => {
     if (!mqPhone.matches || !stops.length) return;
     if (e.touches.length !== 1) { endFinger(); laneTouch = null; return; }
     const t = e.changedTouches[0];
     if (!fingerZone(t.clientY)) { laneTouch = { id: t.identifier, x0: t.clientX, y0: t.clientY, moved: false }; return; }
     laneTouch = null;
-    if (e.cancelable) e.preventDefault(); // the finger's gesture from its first point (A3)
-    finger = { id: t.identifier, x0: t.clientX, y0: t.clientY, x: t.clientX, on: false, pan: null, timer: 0 };
+    finger = { id: t.identifier, x0: t.clientX, y0: t.clientY, x: t.clientX, on: false, timer: 0 };
     finger.timer = setTimeout(() => {
-      if (!finger || finger.pan) return;
+      if (!finger) return;
       finger.on = true;
       pinned = false;
       selectStop(stopForFinger(finger.x));
       syncBand();
       slideClear();
     }, FINGER.hold);
-  }, { passive: false });
+  }, { passive: true });
   hit.addEventListener("touchmove", (e) => {
+    if (e.touches.length !== 1) { endFinger(); laneTouch = null; return; }
     if (laneTouch) { const t = [...e.changedTouches].find((c) => c.identifier === laneTouch.id); if (t && Math.hypot(t.clientX - laneTouch.x0, t.clientY - laneTouch.y0) > FINGER.slop) laneTouch.moved = true; return; }
     const t = fingerTouch(e);
     if (!t) return;
-    if (e.cancelable) e.preventDefault();
     if (finger.on) {
+      if (e.cancelable) e.preventDefault();
       finger.x = t.clientX;
-      selectStop(stopForFinger(t.clientX));
-      return;
-    }
-    const now = performance.now();
-    if (finger.pan) {
-      // The page's pan: it follows the finger one to one, from where the swipe was recognised.
-      const p = finger.pan;
-      scrollToY(p.top + (p.y - t.clientY));
-      p.samples.push([now, t.clientY]);
-      while (p.samples.length > 2 && now - p.samples[0][0] > 100) p.samples.shift();
+      const target = stopForFinger(t.clientX);
+      if (target && sel) selectStop(stops[sel.i + Math.sign(target.i - sel.i)]);
       return;
     }
     // Moved before the hold: a swipe, the page's. It reads nothing.
     if (Math.hypot(t.clientX - finger.x0, t.clientY - finger.y0) > FINGER.slop) {
-      clearTimeout(finger.timer);
-      stopPageMove();
-      finger.pan = { y: t.clientY, top: scrollY, samples: [[now, t.clientY]] };
+      endFinger();
     } else finger.x = t.clientX;
   }, { passive: false });
   hit.addEventListener("touchend", (e) => {
@@ -1920,13 +1894,6 @@
     // No click, no focus and no mouse events follow the finger's own gestures.
     if (e.cancelable) e.preventDefault();
     if (finger.on) { endFinger(); return; }
-    if (finger.pan) {
-      const s = finger.pan.samples, a = s[0], z = s[s.length - 1];
-      finger = null;
-      const dt = z[0] - a[0];
-      if (dt > 0 && performance.now() - z[0] < 100) fling((z[1] - a[1]) / dt);
-      return;
-    }
     // A tap: that time, kept.
     clearTimeout(finger.timer);
     const x = finger.x;
