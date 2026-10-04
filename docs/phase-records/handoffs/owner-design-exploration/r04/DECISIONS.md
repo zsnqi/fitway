@@ -308,6 +308,25 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       a long reason fails on saving. The concept caps the field at 240; production's contract is fixed outside this
       concept milestone (production paths are forbidden here).
 
+34. **Access, after the max-effort build** (`2fa0792` on `owner-r04-access`, 2026-10-04; designer report
+    `D:/fitway-temp/owner-r04-access/REPORT.md`; review `D:/fitway-temp/owner-r04-access-review/REPORT.md`, all checks
+    pass but V8 low). Published with the other three pages, links wired in the staged copy only:
+    https://claude.ai/artifact/34ZEAW6e9xJmAbr4WmG2VM (the account changed; earlier links no longer open).
+    Coordinator answers to the designer's questions, each applying a rule already decided:
+    - Creating a PIN asks nothing first (it signs no one out; item 33 asks only before a change).
+    - Reactivating asks first, as built (the account works again at once with its old password).
+    - A typed password stays masked while its dialog is open after a refusal (item 33: the form is kept) and is emptied
+      when the dialog closes (review F2).
+    - The done link opens the exact record (AMD-C2 built: Activity log arrives on one record by its id; item 33 "a
+      link to the record" and the user's "specification may change where better").
+    - One English pair on both pages: Deactivate / Reactivate (item 33's words); Activity log changes with it.
+    - Changing one's own password ends one's other sessions, as drawn (the usual security rule).
+    The fix round, by an `owner-direction-designer` (xhigh) on the integrated build branch: the two-step PIN change
+    (item 33), the computer's composition (designer and review: at 1440 a row's actions sit about 1000 px from its
+    name, half the screen empty), the sign-out wording («دخول» means visitors' entries here, review F4), and the
+    review's lows (F1, F2, F5, the 700 ms silence, the row that jumps groups); plus the rail and bar links, the spec
+    fragment merged as §4.4, and INDEX.
+
 ## How this milestone's rounds run
 
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the
