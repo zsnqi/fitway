@@ -418,3 +418,10 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
    finished components) at the computer and the phone, with the new dialogs; the user agrees, then the build starts.
    Coordinator: it settles the arrangement for a fraction of a build (Access's skeleton took about a quarter of its
    max-effort build's tokens) and would have caught Access's empty computer page before it was built.
+9. **Who builds what** (the user, 2026-10-05: design stays with Claude; Codex where its rounds show it fits). Claude's
+   designer builds anything visual: arrangement, a new or changed component, a form, a state's look. Codex takes what
+   has no taste in it, with a precise brief: wording, behaviour and logic fixes, links, accessibility fixes (focus,
+   clearing fields), spec and index upkeep, the measurable lows a review returns, and later the move of the concept
+   into production code with tests. Coordinator's reading of `codex-rounds.md`: Codex is thorough and honest (it
+   measures far more than asked, stops on a missing source, reports a conflict instead of working around it) but
+   follows a brief to the letter, so its failures trace mostly to the brief, and it has no eye for composition.

@@ -25,24 +25,22 @@ Nothing.
 
 ## Next steps
 
-1. **Access's fix round, built by Codex** (the user, 2026-10-05: the idea is good on condition Codex gets a plan; its
-   result is judged like every Codex round). On `owner-followup-r04-build` (worktree
-   `D:/Projects/fitway-worktrees/owner-followup-r04-s04`, HEAD `78e0bdf`), the coordinator writes a tracked Codex brief
-   (B1-B10, level `xhigh`: many files and new behaviour) naming each item with its intent and how it is checked; the
-   agreed skeleton is the drawn target and Eclipse's existing components are the only parts, so a visual choice the
-   skeleton does not settle is reported, not invented. The items, from DECISIONS 33-34:
-   - the agreed skeleton on the computer (two halves, buttons under each name, the «سجل الوصول» card);
-   - the owner-typed code (letters and digits, a minimum length, copy in the one-time view);
-   - the two-step change with «إلغاء التغيير»; the optional reason (240 at most);
-   - the quiet removal box at every size; the sign-out wording «يُسجَّل خروج»;
-   - the coordinator's answers: no confirmation on creating a code; Reactivate asks; passwords emptied on close; the
-     done link opens the exact record (an Activity log arrival by id); Deactivate / Reactivate in English on both
-     pages, Activity log included; one's own password change ends one's other sessions;
-   - the review's lows: F1, F2, F5, the 700 ms silence, the row that jumps groups;
-   - the rail and bar links on every page; `ACCESS-SPEC.md` merged as DESIGN-SPEC §4.4; INDEX with `access.js`;
-     every amendment beyond the contract named in the spec.
-   Then one `owner-direction-verifier-high` review (reading direction included), the coordinator's frames, a republish
-   for the user, and the round graded in `codex-rounds.md`.
+1. **Access's fix round, split by kind** (the user, 2026-10-05: design stays with Claude; Codex where the coordinator
+   judges it fits, from its rounds). On `owner-followup-r04-build` (worktree
+   `D:/Projects/fitway-worktrees/owner-followup-r04-s04`, HEAD `78e0bdf`), in this order, from DECISIONS 33-34:
+   - **First, a fresh `owner-direction-designer` (xhigh)** builds what is visual: the agreed skeleton on the computer
+     (two halves, buttons under each name, the «سجل الوصول» card); the owner-typed code (letters and digits, a minimum
+     length, copy in the one-time view); the two-step change with «إلغاء التغيير»; the quiet removal box at every size;
+     the row that jumps groups.
+   - **Then Codex (`high`)**, a tracked brief on top of the designer's commit (B1-B10, each item with its intent and
+     its check): the optional reason (240 at most); the sign-out wording «يُسجَّل خروج»; no confirmation on creating a
+     code; Reactivate asks; passwords emptied on close; the done link opening the exact record (an Activity log
+     arrival by id); Deactivate / Reactivate in English on both pages; one's own password change ending other
+     sessions; the review's F1, F2, F5 and the 700 ms silence; the rail and bar links on every page; `ACCESS-SPEC.md`
+     merged as DESIGN-SPEC §4.4; INDEX with `access.js`; every amendment named in the spec. Anything visual it meets is
+     reported, not decided.
+   - Then one `owner-direction-verifier-high` review of both (reading direction included), the coordinator's frames,
+     a republish for the user, and the Codex part graded in `codex-rounds.md`.
 2. **The remaining Owner screens,** one pass each with the skeleton first (rounds items 6 and 8): Settings,
    Operations (the header status's details), Monitoring. Before each, a `sonnet-researcher` digest of its contract
    and open questions, then all its questions to the user at once in plain words.
