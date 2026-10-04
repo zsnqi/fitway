@@ -10,7 +10,7 @@
 - **Daily and Reports are built through Codex fix-3** on `owner-followup-r04-build`: the review of `436fe40`
   (DECISIONS 27), the busiest-time card's form and one period word (28), Codex fix-2 `ac3ae02`, the user's answers on
   its review (29), Codex fix-3 `4e0be02`. `7bb5845` only adds the fix-3 verifier brief. All rounds are graded in
-  `codex-rounds.md` except fix-3's held-out rows.
+  `codex-rounds.md`.
 - **The user tried both pages on a phone and a computer** (DECISIONS 30): all good so far. One open note: Reports'
   «معدّل الموجودين» card is too empty (artifact comment thread on `#fig-avg`, left open).
 - **Activity log's questions are answered** (DECISIONS 31); the research digest is
@@ -20,27 +20,20 @@
 
 ## Running now
 
-- The fix-3 review, `owner-direction-verifier-high` from `D:/Projects/fitway-worktrees/owner-followup-r04-s04/design-research/owner-composition-exploration-r04/directions/briefs/verifier-fix-3.md`
-  (on `owner-followup-r04-build`), launched by the session titled after this milestone's work on 2026-10-04. Its report
-  reaches only that session, which saves it as `D:/fitway-temp/owner-r04-fix-3-verify/REPORT.md`. If that file is
-  missing when the next session starts, the report was lost: do not rerun the review; grade fix-3's held-out rows
-  (`D:/fitway-grader/owner-r04/fix-3-heldout.md`) as "not run" in `codex-rounds.md` and carry its open items below.
+Nothing.
 
 ## Next steps
 
-1. **Close fix-3:** read `D:/fitway-temp/owner-r04-fix-3-verify/REPORT.md`, fill fix-3's held-out rows, failure cause
-   and repeat fault in `codex-rounds.md`. Only high or medium findings open a round now (DECISIONS rounds item 7);
-   low ones join Daily and Reports' last round (step 3).
-2. **Activity log in one pass:** brief `owner-direction-designer-max` (template
+1. **Activity log in one pass:** brief `owner-direction-designer-max` (template
    `docs/agent-context/briefs/designer.md`; prior example on the build branch:
    `D:/Projects/fitway-worktrees/owner-followup-r04-s04/design-research/owner-composition-exploration-r04/directions/briefs/designer-busiest-average.md`) with
    DECISIONS items 1-8, 11, 12, 16, 23 and 31, `DO-NOT.md`, the digest above, and rounds item 7: every element drawn
    against its whole range, at 1440, 768 and 390 with touch, in one round. Then one review (`owner-direction-verifier-high`,
    reading direction included), then exact crops to the user.
-3. **Daily and Reports' last round,** after Activity log or beside it: the «معدّل الموجودين» card redrawn by a
-   designer and shown to the user before Codex builds it; the open low findings (fix-3's M4: the no-history chart card
-   is taller at some phone widths because its legend takes two rows; the sheet caption "On a phone" under the computer
-   specimen; STA-14's text). Reply in the artifact thread and resolve it when built.
+2. **Daily and Reports' last round,** after Activity log or beside it: the «معدّل الموجودين» card redrawn by a
+   designer and shown to the user before Codex builds it; fix-3's open findings in `D:/fitway-temp/owner-r04-fix-3-verify/REPORT.md` (M4: the
+   no-history chart card is taller at some phone widths because its legend takes two rows; observation 1: the sheet's
+   second computer specimen captioned "On a phone"; observations 2-4). Reply in the artifact thread and resolve it when built.
 
 ## Waiting on the user
 

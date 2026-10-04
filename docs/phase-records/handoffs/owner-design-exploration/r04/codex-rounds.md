@@ -200,5 +200,11 @@ checks live outside the repository and never appear here or in a brief.
   movement is decision 26's slide at the hold's start, which M3's "does not change" forgot); M4 FAIL at widths between
   320 and 720 (320 EN fixed; the no-history legend needs two rows where live needs one, a legend-layout question).
   Result `4e0be02`. Report `D:/fitway-temp/codex-runs/owner-fix-3/last-message.md`.
-- **Held-out rows, failure cause and repeat fault:** pending its review (`D:/fitway-temp/owner-r04-fix-3-verify/`).
-  M3's wording is the coordinator's brief fault (B8: the intent was beside it, the slide exception was not).
+- **Held-out rows:** `D:/fitway-grader/owner-r04/fix-3-heldout.md`, 6 of 8 (H5 fails across the phone range as M4;
+  H8 fails as written, because the row forgot M4's intended change: the held-out row's fault). Graded by
+  `D:/fitway-temp/owner-r04-fix-3-verify/REPORT.md` (verifier at `high`): M1-M3, M5, M6 and L1-L3 pass; M3's literal
+  "fail" is decision 26's slide, which the review confirms behaves as at the base.
+- **Failure causes:** M4, brief: "one height" and "without changing the six states' look" conflict where the
+  no-history legend needs two rows (a legend-layout question for Daily's last round). M5 with M6, brief: from 721 px
+  the sheet now shows two identical computer cards, the second captioned "On a phone".
+- **Repeat fault:** repeats B8 (M3's slide exception and M4's two requirements were not checked together).
