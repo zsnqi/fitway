@@ -18,6 +18,10 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
    After that move, the user shows a demo to the gym's owner (informal; a family friend) to win funding and an
    agreement. Demo polish (convincing synthetic data, no dead links, a clean link) waits for then, as do the demo's
    materials: device mock-ups, a motion-graphics video and an explanatory PDF, each researched first. Not now.
+   The gym already runs an older internal system that handles payments and is wired to the entry/exit turnstile,
+   with no public crowd page; the user believes https://finityloops.com/ built it. FITWAY complements it, not
+   replaces it, with better features and interface (the user, 2026-10-04). Research running: Opus 5.5 motion-graphics
+   examples and tools; the incumbent system and positioning.
 3. **The user's bans.** `DO-NOT.md`, read in full before any design or copy work.
 4. **Motion.** Lights are static and the page is complete at first paint. Digits roll only on a live change. The
    intro plays on first open only, about 1.17 s, with the font wait capped at 200 ms. Reports has no intro and no
