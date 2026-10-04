@@ -1,7 +1,7 @@
 <!-- handoff-format: resume-point-v1 -->
 # owner-design-exploration-r04: resume point
 
-- **As of:** `codex/owner-redesign-r04` at the commit that adds this file, 2026-10-04 16:03 +03:00; `owner-followup-r04-build` at `7bb5845`; `owner-r04-activity` at `4064738`
+- **As of:** `codex/owner-redesign-r04` at the commit that adds this file, 2026-10-04 16:03 +03:00 (updated after the designer's return); `owner-followup-r04-build` at `7bb5845`; `owner-r04-activity` at `a8aa8ad`
 - **Previous resume point:** `docs/phase-records/handoffs/owner-design-exploration/r04/20261004-154306-owner-design-exploration-r04-resume.md` (history; open it only where a pointer below names a section)
 - **Standing decisions:** `docs/phase-records/handoffs/owner-design-exploration/r04/DECISIONS.md`, `docs/agent-context/WORKING_AGREEMENTS.md`
 
@@ -20,27 +20,23 @@
 
 ## Running now
 
-- **`owner-direction-designer-max` on Activity log**, launched 2026-10-04 16:03, background, from the tracked brief
-  `D:/Projects/fitway-worktrees/owner-r04-daily-phone/design-research/owner-composition-exploration-r04/directions/briefs/designer-activity-log.md` in worktree
-  `D:/Projects/fitway-worktrees/owner-r04-daily-phone` (reused, clean and merged), branch `owner-r04-activity` cut from
-  `7bb5845`; `4064738` adds the brief and the current DECISIONS and WORKING_AGREEMENTS. Frames go to
-  `D:/fitway-temp/owner-r04-activity/crops/`; save its report there as `REPORT.md`. If the session ended before the
-  report arrived, inspect the branch and the crop folder; do not relaunch blindly.
+Nothing. The Activity log designer returned: `a8aa8ad` on `owner-r04-activity` (not pushed); report
+`D:/fitway-temp/owner-r04-activity/REPORT.md`, crops `D:/fitway-temp/owner-r04-activity/crops/` (268 frames).
 
 ## Next steps
 
-1. **Activity log:** when the designer returns, inspect its frames, then exact crops to the user and a publish for
-   the user's phone (rounds item 7). No independent review first: the user sees the result before any review
-   (the user, 2026-10-04); a review runs only if the user asks for one after seeing it. Then merge
-   `owner-r04-activity` into `owner-followup-r04-build`.
+1. **Activity log:** the user's reactions to the published build and the designer's open points (report "What reads
+   wrong" 1-5: the phone title wrapping beside Delayed and Offline, «العدد» for count changes, «المزيد من التصفية»,
+   business-day grouping of the 1:05 AM reset, the reset's machine-string reason). Then one fix round, then merge
+   `owner-r04-activity` into `owner-followup-r04-build`. No independent review unless the user asks (2026-10-04).
 2. **Daily and Reports' last round,** after Activity log or beside it: the «معدّل الموجودين» card redrawn by a
-   designer and shown to the user before Codex builds it; fix-3's open findings in `D:/fitway-temp/owner-r04-fix-3-verify/REPORT.md` (M4: the
-   no-history chart card is taller at some phone widths because its legend takes two rows; observation 1: the sheet's
-   second computer specimen captioned "On a phone"; observations 2-4). Reply in the artifact thread and resolve it when built.
+   designer and shown to the user before Codex builds it; fix-3's open findings in `D:/fitway-temp/owner-r04-fix-3-verify/REPORT.md`.
+   The old artifact Fu3qDtwnRUNd9zMj5NiMZp (with the `#fig-avg` thread) no longer lists; the note stands as DECISIONS 30.
 
 ## Waiting on the user
 
-Nothing.
+The user tries Activity log at https://claude.ai/artifact/4rrdgUHUuX8hyiQeGTSMdC (staged copy of `a8aa8ad`
+without `tuner.js`, staging `D:/fitway-temp/owner-r04-artifact-2/`) and answers the designer's questions.
 
 ## Known risks
 
@@ -59,5 +55,5 @@ Nothing.
 - Reviews: `D:/fitway-temp/owner-r04-review-436fe40/REPORT.md`, `D:/fitway-temp/owner-r04-fix-2-verify/REPORT.md`;
   designer `D:/fitway-temp/owner-r04-busiest-average/REPORT.md`.
 - Codex runs: `D:/fitway-temp/codex-runs/owner-fix-2/` and `D:/fitway-temp/codex-runs/owner-fix-3/` (`last-message.md`).
-- Artifact: https://claude.ai/artifact/Fu3qDtwnRUNd9zMj5NiMZp (staging `D:/fitway-temp/owner-r04-artifact/`).
+- Artifact: https://claude.ai/artifact/4rrdgUHUuX8hyiQeGTSMdC (Daily, Reports, Activity log; staging `D:/fitway-temp/owner-r04-artifact-2/`). The older Fu3qDtwnRUNd9zMj5NiMZp no longer lists.
 - Codex evaluations: `docs/phase-records/handoffs/owner-design-exploration/r04/codex-rounds.md`.
