@@ -177,7 +177,13 @@ checks live outside the repository and never appear here or in a brief.
   requirements conflict at 60 Hz: 39 transitions with each stop shown for a frame need about 650 ms, more than a
   1000 px/s sweep plus 250 ms allows. Codex reported the conflict and relaxed nothing (B3). The coordinator wrote
   both requirements and did not check them together against the frame rate (B8's reachability check, not applied).
-- **Held-out rows, failure cause and repeat fault:** pending the review.
+- **Held-out rows:** `D:/fitway-grader/owner-r04/fix-2-heldout.md`, 9 of 11 (H6 fails: 1000 px/s takes 333-452 ms;
+  H7 partial: reversal drags not run). Graded by `D:/fitway-temp/owner-r04-fix-2-verify/REPORT.md` (verifier at
+  `high`), which confirms every other brief row and K4's conflict: the build is within about 30 ms of the 60 Hz floor.
+- **Failure cause:** K4, brief. Two literal requirements (every stop shown for a frame; on the finger's stop within
+  250 ms of a 1000 px/s drag) cannot both hold at 60 Hz. Side findings the brief did not cover: the sheet's computer
+  specimen still draws the trial form (K8 named only its caption); the ring's tap area is the drawn ring only.
+- **Repeat fault:** repeats B8 (written for this round's brief and not applied to K4's bound).
 - **Environment:** the first account's five-hour limit stopped the run before any commit; the coordinator stopped it,
   saved the tree as `stopped-at-usage.patch`, and resumed the same thread on another account (`events-resume.jsonl`).
 - **Outside the round:** the coordinator added `style.css` to the untracked `.impeccable/config.local.json` ignore for
