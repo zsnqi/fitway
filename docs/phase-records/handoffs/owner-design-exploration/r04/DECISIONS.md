@@ -267,6 +267,9 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       decided: Reports' export dialog takes the picker too (this item: every page with dates); the front desk leaves
       "Who" (ADR-008: it writes no record); the components sheet's date specimens show the picker; an owner's name is
       one stored string, shown the same in both languages (truthful data). These go to one small follow-up.
+    - **The picker is the one way to choose dates, everywhere** (the user, after trying `e72e5fe`: "ممتاز", the
+      picker's motion praised): Daily's minute-data export too, and every later screen with a date. The follow-up goes
+      to Codex (frozen edits applying the built picker), then the coordinator inspects its frames.
 
 ## How this milestone's rounds run
 
