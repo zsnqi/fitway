@@ -237,9 +237,18 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - With two owner accounts, a record names the owner, not «المالك» (check the read contract carries a name; if not,
       it is a Product/Spec amendment).
     - The nightly reset's machine-string reason is shown as «تصفير بعد الإغلاق»; production translates it (known).
-    - Still open, asked again in plain words: the phone title beside a long status (finding 1); the name and form of
-      "More filters", which holds only "reason contains" (finding 3); where an after-midnight record sits (finding 4).
-    - A review comes next, after the user switches accounts.
+    - **The phone title** (finding 1): smaller on the phone, on every page alike, so «سجل النشاط» fits one line beside
+      the longest status; the status keeps its word (a dot alone would carry meaning by colour only). The components
+      sheet's type scale, TYP-3 and HDR-4 change with it in the same round.
+    - **"More filters"** (finding 3): «البحث في السبب» rejected by the user. Options put to the user: keep
+      «المزيد من التصفية», a magnifier icon button that opens the reason field, or drop the reason search.
+    - **The after-midnight record** (finding 4): «1:05 ص · فجر الأربعاء» rejected by the user. Options put to the
+      user: group the log by calendar date, or make the nightly reset the day's closing line.
+    - **Who designs the next round:** visual design stays on the Opus designer (WORKING_AGREEMENTS "Delegation"); the
+      Sonnet definitions are read-only research.
+    - **Review:** `owner-direction-verifier-high` (Opus, high), reading direction included, after the user switches
+      accounts (the user: "كويس"). The components sheet waits for the end of the remaining screens, by an xhigh
+      designer or a builder; max only if that result disappoints (the user agrees).
 
 ## How this milestone's rounds run
 
