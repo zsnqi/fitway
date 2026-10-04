@@ -241,9 +241,11 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       the longest status; the status keeps its word (a dot alone would carry meaning by colour only). The components
       sheet's type scale, TYP-3 and HDR-4 change with it in the same round.
     - **"More filters"** (finding 3): «البحث في السبب» rejected by the user. Options put to the user: keep
-      «المزيد من التصفية», a magnifier icon button that opens the reason field, or drop the reason search.
+      «المزيد من التصفية», a magnifier icon button that opens the reason field, or drop the reason search. The user
+      took the coordinator's picks ("ممتاز اجل يلا"): the magnifier, with a localized accessible name.
     - **The after-midnight record** (finding 4): «1:05 ص · فجر الأربعاء» rejected by the user. Options put to the
-      user: group the log by calendar date, or make the nightly reset the day's closing line.
+      user: group the log by calendar date, or make the nightly reset the day's closing line. Picked with the above:
+      calendar date; Daily and Reports keep the business day.
     - **Who designs the next round:** visual design stays on the Opus designer (WORKING_AGREEMENTS "Delegation"); the
       Sonnet definitions are read-only research.
     - **Review:** `owner-direction-verifier-high` (Opus, high), reading direction included, after the user switches

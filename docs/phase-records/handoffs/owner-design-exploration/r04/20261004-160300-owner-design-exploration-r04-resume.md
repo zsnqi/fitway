@@ -20,15 +20,18 @@
 
 ## Running now
 
-Nothing. The Activity log designer returned: `a8aa8ad` on `owner-r04-activity` (not pushed); report
-`D:/fitway-temp/owner-r04-activity/REPORT.md`, crops `D:/fitway-temp/owner-r04-activity/crops/` (268 frames).
+- **`owner-direction-verifier-high` on Activity log's first build**, background, from the tracked brief
+  `D:/Projects/fitway-worktrees/owner-r04-daily-phone/design-research/owner-composition-exploration-r04/directions/briefs/verifier-activity-log.md`
+  (branch `owner-r04-activity` at `6899470`, which adds the brief over `a8aa8ad`). Evidence
+  `D:/fitway-temp/owner-r04-activity-review/`; save its report there as `REPORT.md`. Designer report:
+  `D:/fitway-temp/owner-r04-activity/REPORT.md`.
 
 ## Next steps
 
-1. **Activity log:** the user's reactions to the published build and the designer's open points (report "What reads
-   wrong" 1-5: the phone title wrapping beside Delayed and Offline, «العدد» for count changes, «المزيد من التصفية»,
-   business-day grouping of the 1:05 AM reset, the reset's machine-string reason). Then one fix round, then merge
-   `owner-r04-activity` into `owner-followup-r04-build`. No independent review unless the user asks (2026-10-04).
+1. **Activity log's fix round:** one `owner-direction-designer` (Opus, xhigh) round with DECISIONS 32 (no human
+   corrections, «التصفير» name, no manual-count reason, a date picker on Activity log and Reports, the smaller phone
+   title with the components sheet's type scale, the magnifier, calendar-date grouping, the owner's name) and the
+   review's high and medium findings. Then the user, then merge `owner-r04-activity` into `owner-followup-r04-build`.
 2. **Daily and Reports' last round,** after Activity log or beside it: the «معدّل الموجودين» card redrawn by a
    designer and shown to the user before Codex builds it; fix-3's open findings in `D:/fitway-temp/owner-r04-fix-3-verify/REPORT.md`.
    The old artifact Fu3qDtwnRUNd9zMj5NiMZp (with the `#fig-avg` thread) no longer lists; the note stands as DECISIONS 30.
