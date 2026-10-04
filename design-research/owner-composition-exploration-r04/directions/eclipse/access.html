@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FITWAY Eclipse Access</title>
+  <meta name="description" content="FITWAY Owner Access page concept, Eclipse direction: the shared front desk PIN and the owner accounts. Exploration concept with synthetic data. Not production.">
+  <script>
+    // Language and page state before first paint: ?lang=ar|en (default ar); ?state=loading|error draws a page state
+    // (access.js "the page's states"). Without a page state the page is the loaded one.
+    (function () {
+      var p = new URLSearchParams(location.search), r = document.documentElement;
+      var en = p.get("lang") === "en", st = p.get("state");
+      r.lang = en ? "en" : "ar";
+      r.dir = en ? "ltr" : "rtl";
+      if (["loading", "error"].indexOf(st) >= 0) r.dataset.page = st;
+    })();
+  </script>
+  <link rel="stylesheet" href="fonts/readex-pro.css">
+  <link rel="stylesheet" href="style.css">
+  <!-- reports.css carries the table, form and dialog system the Owner pages share (buttons, fields, the dialog and its
+       phone sheet, the alert); everything Reports-only in it is scoped to its own classes. -->
+  <link rel="stylesheet" href="reports.css">
+  <link rel="stylesheet" href="access.css">
+  <script>
+    // As on the other pages: start the CSS faces themselves, so text shares their one fetch per subset.
+    for (var weight of ["400", "500"]) {
+      document.fonts.load(weight + ' 16px "Readex Pro"', "العربية FITWAY 0123456789")
+        .catch(function () { /* Failed faces keep the existing fallback. */ });
+    }
+  </script>
+  <script src="access.js" defer blocking="render"></script>
+</head>
+<!-- data-frame: the frame every Owner page takes (style.css "the frame"): the rail at 721 px and wider (over the content,
+     with a scrim from 721 to 1023 px), and at 720 px and below the compact header and the bar. -->
+<body class="acc" data-frame>
+  <a class="skip" href="#main" data-t="skip"></a>
+  <div class="page">
+    <i class="wash" aria-hidden="true"><i class="wash-light"></i></i>
+    <div class="rail-scrim" id="rail-scrim" hidden></div>
+
+    <div class="rail-slot">
+      <nav class="rail" id="rail" data-open="false">
+        <div class="rail-brand">
+          <button class="rail-item brand" id="brand" type="button" aria-expanded="false" aria-controls="rail">
+            <span class="tile">
+              <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+                <path class="mk" d="M20.6 50.4A23 23 0 1 0 13.6 43.4" stroke-width="4.4"/>
+                <path class="mk" d="M24.2 20.8A13.6 13.6 0 1 1 26.4 44.2" stroke-width="4"/>
+                <path class="mk" d="M19.4 21.4 30.2 32.2 14.6 47.8" stroke-width="4.2" stroke-linejoin="miter" stroke-linecap="butt"/>
+                <circle class="mk-dot" cx="36" cy="28.2" r="4.2"/>
+              </svg>
+            </span>
+            <span class="rail-name wordmark" lang="en">FITWAY</span>
+            <span class="rail-tip" data-t="railTip" aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <ul class="rail-group">
+          <li><a class="rail-item" href="index.html" id="daily-link" data-nav="daily">
+            <span class="tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 13.5a7.5 7.5 0 0 1 15 0"/><path d="M12 13.5 15.6 9.9"/><path d="M3.5 18h17"/><circle class="fill" cx="12" cy="13.5" r="1.3"/></svg></span>
+            <span class="rail-name"></span>
+          </a></li>
+          <li><a class="rail-item" href="reports.html" id="reports-link" data-nav="reports">
+            <span class="tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 19.5h16"/><path d="M7 16v-4.5M12 16V6.5M17 16v-7"/></svg></span>
+            <span class="rail-name"></span>
+          </a></li>
+          <li><a class="rail-item" href="activity.html" id="activity-link" data-nav="activity">
+            <span class="tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="3.8" width="14" height="16.4" rx="3"/><path d="M8.6 8.6h6.8M8.6 12h6.8M8.6 15.4h4"/></svg></span>
+            <span class="rail-name"></span>
+          </a></li>
+          <li><a class="rail-item is-active" href="#main" aria-current="page" data-nav="access">
+            <span class="tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="8.2" cy="12" r="3.6"/><path d="M11.8 12h8.4M17.2 12v2.8M20.2 12v2"/></svg></span>
+            <span class="rail-name"></span>
+          </a></li>
+        </ul>
+
+        <ul class="rail-group rail-foot">
+          <li><a class="rail-item" href="#" data-nav="monitoring" data-inert>
+            <span class="tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3.6" y="4.6" width="16.8" height="11.4" rx="2.4"/><path d="M9 20h6M12 16v4"/></svg></span>
+            <span class="rail-name"></span>
+          </a></li>
+          <li><a class="rail-item" href="#" id="lang-link" data-nav="lang">
+            <span class="tile tile-lang"><span class="glyph" id="lang-glyph"></span></span>
+            <span class="rail-name"></span>
+          </a></li>
+          <li><a class="rail-item" href="#" data-nav="settings" data-inert>
+            <span class="tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10.02 5.6 10.23 3.28A8.9 8.9 0 0 1 13.77 3.28L13.98 5.6A6.7 6.7 0 0 1 15.13 6.07L16.92 4.58A8.9 8.9 0 0 1 19.42 7.08L17.93 8.87A6.7 6.7 0 0 1 18.4 10.02L20.72 10.23A8.9 8.9 0 0 1 20.72 13.77L18.4 13.98A6.7 6.7 0 0 1 17.93 15.13L19.42 16.92A8.9 8.9 0 0 1 16.92 19.42L15.13 17.93A6.7 6.7 0 0 1 13.98 18.4L13.77 20.72A8.9 8.9 0 0 1 10.23 20.72L10.02 18.4A6.7 6.7 0 0 1 8.87 17.93L7.08 19.42A8.9 8.9 0 0 1 4.58 16.92L6.07 15.13A6.7 6.7 0 0 1 5.6 13.98L3.28 13.77A8.9 8.9 0 0 1 3.28 10.23L5.6 10.02A6.7 6.7 0 0 1 6.07 8.87L4.58 7.08A8.9 8.9 0 0 1 7.08 4.58L8.87 6.07A6.7 6.7 0 0 1 10.02 5.6Z"/><circle cx="12" cy="12" r="2.7"/></svg></span>
+            <span class="rail-name"></span>
+          </a></li>
+          <li><a class="rail-item" href="#" data-nav="signout" data-inert>
+            <span class="tile"><svg class="mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13.5 4.5H7.2a2.2 2.2 0 0 0-2.2 2.2v10.6a2.2 2.2 0 0 0 2.2 2.2h6.3"/><path d="M10.5 12h9M16.5 8.8 19.7 12l-3.2 3.2"/></svg></span>
+            <span class="rail-name"></span>
+          </a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <main class="main" id="main" tabindex="-1">
+      <header class="head">
+        <div class="head-titles">
+          <h1 data-t="title"></h1>
+        </div>
+        <!-- The frame's status column (HDR-6), as on every Owner page: the Operations status at every size; at 720 px
+             and below the menu joins it. -->
+        <div class="head-meta">
+          <div class="head-acts">
+            <span class="hb-slot" id="ops-slot">
+              <span class="hb-res" id="ops-res" aria-hidden="true"></span>
+              <button class="hbadge" id="ops-btn" type="button" aria-expanded="false" aria-controls="ops-pop" aria-haspopup="dialog">
+                <span class="hb-state" id="ops-btn-state"></span>
+                <svg class="hb-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5"/></svg>
+              </button>
+            </span>
+            <div class="fw-pop ops-pop" id="ops-pop" role="dialog" aria-labelledby="ops-title" aria-describedby="ops-desc" tabindex="-1" hidden>
+              <div class="ops-body">
+                <h2 class="ops-title" id="ops-title" data-t="opsTitle"></h2>
+                <div id="ops-desc">
+                  <p class="ops-state" id="ops-state"></p>
+                  <p class="ops-line" id="ops-last"></p>
+                  <p class="ops-line" id="ops-hours"></p>
+                </div>
+              </div>
+              <div class="ops-foot">
+                <a class="fw-mi" href="#" id="ops-link" data-inert>
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 7.5h9M17.5 7.5h2M4.5 16.5h2M10.5 16.5h9"/><circle cx="15.5" cy="7.5" r="2"/><circle cx="8.5" cy="16.5" r="2"/></svg>
+                  <span id="ops-link-name"></span>
+                  <svg class="fw-mi-end mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 7l5 5-5 5"/></svg>
+                </a>
+              </div>
+            </div>
+            <button class="hbtn" id="menu-btn" type="button" aria-expanded="false" aria-controls="menu-pop" aria-haspopup="menu">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle class="fill" cx="5.5" cy="12" r="1.6"/><circle class="fill" cx="12" cy="12" r="1.6"/><circle class="fill" cx="18.5" cy="12" r="1.6"/></svg>
+            </button>
+            <div class="fw-pop menu-pop" id="menu-pop" role="menu" aria-labelledby="menu-btn" hidden>
+              <a class="fw-mi" role="menuitem" tabindex="-1" href="#" id="menu-monitoring" data-inert>
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3.6" y="4.6" width="16.8" height="11.4" rx="2.4"/><path d="M9 20h6M12 16v4"/></svg>
+                <span id="menu-monitoring-name"></span>
+              </a>
+              <a class="fw-mi" role="menuitem" tabindex="-1" href="#" id="menu-lang"><span class="fw-glyph" id="menu-lang-glyph" aria-hidden="true"></span><span id="menu-lang-name"></span></a>
+              <a class="fw-mi" role="menuitem" tabindex="-1" href="#" id="menu-signout" data-inert>
+                <svg class="mirror" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13.5 4.5H7.2a2.2 2.2 0 0 0-2.2 2.2v10.6a2.2 2.2 0 0 0 2.2 2.2h6.3"/><path d="M10.5 12h9M16.5 8.8 19.7 12l-3.2 3.2"/></svg>
+                <span id="menu-signout-name"></span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- The page's controls (HDR-7): one, the way to every access change in Activity log. -->
+      <div class="acc-tools" id="tools">
+        <a class="rbtn acc-history" id="history-link" href="activity.html?kind=access">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="3.8" width="14" height="16.4" rx="3"/><path d="M8.6 8.6h6.8M8.6 12h6.8M8.6 15.4h4"/></svg>
+          <span data-t="history"></span>
+        </a>
+      </div>
+
+      <!-- Who can get in: the front desk's one shared PIN, then the owners. access.js draws both cards. -->
+      <section class="card acc-card" id="desk" aria-labelledby="desk-title"></section>
+      <section class="card acc-card" id="owners" aria-labelledby="owners-title"></section>
+
+      <p class="sr-only" id="say" aria-live="polite" aria-atomic="true"></p>
+    </main>
+
+    <!-- Phone (720 px and below): the bar, five sections with a short name under each icon, after the main content. -->
+    <nav class="tabbar" id="tabbar">
+      <ul>
+        <li><a class="tb-item" href="index.html" id="tab-daily" data-tab="daily">
+          <span class="tb-tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 13.5a7.5 7.5 0 0 1 15 0"/><path d="M12 13.5 15.6 9.9"/><path d="M3.5 18h17"/><circle class="fill" cx="12" cy="13.5" r="1.3"/></svg></span>
+          <span class="tb-name"></span>
+        </a></li>
+        <li><a class="tb-item" href="reports.html" id="tab-reports" data-tab="reports">
+          <span class="tb-tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 19.5h16"/><path d="M7 16v-4.5M12 16V6.5M17 16v-7"/></svg></span>
+          <span class="tb-name"></span>
+        </a></li>
+        <li><a class="tb-item" href="activity.html" id="tab-activity" data-tab="activity">
+          <span class="tb-tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="3.8" width="14" height="16.4" rx="3"/><path d="M8.6 8.6h6.8M8.6 12h6.8M8.6 15.4h4"/></svg></span>
+          <span class="tb-name"></span>
+        </a></li>
+        <li><a class="tb-item" href="#main" aria-current="page" data-tab="access">
+          <span class="tb-tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="8.2" cy="12" r="3.6"/><path d="M11.8 12h8.4M17.2 12v2.8M20.2 12v2"/></svg></span>
+          <span class="tb-name"></span>
+        </a></li>
+        <li><a class="tb-item" href="#" data-tab="settings" data-inert>
+          <span class="tb-tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10.02 5.6 10.23 3.28A8.9 8.9 0 0 1 13.77 3.28L13.98 5.6A6.7 6.7 0 0 1 15.13 6.07L16.92 4.58A8.9 8.9 0 0 1 19.42 7.08L17.93 8.87A6.7 6.7 0 0 1 18.4 10.02L20.72 10.23A8.9 8.9 0 0 1 20.72 13.77L18.4 13.98A6.7 6.7 0 0 1 17.93 15.13L19.42 16.92A8.9 8.9 0 0 1 16.92 19.42L15.13 17.93A6.7 6.7 0 0 1 13.98 18.4L13.77 20.72A8.9 8.9 0 0 1 10.23 20.72L10.02 18.4A6.7 6.7 0 0 1 8.87 17.93L7.08 19.42A8.9 8.9 0 0 1 4.58 16.92L6.07 15.13A6.7 6.7 0 0 1 5.6 13.98L3.28 13.77A8.9 8.9 0 0 1 3.28 10.23L5.6 10.02A6.7 6.7 0 0 1 6.07 8.87L4.58 7.08A8.9 8.9 0 0 1 7.08 4.58L8.87 6.07A6.7 6.7 0 0 1 10.02 5.6Z"/><circle cx="12" cy="12" r="2.7"/></svg></span>
+          <span class="tb-name"></span>
+        </a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- The dialogs (DLG-1…6; a bottom sheet at 720 px and below). access.js writes their words and fields. Each confirms
+       one change; the PIN's dialog has two panels: the confirmation to change it, and the PIN's one-time view, which
+       only "I've saved it" closes (DECISIONS item 33). -->
+  <dialog class="dlg" id="dlg-pin"></dialog>
+  <dialog class="dlg" id="dlg-pinoff"></dialog>
+  <dialog class="dlg" id="dlg-add"></dialog>
+  <dialog class="dlg" id="dlg-reset"></dialog>
+  <dialog class="dlg" id="dlg-off"></dialog>
+  <dialog class="dlg" id="dlg-on"></dialog>
+  <dialog class="dlg" id="dlg-mine"></dialog>
+</body>
+</html>
