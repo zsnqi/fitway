@@ -208,3 +208,19 @@ checks live outside the repository and never appear here or in a brief.
   no-history legend needs two rows (a legend-layout question for Daily's last round). M5 with M6, brief: from 721 px
   the sheet now shows two identical computer cards, the second captioned "On a phone".
 - **Repeat fault:** repeats B8 (M3's slide exception and M4's two requirements were not checked together).
+
+## activity-followup: `design-research/owner-composition-exploration-r04/directions/briefs/codex-activity-followup.md`, result `31e9dd9` on `owner-r04-activity`, level `high`
+
+- **Attempt 1** stopped at once, correctly: the brief named "DESIGN-SPEC §8 Q-PCK", a section FLD-2 points to but that
+  never existed. Brief-caused; no rule covered it, so B10 is added (DECISIONS rounds item 3). Fixed in `97988ff`.
+- **Brief rows:** 7 of 10 (P3, P4, L1-L4, L6 pass). P1 partial: in the short-history state the shown period starts
+  before the first day with readings, so "open on the period shown" and "Reports' bounds" cannot both hold; Codex
+  clamped to the bounds, as the custom period does (coordinator: accepted, no change). P2 literal conflict: "the same
+  field states" kept an invalid specimen the reason search never builds (low, waits for the last round). L5: the
+  index checker's fixture omits `picker.js`, failing at `e72e5fe` too (pre-existing since fix-1; low, last round).
+- **Held-out rows:** none prepared for this round.
+- **Coordinator inspection:** the export dialog at 1440, 390 and 320 in each state, the sheet's picker specimens and
+  English Activity log: no high or medium finding. At 320 the file line sits below the sheet's first view (low).
+- **Environment:** Codex also asked to write three `.impeccable/config.json` ignores for detector flags (the masked
+  lighting, a legend swatch); automatic approval review refused and nothing was written. Left standing.
+- **Repeat fault:** B7 applied (P1's conflict surfaced as a report, not a workaround); attempt 1 is a new fault (B10).

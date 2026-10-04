@@ -271,7 +271,8 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       picker's motion praised): the minute-data export too (it lives on Reports, TBL-10; Daily has no export), and
       every later screen with a date. The follow-up goes to Codex (frozen edits applying the built picker), then the
       coordinator inspects its frames. Brief `codex-activity-followup.md` (`7f8d2dd` on `owner-r04-activity`), level
-      `high`; an owner's one stored name is «فهد» / «نورة» on both pages (coordinator).
+      `high`; an owner's one stored name is «فهد» / «نورة» on both pages (coordinator). Built at `31e9dd9`, merged into
+      `owner-followup-r04-build`; published https://claude.ai/artifact/C6yiDVgdAnFN5wzwuzHdoD (Daily, Reports, Activity log).
 
 33. **Access, the answers before its one pass** (2026-10-04; research digest
     `D:/fitway-temp/owner-r04-access-questions/REPORT.md`). Access holds the one shared front-desk PIN and the owner
@@ -321,6 +322,8 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
      bound. (The user, 2026-10-04: GPT-6.1 Sol follows a brief to the letter; touch-1's L3 and T2.)
    - B9. An outcome about how a value fits names the widest value it can take, not only the current one
      (coordinator, 2026-10-04; card-1's L3).
+   - B10. Before launch, check that every file, section and row the brief names exists at the named HEAD
+     (coordinator, 2026-10-04; activity-followup attempt 1 named a missing "§8 Q-PCK").
 4. **Verifiers** follow these rules:
    - G1. Keep cap checks at least 30 ms from the cap (50, 150, 250 and 600 ms).
    - G2. Detect a removed pre-intro frame by holding fonts until first paint + 50 ms and + 100 ms.
