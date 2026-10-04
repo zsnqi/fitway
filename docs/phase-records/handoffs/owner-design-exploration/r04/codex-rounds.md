@@ -195,4 +195,10 @@ checks live outside the repository and never appear here or in a brief.
   findings: the page moving during a hold (cause unknown), one chart-card height in every state, the sheet's computer
   specimen and wording. The last fixes before the user tries Daily and Reports on a device.
 - **Held-out rows:** `D:/fitway-grader/owner-r04/fix-3-heldout.md` (H1-H8), written before the run.
-- **Result, failure cause and repeat fault:** pending the run and its review.
+- **Brief rows, as Codex graded them:** M1, M2, M5, M6 and L1-L6 PASS; M3 FAIL on its literal text only (the
+  drift is gone: the hidden desktop tooltip widened the phone layout at the missing-reading stop; the remaining
+  movement is decision 26's slide at the hold's start, which M3's "does not change" forgot); M4 FAIL at widths between
+  320 and 720 (320 EN fixed; the no-history legend needs two rows where live needs one, a legend-layout question).
+  Result `4e0be02`. Report `D:/fitway-temp/codex-runs/owner-fix-3/last-message.md`.
+- **Held-out rows, failure cause and repeat fault:** pending its review (`D:/fitway-temp/owner-r04-fix-3-verify/`).
+  M3's wording is the coordinator's brief fault (B8: the intent was beside it, the slide exception was not).

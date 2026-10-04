@@ -198,6 +198,29 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - **A tap near the peak's ring reads the peak:** its tap area is at least fingertip-sized (44 px), not the drawn
       ring only. The user: such a fix follows the 44 px rule and needs no question.
 
+30. **Daily and Reports on the user's own devices** (2026-10-04). Codex fix-3 (`4e0be02`) was published as the private
+    artifact https://claude.ai/artifact/Fu3qDtwnRUNd9zMj5NiMZp (staged copy without `tuner.js`,
+    `D:/fitway-temp/owner-r04-artifact/`). The user tried it on a phone and a computer: "كلشي كويس" (not a visual
+    acceptance of every frame). One note, in the artifact's comment thread on Reports' «معدّل الموجودين» card
+    (`#fig-avg`): the card is too empty. It goes to Reports' last round, redrawn by a designer and shown before it
+    is built; the thread stays open until then.
+31. **Activity log, the answers before its one pass** (2026-10-04; the questions from the research digest
+    `D:/fitway-temp/owner-r04-activity-questions/REPORT.md`; the user agreed with each recommendation):
+    - One list of every record, newest first, with quick kind shortcuts above it: All, count changes, access,
+      settings.
+    - A settings record says honestly that the settings were updated (the log holds only a version, not which
+      setting); recording what changed is a separate Product/Spec amendment, not opened yet.
+    - Filters in view: kind, person and date range; "reason contains" under a "More" control; the exact prior and
+      effective count filters leave.
+    - Older records: a «عرض الأقدم» / "Show older" button, 25 at a time, and the end line «لا توجد سجلات أقدم» /
+      "No older records" (records are kept about 12 months, so "end of the log" would overstate).
+    - No refresh by itself: a refresh button beside the time of the last load, so the page never looks live.
+    - No export (no contract exists for the log).
+    - On the phone the records take a form without sideways scrolling; the designer decides it.
+    - Privacy: no visitor appears anywhere; only staff, owner and the automatic system as actors.
+    - The designer also decides what sits above the list, the record's form at each size, and how Access and
+      Settings link into the log, within DO-NOT and the rounds' lessons (item 7 below).
+
 ## How this milestone's rounds run
 
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the
