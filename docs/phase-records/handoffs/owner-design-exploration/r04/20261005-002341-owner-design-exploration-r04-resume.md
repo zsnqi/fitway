@@ -57,6 +57,10 @@ Nothing; the user starts the next session from «كمّل».
 - Pinch, iOS long-press and a flick are proved on a device only by the user's informal try (DECISIONS 30).
 - «مساءً», «ظهرًا», «ليلًا» on the busiest-time card are a deliberate exception to `DESIGN_GUIDE.md` §9; carry it to the
   later ADR. The same ADR lists every Product/Spec amendment the concept made (DECISIONS 33, 34).
+- **Claude budget:** at this point the account (Pro) had used 89% of its weekly limit (resets 2026-10-09 about 07:00
+  +03:00) and 65% of its five-hour window. Pace the next rounds: one Opus agent at a time, Codex for anything already
+  drawn, no max effort unless the user asks. This session's context was 358k tokens, of which messages 281k, system
+  tools 38k, MCP tools 17k, skills 10k.
 - Ports: 3174 is the user's preview; 3176-3177 are for builders, verifiers and Codex; 3178-3179 are for reviewers.
 
 ## Pointers
