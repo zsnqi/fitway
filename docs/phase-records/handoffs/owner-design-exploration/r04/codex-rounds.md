@@ -102,3 +102,30 @@ checks live outside the repository and never appear here or in a brief.
   file-scoped ignore in the untracked `.impeccable/config.local.json` (H9 checks it).
 - **Brief fault found by the checker:** `brief:check` crashed (`Cannot read properties of null`) on a code span broken
   across two lines; the brief was rewritten without it.
+## card-1: `design-research/owner-composition-exploration-r04/directions/briefs/codex-busiest-card.md`, result `0fcd3e3` on `owner-followup-r04-build`, level `high`
+
+- **Brief rows, as Codex graded them:** C1-C5 and L1-L6 PASS (224 Daily and 32 sheet phone frames changed, all in
+  scope; 704 full-page frames byte-identical to `bd8bada`; 44 auxiliary crop differences classified in
+  `D:/fitway-temp/owner-r04-card-1/work/pixel-comparison.json`). Report: `D:/fitway-temp/codex-runs/owner-card-1/`
+  (the round's long report is the largest `agent_message` in `events.jsonl`; `last-message.md` holds only the
+  hook exchange below).
+- **Held-out rows:** `D:/fitway-grader/owner-r04/card-1-heldout.md`; graded by the coming review.
+- **Failure cause:** pending the review.
+- **Environment:** after the commit an Impeccable hook flagged `.sw-line` in `style.css`; Codex judged it a
+  false positive and tried to amend with an ignore in `.impeccable/config.json`. Codex's own approval review
+  rejected the amend as out-of-scope shared configuration; the commit stands as made and the finding is left
+  standing. Codex reported one stale sheet caption it left under L2: decision 20's caption still says "hours
+  beside the title".
+
+## touch-1: `design-research/owner-composition-exploration-r04/directions/briefs/codex-touch-native.md`, result `38a86cd` on `owner-r04-touch-fix`, level `high`
+
+- **Brief rows, as Codex graded them:** T1-T4, L1, L2 and L4-L6 PASS (400 desktop and 56 phone-at-rest frames;
+  rest comparisons with no persistent difference). L3 FAIL on its literal text: the previous-time button moves
+  7:42 PM to 7:30 PM (12 minutes), as the baseline does; preserved under B7. Pinch was shown only by CDP
+  emulation (scale 1 to 1.0066); device zoom parity is unproved. Report:
+  `D:/fitway-temp/codex-runs/owner-touch-1/last-message.md`.
+- **Held-out rows:** `D:/fitway-grader/owner-r04/touch-1-heldout.md`; graded by the coming review.
+- **Failure cause:** pending the review. L3 looks like a brief fault: it asked for a half hour where the stops
+  include the latest reading, which is not on the half hour.
+- **Folded on merge (`436fe40`):** OWN-D7 now names the slide from the top, and MOT-11 no longer promises that
+  a reduced-motion flick stops at release, as touch-1 reported.
