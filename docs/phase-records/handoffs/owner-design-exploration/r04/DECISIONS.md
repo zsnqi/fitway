@@ -167,6 +167,17 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       screen, the page slides once until both show, as it does above the bar.
     - Accepted as built: Tab goes previous, next, then close (a straight row would break the reading at 320 px).
 
+27. **After the review of `436fe40`** (2026-10-04; report `D:/fitway-temp/owner-r04-review-436fe40/REPORT.md`; the
+    user: "موافق على كل اقتراحاتك").
+    - **The held reading catches up** (F1): when a drag outruns it, the reading moves quickly through each stop to
+      the finger, and reaches the finger's stop as soon as the finger stops. This bounds item 26's "a little behind".
+    - **The noon hour says «ظهرًا»** (F6): «12–1 ظهرًا», and a range across noon «11 صباحًا – 12 ظهرًا»; «صباحًا»
+      and «مساءً» stay as item 26 says. This widens item 26's exception to DESIGN_GUIDE §9.
+    - **A tap on the peak's ring reads the peak** (F8), not the half hour nearest it.
+    - **«بمعدّل 51» on the phone card** (F4: it reads as part of «آخر 7 أيام», not of the hours): the user wants
+      it to belong to the hours and asked for `owner-direction-designer-max` to propose the right form; the user
+      picks from its render. The same answer must hold the longest hour form (F3).
+
 ## How this milestone's rounds run
 
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the
