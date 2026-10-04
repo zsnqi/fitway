@@ -1,6 +1,9 @@
 # owner-design-exploration-r04: Codex rounds as evaluations
 
-One entry per round: the brief, brief rows passed, held-out rows passed, and the failure cause. The held-out
+One entry per round: the brief, brief rows passed, held-out rows passed, the failure cause, and the repeat fault:
+whether a brief-caused failure was already covered by a brief rule (DECISIONS "How this milestone's rounds run" item 3)
+when the brief was written. A repeat means the rule failed or was not applied, and is a brief-rule defect to fix
+(the user, 2026-10-04: held-out pass rates track the task's kind, not round order, so only repeats test the rules). The held-out
 checks live outside the repository and never appear here or in a brief.
 
 ## nav-1: `design-research/owner-composition-exploration-r04/directions/briefs/codex-nav-1-readme-split.md`, result `32958e1`
@@ -16,6 +19,7 @@ checks live outside the repository and never appear here or in a brief.
   is never stated as one sentence; blank lines inside bullet lists (README 64, 356); DESIGN-SPEC PAT-1 points to
   "What it answers" where the rule is in "The table, form and dialog system".
 - **Environment:** `codex exec --approve-for-me`; no escalation was refused.
+- **Repeat fault:** not checked.
 
 ## nav-2: `design-research/owner-composition-exploration-r04/directions/briefs/codex-nav-2-index.md`, result `25795c9` on `owner-r04-nav`
 
@@ -24,6 +28,8 @@ checks live outside the repository and never appear here or in a brief.
 - **Held-out rows:** 7 of 7.
 - **Failure cause:** none in the code.
 - **Side finding:** `let` function bindings (`tuner.js:186`) are not indexed; the brief said "named function constant".
+- **Repeat fault:** not checked.
+
 ## nav-3: `design-research/owner-composition-exploration-r04/directions/briefs/codex-nav-3-probe-kit.md`, result `0c51f7c` on `owner-r04-nav`
 
 - **Brief rows:** 3 of 3 (40 exports, each documented; output refused inside any git tree; smoke run passes over
@@ -35,6 +41,8 @@ checks live outside the repository and never appear here or in a brief.
   fix them; a repair round makes the probe general.
 - **Also for the repair:** the README's run line is an absolute path into this worktree; a port in use fails with
   Node's raw `EADDRINUSE` and no hint to set `PROBE_PORT`.
+- **Repeat fault:** not checked.
+
 ## nav-4: `design-research/owner-composition-exploration-r04/directions/briefs/codex-nav-4-tools-repair.md`, result `fa797b3` on `owner-r04-nav`
 
 - **Brief rows:** 3 of 4 as Codex graded itself (T2-T4 pass; T1 marked partial because pseudo-element text and
@@ -44,6 +52,7 @@ checks live outside the repository and never appear here or in a brief.
 - **Failure cause:** none. Codex's own T1 limits are real but outside what the brief asked.
 - **Side findings:** an ellipsis-clipped element is reported twice (as clipped and as a spill); `build-index.mjs`
   indexes only the first outer IIFE (`build-index.mjs:180`), older than this round.
+- **Repeat fault:** not checked.
 
 ## nav-5: `design-research/owner-composition-exploration-r04/directions/briefs/codex-nav-5-readme-repair.md`, result `d26f507`
 
@@ -58,6 +67,7 @@ checks live outside the repository and never appear here or in a brief.
   the Codex command in `WORKING_AGREEMENTS.md` now adds the note.
 - **Integration:** `owner-r04-nav` merged into `owner-followup-r04-build` (`0723f3b`) and INDEX.md regenerated
   (`b65e2b7`, `--check` passes).
+- **Repeat fault:** not checked.
 
 ## D3-D8 run 4: `design-research/owner-composition-exploration-r04/directions/briefs/codex-d3-d8-defects.md`, result `e6db2e4` on `owner-followup-r04-build`, level `high`
 
@@ -84,6 +94,7 @@ checks live outside the repository and never appear here or in a brief.
   account with `codex exec --approve-for-me -C <worktree> resume -m gpt-6.1-sol -c model_reasoning_effort="high" --json -o <run>/last-message.md <thread> -`
   (`resume` has no `--approve-for-me` of its own; it goes on `exec`). The resumed turn only checked and committed: the
   commit equals the patch saved at the stop. Graded on snapshots of both commits by a fresh verifier (high).
+- **Repeat fault:** repeats B2 and B7, not applied to the brief (K4 above).
 
 ## fix-1: `design-research/owner-composition-exploration-r04/directions/briefs/codex-fix-d21-d24.md`, result `f5f0e2d` on `owner-followup-r04-build`, level `xhigh`
 
@@ -102,6 +113,8 @@ checks live outside the repository and never appear here or in a brief.
   file-scoped ignore in the untracked `.impeccable/config.local.json` (H9 checks it).
 - **Brief fault found by the checker:** `brief:check` crashed (`Cannot read properties of null`) on a code span broken
   across two lines; the brief was rewritten without it.
+- **Repeat fault:** none (no brief-caused failure).
+
 ## card-1: `design-research/owner-composition-exploration-r04/directions/briefs/codex-busiest-card.md`, result `0fcd3e3` on `owner-followup-r04-build`, level `high`
 
 - **Brief rows, as Codex graded them:** C1-C5 and L1-L6 PASS (224 Daily and 32 sheet phone frames changed, all in
@@ -109,8 +122,19 @@ checks live outside the repository and never appear here or in a brief.
   `D:/fitway-temp/owner-r04-card-1/work/pixel-comparison.json`). Report: `D:/fitway-temp/codex-runs/owner-card-1/`
   (the round's long report is the largest `agent_message` in `events.jsonl`; `last-message.md` holds only the
   hook exchange below).
-- **Held-out rows:** `D:/fitway-grader/owner-r04/card-1-heldout.md`; graded by the coming review.
-- **Failure cause:** pending the review.
+- **Held-out rows:** `D:/fitway-grader/owner-r04/card-1-heldout.md`, 8 of 9 (H1-H8 pass; H9 fails). Graded by the
+  review of `436fe40` (`D:/fitway-temp/owner-r04-review-436fe40/REPORT.md`, verifier at `high`).
+- **Brief rows, as the review graded them:** C1, C3-C5 and L1, L2, L4-L6 pass; C2 and L3 fail.
+- **Failure causes:**
+  - C2, code, edge case: a window crossing 720 px during the computer's intro keeps «6–7 م» beside «بمعدّل 51»;
+    the intro's end restores the markup it saved at its start, after the card was filled (`app.js:2851`, `:2866`,
+    `:897`).
+  - L3, code and brief: an hour across noon or midnight («11 صباحًا – 12 مساءً», "11 AM – 12 PM") runs into the
+    average at 320-390 px. C2 made the value longer, but the brief named only today's hour for L3, never the
+    widest value the card can hold.
+  - H9, the design, not the code: the average reads as part of «آخر 7 أيام» above it. Codex built the drawn
+    variant; the question goes to the user.
+- **Repeat fault:** none (no rule covered the widest value; B9 added).
 - **Environment:** after the commit an Impeccable hook flagged `.sw-line` in `style.css`; Codex judged it a
   false positive and tried to amend with an ignore in `.impeccable/config.json`. Codex's own approval review
   rejected the amend as out-of-scope shared configuration; the commit stands as made and the finding is left
@@ -124,8 +148,17 @@ checks live outside the repository and never appear here or in a brief.
   7:42 PM to 7:30 PM (12 minutes), as the baseline does; preserved under B7. Pinch was shown only by CDP
   emulation (scale 1 to 1.0066); device zoom parity is unproved. Report:
   `D:/fitway-temp/codex-runs/owner-touch-1/last-message.md`.
-- **Held-out rows:** `D:/fitway-grader/owner-r04/touch-1-heldout.md`; graded by the coming review.
-- **Failure cause:** pending the review. L3 looks like a brief fault: it asked for a half hour where the stops
-  include the latest reading, which is not on the half hour.
+- **Held-out rows:** `D:/fitway-grader/owner-r04/touch-1-heldout.md`, 9 of 9. Graded by the review of `436fe40`.
+- **Brief rows, as the review graded them:** all pass, L3 included as CHT-15 states it ("one stop"; the stops are the
+  half hours, the peak and the latest reading).
+- **Failure causes:**
+  - L3, brief: it asked for "one half hour", carried from decision 20's wording, where the baseline steps one stop
+    (7:42 PM to 7:30 PM). Codex met the literal text where it could, reported the contradiction, and kept the
+    baseline (B3, B7), without inferring the intent.
+  - T2, brief: "it may trail the finger" set no bound. A drag at normal speed leaves the reading 7 stops behind at
+    390 and 10 at 320, and it does not catch up when the finger stops (`app.js:1877`); `bd8bada` had none. The
+    held-out H3 used a slow drag and missed it too.
+- **Repeat fault:** repeats B7 (L3: the baseline did not meet "one half hour" at the latest reading; not applied).
+  T2's open allowance is new; B8 added.
 - **Folded on merge (`436fe40`):** OWN-D7 now names the slide from the top, and MOT-11 no longer promises that
   a reduced-motion flick stops at release, as touch-1 reported.

@@ -186,6 +186,11 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
    - B6. One change per round, aimed at a cause.
    - B7. Before requiring an outcome under any condition, check the baseline meets it there; a condition where it
      fails is pre-existing and out of scope, required "unchanged from the baseline".
+   - B8. Write each measurable outcome's intent beside it, so a literal text that contradicts the purpose shows,
+     and check that every outcome is literally reachable from the baseline; an allowance ("may trail") states its
+     bound. (The user, 2026-10-04: GPT-6.1 Sol follows a brief to the letter; touch-1's L3 and T2.)
+   - B9. An outcome about how a value fits names the widest value it can take, not only the current one
+     (coordinator, 2026-10-04; card-1's L3).
 4. **Verifiers** follow these rules:
    - G1. Keep cap checks at least 30 ms from the cap (50, 150, 250 and 600 ms).
    - G2. Detect a removed pre-intro frame by holding fonts until first paint + 50 ms and + 100 ms.
