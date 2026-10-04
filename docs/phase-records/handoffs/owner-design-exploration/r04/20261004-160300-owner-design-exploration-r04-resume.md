@@ -26,10 +26,21 @@ the scratchpad staging (no `tuner.js`).
 
 ## Next steps
 
-1. **Activity log:** the user tries the published build. Then one small follow-up (DECISIONS 32, last bullet: the
-   export dialog's picker, components sheet date specimens, one-string owner names), then merge `owner-r04-activity`
-   into `owner-followup-r04-build`.
-2. **Daily and Reports' last round,** after Activity log or beside it: the «معدّل الموجودين» card redrawn by a
+The user agreed to run 1 and 2 in parallel as soon as the new session starts (2026-10-04).
+
+1. **Activity log follow-up, by Codex:** a tracked brief on `owner-r04-activity` (worktree
+   `D:/Projects/fitway-worktrees/owner-r04-daily-phone`, HEAD `e72e5fe`) for DECISIONS 32's last two bullets: the
+   built picker (`eclipse/picker.js`) in Reports' export dialog and Daily's minute-data export; the components
+   sheet's date specimens; an owner's name as one string in both languages; the front desk gone from "Who". Brief
+   rules B1-B9. Then inspect its frames yourself (no Claude review unless something is wrong), republish the artifact
+   from the scratchpad staging pattern (`index.html` without the `tuner.js` tag), and merge `owner-r04-activity` into
+   `owner-followup-r04-build`.
+2. **Access, next screen:** a `sonnet-researcher` digest of Access's data contract, limits and open questions (as
+   `D:/fitway-temp/owner-r04-activity-questions/REPORT.md` was for Activity log); then all of Access's questions to
+   the user at once, in plain words; then `owner-direction-designer-max` in its own worktree, writing only new
+   `access.*` files and a spec fragment, so it never overlaps Codex. The coordinator wires the rail links and merges
+   the spec section at integration.
+3. **Daily and Reports' last round,** after Activity log or beside it: the «معدّل الموجودين» card redrawn by a
    designer and shown to the user before Codex builds it; fix-3's open findings in `D:/fitway-temp/owner-r04-fix-3-verify/REPORT.md`.
    The old artifact Fu3qDtwnRUNd9zMj5NiMZp (with the `#fig-avg` thread) no longer lists; the note stands as DECISIONS 30.
 
