@@ -240,3 +240,20 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
    busiest-time card. Rules are not rigid (WORKING_AGREEMENTS "Rules and findings"): its brief states the question
    and the hard limits (product, privacy, truthful states, the user's bans) and leaves the composition to the
    designer, so that what it notices beyond the rules can show.
+7. **Lessons from Daily and Reports** (the user asked for them, 2026-10-04). Since 2026-09-30 the build branch took 195
+   commits, of which 30 changed the pages' code, and 33 briefs; the phone's busiest-time card alone took six rounds
+   (items 20, 25, 26, 27, 28, 29). The causes, and what the remaining screens do instead (coordinator):
+   - **Elements were picked on today's value.** A form was chosen from one sample, then broke on the widest hour, the
+     noon and midnight words, or an empty state. A designer draws each changed element against its whole range
+     (the widest and the shortest value, every state, both languages, the phone and the computer) before the user
+     picks.
+   - **The phone came after the computer.** Daily was drawn wide, then squeezed, then given its own round and a touch
+     trial. Each screen is drawn at all three sizes in the same round, with its touch behaviour.
+   - **Touch was judged in emulation only.** The phone's gestures went through four rounds without a real finger. Any
+     new interaction is published for the user's phone right after its first build.
+   - **Decisions arrived after their brief.** A decision made while a round ran (item 26 for the computer) produced a
+     conflict the next review had to find. The questions are settled first; a late decision waits for the next round.
+   - **Briefs were read literally.** Most Codex failures traced to the brief (`codex-rounds.md`); B8 and B9 apply.
+   - **Every review opened a new round.** Each review's small findings became the next round. From now on only high
+     and medium findings, or what the user sees, open a round; low findings wait for the screen's last round.
+   - **Questions the rules already answer** go to no one: the coordinator decides and reports in a line.
