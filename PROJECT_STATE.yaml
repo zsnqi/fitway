@@ -119,7 +119,7 @@ milestones:
       log stores, so a longer reason is refused with its own message instead of failing on the audit write.
     taskClass: backend-api-data
     taskPacket: docs/phase-records/task-packets/access-reason-cap-r01.yaml
-    taskPacketSha256: f03db5175b9b0c8a11d31d95f6defcc442b2e3694fc8bffc4433ba008ec48c15
+    taskPacketSha256: c9688acee2b70b114d94236ae5368f2ec3603063ce92a16a699b9ef3e491922b
     dependencies: []
     ownerSession: claude-code-desktop:task_fdc69808
     branch: claude/busy-bartik-858366
@@ -130,6 +130,8 @@ milestones:
       - apps/web/src/components/owner/access/** and its message files and tests
       - "SPEC.md: one line recording the 240-character audit reason limit only"
       - "apps/server/src/phase11-access.integration.test.ts: one added test block for the 241-character reason refusal only"
+      - "scripts/check-frontier-preservation.mjs and scripts/check-frontier-preservation.test.ts: only the recorded transition that excludes apps/web/src/components/owner/access/messages.ts, owner-access-view.tsx and owner-access-view.test.tsx (the source exclusion list and the pinned policy pointer)"
+      - "one new frontier policy pointer document (and its companion if required) under docs/phase-records/handoffs/coordinator/; the pinned snapshot, its companion, the baseline listing and every earlier pointer stay unchanged"
       - docs/phase-records/handoffs/access-reason-cap/**
       - docs/phase-records/task-packets/access-reason-cap-r01.yaml
     forbiddenPaths:
