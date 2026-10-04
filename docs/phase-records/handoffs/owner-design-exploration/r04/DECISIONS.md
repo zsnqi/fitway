@@ -221,6 +221,26 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - The designer also decides what sits above the list, the record's form at each size, and how Access and
       Settings link into the log, within DO-NOT and the rounds' lessons (item 7 below).
 
+32. **Activity log, after the max-effort build** (`a8aa8ad` on `owner-r04-activity`, 2026-10-04; report
+    `D:/fitway-temp/owner-r04-activity/REPORT.md`; published https://claude.ai/artifact/4rrdgUHUuX8hyiQeGTSMdC).
+    - The user: "ممتاز" on the composition, the day grouping, the quieter nightly reset, nothing lit, and the record's
+      form at each size; no notes so far. This judges the max-effort trial (rounds item 6) a success.
+    - The kind shortcut reads «العدد» / "Count"; the full name stays the accessible name (designer finding 2). The
+      next bullet may rename it, since it would hold only the nightly resets.
+    - **No one changes the count by hand** (the user's artifact comment, 2026-10-04; already ADR-008: no staff or
+      owner correction or reset). The synthetic log drops every human correction and reset; the count kind holds the
+      automatic nightly reset only. No reason may say the gym counted people by hand: it never does (artifact comment
+      on the camera-outage reason).
+    - **Dates are picked, not typed** (the user's artifact comment, 2026-10-04): the date field becomes a picker, on
+      Activity log and on every earlier page with dates (Reports). This revises FLD-2; its design goes to the next
+      round.
+    - With two owner accounts, a record names the owner, not «المالك» (check the read contract carries a name; if not,
+      it is a Product/Spec amendment).
+    - The nightly reset's machine-string reason is shown as «تصفير بعد الإغلاق»; production translates it (known).
+    - Still open, asked again in plain words: the phone title beside a long status (finding 1); the name and form of
+      "More filters", which holds only "reason contains" (finding 3); where an after-midnight record sits (finding 4).
+    - A review comes next, after the user switches accounts.
+
 ## How this milestone's rounds run
 
 1. **A design round:** a fresh designer, then a fresh reviewer, then the coordinator inspects the frames, then the
