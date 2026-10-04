@@ -23,6 +23,7 @@ scope:
     - packages/api/src/access/** and its tests
     - apps/web/src/components/owner/access/** and its message files and tests
     - "SPEC.md: one line recording the 240-character audit reason limit only"
+    - "apps/server/src/phase11-access.integration.test.ts: one added test block for the 241-character reason refusal only"
     - docs/phase-records/handoffs/access-reason-cap/**
     - docs/phase-records/task-packets/access-reason-cap-r01.yaml
   forbiddenPaths:
