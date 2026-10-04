@@ -162,3 +162,14 @@ checks live outside the repository and never appear here or in a brief.
   T2's open allowance is new; B8 added.
 - **Folded on merge (`436fe40`):** OWN-D7 now names the slide from the top, and MOT-11 no longer promises that
   a reduced-motion flick stops at release, as touch-1 reported.
+
+## fix-2: `design-research/owner-composition-exploration-r04/directions/briefs/codex-fix-2-review-436fe40.md`, from `5855094` on `owner-followup-r04-build`, level `xhigh`
+
+- **Scope:** the review of `436fe40` (F1-F3, F5-F8) and decisions 27-28: the phone card's form, one period word per
+  hour range at every width, the held reading's catch-up, the tap on the peak's ring, the resize during the intro, and
+  the sheet's gaps and caption. First brief written under B8 and B9.
+- **Level:** `xhigh`, because card-1's C2 and L3 failures traced partly to the code.
+- **Held-out rows:** `D:/fitway-grader/owner-r04/fix-2-heldout.md` (H1-H11), written before the run.
+- **Result, failure cause and repeat fault:** pending the run and its review.
+- **Outside the round:** the coordinator added `style.css` to the untracked `.impeccable/config.local.json` ignore for
+  `border-accent-on-rounded`, after the review confirmed `.sw-line` a false positive.
