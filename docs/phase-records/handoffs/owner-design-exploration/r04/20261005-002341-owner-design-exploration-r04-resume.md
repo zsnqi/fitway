@@ -21,13 +21,18 @@
 
 ## Running now
 
-- Access's fix round is built on `owner-followup-r04-build`: designer `a0c6c76`, Codex `376c845` (graded in
-  `codex-rounds.md`, "access-fix"), builder `4637c53` (report `D:/fitway-temp/owner-r04-access-code/REPORT.md`).
-- A fresh `owner-direction-verifier-high` from `briefs/verifier-access-fix.md` at `5f84c98` reviews `78e0bdf..4637c53`
-  and grades H1-H8; evidence in `D:/fitway-temp/owner-r04-access-fix-review/`. If this session ended before its
-  report, relaunch from the same brief. Then the coordinator's frames and a republish for the user.
-- Coordinator's own note for the review's aftermath: the code view's title wears a visible focus ring each time it
-  opens (focus starts on the title).
+- Access's fix round is done on `owner-followup-r04-build` at `5c2106b`: designer `a0c6c76`, Codex `376c845`
+  (held-out 8 of 8, `codex-rounds.md`), builder `4637c53`, fixer `5c2106b` (the review's F1 and F2). Review
+  `D:/fitway-temp/owner-r04-access-fix-review/REPORT.md`. Published for the user (all four pages, links wired):
+  https://claude.ai/artifact/RKEfwzfwZ7oD5r5fZLnqPS (version 2; staged from `5c2106b` without `tuner.js` in this
+  session's scratchpad). The 34ZE… and Gog3… links do not open on the current account.
+- Waiting for Access's last round (low, rounds item 7): N1 one name for the reset («تعيين» vs «إعادة تعيين»); N2 the
+  done link lands on «هذا السجل غير موجود في هذه العينة.» (hand the new record to Activity log); N3 the records card
+  sparse at 1440; N4 the field's zero dot at 1x; N5 721 EN pairs wrap; N6 lone last words; N7 mono loads on every
+  visit; fixer notes: a tapped Retry leaves the desk title's ring, OWN-C9's "programmatic focus always shows its
+  ring" is stale, `.acc :focus-visible` beats `.rail-item:focus-visible { outline: none }`.
+- A `sonnet-researcher` digest on which side a dialog's buttons sit in Arabic (the user's question: the right, the
+  start, instead of DLG-2's inline end); the user decides after it.
 
 ## Next steps
 
