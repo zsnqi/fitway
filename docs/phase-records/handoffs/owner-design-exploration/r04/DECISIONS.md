@@ -487,8 +487,10 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
       components), then a fresh designer for the per-page work on top of its commit.
     - The usage limit does not shape the rounds: the user switches accounts when one runs out (the user, 2026-10-05).
 11. **The user sees a round only when it is finished** (the user, 2026-10-05, after the motion round came back with
-    the export's empty-panel finding, O1, for the user to decide: «ليه ما تصلحها قبل ما ترجع لي»). A high or medium
-    finding the coordinator would recommend fixing anyway is fixed (a fresh designer for taste, Codex or a fixer for
-    the rest) and checked before the user sees the round; the user gets the finished result, the live site
+    the export's empty-panel finding, O1, for the user to decide: «ليه ما تصلحها قبل ما ترجع لي»; and: «لو مر عليها
+    مراجع وشاف فيه اخطاء ف المفروض تتصلح»). Every error a review finds, low ones included, and every taste finding the
+    coordinator would recommend fixing anyway, is fixed (a fresh designer for taste, Codex or a fixer for the rest)
+    and checked before the user sees the round; this replaces item 7's "low findings wait for the screen's last
+    round" for new rounds; the user gets the finished result, the live site
     (`eclipse-build` preview on 3174) and the published link, with motion shown as frame strips. Only real choices
     go to the user, in plain words.
