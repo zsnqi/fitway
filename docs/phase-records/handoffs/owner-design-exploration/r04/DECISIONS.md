@@ -349,6 +349,14 @@ marked "coordinator". Agreements on how the user and agents work are in `docs/ag
     - **«إلغاء التغيير»** in the one-time view (the user: "ممتاز"): safe with the two-step change, since the old code
       works until «حفظتُ الرمز». This revises item 33's "closes only by «حفظتُ الرمز»".
     - «السبب (اختياري)» confirmed.
+    **After the fix round's design part** (`a0c6c76`, 2026-10-05; report `D:/fitway-temp/owner-r04-access-fix/REPORT.md`),
+    the user's answers to two of the designer's questions:
+    - **The code's letters keep their case** (the user: «نفرّق»): A and a differ. This reverses the designer's
+      case-insensitive proposal in AMD-C4; the code stays 8-16 English letters or digits.
+    - **The code shows in a monospace face** that tells I from l and O from 0, in its one-time view and its field
+      only (the user): a named exception to Readex only (TYP-1), self-hosted or a system face (item 6).
+    Coordinator, applying rules already decided: the records card stays off the phone, which keeps its link (the
+    designer's composition); 16 stays the maximum.
 
 ## How this milestone's rounds run
 
