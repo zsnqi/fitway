@@ -21,12 +21,14 @@
 
 ## Running now
 
-- Access's designer round is done: `a0c6c76` on `owner-followup-r04-build` (report saved as
-  `D:/fitway-temp/owner-r04-access-fix/REPORT.md`; the coordinator looked at the rest, code-view and phone frames).
-- Codex (`high`) from `briefs/codex-access-fix.md` at `f261b25`: run folder `D:/fitway-temp/codex-runs/owner-access-fix/`,
-  held-out rows `D:/fitway-grader/owner-r04/access-fix-heldout.md` (H1-H8). If this session ended before it
-  reported, resume its thread (`last-message.md`, `events.jsonl`) rather than starting over.
-- Asked the user: the code's letters ignoring case, and a monospace face for the code (Readex draws I and l alike).
+- Access's fix round so far on `owner-followup-r04-build`: designer `a0c6c76`, Codex `376c845` (graded in
+  `codex-rounds.md`, "access-fix"; held-out rows H1-H8 wait for the review).
+- A fresh `owner-direction-builder` (high) from `briefs/builder-access-code.md` at `8e5ad1b`: the code's monospace
+  face, the copy control beside it on the computer, the code's case, a double tap never committing, INDEX with
+  `access.js` (DECISIONS 34's last bullets). Frames in `D:/fitway-temp/owner-r04-access-code/`. If this session
+  ended before its report, relaunch from the same brief on a clean worktree.
+- Then one `owner-direction-verifier-high` review of `78e0bdf..` the builder's commit (reading direction included,
+  H1-H8 graded), the coordinator's frames, and a republish for the user.
 
 ## Next steps
 
