@@ -14,14 +14,16 @@
 //       refusal), the one-time view (the shortest code, sixteen mixed and sixteen of the widest characters, copied, not
 //       copied, saving, failed, refused), and every dialog as the phone shows it
 //   3-  the code's change step by step at 1440 and 390: typed, the one-time view, copied, "I've saved it" (saving, then
-//       done with the record on top), and "Cancel change" (nothing changed); then the same for creating a code
+//       done with the record on top), and "Cancel change" (nothing changed); then the same for creating a code; a double
+//       tap (390) or double click (1440) on "Continue", and a held Enter (1440), which never reach "I've saved it"
 //   4-  deactivate and reactivate among eight owners, before and after, at 1440, 768 and 390: the row keeps its place
 //   5-  the checked sizes: 320 x 568, the 200% zoom of 1440 x 900 (720 x 450 at 2x), 721 x 1024 and file://, with the
 //       dialogs that change most with width
 // It exits 1 if a check fails: a console message or page error, a font file fetched twice in one load, a request off
 // the page's origin, a layout shift after the first paint before any input, a sideways page scroll, an element outside
 // the viewport's width, a box whose content spills, an interactive target under 44 px, a row that moved, a record not
-// on top, a cancel that changed something, or a secret left behind: the typed code anywhere in the page (the DOM, the
+// on top, a cancel that changed something, a double press that committed, a code not in its face or a copy control
+// not beside it from 721 px (under it on a phone), or a secret left behind: the typed code anywhere in the page (the DOM, the
 // hooks, the URL, a field) once its view closed, or a password still in a field or the DOM once its change succeeded.
 import { createServer } from "node:http";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
@@ -177,7 +179,8 @@ const PANEL = "dialog[open] .dlg-panel:not([hidden])";
 /* ---- steps */
 const wait = (p, ms) => p.waitForTimeout(ms);
 const press = async (p, sel, phone) => { if (phone) await p.tap(sel); else await p.click(sel); };
-// After an action: the synthetic answer arrives at 700 ms; "I've saved it" ignores a press in the view's first 700 ms.
+// After an action: the synthetic answer arrives at 700 ms; "I've saved it" ignores a press that begins in the view's
+// first 500 ms (the second tap of a double tap on "Continue", which stands in the same place).
 const ANSWER = 1000, VIEW_GUARD = 800;
 const SHORT = { ar: "عادت إلى الدراسة", en: "Back to university" };
 const NEWBIE = { name: { ar: "سارة", en: "سارة" }, email: "sara.alotaibi@example.com" };
@@ -191,6 +194,15 @@ async function typeCode(p, code, ph, mode = "change") {
   await p.fill("#pin-code", code);
 }
 async function toView(p, code, ph, mode) { await typeCode(p, code, ph, mode); await press(p, "#pin-confirm .acc-do", ph); }
+// The code is in its own face, and the copy control stands beside it (from 721 px) or under it (a phone).
+async function copySide(p, o, want) {
+  const got = await p.evaluate(() => {
+    const c = document.querySelector("#pin-code-shown").getBoundingClientRect(), b = document.querySelector("#pin-copy").getBoundingClientRect();
+    return { side: b.top < c.bottom - 4 && b.bottom > c.top + 4 ? "beside" : "under", mono: document.fonts.check('500 20px "JetBrains Mono"') && getComputedStyle(document.querySelector("#pin-code-shown")).fontFamily.startsWith('"JetBrains Mono"') };
+  });
+  if (got.side !== want) o.checks.push(`the copy control stands ${got.side}, not ${want}`);
+  if (!got.mono) o.checks.push("the code is not in its face");
+}
 // Once the view closed, the typed code is nowhere: not in the DOM, the hooks, the URL or a field.
 async function codeGone(o, code) {
   const left = await o.page.evaluate((x) => {
@@ -267,7 +279,7 @@ try {
       await shot(`2-26-code-create-${size}-${lang}`, `${L}&pin=none`, { ...S, act: (p) => typeCode(p, CODE.usual, ph, "create"), clip: panel });
       // The one-time view across the codes' range, and its states.
       for (const [n, k] of [["30", "short"], ["31", "usual"], ["32", "mixed16"], ["33", "wide16"]]) {
-        await shot(`2-${n}-view-${k}-${size}-${lang}`, L, { ...S, act: async (p, o) => { await toView(p, CODE[k], ph); o.notes.codeFont = await p.evaluate(() => { const e = document.querySelector("#pin-code-shown"); return [getComputedStyle(e).fontSize, Math.round(e.getBoundingClientRect().height)]; }); }, clip: panel });
+        await shot(`2-${n}-view-${k}-${size}-${lang}`, L, { ...S, act: async (p, o) => { await toView(p, CODE[k], ph); o.notes.codeFont = await p.evaluate(() => { const e = document.querySelector("#pin-code-shown"); return [getComputedStyle(e).fontSize, Math.round(e.getBoundingClientRect().height)]; }); await copySide(p, o, ph ? "under" : "beside"); }, clip: panel });
       }
       await shot(`2-34-view-copied-${size}-${lang}`, L, { ...S, clipboard: true, act: async (p, o) => { await toView(p, CODE.usual, ph); await press(p, "#pin-copy", ph); await wait(p, 150); const got = await p.evaluate(() => navigator.clipboard.readText().catch(() => "?")); if (got !== CODE.usual) o.checks.push(`the clipboard holds ${got}`); }, clip: panel });
       await shot(`2-35-view-not-copied-${size}-${lang}`, L, { ...S, act: async (p) => { await toView(p, CODE.usual, ph); await p.evaluate(() => { navigator.clipboard.writeText = () => Promise.reject(new Error("denied")); document.execCommand = () => false; }); await press(p, "#pin-copy", ph); await wait(p, 150); }, clip: panel });
@@ -304,6 +316,21 @@ try {
     await shot(`3-07-create-typed-${size}-${lang}`, `${L}&pin=none`, { ...S, act: (p) => typeCode(p, CODE.short, ph, "create") });
     await shot(`3-08-create-view-${size}-${lang}`, `${L}&pin=none`, { ...S, act: (p) => toView(p, CODE.short, ph, "create") });
     await shot(`3-09-create-saved-${size}-${lang}`, `${L}&pin=none`, { ...S, act: async (p, o) => { await toView(p, CODE.short, ph, "create"); await wait(p, VIEW_GUARD); await press(p, "#pin-saved", ph); await wait(p, ANSWER); await codeGone(o, CODE.short); await p.mouse.move(0, 0); } });
+    // A double tap (a phone) or a double click on "Continue": the second press lands on "I've saved it", which stands
+    // in the same place, and never commits; a held Enter in the field never does either. The view stays, not working.
+    const notCommitted = async (p, o, what) => { await wait(p, ANSWER); const st = await p.evaluate(() => ({ view: window.__access.viewOpen, busy: document.querySelector("#dlg-pin").dataset.busy, top: window.__access.records.ids[0], notice: window.__access.notice })); if (!st.view || st.busy === "true" || st.top !== 54 || st.notice) o.checks.push(`${what} reached the commit: ${JSON.stringify(st)}`); };
+    await shot(`3-11-change-double-tap-${size}-${lang}`, L, { ...S, act: async (p, o) => {
+      await typeCode(p, CODE.usual, ph);
+      const b = await p.locator("#pin-confirm .acc-do").boundingBox(), x = b.x + b.width / 2, y = b.y + b.height / 2;
+      if (ph) { await p.touchscreen.tap(x, y); await wait(p, 120); await p.touchscreen.tap(x, y); } else await p.mouse.dblclick(x, y);
+      await notCommitted(p, o, ph ? "a double tap" : "a double click");
+    } });
+    if (!ph) await shot(`3-12-change-enter-held-${size}-${lang}`, L, { ...S, act: async (p, o) => {
+      await typeCode(p, CODE.usual, ph);
+      for (let i = 0; i < 12; i++) { await p.keyboard.down("Enter"); await wait(p, 33); }
+      await p.keyboard.up("Enter");
+      await notCommitted(p, o, "a held Enter");
+    } });
     await shot(`3-10-create-cancelled-${size}-${lang}`, `${L}&pin=none`, { ...S, act: async (p, o) => { await toView(p, CODE.short, ph, "create"); await press(p, "#pin-undo", ph); await wait(p, 300); await codeGone(o, CODE.short); const d = await p.evaluate(() => window.__access.desk); if (d !== "none") o.checks.push(`cancel created a code (${d})`); } });
   }
 

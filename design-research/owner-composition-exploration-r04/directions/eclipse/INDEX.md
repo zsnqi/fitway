@@ -992,6 +992,109 @@ Script top level includes each outer IIFE's body; nested helpers are excluded. E
 - activity.js:1157 — openDatesDialog — function
 - activity.js:1184 — focusArrival — function
 
+## access.js
+
+- access.js:31 — $ — function constant
+- access.js:32 — $$ — function constant
+- access.js:44 — esc — function constant
+- access.js:45 — bdi — function constant
+- access.js:46 — nw — function constant
+- access.js:367 — P — function constant
+- access.js:384 — ownerOf — function constant
+- access.js:385 — activeCount — function constant
+- access.js:390 — sorted — function constant
+- access.js:392 — ordered — function constant
+- access.js:393 — placeNew — function
+- access.js:415 — loadedRecords — function constant
+- access.js:420 — nm — function constant
+- access.js:421 — mailHTML — function constant
+- access.js:426 — motionOn — function constant
+- access.js:430 — f2 — function constant
+- access.js:472 — finishRail — function
+- access.js:482 — animateRail — function
+- access.js:523 — railFocusables — function constant
+- access.js:525 — setRailModal — function constant
+- access.js:538 — setRail — function constant
+- access.js:558 — menuItems — function constant
+- access.js:559 — showLayer — function
+- access.js:568 — hideLayer — function
+- access.js:601 — onFrameChange — function constant
+- access.js:625 — fmtClock — function constant
+- access.js:629 — timeText — function constant
+- access.js:642 — renderStatus — function
+- access.js:661 — say — function constant
+- access.js:664 — svg — function constant
+- access.js:684 — stack — function constant
+- access.js:685 — noticeHTML — function
+- access.js:694 — deskHTML — function
+- access.js:716 — actBtn — function
+- access.js:721 — rowHTML — function
+- access.js:739 — ph — function constant
+- access.js:740 — skeletonRows — function
+- access.js:744 — ownersHTML — function
+- access.js:761 — dayOf — function constant
+- access.js:762 — whenHTML — function
+- access.js:769 — nameIn — function constant
+- access.js:770 — recHref — function constant
+- access.js:776 — recordHTML — function
+- access.js:783 — recSkeleton — function
+- access.js:787 — recordsHTML — function
+- access.js:803 — addRecord — function
+- access.js:808 — recRetry — function
+- access.js:826 — paintError — function
+- access.js:842 — renderCards — function
+- access.js:851 — renderAll — function
+- access.js:858 — byKey — function constant
+- access.js:859 — backTo — function
+- access.js:868 — isSheet — function constant
+- access.js:869 — panelOf — function constant
+- access.js:870 — focusables — function constant
+- access.js:872 — finishDlgAnims — function
+- access.js:873 — openDialog — function
+- access.js:893 — closeDialog — function
+- access.js:916 — isLocked — function constant
+- access.js:917 — isBusy — function constant
+- access.js:923 — panelHTML — function
+- access.js:938 — fieldHTML — function
+- access.js:949 — reasonHTML — function constant
+- access.js:1011 — labelDialog — function
+- access.js:1025 — syncDescribed — function
+- access.js:1030 — setFieldError — function
+- access.js:1041 — clearDialog — function
+- access.js:1049 — resetFields — function
+- access.js:1054 — clearPasswords — function
+- access.js:1059 — setLabels — function constant
+- access.js:1065 — setWorking — function
+- access.js:1077 — showAlert — function
+- access.js:1092 — setEye — function
+- access.js:1166 — answer — function
+- access.js:1175 — run — function constant
+- access.js:1176 — clearNotice — function constant
+- access.js:1177 — finishWithDone — function
+- access.js:1184 — applyTruth — function
+- access.js:1205 — toWestern — function constant
+- access.js:1206 — openCode — function
+- access.js:1244 — copyHTML — function constant
+- access.js:1246 — setCopy — function
+- access.js:1252 — showPinView — function
+- access.js:1281 — fitCode — function
+- access.js:1308 — copyCode — function
+- access.js:1334 — dropCode — function
+- access.js:1349 — onSaved — function
+- access.js:1357 — savedPin — function
+- access.js:1391 — undoCode — function
+- access.js:1400 — openPinOff — function
+- access.js:1431 — openAdd — function
+- access.js:1476 — openRow — function
+- access.js:1495 — rowSubmit — function
+- access.js:1526 — needPw — function constant
+- access.js:1560 — later — function constant
+- access.js:1561 — clearTimers — function constant
+- access.js:1562 — startLoading — function
+- access.js:1573 — arrive — function
+- access.js:1587 — fail — function
+- access.js:1596 — retry — function
+
 ## picker.js
 
 - picker.js:33 — arDays — function constant

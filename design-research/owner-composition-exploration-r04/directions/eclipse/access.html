@@ -17,6 +17,8 @@
     })();
   </script>
   <link rel="stylesheet" href="fonts/readex-pro.css">
+  <!-- The front desk's code only (its one-time view and its field): a face that tells I, l and 1 apart and O from 0. -->
+  <link rel="stylesheet" href="fonts/jetbrains-mono.css">
   <link rel="stylesheet" href="style.css">
   <!-- reports.css carries the table, form and dialog system the Owner pages share (buttons, fields, the dialog and its
        phone sheet, the alert); everything Reports-only in it is scoped to its own classes. -->
@@ -26,6 +28,11 @@
     // As on the other pages: start the CSS faces themselves, so text shares their one fetch per subset.
     for (var weight of ["400", "500"]) {
       document.fonts.load(weight + ' 16px "Readex Pro"', "العربية FITWAY 0123456789")
+        .catch(function () { /* Failed faces keep the existing fallback. */ });
+    }
+    // The code's face, both weights, so the field and the view never swap faces under the owner's eyes.
+    for (var monoWeight of ["400", "500"]) {
+      document.fonts.load(monoWeight + ' 16px "JetBrains Mono"', "Il1O0 abc")
         .catch(function () { /* Failed faces keep the existing fallback. */ });
     }
   </script>

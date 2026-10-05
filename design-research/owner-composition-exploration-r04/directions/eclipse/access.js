@@ -1199,6 +1199,7 @@
    * front desk out; "Cancel change" closes the view and changes nothing. Neither Escape nor a tap outside closes the
    * view: a code the owner may already have handed to the desk is never thrown away by accident. */
   let pin = null, viewAfter = null, codeMode = null;
+  let viewShownAt = -Infinity, savedDownAt = -Infinity;   // when the view appeared; when a press on "I've saved it" began
   const CODE_OK = /^[A-Za-z0-9]+$/;
   const CODE_MIN = 8, CODE_MAX = 16;
   const toWestern = (s) => s.replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660)).replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 0x06f0));
@@ -1251,7 +1252,8 @@
   function showPinView(code, after) {
     pin = code;
     viewAfter = after;
-    // The code as typed, left to right in both languages, in display type sized to its length; read character by
+    viewShownAt = performance.now();
+    // The code as typed, left to right in both languages, in the code's face sized to its length; read character by
     // character to assistive technology.
     $("#pin-secret").innerHTML = `<span class="sr-only" id="pin-say">${L.viewPinSay(esc(code.split("").join(" ")))}</span>` +
       `<span class="acc-code" id="pin-code-shown" aria-hidden="true" dir="ltr" style="--n:${code.length}">${esc(code)}</span>${copyHTML()}` +
@@ -1269,34 +1271,40 @@
     D.pin.dataset.busy = "false";
     labelDialog(D.pin);
   }
-  // The code on one line: measured at 40 px and set smaller to fit the plate, before the view's first paint; again when
-  // the plate's width changes (a phone turned). Where one line would need less than 22 px (the widest letters on a
-  // phone), it takes two even lines instead, broken only at its middle, each as large as fits: never a lone character
-  // on a second line. A copy by selection keeps it one word (the break is a <wbr>).
+  // The code on one line: measured at 40 px and set smaller to fit its room, before the view's first paint; again when
+  // the plate's width changes (a phone turned) and when the code's face arrives late. From 721 px the copy control
+  // shares the code's line; where the code would need less than 22 px there, the control goes under it (is-under) and
+  // the code takes the plate's width. Where one line would still need less than 22 px, the code takes two even lines,
+  // broken only at its middle, each as large as fits: never a lone character on a second line. A copy by selection
+  // keeps it one word (the break is a <wbr>).
   const CODE_MIN_PX = 22;
   function fitCode() {
     const el = $("#pin-code-shown");
     if (!el || !el.getClientRects().length || !pin) return;
+    const plate = $("#pin-secret");
+    plate.classList.remove("is-under");
+    el.textContent = pin;
     // A text's width on one line at 40 px, measured out of the flow (a line that cannot wrap would widen the sheet).
     const width40 = (text) => {
       const m = document.createElement("span");
       m.textContent = text;
-      m.style.cssText = "position:absolute;visibility:hidden;white-space:nowrap;font-size:40px;letter-spacing:0.02em";
+      m.style.cssText = "position:absolute;visibility:hidden;white-space:nowrap;font-size:40px;letter-spacing:0";
       el.append(m);
       const w = m.getBoundingClientRect().width;
       m.remove();
       return w;
     };
-    const room = el.clientWidth - 2;
-    const fit = (need) => Math.min(40, Math.floor((40 * room) / need));
-    el.textContent = pin;
-    const one = fit(width40(pin));
+    const w40 = width40(pin);
+    const fit = (need) => Math.min(40, Math.floor((40 * (el.clientWidth - 2)) / need));
+    let one = fit(w40);
+    if (one < CODE_MIN_PX && getComputedStyle(plate).flexDirection === "row") { plate.classList.add("is-under"); one = fit(w40); }
     if (one >= CODE_MIN_PX) { el.style.fontSize = `${one}px`; return; }
     const mid = Math.ceil(pin.length / 2), a = pin.slice(0, mid), b = pin.slice(mid);
     el.innerHTML = `${esc(a)}<wbr>${esc(b)}`;
     el.style.fontSize = `${Math.max(16, fit(Math.max(width40(a), width40(b))))}px`;
   }
   new ResizeObserver(() => fitCode()).observe($("#pin-secret"));
+  document.fonts.addEventListener("loadingdone", () => fitCode());
   async function copyCode() {
     const b = $("#pin-copy");
     if (!pin || !b || isBusy(D.pin) || b.getAttribute("aria-disabled") === "true") return;
@@ -1329,6 +1337,22 @@
     pin = null;
     D.pin.dataset.locked = "false";
     D.pin.removeAttribute("aria-describedby");
+  }
+  // A double tap never commits a code. "I've saved it" stands where "Continue" stood, so the second tap of a double tap
+  // on "Continue" (a phone's double tap, a mouse's double click) would land on it and save a code the owner never saw,
+  // signing the desk out. A press that begins within 500 ms of the view's appearing (longer than a double tap's
+  // interval, shorter than anyone reads a code) is that second tap, and is ignored: it changes nothing and shows
+  // nothing. A held Enter never reaches it either: the view opens with focus on its title. Any later press is
+  // deliberate, and begins Working in the same frame.
+  const DOUBLE_TAP_MS = 500;
+  $("#pin-saved").addEventListener("pointerdown", (e) => { savedDownAt = e.timeStamp; });
+  function onSaved(e) {
+    // A pointer's press begins at its pointerdown; a keyboard's (detail 0) at the click itself.
+    const began = e.detail && savedDownAt >= viewShownAt ? savedDownAt : e.timeStamp;
+    savedDownAt = -Infinity;
+    // Ignored, the press also leaves focus where the view put it, on its title.
+    if (began - viewShownAt < DOUBLE_TAP_MS) { if (document.activeElement === e.currentTarget) $("#pin-view-title").focus(); return; }
+    savedPin();
   }
   function savedPin() {
     // Every Save begins Working in the same frame. Busy prevents repeated submits; opening focus remains on
@@ -1369,7 +1393,7 @@
     dropCode();
     closeDialog(D.pin);
   }
-  $("#pin-saved").addEventListener("click", savedPin);
+  $("#pin-saved").addEventListener("click", onSaved);
   $("#pin-undo").addEventListener("click", undoCode);
   document.addEventListener("click", (e) => { if (e.target.closest("#pin-copy")) copyCode(); });
 
