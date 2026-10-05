@@ -21,7 +21,7 @@
 
 ## Running now
 
-- Access's fix round is done on `owner-followup-r04-build` at `5c2106b`: designer `a0c6c76`, Codex `376c845`
+- Access's fix round is done on `owner-followup-r04-build` at `54b2737`: designer `a0c6c76`, Codex `376c845`
   (held-out 8 of 8, `codex-rounds.md`), builder `4637c53`, fixer `5c2106b` (the review's F1 and F2). Review
   `D:/fitway-temp/owner-r04-access-fix-review/REPORT.md`. Published for the user (all four pages, links wired):
   https://claude.ai/artifact/RKEfwzfwZ7oD5r5fZLnqPS (version 2; staged from `5c2106b` without `tuner.js` in this
@@ -31,8 +31,9 @@
   sparse at 1440; N4 the field's zero dot at 1x; N5 721 EN pairs wrap; N6 lone last words; N7 mono loads on every
   visit; fixer notes: a tapped Retry leaves the desk title's ring, OWN-C9's "programmatic focus always shows its
   ring" is stale, `.acc :focus-visible` beats `.rail-item:focus-visible { outline: none }`.
-- A `sonnet-researcher` digest on which side a dialog's buttons sit in Arabic (the user's question: the right, the
-  start, instead of DLG-2's inline end); the user decides after it.
+- Decision 35 (dialog buttons at the inline start, Cancel first) built by a fixer at `54b2737`; republished as
+  version 3 of the same link. Open: the export dialog's done state centres its body while the buttons now sit at the
+  start (fixer's observation; a design call for the last round).
 
 ## Next steps
 
