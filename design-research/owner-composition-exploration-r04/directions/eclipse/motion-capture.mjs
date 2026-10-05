@@ -19,6 +19,9 @@
 //   9-export   the export's done moment in its three variants (?done=0|1|2, DECISIONS item 38), and
 //   10-row     Access's row after a deactivation and a reactivation in its two options (?row=0|1): see "9 and 10" below
 //              (moments 1-8 run with ?done=0 and ?row=0, the pages as built)
+//   11-records Access's records card: a new record arrives with the done line, in both row options, and its range (every
+//              kind of change, a record that wraps, the first record, the card's failure, Cancel change, a second change
+//              before the first has settled): see "11" below
 // For each moment, size and language it writes to <outDir>:
 //   N-<moment>-<size>-<lang>.webm  recorded in real time (the page's own timing, with every wait it needs)
 //   N-<moment>-<size>-<lang>.png   a filmstrip per beat: every movement frozen on its first frame (motion.js
@@ -33,7 +36,7 @@
 // than four pixels, or any pixel by more than 24 levels: a ring's anti-aliasing redrawn is raster noise; a text selection
 // a double press made is noted and cleared first); a
 // done state shown before its work finished; two runs from a double press.
-//   node design-research/owner-composition-exploration-r04/directions/eclipse/motion-capture.mjs <outDir> [--port=3176] [--only=1,3] [--lang=ar|en] [--size=d,t,p,z] [--video=0] [--file=0]
+//   node design-research/owner-composition-exploration-r04/directions/eclipse/motion-capture.mjs <outDir> [--port=3176] [--only=1,3] [--lang=ar|en] [--size=d,t,p,z,l] [--video=0] [--file=0]
 import { createServer } from "node:http";
 import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, extname, join, normalize, resolve, sep } from "node:path";
@@ -50,7 +53,7 @@ const PORT = Number(arg("port", "3176"));
 if ([3173, 3174].includes(PORT)) throw new Error("ports 3173 and 3174 belong to other captures");
 const ONLY = arg("only", "").split(",").filter(Boolean);
 const LANGS = arg("lang", "") ? [arg("lang", "")] : ["ar", "en"];
-const SIZE_KEYS = arg("size", "d,t,p,z").split(",");
+const SIZE_KEYS = arg("size", "d,t,p,z,l").split(",");
 const VIDEO = arg("video", "1") !== "0";
 const FILE_RUN = arg("file", "1") !== "0";
 const ORIGIN = `http://127.0.0.1:${PORT}`;
@@ -71,7 +74,7 @@ const browser = await chromium.launch();
 const log = { frames: {}, failures: [] };
 const fail = (key, what) => { log.failures.push(`${key}: ${what}`); console.log(`  FAIL ${key}: ${what}`); };
 
-const SIZES = { d: { w: 1440, h: 900, s: 1, name: "1440" }, t: { w: 768, h: 1024, s: 1, name: "768" }, p: { w: 390, h: 844, s: 1, name: "390" }, z: { w: 720, h: 450, s: 2, name: "z200" } };
+const SIZES = { d: { w: 1440, h: 900, s: 1, name: "1440" }, t: { w: 768, h: 1024, s: 1, name: "768" }, p: { w: 390, h: 844, s: 1, name: "390" }, z: { w: 720, h: 450, s: 2, name: "z200" }, l: { w: 1024, h: 900, s: 1, name: "1024" } };
 
 // Every layout shift is kept with its time, whatever started it (a shift while something moves is a jump).
 const INIT = `(() => { window.__shifts = [];
@@ -80,7 +83,7 @@ const INIT = `(() => { window.__shifts = [];
 // What motion.js might leave behind at rest: its elements and classes, an inline style it set, a running animation.
 const LEFTOVERS = () => {
   const out = [];
-  const marks = document.querySelectorAll(".m-ghost, .m-shade, .m-surface, .m-rolling, .m-roll, .m-reflow, .m-noshadow");
+  const marks = document.querySelectorAll(".m-ghost, .m-shade, .m-surface, .m-rolling, .m-roll, .m-reflow, .m-noshadow, .m-held, .m-edge, .m-skirt, .m-cap");
   if (marks.length) out.push(`${marks.length} motion element(s) or class(es)`);
   // Only where motion.js moves things (a page's own inline layout, such as Daily's axis labels, is the page's).
   for (const el of document.querySelectorAll("dialog [style], dialog[style], .fw-pop[style], .fw-pop [style], .rb-stack [style], .acc-card[style], .acc-card [style], .acc-keys[style], #grid > [style], .dlg-panel[style]")) {
@@ -410,11 +413,12 @@ async function runMoment(n, size, lang, { file = false } = {}) {
 const VARIANTS = {
   9: { name: "export", values: ["0", "1", "2"], param: "done", page: "reports.html", at: 400, until: 1250, acts: [null] },
   10: { name: "row", values: ["0", "1"], param: "row", page: "access.html", at: 700, until: 1600, acts: ["off", "on"] },
+  11: { name: "records", values: ["0", "1"], param: "row", page: "access.html", at: 700, until: 1600, acts: ["off"] },
 };
 const ROW_ID = { off: "o2", on: "o3" };
-const vScale = (size, n) => (size === "p" ? 0.5 : n === "10" ? 0.3 : 0.4);
-// The region a moment is seen in: the export's panel at its tallest (from 721 px), or the whole screen.
-async function vClip(p, n, size) { return n === "9" && size === "d" ? (await dlgClip(p)) || whole(p) : whole(p); }
+const vScale = (size, n) => (size === "p" ? 0.5 : n === "10" ? 0.3 : n === "11" ? 0.5 : 0.4);
+// The region a moment is seen in: the export's panel at its tallest (from 721 px), the records card, or the whole screen.
+async function vClip(p, n, size) { return n === "9" && size === "d" ? (await dlgClip(p)) || whole(p) : n === "11" ? (await recClip(p)) || whole(p) : whole(p); }
 // Up to the press: the export's dialog opened, its file held so the result comes when the capture says; Access's
 // confirmation opened, its answer held.
 async function vSetup(p, n, act) {
@@ -436,6 +440,15 @@ async function vResult(p, n) {
 const vFocus = (n) => (n === "9" ? "export-save" : "notice");
 const vRest = async (p) => { await release(p); await p.waitForFunction(() => !window.EclipseMotion.running, null, { timeout: 5000 }).catch(() => {}); await p.waitForTimeout(200); };
 const vFrame = async (p, t, clip, size, n) => ({ t, png: (await p.screenshot({ clip })).toString("base64"), w: clip.width * SIZES[size].s, s: vScale(size, n) });
+
+// The records card (from 721 px), with room around it; none on a phone, where the card is not shown.
+const recClip = async (p) => p.evaluate(() => {
+  const el = document.querySelector("#records");
+  if (!el || !el.getClientRects().length) return null;
+  const r = el.getBoundingClientRect(), vw = innerWidth, vh = innerHeight;
+  const x = Math.max(0, Math.floor(r.left - 16)), y = Math.max(0, Math.floor(r.top - 16));
+  return { x, y, width: Math.min(vw, Math.ceil(r.right + 16)) - x, height: Math.min(vh, Math.ceil(r.bottom + 24)) - y };
+});
 
 // One variant's moment, frozen and seeked: frames at the given steps from the press (before `at`, the press's own
 // movements; from `at`, the result's), then its rest. Returns the frames, the end and the region.
@@ -618,6 +631,175 @@ async function runExportRange(size, lang) {
   await compose(join(OUT, `${key}.png`), rows);
 }
 
+/* ---- 11 (DECISIONS item 38): Access's records card. A change writes its record, which arrives at the top of the card
+ * in the same movement as the done line: the records below slide down, the new one is uncovered and its words rise when
+ * the done line's do, the oldest of the eight leaves under the card's bottom edge. It follows the row option (?row=0|1).
+ * At 1440 in Arabic: a deactivation in each row option, frame by frame every 50 ms from the press of the confirmation
+ * to 200 ms after the last movement (11-records-off-1440-ar.png; the answer comes at 700 ms), each option's real-time
+ * video (11-records-v<V>-1440-ar.webm, the whole page), and R-11-... the reduced-motion end beside each animated end;
+ * then the range (11-records-range-1440-ar.png, ms from the answer): every kind of change, a record that wraps (the card
+ * grows), a wrapped record leaving (it shrinks), the first record into an empty card, the card's own failure and Cancel
+ * change (nothing in the card moves, its end equals its start), and a second change landing 150 ms into the first. In
+ * English at 1440, and at 1024 in both languages, end states only (the deactivation's two options and the range).
+ * It fails: an end that differs between the options or from its reduced-motion end, focus not on the done line on the
+ * result's first frame (on the code's button after Cancel change), records that are not the ones the change wrote, any
+ * movement in the card where nothing arrives, a layout shift, anything left at rest, a console message. */
+const REC_CASES = [
+  { id: "pinCreate", label: "a code created (?pin=none: four records, the card grows by one)", q: "pin=none", act: "pinCreate" },
+  { id: "pinChange", label: "the code changed", act: "pinChange" },
+  { id: "pinOff", label: "the code deactivated", act: "pinOff" },
+  { id: "add", label: "an owner added", act: "add" },
+  { id: "reset", label: "a password reset", act: "reset:o2" },
+  { id: "mine", label: "one's own password changed", act: "mine:o1" },
+  { id: "on", label: "an owner reactivated", act: "on:o3", rows: true },
+  { id: "grow", label: "a record that wraps (?case=long): the card grows", q: "case=long", act: "off:o2", rows: true },
+  { id: "shrink", label: "a wrapped record leaves (?case=long, after two changes made at once): the card shrinks", q: "case=long", pre: ["add", "pinOff"], act: "off:n4", rows: true },
+  { id: "none", label: "?records=none: the first record replaces the \"none yet\" line", q: "records=none", act: "off:o2", rows: true },
+  { id: "error", label: "?records=error: nothing arrives, the card is unchanged", q: "records=error", act: "off:o2", rows: true, still: true },
+  { id: "cancel", label: "Cancel change in the code's view: no record, nothing moves", act: "pinChange", cancel: true, still: true },
+  { id: "second", label: "a second change (Reactivate) lands 150 ms into the first (the review's hold allows it)", act: "off:o2", then: "on:o3", at: 150 },
+];
+const REC_STEPS = { 0: [0, 100, 150, 200, 250, 300, 400], 1: [0, 220, 300, 350, 400, 500, 600] };
+// A change as the owner makes it: its window opened and filled; returns the confirming press.
+async function recPrepare(p, spec) {
+  const [act, id] = spec.split(":");
+  await p.evaluate((s) => document.querySelector(s).click(), id ? `[data-act="${act}"][data-id="${id}"]` : `[data-act="${act}"]`);
+  await p.waitForTimeout(500);
+  if (act === "pinChange" || act === "pinCreate") { await p.fill("#pin-code", "Desk2026Front"); await p.click("#pin-confirm .acc-do"); await p.waitForTimeout(600); return "#pin-saved"; }
+  if (act === "add") { await p.fill("#add-name", "Reem"); await p.fill("#add-email", "reem.new@example.com"); await p.fill("#add-pw", "a-strong-password-1"); }
+  if (act === "reset") await p.fill("#reset-pw", "a-strong-password-1");
+  if (act === "mine") { await p.fill("#mine-current", "old-password-123"); await p.fill("#mine-new", "a-strong-password-1"); }
+  return act === "pinOff" ? "#pinoff .acc-do" : `#${act} .acc-do`;
+}
+// A second change made while the first still moves: its window opened, confirmed and answered at once.
+async function recSecond(p, spec) {
+  const sel = await recPrepare(p, spec);
+  await p.evaluate((s) => { window.__access.hold = true; document.querySelector(s).click(); window.__access.hold = false; window.__access.answer(); }, sel);
+}
+// One case in one row option: frames from the answer (none for an end state), its end, and its checks.
+async function recCase(c, size, lang, v, steps, { reduced = false } = {}) {
+  const key = `11-records-${c.id}-v${v}-${SIZES[size].name}-${lang}${reduced ? "-reduced" : ""}`;
+  const { ctx, page, errors } = await open(size, lang, `access.html?row=${v}${c.q ? `&${c.q}` : ""}`, { reduced });
+  // Earlier changes at once (motion off for them only).
+  for (const spec of c.pre || []) {
+    await page.evaluate(() => window.EclipseMotion.setGate(() => false));
+    const sel = await recPrepare(page, spec);
+    await page.evaluate(() => { window.__access.hold = true; });
+    await page.click(sel);
+    await page.evaluate(() => { window.__access.hold = false; window.__access.answer(); });
+    await page.waitForTimeout(100);
+    await page.evaluate(() => window.EclipseMotion.setGate(() => true));
+  }
+  // The card before the change, at rest (before its window opens and dims the page).
+  const ids0 = await page.evaluate(() => window.__access.records.ids.join(","));
+  const before = await recClip(page);
+  const start = before ? (await page.screenshot({ clip: before })).toString("base64") : null;
+  const press = await recPrepare(page, c.act);
+  await page.evaluate(() => { window.__access.hold = true; });
+  if (!c.cancel) { await page.click(press); await page.waitForTimeout(300); }
+  if (!reduced) await freeze(page);
+  const t0 = await now(page);
+  if (c.cancel) await page.click("#pin-undo");
+  else await page.evaluate(() => { window.__access.hold = false; window.__access.answer(); });
+  const want = c.cancel ? '[data-act="pinChange"]' : "#notice";
+  const f = await page.evaluate((s) => { const a = document.activeElement; return a && a.matches(s) ? null : (a ? a.id || a.className || a.tagName : "none"); }, want);
+  if (f) fail(key, `focus on ${f} on the result's first frame, not ${want}`);
+  const clip = await unionClip(page, [before, await recClip(page)]);
+  // Where nothing arrives, nothing in the card moves: no movement and no copy in it from the first frame.
+  if (c.still) {
+    const moving = await page.evaluate(() => document.querySelectorAll("#records .m-edge, #records .m-cap, #records .m-skirt, #records .m-ghost").length +
+      document.getAnimations().filter((a) => a.effect && a.effect.target && a.effect.target.closest && a.effect.target.closest("#records")).length);
+    if (moving) fail(key, `${moving} movement(s) or copies in the records card, where nothing arrives`);
+  }
+  const frames = [];
+  let last = 0, second = false;
+  const shot = async (t) => frames.push({ t, png: (await page.screenshot({ clip })).toString("base64"), w: clip.width * SIZES[size].s, s: 0.4 });
+  for (const t of steps) {
+    if (c.then && !second && t >= c.at) {
+      second = true;
+      await seek(page, c.at);
+      last = c.at;
+      await recSecond(page, c.then);
+      await shot(`${c.at} ms: the second`);
+    }
+    if (second) await page.evaluate((x) => window.EclipseMotion.capture.advance(x), t - last);
+    else await seek(page, t);
+    last = t;
+    await shot(`${t} ms`);
+  }
+  if (c.then && !second) { if (!reduced) await seek(page, c.at); await recSecond(page, c.then); }
+  if (!reduced) await vRest(page);
+  else await page.waitForTimeout(150);
+  const end = (await page.screenshot({ clip })).toString("base64");
+  const ids = await page.evaluate(() => window.__access.records.ids);
+  // The records: unchanged after Cancel change; the new one on top otherwise (the card's failure shows none of them).
+  if (c.cancel && ids.join(",") !== ids0) fail(key, `the records changed: ${ids0} → ${ids.join(",")}`);
+  if (!c.still && (ids0.split(",").includes(String(ids[0])) || (ids0 && ids[c.then ? 2 : 1] !== +ids0.split(",")[0]))) fail(key, `the new record is not on top: ${ids0} → ${ids.join(",")}`);
+  if (c.still && start && clip.width === before.width && clip.height === before.height) await vSame(key, "the records card's end against its start", start, end);
+  // With reduced motion the page changes at once by design, so a shift is checked only where things move.
+  const shifts = reduced ? [] : (await shiftsSince(page, t0)).filter((x) => x.v > 0.0001);
+  const left = await page.evaluate(LEFTOVERS);
+  if (shifts.length) fail(key, `layout shift ${shifts.map((x) => `${x.v.toFixed(4)} (${x.nodes})`).join(", ")}`);
+  if (left.length) fail(key, `left at rest: ${left.join("; ")}`);
+  if (reduced) {
+    const running = await page.evaluate(() => document.getAnimations().filter((x) => !(x.effect && x.effect.target && x.effect.target.closest && x.effect.target.closest(".ping"))).length);
+    if (running) fail(key, `${running} animation(s) with reduced motion`);
+  }
+  if (errors.length) fail(key, `console: ${errors.join(" | ")}`);
+  log.frames[key] = { shifts, left, ids: ids.join(",") };
+  await ctx.close();
+  return { frames, end, clip, w: clip.width * SIZES[size].s };
+}
+async function runRecords() {
+  const V = VARIANTS[11];
+  for (const lang of LANGS) for (const size of ["d", "l"]) {
+    if (!SIZE_KEYS.includes(size)) continue;
+    const full = lang === "ar" && size === "d";
+    const base = `11-records-off-${SIZES[size].name}-${lang}`;
+    console.log(base);
+    // The deactivation in each row option: every 50 ms in Arabic at 1440, else two frames into the result and the end.
+    const steps = full ? steps50(V.until) : [V.at + 150, V.at + 300];
+    const runs = {};
+    for (const v of V.values) runs[v] = await vTimeline("11", size, lang, v, "off", steps);
+    await vSame(base, "row=1's end against row=0's", runs["0"].end, runs["1"].end);
+    const all = (v) => [...runs[v].frames, { t: "200 ms after", png: runs[v].end, w: runs[v].w, s: vScale(size, "11") }];
+    const per = full ? 13 : steps.length + 1, rows = [];
+    for (let i = 0; i < all("0").length; i += per) for (const v of V.values) rows.push({ label: `row=${v}`, frames: all(v).slice(i, i + per) });
+    await compose(join(OUT, `${base}.png`), rows);
+    const rrows = [];
+    for (const v of V.values) {
+      const red = await vReduced("11", size, lang, v, "off", runs[v].clip);
+      const k = await vSame(`R-${base}`, `row=${v}: the reduced-motion end against the animated end`, runs[v].end, red);
+      rrows.push({ label: `row=${v}: animated end (left), reduced motion (right), ${k} px differ`, frames: [{ t: "animated, 200 ms after", png: runs[v].end, w: runs[v].w, s: vScale(size, "11") }, { t: "reduced motion, at once", png: red, w: runs[v].w, s: vScale(size, "11") }] });
+    }
+    await compose(join(OUT, `R-${base}.png`), rrows);
+    if (full && VIDEO) for (const v of V.values) await vVideo("11", size, lang, v);
+    // The range: in Arabic at 1440 frame by frame; elsewhere its ends.
+    const key = `11-records-range-${SIZES[size].name}-${lang}`;
+    console.log(key);
+    const rangeRows = [], redRows = [];
+    for (const c of REC_CASES) for (const v of c.rows ? V.values : ["0"]) {
+      const r = await recCase(c, size, lang, v, full ? (c.then ? [0, 100, 200, 250, 300, 400, 500, 650] : REC_STEPS[v]) : []);
+      const red = await recCase(c, size, lang, v, [], { reduced: true });
+      const same = r.clip.width === red.clip.width && r.clip.height === red.clip.height;
+      if (!same) fail(`R-${key}`, `${c.id}, row=${v}: the reduced-motion end's region differs from the animated one's`);
+      const k = same ? await vSame(`R-${key}`, `${c.id}, row=${v}: the reduced-motion end against the animated end`, r.end, red.end) : "-";
+      const label = `${c.label}${c.rows ? `, row=${v}` : ""}`;
+      rangeRows.push({ label: full ? `${label} (ms from the answer)` : label, frames: [...r.frames, { t: full ? "200 ms after" : label.slice(0, 44), png: r.end, w: r.w, s: full ? 0.4 : 0.32 }] });
+      redRows.push({ label: `${label}: animated end (left), reduced motion (right), ${k} px differ`, frames: [{ t: "animated", png: r.end, w: r.w, s: 0.32 }, { t: "reduced motion", png: red.end, w: red.w, s: 0.32 }] });
+    }
+    if (full) await compose(join(OUT, `${key}.png`), rangeRows);
+    else {
+      // End states only: five cases to a row.
+      const packed = [];
+      for (let i = 0; i < rangeRows.length; i += 5) packed.push({ label: `cases ${i + 1}-${Math.min(i + 5, rangeRows.length)}`, frames: rangeRows.slice(i, i + 5).flatMap((r) => r.frames) });
+      await compose(join(OUT, `${key}.png`), packed);
+    }
+    await compose(join(OUT, `R-${key}.png`), redRows);
+  }
+}
+
+
 try {
   for (const n of Object.keys(MOMENTS)) {
     if (ONLY.length && !ONLY.includes(n)) continue;
@@ -626,7 +808,8 @@ try {
       for (const lang of LANGS) await runMoment(n, size, lang);
     }
   }
-  for (const n of Object.keys(VARIANTS)) if (!ONLY.length || ONLY.includes(n)) await runVariants(n);
+  for (const n of Object.keys(VARIANTS)) if (n !== "11" && (!ONLY.length || ONLY.includes(n))) await runVariants(n);
+  if (!ONLY.length || ONLY.includes("11")) await runRecords();
   if (FILE_RUN) for (const n of ["1", "3", "6"]) {
     if (ONLY.length && !ONLY.includes(n)) continue;
     for (const lang of LANGS) await runMoment(n, "d", lang, { file: true });
